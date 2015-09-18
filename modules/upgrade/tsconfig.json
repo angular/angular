@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es3",
+        "noImplicitAny": false,
+        "rootDir": ".",
+        "sourceMap": false,
+        "noEmit": true
+    },
+    "files": [
+      "src/angular.d.ts",
+      "upgrade.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}

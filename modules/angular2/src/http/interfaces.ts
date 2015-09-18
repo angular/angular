@@ -11,10 +11,7 @@ import {URLSearchParams} from './url_search_params';
  * The primary purpose of a `ConnectionBackend` is to create new connections to fulfill a given
  * {@link Request}.
  */
-export abstract class ConnectionBackend {
-  constructor() {}
-  abstract createConnection(request: any): Connection;
-}
+export abstract class ConnectionBackend { abstract createConnection(request: any): Connection; }
 
 /**
  * Abstract class from which real connections are derived.
@@ -22,21 +19,26 @@ export abstract class ConnectionBackend {
 export abstract class Connection {
   readyState: ReadyStates;
   request: Request;
-  response: EventEmitter;  // TODO: generic of <Response>;
+  response: any;  // TODO: generic of <Response>;
 }
 
 /**
- * Interface for options to construct a Request, based on
+ * Interface for options to construct a RequestOptions, based on
  * [RequestInit](https://fetch.spec.whatwg.org/#requestinit) from the Fetch spec.
  */
-export type RequestOptionsArgs = {
+export interface RequestOptionsArgs {
   url?: string;
-  method?: RequestMethods;
+  method?: string | RequestMethods;
   search?: string | URLSearchParams;
   headers?: Headers;
   // TODO: Support Blob, ArrayBuffer, JSON, URLSearchParams, FormData
   body?: string;
 }
+
+/**
+ * Required structure when constructing new Request();
+ */
+export interface RequestArgs extends RequestOptionsArgs { url: string; }
 
 /**
  * Interface for options to construct a Response, based on

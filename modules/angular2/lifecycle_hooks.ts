@@ -14,4 +14,4 @@ export {
   OnDestroy,
   OnInit,
   DoCheck
-} from './src/core/compiler/interfaces';
+} from './src/core/linker/interfaces';

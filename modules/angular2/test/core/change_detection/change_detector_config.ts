@@ -39,8 +39,8 @@ function _createEventRecords(expression: string): BindingRecord[] {
   return [BindingRecord.createForEvent(ast, eventName, 0)];
 }
 
-function _createHostEventRecords(expression: string, directiveRecord: DirectiveRecord):
-    BindingRecord[] {
+function _createHostEventRecords(expression: string,
+                                 directiveRecord: DirectiveRecord): BindingRecord[] {
   var parts = expression.split("=");
   var eventName = parts[0].substring(1, parts[0].length - 1);
   var exp = parts[1].substring(1, parts[1].length - 1);
@@ -53,7 +53,7 @@ function _convertLocalsToVariableBindings(locals: Locals): any[] {
   var variableBindings = [];
   var loc = locals;
   while (isPresent(loc) && isPresent(loc.current)) {
-    MapWrapper.forEach(loc.current, (v, k) => variableBindings.push(k));
+    loc.current.forEach((v, k) => variableBindings.push(k));
     loc = loc.parent;
   }
   return variableBindings;
@@ -156,7 +156,7 @@ export function getAllDefinitions(): TestDefinition[] {
     "onPushObserveDirective",
     "updateElementProduction"
   ]);
-  return ListWrapper.map(allDefs, (id) => getDefinition(id));
+  return allDefs.map(getDefinition);
 }
 
 class _ExpressionWithLocals {
@@ -176,7 +176,7 @@ class _ExpressionWithLocals {
    * Map from test id to _ExpressionWithLocals.
    * Tests in this map define an expression and local values which those expressions refer to.
    */
-  static availableDefinitions: StringMap<string, _ExpressionWithLocals> = {
+  static availableDefinitions: {[key: string]: _ExpressionWithLocals} = {
     'valueFromLocals': new _ExpressionWithLocals(
         'key', new Locals(null, MapWrapper.createFromPairs([['key', 'value']]))),
     'functionFromLocals': new _ExpressionWithLocals(
@@ -241,7 +241,7 @@ class _ExpressionWithMode {
    * Map from test id to _ExpressionWithMode.
    * Definitions in this map define conditions which allow testing various change detector modes.
    */
-  static availableDefinitions: StringMap<string, _ExpressionWithMode> = {
+  static availableDefinitions: {[key: string]: _ExpressionWithMode} = {
     'emptyUsingDefaultStrategy':
         new _ExpressionWithMode(ChangeDetectionStrategy.Default, false, false),
     'emptyUsingOnPushStrategy':
@@ -315,48 +315,46 @@ class _DirectiveUpdating {
    * Map from test id to _DirectiveUpdating.
    * Definitions in this map define definitions which allow testing directive updating.
    */
-  static availableDefinitions:
-      StringMap<string, _DirectiveUpdating> = {
-        'directNoDispatcher': new _DirectiveUpdating(
-            [_DirectiveUpdating.updateA('42', _DirectiveUpdating.basicRecords[0])],
+  static availableDefinitions: {[key: string]: _DirectiveUpdating} = {
+    'directNoDispatcher': new _DirectiveUpdating(
+        [_DirectiveUpdating.updateA('42', _DirectiveUpdating.basicRecords[0])],
+        [_DirectiveUpdating.basicRecords[0]]),
+    'groupChanges':
+        new _DirectiveUpdating(
+            [
+              _DirectiveUpdating.updateA('1', _DirectiveUpdating.basicRecords[0]),
+              _DirectiveUpdating.updateB('2', _DirectiveUpdating.basicRecords[0]),
+              BindingRecord.createDirectiveOnChanges(_DirectiveUpdating.basicRecords[0]),
+              _DirectiveUpdating.updateA('3', _DirectiveUpdating.basicRecords[1]),
+              BindingRecord.createDirectiveOnChanges(_DirectiveUpdating.basicRecords[1])
+            ],
+            [_DirectiveUpdating.basicRecords[0], _DirectiveUpdating.basicRecords[1]]),
+    'directiveDoCheck': new _DirectiveUpdating(
+        [BindingRecord.createDirectiveDoCheck(_DirectiveUpdating.basicRecords[0])],
+        [_DirectiveUpdating.basicRecords[0]]),
+    'directiveOnInit': new _DirectiveUpdating(
+        [BindingRecord.createDirectiveOnInit(_DirectiveUpdating.basicRecords[0])],
+        [_DirectiveUpdating.basicRecords[0]]),
+    'emptyWithDirectiveRecords': new _DirectiveUpdating(
+        [], [_DirectiveUpdating.basicRecords[0], _DirectiveUpdating.basicRecords[1]]),
+    'noCallbacks': new _DirectiveUpdating(
+        [_DirectiveUpdating.updateA('1', _DirectiveUpdating.recordNoCallbacks)],
+        [_DirectiveUpdating.recordNoCallbacks]),
+    'readingDirectives':
+        new _DirectiveUpdating(
+            [
+              BindingRecord.createForHostProperty(
+                  new DirectiveIndex(0, 0), _getParser().parseBinding('a', 'location'), PROP_NAME)
+            ],
             [_DirectiveUpdating.basicRecords[0]]),
-        'groupChanges':
-            new _DirectiveUpdating(
-                [
-                  _DirectiveUpdating.updateA('1', _DirectiveUpdating.basicRecords[0]),
-                  _DirectiveUpdating.updateB('2', _DirectiveUpdating.basicRecords[0]),
-                  BindingRecord.createDirectiveOnChanges(_DirectiveUpdating.basicRecords[0]),
-                  _DirectiveUpdating.updateA('3', _DirectiveUpdating.basicRecords[1]),
-                  BindingRecord.createDirectiveOnChanges(_DirectiveUpdating.basicRecords[1])
-                ],
-                [_DirectiveUpdating.basicRecords[0], _DirectiveUpdating.basicRecords[1]]),
-        'directiveDoCheck': new _DirectiveUpdating(
-            [BindingRecord.createDirectiveDoCheck(_DirectiveUpdating.basicRecords[0])],
-            [_DirectiveUpdating.basicRecords[0]]),
-        'directiveOnInit': new _DirectiveUpdating(
-            [BindingRecord.createDirectiveOnInit(_DirectiveUpdating.basicRecords[0])],
-            [_DirectiveUpdating.basicRecords[0]]),
-        'emptyWithDirectiveRecords': new _DirectiveUpdating(
-            [], [_DirectiveUpdating.basicRecords[0], _DirectiveUpdating.basicRecords[1]]),
-        'noCallbacks': new _DirectiveUpdating(
-            [_DirectiveUpdating.updateA('1', _DirectiveUpdating.recordNoCallbacks)],
-            [_DirectiveUpdating.recordNoCallbacks]),
-        'readingDirectives':
-            new _DirectiveUpdating(
-                [
-                  BindingRecord.createForHostProperty(new DirectiveIndex(0, 0),
-                                                      _getParser().parseBinding('a', 'location'),
-                                                      PROP_NAME)
-                ],
-                [_DirectiveUpdating.basicRecords[0]]),
-        'interpolation':
-            new _DirectiveUpdating(
-                [
-                  BindingRecord.createForElementProperty(
-                      _getParser().parseInterpolation('B{{a}}A', 'location'), 0, PROP_NAME)
-                ],
-                [])
-      };
+    'interpolation':
+        new _DirectiveUpdating(
+            [
+              BindingRecord.createForElementProperty(
+                  _getParser().parseInterpolation('B{{a}}A', 'location'), 0, PROP_NAME)
+            ],
+            [])
+  };
 }
 
 /**
@@ -408,6 +406,7 @@ var _availableDefinitions = [
   'name | pipe',
   '(name | pipe).length',
   "name | pipe:'one':address.city",
+  "name | pipe:'a':'b' | pipe:0:1:2",
   'value',
   'a',
   'address.city',
@@ -417,7 +416,8 @@ var _availableDefinitions = [
   'a()(99)',
   'a.sayHi("Jim")',
   'passThrough([12])',
-  'invalidFn(1)'
+  'invalidFn(1)',
+  'age'
 ];
 
 var _availableEventDefinitions = [

@@ -1,16 +1,18 @@
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {OnChanges} from 'angular2/lifecycle_hooks';
 import {SimpleChange} from 'angular2/src/core/change_detection';
 import {Query, Directive} from 'angular2/src/core/metadata';
-import {forwardRef, Binding, Inject, Optional} from 'angular2/src/core/di';
+import {forwardRef, Provider, Inject, Optional} from 'angular2/src/core/di';
 import {NgControl} from './ng_control';
 import {Control} from '../model';
 import {Validators, NG_VALIDATORS} from '../validators';
-import {setUpControl, isPropertyUpdated} from './shared';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import {setUpControl, composeValidators, isPropertyUpdated, selectValueAccessor} from './shared';
 
 const formControlBinding =
-    CONST_EXPR(new Binding(NgControl, {toAlias: forwardRef(() => NgFormControl)}));
+    CONST_EXPR(new Provider(NgControl, {useExisting: forwardRef(() => NgFormControl)}));
 
 /**
  * Binds an existing {@link Control} to a DOM element.
@@ -23,9 +25,7 @@ const formControlBinding =
  *
  *  ```typescript
  * @Component({
- *   selector: 'my-app'
- * })
- * @View({
+ *   selector: 'my-app',
  *   template: `
  *     <div>
  *       <h2>NgFormControl Example</h2>
@@ -43,15 +43,15 @@ const formControlBinding =
  * }
  *  ```
  *
- * # ng-model
+ *##ng-model
  *
  * We can also use `ng-model` to bind a domain model to the form.
  *
  * ### Example ([live demo](http://plnkr.co/edit/yHMLuHO7DNgT8XvtjTDH?p=preview))
  *
  *  ```typescript
- * @Component({selector: "login-comp"})
- * @View({
+ * @Component({
+ *      selector: "login-comp",
  *      directives: [FORM_DIRECTIVES],
  *      template: "<input type='text' [ng-form-control]='loginControl' [(ng-model)]='login'>"
  *      })
@@ -64,28 +64,29 @@ const formControlBinding =
 @Directive({
   selector: '[ng-form-control]',
   bindings: [formControlBinding],
-  properties: ['form: ngFormControl', 'model: ngModel'],
-  events: ['update: ngModel'],
+  inputs: ['form: ngFormControl', 'model: ngModel'],
+  outputs: ['update: ngModelChange'],
   exportAs: 'form'
 })
 export class NgFormControl extends NgControl implements OnChanges {
   form: Control;
   update = new EventEmitter();
-  _added = false;
   model: any;
   viewModel: any;
-  validators: Function[];
+  private _validator: Function;
 
-  constructor(@Optional() @Inject(NG_VALIDATORS) validators: Function[]) {
+  constructor(@Optional() @Inject(NG_VALIDATORS) validators:
+                  /* Array<Validator|Function> */ any[],
+              @Optional() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[]) {
     super();
-    this.validators = validators;
+    this._validator = composeValidators(validators);
+    this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
-  onChanges(changes: StringMap<string, SimpleChange>): void {
-    if (!this._added) {
+  onChanges(changes: {[key: string]: SimpleChange}): void {
+    if (this._isControlChanged(changes)) {
       setUpControl(this.form, this);
-      this.form.updateValidity();
-      this._added = true;
+      this.form.updateValueAndValidity({emitEvent: false});
     }
     if (isPropertyUpdated(changes, this.viewModel)) {
       this.form.updateValue(this.model);
@@ -95,12 +96,16 @@ export class NgFormControl extends NgControl implements OnChanges {
 
   get path(): string[] { return []; }
 
-  get control(): Control { return this.form; }
+  get validator(): Function { return this._validator; }
 
-  get validator(): Function { return Validators.compose(this.validators); }
+  get control(): Control { return this.form; }
 
   viewToModelUpdate(newValue: any): void {
     this.viewModel = newValue;
     ObservableWrapper.callNext(this.update, newValue);
+  }
+
+  private _isControlChanged(changes: {[key: string]: any}): boolean {
+    return StringMapWrapper.contains(changes, "form");
   }
 }

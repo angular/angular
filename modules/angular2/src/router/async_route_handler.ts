@@ -3,10 +3,11 @@ import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {isPresent, Type} from 'angular2/src/core/facade/lang';
 
 export class AsyncRouteHandler implements RouteHandler {
+  /** @internal */
   _resolvedComponent: Promise<any> = null;
   componentType: Type;
 
-  constructor(private _loader: Function, public data?: Object) {}
+  constructor(private _loader: Function, public data?: {[key: string]: any}) {}
 
   resolveComponentType(): Promise<any> {
     if (isPresent(this._resolvedComponent)) {

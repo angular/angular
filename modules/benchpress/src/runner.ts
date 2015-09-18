@@ -1,4 +1,4 @@
-import {Injector, bind, Binding} from 'angular2/src/core/di';
+import {Injector, bind, provide, Provider} from 'angular2/src/core/di';
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 
@@ -25,8 +25,8 @@ import {Options} from './common_options';
  * It provides defaults, creates the injector and calls the sampler.
  */
 export class Runner {
-  private _defaultBindings: Binding[];
-  constructor(defaultBindings: Binding[] = null) {
+  private _defaultBindings: Provider[];
+  constructor(defaultBindings: Provider[] = null) {
     if (isBlank(defaultBindings)) {
       defaultBindings = [];
     }
@@ -35,7 +35,7 @@ export class Runner {
 
   sample({id, execute, prepare, microMetrics, bindings}): Promise<SampleState> {
     var sampleBindings = [
-      _DEFAULT_BINDINGS,
+      _DEFAULT_PROVIDERS,
       this._defaultBindings,
       bind(Options.SAMPLE_ID).toValue(id),
       bind(Options.EXECUTE).toValue(execute)
@@ -60,7 +60,7 @@ export class Runner {
           var userAgent = args[1];
 
           // This might still create instances twice. We are creating a new injector with all the
-          // bindings.
+          // providers.
           // Only WebDriverAdapter is reused.
           // TODO vsavkin consider changing it when toAsyncFactory is added back or when child
           // injectors are handled better.
@@ -68,7 +68,7 @@ export class Runner {
             sampleBindings,
             bind(Options.CAPABILITIES).toValue(capabilities),
             bind(Options.USER_AGENT).toValue(userAgent),
-            bind(WebDriverAdapter).toValue(adapter)
+            provide(WebDriverAdapter, {useValue: adapter})
           ]);
 
           var sampler = injector.get(Sampler);
@@ -77,8 +77,8 @@ export class Runner {
   }
 }
 
-var _DEFAULT_BINDINGS = [
-  Options.DEFAULT_BINDINGS,
+var _DEFAULT_PROVIDERS = [
+  Options.DEFAULT_PROVIDERS,
   Sampler.BINDINGS,
   ConsoleReporter.BINDINGS,
   RegressionSlopeValidator.BINDINGS,

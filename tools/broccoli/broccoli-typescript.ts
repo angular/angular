@@ -1,5 +1,4 @@
 /// <reference path="../typings/node/node.d.ts" />
-/// <reference path="../../node_modules/typescript/lib/typescript.d.ts" />
 
 import fs = require('fs');
 import fse = require('fs-extra');
@@ -38,12 +37,18 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
   static excludeExtensions = ['.d.ts'];
 
   constructor(public inputPath: string, public cachePath: string, public options) {
-    this.tsOpts = Object.create(options);
+    if (options.rootFilePaths) {
+      this.rootFilePaths = options.rootFilePaths.splice(0);
+      delete options.rootFilePaths;
+    } else {
+      this.rootFilePaths = [];
+    }
+
+    // in tsc 1.7.x this api was renamed to parseJsonConfigFileContent
+    // the conversion is a bit awkward, see https://github.com/Microsoft/TypeScript/issues/5276
+    this.tsOpts = ts.parseConfigFile({compilerOptions: options, files: []}, null, null).options;
     this.tsOpts.outDir = this.cachePath;
-    this.tsOpts.target = (<any>ts).ScriptTarget[options.target];
-    this.tsOpts.module = (<any>ts).ModuleKind[options.module];
-    this.tsOpts.experimentalDecorators = true;
-    this.rootFilePaths = options.rootFilePaths ? options.rootFilePaths.splice(0) : [];
+
     this.tsServiceHost = new CustomLanguageServiceHost(this.tsOpts, this.rootFilePaths,
                                                        this.fileRegistry, this.inputPath);
     this.tsService = ts.createLanguageService(this.tsServiceHost, ts.createDocumentRegistry());
@@ -119,7 +124,7 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
     allDiagnostics.forEach(diagnostic => {
       let message = ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n");
       if (diagnostic.file) {
-        let{line, character} = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
+        let {line, character} = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
         errors.push(`  ${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
       } else {
         errors.push(`  Error: ${message}`);
@@ -218,10 +223,19 @@ class CustomLanguageServiceHost implements ts.LanguageServiceHost {
    * not worth the potential issues with stale cache records.
    */
   getScriptSnapshot(tsFilePath: string): ts.IScriptSnapshot {
-    let absoluteTsFilePath =
-        (tsFilePath == this.defaultLibFilePath || path.isAbsolute(tsFilePath)) ?
-            tsFilePath :
-            path.join(this.treeInputPath, tsFilePath);
+    let absoluteTsFilePath;
+
+    if (tsFilePath == this.defaultLibFilePath || path.isAbsolute(tsFilePath)) {
+      absoluteTsFilePath = tsFilePath;
+    } else if (this.compilerOptions.moduleResolution === ts.ModuleResolutionKind.NodeJs &&
+               tsFilePath.match(/^node_modules/)) {
+      absoluteTsFilePath = path.resolve(tsFilePath);
+    } else if (tsFilePath.match(/^@reactivex/)) {
+      absoluteTsFilePath = path.resolve('node_modules', tsFilePath);
+    } else {
+      absoluteTsFilePath = path.join(this.treeInputPath, tsFilePath);
+    }
+
 
     if (!fs.existsSync(absoluteTsFilePath)) {
       // TypeScript seems to request lots of bogus paths during import path lookup and resolution,

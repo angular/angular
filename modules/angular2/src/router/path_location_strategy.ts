@@ -1,7 +1,7 @@
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {Injectable} from 'angular2/src/core/di';
+import {Injectable} from 'angular2/angular2';
 import {EventListener, History, Location} from 'angular2/src/core/facade/browser';
-import {LocationStrategy} from './location_strategy';
+import {LocationStrategy, normalizeQueryParams} from './location_strategy';
 
 /**
  * `PathLocationStrategy` is a {@link LocationStrategy} used to configure the
@@ -9,7 +9,10 @@ import {LocationStrategy} from './location_strategy';
  * [path](https://en.wikipedia.org/wiki/Uniform_Resource_Locator#Syntax) of the
  * browser's URL.
  *
- * If you're using `PathLocationStrategy`, you must provide a binding for
+ * `PathLocationStrategy` is the default binding for {@link LocationStrategy}
+ * provided in {@link ROUTER_PROVIDERS}.
+ *
+ * If you're using `PathLocationStrategy`, you must provide a provider for
  * {@link APP_BASE_HREF} to a string representing the URL prefix that should
  * be preserved when generating and recognizing URLs.
  *
@@ -17,22 +20,19 @@ import {LocationStrategy} from './location_strategy';
  * `location.go('/foo')`, the browser's URL will become
  * `example.com/my/app/foo`.
  *
- * ## Example
+ * ### Example
  *
  * ```
- * import {Component, View, bind} from 'angular2/angular2';
+ * import {Component, provide} from 'angular2/angular2';
  * import {
  *   APP_BASE_HREF
  *   ROUTER_DIRECTIVES,
- *   routerBindings,
+ *   ROUTER_PROVIDERS,
  *   RouteConfig,
- *   Location,
- *   LocationStrategy,
- *   PathLocationStrategy
+ *   Location
  * } from 'angular2/router';
  *
- * @Component({...})
- * @View({directives: [ROUTER_DIRECTIVES]})
+ * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([
  *  {...},
  * ])
@@ -43,9 +43,8 @@ import {LocationStrategy} from './location_strategy';
  * }
  *
  * bootstrap(AppCmp, [
- *   routerBindings(AppCmp),
- *   bind(LocationStrategy).toClass(PathLocationStrategy),
- *   bind(APP_BASE_HREF).toValue('/my/app')
+ *   ROUTER_PROVIDERS, // includes binding to PathLocationStrategy
+ *   provide(APP_BASE_HREF, {useValue: '/my/app'})
  * ]);
  * ```
  */
@@ -68,9 +67,13 @@ export class PathLocationStrategy extends LocationStrategy {
 
   getBaseHref(): string { return this._baseHref; }
 
-  path(): string { return this._location.pathname; }
+  prepareExternalUrl(internal: string): string { return this._baseHref + internal; }
 
-  pushState(state: any, title: string, url: string) { this._history.pushState(state, title, url); }
+  path(): string { return this._location.pathname + normalizeQueryParams(this._location.search); }
+
+  pushState(state: any, title: string, url: string, queryParams: string) {
+    this._history.pushState(state, title, (url + normalizeQueryParams(queryParams)));
+  }
 
   forward(): void { this._history.forward(); }
 

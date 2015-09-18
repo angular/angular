@@ -8,19 +8,19 @@ import {
   expect,
   beforeEach,
   afterEach
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
-import {PipeBinding} from 'angular2/src/core/pipes/pipe_binding';
+import {PipeProvider} from 'angular2/src/core/pipes/pipe_provider';
 import {Pipe} from 'angular2/src/core/metadata';
 
 class MyPipe {}
 
 export function main() {
-  describe("PipeBinding", () => {
-    it('should create a binding out of a type', () => {
-      var binding = PipeBinding.createFromType(MyPipe, new Pipe({name: 'my-pipe'}));
-      expect(binding.name).toEqual('my-pipe');
-      expect(binding.key.token).toEqual(MyPipe);
+  describe("PipeProvider", () => {
+    it('should create a provider out of a type', () => {
+      var provider = PipeProvider.createFromType(MyPipe, new Pipe({name: 'my-pipe'}));
+      expect(provider.name).toEqual('my-pipe');
+      expect(provider.key.token).toEqual(MyPipe);
     });
   });
 }

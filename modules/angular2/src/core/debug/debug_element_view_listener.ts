@@ -1,11 +1,11 @@
 import {CONST_EXPR, isPresent, NumberWrapper, StringWrapper} from 'angular2/src/core/facade/lang';
 import {MapWrapper, Map, ListWrapper} from 'angular2/src/core/facade/collection';
-import {Injectable, bind, Binding} from 'angular2/src/core/di';
-import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
-import {AppView} from 'angular2/src/core/compiler/view';
+import {Injectable, provide, Provider} from 'angular2/src/core/di';
+import {AppViewListener} from 'angular2/src/core/linker/view_listener';
+import {AppView} from 'angular2/src/core/linker/view';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {Renderer} from 'angular2/src/core/render/api';
-import {DebugElement} from './debug_element';
+import {DebugElement, DebugElement_} from './debug_element';
 
 const NG_ID_PROPERTY = 'ngid';
 const INSPECT_GLOBAL_NAME = 'ng.probe';
@@ -20,15 +20,14 @@ var _nextId = 0;
 
 function _setElementId(element, indices: number[]) {
   if (isPresent(element)) {
-    DOM.setData(element, NG_ID_PROPERTY, ListWrapper.join(indices, NG_ID_SEPARATOR));
+    DOM.setData(element, NG_ID_PROPERTY, indices.join(NG_ID_SEPARATOR));
   }
 }
 
 function _getElementId(element): number[] {
   var elId = DOM.getData(element, NG_ID_PROPERTY);
   if (isPresent(elId)) {
-    return ListWrapper.map(elId.split(NG_ID_SEPARATOR),
-                           (partStr) => NumberWrapper.parseInt(partStr, 10));
+    return elId.split(NG_ID_SEPARATOR).map(partStr => NumberWrapper.parseInt(partStr, 10));
   } else {
     return null;
   }
@@ -39,7 +38,7 @@ export function inspectNativeElement(element): DebugElement {
   if (isPresent(elId)) {
     var view = _allViewsById.get(elId[0]);
     if (isPresent(view)) {
-      return new DebugElement(view, elId[1]);
+      return new DebugElement_(view, elId[1]);
     }
   }
   return null;
@@ -51,7 +50,7 @@ export class DebugElementViewListener implements AppViewListener {
     DOM.setGlobalVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
   }
 
-  viewCreated(view: AppView) {
+  onViewCreated(view: AppView) {
     var viewId = _nextId++;
     _allViewsById.set(viewId, view);
     _allIdsByView.set(view, viewId);
@@ -61,14 +60,16 @@ export class DebugElementViewListener implements AppViewListener {
     }
   }
 
-  viewDestroyed(view: AppView) {
+  onViewDestroyed(view: AppView) {
     var viewId = _allIdsByView.get(view);
-    MapWrapper.delete(_allIdsByView, view);
-    MapWrapper.delete(_allViewsById, viewId);
+    _allIdsByView.delete(view);
+    _allViewsById.delete(viewId);
   }
 }
 
-export const ELEMENT_PROBE_BINDINGS: any[] = CONST_EXPR([
+export const ELEMENT_PROBE_PROVIDERS: any[] = CONST_EXPR([
   DebugElementViewListener,
-  CONST_EXPR(new Binding(AppViewListener, {toAlias: DebugElementViewListener})),
+  CONST_EXPR(new Provider(AppViewListener, {useExisting: DebugElementViewListener})),
 ]);
+
+export const ELEMENT_PROBE_BINDINGS = ELEMENT_PROBE_PROVIDERS;

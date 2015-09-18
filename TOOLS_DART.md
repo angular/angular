@@ -38,8 +38,6 @@ In the browser, open the dev console. The top-level object is called `ng` and
 contains more specific tools inside it.
 
 For example, to run the change detection profiler on your app:
-<!-- QUESTION: is "on your app" accurate?
-is "run the change detection profiler on your app" the best wording? -->
 
 ```javascript
 // In the dev console:
@@ -68,7 +66,7 @@ Options for investigating code size include the `--dump-info` dart2js option,
 ng2soyc, `reflector.trackUsage()`, and code coverage information
 from the Dart VM.
 
-#### --dump-info
+#### Use --dump-info
 
 The `--dump-info` option of `dart2js` outputs information about what happened
 during compilation. You can specify `--dump-info` in `pubspec.yaml`:
@@ -86,7 +84,7 @@ can help you analyze the output.
 For more information, see the
 [dart2js_info API reference](http://dart-lang.github.io/dart2js_info/doc/api/).
 
-#### ng2soyc.dart
+#### Use ng2soyc.dart
 
 [ng2soyc](https://github.com/angular/ng2soyc.dart) is a utility for analyzing
 code size contributors in Angular 2 applications. It groups code size by
@@ -97,17 +95,61 @@ each level. To reduce noise in the output of very large apps, ng2soyc provides
 an option to hide libraries that are too small, so you can focus on the biggest
 contributors.
 
-#### Track unused reflection data
+#### Find unused reflection data
 
-<!-- QUESTION: How do you get access to reflector & ReflectionInfo? -->
+Your app might have types that are annotated with `@Component` or `@Injectable`
+but never used.
+To find these unused types, use `reflector.trackUsage()` and then,
+after exercising your app, `reflector.listUnusedKeys()`.
+For example:
 
-Call `reflector.trackUsage()` to track reflection information used
-by the application. Reflection information (`ReflectionInfo`) is a data
-structure that stores information about your application that Angular uses for
-locating DI factories, generated change detectors and other code related to a
-given type. After exercising your application, call `reflector.listUnusedKeys()`
-to get a list of types and functions whose reflection information was retained
-but never used by the application.
+```
+import 'package:angular2/src/core/reflection/reflection.dart';
+...
+main() async {
+  reflector.trackUsage();
+  await bootstrap(AppComponent);
+  print('Unused keys: ${reflector.listUnusedKeys()}');
+}
+```
+
+When you run that code (in Dartium or another browser),
+you'll see a list of types that Angular _can_ inject but hasn't needed to.
+Consider removing those types or their `@Component`/`@Injectable` annotation
+to decrease your app's code size.
+
+Three conditions must be true for `listUnusedKeys()` to return helpful data:
+
+1. The angular2 transformer must run on the app.
+2. If you're running a JavaScript version of the app,
+   the app must not be minified, so that the names are readable.
+3. You must exercise your app in as many ways as possible
+   before calling `listUnusedKeys()`.
+   Otherwise, you might get false positives:
+   keys that haven't been used only because you didn't exercise
+   the relevant feature of the app.
+
+To run the angular2 transformer, first specify it in `pubspec.yaml`:
+
+```
+name: hello_world
+...
+transformers:
+- angular2:
+    entry_points: web/main.dart
+```
+
+Then use pub to run the transformer. If you use `pub serve`,
+it provides both Dart and unminified (by default) JavaScript versions.
+If you want to serve actual files, then use `pub build` in debug mode
+to generate Dart and unminified JavaScript files:
+`pub build --mode=debug`.
+
+The `reflector.trackUsage()` method makes Angular track the reflection
+information used by the app. Reflection information (`ReflectionInfo`) is a data
+structure that stores information that Angular uses for locating DI factories
+and for generating change detectors and other code related to a
+given type.
 
 #### Use code coverage to find dead code
 
@@ -216,34 +258,45 @@ transformers:
 ### Change detection profiler
 
 If your application is janky (it misses frames) or is slow according to other
-metrics it is important to find the root cause of the issue. Change detection
-is a phase in Angular's lifecycle that detects changes in values that are
-bound to UI, and if it finds a change it performs the corresponding UI update.
-However, sometimes it is hard to tell if the slowness is due to the act of
-computing the changes being slow, or due to the act of applying those changes
-to the UI. For your application to be performant it is important that the
-process of computing changes is very fast. For best results it should be under
-3 milliseconds in order to leave room for the application logic, the UI updates
-and browser's rendering pipeline to fit withing the 16 millisecond frame
-(assuming the 60 FPS target frame rate).
+metrics, you need to find out why. This tool helps by measuring the average
+speed of _change detection_, a phase in Angular's
+lifecycle that detects changes in values that are bound to the UI.
+Janky UI updates can result from slowness either in _computing_ the changes or
+in _applying_ those changes to the UI.
 
-Change detection profiler repeatedly performs change detection without invoking
-any user actions, such as clicking buttons or entering text in input fields. It
-then computes the average amount of time it took to perform a single cycle of
-change detection in milliseconds and prints it to the console. This number
-depends on the current state of the UI. You are likely to see different numbers
+For your app to be performant, the process of _computing_ changes must be very
+fast—preferably **under 3 milliseconds**.
+Fast change computation leaves room for
+the application logic, UI updates, and browser rendering pipeline
+to fit within a 16 ms frame (assuming a target frame rate of 60 FPS).
+
+The change detection profiler repeatedly performs change detection
+without invoking any user actions, such as clicking buttons or entering
+text in input fields. It then computes the average amount of time
+(in milliseconds) to perform a single cycle of change detection and
+prints that to the console. This number depends on the current state of the UI. You are likely to see different numbers
 as you go from one screen in your application to another.
 
 #### Running the profiler
 
-Enable the debugging tools (see above),
-then in the dev console enter the following:
+Before running the profiler, enable the debugging tools
+and put the app into the state you want to measure:
+
+1. If you haven't already done so,
+   [enable the debugging tools](#enabling-the-debugging-tools).
+2. Navigate the app to a screen whose performance you want to profile.
+3. Make sure the screen is in a state that you want to measure.
+   For example, you might want to profile the screen several times,
+   with different amounts and kinds of data.
+
+To run the profiler, enter the following in the dev console:
 
 ```javascript
 ng.profiler.timeChangeDetection();
 ```
 
-The results are printed to the console.
+The results are visible in the console.
+
 
 #### Recording CPU profiles
 
@@ -257,6 +310,7 @@ Then open the **Profiles** tab. The recorded profile has the title
 **Change Detection**. In Chrome, if you record the profile repeatedly, all the
 profiles are nested under Change Detection.
 
+
 #### Interpreting the numbers
 
 In a properly designed application, repeated attempts to detect changes without
@@ -264,9 +318,7 @@ any user actions result in no changes to the UI. It is
 also desirable to have the cost of a user action be proportional to the amount
 of UI changes required. For example, popping up a menu with 5 items should be
 vastly faster than rendering a table of 500 rows and 10 columns. Therefore,
-change detection with no UI updates should be as fast as possible. Ideally the
-number printed by the profiler should be well below the length of a single
-animation frame (16ms). A good rule of thumb is to keep it under 3ms.
+change detection with no UI updates should be as fast as possible.
 
 #### Investigating slow change detection
 

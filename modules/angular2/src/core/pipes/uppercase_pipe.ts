@@ -7,15 +7,13 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 /**
  * Implements uppercase transforms to text.
  *
- * # Example
+ * ### Example
  *
  * In this example we transform the user text uppercase.
  *
  *  ```
  * @Component({
- *   selector: "username-cmp"
- * })
- * @View({
+ *   selector: "username-cmp",
  *   template: "Username: {{ user | uppercase }}"
  * })
  * class Username {

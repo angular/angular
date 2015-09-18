@@ -5,32 +5,40 @@ import {
   Injectable,
   OptionalMetadata,
   SkipSelfMetadata,
-  Binding,
+  Provider,
   Injector,
   bind
 } from 'angular2/src/core/di';
-import {PipeBinding} from './pipe_binding';
+import {PipeProvider} from './pipe_provider';
 import * as cd from 'angular2/src/core/change_detection/pipes';
 
 export class ProtoPipes {
-  /**
-   * Map of {@link PipeMetadata} names to {@link PipeMetadata} implementations.
-   */
-  config: StringMap<string, PipeBinding> = {};
+  static fromProviders(providers: PipeProvider[]): ProtoPipes {
+    var config: {[key: string]: PipeProvider} = {};
+    providers.forEach(b => config[b.name] = b);
+    return new ProtoPipes(config);
+  }
 
-  constructor(bindings: PipeBinding[]) { bindings.forEach(b => this.config[b.name] = b); }
+  constructor(
+      /**
+      * Map of {@link PipeMetadata} names to {@link PipeMetadata} implementations.
+      */
+      public config: {[key: string]: PipeProvider}) {
+    this.config = config;
+  }
 
-  get(name: string): PipeBinding {
-    var binding = this.config[name];
-    if (isBlank(binding)) throw new BaseException(`Cannot find pipe '${name}'.`);
-    return binding;
+  get(name: string): PipeProvider {
+    var provider = this.config[name];
+    if (isBlank(provider)) throw new BaseException(`Cannot find pipe '${name}'.`);
+    return provider;
   }
 }
 
 
 
 export class Pipes implements cd.Pipes {
-  _config: StringMap<string, cd.SelectedPipe> = {};
+  /** @internal */
+  _config: {[key: string]: cd.SelectedPipe} = {};
 
   constructor(public proto: ProtoPipes, public injector: Injector) {}
 

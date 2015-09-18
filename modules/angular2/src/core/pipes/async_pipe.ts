@@ -1,5 +1,5 @@
 import {isBlank, isPresent, isPromise, CONST} from 'angular2/src/core/facade/lang';
-import {Promise, ObservableWrapper, Observable} from 'angular2/src/core/facade/async';
+import {Promise, ObservableWrapper, Observable, EventEmitter} from 'angular2/src/core/facade/async';
 import {Pipe} from 'angular2/src/core/metadata';
 import {Injectable} from 'angular2/src/core/di';
 import {
@@ -40,16 +40,14 @@ var _observableStrategy = new ObservableStrategy();
  * emitted.
  * When a new value is emitted, the `async` pipe marks the component to be checked for changes.
  *
- * # Example
+ * ### Example
  * The example below binds the `time` Observable to the view. Every 500ms, the `time` Observable
  * updates the view with the current time.
  *
  * ```
  * import {Observable} from 'angular2/core';
  * @Component({
- *   selector: "task-cmp"
- * })
- * @View({
+ *   selector: "task-cmp",
  *   template: "Time: {{ time | async }}"
  * })
  * class Task {
@@ -63,14 +61,19 @@ var _observableStrategy = new ObservableStrategy();
 @Pipe({name: 'async', pure: false})
 @Injectable()
 export class AsyncPipe implements PipeTransform, PipeOnDestroy {
+  /** @internal */
   _latestValue: Object = null;
+  /** @internal */
   _latestReturnedValue: Object = null;
 
+  /** @internal */
   _subscription: Object = null;
-  _obj: Observable | Promise<any> = null;
+  /** @internal */
+  _obj: Observable<any>| Promise<any>| EventEmitter<any> = null;
   private _strategy: any = null;
-
-  constructor(public _ref: ChangeDetectorRef) {}
+  /** @internal */
+  public _ref: ChangeDetectorRef;
+  constructor(_ref: ChangeDetectorRef) { this._ref = _ref; }
 
   onDestroy(): void {
     if (isPresent(this._subscription)) {
@@ -78,7 +81,7 @@ export class AsyncPipe implements PipeTransform, PipeOnDestroy {
     }
   }
 
-  transform(obj: Observable | Promise<any>, args?: any[]): any {
+  transform(obj: Observable<any>| Promise<any>| EventEmitter<any>, args?: any[]): any {
     if (isBlank(this._obj)) {
       if (isPresent(obj)) {
         this._subscribe(obj);
@@ -99,14 +102,16 @@ export class AsyncPipe implements PipeTransform, PipeOnDestroy {
     }
   }
 
-  _subscribe(obj: Observable | Promise<any>): void {
+  /** @internal */
+  _subscribe(obj: Observable<any>| Promise<any>| EventEmitter<any>): void {
     this._obj = obj;
     this._strategy = this._selectStrategy(obj);
     this._subscription =
         this._strategy.createSubscription(obj, value => this._updateLatestValue(obj, value));
   }
 
-  _selectStrategy(obj: Observable | Promise<any>): any {
+  /** @internal */
+  _selectStrategy(obj: Observable<any>| Promise<any>| EventEmitter<any>): any {
     if (isPromise(obj)) {
       return _promiseStrategy;
     } else if (ObservableWrapper.isObservable(obj)) {
@@ -116,6 +121,7 @@ export class AsyncPipe implements PipeTransform, PipeOnDestroy {
     }
   }
 
+  /** @internal */
   _dispose(): void {
     this._strategy.dispose(this._subscription);
     this._latestValue = null;
@@ -124,6 +130,7 @@ export class AsyncPipe implements PipeTransform, PipeOnDestroy {
     this._obj = null;
   }
 
+  /** @internal */
   _updateLatestValue(async: any, value: Object) {
     if (async === this._obj) {
       this._latestValue = value;

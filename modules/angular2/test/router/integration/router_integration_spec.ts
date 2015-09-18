@@ -12,18 +12,18 @@ import {
   xdescribe,
   TestComponentBuilder,
   xit,
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {bootstrap} from 'angular2/bootstrap';
 import {Component, Directive, View} from 'angular2/src/core/metadata';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {bind} from 'angular2/core';
+import {provide} from 'angular2/core';
 import {DOCUMENT} from 'angular2/src/core/render/render';
 import {RouteConfig, Route, Redirect} from 'angular2/src/router/route_config_decorator';
 import {PromiseWrapper} from 'angular2/src/core/facade/async';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {
-  ROUTER_BINDINGS,
+  ROUTER_PROVIDERS,
   ROUTER_PRIMARY_COMPONENT,
   RouteParams,
   Router,
@@ -34,11 +34,18 @@ import {
 
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
+import {ApplicationRef} from 'angular2/src/core/application_ref';
+import {MockApplicationRef} from 'angular2/src/mock/mock_application_ref';
 
 export function main() {
   describe('router injectables', () => {
-    beforeEachBindings(
-        () => { return [ROUTER_BINDINGS, bind(LocationStrategy).toClass(MockLocationStrategy)]; });
+    beforeEachBindings(() => {
+      return [
+        ROUTER_PROVIDERS,
+        provide(LocationStrategy, {useClass: MockLocationStrategy}),
+        provide(ApplicationRef, {useClass: MockApplicationRef})
+      ];
+    });
 
     // do not refactor out the `bootstrap` functionality. We still want to
     // keep this test around so we can ensure that bootstrapping a router works
@@ -50,10 +57,10 @@ export function main() {
 
            bootstrap(AppCmp,
                      [
-                       ROUTER_BINDINGS,
-                       bind(ROUTER_PRIMARY_COMPONENT).toValue(AppCmp),
-                       bind(LocationStrategy).toClass(MockLocationStrategy),
-                       bind(DOCUMENT).toValue(fakeDoc)
+                       ROUTER_PROVIDERS,
+                       provide(ROUTER_PRIMARY_COMPONENT, {useValue: AppCmp}),
+                       provide(LocationStrategy, {useClass: MockLocationStrategy}),
+                       provide(DOCUMENT, {useValue: fakeDoc})
                      ])
                .then((applicationRef) => {
                  var router = applicationRef.hostComponent.router;
@@ -67,7 +74,8 @@ export function main() {
     });
 
     describe('broken app', () => {
-      beforeEachBindings(() => { return [bind(ROUTER_PRIMARY_COMPONENT).toValue(BrokenAppCmp)]; });
+      beforeEachBindings(
+          () => { return [provide(ROUTER_PRIMARY_COMPONENT, {useValue: BrokenAppCmp})]; });
 
       it('should rethrow exceptions from component constructors',
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
@@ -84,7 +92,7 @@ export function main() {
 
     describe('back button app', () => {
       beforeEachBindings(
-          () => { return [bind(ROUTER_PRIMARY_COMPONENT).toValue(HierarchyAppCmp)]; });
+          () => { return [provide(ROUTER_PRIMARY_COMPONENT, {useValue: HierarchyAppCmp})]; });
 
       it('should change the url without pushing a new history state for back navigations',
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
@@ -136,7 +144,7 @@ export function main() {
 
     describe('hierarchical app', () => {
       beforeEachBindings(
-          () => { return [bind(ROUTER_PRIMARY_COMPONENT).toValue(HierarchyAppCmp)]; });
+          () => { return [provide(ROUTER_PRIMARY_COMPONENT, {useValue: HierarchyAppCmp})]; });
 
       it('should bootstrap an app with a hierarchy',
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
@@ -155,8 +163,9 @@ export function main() {
                });
          }));
 
-      describe('custom app base ref', () => {
-        beforeEachBindings(() => { return [bind(APP_BASE_HREF).toValue('/my/app')]; });
+      // TODO(btford): mock out level lower than LocationStrategy once that level exists
+      xdescribe('custom app base ref', () => {
+        beforeEachBindings(() => { return [provide(APP_BASE_HREF, {useValue: '/my/app'})]; });
         it('should bootstrap',
            inject([AsyncTestCompleter, TestComponentBuilder],
                   (async, tcb: TestComponentBuilder) => {
@@ -180,7 +189,7 @@ export function main() {
 
     describe('querystring params app', () => {
       beforeEachBindings(
-          () => { return [bind(ROUTER_PRIMARY_COMPONENT).toValue(QueryStringAppCmp)]; });
+          () => { return [provide(ROUTER_PRIMARY_COMPONENT, {useValue: QueryStringAppCmp})]; });
 
       it('should recognize and return querystring params with the injected RouteParams',
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {

@@ -29,6 +29,7 @@ tmp
 pubspec.lock
 .c9
 .idea/
+.settings/
 *.swo
 modules/.settings
 .vscode
@@ -41,3 +42,6 @@ modules/.vscode
 npm-debug.log
 
 /docs/bower_components/
+
+# build-analytics
+.build-analytics

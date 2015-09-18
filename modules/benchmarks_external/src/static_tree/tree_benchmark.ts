@@ -1,5 +1,5 @@
 // static tree benchmark in AngularJS 1.x
-import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
+import {getIntParameter, bindAction} from 'angular2/src/testing/benchmark_util';
 declare var angular: any;
 
 const MAX_DEPTH = 10;
@@ -13,8 +13,7 @@ function addTreeDirective(module, level: number) {
   if (level <= 0) {
     template = `<span> {{data.value}}</span>`
   } else {
-    template =
-        `<span> {{data.value}} <tree${level-1} data='data.right'></tree${level-1}><tree${level-1} data='data.left'></tree${level-1}></span>`;
+    template = `<span> {{data.value}} <tree${level-1} data='data.right'></tree${level-1}><tree${level-1} data='data.left'></tree${level-1}></span>`;
   }
   module.directive(`tree${level}`, function() { return {scope: {data: '='}, template: template}; });
 }

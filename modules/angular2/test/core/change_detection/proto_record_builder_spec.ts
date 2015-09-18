@@ -8,7 +8,7 @@ import {
   beforeEach,
   afterEach,
   inject
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {ProtoRecordBuilder} from 'angular2/src/core/change_detection/proto_change_detector';
 import {BindingRecord} from 'angular2/src/core/change_detection/binding_record';

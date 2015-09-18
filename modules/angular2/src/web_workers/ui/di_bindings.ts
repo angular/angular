@@ -1,157 +1,127 @@
 // TODO (jteplitz602): This whole file is nearly identical to core/application.ts.
 // There should be a way to refactor application so that this file is unnecessary. See #3277
-import {Injector, bind, Binding} from "angular2/src/core/di";
+import {Injector, provide, Provider} from "angular2/src/core/di";
 import {DEFAULT_PIPES} from 'angular2/src/core/pipes';
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
 import {BrowserDetails} from 'angular2/src/animate/browser_details';
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
-import {
-  Parser,
-  Lexer,
-  ChangeDetection,
-  DynamicChangeDetection,
-  JitChangeDetection,
-  PreGeneratedChangeDetection
-} from 'angular2/src/core/change_detection/change_detection';
+import {Parser, Lexer} from 'angular2/src/core/change_detection/change_detection';
 import {
   EventManager,
   DomEventsPlugin,
   EVENT_MANAGER_PLUGINS
 } from 'angular2/src/core/render/dom/events/event_manager';
-import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
+import {ProtoViewFactory} from 'angular2/src/core/linker/proto_view_factory';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {KeyEventsPlugin} from 'angular2/src/core/render/dom/events/key_events';
 import {HammerGesturesPlugin} from 'angular2/src/core/render/dom/events/hammer_gestures';
-import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
-import {Renderer, RenderCompiler} from 'angular2/src/core/render/api';
-import {AppRootUrl} from 'angular2/src/core/services/app_root_url';
-import {
-  DomRenderer,
-  DOCUMENT,
-  DefaultDomCompiler,
-  APP_ID_RANDOM_BINDING,
-  MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE,
-  TemplateCloner
-} from 'angular2/src/core/render/render';
-import {ElementSchemaRegistry} from 'angular2/src/core/render/dom/schema/element_schema_registry';
+import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
+import {Renderer} from 'angular2/src/core/render/api';
+import {AppRootUrl} from 'angular2/src/core/compiler/app_root_url';
+import {DomRenderer, DomRenderer_, DOCUMENT} from 'angular2/src/core/render/render';
+import {APP_ID_RANDOM_PROVIDER} from 'angular2/src/core/application_tokens';
+import {ElementSchemaRegistry} from 'angular2/src/core/compiler/schema/element_schema_registry';
 import {
   DomElementSchemaRegistry
-} from 'angular2/src/core/render/dom/schema/dom_element_schema_registry';
+} from 'angular2/src/core/compiler/schema/dom_element_schema_registry';
 import {
   SharedStylesHost,
   DomSharedStylesHost
-} from 'angular2/src/core/render/dom/view/shared_styles_host';
+} from 'angular2/src/core/render/dom/shared_styles_host';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
-import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
-import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
-import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
-import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
-import {ViewLoader} from 'angular2/src/core/render/dom/compiler/view_loader';
-import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
+import {AppViewManager, AppViewManager_} from 'angular2/src/core/linker/view_manager';
+import {AppViewManagerUtils} from 'angular2/src/core/linker/view_manager_utils';
+import {AppViewListener} from 'angular2/src/core/linker/view_listener';
+import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
+import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
-import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
-import {StyleInliner} from 'angular2/src/core/render/dom/compiler/style_inliner';
-import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
-import {StyleUrlResolver} from 'angular2/src/core/render/dom/compiler/style_url_resolver';
-import {UrlResolver} from 'angular2/src/core/services/url_resolver';
+import {
+  DynamicComponentLoader,
+  DynamicComponentLoader_
+} from 'angular2/src/core/linker/dynamic_component_loader';
+import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {Testability} from 'angular2/src/core/testability/testability';
-import {XHR} from 'angular2/src/core/render/xhr';
-import {XHRImpl} from 'angular2/src/core/render/xhr_impl';
+import {XHR} from 'angular2/src/core/compiler/xhr';
+import {XHRImpl} from 'angular2/src/core/compiler/xhr_impl';
 import {Serializer} from 'angular2/src/web_workers/shared/serializer';
 import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';
 import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_proto_view_ref_store';
 import {
   RenderViewWithFragmentsStore
 } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
-import {AnchorBasedAppRootUrl} from 'angular2/src/core/services/anchor_based_app_root_url';
+import {AnchorBasedAppRootUrl} from 'angular2/src/core/compiler/anchor_based_app_root_url';
 import {WebWorkerApplication} from 'angular2/src/web_workers/ui/impl';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
-import {MessageBasedRenderCompiler} from 'angular2/src/web_workers/ui/render_compiler';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {MessageBasedXHRImpl} from 'angular2/src/web_workers/ui/xhr_impl';
 import {WebWorkerSetup} from 'angular2/src/web_workers/ui/setup';
-import {ServiceMessageBrokerFactory} from 'angular2/src/web_workers/shared/service_message_broker';
-import {ClientMessageBrokerFactory} from 'angular2/src/web_workers/shared/client_message_broker';
+import {
+  ServiceMessageBrokerFactory,
+  ServiceMessageBrokerFactory_
+} from 'angular2/src/web_workers/shared/service_message_broker';
+import {
+  ClientMessageBrokerFactory,
+  ClientMessageBrokerFactory_
+} from 'angular2/src/web_workers/shared/client_message_broker';
 
 var _rootInjector: Injector;
 
 // Contains everything that is safe to share between applications.
-var _rootBindings = [bind(Reflector).toValue(reflector)];
+var _rootProviders = [provide(Reflector, {useValue: reflector})];
 
 // TODO: This code is nearly identical to core/application. There should be a way to only write it
 // once
-function _injectorBindings(): any[] {
-  var bestChangeDetection = new DynamicChangeDetection();
-  if (PreGeneratedChangeDetection.isSupported()) {
-    bestChangeDetection = new PreGeneratedChangeDetection();
-  } else if (JitChangeDetection.isSupported()) {
-    bestChangeDetection = new JitChangeDetection();
-  }
-
+function _injectorProviders(): any[] {
   return [
-    bind(DOCUMENT)
-        .toValue(DOM.defaultDoc()),
+    provide(DOCUMENT, {useValue: DOM.defaultDoc()}),
     EventManager,
-    new Binding(EVENT_MANAGER_PLUGINS, {toClass: DomEventsPlugin, multi: true}),
-    new Binding(EVENT_MANAGER_PLUGINS, {toClass: KeyEventsPlugin, multi: true}),
-    new Binding(EVENT_MANAGER_PLUGINS, {toClass: HammerGesturesPlugin, multi: true}),
-    DomRenderer,
-    bind(Renderer).toAlias(DomRenderer),
-    APP_ID_RANDOM_BINDING,
-    TemplateCloner,
-    bind(MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE).toValue(20),
-    DefaultDomCompiler,
-    bind(RenderCompiler).toAlias(DefaultDomCompiler),
+    new Provider(EVENT_MANAGER_PLUGINS, {useClass: DomEventsPlugin, multi: true}),
+    new Provider(EVENT_MANAGER_PLUGINS, {useClass: KeyEventsPlugin, multi: true}),
+    new Provider(EVENT_MANAGER_PLUGINS, {useClass: HammerGesturesPlugin, multi: true}),
+    provide(DomRenderer, {useClass: DomRenderer_}),
+    provide(Renderer, {useExisting: DomRenderer}),
+    APP_ID_RANDOM_PROVIDER,
     DomSharedStylesHost,
-    bind(SharedStylesHost).toAlias(DomSharedStylesHost),
+    provide(SharedStylesHost, {useExisting: DomSharedStylesHost}),
     Serializer,
-    bind(ON_WEB_WORKER).toValue(false),
-    bind(ElementSchemaRegistry).toValue(new DomElementSchemaRegistry()),
+    provide(ON_WEB_WORKER, {useValue: false}),
+    provide(ElementSchemaRegistry, {useValue: new DomElementSchemaRegistry()}),
     RenderViewWithFragmentsStore,
     RenderProtoViewRefStore,
-    ProtoViewFactory,
     AppViewPool,
-    bind(APP_VIEW_POOL_CAPACITY).toValue(10000),
-    AppViewManager,
+    provide(APP_VIEW_POOL_CAPACITY, {useValue: 10000}),
+    provide(AppViewManager, {useClass: AppViewManager_}),
     AppViewManagerUtils,
     AppViewListener,
-    Compiler,
-    CompilerCache,
+    ProtoViewFactory,
     ViewResolver,
     DEFAULT_PIPES,
-    bind(ChangeDetection).toValue(bestChangeDetection),
-    ViewLoader,
     DirectiveResolver,
     Parser,
     Lexer,
-    bind(ExceptionHandler).toFactory(() => new ExceptionHandler(DOM), []),
-    bind(XHR).toValue(new XHRImpl()),
-    ComponentUrlMapper,
+    provide(ExceptionHandler, {useFactory: () => new ExceptionHandler(DOM), deps: []}),
+    provide(XHR, {useValue: new XHRImpl()}),
     UrlResolver,
-    StyleUrlResolver,
-    StyleInliner,
-    DynamicComponentLoader,
+    provide(DynamicComponentLoader, {useClass: DynamicComponentLoader_}),
     Testability,
     AnchorBasedAppRootUrl,
-    bind(AppRootUrl).toAlias(AnchorBasedAppRootUrl),
+    provide(AppRootUrl, {useExisting: AnchorBasedAppRootUrl}),
     WebWorkerApplication,
     WebWorkerSetup,
-    MessageBasedRenderCompiler,
     MessageBasedXHRImpl,
     MessageBasedRenderer,
-    ServiceMessageBrokerFactory,
-    ClientMessageBrokerFactory,
+    provide(ServiceMessageBrokerFactory, {useClass: ServiceMessageBrokerFactory_}),
+    provide(ClientMessageBrokerFactory, {useClass: ClientMessageBrokerFactory_}),
     BrowserDetails,
-    AnimationBuilder,
+    AnimationBuilder
   ];
 }
 
 export function createInjector(zone: NgZone, bus: MessageBus): Injector {
   BrowserDomAdapter.makeCurrent();
-  _rootBindings.push(bind(NgZone).toValue(zone));
-  _rootBindings.push(bind(MessageBus).toValue(bus));
-  var injector: Injector = Injector.resolveAndCreate(_rootBindings);
-  return injector.resolveAndCreateChild(_injectorBindings());
+  _rootProviders.push(provide(NgZone, {useValue: zone}));
+  _rootProviders.push(provide(MessageBus, {useValue: bus}));
+  var injector: Injector = Injector.resolveAndCreate(_rootProviders);
+  return injector.resolveAndCreateChild(_injectorProviders());
 }

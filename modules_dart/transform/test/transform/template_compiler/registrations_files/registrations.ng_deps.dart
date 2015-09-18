@@ -1,4 +1,4 @@
-library examples.hello_world.index_common_dart.ng_deps.dart;
+library playground.hello_world.index_common_dart.ng_deps.dart;
 
 import 'dependency.dart';
 import 'dependency.ng_deps.dart' as i0;
@@ -30,7 +30,7 @@ void initReflector(reflector) {
     ..registerType(
         EventsCmp,
         new ReflectionInfo(const [
-          const Component(selector: 'events', events: const ['eventName']),
+          const Component(selector: 'events', outputs: const ['eventName']),
           const View(template: 'Hi')
         ], const [
           const []

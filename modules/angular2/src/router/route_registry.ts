@@ -1,13 +1,7 @@
 import {PathMatch} from './path_recognizer';
 import {RouteRecognizer} from './route_recognizer';
 import {Instruction, ComponentInstruction, PrimaryInstruction} from './instruction';
-import {
-  ListWrapper,
-  Map,
-  MapWrapper,
-  StringMap,
-  StringMapWrapper
-} from 'angular2/src/core/facade/collection';
+import {ListWrapper, Map, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {
   isPresent,
@@ -30,7 +24,7 @@ import {
   RouteDefinition
 } from './route_config_impl';
 import {reflector} from 'angular2/src/core/reflection/reflection';
-import {Injectable} from 'angular2/src/core/di';
+import {Injectable} from 'angular2/angular2';
 import {normalizeRouteConfig, assertComponentExists} from './route_config_nomalizer';
 import {parser, Url, pathSegmentsToUrl} from './url_parser';
 
@@ -43,7 +37,7 @@ var _resolveToNull = PromiseWrapper.resolve(null);
  */
 @Injectable()
 export class RouteRegistry {
-  private _rules: Map<any, RouteRecognizer> = new Map();
+  private _rules = new Map<any, RouteRecognizer>();
 
   /**
    * Given a component and a configuration object, add the route to this registry
@@ -95,7 +89,8 @@ export class RouteRegistry {
         var annotation = annotations[i];
 
         if (annotation instanceof RouteConfig) {
-          ListWrapper.forEach(annotation.configs, (config) => this.config(component, config));
+          let routeCfgs: RouteDefinition[] = annotation.configs;
+          routeCfgs.forEach(config => this.config(component, config));
         }
       }
     }
@@ -127,7 +122,7 @@ export class RouteRegistry {
     var possibleMatches = componentRecognizer.recognize(parsedUrl);
 
     var matchPromises =
-        ListWrapper.map(possibleMatches, (candidate) => this._completePrimaryRouteMatch(candidate));
+        possibleMatches.map(candidate => this._completePrimaryRouteMatch(candidate));
 
     return PromiseWrapper.all(matchPromises).then(mostSpecific);
   }
@@ -161,7 +156,7 @@ export class RouteRegistry {
     }
 
     var componentRecognizer = this._rules.get(parentComponent);
-    var auxInstructions = {};
+    var auxInstructions: {[key: string]: Instruction} = {};
 
     var promises = instruction.auxUrls.map((auxSegment: Url) => {
       var match = componentRecognizer.recognizeAuxiliary(auxSegment);
@@ -257,6 +252,14 @@ export class RouteRegistry {
     }
 
     return instruction;
+  }
+
+  public hasRoute(name: string, parentComponent: any): boolean {
+    var componentRecognizer: RouteRecognizer = this._rules.get(parentComponent);
+    if (isBlank(componentRecognizer)) {
+      return false;
+    }
+    return componentRecognizer.hasRoute(name);
   }
 
   // if the child includes a redirect like : "/" -> "/something",

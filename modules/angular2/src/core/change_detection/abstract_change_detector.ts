@@ -2,7 +2,7 @@ import {isPresent, isBlank, StringWrapper} from 'angular2/src/core/facade/lang';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {ChangeDetectionUtil} from './change_detection_util';
-import {ChangeDetectorRef} from './change_detector_ref';
+import {ChangeDetectorRef, ChangeDetectorRef_} from './change_detector_ref';
 import {DirectiveIndex} from './directive_record';
 import {ChangeDetector, ChangeDispatcher} from './interfaces';
 import {Pipes} from './pipes';
@@ -13,7 +13,7 @@ import {
 } from './exceptions';
 import {BindingTarget} from './binding_record';
 import {Locals} from './parser/locals';
-import {ChangeDetectionStrategy} from './constants';
+import {ChangeDetectionStrategy, ChangeDetectorState} from './constants';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 import {isObservable} from './observable_facade';
 
@@ -33,7 +33,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
 
   // The names of the below fields must be kept in sync with codegen_name_util.ts or
   // change detection will fail.
-  alreadyChecked: any = false;
+  state: ChangeDetectorState = ChangeDetectorState.NeverChecked;
   context: T;
   locals: Locals = null;
   mode: ChangeDetectionStrategy = null;
@@ -47,7 +47,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   constructor(public id: string, public dispatcher: ChangeDispatcher,
               public numberOfPropertyProtoRecords: number, public bindingTargets: BindingTarget[],
               public directiveIndices: DirectiveIndex[], public strategy: ChangeDetectionStrategy) {
-    this.ref = new ChangeDetectorRef(this);
+    this.ref = new ChangeDetectorRef_(this);
   }
 
   addChild(cd: ChangeDetector): void {
@@ -80,7 +80,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
 
   runDetectChanges(throwOnChange: boolean): void {
     if (this.mode === ChangeDetectionStrategy.Detached ||
-        this.mode === ChangeDetectionStrategy.Checked)
+        this.mode === ChangeDetectionStrategy.Checked || this.state === ChangeDetectorState.Errored)
       return;
     var s = _scope_check(this.id, throwOnChange);
 
@@ -95,7 +95,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     if (this.mode === ChangeDetectionStrategy.CheckOnce)
       this.mode = ChangeDetectionStrategy.Checked;
 
-    this.alreadyChecked = true;
+    this.state = ChangeDetectorState.CheckedBefore;
     wtfLeave(s);
   }
 
@@ -112,6 +112,10 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     try {
       this.detectChangesInRecordsInternal(throwOnChange);
     } catch (e) {
+      // throwOnChange errors aren't counted as fatal errors.
+      if (!(e instanceof ExpressionChangedAfterItHasBeenCheckedException)) {
+        this.state = ChangeDetectorState.Errored;
+      }
       this._throwError(e, e.stack);
     }
   }
@@ -137,7 +141,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     this.locals = locals;
     this.pipes = pipes;
     this.hydrateDirectives(directives);
-    this.alreadyChecked = false;
+    this.state = ChangeDetectorState.NeverChecked;
   }
 
   // Subclasses should override this method to hydrate any directives.
@@ -178,6 +182,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
 
   afterViewLifecycleCallbacksInternal(): void {}
 
+  /** @internal */
   _detectChangesInLightDomChildren(throwOnChange: boolean): void {
     var c = this.lightDomChildren;
     for (var i = 0; i < c.length; ++i) {
@@ -185,6 +190,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     }
   }
 
+  /** @internal */
   _detectChangesInShadowDomChildren(throwOnChange: boolean): void {
     var c = this.shadowDomChildren;
     for (var i = 0; i < c.length; ++i) {
@@ -278,7 +284,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     this.dispatcher.logBindingUpdate(this._currentBinding(), value);
   }
 
-  addChange(changes: StringMap<string, any>, oldValue: any, newValue: any): StringMap<string, any> {
+  addChange(changes: {[key: string]: any}, oldValue: any, newValue: any): {[key: string]: any} {
     if (isBlank(changes)) {
       changes = {};
     }
@@ -287,11 +293,19 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   }
 
   private _throwError(exception: any, stack: any): void {
-    var c = this.dispatcher.getDebugContext(this._currentBinding().elementIndex, null);
-    var context = isPresent(c) ? new _Context(c.element, c.componentElement, c.context, c.locals,
-                                              c.injector, this._currentBinding().debug) :
-                                 null;
-    throw new ChangeDetectionError(this._currentBinding().debug, exception, stack, context);
+    var error;
+    try {
+      var c = this.dispatcher.getDebugContext(this._currentBinding().elementIndex, null);
+      var context = isPresent(c) ? new _Context(c.element, c.componentElement, c.context, c.locals,
+                                                c.injector, this._currentBinding().debug) :
+                                   null;
+      error = new ChangeDetectionError(this._currentBinding().debug, exception, stack, context);
+    } catch (e) {
+      // if an error happens during getting the debug context, we throw a ChangeDetectionError
+      // without the extra information.
+      error = new ChangeDetectionError(null, exception, stack, null);
+    }
+    throw error;
   }
 
   throwOnChangeError(oldValue: any, newValue: any): void {

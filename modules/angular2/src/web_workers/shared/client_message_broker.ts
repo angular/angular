@@ -1,4 +1,3 @@
-/// <reference path="../../../manual_typings/globals.d.ts" />
 import {MessageBus} from "angular2/src/web_workers/shared/message_bus";
 import {print, isPresent, DateWrapper, stringify} from "angular2/src/core/facade/lang";
 import {
@@ -8,40 +7,54 @@ import {
   ObservableWrapper,
   EventEmitter
 } from "angular2/src/core/facade/async";
-import {ListWrapper, StringMapWrapper, MapWrapper} from "angular2/src/core/facade/collection";
+import {StringMapWrapper, MapWrapper} from "angular2/src/core/facade/collection";
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {Injectable} from "angular2/src/core/di";
 import {Type, StringWrapper} from "angular2/src/core/facade/lang";
 export {Type} from "angular2/src/core/facade/lang";
 
-@Injectable()
-export class ClientMessageBrokerFactory {
+export abstract class ClientMessageBrokerFactory {
   /**
-   * @private
+   * Initializes the given channel and attaches a new {@link ClientMessageBroker} to it.
    */
-  constructor(private _messageBus: MessageBus, public _serializer: Serializer) {}
+  abstract createMessageBroker(channel: string, runInZone?: boolean): ClientMessageBroker;
+}
+
+@Injectable()
+export class ClientMessageBrokerFactory_ extends ClientMessageBrokerFactory {
+  /** @internal */
+  public _serializer: Serializer;
+  constructor(private _messageBus: MessageBus, _serializer: Serializer) {
+    super();
+    this._serializer = _serializer;
+  }
 
   /**
    * Initializes the given channel and attaches a new {@link ClientMessageBroker} to it.
    */
   createMessageBroker(channel: string, runInZone: boolean = true): ClientMessageBroker {
     this._messageBus.initChannel(channel, runInZone);
-    return new ClientMessageBroker(this._messageBus, this._serializer, channel);
+    return new ClientMessageBroker_(this._messageBus, this._serializer, channel);
   }
 }
 
-export class ClientMessageBroker {
-  private _pending: Map<string, PromiseCompleter<any>> = new Map<string, PromiseCompleter<any>>();
-  private _sink: EventEmitter;
+export abstract class ClientMessageBroker {
+  abstract runOnService(args: UiArguments, returnType: Type): Promise<any>;
+}
 
-  /**
-   * @private
-   */
-  constructor(messageBus: MessageBus, public _serializer: Serializer, public channel) {
+export class ClientMessageBroker_ extends ClientMessageBroker {
+  private _pending: Map<string, PromiseCompleter<any>> = new Map<string, PromiseCompleter<any>>();
+  private _sink: EventEmitter<any>;
+  /** @internal */
+  public _serializer: Serializer;
+
+  constructor(messageBus: MessageBus, _serializer: Serializer, public channel) {
+    super();
     this._sink = messageBus.to(channel);
+    this._serializer = _serializer;
     var source = messageBus.from(channel);
     ObservableWrapper.subscribe(source,
-                                (message: StringMap<string, any>) => this._handleMessage(message));
+                                (message: {[key: string]: any}) => this._handleMessage(message));
   }
 
   private _generateMessageId(name: string): string {
@@ -58,7 +71,7 @@ export class ClientMessageBroker {
   runOnService(args: UiArguments, returnType: Type): Promise<any> {
     var fnArgs = [];
     if (isPresent(args.args)) {
-      ListWrapper.forEach(args.args, (argument) => {
+      args.args.forEach(argument => {
         if (argument.type != null) {
           fnArgs.push(this._serializer.serialize(argument.value, argument.type));
         } else {
@@ -99,7 +112,7 @@ export class ClientMessageBroker {
     return promise;
   }
 
-  private _handleMessage(message: StringMap<string, any>): void {
+  private _handleMessage(message: {[key: string]: any}): void {
     var data = new MessageData(message);
     // TODO(jteplitz602): replace these strings with messaging constants #3685
     if (StringWrapper.equals(data.type, "result") || StringWrapper.equals(data.type, "error")) {
@@ -121,7 +134,7 @@ class MessageData {
   value: any;
   id: string;
 
-  constructor(data: StringMap<string, any>) {
+  constructor(data: {[key: string]: any}) {
     this.type = StringMapWrapper.get(data, "type");
     this.id = this._getValueIfPresent(data, "id");
     this.value = this._getValueIfPresent(data, "value");
@@ -129,8 +142,9 @@ class MessageData {
 
   /**
    * Returns the value from the StringMap if present. Otherwise returns null
+   * @internal
    */
-  _getValueIfPresent(data: StringMap<string, any>, key: string) {
+  _getValueIfPresent(data: {[key: string]: any}, key: string) {
     if (StringMapWrapper.contains(data, key)) {
       return StringMapWrapper.get(data, key);
     } else {

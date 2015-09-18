@@ -29,6 +29,7 @@ export class EventManager {
 
   getZone(): NgZone { return this._zone; }
 
+  /** @internal */
   _findPluginFor(eventName: string): EventManagerPlugin {
     var plugins = this._plugins;
     for (var i = 0; i < plugins.length; i++) {

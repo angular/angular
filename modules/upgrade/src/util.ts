@@ -10,3 +10,7 @@ export function onError(e: any) {
   console.log(e, e.stack);
   throw e;
 }
+
+export function controllerKey(name: string): string {
+  return '$' + name + 'Controller';
+}

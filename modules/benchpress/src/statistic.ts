@@ -1,21 +1,22 @@
 import {Math} from 'angular2/src/core/facade/math';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
 
 export class Statistic {
   static calculateCoefficientOfVariation(sample, mean) {
     return Statistic.calculateStandardDeviation(sample, mean) / mean * 100;
   }
 
-  static calculateMean(sample) {
+  static calculateMean(samples: number[]) {
     var total = 0;
-    ListWrapper.forEach(sample, (x) => {total += x});
-    return total / sample.length;
+    // TODO: use reduce
+    samples.forEach(x => total += x);
+    return total / samples.length;
   }
 
-  static calculateStandardDeviation(sample, mean) {
+  static calculateStandardDeviation(samples: number[], mean) {
     var deviation = 0;
-    ListWrapper.forEach(sample, (x) => { deviation += Math.pow(x - mean, 2); });
-    deviation = deviation / (sample.length);
+    // TODO: use reduce
+    samples.forEach(x => deviation += Math.pow(x - mean, 2));
+    deviation = deviation / (samples.length);
     deviation = Math.sqrt(deviation);
     return deviation;
   }

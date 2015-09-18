@@ -1,51 +1,34 @@
 import {Type, isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {ListWrapper, MapWrapper, Predicate} from 'angular2/src/core/facade/collection';
+import {unimplemented} from 'angular2/src/core/facade/exceptions';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
-import {ElementInjector} from 'angular2/src/core/compiler/element_injector';
-import {AppView} from 'angular2/src/core/compiler/view';
-import {internalView} from 'angular2/src/core/compiler/view_ref';
-import {ElementRef} from 'angular2/src/core/compiler/element_ref';
+import {ElementInjector} from 'angular2/src/core/linker/element_injector';
+import {AppView, ViewType} from 'angular2/src/core/linker/view';
+import {internalView} from 'angular2/src/core/linker/view_ref';
+import {ElementRef, ElementRef_} from 'angular2/src/core/linker/element_ref';
 
 /**
  * A DebugElement contains information from the Angular compiler about an
  * element and provides access to the corresponding ElementInjector and
  * underlying DOM Element, as well as a way to query for children.
  */
-export class DebugElement {
-  _elementInjector: ElementInjector;
+export abstract class DebugElement {
+  get componentInstance(): any { return unimplemented(); };
 
-  /**
-   * @private
-   */
-  constructor(private _parentView: AppView, private _boundElementIndex: number) {
-    this._elementInjector = this._parentView.elementInjectors[this._boundElementIndex];
-  }
+  get nativeElement(): any { return unimplemented(); };
 
-  get componentInstance(): any {
-    if (!isPresent(this._elementInjector)) {
-      return null;
-    }
-    return this._elementInjector.getComponent();
-  }
+  get elementRef(): ElementRef { return unimplemented(); };
 
-  get nativeElement(): any { return this.elementRef.nativeElement; }
-
-  get elementRef(): ElementRef { return this._parentView.elementRefs[this._boundElementIndex]; }
-
-  getDirectiveInstance(directiveIndex: number): any {
-    return this._elementInjector.getDirectiveAtIndex(directiveIndex);
-  }
+  abstract getDirectiveInstance(directiveIndex: number): any;
 
   /**
    * Get child DebugElements from within the Light DOM.
    *
    * @return {DebugElement[]}
    */
-  get children(): DebugElement[] {
-    return this._getChildElements(this._parentView, this._boundElementIndex);
-  }
+  get children(): DebugElement[] { return unimplemented(); };
 
   /**
    * Get the root DebugElement children of a component. Returns an empty
@@ -53,36 +36,15 @@ export class DebugElement {
    *
    * @return {DebugElement[]}
    */
-  get componentViewChildren(): DebugElement[] {
-    var shadowView = this._parentView.getNestedView(this._boundElementIndex);
+  get componentViewChildren(): DebugElement[] { return unimplemented(); };
 
-    if (!isPresent(shadowView)) {
-      // The current element is not a component.
-      return [];
-    }
+  abstract triggerEventHandler(eventName: string, eventObj: Event): void;
 
-    return this._getChildElements(shadowView, null);
-  }
+  abstract hasDirective(type: Type): boolean;
 
-  triggerEventHandler(eventName: string, eventObj: Event): void {
-    this._parentView.triggerEventHandlers(eventName, eventObj, this._boundElementIndex);
-  }
+  abstract inject(type: Type): any;
 
-  hasDirective(type: Type): boolean {
-    if (!isPresent(this._elementInjector)) {
-      return false;
-    }
-    return this._elementInjector.hasDirective(type);
-  }
-
-  inject(type: Type): any {
-    if (!isPresent(this._elementInjector)) {
-      return null;
-    }
-    return this._elementInjector.get(type);
-  }
-
-  getLocal(name: string): any { return this._parentView.locals.get(name); }
+  abstract getLocal(name: string): any;
 
   /**
    * Return the first descendant TestElement matching the given predicate
@@ -112,7 +74,68 @@ export class DebugElement {
 
     return ListWrapper.filter(elementsInScope, predicate);
   }
+}
 
+export class DebugElement_ extends DebugElement {
+  /** @internal */
+  _elementInjector: ElementInjector;
+
+  constructor(private _parentView: AppView, private _boundElementIndex: number) {
+    super();
+    this._elementInjector = this._parentView.elementInjectors[this._boundElementIndex];
+  }
+
+  get componentInstance(): any {
+    if (!isPresent(this._elementInjector)) {
+      return null;
+    }
+    return this._elementInjector.getComponent();
+  }
+
+  get nativeElement(): any { return this.elementRef.nativeElement; }
+
+  get elementRef(): ElementRef { return this._parentView.elementRefs[this._boundElementIndex]; }
+
+  getDirectiveInstance(directiveIndex: number): any {
+    return this._elementInjector.getDirectiveAtIndex(directiveIndex);
+  }
+
+  get children(): DebugElement[] {
+    return this._getChildElements(this._parentView, this._boundElementIndex);
+  }
+
+  get componentViewChildren(): DebugElement[] {
+    var shadowView = this._parentView.getNestedView(this._boundElementIndex);
+
+    if (!isPresent(shadowView) || shadowView.proto.type !== ViewType.COMPONENT) {
+      // The current element is not a component.
+      return [];
+    }
+
+    return this._getChildElements(shadowView, null);
+  }
+
+  triggerEventHandler(eventName: string, eventObj: Event): void {
+    this._parentView.triggerEventHandlers(eventName, eventObj, this._boundElementIndex);
+  }
+
+  hasDirective(type: Type): boolean {
+    if (!isPresent(this._elementInjector)) {
+      return false;
+    }
+    return this._elementInjector.hasDirective(type);
+  }
+
+  inject(type: Type): any {
+    if (!isPresent(this._elementInjector)) {
+      return null;
+    }
+    return this._elementInjector.get(type);
+  }
+
+  getLocal(name: string): any { return this._parentView.locals.get(name); }
+
+  /** @internal */
   _getChildElements(view: AppView, parentBoundElementIndex: number): DebugElement[] {
     var els = [];
     var parentElementBinder = null;
@@ -122,13 +145,12 @@ export class DebugElement {
     for (var i = 0; i < view.proto.elementBinders.length; ++i) {
       var binder = view.proto.elementBinders[i];
       if (binder.parent == parentElementBinder) {
-        els.push(new DebugElement(view, view.elementOffset + i));
+        els.push(new DebugElement_(view, view.elementOffset + i));
 
         var views = view.viewContainers[view.elementOffset + i];
         if (isPresent(views)) {
-          ListWrapper.forEach(views.views, (nextView) => {
-            els = els.concat(this._getChildElements(nextView, null));
-          });
+          views.views.forEach(
+              (nextView) => { els = els.concat(this._getChildElements(nextView, null)); });
         }
       }
     }
@@ -143,7 +165,8 @@ export class DebugElement {
  * @return {DebugElement}
  */
 export function inspectElement(elementRef: ElementRef): DebugElement {
-  return new DebugElement(internalView(elementRef.parentView), elementRef.boundElementIndex);
+  return new DebugElement_(internalView((<ElementRef_>elementRef).parentView),
+                           (<ElementRef_>elementRef).boundElementIndex);
 }
 
 export function asNativeElements(arr: DebugElement[]): any[] {
@@ -155,17 +178,15 @@ export class Scope {
     var scope = [];
     scope.push(debugElement);
 
-    ListWrapper.forEach(debugElement.children,
-                        (child) => { scope = scope.concat(Scope.all(child)); });
+    debugElement.children.forEach(child => scope = scope.concat(Scope.all(child)));
 
-    ListWrapper.forEach(debugElement.componentViewChildren,
-                        (child) => { scope = scope.concat(Scope.all(child)); });
+    debugElement.componentViewChildren.forEach(child => scope = scope.concat(Scope.all(child)));
 
     return scope;
   }
   static light(debugElement: DebugElement): DebugElement[] {
     var scope = [];
-    ListWrapper.forEach(debugElement.children, (child) => {
+    debugElement.children.forEach(child => {
       scope.push(child);
       scope = scope.concat(Scope.light(child));
     });
@@ -175,7 +196,7 @@ export class Scope {
   static view(debugElement: DebugElement): DebugElement[] {
     var scope = [];
 
-    ListWrapper.forEach(debugElement.componentViewChildren, (child) => {
+    debugElement.componentViewChildren.forEach(child => {
       scope.push(child);
       scope = scope.concat(Scope.light(child));
     });

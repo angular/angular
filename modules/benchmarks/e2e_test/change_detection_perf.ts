@@ -1,4 +1,4 @@
-import {runClickBenchmark, verifyNoBrowserErrors} from 'angular2/src/test_lib/perf_util';
+import {runClickBenchmark, verifyNoBrowserErrors} from 'angular2/src/testing/perf_util';
 
 describe('ng2 change detection benchmark', function() {
 
@@ -15,7 +15,8 @@ describe('ng2 change detection benchmark', function() {
         {name: 'numberOfChecks', value: 900000},
         {name: 'iterations', value: 20, scale: 'linear'}
       ],
-      microMetrics: {'detectChangesAvg': 'avg time to detect changes (ms)'}
+      microMetrics: {'detectChangesAvg': 'avg time to detect changes (ms)'},
+      waitForAngular2: false
     }).then(done, done.fail);
   });
 
@@ -28,7 +29,8 @@ describe('ng2 change detection benchmark', function() {
         {name: 'numberOfChecks', value: 900000},
         {name: 'iterations', value: 20, scale: 'linear'}
       ],
-      microMetrics: {'detectChangesAvg': 'avg time to detect changes (ms)'}
+      microMetrics: {'detectChangesAvg': 'avg time to detect changes (ms)'},
+      waitForAngular2: false
     }).then(done, done.fail);
   });
 
@@ -41,7 +43,8 @@ describe('ng2 change detection benchmark', function() {
         {name: 'numberOfChecks', value: 900000},
         {name: 'iterations', value: 20, scale: 'linear'}
       ],
-      microMetrics: {'detectChangesAvg': 'avg time to detect changes (ms)'}
+      microMetrics: {'detectChangesAvg': 'avg time to detect changes (ms)'},
+      waitForAngular2: false
     }).then(done, done.fail);
   });
 
@@ -54,7 +57,8 @@ describe('ng2 change detection benchmark', function() {
         {name: 'numberOfChecks', value: 900000},
         {name: 'iterations', value: 20, scale: 'linear'}
       ],
-      microMetrics: {'detectChangesAvg': 'avg time to detect changes (ms)'}
+      microMetrics: {'detectChangesAvg': 'avg time to detect changes (ms)'},
+      waitForAngular2: false
     }).then(done, done.fail);
   });
 
@@ -67,7 +71,8 @@ describe('ng2 change detection benchmark', function() {
         {name: 'numberOfChecks', value: 900000},
         {name: 'iterations', value: 20, scale: 'linear'}
       ],
-      microMetrics: {'detectChangesAvg': 'avg time to detect changes (ms)'}
+      microMetrics: {'detectChangesAvg': 'avg time to detect changes (ms)'},
+      waitForAngular2: false
     }).then(done, done.fail);
   });
 
@@ -80,7 +85,8 @@ describe('ng2 change detection benchmark', function() {
         {name: 'numberOfChecks', value: 900000},
         {name: 'iterations', value: 20, scale: 'linear'}
       ],
-      microMetrics: {'detectChangesAvg': 'avg time to detect changes (ms)'}
+      microMetrics: {'detectChangesAvg': 'avg time to detect changes (ms)'},
+      waitForAngular2: false
     }).then(done, done.fail);
   });
 

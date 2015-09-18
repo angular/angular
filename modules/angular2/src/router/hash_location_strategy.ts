@@ -1,6 +1,6 @@
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {Injectable} from 'angular2/src/core/di';
-import {LocationStrategy} from './location_strategy';
+import {Injectable} from 'angular2/angular2';
+import {LocationStrategy, normalizeQueryParams} from './location_strategy';
 import {EventListener, History, Location} from 'angular2/src/core/facade/browser';
 
 /**
@@ -9,25 +9,23 @@ import {EventListener, History, Location} from 'angular2/src/core/facade/browser
  * [hash fragment](https://en.wikipedia.org/wiki/Uniform_Resource_Locator#Syntax)
  * of the browser's URL.
  *
- * `HashLocationStrategy` is the default binding for {@link LocationStrategy}
- * provided in {@link routerBindings} and {@link ROUTER_BINDINGS}.
- *
  * For instance, if you call `location.go('/foo')`, the browser's URL will become
  * `example.com#/foo`.
  *
- * ## Example
+ * ### Example
  *
  * ```
- * import {Component, View} from 'angular2/angular2';
+ * import {Component, provide} from 'angular2/angular2';
  * import {
  *   ROUTER_DIRECTIVES,
- *   routerBindings,
+ *   ROUTER_PROVIDERS,
  *   RouteConfig,
- *   Location
+ *   Location,
+ *   LocationStrategy,
+ *   HashLocationStrategy
  * } from 'angular2/router';
  *
- * @Component({...})
- * @View({directives: [ROUTER_DIRECTIVES]})
+ * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([
  *  {...},
  * ])
@@ -38,7 +36,8 @@ import {EventListener, History, Location} from 'angular2/src/core/facade/browser
  * }
  *
  * bootstrap(AppCmp, [
- *   routerBindings(AppCmp) // includes binding to HashLocationStrategy
+ *   ROUTER_PROVIDERS,
+ *   provide(LocationStrategy, {useClass: HashLocationStrategy})
  * ]);
  * ```
  */
@@ -67,11 +66,22 @@ export class HashLocationStrategy extends LocationStrategy {
     // Dart will complain if a call to substring is
     // executed with a position value that extends the
     // length of string.
-    return path.length > 0 ? path.substring(1) : path;
+    return (path.length > 0 ? path.substring(1) : path) +
+           normalizeQueryParams(this._location.search);
   }
 
-  pushState(state: any, title: string, url: string) {
-    this._history.pushState(state, title, '#' + url);
+  prepareExternalUrl(internal: string): string {
+    return internal.length > 0 ? ('#' + internal) : internal;
+  }
+
+  pushState(state: any, title: string, path: string, queryParams: string) {
+    var url = path + normalizeQueryParams(queryParams);
+    if (url.length == 0) {
+      url = this._location.pathname;
+    } else {
+      url = this.prepareExternalUrl(url);
+    }
+    this._history.pushState(state, title, url);
   }
 
   forward(): void { this._history.forward(); }

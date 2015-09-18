@@ -56,10 +56,6 @@ export class Token {
 
   isKeywordTrue(): boolean { return (this.type == TokenType.Keyword && this.strValue == "true"); }
 
-  isKeywordIf(): boolean { return (this.type == TokenType.Keyword && this.strValue == "if"); }
-
-  isKeywordElse(): boolean { return (this.type == TokenType.Keyword && this.strValue == "else"); }
-
   isKeywordFalse(): boolean { return (this.type == TokenType.Keyword && this.strValue == "false"); }
 
   toNumber(): number {

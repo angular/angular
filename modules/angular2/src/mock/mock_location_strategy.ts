@@ -7,7 +7,8 @@ export class MockLocationStrategy extends LocationStrategy {
   internalPath: string = '/';
   internalTitle: string = '';
   urlChanges: string[] = [];
-  _subject: EventEmitter = new EventEmitter();
+  /** @internal */
+  _subject: EventEmitter<any> = new EventEmitter();
   constructor() { super(); }
 
   simulatePopState(url: string): void {
@@ -17,12 +18,16 @@ export class MockLocationStrategy extends LocationStrategy {
 
   path(): string { return this.internalPath; }
 
+  prepareExternalUrl(internal: string): string { return internal; }
+
   simulateUrlPop(pathname: string): void {
     ObservableWrapper.callNext(this._subject, {'url': pathname});
   }
 
-  pushState(ctx: any, title: string, url: string): void {
+  pushState(ctx: any, title: string, path: string, query: string): void {
     this.internalTitle = title;
+
+    var url = path + (query.length > 0 ? ('?' + query) : '');
     this.internalPath = url;
     this.urlChanges.push(url);
   }

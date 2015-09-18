@@ -1,62 +1,74 @@
 import {Map, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {Type, isPresent, stringify, isBlank, print} from 'angular2/src/core/facade/lang';
 import {DirectiveMetadata, ComponentMetadata} from '../core/metadata';
-import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
+import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 
 export class MockDirectiveResolver extends DirectiveResolver {
-  private _bindingsOverrides: Map<Type, any[]> = new Map();
-  private _viewBindingsOverrides: Map<Type, any[]> = new Map();
+  private _providerOverrides = new Map<Type, any[]>();
+  private viewProviderOverrides = new Map<Type, any[]>();
 
   resolve(type: Type): DirectiveMetadata {
     var dm = super.resolve(type);
 
-    var bindingsOverride = this._bindingsOverrides.get(type);
-    var viewBindingsOverride = this._viewBindingsOverrides.get(type);
+    var providerOverrides = this._providerOverrides.get(type);
+    var viewProviderOverrides = this.viewProviderOverrides.get(type);
 
-    var bindings = dm.bindings;
-    if (isPresent(bindingsOverride)) {
-      bindings = dm.bindings.concat(bindingsOverride);
+    var providers = dm.providers;
+    if (isPresent(providerOverrides)) {
+      providers = dm.providers.concat(providerOverrides);
     }
 
     if (dm instanceof ComponentMetadata) {
-      var viewBindings = dm.viewBindings;
-      if (isPresent(viewBindingsOverride)) {
-        viewBindings = dm.viewBindings.concat(viewBindingsOverride);
+      var viewProviders = dm.viewProviders;
+      if (isPresent(viewProviderOverrides)) {
+        viewProviders = dm.viewProviders.concat(viewProviderOverrides);
       }
 
       return new ComponentMetadata({
         selector: dm.selector,
-        properties: dm.properties,
-        events: dm.events,
+        inputs: dm.inputs,
+        outputs: dm.outputs,
         host: dm.host,
-        bindings: bindings,
         exportAs: dm.exportAs,
         moduleId: dm.moduleId,
-        compileChildren: dm.compileChildren,
         queries: dm.queries,
         changeDetection: dm.changeDetection,
-        viewBindings: viewBindings
+        providers: providers,
+        viewProviders: viewProviders
       });
     }
 
     return new DirectiveMetadata({
       selector: dm.selector,
-      properties: dm.properties,
-      events: dm.events,
+      inputs: dm.inputs,
+      outputs: dm.outputs,
       host: dm.host,
-      bindings: bindings,
+      providers: providers,
       exportAs: dm.exportAs,
       moduleId: dm.moduleId,
-      compileChildren: dm.compileChildren,
       queries: dm.queries
     });
   }
 
+  /**
+   * @deprecated
+   */
   setBindingsOverride(type: Type, bindings: any[]): void {
-    this._bindingsOverrides.set(type, bindings);
+    this._providerOverrides.set(type, bindings);
   }
 
+  /**
+   * @deprecated
+   */
   setViewBindingsOverride(type: Type, viewBindings: any[]): void {
-    this._viewBindingsOverrides.set(type, viewBindings);
+    this.viewProviderOverrides.set(type, viewBindings);
+  }
+
+  setProvidersOverride(type: Type, bindings: any[]): void {
+    this._providerOverrides.set(type, bindings);
+  }
+
+  setViewProvidersOverride(type: Type, viewBindings: any[]): void {
+    this.viewProviderOverrides.set(type, viewBindings);
   }
 }

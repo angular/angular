@@ -6,7 +6,7 @@ import {MdCheckbox} from "../checkbox/checkbox";
 
 @Component({
   selector: 'md-switch',
-  properties: ['checked', 'disabled'],
+  inputs: ['checked', 'disabled'],
   host: {
     'role': 'checkbox',
     '[attr.aria-checked]': 'checked',

@@ -1,4 +1,4 @@
-import {Component, Directive, View} from 'angular2/angular2';
+import {Component, Directive, View, Output, EventEmitter} from 'angular2/angular2';
 import {
   RootTestComponent,
   afterEach,
@@ -16,7 +16,7 @@ import {
   iit,
   xit,
   browserDetection
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {
@@ -24,16 +24,25 @@ import {
   ControlGroup,
   ControlValueAccessor,
   FORM_DIRECTIVES,
+  NG_VALIDATORS,
+  Provider,
   NgControl,
   NgIf,
   NgFor,
   NgForm,
   Validators,
+  forwardRef,
+  Validator
 } from 'angular2/core';
 import {By} from 'angular2/src/core/debug';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
+import {ObservableWrapper} from 'angular2/src/core/facade/async';
+import {CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {PromiseWrapper} from "angular2/src/core/facade/promise";
 
 export function main() {
   describe("integration tests", () => {
+
     it("should initialize DOM elements with the given form object",
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var t = `<div [ng-form-model]="form">
@@ -73,27 +82,29 @@ export function main() {
        }));
 
     it("should emit ng-submit event on submit",
-       inject(
-           [TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
-             var t =
-                 `<div><form [ng-form-model]="form" (ng-submit)="name='updated'"></form><span>{{name}}</span></div>`;
+       inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
+                var t = `<div>
+                      <form [ng-form-model]="form" (ng-submit)="name='updated'"></form>
+                      <span>{{name}}</span>
+                    </div>`;
 
-             var rootTC: RootTestComponent;
+                var rootTC: RootTestComponent;
 
-             tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((root) => { rootTC = root; });
-             tick();
+                tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
+                    (root) => { rootTC = root; });
+                tick();
 
-             rootTC.debugElement.componentInstance.form = new ControlGroup({});
-             rootTC.debugElement.componentInstance.name = 'old';
+                rootTC.debugElement.componentInstance.form = new ControlGroup({});
+                rootTC.debugElement.componentInstance.name = 'old';
 
-             tick();
+                tick();
 
-             var form = rootTC.debugElement.query(By.css("form"));
-             dispatchEvent(form.nativeElement, "submit");
+                var form = rootTC.debugElement.query(By.css("form"));
+                dispatchEvent(form.nativeElement, "submit");
 
-             tick();
-             expect(rootTC.debugElement.componentInstance.name).toEqual('updated');
-           })));
+                tick();
+                expect(rootTC.debugElement.componentInstance.name).toEqual('updated');
+              })));
 
     it("should work with single controls",
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
@@ -272,6 +283,28 @@ export function main() {
            });
          }));
 
+      it("should support <type=number>",
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var t = `<div [ng-form-model]="form">
+                  <input type="number" ng-control="num">
+                </div>`;
+
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+             rootTC.debugElement.componentInstance.form =
+                 new ControlGroup({"num": new Control(10)});
+             rootTC.detectChanges();
+
+             var input = rootTC.debugElement.query(By.css("input"));
+             expect(input.nativeElement.value).toEqual("10");
+
+             input.nativeElement.value = "20";
+             dispatchEvent(input.nativeElement, "change");
+
+             expect(rootTC.debugElement.componentInstance.form.value).toEqual({"num": 20});
+             async.done();
+           });
+         }));
+
       it("should support <select>",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var t = `<div [ng-form-model]="form">
@@ -301,24 +334,26 @@ export function main() {
          }));
 
       it("should support <select> with a dynamic list of options",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var t = `<div [ng-form-model]="form">
+         inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
+                  var t = `<div [ng-form-model]="form">
                       <select ng-control="city">
                         <option *ng-for="#c of data" [value]="c"></option>
                       </select>
                   </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-             rootTC.debugElement.componentInstance.form =
-                 new ControlGroup({"city": new Control("NYC")});
-             rootTC.debugElement.componentInstance.data = ['SF', 'NYC'];
-             rootTC.detectChanges();
+                  var rootTC;
+                  tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rtc) => rootTC = rtc);
+                  tick();
 
-             var select = rootTC.debugElement.query(By.css('select'));
-             expect(select.nativeElement.value).toEqual('NYC');
-             async.done();
-           });
-         }));
+                  rootTC.debugElement.componentInstance.form =
+                      new ControlGroup({"city": new Control("NYC")});
+                  rootTC.debugElement.componentInstance.data = ['SF', 'NYC'];
+                  rootTC.detectChanges();
+                  tick();
+
+                  var select = rootTC.debugElement.query(By.css('select'));
+                  expect(select.nativeElement.value).toEqual('NYC');
+                })));
 
       it("should support custom value accessors",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
@@ -340,33 +375,78 @@ export function main() {
              async.done();
            });
          }));
+
+      it("should support custom value accessors on non builtin input elements that fire a change event without a 'target' property",
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var t = `<div [ng-form-model]="form">
+                  <my-input ng-control="name"></my-input>
+                </div>`;
+
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+             rootTC.debugElement.componentInstance.form =
+                 new ControlGroup({"name": new Control("aa")});
+             rootTC.detectChanges();
+             var input = rootTC.debugElement.query(By.css("my-input"));
+             expect(input.componentInstance.value).toEqual("!aa!");
+
+             input.componentInstance.value = "!bb!";
+             ObservableWrapper.subscribe(input.componentInstance.onChange, (value) => {
+               expect(rootTC.debugElement.componentInstance.form.value).toEqual({"name": "bb"});
+               async.done();
+             });
+             input.componentInstance.dispatchChangeEvent();
+           });
+         }));
+
     });
 
     describe("validations", () => {
       it("should use validators defined in html",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var form = new ControlGroup({"login": new Control("aa")});
+           var form = new ControlGroup(
+               {"login": new Control(""), "min": new Control(""), "max": new Control("")});
 
-           var t = `<div [ng-form-model]="form">
-                  <input type="text" ng-control="login" required>
+           var t = `<div [ng-form-model]="form" login-is-empty-validator>
+                    <input type="text" ng-control="login" required>
+                    <input type="text" ng-control="min" minlength="3">
+                    <input type="text" ng-control="max" maxlength="3">
                  </div>`;
 
            tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
              rootTC.debugElement.componentInstance.form = form;
              rootTC.detectChanges();
+
+             var required = rootTC.debugElement.query(By.css("[required]"));
+             var minLength = rootTC.debugElement.query(By.css("[minlength]"));
+             var maxLength = rootTC.debugElement.query(By.css("[maxlength]"));
+
+             required.nativeElement.value = "";
+             minLength.nativeElement.value = "1";
+             maxLength.nativeElement.value = "1234";
+             dispatchEvent(required.nativeElement, "change");
+             dispatchEvent(minLength.nativeElement, "change");
+             dispatchEvent(maxLength.nativeElement, "change");
+
+             expect(form.hasError("required", ["login"])).toEqual(true);
+             expect(form.hasError("minlength", ["min"])).toEqual(true);
+             expect(form.hasError("maxlength", ["max"])).toEqual(true);
+
+             expect(form.hasError("loginIsEmpty")).toEqual(true);
+
+             required.nativeElement.value = "1";
+             minLength.nativeElement.value = "123";
+             maxLength.nativeElement.value = "123";
+             dispatchEvent(required.nativeElement, "change");
+             dispatchEvent(minLength.nativeElement, "change");
+             dispatchEvent(maxLength.nativeElement, "change");
+
              expect(form.valid).toEqual(true);
 
-             var input = rootTC.debugElement.query(By.css("input"));
-
-             input.nativeElement.value = "";
-             dispatchEvent(input.nativeElement, "change");
-
-             expect(form.valid).toEqual(false);
              async.done();
            });
          }));
 
-      it("should use validators defined in the model",
+      it("should use sync validators defined in the model",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var form = new ControlGroup({"login": new Control("aa", Validators.required)});
 
@@ -388,6 +468,41 @@ export function main() {
              async.done();
            });
          }));
+
+      it("should use async validators defined in the model",
+         inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
+                  var control =
+                      new Control("", Validators.required, uniqLoginAsyncValidator("expected"));
+                  var form = new ControlGroup({"login": control});
+
+                  var t = `<div [ng-form-model]="form">
+                  <input type="text" ng-control="login">
+                 </div>`;
+
+                  var rootTC;
+                  tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((root) => rootTC = root);
+                  tick();
+
+                  rootTC.debugElement.componentInstance.form = form;
+                  rootTC.detectChanges();
+
+                  expect(form.hasError("required", ["login"])).toEqual(true);
+
+                  var input = rootTC.debugElement.query(By.css("input"));
+                  input.nativeElement.value = "wrong value";
+                  dispatchEvent(input.nativeElement, "change");
+
+                  expect(form.pending).toEqual(true);
+                  tick();
+
+                  expect(form.hasError("uniqLogin", ["login"])).toEqual(true);
+
+                  input.nativeElement.value = "expected";
+                  dispatchEvent(input.nativeElement, "change");
+                  tick();
+
+                  expect(form.valid).toEqual(true);
+                })));
     });
 
     describe("nested forms", () => {
@@ -657,21 +772,18 @@ export function main() {
              rootTC.detectChanges();
 
              var input = rootTC.debugElement.query(By.css("input")).nativeElement;
-             expect(DOM.classList(input))
-                 .toEqual(['ng-binding', 'ng-invalid', 'ng-pristine', 'ng-untouched']);
+             expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
              dispatchEvent(input, "blur");
              rootTC.detectChanges();
 
-             expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-invalid", "ng-pristine", "ng-touched"]);
+             expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-touched"]);
 
              input.value = "updatedValue";
              dispatchEvent(input, "change");
              rootTC.detectChanges();
 
-             expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-touched", "ng-dirty", "ng-valid"]);
+             expect(sortedClassList(input)).toEqual(["ng-dirty", "ng-touched", "ng-valid"]);
              async.done();
            });
          }));
@@ -687,21 +799,18 @@ export function main() {
              rootTC.detectChanges();
 
              var input = rootTC.debugElement.query(By.css("input")).nativeElement;
-             expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-invalid", "ng-pristine", "ng-untouched"]);
+             expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-untouched"]);
 
              dispatchEvent(input, "blur");
              rootTC.detectChanges();
 
-             expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-invalid", "ng-pristine", "ng-touched"]);
+             expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-touched"]);
 
              input.value = "updatedValue";
              dispatchEvent(input, "change");
              rootTC.detectChanges();
 
-             expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-touched", "ng-dirty", "ng-valid"]);
+             expect(sortedClassList(input)).toEqual(["ng-dirty", "ng-touched", "ng-valid"]);
              async.done();
            });
          }));
@@ -715,21 +824,18 @@ export function main() {
              rootTC.detectChanges();
 
              var input = rootTC.debugElement.query(By.css("input")).nativeElement;
-             expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-invalid", "ng-pristine", "ng-untouched"]);
+             expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-untouched"]);
 
              dispatchEvent(input, "blur");
              rootTC.detectChanges();
 
-             expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-invalid", "ng-pristine", "ng-touched"]);
+             expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-touched"]);
 
              input.value = "updatedValue";
              dispatchEvent(input, "change");
              rootTC.detectChanges();
 
-             expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-touched", "ng-dirty", "ng-valid"]);
+             expect(sortedClassList(input)).toEqual(["ng-dirty", "ng-touched", "ng-valid"]);
              async.done();
            });
          }));
@@ -835,10 +941,57 @@ class WrappedValue implements ControlValueAccessor {
   handleOnChange(value) { this.onChange(value.substring(1, value.length - 1)); }
 }
 
-@Component({selector: "my-comp"})
-@View({directives: [FORM_DIRECTIVES, WrappedValue, NgIf, NgFor]})
+@Component({selector: "my-input", template: ''})
+class MyInput implements ControlValueAccessor {
+  @Output('change') onChange: EventEmitter<any> = new EventEmitter();
+  value: string;
+
+  constructor(cd: NgControl) { cd.valueAccessor = this; }
+
+  writeValue(value) { this.value = `!${value}!`; }
+
+  registerOnChange(fn) { ObservableWrapper.subscribe(this.onChange, fn); }
+
+  registerOnTouched(fn) {}
+
+  dispatchChangeEvent() {
+    ObservableWrapper.callNext(this.onChange, this.value.substring(1, this.value.length - 1));
+  }
+}
+
+function uniqLoginAsyncValidator(expectedValue: string) {
+  return (c) => {
+    var e = new EventEmitter();
+    var res = (c.value == expectedValue) ? null : {"uniqLogin": true};
+    PromiseWrapper.scheduleMicrotask(() => ObservableWrapper.callNext(e, res));
+    return e;
+  };
+}
+
+function loginIsEmptyGroupValidator(c: ControlGroup) {
+  return c.controls["login"].value == "" ? {"loginIsEmpty": true} : null;
+}
+
+@Directive({
+  selector: '[login-is-empty-validator]',
+  providers: [new Provider(NG_VALIDATORS, {useValue: loginIsEmptyGroupValidator, multi: true})]
+})
+class LoginIsEmptyValidator {
+}
+
+@Component({
+  selector: "my-comp",
+  template: '',
+  directives: [FORM_DIRECTIVES, WrappedValue, MyInput, NgIf, NgFor, LoginIsEmptyValidator]
+})
 class MyComp {
   form: any;
   name: string;
   data: any;
+}
+
+function sortedClassList(el) {
+  var l = DOM.classList(el);
+  ListWrapper.sort(l);
+  return l;
 }

@@ -3,13 +3,17 @@ import {Type, isPresent, stringify, isBlank} from 'angular2/src/core/facade/lang
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
 import {ViewMetadata} from '../core/metadata';
-import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
+import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
 
 export class MockViewResolver extends ViewResolver {
-  _views: Map<Type, ViewMetadata> = new Map();
-  _inlineTemplates: Map<Type, string> = new Map();
-  _viewCache: Map<Type, ViewMetadata> = new Map();
-  _directiveOverrides: Map<Type, Map<Type, Type>> = new Map();
+  /** @internal */
+  _views = new Map<Type, ViewMetadata>();
+  /** @internal */
+  _inlineTemplates = new Map<Type, string>();
+  /** @internal */
+  _viewCache = new Map<Type, ViewMetadata>();
+  /** @internal */
+  _directiveOverrides = new Map<Type, Map<Type, Type>>();
 
   constructor() { super(); }
 
@@ -48,7 +52,7 @@ export class MockViewResolver extends ViewResolver {
     var overrides = this._directiveOverrides.get(component);
 
     if (isBlank(overrides)) {
-      overrides = new Map();
+      overrides = new Map<Type, Type>();
       this._directiveOverrides.set(component, overrides);
     }
 
@@ -80,7 +84,7 @@ export class MockViewResolver extends ViewResolver {
 
     if (isPresent(overrides) && isPresent(directives)) {
       directives = ListWrapper.clone(view.directives);
-      MapWrapper.forEach(overrides, (to, from) => {
+      overrides.forEach((to, from) => {
         var srcIndex = directives.indexOf(from);
         if (srcIndex == -1) {
           throw new BaseException(
@@ -103,6 +107,8 @@ export class MockViewResolver extends ViewResolver {
   }
 
   /**
+   * @internal
+   *
    * Once a component has been compiled, the AppProtoView is stored in the compiler cache.
    *
    * Then it should not be possible to override the component configuration after the component

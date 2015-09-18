@@ -14,7 +14,7 @@ var runner = new benchpress.Runner([
 describe('deep tree baseline', function() {
   it('should be fast!', function(done) {
     browser.ignoreSynchronization = true;
-    browser.get('http://localhost:8001/examples/src/benchpress/');
+    browser.get('http://localhost:8001/playground/src/benchpress/');
 
     /*
      * Tell benchpress to click the buttons to destroy and re-create the tree for each sample.

@@ -9,17 +9,17 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
-import {ListWrapper, StringMap} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 
-import {Metric, MultiMetric, bind, Injector} from 'benchpress/common';
+import {Metric, MultiMetric, bind, provide, Injector} from 'benchpress/common';
 
 export function main() {
-  function createMetric(ids) {
+  function createMetric(ids: any[]) {
     var m = Injector.resolveAndCreate([
-                      ListWrapper.map(ids, (id) => bind(id).toValue(new MockMetric(id))),
+                      ids.map(id => provide(id, {useValue: new MockMetric(id)})),
                       MultiMetric.createBindings(ids)
                     ])
                 .get(MultiMetric);
@@ -70,14 +70,14 @@ class MockMetric extends Metric {
 
   beginMeasure(): Promise<string> { return PromiseWrapper.resolve(`${this._id}_beginMeasure`); }
 
-  endMeasure(restart: boolean): Promise<StringMap<string, any>> {
+  endMeasure(restart: boolean): Promise<{[key: string]: any}> {
     var result = {};
     result[this._id] = {'restart': restart};
     return PromiseWrapper.resolve(result);
   }
 
-  describe(): StringMap<string, string> {
-    var result = {};
+  describe(): {[key: string]: string} {
+    var result: {[key: string]: string} = {};
     result[this._id] = 'describe';
     return result;
   }

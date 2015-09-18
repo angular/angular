@@ -4,5 +4,5 @@ import {Type} from 'angular2/src/core/facade/lang';
 export interface RouteHandler {
   componentType: Type;
   resolveComponentType(): Promise<any>;
-  data?: Object;
+  data?: {[key: string]: any};
 }

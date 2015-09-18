@@ -1,4 +1,4 @@
-import {isBlank} from 'angular2/src/core/facade/lang';
+import {isBlank, Type} from 'angular2/src/core/facade/lang';
 
 export var DOM: DomAdapter;
 
@@ -23,11 +23,13 @@ export abstract class DomAdapter {
   abstract logGroup(error);
   abstract logGroupEnd();
 
+  abstract getXHR(): Type;
+
   /**
    * Maps attribute names to their corresponding property names for cases
    * where attribute name doesn't match property name.
    */
-  attrToPropMap: StringMap<string, string>;
+  attrToPropMap: {[key: string]: string};
 
   abstract parse(templateHtml: string);
   abstract query(selector: string): any;
@@ -69,6 +71,7 @@ export abstract class DomAdapter {
   abstract createComment(text: string): any;
   abstract createTemplate(html): HTMLElement;
   abstract createElement(tagName, doc?): HTMLElement;
+  abstract createElementNS(ns: string, tagName: string, doc?): Element;
   abstract createTextNode(text: string, doc?): Text;
   abstract createScriptTag(attrName: string, attrValue: string, doc?): HTMLElement;
   abstract createStyleElement(css: string, doc?): HTMLStyleElement;
@@ -91,6 +94,7 @@ export abstract class DomAdapter {
   abstract hasAttribute(element, attribute: string): boolean;
   abstract getAttribute(element, attribute: string): string;
   abstract setAttribute(element, name: string, value: string);
+  abstract setAttributeNS(element, ns: string, name: string, value: string);
   abstract removeAttribute(element, attribute: string);
   abstract templateAwareRoot(el);
   abstract createHtmlDocument(): HTMLDocument;
@@ -107,14 +111,9 @@ export abstract class DomAdapter {
   abstract isShadowRoot(node): boolean;
   abstract importIntoDoc /*<T extends Node>*/ (node: Node /*T*/): Node /*T*/;
   abstract adoptNode /*<T extends Node>*/ (node: Node /*T*/): Node /*T*/;
-  abstract isPageRule(rule): boolean;
-  abstract isStyleRule(rule): boolean;
-  abstract isMediaRule(rule): boolean;
-  abstract isKeyframesRule(rule): boolean;
   abstract getHref(element): string;
   abstract getEventKey(event): string;
   abstract resolveAndSetHref(element, baseUrl: string, href: string);
-  abstract cssToRules(css: string): any[];
   abstract supportsDOMEvents(): boolean;
   abstract supportsNativeShadowDOM(): boolean;
   abstract getGlobalEventTarget(target: string): any;

@@ -5,13 +5,15 @@ import {
   RenderViewRef,
   RenderFragmentRef,
   RenderProtoViewRef,
-  Renderer
+  Renderer,
+  RenderTemplateCmd
 } from 'angular2/src/core/render/api';
-import {WebWorkerElementRef} from 'angular2/src/web_workers/shared/api';
+import {WebWorkerElementRef, WebWorkerTemplateCmd} from 'angular2/src/web_workers/shared/api';
 import {EVENT_CHANNEL, RENDERER_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
 import {Type} from 'angular2/src/core/facade/lang';
 import {bind} from './bind';
 import {EventDispatcher} from 'angular2/src/web_workers/ui/event_dispatcher';
+import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_proto_view_ref_store';
 import {
   RenderViewWithFragmentsStore
 } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
@@ -21,12 +23,19 @@ import {ServiceMessageBrokerFactory} from 'angular2/src/web_workers/shared/servi
 export class MessageBasedRenderer {
   constructor(private _brokerFactory: ServiceMessageBrokerFactory, private _bus: MessageBus,
               private _serializer: Serializer,
+              private _renderProtoViewRefStore: RenderProtoViewRefStore,
               private _renderViewWithFragmentsStore: RenderViewWithFragmentsStore,
               private _renderer: Renderer) {}
 
   start(): void {
     var broker = this._brokerFactory.createMessageBroker(RENDERER_CHANNEL);
     this._bus.initChannel(EVENT_CHANNEL);
+
+    broker.registerMethod("registerComponentTemplate",
+                          [PRIMITIVE, WebWorkerTemplateCmd, PRIMITIVE, PRIMITIVE],
+                          bind(this._renderer.registerComponentTemplate, this._renderer));
+    broker.registerMethod("createProtoView", [WebWorkerTemplateCmd, PRIMITIVE],
+                          bind(this._createProtoView, this));
     broker.registerMethod("createRootHostView",
                           [RenderProtoViewRef, PRIMITIVE, PRIMITIVE, PRIMITIVE],
                           bind(this._createRootHostView, this));
@@ -62,6 +71,11 @@ export class MessageBasedRenderer {
   private _destroyView(viewRef: RenderViewRef): void {
     this._renderer.destroyView(viewRef);
     this._renderViewWithFragmentsStore.remove(viewRef);
+  }
+
+  private _createProtoView(cmds: RenderTemplateCmd[], refIndex: number) {
+    var protoViewRef = this._renderer.createProtoView(cmds);
+    this._renderProtoViewRefStore.store(protoViewRef, refIndex);
   }
 
   private _createRootHostView(ref: RenderProtoViewRef, fragmentCount: number, selector: string,

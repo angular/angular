@@ -1,5 +1,5 @@
 import {Injectable} from 'angular2/src/core/di';
-import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {isPresent, isArray} from 'angular2/src/core/facade/lang';
 import * as modelModule from './model';
 
@@ -7,67 +7,54 @@ import * as modelModule from './model';
 /**
  * Creates a form object from a user-specified configuration.
  *
- * # Example
+ * ### Example ([live demo](http://plnkr.co/edit/ENgZo8EuIECZNensZCVr?p=preview))
  *
- * ```
- * import {Component, View, bootstrap} from 'angular2/angular2';
- * import {FormBuilder, Validators, FORM_DIRECTIVES, ControlGroup} from 'angular2/core';
- *
+ * ```typescript
  * @Component({
- *   selector: 'login-comp',
- *   viewBindings: [FormBuilder]
- * })
- * @View({
+ *   selector: 'my-app',
+ *   viewBindings: [FORM_BINDINGS]
  *   template: `
- *     <form [control-group]="loginForm">
- *       Login <input control="login">
- *
- *       <div control-group="passwordRetry">
- *         Password <input type="password" control="password">
- *         Confirm password <input type="password" control="passwordConfirmation">
+ *     <form [ng-form-model]="loginForm">
+ *       <p>Login <input ng-control="login"></p>
+ *       <div ng-control-group="passwordRetry">
+ *         <p>Password <input type="password" ng-control="password"></p>
+ *         <p>Confirm password <input type="password" ng-control="passwordConfirmation"></p>
  *       </div>
  *     </form>
+ *     <h3>Form value:</h3>
+ *     <pre>{{value}}</pre>
  *   `,
  *   directives: [FORM_DIRECTIVES]
  * })
- * class LoginComp {
+ * export class App {
  *   loginForm: ControlGroup;
  *
  *   constructor(builder: FormBuilder) {
  *     this.loginForm = builder.group({
  *       login: ["", Validators.required],
- *
  *       passwordRetry: builder.group({
  *         password: ["", Validators.required],
  *         passwordConfirmation: ["", Validators.required]
  *       })
  *     });
  *   }
+ *
+ *   get value(): string {
+ *     return JSON.stringify(this.loginForm.value, null, 2);
+ *   }
  * }
- *
- * bootstrap(LoginComp);
  * ```
- *
- * This example creates a {@link ControlGroup} that consists of a `login` {@link Control}, and a
- * nested {@link ControlGroup} that defines a `password` and a `passwordConfirmation`
- * {@link Control}:
- *
- * ```
- *  var loginForm = builder.group({
- *    login: ["", Validators.required],
- *
- *    passwordRetry: builder.group({
- *      password: ["", Validators.required],
- *      passwordConfirmation: ["", Validators.required]
- *    })
- *  });
- *
- *  ```
  */
 @Injectable()
 export class FormBuilder {
-  group(controlsConfig: StringMap<string, any>,
-        extra: StringMap<string, any> = null): modelModule.ControlGroup {
+  /**
+   * Construct a new {@link ControlGroup} with the given map of configuration.
+   * Valid keys for the `extra` parameter map are `optionals` and `validator`.
+   *
+   * See the {@link ControlGroup} constructor for more details.
+   */
+  group(controlsConfig: {[key: string]: any},
+        extra: {[key: string]: any} = null): modelModule.ControlGroup {
     var controls = this._reduceControls(controlsConfig);
     var optionals = isPresent(extra) ? StringMapWrapper.get(extra, "optionals") : null;
     var validator = isPresent(extra) ? StringMapWrapper.get(extra, "validator") : null;
@@ -79,6 +66,9 @@ export class FormBuilder {
     }
   }
 
+  /**
+   * Construct a new {@link Control} with the given `value` and `validator`.
+   */
   control(value: Object, validator: Function = null): modelModule.Control {
     if (isPresent(validator)) {
       return new modelModule.Control(value, validator);
@@ -87,8 +77,12 @@ export class FormBuilder {
     }
   }
 
+  /**
+   * Construct an array of {@link Control}s from the given `controlsConfig` array of
+   * configuration, with the given optional `validator`.
+   */
   array(controlsConfig: any[], validator: Function = null): modelModule.ControlArray {
-    var controls = ListWrapper.map(controlsConfig, (c) => this._createControl(c));
+    var controls = controlsConfig.map(c => this._createControl(c));
     if (isPresent(validator)) {
       return new modelModule.ControlArray(controls, validator);
     } else {
@@ -96,14 +90,16 @@ export class FormBuilder {
     }
   }
 
-  _reduceControls(controlsConfig: any): StringMap<string, modelModule.AbstractControl> {
-    var controls = {};
+  /** @internal */
+  _reduceControls(controlsConfig: any): {[key: string]: modelModule.AbstractControl} {
+    var controls: {[key: string]: modelModule.AbstractControl} = {};
     StringMapWrapper.forEach(controlsConfig, (controlConfig, controlName) => {
       controls[controlName] = this._createControl(controlConfig);
     });
     return controls;
   }
 
+  /** @internal */
   _createControl(controlConfig: any): modelModule.AbstractControl {
     if (controlConfig instanceof modelModule.Control ||
         controlConfig instanceof modelModule.ControlGroup ||

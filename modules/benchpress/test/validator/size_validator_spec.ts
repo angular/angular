@@ -1,8 +1,17 @@
-import {describe, ddescribe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
+import {
+  describe,
+  ddescribe,
+  it,
+  iit,
+  xit,
+  expect,
+  beforeEach,
+  afterEach
+} from 'angular2/testing_internal';
 import {Date, DateWrapper} from 'angular2/src/core/facade/lang';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 
-import {Validator, SizeValidator, Injector, bind, MeasureValues} from 'benchpress/common';
+import {Validator, SizeValidator, Injector, bind, provide, MeasureValues} from 'benchpress/common';
 
 export function main() {
   describe('size validator', () => {

@@ -8,23 +8,17 @@ import {
 } from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
-import {
-  Map,
-  MapWrapper,
-  StringMap,
-  StringMapWrapper,
-  ListWrapper
-} from 'angular2/src/core/facade/collection';
+import {Map, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {RouteHandler} from './route_handler';
 import {Url, RootUrl, serializeParams} from './url_parser';
-import {ComponentInstruction} from './instruction';
+import {ComponentInstruction, ComponentInstruction_} from './instruction';
 
 class TouchMap {
-  map: StringMap<string, string> = {};
-  keys: StringMap<string, boolean> = {};
+  map: {[key: string]: string} = {};
+  keys: {[key: string]: boolean} = {};
 
-  constructor(map: StringMap<string, any>) {
+  constructor(map: {[key: string]: any}) {
     if (isPresent(map)) {
       StringMapWrapper.forEach(map, (value, key) => {
         this.map[key] = isPresent(value) ? value.toString() : null;
@@ -38,10 +32,10 @@ class TouchMap {
     return this.map[key];
   }
 
-  getUnused(): StringMap<string, any> {
-    var unused: StringMap<string, any> = StringMapWrapper.create();
+  getUnused(): {[key: string]: any} {
+    var unused: {[key: string]: any} = StringMapWrapper.create();
     var keys = StringMapWrapper.keys(this.keys);
-    ListWrapper.forEach(keys, (key) => { unused[key] = StringMapWrapper.get(this.map, key); });
+    keys.forEach(key => unused[key] = StringMapWrapper.get(this.map, key));
     return unused;
   }
 }
@@ -96,7 +90,7 @@ class StarSegment implements Segment {
 var paramMatcher = /^:([^\/]+)$/g;
 var wildcardMatcher = /^\*([^\/]+)$/g;
 
-function parsePathString(route: string): StringMap<string, any> {
+function parsePathString(route: string): {[key: string]: any} {
   // normalize route as not starting with a "/". Recognition will
   // also normalize.
   if (StringWrapper.startsWith(route, "/")) {
@@ -278,7 +272,7 @@ export class PathRecognizer {
   }
 
 
-  generate(params: StringMap<string, any>): ComponentInstruction {
+  generate(params: {[key: string]: any}): ComponentInstruction {
     var paramTokens = new TouchMap(params);
 
     var path = [];
@@ -298,12 +292,12 @@ export class PathRecognizer {
   }
 
   private _getInstruction(urlPath: string, urlParams: string[], _recognizer: PathRecognizer,
-                          params: StringMap<string, any>): ComponentInstruction {
+                          params: {[key: string]: any}): ComponentInstruction {
     var hashKey = urlPath + '?' + urlParams.join('?');
     if (this._cache.has(hashKey)) {
       return this._cache.get(hashKey);
     }
-    var instruction = new ComponentInstruction(urlPath, urlParams, _recognizer, params);
+    var instruction = new ComponentInstruction_(urlPath, urlParams, _recognizer, params);
     this._cache.set(hashKey, instruction);
 
     return instruction;

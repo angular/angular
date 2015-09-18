@@ -1,9 +1,10 @@
-import {CONST_EXPR, CONST, isPresent, isString} from 'angular2/src/core/facade/lang';
+import {isPresent, isString} from 'angular2/src/core/facade/lang';
 import {Headers} from './headers';
 import {RequestMethods} from './enums';
 import {RequestOptionsArgs} from './interfaces';
-import {Injectable} from 'angular2/src/core/di';
+import {Injectable} from 'angular2/angular2';
 import {URLSearchParams} from './url_search_params';
+import {normalizeMethodName} from './http_utils';
 
 /**
  * Creates a request options object to be optionally provided when instantiating a
@@ -34,7 +35,7 @@ export class RequestOptions {
    * Http method with which to execute a {@link Request}.
    * Acceptable methods are defined in the {@link RequestMethods} enum.
    */
-  method: RequestMethods;
+  method: RequestMethods | string;
   /**
    * {@link Headers} to be attached to a {@link Request}.
    */
@@ -53,7 +54,7 @@ export class RequestOptions {
    */
   search: URLSearchParams;
   constructor({method, headers, body, url, search}: RequestOptionsArgs = {}) {
-    this.method = isPresent(method) ? method : null;
+    this.method = isPresent(method) ? normalizeMethodName(method) : null;
     this.headers = isPresent(headers) ? headers : null;
     this.body = isPresent(body) ? body : null;
     this.url = isPresent(url) ? url : null;
@@ -71,7 +72,7 @@ export class RequestOptions {
    * the `options` object. If these values should be merged, it should be done prior to calling
    * `merge` on the `RequestOptions` instance.
    *
-   * Example ([live demo](http://plnkr.co/edit/6w8XA8YTkDRcPYpdB9dk?p=preview))
+   * ### Example ([live demo](http://plnkr.co/edit/6w8XA8YTkDRcPYpdB9dk?p=preview))
    *
    * ```typescript
    * import {RequestOptions, Request, RequestMethods} from 'angular2/http';
@@ -116,15 +117,15 @@ export class RequestOptions {
  * ### Example ([live demo](http://plnkr.co/edit/LEKVSx?p=preview))
  *
  * ```typescript
- * import {bind, bootstrap} from 'angular2/angular2';
- * import {HTTP_BINDINGS, Http, BaseRequestOptions, RequestOptions} from 'angular2/http';
+ * import {provide, bootstrap} from 'angular2/angular2';
+ * import {HTTP_PROVIDERS, Http, BaseRequestOptions, RequestOptions} from 'angular2/http';
  * import {App} from './myapp';
  *
  * class MyOptions extends BaseRequestOptions {
  *   search: string = 'coreTeam=true';
  * }
  *
- * bootstrap(App, [HTTP_BINDINGS, bind(RequestOptions).toClass(MyOptions)]);
+ * bootstrap(App, [HTTP_PROVIDERS, provide(RequestOptions, {useClass: MyOptions})]);
  * ```
  *
  * The options could also be extended when manually creating a {@link Request}

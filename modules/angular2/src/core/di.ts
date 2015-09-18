@@ -21,19 +21,23 @@ export {forwardRef, resolveForwardRef, ForwardRefFn} from './di/forward_ref';
 export {Injector} from './di/injector';
 export {
   Binding,
-  BindingBuilder,
+  ProviderBuilder,
   ResolvedBinding,
   ResolvedFactory,
   Dependency,
-  bind
-} from './di/binding';
+  bind,
+
+  Provider,
+  ResolvedProvider,
+  provide
+} from './di/provider';
 export {Key, TypeLiteral} from './di/key';
 export {
-  NoBindingError,
-  AbstractBindingError,
+  NoProviderError,
+  AbstractProviderError,
   CyclicDependencyError,
   InstantiationError,
-  InvalidBindingError,
+  InvalidProviderError,
   NoAnnotationError,
   OutOfBoundsError
 } from './di/exceptions';

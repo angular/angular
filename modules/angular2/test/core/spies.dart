@@ -4,24 +4,20 @@ import 'package:angular2/core.dart';
 import 'package:angular2/src/core/di/injector.dart';
 import 'package:angular2/src/core/change_detection/change_detection.dart';
 import 'package:angular2/src/core/render/api.dart';
-import 'package:angular2/src/core/compiler/directive_resolver.dart';
-import 'package:angular2/src/core/compiler/view.dart';
-import 'package:angular2/src/core/compiler/element_ref.dart';
-import 'package:angular2/src/core/compiler/view_manager.dart';
-import 'package:angular2/src/core/compiler/view_pool.dart';
-import 'package:angular2/src/core/compiler/view_listener.dart';
-import 'package:angular2/src/core/compiler/element_injector.dart';
+import 'package:angular2/src/core/linker/directive_resolver.dart';
+import 'package:angular2/src/core/linker/view.dart';
+import 'package:angular2/src/core/linker/element_ref.dart';
+import 'package:angular2/src/core/linker/view_manager.dart';
+import 'package:angular2/src/core/linker/proto_view_factory.dart';
+import 'package:angular2/src/core/linker/view_pool.dart';
+import 'package:angular2/src/core/linker/view_listener.dart';
+import 'package:angular2/src/core/linker/element_injector.dart';
 import 'package:angular2/src/core/dom/dom_adapter.dart';
-import 'package:angular2/test_lib.dart';
-import 'package:angular2/src/core/render/xhr.dart';
+import 'package:angular2/testing_internal.dart';
+import 'package:angular2/src/core/compiler/xhr.dart';
 
 @proxy
 class SpyDependencyProvider extends SpyObject implements DependencyProvider {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
-
-@proxy
-class SpyChangeDetection extends SpyObject implements ChangeDetection {
   noSuchMethod(m) => super.noSuchMethod(m);
 }
 
@@ -31,7 +27,7 @@ class SpyChangeDetector extends SpyObject implements ChangeDetector {
 }
 
 @proxy
-class SpyProtoChangeDetector extends SpyObject implements ProtoChangeDetector {
+class SpyChangeDispatcher extends SpyObject implements ChangeDispatcher {
   noSuchMethod(m) => super.noSuchMethod(m);
 }
 
@@ -47,11 +43,6 @@ class SpyInjector extends SpyObject implements Injector {
 }
 
 @proxy
-class SpyRenderCompiler extends SpyObject implements RenderCompiler {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
-
-@proxy
 class SpyDirectiveResolver extends SpyObject implements DirectiveResolver {
   noSuchMethod(m) => super.noSuchMethod(m);
 }
@@ -62,7 +53,7 @@ class SpyView extends SpyObject implements AppView {
 }
 
 @proxy
-class SpyElementRef extends SpyObject implements ElementRef {
+class SpyElementRef extends SpyObject implements ElementRef_ {
   noSuchMethod(m) => super.noSuchMethod(m);
 }
 
@@ -87,7 +78,13 @@ class SpyAppViewListener extends SpyObject implements AppViewListener {
 }
 
 @proxy
-class SpyProtoElementInjector extends SpyObject implements ProtoElementInjector {
+class SpyProtoViewFactory extends SpyObject implements ProtoViewFactory {
+  noSuchMethod(m) => super.noSuchMethod(m);
+}
+
+@proxy
+class SpyProtoElementInjector extends SpyObject
+    implements ProtoElementInjector {
   noSuchMethod(m) => super.noSuchMethod(m);
 }
 
@@ -112,6 +109,17 @@ class SpyXHR extends SpyObject implements XHR {
 }
 
 @proxy
-class SpyRenderEventDispatcher extends SpyObject implements RenderEventDispatcher {
+class SpyRenderEventDispatcher extends SpyObject
+    implements RenderEventDispatcher {
+  noSuchMethod(m) => super.noSuchMethod(m);
+}
+
+@proxy
+class SpyNgControl extends SpyObject implements NgControl {
+  noSuchMethod(m) => super.noSuchMethod(m);
+}
+
+@proxy
+class SpyValueAccessor extends SpyObject implements ControlValueAccessor {
   noSuchMethod(m) => super.noSuchMethod(m);
 }

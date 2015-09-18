@@ -8,7 +8,7 @@ import {
   inject,
   it,
   xit
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {DefaultRenderView} from 'angular2/src/core/render/view';
 
@@ -18,7 +18,7 @@ export function main() {
       it('should register global event listeners', () => {
         var addCount = 0;
         var adder = () => { addCount++ };
-        var view = new DefaultRenderView<Node>([], [], [], [], [adder]);
+        var view = new DefaultRenderView<Node>([], [], [], [], [adder], []);
         view.hydrate();
         expect(addCount).toBe(1);
       });
@@ -28,7 +28,7 @@ export function main() {
       it('should deregister global event listeners', () => {
         var removeCount = 0;
         var adder = () => () => { removeCount++ };
-        var view = new DefaultRenderView<Node>([], [], [], [], [adder]);
+        var view = new DefaultRenderView<Node>([], [], [], [], [adder], []);
         view.hydrate();
         view.dehydrate();
         expect(removeCount).toBe(1);

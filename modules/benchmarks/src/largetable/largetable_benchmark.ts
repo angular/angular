@@ -6,21 +6,22 @@ import {
   bindAction,
   windowProfile,
   windowProfileEnd
-} from 'angular2/src/test_lib/benchmark_util';
+} from 'angular2/src/testing/benchmark_util';
 import {bootstrap} from 'angular2/bootstrap';
 import {
   Component,
   Directive,
   View,
   bind,
+  provide,
   NgFor,
   NgSwitch,
   NgSwitchWhen,
-  NgSwitchDefault,
-  LifeCycle
+  NgSwitchDefault
 } from 'angular2/core';
+import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
-import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
+import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 
@@ -34,11 +35,10 @@ export const LARGETABLE_COLS = 'LargetableComponent.cols';
 function _createBindings() {
   var viewCacheCapacity = getStringParameter('viewcache') == 'true' ? 10000 : 1;
   return [
-    bind(BENCHMARK_TYPE)
-        .toValue(getStringParameter('benchmarkType')),
-    bind(LARGETABLE_ROWS).toValue(getIntParameter('rows')),
-    bind(LARGETABLE_COLS).toValue(getIntParameter('columns')),
-    bind(APP_VIEW_POOL_CAPACITY).toValue(viewCacheCapacity)
+    provide(BENCHMARK_TYPE, {useValue: getStringParameter('benchmarkType')}),
+    provide(LARGETABLE_ROWS, {useValue: getIntParameter('rows')}),
+    provide(LARGETABLE_COLS, {useValue: getIntParameter('columns')}),
+    provide(APP_VIEW_POOL_CAPACITY, {useValue: viewCacheCapacity})
   ];
 }
 
@@ -65,7 +65,7 @@ export function main() {
   BASELINE_LARGETABLE_TEMPLATE = DOM.createTemplate('<table></table>');
 
   var app;
-  var lifecycle;
+  var appRef;
   var baselineRootLargetableComponent;
 
   function ng2DestroyDom() {
@@ -73,7 +73,7 @@ export function main() {
     // --> this should be already caught in change detection!
     app.data = null;
     app.benchmarkType = 'none';
-    lifecycle.tick();
+    appRef.tick();
   }
 
   function profile(create, destroy, name) {
@@ -116,7 +116,7 @@ export function main() {
     }
     app.data = data;
     app.benchmarkType = getStringParameter('benchmarkType');
-    lifecycle.tick();
+    appRef.tick();
   }
 
   function noop() {}
@@ -126,7 +126,7 @@ export function main() {
         .then((ref) => {
           var injector = ref.injector;
           app = ref.hostComponent;
-          lifecycle = injector.get(LifeCycle);
+          appRef = injector.get(ApplicationRef);
           bindAction('#ng2DestroyDom', ng2DestroyDom);
           bindAction('#ng2CreateDom', ng2CreateDom);
           bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));
@@ -219,7 +219,7 @@ class CellData {
   iFn() { return this.i; }
 }
 
-@Component({selector: 'largetable', properties: ['data', 'benchmarkType']})
+@Component({selector: 'largetable', inputs: ['data', 'benchmarkType']})
 @View({
   directives: [NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault],
   template: `

@@ -2,32 +2,33 @@ library angular2.transform.reflection_remover.rewriter;
 
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:angular2/src/transform/common/logging.dart';
+import 'package:angular2/src/transform/common/mirror_matcher.dart';
 import 'package:angular2/src/transform/common/mirror_mode.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:path/path.dart' as path;
 
-import 'ast_tester.dart';
 import 'codegen.dart';
 
 class Rewriter {
   final String _code;
   final Codegen _codegen;
-  final AstTester _tester;
+  final MirrorMatcher _mirrorMatcher;
   final MirrorMode _mirrorMode;
   final bool _writeStaticInit;
 
   Rewriter(this._code, this._codegen,
-      {AstTester tester,
+      {MirrorMatcher mirrorMatcher,
       MirrorMode mirrorMode: MirrorMode.none,
       bool writeStaticInit: true})
       : _mirrorMode = mirrorMode,
         _writeStaticInit = writeStaticInit,
-        _tester = tester == null ? const AstTester() : tester;
+        _mirrorMatcher =
+            mirrorMatcher == null ? const MirrorMatcher() : mirrorMatcher;
 
   /// Rewrites the provided code removing imports of the
   /// {@link ReflectionCapabilities} library and instantiations of
   /// {@link ReflectionCapabilities}, as detected by the (potentially) provided
-  /// {@link AstTester}.
+  /// {@link MirrorMatcher}.
   ///
   /// To the extent possible, this method does not change line numbers or
   /// offsets in the provided code to facilitate debugging via source maps.
@@ -62,9 +63,9 @@ class _RewriterVisitor extends Object with RecursiveAstVisitor<Object> {
   Object visitImportDirective(ImportDirective node) {
     buf.write(_rewriter._code.substring(_currentIndex, node.offset));
     _currentIndex = node.offset;
-    if (_rewriter._tester.isReflectionCapabilitiesImport(node)) {
+    if (_rewriter._mirrorMatcher.hasReflectionCapabilitiesUri(node)) {
       _rewriteReflectionCapabilitiesImport(node);
-    } else if (_rewriter._tester.isBootstrapImport(node)) {
+    } else if (_rewriter._mirrorMatcher.hasBootstrapUri(node)) {
       _rewriteBootstrapImportToStatic(node);
     }
     if (!_importAdded && _rewriter._writeStaticInit) {
@@ -78,7 +79,8 @@ class _RewriterVisitor extends Object with RecursiveAstVisitor<Object> {
   @override
   Object visitAssignmentExpression(AssignmentExpression node) {
     if (node.rightHandSide is InstanceCreationExpression &&
-        _rewriter._tester.isNewReflectionCapabilities(node.rightHandSide)) {
+        _rewriter._mirrorMatcher
+            .isNewReflectionCapabilities(node.rightHandSide)) {
       reflectionCapabilityAssignments.add(node);
       _rewriteReflectionCapabilitiesAssignment(node);
     }
@@ -87,7 +89,7 @@ class _RewriterVisitor extends Object with RecursiveAstVisitor<Object> {
 
   @override
   Object visitInstanceCreationExpression(InstanceCreationExpression node) {
-    if (_rewriter._tester.isNewReflectionCapabilities(node) &&
+    if (_rewriter._mirrorMatcher.isNewReflectionCapabilities(node) &&
         !reflectionCapabilityAssignments.contains(node.parent)) {
       logger.error('Unexpected format in creation of '
           '${REFLECTION_CAPABILITIES_NAME}');
@@ -112,10 +114,10 @@ class _RewriterVisitor extends Object with RecursiveAstVisitor<Object> {
 
   _rewriteBootstrapImportToStatic(ImportDirective node) {
     if (_rewriter._writeStaticInit) {
-      // rewrite `bootstrap.dart` to `bootstrap_static.dart`
+      // rewrite bootstrap import to its static version.
       buf.write(_rewriter._code.substring(_currentIndex, node.offset));
       // TODO(yjbanov): handle import "..." show/hide ...
-      buf.write("import 'package:angular2/bootstrap_static.dart';");
+      buf.write("import '$BOOTSTRAP_STATIC_URI';");
     } else {
       // leave it as is
       buf.write(_rewriter._code.substring(_currentIndex, node.end));

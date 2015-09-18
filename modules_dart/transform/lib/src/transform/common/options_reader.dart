@@ -11,9 +11,6 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
   var entryPoints = _readFileList(config, ENTRY_POINT_PARAM);
   var initReflector =
       _readBool(config, INIT_REFLECTOR_PARAM, defaultValue: true);
-  var inlineViews = _readBool(config, INLINE_VIEWS_PARAM, defaultValue: true);
-  var generateChangeDetectors =
-      _readBool(config, GENERATE_CHANGE_DETECTORS_PARAM, defaultValue: true);
   var reflectPropertiesAsAttributes =
       _readBool(config, REFLECT_PROPERTIES_AS_ATTRIBUTES, defaultValue: false);
   var formatCode = _readBool(config, FORMAT_CODE_PARAM, defaultValue: false);
@@ -31,17 +28,13 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
       mirrorMode = MirrorMode.none;
       break;
   }
-  var optimizationPhases = _readInt(config, OPTIMIZATION_PHASES_PARAM,
-      defaultValue: DEFAULT_OPTIMIZATION_PHASES);
   return new TransformerOptions(entryPoints,
       modeName: settings.mode.name,
       mirrorMode: mirrorMode,
       initReflector: initReflector,
-      inlineViews: inlineViews,
       customAnnotationDescriptors: _readCustomAnnotations(config),
-      optimizationPhases: optimizationPhases,
-      generateChangeDetectors: generateChangeDetectors,
       reflectPropertiesAsAttributes: reflectPropertiesAsAttributes,
+      inlineViews: _readBool(config, INLINE_VIEWS_PARAM, defaultValue: false),
       formatCode: formatCode);
 }
 
@@ -71,18 +64,6 @@ List<String> _readFileList(Map config, String paramName) {
     print('Invalid value for "$paramName" in the Angular 2 transformer.');
   }
   return files;
-}
-
-int _readInt(Map config, String paramName, {int defaultValue: null}) {
-  if (!config.containsKey(paramName)) return defaultValue;
-  var value = config[paramName];
-  if (value is String) {
-    value = int.parse(value);
-  }
-  if (value is! int) {
-    throw new ArgumentError.value(value, paramName, 'Expected an integer');
-  }
-  return value;
 }
 
 /// Parse the [CUSTOM_ANNOTATIONS_PARAM] options out of the transformer into
@@ -132,8 +113,8 @@ const CUSTOM_ANNOTATIONS_ERROR = '''
           superClass: ...''';
 
 void _warnDeprecated(Map config) {
-  if (config.containsKey(REFLECTION_ENTRY_POINT_PARAM)) {
-    print('${REFLECTION_ENTRY_POINT_PARAM} is no longer necessary for '
+  if (config.containsKey(GENERATE_CHANGE_DETECTORS_PARAM)) {
+    print('${GENERATE_CHANGE_DETECTORS_PARAM} is no longer necessary for '
         'Angular 2 apps. Please remove it from your pubspec.');
   }
 }

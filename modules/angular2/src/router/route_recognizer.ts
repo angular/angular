@@ -9,13 +9,7 @@ import {
   Type
 } from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
-import {
-  Map,
-  MapWrapper,
-  ListWrapper,
-  StringMap,
-  StringMapWrapper
-} from 'angular2/src/core/facade/collection';
+import {Map, MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {PathRecognizer, PathMatch} from './path_recognizer';
 import {Route, AsyncRoute, AuxRoute, Redirect, RouteDefinition} from './route_config_impl';
@@ -31,9 +25,9 @@ import {ComponentInstruction} from './instruction';
  * components.
  */
 export class RouteRecognizer {
-  names: Map<string, PathRecognizer> = new Map();
+  names = new Map<string, PathRecognizer>();
 
-  auxRoutes: Map<string, PathRecognizer> = new Map();
+  auxRoutes = new Map<string, PathRecognizer>();
 
   // TODO: optimize this into a trie
   matchers: PathRecognizer[] = [];
@@ -44,10 +38,10 @@ export class RouteRecognizer {
   config(config: RouteDefinition): boolean {
     var handler;
 
-    if (isPresent(config.as) && config.as[0].toUpperCase() != config.as[0]) {
-      var suggestedAlias = config.as[0].toUpperCase() + config.as.substring(1);
+    if (isPresent(config.name) && config.name[0].toUpperCase() != config.name[0]) {
+      var suggestedName = config.name[0].toUpperCase() + config.name.substring(1);
       throw new BaseException(
-          `Route '${config.path}' with alias '${config.as}' does not begin with an uppercase letter. Route aliases should be CamelCase like '${suggestedAlias}'.`);
+          `Route "${config.path}" with name "${config.name}" does not begin with an uppercase letter. Route names should be CamelCase like "${suggestedName}".`);
     }
 
     if (config instanceof AuxRoute) {
@@ -78,8 +72,8 @@ export class RouteRecognizer {
     });
 
     this.matchers.push(recognizer);
-    if (isPresent(config.as)) {
-      this.names.set(config.as, recognizer);
+    if (isPresent(config.name)) {
+      this.names.set(config.name, recognizer);
     }
     return recognizer.terminal;
   }
@@ -105,6 +99,7 @@ export class RouteRecognizer {
     return solutions;
   }
 
+  /** @internal */
   _redirect(urlParse: Url): Url {
     for (var i = 0; i < this.redirects.length; i += 1) {
       let redirector = this.redirects[i];

@@ -1,6 +1,7 @@
 library angular2.test.transform.common.annotation_matcher_test;
 
 import 'package:angular2/src/core/render/api.dart';
+import 'package:angular2/src/core/compiler/directive_metadata.dart';
 import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:guinness/guinness.dart';
 
@@ -8,10 +9,10 @@ main() => allTests();
 
 void allTests() {
   var mockData = [
-    new RenderDirectiveMetadata(id: 'm1'),
-    new RenderDirectiveMetadata(id: 'm2'),
-    new RenderDirectiveMetadata(id: 'm3'),
-    new RenderDirectiveMetadata(id: 'm4')
+    CompileDirectiveMetadata.create(type: new CompileTypeMetadata(name: 'N1')),
+    CompileDirectiveMetadata.create(type: new CompileTypeMetadata(name: 'N2')),
+    CompileDirectiveMetadata.create(type: new CompileTypeMetadata(name: 'N3')),
+    CompileDirectiveMetadata.create(type: new CompileTypeMetadata(name: 'N4'))
   ];
 
   it('should allow empty data.', () {
@@ -92,7 +93,7 @@ _checkSimilar(NgMeta a, NgMeta b) {
     expect(b.types).toContain(k);
     var at = a.types[k];
     var bt = b.types[k];
-    expect(at.id).toEqual(bt.id);
+    expect(at.type.name).toEqual(bt.type.name);
   }
   for (var k in a.aliases.keys) {
     expect(b.aliases).toContain(k);

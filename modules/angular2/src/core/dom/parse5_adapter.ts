@@ -1,11 +1,7 @@
-var parse5 = require('parse5');
+var parse5 = require('parse5/index');
 var parser = new parse5.Parser(parse5.TreeAdapters.htmlparser2);
 var serializer = new parse5.Serializer(parse5.TreeAdapters.htmlparser2);
 var treeAdapter = parser.treeAdapter;
-
-var cssParse = require('css').parse;
-
-var url = require('url');
 
 import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {DomAdapter, setRootDomAdapter} from './dom_adapter';
@@ -13,13 +9,15 @@ import {
   isPresent,
   isBlank,
   global,
+  Type,
   setValueOnPath,
   DateWrapper
 } from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
-import {SelectorMatcher, CssSelector} from 'angular2/src/core/render/dom/compiler/selector';
+import {SelectorMatcher, CssSelector} from 'angular2/src/core/compiler/selector';
+import {XHR} from 'angular2/src/core/compiler/xhr';
 
-var _attrToPropMap = {
+var _attrToPropMap: {[key: string]: string} = {
   'class': 'className',
   'innerHtml': 'innerHTML',
   'readonly': 'readOnly',
@@ -62,6 +60,8 @@ export class Parse5DomAdapter extends DomAdapter {
   logGroup(error) { console.error(error); }
 
   logGroupEnd() {}
+
+  getXHR(): Type { return XHR; }
 
   get attrToPropMap() { return _attrToPropMap; }
 
@@ -117,9 +117,9 @@ export class Parse5DomAdapter extends DomAdapter {
     return result;
   }
   on(el, evt, listener) {
-    var listenersMap: StringMap<any, any> = el._eventListenersMap;
+    var listenersMap: {[k: /*any*/ string]: any} = el._eventListenersMap;
     if (isBlank(listenersMap)) {
-      var listenersMap: StringMap<any, any> = StringMapWrapper.create();
+      var listenersMap: {[k: /*any*/ string]: any} = StringMapWrapper.create();
       el._eventListenersMap = listenersMap;
     }
     var listeners = StringMapWrapper.get(listenersMap, evt);
@@ -224,9 +224,7 @@ export class Parse5DomAdapter extends DomAdapter {
     this.remove(node);
     treeAdapter.insertBefore(el.parent, node, el);
   }
-  insertAllBefore(el, nodes) {
-    ListWrapper.forEach(nodes, (n) => { this.insertBefore(el, n); });
-  }
+  insertAllBefore(el, nodes) { nodes.forEach(n => this.insertBefore(el, n)); }
   insertAfter(el, node) {
     if (el.nextSibling) {
       this.insertBefore(el.nextSibling, node);
@@ -276,6 +274,7 @@ export class Parse5DomAdapter extends DomAdapter {
   createElement(tagName): HTMLElement {
     return treeAdapter.createElement(tagName, 'http://www.w3.org/1999/xhtml', []);
   }
+  createElementNS(ns, tagName): HTMLElement { throw 'not implemented'; }
   createTextNode(text: string): Text {
     var t = <any>this.createComment(text);
     t.type = 'text';
@@ -358,7 +357,7 @@ export class Parse5DomAdapter extends DomAdapter {
     var index = classList.indexOf(classname);
     if (index == -1) {
       classList.push(classname);
-      element.attribs["class"] = element.className = ListWrapper.join(classList, " ");
+      element.attribs["class"] = element.className = classList.join(" ");
     }
   }
   removeClass(element, classname: string) {
@@ -366,12 +365,13 @@ export class Parse5DomAdapter extends DomAdapter {
     var index = classList.indexOf(classname);
     if (index > -1) {
       classList.splice(index, 1);
-      element.attribs["class"] = element.className = ListWrapper.join(classList, " ");
+      element.attribs["class"] = element.className = classList.join(" ");
     }
   }
   hasClass(element, classname: string): boolean {
     return ListWrapper.contains(this.classList(element), classname);
   }
+  /** @internal */
   _readStyleAttribute(element) {
     var styleMap = {};
     var attributes = element.attribs;
@@ -387,6 +387,7 @@ export class Parse5DomAdapter extends DomAdapter {
     }
     return styleMap;
   }
+  /** @internal */
   _writeStyleAttribute(element, styleMap) {
     var styleAttrValue = "";
     for (var key in styleMap) {
@@ -409,7 +410,7 @@ export class Parse5DomAdapter extends DomAdapter {
   }
   tagName(element): string { return element.tagName == "style" ? "STYLE" : element.tagName; }
   attributeMap(element): Map<string, string> {
-    var res = new Map();
+    var res = new Map<string, string>();
     var elAttrs = treeAdapter.getAttrList(element);
     for (var i = 0; i < elAttrs.length; i++) {
       var attrib = elAttrs[i];
@@ -433,6 +434,7 @@ export class Parse5DomAdapter extends DomAdapter {
       }
     }
   }
+  setAttributeNS(element, ns: string, attribute: string, value: string) { throw 'not implemented'; }
   removeAttribute(element, attribute: string) {
     if (attribute) {
       StringMapWrapper.delete(element.attribs, attribute);
@@ -470,31 +472,20 @@ export class Parse5DomAdapter extends DomAdapter {
   isShadowRoot(node): boolean { return this.getShadowRoot(node) == node; }
   importIntoDoc(node): any { return this.clone(node); }
   adoptNode(node): any { return node; }
-  isPageRule(rule): boolean {
-    return rule.type === 6;  // CSSRule.PAGE_RULE
-  }
-  isStyleRule(rule): boolean {
-    return rule.type === 1;  // CSSRule.MEDIA_RULE
-  }
-  isMediaRule(rule): boolean {
-    return rule.type === 4;  // CSSRule.MEDIA_RULE
-  }
-  isKeyframesRule(rule): boolean {
-    return rule.type === 7;  // CSSRule.KEYFRAMES_RULE
-  }
   getHref(el): string { return el.href; }
   resolveAndSetHref(el, baseUrl: string, href: string) {
     if (href == null) {
       el.href = baseUrl;
     } else {
-      el.href = url.resolve(baseUrl, href);
+      el.href = baseUrl + '/../' + href;
     }
   }
+  /** @internal */
   _buildRules(parsedRules, css?) {
     var rules = [];
     for (var i = 0; i < parsedRules.length; i++) {
       var parsedRule = parsedRules[i];
-      var rule: StringMap<string, any> = StringMapWrapper.create();
+      var rule: {[key: string]: any} = StringMapWrapper.create();
       StringMapWrapper.set(rule, "cssText", css);
       StringMapWrapper.set(rule, "style", {content: "", cssText: ""});
       if (parsedRule.type == "rule") {
@@ -523,15 +514,6 @@ export class Parse5DomAdapter extends DomAdapter {
         }
       }
       rules.push(rule);
-    }
-    return rules;
-  }
-  cssToRules(css: string): any[] {
-    css = css.replace(/url\(\'(.+)\'\)/g, 'url($1)');
-    var rules = [];
-    var parsedCSS = cssParse(css, {silent: true});
-    if (parsedCSS.stylesheet && parsedCSS.stylesheet.rules) {
-      rules = this._buildRules(parsedCSS.stylesheet.rules, css);
     }
     return rules;
   }

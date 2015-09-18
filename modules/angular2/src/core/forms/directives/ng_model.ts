@@ -3,18 +3,20 @@ import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {OnChanges} from 'angular2/lifecycle_hooks';
 import {SimpleChange} from 'angular2/src/core/change_detection';
 import {Query, Directive} from 'angular2/src/core/metadata';
-import {forwardRef, Binding, Inject, Optional} from 'angular2/src/core/di';
+import {forwardRef, Provider, Inject, Optional} from 'angular2/src/core/di';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
 import {Control} from '../model';
 import {Validators, NG_VALIDATORS} from '../validators';
-import {setUpControl, isPropertyUpdated} from './shared';
+import {setUpControl, isPropertyUpdated, selectValueAccessor, composeValidators} from './shared';
 
-const formControlBinding = CONST_EXPR(new Binding(NgControl, {toAlias: forwardRef(() => NgModel)}));
+const formControlBinding =
+    CONST_EXPR(new Provider(NgControl, {useExisting: forwardRef(() => NgModel)}));
 
 /**
  * Binds a domain model to a form control.
  *
- * # Usage
+ *##Usage
  *
  * `ng-model` binds an existing domain model to a form control. For a
  * two-way binding, use `[(ng-model)]` to ensure the model updates in
@@ -22,8 +24,8 @@ const formControlBinding = CONST_EXPR(new Binding(NgControl, {toAlias: forwardRe
  *
  * ### Example ([live demo](http://plnkr.co/edit/R3UX5qDaUqFO2VYR0UzH?p=preview))
  *  ```typescript
- * @Component({selector: "search-comp"})
- * @View({
+ * @Component({
+ *      selector: "search-comp",
  *      directives: [FORM_DIRECTIVES],
  *      template: `<input type='text' [(ng-model)]="searchQuery">`
  *      })
@@ -35,27 +37,32 @@ const formControlBinding = CONST_EXPR(new Binding(NgControl, {toAlias: forwardRe
 @Directive({
   selector: '[ng-model]:not([ng-control]):not([ng-form-control])',
   bindings: [formControlBinding],
-  properties: ['model: ngModel'],
-  events: ['update: ngModel'],
+  inputs: ['model: ngModel'],
+  outputs: ['update: ngModelChange'],
   exportAs: 'form'
 })
 export class NgModel extends NgControl implements OnChanges {
+  /** @internal */
   _control = new Control();
+  /** @internal */
   _added = false;
   update = new EventEmitter();
   model: any;
   viewModel: any;
-  validators: Function[];
+  private _validator: Function;
 
-  constructor(@Optional() @Inject(NG_VALIDATORS) validators: Function[]) {
+  constructor(@Optional() @Inject(NG_VALIDATORS) validators:
+                  /* Array<Validator|Function> */ any[],
+              @Optional() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[]) {
     super();
-    this.validators = validators;
+    this._validator = composeValidators(validators);
+    this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
-  onChanges(changes: StringMap<string, SimpleChange>) {
+  onChanges(changes: {[key: string]: SimpleChange}) {
     if (!this._added) {
       setUpControl(this._control, this);
-      this._control.updateValidity();
+      this._control.updateValueAndValidity({emitEvent: false});
       this._added = true;
     }
 
@@ -69,7 +76,7 @@ export class NgModel extends NgControl implements OnChanges {
 
   get path(): string[] { return []; }
 
-  get validator(): Function { return Validators.compose(this.validators); }
+  get validator(): Function { return this._validator; }
 
   viewToModelUpdate(newValue: any): void {
     this.viewModel = newValue;

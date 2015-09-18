@@ -1,7 +1,7 @@
 
 angular.module('ngComponentRouter').
     value('$route', null). // can be overloaded with ngRouteShim
-    factory('$router', ['$q', '$location', '$$directiveIntrospector', '$browser', '$rootScope', '$injector', '$route', routerFactory]);
+    factory('$router', ['$q', '$location', '$$directiveIntrospector', '$browser', '$rootScope', '$injector', routerFactory]);
 
 function routerFactory($q, $location, $$directiveIntrospector, $browser, $rootScope, $injector) {
 

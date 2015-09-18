@@ -13,11 +13,11 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/test_lib';
-import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {Component, View, NgFor, bind} from 'angular2/angular2';
+} from 'angular2/testing_internal';
+import {ListWrapper, StringMapWrapper, SetWrapper} from 'angular2/src/core/facade/collection';
+import {Component, View, NgFor, provide} from 'angular2/angular2';
 import {NgClass} from 'angular2/src/core/directives/ng_class';
-import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
+import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 
 function detectChangesAndCheck(rootTC: RootTestComponent, classes: string, elIndex: number = 0) {
   rootTC.detectChanges();
@@ -29,7 +29,7 @@ export function main() {
   describe('binding to CSS class list', () => {
 
     describe('viewpool support', () => {
-      beforeEachBindings(() => { return [bind(APP_VIEW_POOL_CAPACITY).toValue(100)]; });
+      beforeEachBindings(() => { return [provide(APP_VIEW_POOL_CAPACITY, {useValue: 100})]; });
 
       it('should clean up when the directive is destroyed',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
@@ -41,7 +41,7 @@ export function main() {
                  rootTC.detectChanges();
                  rootTC.debugElement.componentInstance.items = [['1']];
 
-                 detectChangesAndCheck(rootTC, 'ng-binding 1', 1);
+                 detectChangesAndCheck(rootTC, '1', 1);
 
                  async.done();
                });
@@ -58,7 +58,7 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'ng-binding foo');
+                 detectChangesAndCheck(rootTC, 'foo');
                  async.done();
                });
          }));
@@ -71,7 +71,7 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'ng-binding foo-bar fooBar');
+                 detectChangesAndCheck(rootTC, 'foo-bar fooBar');
                  async.done();
                });
          }));
@@ -83,10 +83,10 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'ng-binding foo');
+                 detectChangesAndCheck(rootTC, 'foo');
 
                  rootTC.debugElement.componentInstance.condition = false;
-                 detectChangesAndCheck(rootTC, 'ng-binding bar');
+                 detectChangesAndCheck(rootTC, 'bar');
 
                  async.done();
                });
@@ -99,16 +99,16 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'ng-binding foo');
+                 detectChangesAndCheck(rootTC, 'foo');
 
                  StringMapWrapper.set(rootTC.debugElement.componentInstance.objExpr, 'bar', true);
-                 detectChangesAndCheck(rootTC, 'ng-binding foo bar');
+                 detectChangesAndCheck(rootTC, 'foo bar');
 
                  StringMapWrapper.set(rootTC.debugElement.componentInstance.objExpr, 'baz', true);
-                 detectChangesAndCheck(rootTC, 'ng-binding foo bar baz');
+                 detectChangesAndCheck(rootTC, 'foo bar baz');
 
                  StringMapWrapper.delete(rootTC.debugElement.componentInstance.objExpr, 'bar');
-                 detectChangesAndCheck(rootTC, 'ng-binding foo baz');
+                 detectChangesAndCheck(rootTC, 'foo baz');
 
                  async.done();
                });
@@ -121,13 +121,13 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'ng-binding foo');
+                 detectChangesAndCheck(rootTC, 'foo');
 
                  rootTC.debugElement.componentInstance.objExpr = {foo: true, bar: true};
-                 detectChangesAndCheck(rootTC, 'ng-binding foo bar');
+                 detectChangesAndCheck(rootTC, 'foo bar');
 
                  rootTC.debugElement.componentInstance.objExpr = {baz: true};
-                 detectChangesAndCheck(rootTC, 'ng-binding baz');
+                 detectChangesAndCheck(rootTC, 'baz');
 
                  async.done();
                });
@@ -140,13 +140,13 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'ng-binding foo');
+                 detectChangesAndCheck(rootTC, 'foo');
 
                  rootTC.debugElement.componentInstance.objExpr = null;
-                 detectChangesAndCheck(rootTC, 'ng-binding');
+                 detectChangesAndCheck(rootTC, '');
 
                  rootTC.debugElement.componentInstance.objExpr = {'foo': false, 'bar': true};
-                 detectChangesAndCheck(rootTC, 'ng-binding bar');
+                 detectChangesAndCheck(rootTC, 'bar');
 
                  async.done();
                });
@@ -162,7 +162,7 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'ng-binding foo bar foo-bar fooBar');
+                 detectChangesAndCheck(rootTC, 'foo bar foo-bar fooBar');
                  async.done();
                });
          }));
@@ -175,16 +175,16 @@ export function main() {
                .createAsync(TestComponent)
                .then((rootTC) => {
                  var arrExpr: string[] = rootTC.debugElement.componentInstance.arrExpr;
-                 detectChangesAndCheck(rootTC, 'ng-binding foo');
+                 detectChangesAndCheck(rootTC, 'foo');
 
                  arrExpr.push('bar');
-                 detectChangesAndCheck(rootTC, 'ng-binding foo bar');
+                 detectChangesAndCheck(rootTC, 'foo bar');
 
                  arrExpr[1] = 'baz';
-                 detectChangesAndCheck(rootTC, 'ng-binding foo baz');
+                 detectChangesAndCheck(rootTC, 'foo baz');
 
                  ListWrapper.remove(rootTC.debugElement.componentInstance.arrExpr, 'baz');
-                 detectChangesAndCheck(rootTC, 'ng-binding foo');
+                 detectChangesAndCheck(rootTC, 'foo');
 
                  async.done();
                });
@@ -197,10 +197,10 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'ng-binding foo');
+                 detectChangesAndCheck(rootTC, 'foo');
 
                  rootTC.debugElement.componentInstance.arrExpr = ['bar'];
-                 detectChangesAndCheck(rootTC, 'ng-binding bar');
+                 detectChangesAndCheck(rootTC, 'bar');
 
                  async.done();
                });
@@ -213,10 +213,10 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'foo ng-binding');
+                 detectChangesAndCheck(rootTC, 'foo');
 
                  rootTC.debugElement.componentInstance.arrExpr = ['bar'];
-                 detectChangesAndCheck(rootTC, 'ng-binding foo bar');
+                 detectChangesAndCheck(rootTC, 'foo bar');
 
                  async.done();
                });
@@ -231,7 +231,7 @@ export function main() {
                .then((rootTC) => {
 
                  rootTC.debugElement.componentInstance.arrExpr = ['', '  '];
-                 detectChangesAndCheck(rootTC, 'foo ng-binding');
+                 detectChangesAndCheck(rootTC, 'foo');
 
                  async.done();
                });
@@ -246,13 +246,36 @@ export function main() {
                .then((rootTC) => {
 
                  rootTC.debugElement.componentInstance.arrExpr = [' bar  '];
-                 detectChangesAndCheck(rootTC, 'foo ng-binding bar');
+                 detectChangesAndCheck(rootTC, 'foo bar');
 
                  async.done();
                });
          }));
     });
 
+    describe('expressions evaluating to sets', () => {
+
+      it('should add and remove classes if the set instance changed',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = '<div [ng-class]="setExpr"></div>';
+
+           tcb.overrideTemplate(TestComponent, template)
+               .createAsync(TestComponent)
+               .then((rootTC) => {
+                 var setExpr = new Set<string>();
+                 setExpr.add('bar');
+                 rootTC.debugElement.componentInstance.setExpr = setExpr;
+                 detectChangesAndCheck(rootTC, 'bar');
+
+                 setExpr = new Set<string>();
+                 setExpr.add('baz');
+                 rootTC.debugElement.componentInstance.setExpr = setExpr;
+                 detectChangesAndCheck(rootTC, 'baz');
+
+                 async.done();
+               });
+         }));
+    });
     describe('expressions evaluating to string', () => {
 
       it('should add classes specified in a string literal',
@@ -262,7 +285,7 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'ng-binding foo bar foo-bar fooBar');
+                 detectChangesAndCheck(rootTC, 'foo bar foo-bar fooBar');
                  async.done();
                });
          }));
@@ -274,14 +297,14 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'ng-binding foo');
+                 detectChangesAndCheck(rootTC, 'foo');
 
                  rootTC.debugElement.componentInstance.strExpr = 'foo bar';
-                 detectChangesAndCheck(rootTC, 'ng-binding foo bar');
+                 detectChangesAndCheck(rootTC, 'foo bar');
 
 
                  rootTC.debugElement.componentInstance.strExpr = 'baz';
-                 detectChangesAndCheck(rootTC, 'ng-binding baz');
+                 detectChangesAndCheck(rootTC, 'baz');
 
                  async.done();
                });
@@ -294,10 +317,10 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'ng-binding foo');
+                 detectChangesAndCheck(rootTC, 'foo');
 
                  rootTC.debugElement.componentInstance.strExpr = null;
-                 detectChangesAndCheck(rootTC, 'ng-binding');
+                 detectChangesAndCheck(rootTC, '');
 
                  async.done();
                });
@@ -310,10 +333,10 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'foo ng-binding');
+                 detectChangesAndCheck(rootTC, 'foo');
 
                  rootTC.debugElement.componentInstance.strExpr = null;
-                 detectChangesAndCheck(rootTC, 'ng-binding foo');
+                 detectChangesAndCheck(rootTC, 'foo');
 
                  async.done();
                });
@@ -327,7 +350,7 @@ export function main() {
                .createAsync(TestComponent)
                .then((rootTC) => {
                  rootTC.debugElement.componentInstance.strExpr = '';
-                 detectChangesAndCheck(rootTC, 'foo ng-binding');
+                 detectChangesAndCheck(rootTC, 'foo');
 
                  async.done();
                });
@@ -345,13 +368,13 @@ export function main() {
                .createAsync(TestComponent)
                .then((rootTC) => {
                  StringMapWrapper.set(rootTC.debugElement.componentInstance.objExpr, 'bar', true);
-                 detectChangesAndCheck(rootTC, 'init foo ng-binding bar');
+                 detectChangesAndCheck(rootTC, 'init foo bar');
 
                  StringMapWrapper.set(rootTC.debugElement.componentInstance.objExpr, 'foo', false);
-                 detectChangesAndCheck(rootTC, 'init ng-binding bar');
+                 detectChangesAndCheck(rootTC, 'init bar');
 
                  rootTC.debugElement.componentInstance.objExpr = null;
-                 detectChangesAndCheck(rootTC, 'init ng-binding foo');
+                 detectChangesAndCheck(rootTC, 'init foo');
 
                  async.done();
                });
@@ -365,13 +388,13 @@ export function main() {
                .createAsync(TestComponent)
                .then((rootTC) => {
                  StringMapWrapper.set(rootTC.debugElement.componentInstance.objExpr, 'bar', true);
-                 detectChangesAndCheck(rootTC, `{{'init foo'}} ng-binding init foo bar`);
+                 detectChangesAndCheck(rootTC, `init foo bar`);
 
                  StringMapWrapper.set(rootTC.debugElement.componentInstance.objExpr, 'foo', false);
-                 detectChangesAndCheck(rootTC, `{{'init foo'}} ng-binding init bar`);
+                 detectChangesAndCheck(rootTC, `init bar`);
 
                  rootTC.debugElement.componentInstance.objExpr = null;
-                 detectChangesAndCheck(rootTC, `{{'init foo'}} ng-binding init foo`);
+                 detectChangesAndCheck(rootTC, `init foo`);
 
                  async.done();
                });
@@ -385,13 +408,13 @@ export function main() {
                .createAsync(TestComponent)
                .then((rootTC) => {
                  StringMapWrapper.set(rootTC.debugElement.componentInstance.objExpr, 'bar', true);
-                 detectChangesAndCheck(rootTC, `init ng-binding foo bar`);
+                 detectChangesAndCheck(rootTC, `init foo bar`);
 
                  StringMapWrapper.set(rootTC.debugElement.componentInstance.objExpr, 'foo', false);
-                 detectChangesAndCheck(rootTC, `init ng-binding bar`);
+                 detectChangesAndCheck(rootTC, `init bar`);
 
                  rootTC.debugElement.componentInstance.objExpr = null;
-                 detectChangesAndCheck(rootTC, `init ng-binding foo`);
+                 detectChangesAndCheck(rootTC, `init foo`);
 
                  async.done();
                });
@@ -405,16 +428,16 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'init foo ng-binding baz');
+                 detectChangesAndCheck(rootTC, 'init foo baz');
 
                  StringMapWrapper.set(rootTC.debugElement.componentInstance.objExpr, 'bar', true);
-                 detectChangesAndCheck(rootTC, 'init foo ng-binding baz bar');
+                 detectChangesAndCheck(rootTC, 'init foo baz bar');
 
                  StringMapWrapper.set(rootTC.debugElement.componentInstance.objExpr, 'foo', false);
-                 detectChangesAndCheck(rootTC, 'init ng-binding baz bar');
+                 detectChangesAndCheck(rootTC, 'init baz bar');
 
                  rootTC.debugElement.componentInstance.condition = false;
-                 detectChangesAndCheck(rootTC, 'init ng-binding bar');
+                 detectChangesAndCheck(rootTC, 'init bar');
 
                  async.done();
                });
@@ -427,16 +450,16 @@ export function main() {
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
                .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'init ng-binding foo');
+                 detectChangesAndCheck(rootTC, 'init foo');
 
                  StringMapWrapper.set(rootTC.debugElement.componentInstance.objExpr, 'bar', true);
-                 detectChangesAndCheck(rootTC, 'init ng-binding foo bar');
+                 detectChangesAndCheck(rootTC, 'init foo bar');
 
                  rootTC.debugElement.componentInstance.strExpr = 'baz';
-                 detectChangesAndCheck(rootTC, 'init ng-binding bar baz foo');
+                 detectChangesAndCheck(rootTC, 'init bar baz foo');
 
                  rootTC.debugElement.componentInstance.objExpr = null;
-                 detectChangesAndCheck(rootTC, 'init ng-binding baz');
+                 detectChangesAndCheck(rootTC, 'init baz');
 
                  async.done();
                });
@@ -452,6 +475,9 @@ class TestComponent {
   condition: boolean = true;
   items: any[];
   arrExpr: string[] = ['foo'];
+  setExpr: Set<string> = new Set<string>();
   objExpr = {'foo': true, 'bar': false};
   strExpr = 'foo';
+
+  constructor() { this.setExpr.add('foo'); }
 }

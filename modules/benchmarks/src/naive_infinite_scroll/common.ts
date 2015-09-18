@@ -87,7 +87,7 @@ export class RawEntity {
 
   remove(key: string) {
     if (!StringWrapper.contains(key, '.')) {
-      return MapWrapper.delete(this._data, key);
+      return this._data.delete(key);
     }
     var pieces = key.split('.');
     var last = ListWrapper.last(pieces);

@@ -1,1 +1,1 @@
-export {createUpgradeModule, UpgradeModule} from './src/upgrade_module';
+export {UpgradeAdapter} from './src/upgrade_adapter';

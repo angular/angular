@@ -1,4 +1,3 @@
-import {MapWrapper} from 'angular2/src/core/facade/collection';
 import {stringify, CONST, Type, isBlank} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {TypeLiteral} from './type_literal';
@@ -17,7 +16,7 @@ export {TypeLiteral} from './type_literal';
  * injector to store created objects in a more efficient way.
  *
  * `Key` should not be created directly. {@link Injector} creates keys automatically when resolving
- * bindings.
+ * providers.
  */
 export class Key {
   /**
@@ -46,10 +45,10 @@ export class Key {
 }
 
 /**
- * @private
+ * @internal
  */
 export class KeyRegistry {
-  private _allKeys: Map<Object, Key> = new Map();
+  private _allKeys = new Map<Object, Key>();
 
   get(token: Object): Key {
     if (token instanceof Key) return token;
@@ -70,7 +69,7 @@ export class KeyRegistry {
     return newKey;
   }
 
-  get numberOfKeys(): number { return MapWrapper.size(this._allKeys); }
+  get numberOfKeys(): number { return this._allKeys.size; }
 }
 
 var _globalKeyRegistry = new KeyRegistry();

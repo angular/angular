@@ -8,7 +8,7 @@ import {
   inject,
   beforeEach,
   SpyObject
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {UrlParser, Url} from 'angular2/src/router/url_parser';
 
@@ -27,6 +27,11 @@ export function main() {
     it('should remove the leading slash', () => {
       var url = urlParser.parse('/hello/there');
       expect(url.toString()).toEqual('hello/there');
+    });
+
+    it('should parse an empty URL', () => {
+      var url = urlParser.parse('');
+      expect(url.toString()).toEqual('');
     });
 
     it('should work with a single aux route', () => {
@@ -79,6 +84,11 @@ export function main() {
       expect(url.toString()).toEqual('hello/there;hi');
     });
 
+    it('should parse a URL with just a query param', () => {
+      var url = urlParser.parse('?name=bob');
+      expect(url.toString()).toEqual('?name=bob');
+    });
+
     it('should parse a key-value query param', () => {
       var url = urlParser.parse('hello/friend?name=bob');
       expect(url.toString()).toEqual('hello/friend?name=bob');
@@ -90,7 +100,7 @@ export function main() {
       expect(url.toString()).toEqual('hello/there?greeting=hi&whats=up');
     });
 
-    it('should parse a key-only matrix param', () => {
+    it('should parse a key-only query param', () => {
       var url = urlParser.parse('hello/there?hi');
       expect(url.toString()).toEqual('hello/there?hi');
     });

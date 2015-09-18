@@ -11,11 +11,11 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 
-import {Component, View} from 'angular2/angular2';
+import {Component, View, TemplateRef, ContentChild} from 'angular2/angular2';
 
 import {NgFor} from 'angular2/src/core/directives/ng_for';
 
@@ -309,6 +309,25 @@ export function main() {
              });
        }));
 
+    it('should allow to use a custom template',
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         tcb.overrideTemplate(
+                TestComponent,
+                '<ul><template ng-for [ng-for-of]="items" [ng-for-template]="contentTpl"></template></ul>')
+             .overrideTemplate(
+                 ComponentUsingTestComponent,
+                 '<test-cmp><li template="#item #i=index">{{i}}: {{item}};</li></test-cmp>')
+             .createAsync(ComponentUsingTestComponent)
+             .then((rootTC) => {
+               var testComponent = rootTC.debugElement.componentViewChildren[0];
+               testComponent.componentInstance.items = ['a', 'b', 'c'];
+               rootTC.detectChanges();
+               expect(testComponent.nativeElement).toHaveText('0: a;1: b;2: c;');
+
+               async.done();
+             });
+       }));
+
   });
 }
 
@@ -319,6 +338,14 @@ class Foo {
 @Component({selector: 'test-cmp'})
 @View({directives: [NgFor]})
 class TestComponent {
+  @ContentChild(TemplateRef) contentTpl: TemplateRef;
+  items: any;
+  constructor() { this.items = [1, 2]; }
+}
+
+@Component({selector: 'outer-cmp'})
+@View({directives: [TestComponent]})
+class ComponentUsingTestComponent {
   items: any;
   constructor() { this.items = [1, 2]; }
 }

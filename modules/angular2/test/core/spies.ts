@@ -1,50 +1,40 @@
 import {
-  ChangeDetection,
   ChangeDetector,
   ChangeDetectorRef,
   ProtoChangeDetector,
   DynamicChangeDetector
 } from 'angular2/src/core/change_detection/change_detection';
 
-import {RenderCompiler, Renderer, RenderEventDispatcher} from 'angular2/src/core/render/api';
-import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
+import {Renderer, RenderEventDispatcher} from 'angular2/src/core/render/api';
+import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 
-import {AppView} from 'angular2/src/core/compiler/view';
-import {ElementRef} from 'angular2/src/core/compiler/element_ref';
-import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
-import {AppViewPool} from 'angular2/src/core/compiler/view_pool';
-import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
+import {AppView} from 'angular2/src/core/linker/view';
+import {ElementRef} from 'angular2/src/core/linker/element_ref';
+import {AppViewManager} from 'angular2/src/core/linker/view_manager';
+import {AppViewPool} from 'angular2/src/core/linker/view_pool';
+import {AppViewListener} from 'angular2/src/core/linker/view_listener';
+import {ProtoViewFactory} from 'angular2/src/core/linker/proto_view_factory';
 import {DomAdapter} from 'angular2/src/core/dom/dom_adapter';
 import {ClientMessageBroker} from 'angular2/src/web_workers/shared/client_message_broker';
-import {XHR} from 'angular2/src/core/render/xhr';
+import {XHR} from 'angular2/src/core/compiler/xhr';
 
 import {
   ElementInjector,
   PreBuiltObjects,
   ProtoElementInjector
-} from 'angular2/src/core/compiler/element_injector';
+} from 'angular2/src/core/linker/element_injector';
 
-import {SpyObject, proxy} from 'angular2/test_lib';
+import {SpyObject, proxy} from 'angular2/testing_internal';
 
 export class SpyDependencyProvider extends SpyObject {}
-
-export class SpyChangeDetection extends SpyObject {
-  constructor() { super(ChangeDetection); }
-}
 
 export class SpyChangeDetector extends SpyObject {
   constructor() { super(DynamicChangeDetector); }
 }
 
-export class SpyProtoChangeDetector extends SpyObject {
-  constructor() { super(DynamicChangeDetector); }
-}
+export class SpyChangeDispatcher extends SpyObject {}
 
 export class SpyIterableDifferFactory extends SpyObject {}
-
-export class SpyRenderCompiler extends SpyObject {
-  constructor() { super(RenderCompiler); }
-}
 
 export class SpyDirectiveResolver extends SpyObject {
   constructor() { super(DirectiveResolver); }
@@ -63,7 +53,21 @@ export class SpyAppViewManager extends SpyObject {
 }
 
 export class SpyRenderer extends SpyObject {
-  constructor() { super(Renderer); }
+  constructor() {
+    // Note: Renderer is an abstract class,
+    // so we can't generates spy functions automatically
+    // by inspecting the prototype...
+    super(Renderer);
+    this.spy('setEventDispatcher');
+    this.spy('destroyView');
+    this.spy('createView');
+    this.spy('createProtoView');
+    this.spy('hydrateView');
+    this.spy('dehydrateView');
+    this.spy('attachFragmentAfterElement');
+    this.spy('attachFragmentAfterFragment');
+    this.spy('detachFragment');
+  }
 }
 
 export class SpyAppViewPool extends SpyObject {
@@ -72,6 +76,10 @@ export class SpyAppViewPool extends SpyObject {
 
 export class SpyAppViewListener extends SpyObject {
   constructor() { super(AppViewListener); }
+}
+
+export class SpyProtoViewFactory extends SpyObject {
+  constructor() { super(ProtoViewFactory); }
 }
 
 export class SpyProtoElementInjector extends SpyObject {
@@ -103,3 +111,7 @@ export class SpyRenderEventDispatcher extends SpyObject {
     this.spy('dispatchRenderEvent');
   }
 }
+
+export class SpyNgControl extends SpyObject {}
+
+export class SpyValueAccessor extends SpyObject {}

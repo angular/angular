@@ -3,35 +3,66 @@ import {
   KeyValueDiffer,
   KeyValueDiffers,
 } from 'angular2/src/core/change_detection';
-import {ElementRef} from 'angular2/src/core/compiler';
+import {ElementRef} from 'angular2/src/core/linker';
 import {Directive} from 'angular2/src/core/metadata';
 import {Renderer} from 'angular2/src/core/render';
 import {isPresent, isBlank, print} from 'angular2/src/core/facade/lang';
 
 /**
- * Adds or removes styles based on an {expression}.
+ * The `NgStyle` directive changes styles based on a result of expression evaluation.
  *
- * When the expression assigned to `ng-style` evaluates to an object, the corresponding element
- * styles are updated. Style names to update are taken from the object keys and values - from the
- * corresponding object values.
+ * An expression assigned to the `ng-style` property must evaluate to an object and the
+ * corresponding element styles are updated based on changes to this object. Style names to update
+ * are taken from the object's keys, and values - from the corresponding object's values.
  *
- * # Example:
+ *##Syntax
+ *
+ * - `<div [ng-style]="{'font-style': style}"></div>`
+ * - `<div [ng-style]="styleExp"></div>` - here the `styleExp` must evaluate to an object
+ *
+ * ### Example ([live demo](http://plnkr.co/edit/YamGS6GkUh9GqWNQhCyM?p=preview)):
  *
  * ```
- * <div [ng-style]="{'text-align': alignExp}"></div>
+ * import {Component, NgStyle} from 'angular2/angular2';
+ *
+ * @Component({
+ *  selector: 'ng-style-example',
+ *  template: `
+ *    <h1 [ng-style]="{'font-style': style, 'font-size': size, 'font-weight': weight}">
+ *      Change style of this text!
+ *    </h1>
+ *
+ *    <hr>
+ *
+ *    <label>Italic: <input type="checkbox" (change)="changeStyle($event)"></label>
+ *    <label>Bold: <input type="checkbox" (change)="changeWeight($event)"></label>
+ *    <label>Size: <input type="text" [value]="size" (change)="size = $event.target.value"></label>
+ *  `,
+ *  directives: [NgStyle]
+ * })
+ * export class NgStyleExample {
+ *    style = 'normal';
+ *    weight = 'normal';
+ *    size = '20px';
+ *
+ *    changeStyle($event: any) {
+ *      this.style = $event.target.checked ? 'italic' : 'normal';
+ *    }
+ *
+ *    changeWeight($event: any) {
+ *      this.weight = $event.target.checked ? 'bold' : 'normal';
+ *    }
+ * }
  * ```
  *
- * In the above example the `text-align` style will be updated based on the `alignExp` value
- * changes.
- *
- * # Syntax
- *
- * - `<div [ng-style]="{'text-align': alignExp}"></div>`
- * - `<div [ng-style]="styleExp"></div>`
+ * In this example the `font-style`, `font-size` and `font-weight` styles will be updated
+ * based on the `style` property's value changes.
  */
-@Directive({selector: '[ng-style]', properties: ['rawStyle: ng-style']})
+@Directive({selector: '[ng-style]', inputs: ['rawStyle: ng-style']})
 export class NgStyle implements DoCheck {
+  /** @internal */
   _rawStyle;
+  /** @internal */
   _differ: KeyValueDiffer;
 
   constructor(private _differs: KeyValueDiffers, private _ngEl: ElementRef,

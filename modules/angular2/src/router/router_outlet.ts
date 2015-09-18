@@ -3,13 +3,19 @@ import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
-import {Directive, Attribute} from 'angular2/src/core/metadata';
-import {DynamicComponentLoader, ComponentRef, ElementRef} from 'angular2/src/core/compiler';
-import {Injector, bind, Dependency} from 'angular2/src/core/di';
+import {
+  Directive,
+  Attribute,
+  DynamicComponentLoader,
+  ComponentRef,
+  ElementRef,
+  Injector,
+  provide,
+  Dependency
+} from 'angular2/angular2';
 
 import * as routerMod from './router';
-import {ComponentInstruction, RouteParams} from './instruction';
-import {ROUTE_DATA} from './route_data';
+import {ComponentInstruction, RouteParams, RouteData} from './instruction';
 import * as hookMod from './lifecycle_annotations';
 import {hasLifecycleHook} from './route_lifecycle_reflector';
 
@@ -27,13 +33,9 @@ let _resolveToTrue = PromiseWrapper.resolve(true);
 @Directive({selector: 'router-outlet'})
 export class RouterOutlet {
   name: string = null;
-
   private _componentRef: ComponentRef = null;
   private _currentInstruction: ComponentInstruction = null;
 
-  /**
-   * @private
-   */
   constructor(private _elementRef: ElementRef, private _loader: DynamicComponentLoader,
               private _parentRouter: routerMod.Router, @Attribute('name') nameAttr: string) {
     if (isPresent(nameAttr)) {
@@ -54,13 +56,12 @@ export class RouterOutlet {
     var componentType = nextInstruction.componentType;
     var childRouter = this._parentRouter.childRouter(componentType);
 
-    var bindings = Injector.resolve([
-      bind(ROUTE_DATA)
-          .toValue(nextInstruction.routeData()),
-      bind(RouteParams).toValue(new RouteParams(nextInstruction.params)),
-      bind(routerMod.Router).toValue(childRouter)
+    var providers = Injector.resolve([
+      provide(RouteData, {useValue: nextInstruction.routeData}),
+      provide(RouteParams, {useValue: new RouteParams(nextInstruction.params)}),
+      provide(routerMod.Router, {useValue: childRouter})
     ]);
-    return this._loader.loadNextToLocation(componentType, this._elementRef, bindings)
+    return this._loader.loadNextToLocation(componentType, this._elementRef, providers)
         .then((componentRef) => {
           this._componentRef = componentRef;
           if (hasLifecycleHook(hookMod.onActivate, componentType)) {
@@ -88,8 +89,8 @@ export class RouterOutlet {
   }
 
   /**
-   * Called by the {@link Router} when an outlet reuses a component across navigations.
-   * This method in turn is responsible for calling the `onReuse` hook of its child.
+   * Called by the {@link Router} when an outlet disposes of a component's contents.
+   * This method in turn is responsible for calling the `onDeactivate` hook of its child.
    */
   deactivate(nextInstruction: ComponentInstruction): Promise<any> {
     var next = _resolveToTrue;

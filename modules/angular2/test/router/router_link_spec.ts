@@ -12,11 +12,11 @@ import {
   it,
   xit,
   TestComponentBuilder
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {SpyRouter, SpyLocation} from './spies';
 
-import {bind, Component, View} from 'angular2/core';
+import {provide, Component, View} from 'angular2/core';
 import {By} from 'angular2/src/core/debug';
 
 import {
@@ -32,16 +32,22 @@ import {
 } from 'angular2/router';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {ComponentInstruction_} from 'angular2/src/router/instruction';
+import {PathRecognizer} from 'angular2/src/router/path_recognizer';
+import {SyncRouteHandler} from 'angular2/src/router/sync_route_handler';
 
-var dummyInstruction = new Instruction(new ComponentInstruction('detail', [], null), null, {});
+let dummyPathRecognizer = new PathRecognizer('', new SyncRouteHandler(null));
+let dummyInstruction =
+    new Instruction(new ComponentInstruction_('detail', [], dummyPathRecognizer), null, {});
 
 export function main() {
   describe('router-link directive', function() {
     var tcb: TestComponentBuilder;
 
-    beforeEachBindings(
-        () =>
-            [bind(Location).toValue(makeDummyLocation()), bind(Router).toValue(makeDummyRouter())]);
+    beforeEachBindings(() => [
+      provide(Location, {useValue: makeDummyLocation()}),
+      provide(Router, {useValue: makeDummyRouter()})
+    ]);
 
     beforeEach(inject([TestComponentBuilder], (tcBuilder) => { tcb = tcBuilder; }));
 
@@ -51,7 +57,7 @@ export function main() {
              .then((testComponent) => {
                testComponent.detectChanges();
                let anchorElement = testComponent.debugElement.query(By.css('a')).nativeElement;
-               expect(DOM.getAttribute(anchorElement, 'href')).toEqual('/detail');
+               expect(DOM.getAttribute(anchorElement, 'href')).toEqual('detail');
                async.done();
              });
        }));
@@ -97,7 +103,7 @@ class TestComponent {
 
 function makeDummyLocation() {
   var dl = new SpyLocation();
-  dl.spy('normalizeAbsolutely').andCallFake((url) => url);
+  dl.spy('prepareExternalUrl').andCallFake((url) => url);
   return dl;
 }
 

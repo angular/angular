@@ -41,7 +41,7 @@ export class RenderViewWithFragmentsStore {
     this._lookupByView.set(view.viewRef, startIndex);
     startIndex++;
 
-    ListWrapper.forEach(view.fragmentRefs, (ref) => {
+    view.fragmentRefs.forEach(ref => {
       this._lookupByIndex.set(startIndex, ref);
       this._lookupByView.set(ref, startIndex);
       startIndex++;
@@ -54,13 +54,13 @@ export class RenderViewWithFragmentsStore {
     this._removeRef(view);
     var fragments = this._viewFragments.get(view);
     fragments.forEach((fragment) => { this._removeRef(fragment); });
-    MapWrapper.delete(this._viewFragments, view);
+    this._viewFragments.delete(view);
   }
 
   private _removeRef(ref: RenderViewRef | RenderFragmentRef) {
     var index = this._lookupByView.get(ref);
-    MapWrapper.delete(this._lookupByView, ref);
-    MapWrapper.delete(this._lookupByIndex, index);
+    this._lookupByView.delete(ref);
+    this._lookupByIndex.delete(index);
   }
 
   serializeRenderViewRef(viewRef: RenderViewRef): number {
@@ -112,7 +112,7 @@ export class RenderViewWithFragmentsStore {
     }
   }
 
-  serializeViewWithFragments(view: RenderViewWithFragments): StringMap<string, any> {
+  serializeViewWithFragments(view: RenderViewWithFragments): {[key: string]: any} {
     if (view == null) {
       return null;
     }
@@ -120,24 +120,23 @@ export class RenderViewWithFragmentsStore {
     if (this._onWebWorker) {
       return {
         'viewRef': (<WebWorkerRenderViewRef>view.viewRef).serialize(),
-        'fragmentRefs': ListWrapper.map(view.fragmentRefs, (val) => val.serialize())
+        'fragmentRefs': view.fragmentRefs.map(val => (<any>val).serialize())
       };
     } else {
       return {
         'viewRef': this._lookupByView.get(view.viewRef),
-        'fragmentRefs': ListWrapper.map(view.fragmentRefs, (val) => this._lookupByView.get(val))
+        'fragmentRefs': view.fragmentRefs.map(val => this._lookupByView.get(val))
       };
     }
   }
 
-  deserializeViewWithFragments(obj: StringMap<string, any>): RenderViewWithFragments {
+  deserializeViewWithFragments(obj: {[key: string]: any}): RenderViewWithFragments {
     if (obj == null) {
       return null;
     }
 
     var viewRef = this.deserializeRenderViewRef(obj['viewRef']);
-    var fragments =
-        ListWrapper.map(obj['fragmentRefs'], (val) => this.deserializeRenderFragmentRef(val));
+    var fragments = (<any[]>obj['fragmentRefs']).map(val => this.deserializeRenderFragmentRef(val));
 
     return new RenderViewWithFragments(viewRef, fragments);
   }

@@ -1,6 +1,8 @@
 import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {isPresent, isFunction, StringWrapper} from 'angular2/src/core/facade/lang';
+import {isPresent, isFunction, StringWrapper, Type} from 'angular2/src/core/facade/lang';
 import {DomAdapter} from './dom_adapter';
+import {XHRImpl} from 'angular2/src/core/compiler/xhr_impl';
+
 
 /**
  * Provides DOM operations in any browser environment.
@@ -23,7 +25,7 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
           }
         }
       }
-      var transEndEventNames = {
+      var transEndEventNames: {[key: string]: string} = {
         WebkitTransition: 'webkitTransitionEnd',
         MozTransition: 'transitionend',
         OTransition: 'oTransitionEnd otransitionend',
@@ -39,32 +41,11 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
       this._transitionEnd = null;
     }
   }
+
+  getXHR(): Type { return XHRImpl; }
   getDistributedNodes(el: HTMLElement): Node[] { return (<any>el).getDistributedNodes(); }
   resolveAndSetHref(el: HTMLAnchorElement, baseUrl: string, href: string) {
     el.href = href == null ? baseUrl : baseUrl + '/../' + href;
-  }
-  cssToRules(css: string): any[] {
-    var style = this.createStyleElement(css);
-    this.appendChild(this.defaultDoc().head, style);
-    var rules = [];
-    if (isPresent(style.sheet)) {
-      // TODO(sorvell): Firefox throws when accessing the rules of a stylesheet
-      // with an @import
-      // https://bugzilla.mozilla.org/show_bug.cgi?id=625013
-      try {
-        var rawRules = (<any>style.sheet).cssRules;
-        rules = ListWrapper.createFixedSize(rawRules.length);
-        for (var i = 0; i < rawRules.length; i++) {
-          rules[i] = rawRules[i];
-        }
-      } catch (e) {
-        //
-      }
-    } else {
-      // console.warn('sheet not found', style);
-    }
-    this.remove(style);
-    return rules;
   }
   supportsDOMEvents(): boolean { return true; }
   supportsNativeShadowDOM(): boolean {

@@ -14,7 +14,7 @@ import {DependencyMetadata} from 'angular2/src/core/di/metadata';
  *
  * The directive can inject constant string literals of host element attributes.
  *
- * ## Example
+ * ### Example
  *
  * Suppose we have an `<input>` element and want to know its `type`.
  *
@@ -71,17 +71,14 @@ export class AttributeMetadata extends DependencyMetadata {
  * ```javascript
  * @Component({
  *   selector: 'pane',
- *   properties: ['title']
+ *   inputs: ['title']
  * })
- * @View(...)
  * class Pane {
  *   title:string;
  * }
  *
  * @Component({
- *   selector: 'tabs'
- * })
- * @View({
+ *  selector: 'tabs',
  *  template: `
  *    <ul>
  *      <li *ng-for="#pane of panes">{{pane.title}}</li>
@@ -105,11 +102,8 @@ export class AttributeMetadata extends DependencyMetadata {
  *   <div #findme>...</div>
  * </seeker>
  *
- * @Component({
- *   selector: 'foo'
- * })
- * @View(...)
- * class seeker {
+ * @Component({ selector: 'seeker' })
+ * class Seeker {
  *   constructor(@Query('findme') elList: QueryList<ElementRef>) {...}
  * }
  * ```
@@ -126,9 +120,8 @@ export class AttributeMetadata extends DependencyMetadata {
  * </seeker>
  *
  *  @Component({
- *   selector: 'foo'
+ *   selector: 'seeker'
  * })
- * @View(...)
  * class Seeker {
  *   constructor(@Query('findMe, findMeToo') elList: QueryList<ElementRef>) {...}
  * }
@@ -316,9 +309,10 @@ export class ViewQueryMetadata extends QueryMetadata {
  *
  * ```
  * @Component({
- *   selector: 'someDir'
+ *   selector: 'someDir',
+ *   templateUrl: 'someTemplate',
+ *   directives: [ItemDirective]
  * })
- * @View({templateUrl: 'someTemplate', directives: [ItemDirective]})
  * class SomeDir {
  *   @ViewChildren(ItemDirective) viewChildren: QueryList<ItemDirective>;
  *
@@ -342,9 +336,10 @@ export class ViewChildrenMetadata extends ViewQueryMetadata {
  *
  * ```
  * @Component({
- *   selector: 'someDir'
+ *   selector: 'someDir',
+ *   templateUrl: 'someTemplate',
+ *   directives: [ItemDirective]
  * })
- * @View({templateUrl: 'someTemplate', directives: [ItemDirective]})
  * class SomeDir {
  *   @ViewChild(ItemDirective) viewChild:ItemDirective;
  *

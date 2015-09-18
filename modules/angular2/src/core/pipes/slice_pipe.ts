@@ -16,7 +16,7 @@ import {Pipe} from '../metadata';
  *
  * The ending index of the subset to return is specified by the optional `end` parameter.
  *
- * # Usage
+ *##Usage
  *
  *     expression | slice:start[:end]
  *
@@ -44,13 +44,13 @@ import {Pipe} from '../metadata';
  * When operating on a [List], the returned list is always a copy even when all
  * the elements are being returned.
  *
- * # Examples
+ * ### Examples
  *
  * ## List Example
  *
  * Assuming `var collection = ['a', 'b', 'c', 'd']`, this `ng-for` directive:
  *
- *     <li *ng-for="var i in collection | slice:1:3">{{i}}</li>
+ *     <li *ng-for="var i of collection | slice:1:3">{{i}}</li>
  *
  * produces the following:
  *
@@ -67,7 +67,7 @@ import {Pipe} from '../metadata';
  *     {{ 'abcdefghij' | slice: 100 }}    // output is ''
  */
 
-@Pipe({name: 'slice'})
+@Pipe({name: 'slice', pure: false})
 @Injectable()
 export class SlicePipe implements PipeTransform {
   transform(value: any, args: any[] = null): any {

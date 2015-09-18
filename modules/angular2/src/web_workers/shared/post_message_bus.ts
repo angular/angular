@@ -5,7 +5,7 @@ import {
 } from "angular2/src/web_workers/shared/message_bus";
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {EventEmitter} from 'angular2/src/core/facade/async';
-import {StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {Injectable} from "angular2/src/core/di";
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
@@ -27,14 +27,14 @@ export class PostMessageBus implements MessageBus {
     this.sink.initChannel(channel, runInZone);
   }
 
-  from(channel: string): EventEmitter { return this.source.from(channel); }
+  from(channel: string): EventEmitter<any> { return this.source.from(channel); }
 
-  to(channel: string): EventEmitter { return this.sink.to(channel); }
+  to(channel: string): EventEmitter<any> { return this.sink.to(channel); }
 }
 
 export class PostMessageBusSink implements MessageBusSink {
   private _zone: NgZone;
-  private _channels: StringMap<string, _Channel> = StringMapWrapper.create();
+  private _channels: {[key: string]: _Channel} = StringMapWrapper.create();
   private _messageBuffer: Array<Object> = [];
 
   constructor(private _postMessageTarget: PostMessageTarget) {}
@@ -52,19 +52,17 @@ export class PostMessageBusSink implements MessageBusSink {
     var emitter = new EventEmitter();
     var channelInfo = new _Channel(emitter, runInZone);
     this._channels[channel] = channelInfo;
-    emitter.observer({
-      next: (data: Object) => {
-        var message = {channel: channel, message: data};
-        if (runInZone) {
-          this._messageBuffer.push(message);
-        } else {
-          this._sendMessages([message]);
-        }
+    emitter.subscribe((data: Object) => {
+      var message = {channel: channel, message: data};
+      if (runInZone) {
+        this._messageBuffer.push(message);
+      } else {
+        this._sendMessages([message]);
       }
     });
   }
 
-  to(channel: string): EventEmitter {
+  to(channel: string): EventEmitter<any> {
     if (StringMapWrapper.contains(this._channels, channel)) {
       return this._channels[channel].emitter;
     } else {
@@ -73,9 +71,10 @@ export class PostMessageBusSink implements MessageBusSink {
   }
 
   private _handleOnEventDone() {
-    // TODO: Send all buffered messages in one postMessage call
-    this._sendMessages(this._messageBuffer);
-    this._messageBuffer = [];
+    if (this._messageBuffer.length > 0) {
+      this._sendMessages(this._messageBuffer);
+      this._messageBuffer = [];
+    }
   }
 
   private _sendMessages(messages: Array<Object>) { this._postMessageTarget.postMessage(messages); }
@@ -83,7 +82,7 @@ export class PostMessageBusSink implements MessageBusSink {
 
 export class PostMessageBusSource implements MessageBusSource {
   private _zone: NgZone;
-  private _channels: StringMap<string, _Channel> = StringMapWrapper.create();
+  private _channels: {[key: string]: _Channel} = StringMapWrapper.create();
 
   constructor(eventTarget?: EventTarget) {
     if (eventTarget) {
@@ -106,7 +105,7 @@ export class PostMessageBusSource implements MessageBusSource {
     this._channels[channel] = channelInfo;
   }
 
-  from(channel: string): EventEmitter {
+  from(channel: string): EventEmitter<any> {
     if (StringMapWrapper.contains(this._channels, channel)) {
       return this._channels[channel].emitter;
     } else {
@@ -139,7 +138,7 @@ export class PostMessageBusSource implements MessageBusSource {
  * keeps track of if it should run in the zone.
  */
 class _Channel {
-  constructor(public emitter: EventEmitter, public runInZone: boolean) {}
+  constructor(public emitter: EventEmitter<any>, public runInZone: boolean) {}
 }
 
 // TODO(jteplitz602) Replace this with the definition in lib.webworker.d.ts(#3492)

@@ -1,4 +1,6 @@
-library examples.hello_world.index_common_dart.ng_deps.dart;
+library playground.hello_world.index_common_dart.ng_deps.dart;
+
+import 'hello.template.dart' as _templates;
 
 import 'hello.dart';
 import 'goodbye.dart' as prefix;
@@ -16,7 +18,8 @@ void initReflector(reflector) {
         new ReflectionInfo(const [
           const Component(selector: 'hello-app'),
           const View(
-              template: 'goodbye-app', directives: const [prefix.GoodbyeCmp])
+              template: 'goodbye-app', directives: const [prefix.GoodbyeCmp]),
+          _templates.HostHelloCmpTemplate
         ], const [
           const []
         ], () => new HelloCmp()));

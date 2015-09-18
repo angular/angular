@@ -8,9 +8,9 @@ import {
   NgIf,
   NgFor
 } from 'angular2/core';
-import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
+import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
-import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
+import {getIntParameter, bindAction} from 'angular2/src/testing/benchmark_util';
 
 var testList = null;
 
@@ -22,29 +22,29 @@ export function main() {
       .then((ref) => {
         var injector = ref.injector;
         var app: AppComponent = ref.hostComponent;
-        var lifeCycle = injector.get(LifeCycle);
+        var appRef = injector.get(ApplicationRef);
 
         bindAction('#reset', function() {
           app.reset();
-          lifeCycle.tick();
+          appRef.tick();
         });
 
         // Baseline (plain components)
         bindAction('#createPlainComponents', function() {
           app.createPlainComponents();
-          lifeCycle.tick();
+          appRef.tick();
         });
 
         // Components with decorators
         bindAction('#createComponentsWithDirectives', function() {
           app.createComponentsWithDirectives();
-          lifeCycle.tick();
+          appRef.tick();
         });
 
         // Components with decorators
         bindAction('#createDynamicComponents', function() {
           app.createDynamicComponents();
-          lifeCycle.tick();
+          appRef.tick();
         });
       });
 }

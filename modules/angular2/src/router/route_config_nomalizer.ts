@@ -13,9 +13,18 @@ export function normalizeRouteConfig(config: RouteDefinition): RouteDefinition {
     return <RouteDefinition>config;
   }
 
-  if ((!config.component) == (!config.redirectTo)) {
+  if ((+!!config.component) + (+!!config.redirectTo) + (+!!config.loader) != 1) {
     throw new BaseException(
         `Route config should contain exactly one "component", "loader", or "redirectTo" property.`);
+  }
+  if (config.as && config.name) {
+    throw new BaseException(`Route config should contain exactly one "as" or "name" property.`);
+  }
+  if (config.as) {
+    config.name = config.as;
+  }
+  if (config.loader) {
+    return new AsyncRoute({path: config.path, loader: config.loader, name: config.name});
   }
   if (config.component) {
     if (typeof config.component == 'object') {
@@ -24,11 +33,11 @@ export function normalizeRouteConfig(config: RouteDefinition): RouteDefinition {
         return new Route({
           path: config.path,
           component:<Type>componentDefinitionObject.constructor,
-          as: config.as
+          name: config.name
         });
       } else if (componentDefinitionObject.type == 'loader') {
         return new AsyncRoute(
-            {path: config.path, loader: componentDefinitionObject.loader, as: config.as});
+            {path: config.path, loader: componentDefinitionObject.loader, name: config.name});
       } else {
         throw new BaseException(
             `Invalid component type "${componentDefinitionObject.type}". Valid types are "constructor" and "loader".`);
@@ -37,7 +46,7 @@ export function normalizeRouteConfig(config: RouteDefinition): RouteDefinition {
     return new Route(<{
       path: string;
       component: Type;
-      as?: string
+      name?: string;
     }>config);
   }
 

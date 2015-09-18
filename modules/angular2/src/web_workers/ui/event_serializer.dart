@@ -77,7 +77,6 @@ Map<String, dynamic> serializeKeyboardEvent(dynamic e) {
   serialized['eventPhase'] = e.eventPhase;
   serialized['keyCode'] = e.keyCode;
   serialized['keyLocation'] = e.keyLocation;
-  serialized['layer'] = serializePoint(e.layer);
   serialized['location'] = e.location;
   serialized['repeat'] = e.repeat;
   serialized['shiftKey'] = e.shiftKey;

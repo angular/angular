@@ -3,24 +3,23 @@ import {StringWrapper, isPresent, CONST_EXPR} from 'angular2/src/core/facade/lan
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {isBlank} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
-import {OpaqueToken, Injectable, Optional, Inject} from 'angular2/src/core/di';
+import {OpaqueToken, Injectable, Optional, Inject} from 'angular2/angular2';
 
 /**
  * The `APP_BASE_HREF` token represents the base href to be used with the
  * {@link PathLocationStrategy}.
  *
- * If you're using {@link PathLocationStrategy}, you must provide a binding to a string
+ * If you're using {@link PathLocationStrategy}, you must provide a provider to a string
  * representing the URL prefix that should be preserved when generating and recognizing
  * URLs.
  *
- * ## Example
+ * ### Example
  *
  * ```
- * import {Component, View} from 'angular2/angular2';
- * import {ROUTER_DIRECTIVES, routerBindings, RouteConfig} from 'angular2/router';
+ * import {Component} from 'angular2/angular2';
+ * import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
  *
- * @Component({...})
- * @View({directives: [ROUTER_DIRECTIVES]})
+ * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([
  *  {...},
  * ])
@@ -29,9 +28,9 @@ import {OpaqueToken, Injectable, Optional, Inject} from 'angular2/src/core/di';
  * }
  *
  * bootstrap(AppCmp, [
- *   routerBindings(AppCmp),
+ *   ROUTER_PROVIDERS,
  *   PathLocationStrategy,
- *   bind(APP_BASE_HREF).toValue('/my/app')
+ *   provide(APP_BASE_HREF, {useValue: '/my/app'})
  * ]);
  * ```
  */
@@ -53,19 +52,18 @@ export const APP_BASE_HREF: OpaqueToken = CONST_EXPR(new OpaqueToken('appBaseHre
  * - `my/app/user/123` **is not** normalized
  * - `/my/app/user/123/` **is not** normalized
  *
- * ## Example
+ * ### Example
  *
  * ```
- * import {Component, View} from 'angular2/angular2';
+ * import {Component} from 'angular2/angular2';
  * import {
  *   ROUTER_DIRECTIVES,
- *   routerBindings,
+ *   ROUTER_PROVIDERS,
  *   RouteConfig,
  *   Location
  * } from 'angular2/router';
  *
- * @Component({...})
- * @View({directives: [ROUTER_DIRECTIVES]})
+ * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([
  *  {...},
  * ])
@@ -75,12 +73,14 @@ export const APP_BASE_HREF: OpaqueToken = CONST_EXPR(new OpaqueToken('appBaseHre
  *   }
  * }
  *
- * bootstrap(AppCmp, [routerBindings(AppCmp)]);
+ * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
  * ```
  */
 @Injectable()
 export class Location {
-  _subject: EventEmitter = new EventEmitter();
+  /** @internal */
+  _subject: EventEmitter<any> = new EventEmitter();
+  /** @internal */
   _baseHref: string;
 
   constructor(public platformStrategy: LocationStrategy,
@@ -89,7 +89,7 @@ export class Location {
 
     if (isBlank(browserBaseHref)) {
       throw new BaseException(
-          `No base href set. Either provide a binding to "appBaseHrefToken" or add a base element.`);
+          `No base href set. Either provide a provider for the APP_BASE_HREF token or add a base element to the document.`);
     }
 
     this._baseHref = stripTrailingSlash(stripIndexHtml(browserBaseHref));
@@ -103,31 +103,33 @@ export class Location {
   path(): string { return this.normalize(this.platformStrategy.path()); }
 
   /**
-   * Given a string representing a URL, returns the normalized URL path.
+   * Given a string representing a URL, returns the normalized URL path without leading or
+   * trailing slashes
    */
   normalize(url: string): string {
     return stripTrailingSlash(_stripBaseHref(this._baseHref, stripIndexHtml(url)));
   }
 
   /**
-   * Given a string representing a URL, returns the normalized URL path.
+   * Given a string representing a URL, returns the platform-specific external URL path.
    * If the given URL doesn't begin with a leading slash (`'/'`), this method adds one
-   * before normalizing.
+   * before normalizing. This method will also add a hash if `HashLocationStrategy` is
+   * used, or the `APP_BASE_HREF` if the `PathLocationStrategy` is in use.
    */
-  normalizeAbsolutely(url: string): string {
+  prepareExternalUrl(url: string): string {
     if (!url.startsWith('/')) {
       url = '/' + url;
     }
-    return stripTrailingSlash(_addBaseHref(this._baseHref, url));
+    return this.platformStrategy.prepareExternalUrl(
+        stripTrailingSlash(_addBaseHref(this._baseHref, url)));
   }
 
   /**
    * Changes the browsers URL to the normalized version of the given URL, and pushes a
    * new item onto the platform's history.
    */
-  go(url: string): void {
-    var finalUrl = this.normalizeAbsolutely(url);
-    this.platformStrategy.pushState(null, '', finalUrl);
+  go(path: string, query: string = ''): void {
+    this.platformStrategy.pushState(null, '', path, query);
   }
 
   /**
@@ -144,8 +146,8 @@ export class Location {
    * Subscribe to the platform's `popState` events.
    */
   subscribe(onNext: (value: any) => void, onThrow: (exception: any) => void = null,
-            onReturn: () => void = null): void {
-    ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);
+            onReturn: () => void = null): Object {
+    return ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);
   }
 }
 

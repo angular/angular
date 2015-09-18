@@ -9,13 +9,14 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {
   Runner,
   Sampler,
   SampleDescription,
   Validator,
   bind,
+  provide,
   Injector,
   Metric,
   Options,

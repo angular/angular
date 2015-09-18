@@ -8,7 +8,7 @@ import {
   inject,
   it,
   xit
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {enableDebugTools, disableDebugTools} from 'angular2/tools';
 import {SpyComponentRef, callNgProfilerTimeChangeDetection} from './spies';

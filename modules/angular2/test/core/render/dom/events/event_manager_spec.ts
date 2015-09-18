@@ -8,7 +8,7 @@ import {
   expect,
   beforeEach,
   el
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {
   EventManager,
   EventManagerPlugin,
@@ -95,20 +95,19 @@ export function main() {
 }
 
 class FakeEventManagerPlugin extends EventManagerPlugin {
-  _eventHandler: Map<string, Function> = new Map();
+  _eventHandler = new Map<string, Function>();
   constructor(public _supports: string[]) { super(); }
 
   supports(eventName: string): boolean { return ListWrapper.contains(this._supports, eventName); }
 
   addEventListener(element, eventName: string, handler: Function) {
     this._eventHandler.set(eventName, handler);
-    return () => { MapWrapper.delete(this._eventHandler, eventName) };
+    return () => { this._eventHandler.delete(eventName); };
   }
 }
 
 class FakeNgZone extends NgZone {
   constructor() { super({enableLongStackTrace: false}); }
-
   run(fn) { fn(); }
 
   runOutsideAngular(fn) { return fn(); }

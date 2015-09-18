@@ -1,4 +1,6 @@
-library examples.hello_world.index_common_dart.ng_deps.dart;
+library playground.hello_world.index_common_dart.ng_deps.dart;
+
+import 'goodbye.template.dart' as _templates;
 
 import 'goodbye.dart';
 import 'package:angular2/angular2.dart'
@@ -13,9 +15,9 @@ void initReflector(reflector) {
         GoodbyeCmp,
         new ReflectionInfo(const [
           const Component(selector: 'goodbye-app'),
-          const View(template: 'Goodbye {{name}}')
+          const View(template: 'Goodbye {{name}}'),
+          _templates.HostGoodbyeCmpTemplate
         ], const [
           const []
-        ], () => new GoodbyeCmp()))
-    ..registerGetters({'name': (o) => o.name});
+        ], () => new GoodbyeCmp()));
 }

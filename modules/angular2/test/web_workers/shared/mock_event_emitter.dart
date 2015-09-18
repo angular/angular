@@ -4,13 +4,14 @@ import 'dart:core';
 import 'dart:async';
 import "package:angular2/src/core/facade/async.dart";
 
-class MockEventEmitter extends EventEmitter {
+class MockEventEmitter<T> extends EventEmitter<T> {
   final controller = new StreamController.broadcast(sync: true);
 
   @override
   StreamSubscription listen(void onData(dynamic line),
       {void onError(Error error), void onDone(), bool cancelOnError}) {
-    return controller.stream.listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+    return controller.stream.listen(onData,
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
   @override

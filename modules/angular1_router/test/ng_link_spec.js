@@ -30,7 +30,7 @@ describe('ngLink', function () {
   it('should allow linking from the parent to the child', function () {
     $router.config([
       { path: '/a', component: 'oneCmp' },
-      { path: '/b', component: 'twoCmp', as: 'Two' }
+      { path: '/b', component: 'twoCmp', name: 'Two' }
     ]);
     compile('<a ng-link="[\'/Two\']">link</a> | outer { <div ng-outlet></div> }');
 
@@ -43,7 +43,7 @@ describe('ngLink', function () {
   it('should allow linking from the child and the parent', function () {
     $router.config([
       { path: '/a', component: 'oneCmp' },
-      { path: '/b', component: 'twoCmp', as: 'Two' }
+      { path: '/b', component: 'twoCmp', name: 'Two' }
     ]);
     compile('outer { <div ng-outlet></div> }');
 
@@ -59,7 +59,7 @@ describe('ngLink', function () {
 
     $router.config([
       { path: '/a', component: 'twoLinkCmp' },
-      { path: '/b/:param', component: 'twoCmp', as: 'Two' }
+      { path: '/b/:param', component: 'twoCmp', name: 'Two' }
     ]);
     compile('<div ng-outlet></div>');
 
@@ -74,7 +74,7 @@ describe('ngLink', function () {
     registerComponent('twoLinkCmp', '<div><a ng-link="[\'/Two\', {param: twoLinkCmp.number}]">{{twoLinkCmp.number}}</a></div>', function () {this.number = 'param'});
     $router.config([
       { path: '/a', component: 'twoLinkCmp' },
-      { path: '/b/:param', component: 'twoCmp', as: 'Two' }
+      { path: '/b/:param', component: 'twoCmp', name: 'Two' }
     ]);
     compile('<div ng-outlet></div>');
 
@@ -88,7 +88,7 @@ describe('ngLink', function () {
   it('should navigate on left-mouse click when a link url matches a route', function () {
     $router.config([
       { path: '/', component: 'oneCmp' },
-      { path: '/two', component: 'twoCmp', as: 'Two'}
+      { path: '/two', component: 'twoCmp', name: 'Two'}
     ]);
 
     compile('<a ng-link="[\'/Two\']">link</a> | <div ng-outlet></div>');
@@ -107,7 +107,7 @@ describe('ngLink', function () {
   it('should not navigate on non-left mouse click when a link url matches a route', inject(function ($router) {
     $router.config([
       { path: '/', component: 'oneCmp' },
-      { path: '/two', component: 'twoCmp', as: 'Two'}
+      { path: '/two', component: 'twoCmp', name: 'Two'}
     ]);
 
     compile('<a ng-link="[\'/Two\']">link</a> | <div ng-outlet></div>');
@@ -124,7 +124,7 @@ describe('ngLink', function () {
   it('should not navigate a link without an href', function () {
     $router.config([
       { path: '/', component: 'oneCmp' },
-      { path: '/two', component: 'twoCmp', as: 'Two'}
+      { path: '/two', component: 'twoCmp', name: 'Two'}
     ]);
     expect(function () {
       compile('<a>link</a>');

@@ -7,8 +7,10 @@ import 'package:angular2/src/core/reflection/reflection_capabilities.dart'
     show ReflectionCapabilities;
 import 'application_common.dart';
 
-import 'package:angular2/src/core/compiler/dynamic_component_loader.dart';
-export 'package:angular2/src/core/compiler/dynamic_component_loader.dart' show ComponentRef;
+import 'package:angular2/src/core/compiler/compiler.dart';
+import 'package:angular2/src/core/linker/dynamic_component_loader.dart';
+export 'package:angular2/src/core/linker/dynamic_component_loader.dart'
+    show ComponentRef;
 
 /// Starts an application from a root component. This implementation uses
 /// mirrors. Angular 2 transformer automatically replaces this method with a
@@ -17,7 +19,11 @@ export 'package:angular2/src/core/compiler/dynamic_component_loader.dart' show C
 ///
 /// See [commonBootstrap] for detailed documentation.
 Future<ComponentRef> bootstrap(Type appComponentType,
-    [List componentInjectableBindings]) {
+    [List componentInjectableProviders]) {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
-  return commonBootstrap(appComponentType, componentInjectableBindings);
+  var providers = [compilerProviders()];
+  if (componentInjectableProviders != null) {
+    providers.add(componentInjectableProviders);
+  }
+  return commonBootstrap(appComponentType, providers);
 }

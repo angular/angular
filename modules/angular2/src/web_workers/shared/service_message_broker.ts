@@ -10,20 +10,32 @@ import {
   ObservableWrapper
 } from 'angular2/src/core/facade/async';
 
-@Injectable()
-export class ServiceMessageBrokerFactory {
-  /**
-   * @private
-   */
-  constructor(private _messageBus: MessageBus, public _serializer: Serializer) {}
-
+export abstract class ServiceMessageBrokerFactory {
   /**
    * Initializes the given channel and attaches a new {@link ServiceMessageBroker} to it.
    */
+  abstract createMessageBroker(channel: string, runInZone?: boolean): ServiceMessageBroker;
+}
+
+@Injectable()
+export class ServiceMessageBrokerFactory_ extends ServiceMessageBrokerFactory {
+  /** @internal */
+  public _serializer: Serializer;
+
+  constructor(private _messageBus: MessageBus, _serializer: Serializer) {
+    super();
+    this._serializer = _serializer;
+  }
+
   createMessageBroker(channel: string, runInZone: boolean = true): ServiceMessageBroker {
     this._messageBus.initChannel(channel, runInZone);
-    return new ServiceMessageBroker(this._messageBus, this._serializer, channel);
+    return new ServiceMessageBroker_(this._messageBus, this._serializer, channel);
   }
+}
+
+export abstract class ServiceMessageBroker {
+  abstract registerMethod(methodName: string, signature: Type[], method: Function,
+                          returnType?: Type): void;
 }
 
 /**
@@ -32,14 +44,12 @@ export class ServiceMessageBrokerFactory {
  * the UIMessageBroker deserializes its arguments and calls the registered method.
  * If that method returns a promise, the UIMessageBroker returns the result to the worker.
  */
-export class ServiceMessageBroker {
-  private _sink: EventEmitter;
+export class ServiceMessageBroker_ extends ServiceMessageBroker {
+  private _sink: EventEmitter<any>;
   private _methods: Map<string, Function> = new Map<string, Function>();
 
-  /**
-   * @private
-   */
   constructor(messageBus: MessageBus, private _serializer: Serializer, public channel) {
+    super();
     this._sink = messageBus.to(channel);
     var source = messageBus.from(channel);
     ObservableWrapper.subscribe(source, (message) => this._handleMessage(message));
@@ -61,7 +71,7 @@ export class ServiceMessageBroker {
     });
   }
 
-  private _handleMessage(map: StringMap<string, any>): void {
+  private _handleMessage(map: {[key: string]: any}): void {
     var message = new ReceivedMessage(map);
     if (this._methods.has(message.method)) {
       this._methods.get(message.method)(message);
@@ -83,7 +93,7 @@ export class ReceivedMessage {
   id: string;
   type: string;
 
-  constructor(data: StringMap<string, any>) {
+  constructor(data: {[key: string]: any}) {
     this.method = data['method'];
     this.args = data['args'];
     this.id = data['id'];

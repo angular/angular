@@ -21,23 +21,8 @@ var __ignore_me = global;
  * If `onActivate` returns a promise, the route change will wait until the promise settles to
  * instantiate and activate child components.
  *
- * ## Example
- * ```
- * import {Component, View} from 'angular2/angular2';
- * import {OnActivate, ComponentInstruction} from 'angular2/router';
- *
- * @Component({
- *   selector: 'my-cmp'
- * })
- * @View({
- *  template: '<div>hello!</div>'
- * })
- * class MyCmp implements OnActivate {
- *   onActivate(next: ComponentInstruction, prev: ComponentInstruction) {
- *     this.log = 'Finished navigating from ' + prev.urlPath + ' to ' + next.urlPath;
- *   }
- * }
- * ```
+ * ### Example
+ * {@example router/ts/on_activate/on_activate_example.ts region='onActivate'}
  */
 export interface OnActivate {
   onActivate(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction): any;
@@ -54,27 +39,8 @@ export interface OnActivate {
  * representing the current route being navigated to, and the second parameter representing the
  * previous route or `null`.
  *
- * ## Example
- * ```
- * import {Component, View} from 'angular2/angular2';
- * import {CanReuse, OnReuse, ComponentInstruction} from 'angular2/router';
- *
- * @Component({
- *   selector: 'my-cmp'
- * })
- * @View({
- *  template: '<div>hello!</div>'
- * })
- * class MyCmp implements CanReuse, OnReuse {
- *   canReuse(next: ComponentInstruction, prev: ComponentInstruction) {
- *     return true;
- *   }
- *
- *   onReuse(next: ComponentInstruction, prev: ComponentInstruction) {
- *     this.params = next.params;
- *   }
- * }
- * ```
+ * ### Example
+ * {@example router/ts/reuse/reuse_example.ts region='reuseCmp'}
  */
 export interface OnReuse {
   onReuse(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction): any;
@@ -90,23 +56,8 @@ export interface OnReuse {
  *
  * If `onDeactivate` returns a promise, the route change will wait until the promise settles.
  *
- * ## Example
- * ```
- * import {Component, View} from 'angular2/angular2';
- * import {OnDeactivate, ComponentInstruction} from 'angular2/router';
- *
- * @Component({
- *   selector: 'my-cmp'
- * })
- * @View({
- *  template: '<div>hello!</div>'
- * })
- * class MyCmp implements OnDeactivate {
- *   onDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
- *     return this.doFadeAwayAnimation();
- *   }
- * }
- *  ```
+ * ### Example
+ * {@example router/ts/on_deactivate/on_deactivate_example.ts region='onDeactivate'}
  */
 export interface OnDeactivate {
   onDeactivate(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction): any;
@@ -127,27 +78,8 @@ export interface OnDeactivate {
  *
  * If `canReuse` throws or rejects, the navigation will be cancelled.
  *
- * ## Example
- * ```
- * import {Component, View} from 'angular2/angular2';
- * import {CanReuse, OnReuse, ComponentInstruction} from 'angular2/router';
- *
- * @Component({
- *   selector: 'my-cmp'
- * })
- * @View({
- *  template: '<div>hello!</div>'
- * })
- * class MyCmp implements CanReuse, OnReuse {
- *   canReuse(next: ComponentInstruction, prev: ComponentInstruction) {
- *     return next.params.id == prev.params.id;
- *   }
- *
- *   onReuse(next: ComponentInstruction, prev: ComponentInstruction) {
- *     this.id = next.params.id;
- *   }
- * }
- *  ```
+ * ### Example
+ * {@example router/ts/reuse/reuse_example.ts region='reuseCmp'}
  */
 export interface CanReuse {
   canReuse(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction): any;
@@ -167,23 +99,8 @@ export interface CanReuse {
  *
  * If `canDeactivate` throws or rejects, the navigation is also cancelled.
  *
- * ## Example
- * ```
- * import {Component, View} from 'angular2/angular2';
- * import {CanDeactivate, ComponentInstruction} from 'angular2/router';
- *
- * @Component({
- *   selector: 'my-cmp'
- * })
- * @View({
- *  template: '<div>hello!</div>'
- * })
- * class MyCmp implements CanDeactivate {
- *   canDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
- *     return askUserIfTheyAreSureTheyWantToQuit();
- *   }
- * }
- *  ```
+ * ### Example
+ * {@example router/ts/can_deactivate/can_deactivate_example.ts region='canDeactivate'}
  */
 export interface CanDeactivate {
   canDeactivate(nextInstruction: ComponentInstruction, prevInstruction: ComponentInstruction): any;

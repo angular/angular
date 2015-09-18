@@ -7,10 +7,10 @@ import {
 } from 'angular2/src/core/facade/collection';
 
 function paramParser(rawParams: string = ''): Map<string, string[]> {
-  var map: Map<string, string[]> = new Map();
+  var map = new Map<string, string[]>();
   if (rawParams.length > 0) {
     var params: string[] = StringWrapper.split(rawParams, new RegExp('&'));
-    ListWrapper.forEach(params, (param: string) => {
+    params.forEach((param: string) => {
       var split: string[] = StringWrapper.split(param, new RegExp('='));
       var key = split[0];
       var val = split[1];
@@ -71,7 +71,7 @@ export class URLSearchParams {
   //
   // TODO(@caitp): document this better
   setAll(searchParams: URLSearchParams) {
-    MapWrapper.forEach(searchParams.paramsMap, (value, param) => {
+    searchParams.paramsMap.forEach((value, param) => {
       var mapParam = this.paramsMap.get(param);
       var list = isPresent(mapParam) ? mapParam : [];
       ListWrapper.clear(list);
@@ -95,7 +95,7 @@ export class URLSearchParams {
   //
   // TODO(@caitp): document this better
   appendAll(searchParams: URLSearchParams) {
-    MapWrapper.forEach(searchParams.paramsMap, (value, param) => {
+    searchParams.paramsMap.forEach((value, param) => {
       var mapParam = this.paramsMap.get(param);
       var list = isPresent(mapParam) ? mapParam : [];
       for (var i = 0; i < value.length; ++i) {
@@ -114,7 +114,7 @@ export class URLSearchParams {
   //
   // TODO(@caitp): document this better
   replaceAll(searchParams: URLSearchParams) {
-    MapWrapper.forEach(searchParams.paramsMap, (value, param) => {
+    searchParams.paramsMap.forEach((value, param) => {
       var mapParam = this.paramsMap.get(param);
       var list = isPresent(mapParam) ? mapParam : [];
       ListWrapper.clear(list);
@@ -127,11 +127,9 @@ export class URLSearchParams {
 
   toString(): string {
     var paramsList = [];
-    MapWrapper.forEach(this.paramsMap, (values, k) => {
-      ListWrapper.forEach(values, v => { paramsList.push(k + '=' + v); });
-    });
-    return ListWrapper.join(paramsList, '&');
+    this.paramsMap.forEach((values, k) => { values.forEach(v => paramsList.push(k + '=' + v)); });
+    return paramsList.join('&');
   }
 
-  delete (param: string): void { MapWrapper.delete(this.paramsMap, param); }
+  delete (param: string): void { this.paramsMap.delete(param); }
 }

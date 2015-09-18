@@ -1,7 +1,7 @@
 library angular2.transform.template_compiler.reflection.model;
 
-import 'package:angular2/src/core/render/dom/util.dart';
-import 'package:angular2/src/core/render/event_config.dart';
+import 'package:angular2/src/core/compiler/util.dart';
+import 'package:angular2/src/core/linker/event_config.dart';
 
 /// Defines the names of getters, setters, and methods which need to be
 /// available to Angular 2 via the `reflector` at runtime.
@@ -27,11 +27,7 @@ class ReflectiveAccessor {
   /// setter, or method on the `Component`.
   final String sanitizedName;
 
-  /// Whether this getter, setter, or method is still necessary when we have
-  /// pre-generated change detectors.
-  final bool isStaticallyNecessary;
-
-  ReflectiveAccessor(String astValue, {this.isStaticallyNecessary})
+  ReflectiveAccessor(String astValue)
       : this.astValue = astValue,
         this.sanitizedName = sanitizePropertyName(astValue);
 

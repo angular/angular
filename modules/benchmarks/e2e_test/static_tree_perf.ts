@@ -1,4 +1,4 @@
-import {runClickBenchmark, verifyNoBrowserErrors} from 'angular2/src/test_lib/perf_util';
+import {runClickBenchmark, verifyNoBrowserErrors} from 'angular2/src/testing/perf_util';
 
 describe('ng2 static tree benchmark', function() {
 
@@ -37,7 +37,7 @@ describe('ng2 static tree benchmark', function() {
     runClickBenchmark({
       url: URL,
       buttons: ['#baselineDestroyDom', '#baselineCreateDom'],
-      id: 'baseline.tree.create',
+      id: 'baseline.static.tree.create',
       params: [{name: 'depth', value: 9, scale: 'log2'}]
     }).then(done, done.fail);
   });
@@ -46,7 +46,7 @@ describe('ng2 static tree benchmark', function() {
     runClickBenchmark({
       url: URL,
       buttons: ['#baselineCreateDom'],
-      id: 'baseline.tree.update',
+      id: 'baseline.static.tree.update',
       params: [{name: 'depth', value: 9, scale: 'log2'}]
     }).then(done, done.fail);
   });

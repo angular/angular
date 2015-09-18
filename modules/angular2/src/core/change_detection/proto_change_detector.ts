@@ -12,7 +12,6 @@ import {
   Binary,
   Chain,
   Conditional,
-  If,
   BindingPipe,
   FunctionCall,
   ImplicitReceiver,
@@ -38,9 +37,13 @@ import {coalesce} from './coalesce';
 import {ProtoRecord, RecordType} from './proto_record';
 
 export class DynamicProtoChangeDetector implements ProtoChangeDetector {
+  /** @internal */
   _propertyBindingRecords: ProtoRecord[];
+  /** @internal */
   _propertyBindingTargets: BindingTarget[];
+  /** @internal */
   _eventBindingRecords: EventBinding[];
+  /** @internal */
   _directiveIndices: DirectiveIndex[];
 
   constructor(private _definition: ChangeDetectorDefinition) {
@@ -96,6 +99,7 @@ export class ProtoRecordBuilder {
     }
   }
 
+  /** @internal */
   _setArgumentToPureFunction(startIndex: number): void {
     for (var i = startIndex; i < this.records.length; ++i) {
       var rec = this.records[i];
@@ -111,6 +115,7 @@ export class ProtoRecordBuilder {
     }
   }
 
+  /** @internal */
   _appendRecords(b: BindingRecord, variableNames: string[], bindingIndex: number) {
     if (b.isDirectiveLifecycle()) {
       this.records.push(new ProtoRecord(RecordType.DirectiveLifecycle, b.lifecycleEvent, null, [],
@@ -260,8 +265,7 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
     return this._addRecord(RecordType.Chain, "chain", null, args, null, 0);
   }
 
-  visitIf(ast: If) { throw new BaseException('Not supported'); }
-
+  /** @internal */
   _visitAll(asts: any[]) {
     var res = ListWrapper.createFixedSize(asts.length);
     for (var i = 0; i < asts.length; ++i) {
@@ -270,6 +274,7 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
     return res;
   }
 
+  /** @internal */
   _addRecord(type, name, funcOrValue, args, fixedArgs, context) {
     var selfIndex = this._records.length + 1;
     if (context instanceof DirectiveIndex) {
@@ -314,8 +319,7 @@ function _arrayFn(length: number): Function {
 }
 
 function _mapPrimitiveName(keys: any[]) {
-  var stringifiedKeys =
-      ListWrapper.join(ListWrapper.map(keys, (k) => isString(k) ? `"${k}"` : `${k}`), ", ");
+  var stringifiedKeys = keys.map(k => isString(k) ? `"${k}"` : `${k}`).join(', ');
   return `mapFn([${stringifiedKeys}])`;
 }
 

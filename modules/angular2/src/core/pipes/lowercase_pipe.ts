@@ -8,15 +8,13 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 /**
  * Implements lowercase transforms to text.
  *
- * # Example
+ * ### Example
  *
  * In this example we transform the user text lowercase.
  *
  *  ```
  * @Component({
- *   selector: "username-cmp"
- * })
- * @View({
+ *   selector: "username-cmp",
  *   template: "Username: {{ user | lowercase }}"
  * })
  * class Username {

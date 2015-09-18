@@ -29,7 +29,6 @@ import {
   Binary,
   PrefixNot,
   Conditional,
-  If,
   BindingPipe,
   Chain,
   KeyedRead,
@@ -58,9 +57,11 @@ class ParseException extends BaseException {
 
 @Injectable()
 export class Parser {
+  /** @internal */
   _reflector: Reflector;
 
-  constructor(public _lexer: Lexer, providedReflector: Reflector = null) {
+  constructor(/** @internal */
+              public _lexer: Lexer, providedReflector: Reflector = null) {
     this._reflector = isPresent(providedReflector) ? providedReflector : reflector;
   }
 
@@ -215,6 +216,14 @@ export class _ParseAST {
     return n.toString();
   }
 
+  parseSimpleBinding(): AST {
+    var ast = this.parseChain();
+    if (!SimpleExpressionChecker.check(ast)) {
+      this.error(`Simple binding expression can only contain field access and constants'`);
+    }
+    return ast;
+  }
+
   parseChain(): AST {
     var exprs = [];
     while (this.index < this.tokens.length) {
@@ -236,14 +245,6 @@ export class _ParseAST {
     return new Chain(exprs);
   }
 
-  parseSimpleBinding(): AST {
-    var ast = this.parseChain();
-    if (!SimpleExpressionChecker.check(ast)) {
-      this.error(`Simple binding expression can only contain field access and constants'`);
-    }
-    return ast;
-  }
-
   parsePipe(): AST {
     var result = this.parseExpression();
     if (this.optionalOperator("|")) {
@@ -255,7 +256,7 @@ export class _ParseAST {
         var name = this.expectIdentifierOrKeyword();
         var args = [];
         while (this.optionalCharacter($COLON)) {
-          args.push(this.parsePipe());
+          args.push(this.parseExpression());
         }
         result = new BindingPipe(result, name, args);
       } while (this.optionalOperator("|"));
@@ -427,19 +428,6 @@ export class _ParseAST {
       this.advance();
       return new LiteralPrimitive(false);
 
-    } else if (this.parseAction && this.next.isKeywordIf()) {
-      this.advance();
-      this.expectCharacter($LPAREN);
-      let condition = this.parseExpression();
-      this.expectCharacter($RPAREN);
-      let ifExp = this.parseExpressionOrBlock();
-      let elseExp;
-      if (this.next.isKeywordElse()) {
-        this.advance();
-        elseExp = this.parseExpressionOrBlock();
-      }
-      return new If(condition, ifExp, elseExp);
-
     } else if (this.optionalCharacter($LBRACKET)) {
       var elements = this.parseExpressionList($RBRACKET);
       this.expectCharacter($RBRACKET);
@@ -538,16 +526,6 @@ export class _ParseAST {
       positionals.push(this.parsePipe());
     } while (this.optionalCharacter($COMMA));
     return positionals;
-  }
-
-  parseExpressionOrBlock(): AST {
-    if (this.optionalCharacter($LBRACE)) {
-      let block = this.parseBlockContent();
-      this.expectCharacter($RBRACE);
-      return block;
-    }
-
-    return this.parseExpression();
   }
 
   parseBlockContent(): AST {
@@ -686,6 +664,4 @@ class SimpleExpressionChecker implements AstVisitor {
   }
 
   visitChain(ast: Chain) { this.simple = false; }
-
-  visitIf(ast: If) { this.simple = false; }
 }

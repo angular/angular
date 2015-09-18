@@ -1,35 +1,35 @@
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
-import {StringMap} from 'angular2/src/core/facade/collection';
 import {OnChanges, OnDestroy} from 'angular2/lifecycle_hooks';
 import {SimpleChange} from 'angular2/src/core/change_detection';
 import {Query, Directive} from 'angular2/src/core/metadata';
-import {forwardRef, Host, SkipSelf, Binding, Inject, Optional} from 'angular2/src/core/di';
+import {forwardRef, Host, SkipSelf, Provider, Inject, Optional} from 'angular2/src/core/di';
 
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
-import {controlPath, isPropertyUpdated} from './shared';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import {controlPath, composeValidators, isPropertyUpdated, selectValueAccessor} from './shared';
 import {Control} from '../model';
 import {Validators, NG_VALIDATORS} from '../validators';
 
 
 const controlNameBinding =
-    CONST_EXPR(new Binding(NgControl, {toAlias: forwardRef(() => NgControlName)}));
+    CONST_EXPR(new Provider(NgControl, {useExisting: forwardRef(() => NgControlName)}));
 
 /**
  * Creates and binds a control with a specified name to a DOM element.
  *
  * This directive can only be used as a child of {@link NgForm} or {@link NgFormModel}.
 
- * # Example
+ * ### Example
  *
  * In this example, we create the login and password controls.
  * We can work with each control separately: check its validity, get its value, listen to its
  * changes.
  *
  *  ```
- * @Component({selector: "login-comp"})
- * @View({
+ * @Component({
+ *      selector: "login-comp",
  *      directives: [FORM_DIRECTIVES],
  *      template: `
  *        <form #f="form" (submit)='onLogIn(f.value)'>
@@ -50,8 +50,8 @@ const controlNameBinding =
  * We can also use ng-model to bind a domain model to the form.
  *
  *  ```
- * @Component({selector: "login-comp"})
- * @View({
+ * @Component({
+ *      selector: "login-comp",
  *      directives: [FORM_DIRECTIVES],
  *      template: `
  *        <form (submit)='onLogIn()'>
@@ -74,27 +74,32 @@ const controlNameBinding =
 @Directive({
   selector: '[ng-control]',
   bindings: [controlNameBinding],
-  properties: ['name: ngControl', 'model: ngModel'],
-  events: ['update: ngModel'],
+  inputs: ['name: ngControl', 'model: ngModel'],
+  outputs: ['update: ngModelChange'],
   exportAs: 'form'
 })
 export class NgControlName extends NgControl implements OnChanges,
     OnDestroy {
+  /** @internal */
   _parent: ControlContainer;
   update = new EventEmitter();
   model: any;
   viewModel: any;
-  validators: Function[];
+  private _validator: Function;
+  /** @internal */
   _added = false;
 
   constructor(@Host() @SkipSelf() parent: ControlContainer,
-              @Optional() @Inject(NG_VALIDATORS) validators: Function[]) {
+              @Optional() @Inject(NG_VALIDATORS) validators:
+                  /* Array<Validator|Function> */ any[],
+              @Optional() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[]) {
     super();
     this._parent = parent;
-    this.validators = validators;
+    this._validator = composeValidators(validators);
+    this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
-  onChanges(changes: StringMap<string, SimpleChange>) {
+  onChanges(changes: {[key: string]: SimpleChange}) {
     if (!this._added) {
       this.formDirective.addControl(this);
       this._added = true;
@@ -116,7 +121,7 @@ export class NgControlName extends NgControl implements OnChanges,
 
   get formDirective(): any { return this._parent.formDirective; }
 
-  get control(): Control { return this.formDirective.getControl(this); }
+  get validator(): Function { return this._validator; }
 
-  get validator(): Function { return Validators.compose(this.validators); }
+  get control(): Control { return this.formDirective.getControl(this); }
 }

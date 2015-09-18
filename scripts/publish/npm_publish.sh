@@ -30,14 +30,14 @@ function publishModule {
   if [ $NAME = "angular2" ]; then
     # Publish bundles and typings
     mkdir -p $PUBLISH_DIR/bundles/typings/angular2
-    mkdir -p $PUBLISH_DIR/bundles/typings/es6-promise
-    mkdir -p $PUBLISH_DIR/bundles/typings/rx
+    mkdir -p $PUBLISH_DIR/bundles/typings/es6-shim
+    mkdir -p $PUBLISH_DIR/bundles/typings/jasmine
     # Copy Bundles
     cp -r $ROOT_DIR/dist/js/bundle/$FILES $PUBLISH_DIR/bundles
     # Copy Typings
     cp -r $ROOT_DIR/dist/docs/typings/angular2/$DTS_FILES $PUBLISH_DIR/bundles/typings/angular2
-    cp -r $ROOT_DIR/modules/angular2/typings/es6-promise/$DTS_FILES $PUBLISH_DIR/bundles/typings/es6-promise
-    cp -r $ROOT_DIR/modules/angular2/typings/rx/$DTS_FILES $PUBLISH_DIR/bundles/typings/rx
+    cp -r $ROOT_DIR/modules/angular2/typings/es6-shim/$DTS_FILES $PUBLISH_DIR/bundles/typings/es6-shim
+    cp -r $ROOT_DIR/modules/angular2/typings/jasmine/$DTS_FILES $PUBLISH_DIR/bundles/typings/jasmine
   fi
 
   if [ $NAME = "benchpress" ]; then
@@ -48,6 +48,9 @@ function publishModule {
   else
     cp -r $ROOT_DIR/dist/js/cjs/$NAME/$FILES $PUBLISH_DIR
   fi
+
+  # Remove all dart related files
+  rm -f $PUBLISH_DIR/{,**/}{*.dart,*.dart.md}
 
   npm publish $PUBLISH_DIR
 }

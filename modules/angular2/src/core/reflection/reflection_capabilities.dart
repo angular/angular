@@ -259,7 +259,7 @@ class ReflectionCapabilities implements PlatformReflectionCapabilities {
 
   Map propMetadata(typeOrFunc) {
     final res = {};
-    reflectClass(typeOrFunc).declarations.forEach((k,v) {
+    reflectClass(typeOrFunc).declarations.forEach((k, v) {
       var name = _normalizeName(MirrorSystem.getName(k));
       if (res[name] == null) res[name] = [];
       res[name].addAll(v.metadata.map((fm) => fm.reflectee));
@@ -277,8 +277,9 @@ class ReflectionCapabilities implements PlatformReflectionCapabilities {
 
   List _interfacesFromMirror(classMirror) {
     return classMirror.superinterfaces.map((si) => si.reflectedType).toList()
-      ..addAll(classMirror.superclass == null ? []
-        : _interfacesFromMirror(classMirror.superclass));
+      ..addAll(classMirror.superclass == null
+          ? []
+          : _interfacesFromMirror(classMirror.superclass));
   }
 
   GetterFn getter(String name) {
@@ -321,12 +322,5 @@ class ReflectionCapabilities implements PlatformReflectionCapabilities {
 
   String importUri(Type type) {
     return '${(reflectClass(type).owner as LibraryMirror).uri}';
-  }
-
-  String moduleId(Type type) {
-    var rootUri = currentMirrorSystem().isolate.rootLibrary.uri;
-    var moduleUri = (reflectClass(type).owner as LibraryMirror).uri;
-    var relativeUri = new Uri(pathSegments:moduleUri.pathSegments.sublist(rootUri.pathSegments.length-1)).toString();
-    return relativeUri.substring(0, relativeUri.lastIndexOf('.'));
   }
 }

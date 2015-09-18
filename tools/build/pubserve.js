@@ -8,7 +8,7 @@ module.exports = function(gulp, plugins, config, module) {
     var pubArgs = ['serve', '--mode', pubMode, '--port', config.port];
     return util.streamToPromise(spawn(config.command, pubArgs, {
       // pub serve is very spammy, and --verbosity flag doesn't fix it
-      cwd: config.path, stdio: 'ignore'
+      cwd: config.path, stdio: 'inherit'
     }));
   };
 };

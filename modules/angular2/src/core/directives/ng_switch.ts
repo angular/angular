@@ -1,6 +1,6 @@
 import {Directive} from 'angular2/src/core/metadata';
 import {Host} from 'angular2/src/core/di';
-import {ViewContainerRef, TemplateRef} from 'angular2/src/core/compiler';
+import {ViewContainerRef, TemplateRef} from 'angular2/src/core/linker';
 import {isPresent, isBlank, normalizeBlank, CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {ListWrapper, Map} from 'angular2/src/core/facade/collection';
 
@@ -29,7 +29,7 @@ export class SwitchView {
  * evaluated. If a matching expression is not found via a when attribute then an element with the
  * default attribute is displayed.
  *
- * # Example:
+ * ### Example
  *
  * ```
  * <ANY [ng-switch]="expression">
@@ -39,11 +39,11 @@ export class SwitchView {
  * </ANY>
  * ```
  */
-@Directive({selector: '[ng-switch]', properties: ['ngSwitch']})
+@Directive({selector: '[ng-switch]', inputs: ['ngSwitch']})
 export class NgSwitch {
   private _switchValue: any;
   private _useDefault: boolean = false;
-  private _valueViews: Map<any, SwitchView[]> = new Map();
+  private _valueViews = new Map<any, SwitchView[]>();
   private _activeViews: SwitchView[] = [];
 
   set ngSwitch(value) {
@@ -62,6 +62,7 @@ export class NgSwitch {
     this._switchValue = value;
   }
 
+  /** @internal */
   _onWhenValueChanged(oldWhen, newWhen, view: SwitchView): void {
     this._deregisterView(oldWhen, view);
     this._registerView(newWhen, view);
@@ -85,6 +86,7 @@ export class NgSwitch {
     }
   }
 
+  /** @internal */
   _emptyAllActiveViews(): void {
     var activeContainers = this._activeViews;
     for (var i = 0; i < activeContainers.length; i++) {
@@ -93,6 +95,7 @@ export class NgSwitch {
     this._activeViews = [];
   }
 
+  /** @internal */
   _activateViews(views: SwitchView[]): void {
     // TODO(vicb): assert(this._activeViews.length === 0);
     if (isPresent(views)) {
@@ -103,6 +106,7 @@ export class NgSwitch {
     }
   }
 
+  /** @internal */
   _registerView(value, view: SwitchView): void {
     var views = this._valueViews.get(value);
     if (isBlank(views)) {
@@ -112,6 +116,7 @@ export class NgSwitch {
     views.push(view);
   }
 
+  /** @internal */
   _deregisterView(value, view: SwitchView): void {
     // `_WHEN_DEFAULT` is used a marker for non-registered whens
     if (value === _WHEN_DEFAULT) return;
@@ -139,10 +144,12 @@ export class NgSwitch {
  * <template ng-switch-when="stringValue">...</template>
  * ```
  */
-@Directive({selector: '[ng-switch-when]', properties: ['ngSwitchWhen']})
+@Directive({selector: '[ng-switch-when]', inputs: ['ngSwitchWhen']})
 export class NgSwitchWhen {
   // `_WHEN_DEFAULT` is used as a marker for a not yet initialized value
+  /** @internal */
   _value: any = _WHEN_DEFAULT;
+  /** @internal */
   _view: SwitchView;
 
   constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef,

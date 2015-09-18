@@ -1,6 +1,6 @@
 import * as ng from './angular2';
 // the router and http should have their own SFX bundle
-// But currently the module arithemtic 'angular2/router_sfx - angular2/angular2',
+// But currently the module arithmetic 'angular2/router_sfx - angular2/angular2',
 // is not support by system builder.
 import * as router from './router';
 import * as http from './http';

@@ -1,4 +1,4 @@
-import {runClickBenchmark, verifyNoBrowserErrors} from 'angular2/src/test_lib/perf_util';
+import {runClickBenchmark, verifyNoBrowserErrors} from 'angular2/src/testing/perf_util';
 
 describe('ng1.x largetable benchmark', function() {
   var URL = 'benchmarks_external/src/largetable/largetable_benchmark.html';
@@ -17,7 +17,8 @@ describe('ng1.x largetable benchmark', function() {
               {name: 'columns', value: 100, scale: 'sqrt'},
               {name: 'rows', value: 20, scale: 'sqrt'},
               {name: 'benchmarkType', value: benchmarkType}
-            ]
+            ],
+            waitForAngular2: false
           }).then(done, done.fail);
         });
       });

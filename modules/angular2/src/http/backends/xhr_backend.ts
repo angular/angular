@@ -3,10 +3,12 @@ import {ReadyStates, RequestMethods, ResponseTypes} from '../enums';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
-import {Injectable} from 'angular2/src/core/di';
+import {Injectable} from 'angular2/angular2';
 import {BrowserXhr} from './browser_xhr';
 import {isPresent} from 'angular2/src/core/facade/lang';
-var Observable = require('@reactivex/rxjs/dist/cjs/Observable');
+// todo(robwormald): temporary until https://github.com/angular/angular/issues/4390 decided
+var Rx = require('@reactivex/rxjs/dist/cjs/Rx');
+var {Observable} = Rx;
 /**
 * Creates connections using `XMLHttpRequest`. Given a fully-qualified
 * request, an `XHRConnection` will immediately create an `XMLHttpRequest` object and send the
@@ -62,7 +64,7 @@ export class XHRConnection implements Connection {
       };
 
       if (isPresent(req.headers)) {
-        req.headers.forEach((value, name) => { _xhr.setRequestHeader(name, value); });
+        req.headers.forEach((values, name) => _xhr.setRequestHeader(name, values.join(',')));
       }
 
       _xhr.addEventListener('load', onLoad);
@@ -86,20 +88,20 @@ export class XHRConnection implements Connection {
  * overridden if a different backend implementation should be used,
  * such as in a node backend.
  *
- * #Example
+ * ### Example
  *
  * ```
- * import {Http, MyNodeBackend, HTTP_BINDINGS, BaseRequestOptions} from 'angular2/http';
+ * import {Http, MyNodeBackend, HTTP_PROVIDERS, BaseRequestOptions} from 'angular2/http';
  * @Component({
- *   viewBindings: [
- *     HTTP_BINDINGS,
- *     bind(Http).toFactory((backend, options) => {
+ *   viewProviders: [
+ *     HTTP_PROVIDERS,
+ *     provide(Http, {useFactory: (backend, options) => {
  *       return new Http(backend, options);
- *     }, [MyNodeBackend, BaseRequestOptions])]
+ *     }, deps: [MyNodeBackend, BaseRequestOptions]})]
  * })
  * class MyComponent {
  *   constructor(http:Http) {
- *     http('people.json').toRx().subscribe(res => this.people = res.json());
+ *     http.request('people.json').subscribe(res => this.people = res.json());
  *   }
  * }
  * ```

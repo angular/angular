@@ -1,25 +1,20 @@
 import {ChangeDetector} from './interfaces';
 import {ChangeDetectionStrategy} from './constants';
 
-/**
- * Reference to a component's change detection object.
- */
-export class ChangeDetectorRef {
+export abstract class ChangeDetectorRef {
   /**
-   * @private
-   */
-  constructor(private _cd: ChangeDetector) {}
-
-  /**
-   * Marks all {@link OnPush} ancestors as to be checked.
+   * Marks all {@link ChangeDetectionStrategy#OnPush} ancestors as to be checked.
    *
    * <!-- TODO: Add a link to a chapter on OnPush components -->
    *
    * ### Example ([live demo](http://plnkr.co/edit/GC512b?p=preview))
    *
    * ```typescript
-   * @Component({selector: 'cmp', changeDetection: ChangeDetectionStrategy.OnPush})
-   * @View({template: `Number of ticks: {{numberOfTicks}}`})
+   * @Component({
+   *   selector: 'cmp',
+   *   changeDetection: ChangeDetectionStrategy.OnPush,
+   *   template: `Number of ticks: {{numberOfTicks}}`
+   * })
    * class Cmp {
    *   numberOfTicks = 0;
    *
@@ -34,9 +29,7 @@ export class ChangeDetectorRef {
    *
    * @Component({
    *   selector: 'app',
-   *   changeDetection: ChangeDetectionStrategy.OnPush
-   * })
-   * @View({
+   *   changeDetection: ChangeDetectionStrategy.OnPush,
    *   template: `
    *     <cmp><cmp>
    *   `,
@@ -48,14 +41,15 @@ export class ChangeDetectorRef {
    * bootstrap(App);
    * ```
    */
-  markForCheck(): void { this._cd.markPathToRootAsCheckOnce(); }
+  abstract markForCheck(): void;
 
   /**
    * Detaches the change detector from the change detector tree.
    *
    * The detached change detector will not be checked until it is reattached.
    *
-   * This can also be used in combination with {@link detectChanges} to implement local change
+   * This can also be used in combination with {@link ChangeDetectorRef#detectChanges} to implement
+   * local change
    * detection checks.
    *
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->
@@ -76,8 +70,8 @@ export class ChangeDetectorRef {
    *   }
    * }
    *
-   * @Component({selector: 'giant-list'})
-   * @View({
+   * @Component({
+   *   selector: 'giant-list',
    *   template: `
    *     <li *ng-for="#d of dataProvider.data">Data {{d}}</lig>
    *   `,
@@ -93,9 +87,8 @@ export class ChangeDetectorRef {
    * }
    *
    * @Component({
-   *   selector: 'app', bindings: [DataProvider]
-   * })
-   * @View({
+   *   selector: 'app',
+   *   providers: [DataProvider],
    *   template: `
    *     <giant-list><giant-list>
    *   `,
@@ -107,12 +100,13 @@ export class ChangeDetectorRef {
    * bootstrap(App);
    * ```
    */
-  detach(): void { this._cd.mode = ChangeDetectionStrategy.Detached; }
+  abstract detach(): void;
 
   /**
    * Checks the change detector and its children.
    *
-   * This can also be used in combination with {@link detach} to implement local change detection
+   * This can also be used in combination with {@link ChangeDetectorRef#detach} to implement local
+   * change detection
    * checks.
    *
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->
@@ -130,7 +124,15 @@ export class ChangeDetectorRef {
    *
    * See {@link detach} for more information.
    */
-  detectChanges(): void { this._cd.detectChanges(); }
+  abstract detectChanges(): void;
+
+  /**
+   * Checks the change detector and its children, and throws if any changes are detected.
+   *
+   * This is used in development mode to verify that running change detection doesn't introduce
+   * other changes.
+   */
+  abstract checkNoChanges(): void;
 
   /**
    * Reattach the change detector to the change detector tree.
@@ -157,8 +159,9 @@ export class ChangeDetectorRef {
    *   }
    * }
    *
-   * @Component({selector: 'live-data', properties: ['live']})
-   * @View({
+   * @Component({
+   *   selector: 'live-data',
+   *   inputs: ['live'],
    *   template: `Data: {{dataProvider.data}}`
    * })
    * class LiveData {
@@ -174,9 +177,7 @@ export class ChangeDetectorRef {
    *
    * @Component({
    *   selector: 'app',
-   *   bindings: [DataProvider]
-   * })
-   * @View({
+   *   providers: [DataProvider],
    *   template: `
    *     Live Update: <input type="checkbox" [(ng-model)]="live">
    *     <live-data [live]="live"><live-data>
@@ -190,6 +191,16 @@ export class ChangeDetectorRef {
    * bootstrap(App);
    * ```
    */
+  abstract reattach(): void;
+}
+
+export class ChangeDetectorRef_ extends ChangeDetectorRef {
+  constructor(private _cd: ChangeDetector) { super(); }
+
+  markForCheck(): void { this._cd.markPathToRootAsCheckOnce(); }
+  detach(): void { this._cd.mode = ChangeDetectionStrategy.Detached; }
+  detectChanges(): void { this._cd.detectChanges(); }
+  checkNoChanges(): void { this._cd.checkNoChanges(); }
   reattach(): void {
     this._cd.mode = ChangeDetectionStrategy.CheckAlways;
     this.markForCheck();

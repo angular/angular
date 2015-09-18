@@ -8,7 +8,7 @@ import {EventBinding} from './event_binding';
 
 // The names of these fields must be kept in sync with abstract_change_detector.ts or change
 // detection will fail.
-const _ALREADY_CHECKED_ACCESSOR = "alreadyChecked";
+const _STATE_ACCESSOR = "state";
 const _CONTEXT_ACCESSOR = "context";
 const _PROP_BINDING_INDEX = "propertyBindingIndex";
 const _DIRECTIVES_ACCESSOR = "directiveIndices";
@@ -17,6 +17,7 @@ const _LOCALS_ACCESSOR = "locals";
 const _MODE_ACCESSOR = "mode";
 const _PIPES_ACCESSOR = "pipes";
 const _PROTOS_ACCESSOR = "protos";
+export const CONTEXT_ACCESSOR = "context";
 
 // `context` is always first.
 export const CONTEXT_INDEX = 0;
@@ -40,22 +41,23 @@ export class CodegenNameUtil {
   /**
    * Record names sanitized for use as fields.
    * See [sanitizeName] for details.
+   * @internal
    */
   _sanitizedNames: string[];
-  _sanitizedEventNames: Map<EventBinding, string[]>;
+  /** @internal */
+  _sanitizedEventNames = new Map<EventBinding, string[]>();
 
   constructor(private _records: ProtoRecord[], private _eventBindings: EventBinding[],
               private _directiveRecords: any[], private _utilName: string) {
     this._sanitizedNames = ListWrapper.createFixedSize(this._records.length + 1);
-    this._sanitizedNames[CONTEXT_INDEX] = _CONTEXT_ACCESSOR;
+    this._sanitizedNames[CONTEXT_INDEX] = CONTEXT_ACCESSOR;
     for (var i = 0, iLen = this._records.length; i < iLen; ++i) {
       this._sanitizedNames[i + 1] = sanitizeName(`${this._records[i].name}${i}`);
     }
 
-    this._sanitizedEventNames = new Map();
     for (var ebIndex = 0; ebIndex < _eventBindings.length; ++ebIndex) {
       var eb = _eventBindings[ebIndex];
-      var names = [_CONTEXT_ACCESSOR];
+      var names = [CONTEXT_ACCESSOR];
       for (var i = 0, iLen = eb.records.length; i < iLen; ++i) {
         names.push(sanitizeName(`${eb.records[i].name}${i}_${ebIndex}`));
       }
@@ -63,6 +65,7 @@ export class CodegenNameUtil {
     }
   }
 
+  /** @internal */
   _addFieldPrefix(name: string): string { return `${_FIELD_PREFIX}${name}`; }
 
   getDispatcherName(): string { return this._addFieldPrefix(_DISPATCHER_ACCESSOR); }
@@ -75,7 +78,7 @@ export class CodegenNameUtil {
 
   getLocalsAccessorName(): string { return this._addFieldPrefix(_LOCALS_ACCESSOR); }
 
-  getAlreadyCheckedName(): string { return this._addFieldPrefix(_ALREADY_CHECKED_ACCESSOR); }
+  getStateName(): string { return this._addFieldPrefix(_STATE_ACCESSOR); }
 
   getModeName(): string { return this._addFieldPrefix(_MODE_ACCESSOR); }
 
@@ -84,7 +87,7 @@ export class CodegenNameUtil {
   getLocalName(idx: number): string { return `l_${this._sanitizedNames[idx]}`; }
 
   getEventLocalName(eb: EventBinding, idx: number): string {
-    return `l_${MapWrapper.get(this._sanitizedEventNames, eb)[idx]}`;
+    return `l_${this._sanitizedEventNames.get(eb)[idx]}`;
   }
 
   getChangeName(idx: number): string { return `c_${this._sanitizedNames[idx]}`; }
@@ -110,8 +113,8 @@ export class CodegenNameUtil {
       }
     }
     var assignmentsCode =
-        ListWrapper.isEmpty(assignments) ? '' : `${ListWrapper.join(assignments, '=')} = false;`;
-    return `var ${ListWrapper.join(declarations, ',')};${assignmentsCode}`;
+        ListWrapper.isEmpty(assignments) ? '' : `${assignments.join('=')} = false;`;
+    return `var ${declarations.join(',')};${assignmentsCode}`;
   }
 
   /**
@@ -119,7 +122,7 @@ export class CodegenNameUtil {
    */
   genInitEventLocals(): string {
     var res = [`${this.getLocalName(CONTEXT_INDEX)} = ${this.getFieldName(CONTEXT_INDEX)}`];
-    MapWrapper.forEach(this._sanitizedEventNames, (names, eb) => {
+    this._sanitizedEventNames.forEach((names, eb) => {
       for (var i = 0; i < names.length; ++i) {
         if (i !== CONTEXT_INDEX) {
           res.push(`${this.getEventLocalName(eb, i)}`);
@@ -170,20 +173,16 @@ export class CodegenNameUtil {
 
     // At least one assignment.
     fields.push(`${this._utilName}.uninitialized;`);
-    return ListWrapper.join(fields, ' = ');
+    return fields.join(' = ');
   }
 
   /**
    * Generates statements destroying all pipe variables.
    */
   genPipeOnDestroy(): string {
-    return ListWrapper.join(
-        ListWrapper.map(
-            ListWrapper.filter(this._records, (r) => { return r.isPipeRecord(); }),
-            (r) => {
-              return `${this._utilName}.callPipeOnDestroy(${this.getPipeName(r.selfIndex)});`;
-            }),
-        '\n');
+    return ListWrapper.filter(this._records, (r) => { return r.isPipeRecord(); })
+        .map(r => `${this._utilName}.callPipeOnDestroy(${this.getPipeName(r.selfIndex)});`)
+        .join('\n');
   }
 
   getPipeName(idx: number): string {

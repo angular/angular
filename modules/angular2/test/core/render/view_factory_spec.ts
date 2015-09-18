@@ -9,11 +9,11 @@ import {
   it,
   xit,
   stringifyElement
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {isPresent} from 'angular2/src/core/facade/lang';
 import {MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
-import * as appCmds from 'angular2/src/core/compiler/template_commands';
+import * as appCmds from 'angular2/src/core/linker/template_commands';
 import {createRenderView, NodeFactory} from 'angular2/src/core/render/view_factory';
 import {RenderTemplateCmd, RenderBeginElementCmd} from 'angular2/src/core/render/api';
 import {SpyRenderEventDispatcher} from '../spies';
@@ -49,15 +49,15 @@ function endComponent() {
   return appCmds.endComponent();
 }
 
-function ngContent(ngContentIndex: number) {
-  return appCmds.ngContent(ngContentIndex);
+function ngContent(index: number, ngContentIndex: number) {
+  return appCmds.ngContent(index, ngContentIndex);
 }
 
 export function main() {
   describe('createRenderView', () => {
     var nodeFactory: DomNodeFactory;
     var eventDispatcher: SpyRenderEventDispatcher;
-    var componentTemplates: Map<number, RenderTemplateCmd[]> = new Map();
+    var componentTemplates = new Map<number, RenderTemplateCmd[]>();
     beforeEach(() => {
       nodeFactory = new DomNodeFactory(componentTemplates);
       eventDispatcher = new SpyRenderEventDispatcher();
@@ -347,6 +347,72 @@ export function main() {
             .toEqual(['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '3.1', '3.1']);
       });
 
+      it('should store bound elements from the view before bound elements from content components',
+         () => {
+           componentTemplates.set(0, [
+             beginElement('a', ['id', '2.1'], [], true, null),
+             endElement(),
+           ]);
+           componentTemplates.set(1, [
+             beginElement('a', ['id', '3.1'], [], true, null),
+             endElement(),
+           ]);
+           var view = createRenderView(
+               [
+                 beginComponent('a-comp', ['id', '1.1'], [], false, null, 0),
+                 beginComponent('b-comp', ['id', '1.2'], [], false, null, 1),
+                 endComponent(),
+                 endComponent(),
+               ],
+               null, nodeFactory);
+
+           expect(mapAttrs(view.boundElements, 'id')).toEqual(['1.1', '1.2', '2.1', '3.1']);
+         });
+
+      it('should process nested components in depth first order', () => {
+        componentTemplates.set(0, [
+          beginComponent('b11-comp', ['id', '2.1'], [], false, null, 2),
+          endComponent(),
+          beginComponent('b12-comp', ['id', '2.2'], [], false, null, 3),
+          endComponent(),
+        ]);
+        componentTemplates.set(1, [
+          beginComponent('b21-comp', ['id', '3.1'], [], false, null, 4),
+          endComponent(),
+          beginComponent('b22-comp', ['id', '3.2'], [], false, null, 5),
+          endComponent(),
+        ]);
+        componentTemplates.set(2, [
+          beginElement('b11', ['id', '4.11'], [], true, null),
+          endElement(),
+        ]);
+        componentTemplates.set(3, [
+          beginElement('b12', ['id', '4.12'], [], true, null),
+          endElement(),
+        ]);
+        componentTemplates.set(4, [
+          beginElement('b21', ['id', '4.21'], [], true, null),
+          endElement(),
+        ]);
+        componentTemplates.set(5, [
+          beginElement('b22', ['id', '4.22'], [], true, null),
+          endElement(),
+        ]);
+
+        var view = createRenderView(
+            [
+              beginComponent('a1-comp', ['id', '1.1'], [], false, null, 0),
+              endComponent(),
+              beginComponent('a2-comp', ['id', '1.2'], [], false, null, 1),
+              endComponent(),
+            ],
+            null, nodeFactory);
+
+        expect(mapAttrs(view.boundElements, 'id'))
+            .toEqual(['1.1', '1.2', '2.1', '2.2', '4.11', '4.12', '3.1', '3.2', '4.21', '4.22']);
+      });
+
+
       it('should store bound text nodes after the bound text nodes of the main template', () => {
         componentTemplates.set(0, [
           text('2.1', true, null),
@@ -373,6 +439,22 @@ export function main() {
             .toEqual(['1.1', '1.2', '1.3', '2.1', '2.2', '3.1', '3.1']);
       });
     });
+
+    it('should store bound text nodes from the view before bound text nodes from content components',
+       () => {
+         componentTemplates.set(0, [text('2.1', true, null)]);
+         componentTemplates.set(1, [text('3.1', true, null)]);
+         var view = createRenderView(
+             [
+               beginComponent('a-comp', [], [], false, null, 0),
+               beginComponent('b-comp', [], [], false, null, 1),
+               endComponent(),
+               endComponent(),
+             ],
+             null, nodeFactory);
+
+         expect(mapText(view.boundTextNodes)).toEqual(['2.1', '3.1']);
+       });
 
     describe('content projection', () => {
       it('should remove non projected nodes', () => {
@@ -404,9 +486,9 @@ export function main() {
       it('should project commands based on their ngContentIndex', () => {
         componentTemplates.set(0, [
           text('(', false, null),
-          ngContent(null),
+          ngContent(0, null),
           text(',', false, null),
-          ngContent(null),
+          ngContent(1, null),
           text(')', false, null)
         ]);
         var view = createRenderView(
@@ -422,9 +504,9 @@ export function main() {
 
       it('should reproject nodes over multiple ng-content commands', () => {
         componentTemplates.set(
-            0, [beginComponent('b-comp', [], [], false, null, 1), ngContent(0), endComponent()]);
-        componentTemplates.set(1,
-                               [text('(', false, null), ngContent(null), text(')', false, null)]);
+            0, [beginComponent('b-comp', [], [], false, null, 1), ngContent(0, 0), endComponent()]);
+        componentTemplates.set(
+            1, [text('(', false, null), ngContent(0, null), text(')', false, null)]);
         var view = createRenderView(
             [
               beginComponent('a-comp', [], [], false, null, 0),
@@ -434,6 +516,16 @@ export function main() {
             null, nodeFactory);
         expect(stringifyFragment(view.fragments[0].nodes))
             .toEqual('<a-comp><b-comp>(hello)</b-comp></a-comp>');
+      });
+
+
+      it('should store content injection points for root component in a view', () => {
+        componentTemplates.set(0, [ngContent(0, null)]);
+        var view =
+            createRenderView([beginComponent('a-comp', [], [], false, null, 0), endComponent()],
+                             DOM.createElement('root'), nodeFactory);
+        expect(stringifyFragment(view.rootContentInsertionPoints))
+            .toEqual('<root-content-insertion-point></root-content-insertion-point>');
       });
     });
   });
@@ -483,12 +575,15 @@ class DomNodeFactory implements NodeFactory<Node> {
       DOM.setAttribute(el, attrNameAndValues[attrIdx], attrNameAndValues[attrIdx + 1]);
     }
   }
-  createShadowRoot(host: Node): Node {
+  createShadowRoot(host: Node, templateId: number): Node {
     var root = DOM.createElement('shadow-root');
     DOM.appendChild(host, root);
     return root;
   }
   createText(value: string): Node { return DOM.createTextNode(isPresent(value) ? value : ''); }
+  createRootContentInsertionPoint(): Node {
+    return DOM.createElement('root-content-insertion-point');
+  }
   appendChild(parent: Node, child: Node) { DOM.appendChild(parent, child); }
   on(element: Node, eventName: string, callback: Function) {
     this._localEventListeners.push(new LocalEventListener(element, eventName, callback));

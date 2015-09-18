@@ -8,7 +8,7 @@ import {
   beforeEach,
   afterEach,
   el
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {Control, FormBuilder, Validators} from 'angular2/core';
 
 export function main() {
@@ -48,12 +48,6 @@ export function main() {
       var g = b.group({"login": "some value"}, {"validator": Validators.nullValidator});
 
       expect(g.validator).toBe(Validators.nullValidator);
-    });
-
-    it("should use default validators when no validators are provided", () => {
-      var g = b.group({"login": "some value"});
-      expect(g.controls["login"].validator).toBe(Validators.nullValidator);
-      expect(g.validator).toBe(Validators.group);
     });
 
     it("should create control arrays", () => {

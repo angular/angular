@@ -16,7 +16,9 @@ var madge = require('madge');
 var merge = require('merge');
 var merge2 = require('merge2');
 var path = require('path');
+var q = require('q');
 var licenseWrap = require('./tools/build/licensewrap');
+var analytics = require('./tools/analytics/analytics');
 
 var watch = require('./tools/build/watch');
 
@@ -45,8 +47,8 @@ var sauceConf = require('./sauce.conf');
 var os = require('os');
 
 require('./tools/check-environment')({
-  requiredNpmVersion: '>=2.9.0',
-  requiredNodeVersion: '>=0.12.2'
+  requiredNpmVersion: '>=2.14.7',
+  requiredNodeVersion: '>=4.2.1'
 });
 
 // Make it easy to quiet down portions of the build.
@@ -71,7 +73,7 @@ var angularBuilder = {
   rebuildBrowserProdTree: throwToolsBuildMissingError,
   rebuildNodeTree: throwToolsBuildMissingError,
   rebuildDartTree: throwToolsBuildMissingError,
-  mock: true
+  uninitialized: true
 };
 
 
@@ -146,7 +148,7 @@ var BENCHPRESS_BUNDLE_CONFIG = {
     'zone.js'
   ],
   ignore: [
-    'rx'
+    '@reactivex/rxjs'
   ],
   dest: CONFIG.dest.benchpress_bundle
 };
@@ -281,7 +283,7 @@ gulp.task('check-format', function() {
 gulp.task('enforce-format', function() {
   return doCheckFormat().on('warning', function(e) {
     console.log("ERROR: You forgot to run clang-format on your change.");
-    console.log("See https://github.com/angular/angular/blob/master/DEVELOPER.md#formatting");
+    console.log("See https://github.com/angular/angular/blob/master/DEVELOPER.md#clang-format");
     process.exit(1);
   });
 });
@@ -292,14 +294,16 @@ gulp.task('lint', ['build.tools'], function() {
   // https://github.com/palantir/tslint#supported-rules
   var tslintConfig = {
     "rules": {
-      "semicolon": true,
+      "requireInternalWithUnderscore": true,
+      "requireParameterType": true,
       "requireReturnType": true,
-      "requireParameterType": true
+      "semicolon": true,
+      "variable-name": [true, "ban-keywords"]
     }
   };
-  return gulp.src(['modules/angular2/src/**/*.ts', '!modules/angular2/src/test_lib/**'])
+  return gulp.src(['modules/angular2/src/**/*.ts', '!modules/angular2/src/testing/**'])
       .pipe(tslint({
-        tslint: require('tslint'),
+        tslint: require('tslint').default,
         configuration: tslintConfig,
         rulesDirectory: 'dist/tools/tslint'
       }))
@@ -350,7 +354,7 @@ function proxyServeDart() {
   return jsserve(gulp, gulpPlugins, {
     port: 8002,
     proxies: [
-      {route: '/examples', url: 'http://localhost:8004'},
+      {route: '/playground', url: 'http://localhost:8004'},
       {route: '/benchmarks_external', url: 'http://localhost:8008'},
       {route: '/benchmarks', url: 'http://localhost:8006'}
     ]
@@ -359,7 +363,7 @@ function proxyServeDart() {
 
 // ------------------
 // web servers
-gulp.task('serve.js.dev', ['build.js.dev'], function(neverDone) {
+gulp.task('serve.js.dev', ['build.js'], function(neverDone) {
   watch('modules/**', { ignoreInitial: true }, '!broccoli.js.dev');
   jsServeDev();
 });
@@ -391,7 +395,7 @@ gulp.task('serve.dart', function(done) {
 
 gulp.task('serve/examples.dart', pubserve(gulp, gulpPlugins, {
   command: DART_SDK.PUB,
-  path: CONFIG.dest.dart + '/examples',
+  path: CONFIG.dest.dart + '/playground',
   port: 8004
 }));
 
@@ -414,120 +418,6 @@ gulp.task('serve.e2e.dart', ['build.js.cjs'], function(neverDone) {
 });
 
 
-// --------------
-// doc generation
-var Dgeni = require('dgeni');
-var bower = require('bower');
-var webserver = require('gulp-webserver');
-
-gulp.task('docs/bower', function() {
-  var bowerTask = bower.commands.install(undefined, undefined, { cwd: 'docs' });
-  bowerTask.on('log', function (result) {
-    console.log('bower:', result.id, result.data);
-  });
-  bowerTask.on('error', function(error) {
-    console.log(error);
-  });
-  return bowerTask;
-});
-
-
-function createDocsTasks(options) {
-  var dgeniPackage = options.package;
-  var distDocsPath = options.path;
-  var taskPrefix = options.prefix;
-
-  gulp.task(taskPrefix + '/dgeni', function() {
-    try {
-      var dgeni = new Dgeni([require(dgeniPackage)]);
-      return dgeni.generate();
-    } catch(x) {
-      console.log(x);
-      console.log(x.stack);
-      throw x;
-    }
-  });
-
-  gulp.task(taskPrefix + '/assets', ['docs/bower'], function() {
-    return gulp.src('docs/bower_components/**/*')
-      .pipe(gulp.dest(distDocsPath + '/lib'));
-  });
-
-  gulp.task(taskPrefix + '/app', function() {
-    return gulp.src('docs/app/**/*')
-      .pipe(gulp.dest(distDocsPath));
-  });
-
-  gulp.task(taskPrefix, [taskPrefix + '/assets', taskPrefix + '/app', taskPrefix + '/dgeni']);
-  gulp.task(taskPrefix + '/watch', function() {
-    return watch('docs/app/**/*', [taskPrefix + '/app']);
-  });
-
-  gulp.task(taskPrefix + '/test', function (done) {
-    runJasmineTests(['docs/**/*.spec.js'], done);
-  });
-
-  gulp.task(taskPrefix + '/serve', function() {
-    gulp.src(distDocsPath + '/')
-      .pipe(webserver({
-        fallback: 'index.html'
-      }));
-  });
-}
-
-
-createDocsTasks({ package: './docs/docs-package', path: 'dist/docs', prefix: 'docs'});
-createDocsTasks({ package: './docs/public-docs-package', path: 'dist/public_docs', prefix: 'public_docs'});
-
-gulp.task('docs/angular.io', ['build/clean.docs_angular_io'], function() {
-  try {
-    var dgeni = new Dgeni([require('./docs/angular.io-package')]);
-    return dgeni.generate();
-  } catch(x) {
-    console.log(x);
-    console.log(x.stack);
-    throw x;
-  }
-});
-
-
-gulp.task('docs/angular.io/watch', function() {
-  watch(['modules/angular2/docs/**', 'modules/**/src/**'], ['docs/angular.io', 'docs/angular.io/copy']);
-});
-
-
-gulp.task('docs/angular.io/copy', function(){
-  var DOCS_DIRS = ['core', 'http', 'lifecycle_hooks', 'router', 'test'];
-  var DOCS_DIST = 'dist/angular.io/partials/api/angular2/';
-  var DOCS_IO_DIST = '../angular.io/public/docs/js/latest/api/';
-
-  var fs = require('fs');
-  var fse = require('fs-extra');
-
-  if (!fs.existsSync('../angular.io')) {
-    throw new Error('docs/angular.io-watch task requires the angular.io repo to be at ' + path.resolve('../angular.io'));
-  }
-
-  DOCS_DIRS.forEach(function(dir) {
-    var distIODir = DOCS_IO_DIST + dir;
-    fse.removeSync(distIODir);
-    fse.copySync(DOCS_DIST + dir, DOCS_IO_DIST + dir);
-  });
-});
-
-
-gulp.task('docs/typings', [], function() {
-  try {
-    var dgeni = new Dgeni([require('./docs/typescript-definition-package')]);
-    return dgeni.generate();
-  } catch(x) {
-    console.log(x);
-    console.log(x.stack);
-    throw x;
-  }
-});
-
-
 // ------------------
 // CI tests suites
 
@@ -543,12 +433,12 @@ function runKarma(configFile, done) {
 }
 
 gulp.task('test.js', function(done) {
-  runSequence('test.unit.tools/ci', 'test.transpiler.unittest', 'docs/test', 'test.unit.js/ci',
+  runSequence('test.unit.tools/ci', 'test.transpiler.unittest', 'test.unit.js/ci',
               'test.unit.cjs/ci', 'test.typings', sequenceComplete(done));
 });
 
 gulp.task('test.dart', function(done) {
-  runSequence('versions.dart', 'test.transpiler.unittest', 'docs/test', 'test.unit.dart/ci',
+  runSequence('versions.dart', 'test.transpiler.unittest', 'test.unit.dart/ci',
               sequenceComplete(done));
 });
 
@@ -567,7 +457,7 @@ gulp.task('test.all.dart', shell.task(['./scripts/ci/test_dart.sh']));
 function getBrowsersFromCLI() {
   var isSauce = false;
   var args = minimist(process.argv.slice(2));
-  var rawInput = args.browsers?args.browsers:'DartiumWithWebPlatform';
+  var rawInput = args.browsers ? args.browsers : 'DartiumWithWebPlatform';
   var inputList = rawInput.replace(' ', '').split(',');
   var outputList = [];
   for (var i = 0; i < inputList.length; i++) {
@@ -599,7 +489,7 @@ gulp.task('test.unit.js', ['build.js.dev'], function (done) {
   runSequence(
     '!test.unit.js/karma-server',
     function() {
-      watch('modules/**', [
+      watch('modules/**', { ignoreInitial: true }, [
         '!broccoli.js.dev',
         '!test.unit.js/karma-run'
       ]);
@@ -607,24 +497,36 @@ gulp.task('test.unit.js', ['build.js.dev'], function (done) {
   );
 });
 
+gulp.task('watch.js.dev', ['build.js.dev'], function (done) {
+  watch('modules/**', ['!broccoli.js.dev']);
+});
+
 gulp.task('test.unit.js.sauce', ['build.js.dev'], function (done) {
   var browserConf = getBrowsersFromCLI();
   if (browserConf.isSauce) {
-    karma.server.start({
+    new karma.Server({
         configFile: __dirname + '/karma-js.conf.js',
         singleRun: true,
         browserNoActivityTimeout: 240000,
         captureTimeout: 120000,
         reporters: ['dots'],
         browsers: browserConf.browsersToRun},
-      function(err) {done(); process.exit(err ? 1 : 0);});
+      function(err) {done(); process.exit(err ? 1 : 0);}).start();
   } else {
     throw new Error('ERROR: no Saucelabs browsers provided, add them with the --browsers option');
   }
 });
 
-gulp.task('!test.unit.js/karma-server', function() {
-  karma.server.start({configFile: __dirname + '/karma-js.conf.js', reporters: 'dots'});
+gulp.task('!test.unit.js/karma-server', function(done) {
+  var watchStarted = false;
+  var server = new karma.Server({configFile: __dirname + '/karma-js.conf.js', reporters: 'dots'});
+  server.on('run_complete', function () {
+    if (!watchStarted) {
+      watchStarted = true;
+      done();
+    }
+  });
+  server.start();
 });
 
 
@@ -647,7 +549,11 @@ gulp.task('test.unit.router', function (done) {
 });
 
 gulp.task('!test.unit.router/karma-server', function() {
-  karma.server.start({configFile: __dirname + '/modules/angular1_router/karma-router.conf.js'});
+  new karma.Server({
+        configFile: __dirname + '/modules/angular1_router/karma-router.conf.js',
+        reporters: 'dots'
+      }
+  ).start();
 });
 
 
@@ -689,6 +595,29 @@ gulp.task('test.unit.dart', function (done) {
   );
 });
 
+gulp.task('watch.dart.dev', function (done) {
+  runSequence(
+      'build/tree.dart',
+      'build/pure-packages.dart',
+      '!build/pubget.angular2.dart',
+      '!build/change_detect.dart',
+      '!build/remove-pub-symlinks',
+      'build.dart.material.css',
+      function(error) {
+        // if initial build failed (likely due to build or formatting step) then exit
+        // otherwise karma server doesn't start and we can't continue running properly
+        if (error) {
+          done(error);
+          return;
+        }
+
+        watch(['modules/angular2/**'], { ignoreInitial: true }, [
+          '!build/tree.dart'
+        ]);
+      }
+  );
+});
+
 gulp.task('!test.unit.dart/karma-run', function (done) {
   // run the run command in a new process to avoid duplicate logging by both server and runner from
   // a single process
@@ -697,32 +626,57 @@ gulp.task('!test.unit.dart/karma-run', function (done) {
 
 
 gulp.task('!test.unit.dart/karma-server', function() {
-  karma.server.start({configFile: __dirname + '/karma-dart.conf.js', reporters: 'dots'});
+  new karma.Server({configFile: __dirname + '/karma-dart.conf.js', reporters: 'dots'}).start();
 });
 
 
 gulp.task('test.unit.router/ci', function (done) {
   var browserConf = getBrowsersFromCLI();
-  karma.server.start({configFile: __dirname + '/modules/angular1_router/karma-router.conf.js',
-      singleRun: true, reporters: ['dots'], browsers: browserConf.browsersToRun}, done);
+  new karma.Server({
+        configFile: __dirname + '/modules/angular1_router/karma-router.conf.js',
+        singleRun: true,
+        reporters: ['dots'],
+        browsers: browserConf.browsersToRun
+      },
+      done
+  ).start();
 });
 
 gulp.task('test.unit.js/ci', function (done) {
   var browserConf = getBrowsersFromCLI();
-  karma.server.start({configFile: __dirname + '/karma-js.conf.js',
-      singleRun: true, reporters: ['dots'], browsers: browserConf.browsersToRun}, done);
+  new karma.Server({
+        configFile: __dirname + '/karma-js.conf.js',
+        singleRun: true,
+        reporters: ['dots'],
+        browsers: browserConf.browsersToRun
+      },
+      done
+  ).start();
 });
 
 gulp.task('test.unit.js.sauce/ci', function (done) {
-  karma.server.start({configFile: __dirname + '/karma-js.conf.js',
-    singleRun: true, browserNoActivityTimeout: 240000, captureTimeout: 120000, reporters: ['dots', 'saucelabs'], browsers: sauceConf.aliases.CI},
-    function(err) {done(); process.exit(err ? 1 : 0);});
+  new karma.Server({
+        configFile: __dirname + '/karma-js.conf.js',
+        singleRun: true,
+        browserNoActivityTimeout: 240000,
+        captureTimeout: 120000,
+        reporters: ['dots', 'saucelabs'],
+        browsers: sauceConf.aliases.CI
+      },
+      function(err) {done(); process.exit(err ? 1 : 0);}
+  ).start();
 });
 
 gulp.task('test.unit.dart/ci', function (done) {
   var browserConf = getBrowsersFromCLI();
-  karma.server.start({configFile: __dirname + '/karma-dart.conf.js',
-    singleRun: true, reporters: ['dots'], browsers: browserConf.browsersToRun}, done);
+  new karma.Server({
+        configFile: __dirname + '/karma-dart.conf.js',
+        singleRun: true,
+        reporters: ['dots'],
+        browsers: browserConf.browsersToRun
+      },
+      done
+  ).start();
 });
 
 
@@ -743,24 +697,31 @@ gulp.task('test.unit.cjs', ['build/clean.js', 'build.tools'], function (neverDon
   watch('modules/**', buildAndTest);
 });
 
-
+// Use this target to continuously run dartvm unit-tests (such as transformer
+// tests) while coding. Note: these tests do not use Karma.
 gulp.task('test.unit.dartvm', function (done) {
   runSequence(
     'build/tree.dart',
     'build/pure-packages.dart',
-    'build/pubspec.dart',
+    '!build/pubget.angular2.dart',
     '!build/change_detect.dart',
     '!test.unit.dartvm/run',
     function(error) {
-      // if initial build failed (likely due to build or formatting step) then exit
-      // otherwise karma server doesn't start and we can't continue running properly
-      if (error) {
-        done(error);
-        return;
-      }
-
+      // Watch for changes made in the TS and Dart code under "modules" and
+      // run ts2dart and test change detector generator prior to rerunning the
+      // tests.
       watch('modules/angular2/**', { ignoreInitial: true }, [
         '!build/tree.dart',
+        '!build/change_detect.dart',
+        '!test.unit.dartvm/run'
+      ]);
+
+      // Watch for changes made in Dart code under "modules_dart", then copy it
+      // to dist and run test change detector generator prior to retunning the
+      // tests.
+      watch('modules_dart/**', { ignoreInitial: true }, [
+        'build/pure-packages.dart',
+        '!build/change_detect.dart',
         '!test.unit.dartvm/run'
       ]);
     }
@@ -817,30 +778,41 @@ gulp.task('pre-test-checks', function(done) {
 // feedback while allowing tests to execute.
 gulp.task('static-checks', ['!build.tools'], function(done) {
   runSequence(
-    ['enforce-format', 'lint', 'test.typings'],
+    // We do not run test.typings here because it requires building, which is too slow.
+    ['enforce-format', 'lint'],
     sequenceComplete(done));
 });
 
 
-gulp.task('!pre.test.typings', ['docs/typings'], function() {
-  return gulp
-    .src([
-      'modules/angular2/typings/**/*'], {
-        base: 'modules/angular2/typings/**'
-      }
-    )
-    .pipe(gulp.dest('dist/docs/typings/*'));
-});
-
 // -----------------
-gulp.task('test.typings', ['!pre.test.typings'], function() {
-  return gulp.src(['typing_spec/*.ts', 'dist/docs/typings/angular2/*.d.ts', 'dist/docs/typings/http.d.ts'])
-      .pipe(tsc({target: 'ES5', module: 'commonjs',
-                 experimentalDecorators: true,
-                 noImplicitAny: true,
-                 // Don't use the version of typescript that gulp-typescript depends on, we need 1.5
-                 // see https://github.com/ivogabe/gulp-typescript#typescript-version
-                 typescript: require('typescript')}));
+// Tests for the typings we deliver for TS users
+//
+// Typings are contained in individual .d.ts files produced by the compiler,
+// distributed in our npm package, and loaded from node_modules by
+// the typescript compiler.
+
+// Make sure the two typings tests are isolated, by running this one in a tempdir
+var tmpdir = path.join(os.tmpdir(), 'test.typings',  new Date().getTime().toString());
+gulp.task('!pre.test.typings.layoutNodeModule', ['build.js.cjs'], function() {
+  return gulp
+    .src(['dist/js/cjs/angular2/**/*', 'node_modules/@reactivex/rxjs/dist/cjs/**'], {base: 'dist/js/cjs'})
+    .pipe(gulp.dest(path.join(tmpdir, 'node_modules')));
+});
+gulp.task('!pre.test.typings.copyTypingsSpec', function() {
+  return gulp
+    .src(['typing_spec/basic_spec.ts'], {base: 'typing_spec'})
+    .pipe(gulp.dest(path.join(tmpdir)));
+});
+gulp.task('test.typings', [
+  '!pre.test.typings.layoutNodeModule',
+  '!pre.test.typings.copyTypingsSpec'
+], function() {
+  return gulp.src([tmpdir + '/**'])
+    .pipe(tsc({target: 'ES5', module: 'commonjs',
+      experimentalDecorators: true,
+      noImplicitAny: true,
+      moduleResolution: 'node',
+      typescript: require('typescript')}));
 });
 
 // -----------------
@@ -850,65 +822,20 @@ gulp.task('test.typings', ['!pre.test.typings'], function() {
 // These packages need no transpilation. All code is copied over to `dist`
 // unmodified and directory structure is preserved.
 //
-// This task also fixes relative `dependency_overrides` paths in `pubspec.yaml`
-// files.
-//
 // This task is expected to be run after build/tree.dart
 gulp.task('build/pure-packages.dart', function() {
   var through2 = require('through2');
   var yaml = require('js-yaml');
   var originalPrefix = '../../dist/dart/';
 
-  var transformStream = gulp
+  return gulp
     .src([
       'modules_dart/transform/**/*',
-      '!modules_dart/transform/**/*.proto'
+      '!modules_dart/transform/**/*.proto',
+      '!modules_dart/transform/pubspec.yaml',
+      '!modules_dart/transform/**/packages{,/**}',
     ])
     .pipe(gulp.dest(path.join(CONFIG.dest.dart, 'angular2')));
-
-  var moveStream = gulp.src([
-                         'modules_dart/**/*.dart',
-                         'modules_dart/**/pubspec.yaml',
-                         '!modules_dart/transform/**'
-                       ])
-                       .pipe(through2.obj(function(file, enc, done) {
-                         if (/pubspec.yaml$/.test(file.path)) {
-                           // Pure packages specify dependency_overrides relative to
-                           // `modules_dart`, so they have to walk up and into `dist`.
-                           //
-                           // Example:
-                           //
-                           // dependency_overrides:
-                           //   angular2:
-                           //     path: ../../dist/dart/angular2
-                           //
-                           // When we copy a pure package into `dist` the relative path
-                           // must be updated. The code below replaces paths accordingly.
-                           // So the example above is turned into:
-                           //
-                           // dependency_overrides:
-                           //   angular2:
-                           //     path: ../angular2
-                           //
-                           var pubspec = yaml.safeLoad(file.contents.toString());
-                           var overrides = pubspec.dependency_overrides;
-                           if (overrides) {
-                             Object.keys(overrides).forEach(function(pkg) {
-                               var overridePath = overrides[pkg].path;
-                               if ((new RegExp('^' + originalPrefix)).test(overridePath)) {
-                                 overrides[pkg].path = overridePath.replace(originalPrefix, '../');
-                               }
-                             });
-                             file.contents = new Buffer(yaml.safeDump(pubspec));
-                           }
-                         }
-                         this.push(file);
-                         done();
-                       }))
-                       .pipe(gulp.dest(CONFIG.dest.dart));
-
-
-  return merge2(transformStream, moveStream);
 });
 
 // Builds all Dart packages, but does not compile them
@@ -1035,67 +962,45 @@ var bundleConfig = {
 
 // production build
 gulp.task('!bundle.js.prod', ['build.js.prod'], function() {
-  return bundler.bundle(
-      bundleConfig,
-      'angular2/angular2',
-      './dist/build/angular2.js',
-      {
-        sourceMaps: true
-      }).
-      then(function(){
-        return bundler.bundle(
-          bundleConfig,
-          'angular2/http',
-          './dist/build/http.js',
-          {
-            sourceMaps: true
-          }
-        );
-      });
+  var bundlerConfig = {
+    sourceMaps: true
+  };
+
+  return q.all([
+    bundler.bundle(bundleConfig, 'angular2/angular2', './dist/build/angular2.js', bundlerConfig),
+    bundler.bundle(bundleConfig, 'angular2/http - angular2/angular2', './dist/build/http.js', bundlerConfig)
+  ]);
 });
 
 // minified production build
 gulp.task('!bundle.js.min', ['build.js.prod'], function() {
-  return bundler.bundle(
-      bundleConfig,
-      'angular2/angular2',
-      './dist/build/angular2.min.js',
-      {
-        sourceMaps: true,
-        minify: true
-      }).
-      then(function(){
-        return bundler.bundle(
-          bundleConfig,
-          'angular2/http',
-          './dist/build/http.min.js',
-          {
-            sourceMaps: true,
-            minify: true
-          }
-        );
-      });
+  var bundlerConfig = {
+    sourceMaps: true,
+    minify: true
+  };
+
+  return q.all([
+    bundler.bundle(bundleConfig, 'angular2/angular2', './dist/build/angular2.min.js', bundlerConfig),
+    bundler.bundle(bundleConfig, 'angular2/http - angular2/angular2', './dist/build/http.min.js', bundlerConfig),
+    bundler.bundle(bundleConfig, 'angular2/router - angular2/angular2', './dist/js/bundle/router.dev.min.js', bundlerConfig)
+  ]);
 });
 
 // development build
 gulp.task('!bundle.js.dev', ['build.js.dev'], function() {
+  var bundlerConfig = {
+    sourceMaps: true
+  };
+
   var devBundleConfig = merge(true, bundleConfig);
-  devBundleConfig.paths =
-      merge(true, devBundleConfig.paths, {
+  devBundleConfig.paths = merge(true, devBundleConfig.paths, {
        "*": "dist/js/dev/es5/*.js"
       });
-  return bundler.bundle(
-      devBundleConfig,
-      'angular2/angular2',
-      './dist/build/angular2.dev.js',
-      { sourceMaps: true }).
-      then(function() {
-        return bundler.bundle(
-          devBundleConfig,
-          'angular2/http',
-          './dist/build/http.dev.js',
-          { sourceMaps: true });
-      });
+
+  return q.all([
+    bundler.bundle(devBundleConfig, 'angular2/angular2', './dist/build/angular2.dev.js', bundlerConfig),
+    bundler.bundle(devBundleConfig, 'angular2/http - angular2/angular2', './dist/build/http.dev.js', bundlerConfig)
+  ]);
 });
 
 // WebWorker build
@@ -1126,13 +1031,13 @@ gulp.task('!router.bundle.js.dev', ['build.js.dev'], function() {
     { sourceMaps: true });
 });
 
-gulp.task('!test.bundle.js.dev', ['build.js.dev'], function() {
+gulp.task('!bundle.testing', ['build.js.dev'], function() {
   var devBundleConfig = merge(true, bundleConfig);
   devBundleConfig.paths = merge(true, devBundleConfig.paths, {"*": "dist/js/dev/es5/*.js"});
   return bundler.bundle(
     devBundleConfig,
-    'angular2/test + angular2/mock - angular2/angular2',
-    './dist/js/bundle/test_lib.dev.js',
+    'angular2/testing + angular2/mock - angular2/angular2',
+    './dist/js/bundle/testing.js',
     { sourceMaps: true });
 });
 
@@ -1229,6 +1134,21 @@ gulp.task('!bundle.web_worker.js.dev.deps', ['!bundle.web_worker.js.dev'], funct
                 addDevDependencies("web_worker/worker.dev.js")));
 });
 
+// We need to duplicate the deps of bundles.js so that this task runs after
+// all the bundle files are created.
+gulp.task('!bundle.copy', [
+  '!bundle.js.prod.deps',
+  '!bundle.js.dev.deps',
+  '!bundle.js.min.deps',
+  '!bundle.web_worker.js.dev.deps',
+  '!bundle.js.sfx.dev.deps',
+  '!router.bundle.js.dev'
+],
+          function() {
+            return merge2(gulp.src('dist/js/bundle/**').pipe(gulp.dest('dist/js/prod/es5/bundle')),
+                          gulp.src('dist/js/bundle/**').pipe(gulp.dest('dist/js/dev/es5/bundle')));
+          });
+
 gulp.task('bundles.js', [
   '!bundle.js.prod.deps',
   '!bundle.js.dev.deps',
@@ -1236,7 +1156,8 @@ gulp.task('bundles.js', [
   '!bundle.web_worker.js.dev.deps',
   '!bundle.js.sfx.dev.deps',
   '!router.bundle.js.dev',
-  '!test.bundle.js.dev']);
+  '!bundle.testing',
+  '!bundle.copy']);
 
 gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs', 'bundles.js', 'benchpress.bundle']);
 
@@ -1335,12 +1256,13 @@ gulp.task('benchpress.bundle', ['build/clean.benchpress.bundle', 'build.js.cjs']
 
 // register cleanup listener for ctrl+c/kill used to quit any persistent task (autotest or serve tasks)
 process.on('SIGINT', function() {
-  if (!angularBuilder.mock) {
+  if (!angularBuilder.uninitialized) {
     runSequence('cleanup.builder', function () {
       process.exit();
     });
+  } else {
+    process.exit();
   }
-  process.exit();
 });
 
 
@@ -1352,7 +1274,12 @@ process.on('beforeExit', function() {
 
   beforeExitRan = true;
 
-  if (!angularBuilder.mock) {
+  if (!angularBuilder.uninitialized) {
     gulp.start('cleanup.builder');
   }
 });
+
+
+gulp.on('task_start', (e) => { analytics.buildStart('gulp ' + e.task)});
+gulp.on('task_stop', (e) => { analytics.buildSuccess('gulp ' + e.task, e.duration*1000)});
+gulp.on('task_err', (e) => { analytics.buildError('gulp ' + e.task, e.duration*1000)});

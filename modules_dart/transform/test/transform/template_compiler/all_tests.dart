@@ -1,158 +1,350 @@
 library angular2.test.transform.template_compiler.all_tests;
 
 import 'dart:async';
+import 'dart:convert';
+
 import 'package:barback/barback.dart';
+import 'package:angular2/src/core/change_detection/codegen_name_util.dart'
+    show CONTEXT_ACCESSOR;
 import 'package:angular2/src/core/dom/html_adapter.dart';
-import 'package:angular2/src/transform/common/asset_reader.dart';
-import 'package:angular2/src/transform/common/logging.dart';
+import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/template_compiler/generator.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:path/path.dart' as path;
 import 'package:guinness/guinness.dart';
 
+import '../common/compile_directive_metadata/ng_for.ng_meta.dart' as ngMeta;
+import '../common/ng_meta_helper.dart';
 import '../common/read_file.dart';
+import '../common/recording_logger.dart';
 
 var formatter = new DartFormatter();
-AssetReader reader = new TestAssetReader();
+TestAssetReader reader;
+RecordingLogger logger;
 
 main() => allTests();
+
+var fooComponentMeta, fooNgMeta, fooAssetId;
+var barComponentMeta, barNgMeta, barAssetId;
+var bazComponentMeta, bazNgMeta, bazAssetId;
+
+/// Call after making changes to `fooNgMeta`, `barNgMeta`, or `bazNgMeta` and
+/// before trying to read them from `reader`.
+TestAssetReader updateReader() => reader
+  ..addAsset(fooAssetId, JSON.encode(fooNgMeta.toJson()))
+  ..addAsset(barAssetId, JSON.encode(barNgMeta.toJson()))
+  ..addAsset(bazAssetId, JSON.encode(bazNgMeta.toJson()));
 
 void allTests() {
   Html5LibDomAdapter.makeCurrent();
 
-  describe('registrations', () {
-    noChangeDetectorTests();
-    changeDetectorTests();
+  final moduleBase = 'asset:a';
+
+  beforeEach(() {
+    reader = new TestAssetReader()
+      ..addAsset(
+          new AssetId('angular2', 'lib/src/directives/ng_for.ng_meta.json'),
+          JSON.encode(ngMeta.ngFor));
+
+    // Establish some test NgMeta objects with one Component each.
+    // NOTE(kegluneq): For simplicity, the NgDepsModel objects created here are
+    // lacking some details that would be created by DirectiveProcessor but
+    // which are not used in the template compiler.
+    fooComponentMeta = createFoo(moduleBase);
+    fooNgMeta = new NgMeta(ngDeps: new NgDepsModel()
+      ..libraryUri = 'test.foo'
+      ..reflectables.add(new ReflectionInfoModel()..name = fooComponentMeta.type.name));
+    fooNgMeta.types[fooComponentMeta.type.name] = fooComponentMeta;
+
+    barComponentMeta = createBar(moduleBase);
+    barNgMeta = new NgMeta(ngDeps: new NgDepsModel()
+      ..libraryUri = 'test.bar'
+      ..reflectables.add(new ReflectionInfoModel()..name = barComponentMeta.type.name));
+    barNgMeta.types[barComponentMeta.type.name] = barComponentMeta;
+
+    bazComponentMeta = createBaz(moduleBase);
+    bazNgMeta = new NgMeta(ngDeps: new NgDepsModel()
+      ..libraryUri = 'test.baz'
+      ..reflectables.add(new ReflectionInfoModel()..name = bazComponentMeta.type.name));
+    barNgMeta.types[bazComponentMeta.type.name] = bazComponentMeta;
+
+    fooAssetId = new AssetId('a', 'lib/foo.ng_meta.json');
+    barAssetId = new AssetId('a', 'lib/bar.ng_meta.json');
+    bazAssetId = new AssetId('a', 'lib/baz.ng_meta.json');
+    updateReader();
   });
-}
 
-void changeDetectorTests() {
-  Future<String> process(AssetId assetId) => processTemplates(reader, assetId);
+  Future<String> process(AssetId assetId) {
+    logger = new RecordingLogger();
+    return log.setZoned(logger, () => processTemplates(reader, assetId));
+  }
 
-  // TODO(tbosch): This is just a temporary test that makes sure that the dart server and
-  // dart browser is in sync. Change this to "not contains notifyBinding"
-  // when https://github.com/angular/angular/issues/3019 is solved.
-  it('should not always notifyDispatcher for template variables', () async {
-    var inputPath = 'template_compiler/ng_for_files/hello.ng_deps.dart';
-    var output = await (process(new AssetId('a', inputPath)));
-    expect(output).toContain('notifyDispatcher');
+  // TODO(tbosch): This is just a temporary test that makes sure that the dart
+  // server and dart browser is in sync.
+  it('should not contain notifyBinding', () async {
+    fooComponentMeta.template = new CompileTemplateMetadata(
+        template: '<li *ng-for="#thing of things"><div>test</div></li>');
+    final viewAnnotation = new AnnotationModel()
+      ..name = 'View'
+      ..isView = true;
+    fooNgMeta.ngDeps.reflectables.first.annotations.add(viewAnnotation);
+    fooNgMeta.ngDeps.reflectables.first.directives
+        .add(new PrefixedDirective()..name = 'NgFor');
+    fooNgMeta.ngDeps.imports.add(
+        new ImportModel()..uri = 'package:angular2/src/directives/ng_for.dart');
+
+    reader.addAsset(new AssetId('angular2', 'lib/src/directives/ng_for.dart'),
+        JSON.encode(ngMeta.ngFor));
+
+    updateReader();
+
+    final outputs = await process(fooAssetId);
+    // TODO(kegluenq): Does this next line need to be updated as well?
+    expect(outputs.templatesCode).not.toContain('notifyDispatcher');
   });
-
-  it('should include directives mentioned in directive aliases.', () async {
-    // Input 2 is the same as input1, but contains the directive aliases
-    // inlined.
-    var input1Path =
-        'template_compiler/directive_aliases_files/hello1.ng_deps.dart';
-    var input2Path =
-        'template_compiler/directive_aliases_files/hello2.ng_deps.dart';
-    // Except for the directive argument in the View annotation, the generated
-    // change detectors are identical.
-    var output1 = (await process(new AssetId('a', input1Path))).replaceFirst(
-        'directives: const [alias1]', 'directives: const [GoodbyeCmp]');
-    var output2 = await process(new AssetId('a', input2Path));
-    _formatThenExpectEquals(output1, output2);
-  });
-}
-
-void noChangeDetectorTests() {
-  Future<String> process(AssetId assetId) =>
-      processTemplates(reader, assetId, generateChangeDetectors: false);
 
   it('should parse simple expressions in inline templates.', () async {
-    var inputPath =
-        'template_compiler/inline_expression_files/hello.ng_deps.dart';
-    var expected = readFile(
-        'template_compiler/inline_expression_files/expected/hello.ng_deps.dart');
-    var output = await process(new AssetId('a', inputPath));
-    _formatThenExpectEquals(output, expected);
+    fooComponentMeta.template = new CompileTemplateMetadata(
+        template: '<div [a]="b">{{greeting}}</div>',
+        templateUrl: 'template.html');
+    updateReader();
+
+    final outputs = await process(fooAssetId);
+    final ngDeps = outputs.ngDeps;
+    expect(ngDeps).toBeNotNull();
+    expect(ngDeps.imports).toContain(new ImportModel()
+      ..uri = 'foo.template.dart'
+      ..prefix = '_templates');
+    expect(ngDeps.reflectables.first.annotations)
+        .toContain(new AnnotationModel()
+          ..name = '_templates.HostFooComponentTemplate'
+          ..isConstObject = true);
+    expect(outputs.templatesCode)
+      ..toContain('$CONTEXT_ACCESSOR.greeting')
+      ..toContain('$CONTEXT_ACCESSOR.b');
   });
 
   it('should parse simple methods in inline templates.', () async {
-    var inputPath = 'template_compiler/inline_method_files/hello.ng_deps.dart';
-    var expected = readFile(
-        'template_compiler/inline_method_files/expected/hello.ng_deps.dart');
-    var output = await process(new AssetId('a', inputPath));
-    _formatThenExpectEquals(output, expected);
-  });
+    fooComponentMeta.template = new CompileTemplateMetadata(
+        template: '<button (click)="action()">go</button>',
+        templateUrl: 'template.html');
+    updateReader();
 
-  it('should parse simple expressions in linked templates.', () async {
-    var inputPath = 'template_compiler/url_expression_files/hello.ng_deps.dart';
-    var expected = readFile(
-        'template_compiler/url_expression_files/expected/hello.ng_deps.dart');
-    var output = await process(new AssetId('a', inputPath));
-    _formatThenExpectEquals(output, expected);
-  });
-
-  it('should parse simple methods in linked templates.', () async {
-    var inputPath = 'template_compiler/url_method_files/hello.ng_deps.dart';
-    var expected = readFile(
-        'template_compiler/url_method_files/expected/hello.ng_deps.dart');
-    var output = await process(new AssetId('a', inputPath));
-    _formatThenExpectEquals(output, expected);
-  });
-
-  it('should not generate duplicate getters/setters', () async {
-    var inputPath = 'template_compiler/duplicate_files/hello.ng_deps.dart';
-    var expected = readFile(
-        'template_compiler/duplicate_files/expected/hello.ng_deps.dart');
-    var output = await process(new AssetId('a', inputPath));
-    _formatThenExpectEquals(output, expected);
+    final outputs = await process(fooAssetId);
+    final ngDeps = outputs.ngDeps;
+    expect(ngDeps).toBeNotNull();
+    expect(ngDeps.imports).toContain(new ImportModel()
+      ..uri = 'foo.template.dart'
+      ..prefix = '_templates');
+    expect(ngDeps.reflectables.first.annotations)
+        .toContain(new AnnotationModel()
+          ..name = '_templates.HostFooComponentTemplate'
+          ..isConstObject = true);
+    expect(outputs.templatesCode)..toContain('$CONTEXT_ACCESSOR.action()');
   });
 
   it('should parse `View` directives with a single dependency.', () async {
-    var inputPath = 'template_compiler/one_directive_files/hello.ng_deps.dart';
-    var expected = readFile(
-        'template_compiler/one_directive_files/expected/hello.ng_deps.dart');
+    fooComponentMeta.template =
+        new CompileTemplateMetadata(template: '<${barComponentMeta.selector}>');
+    final viewAnnotation = new AnnotationModel()
+      ..name = 'View'
+      ..isView = true;
+    viewAnnotation.namedParameters.add(new NamedParameter()
+      ..name = 'directives'
+      ..value = 'const [${barComponentMeta.type.name}]');
+    fooNgMeta.ngDeps.reflectables.first.annotations.add(viewAnnotation);
+    fooNgMeta.ngDeps.reflectables.first.directives
+        .add(new PrefixedDirective()..name = barComponentMeta.type.name);
+    fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'bar.dart');
+    barComponentMeta.template =
+        new CompileTemplateMetadata(template: 'BarTemplate');
+    updateReader();
 
-    var output = await process(new AssetId('a', inputPath));
-    _formatThenExpectEquals(output, expected);
+    final outputs = await process(fooAssetId);
+    final ngDeps = outputs.ngDeps;
+    expect(ngDeps).toBeNotNull();
+    expect(ngDeps.imports).toContain(new ImportModel()
+      ..uri = 'foo.template.dart'
+      ..prefix = '_templates');
+    expect(ngDeps.reflectables.first.annotations)
+        .toContain(new AnnotationModel()
+          ..name = '_templates.HostFooComponentTemplate'
+          ..isConstObject = true);
+
+    expect(outputs.templatesCode)
+      ..toContain("import 'bar.dart'")
+      ..toContain("import 'bar.template.dart'");
   });
 
   it('should parse `View` directives with a single prefixed dependency.',
       () async {
-    var inputPath = 'template_compiler/with_prefix_files/hello.ng_deps.dart';
-    var expected = readFile(
-        'template_compiler/with_prefix_files/expected/hello.ng_deps.dart');
+    fooComponentMeta.template =
+        new CompileTemplateMetadata(template: '<${barComponentMeta.selector}>');
+    final componentAnnotation = new AnnotationModel()
+      ..name = 'View'
+      ..isView = true;
+    fooNgMeta.ngDeps.reflectables.first.annotations.add(componentAnnotation);
+    fooNgMeta.ngDeps.reflectables.first.directives.add(new PrefixedDirective()
+      ..name = barComponentMeta.type.name
+      ..prefix = 'prefix');
+    fooNgMeta.ngDeps.imports.add(new ImportModel()
+      ..uri = 'bar.dart'
+      ..prefix = 'prefix');
+    barComponentMeta.template =
+        new CompileTemplateMetadata(template: 'BarTemplate');
+    updateReader();
 
-    var output = await process(new AssetId('a', inputPath));
-    _formatThenExpectEquals(output, expected);
+    final outputs = await process(fooAssetId);
+    final ngDeps = outputs.ngDeps;
+    expect(ngDeps).toBeNotNull();
+    expect(ngDeps.imports).toContain(new ImportModel()
+      ..uri = 'foo.template.dart'
+      ..prefix = '_templates');
+    expect(ngDeps.reflectables.first.annotations)
+        .toContain(new AnnotationModel()
+          ..name = '_templates.HostFooComponentTemplate'
+          ..isConstObject = true);
 
-    inputPath = 'template_compiler/with_prefix_files/goodbye.ng_deps.dart';
-    expected = readFile(
-        'template_compiler/with_prefix_files/expected/goodbye.ng_deps.dart');
-
-    output = await process(new AssetId('a', inputPath));
-    _formatThenExpectEquals(output, expected);
+    expect(outputs.templatesCode)
+      ..toContain("import 'bar.dart'")
+      ..toContain("import 'bar.template.dart'");
   });
 
-  it('should parse angular directives with a prefix', () async {
-    var inputPath =
-        'template_compiler/with_prefix_files/ng2_prefix.ng_deps.dart';
-    var expected = readFile(
-        'template_compiler/with_prefix_files/expected/ng2_prefix.ng_deps.dart');
+  it('should include directives mentioned in directive aliases.', () async {
+    fooComponentMeta.template =
+        new CompileTemplateMetadata(template: '<${barComponentMeta.selector}>');
+    final componentAnnotation = new AnnotationModel()
+      ..name = 'View'
+      ..isView = true;
+    fooNgMeta.ngDeps.reflectables.first.annotations.add(componentAnnotation);
+    fooNgMeta.ngDeps.reflectables.first.directives
+        .add(new PrefixedDirective()..name = 'directiveAlias');
+    fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'bar.dart');
 
-    var output = await process(new AssetId('a', inputPath));
-    _formatThenExpectEquals(output, expected);
+    fooNgMeta.aliases['directiveAlias'] = [barComponentMeta.type.name];
+    barComponentMeta.template =
+        new CompileTemplateMetadata(template: 'BarTemplate');
+    updateReader();
+
+    final outputs = await process(fooAssetId);
+    final ngDeps = outputs.ngDeps;
+    expect(ngDeps).toBeNotNull();
+    expect(ngDeps.imports).toContain(new ImportModel()
+      ..uri = 'foo.template.dart'
+      ..prefix = '_templates');
+    expect(ngDeps.reflectables.first.annotations)
+        .toContain(new AnnotationModel()
+          ..name = '_templates.HostFooComponentTemplate'
+          ..isConstObject = true);
+
+    expect(outputs.templatesCode)
+      ..toContain("import 'bar.dart'")
+      ..toContain("import 'bar.template.dart'");
   });
 
   it('should create the same output for multiple calls.', () async {
-    var inputPath =
-        'template_compiler/inline_expression_files/hello.ng_deps.dart';
-    var expected = readFile(
-        'template_compiler/inline_expression_files/expected/hello.ng_deps.dart');
-    var output = await process(new AssetId('a', inputPath));
-    _formatThenExpectEquals(output, expected);
-    output = await process(new AssetId('a', inputPath));
-    _formatThenExpectEquals(output, expected);
+    fooComponentMeta.template = new CompileTemplateMetadata(
+        template: '<div [a]="b">{{greeting}}</div>',
+        templateUrl: 'template.html');
+    updateReader();
+
+    final firstOutputs = await process(fooAssetId);
+    final secondOutputs = await process(fooAssetId);
+    expect(firstOutputs.ngDeps).toEqual(secondOutputs.ngDeps);
+    expect(firstOutputs.templatesCode).toEqual(secondOutputs.templatesCode);
   });
 
-  it('should generate all expected getters, setters, & methods.', () async {
-    var base = 'template_compiler/registrations_files';
-    var inputPath = path.join(base, 'registrations.ng_deps.dart');
-    var expected =
-        readFile(path.join(base, 'expected/registrations.ng_deps.dart'));
-    var output = await process(new AssetId('a', inputPath));
-    _formatThenExpectEquals(output, expected);
+  it('should generate getters for Component#outputs.', () async {
+    fooComponentMeta.template = new CompileTemplateMetadata(
+        template: '<div>{{greeting}}</div>', templateUrl: 'template.html');
+    fooComponentMeta.outputs = {'eventName': 'eventName'};
+    updateReader();
+
+    final outputs = await process(fooAssetId);
+    final ngDeps = outputs.ngDeps;
+    expect(ngDeps.getters).toContain('eventName');
+  });
+
+  it('should generate getters for Directive#outputs.', () async {
+    fooComponentMeta
+      ..template = null
+      ..isComponent = false;
+    fooComponentMeta.outputs = {'eventName': 'eventName'};
+    updateReader();
+
+    final outputs = await process(fooAssetId);
+    final ngDeps = outputs.ngDeps;
+    expect(ngDeps.getters).toContain('eventName');
+  });
+
+  it('should generate setters for Component#inputs.', () async {
+    fooComponentMeta.template = new CompileTemplateMetadata(
+        template: '<div>{{greeting}}</div>', templateUrl: 'template.html');
+    fooComponentMeta.inputs = {'text': 'tool-tip'};
+    updateReader();
+
+    final outputs = await process(fooAssetId);
+    final ngDeps = outputs.ngDeps;
+    expect(ngDeps.setters).toContain('text');
+  });
+
+  it('should generate setters for Directive#inputs.', () async {
+    fooComponentMeta
+      ..template = null
+      ..isComponent = false;
+    fooComponentMeta.inputs = {'text': 'tool-tip'};
+    updateReader();
+
+    final outputs = await process(fooAssetId);
+    final ngDeps = outputs.ngDeps;
+    expect(ngDeps.setters).toContain('text');
+  });
+
+  it(
+      'should generate a single setter for two `Directive`s '
+      'with the same inputs.', () async {
+    fooComponentMeta
+      ..template = null
+      ..isComponent = false;
+    fooComponentMeta.inputs = {'text': 'tool-tip'};
+    barComponentMeta
+      ..template = null
+      ..isComponent = false;
+    barComponentMeta.inputs = {'text': 'tool-tip'};
+    updateReader();
+
+    final outputs = await process(fooAssetId);
+    final ngDeps = outputs.ngDeps;
+    expect(ngDeps.setters).toContain('text');
+    expect(ngDeps.setters.length).toEqual(1);
+  });
+
+  it('should gracefully handle null .ng_meta.json files', () async {
+    final dne =
+        new AssetId('package', 'lib/file_that_does_not_exist.ng_meta.json');
+
+    var didThrow = false;
+    await process(dne).then((out) {
+      expect(out).toBeNull();
+    }).catchError((_) {
+      didThrow = true;
+    });
+
+    expect(didThrow).toBeFalse();
+  });
+
+  it('should gracefully handle empty .ng_meta.json files', () async {
+    final emptyId = new AssetId('package', 'lib/empty.ng_meta.json');
+    reader.addAsset(emptyId, '');
+
+    var didThrow = false;
+    await process(emptyId).then((out) {
+      expect(out).toBeNull();
+    }).catchError((_) {
+      didThrow = true;
+    });
+
+    expect(didThrow).toBeFalse();
   });
 }
 

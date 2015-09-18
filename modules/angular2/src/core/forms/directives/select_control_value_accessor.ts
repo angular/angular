@@ -1,17 +1,20 @@
-import {Self} from 'angular2/src/core/di';
+import {Self, forwardRef, Provider} from 'angular2/src/core/di';
 import {Renderer} from 'angular2/src/core/render';
-import {ElementRef, QueryList} from 'angular2/src/core/compiler';
+import {ElementRef, QueryList} from 'angular2/src/core/linker';
 import {Query, Directive} from 'angular2/src/core/metadata';
 
-import {NgControl} from './ng_control';
-import {ControlValueAccessor} from './control_value_accessor';
-import {isPresent} from 'angular2/src/core/facade/lang';
+import {ObservableWrapper} from 'angular2/src/core/facade/async';
+import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
+import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {setProperty} from './shared';
+
+const SELECT_VALUE_ACCESSOR = CONST_EXPR(new Provider(
+    NG_VALUE_ACCESSOR, {useExisting: forwardRef(() => SelectControlValueAccessor), multi: true}));
 
 /**
  * Marks `<option>` as dynamic, so Angular can be notified when options change.
  *
- * #Example:
+ * ### Example
  *
  * ```
  * <select ng-control="city">
@@ -31,25 +34,17 @@ export class NgSelectOption {
   host: {
     '(change)': 'onChange($event.target.value)',
     '(input)': 'onChange($event.target.value)',
-    '(blur)': 'onTouched()',
-    '[class.ng-untouched]': 'ngClassUntouched',
-    '[class.ng-touched]': 'ngClassTouched',
-    '[class.ng-pristine]': 'ngClassPristine',
-    '[class.ng-dirty]': 'ngClassDirty',
-    '[class.ng-valid]': 'ngClassValid',
-    '[class.ng-invalid]': 'ngClassInvalid'
-  }
+    '(blur)': 'onTouched()'
+  },
+  bindings: [SELECT_VALUE_ACCESSOR]
 })
 export class SelectControlValueAccessor implements ControlValueAccessor {
-  private _cd: NgControl;
   value: string;
   onChange = (_) => {};
   onTouched = () => {};
 
-  constructor(@Self() cd: NgControl, private _renderer: Renderer, private _elementRef: ElementRef,
+  constructor(private _renderer: Renderer, private _elementRef: ElementRef,
               @Query(NgSelectOption, {descendants: true}) query: QueryList<NgSelectOption>) {
-    this._cd = cd;
-    cd.valueAccessor = this;
     this._updateValueWhenListOfOptionsChanges(query);
   }
 
@@ -58,29 +53,10 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
     setProperty(this._renderer, this._elementRef, "value", value);
   }
 
-  get ngClassUntouched(): boolean {
-    return isPresent(this._cd.control) ? this._cd.control.untouched : false;
-  }
-  get ngClassTouched(): boolean {
-    return isPresent(this._cd.control) ? this._cd.control.touched : false;
-  }
-  get ngClassPristine(): boolean {
-    return isPresent(this._cd.control) ? this._cd.control.pristine : false;
-  }
-  get ngClassDirty(): boolean {
-    return isPresent(this._cd.control) ? this._cd.control.dirty : false;
-  }
-  get ngClassValid(): boolean {
-    return isPresent(this._cd.control) ? this._cd.control.valid : false;
-  }
-  get ngClassInvalid(): boolean {
-    return isPresent(this._cd.control) ? !this._cd.control.valid : false;
-  }
-
   registerOnChange(fn: () => any): void { this.onChange = fn; }
   registerOnTouched(fn: () => any): void { this.onTouched = fn; }
 
   private _updateValueWhenListOfOptionsChanges(query: QueryList<NgSelectOption>) {
-    query.onChange(() => this.writeValue(this.value));
+    ObservableWrapper.subscribe(query.changes, (_) => this.writeValue(this.value));
   }
 }

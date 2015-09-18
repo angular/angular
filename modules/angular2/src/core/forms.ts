@@ -26,6 +26,7 @@ export {NgFormModel} from './forms/directives/ng_form_model';
 export {NgForm} from './forms/directives/ng_form';
 export {ControlValueAccessor} from './forms/directives/control_value_accessor';
 export {DefaultValueAccessor} from './forms/directives/default_value_accessor';
+export {NgControlStatus} from './forms/directives/ng_control_status';
 export {CheckboxControlValueAccessor} from './forms/directives/checkbox_value_accessor';
 export {
   NgSelectOption,
@@ -33,19 +34,29 @@ export {
 } from './forms/directives/select_control_value_accessor';
 export {FORM_DIRECTIVES} from './forms/directives';
 export {NG_VALIDATORS, Validators} from './forms/validators';
-export {DefaultValidators} from './forms/directives/validators';
+export {
+  RequiredValidator,
+  MinLengthValidator,
+  MaxLengthValidator,
+  Validator
+} from './forms/directives/validators';
 export {FormBuilder} from './forms/form_builder';
 
 import {FormBuilder} from './forms/form_builder';
 import {CONST_EXPR, Type} from './facade/lang';
 
 /**
- * Shorthand set of bindings used for building Angular forms.
+ * Shorthand set of providers used for building Angular forms.
  *
- * ### Example:
+ * ### Example
  *
  * ```typescript
- * bootstrap(MyApp, [FORM_BINDINGS]);
+ * bootstrap(MyApp, [FORM_PROVIDERS]);
  * ```
  */
-export const FORM_BINDINGS: Type[] = CONST_EXPR([FormBuilder]);
+export const FORM_PROVIDERS: Type[] = CONST_EXPR([FormBuilder]);
+
+/**
+ * @deprecated
+ */
+export const FORM_BINDINGS = FORM_PROVIDERS;

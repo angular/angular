@@ -2,7 +2,6 @@ import {
   Component,
   View,
   ViewEncapsulation,
-  LifecycleEvent,
   Host,
   SkipSelf,
   Attribute,
@@ -13,7 +12,6 @@ import {
 
 import {isPresent, StringWrapper, NumberWrapper} from 'angular2/src/core/facade/lang';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {Event, KeyboardEvent} from 'angular2/src/core/facade/browser';
 
 import {MdRadioDispatcher} from 'angular2_material/src/components/radio/radio_dispatcher';
@@ -35,8 +33,8 @@ var _uniqueIdCounter: number = 0;
 
 @Component({
   selector: 'md-radio-group',
-  events: ['change'],
-  properties: ['disabled', 'value'],
+  outputs: ['change'],
+  inputs: ['disabled', 'value'],
   host: {
     'role': 'radiogroup',
     '[attr.aria-disabled]': 'disabled',
@@ -70,7 +68,7 @@ export class MdRadioGroup implements OnChanges {
   /** The ID of the selected radio button. */
   selectedRadioId: string;
 
-  change: EventEmitter;
+  change: EventEmitter<any>;
 
   tabindex: number;
 
@@ -112,7 +110,7 @@ export class MdRadioGroup implements OnChanges {
     // child radio buttons and select the one that has a corresponding value (if any).
     if (isPresent(this.value) && this.value != '') {
       this.radioDispatcher.notify(this.name_);
-      ListWrapper.forEach(this.radios_, (radio) => {
+      this.radios_.forEach(radio => {
         if (radio.value == this.value) {
           radio.checked = true;
           this.selectedRadioId = radio.id;
@@ -192,7 +190,7 @@ export class MdRadioGroup implements OnChanges {
 
 @Component({
   selector: 'md-radio-button',
-  properties: ['id', 'name', 'value', 'checked', 'disabled'],
+  inputs: ['id', 'name', 'value', 'checked', 'disabled'],
   host: {
     'role': 'radio',
     '[id]': 'id',

@@ -1,7 +1,6 @@
 import {StringWrapper, isPresent, isBlank, normalizeBool} from 'angular2/src/core/facade/lang';
 import {Observable, EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
-import {StringMap, StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
-import {Validators} from './validators';
+import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 
 /**
  * Indicates that a Control is valid, i.e. that no errors exist in the input value.
@@ -12,6 +11,12 @@ export const VALID = "VALID";
  * Indicates that a Control is invalid, i.e. that an error exists in the input value.
  */
 export const INVALID = "INVALID";
+
+/**
+ * Indicates that a Control is pending, i.e. that async validation is occuring and
+ * errors are not yet available for the input value.
+ */
+export const PENDING = "PENDING";
 
 export function isControl(control: Object): boolean {
   return control instanceof AbstractControl;
@@ -38,19 +43,24 @@ function _find(control: AbstractControl, path: Array<string | number>| string) {
 }
 
 /**
- * Omitting from external API doc as this is really an abstract internal concept.
+ *
  */
-export class AbstractControl {
+export abstract class AbstractControl {
+  /** @internal */
   _value: any;
-  _status: string;
-  _errors: StringMap<string, any>;
-  _pristine: boolean = true;
-  _touched: boolean = false;
-  _parent: ControlGroup | ControlArray;
 
-  _valueChanges: EventEmitter;
+  /** @internal */
+  _valueChanges: EventEmitter<any>;
 
-  constructor(public validator: Function) {}
+  private _status: string;
+  private _errors: {[key: string]: any};
+  private _controlsErrors: any;
+  private _pristine: boolean = true;
+  private _touched: boolean = false;
+  private _parent: ControlGroup | ControlArray;
+  private _asyncValidationSubscription;
+
+  constructor(public validator: Function, public asyncValidator: Function) {}
 
   get value(): any { return this._value; }
 
@@ -58,7 +68,15 @@ export class AbstractControl {
 
   get valid(): boolean { return this._status === VALID; }
 
-  get errors(): StringMap<string, any> { return this._errors; }
+  /**
+   * Returns the errors of this control.
+   */
+  get errors(): {[key: string]: any} { return this._errors; }
+
+  /**
+   * Returns the errors of the child controls.
+   */
+  get controlsErrors(): any { return this._controlsErrors; }
 
   get pristine(): boolean { return this._pristine; }
 
@@ -68,7 +86,9 @@ export class AbstractControl {
 
   get untouched(): boolean { return !this._touched; }
 
-  get valueChanges(): Observable { return this._valueChanges; }
+  get valueChanges(): Observable<any> { return this._valueChanges; }
+
+  get pending(): boolean { return this._status == PENDING; }
 
   markAsTouched(): void { this._touched = true; }
 
@@ -81,35 +101,87 @@ export class AbstractControl {
     }
   }
 
-  setParent(parent: ControlGroup | ControlArray): void { this._parent = parent; }
-
-  updateValidity({onlySelf}: {onlySelf?: boolean} = {}): void {
+  markAsPending({onlySelf}: {onlySelf?: boolean} = {}): void {
     onlySelf = normalizeBool(onlySelf);
-
-    this._errors = this.validator(this);
-    this._status = isPresent(this._errors) ? INVALID : VALID;
+    this._status = PENDING;
 
     if (isPresent(this._parent) && !onlySelf) {
-      this._parent.updateValidity({onlySelf: onlySelf});
+      this._parent.markAsPending({onlySelf: onlySelf});
     }
   }
 
-  updateValueAndValidity({onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
-      void {
+  setParent(parent: ControlGroup | ControlArray): void { this._parent = parent; }
+
+  updateValueAndValidity(
+      {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     onlySelf = normalizeBool(onlySelf);
     emitEvent = isPresent(emitEvent) ? emitEvent : true;
 
     this._updateValue();
 
+    this._errors = this._runValidator();
+    this._controlsErrors = this._calculateControlsErrors();
+    this._status = this._calculateStatus();
+
+    if (this._status == VALID || this._status == PENDING) {
+      this._runAsyncValidator();
+    }
+
     if (emitEvent) {
       ObservableWrapper.callNext(this._valueChanges, this._value);
     }
 
-    this._errors = this.validator(this);
-    this._status = isPresent(this._errors) ? INVALID : VALID;
-
     if (isPresent(this._parent) && !onlySelf) {
       this._parent.updateValueAndValidity({onlySelf: onlySelf, emitEvent: emitEvent});
+    }
+  }
+
+  private _runValidator() { return isPresent(this.validator) ? this.validator(this) : null; }
+
+  private _runAsyncValidator() {
+    if (isPresent(this.asyncValidator)) {
+      this._status = PENDING;
+      this._cancelExistingSubscription();
+      this._asyncValidationSubscription =
+          ObservableWrapper.subscribe(this.asyncValidator(this), res => this.setErrors(res));
+    }
+  }
+
+  private _cancelExistingSubscription(): void {
+    if (isPresent(this._asyncValidationSubscription)) {
+      ObservableWrapper.dispose(this._asyncValidationSubscription);
+    }
+  }
+
+  /**
+   * Sets errors on a control.
+   *
+   * This is used when validations are run not automatically, but manually by the user.
+   *
+   * Calling `setErrors` will also update the validity of the parent control.
+   *
+   * ## Usage
+   *
+   * ```
+   * var login = new Control("someLogin");
+   * login.setErrors({
+   *   "notUnique": true
+   * });
+   *
+   * expect(login.valid).toEqual(false);
+   * expect(login.errors).toEqual({"notUnique": true});
+   *
+   * login.updateValue("someOtherLogin");
+   *
+   * expect(login.valid).toEqual(true);
+   * ```
+   */
+  setErrors(errors: {[key: string]: any}): void {
+    this._errors = errors;
+    this._status = this._calculateStatus();
+
+    if (isPresent(this._parent)) {
+      this._parent._updateControlsErrors();
     }
   }
 
@@ -128,7 +200,29 @@ export class AbstractControl {
     return isPresent(this.getError(errorCode, path));
   }
 
-  _updateValue(): void {}
+  /** @internal */
+  _updateControlsErrors(): void {
+    this._controlsErrors = this._calculateControlsErrors();
+    this._status = this._calculateStatus();
+
+    if (isPresent(this._parent)) {
+      this._parent._updateControlsErrors();
+    }
+  }
+
+  private _calculateStatus(): string {
+    if (isPresent(this._errors)) return INVALID;
+    if (this._anyControlsHaveStatus(PENDING)) return PENDING;
+    if (this._anyControlsHaveStatus(INVALID)) return INVALID;
+    return VALID;
+  }
+
+  /** @internal */
+  abstract _updateValue(): void;
+  /** @internal */
+  abstract _calculateControlsErrors(): any;
+  /** @internal */
+  abstract _anyControlsHaveStatus(status: string): boolean;
 }
 
 /**
@@ -138,7 +232,7 @@ export class AbstractControl {
  * `Control` is one of the three fundamental building blocks used to define forms in Angular, along
  * with {@link ControlGroup} and {@link ControlArray}.
  *
- * # Usage
+ *##Usage
  *
  * By default, a `Control` is created for every `<input>` or other form component.
  * With {@link NgFormControl} or {@link NgFormModel} an existing {@link Control} can be
@@ -148,12 +242,13 @@ export class AbstractControl {
  * ### Example ([live demo](http://plnkr.co/edit/23DESOpbNnBpBHZt1BR4?p=preview))
  */
 export class Control extends AbstractControl {
+  /** @internal */
   _onChange: Function;
 
-  constructor(value: any = null, validator: Function = Validators.nullValidator) {
-    super(validator);
+  constructor(value: any = null, validator: Function = null, asyncValidator: Function = null) {
+    super(validator, asyncValidator);
     this._value = value;
-    this.updateValidity({onlySelf: true});
+    this.updateValueAndValidity({onlySelf: true, emitEvent: false});
     this._valueChanges = new EventEmitter();
   }
 
@@ -169,15 +264,31 @@ export class Control extends AbstractControl {
    * via an `onChange` event. This is the default behavior if `emitModelToViewChange` is not
    * specified.
    */
-  updateValue(value: any,
-              {onlySelf, emitEvent, emitModelToViewChange}:
-                  {onlySelf?: boolean, emitEvent?: boolean, emitModelToViewChange?: boolean} = {}):
-      void {
+  updateValue(value: any, {onlySelf, emitEvent, emitModelToViewChange}: {
+    onlySelf?: boolean,
+    emitEvent?: boolean,
+    emitModelToViewChange?: boolean
+  } = {}): void {
     emitModelToViewChange = isPresent(emitModelToViewChange) ? emitModelToViewChange : true;
     this._value = value;
     if (isPresent(this._onChange) && emitModelToViewChange) this._onChange(this._value);
     this.updateValueAndValidity({onlySelf: onlySelf, emitEvent: emitEvent});
   }
+
+  /**
+   * @internal
+   */
+  _updateValue() {}
+
+  /**
+   * @internal
+   */
+  _calculateControlsErrors() { return null; }
+
+  /**
+   * @internal
+   */
+  _anyControlsHaveStatus(status: string): boolean { return false; }
 
   /**
    * Register a listener for change events.
@@ -199,48 +310,85 @@ export class Control extends AbstractControl {
  * ### Example ([live demo](http://plnkr.co/edit/23DESOpbNnBpBHZt1BR4?p=preview))
  */
 export class ControlGroup extends AbstractControl {
-  private _optionals: StringMap<string, boolean>;
+  private _optionals: {[key: string]: boolean};
 
-  constructor(public controls: StringMap<string, AbstractControl>,
-              optionals: StringMap<string, boolean> = null,
-              validator: Function = Validators.group) {
-    super(validator);
+  constructor(public controls: {[key: string]: AbstractControl},
+              optionals: {[key: string]: boolean} = null, validator: Function = null,
+              asyncValidator: Function = null) {
+    super(validator, asyncValidator);
     this._optionals = isPresent(optionals) ? optionals : {};
     this._valueChanges = new EventEmitter();
 
     this._setParentForControls();
-    this._value = this._reduceValue();
-    this.updateValidity({onlySelf: true});
+    this.updateValueAndValidity({onlySelf: true, emitEvent: false});
   }
 
+  /**
+   * Add a control to this group.
+   */
   addControl(name: string, control: AbstractControl): void {
     this.controls[name] = control;
     control.setParent(this);
   }
 
+  /**
+   * Remove a control from this group.
+   */
   removeControl(name: string): void { StringMapWrapper.delete(this.controls, name); }
 
+  /**
+   * Mark the named control as non-optional.
+   */
   include(controlName: string): void {
     StringMapWrapper.set(this._optionals, controlName, true);
     this.updateValueAndValidity();
   }
 
+  /**
+   * Mark the named control as optional.
+   */
   exclude(controlName: string): void {
     StringMapWrapper.set(this._optionals, controlName, false);
     this.updateValueAndValidity();
   }
 
+  /**
+   * Check whether there is a control with the given name in the group.
+   */
   contains(controlName: string): boolean {
     var c = StringMapWrapper.contains(this.controls, controlName);
     return c && this._included(controlName);
   }
 
+  /** @internal */
   _setParentForControls() {
     StringMapWrapper.forEach(this.controls, (control, name) => { control.setParent(this); });
   }
 
+  /** @internal */
   _updateValue() { this._value = this._reduceValue(); }
 
+  /** @internal */
+  _calculateControlsErrors() {
+    var res = {};
+    StringMapWrapper.forEach(this.controls, (control, name) => {
+      if (this.contains(name) && isPresent(control.errors)) {
+        res[name] = control.errors;
+      }
+    });
+    return StringMapWrapper.isEmpty(res) ? null : res;
+  }
+
+  /** @internal */
+  _anyControlsHaveStatus(status: string): boolean {
+    var res = false;
+    StringMapWrapper.forEach(this.controls, (control, name) => {
+      res = res || (this.contains(name) && control.status == status);
+    });
+    return res;
+  }
+
+  /** @internal */
   _reduceValue() {
     return this._reduceChildren({}, (acc, control, name) => {
       acc[name] = control.value;
@@ -248,6 +396,7 @@ export class ControlGroup extends AbstractControl {
     });
   }
 
+  /** @internal */
   _reduceChildren(initValue: any, fn: Function) {
     var res = initValue;
     StringMapWrapper.forEach(this.controls, (control, name) => {
@@ -258,6 +407,7 @@ export class ControlGroup extends AbstractControl {
     return res;
   }
 
+  /** @internal */
   _included(controlName: string): boolean {
     var isOptional = StringMapWrapper.contains(this._optionals, controlName);
     return !isOptional || StringMapWrapper.get(this._optionals, controlName);
@@ -275,7 +425,7 @@ export class ControlGroup extends AbstractControl {
  * along with {@link Control} and {@link ControlGroup}. {@link ControlGroup} can also contain
  * other controls, but is of fixed length.
  *
- * # Adding or removing controls
+ *##Adding or removing controls
  *
  * To change the controls in the array, use the `push`, `insert`, or `removeAt` methods
  * in `ControlArray` itself. These methods ensure the controls are properly tracked in the
@@ -286,14 +436,14 @@ export class ControlGroup extends AbstractControl {
  * ### Example ([live demo](http://plnkr.co/edit/23DESOpbNnBpBHZt1BR4?p=preview))
  */
 export class ControlArray extends AbstractControl {
-  constructor(public controls: AbstractControl[], validator: Function = Validators.array) {
-    super(validator);
+  constructor(public controls: AbstractControl[], validator: Function = null,
+              asyncValidator: Function = null) {
+    super(validator, asyncValidator);
 
     this._valueChanges = new EventEmitter();
 
     this._setParentForControls();
-    this._updateValue();
-    this.updateValidity({onlySelf: true});
+    this.updateValueAndValidity({onlySelf: true, emitEvent: false});
   }
 
   /**
@@ -328,12 +478,33 @@ export class ControlArray extends AbstractControl {
   }
 
   /**
-   * Get the length of the control array.
+   * Length of the control array.
    */
   get length(): number { return this.controls.length; }
 
+  /** @internal */
   _updateValue(): void { this._value = this.controls.map((control) => control.value); }
 
+  /** @internal */
+  _calculateControlsErrors() {
+    var res = [];
+    var anyErrors = false;
+    this.controls.forEach((control) => {
+      res.push(control.errors);
+      if (isPresent(control.errors)) {
+        anyErrors = true;
+      }
+    });
+    return anyErrors ? res : null;
+  }
+
+  /** @internal */
+  _anyControlsHaveStatus(status: string): boolean {
+    return ListWrapper.any(this.controls, c => c.status == status);
+  }
+
+
+  /** @internal */
   _setParentForControls(): void {
     this.controls.forEach((control) => { control.setParent(this); });
   }

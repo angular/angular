@@ -11,17 +11,14 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {DebugElement} from 'angular2/src/core/debug/debug_element';
 
-import {Component, View, ViewMetadata, UrlResolver, bind} from 'angular2/core';
+import {Component, View, ViewMetadata, UrlResolver, bind, provide} from 'angular2/core';
 
 import {MdButton, MdAnchor} from 'angular2_material/src/components/button/button';
 
 import {TestUrlResolver} from './test_url_resolver';
-
-import {XHR} from 'angular2/src/core/render/xhr';
-import {XHRImpl} from 'angular2/src/core/render/xhr_impl';
 
 
 export function main() {
@@ -33,11 +30,6 @@ export function main() {
       // with both JS and Dart output.
       bind(UrlResolver)
           .toValue(new TestUrlResolver()),
-
-      // Need to use the real XHR implementation (instead of the mock) so we can actually request
-      // the template files, since Angular 2 doesn't have anything like $templateCache. This should
-      // eventually be replaced with a preprocessor that inlines templates.
-      bind(XHR).toClass(XHRImpl)
     ]);
 
     beforeEach(inject([TestComponentBuilder], (tcb) => { builder = tcb; }));

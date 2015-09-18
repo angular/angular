@@ -1,19 +1,10 @@
-import {ddescribe, describe, it, xit, iit, expect, beforeEach} from 'angular2/test_lib';
+import {ddescribe, describe, it, xit, iit, expect, beforeEach} from 'angular2/testing_internal';
 import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
 import {reflector} from 'angular2/src/core/reflection/reflection';
-import {MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {Parser} from 'angular2/src/core/change_detection/parser/parser';
 import {Unparser} from './unparser';
 import {Lexer} from 'angular2/src/core/change_detection/parser/lexer';
 import {BindingPipe, LiteralPrimitive, AST} from 'angular2/src/core/change_detection/parser/ast';
-
-class TestData {
-  constructor(public a?: any, public b?: any, public fnReturnValue?: any) {}
-
-  fn() { return this.fnReturnValue; }
-
-  add(a, b) { return a + b; }
-}
 
 export function main() {
   function createParser() { return new Parser(new Lexer(), reflector); }
@@ -174,13 +165,6 @@ export function main() {
         });
       });
 
-      describe("if", () => {
-        it('should parse if statements', () => {
-          checkAction("if (true) a = 0");
-          checkAction("if (true) {a = 0;}", "if (true) a = 0");
-        });
-      });
-
       describe("assignment", () => {
         it("should support field assignments", () => {
           checkAction("a = 12");
@@ -237,8 +221,8 @@ export function main() {
           checkBinding('a[b] | c', '(a[b] | c)');
           checkBinding('a?.b | c', '(a?.b | c)');
           checkBinding('true | a', '(true | a)');
-          checkBinding('a | b:c | d', '(a | b:(c | d))');
-          checkBinding('(a | b:c) | d', '((a | b:c) | d)');
+          checkBinding('a | b:c | d', '((a | b:c) | d)');
+          checkBinding('a | b:(c | d)', '(a | b:(c | d))');
         });
 
         it('should only allow identifier or keyword as formatter names', () => {
@@ -270,12 +254,12 @@ export function main() {
 
     describe('parseTemplateBindings', () => {
 
-      function keys(templateBindings) {
-        return ListWrapper.map(templateBindings, (binding) => binding.key);
+      function keys(templateBindings: any[]) {
+        return templateBindings.map(binding => binding.key);
       }
 
-      function keyValues(templateBindings) {
-        return ListWrapper.map(templateBindings, (binding) => {
+      function keyValues(templateBindings: any[]) {
+        return templateBindings.map(binding => {
           if (binding.keyIsVar) {
             return '#' + binding.key + (isBlank(binding.name) ? '=null' : '=' + binding.name);
           } else {
@@ -284,10 +268,9 @@ export function main() {
         });
       }
 
-      function exprSources(templateBindings) {
-        return ListWrapper.map(templateBindings, (binding) => isPresent(binding.expression) ?
-                                                                  binding.expression.source :
-                                                                  null);
+      function exprSources(templateBindings: any[]) {
+        return templateBindings.map(
+            binding => isPresent(binding.expression) ? binding.expression.source : null);
       }
 
       it('should parse an empty string', () => { expect(parseTemplateBindings('')).toEqual([]); });

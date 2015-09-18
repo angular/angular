@@ -9,18 +9,22 @@ import {
   afterEach,
   tick,
   fakeAsync
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
+
+import {SpyChangeDispatcher} from '../spies';
 
 import {
   CONST_EXPR,
   isPresent,
   isBlank,
+  isNumber,
   isJsObject,
   FunctionWrapper,
+  NumberWrapper,
   normalizeBool
 } from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
-import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {
   ChangeDispatcher,
@@ -65,7 +69,7 @@ const _DEFAULT_CONTEXT = CONST_EXPR(new Object());
  * can be found in the generated/change_detector_classes library.
  */
 export function main() {
-  ListWrapper.forEach(['dynamic', 'JIT', 'Pregen'], (cdType) => {
+  ['dynamic', 'JIT', 'Pregen'].forEach(cdType => {
     if (cdType == "JIT" && IS_DART) return;
     if (cdType == "Pregen" && !IS_DART) return;
 
@@ -92,8 +96,8 @@ export function main() {
 
 
       function _createChangeDetector(expression: string, context = _DEFAULT_CONTEXT,
-                                     registry = null) {
-        var dispatcher = new TestDispatcher();
+                                     registry = null, dispatcher = null) {
+        if (isBlank(dispatcher)) dispatcher = new TestDispatcher();
         var testDef = getDefinition(expression);
         var protoCd = _getProtoChangeDetector(testDef.cdDef);
         var cd = protoCd.instantiate(dispatcher);
@@ -256,6 +260,19 @@ export function main() {
         expect(_bindSimpleValue('a.sayHi("Jim")', td)).toEqual(['propName=Hi, Jim']);
       });
 
+      it('should support NaN', () => {
+        var person = new Person('misko');
+        person.age = NumberWrapper.NaN;
+        var val = _createChangeDetector('age', person);
+
+        val.changeDetector.detectChanges();
+        expect(val.dispatcher.log).toEqual(['propName=NaN']);
+        val.dispatcher.clear();
+
+        val.changeDetector.detectChanges();
+        expect(val.dispatcher.log).toEqual([]);
+      });
+
       it('should do simple watching', () => {
         var person = new Person('misko');
         var val = _createChangeDetector('name', person);
@@ -352,6 +369,14 @@ export function main() {
             expect(val.dispatcher.loggedValues).toEqual(['value one two default']);
           });
 
+          it('should associate pipes right-to-left', () => {
+            var registry = new FakePipes('pipe', () => new MultiArgPipe());
+            var person = new Person('value');
+            var val = _createChangeDetector("name | pipe:'a':'b' | pipe:0:1:2", person, registry);
+            val.changeDetector.detectChanges();
+            expect(val.dispatcher.loggedValues).toEqual(['value a b default 0 1 2']);
+          });
+
           it('should not reevaluate pure pipes unless its context or arg changes', () => {
             var pipe = new CountingPipe();
             var registry = new FakePipes('pipe', () => pipe, {pure: true});
@@ -406,10 +431,12 @@ export function main() {
         describe('updating directives', () => {
           var directive1;
           var directive2;
+          var directive3;
 
           beforeEach(() => {
             directive1 = new TestDirective();
             directive2 = new TestDirective();
+            directive3 = new TestDirective(null, null, true);
           });
 
           it('should happen directly, without invoking the dispatcher', () => {
@@ -484,6 +511,30 @@ export function main() {
                 cd.checkNoChanges();
 
                 expect(directive1.onInitCalled).toBe(false);
+              });
+
+              it('should not call onInit again if it throws', () => {
+                var cd = _createWithoutHydrate('directiveOnInit').changeDetector;
+
+                cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive3], []), null);
+                var errored = false;
+                // First pass fails, but onInit should be called.
+                try {
+                  cd.detectChanges();
+                } catch (e) {
+                  errored = true;
+                }
+                expect(errored).toBe(true);
+                expect(directive3.onInitCalled).toBe(true);
+                directive3.onInitCalled = false;
+
+                // Second change detection also fails, but this time onInit should not be called.
+                try {
+                  cd.detectChanges();
+                } catch (e) {
+                  throw new BaseException("Second detectChanges() should not have run detection.");
+                }
+                expect(directive3.onInitCalled).toBe(false);
               });
             });
 
@@ -795,6 +846,22 @@ export function main() {
           } catch (e) {
             expect(e).toBeAnInstanceOf(ChangeDetectionError);
             expect(e.location).toEqual('invalidFn(1) in location');
+          }
+        });
+
+        it('should handle unexpected errors in the event handler itself', () => {
+          var throwingDispatcher = new SpyChangeDispatcher();
+          throwingDispatcher.spy("getDebugContext")
+              .andCallFake((_, __) => { throw new BaseException('boom'); });
+
+          var val =
+              _createChangeDetector('invalidFn(1)', _DEFAULT_CONTEXT, null, throwingDispatcher);
+          try {
+            val.changeDetector.detectChanges();
+            throw new BaseException('fail');
+          } catch (e) {
+            expect(e).toBeAnInstanceOf(ChangeDetectionError);
+            expect(e.location).toEqual(null);
           }
         });
       });
@@ -1295,13 +1362,19 @@ class TestDirective {
   afterViewCheckedCalled = false;
   event;
 
-  constructor(public afterContentCheckedSpy = null, public afterViewCheckedSpy = null) {}
+  constructor(public afterContentCheckedSpy = null, public afterViewCheckedSpy = null,
+              public throwOnInit = false) {}
 
   onEvent(event) { this.event = event; }
 
   doCheck() { this.doCheckCalled = true; }
 
-  onInit() { this.onInitCalled = true; }
+  onInit() {
+    this.onInitCalled = true;
+    if (this.throwOnInit) {
+      throw "simulated onInit failure";
+    }
+  }
 
   onChanges(changes) {
     var r = {};
@@ -1394,9 +1467,15 @@ class TestDispatcher implements ChangeDispatcher {
 
   getDebugContext(a, b) { return null; }
 
-  _asString(value) { return (isBlank(value) ? 'null' : value.toString()); }
+  _asString(value) {
+    if (isNumber(value) && NumberWrapper.isNaN(value)) {
+      return 'NaN';
+    }
+
+    return isBlank(value) ? 'null' : value.toString();
+  }
 }
 
 class _ChangeDetectorAndDispatcher {
-  constructor(public changeDetector: any, public dispatcher: TestDispatcher) {}
+  constructor(public changeDetector: any, public dispatcher: any) {}
 }

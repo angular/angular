@@ -25,7 +25,7 @@ export class DefaultRenderView<N> extends RenderViewRef {
 
   constructor(public fragments: DefaultRenderFragmentRef<N>[], public boundTextNodes: N[],
               public boundElements: N[], public nativeShadowRoots: N[],
-              public globalEventAdders: Function[]) {
+              public globalEventAdders: Function[], public rootContentInsertionPoints: N[]) {
     super();
   }
 
@@ -52,7 +52,7 @@ export class DefaultRenderView<N> extends RenderViewRef {
   dispatchRenderEvent(boundElementIndex: number, eventName: string, event: any): boolean {
     var allowDefaultBehavior = true;
     if (isPresent(this.eventDispatcher)) {
-      var locals = new Map();
+      var locals = new Map<string, any>();
       locals.set('$event', event);
       allowDefaultBehavior =
           this.eventDispatcher.dispatchRenderEvent(boundElementIndex, eventName, locals);

@@ -1,4 +1,4 @@
-import {UrlResolver} from 'angular2/src/core/services/url_resolver';
+import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 
 export class TestUrlResolver extends UrlResolver {
   constructor() {

@@ -1,13 +1,12 @@
-import {bind, Binding} from 'angular2/src/core/di';
+import {bind, provide, Provider} from 'angular2/src/core/di';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
-import {StringMap} from 'angular2/src/core/facade/collection';
 
 /**
  * A metric is measures values
  */
 export abstract class Metric {
-  static bindTo(delegateToken): Binding[] {
+  static bindTo(delegateToken): Provider[] {
     return [bind(Metric).toFactory((delegate) => delegate, [delegateToken])];
   }
 
@@ -21,11 +20,11 @@ export abstract class Metric {
    * since the begin call.
    * @param restart: Whether to restart right after this.
    */
-  endMeasure(restart: boolean): Promise<StringMap<string, any>> { throw new BaseException('NYI'); }
+  endMeasure(restart: boolean): Promise<{[key: string]: any}> { throw new BaseException('NYI'); }
 
   /**
    * Describes the metrics provided by this metric implementation.
    * (e.g. units, ...)
    */
-  describe(): StringMap<string, any> { throw new BaseException('NYI'); }
+  describe(): {[key: string]: any} { throw new BaseException('NYI'); }
 }

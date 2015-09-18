@@ -3,27 +3,30 @@ import {ReadyStates, RequestMethods} from '../enums';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
-import {Injectable} from 'angular2/src/core/di';
+import {Injectable} from 'angular2/angular2';
 import {BrowserJsonp} from './browser_jsonp';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {makeTypeError} from 'angular2/src/core/facade/exceptions';
 import {StringWrapper, isPresent} from 'angular2/src/core/facade/lang';
-var Observable = require('@reactivex/rxjs/dist/cjs/Observable');
-
-export class JSONPConnection implements Connection {
+// todo(robwormald): temporary until https://github.com/angular/angular/issues/4390 decided
+var Rx = require('@reactivex/rxjs/dist/cjs/Rx');
+var {Observable} = Rx;
+export abstract class JSONPConnection implements Connection {
   readyState: ReadyStates;
   request: Request;
   response: any;
+  abstract finished(data?: any): void;
+}
+
+export class JSONPConnection_ extends JSONPConnection {
   private _id: string;
   private _script: Element;
   private _responseData: any;
   private _finished: boolean = false;
 
-  /**
-   * @private
-   */
   constructor(req: Request, private _dom: BrowserJsonp,
               private baseResponseOptions?: ResponseOptions) {
+    super();
     if (req.method !== RequestMethods.Get) {
       throw makeTypeError("JSONP requests must use GET request method.");
     }
@@ -86,7 +89,7 @@ export class JSONPConnection implements Connection {
           this._dom.cleanup(script);
         }
 
-      }
+      };
     });
   }
 
@@ -99,13 +102,15 @@ export class JSONPConnection implements Connection {
   }
 }
 
+export abstract class JSONPBackend extends ConnectionBackend {}
+
 @Injectable()
-export class JSONPBackend implements ConnectionBackend {
-  /**
-   * @private
-   */
-  constructor(private _browserJSONP: BrowserJsonp, private _baseResponseOptions: ResponseOptions) {}
+export class JSONPBackend_ extends JSONPBackend {
+  constructor(private _browserJSONP: BrowserJsonp, private _baseResponseOptions: ResponseOptions) {
+    super();
+  }
+
   createConnection(request: Request): JSONPConnection {
-    return new JSONPConnection(request, this._browserJSONP, this._baseResponseOptions);
+    return new JSONPConnection_(request, this._browserJSONP, this._baseResponseOptions);
   }
 }

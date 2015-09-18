@@ -1,4 +1,4 @@
-library angular2.src.transform.di_transformer;
+library angular2.test.core.change_detection.generator;
 
 import 'dart:convert';
 import 'dart:io';

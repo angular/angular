@@ -17,7 +17,7 @@ import {CONST, CONST_EXPR, stringify, isBlank, isPresent} from "angular2/src/cor
  * }
  *
  * var injector = Injector.resolveAndCreate([
- *  bind("MyEngine").toClass(Engine),
+ *  provide("MyEngine", {useClass: Engine}),
  *  Car
  * ]);
  *
@@ -129,8 +129,6 @@ export class InjectableMetadata {
  * @Injectable()
  * class NeedsDependency {
  *   dependency;
-
- *   dependency;
  *   constructor(@Self() dependency:Dependency) {
  *     this.dependency = dependency;
  *   }
@@ -212,9 +210,7 @@ export class SkipSelfMetadata {
  *
  * @Component({
  *   selector: 'parent-cmp',
- *   bindings: [HostService]
- * })
- * @View({
+ *   providers: [HostService],
  *   template: `
  *     Dir: <child-directive></child-directive>
  *   `,
@@ -225,9 +221,7 @@ export class SkipSelfMetadata {
  *
  * @Component({
  *   selector: 'app',
- *   bindings: [OtherService]
- * })
- * @View({
+ *   providers: [OtherService],
  *   template: `
  *     Parent: <parent-cmp></parent-cmp>
  *   `,

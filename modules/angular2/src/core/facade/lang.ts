@@ -1,5 +1,3 @@
-/// <reference path="../../../manual_typings/globals.d.ts" />
-
 // TODO(jteplitz602): Load WorkerGlobalScope from lib.webworker.d.ts file #3492
 declare var WorkerGlobalScope;
 var globalScope: BrowserNodeGlobal;
@@ -28,7 +26,8 @@ export var Type = Function;
  * An example of a `Type` is `MyCustomComponent` class, which in JavaScript is be represented by
  * the `MyCustomComponent` constructor function.
  */
-export interface Type extends Function { new (...args): any; }
+export interface Type extends Function {}
+export interface ConcreteType extends Type { new (...args): any; }
 
 export function getTypeNameForDebugging(type: Type): string {
   return type['name'];
@@ -38,18 +37,15 @@ export function getTypeNameForDebugging(type: Type): string {
 export var Math = _global.Math;
 export var Date = _global.Date;
 
-var assertionsEnabled_ = typeof _global['assert'] !== 'undefined';
 export function assertionsEnabled(): boolean {
-  return assertionsEnabled_;
+  return false;
 }
 
 // TODO: remove calls to assert in production environment
 // Note: Can't just export this and import in in other files
 // as `assert` is a reserved keyword in Dart
 _global.assert = function assert(condition) {
-  if (assertionsEnabled_) {
-    _global['assert'].call(condition);
-  }
+  // TODO: to be fixed properly via #2830, noop for now
 };
 
 // This function is needed only to properly support Dart's const expressions
@@ -58,7 +54,7 @@ export function CONST_EXPR<T>(expr: T): T {
   return expr;
 }
 
-export function CONST(): ClassDecorator {
+export function CONST(): ClassDecorator & PropertyDecorator {
   return (target) => target;
 }
 
@@ -195,7 +191,7 @@ export class StringJoiner {
 export class NumberParseError extends Error {
   name: string;
 
-  constructor(public message: string) { super(message); }
+  constructor(public message: string) { super(); }
 
   toString(): string { return this.message; }
 }
@@ -250,7 +246,7 @@ export class RegExpWrapper {
     flags = flags.replace(/g/g, '');
     return new _global.RegExp(regExpStr, flags + 'g');
   }
-  static firstMatch(regExp: RegExp, input: string): string[] {
+  static firstMatch(regExp: RegExp, input: string): RegExpExecArray {
     // Reset multimatch regex state
     regExp.lastIndex = 0;
     return regExp.exec(input);
@@ -276,7 +272,7 @@ export class RegExpMatcherWrapper {
   static next(matcher: {
     re: RegExp;
     input: string
-  }): string[] {
+  }): RegExpExecArray {
     return matcher.re.exec(matcher.input);
   }
 }
@@ -326,6 +322,7 @@ export class DateWrapper {
                 minutes: number = 0, seconds: number = 0, milliseconds: number = 0): Date {
     return new Date(year, month - 1, day, hour, minutes, seconds, milliseconds);
   }
+  static fromISOString(str: string): Date { return new Date(str); }
   static fromMillis(ms: number): Date { return new Date(ms); }
   static toMillis(date: Date): number { return date.getTime(); }
   static now(): Date { return new Date(); }
@@ -350,6 +347,7 @@ export function setValueOnPath(global: any, path: string, value: any) {
 }
 
 // When Symbol.iterator doesn't exist, retrieves the key used in es6-shim
+declare var Symbol;
 var _symbolIterator = null;
 export function getSymbolIterator(): string | symbol {
   if (isBlank(_symbolIterator)) {

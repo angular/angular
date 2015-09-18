@@ -1,4 +1,3 @@
-import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {Json, StringWrapper, isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {CodegenNameUtil} from './codegen_name_util';
 import {codify, combineGeneratedStrings, rawString} from './codegen_facade';
@@ -7,12 +6,14 @@ import {BindingTarget} from './binding_record';
 import {DirectiveRecord} from './directive_record';
 import {ChangeDetectionStrategy} from './constants';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
+import {IS_DART} from 'angular2/src/core/compiler/util';
 
 /**
  * Class responsible for providing change detection logic for change detector classes.
  */
 export class CodegenLogicUtil {
   constructor(private _names: CodegenNameUtil, private _utilName: string,
+              private _changeDetectorStateName: string,
               private _changeDetection: ChangeDetectionStrategy) {}
 
   /**
@@ -38,7 +39,7 @@ export class CodegenLogicUtil {
     var context = (protoRec.contextIndex == -1) ?
                       this._names.getDirectiveName(protoRec.directiveIndex) :
                       getLocalName(protoRec.contextIndex);
-    var argString = ListWrapper.map(protoRec.args, (arg) => getLocalName(arg)).join(", ");
+    var argString = protoRec.args.map(arg => getLocalName(arg)).join(", ");
 
     var rhs: string;
     switch (protoRec.mode) {
@@ -112,6 +113,7 @@ export class CodegenLogicUtil {
     return `${getLocalName(protoRec.selfIndex)} = ${rhs};`;
   }
 
+  /** @internal */
   _observe(exp: string, rec: ProtoRecord): string {
     // This is an experimental feature. Works only in Dart.
     if (this._changeDetection === ChangeDetectionStrategy.OnPushObserve) {
@@ -139,6 +141,7 @@ export class CodegenLogicUtil {
     return `[${bs.join(", ")}]`;
   }
 
+  /** @internal */
   _genInterpolation(protoRec: ProtoRecord): string {
     var iVals = [];
     for (var i = 0; i < protoRec.args.length; ++i) {
@@ -181,12 +184,13 @@ export class CodegenLogicUtil {
 
   genContentLifecycleCallbacks(directiveRecords: DirectiveRecord[]): string[] {
     var res = [];
+    var eq = IS_DART ? '==' : '===';
     // NOTE(kegluneq): Order is important!
     for (var i = directiveRecords.length - 1; i >= 0; --i) {
       var dir = directiveRecords[i];
       if (dir.callAfterContentInit) {
         res.push(
-            `if(! ${this._names.getAlreadyCheckedName()}) ${this._names.getDirectiveName(dir.directiveIndex)}.afterContentInit();`);
+            `if(${this._names.getStateName()} ${eq} ${this._changeDetectorStateName}.NeverChecked) ${this._names.getDirectiveName(dir.directiveIndex)}.afterContentInit();`);
       }
 
       if (dir.callAfterContentChecked) {
@@ -198,12 +202,13 @@ export class CodegenLogicUtil {
 
   genViewLifecycleCallbacks(directiveRecords: DirectiveRecord[]): string[] {
     var res = [];
+    var eq = IS_DART ? '==' : '===';
     // NOTE(kegluneq): Order is important!
     for (var i = directiveRecords.length - 1; i >= 0; --i) {
       var dir = directiveRecords[i];
       if (dir.callAfterViewInit) {
         res.push(
-            `if(! ${this._names.getAlreadyCheckedName()}) ${this._names.getDirectiveName(dir.directiveIndex)}.afterViewInit();`);
+            `if(${this._names.getStateName()} ${eq} ${this._changeDetectorStateName}.NeverChecked) ${this._names.getDirectiveName(dir.directiveIndex)}.afterViewInit();`);
       }
 
       if (dir.callAfterViewChecked) {

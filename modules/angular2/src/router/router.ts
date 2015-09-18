@@ -15,7 +15,13 @@ import {
 } from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {RouteRegistry} from './route_registry';
-import {ComponentInstruction, Instruction, stringifyInstruction} from './instruction';
+import {
+  ComponentInstruction,
+  Instruction,
+  stringifyInstruction,
+  stringifyInstructionPath,
+  stringifyInstructionQuery
+} from './instruction';
 import {RouterOutlet} from './router_outlet';
 import {Location} from './location';
 import {getCanActivateHook} from './route_lifecycle_reflector';
@@ -50,10 +56,10 @@ export class Router {
   private _currentNavigation: Promise<any> = _resolveToTrue;
   private _outlet: RouterOutlet = null;
 
-  private _auxRouters: Map<string, Router> = new Map();
+  private _auxRouters = new Map<string, Router>();
   private _childRouter: Router;
 
-  private _subject: EventEmitter = new EventEmitter();
+  private _subject: EventEmitter<any> = new EventEmitter();
 
 
   constructor(public registry: RouteRegistry, public parent: Router, public hostComponent: any) {}
@@ -81,7 +87,7 @@ export class Router {
    */
   registerPrimaryOutlet(outlet: RouterOutlet): Promise<boolean> {
     if (isPresent(outlet.name)) {
-      throw new BaseException(`registerAuxOutlet expects to be called with an unnamed outlet.`);
+      throw new BaseException(`registerPrimaryOutlet expects to be called with an unnamed outlet.`);
     }
 
     this._outlet = outlet;
@@ -135,7 +141,7 @@ export class Router {
   /**
    * Dynamically update the routing configuration and trigger a navigation.
    *
-   * # Usage
+   *##Usage
    *
    * ```
    * router.config([
@@ -154,7 +160,7 @@ export class Router {
    * Navigate based on the provided Route Link DSL. It's preferred to navigate with this method
    * over `navigateByUrl`.
    *
-   * # Usage
+   *##Usage
    *
    * This method takes an array representing the Route Link DSL:
    * ```
@@ -204,6 +210,7 @@ export class Router {
     });
   }
 
+  /** @internal */
   _navigate(instruction: Instruction, _skipLocationChange: boolean): Promise<any> {
     return this._settleInstruction(instruction)
         .then((_) => this._canReuse(instruction))
@@ -230,6 +237,7 @@ export class Router {
   // guaranteed that the `componentType`s for the terminal async routes have been loaded by the time
   // we begin navigation. The method below simply traverses instructions and resolves any components
   // for which `componentType` is not present
+  /** @internal */
   _settleInstruction(instruction: Instruction): Promise<any> {
     var unsettledInstructions: Array<Promise<any>> = [];
     if (isBlank(instruction.component.componentType)) {
@@ -257,6 +265,7 @@ export class Router {
   /*
    * Recursively set reuse flags
    */
+  /** @internal */
   _canReuse(instruction: Instruction): Promise<any> {
     if (isBlank(this._outlet)) {
       return _resolveToFalse;
@@ -328,16 +337,17 @@ export class Router {
     }
 
     var promises = [];
-    MapWrapper.forEach(this._auxRouters, (router, name) => {
-      promises.push(router.commit(instruction.auxInstruction[name]));
-    });
+    this._auxRouters.forEach(
+        (router, name) => { promises.push(router.commit(instruction.auxInstruction[name])); });
 
     return next.then((_) => PromiseWrapper.all(promises));
   }
 
 
+  /** @internal */
   _startNavigating(): void { this.navigating = true; }
 
+  /** @internal */
   _finishNavigating(): void { this.navigating = false; }
 
 
@@ -422,12 +432,25 @@ export class Router {
         }
       }
     } else if (first != '.') {
-      throw new BaseException(
-          `Link "${ListWrapper.toJSON(linkParams)}" must start with "/", "./", or "../"`);
+      // For a link with no leading `./`, `/`, or `../`, we look for a sibling and child.
+      // If both exist, we throw. Otherwise, we prefer whichever exists.
+      var childRouteExists = this.registry.hasRoute(first, this.hostComponent);
+      var parentRouteExists =
+          isPresent(this.parent) && this.registry.hasRoute(first, this.parent.hostComponent);
+
+      if (parentRouteExists && childRouteExists) {
+        let msg =
+            `Link "${ListWrapper.toJSON(linkParams)}" is ambiguous, use "./" or "../" to disambiguate.`;
+        throw new BaseException(msg);
+      }
+      if (parentRouteExists) {
+        router = this.parent;
+      }
+      rest = linkParams;
     }
 
     if (rest[rest.length - 1] == '') {
-      ListWrapper.removeLast(rest);
+      rest.pop();
     }
 
     if (rest.length < 1) {
@@ -435,7 +458,7 @@ export class Router {
       throw new BaseException(msg);
     }
 
-    // TODO: structural cloning and whatnot
+    var nextInstruction = this.registry.generate(rest, router.hostComponent);
 
     var url = [];
     var parent = router.parent;
@@ -443,8 +466,6 @@ export class Router {
       url.unshift(parent._currentInstruction);
       parent = parent.parent;
     }
-
-    var nextInstruction = this.registry.generate(rest, router.hostComponent);
 
     while (url.length > 0) {
       nextInstruction = url.pop().replaceChild(nextInstruction);
@@ -455,27 +476,38 @@ export class Router {
 }
 
 export class RootRouter extends Router {
+  /** @internal */
   _location: Location;
+  /** @internal */
+  _locationSub: Object;
 
   constructor(registry: RouteRegistry, location: Location, primaryComponent: Type) {
     super(registry, null, primaryComponent);
     this._location = location;
-    this._location.subscribe((change) =>
-                                 this.navigateByUrl(change['url'], isPresent(change['pop'])));
+    this._locationSub = this._location.subscribe(
+        (change) => this.navigateByUrl(change['url'], isPresent(change['pop'])));
     this.registry.configFromComponent(primaryComponent);
     this.navigateByUrl(location.path());
   }
 
   commit(instruction: Instruction, _skipLocationChange: boolean = false): Promise<any> {
-    var emitUrl = stringifyInstruction(instruction);
-    if (emitUrl.length > 0) {
-      emitUrl = '/' + emitUrl;
+    var emitPath = stringifyInstructionPath(instruction);
+    var emitQuery = stringifyInstructionQuery(instruction);
+    if (emitPath.length > 0) {
+      emitPath = '/' + emitPath;
     }
     var promise = super.commit(instruction);
     if (!_skipLocationChange) {
-      promise = promise.then((_) => { this._location.go(emitUrl); });
+      promise = promise.then((_) => { this._location.go(emitPath, emitQuery); });
     }
     return promise;
+  }
+
+  dispose(): void {
+    if (isPresent(this._locationSub)) {
+      ObservableWrapper.dispose(this._locationSub);
+      this._locationSub = null;
+    }
   }
 }
 
@@ -513,8 +545,8 @@ function splitAndFlattenLinkParams(linkParams: any[]): any[] {
   }, []);
 }
 
-function canActivateOne(nextInstruction: Instruction, prevInstruction: Instruction):
-    Promise<boolean> {
+function canActivateOne(nextInstruction: Instruction,
+                        prevInstruction: Instruction): Promise<boolean> {
   var next = _resolveToTrue;
   if (isPresent(nextInstruction.child)) {
     next = canActivateOne(nextInstruction.child,

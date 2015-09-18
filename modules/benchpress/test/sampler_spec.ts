@@ -9,7 +9,7 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {isBlank, isPresent, stringify, Date, DateWrapper} from 'angular2/src/core/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
@@ -21,6 +21,7 @@ import {
   Metric,
   Reporter,
   bind,
+  provide,
   Injector,
   Options,
   MeasureValues
@@ -51,13 +52,13 @@ export function main() {
         driver = new MockDriverAdapter([]);
       }
       var bindings = [
-        Options.DEFAULT_BINDINGS,
+        Options.DEFAULT_PROVIDERS,
         Sampler.BINDINGS,
-        bind(Metric).toValue(metric),
-        bind(Reporter).toValue(reporter),
-        bind(WebDriverAdapter).toValue(driver),
+        provide(Metric, {useValue: metric}),
+        provide(Reporter, {useValue: reporter}),
+        provide(WebDriverAdapter, {useValue: driver}),
         bind(Options.EXECUTE).toValue(execute),
-        bind(Validator).toValue(validator),
+        provide(Validator, {useValue: validator}),
         bind(Options.NOW).toValue(() => DateWrapper.fromMillis(time++))
       ];
       if (isPresent(prepare)) {

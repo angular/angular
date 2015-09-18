@@ -1,9 +1,8 @@
-import {bind, Binding, Injector, OpaqueToken} from 'angular2/src/core/di';
+import {bind, provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
 
 import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
-import {ListWrapper, StringMap} from 'angular2/src/core/facade/collection';
 
 import {Options} from './common_options';
 
@@ -13,17 +12,16 @@ import {Options} from './common_options';
  * Needs one implementation for every supported Browser.
  */
 export abstract class WebDriverExtension {
-  static bindTo(childTokens): Binding[] {
+  static bindTo(childTokens: any[]): Provider[] {
     var res = [
       bind(_CHILDREN)
-          .toFactory(
-              (injector: Injector) => ListWrapper.map(childTokens, (token) => injector.get(token)),
-              [Injector]),
+          .toFactory((injector: Injector) => childTokens.map(token => injector.get(token)),
+                     [Injector]),
       bind(WebDriverExtension)
           .toFactory(
-              (children, capabilities) => {
+              (children: WebDriverExtension[], capabilities) => {
                 var delegate;
-                ListWrapper.forEach(children, (extension) => {
+                children.forEach(extension => {
                   if (extension.supports(capabilities)) {
                     delegate = extension;
                   }
@@ -61,7 +59,7 @@ export abstract class WebDriverExtension {
 
   perfLogFeatures(): PerfLogFeatures { throw new BaseException('NYI'); }
 
-  supports(capabilities: StringMap<string, any>): boolean { return true; }
+  supports(capabilities: {[key: string]: any}): boolean { return true; }
 }
 
 export class PerfLogFeatures {

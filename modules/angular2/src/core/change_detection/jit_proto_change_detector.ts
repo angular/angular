@@ -5,6 +5,7 @@ import {ProtoChangeDetector, ChangeDetector, ChangeDetectorDefinition} from './i
 import {ChangeDetectorJITGenerator} from './change_detection_jit_generator';
 
 export class JitProtoChangeDetector implements ProtoChangeDetector {
+  /** @internal */
   _factory: Function;
 
   constructor(private definition: ChangeDetectorDefinition) {
@@ -15,7 +16,10 @@ export class JitProtoChangeDetector implements ProtoChangeDetector {
 
   instantiate(dispatcher: any): ChangeDetector { return this._factory(dispatcher); }
 
+  /** @internal */
   _createFactory(definition: ChangeDetectorDefinition) {
-    return new ChangeDetectorJITGenerator(definition, 'util', 'AbstractChangeDetector').generate();
+    return new ChangeDetectorJITGenerator(definition, 'util', 'AbstractChangeDetector',
+                                          'ChangeDetectorStatus')
+        .generate();
   }
 }

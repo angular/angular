@@ -10,7 +10,7 @@ import {
   expect,
   beforeEach,
   SpyObject
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {Testability} from 'angular2/src/core/testability/testability';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {normalizeBlank} from 'angular2/src/core/facade/lang';

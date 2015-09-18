@@ -48,7 +48,7 @@ export enum NumberFormatStyle {
 }
 
 export class NumberFormatter {
-  static format(number: number, locale: string, style: NumberFormatStyle,
+  static format(num: number, locale: string, style: NumberFormatStyle,
                 {minimumIntegerDigits = 1, minimumFractionDigits = 0, maximumFractionDigits = 3,
                  currency, currencyAsSymbol = false}: {
                   minimumIntegerDigits?: number,
@@ -67,7 +67,7 @@ export class NumberFormatter {
       intlOptions.currency = currency;
       intlOptions.currencyDisplay = currencyAsSymbol ? 'symbol' : 'code';
     }
-    return new Intl.NumberFormat(locale, intlOptions).format(number);
+    return new Intl.NumberFormat(locale, intlOptions).format(num);
   }
 }
 

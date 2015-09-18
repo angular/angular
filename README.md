@@ -4,6 +4,7 @@
 [![Issue Stats](http://issuestats.com/github/angular/angular/badge/issue)](http://issuestats.com/github/angular/angular)
 [![npm version](https://badge.fury.io/js/angular2.svg)](http://badge.fury.io/js/angular2)
 [![Downloads](http://img.shields.io/npm/dm/angular2.svg)](https://npmjs.org/package/angular2)
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/angular2-ci.svg)](https://saucelabs.com/u/angular2-ci)
 
 Angular 
 =========

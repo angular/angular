@@ -10,11 +10,12 @@ import {
   AsyncTestCompleter,
   inject,
   proxy,
-  SpyObject
-} from 'angular2/test_lib';
+  SpyObject,
+  TestComponentBuilder
+} from 'angular2/testing_internal';
 import {Json, RegExp, NumberWrapper, StringWrapper} from 'angular2/src/core/facade/lang';
 
-import {JsonPipe} from 'angular2/core';
+import {JsonPipe, Component} from 'angular2/core';
 
 export function main() {
   describe("JsonPipe", () => {
@@ -22,7 +23,6 @@ export function main() {
     var inceptionObj;
     var inceptionObjString;
     var pipe;
-    var collection: number[];
 
     function normalize(obj: string): string { return StringWrapper.replace(obj, regNewLine, ''); }
 
@@ -33,7 +33,6 @@ export function main() {
 
 
       pipe = new JsonPipe();
-      collection = [];
     });
 
     describe("transform", () => {
@@ -51,26 +50,29 @@ export function main() {
         var dream2 = normalize(Json.stringify(inceptionObj));
         expect(dream1).toEqual(dream2);
       });
+    });
 
-      it("should return same ref when nothing has changed since the last call", () => {
-        expect(pipe.transform(inceptionObj)).toEqual(inceptionObjString);
-        expect(pipe.transform(inceptionObj)).toEqual(inceptionObjString);
-      });
+    describe('integration', () => {
+      it('should work with mutable objects',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.createAsync(TestComp).then((rootTC) => {
+             let mutable: number[] = [1];
+             rootTC.debugElement.componentInstance.data = mutable;
+             rootTC.detectChanges();
+             expect(rootTC.debugElement.nativeElement).toHaveText("[\n  1\n]");
 
+             mutable.push(2);
+             rootTC.detectChanges();
+             expect(rootTC.debugElement.nativeElement).toHaveText("[\n  1,\n  2\n]");
 
-      it("should return a new value when something changed but the ref hasn't", () => {
-        var stringCollection = '[]';
-        var stringCollectionWith1 = '[\n' +
-                                    '  1' +
-                                    '\n]';
-
-        expect(pipe.transform(collection)).toEqual(stringCollection);
-
-        collection.push(1);
-
-        expect(pipe.transform(collection)).toEqual(stringCollectionWith1);
-      });
-
+             async.done();
+           });
+         }));
     });
   });
+}
+
+@Component({selector: 'test-comp', template: '{{data | json}}', pipes: [JsonPipe]})
+class TestComp {
+  data: any;
 }

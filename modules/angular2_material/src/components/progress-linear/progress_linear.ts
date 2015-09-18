@@ -1,11 +1,4 @@
-import {
-  Component,
-  LifecycleEvent,
-  View,
-  ViewEncapsulation,
-  Attribute,
-  OnChanges
-} from 'angular2/angular2';
+import {Component, View, ViewEncapsulation, Attribute, OnChanges} from 'angular2/angular2';
 import {CONST} from 'angular2/src/core/facade/lang';
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {Math} from 'angular2/src/core/facade/math';
@@ -21,7 +14,7 @@ class ProgressMode {
 
 @Component({
   selector: 'md-progress-linear',
-  properties: ['value', 'bufferValue'],
+  inputs: ['value', 'bufferValue'],
   host: {
     'role': 'progressbar',
     'aria-valuemin': '0',

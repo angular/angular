@@ -1,30 +1,10 @@
-import {OpaqueToken, Binding} from 'angular2/src/core/di';
-import {CONST_EXPR, StringWrapper, Math} from 'angular2/src/core/facade/lang';
+import {OpaqueToken} from 'angular2/src/core/di';
+import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 
+/**
+ * A DI Token representing the main rendering context. In a browser this is the DOM Document.
+ *
+ * Note: Document might not be available in the Application Context when Application and Rendering
+ * Contexts are not the same (e.g. when running the application into a Web Worker).
+ */
 export const DOCUMENT: OpaqueToken = CONST_EXPR(new OpaqueToken('DocumentToken'));
-
-/**
- * A unique id (string) for an angular application.
- */
-export const APP_ID: OpaqueToken = CONST_EXPR(new OpaqueToken('AppId'));
-
-function _appIdRandomBindingFactory() {
-  return `${_randomChar()}${_randomChar()}${_randomChar()}`;
-}
-
-/**
- * Bindings that will generate a random APP_ID_TOKEN.
- */
-export const APP_ID_RANDOM_BINDING: Binding =
-    CONST_EXPR(new Binding(APP_ID, {toFactory: _appIdRandomBindingFactory, deps: []}));
-
-/**
- * Defines when a compiled template should be stored as a string
- * rather than keeping its Nodes to preserve memory.
- */
-export const MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE: OpaqueToken =
-    CONST_EXPR(new OpaqueToken('MaxInMemoryElementsPerTemplate'));
-
-function _randomChar(): string {
-  return StringWrapper.fromCharCode(97 + Math.floor(Math.random() * 25));
-}

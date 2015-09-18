@@ -165,9 +165,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return node;
   }
   insertBefore(el, node) { el.parentNode.insertBefore(node, el); }
-  insertAllBefore(el, nodes) {
-    ListWrapper.forEach(nodes, (n) => { el.parentNode.insertBefore(n, el); });
-  }
+  insertAllBefore(el, nodes) { nodes.forEach(n => el.parentNode.insertBefore(n, el)); }
   insertAfter(el, node) { el.parentNode.insertBefore(node, el.nextSibling); }
   setInnerHTML(el, value) { el.innerHTML = value; }
   getText(el): string { return el.textContent; }
@@ -184,6 +182,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return t;
   }
   createElement(tagName, doc = document): HTMLElement { return doc.createElement(tagName); }
+  createElementNS(ns, tagName, doc = document): Element { return doc.createElementNS(ns, tagName); }
   createTextNode(text: string, doc = document): Text { return doc.createTextNode(text); }
   createScriptTag(attrName: string, attrValue: string, doc = document): HTMLScriptElement {
     var el = <HTMLScriptElement>doc.createElement('SCRIPT');
@@ -216,7 +215,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   getStyle(element, stylename: string): string { return element.style[stylename]; }
   tagName(element): string { return element.tagName; }
   attributeMap(element): Map<string, string> {
-    var res = new Map();
+    var res = new Map<string, string>();
     var elAttrs = element.attributes;
     for (var i = 0; i < elAttrs.length; i++) {
       var attrib = elAttrs[i];
@@ -227,6 +226,9 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   hasAttribute(element, attribute: string): boolean { return element.hasAttribute(attribute); }
   getAttribute(element, attribute: string): string { return element.getAttribute(attribute); }
   setAttribute(element, name: string, value: string) { element.setAttribute(name, value); }
+  setAttributeNS(element, ns: string, name: string, value: string) {
+    element.setAttributeNS(ns, name, value);
+  }
   removeAttribute(element, attribute: string) { element.removeAttribute(attribute); }
   templateAwareRoot(el): any { return this.isTemplateElement(el) ? this.content(el) : el; }
   createHtmlDocument(): HTMLDocument {
@@ -271,10 +273,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return document.importNode(toImport, true);
   }
   adoptNode(node: Node): any { return document.adoptNode(node); }
-  isPageRule(rule): boolean { return rule.type === CSSRule.PAGE_RULE; }
-  isStyleRule(rule): boolean { return rule.type === CSSRule.STYLE_RULE; }
-  isMediaRule(rule): boolean { return rule.type === CSSRule.MEDIA_RULE; }
-  isKeyframesRule(rule): boolean { return rule.type === CSSRule.KEYFRAMES_RULE; }
   getHref(el: Element): string { return (<any>el).href; }
   getEventKey(event): string {
     var key = event.key;

@@ -27,7 +27,7 @@ export class LodashRenderer implements DiffingBroccoliPlugin {
               private options: LodashRendererOptions = kDefaultOptions) {}
 
   rebuild(treeDiff: DiffResult) {
-    let{encoding = 'utf-8', context = {}} = this.options;
+    let {encoding = 'utf-8', context = {}} = this.options;
     let processFile = (relativePath) => {
       let sourceFilePath = path.join(this.inputPath, relativePath);
       let destFilePath = path.join(this.cachePath, relativePath);

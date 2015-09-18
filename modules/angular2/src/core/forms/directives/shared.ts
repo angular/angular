@@ -1,13 +1,21 @@
 import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {isBlank, looseIdentical} from 'angular2/src/core/facade/lang';
+import {isBlank, isPresent, looseIdentical} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
-import {Control} from '../model';
+import {AbstractControlDirective} from './abstract_control_directive';
+import {NgControlGroup} from './ng_control_group';
+import {Control, ControlGroup} from '../model';
 import {Validators} from '../validators';
-import {ElementRef, QueryList} from 'angular2/src/core/compiler';
+import {ControlValueAccessor} from './control_value_accessor';
+import {ElementRef, QueryList} from 'angular2/src/core/linker';
 import {Renderer} from 'angular2/src/core/render';
+import {DefaultValueAccessor} from './default_value_accessor';
+import {NumberValueAccessor} from './number_value_accessor';
+import {CheckboxControlValueAccessor} from './checkbox_value_accessor';
+import {SelectControlValueAccessor} from './select_control_value_accessor';
+import {normalizeValidator} from './normalize_validator';
 
 
 export function controlPath(name: string, parent: ControlContainer): string[] {
@@ -37,8 +45,13 @@ export function setUpControl(control: Control, dir: NgControl): void {
   dir.valueAccessor.registerOnTouched(() => control.markAsTouched());
 }
 
-function _throwError(dir: NgControl, message: string): void {
-  var path = ListWrapper.join(dir.path, " -> ");
+export function setUpControlGroup(control: ControlGroup, dir: NgControlGroup) {
+  if (isBlank(control)) _throwError(dir, "Cannot find control");
+  control.validator = Validators.compose([control.validator, dir.validator]);
+}
+
+function _throwError(dir: AbstractControlDirective, message: string): void {
+  var path = dir.path.join(" -> ");
   throw new BaseException(`${message} '${path}'`);
 }
 
@@ -47,10 +60,49 @@ export function setProperty(renderer: Renderer, elementRef: ElementRef, propName
   renderer.setElementProperty(elementRef, propName, propValue);
 }
 
-export function isPropertyUpdated(changes: StringMap<string, any>, viewModel: any): boolean {
+export function composeValidators(validators: /* Array<Validator|Function> */ any[]): Function {
+  return isPresent(validators) ? Validators.compose(validators.map(normalizeValidator)) :
+                                 Validators.nullValidator;
+}
+
+export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any): boolean {
   if (!StringMapWrapper.contains(changes, "model")) return false;
   var change = changes["model"];
 
   if (change.isFirstChange()) return true;
   return !looseIdentical(viewModel, change.currentValue);
+}
+
+// TODO: vsavkin remove it once https://github.com/angular/angular/issues/3011 is implemented
+export function selectValueAccessor(dir: NgControl,
+                                    valueAccessors: ControlValueAccessor[]): ControlValueAccessor {
+  if (isBlank(valueAccessors)) return null;
+
+  var defaultAccessor;
+  var builtinAccessor;
+  var customAccessor;
+
+  valueAccessors.forEach(v => {
+    if (v instanceof DefaultValueAccessor) {
+      defaultAccessor = v;
+
+    } else if (v instanceof CheckboxControlValueAccessor || v instanceof NumberValueAccessor ||
+               v instanceof SelectControlValueAccessor) {
+      if (isPresent(builtinAccessor))
+        _throwError(dir, "More than one built-in value accessor matches");
+      builtinAccessor = v;
+
+    } else {
+      if (isPresent(customAccessor))
+        _throwError(dir, "More than one custom value accessor matches");
+      customAccessor = v;
+    }
+  });
+
+  if (isPresent(customAccessor)) return customAccessor;
+  if (isPresent(builtinAccessor)) return builtinAccessor;
+  if (isPresent(defaultAccessor)) return defaultAccessor;
+
+  _throwError(dir, "No valid value accessor for");
+  return null;
 }

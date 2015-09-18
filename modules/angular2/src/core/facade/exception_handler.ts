@@ -17,7 +17,7 @@ class _ArrayLogger {
  * intercept error handling,
  * write a custom exception handler that replaces this default as appropriate for your app.
  *
- * # Example
+ * ### Example
  *
  * ```javascript
  *
@@ -27,7 +27,7 @@ class _ArrayLogger {
  *   }
  * }
  *
- * bootstrap(MyApp, [bind(ExceptionHandler).toClass(MyExceptionHandler)])
+ * bootstrap(MyApp, [provide(ExceptionHandler, {useClass: MyExceptionHandler})])
  *
  * ```
  */
@@ -78,15 +78,18 @@ export class ExceptionHandler {
     if (this._rethrowException) throw exception;
   }
 
+  /** @internal */
   _extractMessage(exception: any): string {
     return exception instanceof WrappedException ? exception.wrapperMessage : exception.toString();
   }
 
+  /** @internal */
   _longStackTrace(stackTrace: any): any {
     return isListLikeIterable(stackTrace) ? (<any[]>stackTrace).join("\n\n-----async gap-----\n") :
                                             stackTrace.toString();
   }
 
+  /** @internal */
   _findContext(exception: any): any {
     try {
       if (!(exception instanceof WrappedException)) return null;
@@ -98,6 +101,7 @@ export class ExceptionHandler {
     }
   }
 
+  /** @internal */
   _findOriginalException(exception: any): any {
     if (!(exception instanceof WrappedException)) return null;
 
@@ -109,6 +113,7 @@ export class ExceptionHandler {
     return e;
   }
 
+  /** @internal */
   _findOriginalStack(exception: any): any {
     if (!(exception instanceof WrappedException)) return null;
 

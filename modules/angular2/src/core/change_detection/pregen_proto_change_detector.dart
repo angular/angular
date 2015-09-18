@@ -7,7 +7,9 @@ export 'dart:core' show List;
 export 'package:angular2/src/core/change_detection/abstract_change_detector.dart'
     show AbstractChangeDetector;
 export 'package:angular2/src/core/change_detection/change_detection.dart'
-    show preGeneratedProtoDetectors, ChangeDetectionStrategy;
+    show ChangeDetectionStrategy;
+export 'package:angular2/src/core/change_detection/constants.dart'
+    show ChangeDetectorState;
 export 'package:angular2/src/core/change_detection/directive_record.dart'
     show DirectiveIndex, DirectiveRecord;
 export 'package:angular2/src/core/change_detection/interfaces.dart'
@@ -49,8 +51,3 @@ class PregenProtoChangeDetector extends ProtoChangeDetector {
   @override
   instantiate(dynamic dispatcher) => _instantiateMethod(dispatcher);
 }
-
-/// Provided as an optimization to cut down on '!' characters in generated
-/// change detectors. See https://github.com/angular/angular/issues/3248 for
-/// for details.
-bool looseNotIdentical(a, b) => !looseIdentical(a, b);

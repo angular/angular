@@ -4,8 +4,13 @@ import {Location} from 'angular2/src/router/location';
 
 export class SpyLocation implements Location {
   urlChanges: string[] = [];
+  /** @internal */
   _path: string = '';
-  _subject: EventEmitter = new EventEmitter();
+  /** @internal */
+  _query: string = '';
+  /** @internal */
+  _subject: EventEmitter<any> = new EventEmitter();
+  /** @internal */
   _baseHref: string = '';
 
   setInitialPath(url: string) { this._path = url; }
@@ -16,14 +21,22 @@ export class SpyLocation implements Location {
 
   simulateUrlPop(pathname: string) { ObservableWrapper.callNext(this._subject, {'url': pathname}); }
 
-  normalizeAbsolutely(url: string): string { return this._baseHref + url; }
+  prepareExternalUrl(url: string): string {
+    if (url.length > 0 && !url.startsWith('/')) {
+      url = '/' + url;
+    }
+    return this._baseHref + url;
+  }
 
-  go(url: string) {
-    url = this.normalizeAbsolutely(url);
-    if (this._path == url) {
+  go(path: string, query: string = '') {
+    path = this.prepareExternalUrl(path);
+    if (this._path == path && this._query == query) {
       return;
     }
-    this._path = url;
+    this._path = path;
+    this._query = query;
+
+    var url = path + (query.length > 0 ? ('?' + query) : '');
     this.urlChanges.push(url);
   }
 
@@ -36,8 +49,8 @@ export class SpyLocation implements Location {
   }
 
   subscribe(onNext: (value: any) => void, onThrow: (error: any) => void = null,
-            onReturn: () => void = null) {
-    ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);
+            onReturn: () => void = null): Object {
+    return ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);
   }
 
   // TODO: remove these once Location is an interface, and can be implemented cleanly

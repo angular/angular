@@ -9,19 +9,18 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
-import {StringMap, ListWrapper} from 'angular2/src/core/facade/collection';
 import {isPresent, StringWrapper} from 'angular2/src/core/facade/lang';
 import {PromiseWrapper} from 'angular2/src/core/facade/async';
 
-import {WebDriverExtension, bind, Injector, Options} from 'benchpress/common';
+import {WebDriverExtension, bind, provide, Injector, Options} from 'benchpress/common';
 
 export function main() {
-  function createExtension(ids, caps) {
+  function createExtension(ids: any[], caps) {
     return PromiseWrapper.wrap(() => {
       return Injector.resolveAndCreate([
-                       ListWrapper.map(ids, (id) => bind(id).toValue(new MockExtension(id))),
+                       ids.map(id => provide(id, {useValue: new MockExtension(id)})),
                        bind(Options.CAPABILITIES).toValue(caps),
                        WebDriverExtension.bindTo(ids)
                      ])
@@ -57,7 +56,7 @@ class MockExtension extends WebDriverExtension {
     this.id = id;
   }
 
-  supports(capabilities: StringMap<string, any>): boolean {
+  supports(capabilities: {[key: string]: any}): boolean {
     return StringWrapper.equals(capabilities['browser'], this.id);
   }
 }

@@ -8,17 +8,10 @@
   "license": "<%= packageJson.license %>",
   "repository": <%= JSON.stringify(packageJson.repository) %>,
   "dependencies": {
-    "traceur": "<%= packageJson.dependencies.traceur %>",
     "reflect-metadata": "<%= packageJson.dependencies['reflect-metadata'] %>",
     "@reactivex/rxjs": "<%= packageJson.dependencies['@reactivex/rxjs'] %>",
     "zone.js": "<%= packageJson.dependencies['zone.js'] %>"
   },
   "devDependencies": <%= JSON.stringify(packageJson.defaultDevDependencies) %>,
-  "typescript": {
-    "definitions": [
-      "bundles/typings/angular2/angular2.d.ts",
-      "bundles/typings/angular2/http.d.ts",
-      "bundles/typings/angular2/router.d.ts"
-    ]
-  }
+  "typings": "./angular2.d.ts"
 }

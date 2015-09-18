@@ -9,7 +9,7 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {PromiseWrapper} from 'angular2/src/core/facade/async';
 import {Json, isBlank, isPresent} from 'angular2/src/core/facade/lang';
@@ -19,7 +19,8 @@ import {
   IOsDriverExtension,
   WebDriverAdapter,
   Injector,
-  bind
+  bind,
+  provide
 } from 'benchpress/common';
 
 import {TraceEventFactory} from '../trace_event_factory';
@@ -36,11 +37,12 @@ export function main() {
         perfRecords = [];
       }
       log = [];
-      extension = Injector.resolveAndCreate([
-                            IOsDriverExtension.BINDINGS,
-                            bind(WebDriverAdapter).toValue(new MockDriverAdapter(log, perfRecords))
-                          ])
-                      .get(IOsDriverExtension);
+      extension =
+          Injector.resolveAndCreate([
+                    IOsDriverExtension.BINDINGS,
+                    provide(WebDriverAdapter, {useValue: new MockDriverAdapter(log, perfRecords)})
+                  ])
+              .get(IOsDriverExtension);
       return extension;
     }
 

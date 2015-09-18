@@ -1,5 +1,5 @@
 import {Directive} from 'angular2/src/core/metadata';
-import {ViewContainerRef, TemplateRef} from 'angular2/src/core/compiler';
+import {ViewContainerRef, TemplateRef} from 'angular2/src/core/linker';
 import {isBlank} from 'angular2/src/core/facade/lang';
 
 /**
@@ -18,13 +18,13 @@ import {isBlank} from 'angular2/src/core/facade/lang';
  * </div>
  * ```
  *
- * # Syntax
+ *##Syntax
  *
  * - `<div *ng-if="condition">...</div>`
  * - `<div template="ng-if condition">...</div>`
  * - `<template [ng-if]="condition"><div>...</div></template>`
  */
-@Directive({selector: '[ng-if]', properties: ['ngIf']})
+@Directive({selector: '[ng-if]', inputs: ['ngIf']})
 export class NgIf {
   private _prevCondition: boolean = null;
 

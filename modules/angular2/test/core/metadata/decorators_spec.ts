@@ -8,7 +8,7 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {Component, View, Directive} from 'angular2/angular2';
 import {reflector} from 'angular2/src/core/reflection/reflection';

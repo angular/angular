@@ -12,19 +12,19 @@ export class HasStyle {
   set width(w: number) { this.cellWidth = w; }
 }
 
-@Component({selector: 'company-name', properties: ['width: cell-width', 'company']})
+@Component({selector: 'company-name', inputs: ['width: cell-width', 'company']})
 @View({directives: [], template: `<div [style.width.px]="cellWidth">{{company.name}}</div>`})
 export class CompanyNameComponent extends HasStyle {
   company: Company;
 }
 
-@Component({selector: 'opportunity-name', properties: ['width: cell-width', 'opportunity']})
+@Component({selector: 'opportunity-name', inputs: ['width: cell-width', 'opportunity']})
 @View({directives: [], template: `<div [style.width.px]="cellWidth">{{opportunity.name}}</div>`})
 export class OpportunityNameComponent extends HasStyle {
   opportunity: Opportunity;
 }
 
-@Component({selector: 'offering-name', properties: ['width: cell-width', 'offering']})
+@Component({selector: 'offering-name', inputs: ['width: cell-width', 'offering']})
 @View({directives: [], template: `<div [style.width.px]="cellWidth">{{offering.name}}</div>`})
 export class OfferingNameComponent extends HasStyle {
   offering: Offering;
@@ -37,7 +37,7 @@ export class Stage {
   apply: Function;
 }
 
-@Component({selector: 'stage-buttons', properties: ['width: cell-width', 'offering']})
+@Component({selector: 'stage-buttons', inputs: ['width: cell-width', 'offering']})
 @View({
   directives: [NgFor],
   template: `
@@ -82,7 +82,7 @@ export class StageButtonsComponent extends HasStyle {
   }
 }
 
-@Component({selector: 'account-cell', properties: ['width: cell-width', 'account']})
+@Component({selector: 'account-cell', inputs: ['width: cell-width', 'account']})
 @View({
   directives: [],
   template: `
@@ -96,7 +96,7 @@ export class AccountCellComponent extends HasStyle {
   account: Account;
 }
 
-@Component({selector: 'formatted-cell', properties: ['width: cell-width', 'value']})
+@Component({selector: 'formatted-cell', inputs: ['width: cell-width', 'value']})
 @View({directives: [], template: `<div [style.width.px]="cellWidth">{{formattedValue}}</div>`})
 export class FormattedCellComponent extends HasStyle {
   formattedValue: string;

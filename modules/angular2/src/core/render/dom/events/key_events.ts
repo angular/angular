@@ -12,11 +12,11 @@ import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {Injectable} from 'angular2/src/core/di';
 
 var modifierKeys = ['alt', 'control', 'meta', 'shift'];
-var modifierKeyGetters: StringMap<string, Function> = {
-  'alt': (event) => event.altKey,
-  'control': (event) => event.ctrlKey,
-  'meta': (event) => event.metaKey,
-  'shift': (event) => event.shiftKey
+var modifierKeyGetters: {[key: string]: (event: KeyboardEvent) => boolean} = {
+  'alt': (event: KeyboardEvent) => event.altKey,
+  'control': (event: KeyboardEvent) => event.ctrlKey,
+  'meta': (event: KeyboardEvent) => event.metaKey,
+  'shift': (event: KeyboardEvent) => event.shiftKey
 };
 
 @Injectable()
@@ -38,20 +38,20 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     });
   }
 
-  static parseEventName(eventName: string): StringMap<string, string> {
-    var parts = eventName.toLowerCase().split('.');
+  static parseEventName(eventName: string): {[key: string]: string} {
+    var parts: string[] = eventName.toLowerCase().split('.');
 
-    var domEventName = ListWrapper.removeAt(parts, 0);
+    var domEventName = parts.shift();
     if ((parts.length === 0) ||
         !(StringWrapper.equals(domEventName, 'keydown') ||
           StringWrapper.equals(domEventName, 'keyup'))) {
       return null;
     }
 
-    var key = KeyEventsPlugin._normalizeKey(ListWrapper.removeLast(parts));
+    var key = KeyEventsPlugin._normalizeKey(parts.pop());
 
     var fullKey = '';
-    ListWrapper.forEach(modifierKeys, (modifierName) => {
+    modifierKeys.forEach(modifierName => {
       if (ListWrapper.contains(parts, modifierName)) {
         ListWrapper.remove(parts, modifierName);
         fullKey += modifierName + '.';
@@ -69,7 +69,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     return result;
   }
 
-  static getEventFullKey(event: Event): string {
+  static getEventFullKey(event: KeyboardEvent): string {
     var fullKey = '';
     var key = DOM.getEventKey(event);
     key = key.toLowerCase();
@@ -78,7 +78,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     } else if (StringWrapper.equals(key, '.')) {
       key = 'dot';  // because '.' is used as a separator in event names
     }
-    ListWrapper.forEach(modifierKeys, (modifierName) => {
+    modifierKeys.forEach(modifierName => {
       if (modifierName != key) {
         var modifierGetter = StringMapWrapper.get(modifierKeyGetters, modifierName);
         if (modifierGetter(event)) {
@@ -90,8 +90,8 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     return fullKey;
   }
 
-  static eventCallback(element: HTMLElement, fullKey: any, handler: (Event) => any, zone: NgZone):
-      (event: Event) => void {
+  static eventCallback(element: HTMLElement, fullKey: any, handler: (e: Event) => any,
+                       zone: NgZone): (event: KeyboardEvent) => void {
     return (event) => {
       if (StringWrapper.equals(KeyEventsPlugin.getEventFullKey(event), fullKey)) {
         zone.run(() => handler(event));
@@ -99,6 +99,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     };
   }
 
+  /** @internal */
   static _normalizeKey(keyName: string): string {
     // TODO: switch to a StringMap if the mapping grows too much
     switch (keyName) {

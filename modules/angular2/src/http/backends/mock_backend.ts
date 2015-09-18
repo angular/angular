@@ -1,11 +1,12 @@
-import {Injectable} from 'angular2/src/core/di';
+import {Injectable} from 'angular2/angular2';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {ReadyStates} from '../enums';
 import {Connection, ConnectionBackend} from '../interfaces';
-import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
 import {isPresent} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+var Rx = require('@reactivex/rxjs/dist/cjs/Rx');
+let {Subject, ReplaySubject} = Rx;
 
 /**
  *
@@ -30,33 +31,24 @@ export class MockConnection implements Connection {
    * {@link EventEmitter} of {@link Response}. Can be subscribed to in order to be notified when a
    * response is available.
    */
-  response: EventEmitter;
+  response: any;  // Subject<Response>
 
   constructor(req: Request) {
-    this.response = new EventEmitter();
+    this.response = new ReplaySubject(1).take(1);
     this.readyState = ReadyStates.Open;
     this.request = req;
-  }
-
-  /**
-   * Changes the `readyState` of the connection to a custom state of 5 (cancelled).
-   */
-  dispose() {
-    if (this.readyState !== ReadyStates.Done) {
-      this.readyState = ReadyStates.Cancelled;
-    }
   }
 
   /**
    * Sends a mock response to the connection. This response is the value that is emitted to the
    * {@link EventEmitter} returned by {@link Http}.
    *
-   * #Example
+   * ### Example
    *
    * ```
    * var connection;
-   * backend.connections.toRx().subscribe(c => connection = c);
-   * http.request('data.json').toRx().subscribe(res => console.log(res.text()));
+   * backend.connections.subscribe(c => connection = c);
+   * http.request('data.json').subscribe(res => console.log(res.text()));
    * connection.mockRespond(new Response('fake response')); //logs 'fake response'
    * ```
    *
@@ -66,8 +58,8 @@ export class MockConnection implements Connection {
       throw new BaseException('Connection has already been resolved');
     }
     this.readyState = ReadyStates.Done;
-    ObservableWrapper.callNext(this.response, res);
-    ObservableWrapper.callReturn(this.response);
+    this.response.next(res);
+    this.response.complete();
   }
 
   /**
@@ -92,18 +84,17 @@ export class MockConnection implements Connection {
   mockError(err?: Error) {
     // Matches XHR semantics
     this.readyState = ReadyStates.Done;
-    ObservableWrapper.callThrow(this.response, err);
-    ObservableWrapper.callReturn(this.response);
+    this.response.error(err);
   }
 }
 
 /**
  * A mock backend for testing the {@link Http} service.
  *
- * This class can be injected in tests, and should be used to override bindings
+ * This class can be injected in tests, and should be used to override providers
  * to other backends, such as {@link XHRBackend}.
  *
- * #Example
+ * ### Example
  *
  * ```
  * import {MockBackend, DefaultOptions, Http} from 'angular2/http';
@@ -111,14 +102,14 @@ export class MockConnection implements Connection {
  *   var connection;
  *   var injector = Injector.resolveAndCreate([
  *     MockBackend,
- *     bind(Http).toFactory((backend, defaultOptions) => {
+ *     provide(Http, {useFactory: (backend, defaultOptions) => {
  *       return new Http(backend, defaultOptions)
- *     }, [MockBackend, DefaultOptions])]);
+ *     }, deps: [MockBackend, DefaultOptions]})]);
  *   var http = injector.get(Http);
  *   var backend = injector.get(MockBackend);
  *   //Assign any newly-created connection to local variable
- *   backend.connections.toRx().subscribe(c => connection = c);
- *   http.request('data.json').toRx().subscribe((res) => {
+ *   backend.connections.subscribe(c => connection = c);
+ *   http.request('data.json').subscribe((res) => {
  *     expect(res.text()).toBe('awesome');
  *     async.done();
  *   });
@@ -135,7 +126,7 @@ export class MockBackend implements ConnectionBackend {
    * of {@link MockConnection} instances that have been created by this backend. Can be subscribed
    * to in order to respond to connections.
    *
-   * #Example
+   * ### Example
    *
    * ```
    * import {MockBackend, Http, BaseRequestOptions} from 'angular2/http';
@@ -146,13 +137,13 @@ export class MockBackend implements ConnectionBackend {
    *   var text; //this will be set from mock response
    *   var injector = Injector.resolveAndCreate([
    *     MockBackend,
-   *     bind(Http).toFactory(backend, options) {
+   *     provide(Http, {useFactory: (backend, options) {
    *       return new Http(backend, options);
-   *     }, [MockBackend, BaseRequestOptions]]);
+   *     }, deps: [MockBackend, BaseRequestOptions]}]);
    *   var backend = injector.get(MockBackend);
    *   var http = injector.get(Http);
-   *   backend.connections.toRx().subscribe(c => connection = c);
-   *   http.request('something.json').toRx().subscribe(res => {
+   *   backend.connections.subscribe(c => connection = c);
+   *   http.request('something.json').subscribe(res => {
    *     text = res.text();
    *   });
    *   connection.mockRespond(new Response({body: 'Something'}));
@@ -162,7 +153,7 @@ export class MockBackend implements ConnectionBackend {
    *
    * This property only exists in the mock implementation, not in real Backends.
    */
-  connections: EventEmitter;  //<MockConnection>
+  connections: any;  //<MockConnection>
 
   /**
    * An array representation of `connections`. This array will be updated with each connection that
@@ -179,13 +170,12 @@ export class MockBackend implements ConnectionBackend {
    *
    * This property only exists in the mock implementation, not in real Backends.
    */
-  pendingConnections: EventEmitter;  //<MockConnection>
+  pendingConnections: any;  // Subject<MockConnection>
   constructor() {
     this.connectionsArray = [];
-    this.connections = new EventEmitter();
-    ObservableWrapper.subscribe<MockConnection>(
-        this.connections, connection => this.connectionsArray.push(connection));
-    this.pendingConnections = new EventEmitter();
+    this.connections = new Subject();
+    this.connections.subscribe(connection => this.connectionsArray.push(connection));
+    this.pendingConnections = new Subject();
   }
 
   /**
@@ -195,7 +185,7 @@ export class MockBackend implements ConnectionBackend {
    */
   verifyNoPendingRequests() {
     let pending = 0;
-    ObservableWrapper.subscribe(this.pendingConnections, c => pending++);
+    this.pendingConnections.subscribe(c => pending++);
     if (pending > 0) throw new BaseException(`${pending} pending connections to be resolved`);
   }
 
@@ -205,9 +195,7 @@ export class MockBackend implements ConnectionBackend {
    *
    * This method only exists in the mock implementation, not in real Backends.
    */
-  resolveAllConnections() {
-    ObservableWrapper.subscribe<MockConnection>(this.connections, c => c.readyState = 4);
-  }
+  resolveAllConnections() { this.connections.subscribe(c => c.readyState = 4); }
 
   /**
    * Creates a new {@link MockConnection}. This is equivalent to calling `new
@@ -220,7 +208,7 @@ export class MockBackend implements ConnectionBackend {
       throw new BaseException(`createConnection requires an instance of Request, got ${req}`);
     }
     let connection = new MockConnection(req);
-    ObservableWrapper.callNext(this.connections, connection);
+    this.connections.next(connection);
     return connection;
   }
 }

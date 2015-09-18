@@ -14,12 +14,15 @@ import {PromiseWrapper} from 'angular2/src/core/facade/async';
  */
 @Injectable()
 export class Testability {
+  /** @internal */
   _pendingCount: number = 0;
+  /** @internal */
   _callbacks: Function[] = [];
+  /** @internal */
   _isAngularEventPending: boolean = false;
+  constructor(_ngZone: NgZone) { this._watchAngularEvents(_ngZone); }
 
-  constructor(public _ngZone: NgZone) { this._watchAngularEvents(_ngZone); }
-
+  /** @internal */
   _watchAngularEvents(_ngZone: NgZone): void {
     _ngZone.overrideOnTurnStart(() => { this._isAngularEventPending = true; });
     _ngZone.overrideOnEventDone(() => {
@@ -42,8 +45,11 @@ export class Testability {
     return this._pendingCount;
   }
 
+  isStable(): boolean { return this._pendingCount == 0 && !this._isAngularEventPending; }
+
+  /** @internal */
   _runCallbacksIfReady(): void {
-    if (this._pendingCount != 0 || this._isAngularEventPending) {
+    if (!this.isStable()) {
       return;  // Not ready
     }
 
@@ -66,7 +72,12 @@ export class Testability {
   // check for stability.
   isAngularEventPending(): boolean { return this._isAngularEventPending; }
 
-  findBindings(using: any, binding: string, exactMatch: boolean): any[] {
+  findBindings(using: any, provider: string, exactMatch: boolean): any[] {
+    // TODO(juliemr): implement.
+    return [];
+  }
+
+  findProviders(using: any, provider: string, exactMatch: boolean): any[] {
     // TODO(juliemr): implement.
     return [];
   }
@@ -74,7 +85,8 @@ export class Testability {
 
 @Injectable()
 export class TestabilityRegistry {
-  _applications: Map<any, Testability> = new Map();
+  /** @internal */
+  _applications = new Map<any, Testability>();
 
   constructor() { testabilityGetter.addToWindow(this); }
 

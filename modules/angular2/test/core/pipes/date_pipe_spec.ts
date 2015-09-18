@@ -8,10 +8,11 @@ import {
   beforeEach,
   afterEach,
   browserDetection
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {DatePipe} from 'angular2/core';
 import {DateWrapper} from 'angular2/src/core/facade/lang';
+import {PipeResolver} from 'angular2/src/core/linker/pipe_resolver';
 
 export function main() {
   describe("DatePipe", () => {
@@ -22,6 +23,9 @@ export function main() {
       date = DateWrapper.create(2015, 6, 15, 21, 43, 11);
       pipe = new DatePipe();
     });
+
+    it('should be marked as pure',
+       () => { expect(new PipeResolver().resolve(DatePipe).pure).toEqual(true); });
 
     describe("supports", () => {
       it("should support date", () => { expect(pipe.supports(date)).toBe(true); });

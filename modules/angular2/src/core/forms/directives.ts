@@ -7,27 +7,31 @@ import {NgFormModel} from './directives/ng_form_model';
 import {NgForm} from './directives/ng_form';
 import {DefaultValueAccessor} from './directives/default_value_accessor';
 import {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor';
+import {NumberValueAccessor} from './directives/number_value_accessor';
+import {NgControlStatus} from './directives/ng_control_status';
 import {
   SelectControlValueAccessor,
   NgSelectOption
 } from './directives/select_control_value_accessor';
-import {DefaultValidators} from './directives/validators';
+import {RequiredValidator, MinLengthValidator, MaxLengthValidator} from './directives/validators';
 
 export {NgControlName} from './directives/ng_control_name';
 export {NgFormControl} from './directives/ng_form_control';
 export {NgModel} from './directives/ng_model';
-export {NgControl} from './directives/ng_control';
 export {NgControlGroup} from './directives/ng_control_group';
 export {NgFormModel} from './directives/ng_form_model';
 export {NgForm} from './directives/ng_form';
-export {ControlValueAccessor} from './directives/control_value_accessor';
 export {DefaultValueAccessor} from './directives/default_value_accessor';
 export {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor';
+export {NumberValueAccessor} from './directives/number_value_accessor';
+export {NgControlStatus} from './directives/ng_control_status';
 export {
   SelectControlValueAccessor,
   NgSelectOption
 } from './directives/select_control_value_accessor';
-export {DefaultValidators} from './directives/validators';
+export {RequiredValidator, MinLengthValidator, MaxLengthValidator} from './directives/validators';
+export {NgControl} from './directives/ng_control';
+export {ControlValueAccessor} from './directives/control_value_accessor';
 
 /**
  *
@@ -35,14 +39,12 @@ export {DefaultValidators} from './directives/validators';
  *
  *  This is a shorthand for importing them each individually.
  *
- * ### Example:
+ * ### Example
  *
  * ```typescript
- * @View({
- *   directives: [FORM_DIRECTIVES]
- * })
  * @Component({
- *   selector: 'my-app'
+ *   selector: 'my-app',
+ *   directives: [FORM_DIRECTIVES]
  * })
  * class MyApp {}
  * ```
@@ -58,8 +60,12 @@ export const FORM_DIRECTIVES: Type[] = CONST_EXPR([
 
   NgSelectOption,
   DefaultValueAccessor,
+  NumberValueAccessor,
   CheckboxControlValueAccessor,
   SelectControlValueAccessor,
+  NgControlStatus,
 
-  DefaultValidators
+  RequiredValidator,
+  MinLengthValidator,
+  MaxLengthValidator
 ]);

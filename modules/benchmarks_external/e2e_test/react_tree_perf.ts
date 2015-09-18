@@ -1,4 +1,4 @@
-import {runClickBenchmark, verifyNoBrowserErrors} from 'angular2/src/test_lib/perf_util';
+import {runClickBenchmark, verifyNoBrowserErrors} from 'angular2/src/testing/perf_util';
 
 describe('react tree benchmark', function() {
 
@@ -11,7 +11,8 @@ describe('react tree benchmark', function() {
       url: URL,
       buttons: ['#destroyDom', '#createDom'],
       id: 'react.tree.create',
-      params: [{name: 'depth', value: 9, scale: 'log2'}]
+      params: [{name: 'depth', value: 9, scale: 'log2'}],
+      waitForAngular2: false
     }).then(done, done.fail);
   });
 
@@ -20,7 +21,8 @@ describe('react tree benchmark', function() {
       url: URL,
       buttons: ['#createDom'],
       id: 'react.tree.update',
-      params: [{name: 'depth', value: 9, scale: 'log2'}]
+      params: [{name: 'depth', value: 9, scale: 'log2'}],
+      waitForAngular2: false
     }).then(done, done.fail);
   });
 

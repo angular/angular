@@ -151,6 +151,8 @@ export class DefaultIterableDiffer implements IterableDiffer {
    * currentKey, and clear all of the queues (additions, moves, removals).
    * Set the previousIndexes of moved and added items to their currentIndexes
    * Reset the list of additions, moves and removals
+   *
+   * @internal
    */
   _reset() {
     if (this.isDirty) {
@@ -185,6 +187,8 @@ export class DefaultIterableDiffer implements IterableDiffer {
    *   item.
    * - `item` is the current item in the collection
    * - `index` is the position of the item in the collection
+   *
+   * @internal
    */
   _mismatch(record: CollectionChangeRecord, item, index: number): CollectionChangeRecord {
     // The previous record after which we will append the current one.
@@ -241,6 +245,8 @@ export class DefaultIterableDiffer implements IterableDiffer {
    * at the end. Which will show up as the two 'a's switching position. This is incorrect, since a
    * better way to think of it is as insert of 'b' rather then switch 'a' with 'b' and then add 'a'
    * at the end.
+   *
+   * @internal
    */
   _verifyReinsertion(record: CollectionChangeRecord, item, index: number): CollectionChangeRecord {
     var reinsertRecord: CollectionChangeRecord =
@@ -258,6 +264,8 @@ export class DefaultIterableDiffer implements IterableDiffer {
    * Get rid of any excess {@link CollectionChangeRecord}s from the previous collection
    *
    * - `record` The first excess {@link CollectionChangeRecord}.
+   *
+   * @internal
    */
   _truncate(record: CollectionChangeRecord) {
     // Anything after that needs to be removed;
@@ -284,6 +292,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
     }
   }
 
+  /** @internal */
   _reinsertAfter(record: CollectionChangeRecord, prevRecord: CollectionChangeRecord,
                  index: number): CollectionChangeRecord {
     if (this._unlinkedRecords !== null) {
@@ -308,6 +317,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
     return record;
   }
 
+  /** @internal */
   _moveAfter(record: CollectionChangeRecord, prevRecord: CollectionChangeRecord,
              index: number): CollectionChangeRecord {
     this._unlink(record);
@@ -316,6 +326,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
     return record;
   }
 
+  /** @internal */
   _addAfter(record: CollectionChangeRecord, prevRecord: CollectionChangeRecord,
             index: number): CollectionChangeRecord {
     this._insertAfter(record, prevRecord, index);
@@ -333,6 +344,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
     return record;
   }
 
+  /** @internal */
   _insertAfter(record: CollectionChangeRecord, prevRecord: CollectionChangeRecord,
                index: number): CollectionChangeRecord {
     // todo(vicb)
@@ -366,10 +378,12 @@ export class DefaultIterableDiffer implements IterableDiffer {
     return record;
   }
 
+  /** @internal */
   _remove(record: CollectionChangeRecord): CollectionChangeRecord {
     return this._addToRemovals(this._unlink(record));
   }
 
+  /** @internal */
   _unlink(record: CollectionChangeRecord): CollectionChangeRecord {
     if (this._linkedRecords !== null) {
       this._linkedRecords.remove(record);
@@ -396,6 +410,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
     return record;
   }
 
+  /** @internal */
   _addToMoves(record: CollectionChangeRecord, toIndex: number): CollectionChangeRecord {
     // todo(vicb)
     // assert(record._nextMoved === null);
@@ -417,6 +432,7 @@ export class DefaultIterableDiffer implements IterableDiffer {
     return record;
   }
 
+  /** @internal */
   _addToRemovals(record: CollectionChangeRecord): CollectionChangeRecord {
     if (this._unlinkedRecords === null) {
       this._unlinkedRecords = new _DuplicateMap();
@@ -477,14 +493,23 @@ export class CollectionChangeRecord {
   currentIndex: number = null;
   previousIndex: number = null;
 
+  /** @internal */
   _nextPrevious: CollectionChangeRecord = null;
+  /** @internal */
   _prev: CollectionChangeRecord = null;
+  /** @internal */
   _next: CollectionChangeRecord = null;
+  /** @internal */
   _prevDup: CollectionChangeRecord = null;
+  /** @internal */
   _nextDup: CollectionChangeRecord = null;
+  /** @internal */
   _prevRemoved: CollectionChangeRecord = null;
+  /** @internal */
   _nextRemoved: CollectionChangeRecord = null;
+  /** @internal */
   _nextAdded: CollectionChangeRecord = null;
+  /** @internal */
   _nextMoved: CollectionChangeRecord = null;
 
   constructor(public item: any) {}
@@ -499,7 +524,9 @@ export class CollectionChangeRecord {
 
 // A linked list of CollectionChangeRecords with the same CollectionChangeRecord.item
 class _DuplicateItemRecordList {
+  /** @internal */
   _head: CollectionChangeRecord = null;
+  /** @internal */
   _tail: CollectionChangeRecord = null;
 
   /**
@@ -568,7 +595,7 @@ class _DuplicateItemRecordList {
 }
 
 class _DuplicateMap {
-  map: Map<any, _DuplicateItemRecordList> = new Map();
+  map = new Map<any, _DuplicateItemRecordList>();
 
   put(record: CollectionChangeRecord) {
     // todo(vicb) handle corner cases
@@ -608,12 +635,12 @@ class _DuplicateMap {
     var recordList: _DuplicateItemRecordList = this.map.get(key);
     // Remove the list of duplicates when it gets empty
     if (recordList.remove(record)) {
-      MapWrapper.delete(this.map, key);
+      this.map.delete(key);
     }
     return record;
   }
 
-  get isEmpty(): boolean { return MapWrapper.size(this.map) === 0; }
+  get isEmpty(): boolean { return this.map.size === 0; }
 
   clear() { this.map.clear(); }
 

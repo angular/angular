@@ -1,4 +1,4 @@
-import {runClickBenchmark, verifyNoBrowserErrors} from 'angular2/src/test_lib/perf_util';
+import {runClickBenchmark, verifyNoBrowserErrors} from 'angular2/src/testing/perf_util';
 
 describe('polymer tree benchmark', function() {
 
@@ -6,12 +6,23 @@ describe('polymer tree benchmark', function() {
 
   afterEach(verifyNoBrowserErrors);
 
-  it('should log the stats', function(done) {
+  it('should log the stats (create)', function(done) {
     runClickBenchmark({
       url: URL,
       buttons: ['#destroyDom', '#createDom'],
-      id: 'polymer.tree',
-      params: [{name: 'depth', value: 9, scale: 'log2'}]
+      id: 'polymer.tree.create',
+      params: [{name: 'depth', value: 9, scale: 'log2'}],
+      waitForAngular2: false
+    }).then(done, done.fail);
+  });
+
+  it('should log the stats (update)', function(done) {
+    runClickBenchmark({
+      url: URL,
+      buttons: ['#createDom'],
+      id: 'polymer.tree.update',
+      params: [{name: 'depth', value: 9, scale: 'log2'}],
+      waitForAngular2: false
     }).then(done, done.fail);
   });
 

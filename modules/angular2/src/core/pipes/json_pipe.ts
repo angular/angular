@@ -6,15 +6,13 @@ import {Pipe} from 'angular2/src/core/metadata';
 /**
  * Implements json transforms to any object.
  *
- * # Example
+ * ### Example
  *
  * In this example we transform the user object to json.
  *
  *  ```
  * @Component({
- *   selector: "user-cmp"
- * })
- * @View({
+ *   selector: "user-cmp",
  *   template: "User: {{ user | json }}"
  * })
  * class Username {
@@ -27,7 +25,7 @@ import {Pipe} from 'angular2/src/core/metadata';
  * ```
  */
 @CONST()
-@Pipe({name: 'json'})
+@Pipe({name: 'json', pure: false})
 @Injectable()
 export class JsonPipe implements PipeTransform {
   transform(value: any, args: any[] = null): string { return Json.stringify(value); }

@@ -1,8 +1,15 @@
-import {Type, isPresent, isFunction, global, stringify} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+import {
+  Type,
+  isPresent,
+  isFunction,
+  global,
+  stringify,
+  ConcreteType
+} from 'angular2/src/core/facade/lang';
+import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {GetterFn, SetterFn, MethodFn} from './types';
-import {PlatformReflectionCapabilities} from 'platform_reflection_capabilities';
+import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 
 export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   private _reflect: any;
@@ -11,7 +18,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
 
   isReflectionEnabled(): boolean { return true; }
 
-  factory(t: Type): Function {
+  factory(t: ConcreteType): Function {
     switch (t.length) {
       case 0:
         return () => new t();
@@ -76,6 +83,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
         `Cannot create a factory for '${stringify(t)}' because its constructor has more than 20 arguments`);
   }
 
+  /** @internal */
   _zipTypesAndAnnotaions(paramTypes, paramAnnotations): any[][] {
     var result;
 
@@ -134,7 +142,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     return [];
   }
 
-  propMetadata(typeOrFunc: any): StringMap<string, any[]> {
+  propMetadata(typeOrFunc: any): {[key: string]: any[]} {
     // Prefer the direct API.
     if (isPresent((<any>typeOrFunc).propMetadata)) {
       var propMetadata = (<any>typeOrFunc).propMetadata;
@@ -168,6 +176,4 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
 
   // There is not a concept of import uri in Js, but this is useful in developing Dart applications.
   importUri(type: Type): string { return './'; }
-
-  moduleId(type: Type): string { return './'; }
 }

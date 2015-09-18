@@ -7,7 +7,6 @@ import {
   Chain,
   Conditional,
   EmptyExpr,
-  If,
   BindingPipe,
   FunctionCall,
   ImplicitReceiver,
@@ -68,17 +67,6 @@ export class Unparser implements AstVisitor {
     this._visit(ast.trueExp);
     this._expression += ' : ';
     this._visit(ast.falseExp);
-  }
-
-  visitIf(ast: If) {
-    this._expression += 'if (';
-    this._visit(ast.condition);
-    this._expression += ') ';
-    this._visitExpOrBlock(ast.trueExp);
-    if (isPresent(ast.falseExp)) {
-      this._expression += ' else ';
-      this._visitExpOrBlock(ast.falseExp);
-    }
   }
 
   visitPipe(ast: BindingPipe) {
@@ -200,11 +188,4 @@ export class Unparser implements AstVisitor {
   }
 
   private _visit(ast: AST) { ast.visit(this); }
-
-  private _visitExpOrBlock(ast: AST) {
-    var isBlock = ast instanceof Chain || ast instanceof EmptyExpr;
-    if (isBlock) this._expression += '{ ';
-    this._visit(ast);
-    if (isBlock) this._expression += ' }';
-  }
 }

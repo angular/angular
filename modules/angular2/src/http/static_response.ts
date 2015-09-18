@@ -12,10 +12,10 @@ import {isJsObject} from './http_utils';
  * usually instantiated by end-users, it is the primary object interacted with when it comes time to
  * add data to a view.
  *
- * #Example
+ * ### Example
  *
  * ```
- * http.request('my-friends.txt').toRx().subscribe(response => this.friends = response.text());
+ * http.request('my-friends.txt').subscribe(response => this.friends = response.text());
  * ```
  *
  * The Response's interface is inspired by the Response constructor defined in the [Fetch

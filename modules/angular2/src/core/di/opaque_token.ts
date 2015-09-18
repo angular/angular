@@ -1,22 +1,22 @@
 import {CONST} from 'angular2/src/core/facade/lang';
 
 /**
- * Creates a token that can be used in a DI Binding.
+ * Creates a token that can be used in a DI Provider.
  *
  * ### Example ([live demo](http://plnkr.co/edit/Ys9ezXpj2Mnoy3Uc8KBp?p=preview))
  *
  * ```typescript
- * var t = new OpaqueToken("binding");
+ * var t = new OpaqueToken("value");
  *
  * var injector = Injector.resolveAndCreate([
- *   bind(t).toValue("bindingValue")
+ *   provide(t, {useValue: "providedValue"})
  * ]);
  *
  * expect(injector.get(t)).toEqual("bindingValue");
  * ```
  *
  * Using an `OpaqueToken` is preferable to using strings as tokens because of possible collisions
- * caused by multiple bindings using the same string as two different tokens.
+ * caused by multiple providers using the same string as two different tokens.
  *
  * Using an `OpaqueToken` is preferable to using an `Object` as tokens because it provides better
  * error messages.

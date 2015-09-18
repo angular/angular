@@ -3,7 +3,7 @@
  */
 library angular2.test.web_workers.debug_tools.server_message_bus_common;
 
-import "package:angular2/test_lib.dart";
+import "package:angular2/testing_internal.dart";
 import "dart:io";
 
 @proxy

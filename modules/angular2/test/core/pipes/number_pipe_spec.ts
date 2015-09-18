@@ -8,7 +8,7 @@ import {
   beforeEach,
   afterEach,
   browserDetection
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {DecimalPipe, PercentPipe, CurrencyPipe} from 'angular2/core';
 

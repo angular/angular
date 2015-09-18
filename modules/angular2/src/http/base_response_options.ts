@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/src/core/di';
+import {Injectable} from 'angular2/angular2';
 import {isPresent, isJsObject} from 'angular2/src/core/facade/lang';
 import {Headers} from './headers';
 import {ResponseTypes} from './enums';
@@ -46,11 +46,11 @@ export class ResponseOptions {
    */
   headers: Headers;
   /**
-   * @private
+   * @internal
    */
   statusText: string;
   /**
-   * @private
+   * @internal
    */
   type: ResponseTypes;
   url: string;
@@ -72,7 +72,7 @@ export class ResponseOptions {
    * This may be useful when sharing a base `ResponseOptions` object inside tests,
    * where certain properties may change from test to test.
    *
-   * Example ([live demo](http://plnkr.co/edit/1lXquqFfgduTFBWjNoRE?p=preview))
+   * ### Example ([live demo](http://plnkr.co/edit/1lXquqFfgduTFBWjNoRE?p=preview))
    *
    * ```typescript
    * import {ResponseOptions, Response} from 'angular2/http';
@@ -115,15 +115,16 @@ export class ResponseOptions {
  * ### Example ([live demo](http://plnkr.co/edit/qv8DLT?p=preview))
  *
  * ```typescript
- * import {bind, bootstrap} from 'angular2/angular2';
- * import {HTTP_BINDINGS, Headers, Http, BaseResponseOptions, ResponseOptions} from 'angular2/http';
+ * import {provide, bootstrap} from 'angular2/angular2';
+ * import {HTTP_PROVIDERS, Headers, Http, BaseResponseOptions, ResponseOptions} from
+ * 'angular2/http';
  * import {App} from './myapp';
  *
  * class MyOptions extends BaseResponseOptions {
  *   headers:Headers = new Headers({network: 'github'});
  * }
  *
- * bootstrap(App, [HTTP_BINDINGS, bind(ResponseOptions).toClass(MyOptions)]);
+ * bootstrap(App, [HTTP_PROVIDERS, provide(ResponseOptions, {useClass: MyOptions})]);
  * ```
  *
  * The options could also be extended when manually creating a {@link Response}

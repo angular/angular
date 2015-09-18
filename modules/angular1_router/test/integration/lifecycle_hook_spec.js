@@ -205,7 +205,7 @@ describe('Navigation lifecycle', function () {
 
     $router.config([
       { path: '/on-reuse/:number/...', component: 'reuseCmp' },
-      { path: '/two', component: 'twoCmp', as: 'Two'}
+      { path: '/two', component: 'twoCmp', name: 'Two'}
     ]);
     compile('outer { <div ng-outlet></div> }');
 
@@ -247,7 +247,7 @@ describe('Navigation lifecycle', function () {
 
     $router.config([
       { path: '/never-reuse/:number/...', component: 'reuseCmp' },
-      { path: '/two', component: 'twoCmp', as: 'Two'}
+      { path: '/two', component: 'twoCmp', name: 'Two'}
     ]);
     compile('outer { <div ng-outlet></div> }');
 

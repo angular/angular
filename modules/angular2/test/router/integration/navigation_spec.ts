@@ -13,14 +13,13 @@ import {
   beforeEachBindings,
   it,
   xit
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
-import {bind, Component, View, Injector, Inject} from 'angular2/core';
-import {CONST, NumberWrapper, isPresent, Json} from 'angular2/src/core/facade/lang';
+import {provide, Component, View, Injector, Inject} from 'angular2/core';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 
 import {RootRouter} from 'angular2/src/router/router';
-import {Router, RouterOutlet, RouterLink, RouteParams, ROUTE_DATA} from 'angular2/router';
+import {Router, RouterOutlet, RouterLink, RouteParams, RouteData} from 'angular2/router';
 import {
   RouteConfig,
   Route,
@@ -32,7 +31,7 @@ import {
 import {SpyLocation} from 'angular2/src/mock/location_mock';
 import {Location} from 'angular2/src/router/location';
 import {RouteRegistry} from 'angular2/src/router/route_registry';
-import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
+import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 
 var cmpInstanceCount;
 var childCmpInstanceCount;
@@ -48,10 +47,13 @@ export function main() {
     beforeEachBindings(() => [
       RouteRegistry,
       DirectiveResolver,
-      bind(Location).toClass(SpyLocation),
-      bind(Router)
-          .toFactory((registry, location) => { return new RootRouter(registry, location, MyComp); },
-                     [RouteRegistry, Location])
+      provide(Location, {useClass: SpyLocation}),
+      provide(Router,
+              {
+                useFactory:
+                    (registry, location) => { return new RootRouter(registry, location, MyComp); },
+                deps: [RouteRegistry, Location]
+              })
     ]);
 
     beforeEach(inject([TestComponentBuilder, Router], (tcBuilder, router) => {
@@ -197,13 +199,12 @@ export function main() {
     it('should inject route data into component', inject([AsyncTestCompleter], (async) => {
          compile()
              .then((_) => rtr.config([
-               new Route({path: '/route-data', component: RouteDataCmp, data: {'isAdmin': true}})
+               new Route({path: '/route-data', component: RouteDataCmp, data: {isAdmin: true}})
              ]))
              .then((_) => rtr.navigateByUrl('/route-data'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement)
-                   .toHaveText(Json.stringify({'isAdmin': true}));
+               expect(rootTC.debugElement.nativeElement).toHaveText('true');
                async.done();
              });
        }));
@@ -218,13 +219,12 @@ export function main() {
              .then((_) => rtr.navigateByUrl('/route-data'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement)
-                   .toHaveText(Json.stringify({'isAdmin': true}));
+               expect(rootTC.debugElement.nativeElement).toHaveText('true');
                async.done();
              });
        }));
 
-    it('should inject null if the route has no data property',
+    it('should inject empty object if the route has no data property',
        inject([AsyncTestCompleter], (async) => {
          compile()
              .then((_) => rtr.config(
@@ -232,34 +232,7 @@ export function main() {
              .then((_) => rtr.navigateByUrl('/route-data-default'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('null');
-               async.done();
-             });
-       }));
-
-    it('should allow an array as the route data', inject([AsyncTestCompleter], (async) => {
-         compile()
-             .then((_) => rtr.config([
-               new Route({path: '/route-data-array', component: RouteDataCmp, data: [1, 2, 3]})
-             ]))
-             .then((_) => rtr.navigateByUrl('/route-data-array'))
-             .then((_) => {
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText(Json.stringify([1, 2, 3]));
-               async.done();
-             });
-       }));
-
-    it('should allow a string as the route data', inject([AsyncTestCompleter], (async) => {
-         compile()
-             .then((_) => rtr.config([
-               new Route(
-                   {path: '/route-data-string', component: RouteDataCmp, data: 'hello world'})
-             ]))
-             .then((_) => rtr.navigateByUrl('/route-data-string'))
-             .then((_) => {
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText(Json.stringify('hello world'));
+               expect(rootTC.debugElement.nativeElement).toHaveText('');
                async.done();
              });
        }));
@@ -295,10 +268,8 @@ function AsyncRouteDataCmp() {
 @Component({selector: 'data-cmp'})
 @View({template: "{{myData}}"})
 class RouteDataCmp {
-  myData: string;
-  constructor(@Inject(ROUTE_DATA) data: any) {
-    this.myData = isPresent(data) ? Json.stringify(data) : 'null';
-  }
+  myData: boolean;
+  constructor(data: RouteData) { this.myData = data.get('isAdmin'); }
 }
 
 @Component({selector: 'user-cmp'})
@@ -317,16 +288,24 @@ function parentLoader() {
 }
 
 @Component({selector: 'parent-cmp'})
-@View({template: "inner { <router-outlet></router-outlet> }", directives: [RouterOutlet]})
-@RouteConfig(
-    [new Route({path: '/b', component: HelloCmp}), new Route({path: '/', component: HelloCmp})])
+@View({
+  template: "inner { <router-outlet></router-outlet> }",
+  directives: [RouterOutlet],
+})
+@RouteConfig([
+  new Route({path: '/b', component: HelloCmp}),
+  new Route({path: '/', component: HelloCmp}),
+])
 class ParentCmp {
   constructor() {}
 }
 
 
 @Component({selector: 'team-cmp'})
-@View({template: "team {{id}} { <router-outlet></router-outlet> }", directives: [RouterOutlet]})
+@View({
+  template: "team {{id}} { <router-outlet></router-outlet> }",
+  directives: [RouterOutlet],
+})
 @RouteConfig([new Route({path: '/user/:name', component: UserCmp})])
 class TeamCmp {
   id: string;
@@ -349,13 +328,13 @@ class ModalCmp {
 
 @Component({selector: 'aux-cmp'})
 @View({
-  template:
-      `main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`,
-  directives: [RouterOutlet]
+  template: 'main {<router-outlet></router-outlet>} | ' +
+                'aux {<router-outlet name="modal"></router-outlet>}',
+  directives: [RouterOutlet],
 })
 @RouteConfig([
   new Route({path: '/hello', component: HelloCmp}),
-  new AuxRoute({path: '/modal', component: ModalCmp})
+  new AuxRoute({path: '/modal', component: ModalCmp}),
 ])
 class AuxCmp {
 }

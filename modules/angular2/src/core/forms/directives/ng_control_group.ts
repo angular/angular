@@ -1,6 +1,6 @@
 import {OnInit, OnDestroy} from 'angular2/lifecycle_hooks';
 import {Directive} from 'angular2/src/core/metadata';
-import {Inject, Host, SkipSelf, forwardRef, Binding} from 'angular2/src/core/di';
+import {Optional, Inject, Host, SkipSelf, forwardRef, Provider} from 'angular2/src/core/di';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 
@@ -8,69 +8,97 @@ import {ControlContainer} from './control_container';
 import {controlPath} from './shared';
 import {ControlGroup} from '../model';
 import {Form} from './form_interface';
+import {Validators, NG_VALIDATORS} from '../validators';
 
-const controlGroupBinding =
-    CONST_EXPR(new Binding(ControlContainer, {toAlias: forwardRef(() => NgControlGroup)}));
+const controlGroupProvider =
+    CONST_EXPR(new Provider(ControlContainer, {useExisting: forwardRef(() => NgControlGroup)}));
 
 /**
  * Creates and binds a control group to a DOM element.
  *
  * This directive can only be used as a child of {@link NgForm} or {@link NgFormModel}.
  *
- * # Example
+ * # Example ([live demo](http://plnkr.co/edit/7EJ11uGeaggViYM6T5nq?p=preview))
  *
- * In this example, we create the credentials and personal control groups.
- * We can work with each group separately: check its validity, get its value, listen to its changes.
- *
- *  ```
- * @Component({selector: "signup-comp"})
+ * ```typescript
+ * @Component({
+ *   selector: 'my-app',
+ *   directives: [FORM_DIRECTIVES],
+ * })
  * @View({
- *      directives: [FORM_DIRECTIVES],
- *      template: `
- *              <form #f="form" (submit)='onSignUp(f.value)'>
- *                <div ng-control-group='credentials' #credentials="form">
- *                  Login <input type='text' ng-control='login'>
- *                  Password <input type='password' ng-control='password'>
- *                </div>
- *                <div *ng-if="!credentials.valid">Credentials are invalid</div>
- *
- *                <div ng-control-group='personal'>
- *                  Name <input type='text' ng-control='name'>
- *                </div>
- *                <button type='submit'>Sign Up!</button>
- *              </form>
- *      `})
- * class SignupComp {
- *  onSignUp(value) {
- *    // value === {
- *    //  personal: {name: 'some name'},
- *    //  credentials: {login: 'some login', password: 'some password'}}
- *  }
+ *   template: `
+ *     <div>
+ *       <h2>Angular2 Control &amp; ControlGroup Example</h2>
+ *       <form #f="form">
+ *         <div ng-control-group="name" #cg-name="form">
+ *           <h3>Enter your name:</h3>
+ *           <p>First: <input ng-control="first" required></p>
+ *           <p>Middle: <input ng-control="middle"></p>
+ *           <p>Last: <input ng-control="last" required></p>
+ *         </div>
+ *         <h3>Name value:</h3>
+ *         <pre>{{valueOf(cgName)}}</pre>
+ *         <p>Name is {{cgName?.control?.valid ? "valid" : "invalid"}}</p>
+ *         <h3>What's your favorite food?</h3>
+ *         <p><input ng-control="food"></p>
+ *         <h3>Form value</h3>
+ *         <pre>{{valueOf(f)}}</pre>
+ *       </form>
+ *     </div>
+ *   `,
+ *   directives: [FORM_DIRECTIVES]
+ * })
+ * export class App {
+ *   valueOf(cg: NgControlGroup): string {
+ *     if (cg.control == null) {
+ *       return null;
+ *     }
+ *     return JSON.stringify(cg.control.value, null, 2);
+ *   }
  * }
+ * ```
  *
- *  ```
+ * This example declares a control group for a user's name. The value and validation state of
+ * this group can be accessed separately from the overall form.
  */
 @Directive({
   selector: '[ng-control-group]',
-  bindings: [controlGroupBinding],
-  properties: ['name: ng-control-group'],
+  providers: [controlGroupProvider],
+  inputs: ['name: ng-control-group'],
   exportAs: 'form'
 })
 export class NgControlGroup extends ControlContainer implements OnInit,
     OnDestroy {
+  /** @internal */
   _parent: ControlContainer;
-  constructor(@Host() @SkipSelf() _parent: ControlContainer) {
+
+  private _validators: Function[];
+
+  constructor(@Host() @SkipSelf() parent: ControlContainer,
+              @Optional() @Inject(NG_VALIDATORS) validators: Function[]) {
     super();
-    this._parent = _parent;
+    this._parent = parent;
+    this._validators = validators;
   }
 
   onInit(): void { this.formDirective.addControlGroup(this); }
 
   onDestroy(): void { this.formDirective.removeControlGroup(this); }
 
+  /**
+   * Get the {@link ControlGroup} backing this binding.
+   */
   get control(): ControlGroup { return this.formDirective.getControlGroup(this); }
 
+  /**
+   * Get the path to this control group.
+   */
   get path(): string[] { return controlPath(this.name, this._parent); }
 
+  /**
+   * Get the {@link Form} to which this group belongs.
+   */
   get formDirective(): Form { return this._parent.formDirective; }
+
+  get validator(): Function { return Validators.compose(this._validators); }
 }

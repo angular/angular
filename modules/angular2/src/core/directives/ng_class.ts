@@ -1,7 +1,7 @@
-import {isPresent, isString, StringWrapper, isBlank} from 'angular2/src/core/facade/lang';
+import {isPresent, isString, StringWrapper, isBlank, isArray} from 'angular2/src/core/facade/lang';
 import {DoCheck, OnDestroy} from 'angular2/lifecycle_hooks';
 import {Directive} from 'angular2/src/core/metadata';
-import {ElementRef} from 'angular2/src/core/compiler';
+import {ElementRef} from 'angular2/src/core/linker';
 import {
   IterableDiffer,
   IterableDiffers,
@@ -9,33 +9,67 @@ import {
   KeyValueDiffers
 } from 'angular2/src/core/change_detection';
 import {Renderer} from 'angular2/src/core/render';
-import {
-  ListWrapper,
-  StringMapWrapper,
-  isListLikeIterable
-} from 'angular2/src/core/facade/collection';
+import {StringMapWrapper, isListLikeIterable} from 'angular2/src/core/facade/collection';
 
 /**
- * Adds and removes CSS classes based on an {expression} value.
+ * The `NgClass` directive conditionally adds and removes CSS classes on an HTML element based on
+ * an expression's evaluation result.
  *
- * The result of expression is used to add and remove CSS classes using the following logic,
- * based on expression's value type:
- * - {string} - all the CSS classes (space - separated) are added
- * - {Array} - all the CSS classes (Array elements) are added
- * - {Object} - each key corresponds to a CSS class name while values
- * are interpreted as {boolean} expression. If a given expression
- * evaluates to {true} a corresponding CSS class is added - otherwise
- * it is removed.
+ * The result of an expression evaluation is interpreted differently depending on type of
+ * the expression evaluation result:
+ * - `string` - all the CSS classes listed in a string (space delimited) are added
+ * - `Array` - all the CSS classes (Array elements) are added
+ * - `Object` - each key corresponds to a CSS class name while values are interpreted as expressions
+ * evaluating to `Boolean`. If a given expression evaluates to `true` a corresponding CSS class
+ * is added - otherwise it is removed.
  *
- * # Example:
+ * While the `NgClass` directive can interpret expressions evaluating to `string`, `Array`
+ * or `Object`, the `Object`-based version is the most often used and has an advantage of keeping
+ * all the CSS class names in a template.
+ *
+ * ### Example ([live demo](http://plnkr.co/edit/a4YdtmWywhJ33uqfpPPn?p=preview)):
  *
  * ```
- * <div class="message" [ng-class]="{error: errorCount > 0}">
- *     Please check errors.
- * </div>
+ * import {Component, NgClass} from 'angular2/angular2';
+ *
+ * @Component({
+ *   selector: 'toggle-button',
+ *   inputs: ['isDisabled'],
+ *   template: `
+ *      <div class="button" [ng-class]="{active: isOn, disabled: isDisabled}"
+ *          (click)="toggle(!isOn)">
+ *          Click me!
+ *      </div>`,
+ *   styles: [`
+ *     .button {
+ *       width: 120px;
+ *       border: medium solid black;
+ *     }
+ *
+ *     .active {
+ *       background-color: red;
+ *    }
+ *
+ *     .disabled {
+ *       color: gray;
+ *       border: medium solid gray;
+ *     }
+ *   `]
+ *   directives: [NgClass]
+ * })
+ * class ToggleButton {
+ *   isOn = false;
+ *   isDisabled = false;
+ *
+ *   toggle(newState) {
+ *     if (!this.isDisabled) {
+ *       this.isOn = newState;
+ *     }
+ *   }
+ * }
  * ```
  */
-@Directive({selector: '[ng-class]', properties: ['rawClass: ng-class', 'initialClasses: class']})
+@Directive({selector: '[ng-class]', inputs: ['rawClass: ng-class', 'initialClasses: class']})
 export class NgClass implements DoCheck, OnDestroy {
   private _differ: any;
   private _mode: string;
@@ -109,16 +143,18 @@ export class NgClass implements DoCheck, OnDestroy {
   }
 
   private _applyInitialClasses(isCleanup: boolean) {
-    ListWrapper.forEach(this._initialClasses,
-                        (className) => { this._toggleClass(className, !isCleanup); });
+    this._initialClasses.forEach(className => this._toggleClass(className, !isCleanup));
   }
 
-  private _applyClasses(rawClassVal, isCleanup: boolean) {
+  private _applyClasses(rawClassVal: string[] | Set<string>| {[key: string]: string},
+                        isCleanup: boolean) {
     if (isPresent(rawClassVal)) {
-      if (isListLikeIterable(rawClassVal)) {
-        ListWrapper.forEach(rawClassVal, (className) => this._toggleClass(className, !isCleanup));
+      if (isArray(rawClassVal)) {
+        (<string[]>rawClassVal).forEach(className => this._toggleClass(className, !isCleanup));
+      } else if (rawClassVal instanceof Set) {
+        (<Set<string>>rawClassVal).forEach(className => this._toggleClass(className, !isCleanup));
       } else {
-        StringMapWrapper.forEach(rawClassVal, (expVal, className) => {
+        StringMapWrapper.forEach(<{[k: string]: string}>rawClassVal, (expVal, className) => {
           if (expVal) this._toggleClass(className, !isCleanup);
         });
       }
