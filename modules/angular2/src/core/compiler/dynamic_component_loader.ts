@@ -11,9 +11,8 @@ function _asType(typeOrBinding: Type | Binding): Type {
 }
 
 /**
- * Angular's reference to a component instance.
- *
- * `ComponentRef` represents a component instance lifecycle and meta information.
+ * Represents a component instance as a node in application's component tree and provides access to
+ * other objects related to this component instance.
  */
 export class ComponentRef {
   /**
@@ -27,7 +26,6 @@ export class ComponentRef {
   instance: any;
 
   componentType: Type;
-
 
   injector: Injector;
 
@@ -58,11 +56,15 @@ export class ComponentRef {
 }
 
 /**
- * Service for dynamically loading a Component into an arbitrary position in the internal Angular
- * application tree.
+ * Service for creating an instance of a component and attaching it to the component tree of an
+ * application at a specified location.
  */
 @Injectable()
 export class DynamicComponentLoader {
+
+  /**
+   * @private
+   */
   constructor(private _compiler: Compiler, private _viewManager: AppViewManager) {}
 
   /**

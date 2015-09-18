@@ -10,17 +10,44 @@ import {TemplateRef} from './template_ref';
 import {ViewRef, HostViewRef, ProtoViewRef, internalView} from './view_ref';
 
 /**
- * A location where {@link ViewRef}s can be attached.
+ * Represents a container where one or more Views can be attached.
  *
- * A `ViewContainerRef` represents a location in a {@link ViewRef} where other child
- * {@link ViewRef}s can be inserted. Adding and removing views is the only way of structurally
- * changing the rendered DOM of the application.
+ * The container can contain two kinds of Views. Host Views, created by instantiating a
+ * {@link Component} via {@link #createHostView}s, and Embedded Views, created by instantiating an
+ * {@link TemplateRef Embedded Template} via {@link #createEmbeddedView}).
+ *
+ * The location of the View Container within the containing View is specified by the Anchor
+ * `element`. Each View Container can have only one Anchor Element and each Anchor Element can only
+ * have a single View Container.
+ *
+ * Root elements of Views attached to this container become siblings of the Anchor Element in
+ * the Rendered View.
+ *
+ * To access a ViewContainerRef of an Element, you can either place a {@link Directive} injected
+ * with `ViewContainerRef` on the Element, or you obtain it via
+ * {@link ViewManager#getViewContainer}.
+ *
+ * <!-- TODO: Is ViewContainerRef#element a public api? Should it be renamed? to anchor or anchorElementRef? -->
+ * <!-- TODO: rename all atIndex params to just index or get(index) to get(atIndex) -->
  */
 export class ViewContainerRef {
+
   /**
    * @private
    */
-  constructor(public viewManager: avmModule.AppViewManager, public element: ElementRef) {}
+  constructor(
+    /**
+     * @private
+     */
+    public viewManager: avmModule.AppViewManager,
+
+    /**
+     * Anchor element that specifies the location of this container in the containing View.
+     */
+    public element: ElementRef
+  ) {
+
+  }
 
   private _getViews(): Array<viewModule.AppView> {
     var vc = internalView(this.element.parentView).viewContainers[this.element.boundElementIndex];
@@ -28,7 +55,7 @@ export class ViewContainerRef {
   }
 
   /**
-   * Remove all {@link ViewRef}s at current location.
+   * Destroys all Views in the container.
    */
   clear(): void {
     for (var i = this.length - 1; i >= 0; i--) {
@@ -37,28 +64,22 @@ export class ViewContainerRef {
   }
 
   /**
-   * Return a {@link ViewRef} at specific index.
+   * Returns the {@link ViewRef} for the View located in this container at the specified index.
    */
   get(index: number): ViewRef { return this._getViews()[index].ref; }
 
   /**
-   * Returns number of {@link ViewRef}s currently attached at this location.
+   * Returns the number of Views currently attached to this container.
    */
   get length(): number { return this._getViews().length; }
 
   /**
-   * Create and insert a {@link ViewRef} into the view-container.
+   * Creates an Embedded View based on the {@link TemplateRef `templateRef`} and inserts it into
+   * this container at index specified via `atIndex`.
    *
-   * - `protoViewRef` (optional) {@link ProtoViewRef} - The `ProtoView` to use for creating
-   *   `View` to be inserted at this location. If `ViewContainer` is created at a location
-   *   of inline template, then `protoViewRef` is the `ProtoView` of the template.
-   * - `atIndex` (optional) `number` - location of insertion point. (Or at the end if unspecified.)
-   * - `context` (optional) {@link ElementRef} - Context (for expression evaluation) from the
-   *   {@link ElementRef} location. (Or current context if unspecified.)
-   * - `bindings` (optional) Array of {@link ResolvedBinding} - Used for configuring
-   *   `ElementInjector`.
+   * If `atIndex` is not specified, the new View will be inserted as the last View in the container.
    *
-   * Returns newly created {@link ViewRef}.
+   * Returns the {@link ViewRef} for the newly created View.
    */
   // TODO(rado): profile and decide whether bounds checks should be added
   // to the methods below.
@@ -67,6 +88,17 @@ export class ViewContainerRef {
     return this.viewManager.createEmbeddedViewInContainer(this.element, atIndex, templateRef);
   }
 
+  /**
+   * Creates a View  based on the {@link ProtoViewRef `protoViewRef`} and inserts it into this
+   * container at index specified via `atIndex`.
+   *
+   * If `atIndex` is not specified, the new View will be inserted as the last View in the container.
+   *
+   * You can optionally specify `dynamicallyCreatedBindings`, which configure the {@link Injector}
+   * that will be created for the new Host View. <!-- TODO: what is host view? it's never defined!!! -->
+   *
+   * Returns the {@link ViewRef} for the newly created View.
+   */
   createHostView(protoViewRef: ProtoViewRef = null, atIndex: number = -1,
                  dynamicallyCreatedBindings: ResolvedBinding[] = null): HostViewRef {
     if (atIndex == -1) atIndex = this.length;
@@ -75,12 +107,14 @@ export class ViewContainerRef {
   }
 
   /**
-   * Insert a {@link ViewRef} at specefic index.
+   * <!-- TODO: refactor into move and remove -->
+   * Inserts a View identified by a {@link ViewRef} into the container at index specified via
+   * `atIndex`.
    *
-   * The index is location at which the {@link ViewRef} should be attached. If omitted it is
-   * inserted at the end.
+   * If `atIndex` is not specified, the new View will be inserted as the last View in the container.
    *
    * Returns the inserted {@link ViewRef}.
+   * <!-- TODO: why does it return ViewRef? looks useless -->
    */
   insert(viewRef: ViewRef, atIndex: number = -1): ViewRef {
     if (atIndex == -1) atIndex = this.length;
@@ -88,16 +122,17 @@ export class ViewContainerRef {
   }
 
   /**
-   * Return the index of already inserted {@link ViewRef}.
+   * Returns the index of the View, specified via {@link ViewRef}, within the current container.
    */
   indexOf(viewRef: ViewRef): number {
     return ListWrapper.indexOf(this._getViews(), internalView(viewRef));
   }
 
   /**
-   * Remove a {@link ViewRef} at specific index.
+   * <!-- TODO: rename to destroy -->
+   * Destroys a View attached to this container at index specified via `atIndex`.
    *
-   * If the index is omitted last {@link ViewRef} is removed.
+   * If `atIndex` is not specified, the last View in the container will be removed.
    */
   remove(atIndex: number = -1): void {
     if (atIndex == -1) atIndex = this.length - 1;
@@ -106,8 +141,11 @@ export class ViewContainerRef {
   }
 
   /**
-   * The method can be used together with insert to implement a view move, i.e.
-   * moving the dom nodes while the directives in the view stay intact.
+   * <!-- TODO: refactor into move and remove -->
+   * Use along with {@link #insert} to move a View within the current container.
+   *
+   * If the `atIndex` param is omitted, the last {@link ViewRef} is detached.
+   * <!-- TODO: why does it return ViewRef? looks useless -->
    */
   detach(atIndex: number = -1): ViewRef {
     if (atIndex == -1) atIndex = this.length - 1;

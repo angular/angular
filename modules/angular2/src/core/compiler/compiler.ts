@@ -70,8 +70,7 @@ export class CompilerCache {
   }
 }
 
-/**
- *
+/*
  * ## URL Resolution
  *
  * ```
@@ -88,8 +87,14 @@ export class CompilerCache {
  * var url = viewAnnotation.templateUrl;
  * var componentUrl = componentUrlMapper.getUrl(componentType);
  * var componentResolvedUrl = urlResolver.resolve(appRootUrl.value, componentUrl);
- * var templateResolvedUrl = urlResolver.resolve(componetResolvedUrl, url);
+ * var templateResolvedUrl = urlResolver.resolve(componentResolvedUrl, url);
  * ```
+ */
+/**
+ * Service for compiling {@link Component}s so that they can be later instantiated and their
+ * {@link View}s can be rendered.
+ *
+ * <!-- TODO: check Component and View links, they should likely go to glossary instead -->
  */
 @Injectable()
 export class Compiler {
@@ -127,8 +132,10 @@ export class Compiler {
     return PipeBinding.createFromType(typeOrBinding, meta);
   }
 
-  // Create a hostView as if the compiler encountered <hostcmp></hostcmp>.
-  // Used for bootstrapping.
+  /**
+   * Compiles an {@link EntryPointComponent entry-point Component} and returns a promise for a
+   * {@link ProtoViewRef} that can be passed into {@link AppViewManager
+   */
   compileInHost(componentTypeOrBinding: Type | Binding): Promise<ProtoViewRef> {
     var componentType = isType(componentTypeOrBinding) ? componentTypeOrBinding :
                                                          (<Binding>componentTypeOrBinding).token;
