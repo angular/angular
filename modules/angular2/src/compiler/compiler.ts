@@ -17,6 +17,12 @@ import {StyleCompiler} from 'angular2/src/compiler/style_compiler';
 import {CommandCompiler} from 'angular2/src/compiler/command_compiler';
 import {TemplateCompiler} from 'angular2/src/compiler/template_compiler';
 import {ChangeDetectorGenConfig} from 'angular2/src/core/change_detection/change_detection';
+import {Compiler} from 'angular2/src/core/compiler/compiler';
+import {RuntimeCompiler} from 'angular2/src/compiler/runtime_compiler';
+import {ElementSchemaRegistry} from 'angular2/src/core/render/dom/schema/element_schema_registry';
+import {
+  DomElementSchemaRegistry
+} from 'angular2/src/core/render/dom/schema/dom_element_schema_registry';
 
 export function compilerBindings(): Array<Type | Binding | any[]> {
   return [
@@ -31,5 +37,9 @@ export function compilerBindings(): Array<Type | Binding | any[]> {
         .toValue(
             new ChangeDetectorGenConfig(assertionsEnabled(), assertionsEnabled(), false, true)),
     TemplateCompiler,
+    RuntimeCompiler,
+    bind(Compiler).toAlias(RuntimeCompiler),
+    DomElementSchemaRegistry,
+    bind(ElementSchemaRegistry).toAlias(DomElementSchemaRegistry)
   ];
 }

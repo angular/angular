@@ -34,7 +34,7 @@ export function main() {
       viewManager = new SpyAppViewManager();
       view = new SpyView();
       view.prop("viewContainers", [null]);
-      location = new ElementRef(new ViewRef(view), 0, 0, null);
+      location = new ElementRef(new ViewRef(view), 0, null);
     });
 
     describe('length', () => {

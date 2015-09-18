@@ -454,6 +454,16 @@ export interface RenderElementRef {
 
 export class Renderer {
   /**
+   * Registers the template of a component
+   */
+  registerComponentTemplate(templateId: number, commands: RenderTemplateCmd[], styles: string[]) {}
+
+  /**
+   * Creates a new RenderProtoViewRef gfrom RenderTemplateCmds.
+   */
+  createProtoView(cmds: RenderTemplateCmd[]): RenderProtoViewRef { return null; }
+
+  /**
    * Creates a root host view that includes the given element.
    * Note that the fragmentCount needs to be passed in so that we can create a result
    * synchronously even when dealing with webworkers!

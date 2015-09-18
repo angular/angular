@@ -3,7 +3,7 @@ import {DEFAULT_PIPES} from 'angular2/src/core/pipes';
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
 import {MockAnimationBuilder} from 'angular2/src/mock/animation_builder_mock';
 
-import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
+import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
 import {
   Parser,
@@ -13,7 +13,8 @@ import {
   IterableDiffers,
   defaultIterableDiffers,
   KeyValueDiffers,
-  defaultKeyValueDiffers
+  defaultKeyValueDiffers,
+  ChangeDetectorGenConfig
 } from 'angular2/src/core/change_detection/change_detection';
 import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
 import {ViewLoader} from 'angular2/src/core/render/dom/compiler/view_loader';
@@ -56,7 +57,6 @@ import {FunctionWrapper, Type} from 'angular2/src/core/facade/lang';
 import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
-import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {RenderCompiler, Renderer} from 'angular2/src/core/render/api';
 import {
   DomRenderer,
@@ -109,6 +109,7 @@ function _getAppBindings() {
 
   return [
     compilerBindings(),
+    bind(ChangeDetectorGenConfig).toValue(new ChangeDetectorGenConfig(true, true, false, true)),
     bind(DOCUMENT).toValue(appDoc),
     DomRenderer,
     bind(Renderer).toAlias(DomRenderer),
@@ -120,15 +121,13 @@ function _getAppBindings() {
     bind(ElementSchemaRegistry).toValue(new DomElementSchemaRegistry()),
     DomSharedStylesHost,
     bind(SharedStylesHost).toAlias(DomSharedStylesHost),
-    ProtoViewFactory,
     AppViewPool,
     AppViewManager,
     AppViewManagerUtils,
     Serializer,
     ELEMENT_PROBE_BINDINGS,
     bind(APP_VIEW_POOL_CAPACITY).toValue(500),
-    Compiler,
-    CompilerCache,
+    ProtoViewFactory,
     bind(DirectiveResolver).toClass(MockDirectiveResolver),
     bind(ViewResolver).toClass(MockViewResolver),
     DEFAULT_PIPES,

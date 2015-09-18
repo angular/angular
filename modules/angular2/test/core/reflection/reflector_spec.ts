@@ -250,8 +250,9 @@ export function main() {
     if (IS_DART) {
       describe("moduleId", () => {
         it("should return the moduleId for a type", () => {
-          expect(reflector.moduleId(TestObjWith00Args))
-              .toEqual('base/dist/dart/angular2/test/core/reflection/reflector_spec');
+          expect(reflector.moduleId(TestObjWith00Args)
+                     .endsWith('base/dist/dart/angular2/test/core/reflection/reflector_spec'))
+              .toBe(true);
         });
 
         it("should return an empty array otherwise", () => {

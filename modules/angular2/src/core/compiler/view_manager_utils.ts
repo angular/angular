@@ -3,7 +3,6 @@ import {ListWrapper, MapWrapper, Map, StringMapWrapper} from 'angular2/src/core/
 import * as eli from './element_injector';
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import * as viewModule from './view';
-import {internalView} from './view_ref';
 import * as avmModule from './view_manager';
 import {ElementRef} from './element_ref';
 import {TemplateRef} from './template_ref';
@@ -27,41 +26,51 @@ export class AppViewManagerUtils {
     var renderFragments = renderViewWithFragments.fragmentRefs;
     var renderView = renderViewWithFragments.viewRef;
 
-    var elementCount = mergedParentViewProto.mergeMapping.renderElementIndices.length;
-    var viewCount = mergedParentViewProto.mergeMapping.nestedViewCountByViewIndex[0] + 1;
+    var elementCount = mergedParentViewProto.mergeInfo.elementCount;
+    var viewCount = mergedParentViewProto.mergeInfo.viewCount;
     var elementRefs: ElementRef[] = ListWrapper.createFixedSize(elementCount);
     var viewContainers = ListWrapper.createFixedSize(elementCount);
     var preBuiltObjects: eli.PreBuiltObjects[] = ListWrapper.createFixedSize(elementCount);
-    var elementInjectors = ListWrapper.createFixedSize(elementCount);
+    var elementInjectors: eli.ElementInjector[] = ListWrapper.createFixedSize(elementCount);
     var views = ListWrapper.createFixedSize(viewCount);
 
     var elementOffset = 0;
     var textOffset = 0;
     var fragmentIdx = 0;
+    var containerElementIndicesByViewIndex: number[] = ListWrapper.createFixedSize(viewCount);
     for (var viewOffset = 0; viewOffset < viewCount; viewOffset++) {
-      var hostElementIndex =
-          mergedParentViewProto.mergeMapping.hostElementIndicesByViewIndex[viewOffset];
-      var parentView = isPresent(hostElementIndex) ?
-                           internalView(elementRefs[hostElementIndex].parentView) :
-                           null;
+      var containerElementIndex = containerElementIndicesByViewIndex[viewOffset];
+      var containerElementInjector =
+          isPresent(containerElementIndex) ? elementInjectors[containerElementIndex] : null;
+      var parentView =
+          isPresent(containerElementInjector) ? preBuiltObjects[containerElementIndex].view : null;
       var protoView =
-          isPresent(hostElementIndex) ?
-              parentView.proto.elementBinders[hostElementIndex - parentView.elementOffset]
+          isPresent(containerElementIndex) ?
+              parentView.proto.elementBinders[containerElementIndex - parentView.elementOffset]
                   .nestedProtoView :
               mergedParentViewProto;
       var renderFragment = null;
       if (viewOffset === 0 || protoView.type === ViewType.EMBEDDED) {
         renderFragment = renderFragments[fragmentIdx++];
       }
-      var currentView = new viewModule.AppView(
-          renderer, protoView, mergedParentViewProto.mergeMapping, viewOffset, elementOffset,
-          textOffset, protoView.protoLocals, renderView, renderFragment);
+      var currentView = new viewModule.AppView(renderer, protoView, viewOffset, elementOffset,
+                                               textOffset, protoView.protoLocals, renderView,
+                                               renderFragment, containerElementInjector);
       views[viewOffset] = currentView;
+      if (isPresent(containerElementIndex)) {
+        preBuiltObjects[containerElementIndex].nestedView = currentView;
+      }
       var rootElementInjectors = [];
+      var nestedViewOffset = viewOffset + 1;
       for (var binderIdx = 0; binderIdx < protoView.elementBinders.length; binderIdx++) {
         var binder = protoView.elementBinders[binderIdx];
         var boundElementIndex = elementOffset + binderIdx;
         var elementInjector = null;
+
+        if (isPresent(binder.nestedProtoView) && binder.nestedProtoView.isMergable) {
+          containerElementIndicesByViewIndex[nestedViewOffset] = boundElementIndex;
+          nestedViewOffset += binder.nestedProtoView.mergeInfo.viewCount;
+        }
 
         // elementInjectors and rootElementInjectors
         var protoElementInjector = binder.protoElementInjector;
@@ -78,19 +87,20 @@ export class AppViewManagerUtils {
         elementInjectors[boundElementIndex] = elementInjector;
 
         // elementRefs
-        var el = new ElementRef(
-            currentView.ref, boundElementIndex,
-            mergedParentViewProto.mergeMapping.renderElementIndices[boundElementIndex], renderer);
+        var el = new ElementRef(currentView.ref, boundElementIndex, renderer);
         elementRefs[el.boundElementIndex] = el;
 
         // preBuiltObjects
         if (isPresent(elementInjector)) {
-          var templateRef = binder.hasEmbeddedProtoView() ? new TemplateRef(el) : null;
+          var templateRef = isPresent(binder.nestedProtoView) &&
+                                    binder.nestedProtoView.type === ViewType.EMBEDDED ?
+                                new TemplateRef(el) :
+                                null;
           preBuiltObjects[boundElementIndex] =
               new eli.PreBuiltObjects(viewManager, currentView, el, templateRef);
         }
       }
-      currentView.init(protoView.protoChangeDetector.instantiate(currentView), elementInjectors,
+      currentView.init(protoView.changeDetectorFactory(currentView), elementInjectors,
                        rootElementInjectors, preBuiltObjects, views, elementRefs, viewContainers);
       if (isPresent(parentView) && protoView.type === ViewType.COMPONENT) {
         parentView.changeDetector.addShadowDomChild(currentView.changeDetector);
@@ -166,20 +176,19 @@ export class AppViewManagerUtils {
   _hydrateView(initView: viewModule.AppView, imperativelyCreatedInjector: Injector,
                hostElementInjector: eli.ElementInjector, context: Object, parentLocals: Locals) {
     var viewIdx = initView.viewOffset;
-    var endViewOffset = viewIdx + initView.mainMergeMapping.nestedViewCountByViewIndex[viewIdx];
+    var endViewOffset = viewIdx + initView.proto.mergeInfo.viewCount - 1;
     while (viewIdx <= endViewOffset) {
       var currView = initView.views[viewIdx];
       var currProtoView = currView.proto;
       if (currView !== initView && currView.proto.type === ViewType.EMBEDDED) {
         // Don't hydrate components of embedded fragment views.
-        viewIdx += initView.mainMergeMapping.nestedViewCountByViewIndex[viewIdx] + 1;
+        viewIdx += currView.proto.mergeInfo.viewCount;
       } else {
         if (currView !== initView) {
           // hydrate a nested component view
           imperativelyCreatedInjector = null;
           parentLocals = null;
-          var hostElementIndex = initView.mainMergeMapping.hostElementIndicesByViewIndex[viewIdx];
-          hostElementInjector = initView.elementInjectors[hostElementIndex];
+          hostElementInjector = currView.containerElementInjector;
           context = hostElementInjector.getComponent();
         }
         currView.context = context;
@@ -233,8 +242,7 @@ export class AppViewManagerUtils {
   }
 
   dehydrateView(initView: viewModule.AppView) {
-    var endViewOffset = initView.viewOffset +
-                        initView.mainMergeMapping.nestedViewCountByViewIndex[initView.viewOffset];
+    var endViewOffset = initView.viewOffset + initView.proto.mergeInfo.viewCount - 1;
     for (var viewIdx = initView.viewOffset; viewIdx <= endViewOffset; viewIdx++) {
       var currView = initView.views[viewIdx];
       if (currView.hydrated()) {
