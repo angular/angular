@@ -1,6 +1,6 @@
 import {AsyncRoute, AuxRoute, Route, Redirect, RouteDefinition} from './route_config_decorator';
 import {ComponentDefinition} from './route_definition';
-import {Type} from 'angular2/src/core/facade/lang';
+import {isType, Type} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
 
@@ -46,4 +46,10 @@ export function normalizeRouteConfig(config: RouteDefinition): RouteDefinition {
   }
 
   return config;
+}
+
+export function assertComponentExists(component: Type, path: string): void {
+  if (!isType(component)) {
+    throw new BaseException(`Component for route "${path}" is not defined, or is not a class.`);
+  }
 }

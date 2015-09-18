@@ -31,7 +31,7 @@ import {
 } from './route_config_impl';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {Injectable} from 'angular2/src/core/di';
-import {normalizeRouteConfig} from './route_config_nomalizer';
+import {normalizeRouteConfig, assertComponentExists} from './route_config_nomalizer';
 import {parser, Url, pathSegmentsToUrl} from './url_parser';
 
 var _resolveToNull = PromiseWrapper.resolve(null);
@@ -316,11 +316,5 @@ function assertTerminalComponent(component, path) {
             `Child routes are not allowed for "${path}". Use "..." on the parent's route path.`);
       }
     }
-  }
-}
-
-function assertComponentExists(component: Type, path: string): void {
-  if (!isType(component)) {
-    throw new BaseException(`Component for route "${path}" is not defined, or is not a class.`);
   }
 }
