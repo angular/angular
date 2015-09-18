@@ -6,7 +6,11 @@ import {
   Property,
   Event,
   HostBinding,
-  HostListener
+  HostListener,
+  ContentChildren,
+  ContentChildrenMetadata,
+  ViewChildren,
+  ViewChildrenMetadata
 } from 'angular2/src/core/metadata';
 
 @Directive({selector: 'someDirective'})
@@ -64,6 +68,17 @@ class SomeDirectiveWithHostListeners {
   }
 }
 
+@Directive({selector: 'someDirective', queries: {"cs": new ContentChildren("c")}})
+class SomeDirectiveWithContentChildren {
+  @ContentChildren("a") as: any;
+  c;
+}
+
+@Directive({selector: 'someDirective', queries: {"cs": new ViewChildren("c")}})
+class SomeDirectiveWithViewChildren {
+  @ViewChildren("a") as: any;
+  c;
+}
 
 class SomeDirectiveWithoutMetadata {}
 
@@ -77,7 +92,7 @@ export function main() {
       var directiveMetadata = resolver.resolve(SomeDirective);
       expect(directiveMetadata)
           .toEqual(new DirectiveMetadata(
-              {selector: 'someDirective', properties: [], events: [], host: {}}));
+              {selector: 'someDirective', properties: [], events: [], host: {}, queries: {}}));
     });
 
     it('should throw if not matching metadata is found', () => {
@@ -89,7 +104,7 @@ export function main() {
       var directiveMetadata = resolver.resolve(SomeChildDirective);
       expect(directiveMetadata)
           .toEqual(new DirectiveMetadata(
-              {selector: 'someChildDirective', properties: [], events: [], host: {}}));
+              {selector: 'someChildDirective', properties: [], events: [], host: {}, queries: {}}));
     });
 
     describe('properties', () => {
@@ -126,6 +141,20 @@ export function main() {
         var directiveMetadata = resolver.resolve(SomeDirectiveWithHostListeners);
         expect(directiveMetadata.host)
             .toEqual({'(c)': 'onC()', '(a)': 'onA()', '(b)': 'onB($event.value)'});
+      });
+    });
+
+    describe('queries', () => {
+      it('should append ContentChildren', () => {
+        var directiveMetadata = resolver.resolve(SomeDirectiveWithContentChildren);
+        expect(directiveMetadata.queries)
+            .toEqual({"cs": new ContentChildren("c"), "as": new ContentChildren("a")});
+      });
+
+      it('should append ViewChildren', () => {
+        var directiveMetadata = resolver.resolve(SomeDirectiveWithViewChildren);
+        expect(directiveMetadata.queries)
+            .toEqual({"cs": new ViewChildren("c"), "as": new ViewChildren("a")});
       });
     });
   });
