@@ -138,12 +138,12 @@ module.exports = function makeBrowserTree(options, destinationPath) {
 
   var vendorScriptsTree = flatten(new Funnel('.', {
     files: [
+      'node_modules/es6-shim/es6-shim.js',
       'node_modules/zone.js/dist/zone-microtask.js',
       'node_modules/zone.js/dist/long-stack-trace-zone.js',
       'node_modules/systemjs/dist/system.src.js',
       'node_modules/base64-js/lib/b64.js',
-      'node_modules/reflect-metadata/Reflect.js',
-      'node_modules/es6-shim/es6-shim.js'
+      'node_modules/reflect-metadata/Reflect.js'
     ]
   }));
 

@@ -1,4 +1,6 @@
 import {ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
+import {getSymbolIterator} from 'angular2/src/core/facade/lang';
+
 
 /**
  * An iterable and observable live list of components in the DOM.
@@ -101,7 +103,7 @@ export class QueryList<T> {
 
   map<U>(fn: (item: T) => U): U[] { return this._results.map(fn); }
 
-  [Symbol.iterator](): any { return this._results[Symbol.iterator](); }
+  [getSymbolIterator()](): any { return this._results[getSymbolIterator()](); }
 
   // Internal to the framework.
   fireCallbacks(): void {

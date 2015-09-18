@@ -351,3 +351,24 @@ export function setValueOnPath(global: any, path: string, value: any) {
   }
   obj[parts.shift()] = value;
 }
+
+// TODO(mlaval): remove after https://github.com/paulmillr/es6-shim/issues/360
+// Retrieves the key used in es6-shim when Symbol.iterator doesn't exist
+var _symbolIterator = null;
+export function getSymbolIterator(): string | symbol {
+  if (isBlank(_symbolIterator)) {
+    if (isPresent(Symbol) && isPresent(Symbol.iterator)) {
+      _symbolIterator = Symbol.iterator;
+    } else {
+      var keys = Object.getOwnPropertyNames(Map.prototype);
+      for (var i = 0; i < keys.length; ++i) {
+        var key = keys[i];
+        if (key !== 'entries' && key !== 'size' &&
+            Map.prototype[key] === Map.prototype['entries']) {
+          _symbolIterator = key;
+        }
+      }
+    }
+  }
+  return _symbolIterator;
+}
