@@ -17,6 +17,7 @@ class Directive extends DirectiveMetadata {
   const Directive({String selector, List<String> properties,
   List<String> events, Map<String, String> host,
   List bindings, String exportAs, String moduleId,
+  Map<String, dynamic> queries,
   bool compileChildren: true})
     : super(
     selector: selector,
@@ -26,6 +27,7 @@ class Directive extends DirectiveMetadata {
     bindings: bindings,
     exportAs: exportAs,
     moduleId: moduleId,
+    queries: queries,
     compileChildren: compileChildren);
 }
 
@@ -36,6 +38,7 @@ class Component extends ComponentMetadata {
   const Component({String selector, List<String> properties,
   List<String> events, Map<String, String> host, bool dynamicLoadable,
   List bindings, String exportAs, String moduleId,
+  Map<String, dynamic> queries,
   bool compileChildren, List viewBindings, ChangeDetectionStrategy changeDetection})
     : super(
     selector: selector,
@@ -48,6 +51,7 @@ class Component extends ComponentMetadata {
     moduleId: moduleId,
     compileChildren: compileChildren,
     viewBindings: viewBindings,
+    queries: queries,
     changeDetection: changeDetection);
 }
 
@@ -91,11 +95,27 @@ class Query extends QueryMetadata {
 }
 
 /**
+ * See: [ContentChildrenMetadata] for docs.
+ */
+class ContentChildren extends ContentChildrenMetadata {
+  const ContentChildren(dynamic /*Type | string*/ selector, {bool descendants: false})
+    : super(selector, descendants: descendants);
+}
+
+/**
  * See: [ViewQueryMetadata] for docs.
  */
 class ViewQuery extends ViewQueryMetadata {
   const ViewQuery(dynamic /*Type | string*/ selector)
     : super(selector, descendants: true);
+}
+
+/**
+ * See: [ViewChildrenMetadata] for docs.
+ */
+class ViewChildren extends ViewChildrenMetadata {
+  const ViewChildren(dynamic /*Type | string*/ selector)
+    : super(selector);
 }
 
 /**
