@@ -84,7 +84,8 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     destDir: '/'
   });
 
-  var rxJs = new Funnel('node_modules/@reactivex', {include: ['**/**'], destDir: '/@reactivex'});
+  var clientModules = new Funnel(
+      'node_modules', {include: ['@reactivex/**/**', 'parse5/**/**', 'css/**/**'], destDir: '/'});
 
   var es5ModulesTree = new Funnel('modules', {
     include: ['**/**'],
@@ -210,8 +211,8 @@ module.exports = function makeBrowserTree(options, destinationPath) {
 
   htmlTree = mergeTrees([htmlTree, scripts, polymer, react]);
 
-  es5Tree = mergeTrees([es5Tree, htmlTree, assetsTree, rxJs]);
-  es6Tree = mergeTrees([es6Tree, htmlTree, assetsTree, rxJs]);
+  es5Tree = mergeTrees([es5Tree, htmlTree, assetsTree, clientModules]);
+  es6Tree = mergeTrees([es6Tree, htmlTree, assetsTree, clientModules]);
 
   var mergedTree = mergeTrees([stew.mv(es6Tree, '/es6'), stew.mv(es5Tree, '/es5')]);
 

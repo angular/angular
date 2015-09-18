@@ -10,6 +10,7 @@ import {Promise} from 'angular2/src/core/facade/async';
 import {bootstrapWebWorkerCommon} from "angular2/src/web_workers/worker/application_common";
 import {ComponentRef} from "angular2/src/core/compiler/dynamic_component_loader";
 export * from "angular2/src/web_workers/shared/message_bus";
+import {Parse5DomAdapter} from 'angular2/src/core/dom/parse5_adapter';
 
 // TODO(jteplitz602) remove this and compile with lib.webworker.d.ts (#3492)
 interface PostMessageInterface {
@@ -29,6 +30,7 @@ var _postMessage: PostMessageInterface = <any>postMessage;
 export function bootstrapWebWorker(
     appComponentType: Type, componentInjectableBindings: Array<Type | Binding | any[]> = null):
     Promise<ComponentRef> {
+  Parse5DomAdapter.makeCurrent();
   var sink = new PostMessageBusSink({
     postMessage: (message: any, transferrables?:[ArrayBuffer]) => {
       console.log("Sending", message);

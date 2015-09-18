@@ -13,15 +13,10 @@ import {
   it,
   xit
 } from 'angular2/test_lib';
-import {SpyRenderer, SpyAppViewPool, SpyAppViewListener} from '../spies';
+import {SpyRenderer, SpyAppViewPool, SpyAppViewListener, SpyProtoViewFactory} from '../spies';
 import {Injector, bind} from 'angular2/core';
 
-import {
-  AppProtoView,
-  AppView,
-  AppViewContainer,
-  AppProtoViewMergeMapping
-} from 'angular2/src/core/compiler/view';
+import {AppProtoView, AppView, AppViewContainer} from 'angular2/src/core/compiler/view';
 import {ProtoViewRef, ViewRef, internalView} from 'angular2/src/core/compiler/view_ref';
 import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {TemplateRef} from 'angular2/src/core/compiler/template_ref';
@@ -54,6 +49,7 @@ export function main() {
     var utils: AppViewManagerUtils;
     var viewListener;
     var viewPool;
+    var linker;
     var manager: AppViewManager;
     var createdRenderViews: RenderViewWithFragments[];
 
@@ -78,7 +74,8 @@ export function main() {
       utils = new AppViewManagerUtils();
       viewListener = new SpyAppViewListener();
       viewPool = new SpyAppViewPool();
-      manager = new AppViewManager(viewPool, viewListener, utils, renderer);
+      linker = new SpyProtoViewFactory();
+      manager = new AppViewManager(viewPool, viewListener, utils, renderer, linker);
       createdRenderViews = [];
 
       renderer.spy('createRootHostView')
@@ -110,6 +107,11 @@ export function main() {
       beforeEach(
           () => { hostProtoView = createHostPv([createNestedElBinder(createComponentPv())]); });
 
+      it('should initialize the ProtoView', () => {
+        manager.createRootHostView(wrapPv(hostProtoView), null, null);
+        expect(linker.spy('initializeProtoViewIfNeeded')).toHaveBeenCalledWith(hostProtoView);
+      });
+
       it('should create the view', () => {
         var rootView =
             internalView(<ViewRef>manager.createRootHostView(wrapPv(hostProtoView), null, null));
@@ -129,8 +131,8 @@ export function main() {
         var rootView =
             internalView(<ViewRef>manager.createRootHostView(wrapPv(hostProtoView), null, null));
         expect(renderer.spy('createRootHostView'))
-            .toHaveBeenCalledWith(hostProtoView.mergeMapping.renderProtoViewRef,
-                                  hostProtoView.mergeMapping.renderFragmentCount, 'someComponent');
+            .toHaveBeenCalledWith(hostProtoView.render,
+                                  hostProtoView.mergeInfo.embeddedViewCount + 1, 'someComponent');
         expect(rootView.render).toBe(createdRenderViews[0].viewRef);
         expect(rootView.renderFragment).toBe(createdRenderViews[0].fragmentRefs[0]);
       });
@@ -139,8 +141,8 @@ export function main() {
         var selector = 'someOtherSelector';
         internalView(<ViewRef>manager.createRootHostView(wrapPv(hostProtoView), selector, null));
         expect(renderer.spy('createRootHostView'))
-            .toHaveBeenCalledWith(hostProtoView.mergeMapping.renderProtoViewRef,
-                                  hostProtoView.mergeMapping.renderFragmentCount, selector);
+            .toHaveBeenCalledWith(hostProtoView.render,
+                                  hostProtoView.mergeInfo.embeddedViewCount + 1, selector);
       });
 
       it('should set the event dispatcher', () => {
@@ -182,7 +184,7 @@ export function main() {
 
     });
 
-    describe('createViewInContainer', () => {
+    describe('createEmbeddedViewInContainer', () => {
 
       describe('basic functionality', () => {
         var hostView: AppView;
@@ -198,6 +200,11 @@ export function main() {
           vcRef = hostView.elementRefs[1];
           templateRef = new TemplateRef(hostView.elementRefs[1]);
           resetSpies();
+        });
+
+        it('should initialize the ProtoView', () => {
+          manager.createEmbeddedViewInContainer(vcRef, 0, templateRef);
+          expect(linker.spy('initializeProtoViewIfNeeded')).toHaveBeenCalledWith(childProtoView);
         });
 
         describe('create the first view', () => {
@@ -255,8 +262,8 @@ export function main() {
             expect(childView).not.toBe(firstChildView);
             expect(viewListener.spy('viewCreated')).toHaveBeenCalledWith(childView);
             expect(renderer.spy('createView'))
-                .toHaveBeenCalledWith(childProtoView.mergeMapping.renderProtoViewRef,
-                                      childProtoView.mergeMapping.renderFragmentCount);
+                .toHaveBeenCalledWith(childProtoView.render,
+                                      childProtoView.mergeInfo.embeddedViewCount + 1);
             expect(childView.render).toBe(createdRenderViews[1].viewRef);
             expect(childView.renderFragment).toBe(createdRenderViews[1].fragmentRefs[0]);
           });
@@ -306,6 +313,12 @@ export function main() {
 
         describe('create a host view', () => {
 
+          it('should initialize the ProtoView', () => {
+            var newHostPv = createHostPv([createNestedElBinder(createComponentPv())]);
+            manager.createHostViewInContainer(vcRef, 0, wrapPv(newHostPv), null);
+            expect(linker.spy('initializeProtoViewIfNeeded')).toHaveBeenCalledWith(newHostPv);
+          });
+
           it('should always create a new view and not use the embedded view', () => {
             var newHostPv = createHostPv([createNestedElBinder(createComponentPv())]);
             var newHostView = internalView(
@@ -314,8 +327,7 @@ export function main() {
             expect(newHostView).not.toBe(hostView.views[2]);
             expect(viewListener.spy('viewCreated')).toHaveBeenCalledWith(newHostView);
             expect(renderer.spy('createView'))
-                .toHaveBeenCalledWith(newHostPv.mergeMapping.renderProtoViewRef,
-                                      newHostPv.mergeMapping.renderFragmentCount);
+                .toHaveBeenCalledWith(newHostPv.render, newHostPv.mergeInfo.embeddedViewCount + 1);
           });
 
         });

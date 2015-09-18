@@ -67,10 +67,10 @@ export function main() {
 
       it('should use the moduleId from the reflector if none is given',
          inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
-           var expectedValue =
+           var value: string = resolver.getMetadata(DirectiveWithoutModuleId).type.moduleId;
+           var expectedEndValue =
                IS_DART ? 'base/dist/dart/angular2/test/compiler/runtime_metadata_spec' : './';
-           expect(resolver.getMetadata(DirectiveWithoutModuleId).type.moduleId)
-               .toEqual(expectedValue);
+           expect((<any>value).endsWith(expectedEndValue)).toBe(true);
          }));
     });
 

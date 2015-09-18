@@ -31,6 +31,7 @@ import {
   Validators,
 } from 'angular2/core';
 import {By} from 'angular2/src/core/debug';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 
 export function main() {
   describe("integration tests", () => {
@@ -657,21 +658,18 @@ export function main() {
              rootTC.detectChanges();
 
              var input = rootTC.debugElement.query(By.css("input")).nativeElement;
-             expect(DOM.classList(input))
-                 .toEqual(['ng-binding', 'ng-invalid', 'ng-pristine', 'ng-untouched']);
+             expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
              dispatchEvent(input, "blur");
              rootTC.detectChanges();
 
-             expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-invalid", "ng-pristine", "ng-touched"]);
+             expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-touched"]);
 
              input.value = "updatedValue";
              dispatchEvent(input, "change");
              rootTC.detectChanges();
 
-             expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-touched", "ng-dirty", "ng-valid"]);
+             expect(sortedClassList(input)).toEqual(["ng-dirty", "ng-touched", "ng-valid"]);
              async.done();
            });
          }));
@@ -687,21 +685,18 @@ export function main() {
              rootTC.detectChanges();
 
              var input = rootTC.debugElement.query(By.css("input")).nativeElement;
-             expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-invalid", "ng-pristine", "ng-untouched"]);
+             expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-untouched"]);
 
              dispatchEvent(input, "blur");
              rootTC.detectChanges();
 
-             expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-invalid", "ng-pristine", "ng-touched"]);
+             expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-touched"]);
 
              input.value = "updatedValue";
              dispatchEvent(input, "change");
              rootTC.detectChanges();
 
-             expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-touched", "ng-dirty", "ng-valid"]);
+             expect(sortedClassList(input)).toEqual(["ng-dirty", "ng-touched", "ng-valid"]);
              async.done();
            });
          }));
@@ -715,21 +710,18 @@ export function main() {
              rootTC.detectChanges();
 
              var input = rootTC.debugElement.query(By.css("input")).nativeElement;
-             expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-invalid", "ng-pristine", "ng-untouched"]);
+             expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-untouched"]);
 
              dispatchEvent(input, "blur");
              rootTC.detectChanges();
 
-             expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-invalid", "ng-pristine", "ng-touched"]);
+             expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-touched"]);
 
              input.value = "updatedValue";
              dispatchEvent(input, "change");
              rootTC.detectChanges();
 
-             expect(DOM.classList(input))
-                 .toEqual(["ng-binding", "ng-touched", "ng-dirty", "ng-valid"]);
+             expect(sortedClassList(input)).toEqual(["ng-dirty", "ng-touched", "ng-valid"]);
              async.done();
            });
          }));
@@ -841,4 +833,10 @@ class MyComp {
   form: any;
   name: string;
   data: any;
+}
+
+function sortedClassList(el) {
+  var l = DOM.classList(el);
+  ListWrapper.sort(l);
+  return l;
 }

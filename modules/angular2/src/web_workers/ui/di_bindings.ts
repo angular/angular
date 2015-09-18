@@ -18,7 +18,7 @@ import {
   DomEventsPlugin,
   EVENT_MANAGER_PLUGINS
 } from 'angular2/src/core/render/dom/events/event_manager';
-import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
+import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {KeyEventsPlugin} from 'angular2/src/core/render/dom/events/key_events';
 import {HammerGesturesPlugin} from 'angular2/src/core/render/dom/events/hammer_gestures';
@@ -46,7 +46,6 @@ import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
 import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
-import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {ViewLoader} from 'angular2/src/core/render/dom/compiler/view_loader';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
@@ -68,7 +67,6 @@ import {
 import {AnchorBasedAppRootUrl} from 'angular2/src/core/services/anchor_based_app_root_url';
 import {WebWorkerApplication} from 'angular2/src/web_workers/ui/impl';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
-import {MessageBasedRenderCompiler} from 'angular2/src/web_workers/ui/render_compiler';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {MessageBasedXHRImpl} from 'angular2/src/web_workers/ui/xhr_impl';
 import {WebWorkerSetup} from 'angular2/src/web_workers/ui/setup';
@@ -111,14 +109,12 @@ function _injectorBindings(): any[] {
     bind(ElementSchemaRegistry).toValue(new DomElementSchemaRegistry()),
     RenderViewWithFragmentsStore,
     RenderProtoViewRefStore,
-    ProtoViewFactory,
     AppViewPool,
     bind(APP_VIEW_POOL_CAPACITY).toValue(10000),
     AppViewManager,
     AppViewManagerUtils,
     AppViewListener,
-    Compiler,
-    CompilerCache,
+    ProtoViewFactory,
     ViewResolver,
     DEFAULT_PIPES,
     bind(ChangeDetection).toValue(bestChangeDetection),
@@ -138,7 +134,6 @@ function _injectorBindings(): any[] {
     bind(AppRootUrl).toAlias(AnchorBasedAppRootUrl),
     WebWorkerApplication,
     WebWorkerSetup,
-    MessageBasedRenderCompiler,
     MessageBasedXHRImpl,
     MessageBasedRenderer,
     ServiceMessageBrokerFactory,

@@ -153,7 +153,6 @@ export interface DirectiveFactory {
     bindings?: any[],
     exportAs?: string,
     moduleId?: string,
-    compileChildren?: boolean,
     queries?: StringMap<string, any>
   }): DirectiveDecorator;
   new (obj: {
@@ -164,7 +163,6 @@ export interface DirectiveFactory {
     bindings?: any[],
     exportAs?: string,
     moduleId?: string,
-    compileChildren?: boolean,
     queries?: StringMap<string, any>
   }): DirectiveMetadata;
 }
@@ -221,7 +219,6 @@ export interface ComponentFactory {
     bindings?: any[],
     exportAs?: string,
     moduleId?: string,
-    compileChildren?: boolean,
     queries?: StringMap<string, any>,
     viewBindings?: any[],
     changeDetection?: ChangeDetectionStrategy,
@@ -234,7 +231,6 @@ export interface ComponentFactory {
     bindings?: any[],
     exportAs?: string,
     moduleId?: string,
-    compileChildren?: boolean,
     queries?: StringMap<string, any>,
     viewBindings?: any[],
     changeDetection?: ChangeDetectionStrategy,

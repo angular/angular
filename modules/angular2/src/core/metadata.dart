@@ -17,8 +17,7 @@ class Directive extends DirectiveMetadata {
   const Directive({String selector, List<String> properties,
   List<String> events, Map<String, String> host,
   List bindings, String exportAs, String moduleId,
-  Map<String, dynamic> queries,
-  bool compileChildren: true})
+  Map<String, dynamic> queries})
     : super(
     selector: selector,
     properties: properties,
@@ -27,8 +26,7 @@ class Directive extends DirectiveMetadata {
     bindings: bindings,
     exportAs: exportAs,
     moduleId: moduleId,
-    queries: queries,
-    compileChildren: compileChildren);
+    queries: queries);
 }
 
 /**
@@ -39,7 +37,7 @@ class Component extends ComponentMetadata {
   List<String> events, Map<String, String> host,
   List bindings, String exportAs, String moduleId,
   Map<String, dynamic> queries,
-  bool compileChildren, List viewBindings, ChangeDetectionStrategy changeDetection})
+  List viewBindings, ChangeDetectionStrategy changeDetection})
     : super(
     selector: selector,
     properties: properties,
@@ -48,7 +46,6 @@ class Component extends ComponentMetadata {
     bindings: bindings,
     exportAs: exportAs,
     moduleId: moduleId,
-    compileChildren: compileChildren,
     viewBindings: viewBindings,
     queries: queries,
     changeDetection: changeDetection);

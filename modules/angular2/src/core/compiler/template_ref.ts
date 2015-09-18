@@ -52,5 +52,7 @@ export class TemplateRef {
   /**
    * Allows you to check if this Embedded Template defines Local Variable with name matching `name`.
    */
-  hasLocal(name: string): boolean { return this._getProtoView().variableBindings.has(name); }
+  hasLocal(name: string): boolean {
+    return this._getProtoView().templateVariableBindings.has(name);
+  }
 }

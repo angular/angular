@@ -1,4 +1,11 @@
-import {Injector, Binding, Injectable, ResolvedBinding} from 'angular2/src/core/di';
+import {
+  Injector,
+  Inject,
+  Binding,
+  Injectable,
+  ResolvedBinding,
+  forwardRef
+} from 'angular2/src/core/di';
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
 import * as viewModule from './view';
@@ -17,6 +24,7 @@ import {AppViewManagerUtils} from './view_manager_utils';
 import {AppViewPool} from './view_pool';
 import {AppViewListener} from './view_listener';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
+import {ProtoViewFactory} from './proto_view_factory';
 
 /**
  * Service exposing low level API for creating, moving and destroying Views.
@@ -26,11 +34,15 @@ import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
  */
 @Injectable()
 export class AppViewManager {
+  private _protoViewFactory: ProtoViewFactory;
   /**
    * @private
    */
   constructor(private _viewPool: AppViewPool, private _viewListener: AppViewListener,
-              private _utils: AppViewManagerUtils, private _renderer: Renderer) {}
+              private _utils: AppViewManagerUtils, private _renderer: Renderer,
+              @Inject(forwardRef(() => ProtoViewFactory)) _protoViewFactory) {
+    this._protoViewFactory = _protoViewFactory;
+  }
 
   /**
    * Returns a {@link ViewContainerRef} of the View Container at the specified location.
@@ -138,13 +150,13 @@ export class AppViewManager {
                      injector: Injector): HostViewRef {
     var s = this._createRootHostViewScope();
     var hostProtoView: viewModule.AppProtoView = internalProtoView(hostProtoViewRef);
+    this._protoViewFactory.initializeProtoViewIfNeeded(hostProtoView);
     var hostElementSelector = overrideSelector;
     if (isBlank(hostElementSelector)) {
       hostElementSelector = hostProtoView.elementBinders[0].componentDirective.metadata.selector;
     }
     var renderViewWithFragments = this._renderer.createRootHostView(
-        hostProtoView.mergeMapping.renderProtoViewRef,
-        hostProtoView.mergeMapping.renderFragmentCount, hostElementSelector);
+        hostProtoView.render, hostProtoView.mergeInfo.embeddedViewCount + 1, hostElementSelector);
     var hostView = this._createMainView(hostProtoView, renderViewWithFragments);
 
     this._renderer.hydrateView(hostView.render);
@@ -196,6 +208,7 @@ export class AppViewManager {
     if (protoView.type !== ViewType.EMBEDDED) {
       throw new BaseException('This method can only be called with embedded ProtoViews!');
     }
+    this._protoViewFactory.initializeProtoViewIfNeeded(protoView);
     return wtfLeave(s, this._createViewInContainer(viewContainerLocation, index, protoView,
                                                    templateRef.elementRef, null));
   }
@@ -226,6 +239,7 @@ export class AppViewManager {
     if (protoView.type !== ViewType.HOST) {
       throw new BaseException('This method can only be called with host ProtoViews!');
     }
+    this._protoViewFactory.initializeProtoViewIfNeeded(protoView);
     return wtfLeave(
         s, this._createViewInContainer(viewContainerLocation, index, protoView,
                                        viewContainerLocation, imperativelyCreatedInjector));
@@ -345,8 +359,8 @@ export class AppViewManager {
     var view = this._viewPool.getView(protoView);
     if (isBlank(view)) {
       view = this._createMainView(
-          protoView, this._renderer.createView(protoView.mergeMapping.renderProtoViewRef,
-                                               protoView.mergeMapping.renderFragmentCount));
+          protoView,
+          this._renderer.createView(protoView.render, protoView.mergeInfo.embeddedViewCount + 1));
     }
     return view;
   }
@@ -385,8 +399,7 @@ export class AppViewManager {
     }
     var viewContainers = view.viewContainers;
     var startViewOffset = view.viewOffset;
-    var endViewOffset =
-        view.viewOffset + view.mainMergeMapping.nestedViewCountByViewIndex[view.viewOffset];
+    var endViewOffset = view.viewOffset + view.proto.mergeInfo.viewCount - 1;
     var elementOffset = view.elementOffset;
     for (var viewIdx = startViewOffset; viewIdx <= endViewOffset; viewIdx++) {
       var currView = view.views[viewIdx];

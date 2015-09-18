@@ -14,7 +14,7 @@ import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/core/facad
 import {XHR} from 'angular2/src/core/render/xhr';
 import {WebWorkerXHRImpl} from 'angular2/src/web_workers/worker/xhr_impl';
 import {AppRootUrl} from 'angular2/src/core/services/app_root_url';
-import {WebWorkerRenderer, WebWorkerCompiler} from './renderer';
+import {WebWorkerRenderer} from './renderer';
 import {Renderer, RenderCompiler} from 'angular2/src/core/render/api';
 import {ClientMessageBrokerFactory} from 'angular2/src/web_workers/shared/client_message_broker';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
@@ -91,8 +91,6 @@ function webWorkerBindings(appComponentType, bus: MessageBus, initData: StringMa
     ClientMessageBrokerFactory,
     WebWorkerRenderer,
     bind(Renderer).toAlias(WebWorkerRenderer),
-    WebWorkerCompiler,
-    bind(RenderCompiler).toAlias(WebWorkerCompiler),
     bind(ON_WEB_WORKER).toValue(true),
     RenderViewWithFragmentsStore,
     RenderProtoViewRefStore,

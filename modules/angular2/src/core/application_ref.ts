@@ -18,7 +18,6 @@ import {
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {internalView} from 'angular2/src/core/compiler/view_ref';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
-import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {
   Parser,
   Lexer,
@@ -35,7 +34,7 @@ import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/vi
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
 import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
-import {Compiler, CompilerCache} from './compiler/compiler';
+import {ProtoViewFactory} from './compiler/proto_view_factory';
 import {DEFAULT_PIPES} from 'angular2/src/core/pipes';
 import {ViewResolver} from './compiler/view_resolver';
 import {DirectiveResolver} from './compiler/directive_resolver';
@@ -44,6 +43,9 @@ import {StyleUrlResolver} from 'angular2/src/core/render/dom/compiler/style_url_
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {compilerBindings} from 'angular2/src/compiler/compiler';
+import {
+  APP_ID_RANDOM_BINDING,
+} from 'angular2/src/core/render/render';
 
 /**
  * Constructs the set of bindings meant for use at the platform level.
@@ -96,14 +98,13 @@ export function applicationCommonBindings(): Array<Type | Binding | any[]> {
   }
   return [
     compilerBindings(),
-    ProtoViewFactory,
+    APP_ID_RANDOM_BINDING,
     AppViewPool,
     bind(APP_VIEW_POOL_CAPACITY).toValue(10000),
     AppViewManager,
     AppViewManagerUtils,
     AppViewListener,
-    Compiler,
-    CompilerCache,
+    ProtoViewFactory,
     ViewResolver,
     DEFAULT_PIPES,
     bind(IterableDiffers).toValue(defaultIterableDiffers),
