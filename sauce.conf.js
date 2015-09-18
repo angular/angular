@@ -74,8 +74,14 @@ var customLaunchers = {
   'SL_IE11': {
     base: 'SauceLabs',
     browserName: 'internet explorer',
-    platform: 'Windows 8.1',
+    platform: 'Windows 10',
     version: '11'
+  },
+  'SL_MSEDGE12': {
+    base: 'SauceLabs',
+    browserName: 'microsoftedge',
+    platform: 'Windows 10',
+    version: '20.10240'
   },
   'SL_ANDROID4.1': {
     base: 'SauceLabs',
@@ -111,7 +117,7 @@ var customLaunchers = {
 
 var aliases = {
   'ALL': Object.keys(customLaunchers).filter(function(item) {return customLaunchers[item].base == 'SauceLabs';}),
-  'DESKTOP': ['SL_CHROME', 'SL_FIREFOX', 'SL_IE9', 'SL_IE10', 'SL_IE11', 'SL_SAFARI7', 'SL_SAFARI8'],
+  'DESKTOP': ['SL_CHROME', 'SL_FIREFOX', 'SL_IE9', 'SL_IE10', 'SL_IE11', 'SL_MSEDGE12', 'SL_SAFARI7', 'SL_SAFARI8'],
   'MOBILE': ['SL_ANDROID4.0', 'SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4', 'SL_ANDROID5.1', 'SL_IOS7', 'SL_IOS8'],
   'ANDROID': ['SL_ANDROID4.0', 'SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4', 'SL_ANDROID5.1'],
   'IE': ['SL_IE9', 'SL_IE10', 'SL_IE11'],
@@ -120,7 +126,7 @@ var aliases = {
   'BETA': ['SL_CHROMEBETA', 'SL_FIREFOXBETA'],
   'DEV': ['SL_CHROMEDEV', 'SL_FIREFOXDEV'],
   'CI': ['SL_CHROME', 'SL_ANDROID5.1', 'SL_SAFARI7', 'SL_SAFARI8', 'SL_IOS7', 'SL_IOS8', 'SL_FIREFOX',
-         'SL_IE9', 'SL_IE10', 'SL_IE11', 'SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4']
+         'SL_IE9', 'SL_IE10', 'SL_IE11', 'SL_MSEDGE12', 'SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4']
 };
 
 module.exports = {
