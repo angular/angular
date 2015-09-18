@@ -15,6 +15,10 @@ import {
  */
 @CONST()
 export class CompiledTemplate {
+  static getChangeDetectorFromData(data: any[]): Function { return data[0]; }
+  static getCommandsFromData(data: any[]): TemplateCmd[] { return data[1]; }
+  static getSylesFromData(data: any[]): string[] { return data[2]; }
+
   // Note: paramGetter is a function so that we can have cycles between templates!
   // paramGetter returns a tuple with:
   // - ChangeDetector factory function
@@ -91,13 +95,11 @@ export function endElement(): TemplateCmd {
 export class BeginComponentCmd implements TemplateCmd, IBeginElementCmd, RenderBeginComponentCmd {
   isBound: boolean = true;
   templateId: number;
-  component: Type;
   constructor(public name: string, public attrNameAndValues: string[],
               public eventTargetAndNames: string[],
               public variableNameAndValues: Array<string | number>, public directives: Type[],
               public nativeShadow: boolean, public ngContentIndex: number,
               public template: CompiledTemplate) {
-    this.component = directives[0];
     this.templateId = template.id;
   }
   visit(visitor: RenderCommandVisitor, context: any): any {

@@ -35,6 +35,10 @@ export class TemplateCompiler {
 
   normalizeDirectiveMetadata(directive:
                                  CompileDirectiveMetadata): Promise<CompileDirectiveMetadata> {
+    if (!directive.isComponent) {
+      // For non components there is nothing to be normalized yet.
+      return PromiseWrapper.resolve(directive);
+    }
     var normalizedTemplatePromise;
     if (directive.isComponent) {
       normalizedTemplatePromise =

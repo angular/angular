@@ -41,12 +41,10 @@ export class ChangeDetectionCompiler {
   }
 
   private _createChangeDetectorFactory(definition: ChangeDetectorDefinition): Function {
-    if (IS_DART) {
+    if (IS_DART || !this._genConfig.useJit) {
       var proto = new DynamicProtoChangeDetector(definition);
       return (dispatcher) => proto.instantiate(dispatcher);
     } else {
-      // TODO(tbosch): provide a flag in _genConfig whether to allow eval or fall back to dynamic
-      // change detection as well!
       return new ChangeDetectorJITGenerator(definition, UTIL, ABSTRACT_CHANGE_DETECTOR).generate();
     }
   }
