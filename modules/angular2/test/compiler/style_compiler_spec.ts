@@ -42,6 +42,8 @@ const IMPORT_ABS_MODULE_NAME_WITH_IMPORT =
 export function main() {
   describe('StyleCompiler', () => {
     var xhr: SpyXHR;
+    var typeMeta;
+
     beforeEachBindings(() => {
       xhr = <any>new SpyXHR();
       return [TEST_BINDINGS, bind(XHR).toValue(xhr)];
@@ -49,16 +51,10 @@ export function main() {
 
     var compiler: StyleCompiler;
 
-    beforeEach(inject([StyleCompiler], (_compiler) => { compiler = _compiler; }));
-
-    function comp(styles: string[], styleAbsUrls: string[], encapsulation: ViewEncapsulation):
-        CompileDirectiveMetadata {
-      return CompileDirectiveMetadata.create({
-        type: new CompileTypeMetadata({id: 23, moduleId: 'someUrl'}),
-        template: new CompileTemplateMetadata(
-            {styles: styles, styleUrls: styleAbsUrls, encapsulation: encapsulation})
-      });
-    }
+    beforeEach(inject([StyleCompiler], (_compiler) => {
+      typeMeta = new CompileTypeMetadata({id: 23, moduleId: 'someUrl'});
+      compiler = _compiler;
+    }));
 
     describe('compileComponentRuntime', () => {
       var xhrUrlResults;
@@ -84,7 +80,9 @@ export function main() {
           }
           return PromiseWrapper.resolve(response);
         });
-        return compiler.compileComponentRuntime(comp(styles, styleAbsUrls, encapsulation));
+        return compiler.compileComponentRuntime(
+            typeMeta, new CompileTemplateMetadata(
+                          {styles: styles, styleUrls: styleAbsUrls, encapsulation: encapsulation}));
       }
 
       describe('no shim', () => {
@@ -199,8 +197,9 @@ export function main() {
     describe('compileComponentCodeGen', () => {
       function compile(styles: string[], styleAbsUrls: string[], encapsulation: ViewEncapsulation):
           Promise<string[]> {
-        var sourceExpression =
-            compiler.compileComponentCodeGen(comp(styles, styleAbsUrls, encapsulation));
+        var sourceExpression = compiler.compileComponentCodeGen(
+            typeMeta, new CompileTemplateMetadata(
+                          {styles: styles, styleUrls: styleAbsUrls, encapsulation: encapsulation}));
         var sourceWithImports = testableExpression(sourceExpression).getSourceWithImports();
         return evalModule(sourceWithImports.source, sourceWithImports.imports, null);
       };

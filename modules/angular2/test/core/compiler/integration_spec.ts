@@ -384,11 +384,7 @@ export function main() {
            tcb.overrideView(
                   MyComp, new ViewMetadata({
                     template: '<p no-duplicate></p>',
-                    directives: [
-                      DuplicateDir,
-                      DuplicateDir,
-                      [DuplicateDir, [DuplicateDir, bind(DuplicateDir).toClass(DuplicateDir)]]
-                    ]
+                    directives: [DuplicateDir, DuplicateDir, [DuplicateDir, [DuplicateDir]]]
                   }))
                .createAsync(MyComp)
                .then((rootTC) => {

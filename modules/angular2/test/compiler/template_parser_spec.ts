@@ -464,6 +464,23 @@ export function main() {
               ]);
         });
 
+        it('should favor explicit bound properties over literal properties', () => {
+          var dirA = CompileDirectiveMetadata.create(
+              {selector: 'div', type: new CompileTypeMetadata({name: 'DirA'}), properties: ['a']});
+          expect(humanizeTemplateAsts(parse('<div a="literal" [a]="\'literal2\'"></div>', [dirA])))
+              .toEqual([
+                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
+                [AttrAst, 'a', 'literal', 'TestComp > div:nth-child(0)[a=literal]'],
+                [DirectiveAst, dirA, 'TestComp > div:nth-child(0)'],
+                [
+                  BoundDirectivePropertyAst,
+                  'a',
+                  '"literal2"',
+                  'TestComp > div:nth-child(0)[[a]=\'literal2\']'
+                ]
+              ]);
+        });
+
         it('should support optional directive properties', () => {
           var dirA = CompileDirectiveMetadata.create(
               {selector: 'div', type: new CompileTypeMetadata({name: 'DirA'}), properties: ['a']});
@@ -502,7 +519,7 @@ export function main() {
               ]);
         });
 
-        it('should assign variables with empty value to element', () => {
+        it('should assign variables with empty value to the element', () => {
           expect(humanizeTemplateAsts(parse('<div #a></div>', [])))
               .toEqual([
                 [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
@@ -743,6 +760,11 @@ There is no directive with "exportAs" set to "dirA" at TestComp > div:nth-child(
             .toEqual([['a', null], ['b', 0], ['#text(hello)', 0]]);
       });
 
+      it('should project children of components with ng-non-bindable', () => {
+        expect(humanizeContentProjection(parse('<div ng-non-bindable>{{hello}}<span></span></div>',
+                                               [createComp('div', ['*'])])))
+            .toEqual([['div', null], ['#text({{hello}})', 0], ['span', 0]]);
+      });
     });
 
     describe('splitClasses', () => {
@@ -838,11 +860,74 @@ Property binding a not used by any directive on an embedded template in TestComp
 
       });
 
-      it('should ignore elements with ng-non-bindable, including their children, but include them for source info',
-         () => {
-           expect(humanizeTemplateAsts(parse('<div ng-non-bindable>b</div>a', [])))
-               .toEqual([[TextAst, 'a', 'TestComp > #text(a):nth-child(1)']]);
+      it('should ignore bindings on children of elements with ng-non-bindable', () => {
+        expect(humanizeTemplateAsts(parse('<div ng-non-bindable>{{b}}</div>', [])))
+            .toEqual([
+              [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
+              [AttrAst, 'ng-non-bindable', '', 'TestComp > div:nth-child(0)[ng-non-bindable=]'],
+              [TextAst, '{{b}}', 'TestComp > div:nth-child(0) > #text({{b}}):nth-child(0)']
+            ]);
+      });
 
+      it('should keep nested children of elements with ng-non-bindable', () => {
+        expect(humanizeTemplateAsts(parse('<div ng-non-bindable><span>{{b}}</span></div>', [])))
+            .toEqual([
+              [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
+              [AttrAst, 'ng-non-bindable', '', 'TestComp > div:nth-child(0)[ng-non-bindable=]'],
+              [ElementAst, 'span', 'TestComp > div:nth-child(0) > span:nth-child(0)'],
+              [
+                TextAst,
+                '{{b}}',
+                'TestComp > div:nth-child(0) > span:nth-child(0) > #text({{b}}):nth-child(0)'
+              ]
+            ]);
+      });
+
+      it('should ignore <script> elements inside of elements with ng-non-bindable but include them for source info',
+         () => {
+           expect(humanizeTemplateAsts(parse('<div ng-non-bindable><script></script>a</div>', [])))
+               .toEqual([
+                 [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
+                 [AttrAst, 'ng-non-bindable', '', 'TestComp > div:nth-child(0)[ng-non-bindable=]'],
+                 [TextAst, 'a', 'TestComp > div:nth-child(0) > #text(a):nth-child(1)']
+               ]);
+         });
+
+      it('should ignore <style> elements inside of elements with ng-non-bindable but include them for source info',
+         () => {
+           expect(humanizeTemplateAsts(parse('<div ng-non-bindable><style></style>a</div>', [])))
+               .toEqual([
+                 [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
+                 [AttrAst, 'ng-non-bindable', '', 'TestComp > div:nth-child(0)[ng-non-bindable=]'],
+                 [TextAst, 'a', 'TestComp > div:nth-child(0) > #text(a):nth-child(1)']
+               ]);
+         });
+
+      it('should ignore <link rel="stylesheet"> elements inside of elements with ng-non-bindable but include them for source info',
+         () => {
+           expect(humanizeTemplateAsts(
+                      parse('<div ng-non-bindable><link rel="stylesheet"></link>a</div>', [])))
+               .toEqual([
+                 [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
+                 [AttrAst, 'ng-non-bindable', '', 'TestComp > div:nth-child(0)[ng-non-bindable=]'],
+                 [TextAst, 'a', 'TestComp > div:nth-child(0) > #text(a):nth-child(1)']
+               ]);
+         });
+
+      it('should convert <ng-content> elements into regular elements inside of elements with ng-non-bindable but include them for source info',
+         () => {
+           expect(humanizeTemplateAsts(
+                      parse('<div ng-non-bindable><ng-content></ng-content>a</div>', [])))
+               .toEqual([
+                 [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
+                 [AttrAst, 'ng-non-bindable', '', 'TestComp > div:nth-child(0)[ng-non-bindable=]'],
+                 [
+                   ElementAst,
+                   'ng-content',
+                   'TestComp > div:nth-child(0) > ng-content:nth-child(0)'
+                 ],
+                 [TextAst, 'a', 'TestComp > div:nth-child(0) > #text(a):nth-child(1)']
+               ]);
          });
 
     });

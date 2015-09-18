@@ -12,6 +12,7 @@ import {
   TestComponentBuilder
 } from 'angular2/test_lib';
 
+import {IS_DART} from '../platform';
 import {escapeSingleQuoteString, escapeDoubleQuoteString} from 'angular2/src/compiler/util';
 
 export function main() {
@@ -25,6 +26,12 @@ export function main() {
 
       it('should escape newlines',
          () => { expect(escapeSingleQuoteString('\n')).toEqual(`'\\n'`); });
+
+      if (IS_DART) {
+        it('should escape $', () => { expect(escapeSingleQuoteString('$')).toEqual(`'\\$'`); });
+      } else {
+        it('should not escape $', () => { expect(escapeSingleQuoteString('$')).toEqual(`'$'`); });
+      }
     });
 
     describe('escapeDoubleQuoteString', () => {
@@ -36,6 +43,12 @@ export function main() {
 
       it('should escape newlines',
          () => { expect(escapeDoubleQuoteString('\n')).toEqual(`"\\n"`); });
+
+      if (IS_DART) {
+        it('should escape $', () => { expect(escapeDoubleQuoteString('$')).toEqual(`"\\$"`); });
+      } else {
+        it('should not escape $', () => { expect(escapeDoubleQuoteString('$')).toEqual(`"$"`); });
+      }
     });
 
   });

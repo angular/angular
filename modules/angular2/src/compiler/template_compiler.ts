@@ -1,4 +1,5 @@
 import {Type, Json, isBlank, stringify} from 'angular2/src/core/facade/lang';
+import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper, SetWrapper} from 'angular2/src/core/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 import {CompiledTemplate, TemplateCmd} from 'angular2/src/core/compiler/template_commands';
@@ -58,18 +59,12 @@ export class TemplateCompiler {
         }));
   }
 
-  serializeDirectiveMetadata(metadata: CompileDirectiveMetadata): string {
-    return Json.stringify(metadata.toJson());
-  }
-
-  deserializeDirectiveMetadata(data: string): CompileDirectiveMetadata {
-    return CompileDirectiveMetadata.fromJson(Json.parse(data));
-  }
-
   compileHostComponentRuntime(type: Type): Promise<CompiledTemplate> {
     var compMeta: CompileDirectiveMetadata = this._runtimeMetadataResolver.getMetadata(type);
+    assertComponent(compMeta);
     var hostMeta: CompileDirectiveMetadata =
         createHostComponentMeta(compMeta.type, compMeta.selector);
+
     this._compileComponentRuntime(hostMeta, [compMeta], new Set());
     return this._compiledTemplateDone.get(hostMeta.type.id);
   }
@@ -93,28 +88,30 @@ export class TemplateCompiler {
           new CompiledTemplate(compMeta.type.id, () => [changeDetectorFactory, commands, styles]);
       this._compiledTemplateCache.set(compMeta.type.id, compiledTemplate);
       compilingComponentIds.add(compMeta.type.id);
-      done = PromiseWrapper.all([<any>this._styleCompiler.compileComponentRuntime(compMeta)].concat(
-                                    viewDirectives.map(
-                                        dirMeta => this.normalizeDirectiveMetadata(dirMeta))))
-                 .then((stylesAndNormalizedViewDirMetas: any[]) => {
-                   var childPromises = [];
-                   var normalizedViewDirMetas = stylesAndNormalizedViewDirMetas.slice(1);
-                   var parsedTemplate = this._templateParser.parse(
-                       compMeta.template.template, normalizedViewDirMetas, compMeta.type.name);
+      done =
+          PromiseWrapper
+              .all([
+                <any>this._styleCompiler.compileComponentRuntime(compMeta.type, compMeta.template)
+              ].concat(viewDirectives.map(dirMeta => this.normalizeDirectiveMetadata(dirMeta))))
+              .then((stylesAndNormalizedViewDirMetas: any[]) => {
+                var childPromises = [];
+                var normalizedViewDirMetas = stylesAndNormalizedViewDirMetas.slice(1);
+                var parsedTemplate = this._templateParser.parse(
+                    compMeta.template.template, normalizedViewDirMetas, compMeta.type.name);
 
-                   var changeDetectorFactories = this._cdCompiler.compileComponentRuntime(
-                       compMeta.type, compMeta.changeDetection, parsedTemplate);
-                   changeDetectorFactory = changeDetectorFactories[0];
-                   styles = stylesAndNormalizedViewDirMetas[0];
-                   commands = this._compileCommandsRuntime(compMeta, parsedTemplate,
-                                                           changeDetectorFactories,
-                                                           compilingComponentIds, childPromises);
-                   return PromiseWrapper.all(childPromises);
-                 })
-                 .then((_) => {
-                   SetWrapper.delete(compilingComponentIds, compMeta.type.id);
-                   return compiledTemplate;
-                 });
+                var changeDetectorFactories = this._cdCompiler.compileComponentRuntime(
+                    compMeta.type, compMeta.changeDetection, parsedTemplate);
+                changeDetectorFactory = changeDetectorFactories[0];
+                styles = stylesAndNormalizedViewDirMetas[0];
+                commands =
+                    this._compileCommandsRuntime(compMeta, parsedTemplate, changeDetectorFactories,
+                                                 compilingComponentIds, childPromises);
+                return PromiseWrapper.all(childPromises);
+              })
+              .then((_) => {
+                SetWrapper.delete(compilingComponentIds, compMeta.type.id);
+                return compiledTemplate;
+              });
       this._compiledTemplateDone.set(compMeta.type.id, done);
     }
     return compiledTemplate;
@@ -148,6 +145,7 @@ export class TemplateCompiler {
     var componentMetas: CompileDirectiveMetadata[] = [];
     components.forEach(componentWithDirs => {
       var compMeta = <CompileDirectiveMetadata>componentWithDirs.component;
+      assertComponent(compMeta);
       componentMetas.push(compMeta);
       this._processTemplateCodeGen(compMeta,
                                    <CompileDirectiveMetadata[]>componentWithDirs.directives,
@@ -174,7 +172,7 @@ export class TemplateCompiler {
   private _processTemplateCodeGen(compMeta: CompileDirectiveMetadata,
                                   directives: CompileDirectiveMetadata[],
                                   targetDeclarations: string[], targetTemplateArguments: any[][]) {
-    var styleExpr = this._styleCompiler.compileComponentCodeGen(compMeta);
+    var styleExpr = this._styleCompiler.compileComponentCodeGen(compMeta.type, compMeta.template);
     var parsedTemplate =
         this._templateParser.parse(compMeta.template.template, directives, compMeta.type.name);
     var changeDetectorsExprs = this._cdCompiler.compileComponentCodeGen(
@@ -195,6 +193,12 @@ export class TemplateCompiler {
 export class NormalizedComponentWithViewDirectives {
   constructor(public component: CompileDirectiveMetadata,
               public directives: CompileDirectiveMetadata[]) {}
+}
+
+function assertComponent(meta: CompileDirectiveMetadata) {
+  if (!meta.isComponent) {
+    throw new BaseException(`Could not compile '${meta.type.name}' because it is not a component.`);
+  }
 }
 
 function templateVariableName(type: CompileTypeMetadata): string {

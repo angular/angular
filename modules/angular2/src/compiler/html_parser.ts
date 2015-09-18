@@ -57,12 +57,7 @@ function parseElement(element: Element, indexInParent: number, parentSourceInfo:
   var sourceInfo = `${parentSourceInfo} > ${nodeName}:nth-child(${indexInParent})`;
   var attrs = parseAttrs(element, sourceInfo);
 
-  var childNodes;
-  if (ignoreChildren(attrs)) {
-    childNodes = [];
-  } else {
-    childNodes = parseChildNodes(element, sourceInfo);
-  }
+  var childNodes = parseChildNodes(element, sourceInfo);
   return new HtmlElementAst(nodeName, attrs, childNodes, sourceInfo);
 }
 
@@ -98,16 +93,6 @@ function parseChildNodes(element: Element, parentSourceInfo: string): HtmlAst[] 
     index++;
   });
   return result;
-}
-
-function ignoreChildren(attrs: HtmlAttrAst[]): boolean {
-  for (var i = 0; i < attrs.length; i++) {
-    var a = attrs[i];
-    if (a.name == NG_NON_BINDABLE) {
-      return true;
-    }
-  }
-  return false;
 }
 
 class UnparseVisitor implements HtmlAstVisitor {

@@ -30,9 +30,7 @@ export function preparseElement(ast: HtmlElementAst): PreparsedElement {
   selectAttr = normalizeNgContentSelect(selectAttr);
   var nodeName = ast.name;
   var type = PreparsedElementType.OTHER;
-  if (nonBindable) {
-    type = PreparsedElementType.NON_BINDABLE;
-  } else if (nodeName == NG_CONTENT_ELEMENT) {
+  if (nodeName == NG_CONTENT_ELEMENT) {
     type = PreparsedElementType.NG_CONTENT;
   } else if (nodeName == STYLE_ELEMENT) {
     type = PreparsedElementType.STYLE;
@@ -41,7 +39,7 @@ export function preparseElement(ast: HtmlElementAst): PreparsedElement {
   } else if (nodeName == LINK_ELEMENT && relAttr == LINK_STYLE_REL_VALUE) {
     type = PreparsedElementType.STYLESHEET;
   }
-  return new PreparsedElement(type, selectAttr, hrefAttr);
+  return new PreparsedElement(type, selectAttr, hrefAttr, nonBindable);
 }
 
 export enum PreparsedElementType {
@@ -49,13 +47,12 @@ export enum PreparsedElementType {
   STYLE,
   STYLESHEET,
   SCRIPT,
-  NON_BINDABLE,
   OTHER
 }
 
 export class PreparsedElement {
-  constructor(public type: PreparsedElementType, public selectAttr: string,
-              public hrefAttr: string) {}
+  constructor(public type: PreparsedElementType, public selectAttr: string, public hrefAttr: string,
+              public nonBindable: boolean) {}
 }
 
 
