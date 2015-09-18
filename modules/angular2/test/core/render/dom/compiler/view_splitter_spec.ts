@@ -258,5 +258,25 @@ export function main() {
 
     });
 
+    describe('error conditions', () => {
+
+      it('should detect duplicate *directive_name attributes', () => {
+        var rootElement = DOM.createTemplate(
+            `<span *ng-if="true" *ng-for="#person of peopleService.people"></span>`);
+        expect(() => { proceess(rootElement); })
+            .toThrowErrorWith(
+                'Only one template directive per element is allowed: *ng-if and *ng-for cannot be used simultaneously in someComponent');
+      });
+
+      it('should detect template and *directive_name attribute', () => {
+        var rootElement = DOM.createTemplate(
+            `<span *ng-if="true" template="ng-for #person of peopleService.people"></span>`);
+        expect(() => { proceess(rootElement); })
+            .toThrowErrorWith(
+                'Only one template directive per element is allowed: template and *ng-if cannot be used simultaneously in someComponent');
+      });
+
+    });
+
   });
 }
