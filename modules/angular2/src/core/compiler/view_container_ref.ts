@@ -74,8 +74,8 @@ export class ViewContainerRef {
   get length(): number { return this._getViews().length; }
 
   /**
-   * Creates an Embedded View based on the {@link TemplateRef `templateRef`} and inserts it into
-   * this container at index specified via `atIndex`.
+   * Instantiates an Embedded View based on the {@link TemplateRef `templateRef`} and inserts it
+   * into this container at index specified via `atIndex`.
    *
    * If `atIndex` is not specified, the new View will be inserted as the last View in the container.
    *
@@ -89,8 +89,11 @@ export class ViewContainerRef {
   }
 
   /**
-   * Creates a View  based on the {@link ProtoViewRef `protoViewRef`} and inserts it into this
-   * container at index specified via `atIndex`.
+   * Instantiates a single {@link Component} and inserts it into this container at index specified
+   * via `atIndex`.
+   *
+   * The component is instantiated using its {@link ProtoViewRef `protoViewRef`} which can be
+   * obtained via {@link Compiler#compileInHost}.
    *
    * If `atIndex` is not specified, the new View will be inserted as the last View in the container.
    *
