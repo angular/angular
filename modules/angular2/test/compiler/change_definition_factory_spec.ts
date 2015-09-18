@@ -14,9 +14,8 @@ import {
 } from 'angular2/test_lib';
 import {MapWrapper} from 'angular2/src/core/facade/collection';
 import {
-  NormalizedDirectiveMetadata,
-  TypeMetadata,
-  ChangeDetectionMetadata
+  CompileDirectiveMetadata,
+  CompileTypeMetadata
 } from 'angular2/src/compiler/directive_metadata';
 import {TemplateParser} from 'angular2/src/compiler/template_parser';
 import {
@@ -60,10 +59,10 @@ export function main() {
       pipes = new TestPipes();
     }));
 
-    function createChangeDetector(template: string, directives: NormalizedDirectiveMetadata[],
+    function createChangeDetector(template: string, directives: CompileDirectiveMetadata[],
                                   protoViewIndex: number = 0): ChangeDetector {
       var protoChangeDetectors =
-          createChangeDetectorDefinitions(new TypeMetadata({name: 'SomeComp'}),
+          createChangeDetectorDefinitions(new CompileTypeMetadata({name: 'SomeComp'}),
                                           ChangeDetectionStrategy.Default,
                                           new ChangeDetectorGenConfig(true, true, false, false),
                                           parser.parse(template, directives, 'TestComp'))
@@ -97,6 +96,14 @@ export function main() {
       expect(context.eventLog).toEqual(['click']);
     });
 
+    it('should handle events with targets', () => {
+      var changeDetector = createChangeDetector('<div (window:click)="onEvent($event)">', [], 0);
+
+      eventLocals.set('$event', 'click');
+      changeDetector.handleEvent('window:click', 0, eventLocals);
+      expect(context.eventLog).toEqual(['click']);
+    });
+
     it('should watch variables', () => {
       var changeDetector = createChangeDetector('<div #some-var [el-prop]="someVar">', [], 0);
 
@@ -106,10 +113,10 @@ export function main() {
     });
 
     it('should write directive properties', () => {
-      var dirMeta = new NormalizedDirectiveMetadata({
-        type: new TypeMetadata({name: 'SomeDir'}),
-        selector: 'div',
-        changeDetection: new ChangeDetectionMetadata({properties: ['dirProp']})
+      var dirMeta = CompileDirectiveMetadata.create({
+        type: new CompileTypeMetadata({name: 'SomeDir'}),
+        selector: '[dir-prop]',
+        properties: ['dirProp']
       });
 
       var changeDetector = createChangeDetector('<div [dir-prop]="someProp">', [dirMeta], 0);
@@ -119,11 +126,25 @@ export function main() {
       expect(directive.dirProp).toEqual('someValue');
     });
 
+    it('should write template directive properties', () => {
+      var dirMeta = CompileDirectiveMetadata.create({
+        type: new CompileTypeMetadata({name: 'SomeDir'}),
+        selector: '[dir-prop]',
+        properties: ['dirProp']
+      });
+
+      var changeDetector = createChangeDetector('<template [dir-prop]="someProp">', [dirMeta], 0);
+
+      context.someProp = 'someValue';
+      changeDetector.detectChanges();
+      expect(directive.dirProp).toEqual('someValue');
+    });
+
     it('should watch directive host properties', () => {
-      var dirMeta = new NormalizedDirectiveMetadata({
-        type: new TypeMetadata({name: 'SomeDir'}),
+      var dirMeta = CompileDirectiveMetadata.create({
+        type: new CompileTypeMetadata({name: 'SomeDir'}),
         selector: 'div',
-        changeDetection: new ChangeDetectionMetadata({hostProperties: {'elProp': 'dirProp'}})
+        host: {'[elProp]': 'dirProp'}
       });
 
       var changeDetector = createChangeDetector('<div>', [dirMeta], 0);
@@ -134,11 +155,10 @@ export function main() {
     });
 
     it('should handle directive events', () => {
-      var dirMeta = new NormalizedDirectiveMetadata({
-        type: new TypeMetadata({name: 'SomeDir'}),
+      var dirMeta = CompileDirectiveMetadata.create({
+        type: new CompileTypeMetadata({name: 'SomeDir'}),
         selector: 'div',
-        changeDetection:
-            new ChangeDetectionMetadata({hostListeners: {'click': 'onEvent($event)'}})
+        host: {'(click)': 'onEvent($event)'}
       });
 
       var changeDetector = createChangeDetector('<div>', [dirMeta], 0);

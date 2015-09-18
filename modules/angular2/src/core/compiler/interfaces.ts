@@ -1,4 +1,4 @@
-import {StringMap} from 'angular2/src/core/facade/collection';
+import {StringMap, MapWrapper} from 'angular2/src/core/facade/collection';
 
 export enum LifecycleHooks {
   OnInit,
@@ -10,6 +10,17 @@ export enum LifecycleHooks {
   AfterViewInit,
   AfterViewChecked
 }
+
+export var LIFECYCLE_HOOKS_VALUES = [
+  LifecycleHooks.OnInit,
+  LifecycleHooks.OnDestroy,
+  LifecycleHooks.DoCheck,
+  LifecycleHooks.OnChanges,
+  LifecycleHooks.AfterContentInit,
+  LifecycleHooks.AfterContentChecked,
+  LifecycleHooks.AfterViewInit,
+  LifecycleHooks.AfterViewChecked
+];
 
 /**
  * Lifecycle hooks are guaranteed to be called in the following order:

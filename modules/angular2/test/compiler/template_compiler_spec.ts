@@ -21,11 +21,7 @@ import {
   TemplateCompiler,
   NormalizedComponentWithViewDirectives
 } from 'angular2/src/compiler/template_compiler';
-import {
-  DirectiveMetadata,
-  NormalizedDirectiveMetadata,
-  INormalizedDirectiveMetadata
-} from 'angular2/src/compiler/directive_metadata';
+import {CompileDirectiveMetadata} from 'angular2/src/compiler/directive_metadata';
 import {evalModule} from './eval_module';
 import {SourceModule, moduleRef} from 'angular2/src/compiler/source_module';
 import {XHR} from 'angular2/src/core/render/xhr';
@@ -104,6 +100,18 @@ export function main() {
                    async.done();
                  });
            }));
+
+        it('should pass the right change detector to embedded templates',
+           inject([AsyncTestCompleter], (async) => {
+             compile([CompWithEmbeddedTemplate])
+                 .then((humanizedTemplate) => {
+                   expect(humanizedTemplate['commands'][1]['commands'][0]).toEqual('<template>');
+                   expect(humanizedTemplate['commands'][1]['commands'][1]['cd'])
+                       .toEqual(['elementProperty(href)=someCtxValue']);
+
+                   async.done();
+                 });
+           }));
       }
 
       describe('compileHostComponentRuntime', () => {
@@ -113,28 +121,53 @@ export function main() {
 
         runTests(compile);
 
-        it('should cache components', inject([AsyncTestCompleter, XHR], (async, xhr: MockXHR) => {
-             // we expect only one request!
-             xhr.expect('angular2/test/compiler/compUrl.html', '');
-             PromiseWrapper.all([
-                             compiler.compileHostComponentRuntime(CompWithTemplateUrl),
-                             compiler.compileHostComponentRuntime(CompWithTemplateUrl)
-                           ])
+        it('should cache components for parallel requests',
+           inject([AsyncTestCompleter, XHR], (async, xhr: MockXHR) => {
+             xhr.expect('angular2/test/compiler/compUrl.html', 'a');
+             PromiseWrapper.all([compile([CompWithTemplateUrl]), compile([CompWithTemplateUrl])])
                  .then((humanizedTemplates) => {
-                   expect(humanizedTemplates[0]).toEqual(humanizedTemplates[1]);
+                   expect(humanizedTemplates[0]['commands'][1]['commands']).toEqual(['#text(a)']);
+                   expect(humanizedTemplates[1]['commands'][1]['commands']).toEqual(['#text(a)']);
+
                    async.done();
                  });
              xhr.flush();
            }));
 
-        it('should only allow dynamic loadable components', () => {
-          expect(() => compiler.compileHostComponentRuntime(PlainDirective))
-              .toThrowError(
-                  `Could not compile '${stringify(PlainDirective)}' because it is not dynamically loadable.`);
-          expect(() => compiler.compileHostComponentRuntime(CompWithoutHost))
-              .toThrowError(
-                  `Could not compile '${stringify(CompWithoutHost)}' because it is not dynamically loadable.`);
-        });
+        it('should cache components for sequential requests',
+           inject([AsyncTestCompleter, XHR], (async, xhr: MockXHR) => {
+             xhr.expect('angular2/test/compiler/compUrl.html', 'a');
+             compile([CompWithTemplateUrl])
+                 .then((humanizedTemplate0) => {
+                   return compile([CompWithTemplateUrl])
+                       .then((humanizedTemplate1) => {
+                         expect(humanizedTemplate0['commands'][1]['commands'])
+                             .toEqual(['#text(a)']);
+                         expect(humanizedTemplate1['commands'][1]['commands'])
+                             .toEqual(['#text(a)']);
+                         async.done();
+                       });
+                 });
+             xhr.flush();
+           }));
+
+        it('should allow to clear the cache',
+           inject([AsyncTestCompleter, XHR], (async, xhr: MockXHR) => {
+             xhr.expect('angular2/test/compiler/compUrl.html', 'a');
+             compile([CompWithTemplateUrl])
+                 .then((humanizedTemplate) => {
+                   compiler.clearCache();
+                   xhr.expect('angular2/test/compiler/compUrl.html', 'b');
+                   var result = compile([CompWithTemplateUrl]);
+                   xhr.flush();
+                   return result;
+                 })
+                 .then((humanizedTemplate) => {
+                   expect(humanizedTemplate['commands'][1]['commands']).toEqual(['#text(b)']);
+                   async.done();
+                 });
+             xhr.flush();
+           }));
 
       });
 
@@ -145,7 +178,7 @@ export function main() {
               runtimeMetadataResolver.getViewDirectivesMetadata(component));
           return PromiseWrapper.all(compAndViewDirMetas.map(
                                         meta => compiler.normalizeDirectiveMetadata(meta)))
-              .then((normalizedCompAndViewDirMetas: NormalizedDirectiveMetadata[]) =>
+              .then((normalizedCompAndViewDirMetas: CompileDirectiveMetadata[]) =>
                         new NormalizedComponentWithViewDirectives(
                             normalizedCompAndViewDirMetas[0],
                             normalizedCompAndViewDirMetas.slice(1)));
@@ -173,15 +206,15 @@ export function main() {
       it('should serialize and deserialize', inject([AsyncTestCompleter], (async) => {
            compiler.normalizeDirectiveMetadata(
                        runtimeMetadataResolver.getMetadata(CompWithBindingsAndStyles))
-               .then((meta: NormalizedDirectiveMetadata) => {
+               .then((meta: CompileDirectiveMetadata) => {
                  var json = compiler.serializeDirectiveMetadata(meta);
                  expect(isString(json)).toBe(true);
                  // Note: serializing will clear our the runtime type!
-                 var clonedMeta =
-                     <NormalizedDirectiveMetadata>compiler.deserializeDirectiveMetadata(json);
+                 var clonedMeta = compiler.deserializeDirectiveMetadata(json);
                  expect(meta.changeDetection).toEqual(clonedMeta.changeDetection);
                  expect(meta.template).toEqual(clonedMeta.template);
                  expect(meta.selector).toEqual(clonedMeta.selector);
+                 expect(meta.exportAs).toEqual(clonedMeta.exportAs);
                  expect(meta.type.name).toEqual(clonedMeta.type.name);
                  async.done();
                });
@@ -194,7 +227,7 @@ export function main() {
            xhr.expect('angular2/test/compiler/compUrl.html', 'loadedTemplate');
            compiler.normalizeDirectiveMetadata(
                        runtimeMetadataResolver.getMetadata(CompWithTemplateUrl))
-               .then((meta: NormalizedDirectiveMetadata) => {
+               .then((meta: CompileDirectiveMetadata) => {
                  expect(meta.template.template).toEqual('loadedTemplate');
                  async.done();
                });
@@ -203,15 +236,21 @@ export function main() {
 
       it('should copy all the other fields', inject([AsyncTestCompleter], (async) => {
            var meta = runtimeMetadataResolver.getMetadata(CompWithBindingsAndStyles);
-           compiler.normalizeDirectiveMetadata(meta)
-               .then((normMeta: NormalizedDirectiveMetadata) => {
-                 expect(normMeta.selector).toEqual(meta.selector);
-                 expect(normMeta.dynamicLoadable).toEqual(meta.dynamicLoadable);
-                 expect(normMeta.isComponent).toEqual(meta.isComponent);
-                 expect(normMeta.type).toEqual(meta.type);
-                 expect(normMeta.changeDetection).toEqual(meta.changeDetection);
-                 async.done();
-               });
+           compiler.normalizeDirectiveMetadata(meta).then((normMeta: CompileDirectiveMetadata) => {
+             expect(normMeta.type).toEqual(meta.type);
+             expect(normMeta.isComponent).toEqual(meta.isComponent);
+             expect(normMeta.dynamicLoadable).toEqual(meta.dynamicLoadable);
+             expect(normMeta.selector).toEqual(meta.selector);
+             expect(normMeta.exportAs).toEqual(meta.exportAs);
+             expect(normMeta.changeDetection).toEqual(meta.changeDetection);
+             expect(normMeta.properties).toEqual(meta.properties);
+             expect(normMeta.events).toEqual(meta.events);
+             expect(normMeta.hostListeners).toEqual(meta.hostListeners);
+             expect(normMeta.hostProperties).toEqual(meta.hostProperties);
+             expect(normMeta.hostAttributes).toEqual(meta.hostAttributes);
+             expect(normMeta.lifecycleHooks).toEqual(meta.lifecycleHooks);
+             async.done();
+           });
          }));
     });
 
@@ -233,23 +272,29 @@ export function main() {
 
 @Component({
   selector: 'comp-a',
-  dynamicLoadable: true,
   host: {'[title]': 'someProp'},
-  moduleId: THIS_MODULE
+  moduleId: THIS_MODULE,
+  exportAs: 'someExportAs'
 })
 @View({template: '<a [href]="someProp"></a>', styles: ['div {color: red}']})
 class CompWithBindingsAndStyles {
 }
 
-@Component({selector: 'tree', dynamicLoadable: true, moduleId: THIS_MODULE})
+@Component({selector: 'tree', moduleId: THIS_MODULE})
 @View({template: '<tree></tree>', directives: [TreeComp]})
 class TreeComp {
 }
 
-@Component({selector: 'comp-url', dynamicLoadable: true, moduleId: THIS_MODULE})
+@Component({selector: 'comp-url', moduleId: THIS_MODULE})
 @View({templateUrl: 'compUrl.html'})
 class CompWithTemplateUrl {
 }
+
+@Component({selector: 'comp-tpl', moduleId: THIS_MODULE})
+@View({template: '<template><a [href]="someProp"></a></template>'})
+class CompWithEmbeddedTemplate {
+}
+
 
 @Directive({selector: 'plain', moduleId: THIS_MODULE})
 class PlainDirective {
@@ -260,9 +305,8 @@ class PlainDirective {
 class CompWithoutHost {
 }
 
-function testableTemplateModule(sourceModule: SourceModule, comp: INormalizedDirectiveMetadata):
+function testableTemplateModule(sourceModule: SourceModule, normComp: CompileDirectiveMetadata):
     SourceModule {
-  var normComp = <NormalizedDirectiveMetadata>comp;
   var resultExpression = `${THIS_MODULE_REF}humanizeTemplate(Host${normComp.type.name}Template)`;
   var testableSource = `${sourceModule.sourceWithModuleRefs}
   ${codeGenExportVariable('run')}${codeGenValueFn(['_'], resultExpression)};`;
@@ -290,7 +334,7 @@ export function humanizeTemplate(template: CompiledTemplate,
   result = {
     'styles': template.styles,
     'commands': commands,
-    'cd': testChangeDetector(template.changeDetectorFactories[0])
+    'cd': testChangeDetector(template.changeDetectorFactory)
   };
   humanizedTemplates.set(template.id, result);
   visitAllCommands(new CommandHumanizer(commands, humanizedTemplates), template.commands);
@@ -316,7 +360,10 @@ function testChangeDetector(changeDetectorFactory: Function): string[] {
 class CommandHumanizer implements CommandVisitor {
   constructor(private result: any[],
               private humanizedTemplates: Map<number, StringMap<string, any>>) {}
-  visitText(cmd: TextCmd, context: any): any { return null; }
+  visitText(cmd: TextCmd, context: any): any {
+    this.result.push(`#text(${cmd.value})`);
+    return null;
+  }
   visitNgContent(cmd: NgContentCmd, context: any): any { return null; }
   visitBeginElement(cmd: BeginElementCmd, context: any): any {
     this.result.push(`<${cmd.name}>`);
@@ -332,5 +379,10 @@ class CommandHumanizer implements CommandVisitor {
     return null;
   }
   visitEndComponent(context: any): any { return this.visitEndElement(context); }
-  visitEmbeddedTemplate(cmd: EmbeddedTemplateCmd, context: any): any { return null; }
+  visitEmbeddedTemplate(cmd: EmbeddedTemplateCmd, context: any): any {
+    this.result.push(`<template>`);
+    this.result.push({'cd': testChangeDetector(cmd.changeDetectorFactory)});
+    this.result.push(`</template>`);
+    return null;
+  }
 }

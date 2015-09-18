@@ -397,23 +397,6 @@ export function main() {
                });
          }));
 
-      it('should use the last directive binding per directive',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           tcb.overrideView(MyComp, new ViewMetadata({
-                              template: '<p no-duplicate></p>',
-                              directives: [
-                                bind(DuplicateDir)
-                                    .toClass(DuplicateDir),
-                                bind(DuplicateDir).toClass(OtherDuplicateDir)
-                              ]
-                            }))
-               .createAsync(MyComp)
-               .then((rootTC) => {
-                 expect(rootTC.debugElement.nativeElement).toHaveText('othernoduplicate');
-                 async.done();
-               });
-         }));
-
       it('should support directives where a selector matches property binding',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MyComp, new ViewMetadata(
@@ -436,27 +419,11 @@ export function main() {
                });
          }));
 
-      it('should allow specifying directives as bindings',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           tcb.overrideView(MyComp, new ViewMetadata({
-                              template: '<child-cmp></child-cmp>',
-                              directives: [bind(ChildComp).toClass(ChildComp)]
-                            }))
-
-               .createAsync(MyComp)
-               .then((rootTC) => {
-                 rootTC.detectChanges();
-
-                 expect(rootTC.debugElement.nativeElement).toHaveText('hello');
-                 async.done();
-               });
-         }));
-
       it('should read directives metadata from their binding token',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MyComp, new ViewMetadata({
                               template: '<div public-api><div needs-public-api></div></div>',
-                              directives: [bind(PublicApi).toClass(PrivateImpl), NeedsPublicApi]
+                              directives: [PrivateImpl, NeedsPublicApi]
                             }))
 
                .createAsync(MyComp)
@@ -2043,12 +2010,14 @@ class NeedsAttribute {
   }
 }
 
-@Directive({selector: '[public-api]'})
 @Injectable()
 class PublicApi {
 }
 
-@Directive({selector: '[private-impl]'})
+@Directive({
+  selector: '[public-api]',
+  bindings: [new Binding(PublicApi, {toAlias: PrivateImpl, deps: []})]
+})
 @Injectable()
 class PrivateImpl extends PublicApi {
 }

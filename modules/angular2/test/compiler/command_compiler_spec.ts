@@ -29,9 +29,9 @@ import {
 } from 'angular2/src/core/compiler/template_commands';
 import {CommandCompiler} from 'angular2/src/compiler/command_compiler';
 import {
-  NormalizedDirectiveMetadata,
-  TypeMetadata,
-  NormalizedTemplateMetadata
+  CompileDirectiveMetadata,
+  CompileTypeMetadata,
+  CompileTemplateMetadata
 } from 'angular2/src/compiler/directive_metadata';
 import {SourceModule, SourceExpression, moduleRef} from 'angular2/src/compiler/source_module';
 import {ViewEncapsulation} from 'angular2/src/core/render/api';
@@ -61,12 +61,12 @@ export class RootComp {}
 export class SomeDir {}
 export class AComp {}
 
-var RootCompTypeMeta =
-    new TypeMetadata({id: 1, name: 'RootComp', runtime: RootComp, moduleId: THIS_MODULE_NAME});
+var RootCompTypeMeta = new CompileTypeMetadata(
+    {id: 1, name: 'RootComp', runtime: RootComp, moduleId: THIS_MODULE_NAME});
 var SomeDirTypeMeta =
-    new TypeMetadata({id: 2, name: 'SomeDir', runtime: SomeDir, moduleId: THIS_MODULE_NAME});
+    new CompileTypeMetadata({id: 2, name: 'SomeDir', runtime: SomeDir, moduleId: THIS_MODULE_NAME});
 var ACompTypeMeta =
-    new TypeMetadata({id: 3, name: 'AComp', runtime: AComp, moduleId: THIS_MODULE_NAME});
+    new CompileTypeMetadata({id: 3, name: 'AComp', runtime: AComp, moduleId: THIS_MODULE_NAME});
 
 var NESTED_COMPONENT = new CompiledTemplate(45, () => []);
 
@@ -84,12 +84,12 @@ export function main() {
     }));
 
     function createComp({type, selector, template, encapsulation, ngContentSelectors}: {
-      type?: TypeMetadata,
+      type?: CompileTypeMetadata,
       selector?: string,
       template?: string,
       encapsulation?: ViewEncapsulation,
       ngContentSelectors?: string[]
-    }): NormalizedDirectiveMetadata {
+    }): CompileDirectiveMetadata {
       if (isBlank(encapsulation)) {
         encapsulation = ViewEncapsulation.None;
       }
@@ -102,11 +102,11 @@ export function main() {
       if (isBlank(template)) {
         template = '';
       }
-      return new NormalizedDirectiveMetadata({
+      return CompileDirectiveMetadata.create({
         selector: selector,
         isComponent: true,
         type: type,
-        template: new NormalizedTemplateMetadata({
+        template: new CompileTemplateMetadata({
           template: template,
           ngContentSelectors: ngContentSelectors,
           encapsulation: encapsulation
@@ -114,8 +114,10 @@ export function main() {
       });
     }
 
-    function createDirective(type: TypeMetadata, selector: string): NormalizedDirectiveMetadata {
-      return new NormalizedDirectiveMetadata({selector: selector, isComponent: false, type: type});
+    function createDirective(type: CompileTypeMetadata, selector: string, exportAs: string = null):
+        CompileDirectiveMetadata {
+      return CompileDirectiveMetadata.create(
+          {selector: selector, exportAs: exportAs, isComponent: false, type: type});
     }
 
 
@@ -159,18 +161,47 @@ export function main() {
         it('should create bound element commands', inject([AsyncTestCompleter], (async) => {
              var rootComp = createComp({
                type: RootCompTypeMeta,
-               template: '<div a="b" #some-var="someValue" (click)="someHandler">'
+               template: '<div a="b" #some-var (click)="someHandler" (window:scroll)="scrollTo()">'
              });
-             var dir = createDirective(SomeDirTypeMeta, '[a]');
-             run(rootComp, [dir])
+             run(rootComp, [])
                  .then((data) => {
                    expect(data).toEqual([
                      [
                        BEGIN_ELEMENT,
                        'div',
                        ['a', 'b'],
-                       ['click'],
-                       ['someVar', 'someValue'],
+                       [null, 'click', 'window', 'scroll'],
+                       ['someVar', '%implicit'],
+                       [],
+                       true,
+                       null
+                     ],
+                     [END_ELEMENT]
+                   ]);
+                   async.done();
+                 });
+           }));
+
+        it('should create element commands with directives',
+           inject([AsyncTestCompleter], (async) => {
+             var rootComp =
+                 createComp({type: RootCompTypeMeta, template: '<div a #some-var="someExport">'});
+             var dir = CompileDirectiveMetadata.create({
+               selector: '[a]',
+               exportAs: 'someExport',
+               isComponent: false,
+               type: SomeDirTypeMeta,
+               host: {'(click)': 'doIt()', '(window:scroll)': 'doIt()', 'role': 'button'}
+             });
+             run(rootComp, [dir])
+                 .then((data) => {
+                   expect(data).toEqual([
+                     [
+                       BEGIN_ELEMENT,
+                       'div',
+                       ['a', '', 'role', 'button'],
+                       [null, 'click', 'window', 'scroll'],
+                       ['someVar', 0],
                        ['SomeDirType'],
                        true,
                        null
@@ -214,10 +245,8 @@ export function main() {
       describe('components', () => {
 
         it('should create component commands', inject([AsyncTestCompleter], (async) => {
-             var rootComp = createComp({
-               type: RootCompTypeMeta,
-               template: '<a a="b" #some-var="someValue" (click)="someHandler">'
-             });
+             var rootComp = createComp(
+                 {type: RootCompTypeMeta, template: '<a a="b" #some-var (click)="someHandler">'});
              var comp = createComp({type: ACompTypeMeta, selector: 'a'});
              run(rootComp, [comp])
                  .then((data) => {
@@ -226,8 +255,8 @@ export function main() {
                        BEGIN_COMPONENT,
                        'a',
                        ['a', 'b'],
-                       ['click'],
-                       ['someVar', 'someValue'],
+                       [null, 'click'],
+                       ['someVar', 0],
                        ['ACompType'],
                        false,
                        null,
@@ -305,7 +334,7 @@ export function main() {
                template: '<template a="b" #some-var="someValue"></template>'
              });
              var dir = createDirective(SomeDirTypeMeta, '[a]');
-             run(rootComp, [dir])
+             run(rootComp, [dir], 1)
                  .then((data) => {
                    expect(data).toEqual([
                      [
@@ -315,6 +344,7 @@ export function main() {
                        ['SomeDirType'],
                        false,
                        null,
+                       'cd1',
                        []
                      ]
                    ]);
@@ -325,10 +355,20 @@ export function main() {
         it('should created nested nodes', inject([AsyncTestCompleter], (async) => {
              var rootComp =
                  createComp({type: RootCompTypeMeta, template: '<template>t</template>'});
-             run(rootComp, [])
+             run(rootComp, [], 1)
                  .then((data) => {
-                   expect(data).toEqual(
-                       [[EMBEDDED_TEMPLATE, [], [], [], false, null, [[TEXT, 't', false, null]]]]);
+                   expect(data).toEqual([
+                     [
+                       EMBEDDED_TEMPLATE,
+                       [],
+                       [],
+                       [],
+                       false,
+                       null,
+                       'cd1',
+                       [[TEXT, 't', false, null]]
+                     ]
+                   ]);
                    async.done();
                  });
            }));
@@ -339,10 +379,10 @@ export function main() {
                type: RootCompTypeMeta,
                template: '<template><ng-content></ng-content></template>'
              });
-             run(rootComp, [])
+             run(rootComp, [], 1)
                  .then((data) => {
                    expect(data).toEqual(
-                       [[EMBEDDED_TEMPLATE, [], [], [], true, null, [[NG_CONTENT, null]]]]);
+                       [[EMBEDDED_TEMPLATE, [], [], [], true, null, 'cd1', [[NG_CONTENT, null]]]]);
                    async.done();
                  });
            }));
@@ -364,17 +404,21 @@ export function main() {
 
     describe('compileComponentRuntime', () => {
       beforeEach(() => {
-        componentTemplateFactory = (directive: NormalizedDirectiveMetadata) => {
+        componentTemplateFactory = (directive: CompileDirectiveMetadata) => {
           return new CompiledTemplate(directive.type.id, () => []);
         };
       });
 
-      function run(component: NormalizedDirectiveMetadata,
-                   directives: NormalizedDirectiveMetadata[]): Promise<any[][]> {
+      function run(component: CompileDirectiveMetadata, directives: CompileDirectiveMetadata[],
+                   embeddedTemplateCount: number = 0): Promise<any[][]> {
+        var changeDetectorFactories = [];
+        for (var i = 0; i < embeddedTemplateCount + 1; i++) {
+          (function(i) { changeDetectorFactories.push((_) => `cd${i}`); })(i);
+        }
         var parsedTemplate =
             parser.parse(component.template.template, directives, component.type.name);
-        var commands = commandCompiler.compileComponentRuntime(component, parsedTemplate,
-                                                               componentTemplateFactory);
+        var commands = commandCompiler.compileComponentRuntime(
+            component, parsedTemplate, changeDetectorFactories, componentTemplateFactory);
         return PromiseWrapper.resolve(humanize(commands));
       }
 
@@ -384,17 +428,21 @@ export function main() {
 
     describe('compileComponentCodeGen', () => {
       beforeEach(() => {
-        componentTemplateFactory = (directive: NormalizedDirectiveMetadata) => {
+        componentTemplateFactory = (directive: CompileDirectiveMetadata) => {
           return `new ${TEMPLATE_COMMANDS_MODULE_REF}CompiledTemplate(${directive.type.id}, ${codeGenValueFn([], '{}')})`;
         };
       });
 
-      function run(component: NormalizedDirectiveMetadata,
-                   directives: NormalizedDirectiveMetadata[]): Promise<any[][]> {
+      function run(component: CompileDirectiveMetadata, directives: CompileDirectiveMetadata[],
+                   embeddedTemplateCount: number = 0): Promise<any[][]> {
+        var changeDetectorFactoryExpressions = [];
+        for (var i = 0; i < embeddedTemplateCount + 1; i++) {
+          changeDetectorFactoryExpressions.push(codeGenValueFn(['_'], `'cd${i}'`));
+        }
         var parsedTemplate =
             parser.parse(component.template.template, directives, component.type.name);
-        var sourceModule = commandCompiler.compileComponentCodeGen(component, parsedTemplate,
-                                                                   componentTemplateFactory);
+        var sourceModule = commandCompiler.compileComponentCodeGen(
+            component, parsedTemplate, changeDetectorFactoryExpressions, componentTemplateFactory);
         var testableModule = createTestableModule(sourceModule).getSourceWithImports();
         return evalModule(testableModule.source, testableModule.imports, null);
       }
@@ -432,7 +480,7 @@ class CommandHumanizer implements CommandVisitor {
       BEGIN_ELEMENT,
       cmd.name,
       cmd.attrNameAndValues,
-      cmd.eventNames,
+      cmd.eventTargetAndNames,
       cmd.variableNameAndValues,
       cmd.directives.map(checkAndStringifyType),
       cmd.isBound,
@@ -449,12 +497,11 @@ class CommandHumanizer implements CommandVisitor {
       BEGIN_COMPONENT,
       cmd.name,
       cmd.attrNameAndValues,
-      cmd.eventNames,
+      cmd.eventTargetAndNames,
       cmd.variableNameAndValues,
       cmd.directives.map(checkAndStringifyType),
       cmd.nativeShadow,
       cmd.ngContentIndex,
-      // TODO humanizeTemplate(cmd.template)
       cmd.template.id
     ]);
     return null;
@@ -471,6 +518,7 @@ class CommandHumanizer implements CommandVisitor {
       cmd.directives.map(checkAndStringifyType),
       cmd.isMerged,
       cmd.ngContentIndex,
+      cmd.changeDetectorFactory(null),
       humanize(cmd.children)
     ]);
     return null;

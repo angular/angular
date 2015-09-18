@@ -1,5 +1,5 @@
-import {TypeMetadata} from './directive_metadata';
-import {SourceExpression, moduleRef} from './source_module';
+import {CompileTypeMetadata} from './directive_metadata';
+import {SourceExpressions, moduleRef} from './source_module';
 import {
   ChangeDetectorJITGenerator
 } from 'angular2/src/core/change_detection/change_detection_jit_generator';
@@ -32,7 +32,7 @@ var PREGEN_PROTO_CHANGE_DETECTOR_MODULE =
 export class ChangeDetectionCompiler {
   constructor(private _genConfig: ChangeDetectorGenConfig) {}
 
-  compileComponentRuntime(componentType: TypeMetadata, strategy: ChangeDetectionStrategy,
+  compileComponentRuntime(componentType: CompileTypeMetadata, strategy: ChangeDetectionStrategy,
                           parsedTemplate: TemplateAst[]): Function[] {
     var changeDetectorDefinitions =
         createChangeDetectorDefinitions(componentType, strategy, this._genConfig, parsedTemplate);
@@ -51,8 +51,8 @@ export class ChangeDetectionCompiler {
     }
   }
 
-  compileComponentCodeGen(componentType: TypeMetadata, strategy: ChangeDetectionStrategy,
-                          parsedTemplate: TemplateAst[]): SourceExpression {
+  compileComponentCodeGen(componentType: CompileTypeMetadata, strategy: ChangeDetectionStrategy,
+                          parsedTemplate: TemplateAst[]): SourceExpressions {
     var changeDetectorDefinitions =
         createChangeDetectorDefinitions(componentType, strategy, this._genConfig, parsedTemplate);
     var factories = [];
@@ -75,7 +75,6 @@ export class ChangeDetectionCompiler {
         return codegen.generateSource();
       }
     });
-    var expression = `[ ${factories.join(',')} ]`;
-    return new SourceExpression(sourceParts, expression);
+    return new SourceExpressions(sourceParts, factories);
   }
 }

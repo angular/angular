@@ -1,11 +1,4 @@
-import {
-  StringWrapper,
-  normalizeBool,
-  isBlank,
-  serializeEnum,
-  deserializeEnum
-} from 'angular2/src/core/facade/lang';
-import {MapWrapper} from 'angular2/src/core/facade/collection';
+import {StringWrapper, normalizeBool, isBlank} from 'angular2/src/core/facade/lang';
 
 export enum ChangeDetectionStrategy {
   /**
@@ -48,19 +41,15 @@ export enum ChangeDetectionStrategy {
   OnPushObserve
 }
 
-var strategyMap: Map<number, ChangeDetectionStrategy> = MapWrapper.createFromPairs([
-  [0, ChangeDetectionStrategy.CheckOnce],
-  [1, ChangeDetectionStrategy.Checked],
-  [2, ChangeDetectionStrategy.CheckAlways],
-  [3, ChangeDetectionStrategy.Detached],
-  [4, ChangeDetectionStrategy.OnPush],
-  [5, ChangeDetectionStrategy.Default],
-  [6, ChangeDetectionStrategy.OnPushObserve]
-]);
-
-export function changeDetectionStrategyFromJson(value: number): ChangeDetectionStrategy {
-  return deserializeEnum(value, strategyMap);
-}
+export var CHANGE_DECTION_STRATEGY_VALUES = [
+  ChangeDetectionStrategy.CheckOnce,
+  ChangeDetectionStrategy.Checked,
+  ChangeDetectionStrategy.CheckAlways,
+  ChangeDetectionStrategy.Detached,
+  ChangeDetectionStrategy.OnPush,
+  ChangeDetectionStrategy.Default,
+  ChangeDetectionStrategy.OnPushObserve
+];
 
 export function isDefaultChangeDetectionStrategy(changeDetectionStrategy: ChangeDetectionStrategy):
     boolean {

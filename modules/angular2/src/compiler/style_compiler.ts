@@ -1,4 +1,4 @@
-import {TypeMetadata, NormalizedDirectiveMetadata} from './directive_metadata';
+import {CompileTypeMetadata, CompileDirectiveMetadata} from './directive_metadata';
 import {SourceModule, SourceExpression, moduleRef} from './source_module';
 import {ViewEncapsulation} from 'angular2/src/core/render/api';
 import {XHR} from 'angular2/src/core/render/xhr';
@@ -29,16 +29,16 @@ export class StyleCompiler {
 
   constructor(private _xhr: XHR, private _urlResolver: UrlResolver) {}
 
-  compileComponentRuntime(component: NormalizedDirectiveMetadata): Promise<string[]> {
+  compileComponentRuntime(component: CompileDirectiveMetadata): Promise<string[]> {
     var styles = component.template.styles;
-    var styleAbsUrls = component.template.styleAbsUrls;
+    var styleAbsUrls = component.template.styleUrls;
     return this._loadStyles(styles, styleAbsUrls,
                             component.template.encapsulation === ViewEncapsulation.Emulated)
         .then(styles => styles.map(style => StringWrapper.replaceAll(style, COMPONENT_REGEX,
                                                                      `${component.type.id}`)));
   }
 
-  compileComponentCodeGen(component: NormalizedDirectiveMetadata): SourceExpression {
+  compileComponentCodeGen(component: CompileDirectiveMetadata): SourceExpression {
     var shim = component.template.encapsulation === ViewEncapsulation.Emulated;
     var suffix;
     if (shim) {
@@ -48,7 +48,7 @@ export class StyleCompiler {
     } else {
       suffix = '';
     }
-    return this._styleCodeGen(component.template.styles, component.template.styleAbsUrls, shim,
+    return this._styleCodeGen(component.template.styles, component.template.styleUrls, shim,
                               suffix);
   }
 
@@ -61,6 +61,8 @@ export class StyleCompiler {
                                                            styleWithImports.styleUrls, true, ''))
     ];
   }
+
+  clearCache() { this._styleCache.clear(); }
 
   private _loadStyles(plainStyles: string[], absUrls: string[],
                       encapsulate: boolean): Promise<string[]> {

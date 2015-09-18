@@ -1,6 +1,6 @@
 import {AST} from 'angular2/src/core/change_detection/change_detection';
 import {isPresent} from 'angular2/src/core/facade/lang';
-import {NormalizedDirectiveMetadata} from './directive_metadata';
+import {CompileDirectiveMetadata} from './directive_metadata';
 
 export interface TemplateAst {
   sourceInfo: string;
@@ -38,7 +38,7 @@ export class BoundEventAst implements TemplateAst {
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitEvent(this, context);
   }
-  getFullName(): string {
+  get fullName() {
     if (isPresent(this.target)) {
       return `${this.target}:${this.name}`;
     } else {
@@ -57,7 +57,7 @@ export class VariableAst implements TemplateAst {
 export class ElementAst implements TemplateAst {
   constructor(public name: string, public attrs: AttrAst[],
               public properties: BoundElementPropertyAst[], public events: BoundEventAst[],
-              public vars: VariableAst[], public directives: DirectiveAst[],
+              public exportAsVars: VariableAst[], public directives: DirectiveAst[],
               public children: TemplateAst[], public ngContentIndex: number,
               public sourceInfo: string) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
@@ -65,11 +65,11 @@ export class ElementAst implements TemplateAst {
   }
 
   isBound(): boolean {
-    return (this.properties.length > 0 || this.events.length > 0 || this.vars.length > 0 ||
+    return (this.properties.length > 0 || this.events.length > 0 || this.exportAsVars.length > 0 ||
             this.directives.length > 0);
   }
 
-  getComponent(): NormalizedDirectiveMetadata {
+  getComponent(): CompileDirectiveMetadata {
     return this.directives.length > 0 && this.directives[0].directive.isComponent ?
                this.directives[0].directive :
                null;
@@ -94,10 +94,10 @@ export class BoundDirectivePropertyAst implements TemplateAst {
 }
 
 export class DirectiveAst implements TemplateAst {
-  constructor(public directive: NormalizedDirectiveMetadata,
+  constructor(public directive: CompileDirectiveMetadata,
               public properties: BoundDirectivePropertyAst[],
               public hostProperties: BoundElementPropertyAst[], public hostEvents: BoundEventAst[],
-              public sourceInfo: string) {}
+              public exportAsVars: VariableAst[], public sourceInfo: string) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitDirective(this, context);
   }

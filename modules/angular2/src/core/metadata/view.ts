@@ -82,12 +82,9 @@ export class ViewMetadata {
    * }
    * ```
    */
-  // TODO(tbosch): use Type | Binding | any[] when Dart supports union types,
-  // as otherwise we would need to import Binding type and Dart would warn
-  // for an unused import.
-  directives: Array<Type | any | any[]>;
+  directives: Array<Type | any[]>;
 
-  pipes: Array<Type | any | any[]>;
+  pipes: Array<Type | any[]>;
 
   /**
    * Specify how the template and the styles should be encapsulated.
@@ -100,8 +97,8 @@ export class ViewMetadata {
   constructor({templateUrl, template, directives, pipes, encapsulation, styles, styleUrls}: {
     templateUrl?: string,
     template?: string,
-    directives?: Array<Type | any | any[]>,
-    pipes?: Array<Type | any | any[]>,
+    directives?: Array<Type | any[]>,
+    pipes?: Array<Type | any[]>,
     encapsulation?: ViewEncapsulation,
     styles?: string[],
     styleUrls?: string[],

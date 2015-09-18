@@ -1,12 +1,27 @@
-import {isPresent, normalizeBool, serializeEnum, Type} from 'angular2/src/core/facade/lang';
+import {
+  isPresent,
+  isBlank,
+  normalizeBool,
+  serializeEnum,
+  Type,
+  RegExpWrapper,
+  StringWrapper
+} from 'angular2/src/core/facade/lang';
+import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {
   ChangeDetectionStrategy,
-  changeDetectionStrategyFromJson
+  CHANGE_DECTION_STRATEGY_VALUES
 } from 'angular2/src/core/change_detection/change_detection';
-import {ViewEncapsulation, viewEncapsulationFromJson} from 'angular2/src/core/render/api';
+import {ViewEncapsulation, VIEW_ENCAPSULATION_VALUES} from 'angular2/src/core/render/api';
 import {CssSelector} from 'angular2/src/core/render/dom/compiler/selector';
+import {splitAtColon} from './util';
+import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/compiler/interfaces';
 
-export class TypeMetadata {
+// group 1: "property" from "[property]"
+// group 2: "event" from "(event)"
+var HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$/g;
+
+export class CompileTypeMetadata {
   id: number;
   runtime: Type;
   name: string;
@@ -19,8 +34,9 @@ export class TypeMetadata {
     this.moduleId = moduleId;
   }
 
-  static fromJson(data: StringMap<string, any>): TypeMetadata {
-    return new TypeMetadata({id: data['id'], name: data['name'], moduleId: data['moduleId']});
+  static fromJson(data: StringMap<string, any>): CompileTypeMetadata {
+    return new CompileTypeMetadata(
+        {id: data['id'], name: data['name'], moduleId: data['moduleId']});
   }
 
   toJson(): StringMap<string, any> {
@@ -33,169 +49,39 @@ export class TypeMetadata {
   }
 }
 
-export class ChangeDetectionMetadata {
-  changeDetection: ChangeDetectionStrategy;
-  properties: string[];
-  events: string[];
-  hostListeners: StringMap<string, string>;
-  hostProperties: StringMap<string, string>;
-  callAfterContentInit: boolean;
-  callAfterContentChecked: boolean;
-  callAfterViewInit: boolean;
-  callAfterViewChecked: boolean;
-  callOnChanges: boolean;
-  callDoCheck: boolean;
-  callOnInit: boolean;
-  constructor({changeDetection, properties, events, hostListeners, hostProperties,
-               callAfterContentInit, callAfterContentChecked, callAfterViewInit,
-               callAfterViewChecked, callOnChanges, callDoCheck, callOnInit}: {
-    changeDetection?: ChangeDetectionStrategy,
-    properties?: string[],
-    events?: string[],
-    hostListeners?: StringMap<string, string>,
-    hostProperties?: StringMap<string, string>,
-    callAfterContentInit?: boolean,
-    callAfterContentChecked?: boolean,
-    callAfterViewInit?: boolean,
-    callAfterViewChecked?: boolean,
-    callOnChanges?: boolean,
-    callDoCheck?: boolean,
-    callOnInit?: boolean
-  } = {}) {
-    this.changeDetection = changeDetection;
-    this.properties = isPresent(properties) ? properties : [];
-    this.events = isPresent(events) ? events : [];
-    this.hostListeners = isPresent(hostListeners) ? hostListeners : {};
-    this.hostProperties = isPresent(hostProperties) ? hostProperties : {};
-    this.callAfterContentInit = normalizeBool(callAfterContentInit);
-    this.callAfterContentChecked = normalizeBool(callAfterContentChecked);
-    this.callAfterViewInit = normalizeBool(callAfterViewInit);
-    this.callAfterViewChecked = normalizeBool(callAfterViewChecked);
-    this.callOnChanges = normalizeBool(callOnChanges);
-    this.callDoCheck = normalizeBool(callDoCheck);
-    this.callOnInit = normalizeBool(callOnInit);
-  }
-
-  static fromJson(data: StringMap<string, any>): ChangeDetectionMetadata {
-    return new ChangeDetectionMetadata({
-      changeDetection: isPresent(data['changeDetection']) ?
-                           changeDetectionStrategyFromJson(data['changeDetection']) :
-                           data['changeDetection'],
-      properties: data['properties'],
-      events: data['events'],
-      hostListeners: data['hostListeners'],
-      hostProperties: data['hostProperties'],
-      callAfterContentInit: data['callAfterContentInit'],
-      callAfterContentChecked: data['callAfterContentChecked'],
-      callAfterViewInit: data['callAfterViewInit'],
-      callAfterViewChecked: data['callAfterViewChecked'],
-      callOnChanges: data['callOnChanges'],
-      callDoCheck: data['callDoCheck'],
-      callOnInit: data['callOnInit']
-    });
-  }
-
-  toJson(): StringMap<string, any> {
-    return {
-      'changeDetection': isPresent(this.changeDetection) ? serializeEnum(this.changeDetection) :
-                                                           this.changeDetection,
-      'properties': this.properties,
-      'events': this.events,
-      'hostListeners': this.hostListeners,
-      'hostProperties': this.hostProperties,
-      'callAfterContentInit': this.callAfterContentInit,
-      'callAfterContentChecked': this.callAfterContentChecked,
-      'callAfterViewInit': this.callAfterViewInit,
-      'callAfterViewChecked': this.callAfterViewChecked,
-      'callOnChanges': this.callOnChanges,
-      'callDoCheck': this.callDoCheck,
-      'callOnInit': this.callOnInit
-    };
-  }
-}
-
-export class TemplateMetadata {
+export class CompileTemplateMetadata {
   encapsulation: ViewEncapsulation;
   template: string;
   templateUrl: string;
   styles: string[];
   styleUrls: string[];
-  hostAttributes: StringMap<string, string>;
-  constructor({encapsulation, template, templateUrl, styles, styleUrls, hostAttributes}: {
+  ngContentSelectors: string[];
+  constructor({encapsulation, template, templateUrl, styles, styleUrls, ngContentSelectors}: {
     encapsulation?: ViewEncapsulation,
     template?: string,
     templateUrl?: string,
     styles?: string[],
     styleUrls?: string[],
-    hostAttributes?: StringMap<string, string>
+    ngContentSelectors?: string[]
   } = {}) {
-    this.encapsulation = isPresent(encapsulation) ? encapsulation : ViewEncapsulation.None;
+    this.encapsulation = encapsulation;
     this.template = template;
     this.templateUrl = templateUrl;
     this.styles = isPresent(styles) ? styles : [];
     this.styleUrls = isPresent(styleUrls) ? styleUrls : [];
-    this.hostAttributes = isPresent(hostAttributes) ? hostAttributes : {};
-  }
-}
-
-
-export class DirectiveMetadata {
-  type: TypeMetadata;
-  isComponent: boolean;
-  dynamicLoadable: boolean;
-  selector: string;
-  changeDetection: ChangeDetectionMetadata;
-  template: TemplateMetadata;
-  constructor({type, isComponent, dynamicLoadable, selector, changeDetection, template}: {
-    type?: TypeMetadata,
-    isComponent?: boolean,
-    dynamicLoadable?: boolean,
-    selector?: string,
-    changeDetection?: ChangeDetectionMetadata,
-    template?: TemplateMetadata
-  } = {}) {
-    this.type = type;
-    this.isComponent = normalizeBool(isComponent);
-    this.dynamicLoadable = normalizeBool(dynamicLoadable);
-    this.selector = selector;
-    this.changeDetection = changeDetection;
-    this.template = template;
-  }
-}
-
-export class NormalizedTemplateMetadata {
-  encapsulation: ViewEncapsulation;
-  template: string;
-  styles: string[];
-  styleAbsUrls: string[];
-  ngContentSelectors: string[];
-  hostAttributes: StringMap<string, string>;
-  constructor({encapsulation, template, styles, styleAbsUrls, ngContentSelectors, hostAttributes}: {
-    encapsulation?: ViewEncapsulation,
-    template?: string,
-    styles?: string[],
-    styleAbsUrls?: string[],
-    ngContentSelectors?: string[],
-    hostAttributes?: StringMap<string, string>
-  } = {}) {
-    this.encapsulation = encapsulation;
-    this.template = template;
-    this.styles = styles;
-    this.styleAbsUrls = styleAbsUrls;
-    this.ngContentSelectors = ngContentSelectors;
-    this.hostAttributes = hostAttributes;
+    this.ngContentSelectors = isPresent(ngContentSelectors) ? ngContentSelectors : [];
   }
 
-  static fromJson(data: StringMap<string, any>): NormalizedTemplateMetadata {
-    return new NormalizedTemplateMetadata({
+  static fromJson(data: StringMap<string, any>): CompileTemplateMetadata {
+    return new CompileTemplateMetadata({
       encapsulation: isPresent(data['encapsulation']) ?
-                         viewEncapsulationFromJson(data['encapsulation']) :
+                         VIEW_ENCAPSULATION_VALUES[data['encapsulation']] :
                          data['encapsulation'],
       template: data['template'],
+      templateUrl: data['templateUrl'],
       styles: data['styles'],
-      styleAbsUrls: data['styleAbsUrls'],
-      ngContentSelectors: data['ngContentSelectors'],
-      hostAttributes: data['hostAttributes']
+      styleUrls: data['styleUrls'],
+      ngContentSelectors: data['ngContentSelectors']
     });
   }
 
@@ -204,52 +90,142 @@ export class NormalizedTemplateMetadata {
       'encapsulation':
           isPresent(this.encapsulation) ? serializeEnum(this.encapsulation) : this.encapsulation,
       'template': this.template,
+      'templateUrl': this.templateUrl,
       'styles': this.styles,
-      'styleAbsUrls': this.styleAbsUrls,
-      'ngContentSelectors': this.ngContentSelectors,
-      'hostAttributes': this.hostAttributes
+      'styleUrls': this.styleUrls,
+      'ngContentSelectors': this.ngContentSelectors
     };
   }
 }
 
-export interface INormalizedDirectiveMetadata {}
-
-export class NormalizedDirectiveMetadata implements INormalizedDirectiveMetadata {
-  type: TypeMetadata;
-  isComponent: boolean;
-  dynamicLoadable: boolean;
-  selector: string;
-  changeDetection: ChangeDetectionMetadata;
-  template: NormalizedTemplateMetadata;
-  constructor({type, isComponent, dynamicLoadable, selector, changeDetection, template}: {
-    id?: number,
-    type?: TypeMetadata,
+export class CompileDirectiveMetadata {
+  static create({type, isComponent, dynamicLoadable, selector, exportAs, changeDetection,
+                 properties, events, host, lifecycleHooks, template}: {
+    type?: CompileTypeMetadata,
     isComponent?: boolean,
     dynamicLoadable?: boolean,
     selector?: string,
-    changeDetection?: ChangeDetectionMetadata,
-    template?: NormalizedTemplateMetadata
+    exportAs?: string,
+    changeDetection?: ChangeDetectionStrategy,
+    properties?: string[],
+    events?: string[],
+    host?: StringMap<string, string>,
+    lifecycleHooks?: LifecycleHooks[],
+    template?: CompileTemplateMetadata
+  } = {}): CompileDirectiveMetadata {
+    var hostListeners = {};
+    var hostProperties = {};
+    var hostAttributes = {};
+    if (isPresent(host)) {
+      StringMapWrapper.forEach(host, (value: string, key: string) => {
+        var matches = RegExpWrapper.firstMatch(HOST_REG_EXP, key);
+        if (isBlank(matches)) {
+          hostAttributes[key] = value;
+        } else if (isPresent(matches[1])) {
+          hostProperties[matches[1]] = value;
+        } else if (isPresent(matches[2])) {
+          hostListeners[matches[2]] = value;
+        }
+      });
+    }
+    var propsMap = {};
+    if (isPresent(properties)) {
+      properties.forEach((bindConfig: string) => {
+        // canonical syntax: `dirProp: elProp`
+        // if there is no `:`, use dirProp = elProp
+        var parts = splitAtColon(bindConfig, [bindConfig, bindConfig]);
+        propsMap[parts[0]] = parts[1];
+      });
+    }
+    var eventsMap = {};
+    if (isPresent(events)) {
+      events.forEach((bindConfig: string) => {
+        // canonical syntax: `dirProp: elProp`
+        // if there is no `:`, use dirProp = elProp
+        var parts = splitAtColon(bindConfig, [bindConfig, bindConfig]);
+        eventsMap[parts[0]] = parts[1];
+      });
+    }
+
+    return new CompileDirectiveMetadata({
+      type: type,
+      isComponent: normalizeBool(isComponent),
+      dynamicLoadable: normalizeBool(dynamicLoadable),
+      selector: selector,
+      exportAs: exportAs,
+      changeDetection: changeDetection,
+      properties: propsMap,
+      events: eventsMap,
+      hostListeners: hostListeners,
+      hostProperties: hostProperties,
+      hostAttributes: hostAttributes,
+      lifecycleHooks: isPresent(lifecycleHooks) ? lifecycleHooks : [], template: template
+    });
+  }
+
+  type: CompileTypeMetadata;
+  isComponent: boolean;
+  dynamicLoadable: boolean;
+  selector: string;
+  exportAs: string;
+  changeDetection: ChangeDetectionStrategy;
+  properties: StringMap<string, string>;
+  events: StringMap<string, string>;
+  hostListeners: StringMap<string, string>;
+  hostProperties: StringMap<string, string>;
+  hostAttributes: StringMap<string, string>;
+  lifecycleHooks: LifecycleHooks[];
+  template: CompileTemplateMetadata;
+  constructor({type, isComponent, dynamicLoadable, selector, exportAs, changeDetection, properties,
+               events, hostListeners, hostProperties, hostAttributes, lifecycleHooks, template}: {
+    type?: CompileTypeMetadata,
+    isComponent?: boolean,
+    dynamicLoadable?: boolean,
+    selector?: string,
+    exportAs?: string,
+    changeDetection?: ChangeDetectionStrategy,
+    properties?: StringMap<string, string>,
+    events?: StringMap<string, string>,
+    hostListeners?: StringMap<string, string>,
+    hostProperties?: StringMap<string, string>,
+    hostAttributes?: StringMap<string, string>,
+    lifecycleHooks?: LifecycleHooks[],
+    template?: CompileTemplateMetadata
   } = {}) {
     this.type = type;
-    this.isComponent = normalizeBool(isComponent);
-    this.dynamicLoadable = normalizeBool(dynamicLoadable);
+    this.isComponent = isComponent;
+    this.dynamicLoadable = dynamicLoadable;
     this.selector = selector;
+    this.exportAs = exportAs;
     this.changeDetection = changeDetection;
+    this.properties = properties;
+    this.events = events;
+    this.hostListeners = hostListeners;
+    this.hostProperties = hostProperties;
+    this.hostAttributes = hostAttributes;
+    this.lifecycleHooks = lifecycleHooks;
     this.template = template;
   }
 
-  static fromJson(data: StringMap<string, any>): NormalizedDirectiveMetadata {
-    return new NormalizedDirectiveMetadata({
+  static fromJson(data: StringMap<string, any>): CompileDirectiveMetadata {
+    return new CompileDirectiveMetadata({
       isComponent: data['isComponent'],
       dynamicLoadable: data['dynamicLoadable'],
       selector: data['selector'],
-      type: isPresent(data['type']) ? TypeMetadata.fromJson(data['type']) : data['type'],
+      exportAs: data['exportAs'],
+      type: isPresent(data['type']) ? CompileTypeMetadata.fromJson(data['type']) : data['type'],
       changeDetection: isPresent(data['changeDetection']) ?
-                           ChangeDetectionMetadata.fromJson(data['changeDetection']) :
+                           CHANGE_DECTION_STRATEGY_VALUES[data['changeDetection']] :
                            data['changeDetection'],
-      template:
-          isPresent(data['template']) ? NormalizedTemplateMetadata.fromJson(data['template']) :
-                                        data['template']
+      properties: data['properties'],
+      events: data['events'],
+      hostListeners: data['hostListeners'],
+      hostProperties: data['hostProperties'],
+      hostAttributes: data['hostAttributes'],
+      lifecycleHooks:
+          (<any[]>data['lifecycleHooks']).map(hookValue => LIFECYCLE_HOOKS_VALUES[hookValue]),
+      template: isPresent(data['template']) ? CompileTemplateMetadata.fromJson(data['template']) :
+                                              data['template']
     });
   }
 
@@ -258,45 +234,38 @@ export class NormalizedDirectiveMetadata implements INormalizedDirectiveMetadata
       'isComponent': this.isComponent,
       'dynamicLoadable': this.dynamicLoadable,
       'selector': this.selector,
+      'exportAs': this.exportAs,
       'type': isPresent(this.type) ? this.type.toJson() : this.type,
-      'changeDetection':
-          isPresent(this.changeDetection) ? this.changeDetection.toJson() : this.changeDetection,
+      'changeDetection': isPresent(this.changeDetection) ? serializeEnum(this.changeDetection) :
+                                                           this.changeDetection,
+      'properties': this.properties,
+      'events': this.events,
+      'hostListeners': this.hostListeners,
+      'hostProperties': this.hostProperties,
+      'hostAttributes': this.hostAttributes,
+      'lifecycleHooks': this.lifecycleHooks.map(hook => serializeEnum(hook)),
       'template': isPresent(this.template) ? this.template.toJson() : this.template
     };
   }
 }
 
-export function createHostComponentMeta(componentType: TypeMetadata, componentSelector: string):
-    NormalizedDirectiveMetadata {
+export function createHostComponentMeta(componentType: CompileTypeMetadata,
+                                        componentSelector: string): CompileDirectiveMetadata {
   var template = CssSelector.parse(componentSelector)[0].getMatchingElementTemplate();
-  return new NormalizedDirectiveMetadata({
-    type: new TypeMetadata({
+  return CompileDirectiveMetadata.create({
+    type: new CompileTypeMetadata({
       runtime: Object,
       id: (componentType.id * -1) - 1,
       name: `Host${componentType.name}`,
       moduleId: componentType.moduleId
     }),
-    template: new NormalizedTemplateMetadata({
-      template: template,
-      styles: [],
-      styleAbsUrls: [],
-      hostAttributes: {},
-      ngContentSelectors: []
-    }),
-    changeDetection: new ChangeDetectionMetadata({
-      changeDetection: ChangeDetectionStrategy.Default,
-      properties: [],
-      events: [],
-      hostListeners: {},
-      hostProperties: {},
-      callAfterContentInit: false,
-      callAfterContentChecked: false,
-      callAfterViewInit: false,
-      callAfterViewChecked: false,
-      callOnChanges: false,
-      callDoCheck: false,
-      callOnInit: false
-    }),
+    template: new CompileTemplateMetadata(
+        {template: template, templateUrl: '', styles: [], styleUrls: [], ngContentSelectors: []}),
+    changeDetection: ChangeDetectionStrategy.Default,
+    properties: [],
+    events: [],
+    host: {},
+    lifecycleHooks: [],
     isComponent: true,
     dynamicLoadable: false,
     selector: '*'
