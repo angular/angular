@@ -49,6 +49,8 @@ DtsSerializer.prototype = {
   },
 
   member: function(buffer, ast) {
+    if (ast.private) return;
+
     buffer.push('\n');
     this.comment(buffer, ast.content);
 
