@@ -401,7 +401,7 @@ export interface RenderBeginCmd extends RenderTemplateCmd {
 
 export interface RenderTextCmd extends RenderBeginCmd { value: string; }
 
-export interface RenderNgContentCmd extends RenderBeginCmd { ngContentIndex: number; }
+export interface RenderNgContentCmd { ngContentIndex: number; }
 
 export interface RenderBeginElementCmd extends RenderBeginCmd {
   name: string;
@@ -420,13 +420,13 @@ export interface RenderEmbeddedTemplateCmd extends RenderBeginElementCmd {
 }
 
 export interface RenderCommandVisitor {
-  visitText(cmd: any, context: any): any;
-  visitNgContent(cmd: any, context: any): any;
-  visitBeginElement(cmd: any, context: any): any;
+  visitText(cmd: RenderTextCmd, context: any): any;
+  visitNgContent(cmd: RenderNgContentCmd, context: any): any;
+  visitBeginElement(cmd: RenderBeginElementCmd, context: any): any;
   visitEndElement(context: any): any;
-  visitBeginComponent(cmd: any, context: any): any;
+  visitBeginComponent(cmd: RenderBeginComponentCmd, context: any): any;
   visitEndComponent(context: any): any;
-  visitEmbeddedTemplate(cmd: any, context: any): any;
+  visitEmbeddedTemplate(cmd: RenderEmbeddedTemplateCmd, context: any): any;
 }
 
 

@@ -35,7 +35,8 @@ import {escapeSingleQuoteString} from './util';
 import {Injectable} from 'angular2/src/core/di';
 
 export var TEMPLATE_COMMANDS_MODULE_REF = moduleRef('angular2/src/core/compiler/template_commands');
-const IMPLICIT_VAR = '%implicit';
+
+const IMPLICIT_TEMPLATE_VAR = '\$implicit';
 
 @Injectable()
 export class CommandCompiler {
@@ -207,7 +208,7 @@ class CommandBuilderVisitor<R> implements TemplateAstVisitor {
     var variableNameAndValues = [];
     ast.vars.forEach((varAst) => {
       variableNameAndValues.push(varAst.name);
-      variableNameAndValues.push(varAst.value);
+      variableNameAndValues.push(varAst.value.length > 0 ? varAst.value : IMPLICIT_TEMPLATE_VAR);
     });
     var directives = [];
     ListWrapper.forEachWithIndex(ast.directives, (directiveAst: DirectiveAst, index: number) => {
@@ -227,7 +228,7 @@ class CommandBuilderVisitor<R> implements TemplateAstVisitor {
     if (isBlank(component)) {
       ast.exportAsVars.forEach((varAst) => {
         variableNameAndValues.push(varAst.name);
-        variableNameAndValues.push(IMPLICIT_VAR);
+        variableNameAndValues.push(null);
       });
     }
     var directives = [];

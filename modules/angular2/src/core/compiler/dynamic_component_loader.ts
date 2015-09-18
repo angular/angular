@@ -6,10 +6,6 @@ import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {ElementRef} from './element_ref';
 import {ViewRef, HostViewRef} from './view_ref';
 
-function _asType(typeOrBinding: Type | Binding): Type {
-  return isType(typeOrBinding) ? typeOrBinding : (<Binding>typeOrBinding).token;
-}
-
 /**
  * Angular's reference to a component instance.
  *
@@ -69,7 +65,7 @@ export class DynamicComponentLoader {
    * Loads a root component that is placed at the first element that matches the component's
    * selector.
    *
-   * - `typeOrBinding` `Type` \ {@link Binding} - representing the component to load.
+   * - `typeOrBinding` `Type` - representing the component to load.
    * - `overrideSelector` (optional) selector to load the component at (or use
    *   `@Component.selector`) The selector can be anywhere (i.e. outside the current component.)
    * - `injector` {@link Injector} - optional injector to use for the component.
@@ -120,24 +116,22 @@ export class DynamicComponentLoader {
    * </my-app>
    * ```
    */
-  loadAsRoot(typeOrBinding: Type | Binding, overrideSelector: string, injector: Injector,
+  loadAsRoot(type: Type, overrideSelector: string, injector: Injector,
              onDispose?: () => void): Promise<ComponentRef> {
-    return this._compiler.compileInHost(typeOrBinding)
-        .then(hostProtoViewRef => {
-          var hostViewRef =
-              this._viewManager.createRootHostView(hostProtoViewRef, overrideSelector, injector);
-          var newLocation = this._viewManager.getHostElement(hostViewRef);
-          var component = this._viewManager.getComponent(newLocation);
+    return this._compiler.compileInHost(type).then(hostProtoViewRef => {
+      var hostViewRef =
+          this._viewManager.createRootHostView(hostProtoViewRef, overrideSelector, injector);
+      var newLocation = this._viewManager.getHostElement(hostViewRef);
+      var component = this._viewManager.getComponent(newLocation);
 
-          var dispose = () => {
-            this._viewManager.destroyRootHostView(hostViewRef);
-            if (isPresent(onDispose)) {
-              onDispose();
-            }
-          };
-          return new ComponentRef(newLocation, component, _asType(typeOrBinding), injector,
-                                  dispose);
-        });
+      var dispose = () => {
+        this._viewManager.destroyRootHostView(hostViewRef);
+        if (isPresent(onDispose)) {
+          onDispose();
+        }
+      };
+      return new ComponentRef(newLocation, component, type, injector, dispose);
+    });
   }
 
   /**
@@ -187,11 +181,10 @@ export class DynamicComponentLoader {
    * </my-app>
    * ```
    */
-  loadIntoLocation(typeOrBinding: Type | Binding, hostLocation: ElementRef, anchorName: string,
+  loadIntoLocation(type: Type, hostLocation: ElementRef, anchorName: string,
                    bindings: ResolvedBinding[] = null): Promise<ComponentRef> {
     return this.loadNextToLocation(
-        typeOrBinding, this._viewManager.getNamedElementInComponentView(hostLocation, anchorName),
-        bindings);
+        type, this._viewManager.getNamedElementInComponentView(hostLocation, anchorName), bindings);
   }
 
   /**
@@ -235,23 +228,22 @@ export class DynamicComponentLoader {
    * <child-component>Child</child-component>
    * ```
    */
-  loadNextToLocation(typeOrBinding: Type | Binding, location: ElementRef,
+  loadNextToLocation(type: Type, location: ElementRef,
                      bindings: ResolvedBinding[] = null): Promise<ComponentRef> {
-    return this._compiler.compileInHost(typeOrBinding)
-        .then(hostProtoViewRef => {
-          var viewContainer = this._viewManager.getViewContainer(location);
-          var hostViewRef =
-              viewContainer.createHostView(hostProtoViewRef, viewContainer.length, bindings);
-          var newLocation = this._viewManager.getHostElement(hostViewRef);
-          var component = this._viewManager.getComponent(newLocation);
+    return this._compiler.compileInHost(type).then(hostProtoViewRef => {
+      var viewContainer = this._viewManager.getViewContainer(location);
+      var hostViewRef =
+          viewContainer.createHostView(hostProtoViewRef, viewContainer.length, bindings);
+      var newLocation = this._viewManager.getHostElement(hostViewRef);
+      var component = this._viewManager.getComponent(newLocation);
 
-          var dispose = () => {
-            var index = viewContainer.indexOf(<ViewRef>hostViewRef);
-            if (index !== -1) {
-              viewContainer.remove(index);
-            }
-          };
-          return new ComponentRef(newLocation, component, _asType(typeOrBinding), null, dispose);
-        });
+      var dispose = () => {
+        var index = viewContainer.indexOf(<ViewRef>hostViewRef);
+        if (index !== -1) {
+          viewContainer.remove(index);
+        }
+      };
+      return new ComponentRef(newLocation, component, type, null, dispose);
+    });
   }
 }

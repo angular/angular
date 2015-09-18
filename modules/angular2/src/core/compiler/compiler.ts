@@ -129,9 +129,7 @@ export class Compiler {
 
   // Create a hostView as if the compiler encountered <hostcmp></hostcmp>.
   // Used for bootstrapping.
-  compileInHost(componentTypeOrBinding: Type | Binding): Promise<ProtoViewRef> {
-    var componentType = isType(componentTypeOrBinding) ? componentTypeOrBinding :
-                                                         (<Binding>componentTypeOrBinding).token;
+  compileInHost(componentType: Type): Promise<ProtoViewRef> {
     var r = wtfStartTimeRange('Compiler#compile()', stringify(componentType));
 
     var hostAppProtoView = this._compilerCache.getHost(componentType);
@@ -139,7 +137,7 @@ export class Compiler {
     if (isPresent(hostAppProtoView)) {
       hostPvPromise = PromiseWrapper.resolve(hostAppProtoView);
     } else {
-      var componentBinding: DirectiveBinding = this._bindDirective(componentTypeOrBinding);
+      var componentBinding: DirectiveBinding = this._bindDirective(componentType);
       Compiler._assertTypeIsComponent(componentBinding);
 
       var directiveMetadata = componentBinding.metadata;

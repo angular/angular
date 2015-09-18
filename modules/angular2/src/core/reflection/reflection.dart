@@ -45,7 +45,7 @@ class NoReflectionCapabilities implements PlatformReflectionCapabilities {
 
   String importUri(Type type) => './';
 
-  String moduleId(Type type) => null;
+  String moduleId(Type type) => './';
 }
 
 final Reflector reflector = new Reflector(new NoReflectionCapabilities());

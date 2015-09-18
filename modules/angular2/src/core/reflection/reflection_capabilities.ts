@@ -169,5 +169,5 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   // There is not a concept of import uri in Js, but this is useful in developing Dart applications.
   importUri(type: Type): string { return './'; }
 
-  moduleId(type: Type): string { return null; }
+  moduleId(type: Type): string { return './'; }
 }

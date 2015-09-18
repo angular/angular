@@ -164,8 +164,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     var preparsedElement = preparseElement(element);
     if (preparsedElement.type === PreparsedElementType.SCRIPT ||
         preparsedElement.type === PreparsedElementType.STYLE ||
-        preparsedElement.type === PreparsedElementType.STYLESHEET ||
-        preparsedElement.type === PreparsedElementType.NON_BINDABLE) {
+        preparsedElement.type === PreparsedElementType.STYLESHEET) {
       // Skipping <script> for security reasons
       // Skipping <style> and stylesheets as we already processed them
       // in the StyleCompiler
@@ -196,13 +195,14 @@ class TemplateParseVisitor implements HtmlAstVisitor {
       }
     });
     var isTemplateElement = nodeName == TEMPLATE_ELEMENT;
-    var elementCssSelector = this._createElementCssSelector(nodeName, matchableAttrs);
+    var elementCssSelector = createElementCssSelector(nodeName, matchableAttrs);
     var directives = this._createDirectiveAsts(
         element.name, this._parseDirectives(this.selectorMatcher, elementCssSelector),
         elementOrDirectiveProps, isTemplateElement ? [] : vars, element.sourceInfo);
     var elementProps: BoundElementPropertyAst[] =
         this._createElementPropertyAsts(element.name, elementOrDirectiveProps, directives);
-    var children = htmlVisitAll(this, element.children, Component.create(directives));
+    var children = htmlVisitAll(preparsedElement.nonBindable ? NON_BINDABLE_VISITOR : this,
+                                element.children, Component.create(directives));
     var elementNgContentIndex =
         hasInlineTemplates ? null : component.findNgContentIndex(elementCssSelector);
     var parsedElement;
@@ -221,8 +221,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
                          children, elementNgContentIndex, element.sourceInfo);
     }
     if (hasInlineTemplates) {
-      var templateCssSelector =
-          this._createElementCssSelector(TEMPLATE_ELEMENT, templateMatchableAttrs);
+      var templateCssSelector = createElementCssSelector(TEMPLATE_ELEMENT, templateMatchableAttrs);
       var templateDirectives = this._createDirectiveAsts(
           element.name, this._parseDirectives(this.selectorMatcher, templateCssSelector),
           templateElementOrDirectiveProps, [], element.sourceInfo);
@@ -381,22 +380,6 @@ class TemplateParseVisitor implements HtmlAstVisitor {
         sourceInfo));
   }
 
-  private _createElementCssSelector(elementName: string, matchableAttrs: string[][]): CssSelector {
-    var cssSelector = new CssSelector();
-
-    cssSelector.setElement(elementName);
-    for (var i = 0; i < matchableAttrs.length; i++) {
-      var attrName = matchableAttrs[i][0].toLowerCase();
-      var attrValue = matchableAttrs[i][1];
-      cssSelector.addAttribute(attrName, attrValue);
-      if (attrName == CLASS_ATTR) {
-        var classes = splitClasses(attrValue);
-        classes.forEach(className => cssSelector.addClassName(className));
-      }
-    }
-    return cssSelector;
-  }
-
   private _parseDirectives(selectorMatcher: SelectorMatcher,
                            elementCssSelector: CssSelector): CompileDirectiveMetadata[] {
     var directives = [];
@@ -480,8 +463,14 @@ class TemplateParseVisitor implements HtmlAstVisitor {
                                        targetBoundDirectiveProps: BoundDirectivePropertyAst[]) {
     if (isPresent(directiveProperties)) {
       var boundPropsByName: Map<string, BoundElementOrDirectiveProperty> = new Map();
-      boundProps.forEach(boundProp =>
-                             boundPropsByName.set(dashCaseToCamelCase(boundProp.name), boundProp));
+      boundProps.forEach(boundProp => {
+        var key = dashCaseToCamelCase(boundProp.name);
+        var prevValue = boundPropsByName.get(boundProp.name);
+        if (isBlank(prevValue) || prevValue.isLiteral) {
+          // give [a]="b" a higher precedence thatn a="b" on the same element
+          boundPropsByName.set(key, boundProp);
+        }
+      });
 
       StringMapWrapper.forEach(directiveProperties, (elProp: string, dirProp: string) => {
         elProp = dashCaseToCamelCase(elProp);
@@ -585,6 +574,34 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   }
 }
 
+class NonBindableVisitor implements HtmlAstVisitor {
+  visitElement(ast: HtmlElementAst, component: Component): ElementAst {
+    var preparsedElement = preparseElement(ast);
+    if (preparsedElement.type === PreparsedElementType.SCRIPT ||
+        preparsedElement.type === PreparsedElementType.STYLE ||
+        preparsedElement.type === PreparsedElementType.STYLESHEET) {
+      // Skipping <script> for security reasons
+      // Skipping <style> and stylesheets as we already processed them
+      // in the StyleCompiler
+      return null;
+    }
+
+    var attrNameAndValues = ast.attrs.map(attrAst => [attrAst.name, attrAst.value]);
+    var selector = createElementCssSelector(ast.name, attrNameAndValues);
+    var ngContentIndex = component.findNgContentIndex(selector);
+    var children = htmlVisitAll(this, ast.children, EMPTY_COMPONENT);
+    return new ElementAst(ast.name, htmlVisitAll(this, ast.attrs), [], [], [], [], children,
+                          ngContentIndex, ast.sourceInfo);
+  }
+  visitAttr(ast: HtmlAttrAst, context: any): AttrAst {
+    return new AttrAst(ast.name, ast.value, ast.sourceInfo);
+  }
+  visitText(ast: HtmlTextAst, component: Component): TextAst {
+    var ngContentIndex = component.findNgContentIndex(TEXT_CSS_SELECTOR);
+    return new TextAst(ast.value, ngContentIndex, ast.sourceInfo);
+  }
+}
+
 class BoundElementOrDirectiveProperty {
   constructor(public name: string, public expression: AST, public isLiteral: boolean,
               public sourceInfo: string) {}
@@ -631,4 +648,21 @@ class Component {
   }
 }
 
+function createElementCssSelector(elementName: string, matchableAttrs: string[][]): CssSelector {
+  var cssSelector = new CssSelector();
+
+  cssSelector.setElement(elementName);
+  for (var i = 0; i < matchableAttrs.length; i++) {
+    var attrName = matchableAttrs[i][0].toLowerCase();
+    var attrValue = matchableAttrs[i][1];
+    cssSelector.addAttribute(attrName, attrValue);
+    if (attrName == CLASS_ATTR) {
+      var classes = splitClasses(attrValue);
+      classes.forEach(className => cssSelector.addClassName(className));
+    }
+  }
+  return cssSelector;
+}
+
 var EMPTY_COMPONENT = new Component(new SelectorMatcher(), null);
+var NON_BINDABLE_VISITOR = new NonBindableVisitor();

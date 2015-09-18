@@ -2,8 +2,8 @@ import {StringWrapper, isBlank, isJsObject} from 'angular2/src/core/facade/lang'
 
 var CAMEL_CASE_REGEXP = /([A-Z])/g;
 var DASH_CASE_REGEXP = /-([a-z])/g;
-var SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n/g;
-var DOUBLE_QUOTE_ESCAPE_STRING_RE = /"|\\|\n/g;
+var SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\$/g;
+var DOUBLE_QUOTE_ESCAPE_STRING_RE = /"|\\|\n|\$/g;
 
 export var IS_DART = !isJsObject({});
 
@@ -33,7 +33,9 @@ export function escapeDoubleQuoteString(input: string): string {
 
 function escapeString(input: string, re: RegExp): string {
   return StringWrapper.replaceAllMapped(input, re, (match) => {
-    if (match[0] == '\n') {
+    if (match[0] == '$') {
+      return IS_DART ? '\\$' : '$';
+    } else if (match[0] == '\n') {
       return '\\n';
     } else {
       return `\\${match[0]}`;

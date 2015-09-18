@@ -66,6 +66,15 @@ export function main() {
     describe('compile templates', () => {
 
       function runTests(compile) {
+        it('should throw for non components', inject([AsyncTestCompleter], (async) => {
+             PromiseWrapper.catchError(PromiseWrapper.wrap(() => compile([NonComponent])), (error) => {
+               expect(error.message)
+                   .toEqual(
+                       `Could not compile '${stringify(NonComponent)}' because it is not a component.`);
+               async.done();
+             });
+           }));
+
         it('should compile host components', inject([AsyncTestCompleter], (async) => {
              compile([CompWithBindingsAndStyles])
                  .then((humanizedTemplate) => {
@@ -202,25 +211,6 @@ export function main() {
 
     });
 
-    describe('serializeDirectiveMetadata and deserializeDirectiveMetadata', () => {
-      it('should serialize and deserialize', inject([AsyncTestCompleter], (async) => {
-           compiler.normalizeDirectiveMetadata(
-                       runtimeMetadataResolver.getMetadata(CompWithBindingsAndStyles))
-               .then((meta: CompileDirectiveMetadata) => {
-                 var json = compiler.serializeDirectiveMetadata(meta);
-                 expect(isString(json)).toBe(true);
-                 // Note: serializing will clear our the runtime type!
-                 var clonedMeta = compiler.deserializeDirectiveMetadata(json);
-                 expect(meta.changeDetection).toEqual(clonedMeta.changeDetection);
-                 expect(meta.template).toEqual(clonedMeta.template);
-                 expect(meta.selector).toEqual(clonedMeta.selector);
-                 expect(meta.exportAs).toEqual(clonedMeta.exportAs);
-                 expect(meta.type.name).toEqual(clonedMeta.type.name);
-                 async.done();
-               });
-         }));
-    });
-
     describe('normalizeDirectiveMetadata', () => {
       it('should normalize the template',
          inject([AsyncTestCompleter, XHR], (async, xhr: MockXHR) => {
@@ -297,7 +287,8 @@ class CompWithEmbeddedTemplate {
 
 
 @Directive({selector: 'plain', moduleId: THIS_MODULE})
-class PlainDirective {
+@View({template: ''})
+class NonComponent {
 }
 
 @Component({selector: 'comp', moduleId: THIS_MODULE})
@@ -331,13 +322,11 @@ export function humanizeTemplate(template: CompiledTemplate,
     return result;
   }
   var commands = [];
-  result = {
-    'styles': template.styles,
-    'commands': commands,
-    'cd': testChangeDetector(template.changeDetectorFactory)
-  };
+  var templateData = template.dataGetter();
+  result =
+      {'styles': templateData[2], 'commands': commands, 'cd': testChangeDetector(templateData[0])};
   humanizedTemplates.set(template.id, result);
-  visitAllCommands(new CommandHumanizer(commands, humanizedTemplates), template.commands);
+  visitAllCommands(new CommandHumanizer(commands, humanizedTemplates), templateData[1]);
   return result;
 }
 

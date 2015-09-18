@@ -145,6 +145,14 @@ export function main() {
 
       });
 
+      it('should throw if no template was specified',
+         inject([TemplateNormalizer], (normalizer: TemplateNormalizer) => {
+           expect(() => normalizer.normalizeTemplate(
+                      dirType, new CompileTemplateMetadata(
+                                   {encapsulation: null, styles: [], styleUrls: []})))
+               .toThrowError('No template specified for component SomeComp');
+         }));
+
     });
 
     describe('normalizeLoadedTemplate', () => {
@@ -274,16 +282,23 @@ export function main() {
            expect(template.encapsulation).toEqual(ViewEncapsulation.None);
          }));
 
-      it('should ignore elements with ng-non-bindable attribute and their children',
+      it('should ignore ng-content in elements with ng-non-bindable',
          inject([TemplateNormalizer], (normalizer: TemplateNormalizer) => {
            var template = normalizer.normalizeLoadedTemplate(
                dirType,
                new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}),
-               '<div ng-non-bindable><ng-content select="a"></ng-content></div><ng-content ng-non-bindable select="b"></ng-content>',
-               'some/module/');
+               '<div ng-non-bindable><ng-content select="a"></ng-content></div>', 'some/module/');
            expect(template.ngContentSelectors).toEqual([]);
          }));
 
+      it('should still collect <style> in elements with ng-non-bindable',
+         inject([TemplateNormalizer], (normalizer: TemplateNormalizer) => {
+           var template = normalizer.normalizeLoadedTemplate(
+               dirType,
+               new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}),
+               '<div ng-non-bindable><style>div {color:red}</style></div>', 'some/module/');
+           expect(template.styles).toEqual(['div {color:red}']);
+         }));
     });
   });
 }

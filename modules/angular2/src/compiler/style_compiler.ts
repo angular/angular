@@ -1,4 +1,4 @@
-import {CompileTypeMetadata, CompileDirectiveMetadata} from './directive_metadata';
+import {CompileTypeMetadata, CompileTemplateMetadata} from './directive_metadata';
 import {SourceModule, SourceExpression, moduleRef} from './source_module';
 import {ViewEncapsulation} from 'angular2/src/core/render/api';
 import {XHR} from 'angular2/src/core/render/xhr';
@@ -29,27 +29,28 @@ export class StyleCompiler {
 
   constructor(private _xhr: XHR, private _urlResolver: UrlResolver) {}
 
-  compileComponentRuntime(component: CompileDirectiveMetadata): Promise<string[]> {
-    var styles = component.template.styles;
-    var styleAbsUrls = component.template.styleUrls;
+  compileComponentRuntime(type: CompileTypeMetadata,
+                          template: CompileTemplateMetadata): Promise<string[]> {
+    var styles = template.styles;
+    var styleAbsUrls = template.styleUrls;
     return this._loadStyles(styles, styleAbsUrls,
-                            component.template.encapsulation === ViewEncapsulation.Emulated)
-        .then(styles => styles.map(style => StringWrapper.replaceAll(style, COMPONENT_REGEX,
-                                                                     `${component.type.id}`)));
+                            template.encapsulation === ViewEncapsulation.Emulated)
+        .then(styles => styles.map(
+                  style => StringWrapper.replaceAll(style, COMPONENT_REGEX, `${type.id}`)));
   }
 
-  compileComponentCodeGen(component: CompileDirectiveMetadata): SourceExpression {
-    var shim = component.template.encapsulation === ViewEncapsulation.Emulated;
+  compileComponentCodeGen(type: CompileTypeMetadata,
+                          template: CompileTemplateMetadata): SourceExpression {
+    var shim = template.encapsulation === ViewEncapsulation.Emulated;
     var suffix;
     if (shim) {
-      var componentId = `${ component.type.id}`;
+      var componentId = `${ type.id}`;
       suffix =
           codeGenMapArray(['style'], `style${codeGenReplaceAll(COMPONENT_VARIABLE, componentId)}`);
     } else {
       suffix = '';
     }
-    return this._styleCodeGen(component.template.styles, component.template.styleUrls, shim,
-                              suffix);
+    return this._styleCodeGen(template.styles, template.styleUrls, shim, suffix);
   }
 
   compileStylesheetCodeGen(moduleId: string, cssText: string): SourceModule[] {

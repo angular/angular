@@ -4,6 +4,7 @@ import {
   CompileTemplateMetadata
 } from './directive_metadata';
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
+import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 
 import {XHR} from 'angular2/src/core/render/xhr';
@@ -34,11 +35,13 @@ export class TemplateNormalizer {
     if (isPresent(template.template)) {
       return PromiseWrapper.resolve(this.normalizeLoadedTemplate(
           directiveType, template, template.template, directiveType.moduleId));
-    } else {
+    } else if (isPresent(template.templateUrl)) {
       var sourceAbsUrl = this._urlResolver.resolve(directiveType.moduleId, template.templateUrl);
       return this._xhr.get(sourceAbsUrl)
           .then(templateContent => this.normalizeLoadedTemplate(directiveType, template,
                                                                 templateContent, sourceAbsUrl));
+    } else {
+      throw new BaseException(`No template specified for component ${directiveType.name}`);
     }
   }
 
@@ -79,12 +82,15 @@ class TemplatePreparseVisitor implements HtmlAstVisitor {
   ngContentSelectors: string[] = [];
   styles: string[] = [];
   styleUrls: string[] = [];
+  ngNonBindableStackCount: number = 0;
 
   visitElement(ast: HtmlElementAst, context: any): any {
     var preparsedElement = preparseElement(ast);
     switch (preparsedElement.type) {
       case PreparsedElementType.NG_CONTENT:
-        this.ngContentSelectors.push(preparsedElement.selectAttr);
+        if (this.ngNonBindableStackCount === 0) {
+          this.ngContentSelectors.push(preparsedElement.selectAttr);
+        }
         break;
       case PreparsedElementType.STYLE:
         var textContent = '';
@@ -99,8 +105,12 @@ class TemplatePreparseVisitor implements HtmlAstVisitor {
         this.styleUrls.push(preparsedElement.hrefAttr);
         break;
     }
-    if (preparsedElement.type !== PreparsedElementType.NON_BINDABLE) {
-      htmlVisitAll(this, ast.children);
+    if (preparsedElement.nonBindable) {
+      this.ngNonBindableStackCount++;
+    }
+    htmlVisitAll(this, ast.children);
+    if (preparsedElement.nonBindable) {
+      this.ngNonBindableStackCount--;
     }
     return null;
   }

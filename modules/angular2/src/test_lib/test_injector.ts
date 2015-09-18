@@ -74,6 +74,7 @@ import {
 } from 'angular2/src/core/render/dom/schema/dom_element_schema_registry';
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {Log} from './utils';
+import {compilerBindings} from 'angular2/src/compiler/compiler';
 
 /**
  * Returns the root injector bindings.
@@ -107,8 +108,8 @@ function _getAppBindings() {
   }
 
   return [
-    bind(DOCUMENT)
-        .toValue(appDoc),
+    compilerBindings(),
+    bind(DOCUMENT).toValue(appDoc),
     DomRenderer,
     bind(Renderer).toAlias(DomRenderer),
     bind(APP_ID).toValue('a'),

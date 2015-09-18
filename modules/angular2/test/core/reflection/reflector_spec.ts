@@ -251,7 +251,7 @@ export function main() {
       describe("moduleId", () => {
         it("should return the moduleId for a type", () => {
           expect(reflector.moduleId(TestObjWith00Args))
-              .toEqual('angular2/test/core/reflection/reflector_spec');
+              .toEqual('base/dist/dart/angular2/test/core/reflection/reflector_spec');
         });
 
         it("should return an empty array otherwise", () => {

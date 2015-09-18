@@ -171,7 +171,7 @@ export function main() {
                        'div',
                        ['a', 'b'],
                        [null, 'click', 'window', 'scroll'],
-                       ['someVar', '%implicit'],
+                       ['someVar', null],
                        [],
                        true,
                        null
@@ -329,25 +329,44 @@ export function main() {
 
       describe('embedded templates', () => {
         it('should create embedded template commands', inject([AsyncTestCompleter], (async) => {
-             var rootComp = createComp({
-               type: RootCompTypeMeta,
-               template: '<template a="b" #some-var="someValue"></template>'
-             });
+             var rootComp =
+                 createComp({type: RootCompTypeMeta, template: '<template a="b"></template>'});
              var dir = createDirective(SomeDirTypeMeta, '[a]');
              run(rootComp, [dir], 1)
                  .then((data) => {
                    expect(data).toEqual([
-                     [
-                       EMBEDDED_TEMPLATE,
-                       ['a', 'b'],
-                       ['someVar', 'someValue'],
-                       ['SomeDirType'],
-                       false,
-                       null,
-                       'cd1',
-                       []
-                     ]
+                     [EMBEDDED_TEMPLATE, ['a', 'b'], [], ['SomeDirType'], false, null, 'cd1', []]
                    ]);
+                   async.done();
+                 });
+           }));
+
+        it('should keep variable name and value for <template> elements',
+           inject([AsyncTestCompleter], (async) => {
+             var rootComp = createComp({
+               type: RootCompTypeMeta,
+               template: '<template #some-var="someValue" #some-empty-var></template>'
+             });
+             var dir = createDirective(SomeDirTypeMeta, '[a]');
+             run(rootComp, [dir], 1)
+                 .then((data) => {
+                   expect(data[0][2])
+                       .toEqual(['someEmptyVar', '$implicit', 'someVar', 'someValue']);
+                   async.done();
+                 });
+           }));
+
+        it('should keep variable name and value for template attributes',
+           inject([AsyncTestCompleter], (async) => {
+             var rootComp = createComp({
+               type: RootCompTypeMeta,
+               template: '<div template="var someVar=someValue; var someEmptyVar"></div>'
+             });
+             var dir = createDirective(SomeDirTypeMeta, '[a]');
+             run(rootComp, [dir], 1)
+                 .then((data) => {
+                   expect(data[0][2])
+                       .toEqual(['someVar', 'someValue', 'someEmptyVar', '$implicit']);
                    async.done();
                  });
            }));
