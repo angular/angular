@@ -15,6 +15,7 @@ import {
 
 import {stringify} from 'angular2/src/core/facade/lang';
 import {RuntimeMetadataResolver} from 'angular2/src/compiler/runtime_metadata';
+import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/compiler/interfaces';
 import {
   Component,
   View,
@@ -43,27 +44,20 @@ export function main() {
          inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
            var meta = resolver.getMetadata(ComponentWithEverything);
            expect(meta.selector).toEqual('someSelector');
+           expect(meta.exportAs).toEqual('someExportAs');
            expect(meta.isComponent).toBe(true);
            expect(meta.dynamicLoadable).toBe(true);
            expect(meta.type.runtime).toBe(ComponentWithEverything);
            expect(meta.type.name).toEqual(stringify(ComponentWithEverything));
            expect(meta.type.moduleId).toEqual('someModuleId');
-           expect(meta.changeDetection.callAfterContentChecked).toBe(true);
-           expect(meta.changeDetection.callAfterContentInit).toBe(true);
-           expect(meta.changeDetection.callAfterViewChecked).toBe(true);
-           expect(meta.changeDetection.callAfterViewInit).toBe(true);
-           expect(meta.changeDetection.callDoCheck).toBe(true);
-           expect(meta.changeDetection.callOnChanges).toBe(true);
-           expect(meta.changeDetection.callOnInit).toBe(true);
-           expect(meta.changeDetection.changeDetection).toBe(ChangeDetectionStrategy.CheckAlways);
-           expect(meta.changeDetection.properties).toEqual(['someProp']);
-           expect(meta.changeDetection.events).toEqual(['someEvent']);
-           expect(meta.changeDetection.hostListeners)
-               .toEqual({'someHostListener': 'someHostListenerExpr'});
-           expect(meta.changeDetection.hostProperties)
-               .toEqual({'someHostProp': 'someHostPropExpr'});
+           expect(meta.lifecycleHooks).toEqual(LIFECYCLE_HOOKS_VALUES);
+           expect(meta.changeDetection).toBe(ChangeDetectionStrategy.CheckAlways);
+           expect(meta.properties).toEqual({'someProp': 'someProp'});
+           expect(meta.events).toEqual({'someEvent': 'someEvent'});
+           expect(meta.hostListeners).toEqual({'someHostListener': 'someHostListenerExpr'});
+           expect(meta.hostProperties).toEqual({'someHostProp': 'someHostPropExpr'});
+           expect(meta.hostAttributes).toEqual({'someHostAttr': 'someHostAttrValue'});
            expect(meta.template.encapsulation).toBe(ViewEncapsulation.Emulated);
-           expect(meta.template.hostAttributes).toEqual({'someHostAttr': 'someHostAttrValue'});
            expect(meta.template.styles).toEqual(['someStyle']);
            expect(meta.template.styleUrls).toEqual(['someStyleUrl']);
            expect(meta.template.template).toEqual('someTemplate');
@@ -105,7 +99,7 @@ class DirectiveWithoutModuleId {
     '(someHostListener)': 'someHostListenerExpr',
     'someHostAttr': 'someHostAttrValue'
   },
-  dynamicLoadable: true,
+  exportAs: 'someExportAs',
   moduleId: 'someModuleId',
   changeDetection: ChangeDetectionStrategy.CheckAlways
 })

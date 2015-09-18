@@ -10,7 +10,7 @@ import {
 } from 'angular2/src/core/render/render';
 
 export class CompiledTemplate {
-  private _changeDetectorFactories: Function[] = null;
+  private _changeDetectorFactory: Function = null;
   private _styles: string[] = null;
   private _commands: TemplateCmd[] = null;
   // Note: paramGetter is a function so that we can have cycles between templates!
@@ -19,15 +19,15 @@ export class CompiledTemplate {
   private _init() {
     if (isBlank(this._commands)) {
       var params = this._paramGetter();
-      this._changeDetectorFactories = params[0];
+      this._changeDetectorFactory = params[0];
       this._commands = params[1];
       this._styles = params[2];
     }
   }
 
-  get changeDetectorFactories(): Function[] {
+  get changeDetectorFactory(): Function {
     this._init();
-    return this._changeDetectorFactories;
+    return this._changeDetectorFactory;
   }
 
   get styles(): string[] {
@@ -69,26 +69,28 @@ export function ngContent(ngContentIndex: number): NgContentCmd {
 }
 
 export interface IBeginElementCmd extends TemplateCmd, RenderBeginElementCmd {
-  variableNameAndValues: string[];
-  eventNames: string[];
+  variableNameAndValues: Array<string | number>;
+  eventTargetAndNames: string[];
   directives: Type[];
   visit(visitor: CommandVisitor, context: any): any;
 }
 
 export class BeginElementCmd implements TemplateCmd, IBeginElementCmd, RenderBeginElementCmd {
-  constructor(public name: string, public attrNameAndValues: string[], public eventNames: string[],
-              public variableNameAndValues: string[], public directives: Type[],
+  constructor(public name: string, public attrNameAndValues: string[],
+              public eventTargetAndNames: string[],
+              public variableNameAndValues: Array<string | number>, public directives: Type[],
               public isBound: boolean, public ngContentIndex: number) {}
   visit(visitor: CommandVisitor, context: any): any {
     return visitor.visitBeginElement(this, context);
   }
 }
 
-export function beginElement(name: string, attrNameAndValues: string[], eventNames: string[],
-                             variableNameAndValues: string[], directives: Type[], isBound: boolean,
-                             ngContentIndex: number): BeginElementCmd {
-  return new BeginElementCmd(name, attrNameAndValues, eventNames, variableNameAndValues, directives,
-                             isBound, ngContentIndex);
+export function beginElement(name: string, attrNameAndValues: string[],
+                             eventTargetAndNames: string[],
+                             variableNameAndValues: Array<string | number>, directives: Type[],
+                             isBound: boolean, ngContentIndex: number): BeginElementCmd {
+  return new BeginElementCmd(name, attrNameAndValues, eventTargetAndNames, variableNameAndValues,
+                             directives, isBound, ngContentIndex);
 }
 
 export class EndElementCmd implements TemplateCmd {
@@ -103,8 +105,9 @@ export class BeginComponentCmd implements TemplateCmd, IBeginElementCmd, RenderB
   isBound: boolean = true;
   templateId: number;
   component: Type;
-  constructor(public name: string, public attrNameAndValues: string[], public eventNames: string[],
-              public variableNameAndValues: string[], public directives: Type[],
+  constructor(public name: string, public attrNameAndValues: string[],
+              public eventTargetAndNames: string[],
+              public variableNameAndValues: Array<string | number>, public directives: Type[],
               public nativeShadow: boolean, public ngContentIndex: number,
               public template: CompiledTemplate) {
     this.component = directives[0];
@@ -115,11 +118,11 @@ export class BeginComponentCmd implements TemplateCmd, IBeginElementCmd, RenderB
   }
 }
 
-export function beginComponent(name: string, attrNameAnsValues: string[], eventNames: string[],
-                               variableNameAndValues: string[], directives: Type[],
-                               nativeShadow: boolean, ngContentIndex: number,
-                               template: CompiledTemplate): BeginComponentCmd {
-  return new BeginComponentCmd(name, attrNameAnsValues, eventNames, variableNameAndValues,
+export function beginComponent(
+    name: string, attrNameAnsValues: string[], eventTargetAndNames: string[],
+    variableNameAndValues: Array<string | number>, directives: Type[], nativeShadow: boolean,
+    ngContentIndex: number, template: CompiledTemplate): BeginComponentCmd {
+  return new BeginComponentCmd(name, attrNameAnsValues, eventTargetAndNames, variableNameAndValues,
                                directives, nativeShadow, ngContentIndex, template);
 }
 
@@ -135,10 +138,10 @@ export class EmbeddedTemplateCmd implements TemplateCmd, IBeginElementCmd,
     RenderEmbeddedTemplateCmd {
   isBound: boolean = true;
   name: string = null;
-  eventNames: string[] = EMPTY_ARR;
+  eventTargetAndNames: string[] = EMPTY_ARR;
   constructor(public attrNameAndValues: string[], public variableNameAndValues: string[],
               public directives: Type[], public isMerged: boolean, public ngContentIndex: number,
-              public children: TemplateCmd[]) {}
+              public changeDetectorFactory: Function, public children: TemplateCmd[]) {}
   visit(visitor: CommandVisitor, context: any): any {
     return visitor.visitEmbeddedTemplate(this, context);
   }
@@ -146,20 +149,13 @@ export class EmbeddedTemplateCmd implements TemplateCmd, IBeginElementCmd,
 
 export function embeddedTemplate(attrNameAndValues: string[], variableNameAndValues: string[],
                                  directives: Type[], isMerged: boolean, ngContentIndex: number,
-                                 children: TemplateCmd[]): EmbeddedTemplateCmd {
+                                 changeDetectorFactory: Function, children: TemplateCmd[]):
+    EmbeddedTemplateCmd {
   return new EmbeddedTemplateCmd(attrNameAndValues, variableNameAndValues, directives, isMerged,
-                                 ngContentIndex, children);
+                                 ngContentIndex, changeDetectorFactory, children);
 }
 
-export interface CommandVisitor extends RenderCommandVisitor {
-  visitText(cmd: TextCmd, context: any): any;
-  visitNgContent(cmd: NgContentCmd, context: any): any;
-  visitBeginElement(cmd: BeginElementCmd, context: any): any;
-  visitEndElement(context: any): any;
-  visitBeginComponent(cmd: BeginComponentCmd, context: any): any;
-  visitEndComponent(context: any): any;
-  visitEmbeddedTemplate(cmd: EmbeddedTemplateCmd, context: any): any;
-}
+export interface CommandVisitor extends RenderCommandVisitor {}
 
 export function visitAllCommands(visitor: CommandVisitor, cmds: TemplateCmd[],
                                  context: any = null) {

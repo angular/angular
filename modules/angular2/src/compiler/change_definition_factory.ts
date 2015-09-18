@@ -14,7 +14,7 @@ import {
   ASTWithSource
 } from 'angular2/src/core/change_detection/change_detection';
 
-import {NormalizedDirectiveMetadata, TypeMetadata} from './directive_metadata';
+import {CompileDirectiveMetadata, CompileTypeMetadata} from './directive_metadata';
 import {
   TemplateAst,
   ElementAst,
@@ -32,9 +32,10 @@ import {
   AttrAst,
   TextAst
 } from './template_ast';
+import {LifecycleHooks} from 'angular2/src/core/compiler/interfaces';
 
 export function createChangeDetectorDefinitions(
-    componentType: TypeMetadata, componentStrategy: ChangeDetectionStrategy,
+    componentType: CompileTypeMetadata, componentStrategy: ChangeDetectionStrategy,
     genConfig: ChangeDetectorGenConfig, parsedTemplate: TemplateAst[]): ChangeDetectorDefinition[] {
   var pvVisitors = [];
   var visitor = new ProtoViewVisitor(null, pvVisitors, componentStrategy);
@@ -59,7 +60,9 @@ class ProtoViewVisitor implements TemplateAstVisitor {
 
   visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
     this.boundElementCount++;
-    templateVisitAll(this, ast.directives);
+    for (var i = 0; i < ast.directives.length; i++) {
+      ast.directives[i].visit(this, i);
+    }
 
     var childVisitor =
         new ProtoViewVisitor(this, this.allVisitors, ChangeDetectionStrategy.Default);
@@ -76,7 +79,7 @@ class ProtoViewVisitor implements TemplateAstVisitor {
     }
     templateVisitAll(this, ast.properties, null);
     templateVisitAll(this, ast.events);
-    templateVisitAll(this, ast.vars);
+    templateVisitAll(this, ast.exportAsVars);
     for (var i = 0; i < ast.directives.length; i++) {
       ast.directives[i].visit(this, i);
     }
@@ -94,8 +97,8 @@ class ProtoViewVisitor implements TemplateAstVisitor {
   visitEvent(ast: BoundEventAst, directiveRecord: DirectiveRecord): any {
     var bindingRecord =
         isPresent(directiveRecord) ?
-            BindingRecord.createForHostEvent(ast.handler, ast.name, directiveRecord) :
-            BindingRecord.createForEvent(ast.handler, ast.name, this.boundElementCount - 1);
+            BindingRecord.createForHostEvent(ast.handler, ast.fullName, directiveRecord) :
+            BindingRecord.createForEvent(ast.handler, ast.fullName, this.boundElementCount - 1);
     this.eventRecords.push(bindingRecord);
     return null;
   }
@@ -138,17 +141,20 @@ class ProtoViewVisitor implements TemplateAstVisitor {
   visitDirective(ast: DirectiveAst, directiveIndexAsNumber: number): any {
     var directiveIndex = new DirectiveIndex(this.boundElementCount - 1, directiveIndexAsNumber);
     var directiveMetadata = ast.directive;
-    var changeDetectionMeta = directiveMetadata.changeDetection;
     var directiveRecord = new DirectiveRecord({
       directiveIndex: directiveIndex,
-      callAfterContentInit: changeDetectionMeta.callAfterContentInit,
-      callAfterContentChecked: changeDetectionMeta.callAfterContentChecked,
-      callAfterViewInit: changeDetectionMeta.callAfterViewInit,
-      callAfterViewChecked: changeDetectionMeta.callAfterViewChecked,
-      callOnChanges: changeDetectionMeta.callOnChanges,
-      callDoCheck: changeDetectionMeta.callDoCheck,
-      callOnInit: changeDetectionMeta.callOnInit,
-      changeDetection: changeDetectionMeta.changeDetection
+      callAfterContentInit:
+          directiveMetadata.lifecycleHooks.indexOf(LifecycleHooks.AfterContentInit) !== -1,
+      callAfterContentChecked:
+          directiveMetadata.lifecycleHooks.indexOf(LifecycleHooks.AfterContentChecked) !== -1,
+      callAfterViewInit:
+          directiveMetadata.lifecycleHooks.indexOf(LifecycleHooks.AfterViewInit) !== -1,
+      callAfterViewChecked:
+          directiveMetadata.lifecycleHooks.indexOf(LifecycleHooks.AfterViewChecked) !== -1,
+      callOnChanges: directiveMetadata.lifecycleHooks.indexOf(LifecycleHooks.OnChanges) !== -1,
+      callDoCheck: directiveMetadata.lifecycleHooks.indexOf(LifecycleHooks.DoCheck) !== -1,
+      callOnInit: directiveMetadata.lifecycleHooks.indexOf(LifecycleHooks.OnInit) !== -1,
+      changeDetection: directiveMetadata.changeDetection
     });
     this.directiveRecords.push(directiveRecord);
 
@@ -165,6 +171,7 @@ class ProtoViewVisitor implements TemplateAstVisitor {
     }
     templateVisitAll(this, ast.hostProperties, directiveRecord);
     templateVisitAll(this, ast.hostEvents, directiveRecord);
+    templateVisitAll(this, ast.exportAsVars);
     return null;
   }
   visitDirectiveProperty(ast: BoundDirectivePropertyAst, directiveRecord: DirectiveRecord): any {
@@ -178,7 +185,7 @@ class ProtoViewVisitor implements TemplateAstVisitor {
 }
 
 
-function createChangeDefinitions(pvVisitors: ProtoViewVisitor[], componentType: TypeMetadata,
+function createChangeDefinitions(pvVisitors: ProtoViewVisitor[], componentType: CompileTypeMetadata,
                                  genConfig: ChangeDetectorGenConfig): ChangeDetectorDefinition[] {
   var pvVariableNames = _collectNestedProtoViewsVariableNames(pvVisitors);
   return pvVisitors.map(pvVisitor => {
@@ -202,6 +209,7 @@ function _collectNestedProtoViewsVariableNames(pvVisitors: ProtoViewVisitor[]): 
 }
 
 
-function _protoViewId(hostComponentType: TypeMetadata, pvIndex: number, viewType: string): string {
+function _protoViewId(hostComponentType: CompileTypeMetadata, pvIndex: number, viewType: string):
+    string {
   return `${hostComponentType.name}_${viewType}_${pvIndex}`;
 }

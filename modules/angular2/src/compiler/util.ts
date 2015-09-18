@@ -72,3 +72,13 @@ export function codeGenValueFn(params: string[], value: string): string {
     return `function(${params.join(',')}) { return ${value}; }`;
   }
 }
+
+
+export function splitAtColon(input: string, defaultValues: string[]): string[] {
+  var parts = StringWrapper.split(input.trim(), /\s*:\s*/g);
+  if (parts.length > 1) {
+    return parts;
+  } else {
+    return defaultValues;
+  }
+}

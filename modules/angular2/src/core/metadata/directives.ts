@@ -827,27 +827,6 @@ export class DirectiveMetadata extends InjectableMetadata {
 @CONST()
 export class ComponentMetadata extends DirectiveMetadata {
   /**
-  * Declare that this component can be programatically loaded.
-  * Every component that is used in bootstrap, routing, ... has to be
-  * annotated with this.
-  *
-  * ## Example
-  *
-  * ```
-  * @Component({
-  *   selector: 'root',
-  *   dynamicLoadable: true
-  * })
-  * @View({
-  *   template: 'hello world!'
-  * })
-  * class RootComponent {
-  * }
-  * ```
-   */
-  dynamicLoadable: boolean;
-
-  /**
    * Defines the used change detection strategy.
    *
    * When a component is instantiated, Angular creates a change detector, which is responsible for
@@ -900,22 +879,21 @@ export class ComponentMetadata extends DirectiveMetadata {
    */
   viewBindings: any[];
 
-  constructor({selector, properties, events, host, dynamicLoadable, exportAs, moduleId, bindings,
-               queries, viewBindings, changeDetection = ChangeDetectionStrategy.Default,
-               compileChildren = true}: {
-    selector?: string,
-    properties?: string[],
-    events?: string[],
-    host?: StringMap<string, string>,
-    dynamicLoadable?: boolean,
-    bindings?: any[],
-    exportAs?: string,
-    moduleId?: string,
-    compileChildren?: boolean,
-    viewBindings?: any[],
-    queries?: StringMap<string, any>,
-    changeDetection?: ChangeDetectionStrategy,
-  } = {}) {
+  constructor({selector, properties, events, host, exportAs, moduleId, bindings, viewBindings,
+               changeDetection = ChangeDetectionStrategy.Default, queries, compileChildren = true}:
+                  {
+                    selector?: string,
+                    properties?: string[],
+                    events?: string[],
+                    host?: StringMap<string, string>,
+                    bindings?: any[],
+                    exportAs?: string,
+                    moduleId?: string,
+                    compileChildren?: boolean,
+                    viewBindings?: any[],
+                    queries?: StringMap<string, any>,
+                    changeDetection?: ChangeDetectionStrategy,
+                  } = {}) {
     super({
       selector: selector,
       properties: properties,
@@ -930,7 +908,6 @@ export class ComponentMetadata extends DirectiveMetadata {
 
     this.changeDetection = changeDetection;
     this.viewBindings = viewBindings;
-    this.dynamicLoadable = dynamicLoadable;
   }
 }
 

@@ -21,11 +21,15 @@ import {Promise} from 'angular2/src/core/facade/async';
 import {ChangeDetectionCompiler} from 'angular2/src/compiler/change_detector_compiler';
 
 import {
-  NormalizedDirectiveMetadata,
-  TypeMetadata,
-  ChangeDetectionMetadata
+  CompileDirectiveMetadata,
+  CompileTypeMetadata
 } from 'angular2/src/compiler/directive_metadata';
-import {SourceModule, SourceExpression, moduleRef} from 'angular2/src/compiler/source_module';
+import {
+  SourceModule,
+  SourceExpression,
+  SourceExpressions,
+  moduleRef
+} from 'angular2/src/compiler/source_module';
 
 import {TemplateParser} from 'angular2/src/compiler/template_parser';
 
@@ -63,8 +67,8 @@ export function main() {
 
     describe('compileComponentRuntime', () => {
       function detectChanges(compiler: ChangeDetectionCompiler, template: string,
-                             directives: NormalizedDirectiveMetadata[] = CONST_EXPR([])): string[] {
-        var type = new TypeMetadata({name: 'SomeComp'});
+                             directives: CompileDirectiveMetadata[] = CONST_EXPR([])): string[] {
+        var type = new CompileTypeMetadata({name: 'SomeComp'});
         var parsedTemplate = parser.parse(template, directives, 'TestComp');
         var factories =
             compiler.compileComponentRuntime(type, ChangeDetectionStrategy.Default, parsedTemplate);
@@ -99,13 +103,13 @@ export function main() {
 
     describe('compileComponentCodeGen', () => {
       function detectChanges(compiler: ChangeDetectionCompiler, template: string,
-                             directives: NormalizedDirectiveMetadata[] = CONST_EXPR([])):
+                             directives: CompileDirectiveMetadata[] = CONST_EXPR([])):
           Promise<string[]> {
-        var type = new TypeMetadata({name: 'SomeComp'});
+        var type = new CompileTypeMetadata({name: 'SomeComp'});
         var parsedTemplate = parser.parse(template, directives, 'TestComp');
-        var sourceExpression =
+        var sourceExpressions =
             compiler.compileComponentCodeGen(type, ChangeDetectionStrategy.Default, parsedTemplate);
-        var testableModule = createTestableModule(sourceExpression, 0).getSourceWithImports();
+        var testableModule = createTestableModule(sourceExpressions, 0).getSourceWithImports();
         return evalModule(testableModule.source, testableModule.imports, null);
       }
 
@@ -122,9 +126,10 @@ export function main() {
   });
 }
 
-function createTestableModule(source: SourceExpression, changeDetectorIndex: number): SourceModule {
+function createTestableModule(source: SourceExpressions, changeDetectorIndex: number):
+    SourceModule {
   var resultExpression =
-      `${THIS_MODULE_REF}testChangeDetector((${source.expression})[${changeDetectorIndex}])`;
+      `${THIS_MODULE_REF}testChangeDetector(([${source.expressions.join(',')}])[${changeDetectorIndex}])`;
   var testableSource = `${source.declarations.join('\n')}
   ${codeGenExportVariable('run')}${codeGenValueFn(['_'], resultExpression)};`;
   return new SourceModule(null, testableSource);

@@ -80,22 +80,6 @@ export function main() {
               ]);
         });
       });
-
-      describe('ng-non-bindable', () => {
-        it('should ignore text nodes and elements inside of elements with ng-non-bindable', () => {
-          expect(humanizeDom(
-                     parser.parse('<div ng-non-bindable>hello<span></span></div>', 'TestComp')))
-              .toEqual([
-                [HtmlElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [
-                  HtmlAttrAst,
-                  'ng-non-bindable',
-                  '',
-                  'TestComp > div:nth-child(0)[ng-non-bindable=]'
-                ]
-              ]);
-        });
-      });
     });
 
     describe('unparse', () => {

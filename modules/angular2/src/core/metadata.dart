@@ -36,7 +36,7 @@ class Directive extends DirectiveMetadata {
  */
 class Component extends ComponentMetadata {
   const Component({String selector, List<String> properties,
-  List<String> events, Map<String, String> host, bool dynamicLoadable,
+  List<String> events, Map<String, String> host,
   List bindings, String exportAs, String moduleId,
   Map<String, dynamic> queries,
   bool compileChildren, List viewBindings, ChangeDetectionStrategy changeDetection})
@@ -45,7 +45,6 @@ class Component extends ComponentMetadata {
     properties: properties,
     events: events,
     host: host,
-    dynamicLoadable: dynamicLoadable,
     bindings: bindings,
     exportAs: exportAs,
     moduleId: moduleId,

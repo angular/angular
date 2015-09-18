@@ -42,11 +42,7 @@ export function main() {
 @Component({selector: 'app', viewBindings: [forwardRef(() => Frame)]})
 @View({
   template: `<door><lock></lock></door>`,
-  directives: [
-    bind(forwardRef(() => Door))
-        .toClass(forwardRef(() => Door)),
-    bind(forwardRef(() => Lock)).toClass(forwardRef(() => Lock))
-  ]
+  directives: [forwardRef(() => Door), forwardRef(() => Lock)]
 })
 class App {
 }

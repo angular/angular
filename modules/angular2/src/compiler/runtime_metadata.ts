@@ -8,14 +8,14 @@ import {
   RegExpWrapper
 } from 'angular2/src/core/facade/lang';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
-import {MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {MapWrapper, StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import * as cpl from './directive_metadata';
 import * as dirAnn from 'angular2/src/core/metadata/directives';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 import {ViewMetadata} from 'angular2/src/core/metadata/view';
 import {hasLifecycleHook} from 'angular2/src/core/compiler/directive_lifecycle_reflector';
-import {LifecycleHooks} from 'angular2/src/core/compiler/interfaces';
+import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/compiler/interfaces';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {Injectable} from 'angular2/src/core/di';
 
@@ -26,81 +26,55 @@ var HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$/g;
 @Injectable()
 export class RuntimeMetadataResolver {
   private _directiveCounter = 0;
-  private _cache: Map<Type, cpl.DirectiveMetadata> = new Map();
+  private _cache: Map<Type, cpl.CompileDirectiveMetadata> = new Map();
 
   constructor(private _directiveResolver: DirectiveResolver, private _viewResolver: ViewResolver) {}
 
-  getMetadata(directiveType: Type): cpl.DirectiveMetadata {
+  getMetadata(directiveType: Type): cpl.CompileDirectiveMetadata {
     var meta = this._cache.get(directiveType);
     if (isBlank(meta)) {
       var directiveAnnotation = this._directiveResolver.resolve(directiveType);
       var moduleId = calcModuleId(directiveType, directiveAnnotation);
       var templateMeta = null;
-      var hostListeners = {};
-      var hostProperties = {};
-      var hostAttributes = {};
       var changeDetectionStrategy = null;
-      var dynamicLoadable: boolean = false;
 
-      if (isPresent(directiveAnnotation.host)) {
-        StringMapWrapper.forEach(directiveAnnotation.host, (value: string, key: string) => {
-          var matches = RegExpWrapper.firstMatch(HOST_REG_EXP, key);
-          if (isBlank(matches)) {
-            hostAttributes[key] = value;
-          } else if (isPresent(matches[1])) {
-            hostProperties[matches[1]] = value;
-          } else if (isPresent(matches[2])) {
-            hostListeners[matches[2]] = value;
-          }
-        });
-      }
       if (directiveAnnotation instanceof dirAnn.ComponentMetadata) {
         var compAnnotation = <dirAnn.ComponentMetadata>directiveAnnotation;
         var viewAnnotation = this._viewResolver.resolve(directiveType);
-        templateMeta = new cpl.TemplateMetadata({
+        templateMeta = new cpl.CompileTemplateMetadata({
           encapsulation: viewAnnotation.encapsulation,
           template: viewAnnotation.template,
           templateUrl: viewAnnotation.templateUrl,
           styles: viewAnnotation.styles,
-          styleUrls: viewAnnotation.styleUrls,
-          hostAttributes: hostAttributes
+          styleUrls: viewAnnotation.styleUrls
         });
         changeDetectionStrategy = compAnnotation.changeDetection;
-        dynamicLoadable = compAnnotation.dynamicLoadable;
       }
-      meta = new cpl.DirectiveMetadata({
+      meta = cpl.CompileDirectiveMetadata.create({
         selector: directiveAnnotation.selector,
+        exportAs: directiveAnnotation.exportAs,
         isComponent: isPresent(templateMeta),
-        dynamicLoadable: dynamicLoadable,
-        type: new cpl.TypeMetadata({
+        dynamicLoadable: true,
+        type: new cpl.CompileTypeMetadata({
           id: this._directiveCounter++,
           name: stringify(directiveType),
           moduleId: moduleId,
           runtime: directiveType
         }),
         template: templateMeta,
-        changeDetection: new cpl.ChangeDetectionMetadata({
-          changeDetection: changeDetectionStrategy,
-          properties: directiveAnnotation.properties,
-          events: directiveAnnotation.events,
-          hostListeners: hostListeners,
-          hostProperties: hostProperties,
-          callAfterContentInit: hasLifecycleHook(LifecycleHooks.AfterContentInit, directiveType),
-          callAfterContentChecked:
-              hasLifecycleHook(LifecycleHooks.AfterContentChecked, directiveType),
-          callAfterViewInit: hasLifecycleHook(LifecycleHooks.AfterViewInit, directiveType),
-          callAfterViewChecked: hasLifecycleHook(LifecycleHooks.AfterViewChecked, directiveType),
-          callOnChanges: hasLifecycleHook(LifecycleHooks.OnChanges, directiveType),
-          callDoCheck: hasLifecycleHook(LifecycleHooks.DoCheck, directiveType),
-          callOnInit: hasLifecycleHook(LifecycleHooks.OnInit, directiveType),
-        })
+        changeDetection: changeDetectionStrategy,
+        properties: directiveAnnotation.properties,
+        events: directiveAnnotation.events,
+        host: directiveAnnotation.host,
+        lifecycleHooks: ListWrapper.filter(LIFECYCLE_HOOKS_VALUES,
+                                           hook => hasLifecycleHook(hook, directiveType))
       });
       this._cache.set(directiveType, meta);
     }
     return meta;
   }
 
-  getViewDirectivesMetadata(component: Type): cpl.DirectiveMetadata[] {
+  getViewDirectivesMetadata(component: Type): cpl.CompileDirectiveMetadata[] {
     var view = this._viewResolver.resolve(component);
     var directives = flattenDirectives(view);
     for (var i = 0; i < directives.length; i++) {
@@ -113,8 +87,9 @@ export class RuntimeMetadataResolver {
   }
 }
 
-function removeDuplicatedDirectives(directives: cpl.DirectiveMetadata[]): cpl.DirectiveMetadata[] {
-  var directivesMap: Map<number, cpl.DirectiveMetadata> = new Map();
+function removeDuplicatedDirectives(directives: cpl.CompileDirectiveMetadata[]):
+    cpl.CompileDirectiveMetadata[] {
+  var directivesMap: Map<number, cpl.CompileDirectiveMetadata> = new Map();
   directives.forEach((dirMeta) => { directivesMap.set(dirMeta.type.id, dirMeta); });
   return MapWrapper.values(directivesMap);
 }

@@ -13,98 +13,76 @@ import {
 } from 'angular2/test_lib';
 
 import {
-  NormalizedDirectiveMetadata,
-  TypeMetadata,
-  NormalizedTemplateMetadata,
-  ChangeDetectionMetadata
+  CompileDirectiveMetadata,
+  CompileTypeMetadata,
+  CompileTemplateMetadata
 } from 'angular2/src/compiler/directive_metadata';
 import {ViewEncapsulation} from 'angular2/src/core/render/api';
 import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection';
+import {LifecycleHooks} from 'angular2/src/core/compiler/interfaces';
 
 export function main() {
   describe('DirectiveMetadata', () => {
-    var fullTypeMeta: TypeMetadata;
-    var fullTemplateMeta: NormalizedTemplateMetadata;
-    var fullChangeDetectionMeta: ChangeDetectionMetadata;
-    var fullDirectiveMeta: NormalizedDirectiveMetadata;
+    var fullTypeMeta: CompileTypeMetadata;
+    var fullTemplateMeta: CompileTemplateMetadata;
+    var fullDirectiveMeta: CompileDirectiveMetadata;
 
     beforeEach(() => {
-      fullTypeMeta = new TypeMetadata({id: 23, name: 'SomeType', moduleId: 'someUrl'});
-      fullTemplateMeta = new NormalizedTemplateMetadata({
+      fullTypeMeta = new CompileTypeMetadata({id: 23, name: 'SomeType', moduleId: 'someUrl'});
+      fullTemplateMeta = new CompileTemplateMetadata({
         encapsulation: ViewEncapsulation.Emulated,
         template: '<a></a>',
+        templateUrl: 'someTemplateUrl',
         styles: ['someStyle'],
-        styleAbsUrls: ['someStyleUrl'],
-        hostAttributes: {'attr1': 'attrValue2'},
+        styleUrls: ['someStyleUrl'],
         ngContentSelectors: ['*']
       });
-      fullChangeDetectionMeta = new ChangeDetectionMetadata({
-        changeDetection: ChangeDetectionStrategy.Default,
-        properties: ['someProp'],
-        events: ['someEvent'],
-        hostListeners: {'event1': 'handler1'},
-        hostProperties: {'prop1': 'expr1'},
-        callAfterContentInit: true,
-        callAfterContentChecked: true,
-        callAfterViewInit: true,
-        callAfterViewChecked: true,
-        callOnChanges: true,
-        callDoCheck: true,
-        callOnInit: true
-      });
-      fullDirectiveMeta = new NormalizedDirectiveMetadata({
+      fullDirectiveMeta = CompileDirectiveMetadata.create({
         selector: 'someSelector',
         isComponent: true,
         dynamicLoadable: true,
         type: fullTypeMeta, template: fullTemplateMeta,
-        changeDetection: fullChangeDetectionMeta,
+        changeDetection: ChangeDetectionStrategy.Default,
+        properties: ['someProp'],
+        events: ['someEvent'],
+        host: {'(event1)': 'handler1', '[prop1]': 'expr1', 'attr1': 'attrValue2'},
+        lifecycleHooks: [LifecycleHooks.OnChanges]
       });
 
     });
 
     describe('DirectiveMetadata', () => {
       it('should serialize with full data', () => {
-        expect(NormalizedDirectiveMetadata.fromJson(fullDirectiveMeta.toJson()))
+        expect(CompileDirectiveMetadata.fromJson(fullDirectiveMeta.toJson()))
             .toEqual(fullDirectiveMeta);
       });
 
       it('should serialize with no data', () => {
-        var empty = new NormalizedDirectiveMetadata();
-        expect(NormalizedDirectiveMetadata.fromJson(empty.toJson())).toEqual(empty);
+        var empty = CompileDirectiveMetadata.create();
+        expect(CompileDirectiveMetadata.fromJson(empty.toJson())).toEqual(empty);
       });
     });
 
     describe('TypeMetadata', () => {
-      it('should serialize with full data',
-         () => { expect(TypeMetadata.fromJson(fullTypeMeta.toJson())).toEqual(fullTypeMeta); });
+      it('should serialize with full data', () => {
+        expect(CompileTypeMetadata.fromJson(fullTypeMeta.toJson())).toEqual(fullTypeMeta);
+      });
 
       it('should serialize with no data', () => {
-        var empty = new TypeMetadata();
-        expect(TypeMetadata.fromJson(empty.toJson())).toEqual(empty);
+        var empty = new CompileTypeMetadata();
+        expect(CompileTypeMetadata.fromJson(empty.toJson())).toEqual(empty);
       });
     });
 
     describe('TemplateMetadata', () => {
       it('should serialize with full data', () => {
-        expect(NormalizedTemplateMetadata.fromJson(fullTemplateMeta.toJson()))
+        expect(CompileTemplateMetadata.fromJson(fullTemplateMeta.toJson()))
             .toEqual(fullTemplateMeta);
       });
 
       it('should serialize with no data', () => {
-        var empty = new NormalizedTemplateMetadata();
-        expect(NormalizedTemplateMetadata.fromJson(empty.toJson())).toEqual(empty);
-      });
-    });
-
-    describe('ChangeDetectionMetadata', () => {
-      it('should serialize with full data', () => {
-        expect(ChangeDetectionMetadata.fromJson(fullChangeDetectionMeta.toJson()))
-            .toEqual(fullChangeDetectionMeta);
-      });
-
-      it('should serialize with no data', () => {
-        var empty = new ChangeDetectionMetadata();
-        expect(ChangeDetectionMetadata.fromJson(empty.toJson())).toEqual(empty);
+        var empty = new CompileTemplateMetadata();
+        expect(CompileTemplateMetadata.fromJson(empty.toJson())).toEqual(empty);
       });
     });
   });

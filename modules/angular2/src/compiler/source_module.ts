@@ -35,6 +35,10 @@ export class SourceExpression {
   constructor(public declarations: string[], public expression: string) {}
 }
 
+export class SourceExpressions {
+  constructor(public declarations: string[], public expressions: string[]) {}
+}
+
 export class SourceWithImports {
   constructor(public source: string, public imports: string[][]) {}
 }
