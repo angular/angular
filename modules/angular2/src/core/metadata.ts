@@ -335,7 +335,7 @@ export interface AttributeFactory {
 /**
  * {@link QueryMetadata} factory for creating annotations, decorators or DSL.
  *
- * ## Example as TypeScript Decorator
+ * ### Example as TypeScript Decorator
  *
  * ```
  * import {Query, QueryList, Component, View} from "angular2/angular2";
@@ -343,13 +343,13 @@ export interface AttributeFactory {
  * @Component({...})
  * @View({...})
  * class MyComponent {
- *   constructor(@Query(SomeType) queryList: QueryList) {
+ *   constructor(@Query(SomeType) queryList: QueryList<SomeType>) {
  *     ...
  *   }
  * }
  * ```
  *
- * ## Example as ES5 DSL
+ * ### Example as ES5 DSL
  *
  * ```
  * var MyComponent = ng
@@ -362,7 +362,7 @@ export interface AttributeFactory {
  *   })
  * ```
  *
- * ## Example as ES5 annotation
+ * ### Example as ES5 annotation
  *
  * ```
  * var MyComponent = function(queryList) {
@@ -513,7 +513,7 @@ export var Query: QueryFactory = makeParamDecorator(QueryMetadata);
 
 
 /**
- * {@link di/ViewQueryMetadata} factory function.
+ * {@link ViewQueryMetadata} factory function.
  */
 export var ViewQuery: QueryFactory = makeParamDecorator(ViewQueryMetadata);
 
