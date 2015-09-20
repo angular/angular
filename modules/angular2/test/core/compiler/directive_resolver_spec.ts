@@ -10,7 +10,11 @@ import {
   ContentChildren,
   ContentChildrenMetadata,
   ViewChildren,
-  ViewChildrenMetadata
+  ViewChildrenMetadata,
+  ContentChild,
+  ContentChildMetadata,
+  ViewChild,
+  ViewChildMetadata
 } from 'angular2/src/core/metadata';
 
 @Directive({selector: 'someDirective'})
@@ -77,6 +81,18 @@ class SomeDirectiveWithContentChildren {
 @Directive({selector: 'someDirective', queries: {"cs": new ViewChildren("c")}})
 class SomeDirectiveWithViewChildren {
   @ViewChildren("a") as: any;
+  c;
+}
+
+@Directive({selector: 'someDirective', queries: {"c": new ContentChild("c")}})
+class SomeDirectiveWithContentChild {
+  @ContentChild("a") a: any;
+  c;
+}
+
+@Directive({selector: 'someDirective', queries: {"c": new ViewChild("c")}})
+class SomeDirectiveWithViewChild {
+  @ViewChild("a") a: any;
   c;
 }
 
@@ -155,6 +171,18 @@ export function main() {
         var directiveMetadata = resolver.resolve(SomeDirectiveWithViewChildren);
         expect(directiveMetadata.queries)
             .toEqual({"cs": new ViewChildren("c"), "as": new ViewChildren("a")});
+      });
+
+      it('should append ContentChild', () => {
+        var directiveMetadata = resolver.resolve(SomeDirectiveWithContentChild);
+        expect(directiveMetadata.queries)
+            .toEqual({"c": new ContentChild("c"), "a": new ContentChild("a")});
+      });
+
+      it('should append ViewChild', () => {
+        var directiveMetadata = resolver.resolve(SomeDirectiveWithViewChild);
+        expect(directiveMetadata.queries)
+            .toEqual({"c": new ViewChild("c"), "a": new ViewChild("a")});
       });
     });
   });

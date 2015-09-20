@@ -103,6 +103,14 @@ class ContentChildren extends ContentChildrenMetadata {
 }
 
 /**
+ * See: [ContentChildMetadata] for docs.
+ */
+class ContentChild extends ContentChildMetadata {
+  const ContentChild(dynamic /*Type | string*/ selector)
+    : super(selector);
+}
+
+/**
  * See: [ViewQueryMetadata] for docs.
  */
 class ViewQuery extends ViewQueryMetadata {
@@ -115,6 +123,14 @@ class ViewQuery extends ViewQueryMetadata {
  */
 class ViewChildren extends ViewChildrenMetadata {
   const ViewChildren(dynamic /*Type | string*/ selector)
+    : super(selector);
+}
+
+/**
+ * See: [ViewChildMetadata] for docs.
+ */
+class ViewChild extends ViewChildMetadata {
+  const ViewChild(dynamic /*Type | string*/ selector)
     : super(selector);
 }
 

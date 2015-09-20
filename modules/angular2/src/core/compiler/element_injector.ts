@@ -967,7 +967,11 @@ export class QueryRef {
     // TODO delete the check once only field queries are supported
     if (isPresent(this.dirIndex)) {
       var dir = this.originator.getDirectiveAtIndex(this.dirIndex);
-      this.setter(dir, this.list);
+      if (this.query.first) {
+        this.setter(dir, this.list.length > 0 ? this.list.first : null);
+      } else {
+        this.setter(dir, this.list);
+      }
     }
   }
 
