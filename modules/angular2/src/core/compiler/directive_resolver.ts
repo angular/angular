@@ -10,11 +10,13 @@ import {
   HostBindingMetadata,
   HostListenerMetadata,
   ContentChildrenMetadata,
-  ViewChildrenMetadata
+  ViewChildrenMetadata,
+  ContentChildMetadata,
+  ViewChildMetadata
 } from 'angular2/src/core/metadata';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 
-/**
+/*
  * Resolve a `Type` for {@link DirectiveMetadata}.
  *
  * This interface can be overridden by the application developer to create custom behavior.
@@ -84,6 +86,14 @@ export class DirectiveResolver {
         }
 
         if (a instanceof ViewChildrenMetadata) {
+          queries[propName] = a;
+        }
+
+        if (a instanceof ContentChildMetadata) {
+          queries[propName] = a;
+        }
+
+        if (a instanceof ViewChildMetadata) {
           queries[propName] = a;
         }
       });

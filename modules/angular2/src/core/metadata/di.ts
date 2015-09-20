@@ -170,11 +170,13 @@ export class QueryMetadata extends DependencyMetadata {
    * children (true).
    */
   descendants: boolean;
+  first: boolean;
 
   constructor(private _selector: Type | string,
-              {descendants = false}: {descendants?: boolean} = {}) {
+              {descendants = false, first = false}: {descendants?: boolean, first?: boolean} = {}) {
     super();
     this.descendants = descendants;
+    this.first = first;
   }
 
   /**
@@ -229,6 +231,32 @@ export class ContentChildrenMetadata extends QueryMetadata {
   }
 }
 
+// TODO: add an example after ContentChild and ViewChild are in master
+/**
+ * Configures a content query.
+ *
+ * Content queries are set before the `afterContentInit` callback is called.
+ *
+ * ### Example
+ *
+ * ```
+ * @Directive({
+ *   selector: 'someDir'
+ * })
+ * class SomeDir {
+ *   @ContentChild(ChildDirective) contentChild;
+ *
+ *   afterContentInit() {
+ *     // contentChild is set
+ *   }
+ * }
+ * ```
+ */
+@CONST()
+export class ContentChildMetadata extends QueryMetadata {
+  constructor(_selector: Type | string) { super(_selector, {descendants: true, first: true}); }
+}
+
 /**
  * Similar to {@link QueryMetadata}, but querying the component view, instead of
  * the content children.
@@ -266,8 +294,9 @@ export class ContentChildrenMetadata extends QueryMetadata {
  */
 @CONST()
 export class ViewQueryMetadata extends QueryMetadata {
-  constructor(_selector: Type | string, {descendants = false}: {descendants?: boolean} = {}) {
-    super(_selector, {descendants: descendants});
+  constructor(_selector: Type | string,
+              {descendants = false, first = false}: {descendants?: boolean, first?: boolean} = {}) {
+    super(_selector, {descendants: descendants, first: first});
   }
 
   /**
@@ -301,4 +330,30 @@ export class ViewQueryMetadata extends QueryMetadata {
 @CONST()
 export class ViewChildrenMetadata extends ViewQueryMetadata {
   constructor(_selector: Type | string) { super(_selector, {descendants: true}); }
+}
+
+/**
+ * Configures a view query.
+ *
+ * View queries are set before the `afterViewInit` callback is called.
+ *
+ * ### Example
+ *
+ * ```
+ * @Component({
+ *   selector: 'someDir'
+ * })
+ * @View({templateUrl: 'someTemplate', directives: [ItemDirective]})
+ * class SomeDir {
+ *   @ViewChild(ItemDirective) viewChild:ItemDirective;
+ *
+ *   afterViewInit() {
+ *     // viewChild is set
+ *   }
+ * }
+ * ```
+ */
+@CONST()
+export class ViewChildMetadata extends ViewQueryMetadata {
+  constructor(_selector: Type | string) { super(_selector, {descendants: true, first: true}); }
 }

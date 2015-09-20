@@ -6,9 +6,11 @@
 export {
   QueryMetadata,
   ContentChildrenMetadata,
+  ContentChildMetadata,
   ViewChildrenMetadata,
   ViewQueryMetadata,
-  AttributeMetadata,
+  ViewChildMetadata,
+  AttributeMetadata
 } from './metadata/di';
 
 export {
@@ -26,9 +28,11 @@ export {ViewMetadata, ViewEncapsulation} from './metadata/view';
 import {
   QueryMetadata,
   ContentChildrenMetadata,
+  ContentChildMetadata,
   ViewChildrenMetadata,
+  ViewChildMetadata,
   ViewQueryMetadata,
-  AttributeMetadata,
+  AttributeMetadata
 } from './metadata/di';
 
 import {
@@ -408,10 +412,21 @@ export interface ContentChildrenFactory {
   new (selector: Type | string, {descendants}?: {descendants?: boolean}): ContentChildrenMetadata;
 }
 
+export interface ContentChildFactory {
+  (selector: Type | string): any;
+  new (selector: Type | string): ContentChildFactory;
+}
+
 export interface ViewChildrenFactory {
   (selector: Type | string): any;
   new (selector: Type | string): ViewChildrenMetadata;
 }
+
+export interface ViewChildFactory {
+  (selector: Type | string): any;
+  new (selector: Type | string): ViewChildFactory;
+}
+
 
 /**
  * {@link PipeMetadata} factory for creating decorators.
@@ -547,12 +562,22 @@ export var Query: QueryFactory = makeParamDecorator(QueryMetadata);
 export var ContentChildren: ContentChildrenFactory = makePropDecorator(ContentChildrenMetadata);
 
 /**
+ * {@link ContentChildMetadata} factory function.
+ */
+export var ContentChild: ContentChildFactory = makePropDecorator(ContentChildMetadata);
+
+/**
  * {@link ViewChildrenMetadata} factory function.
  */
 export var ViewChildren: ViewChildrenFactory = makePropDecorator(ViewChildrenMetadata);
 
 /**
- * {@link ViewQueryMetadata} factory function.
+ * {@link ViewChildMetadata} factory function.
+ */
+export var ViewChild: ViewChildFactory = makePropDecorator(ViewChildMetadata);
+
+/**
+ * {@link di/ViewQueryMetadata} factory function.
  */
 export var ViewQuery: QueryFactory = makeParamDecorator(ViewQueryMetadata);
 
