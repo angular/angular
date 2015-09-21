@@ -16,17 +16,28 @@ function _asType(typeOrBinding: Type | Binding): Type {
  */
 export class ComponentRef {
   /**
-   * Location of the component host element.
+   * Location of the Component's host element.
+   *
+   * <!-- TODO: is this public? -->
+   * <!-- TODO: is this the best name? are there other precedences? -->
    */
   location: ElementRef;
 
   /**
    * Instance of component.
+   * <!-- TODO: is this public? -->
+   * <!-- TODO: why is this duplicated by #hostComponent -->
    */
   instance: any;
 
+  /**
+   * <!-- TODO: is this public? -->
+   */
   componentType: Type;
 
+  /**
+   * <!-- TODO: is this public? -->
+   */
   injector: Injector;
 
   /**
@@ -47,17 +58,19 @@ export class ComponentRef {
 
   get hostComponentType(): Type { return this.componentType; }
 
+  /**
+   * The instance of the component.
+   */
   get hostComponent(): any { return this.instance; }
 
   /**
-   * Dispose of the component instance.
+   * Destroys the component instance and all of the data structures associated with it.
    */
   dispose() { this._dispose(); }
 }
 
 /**
- * Service for creating an instance of a component and attaching it to the component tree of an
- * application at a specified location.
+ * Service for instantiating a Component and attaching it to a View at a specified location.
  */
 @Injectable()
 export class DynamicComponentLoader {
