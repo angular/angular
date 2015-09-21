@@ -29,9 +29,7 @@ const NG_API = [
   'APP_ID',
   'AbstractBindingError',
   'AbstractBindingError.addKey',
-  'AbstractBindingError.captureStackTrace',
   'AbstractBindingError.constructor',
-  'AbstractBindingError.constructor.captureStackTrace',
   'AbstractBindingError.constructor.stackTraceLimit',
   'AbstractBindingError.context',
   'AbstractBindingError.stackTraceLimit',
@@ -127,9 +125,7 @@ const NG_API = [
   'CORE_DIRECTIVES',
 
   'ChangeDetectionError',
-  'ChangeDetectionError.captureStackTrace',
   'ChangeDetectionError.constructor',
-  'ChangeDetectionError.constructor.captureStackTrace',
   'ChangeDetectionError.constructor.stackTraceLimit',
   'ChangeDetectionError.context',
   'ChangeDetectionError.message',
@@ -319,9 +315,7 @@ const NG_API = [
 
   'CyclicDependencyError',
   'CyclicDependencyError.addKey',
-  'CyclicDependencyError.captureStackTrace',
   'CyclicDependencyError.constructor',
-  'CyclicDependencyError.constructor.captureStackTrace',
   'CyclicDependencyError.constructor.stackTraceLimit',
   'CyclicDependencyError.context',
   'CyclicDependencyError.stackTraceLimit',
@@ -406,9 +400,7 @@ const NG_API = [
   'EventMetadata',
 
   'ExpressionChangedAfterItHasBeenCheckedException',
-  'ExpressionChangedAfterItHasBeenCheckedException.captureStackTrace',
   'ExpressionChangedAfterItHasBeenCheckedException.constructor',
-  'ExpressionChangedAfterItHasBeenCheckedException.constructor.captureStackTrace',
   'ExpressionChangedAfterItHasBeenCheckedException.constructor.stackTraceLimit',
   'ExpressionChangedAfterItHasBeenCheckedException.stackTraceLimit',
   'ExpressionChangedAfterItHasBeenCheckedException.toString',
@@ -464,10 +456,8 @@ const NG_API = [
 
   'InstantiationError',
   'InstantiationError.addKey',
-  'InstantiationError.captureStackTrace',
   'InstantiationError.causeKey',
   'InstantiationError.constructor',
-  'InstantiationError.constructor.captureStackTrace',
   'InstantiationError.constructor.stackTraceLimit',
   'InstantiationError.context',
   'InstantiationError.message',
@@ -479,9 +469,7 @@ const NG_API = [
   'InstantiationError.wrapperStack',
 
   'InvalidBindingError',
-  'InvalidBindingError.captureStackTrace',
   'InvalidBindingError.constructor',
-  'InvalidBindingError.constructor.captureStackTrace',
   'InvalidBindingError.constructor.stackTraceLimit',
   'InvalidBindingError.stackTraceLimit',
   'InvalidBindingError.toString',
@@ -687,18 +675,14 @@ const NG_API = [
   'NgZone.runOutsideAngular',
 
   'NoAnnotationError',
-  'NoAnnotationError.captureStackTrace',
   'NoAnnotationError.constructor',
-  'NoAnnotationError.constructor.captureStackTrace',
   'NoAnnotationError.constructor.stackTraceLimit',
   'NoAnnotationError.stackTraceLimit',
   'NoAnnotationError.toString',
 
   'NoBindingError',
   'NoBindingError.addKey',
-  'NoBindingError.captureStackTrace',
   'NoBindingError.constructor',
-  'NoBindingError.constructor.captureStackTrace',
   'NoBindingError.constructor.stackTraceLimit',
   'NoBindingError.context',
   'NoBindingError.stackTraceLimit',
@@ -719,9 +703,7 @@ const NG_API = [
   'OptionalMetadata.toString',
 
   'OutOfBoundsError',
-  'OutOfBoundsError.captureStackTrace',
   'OutOfBoundsError.constructor',
-  'OutOfBoundsError.constructor.captureStackTrace',
   'OutOfBoundsError.constructor.stackTraceLimit',
   'OutOfBoundsError.stackTraceLimit',
   'OutOfBoundsError.toString',
@@ -982,9 +964,7 @@ const NG_API = [
   'Visibility',
 
   'WrappedException',
-  'WrappedException.captureStackTrace',
   'WrappedException.constructor',
-  'WrappedException.constructor.captureStackTrace',
   'WrappedException.constructor.stackTraceLimit',
   'WrappedException.context',
   'WrappedException.message',
@@ -1030,6 +1010,16 @@ function extractApi(src: any, dst: string[] = [], path: string[] = [], alreadySe
   alreadySeen.push(src);
   for (var name in src) {
     if (name.charAt(0) == '_') continue;
+    // Extra API in Chrome/V8
+    if (name == 'captureStackTrace') continue;
+    // Extra API in IE9
+    if (name == 'name' ||
+        (name == 'message' &&
+             ['AbstractBindingError', 'CyclicDependencyError',
+              'ExpressionChangedAfterItHasBeenCheckedException', 'InvalidBindingError',
+              'NoAnnotationError', 'NoBindingError', 'OutOfBoundsError']
+                     .indexOf(path[0]) > -1))
+      continue;
     path.push(name);
     var value = null;
     try {
