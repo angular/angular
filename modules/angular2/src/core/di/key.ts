@@ -11,18 +11,27 @@ export {TypeLiteral} from './type_literal';
  *
  * Keys have:
  * - a system-wide unique `id`.
- * - a `token`, usually the `Type` of the instance.
+ * - a `token`.
  *
- * Keys are used internally by the {@link Injector} because their system-wide unique `id`s allow the
- * injector to index in arrays rather than looking up items in maps.
+ * `Key` is used internally by {@link Injector} because its system-wide unique `id` allows the
+ * injector to store created objects in a more efficient way.
+ *
+ * `Key` should not be created directly. {@link Injector} creates keys automatically when resolving
+ * bindings.
  */
 export class Key {
+  /**
+   * Private
+   */
   constructor(public token: Object, public id: number) {
     if (isBlank(token)) {
       throw new BaseException('Token must be defined!');
     }
   }
 
+  /**
+   * Returns a stringified token.
+   */
   get displayName(): string { return stringify(this.token); }
 
   /**
