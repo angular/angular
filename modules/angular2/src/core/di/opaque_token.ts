@@ -1,22 +1,25 @@
 import {CONST} from 'angular2/src/core/facade/lang';
 
 /**
- * By binding to an `OpaqueToken` you can enable an application to return more meaningful error
- * messages.
+ * Creates a token that can be used in a DI Binding.
  *
- * ## Example
+ * ### Example ([live demo](http://plnkr.co/edit/Ys9ezXpj2Mnoy3Uc8KBp?p=preview))
  *
+ * ```typescript
+ * var t = new OpaqueToken("binding");
+ *
+ * var injector = Injector.resolveAndCreate([
+ *   bind(t).toValue("bindingValue")
+ * ]);
+ *
+ * expect(injector.get(t)).toEqual("bindingValue");
  * ```
- * // While the following would work, see below for the preferred way
- * var binding = bind('value0').toValue(0);
- * ...
- * var value = injector.get('value0');
  *
- * // An OpaqueToken is the preferred way and lead to more helpful error messages
- * export value0Token = new OpaqueToken('value0');
- * var binding = bind(value0Token).toValue(0);
- * ...
- * var value = injector.get(value0Token);
+ * Using an `OpaqueToken` is preferable to using strings as tokens because of possible collisions
+ * caused by multiple bindings using the same string as two different tokens.
+ *
+ * Using an `OpaqueToken` is preferable to using an `Object` as tokens because it provides better
+ * error messages.
  * ```
  */
 @CONST()
