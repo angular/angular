@@ -23,9 +23,10 @@ export {_global as global};
 export var Type = Function;
 
 /**
- * Runtime representation of a type.
+ * Runtime representation a type that a Component or other object is instances of.
  *
- * In JavaScript a Type is a constructor function.
+ * An example of a `Type` is `MyCustomComponent` class, which in JavaScript is be represented by
+ * the `MyCustomComponent` constructor function.
  */
 export interface Type extends Function { new (...args): any; }
 
