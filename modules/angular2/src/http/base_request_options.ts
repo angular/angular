@@ -6,31 +6,51 @@ import {Injectable} from 'angular2/src/core/di';
 import {URLSearchParams} from './url_search_params';
 
 /**
- * Creates a request options object similar to the `RequestInit` description
- * in the [Fetch
- * Spec](https://fetch.spec.whatwg.org/#requestinit) to be optionally provided when instantiating a
+ * Creates a request options object to be optionally provided when instantiating a
  * {@link Request}.
  *
- * All values are null by default.
+ * This class is based on the `RequestInit` description in the [Fetch
+ * Spec](https://fetch.spec.whatwg.org/#requestinit).
+ *
+ * All values are null by default. Typical defaults can be found in the {@link BaseRequestOptions}
+ * class, which sub-classes `RequestOptions`.
+ *
+ * ### Example ([live demo](http://plnkr.co/edit/7Wvi3lfLq41aQPKlxB4O?p=preview))
+ *
+ * ```typescript
+ * import {RequestOptions, Request, RequestMethods} from 'angular2/http';
+ *
+ * var options = new RequestOptions({
+ *   method: RequestMethods.Post,
+ *   url: 'https://google.com'
+ * });
+ * var req = new Request(options);
+ * console.log('req.method:', RequestMethods[req.method]); // Post
+ * console.log('options.url:', options.url); // https://google.com
+ * ```
  */
 export class RequestOptions {
   /**
-   * Http method with which to execute the request.
-   *
-   * Defaults to "GET".
+   * Http method with which to execute a {@link Request}.
+   * Acceptable methods are defined in the {@link RequestMethods} enum.
    */
   method: RequestMethods;
   /**
-   * Headers object based on the `Headers` class in the [Fetch
-   * Spec](https://fetch.spec.whatwg.org/#headers-class).
+   * {@link Headers} to be attached to a {@link Request}.
    */
   headers: Headers;
   /**
-   * Body to be used when creating the request.
+   * Body to be used when creating a {@link Request}.
    */
   // TODO: support FormData, Blob, URLSearchParams
   body: string;
+  /**
+   * Url with which to perform a {@link Request}.
+   */
   url: string;
+  /**
+   * Search parameters to be included in a {@link Request}.
+   */
   search: URLSearchParams;
   constructor({method, headers, body, url, search}: RequestOptionsArgs = {}) {
     this.method = isPresent(method) ? method : null;
@@ -44,7 +64,28 @@ export class RequestOptions {
 
   /**
    * Creates a copy of the `RequestOptions` instance, using the optional input as values to override
-   * existing values.
+   * existing values. This method will not change the values of the instance on which it is being
+   * called.
+   *
+   * Note that `headers` and `search` will override existing values completely if present in
+   * the `options` object. If these values should be merged, it should be done prior to calling
+   * `merge` on the `RequestOptions` instance.
+   *
+   * Example ([live demo](http://plnkr.co/edit/6w8XA8YTkDRcPYpdB9dk?p=preview))
+   *
+   * ```typescript
+   * import {RequestOptions, Request, RequestMethods} from 'angular2/http';
+   *
+   * var options = new RequestOptions({
+   *   method: RequestMethods.Post
+   * });
+   * var req = new Request(options.merge({
+   *   url: 'https://google.com'
+   * }));
+   * console.log('req.method:', RequestMethods[req.method]); // Post
+   * console.log('options.url:', options.url); // null
+   * console.log('req.url:', req.url); // https://google.com
+   * ```
    */
   merge(options?: RequestOptionsArgs): RequestOptions {
     return new RequestOptions({
