@@ -115,9 +115,6 @@ const NG_API = [
   'BindingBuilder.toFactory',
   'BindingBuilder.toValue',
 
-  'BindingWithVisibility',
-  'BindingWithVisibility.getKeyId',
-
   'By',  // TODO: not sure
   'By.all',
   'By.css',
@@ -327,6 +324,9 @@ const NG_API = [
   'DebugElement.queryAll',
   'DebugElement.triggerEventHandler',
 
+  'DependencyMetadata',
+  'DependencyMetadata.token',
+
   'DecimalPipe',
   'DecimalPipe.constructor',
   'DecimalPipe.transform',
@@ -346,8 +346,6 @@ const NG_API = [
 
   'Dependency',
   'Dependency.fromKey',
-  'DependencyMetadata',
-  'DependencyMetadata.token',
 
   'Directive',
   'Directive.constructor',
@@ -726,9 +724,6 @@ const NG_API = [
 
   'PropertyMetadata',
 
-  'ProtoInjector',
-  'ProtoInjector.getBindingAtIndex',
-
   'ProtoViewRef',
 
   'Query',
@@ -930,8 +925,6 @@ const NG_API = [
   'ViewRef.render',
   'ViewRef.renderFragment',
   'ViewRef.setLocal',
-
-  'Visibility',
 
   'WrappedException',
   'WrappedException.captureStackTrace',

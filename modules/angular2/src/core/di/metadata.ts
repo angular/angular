@@ -3,10 +3,41 @@ import {CONST, CONST_EXPR, stringify, isBlank, isPresent} from "angular2/src/cor
 /**
  * A parameter metadata that specifies a dependency.
  *
- * ```
- * class AComponent {
- *   constructor(@Inject(MyService) aService:MyService) {}
+ * ### Example ([live demo](http://plnkr.co/edit/6uHYJK?p=preview))
+ *
+ * ```typescript
+ * class Engine {}
+ *
+ * @Injectable()
+ * class Car {
+ *   engine;
+ *   constructor(@Inject("MyEngine") engine:Engine) {
+ *     this.engine = engine;
+ *   }
  * }
+ *
+ * var injector = Injector.resolveAndCreate([
+ *  bind("MyEngine").toClass(Engine),
+ *  Car
+ * ]);
+ *
+ * expect(injector.get(Car).engine instanceof Engine).toBe(true);
+ * ```
+ *
+ * When `@Inject()` is not present, {@link Injector} will use the type annotation of the parameter.
+ *
+ * ### Example
+ *
+ * ```typescript
+ * class Engine {}
+ *
+ * @Injectable()
+ * class Car {
+ *   constructor(public engine: Engine) {} //same as constructor(@Inject(Engine) engine:Engine)
+ * }
+ *
+ * var injector = Injector.resolveAndCreate([Engine, Car]);
+ * expect(injector.get(Car).engine instanceof Engine).toBe(true);
  * ```
  */
 @CONST()
@@ -19,12 +50,21 @@ export class InjectMetadata {
  * A parameter metadata that marks a dependency as optional. {@link Injector} provides `null` if
  * the dependency is not found.
  *
- * ```
- * class AComponent {
- *   constructor(@Optional() aService:MyService) {
- *     this.aService = aService;
+ * ### Example ([live demo](http://plnkr.co/edit/AsryOm?p=preview))
+ *
+ * ```typescript
+ * class Engine {}
+ *
+ * @Injectable()
+ * class Car {
+ *   engine;
+ *   constructor(@Optional() engine:Engine) {
+ *     this.engine = engine;
  *   }
  * }
+ *
+ * var injector = Injector.resolveAndCreate([Car]);
+ * expect(injector.get(Car).engine).toBeNull();
  * ```
  */
 @CONST()
@@ -64,16 +104,34 @@ export class DependencyMetadata {
 }
 
 /**
- * A marker metadata that marks a class as available to `Injector` for creation. Used by tooling
- * for generating constructor stubs.
+ * A marker metadata that marks a class as available to {@link Injector} for creation.
  *
- * ```
+ * ### Example ([live demo](http://plnkr.co/edit/Wk4DMQ?p=preview))
+ *
+ * ```typescript
+ * @Injectable()
+ * class UsefulService {}
+ *
+ * @Injectable()
  * class NeedsService {
- *   constructor(svc:UsefulService) {}
+ *   constructor(public service:UsefulService) {}
  * }
  *
- * @Injectable
+ * var injector = Injector.resolveAndCreate([NeedsService, UsefulService]);
+ * expect(injector.get(NeedsService).service instanceof UsefulService).toBe(true);
+ * ```
+ * {@link Injector} will throw {@link NoAnnotationError} when trying to instantiate a class that
+ * does not have `@Injectable` marker, as shown in the example below.
+ *
+ * ```typescript
  * class UsefulService {}
+ *
+ * class NeedsService {
+ *   constructor(public service:UsefulService) {}
+ * }
+ *
+ * var injector = Injector.resolveAndCreate([NeedsService, UsefulService]);
+ * expect(() => injector.get(NeedsService)).toThrowError();
  * ```
  */
 @CONST()
@@ -82,21 +140,32 @@ export class InjectableMetadata {
 }
 
 /**
- * Specifies that an injector should retrieve a dependency from itself.
+ * Specifies that an {@link Injector} should retrieve a dependency only from itself.
  *
- * ## Example
+ * ### Example ([live demo](http://plnkr.co/edit/NeagAg?p=preview))
  *
- * ```
+ * ```typescript
  * class Dependency {
  * }
  *
+ * @Injectable()
  * class NeedsDependency {
- *   constructor(public @Self() dependency:Dependency) {}
+ *   dependency;
+
+ *   dependency;
+ *   constructor(@Self() dependency:Dependency) {
+ *     this.dependency = dependency;
+ *   }
  * }
  *
  * var inj = Injector.resolveAndCreate([Dependency, NeedsDependency]);
  * var nd = inj.get(NeedsDependency);
- * expect(nd.dependency).toBeAnInstanceOf(Dependency);
+ *
+ * expect(nd.dependency instanceof Dependency).toBe(true);
+ *
+ * var inj = Injector.resolveAndCreate([Dependency]);
+ * var child = inj.resolveAndCreateChild([NeedsDependency]);
+ * expect(() => child.get(NeedsDependency)).toThrowError();
  * ```
  */
 @CONST()
@@ -107,28 +176,26 @@ export class SelfMetadata {
 /**
  * Specifies that the dependency resolution should start from the parent injector.
  *
- * ## Example
+ * ### Example ([live demo](http://plnkr.co/edit/Wchdzb?p=preview))
  *
- *
- * ```
- * class Service {}
- *
- * class ParentService implements Service {
+ * ```typescript
+ * class Dependency {
  * }
  *
- * class ChildService implements Service {
- *   constructor(public @SkipSelf() parentService:Service) {}
+ * @Injectable()
+ * class NeedsDependency {
+ *   dependency;
+ *   constructor(@SkipSelf() dependency:Dependency) {
+ *     this.dependency = dependency;
+ *   }
  * }
  *
- * var parent = Injector.resolveAndCreate([
- *   bind(Service).toClass(ParentService)
- * ]);
- * var child = parent.resolveAndCreateChild([
- *   bind(Service).toClass(ChildSerice)
- * ]);
- * var s = child.get(Service);
- * expect(s).toBeAnInstanceOf(ChildService);
- * expect(s.parentService).toBeAnInstanceOf(ParentService);
+ * var parent = Injector.resolveAndCreate([Dependency]);
+ * var child = parent.resolveAndCreateChild([NeedsDependency]);
+ * expect(child.get(NeedsDependency).dependency instanceof Depedency).toBe(true);
+ *
+ * var inj = Injector.resolveAndCreate([Dependency, NeedsDependency]);
+ * expect(() => inj.get(NeedsDependency)).toThrowError();
  * ```
  */
 @CONST()
@@ -140,24 +207,59 @@ export class SkipSelfMetadata {
  * Specifies that an injector should retrieve a dependency from any injector until reaching the
  * closest host.
  *
- * ## Example
+ * In Angular, a component element is automatically declared as a host for all the injectors in
+ * its view.
  *
- * ```
- * class Dependency {
+ * ### Example ([live demo](http://plnkr.co/edit/GX79pV?p=preview))
+ *
+ * In the following example `App` contains `ParentCmp`, which contains `ChildDirective`.
+ * So `ParentCmp` is the host of `ChildDirective`.
+ *
+ * `ChildDirective` depends on two services: `HostService` and `OtherService`.
+ * `HostService` is defined at `ParentCmp`, and `OtherService` is defined at `App`.
+ *
+ *```typescript
+ * class OtherService {}
+ * class HostService {}
+ *
+ * @Directive({
+ *   selector: 'child-directive'
+ * })
+ * class ChildDirective {
+ *   constructor(@Optional() @Host() os:OtherService, @Optional() @Host() hs:HostService){
+ *     console.log("os is null", os);
+ *     console.log("hs is NOT null", hs);
+ *   }
  * }
  *
- * class NeedsDependency {
- *   constructor(public @Host() dependency:Dependency) {}
+ * @Component({
+ *   selector: 'parent-cmp',
+ *   bindings: [HostService]
+ * })
+ * @View({
+ *   template: `
+ *     Dir: <child-directive></child-directive>
+ *   `,
+ *   directives: [ChildDirective]
+ * })
+ * class ParentCmp {
  * }
  *
- * var parent = Injector.resolveAndCreate([
- *   bind(Dependency).toClass(HostDependency)
- * ]);
- * var child = parent.resolveAndCreateChild([]);
- * var grandChild = child.resolveAndCreateChild([NeedsDependency, Depedency]);
- * var nd = grandChild.get(NeedsDependency);
- * expect(nd.dependency).toBeAnInstanceOf(HostDependency);
- * ```
+ * @Component({
+ *   selector: 'app',
+ *   bindings: [OtherService]
+ * })
+ * @View({
+ *   template: `
+ *     Parent: <parent-cmp></parent-cmp>
+ *   `,
+ *   directives: [ParentCmp]
+ * })
+ * class App {
+ * }
+ *
+ * bootstrap(App);
+ *```
  */
 @CONST()
 export class HostMetadata {

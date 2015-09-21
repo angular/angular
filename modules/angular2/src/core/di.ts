@@ -18,13 +18,7 @@ export {
 export * from './di/decorators';
 
 export {forwardRef, resolveForwardRef, ForwardRefFn} from './di/forward_ref';
-export {
-  Injector,
-  ProtoInjector,
-  BindingWithVisibility,
-  DependencyProvider,
-  Visibility
-} from './di/injector';
+export {Injector, DependencyProvider} from './di/injector';
 export {
   Binding,
   BindingBuilder,

@@ -394,76 +394,103 @@ export interface DependencyProvider {
 }
 
 /**
- * A dependency injection container used for resolving dependencies.
+ * A dependency injection container used for instantiating objects and resolving dependencies.
  *
  * An `Injector` is a replacement for a `new` operator, which can automatically resolve the
  * constructor dependencies.
+ *
  * In typical use, application code asks for the dependencies in the constructor and they are
  * resolved by the `Injector`.
  *
- * ## Example:
+ * ### Example ([live demo](http://plnkr.co/edit/jzjec0?p=preview))
  *
- * Suppose that we want to inject an `Engine` into class `Car`, we would define it like this:
+ * The following example creates an `Injector` configured to create `Engine` and `Car`.
  *
- * ```javascript
+ * ```typescript
+ * @Injectable()
  * class Engine {
  * }
  *
+ * @Injectable()
  * class Car {
- *   constructor(@Inject(Engine) engine) {
- *   }
+ *   constructor(public engine:Engine) {}
  * }
  *
+ * var injector = Injector.resolveAndCreate([Car, Engine]);
+ * var car = injector.get(Car);
+ * expect(car instanceof Car).toBe(true);
+ * expect(car.engine instanceof Engine).toBe(true);
  * ```
  *
- * Next we need to write the code that creates and instantiates the `Injector`. We then ask for the
- * `root` object, `Car`, so that the `Injector` can recursively build all of that object's
- *dependencies.
- *
- * ```javascript
- * main() {
- *   var injector = Injector.resolveAndCreate([Car, Engine]);
- *
- *   // Get a reference to the `root` object, which will recursively instantiate the tree.
- *   var car = injector.get(Car);
- * }
- * ```
- * Notice that we don't use the `new` operator because we explicitly want to have the `Injector`
+ * Notice, we don't use the `new` operator because we explicitly want to have the `Injector`
  * resolve all of the object's dependencies automatically.
  */
 export class Injector {
   /**
-   * Turns a list of binding definitions into an internal resolved list of resolved bindings.
+   * Turns an array of binding definitions into an array of resolved bindings.
    *
-   * A resolution is a process of flattening multiple nested lists and converting individual
-   * bindings into a list of {@link ResolvedBinding}s. The resolution can be cached by `resolve`
-   * for the {@link Injector} for performance-sensitive code.
+   * A resolution is a process of flattening multiple nested arrays and converting individual
+   * bindings into an array of {@link ResolvedBinding}s.
    *
-   * @param `bindings` can be a list of `Type`, {@link Binding}, {@link ResolvedBinding}, or a
-   * recursive list of more bindings.
+   * ### Example ([live demo](http://plnkr.co/edit/AiXTHi?p=preview))
    *
-   * The returned list is sparse, indexed by `id` for the {@link Key}. It is generally not useful to
-   *application code
-   * other than for passing it to {@link Injector} functions that require resolved binding lists,
-   *such as
-   * `fromResolvedBindings` and `createChildFromResolved`.
+   * ```typescript
+   * @Injectable()
+   * class Engine {
+   * }
+   *
+   * @Injectable()
+   * class Car {
+   *   constructor(public engine:Engine) {}
+   * }
+   *
+   * var bindings = Injector.resolve([Car, [[Engine]]]);
+   *
+   * expect(bindings.length).toEqual(2);
+   *
+   * expect(bindings[0] instanceof ResolvedBinding).toBe(true);
+   * expect(bindings[0].key.displayName).toBe("Car");
+   * expect(bindings[0].dependencies.length).toEqual(1);
+   * expect(bindings[0].factory).toBeDefined();
+   *
+   * expect(bindings[1].key.displayName).toBe("Engine");
+   * });
+   * ```
+   *
+   * See {@link fromResolvedBindings} for more info.
    */
   static resolve(bindings: Array<Type | Binding | any[]>): ResolvedBinding[] {
     return resolveBindings(bindings);
   }
 
   /**
-   * Resolves bindings and creates an injector based on those bindings. This function is slower than
-   * the corresponding `fromResolvedBindings` because it needs to resolve bindings first. See
-   *`resolve`
-   * for the {@link Injector}.
+   * Resolves an array of bindings and creates an injector from those bindings.
    *
-   * Prefer `fromResolvedBindings` in performance-critical code that creates lots of injectors.
+   * The passed-in bindings can be an array of `Type`, {@link Binding},
+   * or a recursive array of more bindings.
    *
-   * @param `bindings` can be a list of `Type`, {@link Binding}, {@link ResolvedBinding}, or a
-   *recursive list of more
-   * bindings.
-   * @param `depProvider`
+   * The method also takes an optional {@link DependencyProvider}, which is used to
+   * resolve dependencies that cannot be expressed as bindings.
+   *
+   * ### Example ([live demo](http://plnkr.co/edit/ePOccA?p=preview))
+   *
+   * ```typescript
+   * @Injectable()
+   * class Engine {
+   * }
+   *
+   * @Injectable()
+   * class Car {
+   *   constructor(public engine:Engine) {}
+   * }
+   *
+   * var injector = Injector.resolveAndCreate([Car, Engine]);
+   * expect(injector.get(Car) instanceof Car).toBe(true);
+   * ```
+   *
+   * This function is slower than the corresponding `fromResolvedBindings`
+   * because it needs to resolve the passed-in bindings first.
+   * See {@link resolve} and {@link fromResolvedBindings}.
    */
   static resolveAndCreate(bindings: Array<Type | Binding | any[]>,
                           depProvider: DependencyProvider = null): Injector {
@@ -472,12 +499,29 @@ export class Injector {
   }
 
   /**
-   * Creates an injector from previously resolved bindings. This bypasses resolution and flattening.
+   * Creates an injector from previously resolved bindings.
+   *
    * This API is the recommended way to construct injectors in performance-sensitive parts.
    *
-   * @param `bindings` A sparse list of {@link ResolvedBinding}s. See `resolve` for the
-   * {@link Injector}.
-   * @param `depProvider`
+   * The method also takes an optional {@link DependencyProvider}, which is used to
+   * resolve dependencies that cannot be expressed as bindings.
+   *
+   * ### Example ([live demo](http://plnkr.co/edit/KrSMci?p=preview))
+   *
+   * ```typescript
+   * @Injectable()
+   * class Engine {
+   * }
+   *
+   * @Injectable()
+   * class Car {
+   *   constructor(public engine:Engine) {}
+   * }
+   *
+   * var bindings = Injector.resolve([Car, Engine]);
+   * var injector = Injector.fromResolvedBindings(bindings);
+   * expect(injector.get(Car) instanceof Car).toBe(true);
+   * ```
    */
   static fromResolvedBindings(bindings: ResolvedBinding[],
                               depProvider: DependencyProvider = null): Injector {
@@ -491,71 +535,128 @@ export class Injector {
   _isHost: boolean = false;
   _constructionCounter: number = 0;
 
-  constructor(public _proto: ProtoInjector, public _parent: Injector = null,
+  /**
+   * Private
+   */
+  constructor(public _proto: any /* ProtoInjector */, public _parent: Injector = null,
               private _depProvider: DependencyProvider = null,
               private _debugContext: Function = null) {
     this._strategy = _proto._strategy.createInjectorStrategy(this);
   }
 
   /**
-   * Returns debug information about the injector.
-   *
-   * This information is included into exceptions thrown by the injector.
+   * @private
    */
   debugContext(): any { return this._debugContext(); }
 
   /**
-   * Retrieves an instance from the injector.
+   * Retrieves an instance from the injector based on the provided token.
+   * Throws {@link NoBindingError} if not found.
    *
-   * @param `token`: usually the `Type` of an object. (Same as the token used while setting up a
-   *binding).
-   * @returns an instance represented by the token. Throws if not found.
+   * ### Example ([live demo](http://plnkr.co/edit/HeXSHg?p=preview))
+   *
+   * ```typescript
+   * var injector = Injector.resolveAndCreate([
+   *   bind("validToken").toValue("Value")
+   * ]);
+   * expect(injector.get("validToken")).toEqual("Value");
+   * expect(() => injector.get("invalidToken")).toThrowError();
+   * ```
+   *
+   * `Injector` returns itself when given `Injector` as a token.
+   *
+   * ```typescript
+   * var injector = Injector.resolveAndCreate([]);
+   * expect(injector.get(Injector)).toBe(injector);
+   * ```
    */
   get(token: any): any {
     return this._getByKey(Key.get(token), null, null, false, Visibility.PublicAndPrivate);
   }
 
   /**
-   * Retrieves an instance from the injector.
+   * Retrieves an instance from the injector based on the provided token.
+   * Returns null if not found.
    *
-   * @param `token`: usually a `Type`. (Same as the token used while setting up a binding).
-   * @returns an instance represented by the token. Returns `null` if not found.
+   * ### Example ([live demo](http://plnkr.co/edit/tpEbEy?p=preview))
+   *
+   * ```typescript
+   * var injector = Injector.resolveAndCreate([
+   *   bind("validToken").toValue("Value")
+   * ]);
+   * expect(injector.getOptional("validToken")).toEqual("Value");
+   * expect(injector.getOptional("invalidToken")).toBe(null);
+   * ```
+   *
+   * `Injector` returns itself when given `Injector` as a token.
+   *
+   * ```typescript
+   * var injector = Injector.resolveAndCreate([]);
+   * expect(injector.getOptional(Injector)).toBe(injector);
+   * ```
    */
   getOptional(token: any): any {
     return this._getByKey(Key.get(token), null, null, true, Visibility.PublicAndPrivate);
   }
 
   /**
-   * Retrieves an instance from the injector.
-   *
-   * @param `index`: index of an instance.
-   * @returns an instance represented by the index. Throws if not found.
+   * @private
    */
   getAt(index: number): any { return this._strategy.getObjAtIndex(index); }
 
   /**
-   * Direct parent of this injector.
+   * Parent of this injector.
+   *
+   * <!-- TODO: Add a link to the section of the user guide talking about hierarchical injection.
+   * -->
+   *
+   * ### Example ([live demo](http://plnkr.co/edit/eosMGo?p=preview))
+   *
+   * ```typescript
+   * var parent = Injector.resolveAndCreate([]);
+   * var child = parent.resolveAndCreateChild([]);
+   * expect(child.parent).toBe(parent);
+   * ```
    */
   get parent(): Injector { return this._parent; }
 
   /**
+   * @private
    * Internal. Do not use.
-   *
    * We return `any` not to export the InjectorStrategy type.
    */
   get internalStrategy(): any { return this._strategy; }
 
   /**
-  * Creates a child injector and loads a new set of bindings into it.
-  *
-  * A resolution is a process of flattening multiple nested lists and converting individual
-  * bindings into a list of {@link ResolvedBinding}s. The resolution can be cached by `resolve`
-  * for the {@link Injector} for performance-sensitive code.
-  *
-  * @param `bindings` can be a list of `Type`, {@link Binding}, {@link ResolvedBinding}, or a
-  * recursive list of more bindings.
-  * @param `depProvider`
-  */
+   * Resolves an array of bindings and creates a child injector from those bindings.
+   *
+   * <!-- TODO: Add a link to the section of the user guide talking about hierarchical injection.
+   * -->
+   *
+   * The passed-in bindings can be an array of `Type`, {@link Binding},
+   * or a recursive array of more bindings.
+   *
+   * The methods also takes an optional {@link DependencyProvider}, which is used to
+   * resolved dependencies that cannot be expressed as bindings.
+   *
+   * ### Example ([live demo](http://plnkr.co/edit/opB3T4?p=preview))
+   *
+   * ```typescript
+   * class ParentBinding {}
+   * class ChildBinding {}
+   *
+   * var parent = Injector.resolveAndCreate([ParentBinding]);
+   * var child = parent.resolveAndCreateChild([ChildBinding]);
+   *
+   * expect(child.get(ParentBinding) instanceof ParentBinding).toBe(true);
+   * expect(child.get(ChildBinding) instanceof ChildBinding).toBe(true);
+   * expect(child.get(ParentBinding)).toBe(parent.get(ParentBinding));
+   * ```
+   *
+   * This function is slower than the corresponding `createChildFromResolved`
+   * because it needs to resolve the passed-in bindings first.
+   * See {@link resolve} and {@link createChildFromResolved}.
+   */
   resolveAndCreateChild(bindings: Array<Type | Binding | any[]>,
                         depProvider: DependencyProvider = null): Injector {
     var resolvedBindings = Injector.resolve(bindings);
@@ -563,12 +664,32 @@ export class Injector {
   }
 
   /**
-   * Creates a child injector and loads a new set of {@link ResolvedBinding}s into it.
+   * Creates a child injector from previously resolved bindings.
    *
-   * @param `bindings`: A sparse list of {@link ResolvedBinding}s.
-   * See `resolve` for the {@link Injector}.
-   * @param `depProvider`
-   * @returns a new child {@link Injector}.
+   * <!-- TODO: Add a link to the section of the user guide talking about hierarchical injection.
+   * -->
+   *
+   * This API is the recommended way to construct injectors in performance-sensitive parts.
+   *
+   * The methods also takes an optional {@link DependencyProvider}, which is used to
+   * resolved dependencies that cannot be expressed as bindings.
+   *
+   * ### Example ([live demo](http://plnkr.co/edit/VhyfjN?p=preview))
+   *
+   * ```typescript
+   * class ParentBinding {}
+   * class ChildBinding {}
+   *
+   * var parentBindings = Injector.resolve([ParentBinding]);
+   * var childBindings = Injector.resolve([ChildBinding]);
+   *
+   * var parent = Injector.fromResolvedBindings(parentBindings);
+   * var child = parent.createChildFromResolved(childBindings);
+   *
+   * expect(child.get(ParentBinding) instanceof ParentBinding).toBe(true);
+   * expect(child.get(ChildBinding) instanceof ChildBinding).toBe(true);
+   * expect(child.get(ParentBinding)).toBe(parent.get(ParentBinding));
+   * ```
    */
   createChildFromResolved(bindings: ResolvedBinding[],
                           depProvider: DependencyProvider = null): Injector {
@@ -582,8 +703,26 @@ export class Injector {
   /**
    * Resolves a binding and instantiates an object in the context of the injector.
    *
-   * @param `binding`: either a type or a binding.
-   * @returns an object created using binding.
+   * The created object does not get cached by the injector.
+   *
+   * ### Example ([live demo](http://plnkr.co/edit/yvVXoB?p=preview))
+   *
+   * ```typescript
+   * @Injectable()
+   * class Engine {
+   * }
+   *
+   * @Injectable()
+   * class Car {
+   *   constructor(public engine:Engine) {}
+   * }
+   *
+   * var injector = Injector.resolveAndCreate([Engine]);
+   *
+   * var car = injector.resolveAndInstantiate(Car);
+   * expect(car.engine).toBe(injector.get(Engine));
+   * expect(car).not.toBe(injector.resolveAndInstantiate(Car));
+   * ```
    */
   resolveAndInstantiate(binding: Type | Binding): any {
     return this.instantiateResolved(Injector.resolve([binding])[0]);
@@ -592,8 +731,25 @@ export class Injector {
   /**
    * Instantiates an object using a resolved binding in the context of the injector.
    *
-   * @param `binding`: a resolved binding
-   * @returns an object created using binding.
+   * The created object does not get cached by the injector.
+   *
+   * ### Example ([live demo](http://plnkr.co/edit/ptCImQ?p=preview))
+   *
+   * ```typescript
+   * @Injectable()
+   * class Engine {
+   * }
+   *
+   * @Injectable()
+   * class Car {
+   *   constructor(public engine:Engine) {}
+   * }
+   *
+   * var injector = Injector.resolveAndCreate([Engine]);
+   * var carBinding = Injector.resolve([Car])[0];
+   * var car = injector.instantiateResolved(carBinding);
+   * expect(car.engine).toBe(injector.get(Engine));
+   * expect(car).not.toBe(injector.instantiateResolved(carBinding));
    */
   instantiateResolved(binding: ResolvedBinding): any {
     return this._instantiateBinding(binding, Visibility.PublicAndPrivate);

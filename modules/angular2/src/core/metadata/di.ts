@@ -6,7 +6,8 @@ import {
   StringWrapper,
   isString
 } from 'angular2/src/core/facade/lang';
-import {DependencyMetadata, resolveForwardRef} from 'angular2/src/core/di';
+import {resolveForwardRef} from 'angular2/src/core/di';
+import {DependencyMetadata} from 'angular2/src/core/di/metadata';
 
 /**
  * Specifies that a constant attribute value should be injected.

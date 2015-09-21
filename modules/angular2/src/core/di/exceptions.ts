@@ -195,6 +195,18 @@ export class InvalidBindingError extends BaseException {
  *
  * expect(() => Injector.resolveAndCreate([A])).toThrowError();
  * ```
+ *
+ * This error is also thrown when the class not marked with {@link @Injectable} has parameter types.
+ *
+ * ```typescript
+ * class B {}
+ *
+ * class A {
+ *   constructor(b:B) {} // no information about the parameter types of A is available at runtime.
+ * }
+ *
+ * expect(() => Injector.resolveAndCreate([A,B])).toThrowError();
+ * ```
  */
 export class NoAnnotationError extends BaseException {
   constructor(typeOrFunc, params: any[][]) {

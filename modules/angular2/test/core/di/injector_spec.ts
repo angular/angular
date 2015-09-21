@@ -4,12 +4,10 @@ import {describe, ddescribe, it, iit, expect, beforeEach} from 'angular2/test_li
 import {SpyDependencyProvider} from '../spies';
 import {
   Injector,
-  ProtoInjector,
   bind,
   ResolvedBinding,
   Key,
   forwardRef,
-  DependencyMetadata,
   Injectable,
   InjectMetadata,
   SelfMetadata,
@@ -17,12 +15,17 @@ import {
   SkipSelfMetadata,
   Optional,
   Inject,
-  BindingWithVisibility,
-  Visibility,
   Binding
 } from 'angular2/core';
+import {DependencyMetadata} from 'angular2/src/core/di/metadata';
 
-import {InjectorInlineStrategy, InjectorDynamicStrategy} from 'angular2/src/core/di/injector';
+import {
+  InjectorInlineStrategy,
+  InjectorDynamicStrategy,
+  ProtoInjector,
+  BindingWithVisibility,
+  Visibility
+} from 'angular2/src/core/di/injector';
 
 class CustomDependencyMetadata extends DependencyMetadata {}
 
