@@ -24,6 +24,7 @@ class DeferredRewriter extends Transformer implements DeclaringTransformer {
 
   @override
   declareOutputs(DeclaringTransform transform) {
+    transform.consumePrimary();
     transform.declareOutput(transform.primaryId);
   }
 
@@ -33,9 +34,11 @@ class DeferredRewriter extends Transformer implements DeclaringTransformer {
       var asset = transform.primaryInput;
       var reader = new AssetReader.fromTransform(transform);
       var transformedCode = await rewriteDeferredLibraries(reader, asset.id);
+      transform.consumePrimary();
       if (transformedCode != null) {
-        transform.addOutput(
-            new Asset.fromString(transform.primaryInput.id, transformedCode));
+        transform.addOutput(new Asset.fromString(asset.id, transformedCode));
+      } else {
+        transform.addOutput(asset);
       }
     });
   }

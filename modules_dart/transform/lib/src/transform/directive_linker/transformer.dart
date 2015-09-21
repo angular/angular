@@ -22,7 +22,10 @@ class DirectiveLinker extends Transformer implements DeclaringTransformer {
 
   @override
   declareOutputs(DeclaringTransform transform) {
-    transform.declareOutput(transform.primaryId);
+    // TODO(kegluenq): We should consume this, but doing so causes barback to
+    // incorrectly determine what assets are available in this phase.
+    // transform.consumePrimary();
+    transform.declareOutput(_depsAssetId(transform.primaryId));
   }
 
   @override
@@ -30,20 +33,25 @@ class DirectiveLinker extends Transformer implements DeclaringTransformer {
     await log.initZoned(transform, () async {
       var reader = new AssetReader.fromTransform(transform);
       var assetId = transform.primaryInput.id;
-      var assetPath = assetId.path;
       var ngDepsModel = await linkNgDeps(reader, assetId);
+      // See above
+      // transform.consumePrimary();
+      var outputAssetId = _depsAssetId(assetId);
       if (ngDepsModel != null) {
         var buf = new StringBuffer();
         var writer = new NgDepsWriter(buf);
         writer.writeNgDepsModel(ngDepsModel);
-        var formattedCode = formatter.format('$buf', uri: assetPath);
-        var ngDepsAssetId =
-            new AssetId(assetId.package, toDepsExtension(assetPath));
-        transform.addOutput(new Asset.fromString(ngDepsAssetId, formattedCode));
+        var formattedCode = formatter.format('$buf', uri: assetId.path);
+        transform.addOutput(new Asset.fromString(outputAssetId, formattedCode));
+      } else {
+        transform.addOutput(new Asset.fromString(outputAssetId, ''));
       }
     });
   }
 }
+
+AssetId _depsAssetId(AssetId primaryId) =>
+    new AssetId(primaryId.package, toDepsExtension(primaryId.path));
 
 /// Transformer responsible for removing unnecessary `.ng_deps.json` files
 /// created by {@link DirectiveProcessor}.
@@ -54,17 +62,22 @@ class EmptyNgDepsRemover extends Transformer implements DeclaringTransformer {
   bool isPrimary(AssetId id) => id.path.endsWith(DEPS_JSON_EXTENSION);
 
   /// We occasionally consume the primary input, but that depends on the
-  /// contents of the file, so we conservatively do not declare any outputs nor
-  /// consumption to ensure that we declare a superset of our actual outputs.
+  /// contents of the file, so we conservatively declare that we both consume
+  /// and output the asset. This prevents barback from making any assumptions
+  /// about the existence of the assets until after the transformer has run.
   @override
-  declareOutputs(DeclaringTransform transform) => null;
+  declareOutputs(DeclaringTransform transform) {
+    transform.consumePrimary();
+    transform.declareOutput(transform.primaryId);
+  }
 
   @override
   Future apply(Transform transform) async {
     await log.initZoned(transform, () async {
       var reader = new AssetReader.fromTransform(transform);
-      if (!(await isNecessary(reader, transform.primaryInput.id))) {
-        transform.consumePrimary();
+      transform.consumePrimary();
+      if ((await isNecessary(reader, transform.primaryInput.id))) {
+        transform.addOutput(transform.primaryInput);
       }
     });
   }
