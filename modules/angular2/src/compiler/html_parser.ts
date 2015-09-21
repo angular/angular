@@ -17,9 +17,11 @@ import {
 } from './html_ast';
 
 import {escapeDoubleQuoteString} from './util';
+import {Injectable} from 'angular2/src/core/di';
 
 const NG_NON_BINDABLE = 'ng-non-bindable';
 
+@Injectable()
 export class HtmlParser {
   parse(template: string, sourceInfo: string): HtmlAst[] {
     var root = DOM.createTemplate(template);

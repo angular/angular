@@ -9,9 +9,10 @@ import {
   beforeEach,
   afterEach,
   AsyncTestCompleter,
-  inject
+  inject,
+  beforeEachBindings
 } from 'angular2/test_lib';
-import {IS_DART} from '../platform';
+import {bind} from 'angular2/src/core/di';
 
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {MapWrapper} from 'angular2/src/core/facade/collection';
@@ -19,21 +20,16 @@ import {Promise} from 'angular2/src/core/facade/async';
 
 import {ChangeDetectionCompiler} from 'angular2/src/compiler/change_detector_compiler';
 
-import {HtmlParser} from 'angular2/src/compiler/html_parser';
 import {
-  DirectiveMetadata,
+  NormalizedDirectiveMetadata,
   TypeMetadata,
-  ChangeDetectionMetadata,
-  SourceModule
-} from 'angular2/src/compiler/api';
-
-import {MockSchemaRegistry} from './template_parser_spec';
+  ChangeDetectionMetadata
+} from 'angular2/src/compiler/directive_metadata';
+import {SourceModule, SourceExpression, moduleRef} from 'angular2/src/compiler/source_module';
 
 import {TemplateParser} from 'angular2/src/compiler/template_parser';
 
 import {
-  Parser,
-  Lexer,
   ChangeDetectorGenConfig,
   ChangeDetectionStrategy,
   ChangeDispatcher,
@@ -45,61 +41,76 @@ import {
 
 import {evalModule} from './eval_module';
 
+import {TEST_BINDINGS} from './test_bindings';
 import {TestContext, TestDispatcher, TestPipes} from './change_detector_mocks';
+import {codeGenValueFn, codeGenExportVariable} from 'angular2/src/compiler/util';
 
 // Attention: These module names have to correspond to real modules!
-const MODULE_NAME = 'angular2/test/compiler/change_detector_compiler_spec';
+const THIS_MODULE = 'angular2/test/compiler/change_detector_compiler_spec';
+var THIS_MODULE_REF = moduleRef(THIS_MODULE);
 
 export function main() {
   describe('ChangeDetectorCompiler', () => {
-    var domParser: HtmlParser;
+    beforeEachBindings(() => TEST_BINDINGS);
+
     var parser: TemplateParser;
+    var compiler: ChangeDetectionCompiler;
 
-    function createCompiler(useJit: boolean): ChangeDetectionCompiler {
-      return new ChangeDetectionCompiler(new ChangeDetectorGenConfig(true, true, false, useJit));
-    }
-
-    beforeEach(() => {
-      domParser = new HtmlParser();
-      parser = new TemplateParser(
-          new Parser(new Lexer()),
-          new MockSchemaRegistry({'invalidProp': false}, {'mappedAttr': 'mappedProp'}));
-    });
+    beforeEach(inject([TemplateParser, ChangeDetectionCompiler], (_parser, _compiler) => {
+      parser = _parser;
+      compiler = _compiler;
+    }));
 
     describe('compileComponentRuntime', () => {
       function detectChanges(compiler: ChangeDetectionCompiler, template: string,
-                             directives: DirectiveMetadata[] = CONST_EXPR([])): string[] {
-        var type = new TypeMetadata({typeName: 'SomeComp'});
-        var parsedTemplate = parser.parse(domParser.parse(template, 'TestComp'), directives);
+                             directives: NormalizedDirectiveMetadata[] = CONST_EXPR([])): string[] {
+        var type = new TypeMetadata({name: 'SomeComp'});
+        var parsedTemplate = parser.parse(template, directives, 'TestComp');
         var factories =
             compiler.compileComponentRuntime(type, ChangeDetectionStrategy.Default, parsedTemplate);
         return testChangeDetector(factories[0]);
       }
 
-      it('should watch element properties (no jit)', () => {
-        expect(detectChanges(createCompiler(false), '<div [el-prop]="someProp">'))
-            .toEqual(['elementProperty(elProp)=someValue']);
+      describe('no jit', () => {
+        beforeEachBindings(() => [
+          bind(ChangeDetectorGenConfig)
+              .toValue(new ChangeDetectorGenConfig(true, true, false, false))
+        ]);
+        it('should watch element properties', () => {
+          expect(detectChanges(compiler, '<div [el-prop]="someProp">'))
+              .toEqual(['elementProperty(elProp)=someValue']);
+        });
       });
 
-      it('should watch element properties (jit)', () => {
-        expect(detectChanges(createCompiler(true), '<div [el-prop]="someProp">'))
-            .toEqual(['elementProperty(elProp)=someValue']);
+      describe('jit', () => {
+        beforeEachBindings(() => [
+          bind(ChangeDetectorGenConfig)
+              .toValue(new ChangeDetectorGenConfig(true, true, false, true))
+        ]);
+        it('should watch element properties', () => {
+          expect(detectChanges(compiler, '<div [el-prop]="someProp">'))
+              .toEqual(['elementProperty(elProp)=someValue']);
+        });
+
       });
+
+
     });
 
     describe('compileComponentCodeGen', () => {
       function detectChanges(compiler: ChangeDetectionCompiler, template: string,
-                             directives: DirectiveMetadata[] = CONST_EXPR([])): Promise<string[]> {
-        var type = new TypeMetadata({typeName: 'SomeComp'});
-        var parsedTemplate = parser.parse(domParser.parse(template, 'TestComp'), directives);
-        var sourceModule =
+                             directives: NormalizedDirectiveMetadata[] = CONST_EXPR([])):
+          Promise<string[]> {
+        var type = new TypeMetadata({name: 'SomeComp'});
+        var parsedTemplate = parser.parse(template, directives, 'TestComp');
+        var sourceExpression =
             compiler.compileComponentCodeGen(type, ChangeDetectionStrategy.Default, parsedTemplate);
-        var testableModule = createTestableModule(sourceModule, 0);
+        var testableModule = createTestableModule(sourceExpression, 0).getSourceWithImports();
         return evalModule(testableModule.source, testableModule.imports, null);
       }
 
       it('should watch element properties', inject([AsyncTestCompleter], (async) => {
-           detectChanges(createCompiler(true), '<div [el-prop]="someProp">')
+           detectChanges(compiler, '<div [el-prop]="someProp">')
                .then((value) => {
                  expect(value).toEqual(['elementProperty(elProp)=someValue']);
                  async.done();
@@ -111,19 +122,12 @@ export function main() {
   });
 }
 
-
-function createTestableModule(sourceModule: SourceModule, changeDetectorIndex: number):
-    SourceModule {
-  var testableSource;
-  var testableImports = [[MODULE_NAME, 'mocks']].concat(sourceModule.imports);
-  if (IS_DART) {
-    testableSource = `${sourceModule.source}  
-  run(_) { return mocks.testChangeDetector(CHANGE_DETECTORS[${changeDetectorIndex}]); }`;
-  } else {
-    testableSource = `${sourceModule.source}  
-  exports.run = function(_) { return mocks.testChangeDetector(CHANGE_DETECTORS[${changeDetectorIndex}]); }`;
-  }
-  return new SourceModule(null, testableSource, testableImports);
+function createTestableModule(source: SourceExpression, changeDetectorIndex: number): SourceModule {
+  var resultExpression =
+      `${THIS_MODULE_REF}testChangeDetector((${source.expression})[${changeDetectorIndex}])`;
+  var testableSource = `${source.declarations.join('\n')}
+  ${codeGenExportVariable('run')}${codeGenValueFn(['_'], resultExpression)};`;
+  return new SourceModule(null, testableSource);
 }
 
 export function testChangeDetector(changeDetectorFactory: Function): string[] {

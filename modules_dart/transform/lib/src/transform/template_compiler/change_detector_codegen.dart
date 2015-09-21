@@ -28,6 +28,11 @@ class Codegen {
   /// The names of already generated classes.
   final Set<String> _names = new Set<String>();
 
+  /// The module prefix for pregen_proto_change_detector
+  final String _genPrefix;
+
+  Codegen([this._genPrefix = _GEN_PREFIX_WITH_DOT]);
+
   /// Generates a change detector class with name `changeDetectorTypeName`,
   /// which must not conflict with other generated classes in the same
   /// `.ng_deps.dart` file.  The change detector is used to detect changes in
@@ -40,7 +45,7 @@ class Codegen {
           'conflicts with an earlier generated change detector class.');
     }
     _names.add(changeDetectorTypeName);
-    new _CodegenState(typeName, changeDetectorTypeName, def)
+    new _CodegenState(_genPrefix, typeName, changeDetectorTypeName, def)
       .._writeToBuf(_buf)
       .._writeInitToBuf(_initBuf);
   }
@@ -86,9 +91,13 @@ class _CodegenState {
   final List<BindingTarget> _propertyBindingTargets;
 
   String get _changeDetectionStrategyAsCode =>
-    _changeDetectionStrategy == null ? 'null' : '${_GEN_PREFIX}.${_changeDetectionStrategy}';
+    _changeDetectionStrategy == null ? 'null' : '${_genPrefix}${_changeDetectionStrategy}';
+
+  /// The module prefix for pregen_proto_change_detector
+  final String _genPrefix;
 
   _CodegenState._(
+      this._genPrefix,
       this._changeDetectorDefId,
       this._contextTypeName,
       this._changeDetectorTypeName,
@@ -101,15 +110,16 @@ class _CodegenState {
       this._names,
       this._genConfig);
 
-  factory _CodegenState(String typeName, String changeDetectorTypeName,
+  factory _CodegenState(String genPrefix, String typeName, String changeDetectorTypeName,
       ChangeDetectorDefinition def) {
     var protoRecords = createPropertyRecords(def);
     var eventBindings = createEventRecords(def);
     var propertyBindingTargets = def.bindingRecords.map((b) => b.target).toList();
 
-    var names = new CodegenNameUtil(protoRecords, eventBindings, def.directiveRecords, _UTIL);
-    var logic = new CodegenLogicUtil(names, _UTIL, def.strategy);
+    var names = new CodegenNameUtil(protoRecords, eventBindings, def.directiveRecords, '$genPrefix$_UTIL');
+    var logic = new CodegenLogicUtil(names, '$genPrefix$_UTIL', def.strategy);
     return new _CodegenState._(
+        genPrefix,
         def.id,
         typeName,
         changeDetectorTypeName,
@@ -125,7 +135,7 @@ class _CodegenState {
 
   void _writeToBuf(StringBuffer buf) {
     buf.write('''\n
-      class $_changeDetectorTypeName extends $_BASE_CLASS<$_contextTypeName> {
+      class $_changeDetectorTypeName extends ${_genPrefix}$_BASE_CLASS<$_contextTypeName> {
         ${_genDeclareFields()}
 
         $_changeDetectorTypeName(dispatcher)
@@ -161,10 +171,10 @@ class _CodegenState {
 
         ${_genDirectiveIndices()};
 
-        static $_GEN_PREFIX.ProtoChangeDetector
+        static ${_genPrefix}ProtoChangeDetector
             $PROTO_CHANGE_DETECTOR_FACTORY_METHOD(
-            $_GEN_PREFIX.ChangeDetectorDefinition def) {
-          return new $_GEN_PREFIX.PregenProtoChangeDetector(
+            ${_genPrefix}ChangeDetectorDefinition def) {
+          return new ${_genPrefix}PregenProtoChangeDetector(
               (a) => new $_changeDetectorTypeName(a),
               def);
         }
@@ -233,7 +243,7 @@ class _CodegenState {
 
   void _writeInitToBuf(StringBuffer buf) {
     buf.write('''
-      $_GEN_PREFIX.preGeneratedProtoDetectors['$_changeDetectorDefId'] =
+      ${_genPrefix}preGeneratedProtoDetectors['$_changeDetectorDefId'] =
           $_changeDetectorTypeName.newProtoChangeDetector;
     ''');
   }
@@ -336,7 +346,7 @@ class _CodegenState {
     var pipeType = r.name;
 
     var init = '''
-      if ($_IDENTICAL_CHECK_FN($pipe, $_UTIL.uninitialized)) {
+      if (${_genPrefix}$_IDENTICAL_CHECK_FN($pipe, ${_genPrefix}$_UTIL.uninitialized)) {
         $pipe = ${_names.getPipesAccessorName()}.get('$pipeType');
       }
     ''';
@@ -350,8 +360,8 @@ class _CodegenState {
     var condition = '''!${pipe}.pure || (${contexOrArgCheck.join(" || ")})''';
 
     var check = '''
-      if ($_NOT_IDENTICAL_CHECK_FN($oldValue, $newValue)) {
-        $newValue = $_UTIL.unwrapValue($newValue);
+      if (${_genPrefix}$_NOT_IDENTICAL_CHECK_FN($oldValue, $newValue)) {
+        $newValue = ${_genPrefix}$_UTIL.unwrapValue($newValue);
         ${_genChangeMarker(r)}
         ${_genUpdateDirectiveOrElement(r)}
         ${_genAddToChanges(r)}
@@ -376,7 +386,7 @@ class _CodegenState {
     ''';
 
     var check = '''
-      if ($_NOT_IDENTICAL_CHECK_FN($newValue, $oldValue)) {
+      if (${_genPrefix}$_NOT_IDENTICAL_CHECK_FN($newValue, $oldValue)) {
         ${_genChangeMarker(r)}
         ${_genUpdateDirectiveOrElement(r)}
         ${_genAddToChanges(r)}
@@ -507,13 +517,14 @@ class _CodegenState {
 
 const PROTO_CHANGE_DETECTOR_FACTORY_METHOD = 'newProtoChangeDetector';
 
-const _BASE_CLASS = '$_GEN_PREFIX.AbstractChangeDetector';
+const _BASE_CLASS = 'AbstractChangeDetector';
 const _CHANGES_LOCAL = 'changes';
 const _GEN_PREFIX = '_gen';
+const _GEN_PREFIX_WITH_DOT = _GEN_PREFIX + '.';
 const _GEN_RECORDS_METHOD_NAME = '_createRecords';
-const _IDENTICAL_CHECK_FN = '$_GEN_PREFIX.looseIdentical';
-const _NOT_IDENTICAL_CHECK_FN = '$_GEN_PREFIX.looseNotIdentical';
+const _IDENTICAL_CHECK_FN = 'looseIdentical';
+const _NOT_IDENTICAL_CHECK_FN = 'looseNotIdentical';
 const _IS_CHANGED_LOCAL = 'isChanged';
 const _PREGEN_PROTO_CHANGE_DETECTOR_IMPORT =
     'package:angular2/src/core/change_detection/pregen_proto_change_detector.dart';
-const _UTIL = '$_GEN_PREFIX.ChangeDetectionUtil';
+const _UTIL = 'ChangeDetectionUtil';

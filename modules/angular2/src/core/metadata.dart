@@ -1,14 +1,14 @@
 library angular2.src.core.metadata;
 
-import "package:angular2/src/core/facade/collection.dart" show List;
+import 'package:angular2/src/core/facade/collection.dart' show List;
 import 'package:angular2/src/core/change_detection/change_detection.dart';
-import "./metadata/di.dart";
-import "./metadata/directives.dart";
-import "./metadata/view.dart";
+import './metadata/di.dart';
+import './metadata/directives.dart';
+import './metadata/view.dart';
 
-export "./metadata/di.dart";
-export "./metadata/directives.dart";
-export "./metadata/view.dart";
+export './metadata/di.dart';
+export './metadata/directives.dart';
+export './metadata/view.dart';
 
 /**
  * See: [DirectiveMetadata] for docs.
@@ -16,7 +16,8 @@ export "./metadata/view.dart";
 class Directive extends DirectiveMetadata {
   const Directive({String selector, List<String> properties,
   List<String> events, Map<String, String> host,
-  List bindings, String exportAs,
+  List bindings, String exportAs, String moduleId,
+  Map<String, dynamic> queries,
   bool compileChildren: true})
     : super(
     selector: selector,
@@ -25,6 +26,8 @@ class Directive extends DirectiveMetadata {
     host: host,
     bindings: bindings,
     exportAs: exportAs,
+    moduleId: moduleId,
+    queries: queries,
     compileChildren: compileChildren);
 }
 
@@ -33,18 +36,22 @@ class Directive extends DirectiveMetadata {
  */
 class Component extends ComponentMetadata {
   const Component({String selector, List<String> properties,
-  List<String> events, Map<String, String> host,
-  List bindings, String exportAs,
+  List<String> events, Map<String, String> host, bool dynamicLoadable,
+  List bindings, String exportAs, String moduleId,
+  Map<String, dynamic> queries,
   bool compileChildren, List viewBindings, ChangeDetectionStrategy changeDetection})
     : super(
     selector: selector,
     properties: properties,
     events: events,
     host: host,
+    dynamicLoadable: dynamicLoadable,
     bindings: bindings,
     exportAs: exportAs,
+    moduleId: moduleId,
     compileChildren: compileChildren,
     viewBindings: viewBindings,
+    queries: queries,
     changeDetection: changeDetection);
 }
 
@@ -88,11 +95,43 @@ class Query extends QueryMetadata {
 }
 
 /**
+ * See: [ContentChildrenMetadata] for docs.
+ */
+class ContentChildren extends ContentChildrenMetadata {
+  const ContentChildren(dynamic /*Type | string*/ selector, {bool descendants: false})
+    : super(selector, descendants: descendants);
+}
+
+/**
+ * See: [ContentChildMetadata] for docs.
+ */
+class ContentChild extends ContentChildMetadata {
+  const ContentChild(dynamic /*Type | string*/ selector)
+    : super(selector);
+}
+
+/**
  * See: [ViewQueryMetadata] for docs.
  */
 class ViewQuery extends ViewQueryMetadata {
   const ViewQuery(dynamic /*Type | string*/ selector)
     : super(selector, descendants: true);
+}
+
+/**
+ * See: [ViewChildrenMetadata] for docs.
+ */
+class ViewChildren extends ViewChildrenMetadata {
+  const ViewChildren(dynamic /*Type | string*/ selector)
+    : super(selector);
+}
+
+/**
+ * See: [ViewChildMetadata] for docs.
+ */
+class ViewChild extends ViewChildMetadata {
+  const ViewChild(dynamic /*Type | string*/ selector)
+    : super(selector);
 }
 
 /**

@@ -5,6 +5,8 @@ import 'types.dart';
 import 'dart:mirrors';
 import 'platform_reflection_capabilities.dart';
 
+var DOT_REGEX = new RegExp('\\.');
+
 class ReflectionCapabilities implements PlatformReflectionCapabilities {
   ReflectionCapabilities([metadataReader]) {}
 
@@ -314,5 +316,9 @@ class ReflectionCapabilities implements PlatformReflectionCapabilities {
 
   String importUri(Type type) {
     return '${(reflectClass(type).owner as LibraryMirror).uri}';
+  }
+
+  String moduleId(Type type) {
+    return '${MirrorSystem.getName((reflectClass(type).owner as LibraryMirror).qualifiedName).replaceAll(DOT_REGEX, "/")}';
   }
 }

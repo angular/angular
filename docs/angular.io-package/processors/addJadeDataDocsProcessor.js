@@ -44,17 +44,26 @@ module.exports = function addJadeDataDocsProcessor() {
             title: _.map(path.basename(doc.fileInfo.baseName).split('_'), function(part) {
               return titleCase(part);
             }).join(' '),
-            intro: doc.description.replace('"', '\"').replace(/\s*(\r?\n|\r)\s*/g," ")
+            intro: doc.description.replace('"', '\"').replace(/\s*(\r?\n|\r)\s*/g," "),
+            docType: 'module'
           }];
 
           // GET DATA FOR EACH PAGE (CLASS, VARS, FUNCTIONS)
-          var modulePageInfo  = _.map(doc.exports, function(exportDoc) {
-            return {
+          var modulePageInfo  = _(doc.exports)
+          .map(function(exportDoc) {
+            var dataDoc = {
               name: exportDoc.name + '-' + exportDoc.docType,
               title: exportDoc.name,
-              varType: exportDoc.symbolTypeName && titleCase(exportDoc.symbolTypeName)
+              docType: exportDoc.docType
             };
-          });
+            if (exportDoc.symbolTypeName) dataDoc.varType = titleCase(exportDoc.symbolTypeName);
+            if (exportDoc.originalModule) dataDoc.originalModule = exportDoc.originalModule;
+            return dataDoc;
+          })
+          .sortBy('name')
+          .value();
+
+
 
           //COMBINE PAGE DATA
           var allPageData = indexPageInfo.concat(modulePageInfo);

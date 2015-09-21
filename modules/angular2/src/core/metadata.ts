@@ -5,8 +5,12 @@
 
 export {
   QueryMetadata,
+  ContentChildrenMetadata,
+  ContentChildMetadata,
+  ViewChildrenMetadata,
   ViewQueryMetadata,
-  AttributeMetadata,
+  ViewChildMetadata,
+  AttributeMetadata
 } from './metadata/di';
 
 export {
@@ -23,8 +27,12 @@ export {ViewMetadata, ViewEncapsulation} from './metadata/view';
 
 import {
   QueryMetadata,
+  ContentChildrenMetadata,
+  ContentChildMetadata,
+  ViewChildrenMetadata,
+  ViewChildMetadata,
   ViewQueryMetadata,
-  AttributeMetadata,
+  AttributeMetadata
 } from './metadata/di';
 
 import {
@@ -138,17 +146,31 @@ export interface ViewDecorator extends TypeDecorator {
  */
 export interface DirectiveFactory {
   (obj: {
-    selector?: string, properties?: string[], events?: string[], host?: StringMap<string, string>,
-        bindings?: any[], exportAs?: string, compileChildren?: boolean;
+    selector?: string,
+    properties?: string[],
+    events?: string[],
+    host?: StringMap<string, string>,
+    bindings?: any[],
+    exportAs?: string,
+    moduleId?: string,
+    compileChildren?: boolean,
+    queries?: StringMap<string, any>
   }): DirectiveDecorator;
   new (obj: {
-    selector?: string, properties?: string[], events?: string[], host?: StringMap<string, string>,
-        bindings?: any[], exportAs?: string, compileChildren?: boolean;
+    selector?: string,
+    properties?: string[],
+    events?: string[],
+    host?: StringMap<string, string>,
+    bindings?: any[],
+    exportAs?: string,
+    moduleId?: string,
+    compileChildren?: boolean,
+    queries?: StringMap<string, any>
   }): DirectiveMetadata;
 }
 
 /**
- * {@link ComponentAnnotation} factory for creating annotations, decorators or DSL.
+ * {@link ComponentMetadata} factory for creating annotations, decorators or DSL.
  *
  * ## Example as TypeScript Decorator
  *
@@ -196,9 +218,12 @@ export interface ComponentFactory {
     properties?: string[],
     events?: string[],
     host?: StringMap<string, string>,
+    dynamicLoadable?: boolean,
     bindings?: any[],
     exportAs?: string,
+    moduleId?: string,
     compileChildren?: boolean,
+    queries?: StringMap<string, any>,
     viewBindings?: any[],
     changeDetection?: ChangeDetectionStrategy,
   }): ComponentDecorator;
@@ -207,16 +232,19 @@ export interface ComponentFactory {
     properties?: string[],
     events?: string[],
     host?: StringMap<string, string>,
+    dynamicLoadable?: boolean,
     bindings?: any[],
     exportAs?: string,
+    moduleId?: string,
     compileChildren?: boolean,
+    queries?: StringMap<string, any>,
     viewBindings?: any[],
     changeDetection?: ChangeDetectionStrategy,
   }): ComponentMetadata;
 }
 
 /**
- * {@link ViewAnnotation} factory for creating annotations, decorators or DSL.
+ * {@link ViewMetadata} factory for creating annotations, decorators or DSL.
  *
  * ## Example as TypeScript Decorator
  *
@@ -331,7 +359,7 @@ export interface AttributeFactory {
 /**
  * {@link QueryMetadata} factory for creating annotations, decorators or DSL.
  *
- * ## Example as TypeScript Decorator
+ * ### Example as TypeScript Decorator
  *
  * ```
  * import {Query, QueryList, Component, View} from "angular2/angular2";
@@ -339,13 +367,13 @@ export interface AttributeFactory {
  * @Component({...})
  * @View({...})
  * class MyComponent {
- *   constructor(@Query(SomeType) queryList: QueryList) {
+ *   constructor(@Query(SomeType) queryList: QueryList<SomeType>) {
  *     ...
  *   }
  * }
  * ```
  *
- * ## Example as ES5 DSL
+ * ### Example as ES5 DSL
  *
  * ```
  * var MyComponent = ng
@@ -358,7 +386,7 @@ export interface AttributeFactory {
  *   })
  * ```
  *
- * ## Example as ES5 annotation
+ * ### Example as ES5 annotation
  *
  * ```
  * var MyComponent = function(queryList) {
@@ -378,6 +406,27 @@ export interface QueryFactory {
   (selector: Type | string, {descendants}?: {descendants?: boolean}): ParameterDecorator;
   new (selector: Type | string, {descendants}?: {descendants?: boolean}): QueryMetadata;
 }
+
+export interface ContentChildrenFactory {
+  (selector: Type | string, {descendants}?: {descendants?: boolean}): any;
+  new (selector: Type | string, {descendants}?: {descendants?: boolean}): ContentChildrenMetadata;
+}
+
+export interface ContentChildFactory {
+  (selector: Type | string): any;
+  new (selector: Type | string): ContentChildFactory;
+}
+
+export interface ViewChildrenFactory {
+  (selector: Type | string): any;
+  new (selector: Type | string): ViewChildrenMetadata;
+}
+
+export interface ViewChildFactory {
+  (selector: Type | string): any;
+  new (selector: Type | string): ViewChildFactory;
+}
+
 
 /**
  * {@link PipeMetadata} factory for creating decorators.
@@ -507,6 +556,25 @@ export var Attribute: AttributeFactory = makeParamDecorator(AttributeMetadata);
  */
 export var Query: QueryFactory = makeParamDecorator(QueryMetadata);
 
+/**
+ * {@link ContentChildrenMetadata} factory function.
+ */
+export var ContentChildren: ContentChildrenFactory = makePropDecorator(ContentChildrenMetadata);
+
+/**
+ * {@link ContentChildMetadata} factory function.
+ */
+export var ContentChild: ContentChildFactory = makePropDecorator(ContentChildMetadata);
+
+/**
+ * {@link ViewChildrenMetadata} factory function.
+ */
+export var ViewChildren: ViewChildrenFactory = makePropDecorator(ViewChildrenMetadata);
+
+/**
+ * {@link ViewChildMetadata} factory function.
+ */
+export var ViewChild: ViewChildFactory = makePropDecorator(ViewChildMetadata);
 
 /**
  * {@link di/ViewQueryMetadata} factory function.

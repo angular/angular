@@ -8,11 +8,13 @@ import {
   assertionsEnabled,
   isBlank
 } from 'angular2/src/core/facade/lang';
+import {Injectable} from 'angular2/src/core/di';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {Parser, AST, ASTWithSource} from 'angular2/src/core/change_detection/change_detection';
 import {TemplateBinding} from 'angular2/src/core/change_detection/parser/ast';
+import {NormalizedDirectiveMetadata} from './directive_metadata';
+import {HtmlParser} from './html_parser';
 
-import {DirectiveMetadata, TemplateMetadata} from './api';
 import {
   ElementAst,
   BoundElementPropertyAst,
@@ -68,12 +70,16 @@ const STYLE_PREFIX = 'style';
 
 var TEXT_CSS_SELECTOR = CssSelector.parse('*')[0];
 
+@Injectable()
 export class TemplateParser {
-  constructor(private _exprParser: Parser, private _schemaRegistry: ElementSchemaRegistry) {}
+  constructor(private _exprParser: Parser, private _schemaRegistry: ElementSchemaRegistry,
+              private _htmlParser: HtmlParser) {}
 
-  parse(domNodes: HtmlAst[], directives: DirectiveMetadata[]): TemplateAst[] {
+  parse(template: string, directives: NormalizedDirectiveMetadata[],
+        sourceInfo: string): TemplateAst[] {
     var parseVisitor = new TemplateParseVisitor(directives, this._exprParser, this._schemaRegistry);
-    var result = htmlVisitAll(parseVisitor, domNodes, EMPTY_COMPONENT);
+    var result =
+        htmlVisitAll(parseVisitor, this._htmlParser.parse(template, sourceInfo), EMPTY_COMPONENT);
     if (parseVisitor.errors.length > 0) {
       var errorString = parseVisitor.errors.join('\n');
       throw new BaseException(`Template parse errors:\n${errorString}`);
@@ -85,7 +91,7 @@ export class TemplateParser {
 class TemplateParseVisitor implements HtmlAstVisitor {
   selectorMatcher: SelectorMatcher;
   errors: string[] = [];
-  constructor(directives: DirectiveMetadata[], private _exprParser: Parser,
+  constructor(directives: NormalizedDirectiveMetadata[], private _exprParser: Parser,
               private _schemaRegistry: ElementSchemaRegistry) {
     this.selectorMatcher = new SelectorMatcher();
     directives.forEach(directive => {
@@ -371,31 +377,32 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   }
 
   private _parseDirectives(selectorMatcher: SelectorMatcher,
-                           elementCssSelector: CssSelector): DirectiveMetadata[] {
+                           elementCssSelector: CssSelector): NormalizedDirectiveMetadata[] {
     var directives = [];
     selectorMatcher.match(elementCssSelector,
                           (selector, directive) => { directives.push(directive); });
     // Need to sort the directives so that we get consistent results throughout,
     // as selectorMatcher uses Maps inside.
     // Also need to make components the first directive in the array
-    ListWrapper.sort(directives, (dir1: DirectiveMetadata, dir2: DirectiveMetadata) => {
-      var dir1Comp = dir1.isComponent;
-      var dir2Comp = dir2.isComponent;
-      if (dir1Comp && !dir2Comp) {
-        return -1;
-      } else if (!dir1Comp && dir2Comp) {
-        return 1;
-      } else {
-        return StringWrapper.compare(dir1.type.typeName, dir2.type.typeName);
-      }
-    });
+    ListWrapper.sort(directives,
+                     (dir1: NormalizedDirectiveMetadata, dir2: NormalizedDirectiveMetadata) => {
+                       var dir1Comp = dir1.isComponent;
+                       var dir2Comp = dir2.isComponent;
+                       if (dir1Comp && !dir2Comp) {
+                         return -1;
+                       } else if (!dir1Comp && dir2Comp) {
+                         return 1;
+                       } else {
+                         return StringWrapper.compare(dir1.type.name, dir2.type.name);
+                       }
+                     });
     return directives;
   }
 
-  private _createDirectiveAsts(elementName: string, directives: DirectiveMetadata[],
+  private _createDirectiveAsts(elementName: string, directives: NormalizedDirectiveMetadata[],
                                props: BoundElementOrDirectiveProperty[],
                                sourceInfo: string): DirectiveAst[] {
-    return directives.map((directive: DirectiveMetadata) => {
+    return directives.map((directive: NormalizedDirectiveMetadata) => {
       var hostProperties: BoundElementPropertyAst[] = [];
       var hostEvents: BoundEventAst[] = [];
       var directiveProperties: BoundDirectivePropertyAst[] = [];
@@ -510,7 +517,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   private _findComponentDirectiveNames(directives: DirectiveAst[]): string[] {
     var componentTypeNames: string[] = [];
     directives.forEach(directive => {
-      var typeName = directive.directive.type.typeName;
+      var typeName = directive.directive.type.name;
       if (directive.directive.isComponent) {
         componentTypeNames.push(typeName);
       }

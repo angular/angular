@@ -1,18 +1,17 @@
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
-import {isPresent, global} from 'angular2/src/core/facade/lang';
+import {isPresent, global, StringWrapper} from 'angular2/src/core/facade/lang';
 
 var evalCounter = 0;
 
-function nextModuleName() {
+function nextModuleId() {
   return `evalScript${evalCounter++}`;
 }
 
-export function evalModule(moduleSource: string, moduleImports: string[][], args: any[]):
-    Promise<any> {
-  var moduleName = nextModuleName();
+export function evalModule(moduleSource: string, imports: string[][], args: any[]): Promise<any> {
+  var moduleId = nextModuleId();
   var moduleSourceWithImports = [];
   var importModuleNames = [];
-  moduleImports.forEach(sourceImport => {
+  imports.forEach(sourceImport => {
     var modName = sourceImport[0];
     var modAlias = sourceImport[1];
     importModuleNames.push(modName);
@@ -28,8 +27,8 @@ export function evalModule(moduleSource: string, moduleImports: string[][], args
   var moduleBody = new Function('require', 'exports', 'module', moduleSourceWithImports.join('\n'));
   var System = global['System'];
   if (isPresent(System) && isPresent(System.registerDynamic)) {
-    System.registerDynamic(moduleName, importModuleNames, false, moduleBody);
-    return <Promise<any>>System.import(moduleName).then((module) => module.run(args));
+    System.registerDynamic(moduleId, importModuleNames, false, moduleBody);
+    return <Promise<any>>System.import(moduleId).then((module) => module.run(args));
   } else {
     var exports = {};
     moduleBody(require, exports, {});

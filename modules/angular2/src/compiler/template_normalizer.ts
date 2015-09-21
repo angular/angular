@@ -1,11 +1,16 @@
-import {TypeMetadata, TemplateMetadata} from './api';
-import {ViewEncapsulation} from 'angular2/src/core/render/api';
+import {
+  TypeMetadata,
+  TemplateMetadata,
+  NormalizedDirectiveMetadata,
+  NormalizedTemplateMetadata
+} from './directive_metadata';
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 
 import {XHR} from 'angular2/src/core/render/xhr';
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 import {resolveStyleUrls} from './style_url_resolver';
+import {Injectable} from 'angular2/src/core/di';
 
 import {
   HtmlAstVisitor,
@@ -25,43 +30,43 @@ const LINK_STYLE_HREF_ATTR = 'href';
 const LINK_STYLE_REL_VALUE = 'stylesheet';
 const STYLE_ELEMENT = 'style';
 
-export class TemplateLoader {
+@Injectable()
+export class TemplateNormalizer {
   constructor(private _xhr: XHR, private _urlResolver: UrlResolver,
               private _domParser: HtmlParser) {}
 
-  loadTemplate(directiveType: TypeMetadata, encapsulation: ViewEncapsulation, template: string,
-               templateUrl: string, styles: string[],
-               styleUrls: string[]): Promise<TemplateMetadata> {
-    if (isPresent(template)) {
-      return PromiseWrapper.resolve(this.createTemplateFromString(
-          directiveType, encapsulation, template, directiveType.typeUrl, styles, styleUrls));
+  normalizeTemplate(directiveType: TypeMetadata,
+                    template: TemplateMetadata): Promise<NormalizedTemplateMetadata> {
+    if (isPresent(template.template)) {
+      return PromiseWrapper.resolve(this.normalizeLoadedTemplate(
+          directiveType, template, template.template, directiveType.moduleId));
     } else {
-      var sourceAbsUrl = this._urlResolver.resolve(directiveType.typeUrl, templateUrl);
+      var sourceAbsUrl = this._urlResolver.resolve(directiveType.moduleId, template.templateUrl);
       return this._xhr.get(sourceAbsUrl)
-          .then(templateContent =>
-                    this.createTemplateFromString(directiveType, encapsulation, templateContent,
-                                                  sourceAbsUrl, styles, styleUrls));
+          .then(templateContent => this.normalizeLoadedTemplate(directiveType, template,
+                                                                templateContent, sourceAbsUrl));
     }
   }
 
-  createTemplateFromString(directiveType: TypeMetadata, encapsulation: ViewEncapsulation,
-                           template: string, templateSourceUrl: string, styles: string[],
-                           styleUrls: string[]): TemplateMetadata {
-    var domNodes = this._domParser.parse(template, directiveType.typeName);
+  normalizeLoadedTemplate(directiveType: TypeMetadata, templateMeta: TemplateMetadata,
+                          template: string, templateAbsUrl: string): NormalizedTemplateMetadata {
+    var domNodes = this._domParser.parse(template, directiveType.name);
     var visitor = new TemplatePreparseVisitor();
     var remainingNodes = htmlVisitAll(visitor, domNodes);
-    var allStyles = styles.concat(visitor.styles);
-    var allStyleUrls = styleUrls.concat(visitor.styleUrls);
-    var allResolvedStyles = allStyles.map(style => {
-      var styleWithImports = resolveStyleUrls(this._urlResolver, templateSourceUrl, style);
-      styleWithImports.styleUrls.forEach(styleUrl => allStyleUrls.push(styleUrl));
-      return styleWithImports.style;
-    });
+    var allStyles = templateMeta.styles.concat(visitor.styles);
 
     var allStyleAbsUrls =
-        allStyleUrls.map(styleUrl => this._urlResolver.resolve(templateSourceUrl, styleUrl));
-    return new TemplateMetadata({
-      encapsulation: encapsulation,
+        visitor.styleUrls.map(url => this._urlResolver.resolve(templateAbsUrl, url))
+            .concat(templateMeta.styleUrls.map(
+                url => this._urlResolver.resolve(directiveType.moduleId, url)));
+
+    var allResolvedStyles = allStyles.map(style => {
+      var styleWithImports = resolveStyleUrls(this._urlResolver, templateAbsUrl, style);
+      styleWithImports.styleUrls.forEach(styleUrl => allStyleAbsUrls.push(styleUrl));
+      return styleWithImports.style;
+    });
+    return new NormalizedTemplateMetadata({
+      encapsulation: templateMeta.encapsulation,
       template: this._domParser.unparse(remainingNodes),
       styles: allResolvedStyles,
       styleAbsUrls: allStyleAbsUrls,

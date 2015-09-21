@@ -12,12 +12,13 @@ module.exports = function(config) {
       // Loaded through the System loader, in `test-main.js`.
       {pattern: 'dist/js/dev/es5/**', included: false, watched: false},
 
+      'node_modules/es6-shim/es6-shim.js',
+
       // zone-microtask must be included first as it contains a Promise monkey patch
       'node_modules/zone.js/dist/zone-microtask.js',
       'node_modules/zone.js/dist/long-stack-trace-zone.js',
       'node_modules/zone.js/dist/jasmine-patch.js',
-
-      'node_modules/es6-shim/es6-shim.js',
+      
       // Including systemjs because it defines `__eval`, which produces correct stack traces.
       'modules/angular2/src/test_lib/shims_for_IE.js',
       'node_modules/systemjs/dist/system.src.js',

@@ -1,9 +1,11 @@
-import {StringWrapper, isBlank} from 'angular2/src/core/facade/lang';
+import {StringWrapper, isBlank, isJsObject} from 'angular2/src/core/facade/lang';
 
 var CAMEL_CASE_REGEXP = /([A-Z])/g;
 var DASH_CASE_REGEXP = /-([a-z])/g;
 var SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n/g;
 var DOUBLE_QUOTE_ESCAPE_STRING_RE = /"|\\|\n/g;
+
+export var IS_DART = !isJsObject({});
 
 export function camelCaseToDashCase(input: string): string {
   return StringWrapper.replaceAllMapped(input, CAMEL_CASE_REGEXP,
@@ -37,4 +39,36 @@ function escapeString(input: string, re: RegExp): string {
       return `\\${match[0]}`;
     }
   });
+}
+
+export function codeGenExportVariable(name: string): string {
+  return IS_DART ? `var ${name} = ` : `var ${name} = exports['${name}'] = `;
+}
+
+export function codeGenConcatArray(expression: string): string {
+  return `${IS_DART ? '..addAll' : '.concat'}(${expression})`;
+}
+
+export function codeGenMapArray(argNames: string[], callback: string): string {
+  if (IS_DART) {
+    return `.map( (${argNames.join(',')}) => ${callback} ).toList()`;
+  } else {
+    return `.map(function(${argNames.join(',')}) { return ${callback}; })`;
+  }
+}
+
+export function codeGenReplaceAll(pattern: string, value: string): string {
+  if (IS_DART) {
+    return `.replaceAll('${pattern}', '${value}')`;
+  } else {
+    return `.replace(/${pattern}/g, '${value}')`;
+  }
+}
+
+export function codeGenValueFn(params: string[], value: string): string {
+  if (IS_DART) {
+    return `(${params.join(',')}) => ${value}`;
+  } else {
+    return `function(${params.join(',')}) { return ${value}; }`;
+  }
 }

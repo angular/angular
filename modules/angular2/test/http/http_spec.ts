@@ -103,6 +103,7 @@ export function main() {
     var injector: Injector;
     var backend: MockBackend;
     var baseResponse;
+    var jsonp: Jsonp;
     beforeEach(() => {
       injector = Injector.resolveAndCreate([
         BaseRequestOptions,
@@ -111,9 +112,15 @@ export function main() {
             function(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
               return new Http(backend, defaultOptions);
             },
+            [MockBackend, BaseRequestOptions]),
+        bind(Jsonp).toFactory(
+            function(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
+              return new Jsonp(backend, defaultOptions);
+            },
             [MockBackend, BaseRequestOptions])
       ]);
       http = injector.get(Http);
+      jsonp = injector.get(Jsonp);
       backend = injector.get(MockBackend);
       baseResponse = new Response(new ResponseOptions({body: 'base response'}));
     });
@@ -160,6 +167,13 @@ export function main() {
         //         async.done();
         //       });
         //     }));
+
+
+        it('should throw if url is not a string or Request', () => {
+          var req = <Request>{};
+          expect(() => http.request(req))
+              .toThrowError('First argument must be a url string or Request instance.');
+        });
       });
 
 
@@ -304,6 +318,16 @@ export function main() {
                                                   new RequestOptions({search: 'as_eq=1.x'})),
                                          res => {});
            }));
+      });
+    });
+
+    describe('Jsonp', () => {
+      describe('.request()', () => {
+        it('should throw if url is not a string or Request', () => {
+          var req = <Request>{};
+          expect(() => jsonp.request(req))
+              .toThrowError('First argument must be a url string or Request instance.');
+        });
       });
     });
   });

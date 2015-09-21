@@ -1,4 +1,3 @@
-
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {Type, isBlank, isPresent, assertionsEnabled} from 'angular2/src/core/facade/lang';
 import {bind, Binding, Injector, OpaqueToken} from 'angular2/src/core/di';
@@ -47,9 +46,12 @@ import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mappe
 
 
 /**
- * Contains everything that is safe to share between applications.
+ * Constructs the set of bindings meant for use at the platform level.
+ *
+ * These are bindings that should be singletons shared among all Angular applications
+ * running on the page.
  */
-export function rootBindings(): Array<Type | Binding | any[]> {
+export function platformBindings(): Array<Type | Binding | any[]> {
   return [bind(Reflector).toValue(reflector), TestabilityRegistry];
 }
 
@@ -145,18 +147,19 @@ export function platformCommon(bindings?: Array<Type | Binding | any[]>, initial
   }
 
   if (isBlank(bindings)) {
-    bindings = rootBindings();
+    bindings = platformBindings();
   }
   _platform = new PlatformRef(Injector.resolveAndCreate(bindings), () => { _platform = null; });
   return _platform;
 }
 
 /**
- * Represent the Angular context on a page, and is a true singleton.
+ * The Angular platform is the entry point for Angular on a web page. Each page
+ * has exactly one platform, and services (such as reflection) which are common
+ * to every Angular application running on the page are bound in its scope.
  *
- * The platform {@link Injector} injects dependencies which are also
- * truly singletons in the context of a page (such as the browser's
- * cookie jar).
+ * A page's platform is initialized implicitly when {@link bootstrap}() is called, or
+ * explicitly by calling {@link platform}().
  */
 export class PlatformRef {
   /**
@@ -170,14 +173,38 @@ export class PlatformRef {
   constructor(private _injector: Injector, private _dispose: () => void) {}
 
   /**
-   * Get the platform {@link Injector}.
+   * Retrieve the platform {@link Injector}, which is the parent injector for
+   * every Angular application on the page and provides singleton bindings.
    */
   get injector(): Injector { return this._injector; }
 
   /**
-   * Build a new Angular application with the given bindings. The `ApplicationRef`
-   * returned can be used to bootstrap one or more root components within the
-   * application.
+   * Instantiate a new Angular application on the page.
+   *
+   * # What is an application?
+   *
+   * Each Angular application has its own zone, change detection, compiler,
+   * renderer, and other framework components. An application hosts one or more
+   * root components, which can be initialized via `ApplicationRef.bootstrap()`.
+   *
+   * # Application Bindings
+   *
+   * Angular applications require numerous bindings to be properly instantiated.
+   * When using `application()` to create a new app on the page, these bindings
+   * must be provided. Fortunately, there are helper functions to configure
+   * typical bindings, as shown in the example below.
+   *
+   * # Example
+   * ```
+   * var myAppBindings = [MyAppService];
+   *
+   * platform()
+   *   .application([applicationCommonBindings(), applicationDomBindings(), myAppBindings])
+   *   .bootstrap(MyTopLevelComponent);
+   * ```
+   * # See Also
+   *
+   * See the {@link bootstrap} documentation for more details.
    */
   application(bindings: Array<Type | Binding | any[]>): ApplicationRef {
     var app = this._initApp(createNgZone(), bindings);
@@ -185,10 +212,16 @@ export class PlatformRef {
   }
 
   /**
-   * Build a new Angular application from asynchronously provided bindings.
+   * Instantiate a new Angular application on the page, using bindings which
+   * are only available asynchronously. One such use case is to initialize an
+   * application running in a web worker.
    *
-   * Runs the `AsyncLoader` callback in the application `Zone` and constructs
-   * a new Application from the bindings provided by the `Promise` it returns.
+   * # Usage
+   *
+   * `bindingFn` is a function that will be called in the new application's zone.
+   * It should return a {@link Promise} to a list of bindings to be used for the
+   * new application. Once this promise resolves, the application will be
+   * constructed in the same manner as a normal `application()`.
    */
   asyncApplication(bindingFn: (zone: NgZone) =>
                        Promise<Array<Type | Binding | any[]>>): Promise<ApplicationRef> {
@@ -242,11 +275,9 @@ export class PlatformRef {
 }
 
 /**
- * Represents an Angular application.
+ * A reference to an Angular application running on a page.
  *
- * Use to retrieve the application {@link Injector} or to bootstrap new
- * components at the root of the application. Can also be used to dispose
- * of the entire application and all its loaded components.
+ * For more about Angular applications, see the documentation for {@link bootstrap}.
  */
 export class ApplicationRef {
   private _bootstrapListeners: Function[] = [];
@@ -258,15 +289,34 @@ export class ApplicationRef {
   constructor(private _platform: PlatformRef, private _zone: NgZone, private _injector: Injector) {}
 
   /**
-   * Register a listener to be called each time a new root component type is bootstrapped.
+   * Register a listener to be called each time `bootstrap()` is called to bootstrap
+   * a new root component.
    */
   registerBootstrapListener(listener: (ref: ComponentRef) => void): void {
     this._bootstrapListeners.push(listener);
   }
 
   /**
-   * Bootstrap a new component at the root level of the application, optionally with
-   * component specific bindings.
+   * Bootstrap a new component at the root level of the application.
+   *
+   * # Bootstrap process
+   *
+   * When bootstrapping a new root component into an application, Angular mounts the
+   * specified application component onto DOM elements identified by the [componentType]'s
+   * selector and kicks off automatic change detection to finish initializing the component.
+   *
+   * # Optional Bindings
+   *
+   * Bindings for the given component can optionally be overridden via the `bindings`
+   * parameter. These bindings will only apply for the root component being added and any
+   * child components under it.
+   *
+   * # Example
+   * ```
+   * var app = platform.application([applicationCommonBindings(), applicationDomBindings()];
+   * app.bootstrap(FirstRootComponent);
+   * app.bootstrap(SecondRootComponent, [bind(OverrideBinding).toClass(OverriddenBinding)]);
+   * ```
    */
   bootstrap(componentType: Type, bindings?: Array<Type | Binding | any[]>): Promise<ComponentRef> {
     var completer = PromiseWrapper.completer();
@@ -308,10 +358,13 @@ export class ApplicationRef {
   get injector(): Injector { return this._injector; }
 
   /**
-   * Retrieve the application {@link Zone}.
+   * Retrieve the application {@link NgZone}.
    */
   get zone(): NgZone { return this._zone; }
 
+  /**
+   * Dispose of this application and all of its components.
+   */
   dispose(): void {
     // TODO(alxhub): Dispose of the NgZone.
     this._rootComponents.forEach((ref) => ref.dispose());

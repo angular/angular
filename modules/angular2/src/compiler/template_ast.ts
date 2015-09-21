@@ -1,6 +1,6 @@
 import {AST} from 'angular2/src/core/change_detection/change_detection';
 import {isPresent} from 'angular2/src/core/facade/lang';
-import {DirectiveMetadata} from './api';
+import {NormalizedDirectiveMetadata} from './directive_metadata';
 
 export interface TemplateAst {
   sourceInfo: string;
@@ -69,7 +69,7 @@ export class ElementAst implements TemplateAst {
             this.directives.length > 0);
   }
 
-  getComponent(): DirectiveMetadata {
+  getComponent(): NormalizedDirectiveMetadata {
     return this.directives.length > 0 && this.directives[0].directive.isComponent ?
                this.directives[0].directive :
                null;
@@ -94,7 +94,8 @@ export class BoundDirectivePropertyAst implements TemplateAst {
 }
 
 export class DirectiveAst implements TemplateAst {
-  constructor(public directive: DirectiveMetadata, public properties: BoundDirectivePropertyAst[],
+  constructor(public directive: NormalizedDirectiveMetadata,
+              public properties: BoundDirectivePropertyAst[],
               public hostProperties: BoundElementPropertyAst[], public hostEvents: BoundEventAst[],
               public sourceInfo: string) {}
   visit(visitor: TemplateAstVisitor, context: any): any {

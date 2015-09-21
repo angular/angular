@@ -160,6 +160,7 @@ export class RenderDirectiveMetadata {
   hostListeners: Map<string, string>;
   hostProperties: Map<string, string>;
   hostAttributes: Map<string, string>;
+  queries: StringMap<string, any>;
   // group 1: "property" from "[property]"
   // group 2: "event" from "(event)"
   private static _hostRegExp = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$/g;
@@ -167,7 +168,7 @@ export class RenderDirectiveMetadata {
   constructor({id, selector, compileChildren, events, hostListeners, hostProperties, hostAttributes,
                properties, readAttributes, type, callOnDestroy, callOnChanges, callDoCheck,
                callOnInit, callAfterContentInit, callAfterContentChecked, callAfterViewInit,
-               callAfterViewChecked, changeDetection, exportAs}: {
+               callAfterViewChecked, changeDetection, exportAs, queries}: {
     id?: string,
     selector?: string,
     compileChildren?: boolean,
@@ -187,7 +188,8 @@ export class RenderDirectiveMetadata {
     callAfterViewInit?: boolean,
     callAfterViewChecked?: boolean,
     changeDetection?: ChangeDetectionStrategy,
-    exportAs?: string
+    exportAs?: string,
+    queries?: StringMap<string, any>
   }) {
     this.id = id;
     this.selector = selector;
@@ -209,12 +211,13 @@ export class RenderDirectiveMetadata {
     this.callAfterViewChecked = callAfterViewChecked;
     this.changeDetection = changeDetection;
     this.exportAs = exportAs;
+    this.queries = queries;
   }
 
   static create({id, selector, compileChildren, events, host, properties, readAttributes, type,
                  callOnDestroy, callOnChanges, callDoCheck, callOnInit, callAfterContentInit,
                  callAfterContentChecked, callAfterViewInit, callAfterViewChecked, changeDetection,
-                 exportAs}: {
+                 exportAs, queries}: {
     id?: string,
     selector?: string,
     compileChildren?: boolean,
@@ -232,7 +235,8 @@ export class RenderDirectiveMetadata {
     callAfterViewInit?: boolean,
     callAfterViewChecked?: boolean,
     changeDetection?: ChangeDetectionStrategy,
-    exportAs?: string
+    exportAs?: string,
+    queries?: StringMap<string, any>
   }): RenderDirectiveMetadata {
     let hostListeners = new Map();
     let hostProperties = new Map();
@@ -271,7 +275,8 @@ export class RenderDirectiveMetadata {
       callAfterViewInit: callAfterViewInit,
       callAfterViewChecked: callAfterViewChecked,
       changeDetection: changeDetection,
-      exportAs: exportAs
+      exportAs: exportAs,
+      queries: queries
     });
   }
 }
@@ -409,7 +414,7 @@ export interface RenderBeginElementCmd extends RenderBeginCmd {
 
 export interface RenderBeginComponentCmd extends RenderBeginElementCmd {
   nativeShadow: boolean;
-  templateId: string;
+  templateId: number;
 }
 
 export interface RenderEmbeddedTemplateCmd extends RenderBeginElementCmd {

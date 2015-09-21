@@ -12,6 +12,7 @@ import {
   TestComponentBuilder,
 } from 'angular2/test_lib';
 
+import {isPresent} from 'angular2/src/core/facade/lang';
 
 import {
   Component,
@@ -24,7 +25,15 @@ import {
   Query,
   QueryList,
   View,
-  ViewQuery
+  ViewQuery,
+  ContentChildren,
+  ViewChildren,
+  ContentChild,
+  ViewChild,
+  AfterContentInit,
+  AfterViewInit,
+  AfterContentChecked,
+  AfterViewChecked
 } from 'angular2/core';
 
 import {asNativeElements} from 'angular2/src/core/debug';
@@ -36,7 +45,7 @@ export function main() {
   describe('Query API', () => {
 
     describe("querying by directive type", () => {
-      it('should contain all direct child directives in the light dom',
+      it('should contain all direct child directives in the light dom (constructor)',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<div text="1"></div>' +
                           '<needs-query text="2"><div text="3">' +
@@ -51,6 +60,84 @@ export function main() {
 
                  expect(asNativeElements(view.debugElement.componentViewChildren))
                      .toHaveText('2|3|');
+
+                 async.done();
+               });
+         }));
+
+      it('should contain all direct child directives in the content dom',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template =
+               '<needs-content-children #q><div text="foo"></div></needs-content-children>';
+
+           tcb.overrideTemplate(MyComp, template)
+               .createAsync(MyComp)
+               .then((view) => {
+                 view.detectChanges();
+
+                 var q = view.debugElement.componentViewChildren[0].getLocal('q');
+
+                 view.detectChanges();
+
+                 expect(q.textDirChildren.length).toEqual(1);
+                 expect(q.numberOfChildrenAfterContentInit).toEqual(1);
+
+                 async.done();
+               });
+         }));
+
+      it('should contain the first content child',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template =
+               '<needs-content-child #q><div *ng-if="shouldShow" text="foo"></div></needs-content-child>';
+
+           tcb.overrideTemplate(MyComp, template)
+               .createAsync(MyComp)
+               .then((view) => {
+                 view.debugElement.componentInstance.shouldShow = true;
+                 view.detectChanges();
+
+                 var q = view.debugElement.componentViewChildren[0].getLocal('q');
+
+                 expect(q.log).toEqual([["setter", "foo"], ["init", "foo"], ["check", "foo"]]);
+
+                 view.debugElement.componentInstance.shouldShow = false;
+                 view.detectChanges();
+
+                 expect(q.log).toEqual([
+                   ["setter", "foo"],
+                   ["init", "foo"],
+                   ["check", "foo"],
+                   ["setter", null],
+                   ["check", null]
+                 ]);
+
+                 async.done();
+               });
+         }));
+
+      it('should contain the first view child',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = '<needs-view-child #q></needs-view-child>';
+
+           tcb.overrideTemplate(MyComp, template)
+               .createAsync(MyComp)
+               .then((view) => {
+                 view.detectChanges();
+                 var q = view.debugElement.componentViewChildren[0].getLocal('q');
+
+                 expect(q.log).toEqual([["setter", "foo"], ["init", "foo"], ["check", "foo"]]);
+
+                 q.shouldShow = false;
+                 view.detectChanges();
+
+                 expect(q.log).toEqual([
+                   ["setter", "foo"],
+                   ["init", "foo"],
+                   ["check", "foo"],
+                   ["setter", null],
+                   ["check", null]
+                 ]);
 
                  async.done();
                });
@@ -385,6 +472,27 @@ export function main() {
                  async.done();
                });
          }));
+
+      it('should contain all child directives in the view dom',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = '<needs-view-children #q></needs-view-children>';
+
+           tcb.overrideTemplate(MyComp, template)
+               .createAsync(MyComp)
+               .then((view) => {
+                 view.detectChanges();
+
+                 var q = view.debugElement.componentViewChildren[0].getLocal('q');
+
+                 view.detectChanges();
+
+                 expect(q.textDirChildren.length).toEqual(1);
+                 expect(q.numberOfChildrenAfterViewInit).toEqual(1);
+
+                 async.done();
+               });
+         }));
+
     });
 
     describe("querying in the view", () => {
@@ -552,6 +660,72 @@ class TextDirective {
   constructor() {}
 }
 
+@Component({selector: 'needs-content-children'})
+@View({template: ''})
+class NeedsContentChildren implements AfterContentInit {
+  @ContentChildren(TextDirective) textDirChildren: QueryList<TextDirective>;
+  numberOfChildrenAfterContentInit: number;
+
+  afterContentInit() { this.numberOfChildrenAfterContentInit = this.textDirChildren.length; }
+}
+
+@Component({selector: 'needs-view-children'})
+@View({template: '<div text></div>', directives: [TextDirective]})
+class NeedsViewChildren implements AfterViewInit {
+  @ViewChildren(TextDirective) textDirChildren: QueryList<TextDirective>;
+  numberOfChildrenAfterViewInit: number;
+
+  afterViewInit() { this.numberOfChildrenAfterViewInit = this.textDirChildren.length; }
+}
+
+@Component({selector: 'needs-content-child'})
+@View({template: ''})
+class NeedsContentChild implements AfterContentInit, AfterContentChecked {
+  _child: TextDirective;
+
+  @ContentChild(TextDirective)
+  set child(value) {
+    this._child = value;
+    this.log.push(['setter', isPresent(value) ? value.text : null]);
+  }
+
+  get child() { return this._child; }
+  log = [];
+
+  afterContentInit() { this.log.push(["init", isPresent(this.child) ? this.child.text : null]); }
+
+  afterContentChecked() {
+    this.log.push(["check", isPresent(this.child) ? this.child.text : null]);
+  }
+}
+
+@Component({selector: 'needs-view-child'})
+@View({
+  template: `
+    <div *ng-if="shouldShow" text="foo"></div>
+  `,
+  directives: [NgIf, TextDirective]
+})
+class NeedsViewChild implements AfterViewInit,
+    AfterViewChecked {
+  shouldShow: boolean = true;
+  _child: TextDirective;
+
+  @ViewChild(TextDirective)
+  set child(value) {
+    this._child = value;
+    this.log.push(['setter', isPresent(value) ? value.text : null]);
+  }
+
+  get child() { return this._child; }
+  log = [];
+
+  afterViewInit() { this.log.push(["init", isPresent(this.child) ? this.child.text : null]); }
+
+  afterViewChecked() { this.log.push(["check", isPresent(this.child) ? this.child.text : null]); }
+}
+
+
 @Directive({selector: '[dir]'})
 @Injectable()
 class InertDirective {
@@ -718,6 +892,10 @@ class NeedsTpl {
     NeedsViewQueryOrder,
     NeedsViewQueryByLabel,
     NeedsViewQueryOrderWithParent,
+    NeedsContentChildren,
+    NeedsViewChildren,
+    NeedsViewChild,
+    NeedsContentChild,
     NeedsTpl,
     TextDirective,
     InertDirective,

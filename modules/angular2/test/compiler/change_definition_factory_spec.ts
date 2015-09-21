@@ -9,12 +9,15 @@ import {
   inject,
   it,
   xit,
-  TestComponentBuilder
+  TestComponentBuilder,
+  beforeEachBindings
 } from 'angular2/test_lib';
 import {MapWrapper} from 'angular2/src/core/facade/collection';
-import {HtmlParser} from 'angular2/src/compiler/html_parser';
-import {DirectiveMetadata, TypeMetadata, ChangeDetectionMetadata} from 'angular2/src/compiler/api';
-import {MockSchemaRegistry} from './template_parser_spec';
+import {
+  NormalizedDirectiveMetadata,
+  TypeMetadata,
+  ChangeDetectionMetadata
+} from 'angular2/src/compiler/directive_metadata';
 import {TemplateParser} from 'angular2/src/compiler/template_parser';
 import {
   Parser,
@@ -33,9 +36,12 @@ import {Pipes} from 'angular2/src/core/change_detection/pipes';
 import {createChangeDetectorDefinitions} from 'angular2/src/compiler/change_definition_factory';
 import {TestContext, TestDirective, TestDispatcher, TestPipes} from './change_detector_mocks';
 
+import {TEST_BINDINGS} from './test_bindings';
+
 export function main() {
   describe('ChangeDefinitionFactory', () => {
-    var domParser: HtmlParser;
+    beforeEachBindings(() => TEST_BINDINGS);
+
     var parser: TemplateParser;
     var dispatcher: TestDispatcher;
     var context: TestContext;
@@ -44,26 +50,23 @@ export function main() {
     var pipes: Pipes;
     var eventLocals: Locals;
 
-    beforeEach(() => {
-      domParser = new HtmlParser();
-      parser = new TemplateParser(
-          new Parser(new Lexer()),
-          new MockSchemaRegistry({'invalidProp': false}, {'mappedAttr': 'mappedProp'}));
+    beforeEach(inject([TemplateParser], (_templateParser) => {
+      parser = _templateParser;
       context = new TestContext();
       directive = new TestDirective();
       dispatcher = new TestDispatcher([directive], []);
       locals = new Locals(null, MapWrapper.createFromStringMap({'someVar': null}));
       eventLocals = new Locals(null, MapWrapper.createFromStringMap({'$event': null}));
       pipes = new TestPipes();
-    });
+    }));
 
-    function createChangeDetector(template: string, directives: DirectiveMetadata[],
+    function createChangeDetector(template: string, directives: NormalizedDirectiveMetadata[],
                                   protoViewIndex: number = 0): ChangeDetector {
       var protoChangeDetectors =
-          createChangeDetectorDefinitions(
-              new TypeMetadata({typeName: 'SomeComp'}), ChangeDetectionStrategy.Default,
-              new ChangeDetectorGenConfig(true, true, false, false),
-              parser.parse(domParser.parse(template, 'TestComp'), directives))
+          createChangeDetectorDefinitions(new TypeMetadata({name: 'SomeComp'}),
+                                          ChangeDetectionStrategy.Default,
+                                          new ChangeDetectorGenConfig(true, true, false, false),
+                                          parser.parse(template, directives, 'TestComp'))
               .map(definition => new DynamicProtoChangeDetector(definition));
       var changeDetector = protoChangeDetectors[protoViewIndex].instantiate(dispatcher);
       changeDetector.hydrate(context, locals, dispatcher, pipes);
@@ -103,8 +106,8 @@ export function main() {
     });
 
     it('should write directive properties', () => {
-      var dirMeta = new DirectiveMetadata({
-        type: new TypeMetadata({typeName: 'SomeDir'}),
+      var dirMeta = new NormalizedDirectiveMetadata({
+        type: new TypeMetadata({name: 'SomeDir'}),
         selector: 'div',
         changeDetection: new ChangeDetectionMetadata({properties: ['dirProp']})
       });
@@ -117,8 +120,8 @@ export function main() {
     });
 
     it('should watch directive host properties', () => {
-      var dirMeta = new DirectiveMetadata({
-        type: new TypeMetadata({typeName: 'SomeDir'}),
+      var dirMeta = new NormalizedDirectiveMetadata({
+        type: new TypeMetadata({name: 'SomeDir'}),
         selector: 'div',
         changeDetection: new ChangeDetectionMetadata({hostProperties: {'elProp': 'dirProp'}})
       });
@@ -131,8 +134,8 @@ export function main() {
     });
 
     it('should handle directive events', () => {
-      var dirMeta = new DirectiveMetadata({
-        type: new TypeMetadata({typeName: 'SomeDir'}),
+      var dirMeta = new NormalizedDirectiveMetadata({
+        type: new TypeMetadata({name: 'SomeDir'}),
         selector: 'div',
         changeDetection:
             new ChangeDetectionMetadata({hostListeners: {'click': 'onEvent($event)'}})

@@ -1,26 +1,35 @@
-import {DirectiveMetadata, SourceModule, TypeMetadata} from './api';
+import {TypeMetadata, NormalizedDirectiveMetadata} from './directive_metadata';
+import {SourceModule, SourceExpression, moduleRef} from './source_module';
 import {ViewEncapsulation} from 'angular2/src/core/render/api';
 import {XHR} from 'angular2/src/core/render/xhr';
-import {StringWrapper, isJsObject, isBlank} from 'angular2/src/core/facade/lang';
+import {StringWrapper, isBlank} from 'angular2/src/core/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 import {ShadowCss} from 'angular2/src/core/render/dom/compiler/shadow_css';
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 import {resolveStyleUrls} from './style_url_resolver';
-import {escapeSingleQuoteString} from './util';
+import {
+  escapeSingleQuoteString,
+  IS_DART,
+  codeGenConcatArray,
+  codeGenMapArray,
+  codeGenReplaceAll,
+  codeGenExportVariable
+} from './util';
+import {Injectable} from 'angular2/src/core/di';
 
 const COMPONENT_VARIABLE = '%COMP%';
 var COMPONENT_REGEX = /%COMP%/g;
 const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
 const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
-var IS_DART = !isJsObject({});
 
+@Injectable()
 export class StyleCompiler {
   private _styleCache: Map<string, Promise<string[]>> = new Map<string, Promise<string[]>>();
   private _shadowCss: ShadowCss = new ShadowCss();
 
   constructor(private _xhr: XHR, private _urlResolver: UrlResolver) {}
 
-  compileComponentRuntime(component: DirectiveMetadata): Promise<string[]> {
+  compileComponentRuntime(component: NormalizedDirectiveMetadata): Promise<string[]> {
     var styles = component.template.styles;
     var styleAbsUrls = component.template.styleAbsUrls;
     return this._loadStyles(styles, styleAbsUrls,
@@ -29,7 +38,7 @@ export class StyleCompiler {
                                                                      `${component.type.id}`)));
   }
 
-  compileComponentCodeGen(component: DirectiveMetadata): SourceModule {
+  compileComponentCodeGen(component: NormalizedDirectiveMetadata): SourceExpression {
     var shim = component.template.encapsulation === ViewEncapsulation.Emulated;
     var suffix;
     if (shim) {
@@ -39,16 +48,17 @@ export class StyleCompiler {
     } else {
       suffix = '';
     }
-    return this._styleCodeGen(`$component.type.typeUrl}.styles`, component.template.styles,
-                              component.template.styleAbsUrls, shim, suffix);
+    return this._styleCodeGen(component.template.styles, component.template.styleAbsUrls, shim,
+                              suffix);
   }
 
-  compileStylesheetCodeGen(moduleName: string, cssText: string): SourceModule[] {
-    var styleWithImports = resolveStyleUrls(this._urlResolver, moduleName, cssText);
+  compileStylesheetCodeGen(moduleId: string, cssText: string): SourceModule[] {
+    var styleWithImports = resolveStyleUrls(this._urlResolver, moduleId, cssText);
     return [
-      this._styleCodeGen(moduleName, [styleWithImports.style], styleWithImports.styleUrls, false,
-                         ''),
-      this._styleCodeGen(moduleName, [styleWithImports.style], styleWithImports.styleUrls, true, '')
+      this._styleModule(moduleId, false, this._styleCodeGen([styleWithImports.style],
+                                                            styleWithImports.styleUrls, false, '')),
+      this._styleModule(moduleId, true, this._styleCodeGen([styleWithImports.style],
+                                                           styleWithImports.styleUrls, true, ''))
     ];
   }
 
@@ -74,55 +84,41 @@ export class StyleCompiler {
     });
   }
 
-  private _styleCodeGen(moduleName: string, plainStyles: string[], absUrls: string[], shim: boolean,
-                        suffix: string): SourceModule {
-    var imports: string[][] = [];
-    var moduleSource = `var STYLES = (`;
-    moduleSource +=
+  private _styleCodeGen(plainStyles: string[], absUrls: string[], shim: boolean,
+                        suffix: string): SourceExpression {
+    var expressionSource = `(`;
+    expressionSource +=
         `[${plainStyles.map( plainStyle => escapeSingleQuoteString(this._shimIfNeeded(plainStyle, shim)) ).join(',')}]`;
     for (var i = 0; i < absUrls.length; i++) {
-      var url = absUrls[i];
-      var moduleAlias = `import${i}`;
-      imports.push([this._shimModuleName(url, shim), moduleAlias]);
-      moduleSource += `${codeGenConcatArray(moduleAlias+'.STYLES')}`;
+      var moduleId = this._shimModuleIdIfNeeded(absUrls[i], shim);
+      expressionSource += codeGenConcatArray(`${moduleRef(moduleId)}STYLES`);
     }
-    moduleSource += `)${suffix};`;
-    return new SourceModule(this._shimModuleName(moduleName, shim), moduleSource, imports);
+    expressionSource += `)${suffix}`;
+    return new SourceExpression([], expressionSource);
+  }
+
+  private _styleModule(moduleId: string, shim: boolean,
+                       expression: SourceExpression): SourceModule {
+    var moduleSource = `
+      ${expression.declarations.join('\n')}
+      ${codeGenExportVariable('STYLES')}${expression.expression};
+    `;
+    return new SourceModule(this._shimModuleIdIfNeeded(moduleId, shim), moduleSource);
   }
 
   private _shimIfNeeded(style: string, shim: boolean): string {
     return shim ? this._shadowCss.shimCssText(style, CONTENT_ATTR, HOST_ATTR) : style;
   }
 
-  private _shimModuleName(originalUrl: string, shim: boolean): string {
-    return shim ? `${originalUrl}.shim` : originalUrl;
+  private _shimModuleIdIfNeeded(moduleId: string, shim: boolean): string {
+    return shim ? `${moduleId}.shim` : moduleId;
   }
 }
 
-export function shimContentAttribute(component: TypeMetadata): string {
-  return StringWrapper.replaceAll(CONTENT_ATTR, COMPONENT_REGEX, `${component.id}`);
+export function shimContentAttribute(componentId: number): string {
+  return StringWrapper.replaceAll(CONTENT_ATTR, COMPONENT_REGEX, `${componentId}`);
 }
 
-export function shimHostAttribute(component: TypeMetadata): string {
-  return StringWrapper.replaceAll(HOST_ATTR, COMPONENT_REGEX, `${component.id}`);
-}
-
-function codeGenConcatArray(expression: string): string {
-  return `${IS_DART ? '..addAll' : '.concat'}(${expression})`;
-}
-
-function codeGenMapArray(argNames: string[], callback: string): string {
-  if (IS_DART) {
-    return `.map( (${argNames.join(',')}) => ${callback} ).toList()`;
-  } else {
-    return `.map(function(${argNames.join(',')}) { return ${callback}; })`;
-  }
-}
-
-function codeGenReplaceAll(pattern: string, value: string): string {
-  if (IS_DART) {
-    return `.replaceAll('${pattern}', '${value}')`;
-  } else {
-    return `.replace(/${pattern}/g, '${value}')`;
-  }
+export function shimHostAttribute(componentId: number): string {
+  return StringWrapper.replaceAll(HOST_ATTR, COMPONENT_REGEX, `${componentId}`);
 }

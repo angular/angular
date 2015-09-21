@@ -1,11 +1,4 @@
-import {
-  ReadyStates,
-  RequestModesOpts,
-  RequestMethods,
-  RequestCacheOpts,
-  RequestCredentialsOpts,
-  ResponseTypes
-} from './enums';
+import {ReadyStates, RequestMethods, ResponseTypes} from './enums';
 import {Headers} from './headers';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {EventEmitter} from 'angular2/src/core/facade/async';
@@ -49,9 +42,6 @@ export interface RequestOptionsArgs {
   headers?: Headers;
   // TODO: Support Blob, ArrayBuffer, JSON, URLSearchParams, FormData
   body?: string;
-  mode?: RequestModesOpts;
-  credentials?: RequestCredentialsOpts;
-  cache?: RequestCacheOpts;
 }
 
 /**

@@ -7,31 +7,27 @@ Uri toDartDataUri(String source) {
 }
 
 createIsolateSource(String moduleSource, List<List<String>> moduleImports) {
-  var moduleSourceParts = [];
+  var moduleSourceParts = ['import "dart:isolate";'];
   moduleImports.forEach((sourceImport) {
     String modName = sourceImport[0];
     String modAlias = sourceImport[1];
     moduleSourceParts.add("import 'package:${modName}.dart' as ${modAlias};");
   });
-  moduleSourceParts.add(moduleSource); 
-  
-  return """
-import "dart:isolate";
-import "${toDartDataUri(moduleSourceParts.join('\n'))}" as mut;
-
+  moduleSourceParts.add(moduleSource);
+  moduleSourceParts.add("""
 main(List args, SendPort replyPort) {
-  replyPort.send(mut.run(args));
+  replyPort.send(run(args));
 }
-""";
-
-} 
+""");
+  return moduleSourceParts.join('\n');
+}
 
 var timeStamp = new DateTime.now().millisecondsSinceEpoch;
 
 dynamic callModule(dynamic data) { return data.map( (a) => a+1); }
 
-evalModule(String moduleSource, List<List<String>> moduleImports, List args) {
-    String source = createIsolateSource(moduleSource, moduleImports);
+evalModule(String moduleSource, List<List<String>> imports, List args) {
+    String source = createIsolateSource(moduleSource, imports);
     Completer completer = new Completer();
     RawReceivePort receivePort;
     receivePort = new RawReceivePort( (message) {
@@ -43,12 +39,12 @@ evalModule(String moduleSource, List<List<String>> moduleImports, List args) {
     // With this, spawning multiple isolates gets faster as Darts does not
     // reload the files from the server.
     var packageRoot = Uri.parse('/packages_${timeStamp}');
-    return Isolate.spawnUri(toDartDataUri(source), args, receivePort.sendPort, packageRoot: packageRoot).then( (isolate) { 
+    return Isolate.spawnUri(toDartDataUri(source), args, receivePort.sendPort, packageRoot: packageRoot).then( (isolate) {
       RawReceivePort errorPort;
       errorPort = new RawReceivePort( (message) {
         completer.completeError(message);
       });
       isolate.addErrorListener(errorPort.sendPort);
-      return completer.future; 
+      return completer.future;
     });
 }

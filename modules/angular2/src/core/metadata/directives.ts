@@ -1,4 +1,4 @@
-import {isPresent, CONST, CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {isPresent, CONST, CONST_EXPR, Type} from 'angular2/src/core/facade/lang';
 import {InjectableMetadata} from 'angular2/src/core/di/metadata';
 import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection';
 
@@ -699,8 +699,66 @@ export class DirectiveMetadata extends InjectableMetadata {
    */
   exportAs: string;
 
+  /**
+   * The module id of the module that contains the directive.
+   * Needed to be able to resolve relative urls for templates and styles.
+   * In Dart, this can be determined automatically and does not need to be set.
+   * In CommonJS, this can always be set to `module.id`.
+   *
+   * ## Simple Example
+   *
+   * ```
+   * @Directive({
+   *   selector: 'someDir',
+   *   moduleId: module.id
+   * })
+   * class SomeDir {
+   * }
+   *
+   * ```
+   */
+  moduleId: string;
+
+  // TODO: add an example after ContentChildren and ViewChildren are in master
+  /**
+   * Configures the queries that will be injected into the directive.
+   *
+   * Content queries are set before the `afterContentInit` callback is called.
+   * View queries are set before the `afterViewInit` callback is called.
+   *
+   * ### Example
+   *
+   * ```
+   * @Component({
+   *   selector: 'someDir',
+   *   queries: {
+   *     contentChildren: new ContentChildren(ChildDirective),
+   *     viewChildren: new ViewChildren(ChildDirective)
+   *   }
+   * })
+   * @View({
+   *   template: '<child-directive></child-directive>',
+   *   directives: [ChildDirective]
+   * })
+   * class SomeDir {
+   *   contentChildren: QueryList<ChildDirective>,
+   *   viewChildren: QueryList<ChildDirective>
+   *
+   *   afterContentInit() {
+   *     // contentChildren is set
+   *   }
+   *
+   *   afterViewInit() {
+   *     // viewChildren is set
+   *   }
+   * }
+   * ```
+   */
+  queries: StringMap<string, any>;
+
   constructor({
-                  selector, properties, events, host, bindings, exportAs, compileChildren = true,
+                  selector, properties, events, host, bindings, exportAs, moduleId, queries,
+                  compileChildren = true,
               }: {
     selector?: string,
     properties?: string[],
@@ -708,6 +766,8 @@ export class DirectiveMetadata extends InjectableMetadata {
     host?: StringMap<string, string>,
     bindings?: any[],
     exportAs?: string,
+    moduleId?: string,
+    queries?: StringMap<string, any>,
     compileChildren?: boolean,
   } = {}) {
     super();
@@ -716,6 +776,8 @@ export class DirectiveMetadata extends InjectableMetadata {
     this.events = events;
     this.host = host;
     this.exportAs = exportAs;
+    this.moduleId = moduleId;
+    this.queries = queries;
     this.compileChildren = compileChildren;
     this.bindings = bindings;
   }
@@ -764,6 +826,27 @@ export class DirectiveMetadata extends InjectableMetadata {
  */
 @CONST()
 export class ComponentMetadata extends DirectiveMetadata {
+  /**
+  * Declare that this component can be programatically loaded.
+  * Every component that is used in bootstrap, routing, ... has to be
+  * annotated with this.
+  *
+  * ## Example
+  *
+  * ```
+  * @Component({
+  *   selector: 'root',
+  *   dynamicLoadable: true
+  * })
+  * @View({
+  *   template: 'hello world!'
+  * })
+  * class RootComponent {
+  * }
+  * ```
+   */
+  dynamicLoadable: boolean;
+
   /**
    * Defines the used change detection strategy.
    *
@@ -817,16 +900,20 @@ export class ComponentMetadata extends DirectiveMetadata {
    */
   viewBindings: any[];
 
-  constructor({selector, properties, events, host, exportAs, bindings, viewBindings,
-               changeDetection = ChangeDetectionStrategy.Default, compileChildren = true}: {
+  constructor({selector, properties, events, host, dynamicLoadable, exportAs, moduleId, bindings,
+               queries, viewBindings, changeDetection = ChangeDetectionStrategy.Default,
+               compileChildren = true}: {
     selector?: string,
     properties?: string[],
     events?: string[],
     host?: StringMap<string, string>,
+    dynamicLoadable?: boolean,
     bindings?: any[],
     exportAs?: string,
+    moduleId?: string,
     compileChildren?: boolean,
     viewBindings?: any[],
+    queries?: StringMap<string, any>,
     changeDetection?: ChangeDetectionStrategy,
   } = {}) {
     super({
@@ -835,12 +922,15 @@ export class ComponentMetadata extends DirectiveMetadata {
       events: events,
       host: host,
       exportAs: exportAs,
+      moduleId: moduleId,
       bindings: bindings,
+      queries: queries,
       compileChildren: compileChildren
     });
 
     this.changeDetection = changeDetection;
     this.viewBindings = viewBindings;
+    this.dynamicLoadable = dynamicLoadable;
   }
 }
 
