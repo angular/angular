@@ -31,7 +31,7 @@ export abstract class Connection {
  */
 export type RequestOptionsArgs = {
   url?: string;
-  method?: RequestMethods;
+  method?: string | RequestMethods;
   search?: string | URLSearchParams;
   headers?: Headers;
   // TODO: Support Blob, ArrayBuffer, JSON, URLSearchParams, FormData
