@@ -7,26 +7,44 @@ import {ElementRef} from './element_ref';
 import {ViewRef, HostViewRef} from './view_ref';
 
 /**
- * Represents a component instance as a node in application's component tree and provides access to
- * other objects related to this component instance.
+ * Represents an instance of a Component created via {@link DynamicComponentLoader}.
+ *
+ * `ComponentRef` provides access to the Component Instance as well other objects related to this
+ * Component Instance and allows you to destroy the Component Instance via the {@link #dispose}
+ * method.
  */
 export class ComponentRef {
   /**
-   * Location of the component host element.
+   * Location of the Host Element of this Component Instance.
    */
   location: ElementRef;
 
   /**
-   * Instance of component.
+   * The instance of the Component.
    */
   instance: any;
 
+  /**
+   * The user defined component type, represented via the constructor function.
+   *
+   * <!-- TODO: customize wording for Dart docs -->
+   */
   componentType: Type;
 
+  /**
+   * @private
+   *
+   * The injector provided {@link DynamicComponentLoader#loadAsRoot}.
+   *
+   * TODO(i): this api is useless and should be replaced by an injector retrieved from
+   *     the HostElementRef, which is currently not possible.
+   */
   injector: Injector;
 
   /**
    * @private
+   *
+   * TODO(i): refactor into public/private fields
    */
   constructor(location: ElementRef, instance: any, componentType: Type, injector: Injector,
               private _dispose: () => void) {
@@ -37,42 +55,61 @@ export class ComponentRef {
   }
 
   /**
-   * Returns the host {@link ViewRef}.
+   * The {@link ViewRef} of the Host View of this Component instance.
    */
   get hostView(): HostViewRef { return this.location.parentView; }
 
+  /**
+   * @private
+   *
+   * Returns the type of this Component instance.
+   *
+   * TODO(i): this api should be removed
+   */
   get hostComponentType(): Type { return this.componentType; }
 
+  /**
+   * @private
+   *
+   * The instance of the component.
+   *
+   * TODO(i): this api should be removed
+   */
   get hostComponent(): any { return this.instance; }
 
   /**
-   * Dispose of the component instance.
+   * Destroys the component instance and all of the data structures associated with it.
+   *
+   * TODO(i): rename to destroy to be consistent with AppViewManager and ViewContainerRef
    */
   dispose() { this._dispose(); }
 }
 
 /**
- * Service for creating an instance of a component and attaching it to the component tree of an
- * application at a specified location.
+ * Service for instantiating a Component and attaching it to a View at a specified location.
  */
 @Injectable()
 export class DynamicComponentLoader {
-
   /**
    * @private
    */
   constructor(private _compiler: Compiler, private _viewManager: AppViewManager) {}
 
   /**
-   * Loads a root component that is placed at the first element that matches the component's
-   * selector.
+   * Creates an instance of a Component `type` and attaches it to the first element in the
+   * platform-specific global view that matches the component's selector.
    *
-   * - `typeOrBinding` `Type` - representing the component to load.
-   * - `overrideSelector` (optional) selector to load the component at (or use
-   *   `@Component.selector`) The selector can be anywhere (i.e. outside the current component.)
-   * - `injector` {@link Injector} - optional injector to use for the component.
+   * In a browser the platform-specific global view is the main DOM Document.
    *
-   * The loaded component receives injection normally as a hosted view.
+   * If needed, the component's selector can be overridden via `overrideSelector`.
+   *
+   * You can optionally provide `injector` and this {@link Injector} will be used to instantiate the
+   * Component.
+   *
+   * To be notified when this Component instance is destroyed, you can also optionally provide
+   * `onDispose` callback.
+   *
+   * Returns a promise for the {@link ComponentRef} representing the newly created Component.
    *
    *
    * ## Example
@@ -137,10 +174,18 @@ export class DynamicComponentLoader {
   }
 
   /**
-   * Loads a component into the component view of the provided ElementRef next to the element
-   * with the given name.
+   * Creates an instance of a Component and attaches it to a View Container located inside of the
+   * Component View of another Component instance.
    *
-   * The loaded component receives injection normally as a hosted view.
+   * The targeted Component Instance is specified via its `hostLocation` {@link ElementRef}. The
+   * location within the Component View of this Component Instance is specified via `anchorName`
+   * Template Variable Name.
+   *
+   * You can optionally provide `bindings` to configure the {@link Injector} provisioned for this
+   * Component Instance.
+   *
+   * Returns a promise for the {@link ComponentRef} representing the newly created Component.
+   *
    *
    * ## Example
    *
@@ -190,9 +235,13 @@ export class DynamicComponentLoader {
   }
 
   /**
-   * Loads a component next to the provided ElementRef.
+   * Creates an instance of a Component and attaches it to the View Container found at the
+   * `location` specified as {@link ElementRef}.
    *
-   * The loaded component receives injection normally as a hosted view.
+   * You can optionally provide `bindings` to configure the {@link Injector} provisioned for this
+   * Component Instance.
+   *
+   * Returns a promise for the {@link ComponentRef} representing the newly created Component.
    *
    *
    * ## Example
@@ -216,7 +265,7 @@ export class DynamicComponentLoader {
    * })
    * class MyApp {
    *   constructor(dynamicComponentLoader: ng.DynamicComponentLoader, elementRef: ng.ElementRef) {
-   *     dynamicComponentLoader.loadIntoLocation(ChildComponent, elementRef, 'child');
+   *     dynamicComponentLoader.loadNextToLocation(ChildComponent, elementRef);
    *   }
    * }
    *

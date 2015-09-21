@@ -130,8 +130,7 @@ export class AppViewManagerUtils {
     elementInjector.traverseAndSetQueriesAsDirty();
   }
 
-  detachViewInContainer(parentView: viewModule.AppView, boundElementIndex: number,
-                        index: number) {
+  detachViewInContainer(parentView: viewModule.AppView, boundElementIndex: number, index: number) {
     var viewContainer = parentView.viewContainers[boundElementIndex];
     var view = viewContainer.views[index];
 

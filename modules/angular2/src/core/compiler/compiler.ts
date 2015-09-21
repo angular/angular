@@ -91,10 +91,11 @@ export class CompilerCache {
  * ```
  */
 /**
- * Service for compiling {@link Component}s so that they can be later instantiated and their
- * {@link View}s can be rendered.
+ * Low-level service for compiling {@link Component}s into {@link ProtoViewRef ProtoViews}s, which
+ * can later be used to create and render a Component instance.
  *
- * <!-- TODO: check Component and View links, they should likely go to glossary instead -->
+ * Most applications should instead use higher-level {@link DynamicComponentLoader} service, which
+ * both compiles and instantiates a Component.
  */
 @Injectable()
 export class Compiler {
@@ -133,8 +134,10 @@ export class Compiler {
   }
 
   /**
-   * Compiles an {@link EntryPointComponent entry-point Component} and returns a promise for a
-   * {@link ProtoViewRef} that can be passed into {@link AppViewManager
+   * Compiles a {@link Component} and returns a promise for this component's {@link ProtoViewRef}.
+   *
+   * Returns `ProtoViewRef` that can be later used to instantiate a component via
+   * {@link ViewContainerRef#createHostView} or {@link AppViewManager#createHostViewInContainer}.
    */
   compileInHost(componentType: Type): Promise<ProtoViewRef> {
     var r = wtfStartTimeRange('Compiler#compile()', stringify(componentType));

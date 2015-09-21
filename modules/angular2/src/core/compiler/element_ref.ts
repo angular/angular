@@ -3,17 +3,16 @@ import {ViewRef} from './view_ref';
 import {RenderViewRef, RenderElementRef, Renderer} from 'angular2/src/core/render/api';
 
 /**
- * Represents a location in a View that has an injection, change-detection and render contexts
+ * Represents a location in a View that has an injection, change-detection and render context
  * associated with it.
  *
  * An `ElementRef` is created for each element in the Template that contains a Directive, Component
  * or data-binding.
  *
- * An `ElementRef` is backed by a render-specific element. In the browser context, this is usually a
- * DOM element.
+ * An `ElementRef` is backed by a render-specific element. In the browser, this is usually a DOM
+ * element.
  */
 export class ElementRef implements RenderElementRef {
-
   /**
    * @private
    *
@@ -72,7 +71,7 @@ export class ElementRef implements RenderElementRef {
    *   </p>
    *   <p>
    *    Relying on direct DOM access creates tight coupling between your application and rendering
-   *    layers which will make it impossible to separate the two and deploy your application in into a
+   *    layers which will make it impossible to separate the two and deploy your application into a
    *    web worker.
    *   </p>
    *   <!-- TODO: add info about custom renderers that should be used instead -->
