@@ -226,7 +226,7 @@ Once the channel has been initialized either side can use the `from` and `to` me
 and receive messages. Both methods return EventEmitter. Expanding on the example from earlier:
 ```TypeScript
 // index.ts, which is running on the UI.
-import {bootstrap} from 'angukar2/web_worker/ui';
+import {bootstrap} from 'angular2/web_worker/ui';
 var instance = bootstrap("loader.js");
 var bus = instance.bus;
 bus.initChannel("My Custom Channel");
