@@ -9,7 +9,7 @@ export const DOCUMENT: OpaqueToken = CONST_EXPR(new OpaqueToken('DocumentToken')
 export const APP_ID: OpaqueToken = CONST_EXPR(new OpaqueToken('AppId'));
 
 function _appIdRandomBindingFactory() {
-  return `${randomChar()}${randomChar()}${randomChar()}`;
+  return `${_randomChar()}${_randomChar()}${_randomChar()}`;
 }
 
 /**
@@ -25,6 +25,6 @@ export const APP_ID_RANDOM_BINDING: Binding =
 export const MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE: OpaqueToken =
     CONST_EXPR(new OpaqueToken('MaxInMemoryElementsPerTemplate'));
 
-function randomChar(): string {
+function _randomChar(): string {
   return StringWrapper.fromCharCode(97 + Math.floor(Math.random() * 25));
 }

@@ -1,2 +1,0 @@
-// ignore in dart
-main() {}
