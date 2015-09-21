@@ -10,8 +10,29 @@ import {
 
 /**
  * Polyfill for [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers/Headers), as
- * specified in the [Fetch Spec](https://fetch.spec.whatwg.org/#headers-class). The only known
- * difference from the spec is the lack of an `entries` method.
+ * specified in the [Fetch Spec](https://fetch.spec.whatwg.org/#headers-class).
+ *
+ * The only known difference between this `Headers` implementation and the spec is the
+ * lack of an `entries` method.
+ *
+ * ### Example ([live demo](http://plnkr.co/edit/MTdwT6?p=preview))
+ *
+ * ```
+ * import {Headers} from 'angular2/http';
+ *
+ * var firstHeaders = new Headers();
+ * firstHeaders.append('Content-Type', 'image/jpeg');
+ * console.log(firstHeaders.get('Content-Type')) //'image/jpeg'
+ *
+ * // Create headers from Plain Old JavaScript Object
+ * var secondHeaders = new Headers({
+ *   'X-My-Custom-Header': 'Angular'
+ * });
+ * console.log(secondHeaders.get('X-My-Custom-Header')); //'Angular'
+ *
+ * var thirdHeaders = new Headers(secondHeaders);
+ * console.log(thirdHeaders.get('X-My-Custom-Header')); //'Angular'
+ * ```
  */
 export class Headers {
   _headersMap: Map<string, string[]>;
@@ -50,7 +71,9 @@ export class Headers {
    */
   delete (name: string): void { MapWrapper.delete(this._headersMap, name); }
 
-  forEach(fn: Function) { MapWrapper.forEach(this._headersMap, fn); }
+  forEach(fn: (value: string, name: string, headers: Headers) => any): void {
+    MapWrapper.forEach(this._headersMap, fn);
+  }
 
   /**
    * Returns first header that matches given name.
