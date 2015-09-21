@@ -240,8 +240,7 @@ bool isJsObject(o) {
 }
 
 bool assertionsEnabled() {
-  // TODO(yjbanov): verify that this is inlined after https://github.com/dart-lang/sdk/issues/24355
-  bool k = false;
+  var k = false;
   assert((k = true));
   return k;
 }
