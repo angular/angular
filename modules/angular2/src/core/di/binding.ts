@@ -207,6 +207,11 @@ export class Binding {
   /**
    * Creates multiple bindings matching the same token (a multi-binding).
    *
+   * Multi-bindings are used for creating pluggable service, where the system comes
+   * with some default bindings, and the user can register additonal bindings.
+   * The combination of the default bindings and the additional bindings will be
+   * used to drive the behavior of the system.
+   *
    * ### Example
    *
    * ```typescript

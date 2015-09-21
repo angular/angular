@@ -11,8 +11,6 @@ import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {
   Injector,
-  ProtoInjector,
-  Visibility,
   Key,
   Dependency,
   bind,
@@ -24,8 +22,10 @@ import {
   resolveForwardRef,
   DependencyProvider
 } from 'angular2/src/core/di';
-import {UNDEFINED} from 'angular2/src/core/di/injector';
 import {
+  UNDEFINED,
+  ProtoInjector,
+  Visibility,
   InjectorInlineStrategy,
   InjectorDynamicStrategy,
   BindingWithVisibility
