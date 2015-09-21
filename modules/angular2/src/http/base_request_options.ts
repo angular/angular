@@ -1,9 +1,10 @@
-import {CONST_EXPR, CONST, isPresent, isString} from 'angular2/src/core/facade/lang';
+import {isPresent, isString} from 'angular2/src/core/facade/lang';
 import {Headers} from './headers';
 import {RequestMethods} from './enums';
 import {RequestOptionsArgs} from './interfaces';
 import {Injectable} from 'angular2/src/core/di';
 import {URLSearchParams} from './url_search_params';
+import {normalizeMethodName} from './http_utils';
 
 /**
  * Creates a request options object similar to the `RequestInit` description
@@ -19,7 +20,7 @@ export class RequestOptions {
    *
    * Defaults to "GET".
    */
-  method: RequestMethods;
+  method: RequestMethods | string;
   /**
    * Headers object based on the `Headers` class in the [Fetch
    * Spec](https://fetch.spec.whatwg.org/#headers-class).
@@ -33,7 +34,7 @@ export class RequestOptions {
   url: string;
   search: URLSearchParams;
   constructor({method, headers, body, url, search}: RequestOptionsArgs = {}) {
-    this.method = isPresent(method) ? method : null;
+    this.method = isPresent(method) ? normalizeMethodName(method) : null;
     this.headers = isPresent(headers) ? headers : null;
     this.body = isPresent(body) ? body : null;
     this.url = isPresent(url) ? url : null;

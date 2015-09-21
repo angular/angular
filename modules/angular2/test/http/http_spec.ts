@@ -319,6 +319,29 @@ export function main() {
                                          res => {});
            }));
       });
+
+      describe('string method names', () => {
+        it('should allow case insensitive strings for method names', () => {
+          inject([AsyncTestCompleter], (async) => {
+            ObservableWrapper.subscribe<MockConnection>(backend.connections, c => {
+              expect(c.request.method)
+                  .toBe(RequestMethods.Post)
+                      c.mockRespond(new Response(new ResponseOptions({body: 'Thank you'})));
+              async.done();
+            });
+            ObservableWrapper.subscribe(http.request(new Request(new RequestOptions(
+                                            {url: 'https://google.com', method: 'PosT'}))),
+                                        (res) => {});
+          });
+        });
+
+        it('should throw when invalid string parameter is passed for method name', () => {
+          expect(() => {
+            http.request(
+                new Request(new RequestOptions({url: 'https://google.com', method: 'Invalid'})));
+          }).toThrowError('Invalid request method. The method "Invalid" is not supported.');
+        });
+      });
     });
 
     describe('Jsonp', () => {

@@ -37,7 +37,7 @@ export class Connection {
 // https://github.com/angular/angular/issues/3828
 export interface RequestOptionsArgs {
   url?: string;
-  method?: RequestMethods;
+  method?: string | RequestMethods;
   search?: string | URLSearchParams;
   headers?: Headers;
   // TODO: Support Blob, ArrayBuffer, JSON, URLSearchParams, FormData

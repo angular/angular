@@ -1,6 +1,7 @@
 import {RequestMethods} from './enums';
 import {RequestOptions} from './base_request_options';
 import {Headers} from './headers';
+import {normalizeMethodName} from './http_utils';
 import {
   RegExpWrapper,
   CONST_EXPR,
@@ -8,7 +9,6 @@ import {
   isJsObject,
   StringWrapper
 } from 'angular2/src/core/facade/lang';
-
 
 // TODO(jeffbcross): properly implement body accessors
 /**
@@ -51,7 +51,7 @@ export class Request {
       }
     }
     this._body = requestOptions.body;
-    this.method = requestOptions.method;
+    this.method = normalizeMethodName(requestOptions.method);
     // TODO(jeffbcross): implement behavior
     // Defaults to 'omit', consistent with browser
     // TODO(jeffbcross): implement behavior
