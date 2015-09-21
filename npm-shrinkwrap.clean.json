@@ -7651,6 +7651,39 @@
         }
       }
     },
+    "hash-files": {
+      "version": "1.0.0",
+      "dependencies": {
+        "glob": {
+          "version": "3.2.11",
+          "dependencies": {
+            "inherits": {
+              "version": "2.0.1"
+            },
+            "minimatch": {
+              "version": "0.3.0",
+              "dependencies": {
+                "lru-cache": {
+                  "version": "2.7.0"
+                },
+                "sigmund": {
+                  "version": "1.0.1"
+                }
+              }
+            }
+          }
+        },
+        "read-files": {
+          "version": "0.1.0"
+        },
+        "underscore": {
+          "version": "1.8.3"
+        },
+        "async": {
+          "version": "0.9.2"
+        }
+      }
+    },
     "html2jade": {
       "version": "0.8.3",
       "dependencies": {
@@ -10460,7 +10493,12 @@
       }
     },
     "zone.js": {
-      "version": "0.5.4"
+      "version": "0.5.5",
+      "dependencies": {
+        "es6-promise": {
+          "version": "3.0.2"
+        }
+      }
     }
   },
   "name": "angular",
