@@ -52,7 +52,8 @@ export class RouteRecognizer {
 
     if (config instanceof AuxRoute) {
       handler = new SyncRouteHandler(config.component, config.data);
-      let path = config.path.startsWith('/') ? config.path.substring(1) : config.path;
+      let path =
+          StringWrapper.startsWith(config.path, '/') ? config.path.substring(1) : config.path;
       var recognizer = new PathRecognizer(config.path, handler);
       this.auxRoutes.set(path, recognizer);
       return recognizer.terminal;
@@ -140,11 +141,11 @@ export class Redirector {
   toSegments: string[] = [];
 
   constructor(path: string, redirectTo: string) {
-    if (path.startsWith('/')) {
+    if (StringWrapper.startsWith(path, '/')) {
       path = path.substring(1);
     }
     this.segments = path.split('/');
-    if (redirectTo.startsWith('/')) {
+    if (StringWrapper.startsWith(redirectTo, '/')) {
       redirectTo = redirectTo.substring(1);
     }
     this.toSegments = redirectTo.split('/');
