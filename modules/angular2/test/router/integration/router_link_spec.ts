@@ -26,7 +26,6 @@ import {SpyLocation} from 'angular2/src/mock/location_mock';
 import {
   Location,
   Router,
-  RootRouter,
   RouteRegistry,
   RouterLink,
   RouterOutlet,
@@ -36,6 +35,7 @@ import {
   RouteConfig,
   ROUTER_DIRECTIVES
 } from 'angular2/router';
+import {RootRouter} from 'angular2/src/router/router';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
