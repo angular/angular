@@ -31,31 +31,99 @@ import {Location} from './src/router/location';
 import {bind, OpaqueToken, Binding} from './core';
 import {CONST_EXPR, Type} from './src/core/facade/lang';
 
-export const ROUTER_PRIMARY_COMPONENT: OpaqueToken =
-    CONST_EXPR(new OpaqueToken('RouterPrimaryComponent'));
-
-export const ROUTER_DIRECTIVES: any[] = CONST_EXPR([RouterOutlet, RouterLink]);
-
 /**
- * A list of {@link Binding}. To use the router, you must add this to your application.
+ * Token used to bind the component with the top-level {@link RouteConfig}s for the
+ * application.
  *
- * ## Example
+ * You can use the {@link routerBindings} function in your {@link bootstrap} bindings to
+ * simplify setting up these bindings.
  *
- * ```typescript
+ * ## Example ([live demo](http://plnkr.co/edit/iRUP8B5OUbxCWQ3AcIDm))
+ *
+ * ```
+ * import {Component, View} from 'angular2/angular2';
+ * import {
+ *   ROUTER_DIRECTIVES,
+ *   ROUTER_BINDINGS,
+ *   ROUTER_PRIMARY_COMPONENT,
+ *   RouteConfig
+ * } from 'angular2/router';
+ *
  * @Component({...})
  * @View({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([
- *  new Route(...),
+ *  {...},
  * ])
  * class AppCmp {
- *  constructor(router: Router, location: Location) {
- *    // ...
- *  }
- *
+ *   // ...
  * }
  *
+ * bootstrap(AppCmp, [
+ *   ROUTER_BINDINGS,
+ *   bind(ROUTER_PRIMARY_COMPONENT).toValue(AppCmp)
+ * ]);
+ * ```
+ */
+export const ROUTER_PRIMARY_COMPONENT: OpaqueToken =
+    CONST_EXPR(new OpaqueToken('RouterPrimaryComponent'));
+
+/**
+ * A list of directives. To use the router directives like {@link RouterOutlet} and
+ * {@link RouterLink}, add this to your `directives` array in the {@link View} decorator of your
+ * component.
+ *
+ * ## Example ([live demo](http://plnkr.co/edit/iRUP8B5OUbxCWQ3AcIDm))
+ *
+ * ```
+ * import {Component, View} from 'angular2/angular2';
+ * import {ROUTER_DIRECTIVES, routerBindings, RouteConfig} from 'angular2/router';
+ *
+ * @Component({...})
+ * @View({directives: [ROUTER_DIRECTIVES]})
+ * @RouteConfig([
+ *  {...},
+ * ])
+ * class AppCmp {
+ *    // ...
+ * }
  *
  * bootstrap(AppCmp, [routerBindings(AppCmp)]);
+ * ```
+ */
+export const ROUTER_DIRECTIVES: any[] = CONST_EXPR([RouterOutlet, RouterLink]);
+
+/**
+ * A list of {@link Binding}s. To use the router, you must add this to your application.
+ *
+ * Note that you also need to bind to {@link ROUTER_PRIMARY_COMPONENT}.
+ *
+ * You can use the {@link routerBindings} function in your {@link bootstrap} bindings to
+ * simplify setting up these bindings.
+ *
+ * ## Example ([live demo](http://plnkr.co/edit/iRUP8B5OUbxCWQ3AcIDm))
+ *
+ * ```
+ * import {Component, View} from 'angular2/angular2';
+ * import {
+ *   ROUTER_DIRECTIVES,
+ *   ROUTER_BINDINGS,
+ *   ROUTER_PRIMARY_COMPONENT,
+ *   RouteConfig
+ * } from 'angular2/router';
+ *
+ * @Component({...})
+ * @View({directives: [ROUTER_DIRECTIVES]})
+ * @RouteConfig([
+ *  {...},
+ * ])
+ * class AppCmp {
+ *   // ...
+ * }
+ *
+ * bootstrap(AppCmp, [
+ *   ROUTER_BINDINGS,
+ *   bind(ROUTER_PRIMARY_COMPONENT).toValue(AppCmp)
+ * ]);
  * ```
  */
 export const ROUTER_BINDINGS: any[] = CONST_EXPR([
@@ -74,6 +142,28 @@ function routerFactory(registry, location, primaryComponent) {
   return new RootRouter(registry, location, primaryComponent);
 }
 
+/**
+ * A list of {@link Binding}s. To use the router, you must add these bindings to
+ * your application.
+ *
+ * ## Example ([live demo](http://plnkr.co/edit/iRUP8B5OUbxCWQ3AcIDm))
+ *
+ * ```
+ * import {Component, View} from 'angular2/angular2';
+ * import {ROUTER_DIRECTIVES, routerBindings, RouteConfig} from 'angular2/router';
+ *
+ * @Component({...})
+ * @View({directives: [ROUTER_DIRECTIVES]})
+ * @RouteConfig([
+ *  {...},
+ * ])
+ * class AppCmp {
+ *   // ...
+ * }
+ *
+ * bootstrap(AppCmp, [routerBindings(AppCmp)]);
+ * ```
+ */
 export function routerBindings(primaryComponent: Type): Array<any> {
   return [ROUTER_BINDINGS, bind(ROUTER_PRIMARY_COMPONENT).toValue(primaryComponent)];
 }
