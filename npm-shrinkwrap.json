@@ -4,7 +4,7 @@
   "dependencies": {
     "@reactivex/rxjs": {
       "version": "0.0.0-prealpha.3",
-      "from": "@reactivex/rxjs@0.0.0-prealpha.3",
+      "from": "https://registry.npmjs.org/@reactivex/rxjs/-/rxjs-0.0.0-prealpha.3.tgz",
       "resolved": "https://registry.npmjs.org/@reactivex/rxjs/-/rxjs-0.0.0-prealpha.3.tgz"
     },
     "angular": {
@@ -4640,7 +4640,7 @@
     },
     "es6-shim": {
       "version": "0.33.3",
-      "from": "es6-shim@*",
+      "from": "https://registry.npmjs.org/es6-shim/-/es6-shim-0.33.3.tgz",
       "resolved": "https://registry.npmjs.org/es6-shim/-/es6-shim-0.33.3.tgz"
     },
     "event-stream": {
@@ -11833,6 +11833,57 @@
         }
       }
     },
+    "hash-files": {
+      "version": "1.0.0",
+      "from": "hash-files@>=1.0.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/hash-files/-/hash-files-1.0.0.tgz",
+      "dependencies": {
+        "glob": {
+          "version": "3.2.11",
+          "from": "glob@>=3.0.0 <4.0.0",
+          "resolved": "https://registry.npmjs.org/glob/-/glob-3.2.11.tgz",
+          "dependencies": {
+            "inherits": {
+              "version": "2.0.1",
+              "from": "inherits@>=2.0.0 <3.0.0",
+              "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.1.tgz"
+            },
+            "minimatch": {
+              "version": "0.3.0",
+              "from": "minimatch@>=0.3.0 <0.4.0",
+              "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-0.3.0.tgz",
+              "dependencies": {
+                "lru-cache": {
+                  "version": "2.7.0",
+                  "from": "lru-cache@>=2.0.0 <3.0.0",
+                  "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.7.0.tgz"
+                },
+                "sigmund": {
+                  "version": "1.0.1",
+                  "from": "sigmund@>=1.0.0 <1.1.0",
+                  "resolved": "https://registry.npmjs.org/sigmund/-/sigmund-1.0.1.tgz"
+                }
+              }
+            }
+          }
+        },
+        "read-files": {
+          "version": "0.1.0",
+          "from": "read-files@>=0.0.0 <1.0.0",
+          "resolved": "https://registry.npmjs.org/read-files/-/read-files-0.1.0.tgz"
+        },
+        "underscore": {
+          "version": "1.8.3",
+          "from": "underscore@>=1.0.0 <2.0.0",
+          "resolved": "https://registry.npmjs.org/underscore/-/underscore-1.8.3.tgz"
+        },
+        "async": {
+          "version": "0.9.2",
+          "from": "async@>=0.0.0 <1.0.0",
+          "resolved": "https://registry.npmjs.org/async/-/async-0.9.2.tgz"
+        }
+      }
+    },
     "html2jade": {
       "version": "0.8.3",
       "from": "https://registry.npmjs.org/html2jade/-/html2jade-0.8.3.tgz",
@@ -13479,7 +13530,7 @@
     },
     "karma-jasmine": {
       "version": "0.3.6",
-      "from": "karma-jasmine@latest",
+      "from": "https://registry.npmjs.org/karma-jasmine/-/karma-jasmine-0.3.6.tgz",
       "resolved": "https://registry.npmjs.org/karma-jasmine/-/karma-jasmine-0.3.6.tgz"
     },
     "karma-sauce-launcher": {
