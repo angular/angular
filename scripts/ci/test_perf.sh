@@ -16,14 +16,15 @@ function killServer () {
 # Serving pre-compiled dart JS takes an extra 15m.
 # So we do this only for post-commit testing.
 # Pull requests test with Dartium and pub serve
-if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
+# TODO(jeffbcross): restore conditional dart2js/pubserve #4316
+#if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
   ./node_modules/.bin/gulp build/pubbuild.dart
   ./node_modules/.bin/gulp serve.js.prod serve.js.dart2js&
   serverPid=$!
-else
-  ./node_modules/.bin/gulp serve.js.prod serve.dart&
-  serverPid=$!
-fi
+#else
+#  ./node_modules/.bin/gulp serve.js.prod serve.dart&
+#  serverPid=$!
+#fi
 
 trap killServer EXIT
 
