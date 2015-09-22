@@ -14,7 +14,13 @@ export function internalProtoView(protoViewRef: ProtoViewRef): viewModule.AppPro
 
 
 /**
- * Represents the View of a {@link Component} that was compiled via {@link Compiler#compileInHost
+ * Represents a View containing a single Element that is the Host Element of a {@link Component}
+ * instance.
+ *
+ * A Host View is created for every entry-point Component that was compiled on its own (as opposed
+ * to as a part of another Component's Template) via {@link Compiler#compileInHost} or one of the
+ * higher-level APIs: {@link AppViewManager#createRootHostView},
+ * {@link AppViewManager#createHostViewInContainer}, {@link ViewContainerRef#createHostView}.
  */
 export interface HostViewRef {}
 
@@ -99,11 +105,11 @@ export class ViewRef implements HostViewRef {
 /**
  * Represents Angular's ProtoView.
  *
- * A ProtoView is a prototypical View that is the result of Template compilation and enables
+ * A ProtoView is a prototypical View that is the result of Template compilation and is used by
  * Angular to efficiently create an instance of a View based on the compiled Template.
  *
- * A ProtoView is created {@link AppViewManager#createViewInContainer} and
- * {@link AppViewManager#createRootHostView `AppViewManager#createRootHostView`}).
+ * Most ProtoViews are created internally by Angular as a result of recursive Template compilation
+ * that was started by a low-level {@link Compiler#compileInHost} API to compile a Component.
  *
  *
  * ## Example

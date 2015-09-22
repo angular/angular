@@ -91,8 +91,11 @@ export class CompilerCache {
  * ```
  */
 /**
- * Service for compiling {@link Component}s so that they can be later instantiated and their
+ * Low-level service for compiling {@link Component}s so that they can be later instantiated and their
  * {@link View}s can be rendered.
+ *
+ * Most application should instead use {@link DynamicComponentLoader}, which both compiles and
+ * instantiates a Component.
  *
  * <!-- TODO: check Component and View links, they should likely go to glossary instead -->
  */
@@ -133,8 +136,10 @@ export class Compiler {
   }
 
   /**
-   * Compiles an {@link EntryPointComponent entry-point Component} and returns a promise for a
-   * {@link ProtoViewRef} that can be passed into {@link AppViewManager
+   * Compiles a {@link Component} and returns a promise for this component's {@link ProtoViewRef}.
+   *
+   * The returned `ProtoViewRef` can be later used to instantiate a component via
+   * {@link AppViewManager}.
    */
   compileInHost(componentTypeOrBinding: Type | Binding): Promise<ProtoViewRef> {
     var componentType = isType(componentTypeOrBinding) ? componentTypeOrBinding :

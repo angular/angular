@@ -23,11 +23,9 @@ import {ViewRef, HostViewRef, ProtoViewRef, internalView} from './view_ref';
  * Root elements of Views attached to this container become siblings of the Anchor Element in
  * the Rendered View.
  *
- * To access a ViewContainerRef of an Element, you can either place a {@link Directive} injected
+ * To access a `ViewContainerRef` of an Element, you can either place a {@link Directive} injected
  * with `ViewContainerRef` on the Element, or you obtain it via
  * {@link ViewManager#getViewContainer}.
- *
- * <!-- TODO: Is ViewContainerRef#element a public api? Should it be renamed? to anchor or anchorElementRef? -->
  */
 export class ViewContainerRef {
 
@@ -42,6 +40,7 @@ export class ViewContainerRef {
 
     /**
      * Anchor element that specifies the location of this container in the containing View.
+     * <!-- TODO: rename to anchorElement -->
      */
     public element: ElementRef
   ) {
@@ -97,9 +96,9 @@ export class ViewContainerRef {
    * If `index` is not specified, the new View will be inserted as the last View in the container.
    *
    * You can optionally specify `dynamicallyCreatedBindings`, which configure the {@link Injector}
-   * that will be created for the new Host View. <!-- TODO: what is host view? it's never defined!!! -->
+   * that will be created for the Host View
    *
-   * Returns the {@link ViewRef} for the newly created View.
+   * Returns the {@link HostViewRef} of the Host View created for the newly instantiated Component.
    */
   createHostView(protoViewRef: ProtoViewRef = null, index: number = -1,
                  dynamicallyCreatedBindings: ResolvedBinding[] = null): HostViewRef {

@@ -11,8 +11,12 @@ function _asType(typeOrBinding: Type | Binding): Type {
 }
 
 /**
- * Represents a component instance as a node in application's component tree and provides access to
+ * Represents a Component instance as a node in application's component tree and provides access to
  * other objects related to this component instance.
+ *
+ * <!-- TODO: What should I use this for? No compiler/view apis consume this type, and if all
+ *            fields are private then there is no point in making this symbol public at all.
+ * -->
  */
 export class ComponentRef {
   /**
@@ -32,6 +36,7 @@ export class ComponentRef {
 
   /**
    * <!-- TODO: is this public? -->
+   * <!-- TODO: why is this duplicated by #hostComponentType -->
    */
   componentType: Type;
 
@@ -52,18 +57,26 @@ export class ComponentRef {
   }
 
   /**
-   * Returns the host {@link ViewRef}.
+   * <!-- TODO: is this public? -->
+   * <!-- TODO: is `location.parentView` right? -->
+   * Returns the host {@link ViewRef} of this Component.
    */
   get hostView(): HostViewRef { return this.location.parentView; }
 
+  /**
+   * <!-- TODO: is this public? -->
+   */
   get hostComponentType(): Type { return this.componentType; }
 
   /**
+   * <!-- TODO: is this public? -->
    * The instance of the component.
    */
   get hostComponent(): any { return this.instance; }
 
   /**
+   * <!-- TODO: is this public? -->
+   * <!-- TODO: when to use this as opposed to destroying stuff via ViewContainer apis? -->
    * Destroys the component instance and all of the data structures associated with it.
    */
   dispose() { this._dispose(); }
