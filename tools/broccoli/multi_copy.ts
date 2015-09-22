@@ -1,5 +1,7 @@
 /// <reference path="../typings/node/node.d.ts" />
 /// <reference path="../typings/fs-extra/fs-extra.d.ts" />
+/// <reference path="./broccoli-writer.d.ts" />
+
 import Writer = require('broccoli-writer');
 import fs = require('fs');
 import fsx = require('fs-extra');

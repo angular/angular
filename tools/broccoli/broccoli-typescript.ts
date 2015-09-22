@@ -1,10 +1,9 @@
 /// <reference path="../typings/node/node.d.ts" />
-/// <reference path="../../node_modules/typescript/bin/typescript.d.ts" />
+/// <reference path="../../node_modules/typescript/lib/typescript.d.ts" />
 
 import fs = require('fs');
 import fse = require('fs-extra');
 import path = require('path');
-import ts = require('typescript');
 import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-broccoli-plugin';
 
 
@@ -19,10 +18,10 @@ const FS_OPTS = {
  * Broccoli plugin that implements incremental Typescript compiler.
  *
  * It instantiates a typescript compiler instance that keeps all the state about the project and
- * can reemit only the files that actually changed.
+ * can re-emit only the files that actually changed.
  *
  * Limitations: only files that map directly to the changed source file via naming conventions are
- * reemited. This primarily affects code that uses `const enum`s, because changing the enum value
+ * re-emitted. This primarily affects code that uses `const enum`s, because changing the enum value
  * requires global emit, which can affect many files.
  */
 class DiffingTSCompiler implements DiffingBroccoliPlugin {
