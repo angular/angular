@@ -102,18 +102,49 @@ export class ResponseOptions {
 }
 
 /**
- * Injectable version of {@link ResponseOptions}, with overridable default values.
+ * Subclass of {@link ResponseOptions}, with default values.
+ *
+ * Default values:
+ *  * status: 200
+ *  * headers: empty {@link Headers} object
+ *
+ * This class could be extended and bound to the {@link ResponseOptions} class
+ * when configuring an {@link Injector}, in order to override the default options
+ * used by {@link Http} to create {@link Response Responses}.
+ *
+ * ### Example ([live demo](http://plnkr.co/edit/qv8DLT?p=preview))
+ *
+ * ```
+ * import {bind, bootstrap} from 'angular2/angular2';
+ * import {HTTP_BINDINGS, Headers, Http, BaseResponseOptions, ResponseOptions} from 'angular2/http';
+ * import {App} from './myapp';
+ *
+ * class MyOptions extends BaseResponseOptions {
+ *   headers:Headers = new Headers({network: 'github'});
+ * }
+ *
+ * bootstrap(App, [HTTP_BINDINGS, bind(ResponseOptions).toClass(MyOptions)]);
+ * ```
+ *
+ * The options could also be extended when manually creating a {@link Response}
+ * object.
+ *
+ * ### Example ([live demo](http://plnkr.co/edit/VngosOWiaExEtbstDoix?p=preview))
+ *
+ * ```
+ * import {BaseResponseOptions, Response} from 'angular2/http';
+ *
+ * var options = new BaseResponseOptions();
+ * var res = new Response(options.merge({
+ *   body: 'Angular2',
+ *   headers: new Headers({framework: 'angular'})
+ * }));
+ * console.log('res.headers.get("framework"):', res.headers.get('framework')); // angular
+ * console.log('res.text():', res.text()); // Angular2;
+ * ```
  */
 @Injectable()
 export class BaseResponseOptions extends ResponseOptions {
-  // TODO: Object | ArrayBuffer | JSON | FormData | Blob
-  body: string | Object | ArrayBuffer | JSON | FormData | Blob;
-  status: number;
-  headers: Headers;
-  statusText: string;
-  type: ResponseTypes;
-  url: string;
-
   constructor() {
     super({status: 200, statusText: 'Ok', type: ResponseTypes.Default, headers: new Headers()});
   }
