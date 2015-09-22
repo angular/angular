@@ -387,6 +387,7 @@ export class BindingWithVisibility {
 }
 
 /**
+ * @private
  * Used to provide dependencies that cannot be easily expressed as bindings.
  */
 export interface DependencyProvider {
@@ -469,9 +470,6 @@ export class Injector {
    * The passed-in bindings can be an array of `Type`, {@link Binding},
    * or a recursive array of more bindings.
    *
-   * The method also takes an optional {@link DependencyProvider}, which is used to
-   * resolve dependencies that cannot be expressed as bindings.
-   *
    * ### Example ([live demo](http://plnkr.co/edit/ePOccA?p=preview))
    *
    * ```typescript
@@ -492,19 +490,15 @@ export class Injector {
    * because it needs to resolve the passed-in bindings first.
    * See {@link resolve} and {@link fromResolvedBindings}.
    */
-  static resolveAndCreate(bindings: Array<Type | Binding | any[]>,
-                          depProvider: DependencyProvider = null): Injector {
+  static resolveAndCreate(bindings: Array<Type | Binding | any[]>): Injector {
     var resolvedBindings = Injector.resolve(bindings);
-    return Injector.fromResolvedBindings(resolvedBindings, depProvider);
+    return Injector.fromResolvedBindings(resolvedBindings);
   }
 
   /**
    * Creates an injector from previously resolved bindings.
    *
    * This API is the recommended way to construct injectors in performance-sensitive parts.
-   *
-   * The method also takes an optional {@link DependencyProvider}, which is used to
-   * resolve dependencies that cannot be expressed as bindings.
    *
    * ### Example ([live demo](http://plnkr.co/edit/KrSMci?p=preview))
    *
@@ -523,12 +517,10 @@ export class Injector {
    * expect(injector.get(Car) instanceof Car).toBe(true);
    * ```
    */
-  static fromResolvedBindings(bindings: ResolvedBinding[],
-                              depProvider: DependencyProvider = null): Injector {
+  static fromResolvedBindings(bindings: ResolvedBinding[]): Injector {
     var bd = bindings.map(b => new BindingWithVisibility(b, Visibility.Public));
     var proto = new ProtoInjector(bd);
-    var inj = new Injector(proto, null, depProvider);
-    return inj;
+    return new Injector(proto, null, null);
   }
 
   _strategy: InjectorStrategy;
@@ -539,7 +531,7 @@ export class Injector {
    * Private
    */
   constructor(public _proto: any /* ProtoInjector */, public _parent: Injector = null,
-              private _depProvider: DependencyProvider = null,
+              private _depProvider: any /* DependencyProvider */ = null,
               private _debugContext: Function = null) {
     this._strategy = _proto._strategy.createInjectorStrategy(this);
   }
@@ -636,9 +628,6 @@ export class Injector {
    * The passed-in bindings can be an array of `Type`, {@link Binding},
    * or a recursive array of more bindings.
    *
-   * The methods also takes an optional {@link DependencyProvider}, which is used to
-   * resolved dependencies that cannot be expressed as bindings.
-   *
    * ### Example ([live demo](http://plnkr.co/edit/opB3T4?p=preview))
    *
    * ```typescript
@@ -657,10 +646,9 @@ export class Injector {
    * because it needs to resolve the passed-in bindings first.
    * See {@link resolve} and {@link createChildFromResolved}.
    */
-  resolveAndCreateChild(bindings: Array<Type | Binding | any[]>,
-                        depProvider: DependencyProvider = null): Injector {
+  resolveAndCreateChild(bindings: Array<Type | Binding | any[]>): Injector {
     var resolvedBindings = Injector.resolve(bindings);
-    return this.createChildFromResolved(resolvedBindings, depProvider);
+    return this.createChildFromResolved(resolvedBindings);
   }
 
   /**
@@ -670,9 +658,6 @@ export class Injector {
    * -->
    *
    * This API is the recommended way to construct injectors in performance-sensitive parts.
-   *
-   * The methods also takes an optional {@link DependencyProvider}, which is used to
-   * resolved dependencies that cannot be expressed as bindings.
    *
    * ### Example ([live demo](http://plnkr.co/edit/VhyfjN?p=preview))
    *
@@ -691,11 +676,10 @@ export class Injector {
    * expect(child.get(ParentBinding)).toBe(parent.get(ParentBinding));
    * ```
    */
-  createChildFromResolved(bindings: ResolvedBinding[],
-                          depProvider: DependencyProvider = null): Injector {
+  createChildFromResolved(bindings: ResolvedBinding[]): Injector {
     var bd = bindings.map(b => new BindingWithVisibility(b, Visibility.Public));
     var proto = new ProtoInjector(bd);
-    var inj = new Injector(proto, null, depProvider);
+    var inj = new Injector(proto, null, null);
     inj._parent = this;
     return inj;
   }

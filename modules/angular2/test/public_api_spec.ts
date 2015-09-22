@@ -497,10 +497,6 @@ const NG_API = [
   'Key.get',
   'Key.numberOfKeys',
 
-  'KeyRegistry',
-  'KeyRegistry.get',
-  'KeyRegistry.numberOfKeys',
-
   'KeyValueDiffers',
   'KeyValueDiffers.create',
   'KeyValueDiffers.extend',

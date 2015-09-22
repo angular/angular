@@ -109,8 +109,8 @@ export function main() {
      bindings: dynamicBindings,
      strategyClass: InjectorDynamicStrategy
    }].forEach((context) => {
-    function createInjector(bindings: any[], dependencyProvider = null) {
-      return Injector.resolveAndCreate(bindings.concat(context['bindings']), dependencyProvider);
+    function createInjector(bindings: any[]) {
+      return Injector.resolveAndCreate(bindings.concat(context['bindings']));
     }
 
     describe(`injector ${context['strategy']}`, () => {
@@ -367,7 +367,8 @@ export function main() {
         depProvider.spy("getDependency").andReturn(e);
 
         var bindings = Injector.resolve([Car]);
-        var injector = Injector.fromResolvedBindings(bindings, depProvider);
+        var proto = new ProtoInjector([new BindingWithVisibility(bindings[0], Visibility.Public)]);
+        var injector = new Injector(proto, null, depProvider);
 
         expect(injector.get(Car).engine).toEqual(e);
         expect(depProvider.spy("getDependency"))
