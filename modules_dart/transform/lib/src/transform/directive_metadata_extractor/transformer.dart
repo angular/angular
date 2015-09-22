@@ -21,7 +21,7 @@ class DirectiveMetadataExtractor extends Transformer
   DirectiveMetadataExtractor();
 
   @override
-  bool isPrimary(AssetId id) => id.path.endsWith(DEPS_EXTENSION);
+  bool isPrimary(AssetId id) => id.path.endsWith(DEPS_JSON_EXTENSION);
 
   @override
   declareOutputs(DeclaringTransform transform) {
@@ -44,6 +44,6 @@ class DirectiveMetadataExtractor extends Transformer
 }
 
 AssetId _outputAssetId(AssetId inputAssetId) {
-  assert(inputAssetId.path.endsWith(DEPS_EXTENSION));
+  assert(inputAssetId.path.endsWith(DEPS_JSON_EXTENSION));
   return new AssetId(inputAssetId.package, toMetaExtension(inputAssetId.path));
 }

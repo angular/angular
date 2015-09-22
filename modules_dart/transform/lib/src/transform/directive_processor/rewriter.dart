@@ -7,6 +7,8 @@ import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/async_string_writer.dart';
 import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
+import 'package:angular2/src/transform/common/directive_metadata_reader.dart';
+import 'package:angular2/src/transform/common/interface_matcher.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
 import 'package:angular2/src/transform/common/xhr_impl.dart';
@@ -47,11 +49,10 @@ Future<NgDepsModel> createNgDeps(AssetReader reader, AssetId assetId,
       parseCompilationUnit(codeWithParts, name: '${assetId.path} and parts');
 
   var ngDepsVisitor = new NgDepsVisitor(assetId, annotationMatcher);
-  // TODO(kegluneq): Parse `declarations` in the NgDepsModel as well.
   parsedCode.accept(ngDepsVisitor);
   var ngDepsModel = ngDepsVisitor.model;
 
-  var ngMetaVisitor = new _NgMetaVisitor(ngMeta);
+  var ngMetaVisitor = new _NgMetaVisitor(ngMeta, assetId, annotationMatcher, _interfaceMatcher);
   parsedCode.accept(ngMetaVisitor);
 
   // If this file imports only dart: libraries and does not define any
@@ -67,6 +68,9 @@ Future<NgDepsModel> createNgDeps(AssetReader reader, AssetId assetId,
 
   return ngDepsModel;
 }
+
+// TODO(kegluneq): Allow the caller to provide an InterfaceMatcher.
+final _interfaceMatcher = new InterfaceMatcher();
 
 /// Processes `visitor.parts`, reading and appending their contents to the
 /// original `code`.
@@ -164,12 +168,26 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
   // parsing the ngdeps files later.
   final NgMeta ngMeta;
 
-  _NgMetaVisitor(this.ngMeta);
+  /// The [AssetId] we are currently processing.
+  final AssetId assetId;
+
+  final DirectiveMetadataReader _reader;
+
+  _NgMetaVisitor(this.ngMeta, this.assetId, AnnotationMatcher annotationMatcher, InterfaceMatcher interfaceMatcher)
+    : _reader = new DirectiveMetadataReader(annotationMatcher, interfaceMatcher);
 
   @override
   Object visitCompilationUnit(CompilationUnit node) {
     if (node == null || node.declarations == null) return null;
     return node.declarations.accept(this);
+  }
+
+  @override
+  Object visitClassDeclaration(ClassDeclaration node) {
+    var compileDirectiveMetadata = _reader.readDirectiveMetadata(node, assetId);
+    if (compileDirectiveMetadata != null) {
+      ngMeta.types[compileDirectiveMetadata.type.name] = compileDirectiveMetadata;
+    }
   }
 
   @override

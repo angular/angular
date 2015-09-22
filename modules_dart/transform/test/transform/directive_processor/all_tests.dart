@@ -4,6 +4,9 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:barback/barback.dart';
+import 'package:angular2/src/core/change_detection/change_detection.dart';
+import 'package:angular2/src/core/compiler/interfaces.dart'
+    show LifecycleHooks;
 import 'package:angular2/src/transform/directive_processor/rewriter.dart';
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
@@ -375,21 +378,97 @@ void allTests() {
     expect(functionReflectable.name).toEqual('getMessage');
   });
 
-  it('should find direcive aliases patterns.', () async {
-    var logger = new RecordingLogger();
-    return log.setZoned(logger, () async {
-      var inputId = _assetIdForPath('directive_aliases_files/hello.dart');
-      var reader = new TestAssetReader();
-
+  ddescribe('NgMeta', () {
+    it('should find direcive aliases patterns.', () async {
       var ngMeta = new NgMeta.empty();
-      await createNgDeps(reader, inputId, new AnnotationMatcher(), ngMeta,
-          inlineViews: true);
+      await _testCreateModel('directive_aliases_files/hello.dart',
+          ngMeta: ngMeta);
 
       expect(ngMeta.aliases).toContain('alias1');
       expect(ngMeta.aliases['alias1']).toContain('HelloCmp');
 
       expect(ngMeta.aliases).toContain('alias2');
-      expect(ngMeta.aliases['alias2'])..toContain('HelloCmp')..toContain('Foo');
+      expect(ngMeta.aliases['alias2'])
+        ..toContain('HelloCmp')..toContain('Foo');
+    });
+
+    it('should create type entries for Directives', () async {
+      var ngMeta = new NgMeta.empty();
+      await _testCreateModel('absolute_url_expression_files/hello.dart',
+          ngMeta: ngMeta);
+
+      expect(ngMeta.types.isNotEmpty).toBeTrue();
+      expect(ngMeta.types['HelloCmp']).toBeNotNull();
+      expect(ngMeta.types['HelloCmp'].selector).toEqual('hello-app');
+    });
+
+    it('should populate all provided values for Components & Directives', () async {
+      var ngMeta = new NgMeta.empty();
+      await _testCreateModel('unusual_component_files/hello.dart',
+          ngMeta: ngMeta);
+
+      expect(ngMeta.types.isNotEmpty).toBeTrue();
+
+      var component = ngMeta.types['UnusualComp'];
+      expect(component).toBeNotNull();
+      expect(component.selector).toEqual('unusual-comp');
+      expect(component.isComponent).toBeTrue();
+      expect(component.exportAs).toEqual('ComponentExportAsValue');
+      expect(component.changeDetection).toEqual(ChangeDetectionStrategy.CheckAlways);
+      expect(component.properties).toContain('aProperty');
+      expect(component.properties['aProperty']).toEqual('aProperty');
+      expect(component.events).toContain('anEvent');
+      expect(component.events['anEvent']).toEqual('anEvent');
+      expect(component.hostAttributes).toContain('hostKey');
+      expect(component.hostAttributes['hostKey']).toEqual('hostValue');
+
+      var directive = ngMeta.types['UnusualDirective'];
+      expect(directive).toBeNotNull();
+      expect(directive.selector).toEqual('unusual-directive');
+      expect(directive.isComponent).toBeFalse();
+      expect(directive.exportAs).toEqual('DirectiveExportAsValue');
+      expect(directive.properties).toContain('aDirectiveProperty');
+      expect(directive.properties['aDirectiveProperty']).toEqual('aDirectiveProperty');
+      expect(directive.events).toContain('aDirectiveEvent');
+      expect(directive.events['aDirectiveEvent']).toEqual('aDirectiveEvent');
+      expect(directive.hostAttributes).toContain('directiveHostKey');
+      expect(directive.hostAttributes['directiveHostKey']).toEqual('directiveHostValue');
+    });
+
+    it('should include hooks for implemented types (single)', () async {
+      var ngMeta = new NgMeta.empty();
+      await _testCreateModel('interfaces_files/soup.dart',
+          ngMeta: ngMeta);
+
+      expect(ngMeta.types.isNotEmpty).toBeTrue();
+      expect(ngMeta.types['ChangingSoupComponent']).toBeNotNull();
+      expect(ngMeta.types['ChangingSoupComponent'].selector).toEqual('[soup]');
+      expect(ngMeta.types['ChangingSoupComponent'].lifecycleHooks).toContain(LifecycleHooks.OnChanges);
+    });
+
+    it('should include hooks for implemented types (many)', () async {
+      var ngMeta = new NgMeta.empty();
+      await _testCreateModel('multiple_interface_lifecycle_files/soup.dart',
+          ngMeta: ngMeta);
+
+      expect(ngMeta.types.isNotEmpty).toBeTrue();
+      expect(ngMeta.types['MultiSoupComponent']).toBeNotNull();
+      expect(ngMeta.types['MultiSoupComponent'].selector).toEqual('[soup]');
+      expect(ngMeta.types['MultiSoupComponent'].lifecycleHooks)
+          ..toContain(LifecycleHooks.OnChanges)
+          ..toContain(LifecycleHooks.OnDestroy)
+          ..toContain(LifecycleHooks.OnInit);
+    });
+
+    it('should parse templates from View annotations', () async {
+      var ngMeta = new NgMeta.empty();
+      await _testCreateModel('absolute_url_expression_files/hello.dart',
+          ngMeta: ngMeta);
+
+      expect(ngMeta.types.isNotEmpty).toBeTrue();
+      expect(ngMeta.types['HelloCmp']).toBeNotNull();
+      expect(ngMeta.types['HelloCmp'].template).toBeNotNull();
+      expect(ngMeta.types['HelloCmp'].template.templateUrl).toEqual('package:other_package/template.html');
     });
   });
 }
@@ -399,6 +478,7 @@ Future<NgDepsModel> _testCreateModel(String inputPath,
     AssetId assetId,
     AssetReader reader,
     BuildLogger logger,
+    NgMeta ngMeta,
     bool inlineViews: true}) {
   if (logger == null) logger = new RecordingLogger();
   return log.setZoned(logger, () async {
@@ -410,9 +490,11 @@ Future<NgDepsModel> _testCreateModel(String inputPath,
       reader.addAsset(assetId, await reader.readAsString(inputId));
       inputId = assetId;
     }
+    if (ngMeta == null) {
+      ngMeta = new NgMeta.empty();
+    }
 
     var annotationMatcher = new AnnotationMatcher()..addAll(customDescriptors);
-    var ngMeta = new NgMeta.empty();
     return createNgDeps(reader, inputId, annotationMatcher, ngMeta,
         inlineViews: inlineViews);
   });
