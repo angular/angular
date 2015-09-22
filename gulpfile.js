@@ -944,7 +944,7 @@ gulp.task('!build.tools', function() {
   var stream = gulp.src(['tools/**/*.ts'])
       .pipe(sourcemaps.init())
       .pipe(tsc({target: 'ES5', module: 'commonjs',
-                 // Don't use the version of typescript that gulp-typescript depends on, we need 1.5
+                 // Don't use the version of typescript that gulp-typescript depends on
                  // see https://github.com/ivogabe/gulp-typescript#typescript-version
                  typescript: require('typescript')}))
       .on('error', function(error) {
@@ -1147,7 +1147,7 @@ gulp.task('!bundle.js.sfx.dev', ['build.js.dev'], function() {
       .then(function() {
         return bundler.bundle(devBundleConfig, 'angular2/http', './dist/build/http.sfx.dev.js',
                               {sourceMaps: true},
-                              /* self-executing */ true)
+                              /* self-executing */ true);
       });
 });
 
