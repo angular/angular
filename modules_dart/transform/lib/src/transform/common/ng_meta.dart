@@ -1,7 +1,6 @@
 library angular2.transform.common.ng_meta;
 
-import 'package:angular2/src/core/render/api.dart';
-import 'convert.dart';
+import 'package:angular2/src/compiler/directive_metadata.dart';
 import 'logging.dart';
 
 /// Metadata about directives and directive aliases.
@@ -20,7 +19,7 @@ import 'logging.dart';
 /// easier.
 class NgMeta {
   /// Directive metadata for each type annotated as a directive.
-  final Map<String, RenderDirectiveMetadata> types;
+  final Map<String, CompileDirectiveMetadata> types;
 
   /// List of other types and names associated with a given name.
   final Map<String, List<String>> aliases;
@@ -38,7 +37,7 @@ class NgMeta {
     for (var key in json.keys) {
       var entry = json[key];
       if (entry['kind'] == 'type') {
-        types[key] = directiveMetadataFromMap(entry['value']);
+        types[key] = CompileDirectiveMetadata.fromJson(entry['value']);
       } else if (entry['kind'] == 'alias') {
         aliases[key] = entry['value'];
       }
@@ -50,7 +49,7 @@ class NgMeta {
   Map toJson() {
     var result = {};
     types.forEach((k, v) {
-      result[k] = {'kind': 'type', 'value': directiveMetadataToMap(v)};
+      result[k] = {'kind': 'type', 'value': v.toJson()};
     });
 
     aliases.forEach((k, v) {
@@ -66,8 +65,8 @@ class NgMeta {
   }
 
   /// Returns the metadata for every type associated with the given [alias].
-  List<RenderDirectiveMetadata> flatten(String alias) {
-    var result = [];
+  List<CompileDirectiveMetadata> flatten(String alias) {
+    var result = <CompileDirectiveMetadata>[];
     var seen = new Set();
     helper(name) {
       if (!seen.add(name)) {

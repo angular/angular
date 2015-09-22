@@ -22,7 +22,7 @@ main() {
   describe('Bind Generator', bindGenerator.allTests);
   describe('Directive Linker', directiveLinker.allTests);
   describe('Directive Metadata Extractor', directiveMeta.allTests);
-  describe('Directive Processor', directiveProcessor.allTests);
+  ddescribe('Directive Processor', directiveProcessor.allTests);
   describe('Reflection Remover', reflectionRemover.allTests);
   describe('Template Compiler', templateCompiler.allTests);
   describe('Deferred Rewriter', deferredRewriter.allTests);
