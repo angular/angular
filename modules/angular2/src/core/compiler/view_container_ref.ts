@@ -107,7 +107,7 @@ export class ViewContainerRef {
 
   /**
    * The method can be used together with insert to implement a view move, i.e.
-   * moving the dom nodes while the directives in the view stay intact.
+   * moving the DOM nodes while the directives in the view stay intact.
    */
   detach(atIndex: number = -1): ViewRef {
     if (atIndex == -1) atIndex = this.length - 1;
