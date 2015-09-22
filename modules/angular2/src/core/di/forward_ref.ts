@@ -1,5 +1,14 @@
 import {Type, stringify, isFunction} from 'angular2/src/core/facade/lang';
 
+/**
+ * An interface that a function passed into {@link forwardRef} has to implement.
+ *
+ * ### Example
+ *
+ * ```typescript
+ * var fn:ForwardRefFn = forwardRef(() => Lock);
+ * ```
+ */
 export interface ForwardRefFn { (): any; }
 
 /**

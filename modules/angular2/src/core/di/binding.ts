@@ -254,6 +254,9 @@ export class Binding {
  * ```
  */
 export class ResolvedBinding {
+  /**
+   * @private
+   */
   constructor(
       /**
        * A key, usually a `Type`.
@@ -261,11 +264,13 @@ export class ResolvedBinding {
       public key: Key,
 
       /**
+       * @private
        * Factory function which can return an instance of an object represented by a key.
        */
       public resolvedFactories: ResolvedFactory[],
 
       /**
+       * @private
        * Indicates if the binding is a multi-binding or a regular binding.
        */
       public multiBinding: boolean) {}
@@ -275,6 +280,7 @@ export class ResolvedBinding {
 }
 
 /**
+ * @private
  * An internal resolved representation of a factory function created by resolving {@link Binding}.
  */
 export class ResolvedFactory {
