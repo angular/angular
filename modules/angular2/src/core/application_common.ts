@@ -230,7 +230,7 @@ export function platform(bindings?: Array<Type | Binding | any[]>): PlatformRef 
  * reason, Angular creates exactly one global platform injector which stores all shared
  * services, and each angular application injector has the platform injector as its parent.
  *
- * Each application has its own private injector as well. When there are multipl
+ * Each application has its own private injector as well. When there are multiple
  * applications on a page, Angular treats each application injector's services as private
  * to that application.
  *
