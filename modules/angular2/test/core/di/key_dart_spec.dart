@@ -3,6 +3,7 @@ library angular2.test.di.key_dart_spec;
 
 import 'package:angular2/test_lib.dart';
 import 'package:angular2/core.dart';
+import 'package:angular2/src/core/di/key.dart';
 
 main() {
   describe('TypeLiteral', () {
