@@ -22,14 +22,14 @@ import {By} from 'angular2/src/core/debug';
 import {
   Location,
   Router,
-  RootRouter,
   RouteRegistry,
   RouterLink,
   RouterOutlet,
   Route,
-  RouteParams
+  RouteParams,
+  Instruction,
+  ComponentInstruction
 } from 'angular2/router';
-import {Instruction, ComponentInstruction} from 'angular2/src/router/instruction';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
