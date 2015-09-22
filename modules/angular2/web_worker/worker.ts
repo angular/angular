@@ -30,7 +30,7 @@ export * from '../src/core/forms';
 export * from '../src/core/debug';
 export * from '../src/core/change_detection';
 
-export * from '../profile';
+export * from '../src/core/profile';
 export * from '../src/web_workers/worker/application';
 export * from '../src/web_workers/shared/client_message_broker';
 export * from '../src/web_workers/shared/service_message_broker';

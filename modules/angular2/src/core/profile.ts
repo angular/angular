@@ -4,4 +4,4 @@ export {
   wtfStartTimeRange,
   wtfEndTimeRange,
   WtfScopeFn
-} from './src/core/profile/profile';
+} from './profile/profile';

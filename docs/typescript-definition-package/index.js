@@ -39,6 +39,7 @@ module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, 
   readFilesProcessor.basePath = path.resolve(__dirname, '../..');
   readTypeScriptModules.sourceFiles = [
     'angular2/angular2.ts',
+    'angular2/core.ts',
     'angular2/web_worker/worker.ts',
     'angular2/web_worker/ui.ts',
     'angular2/router.ts',
@@ -50,31 +51,46 @@ module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, 
   createTypeDefinitionFile.typeDefinitions = [
     {
       id: 'angular2/angular2',
-      references: ['../es6-promise/es6-promise.d.ts'],
+      references: [
+        './core.d.ts',
+        './http.d.ts',
+        './router.d.ts'
+      ],
       modules: {
-        'angular2/angular2': {namespace: 'ng', id: 'angular2/angular2'},
-        'angular2/web_worker/worker': {namespace: 'ngWorker', id: 'angular2/web_worker/worker'},
-        'angular2/web_worker/ui': {namespace: 'ngUi', id: 'angular2/web_worker/ui'}
+        'angular2/angular2': {
+          namespace: 'ng',
+          id: 'angular2/angular2'
+        }
+      }
+    },
+    {
+      id: 'angular2/core',
+      references: [
+        '../es6-promise/es6-promise.d.ts'
+      ],
+      modules: {
+        'angular2/core': {namespace: 'ng', id: 'angular2/core'}
       }
     },
     {
       id: 'angular2/router',
-      references: ['./angular2.d.ts'],
-      remapTypes: {Type: 'ng.Type', InjectableReference: 'ng.InjectableReference'},
+      references: ['./core.d.ts'],
+      remapTypes: {Type: 'ng.Type', InjectableReference: 'ng.InjectableReference', StringMap: 'ng.StringMap'},
       modules: {'angular2/router': {namespace: 'ngRouter', id: 'angular2/router'}}
     },
     {
       id: 'angular2/http',
-      references: ['./angular2.d.ts'],
-      remapTypes: {Type: 'ng.Type', Observable: 'ng.Observable', EventEmitter: 'ng.EventEmitter', InjectableReference: 'ng.InjectableReference' },
+      references: ['./core.d.ts'],
+      remapTypes: {Type: 'ng.Type', Observable: 'ng.Observable', EventEmitter: 'ng.EventEmitter', InjectableReference: 'ng.InjectableReference', StringMap: 'ng.StringMap' },
+
       modules: {'angular2/http': {namespace: 'ngHttp', id: 'angular2/http'}}
     },
     {
       id: 'angular2/test_lib',
-      references: ['./angular2.d.ts', '../jasmine/jasmine.d.ts'],
+      references: ['./core.d.ts', '../jasmine/jasmine.d.ts'],
       remapTypes: { Type: 'ng.Type', Binding: 'ng.Binding', ViewMetadata: 'ng.ViewMetadata', Injector: 'ng.Injector',
                     Predicate: 'ng.Predicate', ElementRef: 'ng.ElementRef', DebugElement: 'ng.DebugElement',
-                    InjectableReference: 'ng.InjectableReference' },
+                    InjectableReference: 'ng.InjectableReference', StringMap: 'ng.StringMap' },
       modules: {'angular2/test_lib': {namespace: 'ngTestLib', id: 'angular2/test_lib'}}
     }
   ];

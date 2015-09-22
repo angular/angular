@@ -1,0 +1,18 @@
+{% extends '../type-definition.template.html' %}
+{% block staticDeclarations %}
+
+interface Map<K,V> {}
+
+{% for alias, module in doc.moduleDocs %}
+declare module {$ module.namespace $} {
+  interface StringMap<K,V> extends Map<K,V> {}
+  // See https://github.com/Microsoft/TypeScript/issues/1168
+  class BaseException /* extends Error */ {
+    message: string;
+    stack: string;
+    toString(): string;
+  }
+  interface InjectableReference {}
+}
+{% endfor %}
+{% endblock %}
