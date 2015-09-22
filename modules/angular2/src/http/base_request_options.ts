@@ -101,22 +101,47 @@ export class RequestOptions {
   }
 }
 
+
 /**
- * Injectable version of {@link RequestOptions}, with overridable default values.
+ * Subclass of {@link RequestOptions}, with default values.
  *
- * #Example
+ * Default values:
+ *  * method: {@link RequestMethods RequestMethods.Get}
+ *  * headers: empty {@link Headers} object
+ *
+ * This class could be extended and bound to the {@link RequestOptions} class
+ * when configuring an {@link Injector}, in order to override the default options
+ * used by {@link Http} to create and send {@link Request Requests}.
+ *
+ * ### Example ([live demo](http://plnkr.co/edit/LEKVSx?p=preview))
  *
  * ```
- * import {Http, BaseRequestOptions, Request} from 'angular2/http';
- * ...
- * class MyComponent {
- *   constructor(baseRequestOptions:BaseRequestOptions, http:Http) {
- *     var options = baseRequestOptions.merge({body: 'foobar', url: 'https://foo'});
- *     var request = new Request(options);
- *     http.request(request).toRx().subscribe(res => this.bars = res.json());
- *   }
+ * import {bind, bootstrap} from 'angular2/angular2';
+ * import {HTTP_BINDINGS, Http, BaseRequestOptions, RequestOptions} from 'angular2/http';
+ * import {App} from './myapp';
+ *
+ * class MyOptions extends BaseRequestOptions {
+ *   search: string = 'coreTeam=true';
  * }
  *
+ * bootstrap(App, [HTTP_BINDINGS, bind(RequestOptions).toClass(MyOptions)]);
+ * ```
+ *
+ * The options could also be extended when manually creating a {@link Request}
+ * object.
+ *
+ * ### Example ([live demo](http://plnkr.co/edit/oyBoEvNtDhOSfi9YxaVb?p=preview))
+ *
+ * ```
+ * import {BaseRequestOptions, Request, RequestMethods} from 'angular2/http';
+ *
+ * var req = new Request(options.merge({
+ *   method: RequestMethods.Post,
+ *   url: 'https://google.com'
+ * }));
+ * console.log('req.method:', RequestMethods[req.method]); // Post
+ * console.log('options.url:', options.url); // null
+ * console.log('req.url:', req.url); // https://google.com
  * ```
  */
 @Injectable()
