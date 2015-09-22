@@ -18,7 +18,7 @@ export {
 export * from './di/decorators';
 
 export {forwardRef, resolveForwardRef, ForwardRefFn} from './di/forward_ref';
-export {Injector, DependencyProvider} from './di/injector';
+export {Injector} from './di/injector';
 export {
   Binding,
   BindingBuilder,
@@ -27,7 +27,7 @@ export {
   Dependency,
   bind
 } from './di/binding';
-export {Key, KeyRegistry, TypeLiteral} from './di/key';
+export {Key, TypeLiteral} from './di/key';
 export {
   NoBindingError,
   AbstractBindingError,

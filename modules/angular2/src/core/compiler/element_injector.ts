@@ -19,8 +19,7 @@ import {
   NoBindingError,
   AbstractBindingError,
   CyclicDependencyError,
-  resolveForwardRef,
-  DependencyProvider
+  resolveForwardRef
 } from 'angular2/src/core/di';
 import {
   UNDEFINED,
@@ -28,7 +27,8 @@ import {
   Visibility,
   InjectorInlineStrategy,
   InjectorDynamicStrategy,
-  BindingWithVisibility
+  BindingWithVisibility,
+  DependencyProvider
 } from 'angular2/src/core/di/injector';
 import {resolveBinding, ResolvedFactory} from 'angular2/src/core/di/binding';
 

@@ -74,29 +74,7 @@ export class OptionalMetadata {
 
 /**
  * `DependencyMetadata` is used by the framework to extend DI.
- *
- * Only metadata implementing `DependencyMetadata` are added to the list of dependency
- * properties.
- *
- * For example:
- *
- * ```
- * class Exclude extends DependencyMetadata {}
- * class NotDependencyProperty {}
- *
- * class AComponent {
- *   constructor(@Exclude @NotDependencyProperty aService:AService) {}
- * }
- * ```
- *
- * will create the following dependency:
- *
- * ```
- * new Dependency(Key.get(AService), [new Exclude()])
- * ```
- *
- * The framework can use `new Exclude()` to handle the `aService` dependency
- * in a specific way.
+ * This is internal to Angular and should not be used directly.
  */
 @CONST()
 export class DependencyMetadata {
