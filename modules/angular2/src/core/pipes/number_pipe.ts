@@ -59,7 +59,7 @@ export class NumberPipe {
  * WARNING: this pipe uses the Internationalization API.
  * Therefore it is only reliable in Chrome and Opera browsers.
  *
- * Formats a number as local text. i.e. group sizing and seperator and other locale-specific
+ * Formats a number as local text. i.e. group sizing and separator and other locale-specific
  * configurations are based on the active locale.
  *
  * # Usage

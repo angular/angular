@@ -97,7 +97,7 @@ export class AttributeMetadata extends DependencyMetadata {
  * }
  * ```
  *
- * A query can look for variable bindinds by passing in a string with desired binding symbol.
+ * A query can look for variable bindings by passing in a string with desired binding symbol.
  *
  * ### Example ([live demo](http://plnkr.co/edit/sT2j25cH1dURAyBRCKx1?p=preview))
  * ```html
