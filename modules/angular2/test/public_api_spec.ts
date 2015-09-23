@@ -1089,6 +1089,7 @@ var NG_API = [
   'ViewQueryMetadata.token',
   'ViewQueryMetadata.varBindings',
   'ViewRef',
+  'ViewRef.changeDetectorRef',
   'ViewRef.render',
   'ViewRef.renderFragment',
   'ViewRef.setLocal()',
