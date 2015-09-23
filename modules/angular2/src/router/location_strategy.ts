@@ -16,9 +16,13 @@
  */
 export abstract class LocationStrategy {
   abstract path(): string;
-  abstract pushState(ctx: any, title: string, url: string): void;
+  abstract pushState(state: any, title: string, url: string, queryParams: string): void;
   abstract forward(): void;
   abstract back(): void;
   abstract onPopState(fn: (_: any) => any): void;
   abstract getBaseHref(): string;
+}
+
+export function normalizeQueryParams(params: string): string {
+  return (params.length > 0 && params.substring(0, 1) != '?') ? ('?' + params) : params;
 }

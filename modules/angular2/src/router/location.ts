@@ -125,9 +125,9 @@ export class Location {
    * Changes the browsers URL to the normalized version of the given URL, and pushes a
    * new item onto the platform's history.
    */
-  go(url: string): void {
-    var finalUrl = this.normalizeAbsolutely(url);
-    this.platformStrategy.pushState(null, '', finalUrl);
+  go(path: string, query: string = ''): void {
+    var absolutePath = this.normalizeAbsolutely(path);
+    this.platformStrategy.pushState(null, '', absolutePath, query);
   }
 
   /**

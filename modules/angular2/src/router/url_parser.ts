@@ -70,10 +70,10 @@ export function pathSegmentsToUrl(pathSegments: string[]): Url {
   return url;
 }
 
-var SEGMENT_RE = RegExpWrapper.create('^[^\\/\\(\\)\\?;=&]+');
+var SEGMENT_RE = RegExpWrapper.create('^[^\\/\\(\\)\\?;=&#]+');
 function matchUrlSegment(str: string): string {
   var match = RegExpWrapper.firstMatch(SEGMENT_RE, str);
-  return isPresent(match) ? match[0] : null;
+  return isPresent(match) ? match[0] : '';
 }
 
 export class UrlParser {
