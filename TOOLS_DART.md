@@ -1,52 +1,77 @@
 # Developer Tools for Dart
 
-Here you will find a collection of tools and tips for keeping your application
-perform well and contain fewer bugs.
+Use these tools and techniques to increase your app's performance
+and reliability.
 
-## Angular debug tools in the dev console
+* [Angular debugging tools](#angular-debugging-tools)
+* [Code size](#code-size)
+* [Performance](#performance)
 
-Angular provides a set of debug tools that are accessible from any browser's
-developer console. In Chrome the dev console can be accessed by pressing
-Ctrl + Shift + j.
 
-### Enabling debug tools
+## Angular debugging tools
 
-By default the debug tools are disabled. You can enable debug tools as follows:
+Starting with alpha.38, Angular provides a set of debugging tools
+that are accessible from any browser's developer console.
+In Chrome, you can get to the dev console by pressing
+Ctrl + Shift + J (on Mac: Cmd + Opt + J).
+
+### Enabling the debugging tools
+
+By default the debugging tools are disabled.
+Enable the debugging tools as follows:
 
 ```dart
 import 'package:angular2/tools.dart';
 
-main() {
+main() async {
   var appRef = await bootstrap(Application);
   enableDebugTools(appRef);
 }
 ```
 
-### Using debug tools
+<!-- Change function name to enableDebuggingTools? -->
 
-In the browser open the developer console (Ctrl + Shift + j in Chrome). The
-top level object is called `ng` and contains more specific tools inside it.
 
-Example:
+### Using the debugging tools
+
+In the browser, open the dev console. The top-level object is called `ng` and
+contains more specific tools inside it.
+
+For example, to run the change detection profiler on your app:
+<!-- QUESTION: is "on your app" accurate?
+is "run the change detection profiler on your app" the best wording? -->
 
 ```javascript
+// In the dev console:
 ng.profiler.timeChangeDetection();
 ```
 
+The [Change detection profiler](#change-detection-profiler) section
+has more details.
+<!-- Point to API docs when they're published, if they're useful.
+They should be under
+http://www.dartdocs.org/documentation/angular2/latest
+and/or
+https://angular.io/docs/js/latest/api/. -->
+
+
 ## Code size
 
-Code needs to be downloaded, parsed and executed. Too much code could lead to
+Code must be downloaded, parsed, and executed. Too much code can lead to
 slow application start-up time, especially on slow networks and low-end devices.
-The tools below will help you identify contributors to code size and keep them
-in check.
+The tools and techniques in this section can help you to identify
+unnecessarily large code and to reduce code size.
 
 ### Finding contributors to code size
 
+Options for investigating code size include the `--dump-info` dart2js option,
+ng2soyc, `reflector.trackUsage()`, and code coverage information
+from the Dart VM.
+
 #### --dump-info
 
-`dart2js` has an option `--dump-info` that outputs information about what
-happened during compilation. Enable this option in your transformer options
-like this:
+The `--dump-info` option of `dart2js` outputs information about what happened
+during compilation. You can specify `--dump-info` in `pubspec.yaml`:
 
 ```yaml
 transformers:
@@ -56,35 +81,39 @@ transformers:
     - --dump-info
 ```
 
-Use the [visualizer](https://github.com/dart-lang/dump-info-visualizer) to
-analyze the output or any of the command-line tools documented
-[here](http://dart-lang.github.io/dart2js_info/doc/api/index.html).
+The [Dump Info Visualizer](https://github.com/dart-lang/dump-info-visualizer)
+can help you analyze the output.
+For more information, see the
+[dart2js_info API reference](http://dart-lang.github.io/dart2js_info/doc/api/).
 
 #### ng2soyc.dart
 
 [ng2soyc](https://github.com/angular/ng2soyc.dart) is a utility for analyzing
 code size contributors in Angular 2 applications. It groups code size by
-library. It also assumes your library names follow
-"package.library.sub-library..." convention and gives code size breakdown at
-each level. To reduce noise in the output (for very large apps) it also provides
+library and, assuming your library names follow
+[standard naming conventions](https://www.dartlang.org/articles/style-guide/#do-prefix-library-names-with-the-package-name-and-a-dot-separated-path)
+(package.library.sublibrary...), gives the code size breakdown at
+each level. To reduce noise in the output of very large apps, ng2soyc provides
 an option to hide libraries that are too small, so you can focus on the biggest
 contributors.
 
 #### Track unused reflection data
 
-Call `reflector.trackUsage()` to cause it to track reflection information used
+<!-- QUESTION: How do you get access to reflector & ReflectionInfo? -->
+
+Call `reflector.trackUsage()` to track reflection information used
 by the application. Reflection information (`ReflectionInfo`) is a data
 structure that stores information about your application that Angular uses for
 locating DI factories, generated change detectors and other code related to a
 given type. After exercising your application, call `reflector.listUnusedKeys()`
 to get a list of types and functions whose reflection information was retained
-but was never used by the application.
+but never used by the application.
 
 #### Use code coverage to find dead code
 
-When running in Dartium (or in Dart VM in general) you can request code
+When running in Dartium (or in the Dart VM, in general) you can request code
 coverage information from the VM. You can either use
-[observatory](https://www.dartlang.org/tools/observatory/), or download
+[observatory](https://www.dartlang.org/tools/observatory/) or download
 the coverage file and use your own tools to inspect it. Lines of code that are
 not covered are top candidates for dead code.
 
@@ -93,9 +122,15 @@ code, only necessary evidence. It is perfectly possible that you simply didn't
 exercise your application in a way that triggers the execution of uncovered
 code. A common example is error handling code. Just because your testing never
 encountered an error does not mean the error won't happen in production. You
-therefore do not have to rush and remove all the `catch` blocks.
+therefore don't have to rush and remove all the `catch` blocks.
 
 ### Reducing code size
+
+To reduce code size, you can disable reflection,
+enable minification, and manually remove dead code.
+You can also try less safe options such as
+telling dart2js to trust type annotations.
+
 
 #### Disable reflection
 
@@ -129,19 +164,19 @@ example:
 /// This function decides which serialization format to use
 void setupSerializers() {
   if (server.doYouSupportProtocolBuffers()) {
-    useProtobufSerializaers();
+    useProtobufSerializers();
   } else {
-    useJsonSerializaers();
+    useJsonSerializers();
   }
 }
 ```
 
 In this example the application asks the server what kind of serialization
-format it uses and dynamically chooses one or the other. `dart2js` could never
-tell whether the server responds with yes or no and so it must retain both
-kinds of serializers. However, you, as the developer of the application, may
-know in advance that your server supports protocol buffers and so you could
-remove that `if` block entirely and default to protocol buffers.
+format it uses and dynamically chooses one or the other. `dart2js` can't
+tell whether the server responds with yes or no, so it must retain both
+kinds of serializers. However, if you know that your server supports
+protocol buffers, you can remove that `if` block entirely and default to
+protocol buffers.
 
 Code coverage (see above) is a good way to find dead code in your app.
 
@@ -163,7 +198,7 @@ booleans are never `null` when performing arithmetic, and that your program
 does not run into range error when operating on lists, letting the compiler
 remove some of the error checking code.
 
-These options are specified in `pubspec.yaml`.
+Specify these options in `pubspec.yaml`.
 
 Example:
 
@@ -196,35 +231,36 @@ Change detection profiler repeatedly performs change detection without invoking
 any user actions, such as clicking buttons or entering text in input fields. It
 then computes the average amount of time it took to perform a single cycle of
 change detection in milliseconds and prints it to the console. This number
-depends on the current state of the UI. You will likely see different numbers
+depends on the current state of the UI. You are likely to see different numbers
 as you go from one screen in your application to another.
 
 #### Running the profiler
 
-Enable debug tools (see above), then in the dev console enter the following:
+Enable the debugging tools (see above),
+then in the dev console enter the following:
 
 ```javascript
 ng.profiler.timeChangeDetection();
 ```
 
-The results will be printed to the console.
+The results are printed to the console.
 
-#### Recording CPU profile
+#### Recording CPU profiles
 
-Pass `{record: true}` an argument:
+To record a profile, pass `{record: true}` to `timeChangeDetection()`:
 
 ```javascript
 ng.profiler.timeChangeDetection({record: true});
 ```
 
-Then open the "Profiles" tab. You will see the recorded profile titled
-"Change Detection". In Chrome, if you record the profile repeatedly, all the
-profiles will be nested under "Change Detection".
+Then open the **Profiles** tab. The recorded profile has the title
+**Change Detection**. In Chrome, if you record the profile repeatedly, all the
+profiles are nested under Change Detection.
 
 #### Interpreting the numbers
 
-In a properly-designed application repeated attempts to detect changes without
-any user actions should result in no changes to be applied on the UI. It is
+In a properly designed application, repeated attempts to detect changes without
+any user actions result in no changes to the UI. It is
 also desirable to have the cost of a user action be proportional to the amount
 of UI changes required. For example, popping up a menu with 5 items should be
 vastly faster than rendering a table of 500 rows and 10 columns. Therefore,
@@ -248,24 +284,26 @@ Then look for hot spots using
 #### Reducing change detection cost
 
 There are many reasons for slow change detection. To gain intuition about
-possible causes it would help to understand how change detection works. Such a
-discussion is outside the scope of this document (TODO link to docs), but here
-are some key concepts in brief.
+possible causes it helps to understand how change detection works. Such a
+discussion is outside the scope of this document,
+but here are some key concepts.
 
-By default Angular uses "dirty checking" mechanism for finding model changes.
+<!-- TODO: link to change detection docs -->
+
+By default, Angular uses a _dirty checking_ mechanism to find model changes.
 This mechanism involves evaluating every bound expression that's active on the
 UI. These usually include text interpolation via `{{expression}}` and property
 bindings via `[prop]="expression"`. If any of the evaluated expressions are
-costly to compute they could contribute to slow change detection. A good way to
+costly to compute, they might contribute to slow change detection. A good way to
 speed things up is to use plain class fields in your expressions and avoid any
-kinds of computation. Example:
+kind of computation. For example:
 
 ```dart
 @View(
   template: '<button [enabled]="isEnabled">{{title}}</button>'
 )
 class FancyButton {
-  // GOOD: no computation, just return the value
+  // GOOD: no computation, just returns the value
   bool isEnabled;
 
   // BAD: computes the final value upon request
@@ -274,11 +312,13 @@ class FancyButton {
 }
 ```
 
-Most cases like these could be solved by precomputing the value and storing the
+Most cases like these can be solved by precomputing the value and storing the
 final value in a field.
 
-Angular also supports a second type of change detection - the "push" model. In
-this model Angular does not poll your component for changes. Instead, the
-component "tells" Angular when it changes and only then does Angular perform
+Angular also supports a second type of change detection: the _push_ model. In
+this model, Angular does not poll your component for changes. Instead, the
+component tells Angular when it changes, and only then does Angular perform
 the update. This model is suitable in situations when your data model uses
-observable or immutable objects (also a discussion for another time).
+observable or immutable objects.
+
+<!-- TODO: link to discussion of push model -->
