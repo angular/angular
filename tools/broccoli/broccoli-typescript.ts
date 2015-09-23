@@ -4,6 +4,7 @@
 import fs = require('fs');
 import fse = require('fs-extra');
 import path = require('path');
+import * as ts from 'typescript';
 import {wrapDiffingPlugin, DiffingBroccoliPlugin, DiffResult} from './diffing-broccoli-plugin';
 
 
@@ -187,6 +188,7 @@ class CustomLanguageServiceHost implements ts.LanguageServiceHost {
   constructor(private compilerOptions: ts.CompilerOptions, private fileNames: string[],
               private fileRegistry: FileRegistry, private treeInputPath: string) {
     this.currentDirectory = process.cwd();
+    console.log("compilerOptions", compilerOptions);
     this.defaultLibFilePath = ts.getDefaultLibFilePath(compilerOptions).replace(/\\/g, '/');
   }
 
@@ -238,6 +240,7 @@ class CustomLanguageServiceHost implements ts.LanguageServiceHost {
 
 
   getDefaultLibFileName(options: ts.CompilerOptions): string {
+    console.log("defaultLibFilePath", this.defaultLibFilePath);
     // ignore options argument, options should not change during the lifetime of the plugin
     return this.defaultLibFilePath;
   }
