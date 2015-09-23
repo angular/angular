@@ -19,36 +19,64 @@ const formDirectiveBinding =
     CONST_EXPR(new Binding(ControlContainer, {toAlias: forwardRef(() => NgForm)}));
 
 /**
- * Creates and binds a form object to a DOM element.
+ * If `NgForm` is bound in a component, `<form>` elements in that component will be
+ * upgraded to use the Angular form system.
  *
- * # Example
+ * # Typical Use
  *
- *  ```
- * @Component({selector: "signup-comp"})
+ * Include `FORM_DIRECTIVES` in the `directives` section of a {@link View} annotation
+ * to use `NgForm` and its associated controls.
+ *
+ * # Structure
+ *
+ * An Angular form is a collection of {@link Control}s in some hierarchy.
+ * `Control`s can be at the top level or can be organized in {@link ControlGroups}
+ * or {@link ControlArray}s. This hierarchy is reflected in the form's `value`, a
+ * JSON object that mirrors the form structure.
+ *
+ * # Submission
+ *
+ * The `ng-submit` event signals when the user triggers a form submission.
+ *
+ * ### Example ([live demo](http://plnkr.co/edit/ltdgYj4P0iY64AR71EpL?p=preview))
+ *
+ *  ```typescript
+ * @Component({
+ *   selector: 'my-app'
+ * })
  * @View({
- *      directives: [FORM_DIRECTIVES],
- *      template: `
- *              <form #f="form" (submit)='onSignUp(f.value)'>
- *                <div ng-control-group='credentials' #credentials="form">
- *                  Login <input type='text' ng-control='login'>
- *                  Password <input type='password' ng-control='password'>
- *                </div>
- *                <div *ng-if="!credentials.valid">Credentials are invalid</div>
+ *   template: `
+ *     <div>
+ *       <p>Submit the form to see the data object Angular builds</p>
+ *       <h2>NgForm demo</h2>
+ *       <form #f="form" (ng-submit)="onSubmit(f.value)">
+ *         <h3>Control group: credentials</h3>
+ *         <div ng-control-group="credentials">
+ *           <p>Login: <input type="text" ng-control="login"></p>
+ *           <p>Password: <input type="password" ng-control="password"></p>
+ *         </div>
+ *         <h3>Control group: person</h3>
+ *         <div ng-control-group="person">
+ *           <p>First name: <input type="text" ng-control="firstName"></p>
+ *           <p>Last name: <input type="text" ng-control="lastName"></p>
+ *         </div>
+ *         <button type="submit">Submit Form</button>
+ *       <p>Form data submitted:</p>
+ *       </form>
+ *       <pre>{{data}}</pre>
+ *     </div>
+ * `,
+ *   directives: [CORE_DIRECTIVES, FORM_DIRECTIVES]
+ * })
+ * export class App {
+ *   constructor() {}
  *
- *                <div ng-control-group='personal'>
- *                  Name <input type='text' ng-control='name'>
- *                </div>
- *                <button type='submit'>Sign Up!</button>
- *              </form>
- *      `})
- * class SignupComp {
- *  onSignUp(value): void {
- *    // value === {
- *    //  personal: {name: 'some name'},
- *    //  credentials: {login: 'some login', password: 'some password'}}
- *  }
+ *   data: string;
+ *
+ *   onSubmit(data) {
+ *     this.data = JSON.stringify(data, null, 2);
+ *   }
  * }
- *
  *  ```
  */
 @Directive({

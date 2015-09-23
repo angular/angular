@@ -18,42 +18,48 @@ const formDirectiveBinding =
 /**
  * Binds an existing control group to a DOM element.
  *
- * # Example
+ * ### Example ([live demo](http://plnkr.co/edit/jqrVirudY8anJxTMUjTP?p=preview))
  *
  * In this example, we bind the control group to the form element, and we bind the login and
  * password controls to the login and password elements.
  *
- *  ```
- * @Component({selector: "login-comp"})
+ *  ```typescript
+ * @Component({
+ *   selector: 'my-app'
+ * })
  * @View({
- *      directives: [FORM_DIRECTIVES],
- *      template: `
- *        <form [ng-form-model]='loginForm'>
- *          Login <input type='text' ng-control='login'>
- *          Password <input type='password' ng-control='password'>
- *          <button (click)="onLogin()">Login</button>
- *        </form>`
- *      })
- * class LoginComp {
- *  loginForm: ControlGroup;
+ *   template: `
+ *     <div>
+ *       <h2>NgFormModel Example</h2>
+ *       <form [ng-form-model]="loginForm">
+ *         <p>Login: <input type="text" ng-control="login"></p>
+ *         <p>Password: <input type="password" ng-control="password"></p>
+ *       </form>
+ *       <p>Value:</p>
+ *       <pre>{{value}}</pre>
+ *     </div>
+ *   `,
+ *   directives: [FORM_DIRECTIVES]
+ * })
+ * export class App {
+ *   loginForm: ControlGroup;
  *
- *  constructor() {
- *    this.loginForm = new ControlGroup({
- *      login: new Control(""),
- *      password: new Control("")
- *    });
- *  }
+ *   constructor() {
+ *     this.loginForm = new ControlGroup({
+ *       login: new Control(""),
+ *       password: new Control("")
+ *     });
+ *   }
  *
- *  onLogin(): void {
- *    // this.loginForm.value
- *  }
+ *   get value(): string {
+ *     return JSON.stringify(this.loginForm.value, null, 2);
+ *   }
  * }
- *
  *  ```
  *
  * We can also use ng-model to bind a domain model to the form.
  *
- *  ```
+ *  ```typescript
  * @Component({selector: "login-comp"})
  * @View({
  *      directives: [FORM_DIRECTIVES],
