@@ -135,6 +135,7 @@ export class RequestOptions {
  * ```
  * import {BaseRequestOptions, Request, RequestMethods} from 'angular2/http';
  *
+ * var options = new BaseRequestOptions();
  * var req = new Request(options.merge({
  *   method: RequestMethods.Post,
  *   url: 'https://google.com'
