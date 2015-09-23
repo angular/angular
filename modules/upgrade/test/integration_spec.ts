@@ -19,10 +19,14 @@ export function main() {
     it('should have angular 1 loaded', () => expect(angular.version.major).toBe(1));
 
     it('should instantiate ng2 in ng1 template', inject([AsyncTestCompleter], (async) => {
+         var Ng2 = Component({selector: 'ng2'})
+                       .View({template: `{{ 'NG2' }}`})
+                       .Class({constructor: function() {}});
+
          var element = html("<div>{{ 'ng1-' }}<ng2>~~</ng2>{{ '-ng1' }}</div>");
 
          var upgradeModule: UpgradeModule = createUpgradeModule();
-         upgradeModule.importNg2Component(SimpleComponent);
+         upgradeModule.importNg2Component(Ng2);
          upgradeModule.bootstrap(element).ready(() => {
            expect(document.body.textContent).toEqual("ng1-NG2-ng1");
            async.done();
@@ -30,33 +34,28 @@ export function main() {
        }));
 
     it('should instantiate ng1 in ng2 template', inject([AsyncTestCompleter], (async) => {
+         var upgradeModule: UpgradeModule = createUpgradeModule();
+
+         var Ng2 = Component({selector: 'ng2-1'})
+                       .View({
+                         template: `{{ 'ng2(' }}<ng1></ng1>{{ ')' }}`,
+                         directives: [upgradeModule.exportAsNg2Component('ng1')]
+                       })
+                       .Class({constructor: function() {}});
+
+         upgradeModule.ng1Module.directive('ng1',
+                                           () => { return {template: 'ng1 {{ "WORKS" }}!'}; });
+         upgradeModule.importNg2Component(Ng2);
+
          var element = html("<div>{{'ng1('}}<ng2-1></ng2-1>{{')'}}</div>");
 
-         ng1inNg2Module.bootstrap(element).ready(() => {
+         upgradeModule.bootstrap(element).ready(() => {
            expect(document.body.textContent).toEqual("ng1(ng2(ng1 WORKS!))");
            async.done();
          });
        }));
   });
 }
-
-@Component({selector: 'ng2'})
-@View({template: `{{ 'NG2' }}`})
-class SimpleComponent {
-}
-
-var ng1inNg2Module: UpgradeModule = createUpgradeModule();
-
-@Component({selector: 'ng2-1'})
-@View({
-  template: `{{ 'ng2(' }}<ng1></ng1>{{ ')' }}`,
-  directives: [ng1inNg2Module.exportAsNg2Component('ng1')]
-})
-class Ng2ContainsNg1 {
-}
-
-ng1inNg2Module.ng1Module.directive('ng1', () => { return {template: 'ng1 {{ "WORKS" }}!'}; });
-ng1inNg2Module.importNg2Component(Ng2ContainsNg1);
 
 
 function html(html: string): Element {
