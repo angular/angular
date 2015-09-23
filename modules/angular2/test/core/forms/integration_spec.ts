@@ -800,6 +800,19 @@ export function main() {
                   rootTC.detectChanges();
                   expect(input.value).toEqual("aa");
                 })));
+      it("should not crash when validity is checked from a binding",
+         inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
+                  // {{x.valid}} used to crash because valid() tried to read a property
+                  // from form.control before it was set. This test verifies this bug is
+                  // fixed.
+                  var t = `<form><div ng-control-group="x" #x="form">
+                  <input type="text" ng-control="test"></div>{{x.valid}}</form>`;
+                  var rootTC: RootTestComponent;
+                  tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
+                      (root) => { rootTC = root; });
+                  tick();
+                  rootTC.detectChanges();
+                })));
     });
   });
 }
