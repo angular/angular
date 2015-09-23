@@ -29,7 +29,8 @@ import {
   AfterContentInit,
   AfterContentChecked,
   AfterViewInit,
-  AfterViewChecked
+  AfterViewChecked,
+  SimpleChange
 } from 'angular2/core';
 
 import {TEST_BINDINGS} from './test_bindings';
@@ -114,7 +115,7 @@ class DirectiveWithoutModuleId {
 class ComponentWithEverything implements OnChanges,
     OnInit, DoCheck, OnDestroy, AfterContentInit, AfterContentChecked, AfterViewInit,
     AfterViewChecked {
-  onChanges(changes: StringMap<string, any>): void {}
+  onChanges(changes: StringMap<string, SimpleChange>): void {}
   onInit(): void {}
   doCheck(): void {}
   onDestroy(): void {}

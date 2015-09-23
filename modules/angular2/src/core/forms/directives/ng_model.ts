@@ -1,8 +1,7 @@
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
-
 import {OnChanges} from 'angular2/lifecycle_hooks';
-
+import {SimpleChange} from 'angular2/src/core/change_detection';
 import {Query, Directive} from 'angular2/src/core/metadata';
 import {forwardRef, Binding, Inject, Optional} from 'angular2/src/core/di';
 import {NgControl} from './ng_control';
@@ -47,7 +46,7 @@ export class NgModel extends NgControl implements OnChanges {
     this.validators = validators;
   }
 
-  onChanges(changes: StringMap<string, any>) {
+  onChanges(changes: StringMap<string, SimpleChange>) {
     if (!this._added) {
       setUpControl(this._control, this);
       this._control.updateValidity();

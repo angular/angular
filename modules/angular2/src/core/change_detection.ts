@@ -15,6 +15,7 @@ export {
   ChangeDetectorRef,
 
   WrappedValue,
+  SimpleChange,
   PipeTransform,
   PipeOnDestroy,
   IterableDiffers,
@@ -23,5 +24,4 @@ export {
   KeyValueDiffers,
   KeyValueDiffer,
   KeyValueDifferFactory
-
 } from './change_detection/change_detection';

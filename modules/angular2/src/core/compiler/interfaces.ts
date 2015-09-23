@@ -1,4 +1,5 @@
 import {StringMap, MapWrapper} from 'angular2/src/core/facade/collection';
+import {SimpleChange} from 'angular2/src/core/change_detection/change_detection_util';
 
 export enum LifecycleHooks {
   OnInit,
@@ -60,7 +61,7 @@ export var LIFECYCLE_HOOKS_VALUES = [
  * }
  *  ```
  */
-export interface OnChanges { onChanges(changes: StringMap<string, any>); }
+export interface OnChanges { onChanges(changes: StringMap<string, SimpleChange>); }
 
 /**
  * Notify a directive when it has been checked the first time.
