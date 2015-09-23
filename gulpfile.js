@@ -40,7 +40,6 @@ var insert = require('gulp-insert');
 var buildRouter = require('./modules/angular1_router/build');
 var uglify = require('gulp-uglify');
 var shouldLog = require('./tools/build/logging');
-var tslint = require('gulp-tslint');
 var dartSdk = require('./tools/build/dart');
 var sauceConf = require('./sauce.conf');
 var os = require('os');
@@ -288,6 +287,7 @@ gulp.task('enforce-format', function() {
 });
 
 gulp.task('lint', ['build.tools'], function() {
+  var tslint = require('gulp-tslint');
   // Built-in rules are at
   // https://github.com/palantir/tslint#supported-rules
   var tslintConfig = {
@@ -297,7 +297,6 @@ gulp.task('lint', ['build.tools'], function() {
       "requireParameterType": true
     }
   };
-
   return gulp.src(['modules/angular2/src/**/*.ts', '!modules/angular2/src/test_lib/**'])
       .pipe(tslint({configuration: tslintConfig, rulesDirectory: 'dist/tools/tslint'}))
       .pipe(tslint.report('prose', {emitError: true}));

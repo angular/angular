@@ -56,6 +56,13 @@ module.exports = function createCompilerHost(log) {
       },
       getNewLine: function() {
         return ts.sys.newLine;
+      },
+      fileExists: function(fileName) {
+        var stats;
+        fs.stat(fileName, function(err, s) {
+           stats = s;
+        });
+        return !!stats;
       }
     };
   };

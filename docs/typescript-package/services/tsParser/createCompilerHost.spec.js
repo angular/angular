@@ -38,7 +38,7 @@ describe('createCompilerHost', function() {
 
   describe('getDefaultLibFileName', function() {
     it('should return a path to the default library', function() {
-      expect(host.getDefaultLibFileName(options)).toContain('typescript/bin/lib.d.ts');
+      expect(host.getDefaultLibFileName(options)).toContain('typescript/lib/lib.d.ts');
     });
   });
 

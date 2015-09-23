@@ -37,6 +37,7 @@ module.exports = function makeNodeTree(destinationPath) {
     declaration: false,
     mapRoot: '', /* force sourcemaps to use relative path */
     module: 'CommonJS',
+    moduleResolution: 1 /* classic */,
     noEmitOnError: true,
     rootDir: '.',
     rootFilePaths:
@@ -91,7 +92,7 @@ module.exports = function makeNodeTree(destinationPath) {
         match: /^/,
         replacement: function() {
           return `var parse5Adapter = require('angular2/src/core/dom/parse5_adapter');\n\r
-                  parse5Adapter.Parse5DomAdapter.makeCurrent();`
+                  parse5Adapter.Parse5DomAdapter.makeCurrent();`;
         }
       },
       {match: /$/, replacement: function(_, relativePath) { return "\r\n main(); \n\r"; }}
