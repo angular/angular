@@ -7,7 +7,7 @@ echo "Shutting down Sauce Connect tunnel"
 
 killall sc
 
-while [[ -n `ps -ef | grep "bin/sc" | grep -v "grep"` ]]; do
+while [[ -n `ps -ef | grep "sauce-connect-" | grep -v "grep"` ]]; do
   printf "."
   sleep .5
 done
