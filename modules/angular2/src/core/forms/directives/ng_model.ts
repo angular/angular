@@ -13,10 +13,16 @@ import {setUpControl, isPropertyUpdated} from './shared';
 const formControlBinding = CONST_EXPR(new Binding(NgControl, {toAlias: forwardRef(() => NgModel)}));
 
 /**
- * Binds a domain model to the form.
+ * Binds a domain model to a form control.
  *
- * # Example
- *  ```
+ * # Usage
+ *
+ * `ng-model` binds an existing domain model to a form control. For a
+ * two-way binding, use `[(ng-model)]` to ensure the model updates in
+ * both directions.
+ *
+ * ### Example ([live demo](http://plnkr.co/edit/R3UX5qDaUqFO2VYR0UzH?p=preview))
+ *  ```typescript
  * @Component({selector: "search-comp"})
  * @View({
  *      directives: [FORM_DIRECTIVES],
