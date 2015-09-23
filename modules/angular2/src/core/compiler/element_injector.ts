@@ -242,10 +242,30 @@ function _createEventEmitterAccessors(bwv: BindingWithVisibility): EventEmitterA
   });
 }
 
+function _createProtoQueryRefs(bindings: BindingWithVisibility[]): ProtoQueryRef[] {
+  var res = [];
+  ListWrapper.forEachWithIndex(bindings, (b, i) => {
+    if (b.binding instanceof DirectiveBinding) {
+      // field queries
+      var queries: QueryMetadataWithSetter[] = b.binding.queries;
+      queries.forEach(q => res.push(new ProtoQueryRef(i, q.setter, q.metadata)));
+
+      // queries passed into the constructor.
+      // TODO: remove this after constructor queries are no longer supported
+      var deps: DirectiveDependency[] = b.binding.resolvedFactories[0].dependencies;
+      deps.forEach(d => {
+        if (isPresent(d.queryDecorator)) res.push(new ProtoQueryRef(i, null, d.queryDecorator));
+      });
+    }
+  });
+  return res;
+}
+
 export class ProtoElementInjector {
   view: viewModule.AppView;
   attributes: Map<string, string>;
   eventEmitterAccessors: EventEmitterAccessor[][];
+  protoQueryRefs: ProtoQueryRef[];
   protoInjector: ProtoInjector;
 
   static create(parent: ProtoElementInjector, index: number, bindings: DirectiveBinding[],
@@ -312,6 +332,7 @@ export class ProtoElementInjector {
     for (var i = 0; i < length; ++i) {
       this.eventEmitterAccessors[i] = _createEventEmitterAccessors(bwv[i]);
     }
+    this.protoQueryRefs = _createProtoQueryRefs(bwv);
   }
 
   instantiate(parent: ElementInjector): ElementInjector {
@@ -332,11 +353,7 @@ class _Context {
 export class ElementInjector extends TreeNode<ElementInjector> implements DependencyProvider {
   private _host: ElementInjector;
   private _preBuiltObjects: PreBuiltObjects = null;
-
-  // QueryRefs are added during construction. They are never removed.
-  private _query0: QueryRef;
-  private _query1: QueryRef;
-  private _query2: QueryRef;
+  private _queryStrategy: _QueryStrategy;
 
   hydrated: boolean;
 
@@ -357,7 +374,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
 
     this.hydrated = false;
 
-    this._buildQueries();
+    this._queryStrategy = this._buildQueryStrategy();
   }
 
   dehydrate(): void {
@@ -366,7 +383,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     this._preBuiltObjects = null;
     this._strategy.callOnDestroy();
     this._strategy.dehydrate();
-    this._clearQueryLists();
+    this._queryStrategy.clearQueryLists();
   }
 
   hydrate(imperativelyCreatedInjector: Injector, host: ElementInjector,
@@ -378,36 +395,6 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     this._strategy.hydrate();
 
     this.hydrated = true;
-  }
-
-  updateLocalQueries() {
-    if (isPresent(this._query0) && !this._query0.isViewQuery) {
-      this._query0.update();
-      this._query0.list.fireCallbacks();
-    }
-    if (isPresent(this._query1) && !this._query1.isViewQuery) {
-      this._query1.update();
-      this._query1.list.fireCallbacks();
-    }
-    if (isPresent(this._query2) && !this._query2.isViewQuery) {
-      this._query2.update();
-      this._query2.list.fireCallbacks();
-    }
-  }
-
-  updateLocalViewQueries() {
-    if (isPresent(this._query0) && this._query0.isViewQuery) {
-      this._query0.update();
-      this._query0.list.fireCallbacks();
-    }
-    if (isPresent(this._query1) && this._query1.isViewQuery) {
-      this._query1.update();
-      this._query1.list.fireCallbacks();
-    }
-    if (isPresent(this._query2) && this._query2.isViewQuery) {
-      this._query2.update();
-      this._query2.list.fireCallbacks();
-    }
   }
 
   private _debugContext(): any {
@@ -504,7 +491,8 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
 
       if (isPresent(dirDep.attributeName)) return this._buildAttribute(dirDep);
 
-      if (isPresent(dirDep.queryDecorator)) return this._findQuery(dirDep.queryDecorator).list;
+      if (isPresent(dirDep.queryDecorator))
+        return this._queryStrategy.findQuery(dirDep.queryDecorator).list;
 
       if (dirDep.key.id === StaticKeys.instance().changeDetectorRefId) {
         // We provide the component's view change detector to components and
@@ -557,34 +545,6 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     }
   }
 
-  _buildQueriesForDeps(deps: DirectiveDependency[]): void {
-    for (var i = 0; i < deps.length; i++) {
-      var dep = deps[i];
-      if (isPresent(dep.queryDecorator)) {
-        this._createQueryRef(null, null, dep.queryDecorator);
-      }
-    }
-  }
-  _buildQueriesForDirective(dirIndex: number, meta: QueryMetadataWithSetter[]): void {
-    for (var i = 0; i < meta.length; i++) {
-      var m = meta[i];
-      this._createQueryRef(dirIndex, m.setter, m.metadata);
-    }
-  }
-
-  private _createQueryRef(dirIndex: number, setter: SetterFn, query: QueryMetadata): void {
-    var queryList = new QueryList<any>();
-    if (isBlank(this._query0)) {
-      this._query0 = new QueryRef(dirIndex, setter, query, queryList, this);
-    } else if (isBlank(this._query1)) {
-      this._query1 = new QueryRef(dirIndex, setter, query, queryList, this);
-    } else if (isBlank(this._query2)) {
-      this._query2 = new QueryRef(dirIndex, setter, query, queryList, this);
-    } else {
-      throw new QueryError();
-    }
-  }
-
   addDirectivesMatchingQuery(query: QueryMetadata, list: any[]): void {
     var templateRef = isBlank(this._preBuiltObjects) ? null : this._preBuiltObjects.templateRef;
     if (query.selector === TemplateRef && isPresent(templateRef)) {
@@ -593,23 +553,15 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     this._strategy.addDirectivesMatchingQuery(query, list);
   }
 
-  private _buildQueries(): void {
-    if (isPresent(this._proto)) {
-      this._strategy.buildQueries();
+  private _buildQueryStrategy(): _QueryStrategy {
+    if (this._proto.protoQueryRefs.length === 0) {
+      return _emptyQueryStrategy;
+    } else if (this._proto.protoQueryRefs.length <=
+               InlineQueryStrategy.NUMBER_OF_SUPPORTED_QUERIES) {
+      return new InlineQueryStrategy(this);
+    } else {
+      return new DynamicQueryStrategy(this);
     }
-  }
-
-  private _findQuery(query): QueryRef {
-    if (isPresent(this._query0) && this._query0.query === query) {
-      return this._query0;
-    }
-    if (isPresent(this._query1) && this._query1.query === query) {
-      return this._query1;
-    }
-    if (isPresent(this._query2) && this._query2.query === query) {
-      return this._query2;
-    }
-    throw new BaseException(`Cannot find query for directive ${query}.`);
   }
 
   link(parent: ElementInjector): void { parent.addChild(this); }
@@ -631,15 +583,9 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     return isPresent(nestedView) ? nestedView.rootElementInjectors : [];
   }
 
-  private _clearQueryLists(): void {
-    if (isPresent(this._query0)) this._query0.reset();
-    if (isPresent(this._query1)) this._query1.reset();
-    if (isPresent(this._query2)) this._query2.reset();
-  }
+  afterViewChecked(): void { this._queryStrategy.updateViewQueries(); }
 
-  afterViewChecked(): void { this.updateLocalViewQueries(); }
-
-  afterContentChecked(): void { this.updateLocalQueries(); }
+  afterContentChecked(): void { this._queryStrategy.updateContentQueries(); }
 
   traverseAndSetQueriesAsDirty(): void {
     var inj = this;
@@ -650,16 +596,165 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
   }
 
   private _setQueriesAsDirty(): void {
-    if (isPresent(this._query0) && !this._query0.isViewQuery) this._query0.dirty = true;
-    if (isPresent(this._query1) && !this._query1.isViewQuery) this._query1.dirty = true;
-    if (isPresent(this._query2) && !this._query2.isViewQuery) this._query2.dirty = true;
-    if (isPresent(this._host)) this._host._setViewQueriesAsDirty();
+    this._queryStrategy.setContentQueriesAsDirty();
+    if (isPresent(this._host)) this._host._queryStrategy.setViewQueriesAsDirty();
+  }
+}
+
+interface _QueryStrategy {
+  setContentQueriesAsDirty(): void;
+  setViewQueriesAsDirty(): void;
+  clearQueryLists(): void;
+  updateContentQueries(): void;
+  updateViewQueries(): void;
+  findQuery(query: QueryMetadata): QueryRef;
+}
+
+class _EmptyQueryStrategy implements _QueryStrategy {
+  setContentQueriesAsDirty(): void {}
+  setViewQueriesAsDirty(): void {}
+  clearQueryLists(): void {}
+  updateContentQueries(): void {}
+  updateViewQueries(): void {}
+  findQuery(query: QueryMetadata): QueryRef {
+    throw new BaseException(`Cannot find query for directive ${query}.`);
+  }
+}
+
+var _emptyQueryStrategy = new _EmptyQueryStrategy();
+
+class InlineQueryStrategy implements _QueryStrategy {
+  static NUMBER_OF_SUPPORTED_QUERIES = 3;
+
+  query0: QueryRef;
+  query1: QueryRef;
+  query2: QueryRef;
+
+  constructor(ei: ElementInjector) {
+    var protoRefs = ei._proto.protoQueryRefs;
+    if (protoRefs.length > 0) this.query0 = new QueryRef(protoRefs[0], new QueryList<any>(), ei);
+    if (protoRefs.length > 1) this.query1 = new QueryRef(protoRefs[1], new QueryList<any>(), ei);
+    if (protoRefs.length > 2) this.query2 = new QueryRef(protoRefs[2], new QueryList<any>(), ei);
   }
 
-  private _setViewQueriesAsDirty(): void {
-    if (isPresent(this._query0) && this._query0.isViewQuery) this._query0.dirty = true;
-    if (isPresent(this._query1) && this._query1.isViewQuery) this._query1.dirty = true;
-    if (isPresent(this._query2) && this._query2.isViewQuery) this._query2.dirty = true;
+  setContentQueriesAsDirty(): void {
+    if (isPresent(this.query0) && !this.query0.isViewQuery) this.query0.dirty = true;
+    if (isPresent(this.query1) && !this.query1.isViewQuery) this.query1.dirty = true;
+    if (isPresent(this.query2) && !this.query2.isViewQuery) this.query2.dirty = true;
+  }
+
+  setViewQueriesAsDirty(): void {
+    if (isPresent(this.query0) && this.query0.isViewQuery) this.query0.dirty = true;
+    if (isPresent(this.query1) && this.query1.isViewQuery) this.query1.dirty = true;
+    if (isPresent(this.query2) && this.query2.isViewQuery) this.query2.dirty = true;
+  }
+
+  clearQueryLists(): void {
+    if (isPresent(this.query0)) this.query0.reset();
+    if (isPresent(this.query1)) this.query1.reset();
+    if (isPresent(this.query2)) this.query2.reset();
+  }
+
+  updateContentQueries() {
+    if (isPresent(this.query0) && !this.query0.isViewQuery) {
+      this.query0.update();
+      this.query0.list.fireCallbacks();
+    }
+    if (isPresent(this.query1) && !this.query1.isViewQuery) {
+      this.query1.update();
+      this.query1.list.fireCallbacks();
+    }
+    if (isPresent(this.query2) && !this.query2.isViewQuery) {
+      this.query2.update();
+      this.query2.list.fireCallbacks();
+    }
+  }
+
+  updateViewQueries() {
+    if (isPresent(this.query0) && this.query0.isViewQuery) {
+      this.query0.update();
+      this.query0.list.fireCallbacks();
+    }
+    if (isPresent(this.query1) && this.query1.isViewQuery) {
+      this.query1.update();
+      this.query1.list.fireCallbacks();
+    }
+    if (isPresent(this.query2) && this.query2.isViewQuery) {
+      this.query2.update();
+      this.query2.list.fireCallbacks();
+    }
+  }
+
+  findQuery(query: QueryMetadata): QueryRef {
+    if (isPresent(this.query0) && this.query0.protoQueryRef.query === query) {
+      return this.query0;
+    }
+    if (isPresent(this.query1) && this.query1.protoQueryRef.query === query) {
+      return this.query1;
+    }
+    if (isPresent(this.query2) && this.query2.protoQueryRef.query === query) {
+      return this.query2;
+    }
+    throw new BaseException(`Cannot find query for directive ${query}.`);
+  }
+}
+
+class DynamicQueryStrategy implements _QueryStrategy {
+  queries: QueryRef[];
+
+  constructor(ei: ElementInjector) {
+    this.queries = ei._proto.protoQueryRefs.map(p => new QueryRef(p, new QueryList<any>(), ei));
+  }
+
+  setContentQueriesAsDirty(): void {
+    for (var i = 0; i < this.queries.length; ++i) {
+      var q = this.queries[i];
+      if (!q.isViewQuery) q.dirty = true;
+    }
+  }
+
+  setViewQueriesAsDirty(): void {
+    for (var i = 0; i < this.queries.length; ++i) {
+      var q = this.queries[i];
+      if (q.isViewQuery) q.dirty = true;
+    }
+  }
+
+  clearQueryLists(): void {
+    for (var i = 0; i < this.queries.length; ++i) {
+      var q = this.queries[i];
+      q.reset();
+    }
+  }
+
+  updateContentQueries() {
+    for (var i = 0; i < this.queries.length; ++i) {
+      var q = this.queries[i];
+      if (!q.isViewQuery) {
+        q.update();
+        q.list.fireCallbacks();
+      }
+    }
+  }
+
+  updateViewQueries() {
+    for (var i = 0; i < this.queries.length; ++i) {
+      var q = this.queries[i];
+      if (q.isViewQuery) {
+        q.update();
+        q.list.fireCallbacks();
+      }
+    }
+  }
+
+  findQuery(query: QueryMetadata): QueryRef {
+    for (var i = 0; i < this.queries.length; ++i) {
+      var q = this.queries[i];
+      if (q.protoQueryRef.query === query) {
+        return q;
+      }
+    }
+    throw new BaseException(`Cannot find query for directive ${query}.`);
   }
 }
 
@@ -667,7 +762,6 @@ interface _ElementInjectorStrategy {
   callOnDestroy(): void;
   getComponent(): any;
   isComponentKey(key: Key): boolean;
-  buildQueries(): void;
   addDirectivesMatchingQuery(q: QueryMetadata, res: any[]): void;
   hydrate(): void;
   dehydrate(): void;
@@ -765,63 +859,6 @@ class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
            key.id === this.injectorStrategy.protoStrategy.keyId0;
   }
 
-  buildQueries(): void {
-    var p = this.injectorStrategy.protoStrategy;
-
-    if (p.binding0 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(
-          <DirectiveDependency[]>p.binding0.resolvedFactories[0].dependencies);
-
-      this._ei._buildQueriesForDirective(0, (<DirectiveBinding>p.binding0).queries);
-    }
-    if (p.binding1 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(
-          <DirectiveDependency[]>p.binding1.resolvedFactories[0].dependencies);
-
-      this._ei._buildQueriesForDirective(1, (<DirectiveBinding>p.binding1).queries);
-    }
-    if (p.binding2 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(
-          <DirectiveDependency[]>p.binding2.resolvedFactories[0].dependencies);
-      this._ei._buildQueriesForDirective(2, (<DirectiveBinding>p.binding2).queries);
-    }
-    if (p.binding3 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(
-          <DirectiveDependency[]>p.binding3.resolvedFactories[0].dependencies);
-      this._ei._buildQueriesForDirective(3, (<DirectiveBinding>p.binding3).queries);
-    }
-    if (p.binding4 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(
-          <DirectiveDependency[]>p.binding4.resolvedFactories[0].dependencies);
-      this._ei._buildQueriesForDirective(4, (<DirectiveBinding>p.binding4).queries);
-    }
-    if (p.binding5 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(
-          <DirectiveDependency[]>p.binding5.resolvedFactories[0].dependencies);
-      this._ei._buildQueriesForDirective(5, (<DirectiveBinding>p.binding5).queries);
-    }
-    if (p.binding6 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(
-          <DirectiveDependency[]>p.binding6.resolvedFactories[0].dependencies);
-      this._ei._buildQueriesForDirective(6, (<DirectiveBinding>p.binding6).queries);
-    }
-    if (p.binding7 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(
-          <DirectiveDependency[]>p.binding7.resolvedFactories[0].dependencies);
-      this._ei._buildQueriesForDirective(7, (<DirectiveBinding>p.binding7).queries);
-    }
-    if (p.binding8 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(
-          <DirectiveDependency[]>p.binding8.resolvedFactories[0].dependencies);
-      this._ei._buildQueriesForDirective(8, (<DirectiveBinding>p.binding8).queries);
-    }
-    if (p.binding9 instanceof DirectiveBinding) {
-      this._ei._buildQueriesForDeps(
-          <DirectiveDependency[]>p.binding9.resolvedFactories[0].dependencies);
-      this._ei._buildQueriesForDirective(9, (<DirectiveBinding>p.binding9).queries);
-    }
-  }
-
   addDirectivesMatchingQuery(query: QueryMetadata, list: any[]): void {
     var i = this.injectorStrategy;
     var p = i.protoStrategy;
@@ -913,19 +950,6 @@ class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
     return this._ei._proto._firstBindingIsComponent && isPresent(key) && key.id === p.keyIds[0];
   }
 
-  buildQueries(): void {
-    var inj = this.injectorStrategy;
-    var p = inj.protoStrategy;
-
-    for (var i = 0; i < p.bindings.length; i++) {
-      if (p.bindings[i] instanceof DirectiveBinding) {
-        this._ei._buildQueriesForDeps(
-            <DirectiveDependency[]>p.bindings[i].resolvedFactory.dependencies);
-        this._ei._buildQueriesForDirective(i, (<DirectiveBinding>p.bindings[i]).queries);
-      }
-    }
-  }
-
   addDirectivesMatchingQuery(query: QueryMetadata, list: any[]): void {
     var ist = this.injectorStrategy;
     var p = ist.protoStrategy;
@@ -941,23 +965,17 @@ class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
   }
 }
 
-export class QueryError extends BaseException {
-  message: string;
-  // TODO(rado): pass the names of the active directives.
-  constructor() {
-    super();
-    this.message = 'Only 3 queries can be concurrently active on an element.';
-  }
+export class ProtoQueryRef {
+  constructor(public dirIndex: number, public setter: SetterFn, public query: QueryMetadata) {}
 
-  toString(): string { return this.message; }
+  get usesPropertySyntax(): boolean { return isPresent(this.setter); }
 }
 
 export class QueryRef {
-  constructor(public dirIndex: number, public setter: SetterFn, public query: QueryMetadata,
-              public list: QueryList<any>, public originator: ElementInjector,
-              public dirty: boolean = true) {}
+  constructor(public protoQueryRef: ProtoQueryRef, public list: QueryList<any>,
+              private originator: ElementInjector, public dirty: boolean = true) {}
 
-  get isViewQuery(): boolean { return this.query.isViewQuery; }
+  get isViewQuery(): boolean { return this.protoQueryRef.query.isViewQuery; }
 
   update(): void {
     if (!this.dirty) return;
@@ -965,19 +983,19 @@ export class QueryRef {
     this.dirty = false;
 
     // TODO delete the check once only field queries are supported
-    if (isPresent(this.dirIndex)) {
-      var dir = this.originator.getDirectiveAtIndex(this.dirIndex);
-      if (this.query.first) {
-        this.setter(dir, this.list.length > 0 ? this.list.first : null);
+    if (this.protoQueryRef.usesPropertySyntax) {
+      var dir = this.originator.getDirectiveAtIndex(this.protoQueryRef.dirIndex);
+      if (this.protoQueryRef.query.first) {
+        this.protoQueryRef.setter(dir, this.list.length > 0 ? this.list.first : null);
       } else {
-        this.setter(dir, this.list);
+        this.protoQueryRef.setter(dir, this.list);
       }
     }
   }
 
   private _update(): void {
     var aggregator = [];
-    if (this.query.isViewQuery) {
+    if (this.protoQueryRef.query.isViewQuery) {
       var view = this.originator.getView();
       // intentionally skipping originator for view queries.
       var nestedView =
@@ -1002,7 +1020,7 @@ export class QueryRef {
         break;
       }
 
-      if (!this.query.descendants &&
+      if (!this.protoQueryRef.query.descendants &&
           !(curInj.parent == this.originator || curInj == this.originator))
         continue;
 
@@ -1017,7 +1035,7 @@ export class QueryRef {
   }
 
   private _visitInjector(inj: ElementInjector, aggregator: any[]) {
-    if (this.query.isVarBindingQuery) {
+    if (this.protoQueryRef.query.isVarBindingQuery) {
       this._aggregateVariableBindings(inj, aggregator);
     } else {
       this._aggregateDirective(inj, aggregator);
@@ -1043,7 +1061,7 @@ export class QueryRef {
   }
 
   private _aggregateVariableBindings(inj: ElementInjector, aggregator: any[]): void {
-    var vb = this.query.varBindings;
+    var vb = this.protoQueryRef.query.varBindings;
     for (var i = 0; i < vb.length; ++i) {
       if (inj.hasVariableBinding(vb[i])) {
         aggregator.push(inj.getVariableBinding(vb[i]));
@@ -1052,7 +1070,7 @@ export class QueryRef {
   }
 
   private _aggregateDirective(inj: ElementInjector, aggregator: any[]): void {
-    inj.addDirectivesMatchingQuery(this.query, aggregator);
+    inj.addDirectivesMatchingQuery(this.protoQueryRef.query, aggregator);
   }
 
   reset(): void {

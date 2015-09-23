@@ -43,7 +43,6 @@ import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 export function main() {
   BrowserDomAdapter.makeCurrent();
   describe('Query API', () => {
-
     describe("querying by directive type", () => {
       it('should contain all direct child directives in the light dom (constructor)',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
@@ -649,6 +648,25 @@ export function main() {
                  async.done();
                });
          }));
+
+      it('should support more than three queries',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = '<needs-four-queries #q><div text="1"></div></needs-four-queries>';
+
+           tcb.overrideTemplate(MyComp, template)
+               .createAsync(MyComp)
+               .then((view) => {
+                 view.detectChanges();
+
+                 var q = view.debugElement.componentViewChildren[0].getLocal('q');
+                 expect(q.query1).toBeDefined();
+                 expect(q.query2).toBeDefined();
+                 expect(q.query3).toBeDefined();
+                 expect(q.query4).toBeDefined();
+
+                 async.done();
+               });
+         }));
     });
   });
 }
@@ -741,6 +759,15 @@ class InertDirective {
 class NeedsQuery {
   query: QueryList<TextDirective>;
   constructor(@Query(TextDirective) query: QueryList<TextDirective>) { this.query = query; }
+}
+
+@Component({selector: 'needs-four-queries'})
+@View({template: ''})
+class NeedsFourQueries {
+  @ContentChild(TextDirective) query1: TextDirective;
+  @ContentChild(TextDirective) query2: TextDirective;
+  @ContentChild(TextDirective) query3: TextDirective;
+  @ContentChild(TextDirective) query4: TextDirective;
 }
 
 @Component({selector: 'needs-query-desc'})
@@ -900,7 +927,8 @@ class NeedsTpl {
     TextDirective,
     InertDirective,
     NgIf,
-    NgFor
+    NgFor,
+    NeedsFourQueries
   ]
 })
 @Injectable()
