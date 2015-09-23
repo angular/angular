@@ -2,8 +2,12 @@
 set -e -o pipefail
 
 echo '*******************'
-echo '** AFTER_SUCCESS **'
+echo '** AFTER_SCRIPT **'
 echo '*******************'
+
+if [ "$MODE" = "saucelabs" ]; then
+  ./scripts/sauce/sauce_connect_teardown.sh
+fi
 
 
 echo '---------------------'
