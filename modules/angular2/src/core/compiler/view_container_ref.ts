@@ -49,14 +49,9 @@ export class ViewContainerRef {
   /**
    * Create and insert a {@link ViewRef} into the view-container.
    *
-   * - `protoViewRef` (optional) {@link ProtoViewRef} - The `ProtoView` to use for creating
-   *   `View` to be inserted at this location. If `ViewContainer` is created at a location
-   *   of inline template, then `protoViewRef` is the `ProtoView` of the template.
+   * - `templateRef` {@link TemplateRef} - The `TemplateRef` to use for creating
+   *   `View` to be inserted at this location.
    * - `atIndex` (optional) `number` - location of insertion point. (Or at the end if unspecified.)
-   * - `context` (optional) {@link ElementRef} - Context (for expression evaluation) from the
-   *   {@link ElementRef} location. (Or current context if unspecified.)
-   * - `bindings` (optional) Array of {@link ResolvedBinding} - Used for configuring
-   *   `ElementInjector`.
    *
    * Returns newly created {@link ViewRef}.
    */
