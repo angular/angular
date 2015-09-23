@@ -51,7 +51,7 @@ export {ChangeDetectorRef} from './change_detector_ref';
 export {IterableDiffers, IterableDiffer, IterableDifferFactory} from './differs/iterable_differs';
 export {KeyValueDiffers, KeyValueDiffer, KeyValueDifferFactory} from './differs/keyvalue_differs';
 export {PipeTransform, PipeOnDestroy} from './pipe_transform';
-export {WrappedValue} from './change_detection_util';
+export {WrappedValue, SimpleChange} from './change_detection_util';
 
 /**
  * Structural diffing for `Object`s and `Map`s.
