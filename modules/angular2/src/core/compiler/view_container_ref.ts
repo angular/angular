@@ -122,7 +122,8 @@ export class ViewContainerRef {
   }
 
   /**
-   * Returns the index of the View, specified via {@link ViewRef}, within the current container.
+   * Returns the index of the View, specified via {@link ViewRef}, within the current container or
+   * `-1` if this container doesn't contain the View.
    */
   indexOf(viewRef: ViewRef): number {
     return ListWrapper.indexOf(this._getViews(), internalView(viewRef));

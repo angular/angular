@@ -57,7 +57,7 @@ export class ComponentRef {
   }
 
   /**
-   * <!-- TODO: is this public? -->
+   * <!-- TODO: is this public? - remove -->
    * <!-- TODO: is `location.parentView` right? -->
    * Returns the host {@link ViewRef} of this Component.
    */
@@ -249,6 +249,7 @@ export class DynamicComponentLoader {
    * })
    * class MyApp {
    *   constructor(dynamicComponentLoader: ng.DynamicComponentLoader, elementRef: ng.ElementRef) {
+   *   <!-- TODO: typo, should be loadNextToLocation -->
    *     dynamicComponentLoader.loadIntoLocation(ChildComponent, elementRef, 'child');
    *   }
    * }

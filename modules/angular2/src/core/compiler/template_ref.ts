@@ -3,10 +3,10 @@ import {ElementRef} from './element_ref';
 import * as viewModule from './view';
 
 /**
- * Represents an Embedded Template that can be used for creating Embedded Views.
+ * Represents an Embedded Template that can be used to instantiate Embedded Views.
  *
- * Use {@link ViewContainerRef#createEmbeddedView} method to instantiate an Embedded View and attach
- * it to a View Container.
+ * Use {@link ViewContainerRef#createEmbeddedView} method to instantiate an Embedded View based on
+ * this Template and attach it to a View Container.
  *
  * <!-- TODO: how to get hold of it? -->
  */
