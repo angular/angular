@@ -3,10 +3,8 @@ library angular2.transform.common.directive_metadata_reader;
 import 'package:analyzer/analyzer.dart';
 import 'package:angular2/src/compiler/directive_metadata.dart';
 import 'package:angular2/src/core/change_detection/change_detection.dart';
-import 'package:angular2/src/core/compiler/interfaces.dart'
-    show LifecycleHooks;
-import 'package:angular2/src/core/render/api.dart'
-    show ViewEncapsulation;
+import 'package:angular2/src/core/compiler/interfaces.dart' show LifecycleHooks;
+import 'package:angular2/src/core/render/api.dart' show ViewEncapsulation;
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/interface_matcher.dart';
 import 'package:barback/barback.dart' show AssetId;
@@ -19,10 +17,11 @@ class DirectiveMetadataReader {
 
   /// Accepts an [AnnotationMatcher] which tests that an [Annotation]
   /// is a [Directive], [Component], or [View].
-  factory DirectiveMetadataReader(AnnotationMatcher annotationMatcher, InterfaceMatcher interfaceMatcher)
-  {
+  factory DirectiveMetadataReader(
+      AnnotationMatcher annotationMatcher, InterfaceMatcher interfaceMatcher) {
     var lifecycleVisitor = new _LifecycleHookVisitor(interfaceMatcher);
-    var visitor = new _DirectiveMetadataVisitor(annotationMatcher, lifecycleVisitor);
+    var visitor =
+        new _DirectiveMetadataVisitor(annotationMatcher, lifecycleVisitor);
 
     return new DirectiveMetadataReader._(visitor);
   }
@@ -37,7 +36,8 @@ class DirectiveMetadataReader {
   /// `assetId` is the [AssetId] from which `node` was read, unless `node` was
   /// read from a part file, in which case `assetId` should be the [AssetId] of
   /// the parent file.
-  CompileDirectiveMetadata readDirectiveMetadata(ClassDeclaration node, AssetId assetId) {
+  CompileDirectiveMetadata readDirectiveMetadata(
+      ClassDeclaration node, AssetId assetId) {
     _visitor.reset(assetId);
     node.accept(_visitor);
     return _visitor.hasMetadata ? _visitor.createMetadata() : null;
@@ -63,7 +63,7 @@ void _populateMap(Expression expression, Map map, String propertyName) {
   if (evaluated is! Map) {
     throw new FormatException(
         'Angular 2 expects a Map but could not understand the value for '
-            '$propertyName.',
+        '$propertyName.',
         '$expression' /* source */);
   }
   evaluated.forEach((key, value) {
@@ -76,12 +76,13 @@ void _populateMap(Expression expression, Map map, String propertyName) {
 /// Evaluates the [List] represented by `expression` and adds all values,
 /// to `list`. If `expression` does not evaluate to a [List], throws a
 /// descriptive [FormatException].
-void _populateList(Expression expression, List<String> list, String propertyName) {
+void _populateList(
+    Expression expression, List<String> list, String propertyName) {
   var evaluated = expression.accept(_evaluator);
   if (evaluated is! List) {
     throw new FormatException(
         'Angular 2 expects a List but could not understand the value for '
-            '$propertyName.',
+        '$propertyName.',
         '$expression' /* source */);
   }
   list.addAll(evaluated.map((e) => e.toString()));
@@ -94,7 +95,7 @@ String _expressionToString(Expression node, String nodeDescription) {
   if (value is! String) {
     throw new FormatException(
         'Angular 2 could not understand the value '
-            'in $nodeDescription.',
+        'in $nodeDescription.',
         '$node' /* source */);
   }
   return value;
@@ -170,11 +171,10 @@ class _DirectiveMetadataVisitor extends Object
     var isComponent = _annotationMatcher.isComponent(node, _assetId);
     var isDirective = _annotationMatcher.isDirective(node, _assetId);
     if (isDirective) {
-
       if (_hasMetadata) {
         throw new FormatException(
             'Only one Directive is allowed per class. '
-                'Found unexpected "$node".',
+            'Found unexpected "$node".',
             '$node' /* source */);
       }
       _isComponent = isComponent;
@@ -199,14 +199,14 @@ class _DirectiveMetadataVisitor extends Object
     node.metadata.accept(this);
     if (this._hasMetadata) {
       _type = new CompileTypeMetadata(
-        id: null, // TODO(kegluneq): Populate with unique id, possibly hash?
-        moduleId: path.withoutExtension(_assetId.path),
-        name: node.name.toString(),
-        runtime: null // Intentionally `null`, cannot be provided here.
-      );
+          id: null, // TODO(kegluneq): Populate with unique id, possibly hash?
+          moduleId: path.withoutExtension(_assetId.path),
+          name: node.name.toString(),
+          runtime: null // Intentionally `null`, cannot be provided here.
+          );
       _lifecycleHooks = node.implementsClause != null
-        ? node.implementsClause.accept(_lifecycleVisitor)
-        : const [];
+          ? node.implementsClause.accept(_lifecycleVisitor)
+          : const [];
     }
     return null;
   }
@@ -282,8 +282,8 @@ class _DirectiveMetadataVisitor extends Object
   }
 
   static final Map<String, ChangeDetectionStrategy> _changeDetectionStrategies =
-  new Map.fromIterable(ChangeDetectionStrategy.values,
-      key: (v) => v.toString());
+      new Map.fromIterable(ChangeDetectionStrategy.values,
+          key: (v) => v.toString());
 }
 
 /// Visitor responsible for parsing an [ImplementsClause] and returning a
@@ -326,15 +326,14 @@ class _LifecycleHookVisitor extends SimpleAstVisitor<List<LifecycleHooks>> {
         return LifecycleHooks.OnInit;
       }
       return null;
-    }).where((e) => e != null)
-      .toList(growable: false);
+    }).where((e) => e != null).toList(growable: false);
   }
 }
 
 /// Visitor responsible for parsing a @View [Annotation] and producing a
 /// [CompileTemplateMetadata].
-class _CompileTemplateMetadataVisitor extends RecursiveAstVisitor<CompileTemplateMetadata> {
-
+class _CompileTemplateMetadataVisitor
+    extends RecursiveAstVisitor<CompileTemplateMetadata> {
   ViewEncapsulation _encapsulation = ViewEncapsulation.Emulated;
   String _template = null;
   String _templateUrl = null;
@@ -350,8 +349,7 @@ class _CompileTemplateMetadataVisitor extends RecursiveAstVisitor<CompileTemplat
         template: _template,
         templateUrl: _templateUrl,
         styles: _styles,
-        styleUrls: _styleUrls
-    );
+        styleUrls: _styleUrls);
   }
 
   @override
@@ -405,6 +403,6 @@ class _CompileTemplateMetadataVisitor extends RecursiveAstVisitor<CompileTemplat
     _encapsulation = _viewEncapsulationMap[value.toSource()];
   }
 
-  static final _viewEncapsulationMap = new Map.fromIterable(ViewEncapsulation.values,
-      key: (v) => v.toString());
+  static final _viewEncapsulationMap =
+      new Map.fromIterable(ViewEncapsulation.values, key: (v) => v.toString());
 }

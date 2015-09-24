@@ -27,11 +27,7 @@ class ReflectiveAccessor {
   /// setter, or method on the `Component`.
   final String sanitizedName;
 
-  /// Whether this getter, setter, or method is still necessary when we have
-  /// pre-generated change detectors.
-  final bool isStaticallyNecessary;
-
-  ReflectiveAccessor(String astValue, {this.isStaticallyNecessary})
+  ReflectiveAccessor(String astValue)
       : this.astValue = astValue,
         this.sanitizedName = sanitizePropertyName(astValue);
 

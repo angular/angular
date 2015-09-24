@@ -3,14 +3,30 @@
   {
     "kind": "type",
     "value": {
-      "id":"HelloCmp",
+      "isComponent": true,
+      "dynamicLoadable": true,
       "selector":"hello-app",
-      "compileChildren":true,
-      "host":{},
-      "properties":[],
-      "readAttributes":[],
-      "type":1,
-      "version":1
+      "exportAs": null,
+      "type": {
+        "id": 1,
+        "name": "HelloCmp",
+        "moduleId": "angular2/test/transform/template_compiler/with_prefix_files/hello"
+      },
+      "changeDetection": 5,
+      "properties": {},
+      "events": {},
+      "hostListeners": {},
+      "hostProperties": {},
+      "hostAttributes": {},
+      "lifecycleHooks": [],
+      "template": {
+        "encapsulation": 0,
+        "template": "goodbye-app",
+        "templateUrl": null,
+        "styles": null,
+        "styleUrls": null,
+        "ngContentSelectors": null
+      }
     }
   }
 }

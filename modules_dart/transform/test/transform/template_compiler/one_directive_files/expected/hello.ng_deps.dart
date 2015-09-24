@@ -1,5 +1,7 @@
 library examples.hello_world.index_common_dart.ng_deps.dart;
 
+import 'hello.template.dart' as _templates;
+
 import 'hello.dart';
 import 'package:angular2/angular2.dart'
     show Component, Directive, View, NgElement;
@@ -13,7 +15,8 @@ void initReflector(reflector) {
         HelloCmp,
         new ReflectionInfo(const [
           const Component(selector: 'hello-app'),
-          const View(template: 'goodbye-app', directives: const [GoodbyeCmp])
+          const View(template: 'goodbye-app', directives: const [GoodbyeCmp]),
+          _templates.HostHelloCmpTemplate
         ], const [
           const []
         ], () => new HelloCmp()))
@@ -21,7 +24,8 @@ void initReflector(reflector) {
         GoodbyeCmp,
         new ReflectionInfo(const [
           const Component(selector: 'goodbye-app'),
-          const View(template: 'Goodbye')
+          const View(template: 'Goodbye'),
+          _templates.HostGoodbyeCmpTemplate
         ], const [
           const []
         ], () => new GoodbyeCmp()));

@@ -3,27 +3,59 @@
   {
     "kind": "type",
     "value": {
-      "id":"HelloCmp",
+      "isComponent": true,
+      "dynamicLoadable": true,
       "selector":"hello-app",
-      "compileChildren":true,
-      "host":{},
-      "properties":[],
-      "readAttributes":[],
-      "type":1,
-      "version":1
+      "exportAs": null,
+      "type": {
+        "id": 1,
+        "name": "HelloCmp",
+        "moduleId": "template_compiler/directive_aliases_files/hello1"
+      },
+      "changeDetection": 5,
+      "properties": {},
+      "events": {},
+      "hostListeners": {},
+      "hostProperties": {},
+      "hostAttributes": {},
+      "lifecycleHooks": [],
+      "template": {
+        "encapsulation": 0,
+        "template": "goodbye-app",
+        "templateUrl": null,
+        "styles": null,
+        "styleUrls": null,
+        "ngContentSelectors": null
+      }
     }
   },
   "GoodbyeCmp":{
     "kind": "type",
     "value": {
-      "id":"GoodbyeCmp",
+      "isComponent": true,
+      "dynamicLoadable": true,
       "selector":"goodbye-app",
-      "compileChildren":true,
-      "host":{},
-      "properties":[],
-      "readAttributes":[],
-      "type":1,
-      "version":1
+      "exportAs": null,
+      "type": {
+        "id": 1,
+        "name": "GoodbyeCmp",
+        "moduleId": "template_compiler/directive_aliases_files/hello1"
+      },
+      "changeDetection": 5,
+      "properties": {},
+      "events": {},
+      "hostListeners": {},
+      "hostProperties": {},
+      "hostAttributes": {},
+      "lifecycleHooks": [],
+      "template": {
+        "encapsulation": 0,
+        "template": "Goodbye",
+        "templateUrl": null,
+        "styles": null,
+        "styleUrls": null,
+        "ngContentSelectors": null
+      }
     }
   }
 }

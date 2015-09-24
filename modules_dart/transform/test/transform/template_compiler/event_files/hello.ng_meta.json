@@ -1,26 +1,27 @@
 {
-  "GoodbyeCmp":{
+  "HelloCmp":
+  {
     "kind": "type",
     "value": {
       "isComponent": true,
       "dynamicLoadable": true,
-      "selector":"goodbye-app",
+      "selector":"hello-app",
       "exportAs": null,
       "type": {
         "id": 1,
-        "name": "GoodbyeCmp",
-        "moduleId": "angular2/test/transform/template_compiler/with_prefix_files/goodbye"
+        "name": "HelloCmp",
+        "moduleId": "angular2/test/transform/template_compiler/event_files/hello"
       },
       "changeDetection": 5,
       "properties": {},
-      "events": {},
+      "events": {"eventName": "eventName"},
       "hostListeners": {},
       "hostProperties": {},
       "hostAttributes": {},
       "lifecycleHooks": [],
       "template": {
         "encapsulation": 0,
-        "template": "Goodbye {{name}}",
+        "template": "<button>go</button>",
         "templateUrl": null,
         "styles": null,
         "styleUrls": null,

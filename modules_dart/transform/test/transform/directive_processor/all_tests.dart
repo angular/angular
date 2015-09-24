@@ -5,8 +5,7 @@ import 'dart:convert';
 
 import 'package:barback/barback.dart';
 import 'package:angular2/src/core/change_detection/change_detection.dart';
-import 'package:angular2/src/core/compiler/interfaces.dart'
-    show LifecycleHooks;
+import 'package:angular2/src/core/compiler/interfaces.dart' show LifecycleHooks;
 import 'package:angular2/src/transform/directive_processor/rewriter.dart';
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
@@ -378,7 +377,7 @@ void allTests() {
     expect(functionReflectable.name).toEqual('getMessage');
   });
 
-  ddescribe('NgMeta', () {
+  describe('NgMeta', () {
     it('should find direcive aliases patterns.', () async {
       var ngMeta = new NgMeta.empty();
       await _testCreateModel('directive_aliases_files/hello.dart',
@@ -388,8 +387,7 @@ void allTests() {
       expect(ngMeta.aliases['alias1']).toContain('HelloCmp');
 
       expect(ngMeta.aliases).toContain('alias2');
-      expect(ngMeta.aliases['alias2'])
-        ..toContain('HelloCmp')..toContain('Foo');
+      expect(ngMeta.aliases['alias2'])..toContain('HelloCmp')..toContain('Foo');
     });
 
     it('should create type entries for Directives', () async {
@@ -402,7 +400,8 @@ void allTests() {
       expect(ngMeta.types['HelloCmp'].selector).toEqual('hello-app');
     });
 
-    it('should populate all provided values for Components & Directives', () async {
+    it('should populate all provided values for Components & Directives',
+        () async {
       var ngMeta = new NgMeta.empty();
       await _testCreateModel('unusual_component_files/hello.dart',
           ngMeta: ngMeta);
@@ -414,7 +413,8 @@ void allTests() {
       expect(component.selector).toEqual('unusual-comp');
       expect(component.isComponent).toBeTrue();
       expect(component.exportAs).toEqual('ComponentExportAsValue');
-      expect(component.changeDetection).toEqual(ChangeDetectionStrategy.CheckAlways);
+      expect(component.changeDetection)
+          .toEqual(ChangeDetectionStrategy.CheckAlways);
       expect(component.properties).toContain('aProperty');
       expect(component.properties['aProperty']).toEqual('aProperty');
       expect(component.events).toContain('anEvent');
@@ -428,22 +428,24 @@ void allTests() {
       expect(directive.isComponent).toBeFalse();
       expect(directive.exportAs).toEqual('DirectiveExportAsValue');
       expect(directive.properties).toContain('aDirectiveProperty');
-      expect(directive.properties['aDirectiveProperty']).toEqual('aDirectiveProperty');
+      expect(directive.properties['aDirectiveProperty'])
+          .toEqual('aDirectiveProperty');
       expect(directive.events).toContain('aDirectiveEvent');
       expect(directive.events['aDirectiveEvent']).toEqual('aDirectiveEvent');
       expect(directive.hostAttributes).toContain('directiveHostKey');
-      expect(directive.hostAttributes['directiveHostKey']).toEqual('directiveHostValue');
+      expect(directive.hostAttributes['directiveHostKey'])
+          .toEqual('directiveHostValue');
     });
 
     it('should include hooks for implemented types (single)', () async {
       var ngMeta = new NgMeta.empty();
-      await _testCreateModel('interfaces_files/soup.dart',
-          ngMeta: ngMeta);
+      await _testCreateModel('interfaces_files/soup.dart', ngMeta: ngMeta);
 
       expect(ngMeta.types.isNotEmpty).toBeTrue();
       expect(ngMeta.types['ChangingSoupComponent']).toBeNotNull();
       expect(ngMeta.types['ChangingSoupComponent'].selector).toEqual('[soup]');
-      expect(ngMeta.types['ChangingSoupComponent'].lifecycleHooks).toContain(LifecycleHooks.OnChanges);
+      expect(ngMeta.types['ChangingSoupComponent'].lifecycleHooks)
+          .toContain(LifecycleHooks.OnChanges);
     });
 
     it('should include hooks for implemented types (many)', () async {
@@ -455,9 +457,9 @@ void allTests() {
       expect(ngMeta.types['MultiSoupComponent']).toBeNotNull();
       expect(ngMeta.types['MultiSoupComponent'].selector).toEqual('[soup]');
       expect(ngMeta.types['MultiSoupComponent'].lifecycleHooks)
-          ..toContain(LifecycleHooks.OnChanges)
-          ..toContain(LifecycleHooks.OnDestroy)
-          ..toContain(LifecycleHooks.OnInit);
+        ..toContain(LifecycleHooks.OnChanges)
+        ..toContain(LifecycleHooks.OnDestroy)
+        ..toContain(LifecycleHooks.OnInit);
     });
 
     it('should parse templates from View annotations', () async {
@@ -468,7 +470,21 @@ void allTests() {
       expect(ngMeta.types.isNotEmpty).toBeTrue();
       expect(ngMeta.types['HelloCmp']).toBeNotNull();
       expect(ngMeta.types['HelloCmp'].template).toBeNotNull();
-      expect(ngMeta.types['HelloCmp'].template.templateUrl).toEqual('package:other_package/template.html');
+      expect(ngMeta.types['HelloCmp'].template.templateUrl)
+          .toEqual('package:other_package/template.html');
+    });
+
+    // TODO(kegluneq): Flesh out or remove before committing.
+    describe('templates', () {
+      it('should parse properties from templates', () async {
+        var ngMeta = new NgMeta.empty();
+        await _testCreateModel('template_files/property.dart', ngMeta: ngMeta);
+
+        expect(ngMeta.types.isNotEmpty).toBeTrue();
+        var component = ngMeta.types['PropertyTestComponent'];
+        expect(component).toBeNotNull();
+        expect(component.template).toBeNotNull();
+      });
     });
   });
 }

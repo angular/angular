@@ -1,6 +1,8 @@
 library angular2.test.transform.template_compiler.all_tests;
 
 import 'dart:async';
+import 'dart:convert';
+
 import 'package:barback/barback.dart';
 import 'package:angular2/src/core/dom/html_adapter.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
@@ -10,15 +12,23 @@ import 'package:dart_style/dart_style.dart';
 import 'package:path/path.dart' as path;
 import 'package:guinness/guinness.dart';
 
+import '../common/compile_directive_metadata/ng_for.ng_meta.dart' as ngMeta;
 import '../common/read_file.dart';
 
 var formatter = new DartFormatter();
-AssetReader reader = new TestAssetReader();
+AssetReader reader;
 
 main() => allTests();
 
 void allTests() {
   Html5LibDomAdapter.makeCurrent();
+
+  beforeEach(() async {
+    reader = new TestAssetReader()
+      ..addAsset(
+          new AssetId('angular2', 'lib/src/directives/ng_for.ng_meta.json'),
+          JSON.encode(ngMeta.ngFor));
+  });
 
   describe('registrations', () {
     noChangeDetectorTests();
@@ -27,7 +37,7 @@ void allTests() {
 }
 
 void changeDetectorTests() {
-  Future<String> process(AssetId assetId) => processTemplates(reader, assetId);
+  Future<Outputs> process(AssetId assetId) => processTemplates(reader, assetId);
 
   // TODO(tbosch): This is just a temporary test that makes sure that the dart server and
   // dart browser is in sync. Change this to "not contains notifyBinding"
@@ -35,7 +45,7 @@ void changeDetectorTests() {
   it('should not always notifyDispatcher for template variables', () async {
     var inputPath = 'template_compiler/ng_for_files/hello.ng_deps.dart';
     var output = await (process(new AssetId('a', inputPath)));
-    expect(output).toContain('notifyDispatcher');
+    expect(output.templatesCode).not.toContain('notifyDispatcher');
   });
 
   it('should include directives mentioned in directive aliases.', () async {
@@ -47,16 +57,20 @@ void changeDetectorTests() {
         'template_compiler/directive_aliases_files/hello2.ng_deps.dart';
     // Except for the directive argument in the View annotation, the generated
     // change detectors are identical.
-    var output1 = (await process(new AssetId('a', input1Path))).replaceFirst(
-        'directives: const [alias1]', 'directives: const [GoodbyeCmp]');
-    var output2 = await process(new AssetId('a', input2Path));
+    var output1 = (await process(new AssetId('a', input1Path)))
+        .ngDepsCode
+        .replaceFirst(
+            'directives: const [alias1]', 'directives: const [GoodbyeCmp]')
+        .replaceFirst('hello1', 'hello2');
+    var output2 = (await process(new AssetId('a', input2Path))).ngDepsCode;
     _formatThenExpectEquals(output1, output2);
   });
 }
 
 void noChangeDetectorTests() {
   Future<String> process(AssetId assetId) =>
-      processTemplates(reader, assetId, generateChangeDetectors: false);
+      processTemplates(reader, assetId, generateChangeDetectors: false)
+          .then((outputs) => outputs.ngDepsCode);
 
   it('should parse simple expressions in inline templates.', () async {
     var inputPath =
@@ -87,14 +101,6 @@ void noChangeDetectorTests() {
     var inputPath = 'template_compiler/url_method_files/hello.ng_deps.dart';
     var expected = readFile(
         'template_compiler/url_method_files/expected/hello.ng_deps.dart');
-    var output = await process(new AssetId('a', inputPath));
-    _formatThenExpectEquals(output, expected);
-  });
-
-  it('should not generate duplicate getters/setters', () async {
-    var inputPath = 'template_compiler/duplicate_files/hello.ng_deps.dart';
-    var expected = readFile(
-        'template_compiler/duplicate_files/expected/hello.ng_deps.dart');
     var output = await process(new AssetId('a', inputPath));
     _formatThenExpectEquals(output, expected);
   });
@@ -146,7 +152,19 @@ void noChangeDetectorTests() {
     _formatThenExpectEquals(output, expected);
   });
 
-  it('should generate all expected getters, setters, & methods.', () async {
+  it('should generate getters for Component#events.', () async {
+    var inputPath = 'template_compiler/event_files/hello.ng_deps.dart';
+    var expected =
+        readFile('template_compiler/event_files/expected/hello.ng_deps.dart');
+    var output = await process(new AssetId('a', inputPath));
+    _formatThenExpectEquals(output, expected);
+    output = await process(new AssetId('a', inputPath));
+    _formatThenExpectEquals(output, expected);
+  });
+
+  // TODO(kegluenq): Before committing, should this test be removed or just
+  // modified to check something different, maybe the created template code?
+  xit('should generate all expected getters, setters, & methods.', () async {
     var base = 'template_compiler/registrations_files';
     var inputPath = path.join(base, 'registrations.ng_deps.dart');
     var expected =
