@@ -39,6 +39,9 @@ export class LifeCycle {
   _enforceNoNewChanges: boolean;
   _runningTick: boolean = false;
 
+  /**
+   * @private
+   */
   constructor(changeDetector: ChangeDetector = null, enforceNoNewChanges: boolean = false) {
     this._changeDetectors = [];
     if (isPresent(changeDetector)) {
