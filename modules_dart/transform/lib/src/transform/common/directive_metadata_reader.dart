@@ -199,7 +199,8 @@ class _DirectiveMetadataVisitor extends Object
     node.metadata.accept(this);
     if (this._hasMetadata) {
       _type = new CompileTypeMetadata(
-          id: null, // TODO(kegluneq): Populate with unique id, possibly hash?
+          // TODO: this is not a reliable ID. We need a better option.
+          id: node.toSource().hashCode,
           moduleId: path.withoutExtension(_assetId.path),
           name: node.name.toString(),
           runtime: null // Intentionally `null`, cannot be provided here.
