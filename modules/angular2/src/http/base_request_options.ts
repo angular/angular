@@ -115,7 +115,7 @@ export class RequestOptions {
  *
  * ### Example ([live demo](http://plnkr.co/edit/LEKVSx?p=preview))
  *
- * ```
+ * ```typescript
  * import {bind, bootstrap} from 'angular2/angular2';
  * import {HTTP_BINDINGS, Http, BaseRequestOptions, RequestOptions} from 'angular2/http';
  * import {App} from './myapp';
