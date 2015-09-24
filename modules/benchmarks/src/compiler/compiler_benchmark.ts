@@ -1,82 +1,112 @@
+import {bootstrap} from 'angular2/bootstrap';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {PromiseWrapper} from 'angular2/src/core/facade/async';
 import {ListWrapper, Map, MapWrapper} from 'angular2/src/core/facade/collection';
-import {DateWrapper, Type, print} from 'angular2/src/core/facade/lang';
+import {DateWrapper, Type, print, isPresent} from 'angular2/src/core/facade/lang';
 
 import {
-  Parser,
-  Lexer,
+  Compiler,
+  Component,
+  Directive,
+  View,
+  ViewContainerRef,
+  bind,
+  Binding,
+  NgIf,
+  ViewMetadata
+} from 'angular2/core';
+
+import {CompilerCache} from 'angular2/src/core/compiler/compiler';
+import {
+  ChangeDetection,
   DynamicChangeDetection
 } from 'angular2/src/core/change_detection/change_detection';
-
-import {Compiler, CompilerCache} from 'angular2/src/core/compiler/compiler';
-import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
-import {PipeResolver} from 'angular2/src/core/compiler/pipe_resolver';
-
-import {Component, Directive, View, ViewMetadata} from 'angular2/src/core/metadata';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
-import {UrlResolver} from 'angular2/src/core/services/url_resolver';
-import {AppRootUrl} from 'angular2/src/core/services/app_root_url';
-import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 
-import {reflector} from 'angular2/src/core/reflection/reflection';
-import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 
-import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
-import {
-  ViewLoader,
-  DefaultDomCompiler,
-  SharedStylesHost,
-  TemplateCloner
-} from 'angular2/src/core/render/render';
-import {
-  DomElementSchemaRegistry
-} from 'angular2/src/core/render/dom/schema/dom_element_schema_registry';
+function _createBindings(): Binding[] {
+  var multiplyTemplatesBy = getIntParameter('elements');
+  return [
+    bind(ViewResolver)
+        .toFactory(() => new MultiplyViewResolver(
+                       multiplyTemplatesBy,
+                       [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]),
+                   []),
+    // Use DynamicChangeDetector as that is the only one that Dart supports as well
+    // so that we can compare the numbers between JS and Dart
+    bind(ChangeDetection).toClass(DynamicChangeDetection)
+  ];
+}
 
 export function main() {
   BrowserDomAdapter.makeCurrent();
-  var count = getIntParameter('elements');
+  bootstrap(CompilerAppComponent, _createBindings())
+      .then((ref) => {
+        var app = ref.hostComponent;
+        bindAction('#compileNoBindings',
+                   measureWrapper(() => app.compileNoBindings(), 'No Bindings'));
+        bindAction('#compileWithBindings',
+                   measureWrapper(() => app.compileWithBindings(), 'With Bindings'));
+      });
+}
 
-  reflector.reflectionCapabilities = new ReflectionCapabilities();
-  var reader = new DirectiveResolver();
-  var pipeResolver = new PipeResolver();
-  var cache = new CompilerCache();
-  var viewResolver = new MultipleViewResolver(
-      count, [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]);
-  var urlResolver = new UrlResolver();
-  var appRootUrl = new AppRootUrl("");
-  var renderCompiler = new DefaultDomCompiler(
-      new DomElementSchemaRegistry(), new TemplateCloner(-1), new Parser(new Lexer()),
-      new ViewLoader(null, null, null), new SharedStylesHost(), 'a');
-  var compiler = new Compiler(reader, pipeResolver, [], cache, viewResolver,
-                              new ComponentUrlMapper(), urlResolver, renderCompiler,
-                              new ProtoViewFactory(new DynamicChangeDetection()), appRootUrl);
-
-  function measureWrapper(func, desc) {
-    return function() {
-      var begin = DateWrapper.now();
-      print(`[${desc}] Begin...`);
-      var onSuccess = function(_) {
-        var elapsedMs = DateWrapper.toMillis(DateWrapper.now()) - DateWrapper.toMillis(begin);
-        print(`[${desc}] ...done, took ${elapsedMs} ms`);
-      };
-      PromiseWrapper.then(func(), onSuccess, null);
+function measureWrapper(func, desc) {
+  return function() {
+    var begin = DateWrapper.now();
+    print(`[${desc}] Begin...`);
+    var onSuccess = function(_) {
+      var elapsedMs = DateWrapper.toMillis(DateWrapper.now()) - DateWrapper.toMillis(begin);
+      print(`[${desc}] ...done, took ${elapsedMs} ms`);
     };
+    var onError = function(e) { DOM.logError(e); };
+    PromiseWrapper.then(func(), onSuccess, onError);
+  };
+}
+
+
+class MultiplyViewResolver extends ViewResolver {
+  _multiplyBy: number;
+  _cache: Map<Type, ViewMetadata>;
+
+  constructor(multiple: number, components: Type[]) {
+    super();
+    this._multiplyBy = multiple;
+    this._cache = new Map();
+    ListWrapper.forEach(components, (c) => this._fillCache(c));
   }
 
-  function compileNoBindings() {
-    cache.clear();
-    return compiler.compileInHost(BenchmarkComponentNoBindings);
+  _fillCache(component: Type) {
+    var view = super.resolve(component);
+    var multipliedTemplates = ListWrapper.createFixedSize(this._multiplyBy);
+    for (var i = 0; i < this._multiplyBy; ++i) {
+      multipliedTemplates[i] = view.template;
+    }
+    this._cache.set(
+        component,
+        new ViewMetadata({template: multipliedTemplates.join(''), directives: view.directives}));
   }
 
-  function compileWithBindings() {
-    cache.clear();
-    return compiler.compileInHost(BenchmarkComponentWithBindings);
+  resolve(component: Type): ViewMetadata {
+    var result = this._cache.get(component);
+    return isPresent(result) ? result : super.resolve(component);
+  }
+}
+
+@Component({selector: 'app'})
+@View({directives: [], template: ``})
+class CompilerAppComponent {
+  constructor(private _compiler: Compiler, private _compilerCache: CompilerCache) {}
+  compileNoBindings() {
+    this._compilerCache.clear();
+    return this._compiler.compileInHost(BenchmarkComponentNoBindings);
   }
 
-  bindAction('#compileNoBindings', measureWrapper(compileNoBindings, 'No Bindings'));
-  bindAction('#compileWithBindings', measureWrapper(compileWithBindings, 'With Bindings'));
+  compileWithBindings() {
+    this._compilerCache.clear();
+    return this._compiler.compileInHost(BenchmarkComponentWithBindings);
+  }
 }
 
 @Directive({selector: '[dir0]', properties: ['prop: attr0']})
@@ -103,32 +133,6 @@ class Dir4 {
   constructor(dir3: Dir3) {}
 }
 
-class MultipleViewResolver extends ViewResolver {
-  _multiple: number;
-  _cache: Map<any, any>;
-
-  constructor(multiple: number, components: Type[]) {
-    super();
-    this._multiple = multiple;
-    this._cache = new Map();
-    ListWrapper.forEach(components, (c) => this._warmUp(c));
-  }
-
-  _warmUp(component: Type) {
-    var view = super.resolve(component);
-    var multiplier = ListWrapper.createFixedSize(this._multiple);
-    for (var i = 0; i < this._multiple; ++i) {
-      multiplier[i] = view.template;
-    }
-    this._cache.set(component, ListWrapper.join(multiplier, ''));
-  }
-
-  resolve(component: Type): ViewMetadata {
-    var view = super.resolve(component);
-    return new ViewMetadata(
-        {template:<string>this._cache.get(component), directives: view.directives});
-  }
-}
 
 @Component({selector: 'cmp-nobind'})
 @View({

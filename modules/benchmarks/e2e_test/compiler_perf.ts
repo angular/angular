@@ -7,6 +7,7 @@ describe('ng2 compiler benchmark', function() {
   afterEach(verifyNoBrowserErrors);
 
   it('should log withBindings stats', function(done) {
+    browser.sleep(1000);
     runBenchmark({
       url: URL,
       id: 'ng2.compile.withBindings',
@@ -19,6 +20,7 @@ describe('ng2 compiler benchmark', function() {
   });
 
   it('should log noBindings stats', function(done) {
+    browser.sleep(1000);
     runBenchmark({
       url: URL,
       id: 'ng2.compile.noBindings',
