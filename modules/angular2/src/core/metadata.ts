@@ -454,17 +454,7 @@ export interface PipeFactory {
 /**
  * {@link PropertyMetadata} factory for creating decorators.
  *
- * ## Example as TypeScript Decorator
- *
- * ```
- * @Directive({
- *   selector: 'sample-dir'
- * })
- * class SampleDir {
- *   @Property() property; // Same as @Property('property') property;
- *   @Property("el-property") dirProperty;
- * }
- * ```
+ * See {@link PropertyMetadata}.
  */
 export interface PropertyFactory {
   (bindingPropertyName?: string): any;
@@ -474,17 +464,7 @@ export interface PropertyFactory {
 /**
  * {@link EventMetadata} factory for creating decorators.
  *
- * ## Example as TypeScript Decorator
- *
- * ```
- * @Directive({
- *   selector: 'sample-dir'
- * })
- * class SampleDir {
- *   @Event() event = new EventEmitter(); // Same as @Event('event') event = new EventEmitter();
- *   @Event("el-event") dirEvent = new EventEmitter();
- * }
- * ```
+ * See {@link EventMetadata}.
  */
 export interface EventFactory {
   (bindingPropertyName?: string): any;
@@ -588,11 +568,15 @@ export var Pipe: PipeFactory = <PipeFactory>makeDecorator(PipeMetadata);
 
 /**
  * {@link PropertyMetadata} factory function.
+ *
+ * See {@link PropertyMetadata}.
  */
 export var Property: PropertyFactory = makePropDecorator(PropertyMetadata);
 
 /**
  * {@link EventMetadata} factory function.
+ *
+ * See {@link EventMetadata}.
  */
 export var Event: EventFactory = makePropDecorator(EventMetadata);
 
