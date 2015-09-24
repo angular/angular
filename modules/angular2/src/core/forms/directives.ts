@@ -34,6 +34,18 @@ export {DefaultValidators} from './directives/validators';
  * A list of all the form directives used as part of a `@View` annotation.
  *
  *  This is a shorthand for importing them each individually.
+ *
+ * ### Example:
+ *
+ * ```typescript
+ * @View({
+ *   directives: [FORM_DIRECTIVES]
+ * })
+ * @Component({
+ *   selector: 'my-app'
+ * })
+ * class MyApp {}
+ * ```
  */
 export const FORM_DIRECTIVES: Type[] = CONST_EXPR([
   NgControlName,
