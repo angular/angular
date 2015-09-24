@@ -734,6 +734,7 @@ export class Injector {
    * var car = injector.instantiateResolved(carBinding);
    * expect(car.engine).toBe(injector.get(Engine));
    * expect(car).not.toBe(injector.instantiateResolved(carBinding));
+   * ```
    */
   instantiateResolved(binding: ResolvedBinding): any {
     return this._instantiateBinding(binding, Visibility.PublicAndPrivate);

@@ -20,7 +20,6 @@ import {CONST} from 'angular2/src/core/facade/lang';
  *
  * Using an `OpaqueToken` is preferable to using an `Object` as tokens because it provides better
  * error messages.
- * ```
  */
 @CONST()
 export class OpaqueToken {
