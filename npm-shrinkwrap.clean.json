@@ -10493,7 +10493,12 @@
       }
     },
     "zone.js": {
-      "version": "0.5.4"
+      "version": "0.5.5",
+      "dependencies": {
+        "es6-promise": {
+          "version": "3.0.2"
+        }
+      }
     }
   },
   "name": "angular",

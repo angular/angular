@@ -16223,9 +16223,16 @@
       }
     },
     "zone.js": {
-      "version": "0.5.4",
-      "from": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.4.tgz",
-      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.4.tgz"
+      "version": "0.5.5",
+      "from": "zone.js@0.5.5",
+      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.5.tgz",
+      "dependencies": {
+        "es6-promise": {
+          "version": "3.0.2",
+          "from": "es6-promise@>=3.0.2 <4.0.0",
+          "resolved": "https://registry.npmjs.org/es6-promise/-/es6-promise-3.0.2.tgz"
+        }
+      }
     }
   }
 }
