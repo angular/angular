@@ -1,9 +1,11 @@
-library angular2.transform.template_compiler.view_definition_creator;
+library angular2.transform.template_compiler.compile_data_creator;
 
 import 'dart:async';
 import 'dart:convert';
 
 import 'package:analyzer/analyzer.dart';
+import 'package:angular2/src/compiler/directive_metadata.dart';
+import 'package:angular2/src/compiler/template_compiler.dart';
 import 'package:angular2/src/core/render/api.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
@@ -13,27 +15,22 @@ import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:barback/barback.dart';
 import 'package:code_transformers/assets.dart';
 
-/// Creates [ViewDefinition] objects for all `View` `Directive`s defined in
-/// `entryPoint`.
-Future<ViewDefinitionResults> createViewDefinitions(
+/// Creates [NormalizedComponentWithViewDirectives] objects for all `View`
+/// `Directive`s defined in `entryPoint`.
+///
+/// The returned value wraps the [NgDeps] at `entryPoint` as well as these
+/// created objects.
+Future<CompileDataResults> createCompileData(
     AssetReader reader, AssetId entryPoint) async {
-  return await new _ViewDefinitionCreator(reader, entryPoint).createViewDefs();
+  return new _CompileDataCreator(reader, entryPoint).createCompileData();
 }
 
-class ViewDefinitionResults {
+class CompileDataResults {
   final NgDeps ngDeps;
-  final Map<RegisteredType, ViewDefinitionEntry> viewDefinitions;
-  ViewDefinitionResults._(this.ngDeps, this.viewDefinitions);
+  final Map<RegisteredType, NormalizedComponentWithViewDirectives> viewDefinitions;
+
+  CompileDataResults._(this.ngDeps, this.viewDefinitions);
 }
-
-class ViewDefinitionEntry {
-  final RenderDirectiveMetadata hostMetadata;
-  final ViewDefinition viewDef;
-
-  ViewDefinitionEntry._(this.hostMetadata, this.viewDef);
-}
-
-String _getComponentId(AssetId assetId, String className) => '$className';
 
 // TODO(kegluenq): Improve this test.
 bool _isViewAnnotation(InstanceCreationExpression node) {
@@ -46,42 +43,38 @@ bool _isViewAnnotation(InstanceCreationExpression node) {
 
 /// Creates [ViewDefinition] objects for all `View` `Directive`s defined in
 /// `entryPoint`.
-class _ViewDefinitionCreator {
+class _CompileDataCreator {
   final AssetReader reader;
   final AssetId entryPoint;
   final Future<NgDeps> ngDepsFuture;
 
-  _ViewDefinitionCreator(AssetReader reader, AssetId entryPoint)
+  _CompileDataCreator(AssetReader reader, AssetId entryPoint)
       : this.reader = reader,
         this.entryPoint = entryPoint,
         ngDepsFuture = NgDeps.parse(reader, entryPoint);
 
-  Future<ViewDefinitionResults> createViewDefs() async {
+  Future<CompileDataResults> createCompileData() async {
     var ngDeps = await ngDepsFuture;
 
-    var retVal = <RegisteredType, ViewDefinitionEntry>{};
-    var visitor = new _TemplateExtractVisitor(await _extractNgMeta());
+    var retVal = <RegisteredType, NormalizedComponentWithViewDirectives>{};
+    var visitor = new _DirectiveDependenciesVisitor(await _extractNgMeta());
     ngDeps.registeredTypes.forEach((rType) {
       visitor.reset();
       rType.annotations.accept(visitor);
-      if (visitor.viewDef != null) {
+      if (visitor.compileData != null) {
         // Note: we use '' because the current file maps to the default prefix.
         var ngMeta = visitor._metadataMap[''];
         var typeName = '${rType.typeName}';
-        var hostMetadata = null;
         if (ngMeta.types.containsKey(typeName)) {
-          hostMetadata = ngMeta.types[typeName];
-          visitor.viewDef.componentId = hostMetadata.id;
+          visitor.compileData.component = ngMeta.types[typeName];
         } else {
           logger.warning('Missing component "$typeName" in metadata map',
               asset: entryPoint);
-          visitor.viewDef.componentId = _getComponentId(entryPoint, typeName);
         }
-        retVal[rType] =
-            new ViewDefinitionEntry._(hostMetadata, visitor.viewDef);
+        retVal[rType] = visitor.compileData;
       }
     });
-    return new ViewDefinitionResults._(ngDeps, retVal);
+    return new CompileDataResults._(ngDeps, retVal);
   }
 
   /// Creates a map from [AssetId] to import prefix for `.dart` libraries
@@ -89,7 +82,6 @@ class _ViewDefinitionCreator {
   /// Unprefixed imports have `null` as their value. `entryPoint` is included
   /// in the map with no prefix.
   Future<Map<AssetId, String>> _createImportAssetToPrefixMap() async {
-    // TODO(kegluneq): Support `part` directives.
     var ngDeps = await ngDepsFuture;
 
     var importAssetToPrefix = <AssetId, String>{};
@@ -113,7 +105,7 @@ class _ViewDefinitionCreator {
 
   /// Reads the `.ng_meta.json` files associated with all of `entryPoint`'s
   /// imports and creates a map `Type` name, prefixed if appropriate to the
-  /// associated [RenderDirectiveMetadata].
+  /// associated [CompileDirectiveMetadata].
   ///
   /// For example, if in `entryPoint` we have:
   ///
@@ -129,13 +121,13 @@ class _ViewDefinitionCreator {
   /// ```
   ///
   /// This method will look for `component.ng_meta.json`to contain the
-  /// serialized [RenderDirectiveMetadata] for `MyComponent` and any other
+  /// serialized [CompileDirectiveMetadata] for `MyComponent` and any other
   /// `Directive`s declared in `component.dart`. We use this information to
   /// build a map:
   ///
   /// ```
   /// {
-  ///   "prefix.MyComponent": [RenderDirectiveMetadata for MyComponent],
+  ///   "prefix.MyComponent": [CompileDirectiveMetadata for MyComponent],
   ///   ...<any other entries>...
   /// }
   /// ```
@@ -153,9 +145,6 @@ class _ViewDefinitionCreator {
         try {
           var json = JSON.decode(await reader.readAsString(metaAssetId));
           var newMetadata = new NgMeta.fromJson(json);
-          newMetadata.types.forEach((className, metadata) {
-            metadata.id = _getComponentId(importAssetId, className);
-          });
           ngMeta.addAll(newMetadata);
         } catch (ex, stackTrace) {
           logger.warning('Failed to decode: $ex, $stackTrace',
@@ -168,23 +157,31 @@ class _ViewDefinitionCreator {
 }
 
 /// Visitor responsible for processing the `annotations` property of a
-/// [RegisterType] object and pulling out [ViewDefinition] information.
-class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
-  ViewDefinition viewDef = null;
+/// [RegisterType] object, extracting the `directives` dependencies, and adding
+/// their associated [CompileDirectiveMetadata] to the `directives` of a
+/// created [NormalizedComponentWithViewDirectives] object.
+///
+/// The `component` property of the created
+/// [NormalizedComponentWithViewDirectives] will be null.
+///
+/// If no `View` annotation is found, `compileData` will be null.
+class _DirectiveDependenciesVisitor extends Object with RecursiveAstVisitor<Object> {
+  NormalizedComponentWithViewDirectives compileData = null;
   final Map<String, NgMeta> _metadataMap;
-  final ConstantEvaluator _evaluator = new ConstantEvaluator();
 
-  _TemplateExtractVisitor(this._metadataMap);
+  _DirectiveDependenciesVisitor(this._metadataMap);
 
   void reset() {
-    viewDef = null;
+    compileData = null;
   }
 
-  /// These correspond to the annotations themselves.
+  /// These correspond to the annotations themselves, which are converted into
+  /// const instance creation expressions so they can be stored in the
+  /// reflector.
   @override
   Object visitInstanceCreationExpression(InstanceCreationExpression node) {
     if (_isViewAnnotation(node)) {
-      viewDef = new ViewDefinition(directives: <RenderDirectiveMetadata>[]);
+      compileData = new NormalizedComponentWithViewDirectives(null, <CompileDirectiveMetadata>[]);
       node.visitChildren(this);
     }
     return null;
@@ -200,35 +197,8 @@ class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
           ' Source: ${node}');
       return null;
     }
-    var keyString = '${node.name.label}';
-    if (keyString == 'directives') {
+    if ('${node.name.label}' == 'directives') {
       _readDirectives(node.expression);
-    }
-    if (keyString == 'template' || keyString == 'templateUrl') {
-      // This could happen in a non-View annotation with a `template` or
-      // `templateUrl` property.
-      if (viewDef == null) return null;
-
-      var valueString = node.expression.accept(_evaluator);
-      if (valueString is! String) {
-        logger.error(
-            'Angular 2 currently only supports string literals in directives.'
-            ' Source: ${node}');
-        return null;
-      }
-      if (keyString == 'templateUrl') {
-        if (viewDef.templateAbsUrl != null) {
-          logger.error(
-              'Found multiple values for "templateUrl". Source: ${node}');
-        }
-        viewDef.templateAbsUrl = valueString;
-      } else {
-        // keyString == 'template'
-        if (viewDef.template != null) {
-          logger.error('Found multiple values for "template". Source: ${node}');
-        }
-        viewDef.template = valueString;
-      }
     }
     return null;
   }
@@ -236,7 +206,7 @@ class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
   void _readDirectives(Expression node) {
     // This could happen in a non-View annotation with a `directives`
     // parameter.
-    if (viewDef == null) return;
+    if (compileData == null) return;
 
     if (node is! ListLiteral) {
       logger.error('Angular 2 currently only supports list literals as values '
@@ -260,9 +230,9 @@ class _TemplateExtractVisitor extends Object with RecursiveAstVisitor<Object> {
         return;
       }
       if (ngMeta.types.containsKey(name)) {
-        viewDef.directives.add(ngMeta.types[name]);
+        compileData.directives.add(ngMeta.types[name]);
       } else if (ngMeta.aliases.containsKey(name)) {
-        viewDef.directives.addAll(ngMeta.flatten(name));
+        compileData.directives.addAll(ngMeta.flatten(name));
       } else {
         logger.warning('Could not find Directive entry for $node. '
             'Please be aware that Dart transformers have limited support for '

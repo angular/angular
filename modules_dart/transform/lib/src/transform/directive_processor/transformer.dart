@@ -34,10 +34,10 @@ class DirectiveProcessor extends Transformer implements DeclaringTransformer {
   /// determine that one or the other will not be emitted.
   @override
   declareOutputs(DeclaringTransform transform) {
-    transform.declareOutput(
-        transform.primaryId.changeExtension(ALIAS_EXTENSION));
-    transform.declareOutput(
-        transform.primaryId.changeExtension(DEPS_EXTENSION));
+    transform
+        .declareOutput(transform.primaryId.changeExtension(ALIAS_EXTENSION));
+    transform
+        .declareOutput(transform.primaryId.changeExtension(DEPS_EXTENSION));
   }
 
   @override
@@ -56,7 +56,8 @@ class DirectiveProcessor extends Transformer implements DeclaringTransformer {
           log.logger.error('Clobbering ${ngDepsAssetId}. '
               'This probably will not end well');
         }
-        transform.addOutput(new Asset.fromString(ngDepsAssetId, ngDepsModel.writeToJson()));
+        transform.addOutput(
+            new Asset.fromString(ngDepsAssetId, ngDepsModel.writeToJson()));
       }
       if (!ngMeta.isEmpty) {
         var ngAliasesId =

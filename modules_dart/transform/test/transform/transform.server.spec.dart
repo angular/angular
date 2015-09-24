@@ -24,7 +24,7 @@ main() {
   describe('Directive Metadata Extractor', directiveMeta.allTests);
   ddescribe('Directive Processor', directiveProcessor.allTests);
   describe('Reflection Remover', reflectionRemover.allTests);
-  describe('Template Compiler', templateCompiler.allTests);
+  ddescribe('Template Compiler', templateCompiler.allTests);
   describe('Deferred Rewriter', deferredRewriter.allTests);
   // NOTE(kegluneq): These use `code_transformers#testPhases`, which is not
   // designed to work with `guinness`.

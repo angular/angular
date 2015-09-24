@@ -3,7 +3,8 @@ library examples.src.hello_world.unusual_component_files;
 import 'package:angular2/angular2.dart'
     show Component, Directive, View, NgElement;
 
-@Component(selector: 'unusual-comp',
+@Component(
+    selector: 'unusual-comp',
     exportAs: 'ComponentExportAsValue',
     changeDetection: ChangeDetectionStrategy.CheckAlways,
     properties: const ['aProperty'],
@@ -12,8 +13,8 @@ import 'package:angular2/angular2.dart'
 @View(templateUrl: 'template.html')
 class UnusualComp {}
 
-
-@Directive(selector: 'unusual-directive',
+@Directive(
+    selector: 'unusual-directive',
     exportAs: 'DirectiveExportAsValue',
     properties: const ['aDirectiveProperty'],
     host: const {'directiveHostKey': 'directiveHostValue'},

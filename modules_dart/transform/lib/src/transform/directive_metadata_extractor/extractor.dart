@@ -7,8 +7,7 @@ import 'package:analyzer/analyzer.dart';
 import 'package:angular2/src/compiler/directive_metadata.dart';
 import "package:angular2/src/core/change_detection/change_detection.dart"
     show ChangeDetectionStrategy;
-import "package:angular2/src/core/compiler/interfaces.dart"
-    show LifecycleHooks;
+import "package:angular2/src/core/compiler/interfaces.dart" show LifecycleHooks;
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
@@ -50,7 +49,8 @@ Future<NgMeta> _extractDirectiveMetadataRecursive(
         JSON.decode(await reader.readAsString(aliasesFile))));
   }
 
-  var ngDepsFile = new AssetId(entryPoint.package, toDepsExtension(entryPoint.path));
+  var ngDepsFile =
+      new AssetId(entryPoint.package, toDepsExtension(entryPoint.path));
 
   return Future.wait(ngDepsModel.exports.map((export) {
     var uri = export.uri;
@@ -70,17 +70,21 @@ Future<NgMeta> _extractDirectiveMetadataRecursive(
 void _extractMetadata(NgDepsModel ngDeps, NgMeta ngMeta) {
   if (ngDeps == null) return;
   for (var reflectable in ngDeps.reflectables) {
-    var directiveMetadata = reflectable.annotations.firstWhere((meta) => meta.isComponent, orElse: _returnNull);
+    var directiveMetadata = reflectable.annotations
+        .firstWhere((meta) => meta.isComponent, orElse: _returnNull);
     var isComponent = directiveMetadata != null;
     if (directiveMetadata == null) {
-      directiveMetadata = reflectable.annotations.firstWhere((meta) => meta.isDirective, orElse: _returnNull);
+      directiveMetadata = reflectable.annotations
+          .firstWhere((meta) => meta.isDirective, orElse: _returnNull);
     }
     if (directiveMetadata != null) {
       var typeMetadata = new CompileTypeMetadata(name: reflectable.name);
 
       var changeDetection = null;
-      var cdStrategyString = _findNamedParamValue(directiveMetadata, 'changeDetection');
-      if (cdStrategyString != null && _changeDetectionStrategies.containsKey(cdStrategyString)) {
+      var cdStrategyString =
+          _findNamedParamValue(directiveMetadata, 'changeDetection');
+      if (cdStrategyString != null &&
+          _changeDetectionStrategies.containsKey(cdStrategyString)) {
         changeDetection = _changeDetectionStrategies[cdStrategyString];
       }
 
@@ -97,7 +101,6 @@ void _extractMetadata(NgDepsModel ngDeps, NgMeta ngMeta) {
           lifecycleHooks: _lifecycleHooks(reflectable),
           template: null);
     }
-
   }
 }
 
@@ -108,7 +111,8 @@ bool _isDynamicLoadable(AnnotationModel componentMeta) => true;
 
 dynamic _findNamedParamValue(AnnotationModel model, String paramName) {
   if (model == null) return null;
-  var namedParam = model.namedParameters.firstWhere((p) => p.name == paramName, orElse: _returnNull);
+  var namedParam = model.namedParameters
+      .firstWhere((p) => p.name == paramName, orElse: _returnNull);
   return namedParam != null ? namedParam.value : null;
 }
 
@@ -130,5 +134,5 @@ List<LifecycleHooks> _lifecycleHooks(ReflectionInfoModel model) {
 }
 
 final Map<String, ChangeDetectionStrategy> _changeDetectionStrategies =
-new Map.fromIterable(ChangeDetectionStrategy.values,
-    key: (v) => v.toString());
+    new Map.fromIterable(ChangeDetectionStrategy.values,
+        key: (v) => v.toString());

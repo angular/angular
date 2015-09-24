@@ -52,7 +52,8 @@ Future<NgDepsModel> createNgDeps(AssetReader reader, AssetId assetId,
   parsedCode.accept(ngDepsVisitor);
   var ngDepsModel = ngDepsVisitor.model;
 
-  var ngMetaVisitor = new _NgMetaVisitor(ngMeta, assetId, annotationMatcher, _interfaceMatcher);
+  var ngMetaVisitor =
+      new _NgMetaVisitor(ngMeta, assetId, annotationMatcher, _interfaceMatcher);
   parsedCode.accept(ngMetaVisitor);
 
   // If this file imports only dart: libraries and does not define any
@@ -173,8 +174,10 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
 
   final DirectiveMetadataReader _reader;
 
-  _NgMetaVisitor(this.ngMeta, this.assetId, AnnotationMatcher annotationMatcher, InterfaceMatcher interfaceMatcher)
-    : _reader = new DirectiveMetadataReader(annotationMatcher, interfaceMatcher);
+  _NgMetaVisitor(this.ngMeta, this.assetId, AnnotationMatcher annotationMatcher,
+      InterfaceMatcher interfaceMatcher)
+      : _reader =
+            new DirectiveMetadataReader(annotationMatcher, interfaceMatcher);
 
   @override
   Object visitCompilationUnit(CompilationUnit node) {
@@ -186,7 +189,8 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
   Object visitClassDeclaration(ClassDeclaration node) {
     var compileDirectiveMetadata = _reader.readDirectiveMetadata(node, assetId);
     if (compileDirectiveMetadata != null) {
-      ngMeta.types[compileDirectiveMetadata.type.name] = compileDirectiveMetadata;
+      ngMeta.types[compileDirectiveMetadata.type.name] =
+          compileDirectiveMetadata;
     }
   }
 

@@ -1,5 +1,7 @@
 library angular2.test.transform.template_compiler.with_prefix_files.ng2_prefix.ng_deps.dart;
 
+import 'ng2_prefix.template.dart' as _templates;
+
 import 'ng2_prefix.dart';
 import 'package:angular2/angular2.dart' as ng2
     show Component, Directive, View, NgElement;
@@ -13,9 +15,9 @@ void initReflector(reflector) {
         MyApp,
         new ReflectionInfo(const [
           const ng2.Component(selector: 'my-app'),
-          const ng2.View(template: 'MyApp {{name}}')
+          const ng2.View(template: 'MyApp {{name}}'),
+          _templates.HostMyAppTemplate
         ], const [
           const []
-        ], () => new MyApp()))
-    ..registerGetters({'name': (o) => o.name});
+        ], () => new MyApp()));
 }
