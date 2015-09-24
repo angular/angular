@@ -1019,13 +1019,14 @@ gulp.task('!build.js.cjs', function() {
 
 
 var bundleConfig = {
-  paths: {
-    "*": "dist/js/prod/es5/*.js"
-  },
+  paths: {"*": "dist/js/prod/es5/*.js"},
+  // Files that end up empty after transpilation confuse system-builder
+  // and need to be explitily listed here.
+  // TODO: upgrade system builder and find a way to declare all input as cjs.
   meta: {
-    'angular2/src/router/route_definition': {
-      format: 'cjs'
-    }
+    'angular2/src/router/route_definition': {format: 'cjs'},
+    'angular2/src/core/directives/observable_list_diff': {format: 'cjs'},
+    'angular2/lifecycle_hooks': {format: 'cjs'}
   }
 };
 
