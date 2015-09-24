@@ -122,7 +122,7 @@ export function main() {
         it('should compile plain css rules', inject([AsyncTestCompleter], (async) => {
              compile(['div {\ncolor: red;\n}', 'span {\ncolor: blue;\n}'], [], encapsulation)
                  .then(styles => {
-                   expect(styles).toEqual([
+                   compareStyles(styles, [
                      'div[_ngcontent-23] {\ncolor: red;\n}',
                      'span[_ngcontent-23] {\ncolor: blue;\n}'
                    ]);
@@ -133,7 +133,7 @@ export function main() {
         it('should allow to import rules', inject([AsyncTestCompleter], (async) => {
              compile(['div {\ncolor: red;\n}'], [IMPORT_ABS_MODULE_NAME], encapsulation)
                  .then(styles => {
-                   expect(styles).toEqual([
+                   compareStyles(styles, [
                      'div[_ngcontent-23] {\ncolor: red;\n}',
                      'span[_ngcontent-23] {\ncolor: blue;\n}'
                    ]);
@@ -144,7 +144,7 @@ export function main() {
         it('should allow to import rules transitively', inject([AsyncTestCompleter], (async) => {
              compile(['div {\ncolor: red;\n}'], [IMPORT_ABS_MODULE_NAME_WITH_IMPORT], encapsulation)
                  .then(styles => {
-                   expect(styles).toEqual([
+                   compareStyles(styles, [
                      'div[_ngcontent-23] {\ncolor: red;\n}',
                      'a[_ngcontent-23] {\ncolor: green;\n}',
                      'span[_ngcontent-23] {\ncolor: blue;\n}'
@@ -231,7 +231,7 @@ export function main() {
                    expect(styles).toEqual(['div {color: red}', 'span {color: blue}']);
                    async.done();
                  });
-           }));
+           }), 1000);
       });
 
       describe('with shim', () => {
@@ -240,7 +240,7 @@ export function main() {
         it('should compile plain css ruless', inject([AsyncTestCompleter], (async) => {
              compile(['div {\ncolor: red;\n}', 'span {\ncolor: blue;\n}'], [], encapsulation)
                  .then(styles => {
-                   expect(styles).toEqual([
+                   compareStyles(styles, [
                      'div[_ngcontent-23] {\ncolor: red;\n}',
                      'span[_ngcontent-23] {\ncolor: blue;\n}'
                    ]);
@@ -251,18 +251,18 @@ export function main() {
         it('should allow to import rules', inject([AsyncTestCompleter], (async) => {
              compile(['div {color: red}'], [IMPORT_ABS_MODULE_NAME], encapsulation)
                  .then(styles => {
-                   expect(styles).toEqual([
+                   compareStyles(styles, [
                      'div[_ngcontent-23] {\ncolor: red;\n}',
                      'span[_ngcontent-23] {\ncolor: blue;\n}'
                    ]);
                    async.done();
                  });
-           }));
+           }), 1000);
       });
     });
 
     describe('compileStylesheetCodeGen', () => {
-      function compile(style: string): Promise<string[]> {
+      function compile(style: string): Promise<string[][]> {
         var sourceModules = compiler.compileStylesheetCodeGen(MODULE_NAME, style);
         return PromiseWrapper.all(sourceModules.map(sourceModule => {
           var sourceWithImports = testableModule(sourceModule).getSourceWithImports();
@@ -273,9 +273,10 @@ export function main() {
       it('should compile plain css rules', inject([AsyncTestCompleter], (async) => {
            compile('div {color: red;}')
                .then(stylesAndShimStyles => {
-                 expect(stylesAndShimStyles)
-                     .toEqual(
-                         [['div {color: red;}'], ['div[_ngcontent-%COMP%] {\ncolor: red;\n}']]);
+                 var expected =
+                     [['div {color: red;}'], ['div[_ngcontent-%COMP%] {\ncolor: red;\n}']];
+                 compareStyles(stylesAndShimStyles[0], expected[0]);
+                 compareStyles(stylesAndShimStyles[1], expected[1]);
                  async.done();
                });
          }));
@@ -284,14 +285,15 @@ export function main() {
          inject([AsyncTestCompleter], (async) => {
            compile(`div {color: red}@import ${IMPORT_REL_MODULE_NAME};`)
                .then(stylesAndShimStyles => {
-                 expect(stylesAndShimStyles)
-                     .toEqual([
-                       ['div {color: red}', 'span {color: blue}'],
-                       [
-                         'div[_ngcontent-%COMP%] {\ncolor: red;\n}',
-                         'span[_ngcontent-%COMP%] {\ncolor: blue;\n}'
-                       ]
-                     ]);
+                 var expected = [
+                   ['div {color: red}', 'span {color: blue}'],
+                   [
+                     'div[_ngcontent-%COMP%] {\ncolor: red;\n}',
+                     'span[_ngcontent-%COMP%] {\ncolor: blue;\n}'
+                   ]
+                 ];
+                 compareStyles(stylesAndShimStyles[0], expected[0]);
+                 compareStyles(stylesAndShimStyles[1], expected[1]);
                  async.done();
                });
          }));
