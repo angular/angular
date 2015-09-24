@@ -39,7 +39,7 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  *
  * #Example
  *
- * ```
+ * ```typescript
  * import {Http, HTTP_BINDINGS} from 'angular2/http';
  * @Component({selector: 'http-app', viewBindings: [HTTP_BINDINGS]})
  * @View({templateUrl: 'people.html'})
@@ -68,7 +68,7 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  *
  * #Example
  *
- * ```
+ * ```typescript
  * import {MockBackend, BaseRequestOptions, Http} from 'angular2/http';
  * var injector = Injector.resolveAndCreate([
  *   BaseRequestOptions,
