@@ -417,7 +417,10 @@ export class DirectiveMetadata extends InjectableMetadata {
   selector: string;
 
   /**
-   * Enumerates the set of properties that accept data binding for a directive.
+   * Enumerates the set of data-bound properties for a directive
+   *
+   * Data-bound properties are automatically updated by Angular during change
+   * detection.
    *
    * The `properties` property defines a set of `directiveProperty` to `bindingProperty`
    * configuration:
@@ -425,108 +428,88 @@ export class DirectiveMetadata extends InjectableMetadata {
    * - `directiveProperty` specifies the component property where the value is written.
    * - `bindingProperty` specifies the DOM property where the value is read from.
    *
-   * You can include a {@link PipeMetadata} when specifying a `bindingProperty` to allow for data
-   * transformation and structural change detection of the value. These pipes will be evaluated in
-   * the context of this component.
+   * When `bindingProperty` is not provided, it is assumed to be equal to `directiveProperty`.
    *
-   * ## Syntax
+   * ### Example ([live demo](http://plnkr.co/edit/ivhfXY?p=preview))
    *
-   * There is no need to specify both `directiveProperty` and `bindingProperty` when they both have
-   * the same value.
+   * The following example creates a component with two data-bound properties.
    *
-   * ```
-   * @Directive({
-   *   properties: [
-   *     'propertyName', // shorthand notation for 'propertyName: propertyName'
-   *     'directiveProperty1: bindingProperty1',
-   *     'directiveProperty2: bindingProperty2 | pipe1 | ...',
-   *     ...
-   *   ]
-   * }
-   * ```
-   *
-   *
-   * ## Basic Property Binding
-   *
-   * We can easily build a simple `Tooltip` directive that exposes a `tooltip` property, which can
-   * be used in templates with standard Angular syntax. For example:
-   *
-   * ```
-   * @Directive({
-   *   selector: '[tooltip]',
-   *   properties: [
-   *     'text: tooltip'
-   *   ]
+   * ```typescript
+   * @Component({
+   *   selector: 'bank-account',
+   *   properties: ['bankName', 'id: account-id']
    * })
-   * class Tooltip {
-   *   set text(value: string) {
-   *     // This will get called every time with the new value when the 'tooltip' property changes
-   *   }
+   * @View({
+   *   template: `
+   *     Bank Name: {{bankName}}
+   *     Account Id: {{id}}
+   *   `
+   * })
+   * class BankAccount {
+   *   bankName: string;
+   *   id: string;
+   *
+   *   // this property is not bound, and won't be automatically updated by Angular
+   *   normalizedBankName: string;
    * }
-   * ```
    *
-   * We can then bind to the `tooltip' property as either an expression (`someExpression`) or as a
-   * string literal, as shown in the HTML template below:
+   * @Component({selector: 'app'})
+   * @View({
+   *   template: `
+   *     <bank-account bank-name="RBC" account-id="4747"></bank-account>
+   *   `,
+   *   directives: [BankAccount]
+   * })
+   * class App {}
    *
-   * ```html
-   * <div [tooltip]="someExpression">...</div>
-   * <div tooltip="Some Text">...</div>
-   * ```
-   *
-   * Whenever the `someExpression` expression changes, the `properties` declaration instructs
-   * Angular to update the `Tooltip`'s `text` property.
-   *
-   * ### Bindings With Pipes
-   *
-   * You can use pipes in bindings, as follows:
-   *
-   * ```html
-   * <div [class-set]="someExpression | somePipe">
+   * bootstrap(App);
    * ```
    *
    */
   properties: string[];
 
   /**
-   * Enumerates the set of emitted events.
+   * Enumerates the set of event-bound properties.
    *
-   * ## Syntax
+   * When an event-bound property emits an event, an event handler attached to that event
+   * the template is invoked.
    *
-   * ```
-   * @Component({
-   *   events: ['statusChange']
+   * The `events` property defines a set of `directiveProperty` to `bindingProperty`
+   * configuration:
+   *
+   * - `directiveProperty` specifies the component property that emits events.
+   * - `bindingProperty` specifies the DOM property the event handler is attached to.
+   *
+   * ### Example ([live demo](http://plnkr.co/edit/d5CNq7?p=preview))
+   *
+   * ```typescript
+   * @Directive({
+   *   selector: 'interval-dir',
+   *   events: ['everySecond', 'five5Secs: everyFiveSeconds']
    * })
-   * class TaskComponent {
-   *   statusChange: EventEmitter;
+   * class IntervalDir {
+   *   everySecond = new EventEmitter();
+   *   five5Secs = new EventEmitter();
    *
    *   constructor() {
-   *     this.statusChange = new EventEmitter();
-   *   }
-   *
-   *   onComplete() {
-   *     this.statusChange.next('completed');
+   *     setInterval(() => this.everySecond.next("event"), 1000);
+   *     setInterval(() => this.five5Secs.next("event"), 5000);
    *   }
    * }
-   * ```
    *
-   * Use `propertyName: eventName` when the event emitter property name is different from the name
-   * of the emitted event:
-   *
-   * ```
-   * @Component({
-   *   events: ['status: statusChange']
+   * @Component({selector: 'app'})
+   * @View({
+   *   template: `
+   *     <interval-dir (every-second)="everySecond()" (every-five-seconds)="everyFiveSeconds()">
+   *     </interval-dir>
+   *   `,
+   *   directives: [IntervalDir]
    * })
-   * class TaskComponent {
-   *   status: EventEmitter;
-   *
-   *   constructor() {
-   *     this.status = new EventEmitter();
-   *   }
-   *
-   *   onComplete() {
-   *     this.status.next('completed');
-   *   }
+   * class App {
+   *   everySecond() { console.log('second'); }
+   *   everyFiveSeconds() { console.log('five seconds'); }
    * }
+   * bootstrap(App);
    * ```
    *
    */
@@ -940,38 +923,95 @@ export class PipeMetadata extends InjectableMetadata {
 }
 
 /**
- * Declare a bound field.
+ * Declares a data-bound property.
  *
- * ## Example
+ * Data-bound properties are automatically updated by Angular during change
+ * detection.
  *
- * ```
- * @Directive({
- *   selector: 'sample-dir'
+ * `PropertyMetadata` takes an optional parameters that specifies that name
+ * used when instantiating a component in the template. When not provided,
+ * the class property name is used.
+ *
+ * ### Example
+ *
+ * The following example creates a component with two data-bound properties.
+ *
+ * ```typescript
+ * @Component({selector: 'bank-account'})
+ * @View({
+ *   template: `
+ *     Bank Name: {{bankName}}
+ *     Account Id: {{id}}
+ *   `
  * })
- * class SampleDir {
- *   @Property() property; // Same as @Property('property') property;
- *   @Property("el-property") dirProperty;
+ * class BankAccount {
+ *   @Property() bankName: string;
+ *   @Property('account-id') id: string;
+ *
+ *   // this property is not bound, and won't be automatically updated by Angular
+ *   normalizedBankName: string;
  * }
+ *
+ * @Component({selector: 'app'})
+ * @View({
+ *   template: `
+ *     <bank-account bank-name="RBC" account-id="4747"></bank-account>
+ *   `,
+ *   directives: [BankAccount]
+ * })
+ * class App {}
+ *
+ * bootstrap(App);
  * ```
  */
 @CONST()
 export class PropertyMetadata {
-  constructor(public bindingPropertyName?: string) {}
+  constructor(
+      /**
+       * Name used when instantiating a component in the temlate.
+       */
+      public bindingPropertyName?: string) {}
 }
 
 /**
- * Declare a bound event.
+ * Declares an event-bound property.
  *
- * ## Example
+ * When an event-bound property emits an event, an event handler attached to that event
+ * the template is invoked.
  *
- * ```
+ * `EventMetadata` takes an optional parameters that specifies that name
+ * used when instantiating a component in the template. When not provided,
+ * the class property name is used.
+ *
+ * ### Example
+ *
+ * ```typescript
  * @Directive({
- *   selector: 'sample-dir'
+ *   selector: 'interval-dir',
  * })
- * class SampleDir {
- *   @Event() event = new EventEmitter(); // Same as @Event('event') event = new EventEmitter();
- *   @Event("el-event") dirEvent = new EventEmitter();
+ * class IntervalDir {
+ *   @Event() everySecond = new EventEmitter();
+ *   @Event('everyFiveSeconds') five5Secs = new EventEmitter();
+ *
+ *   constructor() {
+ *     setInterval(() => this.everySecond.next("event"), 1000);
+ *     setInterval(() => this.five5Secs.next("event"), 5000);
+ *   }
  * }
+ *
+ * @Component({selector: 'app'})
+ * @View({
+ *   template: `
+ *     <interval-dir (every-second)="everySecond()" (every-five-seconds)="everyFiveSeconds()">
+ *     </interval-dir>
+ *   `,
+ *   directives: [IntervalDir]
+ * })
+ * class App {
+ *   everySecond() { console.log('second'); }
+ *   everyFiveSeconds() { console.log('five seconds'); }
+ * }
+ * bootstrap(App);
  * ```
  */
 @CONST()
@@ -980,9 +1020,12 @@ export class EventMetadata {
 }
 
 /**
- * Declare a host property binding.
+ * Declares a host binding property.
  *
- * ## Example
+ * Data-bound properties are automatically updated by Angular during change
+ * detection.
+ *
+ * ### Example
  *
  * ```
  * @Directive({
