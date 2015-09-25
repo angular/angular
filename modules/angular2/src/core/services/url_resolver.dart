@@ -6,6 +6,7 @@ import 'package:angular2/src/core/di.dart' show Injectable;
 class UrlResolver {
   /// This will be the location where 'package:' Urls will resolve. Default is
   /// '/packages'
+  // TODO(yjbanov): make this private
   final String packagePrefix;
 
   const UrlResolver() : packagePrefix = '/packages';

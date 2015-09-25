@@ -3,6 +3,7 @@ library angular2.transform.directive_processor.transformer;
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:angular2/src/core/dom/html_adapter.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/common/names.dart';
@@ -40,6 +41,7 @@ class DirectiveProcessor extends Transformer implements DeclaringTransformer {
 
   @override
   Future apply(Transform transform) async {
+    Html5LibDomAdapter.makeCurrent();
     await log.initZoned(transform, () async {
       var assetId = transform.primaryInput.id;
       var reader = new AssetReader.fromTransform(transform);

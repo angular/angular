@@ -1,7 +1,10 @@
 library angular2.transform.common.directive_metadata_reader;
 
+import 'dart:async';
+
 import 'package:analyzer/analyzer.dart';
 import 'package:angular2/src/compiler/directive_metadata.dart';
+import 'package:angular2/src/compiler/template_compiler.dart';
 import 'package:angular2/src/core/change_detection/change_detection.dart';
 import 'package:angular2/src/core/compiler/interfaces.dart' show LifecycleHooks;
 import 'package:angular2/src/core/render/api.dart' show ViewEncapsulation;
@@ -12,8 +15,9 @@ import 'package:path/path.dart' as path;
 
 class DirectiveMetadataReader {
   final _DirectiveMetadataVisitor _visitor;
+  final TemplateCompiler _templateCompiler;
 
-  DirectiveMetadataReader._(this._visitor);
+  DirectiveMetadataReader._(this._visitor, this._templateCompiler);
 
   /// Accepts an [AnnotationMatcher] which tests that an [Annotation]
   /// is a [Directive], [Component], or [View].
@@ -23,7 +27,7 @@ class DirectiveMetadataReader {
     var visitor =
         new _DirectiveMetadataVisitor(annotationMatcher, lifecycleVisitor);
 
-    return new DirectiveMetadataReader._(visitor);
+    return new DirectiveMetadataReader._(visitor, templateCompiler);
   }
 
   /// Reads *un-normalized* [CompileDirectiveMetadata] from the
@@ -40,7 +44,13 @@ class DirectiveMetadataReader {
       ClassDeclaration node, AssetId assetId) {
     _visitor.reset(assetId);
     node.accept(_visitor);
-    return _visitor.hasMetadata ? _visitor.createMetadata() : null;
+    if (!_visitor.hasMetadata) {
+      return new Future.value(null);
+    } else {
+      final metadata = _visitor.createMetadata();
+      if (!metadata.isComponent) return new Future.value(metadata);
+      return _templateCompiler.normalizeDirectiveMetadata(metadata);
+    }
   }
 }
 
