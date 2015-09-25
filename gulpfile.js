@@ -861,7 +861,7 @@ gulp.task('build/pure-packages.dart', function() {
       'modules_dart/transform/**/*',
       '!modules_dart/transform/**/*.proto',
       '!modules_dart/transform/pubspec.yaml',
-      'modules_dart/transform/**/packages',
+      '!modules_dart/transform/**/packages'
     ])
     .pipe(gulp.dest(path.join(CONFIG.dest.dart, 'angular2')));
 
