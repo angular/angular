@@ -1,4 +1,4 @@
-import {Directive} from 'angular2/src/core/metadata';
+import {Directive, HostBinding, HostListener} from 'angular2/src/core/metadata';
 import {ElementRef} from 'angular2/src/core/compiler';
 import {Renderer} from 'angular2/src/core/render';
 import {Self} from 'angular2/src/core/di';
@@ -18,23 +18,14 @@ import {setProperty} from './shared';
  */
 @Directive({
   selector:
-      'input:not([type=checkbox])[ng-control],textarea[ng-control],input:not([type=checkbox])[ng-form-control],textarea[ng-form-control],input:not([type=checkbox])[ng-model],textarea[ng-model]',
-  host: {
-    '(change)': 'onChange($event.target.value)',
-    '(input)': 'onChange($event.target.value)',
-    '(blur)': 'onTouched()',
-    '[class.ng-untouched]': 'ngClassUntouched',
-    '[class.ng-touched]': 'ngClassTouched',
-    '[class.ng-pristine]': 'ngClassPristine',
-    '[class.ng-dirty]': 'ngClassDirty',
-    '[class.ng-valid]': 'ngClassValid',
-    '[class.ng-invalid]': 'ngClassInvalid'
-  }
+      'input:not([type=checkbox])[ng-control],textarea[ng-control],input:not([type=checkbox])[ng-form-control],textarea[ng-form-control],input:not([type=checkbox])[ng-model],textarea[ng-model]'
 })
 export class DefaultValueAccessor implements ControlValueAccessor {
   private _cd: NgControl;
+  @HostListener('change', ['$event.target.value'])
+  @HostListener('input', ['$event.target.value'])
   onChange = (_) => {};
-  onTouched = () => {};
+  @HostListener('blur') onTouched = () => {};
 
   constructor(@Self() cd: NgControl, private _renderer: Renderer, private _elementRef: ElementRef) {
     this._cd = cd;
@@ -46,21 +37,32 @@ export class DefaultValueAccessor implements ControlValueAccessor {
     setProperty(this._renderer, this._elementRef, 'value', normalizedValue);
   }
 
+  @HostBinding('class.ng-untouched')
   get ngClassUntouched(): boolean {
     return isPresent(this._cd.control) ? this._cd.control.untouched : false;
   }
+
+  @HostBinding('class.ng-touched')
   get ngClassTouched(): boolean {
     return isPresent(this._cd.control) ? this._cd.control.touched : false;
   }
+
+  @HostBinding('class.ng-pristine')
   get ngClassPristine(): boolean {
     return isPresent(this._cd.control) ? this._cd.control.pristine : false;
   }
+
+  @HostBinding('class.ng-dirty')
   get ngClassDirty(): boolean {
     return isPresent(this._cd.control) ? this._cd.control.dirty : false;
   }
+
+  @HostBinding('class.ng-valid')
   get ngClassValid(): boolean {
     return isPresent(this._cd.control) ? this._cd.control.valid : false;
   }
+
+  @HostBinding('class.ng-invalid')
   get ngClassInvalid(): boolean {
     return isPresent(this._cd.control) ? !this._cd.control.valid : false;
   }

@@ -1,5 +1,5 @@
 import {DoCheck} from 'angular2/lifecycle_hooks';
-import {Directive} from 'angular2/src/core/metadata';
+import {Directive, Property} from 'angular2/src/core/metadata';
 import {
   ChangeDetectorRef,
   IterableDiffer,
@@ -39,7 +39,7 @@ import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
  * - `<li template="ng-for #item of items; #i = index">...</li>`
  * - `<template ng-for #item [ng-for-of]="items" #i="index"><li>...</li></template>`
  */
-@Directive({selector: '[ng-for][ng-for-of]', properties: ['ngForOf']})
+@Directive({selector: '[ng-for][ng-for-of]'})
 export class NgFor implements DoCheck {
   _ngForOf: any;
   private _differ: IterableDiffer;
@@ -47,6 +47,7 @@ export class NgFor implements DoCheck {
   constructor(private _viewContainer: ViewContainerRef, private _templateRef: TemplateRef,
               private _iterableDiffers: IterableDiffers, private _cdr: ChangeDetectorRef) {}
 
+  @Property('ng-for-of')
   set ngForOf(value: any) {
     this._ngForOf = value;
     if (isBlank(this._differ) && isPresent(value)) {

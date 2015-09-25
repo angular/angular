@@ -3,7 +3,7 @@ import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {StringMap} from 'angular2/src/core/facade/collection';
 import {OnChanges, OnDestroy} from 'angular2/lifecycle_hooks';
 import {SimpleChange} from 'angular2/src/core/change_detection';
-import {Query, Directive} from 'angular2/src/core/metadata';
+import {Query, Directive, Event, Property} from 'angular2/src/core/metadata';
 import {forwardRef, Host, SkipSelf, Binding, Inject, Optional} from 'angular2/src/core/di';
 
 import {ControlContainer} from './control_container';
@@ -74,15 +74,15 @@ const controlNameBinding =
 @Directive({
   selector: '[ng-control]',
   bindings: [controlNameBinding],
-  properties: ['name: ngControl', 'model: ngModel'],
-  events: ['update: ngModel'],
+  properties: ['name: ngControl'],
   exportAs: 'form'
 })
 export class NgControlName extends NgControl implements OnChanges,
     OnDestroy {
+  @Event('ngModel') update = new EventEmitter();
+  @Property('ng-model') model: any;
+
   _parent: ControlContainer;
-  update = new EventEmitter();
-  model: any;
   viewModel: any;
   validators: Function[];
   _added = false;

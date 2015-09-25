@@ -2,7 +2,7 @@ import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {OnChanges} from 'angular2/lifecycle_hooks';
 import {SimpleChange} from 'angular2/src/core/change_detection';
-import {Query, Directive} from 'angular2/src/core/metadata';
+import {Query, Directive, Property, Event} from 'angular2/src/core/metadata';
 import {forwardRef, Binding, Inject, Optional} from 'angular2/src/core/di';
 import {NgControl} from './ng_control';
 import {Control} from '../model';
@@ -61,18 +61,12 @@ const formControlBinding =
  * }
  *  ```
  */
-@Directive({
-  selector: '[ng-form-control]',
-  bindings: [formControlBinding],
-  properties: ['form: ngFormControl', 'model: ngModel'],
-  events: ['update: ngModel'],
-  exportAs: 'form'
-})
+@Directive({selector: '[ng-form-control]', bindings: [formControlBinding], exportAs: 'form'})
 export class NgFormControl extends NgControl implements OnChanges {
-  form: Control;
-  update = new EventEmitter();
+  @Property('ng-form-control') form: Control;
+  @Property('ng-model') model: any;
+  @Event('ngModel') update = new EventEmitter();
   _added = false;
-  model: any;
   viewModel: any;
   validators: Function[];
 

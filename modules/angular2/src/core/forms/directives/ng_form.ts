@@ -6,7 +6,7 @@ import {
 } from 'angular2/src/core/facade/async';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {isPresent, isBlank, CONST_EXPR} from 'angular2/src/core/facade/lang';
-import {Directive} from 'angular2/src/core/metadata';
+import {Directive, Event, HostListener} from 'angular2/src/core/metadata';
 import {forwardRef, Binding} from 'angular2/src/core/di';
 import {NgControl} from './ng_control';
 import {Form} from './form_interface';
@@ -82,15 +82,11 @@ const formDirectiveBinding =
 @Directive({
   selector: 'form:not([ng-no-form]):not([ng-form-model]),ng-form,[ng-form]',
   bindings: [formDirectiveBinding],
-  host: {
-    '(submit)': 'onSubmit()',
-  },
-  events: ['ngSubmit'],
   exportAs: 'form'
 })
 export class NgForm extends ControlContainer implements Form {
   form: ControlGroup = new ControlGroup({});
-  ngSubmit = new EventEmitter();
+  @Event('ngSubmit') ngSubmit = new EventEmitter();
 
   get formDirective(): Form { return this; }
 
@@ -152,6 +148,7 @@ export class NgForm extends ControlContainer implements Form {
     });
   }
 
+  @HostListener('submit')
   onSubmit(): boolean {
     ObservableWrapper.callNext(this.ngSubmit, null);
     return false;

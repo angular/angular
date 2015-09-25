@@ -4,7 +4,7 @@ import {
   KeyValueDiffers,
 } from 'angular2/src/core/change_detection';
 import {ElementRef} from 'angular2/src/core/compiler';
-import {Directive} from 'angular2/src/core/metadata';
+import {Directive, Property} from 'angular2/src/core/metadata';
 import {Renderer} from 'angular2/src/core/render';
 import {isPresent, isBlank, print} from 'angular2/src/core/facade/lang';
 
@@ -29,7 +29,7 @@ import {isPresent, isBlank, print} from 'angular2/src/core/facade/lang';
  * - `<div [ng-style]="{'text-align': alignExp}"></div>`
  * - `<div [ng-style]="styleExp"></div>`
  */
-@Directive({selector: '[ng-style]', properties: ['rawStyle: ng-style']})
+@Directive({selector: '[ng-style]'})
 export class NgStyle implements DoCheck {
   _rawStyle;
   _differ: KeyValueDiffer;
@@ -37,6 +37,7 @@ export class NgStyle implements DoCheck {
   constructor(private _differs: KeyValueDiffers, private _ngEl: ElementRef,
               private _renderer: Renderer) {}
 
+  @Property('ng-style')
   set rawStyle(v) {
     this._rawStyle = v;
     if (isBlank(this._differ) && isPresent(v)) {
