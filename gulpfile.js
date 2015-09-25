@@ -45,8 +45,8 @@ var sauceConf = require('./sauce.conf');
 var os = require('os');
 
 require('./tools/check-environment')({
-  requiredNpmVersion: '>=2.9.0',
-  requiredNodeVersion: '>=0.12.2'
+  requiredNpmVersion: '>=2.14.5',
+  requiredNodeVersion: '>=4.1.1'
 });
 
 // Make it easy to quiet down portions of the build.
