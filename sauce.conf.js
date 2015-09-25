@@ -8,7 +8,7 @@ var customLaunchers = {
   'SL_CHROME': {
     base: 'SauceLabs',
     browserName: 'chrome',
-    version: '44'
+    version: '45'
   },
   'SL_CHROMEBETA': {
     base: 'SauceLabs',
@@ -23,7 +23,7 @@ var customLaunchers = {
   'SL_FIREFOX': {
     base: 'SauceLabs',
     browserName: 'firefox',
-    version: '37'
+    version: '40'
   },
   'SL_FIREFOXBETA': {
     base: 'SauceLabs',
@@ -58,6 +58,12 @@ var customLaunchers = {
     browserName: 'iphone',
     platform: 'OS X 10.10',
     version: '8.4'
+  },
+  'SL_IOS9': {
+    base: 'SauceLabs',
+    browserName: 'iphone',
+    platform: 'OS X 10.10',
+    version: '9.0'
   },
   'SL_IE9': {
     base: 'SauceLabs',
@@ -112,15 +118,16 @@ var customLaunchers = {
 var aliases = {
   'ALL': Object.keys(customLaunchers).filter(function(item) {return customLaunchers[item].base == 'SauceLabs';}),
   'DESKTOP': ['SL_CHROME', 'SL_FIREFOX', 'SL_IE9', 'SL_IE10', 'SL_IE11', 'SL_SAFARI7', 'SL_SAFARI8'],
-  'MOBILE': ['SL_ANDROID4.0', 'SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4', 'SL_ANDROID5.1', 'SL_IOS7', 'SL_IOS8'],
-  'ANDROID': ['SL_ANDROID4.0', 'SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4', 'SL_ANDROID5.1'],
+  'MOBILE': ['SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4', 'SL_ANDROID5.1', 'SL_IOS7', 'SL_IOS8', 'SL_IOS9'],
+  'ANDROID': ['SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4', 'SL_ANDROID5.1'],
   'IE': ['SL_IE9', 'SL_IE10', 'SL_IE11'],
-  'IOS': ['SL_IOS7', 'SL_IOS8'],
+  'IOS': ['SL_IOS7', 'SL_IOS8', 'SL_IOS9'],
   'SAFARI': ['SL_SAFARI7', 'SL_SAFARI8'],
   'BETA': ['SL_CHROMEBETA', 'SL_FIREFOXBETA'],
   'DEV': ['SL_CHROMEDEV', 'SL_FIREFOXDEV'],
   'CI': ['SL_CHROME', 'SL_ANDROID5.1', 'SL_SAFARI7', 'SL_SAFARI8', 'SL_IOS7', 'SL_IOS8', 'SL_FIREFOX',
-         'SL_IE9', 'SL_IE10', 'SL_IE11', 'SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4']
+         'SL_IE9', 'SL_IE10', 'SL_IE11', 'SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4',
+         'SL_CHROMEDEV', 'SL_FIREFOXDEV']
 };
 
 module.exports = {
