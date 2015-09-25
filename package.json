@@ -73,7 +73,7 @@
     "gulp-modify": "0.0.5",
     "gulp-rename": "^1.2.0",
     "gulp-replace": "^0.5.3",
-    "gulp-sass": "^1.3.3",
+    "gulp-sass": "^2.0.4",
     "gulp-shell": "^0.2.10",
     "gulp-sourcemaps": "1.3.*",
     "gulp-template": "^3.0.0",
