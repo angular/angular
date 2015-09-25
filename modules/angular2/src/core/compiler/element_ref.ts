@@ -72,7 +72,7 @@ export class ElementRef implements RenderElementRef {
    *   </p>
    *   <p>
    *    Relying on direct DOM access creates tight coupling between your application and rendering
-   *    layers which will make it impossible to separate the two and deploy your application in into a
+   *    layers which will make it impossible to separate the two and deploy your application into a
    *    web worker.
    *   </p>
    *   <!-- TODO: add info about custom renderers that should be used instead -->

@@ -13,8 +13,8 @@ import {ViewRef, HostViewRef, ProtoViewRef, internalView} from './view_ref';
  * Represents a container where one or more Views can be attached.
  *
  * The container can contain two kinds of Views. Host Views, created by instantiating a
- * {@link Component} via {@link #createHostView}s, and Embedded Views, created by instantiating an
- * {@link TemplateRef Embedded Template} via {@link #createEmbeddedView}).
+ * {@link Component} via {@link #createHostView}, and Embedded Views, created by instantiating an
+ * {@link TemplateRef Embedded Template} via {@link #createEmbeddedView}.
  *
  * The location of the View Container within the containing View is specified by the Anchor
  * `element`. Each View Container can have only one Anchor Element and each Anchor Element can only

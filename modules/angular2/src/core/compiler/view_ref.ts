@@ -104,7 +104,7 @@ export class ViewRef implements HostViewRef {
 }
 
 /**
- * Represents Angular's ProtoView.
+ * Represents an Angular ProtoView.
  *
  * A ProtoView is a prototypical {@link ViewRef View} that is the result of Template compilation and
  * is used by Angular to efficiently create an instance of this View based on the compiled Template.
