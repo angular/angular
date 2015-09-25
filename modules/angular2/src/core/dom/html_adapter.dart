@@ -221,9 +221,7 @@ class Html5LibDomAdapter implements DomAdapter {
     return new Element.tag(tagName);
   }
 
-  createTextNode(String text, [doc]) {
-    throw 'not implemented';
-  }
+  createTextNode(String text, [doc]) => new Text(text);
 
   createScriptTag(String attrName, String attrValue, [doc]) {
     throw 'not implemented';

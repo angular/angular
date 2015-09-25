@@ -110,3 +110,8 @@ class SpyDomAdapter extends SpyObject implements DomAdapter {
 class SpyXHR extends SpyObject implements XHR {
   noSuchMethod(m) => super.noSuchMethod(m);
 }
+
+@proxy
+class SpyRenderEventDispatcher extends SpyObject implements RenderEventDispatcher {
+  noSuchMethod(m) => super.noSuchMethod(m);
+}
