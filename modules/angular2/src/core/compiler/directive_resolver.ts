@@ -77,7 +77,7 @@ export class DirectiveResolver {
         }
 
         if (a instanceof HostListenerMetadata) {
-          var args = isPresent(a.args) ? a.args.join(', ') : '';
+          var args = isPresent(a.args) ? (<any[]>a.args).join(', ') : '';
           host[`(${a.eventName})`] = `${propName}(${args})`;
         }
 

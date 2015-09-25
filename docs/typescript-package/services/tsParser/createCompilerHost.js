@@ -58,11 +58,17 @@ module.exports = function createCompilerHost(log) {
         return ts.sys.newLine;
       },
       fileExists: function(fileName) {
-        var stats;
-        fs.stat(fileName, function(err, s) {
-           stats = s;
-        });
-        return !!stats;
+        var resolvedPath = path.resolve(baseDir, fileName);
+        try {
+          fs.statSync(resolvedPath);
+          return true;
+        } catch (e) {
+          return false;
+        }
+      },
+      readFile: function(fileName) {
+        var resolvedPath = path.resolve(baseDir, fileName);
+        return fs.readFileSync(resolvedPath, { encoding: options.charset });
       }
     };
   };

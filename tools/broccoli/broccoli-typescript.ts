@@ -188,7 +188,6 @@ class CustomLanguageServiceHost implements ts.LanguageServiceHost {
   constructor(private compilerOptions: ts.CompilerOptions, private fileNames: string[],
               private fileRegistry: FileRegistry, private treeInputPath: string) {
     this.currentDirectory = process.cwd();
-    console.log("compilerOptions", compilerOptions);
     this.defaultLibFilePath = ts.getDefaultLibFilePath(compilerOptions).replace(/\\/g, '/');
   }
 
@@ -235,12 +234,9 @@ class CustomLanguageServiceHost implements ts.LanguageServiceHost {
 
   getCurrentDirectory(): string { return this.currentDirectory; }
 
-
   getCompilationSettings(): ts.CompilerOptions { return this.compilerOptions; }
 
-
   getDefaultLibFileName(options: ts.CompilerOptions): string {
-    console.log("defaultLibFilePath", this.defaultLibFilePath);
     // ignore options argument, options should not change during the lifetime of the plugin
     return this.defaultLibFilePath;
   }
