@@ -1,5 +1,5 @@
 /// <reference path="../../node_modules/typescript/lib/typescriptServices.d.ts" />
-/// <reference path="../../node_modules/gulp-tslint/node_modules/tslint/lib/tslint.d.ts" />
+/// <reference path="../../node_modules/tslint/lib/tslint.d.ts" />
 
 export class Rule extends Lint.Rules.AbstractRule {
   public static FAILURE_STRING = "missing type declaration";
