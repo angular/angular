@@ -38,11 +38,16 @@ class MockBrowserJsonp extends BrowserJsonp {
 
   addEventListener(type: string, cb: (data: any) => any) { this.callbacks.set(type, cb); }
 
+  removeEventListener(type: string, cb: Function) { this.callbacks.delete(type); }
+
   dispatchEvent(type: string, argument?: any) {
     if (!isPresent(argument)) {
       argument = {};
     }
-    this.callbacks.get(type)(argument);
+    let cb = this.callbacks.get(type);
+    if (isPresent(cb)) {
+      cb(argument);
+    }
   }
 
   build(url: string) {
@@ -89,7 +94,7 @@ export function main() {
          inject([AsyncTestCompleter], async => {
            let connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp(),
                                                 new ResponseOptions({type: ResponseTypes.Error}));
-           ObservableWrapper.subscribe<Response>(connection.response, res => {
+           connection.response.subscribe(res => {
              expect(res.type).toBe(ResponseTypes.Error);
              async.done();
            });
@@ -104,17 +109,17 @@ export function main() {
            let errorSpy = spy.spy('error');
            let returnSpy = spy.spy('cancelled');
 
-           ObservableWrapper.subscribe(connection.response, loadSpy, errorSpy, returnSpy);
-           connection.dispose();
-           expect(connection.readyState).toBe(ReadyStates.Cancelled);
+           let request = connection.response.subscribe(loadSpy, errorSpy, returnSpy);
+           request.unsubscribe();
 
            connection.finished('Fake data');
            existingScripts[0].dispatchEvent('load');
 
            TimerWrapper.setTimeout(() => {
+             expect(connection.readyState).toBe(ReadyStates.Cancelled);
              expect(loadSpy).not.toHaveBeenCalled();
              expect(errorSpy).not.toHaveBeenCalled();
-             expect(returnSpy).toHaveBeenCalled();
+             expect(returnSpy).not.toHaveBeenCalled();
              async.done();
            }, 10);
          }));
@@ -122,8 +127,7 @@ export function main() {
       it('should report error if loaded without invoking callback',
          inject([AsyncTestCompleter], async => {
            let connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp());
-           ObservableWrapper.subscribe(
-               connection.response,
+           connection.response.subscribe(
                res => {
                  expect("response listener called").toBe(false);
                  async.done();
@@ -139,15 +143,15 @@ export function main() {
       it('should report error if script contains error', inject([AsyncTestCompleter], async => {
            let connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp());
 
-           ObservableWrapper.subscribe(connection.response,
-                                       res => {
-                                         expect("response listener called").toBe(false);
-                                         async.done();
-                                       },
-                                       err => {
-                                         expect(err['message']).toBe('Oops!');
-                                         async.done();
-                                       });
+           connection.response.subscribe(
+               res => {
+                 expect("response listener called").toBe(false);
+                 async.done();
+               },
+               err => {
+                 expect(err['message']).toBe('Oops!');
+                 async.done();
+               });
 
            existingScripts[0].dispatchEvent('error', ({message: "Oops!"}));
          }));
@@ -159,14 +163,15 @@ export function main() {
               let base = new BaseRequestOptions();
               let req = new Request(
                   base.merge(new RequestOptions({url: 'https://google.com', method: method})));
-              expect(() => new JSONPConnection(req, new MockBrowserJsonp())).toThrowError();
+              expect(() => new JSONPConnection(req, new MockBrowserJsonp()).response.subscribe())
+                  .toThrowError();
             });
       });
 
       it('should respond with data passed to callback', inject([AsyncTestCompleter], async => {
            let connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp());
 
-           ObservableWrapper.subscribe<Response>(connection.response, res => {
+           connection.response.subscribe(res => {
              expect(res.json()).toEqual(({fake_payload: true, blob_id: 12345}));
              async.done();
            });
