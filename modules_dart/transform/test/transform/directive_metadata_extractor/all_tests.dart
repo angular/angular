@@ -193,6 +193,20 @@ void allTests() {
       expect(extracted.types['BazComponent'].selector).toEqual('[baz]');
     });
 
+    it('should handle `DirectiveMetadata` export cycles gracefully.', () async {
+      var extracted = await extractDirectiveMetadata(
+          reader,
+          new AssetId('a',
+              'directive_metadata_extractor/export_cycle_files/baz.ng_deps.dart'));
+      expect(extracted.types).toContain('FooComponent');
+      expect(extracted.types).toContain('BarComponent');
+      expect(extracted.types).toContain('BazComponent');
+
+      expect(extracted.types['FooComponent'].selector).toEqual('[foo]');
+      expect(extracted.types['BarComponent'].selector).toEqual('[bar]');
+      expect(extracted.types['BazComponent'].selector).toEqual('[baz]');
+    });
+
     it(
         'should include `DirectiveMetadata` from exported files '
         'expressed as absolute uris', () async {
