@@ -3,10 +3,7 @@ import {Headers} from './headers';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {EventEmitter} from 'angular2/src/core/facade/async';
 import {Request} from './static_request';
-import {URLSearchParamsUnionFixer, URLSearchParams} from './url_search_params';
-
-// Work around Dartanalyzer problem :(
-const URLSearchParams_UnionFixer = URLSearchParamsUnionFixer;
+import {URLSearchParams} from './url_search_params';
 
 /**
  * Abstract class from which real backends are derived.

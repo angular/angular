@@ -22,9 +22,6 @@ function paramParser(rawParams: string = ''): Map<string, string[]> {
   return map;
 }
 
-// TODO(caitp): This really should not be needed. Issue with ts2dart.
-export const URLSearchParamsUnionFixer: string = CONST_EXPR("UnionFixer");
-
 /**
  * Map-like representation of url search parameters, based on
  * [URLSearchParams](https://url.spec.whatwg.org/#urlsearchparams) in the url living standard,
