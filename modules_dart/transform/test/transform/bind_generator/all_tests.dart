@@ -48,4 +48,26 @@ void allTests() {
         await createNgSettersAndGetters(reader, new AssetId('a', inputPath)));
     expect(output).toEqual(expected);
   });
+
+  it('should generate setters for queries defined in the class annotation.',
+      () async {
+    var inputPath = 'bind_generator/queries_class_annotation_files/bar.ng_deps.dart';
+    var expected = formatter.format(
+        readFile('bind_generator/queries_class_annotation_files/expected/bar.ng_deps.dart'));
+
+    var output = formatter.format(
+        await createNgSettersAndGetters(reader, new AssetId('a', inputPath)));
+    expect(output).toEqual(expected);
+  });
+
+  it('should generate setters for queries defined via prop annotations.',
+      () async {
+    var inputPath = 'bind_generator/queries_prop_annotations_files/bar.ng_deps.dart';
+    var expected = formatter.format(
+        readFile('bind_generator/queries_prop_annotations_files/expected/bar.ng_deps.dart'));
+
+    var output = formatter.format(
+        await createNgSettersAndGetters(reader, new AssetId('a', inputPath)));
+    expect(output).toEqual(expected);
+  });
 }

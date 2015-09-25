@@ -26,6 +26,9 @@ class RegisteredType {
   /// The annotations registered.
   final Expression annotations;
 
+  /// The property metadata registered.
+  final Expression propMetadata;
+
   RenderDirectiveMetadata _directiveMetadata = null;
 
   RegisteredType._(
@@ -34,7 +37,8 @@ class RegisteredType {
       this.reflectionInfoCreate,
       this.factoryFn,
       this.parameters,
-      this.annotations);
+      this.annotations,
+      this.propMetadata);
 
   /// Creates a {@link RegisteredType} given a {@link MethodInvocation} node representing
   /// a call to `registerType`.
@@ -42,7 +46,7 @@ class RegisteredType {
     var visitor = new _ParseRegisterTypeVisitor();
     registerMethod.accept(visitor);
     return new RegisteredType._(visitor.typeName, registerMethod, visitor.info,
-        visitor.factoryFn, visitor.parameters, visitor.annotations);
+        visitor.factoryFn, visitor.parameters, visitor.annotations, visitor.propMetadata);
   }
 
   RenderDirectiveMetadata get directiveMetadata {
@@ -68,6 +72,7 @@ class _ParseRegisterTypeVisitor extends Object
   Expression factoryFn;
   Expression parameters;
   Expression annotations;
+  Expression propMetadata;
 
   @override
   Object visitMethodInvocation(MethodInvocation node) {
@@ -90,6 +95,8 @@ class _ParseRegisterTypeVisitor extends Object
         parameters = arg;
       } else if (i == 2) {
         factoryFn = arg;
+      } else if (i == 4) {
+        propMetadata = arg;
       }
     }
 
