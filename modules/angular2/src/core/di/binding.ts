@@ -6,6 +6,8 @@ import {
   CONST_EXPR,
   stringify,
   isArray,
+  isType,
+  isFunction,
   normalizeBool
 } from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
@@ -344,7 +346,13 @@ export class BindingBuilder {
    * expect(injectorAlias.get(Vehicle) instanceof Car).toBe(true);
    * ```
    */
-  toClass(type: Type): Binding { return new Binding(this.token, {toClass: type}); }
+  toClass(type: Type): Binding {
+    if (!isType(type)) {
+      throw new BaseException(
+          `Trying to create a class binding but "${stringify(type)}" is not a class!`);
+    }
+    return new Binding(this.token, {toClass: type});
+  }
 
   /**
    * Binds a DI token to a value.
@@ -416,8 +424,12 @@ export class BindingBuilder {
    * expect(injector.get(String)).toEqual('Value: 3');
    * ```
    */
-  toFactory(factoryFunction: Function, dependencies?: any[]): Binding {
-    return new Binding(this.token, {toFactory: factoryFunction, deps: dependencies});
+  toFactory(factory: Function, dependencies?: any[]): Binding {
+    if (!isFunction(factory)) {
+      throw new BaseException(
+          `Trying to create a factory binding but "${stringify(factory)}" is not a function!`);
+    }
+    return new Binding(this.token, {toFactory: factory, deps: dependencies});
   }
 }
 
