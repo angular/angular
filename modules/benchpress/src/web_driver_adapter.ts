@@ -1,6 +1,5 @@
 import {bind, Binding} from 'angular2/src/core/di';
 import {Promise} from 'angular2/src/core/facade/async';
-import {ABSTRACT} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {Map} from 'angular2/src/core/facade/collection';
 
@@ -9,8 +8,7 @@ import {Map} from 'angular2/src/core/facade/collection';
  * e.g. JS vs Dart Async vs Dart Sync webdriver.
  * Needs one implementation for every supported WebDriver client.
  */
-@ABSTRACT()
-export class WebDriverAdapter {
+export abstract class WebDriverAdapter {
   static bindTo(delegateToken): Binding[] {
     return [bind(WebDriverAdapter).toFactory((delegate) => delegate, [delegateToken])];
   }

@@ -5,7 +5,7 @@ import {DomAdapter} from './dom_adapter';
 /**
  * Provides DOM operations in any browser environment.
  */
-export class GenericBrowserDomAdapter extends DomAdapter {
+export abstract class GenericBrowserDomAdapter extends DomAdapter {
   private _animationPrefix: string = null;
   private _transitionEnd: string = null;
   constructor() {

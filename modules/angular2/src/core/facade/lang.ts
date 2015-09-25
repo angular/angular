@@ -62,10 +62,6 @@ export function CONST(): ClassDecorator {
   return (target) => target;
 }
 
-export function ABSTRACT(): ClassDecorator {
-  return (t) => t;
-}
-
 export function isPresent(obj: any): boolean {
   return obj !== undefined && obj !== null;
 }

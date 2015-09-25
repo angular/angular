@@ -562,6 +562,11 @@ export class Parse5DomAdapter extends DomAdapter {
   getAnimationPrefix(): string { return ''; }
   getTransitionEnd(): string { return 'transitionend'; }
   supportsAnimation(): boolean { return true; }
+
+  replaceChild(el, newNode, oldNode) { throw new Error('not implemented'); }
+  parse(templateHtml: string) { throw new Error('not implemented'); }
+  invoke(el: Element, methodName: string, args: any[]): any { throw new Error('not implemented'); }
+  getEventKey(event): string { throw new Error('not implemented'); }
 }
 
 // TODO: build a proper list, this one is all the keys of a HTMLInputElement
