@@ -1,9 +1,3 @@
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
-
-function _abstract() {
-  return new BaseException('This method is abstract');
-}
-
 /**
  * `LocationStrategy` is responsible for representing and reading route state
  * from the the browser's URL. Angular provides two strategies:
@@ -20,11 +14,11 @@ function _abstract() {
  *
  * See these two classes for more.
  */
-export class LocationStrategy {
-  path(): string { throw _abstract(); }
-  pushState(ctx: any, title: string, url: string): void { throw _abstract(); }
-  forward(): void { throw _abstract(); }
-  back(): void { throw _abstract(); }
-  onPopState(fn: (_: any) => any): void { throw _abstract(); }
-  getBaseHref(): string { throw _abstract(); }
+export abstract class LocationStrategy {
+  abstract path(): string;
+  abstract pushState(ctx: any, title: string, url: string): void;
+  abstract forward(): void;
+  abstract back(): void;
+  abstract onPopState(fn: (_: any) => any): void;
+  abstract getBaseHref(): string;
 }

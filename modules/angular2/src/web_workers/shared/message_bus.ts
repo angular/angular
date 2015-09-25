@@ -1,11 +1,6 @@
 import {EventEmitter} from 'angular2/src/core/facade/async';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 export {EventEmitter, Observable} from 'angular2/src/core/facade/async';
-
-function _abstract() {
-  throw new BaseException("This method is abstract");
-}
 
 /**
  * Message Bus is a low level API used to communicate between the UI and the background.
@@ -13,7 +8,7 @@ function _abstract() {
  * given channel to one MessageBusSink are received on the same channel
  * by the corresponding MessageBusSource.
  */
-export /* abstract (with TS 1.6) */ class MessageBus implements MessageBusSource, MessageBusSink {
+export abstract class MessageBus implements MessageBusSource, MessageBusSink {
   /**
    * Sets up a new channel on the MessageBus.
    * MUST be called before calling from or to on the channel.
@@ -22,27 +17,27 @@ export /* abstract (with TS 1.6) */ class MessageBus implements MessageBusSource
    * if runInZone is false then the source will emit events inside the global zone
    * and the sink will send messages immediately.
    */
-  initChannel(channel: string, runInZone: boolean = true): void { throw _abstract(); }
+  abstract initChannel(channel: string, runInZone?: boolean): void;
 
   /**
    * Assigns this bus to the given zone.
    * Any callbacks attached to channels where runInZone was set to true on initialization
    * will be executed in the given zone.
    */
-  attachToZone(zone: NgZone): void { throw _abstract(); }
+  abstract attachToZone(zone: NgZone): void;
 
   /**
    * Returns an {@link EventEmitter} that emits every time a message
    * is received on the given channel.
    */
-  from(channel: string): EventEmitter { throw _abstract(); }
+  abstract from(channel: string): EventEmitter;
 
 
   /**
    * Returns an {@link EventEmitter} for the given channel
    * To publish methods to that channel just call next (or add in dart) on the returned emitter
    */
-  to(channel: string): EventEmitter { throw _abstract(); }
+  abstract to(channel: string): EventEmitter;
 }
 
 export interface MessageBusSource {

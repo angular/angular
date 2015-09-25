@@ -46,6 +46,10 @@ class Html5LibDomAdapter implements DomAdapter {
     'tabindex': 'tabIndex',
   };
 
+  set attrToPropMap(value) {
+    throw 'readonly';
+  }
+
   @override
   getGlobalEventTarget(String target) {
     throw 'not implemented';

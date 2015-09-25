@@ -17,10 +17,6 @@ class CONST {
   const CONST();
 }
 
-class ABSTRACT {
-  const ABSTRACT();
-}
-
 bool isPresent(obj) => obj != null;
 bool isBlank(obj) => obj == null;
 bool isString(obj) => obj is String;

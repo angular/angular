@@ -1,4 +1,4 @@
-import {ABSTRACT, CONST, Type} from 'angular2/src/core/facade/lang';
+import {CONST, Type} from 'angular2/src/core/facade/lang';
 import {ViewEncapsulation} from 'angular2/src/core/render/api';
 
 export {ViewEncapsulation} from 'angular2/src/core/render/api';

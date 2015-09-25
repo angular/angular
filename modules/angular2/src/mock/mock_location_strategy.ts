@@ -38,4 +38,6 @@ export class MockLocationStrategy extends LocationStrategy {
       this.simulatePopState(nextUrl);
     }
   }
+
+  forward(): void { throw 'not implemented'; }
 }

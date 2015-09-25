@@ -1,7 +1,7 @@
 import {StringWrapper, RegExpWrapper, isJsObject} from 'angular2/src/core/facade/lang';
 
 var IS_FIELD = RegExpWrapper.create('^\\w+[\\.|\\#]\\w+=?$');
-var IS_INTERFACE = RegExpWrapper.create('^\\{\\w+\\}');
+var IS_INTERFACE = RegExpWrapper.create('^\\{.+\\}');
 var IS_DART = RegExpWrapper.create('\\:dart$');
 var IS_JS = RegExpWrapper.create('\\:js$');
 var IS_OPTIONAL = RegExpWrapper.create('\\:optional$');
