@@ -3,6 +3,7 @@ library angular2.transform.directive_processor.rewriter;
 import 'dart:async';
 
 import 'package:analyzer/analyzer.dart';
+import 'package:angular2/src/compiler/html_parser.dart';
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/async_string_writer.dart';
@@ -13,10 +14,19 @@ import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
 import 'package:angular2/src/transform/common/xhr_impl.dart';
 import 'package:angular2/src/transform/common/ng_meta.dart';
+import 'package:angular2/src/core/services/url_resolver.dart';
 import 'package:barback/barback.dart' show AssetId;
 import 'package:code_transformers/assets.dart';
 import 'package:path/path.dart' as path;
 import 'package:source_span/source_span.dart';
+import 'package:angular2/src/core/change_detection/parser/lexer.dart' as ng;
+import 'package:angular2/src/core/change_detection/parser/parser.dart' as ng;
+import 'package:angular2/src/compiler/template_parser.dart';
+import 'package:angular2/src/core/render/dom/schema/dom_element_schema_registry.dart';
+import 'package:angular2/src/compiler/template_normalizer.dart';
+import 'package:angular2/src/compiler/style_compiler.dart';
+import 'package:angular2/src/compiler/command_compiler.dart';
+import 'package:angular2/src/compiler/template_compiler.dart';
 
 import 'inliner.dart';
 
@@ -52,9 +62,11 @@ Future<NgDepsModel> createNgDeps(AssetReader reader, AssetId assetId,
   parsedCode.accept(ngDepsVisitor);
   var ngDepsModel = ngDepsVisitor.model;
 
-  var ngMetaVisitor =
-      new _NgMetaVisitor(ngMeta, assetId, annotationMatcher, _interfaceMatcher);
+  var templateCompiler = _initCompiler(reader, assetId);
+  var ngMetaVisitor = new _NgMetaVisitor(ngMeta, assetId, annotationMatcher,
+      _interfaceMatcher, templateCompiler);
   parsedCode.accept(ngMetaVisitor);
+  await ngMetaVisitor.whenDone();
 
   // If this file imports only dart: libraries and does not define any
   // reflectables of its own, it doesn't need a .ng_deps.dart file.
@@ -173,11 +185,16 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
   final AssetId assetId;
 
   final DirectiveMetadataReader _reader;
+  final _normalizations = <Future>[];
 
   _NgMetaVisitor(this.ngMeta, this.assetId, AnnotationMatcher annotationMatcher,
-      InterfaceMatcher interfaceMatcher)
-      : _reader =
-            new DirectiveMetadataReader(annotationMatcher, interfaceMatcher);
+      InterfaceMatcher interfaceMatcher, TemplateCompiler templateCompiler)
+    : _reader = new DirectiveMetadataReader(annotationMatcher, interfaceMatcher,
+        templateCompiler);
+
+  Future whenDone() {
+    return Future.wait(_normalizations);
+  }
 
   @override
   Object visitCompilationUnit(CompilationUnit node) {
@@ -187,11 +204,14 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
 
   @override
   Object visitClassDeclaration(ClassDeclaration node) {
-    var compileDirectiveMetadata = _reader.readDirectiveMetadata(node, assetId);
-    if (compileDirectiveMetadata != null) {
-      ngMeta.types[compileDirectiveMetadata.type.name] =
-          compileDirectiveMetadata;
-    }
+    _normalizations.add(_reader.readDirectiveMetadata(node, assetId)
+      .then((compileDirectiveMetadata) {
+        if (compileDirectiveMetadata != null) {
+          ngMeta.types[compileDirectiveMetadata.type.name] = compileDirectiveMetadata;
+        }
+      }).catchError((err) {
+        logger.error('ERROR: $err');
+      }));
   }
 
   @override
@@ -215,5 +235,32 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
       }
     }
     return null;
+  }
+}
+
+// TODO: move to a common location
+TemplateCompiler _initCompiler(AssetReader reader, AssetId entryPoint) {
+  var _xhr = new XhrImpl(reader, entryPoint);
+  var _htmlParser = new HtmlParser();
+  var _urlResolver = new TransformerUrlResolver();
+
+  var templateParser = new TemplateParser(
+      new ng.Parser(new ng.Lexer()),
+      new DomElementSchemaRegistry(),
+      _htmlParser);
+
+  return new TemplateCompiler(null /* RuntimeMetadataResolver */,
+      new TemplateNormalizer(_xhr, _urlResolver, _htmlParser),
+      templateParser,
+      new StyleCompiler(_xhr, _urlResolver),
+      new CommandCompiler(),
+      null);
+}
+
+class TransformerUrlResolver implements UrlResolver {
+  @override
+  String resolve(String baseUrl, String url) {
+    // No-op, XhrImpl performs the resolution
+    return url;
   }
 }

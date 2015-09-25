@@ -14,8 +14,16 @@ class XhrImpl implements XHR {
   XhrImpl(this._reader, this._entryPoint);
 
   Future<String> get(String url) async {
-    var assetId = uriToAssetId(_entryPoint, url, logger, null /* span */,
-        errorOnAbsolute: false);
+    AssetId assetId;
+    if (url.startsWith('package:')) {
+      var uri = Uri.parse(url);
+      var package = uri.pathSegments[0];
+      var path = 'lib/${uri.pathSegments.skip(1).join('/')}';
+      assetId = new AssetId(package, path);
+    } else {
+      assetId = uriToAssetId(_entryPoint, url, logger, null /* span */,
+          errorOnAbsolute: false);
+    }
     if (assetId == null) {
       logger.error(
           'Uri $url not supported from $_entryPoint, could not build AssetId');

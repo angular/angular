@@ -104,7 +104,7 @@ void _extractMetadata(NgDepsModel ngDeps, NgMeta ngMeta) {
   }
 }
 
-Function _returnNull() => null;
+_returnNull() => null;
 
 // TODO(kegluneq): This will be an optimization later on, for now
 bool _isDynamicLoadable(AnnotationModel componentMeta) => true;

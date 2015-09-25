@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:barback/barback.dart';
 import 'package:angular2/src/core/change_detection/change_detection.dart';
 import 'package:angular2/src/core/compiler/interfaces.dart' show LifecycleHooks;
+import 'package:angular2/src/core/dom/html_adapter.dart';
 import 'package:angular2/src/transform/directive_processor/rewriter.dart';
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
@@ -16,13 +17,13 @@ import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:code_transformers/messages/build_logger.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:guinness/guinness.dart';
-import 'package:path/path.dart' as path;
 import 'package:source_span/source_span.dart';
 import '../common/read_file.dart';
 
 var formatter = new DartFormatter();
 
 main() {
+  Html5LibDomAdapter.makeCurrent();
   allTests();
 }
 
@@ -175,6 +176,9 @@ void allTests() {
 
     it('should inline multiple `styleUrls` values expressed as absolute urls.',
         () async {
+      absoluteReader
+        ..addAsset(new AssetId('other_package', 'lib/template.html'), '')
+        ..addAsset(new AssetId('other_package', 'lib/template.css'), '');
       var model =
           await _testCreateModel('multiple_style_urls_files/hello.dart');
 
@@ -378,6 +382,11 @@ void allTests() {
   });
 
   describe('NgMeta', () {
+    var  fakeReader;
+    beforeEach(() {
+      fakeReader = new TestAssetReader();
+    });
+
     it('should find direcive aliases patterns.', () async {
       var ngMeta = new NgMeta.empty();
       await _testCreateModel('directive_aliases_files/hello.dart',
@@ -387,7 +396,98 @@ void allTests() {
       expect(ngMeta.aliases['alias1']).toContain('HelloCmp');
 
       expect(ngMeta.aliases).toContain('alias2');
-      expect(ngMeta.aliases['alias2'])..toContain('HelloCmp')..toContain('Foo');
+      expect(ngMeta.aliases['alias2'])
+        ..toContain('HelloCmp')..toContain('Foo');
+    });
+
+    it('should create type entries for Directives', () async {
+      fakeReader
+        ..addAsset(new AssetId('other_package', 'lib/template.html'), '')
+        ..addAsset(new AssetId('other_package', 'lib/template.css'), '');
+      var ngMeta = new NgMeta.empty();
+      await _testCreateModel('absolute_url_expression_files/hello.dart',
+          ngMeta: ngMeta, reader:  fakeReader);
+
+      expect(ngMeta.types.isNotEmpty).toBeTrue();
+      expect(ngMeta.types['HelloCmp']).toBeNotNull();
+      expect(ngMeta.types['HelloCmp'].selector).toEqual('hello-app');
+    });
+
+    it('should populate all provided values for Components & Directives', () async {
+      fakeReader
+        ..addAsset(
+            new AssetId('angular2',
+                'test/transform/directive_processor/unusual_component_files/template.html'),
+            '');
+      var ngMeta = new NgMeta.empty();
+      await _testCreateModel('unusual_component_files/hello.dart',
+          ngMeta: ngMeta, reader:  fakeReader);
+
+      expect(ngMeta.types.isNotEmpty).toBeTrue();
+
+      var component = ngMeta.types['UnusualComp'];
+      expect(component).toBeNotNull();
+      expect(component.selector).toEqual('unusual-comp');
+      expect(component.isComponent).toBeTrue();
+      expect(component.exportAs).toEqual('ComponentExportAsValue');
+      expect(component.changeDetection).toEqual(ChangeDetectionStrategy.CheckAlways);
+      expect(component.properties).toContain('aProperty');
+      expect(component.properties['aProperty']).toEqual('aProperty');
+      expect(component.events).toContain('anEvent');
+      expect(component.events['anEvent']).toEqual('anEvent');
+      expect(component.hostAttributes).toContain('hostKey');
+      expect(component.hostAttributes['hostKey']).toEqual('hostValue');
+
+      var directive = ngMeta.types['UnusualDirective'];
+      expect(directive).toBeNotNull();
+      expect(directive.selector).toEqual('unusual-directive');
+      expect(directive.isComponent).toBeFalse();
+      expect(directive.exportAs).toEqual('DirectiveExportAsValue');
+      expect(directive.properties).toContain('aDirectiveProperty');
+      expect(directive.properties['aDirectiveProperty']).toEqual('aDirectiveProperty');
+      expect(directive.events).toContain('aDirectiveEvent');
+      expect(directive.events['aDirectiveEvent']).toEqual('aDirectiveEvent');
+      expect(directive.hostAttributes).toContain('directiveHostKey');
+      expect(directive.hostAttributes['directiveHostKey']).toEqual('directiveHostValue');
+    });
+
+    it('should include hooks for implemented types (single)', () async {
+      var ngMeta = new NgMeta.empty();
+      await _testCreateModel('interfaces_files/soup.dart',
+          ngMeta: ngMeta);
+
+      expect(ngMeta.types.isNotEmpty).toBeTrue();
+      expect(ngMeta.types['ChangingSoupComponent']).toBeNotNull();
+      expect(ngMeta.types['ChangingSoupComponent'].selector).toEqual('[soup]');
+      expect(ngMeta.types['ChangingSoupComponent'].lifecycleHooks).toContain(LifecycleHooks.OnChanges);
+    });
+
+    it('should include hooks for implemented types (many)', () async {
+      var ngMeta = new NgMeta.empty();
+      await _testCreateModel('multiple_interface_lifecycle_files/soup.dart',
+          ngMeta: ngMeta);
+
+      expect(ngMeta.types.isNotEmpty).toBeTrue();
+      expect(ngMeta.types['MultiSoupComponent']).toBeNotNull();
+      expect(ngMeta.types['MultiSoupComponent'].selector).toEqual('[soup]');
+      expect(ngMeta.types['MultiSoupComponent'].lifecycleHooks)
+          ..toContain(LifecycleHooks.OnChanges)
+          ..toContain(LifecycleHooks.OnDestroy)
+          ..toContain(LifecycleHooks.OnInit);
+    });
+
+    it('should parse templates from View annotations', () async {
+      fakeReader
+        ..addAsset(new AssetId('other_package', 'lib/template.html'), '')
+        ..addAsset(new AssetId('other_package', 'lib/template.css'), '');
+      var ngMeta = new NgMeta.empty();
+      await _testCreateModel('absolute_url_expression_files/hello.dart',
+          ngMeta: ngMeta, reader: fakeReader);
+
+      expect(ngMeta.types.isNotEmpty).toBeTrue();
+      expect(ngMeta.types['HelloCmp']).toBeNotNull();
+      expect(ngMeta.types['HelloCmp'].template).toBeNotNull();
+      expect(ngMeta.types['HelloCmp'].template.templateUrl).toEqual('package:other_package/template.html');
     });
 
     it('should create type entries for Directives', () async {

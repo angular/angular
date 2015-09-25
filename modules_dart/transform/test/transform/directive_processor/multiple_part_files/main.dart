@@ -6,6 +6,7 @@ part 'part1.dart';
 part 'part2.dart';
 
 @Component(selector: '[main]')
+@View(template: '')
 class MainComponent {
   MainComponent();
 }
