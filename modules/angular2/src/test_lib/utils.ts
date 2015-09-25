@@ -119,7 +119,8 @@ export function stringifyElement(el): string {
     result += '>';
 
     // Children
-    var children = DOM.childNodes(DOM.templateAwareRoot(el));
+    var childrenRoot = DOM.templateAwareRoot(el);
+    var children = isPresent(childrenRoot) ? DOM.childNodes(childrenRoot) : [];
     for (let j = 0; j < children.length; j++) {
       result += stringifyElement(children[j]);
     }

@@ -50,6 +50,25 @@ export function main() {
 
     });
 
+    it('should be able to create text nodes and use them with the other APIs', () => {
+      var t = DOM.createTextNode('hello');
+      expect(DOM.isTextNode(t)).toBe(true);
+      var d = DOM.createElement('div');
+      DOM.appendChild(d, t);
+      expect(DOM.getInnerHTML(d)).toEqual('hello');
+    });
+
+    it('should set className via the class attribute', () => {
+      var d = DOM.createElement('div');
+      DOM.setAttribute(d, 'class', 'class1');
+      expect(d.className).toEqual('class1');
+    });
+
+    it('should allow to remove nodes without parents', () => {
+      var d = DOM.createElement('div');
+      expect(() => DOM.remove(d)).not.toThrow();
+    });
+
     if (DOM.supportsDOMEvents()) {
       describe('getBaseHref', () => {
         beforeEach(() => DOM.resetBaseElement());

@@ -276,7 +276,11 @@ export class Parse5DomAdapter extends DomAdapter {
   createElement(tagName): HTMLElement {
     return treeAdapter.createElement(tagName, 'http://www.w3.org/1999/xhtml', []);
   }
-  createTextNode(text: string): Text { throw _notImplemented('createTextNode'); }
+  createTextNode(text: string): Text {
+    var t = <any>this.createComment(text);
+    t.type = 'text';
+    return t;
+  }
   createScriptTag(attrName: string, attrValue: string): HTMLElement {
     return treeAdapter.createElement("script", 'http://www.w3.org/1999/xhtml',
                                      [{name: attrName, value: attrValue}]);
@@ -424,6 +428,9 @@ export class Parse5DomAdapter extends DomAdapter {
   setAttribute(element, attribute: string, value: string) {
     if (attribute) {
       element.attribs[attribute] = value;
+      if (attribute === 'class') {
+        element.className = value;
+      }
     }
   }
   removeAttribute(element, attribute: string) {

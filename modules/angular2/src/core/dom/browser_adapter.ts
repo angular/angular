@@ -158,7 +158,9 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   removeChild(el, node) { el.removeChild(node); }
   replaceChild(el: Node, newChild, oldChild) { el.replaceChild(newChild, oldChild); }
   remove(node): Node {
-    node.parentNode.removeChild(node);
+    if (node.parentNode) {
+      node.parentNode.removeChild(node);
+    }
     return node;
   }
   insertBefore(el, node) { el.parentNode.insertBefore(node, el); }
