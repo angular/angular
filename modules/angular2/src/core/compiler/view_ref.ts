@@ -17,9 +17,9 @@ export function internalProtoView(protoViewRef: ProtoViewRef): viewModule.AppPro
  * Represents a View containing a single Element that is the Host Element of a {@link Component}
  * instance.
  *
- * A Host View is created for every entry-point Component that was compiled on its own (as opposed
- * to as a part of another Component's Template) via {@link Compiler#compileInHost} or one of the
- * higher-level APIs: {@link AppViewManager#createRootHostView},
+ * A Host View is created for every dynamically created Component that was compiled on its own (as
+ * opposed to as a part of another Component's Template) via {@link Compiler#compileInHost} or one
+ * of the higher-level APIs: {@link AppViewManager#createRootHostView},
  * {@link AppViewManager#createHostViewInContainer}, {@link ViewContainerRef#createHostView}.
  */
 export interface HostViewRef {}
@@ -32,8 +32,8 @@ export interface HostViewRef {}
  * Elements which are created and destroyed together.
  *
  * Properties of elements in a View can change, but the structure (number and order) of elements in
- * a View cannot. Changing the structure of elements can only be done by inserting, moving or
- * removing nested Views via a View Container. Each View can contain many View Containers.
+ * a View cannot. Changing the structure of Elements can only be done by inserting, moving or
+ * removing nested Views via a {@link ViewContainer}. Each View can contain many View Containers.
  * <!-- /TODO -->
  *
  * ## Example
@@ -84,37 +84,39 @@ export class ViewRef implements HostViewRef {
   constructor(public _view: viewModule.AppView) {}
 
   /**
+   * @private
+   *
    * Return `RenderViewRef`
    */
   get render(): RenderViewRef { return this._view.render; }
 
   /**
+   * @private
+   *
    * Return `RenderFragmentRef`
    */
   get renderFragment(): RenderFragmentRef { return this._view.renderFragment; }
 
   /**
-   * Set local variable in a view.
-   *
-   * - `contextName` - Name of the local variable in a view.
-   * - `value` - Value for the local variable in a view.
+   * Sets `value` of local variable called `variableName` in this View.
    */
-  setLocal(contextName: string, value: any): void { this._view.setLocal(contextName, value); }
+  setLocal(variableName: string, value: any): void { this._view.setLocal(variableName, value); }
 }
 
 /**
  * Represents Angular's ProtoView.
  *
- * A ProtoView is a prototypical View that is the result of Template compilation and is used by
- * Angular to efficiently create an instance of a View based on the compiled Template.
+ * A ProtoView is a prototypical {@link ViewRef View} that is the result of Template compilation and
+ * is used by Angular to efficiently create an instance of this View based on the compiled Template.
  *
- * Most ProtoViews are created internally by Angular as a result of recursive Template compilation
- * that was started by a low-level {@link Compiler#compileInHost} API to compile a Component.
+ * Most ProtoViews are created and used internally by Angular and you don't need to know about them,
+ * except in advanced use-cases where you compile components yourself via the low-level
+ * {@link Compiler#compileInHost} API.
  *
  *
  * ## Example
  *
- * Given this template
+ * Given this template:
  *
  * ```
  * Count: {{items.length}}
@@ -123,9 +125,9 @@ export class ViewRef implements HostViewRef {
  * </ul>
  * ```
  *
- * The above example we have two {@link ProtoViewRef}s:
+ * Angular desugars and compiles the template into two ProtoViews:
  *
- * Outer {@link ProtoViewRef}:
+ * Outer ProtoView:
  * ```
  * Count: {{items.length}}
  * <ul>
@@ -133,12 +135,12 @@ export class ViewRef implements HostViewRef {
  * </ul>
  * ```
  *
- * Inner {@link ProtoViewRef}:
+ * Inner ProtoView:
  * ```
  *   <li>{{item}}</li>
  * ```
  *
- * Notice that the original template is broken down into two separate {@link ProtoViewRef}s.
+ * Notice that the original template is broken down into two separate ProtoViews.
  */
 export class ProtoViewRef {
   /**

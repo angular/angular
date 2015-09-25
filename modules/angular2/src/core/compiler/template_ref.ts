@@ -5,19 +5,28 @@ import * as viewModule from './view';
 /**
  * Represents an Embedded Template that can be used to instantiate Embedded Views.
  *
- * Use {@link ViewContainerRef#createEmbeddedView} method to instantiate an Embedded View based on
- * this Template and attach it to a View Container.
+ * You can access a TemplateRef, via a directive placed on a `<template>` element (or directive
+ * prefixed with `*`) and have the TemplateRef for this Embedded View injected into the constructor
+ * of the directive using the `TemplateRef` Token.
  *
- * <!-- TODO: how to get hold of it? -->
+ * To instantiate Embedded Views based on a Template, use
+ * {@link ViewContainerRef#createEmbeddedView}, which will create the View and attach it to the
+ * View Container.
  */
 export class TemplateRef {
 
   /**
-   * The location in the View where the Embedded View logically belong to.
+   * The location in the View where the Embedded View logically belongs to.
    *
-   * This `ElementRef` provides the data-binding and injection context for Embedded Views created
-   * from this `TemplateRef`.
+   * The data-binding and injection contexts of Embedded Views created from this `TemplateRef`
+   * inherit from the contexts of this location.
+   *
+   * Typically new Embedded Views are attached to the View Container of this location, but in
+   * advanced use-cases, the View can be attached to a different container while keeping the
+   * data-binding and injection context from the original location.
+   *
    */
+  // TODO(i): rename to anchor or location
   elementRef: ElementRef;
 
   /**
@@ -33,13 +42,15 @@ export class TemplateRef {
   }
 
   /**
-   * Reference to the ProtoView created by compiling the original Embedded Template, from which the
-   * Embedded View is instatiated.
+   * @private
+   *
+   * Reference to the ProtoView, created by compiling the an Embedded Template, using which Embedded
+   * Views can be instantiated.
    */
   get protoViewRef(): ProtoViewRef { return this._getProtoView().ref; }
 
   /**
-   * Returns true if the Template declares a Local Variable with the given name.
+   * Allows you to check if this Embedded Template defines Local Variable with name matching `name`.
    */
   hasLocal(name: string): boolean { return this._getProtoView().variableBindings.has(name); }
 }

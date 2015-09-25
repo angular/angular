@@ -33,7 +33,7 @@ export class AppViewManager {
               private _utils: AppViewManagerUtils, private _renderer: Renderer) {}
 
   /**
-   * Returns a {@link ViewContainerRef} at the {@link ElementRef} location.
+   * Returns a {@link ViewContainerRef} of the View Container at the specified location.
    */
   getViewContainer(location: ElementRef): ViewContainerRef {
     var hostView = internalView(location.parentView);
@@ -41,7 +41,7 @@ export class AppViewManager {
   }
 
   /**
-   * Return the first child element of the host element view.
+   * Returns the {@link ElementRef} that makes up the specified Host View.
    */
   getHostElement(hostViewRef: HostViewRef): ElementRef {
     var hostView = internalView(<ViewRef>hostViewRef);
@@ -52,13 +52,11 @@ export class AppViewManager {
   }
 
   /**
-   * Returns an ElementRef for the element with the given variable name
-   * in the current view.
+   * Searches the Component View of the Component specified via `hostLocation` and returns the
+   * {@link ElementRef} for the Element identified via a Variable Name `variableName`.
    *
-   * - `hostLocation`: {@link ElementRef} of any element in the View which defines the scope of
-   *   search.
-   * - `variableName`: Name of the variable to locate.
-   * - Returns {@link ElementRef} of the found element or null. (Throws if not found.)
+   * Throws an exception if the specified `hostLocation` is not a Host Element of a Component, or if
+   * variable `variableName` couldn't be found in the Component View of this Component.
    */
   getNamedElementInComponentView(hostLocation: ElementRef, variableName: string): ElementRef {
     var hostView = internalView(hostLocation.parentView);
@@ -75,10 +73,7 @@ export class AppViewManager {
   }
 
   /**
-   * Returns the component instance for a given element.
-   *
-   * The component is the execution context as seen by an expression at that {@link ElementRef}
-   * location.
+   * Returns the component instance for the provided Host Element.
    */
   getComponent(hostLocation: ElementRef): any {
     var hostView = internalView(hostLocation.parentView);
@@ -88,19 +83,17 @@ export class AppViewManager {
 
   _createRootHostViewScope: WtfScopeFn = wtfCreateScope('AppViewManager#createRootHostView()');
   /**
-   * Load component view into existing element.
+   * Creates an instance of a Component and attaches it to the first element in the global View
+   * (usually DOM Document) that matches the component's selector or `overrideSelector`.
    *
-   * Use this if a host element is already in the DOM and it is necessary to upgrade
-   * the element into Angular component by attaching a view but reusing the existing element.
+   * This as a low-level way to bootstrap an application and upgrade an existing Element to a
+   * Host Element. Most applications should use {@link DynamicComponentLoader#loadAsRoot} instead.
    *
-   * - `hostProtoViewRef`: {@link ProtoViewRef} Proto view to use in creating a view for this
-   *   component.
-   * - `overrideSelector`: (optional) selector to use in locating the existing element to load
-   *   the view into. If not specified use the selector in the component definition of the
-   *   `hostProtoView`.
-   * - injector: {@link Injector} to use as parent injector for the view.
+   * The Component and its View are created based on the `hostProtoView` which can be obtained
+   * by compiling the component with {@link Compiler#compileInHost}.
    *
-   * See {@link AppViewManager#destroyRootHostView}.
+   * Use {@link AppViewManager#destroyRootHostView} to destroy the created Component and it's Host
+   * View.
    *
    * ## Example
    *
@@ -141,10 +134,10 @@ export class AppViewManager {
    * ng.bootstrap(MyApp);
    * ```
    */
-  createRootHostView(hostProtoViewRef: ProtoViewRef, overrideSelector: string,
+  createRootHostView(hostProtoView: ProtoViewRef, overrideSelector: string,
                      injector: Injector): HostViewRef {
     var s = this._createRootHostViewScope();
-    var hostProtoView: viewModule.AppProtoView = internalProtoView(hostProtoViewRef);
+    var hostProtoView: viewModule.AppProtoView = internalProtoView(hostProtoView);
     var hostElementSelector = overrideSelector;
     if (isBlank(hostElementSelector)) {
       hostElementSelector = hostProtoView.elementBinders[0].componentDirective.metadata.selector;
@@ -160,8 +153,12 @@ export class AppViewManager {
   }
 
   _destroyRootHostViewScope: WtfScopeFn = wtfCreateScope('AppViewManager#destroyRootHostView()');
+
   /**
-   * Remove the View created with {@link AppViewManager#createRootHostView}.
+   * Destroys the Host View created via {@link AppViewManager#createRootHostView}.
+   *
+   * Along with the Host View, the Component Instance as well as all nested View and Components are
+   * destroyed as well.
    */
   destroyRootHostView(hostViewRef: HostViewRef) {
     // Note: Don't put the hostView into the view pool
@@ -178,11 +175,20 @@ export class AppViewManager {
 
   _createEmbeddedViewInContainerScope: WtfScopeFn =
       wtfCreateScope('AppViewManager#createEmbeddedViewInContainer()');
+
   /**
-   * <!-- TODO: why "InContainer"? createRootHostView doesn't use this suffix. seems redundant -->
+   * Instantiates an Embedded View based on the {@link TemplateRef `templateRef`} and inserts it
+   * into the View Container specified via `viewContainerLocation` at the specified `index`.
    *
-   * See {@link AppViewManager#destroyViewInContainer}.
+   * Returns the {@link ViewRef} for the newly created View.
+   *
+   * This as a low-level way to create and attach an Embedded via to a View Container. Most
+   * applications should used {@link ViewContainerRef#createEmbeddedView} instead.
+   *
+   * Use {@link AppViewManager#destroyViewInContainer} to destroy the created Embedded View.
    */
+  // TODO(i): this low-level version of ViewContainerRef#createEmbeddedView doesn't add anything new
+  //    we should make it private, otherwise we have two apis to do the same thing.
   createEmbeddedViewInContainer(viewContainerLocation: ElementRef, index: number,
                                 templateRef: TemplateRef): ViewRef {
     var s = this._createEmbeddedViewInContainerScope();
@@ -196,10 +202,21 @@ export class AppViewManager {
 
   _createHostViewInContainerScope: WtfScopeFn =
       wtfCreateScope('AppViewManager#createHostViewInContainer()');
+
   /**
-   * <!-- TODO: why "InContainer"? createRootHostView doesn't use this suffix. seems redundant -->
+   * Instantiates a single {@link Component} and inserts its Host View into the View Container
+   * found at `viewContainerLocation`. Within the container, the view will be inserted at position
+   * specified via `index`.
    *
-   * See {@link AppViewManager#destroyViewInContainer}.
+   * The component is instantiated using its {@link ProtoViewRef `protoViewRef`} which can be
+   * obtained via {@link Compiler#compileInHost}.
+   *
+   * You can optionally specify `imperativelyCreatedInjector`, which configure the {@link Injector}
+   * that will be created for the Host View.
+   *
+   * Returns the {@link HostViewRef} of the Host View created for the newly instantiated Component.
+   *
+   * Use {@link AppViewManager#destroyViewInContainer} to destroy the created Host View.
    */
   createHostViewInContainer(viewContainerLocation: ElementRef, index: number,
                             protoViewRef: ProtoViewRef,
@@ -260,10 +277,11 @@ export class AppViewManager {
   }
 
   _destroyViewInContainerScope = wtfCreateScope('AppViewMananger#destroyViewInContainer()');
+
   /**
-   * <!-- TODO: why "InContainer"? createRootHostView doesn't use this suffix. seems redundant -->
+   * Destroys an Embedded or Host View attached to a View Container at the specified `index`.
    *
-   * See {@link AppViewManager#createViewInContainer}.
+   * The View Container is located via `viewContainerLocation`.
    */
   destroyViewInContainer(viewContainerLocation: ElementRef, index: number) {
     var s = this._destroyViewInContainerScope();
@@ -274,11 +292,12 @@ export class AppViewManager {
   }
 
   _attachViewInContainerScope = wtfCreateScope('AppViewMananger#attachViewInContainer()');
+
   /**
-   * <!-- TODO: why "InContainer"? createRootHostView doesn't use this suffix. seems redundant -->
    *
    * See {@link AppViewManager#detachViewInContainer}.
    */
+  // TODO(i): refactor detachViewInContainer+attachViewInContainer to moveViewInContainer
   attachViewInContainer(viewContainerLocation: ElementRef, index: number,
                         viewRef: ViewRef): ViewRef {
     var s = this._attachViewInContainerScope();
@@ -297,11 +316,11 @@ export class AppViewManager {
   }
 
   _detachViewInContainerScope = wtfCreateScope('AppViewMananger#detachViewInContainer()');
+
   /**
-   * <!-- TODO: why "InContainer"? createRootHostView doesn't use this suffix. seems redundant -->
-   *
    * See {@link AppViewManager#attachViewInContainer}.
    */
+  // TODO(i): refactor detachViewInContainer+attachViewInContainer to moveViewInContainer
   detachViewInContainer(viewContainerLocation: ElementRef, index: number): ViewRef {
     var s = this._detachViewInContainerScope();
     var parentView = internalView(viewContainerLocation.parentView);
