@@ -22,13 +22,16 @@ import 'package:code_transformers/assets.dart';
 /// [NgMeta] if there are no `Directive`-annotated classes in `entryPoint`.
 Future<NgMeta> extractDirectiveMetadata(
     AssetReader reader, AssetId entryPoint) {
-  return _extractDirectiveMetadataRecursive(reader, entryPoint);
+  return _extractDirectiveMetadataRecursive(
+      reader, entryPoint, new Set<AssetId>());
 }
 
-var _nullFuture = new Future.value(null);
+final _nullFuture = new Future.value(null);
 
 Future<NgMeta> _extractDirectiveMetadataRecursive(
-    AssetReader reader, AssetId entryPoint) async {
+    AssetReader reader, AssetId entryPoint, Set<AssetId> seen) async {
+  if (seen.contains(entryPoint)) return _nullFuture;
+  seen.add(entryPoint);
   var ngMeta = new NgMeta.empty();
   if (!(await reader.hasInput(entryPoint))) return ngMeta;
 
@@ -51,8 +54,12 @@ Future<NgMeta> _extractDirectiveMetadataRecursive(
     var assetId = uriToAssetId(entryPoint, uri, logger, null /* span */,
         errorOnAbsolute: false);
     if (assetId == entryPoint) return _nullFuture;
-    return _extractDirectiveMetadataRecursive(reader, assetId)
-        .then(ngMeta.addAll);
+    return _extractDirectiveMetadataRecursive(reader, assetId, seen)
+        .then((exportedNgMeta) {
+      if (exportedNgMeta != null) {
+        ngMeta.addAll(exportedNgMeta);
+      }
+    });
   }));
   return ngMeta;
 }
