@@ -1,7 +1,7 @@
 language: node_js
 sudo: false
 node_js:
-- '0.12'
+- '4.1.1'
 
 branches:
   except:
@@ -58,7 +58,7 @@ before_install:
 
 install:
   # Update npm
-  - npm install -g npm@2.9.1
+  - npm install -g npm@2.14.4
   - npm --version
   # Check the size of caches
   - du -sh ./node_modules || true
