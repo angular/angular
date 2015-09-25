@@ -162,7 +162,7 @@ export class TemplateCompiler {
     });
     ListWrapper.forEachWithIndex(componentMetas, (compMeta: CompileDirectiveMetadata,
                                                   index: number) => {
-      var templateDataFn = codeGenValueFn([], `[${templateArguments[index].join(',')}]`);
+      var templateDataFn = codeGenValueFn([], `[${(<any[]>templateArguments[index]).join(',')}]`);
       declarations.push(
           `${codeGenExportVariable(templateVariableName(compMeta.type))}new ${TEMPLATE_COMMANDS_MODULE_REF}CompiledTemplate(${compMeta.type.id},${templateDataFn});`);
     });

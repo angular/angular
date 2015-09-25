@@ -11,8 +11,8 @@ declare module "ts2dart" {
   }
 
   export class Transpiler {
-    constructor(options:TranspilerOptions);
+    constructor(options: TranspilerOptions);
 
-    transpile(fileNames:string[], outdir?:string);
+    transpile(fileNames: string[], outdir?: string);
   }
 }

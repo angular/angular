@@ -91,7 +91,7 @@ export class StyleInliner {
     }
 
     return PromiseWrapper.all(promises).then(function(cssParts) {
-      var cssText = cssParts.join('');
+      var cssText = (<any[]>cssParts).join('');
       if (partIndex < parts.length) {
         // append then content located after the last @import rule
         cssText += parts[partIndex];

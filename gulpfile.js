@@ -298,7 +298,11 @@ gulp.task('lint', ['build.tools'], function() {
     }
   };
   return gulp.src(['modules/angular2/src/**/*.ts', '!modules/angular2/src/test_lib/**'])
-      .pipe(tslint({configuration: tslintConfig, rulesDirectory: 'dist/tools/tslint'}))
+      .pipe(tslint({
+        tslint: require('tslint'),
+        configuration: tslintConfig,
+        rulesDirectory: 'dist/tools/tslint'
+      }))
       .pipe(tslint.report('prose', {emitError: true}));
 });
 

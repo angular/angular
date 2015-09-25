@@ -15,7 +15,7 @@ export class ServiceMessageBrokerFactory {
   /**
    * @private
    */
-  constructor(private _messageBus: MessageBus, protected _serializer: Serializer) {}
+  constructor(private _messageBus: MessageBus, public _serializer: Serializer) {}
 
   /**
    * Initializes the given channel and attaches a new {@link ServiceMessageBroker} to it.

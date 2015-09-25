@@ -19,7 +19,7 @@ export class ClientMessageBrokerFactory {
   /**
    * @private
    */
-  constructor(private _messageBus: MessageBus, protected _serializer: Serializer) {}
+  constructor(private _messageBus: MessageBus, public _serializer: Serializer) {}
 
   /**
    * Initializes the given channel and attaches a new {@link ClientMessageBroker} to it.
@@ -37,7 +37,7 @@ export class ClientMessageBroker {
   /**
    * @private
    */
-  constructor(messageBus: MessageBus, protected _serializer: Serializer, public channel) {
+  constructor(messageBus: MessageBus, public _serializer: Serializer, public channel) {
     this._sink = messageBus.to(channel);
     var source = messageBus.from(channel);
     ObservableWrapper.subscribe(source,

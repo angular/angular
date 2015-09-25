@@ -83,7 +83,7 @@ export class ExceptionHandler {
   }
 
   _longStackTrace(stackTrace: any): any {
-    return isListLikeIterable(stackTrace) ? (<any>stackTrace).join("\n\n-----async gap-----\n") :
+    return isListLikeIterable(stackTrace) ? (<any[]>stackTrace).join("\n\n-----async gap-----\n") :
                                             stackTrace.toString();
   }
 

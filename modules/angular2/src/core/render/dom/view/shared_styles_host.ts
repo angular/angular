@@ -5,8 +5,8 @@ import {DOCUMENT} from '../dom_tokens';
 
 @Injectable()
 export class SharedStylesHost {
-  protected _styles: string[] = [];
-  protected _stylesSet: Set<string> = new Set();
+  _styles: string[] = [];
+  _stylesSet: Set<string> = new Set();
 
   constructor() {}
 
@@ -22,7 +22,7 @@ export class SharedStylesHost {
     this.onStylesAdded(additions);
   }
 
-  protected onStylesAdded(additions: string[]) {}
+  onStylesAdded(additions: string[]) {}
 
   getAllStyles(): string[] { return this._styles; }
 }

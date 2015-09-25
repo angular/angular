@@ -59,10 +59,7 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
           if (anyMatches(ignoreExportsMatching, exportSymbol.name)) return;
 
           // If the symbol is an Alias then for most things we want the original resolved symbol
-          var resolvedExport = exportSymbol;
-          if (exportSymbol.resolvedSymbol && exportSymbol.resolvedSymbol.name !== "unknown") {
-            resolvedExport = exportSymbol.resolvedSymbol;
-          }
+          var resolvedExport = exportSymbol.resolvedSymbol || exportSymbol;
           var exportDoc = createExportDoc(exportSymbol.name, resolvedExport, moduleDoc, basePath, parseInfo.typeChecker);
           log.debug('>>>> EXPORT: ' + exportDoc.name + ' (' + exportDoc.docType + ') from ' + moduleDoc.id);
 
@@ -285,11 +282,7 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
 
 
   function getDecorators(symbol) {
-    var declaration = symbol.valueDeclaration;
-    if (!declaration) {
-      console.log("missing declaration for symbol", declaration);
-      return [];
-    }
+    var declaration = symbol.valueDeclaration || symbol.declarations[0];
     var sourceFile = ts.getSourceFileOfNode(declaration);
 
     var decorators = declaration.decorators && declaration.decorators.map(function(decorator) {

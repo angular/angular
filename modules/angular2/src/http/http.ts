@@ -20,10 +20,7 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
       url: providedOpts.url,
       search: providedOpts.search,
       headers: providedOpts.headers,
-      body: providedOpts.body,
-      mode: providedOpts.mode,
-      credentials: providedOpts.credentials,
-      cache: providedOpts.cache
+      body: providedOpts.body
     }));
   }
   if (isPresent(method)) {
