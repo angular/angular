@@ -22,7 +22,8 @@ class DirectiveMetadataReader {
   /// Accepts an [AnnotationMatcher] which tests that an [Annotation]
   /// is a [Directive], [Component], or [View].
   factory DirectiveMetadataReader(
-      AnnotationMatcher annotationMatcher, InterfaceMatcher interfaceMatcher) {
+      AnnotationMatcher annotationMatcher, InterfaceMatcher interfaceMatcher,
+      TemplateCompiler templateCompiler) {
     var lifecycleVisitor = new _LifecycleHookVisitor(interfaceMatcher);
     var visitor =
         new _DirectiveMetadataVisitor(annotationMatcher, lifecycleVisitor);
@@ -40,7 +41,7 @@ class DirectiveMetadataReader {
   /// `assetId` is the [AssetId] from which `node` was read, unless `node` was
   /// read from a part file, in which case `assetId` should be the [AssetId] of
   /// the parent file.
-  CompileDirectiveMetadata readDirectiveMetadata(
+  Future<CompileDirectiveMetadata> readDirectiveMetadata(
       ClassDeclaration node, AssetId assetId) {
     _visitor.reset(assetId);
     node.accept(_visitor);
