@@ -16,7 +16,7 @@ import {getSymbolIterator} from 'angular2/src/core/facade/lang';
  *
  * NOTE: In the future this class will implement an `Observable` interface.
  *
- * ### Example ([live demo](http://plnkr.co/edit/RX8sJnQYl9FWuSCWme5z?p=preview))
+ * ### Example ([live demo](http://plnkr.co/edit/FWIW4g34jk19oLH7IT7a?p=preview))
  * ```javascript
  * @Component({...})
  * class Container {
