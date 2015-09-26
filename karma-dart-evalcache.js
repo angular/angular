@@ -19,7 +19,7 @@ function createFactory(proxyPaths) {
   function dartEvalCacheFactory(emitter, logger, customFileHandlers) {
     var filesPromise = new common.PromiseContainer();
     emitter.on('file_list_modified', function(files) {
-      filesPromise.set(files);
+      filesPromise.set(Promise.resolve(files));
     });
 
     var serveFile = common.createServeFile(fs);
