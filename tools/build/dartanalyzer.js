@@ -4,12 +4,15 @@ var spawn = require('child_process').spawn;
 var path = require('path');
 var glob = require('glob');
 var fs = require('fs');
+var travisFoldStart = require('../travis/travis-fold');
 var util = require('./util');
 var yaml = require('js-yaml');
 
 module.exports = function(gulp, plugins, config) {
   return function() {
+    var travisFoldEnd = travisFoldStart(`dartanalyzer-${config.use_ddc ? 'ddc' : ''}-${config.dest}`);
     var tempFile = '_analyzer.dart';
+
     return util.forEachSubDirSequential(config.dest, function(dir) {
       var pubspecContents = fs.readFileSync(path.join(dir, 'pubspec.yaml'));
       var pubspec = yaml.safeLoad(pubspecContents);
@@ -36,7 +39,7 @@ module.exports = function(gulp, plugins, config) {
         analyze(dir, defer.makeNodeResolver());
       }
       return defer.promise;
-    });
+    }).then(travisFoldEnd);
 
     function analyze(dirName, done, useDdc) {
       // TODO remove --package-warnings once dartanalyzer handles transitive libraries
