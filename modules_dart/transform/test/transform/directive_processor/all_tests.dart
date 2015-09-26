@@ -400,19 +400,6 @@ void allTests() {
         ..toContain('HelloCmp')..toContain('Foo');
     });
 
-    it('should create type entries for Directives', () async {
-      fakeReader
-        ..addAsset(new AssetId('other_package', 'lib/template.html'), '')
-        ..addAsset(new AssetId('other_package', 'lib/template.css'), '');
-      var ngMeta = new NgMeta.empty();
-      await _testCreateModel('absolute_url_expression_files/hello.dart',
-          ngMeta: ngMeta, reader:  fakeReader);
-
-      expect(ngMeta.types.isNotEmpty).toBeTrue();
-      expect(ngMeta.types['HelloCmp']).toBeNotNull();
-      expect(ngMeta.types['HelloCmp'].selector).toEqual('hello-app');
-    });
-
     it('should populate all provided values for Components & Directives', () async {
       fakeReader
         ..addAsset(
@@ -476,24 +463,13 @@ void allTests() {
           ..toContain(LifecycleHooks.OnInit);
     });
 
-    it('should parse templates from View annotations', () async {
+    it('should create type entries for Directives', () async {
       fakeReader
         ..addAsset(new AssetId('other_package', 'lib/template.html'), '')
         ..addAsset(new AssetId('other_package', 'lib/template.css'), '');
       var ngMeta = new NgMeta.empty();
       await _testCreateModel('absolute_url_expression_files/hello.dart',
           ngMeta: ngMeta, reader: fakeReader);
-
-      expect(ngMeta.types.isNotEmpty).toBeTrue();
-      expect(ngMeta.types['HelloCmp']).toBeNotNull();
-      expect(ngMeta.types['HelloCmp'].template).toBeNotNull();
-      expect(ngMeta.types['HelloCmp'].template.templateUrl).toEqual('package:other_package/template.html');
-    });
-
-    it('should create type entries for Directives', () async {
-      var ngMeta = new NgMeta.empty();
-      await _testCreateModel('absolute_url_expression_files/hello.dart',
-          ngMeta: ngMeta);
 
       expect(ngMeta.types.isNotEmpty).toBeTrue();
       expect(ngMeta.types['HelloCmp']).toBeNotNull();
@@ -563,9 +539,12 @@ void allTests() {
     });
 
     it('should parse templates from View annotations', () async {
+      fakeReader
+        ..addAsset(new AssetId('other_package', 'lib/template.html'), '')
+        ..addAsset(new AssetId('other_package', 'lib/template.css'), '');
       var ngMeta = new NgMeta.empty();
       await _testCreateModel('absolute_url_expression_files/hello.dart',
-          ngMeta: ngMeta);
+          ngMeta: ngMeta, reader: fakeReader);
 
       expect(ngMeta.types.isNotEmpty).toBeTrue();
       expect(ngMeta.types['HelloCmp']).toBeNotNull();
