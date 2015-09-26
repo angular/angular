@@ -567,7 +567,7 @@ gulp.task('test.all.dart', shell.task(['./scripts/ci/test_dart.sh']));
 function getBrowsersFromCLI() {
   var isSauce = false;
   var args = minimist(process.argv.slice(2));
-  var rawInput = args.browsers?args.browsers:'DartiumWithWebPlatform';
+  var rawInput = args.browsers ? args.browsers : 'DartiumWithWebPlatform';
   var inputList = rawInput.replace(' ', '').split(',');
   var outputList = [];
   for (var i = 0; i < inputList.length; i++) {
