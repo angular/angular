@@ -9653,7 +9653,7 @@
       }
     },
     "karma-dart": {
-      "version": "0.2.8",
+      "version": "0.3.0",
       "dependencies": {
         "dart2jsaas": {
           "version": "0.0.16",
