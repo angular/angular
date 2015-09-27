@@ -6,7 +6,8 @@ import {
   xit,
   expect,
   beforeEach,
-  afterEach
+  afterEach,
+  browserDetection
 } from 'angular2/testing_internal';
 
 import {SlicePipe} from 'angular2/src/core/pipes';
@@ -68,15 +69,19 @@ export function main() {
         expect(pipe.transform(str, [99])).toEqual('');
       });
 
-      it('should return entire input if START is negative and greater than input length', () => {
-        expect(pipe.transform(list, [-99])).toEqual([1, 2, 3, 4, 5]);
-        expect(pipe.transform(str, [-99])).toEqual('tuvwxyz');
-      });
+      // Makes Edge to disconnect when running the full unit test campaign
+      // TODO: remove when issue is solved: https://github.com/angular/angular/issues/4756
+      if (!browserDetection.isEdge) {
+        it('should return entire input if START is negative and greater than input length', () => {
+          expect(pipe.transform(list, [-99])).toEqual([1, 2, 3, 4, 5]);
+          expect(pipe.transform(str, [-99])).toEqual('tuvwxyz');
+        });
 
-      it('should not modify the input list', () => {
-        expect(pipe.transform(list, [2])).toEqual([3, 4, 5]);
-        expect(list).toEqual([1, 2, 3, 4, 5]);
-      });
+        it('should not modify the input list', () => {
+          expect(pipe.transform(list, [2])).toEqual([3, 4, 5]);
+          expect(list).toEqual([1, 2, 3, 4, 5]);
+        });
+      }
 
     });
 
