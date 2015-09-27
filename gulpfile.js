@@ -723,7 +723,8 @@ gulp.task('test.unit.js/ci', function (done) {
         configFile: __dirname + '/karma-js.conf.js',
         singleRun: true,
         reporters: ['dots'],
-        browsers: browserConf.browsersToRun
+        browsers: browserConf.browsersToRun,
+        logLevel: 'DEBUG'
       },
       done
   ).start();
