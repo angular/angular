@@ -866,14 +866,15 @@ gulp.task('build/pure-packages.dart', function() {
       'modules_dart/transform/**/*',
       '!modules_dart/transform/**/*.proto',
       '!modules_dart/transform/pubspec.yaml',
-      '!modules_dart/transform/**/packages'
+      '!modules_dart/transform/**/packages{,/**}',
     ])
     .pipe(gulp.dest(path.join(CONFIG.dest.dart, 'angular2')));
 
   var moveStream = gulp.src([
                          'modules_dart/**/*.dart',
                          'modules_dart/**/pubspec.yaml',
-                         '!modules_dart/transform/**'
+                         '!modules_dart/transform/**',
+                         '!modules_dart/**/packages{,/**}'
                        ])
                        .pipe(through2.obj(function(file, enc, done) {
                          if (/pubspec.yaml$/.test(file.path)) {

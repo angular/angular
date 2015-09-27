@@ -8,65 +8,98 @@ import 'package:analyzer/src/generated/error.dart';
 import 'package:analyzer/src/generated/parser.dart';
 import 'package:analyzer/src/generated/scanner.dart';
 import 'package:analyzer/src/string_source.dart';
-import 'package:angular2/src/core/render/xhr.dart' show XHR;
 import 'package:angular2/src/transform/common/async_string_writer.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/model/annotation_model.pb.dart';
 import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
+import 'package:code_transformers/assets.dart';
+import 'package:angular2/src/transform/common/asset_reader.dart';
+import 'package:barback/barback.dart' show AssetId;
 
-Future inlineViewProps(XHR xhr, NgDepsModel model) {
-  var toWait = <Future>[];
-  for (var reflectable in model.reflectables) {
-    for (var annotation in reflectable.annotations) {
-      if (annotation.isView) {
-        var rawTemplateUrl = _getTemplateUrlValue(annotation);
-        if (rawTemplateUrl != null) {
-          if (_hasTemplateValue(annotation)) {
-            logger.warning('Both template url and template are specified. '
-                'Ignoring `templateUrl` value.');
-          } else {
-            var url = _dumbEval(rawTemplateUrl);
-            if (url is String) {
-              toWait.add(_readOrEmptyString(xhr, url).then((templateText) {
-                _setTemplateValue(annotation, "r'''$templateText'''");
-              }));
+Future inlineViewProps(AssetReader reader, AssetId assetId, NgDepsModel model) {
+  return new _ViewPropInliner(reader, assetId, model).inlineViewProps();
+}
+
+class _ViewPropInliner {
+  final AssetReader _reader;
+  final AssetId _rootAssetId;
+  final NgDepsModel _model;
+
+  _ViewPropInliner(this._reader, this._rootAssetId, this._model);
+
+  Future inlineViewProps() {
+    var toWait = <Future>[];
+    for (var reflectable in _model.reflectables) {
+      for (var annotation in reflectable.annotations) {
+        if (annotation.isView) {
+          var rawTemplateUrl = _getTemplateUrlValue(annotation);
+          if (rawTemplateUrl != null) {
+            if (_hasTemplateValue(annotation)) {
+              logger.warning('Both template url and template are specified. '
+                  'Ignoring `templateUrl` value.');
             } else {
-              logger.warning('template url is not a String ($rawTemplateUrl)');
+              var url = _dumbEval(rawTemplateUrl);
+              if (url is String) {
+                toWait.add(_readOrEmptyString(url).then((templateText) {
+                  _setTemplateValue(annotation, "r'''$templateText'''");
+                }));
+              } else {
+                logger.warning('template url is not a String ($rawTemplateUrl)');
+              }
             }
           }
-        }
-        var rawStyleUrls = _getStyleUrlsValue(annotation);
-        if (rawStyleUrls != null) {
-          if (_hasStylesValue(annotation)) {
-            logger.warning('Both styleUrls and styles are specified. '
-                'Ignoring `styleUrls` value.');
-          } else {
-            var urls = _dumbEval(rawStyleUrls);
-            if (urls is List) {
-              var writer = new AsyncStringWriter();
-              for (var url in urls) {
-                if (url is String) {
-                  writer.print("r'''");
-                  writer.asyncPrint(_readOrEmptyString(xhr, url));
-                  writer.print("''', ");
-                } else {
-                  logger.warning('style url is not a String (${url})');
-                }
-              }
-              toWait.add(writer.asyncToString().then((styleUrlText) {
-                _setStylesValue(annotation, 'const [$styleUrlText]');
-                _removeStyleUrlsValue(annotation);
-              }));
+          var rawStyleUrls = _getStyleUrlsValue(annotation);
+          if (rawStyleUrls != null) {
+            if (_hasStylesValue(annotation)) {
+              logger.warning('Both styleUrls and styles are specified. '
+                  'Ignoring `styleUrls` value.');
             } else {
-              logger.warning(
-                  'styleUrls is not a List of strings ($rawStyleUrls)');
+              var urls = _dumbEval(rawStyleUrls);
+              if (urls is List) {
+                var writer = new AsyncStringWriter();
+                for (var url in urls) {
+                  if (url is String) {
+                    writer.print("r'''");
+                    writer.asyncPrint(_readOrEmptyString(url));
+                    writer.print("''', ");
+                  } else {
+                    logger.warning('style url is not a String (${url})');
+                  }
+                }
+                toWait.add(writer.asyncToString().then((styleUrlText) {
+                  _setStylesValue(annotation, 'const [$styleUrlText]');
+                  _removeStyleUrlsValue(annotation);
+                }));
+              } else {
+                logger.warning(
+                    'styleUrls is not a List of strings ($rawStyleUrls)');
+              }
             }
           }
         }
       }
     }
+    return Future.wait(toWait);
   }
-  return Future.wait(toWait);
+
+  /// Attempts to read the content from [url]. If [url] is relative, uses
+  /// [_rootAssetId] as resolution base.
+  Future<String> _readOrEmptyString(String url) async {
+    final assetId = uriToAssetId(_rootAssetId, url, logger, null /* span */,
+        errorOnAbsolute: false);
+
+    if (assetId == null) {
+      logger.error('$_rootAssetId: URI $url not supported');
+      return '';
+    }
+
+    var assetExists = await _reader.hasInput(assetId);
+    if (!assetExists) {
+      logger.error('$_rootAssetId: could not read $url');
+      return null;
+    }
+    return _reader.readAsString(assetId);
+  }
 }
 
 String _getNamedArgValue(AnnotationModel model, String argName) {
@@ -112,16 +145,6 @@ void _removeStyleUrlsValue(AnnotationModel model) =>
     _removeNamedArg(model, 'styleUrls');
 
 final _constantEvaluator = new ConstantEvaluator();
-
-/// Attempts to read the content from {@link url}, if it returns null then
-/// just return the empty string.
-Future<String> _readOrEmptyString(XHR xhr, String url) async {
-  var content = await xhr.get(url);
-  if (content == null) {
-    content = '';
-  }
-  return content;
-}
 
 dynamic _dumbEval(String code) {
   var source = new StringSource(code, code);

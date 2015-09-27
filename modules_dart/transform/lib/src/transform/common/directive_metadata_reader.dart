@@ -212,7 +212,8 @@ class _DirectiveMetadataVisitor extends Object
       _type = new CompileTypeMetadata(
           // TODO: this is not a reliable ID. We need a better option.
           id: node.toSource().hashCode,
-          moduleId: path.withoutExtension(_assetId.path),
+          moduleId:
+            '${_assetId.package}/${path.withoutExtension(_assetId.path)}',
           name: node.name.toString(),
           runtime: null // Intentionally `null`, cannot be provided here.
           );

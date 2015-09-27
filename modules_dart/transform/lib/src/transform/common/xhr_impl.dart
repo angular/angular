@@ -5,33 +5,17 @@ import 'package:angular2/src/core/render/xhr.dart' show XHR;
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:barback/barback.dart';
-import 'package:code_transformers/assets.dart';
 
 class XhrImpl implements XHR {
   final AssetReader _reader;
-  final AssetId _entryPoint;
 
-  XhrImpl(this._reader, this._entryPoint);
+  XhrImpl(this._reader);
 
   Future<String> get(String url) async {
-    AssetId assetId;
-    if (url.startsWith('package:')) {
-      var uri = Uri.parse(url);
-      var package = uri.pathSegments[0];
-      var path = 'lib/${uri.pathSegments.skip(1).join('/')}';
-      assetId = new AssetId(package, path);
-    } else {
-      assetId = uriToAssetId(_entryPoint, url, logger, null /* span */,
-          errorOnAbsolute: false);
-    }
-    if (assetId == null) {
-      logger.error(
-          'Uri $url not supported from $_entryPoint, could not build AssetId');
-      return null;
-    }
+    final assetId = new AssetId.parse(url);
     var templateExists = await _reader.hasInput(assetId);
     if (!templateExists) {
-      logger.error('Could not read asset at uri $url from $_entryPoint');
+      logger.error('Could not read asset at uri $url');
       return null;
     }
     return await _reader.readAsString(assetId);
