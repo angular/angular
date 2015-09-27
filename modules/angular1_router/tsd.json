@@ -1,0 +1,12 @@
+{
+  "version": "v4",
+  "repo": "angular/DefinitelyTyped",
+  "ref": "master",
+  "path": "typings",
+  "bundle": "typings/tsd.d.ts",
+  "installed": {
+    "angularjs/angular.d.ts": {
+      "commit": "746b9a892629060bc853e792afff536e0ec4655e"
+    }
+  }
+}
