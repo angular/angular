@@ -12,9 +12,9 @@ import 'package:angular2/src/transform/common/directive_metadata_reader.dart';
 import 'package:angular2/src/transform/common/interface_matcher.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
+import 'package:angular2/src/transform/common/ng_compiler.dart';
 import 'package:angular2/src/transform/common/xhr_impl.dart';
 import 'package:angular2/src/transform/common/ng_meta.dart';
-import 'package:angular2/src/core/services/url_resolver.dart';
 import 'package:barback/barback.dart' show AssetId;
 import 'package:code_transformers/assets.dart';
 import 'package:path/path.dart' as path;
@@ -62,7 +62,7 @@ Future<NgDepsModel> createNgDeps(AssetReader reader, AssetId assetId,
   parsedCode.accept(ngDepsVisitor);
   var ngDepsModel = ngDepsVisitor.model;
 
-  var templateCompiler = _initCompiler(reader, assetId);
+  var templateCompiler = createTemplateCompiler(reader);
   var ngMetaVisitor = new _NgMetaVisitor(ngMeta, assetId, annotationMatcher,
       _interfaceMatcher, templateCompiler);
   parsedCode.accept(ngMetaVisitor);
@@ -76,7 +76,7 @@ Future<NgDepsModel> createNgDeps(AssetReader reader, AssetId assetId,
   }
 
   if (inlineViews) {
-    await inlineViewProps(new XhrImpl(reader, assetId), ngDepsModel);
+    await inlineViewProps(reader, assetId, ngDepsModel);
   }
 
   return ngDepsModel;
@@ -235,32 +235,5 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
       }
     }
     return null;
-  }
-}
-
-// TODO: move to a common location
-TemplateCompiler _initCompiler(AssetReader reader, AssetId entryPoint) {
-  var _xhr = new XhrImpl(reader, entryPoint);
-  var _htmlParser = new HtmlParser();
-  var _urlResolver = new TransformerUrlResolver();
-
-  var templateParser = new TemplateParser(
-      new ng.Parser(new ng.Lexer()),
-      new DomElementSchemaRegistry(),
-      _htmlParser);
-
-  return new TemplateCompiler(null /* RuntimeMetadataResolver */,
-      new TemplateNormalizer(_xhr, _urlResolver, _htmlParser),
-      templateParser,
-      new StyleCompiler(_xhr, _urlResolver),
-      new CommandCompiler(),
-      null);
-}
-
-class TransformerUrlResolver implements UrlResolver {
-  @override
-  String resolve(String baseUrl, String url) {
-    // No-op, XhrImpl performs the resolution
-    return url;
   }
 }

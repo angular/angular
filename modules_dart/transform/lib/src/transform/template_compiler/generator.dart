@@ -20,8 +20,10 @@ import 'package:angular2/src/core/reflection/reflection.dart';
 import 'package:angular2/src/core/services/url_resolver.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/names.dart';
+import 'package:angular2/src/transform/common/ng_compiler.dart';
 import 'package:angular2/src/transform/common/ng_deps.dart';
 import 'package:angular2/src/transform/common/xhr_impl.dart';
+import 'package:angular2/src/transform/common/url_resolver.dart';
 import 'package:barback/barback.dart';
 import 'package:path/path.dart' as path;
 
@@ -29,24 +31,6 @@ import 'reflection/codegen.dart' as reg;
 import 'reflection/processor.dart' as reg;
 import 'reflection/reflection_capabilities.dart';
 import 'compile_data_creator.dart';
-
-TemplateCompiler _initCompiler(
-    AssetReader reader, AssetId entryPoint, ChangeDetectorGenConfig cdConfig) {
-  var _xhr = new XhrImpl(reader, entryPoint);
-  var _htmlParser = new HtmlParser();
-  var _urlResolver = new UrlResolver();
-
-  var templateParser = new TemplateParser(new ng.Parser(new ng.Lexer()),
-      new DomElementSchemaRegistry(), _htmlParser);
-
-  return new TemplateCompiler(
-      null /* RuntimeMetadataResolver */,
-      new TemplateNormalizer(_xhr, _urlResolver, _htmlParser),
-      templateParser,
-      new StyleCompiler(_xhr, _urlResolver),
-      new CommandCompiler(),
-      new ChangeDetectionCompiler(cdConfig));
-}
 
 /// Reads the `.ng_deps.dart` file represented by `entryPoint` and parses any
 /// Angular 2 `View` annotations it declares to generate `getter`s,
@@ -59,11 +43,13 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId entryPoint,
     bool reflectPropertiesAsAttributes: false}) async {
   var viewDefResults = await createCompileData(reader, entryPoint);
 
-  var templateCompiler = _initCompiler(
+  var templateCompiler = createTemplateCompiler(
       reader,
-      entryPoint,
-      new ChangeDetectorGenConfig(assertionsEnabled(), assertionsEnabled(),
-          reflectPropertiesAsAttributes, false));
+      changeDetectionConfig: new ChangeDetectorGenConfig(
+        assertionsEnabled(),
+        assertionsEnabled(),
+        reflectPropertiesAsAttributes,
+        false));
 
   var ngDeps = viewDefResults.ngDeps;
   var compileData =

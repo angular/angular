@@ -358,18 +358,11 @@ void allTests() {
     var model =
         await _testCreateModel('invalid_url_files/hello.dart', logger: logger);
     expect(logger.hasErrors).toBeTrue();
+    var prefix = 'ERROR: angular2|test/transform/directive_processor/invalid_url_files/hello.dart:';
     expect(logger.logs)
-      ..toContain(
-          'ERROR: Uri /bad/absolute/url.html not supported from angular2|test/'
-          'transform/directive_processor/invalid_url_files/hello.dart, could not '
-          'build AssetId')
-      ..toContain(
-          'ERROR: Could not read asset at uri package:invalid/package.css from '
-          'angular2|test/transform/directive_processor/invalid_url_files/'
-          'hello.dart')
-      ..toContain(
-          'ERROR: Could not read asset at uri bad_relative_url.css from angular2|'
-          'test/transform/directive_processor/invalid_url_files/hello.dart');
+      ..toContain('$prefix URI /bad/absolute/url.html not supported')
+      ..toContain('$prefix could not read package:invalid/package.css')
+      ..toContain('$prefix could not read bad_relative_url.css');
   });
 
   it('should find and register static functions.', () async {
@@ -398,44 +391,6 @@ void allTests() {
       expect(ngMeta.aliases).toContain('alias2');
       expect(ngMeta.aliases['alias2'])
         ..toContain('HelloCmp')..toContain('Foo');
-    });
-
-    it('should populate all provided values for Components & Directives', () async {
-      fakeReader
-        ..addAsset(
-            new AssetId('angular2',
-                'test/transform/directive_processor/unusual_component_files/template.html'),
-            '');
-      var ngMeta = new NgMeta.empty();
-      await _testCreateModel('unusual_component_files/hello.dart',
-          ngMeta: ngMeta, reader:  fakeReader);
-
-      expect(ngMeta.types.isNotEmpty).toBeTrue();
-
-      var component = ngMeta.types['UnusualComp'];
-      expect(component).toBeNotNull();
-      expect(component.selector).toEqual('unusual-comp');
-      expect(component.isComponent).toBeTrue();
-      expect(component.exportAs).toEqual('ComponentExportAsValue');
-      expect(component.changeDetection).toEqual(ChangeDetectionStrategy.CheckAlways);
-      expect(component.properties).toContain('aProperty');
-      expect(component.properties['aProperty']).toEqual('aProperty');
-      expect(component.events).toContain('anEvent');
-      expect(component.events['anEvent']).toEqual('anEvent');
-      expect(component.hostAttributes).toContain('hostKey');
-      expect(component.hostAttributes['hostKey']).toEqual('hostValue');
-
-      var directive = ngMeta.types['UnusualDirective'];
-      expect(directive).toBeNotNull();
-      expect(directive.selector).toEqual('unusual-directive');
-      expect(directive.isComponent).toBeFalse();
-      expect(directive.exportAs).toEqual('DirectiveExportAsValue');
-      expect(directive.properties).toContain('aDirectiveProperty');
-      expect(directive.properties['aDirectiveProperty']).toEqual('aDirectiveProperty');
-      expect(directive.events).toContain('aDirectiveEvent');
-      expect(directive.events['aDirectiveEvent']).toEqual('aDirectiveEvent');
-      expect(directive.hostAttributes).toContain('directiveHostKey');
-      expect(directive.hostAttributes['directiveHostKey']).toEqual('directiveHostValue');
     });
 
     it('should include hooks for implemented types (single)', () async {
@@ -550,7 +505,7 @@ void allTests() {
       expect(ngMeta.types['HelloCmp']).toBeNotNull();
       expect(ngMeta.types['HelloCmp'].template).toBeNotNull();
       expect(ngMeta.types['HelloCmp'].template.templateUrl)
-          .toEqual('package:other_package/template.html');
+          .toEqual('other_package|lib/template.html');
     });
 
     // TODO(kegluneq): Flesh out or remove before committing.

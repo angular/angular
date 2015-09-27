@@ -18,7 +18,7 @@ import 'template_compiler/all_tests.dart' as templateCompiler;
 main() {
   useVMConfiguration();
   describe('AsyncStringWriter', asyncStringWriter.allTests);
-  describe('NgMeta', ngMetaTest.allTests);
+  ddescribe('NgMeta', ngMetaTest.allTests);
   describe('Bind Generator', bindGenerator.allTests);
   describe('Directive Linker', directiveLinker.allTests);
   describe('Directive Metadata Extractor', directiveMeta.allTests);
