@@ -25,28 +25,21 @@ var DIRECTIVES = fs.readFileSync(__dirname + '/src/ng_outlet.js', 'utf8');
 var moduleTemplate = fs.readFileSync(__dirname + '/src/module_template.js', 'utf8');
 
 function main() {
-  var ES6_SHIM = fs.readFileSync(__dirname + '/../../node_modules/es6-shim/es6-shim.js', 'utf8');
   var dir = __dirname + '/../angular2/src/router/';
-
-  var sharedCode = '';
-  files.forEach(function (file) {
-    var moduleName = 'router/' + file.replace(/\.ts$/, '');
-
-    sharedCode += transform(moduleName, fs.readFileSync(dir + file, 'utf8'));
-  });
+  var sharedCode = files.reduce(function (prev, file) {
+    return prev + transform(fs.readFileSync(dir + file, 'utf8'));
+  }, '');
 
   var out = moduleTemplate.replace('//{{FACADES}}', FACADES).replace('//{{SHARED_CODE}}', sharedCode);
-
   return PRELUDE + DIRECTIVES + out + POSTLUDE;
 }
-
 
 /*
  * Given a directory name and a file's TypeScript content, return an object with the ES5 code,
  * sourcemap, and exported variable identifier name for the content.
  */
 var IMPORT_RE = new RegExp("import \\{?([\\w\\n_, ]+)\\}? from '(.+)';?", 'g');
-function transform(dir, contents) {
+function transform(contents) {
   contents = contents.replace(IMPORT_RE, function (match, imports, includePath) {
     //TODO: remove special-case
     if (isFacadeModule(includePath) || includePath === './router_outlet') {
@@ -56,20 +49,9 @@ function transform(dir, contents) {
   });
   return ts.transpile(contents, {
     target: ts.ScriptTarget.ES5,
-    module: ts.ModuleKind.CommonJS,
-    sourceRoot: dir
+    module: ts.ModuleKind.CommonJS
   });
 }
-
-
-function angularFactory(name, deps, body) {
-  return ".factory('" + name + "', [" +
-    deps.map(function (service) {
-      return "'" + service + "', ";
-    }).join('') +
-    "function (" + deps.join(', ') + ") {\n" + body + "\n}])";
-}
-
 
 function isFacadeModule(modulePath) {
   return modulePath.indexOf('facade') > -1 ||
@@ -81,5 +63,5 @@ module.exports = function () {
   if (!fs.existsSync(dist)) {
     fs.mkdirSync(dist);
   }
-  fs.writeFileSync(dist + '/angular_1_router.js', main(files));
+  fs.writeFileSync(dist + '/angular_1_router.js', main());
 };
