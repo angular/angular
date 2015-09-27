@@ -21,7 +21,7 @@ var files = [
 var PRELUDE = '(function(){\n';
 var POSTLUDE = '\n}());\n';
 var FACADES = fs.readFileSync(__dirname + '/lib/facades.es5', 'utf8');
-var DIRECTIVES = fs.readFileSync(__dirname + '/src/ng_outlet.js', 'utf8');
+var DIRECTIVES = fs.readFileSync(__dirname + '/src/ng_outlet.ts', 'utf8');
 var moduleTemplate = fs.readFileSync(__dirname + '/src/module_template.js', 'utf8');
 
 function main() {
@@ -31,7 +31,7 @@ function main() {
   }, '');
 
   var out = moduleTemplate.replace('//{{FACADES}}', FACADES).replace('//{{SHARED_CODE}}', sharedCode);
-  return PRELUDE + DIRECTIVES + out + POSTLUDE;
+  return PRELUDE + transform(DIRECTIVES) + out + POSTLUDE;
 }
 
 /*
