@@ -60,6 +60,12 @@ export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any)
   return !looseIdentical(viewModel, change.currentValue);
 }
 
+export function isControlChanged(changes: {[key: string]: any}): boolean {
+  if (!StringMapWrapper.contains(changes, "form")) return false;
+  var change = changes["form"];
+  return change.previousValue !== change.currentValue;
+}
+
 // TODO: vsavkin remove it once https://github.com/angular/angular/issues/3011 is implemented
 export function selectValueAccessor(dir: NgControl, valueAccessors: ControlValueAccessor[]):
     ControlValueAccessor {
