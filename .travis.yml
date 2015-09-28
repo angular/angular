@@ -17,8 +17,8 @@ env:
   - KARMA_BROWSERS=DartiumWithWebPlatform
   - E2E_BROWSERS=Dartium
   - LOGS_DIR=/tmp/angular-build/logs
-  - SAUCE_USERNAME=angular-ci
-  - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
+  - SAUCE_USERNAME=angular2-ci
+  - SAUCE_ACCESS_KEY=693ebc16208a-0b5b-1614-8d66-a2662f4e
   - ARCH=linux-x64
   # Token for tsd to increase github rate limit
   # See https://github.com/DefinitelyTyped/tsd#tsdrc
