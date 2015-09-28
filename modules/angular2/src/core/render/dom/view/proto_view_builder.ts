@@ -355,7 +355,7 @@ function buildElementPropertyBindings(
 
       // directiveTemplatePropertyNames is null for host property bindings
       if (isPresent(directiveTemplatePropertyNames)) {
-        exMsg += ' and there are no matching directives with a corresponding property';
+        exMsg += ' and there are no matching directives with a corresponding property. If this is an attribute, make sure to prefix its name with \'attr.\'';
       }
       throw new BaseException(exMsg);
     }
