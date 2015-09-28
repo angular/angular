@@ -8,7 +8,7 @@ import {NgControl} from './ng_control';
 import {Control} from '../model';
 import {Validators, NG_VALIDATORS} from '../validators';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
-import {setUpControl, isPropertyUpdated, selectValueAccessor} from './shared';
+import {setUpControl, isPropertyUpdated, isControlChanged, selectValueAccessor} from './shared';
 
 const formControlBinding =
     CONST_EXPR(new Provider(NgControl, {useExisting: forwardRef(() => NgFormControl)}));
@@ -70,8 +70,6 @@ const formControlBinding =
 export class NgFormControl extends NgControl implements OnChanges {
   form: Control;
   update = new EventEmitter();
-  /** @internal */
-  _added = false;
   model: any;
   viewModel: any;
   validators: Function[];
@@ -84,10 +82,9 @@ export class NgFormControl extends NgControl implements OnChanges {
   }
 
   onChanges(changes: {[key: string]: SimpleChange}): void {
-    if (!this._added) {
+    if (isControlChanged(changes)) {
       setUpControl(this.form, this);
       this.form.updateValidity();
-      this._added = true;
     }
     if (isPropertyUpdated(changes, this.viewModel)) {
       this.form.updateValue(this.model);
