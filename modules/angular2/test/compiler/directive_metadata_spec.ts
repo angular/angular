@@ -28,7 +28,7 @@ export function main() {
     var fullDirectiveMeta: CompileDirectiveMetadata;
 
     beforeEach(() => {
-      fullTypeMeta = new CompileTypeMetadata({id: 23, name: 'SomeType', moduleId: 'someUrl'});
+      fullTypeMeta = new CompileTypeMetadata({name: 'SomeType', moduleId: 'someUrl'});
       fullTemplateMeta = new CompileTemplateMetadata({
         encapsulation: ViewEncapsulation.Emulated,
         template: '<a></a>',

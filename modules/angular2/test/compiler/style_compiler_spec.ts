@@ -42,7 +42,8 @@ const IMPORT_ABS_MODULE_NAME_WITH_IMPORT =
 export function main() {
   describe('StyleCompiler', () => {
     var xhr: SpyXHR;
-    var typeMeta;
+    var templateId;
+    var appId;
 
     beforeEachBindings(() => {
       xhr = <any>new SpyXHR();
@@ -52,7 +53,8 @@ export function main() {
     var compiler: StyleCompiler;
 
     beforeEach(inject([StyleCompiler], (_compiler) => {
-      typeMeta = new CompileTypeMetadata({id: 23, moduleId: 'someUrl'});
+      templateId = 23;
+      appId = 'app1';
       compiler = _compiler;
     }));
 
@@ -81,8 +83,9 @@ export function main() {
           return PromiseWrapper.resolve(response);
         });
         return compiler.compileComponentRuntime(
-            typeMeta, new CompileTemplateMetadata(
-                          {styles: styles, styleUrls: styleAbsUrls, encapsulation: encapsulation}));
+            appId, templateId,
+            new CompileTemplateMetadata(
+                {styles: styles, styleUrls: styleAbsUrls, encapsulation: encapsulation}));
       }
 
       describe('no shim', () => {
@@ -121,8 +124,8 @@ export function main() {
              compile(['div {\ncolor: red;\n}', 'span {\ncolor: blue;\n}'], [], encapsulation)
                  .then(styles => {
                    compareStyles(styles, [
-                     'div[_ngcontent-23] {\ncolor: red;\n}',
-                     'span[_ngcontent-23] {\ncolor: blue;\n}'
+                     'div[_ngcontent-app1-23] {\ncolor: red;\n}',
+                     'span[_ngcontent-app1-23] {\ncolor: blue;\n}'
                    ]);
                    async.done();
                  });
@@ -132,8 +135,8 @@ export function main() {
              compile(['div {\ncolor: red;\n}'], [IMPORT_ABS_MODULE_NAME], encapsulation)
                  .then(styles => {
                    compareStyles(styles, [
-                     'div[_ngcontent-23] {\ncolor: red;\n}',
-                     'span[_ngcontent-23] {\ncolor: blue;\n}'
+                     'div[_ngcontent-app1-23] {\ncolor: red;\n}',
+                     'span[_ngcontent-app1-23] {\ncolor: blue;\n}'
                    ]);
                    async.done();
                  });
@@ -143,9 +146,9 @@ export function main() {
              compile(['div {\ncolor: red;\n}'], [IMPORT_ABS_MODULE_NAME_WITH_IMPORT], encapsulation)
                  .then(styles => {
                    compareStyles(styles, [
-                     'div[_ngcontent-23] {\ncolor: red;\n}',
-                     'a[_ngcontent-23] {\ncolor: green;\n}',
-                     'span[_ngcontent-23] {\ncolor: blue;\n}'
+                     'div[_ngcontent-app1-23] {\ncolor: red;\n}',
+                     'a[_ngcontent-app1-23] {\ncolor: green;\n}',
+                     'span[_ngcontent-app1-23] {\ncolor: blue;\n}'
                    ]);
                    async.done();
                  });
@@ -198,8 +201,9 @@ export function main() {
       function compile(styles: string[], styleAbsUrls: string[], encapsulation: ViewEncapsulation):
           Promise<string[]> {
         var sourceExpression = compiler.compileComponentCodeGen(
-            typeMeta, new CompileTemplateMetadata(
-                          {styles: styles, styleUrls: styleAbsUrls, encapsulation: encapsulation}));
+            `'${appId}'`, `${templateId}`,
+            new CompileTemplateMetadata(
+                {styles: styles, styleUrls: styleAbsUrls, encapsulation: encapsulation}));
         var sourceWithImports = testableExpression(sourceExpression).getSourceWithImports();
         return evalModule(sourceWithImports.source, sourceWithImports.imports, null);
       };
@@ -207,7 +211,7 @@ export function main() {
       describe('no shim', () => {
         var encapsulation = ViewEncapsulation.None;
 
-        it('should compile plain css ruless', inject([AsyncTestCompleter], (async) => {
+        it('should compile plain css rules', inject([AsyncTestCompleter], (async) => {
              compile(['div {color: red}', 'span {color: blue}'], [], encapsulation)
                  .then(styles => {
                    expect(styles).toEqual(['div {color: red}', 'span {color: blue}']);
@@ -240,8 +244,8 @@ export function main() {
              compile(['div {\ncolor: red;\n}', 'span {\ncolor: blue;\n}'], [], encapsulation)
                  .then(styles => {
                    compareStyles(styles, [
-                     'div[_ngcontent-23] {\ncolor: red;\n}',
-                     'span[_ngcontent-23] {\ncolor: blue;\n}'
+                     'div[_ngcontent-app1-23] {\ncolor: red;\n}',
+                     'span[_ngcontent-app1-23] {\ncolor: blue;\n}'
                    ]);
                    async.done();
                  });
@@ -251,8 +255,8 @@ export function main() {
              compile(['div {color: red}'], [IMPORT_ABS_MODULE_NAME], encapsulation)
                  .then(styles => {
                    compareStyles(styles, [
-                     'div[_ngcontent-23] {\ncolor: red;\n}',
-                     'span[_ngcontent-23] {\ncolor: blue;\n}'
+                     'div[_ngcontent-app1-23] {\ncolor: red;\n}',
+                     'span[_ngcontent-app1-23] {\ncolor: blue;\n}'
                    ]);
                    async.done();
                  });
