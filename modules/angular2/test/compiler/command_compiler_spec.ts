@@ -14,6 +14,7 @@ import {
 } from 'angular2/test_lib';
 
 import {CONST_EXPR, stringify, isType, Type, isBlank} from 'angular2/src/core/facade/lang';
+import {MapWrapper} from 'angular2/src/core/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 import {TemplateParser} from 'angular2/src/compiler/template_parser';
 import {
@@ -61,12 +62,15 @@ export class RootComp {}
 export class SomeDir {}
 export class AComp {}
 
-var RootCompTypeMeta = new CompileTypeMetadata(
-    {id: 1, name: 'RootComp', runtime: RootComp, moduleId: THIS_MODULE_NAME});
+var RootCompTypeMeta =
+    new CompileTypeMetadata({name: 'RootComp', runtime: RootComp, moduleId: THIS_MODULE_NAME});
 var SomeDirTypeMeta =
-    new CompileTypeMetadata({id: 2, name: 'SomeDir', runtime: SomeDir, moduleId: THIS_MODULE_NAME});
+    new CompileTypeMetadata({name: 'SomeDir', runtime: SomeDir, moduleId: THIS_MODULE_NAME});
 var ACompTypeMeta =
-    new CompileTypeMetadata({id: 3, name: 'AComp', runtime: AComp, moduleId: THIS_MODULE_NAME});
+    new CompileTypeMetadata({name: 'AComp', runtime: AComp, moduleId: THIS_MODULE_NAME});
+var compTypeTemplateId: Map<CompileTypeMetadata, number> =
+    MapWrapper.createFromPairs([[RootCompTypeMeta, 1], [SomeDirTypeMeta, 2], [ACompTypeMeta, 3]]);
+const APP_ID = 'app1';
 
 var NESTED_COMPONENT = new CompiledTemplate(45, () => []);
 
@@ -221,7 +225,7 @@ export function main() {
              run(rootComp, [])
                  .then((data) => {
                    expect(data).toEqual([
-                     [BEGIN_ELEMENT, 'div', ['_ngcontent-1', ''], [], [], [], false, null],
+                     [BEGIN_ELEMENT, 'div', ['_ngcontent-app1-1', ''], [], [], [], false, null],
                      [END_ELEMENT]
                    ]);
                    async.done();
@@ -283,7 +287,7 @@ export function main() {
                      [
                        BEGIN_COMPONENT,
                        'a',
-                       ['_nghost-3', '', '_ngcontent-1', ''],
+                       ['_nghost-app1-3', '', '_ngcontent-app1-1', ''],
                        [],
                        [],
                        ['ACompType'],
@@ -424,7 +428,7 @@ export function main() {
     describe('compileComponentRuntime', () => {
       beforeEach(() => {
         componentTemplateFactory = (directive: CompileDirectiveMetadata) => {
-          return new CompiledTemplate(directive.type.id, () => []);
+          return new CompiledTemplate(compTypeTemplateId.get(directive.type), () => []);
         };
       });
 
@@ -437,7 +441,8 @@ export function main() {
         var parsedTemplate =
             parser.parse(component.template.template, directives, component.type.name);
         var commands = commandCompiler.compileComponentRuntime(
-            component, parsedTemplate, changeDetectorFactories, componentTemplateFactory);
+            component, APP_ID, compTypeTemplateId.get(component.type), parsedTemplate,
+            changeDetectorFactories, componentTemplateFactory);
         return PromiseWrapper.resolve(humanize(commands));
       }
 
@@ -448,7 +453,7 @@ export function main() {
     describe('compileComponentCodeGen', () => {
       beforeEach(() => {
         componentTemplateFactory = (directive: CompileDirectiveMetadata) => {
-          return `new ${TEMPLATE_COMMANDS_MODULE_REF}CompiledTemplate(${directive.type.id}, ${codeGenValueFn([], '{}')})`;
+          return `new ${TEMPLATE_COMMANDS_MODULE_REF}CompiledTemplate(${compTypeTemplateId.get(directive.type)}, ${codeGenValueFn([], '{}')})`;
         };
       });
 
@@ -461,7 +466,8 @@ export function main() {
         var parsedTemplate =
             parser.parse(component.template.template, directives, component.type.name);
         var sourceModule = commandCompiler.compileComponentCodeGen(
-            component, parsedTemplate, changeDetectorFactoryExpressions, componentTemplateFactory);
+            component, `'${APP_ID}'`, `${compTypeTemplateId.get(component.type)}`, parsedTemplate,
+            changeDetectorFactoryExpressions, componentTemplateFactory);
         var testableModule = createTestableModule(sourceModule).getSourceWithImports();
         return evalModule(testableModule.source, testableModule.imports, null);
       }

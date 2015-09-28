@@ -95,7 +95,7 @@ export class TemplateParser {
 class TemplateParseVisitor implements HtmlAstVisitor {
   selectorMatcher: SelectorMatcher;
   errors: string[] = [];
-  directivesIndexByTypeId: Map<number, number> = new Map();
+  directivesIndex: Map<CompileDirectiveMetadata, number> = new Map();
   constructor(directives: CompileDirectiveMetadata[], private _exprParser: Parser,
               private _schemaRegistry: ElementSchemaRegistry) {
     this.selectorMatcher = new SelectorMatcher();
@@ -103,7 +103,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
                                  (directive: CompileDirectiveMetadata, index: number) => {
                                    var selector = CssSelector.parse(directive.selector);
                                    this.selectorMatcher.addSelectables(selector, directive);
-                                   this.directivesIndexByTypeId.set(directive.type.id, index);
+                                   this.directivesIndex.set(directive, index);
                                  });
   }
 
@@ -397,8 +397,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
                        } else if (!dir1Comp && dir2Comp) {
                          return 1;
                        } else {
-                         return this.directivesIndexByTypeId.get(dir1.type.id) -
-                                this.directivesIndexByTypeId.get(dir2.type.id);
+                         return this.directivesIndex.get(dir1) - this.directivesIndex.get(dir2);
                        }
                      });
     return directives;

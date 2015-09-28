@@ -25,7 +25,6 @@ var HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$/g;
 
 @Injectable()
 export class RuntimeMetadataResolver {
-  private _directiveCounter = 0;
   private _cache: Map<Type, cpl.CompileDirectiveMetadata> = new Map();
 
   constructor(private _directiveResolver: DirectiveResolver, private _viewResolver: ViewResolver) {}
@@ -55,12 +54,8 @@ export class RuntimeMetadataResolver {
         exportAs: directiveAnnotation.exportAs,
         isComponent: isPresent(templateMeta),
         dynamicLoadable: true,
-        type: new cpl.CompileTypeMetadata({
-          id: this._directiveCounter++,
-          name: stringify(directiveType),
-          moduleId: moduleId,
-          runtime: directiveType
-        }),
+        type: new cpl.CompileTypeMetadata(
+            {name: stringify(directiveType), moduleId: moduleId, runtime: directiveType}),
         template: templateMeta,
         changeDetection: changeDetectionStrategy,
         properties: directiveAnnotation.properties,
@@ -89,8 +84,8 @@ export class RuntimeMetadataResolver {
 
 function removeDuplicatedDirectives(directives: cpl.CompileDirectiveMetadata[]):
     cpl.CompileDirectiveMetadata[] {
-  var directivesMap: Map<number, cpl.CompileDirectiveMetadata> = new Map();
-  directives.forEach((dirMeta) => { directivesMap.set(dirMeta.type.id, dirMeta); });
+  var directivesMap: Map<Type, cpl.CompileDirectiveMetadata> = new Map();
+  directives.forEach((dirMeta) => { directivesMap.set(dirMeta.type.runtime, dirMeta); });
   return MapWrapper.values(directivesMap);
 }
 
