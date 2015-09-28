@@ -58,7 +58,14 @@ export function CONST_EXPR<T>(expr: T): T {
   return expr;
 }
 
-export function CONST(): ClassDecorator {
+// type ClassAndPropertyDecorator = ClassDecorator & PropertyDecorator;
+export type ClassAndPropertyDecorator = {
+  <TFunction extends Function>(target: TFunction): TFunction | void,
+  (target: any, propertyKey: string | symbol): void
+};
+
+
+export function CONST(): ClassAndPropertyDecorator {
   return (target) => target;
 }
 

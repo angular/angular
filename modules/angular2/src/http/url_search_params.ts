@@ -61,7 +61,7 @@ export class URLSearchParams {
 
   set(param: string, val: string) {
     var mapParam = this.paramsMap.get(param);
-    var list = isPresent(mapParam) ? mapParam : [];
+    var list: string[] = isPresent(mapParam) ? mapParam : [];
     ListWrapper.clear(list);
     list.push(val);
     this.paramsMap.set(param, list);
@@ -76,7 +76,7 @@ export class URLSearchParams {
   setAll(searchParams: URLSearchParams) {
     MapWrapper.forEach(searchParams.paramsMap, (value, param) => {
       var mapParam = this.paramsMap.get(param);
-      var list = isPresent(mapParam) ? mapParam : [];
+      var list: string[] = isPresent(mapParam) ? mapParam : [];
       ListWrapper.clear(list);
       list.push(value[0]);
       this.paramsMap.set(param, list);
@@ -85,7 +85,7 @@ export class URLSearchParams {
 
   append(param: string, val: string): void {
     var mapParam = this.paramsMap.get(param);
-    var list = isPresent(mapParam) ? mapParam : [];
+    var list: string[] = isPresent(mapParam) ? mapParam : [];
     list.push(val);
     this.paramsMap.set(param, list);
   }
@@ -100,7 +100,7 @@ export class URLSearchParams {
   appendAll(searchParams: URLSearchParams) {
     MapWrapper.forEach(searchParams.paramsMap, (value, param) => {
       var mapParam = this.paramsMap.get(param);
-      var list = isPresent(mapParam) ? mapParam : [];
+      var list: string[] = isPresent(mapParam) ? mapParam : [];
       for (var i = 0; i < value.length; ++i) {
         list.push(value[i]);
       }
@@ -119,7 +119,7 @@ export class URLSearchParams {
   replaceAll(searchParams: URLSearchParams) {
     MapWrapper.forEach(searchParams.paramsMap, (value, param) => {
       var mapParam = this.paramsMap.get(param);
-      var list = isPresent(mapParam) ? mapParam : [];
+      var list: string[] = isPresent(mapParam) ? mapParam : [];
       ListWrapper.clear(list);
       for (var i = 0; i < value.length; ++i) {
         list.push(value[i]);
