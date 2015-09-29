@@ -32,24 +32,16 @@ export class NgSelectOption {
   host: {
     '(change)': 'onChange($event.target.value)',
     '(input)': 'onChange($event.target.value)',
-    '(blur)': 'onTouched()',
-    '[class.ng-untouched]': 'ngClassUntouched',
-    '[class.ng-touched]': 'ngClassTouched',
-    '[class.ng-pristine]': 'ngClassPristine',
-    '[class.ng-dirty]': 'ngClassDirty',
-    '[class.ng-valid]': 'ngClassValid',
-    '[class.ng-invalid]': 'ngClassInvalid'
+    '(blur)': 'onTouched()'
   }
 })
 export class SelectControlValueAccessor implements ControlValueAccessor {
-  private _cd: NgControl;
   value: string;
   onChange = (_) => {};
   onTouched = () => {};
 
   constructor(@Self() cd: NgControl, private _renderer: Renderer, private _elementRef: ElementRef,
               @Query(NgSelectOption, {descendants: true}) query: QueryList<NgSelectOption>) {
-    this._cd = cd;
     cd.valueAccessor = this;
     this._updateValueWhenListOfOptionsChanges(query);
   }
@@ -57,25 +49,6 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
   writeValue(value: any): void {
     this.value = value;
     setProperty(this._renderer, this._elementRef, "value", value);
-  }
-
-  get ngClassUntouched(): boolean {
-    return isPresent(this._cd.control) ? this._cd.control.untouched : false;
-  }
-  get ngClassTouched(): boolean {
-    return isPresent(this._cd.control) ? this._cd.control.touched : false;
-  }
-  get ngClassPristine(): boolean {
-    return isPresent(this._cd.control) ? this._cd.control.pristine : false;
-  }
-  get ngClassDirty(): boolean {
-    return isPresent(this._cd.control) ? this._cd.control.dirty : false;
-  }
-  get ngClassValid(): boolean {
-    return isPresent(this._cd.control) ? this._cd.control.valid : false;
-  }
-  get ngClassInvalid(): boolean {
-    return isPresent(this._cd.control) ? !this._cd.control.valid : false;
   }
 
   registerOnChange(fn: () => any): void { this.onChange = fn; }
