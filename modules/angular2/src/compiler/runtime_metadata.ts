@@ -25,7 +25,7 @@ var HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$/g;
 
 @Injectable()
 export class RuntimeMetadataResolver {
-  private _cache: Map<Type, cpl.CompileDirectiveMetadata> = new Map();
+  private _cache = new Map<Type, cpl.CompileDirectiveMetadata>();
 
   constructor(private _directiveResolver: DirectiveResolver, private _viewResolver: ViewResolver) {}
 
@@ -84,7 +84,7 @@ export class RuntimeMetadataResolver {
 
 function removeDuplicatedDirectives(directives: cpl.CompileDirectiveMetadata[]):
     cpl.CompileDirectiveMetadata[] {
-  var directivesMap: Map<Type, cpl.CompileDirectiveMetadata> = new Map();
+  var directivesMap = new Map<Type, cpl.CompileDirectiveMetadata>();
   directives.forEach((dirMeta) => { directivesMap.set(dirMeta.type.runtime, dirMeta); });
   return MapWrapper.values(directivesMap);
 }

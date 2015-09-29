@@ -57,7 +57,7 @@ export function main() {
   describe('createRenderView', () => {
     var nodeFactory: DomNodeFactory;
     var eventDispatcher: SpyRenderEventDispatcher;
-    var componentTemplates: Map<number, RenderTemplateCmd[]> = new Map();
+    var componentTemplates = new Map<number, RenderTemplateCmd[]>();
     beforeEach(() => {
       nodeFactory = new DomNodeFactory(componentTemplates);
       eventDispatcher = new SpyRenderEventDispatcher();

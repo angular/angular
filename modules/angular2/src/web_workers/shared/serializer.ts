@@ -179,7 +179,7 @@ export class Serializer {
    */
   objectToMap(obj: StringMap<string, any>, type?: Type, data?: any): Map<string, any> {
     if (isPresent(type)) {
-      var map: Map<string, any> = new Map();
+      var map = new Map<string, any>();
       StringMapWrapper.forEach(obj,
                                (val, key) => { map.set(key, this.deserialize(val, type, data)); });
       return map;

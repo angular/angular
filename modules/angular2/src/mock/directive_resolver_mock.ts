@@ -4,8 +4,8 @@ import {DirectiveMetadata, ComponentMetadata} from '../core/metadata';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 
 export class MockDirectiveResolver extends DirectiveResolver {
-  private _bindingsOverrides: Map<Type, any[]> = new Map();
-  private _viewBindingsOverrides: Map<Type, any[]> = new Map();
+  private _bindingsOverrides = new Map<Type, any[]>();
+  private _viewBindingsOverrides = new Map<Type, any[]>();
 
   resolve(type: Type): DirectiveMetadata {
     var dm = super.resolve(type);

@@ -151,11 +151,13 @@ export function main() {
 
       it("should not throw when not binding to a name exported by two directives", () => {
         expect(() => {
-          createDirectiveVariableBindings(new RenderElementBinder({variableBindings: new Map()}), [
-            directiveBinding({metadata: RenderDirectiveMetadata.create({exportAs: 'exportName'})}),
-            directiveBinding(
-                {metadata: RenderDirectiveMetadata.create({exportAs: 'exportName'})})
-          ]);
+          createDirectiveVariableBindings(
+              new RenderElementBinder({variableBindings: new Map<string, string>()}), [
+                directiveBinding(
+                    {metadata: RenderDirectiveMetadata.create({exportAs: 'exportName'})}),
+                directiveBinding(
+                    {metadata: RenderDirectiveMetadata.create({exportAs: 'exportName'})})
+              ]);
         }).not.toThrow();
       });
     });

@@ -69,7 +69,7 @@ export class DomView {
   dispatchEvent(elementIndex: number, eventName: string, event: Event): boolean {
     var allowDefaultBehavior = true;
     if (isPresent(this.eventDispatcher)) {
-      var evalLocals = new Map();
+      var evalLocals = new Map<string, any>();
       evalLocals.set('$event', event);
       // TODO(tbosch): reenable this when we are parsing element properties
       // out of action expressions

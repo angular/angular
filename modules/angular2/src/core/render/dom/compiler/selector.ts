@@ -156,12 +156,12 @@ export class SelectorMatcher {
     return notMatcher;
   }
 
-  private _elementMap: Map<string, SelectorContext[]> = new Map();
-  private _elementPartialMap: Map<string, SelectorMatcher> = new Map();
-  private _classMap: Map<string, SelectorContext[]> = new Map();
-  private _classPartialMap: Map<string, SelectorMatcher> = new Map();
-  private _attrValueMap: Map<string, Map<string, SelectorContext[]>> = new Map();
-  private _attrValuePartialMap: Map<string, Map<string, SelectorMatcher>> = new Map();
+  private _elementMap = new Map<string, SelectorContext[]>();
+  private _elementPartialMap = new Map<string, SelectorMatcher>();
+  private _classMap = new Map<string, SelectorContext[]>();
+  private _classPartialMap = new Map<string, SelectorMatcher>();
+  private _attrValueMap = new Map<string, Map<string, SelectorContext[]>>();
+  private _attrValuePartialMap = new Map<string, Map<string, SelectorMatcher>>();
   private _listContexts: SelectorListContext[] = [];
 
   addSelectables(cssSelectors: CssSelector[], callbackCtxt?: any) {
@@ -218,7 +218,7 @@ export class SelectorMatcher {
           var terminalMap = matcher._attrValueMap;
           var terminalValuesMap = terminalMap.get(attrName);
           if (isBlank(terminalValuesMap)) {
-            terminalValuesMap = new Map();
+            terminalValuesMap = new Map<string, SelectorContext[]>();
             terminalMap.set(attrName, terminalValuesMap);
           }
           this._addTerminal(terminalValuesMap, attrValue, selectable);
@@ -226,7 +226,7 @@ export class SelectorMatcher {
           var parttialMap = matcher._attrValuePartialMap;
           var partialValuesMap = parttialMap.get(attrName);
           if (isBlank(partialValuesMap)) {
-            partialValuesMap = new Map();
+            partialValuesMap = new Map<string, SelectorMatcher>();
             parttialMap.set(attrName, partialValuesMap);
           }
           matcher = this._addPartial(partialValuesMap, attrValue);

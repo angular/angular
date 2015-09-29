@@ -238,9 +238,9 @@ export class RenderDirectiveMetadata {
     exportAs?: string,
     queries?: StringMap<string, any>
   }): RenderDirectiveMetadata {
-    let hostListeners = new Map();
-    let hostProperties = new Map();
-    let hostAttributes = new Map();
+    let hostListeners = new Map<string, string>();
+    let hostProperties = new Map<string, string>();
+    let hostAttributes = new Map<string, string>();
 
     if (isPresent(host)) {
       MapWrapper.forEach(host, (value: string, key: string) => {

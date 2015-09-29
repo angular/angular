@@ -183,12 +183,9 @@ export function main() {
 }
 
 class FakeXHR extends XHR {
-  _responses: Map<string, string>;
+  _responses = new Map<string, string>();
 
-  constructor() {
-    super();
-    this._responses = new Map();
-  }
+  constructor() { super(); }
 
   get(url: string): Promise<string> {
     var response = this._responses.get(url);

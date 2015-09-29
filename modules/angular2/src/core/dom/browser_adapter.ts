@@ -216,7 +216,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   getStyle(element, stylename: string): string { return element.style[stylename]; }
   tagName(element): string { return element.tagName; }
   attributeMap(element): Map<string, string> {
-    var res = new Map();
+    var res = new Map<string, string>();
     var elAttrs = element.attributes;
     for (var i = 0; i < elAttrs.length; i++) {
       var attrib = elAttrs[i];

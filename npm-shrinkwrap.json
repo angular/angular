@@ -15496,9 +15496,9 @@
       }
     },
     "ts2dart": {
-      "version": "0.7.9",
-      "from": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.9.tgz",
-      "resolved": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.9.tgz",
+      "version": "0.7.10",
+      "from": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.10.tgz",
+      "resolved": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.10.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.4.4",

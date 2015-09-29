@@ -329,7 +329,7 @@ export function humanizeTemplate(template: CompiledTemplate,
                                  humanizedTemplates: Map<number, StringMap<string, any>> = null):
     StringMap<string, any> {
   if (isBlank(humanizedTemplates)) {
-    humanizedTemplates = new Map();
+    humanizedTemplates = new Map<number, StringMap<string, any>>();
   }
   var result = humanizedTemplates.get(template.id);
   if (isPresent(result)) {

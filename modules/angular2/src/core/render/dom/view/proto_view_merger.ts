@@ -36,7 +36,7 @@ export function mergeProtoViewsRecursively(templateCloner: TemplateCloner,
   // modify the DOM
   mergeEmbeddedPvsIntoComponentOrRootPv(clonedProtoViews, hostViewAndBinderIndices);
   var fragments = [];
-  var elementsWithNativeShadowRoot: Set<Element> = new Set();
+  var elementsWithNativeShadowRoot = new Set<Element>();
   mergeComponents(clonedProtoViews, hostViewAndBinderIndices, fragments,
                   elementsWithNativeShadowRoot);
   // Note: Need to remark parent elements of bound text nodes
@@ -50,7 +50,7 @@ export function mergeProtoViewsRecursively(templateCloner: TemplateCloner,
 
   // read out the new element / text node / ElementBinder order
   var mergedBoundElements = queryBoundElements(rootNode, false);
-  var mergedBoundTextIndices: Map<Node, number> = new Map();
+  var mergedBoundTextIndices = new Map<Node, number>();
   var boundTextNodeMap: Map<Node, any> = indexBoundTextNodes(clonedProtoViews);
   var rootTextNodeIndices =
       calcRootTextNodeIndices(rootNode, boundTextNodeMap, mergedBoundTextIndices);
@@ -69,7 +69,7 @@ export function mergeProtoViewsRecursively(templateCloner: TemplateCloner,
   var mergedProtoView =
       DomProtoView.create(templateCloner, mainProtoView.original.type, rootElement,
                           mainProtoView.original.encapsulation, fragmentsRootNodeCount,
-                          rootTextNodeIndices, mergedElementBinders, new Map());
+                          rootTextNodeIndices, mergedElementBinders, new Map<string, string>());
   return new RenderProtoViewMergeMapping(new DomProtoViewRef(mergedProtoView),
                                          fragmentsRootNodeCount.length, mappedElementIndices,
                                          mergedBoundElements.length, mappedTextIndices,
@@ -116,7 +116,7 @@ function markBoundTextNodeParentsAsBoundElements(mergableProtoViews: ClonedProto
 }
 
 function indexBoundTextNodes(mergableProtoViews: ClonedProtoView[]): Map<Node, any> {
-  var boundTextNodeMap = new Map();
+  var boundTextNodeMap = new Map<Node, any>();
   for (var pvIndex = 0; pvIndex < mergableProtoViews.length; pvIndex++) {
     var mergableProtoView = mergableProtoViews[pvIndex];
     mergableProtoView.boundTextNodes.forEach(
@@ -352,7 +352,7 @@ function calcElementBinders(clonedProtoViews: ClonedProtoView[], mergedBoundElem
 
 function indexElementBindersByElement(mergableProtoViews: ClonedProtoView[]):
     Map<Element, DomElementBinder> {
-  var elementBinderByElement = new Map();
+  var elementBinderByElement = new Map<Element, DomElementBinder>();
   mergableProtoViews.forEach((mergableProtoView) => {
     for (var i = 0; i < mergableProtoView.boundElements.length; i++) {
       var el = mergableProtoView.boundElements[i];
@@ -442,7 +442,7 @@ function calcNestedViewCounts(hostViewAndBinderIndices: number[][]): number[] {
 }
 
 function indexArray(arr: any[]): Map<any, number> {
-  var map = new Map();
+  var map = new Map<any, number>();
   for (var i = 0; i < arr.length; i++) {
     map.set(arr[i], i);
   }

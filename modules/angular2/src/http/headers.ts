@@ -38,7 +38,7 @@ export class Headers {
   _headersMap: Map<string, string[]>;
   constructor(headers?: Headers | StringMap<string, any>) {
     if (isBlank(headers)) {
-      this._headersMap = new Map();
+      this._headersMap = new Map<string, string[]>();
       return;
     }
 

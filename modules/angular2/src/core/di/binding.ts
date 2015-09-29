@@ -470,7 +470,8 @@ export function resolveBinding(binding: Binding): ResolvedBinding {
  * Resolve a list of Bindings.
  */
 export function resolveBindings(bindings: Array<Type | Binding | any[]>): ResolvedBinding[] {
-  var normalized = _createListOfBindings(_normalizeBindings(bindings, new Map()));
+  var normalized = _createListOfBindings(
+      _normalizeBindings(bindings, new Map<number, _NormalizedBinding | _NormalizedBinding[]>()));
   return normalized.map(b => {
     if (b instanceof _NormalizedBinding) {
       return new ResolvedBinding(b.key, [b.resolvedFactory], false);

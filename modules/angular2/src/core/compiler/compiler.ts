@@ -45,8 +45,8 @@ import {
  */
 @Injectable()
 export class CompilerCache {
-  _cache: Map<Type, AppProtoView> = new Map();
-  _hostCache: Map<Type, AppProtoView> = new Map();
+  _cache = new Map<Type, AppProtoView>();
+  _hostCache = new Map<Type, AppProtoView>();
 
   set(component: Type, protoView: AppProtoView): void { this._cache.set(component, protoView); }
 
@@ -99,7 +99,7 @@ export class CompilerCache {
  */
 @Injectable()
 export class Compiler {
-  private _compiling: Map<Type, Promise<AppProtoView>> = new Map();
+  private _compiling = new Map<Type, Promise<AppProtoView>>();
   private _appUrl: string;
   private _defaultPipes: Type[];
 
@@ -151,17 +151,17 @@ export class Compiler {
       Compiler._assertTypeIsComponent(componentBinding);
 
       var directiveMetadata = componentBinding.metadata;
-      hostPvPromise =
-          this._render.compileHost(directiveMetadata)
-              .then((hostRenderPv) => {
-                var protoViews = this._protoViewFactory.createAppProtoViews(
-                    componentBinding, hostRenderPv, [componentBinding], []);
-                return this._compileNestedProtoViews(protoViews, componentType, new Map());
-              })
-              .then((appProtoView) => {
-                this._compilerCache.setHost(componentType, appProtoView);
-                return appProtoView;
-              });
+      hostPvPromise = this._render.compileHost(directiveMetadata)
+                          .then((hostRenderPv) => {
+                            var protoViews = this._protoViewFactory.createAppProtoViews(
+                                componentBinding, hostRenderPv, [componentBinding], []);
+                            return this._compileNestedProtoViews(protoViews, componentType,
+                                                                 new Map<Type, AppProtoView>());
+                          })
+                          .then((appProtoView) => {
+                            this._compilerCache.setHost(componentType, appProtoView);
+                            return appProtoView;
+                          });
     }
     return hostPvPromise.then((hostAppProtoView) => {
       wtfEndTimeRange(r);
@@ -221,7 +221,7 @@ export class Compiler {
   }
 
   private _removeDuplicatedDirectives(directives: DirectiveBinding[]): DirectiveBinding[] {
-    var directivesMap: Map<number, DirectiveBinding> = new Map();
+    var directivesMap = new Map<number, DirectiveBinding>();
     directives.forEach((dirBinding) => { directivesMap.set(dirBinding.key.id, dirBinding); });
     return MapWrapper.values(directivesMap);
   }

@@ -74,7 +74,7 @@ export class Testability {
 
 @Injectable()
 export class TestabilityRegistry {
-  _applications: Map<any, Testability> = new Map();
+  _applications = new Map<any, Testability>();
 
   constructor() { testabilityGetter.addToWindow(this); }
 

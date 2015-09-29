@@ -95,7 +95,7 @@ export class TemplateParser {
 class TemplateParseVisitor implements HtmlAstVisitor {
   selectorMatcher: SelectorMatcher;
   errors: string[] = [];
-  directivesIndex: Map<CompileDirectiveMetadata, number> = new Map();
+  directivesIndex = new Map<CompileDirectiveMetadata, number>();
   constructor(directives: CompileDirectiveMetadata[], private _exprParser: Parser,
               private _schemaRegistry: ElementSchemaRegistry) {
     this.selectorMatcher = new SelectorMatcher();
@@ -407,7 +407,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
                                props: BoundElementOrDirectiveProperty[],
                                possibleExportAsVars: VariableAst[],
                                sourceInfo: string): DirectiveAst[] {
-    var matchedVariables: Set<string> = new Set();
+    var matchedVariables = new Set<string>();
     var directiveAsts = directives.map((directive: CompileDirectiveMetadata) => {
       var hostProperties: BoundElementPropertyAst[] = [];
       var hostEvents: BoundEventAst[] = [];
@@ -461,7 +461,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
                                        boundProps: BoundElementOrDirectiveProperty[],
                                        targetBoundDirectiveProps: BoundDirectivePropertyAst[]) {
     if (isPresent(directiveProperties)) {
-      var boundPropsByName: Map<string, BoundElementOrDirectiveProperty> = new Map();
+      var boundPropsByName = new Map<string, BoundElementOrDirectiveProperty>();
       boundProps.forEach(boundProp => {
         var key = dashCaseToCamelCase(boundProp.name);
         var prevValue = boundPropsByName.get(boundProp.name);
@@ -487,7 +487,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   private _createElementPropertyAsts(elementName: string, props: BoundElementOrDirectiveProperty[],
                                      directives: DirectiveAst[]): BoundElementPropertyAst[] {
     var boundElementProps: BoundElementPropertyAst[] = [];
-    var boundDirectivePropsIndex: Map<string, BoundDirectivePropertyAst> = new Map();
+    var boundDirectivePropsIndex = new Map<string, BoundDirectivePropertyAst>();
     directives.forEach((directive: DirectiveAst) => {
       directive.properties.forEach((prop: BoundDirectivePropertyAst) => {
         boundDirectivePropsIndex.set(prop.templateName, prop);

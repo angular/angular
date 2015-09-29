@@ -7,7 +7,7 @@ import {
 } from 'angular2/src/core/facade/collection';
 
 function paramParser(rawParams: string = ''): Map<string, string[]> {
-  var map: Map<string, string[]> = new Map();
+  var map = new Map<string, string[]>();
   if (rawParams.length > 0) {
     var params: string[] = StringWrapper.split(rawParams, new RegExp('&'));
     ListWrapper.forEach(params, (param: string) => {

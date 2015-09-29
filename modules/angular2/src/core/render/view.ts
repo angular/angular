@@ -52,7 +52,7 @@ export class DefaultRenderView<N> extends RenderViewRef {
   dispatchRenderEvent(boundElementIndex: number, eventName: string, event: any): boolean {
     var allowDefaultBehavior = true;
     if (isPresent(this.eventDispatcher)) {
-      var locals = new Map();
+      var locals = new Map<string, any>();
       locals.set('$event', event);
       allowDefaultBehavior =
           this.eventDispatcher.dispatchRenderEvent(boundElementIndex, eventName, locals);

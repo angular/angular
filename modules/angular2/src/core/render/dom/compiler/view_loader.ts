@@ -28,7 +28,7 @@ export class TemplateAndStyles {
  */
 @Injectable()
 export class ViewLoader {
-  _cache: Map<string, Promise<string>> = new Map();
+  _cache = new Map<string, Promise<string>>();
 
   constructor(private _xhr: XHR, private _styleInliner: StyleInliner,
               private _styleUrlResolver: StyleUrlResolver) {}

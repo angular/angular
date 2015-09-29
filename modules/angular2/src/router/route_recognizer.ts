@@ -31,9 +31,9 @@ import {ComponentInstruction} from './instruction';
  * components.
  */
 export class RouteRecognizer {
-  names: Map<string, PathRecognizer> = new Map();
+  names = new Map<string, PathRecognizer>();
 
-  auxRoutes: Map<string, PathRecognizer> = new Map();
+  auxRoutes = new Map<string, PathRecognizer>();
 
   // TODO: optimize this into a trie
   matchers: PathRecognizer[] = [];

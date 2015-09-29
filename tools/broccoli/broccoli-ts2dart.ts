@@ -19,11 +19,7 @@ class TSToDartTranspiler implements DiffingBroccoliPlugin {
   }
 
   rebuild(treeDiff: DiffResult) {
-    // Matches rootFilePaths in node_tree.ts
-    // These files are not compatible with Typescript's ES6 library
-    // so they must be explicitly included when targetting ES5, as ts2dart does.
-    // see https://github.com/angular/angular/issues/3770
-    let toEmit = [path.resolve(this.inputPath, 'angular2/manual_typings/traceur-runtime.d.ts')];
+    let toEmit = [];
     let getDartFilePath = (path: string) => path.replace(/((\.js)|(\.ts))$/i, '.dart');
     treeDiff.addedPaths.concat(treeDiff.changedPaths)
         .forEach((changedPath) => {

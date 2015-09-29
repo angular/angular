@@ -6,13 +6,12 @@ import {PromiseCompleter, PromiseWrapper, Promise} from 'angular2/src/core/facad
 
 export class MockXHR extends XHR {
   private _expectations: _Expectation[];
-  private _definitions: Map<string, string>;
+  private _definitions = new Map<string, string>();
   private _requests: _PendingRequest[];
 
   constructor() {
     super();
     this._expectations = [];
-    this._definitions = new Map();
     this._requests = [];
   }
 
