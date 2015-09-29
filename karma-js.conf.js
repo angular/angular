@@ -41,7 +41,7 @@ module.exports = function(config) {
       recordVideo: false,
       recordScreenshots: false,
       options: {
-        'selenium-version': '2.45.0',
+        'selenium-version': '2.47.1',
         'command-timeout': 600,
         'idle-timeout': 600,
         'max-duration': 5400
