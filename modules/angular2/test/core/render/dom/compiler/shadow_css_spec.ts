@@ -62,7 +62,8 @@ export function main() {
         isPresent(DOM.defaultDoc().body.style.animationName)) {
       it('should handle keyframes rules', () => {
         var css = '@keyframes foo {0% {transform: translate(-50%) scaleX(0);}}';
-        var passRe = /@keyframes foo {\s*0% {\s*transform:translate\(-50%\) scaleX\(0\);\s*}\s*}/g;
+        var passRe =
+            /@(-webkit-)*keyframes foo {\s*0% {\s*transform:translate\(-50%\) scaleX\(0\);\s*}\s*}/g;
         expect(RegExpWrapper.test(passRe, s(css, 'a'))).toEqual(true);
       });
     }
