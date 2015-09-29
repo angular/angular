@@ -2,6 +2,11 @@ import {AbstractControl} from '../model';
 import {isPresent} from 'angular2/src/core/facade/lang';
 import {unimplemented} from 'angular2/src/core/facade/exceptions';
 
+/**
+ * Base class for control directives.
+ *
+ * Only used internally in the forms module.
+ */
 export abstract class AbstractControlDirective {
   get control(): AbstractControl { return unimplemented(); }
 

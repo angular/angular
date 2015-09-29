@@ -29,6 +29,16 @@ export interface Validator { validate(c: modelModule.Control): {[key: string]: a
 const REQUIRED_VALIDATOR =
     CONST_EXPR(new Provider(NG_VALIDATORS, {useValue: Validators.required, multi: true}));
 
+/**
+ * A Directive that adds the `required` validator to any controls marked with the
+ * `required` attribute, via the {@link NG_VALIDATORS} binding.
+ *
+ * # Example
+ *
+ * ```
+ * <input ng-control="fullName" required>
+ * ```
+ */
 @Directive({
   selector: '[required][ng-control],[required][ng-form-control],[required][ng-model]',
   providers: [REQUIRED_VALIDATOR]
