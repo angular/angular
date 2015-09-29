@@ -24,6 +24,7 @@ import 'rewriter.dart';
 /// be followed by {@link DirectiveLinker}.
 class DirectiveProcessor extends Transformer implements DeclaringTransformer {
   final TransformerOptions options;
+  final _encoder = const JsonEncoder.withIndent('  ');
 
   DirectiveProcessor(this.options);
 
@@ -52,13 +53,13 @@ class DirectiveProcessor extends Transformer implements DeclaringTransformer {
       // TODO(kegluneq): Combine NgDepsModel with NgMeta in a single .json file.
       if (ngDepsModel != null) {
         var ngDepsAssetId = _ngDepsAssetId(primaryId);
-        transform.addOutput(
-            new Asset.fromString(ngDepsAssetId, ngDepsModel.writeToJson()));
+        transform.addOutput(new Asset.fromString(ngDepsAssetId,
+            _encoder.convert(ngDepsModel.writeToJsonMap())));
       }
       var metaOutputId = _ngMetaAssetId(primaryId);
       if (!ngMeta.isEmpty) {
         transform.addOutput(new Asset.fromString(metaOutputId,
-            new JsonEncoder.withIndent("  ").convert(ngMeta.toJson())));
+            _encoder.convert(ngMeta.toJson())));
       }
     });
   }

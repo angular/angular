@@ -85,10 +85,9 @@ class _CompileDataCreator {
   Future<Map<AssetId, String>> _createImportAssetToPrefixMap() async {
     var ngDeps = await ngDepsFuture;
 
-    var importAssetToPrefix = <AssetId, String>{};
-    // Include the `.ng_meta.json` file associated with `entryPoint`.
-    importAssetToPrefix[new AssetId(
-        entryPoint.package, toMetaExtension(entryPoint.path))] = null;
+    var importAssetToPrefix = <AssetId, String>{
+      entryPoint: null
+    };
 
     for (ImportDirective node in ngDeps.imports) {
       var uri = stringLiteralToString(node.uri);

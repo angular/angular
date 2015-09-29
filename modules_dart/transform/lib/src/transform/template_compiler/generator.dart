@@ -38,6 +38,7 @@ import 'compile_data_creator.dart';
 ///
 /// This method assumes a {@link DomAdapter} has been registered.
 Future<Outputs> processTemplates(AssetReader reader, AssetId entryPoint,
+    // TODO(kegluneq): Remove `generateRegistrations`.
     {bool generateRegistrations: true,
     bool generateChangeDetectors: true,
     bool reflectPropertiesAsAttributes: false}) async {
@@ -58,11 +59,10 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId entryPoint,
     return new Outputs(entryPoint, ngDeps, null, null, null);
   }
 
-  var moduleId = path.withoutExtension(entryPoint.path);
   var savedReflectionCapabilities = reflector.reflectionCapabilities;
   reflector.reflectionCapabilities = const NullReflectionCapabilities();
-  var compiledTemplates =
-      templateCompiler.compileTemplatesCodeGen(moduleId, compileData);
+  var compiledTemplates = templateCompiler.compileTemplatesCodeGen(
+      compileData.first.component.type.moduleId, compileData);
   reflector.reflectionCapabilities = savedReflectionCapabilities;
 
   var processor = new reg.Processor();
@@ -74,7 +74,7 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId entryPoint,
   codegen.generate(processor);
 
   return new Outputs(entryPoint, ngDeps, codegen,
-      viewDefResults.viewDefinitions, compiledTemplates.getSourceWithImports());
+      viewDefResults.viewDefinitions, compiledTemplates);
 }
 
 AssetId templatesAssetId(AssetId ngDepsAssetId) =>
@@ -91,7 +91,7 @@ class Outputs {
       NgDeps ngDeps,
       reg.Codegen accessors,
       Map<RegisteredType, NormalizedComponentWithViewDirectives> compileDataMap,
-      SourceWithImports templatesSource) {
+      SourceModule templatesSource) {
     return new Outputs._(
         _generateNgDepsCode(assetId, ngDeps, accessors, compileDataMap),
         _generateTemplatesCode(ngDeps, templatesSource));
@@ -152,48 +152,70 @@ class Outputs {
   }
 
   static String _generateTemplatesCode(
-      NgDeps ngDeps, SourceWithImports templatesSource) {
+      NgDeps ngDeps, SourceModule templatesSource) {
     if (ngDeps == null || templatesSource == null) return null;
     var buf = new StringBuffer();
 
+    var sourceWithImports = templatesSource.getSourceWithImports();
+
     buf.writeln('library ${ngDeps.lib.name}_template;');
     buf.writeln();
-    buf.writeAll(templatesSource.imports.map(_formatImportUri), '\n');
+    sourceWithImports.imports
+        .forEach((i) {
+      // Format for importLine := [uri, prefix]
+      if (i.length != 2) {
+        throw new FormatException(
+            'Unexpected import format! '
+                'Angular 2 compiler returned imports in an unexpected format.',
+            i.join(', '));
+      }
+      buf.writeln(_formatImportUri(templatesSource.moduleId, i[0], i[1]));
+    });
     buf.writeln();
-    buf.writeln(templatesSource.source);
+    buf.writeln(sourceWithImports.source);
 
     // Refer to generated code from .ng_deps.dart file.
     return buf.toString();
   }
 
-  static String _formatImportUri(List<String> import) {
-    // Format for importLine := [uri, prefix]
-    if (import.length != 2) {
-      throw new FormatException(
-          'Unexpected import format! '
-          'Angular 2 compiler returned imports in an unexpected format.',
-          import.join(', '));
-    }
-    var uri = import[0], prefix = import[1];
+  static final _uriResolver = new TransformerUrlResolver();
 
-    // If this is an absolute uri, change to package: path.
-    var parts = path.url.split(uri);
-    if (parts.length > 1) {
-      if (parts[1] == 'lib') {
-        if (parts.length > 2) {
-          uri =
-              'package:${parts[0]}/${path.url.joinAll(parts.getRange(2, parts.length))}';
-        }
-      } else if (parts[1] == 'src') {
-        // TODO(kegluneq): We might not want to support this case.
-        uri =
-            'package:${parts[0]}/${path.url.joinAll(parts.getRange(1, parts.length))}';
+  // TODO(kegluenq): Before submit! Move to common/
+  static String _formatImportUri(String moduleId, String import, String prefix) {
+    var moduleUri = Uri.parse(_uriResolver.resolve('', moduleId));
+    var importUri = Uri.parse(_uriResolver.resolve('', import));
+
+    if (moduleUri.scheme != 'asset') {
+      throw new FormatException(
+          'Unsupported scheme "${moduleUri.scheme}" for module id $moduleUri',
+          moduleId);
+    }
+    if (importUri.scheme != 'asset') {
+      throw new FormatException(
+          'Unsupported scheme "${importUri.scheme}" for import $importUri',
+          import);
+    }
+
+    var modulePackage = moduleUri.pathSegments.first;
+    var importPackage = importUri.pathSegments.first;
+    var importSubdir = importUri.pathSegments[1];
+
+    var codegenImportPath;
+    if (modulePackage == importPackage &&
+        moduleUri.pathSegments[1] == importSubdir) {
+      codegenImportPath = path.relative(importUri.toString(), from: moduleUri.toString());
+    } else {
+      if (importSubdir != 'lib') {
+        throw new FormatException(
+            'Cannot import $importUri from $moduleUri', importUri);
       }
+      var subPath = importUri.pathSegments.getRange(2, importUri.pathSegments.length).join('/');
+      codegenImportPath = 'package:$importPackage/$subPath';
     }
 
     if (prefix != null && prefix.isNotEmpty) {
       prefix = ' as $prefix';
     }
-    return 'import \'$uri\'$prefix;';
+    return 'import \'$codegenImportPath\'$prefix;';
   }
 }

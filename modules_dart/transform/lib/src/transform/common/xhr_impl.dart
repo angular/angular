@@ -12,12 +12,15 @@ class XhrImpl implements XHR {
   XhrImpl(this._reader);
 
   Future<String> get(String url) async {
-    final assetId = new AssetId.parse(url);
-    var templateExists = await _reader.hasInput(assetId);
-    if (!templateExists) {
-      logger.error('Could not read asset at uri $url');
-      return null;
+    final uri = Uri.parse(url);
+    if (uri.scheme != 'asset') {
+      throw new FormatException('Unsupported uri encountered: $uri', url);
     }
-    return await _reader.readAsString(assetId);
+    final assetId = new AssetId(uri.pathSegments.first, uri.pathSegments.skip(1).join('/'));
+
+    if (!await _reader.hasInput(assetId)) {
+      throw new ArgumentError.value('Could not read asset at uri $url', 'url');
+    }
+    return _reader.readAsString(assetId);
   }
 }

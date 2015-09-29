@@ -27,7 +27,9 @@ class DirectiveMetadataLinker extends Transformer
 
   @override
   declareOutputs(DeclaringTransform transform) {
-    transform.consumePrimary();
+    // TODO(kegluenq): We should consume this, but doing so causes barback to
+    // incorrectly determine what assets are available in this phase.
+    // transform.consumePrimary();
     transform.declareOutput(transform.primaryId);
   }
 
@@ -38,7 +40,8 @@ class DirectiveMetadataLinker extends Transformer
 
       return linkDirectiveMetadata(
           new AssetReader.fromTransform(transform), primaryId).then((ngMeta) {
-        transform.consumePrimary();
+        // See above
+        // transform.consumePrimary();
         if (ngMeta != null && !ngMeta.isEmpty) {
           transform.addOutput(new Asset.fromString(
               primaryId, _encoder.convert(ngMeta.toJson())));
