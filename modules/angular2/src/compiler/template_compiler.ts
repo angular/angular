@@ -31,9 +31,9 @@ import {Inject} from 'angular2/src/core/di';
 
 @Injectable()
 export class TemplateCompiler {
-  private _hostCacheKeys: Map<Type, any> = new Map();
-  private _compiledTemplateCache: Map<Type, CompiledTemplate> = new Map();
-  private _compiledTemplateDone: Map<Type, Promise<CompiledTemplate>> = new Map();
+  private _hostCacheKeys = new Map<Type, any>();
+  private _compiledTemplateCache = new Map<any, CompiledTemplate>();
+  private _compiledTemplateDone = new Map<any, Promise<CompiledTemplate>>();
   private _appId: string;
 
   constructor(private _runtimeMetadataResolver: RuntimeMetadataResolver,

@@ -38,7 +38,7 @@ class MockBrowserXHR extends BrowserXhr {
   response: any;
   responseText: string;
   setRequestHeader: any;
-  callbacks: Map<string, Function>;
+  callbacks = new Map<string, Function>();
   status: number;
   constructor() {
     super();
@@ -47,7 +47,6 @@ class MockBrowserXHR extends BrowserXhr {
     this.send = sendSpy = spy.spy('send');
     this.open = openSpy = spy.spy('open');
     this.setRequestHeader = setRequestHeaderSpy = spy.spy('setRequestHeader');
-    this.callbacks = new Map();
   }
 
   setStatusCode(status) { this.status = status; }

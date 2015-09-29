@@ -5,7 +5,7 @@ import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {ElementSchemaRegistry} from './element_schema_registry';
 
 export class DomElementSchemaRegistry extends ElementSchemaRegistry {
-  private _protoElements: Map<string, Element> = new Map();
+  private _protoElements = new Map<string, Element>();
 
   private _getProtoElement(tagName: string): Element {
     var element = this._protoElements.get(tagName);

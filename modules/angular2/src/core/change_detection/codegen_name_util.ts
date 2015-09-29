@@ -42,7 +42,7 @@ export class CodegenNameUtil {
    * See [sanitizeName] for details.
    */
   _sanitizedNames: string[];
-  _sanitizedEventNames: Map<EventBinding, string[]>;
+  _sanitizedEventNames = new Map<EventBinding, string[]>();
 
   constructor(private _records: ProtoRecord[], private _eventBindings: EventBinding[],
               private _directiveRecords: any[], private _utilName: string) {
@@ -52,7 +52,6 @@ export class CodegenNameUtil {
       this._sanitizedNames[i + 1] = sanitizeName(`${this._records[i].name}${i}`);
     }
 
-    this._sanitizedEventNames = new Map();
     for (var ebIndex = 0; ebIndex < _eventBindings.length; ++ebIndex) {
       var eb = _eventBindings[ebIndex];
       var names = [_CONTEXT_ACCESSOR];

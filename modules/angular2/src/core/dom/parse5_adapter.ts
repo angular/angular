@@ -409,7 +409,7 @@ export class Parse5DomAdapter extends DomAdapter {
   }
   tagName(element): string { return element.tagName == "style" ? "STYLE" : element.tagName; }
   attributeMap(element): Map<string, string> {
-    var res = new Map();
+    var res = new Map<string, string>();
     var elAttrs = treeAdapter.getAttrList(element);
     for (var i = 0; i < elAttrs.length; i++) {
       var attrib = elAttrs[i];

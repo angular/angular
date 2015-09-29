@@ -43,7 +43,7 @@ export class SwitchView {
 export class NgSwitch {
   private _switchValue: any;
   private _useDefault: boolean = false;
-  private _valueViews: Map<any, SwitchView[]> = new Map();
+  private _valueViews = new Map<any, SwitchView[]>();
   private _activeViews: SwitchView[] = [];
 
   set ngSwitch(value) {

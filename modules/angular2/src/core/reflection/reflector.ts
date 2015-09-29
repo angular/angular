@@ -20,18 +20,14 @@ export class ReflectionInfo {
 }
 
 export class Reflector {
-  _injectableInfo: Map<any, ReflectionInfo>;
-  _getters: Map<string, GetterFn>;
-  _setters: Map<string, SetterFn>;
-  _methods: Map<string, MethodFn>;
+  _injectableInfo = new Map<any, ReflectionInfo>();
+  _getters = new Map<string, GetterFn>();
+  _setters = new Map<string, SetterFn>();
+  _methods = new Map<string, MethodFn>();
   _usedKeys: Set<any>;
   reflectionCapabilities: PlatformReflectionCapabilities;
 
   constructor(reflectionCapabilities: PlatformReflectionCapabilities) {
-    this._injectableInfo = new Map();
-    this._getters = new Map();
-    this._setters = new Map();
-    this._methods = new Map();
     this._usedKeys = null;
     this.reflectionCapabilities = reflectionCapabilities;
   }

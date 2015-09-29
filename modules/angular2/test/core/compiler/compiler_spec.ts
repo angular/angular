@@ -608,7 +608,7 @@ function createProtoView(elementBinders = null, type: ViewType = null,
     type = ViewType.COMPONENT;
   }
   var pv = new AppProtoView(type, isEmbeddedFragment, new RenderProtoViewRef(), null, null,
-                            new Map(), null, null);
+                            new Map<string, number>(), null, null);
   if (isBlank(elementBinders)) {
     elementBinders = [];
   }
@@ -703,7 +703,7 @@ class DirectiveWithAttributes {
 }
 
 class FakeViewResolver extends ViewResolver {
-  _cmpViews: Map<Type, ViewMetadata> = new Map();
+  _cmpViews = new Map<Type, ViewMetadata>();
 
   constructor() { super(); }
 

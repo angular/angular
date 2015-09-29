@@ -194,7 +194,7 @@ export function main() {
 class SomeComponent {}
 
 class FakeXHR extends XHR {
-  _responses: Map<string, string> = new Map();
+  _responses = new Map<string, string>();
 
   constructor() { super(); }
 

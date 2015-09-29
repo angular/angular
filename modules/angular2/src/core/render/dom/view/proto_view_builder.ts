@@ -38,11 +38,11 @@ import {NG_BINDING_CLASS, queryBoundTextNodeIndices, camelCaseToDashCase} from '
 import {EVENT_TARGET_SEPARATOR} from "../../event_config";
 
 export class ProtoViewBuilder {
-  variableBindings: Map<string, string> = new Map();
+  variableBindings = new Map<string, string>();
   elements: ElementBinderBuilder[] = [];
-  rootTextBindings: Map<Node, ASTWithSource> = new Map();
+  rootTextBindings = new Map<Node, ASTWithSource>();
   ngContentCount: number = 0;
-  hostAttributes: Map<string, string> = new Map();
+  hostAttributes = new Map<string, string>();
 
   constructor(public rootElement, public type: ViewType,
               public viewEncapsulation: ViewEncapsulation) {}
@@ -89,7 +89,7 @@ export class ProtoViewBuilder {
                               });
 
     ListWrapper.forEach(this.elements, (ebb: ElementBinderBuilder) => {
-      var directiveTemplatePropertyNames = new Set();
+      var directiveTemplatePropertyNames = new Set<string>();
       var apiDirectiveBinders = ListWrapper.map(ebb.directives, (dbb: DirectiveBuilder) => {
         ebb.eventBuilder.merge(dbb.eventBuilder);
         ListWrapper.forEach(dbb.templatePropertyNames,
@@ -155,12 +155,12 @@ export class ElementBinderBuilder {
   distanceToParent: number = 0;
   directives: DirectiveBuilder[] = [];
   nestedProtoView: ProtoViewBuilder = null;
-  propertyBindings: Map<string, ASTWithSource> = new Map();
-  variableBindings: Map<string, string> = new Map();
+  propertyBindings = new Map<string, ASTWithSource>();
+  variableBindings = new Map<string, string>();
   eventBindings: EventBinding[] = [];
   eventBuilder: EventBuilder = new EventBuilder();
-  textBindings: Map<Node, ASTWithSource> = new Map();
-  readAttributes: Map<string, string> = new Map();
+  textBindings = new Map<Node, ASTWithSource>();
+  readAttributes = new Map<string, string>();
   componentId: string = null;
 
   constructor(public index: number, public element, description: string) {}
@@ -231,10 +231,10 @@ export class ElementBinderBuilder {
 
 export class DirectiveBuilder {
   // mapping from directive property name to AST for that directive
-  propertyBindings: Map<string, ASTWithSource> = new Map();
+  propertyBindings = new Map<string, ASTWithSource>();
   // property names used in the template
   templatePropertyNames: string[] = [];
-  hostPropertyBindings: Map<string, ASTWithSource> = new Map();
+  hostPropertyBindings = new Map<string, ASTWithSource>();
   eventBindings: EventBinding[] = [];
   eventBuilder: EventBuilder = new EventBuilder();
 

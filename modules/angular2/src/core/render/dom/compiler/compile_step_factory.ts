@@ -12,7 +12,7 @@ export class CompileStepFactory {
 }
 
 export class DefaultStepFactory extends CompileStepFactory {
-  private _componentUIDsCache: Map<string, string> = new Map();
+  private _componentUIDsCache = new Map<string, string>();
   constructor(private _parser: Parser, private _appId: string) { super(); }
 
   createSteps(view: ViewDefinition): CompileStep[] {

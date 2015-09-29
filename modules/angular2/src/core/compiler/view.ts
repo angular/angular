@@ -167,7 +167,7 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
    * @param {number} boundElementIndex
    */
   triggerEventHandlers(eventName: string, eventObj: Event, boundElementIndex: number): void {
-    var locals = new Map();
+    var locals = new Map<string, any>();
     locals.set('$event', eventObj);
     this.dispatchEvent(boundElementIndex, eventName, locals);
   }
@@ -332,7 +332,7 @@ class EventEvaluationError extends WrappedException {
  */
 export class AppProtoView {
   elementBinders: ElementBinder[] = [];
-  protoLocals: Map<string, any> = new Map();
+  protoLocals = new Map<string, any>();
   mergeMapping: AppProtoViewMergeMapping;
   ref: ProtoViewRef;
 

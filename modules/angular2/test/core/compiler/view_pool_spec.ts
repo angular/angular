@@ -29,7 +29,7 @@ export function main() {
     }
 
     function createView(pv) {
-      return new AppView(null, pv, null, null, null, null, new Map(), null, null);
+      return new AppView(null, pv, null, null, null, null, new Map<string, any>(), null, null);
     }
 
     it('should support multiple AppProtoViews', () => {
