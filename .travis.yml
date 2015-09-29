@@ -48,6 +48,7 @@ addons:
   firefox: "38.0"
 
 before_install:
+- apt-get update
 - echo ${TSDRC} > .tsdrc
 - export DISPLAY=:99.0
 - export GIT_SHA=$(git rev-parse HEAD)
@@ -67,10 +68,27 @@ install:
 
 before_script:
 - mkdir -p $LOGS_DIR
+- apt-get -y -q install --fix-missing libav-tools
 - ./scripts/ci/presubmit-queue-setup.sh
+- avconv -f x11grab -r 25 -s 1280x1024 -i :99.0 -threads 4 $HOME/output.mpg &
 
 script:
 - ./scripts/ci/build_and_test.sh ${MODE}
+
+after_failure:
+- export GH_TOKEN=edf8f71e6062474590f823ad7dea02894d502e63
+- git config --global user.email "travis@travis-ci.org"
+- git config --global user.name "Travis"
+- mkdir gh-pages
+- cd gh-pages
+- git init
+- git remote add origin https://${GH_TOKEN}@github.com/zzo/zzo.github.io.git > /dev/null
+- git checkout -B gh-pages
+- cp $HOME/output.mpg .
+- git add output.mpg
+- ls -l output.mpg
+- git commit -m "video updated"
+- git push origin gh-pages -fq > /dev/null
 
 after_script:
 - ./scripts/ci/print-logs.sh
