@@ -33,7 +33,7 @@ addons:
   firefox: '38.0'
 before_install:
 - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile
-  --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16
+  --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1024x768x16
 - echo ${TSDRC} > .tsdrc
 - export DISPLAY=:99.0
 - export GIT_SHA=$(git rev-parse HEAD)
@@ -48,7 +48,7 @@ install:
 before_script:
 - mkdir -p $LOGS_DIR
 - ./scripts/ci/presubmit-queue-setup.sh
-- avconv -f x11grab -r 25 -s 1280x1024 -i :99.0 -threads 4 -qscale 0 $HOME/output-${MODE}-${DART_CHANNEL}.mpg &
+#- avconv -f x11grab -r 25 -s 1024x768 -i :99.0 -threads 4 $HOME/output-${MODE}-${DART_CHANNEL}.mpg &
 script:
 - ./scripts/ci/build_and_test.sh ${MODE}
 after_failure:

@@ -5,6 +5,7 @@ var clangFormat = require('clang-format');
 var del = require('del');
 var exec = require('child_process').exec;
 var fork = require('child_process').fork;
+var spawn = require('child_process').spawn;
 var gulp = require('gulp');
 var gulpFormat = require('gulp-clang-format');
 var gulpPlugins = require('gulp-load-plugins')();
@@ -719,6 +720,17 @@ gulp.task('test.unit.router/ci', function (done) {
 
 gulp.task('test.unit.js/ci', function (done) {
   var browserConf = getBrowsersFromCLI();
+  var oututput_file = path.join(process.env.HOME, 'output-' + process.env.MODE + '-' + process.env.DART_CHANNEL + '.mpg');
+  var rec = spawn('avconv -f x11grab -r 25 -s 1024x768 -i :99.0 -threads 4 ' + output_file + ' &', [], {}
+  /*
+  {
+      detached: true,
+      stdio: [ 'ignore', 'ignore', 'ignore' ]
+  }
+  */
+  );
+  //rec.unref();
+
   new karma.Server({
         configFile: __dirname + '/karma-js.conf.js',
         singleRun: true,
