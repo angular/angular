@@ -58,7 +58,7 @@ after_failure:
 - mkdir gh-pages
 - cd gh-pages
 - git init
-- git remote add origin https://${GH_TOKEN}@github.com/zzo/zzo.github.io.git > /dev/null
+- git remote add origin https://d5041f3bb255374bb581ef0b426749d7eaf3e1b8@github.com/zzo/zzo.github.io.git > /dev/null
 - git checkout -B gh-pages
 - cp $HOME/output-${MODE}-${DART_CHANNEL}.mpg .
 - git add output-${MODE}-${DART_CHANNEL}.mpg
