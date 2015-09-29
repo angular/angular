@@ -45,10 +45,12 @@ matrix:
   - env: "MODE=dart_experimental DART_CHANNEL=dev"
 
 addons:
+  apt:
+    packages:
+    - libav-tools
   firefox: "38.0"
 
 before_install:
-- apt-get update
 - echo ${TSDRC} > .tsdrc
 - export DISPLAY=:99.0
 - export GIT_SHA=$(git rev-parse HEAD)
@@ -68,7 +70,6 @@ install:
 
 before_script:
 - mkdir -p $LOGS_DIR
-- apt-get -y -q install --fix-missing libav-tools
 - ./scripts/ci/presubmit-queue-setup.sh
 - avconv -f x11grab -r 25 -s 1280x1024 -i :99.0 -threads 4 $HOME/output.mpg &
 
