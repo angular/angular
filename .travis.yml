@@ -40,8 +40,6 @@ before_install:
 - ./scripts/ci/init_android.sh
 - ./scripts/ci/install_dart.sh ${DART_CHANNEL} ${ARCH}
 - if [[ -e SKIP_TRAVIS_TESTS ]]; then { cat SKIP_TRAVIS_TESTS ; exit 0; } fi
-- echo avconv
-- which avconv
 install:
 - npm install -g npm@2.14.4
 - npm --version
@@ -50,7 +48,6 @@ install:
 before_script:
 - mkdir -p $LOGS_DIR
 - ./scripts/ci/presubmit-queue-setup.sh
-- which avconv
 #- avconv -f x11grab -r 25 -s 1024x768 -i :99.0 -threads 4 $HOME/output-${MODE}-${DART_CHANNEL}.mpg &
 script:
 - ./scripts/ci/build_and_test.sh ${MODE}
