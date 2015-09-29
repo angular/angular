@@ -355,9 +355,8 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
     throw 'not implemented';
   }
 
-  List cssToRules(String css) {
-    throw 'not implemented';
-  }
+  // TODO(kegluneq): This must be implemented.
+  List cssToRules(String css) => [];
 
   List getDistributedNodes(Node) {
     throw 'not implemented';
@@ -411,6 +410,7 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
   requestAnimationFrame(callback) {
     throw 'not implemented';
   }
+
   cancelAnimationFrame(id) {
     throw 'not implemented';
   }
