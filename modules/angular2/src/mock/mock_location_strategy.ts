@@ -21,8 +21,10 @@ export class MockLocationStrategy extends LocationStrategy {
     ObservableWrapper.callNext(this._subject, {'url': pathname});
   }
 
-  pushState(ctx: any, title: string, url: string): void {
+  pushState(ctx: any, title: string, path: string, query: string): void {
     this.internalTitle = title;
+
+    var url = path + (query.length > 0 ? ('?' + query) : '');
     this.internalPath = url;
     this.urlChanges.push(url);
   }

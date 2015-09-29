@@ -102,12 +102,18 @@ export class PrimaryInstruction {
 }
 
 export function stringifyInstruction(instruction: Instruction): string {
-  var params = instruction.component.urlParams.length > 0 ?
-                   ('?' + instruction.component.urlParams.join('&')) :
-                   '';
+  return stringifyInstructionPath(instruction) + stringifyInstructionQuery(instruction);
+}
 
+export function stringifyInstructionPath(instruction: Instruction): string {
   return instruction.component.urlPath + stringifyAux(instruction) +
-         stringifyPrimary(instruction.child) + params;
+         stringifyPrimary(instruction.child);
+}
+
+export function stringifyInstructionQuery(instruction: Instruction): string {
+  return instruction.component.urlParams.length > 0 ?
+             ('?' + instruction.component.urlParams.join('&')) :
+             '';
 }
 
 function stringifyPrimary(instruction: Instruction): string {

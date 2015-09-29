@@ -22,9 +22,15 @@ function _abstract() {
  */
 export class LocationStrategy {
   path(): string { throw _abstract(); }
-  pushState(ctx: any, title: string, url: string): void { throw _abstract(); }
+  pushState(state: any, title: string, url: string, queryParams: string): void {
+    throw _abstract();
+  }
   forward(): void { throw _abstract(); }
   back(): void { throw _abstract(); }
   onPopState(fn: (_: any) => any): void { throw _abstract(); }
   getBaseHref(): string { throw _abstract(); }
+}
+
+export function normalizeQueryParams(params: string): string {
+  return params.length > 0 ? ('?' + params) : '';
 }

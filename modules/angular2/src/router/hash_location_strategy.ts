@@ -1,6 +1,6 @@
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {Injectable} from 'angular2/src/core/di';
-import {LocationStrategy} from './location_strategy';
+import {LocationStrategy, normalizeQueryParams} from './location_strategy';
 import {EventListener, History, Location} from 'angular2/src/core/facade/browser';
 
 /**
@@ -67,11 +67,17 @@ export class HashLocationStrategy extends LocationStrategy {
     // Dart will complain if a call to substring is
     // executed with a position value that extends the
     // length of string.
-    return path.length > 0 ? path.substring(1) : path;
+    return (path.length > 0 ? path.substring(1) : path) +
+           normalizeQueryParams(this._location.search);
   }
 
-  pushState(state: any, title: string, url: string) {
-    this._history.pushState(state, title, '#' + url);
+  pushState(state: any, title: string, path: string, queryParams: string) {
+    var hashPath = path.length > 0 ? ('#' + path) : '';
+    var url = normalizeQueryParams(queryParams) + hashPath;
+    if (url.length == 0) {
+      url = this._location.pathname;
+    }
+    this._history.pushState(state, title, url);
   }
 
   forward(): void { this._history.forward(); }
