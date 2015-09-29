@@ -720,7 +720,7 @@ gulp.task('test.unit.router/ci', function (done) {
 
 gulp.task('test.unit.js/ci', function (done) {
   var browserConf = getBrowsersFromCLI();
-  var oututput_file = path.join(process.env.HOME, 'output-' + process.env.MODE + '-' + process.env.DART_CHANNEL + '.mpg');
+  var output_file = path.join(process.env.HOME, 'output-' + process.env.MODE + '-' + process.env.DART_CHANNEL + '.mpg');
   var rec = spawn('avconv -f x11grab -r 25 -s 1024x768 -i :99.0 -threads 4 ' + output_file + ' &', [], {}
   /*
   {
