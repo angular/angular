@@ -12,30 +12,108 @@ export enum ViewType {
   EMBEDDED
 }
 
-// An opaque reference to a render proto view
-export class RenderProtoViewRef {}
-
-// An opaque reference to a part of a view
-export class RenderFragmentRef {}
-
-// An opaque reference to a view
-export class RenderViewRef {}
 
 /**
- * How the template and styles of a view should be encapsulated.
+ * Represents an Angular ProtoView in the Rendering Context.
+ *
+ * When you implement a custom {@link Renderer}, `RenderProtoViewRef` specifies what Render View
+ * your renderer should create.
+ *
+ * `RenderProtoViewRef` is a counterpart to {@link ProtoViewRef} available in the Application
+ * Context. But unlike `ProtoViewRef`, `RenderProtoViewRef` contains all static nested Proto Views
+ * that are recursively merged into a single Render Proto View.
+
+ *
+ * <!-- TODO: this is created by Renderer#createProtoView in the new compiler -->
+ */
+// TODO(i): refactor this to an interface
+export class RenderProtoViewRef {
+  /**
+   * @private
+   */
+  constructor() {}
+}
+
+
+/**
+ * Represents a list of sibling Nodes that can be moved by the {@link Renderer} independently of
+ * other Render Fragments.
+ *
+ * Any {@link RenderView} has one Render Fragment.
+ *
+ * Additionally any View with an Embedded View that contains a {@link NgContent View Projection}
+ * results in additional Render Fragment.
+ */
+/*
+  <div>foo</div>
+  {{bar}}
+
+
+  <div>foo</div> -> view 1 / fragment 1
+  <ul>
+    <template ng-for>
+      <li>{{fg}}</li> -> view 2 / fragment 1
+    </template>
+  </ul>
+  {{bar}}
+
+
+  <div>foo</div> -> view 1 / fragment 1
+  <ul>
+    <template ng-if>
+      <li><ng-content></></li> -> view 1 / fragment 2
+    </template>
+    <template ng-for>
+      <li><ng-content></></li> ->
+      <li></li>                -> view 1 / fragment 2 + view 2 / fragment 1..n-1
+    </template>
+  </ul>
+  {{bar}}
+ */
+// TODO(i): refactor into an interface
+export class RenderFragmentRef {}
+
+
+/**
+ * Represents an Angular View in the Rendering Context.
+ *
+ * `RenderViewRef` specifies to the {@link Renderer} what View to update or destroy.
+ *
+ * Unlike a {@link ViewRef} available in the Application Context, Render View contains all the
+ * static Component Views that have been recursively merged into a single Render View.
+ *
+ * Each `RenderViewRef` contains one or more {@link RenderFragmentRef Render Fragments}, these
+ * Fragments are created, hydrated, dehydrated and destroyed as a single unit together with the
+ * View.
+ */
+// TODO(i): refactor into an interface
+export class RenderViewRef {}
+
+
+/**
+ * Defines template and style encapsulation options available for Component's {@link View}.
+ *
+ * See {@link ViewMetadata#encapsulation}.
  */
 export enum ViewEncapsulation {
   /**
-   * Emulate scoping of styles by preprocessing the style rules
-   * and adding additional attributes to elements. This is the default.
+   * Emulate `Native` scoping of styles by adding an attribute containing surrogate id to the Host
+   * Element and pre-processing the style rules provided via
+   * {@link ViewMetadata#styles} or {@link ViewMetadata#stylesUrls}, and adding the new Host Element
+   * attribute to all selectors.
+   *
+   * This is the default option.
    */
   Emulated,
   /**
-   * Uses the native mechanism of the renderer. For the DOM this means creating a ShadowRoot.
+   * Use the native encapsulation mechanism of the renderer.
+   *
+   * For the DOM this means using [Shadow DOM](https://w3c.github.io/webcomponents/spec/shadow/) and
+   * creating a ShadowRoot for Component's Host Element.
    */
   Native,
   /**
-   * Don't scope the template nor the styles.
+   * Don't provide any template or style encapsulation.
    */
   None
 }
@@ -81,49 +159,95 @@ export interface RenderCommandVisitor {
 }
 
 
+/**
+ * Container class produced by a {@link Renderer} when creating a Render View.
+ *
+ * An instance of `RenderViewWithFragments` contains a {@link RenderViewRef} and an array of
+ * {@link RenderFragmentRef}s belonging to this Render View.
+ */
+// TODO(i): refactor this by RenderViewWithFragments and adding fragments directly to RenderViewRef
 export class RenderViewWithFragments {
-  constructor(public viewRef: RenderViewRef, public fragmentRefs: RenderFragmentRef[]) {}
+  constructor(
+      /**
+       * Reference to the {@link RenderViewRef}.
+       */
+      public viewRef: RenderViewRef,
+      /**
+       * Array of {@link RenderFragmentRef}s ordered in the depth-first order.
+       */
+      public fragmentRefs: RenderFragmentRef[]) {}
 }
 
 /**
- * Abstract reference to the element which can be marshaled across web-worker boundary.
+ * Represents an Element that is part of a {@link RenderViewRef Render View}.
  *
- * This interface is used by the Renderer API.
+ * `RenderElementRef` is a counterpart to {@link ElementRef} available in the Application Context.
+ *
+ * When using `Renderer` from the Application Context, `ElementRef` can be used instead of
+ * `RenderElementRef`.
  */
 export interface RenderElementRef {
   /**
-   * Reference to the `RenderViewRef` where the `RenderElementRef` is inside of.
+   * Reference to the Render View that contains this Element.
    */
   renderView: RenderViewRef;
   /**
-   * Index of the element inside the `RenderViewRef`.
+   * Index of the Element (in the depth-first order) inside the Render View.
    *
-   * This is used internally by the Angular framework to locate elements.
+   * This index is used internally by Angular to locate elements.
    */
   boundElementIndex: number;
 }
 
+
+/**
+ * Injectable service that provides a low-level interface for modifying the UI.
+ *
+ * Use this service to bypass Angular's templating and make custom UI changes that can't be
+ * expressed declaratively. For example if you need to set a property or an attribute whose name is
+ * not statically known, use {@link #setElementProperty} or {@link #setElementAttribute}
+ * respectively.
+ *
+ * If you are implementing a custom renderer, you must implement this interface.
+ *
+ * The default Renderer implementation is {@link DomRenderer}. Also see {@link WebWorkerRenderer}.
+ */
 export class Renderer {
   /**
-   * Registers the template of a component
+   * @private
+   *
+   * Private constructor is required so that this class gets converted into an interface in our
+   * public api.
+   *
+   * We implement this a class so that we have a DI token available for binding.
+   */
+  constructor(){};
+
+  /**
+   * Registers a component template represented as arrays of {@link RenderTemplateCmd}s and styles
+   * with the Renderer.
+   *
+   * Once a template is registered it can be referenced via {@link RenderBeginComponentCmd} when
+   * {@link #createProtoView creating Render ProtoView}.
    */
   registerComponentTemplate(templateId: number, commands: RenderTemplateCmd[], styles: string[]) {}
 
   /**
-   * Creates a new RenderProtoViewRef gfrom RenderTemplateCmds.
+   * Creates a {@link RenderProtoViewRef} from an array of {@link RenderTemplateCmd}`s.
    */
   createProtoView(cmds: RenderTemplateCmd[]): RenderProtoViewRef { return null; }
 
   /**
-   * Creates a root host view that includes the given element.
-   * Note that the fragmentCount needs to be passed in so that we can create a result
-   * synchronously even when dealing with webworkers!
+   * Creates a Root Host View based on the provided `hostProtoViewRef`.
    *
-   * @param {RenderProtoViewRef} hostProtoViewRef a RenderProtoViewRef of type
-   * ProtoViewDto.HOST_VIEW_TYPE
-   * @param {any} hostElementSelector css selector for the host element (will be queried against the
-   * main document)
-   * @return {RenderViewWithFragments} the created view including fragments
+   * `fragmentCount` is the number of nested {@link RenderFragmentRef}s in this View. This parameter
+   * is non-optional so that the renderer can create a result synchronously even when application
+   * runs in a different context (e.g. in a Web Worker).
+   *
+   * `hostElementSelector` is a (CSS) selector for querying the main document to find the Host
+   * Element. The newly created Root Host View should be attached to this element.
+   *
+   * Returns an instance of {@link RenderViewWithFragments}, representing the Render View.
    */
   createRootHostView(hostProtoViewRef: RenderProtoViewRef, fragmentCount: number,
                      hostElementSelector: string): RenderViewWithFragments {
@@ -131,99 +255,150 @@ export class Renderer {
   }
 
   /**
-   * Creates a regular view out of the given ProtoView.
-   * Note that the fragmentCount needs to be passed in so that we can create a result
-   * synchronously even when dealing with webworkers!
+   * Creates a Render View based on the provided `protoViewRef`.
+   *
+   * `fragmentCount` is the number of nested {@link RenderFragmentRef}s in this View. This parameter
+   * is non-optional so that the renderer can create a result synchronously even when application
+   * runs in a different context (e.g. in a Web Worker).
+   *
+   * Returns an instance of {@link RenderViewWithFragments}, representing the Render View.
    */
   createView(protoViewRef: RenderProtoViewRef, fragmentCount: number): RenderViewWithFragments {
     return null;
   }
 
   /**
-   * Destroys the given view after it has been dehydrated and detached
+   * Destroys a Render View specified via `viewRef`.
+   *
+   * This operation should be performed only on a View that has already been dehydrated and
+   * all of its Render Fragments have been detached.
+   *
+   * Destroying a View indicates to the Renderer that this View is not going to be referenced in any
+   * future operations. If the Renderer created any renderer-specific objects for this View, these
+   * objects should now be destroyed to prevent memory leaks.
    */
   destroyView(viewRef: RenderViewRef) {}
 
   /**
-   * Attaches a fragment after another fragment.
+   * Attaches the Nodes of a Render Fragment after the last Node of `previousFragmentRef`.
    */
   attachFragmentAfterFragment(previousFragmentRef: RenderFragmentRef,
                               fragmentRef: RenderFragmentRef) {}
 
   /**
-   * Attaches a fragment after an element.
+   * Attaches the Nodes of the Render Fragment after an Element.
    */
   attachFragmentAfterElement(elementRef: RenderElementRef, fragmentRef: RenderFragmentRef) {}
 
   /**
-   * Detaches a fragment.
+   * Detaches the Nodes of a Render Fragment from their parent.
+   *
+   * This operations should be called only on a View that has been already
+   * {@link #dehydrateView dehydrated}.
    */
   detachFragment(fragmentRef: RenderFragmentRef) {}
 
   /**
-   * Hydrates a view after it has been attached. Hydration/dehydration is used for reusing views
-   * inside of the view pool.
+   * Notifies a custom Renderer to initialize a Render View.
+   *
+   * This method is called by Angular after a Render View has been created, or when a previously
+   * dehydrated Render View is about to be reused.
    */
   hydrateView(viewRef: RenderViewRef) {}
 
   /**
-   * Dehydrates a view after it has been attached. Hydration/dehydration is used for reusing views
-   * inside of the view pool.
+   * Notifies a custom Renderer that a Render View is no longer active.
+   *
+   * This method is called by Angular before a Render View will be destroyed, or when a hydrated
+   * Render View is about to be put into a pool for future reuse.
    */
   dehydrateView(viewRef: RenderViewRef) {}
 
   /**
-   * Returns the native element at the given location.
-   * Attention: In a WebWorker scenario, this should always return null!
+   * Returns the underlying native element at the specified `location`, or `null` if direct access
+   * to native elements is not supported (e.g. when the application runs in a web worker).
+   *
+   * <div class="callout is-critical">
+   *   <header>Use with caution</header>
+   *   <p>
+   *    Use this api as the last resort when direct access to DOM is needed. Use templating and
+   *    data-binding, or other {@link Renderer} methods instead.
+   *   </p>
+   *   <p>
+   *    Relying on direct DOM access creates tight coupling between your application and rendering
+   *    layers which will make it impossible to separate the two and deploy your application into a
+   *    web worker.
+   *   </p>
+   * </div>
    */
   getNativeElementSync(location: RenderElementRef): any { return null; }
 
   /**
-   * Sets a property on an element.
+   * Sets a property on the Element specified via `location`.
    */
   setElementProperty(location: RenderElementRef, propertyName: string, propertyValue: any) {}
 
   /**
-   * Sets an attribute on an element.
+   * Sets an attribute on the Element specified via `location`.
+   *
+   * If `attributeValue` is `null`, the attribute is removed.
    */
   setElementAttribute(location: RenderElementRef, attributeName: string, attributeValue: string) {}
 
   /**
-   * Sets a class on an element.
+   * Sets a (CSS) class on the Element specified via `location`.
+   *
+   * `isAdd` specifies if the class should be added or removed.
    */
   setElementClass(location: RenderElementRef, className: string, isAdd: boolean) {}
 
   /**
-   * Sets a style on an element.
+   * Sets a (CSS) inline style on the Element specified via `location`.
+   *
+   * If `styleValue` is `null`, the style is removed.
    */
   setElementStyle(location: RenderElementRef, styleName: string, styleValue: string) {}
 
   /**
-   * Calls a method on an element.
+   * Calls a method on the Element specified via `location`.
    */
   invokeElementMethod(location: RenderElementRef, methodName: string, args: any[]) {}
 
   /**
-   * Sets the value of a text node.
+   * Sets the value of an interpolated TextNode at the specified index to the `text` value.
+   *
+   * `textNodeIndex` is the depth-first index of the Node among interpolated Nodes in the Render
+   * View.
    */
   setText(viewRef: RenderViewRef, textNodeIndex: number, text: string) {}
 
   /**
-   * Sets the dispatcher for all events of the given view
+   * Sets a dispatcher to relay all events triggered in the given Render View.
+   *
+   * Each Render View can have only one Event Dispatcher, if this method is called multiple times,
+   * the last provided dispatcher will be used.
    */
   setEventDispatcher(viewRef: RenderViewRef, dispatcher: RenderEventDispatcher) {}
 }
 
 
 /**
- * A dispatcher for all events happening in a view.
+ * A dispatcher that relays all events that occur in a Render View.
+ *
+ * Use {@link Renderer#setEventDispatcher} to register a dispatcher for a particular Render View.
  */
 export interface RenderEventDispatcher {
   /**
-   * Called when an event was triggered for a on-* attribute on an element.
-   * @param {Map<string, any>} locals Locals to be used to evaluate the
-   *   event expressions
-   * @return {boolean} False if `preventDefault` should be called on the DOM event.
+   * Called when Event called `eventName` was triggered on an Element with an Event Binding for this
+   * Event.
+   *
+   * `elementIndex` specifies the depth-first index of the Element in the Render View.
+   *
+   * `locals` is a map for local variable to value mapping that should be used when evaluating the
+   * Event Binding expression.
+   *
+   * Returns `false` if `preventDefault` should be called to stop the default behavior of the Event
+   * in the Rendering Context.
    */
   dispatchRenderEvent(elementIndex: number, eventName: string, locals: Map<string, any>): boolean;
 }
