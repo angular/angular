@@ -23,10 +23,10 @@ const ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
 const UTIL = "ChangeDetectionUtil";
 
 var ABSTRACT_CHANGE_DETECTOR_MODULE =
-    moduleRef('angular2/src/core/change_detection/abstract_change_detector');
-var UTIL_MODULE = moduleRef('angular2/src/core/change_detection/change_detection_util');
+    moduleRef('package:angular2/src/core/change_detection/abstract_change_detector');
+var UTIL_MODULE = moduleRef('package:angular2/src/core/change_detection/change_detection_util');
 var PREGEN_PROTO_CHANGE_DETECTOR_MODULE =
-    moduleRef('angular2/src/core/change_detection/pregen_proto_change_detector');
+    moduleRef('package:angular2/src/core/change_detection/pregen_proto_change_detector');
 
 @Injectable()
 export class ChangeDetectionCompiler {

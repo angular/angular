@@ -40,7 +40,8 @@ import {
 import {escapeSingleQuoteString} from './util';
 import {Injectable} from 'angular2/src/core/di';
 
-export var TEMPLATE_COMMANDS_MODULE_REF = moduleRef('angular2/src/core/compiler/template_commands');
+export var TEMPLATE_COMMANDS_MODULE_REF =
+    moduleRef('package:angular2/src/core/compiler/template_commands');
 
 const IMPLICIT_TEMPLATE_VAR = '\$implicit';
 
