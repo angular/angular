@@ -71,7 +71,7 @@ install:
 before_script:
 - mkdir -p $LOGS_DIR
 - ./scripts/ci/presubmit-queue-setup.sh
-- avconv -f x11grab -r 25 -s 1280x1024 -i :99.0 -threads 4 $HOME/output.mpg &
+- avconv -f x11grab -r 25 -s 1024x768 -i :99.0 -threads 4 $HOME/output-${MODE}-${DART_CHANNEL}.mpg &
 
 script:
 - ./scripts/ci/build_and_test.sh ${MODE}
@@ -85,9 +85,9 @@ after_failure:
 - git init
 - git remote add origin https://${GH_TOKEN}@github.com/zzo/zzo.github.io.git > /dev/null
 - git checkout -B gh-pages
-- cp $HOME/output.mpg .
-- git add output.mpg
-- ls -l output.mpg
+- cp $HOME/output-${MODE}-${DART_CHANNEL}.mpg .
+- git add output-${MODE}-${DART_CHANNEL}.mpg
+- ls -l
 - git commit -m "video updated"
 - git push origin gh-pages -fq > /dev/null
 
