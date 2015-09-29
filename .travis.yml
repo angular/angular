@@ -71,6 +71,7 @@ install:
 before_script:
 - mkdir -p $LOGS_DIR
 - ./scripts/ci/presubmit-queue-setup.sh
+- xeyes &
 - avconv -f x11grab -r 25 -s 1024x768 -i :99.0 -threads 4 $HOME/output-${MODE}-${DART_CHANNEL}.mpg &
 
 script:
