@@ -715,9 +715,8 @@ gulp.task('test.unit.js/ci', function (done) {
 
 gulp.task('test.unit.js.sauce/ci', function (done) {
   karma.server.start({configFile: __dirname + '/karma-js.conf.js',
-    singleRun: true, browserNoActivityTimeout: 240000, captureTimeout: 120000, browsers: sauceConf.aliases.CI,
-    reporters: process.env.TRAVIS_PULL_REQUEST == 'false' && process.env.TRAVIS_BRANCH == 'master' ?
-    ['dots', 'saucelabs'] : ['dots']},
+    singleRun: true, browserNoActivityTimeout: 240000, captureTimeout: 120000,
+    reporters: ['dots', 'saucelabs'], browsers: sauceConf.aliases.CI},
     function(err) {done(); process.exit(err ? 1 : 0);});
 });
 
