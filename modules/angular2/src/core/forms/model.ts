@@ -291,23 +291,38 @@ export class ControlGroup extends AbstractControl {
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
   }
 
+  /**
+   * Add a control to this group.
+   */
   addControl(name: string, control: AbstractControl): void {
     this.controls[name] = control;
     control.setParent(this);
   }
 
+  /**
+   * Remove a control from this group.
+   */
   removeControl(name: string): void { StringMapWrapper.delete(this.controls, name); }
 
+  /**
+   * Mark the named control as non-optional.
+   */
   include(controlName: string): void {
     StringMapWrapper.set(this._optionals, controlName, true);
     this.updateValueAndValidity();
   }
 
+  /**
+   * Mark the named control as optional.
+   */
   exclude(controlName: string): void {
     StringMapWrapper.set(this._optionals, controlName, false);
     this.updateValueAndValidity();
   }
 
+  /**
+   * Check whether there is a control with the given name in the group.
+   */
   contains(controlName: string): boolean {
     var c = StringMapWrapper.contains(this.controls, controlName);
     return c && this._included(controlName);
@@ -421,7 +436,7 @@ export class ControlArray extends AbstractControl {
   }
 
   /**
-   * Get the length of the control array.
+   * Length of the control array.
    */
   get length(): number { return this.controls.length; }
 

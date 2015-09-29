@@ -15,7 +15,7 @@ const DEFAULT_VALUE_ACCESSOR = CONST_EXPR(new Provider(
  *
  *  ### Example
  *  ```
- *  <input type="text" [(ng-model)]="searchQuery">
+ *  <input type="text" ng-control="searchQuery">
  *  ```
  */
 @Directive({

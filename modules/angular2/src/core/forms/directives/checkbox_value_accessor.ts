@@ -15,7 +15,7 @@ const CHECKBOX_VALUE_ACCESSOR = CONST_EXPR(new Provider(
  *
  *  ### Example
  *  ```
- *  <input type="checkbox" [ng-control]="rememberLogin">
+ *  <input type="checkbox" ng-control="rememberLogin">
  *  ```
  */
 @Directive({
