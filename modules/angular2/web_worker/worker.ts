@@ -23,7 +23,15 @@ export {
   RenderViewRef,
   RenderProtoViewRef,
   RenderFragmentRef,
-  RenderViewWithFragments
+  RenderViewWithFragments,
+  RenderTemplateCmd,
+  RenderCommandVisitor,
+  RenderTextCmd,
+  RenderNgContentCmd,
+  RenderBeginElementCmd,
+  RenderBeginComponentCmd,
+  RenderEmbeddedTemplateCmd,
+  RenderBeginCmd
 } from '../src/core/render/render';
 export * from '../src/core/directives';
 export * from '../src/core/forms';

@@ -18,7 +18,6 @@ import {
 
 import {
   SpyChangeDetector,
-  SpyProtoChangeDetector,
   SpyProtoElementInjector,
   SpyElementInjector,
   SpyPreBuiltObjects
@@ -26,9 +25,8 @@ import {
 
 import {Injector, bind} from 'angular2/core';
 import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
-import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
-import {AppProtoView, AppView, AppProtoViewMergeMapping} from 'angular2/src/core/compiler/view';
+import {AppProtoView, AppView, AppProtoViewMergeInfo} from 'angular2/src/core/compiler/view';
 import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
 import {
   DirectiveBinding,
@@ -208,16 +206,19 @@ export function createInjector() {
 function createElementInjector(parent = null) {
   var host = new SpyElementInjector();
   var elementInjector = new SpyElementInjector();
-  var res = SpyObject.stub(elementInjector,
-                           {
-                             'isExportingComponent': false,
-                             'isExportingElement': false,
-                             'getEventEmitterAccessors': [],
-                             'getHostActionAccessors': [],
-                             'getComponent': new Object(),
-                             'getHost': host
-                           },
-                           {});
+  var _preBuiltObjects = null;
+  var res = SpyObject.stub(elementInjector, {
+    'isExportingComponent': false,
+    'isExportingElement': false,
+    'getEventEmitterAccessors': [],
+    'getHostActionAccessors': [],
+    'getComponent': new Object(),
+    'getHost': host
+  });
+  res.spy('getNestedView').andCallFake(() => _preBuiltObjects.nestedView);
+  res.spy('hydrate')
+      .andCallFake((mperativelyCreatedInjector: Injector, host: ElementInjector,
+                    preBuiltObjects: PreBuiltObjects) => { _preBuiltObjects = preBuiltObjects; });
   res.prop('parent', parent);
   return res;
 }
@@ -232,7 +233,7 @@ export function createProtoElInjector(parent: ProtoElementInjector = null): Prot
 
 export function createEmptyElBinder(parent: ElementBinder = null) {
   var parentPeli = isPresent(parent) ? parent.protoElementInjector : null;
-  return new ElementBinder(0, null, 0, createProtoElInjector(parentPeli), null);
+  return new ElementBinder(0, null, 0, createProtoElInjector(parentPeli), null, null);
 }
 
 export function createNestedElBinder(nestedProtoView: AppProtoView) {
@@ -241,78 +242,34 @@ export function createNestedElBinder(nestedProtoView: AppProtoView) {
     var annotation = new DirectiveResolver().resolve(SomeComponent);
     componentBinding = DirectiveBinding.createFromType(SomeComponent, annotation);
   }
-  var binder = new ElementBinder(0, null, 0, createProtoElInjector(), componentBinding);
-  binder.nestedProtoView = nestedProtoView;
-  return binder;
-}
-
-function countNestedElementBinders(pv: AppProtoView): number {
-  var result = pv.elementBinders.length;
-  pv.elementBinders.forEach(binder => {
-    if (isPresent(binder.nestedProtoView)) {
-      result += countNestedElementBinders(binder.nestedProtoView);
-    }
-  });
-  return result;
-}
-
-function calcHostElementIndicesByViewIndex(pv: AppProtoView, elementOffset = 0,
-                                           target: number[] = null): number[] {
-  if (isBlank(target)) {
-    target = [null];
-  }
-  for (var binderIdx = 0; binderIdx < pv.elementBinders.length; binderIdx++) {
-    var binder = pv.elementBinders[binderIdx];
-    if (isPresent(binder.nestedProtoView)) {
-      target.push(elementOffset + binderIdx);
-      calcHostElementIndicesByViewIndex(binder.nestedProtoView,
-                                        elementOffset + pv.elementBinders.length, target);
-      elementOffset += countNestedElementBinders(binder.nestedProtoView);
-    }
-  }
-  return target;
-}
-
-function countNestedProtoViews(pv: AppProtoView, target: number[] = null): number[] {
-  if (isBlank(target)) {
-    target = [];
-  }
-  target.push(null);
-  var resultIndex = target.length - 1;
-  var count = 0;
-  for (var binderIdx = 0; binderIdx < pv.elementBinders.length; binderIdx++) {
-    var binder = pv.elementBinders[binderIdx];
-    if (isPresent(binder.nestedProtoView)) {
-      var nextResultIndex = target.length;
-      countNestedProtoViews(binder.nestedProtoView, target);
-      count += target[nextResultIndex] + 1;
-    }
-  }
-  target[resultIndex] = count;
-  return target;
+  return new ElementBinder(0, null, 0, createProtoElInjector(), componentBinding, nestedProtoView);
 }
 
 function _createProtoView(type: ViewType, binders: ElementBinder[] = null) {
   if (isBlank(binders)) {
     binders = [];
   }
-  var protoChangeDetector = <any>new SpyProtoChangeDetector();
-  protoChangeDetector.spy('instantiate').andReturn(new SpyChangeDetector());
-  var res = new AppProtoView(type, null, null, protoChangeDetector, null, null, 0, null);
-  res.elementBinders = binders;
-  var mappedElementIndices = ListWrapper.createFixedSize(countNestedElementBinders(res));
+  var res = new AppProtoView([], type, true, (_) => new SpyChangeDetector(), new Map(), null);
+  var mergedElementCount = 0;
+  var mergedEmbeddedViewCount = 0;
+  var mergedViewCount = 1;
   for (var i = 0; i < binders.length; i++) {
     var binder = binders[i];
-    mappedElementIndices[i] = i;
     binder.protoElementInjector.index = i;
+    mergedElementCount++;
+    var nestedPv = binder.nestedProtoView;
+    if (isPresent(nestedPv)) {
+      mergedElementCount += nestedPv.mergeInfo.elementCount;
+      mergedEmbeddedViewCount += nestedPv.mergeInfo.embeddedViewCount;
+      mergedViewCount += nestedPv.mergeInfo.viewCount;
+      if (nestedPv.type === ViewType.EMBEDDED) {
+        mergedEmbeddedViewCount++;
+      }
+    }
   }
-  var hostElementIndicesByViewIndex = calcHostElementIndicesByViewIndex(res);
-  if (type === ViewType.EMBEDDED || type === ViewType.HOST) {
-    res.mergeMapping = new AppProtoViewMergeMapping(
-        new RenderProtoViewMergeMapping(null, hostElementIndicesByViewIndex.length,
-                                        mappedElementIndices, mappedElementIndices.length, [],
-                                        hostElementIndicesByViewIndex, countNestedProtoViews(res)));
-  }
+  var mergeInfo =
+      new AppProtoViewMergeInfo(mergedEmbeddedViewCount, mergedElementCount, mergedViewCount);
+  res.init(null, binders, 0, mergeInfo, new Map());
   return res;
 }
 

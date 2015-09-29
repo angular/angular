@@ -1,11 +1,9 @@
-var parse5 = require('parse5');
+var parse5 = require('parse5/index');
 var parser = new parse5.Parser(parse5.TreeAdapters.htmlparser2);
 var serializer = new parse5.Serializer(parse5.TreeAdapters.htmlparser2);
 var treeAdapter = parser.treeAdapter;
 
-var cssParse = require('css').parse;
-
-var url = require('url');
+var cssParse = require('css/lib/parse/index');
 
 import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {DomAdapter, setRootDomAdapter} from './dom_adapter';
@@ -487,7 +485,7 @@ export class Parse5DomAdapter extends DomAdapter {
     if (href == null) {
       el.href = baseUrl;
     } else {
-      el.href = url.resolve(baseUrl, href);
+      el.href = baseUrl + '/../' + href;
     }
   }
   _buildRules(parsedRules, css?) {

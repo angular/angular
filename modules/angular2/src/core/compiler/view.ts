@@ -33,44 +33,11 @@ import {ViewRef, ProtoViewRef, internalView} from './view_ref';
 import {ElementRef} from './element_ref';
 import {ProtoPipes} from 'angular2/src/core/pipes/pipes';
 import {camelCaseToDashCase} from 'angular2/src/core/render/dom/util';
+import {TemplateCmd} from './template_commands';
 
 export {DebugContext} from 'angular2/src/core/change_detection/interfaces';
 
 const REFLECT_PREFIX: string = 'ng-reflect-';
-
-export class AppProtoViewMergeMapping {
-  renderProtoViewRef: renderApi.RenderProtoViewRef;
-  renderFragmentCount: number;
-  renderElementIndices: number[];
-  renderInverseElementIndices: number[];
-  renderTextIndices: number[];
-  nestedViewIndicesByElementIndex: number[];
-  hostElementIndicesByViewIndex: number[];
-  nestedViewCountByViewIndex: number[];
-  constructor(renderProtoViewMergeMapping: renderApi.RenderProtoViewMergeMapping) {
-    this.renderProtoViewRef = renderProtoViewMergeMapping.mergedProtoViewRef;
-    this.renderFragmentCount = renderProtoViewMergeMapping.fragmentCount;
-    this.renderElementIndices = renderProtoViewMergeMapping.mappedElementIndices;
-    this.renderInverseElementIndices = inverseIndexMapping(
-        this.renderElementIndices, renderProtoViewMergeMapping.mappedElementCount);
-    this.renderTextIndices = renderProtoViewMergeMapping.mappedTextIndices;
-    this.hostElementIndicesByViewIndex = renderProtoViewMergeMapping.hostElementIndicesByViewIndex;
-    this.nestedViewIndicesByElementIndex =
-        inverseIndexMapping(this.hostElementIndicesByViewIndex, this.renderElementIndices.length);
-    this.nestedViewCountByViewIndex = renderProtoViewMergeMapping.nestedViewCountByViewIndex;
-  }
-}
-
-function inverseIndexMapping(input: number[], resultLength: number): number[] {
-  var result = ListWrapper.createGrowableSize(resultLength);
-  for (var i = 0; i < input.length; i++) {
-    var value = input[i];
-    if (isPresent(value)) {
-      result[input[i]] = i;
-    }
-  }
-  return result;
-}
 
 export class AppViewContainer {
   // The order in this list matches the DOM order.
@@ -109,7 +76,6 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
   ref: ViewRef;
   changeDetector: ChangeDetector = null;
 
-
   /**
    * The context against which data-binding expressions in this view are evaluated against.
    * This is always a component instance.
@@ -125,10 +91,10 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
   locals: Locals;
 
   constructor(public renderer: renderApi.Renderer, public proto: AppProtoView,
-              public mainMergeMapping: AppProtoViewMergeMapping, public viewOffset: number,
-              public elementOffset: number, public textOffset: number,
+              public viewOffset: number, public elementOffset: number, public textOffset: number,
               protoLocals: Map<string, any>, public render: renderApi.RenderViewRef,
-              public renderFragment: renderApi.RenderFragmentRef) {
+              public renderFragment: renderApi.RenderFragmentRef,
+              public containerElementInjector: ElementInjector) {
     this.ref = new ViewRef(this);
 
     this.locals = new Locals(null, MapWrapper.clone(protoLocals));  // TODO optimize this
@@ -148,10 +114,10 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
 
   setLocal(contextName: string, value: any): void {
     if (!this.hydrated()) throw new BaseException('Cannot set locals on dehydrated view.');
-    if (!this.proto.variableBindings.has(contextName)) {
+    if (!this.proto.templateVariableBindings.has(contextName)) {
       return;
     }
-    var templateName = this.proto.variableBindings.get(contextName);
+    var templateName = this.proto.templateVariableBindings.get(contextName);
     this.locals.set(templateName, value);
   }
 
@@ -175,9 +141,7 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
   // dispatch to element injector or text nodes based on context
   notifyOnBinding(b: BindingTarget, currentValue: any): void {
     if (b.isTextNode()) {
-      this.renderer.setText(
-          this.render, this.mainMergeMapping.renderTextIndices[b.elementIndex + this.textOffset],
-          currentValue);
+      this.renderer.setText(this.render, b.elementIndex + this.textOffset, currentValue);
     } else {
       var elementRef = this.elementRefs[this.elementOffset + b.elementIndex];
       if (b.isElementProperty()) {
@@ -226,13 +190,14 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
   }
 
   getNestedView(boundElementIndex: number): AppView {
-    var viewIndex = this.mainMergeMapping.nestedViewIndicesByElementIndex[boundElementIndex];
-    return isPresent(viewIndex) ? this.views[viewIndex] : null;
+    var eli = this.elementInjectors[boundElementIndex];
+    return isPresent(eli) ? eli.getNestedView() : null;
   }
 
-  getHostElement(): ElementRef {
-    var boundElementIndex = this.mainMergeMapping.hostElementIndicesByViewIndex[this.viewOffset];
-    return isPresent(boundElementIndex) ? this.elementRefs[boundElementIndex] : null;
+  getContainerElement(): ElementRef {
+    return isPresent(this.containerElementInjector) ?
+               this.containerElementInjector.getElementRef() :
+               null;
   }
 
   getDebugContext(elementIndex: number, directiveIndex: DirectiveIndex): DebugContext {
@@ -241,11 +206,11 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
       var hasRefForIndex = offsettedIndex < this.elementRefs.length;
 
       var elementRef = hasRefForIndex ? this.elementRefs[this.elementOffset + elementIndex] : null;
-      var host = this.getHostElement();
+      var container = this.getContainerElement();
       var ei = hasRefForIndex ? this.elementInjectors[this.elementOffset + elementIndex] : null;
 
       var element = isPresent(elementRef) ? elementRef.nativeElement : null;
-      var componentElement = isPresent(host) ? host.nativeElement : null;
+      var componentElement = isPresent(container) ? container.nativeElement : null;
       var directive = isPresent(directiveIndex) ? this.getDirectiveFor(directiveIndex) : null;
       var injector = isPresent(ei) ? ei.getInjector() : null;
 
@@ -269,10 +234,9 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
   }
 
   // implementation of RenderEventDispatcher#dispatchRenderEvent
-  dispatchRenderEvent(renderElementIndex: number, eventName: string,
+  dispatchRenderEvent(boundElementIndex: number, eventName: string,
                       locals: Map<string, any>): boolean {
-    var elementRef =
-        this.elementRefs[this.mainMergeMapping.renderInverseElementIndices[renderElementIndex]];
+    var elementRef = this.elementRefs[boundElementIndex];
     var view = internalView(elementRef.parentView);
     return view.dispatchEvent(elementRef.boundElementIndex, eventName, locals);
   }
@@ -326,36 +290,53 @@ class EventEvaluationError extends WrappedException {
   }
 }
 
+export class AppProtoViewMergeInfo {
+  constructor(public embeddedViewCount: number, public elementCount: number,
+              public viewCount: number) {}
+}
 
 /**
  *
  */
 export class AppProtoView {
-  elementBinders: ElementBinder[] = [];
-  protoLocals: Map<string, any> = new Map();
-  mergeMapping: AppProtoViewMergeMapping;
   ref: ProtoViewRef;
+  protoLocals: Map<string, any>;
 
-  constructor(public type: renderApi.ViewType, public isEmbeddedFragment: boolean,
-              public render: renderApi.RenderProtoViewRef,
-              public protoChangeDetector: ProtoChangeDetector,
-              public variableBindings: Map<string, string>,
-              public variableLocations: Map<string, number>, public textBindingCount: number,
-              public pipes: ProtoPipes) {
+  elementBinders: ElementBinder[] = null;
+  mergeInfo: AppProtoViewMergeInfo = null;
+  variableLocations: Map<string, number> = null;
+  textBindingCount = null;
+  render: renderApi.RenderProtoViewRef = null;
+
+  constructor(public templateCmds: TemplateCmd[], public type: renderApi.ViewType,
+              public isMergable: boolean, public changeDetectorFactory: Function,
+              public templateVariableBindings: Map<string, string>, public pipes: ProtoPipes) {
     this.ref = new ProtoViewRef(this);
-    if (isPresent(variableBindings)) {
-      MapWrapper.forEach(variableBindings,
+  }
+
+  init(render: renderApi.RenderProtoViewRef, elementBinders: ElementBinder[],
+       textBindingCount: number, mergeInfo: AppProtoViewMergeInfo,
+       variableLocations: Map<string, number>) {
+    this.render = render;
+    this.elementBinders = elementBinders;
+    this.textBindingCount = textBindingCount;
+    this.mergeInfo = mergeInfo;
+    this.variableLocations = variableLocations;
+    this.protoLocals = new Map();
+    if (isPresent(this.templateVariableBindings)) {
+      MapWrapper.forEach(this.templateVariableBindings,
                          (templateName, _) => { this.protoLocals.set(templateName, null); });
+    }
+    if (isPresent(variableLocations)) {
+      // The view's locals needs to have a full set of variable names at construction time
+      // in order to prevent new variables from being set later in the lifecycle. Since we don't
+      // want
+      // to actually create variable bindings for the $implicit bindings, add to the
+      // protoLocals manually.
+      MapWrapper.forEach(variableLocations,
+                         (_, templateName) => { this.protoLocals.set(templateName, null); });
     }
   }
 
-  bindElement(parent: ElementBinder, distanceToParent: number,
-              protoElementInjector: ProtoElementInjector,
-              componentDirective: DirectiveBinding = null): ElementBinder {
-    var elBinder = new ElementBinder(this.elementBinders.length, parent, distanceToParent,
-                                     protoElementInjector, componentDirective);
-
-    this.elementBinders.push(elBinder);
-    return elBinder;
-  }
+  isInitialized(): boolean { return isPresent(this.elementBinders); }
 }

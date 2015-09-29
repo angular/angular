@@ -1,9 +1,11 @@
+import {Injectable} from 'angular2/src/core/di';
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {ElementSchemaRegistry} from './element_schema_registry';
 
+@Injectable()
 export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   private _protoElements: Map<string, Element> = new Map();
 

@@ -29,9 +29,26 @@ import {
   RenderElementRef,
   ViewType,
   ViewEncapsulation,
-  PropertyBindingType
+  PropertyBindingType,
+  RenderTemplateCmd,
+  RenderCommandVisitor,
+  RenderTextCmd,
+  RenderNgContentCmd,
+  RenderBeginElementCmd,
+  RenderBeginComponentCmd,
+  RenderEmbeddedTemplateCmd
 } from "angular2/src/core/render/api";
-import {WebWorkerElementRef} from 'angular2/src/web_workers/shared/api';
+import {
+  WebWorkerElementRef,
+  WebWorkerTemplateCmd,
+  WebWorkerTextCmd,
+  WebWorkerNgContentCmd,
+  WebWorkerBeginElementCmd,
+  WebWorkerEndElementCmd,
+  WebWorkerBeginComponentCmd,
+  WebWorkerEndComponentCmd,
+  WebWorkerEmbeddedTemplateCmd
+} from 'angular2/src/web_workers/shared/api';
 import {AST, ASTWithSource} from 'angular2/src/core/change_detection/change_detection';
 import {Parser} from "angular2/src/core/change_detection/parser/parser";
 import {Injectable} from "angular2/src/core/di";
@@ -109,6 +126,8 @@ export class Serializer {
       return this._serializeElementPropertyBinding(obj);
     } else if (type == EventBinding) {
       return this._serializeEventBinding(obj);
+    } else if (type == WebWorkerTemplateCmd) {
+      return serializeTemplateCmd(obj);
     } else {
       throw new BaseException("No serializer for " + type.toString());
     }
@@ -153,6 +172,8 @@ export class Serializer {
       return this._deserializeEventBinding(map);
     } else if (type == ElementPropertyBinding) {
       return this._deserializeElementPropertyBinding(map);
+    } else if (type == WebWorkerTemplateCmd) {
+      return deserializeTemplateCmd(map);
     } else {
       throw new BaseException("No deserializer for " + type.toString());
     }
@@ -406,3 +427,82 @@ export class Serializer {
     });
   }
 }
+
+function serializeTemplateCmd(cmd: RenderTemplateCmd): Object {
+  return cmd.visit(RENDER_TEMPLATE_CMD_SERIALIZER, null);
+}
+
+function deserializeTemplateCmd(data: StringMap<string, any>): RenderTemplateCmd {
+  return RENDER_TEMPLATE_CMD_DESERIALIZERS[data['deserializerIndex']](data);
+}
+
+class RenderTemplateCmdSerializer implements RenderCommandVisitor {
+  visitText(cmd: RenderTextCmd, context: any): any {
+    return {
+      'deserializerIndex': 0,
+      'isBound': cmd.isBound,
+      'ngContentIndex': cmd.ngContentIndex,
+      'value': cmd.value
+    };
+  }
+  visitNgContent(cmd: RenderNgContentCmd, context: any): any {
+    return {'deserializerIndex': 1, 'ngContentIndex': cmd.ngContentIndex};
+  }
+  visitBeginElement(cmd: RenderBeginElementCmd, context: any): any {
+    return {
+      'deserializerIndex': 2,
+      'isBound': cmd.isBound,
+      'ngContentIndex': cmd.ngContentIndex,
+      'name': cmd.name,
+      'attrNameAndValues': cmd.attrNameAndValues,
+      'eventTargetAndNames': cmd.eventTargetAndNames
+    };
+  }
+  visitEndElement(context: any): any { return {'deserializerIndex': 3}; }
+  visitBeginComponent(cmd: RenderBeginComponentCmd, context: any): any {
+    return {
+      'deserializerIndex': 4,
+      'isBound': cmd.isBound,
+      'ngContentIndex': cmd.ngContentIndex,
+      'name': cmd.name,
+      'attrNameAndValues': cmd.attrNameAndValues,
+      'eventTargetAndNames': cmd.eventTargetAndNames,
+      'nativeShadow': cmd.nativeShadow,
+      'templateId': cmd.templateId
+    };
+  }
+  visitEndComponent(context: any): any { return {'deserializerIndex': 5}; }
+  visitEmbeddedTemplate(cmd: RenderEmbeddedTemplateCmd, context: any): any {
+    var children = cmd.children.map(child => child.visit(this, null));
+    return {
+      'deserializerIndex': 6,
+      'isBound': cmd.isBound,
+      'ngContentIndex': cmd.ngContentIndex,
+      'name': cmd.name,
+      'attrNameAndValues': cmd.attrNameAndValues,
+      'eventTargetAndNames': cmd.eventTargetAndNames,
+      'isMerged': cmd.isMerged,
+      'children': children
+    };
+  }
+}
+
+var RENDER_TEMPLATE_CMD_SERIALIZER = new RenderTemplateCmdSerializer();
+
+var RENDER_TEMPLATE_CMD_DESERIALIZERS = [
+  (data: StringMap<string, any>) =>
+      new WebWorkerTextCmd(data['isBound'], data['ngContentIndex'], data['value']),
+  (data: StringMap<string, any>) => new WebWorkerNgContentCmd(data['ngContentIndex']),
+  (data: StringMap<string, any>) =>
+      new WebWorkerBeginElementCmd(data['isBound'], data['ngContentIndex'], data['name'],
+                                   data['attrNameAndValues'], data['eventTargetAndNames']),
+  (data: StringMap<string, any>) => new WebWorkerEndElementCmd(),
+  (data: StringMap<string, any>) => new WebWorkerBeginComponentCmd(
+      data['isBound'], data['ngContentIndex'], data['name'], data['attrNameAndValues'],
+      data['eventTargetAndNames'], data['nativeShadow'], data['templateId']),
+  (data: StringMap<string, any>) => new WebWorkerEndComponentCmd(),
+  (data: StringMap<string, any>) => new WebWorkerEmbeddedTemplateCmd(
+      data['isBound'], data['ngContentIndex'], data['name'], data['attrNameAndValues'],
+      data['eventTargetAndNames'], data['isMerged'],
+      (<any[]>data['children']).map(childData => deserializeTemplateCmd(childData))),
+];

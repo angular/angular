@@ -169,7 +169,7 @@ export class DirectiveBinding extends ResolvedBinding {
       type: meta instanceof ComponentMetadata ? RenderDirectiveMetadata.COMPONENT_TYPE :
                                                 RenderDirectiveMetadata.DIRECTIVE_TYPE,
       selector: meta.selector,
-      compileChildren: meta.compileChildren,
+      compileChildren: true,
       events: meta.events,
       host: isPresent(meta.host) ? MapWrapper.createFromStringMap(meta.host) : null,
       properties: meta.properties,
@@ -213,6 +213,7 @@ export class DirectiveBinding extends ResolvedBinding {
 
 // TODO(rado): benchmark and consider rolling in as ElementInjector fields.
 export class PreBuiltObjects {
+  nestedView: viewModule.AppView = null;
   constructor(public viewManager: avmModule.AppViewManager, public view: viewModule.AppView,
               public elementRef: ElementRef, public templateRef: TemplateRef) {}
 }
@@ -471,6 +472,8 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
   getViewContainerRef(): ViewContainerRef {
     return new ViewContainerRef(this._preBuiltObjects.viewManager, this.getElementRef());
   }
+
+  getNestedView(): viewModule.AppView { return this._preBuiltObjects.nestedView; }
 
   getView(): viewModule.AppView { return this._preBuiltObjects.view; }
 

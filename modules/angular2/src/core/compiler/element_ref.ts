@@ -33,6 +33,7 @@ export class ElementRef implements RenderElementRef {
   /**
    * @private
    *
+   * TODO(tbosch): remove this when the new compiler lands
    * Index of the element inside the `RenderViewRef`.
    *
    * This is used internally by the Angular framework to locate elements.
@@ -42,11 +43,10 @@ export class ElementRef implements RenderElementRef {
   /**
    * @private
    */
-  constructor(parentView: ViewRef, boundElementIndex: number, renderBoundElementIndex: number,
-              private _renderer: Renderer) {
+  constructor(parentView: ViewRef, boundElementIndex: number, private _renderer: Renderer) {
     this.parentView = parentView;
     this.boundElementIndex = boundElementIndex;
-    this.renderBoundElementIndex = renderBoundElementIndex;
+    this.renderBoundElementIndex = boundElementIndex;
   }
 
   /**
