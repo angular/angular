@@ -48,6 +48,7 @@ addons:
   apt:
     packages:
     - libav-tools
+    - x11-apps
   firefox: "38.0"
 
 before_install:
