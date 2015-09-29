@@ -9,7 +9,7 @@
       "type": {
         "id": 1,
         "name": "MyApp",
-        "moduleId": "angular2/test/transform/template_compiler/with_prefix_files/ng2_prefix"
+        "moduleId": "asset:angular2/test/transform/template_compiler/with_prefix_files/ng2_prefix"
       },
       "changeDetection": 5,
       "properties": {},

@@ -505,7 +505,7 @@ void allTests() {
       expect(ngMeta.types['HelloCmp']).toBeNotNull();
       expect(ngMeta.types['HelloCmp'].template).toBeNotNull();
       expect(ngMeta.types['HelloCmp'].template.templateUrl)
-          .toEqual('other_package|lib/template.html');
+          .toEqual('asset:other_package/lib/template.html');
     });
 
     // TODO(kegluneq): Flesh out or remove before committing.

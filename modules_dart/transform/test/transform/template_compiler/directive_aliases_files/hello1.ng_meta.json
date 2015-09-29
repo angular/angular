@@ -10,7 +10,7 @@
       "type": {
         "id": 1,
         "name": "HelloCmp",
-        "moduleId": "template_compiler/directive_aliases_files/hello1"
+        "moduleId": "asset:template_compiler/lib/directive_aliases_files/hello1"
       },
       "changeDetection": 5,
       "properties": {},
@@ -39,7 +39,7 @@
       "type": {
         "id": 1,
         "name": "GoodbyeCmp",
-        "moduleId": "template_compiler/directive_aliases_files/hello1"
+        "moduleId": "asset:template_compiler/lib/directive_aliases_files/hello1"
       },
       "changeDetection": 5,
       "properties": {},

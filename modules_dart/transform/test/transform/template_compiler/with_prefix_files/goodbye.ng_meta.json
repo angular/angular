@@ -9,7 +9,7 @@
       "type": {
         "id": 1,
         "name": "GoodbyeCmp",
-        "moduleId": "angular2/test/transform/template_compiler/with_prefix_files/goodbye"
+        "moduleId": "asset:angular2/test/transform/template_compiler/with_prefix_files/goodbye"
       },
       "changeDetection": 5,
       "properties": {},

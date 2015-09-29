@@ -10,7 +10,7 @@
       "type": {
         "id": 1,
         "name": "HelloCmp",
-        "moduleId": "angular2/test/transform/template_compiler/inline_expression_files/hello"
+        "moduleId": "asset:angular2/test/transform/template_compiler/inline_expression_files/hello"
       },
       "changeDetection": 5,
       "properties": {},

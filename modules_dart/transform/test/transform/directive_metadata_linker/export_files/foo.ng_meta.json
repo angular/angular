@@ -11,7 +11,7 @@
       "type": {
         "id": 1,
         "name": "FooComponent",
-        "moduleId": "angular2/test/transform/directive_metadata_linker/export_cycle_files/foo"
+        "moduleId": "asset:angular2/test/transform/directive_metadata_linker/export_cycle_files/foo"
       },
       "changeDetection": 5,
       "properties": {},

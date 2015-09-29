@@ -10,7 +10,7 @@
       "type": {
         "id": 1,
         "name": "BarComponent",
-        "moduleId": "angular2/test/transform/directive_metadata_linker/export_cycle_files/bar"
+        "moduleId": "asset:angular2/test/transform/directive_metadata_linker/export_cycle_files/bar"
       },
       "changeDetection": 5,
       "properties": {},
