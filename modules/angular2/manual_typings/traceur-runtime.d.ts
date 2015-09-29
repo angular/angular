@@ -7,13 +7,6 @@
 // ES5, because they are redundant with lib.es6.d.ts.
 /// <reference path="../typings/es6-promise/es6-promise.d.ts"/>
 
-// es6-promise.d.ts chose a different name for this interface than TS lib.es6.d.ts
-// Generic Type Alises are in TS 1.6 (https://github.com/Microsoft/TypeScript/pull/3397)
-// So we cannot write:
-// declare type PromiseLike = Thenable;
-// Until then we use a workaround:
-interface PromiseLike<T> extends Thenable<T> {}
-
 // Extend the ES5 standard library with some ES6 features we polyfill at runtime
 // by loading es6-shim.js
 

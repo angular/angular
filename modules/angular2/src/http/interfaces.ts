@@ -11,15 +11,15 @@ import {URLSearchParams} from './url_search_params';
  * The primary purpose of a `ConnectionBackend` is to create new connections to fulfill a given
  * {@link Request}.
  */
-export class ConnectionBackend {
+export abstract class ConnectionBackend {
   constructor() {}
-  createConnection(request: any): Connection { throw new BaseException('Abstract!'); }
+  abstract createConnection(request: any): Connection;
 }
 
 /**
  * Abstract class from which real connections are derived.
  */
-export class Connection {
+export abstract class Connection {
   readyState: ReadyStates;
   request: Request;
   response: EventEmitter;  // TODO: generic of <Response>;

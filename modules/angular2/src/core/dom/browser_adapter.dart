@@ -478,6 +478,10 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   num performanceNow() {
     return window.performance.now();
   }
+
+  parse(s) {
+    throw 'not implemented';
+  }
 }
 
 var baseElement = null;

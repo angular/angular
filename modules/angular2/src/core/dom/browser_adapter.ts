@@ -61,6 +61,7 @@ var _chromeNumKeyPadMap = {
 
 /* tslint:disable:requireParameterType */
 export class BrowserDomAdapter extends GenericBrowserDomAdapter {
+  parse(templateHtml: string) { throw new Error("parse not implemented"); }
   static makeCurrent() { setRootDomAdapter(new BrowserDomAdapter()); }
   hasProperty(element, name: string): boolean { return name in element; }
   setProperty(el: /*element*/ any, name: string, value: any) { el[name] = value; }
