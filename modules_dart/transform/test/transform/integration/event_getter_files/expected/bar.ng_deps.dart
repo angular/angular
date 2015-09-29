@@ -5,7 +5,6 @@ import 'bar.template.dart' as _templates;
 import 'bar.dart';
 import 'package:angular2/src/core/reflection/reflection.dart' as _ngRef;
 import 'package:angular2/src/core/metadata.dart';
-import 'foo.dart';
 export 'bar.dart';
 
 var _visited = false;
@@ -16,10 +15,12 @@ void initReflector() {
     ..registerType(
         MyComponent,
         new _ngRef.ReflectionInfo(const [
-          const Component(componentServices: const [MyContext]),
+          const Component(
+              events: ['eventName1', 'eventName2: propName2'],
+              selector: '[soup]'),
           const View(template: ''),
           _templates.HostMyComponentTemplate
-        ], const [
-          const [MyContext]
-        ], (MyContext c) => new MyComponent(c)));
+        ], const [], () => new MyComponent()))
+    ..registerGetters(
+        {'eventName1': (o) => o.eventName1, 'eventName2': (o) => o.eventName2});
 }

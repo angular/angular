@@ -75,6 +75,9 @@ Future<NgDepsModel> createNgDeps(AssetReader reader, AssetId assetId,
     return null;
   }
 
+  // Populate NgMeta#exports.
+  ngMeta.exports.addAll(ngDepsModel.exports.map((model) => model.uri));
+
   if (inlineViews) {
     await inlineViewProps(reader, assetId, ngDepsModel);
   }
@@ -189,8 +192,8 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
 
   _NgMetaVisitor(this.ngMeta, this.assetId, AnnotationMatcher annotationMatcher,
       InterfaceMatcher interfaceMatcher, TemplateCompiler templateCompiler)
-    : _reader = new DirectiveMetadataReader(annotationMatcher, interfaceMatcher,
-        templateCompiler);
+      : _reader = new DirectiveMetadataReader(
+            annotationMatcher, interfaceMatcher, templateCompiler);
 
   Future whenDone() {
     return Future.wait(_normalizations);
@@ -204,14 +207,16 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
 
   @override
   Object visitClassDeclaration(ClassDeclaration node) {
-    _normalizations.add(_reader.readDirectiveMetadata(node, assetId)
-      .then((compileDirectiveMetadata) {
-        if (compileDirectiveMetadata != null) {
-          ngMeta.types[compileDirectiveMetadata.type.name] = compileDirectiveMetadata;
-        }
-      }).catchError((err) {
-        logger.error('ERROR: $err');
-      }));
+    _normalizations.add(_reader
+        .readDirectiveMetadata(node, assetId)
+        .then((compileDirectiveMetadata) {
+      if (compileDirectiveMetadata != null) {
+        ngMeta.types[compileDirectiveMetadata.type.name] =
+            compileDirectiveMetadata;
+      }
+    }).catchError((err) {
+      logger.error('ERROR: $err');
+    }));
   }
 
   @override

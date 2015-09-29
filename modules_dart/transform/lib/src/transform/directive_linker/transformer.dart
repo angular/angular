@@ -32,16 +32,16 @@ class DirectiveLinker extends Transformer implements DeclaringTransformer {
   Future apply(Transform transform) async {
     await log.initZoned(transform, () async {
       var reader = new AssetReader.fromTransform(transform);
-      var assetId = transform.primaryInput.id;
-      var ngDepsModel = await linkNgDeps(reader, assetId);
+      var primaryId = transform.primaryInput.id;
+      var ngDepsModel = await linkNgDeps(reader, primaryId);
       // See above
       // transform.consumePrimary();
-      var outputAssetId = _depsAssetId(assetId);
+      var outputAssetId = _depsAssetId(primaryId);
       if (ngDepsModel != null) {
         var buf = new StringBuffer();
         var writer = new NgDepsWriter(buf);
         writer.writeNgDepsModel(ngDepsModel);
-        var formattedCode = formatter.format('$buf', uri: assetId.path);
+        var formattedCode = formatter.format('$buf', uri: primaryId.path);
         transform.addOutput(new Asset.fromString(outputAssetId, formattedCode));
       } else {
         transform.addOutput(new Asset.fromString(outputAssetId, ''));

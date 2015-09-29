@@ -39,20 +39,23 @@ class TemplateCompiler extends Transformer implements DeclaringTransformer {
       Html5LibDomAdapter.makeCurrent();
       var primaryId = transform.primaryInput.id;
       var reader = new AssetReader.fromTransform(transform);
-      var outputs = await processTemplates(reader, id,
+      var outputs = await processTemplates(reader, primaryId,
           generateChangeDetectors: options.generateChangeDetectors,
           reflectPropertiesAsAttributes: options.reflectPropertiesAsAttributes);
       transform.consumePrimary();
+      var ngDepsCode = '';
+      var templatesCode = '';
       if (outputs != null) {
         if (outputs.ngDepsCode != null) {
-          transform.addOutput(
-              new Asset.fromString(id, formatter.format(outputs.ngDepsCode)));
+          ngDepsCode = formatter.format(outputs.ngDepsCode);
         }
         if (outputs.templatesCode != null) {
-          transform.addOutput(new Asset.fromString(
-              templatesAssetId(id), formatter.format(outputs.templatesCode)));
+          templatesCode = formatter.format(outputs.templatesCode);
         }
       }
+      transform.addOutput(new Asset.fromString(primaryId, ngDepsCode));
+      transform.addOutput(
+          new Asset.fromString(templatesAssetId(primaryId), templatesCode));
     });
   }
 }

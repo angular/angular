@@ -54,7 +54,9 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId entryPoint,
   var ngDeps = viewDefResults.ngDeps;
   var compileData =
       viewDefResults.viewDefinitions.values.toList(growable: false);
-  if (compileData.isEmpty) return ngDeps.code;
+  if (compileData.isEmpty) {
+    return new Outputs(entryPoint, ngDeps, null, null, null);
+  }
 
   var moduleId = path.withoutExtension(entryPoint.path);
   var savedReflectionCapabilities = reflector.reflectionCapabilities;
@@ -68,6 +70,7 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId entryPoint,
       .map((withDirectives) => withDirectives.component)
       .forEach(processor.process);
   var codegen = new reg.Codegen();
+
   codegen.generate(processor);
 
   return new Outputs(entryPoint, ngDeps, codegen,
@@ -150,9 +153,10 @@ class Outputs {
 
   static String _generateTemplatesCode(
       NgDeps ngDeps, SourceWithImports templatesSource) {
+    if (ngDeps == null || templatesSource == null) return null;
     var buf = new StringBuffer();
 
-    buf.writeln('${ngDeps.lib.name}_template;');
+    buf.writeln('library ${ngDeps.lib.name}_template;');
     buf.writeln();
     buf.writeAll(templatesSource.imports.map(_formatImportUri), '\n');
     buf.writeln();

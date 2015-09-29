@@ -1,5 +1,7 @@
 library bar.ng_deps.dart;
 
+import 'bar.template.dart' as _templates;
+
 import 'bar.dart';
 import 'package:angular2/src/core/reflection/reflection.dart' as _ngRef;
 import 'package:angular2/src/core/metadata.dart';
@@ -15,7 +17,9 @@ void initReflector() {
         MyComponent,
         new _ngRef.ReflectionInfo(
             const [
-          const Component(selector: 'soup')
+          const Component(selector: 'soup'),
+          const View(template: ''),
+          _templates.HostMyComponentTemplate
         ],
             const [
           const [prefix.MyContext],

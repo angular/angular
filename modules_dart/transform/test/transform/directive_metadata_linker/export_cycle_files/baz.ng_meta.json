@@ -1,0 +1,33 @@
+{
+  "__exports__": ["foo.dart"],
+  "BazComponent":
+  {
+    "kind": "type",
+    "value": {
+      "isComponent": true,
+      "dynamicLoadable": true,
+      "selector":"[baz]",
+      "exportAs": null,
+      "type": {
+        "id": 1,
+        "name": "BazComponent",
+        "moduleId": "angular2/test/transform/directive_metadata_linker/export_cycle_files/baz"
+      },
+      "changeDetection": 5,
+      "properties": {},
+      "events": {},
+      "hostListeners": {},
+      "hostProperties": {},
+      "hostAttributes": {},
+      "lifecycleHooks": [],
+      "template": {
+        "encapsulation": 0,
+        "template": "Baz",
+        "templateUrl": null,
+        "styles": null,
+        "styleUrls": null,
+        "ngContentSelectors": null
+      }
+    }
+  }
+}

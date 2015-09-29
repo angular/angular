@@ -1,5 +1,7 @@
 library angular2.transform.common.ng_meta;
 
+import 'dart:convert';
+
 import 'package:angular2/src/compiler/directive_metadata.dart';
 import 'logging.dart';
 
@@ -24,30 +26,40 @@ class NgMeta {
   /// List of other types and names associated with a given name.
   final Map<String, List<String>> aliases;
 
-  NgMeta(this.types, this.aliases);
+  /// TODO(kegluneq): Populate this placeholder with export uris.
+  final List<String> exports;
 
-  NgMeta.empty() : this({}, {});
+  NgMeta(this.types, this.aliases, this.exports);
+
+  NgMeta.empty() : this({}, {}, []);
 
   bool get isEmpty => types.isEmpty && aliases.isEmpty;
 
   /// Parse from the serialized form produced by [toJson].
   factory NgMeta.fromJson(Map json) {
+    var exports = <String>[];
     var types = {};
     var aliases = {};
     for (var key in json.keys) {
-      var entry = json[key];
-      if (entry['kind'] == 'type') {
-        types[key] = CompileDirectiveMetadata.fromJson(entry['value']);
-      } else if (entry['kind'] == 'alias') {
-        aliases[key] = entry['value'];
+      if (key == '__exports__') {
+        exports = json[key];
+      } else {
+        var entry = json[key];
+        if (entry['kind'] == 'type') {
+          types[key] = CompileDirectiveMetadata.fromJson(entry['value']);
+        } else if (entry['kind'] == 'alias') {
+          aliases[key] = entry['value'];
+        }
       }
     }
-    return new NgMeta(types, aliases);
+    return new NgMeta(types, aliases, exports);
   }
 
   /// Serialized representation of this instance.
   Map toJson() {
     var result = {};
+    result['__exports__'] = exports;
+
     types.forEach((k, v) {
       result[k] = {'kind': 'type', 'value': v.toJson()};
     });

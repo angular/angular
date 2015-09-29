@@ -19,9 +19,12 @@ class IntegrationTestConfig {
   final String name;
   final Map<String, String> assetPathToInputPath;
   final Map<String, String> assetPathToExpectedOutputPath;
+  final bool isolate;
 
   IntegrationTestConfig(this.name,
-      {Map<String, String> inputs, Map<String, String> outputs})
+      {Map<String, String> inputs,
+      Map<String, String> outputs,
+      this.isolate: false})
       : this.assetPathToInputPath = inputs,
         this.assetPathToExpectedOutputPath = outputs;
 }
@@ -57,8 +60,6 @@ void allTests() {
         outputs: {
       'a|web/bar.ng_deps.dart':
           'simple_annotation_files/expected/bar.ng_deps.dart',
-      'a|web/bar.ng_meta.json':
-          'simple_annotation_files/expected/bar.ng_meta.json',
       'a|web/index.ng_deps.dart':
           'simple_annotation_files/expected/index.ng_deps.dart'
     }),
@@ -100,10 +101,21 @@ void allTests() {
     }, outputs: {
       'a|web/bar.ng_deps.dart':
           'two_annotations_files/expected/bar.ng_deps.dart'
+    }),
+    new IntegrationTestConfig(
+        'should generate getters for events defined on a Component.',
+        inputs: {
+      'a|web/index.dart': 'event_getter_files/index.dart',
+      'a|web/bar.dart': 'event_getter_files/bar.dart'
+    },
+        outputs: {
+      'a|web/bar.ng_deps.dart': 'event_getter_files/expected/bar.ng_deps.dart'
     })
   ];
 
   var cache = {};
+
+  var isolateAny = tests.any((t) => t.isolate);
 
   for (var config in tests) {
     // Read in input & output files.
@@ -119,15 +131,17 @@ void allTests() {
         return value.endsWith('dart') ? formatter.format(code) : code;
       });
     });
-    testPhases(
-        config.name,
-        [
-          [transform]
-        ],
-        config.assetPathToInputPath,
-        config.assetPathToExpectedOutputPath,
-        [],
-        StringFormatter.noNewlinesOrSurroundingWhitespace);
+    if (!isolateAny || config.isolate) {
+      testPhases(
+          config.name,
+          [
+            [transform]
+          ],
+          config.assetPathToInputPath,
+          config.assetPathToExpectedOutputPath,
+          [],
+          StringFormatter.noNewlinesOrSurroundingWhitespace);
+    }
   }
 }
 

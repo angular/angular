@@ -27,7 +27,8 @@ Future<CompileDataResults> createCompileData(
 
 class CompileDataResults {
   final NgDeps ngDeps;
-  final Map<RegisteredType, NormalizedComponentWithViewDirectives> viewDefinitions;
+  final Map<RegisteredType,
+      NormalizedComponentWithViewDirectives> viewDefinitions;
 
   CompileDataResults._(this.ngDeps, this.viewDefinitions);
 }
@@ -165,7 +166,8 @@ class _CompileDataCreator {
 /// [NormalizedComponentWithViewDirectives] will be null.
 ///
 /// If no `View` annotation is found, `compileData` will be null.
-class _DirectiveDependenciesVisitor extends Object with RecursiveAstVisitor<Object> {
+class _DirectiveDependenciesVisitor extends Object
+    with RecursiveAstVisitor<Object> {
   NormalizedComponentWithViewDirectives compileData = null;
   final Map<String, NgMeta> _metadataMap;
 
@@ -181,7 +183,8 @@ class _DirectiveDependenciesVisitor extends Object with RecursiveAstVisitor<Obje
   @override
   Object visitInstanceCreationExpression(InstanceCreationExpression node) {
     if (_isViewAnnotation(node)) {
-      compileData = new NormalizedComponentWithViewDirectives(null, <CompileDirectiveMetadata>[]);
+      compileData = new NormalizedComponentWithViewDirectives(
+          null, <CompileDirectiveMetadata>[]);
       node.visitChildren(this);
     }
     return null;

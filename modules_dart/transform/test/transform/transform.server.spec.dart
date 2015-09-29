@@ -9,7 +9,7 @@ import 'common/ng_meta_test.dart' as ngMetaTest;
 import 'bind_generator/all_tests.dart' as bindGenerator;
 import 'deferred_rewriter/all_tests.dart' as deferredRewriter;
 import 'directive_linker/all_tests.dart' as directiveLinker;
-import 'directive_metadata_extractor/all_tests.dart' as directiveMeta;
+import 'directive_metadata_linker/all_tests.dart' as directiveMeta;
 import 'directive_processor/all_tests.dart' as directiveProcessor;
 import 'integration/all_tests.dart' as integration;
 import 'reflection_remover/all_tests.dart' as reflectionRemover;
@@ -21,10 +21,10 @@ main() {
   ddescribe('NgMeta', ngMetaTest.allTests);
   describe('Bind Generator', bindGenerator.allTests);
   describe('Directive Linker', directiveLinker.allTests);
-  describe('Directive Metadata Extractor', directiveMeta.allTests);
-  ddescribe('Directive Processor', directiveProcessor.allTests);
+  describe('Directive Metadata Linker', directiveMeta.allTests);
+  describe('Directive Processor', directiveProcessor.allTests);
   describe('Reflection Remover', reflectionRemover.allTests);
-  ddescribe('Template Compiler', templateCompiler.allTests);
+  describe('Template Compiler', templateCompiler.allTests);
   describe('Deferred Rewriter', deferredRewriter.allTests);
   // NOTE(kegluneq): These use `code_transformers#testPhases`, which is not
   // designed to work with `guinness`.

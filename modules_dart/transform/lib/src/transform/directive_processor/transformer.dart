@@ -35,25 +35,27 @@ class DirectiveProcessor extends Transformer implements DeclaringTransformer {
   /// determine that one or the other will not be emitted.
   @override
   declareOutputs(DeclaringTransform transform) {
-    transform.declareOutput(_depsOutputId(transform.primaryId));
-    transform.declareOutput(_metaOutputId(transform.primaryId));
+    transform.declareOutput(_ngMetaAssetId(transform.primaryId));
+    transform.declareOutput(_ngDepsAssetId(transform.primaryId));
   }
 
   @override
   Future apply(Transform transform) async {
     Html5LibDomAdapter.makeCurrent();
     await log.initZoned(transform, () async {
-      var assetId = transform.primaryInput.id;
+      var primaryId = transform.primaryInput.id;
       var reader = new AssetReader.fromTransform(transform);
       var ngMeta = new NgMeta.empty();
       var ngDepsModel = await createNgDeps(
-          reader, assetId, options.annotationMatcher, ngMeta,
+          reader, primaryId, options.annotationMatcher, ngMeta,
           inlineViews: options.inlineViews);
+      // TODO(kegluneq): Combine NgDepsModel with NgMeta in a single .json file.
       if (ngDepsModel != null) {
-        transform.addOutput(new Asset.fromString(
-            _depsOutputId(assetId), ngDepsModel.writeToJson()));
+        var ngDepsAssetId = _ngDepsAssetId(primaryId);
+        transform.addOutput(
+            new Asset.fromString(ngDepsAssetId, ngDepsModel.writeToJson()));
       }
-      var metaOutputId = _metaOutputId(assetId);
+      var metaOutputId = _ngMetaAssetId(primaryId);
       if (!ngMeta.isEmpty) {
         transform.addOutput(new Asset.fromString(metaOutputId,
             new JsonEncoder.withIndent("  ").convert(ngMeta.toJson())));
@@ -62,7 +64,12 @@ class DirectiveProcessor extends Transformer implements DeclaringTransformer {
   }
 }
 
-AssetId _depsOutputId(AssetId primaryId) =>
-    primaryId.changeExtension(DEPS_JSON_EXTENSION);
-AssetId _metaOutputId(AssetId primaryId) =>
-    primaryId.changeExtension(ALIAS_EXTENSION);
+AssetId _ngMetaAssetId(AssetId primaryInputId) {
+  return new AssetId(
+      primaryInputId.package, toMetaExtension(primaryInputId.path));
+}
+
+AssetId _ngDepsAssetId(AssetId primaryInputId) {
+  return new AssetId(
+      primaryInputId.package, toJsonExtension(primaryInputId.path));
+}
