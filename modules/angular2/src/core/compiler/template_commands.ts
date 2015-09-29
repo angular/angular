@@ -9,23 +9,48 @@ import {
   RenderEmbeddedTemplateCmd
 } from 'angular2/src/core/render/render';
 
+var _nextTemplateId: number = 0;
+
+export function nextTemplateId(): number {
+  return _nextTemplateId++;
+}
+
 /**
- * A compiled template. This is const as we are storing it as annotation
+ * A compiled host template.
+ *
+ * This is const as we are storing it as annotation
  * for the compiled component type.
  */
 @CONST()
-export class CompiledTemplate {
-  static getChangeDetectorFromData(data: any[]): Function { return data[0]; }
-  static getCommandsFromData(data: any[]): TemplateCmd[] { return data[1]; }
-  static getSylesFromData(data: any[]): string[] { return data[2]; }
+export class CompiledHostTemplate {
+  // Note: _templateGetter is a function so that CompiledHostTemplate can be
+  // a const!
+  constructor(private _templateGetter: Function) {}
 
+  getTemplate(): CompiledTemplate { return this._templateGetter(); }
+}
+
+/**
+ * A compiled template.
+ */
+export class CompiledTemplate {
   // Note: paramGetter is a function so that we can have cycles between templates!
   // paramGetter returns a tuple with:
   // - ChangeDetector factory function
   // - TemplateCmd[]
   // - styles
   constructor(public id: number,
-              public dataGetter: /*()=>[Function, TemplateCmd[], string[]]*/ Function) {}
+              private _dataGetter: /*()=>Array<Function, TemplateCmd[], string[]>*/ Function) {}
+
+  getData(appId: string): CompiledTemplateData {
+    var data = this._dataGetter(appId, this.id);
+    return new CompiledTemplateData(data[0], data[1], data[2]);
+  }
+}
+
+export class CompiledTemplateData {
+  constructor(public changeDetectorFactory: Function, public commands: TemplateCmd[],
+              public styles: string[]) {}
 }
 
 const EMPTY_ARR = CONST_EXPR([]);

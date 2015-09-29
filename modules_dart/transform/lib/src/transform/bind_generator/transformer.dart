@@ -26,17 +26,19 @@ class BindGenerator extends Transformer implements DeclaringTransformer {
 
   @override
   declareOutputs(DeclaringTransform transform) {
+    transform.consumePrimary();
     transform.declareOutput(transform.primaryId);
   }
 
   @override
   Future apply(Transform transform) async {
     await log.initZoned(transform, () async {
-      var id = transform.primaryInput.id;
+      var primaryId = transform.primaryInput.id;
       var reader = new AssetReader.fromTransform(transform);
-      var transformedCode = await createNgSettersAndGetters(reader, id);
+      var transformedCode = await createNgSettersAndGetters(reader, primaryId);
+      transform.consumePrimary();
       transform.addOutput(new Asset.fromString(
-          id, formatter.format(transformedCode, uri: id.path)));
+          primaryId, formatter.format(transformedCode, uri: primaryId.path)));
     });
   }
 }

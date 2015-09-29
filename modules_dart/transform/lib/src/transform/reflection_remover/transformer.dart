@@ -30,12 +30,14 @@ class ReflectionRemover extends Transformer implements DeclaringTransformer {
 
   @override
   declareOutputs(DeclaringTransform transform) {
+    transform.consumePrimary();
     transform.declareOutput(transform.primaryId);
   }
 
   @override
   Future apply(Transform transform) async {
     await log.initZoned(transform, () async {
+      var primaryId = transform.primaryInput.id;
       var mirrorMode = options.mirrorMode;
       var writeStaticInit = options.initReflector;
       if (options.modeName == TRANSFORM_DYNAMIC_MODE) {
@@ -47,10 +49,10 @@ class ReflectionRemover extends Transformer implements DeclaringTransformer {
       }
 
       var transformedCode = await removeReflectionCapabilities(
-          new AssetReader.fromTransform(transform), transform.primaryInput.id,
+          new AssetReader.fromTransform(transform), primaryId,
           mirrorMode: mirrorMode, writeStaticInit: writeStaticInit);
-      transform.addOutput(
-          new Asset.fromString(transform.primaryInput.id, transformedCode));
+      transform.consumePrimary();
+      transform.addOutput(new Asset.fromString(primaryId, transformedCode));
     });
   }
 }

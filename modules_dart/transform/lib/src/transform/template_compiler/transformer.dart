@@ -28,6 +28,7 @@ class TemplateCompiler extends Transformer implements DeclaringTransformer {
 
   @override
   declareOutputs(DeclaringTransform transform) {
+    transform.consumePrimary();
     transform.declareOutput(transform.primaryId);
   }
 
@@ -35,13 +36,15 @@ class TemplateCompiler extends Transformer implements DeclaringTransformer {
   Future apply(Transform transform) async {
     await log.initZoned(transform, () async {
       Html5LibDomAdapter.makeCurrent();
-      var id = transform.primaryInput.id;
+      var primaryId = transform.primaryInput.id;
       var reader = new AssetReader.fromTransform(transform);
-      var transformedCode = formatter.format(await processTemplates(reader, id,
+      var transformedCode = formatter.format(await processTemplates(
+          reader, primaryId,
           generateChangeDetectors: options.generateChangeDetectors,
           reflectPropertiesAsAttributes:
               options.reflectPropertiesAsAttributes));
-      transform.addOutput(new Asset.fromString(id, transformedCode));
+      transform.consumePrimary();
+      transform.addOutput(new Asset.fromString(primaryId, transformedCode));
     });
   }
 }

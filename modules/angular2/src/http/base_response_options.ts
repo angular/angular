@@ -114,7 +114,7 @@ export class ResponseOptions {
  *
  * ### Example ([live demo](http://plnkr.co/edit/qv8DLT?p=preview))
  *
- * ```
+ * ```typescript
  * import {bind, bootstrap} from 'angular2/angular2';
  * import {HTTP_BINDINGS, Headers, Http, BaseResponseOptions, ResponseOptions} from 'angular2/http';
  * import {App} from './myapp';

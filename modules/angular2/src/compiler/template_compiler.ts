@@ -2,7 +2,12 @@ import {Type, Json, isBlank, stringify} from 'angular2/src/core/facade/lang';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper, SetWrapper} from 'angular2/src/core/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
-import {CompiledTemplate, TemplateCmd} from 'angular2/src/core/compiler/template_commands';
+import {
+  CompiledTemplate,
+  TemplateCmd,
+  nextTemplateId,
+  CompiledHostTemplate
+} from 'angular2/src/core/compiler/template_commands';
 import {
   createHostComponentMeta,
   CompileDirectiveMetadata,
@@ -18,20 +23,26 @@ import {CommandCompiler} from './command_compiler';
 import {TemplateParser} from './template_parser';
 import {TemplateNormalizer} from './template_normalizer';
 import {RuntimeMetadataResolver} from './runtime_metadata';
+import {APP_ID} from 'angular2/src/core/render/dom/dom_tokens';
 
 import {TEMPLATE_COMMANDS_MODULE_REF} from './command_compiler';
 import {IS_DART, codeGenExportVariable, escapeSingleQuoteString, codeGenValueFn} from './util';
+import {Inject} from 'angular2/src/core/di';
 
 @Injectable()
 export class TemplateCompiler {
-  private _compiledTemplateCache: Map<number, CompiledTemplate> = new Map();
-  private _compiledTemplateDone: Map<number, Promise<CompiledTemplate>> = new Map();
+  private _hostCacheKeys: Map<Type, any> = new Map();
+  private _compiledTemplateCache: Map<Type, CompiledTemplate> = new Map();
+  private _compiledTemplateDone: Map<Type, Promise<CompiledTemplate>> = new Map();
+  private _appId: string;
 
   constructor(private _runtimeMetadataResolver: RuntimeMetadataResolver,
               private _templateNormalizer: TemplateNormalizer,
               private _templateParser: TemplateParser, private _styleCompiler: StyleCompiler,
               private _commandCompiler: CommandCompiler,
-              private _cdCompiler: ChangeDetectionCompiler) {}
+              private _cdCompiler: ChangeDetectionCompiler, @Inject(APP_ID) appId: string) {
+    this._appId = appId;
+  }
 
   normalizeDirectiveMetadata(directive:
                                  CompileDirectiveMetadata): Promise<CompileDirectiveMetadata> {
@@ -63,40 +74,49 @@ export class TemplateCompiler {
         }));
   }
 
-  compileHostComponentRuntime(type: Type): Promise<CompiledTemplate> {
-    var compMeta: CompileDirectiveMetadata = this._runtimeMetadataResolver.getMetadata(type);
-    assertComponent(compMeta);
-    var hostMeta: CompileDirectiveMetadata =
-        createHostComponentMeta(compMeta.type, compMeta.selector);
+  compileHostComponentRuntime(type: Type): Promise<CompiledHostTemplate> {
+    var hostCacheKey = this._hostCacheKeys.get(type);
+    if (isBlank(hostCacheKey)) {
+      hostCacheKey = new Object();
+      this._hostCacheKeys.set(type, hostCacheKey);
+      var compMeta: CompileDirectiveMetadata = this._runtimeMetadataResolver.getMetadata(type);
+      assertComponent(compMeta);
+      var hostMeta: CompileDirectiveMetadata =
+          createHostComponentMeta(compMeta.type, compMeta.selector);
 
-    this._compileComponentRuntime(hostMeta, [compMeta], new Set());
-    return this._compiledTemplateDone.get(hostMeta.type.id);
+      this._compileComponentRuntime(hostCacheKey, hostMeta, [compMeta], new Set());
+    }
+    return this._compiledTemplateDone.get(hostCacheKey)
+        .then(compiledTemplate => new CompiledHostTemplate(() => compiledTemplate));
   }
 
   clearCache() {
+    this._hostCacheKeys.clear();
     this._styleCompiler.clearCache();
     this._compiledTemplateCache.clear();
     this._compiledTemplateDone.clear();
   }
 
-  private _compileComponentRuntime(compMeta: CompileDirectiveMetadata,
+  private _compileComponentRuntime(cacheKey: any, compMeta: CompileDirectiveMetadata,
                                    viewDirectives: CompileDirectiveMetadata[],
-                                   compilingComponentIds: Set<number>): CompiledTemplate {
-    var compiledTemplate = this._compiledTemplateCache.get(compMeta.type.id);
-    var done = this._compiledTemplateDone.get(compMeta.type.id);
+                                   compilingComponentCacheKeys: Set<any>): CompiledTemplate {
+    var compiledTemplate = this._compiledTemplateCache.get(cacheKey);
+    var done = this._compiledTemplateDone.get(cacheKey);
     if (isBlank(compiledTemplate)) {
       var styles;
       var changeDetectorFactory;
       var commands;
+      var templateId = nextTemplateId();
       compiledTemplate =
-          new CompiledTemplate(compMeta.type.id, () => [changeDetectorFactory, commands, styles]);
-      this._compiledTemplateCache.set(compMeta.type.id, compiledTemplate);
-      compilingComponentIds.add(compMeta.type.id);
+          new CompiledTemplate(templateId, (_a, _b) => [changeDetectorFactory, commands, styles]);
+      this._compiledTemplateCache.set(cacheKey, compiledTemplate);
+      compilingComponentCacheKeys.add(cacheKey);
       done =
-          PromiseWrapper
-              .all([
-                <any>this._styleCompiler.compileComponentRuntime(compMeta.type, compMeta.template)
-              ].concat(viewDirectives.map(dirMeta => this.normalizeDirectiveMetadata(dirMeta))))
+          PromiseWrapper.all([
+                          <any>this._styleCompiler.compileComponentRuntime(this._appId, templateId,
+                                                                           compMeta.template)
+                        ].concat(viewDirectives.map(dirMeta =>
+                                                        this.normalizeDirectiveMetadata(dirMeta))))
               .then((stylesAndNormalizedViewDirMetas: any[]) => {
                 var childPromises = [];
                 var normalizedViewDirMetas = stylesAndNormalizedViewDirMetas.slice(1);
@@ -107,36 +127,38 @@ export class TemplateCompiler {
                     compMeta.type, compMeta.changeDetection, parsedTemplate);
                 changeDetectorFactory = changeDetectorFactories[0];
                 styles = stylesAndNormalizedViewDirMetas[0];
-                commands =
-                    this._compileCommandsRuntime(compMeta, parsedTemplate, changeDetectorFactories,
-                                                 compilingComponentIds, childPromises);
+                commands = this._compileCommandsRuntime(compMeta, templateId, parsedTemplate,
+                                                        changeDetectorFactories,
+                                                        compilingComponentCacheKeys, childPromises);
                 return PromiseWrapper.all(childPromises);
               })
               .then((_) => {
-                SetWrapper.delete(compilingComponentIds, compMeta.type.id);
+                SetWrapper.delete(compilingComponentCacheKeys, cacheKey);
                 return compiledTemplate;
               });
-      this._compiledTemplateDone.set(compMeta.type.id, done);
+      this._compiledTemplateDone.set(cacheKey, done);
     }
     return compiledTemplate;
   }
 
-  private _compileCommandsRuntime(compMeta: CompileDirectiveMetadata, parsedTemplate: TemplateAst[],
+  private _compileCommandsRuntime(compMeta: CompileDirectiveMetadata, templateId: number,
+                                  parsedTemplate: TemplateAst[],
                                   changeDetectorFactories: Function[],
-                                  compilingComponentIds: Set<number>,
+                                  compilingComponentCacheKeys: Set<Type>,
                                   childPromises: Promise<any>[]): TemplateCmd[] {
     return this._commandCompiler.compileComponentRuntime(
-        compMeta, parsedTemplate, changeDetectorFactories,
+        compMeta, this._appId, templateId, parsedTemplate, changeDetectorFactories,
         (childComponentDir: CompileDirectiveMetadata) => {
+          var childCacheKey = childComponentDir.type.runtime;
           var childViewDirectives: CompileDirectiveMetadata[] =
               this._runtimeMetadataResolver.getViewDirectivesMetadata(
                   childComponentDir.type.runtime);
-          var childIsRecursive = SetWrapper.has(compilingComponentIds, childComponentDir.type.id);
-          var childTemplate = this._compileComponentRuntime(childComponentDir, childViewDirectives,
-                                                            compilingComponentIds);
+          var childIsRecursive = SetWrapper.has(compilingComponentCacheKeys, childCacheKey);
+          var childTemplate = this._compileComponentRuntime(
+              childCacheKey, childComponentDir, childViewDirectives, compilingComponentCacheKeys);
           if (!childIsRecursive) {
             // Only wait for a child if it is not a cycle
-            childPromises.push(this._compiledTemplateDone.get(childComponentDir.type.id));
+            childPromises.push(this._compiledTemplateDone.get(childCacheKey));
           }
           return childTemplate;
         });
@@ -147,24 +169,40 @@ export class TemplateCompiler {
     var declarations = [];
     var templateArguments = [];
     var componentMetas: CompileDirectiveMetadata[] = [];
+    var isHost: boolean[] = [];
+    var templateIdVariable = 'templateId';
+    var appIdVariable = 'appId';
     components.forEach(componentWithDirs => {
       var compMeta = <CompileDirectiveMetadata>componentWithDirs.component;
       assertComponent(compMeta);
       componentMetas.push(compMeta);
-      this._processTemplateCodeGen(compMeta,
+      isHost.push(false);
+      this._processTemplateCodeGen(compMeta, appIdVariable, templateIdVariable,
                                    <CompileDirectiveMetadata[]>componentWithDirs.directives,
                                    declarations, templateArguments);
       if (compMeta.dynamicLoadable) {
         var hostMeta = createHostComponentMeta(compMeta.type, compMeta.selector);
         componentMetas.push(hostMeta);
-        this._processTemplateCodeGen(hostMeta, [compMeta], declarations, templateArguments);
+        isHost.push(true);
+        this._processTemplateCodeGen(hostMeta, appIdVariable, templateIdVariable, [compMeta],
+                                     declarations, templateArguments);
       }
     });
     ListWrapper.forEachWithIndex(componentMetas, (compMeta: CompileDirectiveMetadata,
                                                   index: number) => {
-      var templateDataFn = codeGenValueFn([], `[${(<any[]>templateArguments[index]).join(',')}]`);
+      var templateDataFn = codeGenValueFn([templateIdVariable, appIdVariable],
+                                          `[${(<any[]>templateArguments[index]).join(',')}]`);
+      var compiledTemplateExpr =
+          `new ${TEMPLATE_COMMANDS_MODULE_REF}CompiledTemplate(${TEMPLATE_COMMANDS_MODULE_REF}nextTemplateId(),${templateDataFn})`;
+      var variableValueExpr;
+      if (isHost[index]) {
+        variableValueExpr =
+            `new ${TEMPLATE_COMMANDS_MODULE_REF}CompiledHostTemplate(${codeGenValueFn([], compiledTemplateExpr)})`;
+      } else {
+        variableValueExpr = compiledTemplateExpr;
+      }
       declarations.push(
-          `${codeGenExportVariable(templateVariableName(compMeta.type))}new ${TEMPLATE_COMMANDS_MODULE_REF}CompiledTemplate(${compMeta.type.id},${templateDataFn});`);
+          `${codeGenExportVariable(templateVariableName(compMeta.type))}${variableValueExpr};`);
     });
     return new SourceModule(`${templateModuleName(moduleId)}`, declarations.join('\n'));
   }
@@ -173,16 +211,17 @@ export class TemplateCompiler {
     return this._styleCompiler.compileStylesheetCodeGen(moduleId, cssText);
   }
 
-  private _processTemplateCodeGen(compMeta: CompileDirectiveMetadata,
-                                  directives: CompileDirectiveMetadata[],
+  private _processTemplateCodeGen(compMeta: CompileDirectiveMetadata, appIdExpr: string,
+                                  templateIdExpr: string, directives: CompileDirectiveMetadata[],
                                   targetDeclarations: string[], targetTemplateArguments: any[][]) {
-    var styleExpr = this._styleCompiler.compileComponentCodeGen(compMeta.type, compMeta.template);
+    var styleExpr =
+        this._styleCompiler.compileComponentCodeGen(appIdExpr, templateIdExpr, compMeta.template);
     var parsedTemplate =
         this._templateParser.parse(compMeta.template.template, directives, compMeta.type.name);
     var changeDetectorsExprs = this._cdCompiler.compileComponentCodeGen(
         compMeta.type, compMeta.changeDetection, parsedTemplate);
     var commandsExpr = this._commandCompiler.compileComponentCodeGen(
-        compMeta, parsedTemplate, changeDetectorsExprs.expressions,
+        compMeta, appIdExpr, templateIdExpr, parsedTemplate, changeDetectorsExprs.expressions,
         codeGenComponentTemplateFactory);
 
     addAll(styleExpr.declarations, targetDeclarations);

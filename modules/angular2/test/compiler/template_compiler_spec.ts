@@ -41,22 +41,25 @@ import {
   CompiledTemplate
 } from 'angular2/src/core/compiler/template_commands';
 
-import {Component, View, Directive} from 'angular2/core';
+import {Component, View, Directive, bind} from 'angular2/core';
 
 import {TEST_BINDINGS} from './test_bindings';
 import {TestContext, TestDispatcher, TestPipes} from './change_detector_mocks';
 import {codeGenValueFn, codeGenExportVariable} from 'angular2/src/compiler/util';
+import {APP_ID} from 'angular2/src/core/render/dom/dom_tokens';
 
 // Attention: This path has to point to this test file!
 const THIS_MODULE = 'angular2/test/compiler/template_compiler_spec';
 var THIS_MODULE_REF = moduleRef(THIS_MODULE);
+
+const APP_ID_VALUE = 'app1';
 
 export function main() {
   describe('TemplateCompiler', () => {
     var compiler: TemplateCompiler;
     var runtimeMetadataResolver: RuntimeMetadataResolver;
 
-    beforeEachBindings(() => TEST_BINDINGS);
+    beforeEachBindings(() => [bind(APP_ID).toValue(APP_ID_VALUE), TEST_BINDINGS]);
     beforeEach(inject([TemplateCompiler, RuntimeMetadataResolver],
                       (_compiler, _runtimeMetadataResolver) => {
                         compiler = _compiler;
@@ -125,7 +128,8 @@ export function main() {
 
       describe('compileHostComponentRuntime', () => {
         function compile(components: Type[]): Promise<any[]> {
-          return compiler.compileHostComponentRuntime(components[0]).then(humanizeTemplate);
+          return compiler.compileHostComponentRuntime(components[0])
+              .then((compiledHostTemplate) => humanizeTemplate(compiledHostTemplate.getTemplate()));
         }
 
         runTests(compile);
@@ -307,7 +311,8 @@ class CompWithoutHost {
 
 function testableTemplateModule(sourceModule: SourceModule, normComp: CompileDirectiveMetadata):
     SourceModule {
-  var resultExpression = `${THIS_MODULE_REF}humanizeTemplate(Host${normComp.type.name}Template)`;
+  var resultExpression =
+      `${THIS_MODULE_REF}humanizeTemplate(Host${normComp.type.name}Template.getTemplate())`;
   var testableSource = `${sourceModule.sourceWithModuleRefs}
   ${codeGenExportVariable('run')}${codeGenValueFn(['_'], resultExpression)};`;
   return new SourceModule(sourceModule.moduleId, testableSource);
@@ -330,16 +335,15 @@ export function humanizeTemplate(template: CompiledTemplate,
   if (isPresent(result)) {
     return result;
   }
+  var templateData = template.getData(APP_ID_VALUE);
   var commands = [];
-  var templateData = template.dataGetter();
   result = {
-    'styles': CompiledTemplate.getSylesFromData(templateData),
+    'styles': templateData.styles,
     'commands': commands,
-    'cd': testChangeDetector(CompiledTemplate.getChangeDetectorFromData(templateData))
+    'cd': testChangeDetector(templateData.changeDetectorFactory)
   };
   humanizedTemplates.set(template.id, result);
-  visitAllCommands(new CommandHumanizer(commands, humanizedTemplates),
-                   CompiledTemplate.getCommandsFromData(templateData));
+  visitAllCommands(new CommandHumanizer(commands, humanizedTemplates), templateData.commands);
   return result;
 }
 

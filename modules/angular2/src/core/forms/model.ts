@@ -132,10 +132,20 @@ export class AbstractControl {
 }
 
 /**
- * Defines a part of a form that cannot be divided into other controls.
+ * Defines a part of a form that cannot be divided into other controls. `Control`s have values and
+ * validation state, which is determined by an optional validation function.
  *
  * `Control` is one of the three fundamental building blocks used to define forms in Angular, along
  * with {@link ControlGroup} and {@link ControlArray}.
+ *
+ * # Usage
+ *
+ * By default, a `Control` is created for every `<input>` or other form component.
+ * With {@link NgFormControl} or {@link NgFormModel} an existing {@link Control} can be
+ * bound to a DOM element instead. This `Control` can be configured with a custom
+ * validation function.
+ *
+ * ### Example ([live demo](http://plnkr.co/edit/23DESOpbNnBpBHZt1BR4?p=preview))
  */
 export class Control extends AbstractControl {
   _onChange: Function;
@@ -147,6 +157,18 @@ export class Control extends AbstractControl {
     this._valueChanges = new EventEmitter();
   }
 
+  /**
+   * Set the value of the control to `value`.
+   *
+   * If `onlySelf` is `true`, this change will only affect the validation of this `Control`
+   * and not its parent component. If `emitEvent` is `true`, this change will cause a
+   * `valueChanges` event on the `Control` to be emitted. Both of these options default to
+   * `false`.
+   *
+   * If `emitModelToViewChange` is `true`, the view will be notified about the new value
+   * via an `onChange` event. This is the default behavior if `emitModelToViewChange` is not
+   * specified.
+   */
   updateValue(value: any,
               {onlySelf, emitEvent, emitModelToViewChange}:
                   {onlySelf?: boolean, emitEvent?: boolean, emitModelToViewChange?: boolean} = {}):
@@ -157,6 +179,9 @@ export class Control extends AbstractControl {
     this.updateValueAndValidity({onlySelf: onlySelf, emitEvent: emitEvent});
   }
 
+  /**
+   * Register a listener for change events.
+   */
   registerOnChange(fn: Function): void { this._onChange = fn; }
 }
 
@@ -170,6 +195,8 @@ export class Control extends AbstractControl {
  * `ControlGroup` is one of the three fundamental building blocks used to define forms in Angular,
  * along with {@link Control} and {@link ControlArray}. {@link ControlArray} can also contain other
  * controls, but is of variable length.
+ *
+ * ### Example ([live demo](http://plnkr.co/edit/23DESOpbNnBpBHZt1BR4?p=preview))
  */
 export class ControlGroup extends AbstractControl {
   private _optionals: StringMap<string, boolean>;
@@ -247,6 +274,16 @@ export class ControlGroup extends AbstractControl {
  * `ControlArray` is one of the three fundamental building blocks used to define forms in Angular,
  * along with {@link Control} and {@link ControlGroup}. {@link ControlGroup} can also contain
  * other controls, but is of fixed length.
+ *
+ * # Adding or removing controls
+ *
+ * To change the controls in the array, use the `push`, `insert`, or `removeAt` methods
+ * in `ControlArray` itself. These methods ensure the controls are properly tracked in the
+ * form's hierarchy. Do not modify the array of `AbstractControl`s used to instantiate
+ * the `ControlArray` directly, as that will result in strange and unexpected behavior such
+ * as broken change detection.
+ *
+ * ### Example ([live demo](http://plnkr.co/edit/23DESOpbNnBpBHZt1BR4?p=preview))
  */
 export class ControlArray extends AbstractControl {
   constructor(public controls: AbstractControl[], validator: Function = Validators.array) {
@@ -259,25 +296,40 @@ export class ControlArray extends AbstractControl {
     this.updateValidity({onlySelf: true});
   }
 
+  /**
+   * Get the {@link AbstractControl} at the given `index` in the array.
+   */
   at(index: number): AbstractControl { return this.controls[index]; }
 
+  /**
+   * Insert a new {@link AbstractControl} at the end of the array.
+   */
   push(control: AbstractControl): void {
     this.controls.push(control);
     control.setParent(this);
     this.updateValueAndValidity();
   }
 
+  /**
+   * Insert a new {@link AbstractControl} at the given `index` in the array.
+   */
   insert(index: number, control: AbstractControl): void {
     ListWrapper.insert(this.controls, index, control);
     control.setParent(this);
     this.updateValueAndValidity();
   }
 
+  /**
+   * Remove the control at the given `index` in the array.
+   */
   removeAt(index: number): void {
     ListWrapper.removeAt(this.controls, index);
     this.updateValueAndValidity();
   }
 
+  /**
+   * Get the length of the control array.
+   */
   get length(): number { return this.controls.length; }
 
   _updateValue(): void { this._value = this.controls.map((control) => control.value); }

@@ -322,11 +322,11 @@ export function main() {
         it('should locate directives components first and ordered by the directives array in the View',
            () => {
              var dirA = CompileDirectiveMetadata.create(
-                 {selector: '[a]', type: new CompileTypeMetadata({name: 'DirA', id: 3})});
+                 {selector: '[a]', type: new CompileTypeMetadata({name: 'DirA'})});
              var dirB = CompileDirectiveMetadata.create(
-                 {selector: '[b]', type: new CompileTypeMetadata({name: 'DirB', id: 2})});
+                 {selector: '[b]', type: new CompileTypeMetadata({name: 'DirB'})});
              var dirC = CompileDirectiveMetadata.create(
-                 {selector: '[c]', type: new CompileTypeMetadata({name: 'DirC', id: 1})});
+                 {selector: '[c]', type: new CompileTypeMetadata({name: 'DirC'})});
              var comp = CompileDirectiveMetadata.create({
                selector: 'div',
                isComponent: true,

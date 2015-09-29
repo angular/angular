@@ -59,11 +59,11 @@ export function codeGenMapArray(argNames: string[], callback: string): string {
   }
 }
 
-export function codeGenReplaceAll(pattern: string, value: string): string {
+export function codeGenReplaceAll(pattern: string, expression: string): string {
   if (IS_DART) {
-    return `.replaceAll('${pattern}', '${value}')`;
+    return `.replaceAll('${pattern}', ${expression})`;
   } else {
-    return `.replace(/${pattern}/g, '${value}')`;
+    return `.replace(/${pattern}/g, ${expression})`;
   }
 }
 
@@ -75,6 +75,14 @@ export function codeGenValueFn(params: string[], value: string): string {
   }
 }
 
+export function codeGenToString(expr: string): string {
+  if (IS_DART) {
+    return `'\${${expr}}'`;
+  } else {
+    // JS automatically convets to string...
+    return expr;
+  }
+}
 
 export function splitAtColon(input: string, defaultValues: string[]): string[] {
   var parts = StringWrapper.split(input.trim(), /\s*:\s*/g);

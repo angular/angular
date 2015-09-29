@@ -22,27 +22,22 @@ import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/compiler
 var HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$/g;
 
 export class CompileTypeMetadata {
-  id: number;
   runtime: Type;
   name: string;
   moduleId: string;
-  constructor({id, runtime, name, moduleId}:
-                  {id?: number, runtime?: Type, name?: string, moduleId?: string} = {}) {
-    this.id = id;
+  constructor({runtime, name, moduleId}: {runtime?: Type, name?: string, moduleId?: string} = {}) {
     this.runtime = runtime;
     this.name = name;
     this.moduleId = moduleId;
   }
 
   static fromJson(data: StringMap<string, any>): CompileTypeMetadata {
-    return new CompileTypeMetadata(
-        {id: data['id'], name: data['name'], moduleId: data['moduleId']});
+    return new CompileTypeMetadata({name: data['name'], moduleId: data['moduleId']});
   }
 
   toJson(): StringMap<string, any> {
     return {
       // Note: Runtime type can't be serialized...
-      'id': this.id,
       'name': this.name,
       'moduleId': this.moduleId
     };
@@ -253,12 +248,8 @@ export function createHostComponentMeta(componentType: CompileTypeMetadata,
                                         componentSelector: string): CompileDirectiveMetadata {
   var template = CssSelector.parse(componentSelector)[0].getMatchingElementTemplate();
   return CompileDirectiveMetadata.create({
-    type: new CompileTypeMetadata({
-      runtime: Object,
-      id: (componentType.id * -1) - 1,
-      name: `Host${componentType.name}`,
-      moduleId: componentType.moduleId
-    }),
+    type: new CompileTypeMetadata(
+        {runtime: Object, name: `Host${componentType.name}`, moduleId: componentType.moduleId}),
     template: new CompileTemplateMetadata(
         {template: template, templateUrl: '', styles: [], styleUrls: [], ngContentSelectors: []}),
     changeDetection: ChangeDetectionStrategy.Default,

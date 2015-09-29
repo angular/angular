@@ -34,36 +34,33 @@ class DirectiveProcessor extends Transformer implements DeclaringTransformer {
   /// determine that one or the other will not be emitted.
   @override
   declareOutputs(DeclaringTransform transform) {
-    transform.declareOutput(
-        transform.primaryId.changeExtension(ALIAS_EXTENSION));
-    transform.declareOutput(
-        transform.primaryId.changeExtension(DEPS_EXTENSION));
+    transform.declareOutput(_depsOutputId(transform.primaryId));
+    transform.declareOutput(_metaOutputId(transform.primaryId));
   }
 
   @override
   Future apply(Transform transform) async {
     await log.initZoned(transform, () async {
-      var asset = transform.primaryInput;
+      var assetId = transform.primaryInput.id;
       var reader = new AssetReader.fromTransform(transform);
       var ngMeta = new NgMeta.empty();
       var ngDepsModel = await createNgDeps(
-          reader, asset.id, options.annotationMatcher, ngMeta,
+          reader, assetId, options.annotationMatcher, ngMeta,
           inlineViews: options.inlineViews);
       if (ngDepsModel != null) {
-        var ngDepsAssetId =
-            transform.primaryInput.id.changeExtension(DEPS_JSON_EXTENSION);
-        if (await transform.hasInput(ngDepsAssetId)) {
-          log.logger.error('Clobbering ${ngDepsAssetId}. '
-              'This probably will not end well');
-        }
-        transform.addOutput(new Asset.fromString(ngDepsAssetId, ngDepsModel.writeToJson()));
+        transform.addOutput(new Asset.fromString(
+            _depsOutputId(assetId), ngDepsModel.writeToJson()));
       }
+      var metaOutputId = _metaOutputId(assetId);
       if (!ngMeta.isEmpty) {
-        var ngAliasesId =
-            transform.primaryInput.id.changeExtension(ALIAS_EXTENSION);
-        transform.addOutput(new Asset.fromString(ngAliasesId,
+        transform.addOutput(new Asset.fromString(metaOutputId,
             new JsonEncoder.withIndent("  ").convert(ngMeta.toJson())));
       }
     });
   }
 }
+
+AssetId _depsOutputId(AssetId primaryId) =>
+    primaryId.changeExtension(DEPS_JSON_EXTENSION);
+AssetId _metaOutputId(AssetId primaryId) =>
+    primaryId.changeExtension(ALIAS_EXTENSION);

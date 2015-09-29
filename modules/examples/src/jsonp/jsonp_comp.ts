@@ -17,7 +17,6 @@ import {ObservableWrapper} from 'angular2/src/core/facade/async';
 export class JsonpCmp {
   people: Object;
   constructor(jsonp: Jsonp) {
-    ObservableWrapper.subscribe<Response>(jsonp.get('./people.json?callback=JSONP_CALLBACK'),
-                                          res => this.people = res.json());
+    jsonp.get('./people.json?callback=JSONP_CALLBACK').subscribe(res => this.people = res.json());
   }
 }

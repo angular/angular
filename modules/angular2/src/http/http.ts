@@ -34,30 +34,18 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  * Performs http requests using `XMLHttpRequest` as the default backend.
  *
  * `Http` is available as an injectable class, with methods to perform http requests. Calling
- * `request` returns an {@link EventEmitter} which will emit a single {@link Response} when a
+ * `request` returns an {@link Observable} which will emit a single {@link Response} when a
  * response is received.
- *
- *
- * ## Breaking Change
- *
- * Previously, methods of `Http` would return an RxJS Observable directly. For now,
- * the `toRx()` method of {@link EventEmitter} needs to be called in order to get the RxJS
- * Subject. `EventEmitter` does not provide combinators like `map`, and has different semantics for
- * subscribing/observing. This is temporary; the result of all `Http` method calls will be either an
- * Observable
- * or Dart Stream when [issue #2794](https://github.com/angular/angular/issues/2794) is resolved.
  *
  * #Example
  *
- * ```
+ * ```typescript
  * import {Http, HTTP_BINDINGS} from 'angular2/http';
  * @Component({selector: 'http-app', viewBindings: [HTTP_BINDINGS]})
  * @View({templateUrl: 'people.html'})
  * class PeopleComponent {
  *   constructor(http: Http) {
  *     http.get('people.json')
- *       //Get the RxJS Subject
- *       .toRx()
  *       // Call map on the response observable to get the parsed people object
  *       .map(res => res.json())
  *       // Subscribe to the observable to get the parsed people object and attach it to the
@@ -67,9 +55,6 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  * }
  * ```
  *
- * To use the {@link EventEmitter} returned by `Http`, simply pass a generator (See "interface
- *Generator" in the Async Generator spec: https://github.com/jhusain/asyncgenerator) to the
- *`observer` method of the returned emitter, with optional methods of `next`, `throw`, and `return`.
  *
  * #Example
  *
@@ -83,7 +68,7 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  *
  * #Example
  *
- * ```
+ * ```typescript
  * import {MockBackend, BaseRequestOptions, Http} from 'angular2/http';
  * var injector = Injector.resolveAndCreate([
  *   BaseRequestOptions,
@@ -95,7 +80,7 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  *       [MockBackend, BaseRequestOptions])
  * ]);
  * var http = injector.get(Http);
- * http.get('request-from-mock-backend.json').toRx().subscribe((res:Response) => doSomething(res));
+ * http.get('request-from-mock-backend.json').subscribe((res:Response) => doSomething(res));
  * ```
  *
  **/
