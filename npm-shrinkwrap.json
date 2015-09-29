@@ -15497,7 +15497,7 @@
     },
     "ts2dart": {
       "version": "0.7.9",
-      "from": "ts2dart@0.7.9",
+      "from": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.9.tgz",
       "resolved": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.9.tgz",
       "dependencies": {
         "source-map": {
@@ -16612,9 +16612,9 @@
       }
     },
     "zone.js": {
-      "version": "0.5.6",
-      "from": "zone.js@0.5.6",
-      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.6.tgz",
+      "version": "0.5.7",
+      "from": "zone.js@0.5.7",
+      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.7.tgz",
       "dependencies": {
         "es6-promise": {
           "version": "3.0.2",
