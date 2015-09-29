@@ -61,8 +61,8 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
     if (numCtorsFound > 1) {
       var ctorName = ctor.name;
       if (ctorName != null) {
-        logger.warning('Found ${numCtorsFound} ctors for class ${node.name},'
-            'Using constructor ${ctorName}.');
+        logger.warning('Found ${numCtorsFound} constructors for class '
+            '${node.name}; using constructor ${ctorName}.');
       }
     }
     return ctor;
