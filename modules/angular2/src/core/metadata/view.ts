@@ -4,7 +4,7 @@ import {ViewEncapsulation} from 'angular2/src/core/render/api';
 export {ViewEncapsulation} from 'angular2/src/core/render/api';
 
 /**
- * Declares the available HTML templates for an application.
+ * Metadata properties available for configuring Views.
  *
  * Each Angular component requires a single `@Component` and at least one `@View` annotation. The
  * `@View` annotation specifies the HTML template to use, and lists the directives that are active
@@ -39,19 +39,23 @@ export class ViewMetadata {
   /**
    * Specifies a template URL for an Angular component.
    *
-   * NOTE: either `templateUrl` or `template` should be used, but not both.
+   * NOTE: Only one of `templateUrl` or `template` can be defined per View.
+   *
+   * <!-- TODO: what's the url relative to? -->
    */
   templateUrl: string;
 
   /**
    * Specifies an inline template for an Angular component.
    *
-   * NOTE: either `templateUrl` or `template` should be used, but not both.
+   * NOTE: Only one of `templateUrl` or `template` can be defined per View.
    */
   template: string;
 
   /**
    * Specifies stylesheet URLs for an Angular component.
+   *
+   * <!-- TODO: what's the url relative to? -->
    */
   styleUrls: string[];
 

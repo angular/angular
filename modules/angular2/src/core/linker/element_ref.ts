@@ -54,15 +54,16 @@ export class ElementRef implements RenderElementRef {
    * <div class="callout is-critical">
    *   <header>Use with caution</header>
    *   <p>
-   *    Use this api as the last resort when direct access to DOM is needed. Use templating and
-   *    data-binding provided by Angular instead.
+   *    Use this API as the last resort when direct access to DOM is needed. Use templating and
+   *    data-binding provided by Angular instead. Alternatively you take a look at {@link Renderer}
+   *    which provides API that can safely be used even when direct access to native elements is not
+   *    supported.
    *   </p>
    *   <p>
    *    Relying on direct DOM access creates tight coupling between your application and rendering
    *    layers which will make it impossible to separate the two and deploy your application into a
    *    web worker.
    *   </p>
-   *   <!-- TODO: add info about custom renderers that should be used instead -->
    * </div>
    */
   get nativeElement(): any { return this._renderer.getNativeElementSync(this); }
