@@ -146,7 +146,7 @@ var BENCHPRESS_BUNDLE_CONFIG = {
     'zone.js'
   ],
   ignore: [
-    'rx'
+    '@reactivex/rxjs'
   ],
   dest: CONFIG.dest.benchpress_bundle
 };

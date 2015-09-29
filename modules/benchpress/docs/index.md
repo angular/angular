@@ -1,6 +1,7 @@
 # Benchpress
 
 Benchpress is a framework for e2e performance tests.
+See [here for an example project](https://github.com/angular/benchpress-tree).
 
 # Why?
 
