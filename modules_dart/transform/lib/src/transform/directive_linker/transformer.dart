@@ -1,6 +1,7 @@
 library angular2.transform.directive_linker.transformer;
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
@@ -15,6 +16,8 @@ import 'linker.dart';
 /// {@link DirectiveProcessor} and ensuring that each imports its dependencies'
 /// .ng_deps.dart files.
 class DirectiveLinker extends Transformer implements DeclaringTransformer {
+  final _encoder = const JsonEncoder.withIndent('  ');
+
   DirectiveLinker();
 
   @override
@@ -26,6 +29,9 @@ class DirectiveLinker extends Transformer implements DeclaringTransformer {
     // incorrectly determine what assets are available in this phase.
     // transform.consumePrimary();
     transform.declareOutput(_depsAssetId(transform.primaryId));
+
+    // TODO(kegluneq): Remove before submitting!
+    transform.declareOutput(transform.primaryId);
   }
 
   @override
@@ -38,6 +44,10 @@ class DirectiveLinker extends Transformer implements DeclaringTransformer {
       // transform.consumePrimary();
       var outputAssetId = _depsAssetId(primaryId);
       if (ngDepsModel != null) {
+        // TODO(kegluneq): Remove before submitting!
+        transform.addOutput(new Asset.fromString(primaryId,
+            _encoder.convert(ngDepsModel.writeToJsonMap())));
+
         var buf = new StringBuffer();
         var writer = new NgDepsWriter(buf);
         writer.writeNgDepsModel(ngDepsModel);

@@ -134,6 +134,9 @@ class _CompileDataCreator {
   Future<Map<String, NgMeta>> _extractNgMeta() async {
     var importAssetToPrefix = await _createImportAssetToPrefixMap();
 
+    _maybePrint(entryPoint, 'AssetId of imports:\n'
+        '${importAssetToPrefix.keys.map((id) => id.toString()).join('\n  ')}');
+
     var retVal = <String, NgMeta>{};
     for (var importAssetId in importAssetToPrefix.keys) {
       var prefix = importAssetToPrefix[importAssetId];
@@ -141,7 +144,9 @@ class _CompileDataCreator {
       var ngMeta = retVal.putIfAbsent(prefix, () => new NgMeta.empty());
       var metaAssetId = new AssetId(
           importAssetId.package, toMetaExtension(importAssetId.path));
+      _maybePrint(entryPoint, '  Looking for dep meta: $metaAssetId');
       if (await reader.hasInput(metaAssetId)) {
+        _maybePrint(entryPoint, '  Found dep meta: $metaAssetId');
         try {
           var json = JSON.decode(await reader.readAsString(metaAssetId));
           var newMetadata = new NgMeta.fromJson(json);
@@ -150,9 +155,20 @@ class _CompileDataCreator {
           logger.warning('Failed to decode: $ex, $stackTrace',
               asset: metaAssetId);
         }
+      } else {
+        _maybePrint(entryPoint, '  Does not exist dep meta: $metaAssetId');
       }
     }
+    _maybePrint(entryPoint, '$entryPoint NgMeta:\n'
+        '${_encoder.convert(retVal)}');
     return retVal;
+  }
+}
+
+final _encoder = new JsonEncoder.withIndent('  ');
+void _maybePrint(AssetId entryPoint, String log) {
+  if (entryPoint.package == 'examples' && entryPoint.path.contains('hello_world/index')) {
+    print(log);
   }
 }
 
