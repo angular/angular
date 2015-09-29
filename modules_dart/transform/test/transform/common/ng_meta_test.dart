@@ -9,10 +9,10 @@ main() => allTests();
 
 void allTests() {
   var mockData = [
-    CompileDirectiveMetadata.create(type: new CompileTypeMetadata(id: 1)),
-    CompileDirectiveMetadata.create(type: new CompileTypeMetadata(id: 2)),
-    CompileDirectiveMetadata.create(type: new CompileTypeMetadata(id: 3)),
-    CompileDirectiveMetadata.create(type: new CompileTypeMetadata(id: 4))
+    CompileDirectiveMetadata.create(type: new CompileTypeMetadata(name: 'N1')),
+    CompileDirectiveMetadata.create(type: new CompileTypeMetadata(name: 'N2')),
+    CompileDirectiveMetadata.create(type: new CompileTypeMetadata(name: 'N3')),
+    CompileDirectiveMetadata.create(type: new CompileTypeMetadata(name: 'N4'))
   ];
 
   it('should allow empty data.', () {
@@ -93,7 +93,7 @@ _checkSimilar(NgMeta a, NgMeta b) {
     expect(b.types).toContain(k);
     var at = a.types[k];
     var bt = b.types[k];
-    expect(at.type.id).toEqual(bt.type.id);
+    expect(at.type.name).toEqual(bt.type.name);
   }
   for (var k in a.aliases.keys) {
     expect(b.aliases).toContain(k);

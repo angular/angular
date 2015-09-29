@@ -210,8 +210,6 @@ class _DirectiveMetadataVisitor extends Object
     node.metadata.accept(this);
     if (this._hasMetadata) {
       _type = new CompileTypeMetadata(
-          // TODO: this is not a reliable ID. We need a better option.
-          id: node.toSource().hashCode,
           moduleId:
             '${_assetId.package}/${path.withoutExtension(_assetId.path)}',
           name: node.name.toString(),

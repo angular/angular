@@ -37,5 +37,6 @@ TemplateCompiler createTemplateCompiler(AssetReader reader,
       templateParser,
       new StyleCompiler(_xhr, _urlResolver),
       new CommandCompiler(),
-      cdCompiler);
+      cdCompiler,
+      null /* appId */);
 }

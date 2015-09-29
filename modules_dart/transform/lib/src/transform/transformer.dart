@@ -29,10 +29,8 @@ class AngularTransformerGroup extends TransformerGroup {
       [new ReflectionRemover(options)],
       [new DirectiveProcessor(options)]
     ];
-    /* TODO(kegluneq): Un-comment before submitting.
     phases.addAll(new List.generate(
         options.optimizationPhases, (_) => [new EmptyNgDepsRemover()]));
-        */
     phases.addAll([
       [
         new DeferredRewriter(options),
