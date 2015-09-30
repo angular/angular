@@ -16,11 +16,10 @@ import {
 } from 'angular2/test_lib';
 
 import {bind, Component, View, Injector, Inject} from 'angular2/core';
-import {CONST, NumberWrapper, isPresent, Json} from 'angular2/src/core/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 
 import {RootRouter} from 'angular2/src/router/router';
-import {Router, RouterOutlet, RouterLink, RouteParams, ROUTE_DATA} from 'angular2/router';
+import {Router, RouterOutlet, RouterLink, RouteParams, RouteData} from 'angular2/router';
 import {
   RouteConfig,
   Route,
@@ -197,13 +196,12 @@ export function main() {
     it('should inject route data into component', inject([AsyncTestCompleter], (async) => {
          compile()
              .then((_) => rtr.config([
-               new Route({path: '/route-data', component: RouteDataCmp, data: {'isAdmin': true}})
+               new Route({path: '/route-data', component: RouteDataCmp, data: {isAdmin: true}})
              ]))
              .then((_) => rtr.navigateByUrl('/route-data'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement)
-                   .toHaveText(Json.stringify({'isAdmin': true}));
+               expect(rootTC.debugElement.nativeElement).toHaveText('true');
                async.done();
              });
        }));
@@ -218,13 +216,12 @@ export function main() {
              .then((_) => rtr.navigateByUrl('/route-data'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement)
-                   .toHaveText(Json.stringify({'isAdmin': true}));
+               expect(rootTC.debugElement.nativeElement).toHaveText('true');
                async.done();
              });
        }));
 
-    it('should inject null if the route has no data property',
+    it('should inject empty object if the route has no data property',
        inject([AsyncTestCompleter], (async) => {
          compile()
              .then((_) => rtr.config(
@@ -232,34 +229,7 @@ export function main() {
              .then((_) => rtr.navigateByUrl('/route-data-default'))
              .then((_) => {
                rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('null');
-               async.done();
-             });
-       }));
-
-    it('should allow an array as the route data', inject([AsyncTestCompleter], (async) => {
-         compile()
-             .then((_) => rtr.config([
-               new Route({path: '/route-data-array', component: RouteDataCmp, data: [1, 2, 3]})
-             ]))
-             .then((_) => rtr.navigateByUrl('/route-data-array'))
-             .then((_) => {
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText(Json.stringify([1, 2, 3]));
-               async.done();
-             });
-       }));
-
-    it('should allow a string as the route data', inject([AsyncTestCompleter], (async) => {
-         compile()
-             .then((_) => rtr.config([
-               new Route(
-                   {path: '/route-data-string', component: RouteDataCmp, data: 'hello world'})
-             ]))
-             .then((_) => rtr.navigateByUrl('/route-data-string'))
-             .then((_) => {
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText(Json.stringify('hello world'));
+               expect(rootTC.debugElement.nativeElement).toHaveText('');
                async.done();
              });
        }));
@@ -295,10 +265,8 @@ function AsyncRouteDataCmp() {
 @Component({selector: 'data-cmp'})
 @View({template: "{{myData}}"})
 class RouteDataCmp {
-  myData: string;
-  constructor(@Inject(ROUTE_DATA) data: any) {
-    this.myData = isPresent(data) ? Json.stringify(data) : 'null';
-  }
+  myData: boolean;
+  constructor(data: RouteData) { this.myData = data.get('isAdmin'); }
 }
 
 @Component({selector: 'user-cmp'})
