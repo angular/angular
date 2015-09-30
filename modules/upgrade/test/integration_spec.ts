@@ -54,6 +54,43 @@ export function main() {
            async.done();
          });
        }));
+
+    describe('scope/component change-detection', () => {
+      it('should interleve scope and component expressions', inject([AsyncTestCompleter], (async) {
+           var log = [];
+           var l = function(value) {
+             log.push(value);
+             return value + ';';
+           };
+           var upgrMod: UpgradeModule = createUpgradeModule();
+
+           upgrMod.ng1Module.directive('ng1a', () => { return {template: "{{ l('ng1a') }}"}; });
+           upgrMod.ng1Module.directive('ng1b', () => { return {template: "{{ l('ng1b') }}"}; });
+           upgrMod.ng1Module.run(($rootScope) => {
+             $rootScope.l = l;
+             $rootScope.reset = () => log.length = 0;
+           });
+
+           upgrMod.importNg2Component(
+               Component({selector: 'ng2'})
+                   .View({
+                     template: `{{l('2A')}}<ng1a></ng1a>{{l('2B')}}<ng1b></ng1b>{{l('2C')}}`,
+                     directives: [
+                       upgrMod.exportAsNg2Component('ng1a'),
+                       upgrMod.exportAsNg2Component('ng1b')
+                     ]
+                   })
+                   .Class({constructor: function() { this.l = l; }}));
+
+           var element = html("<div>{{reset(); l('1A');}}<ng2>{{l('1B')}}</ng2>{{l('1C')}}</div>");
+           upgrMod.bootstrap(element).ready(() => {
+             expect(document.body.textContent).toEqual("1A;2A;ng1a;2B;ng1b;2C;1C;");
+             // https://github.com/angular/angular.js/issues/12983
+             expect(log).toEqual(['1A', '1B', '1C', '2A', '2B', '2C', 'ng1a', 'ng1b']);
+             async.done();
+           });
+         }));
+    });
   });
 }
 

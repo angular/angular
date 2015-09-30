@@ -154,10 +154,12 @@ function ng1ComponentDirective(selector: string, type: Type, idPrefix: string): 
       link: (scope: angular.IScope, element: angular.IAugmentedJQuery, attrs: angular.IAttributes,
              parentInjector: any, transclude: angular.ITranscludeFunction): void => {
         var id = element[0].id = idPrefix + (idCount++);
-        var childInjector = parentInjector.resolveAndCreateChild([bind(NG1_SCOPE).toValue(scope)]);
+        var componentScope = scope.$new();
+        componentScope.$watch(() => changeDetector.detectChanges());
+        var childInjector =
+            parentInjector.resolveAndCreateChild([bind(NG1_SCOPE).toValue(componentScope)]);
         var hostViewRef = viewManager.createRootHostView(protoView, '#' + id, childInjector);
         var changeDetector: ChangeDetectorRef = hostViewRef.changeDetectorRef;
-        scope.$watch(() => changeDetector.detectChanges());
         element.bind('$remove', () => viewManager.destroyRootHostView(hostViewRef));
       }
     };
