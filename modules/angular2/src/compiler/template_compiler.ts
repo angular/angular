@@ -204,13 +204,16 @@ export class TemplateCompiler {
           `new ${TEMPLATE_COMMANDS_MODULE_REF}CompiledTemplate(${TEMPLATE_COMMANDS_MODULE_REF}nextTemplateId(),${templateDataFn})`;
       var variableValueExpr;
       if (isHost[index]) {
+        var factoryName = `_hostTemplateFactory${index}`;
+        declarations.push(`${codeGenValueFn([], compiledTemplateExpr, factoryName)};`);
+        var constructionKeyword = IS_DART ? 'const' : 'new';
         variableValueExpr =
-            `new ${TEMPLATE_COMMANDS_MODULE_REF}CompiledHostTemplate(${codeGenValueFn([], compiledTemplateExpr)})`;
+            `${constructionKeyword} ${TEMPLATE_COMMANDS_MODULE_REF}CompiledHostTemplate(${factoryName})`;
       } else {
         variableValueExpr = compiledTemplateExpr;
       }
       declarations.push(
-          `${codeGenExportVariable(templateVariableName(compMeta.type))}${variableValueExpr};`);
+          `${codeGenExportVariable(templateVariableName(compMeta.type), isHost[index])}${variableValueExpr};`);
     });
     var moduleUrl = components[0].component.type.moduleUrl;
     return new SourceModule(`${templateModuleUrl(moduleUrl)}`, declarations.join('\n'));
