@@ -28,10 +28,27 @@ class TransformerUrlResolver implements UrlResolver {
       throw new ArgumentError.value(
           absoluteUri, 'absoluteUri', 'Value passed must be an absolute uri');
     }
-    if (absoluteUri.scheme == 'asset') return absoluteUri;
+    if (absoluteUri.scheme == 'asset') {
+      if (absoluteUri.pathSegments.length < 3) {
+        throw new FormatException(
+            'An asset: URI must have at least 3 path '
+            'segments, for example '
+            'asset:<package-name>/<first-level-dir>/<path-to-dart-file>.',
+            absoluteUri);
+      }
+      return absoluteUri;
+    }
     if (absoluteUri.scheme != 'package') {
       throw new ArgumentError.value(
           absoluteUri, 'absoluteUri', 'Unsupported URI scheme encountered');
+    }
+
+    if (absoluteUri.pathSegments.length < 2) {
+      throw new FormatException(
+          'A package: URI must have at least 2 path '
+          'segments, for example '
+          'package:<package-name>/<path-to-dart-file>',
+          absoluteUri);
     }
 
     var pathSegments = absoluteUri.pathSegments.toList()..insert(1, 'lib');

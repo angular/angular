@@ -24,7 +24,7 @@ String writeImportUri(String importPath, {String prefix, String fromAbsolute}) {
     } else {
       var errMsg;
       if (fromAbsolute == null || fromAbsolute.isEmpty) {
-        errMsg = 'Cannot only import $importPath using a relative uri';
+        errMsg = 'Can only import $importPath using a relative uri';
       } else {
         errMsg = 'Cannot import $importPath from $fromAbsolute';
       }
@@ -40,12 +40,15 @@ String writeImportUri(String importPath, {String prefix, String fromAbsolute}) {
 
 // For a relative import, the scheme, first (package) and second (lib|test|web)
 // path segments must be equal.
-bool _canImportRelative(Uri import, {Uri from}) {
-  if (import == null) throw new ArgumentError.notNull('import');
+bool _canImportRelative(Uri importUri, {Uri from}) {
+  if (importUri == null) throw new ArgumentError.notNull('importUri');
   if (from == null) throw new ArgumentError.notNull('from');
-  return import.scheme == from.scheme &&
-      import.pathSegments.first == from.pathSegments.first &&
-      import.pathSegments[1] == from.pathSegments[1];
+  assert(importUri.scheme == 'asset');
+  assert(importUri.pathSegments.length >= 2);
+  assert(from.scheme == 'asset');
+  assert(from.pathSegments.length >= 2);
+  return importUri.pathSegments.first == from.pathSegments.first &&
+      importUri.pathSegments[1] == from.pathSegments[1];
 }
 
 /// Pub's package scheme assumes that an asset lives under the lib/ directory,
