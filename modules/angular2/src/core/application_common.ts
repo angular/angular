@@ -1,18 +1,10 @@
 import {FORM_PROVIDERS} from 'angular2/src/core/forms';
-import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
-import {
-  NumberWrapper,
-  Type,
-  isBlank,
-  isPresent,
-  assertionsEnabled,
-  print,
-  stringify
-} from 'angular2/src/core/facade/lang';
+import {provide, Provider} from 'angular2/src/core/di';
+import {Type, isBlank, isPresent, stringify} from 'angular2/src/core/facade/lang';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {BrowserGetTestability} from 'angular2/src/core/testability/browser_testability';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/core/facade/async';
+import {Promise} from 'angular2/src/core/facade/async';
 import {XHR} from 'angular2/src/core/compiler/xhr';
 import {XHRImpl} from 'angular2/src/core/compiler/xhr_impl';
 
@@ -23,11 +15,8 @@ import {
 } from 'angular2/src/core/render/dom/events/event_manager';
 import {KeyEventsPlugin} from 'angular2/src/core/render/dom/events/key_events';
 import {HammerGesturesPlugin} from 'angular2/src/core/render/dom/events/hammer_gestures';
-import {
-  ComponentRef,
-  DynamicComponentLoader
-} from 'angular2/src/core/linker/dynamic_component_loader';
-import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
+import {ComponentRef} from 'angular2/src/core/linker/dynamic_component_loader';
+import {Testability} from 'angular2/src/core/testability/testability';
 import {Renderer} from 'angular2/src/core/render/api';
 import {DomRenderer, DomRenderer_, DOCUMENT} from 'angular2/src/core/render/render';
 import {
