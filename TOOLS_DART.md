@@ -97,8 +97,8 @@ contributors.
 
 #### Find unused reflection data
 
-Your app might have @Component and other @Injectable types that
-it declares but doesn't use.
+Your app might have types that are annotated with `@Component` or `@Injectable`
+but never used.
 To find these unused types, use `reflector.trackUsage()` and then,
 after exercising your app, `reflector.listUnusedKeys()`.
 For example:
@@ -113,16 +113,21 @@ main() async {
 }
 ```
 
-When you run that code, you'll see a list of types that Angular
-can inject but hasn't needed to.
-Consider removing those types or their @Component/@Injectable annotation
+When you run that code (in Dartium or another browser),
+you'll see a list of types that Angular _can_ inject but hasn't needed to.
+Consider removing those types or their `@Component`/`@Injectable` annotation
 to decrease your app's code size.
 
-Two conditions must be true for `listUnusedKeys()` to return helpful data:
+Three conditions must be true for `listUnusedKeys()` to return helpful data:
 
 1. The angular2 transformer must run on the app.
 2. If you're running a JavaScript version of the app,
    the app must not be minified, so that the names are readable.
+3. You must exercise your app in as many ways as possible
+   before calling `listUnusedKeys()`.
+   Otherwise, you might get false positives:
+   keys that haven't been used only because you didn't exercise
+   the relevant feature of the app.
 
 To run the angular2 transformer, first specify it in `pubspec.yaml`:
 
@@ -134,12 +139,11 @@ transformers:
     entry_points: web/main.dart
 ```
 
-Then use pub to run the transformer.
-The generated JavaScript is unminified, by default, when you use `pub serve`.
-If you want to serve actual files, then use `pub build` in debug mode:
-`pub build --mode=debug`. Alternatively, use `pub build` in another mode
-and specify `minify: false` to the
-[dart2js transformer](https://www.dartlang.org/tools/pub/dart2js-transformer.html).
+Then use pub to run the transformer. If you use `pub serve`,
+it provides both Dart and unminified (by default) JavaScript versions.
+If you want to serve actual files, then use `pub build` in debug mode
+to generate Dart and unminified JavaScript files:
+`pub build --mode=debug`.
 
 The `reflector.trackUsage()` method makes Angular track the reflection
 information used by the app. Reflection information (`ReflectionInfo`) is a data
@@ -257,11 +261,12 @@ If your application is janky (it misses frames) or is slow according to other
 metrics, you need to find out why. This tool helps by measuring the average
 speed of _change detection_, a phase in Angular's
 lifecycle that detects changes in values that are bound to the UI.
-Janky UI updates can result from slowness either in computing the changes or
-in applying those changes to the UI.
+Janky UI updates can result from slowness either in _computing_ the changes or
+in _applying_ those changes to the UI.
 
-For your app to be performant, the process of computing changes must be very
-fast—preferably **under 3 milliseconds**. Fast change computing leaves room for
+For your app to be performant, the process of _computing_ changes must be very
+fast—preferably **under 3 milliseconds**.
+Fast change computation leaves room for
 the application logic, UI updates, and browser rendering pipeline
 to fit within a 16 ms frame (assuming a target frame rate of 60 FPS).
 
