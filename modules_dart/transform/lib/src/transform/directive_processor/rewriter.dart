@@ -75,9 +75,6 @@ Future<NgDepsModel> createNgDeps(AssetReader reader, AssetId assetId,
     return null;
   }
 
-  // Populate NgMeta#exports.
-  ngMeta.exports.addAll(ngDepsModel.exports.map((model) => model.uri));
-
   if (inlineViews) {
     await inlineViewProps(reader, assetId, ngDepsModel);
   }
@@ -201,8 +198,16 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
 
   @override
   Object visitCompilationUnit(CompilationUnit node) {
-    if (node == null || node.declarations == null) return null;
+    if (node == null || (node.directives == null && node.declarations == null)){
+      return null;
+    }
+    node.directives.accept(this);
     return node.declarations.accept(this);
+  }
+
+  @override
+  Object visitExportDirective(ExportDirective node) {
+    ngMeta.exports.add(stringLiteralToString(node.uri));
   }
 
   @override
