@@ -744,24 +744,31 @@ gulp.task('test.unit.cjs', ['build/clean.js', 'build.tools'], function (neverDon
   watch('modules/**', buildAndTest);
 });
 
-
+// Use this target to continuously run dartvm unit-tests (such as transformer
+// tests) while coding. Note: these tests do not use Karma.
 gulp.task('test.unit.dartvm', function (done) {
   runSequence(
     'build/tree.dart',
     'build/pure-packages.dart',
-    'build/pubspec.dart',
+    '!build/pubget.angular2.dart',
     '!build/change_detect.dart',
     '!test.unit.dartvm/run',
     function(error) {
-      // if initial build failed (likely due to build or formatting step) then exit
-      // otherwise karma server doesn't start and we can't continue running properly
-      if (error) {
-        done(error);
-        return;
-      }
-
+      // Watch for changes made in the TS and Dart code under "modules" and
+      // run ts2dart and test change detector generator prior to rerunning the
+      // tests.
       watch('modules/angular2/**', { ignoreInitial: true }, [
         '!build/tree.dart',
+        '!build/change_detect.dart',
+        '!test.unit.dartvm/run'
+      ]);
+
+      // Watch for changes made in Dart code under "modules_dart", then copy it
+      // to dist and run test change detector generator prior to retunning the
+      // tests.
+      watch('modules_dart/**', { ignoreInitial: true }, [
+        'build/pure-packages.dart',
+        '!build/change_detect.dart',
         '!test.unit.dartvm/run'
       ]);
     }
@@ -863,14 +870,17 @@ gulp.task('build/pure-packages.dart', function() {
   var transformStream = gulp
     .src([
       'modules_dart/transform/**/*',
-      '!modules_dart/transform/**/*.proto'
+      '!modules_dart/transform/**/*.proto',
+      '!modules_dart/transform/pubspec.yaml',
+      '!modules_dart/transform/**/packages{,/**}',
     ])
     .pipe(gulp.dest(path.join(CONFIG.dest.dart, 'angular2')));
 
   var moveStream = gulp.src([
                          'modules_dart/**/*.dart',
                          'modules_dart/**/pubspec.yaml',
-                         '!modules_dart/transform/**'
+                         '!modules_dart/transform/**',
+                         '!modules_dart/**/packages{,/**}'
                        ])
                        .pipe(through2.obj(function(file, enc, done) {
                          if (/pubspec.yaml$/.test(file.path)) {

@@ -33,7 +33,7 @@ export function main() {
       expect(s(css, 'a')).toEqual(expected);
     });
 
-    it('should hanlde invalid css', () => {
+    it('should handle invalid css', () => {
       var css = 'one {color: red;}garbage';
       var expected = 'one[a] {color:red;}';
       expect(s(css, 'a')).toEqual(expected);
@@ -58,8 +58,7 @@ export function main() {
     });
 
     // Check that the browser supports unprefixed CSS animation
-    if (isPresent(DOM.defaultDoc().body.style) &&
-        isPresent(DOM.defaultDoc().body.style.animationName)) {
+    if (DOM.supportsUnprefixedCssAnimation()) {
       it('should handle keyframes rules', () => {
         var css = '@keyframes foo {0% {transform: translate(-50%) scaleX(0);}}';
         var passRe =
@@ -80,9 +79,9 @@ export function main() {
     it('should handle complicated selectors', () => {
       expect(s('one::before {}', 'a')).toEqual('one[a]::before {}');
       expect(s('one two {}', 'a')).toEqual('one[a] two[a] {}');
-      expect(s('one>two {}', 'a')).toEqual('one[a] > two[a] {}');
-      expect(s('one+two {}', 'a')).toEqual('one[a] + two[a] {}');
-      expect(s('one~two {}', 'a')).toEqual('one[a] ~ two[a] {}');
+      expect(s('one > two {}', 'a')).toEqual('one[a] > two[a] {}');
+      expect(s('one + two {}', 'a')).toEqual('one[a] + two[a] {}');
+      expect(s('one ~ two {}', 'a')).toEqual('one[a] ~ two[a] {}');
       var res = s('.one.two > three {}', 'a');  // IE swap classes
       expect(res == '.one.two[a] > three[a] {}' || res == '.two.one[a] > three[a] {}')
           .toEqual(true);
