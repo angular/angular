@@ -8,7 +8,7 @@ import {BrowserJsonp} from './browser_jsonp';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {makeTypeError} from 'angular2/src/core/facade/exceptions';
 import {StringWrapper, isPresent} from 'angular2/src/core/facade/lang';
-var Observable = require('@reactivex/rxjs/dist/cjs/Observable');
+import {ResponseObservable} from '../response_observable';
 
 export class JSONPConnection implements Connection {
   readyState: ReadyStates;
@@ -28,7 +28,7 @@ export class JSONPConnection implements Connection {
       throw makeTypeError("JSONP requests must use GET request method.");
     }
     this.request = req;
-    this.response = new Observable(responseObserver => {
+    this.response = new ResponseObservable(responseObserver => {
 
       this.readyState = ReadyStates.Loading;
       let id = this._id = _dom.nextRequestID();

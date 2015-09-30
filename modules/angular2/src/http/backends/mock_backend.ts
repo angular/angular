@@ -6,6 +6,7 @@ import {Connection, ConnectionBackend} from '../interfaces';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
 import {isPresent} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+import {ResponseObservable} from '../response_observable';
 
 /**
  *
@@ -30,21 +31,17 @@ export class MockConnection implements Connection {
    * {@link EventEmitter} of {@link Response}. Can be subscribed to in order to be notified when a
    * response is available.
    */
-  response: EventEmitter;
+  response: ResponseObservable;
+
+  _responseObserver: any;
 
   constructor(req: Request) {
-    this.response = new EventEmitter();
+    this.response = new ResponseObservable(observer => {
+      this._responseObserver = observer;
+      return () => {}
+    });
     this.readyState = ReadyStates.Open;
     this.request = req;
-  }
-
-  /**
-   * Changes the `readyState` of the connection to a custom state of 5 (cancelled).
-   */
-  dispose() {
-    if (this.readyState !== ReadyStates.Done) {
-      this.readyState = ReadyStates.Cancelled;
-    }
   }
 
   /**
@@ -66,8 +63,10 @@ export class MockConnection implements Connection {
       throw new BaseException('Connection has already been resolved');
     }
     this.readyState = ReadyStates.Done;
-    ObservableWrapper.callNext(this.response, res);
-    ObservableWrapper.callReturn(this.response);
+    if (this._responseObserver) {
+      this._responseObserver.next(res);
+      this._responseObserver.complete();
+    }
   }
 
   /**
@@ -92,8 +91,9 @@ export class MockConnection implements Connection {
   mockError(err?: Error) {
     // Matches XHR semantics
     this.readyState = ReadyStates.Done;
-    ObservableWrapper.callThrow(this.response, err);
-    ObservableWrapper.callReturn(this.response);
+    if (this._responseObserver) {
+      this._responseObserver.error(err);
+    }
   }
 }
 
