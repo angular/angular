@@ -15,8 +15,7 @@ import {
 } from 'angular2/angular2';
 
 import * as routerMod from './router';
-import {ComponentInstruction, RouteParams} from './instruction';
-import {ROUTE_DATA} from './route_data';
+import {ComponentInstruction, RouteParams, RouteData} from './instruction';
 import * as hookMod from './lifecycle_annotations';
 import {hasLifecycleHook} from './route_lifecycle_reflector';
 
@@ -58,7 +57,7 @@ export class RouterOutlet {
     var childRouter = this._parentRouter.childRouter(componentType);
 
     var providers = Injector.resolve([
-      provide(ROUTE_DATA, {useValue: nextInstruction.routeData()}),
+      provide(RouteData, {useValue: nextInstruction.routeData}),
       provide(RouteParams, {useValue: new RouteParams(nextInstruction.params)}),
       provide(routerMod.Router, {useValue: childRouter})
     ]);

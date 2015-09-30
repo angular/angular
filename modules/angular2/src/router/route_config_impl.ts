@@ -20,7 +20,7 @@ export class RouteConfig {
  * - `component` a component type.
  * - `as` is an optional `CamelCase` string representing the name of the route.
  * - `data` is an optional property of any type representing arbitrary route metadata for the given
- * route. It is injectable via the {@link ROUTE_DATA} token.
+ * route. It is injectable via {@link RouteData}.
  *
  * ### Example
  * ```
@@ -34,7 +34,7 @@ export class RouteConfig {
  */
 @CONST()
 export class Route implements RouteDefinition {
-  data: any;
+  data: {[key: string]: any};
   path: string;
   component: Type;
   as: string;
@@ -42,7 +42,7 @@ export class Route implements RouteDefinition {
   loader: Function;
   redirectTo: string;
   constructor({path, component, as, data}:
-                  {path: string, component: Type, as?: string, data?: any}) {
+                  {path: string, component: Type, as?: string, data?: {[key: string]: any}}) {
     this.path = path;
     this.component = component;
     this.as = as;
@@ -60,7 +60,7 @@ export class Route implements RouteDefinition {
  * - `component` a component type.
  * - `as` is an optional `CamelCase` string representing the name of the route.
  * - `data` is an optional property of any type representing arbitrary route metadata for the given
- * route. It is injectable via the {@link ROUTE_DATA} token.
+ * route. It is injectable via {@link RouteData}.
  *
  * ### Example
  * ```
@@ -74,7 +74,7 @@ export class Route implements RouteDefinition {
  */
 @CONST()
 export class AuxRoute implements RouteDefinition {
-  data: any = null;
+  data: {[key: string]: any} = null;
   path: string;
   component: Type;
   as: string;
@@ -97,7 +97,7 @@ export class AuxRoute implements RouteDefinition {
  * - `loader` is a function that returns a promise that resolves to a component.
  * - `as` is an optional `CamelCase` string representing the name of the route.
  * - `data` is an optional property of any type representing arbitrary route metadata for the given
- * route. It is injectable via the {@link ROUTE_DATA} token.
+ * route. It is injectable via {@link RouteData}.
  *
  * ### Example
  * ```
@@ -111,11 +111,12 @@ export class AuxRoute implements RouteDefinition {
  */
 @CONST()
 export class AsyncRoute implements RouteDefinition {
-  data: any;
+  data: {[key: string]: any};
   path: string;
   loader: Function;
   as: string;
-  constructor({path, loader, as, data}: {path: string, loader: Function, as?: string, data?: any}) {
+  constructor({path, loader, as, data}:
+                  {path: string, loader: Function, as?: string, data?: {[key: string]: any}}) {
     this.path = path;
     this.loader = loader;
     this.as = as;

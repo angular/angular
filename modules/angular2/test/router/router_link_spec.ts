@@ -32,9 +32,13 @@ import {
 } from 'angular2/router';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {ComponentInstruction_} from "angular2/src/router/instruction";
+import {ComponentInstruction_} from 'angular2/src/router/instruction';
+import {PathRecognizer} from 'angular2/src/router/path_recognizer';
+import {SyncRouteHandler} from 'angular2/src/router/sync_route_handler';
 
-var dummyInstruction = new Instruction(new ComponentInstruction_('detail', [], null), null, {});
+let dummyPathRecognizer = new PathRecognizer('', new SyncRouteHandler(null));
+let dummyInstruction =
+    new Instruction(new ComponentInstruction_('detail', [], dummyPathRecognizer), null, {});
 
 export function main() {
   describe('router-link directive', function() {
