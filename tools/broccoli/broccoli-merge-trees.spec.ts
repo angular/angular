@@ -1,6 +1,11 @@
 /// <reference path="../typings/node/node.d.ts" />
 /// <reference path="../typings/jasmine/jasmine.d.ts" />
 
+console.warn(
+    "Skipping all tests in broccoli-merge-trees.spec.ts because they require mock-fs which is currently incompatible with node 4.x. See: https://github.com/tschaub/mock-fs/issues/59");
+
+
+/*
 let mockfs = require('mock-fs');
 import fs = require('fs');
 import {TreeDiffer} from './tree-differ';
@@ -89,3 +94,4 @@ describe('MergeTrees', () => {
             'Either remove the duplicate or enable the "overwrite" option for this merge.');
   });
 });
+*/

@@ -45,8 +45,8 @@ var sauceConf = require('./sauce.conf');
 var os = require('os');
 
 require('./tools/check-environment')({
-  requiredNpmVersion: '>=2.9.0',
-  requiredNodeVersion: '>=0.12.2'
+  requiredNpmVersion: '>=2.14.4',
+  requiredNodeVersion: '>=4.1.1'
 });
 
 // Make it easy to quiet down portions of the build.
@@ -567,7 +567,7 @@ gulp.task('test.all.dart', shell.task(['./scripts/ci/test_dart.sh']));
 function getBrowsersFromCLI() {
   var isSauce = false;
   var args = minimist(process.argv.slice(2));
-  var rawInput = args.browsers?args.browsers:'DartiumWithWebPlatform';
+  var rawInput = args.browsers ? args.browsers : 'DartiumWithWebPlatform';
   var inputList = rawInput.replace(' ', '').split(',');
   var outputList = [];
   for (var i = 0; i < inputList.length; i++) {
@@ -610,21 +610,21 @@ gulp.task('test.unit.js', ['build.js.dev'], function (done) {
 gulp.task('test.unit.js.sauce', ['build.js.dev'], function (done) {
   var browserConf = getBrowsersFromCLI();
   if (browserConf.isSauce) {
-    karma.server.start({
+    new karma.Server({
         configFile: __dirname + '/karma-js.conf.js',
         singleRun: true,
         browserNoActivityTimeout: 240000,
         captureTimeout: 120000,
         reporters: ['dots'],
         browsers: browserConf.browsersToRun},
-      function(err) {done(); process.exit(err ? 1 : 0);});
+      function(err) {done(); process.exit(err ? 1 : 0);}).start();
   } else {
     throw new Error('ERROR: no Saucelabs browsers provided, add them with the --browsers option');
   }
 });
 
 gulp.task('!test.unit.js/karma-server', function() {
-  karma.server.start({configFile: __dirname + '/karma-js.conf.js', reporters: 'dots'});
+  new karma.Server({configFile: __dirname + '/karma-js.conf.js', reporters: 'dots'}).start();
 });
 
 
@@ -647,7 +647,11 @@ gulp.task('test.unit.router', function (done) {
 });
 
 gulp.task('!test.unit.router/karma-server', function() {
-  karma.server.start({configFile: __dirname + '/modules/angular1_router/karma-router.conf.js'});
+  new karma.Server({
+        configFile: __dirname + '/modules/angular1_router/karma-router.conf.js',
+        reporters: 'dots'
+      }
+  ).start();
 });
 
 
@@ -697,20 +701,42 @@ gulp.task('!test.unit.dart/karma-run', function (done) {
 
 
 gulp.task('!test.unit.dart/karma-server', function() {
-  karma.server.start({configFile: __dirname + '/karma-dart.conf.js', reporters: 'dots'});
+  new karma.Server({configFile: __dirname + '/karma-dart.conf.js', reporters: 'dots'}).start();
 });
 
 
 gulp.task('test.unit.router/ci', function (done) {
   var browserConf = getBrowsersFromCLI();
-  karma.server.start({configFile: __dirname + '/modules/angular1_router/karma-router.conf.js',
-      singleRun: true, reporters: ['dots'], browsers: browserConf.browsersToRun}, done);
+  new karma.Server({
+        configFile: __dirname + '/modules/angular1_router/karma-router.conf.js',
+        singleRun: true,
+        reporters: ['dots'],
+        browsers: browserConf.browsersToRun
+      },
+      done
+  ).start();
 });
 
 gulp.task('test.unit.js/ci', function (done) {
   var browserConf = getBrowsersFromCLI();
-  karma.server.start({configFile: __dirname + '/karma-js.conf.js',
-      singleRun: true, reporters: ['dots'], browsers: browserConf.browsersToRun}, done);
+  var output_file = path.join(process.env.HOME, 'output-' + process.env.MODE + '-' + process.env.DART_CHANNEL + '.mpg');
+  var rec = spawn('/usr/bin/avconv', ['-f', 'x11grab', '-r', 25, '-s', '1024x768', '-i', ':99.0', '-threads', 4, output_file],
+  {
+      detached: true,
+      stdio: [ 'ignore', 'ignore', 'ignore' ]
+  }
+  );
+  rec.unref();
+
+  new karma.Server({
+        configFile: __dirname + '/karma-js.conf.js',
+        singleRun: true,
+        reporters: ['dots'],
+        browsers: browserConf.browsersToRun,
+        logLevel: 'DEBUG'
+      },
+      done
+  ).start();
 });
 
 gulp.task('test.unit.js.sauce/ci', function (done) {
@@ -723,8 +749,14 @@ gulp.task('test.unit.js.sauce/ci', function (done) {
 
 gulp.task('test.unit.dart/ci', function (done) {
   var browserConf = getBrowsersFromCLI();
-  karma.server.start({configFile: __dirname + '/karma-dart.conf.js',
-    singleRun: true, reporters: ['dots'], browsers: browserConf.browsersToRun}, done);
+  new karma.Server({
+        configFile: __dirname + '/karma-dart.conf.js',
+        singleRun: true,
+        reporters: ['dots'],
+        browsers: browserConf.browsersToRun
+      },
+      done
+  ).start();
 });
 
 

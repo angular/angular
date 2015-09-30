@@ -1,17 +1,14 @@
 language: node_js
 sudo: false
 node_js:
-- '0.12'
-
+- 4.1.1
 branches:
   except:
-    - g3sync
-
+  - g3sync
 cache:
   directories:
-    - node_modules
-    - $HOME/.pub-cache
-
+  - node_modules
+  - $HOME/.pub-cache
 env:
   global:
   - KARMA_BROWSERS=DartiumWithWebPlatform
@@ -20,104 +17,89 @@ env:
   - SAUCE_USERNAME=angular2-ci
   - SAUCE_ACCESS_KEY=693ebc16208a-0b5b-1614-8d66-a2662f4e
   - ARCH=linux-x64
-  # Token for tsd to increase github rate limit
-  # See https://github.com/DefinitelyTyped/tsd#tsdrc
-  # This does not use http://docs.travis-ci.com/user/environment-variables/#Secure-Variables
-  # because those are not visible for pull requests, and those should also be reliable.
-  # This SSO token belongs to github account angular-github-ratelimit-token which has no access
-  # (password is in Valentine)
   - TSDRC='{"token":"ef474500309daea53d5991b3079159a29520a40b"}'
-  # GITHUB_TOKEN_ANGULAR
-  - secure: "fq/U7VDMWO8O8SnAQkdbkoSe2X92PVqg4d044HmRYVmcf6YbO48+xeGJ8yOk0pCBwl3ISO4Q2ot0x546kxfiYBuHkZetlngZxZCtQiFT9kyId8ZKcYdXaIW9OVdw3Gh3tQyUwDucfkVhqcs52D6NZjyE2aWZ4/d1V4kWRO/LMgo="
+  - secure: fq/U7VDMWO8O8SnAQkdbkoSe2X92PVqg4d044HmRYVmcf6YbO48+xeGJ8yOk0pCBwl3ISO4Q2ot0x546kxfiYBuHkZetlngZxZCtQiFT9kyId8ZKcYdXaIW9OVdw3Gh3tQyUwDucfkVhqcs52D6NZjyE2aWZ4/d1V4kWRO/LMgo=
+  - secure: C/rL8kn+MpuT1aaHjLadhCqKnvJPM23BwHDzLTVIOQFt4GJRtfhKQQsp/GkohzMLXxxrRzkYQF240vDRWbwp7D4GiMr6agGrlUkdUOn+QCW8BWnVytdYPtK4q1VfvtWIRYlSS1WmMOFVSKqWyNymGvOmUSVLD+C8O655r2zOnk0=
   matrix:
-    # Order: slowest build on top, so that we don't hog VMs while waiting for others to complete.
-    - MODE=dart DART_CHANNEL=stable
-    - MODE=dart DART_CHANNEL=dev
-    - MODE=saucelabs DART_CHANNEL=dev
-    - MODE=dart_experimental DART_CHANNEL=dev
-    - MODE=js DART_CHANNEL=dev
-    - MODE=router DART_CHANNEL=dev
-    - MODE=lint DART_CHANNEL=dev
-
+  - MODE=js DART_CHANNEL=dev
 matrix:
   allow_failures:
-  - env: "MODE=saucelabs DART_CHANNEL=dev"
-  - env: "MODE=dart_experimental DART_CHANNEL=dev"
-
+  - env: MODE=saucelabs DART_CHANNEL=dev
+  - env: MODE=dart_experimental DART_CHANNEL=dev
 addons:
-  firefox: "38.0"
-
+  apt:
+    packages:
+    - libav-tools
+  firefox: '38.0'
 before_install:
+- /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile
+  --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1024x768x16
 - echo ${TSDRC} > .tsdrc
 - export DISPLAY=:99.0
 - export GIT_SHA=$(git rev-parse HEAD)
 - ./scripts/ci/init_android.sh
 - ./scripts/ci/install_dart.sh ${DART_CHANNEL} ${ARCH}
-- sh -e /etc/init.d/xvfb start
 - if [[ -e SKIP_TRAVIS_TESTS ]]; then { cat SKIP_TRAVIS_TESTS ; exit 0; } fi
-
 install:
-  # Update npm
-  - npm install -g npm@2.9.1
-  - npm --version
-  # Check the size of caches
-  - du -sh ./node_modules || true
-  # Install npm dependecies
-  - npm install
-
+- npm install -g npm@2.14.4
+- npm --version
+- du -sh ./node_modules || true
+- npm install
 before_script:
 - mkdir -p $LOGS_DIR
 - ./scripts/ci/presubmit-queue-setup.sh
-
+#- avconv -f x11grab -r 25 -s 1024x768 -i :99.0 -threads 4 $HOME/output-${MODE}-${DART_CHANNEL}.mpg &
 script:
 - ./scripts/ci/build_and_test.sh ${MODE}
-
+after_failure:
+- sleep 5
+- git config --global user.email "travis@travis-ci.org"
+- git config --global user.name "Travis"
+- mkdir gh-pages
+- cd gh-pages
+- git init
+- git remote add origin https://d5041f3bb255374bb581ef0b426749d7eaf3e1b8@github.com/zzo/zzo.github.io.git > /dev/null
+- git checkout -B gh-pages
+- cp $HOME/output-${MODE}-${DART_CHANNEL}.mpg .
+- git add output-${MODE}-${DART_CHANNEL}.mpg
+- ls -l
+- git commit -m "video updated"
+- git push origin gh-pages -fq > /dev/null
 after_script:
 - ./scripts/ci/print-logs.sh
 - ./scripts/ci/after-script.sh
-
 notifications:
   webhooks:
     urls:
     - https://webhooks.gitter.im/e/1ef62e23078036f9cee4
-    # trigger Buildtime Trend Service to parse Travis CI log
     - https://buildtimetrend.herokuapp.com/travis
-    on_success: always  # options: [always|never|change] default: always
-    on_failure: always  # options: [always|never|change] default: always
-    on_start: false     # default: false
+    on_success: always
+    on_failure: always
+    on_start: false
   slack:
     secure: EP4MzZ8JMyNQJ4S3cd5LEPWSMjC7ZRdzt3veelDiOeorJ6GwZfCDHncR+4BahDzQAuqyE/yNpZqaLbwRWloDi15qIUsm09vgl/1IyNky1Sqc6lEknhzIXpWSalo4/T9ZP8w870EoDvM/UO+LCV99R3wS8Nm9o99eLoWVb2HIUu0=
-
 deploy:
-  - provider: gcs
-    # This is for project angular-github-babysitter
-    access_key_id: GOOGIOQTDBEOPBUAWFZQ
-    secret_access_key:
-      secure: "MEDggllZ5fw4wI9CEUi8WR6jKsKXqdRF/DLxSNC2JpzM5RlVeBm0uqjntYT1Cf1dASvQ2/+vZCUikL/3A48NcoEYRHXGmxu8D6t/SvleQD8Xv434xFOdsa2QqP/HiCtqCLOI5jJz1JVoB5nNyKKZ33ogTUL1LV1TfcrAioyizW8="
-    # this bucket has a lifecycle to delete after 90 days:
-    # $ echo '{"rule": [{"action": {"type": "Delete"}, "condition": {"age": 90}}]}' > lifecycle.json
-    # $ gsutil lifecycle set lifecycle.json gs://angular2-snapshots
-    bucket: angular2-snapshots
-    # don't delete generated files
-    skip_cleanup: true
-    # serve to public at https://storage.googleapis.com/angular2-snapshots/SHA/dart_stable/dist.tgz
-    acl: public-read
-    # upload the .tgz archive created in scripts/ci/build_and_test.sh
-    local-dir: deploy
-    # create a "subdirectory" for each commit
-    upload-dir: $TRAVIS_COMMIT/dart_stable
-    on:
-      repo: angular/angular
-      condition: "$MODE = dart && $DART_CHANNEL = stable"
-  - provider: gcs
-    access_key_id: GOOGIOQTDBEOPBUAWFZQ
-    secret_access_key:
-      secure: "MEDggllZ5fw4wI9CEUi8WR6jKsKXqdRF/DLxSNC2JpzM5RlVeBm0uqjntYT1Cf1dASvQ2/+vZCUikL/3A48NcoEYRHXGmxu8D6t/SvleQD8Xv434xFOdsa2QqP/HiCtqCLOI5jJz1JVoB5nNyKKZ33ogTUL1LV1TfcrAioyizW8="
-    bucket: angular2-snapshots
-    skip_cleanup: true
-    acl: public-read
-    local-dir: deploy
-    upload-dir: $TRAVIS_COMMIT/js
-    on:
-      repo: angular/angular
-      condition: "$MODE = js"
+- provider: gcs
+  access_key_id: GOOGIOQTDBEOPBUAWFZQ
+  secret_access_key:
+    secure: MEDggllZ5fw4wI9CEUi8WR6jKsKXqdRF/DLxSNC2JpzM5RlVeBm0uqjntYT1Cf1dASvQ2/+vZCUikL/3A48NcoEYRHXGmxu8D6t/SvleQD8Xv434xFOdsa2QqP/HiCtqCLOI5jJz1JVoB5nNyKKZ33ogTUL1LV1TfcrAioyizW8=
+  bucket: angular2-snapshots
+  skip_cleanup: true
+  acl: public-read
+  local-dir: deploy
+  upload-dir: $TRAVIS_COMMIT/dart_stable
+  on:
+    repo: angular/angular
+    condition: $MODE = dart && $DART_CHANNEL = stable
+- provider: gcs
+  access_key_id: GOOGIOQTDBEOPBUAWFZQ
+  secret_access_key:
+    secure: MEDggllZ5fw4wI9CEUi8WR6jKsKXqdRF/DLxSNC2JpzM5RlVeBm0uqjntYT1Cf1dASvQ2/+vZCUikL/3A48NcoEYRHXGmxu8D6t/SvleQD8Xv434xFOdsa2QqP/HiCtqCLOI5jJz1JVoB5nNyKKZ33ogTUL1LV1TfcrAioyizW8=
+  bucket: angular2-snapshots
+  skip_cleanup: true
+  acl: public-read
+  local-dir: deploy
+  upload-dir: $TRAVIS_COMMIT/js
+  on:
+    repo: angular/angular
+    condition: $MODE = js
