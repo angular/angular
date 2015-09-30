@@ -287,11 +287,19 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   }
 
   private _throwError(exception: any, stack: any): void {
-    var c = this.dispatcher.getDebugContext(this._currentBinding().elementIndex, null);
-    var context = isPresent(c) ? new _Context(c.element, c.componentElement, c.context, c.locals,
-                                              c.injector, this._currentBinding().debug) :
-                                 null;
-    throw new ChangeDetectionError(this._currentBinding().debug, exception, stack, context);
+    var error;
+    try {
+      var c = this.dispatcher.getDebugContext(this._currentBinding().elementIndex, null);
+      var context = isPresent(c) ? new _Context(c.element, c.componentElement, c.context, c.locals,
+                                                c.injector, this._currentBinding().debug) :
+                                   null;
+      error = new ChangeDetectionError(this._currentBinding().debug, exception, stack, context);
+    } catch (e) {
+      // if an error happens during getting the debug context, we throw a ChangeDetectionError
+      // without the extra information.
+      error = new ChangeDetectionError(null, exception, stack, null);
+    }
+    throw error;
   }
 
   throwOnChangeError(oldValue: any, newValue: any): void {

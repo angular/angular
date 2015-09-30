@@ -40,6 +40,8 @@ export class SpyProtoChangeDetector extends SpyObject {
   constructor() { super(DynamicChangeDetector); }
 }
 
+export class SpyChangeDispatcher extends SpyObject {}
+
 export class SpyIterableDifferFactory extends SpyObject {}
 
 export class SpyRenderCompiler extends SpyObject {

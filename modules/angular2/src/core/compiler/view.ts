@@ -254,7 +254,7 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
 
     } catch (e) {
       // TODO: vsavkin log the exception once we have a good way to log errors and warnings
-      // if an error happens during getting the debug context, we return an empty map.
+      // if an error happens during getting the debug context, we return null.
       return null;
     }
   }

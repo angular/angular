@@ -11,6 +11,8 @@ import {
   fakeAsync
 } from 'angular2/test_lib';
 
+import {SpyChangeDispatcher} from '../spies';
+
 import {
   CONST_EXPR,
   isPresent,
@@ -92,8 +94,8 @@ export function main() {
 
 
       function _createChangeDetector(expression: string, context = _DEFAULT_CONTEXT,
-                                     registry = null) {
-        var dispatcher = new TestDispatcher();
+                                     registry = null, dispatcher = null) {
+        if (isBlank(dispatcher)) dispatcher = new TestDispatcher();
         var testDef = getDefinition(expression);
         var protoCd = _getProtoChangeDetector(testDef.cdDef);
         var cd = protoCd.instantiate(dispatcher);
@@ -797,6 +799,22 @@ export function main() {
             expect(e.location).toEqual('invalidFn(1) in location');
           }
         });
+
+        it('should handle unexpected errors in the event handler itself', () => {
+          var throwingDispatcher = new SpyChangeDispatcher();
+          throwingDispatcher.spy("getDebugContext")
+              .andCallFake((_, __) => { throw new BaseException('boom'); });
+
+          var val =
+              _createChangeDetector('invalidFn(1)', _DEFAULT_CONTEXT, null, throwingDispatcher);
+          try {
+            val.changeDetector.detectChanges();
+            throw new BaseException('fail');
+          } catch (e) {
+            expect(e).toBeAnInstanceOf(ChangeDetectionError);
+            expect(e.location).toEqual(null);
+          }
+        });
       });
 
       describe('Locals', () => {
@@ -1398,5 +1416,5 @@ class TestDispatcher implements ChangeDispatcher {
 }
 
 class _ChangeDetectorAndDispatcher {
-  constructor(public changeDetector: any, public dispatcher: TestDispatcher) {}
+  constructor(public changeDetector: any, public dispatcher: any) {}
 }

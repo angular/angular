@@ -36,6 +36,11 @@ class SpyProtoChangeDetector extends SpyObject implements ProtoChangeDetector {
 }
 
 @proxy
+class SpyChangeDispatcher extends SpyObject implements ChangeDispatcher {
+  noSuchMethod(m) => super.noSuchMethod(m);
+}
+
+@proxy
 class SpyIterableDifferFactory extends SpyObject
     implements IterableDifferFactory {
   noSuchMethod(m) => super.noSuchMethod(m);
