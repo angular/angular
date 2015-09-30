@@ -43,17 +43,7 @@ export function main() {
         return [bind(ProtoViewFactory).toValue(protoViewFactorySpy)];
       });
 
-      it('should read the template from an annotation', inject([AsyncTestCompleter], (async) => {
-           var cht = new CompiledHostTemplate(() => new CompiledTemplate(23, null));
-           reflector.registerType(SomeComponent, new ReflectionInfo([cht]));
-           compiler.compileInHost(SomeComponent)
-               .then((_) => {
-                 expect(protoViewFactorySpy.spy('createHost')).toHaveBeenCalledWith(cht);
-                 async.done();
-               });
-         }));
-
-      it('should compile the template via TemplateCompiler if there is no annotation',
+      it('should compile the template via TemplateCompiler',
          inject([AsyncTestCompleter], (async) => {
            var cht: CompiledHostTemplate;
            protoViewFactorySpy.spy('createHost')
@@ -61,7 +51,7 @@ export function main() {
                  cht = _cht;
                  return someProtoView;
                });
-           compiler.compileInHost(SomeComponent2)
+           compiler.compileInHost(SomeComponent)
                .then((_) => {
                  var beginComponentCmd =
                      <BeginComponentCmd>cht.getTemplate().getData('app1').commands[0];
@@ -72,9 +62,10 @@ export function main() {
 
     });
 
+
     it('should cache the result', inject([AsyncTestCompleter], (async) => {
          PromiseWrapper
-             .all([compiler.compileInHost(SomeComponent2), compiler.compileInHost(SomeComponent2)])
+             .all([compiler.compileInHost(SomeComponent), compiler.compileInHost(SomeComponent)])
              .then((protoViewRefs) => {
                expect(protoViewRefs[0]).toBe(protoViewRefs[1]);
                async.done();
@@ -82,10 +73,10 @@ export function main() {
        }));
 
     it('should clear the cache',
-       inject([AsyncTestCompleter], (async) => {compiler.compileInHost(SomeComponent2)
+       inject([AsyncTestCompleter], (async) => {compiler.compileInHost(SomeComponent)
                                                     .then((protoViewRef1) => {
                                                       compiler.clearCache();
-                                                      compiler.compileInHost(SomeComponent2)
+                                                      compiler.compileInHost(SomeComponent)
                                                           .then((protoViewRef2) => {
                                                             expect(protoViewRef1)
                                                                 .not.toBe(protoViewRef2);
@@ -96,9 +87,7 @@ export function main() {
   });
 }
 
-class SomeComponent {}
-
 @Component({selector: 'some-comp'})
 @View({template: ''})
-class SomeComponent2 {
+class SomeComponent {
 }

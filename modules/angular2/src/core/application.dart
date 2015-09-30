@@ -7,6 +7,8 @@ import 'package:angular2/src/core/reflection/reflection_capabilities.dart'
     show ReflectionCapabilities;
 import 'application_common.dart';
 
+import './di.dart';
+import 'package:angular2/src/compiler/compiler.dart';
 import 'package:angular2/src/core/compiler/dynamic_component_loader.dart';
 export 'package:angular2/src/core/compiler/dynamic_component_loader.dart' show ComponentRef;
 
@@ -19,5 +21,9 @@ export 'package:angular2/src/core/compiler/dynamic_component_loader.dart' show C
 Future<ComponentRef> bootstrap(Type appComponentType,
     [List componentInjectableBindings]) {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
-  return commonBootstrap(appComponentType, componentInjectableBindings);
+  var bindings = [compilerBindings()];
+  if (componentInjectableBindings != null) {
+    bindings.add(componentInjectableBindings);
+  }
+  return commonBootstrap(appComponentType, bindings);
 }

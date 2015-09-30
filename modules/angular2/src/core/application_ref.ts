@@ -42,10 +42,10 @@ import {PipeResolver} from './compiler/pipe_resolver';
 import {StyleUrlResolver} from 'angular2/src/core/render/dom/compiler/style_url_resolver';
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
-import {compilerBindings} from 'angular2/src/compiler/compiler';
 import {
   APP_ID_RANDOM_BINDING,
 } from 'angular2/src/core/render/render';
+import {Compiler} from 'angular2/src/core/compiler/compiler';
 
 /**
  * Constructs the set of bindings meant for use at the platform level.
@@ -97,7 +97,7 @@ export function applicationCommonBindings(): Array<Type | Binding | any[]> {
     bestChangeDetection = new JitChangeDetection();
   }
   return [
-    compilerBindings(),
+    Compiler,
     APP_ID_RANDOM_BINDING,
     AppViewPool,
     bind(APP_VIEW_POOL_CAPACITY).toValue(10000),

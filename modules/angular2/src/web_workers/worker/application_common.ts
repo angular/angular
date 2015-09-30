@@ -35,6 +35,7 @@ import {SETUP_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
 import {WebWorkerEventDispatcher} from 'angular2/src/web_workers/worker/event_dispatcher';
 import {ComponentRef} from 'angular2/src/core/compiler/dynamic_component_loader';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
+import {compilerBindings} from 'angular2/src/compiler/compiler';
 
 /**
  * Initialize the Angular 'platform' on the page in a manner suitable for applications
@@ -86,6 +87,7 @@ class PrintLogger {
 function webWorkerBindings(appComponentType, bus: MessageBus, initData: StringMap<string, any>):
     Array<Type | Binding | any[]> {
   return [
+    compilerBindings(),
     Serializer,
     bind(MessageBus).toValue(bus),
     ClientMessageBrokerFactory,
