@@ -1,8 +1,21 @@
-import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular2/test_lib';
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  ddescribe,
+  iit,
+  xit,
+  el,
+  fakeAsync,
+  tick
+} from 'angular2/test_lib';
 
 import {MapWrapper, ListWrapper, iterateListLike} from 'angular2/src/core/facade/collection';
 import {StringWrapper} from 'angular2/src/core/facade/lang';
+import {ObservableWrapper} from 'angular2/src/core/facade/async';
 import {QueryList} from 'angular2/src/core/compiler/query_list';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 
 export function main() {
@@ -16,95 +29,64 @@ export function main() {
 
     function logAppend(item) { log += (log.length == 0 ? '' : ', ') + item; }
 
-    it('should support adding objects and iterating over them', () => {
-      queryList.add('one');
-      queryList.add('two');
-      iterateListLike(queryList, logAppend);
-      expect(log).toEqual('one, two');
-    });
-
     it('should support resetting and iterating over the new objects', () => {
-      queryList.add('one');
-      queryList.add('two');
-      queryList.reset(['one again']);
-      queryList.add('two again');
+      queryList.reset(['one']);
+      queryList.reset(['two']);
       iterateListLike(queryList, logAppend);
-      expect(log).toEqual('one again, two again');
+      expect(log).toEqual('two');
     });
 
     it('should support length', () => {
-      queryList.add('one');
-      queryList.add('two');
+      queryList.reset(['one', 'two']);
       expect(queryList.length).toEqual(2);
     });
 
     it('should support map', () => {
-      queryList.add('one');
-      queryList.add('two');
+      queryList.reset(['one', 'two']);
       expect(queryList.map((x) => x)).toEqual(['one', 'two']);
     });
 
     it('should support toString', () => {
-      queryList.add('one');
-      queryList.add('two');
+      queryList.reset(['one', 'two']);
       var listString = queryList.toString();
       expect(StringWrapper.contains(listString, 'one')).toBeTruthy();
       expect(StringWrapper.contains(listString, 'two')).toBeTruthy();
     });
 
     it('should support first and last', () => {
-      queryList.add('one');
-      queryList.add('two');
-      queryList.add('three');
+      queryList.reset(['one', 'two', 'three']);
       expect(queryList.first).toEqual('one');
       expect(queryList.last).toEqual('three');
     });
 
-    describe('simple observable interface', () => {
-      it('should fire callbacks on change', () => {
-        var fires = 0;
-        queryList.onChange(() => { fires += 1; });
+    if (DOM.supportsDOMEvents()) {
+      describe('simple observable interface', () => {
+        it('should fire callbacks on change', fakeAsync(() => {
+             var fires = 0;
+             ObservableWrapper.subscribe(queryList.changes, (_) => { fires += 1; });
 
-        queryList.fireCallbacks();
-        expect(fires).toEqual(0);
+             queryList.notifyOnChanges();
+             tick();
 
-        queryList.add('one');
+             expect(fires).toEqual(1);
 
-        queryList.fireCallbacks();
-        expect(fires).toEqual(1);
+             queryList.notifyOnChanges();
+             tick();
 
-        queryList.fireCallbacks();
-        expect(fires).toEqual(1);
+             expect(fires).toEqual(2);
+           }));
+
+        it('should provides query list as an argument', fakeAsync(() => {
+             var recorded;
+             ObservableWrapper.subscribe(queryList.changes, (v: any) => { recorded = v; });
+
+             queryList.reset(["one"]);
+             queryList.notifyOnChanges();
+             tick();
+
+             expect(recorded).toBe(queryList);
+           }));
       });
-
-      it('should support removing callbacks', () => {
-        var fires = 0;
-        var callback = () => fires += 1;
-        queryList.onChange(callback);
-
-        queryList.add('one');
-        queryList.fireCallbacks();
-        expect(fires).toEqual(1);
-
-        queryList.removeCallback(callback);
-
-        queryList.add('two');
-        queryList.fireCallbacks();
-        expect(fires).toEqual(1);
-      });
-
-      it('should support removing all callbacks', () => {
-        var fires = 0;
-        var callback = () => fires += 1;
-        queryList.onChange(callback);
-
-        queryList.add('one');
-        queryList.removeAllCallbacks();
-
-        queryList.fireCallbacks();
-
-        expect(fires).toEqual(0);
-      });
-    });
+    }
   });
 }
