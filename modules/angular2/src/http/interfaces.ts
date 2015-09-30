@@ -4,7 +4,6 @@ import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptio
 import {EventEmitter} from 'angular2/src/core/facade/async';
 import {Request} from './static_request';
 import {URLSearchParams} from './url_search_params';
-import {ResponseObservable} from './response_observable'
 
 /**
  * Abstract class from which real backends are derived.
@@ -23,7 +22,7 @@ export abstract class ConnectionBackend {
 export abstract class Connection {
   readyState: ReadyStates;
   request: Request;
-  response: any;  // TODO: generic of <Response>;
+  response: EventEmitter;  // TODO: generic of <Response>;
 }
 
 /**

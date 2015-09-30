@@ -31,11 +31,7 @@ import {
   Jsonp
 } from 'angular2/http';
 
-import {
-  ResponseObservable
-} from 'angular2/src/http/response_observable'
-
-    class SpyObserver extends SpyObject {
+class SpyObserver extends SpyObject {
   onNext: Function;
   onError: Function;
   onCompleted: Function;
@@ -87,7 +83,7 @@ export function main() {
            }
          });
 
-         http.get(url).subscribe(() => {});
+         ObservableWrapper.subscribe(http.get(url), () => {});
 
          ObservableWrapper.subscribe(jsonpBackend.connections, () => {
            jsonpCreatedConnections++;
@@ -97,7 +93,7 @@ export function main() {
            }
          });
 
-         jsonp.request(url).subscribe(() => {});
+         ObservableWrapper.subscribe(jsonp.request(url), () => {});
        }));
   });
 
@@ -134,7 +130,7 @@ export function main() {
     describe('Http', () => {
       describe('.request()', () => {
         it('should return an Observable',
-           () => { expect(http.request(url)).toBeAnInstanceOf(ResponseObservable); });
+           () => { expect(ObservableWrapper.isObservable(http.request(url))).toBe(true); });
 
 
         it('should accept a fully-qualified request as its only parameter',
@@ -144,8 +140,9 @@ export function main() {
                c.mockRespond(new Response(new ResponseOptions({body: 'Thank you'})));
                async.done();
              });
-             http.request(new Request(new RequestOptions({url: 'https://google.com'})))
-                 .subscribe((res) => {});
+             ObservableWrapper.subscribe(
+                 http.request(new Request(new RequestOptions({url: 'https://google.com'}))),
+                 (res) => {});
            }));
 
 
@@ -153,11 +150,10 @@ export function main() {
            inject([AsyncTestCompleter], (async) => {
              ObservableWrapper.subscribe<MockConnection>(backend.connections,
                                                          c => c.mockRespond(baseResponse));
-             http.request('http://basic.connection')
-                 .subscribe(res => {
-                   expect(res.text()).toBe('base response');
-                   async.done();
-                 });
+             ObservableWrapper.subscribe<Response>(http.request('http://basic.connection'), res => {
+               expect(res.text()).toBe('base response');
+               async.done();
+             });
            }));
 
         // TODO: make dart not complain about "argument type 'Map' cannot be assigned to the
@@ -188,7 +184,7 @@ export function main() {
                backend.resolveAllConnections();
                async.done();
              });
-             http.get(url).subscribe(res => {});
+             ObservableWrapper.subscribe(http.get(url), res => {});
            }));
       });
 
@@ -200,7 +196,7 @@ export function main() {
                backend.resolveAllConnections();
                async.done();
              });
-             http.post(url, 'post me').subscribe(res => {});
+             ObservableWrapper.subscribe(http.post(url, 'post me'), res => {});
            }));
 
 
@@ -211,7 +207,7 @@ export function main() {
                backend.resolveAllConnections();
                async.done();
              });
-             http.post(url, body).subscribe(res => {});
+             ObservableWrapper.subscribe(http.post(url, body), res => {});
            }));
       });
 
@@ -223,7 +219,7 @@ export function main() {
                backend.resolveAllConnections();
                async.done();
              });
-             http.put(url, 'put me').subscribe(res => {});
+             ObservableWrapper.subscribe(http.put(url, 'put me'), res => {});
            }));
 
         it('should attach the provided body to the request', inject([AsyncTestCompleter], async => {
@@ -233,7 +229,7 @@ export function main() {
                backend.resolveAllConnections();
                async.done();
              });
-             http.put(url, body).subscribe(res => {});
+             ObservableWrapper.subscribe(http.put(url, body), res => {});
            }));
       });
 
@@ -245,7 +241,7 @@ export function main() {
                backend.resolveAllConnections();
                async.done();
              });
-             http.delete(url).subscribe(res => {});
+             ObservableWrapper.subscribe(http.delete(url), res => {});
            }));
       });
 
@@ -257,7 +253,7 @@ export function main() {
                backend.resolveAllConnections();
                async.done();
              });
-             http.patch(url, 'this is my patch body').subscribe(res => {});
+             ObservableWrapper.subscribe(http.patch(url, 'this is my patch body'), res => {});
            }));
 
         it('should attach the provided body to the request', inject([AsyncTestCompleter], async => {
@@ -267,7 +263,7 @@ export function main() {
                backend.resolveAllConnections();
                async.done();
              });
-             http.patch(url, body).subscribe(res => {});
+             ObservableWrapper.subscribe(http.patch(url, body), res => {});
            }));
       });
 
@@ -279,7 +275,7 @@ export function main() {
                backend.resolveAllConnections();
                async.done();
              });
-             http.head(url).subscribe(res => {});
+             ObservableWrapper.subscribe(http.head(url), res => {});
            }));
       });
 
@@ -293,8 +289,9 @@ export function main() {
                backend.resolveAllConnections();
                async.done();
              });
-             http.get('https://www.google.com', new RequestOptions({search: params}))
-                 .subscribe(res => {});
+             ObservableWrapper.subscribe(
+                 http.get('https://www.google.com', new RequestOptions({search: params})),
+                 res => {});
            }));
 
 
@@ -304,8 +301,9 @@ export function main() {
                backend.resolveAllConnections();
                async.done();
              });
-             http.get('https://www.google.com', new RequestOptions({search: 'q=piggies'}))
-                 .subscribe(res => {});
+             ObservableWrapper.subscribe(
+                 http.get('https://www.google.com', new RequestOptions({search: 'q=piggies'})),
+                 res => {});
            }));
 
 
@@ -316,8 +314,9 @@ export function main() {
                backend.resolveAllConnections();
                async.done();
              });
-             http.get('https://www.google.com?q=angular', new RequestOptions({search: 'as_eq=1.x'}))
-                 .subscribe(res => {});
+             ObservableWrapper.subscribe(http.get('https://www.google.com?q=angular',
+                                                  new RequestOptions({search: 'as_eq=1.x'})),
+                                         res => {});
            }));
       });
     });

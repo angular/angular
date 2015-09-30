@@ -1,5 +1,4 @@
 import {ConnectionBackend, Connection} from '../interfaces';
-import {ResponseObservable} from '../response_observable';
 import {ReadyStates, RequestMethods, ResponseTypes} from '../enums';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
@@ -7,7 +6,7 @@ import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
 import {Injectable} from 'angular2/src/core/di';
 import {BrowserXhr} from './browser_xhr';
 import {isPresent} from 'angular2/src/core/facade/lang';
-
+var Observable = require('@reactivex/rxjs/dist/cjs/Observable');
 /**
 * Creates connections using `XMLHttpRequest`. Given a fully-qualified
 * request, an `XHRConnection` will immediately create an `XMLHttpRequest` object and send the
@@ -26,7 +25,7 @@ export class XHRConnection implements Connection {
   readyState: ReadyStates;
   constructor(req: Request, browserXHR: BrowserXhr, baseResponseOptions?: ResponseOptions) {
     this.request = req;
-    this.response = new ResponseObservable(responseObserver => {
+    this.response = new Observable(responseObserver => {
       let _xhr: XMLHttpRequest = browserXHR.build();
       _xhr.open(RequestMethods[req.method].toUpperCase(), req.url);
       // load event handler
