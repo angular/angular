@@ -19,6 +19,7 @@ import 'package:angular2/src/core/render/dom/schema/dom_element_schema_registry.
 import 'package:angular2/src/core/reflection/reflection.dart';
 import 'package:angular2/src/core/services/url_resolver.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
+import 'package:angular2/src/transform/common/code/uri.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/ng_compiler.dart';
 import 'package:angular2/src/transform/common/ng_deps.dart';
@@ -44,13 +45,9 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId entryPoint,
     bool reflectPropertiesAsAttributes: false}) async {
   var viewDefResults = await createCompileData(reader, entryPoint);
 
-  var templateCompiler = createTemplateCompiler(
-      reader,
-      changeDetectionConfig: new ChangeDetectorGenConfig(
-        assertionsEnabled(),
-        assertionsEnabled(),
-        reflectPropertiesAsAttributes,
-        false));
+  var templateCompiler = createTemplateCompiler(reader,
+      changeDetectionConfig: new ChangeDetectorGenConfig(assertionsEnabled(),
+          assertionsEnabled(), reflectPropertiesAsAttributes, false));
 
   var ngDeps = viewDefResults.ngDeps;
   var compileData =
@@ -159,62 +156,21 @@ class Outputs {
 
     buf.writeln('library ${ngDeps.lib.name}_template;');
     buf.writeln();
-    sourceWithImports.imports
-        .forEach((i) {
+    sourceWithImports.imports.forEach((i) {
       // Format for importLine := [uri, prefix]
       if (i.length != 2) {
         throw new FormatException(
             'Unexpected import format! '
-                'Angular 2 compiler returned imports in an unexpected format.',
+            'Angular 2 compiler returned imports in an unexpected format.',
             i.join(', '));
       }
-      buf.writeln(_formatImportUri(templatesSource.moduleUrl, i[0], i[1]));
+      buf.writeln(writeImportUri(i[0],
+          prefix: i[1], fromAbsolute: templatesSource.moduleUrl));
     });
     buf.writeln();
     buf.writeln(sourceWithImports.source);
 
     // Refer to generated code from .ng_deps.dart file.
     return buf.toString();
-  }
-
-  static final _uriResolver = new TransformerUrlResolver();
-
-  // TODO(kegluenq): Before submit! Move to common/
-  static String _formatImportUri(String moduleUrl, String import, String prefix) {
-    var moduleUri = Uri.parse(_uriResolver.resolve('', moduleUrl));
-    var importUri = Uri.parse(_uriResolver.resolve('', import));
-
-    if (moduleUri.scheme != 'asset') {
-      throw new FormatException(
-          'Unsupported scheme "${moduleUri.scheme}" for module id $moduleUri',
-          moduleUrl);
-    }
-    if (importUri.scheme != 'asset') {
-      throw new FormatException(
-          'Unsupported scheme "${importUri.scheme}" for import $importUri',
-          import);
-    }
-
-    var modulePackage = moduleUri.pathSegments.first;
-    var importPackage = importUri.pathSegments.first;
-    var importSubdir = importUri.pathSegments[1];
-
-    var codegenImportPath;
-    if (modulePackage == importPackage &&
-        moduleUri.pathSegments[1] == importSubdir) {
-      codegenImportPath = path.relative(importUri.toString(), from: moduleUri.toString());
-    } else {
-      if (importSubdir != 'lib') {
-        throw new FormatException(
-            'Cannot import $importUri from $moduleUri', importUri);
-      }
-      var subPath = importUri.pathSegments.getRange(2, importUri.pathSegments.length).join('/');
-      codegenImportPath = 'package:$importPackage/$subPath';
-    }
-
-    if (prefix != null && prefix.isNotEmpty) {
-      prefix = ' as $prefix';
-    }
-    return 'import \'$codegenImportPath\'$prefix;';
   }
 }

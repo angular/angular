@@ -22,14 +22,14 @@ TemplateCompiler createTemplateCompiler(AssetReader reader,
     {ChangeDetectorGenConfig changeDetectionConfig}) {
   var _xhr = new XhrImpl(reader);
   var _htmlParser = new HtmlParser();
-  var _urlResolver = new TransformerUrlResolver();
+  var _urlResolver = const TransformerUrlResolver();
 
   var templateParser = new TemplateParser(new ng.Parser(new ng.Lexer()),
       new DomElementSchemaRegistry(), _htmlParser);
 
   var cdCompiler = changeDetectionConfig != null
-    ? new ChangeDetectionCompiler(changeDetectionConfig)
-    : null;
+      ? new ChangeDetectionCompiler(changeDetectionConfig)
+      : null;
 
   return new TemplateCompiler(
       null /* RuntimeMetadataResolver */,

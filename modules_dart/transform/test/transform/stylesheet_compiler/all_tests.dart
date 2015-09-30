@@ -27,11 +27,13 @@ allTests() {
   });
 
   it('should accept CSS assets', () {
-    expect(subject.isPrimary(new AssetId('somepackage', 'lib/style.css'))).toBe(true);
+    expect(subject.isPrimary(new AssetId('somepackage', 'lib/style.css')))
+        .toBe(true);
   });
 
   it('should reject non-CSS assets', () {
-    expect(subject.isPrimary(new AssetId('somepackage', 'lib/style.scss'))).toBe(false);
+    expect(subject.isPrimary(new AssetId('somepackage', 'lib/style.scss')))
+        .toBe(false);
   });
 
   it('should declare outputs', () {
@@ -65,6 +67,13 @@ class FakeTransform implements Transform {
 
   addOutput(Asset output) {
     this.outputs.add(output);
+  }
+
+  readInputAsString(AssetId id, {Encoding encoding}) {
+    if (id == primaryInput.id) {
+      return primaryInput.readAsString(encoding: encoding);
+    }
+    throw 'Could not read input $id';
   }
 
   noSuchMethod(Invocation i) {

@@ -3,6 +3,8 @@ library angular2.transform.template_compiler.xhr_impl;
 import 'package:angular2/src/core/services/url_resolver.dart';
 
 class TransformerUrlResolver implements UrlResolver {
+  const TransformerUrlResolver();
+
   @override
   String resolve(String baseUrl, String url) {
     Uri uri = Uri.parse(url);
