@@ -37,11 +37,11 @@ import {
   shimContentAttributeExpr,
   shimHostAttributeExpr
 } from './style_compiler';
-import {escapeSingleQuoteString} from './util';
+import {escapeSingleQuoteString, MODULE_SUFFIX} from './util';
 import {Injectable} from 'angular2/src/core/di';
 
 export var TEMPLATE_COMMANDS_MODULE_REF =
-    moduleRef('package:angular2/src/core/compiler/template_commands');
+    moduleRef(`package:angular2/src/core/compiler/template_commands${MODULE_SUFFIX}`);
 
 const IMPLICIT_TEMPLATE_VAR = '\$implicit';
 
@@ -354,6 +354,6 @@ function codeGenArray(data: any[]): string {
 
 function codeGenDirectivesArray(directives: CompileDirectiveMetadata[]): string {
   var expressions = directives.map(
-      directiveType => `${moduleRef(directiveType.type.moduleId)}${directiveType.type.name}`);
+      directiveType => `${moduleRef(directiveType.type.moduleUrl)}${directiveType.type.name}`);
   return `[${expressions.join(',')}]`;
 }

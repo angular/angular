@@ -45,12 +45,12 @@ import {Component, View, Directive, bind} from 'angular2/core';
 
 import {TEST_BINDINGS} from './test_bindings';
 import {TestContext, TestDispatcher, TestPipes} from './change_detector_mocks';
-import {codeGenValueFn, codeGenExportVariable} from 'angular2/src/compiler/util';
+import {codeGenValueFn, codeGenExportVariable, MODULE_SUFFIX} from 'angular2/src/compiler/util';
 import {APP_ID} from 'angular2/src/core/render/dom/dom_tokens';
 
 // Attention: This path has to point to this test file!
-const THIS_MODULE = 'angular2/test/compiler/template_compiler_spec';
-var THIS_MODULE_REF = moduleRef(THIS_MODULE);
+const THIS_MODULE_ID = 'angular2/test/compiler/template_compiler_spec';
+var THIS_MODULE_REF = moduleRef(`package:${THIS_MODULE_ID}${MODULE_SUFFIX}`);
 
 const APP_ID_VALUE = 'app1';
 
@@ -136,7 +136,7 @@ export function main() {
 
         it('should cache components for parallel requests',
            inject([AsyncTestCompleter, XHR], (async, xhr: MockXHR) => {
-             xhr.expect('angular2/test/compiler/compUrl.html', 'a');
+             xhr.expect('package:angular2/test/compiler/compUrl.html', 'a');
              PromiseWrapper.all([compile([CompWithTemplateUrl]), compile([CompWithTemplateUrl])])
                  .then((humanizedTemplates) => {
                    expect(humanizedTemplates[0]['commands'][1]['commands']).toEqual(['#text(a)']);
@@ -149,7 +149,7 @@ export function main() {
 
         it('should cache components for sequential requests',
            inject([AsyncTestCompleter, XHR], (async, xhr: MockXHR) => {
-             xhr.expect('angular2/test/compiler/compUrl.html', 'a');
+             xhr.expect('package:angular2/test/compiler/compUrl.html', 'a');
              compile([CompWithTemplateUrl])
                  .then((humanizedTemplate0) => {
                    return compile([CompWithTemplateUrl])
@@ -166,11 +166,11 @@ export function main() {
 
         it('should allow to clear the cache',
            inject([AsyncTestCompleter, XHR], (async, xhr: MockXHR) => {
-             xhr.expect('angular2/test/compiler/compUrl.html', 'a');
+             xhr.expect('package:angular2/test/compiler/compUrl.html', 'a');
              compile([CompWithTemplateUrl])
                  .then((humanizedTemplate) => {
                    compiler.clearCache();
-                   xhr.expect('angular2/test/compiler/compUrl.html', 'b');
+                   xhr.expect('package:angular2/test/compiler/compUrl.html', 'b');
                    var result = compile([CompWithTemplateUrl]);
                    xhr.flush();
                    return result;
@@ -200,8 +200,7 @@ export function main() {
         function compile(components: Type[]): Promise<any[]> {
           return PromiseWrapper.all(components.map(normalizeComponent))
               .then((normalizedCompWithViewDirMetas: NormalizedComponentWithViewDirectives[]) => {
-                var sourceModule =
-                    compiler.compileTemplatesCodeGen(THIS_MODULE, normalizedCompWithViewDirMetas);
+                var sourceModule = compiler.compileTemplatesCodeGen(normalizedCompWithViewDirMetas);
                 var sourceWithImports =
                     testableTemplateModule(sourceModule,
                                            normalizedCompWithViewDirMetas[0].component)
@@ -227,7 +226,7 @@ export function main() {
 
       it('should normalize the template',
          inject([AsyncTestCompleter, XHR], (async, xhr: MockXHR) => {
-           xhr.expect('angular2/test/compiler/compUrl.html', 'loadedTemplate');
+           xhr.expect('package:angular2/test/compiler/compUrl.html', 'loadedTemplate');
            compiler.normalizeDirectiveMetadata(
                        runtimeMetadataResolver.getMetadata(CompWithTemplateUrl))
                .then((meta: CompileDirectiveMetadata) => {
@@ -260,7 +259,8 @@ export function main() {
     describe('compileStylesheetCodeGen', () => {
       it('should compile stylesheets into code', inject([AsyncTestCompleter], (async) => {
            var cssText = 'div {color: red}';
-           var sourceModule = compiler.compileStylesheetCodeGen('someModuleId', cssText)[0];
+           var sourceModule =
+               compiler.compileStylesheetCodeGen('package:someModuleUrl', cssText)[0];
            var sourceWithImports = testableStylesModule(sourceModule).getSourceWithImports();
            evalModule(sourceWithImports.source, sourceWithImports.imports, null)
                .then(loadedCssText => {
@@ -276,35 +276,35 @@ export function main() {
 @Component({
   selector: 'comp-a',
   host: {'[title]': 'someProp'},
-  moduleId: THIS_MODULE,
+  moduleId: THIS_MODULE_ID,
   exportAs: 'someExportAs'
 })
 @View({template: '<a [href]="someProp"></a>', styles: ['div {color: red}']})
 class CompWithBindingsAndStyles {
 }
 
-@Component({selector: 'tree', moduleId: THIS_MODULE})
+@Component({selector: 'tree', moduleId: THIS_MODULE_ID})
 @View({template: '<tree></tree>', directives: [TreeComp]})
 class TreeComp {
 }
 
-@Component({selector: 'comp-url', moduleId: THIS_MODULE})
+@Component({selector: 'comp-url', moduleId: THIS_MODULE_ID})
 @View({templateUrl: 'compUrl.html'})
 class CompWithTemplateUrl {
 }
 
-@Component({selector: 'comp-tpl', moduleId: THIS_MODULE})
+@Component({selector: 'comp-tpl', moduleId: THIS_MODULE_ID})
 @View({template: '<template><a [href]="someProp"></a></template>'})
 class CompWithEmbeddedTemplate {
 }
 
 
-@Directive({selector: 'plain', moduleId: THIS_MODULE})
+@Directive({selector: 'plain', moduleId: THIS_MODULE_ID})
 @View({template: ''})
 class NonComponent {
 }
 
-@Component({selector: 'comp', moduleId: THIS_MODULE})
+@Component({selector: 'comp', moduleId: THIS_MODULE_ID})
 @View({template: ''})
 class CompWithoutHost {
 }
@@ -315,13 +315,13 @@ function testableTemplateModule(sourceModule: SourceModule, normComp: CompileDir
       `${THIS_MODULE_REF}humanizeTemplate(Host${normComp.type.name}Template.getTemplate())`;
   var testableSource = `${sourceModule.sourceWithModuleRefs}
   ${codeGenExportVariable('run')}${codeGenValueFn(['_'], resultExpression)};`;
-  return new SourceModule(sourceModule.moduleId, testableSource);
+  return new SourceModule(sourceModule.moduleUrl, testableSource);
 }
 
 function testableStylesModule(sourceModule: SourceModule): SourceModule {
   var testableSource = `${sourceModule.sourceWithModuleRefs}
   ${codeGenExportVariable('run')}${codeGenValueFn(['_'], 'STYLES')};`;
-  return new SourceModule(sourceModule.moduleId, testableSource);
+  return new SourceModule(sourceModule.moduleUrl, testableSource);
 }
 
 // Attention: read by eval!

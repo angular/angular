@@ -16,17 +16,18 @@ import {
 
 import {TemplateAst} from './template_ast';
 import {Codegen} from 'angular2/src/transform/template_compiler/change_detector_codegen';
-import {IS_DART} from './util';
+import {IS_DART, MODULE_SUFFIX} from './util';
 import {Injectable} from 'angular2/src/core/di';
 
 const ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
 const UTIL = "ChangeDetectionUtil";
 
-var ABSTRACT_CHANGE_DETECTOR_MODULE =
-    moduleRef('package:angular2/src/core/change_detection/abstract_change_detector');
-var UTIL_MODULE = moduleRef('package:angular2/src/core/change_detection/change_detection_util');
-var PREGEN_PROTO_CHANGE_DETECTOR_MODULE =
-    moduleRef('package:angular2/src/core/change_detection/pregen_proto_change_detector');
+var ABSTRACT_CHANGE_DETECTOR_MODULE = moduleRef(
+    `package:angular2/src/core/change_detection/abstract_change_detector${MODULE_SUFFIX}`);
+var UTIL_MODULE =
+    moduleRef(`package:angular2/src/core/change_detection/change_detection_util${MODULE_SUFFIX}`);
+var PREGEN_PROTO_CHANGE_DETECTOR_MODULE = moduleRef(
+    `package:angular2/src/core/change_detection/pregen_proto_change_detector${MODULE_SUFFIX}`);
 
 @Injectable()
 export class ChangeDetectionCompiler {

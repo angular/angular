@@ -7,6 +7,8 @@ var DOUBLE_QUOTE_ESCAPE_STRING_RE = /"|\\|\n|\$/g;
 
 export var IS_DART = !isJsObject({});
 
+export var MODULE_SUFFIX = IS_DART ? '.dart' : '.js';
+
 export function camelCaseToDashCase(input: string): string {
   return StringWrapper.replaceAllMapped(input, CAMEL_CASE_REGEXP,
                                         (m) => { return '-' + m[1].toLowerCase(); });

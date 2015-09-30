@@ -61,8 +61,7 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId entryPoint,
 
   var savedReflectionCapabilities = reflector.reflectionCapabilities;
   reflector.reflectionCapabilities = const NullReflectionCapabilities();
-  var compiledTemplates = templateCompiler.compileTemplatesCodeGen(
-      compileData.first.component.type.moduleId, compileData);
+  var compiledTemplates = templateCompiler.compileTemplatesCodeGen(compileData);
   reflector.reflectionCapabilities = savedReflectionCapabilities;
 
   var processor = new reg.Processor();
@@ -169,7 +168,7 @@ class Outputs {
                 'Angular 2 compiler returned imports in an unexpected format.',
             i.join(', '));
       }
-      buf.writeln(_formatImportUri(templatesSource.moduleId, i[0], i[1]));
+      buf.writeln(_formatImportUri(templatesSource.moduleUrl, i[0], i[1]));
     });
     buf.writeln();
     buf.writeln(sourceWithImports.source);
@@ -181,14 +180,14 @@ class Outputs {
   static final _uriResolver = new TransformerUrlResolver();
 
   // TODO(kegluenq): Before submit! Move to common/
-  static String _formatImportUri(String moduleId, String import, String prefix) {
-    var moduleUri = Uri.parse(_uriResolver.resolve('', moduleId));
+  static String _formatImportUri(String moduleUrl, String import, String prefix) {
+    var moduleUri = Uri.parse(_uriResolver.resolve('', moduleUrl));
     var importUri = Uri.parse(_uriResolver.resolve('', import));
 
     if (moduleUri.scheme != 'asset') {
       throw new FormatException(
           'Unsupported scheme "${moduleUri.scheme}" for module id $moduleUri',
-          moduleId);
+          moduleUrl);
     }
     if (importUri.scheme != 'asset') {
       throw new FormatException(

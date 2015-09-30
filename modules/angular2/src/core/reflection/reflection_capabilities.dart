@@ -322,9 +322,4 @@ class ReflectionCapabilities implements PlatformReflectionCapabilities {
   String importUri(Type type) {
     return '${(reflectClass(type).owner as LibraryMirror).uri}';
   }
-
-  String moduleId(Type type) {
-    var moduleUri = (reflectClass(type).owner as LibraryMirror).uri.toString();
-    return moduleUri.substring(0, moduleUri.lastIndexOf('.'));
-  }
 }

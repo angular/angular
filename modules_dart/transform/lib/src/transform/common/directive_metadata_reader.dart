@@ -210,8 +210,8 @@ class _DirectiveMetadataVisitor extends Object
     node.metadata.accept(this);
     if (this._hasMetadata) {
       _type = new CompileTypeMetadata(
-          moduleId:
-            'asset:${_assetId.package}/${path.withoutExtension(_assetId.path)}',
+          moduleUrl:
+            'asset:${_assetId.package}/${_assetId.path}',
           name: node.name.toString(),
           runtime: null // Intentionally `null`, cannot be provided here.
           );

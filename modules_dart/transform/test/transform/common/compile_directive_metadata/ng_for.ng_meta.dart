@@ -11,7 +11,7 @@ final ngFor = {
       "type": {
         "id": 9999,
         "name": "NgFor",
-        "moduleId": "asset:angular2/lib/src/core/directives/ng_for"
+        "moduleUrl": "asset:angular2/lib/src/core/directives/ng_for.dart"
       },
       "changeDetection": null,
       "properties": {"ngForOf": "ngForOf"},

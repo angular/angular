@@ -29,8 +29,6 @@ class NullReflectionCapabilities implements ReflectionCapabilities {
   MethodFn method(String name) => _nullMethod;
 
   String importUri(Type type) => './';
-
-  String moduleId(Type type) => null;
 }
 
 _nullGetter(Object p) => null;

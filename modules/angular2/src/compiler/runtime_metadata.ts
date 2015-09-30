@@ -18,6 +18,7 @@ import {hasLifecycleHook} from 'angular2/src/core/compiler/directive_lifecycle_r
 import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/compiler/interfaces';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {Injectable} from 'angular2/src/core/di';
+import {MODULE_SUFFIX} from './util';
 
 // group 1: "property" from "[property]"
 // group 2: "event" from "(event)"
@@ -33,7 +34,7 @@ export class RuntimeMetadataResolver {
     var meta = this._cache.get(directiveType);
     if (isBlank(meta)) {
       var directiveAnnotation = this._directiveResolver.resolve(directiveType);
-      var moduleId = calcModuleId(directiveType, directiveAnnotation);
+      var moduleUrl = calcModuleUrl(directiveType, directiveAnnotation);
       var templateMeta = null;
       var changeDetectionStrategy = null;
 
@@ -55,7 +56,7 @@ export class RuntimeMetadataResolver {
         isComponent: isPresent(templateMeta),
         dynamicLoadable: true,
         type: new cpl.CompileTypeMetadata(
-            {name: stringify(directiveType), moduleId: moduleId, runtime: directiveType}),
+            {name: stringify(directiveType), moduleUrl: moduleUrl, runtime: directiveType}),
         template: templateMeta,
         changeDetection: changeDetectionStrategy,
         properties: directiveAnnotation.properties,
@@ -111,10 +112,10 @@ function isValidDirective(value: Type): boolean {
   return isPresent(value) && (value instanceof Type);
 }
 
-function calcModuleId(type: Type, directiveAnnotation: dirAnn.DirectiveMetadata): string {
+function calcModuleUrl(type: Type, directiveAnnotation: dirAnn.DirectiveMetadata): string {
   if (isPresent(directiveAnnotation.moduleId)) {
-    return directiveAnnotation.moduleId;
+    return `package:${directiveAnnotation.moduleId}${MODULE_SUFFIX}`;
   } else {
-    return reflector.moduleId(type);
+    return reflector.importUri(type);
   }
 }

@@ -10,7 +10,7 @@
       "type": {
         "id": 1,
         "name": "HelloCmp",
-        "moduleId": "asset:template_compiler/lib/directive_aliases_files/hello1"
+        "moduleUrl": "asset:template_compiler/lib/directive_aliases_files/hello1.dart"
       },
       "changeDetection": 5,
       "properties": {},
@@ -39,7 +39,7 @@
       "type": {
         "id": 1,
         "name": "GoodbyeCmp",
-        "moduleId": "asset:template_compiler/lib/directive_aliases_files/hello1"
+        "moduleUrl": "asset:template_compiler/lib/directive_aliases_files/hello1.dart"
       },
       "changeDetection": 5,
       "properties": {},

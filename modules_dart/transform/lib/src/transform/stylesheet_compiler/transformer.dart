@@ -51,11 +51,11 @@ AssetId nonShimmedStylesheetAssetId(AssetId cssAssetId) => new AssetId(
 Future<List<Asset>> processStylesheet(
     AssetReader reader, Asset stylesheet) async {
   final stylesheetId = stylesheet.id;
-  final stylesheetModuleId = '${stylesheetId.package}|${stylesheetId.path}';
+  final stylesheetUrl = '${stylesheetId.package}|${stylesheetId.path}';
   final templateCompiler = createTemplateCompiler(reader);
   final cssText = await stylesheet.readAsString();
   final sourceModules =
-      templateCompiler.compileStylesheetCodeGen(stylesheetModuleId, cssText);
+      templateCompiler.compileStylesheetCodeGen(stylesheetUrl, cssText);
 
   return sourceModules.map((SourceModule module) {
     final code = new StringBuffer();
@@ -72,6 +72,6 @@ Future<List<Asset>> processStylesheet(
     code.writeln();
     code.write(stylesheetSource.source);
     return new Asset.fromString(
-        new AssetId.parse('${module.moduleId}.dart'), code.toString());
+        new AssetId.parse('${module.moduleUrl}'), code.toString());
   }).toList();
 }

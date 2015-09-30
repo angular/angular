@@ -47,11 +47,11 @@ import {evalModule} from './eval_module';
 
 import {TEST_BINDINGS} from './test_bindings';
 import {TestContext, TestDispatcher, TestPipes} from './change_detector_mocks';
-import {codeGenValueFn, codeGenExportVariable} from 'angular2/src/compiler/util';
+import {codeGenValueFn, codeGenExportVariable, MODULE_SUFFIX} from 'angular2/src/compiler/util';
 
 // Attention: These module names have to correspond to real modules!
-const THIS_MODULE = 'angular2/test/compiler/change_detector_compiler_spec';
-var THIS_MODULE_REF = moduleRef(THIS_MODULE);
+const THIS_MODULE_ID = 'angular2/test/compiler/change_detector_compiler_spec';
+var THIS_MODULE_REF = moduleRef(`package:${THIS_MODULE_ID}${MODULE_SUFFIX}`);
 
 export function main() {
   describe('ChangeDetectorCompiler', () => {

@@ -10,7 +10,7 @@
       "type": {
         "id": 1,
         "name": "BazComponent",
-        "moduleId": "asset:angular2/test/transform/directive_metadata_linker/recursive_export_files/baz"
+        "moduleUrl": "asset:angular2/test/transform/directive_metadata_linker/recursive_export_files/baz.dart"
       },
       "changeDetection": 5,
       "properties": {},

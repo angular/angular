@@ -24,22 +24,23 @@ var HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$/g;
 export class CompileTypeMetadata {
   runtime: Type;
   name: string;
-  moduleId: string;
-  constructor({runtime, name, moduleId}: {runtime?: Type, name?: string, moduleId?: string} = {}) {
+  moduleUrl: string;
+  constructor({runtime, name, moduleUrl}:
+                  {runtime?: Type, name?: string, moduleUrl?: string} = {}) {
     this.runtime = runtime;
     this.name = name;
-    this.moduleId = moduleId;
+    this.moduleUrl = moduleUrl;
   }
 
   static fromJson(data: StringMap<string, any>): CompileTypeMetadata {
-    return new CompileTypeMetadata({name: data['name'], moduleId: data['moduleId']});
+    return new CompileTypeMetadata({name: data['name'], moduleUrl: data['moduleUrl']});
   }
 
   toJson(): StringMap<string, any> {
     return {
       // Note: Runtime type can't be serialized...
       'name': this.name,
-      'moduleId': this.moduleId
+      'moduleUrl': this.moduleUrl
     };
   }
 }
@@ -249,7 +250,7 @@ export function createHostComponentMeta(componentType: CompileTypeMetadata,
   var template = CssSelector.parse(componentSelector)[0].getMatchingElementTemplate();
   return CompileDirectiveMetadata.create({
     type: new CompileTypeMetadata(
-        {runtime: Object, name: `Host${componentType.name}`, moduleId: componentType.moduleId}),
+        {runtime: Object, name: `Host${componentType.name}`, moduleUrl: componentType.moduleUrl}),
     template: new CompileTemplateMetadata(
         {template: template, templateUrl: '', styles: [], styleUrls: [], ngContentSelectors: []}),
     changeDetection: ChangeDetectionStrategy.Default,

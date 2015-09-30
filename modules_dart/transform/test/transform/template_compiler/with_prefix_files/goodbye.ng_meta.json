@@ -9,7 +9,7 @@
       "type": {
         "id": 1,
         "name": "GoodbyeCmp",
-        "moduleId": "asset:angular2/test/transform/template_compiler/with_prefix_files/goodbye"
+        "moduleUrl": "asset:angular2/test/transform/template_compiler/with_prefix_files/goodbye.dart"
       },
       "changeDetection": 5,
       "properties": {},

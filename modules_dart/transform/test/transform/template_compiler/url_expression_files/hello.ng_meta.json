@@ -10,7 +10,7 @@
       "type": {
         "id": 1,
         "name": "HelloCmp",
-        "moduleId": "asset:angular2/test/transform/template_compiler/url_expression_files/hello"
+        "moduleUrl": "asset:angular2/test/transform/template_compiler/url_expression_files/hello.dart"
       },
       "changeDetection": 5,
       "properties": {},
