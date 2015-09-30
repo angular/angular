@@ -383,7 +383,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     this._preBuiltObjects = null;
     this._strategy.callOnDestroy();
     this._strategy.dehydrate();
-    this._queryStrategy.clearQueryLists();
+    this._queryStrategy.dehydrate();
   }
 
   hydrate(imperativelyCreatedInjector: Injector, host: ElementInjector,
@@ -392,6 +392,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     this._preBuiltObjects = preBuiltObjects;
 
     this._reattachInjectors(imperativelyCreatedInjector);
+    this._queryStrategy.hydrate();
     this._strategy.hydrate();
 
     this.hydrated = true;
@@ -604,7 +605,8 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
 interface _QueryStrategy {
   setContentQueriesAsDirty(): void;
   setViewQueriesAsDirty(): void;
-  clearQueryLists(): void;
+  hydrate(): void;
+  dehydrate(): void;
   updateContentQueries(): void;
   updateViewQueries(): void;
   findQuery(query: QueryMetadata): QueryRef;
@@ -613,7 +615,8 @@ interface _QueryStrategy {
 class _EmptyQueryStrategy implements _QueryStrategy {
   setContentQueriesAsDirty(): void {}
   setViewQueriesAsDirty(): void {}
-  clearQueryLists(): void {}
+  hydrate(): void {}
+  dehydrate(): void {}
   updateContentQueries(): void {}
   updateViewQueries(): void {}
   findQuery(query: QueryMetadata): QueryRef {
@@ -632,9 +635,9 @@ class InlineQueryStrategy implements _QueryStrategy {
 
   constructor(ei: ElementInjector) {
     var protoRefs = ei._proto.protoQueryRefs;
-    if (protoRefs.length > 0) this.query0 = new QueryRef(protoRefs[0], new QueryList<any>(), ei);
-    if (protoRefs.length > 1) this.query1 = new QueryRef(protoRefs[1], new QueryList<any>(), ei);
-    if (protoRefs.length > 2) this.query2 = new QueryRef(protoRefs[2], new QueryList<any>(), ei);
+    if (protoRefs.length > 0) this.query0 = new QueryRef(protoRefs[0], ei);
+    if (protoRefs.length > 1) this.query1 = new QueryRef(protoRefs[1], ei);
+    if (protoRefs.length > 2) this.query2 = new QueryRef(protoRefs[2], ei);
   }
 
   setContentQueriesAsDirty(): void {
@@ -649,39 +652,39 @@ class InlineQueryStrategy implements _QueryStrategy {
     if (isPresent(this.query2) && this.query2.isViewQuery) this.query2.dirty = true;
   }
 
-  clearQueryLists(): void {
-    if (isPresent(this.query0)) this.query0.reset();
-    if (isPresent(this.query1)) this.query1.reset();
-    if (isPresent(this.query2)) this.query2.reset();
+  hydrate(): void {
+    if (isPresent(this.query0)) this.query0.hydrate();
+    if (isPresent(this.query1)) this.query1.hydrate();
+    if (isPresent(this.query2)) this.query2.hydrate();
+  }
+
+  dehydrate(): void {
+    if (isPresent(this.query0)) this.query0.dehydrate();
+    if (isPresent(this.query1)) this.query1.dehydrate();
+    if (isPresent(this.query2)) this.query2.dehydrate();
   }
 
   updateContentQueries() {
     if (isPresent(this.query0) && !this.query0.isViewQuery) {
       this.query0.update();
-      this.query0.list.fireCallbacks();
     }
     if (isPresent(this.query1) && !this.query1.isViewQuery) {
       this.query1.update();
-      this.query1.list.fireCallbacks();
     }
     if (isPresent(this.query2) && !this.query2.isViewQuery) {
       this.query2.update();
-      this.query2.list.fireCallbacks();
     }
   }
 
   updateViewQueries() {
     if (isPresent(this.query0) && this.query0.isViewQuery) {
       this.query0.update();
-      this.query0.list.fireCallbacks();
     }
     if (isPresent(this.query1) && this.query1.isViewQuery) {
       this.query1.update();
-      this.query1.list.fireCallbacks();
     }
     if (isPresent(this.query2) && this.query2.isViewQuery) {
       this.query2.update();
-      this.query2.list.fireCallbacks();
     }
   }
 
@@ -703,7 +706,7 @@ class DynamicQueryStrategy implements _QueryStrategy {
   queries: QueryRef[];
 
   constructor(ei: ElementInjector) {
-    this.queries = ei._proto.protoQueryRefs.map(p => new QueryRef(p, new QueryList<any>(), ei));
+    this.queries = ei._proto.protoQueryRefs.map(p => new QueryRef(p, ei));
   }
 
   setContentQueriesAsDirty(): void {
@@ -720,10 +723,17 @@ class DynamicQueryStrategy implements _QueryStrategy {
     }
   }
 
-  clearQueryLists(): void {
+  hydrate(): void {
     for (var i = 0; i < this.queries.length; ++i) {
       var q = this.queries[i];
-      q.reset();
+      q.hydrate();
+    }
+  }
+
+  dehydrate(): void {
+    for (var i = 0; i < this.queries.length; ++i) {
+      var q = this.queries[i];
+      q.dehydrate();
     }
   }
 
@@ -732,7 +742,6 @@ class DynamicQueryStrategy implements _QueryStrategy {
       var q = this.queries[i];
       if (!q.isViewQuery) {
         q.update();
-        q.list.fireCallbacks();
       }
     }
   }
@@ -742,7 +751,6 @@ class DynamicQueryStrategy implements _QueryStrategy {
       var q = this.queries[i];
       if (q.isViewQuery) {
         q.update();
-        q.list.fireCallbacks();
       }
     }
   }
@@ -972,8 +980,10 @@ export class ProtoQueryRef {
 }
 
 export class QueryRef {
-  constructor(public protoQueryRef: ProtoQueryRef, public list: QueryList<any>,
-              private originator: ElementInjector, public dirty: boolean = true) {}
+  public list: QueryList<any>;
+  public dirty: boolean;
+
+  constructor(public protoQueryRef: ProtoQueryRef, private originator: ElementInjector) {}
 
   get isViewQuery(): boolean { return this.protoQueryRef.query.isViewQuery; }
 
@@ -991,6 +1001,8 @@ export class QueryRef {
         this.protoQueryRef.setter(dir, this.list);
       }
     }
+
+    this.list.notifyOnChanges();
   }
 
   private _update(): void {
@@ -1073,9 +1085,10 @@ export class QueryRef {
     inj.addDirectivesMatchingQuery(this.protoQueryRef.query, aggregator);
   }
 
-  reset(): void {
-    this.list.reset([]);
-    this.list.removeAllCallbacks();
+  dehydrate(): void { this.list = null; }
+
+  hydrate(): void {
+    this.list = new QueryList<any>();
     this.dirty = true;
   }
 }

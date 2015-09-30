@@ -6,6 +6,7 @@ import {Query, Directive} from 'angular2/src/core/metadata';
 import {NgControl} from './ng_control';
 import {ControlValueAccessor} from './control_value_accessor';
 import {isPresent} from 'angular2/src/core/facade/lang';
+import {ObservableWrapper} from 'angular2/src/core/facade/async';
 import {setProperty} from './shared';
 
 /**
@@ -81,6 +82,6 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
   registerOnTouched(fn: () => any): void { this.onTouched = fn; }
 
   private _updateValueWhenListOfOptionsChanges(query: QueryList<NgSelectOption>) {
-    query.onChange(() => this.writeValue(this.value));
+    ObservableWrapper.subscribe(query.changes, (_) => this.writeValue(this.value));
   }
 }

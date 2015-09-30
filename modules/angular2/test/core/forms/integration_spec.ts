@@ -301,24 +301,26 @@ export function main() {
          }));
 
       it("should support <select> with a dynamic list of options",
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var t = `<div [ng-form-model]="form">
+         inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
+                  var t = `<div [ng-form-model]="form">
                       <select ng-control="city">
                         <option *ng-for="#c of data" [value]="c"></option>
                       </select>
                   </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-             rootTC.debugElement.componentInstance.form =
-                 new ControlGroup({"city": new Control("NYC")});
-             rootTC.debugElement.componentInstance.data = ['SF', 'NYC'];
-             rootTC.detectChanges();
+                  var rootTC;
+                  tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rtc) => rootTC = rtc);
+                  tick();
 
-             var select = rootTC.debugElement.query(By.css('select'));
-             expect(select.nativeElement.value).toEqual('NYC');
-             async.done();
-           });
-         }));
+                  rootTC.debugElement.componentInstance.form =
+                      new ControlGroup({"city": new Control("NYC")});
+                  rootTC.debugElement.componentInstance.data = ['SF', 'NYC'];
+                  rootTC.detectChanges();
+                  tick();
+
+                  var select = rootTC.debugElement.query(By.css('select'));
+                  expect(select.nativeElement.value).toEqual('NYC');
+                })));
 
       it("should support custom value accessors",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {

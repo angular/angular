@@ -13,6 +13,7 @@ import {
 } from 'angular2/test_lib';
 
 import {isPresent} from 'angular2/src/core/facade/lang';
+import {ObservableWrapper} from 'angular2/src/core/facade/async';
 
 import {
   Component,
@@ -263,7 +264,7 @@ export function main() {
 
     });
 
-    describe("onChange", () => {
+    describe("changes", () => {
       it('should notify query on change',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var template = '<needs-query #q>' +
@@ -277,7 +278,7 @@ export function main() {
                  var q = view.debugElement.componentViewChildren[0].getLocal("q");
                  view.detectChanges();
 
-                 q.query.onChange(() => {
+                 ObservableWrapper.subscribe(q.query.changes, (_) => {
                    expect(q.query.first.text).toEqual("1");
                    expect(q.query.last.text).toEqual("2");
                    async.done();
@@ -304,8 +305,8 @@ export function main() {
 
                  var firedQ2 = false;
 
-                 q2.query.onChange(() => { firedQ2 = true; });
-                 q1.query.onChange(() => {
+                 ObservableWrapper.subscribe(q2.query.changes, (_) => { firedQ2 = true; });
+                 ObservableWrapper.subscribe(q1.query.changes, (_) => {
                    expect(firedQ2).toBe(true);
                    async.done();
                  });

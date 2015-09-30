@@ -1,6 +1,7 @@
 library angular2.src.core.compiler.query_list;
 
 import 'dart:collection';
+import 'package:angular2/src/core/facade/async.dart';
 
 /**
  * See query_list.ts
@@ -8,33 +9,11 @@ import 'dart:collection';
 class QueryList<T> extends Object
     with IterableMixin<T> {
   List<T> _results = [];
-  List _callbacks = [];
-  bool _dirty = false;
+  EventEmitter _emitter = new EventEmitter();
 
   Iterator<T> get iterator => _results.iterator;
 
-  /** @private */
-  void reset(List<T> newList) {
-    _results = newList;
-    _dirty = true;
-  }
-
-  void add(T obj) {
-    _results.add(obj);
-    _dirty = true;
-  }
-
-  void onChange(callback) {
-    _callbacks.add(callback);
-  }
-
-  void removeCallback(callback) {
-    _callbacks.remove(callback);
-  }
-
-  void removeAllCallbacks() {
-    this._callbacks = [];
-  }
+  Stream<Iterable<T>> get changes => _emitter;
 
   int get length => _results.length;
   T get first => _results.first;
@@ -49,10 +28,12 @@ class QueryList<T> extends Object
   }
 
   /** @private */
-  void fireCallbacks() {
-    if (_dirty) {
-      _callbacks.forEach((c) => c());
-      _dirty = false;
-    }
+  void reset(List<T> newList) {
+    _results = newList;
+  }
+
+  /** @private */
+  void notifyOnChanges() {
+    _emitter.add(this);
   }
 }
