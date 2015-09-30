@@ -1,6 +1,9 @@
 library angular2.dom.abstractHtmlAdapter;
 
 import 'dom_adapter.dart';
+import 'package:csslib/css.dart' as css;
+import 'package:csslib/parser.dart' as cssp;
+import 'package:csslib/visitor.dart' as cssv;
 import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart';
 
@@ -355,8 +358,12 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
     throw 'not implemented';
   }
 
-  // TODO(kegluneq): This must be implemented.
-  List cssToRules(String css) => [];
+  List cssToRules(String css) {
+    var stylesheet = cssp.parse(css);
+    var extractor = new _CssRuleExtractor();
+    stylesheet.visit(extractor);
+    return extractor.rules;
+  }
 
   List getDistributedNodes(Node) {
     throw 'not implemented';
@@ -429,5 +436,14 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
 
   supportsAnimation() {
     throw 'not implemented';
+  }
+}
+
+class _CssRuleExtractor extends cssv.Visitor {
+  final rules = [];
+
+  @override
+  void visitRuleSet(cssv.RuleSet node) {
+    // TODO: parse&add rules to this.rules
   }
 }

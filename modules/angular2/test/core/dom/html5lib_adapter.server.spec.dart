@@ -30,5 +30,15 @@ main() {
       expect(subject.getAttribute(div, 'foo')).toEqual('bar');
       expect(subject.getAttribute(div, 'bar')).toBe(null);
     });
+
+    // TODO(yjbanov): make this test pass
+    xit('implements cssToRules', () {
+      var rules = subject.cssToRules('''
+.foo {
+  width: 10px;
+}
+      ''');
+      expect(rules.length).toBe(1);
+    });
   });
 }

@@ -4,6 +4,9 @@ const BOOTSTRAP_NAME = 'bootstrap';
 const SETUP_METHOD_NAME = 'initReflector';
 const REFLECTOR_VAR_NAME = 'reflector';
 const TRANSFORM_DYNAMIC_MODE = 'transform_dynamic';
+const CSS_EXTENSION = '.css';
+const SHIMMED_STYLESHEET_EXTENSION = '.css.shim.dart';
+const NON_SHIMMED_STYLESHEET_EXTENSION = '.css.dart';
 const DEPS_EXTENSION = '.ng_deps.dart';
 const DEPS_JSON_EXTENSION = '.ng_deps.json';
 const META_EXTENSION = '.ng_meta.json';
@@ -42,6 +45,14 @@ String toJsonExtension(String uri) =>
 /// Returns `uri` with its extension updated to [TEMPLATES_EXTENSION].
 String toTemplateExtension(String uri) =>
     _toExtension(uri, ALL_EXTENSIONS, TEMPLATE_EXTENSION);
+
+/// Returns `uri` with its extension updated to [SHIMMED_STYLESHEET_EXTENSION].
+String toShimmedStylesheetExtension(String uri) =>
+    _toExtension(uri, const [CSS_EXTENSION], SHIMMED_STYLESHEET_EXTENSION);
+
+/// Returns `uri` with its extension updated to [NON_SHIMMED_STYLESHEET_EXTENSION].
+String toNonShimmedStylesheetExtension(String uri) =>
+    _toExtension(uri, const [CSS_EXTENSION], NON_SHIMMED_STYLESHEET_EXTENSION);
 
 /// Returns `uri` with its extension updated to `toExtension` if its
 /// extension is currently in `fromExtension`.

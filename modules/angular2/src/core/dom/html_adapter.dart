@@ -9,16 +9,16 @@ class Html5LibDomAdapter extends AbstractHtml5LibAdapter {
     setRootDomAdapter(new Html5LibDomAdapter());
   }
 
-  logError(error) {
-    stderr.writeln('${error}');
+  logError(errorMessage) {
+    stderr.writeln('${errorMessage}');
   }
 
-  log(error) {
-    stdout.writeln('${error}');
+  log(message) {
+    stdout.writeln('${message}');
   }
 
-  logGroup(error) {
-    stdout.writeln('${error}');
+  logGroup(message) {
+    stdout.writeln('${message}');
   }
 
   logGroupEnd() {}

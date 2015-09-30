@@ -9,6 +9,7 @@ import 'directive_metadata_linker/transformer.dart';
 import 'directive_processor/transformer.dart';
 import 'bind_generator/transformer.dart';
 import 'reflection_remover/transformer.dart';
+import 'stylesheet_compiler/transformer.dart';
 import 'template_compiler/transformer.dart';
 import 'common/formatter.dart' as formatter;
 import 'common/options.dart';
@@ -38,7 +39,8 @@ class AngularTransformerGroup extends TransformerGroup {
         new DirectiveMetadataLinker()
       ],
       [new BindGenerator(options)],
-      [new TemplateCompiler(options)]
+      [new TemplateCompiler(options)],
+      [new StylesheetCompiler()],
     ]);
     return new AngularTransformerGroup._(phases,
         formatCode: options.formatCode);

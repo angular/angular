@@ -14,6 +14,7 @@ import 'directive_processor/all_tests.dart' as directiveProcessor;
 import 'integration/all_tests.dart' as integration;
 import 'reflection_remover/all_tests.dart' as reflectionRemover;
 import 'template_compiler/all_tests.dart' as templateCompiler;
+import 'stylesheet_compiler/all_tests.dart' as stylesheetCompiler;
 
 main() {
   useVMConfiguration();
@@ -26,6 +27,7 @@ main() {
   describe('Reflection Remover', reflectionRemover.allTests);
   describe('Template Compiler', templateCompiler.allTests);
   describe('Deferred Rewriter', deferredRewriter.allTests);
+  describe('Stylesheet Compiler', stylesheetCompiler.allTests);
   // NOTE(kegluneq): These use `code_transformers#testPhases`, which is not
   // designed to work with `guinness`.
   group('Transformer Pipeline', integration.allTests);
