@@ -3,7 +3,7 @@ import {ViewMetadata} from '../metadata/view';
 
 import {Type, stringify, isBlank} from 'angular2/src/core/facade/lang';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
-import {Map, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+import {Map} from 'angular2/src/core/facade/collection';
 
 import {reflector} from 'angular2/src/core/reflection/reflection';
 
