@@ -28,5 +28,5 @@ main() {
   describe('Deferred Rewriter', deferredRewriter.allTests);
   // NOTE(kegluneq): These use `code_transformers#testPhases`, which is not
   // designed to work with `guinness`.
-  solo_group('Transformer Pipeline', integration.allTests);
+  group('Transformer Pipeline', integration.allTests);
 }

@@ -26,14 +26,14 @@ class NgMeta {
   /// List of other types and names associated with a given name.
   final Map<String, List<String>> aliases;
 
-  /// TODO(kegluneq): Populate this placeholder with export uris.
+  /// TODO(kegluneq): Once merged with NgDepsModel, use its exports.
   final List<String> exports;
 
   NgMeta(this.types, this.aliases, this.exports);
 
   NgMeta.empty() : this({}, {}, []);
 
-  bool get isEmpty => types.isEmpty && aliases.isEmpty;
+  bool get isEmpty => types.isEmpty && aliases.isEmpty && exports.isEmpty;
 
   /// Parse from the serialized form produced by [toJson].
   factory NgMeta.fromJson(Map json) {
@@ -71,6 +71,7 @@ class NgMeta {
   }
 
   /// Merge into this instance all information from [other].
+  /// This does not include `exports`.
   void addAll(NgMeta other) {
     types.addAll(other.types);
     aliases.addAll(other.aliases);
