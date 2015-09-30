@@ -1,11 +1,10 @@
 library angular2.dom.abstractHtmlAdapter;
 
-import 'dom_adapter.dart';
-import 'package:csslib/css.dart' as css;
-import 'package:csslib/parser.dart' as cssp;
-import 'package:csslib/visitor.dart' as cssv;
 import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart';
+
+import 'dom_adapter.dart';
+import 'emulated_css.dart';
 
 abstract class AbstractHtml5LibAdapter implements DomAdapter {
   hasProperty(element, String name) {
@@ -334,21 +333,13 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
     throw 'not implemented';
   }
 
-  bool isPageRule(rule) {
-    throw 'not implemented';
-  }
+  bool isPageRule(rule)  => (rule.type == 6);
 
-  bool isStyleRule(rule) {
-    throw 'not implemented';
-  }
+  bool isStyleRule(rule) => (rule.type == 1);
 
-  bool isMediaRule(rule) {
-    throw 'not implemented';
-  }
+  bool isMediaRule(rule) => (rule.type == 4);
 
-  bool isKeyframesRule(rule) {
-    throw 'not implemented';
-  }
+  bool isKeyframesRule(rule)  => (rule.type == 7);
 
   String getHref(element) {
     throw 'not implemented';
@@ -359,10 +350,7 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
   }
 
   List cssToRules(String css) {
-    var stylesheet = cssp.parse(css);
-    var extractor = new _CssRuleExtractor();
-    stylesheet.visit(extractor);
-    return extractor.rules;
+    return parseAndEmulateCssRules(css);
   }
 
   List getDistributedNodes(Node) {
@@ -374,6 +362,13 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
   }
 
   bool supportsNativeShadowDOM() {
+    return false;
+  }
+
+  bool supportsUnprefixedCssAnimation() {
+    // Currently during code transformation we do not know what
+    // browsers we are targetting. To play it safe, we assume
+    // unprefixed animations are not supported.
     return false;
   }
 
@@ -394,7 +389,7 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
   }
 
   String getUserAgent() {
-    throw 'not implemented';
+    return 'Angular 2 Dart Transformer';
   }
 
   void setData(Element element, String name, String value) {
@@ -436,14 +431,5 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
 
   supportsAnimation() {
     throw 'not implemented';
-  }
-}
-
-class _CssRuleExtractor extends cssv.Visitor {
-  final rules = [];
-
-  @override
-  void visitRuleSet(cssv.RuleSet node) {
-    // TODO: parse&add rules to this.rules
   }
 }

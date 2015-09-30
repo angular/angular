@@ -70,6 +70,10 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
   supportsNativeShadowDOM(): boolean {
     return isFunction((<any>this.defaultDoc().body).createShadowRoot);
   }
+  supportsUnprefixedCssAnimation(): boolean {
+    return isPresent(this.defaultDoc().body.style) &&
+        isPresent(this.defaultDoc().body.style.animationName);
+  }
   getAnimationPrefix(): string {
     return isPresent(this._animationPrefix) ? this._animationPrefix : "";
   }

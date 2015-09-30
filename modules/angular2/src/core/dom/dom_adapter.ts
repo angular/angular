@@ -117,6 +117,7 @@ export abstract class DomAdapter {
   abstract cssToRules(css: string): any[];
   abstract supportsDOMEvents(): boolean;
   abstract supportsNativeShadowDOM(): boolean;
+  abstract supportsUnprefixedCssAnimation(): boolean;
   abstract getGlobalEventTarget(target: string): any;
   abstract getHistory(): History;
   abstract getLocation(): Location;

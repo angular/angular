@@ -544,6 +544,12 @@ export class Parse5DomAdapter extends DomAdapter {
       return this.defaultDoc().body;
     }
   }
+  supportsUnprefixedCssAnimation(): boolean {
+    // Currently during offline code transformation we do not know
+    // what browsers we are targetting. To play it safe, we assume
+    // unprefixed animations are not supported.
+    return false;
+  }
   getBaseHref(): string { throw 'not implemented'; }
   resetBaseElement(): void { throw 'not implemented'; }
   getHistory(): History { throw 'not implemented'; }
