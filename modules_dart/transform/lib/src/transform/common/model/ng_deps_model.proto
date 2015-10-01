@@ -14,7 +14,10 @@ message NgDepsModel {
 
   repeated ExportModel exports = 4;
 
+  // All classes in `source_file` marked with @Injectable or a known subclass.
   repeated ReflectionInfoModel reflectables = 5;
 
+  // The basename of the file from which the ng_deps were generated.
+  // Example: component.dart
   optional string source_file = 6;
 }

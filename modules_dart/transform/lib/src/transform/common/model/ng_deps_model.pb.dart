@@ -99,7 +99,7 @@ const NgDepsModel$json = const {
 
 /**
  * Generated with:
- * ng_deps_model.proto (7188431b4430396fdeb24367c8042d1e661a0ec8)
+ * ng_deps_model.proto (83fe43a087fdd0a7ebee360cd6b669570df4d216)
  * libprotoc 2.5.0
  * dart-protoc-plugin (cc35f743de982a4916588b9c505dd21c7fe87d17)
  */
