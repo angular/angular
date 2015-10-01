@@ -1,22 +1,19 @@
 import {Inject, Injectable, OpaqueToken} from 'angular2/src/core/di';
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
-import {isPresent, isBlank, RegExpWrapper, CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {
+  isPresent,
+  isBlank,
+  RegExpWrapper,
+  CONST_EXPR,
+  stringify
+} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {EventManager} from './events/event_manager';
 
-import {DomProtoView, DomProtoViewRef, resolveInternalDomProtoView} from './view/proto_view';
-import {DomView, DomViewRef, resolveInternalDomView} from './view/view';
-import {DomFragmentRef, resolveInternalDomFragment} from './view/fragment';
 import {DomSharedStylesHost} from './view/shared_styles_host';
-import {
-  NG_BINDING_CLASS_SELECTOR,
-  NG_BINDING_CLASS,
-  cloneAndQueryProtoView,
-  camelCaseToDashCase
-} from './util';
 import {WtfScopeFn, wtfLeave, wtfCreateScope} from '../../profile/profile';
 
 import {
@@ -25,65 +22,80 @@ import {
   RenderViewRef,
   RenderElementRef,
   RenderFragmentRef,
-  RenderViewWithFragments
+  RenderViewWithFragments,
+  RenderTemplateCmd,
+  RenderEventDispatcher
 } from '../api';
 
-import {TemplateCloner} from './template_cloner';
-
 import {DOCUMENT} from './dom_tokens';
-
-const REFLECT_PREFIX: string = 'ng-reflect-';
-
+import {createRenderView, NodeFactory} from '../view_factory';
+import {DefaultRenderView, DefaultRenderFragmentRef, DefaultProtoViewRef} from '../view';
+import {camelCaseToDashCase} from './util';
 
 @Injectable()
-export class DomRenderer extends Renderer {
-  _document;
+export class DomRenderer implements Renderer, NodeFactory<Node> {
+  private _componentCmds: Map<number, RenderTemplateCmd[]> = new Map<number, RenderTemplateCmd[]>();
+  private _document;
 
   /**
    * @private
    */
   constructor(private _eventManager: EventManager,
               private _domSharedStylesHost: DomSharedStylesHost, private _animate: AnimationBuilder,
-              private _templateCloner: TemplateCloner, @Inject(DOCUMENT) document) {
-    super();
+              @Inject(DOCUMENT) document) {
     this._document = document;
+  }
+
+  registerComponentTemplate(templateId: number, commands: RenderTemplateCmd[], styles: string[]) {
+    this._componentCmds.set(templateId, commands);
+    this._domSharedStylesHost.addStyles(styles);
+  }
+
+  resolveComponentTemplate(templateId: number): RenderTemplateCmd[] {
+    return this._componentCmds.get(templateId);
+  }
+
+  createProtoView(cmds: RenderTemplateCmd[]): RenderProtoViewRef {
+    return new DefaultProtoViewRef(cmds);
   }
 
   _createRootHostViewScope: WtfScopeFn = wtfCreateScope('DomRenderer#createRootHostView()');
   createRootHostView(hostProtoViewRef: RenderProtoViewRef, fragmentCount: number,
                      hostElementSelector: string): RenderViewWithFragments {
     var s = this._createRootHostViewScope();
-    var hostProtoView = resolveInternalDomProtoView(hostProtoViewRef);
     var element = DOM.querySelector(this._document, hostElementSelector);
     if (isBlank(element)) {
       wtfLeave(s);
       throw new BaseException(`The selector "${hostElementSelector}" did not match any elements`);
     }
-    return wtfLeave(s, this._createView(hostProtoView, element));
+    return wtfLeave(s, this._createView(hostProtoViewRef, element));
   }
 
   _createViewScope = wtfCreateScope('DomRenderer#createView()');
   createView(protoViewRef: RenderProtoViewRef, fragmentCount: number): RenderViewWithFragments {
     var s = this._createViewScope();
-    var protoView = resolveInternalDomProtoView(protoViewRef);
-    return wtfLeave(s, this._createView(protoView, null));
+    return wtfLeave(s, this._createView(protoViewRef, null));
+  }
+
+  private _createView(protoViewRef: RenderProtoViewRef,
+                      inplaceElement: HTMLElement): RenderViewWithFragments {
+    var view = createRenderView((<DefaultProtoViewRef>protoViewRef).cmds, inplaceElement, this);
+    var sdRoots = view.nativeShadowRoots;
+    for (var i = 0; i < sdRoots.length; i++) {
+      this._domSharedStylesHost.addHost(sdRoots[i]);
+    }
+    return new RenderViewWithFragments(view, view.fragments);
   }
 
   destroyView(viewRef: RenderViewRef) {
-    var view = resolveInternalDomView(viewRef);
-    var elementBinders = view.proto.elementBinders;
-    for (var i = 0; i < elementBinders.length; i++) {
-      var binder = elementBinders[i];
-      if (binder.hasNativeShadowRoot) {
-        this._domSharedStylesHost.removeHost(DOM.getShadowRoot(view.boundElements[i]));
-      }
+    var view = <DefaultRenderView<Node>>viewRef;
+    var sdRoots = view.nativeShadowRoots;
+    for (var i = 0; i < sdRoots.length; i++) {
+      this._domSharedStylesHost.removeHost(sdRoots[i]);
     }
   }
 
   getNativeElementSync(location: RenderElementRef): any {
-    if (isBlank(location.renderBoundElementIndex)) {
-      return null;
-    }
     return resolveInternalDomView(location.renderView)
         .boundElements[location.renderBoundElementIndex];
   }
@@ -144,9 +156,6 @@ export class DomRenderer extends Renderer {
   }
 
   attachFragmentAfterElement(elementRef: RenderElementRef, fragmentRef: RenderFragmentRef) {
-    if (isBlank(elementRef.renderBoundElementIndex)) {
-      return;
-    }
     var parentView = resolveInternalDomView(elementRef.renderView);
     var element = parentView.boundElements[elementRef.renderBoundElementIndex];
     var nodes = resolveInternalDomFragment(fragmentRef);
@@ -164,153 +173,100 @@ export class DomRenderer extends Renderer {
     wtfLeave(s);
   }
 
-  hydrateView(viewRef: RenderViewRef) {
-    var view = resolveInternalDomView(viewRef);
-    if (view.hydrated) throw new BaseException('The view is already hydrated.');
-    view.hydrated = true;
+  hydrateView(viewRef: RenderViewRef) { resolveInternalDomView(viewRef).hydrate(); }
 
-    // add global events
-    view.eventHandlerRemovers = [];
-    var binders = view.proto.elementBinders;
-    for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
-      var binder = binders[binderIdx];
-      if (isPresent(binder.globalEvents)) {
-        for (var i = 0; i < binder.globalEvents.length; i++) {
-          var globalEvent = binder.globalEvents[i];
-          var remover = this._createGlobalEventListener(view, binderIdx, globalEvent.name,
-                                                        globalEvent.target, globalEvent.fullName);
-          view.eventHandlerRemovers.push(remover);
-        }
-      }
+  dehydrateView(viewRef: RenderViewRef) { resolveInternalDomView(viewRef).dehydrate(); }
+
+  createTemplateAnchor(attrNameAndValues: string[]): Node {
+    return this.createElement('script', attrNameAndValues);
+  }
+  createElement(name: string, attrNameAndValues: string[]): Node {
+    var el = DOM.createElement(name);
+    this._setAttributes(el, attrNameAndValues);
+    return el;
+  }
+  mergeElement(existing: Node, attrNameAndValues: string[]) {
+    DOM.clearNodes(existing);
+    this._setAttributes(existing, attrNameAndValues);
+  }
+  private _setAttributes(node: Node, attrNameAndValues: string[]) {
+    for (var attrIdx = 0; attrIdx < attrNameAndValues.length; attrIdx += 2) {
+      DOM.setAttribute(node, attrNameAndValues[attrIdx], attrNameAndValues[attrIdx + 1]);
     }
   }
-
-  dehydrateView(viewRef: RenderViewRef) {
-    var view = resolveInternalDomView(viewRef);
-
-    // remove global events
-    for (var i = 0; i < view.eventHandlerRemovers.length; i++) {
-      view.eventHandlerRemovers[i]();
-    }
-
-    view.eventHandlerRemovers = null;
-    view.hydrated = false;
+  createShadowRoot(host: Node): Node { return DOM.createShadowRoot(host); }
+  createText(value: string): Node { return DOM.createTextNode(isPresent(value) ? value : ''); }
+  appendChild(parent: Node, child: Node) { DOM.appendChild(parent, child); }
+  on(element: Node, eventName: string, callback: Function) {
+    this._eventManager.addEventListener(<HTMLElement>element, eventName,
+                                        decoratePreventDefault(callback));
+  }
+  globalOn(target: string, eventName: string, callback: Function): Function {
+    return this._eventManager.addGlobalEventListener(target, eventName,
+                                                     decoratePreventDefault(callback));
   }
 
   setElementProperty(location: RenderElementRef, propertyName: string, propertyValue: any): void {
-    if (isBlank(location.renderBoundElementIndex)) {
-      return;
-    }
     var view = resolveInternalDomView(location.renderView);
-    view.setElementProperty(location.renderBoundElementIndex, propertyName, propertyValue);
+    DOM.setProperty(<Element>view.boundElements[location.renderBoundElementIndex], propertyName,
+                    propertyValue);
   }
 
   setElementAttribute(location: RenderElementRef, attributeName: string, attributeValue: string):
       void {
-    if (isBlank(location.renderBoundElementIndex)) {
-      return;
-    }
     var view = resolveInternalDomView(location.renderView);
-    view.setElementAttribute(location.renderBoundElementIndex, attributeName, attributeValue);
+    var element = view.boundElements[location.renderBoundElementIndex];
+    var dashCasedAttributeName = camelCaseToDashCase(attributeName);
+    if (isPresent(attributeValue)) {
+      DOM.setAttribute(element, dashCasedAttributeName, stringify(attributeValue));
+    } else {
+      DOM.removeAttribute(element, dashCasedAttributeName);
+    }
   }
 
   setElementClass(location: RenderElementRef, className: string, isAdd: boolean): void {
-    if (isBlank(location.renderBoundElementIndex)) {
-      return;
-    }
     var view = resolveInternalDomView(location.renderView);
-    view.setElementClass(location.renderBoundElementIndex, className, isAdd);
+    var element = view.boundElements[location.renderBoundElementIndex];
+    if (isAdd) {
+      DOM.addClass(element, className);
+    } else {
+      DOM.removeClass(element, className);
+    }
   }
 
   setElementStyle(location: RenderElementRef, styleName: string, styleValue: string): void {
-    if (isBlank(location.renderBoundElementIndex)) {
-      return;
-    }
     var view = resolveInternalDomView(location.renderView);
-    view.setElementStyle(location.renderBoundElementIndex, styleName, styleValue);
+    var element = view.boundElements[location.renderBoundElementIndex];
+    var dashCasedStyleName = camelCaseToDashCase(styleName);
+    if (isPresent(styleValue)) {
+      DOM.setStyle(element, dashCasedStyleName, stringify(styleValue));
+    } else {
+      DOM.removeStyle(element, dashCasedStyleName);
+    }
   }
 
   invokeElementMethod(location: RenderElementRef, methodName: string, args: any[]): void {
-    if (isBlank(location.renderBoundElementIndex)) {
-      return;
-    }
     var view = resolveInternalDomView(location.renderView);
-    view.invokeElementMethod(location.renderBoundElementIndex, methodName, args);
+    var element = <Element>view.boundElements[location.renderBoundElementIndex];
+    DOM.invoke(element, methodName, args);
   }
 
   setText(viewRef: RenderViewRef, textNodeIndex: number, text: string): void {
-    if (isBlank(textNodeIndex)) {
-      return;
-    }
     var view = resolveInternalDomView(viewRef);
     DOM.setText(view.boundTextNodes[textNodeIndex], text);
   }
 
-  _setEventDispatcherScope = wtfCreateScope('DomRenderer#setEventDispatcher()');
-  setEventDispatcher(viewRef: RenderViewRef, dispatcher: any /*api.EventDispatcher*/): void {
-    var s = this._setEventDispatcherScope();
-    var view = resolveInternalDomView(viewRef);
-    view.eventDispatcher = dispatcher;
-    wtfLeave(s);
+  setEventDispatcher(viewRef: RenderViewRef, dispatcher: RenderEventDispatcher): void {
+    resolveInternalDomView(viewRef).setEventDispatcher(dispatcher);
   }
+}
 
-  _createView(protoView: DomProtoView, inplaceElement: HTMLElement): RenderViewWithFragments {
-    var clonedProtoView = cloneAndQueryProtoView(this._templateCloner, protoView, true);
+function resolveInternalDomView(viewRef: RenderViewRef): DefaultRenderView<Node> {
+  return <DefaultRenderView<Node>>viewRef;
+}
 
-    var boundElements = clonedProtoView.boundElements;
-
-    // adopt inplaceElement
-    if (isPresent(inplaceElement)) {
-      if (protoView.fragmentsRootNodeCount[0] !== 1) {
-        throw new BaseException('Root proto views can only contain one element!');
-      }
-      DOM.clearNodes(inplaceElement);
-      var tempRoot = clonedProtoView.fragments[0][0];
-      moveChildNodes(tempRoot, inplaceElement);
-      if (boundElements.length > 0 && boundElements[0] === tempRoot) {
-        boundElements[0] = inplaceElement;
-      }
-      clonedProtoView.fragments[0][0] = inplaceElement;
-    }
-
-    var view = new DomView(protoView, clonedProtoView.boundTextNodes, boundElements);
-
-    var binders = protoView.elementBinders;
-    for (var binderIdx = 0; binderIdx < binders.length; binderIdx++) {
-      var binder = binders[binderIdx];
-      var element = boundElements[binderIdx];
-
-      // native shadow DOM
-      if (binder.hasNativeShadowRoot) {
-        var shadowRootWrapper = DOM.firstChild(element);
-        var shadowRoot = DOM.createShadowRoot(element);
-        this._domSharedStylesHost.addHost(shadowRoot);
-        moveChildNodes(shadowRootWrapper, shadowRoot);
-        DOM.remove(shadowRootWrapper);
-      }
-
-      // events
-      if (isPresent(binder.eventLocals) && isPresent(binder.localEvents)) {
-        for (var i = 0; i < binder.localEvents.length; i++) {
-          this._createEventListener(view, element, binderIdx, binder.localEvents[i].name,
-                                    binder.eventLocals);
-        }
-      }
-    }
-
-    return new RenderViewWithFragments(
-        new DomViewRef(view), clonedProtoView.fragments.map(nodes => new DomFragmentRef(nodes)));
-  }
-
-  _createEventListener(view, element, elementIndex, eventName, eventLocals) {
-    this._eventManager.addEventListener(
-        element, eventName, (event) => { view.dispatchEvent(elementIndex, eventName, event); });
-  }
-
-  _createGlobalEventListener(view, elementIndex, eventName, eventTarget, fullName): Function {
-    return this._eventManager.addGlobalEventListener(
-        eventTarget, eventName, (event) => { view.dispatchEvent(elementIndex, fullName, event); });
-  }
+function resolveInternalDomFragment(fragmentRef: RenderFragmentRef): Node[] {
+  return (<DefaultRenderFragmentRef<Node>>fragmentRef).nodes;
 }
 
 function moveNodesAfterSibling(sibling, nodes) {
@@ -318,7 +274,7 @@ function moveNodesAfterSibling(sibling, nodes) {
     for (var i = 0; i < nodes.length; i++) {
       DOM.insertBefore(sibling, nodes[i]);
     }
-    DOM.insertBefore(nodes[nodes.length - 1], sibling);
+    DOM.insertBefore(nodes[0], sibling);
   }
 }
 
@@ -329,4 +285,14 @@ function moveChildNodes(source: Node, target: Node) {
     DOM.appendChild(target, currChild);
     currChild = nextChild;
   }
+}
+
+function decoratePreventDefault(eventHandler: Function): Function {
+  return (event) => {
+    var allowDefaultBehavior = eventHandler(event);
+    if (!allowDefaultBehavior) {
+      // TODO(tbosch): move preventDefault into event plugins...
+      DOM.preventDefault(event);
+    }
+  };
 }

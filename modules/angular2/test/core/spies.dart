@@ -8,6 +8,7 @@ import 'package:angular2/src/core/compiler/directive_resolver.dart';
 import 'package:angular2/src/core/compiler/view.dart';
 import 'package:angular2/src/core/compiler/element_ref.dart';
 import 'package:angular2/src/core/compiler/view_manager.dart';
+import 'package:angular2/src/core/compiler/proto_view_factory.dart';
 import 'package:angular2/src/core/compiler/view_pool.dart';
 import 'package:angular2/src/core/compiler/view_listener.dart';
 import 'package:angular2/src/core/compiler/element_injector.dart';
@@ -88,6 +89,11 @@ class SpyAppViewPool extends SpyObject implements AppViewPool {
 
 @proxy
 class SpyAppViewListener extends SpyObject implements AppViewListener {
+  noSuchMethod(m) => super.noSuchMethod(m);
+}
+
+@proxy
+class SpyProtoViewFactory extends SpyObject implements ProtoViewFactory {
   noSuchMethod(m) => super.noSuchMethod(m);
 }
 

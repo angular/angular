@@ -11,7 +11,7 @@ createIsolateSource(String moduleSource, List<List<String>> moduleImports) {
   moduleImports.forEach((sourceImport) {
     String modName = sourceImport[0];
     String modAlias = sourceImport[1];
-    moduleSourceParts.add("import 'package:${modName}.dart' as ${modAlias};");
+    moduleSourceParts.add("import '${modName}' as ${modAlias};");
   });
   moduleSourceParts.add(moduleSource);
   moduleSourceParts.add("""

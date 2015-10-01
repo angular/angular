@@ -10,9 +10,9 @@ import {
   RenderEventDispatcher,
   RenderProtoViewMergeMapping,
   RenderViewWithFragments,
-  RenderFragmentRef
+  RenderFragmentRef,
+  RenderTemplateCmd
 } from 'angular2/src/core/render/api';
-import {Promise, PromiseWrapper} from "angular2/src/core/facade/async";
 import {
   ClientMessageBroker,
   ClientMessageBrokerFactory,
@@ -21,69 +21,45 @@ import {
 } from "angular2/src/web_workers/shared/client_message_broker";
 import {isPresent, print} from "angular2/src/core/facade/lang";
 import {Injectable} from "angular2/src/core/di";
+import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_proto_view_ref_store';
 import {
   RenderViewWithFragmentsStore,
   WebWorkerRenderViewRef
 } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
-import {WebWorkerElementRef} from 'angular2/src/web_workers/shared/api';
-import {
-  RENDER_COMPILER_CHANNEL,
-  RENDERER_CHANNEL
-} from 'angular2/src/web_workers/shared/messaging_api';
+import {WebWorkerElementRef, WebWorkerTemplateCmd} from 'angular2/src/web_workers/shared/api';
+import {RENDERER_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
 import {WebWorkerEventDispatcher} from 'angular2/src/web_workers/worker/event_dispatcher';
-
-@Injectable()
-export class WebWorkerCompiler implements RenderCompiler {
-  private _messageBroker;
-  constructor(messageBrokerFactory: ClientMessageBrokerFactory) {
-    this._messageBroker = messageBrokerFactory.createMessageBroker(RENDER_COMPILER_CHANNEL);
-  }
-  /**
-   * Creates a ProtoViewDto that contains a single nested component with the given componentId.
-   */
-  compileHost(directiveMetadata: RenderDirectiveMetadata): Promise<ProtoViewDto> {
-    var fnArgs: FnArg[] = [new FnArg(directiveMetadata, RenderDirectiveMetadata)];
-    var args: UiArguments = new UiArguments("compileHost", fnArgs);
-    return this._messageBroker.runOnService(args, ProtoViewDto);
-  }
-
-  /**
-   * Compiles a single DomProtoView. Non recursive so that
-   * we don't need to serialize all possible components over the wire,
-   * but only the needed ones based on previous calls.
-   */
-  compile(view: ViewDefinition): Promise<ProtoViewDto> {
-    var fnArgs: FnArg[] = [new FnArg(view, ViewDefinition)];
-    var args: UiArguments = new UiArguments("compile", fnArgs);
-    return this._messageBroker.runOnService(args, ProtoViewDto);
-  }
-
-  /**
-   * Merges ProtoViews.
-   * The first entry of the array is the protoview into which all the other entries of the array
-   * should be merged.
-   * If the array contains other arrays, they will be merged before processing the parent array.
-   * The array must contain an entry for every component and embedded ProtoView of the first entry.
-   * @param protoViewRefs Array of ProtoViewRefs or nested
-   * @return the merge result for every input array in depth first order.
-   */
-  mergeProtoViewsRecursively(
-      protoViewRefs: Array<RenderProtoViewRef | any[]>): Promise<RenderProtoViewMergeMapping> {
-    var fnArgs: FnArg[] = [new FnArg(protoViewRefs, RenderProtoViewRef)];
-    var args: UiArguments = new UiArguments("mergeProtoViewsRecursively", fnArgs);
-    return this._messageBroker.runOnService(args, RenderProtoViewMergeMapping);
-  }
-}
-
 
 @Injectable()
 export class WebWorkerRenderer implements Renderer {
   private _messageBroker;
   constructor(messageBrokerFactory: ClientMessageBrokerFactory,
+              private _renderProtoViewRefStore: RenderProtoViewRefStore,
               private _renderViewStore: RenderViewWithFragmentsStore,
               private _eventDispatcher: WebWorkerEventDispatcher) {
     this._messageBroker = messageBrokerFactory.createMessageBroker(RENDERER_CHANNEL);
   }
+
+  registerComponentTemplate(templateId: number, commands: RenderTemplateCmd[], styles: string[]) {
+    var fnArgs = [
+      new FnArg(templateId, null),
+      new FnArg(commands, WebWorkerTemplateCmd),
+      new FnArg(styles, null)
+    ];
+    var args = new UiArguments("registerComponentTemplate", fnArgs);
+    this._messageBroker.runOnService(args, null);
+  }
+
+  createProtoView(cmds: RenderTemplateCmd[]): RenderProtoViewRef {
+    var renderProtoViewRef = this._renderProtoViewRefStore.allocate();
+
+    var fnArgs: FnArg[] =
+        [new FnArg(cmds, WebWorkerTemplateCmd), new FnArg(renderProtoViewRef, RenderProtoViewRef)];
+    var args: UiArguments = new UiArguments("createProtoView", fnArgs);
+    this._messageBroker.runOnService(args, null);
+    return renderProtoViewRef;
+  }
+
   /**
    * Creates a root host view that includes the given element.
    * Note that the fragmentCount needs to be passed in so that we can create a result

@@ -12,41 +12,33 @@ export class RenderProtoViewRefStore {
 
   constructor(@Inject(ON_WEB_WORKER) onWebworker) { this._onWebworker = onWebworker; }
 
-  storeRenderProtoViewRef(ref: RenderProtoViewRef): number {
-    if (this._lookupByProtoView.has(ref)) {
-      return this._lookupByProtoView.get(ref);
-    } else {
-      this._lookupByIndex.set(this._nextIndex, ref);
-      this._lookupByProtoView.set(ref, this._nextIndex);
-      return this._nextIndex++;
-    }
+  allocate(): RenderProtoViewRef {
+    var index = this._nextIndex++;
+    var result = new WebWorkerRenderProtoViewRef(index);
+    this.store(result, index);
+    return result;
   }
 
-  retreiveRenderProtoViewRef(index: number): RenderProtoViewRef {
-    return this._lookupByIndex.get(index);
+  store(ref: RenderProtoViewRef, index: number): void {
+    this._lookupByProtoView.set(ref, index);
+    this._lookupByIndex.set(index, ref);
   }
 
   deserialize(index: number): RenderProtoViewRef {
     if (index == null) {
       return null;
     }
-
-    if (this._onWebworker) {
-      return new WebWorkerRenderProtoViewRef(index);
-    } else {
-      return this.retreiveRenderProtoViewRef(index);
-    }
+    return this._lookupByIndex.get(index);
   }
 
   serialize(ref: RenderProtoViewRef): number {
     if (ref == null) {
       return null;
     }
-
     if (this._onWebworker) {
       return (<WebWorkerRenderProtoViewRef>ref).refNumber;
     } else {
-      return this.storeRenderProtoViewRef(ref);
+      return this._lookupByProtoView.get(ref);
     }
   }
 }

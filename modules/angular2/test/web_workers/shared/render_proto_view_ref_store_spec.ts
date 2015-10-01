@@ -1,24 +1,56 @@
-import {AsyncTestCompleter, inject, describe, it, expect} from "angular2/test_lib";
+import {
+  AsyncTestCompleter,
+  inject,
+  describe,
+  ddescribe,
+  beforeEach,
+  it,
+  expect
+} from "angular2/test_lib";
 import {RenderProtoViewRef} from "angular2/src/core/render/api";
 import {RenderProtoViewRefStore} from "angular2/src/web_workers/shared/render_proto_view_ref_store";
+import {
+  WebWorkerRenderProtoViewRef
+} from "angular2/src/web_workers/shared/render_proto_view_ref_store";
 
 export function main() {
   describe("RenderProtoViewRefStore", () => {
-    it("should store and return the correct reference", () => {
-      var store = new RenderProtoViewRefStore(true);
-      var ref1 = new RenderProtoViewRef();
-      var index1 = store.storeRenderProtoViewRef(ref1);
-      expect(store.retreiveRenderProtoViewRef(index1)).toBe(ref1);
-      var ref2 = new RenderProtoViewRef();
-      var index2 = store.storeRenderProtoViewRef(ref2);
-      expect(store.retreiveRenderProtoViewRef(index2)).toBe(ref2);
+    describe("on WebWorker", () => {
+      var store: RenderProtoViewRefStore;
+      beforeEach(() => { store = new RenderProtoViewRefStore(true); });
+
+      it("should allocate refs", () => {
+        expect((<WebWorkerRenderProtoViewRef>store.allocate()).refNumber).toBe(0);
+        expect((<WebWorkerRenderProtoViewRef>store.allocate()).refNumber).toBe(1);
+      });
+
+      it("should be serializable", () => {
+        var protoView = store.allocate();
+        expect(store.deserialize(store.serialize(protoView))).toEqual(protoView);
+      });
+
     });
 
-    it("should cache index numbers", () => {
-      var store = new RenderProtoViewRefStore(true);
-      var ref = new RenderProtoViewRef();
-      var index = store.storeRenderProtoViewRef(ref);
-      expect(store.storeRenderProtoViewRef(ref)).toEqual(index);
+    describe("on UI", () => {
+      var store: RenderProtoViewRefStore;
+      beforeEach(() => { store = new RenderProtoViewRefStore(false); });
+
+      it("should associate views with the correct references", () => {
+        var renderProtoViewRef = new RenderProtoViewRef();
+
+        store.store(renderProtoViewRef, 100);
+        expect(store.deserialize(100)).toBe(renderProtoViewRef);
+      });
+
+      it("should be serializable", () => {
+        var renderProtoViewRef = new RenderProtoViewRef();
+        store.store(renderProtoViewRef, 0);
+
+        var deserialized = store.deserialize(store.serialize(renderProtoViewRef));
+        expect(deserialized).toBe(renderProtoViewRef);
+      });
+
     });
+
   });
 }

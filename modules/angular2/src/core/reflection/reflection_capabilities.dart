@@ -322,11 +322,4 @@ class ReflectionCapabilities implements PlatformReflectionCapabilities {
   String importUri(Type type) {
     return '${(reflectClass(type).owner as LibraryMirror).uri}';
   }
-
-  String moduleId(Type type) {
-    var rootUri = currentMirrorSystem().isolate.rootLibrary.uri;
-    var moduleUri = (reflectClass(type).owner as LibraryMirror).uri;
-    var relativeUri = new Uri(pathSegments:moduleUri.pathSegments.sublist(rootUri.pathSegments.length-1)).toString();
-    return relativeUri.substring(0, relativeUri.lastIndexOf('.'));
-  }
 }

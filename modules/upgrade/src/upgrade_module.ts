@@ -24,7 +24,8 @@ import {
   ViewRef
 } from 'angular2/angular2';
 import {applicationDomBindings} from 'angular2/src/core/application_common';
-import {applicationCommonBindings} from "../../angular2/src/core/application_ref";
+import {applicationCommonBindings} from '../../angular2/src/core/application_ref';
+import {compilerBindings} from 'angular2/src/compiler/compiler';
 
 import {getComponentSelector} from './metadata';
 import {onError} from './util';
@@ -84,6 +85,7 @@ export class UpgradeModule {
     var bindings = [
       applicationCommonBindings(),
       applicationDomBindings(),
+      compilerBindings(),
       bind(NG1_INJECTOR).toFactory(() => ng1Injector),
       bind(NG1_COMPILE).toFactory(() => ng1Injector.get(NG1_COMPILE))
     ];

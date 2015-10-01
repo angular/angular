@@ -16,17 +16,18 @@ import {
 
 import {TemplateAst} from './template_ast';
 import {Codegen} from 'angular2/src/transform/template_compiler/change_detector_codegen';
-import {IS_DART} from './util';
+import {IS_DART, MODULE_SUFFIX} from './util';
 import {Injectable} from 'angular2/src/core/di';
 
 const ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
 const UTIL = "ChangeDetectionUtil";
 
-var ABSTRACT_CHANGE_DETECTOR_MODULE =
-    moduleRef('angular2/src/core/change_detection/abstract_change_detector');
-var UTIL_MODULE = moduleRef('angular2/src/core/change_detection/change_detection_util');
-var PREGEN_PROTO_CHANGE_DETECTOR_MODULE =
-    moduleRef('angular2/src/core/change_detection/pregen_proto_change_detector');
+var ABSTRACT_CHANGE_DETECTOR_MODULE = moduleRef(
+    `package:angular2/src/core/change_detection/abstract_change_detector${MODULE_SUFFIX}`);
+var UTIL_MODULE =
+    moduleRef(`package:angular2/src/core/change_detection/change_detection_util${MODULE_SUFFIX}`);
+var PREGEN_PROTO_CHANGE_DETECTOR_MODULE = moduleRef(
+    `package:angular2/src/core/change_detection/pregen_proto_change_detector${MODULE_SUFFIX}`);
 
 @Injectable()
 export class ChangeDetectionCompiler {
@@ -54,24 +55,31 @@ export class ChangeDetectionCompiler {
     var changeDetectorDefinitions =
         createChangeDetectorDefinitions(componentType, strategy, this._genConfig, parsedTemplate);
     var factories = [];
+    var index = 0;
     var sourceParts = changeDetectorDefinitions.map(definition => {
       var codegen: any;
+      var sourcePart;
       // TODO(tbosch): move the 2 code generators to the same place, one with .dart and one with .ts
       // suffix
       // and have the same API for calling them!
       if (IS_DART) {
         codegen = new Codegen(PREGEN_PROTO_CHANGE_DETECTOR_MODULE);
         var className = definition.id;
-        codegen.generate(componentType.name, className, definition);
+        var typeRef = (index === 0 && componentType.isHost) ?
+                          'dynamic' :
+                          `${moduleRef(componentType.moduleUrl)}${componentType.name}`;
+        codegen.generate(typeRef, className, definition);
         factories.push(`(dispatcher) => new ${className}(dispatcher)`);
-        return codegen.toString();
+        sourcePart = codegen.toString();
       } else {
         codegen = new ChangeDetectorJITGenerator(
             definition, `${UTIL_MODULE}${UTIL}`,
             `${ABSTRACT_CHANGE_DETECTOR_MODULE}${ABSTRACT_CHANGE_DETECTOR}`);
         factories.push(`function(dispatcher) { return new ${codegen.typeName}(dispatcher); }`);
-        return codegen.generateSource();
+        sourcePart = codegen.generateSource();
       }
+      index++;
+      return sourcePart;
     });
     return new SourceExpressions(sourceParts, factories);
   }

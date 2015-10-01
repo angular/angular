@@ -12,7 +12,6 @@ import {Injectable} from 'angular2/src/core/di';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {wtfInit} from 'angular2/src/core/profile/wtf_init';
 import {WebWorkerSetup} from 'angular2/src/web_workers/ui/setup';
-import {MessageBasedRenderCompiler} from 'angular2/src/web_workers/ui/render_compiler';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {MessageBasedXHRImpl} from 'angular2/src/web_workers/ui/xhr_impl';
 import {
@@ -35,7 +34,6 @@ export function bootstrapUICommon(bus: MessageBus): WebWorkerApplication {
   bus.attachToZone(zone);
   return zone.run(() => {
     var injector = createInjector(zone, bus);
-    injector.get(MessageBasedRenderCompiler).start();
     injector.get(MessageBasedRenderer).start();
     injector.get(MessageBasedXHRImpl).start();
     injector.get(WebWorkerSetup).start();

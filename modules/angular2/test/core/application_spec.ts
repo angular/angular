@@ -101,8 +101,8 @@ export function main() {
 
          PromiseWrapper.then(refPromise, null, (exception) => {
            expect(exception).toContainError(
-               `Could not load '${stringify(HelloRootDirectiveIsNotCmp)}' because it is not a component.`);
-           expect(logger.res.join("")).toContain("Could not load");
+               `Could not compile '${stringify(HelloRootDirectiveIsNotCmp)}' because it is not a component.`);
+           expect(logger.res.join("")).toContain("Could not compile");
            async.done();
            return null;
          });

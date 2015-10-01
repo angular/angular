@@ -1,9 +1,10 @@
-import {ListWrapper} from 'angular2/src/core/facade/collection';
+import {Injectable} from 'angular2/angular2';
 
 /**
  * Class for radio buttons to coordinate unique selection based on name.
  * Indended to be consumed as an Angular service.
  */
+@Injectable()
 export class MdRadioDispatcher {
   // TODO(jelbourn): Change this to TypeScript syntax when supported.
   listeners_: Function[];

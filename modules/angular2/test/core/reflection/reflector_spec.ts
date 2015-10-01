@@ -248,15 +248,11 @@ export function main() {
     });
 
     if (IS_DART) {
-      describe("moduleId", () => {
-        it("should return the moduleId for a type", () => {
-          expect(reflector.moduleId(TestObjWith00Args))
-              .toEqual('base/dist/dart/angular2/test/core/reflection/reflector_spec');
-        });
-
-        it("should return an empty array otherwise", () => {
-          var p = reflector.interfaces(ClassWithDecorators);
-          expect(p).toEqual([]);
+      describe("importUri", () => {
+        it("should return the importUri for a type", () => {
+          expect(reflector.importUri(TestObjWith00Args)
+                     .endsWith('base/dist/dart/angular2/test/core/reflection/reflector_spec.dart'))
+              .toBe(true);
         });
       });
     }

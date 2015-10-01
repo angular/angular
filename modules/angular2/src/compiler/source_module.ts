@@ -2,28 +2,28 @@ import {StringWrapper, isBlank} from 'angular2/src/core/facade/lang';
 
 var MODULE_REGEXP = /#MODULE\[([^\]]*)\]/g;
 
-export function moduleRef(moduleId): string {
-  return `#MODULE[${moduleId}]`;
+export function moduleRef(moduleUrl): string {
+  return `#MODULE[${moduleUrl}]`;
 }
 
 export class SourceModule {
-  constructor(public moduleId: string, public sourceWithModuleRefs: string) {}
+  constructor(public moduleUrl: string, public sourceWithModuleRefs: string) {}
 
   getSourceWithImports(): SourceWithImports {
     var moduleAliases = {};
     var imports: string[][] = [];
     var newSource =
         StringWrapper.replaceAllMapped(this.sourceWithModuleRefs, MODULE_REGEXP, (match) => {
-          var moduleId = match[1];
-          var alias = moduleAliases[moduleId];
+          var moduleUrl = match[1];
+          var alias = moduleAliases[moduleUrl];
           if (isBlank(alias)) {
-            if (moduleId == this.moduleId) {
+            if (moduleUrl == this.moduleUrl) {
               alias = '';
             } else {
               alias = `import${imports.length}`;
-              imports.push([moduleId, alias]);
+              imports.push([moduleUrl, alias]);
             }
-            moduleAliases[moduleId] = alias;
+            moduleAliases[moduleUrl] = alias;
           }
           return alias.length > 0 ? `${alias}.` : '';
         });

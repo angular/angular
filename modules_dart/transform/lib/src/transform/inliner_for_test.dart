@@ -8,7 +8,6 @@ import 'package:angular2/src/core/render/xhr.dart' show XHR;
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:barback/barback.dart';
 
-import 'common/options_reader.dart';
 import 'common/asset_reader.dart';
 import 'common/async_string_writer.dart';
 import 'common/logging.dart';
@@ -18,7 +17,9 @@ import 'directive_processor/inliner.dart';
 
 /// Processes .dart files and inlines `templateUrl` and styleUrls` values.
 class InlinerForTest extends Transformer implements DeclaringTransformer {
-  InlinerForTest();
+  final BarbackSettings settings;
+
+  InlinerForTest(this.settings);
 
   @override
   bool isPrimary(AssetId id) => id.extension.endsWith('dart');
@@ -31,7 +32,7 @@ class InlinerForTest extends Transformer implements DeclaringTransformer {
 
   @override
   Future apply(Transform transform) async {
-    return log.initZoned(transform, () async {
+    return initZoned(transform, () async {
       var primaryId = transform.primaryInput.id;
       transform.consumePrimary();
       var inlinedCode =
@@ -45,7 +46,7 @@ class InlinerForTest extends Transformer implements DeclaringTransformer {
   }
 
   factory InlinerForTest.asPlugin(BarbackSettings settings) {
-    return new InlinerForTest(parseBarbackSettings(settings));
+    return new InlinerForTest(settings);
   }
 }
 
@@ -132,7 +133,7 @@ class _ViewPropInliner extends ToSourceVisitor {
     final resolvedUri = _urlResolver.resolve(_baseUri.toString(), url);
 
     return _xhr.get(resolvedUri).catchError((_) {
-      logger.error('$_rootAssetId: could not read $url');
+      logger.error('$_baseUri: could not read $url');
       return '';
     });
   }

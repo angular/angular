@@ -34,27 +34,29 @@ export function main() {
         () => { injector = Injector.resolveAndCreate([bind('dep').toValue('dependency')]); });
 
     it('should instantiate a pipe', () => {
-      var proto = new ProtoPipes([PipeBinding.createFromType(PipeA, new Pipe({name: 'a'}))]);
+      var proto =
+          ProtoPipes.fromBindings([PipeBinding.createFromType(PipeA, new Pipe({name: 'a'}))]);
       var pipes = new Pipes(proto, injector);
 
       expect(pipes.get("a").pipe).toBeAnInstanceOf(PipeA);
     });
 
     it('should throw when no pipe found', () => {
-      var proto = new ProtoPipes([]);
+      var proto = ProtoPipes.fromBindings([]);
       var pipes = new Pipes(proto, injector);
       expect(() => pipes.get("invalid")).toThrowErrorWith("Cannot find pipe 'invalid'");
     });
 
     it('should inject dependencies from the provided injector', () => {
-      var proto = new ProtoPipes([PipeBinding.createFromType(PipeB, new Pipe({name: 'b'}))]);
+      var proto =
+          ProtoPipes.fromBindings([PipeBinding.createFromType(PipeB, new Pipe({name: 'b'}))]);
       var pipes = new Pipes(proto, injector);
       expect((<any>pipes.get("b").pipe).dep).toEqual("dependency");
     });
 
     it('should cache pure pipes', () => {
-      var proto =
-          new ProtoPipes([PipeBinding.createFromType(PipeA, new Pipe({name: 'a', pure: true}))]);
+      var proto = ProtoPipes.fromBindings(
+          [PipeBinding.createFromType(PipeA, new Pipe({name: 'a', pure: true}))]);
       var pipes = new Pipes(proto, injector);
 
       expect(pipes.get("a").pure).toEqual(true);
@@ -62,8 +64,8 @@ export function main() {
     });
 
     it('should NOT cache impure pipes', () => {
-      var proto =
-          new ProtoPipes([PipeBinding.createFromType(PipeA, new Pipe({name: 'a', pure: false}))]);
+      var proto = ProtoPipes.fromBindings(
+          [PipeBinding.createFromType(PipeA, new Pipe({name: 'a', pure: false}))]);
       var pipes = new Pipes(proto, injector);
 
       expect(pipes.get("a").pure).toEqual(false);

@@ -7,6 +7,8 @@ var DOUBLE_QUOTE_ESCAPE_STRING_RE = /"|\\|\n|\$/g;
 
 export var IS_DART = !isJsObject({});
 
+export var MODULE_SUFFIX = IS_DART ? '.dart' : '.js';
+
 export function camelCaseToDashCase(input: string): string {
   return StringWrapper.replaceAllMapped(input, CAMEL_CASE_REGEXP,
                                         (m) => { return '-' + m[1].toLowerCase(); });
@@ -43,8 +45,9 @@ function escapeString(input: string, re: RegExp): string {
   });
 }
 
-export function codeGenExportVariable(name: string): string {
-  return IS_DART ? `var ${name} = ` : `var ${name} = exports['${name}'] = `;
+export function codeGenExportVariable(name: string, isConst: boolean = false): string {
+  var declaration = isConst ? `const ${name}` : `var ${name}`;
+  return IS_DART ? `${declaration} = ` : `${declaration} = exports['${name}'] = `;
 }
 
 export function codeGenConcatArray(expression: string): string {
@@ -67,11 +70,11 @@ export function codeGenReplaceAll(pattern: string, expression: string): string {
   }
 }
 
-export function codeGenValueFn(params: string[], value: string): string {
+export function codeGenValueFn(params: string[], value: string, fnName: string = ''): string {
   if (IS_DART) {
-    return `(${params.join(',')}) => ${value}`;
+    return `${fnName}(${params.join(',')}) => ${value}`;
   } else {
-    return `function(${params.join(',')}) { return ${value}; }`;
+    return `function ${fnName}(${params.join(',')}) { return ${value}; }`;
   }
 }
 

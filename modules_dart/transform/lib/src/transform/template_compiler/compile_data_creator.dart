@@ -29,8 +29,9 @@ class CompileDataResults {
   final NgDeps ngDeps;
   final Map<RegisteredType,
       NormalizedComponentWithViewDirectives> viewDefinitions;
+  final List<CompileDirectiveMetadata> directiveMetadatas;
 
-  CompileDataResults._(this.ngDeps, this.viewDefinitions);
+  CompileDataResults._(this.ngDeps, this.viewDefinitions, this.directiveMetadatas);
 }
 
 // TODO(kegluenq): Improve this test.
@@ -48,6 +49,7 @@ class _CompileDataCreator {
   final AssetReader reader;
   final AssetId entryPoint;
   final Future<NgDeps> ngDepsFuture;
+  final List<CompileDirectiveMetadata> directiveMetadatas = [];
 
   _CompileDataCreator(AssetReader reader, AssetId entryPoint)
       : this.reader = reader,
@@ -75,7 +77,7 @@ class _CompileDataCreator {
         retVal[rType] = visitor.compileData;
       }
     });
-    return new CompileDataResults._(ngDeps, retVal);
+    return new CompileDataResults._(ngDeps, retVal, directiveMetadatas);
   }
 
   /// Creates a map from [AssetId] to import prefix for `.dart` libraries
@@ -145,6 +147,9 @@ class _CompileDataCreator {
         try {
           var json = JSON.decode(await reader.readAsString(metaAssetId));
           var newMetadata = new NgMeta.fromJson(json);
+          if (importAssetId == entryPoint) {
+            this.directiveMetadatas.addAll(newMetadata.types.values);
+          }
           ngMeta.addAll(newMetadata);
         } catch (ex, stackTrace) {
           logger.warning('Failed to decode: $ex, $stackTrace',

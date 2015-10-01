@@ -40,7 +40,8 @@ import {evalModule} from './eval_module';
 import {
   escapeSingleQuoteString,
   codeGenValueFn,
-  codeGenExportVariable
+  codeGenExportVariable,
+  MODULE_SUFFIX
 } from 'angular2/src/compiler/util';
 import {TEST_BINDINGS} from './test_bindings';
 
@@ -53,9 +54,10 @@ const NG_CONTENT = 'NG_CONTENT';
 const EMBEDDED_TEMPLATE = 'EMBEDDED_TEMPLATE';
 
 // Attention: These module names have to correspond to real modules!
-const THIS_MODULE_NAME = 'angular2/test/compiler/command_compiler_spec';
-var THIS_MODULE_REF = moduleRef(THIS_MODULE_NAME);
-var TEMPLATE_COMMANDS_MODULE_REF = moduleRef('angular2/src/core/compiler/template_commands');
+var THIS_MODULE_URL = `package:angular2/test/compiler/command_compiler_spec${MODULE_SUFFIX}`;
+var THIS_MODULE_REF = moduleRef(THIS_MODULE_URL);
+var TEMPLATE_COMMANDS_MODULE_REF =
+    moduleRef(`package:angular2/src/core/compiler/template_commands${MODULE_SUFFIX}`);
 
 // Attention: read by eval!
 export class RootComp {}
@@ -63,11 +65,11 @@ export class SomeDir {}
 export class AComp {}
 
 var RootCompTypeMeta =
-    new CompileTypeMetadata({name: 'RootComp', runtime: RootComp, moduleId: THIS_MODULE_NAME});
+    new CompileTypeMetadata({name: 'RootComp', runtime: RootComp, moduleUrl: THIS_MODULE_URL});
 var SomeDirTypeMeta =
-    new CompileTypeMetadata({name: 'SomeDir', runtime: SomeDir, moduleId: THIS_MODULE_NAME});
+    new CompileTypeMetadata({name: 'SomeDir', runtime: SomeDir, moduleUrl: THIS_MODULE_URL});
 var ACompTypeMeta =
-    new CompileTypeMetadata({name: 'AComp', runtime: AComp, moduleId: THIS_MODULE_NAME});
+    new CompileTypeMetadata({name: 'AComp', runtime: AComp, moduleUrl: THIS_MODULE_URL});
 var compTypeTemplateId: Map<CompileTypeMetadata, number> =
     MapWrapper.createFromPairs([[RootCompTypeMeta, 1], [SomeDirTypeMeta, 2], [ACompTypeMeta, 3]]);
 const APP_ID = 'app1';

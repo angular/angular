@@ -161,6 +161,17 @@ void noChangeDetectorTests() {
     _formatThenExpectEquals(output, expected);
   });
 
+  it('should generate getters for Directive#events.', () async {
+    var inputPath =
+        'template_compiler/directive_event_files/hello.ng_deps.dart';
+    var expected = readFile(
+        'template_compiler/directive_event_files/expected/hello.ng_deps.dart');
+    var output = await process(new AssetId('a', inputPath));
+    _formatThenExpectEquals(output, expected);
+    output = await process(new AssetId('a', inputPath));
+    _formatThenExpectEquals(output, expected);
+  });
+
   // TODO(kegluenq): Before committing, should this test be removed or just
   // modified to check something different, maybe the created template code?
   xit('should generate all expected getters, setters, & methods.', () async {

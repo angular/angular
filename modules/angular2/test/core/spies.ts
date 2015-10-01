@@ -14,6 +14,7 @@ import {ElementRef} from 'angular2/src/core/compiler/element_ref';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewPool} from 'angular2/src/core/compiler/view_pool';
 import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
+import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {DomAdapter} from 'angular2/src/core/dom/dom_adapter';
 import {ClientMessageBroker} from 'angular2/src/web_workers/shared/client_message_broker';
 import {XHR} from 'angular2/src/core/render/xhr';
@@ -74,6 +75,10 @@ export class SpyAppViewPool extends SpyObject {
 
 export class SpyAppViewListener extends SpyObject {
   constructor() { super(AppViewListener); }
+}
+
+export class SpyProtoViewFactory extends SpyObject {
+  constructor() { super(ProtoViewFactory); }
 }
 
 export class SpyProtoElementInjector extends SpyObject {

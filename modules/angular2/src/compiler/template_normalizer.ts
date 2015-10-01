@@ -34,9 +34,9 @@ export class TemplateNormalizer {
                     template: CompileTemplateMetadata): Promise<CompileTemplateMetadata> {
     if (isPresent(template.template)) {
       return PromiseWrapper.resolve(this.normalizeLoadedTemplate(
-          directiveType, template, template.template, directiveType.moduleId));
+          directiveType, template, template.template, directiveType.moduleUrl));
     } else if (isPresent(template.templateUrl)) {
-      var sourceAbsUrl = this._urlResolver.resolve(directiveType.moduleId, template.templateUrl);
+      var sourceAbsUrl = this._urlResolver.resolve(directiveType.moduleUrl, template.templateUrl);
       return this._xhr.get(sourceAbsUrl)
           .then(templateContent => this.normalizeLoadedTemplate(directiveType, template,
                                                                 templateContent, sourceAbsUrl));
@@ -55,7 +55,7 @@ export class TemplateNormalizer {
     var allStyleAbsUrls =
         visitor.styleUrls.map(url => this._urlResolver.resolve(templateAbsUrl, url))
             .concat(templateMeta.styleUrls.map(
-                url => this._urlResolver.resolve(directiveType.moduleId, url)));
+                url => this._urlResolver.resolve(directiveType.moduleUrl, url)));
 
     var allResolvedStyles = allStyles.map(style => {
       var styleWithImports = resolveStyleUrls(this._urlResolver, templateAbsUrl, style);
