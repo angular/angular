@@ -14,6 +14,9 @@ import {
   inject
 } from 'angular2/test_lib';
 
+import {SpyNgControl, SpyValueAccessor} from '../spies';
+
+
 import {
   ControlGroup,
   Control,
@@ -25,8 +28,17 @@ import {
   NgForm,
   NgModel,
   NgFormControl,
-  DefaultValidators
+  DefaultValidators,
+  NgControl,
+  DefaultValueAccessor,
+  CheckboxControlValueAccessor,
+  SelectControlValueAccessor,
+  QueryList
 } from 'angular2/core';
+
+
+import {selectValueAccessor} from 'angular2/src/core/forms/directives/shared';
+
 
 class DummyControlValueAccessor implements ControlValueAccessor {
   writtenValue;
@@ -39,6 +51,54 @@ class DummyControlValueAccessor implements ControlValueAccessor {
 
 export function main() {
   describe("Form Directives", () => {
+    var defaultAccessor;
+
+    beforeEach(() => { defaultAccessor = new DefaultValueAccessor(null, null); });
+
+    describe("shared", () => {
+      describe("selectValueAccessor", () => {
+        var dir: NgControl;
+
+        beforeEach(() => { dir = <any>new SpyNgControl(); });
+
+        it("should throw when given an empty array",
+           () => { expect(() => selectValueAccessor(dir, [])).toThrowError(); });
+
+        it("should return the default value accessor when no other provided",
+           () => { expect(selectValueAccessor(dir, [defaultAccessor])).toEqual(defaultAccessor); });
+
+        it("should return checkbox accessor when provided", () => {
+          var checkboxAccessor = new CheckboxControlValueAccessor(null, null);
+          expect(selectValueAccessor(dir, [defaultAccessor, checkboxAccessor]))
+              .toEqual(checkboxAccessor);
+        });
+
+        it("should return select accessor when provided", () => {
+          var selectAccessor = new SelectControlValueAccessor(null, null, new QueryList<any>());
+          expect(selectValueAccessor(dir, [defaultAccessor, selectAccessor]))
+              .toEqual(selectAccessor);
+        });
+
+        it("should throw when more than one build-in accessor is provided", () => {
+          var checkboxAccessor = new CheckboxControlValueAccessor(null, null);
+          var selectAccessor = new SelectControlValueAccessor(null, null, new QueryList<any>());
+          expect(() => selectValueAccessor(dir, [checkboxAccessor, selectAccessor])).toThrowError();
+        });
+
+        it("should return custom accessor when provided", () => {
+          var customAccessor = new SpyValueAccessor();
+          var checkboxAccessor = new CheckboxControlValueAccessor(null, null);
+          expect(selectValueAccessor(dir, [defaultAccessor, customAccessor, checkboxAccessor]))
+              .toEqual(customAccessor);
+        });
+
+        it("should throw when more than one custom accessor is provided", () => {
+          var customAccessor = new SpyValueAccessor();
+          expect(() => selectValueAccessor(dir, [customAccessor, customAccessor])).toThrowError();
+        });
+      });
+    });
+
     describe("NgFormModel", () => {
       var form;
       var formModel;
@@ -49,7 +109,7 @@ export function main() {
         formModel = new ControlGroup({"login": new Control(null)});
         form.form = formModel;
 
-        loginControlDir = new NgControlName(form, []);
+        loginControlDir = new NgControlName(form, [], [defaultAccessor]);
         loginControlDir.name = "login";
         loginControlDir.valueAccessor = new DummyControlValueAccessor();
       });
@@ -67,7 +127,7 @@ export function main() {
 
       describe("addControl", () => {
         it("should throw when no control found", () => {
-          var dir = new NgControlName(form, null);
+          var dir = new NgControlName(form, null, [defaultAccessor]);
           dir.name = "invalidName";
 
           expect(() => form.addControl(dir))
@@ -75,7 +135,7 @@ export function main() {
         });
 
         it("should throw when no value accessor", () => {
-          var dir = new NgControlName(form, null);
+          var dir = new NgControlName(form, null, null);
           dir.name = "login";
 
           expect(() => form.addControl(dir))
@@ -141,7 +201,7 @@ export function main() {
         personControlGroupDir = new NgControlGroup(form);
         personControlGroupDir.name = "person";
 
-        loginControlDir = new NgControlName(personControlGroupDir, null);
+        loginControlDir = new NgControlName(personControlGroupDir, null, [defaultAccessor]);
         loginControlDir.name = "login";
         loginControlDir.valueAccessor = new DummyControlValueAccessor();
       });
@@ -218,7 +278,7 @@ export function main() {
       var control;
 
       beforeEach(() => {
-        controlDir = new NgFormControl([]);
+        controlDir = new NgFormControl([], [defaultAccessor]);
         controlDir.valueAccessor = new DummyControlValueAccessor();
 
         control = new Control(null);
@@ -252,7 +312,7 @@ export function main() {
       var ngModel;
 
       beforeEach(() => {
-        ngModel = new NgModel([]);
+        ngModel = new NgModel([], [defaultAccessor]);
         ngModel.valueAccessor = new DummyControlValueAccessor();
       });
 
@@ -289,7 +349,7 @@ export function main() {
 
         var parent = new NgFormModel();
         parent.form = new ControlGroup({"name": formModel});
-        controlNameDir = new NgControlName(parent, []);
+        controlNameDir = new NgControlName(parent, [], [defaultAccessor]);
         controlNameDir.name = "name";
       });
 

@@ -34,6 +34,7 @@ import {By} from 'angular2/src/core/debug';
 
 export function main() {
   describe("integration tests", () => {
+
     it("should initialize DOM elements with the given form object",
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var t = `<div [ng-form-model]="form">

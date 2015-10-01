@@ -8,7 +8,8 @@ import {forwardRef, Host, SkipSelf, Binding, Inject, Optional} from 'angular2/sr
 
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
-import {controlPath, isPropertyUpdated} from './shared';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import {controlPath, isPropertyUpdated, selectValueAccessor} from './shared';
 import {Control} from '../model';
 import {Validators, NG_VALIDATORS} from '../validators';
 
@@ -88,10 +89,12 @@ export class NgControlName extends NgControl implements OnChanges,
   _added = false;
 
   constructor(@Host() @SkipSelf() parent: ControlContainer,
-              @Optional() @Inject(NG_VALIDATORS) validators: Function[]) {
+              @Optional() @Inject(NG_VALIDATORS) validators: Function[],
+              @Optional() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[]) {
     super();
     this._parent = parent;
     this.validators = validators;
+    this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
   onChanges(changes: StringMap<string, SimpleChange>) {

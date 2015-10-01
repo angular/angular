@@ -1,11 +1,13 @@
 import {Directive} from 'angular2/src/core/metadata';
 import {ElementRef} from 'angular2/src/core/compiler';
 import {Renderer} from 'angular2/src/core/render';
-import {Self} from 'angular2/src/core/di';
-import {NgControl} from './ng_control';
-import {ControlValueAccessor} from './control_value_accessor';
-import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
+import {Self, forwardRef, Binding} from 'angular2/src/core/di';
+import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
+import {isBlank, CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {setProperty} from './shared';
+
+const DEFAULT_VALUE_ACCESSOR = CONST_EXPR(
+    new Binding(NG_VALUE_ACCESSOR, {toAlias: forwardRef(() => DefaultValueAccessor), multi: true}));
 
 /**
  * The default accessor for writing a value and listening to changes that is used by the
@@ -17,21 +19,19 @@ import {setProperty} from './shared';
  *  ```
  */
 @Directive({
-  selector:
-      'input:not([type=checkbox])[ng-control],textarea[ng-control],input:not([type=checkbox])[ng-form-control],textarea[ng-form-control],input:not([type=checkbox])[ng-model],textarea[ng-model]',
+  selector: '[ng-control],[ng-model],[ng-form-control]',
   host: {
     '(change)': 'onChange($event.target.value)',
     '(input)': 'onChange($event.target.value)',
     '(blur)': 'onTouched()'
-  }
+  },
+  bindings: [DEFAULT_VALUE_ACCESSOR]
 })
 export class DefaultValueAccessor implements ControlValueAccessor {
   onChange = (_) => {};
   onTouched = () => {};
 
-  constructor(@Self() cd: NgControl, private _renderer: Renderer, private _elementRef: ElementRef) {
-    cd.valueAccessor = this;
-  }
+  constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}
 
   writeValue(value: any): void {
     var normalizedValue = isBlank(value) ? '' : value;

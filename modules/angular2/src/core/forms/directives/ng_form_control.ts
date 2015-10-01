@@ -7,7 +7,8 @@ import {forwardRef, Binding, Inject, Optional} from 'angular2/src/core/di';
 import {NgControl} from './ng_control';
 import {Control} from '../model';
 import {Validators, NG_VALIDATORS} from '../validators';
-import {setUpControl, isPropertyUpdated} from './shared';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import {setUpControl, isPropertyUpdated, selectValueAccessor} from './shared';
 
 const formControlBinding =
     CONST_EXPR(new Binding(NgControl, {toAlias: forwardRef(() => NgFormControl)}));
@@ -76,9 +77,11 @@ export class NgFormControl extends NgControl implements OnChanges {
   viewModel: any;
   validators: Function[];
 
-  constructor(@Optional() @Inject(NG_VALIDATORS) validators: Function[]) {
+  constructor(@Optional() @Inject(NG_VALIDATORS) validators: Function[],
+              @Optional() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[]) {
     super();
     this.validators = validators;
+    this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
   onChanges(changes: StringMap<string, SimpleChange>): void {
