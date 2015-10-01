@@ -79,12 +79,6 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
   }
 
   @override
-  Object visitExportDirective(ExportDirective node) {
-    ngMeta.exports.add(stringLiteralToString(node.uri));
-    return null;
-  }
-
-  @override
   Object visitClassDeclaration(ClassDeclaration node) {
     _normalizations.add(_reader
         .readDirectiveMetadata(node, assetId)

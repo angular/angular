@@ -87,9 +87,8 @@ void allTests() {
       _expectSelector(model.reflectables[2]).toEqual("'[main]'");
     });
 
-    it('should not generate .ng_deps.dart for `part` files.', () async {
-      var model = (await _testCreateModel('part_files/part.dart')).ngDeps;
-      expect(model).toBeNull();
+    it('should not generate anything for `part` files.', () async {
+      expect(await _testCreateModel('part_files/part.dart')).toBeNull();
     });
   });
 
@@ -125,13 +124,13 @@ void allTests() {
         const ClassDescriptor('Soup', 'package:soup/soup.dart',
             superClass: 'Component')
       ]);
-      expect(ngMeta.ngDeps).toBeNull();
+      expect(ngMeta.ngDeps == null || ngMeta.ngDeps.reflectables.isEmpty).toBeTrue();
     });
   });
 
   describe('interfaces', () {
     it('should include implemented types', () async {
-      var model = await _testCreateModel('interfaces_files/soup.dart');
+      var model = (await _testCreateModel('interfaces_files/soup.dart')).ngDeps;
 
       expect(model.reflectables.first.interfaces).toBeNotNull();
       expect(model.reflectables.first.interfaces.isNotEmpty).toBeTrue();
@@ -142,7 +141,7 @@ void allTests() {
     });
 
     it('should not include transitively implemented types', () async {
-      var model = await _testCreateModel('interface_chain_files/soup.dart');
+      var model = (await _testCreateModel('interface_chain_files/soup.dart')).ngDeps;
 
       expect(model.reflectables.first.interfaces).toBeNotNull();
       expect(model.reflectables.first.interfaces.isNotEmpty).toBeTrue();
@@ -155,15 +154,15 @@ void allTests() {
     });
 
     it('should not include superclasses.', () async {
-      var model = await _testCreateModel('superclass_files/soup.dart');
+      var model = (await _testCreateModel('superclass_files/soup.dart')).ngDeps;
 
       var interfaces = model.reflectables.first.interfaces;
       expect(interfaces == null || interfaces.isEmpty).toBeTrue();
     });
 
     it('should populate multiple `lifecycle` values when necessary.', () async {
-      var model = await _testCreateModel(
-          'multiple_interface_lifecycle_files/soup.dart');
+      var model = (await _testCreateModel(
+          'multiple_interface_lifecycle_files/soup.dart')).ngDeps;
 
       expect(model.reflectables.first.interfaces).toBeNotNull();
       expect(model.reflectables.first.interfaces.isNotEmpty).toBeTrue();
@@ -177,15 +176,15 @@ void allTests() {
     it('should not populate `lifecycle` when lifecycle superclass is present.',
         () async {
       var model =
-          await _testCreateModel('superclass_lifecycle_files/soup.dart');
+          (await _testCreateModel('superclass_lifecycle_files/soup.dart')).ngDeps;
 
       var interfaces = model.reflectables.first.interfaces;
       expect(interfaces == null || interfaces.isEmpty).toBeTrue();
     });
 
     it('should populate `lifecycle` with prefix when necessary.', () async {
-      var model = await _testCreateModel(
-          'prefixed_interface_lifecycle_files/soup.dart');
+      var model = (await _testCreateModel(
+          'prefixed_interface_lifecycle_files/soup.dart')).ngDeps;
       expect(model.reflectables.first.interfaces).toBeNotNull();
       expect(model.reflectables.first.interfaces.isNotEmpty).toBeTrue();
       expect(model.reflectables.first.interfaces
@@ -196,7 +195,7 @@ void allTests() {
 
   describe('property metadata', () {
     it('should be recorded on fields', () async {
-      var model = await _testCreateModel('prop_metadata_files/fields.dart');
+      var model = (await _testCreateModel('prop_metadata_files/fields.dart')).ngDeps;
 
       expect(model.reflectables.first.propertyMetadata).toBeNotNull();
       expect(model.reflectables.first.propertyMetadata.isNotEmpty).toBeTrue();
@@ -208,7 +207,7 @@ void allTests() {
     });
 
     it('should be recorded on getters', () async {
-      var model = await _testCreateModel('prop_metadata_files/getters.dart');
+      var model = (await _testCreateModel('prop_metadata_files/getters.dart')).ngDeps;
 
       expect(model.reflectables.first.propertyMetadata).toBeNotNull();
       expect(model.reflectables.first.propertyMetadata.isNotEmpty).toBeTrue();
@@ -220,7 +219,7 @@ void allTests() {
     });
 
     it('should be recorded on setters', () async {
-      var model = await _testCreateModel('prop_metadata_files/setters.dart');
+      var model = (await _testCreateModel('prop_metadata_files/setters.dart')).ngDeps;
 
       expect(model.reflectables.first.propertyMetadata).toBeNotNull();
       expect(model.reflectables.first.propertyMetadata.isNotEmpty).toBeTrue();
@@ -233,8 +232,8 @@ void allTests() {
 
     it('should be coalesced when getters and setters have the same name',
         () async {
-      var model = await _testCreateModel(
-          'prop_metadata_files/getters_and_setters.dart');
+      var model = (await _testCreateModel(
+          'prop_metadata_files/getters_and_setters.dart')).ngDeps;
 
       expect(model.reflectables.first.propertyMetadata).toBeNotNull();
       expect(model.reflectables.first.propertyMetadata.length).toBe(1);
@@ -251,8 +250,7 @@ void allTests() {
 
   it('should not throw/hang on invalid urls', () async {
     var logger = new RecordingLogger();
-    var model =
-        await _testCreateModel('invalid_url_files/hello.dart', logger: logger);
+    await _testCreateModel('invalid_url_files/hello.dart', logger: logger);
     expect(logger.hasErrors).toBeTrue();
     expect(logger.logs)
       ..toContain('ERROR: ERROR: Invalid argument (url): '
@@ -260,7 +258,7 @@ void allTests() {
   });
 
   it('should find and register static functions.', () async {
-    var model = await _testCreateModel('static_function_files/hello.dart');
+    var model = (await _testCreateModel('static_function_files/hello.dart')).ngDeps;
 
     var functionReflectable =
         model.reflectables.firstWhere((i) => i.isFunction, orElse: () => null);
