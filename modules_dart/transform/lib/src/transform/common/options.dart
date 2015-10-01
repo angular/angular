@@ -11,12 +11,15 @@ const DEFAULT_OPTIMIZATION_PHASES = 5;
 const CUSTOM_ANNOTATIONS_PARAM = 'custom_annotations';
 const ENTRY_POINT_PARAM = 'entry_points';
 const FORMAT_CODE_PARAM = 'format_code';
+// TODO(kegluenq): Remove this after 30 Oct (i/4433).
 const GENERATE_CHANGE_DETECTORS_PARAM = 'generate_change_detectors';
 const REFLECT_PROPERTIES_AS_ATTRIBUTES = 'reflectPropertiesAsAttributes';
 const INIT_REFLECTOR_PARAM = 'init_reflector';
+// TODO(kegluenq): Remove this after 30 Oct (i/4433).
 const INLINE_VIEWS_PARAM = 'inline_views';
 const MIRROR_MODE_PARAM = 'mirror_mode';
 const OPTIMIZATION_PHASES_PARAM = 'optimization_phases';
+const PRECOMPILE_PARAM = 'precompile';
 const REFLECTION_ENTRY_POINT_PARAM = 'reflection_entry_points';
 
 /// Provides information necessary to transform an Angular2 app.
@@ -35,14 +38,8 @@ class TransformerOptions {
   /// Whether to generate calls to our generated `initReflector` code
   final bool initReflector;
 
-  /// Whether to inline html/css urls into the View directive
-  final bool inlineViews;
-
   /// The [AnnotationMatcher] which is used to identify angular annotations.
   final AnnotationMatcher annotationMatcher;
-
-  /// Whether to create change detector classes for discovered `@View`s.
-  final bool generateChangeDetectors;
 
   final bool reflectPropertiesAsAttributes;
 
@@ -68,9 +65,7 @@ class TransformerOptions {
       this.initReflector,
       this.annotationMatcher,
       this.optimizationPhases,
-      {this.generateChangeDetectors,
-      this.reflectPropertiesAsAttributes,
-      this.inlineViews,
+      {this.reflectPropertiesAsAttributes,
       this.formatCode});
 
   factory TransformerOptions(List<String> entryPoints,
@@ -80,7 +75,6 @@ class TransformerOptions {
       List<ClassDescriptor> customAnnotationDescriptors: const [],
       int optimizationPhases: DEFAULT_OPTIMIZATION_PHASES,
       bool inlineViews: true,
-      bool generateChangeDetectors: true,
       bool reflectPropertiesAsAttributes: true,
       bool formatCode: false}) {
     var annotationMatcher = new AnnotationMatcher()
@@ -97,9 +91,7 @@ class TransformerOptions {
         initReflector,
         annotationMatcher,
         optimizationPhases,
-        generateChangeDetectors: generateChangeDetectors,
         reflectPropertiesAsAttributes: reflectPropertiesAsAttributes,
-        inlineViews: inlineViews,
         formatCode: formatCode);
   }
 }

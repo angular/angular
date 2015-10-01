@@ -11,9 +11,6 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
   var entryPoints = _readFileList(config, ENTRY_POINT_PARAM);
   var initReflector =
       _readBool(config, INIT_REFLECTOR_PARAM, defaultValue: true);
-  var inlineViews = _readBool(config, INLINE_VIEWS_PARAM, defaultValue: true);
-  var generateChangeDetectors =
-      _readBool(config, GENERATE_CHANGE_DETECTORS_PARAM, defaultValue: true);
   var reflectPropertiesAsAttributes =
       _readBool(config, REFLECT_PROPERTIES_AS_ATTRIBUTES, defaultValue: false);
   var formatCode = _readBool(config, FORMAT_CODE_PARAM, defaultValue: false);
@@ -37,10 +34,8 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
       modeName: settings.mode.name,
       mirrorMode: mirrorMode,
       initReflector: initReflector,
-      inlineViews: inlineViews,
       customAnnotationDescriptors: _readCustomAnnotations(config),
       optimizationPhases: optimizationPhases,
-      generateChangeDetectors: generateChangeDetectors,
       reflectPropertiesAsAttributes: reflectPropertiesAsAttributes,
       formatCode: formatCode);
 }
@@ -134,6 +129,14 @@ const CUSTOM_ANNOTATIONS_ERROR = '''
 void _warnDeprecated(Map config) {
   if (config.containsKey(REFLECTION_ENTRY_POINT_PARAM)) {
     print('${REFLECTION_ENTRY_POINT_PARAM} is no longer necessary for '
+        'Angular 2 apps. Please remove it from your pubspec.');
+  }
+  if (config.containsKey(GENERATE_CHANGE_DETECTORS_PARAM)) {
+    print('${GENERATE_CHANGE_DETECTORS_PARAM} is no longer necessary for '
+        'Angular 2 apps. Please remove it from your pubspec.');
+  }
+  if (config.containsKey(INLINE_VIEWS_PARAM)) {
+    print('${INLINE_VIEWS_PARAM} is no longer necessary for '
         'Angular 2 apps. Please remove it from your pubspec.');
   }
 }
