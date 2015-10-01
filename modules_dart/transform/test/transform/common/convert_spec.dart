@@ -23,7 +23,7 @@ main() {
             ["AtKey", "AtVal"]
           ]),
           id: "someComponent",
-          properties: ["propKey: propVal"],
+          inputs: ["propKey: propVal"],
           readAttributes: ["read1", "read2"],
           selector: "some-comp",
           type: RenderDirectiveMetadata.COMPONENT_TYPE,
@@ -36,7 +36,7 @@ main() {
           callAfterContentChecked: true,
           callAfterViewInit: true,
           callAfterViewChecked: true,
-          events: ["onFoo", "onBar"],
+          outputs: ["onFoo", "onBar"],
           changeDetection: ChangeDetectionStrategy.CheckOnce);
       var map = directiveMetadataToMap(someComponent);
       expect(map["compileChildren"]).toEqual(false);
@@ -50,7 +50,7 @@ main() {
         ["AtKey", "AtVal"]
       ]));
       expect(map["id"]).toEqual("someComponent");
-      expect(map["properties"]).toEqual(["propKey: propVal"]);
+      expect(map["inputs"]).toEqual(["propKey: propVal"]);
       expect(map["readAttributes"]).toEqual(["read1", "read2"]);
       expect(map["selector"]).toEqual("some-comp");
       expect(map["type"]).toEqual(RenderDirectiveMetadata.COMPONENT_TYPE);
@@ -63,7 +63,7 @@ main() {
       expect(map["callAfterViewInit"]).toEqual(true);
       expect(map["callAfterViewChecked"]).toEqual(true);
       expect(map["exportAs"]).toEqual("aaa");
-      expect(map["events"]).toEqual(["onFoo", "onBar"]);
+      expect(map["outputs"]).toEqual(["onFoo", "onBar"]);
       expect(map["changeDetection"])
           .toEqual(ChangeDetectionStrategy.CheckOnce.index);
     });
@@ -90,7 +90,7 @@ main() {
         ],
         ["id", "testId"],
         [
-          "properties",
+          "inputs",
           ["propKey: propVal"]
         ],
         [
@@ -109,7 +109,7 @@ main() {
         ["callAfterViewInit", true],
         ["callAfterViewChecked", true],
         [
-          "events",
+          "outputs",
           ["onFoo", "onBar"]
         ],
         ["changeDetection", ChangeDetectionStrategy.CheckOnce.index]
@@ -126,7 +126,7 @@ main() {
         ["AtKey", "testVal"]
       ]));
       expect(meta.id).toEqual("testId");
-      expect(meta.properties).toEqual(["propKey: propVal"]);
+      expect(meta.inputs).toEqual(["propKey: propVal"]);
       expect(meta.readAttributes).toEqual(["readTest1", "readTest2"]);
       expect(meta.selector).toEqual("testSelector");
       expect(meta.type).toEqual(RenderDirectiveMetadata.DIRECTIVE_TYPE);
@@ -139,7 +139,7 @@ main() {
       expect(meta.callAfterContentChecked).toEqual(true);
       expect(meta.callAfterViewInit).toEqual(true);
       expect(meta.callAfterViewChecked).toEqual(true);
-      expect(meta.events).toEqual(["onFoo", "onBar"]);
+      expect(meta.outputs).toEqual(["onFoo", "onBar"]);
       expect(meta.changeDetection).toEqual(ChangeDetectionStrategy.CheckOnce);
     });
   });

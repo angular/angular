@@ -62,7 +62,7 @@ class LifecycleDir implements DoCheck {
   doCheck() { this._log.add("child_doCheck"); }
 }
 
-@Component({selector: "[lifecycle]", properties: ['field']})
+@Component({selector: "[lifecycle]", inputs: ['field']})
 @View({template: `<div lifecycle-dir></div>`, directives: [LifecycleDir]})
 class LifecycleCmp implements OnChanges, OnInit, DoCheck, AfterContentInit, AfterContentChecked,
     AfterViewInit, AfterViewChecked {

@@ -24,7 +24,7 @@ import {isBlank} from 'angular2/src/core/facade/lang';
  * - `<div template="ng-if condition">...</div>`
  * - `<template [ng-if]="condition"><div>...</div></template>`
  */
-@Directive({selector: '[ng-if]', properties: ['ngIf']})
+@Directive({selector: '[ng-if]', inputs: ['ngIf']})
 export class NgIf {
   private _prevCondition: boolean = null;
 

@@ -32,8 +32,8 @@ class Processor implements CodegenModel {
   void _processViewDefinition(ViewDefinitionEntry viewDefEntry) {
     // These are necessary even with generated change detectors.
     if (viewDefEntry.hostMetadata != null &&
-        viewDefEntry.hostMetadata.events != null) {
-      viewDefEntry.hostMetadata.events.forEach((eventName) {
+        viewDefEntry.hostMetadata.outputs != null) {
+      viewDefEntry.hostMetadata.outputs.forEach((eventName) {
         getterNames.add(
             new ReflectiveAccessor(eventName, isStaticallyNecessary: true));
       });

@@ -12,7 +12,7 @@ void initReflector(reflector) {
     ..registerType(
         HelloCmp,
         new ReflectionInfo(const [
-          const Component(properties: const ['key1: val1', 'key2: val2'])
+          const Component(inputs: const ['key1: val1', 'key2: val2'])
         ], const [
           const []
         ], () => new HelloCmp()));

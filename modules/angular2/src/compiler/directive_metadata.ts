@@ -94,16 +94,16 @@ export class CompileTemplateMetadata {
 }
 
 export class CompileDirectiveMetadata {
-  static create({type, isComponent, dynamicLoadable, selector, exportAs, changeDetection,
-                 properties, events, host, lifecycleHooks, template}: {
+  static create({type, isComponent, dynamicLoadable, selector, exportAs, changeDetection, inputs,
+                 outputs, host, lifecycleHooks, template}: {
     type?: CompileTypeMetadata,
     isComponent?: boolean,
     dynamicLoadable?: boolean,
     selector?: string,
     exportAs?: string,
     changeDetection?: ChangeDetectionStrategy,
-    properties?: string[],
-    events?: string[],
+    inputs?: string[],
+    outputs?: string[],
     host?: StringMap<string, string>,
     lifecycleHooks?: LifecycleHooks[],
     template?: CompileTemplateMetadata
@@ -123,22 +123,22 @@ export class CompileDirectiveMetadata {
         }
       });
     }
-    var propsMap = {};
-    if (isPresent(properties)) {
-      properties.forEach((bindConfig: string) => {
+    var inputsMap = {};
+    if (isPresent(inputs)) {
+      inputs.forEach((bindConfig: string) => {
         // canonical syntax: `dirProp: elProp`
         // if there is no `:`, use dirProp = elProp
         var parts = splitAtColon(bindConfig, [bindConfig, bindConfig]);
-        propsMap[parts[0]] = parts[1];
+        inputsMap[parts[0]] = parts[1];
       });
     }
-    var eventsMap = {};
-    if (isPresent(events)) {
-      events.forEach((bindConfig: string) => {
+    var outputsMap = {};
+    if (isPresent(outputs)) {
+      outputs.forEach((bindConfig: string) => {
         // canonical syntax: `dirProp: elProp`
         // if there is no `:`, use dirProp = elProp
         var parts = splitAtColon(bindConfig, [bindConfig, bindConfig]);
-        eventsMap[parts[0]] = parts[1];
+        outputsMap[parts[0]] = parts[1];
       });
     }
 
@@ -149,8 +149,8 @@ export class CompileDirectiveMetadata {
       selector: selector,
       exportAs: exportAs,
       changeDetection: changeDetection,
-      properties: propsMap,
-      events: eventsMap,
+      inputs: inputsMap,
+      outputs: outputsMap,
       hostListeners: hostListeners,
       hostProperties: hostProperties,
       hostAttributes: hostAttributes,
@@ -164,23 +164,23 @@ export class CompileDirectiveMetadata {
   selector: string;
   exportAs: string;
   changeDetection: ChangeDetectionStrategy;
-  properties: StringMap<string, string>;
-  events: StringMap<string, string>;
+  inputs: StringMap<string, string>;
+  outputs: StringMap<string, string>;
   hostListeners: StringMap<string, string>;
   hostProperties: StringMap<string, string>;
   hostAttributes: StringMap<string, string>;
   lifecycleHooks: LifecycleHooks[];
   template: CompileTemplateMetadata;
-  constructor({type, isComponent, dynamicLoadable, selector, exportAs, changeDetection, properties,
-               events, hostListeners, hostProperties, hostAttributes, lifecycleHooks, template}: {
+  constructor({type, isComponent, dynamicLoadable, selector, exportAs, changeDetection, inputs,
+               outputs, hostListeners, hostProperties, hostAttributes, lifecycleHooks, template}: {
     type?: CompileTypeMetadata,
     isComponent?: boolean,
     dynamicLoadable?: boolean,
     selector?: string,
     exportAs?: string,
     changeDetection?: ChangeDetectionStrategy,
-    properties?: StringMap<string, string>,
-    events?: StringMap<string, string>,
+    inputs?: StringMap<string, string>,
+    outputs?: StringMap<string, string>,
     hostListeners?: StringMap<string, string>,
     hostProperties?: StringMap<string, string>,
     hostAttributes?: StringMap<string, string>,
@@ -193,8 +193,8 @@ export class CompileDirectiveMetadata {
     this.selector = selector;
     this.exportAs = exportAs;
     this.changeDetection = changeDetection;
-    this.properties = properties;
-    this.events = events;
+    this.inputs = inputs;
+    this.outputs = outputs;
     this.hostListeners = hostListeners;
     this.hostProperties = hostProperties;
     this.hostAttributes = hostAttributes;
@@ -212,8 +212,8 @@ export class CompileDirectiveMetadata {
       changeDetection: isPresent(data['changeDetection']) ?
                            CHANGE_DECTION_STRATEGY_VALUES[data['changeDetection']] :
                            data['changeDetection'],
-      properties: data['properties'],
-      events: data['events'],
+      inputs: data['inputs'],
+      outputs: data['outputs'],
       hostListeners: data['hostListeners'],
       hostProperties: data['hostProperties'],
       hostAttributes: data['hostAttributes'],
@@ -233,8 +233,8 @@ export class CompileDirectiveMetadata {
       'type': isPresent(this.type) ? this.type.toJson() : this.type,
       'changeDetection': isPresent(this.changeDetection) ? serializeEnum(this.changeDetection) :
                                                            this.changeDetection,
-      'properties': this.properties,
-      'events': this.events,
+      'inputs': this.inputs,
+      'outputs': this.outputs,
       'hostListeners': this.hostListeners,
       'hostProperties': this.hostProperties,
       'hostAttributes': this.hostAttributes,
@@ -253,8 +253,8 @@ export function createHostComponentMeta(componentType: CompileTypeMetadata,
     template: new CompileTemplateMetadata(
         {template: template, templateUrl: '', styles: [], styleUrls: [], ngContentSelectors: []}),
     changeDetection: ChangeDetectionStrategy.Default,
-    properties: [],
-    events: [],
+    inputs: [],
+    outputs: [],
     host: {},
     lifecycleHooks: [],
     isComponent: true,

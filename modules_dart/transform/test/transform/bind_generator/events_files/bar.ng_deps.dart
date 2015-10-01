@@ -13,6 +13,6 @@ void initReflector(reflector) {
         new ReflectionInfo(const [
           const Directive(
               selector: '[tool-tip]',
-              events: const ['onOpen', 'close: onClose'])
+              outputs: const ['onOpen', 'close: onClose'])
         ], const [], () => new ToolTip()));
 }

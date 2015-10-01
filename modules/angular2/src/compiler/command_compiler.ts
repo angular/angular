@@ -246,7 +246,7 @@ class CommandBuilderVisitor<R> implements TemplateAstVisitor {
   }
   visitElement(ast: ElementAst, context: any): any {
     var component = ast.getComponent();
-    var eventTargetAndNames = visitAndReturnContext(this, ast.events, []);
+    var eventTargetAndNames = visitAndReturnContext(this, ast.outputs, []);
     var variableNameAndValues = [];
     if (isBlank(component)) {
       ast.exportAsVars.forEach((varAst) => {

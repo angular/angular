@@ -67,7 +67,7 @@ class DemoApp {
 
 @Component({
   selector: 'simple-dialog',
-  properties: ['numCoconuts'],
+  inputs: ['numCoconuts'],
 })
 @View({
   encapsulation: ViewEncapsulation.None,

@@ -246,8 +246,8 @@ export function main() {
              expect(normMeta.selector).toEqual(meta.selector);
              expect(normMeta.exportAs).toEqual(meta.exportAs);
              expect(normMeta.changeDetection).toEqual(meta.changeDetection);
-             expect(normMeta.properties).toEqual(meta.properties);
-             expect(normMeta.events).toEqual(meta.events);
+             expect(normMeta.inputs).toEqual(meta.inputs);
+             expect(normMeta.outputs).toEqual(meta.outputs);
              expect(normMeta.hostListeners).toEqual(meta.hostListeners);
              expect(normMeta.hostProperties).toEqual(meta.hostProperties);
              expect(normMeta.hostAttributes).toEqual(meta.hostAttributes);

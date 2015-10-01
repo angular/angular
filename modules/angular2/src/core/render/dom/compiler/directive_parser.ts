@@ -65,8 +65,8 @@ export class DirectiveParser implements CompileStep {
       var dirMetadata = this._directives[directiveIndex];
       var directiveBinderBuilder = elementBinder.bindDirective(directiveIndex);
       current.compileChildren = current.compileChildren && dirMetadata.compileChildren;
-      if (isPresent(dirMetadata.properties)) {
-        ListWrapper.forEach(dirMetadata.properties, (bindConfig) => {
+      if (isPresent(dirMetadata.inputs)) {
+        ListWrapper.forEach(dirMetadata.inputs, (bindConfig) => {
           this._bindDirectiveProperty(bindConfig, current, directiveBinderBuilder);
         });
       }

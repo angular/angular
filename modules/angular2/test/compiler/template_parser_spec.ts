@@ -58,11 +58,8 @@ export function main() {
 
     beforeEach(inject([TemplateParser], (_parser) => {
       parser = _parser;
-      ngIf = CompileDirectiveMetadata.create({
-        selector: '[ng-if]',
-        type: new CompileTypeMetadata({name: 'NgIf'}),
-        properties: ['ngIf']
-      });
+      ngIf = CompileDirectiveMetadata.create(
+          {selector: '[ng-if]', type: new CompileTypeMetadata({name: 'NgIf'}), inputs: ['ngIf']});
     }));
 
     function parse(template: string, directives: CompileDirectiveMetadata[]): TemplateAst[] {
@@ -415,11 +412,8 @@ export function main() {
         });
 
         it('should parse directive properties', () => {
-          var dirA = CompileDirectiveMetadata.create({
-            selector: 'div',
-            type: new CompileTypeMetadata({name: 'DirA'}),
-            properties: ['aProp']
-          });
+          var dirA = CompileDirectiveMetadata.create(
+              {selector: 'div', type: new CompileTypeMetadata({name: 'DirA'}), inputs: ['aProp']});
           expect(humanizeTemplateAsts(parse('<div [a-prop]="expr"></div>', [dirA])))
               .toEqual([
                 [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
@@ -434,11 +428,8 @@ export function main() {
         });
 
         it('should parse renamed directive properties', () => {
-          var dirA = CompileDirectiveMetadata.create({
-            selector: 'div',
-            type: new CompileTypeMetadata({name: 'DirA'}),
-            properties: ['b:a']
-          });
+          var dirA = CompileDirectiveMetadata.create(
+              {selector: 'div', type: new CompileTypeMetadata({name: 'DirA'}), inputs: ['b:a']});
           expect(humanizeTemplateAsts(parse('<div [a]="expr"></div>', [dirA])))
               .toEqual([
                 [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
@@ -449,7 +440,7 @@ export function main() {
 
         it('should parse literal directive properties', () => {
           var dirA = CompileDirectiveMetadata.create(
-              {selector: 'div', type: new CompileTypeMetadata({name: 'DirA'}), properties: ['a']});
+              {selector: 'div', type: new CompileTypeMetadata({name: 'DirA'}), inputs: ['a']});
           expect(humanizeTemplateAsts(parse('<div a="literal"></div>', [dirA])))
               .toEqual([
                 [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
@@ -466,7 +457,7 @@ export function main() {
 
         it('should favor explicit bound properties over literal properties', () => {
           var dirA = CompileDirectiveMetadata.create(
-              {selector: 'div', type: new CompileTypeMetadata({name: 'DirA'}), properties: ['a']});
+              {selector: 'div', type: new CompileTypeMetadata({name: 'DirA'}), inputs: ['a']});
           expect(humanizeTemplateAsts(parse('<div a="literal" [a]="\'literal2\'"></div>', [dirA])))
               .toEqual([
                 [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
@@ -483,7 +474,7 @@ export function main() {
 
         it('should support optional directive properties', () => {
           var dirA = CompileDirectiveMetadata.create(
-              {selector: 'div', type: new CompileTypeMetadata({name: 'DirA'}), properties: ['a']});
+              {selector: 'div', type: new CompileTypeMetadata({name: 'DirA'}), inputs: ['a']});
           expect(humanizeTemplateAsts(parse('<div></div>', [dirA])))
               .toEqual([
                 [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
@@ -621,11 +612,8 @@ There is no directive with "exportAs" set to "dirA" at TestComp > div:nth-child(
 
         describe('directives', () => {
           it('should locate directives in property bindings', () => {
-            var dirA = CompileDirectiveMetadata.create({
-              selector: '[a=b]',
-              type: new CompileTypeMetadata({name: 'DirA'}),
-              properties: ['a']
-            });
+            var dirA = CompileDirectiveMetadata.create(
+                {selector: '[a=b]', type: new CompileTypeMetadata({name: 'DirA'}), inputs: ['a']});
             var dirB = CompileDirectiveMetadata.create(
                 {selector: '[b]', type: new CompileTypeMetadata({name: 'DirB'})});
             expect(humanizeTemplateAsts(parse('<div template="a b" b>', [dirA, dirB])))
@@ -791,7 +779,7 @@ Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp > div:nth-ch
            var dirA = CompileDirectiveMetadata.create({
              selector: 'div',
              type: new CompileTypeMetadata({name: 'DirA'}),
-             properties: ['invalidProp']
+             inputs: ['invalidProp']
            });
            expect(() => parse('<div [invalid-prop]></div>', [dirA])).not.toThrow();
          });
@@ -957,8 +945,8 @@ class TemplateHumanizer implements TemplateAstVisitor {
   visitElement(ast: ElementAst, context: any): any {
     this.result.push([ElementAst, ast.name, ast.sourceInfo]);
     templateVisitAll(this, ast.attrs);
-    templateVisitAll(this, ast.properties);
-    templateVisitAll(this, ast.events);
+    templateVisitAll(this, ast.inputs);
+    templateVisitAll(this, ast.outputs);
     templateVisitAll(this, ast.exportAsVars);
     templateVisitAll(this, ast.directives);
     templateVisitAll(this, ast.children);
@@ -1003,7 +991,7 @@ class TemplateHumanizer implements TemplateAstVisitor {
   }
   visitDirective(ast: DirectiveAst, context: any): any {
     this.result.push([DirectiveAst, ast.directive, ast.sourceInfo]);
-    templateVisitAll(this, ast.properties);
+    templateVisitAll(this, ast.inputs);
     templateVisitAll(this, ast.hostProperties);
     templateVisitAll(this, ast.hostEvents);
     templateVisitAll(this, ast.exportAsVars);

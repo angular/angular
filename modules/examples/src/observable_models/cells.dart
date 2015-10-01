@@ -16,7 +16,7 @@ class HasStyle {
 }
 @Component(
     selector: "company-name",
-    properties: const ["width: cell-width", "company"],
+    inputs: const ["width: cell-width", "company"],
     changeDetection: ChangeDetectionStrategy.OnPushObserve
 )
 @View(
@@ -28,7 +28,7 @@ class CompanyNameComponent extends HasStyle {
 }
 @Component(
     selector: "opportunity-name",
-    properties: const ["width: cell-width", "opportunity"],
+    inputs: const ["width: cell-width", "opportunity"],
     changeDetection: ChangeDetectionStrategy.OnPushObserve
 )
 @View(
@@ -40,7 +40,7 @@ class OpportunityNameComponent extends HasStyle {
 }
 @Component(
     selector: "offering-name",
-    properties: const ["width: cell-width", "offering"],
+    inputs: const ["width: cell-width", "offering"],
     changeDetection: ChangeDetectionStrategy.OnPushObserve
 )
 @View(
@@ -58,7 +58,7 @@ class Stage {
 }
 @Component(
     selector: "stage-buttons",
-    properties: const ["width: cell-width", "offering"],
+    inputs: const ["width: cell-width", "offering"],
     changeDetection: ChangeDetectionStrategy.OnPushObserve
 )
 @View(directives: const [NgFor], template: '''
@@ -102,7 +102,7 @@ class StageButtonsComponent extends HasStyle {
 }
 @Component(
     selector: "account-cell",
-    properties: const ["width: cell-width", "account"],
+    inputs: const ["width: cell-width", "account"],
     changeDetection: ChangeDetectionStrategy.OnPushObserve
 )
 @View(directives: const [], template: '''
@@ -116,7 +116,7 @@ class AccountCellComponent extends HasStyle {
 }
 @Component(
     selector: "formatted-cell",
-    properties: const ["width: cell-width", "value"],
+    inputs: const ["width: cell-width", "value"],
     changeDetection: ChangeDetectionStrategy.OnPushObserve
 )
 @View(

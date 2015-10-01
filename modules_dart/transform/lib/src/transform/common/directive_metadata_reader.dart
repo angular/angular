@@ -132,7 +132,7 @@ class _DirectiveMetadataVisitor extends Object
   num _type;
   String _selector;
   bool _compileChildren;
-  List<String> _properties;
+  List<String> _inputs;
   Map<String, String> _host;
   List<String> _readAttributes;
   String _exportAs;
@@ -145,7 +145,7 @@ class _DirectiveMetadataVisitor extends Object
   bool _callAfterViewInit;
   bool _callAfterViewChecked;
   ChangeDetectionStrategy _changeDetection;
-  List<String> _events;
+  List<String> _outputs;
 
   final ConstantEvaluator _evaluator = new ConstantEvaluator();
 
@@ -155,7 +155,7 @@ class _DirectiveMetadataVisitor extends Object
     _type = directiveType;
     _selector = '';
     _compileChildren = true;
-    _properties = [];
+    _inputs = [];
     _host = {};
     _readAttributes = [];
     _exportAs = null;
@@ -168,14 +168,14 @@ class _DirectiveMetadataVisitor extends Object
     _callAfterViewInit = false;
     _callAfterViewChecked = false;
     _changeDetection = null;
-    _events = [];
+    _outputs = [];
   }
 
   RenderDirectiveMetadata get meta => RenderDirectiveMetadata.create(
       type: _type,
       selector: _selector,
       compileChildren: _compileChildren,
-      properties: _properties,
+      inputs: _inputs,
       host: _host,
       readAttributes: _readAttributes,
       exportAs: _exportAs,
@@ -188,7 +188,7 @@ class _DirectiveMetadataVisitor extends Object
       callAfterViewInit: _callAfterViewInit,
       callAfterViewChecked: _callAfterViewChecked,
       changeDetection: _changeDetection,
-      events: _events);
+      outputs: _outputs);
 
   @override
   Object visitAnnotation(Annotation node) {
@@ -223,7 +223,7 @@ class _DirectiveMetadataVisitor extends Object
       case 'compileChildren':
         _populateCompileChildren(node.expression);
         break;
-      case 'properties':
+      case 'inputs':
         _populateProperties(node.expression);
         break;
       case 'host':
@@ -235,7 +235,7 @@ class _DirectiveMetadataVisitor extends Object
       case 'changeDetection':
         _populateChangeDetection(node.expression);
         break;
-      case 'events':
+      case 'outputs':
         _populateEvents(node.expression);
         break;
     }
@@ -312,7 +312,7 @@ class _DirectiveMetadataVisitor extends Object
 
   void _populateProperties(Expression propertiesValue) {
     _checkMeta();
-    _populateList(propertiesValue, _properties, 'Directive#properties');
+    _populateList(propertiesValue, _inputs, 'Directive#properties');
   }
 
   void _populateHost(Expression hostValue) {
@@ -342,7 +342,7 @@ class _DirectiveMetadataVisitor extends Object
 
   void _populateEvents(Expression eventsValue) {
     _checkMeta();
-    _populateList(eventsValue, _events, 'Directive#events');
+    _populateList(eventsValue, _outputs, 'Directive#events');
   }
 
   void _populateChangeDetection(Expression value) {

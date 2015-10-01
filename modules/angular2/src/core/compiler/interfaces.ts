@@ -50,7 +50,7 @@ export var LIFECYCLE_HOOKS_VALUES = [
  *   propB;
  *
  *   onChanges(changes: {[idx: string, PropertyUpdate]}): void {
- *     // This will get called after any of the properties have been updated.
+ *     // This will get called after any of the inputs have been updated.
  *     if (changes['propA']) {
  *       // if propA was updated
  *     }

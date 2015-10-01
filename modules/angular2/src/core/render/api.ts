@@ -143,8 +143,8 @@ export class RenderDirectiveMetadata {
   id: any;
   selector: string;
   compileChildren: boolean;
-  events: string[];
-  properties: string[];
+  outputs: string[];
+  inputs: string[];
   readAttributes: string[];
   type: number;
   callOnDestroy: boolean;
@@ -165,18 +165,18 @@ export class RenderDirectiveMetadata {
   // group 2: "event" from "(event)"
   private static _hostRegExp = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$/g;
 
-  constructor({id, selector, compileChildren, events, hostListeners, hostProperties, hostAttributes,
-               properties, readAttributes, type, callOnDestroy, callOnChanges, callDoCheck,
-               callOnInit, callAfterContentInit, callAfterContentChecked, callAfterViewInit,
-               callAfterViewChecked, changeDetection, exportAs, queries}: {
+  constructor({id, selector, compileChildren, outputs, hostListeners, hostProperties,
+               hostAttributes, inputs, readAttributes, type, callOnDestroy, callOnChanges,
+               callDoCheck, callOnInit, callAfterContentInit, callAfterContentChecked,
+               callAfterViewInit, callAfterViewChecked, changeDetection, exportAs, queries}: {
     id?: string,
     selector?: string,
     compileChildren?: boolean,
-    events?: string[],
+    outputs?: string[],
     hostListeners?: Map<string, string>,
     hostProperties?: Map<string, string>,
     hostAttributes?: Map<string, string>,
-    properties?: string[],
+    inputs?: string[],
     readAttributes?: string[],
     type?: number,
     callOnDestroy?: boolean,
@@ -194,11 +194,11 @@ export class RenderDirectiveMetadata {
     this.id = id;
     this.selector = selector;
     this.compileChildren = isPresent(compileChildren) ? compileChildren : true;
-    this.events = events;
+    this.outputs = outputs;
     this.hostListeners = hostListeners;
     this.hostAttributes = hostAttributes;
     this.hostProperties = hostProperties;
-    this.properties = properties;
+    this.inputs = inputs;
     this.readAttributes = readAttributes;
     this.type = type;
     this.callOnDestroy = callOnDestroy;
@@ -214,16 +214,16 @@ export class RenderDirectiveMetadata {
     this.queries = queries;
   }
 
-  static create({id, selector, compileChildren, events, host, properties, readAttributes, type,
+  static create({id, selector, compileChildren, outputs, host, inputs, readAttributes, type,
                  callOnDestroy, callOnChanges, callDoCheck, callOnInit, callAfterContentInit,
                  callAfterContentChecked, callAfterViewInit, callAfterViewChecked, changeDetection,
                  exportAs, queries}: {
     id?: string,
     selector?: string,
     compileChildren?: boolean,
-    events?: string[],
+    outputs?: string[],
     host?: Map<string, string>,
-    properties?: string[],
+    inputs?: string[],
     readAttributes?: string[],
     type?: number,
     callOnDestroy?: boolean,
@@ -259,11 +259,11 @@ export class RenderDirectiveMetadata {
       id: id,
       selector: selector,
       compileChildren: compileChildren,
-      events: events,
+      outputs: outputs,
       hostListeners: hostListeners,
       hostProperties: hostProperties,
       hostAttributes: hostAttributes,
-      properties: properties,
+      inputs: inputs,
       readAttributes: readAttributes,
       type: type,
       callOnDestroy: callOnDestroy,

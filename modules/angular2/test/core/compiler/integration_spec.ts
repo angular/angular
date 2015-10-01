@@ -75,8 +75,8 @@ import {
   Attribute,
   Query,
   Pipe,
-  Property,
-  Event,
+  Input,
+  Output,
   HostBinding,
   HostListener
 } from 'angular2/src/core/metadata';
@@ -1733,25 +1733,25 @@ class DynamicViewport {
   }
 }
 
-@Directive({selector: '[my-dir]', properties: ['dirProp: elprop'], exportAs: 'mydir'})
+@Directive({selector: '[my-dir]', inputs: ['dirProp: elprop'], exportAs: 'mydir'})
 @Injectable()
 class MyDir {
   dirProp: string;
   constructor() { this.dirProp = ''; }
 }
 
-@Directive({selector: '[title]', properties: ['title']})
+@Directive({selector: '[title]', inputs: ['title']})
 class DirectiveWithTitle {
   title: string;
 }
 
-@Directive({selector: '[title]', properties: ['title'], host: {'[title]': 'title'}})
+@Directive({selector: '[title]', inputs: ['title'], host: {'[title]': 'title'}})
 class DirectiveWithTitleAndHostProperty {
   title: string;
 }
 
 @Component(
-    {selector: 'push-cmp', properties: ['prop'], changeDetection: ChangeDetectionStrategy.OnPush})
+    {selector: 'push-cmp', inputs: ['prop'], changeDetection: ChangeDetectionStrategy.OnPush})
 @View({template: '{{field}}'})
 @Injectable()
 class PushCmp {
@@ -1768,7 +1768,7 @@ class PushCmp {
 
 @Component({
   selector: 'push-cmp-with-ref',
-  properties: ['prop'],
+  inputs: ['prop'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 @View({template: '{{field}}'})
@@ -1828,7 +1828,7 @@ class MyComp {
   throwError() { throw 'boom'; }
 }
 
-@Component({selector: 'child-cmp', properties: ['dirProp'], viewBindings: [MyService]})
+@Component({selector: 'child-cmp', inputs: ['dirProp'], viewBindings: [MyService]})
 @View({directives: [MyDir], template: '{{ctxProp}}'})
 @Injectable()
 class ChildComp {
@@ -1896,7 +1896,7 @@ class DoublePipe implements PipeTransform {
   transform(value, args = null) { return `${value}${value}`; }
 }
 
-@Directive({selector: '[emitter]', events: ['event']})
+@Directive({selector: '[emitter]', outputs: ['event']})
 @Injectable()
 class DirectiveEmitingEvent {
   msg: string;
@@ -1985,7 +1985,7 @@ class DirectiveListeningDomEventNoPrevent {
   onEvent(event) { return true; }
 }
 
-@Directive({selector: '[id]', properties: ['id']})
+@Directive({selector: '[id]', inputs: ['id']})
 @Injectable()
 class IdDir {
   id: string;
@@ -2031,7 +2031,7 @@ class ToolbarPart {
   constructor(templateRef: TemplateRef) { this.templateRef = templateRef; }
 }
 
-@Directive({selector: '[toolbar-vc]', properties: ['toolbarVc']})
+@Directive({selector: '[toolbar-vc]', inputs: ['toolbarVc']})
 @Injectable()
 class ToolbarViewContainer {
   vc: ViewContainerRef;
@@ -2059,7 +2059,7 @@ class ToolbarComponent {
   }
 }
 
-@Directive({selector: '[two-way]', properties: ['value: control'], events: ['control']})
+@Directive({selector: '[two-way]', inputs: ['value: control'], outputs: ['control']})
 @Injectable()
 class DirectiveWithTwoWayBinding {
   control: EventEmitter;
@@ -2199,7 +2199,7 @@ class ChildConsumingEventBus {
   constructor(@SkipSelf() bus: EventBus) { this.bus = bus; }
 }
 
-@Directive({selector: '[some-impvp]', properties: ['someImpvp']})
+@Directive({selector: '[some-impvp]', inputs: ['someImpvp']})
 @Injectable()
 class SomeImperativeViewport {
   view: ViewRef;
@@ -2256,8 +2256,8 @@ class DirectiveThrowingAnError {
 class DirectiveWithPropDecorators {
   target;
 
-  @Property("elProp") dirProp: string;
-  @Event('elEvent') event = new EventEmitter();
+  @Input("elProp") dirProp: string;
+  @Output('elEvent') event = new EventEmitter();
 
   @HostBinding("attr.my-attr") myAttr: string;
   @HostListener("click", ["$event.target"])

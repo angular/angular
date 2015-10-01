@@ -470,7 +470,7 @@ class MainComp {
   text: string = '';
 }
 
-@Component({selector: 'simple', properties: ['stringProp']})
+@Component({selector: 'simple', inputs: ['stringProp']})
 @View({template: 'SIMPLE(<ng-content></ng-content>)', directives: []})
 class Simple {
   stringProp: string = '';
@@ -570,7 +570,7 @@ class ConditionalTextComponent {
 class Tab {
 }
 
-@Component({selector: 'tree', properties: ['depth']})
+@Component({selector: 'tree', inputs: ['depth']})
 @View({
   template: 'TREE({{depth}}:<tree *manual [depth]="depth+1"></tree>)',
   directives: [ManualViewportDirective, Tree]

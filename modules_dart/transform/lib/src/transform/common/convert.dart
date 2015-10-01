@@ -19,7 +19,7 @@ Map<String, dynamic> directiveMetadataToMap(RenderDirectiveMetadata meta) {
     ["hostProperties", _cloneIfPresent(meta.hostProperties)],
     ["hostListeners", _cloneIfPresent(meta.hostListeners)],
     ["hostAttributes", _cloneIfPresent(meta.hostAttributes)],
-    ["properties", _cloneIfPresent(meta.properties)],
+    ["inputs", _cloneIfPresent(meta.inputs)],
     ["readAttributes", _cloneIfPresent(meta.readAttributes)],
     ["type", meta.type],
     ["exportAs", meta.exportAs],
@@ -31,7 +31,7 @@ Map<String, dynamic> directiveMetadataToMap(RenderDirectiveMetadata meta) {
     ["callAfterContentChecked", meta.callAfterContentChecked],
     ["callAfterViewInit", meta.callAfterViewInit],
     ["callAfterViewChecked", meta.callAfterViewChecked],
-    ["events", meta.events],
+    ["outputs", meta.outputs],
     ["changeDetection", meta.changeDetection == null ? null : meta.changeDetection.index],
     ["version", 1]
   ]);
@@ -52,7 +52,7 @@ RenderDirectiveMetadata directiveMetadataFromMap(Map<String, dynamic> map) {
           map["hostListeners"]) as Map<String, String>),
       hostAttributes: (_cloneIfPresent(
           map["hostAttributes"]) as Map<String, String>),
-      properties: (_cloneIfPresent(map["properties"]) as List<String>),
+      inputs: (_cloneIfPresent(map["inputs"]) as List<String>),
       readAttributes: (_cloneIfPresent(map["readAttributes"]) as List<String>),
       type: (map["type"] as num),
       exportAs: (map["exportAs"] as String),
@@ -64,7 +64,7 @@ RenderDirectiveMetadata directiveMetadataFromMap(Map<String, dynamic> map) {
       callAfterContentChecked: (map["callAfterContentChecked"] as bool),
       callAfterViewInit: (map["callAfterViewInit"] as bool),
       callAfterViewChecked: (map["callAfterViewChecked"] as bool),
-      events: (_cloneIfPresent(map["events"]) as List<String>),
+      outputs: (_cloneIfPresent(map["outputs"]) as List<String>),
       changeDetection: map["changeDetection"] == null ? null
           : ChangeDetectionStrategy.values[map["changeDetection"] as int]);
 }

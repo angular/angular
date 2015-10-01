@@ -65,13 +65,13 @@ void allTests() {
       expect(trueComp.compileChildren).toBeTrue();
     });
 
-    it('should parse properties.', () async {
+    it('should parse inputs.', () async {
       var metadata = await readMetadata('directive_metadata_extractor/'
           'directive_metadata_files/properties.ng_deps.dart');
-      expect(metadata.properties).toBeNotNull();
-      expect(metadata.properties.length).toBe(2);
-      expect(metadata.properties).toContain('key1: val1');
-      expect(metadata.properties).toContain('key2: val2');
+      expect(metadata.inputs).toBeNotNull();
+      expect(metadata.inputs.length).toBe(2);
+      expect(metadata.inputs).toContain('key1: val1');
+      expect(metadata.inputs).toContain('key2: val2');
     });
 
     it('should parse exportAs.', () async {
@@ -112,10 +112,10 @@ void allTests() {
       expect(metadata.callAfterViewChecked).toBe(true);
     });
 
-    it('should parse events.', () async {
+    it('should parse outputs.', () async {
       var metadata = await readMetadata('directive_metadata_extractor/'
           'directive_metadata_files/events.ng_deps.dart');
-      expect(metadata.events).toEqual(['onFoo', 'onBar']);
+      expect(metadata.outputs).toEqual(['onFoo', 'onBar']);
     });
 
     it('should parse changeDetection.', () async {

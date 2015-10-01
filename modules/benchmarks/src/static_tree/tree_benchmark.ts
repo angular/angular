@@ -226,12 +226,12 @@ class StaticTreeComponentBase {
   get data() { return this._value; }
 }
 
-@Component({selector: 'tree', properties: ['data']})
+@Component({selector: 'tree', inputs: ['data']})
 @View({directives: [], template: '<span>{{data.value}} </span>'})
 class StaticTreeComponent0 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', properties: ['data']})
+@Component({selector: 'tree', inputs: ['data']})
 @View({
   directives: [StaticTreeComponent0],
   template:
@@ -240,7 +240,7 @@ class StaticTreeComponent0 extends StaticTreeComponentBase {
 class StaticTreeComponent1 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', properties: ['data']})
+@Component({selector: 'tree', inputs: ['data']})
 @View({
   directives: [StaticTreeComponent1],
   template:
@@ -250,7 +250,7 @@ class StaticTreeComponent2 extends StaticTreeComponentBase {
   data: TreeNode;
 }
 
-@Component({selector: 'tree', properties: ['data']})
+@Component({selector: 'tree', inputs: ['data']})
 @View({
   directives: [StaticTreeComponent2],
   template:
@@ -259,7 +259,7 @@ class StaticTreeComponent2 extends StaticTreeComponentBase {
 class StaticTreeComponent3 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', properties: ['data']})
+@Component({selector: 'tree', inputs: ['data']})
 @View({
   directives: [StaticTreeComponent3],
   template:
@@ -268,7 +268,7 @@ class StaticTreeComponent3 extends StaticTreeComponentBase {
 class StaticTreeComponent4 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', properties: ['data']})
+@Component({selector: 'tree', inputs: ['data']})
 @View({
   directives: [StaticTreeComponent4],
   template:
@@ -277,7 +277,7 @@ class StaticTreeComponent4 extends StaticTreeComponentBase {
 class StaticTreeComponent5 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', properties: ['data']})
+@Component({selector: 'tree', inputs: ['data']})
 @View({
   directives: [StaticTreeComponent5],
   template:
@@ -286,7 +286,7 @@ class StaticTreeComponent5 extends StaticTreeComponentBase {
 class StaticTreeComponent6 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', properties: ['data']})
+@Component({selector: 'tree', inputs: ['data']})
 @View({
   directives: [StaticTreeComponent6],
   template:
@@ -295,7 +295,7 @@ class StaticTreeComponent6 extends StaticTreeComponentBase {
 class StaticTreeComponent7 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', properties: ['data']})
+@Component({selector: 'tree', inputs: ['data']})
 @View({
   directives: [StaticTreeComponent7],
   template:
@@ -304,7 +304,7 @@ class StaticTreeComponent7 extends StaticTreeComponentBase {
 class StaticTreeComponent8 extends StaticTreeComponentBase {
 }
 
-@Component({selector: 'tree', properties: ['data']})
+@Component({selector: 'tree', inputs: ['data']})
 @View({
   directives: [StaticTreeComponent8],
   template:

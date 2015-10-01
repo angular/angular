@@ -77,8 +77,8 @@ class ProtoViewVisitor implements TemplateAstVisitor {
     if (ast.isBound()) {
       this.boundElementCount++;
     }
-    templateVisitAll(this, ast.properties, null);
-    templateVisitAll(this, ast.events);
+    templateVisitAll(this, ast.inputs, null);
+    templateVisitAll(this, ast.outputs);
     templateVisitAll(this, ast.exportAsVars);
     for (var i = 0; i < ast.directives.length; i++) {
       ast.directives[i].visit(this, i);
@@ -158,7 +158,7 @@ class ProtoViewVisitor implements TemplateAstVisitor {
     });
     this.directiveRecords.push(directiveRecord);
 
-    templateVisitAll(this, ast.properties, directiveRecord);
+    templateVisitAll(this, ast.inputs, directiveRecord);
     var bindingRecords = this.bindingRecords;
     if (directiveRecord.callOnChanges) {
       bindingRecords.push(BindingRecord.createDirectiveOnChanges(directiveRecord));

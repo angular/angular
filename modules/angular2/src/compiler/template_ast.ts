@@ -56,7 +56,7 @@ export class VariableAst implements TemplateAst {
 
 export class ElementAst implements TemplateAst {
   constructor(public name: string, public attrs: AttrAst[],
-              public properties: BoundElementPropertyAst[], public events: BoundEventAst[],
+              public inputs: BoundElementPropertyAst[], public outputs: BoundEventAst[],
               public exportAsVars: VariableAst[], public directives: DirectiveAst[],
               public children: TemplateAst[], public ngContentIndex: number,
               public sourceInfo: string) {}
@@ -65,7 +65,7 @@ export class ElementAst implements TemplateAst {
   }
 
   isBound(): boolean {
-    return (this.properties.length > 0 || this.events.length > 0 || this.exportAsVars.length > 0 ||
+    return (this.inputs.length > 0 || this.outputs.length > 0 || this.exportAsVars.length > 0 ||
             this.directives.length > 0);
   }
 
@@ -95,7 +95,7 @@ export class BoundDirectivePropertyAst implements TemplateAst {
 
 export class DirectiveAst implements TemplateAst {
   constructor(public directive: CompileDirectiveMetadata,
-              public properties: BoundDirectivePropertyAst[],
+              public inputs: BoundDirectivePropertyAst[],
               public hostProperties: BoundElementPropertyAst[], public hostEvents: BoundEventAst[],
               public exportAsVars: VariableAst[], public sourceInfo: string) {}
   visit(visitor: TemplateAstVisitor, context: any): any {

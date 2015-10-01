@@ -6,7 +6,7 @@ import {NumberWrapper} from 'angular2/src/core/facade/lang';
 
 @Component({
   selector: 'md-checkbox',
-  properties: ['checked', 'disabled'],
+  inputs: ['checked', 'disabled'],
   host: {
     'role': 'checkbox',
     '[attr.aria-checked]': 'checked',

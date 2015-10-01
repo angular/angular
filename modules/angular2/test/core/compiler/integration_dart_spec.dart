@@ -266,7 +266,7 @@ class NoPropertyAccess {
 
 @Component(
     selector: 'on-change',
-    properties: const ['prop'])
+    inputs: const ['prop'])
 @View(template: '')
 class OnChangeComponent implements OnChanges {
   Map changes;
@@ -281,7 +281,7 @@ class OnChangeComponent implements OnChanges {
 @Component(
     selector: 'component-with-observable-list',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    properties: const ['list'],
+    inputs: const ['list'],
     bindings: const [
       const Binding(IterableDiffers,
           toValue: const IterableDiffers(const [

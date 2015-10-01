@@ -71,7 +71,7 @@ export class AttributeMetadata extends DependencyMetadata {
  * ```javascript
  * @Component({
  *   selector: 'pane',
- *   properties: ['title']
+ *   inputs: ['title']
  * })
  * @View(...)
  * class Pane {

@@ -35,7 +35,7 @@ import {
  * </div>
  * ```
  */
-@Directive({selector: '[ng-class]', properties: ['rawClass: ng-class', 'initialClasses: class']})
+@Directive({selector: '[ng-class]', inputs: ['rawClass: ng-class', 'initialClasses: class']})
 export class NgClass implements DoCheck, OnDestroy {
   private _differ: any;
   private _mode: string;

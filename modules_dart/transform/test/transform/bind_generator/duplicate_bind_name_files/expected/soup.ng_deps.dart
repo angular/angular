@@ -13,12 +13,12 @@ void initReflector(reflector) {
         new ReflectionInfo(const [
           const Component(
               componentServices: const [SaladComponent],
-              properties: const ['menu'])
+              inputs: const ['menu'])
         ], const [], () => new SoupComponent()))
     ..registerType(
         SaladComponent,
         new ReflectionInfo(const [
-          const Component(properties: const ['menu'])
+          const Component(inputs: const ['menu'])
         ], const [], () => new SaladComponent()))
     ..registerSetters({'menu': (o, v) => o.menu = v});
 }

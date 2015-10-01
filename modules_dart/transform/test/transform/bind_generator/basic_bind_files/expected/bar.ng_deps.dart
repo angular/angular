@@ -12,7 +12,7 @@ void initReflector(reflector) {
         ToolTip,
         new ReflectionInfo(const [
           const Directive(
-              selector: '[tool-tip]', properties: const ['text: tool-tip'])
+              selector: '[tool-tip]', inputs: const ['text: tool-tip'])
         ], const [], () => new ToolTip()))
     ..registerSetters({'text': (o, v) => o.text = v});
 }

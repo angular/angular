@@ -3,8 +3,8 @@ import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {
   DirectiveMetadata,
   Directive,
-  Property,
-  Event,
+  Input,
+  Output,
   HostBinding,
   HostListener,
   ContentChildren,
@@ -25,31 +25,31 @@ class SomeDirective {
 class SomeChildDirective extends SomeDirective {
 }
 
-@Directive({selector: 'someDirective', properties: ['c']})
+@Directive({selector: 'someDirective', inputs: ['c']})
 class SomeDirectiveWithProperties {
-  @Property() a;
-  @Property("renamed") b;
+  @Input() a;
+  @Input("renamed") b;
   c;
 }
 
-@Directive({selector: 'someDirective', events: ['c']})
-class SomeDirectiveWithEvents {
-  @Event() a;
-  @Event("renamed") b;
+@Directive({selector: 'someDirective', outputs: ['c']})
+class SomeDirectiveWithOutputs {
+  @Output() a;
+  @Output("renamed") b;
   c;
 }
 
 
 @Directive({selector: 'someDirective'})
 class SomeDirectiveWithSetterProps {
-  @Property("renamed")
+  @Input("renamed")
   set a(value) {
   }
 }
 
 @Directive({selector: 'someDirective'})
-class SomeDirectiveWithGetterEvents {
-  @Event("renamed")
+class SomeDirectiveWithGetterOutputs {
+  @Output("renamed")
   get a() {
     return null;
   }
@@ -108,7 +108,7 @@ export function main() {
       var directiveMetadata = resolver.resolve(SomeDirective);
       expect(directiveMetadata)
           .toEqual(new DirectiveMetadata(
-              {selector: 'someDirective', properties: [], events: [], host: {}, queries: {}}));
+              {selector: 'someDirective', inputs: [], outputs: [], host: {}, queries: {}}));
     });
 
     it('should throw if not matching metadata is found', () => {
@@ -120,30 +120,30 @@ export function main() {
       var directiveMetadata = resolver.resolve(SomeChildDirective);
       expect(directiveMetadata)
           .toEqual(new DirectiveMetadata(
-              {selector: 'someChildDirective', properties: [], events: [], host: {}, queries: {}}));
+              {selector: 'someChildDirective', inputs: [], outputs: [], host: {}, queries: {}}));
     });
 
-    describe('properties', () => {
-      it('should append directive properties', () => {
+    describe('inputs', () => {
+      it('should append directive inputs', () => {
         var directiveMetadata = resolver.resolve(SomeDirectiveWithProperties);
-        expect(directiveMetadata.properties).toEqual(['c', 'a', 'b: renamed']);
+        expect(directiveMetadata.inputs).toEqual(['c', 'a', 'b: renamed']);
       });
 
       it('should work with getters and setters', () => {
         var directiveMetadata = resolver.resolve(SomeDirectiveWithSetterProps);
-        expect(directiveMetadata.properties).toEqual(['a: renamed']);
+        expect(directiveMetadata.inputs).toEqual(['a: renamed']);
       });
     });
 
-    describe('events', () => {
-      it('should append directive events', () => {
-        var directiveMetadata = resolver.resolve(SomeDirectiveWithEvents);
-        expect(directiveMetadata.events).toEqual(['c', 'a', 'b: renamed']);
+    describe('outputs', () => {
+      it('should append directive outputs', () => {
+        var directiveMetadata = resolver.resolve(SomeDirectiveWithOutputs);
+        expect(directiveMetadata.outputs).toEqual(['c', 'a', 'b: renamed']);
       });
 
       it('should work with getters and setters', () => {
-        var directiveMetadata = resolver.resolve(SomeDirectiveWithGetterEvents);
-        expect(directiveMetadata.events).toEqual(['a: renamed']);
+        var directiveMetadata = resolver.resolve(SomeDirectiveWithGetterOutputs);
+        expect(directiveMetadata.outputs).toEqual(['a: renamed']);
       });
     });
 

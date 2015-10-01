@@ -53,7 +53,7 @@ const controlGroupBinding =
 @Directive({
   selector: '[ng-control-group]',
   bindings: [controlGroupBinding],
-  properties: ['name: ng-control-group'],
+  inputs: ['name: ng-control-group'],
   exportAs: 'form'
 })
 export class NgControlGroup extends ControlContainer implements OnInit,

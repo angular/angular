@@ -25,7 +25,7 @@ import {
   AAT_STATUS_WIDTH
 } from './common';
 
-@Component({selector: 'scroll-item', properties: ['offering']})
+@Component({selector: 'scroll-item', inputs: ['offering']})
 @View({
   directives: [
     CompanyNameComponent,

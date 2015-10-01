@@ -36,7 +36,7 @@ import {Instruction, stringifyInstruction} from './instruction';
  */
 @Directive({
   selector: '[router-link]',
-  properties: ['routeParams: routerLink'],
+  inputs: ['routeParams: routerLink'],
   host: {
     '(click)': 'onClick()',
     '[attr.href]': 'visibleHref',
