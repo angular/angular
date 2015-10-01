@@ -6,12 +6,9 @@ import {
   StringMap
 } from 'angular2/src/core/facade/collection';
 import {
-  AST,
   ChangeDetector,
-  ChangeDetectorRef,
   ChangeDispatcher,
   DirectiveIndex,
-  DirectiveRecord,
   BindingTarget,
   Locals,
   ProtoChangeDetector
@@ -25,7 +22,7 @@ import {
   DirectiveBinding
 } from './element_injector';
 import {ElementBinder} from './element_binder';
-import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
+import {isPresent} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import * as renderApi from 'angular2/src/core/render/api';
 import {RenderEventDispatcher} from 'angular2/src/core/render/api';

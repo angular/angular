@@ -1,12 +1,9 @@
 import {FORM_BINDINGS} from 'angular2/src/core/forms';
-import {bind, Binding, Injector, OpaqueToken} from 'angular2/src/core/di';
+import {bind, Binding} from 'angular2/src/core/di';
 import {
-  NumberWrapper,
   Type,
   isBlank,
   isPresent,
-  assertionsEnabled,
-  print,
   stringify
 } from 'angular2/src/core/facade/lang';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
@@ -14,7 +11,7 @@ import {BrowserGetTestability} from 'angular2/src/core/testability/browser_testa
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {ViewLoader} from 'angular2/src/core/render/dom/compiler/view_loader';
 import {StyleInliner} from 'angular2/src/core/render/dom/compiler/style_inliner';
-import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/core/facade/async';
+import {Promise} from 'angular2/src/core/facade/async';
 import {XHR} from 'angular2/src/core/render/xhr';
 import {XHRImpl} from 'angular2/src/core/render/xhr_impl';
 import {
@@ -27,10 +24,9 @@ import {HammerGesturesPlugin} from 'angular2/src/core/render/dom/events/hammer_g
 import {AppRootUrl} from 'angular2/src/core/services/app_root_url';
 import {AnchorBasedAppRootUrl} from 'angular2/src/core/services/anchor_based_app_root_url';
 import {
-  ComponentRef,
-  DynamicComponentLoader
+  ComponentRef
 } from 'angular2/src/core/compiler/dynamic_component_loader';
-import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
+import {Testability} from 'angular2/src/core/testability/testability';
 import {Renderer, RenderCompiler} from 'angular2/src/core/render/api';
 import {
   DomRenderer,
