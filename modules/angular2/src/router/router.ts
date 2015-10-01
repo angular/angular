@@ -81,7 +81,7 @@ export class Router {
    */
   registerPrimaryOutlet(outlet: RouterOutlet): Promise<boolean> {
     if (isPresent(outlet.name)) {
-      throw new BaseException(`registerAuxOutlet expects to be called with an unnamed outlet.`);
+      throw new BaseException(`registerPrimaryOutlet expects to be called with an unnamed outlet.`);
     }
 
     this._outlet = outlet;
