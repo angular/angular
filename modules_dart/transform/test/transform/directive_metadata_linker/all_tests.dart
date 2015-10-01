@@ -1,18 +1,20 @@
 library angular2.test.transform.directive_metadata_linker.all_tests;
 
 import 'dart:async';
+import 'dart:convert';
+
 import 'package:angular2/src/core/render/api.dart';
-import 'package:angular2/src/core/change_detection/change_detection.dart';
 import 'package:angular2/src/transform/common/convert.dart';
 import 'package:angular2/src/transform/common/directive_metadata_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/ng_deps.dart';
-import 'package:angular2/src/transform/directive_metadata_linker/'
-    'linker.dart';
+import 'package:angular2/src/transform/common/ng_meta.dart';
+import 'package:angular2/src/transform/directive_metadata_linker/linker.dart';
 import 'package:barback/barback.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:guinness/guinness.dart';
 
+import '../common/ng_meta_helper.dart';
 import '../common/read_file.dart';
 
 var formatter = new DartFormatter();
@@ -21,16 +23,60 @@ main() => allTests();
 
 void allTests() {
   TestAssetReader reader = null;
+  final moduleBase = 'asset:angular2/test/transform/directive_metadata_linker';
+  var fooNgMeta, fooAssetId;
+  var barNgMeta, barAssetId;
+  var bazNgMeta, bazAssetId;
+
+  /// Call after making changes to `fooNgMeta`, `barNgMeta`, or `bazNgMeta` and
+  /// before trying to read them from `reader`.
+  final updateReader = () => reader
+    ..addAsset(fooAssetId, JSON.encode(fooNgMeta.toJson()))
+    ..addAsset(barAssetId, JSON.encode(barNgMeta.toJson()))
+    ..addAsset(bazAssetId, JSON.encode(bazNgMeta.toJson()));
 
   beforeEach(() {
     reader = new TestAssetReader();
+
+    // Establish some test NgMeta objects with one Component each.
+    var fooName = 'FooComponent';
+    var fooComponentMeta = createComponentMetadataForTest(
+        name: fooName,
+        moduleUrl: '$moduleBase/export_cycle_files/foo.dart',
+        selector: '[foo]',
+        template: 'Foo');
+    fooNgMeta = new NgMeta.empty();
+    fooNgMeta.types[fooName] = fooComponentMeta;
+
+    var barName = 'BarComponent';
+    var barComponentMeta = createComponentMetadataForTest(
+        name: barName,
+        moduleUrl: '$moduleBase/export_cycle_files/bar.dart',
+        selector: '[bar]',
+        template: 'Bar');
+    barNgMeta = new NgMeta.empty();
+    barNgMeta.types[barName] = barComponentMeta;
+
+    var bazName = 'BazComponent';
+    var bazComponentMeta = createComponentMetadataForTest(
+        name: bazName,
+        moduleUrl: '$moduleBase/export_cycle_files/baz.dart',
+        selector: '[baz]',
+        template: 'Baz');
+    bazNgMeta = new NgMeta.empty();
+    barNgMeta.types[bazName] = bazComponentMeta;
+
+    fooAssetId = new AssetId('a', 'lib/foo.ng_meta.json');
+    barAssetId = new AssetId('a', 'lib/bar.ng_meta.json');
+    bazAssetId = new AssetId('a', 'lib/baz.ng_meta.json');
+    updateReader();
   });
 
   it('should include `DirectiveMetadata` from exported files.', () async {
-    var extracted = await linkDirectiveMetadata(
-        reader,
-        new AssetId(
-            'a', 'directive_metadata_linker/export_files/foo.ng_meta.json'));
+    fooNgMeta.exports.add('bar.dart');
+    updateReader();
+
+    var extracted = await linkDirectiveMetadata(reader, fooAssetId);
     expect(extracted.types).toContain('FooComponent');
     expect(extracted.types).toContain('BarComponent');
 
@@ -40,10 +86,11 @@ void allTests() {
 
   it('should include `DirectiveMetadata` recursively from exported files.',
       () async {
-    var extracted = await linkDirectiveMetadata(
-        reader,
-        new AssetId('a',
-            'directive_metadata_linker/recursive_export_files/foo.ng_meta.json'));
+    fooNgMeta.exports.add('bar.dart');
+    barNgMeta.exports.add('baz.dart');
+    updateReader();
+
+    var extracted = await linkDirectiveMetadata(reader, fooAssetId);
     expect(extracted.types).toContain('FooComponent');
     expect(extracted.types).toContain('BarComponent');
     expect(extracted.types).toContain('BazComponent');
@@ -54,10 +101,12 @@ void allTests() {
   });
 
   it('should handle `DirectiveMetadata` export cycles gracefully.', () async {
-    var extracted = await linkDirectiveMetadata(
-        reader,
-        new AssetId('a',
-            'directive_metadata_linker/export_cycle_files/baz.ng_meta.json'));
+    fooNgMeta.exports.add('bar.dart');
+    barNgMeta.exports.add('baz.dart');
+    bazNgMeta.exports.add('foo.dart');
+    updateReader();
+
+    var extracted = await linkDirectiveMetadata(reader, bazAssetId);
     expect(extracted.types).toContain('FooComponent');
     expect(extracted.types).toContain('BarComponent');
     expect(extracted.types).toContain('BazComponent');
@@ -66,10 +115,13 @@ void allTests() {
   it(
       'should include `DirectiveMetadata` from exported files '
       'expressed as absolute uris', () async {
-    var extracted = await linkDirectiveMetadata(
-        reader,
-        new AssetId('a',
-            'directive_metadata_linker/absolute_export_files/foo.ng_meta.json'));
+    fooNgMeta.exports.add('package:bar/bar.dart');
+    updateReader();
+    reader.addAsset(new AssetId('bar', 'lib/bar.ng_meta.json'),
+        JSON.encode(barNgMeta.toJson()));
+
+    var extracted = await linkDirectiveMetadata(reader, fooAssetId);
+
     expect(extracted.types).toContain('FooComponent');
     expect(extracted.types).toContain('BarComponent');
 

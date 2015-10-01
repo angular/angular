@@ -1,18 +1,17 @@
-library angular2.test.transform.common.annotation_matcher_test;
+library angular2.test.transform.common.ng_meta_test;
 
-import 'package:angular2/src/core/render/api.dart';
-import 'package:angular2/src/compiler/directive_metadata.dart';
-import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:guinness/guinness.dart';
+
+import 'ng_meta_helper.dart';
 
 main() => allTests();
 
 void allTests() {
   var mockData = [
-    CompileDirectiveMetadata.create(type: new CompileTypeMetadata(name: 'N1')),
-    CompileDirectiveMetadata.create(type: new CompileTypeMetadata(name: 'N2')),
-    CompileDirectiveMetadata.create(type: new CompileTypeMetadata(name: 'N3')),
-    CompileDirectiveMetadata.create(type: new CompileTypeMetadata(name: 'N4'))
+    createDirectiveMetadataForTest(name: 'N1'),
+    createDirectiveMetadataForTest(name: 'N2'),
+    createDirectiveMetadataForTest(name: 'N3'),
+    createDirectiveMetadataForTest(name: 'N4')
   ];
 
   it('should allow empty data.', () {
