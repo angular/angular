@@ -29,6 +29,8 @@ Future<NgDepsModel> createNgDeps(AssetReader reader, AssetId assetId,
   // TODO(kegluneq): Shortcut if we can determine that there are no
   // [Directive]s present, taking into account `export`s.
   var codeWithParts = await inlineParts(reader, assetId);
+  if (codeWithParts == null || codeWithParts.isEmpty) return null;
+
   var parsedCode =
       parseCompilationUnit(codeWithParts, name: '${assetId.path} and parts');
 

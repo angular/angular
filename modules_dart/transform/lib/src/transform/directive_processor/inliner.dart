@@ -96,4 +96,10 @@ class _NgDepsDirectivesVisitor extends Object with SimpleAstVisitor<Object> {
     _parts.add(node);
     return null;
   }
+
+  @override
+  Object visitPartOfDirective(PartOfDirective node) {
+    _isPart = true;
+    return null;
+  }
 }
