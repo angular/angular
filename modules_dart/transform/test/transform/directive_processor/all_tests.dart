@@ -335,10 +335,10 @@ void allTests() {
       expect(component.exportAs).toEqual('ComponentExportAsValue');
       expect(component.changeDetection)
           .toEqual(ChangeDetectionStrategy.CheckAlways);
-      expect(component.properties).toContain('aProperty');
-      expect(component.properties['aProperty']).toEqual('aProperty');
-      expect(component.events).toContain('anEvent');
-      expect(component.events['anEvent']).toEqual('anEvent');
+      expect(component.inputs).toContain('aProperty');
+      expect(component.inputs['aProperty']).toEqual('aProperty');
+      expect(component.outputs).toContain('anEvent');
+      expect(component.outputs['anEvent']).toEqual('anEvent');
       expect(component.hostAttributes).toContain('hostKey');
       expect(component.hostAttributes['hostKey']).toEqual('hostValue');
 
@@ -347,11 +347,11 @@ void allTests() {
       expect(directive.selector).toEqual('unusual-directive');
       expect(directive.isComponent).toBeFalse();
       expect(directive.exportAs).toEqual('DirectiveExportAsValue');
-      expect(directive.properties).toContain('aDirectiveProperty');
-      expect(directive.properties['aDirectiveProperty'])
+      expect(directive.inputs).toContain('aDirectiveProperty');
+      expect(directive.inputs['aDirectiveProperty'])
           .toEqual('aDirectiveProperty');
-      expect(directive.events).toContain('aDirectiveEvent');
-      expect(directive.events['aDirectiveEvent']).toEqual('aDirectiveEvent');
+      expect(directive.outputs).toContain('aDirectiveEvent');
+      expect(directive.outputs['aDirectiveEvent']).toEqual('aDirectiveEvent');
       expect(directive.hostAttributes).toContain('directiveHostKey');
       expect(directive.hostAttributes['directiveHostKey'])
           .toEqual('directiveHostValue');

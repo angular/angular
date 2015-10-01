@@ -13,8 +13,8 @@
         "moduleUrl": "asset:template_compiler/lib/directive_aliases_files/hello1.dart"
       },
       "changeDetection": 5,
-      "properties": {},
-      "events": {},
+      "inputs": {},
+      "outputs": {},
       "hostListeners": {},
       "hostProperties": {},
       "hostAttributes": {},
@@ -42,8 +42,8 @@
         "moduleUrl": "asset:template_compiler/lib/directive_aliases_files/hello1.dart"
       },
       "changeDetection": 5,
-      "properties": {},
-      "events": {},
+      "inputs": {},
+      "outputs": {},
       "hostListeners": {},
       "hostProperties": {},
       "hostAttributes": {},

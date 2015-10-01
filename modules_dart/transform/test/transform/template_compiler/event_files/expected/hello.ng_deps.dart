@@ -14,7 +14,7 @@ void initReflector(reflector) {
     ..registerType(
         HelloCmp,
         new ReflectionInfo(const [
-          const Component(selector: 'hello-app', events: const ['eventName']),
+          const Component(selector: 'hello-app', outputs: const ['eventName']),
           const View(template: '<button>go</button>'),
           _templates.HostHelloCmpTemplate
         ], const [

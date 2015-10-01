@@ -14,7 +14,7 @@ main() => allTests();
 void allTests() {
   var reader = new TestAssetReader();
 
-  it('should generate a setter for a `properties` property in an annotation.',
+  it('should generate a setter for an `inputs` property in an annotation.',
       () async {
     var inputPath = 'bind_generator/basic_bind_files/bar.ng_deps.dart';
     var expected = formatter.format(
@@ -27,7 +27,7 @@ void allTests() {
 
   it(
       'should generate a single setter when multiple annotations bind to the '
-      'same property.', () async {
+      'same `inputs` property.', () async {
     var inputPath =
         'bind_generator/duplicate_bind_name_files/soup.ng_deps.dart';
     var expected = formatter.format(readFile(

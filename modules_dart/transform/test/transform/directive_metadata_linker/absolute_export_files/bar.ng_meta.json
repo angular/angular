@@ -13,8 +13,8 @@
         "moduleUrl": "asset:angular2/test/transform/directive_metadata_linker/absolute_export_files/bar.dart"
       },
       "changeDetection": 5,
-      "properties": {},
-      "events": {},
+      "inputs": {},
+      "outputs": {},
       "hostListeners": {},
       "hostProperties": {},
       "hostAttributes": {},
