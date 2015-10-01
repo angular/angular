@@ -24,6 +24,14 @@ Future<Iterable<Asset>> processStylesheet(
   final sourceModules =
       templateCompiler.compileStylesheetCodeGen(stylesheetUrl, cssText);
 
+  var libraryIdx = 0;
   return sourceModules.map((SourceModule module) => new Asset.fromString(
-      new AssetId.parse('${module.moduleUrl}'), writeSourceModule(module)));
+      new AssetId.parse('${module.moduleUrl}'),
+      writeSourceModule(module,
+          libraryName: '${_getLibBase(module.moduleUrl)}${libraryIdx++}')));
+}
+
+final _unsafeCharsPattern = new RegExp(r'[^a-zA-Z0-9_]');
+String _getLibBase(String libraryName) {
+  return libraryName.replaceAll('/', '.').replaceAll(_unsafeCharsPattern, '_');
 }

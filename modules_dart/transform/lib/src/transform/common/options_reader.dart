@@ -136,7 +136,9 @@ void _warnDeprecated(Map config) {
         'Angular 2 apps. Please remove it from your pubspec.');
   }
   if (config.containsKey(INLINE_VIEWS_PARAM)) {
-    print('${INLINE_VIEWS_PARAM} is no longer necessary for '
-        'Angular 2 apps. Please remove it from your pubspec.');
+    print('Parameter "${INLINE_VIEWS_PARAM}" no longer has any effect on the '
+        'Angular2 transformer. Inlining of views is only needed for tests that '
+        'manipulate component metadata. For this purpose, use transformer '
+        'angular2/src/transform/inliner_for_test.');
   }
 }
