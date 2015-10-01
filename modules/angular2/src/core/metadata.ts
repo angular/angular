@@ -472,19 +472,7 @@ export interface OutputFactory {
 }
 
 /**
- * {@link HostBindingMetadata} factory for creating decorators.
- *
- * ## Example as TypeScript Decorator
- *
- * ```
- * @Directive({
- *   selector: 'sample-dir'
- * })
- * class SampleDir {
- *   @HostBinding() prop1; // Same as @HostBinding('prop1') prop1;
- *   @HostBinding("el-prop") prop1;
- * }
- * ```
+ * {@link HostBindingMetadata} factory function.
  */
 export interface HostBindingFactory {
   (hostPropertyName?: string): any;
@@ -492,18 +480,7 @@ export interface HostBindingFactory {
 }
 
 /**
- * {@link HostListenerMetadata} factory for creating decorators.
- *
- * ## Example as TypeScript Decorator
- *
- * ```
- * @Directive({
- *   selector: 'sample-dir'
- * })
- * class SampleDir {
- *   @HostListener("change", ['$event.target.value']) onChange(value){}
- * }
- * ```
+ * {@link HostListenerMetadata} factory function.
  */
 export interface HostListenerFactory {
   (eventName: string, args?: string[]): any;
