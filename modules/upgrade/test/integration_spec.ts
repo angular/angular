@@ -11,7 +11,7 @@ import {
   xit,
 } from 'angular2/test_lib';
 
-import {Component, View, Inject} from 'angular2/angular2';
+import {Component, View, Inject, EventEmitter} from 'angular2/angular2';
 import {createUpgradeModule, UpgradeModule, bootstrapHybrid} from 'upgrade/upgrade';
 
 export function main() {
@@ -91,9 +91,127 @@ export function main() {
            });
          }));
     });
+
+    describe('binding from ng1 to ng2', () => {
+      it('should bind properties, events', inject([AsyncTestCompleter], (async) {
+           var upgrMod: UpgradeModule = createUpgradeModule();
+           upgrMod.ng1Module.run(($rootScope) => {
+             $rootScope.dataA = 'A';
+             $rootScope.dataB = 'B';
+             $rootScope.modelA = 'initModelA';
+             $rootScope.modelB = 'initModelB';
+             $rootScope.eventA = '?';
+             $rootScope.eventB = '?';
+           });
+           upgrMod.importNg2Component(
+               Component({
+                 selector: 'ng2',
+                 inputs: ['literal', 'interpolate', 'oneWayA', 'oneWayB', 'twoWayA', 'twoWayB'],
+                 outputs:
+                     ['eventA', 'eventB', 'twoWayAEmitter: twoWayA', 'twoWayBEmitter: twoWayB']
+               })
+                   .View({
+                     template:
+                         "ignore: {{ignore}}; " +
+                             "literal: {{literal}}; interpolate: {{interpolate}}; " +
+                             "oneWayA: {{oneWayA}}; oneWayB: {{oneWayB}}; " +
+                             "twoWayA: {{twoWayA}}; twoWayB: {{twoWayB}}; ({{onChangesCount}})"
+                   })
+                   .Class({
+                     constructor: function() {
+                       this.onChangesCount = 0;
+                       this.ignore = '-';
+                       this.literal = '?';
+                       this.interpolate = '?';
+                       this.oneWayA = '?';
+                       this.oneWayB = '?';
+                       this.twoWayA = '?';
+                       this.twoWayB = '?';
+                       this.eventA = new EventEmitter();
+                       this.eventB = new EventEmitter();
+                       this.twoWayAEmitter = new EventEmitter();
+                       this.twoWayBEmitter = new EventEmitter();
+                     },
+                     onChanges: function(changes) {
+                       var assert =
+                           (prop, value) => {
+                             if (this[prop] != value) {
+                               throw new Error(
+                                   `Expected: '${prop}' to be '${value}' but was '${this[prop]}'`);
+                             }
+                           }
+
+                       var assertChange =
+                           (prop, value) => {
+                             assert(prop, value);
+                             if (!changes[prop]) {
+                               throw new Error(`Changes record for '${prop}' not found.`);
+                             }
+                             var actValue = changes[prop].currentValue;
+                             if (actValue != value) {
+                               throw new Error(
+                                   `Expected changes record for'${prop}' to be '${value}' but was '${actValue}'`);
+                             }
+                           }
+
+                       switch (this.onChangesCount++) {
+                         case 0:
+                           assert('ignore', '-');
+                           assertChange('literal', 'Text');
+                           assertChange('interpolate', 'Hello world');
+                           assertChange('oneWayA', 'A');
+                           assertChange('oneWayB', 'B');
+                           assertChange('twoWayA', 'initModelA');
+                           assertChange('twoWayB', 'initModelB');
+
+                           this.twoWayAEmitter.next('newA');
+                           this.twoWayBEmitter.next('newB');
+                           this.eventA.next('aFired');
+                           this.eventB.next('bFired');
+                           break;
+                         case 1:
+                           assertChange('twoWayA', 'newA');
+                           break;
+                         case 2:
+                           assertChange('twoWayB', 'newB');
+                           break;
+                         default:
+                           throw new Error('Called too many times! ' + JSON.stringify(changes));
+                       }
+                     }
+                   }));
+           var element = html(`<div>
+              <ng2 literal="Text" interpolate="Hello {{'world'}}"
+                   bind-one-way-a="dataA" [one-way-b]="dataB"
+                   bindon-two-way-a="modelA" [(two-way-b)]="modelB"
+                   on-event-a='eventA=$event' (event-b)="eventB=$event"></ng2>
+              | modelA: {{modelA}}; modelB: {{modelB}}; eventA: {{eventA}}; eventB: {{eventB}};
+              </div>`);
+           upgrMod.bootstrap(element).ready(() => {
+             expect(multiTrim(document.body.textContent))
+                 .toEqual(
+                     "ignore: -; " + "literal: Text; interpolate: Hello world; " +
+                     "oneWayA: A; oneWayB: B; twoWayA: initModelA; twoWayB: initModelB; (1) | " +
+                     "modelA: initModelA; modelB: initModelB; eventA: ?; eventB: ?;");
+             setTimeout(() => {
+               // we need to do setTimeout, because the EventEmitter uses setTimeout to schedule
+               // events, and so without this we would not see the events processed.
+               expect(multiTrim(document.body.textContent))
+                   .toEqual("ignore: -; " + "literal: Text; interpolate: Hello world; " +
+                            "oneWayA: A; oneWayB: B; twoWayA: newA; twoWayB: newB; (3) | " +
+                            "modelA: newA; modelB: newB; eventA: aFired; eventB: bFired;");
+               async.done();
+             });
+           });
+
+         }));
+    });
   });
 }
 
+function multiTrim(text: string): string {
+  return text.replace(/\n/g, '').replace(/\s\s+/g, ' ').trim();
+}
 
 function html(html: string): Element {
   var body = document.body;
