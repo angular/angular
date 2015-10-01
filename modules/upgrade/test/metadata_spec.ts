@@ -12,27 +12,57 @@ import {
 } from 'angular2/test_lib';
 
 import {Component, View} from 'angular2/angular2';
-import {getComponentSelector} from 'upgrade/src/metadata';
+import {getComponentInfo, parseFields} from 'upgrade/src/metadata';
 
 export function main() {
   describe('upgrade metadata', () => {
-    it('should extract component selector',
-       () => { expect(getComponentSelector(ElementNameComponent)).toEqual('elementNameDashed'); });
+    it('should extract component selector', () => {
+      expect(getComponentInfo(ElementNameComponent).selector).toEqual('elementNameDashed');
+    });
 
 
     describe('errors', () => {
       it('should throw on missing selector', () => {
-        expect(() => getComponentSelector(AttributeNameComponent))
+        expect(() => getComponentInfo(AttributeNameComponent))
             .toThrowErrorWith(
                 "Only selectors matching element names are supported, got: [attr-name]");
       });
 
       it('should throw on non element names', () => {
-        expect(() => getComponentSelector(NoAnnotationComponent))
+        expect(() => getComponentInfo(NoAnnotationComponent))
             .toThrowErrorWith("No Directive annotation found on NoAnnotationComponent");
       });
-
     });
+
+    describe('parseFields', () => {
+      it('should process nulls', () => { expect(parseFields(null)).toEqual([]); });
+
+      it('should process values', () => {
+        expect(parseFields([' name ', ' prop :  attr ']))
+            .toEqual([
+              {
+                prop: 'name',
+                attr: 'name',
+                bracketAttr: '[name]',
+                parenAttr: '(name)',
+                bracketParanAttr: '[(name)]',
+                onAttr: 'onName',
+                bindAttr: 'bindName',
+                bindonAttr: 'bindonName'
+              },
+              {
+                prop: 'prop',
+                attr: 'attr',
+                bracketAttr: '[attr]',
+                parenAttr: '(attr)',
+                bracketParanAttr: '[(attr)]',
+                onAttr: 'onAttr',
+                bindAttr: 'bindAttr',
+                bindonAttr: 'bindonAttr'
+              }
+            ]);
+      });
+    })
   });
 }
 

@@ -21,13 +21,14 @@ import {
   ProtoViewRef,
   ElementRef,
   HostViewRef,
-  ViewRef
+  ViewRef,
+  SimpleChange
 } from 'angular2/angular2';
 import {applicationDomBindings} from 'angular2/src/core/application_common';
 import {applicationCommonBindings} from '../../angular2/src/core/application_ref';
 import {compilerBindings} from 'angular2/src/compiler/compiler';
 
-import {getComponentSelector} from './metadata';
+import {getComponentInfo, ComponentInfo} from './metadata';
 import {onError} from './util';
 export const INJECTOR = 'ng2.Injector';
 export const APP_VIEW_MANAGER = 'ng2.AppViewManager';
@@ -39,6 +40,7 @@ const NG1_REQUIRE_INJECTOR_REF = '$' + INJECTOR + 'Controller';
 const NG1_SCOPE = '$scope';
 const NG1_COMPILE = '$compile';
 const NG1_INJECTOR = '$injector';
+const NG1_PARSE = '$parse';
 const REQUIRE_INJECTOR = '^' + INJECTOR;
 
 var moduleCount: number = 0;
@@ -57,9 +59,9 @@ export class UpgradeModule {
 
   importNg2Component(type: Type): UpgradeModule {
     this.componentTypes.push(type);
-    var selector: string = getComponentSelector(type);
-    var factory: Function = ng1ComponentDirective(selector, type, `${this.idPrefix}${selector}_c`);
-    this.ng1Module.directive(selector, <any[]>factory);
+    var info: ComponentInfo = getComponentInfo(type);
+    var factory: Function = ng1ComponentDirective(info, `${this.idPrefix}${info.selector}_c`);
+    this.ng1Module.directive(info.selector, <any[]>factory);
     return this;
   }
 
@@ -132,7 +134,7 @@ export class UpgradeModule {
       var protoViewRefMap: ProtoViewRefMap = {};
       var types = this.componentTypes;
       for (var i = 0; i < protoViews.length; i++) {
-        protoViewRefMap[getComponentSelector(types[i])] = protoViews[i];
+        protoViewRefMap[getComponentInfo(types[i]).selector] = protoViews[i];
       }
       return protoViewRefMap;
     }, onError);
@@ -143,31 +145,160 @@ interface ProtoViewRefMap {
   [selector: string]: ProtoViewRef
 }
 
-function ng1ComponentDirective(selector: string, type: Type, idPrefix: string): Function {
-  directiveFactory.$inject = [PROTO_VIEW_REF_MAP, APP_VIEW_MANAGER];
-  function directiveFactory(protoViewRefMap: ProtoViewRefMap, viewManager: AppViewManager):
-      angular.IDirective {
-    var protoView: ProtoViewRef = protoViewRefMap[selector];
-    if (!protoView) throw new Error('Expecting ProtoViewRef for: ' + selector);
+function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function {
+  directiveFactory.$inject = [PROTO_VIEW_REF_MAP, APP_VIEW_MANAGER, NG1_PARSE];
+  function directiveFactory(protoViewRefMap: ProtoViewRefMap, viewManager: AppViewManager,
+                            parse: angular.IParseService): angular.IDirective {
+    var protoView: ProtoViewRef = protoViewRefMap[info.selector];
+    if (!protoView) throw new Error('Expecting ProtoViewRef for: ' + info.selector);
     var idCount = 0;
     return {
       restrict: 'E',
       require: REQUIRE_INJECTOR,
       link: (scope: angular.IScope, element: angular.IAugmentedJQuery, attrs: angular.IAttributes,
              parentInjector: any, transclude: angular.ITranscludeFunction): void => {
-        var id = element[0].id = idPrefix + (idCount++);
-        var componentScope = scope.$new();
-        componentScope.$watch(() => changeDetector.detectChanges());
-        var childInjector =
-            parentInjector.resolveAndCreateChild([bind(NG1_SCOPE).toValue(componentScope)]);
-        var hostViewRef = viewManager.createRootHostView(protoView, '#' + id, childInjector);
-        var changeDetector: ChangeDetectorRef = hostViewRef.changeDetectorRef;
-        element.bind('$remove', () => viewManager.destroyRootHostView(hostViewRef));
+        var facade =
+            new Ng2ComponentFacade(element[0].id = idPrefix + (idCount++), info, element, attrs,
+                                   scope, <Injector>parentInjector, parse, viewManager, protoView);
+
+        facade.setupInputs();
+        facade.bootstrapNg2();
+        facade.setupOutputs();
+        facade.registerCleanup();
       }
     };
   }
   return directiveFactory;
 }
+
+class Ng2ComponentFacade {
+  component: any = null;
+  inputChangeCount: number = 0;
+  inputChanges: StringMap<string, SimpleChange> = null;
+  hostViewRef: HostViewRef = null;
+  changeDetector: ChangeDetectorRef = null;
+  componentScope: angular.IScope;
+
+  constructor(private id: string, private info: ComponentInfo,
+              private element: angular.IAugmentedJQuery, private attrs: angular.IAttributes,
+              private scope: angular.IScope, private parentInjector: Injector,
+              private parse: angular.IParseService, private viewManager: AppViewManager,
+              private protoView: ProtoViewRef) {
+    this.componentScope = scope.$new();
+  }
+
+  bootstrapNg2() {
+    var childInjector =
+        this.parentInjector.resolveAndCreateChild([bind(NG1_SCOPE).toValue(this.componentScope)]);
+    this.hostViewRef =
+        this.viewManager.createRootHostView(this.protoView, '#' + this.id, childInjector);
+    var hostElement = this.viewManager.getHostElement(this.hostViewRef);
+    this.changeDetector = this.hostViewRef.changeDetectorRef;
+    this.component = this.viewManager.getComponent(hostElement);
+  }
+
+  setupInputs() {
+    var attrs = this.attrs;
+    var inputs = this.info.inputs;
+    for (var i = 0; i < inputs.length; i++) {
+      var input = inputs[i];
+      var expr = null;
+      if (attrs.hasOwnProperty(input.attr)) {
+        attrs.$observe(input.attr, ((prop) => {
+                         var prevValue = this;
+                         return (value) => {
+                           if (this.inputChanges != null) {
+                             this.inputChangeCount++;
+                             this.inputChanges[prop] =
+                                 new Ng1Change(value, prevValue == this ? value : prevValue);
+                             prevValue = value;
+                           }
+                           this.component[prop] = value;
+                         }
+                       })(input.prop));
+      } else if (attrs.hasOwnProperty(input.bindAttr)) {
+        expr = attrs[input.bindAttr];
+      } else if (attrs.hasOwnProperty(input.bracketAttr)) {
+        expr = attrs[input.bracketAttr];
+      } else if (attrs.hasOwnProperty(input.bindonAttr)) {
+        expr = attrs[input.bindonAttr];
+      } else if (attrs.hasOwnProperty(input.bracketParanAttr)) {
+        expr = attrs[input.bracketParanAttr];
+      }
+      if (expr != null) {
+        var watchFn = ((prop) => (value, prevValue) => {
+          if (this.inputChanges != null) {
+            this.inputChangeCount++;
+            this.inputChanges[prop] = new Ng1Change(prevValue, value);
+          }
+          this.component[prop] = value;
+        })(input.prop);
+        this.componentScope.$watch(expr, watchFn);
+      }
+    }
+
+    var prototype = this.info.type.prototype;
+    if (prototype && prototype.onChanges) {
+      this.inputChanges = {};
+      this.componentScope.$watch(() => this.inputChangeCount, () => {
+        var inputChanges = this.inputChanges;
+        this.inputChanges = {};
+        this.component.onChanges(inputChanges);
+      });
+    }
+    this.componentScope.$watch(() => this.changeDetector.detectChanges());
+  }
+
+  setupOutputs() {
+    var attrs = this.attrs;
+    var outputs = this.info.outputs;
+    for (var j = 0; j < outputs.length; j++) {
+      var output = outputs[j];
+      var expr = null;
+      var assignExpr = false;
+      if (attrs.hasOwnProperty(output.onAttr)) {
+        expr = attrs[output.onAttr];
+      } else if (attrs.hasOwnProperty(output.parenAttr)) {
+        expr = attrs[output.parenAttr];
+      } else if (attrs.hasOwnProperty(output.bindonAttr)) {
+        expr = attrs[output.bindonAttr];
+        assignExpr = true;
+      } else if (attrs.hasOwnProperty(output.bracketParanAttr)) {
+        expr = attrs[output.bracketParanAttr];
+        assignExpr = true;
+      }
+
+      if (expr != null && assignExpr != null) {
+        var getter = this.parse(expr);
+        var setter = getter.assign;
+        if (assignExpr && !setter) {
+          throw new Error(`Expression '${expr}' is not assignable!`);
+        }
+        var emitter = this.component[output.prop];
+        if (emitter) {
+          emitter.observer({
+            next: assignExpr ? ((setter) => (value) => setter(this.scope, value))(setter) :
+                               ((getter) => (value) => getter(this.scope, {$event: value}))(getter)
+          });
+        } else {
+          throw new Error(
+              `Missing emitter '${output.prop}' on component '${this.input.selector}'!`);
+        }
+      }
+    }
+  }
+
+  registerCleanup() {
+    this.element.bind('$remove', () => this.viewManager.destroyRootHostView(this.hostViewRef));
+  }
+}
+
+export class Ng1Change implements SimpleChange {
+  constructor(public previousValue: any, public currentValue: any) {}
+
+  isFirstChange(): boolean { return this.previousValue === this.currentValue; }
+}
+
 
 export class UpgradeRef {
   readyFn: Function;
