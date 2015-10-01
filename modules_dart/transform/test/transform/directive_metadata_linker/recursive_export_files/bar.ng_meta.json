@@ -1,0 +1,33 @@
+{
+  "__exports__": ["baz.dart"],
+  "BarComponent":
+  {
+    "kind": "type",
+    "value": {
+      "isComponent": true,
+      "dynamicLoadable": true,
+      "selector":"[bar]",
+      "exportAs": null,
+      "type": {
+        "id": 1,
+        "name": "BarComponent",
+        "moduleUrl": "asset:angular2/test/transform/directive_metadata_linker/recursive_export_files/bar.dart"
+      },
+      "changeDetection": 5,
+      "properties": {},
+      "events": {},
+      "hostListeners": {},
+      "hostProperties": {},
+      "hostAttributes": {},
+      "lifecycleHooks": [],
+      "template": {
+        "encapsulation": 0,
+        "template": "Bar",
+        "templateUrl": null,
+        "styles": null,
+        "styleUrls": null,
+        "ngContentSelectors": null
+      }
+    }
+  }
+}

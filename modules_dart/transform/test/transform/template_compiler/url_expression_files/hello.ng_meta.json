@@ -3,14 +3,30 @@
   {
     "kind": "type",
     "value": {
-      "id":"HelloCmp",
+      "isComponent": true,
+      "dynamicLoadable": true,
       "selector":"hello-app",
-      "compileChildren":true,
-      "host":{},
-      "properties":[],
-      "readAttributes":[],
-      "type":1,
-      "version":1
+      "exportAs": null,
+      "type": {
+        "id": 1,
+        "name": "HelloCmp",
+        "moduleUrl": "asset:angular2/test/transform/template_compiler/url_expression_files/hello.dart"
+      },
+      "changeDetection": 5,
+      "properties": {},
+      "events": {},
+      "hostListeners": {},
+      "hostProperties": {},
+      "hostAttributes": {},
+      "lifecycleHooks": [],
+      "template": {
+        "encapsulation": 0,
+        "template": "{{greeting}}",
+        "templateUrl": "template.html",
+        "styles": null,
+        "styleUrls": null,
+        "ngContentSelectors": null
+      }
     }
   }
 }

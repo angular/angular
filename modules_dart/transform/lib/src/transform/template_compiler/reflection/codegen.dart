@@ -8,12 +8,11 @@ import 'model.dart';
 class Codegen {
   final StringBuffer _buf = new StringBuffer();
 
-  /// Whether we are pre-generating change detectors.
-  /// If we have pre-generated change detectors, we need
-  final bool generateChangeDetectors;
-
-  Codegen({this.generateChangeDetectors});
-
+  /// Generates code to register all getters, setters, and methods stored by
+  /// `model`.
+  ///
+  /// The code takes the form of zero or more cascaded calls. The receiver of
+  /// these calls is expected to be an Angular 2 reflector object.
   void generate(CodegenModel model) {
     if (model != null) {
       var calls = _generateGetters(_extractNames(model.getterNames));
@@ -35,9 +34,7 @@ class Codegen {
   }
 
   Iterable<String> _extractNames(Iterable<ReflectiveAccessor> accessors) {
-    var names = accessors.where((accessor) {
-      return accessor.isStaticallyNecessary || !generateChangeDetectors;
-    }).map((accessor) => accessor.sanitizedName);
+    var names = accessors.map((accessor) => accessor.sanitizedName);
     var nameList = names.toList();
     nameList.sort();
     return nameList;

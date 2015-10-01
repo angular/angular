@@ -3,29 +3,24 @@ library angular2.transform.template_compiler.xhr_impl;
 import 'dart:async';
 import 'package:angular2/src/core/render/xhr.dart' show XHR;
 import 'package:angular2/src/transform/common/asset_reader.dart';
-import 'package:angular2/src/transform/common/logging.dart';
 import 'package:barback/barback.dart';
-import 'package:code_transformers/assets.dart';
 
 class XhrImpl implements XHR {
   final AssetReader _reader;
-  final AssetId _entryPoint;
 
-  XhrImpl(this._reader, this._entryPoint);
+  XhrImpl(this._reader);
 
   Future<String> get(String url) async {
-    var assetId = uriToAssetId(_entryPoint, url, logger, null /* span */,
-        errorOnAbsolute: false);
-    if (assetId == null) {
-      logger.error(
-          'Uri $url not supported from $_entryPoint, could not build AssetId');
-      return null;
+    final uri = Uri.parse(url);
+    if (uri.scheme != 'asset') {
+      throw new FormatException('Unsupported uri encountered: $uri', url);
     }
-    var templateExists = await _reader.hasInput(assetId);
-    if (!templateExists) {
-      logger.error('Could not read asset at uri $url from $_entryPoint');
-      return null;
+    final assetId =
+        new AssetId(uri.pathSegments.first, uri.pathSegments.skip(1).join('/'));
+
+    if (!await _reader.hasInput(assetId)) {
+      throw new ArgumentError.value('Could not read asset at uri $url', 'url');
     }
-    return await _reader.readAsString(assetId);
+    return _reader.readAsString(assetId);
   }
 }

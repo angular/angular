@@ -1,5 +1,7 @@
 library examples.src.hello_world.index_common_dart;
 
+import 'hello.template.dart' as _templates;
+
 import 'hello.dart';
 import 'package:angular2/angular2.dart'
     show Component, Directive, View, NgElement;
@@ -13,9 +15,9 @@ void initReflector(reflector) {
         HelloCmp,
         new ReflectionInfo(const [
           const Component(selector: 'hello-app'),
-          const View(templateUrl: 'template.html')
+          const View(templateUrl: 'template.html'),
+          _templates.HostHelloCmpTemplate
         ], const [
           const []
-        ], () => new HelloCmp()))
-    ..registerGetters({'greeting': (o) => o.greeting});
+        ], () => new HelloCmp()));
 }

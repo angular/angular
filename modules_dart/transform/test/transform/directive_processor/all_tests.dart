@@ -4,6 +4,9 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:barback/barback.dart';
+import 'package:angular2/src/core/change_detection/change_detection.dart';
+import 'package:angular2/src/core/compiler/interfaces.dart' show LifecycleHooks;
+import 'package:angular2/src/core/dom/html_adapter.dart';
 import 'package:angular2/src/transform/directive_processor/rewriter.dart';
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
@@ -14,13 +17,13 @@ import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:code_transformers/messages/build_logger.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:guinness/guinness.dart';
-import 'package:path/path.dart' as path;
 import 'package:source_span/source_span.dart';
 import '../common/read_file.dart';
 
 var formatter = new DartFormatter();
 
 main() {
+  Html5LibDomAdapter.makeCurrent();
   allTests();
 }
 
@@ -119,111 +122,6 @@ void allTests() {
             superClass: 'Component')
       ]);
       expect(model).toBeNull();
-    });
-  });
-
-  describe('inliner', () {
-    var absoluteReader;
-    beforeEach(() {
-      absoluteReader = new TestAssetReader();
-    });
-
-    it('should inline `templateUrl` values', () async {
-      var model = await _testCreateModel('url_expression_files/hello.dart');
-      expect(model.reflectables.isNotEmpty).toBeTrue();
-      var view =
-          model.reflectables.first.annotations.firstWhere((a) => a.isView);
-      expect(view.namedParameters
-          .firstWhere((p) => p.name == 'templateUrl')
-          .value).toContain('template.html');
-      expect(view.namedParameters.firstWhere((p) => p.name == 'template').value)
-          .toContain('{{greeting}}');
-    });
-
-    it(
-        'should inline `templateUrl` and `styleUrls` values expressed as '
-        'absolute urls.', () async {
-      absoluteReader.addAsset(
-          new AssetId('other_package', 'lib/template.html'),
-          readFile(
-              'directive_processor/absolute_url_expression_files/template.html'));
-      absoluteReader.addAsset(
-          new AssetId('other_package', 'lib/template.css'),
-          readFile(
-              'directive_processor/absolute_url_expression_files/template.css'));
-      var model = await _testCreateModel(
-          'absolute_url_expression_files/hello.dart',
-          reader: absoluteReader);
-
-      expect(model.reflectables.length).toEqual(2);
-      var view =
-          model.reflectables.first.annotations.firstWhere((a) => a.isView);
-      expect(view.namedParameters
-          .firstWhere((p) => p.name == 'templateUrl')
-          .value).toContain('package:other_package/template.html');
-      expect(view.namedParameters.firstWhere((p) => p.name == 'template').value)
-          .toContain('{{greeting}}');
-      expect(view.namedParameters.firstWhere((p) => p.name == 'styles').value)
-          .toContain('.greeting { .color: blue; }');
-
-      // TODO(kegluneq): Split this test out, as it is logically very different.
-      expect(model.reflectables[1].isFunction).toBeTrue();
-      expect(model.reflectables[1].name).toEqual('hello');
-    });
-
-    it('should inline multiple `styleUrls` values expressed as absolute urls.',
-        () async {
-      var model =
-          await _testCreateModel('multiple_style_urls_files/hello.dart');
-
-      expect(model.reflectables.isNotEmpty).toBeTrue();
-      var view =
-          model.reflectables.first.annotations.firstWhere((a) => a.isView);
-      var expectStyles = expect(
-          view.namedParameters.firstWhere((p) => p.name == 'styles').value);
-      expectStyles
-        ..toContain('.greeting { .color: blue; }')
-        ..toContain('.hello { .color: red; }');
-    });
-
-    it(
-        'should not inline multiple `styleUrls` values expressed as absolute '
-        'urls.', () async {
-      absoluteReader.addAsset(
-          new AssetId('a', 'lib/template.html'),
-          readFile(
-              'directive_processor/multiple_style_urls_files/template.html'));
-      absoluteReader.addAsset(
-          new AssetId('a', 'lib/template.css'),
-          readFile(
-              'directive_processor/multiple_style_urls_files/template.css'));
-      absoluteReader.addAsset(
-          new AssetId('a', 'lib/template_other.css'),
-          readFile(
-              'directive_processor/multiple_style_urls_files/template_other.css'));
-      var model = await _testCreateModel(
-          'multiple_style_urls_not_inlined_files/hello.dart',
-          inlineViews: false,
-          reader: absoluteReader);
-      expect(model.reflectables.isNotEmpty).toBeTrue();
-      var view =
-          model.reflectables.first.annotations.firstWhere((a) => a.isView);
-      expect(view.namedParameters.firstWhere((p) => p.name == 'styles',
-          orElse: () => null)).toBeNull();
-      expect(
-          view.namedParameters.firstWhere((p) => p.name == 'styleUrls').value)
-        ..toContain('package:a/template.css')
-        ..toContain('package:a/template_other.css');
-    });
-
-    it('should inline `templateUrl`s expressed as adjacent strings.', () async {
-      var model =
-          await _testCreateModel('split_url_expression_files/hello.dart');
-      expect(model.reflectables.isNotEmpty).toBeTrue();
-      var view =
-          model.reflectables.first.annotations.firstWhere((a) => a.isView);
-      expect(view.namedParameters.firstWhere((p) => p.name == 'template').value)
-          .toContain('{{greeting}}');
     });
   });
 
@@ -353,17 +251,8 @@ void allTests() {
         await _testCreateModel('invalid_url_files/hello.dart', logger: logger);
     expect(logger.hasErrors).toBeTrue();
     expect(logger.logs)
-      ..toContain(
-          'ERROR: Uri /bad/absolute/url.html not supported from angular2|test/'
-          'transform/directive_processor/invalid_url_files/hello.dart, could not '
-          'build AssetId')
-      ..toContain(
-          'ERROR: Could not read asset at uri package:invalid/package.css from '
-          'angular2|test/transform/directive_processor/invalid_url_files/'
-          'hello.dart')
-      ..toContain(
-          'ERROR: Could not read asset at uri bad_relative_url.css from angular2|'
-          'test/transform/directive_processor/invalid_url_files/hello.dart');
+      ..toContain('ERROR: ERROR: Invalid argument (url): '
+          '"Could not read asset at uri asset:/bad/absolute/url.html"');
   });
 
   it('should find and register static functions.', () async {
@@ -375,21 +264,137 @@ void allTests() {
     expect(functionReflectable.name).toEqual('getMessage');
   });
 
-  it('should find direcive aliases patterns.', () async {
-    var logger = new RecordingLogger();
-    return log.setZoned(logger, () async {
-      var inputId = _assetIdForPath('directive_aliases_files/hello.dart');
-      var reader = new TestAssetReader();
+  describe('NgMeta', () {
+    var fakeReader;
+    beforeEach(() {
+      fakeReader = new TestAssetReader();
+    });
 
+    it('should find direcive aliases patterns.', () async {
       var ngMeta = new NgMeta.empty();
-      await createNgDeps(reader, inputId, new AnnotationMatcher(), ngMeta,
-          inlineViews: true);
+      await _testCreateModel('directive_aliases_files/hello.dart',
+          ngMeta: ngMeta);
 
       expect(ngMeta.aliases).toContain('alias1');
       expect(ngMeta.aliases['alias1']).toContain('HelloCmp');
 
       expect(ngMeta.aliases).toContain('alias2');
       expect(ngMeta.aliases['alias2'])..toContain('HelloCmp')..toContain('Foo');
+    });
+
+    it('should include hooks for implemented types (single)', () async {
+      var ngMeta = new NgMeta.empty();
+      await _testCreateModel('interfaces_files/soup.dart', ngMeta: ngMeta);
+
+      expect(ngMeta.types.isNotEmpty).toBeTrue();
+      expect(ngMeta.types['ChangingSoupComponent']).toBeNotNull();
+      expect(ngMeta.types['ChangingSoupComponent'].selector).toEqual('[soup]');
+      expect(ngMeta.types['ChangingSoupComponent'].lifecycleHooks)
+          .toContain(LifecycleHooks.OnChanges);
+    });
+
+    it('should include hooks for implemented types (many)', () async {
+      var ngMeta = new NgMeta.empty();
+      await _testCreateModel('multiple_interface_lifecycle_files/soup.dart',
+          ngMeta: ngMeta);
+
+      expect(ngMeta.types.isNotEmpty).toBeTrue();
+      expect(ngMeta.types['MultiSoupComponent']).toBeNotNull();
+      expect(ngMeta.types['MultiSoupComponent'].selector).toEqual('[soup]');
+      expect(ngMeta.types['MultiSoupComponent'].lifecycleHooks)
+        ..toContain(LifecycleHooks.OnChanges)
+        ..toContain(LifecycleHooks.OnDestroy)
+        ..toContain(LifecycleHooks.OnInit);
+    });
+
+    it('should create type entries for Directives', () async {
+      fakeReader
+        ..addAsset(new AssetId('other_package', 'lib/template.html'), '')
+        ..addAsset(new AssetId('other_package', 'lib/template.css'), '');
+      var ngMeta = new NgMeta.empty();
+      await _testCreateModel('absolute_url_expression_files/hello.dart',
+          ngMeta: ngMeta, reader: fakeReader);
+
+      expect(ngMeta.types.isNotEmpty).toBeTrue();
+      expect(ngMeta.types['HelloCmp']).toBeNotNull();
+      expect(ngMeta.types['HelloCmp'].selector).toEqual('hello-app');
+    });
+
+    it('should populate all provided values for Components & Directives',
+        () async {
+      var ngMeta = new NgMeta.empty();
+      await _testCreateModel('unusual_component_files/hello.dart',
+          ngMeta: ngMeta);
+
+      expect(ngMeta.types.isNotEmpty).toBeTrue();
+
+      var component = ngMeta.types['UnusualComp'];
+      expect(component).toBeNotNull();
+      expect(component.selector).toEqual('unusual-comp');
+      expect(component.isComponent).toBeTrue();
+      expect(component.exportAs).toEqual('ComponentExportAsValue');
+      expect(component.changeDetection)
+          .toEqual(ChangeDetectionStrategy.CheckAlways);
+      expect(component.properties).toContain('aProperty');
+      expect(component.properties['aProperty']).toEqual('aProperty');
+      expect(component.events).toContain('anEvent');
+      expect(component.events['anEvent']).toEqual('anEvent');
+      expect(component.hostAttributes).toContain('hostKey');
+      expect(component.hostAttributes['hostKey']).toEqual('hostValue');
+
+      var directive = ngMeta.types['UnusualDirective'];
+      expect(directive).toBeNotNull();
+      expect(directive.selector).toEqual('unusual-directive');
+      expect(directive.isComponent).toBeFalse();
+      expect(directive.exportAs).toEqual('DirectiveExportAsValue');
+      expect(directive.properties).toContain('aDirectiveProperty');
+      expect(directive.properties['aDirectiveProperty'])
+          .toEqual('aDirectiveProperty');
+      expect(directive.events).toContain('aDirectiveEvent');
+      expect(directive.events['aDirectiveEvent']).toEqual('aDirectiveEvent');
+      expect(directive.hostAttributes).toContain('directiveHostKey');
+      expect(directive.hostAttributes['directiveHostKey'])
+          .toEqual('directiveHostValue');
+    });
+
+    it('should include hooks for implemented types (single)', () async {
+      var ngMeta = new NgMeta.empty();
+      await _testCreateModel('interfaces_files/soup.dart', ngMeta: ngMeta);
+
+      expect(ngMeta.types.isNotEmpty).toBeTrue();
+      expect(ngMeta.types['ChangingSoupComponent']).toBeNotNull();
+      expect(ngMeta.types['ChangingSoupComponent'].selector).toEqual('[soup]');
+      expect(ngMeta.types['ChangingSoupComponent'].lifecycleHooks)
+          .toContain(LifecycleHooks.OnChanges);
+    });
+
+    it('should include hooks for implemented types (many)', () async {
+      var ngMeta = new NgMeta.empty();
+      await _testCreateModel('multiple_interface_lifecycle_files/soup.dart',
+          ngMeta: ngMeta);
+
+      expect(ngMeta.types.isNotEmpty).toBeTrue();
+      expect(ngMeta.types['MultiSoupComponent']).toBeNotNull();
+      expect(ngMeta.types['MultiSoupComponent'].selector).toEqual('[soup]');
+      expect(ngMeta.types['MultiSoupComponent'].lifecycleHooks)
+        ..toContain(LifecycleHooks.OnChanges)
+        ..toContain(LifecycleHooks.OnDestroy)
+        ..toContain(LifecycleHooks.OnInit);
+    });
+
+    it('should parse templates from View annotations', () async {
+      fakeReader
+        ..addAsset(new AssetId('other_package', 'lib/template.html'), '')
+        ..addAsset(new AssetId('other_package', 'lib/template.css'), '');
+      var ngMeta = new NgMeta.empty();
+      await _testCreateModel('absolute_url_expression_files/hello.dart',
+          ngMeta: ngMeta, reader: fakeReader);
+
+      expect(ngMeta.types.isNotEmpty).toBeTrue();
+      expect(ngMeta.types['HelloCmp']).toBeNotNull();
+      expect(ngMeta.types['HelloCmp'].template).toBeNotNull();
+      expect(ngMeta.types['HelloCmp'].template.templateUrl)
+          .toEqual('asset:other_package/lib/template.html');
     });
   });
 }
@@ -399,7 +404,7 @@ Future<NgDepsModel> _testCreateModel(String inputPath,
     AssetId assetId,
     AssetReader reader,
     BuildLogger logger,
-    bool inlineViews: true}) {
+    NgMeta ngMeta}) {
   if (logger == null) logger = new RecordingLogger();
   return log.setZoned(logger, () async {
     var inputId = _assetIdForPath(inputPath);
@@ -410,11 +415,12 @@ Future<NgDepsModel> _testCreateModel(String inputPath,
       reader.addAsset(assetId, await reader.readAsString(inputId));
       inputId = assetId;
     }
+    if (ngMeta == null) {
+      ngMeta = new NgMeta.empty();
+    }
 
     var annotationMatcher = new AnnotationMatcher()..addAll(customDescriptors);
-    var ngMeta = new NgMeta.empty();
-    return createNgDeps(reader, inputId, annotationMatcher, ngMeta,
-        inlineViews: inlineViews);
+    return createNgDeps(reader, inputId, annotationMatcher, ngMeta);
   });
 }
 

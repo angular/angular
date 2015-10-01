@@ -11,7 +11,8 @@ import 'package:angular2/src/core/change_detection/proto_change_detector.dart';
 import 'package:angular2/src/core/change_detection/proto_record.dart';
 import 'package:angular2/src/core/change_detection/event_binding.dart';
 import 'package:angular2/src/core/change_detection/binding_record.dart';
-import 'package:angular2/src/core/change_detection/codegen_facade.dart' show codify;
+import 'package:angular2/src/core/change_detection/codegen_facade.dart'
+    show codify;
 import 'package:angular2/src/core/facade/exceptions.dart' show BaseException;
 
 /// Responsible for generating change detector classes for Angular 2.
@@ -90,8 +91,9 @@ class _CodegenState {
   final ChangeDetectorGenConfig _genConfig;
   final List<BindingTarget> _propertyBindingTargets;
 
-  String get _changeDetectionStrategyAsCode =>
-    _changeDetectionStrategy == null ? 'null' : '${_genPrefix}${_changeDetectionStrategy}';
+  String get _changeDetectionStrategyAsCode => _changeDetectionStrategy == null
+      ? 'null'
+      : '${_genPrefix}${_changeDetectionStrategy}';
 
   /// The module prefix for pregen_proto_change_detector
   final String _genPrefix;
@@ -110,13 +112,15 @@ class _CodegenState {
       this._names,
       this._genConfig);
 
-  factory _CodegenState(String genPrefix, String typeName, String changeDetectorTypeName,
-      ChangeDetectorDefinition def) {
+  factory _CodegenState(String genPrefix, String typeName,
+      String changeDetectorTypeName, ChangeDetectorDefinition def) {
     var protoRecords = createPropertyRecords(def);
     var eventBindings = createEventRecords(def);
-    var propertyBindingTargets = def.bindingRecords.map((b) => b.target).toList();
+    var propertyBindingTargets =
+        def.bindingRecords.map((b) => b.target).toList();
 
-    var names = new CodegenNameUtil(protoRecords, eventBindings, def.directiveRecords, '$genPrefix$_UTIL');
+    var names = new CodegenNameUtil(
+        protoRecords, eventBindings, def.directiveRecords, '$genPrefix$_UTIL');
     var logic = new CodegenLogicUtil(names, '$genPrefix$_UTIL', def.strategy);
     return new _CodegenState._(
         genPrefix,
@@ -141,8 +145,8 @@ class _CodegenState {
         $_changeDetectorTypeName(dispatcher)
           : super(${codify(_changeDetectorDefId)},
               dispatcher, ${_records.length},
-              ${_changeDetectorTypeName}.gen_propertyBindingTargets,
-              ${_changeDetectorTypeName}.gen_directiveIndices,
+              ${_changeDetectorTypeName}.${_GEN_PROPERTY_BINDING_TARGETS_NAME},
+              ${_changeDetectorTypeName}.${_GEN_DIRECTIVE_INDICES_NAME},
               ${_changeDetectionStrategyAsCode}) {
           dehydrateDirectives(false);
         }
@@ -183,18 +187,20 @@ class _CodegenState {
   }
 
   String _genPropertyBindingTargets() {
-    var targets = _logic.genPropertyBindingTargets(_propertyBindingTargets, this._genConfig.genDebugInfo);
-    return "static var gen_propertyBindingTargets = ${targets}";
+    var targets = _logic.genPropertyBindingTargets(
+        _propertyBindingTargets, this._genConfig.genDebugInfo);
+    return "static final ${_GEN_PROPERTY_BINDING_TARGETS_NAME} = ${targets}";
   }
 
   String _genDirectiveIndices() {
     var indices = _logic.genDirectiveIndices(_directiveRecords);
-    return "static var gen_directiveIndices = ${indices}";
+    return "static final ${_GEN_DIRECTIVE_INDICES_NAME} = ${indices}";
   }
 
   String _maybeGenHandleEventInternal() {
     if (_eventBindings.length > 0) {
-      var handlers = _eventBindings.map((eb) => _genEventBinding(eb)).join("\n");
+      var handlers =
+          _eventBindings.map((eb) => _genEventBinding(eb)).join("\n");
       return '''
         handleEventInternal(eventName, elIndex, locals) {
           var ${this._names.getPreventDefaultAccesor()} = false;
@@ -216,7 +222,7 @@ class _CodegenState {
     }''';
   }
 
-  String _genEventBindingEval(EventBinding eb, ProtoRecord r){
+  String _genEventBindingEval(EventBinding eb, ProtoRecord r) {
     if (r.lastInBinding) {
       var evalRecord = _logic.genEventBindingEvalValue(eb, r);
       var markPath = _genMarkPathToRootAsCheckOnce(r);
@@ -271,7 +277,8 @@ class _CodegenState {
   }
 
   String _maybeGenAfterContentLifecycleCallbacks() {
-    var directiveNotifications = _logic.genContentLifecycleCallbacks(_directiveRecords);
+    var directiveNotifications =
+        _logic.genContentLifecycleCallbacks(_directiveRecords);
     if (directiveNotifications.isNotEmpty) {
       return '''
         void afterContentLifecycleCallbacksInternal() {
@@ -284,7 +291,8 @@ class _CodegenState {
   }
 
   String _maybeGenAfterViewLifecycleCallbacks() {
-    var directiveNotifications = _logic.genViewLifecycleCallbacks(_directiveRecords);
+    var directiveNotifications =
+        _logic.genViewLifecycleCallbacks(_directiveRecords);
     if (directiveNotifications.isNotEmpty) {
       return '''
         void afterViewLifecycleCallbacksInternal() {
@@ -420,7 +428,9 @@ class _CodegenState {
 
     var newValue = _names.getLocalName(r.selfIndex);
     var oldValue = _names.getFieldName(r.selfIndex);
-    var notifyDebug = _genConfig.logBindingUpdate ? "this.logBindingUpdate(${newValue});" : "";
+    var notifyDebug = _genConfig.logBindingUpdate
+        ? "this.logBindingUpdate(${newValue});"
+        : "";
 
     var br = r.bindingRecord;
     if (br.target.isDirective()) {
@@ -527,4 +537,7 @@ const _NOT_IDENTICAL_CHECK_FN = 'looseNotIdentical';
 const _IS_CHANGED_LOCAL = 'isChanged';
 const _PREGEN_PROTO_CHANGE_DETECTOR_IMPORT =
     'package:angular2/src/core/change_detection/pregen_proto_change_detector.dart';
+const _GEN_PROPERTY_BINDING_TARGETS_NAME =
+    '${_GEN_PREFIX}_propertyBindingTargets';
+const _GEN_DIRECTIVE_INDICES_NAME = '${_GEN_PREFIX}_directiveIndices';
 const _UTIL = 'ChangeDetectionUtil';

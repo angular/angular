@@ -38,17 +38,9 @@ class NgDepsVisitor extends RecursiveAstVisitor<Object> {
   }
 
   void _createModel(String libraryUri) {
-    _model = new NgDepsModel()..libraryUri = libraryUri;
-
-    // We need to import & export the original file.
-    var origDartFile = path.basename(processedFile.path);
-    _model.imports.add(new ImportModel()..uri = origDartFile);
-    _model.exports.add(new ExportModel()..uri = origDartFile);
-
-    // Used to register reflective information.
-    _model.imports.add(new ImportModel()
-      ..uri = REFLECTOR_IMPORT
-      ..prefix = REFLECTOR_PREFIX);
+    _model = new NgDepsModel()
+      ..libraryUri = libraryUri
+      ..sourceFile = path.basename(processedFile.path);
   }
 
   @override
@@ -139,6 +131,14 @@ abstract class NgDepsWriterMixin
       buffer.writeln('library ${model.libraryUri}${DEPS_EXTENSION};\n');
     }
 
+    // We need to import & export the source file.
+    writeImportModel(new ImportModel()..uri = model.sourceFile);
+
+    // Used to register reflective information.
+    writeImportModel(new ImportModel()
+      ..uri = REFLECTOR_IMPORT
+      ..prefix = REFLECTOR_PREFIX);
+
     // We do not support `partUris`, so skip outputting them.
     for (var importModel in model.imports) {
       // Ignore deferred imports here so as to not load the deferred libraries
@@ -149,6 +149,7 @@ abstract class NgDepsWriterMixin
 
       writeImportModel(importModel);
     }
+    writeExportModel(new ExportModel()..uri = model.sourceFile);
     model.exports.forEach(writeExportModel);
 
     buffer

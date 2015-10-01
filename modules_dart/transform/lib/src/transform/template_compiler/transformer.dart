@@ -30,6 +30,7 @@ class TemplateCompiler extends Transformer implements DeclaringTransformer {
   declareOutputs(DeclaringTransform transform) {
     transform.consumePrimary();
     transform.declareOutput(transform.primaryId);
+    transform.declareOutput(templatesAssetId(transform.primaryId));
   }
 
   @override
@@ -38,13 +39,22 @@ class TemplateCompiler extends Transformer implements DeclaringTransformer {
       Html5LibDomAdapter.makeCurrent();
       var primaryId = transform.primaryInput.id;
       var reader = new AssetReader.fromTransform(transform);
-      var transformedCode = formatter.format(await processTemplates(
-          reader, primaryId,
-          generateChangeDetectors: options.generateChangeDetectors,
-          reflectPropertiesAsAttributes:
-              options.reflectPropertiesAsAttributes));
+      var outputs = await processTemplates(reader, primaryId,
+          reflectPropertiesAsAttributes: options.reflectPropertiesAsAttributes);
       transform.consumePrimary();
-      transform.addOutput(new Asset.fromString(primaryId, transformedCode));
+      var ngDepsCode = '';
+      var templatesCode = '';
+      if (outputs != null) {
+        if (outputs.ngDepsCode != null) {
+          ngDepsCode = formatter.format(outputs.ngDepsCode);
+        }
+        if (outputs.templatesCode != null) {
+          templatesCode = formatter.format(outputs.templatesCode);
+        }
+      }
+      transform.addOutput(new Asset.fromString(primaryId, ngDepsCode));
+      transform.addOutput(
+          new Asset.fromString(templatesAssetId(primaryId), templatesCode));
     });
   }
 }

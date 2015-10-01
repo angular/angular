@@ -1,7 +1,6 @@
 library angular2.transform.common.ng_meta;
 
-import 'package:angular2/src/core/render/api.dart';
-import 'convert.dart';
+import 'package:angular2/src/compiler/directive_metadata.dart';
 import 'logging.dart';
 
 /// Metadata about directives and directive aliases.
@@ -20,37 +19,47 @@ import 'logging.dart';
 /// easier.
 class NgMeta {
   /// Directive metadata for each type annotated as a directive.
-  final Map<String, RenderDirectiveMetadata> types;
+  final Map<String, CompileDirectiveMetadata> types;
 
   /// List of other types and names associated with a given name.
   final Map<String, List<String>> aliases;
 
-  NgMeta(this.types, this.aliases);
+  /// TODO(kegluneq): Once merged with NgDepsModel, use its exports.
+  final List<String> exports;
 
-  NgMeta.empty() : this({}, {});
+  NgMeta(this.types, this.aliases, this.exports);
 
-  bool get isEmpty => types.isEmpty && aliases.isEmpty;
+  NgMeta.empty() : this({}, {}, []);
+
+  bool get isEmpty => types.isEmpty && aliases.isEmpty && exports.isEmpty;
 
   /// Parse from the serialized form produced by [toJson].
   factory NgMeta.fromJson(Map json) {
+    var exports = <String>[];
     var types = {};
     var aliases = {};
     for (var key in json.keys) {
-      var entry = json[key];
-      if (entry['kind'] == 'type') {
-        types[key] = directiveMetadataFromMap(entry['value']);
-      } else if (entry['kind'] == 'alias') {
-        aliases[key] = entry['value'];
+      if (key == '__exports__') {
+        exports = json[key];
+      } else {
+        var entry = json[key];
+        if (entry['kind'] == 'type') {
+          types[key] = CompileDirectiveMetadata.fromJson(entry['value']);
+        } else if (entry['kind'] == 'alias') {
+          aliases[key] = entry['value'];
+        }
       }
     }
-    return new NgMeta(types, aliases);
+    return new NgMeta(types, aliases, exports);
   }
 
   /// Serialized representation of this instance.
   Map toJson() {
     var result = {};
+    result['__exports__'] = exports;
+
     types.forEach((k, v) {
-      result[k] = {'kind': 'type', 'value': directiveMetadataToMap(v)};
+      result[k] = {'kind': 'type', 'value': v.toJson()};
     });
 
     aliases.forEach((k, v) {
@@ -60,14 +69,15 @@ class NgMeta {
   }
 
   /// Merge into this instance all information from [other].
+  /// This does not include `exports`.
   void addAll(NgMeta other) {
     types.addAll(other.types);
     aliases.addAll(other.aliases);
   }
 
   /// Returns the metadata for every type associated with the given [alias].
-  List<RenderDirectiveMetadata> flatten(String alias) {
-    var result = [];
+  List<CompileDirectiveMetadata> flatten(String alias) {
+    var result = <CompileDirectiveMetadata>[];
     var seen = new Set();
     helper(name) {
       if (!seen.add(name)) {
