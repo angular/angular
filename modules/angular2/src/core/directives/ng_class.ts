@@ -1,13 +1,8 @@
 import {isPresent, isString, StringWrapper, isBlank} from 'angular2/src/core/facade/lang';
 import {DoCheck, OnDestroy} from 'angular2/lifecycle_hooks';
-import {Directive} from 'angular2/src/core/metadata';
+import {Directive, Property} from 'angular2/src/core/metadata';
 import {ElementRef} from 'angular2/src/core/compiler';
-import {
-  IterableDiffer,
-  IterableDiffers,
-  KeyValueDiffer,
-  KeyValueDiffers
-} from 'angular2/src/core/change_detection';
+import {IterableDiffers, KeyValueDiffers} from 'angular2/src/core/change_detection';
 import {Renderer} from 'angular2/src/core/render';
 import {
   ListWrapper,
@@ -35,7 +30,7 @@ import {
  * </div>
  * ```
  */
-@Directive({selector: '[ng-class]', properties: ['rawClass: ng-class', 'initialClasses: class']})
+@Directive({selector: '[ng-class]'})
 export class NgClass implements DoCheck, OnDestroy {
   private _differ: any;
   private _mode: string;
@@ -45,6 +40,7 @@ export class NgClass implements DoCheck, OnDestroy {
   constructor(private _iterableDiffers: IterableDiffers, private _keyValueDiffers: KeyValueDiffers,
               private _ngEl: ElementRef, private _renderer: Renderer) {}
 
+  @Property('class')
   set initialClasses(v) {
     this._applyInitialClasses(true);
     this._initialClasses = isPresent(v) && isString(v) ? v.split(' ') : [];
@@ -52,6 +48,7 @@ export class NgClass implements DoCheck, OnDestroy {
     this._applyClasses(this._rawClass, false);
   }
 
+  @Property('ng-class')
   set rawClass(v) {
     this._cleanupClasses(this._rawClass);
 

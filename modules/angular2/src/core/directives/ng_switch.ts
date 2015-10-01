@@ -1,4 +1,4 @@
-import {Directive} from 'angular2/src/core/metadata';
+import {Directive, Property} from 'angular2/src/core/metadata';
 import {Host} from 'angular2/src/core/di';
 import {ViewContainerRef, TemplateRef} from 'angular2/src/core/compiler';
 import {isPresent, isBlank, normalizeBlank, CONST_EXPR} from 'angular2/src/core/facade/lang';
@@ -39,13 +39,14 @@ export class SwitchView {
  * </ANY>
  * ```
  */
-@Directive({selector: '[ng-switch]', properties: ['ngSwitch']})
+@Directive({selector: '[ng-switch]'})
 export class NgSwitch {
   private _switchValue: any;
   private _useDefault: boolean = false;
   private _valueViews = new Map<any, SwitchView[]>();
   private _activeViews: SwitchView[] = [];
 
+  @Property('ng-switch')
   set ngSwitch(value) {
     // Empty the currently active ViewContainers
     this._emptyAllActiveViews();
@@ -139,7 +140,7 @@ export class NgSwitch {
  * <template ng-switch-when="stringValue">...</template>
  * ```
  */
-@Directive({selector: '[ng-switch-when]', properties: ['ngSwitchWhen']})
+@Directive({selector: '[ng-switch-when]'})
 export class NgSwitchWhen {
   // `_WHEN_DEFAULT` is used as a marker for a not yet initialized value
   _value: any = _WHEN_DEFAULT;
@@ -150,6 +151,7 @@ export class NgSwitchWhen {
     this._view = new SwitchView(viewContainer, templateRef);
   }
 
+  @Property('ng-switch-when')
   set ngSwitchWhen(value) {
     this._switch._onWhenValueChanged(this._value, value, this._view);
     this._value = value;

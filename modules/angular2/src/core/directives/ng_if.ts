@@ -1,4 +1,4 @@
-import {Directive} from 'angular2/src/core/metadata';
+import {Directive, Property} from 'angular2/src/core/metadata';
 import {ViewContainerRef, TemplateRef} from 'angular2/src/core/compiler';
 import {isBlank} from 'angular2/src/core/facade/lang';
 
@@ -24,12 +24,13 @@ import {isBlank} from 'angular2/src/core/facade/lang';
  * - `<div template="ng-if condition">...</div>`
  * - `<template [ng-if]="condition"><div>...</div></template>`
  */
-@Directive({selector: '[ng-if]', properties: ['ngIf']})
+@Directive({selector: '[ng-if]'})
 export class NgIf {
   private _prevCondition: boolean = null;
 
   constructor(private _viewContainer: ViewContainerRef, private _templateRef: TemplateRef) {}
 
+  @Property('ng-if')
   set ngIf(newCondition /* boolean */) {
     if (newCondition && (isBlank(this._prevCondition) || !this._prevCondition)) {
       this._prevCondition = true;

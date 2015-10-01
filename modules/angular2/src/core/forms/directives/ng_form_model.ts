@@ -3,7 +3,7 @@ import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
 
 import {OnChanges} from 'angular2/lifecycle_hooks';
-import {Directive} from 'angular2/src/core/metadata';
+import {Directive, Property, HostListener, Event} from 'angular2/src/core/metadata';
 import {forwardRef, Binding} from 'angular2/src/core/di';
 import {NgControl} from './ng_control';
 import {NgControlGroup} from './ng_control_group';
@@ -89,19 +89,12 @@ const formDirectiveBinding =
  * }
  *  ```
  */
-@Directive({
-  selector: '[ng-form-model]',
-  bindings: [formDirectiveBinding],
-  properties: ['form: ng-form-model'],
-  host: {'(submit)': 'onSubmit()'},
-  events: ['ngSubmit'],
-  exportAs: 'form'
-})
-export class NgFormModel extends ControlContainer implements Form,
-    OnChanges {
-  form: ControlGroup = null;
+@Directive({selector: '[ng-form-model]', bindings: [formDirectiveBinding], exportAs: 'form'})
+export class NgFormModel extends ControlContainer implements Form, OnChanges {
+  @Property('ng-form-model') form: ControlGroup = null;
+  @Event('ngSubmit') ngSubmit = new EventEmitter();
+
   directives: NgControl[] = [];
-  ngSubmit = new EventEmitter();
 
   onChanges(_): void { this._updateDomValue(); }
 
@@ -135,6 +128,7 @@ export class NgFormModel extends ControlContainer implements Form,
     ctrl.updateValue(value);
   }
 
+  @HostListener('submit')
   onSubmit(): boolean {
     ObservableWrapper.callNext(this.ngSubmit, null);
     return false;
