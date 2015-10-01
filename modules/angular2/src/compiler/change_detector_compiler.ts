@@ -55,24 +55,31 @@ export class ChangeDetectionCompiler {
     var changeDetectorDefinitions =
         createChangeDetectorDefinitions(componentType, strategy, this._genConfig, parsedTemplate);
     var factories = [];
+    var index = 0;
     var sourceParts = changeDetectorDefinitions.map(definition => {
       var codegen: any;
+      var sourcePart;
       // TODO(tbosch): move the 2 code generators to the same place, one with .dart and one with .ts
       // suffix
       // and have the same API for calling them!
       if (IS_DART) {
         codegen = new Codegen(PREGEN_PROTO_CHANGE_DETECTOR_MODULE);
         var className = definition.id;
-        codegen.generate(componentType.name, className, definition);
+        var typeRef = (index === 0 && componentType.isHost) ?
+                          'dynamic' :
+                          `${moduleRef(componentType.moduleUrl)}${componentType.name}`;
+        codegen.generate(typeRef, className, definition);
         factories.push(`(dispatcher) => new ${className}(dispatcher)`);
-        return codegen.toString();
+        sourcePart = codegen.toString();
       } else {
         codegen = new ChangeDetectorJITGenerator(
             definition, `${UTIL_MODULE}${UTIL}`,
             `${ABSTRACT_CHANGE_DETECTOR_MODULE}${ABSTRACT_CHANGE_DETECTOR}`);
         factories.push(`function(dispatcher) { return new ${codegen.typeName}(dispatcher); }`);
-        return codegen.generateSource();
+        sourcePart = codegen.generateSource();
       }
+      index++;
+      return sourcePart;
     });
     return new SourceExpressions(sourceParts, factories);
   }

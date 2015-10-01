@@ -1,4 +1,4 @@
-import {Compiler} from 'angular2/src/core/compiler/compiler';
+import {Compiler, internalCreateProtoView} from 'angular2/src/core/compiler/compiler';
 import {ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
 import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
 import {TemplateCompiler} from './template_compiler';
@@ -16,7 +16,7 @@ export class RuntimeCompiler extends Compiler {
 
   compileInHost(componentType: Type): Promise<ProtoViewRef> {
     return this._templateCompiler.compileHostComponentRuntime(componentType)
-        .then(compiledHostTemplate => this.internalCreateProtoView(compiledHostTemplate));
+        .then(compiledHostTemplate => internalCreateProtoView(this, compiledHostTemplate));
   }
 
   clearCache() {

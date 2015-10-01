@@ -159,7 +159,6 @@ var NG_API = [
   'Compiler',
   'Compiler.compileInHost()',
   'Compiler.clearCache()',
-  'Compiler.internalCreateProtoView()',
   'Component',
   'Component.bindings',
   'Component.changeDetection',

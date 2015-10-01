@@ -14,7 +14,7 @@ import {
 } from 'angular2/test_lib';
 import {bind} from 'angular2/src/core/di';
 
-import {CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {CONST_EXPR, stringify} from 'angular2/src/core/facade/lang';
 import {MapWrapper} from 'angular2/src/core/facade/collection';
 import {Promise} from 'angular2/src/core/facade/async';
 
@@ -46,12 +46,13 @@ import {
 import {evalModule} from './eval_module';
 
 import {TEST_BINDINGS} from './test_bindings';
-import {TestContext, TestDispatcher, TestPipes} from './change_detector_mocks';
+import {TestDispatcher, TestPipes} from './change_detector_mocks';
 import {codeGenValueFn, codeGenExportVariable, MODULE_SUFFIX} from 'angular2/src/compiler/util';
 
 // Attention: These module names have to correspond to real modules!
-const THIS_MODULE_ID = 'angular2/test/compiler/change_detector_compiler_spec';
-var THIS_MODULE_REF = moduleRef(`package:${THIS_MODULE_ID}${MODULE_SUFFIX}`);
+var THIS_MODULE_ID = 'angular2/test/compiler/change_detector_compiler_spec';
+var THIS_MODULE_URL = `package:${THIS_MODULE_ID}${MODULE_SUFFIX}`;
+var THIS_MODULE_REF = moduleRef(THIS_MODULE_URL);
 
 export function main() {
   describe('ChangeDetectorCompiler', () => {
@@ -68,7 +69,8 @@ export function main() {
     describe('compileComponentRuntime', () => {
       function detectChanges(compiler: ChangeDetectionCompiler, template: string,
                              directives: CompileDirectiveMetadata[] = CONST_EXPR([])): string[] {
-        var type = new CompileTypeMetadata({name: 'SomeComp'});
+        var type =
+            new CompileTypeMetadata({name: stringify(SomeComponent), moduleUrl: THIS_MODULE_URL});
         var parsedTemplate = parser.parse(template, directives, 'TestComp');
         var factories =
             compiler.compileComponentRuntime(type, ChangeDetectionStrategy.Default, parsedTemplate);
@@ -105,7 +107,8 @@ export function main() {
       function detectChanges(compiler: ChangeDetectionCompiler, template: string,
                              directives: CompileDirectiveMetadata[] = CONST_EXPR([])):
           Promise<string[]> {
-        var type = new CompileTypeMetadata({name: 'SomeComp'});
+        var type =
+            new CompileTypeMetadata({name: stringify(SomeComponent), moduleUrl: THIS_MODULE_URL});
         var parsedTemplate = parser.parse(template, directives, 'TestComp');
         var sourceExpressions =
             compiler.compileComponentCodeGen(type, ChangeDetectionStrategy.Default, parsedTemplate);
@@ -138,10 +141,14 @@ function createTestableModule(source: SourceExpressions, changeDetectorIndex: nu
 export function testChangeDetector(changeDetectorFactory: Function): string[] {
   var dispatcher = new TestDispatcher([], []);
   var cd = changeDetectorFactory(dispatcher);
-  var ctx = new TestContext();
+  var ctx = new SomeComponent();
   ctx.someProp = 'someValue';
   var locals = new Locals(null, MapWrapper.createFromStringMap({'someVar': null}));
   cd.hydrate(ctx, locals, dispatcher, new TestPipes());
   cd.detectChanges();
   return dispatcher.log;
+}
+
+class SomeComponent {
+  someProp: string;
 }

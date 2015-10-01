@@ -177,21 +177,18 @@ export class TemplateCompiler {
     var declarations = [];
     var templateArguments = [];
     var componentMetas: CompileDirectiveMetadata[] = [];
-    var isHost: boolean[] = [];
     var templateIdVariable = 'templateId';
     var appIdVariable = 'appId';
     components.forEach(componentWithDirs => {
       var compMeta = <CompileDirectiveMetadata>componentWithDirs.component;
       assertComponent(compMeta);
       componentMetas.push(compMeta);
-      isHost.push(false);
       this._processTemplateCodeGen(compMeta, appIdVariable, templateIdVariable,
                                    <CompileDirectiveMetadata[]>componentWithDirs.directives,
                                    declarations, templateArguments);
       if (compMeta.dynamicLoadable) {
         var hostMeta = createHostComponentMeta(compMeta.type, compMeta.selector);
         componentMetas.push(hostMeta);
-        isHost.push(true);
         this._processTemplateCodeGen(hostMeta, appIdVariable, templateIdVariable, [compMeta],
                                      declarations, templateArguments);
       }
@@ -203,7 +200,7 @@ export class TemplateCompiler {
       var compiledTemplateExpr =
           `new ${TEMPLATE_COMMANDS_MODULE_REF}CompiledTemplate(${TEMPLATE_COMMANDS_MODULE_REF}nextTemplateId(),${templateDataFn})`;
       var variableValueExpr;
-      if (isHost[index]) {
+      if (compMeta.type.isHost) {
         var factoryName = `_hostTemplateFactory${index}`;
         declarations.push(`${codeGenValueFn([], compiledTemplateExpr, factoryName)};`);
         var constructionKeyword = IS_DART ? 'const' : 'new';
@@ -213,7 +210,7 @@ export class TemplateCompiler {
         variableValueExpr = compiledTemplateExpr;
       }
       declarations.push(
-          `${codeGenExportVariable(templateVariableName(compMeta.type), isHost[index])}${variableValueExpr};`);
+          `${codeGenExportVariable(templateVariableName(compMeta.type), compMeta.type.isHost)}${variableValueExpr};`);
     });
     var moduleUrl = components[0].component.type.moduleUrl;
     return new SourceModule(`${templateModuleUrl(moduleUrl)}`, declarations.join('\n'));

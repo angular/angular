@@ -25,22 +25,26 @@ export class CompileTypeMetadata {
   runtime: Type;
   name: string;
   moduleUrl: string;
-  constructor({runtime, name, moduleUrl}:
-                  {runtime?: Type, name?: string, moduleUrl?: string} = {}) {
+  isHost: boolean;
+  constructor({runtime, name, moduleUrl, isHost}:
+                  {runtime?: Type, name?: string, moduleUrl?: string, isHost?: boolean} = {}) {
     this.runtime = runtime;
     this.name = name;
     this.moduleUrl = moduleUrl;
+    this.isHost = normalizeBool(isHost);
   }
 
   static fromJson(data: StringMap<string, any>): CompileTypeMetadata {
-    return new CompileTypeMetadata({name: data['name'], moduleUrl: data['moduleUrl']});
+    return new CompileTypeMetadata(
+        {name: data['name'], moduleUrl: data['moduleUrl'], isHost: data['isHost']});
   }
 
   toJson(): StringMap<string, any> {
     return {
       // Note: Runtime type can't be serialized...
       'name': this.name,
-      'moduleUrl': this.moduleUrl
+      'moduleUrl': this.moduleUrl,
+      'isHost': this.isHost
     };
   }
 }
@@ -249,8 +253,12 @@ export function createHostComponentMeta(componentType: CompileTypeMetadata,
                                         componentSelector: string): CompileDirectiveMetadata {
   var template = CssSelector.parse(componentSelector)[0].getMatchingElementTemplate();
   return CompileDirectiveMetadata.create({
-    type: new CompileTypeMetadata(
-        {runtime: Object, name: `Host${componentType.name}`, moduleUrl: componentType.moduleUrl}),
+    type: new CompileTypeMetadata({
+      runtime: Object,
+      name: `Host${componentType.name}`,
+      moduleUrl: componentType.moduleUrl,
+      isHost: true
+    }),
     template: new CompileTemplateMetadata(
         {template: template, templateUrl: '', styles: [], styleUrls: [], ngContentSelectors: []}),
     changeDetection: ChangeDetectionStrategy.Default,

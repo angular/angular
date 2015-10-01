@@ -33,15 +33,17 @@ export class Compiler {
       throw new BaseException(
           `No precompiled template for component ${stringify(componentType)} found`);
     }
-    return PromiseWrapper.resolve(this.internalCreateProtoView(compiledHostTemplate));
+    return PromiseWrapper.resolve(this._createProtoView(compiledHostTemplate));
   }
 
-  /**
-   * @private
-   */
-  internalCreateProtoView(compiledHostTemplate: CompiledHostTemplate): ProtoViewRef {
+  private _createProtoView(compiledHostTemplate: CompiledHostTemplate): ProtoViewRef {
     return this._protoViewFactory.createHost(compiledHostTemplate).ref;
   }
 
   clearCache() { this._protoViewFactory.clearCache(); }
+}
+
+export function internalCreateProtoView(compiler: Compiler,
+                                        compiledHostTemplate: CompiledHostTemplate): ProtoViewRef {
+  return (<any>compiler)._createProtoView(compiledHostTemplate);
 }

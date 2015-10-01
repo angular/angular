@@ -7,14 +7,6 @@ import {
   BindingTarget
 } from 'angular2/src/core/change_detection/change_detection';
 
-export class TestContext {
-  eventLog: string[] = [];
-  someProp: string;
-  someProp2: string;
-
-  onEvent(value: string) { this.eventLog.push(value); }
-}
-
 export class TestDirective {
   eventLog: string[] = [];
   dirProp: string;

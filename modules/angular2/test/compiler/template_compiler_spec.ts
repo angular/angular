@@ -44,7 +44,7 @@ import {
 import {Component, View, Directive, bind} from 'angular2/core';
 
 import {TEST_BINDINGS} from './test_bindings';
-import {TestContext, TestDispatcher, TestPipes} from './change_detector_mocks';
+import {TestDispatcher, TestPipes} from './change_detector_mocks';
 import {codeGenValueFn, codeGenExportVariable, MODULE_SUFFIX} from 'angular2/src/compiler/util';
 import {APP_ID} from 'angular2/src/core/render/dom/dom_tokens';
 
@@ -304,11 +304,6 @@ class CompWithEmbeddedTemplate {
 class NonComponent {
 }
 
-@Component({selector: 'comp', moduleId: THIS_MODULE_ID})
-@View({template: ''})
-class CompWithoutHost {
-}
-
 function testableTemplateModule(sourceModule: SourceModule, normComp: CompileDirectiveMetadata):
     SourceModule {
   var resultExpression =
@@ -345,6 +340,11 @@ export function humanizeTemplate(template: CompiledTemplate,
   humanizedTemplates.set(template.id, result);
   visitAllCommands(new CommandHumanizer(commands, humanizedTemplates), templateData.commands);
   return result;
+}
+
+class TestContext implements CompWithBindingsAndStyles, TreeComp, CompWithTemplateUrl,
+    CompWithEmbeddedTemplate {
+  someProp: string;
 }
 
 

@@ -33,7 +33,7 @@ import {
 } from 'angular2/src/core/change_detection/change_detection';
 import {Pipes} from 'angular2/src/core/change_detection/pipes';
 import {createChangeDetectorDefinitions} from 'angular2/src/compiler/change_definition_factory';
-import {TestContext, TestDirective, TestDispatcher, TestPipes} from './change_detector_mocks';
+import {TestDirective, TestDispatcher, TestPipes} from './change_detector_mocks';
 
 import {TEST_BINDINGS} from './test_bindings';
 
@@ -185,4 +185,12 @@ export function main() {
       expect(dispatcher.log).toEqual(['textNode(null)=someValue']);
     });
   });
+}
+
+class TestContext {
+  eventLog: string[] = [];
+  someProp: string;
+  someProp2: string;
+
+  onEvent(value: string) { this.eventLog.push(value); }
 }
