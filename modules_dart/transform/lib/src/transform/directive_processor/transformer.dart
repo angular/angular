@@ -3,6 +3,7 @@ library angular2.transform.directive_processor.transformer;
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:angular2/src/core/dom/html_adapter.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/common/names.dart';
@@ -23,6 +24,7 @@ import 'rewriter.dart';
 /// be followed by {@link DirectiveLinker}.
 class DirectiveProcessor extends Transformer implements DeclaringTransformer {
   final TransformerOptions options;
+  final _encoder = const JsonEncoder.withIndent('  ');
 
   DirectiveProcessor(this.options);
 
@@ -34,33 +36,40 @@ class DirectiveProcessor extends Transformer implements DeclaringTransformer {
   /// determine that one or the other will not be emitted.
   @override
   declareOutputs(DeclaringTransform transform) {
-    transform.declareOutput(_depsOutputId(transform.primaryId));
-    transform.declareOutput(_metaOutputId(transform.primaryId));
+    transform.declareOutput(_ngMetaAssetId(transform.primaryId));
+    transform.declareOutput(_ngDepsAssetId(transform.primaryId));
   }
 
   @override
   Future apply(Transform transform) async {
+    Html5LibDomAdapter.makeCurrent();
     await log.initZoned(transform, () async {
-      var assetId = transform.primaryInput.id;
+      var primaryId = transform.primaryInput.id;
       var reader = new AssetReader.fromTransform(transform);
       var ngMeta = new NgMeta.empty();
       var ngDepsModel = await createNgDeps(
-          reader, assetId, options.annotationMatcher, ngMeta,
-          inlineViews: options.inlineViews);
+          reader, primaryId, options.annotationMatcher, ngMeta);
+      // TODO(kegluneq): Combine NgDepsModel with NgMeta in a single .json file.
       if (ngDepsModel != null) {
+        var ngDepsAssetId = _ngDepsAssetId(primaryId);
         transform.addOutput(new Asset.fromString(
-            _depsOutputId(assetId), ngDepsModel.writeToJson()));
+            ngDepsAssetId, _encoder.convert(ngDepsModel.writeToJsonMap())));
       }
-      var metaOutputId = _metaOutputId(assetId);
+      var metaOutputId = _ngMetaAssetId(primaryId);
       if (!ngMeta.isEmpty) {
-        transform.addOutput(new Asset.fromString(metaOutputId,
-            new JsonEncoder.withIndent("  ").convert(ngMeta.toJson())));
+        transform.addOutput(new Asset.fromString(
+            metaOutputId, _encoder.convert(ngMeta.toJson())));
       }
     });
   }
 }
 
-AssetId _depsOutputId(AssetId primaryId) =>
-    primaryId.changeExtension(DEPS_JSON_EXTENSION);
-AssetId _metaOutputId(AssetId primaryId) =>
-    primaryId.changeExtension(ALIAS_EXTENSION);
+AssetId _ngMetaAssetId(AssetId primaryInputId) {
+  return new AssetId(
+      primaryInputId.package, toMetaExtension(primaryInputId.path));
+}
+
+AssetId _ngDepsAssetId(AssetId primaryInputId) {
+  return new AssetId(
+      primaryInputId.package, toJsonExtension(primaryInputId.path));
+}

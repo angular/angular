@@ -1,9 +1,0 @@
-{
-  "alias2": {
-    "kind": "alias",
-    "value": [
-      "FooComponent",
-      "alias1"
-    ]
-  }
-}

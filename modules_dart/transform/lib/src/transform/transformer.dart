@@ -1,14 +1,15 @@
-library angular2.transform;
+library angular2.src.transform.transformer;
 
 import 'package:barback/barback.dart';
 import 'package:dart_style/dart_style.dart';
 
 import 'deferred_rewriter/transformer.dart';
 import 'directive_linker/transformer.dart';
-import 'directive_metadata_extractor/transformer.dart';
+import 'directive_metadata_linker/transformer.dart';
 import 'directive_processor/transformer.dart';
 import 'bind_generator/transformer.dart';
 import 'reflection_remover/transformer.dart';
+import 'stylesheet_compiler/transformer.dart';
 import 'template_compiler/transformer.dart';
 import 'common/formatter.dart' as formatter;
 import 'common/options.dart';
@@ -32,10 +33,14 @@ class AngularTransformerGroup extends TransformerGroup {
     phases.addAll(new List.generate(
         options.optimizationPhases, (_) => [new EmptyNgDepsRemover()]));
     phases.addAll([
-      [new DirectiveLinker(), new DeferredRewriter(options)],
-      [new DirectiveMetadataExtractor()],
+      [
+        new DeferredRewriter(options),
+        new DirectiveLinker(),
+        new DirectiveMetadataLinker()
+      ],
       [new BindGenerator(options)],
-      [new TemplateCompiler(options)]
+      [new TemplateCompiler(options)],
+      [new StylesheetCompiler()],
     ]);
     return new AngularTransformerGroup._(phases,
         formatCode: options.formatCode);
