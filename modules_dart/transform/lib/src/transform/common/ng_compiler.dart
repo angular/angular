@@ -1,7 +1,5 @@
 library angular2.transform.template_compiler.xhr_impl;
 
-import 'package:barback/barback.dart' show AssetId;
-
 import 'package:angular2/src/compiler/command_compiler.dart';
 import 'package:angular2/src/compiler/html_parser.dart';
 import 'package:angular2/src/compiler/style_compiler.dart';

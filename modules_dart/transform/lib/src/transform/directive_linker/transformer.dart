@@ -1,7 +1,6 @@
 library angular2.transform.directive_linker.transformer;
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
@@ -16,8 +15,6 @@ import 'linker.dart';
 /// {@link DirectiveProcessor} and ensuring that each imports its dependencies'
 /// .ng_deps.dart files.
 class DirectiveLinker extends Transformer implements DeclaringTransformer {
-  final _encoder = const JsonEncoder.withIndent('  ');
-
   DirectiveLinker();
 
   @override

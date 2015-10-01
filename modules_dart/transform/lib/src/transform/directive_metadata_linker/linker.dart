@@ -3,16 +3,9 @@ library angular2.transform.directive_metadata_linker.linker;
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:analyzer/analyzer.dart';
-import 'package:angular2/src/compiler/directive_metadata.dart';
-import "package:angular2/src/core/change_detection/change_detection.dart"
-    show ChangeDetectionStrategy;
-import "package:angular2/src/core/compiler/interfaces.dart" show LifecycleHooks;
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
-import 'package:angular2/src/transform/common/model/annotation_model.pb.dart';
-import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
 import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:barback/barback.dart';
 import 'package:code_transformers/assets.dart';
@@ -44,7 +37,6 @@ AssetId _fromPackageUri(String packageUri) {
   var pathParts = path.url.split(packageUri);
   return new AssetId(pathParts[0].substring('package:'.length),
       'lib/${pathParts.getRange(1, pathParts.length).join('/')}');
-
 }
 
 Future<NgMeta> _linkDirectiveMetadataRecursive(
@@ -72,8 +64,7 @@ Future<NgMeta> _linkDirectiveMetadataRecursive(
     if (uri.startsWith('package:')) {
       assetId = _fromPackageUri(metaUri);
     } else {
-      assetId = uriToAssetId(
-          entryPoint, metaUri, logger, null /* span */,
+      assetId = uriToAssetId(entryPoint, metaUri, logger, null /* span */,
           errorOnAbsolute: false);
     }
 

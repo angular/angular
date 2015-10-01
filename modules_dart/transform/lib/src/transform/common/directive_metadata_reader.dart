@@ -11,7 +11,6 @@ import 'package:angular2/src/core/render/api.dart' show ViewEncapsulation;
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/interface_matcher.dart';
 import 'package:barback/barback.dart' show AssetId;
-import 'package:path/path.dart' as path;
 
 class DirectiveMetadataReader {
   final _DirectiveMetadataVisitor _visitor;
@@ -21,9 +20,8 @@ class DirectiveMetadataReader {
 
   /// Accepts an [AnnotationMatcher] which tests that an [Annotation]
   /// is a [Directive], [Component], or [View].
-  factory DirectiveMetadataReader(
-      AnnotationMatcher annotationMatcher, InterfaceMatcher interfaceMatcher,
-      TemplateCompiler templateCompiler) {
+  factory DirectiveMetadataReader(AnnotationMatcher annotationMatcher,
+      InterfaceMatcher interfaceMatcher, TemplateCompiler templateCompiler) {
     var lifecycleVisitor = new _LifecycleHookVisitor(interfaceMatcher);
     var visitor =
         new _DirectiveMetadataVisitor(annotationMatcher, lifecycleVisitor);
@@ -210,8 +208,7 @@ class _DirectiveMetadataVisitor extends Object
     node.metadata.accept(this);
     if (this._hasMetadata) {
       _type = new CompileTypeMetadata(
-          moduleUrl:
-            'asset:${_assetId.package}/${_assetId.path}',
+          moduleUrl: 'asset:${_assetId.package}/${_assetId.path}',
           name: node.name.toString(),
           runtime: null // Intentionally `null`, cannot be provided here.
           );

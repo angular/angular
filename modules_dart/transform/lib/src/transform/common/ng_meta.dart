@@ -1,7 +1,5 @@
 library angular2.transform.common.ng_meta;
 
-import 'dart:convert';
-
 import 'package:angular2/src/compiler/directive_metadata.dart';
 import 'logging.dart';
 

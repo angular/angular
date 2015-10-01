@@ -1,4 +1,4 @@
-library angular2.transform.template_compiler.xhr_impl;
+library angular2.transform.template_compiler.url_resolver;
 
 import 'package:angular2/src/core/services/url_resolver.dart';
 

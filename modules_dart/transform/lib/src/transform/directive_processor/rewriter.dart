@@ -3,29 +3,16 @@ library angular2.transform.directive_processor.rewriter;
 import 'dart:async';
 
 import 'package:analyzer/analyzer.dart';
-import 'package:angular2/src/compiler/html_parser.dart';
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
-import 'package:angular2/src/transform/common/async_string_writer.dart';
 import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
 import 'package:angular2/src/transform/common/directive_metadata_reader.dart';
 import 'package:angular2/src/transform/common/interface_matcher.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
 import 'package:angular2/src/transform/common/ng_compiler.dart';
-import 'package:angular2/src/transform/common/xhr_impl.dart';
 import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:barback/barback.dart' show AssetId;
-import 'package:code_transformers/assets.dart';
-import 'package:path/path.dart' as path;
-import 'package:source_span/source_span.dart';
-import 'package:angular2/src/core/change_detection/parser/lexer.dart' as ng;
-import 'package:angular2/src/core/change_detection/parser/parser.dart' as ng;
-import 'package:angular2/src/compiler/template_parser.dart';
-import 'package:angular2/src/core/render/dom/schema/dom_element_schema_registry.dart';
-import 'package:angular2/src/compiler/template_normalizer.dart';
-import 'package:angular2/src/compiler/style_compiler.dart';
-import 'package:angular2/src/compiler/command_compiler.dart';
 import 'package:angular2/src/compiler/template_compiler.dart';
 
 import 'inliner.dart';
@@ -110,6 +97,7 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
   @override
   Object visitExportDirective(ExportDirective node) {
     ngMeta.exports.add(stringLiteralToString(node.uri));
+    return null;
   }
 
   @override
@@ -124,6 +112,7 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
     }).catchError((err) {
       logger.error('ERROR: $err');
     }));
+    return null;
   }
 
   @override

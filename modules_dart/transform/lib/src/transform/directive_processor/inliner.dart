@@ -9,6 +9,8 @@ import 'package:angular2/src/transform/common/logging.dart';
 import 'package:code_transformers/assets.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:barback/barback.dart' show AssetId;
+import 'package:source_span/source_span.dart';
+import 'package:path/path.dart' as path;
 
 /// Reads the code at `assetId`, inlining any `part` directives in that code.
 ///

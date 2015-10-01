@@ -6,7 +6,6 @@
  */
 library angular2.dom.emulated_css;
 
-import 'package:csslib/css.dart' as css;
 import 'package:csslib/parser.dart' as cssp;
 import 'package:csslib/visitor.dart' as cssv;
 
