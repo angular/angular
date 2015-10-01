@@ -1,7 +1,0 @@
-name: angular2_analysis_server
-version: 0.0.0
-description: Dart analyzer server plugin for Angular 2
-environment:
-  sdk: '>=1.9.0-dev.8.0'
-dependencies:
-  analyzer: '^0.24.4'
