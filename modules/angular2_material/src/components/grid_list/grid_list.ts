@@ -27,7 +27,7 @@ class RowHeightMode {
 }
 
 
-@Component({selector: 'md-grid-list', properties: ['cols', 'rowHeight', 'gutterSize']})
+@Component({selector: 'md-grid-list', inputs: ['cols', 'rowHeight', 'gutterSize']})
 @View({
   templateUrl: 'package:angular2_material/src/components/grid_list/grid_list.html',
   encapsulation: ViewEncapsulation.None
@@ -214,7 +214,7 @@ export class MdGridList implements AfterContentChecked {
 
 @Component({
   selector: 'md-grid-tile',
-  properties: ['rowspan', 'colspan'],
+  inputs: ['rowspan', 'colspan'],
   host: {
     'role': 'listitem',
     '[style.height]': 'style.height',

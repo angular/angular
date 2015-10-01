@@ -21,7 +21,7 @@ import {BaseException, WrappedException} from "angular2/src/core/facade/exceptio
  *   parentProp = "init";
  * }
  *
- * @Directive({selector: 'child', properties: ['prop']})
+ * @Directive({selector: 'child', inputs: ['prop']})
  * class Child {
  *   constructor(public parent: Parent) {}
  *
@@ -49,7 +49,7 @@ export class ExpressionChangedAfterItHasBeenCheckedException extends BaseExcepti
  * ### Example ([live demo](http://plnkr.co/edit/2Kywoz?p=preview))
  *
  * ```typescript
- * @Directive({selector: 'child', properties: ['prop']})
+ * @Directive({selector: 'child', inputs: ['prop']})
  * class Child {
  *   prop;
  * }

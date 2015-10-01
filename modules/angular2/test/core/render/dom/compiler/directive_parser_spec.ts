@@ -216,11 +216,8 @@ var decoratorWithMultipleAttrs = RenderDirectiveMetadata.create({
   type: RenderDirectiveMetadata.DIRECTIVE_TYPE
 });
 
-var someDirectiveWithProps = RenderDirectiveMetadata.create({
-  selector: '[some-decor-props]',
-  properties: ['dirProp: elProp'],
-  readAttributes: ['some-attr']
-});
+var someDirectiveWithProps = RenderDirectiveMetadata.create(
+    {selector: '[some-decor-props]', inputs: ['dirProp: elProp'], readAttributes: ['some-attr']});
 
 var someDirectiveWithHostProperties = RenderDirectiveMetadata.create({
   selector: '[some-decor-with-host-props]',

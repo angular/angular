@@ -75,8 +75,8 @@ const controlNameBinding =
 @Directive({
   selector: '[ng-control]',
   bindings: [controlNameBinding],
-  properties: ['name: ngControl', 'model: ngModel'],
-  events: ['update: ngModel'],
+  inputs: ['name: ngControl', 'model: ngModel'],
+  outputs: ['update: ngModel'],
   exportAs: 'form'
 })
 export class NgControlName extends NgControl implements OnChanges,

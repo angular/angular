@@ -39,7 +39,7 @@ export class SwitchView {
  * </ANY>
  * ```
  */
-@Directive({selector: '[ng-switch]', properties: ['ngSwitch']})
+@Directive({selector: '[ng-switch]', inputs: ['ngSwitch']})
 export class NgSwitch {
   private _switchValue: any;
   private _useDefault: boolean = false;
@@ -139,7 +139,7 @@ export class NgSwitch {
  * <template ng-switch-when="stringValue">...</template>
  * ```
  */
-@Directive({selector: '[ng-switch-when]', properties: ['ngSwitchWhen']})
+@Directive({selector: '[ng-switch-when]', inputs: ['ngSwitchWhen']})
 export class NgSwitchWhen {
   // `_WHEN_DEFAULT` is used as a marker for a not yet initialized value
   _value: any = _WHEN_DEFAULT;

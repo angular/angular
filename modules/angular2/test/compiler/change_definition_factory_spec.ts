@@ -116,7 +116,7 @@ export function main() {
       var dirMeta = CompileDirectiveMetadata.create({
         type: new CompileTypeMetadata({name: 'SomeDir'}),
         selector: '[dir-prop]',
-        properties: ['dirProp']
+        inputs: ['dirProp']
       });
 
       var changeDetector = createChangeDetector('<div [dir-prop]="someProp">', [dirMeta], 0);
@@ -130,7 +130,7 @@ export function main() {
       var dirMeta = CompileDirectiveMetadata.create({
         type: new CompileTypeMetadata({name: 'SomeDir'}),
         selector: '[dir-prop]',
-        properties: ['dirProp']
+        inputs: ['dirProp']
       });
 
       var changeDetector = createChangeDetector('<template [dir-prop]="someProp">', [dirMeta], 0);

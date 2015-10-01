@@ -5,8 +5,8 @@ import {ListWrapper, StringMap, StringMapWrapper} from 'angular2/src/core/facade
 import {
   DirectiveMetadata,
   ComponentMetadata,
-  PropertyMetadata,
-  EventMetadata,
+  InputMetadata,
+  OutputMetadata,
   HostBindingMetadata,
   HostListenerMetadata,
   ContentChildrenMetadata,
@@ -45,26 +45,26 @@ export class DirectiveResolver {
   private _mergeWithPropertyMetadata(dm: DirectiveMetadata,
                                      propertyMetadata:
                                          StringMap<string, any[]>): DirectiveMetadata {
-    var properties = [];
-    var events = [];
+    var inputs = [];
+    var outputs = [];
     var host = {};
     var queries = {};
 
     StringMapWrapper.forEach(propertyMetadata, (metadata: any[], propName: string) => {
       metadata.forEach(a => {
-        if (a instanceof PropertyMetadata) {
+        if (a instanceof InputMetadata) {
           if (isPresent(a.bindingPropertyName)) {
-            properties.push(`${propName}: ${a.bindingPropertyName}`);
+            inputs.push(`${propName}: ${a.bindingPropertyName}`);
           } else {
-            properties.push(propName);
+            inputs.push(propName);
           }
         }
 
-        if (a instanceof EventMetadata) {
+        if (a instanceof OutputMetadata) {
           if (isPresent(a.bindingPropertyName)) {
-            events.push(`${propName}: ${a.bindingPropertyName}`);
+            outputs.push(`${propName}: ${a.bindingPropertyName}`);
           } else {
-            events.push(propName);
+            outputs.push(propName);
           }
         }
 
@@ -98,15 +98,14 @@ export class DirectiveResolver {
         }
       });
     });
-    return this._merge(dm, properties, events, host, queries);
+    return this._merge(dm, inputs, outputs, host, queries);
   }
 
-  private _merge(dm: DirectiveMetadata, properties: string[], events: string[],
+  private _merge(dm: DirectiveMetadata, inputs: string[], outputs: string[],
                  host: StringMap<string, string>,
                  queries: StringMap<string, any>): DirectiveMetadata {
-    var mergedProperties =
-        isPresent(dm.properties) ? ListWrapper.concat(dm.properties, properties) : properties;
-    var mergedEvents = isPresent(dm.events) ? ListWrapper.concat(dm.events, events) : events;
+    var mergedInputs = isPresent(dm.inputs) ? ListWrapper.concat(dm.inputs, inputs) : inputs;
+    var mergedOutputs = isPresent(dm.outputs) ? ListWrapper.concat(dm.outputs, outputs) : outputs;
     var mergedHost = isPresent(dm.host) ? StringMapWrapper.merge(dm.host, host) : host;
     var mergedQueries =
         isPresent(dm.queries) ? StringMapWrapper.merge(dm.queries, queries) : queries;
@@ -114,8 +113,8 @@ export class DirectiveResolver {
     if (dm instanceof ComponentMetadata) {
       return new ComponentMetadata({
         selector: dm.selector,
-        properties: mergedProperties,
-        events: mergedEvents,
+        inputs: mergedInputs,
+        outputs: mergedOutputs,
         host: mergedHost,
         bindings: dm.bindings,
         exportAs: dm.exportAs,
@@ -129,8 +128,8 @@ export class DirectiveResolver {
     } else {
       return new DirectiveMetadata({
         selector: dm.selector,
-        properties: mergedProperties,
-        events: mergedEvents,
+        inputs: mergedInputs,
+        outputs: mergedOutputs,
         host: mergedHost,
         bindings: dm.bindings,
         exportAs: dm.exportAs,

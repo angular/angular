@@ -151,7 +151,8 @@ export class DirectiveBinding extends ResolvedBinding {
   }
 
   get eventEmitters(): string[] {
-    return isPresent(this.metadata) && isPresent(this.metadata.events) ? this.metadata.events : [];
+    return isPresent(this.metadata) && isPresent(this.metadata.outputs) ? this.metadata.outputs :
+                                                                          [];
   }
 
   static createFromBinding(binding: Binding, meta: DirectiveMetadata): DirectiveBinding {
@@ -170,9 +171,9 @@ export class DirectiveBinding extends ResolvedBinding {
                                                 RenderDirectiveMetadata.DIRECTIVE_TYPE,
       selector: meta.selector,
       compileChildren: meta.compileChildren,
-      events: meta.events,
+      outputs: meta.outputs,
       host: isPresent(meta.host) ? MapWrapper.createFromStringMap(meta.host) : null,
-      properties: meta.properties,
+      inputs: meta.inputs,
       readAttributes: DirectiveBinding._readAttributes(<any>deps),
       queries: meta.queries,
 

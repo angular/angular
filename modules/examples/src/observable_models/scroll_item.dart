@@ -25,7 +25,7 @@ import "common.dart"
         END_DATE_WIDTH,
         AAT_STATUS_WIDTH;
 
-@Component(selector: "scroll-item", properties: const ["offering"],
+@Component(selector: "scroll-item", inputs: const ["offering"],
   changeDetection: ChangeDetectionStrategy.OnPushObserve)
 @View(
     directives: const [

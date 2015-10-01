@@ -109,26 +109,26 @@ class CompilerAppComponent {
   }
 }
 
-@Directive({selector: '[dir0]', properties: ['prop: attr0']})
+@Directive({selector: '[dir0]', inputs: ['prop: attr0']})
 class Dir0 {
 }
 
-@Directive({selector: '[dir1]', properties: ['prop: attr1']})
+@Directive({selector: '[dir1]', inputs: ['prop: attr1']})
 class Dir1 {
   constructor(dir0: Dir0) {}
 }
 
-@Directive({selector: '[dir2]', properties: ['prop: attr2']})
+@Directive({selector: '[dir2]', inputs: ['prop: attr2']})
 class Dir2 {
   constructor(dir1: Dir1) {}
 }
 
-@Directive({selector: '[dir3]', properties: ['prop: attr3']})
+@Directive({selector: '[dir3]', inputs: ['prop: attr3']})
 class Dir3 {
   constructor(dir2: Dir2) {}
 }
 
-@Directive({selector: '[dir4]', properties: ['prop: attr4']})
+@Directive({selector: '[dir4]', inputs: ['prop: attr4']})
 class Dir4 {
   constructor(dir3: Dir3) {}
 }

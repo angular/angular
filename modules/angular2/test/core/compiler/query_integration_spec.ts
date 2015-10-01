@@ -672,7 +672,7 @@ export function main() {
   });
 }
 
-@Directive({selector: '[text]', properties: ['text'], exportAs: 'textDir'})
+@Directive({selector: '[text]', inputs: ['text'], exportAs: 'textDir'})
 @Injectable()
 class TextDirective {
   text: string;

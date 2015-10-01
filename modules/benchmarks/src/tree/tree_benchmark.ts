@@ -218,7 +218,7 @@ class BaseLineIf {
   }
 }
 
-@Component({selector: 'tree', properties: ['data']})
+@Component({selector: 'tree', inputs: ['data']})
 @View({
   directives: [TreeComponent, NgIf],
   template:

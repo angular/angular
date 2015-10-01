@@ -29,7 +29,7 @@ import {isPresent, isBlank, print} from 'angular2/src/core/facade/lang';
  * - `<div [ng-style]="{'text-align': alignExp}"></div>`
  * - `<div [ng-style]="styleExp"></div>`
  */
-@Directive({selector: '[ng-style]', properties: ['rawStyle: ng-style']})
+@Directive({selector: '[ng-style]', inputs: ['rawStyle: ng-style']})
 export class NgStyle implements DoCheck {
   _rawStyle;
   _differ: KeyValueDiffer;

@@ -85,7 +85,7 @@ const formDirectiveBinding =
   host: {
     '(submit)': 'onSubmit()',
   },
-  events: ['ngSubmit'],
+  outputs: ['ngSubmit'],
   exportAs: 'form'
 })
 export class NgForm extends ControlContainer implements Form {

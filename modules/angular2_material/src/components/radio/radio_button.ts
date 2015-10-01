@@ -35,8 +35,8 @@ var _uniqueIdCounter: number = 0;
 
 @Component({
   selector: 'md-radio-group',
-  events: ['change'],
-  properties: ['disabled', 'value'],
+  outputs: ['change'],
+  inputs: ['disabled', 'value'],
   host: {
     'role': 'radiogroup',
     '[attr.aria-disabled]': 'disabled',
@@ -192,7 +192,7 @@ export class MdRadioGroup implements OnChanges {
 
 @Component({
   selector: 'md-radio-button',
-  properties: ['id', 'name', 'value', 'checked', 'disabled'],
+  inputs: ['id', 'name', 'value', 'checked', 'disabled'],
   host: {
     'role': 'radio',
     '[id]': 'id',

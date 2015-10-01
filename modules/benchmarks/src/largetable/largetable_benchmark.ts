@@ -219,7 +219,7 @@ class CellData {
   iFn() { return this.i; }
 }
 
-@Component({selector: 'largetable', properties: ['data', 'benchmarkType']})
+@Component({selector: 'largetable', inputs: ['data', 'benchmarkType']})
 @View({
   directives: [NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault],
   template: `

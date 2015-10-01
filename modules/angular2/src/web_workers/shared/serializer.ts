@@ -367,8 +367,8 @@ export class Serializer {
       'id': meta.id,
       'selector': meta.selector,
       'compileChildren': meta.compileChildren,
-      'events': meta.events,
-      'properties': meta.properties,
+      'events': meta.outputs,
+      'inputs': meta.inputs,
       'readAttributes': meta.readAttributes,
       'type': meta.type,
       'callOnDestroy': meta.callOnDestroy,
@@ -392,7 +392,7 @@ export class Serializer {
       hostProperties: this.objectToMap(obj['hostProperties']),
       hostListeners: this.objectToMap(obj['hostListeners']),
       hostAttributes: this.objectToMap(obj['hostAttributes']),
-      properties: obj['properties'],
+      inputs: obj['inputs'],
       readAttributes: obj['readAttributes'],
       type: obj['type'],
       exportAs: obj['exportAs'],
@@ -402,7 +402,7 @@ export class Serializer {
       callOnInit: obj['callOnInit'],
       callAfterContentChecked: obj['callAfterContentChecked'],
       changeDetection: obj['changeDetection'],
-      events: obj['events']
+      outputs: obj['events']
     });
   }
 }

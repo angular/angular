@@ -123,7 +123,7 @@ List<String> _generateSetters(Map<String, String> bindMap) {
 /// the bind properties and the values are either the one and only type
 /// binding to that property or the empty string.
 Map<String, String> _createPropertiesMap(NgDeps ngDeps) {
-  var visitor = new ExtractNamedExpressionVisitor('properties');
+  var visitor = new ExtractNamedExpressionVisitor('inputs');
   var bindMap = {};
   ngDeps.registeredTypes.forEach((RegisteredType t) {
     visitor.bindConfig.clear();
@@ -167,7 +167,7 @@ List<String> _generateGetters(List<String> eventProperties) {
 /// Collapses all `events` in {@link ngDeps} into a list of corresponding
 /// property names.
 List<String> _createEventPropertiesList(NgDeps ngDeps) {
-  var visitor = new ExtractNamedExpressionVisitor('events');
+  var visitor = new ExtractNamedExpressionVisitor('outputs');
   var propertyNames = [];
   ngDeps.registeredTypes.forEach((RegisteredType t) {
     visitor.bindConfig.clear();

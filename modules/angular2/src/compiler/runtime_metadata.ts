@@ -58,8 +58,8 @@ export class RuntimeMetadataResolver {
             {name: stringify(directiveType), moduleId: moduleId, runtime: directiveType}),
         template: templateMeta,
         changeDetection: changeDetectionStrategy,
-        properties: directiveAnnotation.properties,
-        events: directiveAnnotation.events,
+        inputs: directiveAnnotation.inputs,
+        outputs: directiveAnnotation.outputs,
         host: directiveAnnotation.host,
         lifecycleHooks: ListWrapper.filter(LIFECYCLE_HOOKS_VALUES,
                                            hook => hasLifecycleHook(hook, directiveType))

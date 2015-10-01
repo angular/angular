@@ -8,7 +8,7 @@
       "hostProperties": {},
       "hostListeners": {},
       "hostAttributes": {},
-      "properties": null,
+      "inputs": null,
       "readAttributes": null,
       "type": null,
       "exportAs": null,
@@ -20,7 +20,7 @@
       "callAfterContentChecked": null,
       "callAfterViewInit": null,
       "callAfterViewChecked": null,
-      "events": ["dependencyEventName"],
+      "outputs": ["dependencyEventName"],
       "changeDetection": null,
       "version": 1
     }
@@ -34,7 +34,7 @@
       "hostProperties": {"hprop": "hprop"},
       "hostListeners": {},
       "hostAttributes": {},
-      "properties": ["prop"],
+      "inputs": ["prop"],
       "readAttributes": null,
       "type": null,
       "exportAs": null,
@@ -46,7 +46,7 @@
       "callAfterContentChecked": null,
       "callAfterViewInit": null,
       "callAfterViewChecked": null,
-      "events": null,
+      "outpus": null,
       "changeDetection": null,
       "version": 1
     }
@@ -60,7 +60,7 @@
       "hostProperties": {},
       "hostListeners": {"subevent": "doAThing()"},
       "hostAttributes": {},
-      "properties": [],
+      "inputs": [],
       "readAttributes": null,
       "type": null,
       "exportAs": null,
@@ -72,7 +72,7 @@
       "callAfterContentChecked": null,
       "callAfterViewInit": null,
       "callAfterViewChecked": null,
-      "events": null,
+      "outputs": null,
       "changeDetection": null,
       "version": 1
     }
@@ -86,7 +86,7 @@
       "hostProperties": {},
       "hostListeners": {},
       "hostAttributes": {},
-      "properties": ["ngForOf"],
+      "inputs": ["ngForOf"],
       "readAttributes": null,
       "type": null,
       "exportAs": null,
@@ -98,7 +98,7 @@
       "callAfterContentChecked": null,
       "callAfterViewInit": null,
       "callAfterViewChecked": null,
-      "events": null,
+      "outputs": null,
       "changeDetection": null,
       "version": 1
     }

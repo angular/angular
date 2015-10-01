@@ -65,8 +65,8 @@ const formControlBinding =
 @Directive({
   selector: '[ng-form-control]',
   bindings: [formControlBinding],
-  properties: ['form: ngFormControl', 'model: ngModel'],
-  events: ['update: ngModel'],
+  inputs: ['form: ngFormControl', 'model: ngModel'],
+  outputs: ['update: ngModel'],
   exportAs: 'form'
 })
 export class NgFormControl extends NgControl implements OnChanges {

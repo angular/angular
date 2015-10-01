@@ -415,7 +415,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
       this._createDirectiveHostPropertyAsts(elementName, directive.hostProperties, sourceInfo,
                                             hostProperties);
       this._createDirectiveHostEventAsts(directive.hostListeners, sourceInfo, hostEvents);
-      this._createDirectivePropertyAsts(directive.properties, props, directiveProperties);
+      this._createDirectivePropertyAsts(directive.inputs, props, directiveProperties);
       var exportAsVars = [];
       possibleExportAsVars.forEach((varAst) => {
         if ((varAst.value.length === 0 && directive.isComponent) ||
@@ -489,7 +489,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     var boundElementProps: BoundElementPropertyAst[] = [];
     var boundDirectivePropsIndex = new Map<string, BoundDirectivePropertyAst>();
     directives.forEach((directive: DirectiveAst) => {
-      directive.properties.forEach((prop: BoundDirectivePropertyAst) => {
+      directive.inputs.forEach((prop: BoundDirectivePropertyAst) => {
         boundDirectivePropsIndex.set(prop.templateName, prop);
       });
     });

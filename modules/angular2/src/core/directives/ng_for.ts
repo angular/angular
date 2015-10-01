@@ -39,7 +39,7 @@ import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
  * - `<li template="ng-for #item of items; #i = index">...</li>`
  * - `<template ng-for #item [ng-for-of]="items" #i="index"><li>...</li></template>`
  */
-@Directive({selector: '[ng-for][ng-for-of]', properties: ['ngForOf']})
+@Directive({selector: '[ng-for][ng-for-of]', inputs: ['ngForOf']})
 export class NgFor implements DoCheck {
   _ngForOf: any;
   private _differ: IterableDiffer;

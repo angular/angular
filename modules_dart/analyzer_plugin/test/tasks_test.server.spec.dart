@@ -105,7 +105,7 @@ class Component extends Directive {
         injectables = injectables,
         super(
             selector: selector,
-            properties: properties,
+            inputs: properties,
             events: events,
             hostListeners: hostListeners,
             lifecycle: lifecycle);

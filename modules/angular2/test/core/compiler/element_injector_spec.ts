@@ -345,7 +345,7 @@ export function main() {
     describe('event emitters', () => {
       it('should return a list of event accessors', () => {
         var binding = DirectiveBinding.createFromType(HasEventEmitter,
-                                                      new DirectiveMetadata({events: ['emitter']}));
+                                                      new DirectiveMetadata({outputs: ['emitter']}));
 
         var inj = createPei(null, 0, [binding]);
         expect(inj.eventEmitterAccessors.length).toEqual(1);
@@ -357,7 +357,7 @@ export function main() {
 
       it('should allow a different event vs field name', () => {
         var binding = DirectiveBinding.createFromType(HasEventEmitter,
-            new DirectiveMetadata({events: ['emitter: publicEmitter']}));
+            new DirectiveMetadata({outputs: ['emitter: publicEmitter']}));
 
         var inj = createPei(null, 0, [binding]);
         expect(inj.eventEmitterAccessors.length).toEqual(1);

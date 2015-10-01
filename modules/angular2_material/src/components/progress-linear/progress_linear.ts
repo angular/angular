@@ -21,7 +21,7 @@ class ProgressMode {
 
 @Component({
   selector: 'md-progress-linear',
-  properties: ['value', 'bufferValue'],
+  inputs: ['value', 'bufferValue'],
   host: {
     'role': 'progressbar',
     'aria-valuemin': '0',

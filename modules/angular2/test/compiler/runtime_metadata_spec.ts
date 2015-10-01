@@ -53,8 +53,8 @@ export function main() {
            expect(meta.type.moduleId).toEqual('someModuleId');
            expect(meta.lifecycleHooks).toEqual(LIFECYCLE_HOOKS_VALUES);
            expect(meta.changeDetection).toBe(ChangeDetectionStrategy.CheckAlways);
-           expect(meta.properties).toEqual({'someProp': 'someProp'});
-           expect(meta.events).toEqual({'someEvent': 'someEvent'});
+           expect(meta.inputs).toEqual({'someProp': 'someProp'});
+           expect(meta.outputs).toEqual({'someEvent': 'someEvent'});
            expect(meta.hostListeners).toEqual({'someHostListener': 'someHostListenerExpr'});
            expect(meta.hostProperties).toEqual({'someHostProp': 'someHostPropExpr'});
            expect(meta.hostAttributes).toEqual({'someHostAttr': 'someHostAttrValue'});
@@ -94,8 +94,8 @@ class DirectiveWithoutModuleId {
 
 @Component({
   selector: 'someSelector',
-  properties: ['someProp'],
-  events: ['someEvent'],
+  inputs: ['someProp'],
+  outputs: ['someEvent'],
   host: {
     '[someHostProp]': 'someHostPropExpr',
     '(someHostListener)': 'someHostListenerExpr',

@@ -43,8 +43,8 @@ export function main() {
         dynamicLoadable: true,
         type: fullTypeMeta, template: fullTemplateMeta,
         changeDetection: ChangeDetectionStrategy.Default,
-        properties: ['someProp'],
-        events: ['someEvent'],
+        inputs: ['someProp'],
+        outputs: ['someEvent'],
         host: {'(event1)': 'handler1', '[prop1]': 'expr1', 'attr1': 'attrValue2'},
         lifecycleHooks: [LifecycleHooks.OnChanges]
       });

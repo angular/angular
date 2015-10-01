@@ -30,7 +30,7 @@ void initReflector(reflector) {
     ..registerType(
         EventsCmp,
         new ReflectionInfo(const [
-          const Component(selector: 'events', events: const ['eventName']),
+          const Component(selector: 'events', outputs: const ['eventName']),
           const View(template: 'Hi')
         ], const [
           const []

@@ -36,7 +36,7 @@ class Logger {
   add(thing: string) { this.log.push(thing); }
 }
 
-@Directive({selector: '[message]', properties: ['message']})
+@Directive({selector: '[message]', inputs: ['message']})
 @Injectable()
 class MessageDir {
   logger: Logger;
@@ -76,7 +76,7 @@ class ParentComp {
   constructor() { this.parentBinding = 'OriginalParent'; }
 }
 
-@Directive({selector: 'custom-emitter', events: ['myevent']})
+@Directive({selector: 'custom-emitter', outputs: ['myevent']})
 @Injectable()
 class CustomEmitter {
   myevent: EventEmitter;

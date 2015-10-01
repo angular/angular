@@ -14,15 +14,15 @@ export './metadata/view.dart';
  * See: [DirectiveMetadata] for docs.
  */
 class Directive extends DirectiveMetadata {
-  const Directive({String selector, List<String> properties,
-  List<String> events, Map<String, String> host,
+  const Directive({String selector, List<String> inputs,
+  List<String> outputs, Map<String, String> host,
   List bindings, String exportAs, String moduleId,
   Map<String, dynamic> queries,
   bool compileChildren: true})
     : super(
     selector: selector,
-    properties: properties,
-    events: events,
+    inputs: inputs,
+    outputs: outputs,
     host: host,
     bindings: bindings,
     exportAs: exportAs,
@@ -35,15 +35,15 @@ class Directive extends DirectiveMetadata {
  * See: [ComponentMetadata] for docs.
  */
 class Component extends ComponentMetadata {
-  const Component({String selector, List<String> properties,
-  List<String> events, Map<String, String> host,
+  const Component({String selector, List<String> inputs,
+  List<String> outputs, Map<String, String> host,
   List bindings, String exportAs, String moduleId,
   Map<String, dynamic> queries,
   bool compileChildren, List viewBindings, ChangeDetectionStrategy changeDetection})
     : super(
     selector: selector,
-    properties: properties,
-    events: events,
+    inputs: inputs,
+    outputs: outputs,
     host: host,
     bindings: bindings,
     exportAs: exportAs,
@@ -134,18 +134,18 @@ class ViewChild extends ViewChildMetadata {
 }
 
 /**
- * See: [PropertyMetadata] for docs.
+ * See: [InputMetadata] for docs.
  */
-class Property extends PropertyMetadata {
-  const Property([String bindingPropertyName])
+class Input extends InputMetadata {
+  const Input([String bindingPropertyName])
     : super(bindingPropertyName);
 }
 
 /**
- * See: [EventMetadata] for docs.
+ * See: [OutputMetadata] for docs.
  */
-class Event extends EventMetadata {
-  const Event([String bindingPropertyName])
+class Output extends OutputMetadata {
+  const Output([String bindingPropertyName])
     : super(bindingPropertyName);
 }
 

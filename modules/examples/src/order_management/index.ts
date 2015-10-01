@@ -116,7 +116,7 @@ class OrderListComponent {
 }
 
 
-@Component({selector: 'order-item-cmp', properties: ['item'], events: ['delete']})
+@Component({selector: 'order-item-cmp', inputs: ['item'], outputs: ['delete']})
 @View({
   template: `
     <div>

@@ -26,8 +26,8 @@ export class MockDirectiveResolver extends DirectiveResolver {
 
       return new ComponentMetadata({
         selector: dm.selector,
-        properties: dm.properties,
-        events: dm.events,
+        inputs: dm.inputs,
+        outputs: dm.outputs,
         host: dm.host,
         bindings: bindings,
         exportAs: dm.exportAs,
@@ -41,8 +41,8 @@ export class MockDirectiveResolver extends DirectiveResolver {
 
     return new DirectiveMetadata({
       selector: dm.selector,
-      properties: dm.properties,
-      events: dm.events,
+      inputs: dm.inputs,
+      outputs: dm.outputs,
       host: dm.host,
       bindings: bindings,
       exportAs: dm.exportAs,

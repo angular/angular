@@ -91,7 +91,7 @@ export class Observable {
 }
 
 /**
- * Use by directives and components to emit custom {@link Event}s.
+ * Use by directives and components to emit custom Events.
  *
  * ## Examples
  *
@@ -109,8 +109,8 @@ export class Observable {
  *  </div>`})
  * export class Zippy {
  *   visible: boolean = true;
- *   @Event() open: EventEmitter = new EventEmitter();
- *   @Event() close: EventEmitter = new EventEmitter();
+ *   @Output() open: EventEmitter = new EventEmitter();
+ *   @Output() close: EventEmitter = new EventEmitter();
  *
  *   toggle() {
  *     this.visible = !this.visible;

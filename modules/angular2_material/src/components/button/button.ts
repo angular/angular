@@ -49,7 +49,7 @@ export class MdButton {
 
 @Component({
   selector: 'a[md-button], a[md-raised-button], a[md-fab]',
-  properties: ['disabled'],
+  inputs: ['disabled'],
   host: {
     '(click)': 'onClick($event)',
     '(mousedown)': 'onMousedown()',

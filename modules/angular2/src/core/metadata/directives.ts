@@ -96,7 +96,7 @@ import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection';
  *
  * @Directive({
  *   selector: '[dependency]',
- *   properties: [
+ *   inputs: [
  *     'id: dependency'
  *   ]
  * })
@@ -242,7 +242,7 @@ import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection';
  * ```
  * @Directive({
  *   selector: '[tooltip]',
- *   properties: [
+ *   inputs: [
  *     'text: tooltip'
  *   ],
  *   host: {
@@ -332,7 +332,7 @@ import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection';
  * ```
  * @Directive({
  *   selector: '[unless]',
- *   properties: ['unless']
+ *   inputs: ['unless']
  * })
  * export class Unless {
  *   viewContainer: ViewContainerRef;
@@ -417,11 +417,11 @@ export class DirectiveMetadata extends InjectableMetadata {
   selector: string;
 
   /**
-   * Enumerates the set of data-bound properties for a directive
+   * Enumerates the set of data-bound input properties for a directive
    *
-   * Angular automatically updates data-bound properties during change detection.
+   * Angular automatically updates input properties during change detection.
    *
-   * The `properties` property defines a set of `directiveProperty` to `bindingProperty`
+   * The `inputs` property defines a set of `directiveProperty` to `bindingProperty`
    * configuration:
    *
    * - `directiveProperty` specifies the component property where the value is written.
@@ -436,7 +436,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    * ```typescript
    * @Component({
    *   selector: 'bank-account',
-   *   properties: ['bankName', 'id: account-id']
+   *   inputs: ['bankName', 'id: account-id']
    * })
    * @View({
    *   template: `
@@ -465,15 +465,15 @@ export class DirectiveMetadata extends InjectableMetadata {
    * ```
    *
    */
-  properties: string[];
+  inputs: string[];
 
   /**
-   * Enumerates the set of event-bound properties.
+   * Enumerates the set of event-bound output properties.
    *
-   * When an event-bound property emits an event, an event handler attached to that event
+   * When an output property emits an event, an event handler attached to that event
    * the template is invoked.
    *
-   * The `events` property defines a set of `directiveProperty` to `bindingProperty`
+   * The `outputs` property defines a set of `directiveProperty` to `bindingProperty`
    * configuration:
    *
    * - `directiveProperty` specifies the component property that emits events.
@@ -484,7 +484,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    * ```typescript
    * @Directive({
    *   selector: 'interval-dir',
-   *   events: ['everySecond', 'five5Secs: everyFiveSeconds']
+   *   outputs: ['everySecond', 'five5Secs: everyFiveSeconds']
    * })
    * class IntervalDir {
    *   everySecond = new EventEmitter();
@@ -512,7 +512,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    * ```
    *
    */
-  events: string[];
+  outputs: string[];
 
   /**
    * Specify the events, actions, properties and attributes related to the host element.
@@ -739,12 +739,12 @@ export class DirectiveMetadata extends InjectableMetadata {
   queries: StringMap<string, any>;
 
   constructor({
-                  selector, properties, events, host, bindings, exportAs, moduleId, queries,
+                  selector, inputs, outputs, host, bindings, exportAs, moduleId, queries,
                   compileChildren = true,
               }: {
     selector?: string,
-    properties?: string[],
-    events?: string[],
+    inputs?: string[],
+    outputs?: string[],
     host?: StringMap<string, string>,
     bindings?: any[],
     exportAs?: string,
@@ -754,8 +754,8 @@ export class DirectiveMetadata extends InjectableMetadata {
   } = {}) {
     super();
     this.selector = selector;
-    this.properties = properties;
-    this.events = events;
+    this.inputs = inputs;
+    this.outputs = outputs;
     this.host = host;
     this.exportAs = exportAs;
     this.moduleId = moduleId;
@@ -861,12 +861,12 @@ export class ComponentMetadata extends DirectiveMetadata {
    */
   viewBindings: any[];
 
-  constructor({selector, properties, events, host, exportAs, moduleId, bindings, viewBindings,
+  constructor({selector, inputs, outputs, host, exportAs, moduleId, bindings, viewBindings,
                changeDetection = ChangeDetectionStrategy.Default, queries, compileChildren = true}:
                   {
                     selector?: string,
-                    properties?: string[],
-                    events?: string[],
+                    inputs?: string[],
+                    outputs?: string[],
                     host?: StringMap<string, string>,
                     bindings?: any[],
                     exportAs?: string,
@@ -878,8 +878,8 @@ export class ComponentMetadata extends DirectiveMetadata {
                   } = {}) {
     super({
       selector: selector,
-      properties: properties,
-      events: events,
+      inputs: inputs,
+      outputs: outputs,
       host: host,
       exportAs: exportAs,
       moduleId: moduleId,
@@ -922,17 +922,17 @@ export class PipeMetadata extends InjectableMetadata {
 }
 
 /**
- * Declares a data-bound property.
+ * Declares a data-bound input property.
  *
  * Angular automatically updates data-bound properties during change detection.
  *
- * `PropertyMetadata` takes an optional parameters that specifies that name
+ * `InputMetadata` takes an optional parameters that specifies that name
  * used when instantiating a component in the template. When not provided,
  * the class property name is used.
  *
  * ### Example
  *
- * The following example creates a component with two data-bound properties.
+ * The following example creates a component with two input properties.
  *
  * ```typescript
  * @Component({selector: 'bank-account'})
@@ -943,8 +943,8 @@ export class PipeMetadata extends InjectableMetadata {
  *   `
  * })
  * class BankAccount {
- *   @Property() bankName: string;
- *   @Property('account-id') id: string;
+ *   @Input() bankName: string;
+ *   @Input('account-id') id: string;
  *
  *   // this property is not bound, and won't be automatically updated by Angular
  *   normalizedBankName: string;
@@ -963,7 +963,7 @@ export class PipeMetadata extends InjectableMetadata {
  * ```
  */
 @CONST()
-export class PropertyMetadata {
+export class InputMetadata {
   constructor(
       /**
        * Name used when instantiating a component in the temlate.
@@ -972,12 +972,12 @@ export class PropertyMetadata {
 }
 
 /**
- * Declares an event-bound property.
+ * Declares an event-bound output property.
  *
- * When an event-bound property emits an event, an event handler attached to that event
+ * When an output property emits an event, an event handler attached to that event
  * the template is invoked.
  *
- * `EventMetadata` takes an optional parameters that specifies that name
+ * `OutputMetadata` takes an optional parameters that specifies that name
  * used when instantiating a component in the template. When not provided,
  * the class property name is used.
  *
@@ -988,8 +988,8 @@ export class PropertyMetadata {
  *   selector: 'interval-dir',
  * })
  * class IntervalDir {
- *   @Event() everySecond = new EventEmitter();
- *   @Event('everyFiveSeconds') five5Secs = new EventEmitter();
+ *   @Output() everySecond = new EventEmitter();
+ *   @Output('everyFiveSeconds') five5Secs = new EventEmitter();
  *
  *   constructor() {
  *     setInterval(() => this.everySecond.next("event"), 1000);
@@ -1013,7 +1013,7 @@ export class PropertyMetadata {
  * ```
  */
 @CONST()
-export class EventMetadata {
+export class OutputMetadata {
   constructor(public bindingPropertyName?: string) {}
 }
 

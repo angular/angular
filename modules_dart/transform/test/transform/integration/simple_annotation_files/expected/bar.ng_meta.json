@@ -8,7 +8,7 @@
       "hostProperties": {},
       "hostListeners": {},
       "hostAttributes": {},
-      "properties": [],
+      "inputs": [],
       "readAttributes": [],
       "type": 1,
       "exportAs": null,
@@ -20,7 +20,7 @@
       "callAfterContentChecked": false,
       "callAfterViewInit": false,
       "callAfterViewChecked": false,
-      "events": [],
+      "outputs": [],
       "changeDetection": null,
       "version": 1
     }

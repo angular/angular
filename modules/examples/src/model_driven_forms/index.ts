@@ -41,7 +41,7 @@ function creditCardValidator(c): StringMap<string, boolean> {
  * actual error message.
  * To make it simple, we are using a simple map here.
  */
-@Component({selector: 'show-error', properties: ['controlPath: control', 'errorTypes: errors']})
+@Component({selector: 'show-error', inputs: ['controlPath: control', 'errorTypes: errors']})
 @View({
   template: `
     <span *ng-if="errorMessage !== null">{{errorMessage}}</span>
