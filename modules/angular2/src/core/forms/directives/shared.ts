@@ -1,13 +1,17 @@
 import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {isBlank, looseIdentical} from 'angular2/src/core/facade/lang';
+import {isBlank, isPresent, looseIdentical} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
 import {Control} from '../model';
 import {Validators} from '../validators';
+import {ControlValueAccessor} from './control_value_accessor';
 import {ElementRef, QueryList} from 'angular2/src/core/compiler';
 import {Renderer} from 'angular2/src/core/render';
+import {DefaultValueAccessor} from './default_value_accessor';
+import {CheckboxControlValueAccessor} from './checkbox_value_accessor';
+import {SelectControlValueAccessor} from './select_control_value_accessor';
 
 
 export function controlPath(name: string, parent: ControlContainer): string[] {
@@ -53,4 +57,38 @@ export function isPropertyUpdated(changes: StringMap<string, any>, viewModel: an
 
   if (change.isFirstChange()) return true;
   return !looseIdentical(viewModel, change.currentValue);
+}
+
+// TODO: vsavkin remove it once https://github.com/angular/angular/issues/3011 is implemented
+export function selectValueAccessor(dir: NgControl, valueAccessors: ControlValueAccessor[]):
+    ControlValueAccessor {
+  if (isBlank(valueAccessors)) return null;
+
+  var defaultAccessor;
+  var builtinAccessor;
+  var customAccessor;
+
+  valueAccessors.forEach(v => {
+    if (v instanceof DefaultValueAccessor) {
+      defaultAccessor = v;
+
+    } else if (v instanceof CheckboxControlValueAccessor ||
+               v instanceof SelectControlValueAccessor) {
+      if (isPresent(builtinAccessor))
+        _throwError(dir, "More than one built-in value accessor matches");
+      builtinAccessor = v;
+
+    } else {
+      if (isPresent(customAccessor))
+        _throwError(dir, "More than one custom value accessor matches");
+      customAccessor = v;
+    }
+  });
+
+  if (isPresent(customAccessor)) return customAccessor;
+  if (isPresent(builtinAccessor)) return builtinAccessor;
+  if (isPresent(defaultAccessor)) return defaultAccessor;
+
+  _throwError(dir, "No valid value accessor for");
+  return null;
 }

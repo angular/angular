@@ -4,7 +4,7 @@ import {NgControl} from './ng_control';
 import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
 
 @Directive({
-  selector:'[ng-control],[ng-model],[ng-form-control]',
+  selector: '[ng-control],[ng-model],[ng-form-control]',
   host: {
     '[class.ng-untouched]': 'ngClassUntouched',
     '[class.ng-touched]': 'ngClassTouched',
