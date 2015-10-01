@@ -3,9 +3,12 @@ import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {ReadyStates} from '../enums';
 import {Connection, ConnectionBackend} from '../interfaces';
-import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
 import {isPresent} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+
+var Rx = require('@reactivex/rxjs/dist/cjs/Rx');
+
+let {ReplaySubject, Subject} = Rx;
 
 /**
  *
@@ -30,10 +33,10 @@ export class MockConnection implements Connection {
    * {@link EventEmitter} of {@link Response}. Can be subscribed to in order to be notified when a
    * response is available.
    */
-  response: EventEmitter;
-
+  response: any; //todo: ReplaySubject<Response>
+ 
   constructor(req: Request) {
-    this.response = new EventEmitter();
+    this.response = new Subject().take(1);
     this.readyState = ReadyStates.Open;
     this.request = req;
   }
@@ -66,8 +69,8 @@ export class MockConnection implements Connection {
       throw new BaseException('Connection has already been resolved');
     }
     this.readyState = ReadyStates.Done;
-    ObservableWrapper.callNext(this.response, res);
-    ObservableWrapper.callReturn(this.response);
+    this.response.next(res);
+    this.response.complete();
   }
 
   /**
@@ -92,8 +95,7 @@ export class MockConnection implements Connection {
   mockError(err?: Error) {
     // Matches XHR semantics
     this.readyState = ReadyStates.Done;
-    ObservableWrapper.callThrow(this.response, err);
-    ObservableWrapper.callReturn(this.response);
+    this.response.error(err);
   }
 }
 
@@ -162,7 +164,7 @@ export class MockBackend implements ConnectionBackend {
    *
    * This property only exists in the mock implementation, not in real Backends.
    */
-  connections: EventEmitter;  //<MockConnection>
+  connections: any;  //ReplaySubject<Connection>
 
   /**
    * An array representation of `connections`. This array will be updated with each connection that
@@ -179,13 +181,9 @@ export class MockBackend implements ConnectionBackend {
    *
    * This property only exists in the mock implementation, not in real Backends.
    */
-  pendingConnections: EventEmitter;  //<MockConnection>
+  pendingConnections: any;  //ReplaySubject<Connection>
   constructor() {
-    this.connectionsArray = [];
-    this.connections = new EventEmitter();
-    ObservableWrapper.subscribe<MockConnection>(
-        this.connections, connection => this.connectionsArray.push(connection));
-    this.pendingConnections = new EventEmitter();
+    this.connections = [];
   }
 
   /**
@@ -195,8 +193,12 @@ export class MockBackend implements ConnectionBackend {
    */
   verifyNoPendingRequests() {
     let pending = 0;
-    ObservableWrapper.subscribe(this.pendingConnections, c => pending++);
-    if (pending > 0) throw new BaseException(`${pending} pending connections to be resolved`);
+    this.connections
+      .filter(c => c.readyState !== ReadyStates.Done)
+      .forEach(() => pending++);
+    if(pending){
+      throw new BaseException(`${pending} pending connections to be resolved`);
+    }
   }
 
   /**
@@ -206,7 +208,12 @@ export class MockBackend implements ConnectionBackend {
    * This method only exists in the mock implementation, not in real Backends.
    */
   resolveAllConnections() {
-    ObservableWrapper.subscribe<MockConnection>(this.connections, c => c.readyState = 4);
+    this.connections = this.connections.map(c => {
+      if(c.readyState !== ReadyStates.Done){
+        c.readyState = ReadyStates.Done;
+      }
+      return c;
+    });
   }
 
   /**
@@ -220,7 +227,7 @@ export class MockBackend implements ConnectionBackend {
       throw new BaseException(`createConnection requires an instance of Request, got ${req}`);
     }
     let connection = new MockConnection(req);
-    ObservableWrapper.callNext(this.connections, connection);
+    this.connections.push(connection);
     return connection;
   }
 }
