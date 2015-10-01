@@ -4,13 +4,8 @@ import 'dart:async';
 
 import 'package:angular2/src/core/dom/html_adapter.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
-import 'package:angular2/src/transform/common/code/uri.dart';
-import 'package:angular2/src/transform/common/formatter.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/common/names.dart';
-import 'package:angular2/src/transform/common/ng_compiler.dart';
-import 'package:angular2/src/compiler/template_compiler.dart';
-import 'package:angular2/src/compiler/source_module.dart';
 
 import 'package:barback/barback.dart';
 
