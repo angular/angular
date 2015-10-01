@@ -14,8 +14,8 @@ final ngFor = {
         "moduleUrl": "asset:angular2/lib/src/core/directives/ng_for.dart"
       },
       "changeDetection": null,
-      "properties": {"ngForOf": "ngForOf"},
-      "events": {},
+      "inputs": {"ngForOf": "ngForOf"},
+      "outputs": {},
       "hostListeners": {},
       "hostProperties": {},
       "hostAttributes": {},

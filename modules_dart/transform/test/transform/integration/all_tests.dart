@@ -103,7 +103,7 @@ void allTests() {
           'two_annotations_files/expected/bar.ng_deps.dart'
     }),
     new IntegrationTestConfig(
-        'should generate getters for events defined on a Component.',
+        'should generate getters for output events defined on a Component.',
         inputs: {
       'a|web/index.dart': 'event_getter_files/index.dart',
       'a|web/bar.dart': 'event_getter_files/bar.dart'

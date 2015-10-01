@@ -13,8 +13,8 @@
         "moduleUrl": "asset:angular2/test/transform/template_compiler/event_files/hello.dart"
       },
       "changeDetection": 5,
-      "properties": {},
-      "events": {"eventName": "eventName"},
+      "inputs": {},
+      "outputs": {"eventName": "eventName"},
       "hostListeners": {},
       "hostProperties": {},
       "hostAttributes": {},

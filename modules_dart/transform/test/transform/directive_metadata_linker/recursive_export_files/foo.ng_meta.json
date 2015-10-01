@@ -14,8 +14,8 @@
         "moduleUrl": "asset:angular2/test/transform/directive_metadata_linker/recursive_export_files/foo.dart"
       },
       "changeDetection": 5,
-      "properties": {},
-      "events": {},
+      "inputs": {},
+      "outputs": {},
       "hostListeners": {},
       "hostProperties": {},
       "hostAttributes": {},

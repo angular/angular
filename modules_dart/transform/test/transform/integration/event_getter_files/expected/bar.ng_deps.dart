@@ -16,7 +16,7 @@ void initReflector() {
         MyComponent,
         new _ngRef.ReflectionInfo(const [
           const Component(
-              events: ['eventName1', 'eventName2: propName2'],
+              outputs: ['eventName1', 'eventName2: propName2'],
               selector: '[soup]'),
           const View(template: ''),
           _templates.HostMyComponentTemplate

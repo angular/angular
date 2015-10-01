@@ -15,7 +15,7 @@ class Processor implements CodegenModel {
   final Set<ReflectiveAccessor> methodNames = new Set<ReflectiveAccessor>();
 
   void process(CompileDirectiveMetadata meta) {
-    meta.events.keys.forEach((eventName) {
+    meta.outputs.keys.forEach((eventName) {
       getterNames.add(new ReflectiveAccessor(eventName));
     });
   }

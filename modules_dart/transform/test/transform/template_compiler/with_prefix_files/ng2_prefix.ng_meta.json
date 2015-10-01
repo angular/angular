@@ -12,8 +12,8 @@
         "moduleUrl": "asset:angular2/test/transform/template_compiler/with_prefix_files/ng2_prefix.dart"
       },
       "changeDetection": 5,
-      "properties": {},
-      "events": {},
+      "inputs": {},
+      "outputs": {},
       "hostListeners": {},
       "hostProperties": {},
       "hostAttributes": {},

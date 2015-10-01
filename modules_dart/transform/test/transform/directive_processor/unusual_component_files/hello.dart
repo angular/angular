@@ -7,16 +7,16 @@ import 'package:angular2/angular2.dart'
     selector: 'unusual-comp',
     exportAs: 'ComponentExportAsValue',
     changeDetection: ChangeDetectionStrategy.CheckAlways,
-    properties: const ['aProperty'],
+    inputs: const ['aProperty'],
     host: const {'hostKey': 'hostValue'},
-    events: const ['anEvent'])
+    outputs: const ['anEvent'])
 @View(templateUrl: 'template.html')
 class UnusualComp {}
 
 @Directive(
     selector: 'unusual-directive',
     exportAs: 'DirectiveExportAsValue',
-    properties: const ['aDirectiveProperty'],
+    inputs: const ['aDirectiveProperty'],
     host: const {'directiveHostKey': 'directiveHostValue'},
-    events: const ['aDirectiveEvent'])
+    outputs: const ['aDirectiveEvent'])
 class UnusualDirective {}

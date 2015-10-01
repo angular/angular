@@ -137,8 +137,8 @@ class _DirectiveMetadataVisitor extends Object
   String _selector;
   String _exportAs;
   ChangeDetectionStrategy _changeDetection;
-  List<String> _properties;
-  List<String> _events;
+  List<String> _inputs;
+  List<String> _outputs;
   Map<String, String> _host;
   List<LifecycleHooks> _lifecycleHooks;
   CompileTemplateMetadata _template;
@@ -153,8 +153,8 @@ class _DirectiveMetadataVisitor extends Object
     _selector = '';
     _exportAs = null;
     _changeDetection = ChangeDetectionStrategy.Default;
-    _properties = <String>[];
-    _events = <String>[];
+    _inputs = <String>[];
+    _outputs = <String>[];
     _host = <String, String>{};
     _lifecycleHooks = null;
     _template = null;
@@ -169,8 +169,8 @@ class _DirectiveMetadataVisitor extends Object
       selector: _selector,
       exportAs: _exportAs,
       changeDetection: _changeDetection,
-      properties: _properties,
-      events: _events,
+      inputs: _inputs,
+      outputs: _outputs,
       host: _host,
       lifecycleHooks: _lifecycleHooks,
       template: _template);
@@ -232,7 +232,7 @@ class _DirectiveMetadataVisitor extends Object
       case 'selector':
         _populateSelector(node.expression);
         break;
-      case 'properties':
+      case 'inputs':
         _populateProperties(node.expression);
         break;
       case 'host':
@@ -244,7 +244,7 @@ class _DirectiveMetadataVisitor extends Object
       case 'changeDetection':
         _populateChangeDetection(node.expression);
         break;
-      case 'events':
+      case 'outputs':
         _populateEvents(node.expression);
         break;
     }
@@ -264,9 +264,9 @@ class _DirectiveMetadataVisitor extends Object
     }
   }
 
-  void _populateProperties(Expression propertiesValue) {
+  void _populateProperties(Expression inputsValue) {
     _checkMeta();
-    _populateList(propertiesValue, _properties, 'Directive#properties');
+    _populateList(inputsValue, _inputs, 'Directive#inputs');
   }
 
   void _populateHost(Expression hostValue) {
@@ -279,9 +279,9 @@ class _DirectiveMetadataVisitor extends Object
     _exportAs = _expressionToString(exportAsValue, 'Directive#exportAs');
   }
 
-  void _populateEvents(Expression eventsValue) {
+  void _populateEvents(Expression outputsValue) {
     _checkMeta();
-    _populateList(eventsValue, _events, 'Directive#events');
+    _populateList(outputsValue, _outputs, 'Directive#outputs');
   }
 
   void _populateChangeDetection(Expression value) {
