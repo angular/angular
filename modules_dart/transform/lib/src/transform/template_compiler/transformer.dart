@@ -40,7 +40,6 @@ class TemplateCompiler extends Transformer implements DeclaringTransformer {
       var primaryId = transform.primaryInput.id;
       var reader = new AssetReader.fromTransform(transform);
       var outputs = await processTemplates(reader, primaryId,
-          generateChangeDetectors: options.generateChangeDetectors,
           reflectPropertiesAsAttributes: options.reflectPropertiesAsAttributes);
       transform.consumePrimary();
       var ngDepsCode = '';

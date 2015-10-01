@@ -3,28 +3,16 @@ library angular2.transform.template_compiler.generator;
 import 'dart:async';
 
 import 'package:analyzer/analyzer.dart';
-import 'package:angular2/src/compiler/change_detector_compiler.dart';
-import 'package:angular2/src/compiler/command_compiler.dart';
-import 'package:angular2/src/compiler/html_parser.dart';
 import 'package:angular2/src/compiler/source_module.dart';
-import 'package:angular2/src/compiler/style_compiler.dart';
 import 'package:angular2/src/compiler/template_compiler.dart';
-import 'package:angular2/src/compiler/template_normalizer.dart';
-import 'package:angular2/src/compiler/template_parser.dart';
-import 'package:angular2/src/core/change_detection/parser/lexer.dart' as ng;
-import 'package:angular2/src/core/change_detection/parser/parser.dart' as ng;
 import 'package:angular2/src/core/change_detection/interfaces.dart';
 import 'package:angular2/src/core/facade/lang.dart';
-import 'package:angular2/src/core/render/dom/schema/dom_element_schema_registry.dart';
 import 'package:angular2/src/core/reflection/reflection.dart';
-import 'package:angular2/src/core/services/url_resolver.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
-import 'package:angular2/src/transform/common/code/uri.dart';
+import 'package:angular2/src/transform/common/code/source_module.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/ng_compiler.dart';
 import 'package:angular2/src/transform/common/ng_deps.dart';
-import 'package:angular2/src/transform/common/xhr_impl.dart';
-import 'package:angular2/src/transform/common/url_resolver.dart';
 import 'package:barback/barback.dart';
 import 'package:path/path.dart' as path;
 
@@ -39,10 +27,7 @@ import 'compile_data_creator.dart';
 ///
 /// This method assumes a {@link DomAdapter} has been registered.
 Future<Outputs> processTemplates(AssetReader reader, AssetId entryPoint,
-    // TODO(kegluneq): Remove `generateRegistrations`.
-    {bool generateRegistrations: true,
-    bool generateChangeDetectors: true,
-    bool reflectPropertiesAsAttributes: false}) async {
+    {bool reflectPropertiesAsAttributes: false}) async {
   var viewDefResults = await createCompileData(reader, entryPoint);
 
   var templateCompiler = createTemplateCompiler(reader,
@@ -88,9 +73,11 @@ class Outputs {
       reg.Codegen accessors,
       Map<RegisteredType, NormalizedComponentWithViewDirectives> compileDataMap,
       SourceModule templatesSource) {
+    var libraryName =
+        ngDeps != null && ngDeps.lib != null ? '${ngDeps.lib.name}' : null;
     return new Outputs._(
         _generateNgDepsCode(assetId, ngDeps, accessors, compileDataMap),
-        _generateTemplatesCode(ngDeps, templatesSource));
+        writeSourceModule(templatesSource, libraryName: libraryName));
   }
 
   // Updates the NgDeps code with an additional `CompiledTemplate` annotation
@@ -144,33 +131,6 @@ class Outputs {
 
     // Add everything after the final registration.
     buf.writeln(code.substring(endRegistratationsIdx));
-    return buf.toString();
-  }
-
-  static String _generateTemplatesCode(
-      NgDeps ngDeps, SourceModule templatesSource) {
-    if (ngDeps == null || templatesSource == null) return null;
-    var buf = new StringBuffer();
-
-    var sourceWithImports = templatesSource.getSourceWithImports();
-
-    buf.writeln('library ${ngDeps.lib.name}_template;');
-    buf.writeln();
-    sourceWithImports.imports.forEach((i) {
-      // Format for importLine := [uri, prefix]
-      if (i.length != 2) {
-        throw new FormatException(
-            'Unexpected import format! '
-            'Angular 2 compiler returned imports in an unexpected format.',
-            i.join(', '));
-      }
-      buf.writeln(writeImportUri(i[0],
-          prefix: i[1], fromAbsolute: templatesSource.moduleUrl));
-    });
-    buf.writeln();
-    buf.writeln(sourceWithImports.source);
-
-    // Refer to generated code from .ng_deps.dart file.
     return buf.toString();
   }
 }

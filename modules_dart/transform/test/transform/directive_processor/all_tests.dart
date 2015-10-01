@@ -125,114 +125,6 @@ void allTests() {
     });
   });
 
-  describe('inliner', () {
-    var absoluteReader;
-    beforeEach(() {
-      absoluteReader = new TestAssetReader();
-    });
-
-    it('should inline `templateUrl` values', () async {
-      var model = await _testCreateModel('url_expression_files/hello.dart');
-      expect(model.reflectables.isNotEmpty).toBeTrue();
-      var view =
-          model.reflectables.first.annotations.firstWhere((a) => a.isView);
-      expect(view.namedParameters
-          .firstWhere((p) => p.name == 'templateUrl')
-          .value).toContain('template.html');
-      expect(view.namedParameters.firstWhere((p) => p.name == 'template').value)
-          .toContain('{{greeting}}');
-    });
-
-    it(
-        'should inline `templateUrl` and `styleUrls` values expressed as '
-        'absolute urls.', () async {
-      absoluteReader.addAsset(
-          new AssetId('other_package', 'lib/template.html'),
-          readFile(
-              'directive_processor/absolute_url_expression_files/template.html'));
-      absoluteReader.addAsset(
-          new AssetId('other_package', 'lib/template.css'),
-          readFile(
-              'directive_processor/absolute_url_expression_files/template.css'));
-      var model = await _testCreateModel(
-          'absolute_url_expression_files/hello.dart',
-          reader: absoluteReader);
-
-      expect(model.reflectables.length).toEqual(2);
-      var view =
-          model.reflectables.first.annotations.firstWhere((a) => a.isView);
-      expect(view.namedParameters
-          .firstWhere((p) => p.name == 'templateUrl')
-          .value).toContain('package:other_package/template.html');
-      expect(view.namedParameters.firstWhere((p) => p.name == 'template').value)
-          .toContain('{{greeting}}');
-      expect(view.namedParameters.firstWhere((p) => p.name == 'styles').value)
-          .toContain('.greeting { .color: blue; }');
-
-      // TODO(kegluneq): Split this test out, as it is logically very different.
-      expect(model.reflectables[1].isFunction).toBeTrue();
-      expect(model.reflectables[1].name).toEqual('hello');
-    });
-
-    it('should inline multiple `styleUrls` values expressed as absolute urls.',
-        () async {
-      absoluteReader
-        ..addAsset(new AssetId('other_package', 'lib/template.html'), '')
-        ..addAsset(new AssetId('other_package', 'lib/template.css'), '');
-      var model =
-          await _testCreateModel('multiple_style_urls_files/hello.dart');
-
-      expect(model.reflectables.isNotEmpty).toBeTrue();
-      var view =
-          model.reflectables.first.annotations.firstWhere((a) => a.isView);
-      var expectStyles = expect(
-          view.namedParameters.firstWhere((p) => p.name == 'styles').value);
-      expectStyles
-        ..toContain('.greeting { .color: blue; }')
-        ..toContain('.hello { .color: red; }');
-    });
-
-    it(
-        'should not inline multiple `styleUrls` values expressed as absolute '
-        'urls.', () async {
-      absoluteReader.addAsset(
-          new AssetId('a', 'lib/template.html'),
-          readFile(
-              'directive_processor/multiple_style_urls_files/template.html'));
-      absoluteReader.addAsset(
-          new AssetId('a', 'lib/template.css'),
-          readFile(
-              'directive_processor/multiple_style_urls_files/template.css'));
-      absoluteReader.addAsset(
-          new AssetId('a', 'lib/template_other.css'),
-          readFile(
-              'directive_processor/multiple_style_urls_files/template_other.css'));
-      var model = await _testCreateModel(
-          'multiple_style_urls_not_inlined_files/hello.dart',
-          inlineViews: false,
-          reader: absoluteReader);
-      expect(model.reflectables.isNotEmpty).toBeTrue();
-      var view =
-          model.reflectables.first.annotations.firstWhere((a) => a.isView);
-      expect(view.namedParameters.firstWhere((p) => p.name == 'styles',
-          orElse: () => null)).toBeNull();
-      expect(
-          view.namedParameters.firstWhere((p) => p.name == 'styleUrls').value)
-        ..toContain('package:a/template.css')
-        ..toContain('package:a/template_other.css');
-    });
-
-    it('should inline `templateUrl`s expressed as adjacent strings.', () async {
-      var model =
-          await _testCreateModel('split_url_expression_files/hello.dart');
-      expect(model.reflectables.isNotEmpty).toBeTrue();
-      var view =
-          model.reflectables.first.annotations.firstWhere((a) => a.isView);
-      expect(view.namedParameters.firstWhere((p) => p.name == 'template').value)
-          .toContain('{{greeting}}');
-    });
-  });
-
   describe('interfaces', () {
     it('should include implemented types', () async {
       var model = await _testCreateModel('interfaces_files/soup.dart');
@@ -358,11 +250,9 @@ void allTests() {
     var model =
         await _testCreateModel('invalid_url_files/hello.dart', logger: logger);
     expect(logger.hasErrors).toBeTrue();
-    var prefix = 'ERROR: angular2|test/transform/directive_processor/invalid_url_files/hello.dart:';
     expect(logger.logs)
-      ..toContain('$prefix URI /bad/absolute/url.html not supported')
-      ..toContain('$prefix could not read package:invalid/package.css')
-      ..toContain('$prefix could not read bad_relative_url.css');
+      ..toContain('ERROR: ERROR: Invalid argument (url): '
+          '"Could not read asset at uri asset:/bad/absolute/url.html"');
   });
 
   it('should find and register static functions.', () async {
@@ -375,7 +265,7 @@ void allTests() {
   });
 
   describe('NgMeta', () {
-    var  fakeReader;
+    var fakeReader;
     beforeEach(() {
       fakeReader = new TestAssetReader();
     });
@@ -389,19 +279,18 @@ void allTests() {
       expect(ngMeta.aliases['alias1']).toContain('HelloCmp');
 
       expect(ngMeta.aliases).toContain('alias2');
-      expect(ngMeta.aliases['alias2'])
-        ..toContain('HelloCmp')..toContain('Foo');
+      expect(ngMeta.aliases['alias2'])..toContain('HelloCmp')..toContain('Foo');
     });
 
     it('should include hooks for implemented types (single)', () async {
       var ngMeta = new NgMeta.empty();
-      await _testCreateModel('interfaces_files/soup.dart',
-          ngMeta: ngMeta);
+      await _testCreateModel('interfaces_files/soup.dart', ngMeta: ngMeta);
 
       expect(ngMeta.types.isNotEmpty).toBeTrue();
       expect(ngMeta.types['ChangingSoupComponent']).toBeNotNull();
       expect(ngMeta.types['ChangingSoupComponent'].selector).toEqual('[soup]');
-      expect(ngMeta.types['ChangingSoupComponent'].lifecycleHooks).toContain(LifecycleHooks.OnChanges);
+      expect(ngMeta.types['ChangingSoupComponent'].lifecycleHooks)
+          .toContain(LifecycleHooks.OnChanges);
     });
 
     it('should include hooks for implemented types (many)', () async {
@@ -413,9 +302,9 @@ void allTests() {
       expect(ngMeta.types['MultiSoupComponent']).toBeNotNull();
       expect(ngMeta.types['MultiSoupComponent'].selector).toEqual('[soup]');
       expect(ngMeta.types['MultiSoupComponent'].lifecycleHooks)
-          ..toContain(LifecycleHooks.OnChanges)
-          ..toContain(LifecycleHooks.OnDestroy)
-          ..toContain(LifecycleHooks.OnInit);
+        ..toContain(LifecycleHooks.OnChanges)
+        ..toContain(LifecycleHooks.OnDestroy)
+        ..toContain(LifecycleHooks.OnInit);
     });
 
     it('should create type entries for Directives', () async {
@@ -507,19 +396,6 @@ void allTests() {
       expect(ngMeta.types['HelloCmp'].template.templateUrl)
           .toEqual('asset:other_package/lib/template.html');
     });
-
-    // TODO(kegluneq): Flesh out or remove before committing.
-    describe('templates', () {
-      it('should parse properties from templates', () async {
-        var ngMeta = new NgMeta.empty();
-        await _testCreateModel('template_files/property.dart', ngMeta: ngMeta);
-
-        expect(ngMeta.types.isNotEmpty).toBeTrue();
-        var component = ngMeta.types['PropertyTestComponent'];
-        expect(component).toBeNotNull();
-        expect(component.template).toBeNotNull();
-      });
-    });
   });
 }
 
@@ -528,8 +404,7 @@ Future<NgDepsModel> _testCreateModel(String inputPath,
     AssetId assetId,
     AssetReader reader,
     BuildLogger logger,
-    NgMeta ngMeta,
-    bool inlineViews: true}) {
+    NgMeta ngMeta}) {
   if (logger == null) logger = new RecordingLogger();
   return log.setZoned(logger, () async {
     var inputId = _assetIdForPath(inputPath);
@@ -545,8 +420,7 @@ Future<NgDepsModel> _testCreateModel(String inputPath,
     }
 
     var annotationMatcher = new AnnotationMatcher()..addAll(customDescriptors);
-    return createNgDeps(reader, inputId, annotationMatcher, ngMeta,
-        inlineViews: inlineViews);
+    return createNgDeps(reader, inputId, annotationMatcher, ngMeta);
   });
 }
 

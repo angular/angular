@@ -38,23 +38,10 @@ import 'inliner.dart';
 /// string unless `forceGenerate` is true, in which case an empty ngDeps
 /// file is created.
 Future<NgDepsModel> createNgDeps(AssetReader reader, AssetId assetId,
-    AnnotationMatcher annotationMatcher, NgMeta ngMeta,
-    {bool inlineViews}) async {
+    AnnotationMatcher annotationMatcher, NgMeta ngMeta) async {
   // TODO(kegluneq): Shortcut if we can determine that there are no
   // [Directive]s present, taking into account `export`s.
-  var code = await reader.readAsString(assetId);
-
-  var directivesVisitor = new _NgDepsDirectivesVisitor();
-  parseDirectives(code, name: assetId.path)
-      .directives
-      .accept(directivesVisitor);
-
-  // If this is part of another library, its contents will be processed by its
-  // parent, so it does not need its own `.ng_deps.dart` file.
-  if (directivesVisitor.isPart) return null;
-
-  var codeWithParts =
-      await _getAllDeclarations(reader, assetId, code, directivesVisitor);
+  var codeWithParts = await inlineParts(reader, assetId);
   var parsedCode =
       parseCompilationUnit(codeWithParts, name: '${assetId.path} and parts');
 
@@ -63,116 +50,30 @@ Future<NgDepsModel> createNgDeps(AssetReader reader, AssetId assetId,
   var ngDepsModel = ngDepsVisitor.model;
 
   var templateCompiler = createTemplateCompiler(reader);
-  var ngMetaVisitor = new _NgMetaVisitor(ngMeta, assetId, annotationMatcher,
-      _interfaceMatcher, templateCompiler);
+  var ngMetaVisitor = new _NgMetaVisitor(
+      ngMeta, assetId, annotationMatcher, _interfaceMatcher, templateCompiler);
   parsedCode.accept(ngMetaVisitor);
   await ngMetaVisitor.whenDone();
 
   // If this file imports only dart: libraries and does not define any
   // reflectables of its own, it doesn't need a .ng_deps.dart file.
-  if (!directivesVisitor.usesNonLangLibs &&
-      (ngDepsModel.reflectables == null || ngDepsModel.reflectables.isEmpty)) {
-    return null;
-  }
-
-  if (inlineViews) {
-    await inlineViewProps(reader, assetId, ngDepsModel);
+  if (ngDepsModel.reflectables == null || ngDepsModel.reflectables.isEmpty) {
+    if (ngDepsModel.imports.every(_isDartImport) &&
+        ngDepsModel.exports.every(_isDartImport)) {
+      return null;
+    }
   }
 
   return ngDepsModel;
 }
 
+// `model` can be an [ImportModel] or [ExportModel].
+bool _isDartImport(dynamic model) => model.uri.startsWith('dart:');
+
 // TODO(kegluneq): Allow the caller to provide an InterfaceMatcher.
 final _interfaceMatcher = new InterfaceMatcher();
 
-/// Processes `visitor.parts`, reading and appending their contents to the
-/// original `code`.
-/// Order of `part`s is preserved. That is, if in the main library we have
-/// ```
-/// library main;
-///
-/// part 'lib1.dart'
-/// part 'lib2.dart'
-/// ```
-/// The output will first have the contents of lib1 followed by the contents of
-/// lib2.dart, followed by the original code in the library.
-Future<String> _getAllDeclarations(AssetReader reader, AssetId assetId,
-    String code, _NgDepsDirectivesVisitor visitor) {
-  if (visitor.parts.isEmpty) return new Future<String>.value(code);
-
-  var partsStart = visitor.parts.first.offset,
-      partsEnd = visitor.parts.last.end;
-
-  var asyncWriter = new AsyncStringWriter(code.substring(0, partsStart));
-  visitor.parts.forEach((partDirective) {
-    var uri = stringLiteralToString(partDirective.uri);
-    var partAssetId = uriToAssetId(assetId, uri, logger, null /* span */,
-        errorOnAbsolute: false);
-    asyncWriter.asyncPrint(reader.readAsString(partAssetId).then((partCode) {
-      if (partCode == null || partCode.isEmpty) {
-        logger.warning('Empty part at "${partDirective.uri}. Ignoring.',
-            asset: partAssetId);
-        return '';
-      }
-      // Remove any directives -- we just want declarations.
-      var parsedDirectives = parseDirectives(partCode, name: uri).directives;
-      return partCode.substring(parsedDirectives.last.end);
-    }).catchError((err, stackTrace) {
-      logger.warning(
-          'Failed while reading part at ${partDirective.uri}. Ignoring.\n'
-          'Error: $err\n'
-          'Stack Trace: $stackTrace',
-          asset: partAssetId,
-          span: new SourceFile(code, url: path.basename(assetId.path))
-              .span(partDirective.offset, partDirective.end));
-    }));
-  });
-  asyncWriter.print(code.substring(partsEnd));
-
-  return asyncWriter.asyncToString();
-}
-
-/// Visitor responsible for flattening directives passed to it.
-/// Once this has visited an Ast, use [#writeTo] to write out the directives
-/// for the .ng_deps.dart file. See [#writeTo] for details.
-class _NgDepsDirectivesVisitor extends Object with SimpleAstVisitor<Object> {
-  /// Whether this library `imports` or `exports` any non-'dart:' libraries.
-  bool _usesNonLangLibs = false;
-
-  /// Whether the file we are processing is a part, that is, whether we have
-  /// visited a `part of` directive.
-  bool _isPart = false;
-
-  final List<PartDirective> _parts = <PartDirective>[];
-
-  bool get usesNonLangLibs => _usesNonLangLibs;
-  bool get isPart => _isPart;
-
-  /// In the order encountered in the source.
-  Iterable<PartDirective> get parts => _parts;
-
-  Object _updateUsesNonLangLibs(UriBasedDirective directive) {
-    _usesNonLangLibs = _usesNonLangLibs ||
-        !stringLiteralToString(directive.uri).startsWith('dart:');
-    return null;
-  }
-
-  @override
-  Object visitExportDirective(ExportDirective node) =>
-      _updateUsesNonLangLibs(node);
-
-  @override
-  Object visitImportDirective(ImportDirective node) =>
-      _updateUsesNonLangLibs(node);
-
-  @override
-  Object visitPartDirective(PartDirective node) {
-    _parts.add(node);
-    return null;
-  }
-}
-
-/// Visitor responsible for visiting a file's [Declaration]s and outputting the
+/// Visitor responsible for visiting a file and outputting the
 /// code necessary to register the file with the Angular 2 system.
 class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
   /// Output ngMeta information about aliases.
@@ -198,7 +99,8 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
 
   @override
   Object visitCompilationUnit(CompilationUnit node) {
-    if (node == null || (node.directives == null && node.declarations == null)){
+    if (node == null ||
+        (node.directives == null && node.declarations == null)) {
       return null;
     }
     node.directives.accept(this);

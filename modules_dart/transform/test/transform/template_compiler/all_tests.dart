@@ -69,8 +69,7 @@ void changeDetectorTests() {
 
 void noChangeDetectorTests() {
   Future<String> process(AssetId assetId) =>
-      processTemplates(reader, assetId, generateChangeDetectors: false)
-          .then((outputs) => outputs.ngDepsCode);
+      processTemplates(reader, assetId).then((outputs) => outputs.ngDepsCode);
 
   it('should parse simple expressions in inline templates.', () async {
     var inputPath =
