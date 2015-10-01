@@ -48,18 +48,17 @@ class DirectiveProcessor extends Transformer implements DeclaringTransformer {
       var reader = new AssetReader.fromTransform(transform);
       var ngMeta = new NgMeta.empty();
       var ngDepsModel = await createNgDeps(
-          reader, primaryId, options.annotationMatcher, ngMeta,
-          inlineViews: options.inlineViews);
+          reader, primaryId, options.annotationMatcher, ngMeta);
       // TODO(kegluneq): Combine NgDepsModel with NgMeta in a single .json file.
       if (ngDepsModel != null) {
         var ngDepsAssetId = _ngDepsAssetId(primaryId);
-        transform.addOutput(new Asset.fromString(ngDepsAssetId,
-            _encoder.convert(ngDepsModel.writeToJsonMap())));
+        transform.addOutput(new Asset.fromString(
+            ngDepsAssetId, _encoder.convert(ngDepsModel.writeToJsonMap())));
       }
       var metaOutputId = _ngMetaAssetId(primaryId);
       if (!ngMeta.isEmpty) {
-        transform.addOutput(new Asset.fromString(metaOutputId,
-            _encoder.convert(ngMeta.toJson())));
+        transform.addOutput(new Asset.fromString(
+            metaOutputId, _encoder.convert(ngMeta.toJson())));
       }
     });
   }
