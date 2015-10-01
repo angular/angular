@@ -15,4 +15,6 @@ message NgDepsModel {
   repeated ExportModel exports = 4;
 
   repeated ReflectionInfoModel reflectables = 5;
+
+  optional string source_file = 6;
 }
