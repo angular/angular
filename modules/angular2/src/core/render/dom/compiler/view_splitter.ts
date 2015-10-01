@@ -34,21 +34,22 @@ export class ViewSplitter implements CompileStep {
   processElement(parent: CompileElement, current: CompileElement, control: CompileControl) {
     var attrs = current.attrs();
     var templateBindings = attrs.get('template');
-    var hasTemplateBinding = isPresent(templateBindings);
+    var attrWithTplBinding = isPresent(templateBindings) ? 'template' : null;
 
     // look for template shortcuts such as *ng-if="condition" and treat them as template="if
     // condition"
     MapWrapper.forEach(attrs, (attrValue, attrName) => {
       if (StringWrapper.startsWith(attrName, '*')) {
         var key = StringWrapper.substring(attrName, 1);  // remove the star
-        if (hasTemplateBinding) {
+        if (isPresent(attrWithTplBinding)) {
           // 2nd template binding detected
-          throw new BaseException(`Only one template directive per element is allowed: ` +
-                                  `${templateBindings} and ${key} cannot be used simultaneously ` +
-                                  `in ${current.elementDescription}`);
+          throw new BaseException(
+              `Only one template directive per element is allowed: ` +
+              `${attrWithTplBinding} and ${attrName} cannot be used simultaneously ` +
+              `in ${current.elementDescription}`);
         } else {
           templateBindings = (attrValue.length == 0) ? key : key + ' ' + attrValue;
-          hasTemplateBinding = true;
+          attrWithTplBinding = attrName;
         }
       }
     });
@@ -67,7 +68,7 @@ export class ViewSplitter implements CompileStep {
           control.addChild(viewRoot);
         }
       }
-      if (hasTemplateBinding) {
+      if (isPresent(attrWithTplBinding)) {
         var anchor = new CompileElement(DOM.createTemplate(''));
         anchor.inheritedProtoView = current.inheritedProtoView;
         anchor.inheritedElementBinder = current.inheritedElementBinder;
