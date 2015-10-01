@@ -8,7 +8,7 @@ import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:barback/barback.dart';
 
-import 'linker.dart';
+import 'ng_meta_linker.dart';
 
 /// Transformer responsible for processing .ng_meta.json files created by
 /// {@link DirectiveProcessor} and "linking" them.
@@ -31,6 +31,7 @@ class DirectiveMetadataLinker extends Transformer
     // incorrectly determine what assets are available in this phase.
     // transform.consumePrimary();
     transform.declareOutput(transform.primaryId);
+    transform.declareOutput(_depsAssetId(transform.primaryId));
   }
 
   @override
@@ -46,11 +47,13 @@ class DirectiveMetadataLinker extends Transformer
           transform.addOutput(new Asset.fromString(
               primaryId, _encoder.convert(ngMeta.toJson())));
         } else {
-          // Not outputting an asset could confuse barback, so output an
-          // empty one.
+          // Not outputting an asset could confuse barback.
           transform.addOutput(transform.primaryInput);
         }
       });
     });
   }
 }
+
+AssetId _depsAssetId(AssetId primaryId) =>
+    new AssetId(primaryId.package, toDepsExtension(primaryId.path));

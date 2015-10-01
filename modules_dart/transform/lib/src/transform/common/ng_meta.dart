@@ -78,6 +78,10 @@ class NgMeta {
         ngDeps = new NgDepsModel.fromJson(json[key]);
       } else {
         var entry = json[key];
+        if (entry is! Map) {
+          logger.warning('Unexpected value $entry for key "$key" in NgMeta.');
+          continue;
+        }
         if (entry[_KIND_KEY] == _TYPE_VALUE) {
           types[key] = CompileDirectiveMetadata.fromJson(entry[_VALUE_KEY]);
         } else if (entry[_KIND_KEY] == _ALIAS_VALUE) {
@@ -85,7 +89,7 @@ class NgMeta {
         }
       }
     }
-    return new NgMeta(types, aliases, const [], ngDeps);
+    return new NgMeta(types, aliases, ngDeps);
   }
 
   /// Serialized representation of this instance.
