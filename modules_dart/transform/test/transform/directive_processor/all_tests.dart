@@ -40,7 +40,7 @@ Expect _expectSelector(ReflectionInfoModel model) {
 
 void allTests() {
   it('should preserve parameter annotations.', () async {
-    var model = await _testCreateModel('parameter_metadata/soup.dart');
+    var model = (await _testCreateModel('parameter_metadata/soup.dart')).ngDeps;
     expect(model.reflectables.length).toBe(1);
     var reflectable = model.reflectables.first;
     expect(reflectable.parameters.length).toBe(2);
@@ -58,7 +58,8 @@ void allTests() {
   });
 
   describe('part support', () {
-    var modelFuture = _testCreateModel('part_files/main.dart');
+    var modelFuture = _testCreateModel('part_files/main.dart').
+      then((ngMeta) => ngMeta != null ? ngMeta.ngDeps : null);
 
     it('should include directives from the part.', () async {
       var model = await modelFuture;
@@ -78,7 +79,8 @@ void allTests() {
     });
 
     it('should handle multiple `part` directives.', () async {
-      var model = await _testCreateModel('multiple_part_files/main.dart');
+      var model = (await _testCreateModel('multiple_part_files/main.dart'))
+        .ngDeps;
       expect(model.reflectables.length).toEqual(3);
       _expectSelector(model.reflectables.first).toEqual("'[part1]'");
       _expectSelector(model.reflectables[1]).toEqual("'[part2]'");
@@ -86,42 +88,44 @@ void allTests() {
     });
 
     it('should not generate .ng_deps.dart for `part` files.', () async {
-      var model = await _testCreateModel('part_files/part.dart');
+      var model = (await _testCreateModel('part_files/part.dart')).ngDeps;
       expect(model).toBeNull();
     });
   });
 
   describe('custom annotations', () {
     it('should be recognized from package: imports', () async {
-      var model =
+      var ngMeta =
           await _testCreateModel('custom_metadata/package_soup.dart', customDescriptors:
               [
         const ClassDescriptor('Soup', 'package:soup/soup.dart',
             superClass: 'Component')
       ]);
+      var model = ngMeta.ngDeps;
       expect(model.reflectables.length).toEqual(1);
       expect(model.reflectables.first.name).toEqual('PackageSoup');
     });
 
     it('should be recognized from relative imports', () async {
-      var model = await _testCreateModel('custom_metadata/relative_soup.dart',
+      var ngMeta = await _testCreateModel('custom_metadata/relative_soup.dart',
           assetId: new AssetId('soup', 'lib/relative_soup.dart'),
           customDescriptors: [
             const ClassDescriptor('Soup', 'package:soup/annotations/soup.dart',
                 superClass: 'Component')
           ]);
+      var model = ngMeta.ngDeps;
       expect(model.reflectables.length).toEqual(1);
       expect(model.reflectables.first.name).toEqual('RelativeSoup');
     });
 
     it('should ignore annotations that are not imported', () async {
-      var model =
+      var ngMeta =
           await _testCreateModel('custom_metadata/bad_soup.dart', customDescriptors:
               [
         const ClassDescriptor('Soup', 'package:soup/soup.dart',
             superClass: 'Component')
       ]);
-      expect(model).toBeNull();
+      expect(ngMeta.ngDeps).toBeNull();
     });
   });
 
@@ -271,9 +275,7 @@ void allTests() {
     });
 
     it('should find direcive aliases patterns.', () async {
-      var ngMeta = new NgMeta.empty();
-      await _testCreateModel('directive_aliases_files/hello.dart',
-          ngMeta: ngMeta);
+      var ngMeta = await _testCreateModel('directive_aliases_files/hello.dart');
 
       expect(ngMeta.aliases).toContain('alias1');
       expect(ngMeta.aliases['alias1']).toContain('HelloCmp');
@@ -283,8 +285,7 @@ void allTests() {
     });
 
     it('should include hooks for implemented types (single)', () async {
-      var ngMeta = new NgMeta.empty();
-      await _testCreateModel('interfaces_files/soup.dart', ngMeta: ngMeta);
+      var ngMeta = await _testCreateModel('interfaces_files/soup.dart');
 
       expect(ngMeta.types.isNotEmpty).toBeTrue();
       expect(ngMeta.types['ChangingSoupComponent']).toBeNotNull();
@@ -294,9 +295,7 @@ void allTests() {
     });
 
     it('should include hooks for implemented types (many)', () async {
-      var ngMeta = new NgMeta.empty();
-      await _testCreateModel('multiple_interface_lifecycle_files/soup.dart',
-          ngMeta: ngMeta);
+      var ngMeta = await _testCreateModel('multiple_interface_lifecycle_files/soup.dart');
 
       expect(ngMeta.types.isNotEmpty).toBeTrue();
       expect(ngMeta.types['MultiSoupComponent']).toBeNotNull();
@@ -311,9 +310,8 @@ void allTests() {
       fakeReader
         ..addAsset(new AssetId('other_package', 'lib/template.html'), '')
         ..addAsset(new AssetId('other_package', 'lib/template.css'), '');
-      var ngMeta = new NgMeta.empty();
-      await _testCreateModel('absolute_url_expression_files/hello.dart',
-          ngMeta: ngMeta, reader: fakeReader);
+      var ngMeta = await _testCreateModel('absolute_url_expression_files/hello.dart',
+          reader: fakeReader);
 
       expect(ngMeta.types.isNotEmpty).toBeTrue();
       expect(ngMeta.types['HelloCmp']).toBeNotNull();
@@ -322,9 +320,7 @@ void allTests() {
 
     it('should populate all provided values for Components & Directives',
         () async {
-      var ngMeta = new NgMeta.empty();
-      await _testCreateModel('unusual_component_files/hello.dart',
-          ngMeta: ngMeta);
+      var ngMeta = await _testCreateModel('unusual_component_files/hello.dart');
 
       expect(ngMeta.types.isNotEmpty).toBeTrue();
 
@@ -358,8 +354,7 @@ void allTests() {
     });
 
     it('should include hooks for implemented types (single)', () async {
-      var ngMeta = new NgMeta.empty();
-      await _testCreateModel('interfaces_files/soup.dart', ngMeta: ngMeta);
+      var ngMeta = await _testCreateModel('interfaces_files/soup.dart');
 
       expect(ngMeta.types.isNotEmpty).toBeTrue();
       expect(ngMeta.types['ChangingSoupComponent']).toBeNotNull();
@@ -369,9 +364,7 @@ void allTests() {
     });
 
     it('should include hooks for implemented types (many)', () async {
-      var ngMeta = new NgMeta.empty();
-      await _testCreateModel('multiple_interface_lifecycle_files/soup.dart',
-          ngMeta: ngMeta);
+      var ngMeta = await _testCreateModel('multiple_interface_lifecycle_files/soup.dart');
 
       expect(ngMeta.types.isNotEmpty).toBeTrue();
       expect(ngMeta.types['MultiSoupComponent']).toBeNotNull();
@@ -386,9 +379,8 @@ void allTests() {
       fakeReader
         ..addAsset(new AssetId('other_package', 'lib/template.html'), '')
         ..addAsset(new AssetId('other_package', 'lib/template.css'), '');
-      var ngMeta = new NgMeta.empty();
-      await _testCreateModel('absolute_url_expression_files/hello.dart',
-          ngMeta: ngMeta, reader: fakeReader);
+      var ngMeta = await _testCreateModel('absolute_url_expression_files/hello.dart',
+          reader: fakeReader);
 
       expect(ngMeta.types.isNotEmpty).toBeTrue();
       expect(ngMeta.types['HelloCmp']).toBeNotNull();
@@ -399,12 +391,11 @@ void allTests() {
   });
 }
 
-Future<NgDepsModel> _testCreateModel(String inputPath,
+Future<NgMeta> _testCreateModel(String inputPath,
     {List<AnnotationDescriptor> customDescriptors: const [],
     AssetId assetId,
     AssetReader reader,
-    BuildLogger logger,
-    NgMeta ngMeta}) {
+    BuildLogger logger}) {
   if (logger == null) logger = new RecordingLogger();
   return log.setZoned(logger, () async {
     var inputId = _assetIdForPath(inputPath);
@@ -415,12 +406,9 @@ Future<NgDepsModel> _testCreateModel(String inputPath,
       reader.addAsset(assetId, await reader.readAsString(inputId));
       inputId = assetId;
     }
-    if (ngMeta == null) {
-      ngMeta = new NgMeta.empty();
-    }
 
     var annotationMatcher = new AnnotationMatcher()..addAll(customDescriptors);
-    return createNgDeps(reader, inputId, annotationMatcher, ngMeta);
+    return createNgDeps(reader, inputId, annotationMatcher);
   });
 }
 
