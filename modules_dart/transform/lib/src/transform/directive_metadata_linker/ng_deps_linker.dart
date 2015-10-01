@@ -3,14 +3,12 @@ library angular2.transform.directive_metadata_linker.ng_deps_linker;
 import 'dart:async';
 
 import 'package:angular2/src/core/services/url_resolver.dart';
-import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/model/import_export_model.pb.dart';
 import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
 import 'package:angular2/src/transform/common/url_resolver.dart';
 import 'package:angular2/src/transform/common/xhr_impl.dart';
-import 'package:barback/barback.dart';
 
 /// Modifies the [NgDepsModel] represented by `entryPoint` to import its
 /// dependencies' associated `.ng_deps.dart` files.

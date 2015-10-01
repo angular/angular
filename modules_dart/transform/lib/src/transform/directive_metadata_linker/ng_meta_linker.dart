@@ -10,8 +10,6 @@ import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:angular2/src/transform/common/url_resolver.dart';
 import 'package:angular2/src/transform/common/xhr_impl.dart';
 import 'package:barback/barback.dart';
-import 'package:code_transformers/assets.dart';
-import 'package:path/path.dart' as path;
 
 import 'ng_deps_linker.dart';
 

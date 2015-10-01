@@ -10,7 +10,6 @@ import 'package:path/path.dart' as path;
 String writeImportUri(String importPath, {String prefix, String fromAbsolute}) {
   var codegenImportPath;
 
-  var resolver = const TransformerUrlResolver();
   var importUri = toAssetScheme(Uri.parse(importPath));
   if (_canPackageImport(importUri) ||
       fromAbsolute == null ||

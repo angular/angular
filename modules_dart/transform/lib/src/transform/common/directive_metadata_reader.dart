@@ -10,7 +10,6 @@ import 'package:angular2/src/core/compiler/interfaces.dart' show LifecycleHooks;
 import 'package:angular2/src/core/render/api.dart' show ViewEncapsulation;
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/interface_matcher.dart';
-import 'package:angular2/src/transform/common/url_resolver.dart';
 import 'package:barback/barback.dart' show AssetId;
 
 class DirectiveMetadataReader {
@@ -53,8 +52,6 @@ class DirectiveMetadataReader {
     }
   }
 }
-
-final UrlResolver _urlResolver = const UrlResolver();
 
 /// Visitor that attempts to evaluate a provided `node` syntactically.
 ///

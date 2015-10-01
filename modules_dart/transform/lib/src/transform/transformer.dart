@@ -4,7 +4,6 @@ import 'package:barback/barback.dart';
 import 'package:dart_style/dart_style.dart';
 
 import 'deferred_rewriter/transformer.dart';
-import 'directive_linker/transformer.dart';
 import 'directive_metadata_linker/transformer.dart';
 import 'directive_processor/transformer.dart';
 import 'bind_generator/transformer.dart';

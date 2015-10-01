@@ -8,7 +8,6 @@ import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/options.dart';
-import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:barback/barback.dart';
 
 import 'rewriter.dart';
