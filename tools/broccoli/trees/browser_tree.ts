@@ -104,19 +104,6 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     patterns: [{match: /\$SCRIPTS\$/, replacement: jsReplace('SCRIPTS')}]
   });
 
-  // Use TypeScript to transpile the *.ts files to ES6
-  var es6Tree = compileWithTypescript(modulesTree, {
-    allowNonTsExtensions: false,
-    declaration: false,
-    emitDecoratorMetadata: true,
-    mapRoot: '',  // force sourcemaps to use relative path
-    noEmitOnError: false,
-    rootDir: '.',
-    sourceMap: true,
-    sourceRoot: '.',
-    target: 'ES6'
-  });
-
   // Use TypeScript to transpile the *.ts files to ES5
   var es5Tree = compileWithTypescript(es5ModulesTree, {
     allowNonTsExtensions: false,
@@ -132,10 +119,6 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     sourceRoot: '.',
     target: 'ES5'
   });
-
-  // Now we add a few more files to the es6 tree that the es5 tree should not see
-  var extras = new Funnel('tools/build', {files: ['es5build.js'], destDir: 'angular2'});
-  es6Tree = mergeTrees([es6Tree, extras]);
 
   var vendorScriptsTree = flatten(new Funnel('.', {
     files: [
@@ -211,9 +194,6 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   htmlTree = mergeTrees([htmlTree, scripts, polymer, react]);
 
   es5Tree = mergeTrees([es5Tree, htmlTree, assetsTree, rxJs]);
-  es6Tree = mergeTrees([es6Tree, htmlTree, assetsTree, rxJs]);
 
-  var mergedTree = mergeTrees([stew.mv(es6Tree, '/es6'), stew.mv(es5Tree, '/es5')]);
-
-  return destCopy(mergedTree, destinationPath);
+  return destCopy(stew.mv(es5Tree, '/es5'), destinationPath);
 };
