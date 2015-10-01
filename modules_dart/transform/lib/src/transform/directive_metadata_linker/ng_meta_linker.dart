@@ -13,6 +13,8 @@ import 'package:barback/barback.dart';
 import 'package:code_transformers/assets.dart';
 import 'package:path/path.dart' as path;
 
+import 'ng_deps_linker.dart';
+
 /// Returns [NgMeta] associated with [entryPoint] combined with the [NgMeta] of
 /// all files `export`ed from the original file.
 ///
@@ -27,13 +29,20 @@ import 'package:path/path.dart' as path;
 ///
 /// Returns an empty [NgMeta] if there are no `Directive`-annotated classes or
 /// `DirectiveAlias` annotated constants in `entryPoint`.
-Future<NgMeta> linkDirectiveMetadata(AssetReader reader, AssetId entryPoint) async {
+Future<NgMeta> linkDirectiveMetadata(
+    AssetReader reader, AssetId entryPoint) async {
   var ngMeta = await _readNgMeta(reader, entryPoint);
   if (ngMeta == null || ngMeta.isEmpty) return null;
 
-  var xhr = new XhrImpl(reader);
+  final xhr = new XhrImpl(reader);
+  final entryPointAssetUri = toAssetUri(entryPoint);
 
-  return _linkDirectiveMetadataRecursive(ngMeta, xhr, toAssetUri(entryPoint), new Set<AssetId>());
+  await Future.wait([
+    linkNgDeps(xhr, _urlResolver, entryPointAssetUri, ngMeta.ngDeps),
+    _linkDirectiveMetadataRecursive(
+        ngMeta, xhr, entryPointAssetUri, new Set<String>())
+  ]);
+  return ngMeta;
 }
 
 Future<NgMeta> _readNgMeta(AssetReader reader, AssetId ngMetaAssetId) async {
@@ -45,18 +54,23 @@ Future<NgMeta> _readNgMeta(AssetReader reader, AssetId ngMetaAssetId) async {
   return new NgMeta.fromJson(JSON.decode(ngMetaJson));
 }
 
-final _urlResolver = const UrlResolver();
+final _urlResolver = const TransformerUrlResolver();
 
 Future<NgMeta> _linkDirectiveMetadataRecursive(
-    NgMeta ngMeta, XhrImpl xhr, String moduleUrl, Set<AssetId> seen) async {
-  if (ngMeta == null || ngMeta.ngDeps == null || ngMeta.ngDeps.exports == null) {
+    NgMeta ngMeta, XhrImpl xhr, String moduleUrl, Set<String> seen) async {
+  if (ngMeta == null ||
+      ngMeta.ngDeps == null ||
+      ngMeta.ngDeps.exports == null) {
     return ngMeta;
   }
 
-  return Future.wait(ngMeta.ngDeps.exports
-      .map((export) => _urlResolver.resolve(moduleUrl, export.uri))
-      .where((uri) => !seen.contains(uri))
-      .map((uri) async {
+  return Future
+      .wait(ngMeta.ngDeps.exports
+          .where((export) => !isDartCoreUri(export.uri))
+          .map((export) =>
+              _urlResolver.resolve(moduleUrl, toMetaExtension(export.uri)))
+          .where((uri) => !seen.contains(uri))
+          .map((uri) async {
     seen.add(uri);
     try {
       if (await xhr.exists(uri)) {
@@ -72,5 +86,6 @@ Future<NgMeta> _linkDirectiveMetadataRecursive(
       // Log and continue.
       logger.warning('Failed to fetch $uri. Message: $err.\n$st');
     }
-  })).then((_) => ngMeta);
+  }))
+      .then((_) => ngMeta);
 }

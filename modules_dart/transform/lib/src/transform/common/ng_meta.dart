@@ -3,6 +3,7 @@ library angular2.transform.common.ng_meta;
 import 'package:angular2/src/compiler/directive_metadata.dart';
 import 'logging.dart';
 import 'model/ng_deps_model.pb.dart';
+import 'url_resolver.dart' show isDartCoreUri;
 
 /// Metadata about directives, directive aliases, and injectable values.
 ///
@@ -38,35 +39,35 @@ class NgMeta {
   /// List of other types and names associated with a given name.
   final Map<String, List<String>> aliases;
 
-  // The NgDeps generated from 
+  // The NgDeps generated from
   final NgDepsModel ngDeps;
 
-  NgMeta(this.types, this.aliases, this.ngDeps);
+  NgMeta(
+      {Map<String, CompileDirectiveMetadata> types,
+      Map<String, List<String>> aliases,
+      this.ngDeps: null})
+      : this.types = types != null ? types : {},
+        this.aliases = aliases != null ? aliases : {};
 
-  NgMeta.empty() : this({}, {}, null);
-
-  /// TODO(kegluneq): Remove.
-  List<String> get exports => const <String>[];
+  NgMeta.empty() : this();
 
   // `model` can be an `ImportModel` or `ExportModel`.
-  static bool _isDartImport(dynamic model) => model.uri.startsWith('dart:');
+  static bool _isDartImport(dynamic model) => isDartCoreUri(model.uri);
 
-  bool get _isNgDepsEmpty {
+  bool get isNgDepsEmpty {
     if (ngDeps == null) return true;
     // If this file imports only dart: libraries and does not define any
     // reflectables of its own, it doesn't need a .ng_deps.dart file.
     if (ngDeps.reflectables == null || ngDeps.reflectables.isEmpty) {
       if ((ngDeps.imports == null || ngDeps.imports.every(_isDartImport)) &&
-          (ngDeps.export == null || ngDeps.exports.every(_isDartImport))) {
+          (ngDeps.exports == null || ngDeps.exports.every(_isDartImport))) {
         return true;
       }
     }
     return false;
   }
 
-  bool get isEmpty {
-    return types.isEmpty && aliases.isEmpty && _isNgDepsEmpty;
-  }
+  bool get isEmpty => types.isEmpty && aliases.isEmpty && isNgDepsEmpty;
 
   /// Parse from the serialized form produced by [toJson].
   factory NgMeta.fromJson(Map json) {
@@ -75,7 +76,14 @@ class NgMeta {
     final aliases = {};
     for (var key in json.keys) {
       if (key == _NG_DEPS_KEY) {
-        ngDeps = new NgDepsModel.fromJson(json[key]);
+        var ngDepsJsonMap = json[key];
+        if (ngDepsJsonMap == null) continue;
+        if (ngDepsJsonMap is! Map) {
+          logger.warning(
+              'Unexpected value $ngDepsJsonMap for key "$key" in NgMeta.');
+          continue;
+        }
+        ngDeps = new NgDepsModel()..mergeFromJsonMap(ngDepsJsonMap);
       } else {
         var entry = json[key];
         if (entry is! Map) {
@@ -89,14 +97,14 @@ class NgMeta {
         }
       }
     }
-    return new NgMeta(types, aliases, ngDeps);
+    return new NgMeta(types: types, aliases: aliases, ngDeps: ngDeps);
   }
 
   /// Serialized representation of this instance.
   Map toJson({bool withNgDeps: true}) {
     var result = {};
     if (withNgDeps) {
-      result[_NG_DEPS_KEY] = _isNgDepsEmpty ? null : ngDeps.toJsonMap();
+      result[_NG_DEPS_KEY] = isNgDepsEmpty ? null : ngDeps.writeToJsonMap();
     }
 
     types.forEach((k, v) {

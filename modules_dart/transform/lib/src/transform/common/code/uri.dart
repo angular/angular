@@ -11,13 +11,13 @@ String writeImportUri(String importPath, {String prefix, String fromAbsolute}) {
   var codegenImportPath;
 
   var resolver = const TransformerUrlResolver();
-  var importUri = resolver.toAssetScheme(Uri.parse(importPath));
+  var importUri = toAssetScheme(Uri.parse(importPath));
   if (_canPackageImport(importUri) ||
       fromAbsolute == null ||
       fromAbsolute.isEmpty) {
     codegenImportPath = _toPackageImport(importUri);
   } else {
-    var moduleUri = resolver.toAssetScheme(Uri.parse(fromAbsolute));
+    var moduleUri = toAssetScheme(Uri.parse(fromAbsolute));
     if (_canImportRelative(importUri, from: moduleUri)) {
       codegenImportPath = path.url.relative(importUri.toString(),
           from: path.dirname(moduleUri.toString()));

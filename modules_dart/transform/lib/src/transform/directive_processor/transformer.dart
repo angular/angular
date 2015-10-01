@@ -45,9 +45,11 @@ class DirectiveProcessor extends Transformer implements DeclaringTransformer {
     await log.initZoned(transform, () async {
       var primaryId = transform.primaryInput.id;
       var reader = new AssetReader.fromTransform(transform);
-      var ngMeta = await createNgDeps(
-          reader, primaryId, options.annotationMatcher);
-      if (ngMeta == null || ngMeta.isEmpty) return;
+      var ngMeta =
+          await createNgDeps(reader, primaryId, options.annotationMatcher);
+      if (ngMeta == null || ngMeta.isEmpty) {
+        return;
+      }
       transform.addOutput(new Asset.fromString(
           _ngMetaAssetId(primaryId), _encoder.convert(ngMeta.toJson())));
     });

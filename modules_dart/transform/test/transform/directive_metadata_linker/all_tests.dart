@@ -7,6 +7,7 @@ import 'package:angular2/src/core/render/api.dart';
 import 'package:angular2/src/transform/common/convert.dart';
 import 'package:angular2/src/transform/common/directive_metadata_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
+import 'package:angular2/src/transform/common/model/import_export_model.pb.dart';
 import 'package:angular2/src/transform/common/ng_deps.dart';
 import 'package:angular2/src/transform/directive_metadata_linker/ng_meta_linker.dart';
 import 'package:barback/barback.dart';
@@ -22,7 +23,7 @@ main() => allTests();
 
 void allTests() {
   TestAssetReader reader = null;
-  final moduleBase = 'asset:angular2/test/transform/directive_metadata_linker';
+  final moduleBase = 'asset:a';
   var fooNgMeta, fooAssetId;
   var barNgMeta, barAssetId;
   var bazNgMeta, bazAssetId;
@@ -44,7 +45,7 @@ void allTests() {
         moduleUrl: '$moduleBase/export_cycle_files/foo.dart',
         selector: '[foo]',
         template: 'Foo');
-    fooNgMeta = new NgMeta.empty();
+    fooNgMeta = new NgMeta(ngDeps: new NgDepsModel());
     fooNgMeta.types[fooName] = fooComponentMeta;
 
     var barName = 'BarComponent';
@@ -53,7 +54,7 @@ void allTests() {
         moduleUrl: '$moduleBase/export_cycle_files/bar.dart',
         selector: '[bar]',
         template: 'Bar');
-    barNgMeta = new NgMeta.empty();
+    barNgMeta = new NgMeta(ngDeps: new NgDepsModel());
     barNgMeta.types[barName] = barComponentMeta;
 
     var bazName = 'BazComponent';
@@ -62,7 +63,7 @@ void allTests() {
         moduleUrl: '$moduleBase/export_cycle_files/baz.dart',
         selector: '[baz]',
         template: 'Baz');
-    bazNgMeta = new NgMeta.empty();
+    bazNgMeta = new NgMeta(ngDeps: new NgDepsModel());
     barNgMeta.types[bazName] = bazComponentMeta;
 
     fooAssetId = new AssetId('a', 'lib/foo.ng_meta.json');
@@ -72,7 +73,7 @@ void allTests() {
   });
 
   it('should include `DirectiveMetadata` from exported files.', () async {
-    fooNgMeta.exports.add('bar.dart');
+    fooNgMeta.ngDeps.exports.add(new ExportModel()..uri = 'bar.dart');
     updateReader();
 
     var extracted = await linkDirectiveMetadata(reader, fooAssetId);
@@ -85,8 +86,8 @@ void allTests() {
 
   it('should include `DirectiveMetadata` recursively from exported files.',
       () async {
-    fooNgMeta.exports.add('bar.dart');
-    barNgMeta.exports.add('baz.dart');
+    fooNgMeta.ngDeps.exports.add(new ExportModel()..uri = 'bar.dart');
+    barNgMeta.ngDeps.exports.add(new ExportModel()..uri = 'baz.dart');
     updateReader();
 
     var extracted = await linkDirectiveMetadata(reader, fooAssetId);
@@ -100,9 +101,9 @@ void allTests() {
   });
 
   it('should handle `DirectiveMetadata` export cycles gracefully.', () async {
-    fooNgMeta.exports.add('bar.dart');
-    barNgMeta.exports.add('baz.dart');
-    bazNgMeta.exports.add('foo.dart');
+    fooNgMeta.ngDeps.exports.add(new ExportModel()..uri = 'bar.dart');
+    barNgMeta.ngDeps.exports.add(new ExportModel()..uri = 'baz.dart');
+    bazNgMeta.ngDeps.exports.add(new ExportModel()..uri = 'foo.dart');
     updateReader();
 
     var extracted = await linkDirectiveMetadata(reader, bazAssetId);
@@ -114,7 +115,8 @@ void allTests() {
   it(
       'should include `DirectiveMetadata` from exported files '
       'expressed as absolute uris', () async {
-    fooNgMeta.exports.add('package:bar/bar.dart');
+    fooNgMeta.ngDeps.exports
+        .add(new ExportModel()..uri = 'package:bar/bar.dart');
     updateReader();
     reader.addAsset(new AssetId('bar', 'lib/bar.ng_meta.json'),
         JSON.encode(barNgMeta.toJson()));

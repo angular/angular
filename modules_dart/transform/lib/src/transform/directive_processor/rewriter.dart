@@ -30,7 +30,7 @@ Future<NgMeta> createNgDeps(AssetReader reader, AssetId assetId,
   var ngDepsVisitor = new NgDepsVisitor(assetId, annotationMatcher);
   parsedCode.accept(ngDepsVisitor);
 
-  var ngMeta = new NgMeta({}, {}, ngDepsVisitor.model);
+  var ngMeta = new NgMeta(ngDeps: ngDepsVisitor.model);
 
   var templateCompiler = createTemplateCompiler(reader);
   var ngMetaVisitor = new _NgMetaVisitor(

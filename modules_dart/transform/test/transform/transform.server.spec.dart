@@ -23,7 +23,7 @@ main() {
   describe('NgMeta', ngMetaTest.allTests);
   describe('Bind Generator', bindGenerator.allTests);
   describe('Directive Linker', directiveLinker.allTests);
-  ddescribe('Directive Metadata Linker', directiveMeta.allTests);
+  describe('Directive Metadata Linker', directiveMeta.allTests);
   describe('Directive Processor', directiveProcessor.allTests);
   describe('Inliner For Test', inliner.allTests);
   describe('Reflection Remover', reflectionRemover.allTests);
