@@ -34,7 +34,7 @@ import {
 } from 'angular2/core';
 
 import {TEST_BINDINGS} from './test_bindings';
-import {IS_DART} from '../platform';
+import {MODULE_SUFFIX, IS_DART} from 'angular2/src/compiler/util';
 
 export function main() {
   describe('RuntimeMetadataResolver', () => {
@@ -50,7 +50,7 @@ export function main() {
            expect(meta.dynamicLoadable).toBe(true);
            expect(meta.type.runtime).toBe(ComponentWithEverything);
            expect(meta.type.name).toEqual(stringify(ComponentWithEverything));
-           expect(meta.type.moduleId).toEqual('someModuleId');
+           expect(meta.type.moduleUrl).toEqual(`package:someModuleId${MODULE_SUFFIX}`);
            expect(meta.lifecycleHooks).toEqual(LIFECYCLE_HOOKS_VALUES);
            expect(meta.changeDetection).toBe(ChangeDetectionStrategy.CheckAlways);
            expect(meta.inputs).toEqual({'someProp': 'someProp'});
@@ -65,12 +65,12 @@ export function main() {
            expect(meta.template.templateUrl).toEqual('someTemplateUrl');
          }));
 
-      it('should use the moduleId from the reflector if none is given',
+      it('should use the moduleUrl from the reflector if none is given',
          inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
-           var expectedValue =
-               IS_DART ? 'base/dist/dart/angular2/test/compiler/runtime_metadata_spec' : './';
-           expect(resolver.getMetadata(DirectiveWithoutModuleId).type.moduleId)
-               .toEqual(expectedValue);
+           var value: string = resolver.getMetadata(DirectiveWithoutModuleId).type.moduleUrl;
+           var expectedEndValue =
+               IS_DART ? 'base/dist/dart/angular2/test/compiler/runtime_metadata_spec.dart' : './';
+           expect((<any>value).endsWith(expectedEndValue)).toBe(true);
          }));
     });
 

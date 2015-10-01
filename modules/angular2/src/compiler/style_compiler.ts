@@ -14,7 +14,8 @@ import {
   codeGenMapArray,
   codeGenReplaceAll,
   codeGenExportVariable,
-  codeGenToString
+  codeGenToString,
+  MODULE_SUFFIX
 } from './util';
 import {Injectable} from 'angular2/src/core/di';
 
@@ -56,13 +57,15 @@ export class StyleCompiler {
     return this._styleCodeGen(template.styles, template.styleUrls, shim, suffix);
   }
 
-  compileStylesheetCodeGen(moduleId: string, cssText: string): SourceModule[] {
-    var styleWithImports = resolveStyleUrls(this._urlResolver, moduleId, cssText);
+  compileStylesheetCodeGen(stylesheetUrl: string, cssText: string): SourceModule[] {
+    var styleWithImports = resolveStyleUrls(this._urlResolver, stylesheetUrl, cssText);
     return [
-      this._styleModule(moduleId, false, this._styleCodeGen([styleWithImports.style],
-                                                            styleWithImports.styleUrls, false, '')),
-      this._styleModule(moduleId, true, this._styleCodeGen([styleWithImports.style],
-                                                           styleWithImports.styleUrls, true, ''))
+      this._styleModule(
+          stylesheetUrl, false,
+          this._styleCodeGen([styleWithImports.style], styleWithImports.styleUrls, false, '')),
+      this._styleModule(
+          stylesheetUrl, true,
+          this._styleCodeGen([styleWithImports.style], styleWithImports.styleUrls, true, ''))
     ];
   }
 
@@ -96,28 +99,28 @@ export class StyleCompiler {
     expressionSource +=
         `[${plainStyles.map( plainStyle => escapeSingleQuoteString(this._shimIfNeeded(plainStyle, shim)) ).join(',')}]`;
     for (var i = 0; i < absUrls.length; i++) {
-      var moduleId = this._shimModuleIdIfNeeded(absUrls[i], shim);
-      expressionSource += codeGenConcatArray(`${moduleRef(moduleId)}STYLES`);
+      var moduleUrl = this._createModuleUrl(absUrls[i], shim);
+      expressionSource += codeGenConcatArray(`${moduleRef(moduleUrl)}STYLES`);
     }
     expressionSource += `)${suffix}`;
     return new SourceExpression([], expressionSource);
   }
 
-  private _styleModule(moduleId: string, shim: boolean,
+  private _styleModule(stylesheetUrl: string, shim: boolean,
                        expression: SourceExpression): SourceModule {
     var moduleSource = `
       ${expression.declarations.join('\n')}
       ${codeGenExportVariable('STYLES')}${expression.expression};
     `;
-    return new SourceModule(this._shimModuleIdIfNeeded(moduleId, shim), moduleSource);
+    return new SourceModule(this._createModuleUrl(stylesheetUrl, shim), moduleSource);
   }
 
   private _shimIfNeeded(style: string, shim: boolean): string {
     return shim ? this._shadowCss.shimCssText(style, CONTENT_ATTR, HOST_ATTR) : style;
   }
 
-  private _shimModuleIdIfNeeded(moduleId: string, shim: boolean): string {
-    return shim ? `${moduleId}.shim` : moduleId;
+  private _createModuleUrl(stylesheetUrl: string, shim: boolean): string {
+    return shim ? `${stylesheetUrl}.shim${MODULE_SUFFIX}` : `${stylesheetUrl}${MODULE_SUFFIX}`;
   }
 }
 

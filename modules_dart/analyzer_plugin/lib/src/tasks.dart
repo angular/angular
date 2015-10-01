@@ -1,19 +1,19 @@
 library angular2.src.analysis.analyzer_plugin.src.tasks;
 
-import 'package:analyzer/src/generated/ast.dart' hide Directive;
+// import 'package:analyzer/src/generated/ast.dart' hide Directive;
 import 'package:analyzer/src/generated/engine.dart';
 import 'package:analyzer/src/task/general.dart';
 import 'package:analyzer/task/dart.dart';
 import 'package:analyzer/task/model.dart';
-import 'package:angular2/src/core/render/api.dart';
-import 'package:angular2/src/transform/common/directive_metadata_reader.dart';
+import 'package:angular2/src/compiler/directive_metadata.dart';
+// import 'package:angular2/src/transform/common/directive_metadata_reader.dart';
 
 
-/// The [RenderDirectiveMetadata]s of a [LibrarySpecificUnit].
-final ListResultDescriptor<RenderDirectiveMetadata> DIRECTIVES =
-    new ListResultDescriptor<RenderDirectiveMetadata>('ANGULAR2_DIRECTIVES', null);
+/// The [CompileDirectiveMetadata]s of a [LibrarySpecificUnit].
+final ListResultDescriptor<CompileDirectiveMetadata> DIRECTIVES =
+    new ListResultDescriptor<CompileDirectiveMetadata>('ANGULAR2_DIRECTIVES', null);
 
-/// A task that builds [RenderDirectiveMetadata]s for directive classes.
+/// A task that builds [CompileDirectiveMetadata]s for directive classes.
 class BuildUnitDirectivesTask extends SourceBasedAnalysisTask {
   static const String UNIT_INPUT = 'UNIT_INPUT';
 
@@ -29,17 +29,18 @@ class BuildUnitDirectivesTask extends SourceBasedAnalysisTask {
 
   @override
   void internalPerform() {
-    CompilationUnit unit = getRequiredInput(UNIT_INPUT);
+    // CompilationUnit unit = getRequiredInput(UNIT_INPUT);
 
-    List<RenderDirectiveMetadata> metaList = <RenderDirectiveMetadata>[];
-    for (CompilationUnitMember unitMember in unit.declarations) {
-      if (unitMember is ClassDeclaration) {
-        RenderDirectiveMetadata meta = readDirectiveMetadata(unitMember);
-        if (meta != null) {
-          metaList.add(meta);
-        }
-      }
-    }
+    List<CompileDirectiveMetadata> metaList = <CompileDirectiveMetadata>[];
+    // TODO(tbosch): figure our whether analyzer plugin is used at all...
+    // for (CompilationUnitMember unitMember in unit.declarations) {
+    //  if (unitMember is ClassDeclaration) {
+    //     CompileDirectiveMetadata meta = readDirectiveMetadata(unitMember);
+    //     if (meta != null) {
+    //       metaList.add(meta);
+    //     }
+    //   }
+    // }
     outputs[DIRECTIVES] = metaList;
   }
 

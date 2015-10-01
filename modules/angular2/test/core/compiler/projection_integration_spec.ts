@@ -522,7 +522,8 @@ class OuterWithIndirectNestedComponent {
 
 @Component({selector: 'outer'})
 @View({
-  template: 'OUTER(<inner><ng-content></ng-content></inner>)',
+  template:
+      'OUTER(<inner><ng-content select=".left" class="left"></ng-content><ng-content></ng-content></inner>)',
   directives: [forwardRef(() => InnerComponent)]
 })
 class OuterComponent {
@@ -530,7 +531,8 @@ class OuterComponent {
 
 @Component({selector: 'inner'})
 @View({
-  template: 'INNER(<innerinner><ng-content></ng-content></innerinner>)',
+  template:
+      'INNER(<innerinner><ng-content select=".left" class="left"></ng-content><ng-content></ng-content></innerinner>)',
   directives: [forwardRef(() => InnerInnerComponent)]
 })
 class InnerComponent {

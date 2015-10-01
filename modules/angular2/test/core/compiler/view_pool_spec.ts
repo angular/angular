@@ -24,12 +24,10 @@ export function main() {
 
     function createViewPool({capacity}): AppViewPool { return new AppViewPool(capacity); }
 
-    function createProtoView() {
-      return new AppProtoView(null, null, null, null, null, null, null, null);
-    }
+    function createProtoView() { return new AppProtoView(null, null, null, null, null, null); }
 
     function createView(pv) {
-      return new AppView(null, pv, null, null, null, null, new Map<string, any>(), null, null);
+      return new AppView(null, pv, null, null, null, new Map<string, any>(), null, null, null);
     }
 
     it('should support multiple AppProtoViews', () => {

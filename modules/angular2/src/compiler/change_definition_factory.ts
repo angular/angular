@@ -189,8 +189,7 @@ function createChangeDefinitions(pvVisitors: ProtoViewVisitor[], componentType: 
                                  genConfig: ChangeDetectorGenConfig): ChangeDetectorDefinition[] {
   var pvVariableNames = _collectNestedProtoViewsVariableNames(pvVisitors);
   return pvVisitors.map(pvVisitor => {
-    var viewType = pvVisitor.viewIndex === 0 ? 'component' : 'embedded';
-    var id = _protoViewId(componentType, pvVisitor.viewIndex, viewType);
+    var id = `${componentType.name}_${pvVisitor.viewIndex}`;
     return new ChangeDetectorDefinition(
         id, pvVisitor.strategy, pvVariableNames[pvVisitor.viewIndex], pvVisitor.bindingRecords,
         pvVisitor.eventRecords, pvVisitor.directiveRecords, genConfig);
@@ -206,10 +205,4 @@ function _collectNestedProtoViewsVariableNames(pvVisitors: ProtoViewVisitor[]): 
     nestedPvVariableNames[pv.viewIndex] = parentVariableNames.concat(pv.variableNames);
   });
   return nestedPvVariableNames;
-}
-
-
-function _protoViewId(hostComponentType: CompileTypeMetadata, pvIndex: number, viewType: string):
-    string {
-  return `${hostComponentType.name}_${viewType}_${pvIndex}`;
 }

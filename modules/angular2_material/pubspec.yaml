@@ -16,3 +16,5 @@ dependency_overrides:
     path: ../angular2
 dev_dependencies:
   guinness: '^0.1.17'
+transformers:
+- angular2

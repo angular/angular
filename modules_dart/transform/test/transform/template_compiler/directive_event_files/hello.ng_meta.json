@@ -1,0 +1,32 @@
+{
+  "HelloCmp":
+  {
+    "kind": "type",
+    "value": {
+      "isComponent": false,
+      "dynamicLoadable": true,
+      "selector":"hello-app",
+      "exportAs": null,
+      "type": {
+        "id": 1,
+        "name": "HelloCmp",
+        "moduleUrl": "asset:angular2/test/transform/template_compiler/directive_event_files/hello.dart"
+      },
+      "changeDetection": 5,
+      "properties": {},
+      "outputs": {"eventName": "eventName"},
+      "hostListeners": {},
+      "hostProperties": {},
+      "hostAttributes": {},
+      "lifecycleHooks": [],
+      "template": {
+        "encapsulation": 0,
+        "template": "<button>go</button>",
+        "templateUrl": null,
+        "styles": null,
+        "styleUrls": null,
+        "ngContentSelectors": null
+      }
+    }
+  }
+}

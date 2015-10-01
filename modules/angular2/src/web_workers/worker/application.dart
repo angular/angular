@@ -9,6 +9,7 @@ import "package:angular2/src/core/compiler/dynamic_component_loader.dart" show C
 import "dart:isolate";
 import "dart:async";
 import 'dart:core';
+import 'package:angular2/src/core/dom/webworker_adapter.dart';
 
 /**
  * Bootstrapping a Webworker Application
@@ -24,6 +25,7 @@ import 'dart:core';
 Future<ComponentRef> bootstrapWebWorker(
     SendPort replyTo, Type appComponentType,
     [List<dynamic> componentInjectableBindings = null]) {
+  WebWorkerDomAdapter.makeCurrent();
   ReceivePort rPort = new ReceivePort();
   var sink = new WebWorkerMessageBusSink(replyTo, rPort);
   var source = new IsolateMessageBusSource(rPort);

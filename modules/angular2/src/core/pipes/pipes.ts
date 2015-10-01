@@ -13,12 +13,19 @@ import {PipeBinding} from './pipe_binding';
 import * as cd from 'angular2/src/core/change_detection/pipes';
 
 export class ProtoPipes {
-  /**
-   * Map of {@link PipeMetadata} names to {@link PipeMetadata} implementations.
-   */
-  config: StringMap<string, PipeBinding> = {};
+  static fromBindings(bindings: PipeBinding[]): ProtoPipes {
+    var config = {};
+    bindings.forEach(b => config[b.name] = b);
+    return new ProtoPipes(config);
+  }
 
-  constructor(bindings: PipeBinding[]) { bindings.forEach(b => this.config[b.name] = b); }
+  constructor(
+      /**
+      * Map of {@link PipeMetadata} names to {@link PipeMetadata} implementations.
+      */
+      public config: StringMap<string, PipeBinding>) {
+    this.config = config;
+  }
 
   get(name: string): PipeBinding {
     var binding = this.config[name];

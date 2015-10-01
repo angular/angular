@@ -119,7 +119,6 @@ export class DirectiveResolver {
         bindings: dm.bindings,
         exportAs: dm.exportAs,
         moduleId: dm.moduleId,
-        compileChildren: dm.compileChildren,
         queries: mergedQueries,
         changeDetection: dm.changeDetection,
         viewBindings: dm.viewBindings
@@ -134,7 +133,6 @@ export class DirectiveResolver {
         bindings: dm.bindings,
         exportAs: dm.exportAs,
         moduleId: dm.moduleId,
-        compileChildren: dm.compileChildren,
         queries: mergedQueries
       });
     }

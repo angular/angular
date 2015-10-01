@@ -29,7 +29,13 @@ import 'compile_data_creator.dart';
 Future<Outputs> processTemplates(AssetReader reader, AssetId entryPoint,
     {bool reflectPropertiesAsAttributes: false}) async {
   var viewDefResults = await createCompileData(reader, entryPoint);
-
+  var codegen = null;
+  if (viewDefResults.directiveMetadatas.isNotEmpty) {
+    var processor = new reg.Processor();
+    viewDefResults.directiveMetadatas.forEach(processor.process);
+    codegen = new reg.Codegen();
+    codegen.generate(processor);
+  }
   var templateCompiler = createTemplateCompiler(reader,
       changeDetectionConfig: new ChangeDetectorGenConfig(assertionsEnabled(),
           assertionsEnabled(), reflectPropertiesAsAttributes, false));
@@ -38,21 +44,13 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId entryPoint,
   var compileData =
       viewDefResults.viewDefinitions.values.toList(growable: false);
   if (compileData.isEmpty) {
-    return new Outputs(entryPoint, ngDeps, null, null, null);
+    return new Outputs(entryPoint, ngDeps, codegen, null, null);
   }
 
   var savedReflectionCapabilities = reflector.reflectionCapabilities;
   reflector.reflectionCapabilities = const NullReflectionCapabilities();
   var compiledTemplates = templateCompiler.compileTemplatesCodeGen(compileData);
   reflector.reflectionCapabilities = savedReflectionCapabilities;
-
-  var processor = new reg.Processor();
-  compileData
-      .map((withDirectives) => withDirectives.component)
-      .forEach(processor.process);
-  var codegen = new reg.Codegen();
-
-  codegen.generate(processor);
 
   return new Outputs(entryPoint, ngDeps, codegen,
       viewDefResults.viewDefinitions, compiledTemplates);
@@ -73,11 +71,9 @@ class Outputs {
       reg.Codegen accessors,
       Map<RegisteredType, NormalizedComponentWithViewDirectives> compileDataMap,
       SourceModule templatesSource) {
-    var libraryName =
-        ngDeps != null && ngDeps.lib != null ? '${ngDeps.lib.name}' : null;
     return new Outputs._(
         _generateNgDepsCode(assetId, ngDeps, accessors, compileDataMap),
-        writeSourceModule(templatesSource, libraryName: libraryName));
+        writeSourceModule(templatesSource));
   }
 
   // Updates the NgDeps code with an additional `CompiledTemplate` annotation
@@ -91,7 +87,7 @@ class Outputs {
       Map<RegisteredType,
           NormalizedComponentWithViewDirectives> compileDataMap) {
     var code = ngDeps.code;
-    if (compileDataMap == null || compileDataMap.isEmpty) return code;
+    if (accessors == null && (compileDataMap == null || compileDataMap.isEmpty)) return code;
 
     if (ngDeps.registeredTypes.isEmpty) return code;
     var beginRegistrationsIdx =
@@ -101,12 +97,16 @@ class Outputs {
 
     // Add everything up to the point where we begin registering classes with
     // the reflector, injecting an import to the generated template code.
-    var buf = new StringBuffer('${code.substring(0, importInjectIdx)}'
-        'import \'${toTemplateExtension(path.basename(id.path))}\' as _templates;'
-        '${code.substring(importInjectIdx, beginRegistrationsIdx)}');
-
+    var buf;
+    if (compileDataMap != null) {
+      buf = new StringBuffer('${code.substring(0, importInjectIdx)}'
+          'import \'${toTemplateExtension(path.basename(id.path))}\' as _templates;'
+          '${code.substring(importInjectIdx, beginRegistrationsIdx)}');
+    } else {
+      buf = new StringBuffer('${code.substring(0, beginRegistrationsIdx)}');
+    }
     for (var registeredType in ngDeps.registeredTypes) {
-      if (compileDataMap.containsKey(registeredType)) {
+      if (compileDataMap != null && compileDataMap.containsKey(registeredType)) {
         // We generated a template for this type, so add the generated
         // `CompiledTemplate` value as the final annotation in the list.
         var annotations = registeredType.annotations as ListLiteral;
@@ -126,7 +126,6 @@ class Outputs {
             registeredType.registerMethod.end));
       }
     }
-
     buf.writeln(accessors.toString());
 
     // Add everything after the final registration.

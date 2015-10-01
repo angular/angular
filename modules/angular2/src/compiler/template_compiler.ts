@@ -26,7 +26,13 @@ import {RuntimeMetadataResolver} from './runtime_metadata';
 import {APP_ID} from 'angular2/src/core/render/dom/dom_tokens';
 
 import {TEMPLATE_COMMANDS_MODULE_REF} from './command_compiler';
-import {IS_DART, codeGenExportVariable, escapeSingleQuoteString, codeGenValueFn} from './util';
+import {
+  IS_DART,
+  codeGenExportVariable,
+  escapeSingleQuoteString,
+  codeGenValueFn,
+  MODULE_SUFFIX
+} from './util';
 import {Inject} from 'angular2/src/core/di';
 
 @Injectable()
@@ -164,51 +170,54 @@ export class TemplateCompiler {
         });
   }
 
-  compileTemplatesCodeGen(moduleId: string,
-                          components: NormalizedComponentWithViewDirectives[]): SourceModule {
+  compileTemplatesCodeGen(components: NormalizedComponentWithViewDirectives[]): SourceModule {
+    if (components.length === 0) {
+      throw new BaseException('No components given');
+    }
     var declarations = [];
     var templateArguments = [];
     var componentMetas: CompileDirectiveMetadata[] = [];
-    var isHost: boolean[] = [];
     var templateIdVariable = 'templateId';
     var appIdVariable = 'appId';
     components.forEach(componentWithDirs => {
       var compMeta = <CompileDirectiveMetadata>componentWithDirs.component;
       assertComponent(compMeta);
       componentMetas.push(compMeta);
-      isHost.push(false);
       this._processTemplateCodeGen(compMeta, appIdVariable, templateIdVariable,
                                    <CompileDirectiveMetadata[]>componentWithDirs.directives,
                                    declarations, templateArguments);
       if (compMeta.dynamicLoadable) {
         var hostMeta = createHostComponentMeta(compMeta.type, compMeta.selector);
         componentMetas.push(hostMeta);
-        isHost.push(true);
         this._processTemplateCodeGen(hostMeta, appIdVariable, templateIdVariable, [compMeta],
                                      declarations, templateArguments);
       }
     });
     ListWrapper.forEachWithIndex(componentMetas, (compMeta: CompileDirectiveMetadata,
                                                   index: number) => {
-      var templateDataFn = codeGenValueFn([templateIdVariable, appIdVariable],
+      var templateDataFn = codeGenValueFn([appIdVariable, templateIdVariable],
                                           `[${(<any[]>templateArguments[index]).join(',')}]`);
       var compiledTemplateExpr =
           `new ${TEMPLATE_COMMANDS_MODULE_REF}CompiledTemplate(${TEMPLATE_COMMANDS_MODULE_REF}nextTemplateId(),${templateDataFn})`;
       var variableValueExpr;
-      if (isHost[index]) {
+      if (compMeta.type.isHost) {
+        var factoryName = `_hostTemplateFactory${index}`;
+        declarations.push(`${codeGenValueFn([], compiledTemplateExpr, factoryName)};`);
+        var constructionKeyword = IS_DART ? 'const' : 'new';
         variableValueExpr =
-            `new ${TEMPLATE_COMMANDS_MODULE_REF}CompiledHostTemplate(${codeGenValueFn([], compiledTemplateExpr)})`;
+            `${constructionKeyword} ${TEMPLATE_COMMANDS_MODULE_REF}CompiledHostTemplate(${factoryName})`;
       } else {
         variableValueExpr = compiledTemplateExpr;
       }
       declarations.push(
-          `${codeGenExportVariable(templateVariableName(compMeta.type))}${variableValueExpr};`);
+          `${codeGenExportVariable(templateVariableName(compMeta.type), compMeta.type.isHost)}${variableValueExpr};`);
     });
-    return new SourceModule(`${templateModuleName(moduleId)}`, declarations.join('\n'));
+    var moduleUrl = components[0].component.type.moduleUrl;
+    return new SourceModule(`${templateModuleUrl(moduleUrl)}`, declarations.join('\n'));
   }
 
-  compileStylesheetCodeGen(moduleId: string, cssText: string): SourceModule[] {
-    return this._styleCompiler.compileStylesheetCodeGen(moduleId, cssText);
+  compileStylesheetCodeGen(stylesheetUrl: string, cssText: string): SourceModule[] {
+    return this._styleCompiler.compileStylesheetCodeGen(stylesheetUrl, cssText);
   }
 
   private _processTemplateCodeGen(compMeta: CompileDirectiveMetadata, appIdExpr: string,
@@ -248,8 +257,9 @@ function templateVariableName(type: CompileTypeMetadata): string {
   return `${type.name}Template`;
 }
 
-function templateModuleName(moduleId: string): string {
-  return `${moduleId}.template`;
+function templateModuleUrl(moduleUrl: string): string {
+  var urlWithoutSuffix = moduleUrl.substring(0, moduleUrl.length - MODULE_SUFFIX.length);
+  return `${urlWithoutSuffix}.template${MODULE_SUFFIX}`;
 }
 
 function addAll(source: any[], target: any[]) {
@@ -259,5 +269,5 @@ function addAll(source: any[], target: any[]) {
 }
 
 function codeGenComponentTemplateFactory(nestedCompType: CompileDirectiveMetadata): string {
-  return `${moduleRef(templateModuleName(nestedCompType.type.moduleId))}${templateVariableName(nestedCompType.type)}`;
+  return `${moduleRef(templateModuleUrl(nestedCompType.type.moduleUrl))}${templateVariableName(nestedCompType.type)}`;
 }

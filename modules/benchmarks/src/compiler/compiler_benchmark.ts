@@ -17,11 +17,7 @@ import {
   ViewMetadata
 } from 'angular2/core';
 
-import {CompilerCache} from 'angular2/src/core/compiler/compiler';
-import {
-  ChangeDetection,
-  DynamicChangeDetection
-} from 'angular2/src/core/change_detection/change_detection';
+import {ChangeDetectorGenConfig} from 'angular2/src/core/change_detection/change_detection';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
 
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
@@ -36,7 +32,7 @@ function _createBindings(): Binding[] {
                    []),
     // Use DynamicChangeDetector as that is the only one that Dart supports as well
     // so that we can compare the numbers between JS and Dart
-    bind(ChangeDetection).toClass(DynamicChangeDetection)
+    bind(ChangeDetectorGenConfig).toValue(new ChangeDetectorGenConfig(false, false, false, false))
   ];
 }
 
@@ -97,14 +93,14 @@ class MultiplyViewResolver extends ViewResolver {
 @Component({selector: 'app'})
 @View({directives: [], template: ``})
 class CompilerAppComponent {
-  constructor(private _compiler: Compiler, private _compilerCache: CompilerCache) {}
+  constructor(private _compiler: Compiler) {}
   compileNoBindings() {
-    this._compilerCache.clear();
+    this._compiler.clearCache();
     return this._compiler.compileInHost(BenchmarkComponentNoBindings);
   }
 
   compileWithBindings() {
-    this._compilerCache.clear();
+    this._compiler.clearCache();
     return this._compiler.compileInHost(BenchmarkComponentWithBindings);
   }
 }

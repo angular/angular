@@ -111,7 +111,6 @@ export function main() {
                  rootTC.detectChanges();
                  expect(rootTC.debugElement.nativeElement).toHaveText('Hello World!');
                  async.done();
-
                });
          }));
 
@@ -431,7 +430,7 @@ export function main() {
            tcb.overrideView(
                   MyComp, new ViewMetadata({
                     template:
-                        '<div><template some-viewport var-greeting="some-tmpl"><copy-me>{{greeting}}</copy-me></template></div>',
+                        '<template some-viewport var-greeting="some-tmpl"><copy-me>{{greeting}}</copy-me></template>',
                     directives: [SomeViewport]
                   }))
 
@@ -440,11 +439,11 @@ export function main() {
 
                  rootTC.detectChanges();
 
-                 var childNodesOfWrapper = rootTC.debugElement.componentViewChildren;
+                 var childNodesOfWrapper = DOM.childNodes(rootTC.debugElement.nativeElement);
                  // 1 template + 2 copies.
                  expect(childNodesOfWrapper.length).toBe(3);
-                 expect(childNodesOfWrapper[1].nativeElement).toHaveText('hello');
-                 expect(childNodesOfWrapper[2].nativeElement).toHaveText('again');
+                 expect(childNodesOfWrapper[1]).toHaveText('hello');
+                 expect(childNodesOfWrapper[2]).toHaveText('again');
                  async.done();
                });
          }));
@@ -454,7 +453,7 @@ export function main() {
            tcb.overrideView(
                   MyComp, new ViewMetadata({
                     template:
-                        '<div><copy-me template="some-viewport: var greeting=some-tmpl">{{greeting}}</copy-me></div>',
+                        '<copy-me template="some-viewport: var greeting=some-tmpl">{{greeting}}</copy-me>',
                     directives: [SomeViewport]
                   }))
 
@@ -462,11 +461,11 @@ export function main() {
                .then((rootTC) => {
                  rootTC.detectChanges();
 
-                 var childNodesOfWrapper = rootTC.debugElement.componentViewChildren;
+                 var childNodesOfWrapper = DOM.childNodes(rootTC.debugElement.nativeElement);
                  // 1 template + 2 copies.
                  expect(childNodesOfWrapper.length).toBe(3);
-                 expect(childNodesOfWrapper[1].nativeElement).toHaveText('hello');
-                 expect(childNodesOfWrapper[2].nativeElement).toHaveText('again');
+                 expect(childNodesOfWrapper[1]).toHaveText('hello');
+                 expect(childNodesOfWrapper[2]).toHaveText('again');
                  async.done();
                });
          }));
@@ -629,7 +628,7 @@ export function main() {
              tcb.overrideView(
                     MyComp, new ViewMetadata({
                       template:
-                          '<div><div *ng-for="var i of [1]"><child-cmp-no-template #cmp></child-cmp-no-template>{{i}}-{{cmp.ctxProp}}</div></div>',
+                          '<template ng-for [ng-for-of]="[1]" var-i><child-cmp-no-template #cmp></child-cmp-no-template>{{i}}-{{cmp.ctxProp}}</template>',
                       directives: [ChildCompNoTemplate, NgFor]
                     }))
 
@@ -637,8 +636,8 @@ export function main() {
                  .then((rootTC) => {
                    rootTC.detectChanges();
 
-                   // Get the element at index 1, since index 0 is the <template>.
-                   expect(rootTC.debugElement.componentViewChildren[1].nativeElement)
+                   // Get the element at index 2, since index 0 is the <template>.
+                   expect(DOM.childNodes(rootTC.debugElement.nativeElement)[2])
                        .toHaveText("1-hello");
 
                    async.done();
@@ -1217,8 +1216,9 @@ export function main() {
     describe("error handling", () => {
       it('should report a meaningful error when a directive is missing annotation',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           tcb = tcb.overrideView(MyComp,
-                                  new ViewMetadata({directives: [SomeDirectiveMissingAnnotation]}));
+           tcb = tcb.overrideView(
+               MyComp,
+               new ViewMetadata({template: '', directives: [SomeDirectiveMissingAnnotation]}));
 
            PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) => {
              expect(e.message).toEqual(
@@ -1229,19 +1229,20 @@ export function main() {
          }));
 
       it('should report a meaningful error when a component is missing view annotation',
-         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           PromiseWrapper.catchError(tcb.createAsync(ComponentWithoutView), (e) => {
+         inject([TestComponentBuilder], (tcb: TestComponentBuilder) => {
+           try {
+             tcb.createAsync(ComponentWithoutView);
+           } catch (e) {
              expect(e.message).toEqual(
                  `No View annotation found on component ${stringify(ComponentWithoutView)}`);
-             async.done();
              return null;
-           });
+           }
          }));
 
       it('should report a meaningful error when a directive is null',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
-           tcb = tcb.overrideView(MyComp, new ViewMetadata({directives: [[null]]}));
+           tcb = tcb.overrideView(MyComp, new ViewMetadata({directives: [[null]], template: ''}));
 
            PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) => {
              expect(e.message).toEqual(
@@ -1353,7 +1354,8 @@ export function main() {
 
              var undefinedValue;
 
-             tcb = tcb.overrideView(MyComp, new ViewMetadata({directives: [undefinedValue]}));
+             tcb = tcb.overrideView(MyComp,
+                                    new ViewMetadata({directives: [undefinedValue], template: ''}));
 
              PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) => {
                expect(e.message).toEqual(
@@ -1457,7 +1459,7 @@ export function main() {
 
                      PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) => {
                        expect(e.message).toEqual(
-                           `Can't bind to 'unknown' since it isn't a known property of the '<div>' element and there are no matching directives with a corresponding property`);
+                           `Template parse errors:\nCan't bind to 'unknown' since it isn't a known native property in MyComp > div:nth-child(0)[unknown={{ctxProp}}]`);
                        async.done();
                        return null;
                      });
@@ -1516,9 +1518,8 @@ export function main() {
 
     describe('logging property updates', () => {
       beforeEachBindings(() => [
-        bind(ChangeDetection)
-            .toValue(
-                new DynamicChangeDetection(new ChangeDetectorGenConfig(true, true, true, false)))
+        bind(ChangeDetectorGenConfig)
+            .toValue(new ChangeDetectorGenConfig(true, true, true, false))
       ]);
 
       it('should reflect property values as attributes',

@@ -29,15 +29,15 @@ import {
 import {SourceExpression, SourceModule} from 'angular2/src/compiler/source_module';
 import {ViewEncapsulation} from 'angular2/src/core/render/api';
 import {TEST_BINDINGS} from './test_bindings';
-import {codeGenValueFn, codeGenExportVariable} from 'angular2/src/compiler/util';
+import {codeGenValueFn, codeGenExportVariable, MODULE_SUFFIX} from 'angular2/src/compiler/util';
 
 // Attention: These module names have to correspond to real modules!
-const MODULE_NAME = 'angular2/test/compiler/style_compiler_spec';
-const IMPORT_ABS_MODULE_NAME = 'angular2/test/compiler/style_compiler_import';
-const IMPORT_REL_MODULE_NAME = './style_compiler_import';
+var MODULE_URL = `package:angular2/test/compiler/style_compiler_spec${MODULE_SUFFIX}`;
+var IMPORT_ABS_STYLESHEET_URL = `package:angular2/test/compiler/style_compiler_import.css`;
+var IMPORT_REL_STYLESHEET_URL = './style_compiler_import.css';
 // Note: Not a real module, only used via mocks.
-const IMPORT_ABS_MODULE_NAME_WITH_IMPORT =
-    'angular2/test/compiler/style_compiler_transitive_import';
+var IMPORT_ABS_STYLESHEET_URL_WITH_IMPORT =
+    `package:angular2/test/compiler/style_compiler_transitive_import.css`;
 
 export function main() {
   describe('StyleCompiler', () => {
@@ -65,9 +65,9 @@ export function main() {
       beforeEach(() => {
         xhrCount = 0;
         xhrUrlResults = {};
-        xhrUrlResults[IMPORT_ABS_MODULE_NAME] = 'span {color: blue}';
-        xhrUrlResults[IMPORT_ABS_MODULE_NAME_WITH_IMPORT] =
-            `a {color: green}@import ${IMPORT_REL_MODULE_NAME};`;
+        xhrUrlResults[IMPORT_ABS_STYLESHEET_URL] = 'span {color: blue}';
+        xhrUrlResults[IMPORT_ABS_STYLESHEET_URL_WITH_IMPORT] =
+            `a {color: green}@import ${IMPORT_REL_STYLESHEET_URL};`;
       });
 
       function compile(styles: string[], styleAbsUrls: string[], encapsulation: ViewEncapsulation):
@@ -100,7 +100,7 @@ export function main() {
            }));
 
         it('should allow to import rules', inject([AsyncTestCompleter], (async) => {
-             compile(['div {color: red}'], [IMPORT_ABS_MODULE_NAME], encapsulation)
+             compile(['div {color: red}'], [IMPORT_ABS_STYLESHEET_URL], encapsulation)
                  .then(styles => {
                    expect(styles).toEqual(['div {color: red}', 'span {color: blue}']);
                    async.done();
@@ -108,7 +108,7 @@ export function main() {
            }));
 
         it('should allow to import rules transitively', inject([AsyncTestCompleter], (async) => {
-             compile(['div {color: red}'], [IMPORT_ABS_MODULE_NAME_WITH_IMPORT], encapsulation)
+             compile(['div {color: red}'], [IMPORT_ABS_STYLESHEET_URL_WITH_IMPORT], encapsulation)
                  .then(styles => {
                    expect(styles)
                        .toEqual(['div {color: red}', 'a {color: green}', 'span {color: blue}']);
@@ -132,7 +132,7 @@ export function main() {
            }));
 
         it('should allow to import rules', inject([AsyncTestCompleter], (async) => {
-             compile(['div {\ncolor: red;\n}'], [IMPORT_ABS_MODULE_NAME], encapsulation)
+             compile(['div {\ncolor: red;\n}'], [IMPORT_ABS_STYLESHEET_URL], encapsulation)
                  .then(styles => {
                    compareStyles(styles, [
                      'div[_ngcontent-app1-23] {\ncolor: red;\n}',
@@ -143,7 +143,8 @@ export function main() {
            }));
 
         it('should allow to import rules transitively', inject([AsyncTestCompleter], (async) => {
-             compile(['div {\ncolor: red;\n}'], [IMPORT_ABS_MODULE_NAME_WITH_IMPORT], encapsulation)
+             compile(['div {\ncolor: red;\n}'], [IMPORT_ABS_STYLESHEET_URL_WITH_IMPORT],
+                     encapsulation)
                  .then(styles => {
                    compareStyles(styles, [
                      'div[_ngcontent-app1-23] {\ncolor: red;\n}',
@@ -157,8 +158,8 @@ export function main() {
 
       it('should cache stylesheets for parallel requests', inject([AsyncTestCompleter], (async) => {
            PromiseWrapper.all([
-                           compile([], [IMPORT_ABS_MODULE_NAME], ViewEncapsulation.None),
-                           compile([], [IMPORT_ABS_MODULE_NAME], ViewEncapsulation.None)
+                           compile([], [IMPORT_ABS_STYLESHEET_URL], ViewEncapsulation.None),
+                           compile([], [IMPORT_ABS_STYLESHEET_URL], ViewEncapsulation.None)
                          ])
                .then((styleArrays) => {
                  expect(styleArrays[0]).toEqual(['span {color: blue}']);
@@ -169,10 +170,10 @@ export function main() {
          }));
 
       it('should cache stylesheets for serial requests', inject([AsyncTestCompleter], (async) => {
-           compile([], [IMPORT_ABS_MODULE_NAME], ViewEncapsulation.None)
+           compile([], [IMPORT_ABS_STYLESHEET_URL], ViewEncapsulation.None)
                .then((styles0) => {
-                 xhrUrlResults[IMPORT_ABS_MODULE_NAME] = 'span {color: black}';
-                 return compile([], [IMPORT_ABS_MODULE_NAME], ViewEncapsulation.None)
+                 xhrUrlResults[IMPORT_ABS_STYLESHEET_URL] = 'span {color: black}';
+                 return compile([], [IMPORT_ABS_STYLESHEET_URL], ViewEncapsulation.None)
                      .then((styles1) => {
                        expect(styles0).toEqual(['span {color: blue}']);
                        expect(styles1).toEqual(['span {color: blue}']);
@@ -183,11 +184,11 @@ export function main() {
          }));
 
       it('should allow to clear the cache', inject([AsyncTestCompleter], (async) => {
-           compile([], [IMPORT_ABS_MODULE_NAME], ViewEncapsulation.None)
+           compile([], [IMPORT_ABS_STYLESHEET_URL], ViewEncapsulation.None)
                .then((_) => {
                  compiler.clearCache();
-                 xhrUrlResults[IMPORT_ABS_MODULE_NAME] = 'span {color: black}';
-                 return compile([], [IMPORT_ABS_MODULE_NAME], ViewEncapsulation.None);
+                 xhrUrlResults[IMPORT_ABS_STYLESHEET_URL] = 'span {color: black}';
+                 return compile([], [IMPORT_ABS_STYLESHEET_URL], ViewEncapsulation.None);
                })
                .then((styles) => {
                  expect(xhrCount).toBe(2);
@@ -229,7 +230,7 @@ export function main() {
            }));
 
         it('should allow to import rules', inject([AsyncTestCompleter], (async) => {
-             compile(['div {color: red}'], [IMPORT_ABS_MODULE_NAME], encapsulation)
+             compile(['div {color: red}'], [IMPORT_ABS_STYLESHEET_URL], encapsulation)
                  .then(styles => {
                    expect(styles).toEqual(['div {color: red}', 'span {color: blue}']);
                    async.done();
@@ -252,7 +253,7 @@ export function main() {
            }));
 
         it('should allow to import rules', inject([AsyncTestCompleter], (async) => {
-             compile(['div {color: red}'], [IMPORT_ABS_MODULE_NAME], encapsulation)
+             compile(['div {color: red}'], [IMPORT_ABS_STYLESHEET_URL], encapsulation)
                  .then(styles => {
                    compareStyles(styles, [
                      'div[_ngcontent-app1-23] {\ncolor: red;\n}',
@@ -266,7 +267,7 @@ export function main() {
 
     describe('compileStylesheetCodeGen', () => {
       function compile(style: string): Promise<string[][]> {
-        var sourceModules = compiler.compileStylesheetCodeGen(MODULE_NAME, style);
+        var sourceModules = compiler.compileStylesheetCodeGen(MODULE_URL, style);
         return PromiseWrapper.all(sourceModules.map(sourceModule => {
           var sourceWithImports = testableModule(sourceModule).getSourceWithImports();
           return evalModule(sourceWithImports.source, sourceWithImports.imports, null);
@@ -286,7 +287,7 @@ export function main() {
 
       it('should allow to import rules with relative paths',
          inject([AsyncTestCompleter], (async) => {
-           compile(`div {color: red}@import ${IMPORT_REL_MODULE_NAME};`)
+           compile(`div {color: red}@import ${IMPORT_REL_STYLESHEET_URL};`)
                .then(stylesAndShimStyles => {
                  var expected = [
                    ['div {color: red}', 'span {color: blue}'],
@@ -314,7 +315,7 @@ function testableExpression(source: SourceExpression): SourceModule {
 function testableModule(sourceModule: SourceModule): SourceModule {
   var testableSource = `${sourceModule.sourceWithModuleRefs}
   ${codeGenExportVariable('run')}${codeGenValueFn(['_'], 'STYLES')};`;
-  return new SourceModule(sourceModule.moduleId, testableSource);
+  return new SourceModule(sourceModule.moduleUrl, testableSource);
 }
 
 // Needed for Android browsers which add an extra space at the end of some lines

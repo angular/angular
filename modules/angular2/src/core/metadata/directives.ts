@@ -617,12 +617,6 @@ export class DirectiveMetadata extends InjectableMetadata {
   host: StringMap<string, string>;
 
   /**
-   * If set to false the compiler does not compile the children of this directive.
-   */
-  // TODO(vsavkin): This would better fall under the Macro directive concept.
-  compileChildren: boolean;
-
-  /**
    * Defines the set of injectable objects that are visible to a Directive and its light DOM
    * children.
    *
@@ -738,10 +732,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    */
   queries: StringMap<string, any>;
 
-  constructor({
-                  selector, inputs, outputs, host, bindings, exportAs, moduleId, queries,
-                  compileChildren = true,
-              }: {
+  constructor({selector, inputs, outputs, host, bindings, exportAs, moduleId, queries}: {
     selector?: string,
     inputs?: string[],
     outputs?: string[],
@@ -749,8 +740,7 @@ export class DirectiveMetadata extends InjectableMetadata {
     bindings?: any[],
     exportAs?: string,
     moduleId?: string,
-    queries?: StringMap<string, any>,
-    compileChildren?: boolean,
+    queries?: StringMap<string, any>
   } = {}) {
     super();
     this.selector = selector;
@@ -760,7 +750,6 @@ export class DirectiveMetadata extends InjectableMetadata {
     this.exportAs = exportAs;
     this.moduleId = moduleId;
     this.queries = queries;
-    this.compileChildren = compileChildren;
     this.bindings = bindings;
   }
 }
@@ -862,20 +851,18 @@ export class ComponentMetadata extends DirectiveMetadata {
   viewBindings: any[];
 
   constructor({selector, inputs, outputs, host, exportAs, moduleId, bindings, viewBindings,
-               changeDetection = ChangeDetectionStrategy.Default, queries, compileChildren = true}:
-                  {
-                    selector?: string,
-                    inputs?: string[],
-                    outputs?: string[],
-                    host?: StringMap<string, string>,
-                    bindings?: any[],
-                    exportAs?: string,
-                    moduleId?: string,
-                    compileChildren?: boolean,
-                    viewBindings?: any[],
-                    queries?: StringMap<string, any>,
-                    changeDetection?: ChangeDetectionStrategy,
-                  } = {}) {
+               changeDetection = ChangeDetectionStrategy.Default, queries}: {
+    selector?: string,
+    inputs?: string[],
+    outputs?: string[],
+    host?: StringMap<string, string>,
+    bindings?: any[],
+    exportAs?: string,
+    moduleId?: string,
+    viewBindings?: any[],
+    queries?: StringMap<string, any>,
+    changeDetection?: ChangeDetectionStrategy,
+  } = {}) {
     super({
       selector: selector,
       inputs: inputs,
@@ -884,8 +871,7 @@ export class ComponentMetadata extends DirectiveMetadata {
       exportAs: exportAs,
       moduleId: moduleId,
       bindings: bindings,
-      queries: queries,
-      compileChildren: compileChildren
+      queries: queries
     });
 
     this.changeDetection = changeDetection;

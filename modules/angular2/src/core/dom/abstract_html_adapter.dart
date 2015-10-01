@@ -6,6 +6,12 @@ import 'package:html/dom.dart';
 import 'dom_adapter.dart';
 import 'emulated_css.dart';
 
+const _attrToPropMap = const {
+  'innerHtml': 'innerHTML',
+  'readonly': 'readOnly',
+  'tabindex': 'tabIndex',
+};
+
 abstract class AbstractHtml5LibAdapter implements DomAdapter {
   hasProperty(element, String name) {
     // This is needed for serverside compile to generate the right getters/setters.
@@ -23,12 +29,9 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
       throw 'not implemented';
 
   @override
-  final attrToPropMap = const {
-    'innerHtml': 'innerHTML',
-    'readonly': 'readOnly',
-    'tabindex': 'tabIndex',
-  };
+  get attrToPropMap => _attrToPropMap;
 
+  @override
   set attrToPropMap(value) {
     throw 'readonly';
   }
