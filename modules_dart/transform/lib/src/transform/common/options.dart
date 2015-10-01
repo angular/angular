@@ -19,8 +19,6 @@ const INIT_REFLECTOR_PARAM = 'init_reflector';
 const INLINE_VIEWS_PARAM = 'inline_views';
 const MIRROR_MODE_PARAM = 'mirror_mode';
 const OPTIMIZATION_PHASES_PARAM = 'optimization_phases';
-const PRECOMPILE_PARAM = 'precompile';
-const REFLECTION_ENTRY_POINT_PARAM = 'reflection_entry_points';
 
 /// Provides information necessary to transform an Angular2 app.
 class TransformerOptions {

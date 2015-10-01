@@ -127,10 +127,6 @@ const CUSTOM_ANNOTATIONS_ERROR = '''
           superClass: ...''';
 
 void _warnDeprecated(Map config) {
-  if (config.containsKey(REFLECTION_ENTRY_POINT_PARAM)) {
-    print('${REFLECTION_ENTRY_POINT_PARAM} is no longer necessary for '
-        'Angular 2 apps. Please remove it from your pubspec.');
-  }
   if (config.containsKey(GENERATE_CHANGE_DETECTORS_PARAM)) {
     print('${GENERATE_CHANGE_DETECTORS_PARAM} is no longer necessary for '
         'Angular 2 apps. Please remove it from your pubspec.');
