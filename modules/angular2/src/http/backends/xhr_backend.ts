@@ -6,7 +6,9 @@ import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
 import {Injectable} from 'angular2/src/core/di';
 import {BrowserXhr} from './browser_xhr';
 import {isPresent} from 'angular2/src/core/facade/lang';
-var Observable = require('@reactivex/rxjs/dist/cjs/Observable');
+// todo(robwormald): temporary until https://github.com/angular/angular/issues/4390 decided
+var Rx = require('@reactivex/rxjs/dist/cjs/Rx');
+var {Observable} = Rx;
 /**
 * Creates connections using `XMLHttpRequest`. Given a fully-qualified
 * request, an `XHRConnection` will immediately create an `XMLHttpRequest` object and send the

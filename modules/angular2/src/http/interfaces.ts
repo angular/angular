@@ -22,7 +22,7 @@ export abstract class ConnectionBackend {
 export abstract class Connection {
   readyState: ReadyStates;
   request: Request;
-  response: EventEmitter;  // TODO: generic of <Response>;
+  response: any;  // TODO: generic of <Response>;
 }
 
 /**
