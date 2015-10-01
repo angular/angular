@@ -114,24 +114,25 @@ void allTests() {
     new IntegrationTestConfig(
         'should handle Directive depenedencies declared on a View.',
         inputs: {
-          'a|web/index.dart': 'directive_dep_files/index.dart',
-          'a|web/foo.dart': 'directive_dep_files/foo.dart',
-          'a|web/bar.dart': 'directive_dep_files/bar.dart'
-        },
+      'a|web/index.dart': 'directive_dep_files/index.dart',
+      'a|web/foo.dart': 'directive_dep_files/foo.dart',
+      'a|web/bar.dart': 'directive_dep_files/bar.dart'
+    },
         outputs: {
-          'a|web/bar.ng_deps.dart': 'directive_dep_files/expected/bar.ng_deps.dart'
-        }),
+      'a|web/bar.ng_deps.dart': 'directive_dep_files/expected/bar.ng_deps.dart'
+    }),
     new IntegrationTestConfig(
         'should handle chained Directive dependencies declared on a View.',
         inputs: {
-          'a|web/index.dart': 'directive_chain_files/index.dart',
-          'a|web/foo.dart': 'directive_chain_files/foo.dart',
-          'a|web/bar.dart': 'directive_chain_files/bar.dart',
-          'a|web/baz.dart': 'directive_chain_files/baz.dart'
-        },
+      'a|web/index.dart': 'directive_chain_files/index.dart',
+      'a|web/foo.dart': 'directive_chain_files/foo.dart',
+      'a|web/bar.dart': 'directive_chain_files/bar.dart',
+      'a|web/baz.dart': 'directive_chain_files/baz.dart'
+    },
         outputs: {
-          'a|web/bar.ng_deps.dart': 'directive_chain_files/expected/bar.ng_deps.dart'
-        })
+      'a|web/bar.ng_deps.dart':
+          'directive_chain_files/expected/bar.ng_deps.dart'
+    })
   ];
 
   var cache = {};
@@ -160,8 +161,9 @@ void allTests() {
           ],
           config.assetPathToInputPath,
           config.assetPathToExpectedOutputPath,
-          [],
-          StringFormatter.noNewlinesOrSurroundingWhitespace);
+          []);
+//,
+//          StringFormatter.noNewlinesOrSurroundingWhitespace);
     }
   }
 }

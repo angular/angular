@@ -5,6 +5,7 @@ import 'bar.template.dart' as _templates;
 import 'bar.dart';
 import 'package:angular2/src/core/reflection/reflection.dart' as _ngRef;
 import 'package:angular2/src/core/metadata.dart';
+import 'package:angular2/src/core/metadata.ng_deps.dart' as i0;
 import 'baz.dart';
 import 'baz.ng_deps.dart' as i1;
 export 'bar.dart';
@@ -21,5 +22,6 @@ void initReflector() {
           const View(directives: [Foo], template: 'foo'),
           _templates.HostMyComponentTemplate
         ], const [], () => new MyComponent()));
+  i0.initReflector();
   i1.initReflector();
 }

@@ -4,7 +4,6 @@ import 'package:barback/barback.dart';
 import 'package:dart_style/dart_style.dart';
 
 import 'deferred_rewriter/transformer.dart';
-import 'directive_linker/transformer.dart';
 import 'directive_metadata_linker/transformer.dart';
 import 'directive_processor/transformer.dart';
 import 'bind_generator/transformer.dart';
@@ -30,14 +29,8 @@ class AngularTransformerGroup extends TransformerGroup {
       [new ReflectionRemover(options)],
       [new DirectiveProcessor(options)]
     ];
-    phases.addAll(new List.generate(
-        options.optimizationPhases, (_) => [new EmptyNgDepsRemover()]));
     phases.addAll([
-      [
-        new DeferredRewriter(options),
-        new DirectiveLinker(),
-        new DirectiveMetadataLinker()
-      ],
+      [new DeferredRewriter(options), new DirectiveMetadataLinker()],
       [new BindGenerator(options)],
       [new TemplateCompiler(options)],
       [new StylesheetCompiler()],

@@ -30,7 +30,8 @@ class CompileDataResults {
       NormalizedComponentWithViewDirectives> viewDefinitions;
   final List<CompileDirectiveMetadata> directiveMetadatas;
 
-  CompileDataResults._(this.ngDeps, this.viewDefinitions, this.directiveMetadatas);
+  CompileDataResults._(
+      this.ngDeps, this.viewDefinitions, this.directiveMetadatas);
 }
 
 // TODO(kegluenq): Improve this test.
@@ -86,9 +87,7 @@ class _CompileDataCreator {
   Future<Map<AssetId, String>> _createImportAssetToPrefixMap() async {
     var ngDeps = await ngDepsFuture;
 
-    var importAssetToPrefix = <AssetId, String>{
-      entryPoint: null
-    };
+    var importAssetToPrefix = <AssetId, String>{entryPoint: null};
 
     for (ImportDirective node in ngDeps.imports) {
       var uri = stringLiteralToString(node.uri);
@@ -144,12 +143,15 @@ class _CompileDataCreator {
           importAssetId.package, toMetaExtension(importAssetId.path));
       if (await reader.hasInput(metaAssetId)) {
         try {
-          var json = JSON.decode(await reader.readAsString(metaAssetId));
-          var newMetadata = new NgMeta.fromJson(json);
-          if (importAssetId == entryPoint) {
-            this.directiveMetadatas.addAll(newMetadata.types.values);
+          var jsonString = await reader.readAsString(metaAssetId);
+          if (jsonString != null && jsonString.isNotEmpty) {
+            var json = JSON.decode(jsonString);
+            var newMetadata = new NgMeta.fromJson(json);
+            if (importAssetId == entryPoint) {
+              this.directiveMetadatas.addAll(newMetadata.types.values);
+            }
+            ngMeta.addAll(newMetadata);
           }
-          ngMeta.addAll(newMetadata);
         } catch (ex, stackTrace) {
           logger.warning('Failed to decode: $ex, $stackTrace',
               asset: metaAssetId);

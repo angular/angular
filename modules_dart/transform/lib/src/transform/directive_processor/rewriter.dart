@@ -9,7 +9,6 @@ import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
 import 'package:angular2/src/transform/common/directive_metadata_reader.dart';
 import 'package:angular2/src/transform/common/interface_matcher.dart';
 import 'package:angular2/src/transform/common/logging.dart';
-import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
 import 'package:angular2/src/transform/common/ng_compiler.dart';
 import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:barback/barback.dart' show AssetId;
@@ -17,26 +16,20 @@ import 'package:angular2/src/core/compiler/template_compiler.dart';
 
 import 'inliner.dart';
 
-/// Generates a file registering all Angular 2 `Directive`s found in `code` in
-/// ngDeps format [TODO(kegluneq): documentation reference needed]. `assetId` is
-/// the id of the asset containing `code`.
-///
-/// If no Angular 2 `Directive`s are found in `code`, returns the empty
-/// string unless `forceGenerate` is true, in which case an empty ngDeps
-/// file is created.
-Future<NgDepsModel> createNgDeps(AssetReader reader, AssetId assetId,
-    AnnotationMatcher annotationMatcher, NgMeta ngMeta) async {
+/// Generates an instance of [NgMeta] describing the file at `assetId`.
+Future<NgMeta> createNgDeps(AssetReader reader, AssetId assetId,
+    AnnotationMatcher annotationMatcher) async {
   // TODO(kegluneq): Shortcut if we can determine that there are no
   // [Directive]s present, taking into account `export`s.
   var codeWithParts = await inlineParts(reader, assetId);
   if (codeWithParts == null || codeWithParts.isEmpty) return null;
-
   var parsedCode =
       parseCompilationUnit(codeWithParts, name: '${assetId.path} and parts');
 
   var ngDepsVisitor = new NgDepsVisitor(assetId, annotationMatcher);
   parsedCode.accept(ngDepsVisitor);
-  var ngDepsModel = ngDepsVisitor.model;
+
+  var ngMeta = new NgMeta(ngDeps: ngDepsVisitor.model);
 
   var templateCompiler = createTemplateCompiler(reader);
   var ngMetaVisitor = new _NgMetaVisitor(
@@ -44,20 +37,8 @@ Future<NgDepsModel> createNgDeps(AssetReader reader, AssetId assetId,
   parsedCode.accept(ngMetaVisitor);
   await ngMetaVisitor.whenDone();
 
-  // If this file imports only dart: libraries and does not define any
-  // reflectables of its own, it doesn't need a .ng_deps.dart file.
-  if (ngDepsModel.reflectables == null || ngDepsModel.reflectables.isEmpty) {
-    if (ngDepsModel.imports.every(_isDartImport) &&
-        ngDepsModel.exports.every(_isDartImport)) {
-      return null;
-    }
-  }
-
-  return ngDepsModel;
+  return ngMeta;
 }
-
-// `model` can be an [ImportModel] or [ExportModel].
-bool _isDartImport(dynamic model) => model.uri.startsWith('dart:');
 
 // TODO(kegluneq): Allow the caller to provide an InterfaceMatcher.
 final _interfaceMatcher = new InterfaceMatcher();
@@ -94,12 +75,6 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
     }
     node.directives.accept(this);
     return node.declarations.accept(this);
-  }
-
-  @override
-  Object visitExportDirective(ExportDirective node) {
-    ngMeta.exports.add(stringLiteralToString(node.uri));
-    return null;
   }
 
   @override

@@ -8,16 +8,17 @@ import 'package:path/path.dart' as path;
 /// If `fromAbsolute` is specified, `importPath` may be a relative path,
 /// otherwise it is expected to be absolute.
 String writeImportUri(String importPath, {String prefix, String fromAbsolute}) {
+  var urlResolver = const TransformerUrlResolver();
   var codegenImportPath;
 
-  var resolver = const TransformerUrlResolver();
-  var importUri = resolver.toAssetScheme(Uri.parse(importPath));
+  var importUri =
+      toAssetScheme(Uri.parse(urlResolver.resolve(fromAbsolute, importPath)));
   if (_canPackageImport(importUri) ||
       fromAbsolute == null ||
       fromAbsolute.isEmpty) {
     codegenImportPath = _toPackageImport(importUri);
   } else {
-    var moduleUri = resolver.toAssetScheme(Uri.parse(fromAbsolute));
+    var moduleUri = toAssetScheme(Uri.parse(fromAbsolute));
     if (_canImportRelative(importUri, from: moduleUri)) {
       codegenImportPath = path.url.relative(importUri.toString(),
           from: path.dirname(moduleUri.toString()));

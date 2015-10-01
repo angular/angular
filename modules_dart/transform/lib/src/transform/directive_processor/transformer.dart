@@ -8,7 +8,6 @@ import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/options.dart';
-import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:barback/barback.dart';
 
 import 'rewriter.dart';
@@ -37,7 +36,6 @@ class DirectiveProcessor extends Transformer implements DeclaringTransformer {
   @override
   declareOutputs(DeclaringTransform transform) {
     transform.declareOutput(_ngMetaAssetId(transform.primaryId));
-    transform.declareOutput(_ngDepsAssetId(transform.primaryId));
   }
 
   @override
@@ -46,20 +44,13 @@ class DirectiveProcessor extends Transformer implements DeclaringTransformer {
     await log.initZoned(transform, () async {
       var primaryId = transform.primaryInput.id;
       var reader = new AssetReader.fromTransform(transform);
-      var ngMeta = new NgMeta.empty();
-      var ngDepsModel = await createNgDeps(
-          reader, primaryId, options.annotationMatcher, ngMeta);
-      // TODO(kegluneq): Combine NgDepsModel with NgMeta in a single .json file.
-      if (ngDepsModel != null) {
-        var ngDepsAssetId = _ngDepsAssetId(primaryId);
-        transform.addOutput(new Asset.fromString(
-            ngDepsAssetId, _encoder.convert(ngDepsModel.writeToJsonMap())));
+      var ngMeta =
+          await createNgDeps(reader, primaryId, options.annotationMatcher);
+      if (ngMeta == null || ngMeta.isEmpty) {
+        return;
       }
-      var metaOutputId = _ngMetaAssetId(primaryId);
-      if (!ngMeta.isEmpty) {
-        transform.addOutput(new Asset.fromString(
-            metaOutputId, _encoder.convert(ngMeta.toJson())));
-      }
+      transform.addOutput(new Asset.fromString(
+          _ngMetaAssetId(primaryId), _encoder.convert(ngMeta.toJson())));
     });
   }
 }
@@ -67,9 +58,4 @@ class DirectiveProcessor extends Transformer implements DeclaringTransformer {
 AssetId _ngMetaAssetId(AssetId primaryInputId) {
   return new AssetId(
       primaryInputId.package, toMetaExtension(primaryInputId.path));
-}
-
-AssetId _ngDepsAssetId(AssetId primaryInputId) {
-  return new AssetId(
-      primaryInputId.package, toJsonExtension(primaryInputId.path));
 }
