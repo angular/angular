@@ -12,6 +12,7 @@ var stew = require('broccoli-stew');
 import ts2dart from '../broccoli-ts2dart';
 import dartfmt from '../broccoli-dartfmt';
 import replace from '../broccoli-replace';
+var version = require('../../../../tools/versions/version-info.js').currentVersion;
 
 var global_excludes = [
   'angular2/http*',
@@ -63,6 +64,19 @@ function getSourceTree() {
     generateSourceMap: false,
     translateBuiltins: true,
   });
+
+
+  transpiled = replace(transpiled, {
+    files: ['**/*application_version*'],
+    patterns: [
+      {match: "NG_VERSION_FULL", replacement: function() { return version.full }},
+      {match: "NG_VERSION_MAJOR", replacement: function() { return version.major }},
+      {match: "NG_VERSION_MINOR", replacement: function() { return version.minor }},
+      {match: "NG_VERSION_DOT", replacement: function() { return version.patch }},
+      {match: "NG_VERSION_CODENAME", replacement: function() { return version.codeName }},
+    ]
+  });
+
   // Native sources, dart only examples, etc.
   var dartSrcs =
       modulesFunnel(['**/*.dart', '**/*.ng_meta.json', '**/*.aliases.json', '**/css/**']);
