@@ -189,7 +189,6 @@ function createChangeDefinitions(pvVisitors: ProtoViewVisitor[], componentType: 
                                  genConfig: ChangeDetectorGenConfig): ChangeDetectorDefinition[] {
   var pvVariableNames = _collectNestedProtoViewsVariableNames(pvVisitors);
   return pvVisitors.map(pvVisitor => {
-    var isHost = pvVisitor.viewIndex === 0 && componentType.isHost;
     var id = `${componentType.name}_${pvVisitor.viewIndex}`;
     return new ChangeDetectorDefinition(
         id, pvVisitor.strategy, pvVariableNames[pvVisitor.viewIndex], pvVisitor.bindingRecords,
