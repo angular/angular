@@ -6,12 +6,12 @@ import 'package:angular2/bootstrap_static.dart';
 import 'index.ng_deps.dart' as ngStaticInit;
 import 'package:angular2/src/core/reflection/reflection.dart';
 import 'bar.dart';
-import 'bar.ng_deps.dart' as i5;
+import 'bar.ng_deps.dart' as i3;
 export 'index.dart';
 
 var _visited = false;
 void initReflector() {
   if (_visited) return;
   _visited = true;
-  i5.initReflector();
+  i3.initReflector();
 }
