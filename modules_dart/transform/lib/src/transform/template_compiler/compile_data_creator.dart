@@ -4,8 +4,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:analyzer/analyzer.dart';
-import 'package:angular2/src/compiler/directive_metadata.dart';
-import 'package:angular2/src/compiler/template_compiler.dart';
+import 'package:angular2/src/core/compiler/directive_metadata.dart';
+import 'package:angular2/src/core/compiler/template_compiler.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';

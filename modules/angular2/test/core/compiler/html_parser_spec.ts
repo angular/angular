@@ -1,6 +1,6 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
 
-import {HtmlParser} from 'angular2/src/compiler/html_parser';
+import {HtmlParser} from 'angular2/src/core/compiler/html_parser';
 import {
   HtmlAst,
   HtmlAstVisitor,
@@ -8,7 +8,7 @@ import {
   HtmlAttrAst,
   HtmlTextAst,
   htmlVisitAll
-} from 'angular2/src/compiler/html_ast';
+} from 'angular2/src/core/compiler/html_ast';
 
 export function main() {
   describe('DomParser', () => {

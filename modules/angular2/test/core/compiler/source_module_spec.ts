@@ -12,7 +12,7 @@ import {
   TestComponentBuilder
 } from 'angular2/test_lib';
 
-import {SourceModule, moduleRef} from 'angular2/src/compiler/source_module';
+import {SourceModule, moduleRef} from 'angular2/src/core/compiler/source_module';
 
 export function main() {
   describe('SourceModule', () => {

@@ -8,17 +8,17 @@ export {SourceModule, SourceWithImports} from './source_module';
 
 import {assertionsEnabled, Type} from 'angular2/src/core/facade/lang';
 import {bind, Binding} from 'angular2/src/core/di';
-import {TemplateParser} from 'angular2/src/compiler/template_parser';
-import {HtmlParser} from 'angular2/src/compiler/html_parser';
-import {TemplateNormalizer} from 'angular2/src/compiler/template_normalizer';
-import {RuntimeMetadataResolver} from 'angular2/src/compiler/runtime_metadata';
-import {ChangeDetectionCompiler} from 'angular2/src/compiler/change_detector_compiler';
-import {StyleCompiler} from 'angular2/src/compiler/style_compiler';
-import {CommandCompiler} from 'angular2/src/compiler/command_compiler';
-import {TemplateCompiler} from 'angular2/src/compiler/template_compiler';
+import {TemplateParser} from 'angular2/src/core/compiler/template_parser';
+import {HtmlParser} from 'angular2/src/core/compiler/html_parser';
+import {TemplateNormalizer} from 'angular2/src/core/compiler/template_normalizer';
+import {RuntimeMetadataResolver} from 'angular2/src/core/compiler/runtime_metadata';
+import {ChangeDetectionCompiler} from 'angular2/src/core/compiler/change_detector_compiler';
+import {StyleCompiler} from 'angular2/src/core/compiler/style_compiler';
+import {CommandCompiler} from 'angular2/src/core/compiler/command_compiler';
+import {TemplateCompiler} from 'angular2/src/core/compiler/template_compiler';
 import {ChangeDetectorGenConfig} from 'angular2/src/core/change_detection/change_detection';
 import {Compiler} from 'angular2/src/core/linker/compiler';
-import {RuntimeCompiler} from 'angular2/src/compiler/runtime_compiler';
+import {RuntimeCompiler} from 'angular2/src/core/compiler/runtime_compiler';
 import {ElementSchemaRegistry} from 'angular2/src/core/render/dom/schema/element_schema_registry';
 import {
   DomElementSchemaRegistry

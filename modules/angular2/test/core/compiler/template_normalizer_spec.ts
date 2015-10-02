@@ -16,10 +16,10 @@ import {
 import {
   CompileTypeMetadata,
   CompileTemplateMetadata
-} from 'angular2/src/compiler/directive_metadata';
+} from 'angular2/src/core/compiler/directive_metadata';
 import {ViewEncapsulation} from 'angular2/src/core/render/api';
 
-import {TemplateNormalizer} from 'angular2/src/compiler/template_normalizer';
+import {TemplateNormalizer} from 'angular2/src/core/compiler/template_normalizer';
 import {XHR} from 'angular2/src/core/render/xhr';
 import {MockXHR} from 'angular2/src/core/render/xhr_mock';
 import {TEST_BINDINGS} from './test_bindings';

@@ -16,7 +16,7 @@ import {
 import {CONST_EXPR, stringify, isType, Type, isBlank} from 'angular2/src/core/facade/lang';
 import {MapWrapper} from 'angular2/src/core/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
-import {TemplateParser} from 'angular2/src/compiler/template_parser';
+import {TemplateParser} from 'angular2/src/core/compiler/template_parser';
 import {
   CommandVisitor,
   TextCmd,
@@ -28,13 +28,13 @@ import {
   visitAllCommands,
   CompiledTemplate
 } from 'angular2/src/core/linker/template_commands';
-import {CommandCompiler} from 'angular2/src/compiler/command_compiler';
+import {CommandCompiler} from 'angular2/src/core/compiler/command_compiler';
 import {
   CompileDirectiveMetadata,
   CompileTypeMetadata,
   CompileTemplateMetadata
-} from 'angular2/src/compiler/directive_metadata';
-import {SourceModule, SourceExpression, moduleRef} from 'angular2/src/compiler/source_module';
+} from 'angular2/src/core/compiler/directive_metadata';
+import {SourceModule, SourceExpression, moduleRef} from 'angular2/src/core/compiler/source_module';
 import {ViewEncapsulation} from 'angular2/src/core/render/api';
 import {evalModule} from './eval_module';
 import {
@@ -42,7 +42,7 @@ import {
   codeGenValueFn,
   codeGenExportVariable,
   MODULE_SUFFIX
-} from 'angular2/src/compiler/util';
+} from 'angular2/src/core/compiler/util';
 import {TEST_BINDINGS} from './test_bindings';
 
 const BEGIN_ELEMENT = 'BEGIN_ELEMENT';
@@ -54,7 +54,7 @@ const NG_CONTENT = 'NG_CONTENT';
 const EMBEDDED_TEMPLATE = 'EMBEDDED_TEMPLATE';
 
 // Attention: These module names have to correspond to real modules!
-var THIS_MODULE_URL = `package:angular2/test/compiler/command_compiler_spec${MODULE_SUFFIX}`;
+var THIS_MODULE_URL = `package:angular2/test/core/compiler/command_compiler_spec${MODULE_SUFFIX}`;
 var THIS_MODULE_REF = moduleRef(THIS_MODULE_URL);
 var TEMPLATE_COMMANDS_MODULE_REF =
     moduleRef(`package:angular2/src/core/linker/template_commands${MODULE_SUFFIX}`);

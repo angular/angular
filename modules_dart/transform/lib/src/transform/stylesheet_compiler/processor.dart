@@ -6,7 +6,7 @@ import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/code/source_module.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/ng_compiler.dart';
-import 'package:angular2/src/compiler/source_module.dart';
+import 'package:angular2/src/core/compiler/source_module.dart';
 
 import 'package:barback/barback.dart';
 

@@ -3,8 +3,8 @@ library angular2.transform.template_compiler.generator;
 import 'dart:async';
 
 import 'package:analyzer/analyzer.dart';
-import 'package:angular2/src/compiler/source_module.dart';
-import 'package:angular2/src/compiler/template_compiler.dart';
+import 'package:angular2/src/core/compiler/source_module.dart';
+import 'package:angular2/src/core/compiler/template_compiler.dart';
 import 'package:angular2/src/core/change_detection/interfaces.dart';
 import 'package:angular2/src/core/facade/lang.dart';
 import 'package:angular2/src/core/reflection/reflection.dart';

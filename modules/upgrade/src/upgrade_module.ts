@@ -25,7 +25,7 @@ import {
 } from 'angular2/angular2';
 import {applicationDomBindings} from 'angular2/src/core/application_common';
 import {applicationCommonBindings} from '../../angular2/src/core/application_ref';
-import {compilerBindings} from 'angular2/src/compiler/compiler';
+import {compilerBindings} from 'angular2/src/core/compiler/compiler';
 
 import {getComponentSelector} from './metadata';
 import {onError} from './util';

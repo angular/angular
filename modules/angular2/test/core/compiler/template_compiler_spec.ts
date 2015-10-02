@@ -16,14 +16,14 @@ import {
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {Type, isPresent, isBlank, stringify, isString} from 'angular2/src/core/facade/lang';
 import {MapWrapper, SetWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
-import {RuntimeMetadataResolver} from 'angular2/src/compiler/runtime_metadata';
+import {RuntimeMetadataResolver} from 'angular2/src/core/compiler/runtime_metadata';
 import {
   TemplateCompiler,
   NormalizedComponentWithViewDirectives
-} from 'angular2/src/compiler/template_compiler';
-import {CompileDirectiveMetadata} from 'angular2/src/compiler/directive_metadata';
+} from 'angular2/src/core/compiler/template_compiler';
+import {CompileDirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 import {evalModule} from './eval_module';
-import {SourceModule, moduleRef} from 'angular2/src/compiler/source_module';
+import {SourceModule, moduleRef} from 'angular2/src/core/compiler/source_module';
 import {XHR} from 'angular2/src/core/render/xhr';
 import {MockXHR} from 'angular2/src/core/render/xhr_mock';
 
@@ -45,11 +45,15 @@ import {Component, View, Directive, bind} from 'angular2/core';
 
 import {TEST_BINDINGS} from './test_bindings';
 import {TestDispatcher, TestPipes} from './change_detector_mocks';
-import {codeGenValueFn, codeGenExportVariable, MODULE_SUFFIX} from 'angular2/src/compiler/util';
+import {
+  codeGenValueFn,
+  codeGenExportVariable,
+  MODULE_SUFFIX
+} from 'angular2/src/core/compiler/util';
 import {APP_ID} from 'angular2/src/core/render/dom/dom_tokens';
 
 // Attention: This path has to point to this test file!
-const THIS_MODULE_ID = 'angular2/test/compiler/template_compiler_spec';
+const THIS_MODULE_ID = 'angular2/test/core/compiler/template_compiler_spec';
 var THIS_MODULE_REF = moduleRef(`package:${THIS_MODULE_ID}${MODULE_SUFFIX}`);
 
 const APP_ID_VALUE = 'app1';
@@ -136,7 +140,7 @@ export function main() {
 
         it('should cache components for parallel requests',
            inject([AsyncTestCompleter, XHR], (async, xhr: MockXHR) => {
-             xhr.expect('package:angular2/test/compiler/compUrl.html', 'a');
+             xhr.expect('package:angular2/test/core/compiler/compUrl.html', 'a');
              PromiseWrapper.all([compile([CompWithTemplateUrl]), compile([CompWithTemplateUrl])])
                  .then((humanizedTemplates) => {
                    expect(humanizedTemplates[0]['commands'][1]['commands']).toEqual(['#text(a)']);
@@ -149,7 +153,7 @@ export function main() {
 
         it('should cache components for sequential requests',
            inject([AsyncTestCompleter, XHR], (async, xhr: MockXHR) => {
-             xhr.expect('package:angular2/test/compiler/compUrl.html', 'a');
+             xhr.expect('package:angular2/test/core/compiler/compUrl.html', 'a');
              compile([CompWithTemplateUrl])
                  .then((humanizedTemplate0) => {
                    return compile([CompWithTemplateUrl])
@@ -166,11 +170,11 @@ export function main() {
 
         it('should allow to clear the cache',
            inject([AsyncTestCompleter, XHR], (async, xhr: MockXHR) => {
-             xhr.expect('package:angular2/test/compiler/compUrl.html', 'a');
+             xhr.expect('package:angular2/test/core/compiler/compUrl.html', 'a');
              compile([CompWithTemplateUrl])
                  .then((humanizedTemplate) => {
                    compiler.clearCache();
-                   xhr.expect('package:angular2/test/compiler/compUrl.html', 'b');
+                   xhr.expect('package:angular2/test/core/compiler/compUrl.html', 'b');
                    var result = compile([CompWithTemplateUrl]);
                    xhr.flush();
                    return result;
@@ -226,7 +230,7 @@ export function main() {
 
       it('should normalize the template',
          inject([AsyncTestCompleter, XHR], (async, xhr: MockXHR) => {
-           xhr.expect('package:angular2/test/compiler/compUrl.html', 'loadedTemplate');
+           xhr.expect('package:angular2/test/core/compiler/compUrl.html', 'loadedTemplate');
            compiler.normalizeDirectiveMetadata(
                        runtimeMetadataResolver.getMetadata(CompWithTemplateUrl))
                .then((meta: CompileDirectiveMetadata) => {

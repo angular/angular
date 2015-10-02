@@ -12,8 +12,8 @@ import {
   TestComponentBuilder
 } from 'angular2/test_lib';
 
-import {IS_DART} from '../platform';
-import {escapeSingleQuoteString, escapeDoubleQuoteString} from 'angular2/src/compiler/util';
+import {IS_DART} from '../../platform';
+import {escapeSingleQuoteString, escapeDoubleQuoteString} from 'angular2/src/core/compiler/util';
 
 export function main() {
   describe('util', () => {

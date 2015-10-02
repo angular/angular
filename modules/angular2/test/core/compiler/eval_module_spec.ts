@@ -11,7 +11,7 @@ import {
   AsyncTestCompleter,
   inject
 } from 'angular2/test_lib';
-import {IS_DART} from '../platform';
+import {IS_DART} from '../../platform';
 
 import {evalModule} from './eval_module';
 
@@ -19,7 +19,8 @@ import {evalModule} from './eval_module';
 // when evaling the test module!
 export var TEST_VALUE = 23;
 
-const THIS_MODULE_URL = `package:angular2/test/compiler/eval_module_spec${IS_DART?'.dart':'.js'}`;
+const THIS_MODULE_URL =
+    `package:angular2/test/core/compiler/eval_module_spec${IS_DART?'.dart':'.js'}`;
 
 export function main() {
   describe('evalModule', () => {

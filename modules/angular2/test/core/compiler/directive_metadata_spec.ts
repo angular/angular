@@ -16,7 +16,7 @@ import {
   CompileDirectiveMetadata,
   CompileTypeMetadata,
   CompileTemplateMetadata
-} from 'angular2/src/compiler/directive_metadata';
+} from 'angular2/src/core/compiler/directive_metadata';
 import {ViewEncapsulation} from 'angular2/src/core/render/api';
 import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection';
 import {LifecycleHooks} from 'angular2/src/core/linker/interfaces';

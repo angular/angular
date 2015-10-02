@@ -18,20 +18,20 @@ import {CONST_EXPR, stringify} from 'angular2/src/core/facade/lang';
 import {MapWrapper} from 'angular2/src/core/facade/collection';
 import {Promise} from 'angular2/src/core/facade/async';
 
-import {ChangeDetectionCompiler} from 'angular2/src/compiler/change_detector_compiler';
+import {ChangeDetectionCompiler} from 'angular2/src/core/compiler/change_detector_compiler';
 
 import {
   CompileDirectiveMetadata,
   CompileTypeMetadata
-} from 'angular2/src/compiler/directive_metadata';
+} from 'angular2/src/core/compiler/directive_metadata';
 import {
   SourceModule,
   SourceExpression,
   SourceExpressions,
   moduleRef
-} from 'angular2/src/compiler/source_module';
+} from 'angular2/src/core/compiler/source_module';
 
-import {TemplateParser} from 'angular2/src/compiler/template_parser';
+import {TemplateParser} from 'angular2/src/core/compiler/template_parser';
 
 import {
   ChangeDetectorGenConfig,
@@ -47,10 +47,14 @@ import {evalModule} from './eval_module';
 
 import {TEST_BINDINGS} from './test_bindings';
 import {TestDispatcher, TestPipes} from './change_detector_mocks';
-import {codeGenValueFn, codeGenExportVariable, MODULE_SUFFIX} from 'angular2/src/compiler/util';
+import {
+  codeGenValueFn,
+  codeGenExportVariable,
+  MODULE_SUFFIX
+} from 'angular2/src/core/compiler/util';
 
 // Attention: These module names have to correspond to real modules!
-var THIS_MODULE_ID = 'angular2/test/compiler/change_detector_compiler_spec';
+var THIS_MODULE_ID = 'angular2/test/core/compiler/change_detector_compiler_spec';
 var THIS_MODULE_URL = `package:${THIS_MODULE_ID}${MODULE_SUFFIX}`;
 var THIS_MODULE_REF = moduleRef(THIS_MODULE_URL);
 

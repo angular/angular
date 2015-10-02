@@ -2,7 +2,7 @@
 import {Binding} from './di';
 import {Type, isPresent} from 'angular2/src/core/facade/lang';
 import {Promise} from 'angular2/src/core/facade/async';
-import {compilerBindings} from 'angular2/src/compiler/compiler';
+import {compilerBindings} from 'angular2/src/core/compiler/compiler';
 import {commonBootstrap} from './application_common';
 import {ComponentRef} from './linker/dynamic_component_loader';
 

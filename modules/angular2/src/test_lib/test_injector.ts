@@ -65,7 +65,7 @@ import {
 } from 'angular2/src/core/render/dom/schema/dom_element_schema_registry';
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {Log} from './utils';
-import {compilerBindings} from 'angular2/src/compiler/compiler';
+import {compilerBindings} from 'angular2/src/core/compiler/compiler';
 
 /**
  * Returns the root injector bindings.

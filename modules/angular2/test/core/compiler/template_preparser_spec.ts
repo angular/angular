@@ -13,12 +13,12 @@ import {
   beforeEachBindings
 } from 'angular2/test_lib';
 
-import {HtmlParser} from 'angular2/src/compiler/html_parser';
+import {HtmlParser} from 'angular2/src/core/compiler/html_parser';
 import {
   preparseElement,
   PreparsedElementType,
   PreparsedElement
-} from 'angular2/src/compiler/template_preparser';
+} from 'angular2/src/core/compiler/template_preparser';
 
 export function main() {
   describe('preparseElement', () => {

@@ -14,7 +14,7 @@ import {
 } from 'angular2/test_lib';
 
 import {stringify} from 'angular2/src/core/facade/lang';
-import {RuntimeMetadataResolver} from 'angular2/src/compiler/runtime_metadata';
+import {RuntimeMetadataResolver} from 'angular2/src/core/compiler/runtime_metadata';
 import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/linker/interfaces';
 import {
   Component,
@@ -34,7 +34,7 @@ import {
 } from 'angular2/core';
 
 import {TEST_BINDINGS} from './test_bindings';
-import {MODULE_SUFFIX, IS_DART} from 'angular2/src/compiler/util';
+import {MODULE_SUFFIX, IS_DART} from 'angular2/src/core/compiler/util';
 
 export function main() {
   describe('RuntimeMetadataResolver', () => {
@@ -69,7 +69,8 @@ export function main() {
          inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
            var value: string = resolver.getMetadata(DirectiveWithoutModuleId).type.moduleUrl;
            var expectedEndValue =
-               IS_DART ? 'base/dist/dart/angular2/test/compiler/runtime_metadata_spec.dart' : './';
+               IS_DART ? 'base/dist/dart/angular2/test/core/compiler/runtime_metadata_spec.dart' :
+                         './';
            expect((<any>value).endsWith(expectedEndValue)).toBe(true);
          }));
     });

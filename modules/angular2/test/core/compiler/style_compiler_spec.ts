@@ -13,31 +13,35 @@ import {
   beforeEachBindings
 } from 'angular2/test_lib';
 import {bind} from 'angular2/src/core/di';
-import {SpyXHR} from '../core/spies';
+import {SpyXHR} from '../spies';
 import {XHR} from 'angular2/src/core/render/xhr';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
 import {CONST_EXPR, isPresent, isBlank, StringWrapper} from 'angular2/src/core/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 import {evalModule} from './eval_module';
-import {StyleCompiler} from 'angular2/src/compiler/style_compiler';
+import {StyleCompiler} from 'angular2/src/core/compiler/style_compiler';
 import {
   CompileDirectiveMetadata,
   CompileTemplateMetadata,
   CompileTypeMetadata
-} from 'angular2/src/compiler/directive_metadata';
-import {SourceExpression, SourceModule} from 'angular2/src/compiler/source_module';
+} from 'angular2/src/core/compiler/directive_metadata';
+import {SourceExpression, SourceModule} from 'angular2/src/core/compiler/source_module';
 import {ViewEncapsulation} from 'angular2/src/core/render/api';
 import {TEST_BINDINGS} from './test_bindings';
-import {codeGenValueFn, codeGenExportVariable, MODULE_SUFFIX} from 'angular2/src/compiler/util';
+import {
+  codeGenValueFn,
+  codeGenExportVariable,
+  MODULE_SUFFIX
+} from 'angular2/src/core/compiler/util';
 
 // Attention: These module names have to correspond to real modules!
-var MODULE_URL = `package:angular2/test/compiler/style_compiler_spec${MODULE_SUFFIX}`;
-var IMPORT_ABS_STYLESHEET_URL = `package:angular2/test/compiler/style_compiler_import.css`;
+var MODULE_URL = `package:angular2/test/core/compiler/style_compiler_spec${MODULE_SUFFIX}`;
+var IMPORT_ABS_STYLESHEET_URL = `package:angular2/test/core/compiler/style_compiler_import.css`;
 var IMPORT_REL_STYLESHEET_URL = './style_compiler_import.css';
 // Note: Not a real module, only used via mocks.
 var IMPORT_ABS_STYLESHEET_URL_WITH_IMPORT =
-    `package:angular2/test/compiler/style_compiler_transitive_import.css`;
+    `package:angular2/test/core/compiler/style_compiler_transitive_import.css`;
 
 export function main() {
   describe('StyleCompiler', () => {

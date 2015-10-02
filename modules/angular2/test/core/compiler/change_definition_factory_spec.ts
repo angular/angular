@@ -16,8 +16,8 @@ import {MapWrapper} from 'angular2/src/core/facade/collection';
 import {
   CompileDirectiveMetadata,
   CompileTypeMetadata
-} from 'angular2/src/compiler/directive_metadata';
-import {TemplateParser} from 'angular2/src/compiler/template_parser';
+} from 'angular2/src/core/compiler/directive_metadata';
+import {TemplateParser} from 'angular2/src/core/compiler/template_parser';
 import {
   Parser,
   Lexer,
@@ -32,7 +32,9 @@ import {
   ChangeDetector
 } from 'angular2/src/core/change_detection/change_detection';
 import {Pipes} from 'angular2/src/core/change_detection/pipes';
-import {createChangeDetectorDefinitions} from 'angular2/src/compiler/change_definition_factory';
+import {
+  createChangeDetectorDefinitions
+} from 'angular2/src/core/compiler/change_definition_factory';
 import {TestDirective, TestDispatcher, TestPipes} from './change_detector_mocks';
 
 import {TEST_BINDINGS} from './test_bindings';

@@ -1,5 +1,5 @@
 import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular2/test_lib';
-import {resolveStyleUrls} from 'angular2/src/compiler/style_url_resolver';
+import {resolveStyleUrls} from 'angular2/src/core/compiler/style_url_resolver';
 
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 

@@ -13,7 +13,7 @@ import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
 import 'package:angular2/src/transform/common/ng_compiler.dart';
 import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:barback/barback.dart' show AssetId;
-import 'package:angular2/src/compiler/template_compiler.dart';
+import 'package:angular2/src/core/compiler/template_compiler.dart';
 
 import 'inliner.dart';
 

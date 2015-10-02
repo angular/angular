@@ -14,12 +14,12 @@ import {bind} from 'angular2/src/core/di';
 
 import {TEST_BINDINGS} from './test_bindings';
 import {isPresent} from 'angular2/src/core/facade/lang';
-import {TemplateParser, splitClasses} from 'angular2/src/compiler/template_parser';
+import {TemplateParser, splitClasses} from 'angular2/src/core/compiler/template_parser';
 import {
   CompileDirectiveMetadata,
   CompileTypeMetadata,
   CompileTemplateMetadata
-} from 'angular2/src/compiler/directive_metadata';
+} from 'angular2/src/core/compiler/directive_metadata';
 import {
   templateVisitAll,
   TemplateAstVisitor,
@@ -36,12 +36,12 @@ import {
   TextAst,
   PropertyBindingType,
   DirectiveAst
-} from 'angular2/src/compiler/template_ast';
+} from 'angular2/src/core/compiler/template_ast';
 
 import {ElementSchemaRegistry} from 'angular2/src/core/render/dom/schema/element_schema_registry';
 import {MockSchemaRegistry} from './schema_registry_mock';
 
-import {Unparser} from '../core/change_detection/parser/unparser';
+import {Unparser} from '../change_detection/parser/unparser';
 
 var expressionUnparser = new Unparser();
 
