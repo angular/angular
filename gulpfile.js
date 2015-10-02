@@ -117,11 +117,9 @@ var CONFIG = {
     js: {
       all: 'dist/js',
       dev: {
-        es6: 'dist/js/dev/es6',
         es5: 'dist/js/dev/es5'
       },
       prod: {
-        es6: 'dist/js/prod/es6',
         es5: 'dist/js/prod/es5'
       },
       cjs: 'dist/js/cjs',
@@ -309,13 +307,10 @@ gulp.task('lint', ['build.tools'], function() {
 // ------------
 // check circular dependencies in Node.js context
 gulp.task('build/checkCircularDependencies', function (done) {
-  var dependencyObject = madge(CONFIG.dest.js.dev.es6, {
-    format: 'es6',
-    paths: [CONFIG.dest.js.dev.es6],
-    extensions: ['.js'],
-    onParseFile: function(data) {
-      data.src = data.src.replace(/import \* as/g, "//import * as");
-    }
+  var dependencyObject = madge(CONFIG.dest.js.dev.es5, {
+    format: 'cjs',
+    paths: [CONFIG.dest.js.dev.es5],
+    extensions: ['.js']
   });
   var circularDependencies = dependencyObject.circular().getArray();
   if (circularDependencies.length > 0) {
