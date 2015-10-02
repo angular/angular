@@ -9,7 +9,6 @@ export {
   OnInit,
   DoCheck
 } from './compiler/interfaces';
-export {ComponentUrlMapper} from './compiler/component_url_mapper';
 export {DirectiveResolver} from './compiler/directive_resolver';
 export {Compiler} from './compiler/compiler';
 export {AppViewManager} from './compiler/view_manager';

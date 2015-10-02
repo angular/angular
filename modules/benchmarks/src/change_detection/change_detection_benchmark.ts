@@ -7,10 +7,9 @@ import {
   Lexer,
   Parser,
   ChangeDispatcher,
-  ChangeDetection,
   DebugContext,
-  DynamicChangeDetection,
-  JitChangeDetection,
+  DynamicProtoChangeDetector,
+  JitProtoChangeDetector,
   ChangeDetectorDefinition,
   ChangeDetectorGenConfig,
   BindingRecord,
@@ -245,13 +244,13 @@ function runBaselineWrites(baselineHead, numberOfRuns, object) {
 
 // ---- CHANGE DETECTION
 
-function setUpChangeDetection(changeDetection: ChangeDetection, iterations, object) {
+function setUpChangeDetection(protoChangeDetectorFactory: Function, iterations, object) {
   var dispatcher = new DummyDispatcher();
   var parser = new Parser(new Lexer());
 
   var genConfig = new ChangeDetectorGenConfig(false, false, false, true);
-  var parentProto = changeDetection.getProtoChangeDetector(
-      "id", new ChangeDetectorDefinition('parent', null, [], [], [], [], genConfig));
+  var parentProto = protoChangeDetectorFactory(
+      new ChangeDetectorDefinition('parent', null, [], [], [], [], genConfig));
   var parentCd = parentProto.instantiate(dispatcher);
 
   var directiveRecord = new DirectiveRecord({directiveIndex: new DirectiveIndex(0, 0)});
@@ -278,8 +277,7 @@ function setUpChangeDetection(changeDetection: ChangeDetection, iterations, obje
                                      reflector.setter("field9"), directiveRecord)
   ];
 
-  var proto = changeDetection.getProtoChangeDetector(
-      "id",
+  var proto = protoChangeDetectorFactory(
       new ChangeDetectorDefinition("proto", null, [], bindings, [], [directiveRecord], genConfig));
 
   var targetObj = new Obj();
@@ -334,8 +332,9 @@ export function main() {
 
 
   // -- DYNAMIC
-  var ng2DynamicChangeDetector =
-      setUpChangeDetection(new DynamicChangeDetection(), numberOfDetectors, object);
+  var ng2DynamicChangeDetector = setUpChangeDetection(
+      (changeDetectorDefinition) => new DynamicProtoChangeDetector(changeDetectorDefinition),
+      numberOfDetectors, object);
 
   runChangeDetectionReads(ng2DynamicChangeDetector, 1);  // warmup
 
@@ -353,9 +352,10 @@ export function main() {
 
   // -- JIT
   // Reenable when we have transformers for Dart
-  if (JitChangeDetection.isSupported()) {
-    var ng2JitChangeDetector =
-        setUpChangeDetection(new JitChangeDetection(), numberOfDetectors, object);
+  if (JitProtoChangeDetector.isSupported()) {
+    var ng2JitChangeDetector = setUpChangeDetection(
+        (changeDetectorDefinition) => new JitProtoChangeDetector(changeDetectorDefinition),
+        numberOfDetectors, object);
 
     runChangeDetectionReads(ng2JitChangeDetector, 1);  // warmup
 

@@ -35,7 +35,6 @@ import {
   ViewMetadata
 } from 'angular2/core';
 import {By} from 'angular2/src/core/debug';
-import {MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE} from 'angular2/src/core/render';
 
 export function main() {
   describe('projection', () => {
@@ -421,45 +420,29 @@ export function main() {
          }));
     }
 
-    describe('different proto view storages', () => {
-      function runTests() {
-        it('should support nested conditionals that contain ng-contents',
-           inject(
-               [TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-                 tcb.overrideView(MainComp, new ViewMetadata({
-                                    template: `<conditional-text>a</conditional-text>`,
-                                    directives: [ConditionalTextComponent]
-                                  }))
-                     .createAsync(MainComp)
-                     .then((main) => {
-                       expect(main.debugElement.nativeElement).toHaveText('MAIN()');
+    it('should support nested conditionals that contain ng-contents',
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         tcb.overrideView(MainComp, new ViewMetadata({
+                            template: `<conditional-text>a</conditional-text>`,
+                            directives: [ConditionalTextComponent]
+                          }))
+             .createAsync(MainComp)
+             .then((main) => {
+               expect(main.debugElement.nativeElement).toHaveText('MAIN()');
 
-                       var viewportElement =
-                           main.debugElement.componentViewChildren[0].componentViewChildren[0];
-                       viewportElement.inject(ManualViewportDirective).show();
-                       expect(main.debugElement.nativeElement).toHaveText('MAIN(FIRST())');
+               var viewportElement =
+                   main.debugElement.componentViewChildren[0].componentViewChildren[0];
+               viewportElement.inject(ManualViewportDirective).show();
+               expect(main.debugElement.nativeElement).toHaveText('MAIN(FIRST())');
 
-                       viewportElement =
-                           main.debugElement.componentViewChildren[0].componentViewChildren[1];
-                       viewportElement.inject(ManualViewportDirective).show();
-                       expect(main.debugElement.nativeElement).toHaveText('MAIN(FIRST(SECOND(a)))');
+               viewportElement =
+                   main.debugElement.componentViewChildren[0].componentViewChildren[1];
+               viewportElement.inject(ManualViewportDirective).show();
+               expect(main.debugElement.nativeElement).toHaveText('MAIN(FIRST(SECOND(a)))');
 
-                       async.done();
-                     });
-               }));
-      }
-
-      describe('serialize templates', () => {
-        beforeEachBindings(() => [bind(MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE).toValue(0)]);
-        runTests();
-      });
-
-      describe("don't serialize templates", () => {
-        beforeEachBindings(() => [bind(MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE).toValue(-1)]);
-        runTests();
-      });
-
-    });
+               async.done();
+             });
+       }));
 
   });
 }

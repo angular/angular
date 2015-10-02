@@ -21,10 +21,6 @@ import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {
   Parser,
   Lexer,
-  ChangeDetection,
-  DynamicChangeDetection,
-  JitChangeDetection,
-  PreGeneratedChangeDetection,
   IterableDiffers,
   defaultIterableDiffers,
   KeyValueDiffers,
@@ -39,9 +35,7 @@ import {DEFAULT_PIPES} from 'angular2/src/core/pipes';
 import {ViewResolver} from './compiler/view_resolver';
 import {DirectiveResolver} from './compiler/directive_resolver';
 import {PipeResolver} from './compiler/pipe_resolver';
-import {StyleUrlResolver} from 'angular2/src/core/render/dom/compiler/style_url_resolver';
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
-import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
 import {
   APP_ID_RANDOM_BINDING,
 } from 'angular2/src/core/render/render';
@@ -90,12 +84,6 @@ function _componentBindings(appComponentType: Type): Array<Type | Binding | any[
  * application, regardless of whether it runs on the UI thread or in a web worker.
  */
 export function applicationCommonBindings(): Array<Type | Binding | any[]> {
-  var bestChangeDetection = new DynamicChangeDetection();
-  if (PreGeneratedChangeDetection.isSupported()) {
-    bestChangeDetection = new PreGeneratedChangeDetection();
-  } else if (JitChangeDetection.isSupported()) {
-    bestChangeDetection = new JitChangeDetection();
-  }
   return [
     Compiler,
     APP_ID_RANDOM_BINDING,
@@ -109,12 +97,9 @@ export function applicationCommonBindings(): Array<Type | Binding | any[]> {
     DEFAULT_PIPES,
     bind(IterableDiffers).toValue(defaultIterableDiffers),
     bind(KeyValueDiffers).toValue(defaultKeyValueDiffers),
-    bind(ChangeDetection).toValue(bestChangeDetection),
     DirectiveResolver,
     UrlResolver,
-    StyleUrlResolver,
     PipeResolver,
-    ComponentUrlMapper,
     Parser,
     Lexer,
     DynamicComponentLoader,

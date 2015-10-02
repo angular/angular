@@ -1,12 +1,11 @@
 import {
-  ChangeDetection,
   ChangeDetector,
   ChangeDetectorRef,
   ProtoChangeDetector,
   DynamicChangeDetector
 } from 'angular2/src/core/change_detection/change_detection';
 
-import {RenderCompiler, Renderer, RenderEventDispatcher} from 'angular2/src/core/render/api';
+import {Renderer, RenderEventDispatcher} from 'angular2/src/core/render/api';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 
 import {AppView} from 'angular2/src/core/compiler/view';
@@ -29,25 +28,13 @@ import {SpyObject, proxy} from 'angular2/test_lib';
 
 export class SpyDependencyProvider extends SpyObject {}
 
-export class SpyChangeDetection extends SpyObject {
-  constructor() { super(ChangeDetection); }
-}
-
 export class SpyChangeDetector extends SpyObject {
-  constructor() { super(DynamicChangeDetector); }
-}
-
-export class SpyProtoChangeDetector extends SpyObject {
   constructor() { super(DynamicChangeDetector); }
 }
 
 export class SpyChangeDispatcher extends SpyObject {}
 
 export class SpyIterableDifferFactory extends SpyObject {}
-
-export class SpyRenderCompiler extends SpyObject {
-  constructor() { super(RenderCompiler); }
-}
 
 export class SpyDirectiveResolver extends SpyObject {
   constructor() { super(DirectiveResolver); }

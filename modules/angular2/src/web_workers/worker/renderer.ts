@@ -1,14 +1,9 @@
 import {
   Renderer,
-  RenderCompiler,
-  RenderDirectiveMetadata,
-  ProtoViewDto,
-  ViewDefinition,
   RenderProtoViewRef,
   RenderViewRef,
   RenderElementRef,
   RenderEventDispatcher,
-  RenderProtoViewMergeMapping,
   RenderViewWithFragments,
   RenderFragmentRef,
   RenderTemplateCmd

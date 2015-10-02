@@ -1,112 +1,102 @@
 library angular2.test.core.compiler.directive_lifecycle_spec;
 
 import 'package:angular2/test_lib.dart';
-import 'package:angular2/angular2.dart';
-import 'package:angular2/src/core/compiler/element_injector.dart';
+import 'package:angular2/src/core/compiler/directive_lifecycle_reflector.dart';
+import 'package:angular2/src/core/compiler/interfaces.dart';
 
 main() {
   describe('Create DirectiveMetadata', () {
     describe('lifecycle', () {
-      metadata(type, annotation) =>
-          DirectiveBinding.createFromType(type, annotation).metadata;
 
       describe("onChanges", () {
-        it("should be true when the directive implements OnChanges", () {
-          expect(metadata(DirectiveImplementingOnChanges, new Directive())
-              .callOnChanges).toBe(true);
+        it("should be true when the directive has the onChanges method", () {
+          expect(hasLifecycleHook(LifecycleHooks.OnChanges, DirectiveImplementingOnChanges))
+              .toBe(true);
         });
 
         it("should be false otherwise", () {
-          expect(metadata(DirectiveNoHooks, new Directive()).callOnChanges)
-              .toBe(false);
+          expect(hasLifecycleHook(LifecycleHooks.OnChanges, DirectiveNoHooks)).toBe(false);
         });
       });
 
       describe("onDestroy", () {
-        it("should be true when the directive implements OnDestroy", () {
-          expect(metadata(DirectiveImplementingOnDestroy, new Directive())
-              .callOnDestroy).toBe(true);
+        it("should be true when the directive has the onDestroy method", () {
+          expect(hasLifecycleHook(LifecycleHooks.OnDestroy, DirectiveImplementingOnDestroy))
+              .toBe(true);
         });
 
         it("should be false otherwise", () {
-          expect(metadata(DirectiveNoHooks, new Directive()).callOnDestroy)
-              .toBe(false);
-        });
-      });
-
-      describe("doCheck", () {
-        it("should be true when the directive implements DoCheck", () {
-          expect(metadata(DirectiveImplementingOnCheck, new Directive())
-              .callDoCheck).toBe(true);
-        });
-
-        it("should be false otherwise", () {
-          expect(metadata(DirectiveNoHooks, new Directive()).callDoCheck)
-              .toBe(false);
+          expect(hasLifecycleHook(LifecycleHooks.OnDestroy, DirectiveNoHooks)).toBe(false);
         });
       });
 
       describe("onInit", () {
-        it("should be true when the directive implements OnInit", () {
-          expect(metadata(DirectiveImplementingOnInit, new Directive())
-              .callOnInit).toBe(true);
+        it("should be true when the directive has the onInit method", () {
+          expect(hasLifecycleHook(LifecycleHooks.OnInit, DirectiveImplementingOnInit))
+              .toBe(true);
         });
 
         it("should be false otherwise", () {
-          expect(metadata(DirectiveNoHooks, new Directive()).callOnInit)
-              .toBe(false);
+          expect(hasLifecycleHook(LifecycleHooks.OnInit, DirectiveNoHooks)).toBe(false);
+        });
+      });
+
+      describe("doCheck", () {
+        it("should be true when the directive has the doCheck method", () {
+          expect(hasLifecycleHook(LifecycleHooks.DoCheck, DirectiveImplementingOnCheck))
+              .toBe(true);
+        });
+
+        it("should be false otherwise", () {
+          expect(hasLifecycleHook(LifecycleHooks.DoCheck, DirectiveNoHooks)).toBe(false);
         });
       });
 
       describe("afterContentInit", () {
-        it("should be true when the directive implements AfterContentInit", () {
-          expect(
-              metadata(DirectiveImplementingAfterContentInit, new Directive())
-                  .callAfterContentInit).toBe(true);
+        it("should be true when the directive has the afterContentInit method", () {
+          expect(hasLifecycleHook(LifecycleHooks.AfterContentInit, DirectiveImplementingAfterContentInit))
+              .toBe(true);
         });
 
         it("should be false otherwise", () {
-          expect(metadata(DirectiveNoHooks, new Directive())
-              .callAfterContentInit).toBe(false);
+          expect(hasLifecycleHook(LifecycleHooks.AfterContentInit, DirectiveNoHooks))
+              .toBe(false);
         });
       });
 
       describe("afterContentChecked", () {
-        it("should be true when the directive implements AfterContentChecked", () {
-          expect(
-              metadata(DirectiveImplementingAfterContentChecked, new Directive())
-                  .callAfterContentChecked).toBe(true);
+        it("should be true when the directive has the afterContentChecked method", () {
+          expect(hasLifecycleHook(LifecycleHooks.AfterContentChecked, DirectiveImplementingAfterContentChecked))
+              .toBe(true);
         });
 
         it("should be false otherwise", () {
-          expect(metadata(DirectiveNoHooks, new Directive())
-              .callAfterContentChecked).toBe(false);
+          expect(hasLifecycleHook(LifecycleHooks.AfterContentChecked, DirectiveNoHooks))
+              .toBe(false);
         });
       });
 
+
       describe("afterViewInit", () {
-        it("should be true when the directive implements AfterViewInit", () {
-          expect(
-              metadata(DirectiveImplementingAfterViewInit, new Directive())
-                  .callAfterViewInit).toBe(true);
+        it("should be true when the directive has the afterViewInit method", () {
+          expect(hasLifecycleHook(LifecycleHooks.AfterViewInit, DirectiveImplementingAfterViewInit))
+              .toBe(true);
         });
 
         it("should be false otherwise", () {
-          expect(metadata(DirectiveNoHooks, new Directive())
-              .callAfterViewInit).toBe(false);
+          expect(hasLifecycleHook(LifecycleHooks.AfterViewInit, DirectiveNoHooks)).toBe(false);
         });
       });
 
       describe("afterViewChecked", () {
-        it("should be true when the directive implements AfterViewChecked", () {
-          expect(
-              metadata(DirectiveImplementingAfterViewChecked, new Directive())
-                  .callAfterViewChecked).toBe(true);
+        it("should be true when the directive has the afterViewChecked method", () {
+          expect(hasLifecycleHook(LifecycleHooks.AfterViewChecked, DirectiveImplementingAfterViewChecked))
+              .toBe(true);
         });
 
         it("should be false otherwise", () {
-          expect(metadata(DirectiveNoHooks, new Directive())
-              .callAfterViewChecked).toBe(false);
+          expect(hasLifecycleHook(LifecycleHooks.AfterViewChecked, DirectiveNoHooks))
+              .toBe(false);
         });
       });
     });

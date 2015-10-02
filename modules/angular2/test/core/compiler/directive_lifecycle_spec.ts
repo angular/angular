@@ -13,83 +13,76 @@ import {
   proxy
 } from 'angular2/test_lib';
 
-import {DirectiveMetadata} from 'angular2/src/core/metadata';
-import {DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
-import {RenderDirectiveMetadata} from 'angular2/src/core/render/api';
+import {hasLifecycleHook} from 'angular2/src/core/compiler/directive_lifecycle_reflector';
+import {LifecycleHooks} from 'angular2/src/core/compiler/interfaces';
 
 export function main() {
   describe('Create DirectiveMetadata', () => {
     describe('lifecycle', () => {
-      function metadata(type, annotation): RenderDirectiveMetadata {
-        return DirectiveBinding.createFromType(type, annotation).metadata;
-      }
 
       describe("onChanges", () => {
         it("should be true when the directive has the onChanges method", () => {
-          expect(metadata(DirectiveWithOnChangesMethod, new DirectiveMetadata({})).callOnChanges)
+          expect(hasLifecycleHook(LifecycleHooks.OnChanges, DirectiveWithOnChangesMethod))
               .toBe(true);
         });
 
         it("should be false otherwise", () => {
-          expect(metadata(DirectiveNoHooks, new DirectiveMetadata()).callOnChanges).toBe(false);
+          expect(hasLifecycleHook(LifecycleHooks.OnChanges, DirectiveNoHooks)).toBe(false);
         });
       });
 
       describe("onDestroy", () => {
         it("should be true when the directive has the onDestroy method", () => {
-          expect(metadata(DirectiveWithOnDestroyMethod, new DirectiveMetadata({})).callOnDestroy)
+          expect(hasLifecycleHook(LifecycleHooks.OnDestroy, DirectiveWithOnDestroyMethod))
               .toBe(true);
         });
 
         it("should be false otherwise", () => {
-          expect(metadata(DirectiveNoHooks, new DirectiveMetadata()).callOnDestroy).toBe(false);
+          expect(hasLifecycleHook(LifecycleHooks.OnDestroy, DirectiveNoHooks)).toBe(false);
         });
       });
 
       describe("onInit", () => {
         it("should be true when the directive has the onInit method", () => {
-          expect(metadata(DirectiveWithOnInitMethod, new DirectiveMetadata({})).callOnInit)
-              .toBe(true);
+          expect(hasLifecycleHook(LifecycleHooks.OnInit, DirectiveWithOnInitMethod)).toBe(true);
         });
 
         it("should be false otherwise", () => {
-          expect(metadata(DirectiveNoHooks, new DirectiveMetadata()).callOnInit).toBe(false);
+          expect(hasLifecycleHook(LifecycleHooks.OnInit, DirectiveNoHooks)).toBe(false);
         });
       });
 
       describe("doCheck", () => {
         it("should be true when the directive has the doCheck method", () => {
-          expect(metadata(DirectiveWithOnCheckMethod, new DirectiveMetadata({})).callDoCheck)
-              .toBe(true);
+          expect(hasLifecycleHook(LifecycleHooks.DoCheck, DirectiveWithOnCheckMethod)).toBe(true);
         });
 
         it("should be false otherwise", () => {
-          expect(metadata(DirectiveNoHooks, new DirectiveMetadata()).callDoCheck).toBe(false);
+          expect(hasLifecycleHook(LifecycleHooks.DoCheck, DirectiveNoHooks)).toBe(false);
         });
       });
 
       describe("afterContentInit", () => {
         it("should be true when the directive has the afterContentInit method", () => {
-          expect(metadata(DirectiveWithAfterContentInitMethod, new DirectiveMetadata({}))
-                     .callAfterContentInit)
+          expect(hasLifecycleHook(LifecycleHooks.AfterContentInit,
+                                  DirectiveWithAfterContentInitMethod))
               .toBe(true);
         });
 
         it("should be false otherwise", () => {
-          expect(metadata(DirectiveNoHooks, new DirectiveMetadata()).callAfterContentInit)
-              .toBe(false);
+          expect(hasLifecycleHook(LifecycleHooks.AfterContentInit, DirectiveNoHooks)).toBe(false);
         });
       });
 
       describe("afterContentChecked", () => {
         it("should be true when the directive has the afterContentChecked method", () => {
-          expect(metadata(DirectiveWithAfterContentCheckedMethod, new DirectiveMetadata({}))
-                     .callAfterContentChecked)
+          expect(hasLifecycleHook(LifecycleHooks.AfterContentChecked,
+                                  DirectiveWithAfterContentCheckedMethod))
               .toBe(true);
         });
 
         it("should be false otherwise", () => {
-          expect(metadata(DirectiveNoHooks, new DirectiveMetadata()).callAfterContentChecked)
+          expect(hasLifecycleHook(LifecycleHooks.AfterContentChecked, DirectiveNoHooks))
               .toBe(false);
         });
       });
@@ -97,26 +90,24 @@ export function main() {
 
       describe("afterViewInit", () => {
         it("should be true when the directive has the afterViewInit method", () => {
-          expect(metadata(DirectiveWithAfterViewInitMethod, new DirectiveMetadata({}))
-                     .callAfterViewInit)
+          expect(hasLifecycleHook(LifecycleHooks.AfterViewInit, DirectiveWithAfterViewInitMethod))
               .toBe(true);
         });
 
         it("should be false otherwise", () => {
-          expect(metadata(DirectiveNoHooks, new DirectiveMetadata()).callAfterViewInit).toBe(false);
+          expect(hasLifecycleHook(LifecycleHooks.AfterViewInit, DirectiveNoHooks)).toBe(false);
         });
       });
 
       describe("afterViewChecked", () => {
         it("should be true when the directive has the afterViewChecked method", () => {
-          expect(metadata(DirectiveWithAfterViewCheckedMethod, new DirectiveMetadata({}))
-                     .callAfterViewChecked)
+          expect(hasLifecycleHook(LifecycleHooks.AfterViewChecked,
+                                  DirectiveWithAfterViewCheckedMethod))
               .toBe(true);
         });
 
         it("should be false otherwise", () => {
-          expect(metadata(DirectiveNoHooks, new DirectiveMetadata()).callAfterViewChecked)
-              .toBe(false);
+          expect(hasLifecycleHook(LifecycleHooks.AfterViewChecked, DirectiveNoHooks)).toBe(false);
         });
       });
     });
