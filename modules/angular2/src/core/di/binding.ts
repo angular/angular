@@ -31,7 +31,7 @@ import {
 import {resolveForwardRef} from './forward_ref';
 
 /**
- * @private
+ * @internal
  */
 export class Dependency {
   constructor(public key: Key, public optional: boolean, public lowerBoundVisibility: any,
@@ -257,7 +257,7 @@ export class Binding {
  */
 export class ResolvedBinding {
   /**
-   * @private
+   * @internal
    */
   constructor(
       /**
@@ -266,23 +266,23 @@ export class ResolvedBinding {
       public key: Key,
 
       /**
-       * @private
+       * @internal
        * Factory function which can return an instance of an object represented by a key.
        */
       public resolvedFactories: ResolvedFactory[],
 
       /**
-       * @private
+       * @internal
        * Indicates if the binding is a multi-binding or a regular binding.
        */
       public multiBinding: boolean) {}
 
-  /** @private */
+  /** @internal */
   get resolvedFactory(): ResolvedFactory { return this.resolvedFactories[0]; }
 }
 
 /**
- * @private
+ * @internal
  * An internal resolved representation of a factory function created by resolving {@link Binding}.
  */
 export class ResolvedFactory {

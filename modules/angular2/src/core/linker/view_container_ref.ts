@@ -31,11 +31,11 @@ import {ViewRef, HostViewRef, ProtoViewRef, internalView} from './view_ref';
  */
 export class ViewContainerRef {
   /**
-   * @private
+   * @internal
    */
   constructor(
       /**
-       * @private
+       * @internal
        */
       public viewManager: avmModule.AppViewManager,
 

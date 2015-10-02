@@ -11,13 +11,13 @@ describe('readTypeScriptModules', function() {
     convertPrivateClassesToInterfaces = injector.get('convertPrivateClassesToInterfaces');
   });
 
-  it('should convert private class docs to interface docs', function() {
+  it('should convert @internal class docs to interface docs', function() {
     var docs = [
       {
         docType: 'class',
         name: 'privateClass',
         id: 'privateClass',
-        constructorDoc: { private: true }
+        constructorDoc: { internal: true }
       }
     ];
     convertPrivateClassesToInterfaces(docs, false);
@@ -25,7 +25,7 @@ describe('readTypeScriptModules', function() {
   });
 
 
-  it('should not touch non-private class docs', function() {
+  it('should not touch non-internal class docs', function() {
     var docs = [
       {
         docType: 'class',
@@ -45,7 +45,7 @@ describe('readTypeScriptModules', function() {
         docType: 'class',
         name: 'privateClass',
         id: 'privateClass',
-        constructorDoc: { private: true },
+        constructorDoc: { internal: true },
         heritage: 'implements parentInterface'
       }
     ];
@@ -60,7 +60,7 @@ describe('readTypeScriptModules', function() {
         docType: 'class',
         name: 'privateClass',
         id: 'privateClass',
-        constructorDoc: { private: true },
+        constructorDoc: { internal: true },
         heritage: 'implements parentInterface'
       }
     ];

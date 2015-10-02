@@ -27,7 +27,7 @@ module.exports = function generateNavigationDoc() {
           modulesDoc.value.sections.push(moduleNavItem);
 
           _.forEach(doc.exports, function(exportDoc) {
-            if (!exportDoc.private) {
+            if (!exportDoc.internal) {
               var exportNavItem = {
                 path: exportDoc.path,
                 partial: exportDoc.outputPath,

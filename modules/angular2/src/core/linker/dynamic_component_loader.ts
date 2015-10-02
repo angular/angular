@@ -32,7 +32,7 @@ export class ComponentRef {
   componentType: Type;
 
   /**
-   * @private
+   * @internal
    *
    * The injector provided {@link DynamicComponentLoader#loadAsRoot}.
    *
@@ -42,7 +42,7 @@ export class ComponentRef {
   injector: Injector;
 
   /**
-   * @private
+   * @internal
    *
    * TODO(i): refactor into public/private fields
    */
@@ -60,7 +60,7 @@ export class ComponentRef {
   get hostView(): HostViewRef { return this.location.parentView; }
 
   /**
-   * @private
+   * @internal
    *
    * Returns the type of this Component instance.
    *
@@ -69,7 +69,7 @@ export class ComponentRef {
   get hostComponentType(): Type { return this.componentType; }
 
   /**
-   * @private
+   * @internal
    *
    * The instance of the component.
    *
@@ -91,7 +91,7 @@ export class ComponentRef {
 @Injectable()
 export class DynamicComponentLoader {
   /**
-   * @private
+   * @internal
    */
   constructor(private _compiler: Compiler, private _viewManager: AppViewManager) {}
 

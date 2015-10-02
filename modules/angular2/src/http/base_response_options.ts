@@ -46,11 +46,11 @@ export class ResponseOptions {
    */
   headers: Headers;
   /**
-   * @private
+   * @internal
    */
   statusText: string;
   /**
-   * @private
+   * @internal
    */
   type: ResponseTypes;
   url: string;

@@ -25,7 +25,7 @@ export function internalProtoView(protoViewRef: ProtoViewRef): viewModule.AppPro
  */
 export interface HostViewRef {
   /**
-   * @private
+   * @internal
    */
   changeDetectorRef: ChangeDetectorRef;
 }
@@ -87,26 +87,26 @@ export class ViewRef implements HostViewRef {
   private _changeDetectorRef: ChangeDetectorRef = null;
 
   /**
-   * @private
+   * @internal
    */
   constructor(public _view: viewModule.AppView) {}
 
   /**
-   * @private
+   * @internal
    *
    * Return `RenderViewRef`
    */
   get render(): RenderViewRef { return this._view.render; }
 
   /**
-   * @private
+   * @internal
    *
    * Return `RenderFragmentRef`
    */
   get renderFragment(): RenderFragmentRef { return this._view.renderFragment; }
 
   /**
-   * @private
+   * @internal
    *
    * Return `ChangeDetectorRef`
    */
@@ -167,7 +167,7 @@ export class ViewRef implements HostViewRef {
  */
 export class ProtoViewRef {
   /**
-   * @private
+   * @internal
    */
   constructor(public _protoView: viewModule.AppProtoView) {}
 }

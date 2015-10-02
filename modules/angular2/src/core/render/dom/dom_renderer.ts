@@ -39,7 +39,7 @@ export class DomRenderer implements Renderer, NodeFactory<Node> {
   private _document;
 
   /**
-   * @private
+   * @internal
    */
   constructor(private _eventManager: EventManager,
               private _domSharedStylesHost: DomSharedStylesHost, private _animate: AnimationBuilder,

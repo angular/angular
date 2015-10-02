@@ -1,9 +1,10 @@
 var basePackage = require('dgeni-packages/base');
+var jsdocPackage = require('dgeni-packages/jsdoc');
 var Package = require('dgeni').Package;
 var path = require('canonical-path');
 
 // Define the dgeni package for generating the docs
-module.exports = new Package('typescript-parsing', [basePackage])
+module.exports = new Package('typescript-parsing', [basePackage, jsdocPackage])
 
 // Register the services and file readers
 .factory(require('./services/modules'))
@@ -37,6 +38,9 @@ module.exports = new Package('typescript-parsing', [basePackage])
   log.level = 'warn';
 })
 
+.config(function(parseTagsProcessor) {
+  parseTagsProcessor.tagDefinitions.push({ name: 'internal', transforms: function() { return true; } });
+})
 
 // Configure ids and paths
 .config(function(computeIdsProcessor, computePathsProcessor, EXPORT_DOC_TYPES) {

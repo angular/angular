@@ -6,7 +6,7 @@ import {ChangeDetectionStrategy} from './constants';
  */
 export class ChangeDetectorRef {
   /**
-   * @private
+   * @internal
    */
   constructor(private _cd: ChangeDetector) {}
 
