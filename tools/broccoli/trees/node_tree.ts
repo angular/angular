@@ -41,7 +41,7 @@ module.exports = function makeNodeTree(destinationPath) {
     moduleResolution: 1 /* classic */,
     noEmitOnError: true,
     rootDir: '.',
-    rootFilePaths: ['angular2/manual_typings/globals.d.ts'],
+    rootFilePaths: ['angular2/manual_typings/globals.d.ts', 'angular2/typings/es6-shim/es6-shim.d.ts'],
     sourceMap: true,
     sourceRoot: '.',
     target: 'ES5'

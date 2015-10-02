@@ -1,5 +1,3 @@
-/// <reference path="../../../../../typings/hammerjs/hammerjs.d.ts"/>
-
 import {HammerGesturesPluginCommon} from './hammer_common';
 import {isPresent} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';

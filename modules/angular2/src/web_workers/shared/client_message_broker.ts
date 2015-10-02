@@ -1,4 +1,3 @@
-/// <reference path="../../../manual_typings/globals.d.ts" />
 import {MessageBus} from "angular2/src/web_workers/shared/message_bus";
 import {print, isPresent, DateWrapper, stringify} from "angular2/src/core/facade/lang";
 import {

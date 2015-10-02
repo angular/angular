@@ -13,13 +13,13 @@ interface Trace {
   endTimeRange(range: Range);
 }
 
-interface Range {}
+export interface Range {}
 
 interface Events {
   createScope(signature: string, flags: any): Scope;
 }
 
-interface Scope {
+export interface Scope {
   (...args): any;
 }
 

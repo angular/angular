@@ -39,7 +39,7 @@ export class ImageDemo {
     }
   }
 
-  private _filter(i: number): Function {
+  private _filter(i: number): (...args: any[]) => void {
     return () => {
       var imageData = this._bitmapService.convertToImageData(this.images[i].buffer);
       imageData = this._bitmapService.applySepia(imageData);

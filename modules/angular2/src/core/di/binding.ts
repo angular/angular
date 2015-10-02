@@ -30,9 +30,6 @@ import {
 } from './exceptions';
 import {resolveForwardRef} from './forward_ref';
 
-/**
- * @internal
- */
 export class Dependency {
   constructor(public key: Key, public optional: boolean, public lowerBoundVisibility: any,
               public upperBoundVisibility: any, public properties: any[]) {}
@@ -280,7 +277,6 @@ export class ResolvedBinding_ implements ResolvedBinding {
 }
 
 /**
- * @internal
  * An internal resolved representation of a factory function created by resolving {@link Binding}.
  */
 export class ResolvedFactory {

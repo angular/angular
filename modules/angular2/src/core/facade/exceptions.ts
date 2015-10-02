@@ -1,5 +1,3 @@
-/// <reference path="../../../manual_typings/globals.d.ts" />
-
 import {ExceptionHandler} from './exception_handler';
 
 export {ExceptionHandler} from './exception_handler';
