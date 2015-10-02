@@ -235,6 +235,9 @@ class _DirectiveMetadataVisitor extends Object
       case 'inputs':
         _populateProperties(node.expression);
         break;
+      case 'properties':
+        _populateProperties(node.expression);
+        break;
       case 'host':
         _populateHost(node.expression);
         break;
@@ -245,6 +248,9 @@ class _DirectiveMetadataVisitor extends Object
         _populateChangeDetection(node.expression);
         break;
       case 'outputs':
+        _populateEvents(node.expression);
+        break;
+      case 'events':
         _populateEvents(node.expression);
         break;
     }

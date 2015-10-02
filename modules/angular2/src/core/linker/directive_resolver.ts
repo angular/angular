@@ -1,5 +1,5 @@
 import {resolveForwardRef, Injectable} from 'angular2/src/core/di';
-import {Type, isPresent, stringify} from 'angular2/src/core/facade/lang';
+import {Type, isPresent, isBlank, stringify} from 'angular2/src/core/facade/lang';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper, StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {
@@ -109,6 +109,10 @@ export class DirectiveResolver {
     var mergedHost = isPresent(dm.host) ? StringMapWrapper.merge(dm.host, host) : host;
     var mergedQueries =
         isPresent(dm.queries) ? StringMapWrapper.merge(dm.queries, queries) : queries;
+
+    // TODO: remove after migrating from properties to inputs
+    if (mergedInputs.length == 0 && isPresent(dm.properties)) mergedInputs = dm.properties;
+    if (mergedOutputs.length == 0 && isPresent(dm.events)) mergedOutputs = dm.events;
 
     if (dm instanceof ComponentMetadata) {
       return new ComponentMetadata({
