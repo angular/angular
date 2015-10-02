@@ -20,6 +20,10 @@ env:
   - SAUCE_USERNAME=angular-ci
   - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
   - ARCH=linux-x64
+  # TODO: change DART_DEV_VERSION to "latest" again once
+  # https://github.com/angular/angular/issues/4467 is solved
+  - DART_DEV_VERSION=1.13.0-dev.3.1
+  - DART_STABLE_VERSION=latest
   # Token for tsd to increase github rate limit
   # See https://github.com/DefinitelyTyped/tsd#tsdrc
   # This does not use http://docs.travis-ci.com/user/environment-variables/#Secure-Variables
@@ -31,18 +35,18 @@ env:
   - secure: "fq/U7VDMWO8O8SnAQkdbkoSe2X92PVqg4d044HmRYVmcf6YbO48+xeGJ8yOk0pCBwl3ISO4Q2ot0x546kxfiYBuHkZetlngZxZCtQiFT9kyId8ZKcYdXaIW9OVdw3Gh3tQyUwDucfkVhqcs52D6NZjyE2aWZ4/d1V4kWRO/LMgo="
   matrix:
     # Order: slowest build on top, so that we don't hog VMs while waiting for others to complete.
-    - MODE=dart DART_CHANNEL=stable
-    - MODE=dart DART_CHANNEL=dev
-    - MODE=saucelabs DART_CHANNEL=dev
-    - MODE=dart_experimental DART_CHANNEL=dev
-    - MODE=js DART_CHANNEL=dev
-    - MODE=router DART_CHANNEL=dev
-    - MODE=lint DART_CHANNEL=dev
+    - MODE=dart DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
+    - MODE=dart DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
+    - MODE=saucelabs DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
+    - MODE=dart_experimental DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
+    - MODE=js DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
+    - MODE=router DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
+    - MODE=lint DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
 
 matrix:
   allow_failures:
-  - env: "MODE=saucelabs DART_CHANNEL=dev"
-  - env: "MODE=dart_experimental DART_CHANNEL=dev"
+  - env: "MODE=saucelabs DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
+  - env: "MODE=dart_experimental DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
 
 addons:
   firefox: "38.0"
@@ -52,7 +56,7 @@ before_install:
 - export DISPLAY=:99.0
 - export GIT_SHA=$(git rev-parse HEAD)
 - ./scripts/ci/init_android.sh
-- ./scripts/ci/install_dart.sh ${DART_CHANNEL} ${ARCH}
+- ./scripts/ci/install_dart.sh ${DART_CHANNEL} ${DART_VERSION} ${ARCH}
 - sh -e /etc/init.d/xvfb start
 - if [[ -e SKIP_TRAVIS_TESTS ]]; then { cat SKIP_TRAVIS_TESTS ; exit 0; } fi
 - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ] && SAUCE_USERNAME="angular2-ci" && SAUCE_ACCESS_KEY="693ebc16208a-0b5b-1614-8d66-a2662f4e" || true'
