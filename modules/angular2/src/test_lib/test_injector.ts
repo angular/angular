@@ -6,8 +6,6 @@ import {MockAnimationBuilder} from 'angular2/src/mock/animation_builder_mock';
 import {ProtoViewFactory} from 'angular2/src/core/linker/proto_view_factory';
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
 import {
-  Parser,
-  Lexer,
   IterableDiffers,
   defaultIterableDiffers,
   KeyValueDiffers,
@@ -20,9 +18,6 @@ import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 import {PipeResolver} from 'angular2/src/core/linker/pipe_resolver';
 import {DynamicComponentLoader} from 'angular2/src/core/linker/dynamic_component_loader';
 import {XHR} from 'angular2/src/core/compiler/xhr';
-import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
-import {AppRootUrl} from 'angular2/src/core/compiler/app_root_url';
-import {AnchorBasedAppRootUrl} from 'angular2/src/core/compiler/anchor_based_app_root_url';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
@@ -58,11 +53,7 @@ import {
   SharedStylesHost,
   DomSharedStylesHost
 } from 'angular2/src/core/render/render';
-import {APP_ID} from 'angular2/src/core/application_tokens' import { ElementSchemaRegistry }
-from 'angular2/src/core/compiler/schema/element_schema_registry';
-import {
-  DomElementSchemaRegistry
-} from 'angular2/src/core/compiler/schema/dom_element_schema_registry';
+import {APP_ID} from 'angular2/src/core/application_tokens';
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {Log} from './utils';
 import {compilerBindings} from 'angular2/src/core/compiler/compiler';
@@ -105,7 +96,6 @@ function _getAppBindings() {
     DomRenderer,
     bind(Renderer).toAlias(DomRenderer),
     bind(APP_ID).toValue('a'),
-    bind(ElementSchemaRegistry).toValue(new DomElementSchemaRegistry()),
     DomSharedStylesHost,
     bind(SharedStylesHost).toAlias(DomSharedStylesHost),
     AppViewPool,
@@ -123,14 +113,9 @@ function _getAppBindings() {
     Log,
     DynamicComponentLoader,
     PipeResolver,
-    Parser,
-    Lexer,
     bind(ExceptionHandler).toValue(new ExceptionHandler(DOM)),
     bind(LocationStrategy).toClass(MockLocationStrategy),
     bind(XHR).toClass(MockXHR),
-    UrlResolver,
-    AnchorBasedAppRootUrl,
-    bind(AppRootUrl).toAlias(AnchorBasedAppRootUrl),
     TestComponentBuilder,
     bind(NgZone).toClass(MockNgZone),
     bind(AnimationBuilder).toClass(MockAnimationBuilder),
