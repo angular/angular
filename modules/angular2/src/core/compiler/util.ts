@@ -46,7 +46,7 @@ function escapeString(input: string, re: RegExp): string {
 }
 
 export function codeGenExportVariable(name: string, isConst: boolean = false): string {
-  var declaration = isConst ? `const ${name}` : `var ${name}`;
+  var declaration = IS_DART && isConst ? `const ${name}` : `var ${name}`;
   return IS_DART ? `${declaration} = ` : `${declaration} = exports['${name}'] = `;
 }
 
