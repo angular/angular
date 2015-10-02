@@ -1,5 +1,5 @@
-import {OpaqueToken} from 'angular2/src/core/di';
-import {CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {OpaqueToken, Binding} from 'angular2/src/core/di';
+import {CONST_EXPR, Math, StringWrapper} from 'angular2/src/core/facade/lang';
 
 /**
  *  @private
@@ -24,3 +24,28 @@ export const APP_COMPONENT_REF_PROMISE = CONST_EXPR(new OpaqueToken('Promise<Com
  * ```
  */
 export const APP_COMPONENT: OpaqueToken = CONST_EXPR(new OpaqueToken('AppComponent'));
+
+/**
+ * A DI Token representing a unique string id assigned to the application by Angular and used
+ * primarily for prefixing application attributes and CSS styles when
+ * {@link ViewEncapsulation#Emulated} is being used.
+ *
+ * If you need to avoid randomly generated value to be used as an application id, you can provide
+ * a custom value via a DI binding <!-- TODO: provider --> configuring the root {@link Injector}
+ * using this token.
+ */
+export const APP_ID: OpaqueToken = CONST_EXPR(new OpaqueToken('AppId'));
+
+function _appIdRandomBindingFactory() {
+  return `${_randomChar()}${_randomChar()}${_randomChar()}`;
+}
+
+/**
+ * Bindings that will generate a random APP_ID_TOKEN.
+ */
+export const APP_ID_RANDOM_BINDING: Binding =
+    CONST_EXPR(new Binding(APP_ID, {toFactory: _appIdRandomBindingFactory, deps: []}));
+
+function _randomChar(): string {
+  return StringWrapper.fromCharCode(97 + Math.floor(Math.random() * 25));
+}

@@ -30,7 +30,8 @@ import {
 } from 'angular2/src/core/linker/dynamic_component_loader';
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
 import {Renderer} from 'angular2/src/core/render/api';
-import {DomRenderer, DOCUMENT, APP_ID_RANDOM_BINDING} from 'angular2/src/core/render/render';
+import {DomRenderer, DOCUMENT} from 'angular2/src/core/render/render';
+import {APP_ID_RANDOM_BINDING} from 'angular2/src/core/application_tokens';
 import {ElementSchemaRegistry} from 'angular2/src/core/compiler/schema/element_schema_registry';
 import {
   DomElementSchemaRegistry

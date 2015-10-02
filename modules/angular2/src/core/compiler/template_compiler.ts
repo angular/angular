@@ -23,7 +23,7 @@ import {CommandCompiler} from './command_compiler';
 import {TemplateParser} from './template_parser';
 import {TemplateNormalizer} from './template_normalizer';
 import {RuntimeMetadataResolver} from './runtime_metadata';
-import {APP_ID} from 'angular2/src/core/render/dom/dom_tokens';
+import {APP_ID} from 'angular2/src/core/application_tokens';
 
 import {TEMPLATE_COMMANDS_MODULE_REF} from './command_compiler';
 import {

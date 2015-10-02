@@ -8,7 +8,6 @@ export {
   RenderFragmentRef,
   RenderViewWithFragments,
   DOCUMENT,
-  APP_ID,
   RenderTemplateCmd,
   RenderCommandVisitor,
   RenderTextCmd,
