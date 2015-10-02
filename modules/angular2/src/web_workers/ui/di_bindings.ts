@@ -18,7 +18,8 @@ import {HammerGesturesPlugin} from 'angular2/src/core/render/dom/events/hammer_g
 import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 import {Renderer} from 'angular2/src/core/render/api';
 import {AppRootUrl} from 'angular2/src/core/compiler/app_root_url';
-import {DomRenderer, DOCUMENT, APP_ID_RANDOM_BINDING} from 'angular2/src/core/render/render';
+import {DomRenderer, DOCUMENT} from 'angular2/src/core/render/render';
+import {APP_ID_RANDOM_BINDING} from 'angular2/src/core/application_tokens';
 import {ElementSchemaRegistry} from 'angular2/src/core/compiler/schema/element_schema_registry';
 import {
   DomElementSchemaRegistry

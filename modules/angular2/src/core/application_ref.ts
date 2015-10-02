@@ -1,7 +1,11 @@
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {Type, isBlank, isPresent, assertionsEnabled} from 'angular2/src/core/facade/lang';
 import {bind, Binding, Injector, OpaqueToken} from 'angular2/src/core/di';
-import {APP_COMPONENT_REF_PROMISE, APP_COMPONENT} from './application_tokens';
+import {
+  APP_COMPONENT_REF_PROMISE,
+  APP_COMPONENT,
+  APP_ID_RANDOM_BINDING
+} from './application_tokens';
 import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/core/facade/async';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
@@ -36,9 +40,6 @@ import {ViewResolver} from './linker/view_resolver';
 import {DirectiveResolver} from './linker/directive_resolver';
 import {PipeResolver} from './linker/pipe_resolver';
 import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
-import {
-  APP_ID_RANDOM_BINDING,
-} from 'angular2/src/core/render/render';
 import {Compiler} from 'angular2/src/core/linker/compiler';
 
 /**

@@ -50,7 +50,7 @@ import {
   codeGenExportVariable,
   MODULE_SUFFIX
 } from 'angular2/src/core/compiler/util';
-import {APP_ID} from 'angular2/src/core/render/dom/dom_tokens';
+import {APP_ID} from 'angular2/src/core/application_tokens';
 
 // Attention: This path has to point to this test file!
 const THIS_MODULE_ID = 'angular2/test/core/compiler/template_compiler_spec';

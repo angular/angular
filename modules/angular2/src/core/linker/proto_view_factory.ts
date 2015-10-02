@@ -32,7 +32,7 @@ import {
 } from './template_commands';
 
 import {Renderer} from 'angular2/render';
-import {APP_ID} from 'angular2/src/core/render/dom/dom_tokens';
+import {APP_ID} from 'angular2/src/core/application_tokens';
 
 
 @Injectable()

@@ -6,7 +6,7 @@ import {compilerBindings} from 'angular2/src/core/compiler/compiler';
 import {commonBootstrap} from './application_common';
 import {ComponentRef} from './linker/dynamic_component_loader';
 
-export {APP_COMPONENT} from './application_tokens';
+export {APP_COMPONENT, APP_ID} from './application_tokens';
 export {platform} from './application_common';
 export {
   PlatformRef,

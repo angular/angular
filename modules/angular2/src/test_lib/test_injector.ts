@@ -55,11 +55,11 @@ import {Renderer} from 'angular2/src/core/render/api';
 import {
   DomRenderer,
   DOCUMENT,
-  APP_ID,
   SharedStylesHost,
   DomSharedStylesHost
 } from 'angular2/src/core/render/render';
-import {ElementSchemaRegistry} from 'angular2/src/core/compiler/schema/element_schema_registry';
+import {APP_ID} from 'angular2/src/core/application_tokens' import { ElementSchemaRegistry }
+from 'angular2/src/core/compiler/schema/element_schema_registry';
 import {
   DomElementSchemaRegistry
 } from 'angular2/src/core/compiler/schema/dom_element_schema_registry';
