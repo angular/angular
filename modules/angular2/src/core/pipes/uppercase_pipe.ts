@@ -9,14 +9,17 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
  *
  * # Example
  *
- * In this example we transform the user text uppercase.
+ * In this example we change use text case to upper case
  *
  *  ```
+ * import {Component, View, UpperCasePipe} from 'angular2/angular2'
+ * 
  * @Component({
  *   selector: "username-cmp"
  * })
  * @View({
- *   template: "Username: {{ user | uppercase }}"
+ *   template: "Username: {{ user | uppercase }}",
+ *   pipes: [UpperCasePipe]
  * })
  * class Username {
  *   user:string;

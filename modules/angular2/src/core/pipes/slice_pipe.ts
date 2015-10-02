@@ -49,22 +49,28 @@ import {Pipe} from '../metadata';
  * ## List Example
  *
  * Assuming `var collection = ['a', 'b', 'c', 'd']`, this `ng-for` directive:
- *
- *     <li *ng-for="var i in collection | slice:1:3">{{i}}</li>
+ * 
+ * ```html
+ * <li *ng-for="var i in collection | slice:1:3">{{i}}</li>
+ * ```
  *
  * produces the following:
- *
- *     <li>b</li>
- *     <li>c</li>
- *
+ * 
+ * ```html
+ * <li>b</li>
+ * <li>c</li>
+ * ```
+ * 
  * ## String Examples
- *
- *     {{ 'abcdefghij' | slice:0:4 }}       // output is 'abcd'
- *     {{ 'abcdefghij' | slice:4:0 }}       // output is ''
- *     {{ 'abcdefghij' | slice:-4 }}      // output is 'ghij'
- *     {{ 'abcdefghij' | slice:-4,-2 }}      // output is 'gh'
- *     {{ 'abcdefghij' | slice: -100 }}    // output is 'abcdefghij'
- *     {{ 'abcdefghij' | slice: 100 }}    // output is ''
+ * 
+ * ```html 
+ * {{ 'abcdefghij' | slice:0:4 }}       // output is 'abcd'
+ * {{ 'abcdefghij' | slice:4:0 }}       // output is ''
+ * {{ 'abcdefghij' | slice:-4 }}      // output is 'ghij'
+ * {{ 'abcdefghij' | slice:-4,-2 }}      // output is 'gh'
+ * {{ 'abcdefghij' | slice: -100 }}    // output is 'abcdefghij'
+ * {{ 'abcdefghij' | slice: 100 }}    // output is ''
+ * ```
  */
 
 @Pipe({name: 'slice'})

@@ -78,10 +78,12 @@ export class NumberPipe {
  * details see your native internationalization library.
  *
  * # Examples
- *
- *     {{ 123 | number }}              // output is 123
- *     {{ 123.1 | number: '.2-3' }}    // output is 123.10
- *     {{ 1 | number: '2.2' }}         // output is 01.00
+ * 
+ * ```html
+ * {{ 123 | number }}              // output is 123
+ * {{ 123.1 | number: '.2-3' }}    // output is 123.10
+ * {{ 1 | number: '2.2' }}         // output is 01.00
+ * ```
  */
 @CONST()
 @Pipe({name: 'number'})

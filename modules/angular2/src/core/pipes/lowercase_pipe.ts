@@ -10,14 +10,17 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
  *
  * # Example
  *
- * In this example we transform the user text lowercase.
+ * In this example we change use text case to lower case
  *
- *  ```
+ *  ```typescript
+ * import {Component, LowerCasePipe, View} from 'angular2/angular2'
+ * 
  * @Component({
  *   selector: "username-cmp"
  * })
  * @View({
- *   template: "Username: {{ user | lowercase }}"
+ *   template: "Username: {{ user | lowercase }}",
+ *   pipes: [LowerCasePipe]
  * })
  * class Username {
  *   user:string;
