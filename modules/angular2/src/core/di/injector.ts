@@ -387,7 +387,7 @@ export class BindingWithVisibility {
 }
 
 /**
- * @private
+ * @internal
  * Used to provide dependencies that cannot be easily expressed as bindings.
  */
 export interface DependencyProvider {
@@ -537,7 +537,7 @@ export class Injector {
   }
 
   /**
-   * @private
+   * @internal
    */
   debugContext(): any { return this._debugContext(); }
 
@@ -592,7 +592,7 @@ export class Injector {
   }
 
   /**
-   * @private
+   * @internal
    */
   getAt(index: number): any { return this._strategy.getObjAtIndex(index); }
 
@@ -613,7 +613,7 @@ export class Injector {
   get parent(): Injector { return this._parent; }
 
   /**
-   * @private
+   * @internal
    * Internal. Do not use.
    * We return `any` not to export the InjectorStrategy type.
    */

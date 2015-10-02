@@ -10,7 +10,7 @@ import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 @Injectable()
 export class RuntimeCompiler extends Compiler {
   /**
-   * @private
+   * @internal
    */
   constructor(_protoViewFactory: ProtoViewFactory, private _templateCompiler: TemplateCompiler) {
     super(_protoViewFactory);

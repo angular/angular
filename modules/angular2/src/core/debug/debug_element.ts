@@ -17,7 +17,7 @@ export class DebugElement {
   _elementInjector: ElementInjector;
 
   /**
-   * @private
+   * @internal
    */
   constructor(private _parentView: AppView, private _boundElementIndex: number) {
     this._elementInjector = this._parentView.elementInjectors[this._boundElementIndex];

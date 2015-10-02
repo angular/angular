@@ -21,7 +21,7 @@ export class JSONPConnection implements Connection {
   private _finished: boolean = false;
 
   /**
-   * @private
+   * @internal
    */
   constructor(req: Request, private _dom: BrowserJsonp,
               private baseResponseOptions?: ResponseOptions) {
@@ -103,7 +103,7 @@ export class JSONPConnection implements Connection {
 @Injectable()
 export class JSONPBackend implements ConnectionBackend {
   /**
-   * @private
+   * @internal
    */
   constructor(private _browserJSONP: BrowserJsonp, private _baseResponseOptions: ResponseOptions) {}
   createConnection(request: Request): JSONPConnection {

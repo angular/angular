@@ -30,7 +30,7 @@ export class TemplateRef {
   elementRef: ElementRef;
 
   /**
-   * @private
+   * @internal
    */
   constructor(elementRef: ElementRef) { this.elementRef = elementRef; }
 
@@ -42,7 +42,7 @@ export class TemplateRef {
   }
 
   /**
-   * @private
+   * @internal
    *
    * Reference to the ProtoView used for creating Embedded Views that are based on the compiled
    * Embedded Template.

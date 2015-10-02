@@ -18,7 +18,7 @@ import {CompiledHostTemplate} from 'angular2/src/core/linker/template_commands';
 @Injectable()
 export class Compiler {
   /**
-   * @private
+   * @internal
    */
   constructor(private _protoViewFactory: ProtoViewFactory) {}
 

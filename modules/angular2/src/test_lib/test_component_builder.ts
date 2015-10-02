@@ -28,7 +28,7 @@ export class RootTestComponent {
   debugElement: DebugElement;
 
   /**
-   * @private
+   * @internal
    */
   constructor(componentRef: ComponentRef) {
     this.debugElement = new DebugElement(internalView(<ViewRef>componentRef.hostView), 0);

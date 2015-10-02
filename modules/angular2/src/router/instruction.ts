@@ -144,7 +144,7 @@ export class ComponentInstruction {
   reuse: boolean = false;
 
   /**
-   * @private
+   * @internal
    */
   constructor(public urlPath: string, public urlParams: string[],
               private _recognizer: PathRecognizer, public params: {[key: string]: any} = null) {}

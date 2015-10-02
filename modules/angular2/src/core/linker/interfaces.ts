@@ -2,7 +2,7 @@ import {MapWrapper} from 'angular2/src/core/facade/collection';
 import {SimpleChange} from 'angular2/src/core/change_detection/change_detection_util';
 
 /**
- * @private
+ * @internal
  */
 export enum LifecycleHooks {
   OnInit,
@@ -16,7 +16,7 @@ export enum LifecycleHooks {
 }
 
 /**
- * @private
+ * @internal
  */
 export var LIFECYCLE_HOOKS_VALUES = [
   LifecycleHooks.OnInit,

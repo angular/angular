@@ -13,7 +13,7 @@ import {
 @Injectable()
 export class ServiceMessageBrokerFactory {
   /**
-   * @private
+   * @internal
    */
   constructor(private _messageBus: MessageBus, public _serializer: Serializer) {}
 
@@ -37,7 +37,7 @@ export class ServiceMessageBroker {
   private _methods: Map<string, Function> = new Map<string, Function>();
 
   /**
-   * @private
+   * @internal
    */
   constructor(messageBus: MessageBus, private _serializer: Serializer, public channel) {
     this._sink = messageBus.to(channel);

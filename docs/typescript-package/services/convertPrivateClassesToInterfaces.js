@@ -4,8 +4,8 @@ module.exports = function convertPrivateClassesToInterfaces() {
   return function(exportDocs, addInjectableReference) {
     _.forEach(exportDocs, function(exportDoc) {
 
-      // Search for classes with a constructor marked as `@private`
-      if (exportDoc.docType === 'class' && exportDoc.constructorDoc && exportDoc.constructorDoc.private) {
+      // Search for classes with a constructor marked as `@internal`
+      if (exportDoc.docType === 'class' && exportDoc.constructorDoc && exportDoc.constructorDoc.internal) {
 
         // Convert this class to an interface with no constructor
         exportDoc.docType = 'interface';

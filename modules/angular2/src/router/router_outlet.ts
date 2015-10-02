@@ -32,7 +32,7 @@ export class RouterOutlet {
   private _currentInstruction: ComponentInstruction = null;
 
   /**
-   * @private
+   * @internal
    */
   constructor(private _elementRef: ElementRef, private _loader: DynamicComponentLoader,
               private _parentRouter: routerMod.Router, @Attribute('name') nameAttr: string) {

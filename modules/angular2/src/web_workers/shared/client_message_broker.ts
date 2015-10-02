@@ -17,7 +17,7 @@ export {Type} from "angular2/src/core/facade/lang";
 @Injectable()
 export class ClientMessageBrokerFactory {
   /**
-   * @private
+   * @internal
    */
   constructor(private _messageBus: MessageBus, public _serializer: Serializer) {}
 
@@ -35,7 +35,7 @@ export class ClientMessageBroker {
   private _sink: EventEmitter;
 
   /**
-   * @private
+   * @internal
    */
   constructor(messageBus: MessageBus, public _serializer: Serializer, public channel) {
     this._sink = messageBus.to(channel);
