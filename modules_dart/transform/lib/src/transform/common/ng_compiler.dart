@@ -8,7 +8,7 @@ import 'package:angular2/src/core/compiler/template_normalizer.dart';
 import 'package:angular2/src/core/compiler/template_parser.dart';
 import 'package:angular2/src/core/change_detection/parser/lexer.dart' as ng;
 import 'package:angular2/src/core/change_detection/parser/parser.dart' as ng;
-import 'package:angular2/src/core/render/dom/schema/dom_element_schema_registry.dart';
+import 'package:angular2/src/core/compiler/schema/dom_element_schema_registry.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/core/change_detection/interfaces.dart';
 import 'package:angular2/src/core/compiler/change_detector_compiler.dart';

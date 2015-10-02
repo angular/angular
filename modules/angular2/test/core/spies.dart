@@ -14,7 +14,7 @@ import 'package:angular2/src/core/linker/view_listener.dart';
 import 'package:angular2/src/core/linker/element_injector.dart';
 import 'package:angular2/src/core/dom/dom_adapter.dart';
 import 'package:angular2/test_lib.dart';
-import 'package:angular2/src/core/render/xhr.dart';
+import 'package:angular2/src/core/compiler/xhr.dart';
 
 @proxy
 class SpyDependencyProvider extends SpyObject implements DependencyProvider {

@@ -15,7 +15,7 @@ import {
   DateWrapper
 } from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
-import {SelectorMatcher, CssSelector} from 'angular2/src/core/render/dom/compiler/selector';
+import {SelectorMatcher, CssSelector} from 'angular2/src/core/compiler/selector';
 
 var _attrToPropMap = {
   'class': 'className',

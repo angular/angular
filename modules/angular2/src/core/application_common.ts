@@ -13,8 +13,8 @@ import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {BrowserGetTestability} from 'angular2/src/core/testability/browser_testability';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/core/facade/async';
-import {XHR} from 'angular2/src/core/render/xhr';
-import {XHRImpl} from 'angular2/src/core/render/xhr_impl';
+import {XHR} from 'angular2/src/core/compiler/xhr';
+import {XHRImpl} from 'angular2/src/core/compiler/xhr_impl';
 import {
   EventManager,
   DomEventsPlugin,
@@ -22,8 +22,8 @@ import {
 } from 'angular2/src/core/render/dom/events/event_manager';
 import {KeyEventsPlugin} from 'angular2/src/core/render/dom/events/key_events';
 import {HammerGesturesPlugin} from 'angular2/src/core/render/dom/events/hammer_gestures';
-import {AppRootUrl} from 'angular2/src/core/services/app_root_url';
-import {AnchorBasedAppRootUrl} from 'angular2/src/core/services/anchor_based_app_root_url';
+import {AppRootUrl} from 'angular2/src/core/compiler/app_root_url';
+import {AnchorBasedAppRootUrl} from 'angular2/src/core/compiler/anchor_based_app_root_url';
 import {
   ComponentRef,
   DynamicComponentLoader
@@ -31,14 +31,14 @@ import {
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
 import {Renderer} from 'angular2/src/core/render/api';
 import {DomRenderer, DOCUMENT, APP_ID_RANDOM_BINDING} from 'angular2/src/core/render/render';
-import {ElementSchemaRegistry} from 'angular2/src/core/render/dom/schema/element_schema_registry';
+import {ElementSchemaRegistry} from 'angular2/src/core/compiler/schema/element_schema_registry';
 import {
   DomElementSchemaRegistry
-} from 'angular2/src/core/render/dom/schema/dom_element_schema_registry';
+} from 'angular2/src/core/compiler/schema/dom_element_schema_registry';
 import {
   SharedStylesHost,
   DomSharedStylesHost
-} from 'angular2/src/core/render/dom/view/shared_styles_host';
+} from 'angular2/src/core/render/dom/shared_styles_host';
 import {EXCEPTION_BINDING} from './platform_bindings';
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
 import {BrowserDetails} from 'angular2/src/animate/browser_details';

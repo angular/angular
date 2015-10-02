@@ -7,8 +7,8 @@ import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 
-import {XHR} from 'angular2/src/core/render/xhr';
-import {UrlResolver} from 'angular2/src/core/services/url_resolver';
+import {XHR} from 'angular2/src/core/compiler/xhr';
+import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {resolveStyleUrls} from './style_url_resolver';
 import {Injectable} from 'angular2/src/core/di';
 import {ViewEncapsulation} from 'angular2/src/core/render/api';

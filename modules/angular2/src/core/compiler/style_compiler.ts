@@ -1,11 +1,11 @@
 import {CompileTypeMetadata, CompileTemplateMetadata} from './directive_metadata';
 import {SourceModule, SourceExpression, moduleRef} from './source_module';
 import {ViewEncapsulation} from 'angular2/src/core/render/api';
-import {XHR} from 'angular2/src/core/render/xhr';
+import {XHR} from 'angular2/src/core/compiler/xhr';
 import {StringWrapper, isBlank} from 'angular2/src/core/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
-import {ShadowCss} from 'angular2/src/core/render/dom/compiler/shadow_css';
-import {UrlResolver} from 'angular2/src/core/services/url_resolver';
+import {ShadowCss} from 'angular2/src/core/compiler/shadow_css';
+import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {resolveStyleUrls} from './style_url_resolver';
 import {
   escapeSingleQuoteString,

@@ -10,7 +10,7 @@ import {
   normalizeCSS,
   browserDetection
 } from 'angular2/test_lib';
-import {ShadowCss} from 'angular2/src/core/render/dom/compiler/shadow_css';
+import {ShadowCss} from 'angular2/src/core/compiler/shadow_css';
 
 import {RegExpWrapper, StringWrapper, isPresent} from 'angular2/src/core/facade/lang';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';

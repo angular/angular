@@ -17,16 +17,16 @@ import {KeyEventsPlugin} from 'angular2/src/core/render/dom/events/key_events';
 import {HammerGesturesPlugin} from 'angular2/src/core/render/dom/events/hammer_gestures';
 import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 import {Renderer} from 'angular2/src/core/render/api';
-import {AppRootUrl} from 'angular2/src/core/services/app_root_url';
+import {AppRootUrl} from 'angular2/src/core/compiler/app_root_url';
 import {DomRenderer, DOCUMENT, APP_ID_RANDOM_BINDING} from 'angular2/src/core/render/render';
-import {ElementSchemaRegistry} from 'angular2/src/core/render/dom/schema/element_schema_registry';
+import {ElementSchemaRegistry} from 'angular2/src/core/compiler/schema/element_schema_registry';
 import {
   DomElementSchemaRegistry
-} from 'angular2/src/core/render/dom/schema/dom_element_schema_registry';
+} from 'angular2/src/core/compiler/schema/dom_element_schema_registry';
 import {
   SharedStylesHost,
   DomSharedStylesHost
-} from 'angular2/src/core/render/dom/view/shared_styles_host';
+} from 'angular2/src/core/render/dom/shared_styles_host';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {AppViewManager} from 'angular2/src/core/linker/view_manager';
@@ -36,17 +36,17 @@ import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
 import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
 import {DynamicComponentLoader} from 'angular2/src/core/linker/dynamic_component_loader';
-import {UrlResolver} from 'angular2/src/core/services/url_resolver';
+import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {Testability} from 'angular2/src/core/testability/testability';
-import {XHR} from 'angular2/src/core/render/xhr';
-import {XHRImpl} from 'angular2/src/core/render/xhr_impl';
+import {XHR} from 'angular2/src/core/compiler/xhr';
+import {XHRImpl} from 'angular2/src/core/compiler/xhr_impl';
 import {Serializer} from 'angular2/src/web_workers/shared/serializer';
 import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';
 import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_proto_view_ref_store';
 import {
   RenderViewWithFragmentsStore
 } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
-import {AnchorBasedAppRootUrl} from 'angular2/src/core/services/anchor_based_app_root_url';
+import {AnchorBasedAppRootUrl} from 'angular2/src/core/compiler/anchor_based_app_root_url';
 import {WebWorkerApplication} from 'angular2/src/web_workers/ui/impl';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';

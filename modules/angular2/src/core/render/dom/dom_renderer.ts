@@ -13,7 +13,7 @@ import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {EventManager} from './events/event_manager';
 
-import {DomSharedStylesHost} from './view/shared_styles_host';
+import {DomSharedStylesHost} from './shared_styles_host';
 import {WtfScopeFn, wtfLeave, wtfCreateScope} from '../../profile/profile';
 
 import {

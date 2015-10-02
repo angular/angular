@@ -14,7 +14,7 @@ import {
 } from 'angular2/test_lib';
 import {bind} from 'angular2/src/core/di';
 import {SpyXHR} from '../spies';
-import {XHR} from 'angular2/src/core/render/xhr';
+import {XHR} from 'angular2/src/core/compiler/xhr';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
 import {CONST_EXPR, isPresent, isBlank, StringWrapper} from 'angular2/src/core/facade/lang';

@@ -19,10 +19,10 @@ import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
 import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 import {PipeResolver} from 'angular2/src/core/linker/pipe_resolver';
 import {DynamicComponentLoader} from 'angular2/src/core/linker/dynamic_component_loader';
-import {XHR} from 'angular2/src/core/render/xhr';
-import {UrlResolver} from 'angular2/src/core/services/url_resolver';
-import {AppRootUrl} from 'angular2/src/core/services/app_root_url';
-import {AnchorBasedAppRootUrl} from 'angular2/src/core/services/anchor_based_app_root_url';
+import {XHR} from 'angular2/src/core/compiler/xhr';
+import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
+import {AppRootUrl} from 'angular2/src/core/compiler/app_root_url';
+import {AnchorBasedAppRootUrl} from 'angular2/src/core/compiler/anchor_based_app_root_url';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
@@ -35,7 +35,7 @@ import {
 
 import {MockDirectiveResolver} from 'angular2/src/mock/directive_resolver_mock';
 import {MockViewResolver} from 'angular2/src/mock/view_resolver_mock';
-import {MockXHR} from 'angular2/src/core/render/xhr_mock';
+import {MockXHR} from 'angular2/src/core/compiler/xhr_mock';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
 import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
@@ -59,10 +59,10 @@ import {
   SharedStylesHost,
   DomSharedStylesHost
 } from 'angular2/src/core/render/render';
-import {ElementSchemaRegistry} from 'angular2/src/core/render/dom/schema/element_schema_registry';
+import {ElementSchemaRegistry} from 'angular2/src/core/compiler/schema/element_schema_registry';
 import {
   DomElementSchemaRegistry
-} from 'angular2/src/core/render/dom/schema/dom_element_schema_registry';
+} from 'angular2/src/core/compiler/schema/dom_element_schema_registry';
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {Log} from './utils';
 import {compilerBindings} from 'angular2/src/core/compiler/compiler';

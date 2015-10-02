@@ -11,9 +11,9 @@ import {
 } from 'angular2/src/core/facade/lang';
 import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
 import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/core/facade/async';
-import {XHR} from 'angular2/src/core/render/xhr';
+import {XHR} from 'angular2/src/core/compiler/xhr';
 import {WebWorkerXHRImpl} from 'angular2/src/web_workers/worker/xhr_impl';
-import {AppRootUrl} from 'angular2/src/core/services/app_root_url';
+import {AppRootUrl} from 'angular2/src/core/compiler/app_root_url';
 import {WebWorkerRenderer} from './renderer';
 import {Renderer} from 'angular2/src/core/render/api';
 import {ClientMessageBrokerFactory} from 'angular2/src/web_workers/shared/client_message_broker';

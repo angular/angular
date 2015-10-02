@@ -17,7 +17,7 @@ import {
 } from 'angular2/test_lib';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {DomSharedStylesHost} from 'angular2/src/core/render/dom/view/shared_styles_host';
+import {DomSharedStylesHost} from 'angular2/src/core/render/dom/shared_styles_host';
 
 export function main() {
   describe('DomSharedStylesHost', () => {

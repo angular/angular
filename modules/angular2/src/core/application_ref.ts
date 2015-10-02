@@ -35,7 +35,7 @@ import {DEFAULT_PIPES} from 'angular2/src/core/pipes';
 import {ViewResolver} from './linker/view_resolver';
 import {DirectiveResolver} from './linker/directive_resolver';
 import {PipeResolver} from './linker/pipe_resolver';
-import {UrlResolver} from 'angular2/src/core/services/url_resolver';
+import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {
   APP_ID_RANDOM_BINDING,
 } from 'angular2/src/core/render/render';

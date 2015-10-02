@@ -20,8 +20,8 @@ import {
 import {ViewEncapsulation} from 'angular2/src/core/render/api';
 
 import {TemplateNormalizer} from 'angular2/src/core/compiler/template_normalizer';
-import {XHR} from 'angular2/src/core/render/xhr';
-import {MockXHR} from 'angular2/src/core/render/xhr_mock';
+import {XHR} from 'angular2/src/core/compiler/xhr';
+import {MockXHR} from 'angular2/src/core/compiler/xhr_mock';
 import {TEST_BINDINGS} from './test_bindings';
 
 export function main() {

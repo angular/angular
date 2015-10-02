@@ -1,6 +1,6 @@
 import {Injectable} from 'angular2/src/core/di';
 import {Promise} from 'angular2/src/core/facade/async';
-import {XHR} from 'angular2/src/core/render/xhr';
+import {XHR} from 'angular2/src/core/compiler/xhr';
 import {
   FnArg,
   UiArguments,
@@ -10,7 +10,7 @@ import {
 import {XHR_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
 
 /**
- * Implementation of render/xhr that relays XHR requests to the UI side where they are sent
+ * Implementation of compiler/xhr that relays XHR requests to the UI side where they are sent
  * and the result is proxied back to the worker
  */
 @Injectable()
