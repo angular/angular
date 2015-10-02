@@ -325,10 +325,10 @@ function testableStylesModule(sourceModule: SourceModule): SourceModule {
 
 // Attention: read by eval!
 export function humanizeTemplate(template: CompiledTemplate,
-                                 humanizedTemplates: Map<number, StringMap<string, any>> = null):
-    StringMap<string, any> {
+                                 humanizedTemplates: Map<number, {[key: string]: any}> = null):
+    {[key: string]: any} {
   if (isBlank(humanizedTemplates)) {
-    humanizedTemplates = new Map<number, StringMap<string, any>>();
+    humanizedTemplates = new Map<number, {[key: string]: any}>();
   }
   var result = humanizedTemplates.get(template.id);
   if (isPresent(result)) {
@@ -369,7 +369,7 @@ function testChangeDetector(changeDetectorFactory: Function): string[] {
 
 class CommandHumanizer implements CommandVisitor {
   constructor(private result: any[],
-              private humanizedTemplates: Map<number, StringMap<string, any>>) {}
+              private humanizedTemplates: Map<number, {[key: string]: any}>) {}
   visitText(cmd: TextCmd, context: any): any {
     this.result.push(`#text(${cmd.value})`);
     return null;

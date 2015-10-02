@@ -1,5 +1,5 @@
 import {bind, Binding} from 'angular2/src/core/di';
-import {ListWrapper, StringMapWrapper, StringMap} from 'angular2/src/core/facade/collection';
+import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {
   Json,
   isPresent,
@@ -84,8 +84,8 @@ export class ChromeDriverExtension extends WebDriverExtension {
         });
   }
 
-  private _convertPerfRecordsToEvents(chromeEvents: Array<StringMap<string, any>>,
-                                      normalizedEvents: Array<StringMap<string, any>> = null) {
+  private _convertPerfRecordsToEvents(chromeEvents: Array<{[key: string]: any}>,
+                                      normalizedEvents: Array<{[key: string]: any}> = null) {
     if (isBlank(normalizedEvents)) {
       normalizedEvents = [];
     }
@@ -214,14 +214,14 @@ export class ChromeDriverExtension extends WebDriverExtension {
     return new PerfLogFeatures({render: true, gc: true, frameCapture: true});
   }
 
-  supports(capabilities: StringMap<string, any>): boolean {
+  supports(capabilities: {[key: string]: any}): boolean {
     return this._majorChromeVersion != -1 &&
            StringWrapper.equals(capabilities['browserName'].toLowerCase(), 'chrome');
   }
 }
 
-function normalizeEvent(chromeEvent: StringMap<string, any>, data: StringMap<string, any>):
-    StringMap<string, any> {
+function normalizeEvent(chromeEvent: {[key: string]: any}, data: {[key: string]: any}):
+    {[key: string]: any} {
   var ph = chromeEvent['ph'];
   if (StringWrapper.equals(ph, 'S')) {
     ph = 'b';

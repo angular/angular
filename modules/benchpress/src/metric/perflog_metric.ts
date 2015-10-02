@@ -8,7 +8,7 @@ import {
   NumberWrapper
 } from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
-import {ListWrapper, StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {bind, Binding, OpaqueToken} from 'angular2/src/core/di';
 
 import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
@@ -24,7 +24,7 @@ export class PerflogMetric extends Metric {
   // TODO(tbosch): use static values when our transpiler supports them
   static get SET_TIMEOUT(): OpaqueToken { return _SET_TIMEOUT; }
 
-  private _remainingEvents: Array<StringMap<string, any>>;
+  private _remainingEvents: Array<{[key: string]: any}>;
   private _measureCount: number;
   _perfLogFeatures: PerfLogFeatures;
 
@@ -35,7 +35,7 @@ export class PerflogMetric extends Metric {
    * @param microMetrics Name and description of metrics provided via console.time / console.timeEnd
    **/
   constructor(private _driverExtension: WebDriverExtension, private _setTimeout: Function,
-              private _microMetrics: StringMap<string, any>, private _forceGc: boolean,
+              private _microMetrics: {[key: string]: any}, private _forceGc: boolean,
               private _captureFrames: boolean) {
     super();
 
@@ -44,7 +44,7 @@ export class PerflogMetric extends Metric {
     this._perfLogFeatures = _driverExtension.perfLogFeatures();
   }
 
-  describe(): StringMap<string, any> {
+  describe(): {[key: string]: any} {
     var res = {
       'scriptTime': 'script execution time in ms, including gc and render',
       'pureScriptTime': 'script execution time in ms, without gc nor render'
@@ -89,7 +89,7 @@ export class PerflogMetric extends Metric {
     return resultPromise.then((_) => this._beginMeasure());
   }
 
-  endMeasure(restart: boolean): Promise<StringMap<string, any>> {
+  endMeasure(restart: boolean): Promise<{[key: string]: any}> {
     if (this._forceGc) {
       return this._endPlainMeasureAndMeasureForceGc(restart);
     } else {
@@ -117,7 +117,7 @@ export class PerflogMetric extends Metric {
     return this._driverExtension.timeBegin(this._markName(this._measureCount++));
   }
 
-  _endMeasure(restart: boolean): Promise<StringMap<string, any>> {
+  _endMeasure(restart: boolean): Promise<{[key: string]: any}> {
     var markName = this._markName(this._measureCount - 1);
     var nextMarkName = restart ? this._markName(this._measureCount++) : null;
     return this._driverExtension.timeEnd(markName, nextMarkName)
@@ -171,7 +171,7 @@ export class PerflogMetric extends Metric {
     }
   }
 
-  _aggregateEvents(events: Array<StringMap<string, any>>, markName): StringMap<string, any> {
+  _aggregateEvents(events: Array<{[key: string]: any}>, markName): {[key: string]: any} {
     var result = {'scriptTime': 0, 'pureScriptTime': 0};
     if (this._perfLogFeatures.gc) {
       result['gcTime'] = 0;
@@ -199,8 +199,8 @@ export class PerflogMetric extends Metric {
     var frameCaptureStartEvent = null;
     var frameCaptureEndEvent = null;
 
-    var intervalStarts: StringMap<string, any> = {};
-    var intervalStartCount: StringMap<string, number> = {};
+    var intervalStarts: {[key: string]: any} = {};
+    var intervalStartCount: {[key: string]: number} = {};
     events.forEach((event) => {
       var ph = event['ph'];
       var name = event['name'];
@@ -307,7 +307,7 @@ export class PerflogMetric extends Metric {
     return result;
   }
 
-  _addFrameMetrics(result: StringMap<string, any>, frameTimes: any[]) {
+  _addFrameMetrics(result: {[key: string]: any}, frameTimes: any[]) {
     result['frameTime.mean'] =
         ListWrapper.reduce(frameTimes, (a, b) => a + b, 0) / frameTimes.length;
     var firstFrame = frameTimes[0];

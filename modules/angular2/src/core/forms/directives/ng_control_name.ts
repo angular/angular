@@ -1,6 +1,5 @@
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
-import {StringMap} from 'angular2/src/core/facade/collection';
 import {OnChanges, OnDestroy} from 'angular2/lifecycle_hooks';
 import {SimpleChange} from 'angular2/src/core/change_detection';
 import {Query, Directive} from 'angular2/src/core/metadata';
@@ -97,7 +96,7 @@ export class NgControlName extends NgControl implements OnChanges,
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
-  onChanges(changes: StringMap<string, SimpleChange>) {
+  onChanges(changes: {[key: string]: SimpleChange}) {
     if (!this._added) {
       this.formDirective.addControl(this);
       this._added = true;

@@ -5,10 +5,6 @@
 /// <reference path="../typings/zone/zone.d.ts"/>
 declare var assert: any;
 
-// FIXME: K must be string!
-// FIXME: should have an index signature, `[k: string]: V;`
-interface StringMap<K extends string, V> {}
-
 interface BrowserNodeGlobal {
   Object: typeof Object;
   Array: typeof Array;

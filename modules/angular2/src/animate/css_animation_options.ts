@@ -1,9 +1,9 @@
 export class CssAnimationOptions {
   /** initial styles for the element */
-  fromStyles: StringMap<string, any>;
+  fromStyles: {[key: string]: any};
 
   /** destination styles for the element */
-  toStyles: StringMap<string, any>;
+  toStyles: {[key: string]: any};
 
   /** classes to be added to the element */
   classesToAdd: string[] = [];

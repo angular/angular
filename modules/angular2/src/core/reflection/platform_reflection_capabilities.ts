@@ -7,7 +7,7 @@ export interface PlatformReflectionCapabilities {
   interfaces(type: Type): any[];
   parameters(type: any): any[][];
   annotations(type: any): any[];
-  propMetadata(typeOrFunc: any): StringMap<string, any[]>;
+  propMetadata(typeOrFunc: any): {[key: string]: any[]};
   getter(name: string): GetterFn;
   setter(name: string): SetterFn;
   method(name: string): MethodFn;

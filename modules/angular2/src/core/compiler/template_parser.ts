@@ -436,8 +436,8 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     return directiveAsts;
   }
 
-  private _createDirectiveHostPropertyAsts(elementName: string,
-                                           hostProps: StringMap<string, string>, sourceInfo: string,
+  private _createDirectiveHostPropertyAsts(elementName: string, hostProps: {[key: string]: string},
+                                           sourceInfo: string,
                                            targetPropertyAsts: BoundElementPropertyAst[]) {
     if (isPresent(hostProps)) {
       StringMapWrapper.forEach(hostProps, (expression, propName) => {
@@ -448,8 +448,8 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     }
   }
 
-  private _createDirectiveHostEventAsts(hostListeners: StringMap<string, string>,
-                                        sourceInfo: string, targetEventAsts: BoundEventAst[]) {
+  private _createDirectiveHostEventAsts(hostListeners: {[key: string]: string}, sourceInfo: string,
+                                        targetEventAsts: BoundEventAst[]) {
     if (isPresent(hostListeners)) {
       StringMapWrapper.forEach(hostListeners, (expression, propName) => {
         this._parseEvent(propName, expression, sourceInfo, [], targetEventAsts);
@@ -457,7 +457,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     }
   }
 
-  private _createDirectivePropertyAsts(directiveProperties: StringMap<string, string>,
+  private _createDirectivePropertyAsts(directiveProperties: {[key: string]: string},
                                        boundProps: BoundElementOrDirectiveProperty[],
                                        targetBoundDirectiveProps: BoundDirectivePropertyAst[]) {
     if (isPresent(directiveProperties)) {

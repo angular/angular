@@ -1,4 +1,4 @@
-import {StringMap, MapWrapper} from 'angular2/src/core/facade/collection';
+import {MapWrapper} from 'angular2/src/core/facade/collection';
 import {SimpleChange} from 'angular2/src/core/change_detection/change_detection_util';
 
 /**
@@ -77,7 +77,7 @@ export var LIFECYCLE_HOOKS_VALUES = [
  * bootstrap(App).catch(err => console.error(err));
  * ```
  */
-export interface OnChanges { onChanges(changes: StringMap<string, SimpleChange>); }
+export interface OnChanges { onChanges(changes: {[key: string]: SimpleChange}); }
 
 /**
  * Implement this interface to execute custom initialization logic after your directive's

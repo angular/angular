@@ -1,13 +1,7 @@
 import {PathMatch} from './path_recognizer';
 import {RouteRecognizer} from './route_recognizer';
 import {Instruction, ComponentInstruction, PrimaryInstruction} from './instruction';
-import {
-  ListWrapper,
-  Map,
-  MapWrapper,
-  StringMap,
-  StringMapWrapper
-} from 'angular2/src/core/facade/collection';
+import {ListWrapper, Map, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {
   isPresent,

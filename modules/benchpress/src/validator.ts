@@ -1,5 +1,4 @@
 import {bind, Binding} from 'angular2/src/core/di';
-import {StringMap} from 'angular2/src/core/facade/collection';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
 import {MeasureValues} from './measure_values';
@@ -23,5 +22,5 @@ export abstract class Validator {
    * Returns a Map that describes the properties of the validator
    * (e.g. sample size, ...)
    */
-  describe(): StringMap<string, any> { throw new BaseException('NYI'); }
+  describe(): {[key: string]: any} { throw new BaseException('NYI'); }
 }

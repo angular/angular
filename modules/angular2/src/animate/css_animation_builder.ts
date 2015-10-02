@@ -61,7 +61,7 @@ export class CssAnimationBuilder {
    * @param from
    * @param to
    */
-  setStyles(from: StringMap<string, any>, to: StringMap<string, any>): CssAnimationBuilder {
+  setStyles(from: {[key: string]: any}, to: {[key: string]: any}): CssAnimationBuilder {
     return this.setFromStyles(from).setToStyles(to);
   }
 
@@ -69,7 +69,7 @@ export class CssAnimationBuilder {
    * Sets the initial styles for the animation
    * @param from
    */
-  setFromStyles(from: StringMap<string, any>): CssAnimationBuilder {
+  setFromStyles(from: {[key: string]: any}): CssAnimationBuilder {
     this.data.fromStyles = from;
     return this;
   }
@@ -78,7 +78,7 @@ export class CssAnimationBuilder {
    * Sets the destination styles for the animation
    * @param to
    */
-  setToStyles(to: StringMap<string, any>): CssAnimationBuilder {
+  setToStyles(to: {[key: string]: any}): CssAnimationBuilder {
     this.data.toStyles = to;
     return this;
   }

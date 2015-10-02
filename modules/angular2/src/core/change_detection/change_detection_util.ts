@@ -124,7 +124,7 @@ export class ChangeDetectionUtil {
   static cond(cond, trueVal, falseVal): any { return cond ? trueVal : falseVal; }
 
   static mapFn(keys: any[]): any {
-    function buildMap(values): StringMap<any, any> {
+    function buildMap(values): {[k: /*any*/ string]: any} {
       var res = StringMapWrapper.create();
       for (var i = 0; i < keys.length; ++i) {
         StringMapWrapper.set(res, keys[i], values[i]);

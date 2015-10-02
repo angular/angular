@@ -1,6 +1,6 @@
 import {StringWrapper, isPresent, isBlank, normalizeBool} from 'angular2/src/core/facade/lang';
 import {Observable, EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
-import {StringMap, StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {Validators} from './validators';
 
 /**
@@ -43,7 +43,7 @@ function _find(control: AbstractControl, path: Array<string | number>| string) {
 export class AbstractControl {
   _value: any;
   _status: string;
-  _errors: StringMap<string, any>;
+  _errors: {[key: string]: any};
   _pristine: boolean = true;
   _touched: boolean = false;
   _parent: ControlGroup | ControlArray;
@@ -58,7 +58,7 @@ export class AbstractControl {
 
   get valid(): boolean { return this._status === VALID; }
 
-  get errors(): StringMap<string, any> { return this._errors; }
+  get errors(): {[key: string]: any} { return this._errors; }
 
   get pristine(): boolean { return this._pristine; }
 
@@ -199,11 +199,10 @@ export class Control extends AbstractControl {
  * ### Example ([live demo](http://plnkr.co/edit/23DESOpbNnBpBHZt1BR4?p=preview))
  */
 export class ControlGroup extends AbstractControl {
-  private _optionals: StringMap<string, boolean>;
+  private _optionals: {[key: string]: boolean};
 
-  constructor(public controls: StringMap<string, AbstractControl>,
-              optionals: StringMap<string, boolean> = null,
-              validator: Function = Validators.group) {
+  constructor(public controls: {[key: string]: AbstractControl},
+              optionals: {[key: string]: boolean} = null, validator: Function = Validators.group) {
     super(validator);
     this._optionals = isPresent(optionals) ? optionals : {};
     this._valueChanges = new EventEmitter();

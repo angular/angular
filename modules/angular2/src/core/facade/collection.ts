@@ -9,7 +9,6 @@ import {
 
 export var Map = global.Map;
 export var Set = global.Set;
-export var StringMap = global.Object;
 
 // Safari and Internet Explorer do not support the iterable parameter to the
 // Map constructor.  We work around that by manually adding the items.
@@ -79,14 +78,14 @@ var _arrayFromMap: {(m: Map<any, any>, getValues: boolean): any[]} = (function()
 
 export class MapWrapper {
   static clone<K, V>(m: Map<K, V>): Map<K, V> { return createMapFromMap(m); }
-  static createFromStringMap<T>(stringMap: StringMap<string, T>): Map<string, T> {
+  static createFromStringMap<T>(stringMap: {[key: string]: T}): Map<string, T> {
     var result = new Map<string, T>();
     for (var prop in stringMap) {
       result.set(prop, stringMap[prop]);
     }
     return result;
   }
-  static toStringMap<T>(m: Map<string, T>): StringMap<string, T> {
+  static toStringMap<T>(m: Map<string, T>): {[key: string]: T} {
     var r = {};
     m.forEach((v, k) => r[k] = v);
     return r;
@@ -106,28 +105,28 @@ export class MapWrapper {
  * Wraps Javascript Objects
  */
 export class StringMapWrapper {
-  static create(): StringMap<any, any> {
+  static create(): {[k: /*any*/ string]: any} {
     // Note: We are not using Object.create(null) here due to
     // performance!
     // http://jsperf.com/ng2-object-create-null
     return {};
   }
-  static contains(map: StringMap<string, any>, key: string): boolean {
+  static contains(map: {[key: string]: any}, key: string): boolean {
     return map.hasOwnProperty(key);
   }
-  static get<V>(map: StringMap<string, V>, key: string): V {
+  static get<V>(map: {[key: string]: V}, key: string): V {
     return map.hasOwnProperty(key) ? map[key] : undefined;
   }
-  static set<V>(map: StringMap<string, V>, key: string, value: V) { map[key] = value; }
-  static keys(map: StringMap<string, any>): string[] { return Object.keys(map); }
-  static isEmpty(map: StringMap<string, any>): boolean {
+  static set<V>(map: {[key: string]: V}, key: string, value: V) { map[key] = value; }
+  static keys(map: {[key: string]: any}): string[] { return Object.keys(map); }
+  static isEmpty(map: {[key: string]: any}): boolean {
     for (var prop in map) {
       return false;
     }
     return true;
   }
-  static delete (map: StringMap<string, any>, key: string) { delete map[key]; }
-  static forEach<K, V>(map: StringMap<string, V>, callback: /*(V, K) => void*/ Function) {
+  static delete (map: {[key: string]: any}, key: string) { delete map[key]; }
+  static forEach<K, V>(map: {[key: string]: V}, callback: /*(V, K) => void*/ Function) {
     for (var prop in map) {
       if (map.hasOwnProperty(prop)) {
         callback(map[prop], prop);
@@ -135,7 +134,7 @@ export class StringMapWrapper {
     }
   }
 
-  static merge<V>(m1: StringMap<string, V>, m2: StringMap<string, V>): StringMap<string, V> {
+  static merge<V>(m1: {[key: string]: V}, m2: {[key: string]: V}): {[key: string]: V} {
     var m = {};
 
     for (var attr in m1) {
@@ -153,7 +152,7 @@ export class StringMapWrapper {
     return m;
   }
 
-  static equals<V>(m1: StringMap<string, V>, m2: StringMap<string, V>): boolean {
+  static equals<V>(m1: {[key: string]: V}, m2: {[key: string]: V}): boolean {
     var k1 = Object.keys(m1);
     var k2 = Object.keys(m2);
     if (k1.length != k2.length) {

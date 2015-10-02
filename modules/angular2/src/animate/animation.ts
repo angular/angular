@@ -96,7 +96,7 @@ export class Animation {
    * Applies the provided styles to the element
    * @param styles
    */
-  applyStyles(styles: StringMap<string, any>): void {
+  applyStyles(styles: {[key: string]: any}): void {
     StringMapWrapper.forEach(styles, (value, key) => {
       var dashCaseKey = camelCaseToDashCase(key);
       if (isPresent(DOM.getStyle(this.element, dashCaseKey))) {

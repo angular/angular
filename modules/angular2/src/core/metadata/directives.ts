@@ -632,7 +632,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    * }
    * ```
    */
-  host: StringMap<string, string>;
+  host: {[key: string]: string};
 
   /**
    * Defines the set of injectable objects that are visible to a Directive and its light DOM
@@ -748,7 +748,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    * }
    * ```
    */
-  queries: StringMap<string, any>;
+  queries: {[key: string]: any};
 
   constructor({selector, inputs, outputs, properties, events, host, bindings, exportAs, moduleId,
                queries}: {
@@ -757,11 +757,11 @@ export class DirectiveMetadata extends InjectableMetadata {
     outputs?: string[],
     properties?: string[],
     events?: string[],
-    host?: StringMap<string, string>,
+    host?: {[key: string]: string},
     bindings?: any[],
     exportAs?: string,
     moduleId?: string,
-    queries?: StringMap<string, any>
+    queries?: {[key: string]: any}
   } = {}) {
     super();
     this.selector = selector;
@@ -883,12 +883,12 @@ export class ComponentMetadata extends DirectiveMetadata {
     outputs?: string[],
     properties?: string[],
     events?: string[],
-    host?: StringMap<string, string>,
+    host?: {[key: string]: string},
     bindings?: any[],
     exportAs?: string,
     moduleId?: string,
     viewBindings?: any[],
-    queries?: StringMap<string, any>,
+    queries?: {[key: string]: any},
     changeDetection?: ChangeDetectionStrategy,
   } = {}) {
     super({

@@ -18,7 +18,7 @@ import {RegExpWrapper, print, isPresent} from 'angular2/src/core/facade/lang';
 /**
  * Custom validator.
  */
-function creditCardValidator(c): StringMap<string, boolean> {
+function creditCardValidator(c): {[key: string]: boolean} {
   if (isPresent(c.value) && RegExpWrapper.test(/^\d{16}$/g, c.value)) {
     return null;
   } else {

@@ -7,13 +7,7 @@ import {
 } from "angular2/src/core/facade/lang";
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
-import {
-  ListWrapper,
-  Map,
-  StringMap,
-  StringMapWrapper,
-  MapWrapper
-} from "angular2/src/core/facade/collection";
+import {ListWrapper, Map, StringMapWrapper, MapWrapper} from "angular2/src/core/facade/collection";
 import {
   RenderProtoViewRef,
   RenderViewRef,
@@ -144,7 +138,7 @@ export class Serializer {
    * If the values need to be deserialized pass in their type
    * and they will be deserialized before being placed in the map
    */
-  objectToMap(obj: StringMap<string, any>, type?: Type, data?: any): Map<string, any> {
+  objectToMap(obj: {[key: string]: any}, type?: Type, data?: any): Map<string, any> {
     if (isPresent(type)) {
       var map = new Map<string, any>();
       StringMapWrapper.forEach(obj,
@@ -157,14 +151,14 @@ export class Serializer {
 
   allocateRenderViews(fragmentCount: number) { this._renderViewStore.allocate(fragmentCount); }
 
-  private _serializeWorkerElementRef(elementRef: RenderElementRef): StringMap<string, any> {
+  private _serializeWorkerElementRef(elementRef: RenderElementRef): {[key: string]: any} {
     return {
       'renderView': this.serialize(elementRef.renderView, RenderViewRef),
       'boundElementIndex': elementRef.boundElementIndex
     };
   }
 
-  private _deserializeWorkerElementRef(map: StringMap<string, any>): RenderElementRef {
+  private _deserializeWorkerElementRef(map: {[key: string]: any}): RenderElementRef {
     return new WebWorkerElementRef(this.deserialize(map['renderView'], RenderViewRef),
                                    map['boundElementIndex']);
   }
@@ -174,7 +168,7 @@ function serializeTemplateCmd(cmd: RenderTemplateCmd): Object {
   return cmd.visit(RENDER_TEMPLATE_CMD_SERIALIZER, null);
 }
 
-function deserializeTemplateCmd(data: StringMap<string, any>): RenderTemplateCmd {
+function deserializeTemplateCmd(data: {[key: string]: any}): RenderTemplateCmd {
   return RENDER_TEMPLATE_CMD_DESERIALIZERS[data['deserializerIndex']](data);
 }
 
@@ -232,18 +226,18 @@ class RenderTemplateCmdSerializer implements RenderCommandVisitor {
 var RENDER_TEMPLATE_CMD_SERIALIZER = new RenderTemplateCmdSerializer();
 
 var RENDER_TEMPLATE_CMD_DESERIALIZERS = [
-  (data: StringMap<string, any>) =>
+  (data: {[key: string]: any}) =>
       new WebWorkerTextCmd(data['isBound'], data['ngContentIndex'], data['value']),
-  (data: StringMap<string, any>) => new WebWorkerNgContentCmd(data['ngContentIndex']),
-  (data: StringMap<string, any>) =>
+  (data: {[key: string]: any}) => new WebWorkerNgContentCmd(data['ngContentIndex']),
+  (data: {[key: string]: any}) =>
       new WebWorkerBeginElementCmd(data['isBound'], data['ngContentIndex'], data['name'],
                                    data['attrNameAndValues'], data['eventTargetAndNames']),
-  (data: StringMap<string, any>) => new WebWorkerEndElementCmd(),
-  (data: StringMap<string, any>) => new WebWorkerBeginComponentCmd(
+  (data: {[key: string]: any}) => new WebWorkerEndElementCmd(),
+  (data: {[key: string]: any}) => new WebWorkerBeginComponentCmd(
       data['isBound'], data['ngContentIndex'], data['name'], data['attrNameAndValues'],
       data['eventTargetAndNames'], data['nativeShadow'], data['templateId']),
-  (data: StringMap<string, any>) => new WebWorkerEndComponentCmd(),
-  (data: StringMap<string, any>) => new WebWorkerEmbeddedTemplateCmd(
+  (data: {[key: string]: any}) => new WebWorkerEndComponentCmd(),
+  (data: {[key: string]: any}) => new WebWorkerEmbeddedTemplateCmd(
       data['isBound'], data['ngContentIndex'], data['name'], data['attrNameAndValues'],
       data['eventTargetAndNames'], data['isMerged'],
       (<any[]>data['children']).map(childData => deserializeTemplateCmd(childData))),

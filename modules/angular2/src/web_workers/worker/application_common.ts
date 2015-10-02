@@ -84,7 +84,7 @@ class PrintLogger {
   logGroupEnd() {}
 }
 
-function webWorkerBindings(appComponentType, bus: MessageBus, initData: StringMap<string, any>):
+function webWorkerBindings(appComponentType, bus: MessageBus, initData: {[key: string]: any}):
     Array<Type | Binding | any[]> {
   return [
     compilerBindings(),
@@ -118,7 +118,7 @@ export function bootstrapWebWorkerCommon(appComponentType: Type, bus: MessageBus
 
     var subscription: any;
     var emitter = bus.from(SETUP_CHANNEL);
-    subscription = ObservableWrapper.subscribe(emitter, (message: StringMap<string, any>) => {
+    subscription = ObservableWrapper.subscribe(emitter, (message: {[key: string]: any}) => {
       var bindings =
           [applicationCommonBindings(), webWorkerBindings(appComponentType, bus, message)];
       if (isPresent(appBindings)) {

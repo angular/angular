@@ -17,11 +17,11 @@ export const NG_VALIDATORS: OpaqueToken = CONST_EXPR(new OpaqueToken("NgValidato
  * ```
  */
 export class Validators {
-  static required(control: modelModule.Control): StringMap<string, boolean> {
+  static required(control: modelModule.Control): {[key: string]: boolean} {
     return isBlank(control.value) || control.value == "" ? {"required": true} : null;
   }
 
-  static nullValidator(c: any): StringMap<string, boolean> { return null; }
+  static nullValidator(c: any): {[key: string]: boolean} { return null; }
 
   static compose(validators: Function[]): Function {
     if (isBlank(validators)) return Validators.nullValidator;
@@ -35,7 +35,7 @@ export class Validators {
     };
   }
 
-  static group(group: modelModule.ControlGroup): StringMap<string, boolean> {
+  static group(group: modelModule.ControlGroup): {[key: string]: boolean} {
     var res = {};
     StringMapWrapper.forEach(group.controls, (control, name) => {
       if (group.contains(name) && isPresent(control.errors)) {
@@ -45,7 +45,7 @@ export class Validators {
     return StringMapWrapper.isEmpty(res) ? null : res;
   }
 
-  static array(array: modelModule.ControlArray): StringMap<string, boolean> {
+  static array(array: modelModule.ControlArray): {[key: string]: boolean} {
     var res = {};
     array.controls.forEach((control) => {
       if (isPresent(control.errors)) {
@@ -55,7 +55,7 @@ export class Validators {
     return StringMapWrapper.isEmpty(res) ? null : res;
   }
 
-  static _mergeErrors(control: modelModule.AbstractControl, res: StringMap<string, any[]>): void {
+  static _mergeErrors(control: modelModule.AbstractControl, res: {[key: string]: any[]}): void {
     StringMapWrapper.forEach(control.errors, (value, error) => {
       if (!StringMapWrapper.contains(res, error)) {
         res[error] = [];

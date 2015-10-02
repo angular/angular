@@ -84,7 +84,7 @@ export class NgFormControl extends NgControl implements OnChanges {
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
-  onChanges(changes: StringMap<string, SimpleChange>): void {
+  onChanges(changes: {[key: string]: SimpleChange}): void {
     if (!this._added) {
       setUpControl(this.form, this);
       this.form.updateValidity();

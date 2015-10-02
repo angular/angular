@@ -5,7 +5,7 @@ import {
 } from "angular2/src/web_workers/shared/message_bus";
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {EventEmitter} from 'angular2/src/core/facade/async';
-import {StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {Injectable} from "angular2/src/core/di";
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
@@ -34,7 +34,7 @@ export class PostMessageBus implements MessageBus {
 
 export class PostMessageBusSink implements MessageBusSink {
   private _zone: NgZone;
-  private _channels: StringMap<string, _Channel> = StringMapWrapper.create();
+  private _channels: {[key: string]: _Channel} = StringMapWrapper.create();
   private _messageBuffer: Array<Object> = [];
 
   constructor(private _postMessageTarget: PostMessageTarget) {}
@@ -83,7 +83,7 @@ export class PostMessageBusSink implements MessageBusSink {
 
 export class PostMessageBusSource implements MessageBusSource {
   private _zone: NgZone;
-  private _channels: StringMap<string, _Channel> = StringMapWrapper.create();
+  private _channels: {[key: string]: _Channel} = StringMapWrapper.create();
 
   constructor(eventTarget?: EventTarget) {
     if (eventTarget) {

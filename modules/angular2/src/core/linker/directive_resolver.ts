@@ -1,7 +1,7 @@
 import {resolveForwardRef, Injectable} from 'angular2/src/core/di';
 import {Type, isPresent, isBlank, stringify} from 'angular2/src/core/facade/lang';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
-import {ListWrapper, StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {
   DirectiveMetadata,
   ComponentMetadata,
@@ -43,8 +43,7 @@ export class DirectiveResolver {
   }
 
   private _mergeWithPropertyMetadata(dm: DirectiveMetadata,
-                                     propertyMetadata:
-                                         StringMap<string, any[]>): DirectiveMetadata {
+                                     propertyMetadata: {[key: string]: any[]}): DirectiveMetadata {
     var inputs = [];
     var outputs = [];
     var host = {};
@@ -102,8 +101,7 @@ export class DirectiveResolver {
   }
 
   private _merge(dm: DirectiveMetadata, inputs: string[], outputs: string[],
-                 host: StringMap<string, string>,
-                 queries: StringMap<string, any>): DirectiveMetadata {
+                 host: {[key: string]: string}, queries: {[key: string]: any}): DirectiveMetadata {
     var mergedInputs = isPresent(dm.inputs) ? ListWrapper.concat(dm.inputs, inputs) : inputs;
     var mergedOutputs = isPresent(dm.outputs) ? ListWrapper.concat(dm.outputs, outputs) : outputs;
     var mergedHost = isPresent(dm.host) ? StringMapWrapper.merge(dm.host, host) : host;

@@ -1,4 +1,4 @@
-import {ListWrapper, StringMap} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {bind, Binding, OpaqueToken} from 'angular2/src/core/di';
 
 import {Validator} from '../validator';
@@ -20,7 +20,7 @@ export class SizeValidator extends Validator {
     this._sampleSize = size;
   }
 
-  describe(): StringMap<string, any> { return {'sampleSize': this._sampleSize}; }
+  describe(): {[key: string]: any} { return {'sampleSize': this._sampleSize}; }
 
   validate(completeSample: MeasureValues[]): MeasureValues[] {
     if (completeSample.length >= this._sampleSize) {

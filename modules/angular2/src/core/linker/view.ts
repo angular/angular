@@ -3,7 +3,6 @@ import {
   MapWrapper,
   Map,
   StringMapWrapper,
-  StringMap
 } from 'angular2/src/core/facade/collection';
 import {
   AST,
@@ -263,7 +262,7 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
   get ownBindersCount(): number { return this.proto.elementBinders.length; }
 }
 
-function _localsToStringMap(locals: Locals): StringMap<string, any> {
+function _localsToStringMap(locals: Locals): {[key: string]: any} {
   var res = {};
   var c = locals;
   while (isPresent(c)) {

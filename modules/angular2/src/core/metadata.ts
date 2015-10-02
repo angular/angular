@@ -151,11 +151,11 @@ export interface DirectiveFactory {
     outputs?: string[],
     properties?: string[],
     events?: string[],
-    host?: StringMap<string, string>,
+    host?: {[key: string]: string},
     bindings?: any[],
     exportAs?: string,
     moduleId?: string,
-    queries?: StringMap<string, any>
+    queries?: {[key: string]: any}
   }): DirectiveDecorator;
   new (obj: {
     selector?: string,
@@ -163,11 +163,11 @@ export interface DirectiveFactory {
     outputs?: string[],
     properties?: string[],
     events?: string[],
-    host?: StringMap<string, string>,
+    host?: {[key: string]: string},
     bindings?: any[],
     exportAs?: string,
     moduleId?: string,
-    queries?: StringMap<string, any>
+    queries?: {[key: string]: any}
   }): DirectiveMetadata;
 }
 
@@ -221,11 +221,11 @@ export interface ComponentFactory {
     outputs?: string[],
     properties?: string[],
     events?: string[],
-    host?: StringMap<string, string>,
+    host?: {[key: string]: string},
     bindings?: any[],
     exportAs?: string,
     moduleId?: string,
-    queries?: StringMap<string, any>,
+    queries?: {[key: string]: any},
     viewBindings?: any[],
     changeDetection?: ChangeDetectionStrategy,
   }): ComponentDecorator;
@@ -235,11 +235,11 @@ export interface ComponentFactory {
     outputs?: string[],
     properties?: string[],
     events?: string[],
-    host?: StringMap<string, string>,
+    host?: {[key: string]: string},
     bindings?: any[],
     exportAs?: string,
     moduleId?: string,
-    queries?: StringMap<string, any>,
+    queries?: {[key: string]: any},
     viewBindings?: any[],
     changeDetection?: ChangeDetectionStrategy,
   }): ComponentMetadata;

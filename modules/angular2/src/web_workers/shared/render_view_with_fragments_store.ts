@@ -112,7 +112,7 @@ export class RenderViewWithFragmentsStore {
     }
   }
 
-  serializeViewWithFragments(view: RenderViewWithFragments): StringMap<string, any> {
+  serializeViewWithFragments(view: RenderViewWithFragments): {[key: string]: any} {
     if (view == null) {
       return null;
     }
@@ -130,7 +130,7 @@ export class RenderViewWithFragmentsStore {
     }
   }
 
-  deserializeViewWithFragments(obj: StringMap<string, any>): RenderViewWithFragments {
+  deserializeViewWithFragments(obj: {[key: string]: any}): RenderViewWithFragments {
     if (obj == null) {
       return null;
     }

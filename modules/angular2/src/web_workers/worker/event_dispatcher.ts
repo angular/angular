@@ -38,7 +38,7 @@ class RenderEventData {
   eventName: string;
   locals: Map<string, any>;
 
-  constructor(message: StringMap<string, any>, serializer: Serializer) {
+  constructor(message: {[key: string]: any}, serializer: Serializer) {
     this.viewRef = serializer.deserialize(message['viewRef'], RenderViewRef);
     this.elementIndex = message['elementIndex'];
     this.eventName = message['eventName'];

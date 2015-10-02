@@ -1,5 +1,5 @@
 import {bind, Binding, Injector, OpaqueToken} from 'angular2/src/core/di';
-import {ListWrapper, StringMapWrapper, StringMap} from 'angular2/src/core/facade/collection';
+import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 
 import {Metric} from '../metric';
@@ -29,7 +29,7 @@ export class MultiMetric extends Metric {
    * since the begin call.
    * @param restart: Whether to restart right after this.
    */
-  endMeasure(restart: boolean): Promise<StringMap<string, any>> {
+  endMeasure(restart: boolean): Promise<{[key: string]: any}> {
     return PromiseWrapper.all(
                              ListWrapper.map(this._metrics, (metric) => metric.endMeasure(restart)))
         .then((values) => { return mergeStringMaps(values); });
@@ -39,7 +39,7 @@ export class MultiMetric extends Metric {
    * Describes the metrics provided by this metric implementation.
    * (e.g. units, ...)
    */
-  describe(): StringMap<string, any> {
+  describe(): {[key: string]: any} {
     return mergeStringMaps(this._metrics.map((metric) => metric.describe()));
   }
 }

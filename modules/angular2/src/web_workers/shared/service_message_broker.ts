@@ -61,7 +61,7 @@ export class ServiceMessageBroker {
     });
   }
 
-  private _handleMessage(map: StringMap<string, any>): void {
+  private _handleMessage(map: {[key: string]: any}): void {
     var message = new ReceivedMessage(map);
     if (this._methods.has(message.method)) {
       this._methods.get(message.method)(message);
@@ -83,7 +83,7 @@ export class ReceivedMessage {
   id: string;
   type: string;
 
-  constructor(data: StringMap<string, any>) {
+  constructor(data: {[key: string]: any}) {
     this.method = data['method'];
     this.args = data['args'];
     this.id = data['id'];
