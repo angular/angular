@@ -5,14 +5,7 @@ import {DEFAULT_PIPES} from 'angular2/src/core/pipes';
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
 import {BrowserDetails} from 'angular2/src/animate/browser_details';
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
-import {
-  Parser,
-  Lexer,
-  ChangeDetection,
-  DynamicChangeDetection,
-  JitChangeDetection,
-  PreGeneratedChangeDetection
-} from 'angular2/src/core/change_detection/change_detection';
+import {Parser, Lexer} from 'angular2/src/core/change_detection/change_detection';
 import {
   EventManager,
   DomEventsPlugin,
@@ -23,16 +16,9 @@ import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {KeyEventsPlugin} from 'angular2/src/core/render/dom/events/key_events';
 import {HammerGesturesPlugin} from 'angular2/src/core/render/dom/events/hammer_gestures';
 import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
-import {Renderer, RenderCompiler} from 'angular2/src/core/render/api';
+import {Renderer} from 'angular2/src/core/render/api';
 import {AppRootUrl} from 'angular2/src/core/services/app_root_url';
-import {
-  DomRenderer,
-  DOCUMENT,
-  DefaultDomCompiler,
-  APP_ID_RANDOM_BINDING,
-  MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE,
-  TemplateCloner
-} from 'angular2/src/core/render/render';
+import {DomRenderer, DOCUMENT, APP_ID_RANDOM_BINDING} from 'angular2/src/core/render/render';
 import {ElementSchemaRegistry} from 'angular2/src/core/render/dom/schema/element_schema_registry';
 import {
   DomElementSchemaRegistry
@@ -47,13 +33,9 @@ import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
 import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
 import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
-import {ViewLoader} from 'angular2/src/core/render/dom/compiler/view_loader';
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
-import {ComponentUrlMapper} from 'angular2/src/core/compiler/component_url_mapper';
-import {StyleInliner} from 'angular2/src/core/render/dom/compiler/style_inliner';
 import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
-import {StyleUrlResolver} from 'angular2/src/core/render/dom/compiler/style_url_resolver';
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 import {Testability} from 'angular2/src/core/testability/testability';
 import {XHR} from 'angular2/src/core/render/xhr';
@@ -81,13 +63,6 @@ var _rootBindings = [bind(Reflector).toValue(reflector)];
 // TODO: This code is nearly identical to core/application. There should be a way to only write it
 // once
 function _injectorBindings(): any[] {
-  var bestChangeDetection = new DynamicChangeDetection();
-  if (PreGeneratedChangeDetection.isSupported()) {
-    bestChangeDetection = new PreGeneratedChangeDetection();
-  } else if (JitChangeDetection.isSupported()) {
-    bestChangeDetection = new JitChangeDetection();
-  }
-
   return [
     bind(DOCUMENT)
         .toValue(DOM.defaultDoc()),
@@ -98,10 +73,6 @@ function _injectorBindings(): any[] {
     DomRenderer,
     bind(Renderer).toAlias(DomRenderer),
     APP_ID_RANDOM_BINDING,
-    TemplateCloner,
-    bind(MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE).toValue(20),
-    DefaultDomCompiler,
-    bind(RenderCompiler).toAlias(DefaultDomCompiler),
     DomSharedStylesHost,
     bind(SharedStylesHost).toAlias(DomSharedStylesHost),
     Serializer,
@@ -117,17 +88,12 @@ function _injectorBindings(): any[] {
     ProtoViewFactory,
     ViewResolver,
     DEFAULT_PIPES,
-    bind(ChangeDetection).toValue(bestChangeDetection),
-    ViewLoader,
     DirectiveResolver,
     Parser,
     Lexer,
     bind(ExceptionHandler).toFactory(() => new ExceptionHandler(DOM), []),
     bind(XHR).toValue(new XHRImpl()),
-    ComponentUrlMapper,
     UrlResolver,
-    StyleUrlResolver,
-    StyleInliner,
     DynamicComponentLoader,
     Testability,
     AnchorBasedAppRootUrl,

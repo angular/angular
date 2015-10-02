@@ -62,8 +62,6 @@ import {
   PipeTransform,
   ChangeDetectorRef,
   ChangeDetectionStrategy,
-  ChangeDetection,
-  DynamicChangeDetection,
   ChangeDetectorGenConfig
 } from 'angular2/src/core/change_detection/change_detection';
 

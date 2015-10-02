@@ -8,6 +8,7 @@ import "package:angular2/test_lib.dart"
         inject,
         describe,
         it,
+        iit,
         expect,
         beforeEach,
         createTestInjector,

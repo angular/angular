@@ -48,7 +48,6 @@ import {
 import {QueryList} from './query_list';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {SetterFn} from 'angular2/src/core/reflection/types';
-import {RenderDirectiveMetadata} from 'angular2/src/core/render/api';
 import {EventConfig} from 'angular2/src/core/render/event_config';
 import {PipeBinding} from '../pipes/pipe_binding';
 
@@ -128,16 +127,16 @@ export class DirectiveDependency extends Dependency {
 }
 
 export class DirectiveBinding extends ResolvedBinding {
-  constructor(key: Key, factory: Function, deps: Dependency[],
-              public metadata: RenderDirectiveMetadata,
+  public callOnDestroy: boolean;
+
+  constructor(key: Key, factory: Function, deps: Dependency[], public metadata: DirectiveMetadata,
               public bindings: Array<Type | Binding | any[]>,
               public viewBindings: Array<Type | Binding | any[]>) {
     super(key, [new ResolvedFactory(factory, deps)], false);
+    this.callOnDestroy = hasLifecycleHook(LifecycleHooks.OnDestroy, key.token);
   }
 
   get displayName(): string { return this.key.displayName; }
-
-  get callOnDestroy(): boolean { return this.metadata.callOnDestroy; }
 
   get queries(): QueryMetadataWithSetter[] {
     if (isBlank(this.metadata.queries)) return [];
@@ -163,47 +162,11 @@ export class DirectiveBinding extends ResolvedBinding {
     var rb = resolveBinding(binding);
     var rf = rb.resolvedFactories[0];
     var deps = rf.dependencies.map(DirectiveDependency.createFrom);
-    var token = binding.token;
 
-    var metadata = RenderDirectiveMetadata.create({
-      id: stringify(binding.token),
-      type: meta instanceof ComponentMetadata ? RenderDirectiveMetadata.COMPONENT_TYPE :
-                                                RenderDirectiveMetadata.DIRECTIVE_TYPE,
-      selector: meta.selector,
-      compileChildren: true,
-      outputs: meta.outputs,
-      host: isPresent(meta.host) ? MapWrapper.createFromStringMap(meta.host) : null,
-      inputs: meta.inputs,
-      readAttributes: DirectiveBinding._readAttributes(<any>deps),
-      queries: meta.queries,
-
-      callOnDestroy: hasLifecycleHook(LifecycleHooks.OnDestroy, token),
-      callOnChanges: hasLifecycleHook(LifecycleHooks.OnChanges, token),
-      callDoCheck: hasLifecycleHook(LifecycleHooks.DoCheck, token),
-      callOnInit: hasLifecycleHook(LifecycleHooks.OnInit, token),
-      callAfterContentInit: hasLifecycleHook(LifecycleHooks.AfterContentInit, token),
-      callAfterContentChecked: hasLifecycleHook(LifecycleHooks.AfterContentChecked, token),
-      callAfterViewInit: hasLifecycleHook(LifecycleHooks.AfterViewInit, token),
-      callAfterViewChecked: hasLifecycleHook(LifecycleHooks.AfterViewChecked, token),
-
-      changeDetection: meta instanceof ComponentMetadata ? meta.changeDetection : null,
-
-      exportAs: meta.exportAs
-    });
     var bindings = isPresent(meta.bindings) ? meta.bindings : [];
     var viewBindigs =
         meta instanceof ComponentMetadata && isPresent(meta.viewBindings) ? meta.viewBindings : [];
-    return new DirectiveBinding(rb.key, rf.factory, deps, metadata, bindings, viewBindigs);
-  }
-
-  static _readAttributes(deps: DirectiveDependency[]): string[] {
-    var readAttributes = [];
-    deps.forEach(dep => {
-      if (isPresent(dep.attributeName)) {
-        readAttributes.push(dep.attributeName);
-      }
-    });
-    return readAttributes;
+    return new DirectiveBinding(rb.key, rf.factory, deps, meta, bindings, viewBindigs);
   }
 
   static createFromType(type: Type, annotation: DirectiveMetadata): DirectiveBinding {
@@ -502,7 +465,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
       if (dirDep.key.id === StaticKeys.instance().changeDetectorRefId) {
         // We provide the component's view change detector to components and
         // the surrounding component's change detector to directives.
-        if (dirBin.metadata.type === RenderDirectiveMetadata.COMPONENT_TYPE) {
+        if (dirBin.metadata instanceof ComponentMetadata) {
           var componentView = this._preBuiltObjects.view.getNestedView(
               this._preBuiltObjects.elementRef.boundElementIndex);
           return componentView.changeDetector.ref;

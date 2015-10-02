@@ -12,8 +12,6 @@ import {
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {BrowserGetTestability} from 'angular2/src/core/testability/browser_testability';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {ViewLoader} from 'angular2/src/core/render/dom/compiler/view_loader';
-import {StyleInliner} from 'angular2/src/core/render/dom/compiler/style_inliner';
 import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/core/facade/async';
 import {XHR} from 'angular2/src/core/render/xhr';
 import {XHRImpl} from 'angular2/src/core/render/xhr_impl';
@@ -31,15 +29,8 @@ import {
   DynamicComponentLoader
 } from 'angular2/src/core/compiler/dynamic_component_loader';
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
-import {Renderer, RenderCompiler} from 'angular2/src/core/render/api';
-import {
-  DomRenderer,
-  DOCUMENT,
-  DefaultDomCompiler,
-  APP_ID_RANDOM_BINDING,
-  MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE,
-  TemplateCloner
-} from 'angular2/src/core/render/render';
+import {Renderer} from 'angular2/src/core/render/api';
+import {DomRenderer, DOCUMENT, APP_ID_RANDOM_BINDING} from 'angular2/src/core/render/render';
 import {ElementSchemaRegistry} from 'angular2/src/core/render/dom/schema/element_schema_registry';
 import {
   DomElementSchemaRegistry
@@ -72,17 +63,11 @@ export function applicationDomBindings(): Array<Type | Binding | any[]> {
     DomRenderer,
     bind(Renderer).toAlias(DomRenderer),
     APP_ID_RANDOM_BINDING,
-    TemplateCloner,
-    bind(MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE).toValue(20),
-    DefaultDomCompiler,
     bind(ElementSchemaRegistry).toValue(new DomElementSchemaRegistry()),
-    bind(RenderCompiler).toAlias(DefaultDomCompiler),
     DomSharedStylesHost,
     bind(SharedStylesHost).toAlias(DomSharedStylesHost),
-    ViewLoader,
     EXCEPTION_BINDING,
     bind(XHR).toValue(new XHRImpl()),
-    StyleInliner,
     Testability,
     AnchorBasedAppRootUrl,
     bind(AppRootUrl).toAlias(AnchorBasedAppRootUrl),

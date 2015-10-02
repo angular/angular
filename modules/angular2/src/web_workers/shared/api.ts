@@ -15,7 +15,7 @@ import {
 export const ON_WEB_WORKER = CONST_EXPR(new OpaqueToken('WebWorker.onWebWorker'));
 
 export class WebWorkerElementRef implements RenderElementRef {
-  constructor(public renderView: RenderViewRef, public renderBoundElementIndex: number) {}
+  constructor(public renderView: RenderViewRef, public boundElementIndex: number) {}
 }
 
 export class WebWorkerTemplateCmd implements RenderTemplateCmd {

@@ -26,7 +26,6 @@ import {
   RenderProtoViewRef,
   RenderFragmentRef,
   ViewType,
-  RenderProtoViewMergeMapping,
   RenderViewWithFragments
 } from 'angular2/src/core/render/api';
 import {AppViewManager} from 'angular2/src/core/compiler/view_manager';

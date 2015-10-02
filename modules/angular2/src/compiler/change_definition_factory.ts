@@ -3,11 +3,9 @@ import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 
 import {
-  ChangeDetection,
   DirectiveIndex,
   BindingRecord,
   DirectiveRecord,
-  ProtoChangeDetector,
   ChangeDetectionStrategy,
   ChangeDetectorDefinition,
   ChangeDetectorGenConfig,
