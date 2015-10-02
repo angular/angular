@@ -29,24 +29,12 @@ export class ElementRef implements RenderElementRef {
    * This is used internally by the Angular framework to locate elements.
    */
   boundElementIndex: number;
-
-  /**
-   * @private
-   *
-   * TODO(tbosch): remove this when the new compiler lands
-   * Index of the element inside the `RenderViewRef`.
-   *
-   * This is used internally by the Angular framework to locate elements.
-   */
-  renderBoundElementIndex: number;
-
   /**
    * @private
    */
   constructor(parentView: ViewRef, boundElementIndex: number, private _renderer: Renderer) {
     this.parentView = parentView;
     this.boundElementIndex = boundElementIndex;
-    this.renderBoundElementIndex = boundElementIndex;
   }
 
   /**

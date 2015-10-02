@@ -37,11 +37,7 @@ import {
 import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
 import {Component} from 'angular2/src/core/metadata';
 import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
-import {
-  RenderProtoViewMergeMapping,
-  ViewType,
-  RenderViewWithFragments
-} from 'angular2/src/core/render/render';
+import {ViewType, RenderViewWithFragments} from 'angular2/src/core/render/render';
 
 export function main() {
   // TODO(tbosch): add more tests here!

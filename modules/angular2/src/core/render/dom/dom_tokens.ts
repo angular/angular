@@ -18,13 +18,6 @@ function _appIdRandomBindingFactory() {
 export const APP_ID_RANDOM_BINDING: Binding =
     CONST_EXPR(new Binding(APP_ID, {toFactory: _appIdRandomBindingFactory, deps: []}));
 
-/**
- * Defines when a compiled template should be stored as a string
- * rather than keeping its Nodes to preserve memory.
- */
-export const MAX_IN_MEMORY_ELEMENTS_PER_TEMPLATE: OpaqueToken =
-    CONST_EXPR(new OpaqueToken('MaxInMemoryElementsPerTemplate'));
-
 function _randomChar(): string {
   return StringWrapper.fromCharCode(97 + Math.floor(Math.random() * 25));
 }

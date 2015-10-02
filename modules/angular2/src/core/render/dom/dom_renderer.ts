@@ -96,8 +96,7 @@ export class DomRenderer implements Renderer, NodeFactory<Node> {
   }
 
   getNativeElementSync(location: RenderElementRef): any {
-    return resolveInternalDomView(location.renderView)
-        .boundElements[location.renderBoundElementIndex];
+    return resolveInternalDomView(location.renderView).boundElements[location.boundElementIndex];
   }
 
   getRootNodes(fragment: RenderFragmentRef): Node[] { return resolveInternalDomFragment(fragment); }
@@ -157,7 +156,7 @@ export class DomRenderer implements Renderer, NodeFactory<Node> {
 
   attachFragmentAfterElement(elementRef: RenderElementRef, fragmentRef: RenderFragmentRef) {
     var parentView = resolveInternalDomView(elementRef.renderView);
-    var element = parentView.boundElements[elementRef.renderBoundElementIndex];
+    var element = parentView.boundElements[elementRef.boundElementIndex];
     var nodes = resolveInternalDomFragment(fragmentRef);
     moveNodesAfterSibling(element, nodes);
     this.animateNodesEnter(nodes);
@@ -208,14 +207,14 @@ export class DomRenderer implements Renderer, NodeFactory<Node> {
 
   setElementProperty(location: RenderElementRef, propertyName: string, propertyValue: any): void {
     var view = resolveInternalDomView(location.renderView);
-    DOM.setProperty(<Element>view.boundElements[location.renderBoundElementIndex], propertyName,
+    DOM.setProperty(<Element>view.boundElements[location.boundElementIndex], propertyName,
                     propertyValue);
   }
 
   setElementAttribute(location: RenderElementRef, attributeName: string, attributeValue: string):
       void {
     var view = resolveInternalDomView(location.renderView);
-    var element = view.boundElements[location.renderBoundElementIndex];
+    var element = view.boundElements[location.boundElementIndex];
     var dashCasedAttributeName = camelCaseToDashCase(attributeName);
     if (isPresent(attributeValue)) {
       DOM.setAttribute(element, dashCasedAttributeName, stringify(attributeValue));
@@ -226,7 +225,7 @@ export class DomRenderer implements Renderer, NodeFactory<Node> {
 
   setElementClass(location: RenderElementRef, className: string, isAdd: boolean): void {
     var view = resolveInternalDomView(location.renderView);
-    var element = view.boundElements[location.renderBoundElementIndex];
+    var element = view.boundElements[location.boundElementIndex];
     if (isAdd) {
       DOM.addClass(element, className);
     } else {
@@ -236,7 +235,7 @@ export class DomRenderer implements Renderer, NodeFactory<Node> {
 
   setElementStyle(location: RenderElementRef, styleName: string, styleValue: string): void {
     var view = resolveInternalDomView(location.renderView);
-    var element = view.boundElements[location.renderBoundElementIndex];
+    var element = view.boundElements[location.boundElementIndex];
     var dashCasedStyleName = camelCaseToDashCase(styleName);
     if (isPresent(styleValue)) {
       DOM.setStyle(element, dashCasedStyleName, stringify(styleValue));
@@ -247,7 +246,7 @@ export class DomRenderer implements Renderer, NodeFactory<Node> {
 
   invokeElementMethod(location: RenderElementRef, methodName: string, args: any[]): void {
     var view = resolveInternalDomView(location.renderView);
-    var element = <Element>view.boundElements[location.renderBoundElementIndex];
+    var element = <Element>view.boundElements[location.boundElementIndex];
     DOM.invoke(element, methodName, args);
   }
 
