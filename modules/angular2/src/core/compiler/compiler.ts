@@ -23,9 +23,15 @@ import {ElementSchemaRegistry} from 'angular2/src/core/compiler/schema/element_s
 import {
   DomElementSchemaRegistry
 } from 'angular2/src/core/compiler/schema/dom_element_schema_registry';
+import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
+import {AppRootUrl} from 'angular2/src/core/compiler/app_root_url';
+import {AnchorBasedAppRootUrl} from 'angular2/src/core/compiler/anchor_based_app_root_url';
+import {Parser, Lexer} from 'angular2/src/core/change_detection/change_detection';
 
 export function compilerBindings(): Array<Type | Binding | any[]> {
   return [
+    Lexer,
+    Parser,
     HtmlParser,
     TemplateParser,
     TemplateNormalizer,
@@ -40,6 +46,9 @@ export function compilerBindings(): Array<Type | Binding | any[]> {
     RuntimeCompiler,
     bind(Compiler).toAlias(RuntimeCompiler),
     DomElementSchemaRegistry,
-    bind(ElementSchemaRegistry).toAlias(DomElementSchemaRegistry)
+    bind(ElementSchemaRegistry).toAlias(DomElementSchemaRegistry),
+    AnchorBasedAppRootUrl,
+    bind(AppRootUrl).toAlias(AnchorBasedAppRootUrl),
+    UrlResolver
   ];
 }

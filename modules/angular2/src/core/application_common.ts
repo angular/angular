@@ -15,6 +15,7 @@ import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/core/facade/async';
 import {XHR} from 'angular2/src/core/compiler/xhr';
 import {XHRImpl} from 'angular2/src/core/compiler/xhr_impl';
+
 import {
   EventManager,
   DomEventsPlugin,
@@ -22,8 +23,6 @@ import {
 } from 'angular2/src/core/render/dom/events/event_manager';
 import {KeyEventsPlugin} from 'angular2/src/core/render/dom/events/key_events';
 import {HammerGesturesPlugin} from 'angular2/src/core/render/dom/events/hammer_gestures';
-import {AppRootUrl} from 'angular2/src/core/compiler/app_root_url';
-import {AnchorBasedAppRootUrl} from 'angular2/src/core/compiler/anchor_based_app_root_url';
 import {
   ComponentRef,
   DynamicComponentLoader
@@ -31,11 +30,6 @@ import {
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
 import {Renderer} from 'angular2/src/core/render/api';
 import {DomRenderer, DOCUMENT} from 'angular2/src/core/render/render';
-import {APP_ID_RANDOM_BINDING} from 'angular2/src/core/application_tokens';
-import {ElementSchemaRegistry} from 'angular2/src/core/compiler/schema/element_schema_registry';
-import {
-  DomElementSchemaRegistry
-} from 'angular2/src/core/compiler/schema/dom_element_schema_registry';
 import {
   SharedStylesHost,
   DomSharedStylesHost
@@ -63,15 +57,11 @@ export function applicationDomBindings(): Array<Type | Binding | any[]> {
     new Binding(EVENT_MANAGER_PLUGINS, {toClass: HammerGesturesPlugin, multi: true}),
     DomRenderer,
     bind(Renderer).toAlias(DomRenderer),
-    APP_ID_RANDOM_BINDING,
-    bind(ElementSchemaRegistry).toValue(new DomElementSchemaRegistry()),
     DomSharedStylesHost,
     bind(SharedStylesHost).toAlias(DomSharedStylesHost),
     EXCEPTION_BINDING,
     bind(XHR).toValue(new XHRImpl()),
     Testability,
-    AnchorBasedAppRootUrl,
-    bind(AppRootUrl).toAlias(AnchorBasedAppRootUrl),
     BrowserDetails,
     AnimationBuilder,
     FORM_BINDINGS

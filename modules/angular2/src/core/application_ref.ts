@@ -23,8 +23,6 @@ import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {internalView} from 'angular2/src/core/linker/view_ref';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {
-  Parser,
-  Lexer,
   IterableDiffers,
   defaultIterableDiffers,
   KeyValueDiffers,
@@ -39,7 +37,6 @@ import {DEFAULT_PIPES} from 'angular2/src/core/pipes';
 import {ViewResolver} from './linker/view_resolver';
 import {DirectiveResolver} from './linker/directive_resolver';
 import {PipeResolver} from './linker/pipe_resolver';
-import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {Compiler} from 'angular2/src/core/linker/compiler';
 
 /**
@@ -99,10 +96,7 @@ export function applicationCommonBindings(): Array<Type | Binding | any[]> {
     bind(IterableDiffers).toValue(defaultIterableDiffers),
     bind(KeyValueDiffers).toValue(defaultKeyValueDiffers),
     DirectiveResolver,
-    UrlResolver,
     PipeResolver,
-    Parser,
-    Lexer,
     DynamicComponentLoader,
     bind(LifeCycle).toFactory((exceptionHandler) => new LifeCycle(null, assertionsEnabled()),
                               [ExceptionHandler]),
