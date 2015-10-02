@@ -9,6 +9,7 @@ import 'package:angular2/src/core/linker/interfaces.dart' show LifecycleHooks;
 import 'package:angular2/src/core/dom/html_adapter.dart';
 import 'package:angular2/src/transform/directive_processor/rewriter.dart';
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
+import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/common/model/reflection_info_model.pb.dart';
@@ -210,9 +211,32 @@ void allTests() {
       expect(model.reflectables.first.propertyMetadata.isNotEmpty).toBeTrue();
       expect(model.reflectables.first.propertyMetadata.first.name)
           .toEqual('getVal');
-      expect(model.reflectables.first.propertyMetadata.first.annotations
-              .firstWhere((a) => a.name == 'GetDecorator', orElse: () => null))
-          .toBeNotNull();
+
+      var getDecoratorAnnotation = model
+          .reflectables.first.propertyMetadata.first.annotations
+          .firstWhere((a) => a.name == 'GetDecorator', orElse: () => null);
+      expect(getDecoratorAnnotation).toBeNotNull();
+      expect(getDecoratorAnnotation.isConstObject).toBeFalse();
+    });
+
+    it('should gracefully handle const instances of annotations', () async {
+      // Regression test for i/4481
+      var model = await _testCreateModel('prop_metadata_files/override.dart');
+
+      expect(model.reflectables.first.propertyMetadata).toBeNotNull();
+      expect(model.reflectables.first.propertyMetadata.isNotEmpty).toBeTrue();
+      expect(model.reflectables.first.propertyMetadata.first.name)
+          .toEqual('getVal');
+      var overrideAnnotation = model
+          .reflectables.first.propertyMetadata.first.annotations
+          .firstWhere((a) => a.name == 'override', orElse: () => null);
+
+      expect(overrideAnnotation).toBeNotNull();
+      expect(overrideAnnotation.isConstObject).toBeTrue();
+
+      var buf = new StringBuffer();
+      new NgDepsWriter(buf).writeAnnotationModel(overrideAnnotation);
+      expect(buf.toString()).toEqual('override');
     });
 
     it('should be recorded on setters', () async {

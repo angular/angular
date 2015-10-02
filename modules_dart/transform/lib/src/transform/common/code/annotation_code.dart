@@ -36,9 +36,12 @@ class AnnotationVisitor extends SimpleAstVisitor<AnnotationModel> {
       ..isComponent = isComponent
       ..isDirective = isDirective
       ..isInjectable = isInjectable
-      ..isView = isView;
+      ..isView = isView
+      ..isConstObject = node.arguments == null;
 
-    if (node.arguments != null) {
+    // This annotation is a constant instance creation expression,
+    // e.g. @Injectable(), rather than a const object, e.g. @override.
+    if (!model.isConstObject) {
       for (var arg in node.arguments.arguments) {
         if (arg is NamedExpression) {
           model.namedParameters.add(new NamedParameter()
@@ -60,7 +63,11 @@ abstract class AnnotationWriterMixin {
   StringBuffer get buffer;
 
   void writeAnnotationModel(AnnotationModel model) {
-    if (model.parameters != null || model.namedParameters != null) {
+    if (model.isConstObject) {
+      // This is a const instance, not a ctor invocation and does not need a
+      // const instance creation expression.
+      buffer.write(model.name);
+    } else {
       buffer.write('const ${model.name}(');
       var first = true;
       for (var param in model.parameters) {
@@ -83,10 +90,6 @@ abstract class AnnotationWriterMixin {
         buffer.write('${param.name}: ${param.value}');
       }
       buffer.write(')');
-    } else {
-      // This is a const instance, not a ctor invocation and does not need a
-      // const instance creation expression.
-      buffer.write(model.name);
     }
   }
 }

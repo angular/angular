@@ -50,6 +50,7 @@ class _ExtractQueryFieldsFromPropMetadata extends Object
   bool _hasQueryAnnotation(list) {
     var res = false;
     list.elements.forEach((item) {
+      if (item is! InstanceCreationExpression) return;
       var n = item.constructorName.toString();
       if (n == "ContentChild" ||
           n == "ViewChild" ||
