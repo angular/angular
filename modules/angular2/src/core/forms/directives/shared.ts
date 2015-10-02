@@ -51,7 +51,7 @@ export function setProperty(renderer: Renderer, elementRef: ElementRef, propName
   renderer.setElementProperty(elementRef, propName, propValue);
 }
 
-export function isPropertyUpdated(changes: StringMap<string, any>, viewModel: any): boolean {
+export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any): boolean {
   if (!StringMapWrapper.contains(changes, "model")) return false;
   var change = changes["model"];
 

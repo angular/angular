@@ -9,13 +9,7 @@ import {
   Type
 } from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
-import {
-  Map,
-  MapWrapper,
-  ListWrapper,
-  StringMap,
-  StringMapWrapper
-} from 'angular2/src/core/facade/collection';
+import {Map, MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {PathRecognizer, PathMatch} from './path_recognizer';
 import {Route, AsyncRoute, AuxRoute, Redirect, RouteDefinition} from './route_config_impl';

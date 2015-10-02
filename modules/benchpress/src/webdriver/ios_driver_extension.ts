@@ -1,5 +1,5 @@
 import {bind, Binding} from 'angular2/src/core/di';
-import {ListWrapper, StringMap} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {
   Json,
   isPresent,
@@ -91,7 +91,7 @@ export class IOsDriverExtension extends WebDriverExtension {
 
   perfLogFeatures(): PerfLogFeatures { return new PerfLogFeatures({render: true}); }
 
-  supports(capabilities: StringMap<string, any>): boolean {
+  supports(capabilities: {[key: string]: any}): boolean {
     return StringWrapper.equals(capabilities['browserName'].toLowerCase(), 'safari');
   }
 }

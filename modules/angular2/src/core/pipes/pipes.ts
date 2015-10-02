@@ -23,7 +23,7 @@ export class ProtoPipes {
       /**
       * Map of {@link PipeMetadata} names to {@link PipeMetadata} implementations.
       */
-      public config: StringMap<string, PipeBinding>) {
+      public config: {[key: string]: PipeBinding}) {
     this.config = config;
   }
 
@@ -37,7 +37,7 @@ export class ProtoPipes {
 
 
 export class Pipes implements cd.Pipes {
-  _config: StringMap<string, cd.SelectedPipe> = {};
+  _config: {[key: string]: cd.SelectedPipe} = {};
 
   constructor(public proto: ProtoPipes, public injector: Injector) {}
 

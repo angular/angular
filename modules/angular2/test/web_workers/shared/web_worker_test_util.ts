@@ -1,4 +1,4 @@
-import {StringMap, StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {
   MessageBusSink,
   MessageBusSource,
@@ -13,11 +13,11 @@ import {NgZone} from 'angular2/src/core/zone/ng_zone';
  * Such that whatever goes into one's sink comes out the others source.
  */
 export function createPairedMessageBuses(): PairedMessageBuses {
-  var firstChannels: StringMap<string, MockEventEmitter> = {};
+  var firstChannels: {[key: string]: MockEventEmitter} = {};
   var workerMessageBusSink = new MockMessageBusSink(firstChannels);
   var uiMessageBusSource = new MockMessageBusSource(firstChannels);
 
-  var secondChannels: StringMap<string, MockEventEmitter> = {};
+  var secondChannels: {[key: string]: MockEventEmitter} = {};
   var uiMessageBusSink = new MockMessageBusSink(secondChannels);
   var workerMessageBusSource = new MockMessageBusSource(secondChannels);
 
@@ -30,7 +30,7 @@ export class PairedMessageBuses {
 }
 
 export class MockMessageBusSource implements MessageBusSource {
-  constructor(private _channels: StringMap<string, MockEventEmitter>) {}
+  constructor(private _channels: {[key: string]: MockEventEmitter}) {}
 
   initChannel(channel: string, runInZone = true) {
     if (!StringMapWrapper.contains(this._channels, channel)) {
@@ -49,7 +49,7 @@ export class MockMessageBusSource implements MessageBusSource {
 }
 
 export class MockMessageBusSink implements MessageBusSink {
-  constructor(private _channels: StringMap<string, MockEventEmitter>) {}
+  constructor(private _channels: {[key: string]: MockEventEmitter}) {}
 
   initChannel(channel: string, runInZone = true) {
     if (!StringMapWrapper.contains(this._channels, channel)) {

@@ -115,9 +115,9 @@ export class Parse5DomAdapter extends DomAdapter {
     return result;
   }
   on(el, evt, listener) {
-    var listenersMap: StringMap<any, any> = el._eventListenersMap;
+    var listenersMap: {[k: /*any*/ string]: any} = el._eventListenersMap;
     if (isBlank(listenersMap)) {
-      var listenersMap: StringMap<any, any> = StringMapWrapper.create();
+      var listenersMap: {[k: /*any*/ string]: any} = StringMapWrapper.create();
       el._eventListenersMap = listenersMap;
     }
     var listeners = StringMapWrapper.get(listenersMap, evt);
@@ -492,7 +492,7 @@ export class Parse5DomAdapter extends DomAdapter {
     var rules = [];
     for (var i = 0; i < parsedRules.length; i++) {
       var parsedRule = parsedRules[i];
-      var rule: StringMap<string, any> = StringMapWrapper.create();
+      var rule: {[key: string]: any} = StringMapWrapper.create();
       StringMapWrapper.set(rule, "cssText", css);
       StringMapWrapper.set(rule, "style", {content: "", cssText: ""});
       if (parsedRule.type == "rule") {

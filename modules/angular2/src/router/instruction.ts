@@ -1,10 +1,4 @@
-import {
-  Map,
-  MapWrapper,
-  StringMap,
-  StringMapWrapper,
-  ListWrapper
-} from 'angular2/src/core/facade/collection';
+import {Map, MapWrapper, StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {isPresent, isBlank, normalizeBlank, Type} from 'angular2/src/core/facade/lang';
 import {Promise} from 'angular2/src/core/facade/async';
 
@@ -43,7 +37,7 @@ import {Url} from './url_parser';
  * ```
  */
 export class RouteParams {
-  constructor(public params: StringMap<string, string>) {}
+  constructor(public params: {[key: string]: string}) {}
 
   get(param: string): string { return normalizeBlank(StringMapWrapper.get(this.params, param)); }
 }
@@ -78,7 +72,7 @@ export class RouteParams {
  */
 export class Instruction {
   constructor(public component: ComponentInstruction, public child: Instruction,
-              public auxInstruction: StringMap<string, Instruction>) {}
+              public auxInstruction: {[key: string]: Instruction}) {}
 
   /**
    * Returns a new instruction that shares the state of the existing instruction, but with
@@ -153,7 +147,7 @@ export class ComponentInstruction {
    * @private
    */
   constructor(public urlPath: string, public urlParams: string[],
-              private _recognizer: PathRecognizer, public params: StringMap<string, any> = null) {}
+              private _recognizer: PathRecognizer, public params: {[key: string]: any} = null) {}
 
   /**
    * Returns the component type of the represented route, or `null` if this instruction

@@ -1,4 +1,4 @@
-import {StringMap, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {
   isPresent,
   isBlank,
@@ -14,7 +14,7 @@ import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptio
 export class Url {
   constructor(public path: string, public child: Url = null,
               public auxiliary: Url[] = CONST_EXPR([]),
-              public params: StringMap<string, any> = null) {}
+              public params: {[key: string]: any} = null) {}
 
   toString(): string {
     return this.path + this._matrixParamsToString() + this._auxToString() + this._childString();
@@ -41,7 +41,7 @@ export class Url {
 
 export class RootUrl extends Url {
   constructor(path: string, child: Url = null, auxiliary: Url[] = CONST_EXPR([]),
-              params: StringMap<string, any> = null) {
+              params: {[key: string]: any} = null) {
     super(path, child, auxiliary, params);
   }
 
@@ -149,7 +149,7 @@ export class UrlParser {
     return new Url(path, child, aux, matrixParams);
   }
 
-  parseQueryParams(): StringMap<string, any> {
+  parseQueryParams(): {[key: string]: any} {
     var params = {};
     this.capture('?');
     this.parseParam(params);
@@ -160,7 +160,7 @@ export class UrlParser {
     return params;
   }
 
-  parseMatrixParams(): StringMap<string, any> {
+  parseMatrixParams(): {[key: string]: any} {
     var params = {};
     while (this._remaining.length > 0 && this.peekStartsWith(';')) {
       this.capture(';');
@@ -169,7 +169,7 @@ export class UrlParser {
     return params;
   }
 
-  parseParam(params: StringMap<string, any>): void {
+  parseParam(params: {[key: string]: any}): void {
     var key = matchUrlSegment(this._remaining);
     if (isBlank(key)) {
       return;
@@ -206,7 +206,7 @@ export class UrlParser {
 
 export var parser = new UrlParser();
 
-export function serializeParams(paramMap: StringMap<string, any>): string[] {
+export function serializeParams(paramMap: {[key: string]: any}): string[] {
   var params = [];
   if (isPresent(paramMap)) {
     StringMapWrapper.forEach(paramMap, (value, key) => {

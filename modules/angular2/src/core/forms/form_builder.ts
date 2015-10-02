@@ -66,8 +66,8 @@ import * as modelModule from './model';
  */
 @Injectable()
 export class FormBuilder {
-  group(controlsConfig: StringMap<string, any>,
-        extra: StringMap<string, any> = null): modelModule.ControlGroup {
+  group(controlsConfig: {[key: string]: any},
+        extra: {[key: string]: any} = null): modelModule.ControlGroup {
     var controls = this._reduceControls(controlsConfig);
     var optionals = isPresent(extra) ? StringMapWrapper.get(extra, "optionals") : null;
     var validator = isPresent(extra) ? StringMapWrapper.get(extra, "validator") : null;
@@ -96,7 +96,7 @@ export class FormBuilder {
     }
   }
 
-  _reduceControls(controlsConfig: any): StringMap<string, modelModule.AbstractControl> {
+  _reduceControls(controlsConfig: any): {[key: string]: modelModule.AbstractControl} {
     var controls = {};
     StringMapWrapper.forEach(controlsConfig, (controlConfig, controlName) => {
       controls[controlName] = this._createControl(controlConfig);

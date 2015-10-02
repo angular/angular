@@ -1,4 +1,4 @@
-import {ListWrapper, StringMap} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {bind, Binding, OpaqueToken} from 'angular2/src/core/di';
 
 import {Validator} from '../validator';
@@ -26,7 +26,7 @@ export class RegressionSlopeValidator extends Validator {
     this._metric = metric;
   }
 
-  describe(): StringMap<string, any> {
+  describe(): {[key: string]: any} {
     return {'sampleSize': this._sampleSize, 'regressionSlopeMetric': this._metric};
   }
 

@@ -3,7 +3,7 @@ import {bind, Binding, Injector, OpaqueToken} from 'angular2/src/core/di';
 import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
-import {ListWrapper, StringMap} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 
 import {Options} from './common_options';
 
@@ -61,7 +61,7 @@ export abstract class WebDriverExtension {
 
   perfLogFeatures(): PerfLogFeatures { throw new BaseException('NYI'); }
 
-  supports(capabilities: StringMap<string, any>): boolean { return true; }
+  supports(capabilities: {[key: string]: any}): boolean { return true; }
 }
 
 export class PerfLogFeatures {

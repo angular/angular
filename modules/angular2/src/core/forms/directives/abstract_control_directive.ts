@@ -8,7 +8,7 @@ export class AbstractControlDirective {
 
   get valid(): boolean { return isPresent(this.control) ? this.control.valid : null; }
 
-  get errors(): StringMap<string, any> {
+  get errors(): {[key: string]: any} {
     return isPresent(this.control) ? this.control.errors : null;
   }
 

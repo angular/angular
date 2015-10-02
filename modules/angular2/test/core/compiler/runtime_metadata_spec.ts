@@ -117,7 +117,7 @@ class DirectiveWithoutModuleId {
 class ComponentWithEverything implements OnChanges,
     OnInit, DoCheck, OnDestroy, AfterContentInit, AfterContentChecked, AfterViewInit,
     AfterViewChecked {
-  onChanges(changes: StringMap<string, SimpleChange>): void {}
+  onChanges(changes: {[key: string]: SimpleChange}): void {}
   onInit(): void {}
   doCheck(): void {}
   onDestroy(): void {}

@@ -12,7 +12,7 @@ import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {Injectable} from 'angular2/src/core/di';
 
 var modifierKeys = ['alt', 'control', 'meta', 'shift'];
-var modifierKeyGetters: StringMap<string, Function> = {
+var modifierKeyGetters: {[key: string]: Function} = {
   'alt': (event) => event.altKey,
   'control': (event) => event.ctrlKey,
   'meta': (event) => event.metaKey,
@@ -38,7 +38,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     });
   }
 
-  static parseEventName(eventName: string): StringMap<string, string> {
+  static parseEventName(eventName: string): {[key: string]: string} {
     var parts = eventName.toLowerCase().split('.');
 
     var domEventName = ListWrapper.removeAt(parts, 0);

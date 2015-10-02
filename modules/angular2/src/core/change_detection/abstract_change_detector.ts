@@ -278,7 +278,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     this.dispatcher.logBindingUpdate(this._currentBinding(), value);
   }
 
-  addChange(changes: StringMap<string, any>, oldValue: any, newValue: any): StringMap<string, any> {
+  addChange(changes: {[key: string]: any}, oldValue: any, newValue: any): {[key: string]: any} {
     if (isBlank(changes)) {
       changes = {};
     }

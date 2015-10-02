@@ -98,7 +98,7 @@ export class NgForm extends ControlContainer implements Form {
 
   get path(): string[] { return []; }
 
-  get controls(): StringMap<string, AbstractControl> { return this.form.controls; }
+  get controls(): {[key: string]: AbstractControl} { return this.form.controls; }
 
   addControl(dir: NgControl): void {
     this._later(_ => {

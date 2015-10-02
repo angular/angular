@@ -38,7 +38,7 @@ export class FirefoxDriverExtension extends WebDriverExtension {
 
   perfLogFeatures(): PerfLogFeatures { return new PerfLogFeatures({render: true, gc: true}); }
 
-  supports(capabilities: StringMap<string, any>): boolean {
+  supports(capabilities: {[key: string]: any}): boolean {
     return StringWrapper.equals(capabilities['browserName'].toLowerCase(), 'firefox');
   }
 }

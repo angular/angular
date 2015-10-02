@@ -34,12 +34,12 @@ export class CompileTypeMetadata {
     this.isHost = normalizeBool(isHost);
   }
 
-  static fromJson(data: StringMap<string, any>): CompileTypeMetadata {
+  static fromJson(data: {[key: string]: any}): CompileTypeMetadata {
     return new CompileTypeMetadata(
         {name: data['name'], moduleUrl: data['moduleUrl'], isHost: data['isHost']});
   }
 
-  toJson(): StringMap<string, any> {
+  toJson(): {[key: string]: any} {
     return {
       // Note: Runtime type can't be serialized...
       'name': this.name,
@@ -72,7 +72,7 @@ export class CompileTemplateMetadata {
     this.ngContentSelectors = isPresent(ngContentSelectors) ? ngContentSelectors : [];
   }
 
-  static fromJson(data: StringMap<string, any>): CompileTemplateMetadata {
+  static fromJson(data: {[key: string]: any}): CompileTemplateMetadata {
     return new CompileTemplateMetadata({
       encapsulation: isPresent(data['encapsulation']) ?
                          VIEW_ENCAPSULATION_VALUES[data['encapsulation']] :
@@ -85,7 +85,7 @@ export class CompileTemplateMetadata {
     });
   }
 
-  toJson(): StringMap<string, any> {
+  toJson(): {[key: string]: any} {
     return {
       'encapsulation':
           isPresent(this.encapsulation) ? serializeEnum(this.encapsulation) : this.encapsulation,
@@ -109,7 +109,7 @@ export class CompileDirectiveMetadata {
     changeDetection?: ChangeDetectionStrategy,
     inputs?: string[],
     outputs?: string[],
-    host?: StringMap<string, string>,
+    host?: {[key: string]: string},
     lifecycleHooks?: LifecycleHooks[],
     template?: CompileTemplateMetadata
   } = {}): CompileDirectiveMetadata {
@@ -169,11 +169,11 @@ export class CompileDirectiveMetadata {
   selector: string;
   exportAs: string;
   changeDetection: ChangeDetectionStrategy;
-  inputs: StringMap<string, string>;
-  outputs: StringMap<string, string>;
-  hostListeners: StringMap<string, string>;
-  hostProperties: StringMap<string, string>;
-  hostAttributes: StringMap<string, string>;
+  inputs: {[key: string]: string};
+  outputs: {[key: string]: string};
+  hostListeners: {[key: string]: string};
+  hostProperties: {[key: string]: string};
+  hostAttributes: {[key: string]: string};
   lifecycleHooks: LifecycleHooks[];
   template: CompileTemplateMetadata;
   constructor({type, isComponent, dynamicLoadable, selector, exportAs, changeDetection, inputs,
@@ -184,11 +184,11 @@ export class CompileDirectiveMetadata {
     selector?: string,
     exportAs?: string,
     changeDetection?: ChangeDetectionStrategy,
-    inputs?: StringMap<string, string>,
-    outputs?: StringMap<string, string>,
-    hostListeners?: StringMap<string, string>,
-    hostProperties?: StringMap<string, string>,
-    hostAttributes?: StringMap<string, string>,
+    inputs?: {[key: string]: string},
+    outputs?: {[key: string]: string},
+    hostListeners?: {[key: string]: string},
+    hostProperties?: {[key: string]: string},
+    hostAttributes?: {[key: string]: string},
     lifecycleHooks?: LifecycleHooks[],
     template?: CompileTemplateMetadata
   } = {}) {
@@ -207,7 +207,7 @@ export class CompileDirectiveMetadata {
     this.template = template;
   }
 
-  static fromJson(data: StringMap<string, any>): CompileDirectiveMetadata {
+  static fromJson(data: {[key: string]: any}): CompileDirectiveMetadata {
     return new CompileDirectiveMetadata({
       isComponent: data['isComponent'],
       dynamicLoadable: data['dynamicLoadable'],
@@ -229,7 +229,7 @@ export class CompileDirectiveMetadata {
     });
   }
 
-  toJson(): StringMap<string, any> {
+  toJson(): {[key: string]: any} {
     return {
       'isComponent': this.isComponent,
       'dynamicLoadable': this.dynamicLoadable,

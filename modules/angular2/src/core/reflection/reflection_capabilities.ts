@@ -134,7 +134,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     return [];
   }
 
-  propMetadata(typeOrFunc: any): StringMap<string, any[]> {
+  propMetadata(typeOrFunc: any): {[key: string]: any[]} {
     // Prefer the direct API.
     if (isPresent((<any>typeOrFunc).propMetadata)) {
       var propMetadata = (<any>typeOrFunc).propMetadata;
