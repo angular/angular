@@ -1,5 +1,3 @@
-/// <reference path="../../typings/jasmine/jasmine.d.ts"/>
-
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {global, isFunction, Math} from 'angular2/src/core/facade/lang';

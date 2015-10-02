@@ -50,7 +50,7 @@ module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, 
   createTypeDefinitionFile.typeDefinitions = [
     {
       id: 'angular2/angular2',
-      references: ['../es6-shim/es6-shim.d.ts'],
+      references: [],
       modules: {
         'angular2/angular2': {namespace: 'ng', id: 'angular2/angular2'},
         'angular2/web_worker/worker': {namespace: 'ngWorker', id: 'angular2/web_worker/worker'},
@@ -71,7 +71,7 @@ module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, 
     },
     {
       id: 'angular2/test_lib',
-      references: ['./angular2.d.ts', '../jasmine/jasmine.d.ts'],
+      references: ['./angular2.d.ts'],
       remapTypes: { Type: 'ng.Type', Binding: 'ng.Binding', ViewMetadata: 'ng.ViewMetadata', Injector: 'ng.Injector',
                     Predicate: 'ng.Predicate', ElementRef: 'ng.ElementRef', DebugElement: 'ng.DebugElement',
                     InjectableReference: 'ng.InjectableReference', ComponentRef: 'ng.ComponentRef' },

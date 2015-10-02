@@ -23,7 +23,7 @@ var needsLongerTimers = browserDetection.isSlow || browserDetection.isEdge;
 var resultTimer = 1000;
 var testTimeout = browserDetection.isEdge ? 1200 : 100;
 // Schedules a macrotask (using a timer)
-function macroTask(fn: Function, timer = 1): void {
+function macroTask(fn: (...args: any[]) => void, timer = 1): void {
   // adds longer timers for passing tests in IE and Edge
   _zone.runOutsideAngular(() => TimerWrapper.setTimeout(fn, needsLongerTimers ? timer : 1));
 }

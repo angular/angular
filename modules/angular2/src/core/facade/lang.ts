@@ -1,5 +1,3 @@
-/// <reference path="../../../manual_typings/globals.d.ts" />
-
 // TODO(jteplitz602): Load WorkerGlobalScope from lib.webworker.d.ts file #3492
 declare var WorkerGlobalScope;
 var globalScope: BrowserNodeGlobal;
@@ -196,7 +194,7 @@ export class StringJoiner {
 export class NumberParseError extends Error {
   name: string;
 
-  constructor(public message: string) { super(message); }
+  constructor(public message: string) { super(); }
 
   toString(): string { return this.message; }
 }
@@ -251,7 +249,7 @@ export class RegExpWrapper {
     flags = flags.replace(/g/g, '');
     return new _global.RegExp(regExpStr, flags + 'g');
   }
-  static firstMatch(regExp: RegExp, input: string): string[] {
+  static firstMatch(regExp: RegExp, input: string): RegExpExecArray {
     // Reset multimatch regex state
     regExp.lastIndex = 0;
     return regExp.exec(input);
@@ -277,7 +275,7 @@ export class RegExpMatcherWrapper {
   static next(matcher: {
     re: RegExp;
     input: string
-  }): string[] {
+  }): RegExpExecArray {
     return matcher.re.exec(matcher.input);
   }
 }

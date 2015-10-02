@@ -259,7 +259,7 @@ export class ListWrapper {
   static toString<T>(l: T[]): string { return l.toString(); }
   static toJSON<T>(l: T[]): string { return JSON.stringify(l); }
 
-  static maximum<T>(list: T[], predicate: (T) => number): T {
+  static maximum<T>(list: T[], predicate: (t: T) => number): T {
     if (list.length == 0) {
       return null;
     }

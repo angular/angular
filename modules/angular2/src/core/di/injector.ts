@@ -387,7 +387,6 @@ export class BindingWithVisibility {
 }
 
 /**
- * @internal
  * Used to provide dependencies that cannot be easily expressed as bindings.
  */
 export interface DependencyProvider {

@@ -117,9 +117,6 @@ export function createNgZone(): NgZone {
 
 var _platform: PlatformRef;
 
-/**
- * @internal
- */
 export function platformCommon(bindings?: Array<Type | Binding | any[]>, initializer?: () => void):
     PlatformRef {
   if (isPresent(_platform)) {
