@@ -175,6 +175,11 @@ _AnalyzerOutputLine.prototype = {
         return true;
       }
     }
+
+    if (this.errorCode.match(/DEPRECATED_MEMBER_USE/i)) {
+      return true;
+    }
+
     // TODO: https://github.com/angular/ts2dart/issues/168
     if (this.errorCode.match(/UNUSED_CATCH_STACK/i)) {
       return true;

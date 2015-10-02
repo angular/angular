@@ -26,7 +26,7 @@ class SomeChildDirective extends SomeDirective {
 }
 
 @Directive({selector: 'someDirective', inputs: ['c']})
-class SomeDirectiveWithProperties {
+class SomeDirectiveWithInputs {
   @Input() a;
   @Input("renamed") b;
   c;
@@ -38,6 +38,15 @@ class SomeDirectiveWithOutputs {
   @Output("renamed") b;
   c;
 }
+
+@Directive({selector: 'someDirective', properties: ['a']})
+class SomeDirectiveWithProperties {
+}
+
+@Directive({selector: 'someDirective', events: ['a']})
+class SomeDirectiveWithEvents {
+}
+
 
 
 @Directive({selector: 'someDirective'})
@@ -125,7 +134,7 @@ export function main() {
 
     describe('inputs', () => {
       it('should append directive inputs', () => {
-        var directiveMetadata = resolver.resolve(SomeDirectiveWithProperties);
+        var directiveMetadata = resolver.resolve(SomeDirectiveWithInputs);
         expect(directiveMetadata.inputs).toEqual(['c', 'a', 'b: renamed']);
       });
 
@@ -133,6 +142,12 @@ export function main() {
         var directiveMetadata = resolver.resolve(SomeDirectiveWithSetterProps);
         expect(directiveMetadata.inputs).toEqual(['a: renamed']);
       });
+
+      it('should use properties as inputs', () => {
+        var directiveMetadata = resolver.resolve(SomeDirectiveWithProperties);
+        expect(directiveMetadata.inputs).toEqual(['a']);
+      });
+
     });
 
     describe('outputs', () => {
@@ -144,6 +159,11 @@ export function main() {
       it('should work with getters and setters', () => {
         var directiveMetadata = resolver.resolve(SomeDirectiveWithGetterOutputs);
         expect(directiveMetadata.outputs).toEqual(['a: renamed']);
+      });
+
+      it('should use events as outputs', () => {
+        var directiveMetadata = resolver.resolve(SomeDirectiveWithEvents);
+        expect(directiveMetadata.outputs).toEqual(['a']);
       });
     });
 

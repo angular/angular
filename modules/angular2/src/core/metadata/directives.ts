@@ -468,6 +468,12 @@ export class DirectiveMetadata extends InjectableMetadata {
   inputs: string[];
 
   /**
+   * @deprecated
+   * Same as `inputs`. This is to enable easier migration.
+   */
+  properties: string[];
+
+  /**
    * Enumerates the set of event-bound output properties.
    *
    * When an output property emits an event, an event handler attached to that event
@@ -513,6 +519,12 @@ export class DirectiveMetadata extends InjectableMetadata {
    *
    */
   outputs: string[];
+
+  /**
+   * @deprecated
+   * Same as `outputs`. This is to enable easier migration.
+   */
+  events: string[];
 
   /**
    * Specify the events, actions, properties and attributes related to the host element.
@@ -738,10 +750,13 @@ export class DirectiveMetadata extends InjectableMetadata {
    */
   queries: StringMap<string, any>;
 
-  constructor({selector, inputs, outputs, host, bindings, exportAs, moduleId, queries}: {
+  constructor({selector, inputs, outputs, properties, events, host, bindings, exportAs, moduleId,
+               queries}: {
     selector?: string,
     inputs?: string[],
     outputs?: string[],
+    properties?: string[],
+    events?: string[],
     host?: StringMap<string, string>,
     bindings?: any[],
     exportAs?: string,
@@ -753,6 +768,11 @@ export class DirectiveMetadata extends InjectableMetadata {
     this.inputs = inputs;
     this.outputs = outputs;
     this.host = host;
+
+    // TODO: remove this once properties and events are removed.
+    this.properties = properties;
+    this.events = events;
+
     this.exportAs = exportAs;
     this.moduleId = moduleId;
     this.queries = queries;
@@ -856,11 +876,13 @@ export class ComponentMetadata extends DirectiveMetadata {
    */
   viewBindings: any[];
 
-  constructor({selector, inputs, outputs, host, exportAs, moduleId, bindings, viewBindings,
-               changeDetection = ChangeDetectionStrategy.Default, queries}: {
+  constructor({selector, inputs, outputs, properties, events, host, exportAs, moduleId, bindings,
+               viewBindings, changeDetection = ChangeDetectionStrategy.Default, queries}: {
     selector?: string,
     inputs?: string[],
     outputs?: string[],
+    properties?: string[],
+    events?: string[],
     host?: StringMap<string, string>,
     bindings?: any[],
     exportAs?: string,
@@ -873,6 +895,8 @@ export class ComponentMetadata extends DirectiveMetadata {
       selector: selector,
       inputs: inputs,
       outputs: outputs,
+      properties: properties,
+      events: events,
       host: host,
       exportAs: exportAs,
       moduleId: moduleId,

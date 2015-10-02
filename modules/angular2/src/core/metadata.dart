@@ -15,13 +15,18 @@ export './metadata/view.dart';
  */
 class Directive extends DirectiveMetadata {
   const Directive({String selector, List<String> inputs,
-  List<String> outputs, Map<String, String> host,
+  List<String> outputs,
+  @deprecated List<String> properties,
+  @deprecated List<String> events,
+  Map<String, String> host,
   List bindings, String exportAs, String moduleId,
   Map<String, dynamic> queries})
     : super(
     selector: selector,
     inputs: inputs,
     outputs: outputs,
+    properties: properties,
+    events: events,
     host: host,
     bindings: bindings,
     exportAs: exportAs,
@@ -34,7 +39,10 @@ class Directive extends DirectiveMetadata {
  */
 class Component extends ComponentMetadata {
   const Component({String selector, List<String> inputs,
-  List<String> outputs, Map<String, String> host,
+  List<String> outputs,
+  @deprecated List<String> properties,
+  @deprecated List<String> events,
+  Map<String, String> host,
   List bindings, String exportAs, String moduleId,
   Map<String, dynamic> queries,
   List viewBindings, ChangeDetectionStrategy changeDetection})
@@ -42,6 +50,8 @@ class Component extends ComponentMetadata {
     selector: selector,
     inputs: inputs,
     outputs: outputs,
+    properties: properties,
+    events: events,
     host: host,
     bindings: bindings,
     exportAs: exportAs,
