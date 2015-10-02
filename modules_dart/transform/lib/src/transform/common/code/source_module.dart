@@ -1,5 +1,6 @@
 library angular2.transform.common.code.source_module;
 
+import 'package:analyzer/src/generated/scanner.dart' show Keyword;
 import 'package:angular2/src/core/compiler/source_module.dart';
 
 import 'uri.dart';
@@ -9,7 +10,8 @@ String writeSourceModule(SourceModule sourceModule, {String libraryName}) {
   if (sourceModule == null) return null;
   var buf = new StringBuffer();
   var sourceWithImports = sourceModule.getSourceWithImports();
-  var libraryName = _getLibName(sourceModule.moduleUrl);
+  libraryName = _sanitizeLibName(
+      libraryName != null ? libraryName : sourceModule.moduleUrl);
   buf..writeln('library $libraryName;')..writeln();
   sourceWithImports.imports.forEach((import) {
     // Format for importLine := [uri, prefix]
@@ -29,11 +31,11 @@ String writeSourceModule(SourceModule sourceModule, {String libraryName}) {
 }
 
 final _unsafeCharsPattern = new RegExp(r'[^a-zA-Z0-9_\.]');
-String _getLibName(String moduleUrl) {
-  // TODO(tbosch): use `.replaceAll('/', '.')` here as well
-  // Also: replaceAll('asset:', '').
-  // Right now, this fails in some cases with Dart2Js, e.g.
-  // (Error 'switch' is a reserved word and can't be used here.
-  //  library angular2_material.lib.src.components.switcher.switch.template.dart;)
-  return moduleUrl.replaceAll(_unsafeCharsPattern, '_');
+String _sanitizeLibName(String moduleUrl) {
+  var sanitized =
+      moduleUrl.replaceAll(_unsafeCharsPattern, '_').replaceAll('/', '.');
+  for (var keyword in Keyword.values) {
+    sanitized.replaceAll(keyword.syntax, '${keyword.syntax}_');
+  }
+  return sanitized;
 }
