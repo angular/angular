@@ -39,7 +39,7 @@ import {
   TemplateCmd,
   visitAllCommands,
   CompiledTemplate
-} from 'angular2/src/core/compiler/template_commands';
+} from 'angular2/src/core/linker/template_commands';
 
 import {Component, View, Directive, bind} from 'angular2/core';
 

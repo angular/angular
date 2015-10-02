@@ -10,7 +10,7 @@ export 'package:angular2/src/core/facade.dart';
 //export 'package:angular2/src/core/application.dart';
 export 'package:angular2/src/core/application_ref.dart';
 export 'package:angular2/src/core/services.dart';
-export 'package:angular2/src/core/compiler.dart';
+export 'package:angular2/src/core/linker.dart';
 export 'package:angular2/src/core/lifecycle.dart';
 export 'package:angular2/src/core/zone.dart';
 export 'package:angular2/src/core/render.dart';

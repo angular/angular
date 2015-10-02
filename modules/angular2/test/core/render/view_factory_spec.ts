@@ -13,7 +13,7 @@ import {
 
 import {isPresent} from 'angular2/src/core/facade/lang';
 import {MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
-import * as appCmds from 'angular2/src/core/compiler/template_commands';
+import * as appCmds from 'angular2/src/core/linker/template_commands';
 import {createRenderView, NodeFactory} from 'angular2/src/core/render/view_factory';
 import {RenderTemplateCmd, RenderBeginElementCmd} from 'angular2/src/core/render/api';
 import {SpyRenderEventDispatcher} from '../spies';

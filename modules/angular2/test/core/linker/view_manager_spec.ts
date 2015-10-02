@@ -16,10 +16,10 @@ import {
 import {SpyRenderer, SpyAppViewPool, SpyAppViewListener, SpyProtoViewFactory} from '../spies';
 import {Injector, bind} from 'angular2/core';
 
-import {AppProtoView, AppView, AppViewContainer} from 'angular2/src/core/compiler/view';
-import {ProtoViewRef, ViewRef, internalView} from 'angular2/src/core/compiler/view_ref';
-import {ElementRef} from 'angular2/src/core/compiler/element_ref';
-import {TemplateRef} from 'angular2/src/core/compiler/template_ref';
+import {AppProtoView, AppView, AppViewContainer} from 'angular2/src/core/linker/view';
+import {ProtoViewRef, ViewRef, internalView} from 'angular2/src/core/linker/view_ref';
+import {ElementRef} from 'angular2/src/core/linker/element_ref';
+import {TemplateRef} from 'angular2/src/core/linker/template_ref';
 import {
   Renderer,
   RenderViewRef,
@@ -28,8 +28,8 @@ import {
   ViewType,
   RenderViewWithFragments
 } from 'angular2/src/core/render/api';
-import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
-import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
+import {AppViewManager} from 'angular2/src/core/linker/view_manager';
+import {AppViewManagerUtils} from 'angular2/src/core/linker/view_manager_utils';
 
 import {
   createHostPv,

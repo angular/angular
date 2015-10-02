@@ -20,8 +20,8 @@ import {OnDestroy} from 'angular2/lifecycle_hooks';
 import {Injector, NgIf} from 'angular2/core';
 import {inspectElement, By} from 'angular2/src/core/debug';
 import {Component, View, ViewMetadata} from 'angular2/src/core/metadata';
-import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
-import {ElementRef} from 'angular2/src/core/compiler/element_ref';
+import {DynamicComponentLoader} from 'angular2/src/core/linker/dynamic_component_loader';
+import {ElementRef} from 'angular2/src/core/linker/element_ref';
 import {DOCUMENT} from 'angular2/src/core/render/render';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 

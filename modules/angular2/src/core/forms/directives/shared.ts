@@ -7,7 +7,7 @@ import {NgControl} from './ng_control';
 import {Control} from '../model';
 import {Validators} from '../validators';
 import {ControlValueAccessor} from './control_value_accessor';
-import {ElementRef, QueryList} from 'angular2/src/core/compiler';
+import {ElementRef, QueryList} from 'angular2/src/core/linker';
 import {Renderer} from 'angular2/src/core/render';
 import {DefaultValueAccessor} from './default_value_accessor';
 import {CheckboxControlValueAccessor} from './checkbox_value_accessor';

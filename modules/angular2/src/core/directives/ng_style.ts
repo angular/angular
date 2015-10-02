@@ -3,7 +3,7 @@ import {
   KeyValueDiffer,
   KeyValueDiffers,
 } from 'angular2/src/core/change_detection';
-import {ElementRef} from 'angular2/src/core/compiler';
+import {ElementRef} from 'angular2/src/core/linker';
 import {Directive} from 'angular2/src/core/metadata';
 import {Renderer} from 'angular2/src/core/render';
 import {isPresent, isBlank, print} from 'angular2/src/core/facade/lang';

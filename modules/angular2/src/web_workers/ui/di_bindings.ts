@@ -11,11 +11,11 @@ import {
   DomEventsPlugin,
   EVENT_MANAGER_PLUGINS
 } from 'angular2/src/core/render/dom/events/event_manager';
-import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
+import {ProtoViewFactory} from 'angular2/src/core/linker/proto_view_factory';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {KeyEventsPlugin} from 'angular2/src/core/render/dom/events/key_events';
 import {HammerGesturesPlugin} from 'angular2/src/core/render/dom/events/hammer_gestures';
-import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
+import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 import {Renderer} from 'angular2/src/core/render/api';
 import {AppRootUrl} from 'angular2/src/core/services/app_root_url';
 import {DomRenderer, DOCUMENT, APP_ID_RANDOM_BINDING} from 'angular2/src/core/render/render';
@@ -29,13 +29,13 @@ import {
 } from 'angular2/src/core/render/dom/view/shared_styles_host';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
-import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
-import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
-import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
-import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
+import {AppViewManager} from 'angular2/src/core/linker/view_manager';
+import {AppViewManagerUtils} from 'angular2/src/core/linker/view_manager_utils';
+import {AppViewListener} from 'angular2/src/core/linker/view_listener';
+import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
+import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
-import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
+import {DynamicComponentLoader} from 'angular2/src/core/linker/dynamic_component_loader';
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 import {Testability} from 'angular2/src/core/testability/testability';
 import {XHR} from 'angular2/src/core/render/xhr';

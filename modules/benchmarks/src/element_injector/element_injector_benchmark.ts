@@ -1,7 +1,7 @@
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
 import {Injectable, Injector} from 'angular2/core';
-import {ProtoElementInjector, DirectiveBinding} from 'angular2/src/core/compiler/element_injector';
+import {ProtoElementInjector, DirectiveBinding} from 'angular2/src/core/linker/element_injector';
 import {getIntParameter, bindAction, microBenchmark} from 'angular2/src/test_lib/benchmark_util';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 

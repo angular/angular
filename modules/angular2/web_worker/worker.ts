@@ -9,7 +9,7 @@ export * from '../src/core/facade';
 // export * from '../src/core/application';
 export * from '../src/core/application_ref';
 export * from '../src/core/services';
-export * from '../src/core/compiler';
+export * from '../src/core/linker';
 export * from '../src/core/lifecycle';
 export * from '../src/core/zone';
 // Do not export render in web_worker

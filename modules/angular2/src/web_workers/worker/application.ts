@@ -8,7 +8,7 @@ import {Binding, Injectable} from "angular2/src/core/di";
 import {Map} from 'angular2/src/core/facade/collection';
 import {Promise} from 'angular2/src/core/facade/async';
 import {bootstrapWebWorkerCommon} from "angular2/src/web_workers/worker/application_common";
-import {ComponentRef} from "angular2/src/core/compiler/dynamic_component_loader";
+import {ComponentRef} from "angular2/src/core/linker/dynamic_component_loader";
 export * from "angular2/src/web_workers/shared/message_bus";
 import {Parse5DomAdapter} from 'angular2/src/core/dom/parse5_adapter';
 

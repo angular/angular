@@ -1,6 +1,6 @@
 import {Directive} from 'angular2/src/core/metadata';
 import {Renderer} from 'angular2/src/core/render';
-import {ElementRef} from 'angular2/src/core/compiler';
+import {ElementRef} from 'angular2/src/core/linker';
 import {Self, forwardRef, Binding} from 'angular2/src/core/di';
 
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';

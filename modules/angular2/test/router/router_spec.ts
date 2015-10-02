@@ -22,7 +22,7 @@ import {stringifyInstruction} from 'angular2/src/router/instruction';
 
 import {RouteRegistry} from 'angular2/src/router/route_registry';
 import {RouteConfig, AsyncRoute, Route} from 'angular2/src/router/route_config_decorator';
-import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
+import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 
 import {bind} from 'angular2/core';
 

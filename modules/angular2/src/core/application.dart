@@ -8,8 +8,8 @@ import 'package:angular2/src/core/reflection/reflection_capabilities.dart'
 import 'application_common.dart';
 
 import 'package:angular2/src/compiler/compiler.dart';
-import 'package:angular2/src/core/compiler/dynamic_component_loader.dart';
-export 'package:angular2/src/core/compiler/dynamic_component_loader.dart' show ComponentRef;
+import 'package:angular2/src/core/linker/dynamic_component_loader.dart';
+export 'package:angular2/src/core/linker/dynamic_component_loader.dart' show ComponentRef;
 
 /// Starts an application from a root component. This implementation uses
 /// mirrors. Angular 2 transformer automatically replaces this method with a

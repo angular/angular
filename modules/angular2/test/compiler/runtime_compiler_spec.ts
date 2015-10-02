@@ -20,10 +20,10 @@ import {
   CompiledHostTemplate,
   CompiledTemplate,
   BeginComponentCmd
-} from 'angular2/src/core/compiler/template_commands';
+} from 'angular2/src/core/linker/template_commands';
 import {RuntimeCompiler} from 'angular2/src/compiler/runtime_compiler';
-import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
-import {AppProtoView} from 'angular2/src/core/compiler/view';
+import {ProtoViewFactory} from 'angular2/src/core/linker/proto_view_factory';
+import {AppProtoView} from 'angular2/src/core/linker/view';
 
 export function main() {
   describe('RuntimeCompiler', () => {

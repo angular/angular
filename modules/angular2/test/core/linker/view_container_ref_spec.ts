@@ -15,10 +15,10 @@ import {
 } from 'angular2/test_lib';
 
 import {SpyView, SpyAppViewManager} from '../spies';
-import {AppView, AppViewContainer} from 'angular2/src/core/compiler/view';
-import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
-import {ElementRef} from 'angular2/src/core/compiler/element_ref';
-import {ViewRef} from 'angular2/src/core/compiler/view_ref';
+import {AppView, AppViewContainer} from 'angular2/src/core/linker/view';
+import {ViewContainerRef} from 'angular2/src/core/linker/view_container_ref';
+import {ElementRef} from 'angular2/src/core/linker/element_ref';
+import {ViewRef} from 'angular2/src/core/linker/view_ref';
 
 export function main() {
   // TODO(tbosch): add missing tests

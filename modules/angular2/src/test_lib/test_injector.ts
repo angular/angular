@@ -3,7 +3,7 @@ import {DEFAULT_PIPES} from 'angular2/src/core/pipes';
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
 import {MockAnimationBuilder} from 'angular2/src/mock/animation_builder_mock';
 
-import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
+import {ProtoViewFactory} from 'angular2/src/core/linker/proto_view_factory';
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
 import {
   Parser,
@@ -15,10 +15,10 @@ import {
   ChangeDetectorGenConfig
 } from 'angular2/src/core/change_detection/change_detection';
 import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
-import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
-import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
-import {PipeResolver} from 'angular2/src/core/compiler/pipe_resolver';
-import {DynamicComponentLoader} from 'angular2/src/core/compiler/dynamic_component_loader';
+import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
+import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
+import {PipeResolver} from 'angular2/src/core/linker/pipe_resolver';
+import {DynamicComponentLoader} from 'angular2/src/core/linker/dynamic_component_loader';
 import {XHR} from 'angular2/src/core/render/xhr';
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 import {AppRootUrl} from 'angular2/src/core/services/app_root_url';
@@ -48,9 +48,9 @@ import {ELEMENT_PROBE_BINDINGS} from 'angular2/src/core/debug';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {FunctionWrapper, Type} from 'angular2/src/core/facade/lang';
 
-import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
-import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
-import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
+import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
+import {AppViewManager} from 'angular2/src/core/linker/view_manager';
+import {AppViewManagerUtils} from 'angular2/src/core/linker/view_manager_utils';
 import {Renderer} from 'angular2/src/core/render/api';
 import {
   DomRenderer,

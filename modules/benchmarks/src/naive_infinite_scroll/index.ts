@@ -2,7 +2,7 @@ import {bootstrap} from 'angular2/bootstrap';
 
 import {App} from './app';
 
-import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
+import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 import {bind} from 'angular2/core';
 
 export function main() {

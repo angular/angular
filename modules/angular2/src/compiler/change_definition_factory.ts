@@ -30,7 +30,7 @@ import {
   AttrAst,
   TextAst
 } from './template_ast';
-import {LifecycleHooks} from 'angular2/src/core/compiler/interfaces';
+import {LifecycleHooks} from 'angular2/src/core/linker/interfaces';
 
 export function createChangeDetectorDefinitions(
     componentType: CompileTypeMetadata, componentStrategy: ChangeDetectionStrategy,

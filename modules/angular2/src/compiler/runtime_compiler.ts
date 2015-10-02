@@ -1,6 +1,6 @@
-import {Compiler, internalCreateProtoView} from 'angular2/src/core/compiler/compiler';
-import {ProtoViewRef} from 'angular2/src/core/compiler/view_ref';
-import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
+import {Compiler, internalCreateProtoView} from 'angular2/src/core/linker/compiler';
+import {ProtoViewRef} from 'angular2/src/core/linker/view_ref';
+import {ProtoViewFactory} from 'angular2/src/core/linker/proto_view_factory';
 import {TemplateCompiler} from './template_compiler';
 
 import {Injectable} from 'angular2/src/core/di';

@@ -1,6 +1,6 @@
 import {Self, forwardRef, Binding} from 'angular2/src/core/di';
 import {Renderer} from 'angular2/src/core/render';
-import {ElementRef, QueryList} from 'angular2/src/core/compiler';
+import {ElementRef, QueryList} from 'angular2/src/core/linker';
 import {Query, Directive} from 'angular2/src/core/metadata';
 
 import {ObservableWrapper} from 'angular2/src/core/facade/async';

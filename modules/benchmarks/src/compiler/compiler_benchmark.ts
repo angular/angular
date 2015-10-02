@@ -18,7 +18,7 @@ import {
 } from 'angular2/core';
 
 import {ChangeDetectorGenConfig} from 'angular2/src/core/change_detection/change_detection';
-import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
+import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
 
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 

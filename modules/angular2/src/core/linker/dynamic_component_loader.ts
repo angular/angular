@@ -2,7 +2,7 @@ import {Key, Injector, ResolvedBinding, Binding, bind, Injectable} from 'angular
 import {Compiler} from './compiler';
 import {isType, Type, stringify, isPresent} from 'angular2/src/core/facade/lang';
 import {Promise} from 'angular2/src/core/facade/async';
-import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
+import {AppViewManager} from 'angular2/src/core/linker/view_manager';
 import {ElementRef} from './element_ref';
 import {ViewRef, HostViewRef} from './view_ref';
 

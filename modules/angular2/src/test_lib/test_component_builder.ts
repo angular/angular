@@ -6,14 +6,14 @@ import {ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
 
 import {ViewMetadata} from '../core/metadata';
 
-import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
-import {ViewResolver} from 'angular2/src/core/compiler/view_resolver';
-import {AppView} from 'angular2/src/core/compiler/view';
-import {internalView, ViewRef} from 'angular2/src/core/compiler/view_ref';
+import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
+import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
+import {AppView} from 'angular2/src/core/linker/view';
+import {internalView, ViewRef} from 'angular2/src/core/linker/view_ref';
 import {
   DynamicComponentLoader,
   ComponentRef
-} from 'angular2/src/core/compiler/dynamic_component_loader';
+} from 'angular2/src/core/linker/dynamic_component_loader';
 
 import {el} from './utils';
 

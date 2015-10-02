@@ -26,17 +26,17 @@ import {
 import {Injector, bind} from 'angular2/core';
 import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
 
-import {AppProtoView, AppView, AppProtoViewMergeInfo} from 'angular2/src/core/compiler/view';
-import {ElementBinder} from 'angular2/src/core/compiler/element_binder';
+import {AppProtoView, AppView, AppProtoViewMergeInfo} from 'angular2/src/core/linker/view';
+import {ElementBinder} from 'angular2/src/core/linker/element_binder';
 import {
   DirectiveBinding,
   ElementInjector,
   PreBuiltObjects,
   ProtoElementInjector
-} from 'angular2/src/core/compiler/element_injector';
-import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
+} from 'angular2/src/core/linker/element_injector';
+import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 import {Component} from 'angular2/src/core/metadata';
-import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
+import {AppViewManagerUtils} from 'angular2/src/core/linker/view_manager_utils';
 import {ViewType, RenderViewWithFragments} from 'angular2/src/core/render/render';
 
 export function main() {

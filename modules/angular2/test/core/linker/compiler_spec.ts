@@ -19,11 +19,11 @@ import {
   CompiledHostTemplate,
   CompiledTemplate,
   BeginComponentCmd
-} from 'angular2/src/core/compiler/template_commands';
-import {Compiler} from 'angular2/src/core/compiler/compiler';
-import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
+} from 'angular2/src/core/linker/template_commands';
+import {Compiler} from 'angular2/src/core/linker/compiler';
+import {ProtoViewFactory} from 'angular2/src/core/linker/proto_view_factory';
 import {reflector, ReflectionInfo} from 'angular2/src/core/reflection/reflection';
-import {AppProtoView} from 'angular2/src/core/compiler/view';
+import {AppProtoView} from 'angular2/src/core/linker/view';
 
 export function main() {
   describe('Compiler', () => {

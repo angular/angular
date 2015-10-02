@@ -10,7 +10,7 @@ import {
   endComponent,
   embeddedTemplate,
   CompiledTemplate
-} from 'angular2/src/core/compiler/template_commands';
+} from 'angular2/src/core/linker/template_commands';
 import {
   TemplateAst,
   TemplateAstVisitor,
@@ -41,7 +41,7 @@ import {escapeSingleQuoteString, MODULE_SUFFIX} from './util';
 import {Injectable} from 'angular2/src/core/di';
 
 export var TEMPLATE_COMMANDS_MODULE_REF =
-    moduleRef(`package:angular2/src/core/compiler/template_commands${MODULE_SUFFIX}`);
+    moduleRef(`package:angular2/src/core/linker/template_commands${MODULE_SUFFIX}`);
 
 const IMPLICIT_TEMPLATE_VAR = '\$implicit';
 

@@ -29,7 +29,7 @@ import {
   PreBuiltObjects,
   DirectiveBinding,
   TreeNode
-} from 'angular2/src/core/compiler/element_injector';
+} from 'angular2/src/core/linker/element_injector';
 import {
   Attribute,
   Query,
@@ -39,12 +39,12 @@ import {
 } from 'angular2/src/core/metadata';
 import {OnDestroy} from 'angular2/lifecycle_hooks';
 import {bind, Injector, Binding, Optional, Inject, Injectable, Self, SkipSelf, InjectMetadata, Host, HostMetadata, SkipSelfMetadata} from 'angular2/core';
-import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
-import {TemplateRef} from 'angular2/src/core/compiler/template_ref';
-import {ElementRef} from 'angular2/src/core/compiler/element_ref';
+import {ViewContainerRef} from 'angular2/src/core/linker/view_container_ref';
+import {TemplateRef} from 'angular2/src/core/linker/template_ref';
+import {ElementRef} from 'angular2/src/core/linker/element_ref';
 import {DynamicChangeDetector, ChangeDetectorRef, Parser, Lexer} from 'angular2/src/core/change_detection/change_detection';
-import {QueryList} from 'angular2/src/core/compiler/query_list';
-import {AppView, AppViewContainer} from "angular2/src/core/compiler/view";
+import {QueryList} from 'angular2/src/core/linker/query_list';
+import {AppView, AppViewContainer} from "angular2/src/core/linker/view";
 
 function createDummyView(detector = null): AppView {
   var res = new SpyView();

@@ -79,14 +79,14 @@ import {
   HostListener
 } from 'angular2/src/core/metadata';
 
-import {QueryList} from 'angular2/src/core/compiler/query_list';
+import {QueryList} from 'angular2/src/core/linker/query_list';
 
-import {ViewContainerRef} from 'angular2/src/core/compiler/view_container_ref';
-import {ViewRef} from 'angular2/src/core/compiler/view_ref';
+import {ViewContainerRef} from 'angular2/src/core/linker/view_container_ref';
+import {ViewRef} from 'angular2/src/core/linker/view_ref';
 
-import {Compiler} from 'angular2/src/core/compiler/compiler';
-import {ElementRef} from 'angular2/src/core/compiler/element_ref';
-import {TemplateRef} from 'angular2/src/core/compiler/template_ref';
+import {Compiler} from 'angular2/src/core/linker/compiler';
+import {ElementRef} from 'angular2/src/core/linker/element_ref';
+import {TemplateRef} from 'angular2/src/core/linker/template_ref';
 
 import {DomRenderer} from 'angular2/src/core/render/dom/dom_renderer';
 import {IS_DART} from '../../platform';

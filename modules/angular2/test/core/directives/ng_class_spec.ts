@@ -17,7 +17,7 @@ import {
 import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {Component, View, NgFor, bind} from 'angular2/angular2';
 import {NgClass} from 'angular2/src/core/directives/ng_class';
-import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
+import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 
 function detectChangesAndCheck(rootTC: RootTestComponent, classes: string, elIndex: number = 0) {
   rootTC.detectChanges();

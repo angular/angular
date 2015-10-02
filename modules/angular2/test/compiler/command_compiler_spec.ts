@@ -27,7 +27,7 @@ import {
   TemplateCmd,
   visitAllCommands,
   CompiledTemplate
-} from 'angular2/src/core/compiler/template_commands';
+} from 'angular2/src/core/linker/template_commands';
 import {CommandCompiler} from 'angular2/src/compiler/command_compiler';
 import {
   CompileDirectiveMetadata,
@@ -57,7 +57,7 @@ const EMBEDDED_TEMPLATE = 'EMBEDDED_TEMPLATE';
 var THIS_MODULE_URL = `package:angular2/test/compiler/command_compiler_spec${MODULE_SUFFIX}`;
 var THIS_MODULE_REF = moduleRef(THIS_MODULE_URL);
 var TEMPLATE_COMMANDS_MODULE_REF =
-    moduleRef(`package:angular2/src/core/compiler/template_commands${MODULE_SUFFIX}`);
+    moduleRef(`package:angular2/src/core/linker/template_commands${MODULE_SUFFIX}`);
 
 // Attention: read by eval!
 export class RootComp {}

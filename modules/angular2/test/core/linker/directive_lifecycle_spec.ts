@@ -13,8 +13,8 @@ import {
   proxy
 } from 'angular2/test_lib';
 
-import {hasLifecycleHook} from 'angular2/src/core/compiler/directive_lifecycle_reflector';
-import {LifecycleHooks} from 'angular2/src/core/compiler/interfaces';
+import {hasLifecycleHook} from 'angular2/src/core/linker/directive_lifecycle_reflector';
+import {LifecycleHooks} from 'angular2/src/core/linker/interfaces';
 
 export function main() {
   describe('Create DirectiveMetadata', () => {

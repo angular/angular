@@ -14,7 +14,7 @@ import {
 import {MapWrapper, ListWrapper, iterateListLike} from 'angular2/src/core/facade/collection';
 import {StringWrapper} from 'angular2/src/core/facade/lang';
 import {ObservableWrapper} from 'angular2/src/core/facade/async';
-import {QueryList} from 'angular2/src/core/compiler/query_list';
+import {QueryList} from 'angular2/src/core/linker/query_list';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 

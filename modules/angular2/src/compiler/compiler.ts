@@ -17,7 +17,7 @@ import {StyleCompiler} from 'angular2/src/compiler/style_compiler';
 import {CommandCompiler} from 'angular2/src/compiler/command_compiler';
 import {TemplateCompiler} from 'angular2/src/compiler/template_compiler';
 import {ChangeDetectorGenConfig} from 'angular2/src/core/change_detection/change_detection';
-import {Compiler} from 'angular2/src/core/compiler/compiler';
+import {Compiler} from 'angular2/src/core/linker/compiler';
 import {RuntimeCompiler} from 'angular2/src/compiler/runtime_compiler';
 import {ElementSchemaRegistry} from 'angular2/src/core/render/dom/schema/element_schema_registry';
 import {

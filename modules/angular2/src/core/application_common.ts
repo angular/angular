@@ -27,7 +27,7 @@ import {AnchorBasedAppRootUrl} from 'angular2/src/core/services/anchor_based_app
 import {
   ComponentRef,
   DynamicComponentLoader
-} from 'angular2/src/core/compiler/dynamic_component_loader';
+} from 'angular2/src/core/linker/dynamic_component_loader';
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
 import {Renderer} from 'angular2/src/core/render/api';
 import {DomRenderer, DOCUMENT, APP_ID_RANDOM_BINDING} from 'angular2/src/core/render/render';

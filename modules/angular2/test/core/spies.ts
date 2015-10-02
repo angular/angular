@@ -6,14 +6,14 @@ import {
 } from 'angular2/src/core/change_detection/change_detection';
 
 import {Renderer, RenderEventDispatcher} from 'angular2/src/core/render/api';
-import {DirectiveResolver} from 'angular2/src/core/compiler/directive_resolver';
+import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 
-import {AppView} from 'angular2/src/core/compiler/view';
-import {ElementRef} from 'angular2/src/core/compiler/element_ref';
-import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
-import {AppViewPool} from 'angular2/src/core/compiler/view_pool';
-import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
-import {ProtoViewFactory} from 'angular2/src/core/compiler/proto_view_factory';
+import {AppView} from 'angular2/src/core/linker/view';
+import {ElementRef} from 'angular2/src/core/linker/element_ref';
+import {AppViewManager} from 'angular2/src/core/linker/view_manager';
+import {AppViewPool} from 'angular2/src/core/linker/view_pool';
+import {AppViewListener} from 'angular2/src/core/linker/view_listener';
+import {ProtoViewFactory} from 'angular2/src/core/linker/proto_view_factory';
 import {DomAdapter} from 'angular2/src/core/dom/dom_adapter';
 import {ClientMessageBroker} from 'angular2/src/web_workers/shared/client_message_broker';
 import {XHR} from 'angular2/src/core/render/xhr';
@@ -22,7 +22,7 @@ import {
   ElementInjector,
   PreBuiltObjects,
   ProtoElementInjector
-} from 'angular2/src/core/compiler/element_injector';
+} from 'angular2/src/core/linker/element_injector';
 
 import {SpyObject, proxy} from 'angular2/test_lib';
 

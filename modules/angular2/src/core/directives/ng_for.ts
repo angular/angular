@@ -5,7 +5,7 @@ import {
   IterableDiffer,
   IterableDiffers
 } from 'angular2/src/core/change_detection';
-import {ViewContainerRef, TemplateRef, ViewRef} from 'angular2/src/core/compiler';
+import {ViewContainerRef, TemplateRef, ViewRef} from 'angular2/src/core/linker';
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 
 /**

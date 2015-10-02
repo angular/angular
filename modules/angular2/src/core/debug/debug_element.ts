@@ -3,10 +3,10 @@ import {ListWrapper, MapWrapper, Predicate} from 'angular2/src/core/facade/colle
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
-import {ElementInjector} from 'angular2/src/core/compiler/element_injector';
-import {AppView} from 'angular2/src/core/compiler/view';
-import {internalView} from 'angular2/src/core/compiler/view_ref';
-import {ElementRef} from 'angular2/src/core/compiler/element_ref';
+import {ElementInjector} from 'angular2/src/core/linker/element_injector';
+import {AppView} from 'angular2/src/core/linker/view';
+import {internalView} from 'angular2/src/core/linker/view_ref';
+import {ElementRef} from 'angular2/src/core/linker/element_ref';
 
 /**
  * A DebugElement contains information from the Angular compiler about an

@@ -5,7 +5,7 @@ import 'dart:convert';
 
 import 'package:barback/barback.dart';
 import 'package:angular2/src/core/change_detection/change_detection.dart';
-import 'package:angular2/src/core/compiler/interfaces.dart' show LifecycleHooks;
+import 'package:angular2/src/core/linker/interfaces.dart' show LifecycleHooks;
 import 'package:angular2/src/core/dom/html_adapter.dart';
 import 'package:angular2/src/transform/directive_processor/rewriter.dart';
 import 'package:angular2/src/transform/common/annotation_matcher.dart';

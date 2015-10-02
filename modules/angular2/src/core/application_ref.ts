@@ -9,14 +9,14 @@ import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/te
 import {
   ComponentRef,
   DynamicComponentLoader
-} from 'angular2/src/core/compiler/dynamic_component_loader';
+} from 'angular2/src/core/linker/dynamic_component_loader';
 import {
   BaseException,
   WrappedException,
   ExceptionHandler
 } from 'angular2/src/core/facade/exceptions';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {internalView} from 'angular2/src/core/compiler/view_ref';
+import {internalView} from 'angular2/src/core/linker/view_ref';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {
   Parser,
@@ -26,20 +26,20 @@ import {
   KeyValueDiffers,
   defaultKeyValueDiffers
 } from 'angular2/src/core/change_detection/change_detection';
-import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
-import {AppViewManager} from 'angular2/src/core/compiler/view_manager';
-import {AppViewManagerUtils} from 'angular2/src/core/compiler/view_manager_utils';
-import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
-import {ProtoViewFactory} from './compiler/proto_view_factory';
+import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
+import {AppViewManager} from 'angular2/src/core/linker/view_manager';
+import {AppViewManagerUtils} from 'angular2/src/core/linker/view_manager_utils';
+import {AppViewListener} from 'angular2/src/core/linker/view_listener';
+import {ProtoViewFactory} from './linker/proto_view_factory';
 import {DEFAULT_PIPES} from 'angular2/src/core/pipes';
-import {ViewResolver} from './compiler/view_resolver';
-import {DirectiveResolver} from './compiler/directive_resolver';
-import {PipeResolver} from './compiler/pipe_resolver';
+import {ViewResolver} from './linker/view_resolver';
+import {DirectiveResolver} from './linker/directive_resolver';
+import {PipeResolver} from './linker/pipe_resolver';
 import {UrlResolver} from 'angular2/src/core/services/url_resolver';
 import {
   APP_ID_RANDOM_BINDING,
 } from 'angular2/src/core/render/render';
-import {Compiler} from 'angular2/src/core/compiler/compiler';
+import {Compiler} from 'angular2/src/core/linker/compiler';
 
 /**
  * Constructs the set of bindings meant for use at the platform level.

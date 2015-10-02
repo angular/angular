@@ -1,8 +1,8 @@
 import {CONST_EXPR, isPresent, NumberWrapper, StringWrapper} from 'angular2/src/core/facade/lang';
 import {MapWrapper, Map, ListWrapper} from 'angular2/src/core/facade/collection';
 import {Injectable, bind, Binding} from 'angular2/src/core/di';
-import {AppViewListener} from 'angular2/src/core/compiler/view_listener';
-import {AppView} from 'angular2/src/core/compiler/view';
+import {AppViewListener} from 'angular2/src/core/linker/view_listener';
+import {AppView} from 'angular2/src/core/linker/view';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {Renderer} from 'angular2/src/core/render/api';
 import {DebugElement} from './debug_element';

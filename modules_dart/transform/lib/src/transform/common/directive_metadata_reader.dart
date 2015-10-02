@@ -6,7 +6,7 @@ import 'package:analyzer/analyzer.dart';
 import 'package:angular2/src/compiler/directive_metadata.dart';
 import 'package:angular2/src/compiler/template_compiler.dart';
 import 'package:angular2/src/core/change_detection/change_detection.dart';
-import 'package:angular2/src/core/compiler/interfaces.dart' show LifecycleHooks;
+import 'package:angular2/src/core/linker/interfaces.dart' show LifecycleHooks;
 import 'package:angular2/src/core/render/api.dart' show ViewEncapsulation;
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/interface_matcher.dart';

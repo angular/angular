@@ -20,7 +20,7 @@ import {
   LifeCycle
 } from 'angular2/core';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
-import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/compiler/view_pool';
+import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 
