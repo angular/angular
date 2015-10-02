@@ -48,7 +48,7 @@ import {
 import {QueryList} from './query_list';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {SetterFn} from 'angular2/src/core/reflection/types';
-import {EventConfig} from 'angular2/src/core/render/event_config';
+import {EventConfig} from 'angular2/src/core/linker/event_config';
 import {PipeBinding} from '../pipes/pipe_binding';
 
 import {LifecycleHooks} from './interfaces';

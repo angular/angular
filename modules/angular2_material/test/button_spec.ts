@@ -20,8 +20,8 @@ import {MdButton, MdAnchor} from 'angular2_material/src/components/button/button
 
 import {TestUrlResolver} from './test_url_resolver';
 
-import {XHR} from 'angular2/src/core/render/xhr';
-import {XHRImpl} from 'angular2/src/core/render/xhr_impl';
+import {XHR} from 'angular2/src/core/compiler/xhr';
+import {XHRImpl} from 'angular2/src/core/compiler/xhr_impl';
 
 
 export function main() {

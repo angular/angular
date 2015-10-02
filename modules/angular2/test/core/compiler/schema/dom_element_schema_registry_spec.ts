@@ -9,11 +9,11 @@ import {
   it,
   xit
 } from 'angular2/test_lib';
-import {IS_DART} from '../../../../platform';
+import {IS_DART} from '../../../platform';
 
 import {
   DomElementSchemaRegistry
-} from 'angular2/src/core/render/dom/schema/dom_element_schema_registry';
+} from 'angular2/src/core/compiler/schema/dom_element_schema_registry';
 
 export function main() {
   // DOMElementSchema can only be used on the JS side where we can safely

@@ -10,7 +10,7 @@ import {
   xit
 } from 'angular2/test_lib';
 
-import {XHRImpl} from 'angular2/src/core/render/xhr_impl';
+import {XHRImpl} from 'angular2/src/core/compiler/xhr_impl';
 import {PromiseWrapper} from 'angular2/src/core/facade/async';
 
 export function main() {

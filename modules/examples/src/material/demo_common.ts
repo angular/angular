@@ -1,5 +1,5 @@
 import {print} from 'angular2/src/core/facade/lang';
-import {UrlResolver} from 'angular2/src/core/services/url_resolver';
+import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {isPresent, isBlank, RegExpWrapper, StringWrapper} from 'angular2/src/core/facade/lang';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {Injectable} from 'angular2/core';

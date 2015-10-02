@@ -35,9 +35,9 @@ import {
   DirectiveAst,
   BoundDirectivePropertyAst
 } from './template_ast';
-import {CssSelector, SelectorMatcher} from 'angular2/src/core/render/dom/compiler/selector';
+import {CssSelector, SelectorMatcher} from 'angular2/src/core/compiler/selector';
 
-import {ElementSchemaRegistry} from 'angular2/src/core/render/dom/schema/element_schema_registry';
+import {ElementSchemaRegistry} from 'angular2/src/core/compiler/schema/element_schema_registry';
 import {preparseElement, PreparsedElement, PreparsedElementType} from './template_preparser';
 
 import {

@@ -1,4 +1,4 @@
-import {ElementSchemaRegistry} from 'angular2/src/core/render/dom/schema/element_schema_registry';
+import {ElementSchemaRegistry} from 'angular2/src/core/compiler/schema/element_schema_registry';
 import {StringMap} from 'angular2/src/core/facade/collection';
 import {isPresent} from 'angular2/src/core/facade/lang';
 

@@ -1,4 +1,4 @@
-import {XHR} from 'angular2/src/core/render/xhr';
+import {XHR} from 'angular2/src/core/compiler/xhr';
 import {ListWrapper, Map, MapWrapper} from 'angular2/src/core/facade/collection';
 import {isBlank, isPresent, normalizeBlank} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';

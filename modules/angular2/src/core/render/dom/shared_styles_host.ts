@@ -1,7 +1,7 @@
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {Inject, Injectable} from 'angular2/src/core/di';
 import {SetWrapper} from 'angular2/src/core/facade/collection';
-import {DOCUMENT} from '../dom_tokens';
+import {DOCUMENT} from './dom_tokens';
 
 @Injectable()
 export class SharedStylesHost {

@@ -19,10 +19,10 @@ import {TemplateCompiler} from 'angular2/src/core/compiler/template_compiler';
 import {ChangeDetectorGenConfig} from 'angular2/src/core/change_detection/change_detection';
 import {Compiler} from 'angular2/src/core/linker/compiler';
 import {RuntimeCompiler} from 'angular2/src/core/compiler/runtime_compiler';
-import {ElementSchemaRegistry} from 'angular2/src/core/render/dom/schema/element_schema_registry';
+import {ElementSchemaRegistry} from 'angular2/src/core/compiler/schema/element_schema_registry';
 import {
   DomElementSchemaRegistry
-} from 'angular2/src/core/render/dom/schema/dom_element_schema_registry';
+} from 'angular2/src/core/compiler/schema/dom_element_schema_registry';
 
 export function compilerBindings(): Array<Type | Binding | any[]> {
   return [

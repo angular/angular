@@ -1,6 +1,6 @@
 library angular2.transform.template_compiler.url_resolver;
 
-import 'package:angular2/src/core/services/url_resolver.dart';
+import 'package:angular2/src/core/compiler/url_resolver.dart';
 
 class TransformerUrlResolver implements UrlResolver {
   const TransformerUrlResolver();

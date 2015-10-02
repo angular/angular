@@ -2,7 +2,7 @@
 // https://github.com/webcomponents/webcomponentsjs/blob/master/src/HTMLImports/path.js
 
 import {RegExp, RegExpWrapper, StringWrapper, isPresent} from 'angular2/src/core/facade/lang';
-import {UrlResolver} from 'angular2/src/core/services/url_resolver';
+import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 
 /**
  * Rewrites URLs by resolving '@import' and 'url()' URLs from the given base URL,

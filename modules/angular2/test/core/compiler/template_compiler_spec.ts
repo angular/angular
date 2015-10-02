@@ -24,8 +24,8 @@ import {
 import {CompileDirectiveMetadata} from 'angular2/src/core/compiler/directive_metadata';
 import {evalModule} from './eval_module';
 import {SourceModule, moduleRef} from 'angular2/src/core/compiler/source_module';
-import {XHR} from 'angular2/src/core/render/xhr';
-import {MockXHR} from 'angular2/src/core/render/xhr_mock';
+import {XHR} from 'angular2/src/core/compiler/xhr';
+import {MockXHR} from 'angular2/src/core/compiler/xhr_mock';
 
 import {Locals} from 'angular2/src/core/change_detection/change_detection';
 

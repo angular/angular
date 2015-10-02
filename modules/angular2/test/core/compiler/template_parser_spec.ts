@@ -38,7 +38,7 @@ import {
   DirectiveAst
 } from 'angular2/src/core/compiler/template_ast';
 
-import {ElementSchemaRegistry} from 'angular2/src/core/render/dom/schema/element_schema_registry';
+import {ElementSchemaRegistry} from 'angular2/src/core/compiler/schema/element_schema_registry';
 import {MockSchemaRegistry} from './schema_registry_mock';
 
 import {Unparser} from '../change_detection/parser/unparser';

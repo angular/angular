@@ -13,7 +13,7 @@ import {
   CHANGE_DECTION_STRATEGY_VALUES
 } from 'angular2/src/core/change_detection/change_detection';
 import {ViewEncapsulation, VIEW_ENCAPSULATION_VALUES} from 'angular2/src/core/render/api';
-import {CssSelector} from 'angular2/src/core/render/dom/compiler/selector';
+import {CssSelector} from 'angular2/src/core/compiler/selector';
 import {splitAtColon} from './util';
 import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/linker/interfaces';
 

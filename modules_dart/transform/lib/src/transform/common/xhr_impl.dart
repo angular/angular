@@ -1,7 +1,7 @@
 library angular2.transform.template_compiler.xhr_impl;
 
 import 'dart:async';
-import 'package:angular2/src/core/render/xhr.dart' show XHR;
+import 'package:angular2/src/core/compiler/xhr.dart' show XHR;
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:barback/barback.dart';
 
