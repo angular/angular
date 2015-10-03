@@ -53,12 +53,13 @@ module.exports = function(config) {
     port: 9876
   });
 
-  if (process.env.TRAVIS) {
+  if (process.env.TRAVIS && process.env.MODE === 'saucelabs') {
     config.sauceLabs.build = 'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' + process.env.TRAVIS_BUILD_ID + ')';
     config.sauceLabs.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
 
     // TODO(mlaval): remove once SauceLabs supports websockets.
     // This speeds up the capturing a bit, as browsers don't even try to use websocket.
-    config.transports = ['xhr-polling'];
+    console.log('>>>> setting socket.io transport to polling <<<<');
+    config.transports = ['polling'];
   }
 };
