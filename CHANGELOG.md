@@ -374,13 +374,17 @@ This is not the case any more. To access that binding, remove the constraint.
 [remove the (^ syntax and make all DOM events bubbling)](https://github.com/angular/angular/commit/60ce8846710338228bc7db3d3c808c166e15e931)
 
 * Before
+```html
 <div (^click)="onEventHandler()">
   <button></button>
 </div>
+```
 * After
+```html
 <div (click)="onEventHandler()">
   <button></button>
 </div>
+```
 
 #### Properties/Events (Inputs/Outputs)
 
