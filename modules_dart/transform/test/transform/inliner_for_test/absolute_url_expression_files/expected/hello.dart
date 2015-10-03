@@ -5,8 +5,8 @@ import 'package:angular2/angular2.dart'
 
 @Component(selector: 'hello-app')
 @View(
-    templateUrl: 'package:other_package/template.html',
-    styleUrls: const ['package:other_package/template.css'])
+    template: r'''{{greeting}}''',
+    styles: const [r'''.greeting { .color: blue; }''',])
 class HelloCmp {}
 
 @Injectable() hello() {}

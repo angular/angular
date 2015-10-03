@@ -7,19 +7,22 @@ import 'package:analyzer/src/generated/ast.dart';
 import 'package:angular2/src/core/compiler/xhr.dart' show XHR;
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:barback/barback.dart';
+import 'package:dart_style/dart_style.dart';
 
 import 'common/asset_reader.dart';
 import 'common/async_string_writer.dart';
 import 'common/logging.dart';
+import 'common/options_reader.dart';
 import 'common/url_resolver.dart';
 import 'common/xhr_impl.dart';
 import 'directive_processor/inliner.dart';
 
 /// Processes .dart files and inlines `templateUrl` and styleUrls` values.
 class InlinerForTest extends Transformer implements DeclaringTransformer {
-  final BarbackSettings settings;
+  final DartFormatter _formatter;
 
-  InlinerForTest(this.settings);
+  InlinerForTest({bool formatCode: false})
+      : _formatter = formatCode ? new DartFormatter() : null;
 
   @override
   bool isPrimary(AssetId id) => id.extension.endsWith('dart');
@@ -40,13 +43,17 @@ class InlinerForTest extends Transformer implements DeclaringTransformer {
       if (inlinedCode == null || inlinedCode.isEmpty) {
         transform.addOutput(transform.primaryInput);
       } else {
+        if (_formatter != null) {
+          inlinedCode = _formatter.format(inlinedCode);
+        }
         transform.addOutput(new Asset.fromString(primaryId, inlinedCode));
       }
     });
   }
 
   factory InlinerForTest.asPlugin(BarbackSettings settings) {
-    return new InlinerForTest(settings);
+    return new InlinerForTest(
+        formatCode: parseBarbackSettings(settings).formatCode);
   }
 }
 
@@ -89,10 +96,10 @@ class _ViewPropInliner extends ToSourceVisitor {
     switch (keyString) {
       case 'templateUrl':
         _populateTemplateUrl(node.expression);
-        break;
+        return null;
       case 'styleUrls':
         _populateStyleUrls(node.expression);
-        break;
+        return null;
     }
     return super.visitNamedExpression(node);
   }
@@ -113,7 +120,7 @@ class _ViewPropInliner extends ToSourceVisitor {
         logger.warning('style url is not a String (${url})');
       }
     }
-    _writer.println('],');
+    _writer.println(']');
   }
 
   void _populateTemplateUrl(Expression value) {
@@ -124,7 +131,7 @@ class _ViewPropInliner extends ToSourceVisitor {
     }
     _writer.print("template: r'''");
     _writer.asyncPrint(_readOrEmptyString(url));
-    _writer.println("''',");
+    _writer.println("'''");
   }
 
   /// Attempts to read the content from [url]. If [url] is relative, uses
