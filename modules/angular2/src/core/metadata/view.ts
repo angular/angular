@@ -7,17 +7,19 @@ export {ViewEncapsulation} from 'angular2/src/core/render/api';
  * Metadata properties available for configuring Views.
  *
  * Each Angular component requires a single `@Component` and at least one `@View` annotation. The
- * `@View` annotation specifies the HTML template to use, and lists the directives that are active
+ * `@View` annotation specifies the HTML template to use, and lists the directives, pipes and styles that are active
  * within the template.
  *
- * When a component is instantiated, the template is loaded into the component's shadow root, and
- * the expressions and statements in the template are evaluated against the component.
+ * When a component is instantiated, the template is loaded, and the expressions and statements 
+ * in the template are evaluated against the component.
  *
  * For details on the `@Component` annotation, see {@link ComponentMetadata}.
  *
  * ## Example
  *
- * ```
+ * ```typescript
+ * import {Bold, Component, GreetUser, View} from 'angular2/angular2'
+ * 
  * @Component({
  *   selector: 'greet'
  * })
@@ -41,6 +43,22 @@ export class ViewMetadata {
    *
    * NOTE: Only one of `templateUrl` or `template` can be defined per View.
    *
+   * ## Example
+   *
+   * ```typescript
+   * import {Component, NgFor, View} from 'angular2/angular2'
+   * 
+   * @Component({
+   *     selector: 'my-component'
+   *   })
+   * @View({
+   *   styleUrls: ['my-component.css'],
+   *   templateUrl: 'my-component.html'
+   * })
+   * class MyComponent {
+   * }
+   * ```
+   * 
    * <!-- TODO: what's the url relative to? -->
    */
   templateUrl: string;
@@ -49,11 +67,44 @@ export class ViewMetadata {
    * Specifies an inline template for an Angular component.
    *
    * NOTE: Only one of `templateUrl` or `template` can be defined per View.
+   * 
+   * ## Example
+   *
+   * ```typescript
+   * import {Component, NgFor, View} from 'angular2/angular2'
+   * 
+   * @Component({
+   *     selector: 'my-component'
+   *   })
+   * @View({
+   *   template: `<p>
+   *                  {{title}}
+   *              </p>`
+   * })
+   * class MyComponent {
+   * }
+   * ```
    */
   template: string;
 
   /**
    * Specifies stylesheet URLs for an Angular component.
+   * 
+   * ## Example
+   *
+   * ```typescript
+   * import {Component, NgFor, View} from 'angular2/angular2'
+   * 
+   * @Component({
+   *     selector: 'my-component'
+   *   })
+   * @View({
+   *   styleUrls: ['my-component.css'],
+   *   template: '<p>{{title}}</p>'
+   * })
+   * class MyComponent {
+   * }
+   * ```
    *
    * <!-- TODO: what's the url relative to? -->
    */
@@ -61,6 +112,26 @@ export class ViewMetadata {
 
   /**
    * Specifies an inline stylesheet for an Angular component.
+   *
+   * ## Example
+   *
+   * ```typescript
+   * import {Component, NgFor, View} from 'angular2/angular2'
+   * 
+   * @Component({
+   *     selector: 'my-component'
+   *   })
+   * @View({
+   *   styles: [`
+   *    p {
+   *      background: green;
+   *    }
+  `*   ],
+   *   template: '<p>{{title}}</p>'
+   * })
+   * class MyComponent {
+   * }
+   * ```
    */
   styles: string[];
 
@@ -71,7 +142,9 @@ export class ViewMetadata {
    *
    * ## Example
    *
-   * ```javascript
+   * ```typescript
+   * import {Component, NgFor, View} from 'angular2/angular2'
+   * 
    * @Component({
    *     selector: 'my-component'
    *   })
@@ -87,7 +160,26 @@ export class ViewMetadata {
    * ```
    */
   directives: Array<Type | any[]>;
-
+  
+  /**
+   * Specifies a list of pipes that can be used within a template.
+   *
+   * ## Example
+   *
+   * ```typescript
+   * import {Component, View, UpperCasePipe} from 'angular2/angular2'
+   * 
+   * @Component({
+   *     selector: 'my-component'
+   *   })
+   * @View({
+   *   pipes: [UpperCasePipe],
+   *   template: '{{title | uppercase}}'
+   * })
+   * class MyComponent {
+   * }
+   * ```
+   */  
   pipes: Array<Type | any[]>;
 
   /**
@@ -95,6 +187,22 @@ export class ViewMetadata {
    * The default is {@link ViewEncapsulation#Emulated `ViewEncapsulation.Emulated`} if the view
    * has styles,
    * otherwise {@link ViewEncapsulation#None `ViewEncapsulation.None`}.
+   * 
+   * ## Example
+   *
+   * ```typescript
+   * import {Component, View, ViewEncapsulation} from 'angular2/angular2'
+   * 
+   * @Component({
+   *     selector: 'my-component'
+   *   })
+   * @View({
+   *   template: '{{title}}',
+   *   encapsulation: ViewEncapsulation.None
+   * })
+   * class MyComponent {
+   * }
+   * ```
    */
   encapsulation: ViewEncapsulation;
 

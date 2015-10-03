@@ -10,12 +10,15 @@ import {Pipe} from 'angular2/src/core/metadata';
  *
  * In this example we transform the user object to json.
  *
- *  ```
+ *  ```typescript
+ * import {Component, JsonPipe, View} from 'angular2/angular2'
+ * 
  * @Component({
  *   selector: "user-cmp"
  * })
  * @View({
  *   template: "User: {{ user | json }}"
+ *   pipes: [JsonPipe]
  * })
  * class Username {
  *  user:Object

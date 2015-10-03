@@ -44,13 +44,16 @@ var _observableStrategy = new ObservableStrategy();
  * The example below binds the `time` Observable to the view. Every 500ms, the `time` Observable
  * updates the view with the current time.
  *
- * ```
+ * ```typescript
  * import {Observable} from 'angular2/core';
+ * import {AsyncPipe, Component, View} from 'angular2/angular2'
+ * 
  * @Component({
  *   selector: "task-cmp"
  * })
  * @View({
- *   template: "Time: {{ time | async }}"
+ *   template: "Time: {{ time | async }}",
+ *   pipes: [AsyncPipe]
  * })
  * class Task {
  *   time = new Observable<number>(observer => {
