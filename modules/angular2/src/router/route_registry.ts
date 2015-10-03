@@ -155,7 +155,7 @@ export class RouteRegistry {
     }
 
     var componentRecognizer = this._rules.get(parentComponent);
-    var auxInstructions = {};
+    var auxInstructions: {[key: string]: Instruction} = {};
 
     var promises = instruction.auxUrls.map((auxSegment: Url) => {
       var match = componentRecognizer.recognizeAuxiliary(auxSegment);

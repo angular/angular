@@ -187,7 +187,7 @@ export function main() {
       }
     ];
 
-    browsers.forEach((browser) => {
+    browsers.forEach((browser: {[key: string]: any}) => {
       it(`should detect ${StringMapWrapper.get(browser, 'name')}`, () => {
         var bd = new BrowserDetection(<string>StringMapWrapper.get(browser, 'ua'));
         expect(bd.isFirefox).toBe(StringMapWrapper.get(browser, 'isFirefox'));

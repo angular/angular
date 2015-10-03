@@ -46,8 +46,8 @@ export class DirectiveResolver {
                                      propertyMetadata: {[key: string]: any[]}): DirectiveMetadata {
     var inputs = [];
     var outputs = [];
-    var host = {};
-    var queries = {};
+    var host: {[key: string]: string} = {};
+    var queries: {[key: string]: any} = {};
 
     StringMapWrapper.forEach(propertyMetadata, (metadata: any[], propName: string) => {
       metadata.forEach(a => {

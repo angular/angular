@@ -81,7 +81,7 @@ var defaultLocale: string = 'en-US';
 @Pipe({name: 'date'})
 @Injectable()
 export class DatePipe implements PipeTransform {
-  static _ALIASES = {
+  static _ALIASES: {[key: string]: String} = {
     'medium': 'yMMMdjms',
     'short': 'yMdjm',
     'fullDate': 'yMMMMEEEEd',

@@ -29,14 +29,14 @@ export class Validators {
     return function(control: modelModule.Control) {
       var res = ListWrapper.reduce(validators, (res, validator) => {
         var errors = validator(control);
-        return isPresent(errors) ? StringMapWrapper.merge(res, errors) : res;
+        return isPresent(errors) ? StringMapWrapper.merge(<any>res, <any>errors) : res;
       }, {});
       return StringMapWrapper.isEmpty(res) ? null : res;
     };
   }
 
-  static group(group: modelModule.ControlGroup): {[key: string]: boolean} {
-    var res = {};
+  static group(group: modelModule.ControlGroup): {[key: string]: any[]} {
+    var res: {[key: string]: any[]} = {};
     StringMapWrapper.forEach(group.controls, (control, name) => {
       if (group.contains(name) && isPresent(control.errors)) {
         Validators._mergeErrors(control, res);
@@ -45,8 +45,8 @@ export class Validators {
     return StringMapWrapper.isEmpty(res) ? null : res;
   }
 
-  static array(array: modelModule.ControlArray): {[key: string]: boolean} {
-    var res = {};
+  static array(array: modelModule.ControlArray): {[key: string]: any[]} {
+    var res: {[key: string]: any[]} = {};
     array.controls.forEach((control) => {
       if (isPresent(control.errors)) {
         Validators._mergeErrors(control, res);

@@ -17,7 +17,7 @@ import {
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {SelectorMatcher, CssSelector} from 'angular2/src/core/compiler/selector';
 
-var _attrToPropMap = {
+var _attrToPropMap: {[key: string]: string} = {
   'class': 'className',
   'innerHtml': 'innerHTML',
   'readonly': 'readOnly',

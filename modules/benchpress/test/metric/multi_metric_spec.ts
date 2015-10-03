@@ -77,7 +77,7 @@ class MockMetric extends Metric {
   }
 
   describe(): {[key: string]: string} {
-    var result = {};
+    var result: {[key: string]: string} = {};
     result[this._id] = 'describe';
     return result;
   }
