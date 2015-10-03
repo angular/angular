@@ -1095,25 +1095,16 @@ gulp.task('!bundle.js.prod', ['build.js.prod'], function() {
 
 // minified production build
 gulp.task('!bundle.js.min', ['build.js.prod'], function() {
-  return bundler.bundle(
-      bundleConfig,
-      'angular2/angular2',
-      './dist/build/angular2.min.js',
-      {
-        sourceMaps: true,
-        minify: true
-      }).
-      then(function(){
-        return bundler.bundle(
-          bundleConfig,
-          'angular2/http',
-          './dist/build/http.min.js',
-          {
-            sourceMaps: true,
-            minify: true
-          }
-        );
-      });
+  var q = require('q');
+  var minBundleConfig = {
+    sourceMaps: true,
+    minify: true
+  };
+
+  return q.all([
+    bundler.bundle(bundleConfig, 'angular2/angular2', './dist/build/angular2.min.js', minBundleConfig),
+    bundler.bundle(bundleConfig, 'angular2/http', './dist/build/http.min.js', minBundleConfig)
+  ]);
 });
 
 // development build
