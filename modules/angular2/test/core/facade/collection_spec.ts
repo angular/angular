@@ -109,33 +109,33 @@ export function main() {
          () => { expect(StringMapWrapper.equals({}, {})).toBe(true); });
 
       it('should return true when comparing the same map', () => {
-        var m1 = {'a': 1, 'b': 2, 'c': 3};
+        var m1: {[key: string]: number} = {'a': 1, 'b': 2, 'c': 3};
         expect(StringMapWrapper.equals(m1, m1)).toBe(true);
       });
 
       it('should return true when comparing different maps with the same keys and values', () => {
-        var m1 = {'a': 1, 'b': 2, 'c': 3};
-        var m2 = {'a': 1, 'b': 2, 'c': 3};
+        var m1: {[key: string]: number} = {'a': 1, 'b': 2, 'c': 3};
+        var m2: {[key: string]: number} = {'a': 1, 'b': 2, 'c': 3};
         expect(StringMapWrapper.equals(m1, m2)).toBe(true);
       });
 
       it('should return false when comparing maps with different numbers of keys', () => {
-        var m1 = {'a': 1, 'b': 2, 'c': 3};
-        var m2 = {'a': 1, 'b': 2, 'c': 3, 'd': 4};
+        var m1: {[key: string]: number} = {'a': 1, 'b': 2, 'c': 3};
+        var m2: {[key: string]: number} = {'a': 1, 'b': 2, 'c': 3, 'd': 4};
         expect(StringMapWrapper.equals(m1, m2)).toBe(false);
         expect(StringMapWrapper.equals(m2, m1)).toBe(false);
       });
 
       it('should return false when comparing maps with different keys', () => {
-        var m1 = {'a': 1, 'b': 2, 'c': 3};
-        var m2 = {'a': 1, 'b': 2, 'CC': 3};
+        var m1: {[key: string]: number} = {'a': 1, 'b': 2, 'c': 3};
+        var m2: {[key: string]: number} = {'a': 1, 'b': 2, 'CC': 3};
         expect(StringMapWrapper.equals(m1, m2)).toBe(false);
         expect(StringMapWrapper.equals(m2, m1)).toBe(false);
       });
 
       it('should return false when comparing maps with different values', () => {
-        var m1 = {'a': 1, 'b': 2, 'c': 3};
-        var m2 = {'a': 1, 'b': 20, 'c': 3};
+        var m1: {[key: string]: number} = {'a': 1, 'b': 2, 'c': 3};
+        var m2: {[key: string]: number} = {'a': 1, 'b': 20, 'c': 3};
         expect(StringMapWrapper.equals(m1, m2)).toBe(false);
         expect(StringMapWrapper.equals(m2, m1)).toBe(false);
       });

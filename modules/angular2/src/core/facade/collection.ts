@@ -86,7 +86,7 @@ export class MapWrapper {
     return result;
   }
   static toStringMap<T>(m: Map<string, T>): {[key: string]: T} {
-    var r = {};
+    var r: {[key: string]: T} = {};
     m.forEach((v, k) => r[k] = v);
     return r;
   }
@@ -135,7 +135,7 @@ export class StringMapWrapper {
   }
 
   static merge<V>(m1: {[key: string]: V}, m2: {[key: string]: V}): {[key: string]: V} {
-    var m = {};
+    var m: {[key: string]: V} = {};
 
     for (var attr in m1) {
       if (m1.hasOwnProperty(attr)) {

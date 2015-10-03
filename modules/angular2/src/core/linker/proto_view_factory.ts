@@ -55,9 +55,9 @@ export class ProtoViewFactory {
     var result = this._cache.get(compiledTemplate.id);
     if (isBlank(result)) {
       var templateData = compiledTemplate.getData(this._appId);
-      result =
-          new AppProtoView(templateData.commands, ViewType.HOST, true,
-                           templateData.changeDetectorFactory, null, new ProtoPipes(new Map()));
+      var emptyMap: {[key: string]: PipeBinding} = {};
+      result = new AppProtoView(templateData.commands, ViewType.HOST, true,
+                                templateData.changeDetectorFactory, null, new ProtoPipes(emptyMap));
       this._cache.set(compiledTemplate.id, result);
     }
     return result;

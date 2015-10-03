@@ -23,7 +23,7 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
           }
         }
       }
-      var transEndEventNames = {
+      var transEndEventNames: {[key: string]: string} = {
         WebkitTransition: 'webkitTransitionEnd',
         MozTransition: 'transitionend',
         OTransition: 'oTransitionEnd otransitionend',

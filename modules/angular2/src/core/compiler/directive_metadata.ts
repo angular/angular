@@ -113,9 +113,9 @@ export class CompileDirectiveMetadata {
     lifecycleHooks?: LifecycleHooks[],
     template?: CompileTemplateMetadata
   } = {}): CompileDirectiveMetadata {
-    var hostListeners = {};
-    var hostProperties = {};
-    var hostAttributes = {};
+    var hostListeners: {[key: string]: string} = {};
+    var hostProperties: {[key: string]: string} = {};
+    var hostAttributes: {[key: string]: string} = {};
     if (isPresent(host)) {
       StringMapWrapper.forEach(host, (value: string, key: string) => {
         var matches = RegExpWrapper.firstMatch(HOST_REG_EXP, key);
@@ -128,7 +128,7 @@ export class CompileDirectiveMetadata {
         }
       });
     }
-    var inputsMap = {};
+    var inputsMap: {[key: string]: string} = {};
     if (isPresent(inputs)) {
       inputs.forEach((bindConfig: string) => {
         // canonical syntax: `dirProp: elProp`
@@ -137,7 +137,7 @@ export class CompileDirectiveMetadata {
         inputsMap[parts[0]] = parts[1];
       });
     }
-    var outputsMap = {};
+    var outputsMap: {[key: string]: string} = {};
     if (isPresent(outputs)) {
       outputs.forEach((bindConfig: string) => {
         // canonical syntax: `dirProp: elProp`

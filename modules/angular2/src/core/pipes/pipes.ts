@@ -14,7 +14,7 @@ import * as cd from 'angular2/src/core/change_detection/pipes';
 
 export class ProtoPipes {
   static fromBindings(bindings: PipeBinding[]): ProtoPipes {
-    var config = {};
+    var config: {[key: string]: PipeBinding} = {};
     bindings.forEach(b => config[b.name] = b);
     return new ProtoPipes(config);
   }
