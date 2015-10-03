@@ -87,7 +87,7 @@ export class JSONPConnection implements Connection {
           this._dom.cleanup(script);
         }
 
-      }
+      };
     });
   }
 
