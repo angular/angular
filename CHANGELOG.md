@@ -230,6 +230,13 @@ class A {@Property() one; @Event() two;}
 * After:
 class A {@Input() one; @Output() two;}
 
+#### Compiler 
+
+With a [new compiler](https://github.com/angular/angular/commit/76247b70973e3266e504e05381fbd7d85d4de5c6) `NgNonBindable`
+ is not a directive but rather a special attribute (`ng-non-bindable`) recognized by the compiler. This means that you 
+can't import / use the `NgNonBindable` as a directive. You should remove all the imports for the the `NgNonBindable`
+directive and all the references to it in the `directives` section of the `@View` decorator.
+
 
 
 <a name="2.0.0-alpha.37"></a>
