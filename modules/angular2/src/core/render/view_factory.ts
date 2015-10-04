@@ -128,13 +128,13 @@ class RenderViewBuilder<N> implements RenderCommandVisitor {
       root = this.factory.createShadowRoot(el);
       this.nativeShadowRoots.push(root);
     }
-    this.parentStack.push(new Component(el, root, cmd, this.factory));
+    var component = new Component(el, root, cmd, this.factory, this.allBuilders);
+    this.parentStack.push(component);
     return null;
   }
   visitEndComponent(context: any): any {
     var c = <Component<N>>this.parent;
-    var template = this.factory.resolveComponentTemplate(c.cmd.templateId);
-    this._visitChildTemplate(template, c, c.shadowRoot);
+    c.build();
     this._endElement();
     return null;
   }
@@ -143,7 +143,9 @@ class RenderViewBuilder<N> implements RenderCommandVisitor {
     this._addChild(el, cmd.ngContentIndex);
     this.boundElements.push(el);
     if (cmd.isMerged) {
-      this._visitChildTemplate(cmd.children, this.parentComponent, null);
+      visitAll(
+          new RenderViewBuilder(this.parentComponent, null, null, this.allBuilders, this.factory),
+          cmd.children);
     }
     return null;
   }
@@ -172,11 +174,6 @@ class RenderViewBuilder<N> implements RenderCommandVisitor {
 
   private _endElement() { this.parentStack.pop(); }
 
-  private _visitChildTemplate(cmds: RenderTemplateCmd[], parent: Component<N>, rootNodesParent: N) {
-    visitAll(new RenderViewBuilder(parent, rootNodesParent, null, this.allBuilders, this.factory),
-             cmds);
-  }
-
   private _addChild(node: N, ngContentIndex: number) {
     var parent = this.parent;
     if (isPresent(parent)) {
@@ -194,9 +191,12 @@ class RenderViewBuilder<N> implements RenderCommandVisitor {
 class Component<N> {
   private contentNodesByNgContentIndex: N[][] = [];
   private projectingNgContentIndex: number = 0;
+  private viewBuilder: RenderViewBuilder<N>;
 
-  constructor(public hostElement: N, public shadowRoot: N, public cmd: RenderBeginComponentCmd,
-              public factory: NodeFactory<N>) {}
+  constructor(public hostElement: N, shadowRoot: N, public cmd: RenderBeginComponentCmd,
+              public factory: NodeFactory<N>, allBuilders: RenderViewBuilder<N>[]) {
+    this.viewBuilder = new RenderViewBuilder(this, shadowRoot, null, allBuilders, factory);
+  }
   addContentNode(ngContentIndex: number, node: N) {
     if (isBlank(ngContentIndex)) {
       if (this.cmd.nativeShadow) {
@@ -214,6 +214,9 @@ class Component<N> {
     return ngContentIndex < this.contentNodesByNgContentIndex.length ?
                this.contentNodesByNgContentIndex[ngContentIndex] :
                [];
+  }
+  build() {
+    visitAll(this.viewBuilder, this.factory.resolveComponentTemplate(this.cmd.templateId));
   }
 }
 

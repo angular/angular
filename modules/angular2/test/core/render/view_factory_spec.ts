@@ -347,6 +347,28 @@ export function main() {
             .toEqual(['1.1', '1.2', '1.3', '1.4', '2.1', '2.2', '3.1', '3.1']);
       });
 
+      it('should store bound elements from the view before bound elements from content components',
+         () => {
+           componentTemplates.set(0, [
+             beginElement('a', ['id', '2.1'], [], true, null),
+             endElement(),
+           ]);
+           componentTemplates.set(1, [
+             beginElement('a', ['id', '3.1'], [], true, null),
+             endElement(),
+           ]);
+           var view = createRenderView(
+               [
+                 beginComponent('a-comp', ['id', '1.1'], [], false, null, 0),
+                 beginComponent('b-comp', ['id', '1.2'], [], false, null, 1),
+                 endComponent(),
+                 endComponent(),
+               ],
+               null, nodeFactory);
+
+           expect(mapAttrs(view.boundElements, 'id')).toEqual(['1.1', '1.2', '2.1', '3.1']);
+         });
+
       it('should store bound text nodes after the bound text nodes of the main template', () => {
         componentTemplates.set(0, [
           text('2.1', true, null),
@@ -373,6 +395,22 @@ export function main() {
             .toEqual(['1.1', '1.2', '1.3', '2.1', '2.2', '3.1', '3.1']);
       });
     });
+
+    it('should store bound text nodes from the view before bound text nodes from content components',
+       () => {
+         componentTemplates.set(0, [text('2.1', true, null)]);
+         componentTemplates.set(1, [text('3.1', true, null)]);
+         var view = createRenderView(
+             [
+               beginComponent('a-comp', [], [], false, null, 0),
+               beginComponent('b-comp', [], [], false, null, 1),
+               endComponent(),
+               endComponent(),
+             ],
+             null, nodeFactory);
+
+         expect(mapText(view.boundTextNodes)).toEqual(['2.1', '3.1']);
+       });
 
     describe('content projection', () => {
       it('should remove non projected nodes', () => {

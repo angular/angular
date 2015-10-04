@@ -112,6 +112,26 @@ export function main() {
              });
        }));
 
+    it('should project content components',
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         tcb.overrideView(
+                Simple,
+                new ViewMetadata(
+                    {template: 'SIMPLE({{0}}|<ng-content></ng-content>|{{2}})', directives: []}))
+             .overrideView(OtherComp, new ViewMetadata({template: '{{1}}', directives: []}))
+             .overrideView(MainComp, new ViewMetadata({
+                             template: '<simple><other></other></simple>',
+                             directives: [Simple, OtherComp]
+                           }))
+             .createAsync(MainComp)
+             .then((main) => {
+
+               main.detectChanges();
+               expect(main.debugElement.nativeElement).toHaveText('SIMPLE(0|1|2)');
+               async.done();
+             });
+       }));
+
     it('should not show the light dom even if there is no content tag',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(MainComp,
@@ -450,6 +470,12 @@ export function main() {
 @Component({selector: 'main'})
 @View({template: '', directives: []})
 class MainComp {
+  text: string = '';
+}
+
+@Component({selector: 'other'})
+@View({template: '', directives: []})
+class OtherComp {
   text: string = '';
 }
 
