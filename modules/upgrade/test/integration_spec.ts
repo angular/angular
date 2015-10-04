@@ -205,6 +205,60 @@ export function main() {
 
          }));
     });
+
+    describe('binding from ng2 to ng1', () => {
+      it('should bind properties, events', inject([AsyncTestCompleter], (async) => {
+           var upgrMod = createUpgradeModule();
+           var ng1 = function() {
+             return {
+               template: 'Hello {{fullName}}; A: {{dataA}}; B: {{dataB}}; | ',
+                   scope: {fullName: '@', modelA: '=dataA', modelB: '=dataB', event: '&'},
+                   link: function(scope) {
+                     scope.$watch('dataB', (v) => {
+                       if (v == 'Savkin') {
+                         scope.dataB = 'SAVKIN';
+                         scope.event('WORKS');
+
+                         // Should not update becaus [model-a] is uni directional
+                         scope.dataA = 'VICTOR';
+                       }
+                     })
+                   }
+             }
+           };
+           upgrMod.ng1Module.directive('ng1', ng1);
+           var ng2 =
+               Component({selector: 'ng2'})
+                   .View({
+                     template:
+                         '<ng1 full-name="{{last}}, {{first}}" [model-a]="first" [(model-b)]="last" ' +
+                             '(event)="event=$event"></ng1>' +
+                             '<ng1 full-name="{{\'TEST\'}}" model-a="First" model-b="Last"></ng1>' +
+                             '{{event}}-{{last}}, {{first}}',
+                     directives: [upgrMod.exportAsNg2Component('ng1')]
+                   })
+                   .Class({
+                     constructor: function() {
+                       this.first = 'Victor';
+                       this.last = 'Savkin';
+                       this.event = '?';
+                     }
+                   });
+           upgrMod.importNg2Component(ng2);
+           var element = html(`<div><ng2></ng2></div>`);
+           upgrMod.bootstrap(element).ready(() => {
+             // we need to do setTimeout, because the EventEmitter uses setTimeout to schedule
+             // events, and so without this we would not see the events processed.
+             setTimeout(() => {
+               expect(multiTrim(document.body.textContent))
+                   .toEqual(
+                       "Hello SAVKIN, Victor; A: VICTOR; B: SAVKIN; | Hello TEST; A: First; B: Last; | WORKS-SAVKIN, Victor");
+               async.done();
+             }, 0);
+           });
+         }));
+    });
+
   });
 }
 

@@ -1,6 +1,7 @@
 declare namespace angular {
   function module(prefix: string, dependencies?: string[]);
   interface IModule {
+    config(fn: any): IModule;
     directive(selector: string, factory: any): IModule;
     value(key: string, value: any): IModule;
     run(a: any);
@@ -13,11 +14,19 @@ declare namespace angular {
     $watch(expr: any, fn?: (a1?: any, a2?: any) => void);
     $apply(): any;
     $apply(exp: string): any;
-    $apply(exp: (scope: IScope) => any): any;
+    $apply(exp: Function): any;
+    $$childTail: IScope;
+    $$childHead: IScope;
+    $$nextSibling: IScope;
   }
   interface IScope extends IRootScopeService {}
   interface IAngularBootstrapConfig {}
-  interface IDirective {}
+  interface IDirective {
+    require?: string;
+    restrict?: string;
+    scope?: {[key: string]: string};
+    link?: Function;
+  }
   interface IAttributes {
     $observe(attr: string, fn: (v: string) => void);
   }
