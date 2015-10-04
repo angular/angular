@@ -126,7 +126,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     mapRoot: '',  // force sourcemaps to use relative path
     module: 'CommonJS',
     moduleResolution: 1 /* classic */,
-    noEmitOnError: false,
+    noEmitOnError: true,
     rootDir: '.',
     sourceMap: true,
     sourceRoot: '.',
