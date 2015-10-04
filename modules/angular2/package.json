@@ -17,7 +17,8 @@
     "definitions": [
       "bundles/typings/angular2/angular2.d.ts",
       "bundles/typings/angular2/http.d.ts",
-      "bundles/typings/angular2/router.d.ts"
+      "bundles/typings/angular2/router.d.ts",
+      "bundles/typings/angular2/test_lib.d.ts"
     ]
   }
 }
