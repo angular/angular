@@ -165,7 +165,8 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     return funnels;
   }
 
-  var htmlTree = new Funnel(modulesTree, {include: ['*/src/**/*.html'], destDir: '/'});
+  var htmlTree = new Funnel(modulesTree,
+                            {include: ['*/src/**/*.html', '**/examples/**/*.html'], destDir: '/'});
   htmlTree = replace(htmlTree, {
     files: ['examples*/**/*.html'],
     patterns: [

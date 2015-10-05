@@ -26,7 +26,8 @@ module.exports = function makeNodeTree(destinationPath) {
       'angular2/test/core/compiler/xhr_impl_spec.ts',
       'angular2/test/core/forms/**',
       'angular2/test/tools/tools_spec.ts',
-      'angular1_router/**'
+      'angular1_router/**',
+      'angular2/examples/**/!(*_spec.ts)',
     ]
   });
 
