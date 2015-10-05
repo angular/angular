@@ -71,7 +71,7 @@ export class ProtoViewFactory {
       var compiledTemplateData = cmd.template.getData(this._appId);
 
       this._renderer.registerComponentTemplate(cmd.templateId, compiledTemplateData.commands,
-                                               compiledTemplateData.styles);
+                                               compiledTemplateData.styles, cmd.nativeShadow);
       var boundPipes = this._flattenPipes(view).map(pipe => this._bindPipe(pipe));
 
       nestedProtoView = new AppProtoView(compiledTemplateData.commands, ViewType.COMPONENT, true,

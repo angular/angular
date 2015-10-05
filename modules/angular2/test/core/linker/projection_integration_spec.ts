@@ -403,18 +403,18 @@ export function main() {
        }));
 
     if (DOM.supportsNativeShadowDOM()) {
-      it('should support native content projection',
+      it('should support native content projection and isolate styles per component',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MainComp, new ViewMetadata({
-                              template: '<simple-native>' +
-                                            '<div>A</div>' +
-                                            '</simple-native>',
-                              directives: [SimpleNative]
+                              template: '<simple-native1><div>A</div></simple-native1>' +
+                                            '<simple-native2><div>B</div></simple-native2>',
+                              directives: [SimpleNative1, SimpleNative2]
                             }))
                .createAsync(MainComp)
                .then((main) => {
-
-                 expect(main.debugElement.nativeElement).toHaveText('SIMPLE(A)');
+                 var childNodes = DOM.childNodes(main.debugElement.nativeElement);
+                 expect(childNodes[0]).toHaveText('div {color: red}SIMPLE1(A)');
+                 expect(childNodes[1]).toHaveText('div {color: blue}SIMPLE2(B)');
                  async.done();
                });
          }));
@@ -459,13 +459,24 @@ class Simple {
   stringProp: string = '';
 }
 
-@Component({selector: 'simple-native'})
+@Component({selector: 'simple-native1'})
 @View({
-  template: 'SIMPLE(<content></content>)',
+  template: 'SIMPLE1(<content></content>)',
   directives: [],
-  encapsulation: ViewEncapsulation.Native
+  encapsulation: ViewEncapsulation.Native,
+  styles: ['div {color: red}']
 })
-class SimpleNative {
+class SimpleNative1 {
+}
+
+@Component({selector: 'simple-native2'})
+@View({
+  template: 'SIMPLE2(<content></content>)',
+  directives: [],
+  encapsulation: ViewEncapsulation.Native,
+  styles: ['div {color: blue}']
+})
+class SimpleNative2 {
 }
 
 @Component({selector: 'empty'})

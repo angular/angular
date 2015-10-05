@@ -230,7 +230,8 @@ export class Renderer {
    * Once a template is registered it can be referenced via {@link RenderBeginComponentCmd} when
    * {@link #createProtoView creating Render ProtoView}.
    */
-  registerComponentTemplate(templateId: number, commands: RenderTemplateCmd[], styles: string[]) {}
+  registerComponentTemplate(templateId: number, commands: RenderTemplateCmd[], styles: string[],
+                            nativeShadow: boolean) {}
 
   /**
    * Creates a {@link RenderProtoViewRef} from an array of {@link RenderTemplateCmd}`s.

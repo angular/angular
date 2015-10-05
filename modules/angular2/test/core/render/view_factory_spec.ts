@@ -483,7 +483,7 @@ class DomNodeFactory implements NodeFactory<Node> {
       DOM.setAttribute(el, attrNameAndValues[attrIdx], attrNameAndValues[attrIdx + 1]);
     }
   }
-  createShadowRoot(host: Node): Node {
+  createShadowRoot(host: Node, templateId: number): Node {
     var root = DOM.createElement('shadow-root');
     DOM.appendChild(host, root);
     return root;

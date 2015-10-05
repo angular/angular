@@ -35,11 +35,13 @@ export class WebWorkerRenderer implements Renderer {
     this._messageBroker = messageBrokerFactory.createMessageBroker(RENDERER_CHANNEL);
   }
 
-  registerComponentTemplate(templateId: number, commands: RenderTemplateCmd[], styles: string[]) {
+  registerComponentTemplate(templateId: number, commands: RenderTemplateCmd[], styles: string[],
+                            nativeShadow: boolean) {
     var fnArgs = [
       new FnArg(templateId, null),
       new FnArg(commands, WebWorkerTemplateCmd),
-      new FnArg(styles, null)
+      new FnArg(styles, null),
+      new FnArg(nativeShadow, null)
     ];
     var args = new UiArguments("registerComponentTemplate", fnArgs);
     this._messageBroker.runOnService(args, null);
