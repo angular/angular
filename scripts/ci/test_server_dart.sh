@@ -14,15 +14,18 @@ ps -ef | grep webdriver-manager
 # Serving pre-compiled dart JS takes an extra 15m.
 # So we do this only for post-commit testing.
 # Pull requests test with Dartium and pub serve
-# TODO(jeffbcross): restore conditional dart2js/pubserve #4316
-#if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
+if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then
   ./node_modules/.bin/gulp build/pubbuild.dart
   ./node_modules/.bin/gulp serve.js.dart2js&
   serverPid=$!
-#else
-#  ./node_modules/.bin/gulp serve.dart&
-#  serverPid=$!
-#fi
+else
+  if (-z "$LOGS_DIR"); then
+    PUB_LOGFILE=$LOGS_DIR/pubserve.log ./node_modules/.bin/gulp serve.dart& 4> $PUB_LOGFILE
+  else
+    ./node_modules/.bin/gulp serve.dart&
+  fi
+  serverPid=$!
+fi
 
 function killAllServers () {
   kill $serverPid

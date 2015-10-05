@@ -392,19 +392,25 @@ gulp.task('serve.dart', function(done) {
 gulp.task('serve/examples.dart', pubserve(gulp, gulpPlugins, {
   command: DART_SDK.PUB,
   path: CONFIG.dest.dart + '/examples',
-  port: 8004
+  port: 8004,
+  // This output is piped to travis logs. See .travis.yml
+  stdio: [0, 'ignore', process.env.PUB_LOGFILE ? 4 : 'ignore']
 }));
 
 gulp.task('serve/benchmarks.dart', pubserve(gulp, gulpPlugins, {
   command: DART_SDK.PUB,
   path: CONFIG.dest.dart + '/benchmarks',
-  port: 8006
+  port: 8006,
+  // This output is piped to travis logs. See .travis.yml
+  stdio: [0, 'ignore', process.env.PUB_LOGFILE ? 4 : 'ignore']
 }));
 
 gulp.task('serve/benchmarks_external.dart', pubserve(gulp, gulpPlugins, {
   command: DART_SDK.PUB,
   path: CONFIG.dest.dart + '/benchmarks_external',
-  port: 8008
+  port: 8008,
+  // This output is piped to travis logs. See .travis.yml
+  stdio: [0, 'ignore', process.env.PUB_LOGFILE ? 4 : 'ignore']
 }));
 
 gulp.task('serve.e2e.dart', ['build.js.cjs'], function(neverDone) {
