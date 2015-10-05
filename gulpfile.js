@@ -886,16 +886,13 @@ gulp.task('test.typings', ['!pre.test.typings'], function() {
 // These packages need no transpilation. All code is copied over to `dist`
 // unmodified and directory structure is preserved.
 //
-// This task also fixes relative `dependency_overrides` paths in `pubspec.yaml`
-// files.
-//
 // This task is expected to be run after build/tree.dart
 gulp.task('build/pure-packages.dart', function() {
   var through2 = require('through2');
   var yaml = require('js-yaml');
   var originalPrefix = '../../dist/dart/';
 
-  var transformStream = gulp
+  return gulp
     .src([
       'modules_dart/transform/**/*',
       '!modules_dart/transform/**/*.proto',
@@ -903,51 +900,6 @@ gulp.task('build/pure-packages.dart', function() {
       '!modules_dart/transform/**/packages{,/**}',
     ])
     .pipe(gulp.dest(path.join(CONFIG.dest.dart, 'angular2')));
-
-  var moveStream = gulp.src([
-                         'modules_dart/**/*.dart',
-                         'modules_dart/**/pubspec.yaml',
-                         '!modules_dart/transform/**',
-                         '!modules_dart/**/packages{,/**}'
-                       ])
-                       .pipe(through2.obj(function(file, enc, done) {
-                         if (/pubspec.yaml$/.test(file.path)) {
-                           // Pure packages specify dependency_overrides relative to
-                           // `modules_dart`, so they have to walk up and into `dist`.
-                           //
-                           // Example:
-                           //
-                           // dependency_overrides:
-                           //   angular2:
-                           //     path: ../../dist/dart/angular2
-                           //
-                           // When we copy a pure package into `dist` the relative path
-                           // must be updated. The code below replaces paths accordingly.
-                           // So the example above is turned into:
-                           //
-                           // dependency_overrides:
-                           //   angular2:
-                           //     path: ../angular2
-                           //
-                           var pubspec = yaml.safeLoad(file.contents.toString());
-                           var overrides = pubspec.dependency_overrides;
-                           if (overrides) {
-                             Object.keys(overrides).forEach(function(pkg) {
-                               var overridePath = overrides[pkg].path;
-                               if ((new RegExp('^' + originalPrefix)).test(overridePath)) {
-                                 overrides[pkg].path = overridePath.replace(originalPrefix, '../');
-                               }
-                             });
-                             file.contents = new Buffer(yaml.safeDump(pubspec));
-                           }
-                         }
-                         this.push(file);
-                         done();
-                       }))
-                       .pipe(gulp.dest(CONFIG.dest.dart));
-
-
-  return merge2(transformStream, moveStream);
 });
 
 // Builds all Dart packages, but does not compile them
