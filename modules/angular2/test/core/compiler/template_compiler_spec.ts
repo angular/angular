@@ -26,6 +26,7 @@ import {evalModule} from './eval_module';
 import {SourceModule, moduleRef} from 'angular2/src/core/compiler/source_module';
 import {XHR} from 'angular2/src/core/compiler/xhr';
 import {MockXHR} from 'angular2/src/core/compiler/xhr_mock';
+import {ViewEncapsulation} from 'angular2/src/core/render/api';
 
 import {Locals} from 'angular2/src/core/change_detection/change_detection';
 
@@ -283,22 +284,29 @@ export function main() {
   moduleId: THIS_MODULE_ID,
   exportAs: 'someExportAs'
 })
-@View({template: '<a [href]="someProp"></a>', styles: ['div {color: red}']})
+@View({
+  template: '<a [href]="someProp"></a>',
+  styles: ['div {color: red}'],
+  encapsulation: ViewEncapsulation.None
+})
 class CompWithBindingsAndStyles {
 }
 
 @Component({selector: 'tree', moduleId: THIS_MODULE_ID})
-@View({template: '<tree></tree>', directives: [TreeComp]})
+@View({template: '<tree></tree>', directives: [TreeComp], encapsulation: ViewEncapsulation.None})
 class TreeComp {
 }
 
 @Component({selector: 'comp-url', moduleId: THIS_MODULE_ID})
-@View({templateUrl: 'compUrl.html'})
+@View({templateUrl: 'compUrl.html', encapsulation: ViewEncapsulation.None})
 class CompWithTemplateUrl {
 }
 
 @Component({selector: 'comp-tpl', moduleId: THIS_MODULE_ID})
-@View({template: '<template><a [href]="someProp"></a></template>'})
+@View({
+  template: '<template><a [href]="someProp"></a></template>',
+  encapsulation: ViewEncapsulation.None
+})
 class CompWithEmbeddedTemplate {
 }
 
