@@ -9,6 +9,9 @@ import {LocationStrategy} from './location_strategy';
  * [path](https://en.wikipedia.org/wiki/Uniform_Resource_Locator#Syntax) of the
  * browser's URL.
  *
+ * `PathLocationStrategy` is the default binding for {@link LocationStrategy}
+ * provided in {@link routerBindings} and {@link ROUTER_BINDINGS}.
+ *
  * If you're using `PathLocationStrategy`, you must provide a binding for
  * {@link APP_BASE_HREF} to a string representing the URL prefix that should
  * be preserved when generating and recognizing URLs.
@@ -26,9 +29,7 @@ import {LocationStrategy} from './location_strategy';
  *   ROUTER_DIRECTIVES,
  *   routerBindings,
  *   RouteConfig,
- *   Location,
- *   LocationStrategy,
- *   PathLocationStrategy
+ *   Location
  * } from 'angular2/router';
  *
  * @Component({...})
@@ -43,8 +44,7 @@ import {LocationStrategy} from './location_strategy';
  * }
  *
  * bootstrap(AppCmp, [
- *   routerBindings(AppCmp),
- *   bind(LocationStrategy).toClass(PathLocationStrategy),
+ *   routerBindings(AppCmp), // includes binding to PathLocationStrategy
  *   bind(APP_BASE_HREF).toValue('/my/app')
  * ]);
  * ```
