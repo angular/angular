@@ -13,8 +13,6 @@ import {
   RenderViewRef,
   RenderFragmentRef,
   RenderElementRef,
-  ViewType,
-  ViewEncapsulation,
   RenderTemplateCmd,
   RenderCommandVisitor,
   RenderTextCmd,
@@ -46,23 +44,8 @@ export const PRIMITIVE: Type = String;
 
 @Injectable()
 export class Serializer {
-  private _enumRegistry: Map<any, Map<number, any>>;
   constructor(private _protoViewStore: RenderProtoViewRefStore,
-              private _renderViewStore: RenderViewWithFragmentsStore) {
-    this._enumRegistry = new Map<any, Map<number, any>>();
-
-    var viewTypeMap = new Map<number, any>();
-    viewTypeMap[0] = ViewType.HOST;
-    viewTypeMap[1] = ViewType.COMPONENT;
-    viewTypeMap[2] = ViewType.EMBEDDED;
-    this._enumRegistry.set(ViewType, viewTypeMap);
-
-    var viewEncapsulationMap = new Map<number, any>();
-    viewEncapsulationMap[0] = ViewEncapsulation.Emulated;
-    viewEncapsulationMap[1] = ViewEncapsulation.Native;
-    viewEncapsulationMap[2] = ViewEncapsulation.None;
-    this._enumRegistry.set(ViewEncapsulation, viewEncapsulationMap);
-  }
+              private _renderViewStore: RenderViewWithFragmentsStore) {}
 
   serialize(obj: any, type: Type): Object {
     if (!isPresent(obj)) {

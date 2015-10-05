@@ -17,7 +17,7 @@ import {
   CompileTypeMetadata,
   CompileTemplateMetadata
 } from 'angular2/src/core/compiler/directive_metadata';
-import {ViewEncapsulation} from 'angular2/src/core/render/api';
+import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
 
 import {TemplateNormalizer} from 'angular2/src/core/compiler/template_normalizer';
 import {XHR} from 'angular2/src/core/compiler/xhr';

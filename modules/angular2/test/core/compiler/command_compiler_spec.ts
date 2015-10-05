@@ -35,7 +35,7 @@ import {
   CompileTemplateMetadata
 } from 'angular2/src/core/compiler/directive_metadata';
 import {SourceModule, SourceExpression, moduleRef} from 'angular2/src/core/compiler/source_module';
-import {ViewEncapsulation} from 'angular2/src/core/render/api';
+import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
 import {evalModule} from './eval_module';
 import {
   escapeSingleQuoteString,

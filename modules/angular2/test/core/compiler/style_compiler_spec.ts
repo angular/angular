@@ -27,7 +27,7 @@ import {
   CompileTypeMetadata
 } from 'angular2/src/core/compiler/directive_metadata';
 import {SourceExpression, SourceModule} from 'angular2/src/core/compiler/source_module';
-import {ViewEncapsulation} from 'angular2/src/core/render/api';
+import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
 import {TEST_BINDINGS} from './test_bindings';
 import {
   codeGenValueFn,
