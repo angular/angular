@@ -17,8 +17,7 @@ import {
   Renderer,
   RenderViewRef,
   RenderFragmentRef,
-  RenderViewWithFragments,
-  ViewType
+  RenderViewWithFragments
 } from 'angular2/src/core/render/api';
 import {AppViewManagerUtils} from './view_manager_utils';
 import {AppViewPool} from './view_pool';
@@ -57,7 +56,7 @@ export class AppViewManager {
    */
   getHostElement(hostViewRef: HostViewRef): ElementRef {
     var hostView = internalView(<ViewRef>hostViewRef);
-    if (hostView.proto.type !== ViewType.HOST) {
+    if (hostView.proto.type !== viewModule.ViewType.HOST) {
       throw new BaseException('This operation is only allowed on host views');
     }
     return hostView.elementRefs[hostView.elementOffset];
@@ -205,7 +204,7 @@ export class AppViewManager {
                                 templateRef: TemplateRef): ViewRef {
     var s = this._createEmbeddedViewInContainerScope();
     var protoView = internalProtoView(templateRef.protoViewRef);
-    if (protoView.type !== ViewType.EMBEDDED) {
+    if (protoView.type !== viewModule.ViewType.EMBEDDED) {
       throw new BaseException('This method can only be called with embedded ProtoViews!');
     }
     this._protoViewFactory.initializeProtoViewIfNeeded(protoView);
@@ -236,7 +235,7 @@ export class AppViewManager {
                             imperativelyCreatedInjector: ResolvedBinding[]): HostViewRef {
     var s = this._createHostViewInContainerScope();
     var protoView = internalProtoView(protoViewRef);
-    if (protoView.type !== ViewType.HOST) {
+    if (protoView.type !== viewModule.ViewType.HOST) {
       throw new BaseException('This method can only be called with host ProtoViews!');
     }
     this._protoViewFactory.initializeProtoViewIfNeeded(protoView);
@@ -258,7 +257,7 @@ export class AppViewManager {
     var contextBoundElementIndex = context.boundElementIndex;
     var embeddedFragmentView = contextView.getNestedView(contextBoundElementIndex);
     var view;
-    if (protoView.type === ViewType.EMBEDDED && isPresent(embeddedFragmentView) &&
+    if (protoView.type === viewModule.ViewType.EMBEDDED && isPresent(embeddedFragmentView) &&
         !embeddedFragmentView.hydrated()) {
       // Case 1: instantiate the first view of a template that has been merged into a parent
       view = embeddedFragmentView;

@@ -30,7 +30,7 @@ import {
 import {CompileTypeMetadata, CompileDirectiveMetadata} from './directive_metadata';
 import {SourceExpressions, SourceExpression, moduleRef} from './source_module';
 
-import {ViewEncapsulation} from 'angular2/src/core/render/api';
+import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
 import {
   shimHostAttribute,
   shimContentAttribute,

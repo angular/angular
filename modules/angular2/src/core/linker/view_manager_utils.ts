@@ -9,7 +9,6 @@ import {TemplateRef} from './template_ref';
 import {Renderer, RenderViewWithFragments} from 'angular2/src/core/render/api';
 import {Locals} from 'angular2/src/core/change_detection/change_detection';
 import {Pipes} from 'angular2/src/core/pipes/pipes';
-import {RenderViewRef, RenderFragmentRef, ViewType} from 'angular2/src/core/render/api';
 
 @Injectable()
 export class AppViewManagerUtils {
@@ -50,7 +49,7 @@ export class AppViewManagerUtils {
                   .nestedProtoView :
               mergedParentViewProto;
       var renderFragment = null;
-      if (viewOffset === 0 || protoView.type === ViewType.EMBEDDED) {
+      if (viewOffset === 0 || protoView.type === viewModule.ViewType.EMBEDDED) {
         renderFragment = renderFragments[fragmentIdx++];
       }
       var currentView = new viewModule.AppView(renderer, protoView, viewOffset, elementOffset,
@@ -93,7 +92,7 @@ export class AppViewManagerUtils {
         // preBuiltObjects
         if (isPresent(elementInjector)) {
           var templateRef = isPresent(binder.nestedProtoView) &&
-                                    binder.nestedProtoView.type === ViewType.EMBEDDED ?
+                                    binder.nestedProtoView.type === viewModule.ViewType.EMBEDDED ?
                                 new TemplateRef(el) :
                                 null;
           preBuiltObjects[boundElementIndex] =
@@ -102,7 +101,7 @@ export class AppViewManagerUtils {
       }
       currentView.init(protoView.changeDetectorFactory(currentView), elementInjectors,
                        rootElementInjectors, preBuiltObjects, views, elementRefs, viewContainers);
-      if (isPresent(parentView) && protoView.type === ViewType.COMPONENT) {
+      if (isPresent(parentView) && protoView.type === viewModule.ViewType.COMPONENT) {
         parentView.changeDetector.addShadowDomChild(currentView.changeDetector);
       }
       elementOffset += protoView.elementBinders.length;
@@ -180,7 +179,7 @@ export class AppViewManagerUtils {
     while (viewIdx <= endViewOffset) {
       var currView = initView.views[viewIdx];
       var currProtoView = currView.proto;
-      if (currView !== initView && currView.proto.type === ViewType.EMBEDDED) {
+      if (currView !== initView && currView.proto.type === viewModule.ViewType.EMBEDDED) {
         // Don't hydrate components of embedded fragment views.
         viewIdx += currView.proto.mergeInfo.viewCount;
       } else {

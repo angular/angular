@@ -26,7 +26,7 @@ import {evalModule} from './eval_module';
 import {SourceModule, moduleRef} from 'angular2/src/core/compiler/source_module';
 import {XHR} from 'angular2/src/core/compiler/xhr';
 import {MockXHR} from 'angular2/src/core/compiler/xhr_mock';
-import {ViewEncapsulation} from 'angular2/src/core/render/api';
+import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
 
 import {Locals} from 'angular2/src/core/change_detection/change_detection';
 

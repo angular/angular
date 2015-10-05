@@ -11,7 +11,8 @@ import {XHR} from 'angular2/src/core/compiler/xhr';
 import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {resolveStyleUrls} from './style_url_resolver';
 import {Injectable} from 'angular2/src/core/di';
-import {ViewEncapsulation} from 'angular2/src/core/render/api';
+import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
+
 
 import {
   HtmlAstVisitor,

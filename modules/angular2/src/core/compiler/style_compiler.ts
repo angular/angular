@@ -1,6 +1,6 @@
 import {CompileTypeMetadata, CompileTemplateMetadata} from './directive_metadata';
 import {SourceModule, SourceExpression, moduleRef} from './source_module';
-import {ViewEncapsulation} from 'angular2/src/core/render/api';
+import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
 import {XHR} from 'angular2/src/core/compiler/xhr';
 import {StringWrapper, isBlank} from 'angular2/src/core/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';

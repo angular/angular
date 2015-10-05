@@ -26,7 +26,12 @@ import {
 import {Injector, bind} from 'angular2/core';
 import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
 
-import {AppProtoView, AppView, AppProtoViewMergeInfo} from 'angular2/src/core/linker/view';
+import {
+  AppProtoView,
+  AppView,
+  AppProtoViewMergeInfo,
+  ViewType
+} from 'angular2/src/core/linker/view';
 import {ElementBinder} from 'angular2/src/core/linker/element_binder';
 import {
   DirectiveBinding,
@@ -37,7 +42,7 @@ import {
 import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 import {Component} from 'angular2/src/core/metadata';
 import {AppViewManagerUtils} from 'angular2/src/core/linker/view_manager_utils';
-import {ViewType, RenderViewWithFragments} from 'angular2/src/core/render/render';
+import {RenderViewWithFragments} from 'angular2/src/core/render/render';
 
 export function main() {
   // TODO(tbosch): add more tests here!

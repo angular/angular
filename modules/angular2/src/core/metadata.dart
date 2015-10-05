@@ -8,7 +8,7 @@ import './metadata/view.dart';
 
 export './metadata/di.dart';
 export './metadata/directives.dart';
-export './metadata/view.dart';
+export './metadata/view.dart' hide VIEW_ENCAPSULATION_VALUES;
 
 /**
  * See: [DirectiveMetadata] for docs.

@@ -1,14 +1,14 @@
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {isPresent, isBlank, Type, isArray, isNumber} from 'angular2/src/core/facade/lang';
 
-import {ViewType, RenderProtoViewRef} from 'angular2/src/core/render/api';
+import {RenderProtoViewRef} from 'angular2/src/core/render/api';
 
 import {Injectable, Binding, resolveForwardRef, Inject} from 'angular2/src/core/di';
 
 import {PipeBinding} from '../pipes/pipe_binding';
 import {ProtoPipes} from '../pipes/pipes';
 
-import {AppProtoView, AppProtoViewMergeInfo} from './view';
+import {AppProtoView, AppProtoViewMergeInfo, ViewType} from './view';
 import {ElementBinder} from './element_binder';
 import {ProtoElementInjector, DirectiveBinding} from './element_injector';
 import {DirectiveResolver} from './directive_resolver';

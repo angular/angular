@@ -38,6 +38,18 @@ export {DebugContext} from 'angular2/src/core/change_detection/interfaces';
 
 const REFLECT_PREFIX: string = 'ng-reflect-';
 
+export enum ViewType {
+  // A view that contains the host element with bound component directive.
+  // Contains a COMPONENT view
+  HOST,
+  // The view of the component
+  // Can contain 0 to n EMBEDDED views
+  COMPONENT,
+  // A view that is embedded into another View via a <template> element
+  // inside of a COMPONENT view
+  EMBEDDED
+}
+
 export class AppViewContainer {
   // The order in this list matches the DOM order.
   views: AppView[] = [];
@@ -307,8 +319,8 @@ export class AppProtoView {
   textBindingCount = null;
   render: renderApi.RenderProtoViewRef = null;
 
-  constructor(public templateCmds: TemplateCmd[], public type: renderApi.ViewType,
-              public isMergable: boolean, public changeDetectorFactory: Function,
+  constructor(public templateCmds: TemplateCmd[], public type: ViewType, public isMergable: boolean,
+              public changeDetectorFactory: Function,
               public templateVariableBindings: Map<string, string>, public pipes: ProtoPipes) {
     this.ref = new ProtoViewRef(this);
   }

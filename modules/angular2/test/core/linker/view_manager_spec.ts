@@ -16,7 +16,7 @@ import {
 import {SpyRenderer, SpyAppViewPool, SpyAppViewListener, SpyProtoViewFactory} from '../spies';
 import {Injector, bind} from 'angular2/core';
 
-import {AppProtoView, AppView, AppViewContainer} from 'angular2/src/core/linker/view';
+import {AppProtoView, AppView, AppViewContainer, ViewType} from 'angular2/src/core/linker/view';
 import {ProtoViewRef, ViewRef, internalView} from 'angular2/src/core/linker/view_ref';
 import {ElementRef} from 'angular2/src/core/linker/element_ref';
 import {TemplateRef} from 'angular2/src/core/linker/template_ref';
@@ -25,7 +25,6 @@ import {
   RenderViewRef,
   RenderProtoViewRef,
   RenderFragmentRef,
-  ViewType,
   RenderViewWithFragments
 } from 'angular2/src/core/render/api';
 import {AppViewManager} from 'angular2/src/core/linker/view_manager';

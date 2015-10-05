@@ -1,18 +1,5 @@
 import {Map} from 'angular2/src/core/facade/collection';
 
-export enum ViewType {
-  // A view that contains the host element with bound component directive.
-  // Contains a COMPONENT view
-  HOST,
-  // The view of the component
-  // Can contain 0 to n EMBEDDED views
-  COMPONENT,
-  // A view that is embedded into another View via a <template> element
-  // inside of a COMPONENT view
-  EMBEDDED
-}
-
-
 /**
  * Represents an Angular ProtoView in the Rendering Context.
  *
@@ -88,38 +75,6 @@ export class RenderFragmentRef {}
  */
 // TODO(i): refactor into an interface
 export class RenderViewRef {}
-
-
-/**
- * Defines template and style encapsulation options available for Component's {@link View}.
- *
- * See {@link ViewMetadata#encapsulation}.
- */
-export enum ViewEncapsulation {
-  /**
-   * Emulate `Native` scoping of styles by adding an attribute containing surrogate id to the Host
-   * Element and pre-processing the style rules provided via
-   * {@link ViewMetadata#styles} or {@link ViewMetadata#stylesUrls}, and adding the new Host Element
-   * attribute to all selectors.
-   *
-   * This is the default option.
-   */
-  Emulated,
-  /**
-   * Use the native encapsulation mechanism of the renderer.
-   *
-   * For the DOM this means using [Shadow DOM](https://w3c.github.io/webcomponents/spec/shadow/) and
-   * creating a ShadowRoot for Component's Host Element.
-   */
-  Native,
-  /**
-   * Don't provide any template or style encapsulation.
-   */
-  None
-}
-
-export var VIEW_ENCAPSULATION_VALUES =
-    [ViewEncapsulation.Emulated, ViewEncapsulation.Native, ViewEncapsulation.None];
 
 export interface RenderTemplateCmd { visit(visitor: RenderCommandVisitor, context: any): any; }
 
