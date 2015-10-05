@@ -1,11 +1,11 @@
-import {Component, View, LifecycleEvent, ViewEncapsulation, OnChanges} from 'angular2/angular2';
+import {Component, View, ViewEncapsulation, OnChanges} from 'angular2/angular2';
 
 import {TimerWrapper} from 'angular2/src/core/facade/async';
 import {isPresent} from 'angular2/src/core/facade/lang';
 
 
 // TODO(jelbourn): Ink ripples.
-// TODO(jelbourn): Make the `isMosueDown` stuff done with one global listener.
+// TODO(jelbourn): Make the `isMouseDown` stuff done with one global listener.
 
 @Component({
   selector: '[md-button]:not(a), [md-fab]:not(a), [md-raised-button]:not(a)',

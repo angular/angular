@@ -10,9 +10,9 @@ document.getElementById("send_echo")
       var val = (<HTMLInputElement>document.getElementById("echo_input")).value;
       // TODO(jteplitz602): Replace default constructors with real constructors
       // once they're in the .d.ts file (#3926)
-      var args = new UiArguments();
+      var args = new UiArguments("echo");
       args.method = "echo";
-      var fnArg = new FnArg();
+      var fnArg = new FnArg(val, PRIMITIVE);
       fnArg.value = val;
       fnArg.type = PRIMITIVE;
       args.args = [fnArg];

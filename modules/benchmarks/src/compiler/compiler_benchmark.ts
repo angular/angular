@@ -64,12 +64,11 @@ function measureWrapper(func, desc) {
 
 class MultiplyViewResolver extends ViewResolver {
   _multiplyBy: number;
-  _cache: Map<Type, ViewMetadata>;
+  _cache = new Map<Type, ViewMetadata>();
 
   constructor(multiple: number, components: Type[]) {
     super();
     this._multiplyBy = multiple;
-    this._cache = new Map();
     ListWrapper.forEach(components, (c) => this._fillCache(c));
   }
 

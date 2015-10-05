@@ -12,7 +12,7 @@ import {
 } from 'angular2/test_lib';
 
 import {Component, View, Inject, EventEmitter} from 'angular2/angular2';
-import {createUpgradeModule, UpgradeModule, bootstrapHybrid} from 'upgrade/upgrade';
+import {createUpgradeModule, UpgradeModule} from 'upgrade/upgrade';
 
 export function main() {
   describe('upgrade: ng1 to ng2', () => {
@@ -56,7 +56,8 @@ export function main() {
        }));
 
     describe('scope/component change-detection', () => {
-      it('should interleve scope and component expressions', inject([AsyncTestCompleter], (async) {
+      it('should interleave scope and component expressions',
+         inject([AsyncTestCompleter], (async) => {
            var log = [];
            var l = function(value) {
              log.push(value);
@@ -93,7 +94,7 @@ export function main() {
     });
 
     describe('binding from ng1 to ng2', () => {
-      it('should bind properties, events', inject([AsyncTestCompleter], (async) {
+      it('should bind properties, events', inject([AsyncTestCompleter], (async) => {
            var upgrMod: UpgradeModule = createUpgradeModule();
            upgrMod.ng1Module.run(($rootScope) => {
              $rootScope.dataA = 'A';
@@ -133,26 +134,24 @@ export function main() {
                        this.twoWayBEmitter = new EventEmitter();
                      },
                      onChanges: function(changes) {
-                       var assert =
-                           (prop, value) => {
-                             if (this[prop] != value) {
-                               throw new Error(
-                                   `Expected: '${prop}' to be '${value}' but was '${this[prop]}'`);
-                             }
-                           }
+                       var assert = (prop, value) => {
+                         if (this[prop] != value) {
+                           throw new Error(
+                               `Expected: '${prop}' to be '${value}' but was '${this[prop]}'`);
+                         }
+                       };
 
-                       var assertChange =
-                           (prop, value) => {
-                             assert(prop, value);
-                             if (!changes[prop]) {
-                               throw new Error(`Changes record for '${prop}' not found.`);
-                             }
-                             var actValue = changes[prop].currentValue;
-                             if (actValue != value) {
-                               throw new Error(
-                                   `Expected changes record for'${prop}' to be '${value}' but was '${actValue}'`);
-                             }
-                           }
+                       var assertChange = (prop, value) => {
+                         assert(prop, value);
+                         if (!changes[prop]) {
+                           throw new Error(`Changes record for '${prop}' not found.`);
+                         }
+                         var actValue = changes[prop].currentValue;
+                         if (actValue != value) {
+                           throw new Error(
+                               `Expected changes record for'${prop}' to be '${value}' but was '${actValue}'`);
+                         }
+                       };
 
                        switch (this.onChangesCount++) {
                          case 0:

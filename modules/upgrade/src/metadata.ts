@@ -26,12 +26,13 @@ export interface AttrProp {
 }
 
 export interface ComponentInfo {
+  type: Type;
   selector: string;
   inputs: AttrProp[];
   outputs: AttrProp[];
 }
 
-export function getComponentInfo(type: Type): string {
+export function getComponentInfo(type: Type): ComponentInfo {
   var resolvedMetadata: DirectiveMetadata = directiveResolver.resolve(type);
   var selector = resolvedMetadata.selector;
   if (!selector.match(COMPONENT_SELECTOR)) {
@@ -59,7 +60,7 @@ export function parseFields(names: string[]): AttrProp[] {
         attr: attr,
         bracketAttr: `[${attr}]`,
         parenAttr: `(${attr})`,
-        bracketParenAttr: `[(${attr})]`
+        bracketParenAttr: `[(${attr})]`,
         onAttr: `on${capitalAttr}`,
         bindAttr: `bind${capitalAttr}`,
         bindonAttr: `bindon${capitalAttr}`
