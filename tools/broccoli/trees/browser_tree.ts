@@ -13,9 +13,6 @@ import mergeTrees from '../broccoli-merge-trees';
 import replace from '../broccoli-replace';
 
 
-var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..', '..'));
-
-
 const kServedPaths = [
   // Relative (to /modules) paths to benchmark directories
   'benchmarks/src',
