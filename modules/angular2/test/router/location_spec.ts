@@ -81,7 +81,7 @@ export function main() {
       locationStrategy.internalBaseHref = null;
       expect(() => new Location(locationStrategy))
           .toThrowError(
-              `No base href set. Either provide a binding to "appBaseHrefToken" or add a base element.`);
+              `No base href set. Either provide a binding to "APP_BASE_HREF" or add a base element.`);
     });
 
     it('should revert to the previous path when a back() operation is executed', () => {
