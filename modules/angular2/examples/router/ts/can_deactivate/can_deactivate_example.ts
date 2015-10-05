@@ -1,0 +1,69 @@
+import {bind, bootstrap, Component, View} from 'angular2/angular2';
+import {
+  CanDeactivate,
+  RouteConfig,
+  RouteParams,
+  ComponentInstruction,
+  routerBindings,
+  ROUTER_DIRECTIVES,
+  APP_BASE_HREF
+} from 'angular2/router';
+
+// #docregion canDeactivate
+@Component({selector: 'note-cmp'})
+@View({
+  template: `
+    <div>
+      <h2>id: {{id}}</h2>
+      <textarea cols="40" rows="10"></textarea>
+    </div>`
+})
+class NoteCmp implements CanDeactivate {
+  id: string;
+
+  constructor(params: RouteParams) { this.id = params.get('id'); }
+
+  canDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
+    return confirm('Are you sure you want to leave?');
+  }
+}
+// #enddocregion
+
+
+@Component({selector: 'note-index-cmp'})
+@View({
+  template: `
+    <h1>Your Notes</h1>
+    <div>
+      Edit <a [router-link]="['/NoteCmp', {id: 1}]" id="note-1-link">Note 1</a> |
+      Edit <a [router-link]="['/NoteCmp', {id: 2}]" id="note-2-link">Note 2</a>
+    </div>
+  `,
+  directives: [ROUTER_DIRECTIVES]
+})
+class NoteIndexCmp {
+}
+
+
+@Component({selector: 'example-app'})
+@View({
+  template: `
+    <h1>My App</h1>
+    <router-outlet></router-outlet>
+  `,
+  directives: [ROUTER_DIRECTIVES]
+})
+@RouteConfig([
+  {path: '/note/:id', component: NoteCmp, as: 'NoteCmp'},
+  {path: '/', component: NoteIndexCmp, as: 'NoteIndexCmp'}
+])
+class AppCmp {
+}
+
+
+export function main() {
+  return bootstrap(AppCmp, [
+    routerBindings(AppCmp),
+    bind(APP_BASE_HREF).toValue('/angular2/examples/router/ts/can_deactivate')
+  ]);
+}
