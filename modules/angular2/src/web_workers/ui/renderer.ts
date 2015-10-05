@@ -31,7 +31,8 @@ export class MessageBasedRenderer {
     var broker = this._brokerFactory.createMessageBroker(RENDERER_CHANNEL);
     this._bus.initChannel(EVENT_CHANNEL);
 
-    broker.registerMethod("registerComponentTemplate", [PRIMITIVE, WebWorkerTemplateCmd, PRIMITIVE],
+    broker.registerMethod("registerComponentTemplate",
+                          [PRIMITIVE, WebWorkerTemplateCmd, PRIMITIVE, PRIMITIVE],
                           bind(this._renderer.registerComponentTemplate, this._renderer));
     broker.registerMethod("createProtoView", [WebWorkerTemplateCmd, PRIMITIVE],
                           bind(this._createProtoView, this));

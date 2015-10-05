@@ -70,7 +70,7 @@ export interface NodeFactory<N> {
   createTemplateAnchor(attrNameAndValues: string[]): N;
   createElement(name: string, attrNameAndValues: string[]): N;
   mergeElement(existing: N, attrNameAndValues: string[]);
-  createShadowRoot(host: N): N;
+  createShadowRoot(host: N, templateId: number): N;
   createText(value: string): N;
   appendChild(parent: N, child: N);
   on(element: N, eventName: string, callback: Function);
@@ -125,7 +125,7 @@ class RenderViewBuilder<N> implements RenderCommandVisitor {
     var el = this._beginElement(cmd);
     var root = el;
     if (cmd.nativeShadow) {
-      root = this.factory.createShadowRoot(el);
+      root = this.factory.createShadowRoot(el, cmd.templateId);
       this.nativeShadowRoots.push(root);
     }
     var component = new Component(el, root, cmd, this.factory, this.allBuilders);

@@ -35,6 +35,7 @@ import {camelCaseToDashCase} from './util';
 @Injectable()
 export class DomRenderer implements Renderer, NodeFactory<Node> {
   private _componentCmds: Map<number, RenderTemplateCmd[]> = new Map<number, RenderTemplateCmd[]>();
+  private _nativeShadowStyles: Map<number, string[]> = new Map<number, string[]>();
   private _document;
 
   /**
@@ -46,9 +47,14 @@ export class DomRenderer implements Renderer, NodeFactory<Node> {
     this._document = document;
   }
 
-  registerComponentTemplate(templateId: number, commands: RenderTemplateCmd[], styles: string[]) {
+  registerComponentTemplate(templateId: number, commands: RenderTemplateCmd[], styles: string[],
+                            nativeShadow: boolean) {
     this._componentCmds.set(templateId, commands);
-    this._domSharedStylesHost.addStyles(styles);
+    if (nativeShadow) {
+      this._nativeShadowStyles.set(templateId, styles);
+    } else {
+      this._domSharedStylesHost.addStyles(styles);
+    }
   }
 
   resolveComponentTemplate(templateId: number): RenderTemplateCmd[] {
@@ -193,7 +199,14 @@ export class DomRenderer implements Renderer, NodeFactory<Node> {
       DOM.setAttribute(node, attrNameAndValues[attrIdx], attrNameAndValues[attrIdx + 1]);
     }
   }
-  createShadowRoot(host: Node): Node { return DOM.createShadowRoot(host); }
+  createShadowRoot(host: Node, templateId: number): Node {
+    var sr = DOM.createShadowRoot(host);
+    var styles = this._nativeShadowStyles.get(templateId);
+    for (var i = 0; i < styles.length; i++) {
+      DOM.appendChild(sr, DOM.createStyleElement(styles[i]));
+    }
+    return sr;
+  }
   createText(value: string): Node { return DOM.createTextNode(isPresent(value) ? value : ''); }
   appendChild(parent: Node, child: Node) { DOM.appendChild(parent, child); }
   on(element: Node, eventName: string, callback: Function) {
