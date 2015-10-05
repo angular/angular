@@ -18,7 +18,13 @@ export interface ClassDefinition {
    *
    * See {@link Class} for example of usage.
    */
-  constructor: (Function | any[]);
+  constructor: Function | any[];
+
+  /**
+   * Other methods on the class. Note that values should have type 'Function' but TS requires
+   * all properties to have a narrower type than the index signature.
+   */
+  [x: string]: Type | Function | any[];
 }
 
 /**

@@ -58,7 +58,7 @@ export function CONST_EXPR<T>(expr: T): T {
   return expr;
 }
 
-export function CONST(): ClassDecorator {
+export function CONST(): ClassDecorator & PropertyDecorator {
   return (target) => target;
 }
 

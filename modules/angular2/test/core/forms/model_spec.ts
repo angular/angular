@@ -156,7 +156,7 @@ export function main() {
               {"one": new Control("111"), "nested": new ControlGroup({"two": new Control("222")})});
           expect(g.value).toEqual({"one": "111", "nested": {"two": "222"}});
 
-          g.controls["nested"].controls["two"].updateValue("333");
+          (<Control>(g.controls["nested"].find("two"))).updateValue("333");
 
           expect(g.value).toEqual({"one": "111", "nested": {"two": "333"}});
         });

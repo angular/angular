@@ -1,9 +1,7 @@
-///<reference path="../typings/angularjs/angular.d.ts"/>
+///<reference path="./angular.d.ts"/>
 
 import {
   platform,
-  PlatformRef,
-  ApplicationRef,
   ComponentRef,
   bind,
   Directive,
@@ -62,7 +60,7 @@ export class UpgradeModule {
     this.componentTypes.push(type);
     var info: ComponentInfo = getComponentInfo(type);
     var factory: Function = ng1ComponentDirective(info, `${this.idPrefix}${info.selector}_c`);
-    this.ng1Module.directive(info.selector, <any[]>factory);
+    this.ng1Module.directive(info.selector, <any>factory);
     return this;
   }
 
@@ -175,7 +173,7 @@ function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function 
 class Ng2ComponentFacade {
   component: any = null;
   inputChangeCount: number = 0;
-  inputChanges: StringMap<string, SimpleChange> = null;
+  inputChanges: {[key: string]: SimpleChange} = null;
   hostViewRef: HostViewRef = null;
   changeDetector: ChangeDetectorRef = null;
   componentScope: angular.IScope;
@@ -215,7 +213,7 @@ class Ng2ComponentFacade {
               prevValue = value;
             }
             this.component[prop] = value;
-          }
+          };
         })(input.prop);
         attrs.$observe(input.attr, observeFn);
       } else if (attrs.hasOwnProperty(input.bindAttr)) {
@@ -284,8 +282,7 @@ class Ng2ComponentFacade {
                                ((getter) => (value) => getter(this.scope, {$event: value}))(getter)
           });
         } else {
-          throw new Error(
-              `Missing emitter '${output.prop}' on component '${this.input.selector}'!`);
+          throw new Error(`Missing emitter '${output.prop}' on component '${this.info.selector}'!`);
         }
       }
     }
