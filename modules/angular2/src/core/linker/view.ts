@@ -33,6 +33,8 @@ import {ElementRef} from './element_ref';
 import {ProtoPipes} from 'angular2/src/core/pipes/pipes';
 import {camelCaseToDashCase} from 'angular2/src/core/render/dom/util';
 import {TemplateCmd} from './template_commands';
+import {ViewRef_} from "./view_ref";
+import {ProtoViewRef_} from "./view_ref";
 
 export {DebugContext} from 'angular2/src/core/change_detection/interfaces';
 
@@ -106,7 +108,7 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
               protoLocals: Map<string, any>, public render: renderApi.RenderViewRef,
               public renderFragment: renderApi.RenderFragmentRef,
               public containerElementInjector: ElementInjector) {
-    this.ref = new ViewRef(this);
+    this.ref = new ViewRef_(this);
 
     this.locals = new Locals(null, MapWrapper.clone(protoLocals));  // TODO optimize this
   }
@@ -322,7 +324,7 @@ export class AppProtoView {
   constructor(public templateCmds: TemplateCmd[], public type: ViewType, public isMergable: boolean,
               public changeDetectorFactory: Function,
               public templateVariableBindings: Map<string, string>, public pipes: ProtoPipes) {
-    this.ref = new ProtoViewRef(this);
+    this.ref = new ProtoViewRef_(this);
   }
 
   init(render: renderApi.RenderProtoViewRef, elementBinders: ElementBinder[],

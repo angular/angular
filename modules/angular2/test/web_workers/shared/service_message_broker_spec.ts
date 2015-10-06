@@ -20,6 +20,7 @@ import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_pr
 import {
   RenderViewWithFragmentsStore
 } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
+import {ServiceMessageBroker_} from "../../../src/web_workers/shared/service_message_broker";
 
 export function main() {
   const CHANNEL = "UIMessageBroker Test Channel";
@@ -46,7 +47,7 @@ export function main() {
     });
     it("should call registered method with correct arguments",
        inject([Serializer], (serializer) => {
-         var broker = new ServiceMessageBroker(messageBuses.ui, serializer, CHANNEL);
+         var broker = new ServiceMessageBroker_(messageBuses.ui, serializer, CHANNEL);
          broker.registerMethod(TEST_METHOD, [PRIMITIVE, PRIMITIVE], (arg1, arg2) => {
            expect(arg1).toEqual(PASSED_ARG_1);
            expect(arg2).toEqual(PASSED_ARG_2);
@@ -56,7 +57,7 @@ export function main() {
        }));
 
     it("should return promises to the worker", inject([Serializer], (serializer) => {
-         var broker = new ServiceMessageBroker(messageBuses.ui, serializer, CHANNEL);
+         var broker = new ServiceMessageBroker_(messageBuses.ui, serializer, CHANNEL);
          broker.registerMethod(TEST_METHOD, [PRIMITIVE], (arg1) => {
            expect(arg1).toEqual(PASSED_ARG_1);
            return PromiseWrapper.wrap(() => { return RESULT; });

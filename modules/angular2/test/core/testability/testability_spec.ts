@@ -15,13 +15,14 @@ import {Testability} from 'angular2/src/core/testability/testability';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {normalizeBlank} from 'angular2/src/core/facade/lang';
 import {PromiseWrapper} from 'angular2/src/core/facade/async';
+import {NgZone_} from "../../../src/core/zone/ng_zone";
 
 // Schedules a microtasks (using a resolved promise .then())
 function microTask(fn: Function): void {
   PromiseWrapper.resolve(null).then((_) => { fn(); });
 }
 
-class MockNgZone extends NgZone {
+class MockNgZone extends NgZone_ {
   _onTurnStart: () => void;
   _onEventDone: () => void;
 

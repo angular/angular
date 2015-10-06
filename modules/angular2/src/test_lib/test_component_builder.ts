@@ -20,19 +20,22 @@ import {el} from './utils';
 import {DOCUMENT} from 'angular2/src/core/render/render';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
-import {DebugElement} from 'angular2/src/core/debug/debug_element';
+import {DebugElement, DebugElement_} from 'angular2/src/core/debug/debug_element';
 
-export class RootTestComponent {
-  _componentRef: ComponentRef;
-  _componentParentView: AppView;
+export abstract class RootTestComponent {
   debugElement: DebugElement;
 
-  /**
-   * @internal
-   */
-  constructor(componentRef: ComponentRef) {
-    this.debugElement = new DebugElement(internalView(<ViewRef>componentRef.hostView), 0);
+  abstract detectChanges(): void;
+  abstract destroy(): void;
+}
 
+export class RootTestComponent_ extends RootTestComponent {
+  _componentRef: ComponentRef;
+  _componentParentView: AppView;
+
+  constructor(componentRef: ComponentRef) {
+    super();
+    this.debugElement = new DebugElement_(internalView(<ViewRef>componentRef.hostView), 0);
     this._componentParentView = internalView(<ViewRef>componentRef.hostView);
     this._componentRef = componentRef;
   }
@@ -195,6 +198,6 @@ export class TestComponentBuilder {
 
     return this._injector.get(DynamicComponentLoader)
         .loadAsRoot(rootComponentType, `#${rootElId}`, this._injector)
-        .then((componentRef) => { return new RootTestComponent(componentRef); });
+        .then((componentRef) => { return new RootTestComponent_(componentRef); });
   }
 }

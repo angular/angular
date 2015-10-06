@@ -2,8 +2,9 @@ import {Type} from 'angular2/src/core/facade/lang';
 import {ResolvedFactory, resolveBinding} from 'angular2/src/core/di/binding';
 import {Key, ResolvedBinding, Binding} from 'angular2/src/core/di';
 import {PipeMetadata} from '../metadata/directives';
+import {ResolvedBinding_} from "../di/binding";
 
-export class PipeBinding extends ResolvedBinding {
+export class PipeBinding extends ResolvedBinding_ {
   constructor(public name: string, public pure: boolean, key: Key,
               resolvedFactories: ResolvedFactory[], multiBinding: boolean) {
     super(key, resolvedFactories, multiBinding);

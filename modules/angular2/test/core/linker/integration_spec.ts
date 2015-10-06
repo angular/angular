@@ -90,6 +90,7 @@ import {TemplateRef} from 'angular2/src/core/linker/template_ref';
 
 import {DomRenderer} from 'angular2/src/core/render/dom/dom_renderer';
 import {IS_DART} from '../../platform';
+import {ViewRef_} from "../../../src/core/linker/view_ref";
 
 const ANCHOR_ELEMENT = CONST_EXPR(new OpaqueToken('AnchorElement'));
 
@@ -2231,7 +2232,7 @@ class SomeImperativeViewport {
     }
     if (value) {
       this.view = this.vc.createEmbeddedView(this.templateRef);
-      var nodes = this.renderer.getRootNodes(this.view.renderFragment);
+      var nodes = this.renderer.getRootNodes((<ViewRef_>this.view).renderFragment);
       for (var i = 0; i < nodes.length; i++) {
         DOM.appendChild(this.anchor, nodes[i]);
       }

@@ -1,5 +1,5 @@
 import {internalView, ProtoViewRef} from './view_ref';
-import {ElementRef} from './element_ref';
+import {ElementRef, ElementRef_} from './element_ref';
 import * as viewModule from './view';
 
 /**
@@ -14,7 +14,7 @@ import * as viewModule from './view';
  * {@link ViewContainerRef#createEmbeddedView}, which will create the View and attach it to the
  * View Container.
  */
-export class TemplateRef {
+export abstract class TemplateRef {
   /**
    * The location in the View where the Embedded View logically belongs to.
    *
@@ -30,28 +30,30 @@ export class TemplateRef {
   elementRef: ElementRef;
 
   /**
-   * @internal
+   * Allows you to check if this Embedded Template defines Local Variable with name matching `name`.
    */
-  constructor(elementRef: ElementRef) { this.elementRef = elementRef; }
+  abstract hasLocal(name: string): boolean;
+}
+
+export class TemplateRef_ extends TemplateRef {
+  constructor(elementRef: ElementRef) {
+    super();
+    this.elementRef = elementRef;
+  }
 
   private _getProtoView(): viewModule.AppProtoView {
-    var parentView = internalView(this.elementRef.parentView);
-    return parentView.proto
-        .elementBinders[this.elementRef.boundElementIndex - parentView.elementOffset]
+    let elementRef = <ElementRef_>this.elementRef;
+    var parentView = internalView(elementRef.parentView);
+    return parentView.proto.elementBinders[elementRef.boundElementIndex - parentView.elementOffset]
         .nestedProtoView;
   }
 
   /**
-   * @internal
-   *
    * Reference to the ProtoView used for creating Embedded Views that are based on the compiled
    * Embedded Template.
    */
   get protoViewRef(): ProtoViewRef { return this._getProtoView().ref; }
 
-  /**
-   * Allows you to check if this Embedded Template defines Local Variable with name matching `name`.
-   */
   hasLocal(name: string): boolean {
     return this._getProtoView().templateVariableBindings.has(name);
   }

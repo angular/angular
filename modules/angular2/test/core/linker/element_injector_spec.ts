@@ -45,6 +45,7 @@ import {ElementRef} from 'angular2/src/core/linker/element_ref';
 import {DynamicChangeDetector, ChangeDetectorRef, Parser, Lexer} from 'angular2/src/core/change_detection/change_detection';
 import {QueryList} from 'angular2/src/core/linker/query_list';
 import {AppView, AppViewContainer} from "angular2/src/core/linker/view";
+import {TemplateRef_} from "../../../src/core/linker/template_ref";
 
 function createDummyView(detector = null): AppView {
   var res = new SpyView();
@@ -701,7 +702,7 @@ export function main() {
           });
 
           it("should instantiate directives that depend on pre built objects", () => {
-            var templateRef = new TemplateRef(<any>new SpyElementRef());
+            var templateRef = new TemplateRef_(<any>new SpyElementRef());
             var bindings = ListWrapper.concat([NeedsTemplateRef], extraBindings);
             var inj = injector(bindings, null, false, new PreBuiltObjects(null, null, null, templateRef));
 
@@ -909,7 +910,7 @@ export function main() {
           });
 
           it("should inject TemplateRef", () => {
-            var templateRef = new TemplateRef(<any>new SpyElementRef());
+            var templateRef = new TemplateRef_(<any>new SpyElementRef());
             var inj = injector(ListWrapper.concat([NeedsTemplateRef], extraBindings), null, false,
                                new PreBuiltObjects(null, null, null, templateRef));
 
@@ -968,7 +969,7 @@ export function main() {
           });
 
           it('should contain PreBuiltObjects on the same injector', () => {
-            var preBuiltObjects = new PreBuiltObjects(null, dummyView, null, new TemplateRef(<any>new SpyElementRef()));
+            var preBuiltObjects = new PreBuiltObjects(null, dummyView, null, new TemplateRef_(<any>new SpyElementRef()));
             var inj = injector(ListWrapper.concat([
                 NeedsTemplateRefQuery
               ], extraBindings), null,

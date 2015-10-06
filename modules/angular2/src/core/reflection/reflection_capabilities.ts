@@ -3,6 +3,7 @@ import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptio
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {GetterFn, SetterFn, MethodFn} from './types';
 import {PlatformReflectionCapabilities} from 'platform_reflection_capabilities';
+import {ConcreteType} from "../facade/lang";
 
 export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   private _reflect: any;
@@ -11,7 +12,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
 
   isReflectionEnabled(): boolean { return true; }
 
-  factory(t: Type): Function {
+  factory(t: ConcreteType): Function {
     switch (t.length) {
       case 0:
         return () => new t();

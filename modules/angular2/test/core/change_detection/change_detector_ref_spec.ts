@@ -13,6 +13,7 @@ import {
 
 import {ChangeDetectorRef} from 'angular2/src/core/change_detection/change_detector_ref';
 import {SpyChangeDetector} from '../spies';
+import {ChangeDetectorRef_} from "../../../src/core/change_detection/change_detector_ref";
 
 
 export function main() {
@@ -20,7 +21,7 @@ export function main() {
     it('should delegate detectChanges()', () => {
       var changeDetector = new SpyChangeDetector();
       changeDetector.spy('detectChanges');
-      var changeDetectorRef = new ChangeDetectorRef(<any>changeDetector);
+      var changeDetectorRef = new ChangeDetectorRef_(<any>changeDetector);
       changeDetectorRef.detectChanges();
       expect(changeDetector.spy('detectChanges')).toHaveBeenCalled();
     });

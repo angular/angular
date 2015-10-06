@@ -17,6 +17,7 @@ import {
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {ListWrapper, Map, MapWrapper} from 'angular2/src/core/facade/collection';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {NgZone_} from "../../../../../src/core/zone/ng_zone";
 
 export function main() {
   var domEventPlugin;
@@ -106,7 +107,7 @@ class FakeEventManagerPlugin extends EventManagerPlugin {
   }
 }
 
-class FakeNgZone extends NgZone {
+class FakeNgZone extends NgZone_ {
   constructor() { super({enableLongStackTrace: false}); }
 
   run(fn) { fn(); }

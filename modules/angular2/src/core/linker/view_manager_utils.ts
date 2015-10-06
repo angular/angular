@@ -9,6 +9,8 @@ import {TemplateRef} from './template_ref';
 import {Renderer, RenderViewWithFragments} from 'angular2/src/core/render/api';
 import {Locals} from 'angular2/src/core/change_detection/change_detection';
 import {Pipes} from 'angular2/src/core/pipes/pipes';
+import {TemplateRef_} from "./template_ref";
+import {ElementRef_} from "./element_ref";
 
 @Injectable()
 export class AppViewManagerUtils {
@@ -86,14 +88,14 @@ export class AppViewManagerUtils {
         elementInjectors[boundElementIndex] = elementInjector;
 
         // elementRefs
-        var el = new ElementRef(currentView.ref, boundElementIndex, renderer);
+        var el = new ElementRef_(currentView.ref, boundElementIndex, renderer);
         elementRefs[el.boundElementIndex] = el;
 
         // preBuiltObjects
         if (isPresent(elementInjector)) {
           var templateRef = isPresent(binder.nestedProtoView) &&
                                     binder.nestedProtoView.type === viewModule.ViewType.EMBEDDED ?
-                                new TemplateRef(el) :
+                                new TemplateRef_(el) :
                                 null;
           preBuiltObjects[boundElementIndex] =
               new eli.PreBuiltObjects(viewManager, currentView, el, templateRef);

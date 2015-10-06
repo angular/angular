@@ -28,7 +28,8 @@ export var Type = Function;
  * An example of a `Type` is `MyCustomComponent` class, which in JavaScript is be represented by
  * the `MyCustomComponent` constructor function.
  */
-export interface Type extends Function { new (...args): any; }
+export interface Type extends Function {}
+export interface ConcreteType extends Type { new (...args): any; }
 
 export function getTypeNameForDebugging(type: Type): string {
   return type['name'];

@@ -2,6 +2,7 @@ import {isPresent, isString, StringWrapper, isBlank} from 'angular2/src/core/fac
 import {DoCheck, OnDestroy} from 'angular2/lifecycle_hooks';
 import {Directive} from 'angular2/src/core/metadata';
 import {ElementRef} from 'angular2/src/core/linker';
+import {ElementRef_} from '../linker/element_ref';
 import {
   IterableDiffer,
   IterableDiffers,
@@ -39,7 +40,7 @@ export class NgClass implements DoCheck, OnDestroy {
   private _rawClass;
 
   constructor(private _iterableDiffers: IterableDiffers, private _keyValueDiffers: KeyValueDiffers,
-              private _ngEl: ElementRef, private _renderer: Renderer) {}
+              private _ngEl: ElementRef_, private _renderer: Renderer) {}
 
   set initialClasses(v) {
     this._applyInitialClasses(true);

@@ -11,20 +11,22 @@ import {StringWrapper, isPresent} from 'angular2/src/core/facade/lang';
 // todo(robwormald): temporary until https://github.com/angular/angular/issues/4390 decided
 var Rx = require('@reactivex/rxjs/dist/cjs/Rx');
 var {Observable} = Rx;
-export class JSONPConnection implements Connection {
+export abstract class JSONPConnection implements Connection {
   readyState: ReadyStates;
   request: Request;
   response: any;
+  abstract finished(data?: any): void;
+}
+
+export class JSONPConnection_ extends JSONPConnection {
   private _id: string;
   private _script: Element;
   private _responseData: any;
   private _finished: boolean = false;
 
-  /**
-   * @internal
-   */
   constructor(req: Request, private _dom: BrowserJsonp,
               private baseResponseOptions?: ResponseOptions) {
+    super();
     if (req.method !== RequestMethods.Get) {
       throw makeTypeError("JSONP requests must use GET request method.");
     }
@@ -100,13 +102,15 @@ export class JSONPConnection implements Connection {
   }
 }
 
+export abstract class JSONPBackend extends ConnectionBackend {}
+
 @Injectable()
-export class JSONPBackend implements ConnectionBackend {
-  /**
-   * @internal
-   */
-  constructor(private _browserJSONP: BrowserJsonp, private _baseResponseOptions: ResponseOptions) {}
+export class JSONPBackend_ extends JSONPBackend {
+  constructor(private _browserJSONP: BrowserJsonp, private _baseResponseOptions: ResponseOptions) {
+    super();
+  }
+
   createConnection(request: Request): JSONPConnection {
-    return new JSONPConnection(request, this._browserJSONP, this._baseResponseOptions);
+    return new JSONPConnection_(request, this._browserJSONP, this._baseResponseOptions);
   }
 }

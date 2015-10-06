@@ -77,7 +77,35 @@ export interface NgZoneZone extends Zone { _innerZone: boolean; }
  * }
  * ```
  */
-export class NgZone {
+export abstract class NgZone {
+  /**
+   * Executes the `fn` function synchronously within the Angular zone and returns value returned by
+   * the function.
+   *
+   * Running functions via `run` allows you to reenter Angular zone from a task that was executed
+   * outside of the Angular zone (typically started via {@link #runOutsideAngular}).
+   *
+   * Any future tasks or microtasks scheduled from within this function will continue executing from
+   * within the Angular zone.
+   */
+  abstract run(fn: () => any): any;
+
+  /**
+   * Executes the `fn` function synchronously in Angular's parent zone and returns value returned by
+   * the function.
+   *
+   * Running functions via `runOutsideAngular` allows you to escape Angular's zone and do work that
+   * doesn't trigger Angular change-detection or is subject to Angular's error handling.
+   *
+   * Any future tasks or microtasks scheduled from within this function will continue executing from
+   * outside of the Angular zone.
+   *
+   * Use {@link #run} to reenter the Angular zone and do work that updates the application model.
+   */
+  abstract runOutsideAngular(fn: () => any): any;
+}
+
+export class NgZone_ extends NgZone {
   _runScope: WtfScopeFn = wtfCreateScope(`NgZone#run()`);
   _microtaskScope: WtfScopeFn = wtfCreateScope(`NgZone#microtask()`);
 
@@ -111,11 +139,11 @@ export class NgZone {
   _pendingTimeouts: number[] = [];
 
   /**
-   * @internal
    * @param {bool} enableLongStackTrace whether to enable long stack trace. They should only be
    *               enabled in development mode as they significantly impact perf.
    */
   constructor({enableLongStackTrace}) {
+    super();
     this._onTurnStart = null;
     this._onTurnDone = null;
     this._onEventDone = null;
@@ -136,8 +164,6 @@ export class NgZone {
   }
 
   /**
-   * @internal <!-- TODO: refactor to make TS private -->
-   *
    * Sets the zone hook that is called just before a browser task that is handled by Angular
    * executes.
    *
@@ -150,8 +176,6 @@ export class NgZone {
   }
 
   /**
-   * @internal <!-- TODO: refactor to make TS private -->
-   *
    * Sets the zone hook that is called immediately after Angular zone is done processing the current
    * task and any microtasks scheduled from that task.
    *
@@ -166,8 +190,6 @@ export class NgZone {
   }
 
   /**
-   * @internal <!-- TODO: refactor to make TS private -->
-   *
    * Sets the zone hook that is called immediately after the `onTurnDone` callback is called and any
    * microstasks scheduled from within that callback are drained.
    *
@@ -192,8 +214,6 @@ export class NgZone {
   }
 
   /**
-   * @internal <!-- TODO: refactor to make TS private -->
-   *
    * Sets the zone hook that is called when an error is thrown in the Angular zone.
    *
    * Setting the hook overrides any previously set hook.
@@ -202,16 +222,6 @@ export class NgZone {
     this._onErrorHandler = normalizeBlank(errorHandler);
   }
 
-  /**
-   * Executes the `fn` function synchronously within the Angular zone and returns value returned by
-   * the function.
-   *
-   * Running functions via `run` allows you to reenter Angular zone from a task that was executed
-   * outside of the Angular zone (typically started via {@link #runOutsideAngular}).
-   *
-   * Any future tasks or microtasks scheduled from within this function will continue executing from
-   * within the Angular zone.
-   */
   run(fn: () => any): any {
     if (this._disabled) {
       return fn();
@@ -225,18 +235,6 @@ export class NgZone {
     }
   }
 
-  /**
-   * Executes the `fn` function synchronously in Angular's parent zone and returns value returned by
-   * the function.
-   *
-   * Running functions via `runOutsideAngular` allows you to escape Angular's zone and do work that
-   * doesn't trigger Angular change-detection or is subject to Angular's error handling.
-   *
-   * Any future tasks or microtasks scheduled from within this function will continue executing from
-   * outside of the Angular zone.
-   *
-   * Use {@link #run} to reenter the Angular zone and do work that updates the application model.
-   */
   runOutsideAngular(fn: () => any): any {
     if (this._disabled) {
       return fn();

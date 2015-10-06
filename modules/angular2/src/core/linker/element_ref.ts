@@ -1,6 +1,7 @@
-import {BaseException} from 'angular2/src/core/facade/exceptions';
-import {ViewRef} from './view_ref';
+import {BaseException, unimplemented} from 'angular2/src/core/facade/exceptions';
+import {ViewRef, ViewRef_} from './view_ref';
 import {RenderViewRef, RenderElementRef, Renderer} from 'angular2/src/core/render/api';
+import {ChangeDetectorRef} from "../change_detection/change_detector_ref";
 
 /**
  * Represents a location in a View that has an injection, change-detection and render context
@@ -12,14 +13,13 @@ import {RenderViewRef, RenderElementRef, Renderer} from 'angular2/src/core/rende
  * An `ElementRef` is backed by a render-specific element. In the browser, this is usually a DOM
  * element.
  */
-export class ElementRef implements RenderElementRef {
+export abstract class ElementRef implements RenderElementRef {
   /**
    * @internal
    *
    * Reference to the {@link ViewRef} that this `ElementRef` is part of.
    */
   parentView: ViewRef;
-
 
   /**
    * @internal
@@ -29,23 +29,6 @@ export class ElementRef implements RenderElementRef {
    * This is used internally by the Angular framework to locate elements.
    */
   boundElementIndex: number;
-  /**
-   * @internal
-   */
-  constructor(parentView: ViewRef, boundElementIndex: number, private _renderer: Renderer) {
-    this.parentView = parentView;
-    this.boundElementIndex = boundElementIndex;
-  }
-
-  /**
-   * @internal
-   */
-  get renderView(): RenderViewRef { return this.parentView.render; }
-
-  // TODO(tbosch): remove this once Typescript supports declaring interfaces
-  // that contain getters
-  // https://github.com/Microsoft/TypeScript/issues/3745
-  set renderView(viewRef: RenderViewRef) { throw new BaseException('Abstract setter'); }
 
   /**
    * The underlying native element or `null` if direct access to native elements is not supported
@@ -66,5 +49,23 @@ export class ElementRef implements RenderElementRef {
    *   </p>
    * </div>
    */
+  get nativeElement(): any { return unimplemented(); };
+
+  get renderView(): RenderViewRef { return unimplemented(); }
+}
+
+export class ElementRef_ extends ElementRef {
+  constructor(public parentView: ViewRef,
+
+              /**
+               * Index of the element inside the {@link ViewRef}.
+               *
+               * This is used internally by the Angular framework to locate elements.
+               */
+              public boundElementIndex: number, private _renderer: Renderer) {
+    super();
+  }
+
+  get renderView(): RenderViewRef { return (<ViewRef_>this.parentView).render; }
   get nativeElement(): any { return this._renderer.getNativeElementSync(this); }
 }

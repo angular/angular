@@ -52,6 +52,8 @@ import {EventConfig} from 'angular2/src/core/linker/event_config';
 import {PipeBinding} from '../pipes/pipe_binding';
 
 import {LifecycleHooks} from './interfaces';
+import {ViewContainerRef_} from "./view_container_ref";
+import {ResolvedBinding_} from "../di/binding";
 
 var _staticKeys;
 
@@ -126,7 +128,7 @@ export class DirectiveDependency extends Dependency {
   }
 }
 
-export class DirectiveBinding extends ResolvedBinding {
+export class DirectiveBinding extends ResolvedBinding_ {
   public callOnDestroy: boolean;
 
   constructor(key: Key, factory: Function, deps: Dependency[], public metadata: DirectiveMetadata,
@@ -435,7 +437,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
   getElementRef(): ElementRef { return this._preBuiltObjects.elementRef; }
 
   getViewContainerRef(): ViewContainerRef {
-    return new ViewContainerRef(this._preBuiltObjects.viewManager, this.getElementRef());
+    return new ViewContainerRef_(this._preBuiltObjects.viewManager, this.getElementRef());
   }
 
   getNestedView(): viewModule.AppView { return this._preBuiltObjects.nestedView; }

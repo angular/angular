@@ -12,6 +12,7 @@ import {RenderProtoViewRefStore} from "angular2/src/web_workers/shared/render_pr
 import {
   WebWorkerRenderProtoViewRef
 } from "angular2/src/web_workers/shared/render_proto_view_ref_store";
+import {RenderProtoViewRef_} from "../../../src/core/render/api";
 
 export function main() {
   describe("RenderProtoViewRefStore", () => {
@@ -36,14 +37,14 @@ export function main() {
       beforeEach(() => { store = new RenderProtoViewRefStore(false); });
 
       it("should associate views with the correct references", () => {
-        var renderProtoViewRef = new RenderProtoViewRef();
+        var renderProtoViewRef = new RenderProtoViewRef_();
 
         store.store(renderProtoViewRef, 100);
         expect(store.deserialize(100)).toBe(renderProtoViewRef);
       });
 
       it("should be serializable", () => {
-        var renderProtoViewRef = new RenderProtoViewRef();
+        var renderProtoViewRef = new RenderProtoViewRef_();
         store.store(renderProtoViewRef, 0);
 
         var deserialized = store.deserialize(store.serialize(renderProtoViewRef));

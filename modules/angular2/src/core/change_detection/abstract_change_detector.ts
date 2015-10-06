@@ -2,7 +2,7 @@ import {isPresent, isBlank, StringWrapper} from 'angular2/src/core/facade/lang';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {ChangeDetectionUtil} from './change_detection_util';
-import {ChangeDetectorRef} from './change_detector_ref';
+import {ChangeDetectorRef, ChangeDetectorRef_} from './change_detector_ref';
 import {DirectiveIndex} from './directive_record';
 import {ChangeDetector, ChangeDispatcher} from './interfaces';
 import {Pipes} from './pipes';
@@ -47,7 +47,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   constructor(public id: string, public dispatcher: ChangeDispatcher,
               public numberOfPropertyProtoRecords: number, public bindingTargets: BindingTarget[],
               public directiveIndices: DirectiveIndex[], public strategy: ChangeDetectionStrategy) {
-    this.ref = new ChangeDetectorRef(this);
+    this.ref = new ChangeDetectorRef_(this);
   }
 
   addChild(cd: ChangeDetector): void {
