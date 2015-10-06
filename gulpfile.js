@@ -1061,7 +1061,8 @@ gulp.task('!build.js.cjs', function() {
 
 
 var bundleConfig = {
-  paths: {"*": "dist/js/prod/es5/*.js"},
+  baseURL: 'dist/js/prod/es5',
+  defaultJSExtensions: true,
   // Files that end up empty after transpilation confuse system-builder
   // and need to be explitily listed here.
   // TODO: upgrade system builder and find a way to declare all input as cjs.
@@ -1119,10 +1120,9 @@ gulp.task('!bundle.js.min', ['build.js.prod'], function() {
 // development build
 gulp.task('!bundle.js.dev', ['build.js.dev'], function() {
   var devBundleConfig = merge(true, bundleConfig);
-  devBundleConfig.paths =
-      merge(true, devBundleConfig.paths, {
-       "*": "dist/js/dev/es5/*.js"
-      });
+  devBundleConfig = merge(true, devBundleConfig, {
+    baseURL: 'dist/js/dev/es5'
+  });
   return bundler.bundle(
       devBundleConfig,
       'angular2/angular2',
@@ -1139,8 +1139,9 @@ gulp.task('!bundle.js.dev', ['build.js.dev'], function() {
 
 // WebWorker build
 gulp.task("!bundle.web_worker.js.dev", ["build.js.dev"], function() {
-  var devBundleConfig = merge(true, bundleConfig);
-  devBundleConfig.paths = merge(true, devBundleConfig.paths, {"*": "dist/js/dev/es5/*.js"});
+  var devBundleConfig = merge(true, bundleConfig, {
+    baseURL: 'dist/js/dev/es5'
+  });
   return bundler.bundle(
       devBundleConfig,
       'angular2/web_worker/ui',
@@ -1156,8 +1157,9 @@ gulp.task("!bundle.web_worker.js.dev", ["build.js.dev"], function() {
 });
 
 gulp.task('!router.bundle.js.dev', ['build.js.dev'], function() {
-  var devBundleConfig = merge(true, bundleConfig);
-  devBundleConfig.paths = merge(true, devBundleConfig.paths, {"*": "dist/js/dev/es5/*.js"});
+  var devBundleConfig = merge(true, bundleConfig,{
+    baseURL: 'dist/js/dev/es5'
+  });
   return bundler.bundle(
     devBundleConfig,
     'angular2/router - angular2/angular2',
@@ -1166,8 +1168,9 @@ gulp.task('!router.bundle.js.dev', ['build.js.dev'], function() {
 });
 
 gulp.task('!test.bundle.js.dev', ['build.js.dev'], function() {
-  var devBundleConfig = merge(true, bundleConfig);
-  devBundleConfig.paths = merge(true, devBundleConfig.paths, {"*": "dist/js/dev/es5/*.js"});
+  var devBundleConfig = merge(true, bundleConfig,{
+    baseURL: 'dist/js/dev/es5'
+  });
   return bundler.bundle(
     devBundleConfig,
     'angular2/test + angular2/mock - angular2/angular2',
@@ -1181,8 +1184,9 @@ gulp.task('!test.bundle.js.dev', ['build.js.dev'], function() {
 // use System loader polyfills (like system.js and es6 loader).
 // see: https://github.com/systemjs/builder (SFX bundles).
 gulp.task('!bundle.js.sfx.dev', ['build.js.dev'], function() {
-  var devBundleConfig = merge(true, bundleConfig);
-  devBundleConfig.paths = merge(true, devBundleConfig.paths, {'*': 'dist/js/dev/es5/*.js'});
+  var devBundleConfig = merge(true, bundleConfig,{
+    baseURL: 'dist/js/dev/es5'
+  });
   return bundler.bundle(devBundleConfig, 'angular2/angular2_sfx',
                         './dist/build/angular2.sfx.dev.js', {sourceMaps: true},
                         /* self-executing */ true)

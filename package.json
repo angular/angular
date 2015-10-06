@@ -124,7 +124,7 @@
     "strip-ansi": "^2.0.1",
     "symlink-or-copy": "^1.0.1",
     "systemjs": "^0.18.10",
-    "systemjs-builder": "^0.10.3",
+    "systemjs-builder": "0.14.7",
     "temp": "^0.8.1",
     "ternary-stream": "^1.2.3",
     "through2": "^0.6.1",
