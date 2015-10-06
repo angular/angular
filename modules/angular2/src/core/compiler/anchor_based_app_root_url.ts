@@ -11,11 +11,8 @@ export class AnchorBasedAppRootUrl extends AppRootUrl {
   constructor() {
     super("");
     // compute the root url to pass to AppRootUrl
-    var rootUrl: string;
     var a = DOM.createElement('a');
     DOM.resolveAndSetHref(a, './', null);
-    rootUrl = DOM.getHref(a);
-
-    this.value = rootUrl;
+    this.value = DOM.getHref(a);
   }
 }
