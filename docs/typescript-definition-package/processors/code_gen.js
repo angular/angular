@@ -49,7 +49,7 @@ DtsSerializer.prototype = {
   },
 
   member: function(buffer, ast) {
-    if (ast.private) return;
+    if (ast.private || ast.internal) return;
 
     buffer.push('\n');
     this.comment(buffer, ast.content);

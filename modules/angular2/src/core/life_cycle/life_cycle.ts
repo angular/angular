@@ -40,7 +40,7 @@ export class LifeCycle {
   _runningTick: boolean = false;
 
   /**
-   * @private
+   * @internal
    */
   constructor(changeDetector: ChangeDetector = null, enforceNoNewChanges: boolean = false) {
     this._changeDetectors = [];
@@ -51,7 +51,7 @@ export class LifeCycle {
   }
 
   /**
-   * @private
+   * @internal
    */
   registerWith(zone: NgZone, changeDetector: ChangeDetector = null) {
     if (isPresent(changeDetector)) {

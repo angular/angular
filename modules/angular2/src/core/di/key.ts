@@ -46,7 +46,7 @@ export class Key {
 }
 
 /**
- * @private
+ * @internal
  */
 export class KeyRegistry {
   private _allKeys = new Map<Object, Key>();

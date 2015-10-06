@@ -14,7 +14,7 @@ import {RenderViewRef, RenderElementRef, Renderer} from 'angular2/src/core/rende
  */
 export class ElementRef implements RenderElementRef {
   /**
-   * @private
+   * @internal
    *
    * Reference to the {@link ViewRef} that this `ElementRef` is part of.
    */
@@ -22,7 +22,7 @@ export class ElementRef implements RenderElementRef {
 
 
   /**
-   * @private
+   * @internal
    *
    * Index of the element inside the {@link ViewRef}.
    *
@@ -30,7 +30,7 @@ export class ElementRef implements RenderElementRef {
    */
   boundElementIndex: number;
   /**
-   * @private
+   * @internal
    */
   constructor(parentView: ViewRef, boundElementIndex: number, private _renderer: Renderer) {
     this.parentView = parentView;
@@ -38,7 +38,7 @@ export class ElementRef implements RenderElementRef {
   }
 
   /**
-   * @private
+   * @internal
    */
   get renderView(): RenderViewRef { return this.parentView.render; }
 

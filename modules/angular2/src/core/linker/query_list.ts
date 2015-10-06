@@ -46,10 +46,10 @@ export class QueryList<T> {
   toString(): string { return this._results.toString(); }
 
   /**
-   * @private
+   * @internal
    */
   reset(res: T[]): void { this._results = res; }
 
-  /** @private */
+  /** @internal */
   notifyOnChanges(): void { this._emitter.next(this); }
 }

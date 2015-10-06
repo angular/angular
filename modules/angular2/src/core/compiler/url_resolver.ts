@@ -145,7 +145,7 @@ function _buildFromEncodedParts(opt_scheme?: string, opt_userInfo?: string, opt_
  *    $7 = Related           fragment without #
  * </pre>
  * @type {!RegExp}
- * @private
+ * @internal
  */
 var _splitRe =
     RegExpWrapper.create('^' +

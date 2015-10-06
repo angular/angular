@@ -35,7 +35,7 @@ import {ProtoViewFactory} from './proto_view_factory';
 export class AppViewManager {
   private _protoViewFactory: ProtoViewFactory;
   /**
-   * @private
+   * @internal
    */
   constructor(private _viewPool: AppViewPool, private _viewListener: AppViewListener,
               private _utils: AppViewManagerUtils, private _renderer: Renderer,

@@ -27,12 +27,12 @@ class QueryList<T> extends Object
     return this._results.map(fn).toList();
   }
 
-  /** @private */
+  /** @internal */
   void reset(List<T> newList) {
     _results = newList;
   }
 
-  /** @private */
+  /** @internal */
   void notifyOnChanges() {
     _emitter.add(this);
   }

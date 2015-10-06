@@ -16,7 +16,7 @@ import {Map} from 'angular2/src/core/facade/collection';
 // TODO(i): refactor this to an interface
 export class RenderProtoViewRef {
   /**
-   * @private
+   * @internal
    */
   constructor() {}
 }
@@ -169,7 +169,7 @@ export interface RenderElementRef {
  */
 export class Renderer {
   /**
-   * @private
+   * @internal
    *
    * Private constructor is required so that this class gets converted into an interface in our
    * public api.

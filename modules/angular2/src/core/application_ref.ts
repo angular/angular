@@ -113,7 +113,7 @@ export function createNgZone(): NgZone {
 var _platform: PlatformRef;
 
 /**
- * @private
+ * @internal
  */
 export function platformCommon(bindings?: Array<Type | Binding | any[]>, initializer?: () => void):
     PlatformRef {
@@ -145,12 +145,12 @@ export function platformCommon(bindings?: Array<Type | Binding | any[]>, initial
  */
 export class PlatformRef {
   /**
-   * @private
+   * @internal
    */
   _applications: ApplicationRef[] = [];
 
   /**
-   * @private
+   * @internal
    */
   constructor(private _injector: Injector, private _dispose: () => void) {}
 
@@ -251,7 +251,7 @@ export class PlatformRef {
   }
 
   /**
-   * @private
+   * @internal
    */
   _applicationDisposed(app: ApplicationRef): void { ListWrapper.remove(this._applications, app); }
 }
@@ -266,7 +266,7 @@ export class ApplicationRef {
   private _rootComponents: ComponentRef[] = [];
 
   /**
-   * @private
+   * @internal
    */
   constructor(private _platform: PlatformRef, private _zone: NgZone, private _injector: Injector) {}
 
