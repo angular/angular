@@ -415,106 +415,8 @@ gulp.task('serve.e2e.dart', ['build.js.cjs'], function(neverDone) {
 
 
 // --------------
-// doc generation
+// d.ts generation
 var Dgeni = require('dgeni');
-var bower = require('bower');
-var webserver = require('gulp-webserver');
-
-gulp.task('docs/bower', function() {
-  var bowerTask = bower.commands.install(undefined, undefined, { cwd: 'docs' });
-  bowerTask.on('log', function (result) {
-    console.log('bower:', result.id, result.data);
-  });
-  bowerTask.on('error', function(error) {
-    console.log(error);
-  });
-  return bowerTask;
-});
-
-
-function createDocsTasks(options) {
-  var dgeniPackage = options.package;
-  var distDocsPath = options.path;
-  var taskPrefix = options.prefix;
-
-  gulp.task(taskPrefix + '/dgeni', function() {
-    try {
-      var dgeni = new Dgeni([require(dgeniPackage)]);
-      return dgeni.generate();
-    } catch(x) {
-      console.log(x);
-      console.log(x.stack);
-      throw x;
-    }
-  });
-
-  gulp.task(taskPrefix + '/assets', ['docs/bower'], function() {
-    return gulp.src('docs/bower_components/**/*')
-      .pipe(gulp.dest(distDocsPath + '/lib'));
-  });
-
-  gulp.task(taskPrefix + '/app', function() {
-    return gulp.src('docs/app/**/*')
-      .pipe(gulp.dest(distDocsPath));
-  });
-
-  gulp.task(taskPrefix, [taskPrefix + '/assets', taskPrefix + '/app', taskPrefix + '/dgeni']);
-  gulp.task(taskPrefix + '/watch', function() {
-    return watch('docs/app/**/*', [taskPrefix + '/app']);
-  });
-
-  gulp.task(taskPrefix + '/test', function (done) {
-    runJasmineTests(['docs/**/*.spec.js'], done);
-  });
-
-  gulp.task(taskPrefix + '/serve', function() {
-    gulp.src(distDocsPath + '/')
-      .pipe(webserver({
-        fallback: 'index.html'
-      }));
-  });
-}
-
-
-createDocsTasks({ package: './docs/docs-package', path: 'dist/docs', prefix: 'docs'});
-createDocsTasks({ package: './docs/public-docs-package', path: 'dist/public_docs', prefix: 'public_docs'});
-
-gulp.task('docs/angular.io', ['build/clean.docs_angular_io'], function() {
-  try {
-    var dgeni = new Dgeni([require('./docs/angular.io-package')]);
-    return dgeni.generate();
-  } catch(x) {
-    console.log(x);
-    console.log(x.stack);
-    throw x;
-  }
-});
-
-
-gulp.task('docs/angular.io/watch', function() {
-  watch(['modules/angular2/docs/**', 'modules/**/src/**'], ['docs/angular.io', 'docs/angular.io/copy']);
-});
-
-
-gulp.task('docs/angular.io/copy', function(){
-  var DOCS_DIRS = ['core', 'http', 'lifecycle_hooks', 'router', 'test'];
-  var DOCS_DIST = 'dist/angular.io/partials/api/angular2/';
-  var DOCS_IO_DIST = '../angular.io/public/docs/js/latest/api/';
-
-  var fs = require('fs');
-  var fse = require('fs-extra');
-
-  if (!fs.existsSync('../angular.io')) {
-    throw new Error('docs/angular.io-watch task requires the angular.io repo to be at ' + path.resolve('../angular.io'));
-  }
-
-  DOCS_DIRS.forEach(function(dir) {
-    var distIODir = DOCS_IO_DIST + dir;
-    fse.removeSync(distIODir);
-    fse.copySync(DOCS_DIST + dir, DOCS_IO_DIST + dir);
-  });
-});
-
 
 gulp.task('docs/typings', [], function() {
   try {
@@ -543,12 +445,12 @@ function runKarma(configFile, done) {
 }
 
 gulp.task('test.js', function(done) {
-  runSequence('test.unit.tools/ci', 'test.transpiler.unittest', 'docs/test', 'test.unit.js/ci',
+  runSequence('test.unit.tools/ci', 'test.transpiler.unittest', 'test.unit.js/ci',
               'test.unit.cjs/ci', 'test.typings', sequenceComplete(done));
 });
 
 gulp.task('test.dart', function(done) {
-  runSequence('versions.dart', 'test.transpiler.unittest', 'docs/test', 'test.unit.dart/ci',
+  runSequence('versions.dart', 'test.transpiler.unittest', 'test.unit.dart/ci',
               sequenceComplete(done));
 });
 
