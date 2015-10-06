@@ -1013,11 +1013,19 @@ gulp.task('broccoli.js.dev', ['build.tools'], function(done) {
 });
 
 gulp.task('!broccoli.js.dev', function() {
-  return angularBuilder.rebuildBrowserDevTree();
+  return angularBuilder.rebuildBrowserDevTree().then(function () {
+    // TODO: this is not ideal
+    return gulp.src('dist/js/bundle/*')
+      .pipe(gulp.dest('dist/js/dev/es5/bundle'));
+  });
 });
 
 gulp.task('!broccoli.js.prod', function() {
-  return angularBuilder.rebuildBrowserProdTree();
+  return angularBuilder.rebuildBrowserProdTree().then(function () {
+    // TODO: this is not ideal
+    return gulp.src('dist/js/bundle/*')
+      .pipe(gulp.dest('dist/js/prod/es5/bundle'));
+  });
 });
 
 gulp.task('build.js.dev', ['build/clean.js'], function(done) {
