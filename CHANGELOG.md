@@ -1,3 +1,34 @@
+<a name="2.0.0-alpha.39"></a>
+# 2.0.0-alpha.39 (2015-10-06)
+
+
+### Bug Fixes
+
+* **core:** keep styles for `ViewEncapsulation.Native` isolated per component ([0299d4a](https://github.com/angular/angular/commit/0299d4a)), closes [#4513](https://github.com/angular/angular/issues/4513) [#4524](https://github.com/angular/angular/issues/4524)
+* **core:** set `ViewEncapsulation.Emulated` as the default again ([a9aef8e](https://github.com/angular/angular/commit/a9aef8e)), closes [#4494](https://github.com/angular/angular/issues/4494)
+* **dart/transformer:** Correctly handle const object annotations ([decdbea](https://github.com/angular/angular/commit/decdbea)), closes [#4481](https://github.com/angular/angular/issues/4481)
+* **gulp:** use the new karma.Server api ([758efba](https://github.com/angular/angular/commit/758efba)), closes [#4375](https://github.com/angular/angular/issues/4375)
+* **http:** add missing semicolon ([150cc22](https://github.com/angular/angular/commit/150cc22))
+* **karma:** socket.io 1.x transport is now called 'polling' instead of 'xhr-polling' ([39e9bb6](https://github.com/angular/angular/commit/39e9bb6))
+* add test_lib.d.ts to type definitions in generated package.json ([4ebb1a9](https://github.com/angular/angular/commit/4ebb1a9))
+* **karma-dart-evalcache:** make the code compatible with karma 0.13.x ([a649992](https://github.com/angular/angular/commit/a649992))
+* **npm_publish:** update transitive typings provided in npm distribution ([2ebc74d](https://github.com/angular/angular/commit/2ebc74d))
+* **render:** keep bindings of components in content and view in the right order ([6fe8b85](https://github.com/angular/angular/commit/6fe8b85)), closes [#4522](https://github.com/angular/angular/issues/4522) [#4523](https://github.com/angular/angular/issues/4523)
+* **shims:** Don't rely on prefixed requestAnimationFrame ([9679fc9](https://github.com/angular/angular/commit/9679fc9)), closes [#4394](https://github.com/angular/angular/issues/4394)
+* **tslint:** fix d.ts file paths for node_modules dependencies ([2628631](https://github.com/angular/angular/commit/2628631))
+* **typings:** repair broken type-checking for StringMap ([208f3d4](https://github.com/angular/angular/commit/208f3d4)), closes [#4487](https://github.com/angular/angular/issues/4487)
+* **typings:** repair broken typechecks ([6093e28](https://github.com/angular/angular/commit/6093e28)), closes [#4507](https://github.com/angular/angular/issues/4507) [#4508](https://github.com/angular/angular/issues/4508)
+
+### Features
+
+* **upgrade:** support binding of Ng2 form Ng1 ([09371a3](https://github.com/angular/angular/commit/09371a3)), closes [#4458](https://github.com/angular/angular/issues/4458)
+
+
+### BREAKING CHANGES
+
+* `Renderer.registerComponent` now takes an additional argument ([0299d4a](https://github.com/angular/angular/commit/0299d4a)).
+
+
 <a name="2.0.0-alpha.38"></a>
 # 2.0.0-alpha.38 (2015-10-03)
 
@@ -230,10 +261,10 @@ class A {@Property() one; @Event() two;}
 * After:
 class A {@Input() one; @Output() two;}
 
-#### Compiler 
+#### Compiler
 
 With a [new compiler](https://github.com/angular/angular/commit/76247b70973e3266e504e05381fbd7d85d4de5c6) `NgNonBindable`
- is not a directive but rather a special attribute (`ng-non-bindable`) recognized by the compiler. This means that you 
+ is not a directive but rather a special attribute (`ng-non-bindable`) recognized by the compiler. This means that you
 can't import / use the `NgNonBindable` as a directive. You should remove all the imports for the the `NgNonBindable`
 directive and all the references to it in the `directives` section of the `@View` decorator.
 
