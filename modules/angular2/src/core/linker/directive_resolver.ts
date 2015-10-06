@@ -12,7 +12,8 @@ import {
   ContentChildrenMetadata,
   ViewChildrenMetadata,
   ContentChildMetadata,
-  ViewChildMetadata
+  ViewChildMetadata,
+  QueryMetadata
 } from 'angular2/src/core/metadata';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 
@@ -35,7 +36,7 @@ export class DirectiveResolver {
         var metadata = typeMetadata[i];
         if (metadata instanceof DirectiveMetadata) {
           var propertyMetadata = reflector.propMetadata(type);
-          return this._mergeWithPropertyMetadata(metadata, propertyMetadata);
+          return this._mergeWithPropertyMetadata(metadata, propertyMetadata, type);
         }
       }
     }
@@ -43,7 +44,8 @@ export class DirectiveResolver {
   }
 
   private _mergeWithPropertyMetadata(dm: DirectiveMetadata,
-                                     propertyMetadata: {[key: string]: any[]}): DirectiveMetadata {
+                                     propertyMetadata: {[key: string]: any[]},
+                                     type: Type): DirectiveMetadata {
     var inputs = [];
     var outputs = [];
     var host: {[key: string]: string} = {};
@@ -97,16 +99,29 @@ export class DirectiveResolver {
         }
       });
     });
-    return this._merge(dm, inputs, outputs, host, queries);
+    return this._merge(dm, inputs, outputs, host, queries, type);
+  }
+
+  private _mergeQueries(dm: DirectiveMetadata, queries: {[key: string]: any}, type: Type):
+      {[key: string]: any} {
+    var mergedQueries =
+        isPresent(dm.queries) ? StringMapWrapper.merge(dm.queries, queries) : queries;
+    StringMapWrapper.forEach(mergedQueries, (query: any, propName: string) => {
+      if (!isValidDirective(query.selector)) {
+        throw new BaseException(
+            `Unexpected directive value '${stringify(query.selector)}' on the '${stringify(query)}' of component '${stringify(type)}'`);
+      }
+    });
+    return mergedQueries;
   }
 
   private _merge(dm: DirectiveMetadata, inputs: string[], outputs: string[],
-                 host: {[key: string]: string}, queries: {[key: string]: any}): DirectiveMetadata {
+                 host: {[key: string]: string}, queries: {[key: string]: any},
+                 type: Type): DirectiveMetadata {
     var mergedInputs = isPresent(dm.inputs) ? ListWrapper.concat(dm.inputs, inputs) : inputs;
     var mergedOutputs = isPresent(dm.outputs) ? ListWrapper.concat(dm.outputs, outputs) : outputs;
     var mergedHost = isPresent(dm.host) ? StringMapWrapper.merge(dm.host, host) : host;
-    var mergedQueries =
-        isPresent(dm.queries) ? StringMapWrapper.merge(dm.queries, queries) : queries;
+    var mergedQueries = this._mergeQueries(dm, queries, type);
 
     // TODO: remove after migrating from properties to inputs
     if (mergedInputs.length == 0 && isPresent(dm.properties)) mergedInputs = dm.properties;
@@ -139,4 +154,8 @@ export class DirectiveResolver {
       });
     }
   }
+}
+
+function isValidDirective(value: Type): boolean {
+  return isPresent(value) && (value instanceof Type);
 }

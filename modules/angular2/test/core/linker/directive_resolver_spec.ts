@@ -81,27 +81,53 @@ class SomeDirectiveWithHostListeners {
   }
 }
 
-@Directive({selector: 'someDirective', queries: {"cs": new ContentChildren("c")}})
+@Directive({selector: 'someDirective', queries: {"c": new ContentChildren(SomeChildDirective)}})
 class SomeDirectiveWithContentChildren {
-  @ContentChildren("a") as: any;
+  @ContentChildren(SomeDirective) a: any;
   c;
 }
 
-@Directive({selector: 'someDirective', queries: {"cs": new ViewChildren("c")}})
+@Directive(
+    {selector: 'someDirective', queries: {"c": new ContentChildren(SomeDirectiveWithViewChildren)}})
+class SomeDirectiveWithWrongContentChildren {
+  @ContentChildren(SomeDirective) a: any;
+  c;
+}
+
+@Directive({selector: 'someDirective', queries: {"c": new ViewChildren(SomeChildDirective)}})
 class SomeDirectiveWithViewChildren {
-  @ViewChildren("a") as: any;
+  @ViewChildren(SomeDirective) a: any;
   c;
 }
 
-@Directive({selector: 'someDirective', queries: {"c": new ContentChild("c")}})
+@Directive(
+    {selector: 'someDirective', queries: {"c": new ViewChildren(SomeDirectiveWithContentChild)}})
+class SomeDirectiveWithWrongViewChildren {
+  @ViewChildren(SomeDirective) a: any;
+  c;
+}
+
+@Directive({selector: 'someDirective', queries: {"c": new ContentChild(SomeChildDirective)}})
 class SomeDirectiveWithContentChild {
-  @ContentChild("a") a: any;
+  @ContentChild(SomeDirective) a: any;
   c;
 }
 
-@Directive({selector: 'someDirective', queries: {"c": new ViewChild("c")}})
+@Directive({selector: 'someDirective', queries: {"c": new ContentChild(SomeChildDirective)}})
+class SomeDirectiveWithWrongContentChild {
+  @ContentChild(SomeDirectiveWithViewChild) a: any;
+  c;
+}
+
+@Directive({selector: 'someDirective', queries: {"c": new ViewChild(SomeChildDirective)}})
 class SomeDirectiveWithViewChild {
-  @ViewChild("a") a: any;
+  @ViewChild(SomeDirective) a: any;
+  c;
+}
+
+@Directive({selector: 'someDirective', queries: {"c": new ViewChild(SomeDirectiveWithoutMetadata)}})
+class SomeDirectiveWithWrongViewChild {
+  @ViewChild(SomeDirective) a: any;
   c;
 }
 
@@ -184,25 +210,55 @@ export function main() {
       it('should append ContentChildren', () => {
         var directiveMetadata = resolver.resolve(SomeDirectiveWithContentChildren);
         expect(directiveMetadata.queries)
-            .toEqual({"cs": new ContentChildren("c"), "as": new ContentChildren("a")});
+            .toEqual({
+              "c": new ContentChildren(SomeChildDirective),
+              "a": new ContentChildren(SomeDirective)
+            });
+      });
+
+      it('should fail appending ContentChildren when is used inappropriate selector', () => {
+        expect(() => resolver.resolve(SomeDirectiveWithWrongContentChildren))
+            .toThrowError(
+                "Unexpected directive value 'undefined' on the '@ContentChildren(undefined)' of component 'SomeDirectiveWithWrongContentChildren'");
       });
 
       it('should append ViewChildren', () => {
         var directiveMetadata = resolver.resolve(SomeDirectiveWithViewChildren);
         expect(directiveMetadata.queries)
-            .toEqual({"cs": new ViewChildren("c"), "as": new ViewChildren("a")});
+            .toEqual(
+                {"c": new ViewChildren(SomeChildDirective), "a": new ViewChildren(SomeDirective)});
       });
+
+      it('should fail appending ViewChildren when is used inappropriate selector', () => {
+        expect(() => resolver.resolve(SomeDirectiveWithWrongViewChildren))
+            .toThrowError(
+                "Unexpected directive value 'undefined' on the '@ViewChildren(undefined)' of component 'SomeDirectiveWithWrongViewChildren'");
+      });
+
 
       it('should append ContentChild', () => {
         var directiveMetadata = resolver.resolve(SomeDirectiveWithContentChild);
         expect(directiveMetadata.queries)
-            .toEqual({"c": new ContentChild("c"), "a": new ContentChild("a")});
+            .toEqual(
+                {"c": new ContentChild(SomeChildDirective), "a": new ContentChild(SomeDirective)});
+      });
+
+      it('should fail appending ContentChild when is used inappropriate selector', () => {
+        expect(() => resolver.resolve(SomeDirectiveWithWrongContentChild))
+            .toThrowError(
+                "Unexpected directive value 'undefined' on the '@ContentChild(undefined)' of component 'SomeDirectiveWithWrongContentChild'");
       });
 
       it('should append ViewChild', () => {
         var directiveMetadata = resolver.resolve(SomeDirectiveWithViewChild);
         expect(directiveMetadata.queries)
-            .toEqual({"c": new ViewChild("c"), "a": new ViewChild("a")});
+            .toEqual({"c": new ViewChild(SomeChildDirective), "a": new ViewChild(SomeDirective)});
+      });
+
+      it('should fail appending ViewChild when is used inappropriate selector', () => {
+        expect(() => resolver.resolve(SomeDirectiveWithWrongViewChild))
+            .toThrowError(
+                "Unexpected directive value 'undefined' on the '@ViewChild(undefined)' of component 'SomeDirectiveWithWrongViewChild'");
       });
     });
   });
