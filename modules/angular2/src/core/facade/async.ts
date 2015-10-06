@@ -137,7 +137,7 @@ export class EventEmitter extends Observable {
                                    () => generator.return ? generator.return () : null);
   }
 
-  toRx(): any { return this; }
+  toRx(): any { return this._subject; }
 
   next(value: any) { this._subject.next(value); }
 
