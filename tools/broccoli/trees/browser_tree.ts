@@ -90,9 +90,18 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   });
 
   var scriptPathPatternReplacement = {
-    match: '@@FILENAME_NO_EXT',
+    match: '@@PATH',
     replacement: function(replacement, relativePath) {
-      return relativePath.replace(/\.\w+$/, '').replace(/\\/g, '/');
+      var parts = relativePath.replace(/\\/g, '/').split('/');
+      return parts.splice(0, parts.length - 1).join('/');
+    }
+  };
+
+  var scriptFilePatternReplacement = {
+    match: '@@FILENAME',
+    replacement: function(replacement, relativePath) {
+      var parts = relativePath.replace(/\\/g, '/').split('/');
+      return parts[parts.length - 1].replace('html', 'js');
     }
   };
 
@@ -171,7 +180,8 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     files: ['examples*/**/*.html'],
     patterns: [
       {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS')},
-      scriptPathPatternReplacement
+      scriptPathPatternReplacement,
+      scriptFilePatternReplacement
     ]
   });
 
@@ -180,7 +190,8 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     files: ['benchmarks/**'],
     patterns: [
       {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS_benchmarks')},
-      scriptPathPatternReplacement
+      scriptPathPatternReplacement,
+      scriptFilePatternReplacement
     ]
   });
 
@@ -188,8 +199,16 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     files: ['benchmarks_external/**'],
     patterns: [
       {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS_benchmarks_external')},
-      scriptPathPatternReplacement
+      scriptPathPatternReplacement,
+      scriptFilePatternReplacement
     ]
+  });
+
+  // We need to replace the regular angular bundle with the web-worker bundle
+  // for web-worker e2e tests.
+  htmlTree = replace(htmlTree, {
+    files: ['examples*/**/web_workers/**/*.html'],
+    patterns: [{match: "/bundle/angular2.dev.js", replacement: "/bundle/web_worker/ui.dev.js"}]
   });
 
   var assetsTree =

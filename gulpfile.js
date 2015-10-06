@@ -1123,11 +1123,11 @@ gulp.task('!bundle.copy', [
   '!bundle.web_worker.js.dev.deps',
   '!bundle.js.sfx.dev.deps',
   '!router.bundle.js.dev'
-], function () {
-  return merge2(
-    gulp.src('dist/js/bundle/*').pipe(gulp.dest('dist/js/prod/es5/bundle')),
-    gulp.src('dist/js/bundle/*').pipe(gulp.dest('dist/js/dev/es5/bundle')));
-});
+],
+          function() {
+            return merge2(gulp.src('dist/js/bundle/**').pipe(gulp.dest('dist/js/prod/es5/bundle')),
+                          gulp.src('dist/js/bundle/**').pipe(gulp.dest('dist/js/dev/es5/bundle')));
+          });
 
 gulp.task('bundles.js', [
   '!bundle.js.prod.deps',
