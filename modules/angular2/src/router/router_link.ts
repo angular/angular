@@ -12,21 +12,21 @@ import {Instruction, stringifyInstruction} from './instruction';
 
  * ```
  * @RouteConfig([
- *   { path: '/user', component: UserCmp, as: 'user' }
+ *   { path: '/user', component: UserCmp, as: 'User' }
  * ]);
  * class MyComp {}
  * ```
  *
- * When linking to this `user` route, you can write:
+ * When linking to this `User` route, you can write:
  *
  * ```
- * <a [router-link]="['./user']">link to user component</a>
+ * <a [router-link]="['./User']">link to user component</a>
  * ```
  *
  * RouterLink expects the value to be an array of route names, followed by the params
- * for that level of routing. For instance `['/team', {teamId: 1}, 'user', {userId: 2}]`
- * means that we want to generate a link for the `team` route with params `{teamId: 1}`,
- * and with a child route `user` with params `{userId: 2}`.
+ * for that level of routing. For instance `['/Team', {teamId: 1}, 'User', {userId: 2}]`
+ * means that we want to generate a link for the `Team` route with params `{teamId: 1}`,
+ * and with a child route `User` with params `{userId: 2}`.
  *
  * The first route name should be prepended with `/`, `./`, or `../`.
  * If the route begins with `/`, the router will look up the route from the root of the app.
