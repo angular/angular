@@ -1011,13 +1011,13 @@ gulp.task('!router.bundle.js.dev', ['build.js.dev'], function() {
     { sourceMaps: true });
 });
 
-gulp.task('!test.bundle.js.dev', ['build.js.dev'], function() {
+gulp.task('!bundle.testing', ['build.js.dev'], function() {
   var devBundleConfig = merge(true, bundleConfig);
   devBundleConfig.paths = merge(true, devBundleConfig.paths, {"*": "dist/js/dev/es5/*.js"});
   return bundler.bundle(
     devBundleConfig,
-    'angular2/test + angular2/mock - angular2/angular2',
-    './dist/js/bundle/test_lib.dev.js',
+    'angular2/test_lib + angular2/mock - angular2/angular2',
+    './dist/js/bundle/test_lib.js',
     { sourceMaps: true });
 });
 
@@ -1136,8 +1136,8 @@ gulp.task('bundles.js', [
   '!bundle.web_worker.js.dev.deps',
   '!bundle.js.sfx.dev.deps',
   '!router.bundle.js.dev',
-  '!bundle.copy',
-  '!test.bundle.js.dev']);
+  '!bundle.testing',
+  '!bundle.copy']);
 
 gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs', 'bundles.js', 'benchpress.bundle']);
 
