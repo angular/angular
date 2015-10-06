@@ -230,6 +230,7 @@ export class ContentChildrenMetadata extends QueryMetadata {
   constructor(_selector: Type | string, {descendants = false}: {descendants?: boolean} = {}) {
     super(_selector, {descendants: descendants});
   }
+  toString(): string { return `@ContentChildren(${stringify(this.selector)})`; }
 }
 
 // TODO: add an example after ContentChild and ViewChild are in master
@@ -256,6 +257,7 @@ export class ContentChildrenMetadata extends QueryMetadata {
 @CONST()
 export class ContentChildMetadata extends QueryMetadata {
   constructor(_selector: Type | string) { super(_selector, {descendants: true, first: true}); }
+  toString(): string { return `@ContentChild(${stringify(this.selector)})`; }
 }
 
 /**
@@ -331,6 +333,7 @@ export class ViewQueryMetadata extends QueryMetadata {
 @CONST()
 export class ViewChildrenMetadata extends ViewQueryMetadata {
   constructor(_selector: Type | string) { super(_selector, {descendants: true}); }
+  toString(): string { return `@ViewChildren(${stringify(this.selector)})`; }
 }
 
 /**
@@ -357,4 +360,5 @@ export class ViewChildrenMetadata extends ViewQueryMetadata {
 @CONST()
 export class ViewChildMetadata extends ViewQueryMetadata {
   constructor(_selector: Type | string) { super(_selector, {descendants: true, first: true}); }
+  toString(): string { return `@ViewChild(${stringify(this.selector)})`; }
 }
