@@ -1,16 +1,17 @@
 import {isPresent} from 'angular2/src/core/facade/lang';
+import {unimplemented} from 'angular2/src/core/facade/exceptions';
 import * as viewModule from './view';
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {RenderViewRef, RenderFragmentRef} from 'angular2/src/core/render/api';
 
 // This is a workaround for privacy in Dart as we don't have library parts
 export function internalView(viewRef: ViewRef): viewModule.AppView {
-  return viewRef._view;
+  return (<ViewRef_>viewRef)._view;
 }
 
 // This is a workaround for privacy in Dart as we don't have library parts
 export function internalProtoView(protoViewRef: ProtoViewRef): viewModule.AppProtoView {
-  return isPresent(protoViewRef) ? protoViewRef._protoView : null;
+  return isPresent(protoViewRef) ? (<ProtoViewRef_>protoViewRef)._protoView : null;
 }
 
 
@@ -83,31 +84,34 @@ export interface HostViewRef {
  * <!-- /ViewRef: outer-0 -->
  * ```
  */
-export class ViewRef implements HostViewRef {
+export abstract class ViewRef implements HostViewRef {
+  /**
+   * Sets `value` of local variable called `variableName` in this View.
+   */
+  abstract setLocal(variableName: string, value: any): void;
+
+  get changeDetectorRef(): ChangeDetectorRef { return unimplemented(); }
+  set changeDetectorRef(value: ChangeDetectorRef) {
+    unimplemented();  // TODO: https://github.com/Microsoft/TypeScript/issues/12
+  }
+}
+
+export class ViewRef_ extends ViewRef {
   private _changeDetectorRef: ChangeDetectorRef = null;
 
-  /**
-   * @internal
-   */
-  constructor(public _view: viewModule.AppView) {}
+  constructor(public _view: viewModule.AppView) { super(); }
 
   /**
-   * @internal
-   *
    * Return `RenderViewRef`
    */
   get render(): RenderViewRef { return this._view.render; }
 
   /**
-   * @internal
-   *
    * Return `RenderFragmentRef`
    */
   get renderFragment(): RenderFragmentRef { return this._view.renderFragment; }
 
   /**
-   * @internal
-   *
    * Return `ChangeDetectorRef`
    */
   get changeDetectorRef(): ChangeDetectorRef {
@@ -116,13 +120,7 @@ export class ViewRef implements HostViewRef {
     }
     return this._changeDetectorRef;
   }
-  set changeDetectorRef(value: ChangeDetectorRef) {
-    throw "readonly";  // TODO: https://github.com/Microsoft/TypeScript/issues/12
-  }
 
-  /**
-   * Sets `value` of local variable called `variableName` in this View.
-   */
   setLocal(variableName: string, value: any): void { this._view.setLocal(variableName, value); }
 }
 
@@ -165,9 +163,8 @@ export class ViewRef implements HostViewRef {
  *
  * Notice that the original template is broken down into two separate ProtoViews.
  */
-export class ProtoViewRef {
-  /**
-   * @internal
-   */
-  constructor(public _protoView: viewModule.AppProtoView) {}
+export abstract class ProtoViewRef {}
+
+export class ProtoViewRef_ extends ProtoViewRef {
+  constructor(public _protoView: viewModule.AppProtoView) { super(); }
 }

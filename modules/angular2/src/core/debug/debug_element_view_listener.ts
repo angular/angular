@@ -5,7 +5,7 @@ import {AppViewListener} from 'angular2/src/core/linker/view_listener';
 import {AppView} from 'angular2/src/core/linker/view';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {Renderer} from 'angular2/src/core/render/api';
-import {DebugElement} from './debug_element';
+import {DebugElement, DebugElement_} from './debug_element';
 
 const NG_ID_PROPERTY = 'ngid';
 const INSPECT_GLOBAL_NAME = 'ng.probe';
@@ -39,7 +39,7 @@ export function inspectNativeElement(element): DebugElement {
   if (isPresent(elId)) {
     var view = _allViewsById.get(elId[0]);
     if (isPresent(view)) {
-      return new DebugElement(view, elId[1]);
+      return new DebugElement_(view, elId[1]);
     }
   }
   return null;

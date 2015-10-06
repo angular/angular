@@ -13,6 +13,7 @@ import {Map, MapWrapper, StringMapWrapper, ListWrapper} from 'angular2/src/core/
 import {RouteHandler} from './route_handler';
 import {Url, RootUrl, serializeParams} from './url_parser';
 import {ComponentInstruction} from './instruction';
+import {ComponentInstruction_} from "./instruction";
 
 class TouchMap {
   map: {[key: string]: string} = {};
@@ -297,7 +298,7 @@ export class PathRecognizer {
     if (this._cache.has(hashKey)) {
       return this._cache.get(hashKey);
     }
-    var instruction = new ComponentInstruction(urlPath, urlParams, _recognizer, params);
+    var instruction = new ComponentInstruction_(urlPath, urlParams, _recognizer, params);
     this._cache.set(hashKey, instruction);
 
     return instruction;

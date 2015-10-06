@@ -255,29 +255,31 @@ export class Binding {
  * expect(injector.get('message')).toEqual('Hello');
  * ```
  */
-export class ResolvedBinding {
+export abstract class ResolvedBinding {
   /**
-   * @internal
+   * A key, usually a `Type`.
    */
-  constructor(
-      /**
-       * A key, usually a `Type`.
-       */
-      public key: Key,
+  public key: Key;
 
-      /**
-       * @internal
-       * Factory function which can return an instance of an object represented by a key.
-       */
-      public resolvedFactories: ResolvedFactory[],
+  /**
+   * Factory function which can return an instance of an object represented by a key.
+   */
+  public resolvedFactories: ResolvedFactory[];
 
-      /**
-       * @internal
-       * Indicates if the binding is a multi-binding or a regular binding.
-       */
-      public multiBinding: boolean) {}
+  /**
+   * Indicates if the binding is a multi-binding or a regular binding.
+   */
+  public multiBinding: boolean;
+}
 
-  /** @internal */
+export class ResolvedBinding_ extends ResolvedBinding {
+  constructor(key: Key, resolvedFactories: ResolvedFactory[], multiBinding: boolean) {
+    super();
+    this.key = key;
+    this.resolvedFactories = resolvedFactories;
+    this.multiBinding = multiBinding;
+  }
+
   get resolvedFactory(): ResolvedFactory { return this.resolvedFactories[0]; }
 }
 
@@ -463,7 +465,7 @@ export function resolveFactory(binding: Binding): ResolvedFactory {
  * convenience binding syntax.
  */
 export function resolveBinding(binding: Binding): ResolvedBinding {
-  return new ResolvedBinding(Key.get(binding.token), [resolveFactory(binding)], false);
+  return new ResolvedBinding_(Key.get(binding.token), [resolveFactory(binding)], false);
 }
 
 /**
@@ -474,11 +476,11 @@ export function resolveBindings(bindings: Array<Type | Binding | any[]>): Resolv
       _normalizeBindings(bindings, new Map<number, _NormalizedBinding | _NormalizedBinding[]>()));
   return normalized.map(b => {
     if (b instanceof _NormalizedBinding) {
-      return new ResolvedBinding(b.key, [b.resolvedFactory], false);
+      return new ResolvedBinding_(b.key, [b.resolvedFactory], false);
 
     } else {
       var arr = <_NormalizedBinding[]>b;
-      return new ResolvedBinding(arr[0].key, arr.map(_ => _.resolvedFactory), true);
+      return new ResolvedBinding_(arr[0].key, arr.map(_ => _.resolvedFactory), true);
     }
   });
 }

@@ -3,6 +3,7 @@ import {ComponentRef} from 'angular2/src/core/linker/dynamic_component_loader';
 import {isPresent, NumberWrapper} from 'angular2/src/core/facade/lang';
 import {performance, window} from 'angular2/src/core/facade/browser';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {ComponentRef_} from "../core/linker/dynamic_component_loader";
 
 /**
  * Entry point for all Angular debug tools. This object corresponds to the `ng`
@@ -21,7 +22,7 @@ export class AngularTools {
 export class AngularProfiler {
   lifeCycle: LifeCycle;
 
-  constructor(ref: ComponentRef) { this.lifeCycle = ref.injector.get(LifeCycle); }
+  constructor(ref: ComponentRef) { this.lifeCycle = (<ComponentRef_>ref).injector.get(LifeCycle); }
 
   /**
    * Exercises change detection in a loop and then prints the average amount of

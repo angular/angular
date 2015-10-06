@@ -9,7 +9,7 @@ import {
   Binding,
   NgIf
 } from 'angular2/core';
-
+import {ComponentRef_} from 'angular2/src/core/linker/dynamic_component_loader';
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
@@ -96,10 +96,10 @@ export function main() {
   function initNg2() {
     bootstrap(AppComponentWithStaticTree, createBindings())
         .then((ref) => {
-          var injector = ref.injector;
+          var injector = (<ComponentRef_>ref).injector;
           lifeCycle = injector.get(LifeCycle);
 
-          app = ref.hostComponent;
+          app = (<ComponentRef_>ref).hostComponent;
           bindAction('#ng2DestroyDom', ng2DestroyDom);
           bindAction('#ng2CreateDom', ng2CreateDom);
           bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));

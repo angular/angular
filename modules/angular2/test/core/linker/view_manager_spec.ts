@@ -38,6 +38,10 @@ import {
   createNestedElBinder,
   createProtoElInjector
 } from './view_manager_utils_spec';
+import {ProtoViewRef_} from "../../../src/core/linker/view_ref";
+import {ViewRef_} from "../../../src/core/linker/view_ref";
+import {AppViewManager_} from "../../../src/core/linker/view_manager";
+import {TemplateRef_} from "../../../src/core/linker/template_ref";
 
 export function main() {
   // TODO(tbosch): add missing tests
@@ -51,9 +55,9 @@ export function main() {
     var manager: AppViewManager;
     var createdRenderViews: RenderViewWithFragments[];
 
-    function wrapPv(protoView: AppProtoView): ProtoViewRef { return new ProtoViewRef(protoView); }
+    function wrapPv(protoView: AppProtoView): ProtoViewRef { return new ProtoViewRef_(protoView); }
 
-    function wrapView(view: AppView): ViewRef { return new ViewRef(view); }
+    function wrapView(view: AppView): ViewRef { return new ViewRef_(view); }
 
     function resetSpies() {
       viewListener.spy('viewCreated').reset();
@@ -73,7 +77,7 @@ export function main() {
       viewListener = new SpyAppViewListener();
       viewPool = new SpyAppViewPool();
       linker = new SpyProtoViewFactory();
-      manager = new AppViewManager(viewPool, viewListener, utils, renderer, linker);
+      manager = new AppViewManager_(viewPool, viewListener, utils, renderer, linker);
       createdRenderViews = [];
 
       renderer.spy('createRootHostView')
@@ -196,7 +200,7 @@ export function main() {
           hostView =
               internalView(<ViewRef>manager.createRootHostView(wrapPv(hostProtoView), null, null));
           vcRef = hostView.elementRefs[1];
-          templateRef = new TemplateRef(hostView.elementRefs[1]);
+          templateRef = new TemplateRef_(hostView.elementRefs[1]);
           resetSpies();
         });
 
@@ -348,7 +352,7 @@ export function main() {
           hostView =
               internalView(<ViewRef>manager.createRootHostView(wrapPv(hostProtoView), null, null));
           vcRef = hostView.elementRefs[1];
-          templateRef = new TemplateRef(hostView.elementRefs[1]);
+          templateRef = new TemplateRef_(hostView.elementRefs[1]);
           firstChildView =
               internalView(manager.createEmbeddedViewInContainer(vcRef, 0, templateRef));
           resetSpies();
@@ -420,7 +424,7 @@ export function main() {
             hostView = internalView(
                 <ViewRef>manager.createRootHostView(wrapPv(hostProtoView), null, null));
             vcRef = hostView.elementRefs[1];
-            templateRef = new TemplateRef(hostView.elementRefs[1]);
+            templateRef = new TemplateRef_(hostView.elementRefs[1]);
             firstChildView =
                 internalView(manager.createEmbeddedViewInContainer(vcRef, 0, templateRef));
             secondChildView =
@@ -473,7 +477,7 @@ export function main() {
             hostView = internalView(
                 <ViewRef>manager.createRootHostView(wrapPv(hostProtoView), null, null));
             vcRef = hostView.elementRefs[1];
-            templateRef = new TemplateRef(hostView.elementRefs[1]);
+            templateRef = new TemplateRef_(hostView.elementRefs[1]);
             nestedChildViews = [];
             childViews = [];
             nestedVcRefs = [];

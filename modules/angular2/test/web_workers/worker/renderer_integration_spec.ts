@@ -52,6 +52,8 @@ import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {createPairedMessageBuses, PairedMessageBuses} from '../shared/web_worker_test_util';
 import {ServiceMessageBrokerFactory} from 'angular2/src/web_workers/shared/service_message_broker';
 import {WebWorkerEventDispatcher} from 'angular2/src/web_workers/worker/event_dispatcher';
+import {ServiceMessageBrokerFactory_} from "../../../src/web_workers/shared/service_message_broker";
+import {ClientMessageBrokerFactory_} from "../../../src/web_workers/shared/client_message_broker";
 
 
 export function main() {
@@ -63,10 +65,11 @@ export function main() {
     var workerMessageBus = messageBuses.worker;
 
     // set up the worker side
-    var webWorkerBrokerFactory = new ClientMessageBrokerFactory(workerMessageBus, workerSerializer);
+    var webWorkerBrokerFactory =
+        new ClientMessageBrokerFactory_(workerMessageBus, workerSerializer);
 
     // set up the ui side
-    var uiMessageBrokerFactory = new ServiceMessageBrokerFactory(uiMessageBus, uiSerializer);
+    var uiMessageBrokerFactory = new ServiceMessageBrokerFactory_(uiMessageBus, uiSerializer);
     var renderer = new MessageBasedRenderer(uiMessageBrokerFactory, uiMessageBus, uiSerializer,
                                             uiRenderProtoViewStore, uiRenderViewStore, domRenderer);
     renderer.start();

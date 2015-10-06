@@ -1,15 +1,7 @@
 import {ChangeDetector} from './interfaces';
 import {ChangeDetectionStrategy} from './constants';
 
-/**
- * Reference to a component's change detection object.
- */
-export class ChangeDetectorRef {
-  /**
-   * @internal
-   */
-  constructor(private _cd: ChangeDetector) {}
-
+export abstract class ChangeDetectorRef {
   /**
    * Marks all {@link OnPush} ancestors as to be checked.
    *
@@ -48,7 +40,7 @@ export class ChangeDetectorRef {
    * bootstrap(App);
    * ```
    */
-  markForCheck(): void { this._cd.markPathToRootAsCheckOnce(); }
+  abstract markForCheck(): void;
 
   /**
    * Detaches the change detector from the change detector tree.
@@ -107,7 +99,7 @@ export class ChangeDetectorRef {
    * bootstrap(App);
    * ```
    */
-  detach(): void { this._cd.mode = ChangeDetectionStrategy.Detached; }
+  abstract detach(): void;
 
   /**
    * Checks the change detector and its children.
@@ -130,7 +122,7 @@ export class ChangeDetectorRef {
    *
    * See {@link detach} for more information.
    */
-  detectChanges(): void { this._cd.detectChanges(); }
+  abstract detectChanges(): void;
 
   /**
    * Reattach the change detector to the change detector tree.
@@ -190,6 +182,15 @@ export class ChangeDetectorRef {
    * bootstrap(App);
    * ```
    */
+  abstract reattach(): void;
+}
+
+export class ChangeDetectorRef_ extends ChangeDetectorRef {
+  constructor(private _cd: ChangeDetector) { super(); }
+
+  markForCheck(): void { this._cd.markPathToRootAsCheckOnce(); }
+  detach(): void { this._cd.mode = ChangeDetectionStrategy.Detached; }
+  detectChanges(): void { this._cd.detectChanges(); }
   reattach(): void {
     this._cd.mode = ChangeDetectionStrategy.CheckAlways;
     this.markForCheck();

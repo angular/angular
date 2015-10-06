@@ -9,10 +9,10 @@ import {
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
 import * as viewModule from './view';
-import {ElementRef} from './element_ref';
+import {ElementRef, ElementRef_} from './element_ref';
 import {ProtoViewRef, ViewRef, HostViewRef, internalView, internalProtoView} from './view_ref';
 import {ViewContainerRef} from './view_container_ref';
-import {TemplateRef} from './template_ref';
+import {TemplateRef, TemplateRef_} from './template_ref';
 import {
   Renderer,
   RenderViewRef,
@@ -31,25 +31,11 @@ import {ProtoViewFactory} from './proto_view_factory';
  * Most applications should use higher-level abstractions like {@link DynamicComponentLoader} and
  * {@link ViewContainerRef} instead.
  */
-@Injectable()
-export class AppViewManager {
-  private _protoViewFactory: ProtoViewFactory;
-  /**
-   * @internal
-   */
-  constructor(private _viewPool: AppViewPool, private _viewListener: AppViewListener,
-              private _utils: AppViewManagerUtils, private _renderer: Renderer,
-              @Inject(forwardRef(() => ProtoViewFactory)) _protoViewFactory) {
-    this._protoViewFactory = _protoViewFactory;
-  }
-
+export abstract class AppViewManager {
   /**
    * Returns a {@link ViewContainerRef} of the View Container at the specified location.
    */
-  getViewContainer(location: ElementRef): ViewContainerRef {
-    var hostView = internalView(location.parentView);
-    return hostView.elementInjectors[location.boundElementIndex].getViewContainerRef();
-  }
+  abstract getViewContainer(location: ElementRef): ViewContainerRef;
 
   /**
    * Returns the {@link ElementRef} that makes up the specified Host View.
@@ -69,30 +55,14 @@ export class AppViewManager {
    * Throws an exception if the specified `hostLocation` is not a Host Element of a Component, or if
    * variable `variableName` couldn't be found in the Component View of this Component.
    */
-  getNamedElementInComponentView(hostLocation: ElementRef, variableName: string): ElementRef {
-    var hostView = internalView(hostLocation.parentView);
-    var boundElementIndex = hostLocation.boundElementIndex;
-    var componentView = hostView.getNestedView(boundElementIndex);
-    if (isBlank(componentView)) {
-      throw new BaseException(`There is no component directive at element ${boundElementIndex}`);
-    }
-    var binderIdx = componentView.proto.variableLocations.get(variableName);
-    if (isBlank(binderIdx)) {
-      throw new BaseException(`Could not find variable ${variableName}`);
-    }
-    return componentView.elementRefs[componentView.elementOffset + binderIdx];
-  }
+  abstract getNamedElementInComponentView(hostLocation: ElementRef, variableName: string):
+      ElementRef;
 
   /**
    * Returns the component instance for the provided Host Element.
    */
-  getComponent(hostLocation: ElementRef): any {
-    var hostView = internalView(hostLocation.parentView);
-    var boundElementIndex = hostLocation.boundElementIndex;
-    return this._utils.getComponentInstance(hostView, boundElementIndex);
-  }
+  abstract getComponent(hostLocation: ElementRef): any;
 
-  _createRootHostViewScope: WtfScopeFn = wtfCreateScope('AppViewManager#createRootHostView()');
   /**
    * Creates an instance of a Component and attaches it to the first element in the global View
    * (usually DOM Document) that matches the component's selector or `overrideSelector`.
@@ -145,6 +115,112 @@ export class AppViewManager {
    * ng.bootstrap(MyApp);
    * ```
    */
+  abstract createRootHostView(hostProtoViewRef: ProtoViewRef, overrideSelector: string,
+                              injector: Injector): HostViewRef;
+
+  /**
+   * Destroys the Host View created via {@link AppViewManager#createRootHostView}.
+   *
+   * Along with the Host View, the Component Instance as well as all nested View and Components are
+   * destroyed as well.
+   */
+  abstract destroyRootHostView(hostViewRef: HostViewRef);
+
+  /**
+   * Instantiates an Embedded View based on the {@link TemplateRef `templateRef`} and inserts it
+   * into the View Container specified via `viewContainerLocation` at the specified `index`.
+   *
+   * Returns the {@link ViewRef} for the newly created View.
+   *
+   * This as a low-level way to create and attach an Embedded via to a View Container. Most
+   * applications should used {@link ViewContainerRef#createEmbeddedView} instead.
+   *
+   * Use {@link AppViewManager#destroyViewInContainer} to destroy the created Embedded View.
+   */
+  // TODO(i): this low-level version of ViewContainerRef#createEmbeddedView doesn't add anything new
+  //    we should make it private, otherwise we have two apis to do the same thing.
+  abstract createEmbeddedViewInContainer(viewContainerLocation: ElementRef, index: number,
+                                         templateRef: TemplateRef): ViewRef;
+
+  /**
+   * Instantiates a single {@link Component} and inserts its Host View into the View Container
+   * found at `viewContainerLocation`. Within the container, the view will be inserted at position
+   * specified via `index`.
+   *
+   * The component is instantiated using its {@link ProtoViewRef `protoViewRef`} which can be
+   * obtained via {@link Compiler#compileInHost}.
+   *
+   * You can optionally specify `imperativelyCreatedInjector`, which configure the {@link Injector}
+   * that will be created for the Host View.
+   *
+   * Returns the {@link HostViewRef} of the Host View created for the newly instantiated Component.
+   *
+   * Use {@link AppViewManager#destroyViewInContainer} to destroy the created Host View.
+   */
+  abstract createHostViewInContainer(viewContainerLocation: ElementRef, index: number,
+                                     protoViewRef: ProtoViewRef,
+                                     imperativelyCreatedInjector: ResolvedBinding[]): HostViewRef;
+
+  /**
+   * Destroys an Embedded or Host View attached to a View Container at the specified `index`.
+   *
+   * The View Container is located via `viewContainerLocation`.
+   */
+  abstract destroyViewInContainer(viewContainerLocation: ElementRef, index: number);
+
+  /**
+   *
+   * See {@link AppViewManager#detachViewInContainer}.
+   */
+  // TODO(i): refactor detachViewInContainer+attachViewInContainer to moveViewInContainer
+  abstract attachViewInContainer(viewContainerLocation: ElementRef, index: number,
+                                 viewRef: ViewRef): ViewRef;
+
+  /**
+   * See {@link AppViewManager#attachViewInContainer}.
+   */
+  abstract detachViewInContainer(viewContainerLocation: ElementRef, index: number): ViewRef;
+}
+
+@Injectable()
+export class AppViewManager_ extends AppViewManager {
+  private _protoViewFactory: ProtoViewFactory;
+
+  constructor(private _viewPool: AppViewPool, private _viewListener: AppViewListener,
+              private _utils: AppViewManagerUtils, private _renderer: Renderer,
+              @Inject(forwardRef(() => ProtoViewFactory)) _protoViewFactory) {
+    super();
+    this._protoViewFactory = _protoViewFactory;
+  }
+
+  getViewContainer(location: ElementRef): ViewContainerRef {
+    var hostView = internalView((<ElementRef_>location).parentView);
+    return hostView.elementInjectors[(<ElementRef_>location).boundElementIndex]
+        .getViewContainerRef();
+  }
+
+  getNamedElementInComponentView(hostLocation: ElementRef, variableName: string): ElementRef {
+    var hostView = internalView((<ElementRef_>hostLocation).parentView);
+    var boundElementIndex = (<ElementRef_>hostLocation).boundElementIndex;
+    var componentView = hostView.getNestedView(boundElementIndex);
+    if (isBlank(componentView)) {
+      throw new BaseException(`There is no component directive at element ${boundElementIndex}`);
+    }
+    var binderIdx = componentView.proto.variableLocations.get(variableName);
+    if (isBlank(binderIdx)) {
+      throw new BaseException(`Could not find variable ${variableName}`);
+    }
+    return componentView.elementRefs[componentView.elementOffset + binderIdx];
+  }
+
+  getComponent(hostLocation: ElementRef): any {
+    var hostView = internalView((<ElementRef_>hostLocation).parentView);
+    var boundElementIndex = (<ElementRef_>hostLocation).boundElementIndex;
+    return this._utils.getComponentInstance(hostView, boundElementIndex);
+  }
+
+  _createRootHostViewScope: WtfScopeFn = wtfCreateScope('AppViewManager#createRootHostView()');
+
   createRootHostView(hostProtoViewRef: ProtoViewRef, overrideSelector: string,
                      injector: Injector): HostViewRef {
     var s = this._createRootHostViewScope();
@@ -165,12 +241,6 @@ export class AppViewManager {
 
   _destroyRootHostViewScope: WtfScopeFn = wtfCreateScope('AppViewManager#destroyRootHostView()');
 
-  /**
-   * Destroys the Host View created via {@link AppViewManager#createRootHostView}.
-   *
-   * Along with the Host View, the Component Instance as well as all nested View and Components are
-   * destroyed as well.
-   */
   destroyRootHostView(hostViewRef: HostViewRef) {
     // Note: Don't put the hostView into the view pool
     // as it is depending on the element for which it was created.
@@ -187,23 +257,10 @@ export class AppViewManager {
   _createEmbeddedViewInContainerScope: WtfScopeFn =
       wtfCreateScope('AppViewManager#createEmbeddedViewInContainer()');
 
-  /**
-   * Instantiates an Embedded View based on the {@link TemplateRef `templateRef`} and inserts it
-   * into the View Container specified via `viewContainerLocation` at the specified `index`.
-   *
-   * Returns the {@link ViewRef} for the newly created View.
-   *
-   * This as a low-level way to create and attach an Embedded via to a View Container. Most
-   * applications should used {@link ViewContainerRef#createEmbeddedView} instead.
-   *
-   * Use {@link AppViewManager#destroyViewInContainer} to destroy the created Embedded View.
-   */
-  // TODO(i): this low-level version of ViewContainerRef#createEmbeddedView doesn't add anything new
-  //    we should make it private, otherwise we have two apis to do the same thing.
   createEmbeddedViewInContainer(viewContainerLocation: ElementRef, index: number,
                                 templateRef: TemplateRef): ViewRef {
     var s = this._createEmbeddedViewInContainerScope();
-    var protoView = internalProtoView(templateRef.protoViewRef);
+    var protoView = internalProtoView((<TemplateRef_>templateRef).protoViewRef);
     if (protoView.type !== viewModule.ViewType.EMBEDDED) {
       throw new BaseException('This method can only be called with embedded ProtoViews!');
     }
@@ -215,21 +272,6 @@ export class AppViewManager {
   _createHostViewInContainerScope: WtfScopeFn =
       wtfCreateScope('AppViewManager#createHostViewInContainer()');
 
-  /**
-   * Instantiates a single {@link Component} and inserts its Host View into the View Container
-   * found at `viewContainerLocation`. Within the container, the view will be inserted at position
-   * specified via `index`.
-   *
-   * The component is instantiated using its {@link ProtoViewRef `protoViewRef`} which can be
-   * obtained via {@link Compiler#compileInHost}.
-   *
-   * You can optionally specify `imperativelyCreatedInjector`, which configure the {@link Injector}
-   * that will be created for the Host View.
-   *
-   * Returns the {@link HostViewRef} of the Host View created for the newly instantiated Component.
-   *
-   * Use {@link AppViewManager#destroyViewInContainer} to destroy the created Host View.
-   */
   createHostViewInContainer(viewContainerLocation: ElementRef, index: number,
                             protoViewRef: ProtoViewRef,
                             imperativelyCreatedInjector: ResolvedBinding[]): HostViewRef {
@@ -251,10 +293,10 @@ export class AppViewManager {
   _createViewInContainer(viewContainerLocation: ElementRef, index: number,
                          protoView: viewModule.AppProtoView, context: ElementRef,
                          imperativelyCreatedInjector: ResolvedBinding[]): ViewRef {
-    var parentView = internalView(viewContainerLocation.parentView);
-    var boundElementIndex = viewContainerLocation.boundElementIndex;
-    var contextView = internalView(context.parentView);
-    var contextBoundElementIndex = context.boundElementIndex;
+    var parentView = internalView((<ElementRef_>viewContainerLocation).parentView);
+    var boundElementIndex = (<ElementRef_>viewContainerLocation).boundElementIndex;
+    var contextView = internalView((<ElementRef_>context).parentView);
+    var contextBoundElementIndex = (<ElementRef_>context).boundElementIndex;
     var embeddedFragmentView = contextView.getNestedView(contextBoundElementIndex);
     var view;
     if (protoView.type === viewModule.ViewType.EMBEDDED && isPresent(embeddedFragmentView) &&
@@ -291,32 +333,23 @@ export class AppViewManager {
 
   _destroyViewInContainerScope = wtfCreateScope('AppViewMananger#destroyViewInContainer()');
 
-  /**
-   * Destroys an Embedded or Host View attached to a View Container at the specified `index`.
-   *
-   * The View Container is located via `viewContainerLocation`.
-   */
   destroyViewInContainer(viewContainerLocation: ElementRef, index: number) {
     var s = this._destroyViewInContainerScope();
-    var parentView = internalView(viewContainerLocation.parentView);
-    var boundElementIndex = viewContainerLocation.boundElementIndex;
+    var parentView = internalView((<ElementRef_>viewContainerLocation).parentView);
+    var boundElementIndex = (<ElementRef_>viewContainerLocation).boundElementIndex;
     this._destroyViewInContainer(parentView, boundElementIndex, index);
     wtfLeave(s);
   }
 
   _attachViewInContainerScope = wtfCreateScope('AppViewMananger#attachViewInContainer()');
 
-  /**
-   *
-   * See {@link AppViewManager#detachViewInContainer}.
-   */
   // TODO(i): refactor detachViewInContainer+attachViewInContainer to moveViewInContainer
   attachViewInContainer(viewContainerLocation: ElementRef, index: number,
                         viewRef: ViewRef): ViewRef {
     var s = this._attachViewInContainerScope();
     var view = internalView(viewRef);
-    var parentView = internalView(viewContainerLocation.parentView);
-    var boundElementIndex = viewContainerLocation.boundElementIndex;
+    var parentView = internalView((<ElementRef_>viewContainerLocation).parentView);
+    var boundElementIndex = (<ElementRef_>viewContainerLocation).boundElementIndex;
     // TODO(tbosch): the public methods attachViewInContainer/detachViewInContainer
     // are used for moving elements without the same container.
     // We will change this into an atomic `move` operation, which should preserve the
@@ -330,14 +363,11 @@ export class AppViewManager {
 
   _detachViewInContainerScope = wtfCreateScope('AppViewMananger#detachViewInContainer()');
 
-  /**
-   * See {@link AppViewManager#attachViewInContainer}.
-   */
   // TODO(i): refactor detachViewInContainer+attachViewInContainer to moveViewInContainer
   detachViewInContainer(viewContainerLocation: ElementRef, index: number): ViewRef {
     var s = this._detachViewInContainerScope();
-    var parentView = internalView(viewContainerLocation.parentView);
-    var boundElementIndex = viewContainerLocation.boundElementIndex;
+    var parentView = internalView((<ElementRef_>viewContainerLocation).parentView);
+    var boundElementIndex = (<ElementRef_>viewContainerLocation).boundElementIndex;
     var viewContainer = parentView.viewContainers[boundElementIndex];
     var view = viewContainer.views[index];
     this._utils.detachViewInContainer(parentView, boundElementIndex, index);

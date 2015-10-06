@@ -14,30 +14,36 @@ import {Injectable} from "angular2/src/core/di";
 import {Type, StringWrapper} from "angular2/src/core/facade/lang";
 export {Type} from "angular2/src/core/facade/lang";
 
-@Injectable()
-export class ClientMessageBrokerFactory {
+export abstract class ClientMessageBrokerFactory {
   /**
-   * @internal
+   * Initializes the given channel and attaches a new {@link ClientMessageBroker} to it.
    */
-  constructor(private _messageBus: MessageBus, public _serializer: Serializer) {}
+  abstract createMessageBroker(channel: string, runInZone?: boolean): ClientMessageBroker;
+}
+
+@Injectable()
+export class ClientMessageBrokerFactory_ extends ClientMessageBrokerFactory {
+  constructor(private _messageBus: MessageBus, public _serializer: Serializer) { super(); }
 
   /**
    * Initializes the given channel and attaches a new {@link ClientMessageBroker} to it.
    */
   createMessageBroker(channel: string, runInZone: boolean = true): ClientMessageBroker {
     this._messageBus.initChannel(channel, runInZone);
-    return new ClientMessageBroker(this._messageBus, this._serializer, channel);
+    return new ClientMessageBroker_(this._messageBus, this._serializer, channel);
   }
 }
 
-export class ClientMessageBroker {
+export abstract class ClientMessageBroker {
+  abstract runOnService(args: UiArguments, returnType: Type): Promise<any>;
+}
+
+export class ClientMessageBroker_ extends ClientMessageBroker {
   private _pending: Map<string, PromiseCompleter<any>> = new Map<string, PromiseCompleter<any>>();
   private _sink: EventEmitter;
 
-  /**
-   * @internal
-   */
   constructor(messageBus: MessageBus, public _serializer: Serializer, public channel) {
+    super();
     this._sink = messageBus.to(channel);
     var source = messageBus.from(channel);
     ObservableWrapper.subscribe(source,

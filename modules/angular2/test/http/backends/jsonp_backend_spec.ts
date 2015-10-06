@@ -23,6 +23,7 @@ import {Map} from 'angular2/src/core/facade/collection';
 import {RequestOptions, BaseRequestOptions} from 'angular2/src/http/base_request_options';
 import {BaseResponseOptions, ResponseOptions} from 'angular2/src/http/base_response_options';
 import {ResponseTypes, ReadyStates, RequestMethods} from 'angular2/src/http/enums';
+import {JSONPConnection_} from "../../../src/http/backends/jsonp_backend";
 
 var addEventListenerSpy;
 var existingScripts = [];
@@ -89,8 +90,8 @@ export function main() {
     describe('JSONPConnection', () => {
       it('should use the injected BaseResponseOptions to create the response',
          inject([AsyncTestCompleter], async => {
-           let connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp(),
-                                                new ResponseOptions({type: ResponseTypes.Error}));
+           let connection = new JSONPConnection_(sampleRequest, new MockBrowserJsonp(),
+                                                 new ResponseOptions({type: ResponseTypes.Error}));
            connection.response.subscribe(res => {
              expect(res.type).toBe(ResponseTypes.Error);
              async.done();
@@ -100,7 +101,7 @@ export function main() {
          }));
 
       it('should ignore load/callback when disposed', inject([AsyncTestCompleter], async => {
-           var connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp());
+           var connection = new JSONPConnection_(sampleRequest, new MockBrowserJsonp());
            let spy = new SpyObject();
            let loadSpy = spy.spy('load');
            let errorSpy = spy.spy('error');
@@ -123,7 +124,7 @@ export function main() {
 
       it('should report error if loaded without invoking callback',
          inject([AsyncTestCompleter], async => {
-           let connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp());
+           let connection = new JSONPConnection_(sampleRequest, new MockBrowserJsonp());
            connection.response.subscribe(
                res => {
                  expect("response listener called").toBe(false);
@@ -138,7 +139,7 @@ export function main() {
          }));
 
       it('should report error if script contains error', inject([AsyncTestCompleter], async => {
-           let connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp());
+           let connection = new JSONPConnection_(sampleRequest, new MockBrowserJsonp());
 
            connection.response.subscribe(
                res => {
@@ -160,13 +161,13 @@ export function main() {
               let base = new BaseRequestOptions();
               let req = new Request(
                   base.merge(new RequestOptions({url: 'https://google.com', method: method})));
-              expect(() => new JSONPConnection(req, new MockBrowserJsonp()).response.subscribe())
+              expect(() => new JSONPConnection_(req, new MockBrowserJsonp()).response.subscribe())
                   .toThrowError();
             });
       });
 
       it('should respond with data passed to callback', inject([AsyncTestCompleter], async => {
-           let connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp());
+           let connection = new JSONPConnection_(sampleRequest, new MockBrowserJsonp());
 
            connection.response.subscribe(res => {
              expect(res.json()).toEqual(({fake_payload: true, blob_id: 12345}));

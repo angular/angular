@@ -18,6 +18,7 @@ import {PromiseCompleter, PromiseWrapper, TimerWrapper} from 'angular2/src/core/
 import {BaseException} from 'angular2/src/core/facade/exceptions';
 
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
+import {NgZone_} from "../../../src/core/zone/ng_zone";
 
 var needsLongerTimers = browserDetection.isSlow || browserDetection.isEdge;
 var resultTimer = 1000;
@@ -47,7 +48,7 @@ export function main() {
   describe("NgZone", () => {
 
     function createZone(enableLongStackTrace) {
-      var zone = new NgZone({enableLongStackTrace: enableLongStackTrace});
+      var zone = new NgZone_({enableLongStackTrace: enableLongStackTrace});
       zone.overrideOnTurnStart(_log.fn('onTurnStart'));
       zone.overrideOnTurnDone(_log.fn('onTurnDone'));
       return zone;

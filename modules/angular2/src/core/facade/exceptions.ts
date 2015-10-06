@@ -43,3 +43,7 @@ export class WrappedException extends Error {
 export function makeTypeError(message?: string): Error {
   return new TypeError(message);
 }
+
+export function unimplemented(): any {
+  throw new BaseException('unimplemented');
+}

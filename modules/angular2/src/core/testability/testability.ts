@@ -5,6 +5,7 @@ import {CONST, CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {NgZone} from '../zone/ng_zone';
 import {PromiseWrapper} from 'angular2/src/core/facade/async';
+import {NgZone_} from "../zone/ng_zone";
 
 
 /**
@@ -21,11 +22,12 @@ export class Testability {
   constructor(public _ngZone: NgZone) { this._watchAngularEvents(_ngZone); }
 
   _watchAngularEvents(_ngZone: NgZone): void {
-    _ngZone.overrideOnTurnStart(() => { this._isAngularEventPending = true; });
-    _ngZone.overrideOnEventDone(() => {
-      this._isAngularEventPending = false;
-      this._runCallbacksIfReady();
-    }, true);
+    (<NgZone_>_ngZone).overrideOnTurnStart(() => { this._isAngularEventPending = true; });
+    (<NgZone_>_ngZone)
+        .overrideOnEventDone(() => {
+          this._isAngularEventPending = false;
+          this._runCallbacksIfReady();
+        }, true);
   }
 
   increasePendingRequestCount(): number {
