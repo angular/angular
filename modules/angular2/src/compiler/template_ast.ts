@@ -1,32 +1,35 @@
 import {AST} from 'angular2/src/core/change_detection/change_detection';
 import {isPresent} from 'angular2/src/facade/lang';
 import {CompileDirectiveMetadata} from './directive_metadata';
+import {ParseSourceSpan} from './parse_util';
 
 export interface TemplateAst {
-  sourceInfo: string;
+  sourceSpan: ParseSourceSpan;
   visit(visitor: TemplateAstVisitor, context: any): any;
 }
 
 export class TextAst implements TemplateAst {
-  constructor(public value: string, public ngContentIndex: number, public sourceInfo: string) {}
+  constructor(public value: string, public ngContentIndex: number,
+              public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any { return visitor.visitText(this, context); }
 }
 
 export class BoundTextAst implements TemplateAst {
-  constructor(public value: AST, public ngContentIndex: number, public sourceInfo: string) {}
+  constructor(public value: AST, public ngContentIndex: number,
+              public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitBoundText(this, context);
   }
 }
 
 export class AttrAst implements TemplateAst {
-  constructor(public name: string, public value: string, public sourceInfo: string) {}
+  constructor(public name: string, public value: string, public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any { return visitor.visitAttr(this, context); }
 }
 
 export class BoundElementPropertyAst implements TemplateAst {
   constructor(public name: string, public type: PropertyBindingType, public value: AST,
-              public unit: string, public sourceInfo: string) {}
+              public unit: string, public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitElementProperty(this, context);
   }
@@ -34,7 +37,7 @@ export class BoundElementPropertyAst implements TemplateAst {
 
 export class BoundEventAst implements TemplateAst {
   constructor(public name: string, public target: string, public handler: AST,
-              public sourceInfo: string) {}
+              public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitEvent(this, context);
   }
@@ -48,7 +51,7 @@ export class BoundEventAst implements TemplateAst {
 }
 
 export class VariableAst implements TemplateAst {
-  constructor(public name: string, public value: string, public sourceInfo: string) {}
+  constructor(public name: string, public value: string, public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitVariable(this, context);
   }
@@ -59,7 +62,7 @@ export class ElementAst implements TemplateAst {
               public inputs: BoundElementPropertyAst[], public outputs: BoundEventAst[],
               public exportAsVars: VariableAst[], public directives: DirectiveAst[],
               public children: TemplateAst[], public ngContentIndex: number,
-              public sourceInfo: string) {}
+              public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitElement(this, context);
   }
@@ -79,7 +82,7 @@ export class ElementAst implements TemplateAst {
 export class EmbeddedTemplateAst implements TemplateAst {
   constructor(public attrs: AttrAst[], public outputs: BoundEventAst[], public vars: VariableAst[],
               public directives: DirectiveAst[], public children: TemplateAst[],
-              public ngContentIndex: number, public sourceInfo: string) {}
+              public ngContentIndex: number, public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitEmbeddedTemplate(this, context);
   }
@@ -87,7 +90,7 @@ export class EmbeddedTemplateAst implements TemplateAst {
 
 export class BoundDirectivePropertyAst implements TemplateAst {
   constructor(public directiveName: string, public templateName: string, public value: AST,
-              public sourceInfo: string) {}
+              public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitDirectiveProperty(this, context);
   }
@@ -97,14 +100,15 @@ export class DirectiveAst implements TemplateAst {
   constructor(public directive: CompileDirectiveMetadata,
               public inputs: BoundDirectivePropertyAst[],
               public hostProperties: BoundElementPropertyAst[], public hostEvents: BoundEventAst[],
-              public exportAsVars: VariableAst[], public sourceInfo: string) {}
+              public exportAsVars: VariableAst[], public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitDirective(this, context);
   }
 }
 
 export class NgContentAst implements TemplateAst {
-  constructor(public index: number, public ngContentIndex: number, public sourceInfo: string) {}
+  constructor(public index: number, public ngContentIndex: number,
+              public sourceSpan: ParseSourceSpan) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitNgContent(this, context);
   }

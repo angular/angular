@@ -29,7 +29,7 @@ import {preparseElement, PreparsedElement, PreparsedElementType} from './templat
 @Injectable()
 export class TemplateNormalizer {
   constructor(private _xhr: XHR, private _urlResolver: UrlResolver,
-              private _domParser: HtmlParser) {}
+              private _htmlParser: HtmlParser) {}
 
   normalizeTemplate(directiveType: CompileTypeMetadata,
                     template: CompileTemplateMetadata): Promise<CompileTemplateMetadata> {
@@ -48,9 +48,14 @@ export class TemplateNormalizer {
 
   normalizeLoadedTemplate(directiveType: CompileTypeMetadata, templateMeta: CompileTemplateMetadata,
                           template: string, templateAbsUrl: string): CompileTemplateMetadata {
-    var domNodes = this._domParser.parse(template, directiveType.name);
+    var rootNodesAndErrors = this._htmlParser.parse(template, directiveType.name);
+    if (rootNodesAndErrors.errors.length > 0) {
+      var errorString = rootNodesAndErrors.errors.join('\n');
+      throw new BaseException(`Template parse errors:\n${errorString}`);
+    }
+
     var visitor = new TemplatePreparseVisitor();
-    htmlVisitAll(visitor, domNodes);
+    htmlVisitAll(visitor, rootNodesAndErrors.rootNodes);
     var allStyles = templateMeta.styles.concat(visitor.styles);
 
     var allStyleAbsUrls =
