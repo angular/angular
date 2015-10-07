@@ -89,7 +89,8 @@ export class RouteRegistry {
         var annotation = annotations[i];
 
         if (annotation instanceof RouteConfig) {
-          ListWrapper.forEach(annotation.configs, (config) => this.config(component, config));
+          let routeCfgs: RouteDefinition[] = annotation.configs;
+          routeCfgs.forEach(config => this.config(component, config));
         }
       }
     }

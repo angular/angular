@@ -9,11 +9,7 @@ import {
   KeyValueDiffers
 } from 'angular2/src/core/change_detection';
 import {Renderer} from 'angular2/src/core/render';
-import {
-  ListWrapper,
-  StringMapWrapper,
-  isListLikeIterable
-} from 'angular2/src/core/facade/collection';
+import {StringMapWrapper, isListLikeIterable} from 'angular2/src/core/facade/collection';
 
 /**
  * Adds and removes CSS classes based on an {expression} value.
@@ -109,14 +105,13 @@ export class NgClass implements DoCheck, OnDestroy {
   }
 
   private _applyInitialClasses(isCleanup: boolean) {
-    ListWrapper.forEach(this._initialClasses,
-                        (className) => { this._toggleClass(className, !isCleanup); });
+    this._initialClasses.forEach(className => this._toggleClass(className, !isCleanup));
   }
 
   private _applyClasses(rawClassVal, isCleanup: boolean) {
     if (isPresent(rawClassVal)) {
       if (isListLikeIterable(rawClassVal)) {
-        ListWrapper.forEach(rawClassVal, (className) => this._toggleClass(className, !isCleanup));
+        (<string[]>rawClassVal).forEach(className => this._toggleClass(className, !isCleanup));
       } else {
         StringMapWrapper.forEach(rawClassVal, (expVal, className) => {
           if (expVal) this._toggleClass(className, !isCleanup);

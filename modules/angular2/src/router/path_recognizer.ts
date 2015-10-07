@@ -8,7 +8,7 @@ import {
 } from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
-import {Map, MapWrapper, StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+import {Map, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {RouteHandler} from './route_handler';
 import {Url, RootUrl, serializeParams} from './url_parser';
@@ -35,7 +35,7 @@ class TouchMap {
   getUnused(): {[key: string]: any} {
     var unused: {[key: string]: any} = StringMapWrapper.create();
     var keys = StringMapWrapper.keys(this.keys);
-    ListWrapper.forEach(keys, (key) => { unused[key] = StringMapWrapper.get(this.map, key); });
+    keys.forEach(key => unused[key] = StringMapWrapper.get(this.map, key));
     return unused;
   }
 }

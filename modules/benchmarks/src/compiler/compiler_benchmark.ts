@@ -69,7 +69,7 @@ class MultiplyViewResolver extends ViewResolver {
   constructor(multiple: number, components: Type[]) {
     super();
     this._multiplyBy = multiple;
-    ListWrapper.forEach(components, (c) => this._fillCache(c));
+    components.forEach(c => this._fillCache(c));
   }
 
   _fillCache(component: Type) {

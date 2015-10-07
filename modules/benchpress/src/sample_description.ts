@@ -1,4 +1,4 @@
-import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {bind, Binding, OpaqueToken} from 'angular2/src/core/di';
 import {Validator} from './validator';
 import {Metric} from './metric';
@@ -15,7 +15,7 @@ export class SampleDescription {
   constructor(public id: string, descriptions: Array<{[key: string]: any}>,
               public metrics: {[key: string]: any}) {
     this.description = {};
-    ListWrapper.forEach(descriptions, (description) => {
+    descriptions.forEach(description => {
       StringMapWrapper.forEach(description, (value, prop) => this.description[prop] = value);
     });
   }

@@ -222,9 +222,7 @@ export class Parse5DomAdapter extends DomAdapter {
     this.remove(node);
     treeAdapter.insertBefore(el.parent, node, el);
   }
-  insertAllBefore(el, nodes) {
-    ListWrapper.forEach(nodes, (n) => { this.insertBefore(el, n); });
-  }
+  insertAllBefore(el, nodes) { nodes.forEach(n => this.insertBefore(el, n)); }
   insertAfter(el, node) {
     if (el.nextSibling) {
       this.insertBefore(el.nextSibling, node);

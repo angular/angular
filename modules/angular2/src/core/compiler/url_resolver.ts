@@ -213,7 +213,7 @@ function _removeDotSegments(path: string): string {
   var trailingSlash = path[path.length - 1] === '/' ? '/' : '';
   var segments = path.split('/');
 
-  var out = [];
+  var out: string[] = [];
   var up = 0;
   for (var pos = 0; pos < segments.length; pos++) {
     var segment = segments[pos];
@@ -223,7 +223,7 @@ function _removeDotSegments(path: string): string {
         break;
       case '..':
         if (out.length > 0) {
-          ListWrapper.removeAt(out, out.length - 1);
+          out.pop();
         } else {
           up++;
         }
@@ -235,7 +235,7 @@ function _removeDotSegments(path: string): string {
 
   if (leadingSlash == '') {
     while (up-- > 0) {
-      ListWrapper.insert(out, 0, '..');
+      out.unshift('..');
     }
 
     if (out.length === 0) out.push('.');

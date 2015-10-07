@@ -13,7 +13,6 @@ import {
 } from 'angular2/test_lib';
 
 import {ObservableWrapper, EventEmitter, PromiseWrapper} from 'angular2/src/core/facade/async';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
 
 export function main() {
   describe('EventEmitter', () => {
@@ -88,7 +87,7 @@ export function main() {
            one.resolve('one');
          }));
 
-      ListWrapper.forEach([null, true, false, 10, 'thing', {}, []], (abruptCompletion) => {
+      [null, true, false, 10, 'thing', {}, []].forEach(abruptCompletion => {
         it(`should treat "${abruptCompletion}" as an "abrupt completion"`,
            inject([AsyncTestCompleter], (async) => {
              var one = PromiseWrapper.completer();
