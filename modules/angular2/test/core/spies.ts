@@ -53,7 +53,21 @@ export class SpyAppViewManager extends SpyObject {
 }
 
 export class SpyRenderer extends SpyObject {
-  constructor() { super(Renderer); }
+  constructor() {
+    // Note: Renderer is an abstract class,
+    // so we can't generates spy functions automatically
+    // by inspecting the prototype...
+    super(Renderer);
+    this.spy('setEventDispatcher');
+    this.spy('destroyView');
+    this.spy('createView');
+    this.spy('createProtoView');
+    this.spy('hydrateView');
+    this.spy('dehydrateView');
+    this.spy('attachFragmentAfterElement');
+    this.spy('attachFragmentAfterFragment');
+    this.spy('detachFragment');
+  }
 }
 
 export class SpyAppViewPool extends SpyObject {

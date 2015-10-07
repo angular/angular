@@ -7,12 +7,11 @@ import {
   it,
   expect
 } from "angular2/test_lib";
-import {RenderProtoViewRef} from "angular2/src/core/render/api";
+import {RenderProtoViewRef, RenderProtoViewRef_} from "angular2/src/core/render/api";
 import {RenderProtoViewRefStore} from "angular2/src/web_workers/shared/render_proto_view_ref_store";
 import {
   WebWorkerRenderProtoViewRef
 } from "angular2/src/web_workers/shared/render_proto_view_ref_store";
-import {RenderProtoViewRef_} from "../../../src/core/render/api";
 
 export function main() {
   describe("RenderProtoViewRefStore", () => {

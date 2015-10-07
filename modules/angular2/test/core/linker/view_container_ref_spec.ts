@@ -16,12 +16,9 @@ import {
 
 import {SpyView, SpyAppViewManager} from '../spies';
 import {AppView, AppViewContainer} from 'angular2/src/core/linker/view';
-import {ViewContainerRef} from 'angular2/src/core/linker/view_container_ref';
-import {ElementRef} from 'angular2/src/core/linker/element_ref';
-import {ViewRef} from 'angular2/src/core/linker/view_ref';
-import {ViewContainerRef_} from "../../../src/core/linker/view_container_ref";
-import {ViewRef_} from "../../../src/core/linker/view_ref";
-import {ElementRef_} from "../../../src/core/linker/element_ref";
+import {ViewContainerRef, ViewContainerRef_} from 'angular2/src/core/linker/view_container_ref';
+import {ElementRef, ElementRef_} from 'angular2/src/core/linker/element_ref';
+import {ViewRef, ViewRef_} from 'angular2/src/core/linker/view_ref';
 
 export function main() {
   // TODO(tbosch): add missing tests

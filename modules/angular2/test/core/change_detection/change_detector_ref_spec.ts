@@ -11,9 +11,11 @@ import {
   fakeAsync
 } from 'angular2/test_lib';
 
-import {ChangeDetectorRef} from 'angular2/src/core/change_detection/change_detector_ref';
+import {
+  ChangeDetectorRef,
+  ChangeDetectorRef_
+} from 'angular2/src/core/change_detection/change_detector_ref';
 import {SpyChangeDetector} from '../spies';
-import {ChangeDetectorRef_} from "../../../src/core/change_detection/change_detector_ref";
 
 
 export function main() {

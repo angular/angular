@@ -44,7 +44,7 @@ export class NgClass implements DoCheck, OnDestroy {
   private _rawClass;
 
   constructor(private _iterableDiffers: IterableDiffers, private _keyValueDiffers: KeyValueDiffers,
-              private _ngEl: ElementRef_, private _renderer: Renderer) {}
+              private _ngEl: ElementRef, private _renderer: Renderer) {}
 
   set initialClasses(v) {
     this._applyInitialClasses(true);

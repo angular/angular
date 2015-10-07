@@ -1,3 +1,4 @@
+import {RuntimeCompiler_} from "./runtime_compiler";
 export {TemplateCompiler} from './template_compiler';
 export {
   CompileDirectiveMetadata,
@@ -43,7 +44,7 @@ export function compilerBindings(): Array<Type | Binding | any[]> {
         .toValue(
             new ChangeDetectorGenConfig(assertionsEnabled(), assertionsEnabled(), false, true)),
     TemplateCompiler,
-    RuntimeCompiler,
+    bind(RuntimeCompiler).toClass(RuntimeCompiler_),
     bind(Compiler).toAlias(RuntimeCompiler),
     DomElementSchemaRegistry,
     bind(ElementSchemaRegistry).toAlias(DomElementSchemaRegistry),

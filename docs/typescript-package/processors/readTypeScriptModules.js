@@ -223,6 +223,9 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
     if (exportSymbol.flags & ts.SymbolFlags.TypeAlias) {
       exportDoc.typeDefinition = typeDefinition;
     }
+    if (isAbstract(exportSymbol)) {
+      exportDoc.abstract = true;
+    }
 
     // Compute the original module name from the relative file path
     exportDoc.originalModule = exportDoc.fileInfo.relativePath
@@ -345,6 +348,10 @@ module.exports = function readTypeScriptModules(tsParser, modules, getFileInfo,
     }
   }
 
+  function isAbstract(symbol) {
+    var declaration = symbol.valueDeclaration || symbol.declarations[0];
+    return declaration.flags & ts.NodeFlags.Abstract;
+  }
 
   function expandSourceFiles(sourceFiles, basePath) {
     var filePaths = [];

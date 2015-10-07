@@ -82,7 +82,7 @@ import {
 import {QueryList} from 'angular2/src/core/linker/query_list';
 
 import {ViewContainerRef} from 'angular2/src/core/linker/view_container_ref';
-import {ViewRef} from 'angular2/src/core/linker/view_ref';
+import {ViewRef, ViewRef_} from 'angular2/src/core/linker/view_ref';
 
 import {Compiler} from 'angular2/src/core/linker/compiler';
 import {ElementRef} from 'angular2/src/core/linker/element_ref';
@@ -90,7 +90,7 @@ import {TemplateRef} from 'angular2/src/core/linker/template_ref';
 
 import {DomRenderer} from 'angular2/src/core/render/dom/dom_renderer';
 import {IS_DART} from '../../platform';
-import {ViewRef_} from "../../../src/core/linker/view_ref";
+import {Compiler_} from "../../../src/core/linker/compiler";
 
 const ANCHOR_ELEMENT = CONST_EXPR(new OpaqueToken('AnchorElement'));
 
@@ -1020,7 +1020,7 @@ export function main() {
       describe('dynamic ViewContainers', () => {
 
         it('should allow to create a ViewContainerRef at any bound location',
-           inject([TestComponentBuilder, AsyncTestCompleter, Compiler],
+           inject([TestComponentBuilder, AsyncTestCompleter, bind(Compiler).toClass(Compiler_)],
                   (tcb: TestComponentBuilder, async, compiler) => {
                     tcb.overrideView(MyComp, new ViewMetadata({
                                        template: '<div><dynamic-vp #dynamic></dynamic-vp></div>',

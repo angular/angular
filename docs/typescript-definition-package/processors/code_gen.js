@@ -59,6 +59,10 @@ DtsSerializer.prototype = {
   },
 
   interfaceOrClass: function(buffer, ast, isInterface) {
+    if (ast.abstract) {
+      buffer.push('abstract ');
+    }
+
     buffer.push(isInterface ? 'interface ' : 'class ');
     buffer.push(ast.name);
     buffer.push(ast.typeParams);

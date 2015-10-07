@@ -35,7 +35,7 @@ export class NgStyle implements DoCheck {
   _rawStyle;
   _differ: KeyValueDiffer;
 
-  constructor(private _differs: KeyValueDiffers, private _ngEl: ElementRef_,
+  constructor(private _differs: KeyValueDiffers, private _ngEl: ElementRef,
               private _renderer: Renderer) {}
 
   set rawStyle(v) {

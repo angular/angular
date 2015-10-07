@@ -57,6 +57,9 @@ import {APP_ID} from 'angular2/src/core/application_tokens';
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {Log} from './utils';
 import {compilerBindings} from 'angular2/src/core/compiler/compiler';
+import {DomRenderer_} from "../core/render/dom/dom_renderer";
+import {DynamicComponentLoader_} from "../core/linker/dynamic_component_loader";
+import {AppViewManager_} from "../core/linker/view_manager";
 
 /**
  * Returns the root injector bindings.
@@ -93,13 +96,13 @@ function _getAppBindings() {
     compilerBindings(),
     bind(ChangeDetectorGenConfig).toValue(new ChangeDetectorGenConfig(true, true, false, true)),
     bind(DOCUMENT).toValue(appDoc),
-    DomRenderer,
+    bind(DomRenderer).toClass(DomRenderer_),
     bind(Renderer).toAlias(DomRenderer),
     bind(APP_ID).toValue('a'),
     DomSharedStylesHost,
     bind(SharedStylesHost).toAlias(DomSharedStylesHost),
     AppViewPool,
-    AppViewManager,
+    bind(AppViewManager).toClass(AppViewManager_),
     AppViewManagerUtils,
     Serializer,
     ELEMENT_PROBE_BINDINGS,
@@ -111,7 +114,7 @@ function _getAppBindings() {
     bind(IterableDiffers).toValue(defaultIterableDiffers),
     bind(KeyValueDiffers).toValue(defaultKeyValueDiffers),
     Log,
-    DynamicComponentLoader,
+    bind(DynamicComponentLoader).toClass(DynamicComponentLoader_),
     PipeResolver,
     bind(ExceptionHandler).toValue(new ExceptionHandler(DOM)),
     bind(LocationStrategy).toClass(MockLocationStrategy),

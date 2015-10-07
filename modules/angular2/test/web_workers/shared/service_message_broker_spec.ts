@@ -12,7 +12,10 @@ import {
 } from 'angular2/test_lib';
 import {createPairedMessageBuses} from '../shared/web_worker_test_util';
 import {Serializer, PRIMITIVE} from 'angular2/src/web_workers/shared/serializer';
-import {ServiceMessageBroker} from 'angular2/src/web_workers/shared/service_message_broker';
+import {
+  ServiceMessageBroker,
+  ServiceMessageBroker_
+} from 'angular2/src/web_workers/shared/service_message_broker';
 import {ObservableWrapper, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {bind} from 'angular2/core';
 import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';
@@ -20,7 +23,6 @@ import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_pr
 import {
   RenderViewWithFragmentsStore
 } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
-import {ServiceMessageBroker_} from "../../../src/web_workers/shared/service_message_broker";
 
 export function main() {
   const CHANNEL = "UIMessageBroker Test Channel";

@@ -146,6 +146,8 @@ export interface RenderElementRef {
   renderView: RenderViewRef;
 
   /**
+   * @internal
+   *
    * Index of the Element (in the depth-first order) inside the Render View.
    *
    * This index is used internally by Angular to locate elements.

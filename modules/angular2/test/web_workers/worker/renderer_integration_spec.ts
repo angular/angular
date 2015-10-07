@@ -26,6 +26,7 @@ import {
 import {WebWorkerRenderer} from "angular2/src/web_workers/worker/renderer";
 import {
   ClientMessageBrokerFactory,
+  ClientMessageBrokerFactory_,
   UiArguments,
   FnArg
 } from "angular2/src/web_workers/shared/client_message_broker";
@@ -50,10 +51,11 @@ import {
 import {WebWorkerApplication} from 'angular2/src/web_workers/ui/impl';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {createPairedMessageBuses, PairedMessageBuses} from '../shared/web_worker_test_util';
-import {ServiceMessageBrokerFactory} from 'angular2/src/web_workers/shared/service_message_broker';
+import {
+  ServiceMessageBrokerFactory,
+  ServiceMessageBrokerFactory_
+} from 'angular2/src/web_workers/shared/service_message_broker';
 import {WebWorkerEventDispatcher} from 'angular2/src/web_workers/worker/event_dispatcher';
-import {ServiceMessageBrokerFactory_} from "../../../src/web_workers/shared/service_message_broker";
-import {ClientMessageBrokerFactory_} from "../../../src/web_workers/shared/client_message_broker";
 
 
 export function main() {

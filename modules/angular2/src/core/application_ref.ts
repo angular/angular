@@ -39,6 +39,9 @@ import {ViewResolver} from './linker/view_resolver';
 import {DirectiveResolver} from './linker/directive_resolver';
 import {PipeResolver} from './linker/pipe_resolver';
 import {Compiler} from 'angular2/src/core/linker/compiler';
+import {DynamicComponentLoader_} from "./linker/dynamic_component_loader";
+import {AppViewManager_} from "./linker/view_manager";
+import {Compiler_} from "./linker/compiler";
 
 /**
  * Constructs the set of bindings meant for use at the platform level.
@@ -71,7 +74,7 @@ function _componentBindings(appComponentType: Type): Array<Type | Binding | any[
                     return componentRef;
                   });
             },
-            [DynamicComponentLoader, Injector]),
+            [bind(DynamicComponentLoader).toClass(DynamicComponentLoader_), Injector]),
 
     bind(appComponentType)
         .toFactory((p: Promise<any>) => p.then(ref => ref.instance), [APP_COMPONENT_REF_PROMISE]),
@@ -84,11 +87,12 @@ function _componentBindings(appComponentType: Type): Array<Type | Binding | any[
  */
 export function applicationCommonBindings(): Array<Type | Binding | any[]> {
   return [
-    Compiler,
+    bind(Compiler)
+        .toClass(Compiler_),
     APP_ID_RANDOM_BINDING,
     AppViewPool,
     bind(APP_VIEW_POOL_CAPACITY).toValue(10000),
-    AppViewManager,
+    bind(AppViewManager).toClass(AppViewManager_),
     AppViewManagerUtils,
     AppViewListener,
     ProtoViewFactory,
@@ -98,7 +102,7 @@ export function applicationCommonBindings(): Array<Type | Binding | any[]> {
     bind(KeyValueDiffers).toValue(defaultKeyValueDiffers),
     DirectiveResolver,
     PipeResolver,
-    DynamicComponentLoader,
+    bind(DynamicComponentLoader).toClass(DynamicComponentLoader_),
     bind(LifeCycle).toFactory((exceptionHandler) => new LifeCycle_(null, assertionsEnabled()),
                               [ExceptionHandler]),
   ];
