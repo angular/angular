@@ -73,7 +73,7 @@ Future<String> createNgSettersAndGetters(
   NgDeps ngDeps = await NgDeps.parse(reader, entryPoint);
 
   String code = ngDeps.code;
-  var setters = _generateSetters(_createInputPropertiesMap(ngDeps));
+  var setters = [];
 
   ngDeps.registeredTypes.forEach((t) {
     final fromAnnotation = new _ExtractQueryFieldsFromAnnotation();
@@ -115,33 +115,4 @@ List<String> _generateSetters(Map<String, String> bindMap) {
     }
   });
   return setters;
-}
-
-/// Collapses all `inputs` in {@link ngDeps} into a map where the keys are
-/// the bind inputs and the values are either the one and only type
-/// binding to that property or the empty string.
-Map<String, String> _createInputPropertiesMap(NgDeps ngDeps) {
-  var visitor = new ExtractNamedExpressionVisitor('inputs');
-  var bindMap = {};
-  ngDeps.registeredTypes.forEach((RegisteredType t) {
-    visitor.bindConfig.clear();
-    t.annotations.accept(visitor);
-    visitor.bindConfig.forEach((String config) {
-      // See comments for `Directive` in annotations_impl/annotations.ts for
-      // details on how `inputs` is specified.
-      var prop;
-      var idx = config.indexOf(':');
-      if (idx > 0) {
-        prop = config.substring(0, idx).trim();
-      } else {
-        prop = config;
-      }
-      if (bindMap.containsKey(prop)) {
-        bindMap[prop] = '';
-      } else {
-        bindMap[prop] = '${t.typeName}';
-      }
-    });
-  });
-  return bindMap;
 }

@@ -159,7 +159,7 @@ void noChangeDetectorTests() {
     _formatThenExpectEquals(output, expected);
   });
 
-  it('should generate getters for Component#events.', () async {
+  it('should generate getters for Component#outputs.', () async {
     var inputPath = 'template_compiler/event_files/hello.ng_deps.dart';
     var expected =
         readFile('template_compiler/event_files/expected/hello.ng_deps.dart');
@@ -169,11 +169,44 @@ void noChangeDetectorTests() {
     _formatThenExpectEquals(output, expected);
   });
 
-  it('should generate getters for Directive#events.', () async {
+  it('should generate getters for Directive#outputs.', () async {
     var inputPath =
         'template_compiler/directive_event_files/hello.ng_deps.dart';
     var expected = readFile(
         'template_compiler/directive_event_files/expected/hello.ng_deps.dart');
+    var output = await process(new AssetId('a', inputPath));
+    _formatThenExpectEquals(output, expected);
+    output = await process(new AssetId('a', inputPath));
+    _formatThenExpectEquals(output, expected);
+  });
+
+  it('should generate setters for Component#inputs.', () async {
+    var inputPath = 'template_compiler/component_inputs_files/bar.ng_deps.dart';
+    var expected = readFile(
+        'template_compiler/component_inputs_files/expected/bar.ng_deps.dart');
+    var output = await process(new AssetId('a', inputPath));
+    _formatThenExpectEquals(output, expected);
+    output = await process(new AssetId('a', inputPath));
+    _formatThenExpectEquals(output, expected);
+  });
+
+  it('should generate setters for Directive#inputs.', () async {
+    var inputPath = 'template_compiler/directive_inputs_files/bar.ng_deps.dart';
+    var expected = readFile(
+        'template_compiler/directive_inputs_files/expected/bar.ng_deps.dart');
+    var output = await process(new AssetId('a', inputPath));
+    _formatThenExpectEquals(output, expected);
+    output = await process(new AssetId('a', inputPath));
+    _formatThenExpectEquals(output, expected);
+  });
+
+  it(
+      'should generate a single setter for two `Directive`s '
+      'with the same inputs.', () async {
+    var inputPath =
+        'template_compiler/duplicate_input_name_files/soup.ng_deps.dart';
+    var expected = readFile(
+        'template_compiler/duplicate_input_name_files/expected/soup.ng_deps.dart');
     var output = await process(new AssetId('a', inputPath));
     _formatThenExpectEquals(output, expected);
     output = await process(new AssetId('a', inputPath));

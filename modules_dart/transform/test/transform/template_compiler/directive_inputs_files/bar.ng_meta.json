@@ -1,0 +1,25 @@
+{
+  "ToolTip":
+  {
+    "kind": "type",
+    "value": {
+      "isComponent": false,
+      "dynamicLoadable": true,
+      "selector":"[tool-tip]",
+      "exportAs": null,
+      "type": {
+        "id": 1,
+        "name": "ToolTip",
+        "moduleUrl": "asset:template_compiler/lib/basic_inputs_files/bar.dart"
+      },
+      "changeDetection": 5,
+      "inputs": {"text": "tool-tip"},
+      "outputs": {},
+      "hostListeners": {},
+      "hostProperties": {},
+      "hostAttributes": {},
+      "lifecycleHooks": [],
+      "template": null
+    }
+  }
+}
