@@ -16,8 +16,7 @@ void initReflector() {
     ..registerType(
         MyComponent,
         new _ngRef.ReflectionInfo(const [
-          const Component(selector: '[soup]'),
-          const View(template: ''),
+          const Component(selector: '[soup]', template: 'aa'),
           _templates.HostMyComponentTemplate
         ], const [], () => new MyComponent()));
   i0.initReflector();

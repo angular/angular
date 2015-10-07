@@ -141,7 +141,8 @@ class _DirectiveMetadataVisitor extends Object
   List<String> _outputs;
   Map<String, String> _host;
   List<LifecycleHooks> _lifecycleHooks;
-  CompileTemplateMetadata _template;
+  CompileTemplateMetadata _cmpTemplate;
+  CompileTemplateMetadata _viewTemplate;
 
   void reset(AssetId assetId) {
     _lifecycleVisitor.reset(assetId);
@@ -157,23 +158,29 @@ class _DirectiveMetadataVisitor extends Object
     _outputs = <String>[];
     _host = <String, String>{};
     _lifecycleHooks = null;
-    _template = null;
+    _cmpTemplate = null;
+    _viewTemplate = null;
   }
 
   bool get hasMetadata => _hasMetadata;
 
-  CompileDirectiveMetadata createMetadata() => CompileDirectiveMetadata.create(
-      type: _type,
-      isComponent: _isComponent,
-      dynamicLoadable: true, // NOTE(kegluneq): For future optimization.
-      selector: _selector,
-      exportAs: _exportAs,
-      changeDetection: _changeDetection,
-      inputs: _inputs,
-      outputs: _outputs,
-      host: _host,
-      lifecycleHooks: _lifecycleHooks,
-      template: _template);
+  get _template => _viewTemplate != null ? _viewTemplate : _cmpTemplate;
+
+  CompileDirectiveMetadata createMetadata() {
+    return CompileDirectiveMetadata.create(
+        type: _type,
+        isComponent: _isComponent,
+        dynamicLoadable: true,
+    // NOTE(kegluneq): For future optimization.
+        selector: _selector,
+        exportAs: _exportAs,
+        changeDetection: _changeDetection,
+        inputs: _inputs,
+        outputs: _outputs,
+        host: _host,
+        lifecycleHooks: _lifecycleHooks,
+        template: _template);
+  }
 
   @override
   Object visitAnnotation(Annotation node) {
@@ -183,20 +190,26 @@ class _DirectiveMetadataVisitor extends Object
       if (_hasMetadata) {
         throw new FormatException(
             'Only one Directive is allowed per class. '
-            'Found unexpected "$node".',
+                'Found unexpected "$node".',
             '$node' /* source */);
       }
       _isComponent = isComponent;
       _hasMetadata = true;
+      if (isComponent) {
+        var t = new _CompileTemplateMetadataVisitor().visitAnnotation(node);
+        if (t.template != null || t.templateUrl != null) {
+          _cmpTemplate = t;
+        }
+      }
       super.visitAnnotation(node);
     } else if (_annotationMatcher.isView(node, _assetId)) {
-      if (_template != null) {
+      if (_viewTemplate!= null) {
         throw new FormatException(
             'Only one View is allowed per class. '
             'Found unexpected "$node".',
             '$node' /* source */);
       }
-      _template = new _CompileTemplateMetadataVisitor().visitAnnotation(node);
+      _viewTemplate = new _CompileTemplateMetadataVisitor().visitAnnotation(node);
     }
 
     // Annotation we do not recognize - no need to visit.

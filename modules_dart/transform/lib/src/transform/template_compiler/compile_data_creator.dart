@@ -19,8 +19,8 @@ import 'package:code_transformers/assets.dart';
 ///
 /// The returned value wraps the [NgDeps] at `entryPoint` as well as these
 /// created objects.
-Future<CompileDataResults> createCompileData(
-    AssetReader reader, AssetId entryPoint) async {
+Future<CompileDataResults> createCompileData(AssetReader reader,
+    AssetId entryPoint) async {
   return new _CompileDataCreator(reader, entryPoint).createCompileData();
 }
 
@@ -41,6 +41,14 @@ bool _isViewAnnotation(InstanceCreationExpression node) {
     constructorName = constructorName.identifier;
   }
   return constructorName.name == 'View';
+}
+
+bool _isComponentAnnotation(InstanceCreationExpression node) {
+  var constructorName = node.constructorName.type.name;
+  if (constructorName is PrefixedIdentifier) {
+    constructorName = constructorName.identifier;
+  }
+  return constructorName.name == 'Component';
 }
 
 /// Creates [ViewDefinition] objects for all `View` `Directive`s defined in
@@ -68,6 +76,7 @@ class _CompileDataCreator {
         // Note: we use '' because the current file maps to the default prefix.
         var ngMeta = visitor._metadataMap[''];
         var typeName = '${rType.typeName}';
+
         if (ngMeta.types.containsKey(typeName)) {
           visitor.compileData.component = ngMeta.types[typeName];
         } else {
@@ -161,7 +170,6 @@ class _CompileDataCreator {
     return retVal;
   }
 }
-
 /// Visitor responsible for processing the `annotations` property of a
 /// [RegisterType] object, extracting the `directives` dependencies, and adding
 /// their associated [CompileDirectiveMetadata] to the `directives` of a
@@ -187,7 +195,8 @@ class _DirectiveDependenciesVisitor extends Object
   /// reflector.
   @override
   Object visitInstanceCreationExpression(InstanceCreationExpression node) {
-    if (_isViewAnnotation(node)) {
+//    if (_isViewAnnotation(node)) {
+    if (_isViewAnnotation(node) || _isComponentAnnotation(node)) {
       compileData = new NormalizedComponentWithViewDirectives(
           null, <CompileDirectiveMetadata>[]);
       node.visitChildren(this);
@@ -202,7 +211,7 @@ class _DirectiveDependenciesVisitor extends Object
     if (node.name is! Label || node.name.label is! SimpleIdentifier) {
       logger.error(
           'Angular 2 currently only supports simple identifiers in directives.'
-          ' Source: ${node}');
+              ' Source: ${node}');
       return null;
     }
     if ('${node.name.label}' == 'directives') {
@@ -234,7 +243,7 @@ class _DirectiveDependenciesVisitor extends Object
       } else {
         logger.error(
             'Angular 2 currently only supports simple and prefixed identifiers '
-            'as values for "directives". Source: $node');
+                'as values for "directives". Source: $node');
         return;
       }
       if (ngMeta.types.containsKey(name)) {
