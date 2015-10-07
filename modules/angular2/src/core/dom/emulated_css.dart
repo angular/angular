@@ -28,6 +28,8 @@ List<EmulatedCssRule> emulateRules(Iterable<cssv.TreeNode> rules) {
         return new EmulatedCssStyleRule(node);
       } else if (node is cssv.MediaDirective) {
         return new EmulatedCssMedialRule(node);
+      } else if (node is cssv.ImportDirective) {
+        return new EmulatedCssImportRule(node);
       }
     })
     .where((r) => r != null)
@@ -98,5 +100,14 @@ class EmulatedMediaList {
   EmulatedMediaList(cssv.MediaDirective directive) {
     this.mediaText = directive.mediaQueries
         .map((q) => q.span.text).join(' and ');
+  }
+}
+
+/// Emulates [CSSImportRule](https://developer.mozilla.org/en-US/docs/Web/API/CSSImportRule)
+class EmulatedCssImportRule extends EmulatedCssRule {
+  EmulatedCssImportRule(cssv.ImportDirective directive) {
+    this
+      ..type = 3
+      ..cssText = '@${directive.span.text};';
   }
 }

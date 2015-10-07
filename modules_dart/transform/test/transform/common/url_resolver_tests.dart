@@ -88,9 +88,9 @@ void allTests() {
           .toThrowWith(anInstanceOf: FormatException);
     });
 
-    it('should throw for unsupported schemes', () {
-      expect(() => toAssetScheme(Uri.parse('file:///angular2')))
-          .toThrowWith(anInstanceOf: FormatException);
+    it('should pass through unsupported schemes', () {
+      var uri = 'http://server.com/style.css';
+      expect('${toAssetScheme(Uri.parse(uri))}').toEqual(uri);
     });
 
     it('should throw if passed a null uri', () {

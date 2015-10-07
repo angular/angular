@@ -154,5 +154,11 @@ export function main() {
       var css = s('x >>> y {}', 'a');
       expect(css).toEqual('x[a] y[a] {}');
     });
+
+    it('should pass through @import directives', () => {
+      var styleStr = '@import url("https://fonts.googleapis.com/css?family=Roboto");';
+      var css = s(styleStr, 'a');
+      expect(css).toEqual(styleStr);
+    });
   });
 }
