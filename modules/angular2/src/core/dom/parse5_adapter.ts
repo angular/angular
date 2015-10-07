@@ -356,7 +356,7 @@ export class Parse5DomAdapter extends DomAdapter {
     var index = classList.indexOf(classname);
     if (index == -1) {
       classList.push(classname);
-      element.attribs["class"] = element.className = ListWrapper.join(classList, " ");
+      element.attribs["class"] = element.className = classList.join(" ");
     }
   }
   removeClass(element, classname: string) {
@@ -364,7 +364,7 @@ export class Parse5DomAdapter extends DomAdapter {
     var index = classList.indexOf(classname);
     if (index > -1) {
       classList.splice(index, 1);
-      element.attribs["class"] = element.className = ListWrapper.join(classList, " ");
+      element.attribs["class"] = element.className = classList.join(" ");
     }
   }
   hasClass(element, classname: string): boolean {

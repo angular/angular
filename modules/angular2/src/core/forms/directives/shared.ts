@@ -42,7 +42,7 @@ export function setUpControl(control: Control, dir: NgControl): void {
 }
 
 function _throwError(dir: NgControl, message: string): void {
-  var path = ListWrapper.join(dir.path, " -> ");
+  var path = dir.path.join(" -> ");
   throw new BaseException(`${message} '${path}'`);
 }
 

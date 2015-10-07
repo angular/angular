@@ -130,7 +130,7 @@ export class URLSearchParams {
     MapWrapper.forEach(this.paramsMap, (values, k) => {
       ListWrapper.forEach(values, v => { paramsList.push(k + '=' + v); });
     });
-    return ListWrapper.join(paramsList, '&');
+    return paramsList.join('&');
   }
 
   delete (param: string): void { MapWrapper.delete(this.paramsMap, param); }

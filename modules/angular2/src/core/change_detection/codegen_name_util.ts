@@ -109,8 +109,8 @@ export class CodegenNameUtil {
       }
     }
     var assignmentsCode =
-        ListWrapper.isEmpty(assignments) ? '' : `${ListWrapper.join(assignments, '=')} = false;`;
-    return `var ${ListWrapper.join(declarations, ',')};${assignmentsCode}`;
+        ListWrapper.isEmpty(assignments) ? '' : `${assignments.join('=')} = false;`;
+    return `var ${declarations.join(',')};${assignmentsCode}`;
   }
 
   /**
@@ -169,20 +169,16 @@ export class CodegenNameUtil {
 
     // At least one assignment.
     fields.push(`${this._utilName}.uninitialized;`);
-    return ListWrapper.join(fields, ' = ');
+    return fields.join(' = ');
   }
 
   /**
    * Generates statements destroying all pipe variables.
    */
   genPipeOnDestroy(): string {
-    return ListWrapper.join(
-        ListWrapper.map(
-            ListWrapper.filter(this._records, (r) => { return r.isPipeRecord(); }),
-            (r) => {
-              return `${this._utilName}.callPipeOnDestroy(${this.getPipeName(r.selfIndex)});`;
-            }),
-        '\n');
+    return ListWrapper.filter(this._records, (r) => { return r.isPipeRecord(); })
+        .map(r => `${this._utilName}.callPipeOnDestroy(${this.getPipeName(r.selfIndex)});`)
+        .join('\n');
   }
 
   getPipeName(idx: number): string {
