@@ -129,8 +129,6 @@ export class InjectableMetadata {
  * @Injectable()
  * class NeedsDependency {
  *   dependency;
-
- *   dependency;
  *   constructor(@Self() dependency:Dependency) {
  *     this.dependency = dependency;
  *   }
