@@ -88,5 +88,26 @@ export function main() {
           .toEqual(['http://ng.io/print1.css', 'http://ng.io/print2.css']);
     });
 
+    it('should leave absolute non-package @import urls intact', () => {
+      var css = `@import url('http://server.com/some.css');`;
+      var styleWithImports = resolveStyleUrls(urlResolver, 'http://ng.io', css);
+      expect(styleWithImports.style.trim()).toEqual(`@import url('http://server.com/some.css');`);
+      expect(styleWithImports.styleUrls).toEqual([]);
+    });
+
+    it('should resolve package @import urls', () => {
+      var css = `@import url('package:a/b/some.css');`;
+      var styleWithImports = resolveStyleUrls(new FakeUrlResolver(), 'http://ng.io', css);
+      expect(styleWithImports.style.trim()).toEqual(``);
+      expect(styleWithImports.styleUrls).toEqual(['fake_resolved_url']);
+    });
+
   });
+}
+
+/// The real thing behaves differently between Dart and JS for package URIs.
+class FakeUrlResolver extends UrlResolver {
+  constructor() { super(); }
+
+  resolve(baseUrl: string, url: string): string { return 'fake_resolved_url'; }
 }

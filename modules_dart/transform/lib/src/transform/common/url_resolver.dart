@@ -59,9 +59,8 @@ Uri toAssetScheme(Uri absoluteUri) {
     return absoluteUri;
   }
   if (absoluteUri.scheme != 'package') {
-    throw new FormatException(
-        'Unsupported URI scheme "${absoluteUri.scheme}" encountered.',
-        absoluteUri);
+    // Pass through URIs with non-package scheme
+    return absoluteUri;
   }
 
   if (absoluteUri.pathSegments.length < 2) {
