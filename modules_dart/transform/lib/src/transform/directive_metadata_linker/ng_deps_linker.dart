@@ -20,10 +20,11 @@ import 'package:barback/barback.dart';
 /// `isNgDeps` to `true` to signify that it is a dependency on which we need to
 /// call `initReflector`.
 Future<NgDepsModel> linkNgDeps(NgDepsModel ngDepsModel, AssetReader reader,
-    AssetId entryPoint, UrlResolver resolver) async {
+    AssetId assetId, UrlResolver resolver) async {
   if (ngDepsModel == null) return null;
+  final timer = new Stopwatch()..start();
   var linkedDepsMap =
-      await _processNgImports(ngDepsModel, reader, entryPoint, resolver);
+      await _processNgImports(ngDepsModel, reader, assetId, resolver);
 
   if (linkedDepsMap.isEmpty) {
     // We are not calling `initReflector` on any other libraries, but we still
@@ -54,6 +55,8 @@ Future<NgDepsModel> linkNgDeps(NgDepsModel ngDepsModel, AssetReader reader,
       ngDepsModel.imports.add(linkedModel);
     }
   }
+  timer.stop();
+  logger.fine('[linkNgDeps] took ${timer.elapsedMilliseconds} ms on $assetId');
 
   return ngDepsModel;
 }

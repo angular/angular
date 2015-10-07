@@ -30,6 +30,7 @@ class Rewriter {
     var node = parseCompilationUnit(code);
     if (node == null) return null;
 
+    final timer = new Stopwatch()..start();
     var visitor = new _FindDeferredLibraries(_reader, _entryPoint);
     node.accept(visitor);
     // Look to see if we found any deferred libraries
@@ -63,6 +64,9 @@ class Rewriter {
       return node.end;
     });
     if (idx < code.length) buf.write(code.substring(idx));
+    timer.stop();
+    logger.fine(
+        '[rewriteDeferredLibraries] took ${timer.elapsedMilliseconds} ms on $_entryPoint');
     return '$buf';
   }
 }
