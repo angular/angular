@@ -105,5 +105,13 @@ export function main() {
       location.back();
       assertUrl('/ready');
     });
+
+    it('should incorporate the provided query values into the location change', () => {
+      var locationStrategy = new MockLocationStrategy();
+      var location = new Location(locationStrategy);
+
+      location.go('/home', "key=value");
+      expect(location.path()).toEqual("/home?key=value");
+    });
   });
 }
