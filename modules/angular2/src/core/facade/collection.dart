@@ -167,7 +167,6 @@ class ListWrapper {
     l.clear();
   }
 
-  static String join(List l, String s) => l.join(s);
   static bool isEmpty(Iterable list) => list.isEmpty;
   static void fill(List l, value, [int start = 0, int end]) {
     l.fillRange(_startOffset(l, start), _endOffset(l, end), value);

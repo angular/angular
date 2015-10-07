@@ -20,7 +20,7 @@ var _nextId = 0;
 
 function _setElementId(element, indices: number[]) {
   if (isPresent(element)) {
-    DOM.setData(element, NG_ID_PROPERTY, ListWrapper.join(indices, NG_ID_SEPARATOR));
+    DOM.setData(element, NG_ID_PROPERTY, indices.join(NG_ID_SEPARATOR));
   }
 }
 

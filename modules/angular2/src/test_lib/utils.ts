@@ -21,7 +21,7 @@ export class Log {
 
   clear(): void { this._result = []; }
 
-  result(): string { return ListWrapper.join(this._result, "; "); }
+  result(): string { return this._result.join("; "); }
 }
 
 

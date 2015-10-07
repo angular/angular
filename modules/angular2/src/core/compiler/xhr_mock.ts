@@ -5,15 +5,9 @@ import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptio
 import {PromiseCompleter, PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 
 export class MockXHR extends XHR {
-  private _expectations: _Expectation[];
+  private _expectations: _Expectation[] = [];
   private _definitions = new Map<string, string>();
-  private _requests: _PendingRequest[];
-
-  constructor() {
-    super();
-    this._expectations = [];
-    this._requests = [];
-  }
+  private _requests: _PendingRequest[] = [];
 
   get(url: string): Promise<string> {
     var request = new _PendingRequest(url);
@@ -50,7 +44,7 @@ export class MockXHR extends XHR {
       urls.push(expectation.url);
     }
 
-    throw new BaseException(`Unsatisfied requests: ${ListWrapper.join(urls, ', ')}`);
+    throw new BaseException(`Unsatisfied requests: ${urls.join(', ')}`);
   }
 
   private _processRequest(request: _PendingRequest) {

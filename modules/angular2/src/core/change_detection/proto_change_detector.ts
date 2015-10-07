@@ -314,8 +314,7 @@ function _arrayFn(length: number): Function {
 }
 
 function _mapPrimitiveName(keys: any[]) {
-  var stringifiedKeys =
-      ListWrapper.join(ListWrapper.map(keys, (k) => isString(k) ? `"${k}"` : `${k}`), ", ");
+  var stringifiedKeys = keys.map(k => isString(k) ? `"${k}"` : `${k}`).join(', ');
   return `mapFn([${stringifiedKeys}])`;
 }
 
