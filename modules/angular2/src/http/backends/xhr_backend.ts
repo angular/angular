@@ -101,7 +101,7 @@ export class XHRConnection implements Connection {
  * })
  * class MyComponent {
  *   constructor(http:Http) {
- *     http('people.json').toRx().subscribe(res => this.people = res.json());
+ *     http('people.json').subscribe(res => this.people = res.json());
  *   }
  * }
  * ```
