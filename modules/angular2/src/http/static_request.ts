@@ -42,7 +42,7 @@ import {
  *
  * var injector = Injector.resolveAndCreate([HTTP_BINDINGS, AutoAuthenticator]);
  * var authenticator = injector.get(AutoAuthenticator);
- * authenticator.request('people.json').toRx().subscribe(res => {
+ * authenticator.request('people.json').subscribe(res => {
  *   //URL should have included '?password=123'
  *   console.log('people', res.json());
  * });
