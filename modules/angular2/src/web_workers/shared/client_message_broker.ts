@@ -8,7 +8,7 @@ import {
   ObservableWrapper,
   EventEmitter
 } from "angular2/src/core/facade/async";
-import {ListWrapper, StringMapWrapper, MapWrapper} from "angular2/src/core/facade/collection";
+import {StringMapWrapper, MapWrapper} from "angular2/src/core/facade/collection";
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {Injectable} from "angular2/src/core/di";
 import {Type, StringWrapper} from "angular2/src/core/facade/lang";
@@ -58,7 +58,7 @@ export class ClientMessageBroker {
   runOnService(args: UiArguments, returnType: Type): Promise<any> {
     var fnArgs = [];
     if (isPresent(args.args)) {
-      ListWrapper.forEach(args.args, (argument) => {
+      args.args.forEach(argument => {
         if (argument.type != null) {
           fnArgs.push(this._serializer.serialize(argument.value, argument.type));
         } else {

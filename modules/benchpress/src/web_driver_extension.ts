@@ -3,7 +3,6 @@ import {bind, Binding, Injector, OpaqueToken} from 'angular2/src/core/di';
 import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
 
 import {Options} from './common_options';
 
@@ -20,9 +19,9 @@ export abstract class WebDriverExtension {
                      [Injector]),
       bind(WebDriverExtension)
           .toFactory(
-              (children, capabilities) => {
+              (children: WebDriverExtension[], capabilities) => {
                 var delegate;
-                ListWrapper.forEach(children, (extension) => {
+                children.forEach(extension => {
                   if (extension.supports(capabilities)) {
                     delegate = extension;
                   }

@@ -41,7 +41,7 @@ export class RenderViewWithFragmentsStore {
     this._lookupByView.set(view.viewRef, startIndex);
     startIndex++;
 
-    ListWrapper.forEach(view.fragmentRefs, (ref) => {
+    view.fragmentRefs.forEach(ref => {
       this._lookupByIndex.set(startIndex, ref);
       this._lookupByView.set(ref, startIndex);
       startIndex++;

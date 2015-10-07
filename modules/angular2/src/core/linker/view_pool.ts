@@ -1,6 +1,6 @@
 import {Inject, Injectable, OpaqueToken} from 'angular2/src/core/di';
 
-import {ListWrapper, MapWrapper, Map} from 'angular2/src/core/facade/collection';
+import {MapWrapper, Map} from 'angular2/src/core/facade/collection';
 import {isPresent, isBlank, CONST_EXPR} from 'angular2/src/core/facade/lang';
 
 import * as viewModule from './view';
@@ -19,7 +19,7 @@ export class AppViewPool {
   getView(protoView: viewModule.AppProtoView): viewModule.AppView {
     var pooledViews = this._pooledViewsPerProtoView.get(protoView);
     if (isPresent(pooledViews) && pooledViews.length > 0) {
-      return ListWrapper.removeLast(pooledViews);
+      return pooledViews.pop();
     }
     return null;
   }

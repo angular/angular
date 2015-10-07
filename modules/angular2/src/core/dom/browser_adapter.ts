@@ -165,9 +165,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return node;
   }
   insertBefore(el, node) { el.parentNode.insertBefore(node, el); }
-  insertAllBefore(el, nodes) {
-    ListWrapper.forEach(nodes, (n) => { el.parentNode.insertBefore(n, el); });
-  }
+  insertAllBefore(el, nodes) { nodes.forEach(n => el.parentNode.insertBefore(n, el)); }
   insertAfter(el, node) { el.parentNode.insertBefore(node, el.nextSibling); }
   setInnerHTML(el, value) { el.innerHTML = value; }
   getText(el): string { return el.textContent; }

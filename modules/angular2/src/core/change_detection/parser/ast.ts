@@ -221,7 +221,7 @@ export class RecursiveAstVisitor implements AstVisitor {
     return this.visitAll(ast.args);
   }
   visitAll(asts: AST[]): any {
-    ListWrapper.forEach(asts, (ast) => { ast.visit(this); });
+    asts.forEach(ast => ast.visit(this));
     return null;
   }
 }

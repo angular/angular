@@ -11,7 +11,7 @@ import {
   xit,
 } from 'angular2/test_lib';
 
-import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 
@@ -325,7 +325,7 @@ export function main() {
     describe('aggregation', () => {
 
       function aggregate(events: any[], microMetrics = null, captureFrames = null) {
-        ListWrapper.insert(events, 0, eventFactory.markStart('benchpress0', 0));
+        events.unshift(eventFactory.markStart('benchpress0', 0));
         events.push(eventFactory.markEnd('benchpress0', 10));
         var metric = createMetric([events], microMetrics, null, null, captureFrames);
         return metric.beginMeasure().then((_) => metric.endMeasure(false));
@@ -662,7 +662,7 @@ class MockDriverExtension extends WebDriverExtension {
     this._commandLog.push('readPerfLog');
     if (this._perfLogs.length > 0) {
       var next = this._perfLogs[0];
-      ListWrapper.removeAt(this._perfLogs, 0);
+      this._perfLogs.shift();
       return PromiseWrapper.resolve(next);
     } else {
       return PromiseWrapper.resolve([]);

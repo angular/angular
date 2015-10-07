@@ -142,9 +142,9 @@ export class PerflogMetric extends Metric {
     });
   }
 
-  _addEvents(events) {
+  _addEvents(events: any[]) {
     var needSort = false;
-    ListWrapper.forEach(events, (event) => {
+    events.forEach(event => {
       if (StringWrapper.equals(event['ph'], 'X')) {
         needSort = true;
         var startEvent = {};

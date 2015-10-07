@@ -177,11 +177,6 @@ export class ListWrapper {
   static createFixedSize(size: number): any[] { return new Array(size); }
   static createGrowableSize(size: number): any[] { return new Array(size); }
   static clone<T>(array: T[]): T[] { return array.slice(0); }
-  static forEach<T>(array: T[], fn: (T) => void) {
-    for (var i = 0; i < array.length; i++) {
-      fn(array[i]);
-    }
-  }
   static forEachWithIndex<T>(array: T[], fn: (T, number) => void) {
     for (var i = 0; i < array.length; i++) {
       fn(array[i], i);
@@ -234,7 +229,6 @@ export class ListWrapper {
       list.splice(index, 1);
     }
   }
-  static removeLast<T>(list: T[]): T { return list.pop(); }
   static remove<T>(list: T[], el: T): boolean {
     var index = list.indexOf(el);
     if (index > -1) {

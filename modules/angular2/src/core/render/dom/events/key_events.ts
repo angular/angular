@@ -39,19 +39,19 @@ export class KeyEventsPlugin extends EventManagerPlugin {
   }
 
   static parseEventName(eventName: string): {[key: string]: string} {
-    var parts = eventName.toLowerCase().split('.');
+    var parts: string[] = eventName.toLowerCase().split('.');
 
-    var domEventName = ListWrapper.removeAt(parts, 0);
+    var domEventName = parts.shift();
     if ((parts.length === 0) ||
         !(StringWrapper.equals(domEventName, 'keydown') ||
           StringWrapper.equals(domEventName, 'keyup'))) {
       return null;
     }
 
-    var key = KeyEventsPlugin._normalizeKey(ListWrapper.removeLast(parts));
+    var key = KeyEventsPlugin._normalizeKey(parts.pop());
 
     var fullKey = '';
-    ListWrapper.forEach(modifierKeys, (modifierName) => {
+    modifierKeys.forEach(modifierName => {
       if (ListWrapper.contains(parts, modifierName)) {
         ListWrapper.remove(parts, modifierName);
         fullKey += modifierName + '.';
@@ -78,7 +78,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     } else if (StringWrapper.equals(key, '.')) {
       key = 'dot';  // because '.' is used as a separator in event names
     }
-    ListWrapper.forEach(modifierKeys, (modifierName) => {
+    modifierKeys.forEach(modifierName => {
       if (modifierName != key) {
         var modifierGetter = StringMapWrapper.get(modifierKeyGetters, modifierName);
         if (modifierGetter(event)) {

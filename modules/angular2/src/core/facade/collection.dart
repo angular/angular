@@ -125,9 +125,6 @@ class ListWrapper {
   static find(List list, bool fn(item)) =>
       list.firstWhere(fn, orElse: () => null);
   static bool any(List list, bool fn(item)) => list.any(fn);
-  static void forEach(Iterable list, fn(item)) {
-    list.forEach(fn);
-  }
 
   static void forEachWithIndex(List list, fn(item, index)) {
     for (var i = 0; i < list.length; ++i) {
@@ -160,7 +157,6 @@ class ListWrapper {
     }
   }
 
-  static removeLast(List list) => list.removeLast();
   static bool remove(List list, item) => list.remove(item);
   static void clear(List l) {
     l.clear();
