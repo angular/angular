@@ -10551,10 +10551,47 @@
       }
     },
     "systemjs-builder": {
-      "version": "0.10.6",
+      "version": "0.14.7",
       "dependencies": {
+        "algorithms": {
+          "version": "0.9.1"
+        },
+        "es6-template-strings": {
+          "version": "2.0.0",
+          "dependencies": {
+            "es5-ext": {
+              "version": "0.10.8",
+              "dependencies": {
+                "es6-iterator": {
+                  "version": "2.0.0",
+                  "dependencies": {
+                    "d": {
+                      "version": "0.1.1"
+                    }
+                  }
+                },
+                "es6-symbol": {
+                  "version": "3.0.0",
+                  "dependencies": {
+                    "d": {
+                      "version": "0.1.1"
+                    }
+                  }
+                }
+              }
+            },
+            "esniff": {
+              "version": "1.0.0",
+              "dependencies": {
+                "d": {
+                  "version": "0.1.1"
+                }
+              }
+            }
+          }
+        },
         "glob": {
-          "version": "5.0.5",
+          "version": "5.0.15",
           "dependencies": {
             "inflight": {
               "version": "1.0.4",
@@ -10581,7 +10618,7 @@
           }
         },
         "mkdirp": {
-          "version": "0.5.0",
+          "version": "0.5.1",
           "dependencies": {
             "minimist": {
               "version": "0.0.8"
@@ -10589,31 +10626,29 @@
           }
         },
         "rsvp": {
-          "version": "3.0.18"
+          "version": "3.1.0"
         },
         "source-map": {
-          "version": "0.4.2",
+          "version": "0.4.4",
           "dependencies": {
             "amdefine": {
-              "version": "0.1.0"
+              "version": "1.0.0"
             }
           }
         },
         "systemjs": {
-          "version": "0.16.11",
+          "version": "0.19.3",
           "dependencies": {
             "es6-module-loader": {
-              "version": "0.16.6",
-              "dependencies": {
-                "when": {
-                  "version": "3.7.3"
-                }
-              }
+              "version": "0.17.8"
+            },
+            "when": {
+              "version": "3.7.3"
             }
           }
         },
         "traceur": {
-          "version": "0.0.88",
+          "version": "0.0.91",
           "dependencies": {
             "commander": {
               "version": "2.6.0"
@@ -10652,7 +10687,7 @@
                   "version": "0.1.32",
                   "dependencies": {
                     "amdefine": {
-                      "version": "0.1.0"
+                      "version": "1.0.0"
                     }
                   }
                 }
@@ -10661,7 +10696,7 @@
           }
         },
         "uglify-js": {
-          "version": "2.4.21",
+          "version": "2.4.24",
           "dependencies": {
             "async": {
               "version": "0.2.10"
@@ -10670,7 +10705,7 @@
               "version": "0.1.34",
               "dependencies": {
                 "amdefine": {
-                  "version": "0.1.0"
+                  "version": "1.0.0"
                 }
               }
             },
@@ -10681,7 +10716,7 @@
               "version": "3.5.4",
               "dependencies": {
                 "camelcase": {
-                  "version": "1.0.2"
+                  "version": "1.2.1"
                 },
                 "decamelize": {
                   "version": "1.0.0"

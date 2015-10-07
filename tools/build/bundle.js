@@ -13,9 +13,9 @@ module.exports.bundle = function(buildConfig, moduleName, outputFile, outputConf
   var builder = new Builder();
   builder.config(buildConfig);
   if (sfx) {
-    return builder.buildSFX(moduleName, outputFile, outputConfig);
+    return builder.buildStatic(moduleName, outputFile, outputConfig);
   } else {
-    return builder.build(moduleName, outputFile, outputConfig);
+    return builder.bundle(moduleName, outputFile, outputConfig);
   }
 };
 
