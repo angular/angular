@@ -50,11 +50,9 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
 
   var savedReflectionCapabilities = reflector.reflectionCapabilities;
   reflector.reflectionCapabilities = const NullReflectionCapabilities();
-  final timer = new Stopwatch()..start();
-  var compiledTemplates = templateCompiler.compileTemplatesCodeGen(compileData);
-  timer.stop();
-  logger.fine(
-      '[compileTemplatesCodegen] took ${timer.elapsedMilliseconds} ms on $assetId');
+  final compiledTemplates = await logElapsedAsync(() async {
+    return templateCompiler.compileTemplatesCodeGen(compileData);
+  }, operationName: 'compileTemplatesCodegen', assetId: assetId);
   reflector.reflectionCapabilities = savedReflectionCapabilities;
 
   return new Outputs(assetId, ngDeps, codegen, viewDefResults.viewDefinitions,

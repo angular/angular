@@ -37,12 +37,9 @@ Future<String> inlineParts(AssetReader reader, AssetId assetId) async {
   // parent, so it does not need its own `.ng_deps.dart` file.
   if (directivesVisitor.isPart) return null;
 
-  final timer = new Stopwatch()..start();
-  final allCode =
-      await _getAllDeclarations(reader, assetId, code, directivesVisitor);
-  timer.stop();
-  logger.fine('[inlineParts] $assetId took ${timer.elapsedMilliseconds} ms');
-  return allCode;
+  return logElapsedAsync(() {
+    return _getAllDeclarations(reader, assetId, code, directivesVisitor);
+  }, operationName: 'inlineParts', assetId: assetId);
 }
 
 /// Processes `visitor.parts`, reading and appending their contents to the

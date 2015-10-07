@@ -22,13 +22,11 @@ Future<Iterable<Asset>> processStylesheet(
   final stylesheetUrl = '${stylesheetId.package}|${stylesheetId.path}';
   final templateCompiler = createTemplateCompiler(reader);
   final cssText = await reader.readAsString(stylesheetId);
-  final timer = new Stopwatch()..start();
-  final sourceModules =
-      templateCompiler.compileStylesheetCodeGen(stylesheetUrl, cssText);
-  timer.stop();
-  logger.fine(
-      '[processStylesheet] took ${timer.elapsedMilliseconds} ms on $stylesheetId');
+  return logElapsedAsync(() async {
+    final sourceModules =
+        templateCompiler.compileStylesheetCodeGen(stylesheetUrl, cssText);
 
-  return sourceModules.map((SourceModule module) => new Asset.fromString(
-      new AssetId.parse('${module.moduleUrl}'), writeSourceModule(module)));
+    return sourceModules.map((SourceModule module) => new Asset.fromString(
+        new AssetId.parse('${module.moduleUrl}'), writeSourceModule(module)));
+  }, operationName: 'processStylesheet', assetId: stylesheetId);
 }
