@@ -132,7 +132,7 @@ var config = exports.config = {
     // TODO(juliemr): remove this hack and use the config option
     // restartBrowserBetweenTests once that is not hanging.
     // See https://github.com/angular/protractor/issues/1983
-    patchProtractorWait(browser);
+    //
     // During benchmarking, we need to open a new browser
     // for every benchmark, otherwise the numbers can get skewed
     // from other benchmarks (e.g. Chrome keeps JIT caches, ...)
@@ -141,7 +141,6 @@ var config = exports.config = {
       var _tmpBrowser;
       beforeEach(function() {
         global.browser = originalBrowser.forkNewDriverInstance();
-        patchProtractorWait(global.browser);
         global.element = global.browser.element;
         global.$ = global.browser.$;
         global.$$ = global.browser.$$;
@@ -170,6 +169,8 @@ var config = exports.config = {
 
   framework: 'jasmine2',
 
+  useAllAngular2AppRoots: true,
+
   jasmineNodeOpts: {
     showColors: true,
     defaultTimeoutInterval: argv['benchmark'] ? 1200000 : 60000
@@ -182,35 +183,6 @@ var config = exports.config = {
     }
   }
 };
-
-// Disable waiting for Angular as we don't have an integration layer yet...
-// TODO(tbosch): Implement a proper debugging API for Ng2.0, remove this here
-// and the sleeps in all tests.
-function patchProtractorWait(browser) {
-  browser.ignoreSynchronization = true;
-  // Benchmarks never need to wait for Angular 2 to be ready
-  var _get = browser.get;
-  var sleepInterval = process.env.TRAVIS || process.env.JENKINS_URL ? 14000 : 8000;
-  browser.get = function() {
-    var result = _get.apply(this, arguments);
-    browser.driver.wait(protractor.until.elementLocated(By.js(function() {
-      var isLoading = true;
-      if (window.getAllAngularTestabilities) {
-        var testabilities = window.getAllAngularTestabilities();
-        if (testabilities && testabilities.length > 0) {
-          isLoading = false;
-          testabilities.forEach(function(testability) {
-            if (!testability.isStable()) {
-              isLoading = true;
-            }
-          });
-        }
-      }
-      return !isLoading ? document.body.children : null;
-    })), sleepInterval);
-    return result;
-  }
-}
 
 exports.createBenchpressRunner = function(options) {
   // benchpress will also load traceur runtime as our tests are written in es6

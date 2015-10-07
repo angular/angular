@@ -36,7 +36,7 @@ export class SeleniumWebDriverAdapter extends WebDriverAdapter {
 
   capabilities(): Promise<any> {
     return this._convertPromise(
-        this._driver.getCapabilities().then((capsObject) => capsObject.toJSON()));
+        this._driver.getCapabilities().then((capsObject) => capsObject.serialize()));
   }
 
   logs(type: string): Promise<any> {
