@@ -11,7 +11,6 @@ describe('md-dialog', function() {
     openButton.click();
 
     var dialog = element(by.css('.md-dialog'));
-    browser.sleep(500);
 
     expect(dialog.isPresent()).toEqual(true);
 
