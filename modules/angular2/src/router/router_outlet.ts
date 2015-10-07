@@ -1,6 +1,6 @@
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
+import {isBlank, isPresent, Type} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
 import {Directive, Attribute} from 'angular2/src/core/metadata';
@@ -12,7 +12,6 @@ import {ComponentInstruction, RouteParams} from './instruction';
 import {ROUTE_DATA} from './route_data';
 import * as hookMod from './lifecycle_annotations';
 import {hasLifecycleHook} from './route_lifecycle_reflector';
-import {Type} from "../core/facade/lang";
 
 let _resolveToTrue = PromiseWrapper.resolve(true);
 
@@ -25,59 +24,14 @@ let _resolveToTrue = PromiseWrapper.resolve(true);
  * <router-outlet></router-outlet>
  * ```
  */
-export abstract class RouterOutlet {
-  name: string = null;
-
-  /**
-   * Called by the Router to instantiate a new component during the commit phase of a navigation.
-   * This method in turn is responsible for calling the `onActivate` hook of its child.
-   */
-  abstract activate(nextInstruction: ComponentInstruction): Promise<any>;
-
-  /**
-   * Called by the {@link Router} during the commit phase of a navigation when an outlet
-   * reuses a component between different routes.
-   * This method in turn is responsible for calling the `onReuse` hook of its child.
-   */
-  abstract reuse(nextInstruction: ComponentInstruction): Promise<any>;
-
-  /**
-   * Called by the {@link Router} when an outlet reuses a component across navigations.
-   * This method in turn is responsible for calling the `onReuse` hook of its child.
-   */
-  abstract deactivate(nextInstruction: ComponentInstruction): Promise<any>;
-
-  /**
-   * Called by the {@link Router} during recognition phase of a navigation.
-   *
-   * If this resolves to `false`, the given navigation is cancelled.
-   *
-   * This method delegates to the child component's `canDeactivate` hook if it exists,
-   * and otherwise resolves to true.
-   */
-  abstract canDeactivate(nextInstruction: ComponentInstruction): Promise<boolean>;
-
-  /**
-   * Called by the {@link Router} during recognition phase of a navigation.
-   *
-   * If the new child component has a different Type than the existing child component,
-   * this will resolve to `false`. You can't reuse an old component when the new component
-   * is of a different Type.
-   *
-   * Otherwise, this method delegates to the child component's `canReuse` hook if it exists,
-   * or resolves to true if the hook is not present.
-   */
-  abstract canReuse(nextInstruction: ComponentInstruction): Promise<boolean>;
-}
-
 @Directive({selector: 'router-outlet'})
-export class RouterOutlet_ extends RouterOutlet {
+export class RouterOutlet {
+  name: string = null;
   private _componentRef: ComponentRef = null;
   private _currentInstruction: ComponentInstruction = null;
 
   constructor(private _elementRef: ElementRef, private _loader: DynamicComponentLoader,
               private _parentRouter: routerMod.Router, @Attribute('name') nameAttr: string) {
-    super();
     if (isPresent(nameAttr)) {
       this.name = nameAttr;
       this._parentRouter.registerAuxOutlet(this);
@@ -86,6 +40,10 @@ export class RouterOutlet_ extends RouterOutlet {
     }
   }
 
+  /**
+   * Called by the Router to instantiate a new component during the commit phase of a navigation.
+   * This method in turn is responsible for calling the `onActivate` hook of its child.
+   */
   activate(nextInstruction: ComponentInstruction): Promise<any> {
     var previousInstruction = this._currentInstruction;
     this._currentInstruction = nextInstruction;
@@ -107,6 +65,11 @@ export class RouterOutlet_ extends RouterOutlet {
         });
   }
 
+  /**
+   * Called by the {@link Router} during the commit phase of a navigation when an outlet
+   * reuses a component between different routes.
+   * This method in turn is responsible for calling the `onReuse` hook of its child.
+   */
   reuse(nextInstruction: ComponentInstruction): Promise<any> {
     var previousInstruction = this._currentInstruction;
     this._currentInstruction = nextInstruction;
@@ -120,6 +83,10 @@ export class RouterOutlet_ extends RouterOutlet {
             true);
   }
 
+  /**
+   * Called by the {@link Router} when an outlet reuses a component across navigations.
+   * This method in turn is responsible for calling the `onReuse` hook of its child.
+   */
   deactivate(nextInstruction: ComponentInstruction): Promise<any> {
     var next = _resolveToTrue;
     if (isPresent(this._componentRef) && isPresent(this._currentInstruction) &&
@@ -135,6 +102,14 @@ export class RouterOutlet_ extends RouterOutlet {
     });
   }
 
+  /**
+   * Called by the {@link Router} during recognition phase of a navigation.
+   *
+   * If this resolves to `false`, the given navigation is cancelled.
+   *
+   * This method delegates to the child component's `canDeactivate` hook if it exists,
+   * and otherwise resolves to true.
+   */
   canDeactivate(nextInstruction: ComponentInstruction): Promise<boolean> {
     if (isBlank(this._currentInstruction)) {
       return _resolveToTrue;
@@ -146,6 +121,16 @@ export class RouterOutlet_ extends RouterOutlet {
     return _resolveToTrue;
   }
 
+  /**
+   * Called by the {@link Router} during recognition phase of a navigation.
+   *
+   * If the new child component has a different Type than the existing child component,
+   * this will resolve to `false`. You can't reuse an old component when the new component
+   * is of a different Type.
+   *
+   * Otherwise, this method delegates to the child component's `canReuse` hook if it exists,
+   * or resolves to true if the hook is not present.
+   */
   canReuse(nextInstruction: ComponentInstruction): Promise<boolean> {
     var result;
 

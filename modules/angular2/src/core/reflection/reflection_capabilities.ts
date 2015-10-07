@@ -1,9 +1,8 @@
-import {Type, isPresent, isFunction, global, stringify} from 'angular2/src/core/facade/lang';
+import {Type, isPresent, isFunction, global, stringify, ConcreteType} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {GetterFn, SetterFn, MethodFn} from './types';
 import {PlatformReflectionCapabilities} from 'platform_reflection_capabilities';
-import {ConcreteType} from "../facade/lang";
 
 export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   private _reflect: any;

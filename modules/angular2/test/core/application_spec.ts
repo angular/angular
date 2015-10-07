@@ -21,7 +21,7 @@ import {bind, Inject, Injector, LifeCycle} from 'angular2/core';
 import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
 import {IS_DART} from '../platform';
-import {ComponentRef_} from "../../src/core/linker/dynamic_component_loader";
+import {ComponentRef_} from "angular2/src/core/linker/dynamic_component_loader";
 
 @Component({selector: 'hello-app'})
 @View({template: '{{greeting}} world!'})

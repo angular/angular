@@ -16,7 +16,8 @@ import {BrowserJsonp} from 'angular2/src/http/backends/browser_jsonp';
 import {
   JSONPConnection,
   JSONPConnection_,
-  JSONPBackend
+  JSONPBackend,
+  JSONPBackend_
 } from 'angular2/src/http/backends/jsonp_backend';
 import {bind, Injector} from 'angular2/core';
 import {isPresent, StringWrapper} from 'angular2/src/core/facade/lang';
@@ -74,7 +75,7 @@ export function main() {
         bind(ResponseOptions)
             .toClass(BaseResponseOptions),
         bind(BrowserJsonp).toClass(MockBrowserJsonp),
-        JSONPBackend
+        bind(JSONPBackend).toClass(JSONPBackend_)
       ]);
       backend = injector.get(JSONPBackend);
       let base = new BaseRequestOptions();

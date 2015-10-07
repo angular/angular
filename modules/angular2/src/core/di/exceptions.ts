@@ -135,6 +135,9 @@ export class CyclicDependencyError extends AbstractBindingError {
  * ```
  */
 export abstract class InstantiationError extends WrappedException {
+  constructor(message, originalException, originalStack, context) {
+    super(message, originalException, originalStack, context);
+  }
   abstract addKey(injector: Injector, key: Key): void;
   get wrapperMessage(): string { return unimplemented(); };
   get causeKey(): Key { return unimplemented(); };

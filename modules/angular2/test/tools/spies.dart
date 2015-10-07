@@ -1,7 +1,7 @@
 import 'package:angular2/test_lib.dart' show SpyObject;
 import 'package:angular2/core.dart' show LifeCycle, Injector, bind;
 import 'package:angular2/src/core/linker/dynamic_component_loader.dart'
-    show ComponentRef;
+    show ComponentRef_;
 import 'dart:js';
 
 @proxy
@@ -10,7 +10,7 @@ class SpyLifeCycle extends SpyObject implements LifeCycle {
 }
 
 @proxy
-class SpyComponentRef extends SpyObject implements ComponentRef {
+class SpyComponentRef extends SpyObject implements ComponentRef_ {
   Injector injector;
 
   SpyComponentRef() {
