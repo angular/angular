@@ -156,7 +156,7 @@ export function getAllDefinitions(): TestDefinition[] {
     "onPushObserveDirective",
     "updateElementProduction"
   ]);
-  return ListWrapper.map(allDefs, (id) => getDefinition(id));
+  return allDefs.map(getDefinition);
 }
 
 class _ExpressionWithLocals {

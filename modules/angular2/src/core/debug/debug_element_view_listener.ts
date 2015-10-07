@@ -27,8 +27,7 @@ function _setElementId(element, indices: number[]) {
 function _getElementId(element): number[] {
   var elId = DOM.getData(element, NG_ID_PROPERTY);
   if (isPresent(elId)) {
-    return ListWrapper.map(elId.split(NG_ID_SEPARATOR),
-                           (partStr) => NumberWrapper.parseInt(partStr, 10));
+    return elId.split(NG_ID_SEPARATOR).map(partStr => NumberWrapper.parseInt(partStr, 10));
   } else {
     return null;
   }

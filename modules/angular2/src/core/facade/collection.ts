@@ -177,7 +177,6 @@ export class ListWrapper {
   static createFixedSize(size: number): any[] { return new Array(size); }
   static createGrowableSize(size: number): any[] { return new Array(size); }
   static clone<T>(array: T[]): T[] { return array.slice(0); }
-  static map<T, V>(array: T[], fn: (T) => V): V[] { return array.map(fn); }
   static forEach<T>(array: T[], fn: (T) => void) {
     for (var i = 0; i < array.length; i++) {
       fn(array[i]);

@@ -235,8 +235,8 @@ export function main() {
     dynamicBindings.push(bind(i).toValue(i));
   }
 
-  function createPei(parent, index, bindings, distance = 1, hasShadowRoot = false, dirVariableBindings = null) {
-    var directiveBinding = ListWrapper.map(bindings, b => {
+  function createPei(parent, index, bindings: any[], distance = 1, hasShadowRoot = false, dirVariableBindings = null) {
+    var directiveBinding = bindings.map(b => {
       if (b instanceof DirectiveBinding) return b;
       if (b instanceof Binding) return DirectiveBinding.createFromBinding(b, null);
       return DirectiveBinding.createFromType(b, null);

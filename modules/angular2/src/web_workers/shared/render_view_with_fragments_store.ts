@@ -120,12 +120,12 @@ export class RenderViewWithFragmentsStore {
     if (this._onWebWorker) {
       return {
         'viewRef': (<WebWorkerRenderViewRef>view.viewRef).serialize(),
-        'fragmentRefs': ListWrapper.map(view.fragmentRefs, (val) => val.serialize())
+        'fragmentRefs': view.fragmentRefs.map(val => (<any>val).serialize())
       };
     } else {
       return {
         'viewRef': this._lookupByView.get(view.viewRef),
-        'fragmentRefs': ListWrapper.map(view.fragmentRefs, (val) => this._lookupByView.get(val))
+        'fragmentRefs': view.fragmentRefs.map(val => this._lookupByView.get(val))
       };
     }
   }
@@ -136,8 +136,7 @@ export class RenderViewWithFragmentsStore {
     }
 
     var viewRef = this.deserializeRenderViewRef(obj['viewRef']);
-    var fragments =
-        ListWrapper.map(obj['fragmentRefs'], (val) => this.deserializeRenderFragmentRef(val));
+    var fragments = obj['fragmentRefs'].map(val => this.deserializeRenderFragmentRef(val));
 
     return new RenderViewWithFragments(viewRef, fragments);
   }

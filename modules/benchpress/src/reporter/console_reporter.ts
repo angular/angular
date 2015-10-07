@@ -61,7 +61,7 @@ export class ConsoleReporter extends Reporter {
   }
 
   reportMeasureValues(measureValues: MeasureValues): Promise<any> {
-    var formattedValues = ListWrapper.map(this._metricNames, (metricName) => {
+    var formattedValues = this._metricNames.map(metricName => {
       var value = measureValues.values[metricName];
       return ConsoleReporter._formatNum(value);
     });
@@ -69,13 +69,12 @@ export class ConsoleReporter extends Reporter {
     return PromiseWrapper.resolve(null);
   }
 
-  reportSample(completeSample: MeasureValues[], validSample: MeasureValues[]): Promise<any> {
+  reportSample(completeSample: MeasureValues[], validSamples: MeasureValues[]): Promise<any> {
     this._printStringRow(this._metricNames.map((_) => ''), '=');
-    this._printStringRow(ListWrapper.map(this._metricNames, (metricName) => {
-      var sample =
-          ListWrapper.map(validSample, (measureValues) => measureValues.values[metricName]);
-      var mean = Statistic.calculateMean(sample);
-      var cv = Statistic.calculateCoefficientOfVariation(sample, mean);
+    this._printStringRow(this._metricNames.map(metricName => {
+      var samples = validSamples.map(measureValues => measureValues.values[metricName]);
+      var mean = Statistic.calculateMean(samples);
+      var cv = Statistic.calculateCoefficientOfVariation(samples, mean);
       var formattedMean = ConsoleReporter._formatNum(mean)
                               // Note: Don't use the unicode character for +- as it might cause
                               // hickups for consoles...
@@ -87,10 +86,8 @@ export class ConsoleReporter extends Reporter {
   }
 
   _printStringRow(parts, fill = ' ') {
-    this._print(ListWrapper.map(parts, (part) => {
-                             var w = this._columnWidth;
-                             return ConsoleReporter._lpad(part, w, fill);
-                           }).join(' | '));
+    this._print(
+        parts.map(part => ConsoleReporter._lpad(part, this._columnWidth, fill)).join(' | '));
   }
 }
 

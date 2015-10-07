@@ -20,7 +20,7 @@ function findFirstClosedCycle(keys: any[]): any[] {
 function constructResolvingPath(keys: any[]): string {
   if (keys.length > 1) {
     var reversed = findFirstClosedCycle(ListWrapper.reversed(keys));
-    var tokenStrs = ListWrapper.map(reversed, (k) => stringify(k.token));
+    var tokenStrs = reversed.map(k => stringify(k.token));
     return " (" + tokenStrs.join(' -> ') + ")";
   } else {
     return "";
@@ -220,7 +220,7 @@ export class NoAnnotationError extends BaseException {
       if (isBlank(parameter) || parameter.length == 0) {
         signature.push('?');
       } else {
-        signature.push(ListWrapper.map(parameter, stringify).join(' '));
+        signature.push(parameter.map(stringify).join(' '));
       }
     }
     return "Cannot resolve all parameters for " + stringify(typeOrFunc) + "(" +

@@ -5,12 +5,11 @@ import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {Metric} from '../metric';
 
 export class MultiMetric extends Metric {
-  static createBindings(childTokens): Binding[] {
+  static createBindings(childTokens: any[]): Binding[] {
     return [
       bind(_CHILDREN)
-          .toFactory(
-              (injector: Injector) => ListWrapper.map(childTokens, (token) => injector.get(token)),
-              [Injector]),
+          .toFactory((injector: Injector) => childTokens.map(token => injector.get(token)),
+                     [Injector]),
       bind(MultiMetric).toFactory(children => new MultiMetric(children), [_CHILDREN])
     ];
   }
@@ -21,7 +20,7 @@ export class MultiMetric extends Metric {
    * Starts measuring
    */
   beginMeasure(): Promise<any> {
-    return PromiseWrapper.all(ListWrapper.map(this._metrics, (metric) => metric.beginMeasure()));
+    return PromiseWrapper.all(this._metrics.map(metric => metric.beginMeasure()));
   }
 
   /**
@@ -30,9 +29,8 @@ export class MultiMetric extends Metric {
    * @param restart: Whether to restart right after this.
    */
   endMeasure(restart: boolean): Promise<{[key: string]: any}> {
-    return PromiseWrapper.all(
-                             ListWrapper.map(this._metrics, (metric) => metric.endMeasure(restart)))
-        .then((values) => { return mergeStringMaps(values); });
+    return PromiseWrapper.all(this._metrics.map(metric => metric.endMeasure(restart)))
+        .then(values => mergeStringMaps(values));
   }
 
   /**

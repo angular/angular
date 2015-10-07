@@ -556,8 +556,8 @@ function _constructDependencies(factoryFunction: Function, dependencies: any[]):
   if (isBlank(dependencies)) {
     return _dependenciesFor(factoryFunction);
   } else {
-    var params: any[][] = ListWrapper.map(dependencies, (t) => [t]);
-    return ListWrapper.map(dependencies, (t) => _extractToken(factoryFunction, t, params));
+    var params: any[][] = dependencies.map(t => [t]);
+    return dependencies.map(t => _extractToken(factoryFunction, t, params));
   }
 }
 
@@ -567,7 +567,7 @@ function _dependenciesFor(typeOrFunc): Dependency[] {
   if (ListWrapper.any(params, (p) => isBlank(p))) {
     throw new NoAnnotationError(typeOrFunc, params);
   }
-  return ListWrapper.map(params, (p: any[]) => _extractToken(typeOrFunc, p, params));
+  return params.map((p: any[]) => _extractToken(typeOrFunc, p, params));
 }
 
 function _extractToken(typeOrFunc, metadata /*any[] | any*/, params: any[][]): Dependency {

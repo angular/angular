@@ -1,4 +1,3 @@
-import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {Json, StringWrapper, isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {CodegenNameUtil} from './codegen_name_util';
 import {codify, combineGeneratedStrings, rawString} from './codegen_facade';
@@ -38,7 +37,7 @@ export class CodegenLogicUtil {
     var context = (protoRec.contextIndex == -1) ?
                       this._names.getDirectiveName(protoRec.directiveIndex) :
                       getLocalName(protoRec.contextIndex);
-    var argString = ListWrapper.map(protoRec.args, (arg) => getLocalName(arg)).join(", ");
+    var argString = protoRec.args.map(arg => getLocalName(arg)).join(", ");
 
     var rhs: string;
     switch (protoRec.mode) {

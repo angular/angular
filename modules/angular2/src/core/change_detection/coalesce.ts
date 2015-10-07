@@ -67,7 +67,7 @@ function _sameDirIndex(a: ProtoRecord, b: ProtoRecord): boolean {
 }
 
 function _replaceIndices(r: ProtoRecord, selfIndex: number, indexMap: Map<any, any>) {
-  var args = ListWrapper.map(r.args, (a) => _map(indexMap, a));
+  var args = r.args.map(a => _map(indexMap, a));
   var contextIndex = _map(indexMap, r.contextIndex);
   return new ProtoRecord(r.mode, r.name, r.funcOrValue, args, r.fixedArgs, contextIndex,
                          r.directiveIndex, selfIndex, r.bindingRecord, r.lastInBinding,

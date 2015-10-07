@@ -434,19 +434,20 @@ export class ShadowCss {
     for (var i = 0; i < splits.length; i++) {
       var sep = splits[i];
       var parts = scoped.split(sep);
-      scoped = ListWrapper.map(parts, function(p) {
-                            // remove :host since it should be unnecessary
-                            var t = StringWrapper.replaceAll(p.trim(), _polyfillHostRe, '');
-                            if (t.length > 0 && !ListWrapper.contains(splits, t) &&
-                                !StringWrapper.contains(t, attrName)) {
-                              var re = /([^:]*)(:*)(.*)/g;
-                              var m = RegExpWrapper.firstMatch(re, t);
-                              if (isPresent(m)) {
-                                p = m[1] + attrName + m[2] + m[3];
-                              }
-                            }
-                            return p;
-                          }).join(sep);
+      scoped = parts.map(p => {
+                      // remove :host since it should be unnecessary
+                      var t = StringWrapper.replaceAll(p.trim(), _polyfillHostRe, '');
+                      if (t.length > 0 && !ListWrapper.contains(splits, t) &&
+                          !StringWrapper.contains(t, attrName)) {
+                        var re = /([^:]*)(:*)(.*)/g;
+                        var m = RegExpWrapper.firstMatch(re, t);
+                        if (isPresent(m)) {
+                          p = m[1] + attrName + m[2] + m[3];
+                        }
+                      }
+                      return p;
+                    })
+                   .join(sep);
     }
     return scoped;
   }
