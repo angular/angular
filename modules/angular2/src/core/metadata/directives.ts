@@ -1,6 +1,7 @@
 import {isPresent, CONST, CONST_EXPR, Type} from 'angular2/src/core/facade/lang';
 import {InjectableMetadata} from 'angular2/src/core/di/metadata';
 import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection';
+import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
 
 /**
  * Directives allow you to attach behavior to elements in the DOM.
@@ -876,8 +877,23 @@ export class ComponentMetadata extends DirectiveMetadata {
    */
   viewBindings: any[];
 
+  templateUrl: string;
+
+  template: string;
+
+  styleUrls: string[];
+
+  styles: string[];
+
+  directives: Array<Type | any[]>;
+
+  pipes: Array<Type | any[]>;
+
+  encapsulation: ViewEncapsulation;
+
   constructor({selector, inputs, outputs, properties, events, host, exportAs, moduleId, bindings,
-               viewBindings, changeDetection = ChangeDetectionStrategy.Default, queries}: {
+               viewBindings, changeDetection = ChangeDetectionStrategy.Default, queries,
+               templateUrl, template, styleUrls, styles, directives, pipes, encapsulation}: {
     selector?: string,
     inputs?: string[],
     outputs?: string[],
@@ -890,6 +906,13 @@ export class ComponentMetadata extends DirectiveMetadata {
     viewBindings?: any[],
     queries?: {[key: string]: any},
     changeDetection?: ChangeDetectionStrategy,
+    templateUrl?: string,
+    template?: string,
+    styleUrls?: string[],
+    styles?: string[],
+    directives?: Array<Type | any[]>,
+    pipes?: Array<Type | any[]>,
+    encapsulation?: ViewEncapsulation
   } = {}) {
     super({
       selector: selector,
@@ -906,6 +929,14 @@ export class ComponentMetadata extends DirectiveMetadata {
 
     this.changeDetection = changeDetection;
     this.viewBindings = viewBindings;
+
+    this.templateUrl = templateUrl;
+    this.template = template;
+    this.styleUrls = styleUrls;
+    this.styles = styles;
+    this.directives = directives;
+    this.pipes = pipes;
+    this.encapsulation = encapsulation;
   }
 }
 

@@ -45,7 +45,11 @@ class Component extends ComponentMetadata {
   Map<String, String> host,
   List bindings, String exportAs, String moduleId,
   Map<String, dynamic> queries,
-  List viewBindings, ChangeDetectionStrategy changeDetection})
+  List viewBindings, ChangeDetectionStrategy changeDetection,
+  String templateUrl, String template, dynamic directives,
+  dynamic pipes, ViewEncapsulation encapsulation, List<String> styles,
+  List<String> styleUrls
+  })
     : super(
     selector: selector,
     inputs: inputs,
@@ -58,7 +62,15 @@ class Component extends ComponentMetadata {
     moduleId: moduleId,
     viewBindings: viewBindings,
     queries: queries,
-    changeDetection: changeDetection);
+    changeDetection: changeDetection,
+    templateUrl: templateUrl,
+    template: template,
+    directives: directives,
+    pipes: pipes,
+    encapsulation: encapsulation,
+    styles: styles,
+    styleUrls: styleUrls
+    );
 }
 
 /**
