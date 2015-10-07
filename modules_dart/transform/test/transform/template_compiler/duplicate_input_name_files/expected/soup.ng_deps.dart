@@ -9,16 +9,17 @@ void initReflector(reflector) {
   _visited = true;
   reflector
     ..registerType(
-        SoupComponent,
+        SoupDirective,
         new ReflectionInfo(const [
-          const Component(
-              componentServices: const [SaladComponent],
+          const Directive(
+              selector: 'soup',
+              componentServices: const [SaladDirective],
               inputs: const ['menu'])
-        ], const [], () => new SoupComponent()))
+        ], const [], () => new SoupDirective()))
     ..registerType(
-        SaladComponent,
+        SaladDirective,
         new ReflectionInfo(const [
-          const Component(inputs: const ['menu'])
-        ], const [], () => new SaladComponent()))
+          const Directive(selector: 'salad', inputs: const ['menu'])
+        ], const [], () => new SaladDirective()))
     ..registerSetters({'menu': (o, v) => o.menu = v});
 }
