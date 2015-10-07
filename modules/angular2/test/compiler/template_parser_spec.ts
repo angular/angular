@@ -8,7 +8,7 @@ import {
   beforeEach,
   afterEach,
   inject,
-  beforeEachBindings
+  beforeEachProviders
 } from 'angular2/testing_internal';
 import {provide} from 'angular2/src/core/di';
 
@@ -45,9 +45,12 @@ import {Unparser} from '../core/change_detection/parser/unparser';
 
 var expressionUnparser = new Unparser();
 
+// TODO(tbosch): add tests for checking that we
+// keep the correct sourceSpans!
+
 export function main() {
   describe('TemplateParser', () => {
-    beforeEachBindings(() => [
+    beforeEachProviders(() => [
       TEST_PROVIDERS,
       provide(ElementSchemaRegistry,
               {
@@ -72,29 +75,22 @@ export function main() {
     describe('parse', () => {
       describe('nodes without bindings', () => {
 
-        it('should parse text nodes', () => {
-          expect(humanizeTemplateAsts(parse('a', [])))
-              .toEqual([[TextAst, 'a', 'TestComp > #text(a):nth-child(0)']]);
-        });
+        it('should parse text nodes',
+           () => { expect(humanizeTemplateAsts(parse('a', []))).toEqual([[TextAst, 'a']]); });
 
         it('should parse elements with attributes', () => {
           expect(humanizeTemplateAsts(parse('<div a=b>', [])))
-              .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [AttrAst, 'a', 'b', 'TestComp > div:nth-child(0)[a=b]']
-              ]);
+              .toEqual([[ElementAst, 'div'], [AttrAst, 'a', 'b']]);
         });
       });
 
       it('should parse ngContent', () => {
         var parsed = parse('<ng-content select="a">', []);
-        expect(humanizeTemplateAsts(parsed))
-            .toEqual([[NgContentAst, 'TestComp > ng-content:nth-child(0)']]);
+        expect(humanizeTemplateAsts(parsed)).toEqual([[NgContentAst]]);
       });
 
       it('should parse bound text nodes', () => {
-        expect(humanizeTemplateAsts(parse('{{a}}', [])))
-            .toEqual([[BoundTextAst, '{{ a }}', 'TestComp > #text({{a}}):nth-child(0)']]);
+        expect(humanizeTemplateAsts(parse('{{a}}', []))).toEqual([[BoundTextAst, '{{ a }}']]);
       });
 
       describe('bound properties', () => {
@@ -102,120 +98,64 @@ export function main() {
         it('should parse and camel case bound properties', () => {
           expect(humanizeTemplateAsts(parse('<div [some-prop]="v">', [])))
               .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [
-                  BoundElementPropertyAst,
-                  PropertyBindingType.Property,
-                  'someProp',
-                  'v',
-                  null,
-                  'TestComp > div:nth-child(0)[[some-prop]=v]'
-                ]
+                [ElementAst, 'div'],
+                [BoundElementPropertyAst, PropertyBindingType.Property, 'someProp', 'v', null]
               ]);
         });
 
         it('should normalize property names via the element schema', () => {
           expect(humanizeTemplateAsts(parse('<div [mapped-attr]="v">', [])))
               .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [
-                  BoundElementPropertyAst,
-                  PropertyBindingType.Property,
-                  'mappedProp',
-                  'v',
-                  null,
-                  'TestComp > div:nth-child(0)[[mapped-attr]=v]'
-                ]
+                [ElementAst, 'div'],
+                [BoundElementPropertyAst, PropertyBindingType.Property, 'mappedProp', 'v', null]
               ]);
         });
 
         it('should parse and camel case bound attributes', () => {
           expect(humanizeTemplateAsts(parse('<div [attr.some-attr]="v">', [])))
               .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [
-                  BoundElementPropertyAst,
-                  PropertyBindingType.Attribute,
-                  'someAttr',
-                  'v',
-                  null,
-                  'TestComp > div:nth-child(0)[[attr.some-attr]=v]'
-                ]
+                [ElementAst, 'div'],
+                [BoundElementPropertyAst, PropertyBindingType.Attribute, 'someAttr', 'v', null]
               ]);
         });
 
         it('should parse and dash case bound classes', () => {
           expect(humanizeTemplateAsts(parse('<div [class.some-class]="v">', [])))
               .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [
-                  BoundElementPropertyAst,
-                  PropertyBindingType.Class,
-                  'some-class',
-                  'v',
-                  null,
-                  'TestComp > div:nth-child(0)[[class.some-class]=v]'
-                ]
+                [ElementAst, 'div'],
+                [BoundElementPropertyAst, PropertyBindingType.Class, 'some-class', 'v', null]
               ]);
         });
 
         it('should parse and camel case bound styles', () => {
           expect(humanizeTemplateAsts(parse('<div [style.some-style]="v">', [])))
               .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [
-                  BoundElementPropertyAst,
-                  PropertyBindingType.Style,
-                  'someStyle',
-                  'v',
-                  null,
-                  'TestComp > div:nth-child(0)[[style.some-style]=v]'
-                ]
+                [ElementAst, 'div'],
+                [BoundElementPropertyAst, PropertyBindingType.Style, 'someStyle', 'v', null]
               ]);
         });
 
         it('should parse bound properties via [...] and not report them as attributes', () => {
           expect(humanizeTemplateAsts(parse('<div [prop]="v">', [])))
               .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [
-                  BoundElementPropertyAst,
-                  PropertyBindingType.Property,
-                  'prop',
-                  'v',
-                  null,
-                  'TestComp > div:nth-child(0)[[prop]=v]'
-                ]
+                [ElementAst, 'div'],
+                [BoundElementPropertyAst, PropertyBindingType.Property, 'prop', 'v', null]
               ]);
         });
 
         it('should parse bound properties via bind- and not report them as attributes', () => {
           expect(humanizeTemplateAsts(parse('<div bind-prop="v">', [])))
               .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [
-                  BoundElementPropertyAst,
-                  PropertyBindingType.Property,
-                  'prop',
-                  'v',
-                  null,
-                  'TestComp > div:nth-child(0)[bind-prop=v]'
-                ]
+                [ElementAst, 'div'],
+                [BoundElementPropertyAst, PropertyBindingType.Property, 'prop', 'v', null]
               ]);
         });
 
         it('should parse bound properties via {{...}} and not report them as attributes', () => {
           expect(humanizeTemplateAsts(parse('<div prop="{{v}}">', [])))
               .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [
-                  BoundElementPropertyAst,
-                  PropertyBindingType.Property,
-                  'prop',
-                  '{{ v }}',
-                  null,
-                  'TestComp > div:nth-child(0)[prop={{v}}]'
-                ]
+                [ElementAst, 'div'],
+                [BoundElementPropertyAst, PropertyBindingType.Property, 'prop', '{{ v }}', null]
               ]);
         });
 
@@ -225,46 +165,22 @@ export function main() {
 
         it('should parse bound events with a target', () => {
           expect(humanizeTemplateAsts(parse('<div (window:event)="v">', [])))
-              .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [
-                  BoundEventAst,
-                  'event',
-                  'window',
-                  'v',
-                  'TestComp > div:nth-child(0)[(window:event)=v]'
-                ]
-              ]);
+              .toEqual([[ElementAst, 'div'], [BoundEventAst, 'event', 'window', 'v']]);
         });
 
         it('should parse bound events via (...) and not report them as attributes', () => {
           expect(humanizeTemplateAsts(parse('<div (event)="v">', [])))
-              .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [BoundEventAst, 'event', null, 'v', 'TestComp > div:nth-child(0)[(event)=v]']
-              ]);
+              .toEqual([[ElementAst, 'div'], [BoundEventAst, 'event', null, 'v']]);
         });
 
         it('should camel case event names', () => {
           expect(humanizeTemplateAsts(parse('<div (some-event)="v">', [])))
-              .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [
-                  BoundEventAst,
-                  'someEvent',
-                  null,
-                  'v',
-                  'TestComp > div:nth-child(0)[(some-event)=v]'
-                ]
-              ]);
+              .toEqual([[ElementAst, 'div'], [BoundEventAst, 'someEvent', null, 'v']]);
         });
 
         it('should parse bound events via on- and not report them as attributes', () => {
           expect(humanizeTemplateAsts(parse('<div on-event="v">', [])))
-              .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [BoundEventAst, 'event', null, 'v', 'TestComp > div:nth-child(0)[on-event=v]']
-              ]);
+              .toEqual([[ElementAst, 'div'], [BoundEventAst, 'event', null, 'v']]);
         });
 
         it('should allow events on explicit embedded templates that are emitted by a directive',
@@ -276,9 +192,9 @@ export function main() {
              });
              expect(humanizeTemplateAsts(parse('<template (e)="f"></template>', [dirA])))
                  .toEqual([
-                   [EmbeddedTemplateAst, 'TestComp > template:nth-child(0)'],
-                   [BoundEventAst, 'e', null, 'f', 'TestComp > template:nth-child(0)[(e)=f]'],
-                   [DirectiveAst, dirA, 'TestComp > template:nth-child(0)'],
+                   [EmbeddedTemplateAst],
+                   [BoundEventAst, 'e', null, 'f'],
+                   [DirectiveAst, dirA],
                  ]);
            });
       });
@@ -288,22 +204,9 @@ export function main() {
            () => {
              expect(humanizeTemplateAsts(parse('<div [(prop)]="v">', [])))
                  .toEqual([
-                   [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                   [
-                     BoundElementPropertyAst,
-                     PropertyBindingType.Property,
-                     'prop',
-                     'v',
-                     null,
-                     'TestComp > div:nth-child(0)[[(prop)]=v]'
-                   ],
-                   [
-                     BoundEventAst,
-                     'propChange',
-                     null,
-                     'v = $event',
-                     'TestComp > div:nth-child(0)[[(prop)]=v]'
-                   ]
+                   [ElementAst, 'div'],
+                   [BoundElementPropertyAst, PropertyBindingType.Property, 'prop', 'v', null],
+                   [BoundEventAst, 'propChange', null, 'v = $event']
                  ]);
            });
 
@@ -311,22 +214,9 @@ export function main() {
            () => {
              expect(humanizeTemplateAsts(parse('<div bindon-prop="v">', [])))
                  .toEqual([
-                   [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                   [
-                     BoundElementPropertyAst,
-                     PropertyBindingType.Property,
-                     'prop',
-                     'v',
-                     null,
-                     'TestComp > div:nth-child(0)[bindon-prop=v]'
-                   ],
-                   [
-                     BoundEventAst,
-                     'propChange',
-                     null,
-                     'v = $event',
-                     'TestComp > div:nth-child(0)[bindon-prop=v]'
-                   ]
+                   [ElementAst, 'div'],
+                   [BoundElementPropertyAst, PropertyBindingType.Property, 'prop', 'v', null],
+                   [BoundEventAst, 'propChange', null, 'v = $event']
                  ]);
            });
 
@@ -349,14 +239,14 @@ export function main() {
              });
              expect(humanizeTemplateAsts(parse('<div a c b>', [dirA, dirB, dirC, comp])))
                  .toEqual([
-                   [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                   [AttrAst, 'a', '', 'TestComp > div:nth-child(0)[a=]'],
-                   [AttrAst, 'b', '', 'TestComp > div:nth-child(0)[b=]'],
-                   [AttrAst, 'c', '', 'TestComp > div:nth-child(0)[c=]'],
-                   [DirectiveAst, comp, 'TestComp > div:nth-child(0)'],
-                   [DirectiveAst, dirA, 'TestComp > div:nth-child(0)'],
-                   [DirectiveAst, dirB, 'TestComp > div:nth-child(0)'],
-                   [DirectiveAst, dirC, 'TestComp > div:nth-child(0)']
+                   [ElementAst, 'div'],
+                   [AttrAst, 'a', ''],
+                   [AttrAst, 'c', ''],
+                   [AttrAst, 'b', ''],
+                   [DirectiveAst, comp],
+                   [DirectiveAst, dirA],
+                   [DirectiveAst, dirB],
+                   [DirectiveAst, dirC]
                  ]);
            });
 
@@ -367,16 +257,9 @@ export function main() {
               {selector: '[b]', type: new CompileTypeMetadata({name: 'DirB'})});
           expect(humanizeTemplateAsts(parse('<div [a]="b">', [dirA, dirB])))
               .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [
-                  BoundElementPropertyAst,
-                  PropertyBindingType.Property,
-                  'a',
-                  'b',
-                  null,
-                  'TestComp > div:nth-child(0)[[a]=b]'
-                ],
-                [DirectiveAst, dirA, 'TestComp > div:nth-child(0)']
+                [ElementAst, 'div'],
+                [BoundElementPropertyAst, PropertyBindingType.Property, 'a', 'b', null],
+                [DirectiveAst, dirA]
               ]);
         });
 
@@ -388,16 +271,9 @@ export function main() {
           });
           expect(humanizeTemplateAsts(parse('<div></div>', [dirA])))
               .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [DirectiveAst, dirA, 'TestComp > div:nth-child(0)'],
-                [
-                  BoundElementPropertyAst,
-                  PropertyBindingType.Property,
-                  'a',
-                  'expr',
-                  null,
-                  'TestComp > div:nth-child(0)'
-                ]
+                [ElementAst, 'div'],
+                [DirectiveAst, dirA],
+                [BoundElementPropertyAst, PropertyBindingType.Property, 'a', 'expr', null]
               ]);
         });
 
@@ -408,11 +284,8 @@ export function main() {
             host: {'(a)': 'expr'}
           });
           expect(humanizeTemplateAsts(parse('<div></div>', [dirA])))
-              .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [DirectiveAst, dirA, 'TestComp > div:nth-child(0)'],
-                [BoundEventAst, 'a', null, 'expr', 'TestComp > div:nth-child(0)']
-              ]);
+              .toEqual(
+                  [[ElementAst, 'div'], [DirectiveAst, dirA], [BoundEventAst, 'a', null, 'expr']]);
         });
 
         it('should parse directive properties', () => {
@@ -420,14 +293,9 @@ export function main() {
               {selector: 'div', type: new CompileTypeMetadata({name: 'DirA'}), inputs: ['aProp']});
           expect(humanizeTemplateAsts(parse('<div [a-prop]="expr"></div>', [dirA])))
               .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [DirectiveAst, dirA, 'TestComp > div:nth-child(0)'],
-                [
-                  BoundDirectivePropertyAst,
-                  'aProp',
-                  'expr',
-                  'TestComp > div:nth-child(0)[[a-prop]=expr]'
-                ]
+                [ElementAst, 'div'],
+                [DirectiveAst, dirA],
+                [BoundDirectivePropertyAst, 'aProp', 'expr']
               ]);
         });
 
@@ -436,9 +304,9 @@ export function main() {
               {selector: 'div', type: new CompileTypeMetadata({name: 'DirA'}), inputs: ['b:a']});
           expect(humanizeTemplateAsts(parse('<div [a]="expr"></div>', [dirA])))
               .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [DirectiveAst, dirA, 'TestComp > div:nth-child(0)'],
-                [BoundDirectivePropertyAst, 'b', 'expr', 'TestComp > div:nth-child(0)[[a]=expr]']
+                [ElementAst, 'div'],
+                [DirectiveAst, dirA],
+                [BoundDirectivePropertyAst, 'b', 'expr']
               ]);
         });
 
@@ -447,15 +315,10 @@ export function main() {
               {selector: 'div', type: new CompileTypeMetadata({name: 'DirA'}), inputs: ['a']});
           expect(humanizeTemplateAsts(parse('<div a="literal"></div>', [dirA])))
               .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [AttrAst, 'a', 'literal', 'TestComp > div:nth-child(0)[a=literal]'],
-                [DirectiveAst, dirA, 'TestComp > div:nth-child(0)'],
-                [
-                  BoundDirectivePropertyAst,
-                  'a',
-                  '"literal"',
-                  'TestComp > div:nth-child(0)[a=literal]'
-                ]
+                [ElementAst, 'div'],
+                [AttrAst, 'a', 'literal'],
+                [DirectiveAst, dirA],
+                [BoundDirectivePropertyAst, 'a', '"literal"']
               ]);
         });
 
@@ -464,15 +327,10 @@ export function main() {
               {selector: 'div', type: new CompileTypeMetadata({name: 'DirA'}), inputs: ['a']});
           expect(humanizeTemplateAsts(parse('<div a="literal" [a]="\'literal2\'"></div>', [dirA])))
               .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [AttrAst, 'a', 'literal', 'TestComp > div:nth-child(0)[a=literal]'],
-                [DirectiveAst, dirA, 'TestComp > div:nth-child(0)'],
-                [
-                  BoundDirectivePropertyAst,
-                  'a',
-                  '"literal2"',
-                  'TestComp > div:nth-child(0)[[a]=\'literal2\']'
-                ]
+                [ElementAst, 'div'],
+                [AttrAst, 'a', 'literal'],
+                [DirectiveAst, dirA],
+                [BoundDirectivePropertyAst, 'a', '"literal2"']
               ]);
         });
 
@@ -480,10 +338,7 @@ export function main() {
           var dirA = CompileDirectiveMetadata.create(
               {selector: 'div', type: new CompileTypeMetadata({name: 'DirA'}), inputs: ['a']});
           expect(humanizeTemplateAsts(parse('<div></div>', [dirA])))
-              .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [DirectiveAst, dirA, 'TestComp > div:nth-child(0)']
-              ]);
+              .toEqual([[ElementAst, 'div'], [DirectiveAst, dirA]]);
         });
 
       });
@@ -492,34 +347,22 @@ export function main() {
 
         it('should parse variables via #... and not report them as attributes', () => {
           expect(humanizeTemplateAsts(parse('<div #a>', [])))
-              .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [VariableAst, 'a', '', 'TestComp > div:nth-child(0)[#a=]']
-              ]);
+              .toEqual([[ElementAst, 'div'], [VariableAst, 'a', '']]);
         });
 
         it('should parse variables via var-... and not report them as attributes', () => {
           expect(humanizeTemplateAsts(parse('<div var-a>', [])))
-              .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [VariableAst, 'a', '', 'TestComp > div:nth-child(0)[var-a=]']
-              ]);
+              .toEqual([[ElementAst, 'div'], [VariableAst, 'a', '']]);
         });
 
         it('should camel case variables', () => {
           expect(humanizeTemplateAsts(parse('<div var-some-a>', [])))
-              .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [VariableAst, 'someA', '', 'TestComp > div:nth-child(0)[var-some-a=]']
-              ]);
+              .toEqual([[ElementAst, 'div'], [VariableAst, 'someA', '']]);
         });
 
         it('should assign variables with empty value to the element', () => {
           expect(humanizeTemplateAsts(parse('<div #a></div>', [])))
-              .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [VariableAst, 'a', '', 'TestComp > div:nth-child(0)[#a=]']
-              ]);
+              .toEqual([[ElementAst, 'div'], [VariableAst, 'a', '']]);
         });
 
         it('should assign variables to directives via exportAs', () => {
@@ -527,25 +370,22 @@ export function main() {
               {selector: '[a]', type: new CompileTypeMetadata({name: 'DirA'}), exportAs: 'dirA'});
           expect(humanizeTemplateAsts(parse('<div a #a="dirA"></div>', [dirA])))
               .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [AttrAst, 'a', '', 'TestComp > div:nth-child(0)[a=]'],
-                [DirectiveAst, dirA, 'TestComp > div:nth-child(0)'],
-                [VariableAst, 'a', 'dirA', 'TestComp > div:nth-child(0)[#a=dirA]']
+                [ElementAst, 'div'],
+                [AttrAst, 'a', ''],
+                [DirectiveAst, dirA],
+                [VariableAst, 'a', 'dirA']
               ]);
         });
 
         it('should report variables with values that dont match a directive as errors', () => {
           expect(() => parse('<div #a="dirA"></div>', [])).toThrowError(`Template parse errors:
-There is no directive with "exportAs" set to "dirA" at TestComp > div:nth-child(0)[#a=dirA]`);
+There is no directive with "exportAs" set to "dirA" (<div #a="dirA">): TestComp@0:5`);
         });
 
         it('should allow variables with values that dont match a directive on embedded template elements',
            () => {
              expect(humanizeTemplateAsts(parse('<template #a="b"></template>', [])))
-                 .toEqual([
-                   [EmbeddedTemplateAst, 'TestComp > template:nth-child(0)'],
-                   [VariableAst, 'a', 'b', 'TestComp > template:nth-child(0)[#a=b]']
-                 ]);
+                 .toEqual([[EmbeddedTemplateAst], [VariableAst, 'a', 'b']]);
            });
 
         it('should assign variables with empty value to components', () => {
@@ -558,11 +398,11 @@ There is no directive with "exportAs" set to "dirA" at TestComp > div:nth-child(
           });
           expect(humanizeTemplateAsts(parse('<div a #a></div>', [dirA])))
               .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [AttrAst, 'a', '', 'TestComp > div:nth-child(0)[a=]'],
-                [VariableAst, 'a', '', 'TestComp > div:nth-child(0)[#a=]'],
-                [DirectiveAst, dirA, 'TestComp > div:nth-child(0)'],
-                [VariableAst, 'a', '', 'TestComp > div:nth-child(0)[#a=]']
+                [ElementAst, 'div'],
+                [AttrAst, 'a', ''],
+                [VariableAst, 'a', ''],
+                [DirectiveAst, dirA],
+                [VariableAst, 'a', '']
               ]);
         });
 
@@ -571,50 +411,34 @@ There is no directive with "exportAs" set to "dirA" at TestComp > div:nth-child(
       describe('explicit templates', () => {
         it('should create embedded templates for <template> elements', () => {
           expect(humanizeTemplateAsts(parse('<template></template>', [])))
-              .toEqual([[EmbeddedTemplateAst, 'TestComp > template:nth-child(0)']]);
+              .toEqual([[EmbeddedTemplateAst]]);
         });
       });
 
       describe('inline templates', () => {
         it('should wrap the element into an EmbeddedTemplateAST', () => {
           expect(humanizeTemplateAsts(parse('<div template>', [])))
-              .toEqual([
-                [EmbeddedTemplateAst, 'TestComp > div:nth-child(0)'],
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)']
-              ]);
+              .toEqual([[EmbeddedTemplateAst], [ElementAst, 'div']]);
         });
 
         it('should parse bound properties', () => {
           expect(humanizeTemplateAsts(parse('<div template="ngIf test">', [ngIf])))
               .toEqual([
-                [EmbeddedTemplateAst, 'TestComp > div:nth-child(0)'],
-                [DirectiveAst, ngIf, 'TestComp > div:nth-child(0)'],
-                [
-                  BoundDirectivePropertyAst,
-                  'ngIf',
-                  'test',
-                  'TestComp > div:nth-child(0)[template=ngIf test]'
-                ],
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)']
+                [EmbeddedTemplateAst],
+                [DirectiveAst, ngIf],
+                [BoundDirectivePropertyAst, 'ngIf', 'test'],
+                [ElementAst, 'div']
               ]);
         });
 
         it('should parse variables via #...', () => {
           expect(humanizeTemplateAsts(parse('<div template="ngIf #a=b">', [])))
-              .toEqual([
-                [EmbeddedTemplateAst, 'TestComp > div:nth-child(0)'],
-                [VariableAst, 'a', 'b', 'TestComp > div:nth-child(0)[template=ngIf #a=b]'],
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)']
-              ]);
+              .toEqual([[EmbeddedTemplateAst], [VariableAst, 'a', 'b'], [ElementAst, 'div']]);
         });
 
         it('should parse variables via var ...', () => {
           expect(humanizeTemplateAsts(parse('<div template="ngIf var a=b">', [])))
-              .toEqual([
-                [EmbeddedTemplateAst, 'TestComp > div:nth-child(0)'],
-                [VariableAst, 'a', 'b', 'TestComp > div:nth-child(0)[template=ngIf var a=b]'],
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)']
-              ]);
+              .toEqual([[EmbeddedTemplateAst], [VariableAst, 'a', 'b'], [ElementAst, 'div']]);
         });
 
         describe('directives', () => {
@@ -625,17 +449,12 @@ There is no directive with "exportAs" set to "dirA" at TestComp > div:nth-child(
                 {selector: '[b]', type: new CompileTypeMetadata({name: 'DirB'})});
             expect(humanizeTemplateAsts(parse('<div template="a b" b>', [dirA, dirB])))
                 .toEqual([
-                  [EmbeddedTemplateAst, 'TestComp > div:nth-child(0)'],
-                  [DirectiveAst, dirA, 'TestComp > div:nth-child(0)'],
-                  [
-                    BoundDirectivePropertyAst,
-                    'a',
-                    'b',
-                    'TestComp > div:nth-child(0)[template=a b]'
-                  ],
-                  [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                  [AttrAst, 'b', '', 'TestComp > div:nth-child(0)[b=]'],
-                  [DirectiveAst, dirB, 'TestComp > div:nth-child(0)']
+                  [EmbeddedTemplateAst],
+                  [DirectiveAst, dirA],
+                  [BoundDirectivePropertyAst, 'a', 'b'],
+                  [ElementAst, 'div'],
+                  [AttrAst, 'b', ''],
+                  [DirectiveAst, dirB]
                 ]);
           });
 
@@ -646,12 +465,12 @@ There is no directive with "exportAs" set to "dirA" at TestComp > div:nth-child(
                 {selector: '[b]', type: new CompileTypeMetadata({name: 'DirB'})});
             expect(humanizeTemplateAsts(parse('<div template="#a=b" b>', [dirA, dirB])))
                 .toEqual([
-                  [EmbeddedTemplateAst, 'TestComp > div:nth-child(0)'],
-                  [VariableAst, 'a', 'b', 'TestComp > div:nth-child(0)[template=#a=b]'],
-                  [DirectiveAst, dirA, 'TestComp > div:nth-child(0)'],
-                  [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                  [AttrAst, 'b', '', 'TestComp > div:nth-child(0)[b=]'],
-                  [DirectiveAst, dirB, 'TestComp > div:nth-child(0)']
+                  [EmbeddedTemplateAst],
+                  [VariableAst, 'a', 'b'],
+                  [DirectiveAst, dirA],
+                  [ElementAst, 'div'],
+                  [AttrAst, 'b', ''],
+                  [DirectiveAst, dirB]
                 ]);
           });
 
@@ -660,30 +479,23 @@ There is no directive with "exportAs" set to "dirA" at TestComp > div:nth-child(
         it('should work with *... and use the attribute name as property binding name', () => {
           expect(humanizeTemplateAsts(parse('<div *ng-if="test">', [ngIf])))
               .toEqual([
-                [EmbeddedTemplateAst, 'TestComp > div:nth-child(0)'],
-                [DirectiveAst, ngIf, 'TestComp > div:nth-child(0)'],
-                [
-                  BoundDirectivePropertyAst,
-                  'ngIf',
-                  'test',
-                  'TestComp > div:nth-child(0)[*ng-if=test]'
-                ],
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)']
+                [EmbeddedTemplateAst],
+                [DirectiveAst, ngIf],
+                [BoundDirectivePropertyAst, 'ngIf', 'test'],
+                [ElementAst, 'div']
               ]);
         });
 
         it('should work with *... and empty value', () => {
           expect(humanizeTemplateAsts(parse('<div *ng-if>', [ngIf])))
               .toEqual([
-                [EmbeddedTemplateAst, 'TestComp > div:nth-child(0)'],
-                [DirectiveAst, ngIf, 'TestComp > div:nth-child(0)'],
-                [BoundDirectivePropertyAst, 'ngIf', 'null', 'TestComp > div:nth-child(0)[*ng-if=]'],
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)']
+                [EmbeddedTemplateAst],
+                [DirectiveAst, ngIf],
+                [BoundDirectivePropertyAst, 'ngIf', 'null'],
+                [ElementAst, 'div']
               ]);
         });
-
       });
-
     });
 
     describe('content projection', () => {
@@ -788,14 +600,14 @@ There is no directive with "exportAs" set to "dirA" at TestComp > div:nth-child(
     });
 
     describe('error cases', () => {
-      it('should throw on invalid property names', () => {
+      it('should report invalid property names', () => {
         expect(() => parse('<div [invalid-prop]></div>', [])).toThrowError(`Template parse errors:
-Can't bind to 'invalidProp' since it isn't a known native property in TestComp > div:nth-child(0)[[invalid-prop]=]`);
+Can't bind to 'invalidProp' since it isn't a known native property (<div [invalid-prop]>): TestComp@0:5`);
       });
 
       it('should report errors in expressions', () => {
         expect(() => parse('<div [prop]="a b"></div>', [])).toThrowErrorWith(`Template parse errors:
-Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp > div:nth-child(0)[[prop]=a b]`);
+Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp@0:5 in [prop]="a b": TestComp@0:5`);
       });
 
       it('should not throw on invalid property names if the property is used by a directive',
@@ -821,8 +633,8 @@ Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp > div:nth-ch
           type: new CompileTypeMetadata({name: 'DirB'}),
           template: new CompileTemplateMetadata({ngContentSelectors: []})
         });
-        expect(() => parse('<div>', [dirB, dirA])).toThrowError(`Template parse errors:
-More than one component: DirB,DirA in TestComp > div:nth-child(0)`);
+        expect(() => parse('<div/>', [dirB, dirA])).toThrowError(`Template parse errors:
+More than one component: DirB,DirA in <div/>: TestComp@0:0`);
       });
 
       it('should not allow components or element bindings nor dom events on explicit embedded templates',
@@ -847,23 +659,20 @@ Property binding a not used by any directive on an embedded template in TestComp
           type: new CompileTypeMetadata({name: 'DirA'}),
           template: new CompileTemplateMetadata({ngContentSelectors: []})
         });
-        expect(() => parse('<div *a="b">', [dirA])).toThrowError(`Template parse errors:
-Components on an embedded template: DirA in TestComp > div:nth-child(0)
-Property binding a not used by any directive on an embedded template in TestComp > div:nth-child(0)[*a=b]`);
+        expect(() => parse('<div *a="b"></div>', [dirA])).toThrowError(`Template parse errors:
+Components on an embedded template: DirA in <div *a="b">: TestComp@0:0
+Property binding a not used by any directive on an embedded template in <div *a="b">: TestComp@0:0`);
       });
     });
 
     describe('ignore elements', () => {
-      it('should ignore <script> elements but include them for source info', () => {
-        expect(humanizeTemplateAsts(parse('<script></script>a', [])))
-            .toEqual([[TextAst, 'a', 'TestComp > #text(a):nth-child(1)']]);
+      it('should ignore <script> elements', () => {
+        expect(humanizeTemplateAsts(parse('<script></script>a', []))).toEqual([[TextAst, 'a']]);
 
       });
 
-      it('should ignore <style> elements but include them for source info', () => {
-        expect(humanizeTemplateAsts(parse('<style></style>a', [])))
-            .toEqual([[TextAst, 'a', 'TestComp > #text(a):nth-child(1)']]);
-
+      it('should ignore <style> elements', () => {
+        expect(humanizeTemplateAsts(parse('<style></style>a', []))).toEqual([[TextAst, 'a']]);
       });
 
       describe('<link rel="stylesheet">', () => {
@@ -873,108 +682,73 @@ Property binding a not used by any directive on an embedded template in TestComp
              expect(humanizeTemplateAsts(
                         parse('<link rel="stylesheet" href="http://someurl"></link>a', [])))
                  .toEqual([
-                   [ElementAst, 'link', 'TestComp > link:nth-child(0)'],
-                   [
-                     AttrAst,
-                     'href',
-                     'http://someurl',
-                     'TestComp > link:nth-child(0)[href=http://someurl]'
-                   ],
-                   [AttrAst, 'rel', 'stylesheet', 'TestComp > link:nth-child(0)[rel=stylesheet]'],
-                   [TextAst, 'a', 'TestComp > #text(a):nth-child(1)']
+                   [ElementAst, 'link'],
+                   [AttrAst, 'href', 'http://someurl'],
+                   [AttrAst, 'rel', 'stylesheet'],
+                   [TextAst, 'a']
                  ]);
            });
 
         it('should keep <link rel="stylesheet"> elements if they have no uri', () => {
           expect(humanizeTemplateAsts(parse('<link rel="stylesheet"></link>a', [])))
-              .toEqual([
-                [ElementAst, 'link', 'TestComp > link:nth-child(0)'],
-                [AttrAst, 'rel', 'stylesheet', 'TestComp > link:nth-child(0)[rel=stylesheet]'],
-                [TextAst, 'a', 'TestComp > #text(a):nth-child(1)']
-              ]);
+              .toEqual([[ElementAst, 'link'], [AttrAst, 'rel', 'stylesheet'], [TextAst, 'a']]);
         });
 
         it('should ignore <link rel="stylesheet"> elements if they have a relative uri', () => {
           expect(
               humanizeTemplateAsts(parse('<link rel="stylesheet" href="./other.css"></link>a', [])))
-              .toEqual([[TextAst, 'a', 'TestComp > #text(a):nth-child(1)']]);
+              .toEqual([[TextAst, 'a']]);
         });
 
         it('should ignore <link rel="stylesheet"> elements if they have a package: uri', () => {
           expect(humanizeTemplateAsts(
                      parse('<link rel="stylesheet" href="package:somePackage"></link>a', [])))
-              .toEqual([[TextAst, 'a', 'TestComp > #text(a):nth-child(1)']]);
+              .toEqual([[TextAst, 'a']]);
         });
 
       });
 
       it('should ignore bindings on children of elements with ng-non-bindable', () => {
         expect(humanizeTemplateAsts(parse('<div ng-non-bindable>{{b}}</div>', [])))
-            .toEqual([
-              [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-              [AttrAst, 'ng-non-bindable', '', 'TestComp > div:nth-child(0)[ng-non-bindable=]'],
-              [TextAst, '{{b}}', 'TestComp > div:nth-child(0) > #text({{b}}):nth-child(0)']
-            ]);
+            .toEqual([[ElementAst, 'div'], [AttrAst, 'ng-non-bindable', ''], [TextAst, '{{b}}']]);
       });
 
       it('should keep nested children of elements with ng-non-bindable', () => {
         expect(humanizeTemplateAsts(parse('<div ng-non-bindable><span>{{b}}</span></div>', [])))
             .toEqual([
-              [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-              [AttrAst, 'ng-non-bindable', '', 'TestComp > div:nth-child(0)[ng-non-bindable=]'],
-              [ElementAst, 'span', 'TestComp > div:nth-child(0) > span:nth-child(0)'],
-              [
-                TextAst,
-                '{{b}}',
-                'TestComp > div:nth-child(0) > span:nth-child(0) > #text({{b}}):nth-child(0)'
-              ]
+              [ElementAst, 'div'],
+              [AttrAst, 'ng-non-bindable', ''],
+              [ElementAst, 'span'],
+              [TextAst, '{{b}}']
             ]);
       });
 
-      it('should ignore <script> elements inside of elements with ng-non-bindable but include them for source info',
-         () => {
-           expect(humanizeTemplateAsts(parse('<div ng-non-bindable><script></script>a</div>', [])))
-               .toEqual([
-                 [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                 [AttrAst, 'ng-non-bindable', '', 'TestComp > div:nth-child(0)[ng-non-bindable=]'],
-                 [TextAst, 'a', 'TestComp > div:nth-child(0) > #text(a):nth-child(1)']
-               ]);
-         });
+      it('should ignore <script> elements inside of elements with ng-non-bindable', () => {
+        expect(humanizeTemplateAsts(parse('<div ng-non-bindable><script></script>a</div>', [])))
+            .toEqual([[ElementAst, 'div'], [AttrAst, 'ng-non-bindable', ''], [TextAst, 'a']]);
+      });
 
-      it('should ignore <style> elements inside of elements with ng-non-bindable but include them for source info',
-         () => {
-           expect(humanizeTemplateAsts(parse('<div ng-non-bindable><style></style>a</div>', [])))
-               .toEqual([
-                 [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                 [AttrAst, 'ng-non-bindable', '', 'TestComp > div:nth-child(0)[ng-non-bindable=]'],
-                 [TextAst, 'a', 'TestComp > div:nth-child(0) > #text(a):nth-child(1)']
-               ]);
-         });
+      it('should ignore <style> elements inside of elements with ng-non-bindable', () => {
+        expect(humanizeTemplateAsts(parse('<div ng-non-bindable><style></style>a</div>', [])))
+            .toEqual([[ElementAst, 'div'], [AttrAst, 'ng-non-bindable', ''], [TextAst, 'a']]);
+      });
 
-      it('should ignore <link rel="stylesheet"> elements inside of elements with ng-non-bindable but include them for source info',
+      it('should ignore <link rel="stylesheet"> elements inside of elements with ng-non-bindable',
          () => {
            expect(humanizeTemplateAsts(
                       parse('<div ng-non-bindable><link rel="stylesheet"></link>a</div>', [])))
-               .toEqual([
-                 [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                 [AttrAst, 'ng-non-bindable', '', 'TestComp > div:nth-child(0)[ng-non-bindable=]'],
-                 [TextAst, 'a', 'TestComp > div:nth-child(0) > #text(a):nth-child(1)']
-               ]);
+               .toEqual([[ElementAst, 'div'], [AttrAst, 'ng-non-bindable', ''], [TextAst, 'a']]);
          });
 
-      it('should convert <ng-content> elements into regular elements inside of elements with ng-non-bindable but include them for source info',
+      it('should convert <ng-content> elements into regular elements inside of elements with ng-non-bindable',
          () => {
            expect(humanizeTemplateAsts(
                       parse('<div ng-non-bindable><ng-content></ng-content>a</div>', [])))
                .toEqual([
-                 [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                 [AttrAst, 'ng-non-bindable', '', 'TestComp > div:nth-child(0)[ng-non-bindable=]'],
-                 [
-                   ElementAst,
-                   'ng-content',
-                   'TestComp > div:nth-child(0) > ng-content:nth-child(0)'
-                 ],
-                 [TextAst, 'a', 'TestComp > div:nth-child(0) > #text(a):nth-child(1)']
+                 [ElementAst, 'div'],
+                 [AttrAst, 'ng-non-bindable', ''],
+                 [ElementAst, 'ng-content'],
+                 [TextAst, 'a']
                ]);
          });
 
@@ -991,11 +765,11 @@ export function humanizeTemplateAsts(templateAsts: TemplateAst[]): any[] {
 class TemplateHumanizer implements TemplateAstVisitor {
   result: any[] = [];
   visitNgContent(ast: NgContentAst, context: any): any {
-    this.result.push([NgContentAst, ast.sourceInfo]);
+    this.result.push([NgContentAst]);
     return null;
   }
   visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
-    this.result.push([EmbeddedTemplateAst, ast.sourceInfo]);
+    this.result.push([EmbeddedTemplateAst]);
     templateVisitAll(this, ast.attrs);
     templateVisitAll(this, ast.outputs);
     templateVisitAll(this, ast.vars);
@@ -1004,7 +778,7 @@ class TemplateHumanizer implements TemplateAstVisitor {
     return null;
   }
   visitElement(ast: ElementAst, context: any): any {
-    this.result.push([ElementAst, ast.name, ast.sourceInfo]);
+    this.result.push([ElementAst, ast.name]);
     templateVisitAll(this, ast.attrs);
     templateVisitAll(this, ast.inputs);
     templateVisitAll(this, ast.outputs);
@@ -1014,17 +788,12 @@ class TemplateHumanizer implements TemplateAstVisitor {
     return null;
   }
   visitVariable(ast: VariableAst, context: any): any {
-    this.result.push([VariableAst, ast.name, ast.value, ast.sourceInfo]);
+    this.result.push([VariableAst, ast.name, ast.value]);
     return null;
   }
   visitEvent(ast: BoundEventAst, context: any): any {
-    this.result.push([
-      BoundEventAst,
-      ast.name,
-      ast.target,
-      expressionUnparser.unparse(ast.handler),
-      ast.sourceInfo
-    ]);
+    this.result.push(
+        [BoundEventAst, ast.name, ast.target, expressionUnparser.unparse(ast.handler)]);
     return null;
   }
   visitElementProperty(ast: BoundElementPropertyAst, context: any): any {
@@ -1033,25 +802,24 @@ class TemplateHumanizer implements TemplateAstVisitor {
       ast.type,
       ast.name,
       expressionUnparser.unparse(ast.value),
-      ast.unit,
-      ast.sourceInfo
+      ast.unit
     ]);
     return null;
   }
   visitAttr(ast: AttrAst, context: any): any {
-    this.result.push([AttrAst, ast.name, ast.value, ast.sourceInfo]);
+    this.result.push([AttrAst, ast.name, ast.value]);
     return null;
   }
   visitBoundText(ast: BoundTextAst, context: any): any {
-    this.result.push([BoundTextAst, expressionUnparser.unparse(ast.value), ast.sourceInfo]);
+    this.result.push([BoundTextAst, expressionUnparser.unparse(ast.value)]);
     return null;
   }
   visitText(ast: TextAst, context: any): any {
-    this.result.push([TextAst, ast.value, ast.sourceInfo]);
+    this.result.push([TextAst, ast.value]);
     return null;
   }
   visitDirective(ast: DirectiveAst, context: any): any {
-    this.result.push([DirectiveAst, ast.directive, ast.sourceInfo]);
+    this.result.push([DirectiveAst, ast.directive]);
     templateVisitAll(this, ast.inputs);
     templateVisitAll(this, ast.hostProperties);
     templateVisitAll(this, ast.hostEvents);
@@ -1059,14 +827,14 @@ class TemplateHumanizer implements TemplateAstVisitor {
     return null;
   }
   visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {
-    this.result.push([
-      BoundDirectivePropertyAst,
-      ast.directiveName,
-      expressionUnparser.unparse(ast.value),
-      ast.sourceInfo
-    ]);
+    this.result.push(
+        [BoundDirectivePropertyAst, ast.directiveName, expressionUnparser.unparse(ast.value)]);
     return null;
   }
+}
+
+function sourceInfo(ast: TemplateAst): string {
+  return `${ast.sourceSpan}: ${ast.sourceSpan.start}`;
 }
 
 function humanizeContentProjection(templateAsts: TemplateAst[]): any[] {
