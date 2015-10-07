@@ -20,42 +20,43 @@ import 'package:barback/barback.dart';
 /// `isNgDeps` to `true` to signify that it is a dependency on which we need to
 /// call `initReflector`.
 Future<NgDepsModel> linkNgDeps(NgDepsModel ngDepsModel, AssetReader reader,
-    AssetId entryPoint, UrlResolver resolver) async {
+    AssetId assetId, UrlResolver resolver) async {
   if (ngDepsModel == null) return null;
-  var linkedDepsMap =
-      await _processNgImports(ngDepsModel, reader, entryPoint, resolver);
+  return logElapsedAsync(() async {
+    var linkedDepsMap =
+        await _processNgImports(ngDepsModel, reader, assetId, resolver);
 
-  if (linkedDepsMap.isEmpty) {
-    // We are not calling `initReflector` on any other libraries, but we still
-    // return the model to ensure it is written to code.
-    // TODO(kegluneq): Continue using the protobuf format after this phase.
+    if (linkedDepsMap.isEmpty) {
+      // We are not calling `initReflector` on any other libraries, but we still
+      // return the model to ensure it is written to code.
+      // TODO(kegluneq): Continue using the protobuf format after this phase.
+      return ngDepsModel;
+    }
+
+    for (var i = ngDepsModel.imports.length - 1; i >= 0; --i) {
+      var import = ngDepsModel.imports[i];
+      if (linkedDepsMap.containsKey(import.uri)) {
+        var linkedModel = new ImportModel()
+          ..isNgDeps = true
+          ..uri = toDepsExtension(import.uri)
+          ..prefix = 'i$i';
+        // TODO(kegluneq): Preserve combinators?
+        ngDepsModel.imports.insert(i + 1, linkedModel);
+      }
+    }
+    for (var i = 0, iLen = ngDepsModel.exports.length; i < iLen; ++i) {
+      var export = ngDepsModel.exports[i];
+      if (linkedDepsMap.containsKey(export.uri)) {
+        var linkedModel = new ImportModel()
+          ..isNgDeps = true
+          ..uri = toDepsExtension(export.uri)
+          ..prefix = 'i${ngDepsModel.imports.length}';
+        // TODO(kegluneq): Preserve combinators?
+        ngDepsModel.imports.add(linkedModel);
+      }
+    }
     return ngDepsModel;
-  }
-
-  for (var i = ngDepsModel.imports.length - 1; i >= 0; --i) {
-    var import = ngDepsModel.imports[i];
-    if (linkedDepsMap.containsKey(import.uri)) {
-      var linkedModel = new ImportModel()
-        ..isNgDeps = true
-        ..uri = toDepsExtension(import.uri)
-        ..prefix = 'i$i';
-      // TODO(kegluneq): Preserve combinators?
-      ngDepsModel.imports.insert(i + 1, linkedModel);
-    }
-  }
-  for (var i = 0, iLen = ngDepsModel.exports.length; i < iLen; ++i) {
-    var export = ngDepsModel.exports[i];
-    if (linkedDepsMap.containsKey(export.uri)) {
-      var linkedModel = new ImportModel()
-        ..isNgDeps = true
-        ..uri = toDepsExtension(export.uri)
-        ..prefix = 'i${ngDepsModel.imports.length}';
-      // TODO(kegluneq): Preserve combinators?
-      ngDepsModel.imports.add(linkedModel);
-    }
-  }
-
-  return ngDepsModel;
+  }, operationName: 'linkNgDeps', assetId: assetId);
 }
 
 bool _isNotDartDirective(dynamic model) => !isDartCoreUri(model.uri);

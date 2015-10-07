@@ -30,40 +30,42 @@ class Rewriter {
     var node = parseCompilationUnit(code);
     if (node == null) return null;
 
-    var visitor = new _FindDeferredLibraries(_reader, _entryPoint);
-    node.accept(visitor);
-    // Look to see if we found any deferred libraries
-    if (!visitor.hasDeferredLibrariesToRewrite()) return null;
-    // Remove any libraries that don't need angular codegen.
-    await visitor.cull();
-    // Check again if there are any deferred libraries.
-    if (!visitor.hasDeferredLibrariesToRewrite()) return null;
+    return logElapsedAsync(() async {
+      var visitor = new _FindDeferredLibraries(_reader, _entryPoint);
+      node.accept(visitor);
+      // Look to see if we found any deferred libraries
+      if (!visitor.hasDeferredLibrariesToRewrite()) return null;
+      // Remove any libraries that don't need angular codegen.
+      await visitor.cull();
+      // Check again if there are any deferred libraries.
+      if (!visitor.hasDeferredLibrariesToRewrite()) return null;
 
-    var compare = (AstNode a, AstNode b) => a.offset - b.offset;
-    visitor.deferredImports.sort(compare);
-    visitor.loadLibraryInvocations.sort(compare);
+      var compare = (AstNode a, AstNode b) => a.offset - b.offset;
+      visitor.deferredImports.sort(compare);
+      visitor.loadLibraryInvocations.sort(compare);
 
-    var buf = new StringBuffer();
-    var idx =
-        visitor.deferredImports.fold(0, (int lastIdx, ImportDirective node) {
-      buf.write(code.substring(lastIdx, node.offset));
+      var buf = new StringBuffer();
+      var idx =
+          visitor.deferredImports.fold(0, (int lastIdx, ImportDirective node) {
+        buf.write(code.substring(lastIdx, node.offset));
 
-      var import = code.substring(node.offset, node.end);
-      buf.write(import.replaceFirst('.dart', DEPS_EXTENSION));
-      return node.end;
-    });
+        var import = code.substring(node.offset, node.end);
+        buf.write(import.replaceFirst('.dart', DEPS_EXTENSION));
+        return node.end;
+      });
 
-    idx = visitor.loadLibraryInvocations.fold(idx,
-        (int lastIdx, MethodInvocation node) {
-      buf.write(code.substring(lastIdx, node.offset));
-      var value = node.realTarget as SimpleIdentifier;
-      var prefix = value.name;
-      // Chain a future that initializes the reflector.
-      buf.write('$prefix.loadLibrary().then((_) {$prefix.initReflector();})');
-      return node.end;
-    });
-    if (idx < code.length) buf.write(code.substring(idx));
-    return '$buf';
+      idx = visitor.loadLibraryInvocations.fold(idx,
+          (int lastIdx, MethodInvocation node) {
+        buf.write(code.substring(lastIdx, node.offset));
+        var value = node.realTarget as SimpleIdentifier;
+        var prefix = value.name;
+        // Chain a future that initializes the reflector.
+        buf.write('$prefix.loadLibrary().then((_) {$prefix.initReflector();})');
+        return node.end;
+      });
+      if (idx < code.length) buf.write(code.substring(idx));
+      return '$buf';
+    }, operationName: 'rewriteDeferredLibraries', assetId: _entryPoint);
   }
 }
 

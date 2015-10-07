@@ -2,14 +2,12 @@ library angular2.test.transform.deferred_rewriter.all_tests;
 
 import 'package:barback/barback.dart';
 import 'package:angular2/src/transform/deferred_rewriter/transformer.dart';
-import 'package:angular2/src/transform/common/annotation_matcher.dart';
-import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
-import 'package:code_transformers/messages/build_logger.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:guinness/guinness.dart';
 import 'package:path/path.dart' as path;
 import '../common/read_file.dart';
+import '../common/recording_logger.dart';
 
 var formatter = new DartFormatter();
 
@@ -36,21 +34,23 @@ void allTests() {
 }
 
 void _testRewriteDeferredLibraries(String name, String inputPath) {
-  it(name, () async {
-    var inputId = _assetIdForPath(inputPath);
-    var reader = new TestAssetReader();
-    var expectedPath = path.join(
-        path.dirname(inputPath), 'expected', path.basename(inputPath));
-    var expectedId = _assetIdForPath(expectedPath);
+  it(name, () {
+    return log.setZoned(new RecordingLogger(), () async {
+      var inputId = _assetIdForPath(inputPath);
+      var reader = new TestAssetReader();
+      var expectedPath = path.join(
+          path.dirname(inputPath), 'expected', path.basename(inputPath));
+      var expectedId = _assetIdForPath(expectedPath);
 
-    var output = await rewriteDeferredLibraries(reader, inputId);
-    var input = await reader.readAsString(expectedId);
-    if (input == null) {
-      // Null input signals no output. Ensure that is true.
-      expect(output).toBeNull();
-    } else {
-      expect(formatter.format(output)).toEqual(formatter.format(input));
-    }
+      var output = await rewriteDeferredLibraries(reader, inputId);
+      var input = await reader.readAsString(expectedId);
+      if (input == null) {
+        // Null input signals no output. Ensure that is true.
+        expect(output).toBeNull();
+      } else {
+        expect(formatter.format(output)).toEqual(formatter.format(input));
+      }
+    });
   });
 }
 

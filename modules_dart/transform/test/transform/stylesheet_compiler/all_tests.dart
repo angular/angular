@@ -8,6 +8,8 @@ import 'package:angular2/src/transform/stylesheet_compiler/transformer.dart';
 import 'package:barback/barback.dart';
 import 'package:guinness/guinness.dart';
 
+import '../common/recording_logger.dart';
+
 const SIMPLE_CSS = '''
 .foo {
   width: 10px;
@@ -64,6 +66,9 @@ allTests() {
 class FakeTransform implements Transform {
   final outputs = <Asset>[];
   Asset primaryInput;
+  final _logger = new RecordingLogger();
+
+  get logger => _logger;
 
   addOutput(Asset output) {
     this.outputs.add(output);

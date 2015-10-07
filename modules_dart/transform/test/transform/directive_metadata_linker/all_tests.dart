@@ -1,7 +1,10 @@
 library angular2.test.transform.directive_metadata_linker.all_tests;
 
+import 'dart:async';
 import 'dart:convert';
 
+import 'package:angular2/src/transform/common/asset_reader.dart';
+import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/common/model/import_export_model.pb.dart';
 import 'package:angular2/src/transform/directive_metadata_linker/ng_meta_linker.dart';
 import 'package:barback/barback.dart';
@@ -10,6 +13,7 @@ import 'package:guinness/guinness.dart';
 
 import '../common/ng_meta_helper.dart';
 import '../common/read_file.dart';
+import '../common/recording_logger.dart';
 
 var formatter = new DartFormatter();
 
@@ -71,7 +75,7 @@ void allTests() {
       fooNgMeta.ngDeps.exports.add(new ExportModel()..uri = 'bar.dart');
       updateReader();
 
-      var extracted = await linkDirectiveMetadata(reader, fooAssetId);
+      var extracted = await _testLink(reader, fooAssetId);
       expect(extracted.types).toContain('FooComponent');
       expect(extracted.types).toContain('BarComponent');
 
@@ -85,7 +89,7 @@ void allTests() {
       barNgMeta.ngDeps.exports.add(new ExportModel()..uri = 'baz.dart');
       updateReader();
 
-      var extracted = await linkDirectiveMetadata(reader, fooAssetId);
+      var extracted = await _testLink(reader, fooAssetId);
       expect(extracted.types).toContain('FooComponent');
       expect(extracted.types).toContain('BarComponent');
       expect(extracted.types).toContain('BazComponent');
@@ -101,7 +105,7 @@ void allTests() {
       bazNgMeta.ngDeps.exports.add(new ExportModel()..uri = 'foo.dart');
       updateReader();
 
-      var extracted = await linkDirectiveMetadata(reader, bazAssetId);
+      var extracted = await _testLink(reader, bazAssetId);
       expect(extracted.types).toContain('FooComponent');
       expect(extracted.types).toContain('BarComponent');
       expect(extracted.types).toContain('BazComponent');
@@ -116,7 +120,7 @@ void allTests() {
       reader.addAsset(new AssetId('bar', 'lib/bar.ng_meta.json'),
           JSON.encode(barNgMeta.toJson()));
 
-      var extracted = await linkDirectiveMetadata(reader, fooAssetId);
+      var extracted = await _testLink(reader, fooAssetId);
 
       expect(extracted.types).toContain('FooComponent');
       expect(extracted.types).toContain('BarComponent');
@@ -136,7 +140,7 @@ void allTests() {
       barNgMeta.ngDeps.libraryUri = 'test.bar';
       updateReader();
 
-      var linked = (await linkDirectiveMetadata(reader, fooAssetId)).ngDeps;
+      var linked = (await _testLink(reader, fooAssetId)).ngDeps;
       expect(linked).toBeNotNull();
       var linkedImport =
           linked.imports.firstWhere((i) => i.uri.endsWith('bar.ng_deps.dart'));
@@ -152,7 +156,7 @@ void allTests() {
       barNgMeta.ngDeps.libraryUri = 'test.bar';
       updateReader();
 
-      var linked = (await linkDirectiveMetadata(reader, fooAssetId)).ngDeps;
+      var linked = (await _testLink(reader, fooAssetId)).ngDeps;
       expect(linked).toBeNotNull();
       var linkedImport =
           linked.imports.firstWhere((i) => i.uri.endsWith('bar.ng_deps.dart'));
@@ -161,4 +165,9 @@ void allTests() {
       expect(linkedImport.prefix.startsWith('i')).toBeTrue();
     });
   });
+}
+
+Future<NgMeta> _testLink(AssetReader reader, AssetId assetId) {
+  return log.setZoned(
+      new RecordingLogger(), () => linkDirectiveMetadata(reader, assetId));
 }

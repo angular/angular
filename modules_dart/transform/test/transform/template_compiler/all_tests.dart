@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'package:barback/barback.dart';
 import 'package:angular2/src/core/dom/html_adapter.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
-import 'package:angular2/src/transform/common/logging.dart';
+import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/template_compiler/generator.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:path/path.dart' as path;
@@ -14,6 +14,7 @@ import 'package:guinness/guinness.dart';
 
 import '../common/compile_directive_metadata/ng_for.ng_meta.dart' as ngMeta;
 import '../common/read_file.dart';
+import '../common/recording_logger.dart';
 
 var formatter = new DartFormatter();
 AssetReader reader;
@@ -37,7 +38,10 @@ void allTests() {
 }
 
 void changeDetectorTests() {
-  Future<Outputs> process(AssetId assetId) => processTemplates(reader, assetId);
+  Future<Outputs> process(AssetId assetId) {
+    return log.setZoned(
+        new RecordingLogger(), () => processTemplates(reader, assetId));
+  }
 
   // TODO(tbosch): This is just a temporary test that makes sure that the dart server and
   // dart browser is in sync. Change this to "not contains notifyBinding"
@@ -68,8 +72,12 @@ void changeDetectorTests() {
 }
 
 void noChangeDetectorTests() {
-  Future<String> process(AssetId assetId) =>
-      processTemplates(reader, assetId).then((outputs) => outputs.ngDepsCode);
+  Future<String> process(AssetId assetId) {
+    return log.setZoned(
+        new RecordingLogger(),
+        () => processTemplates(reader, assetId)
+            .then((outputs) => outputs.ngDepsCode));
+  }
 
   it('should parse simple expressions in inline templates.', () async {
     var inputPath =
