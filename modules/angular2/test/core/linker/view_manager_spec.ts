@@ -17,9 +17,15 @@ import {SpyRenderer, SpyAppViewPool, SpyAppViewListener, SpyProtoViewFactory} fr
 import {Injector, bind} from 'angular2/core';
 
 import {AppProtoView, AppView, AppViewContainer, ViewType} from 'angular2/src/core/linker/view';
-import {ProtoViewRef, ViewRef, internalView} from 'angular2/src/core/linker/view_ref';
+import {
+  ProtoViewRef,
+  ProtoViewRef_,
+  ViewRef,
+  ViewRef_,
+  internalView
+} from 'angular2/src/core/linker/view_ref';
 import {ElementRef} from 'angular2/src/core/linker/element_ref';
-import {TemplateRef} from 'angular2/src/core/linker/template_ref';
+import {TemplateRef, TemplateRef_} from 'angular2/src/core/linker/template_ref';
 import {
   Renderer,
   RenderViewRef,
@@ -27,7 +33,7 @@ import {
   RenderFragmentRef,
   RenderViewWithFragments
 } from 'angular2/src/core/render/api';
-import {AppViewManager} from 'angular2/src/core/linker/view_manager';
+import {AppViewManager, AppViewManager_} from 'angular2/src/core/linker/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/linker/view_manager_utils';
 
 import {
@@ -38,10 +44,6 @@ import {
   createNestedElBinder,
   createProtoElInjector
 } from './view_manager_utils_spec';
-import {ProtoViewRef_} from "../../../src/core/linker/view_ref";
-import {ViewRef_} from "../../../src/core/linker/view_ref";
-import {AppViewManager_} from "../../../src/core/linker/view_manager";
-import {TemplateRef_} from "../../../src/core/linker/template_ref";
 
 export function main() {
   // TODO(tbosch): add missing tests

@@ -33,8 +33,7 @@ import {ElementRef} from './element_ref';
 import {ProtoPipes} from 'angular2/src/core/pipes/pipes';
 import {camelCaseToDashCase} from 'angular2/src/core/render/dom/util';
 import {TemplateCmd} from './template_commands';
-import {ViewRef_} from "./view_ref";
-import {ProtoViewRef_} from "./view_ref";
+import {ViewRef_, ProtoViewRef_} from "./view_ref";
 
 export {DebugContext} from 'angular2/src/core/change_detection/interfaces';
 

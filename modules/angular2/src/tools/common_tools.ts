@@ -1,9 +1,8 @@
 import {LifeCycle} from 'angular2/angular2';
-import {ComponentRef} from 'angular2/src/core/linker/dynamic_component_loader';
+import {ComponentRef, ComponentRef_} from 'angular2/src/core/linker/dynamic_component_loader';
 import {isPresent, NumberWrapper} from 'angular2/src/core/facade/lang';
 import {performance, window} from 'angular2/src/core/facade/browser';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {ComponentRef_} from "../core/linker/dynamic_component_loader";
 
 /**
  * Entry point for all Angular debug tools. This object corresponds to the `ng`

@@ -13,7 +13,11 @@ import {
 } from 'angular2/test_lib';
 import {ObservableWrapper} from 'angular2/src/core/facade/async';
 import {BrowserJsonp} from 'angular2/src/http/backends/browser_jsonp';
-import {JSONPConnection, JSONPBackend} from 'angular2/src/http/backends/jsonp_backend';
+import {
+  JSONPConnection,
+  JSONPConnection_,
+  JSONPBackend
+} from 'angular2/src/http/backends/jsonp_backend';
 import {bind, Injector} from 'angular2/core';
 import {isPresent, StringWrapper} from 'angular2/src/core/facade/lang';
 import {TimerWrapper} from 'angular2/src/core/facade/async';
@@ -23,7 +27,6 @@ import {Map} from 'angular2/src/core/facade/collection';
 import {RequestOptions, BaseRequestOptions} from 'angular2/src/http/base_request_options';
 import {BaseResponseOptions, ResponseOptions} from 'angular2/src/http/base_response_options';
 import {ResponseTypes, ReadyStates, RequestMethods} from 'angular2/src/http/enums';
-import {JSONPConnection_} from "../../../src/http/backends/jsonp_backend";
 
 var addEventListenerSpy;
 var existingScripts = [];
