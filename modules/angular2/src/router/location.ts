@@ -89,7 +89,7 @@ export class Location {
 
     if (isBlank(browserBaseHref)) {
       throw new BaseException(
-          `No base href set. Either provide a binding to "appBaseHrefToken" or add a base element.`);
+          `No base href set. Either provide a binding for the APP_BASE_HREF token or add a base element to the document.`);
     }
 
     this._baseHref = stripTrailingSlash(stripIndexHtml(browserBaseHref));
