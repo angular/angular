@@ -70,7 +70,7 @@ export class Headers {
    */
   delete (name: string): void { MapWrapper.delete(this._headersMap, name); }
 
-  forEach(fn: (value: string, name: string, headers: Headers) => any): void {
+  forEach(fn: (values: string[], name: string, headers: Map<string, string[]>) => void): void {
     MapWrapper.forEach(this._headersMap, fn);
   }
 

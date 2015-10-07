@@ -148,14 +148,16 @@ export function main() {
       });
 
       it('should attach headers to the request', () => {
-        var headers = new Headers({'Content-Type': 'text/xml', 'Breaking-Bad': '<3'});
+        var headers =
+            new Headers({'Content-Type': 'text/xml', 'Breaking-Bad': '<3', 'X-Multi': ['a', 'b']});
 
         var base = new BaseRequestOptions();
         var connection = new XHRConnection(
             new Request(base.merge(new RequestOptions({headers: headers}))), new MockBrowserXHR());
         connection.response.subscribe();
-        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', ['text/xml']);
-        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Breaking-Bad', ['<3']);
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Content-Type', 'text/xml');
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('Breaking-Bad', '<3');
+        expect(setRequestHeaderSpy).toHaveBeenCalledWith('X-Multi', 'a,b');
       });
 
       it('should return the correct status code', inject([AsyncTestCompleter], async => {
