@@ -169,7 +169,7 @@ export class FunctionWithParamTokens {
    * Returns the value of the executed function.
    */
   execute(injector: Injector): any {
-    var params = ListWrapper.map(this._tokens, (t) => injector.get(t));
+    var params = this._tokens.map(t => injector.get(t));
     return FunctionWrapper.apply(this._fn, params);
   }
 

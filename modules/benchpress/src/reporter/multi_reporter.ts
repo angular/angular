@@ -9,9 +9,8 @@ export class MultiReporter extends Reporter {
   static createBindings(childTokens: any[]): Binding[] {
     return [
       bind(_CHILDREN)
-          .toFactory(
-              (injector: Injector) => ListWrapper.map(childTokens, (token) => injector.get(token)),
-              [Injector]),
+          .toFactory((injector: Injector) => childTokens.map(token => injector.get(token)),
+                     [Injector]),
       bind(MultiReporter).toFactory(children => new MultiReporter(children), [_CHILDREN])
     ];
   }
@@ -25,12 +24,12 @@ export class MultiReporter extends Reporter {
 
   reportMeasureValues(values: MeasureValues): Promise<any[]> {
     return PromiseWrapper.all(
-        ListWrapper.map(this._reporters, (reporter) => reporter.reportMeasureValues(values)));
+        this._reporters.map(reporter => reporter.reportMeasureValues(values)));
   }
 
   reportSample(completeSample: MeasureValues[], validSample: MeasureValues[]): Promise<any[]> {
-    return PromiseWrapper.all(ListWrapper.map(
-        this._reporters, (reporter) => reporter.reportSample(completeSample, validSample)));
+    return PromiseWrapper.all(
+        this._reporters.map(reporter => reporter.reportSample(completeSample, validSample)));
   }
 }
 

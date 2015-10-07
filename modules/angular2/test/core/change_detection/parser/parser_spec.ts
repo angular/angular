@@ -1,7 +1,7 @@
 import {ddescribe, describe, it, xit, iit, expect, beforeEach} from 'angular2/test_lib';
 import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
 import {reflector} from 'angular2/src/core/reflection/reflection';
-import {MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+import {MapWrapper} from 'angular2/src/core/facade/collection';
 import {Parser} from 'angular2/src/core/change_detection/parser/parser';
 import {Unparser} from './unparser';
 import {Lexer} from 'angular2/src/core/change_detection/parser/lexer';
@@ -270,12 +270,10 @@ export function main() {
 
     describe('parseTemplateBindings', () => {
 
-      function keys(templateBindings) {
-        return ListWrapper.map(templateBindings, (binding) => binding.key);
-      }
+      function keys(templateBindings) { return templateBindings.map(binding => binding.key); }
 
       function keyValues(templateBindings) {
-        return ListWrapper.map(templateBindings, (binding) => {
+        return templateBindings.map(binding => {
           if (binding.keyIsVar) {
             return '#' + binding.key + (isBlank(binding.name) ? '=null' : '=' + binding.name);
           } else {
@@ -285,9 +283,8 @@ export function main() {
       }
 
       function exprSources(templateBindings) {
-        return ListWrapper.map(templateBindings, (binding) => isPresent(binding.expression) ?
-                                                                  binding.expression.source :
-                                                                  null);
+        return templateBindings.map(
+            binding => isPresent(binding.expression) ? binding.expression.source : null);
       }
 
       it('should parse an empty string', () => { expect(parseTemplateBindings('')).toEqual([]); });

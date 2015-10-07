@@ -13,12 +13,11 @@ import {Options} from './common_options';
  * Needs one implementation for every supported Browser.
  */
 export abstract class WebDriverExtension {
-  static bindTo(childTokens): Binding[] {
+  static bindTo(childTokens: any[]): Binding[] {
     var res = [
       bind(_CHILDREN)
-          .toFactory(
-              (injector: Injector) => ListWrapper.map(childTokens, (token) => injector.get(token)),
-              [Injector]),
+          .toFactory((injector: Injector) => childTokens.map(token => injector.get(token)),
+                     [Injector]),
       bind(WebDriverExtension)
           .toFactory(
               (children, capabilities) => {

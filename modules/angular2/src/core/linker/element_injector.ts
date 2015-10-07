@@ -201,7 +201,7 @@ function _createEventEmitterAccessors(bwv: BindingWithVisibility): EventEmitterA
   var binding = bwv.binding;
   if (!(binding instanceof DirectiveBinding)) return [];
   var db = <DirectiveBinding>binding;
-  return ListWrapper.map(db.eventEmitters, eventConfig => {
+  return db.eventEmitters.map(eventConfig => {
     var parsedEvent = EventConfig.parse(eventConfig);
     return new EventEmitterAccessor(parsedEvent.eventName, reflector.getter(parsedEvent.fieldName));
   });

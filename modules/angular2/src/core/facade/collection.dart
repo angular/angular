@@ -117,7 +117,6 @@ class ListWrapper {
       new List.generate(size, (_) => null, growable: true);
 
   static bool contains(List m, k) => m.contains(k);
-  static List map(list, fn(item)) => list.map(fn).toList();
   static List filter(List list, bool fn(item)) => list.where(fn).toList();
   static int indexOf(List list, value, [int startIndex = 0]) =>
       list.indexOf(value, startIndex);

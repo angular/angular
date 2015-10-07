@@ -21,7 +21,7 @@ export function main() {
   function createExtension(ids, caps) {
     return PromiseWrapper.wrap(() => {
       return Injector.resolveAndCreate([
-                       ListWrapper.map(ids, (id) => bind(id).toValue(new MockExtension(id))),
+                       ids.map(id => bind(id).toValue(new MockExtension(id))),
                        bind(Options.CAPABILITIES).toValue(caps),
                        WebDriverExtension.bindTo(ids)
                      ])

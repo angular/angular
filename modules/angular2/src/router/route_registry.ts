@@ -121,7 +121,7 @@ export class RouteRegistry {
     var possibleMatches = componentRecognizer.recognize(parsedUrl);
 
     var matchPromises =
-        ListWrapper.map(possibleMatches, (candidate) => this._completePrimaryRouteMatch(candidate));
+        possibleMatches.map(candidate => this._completePrimaryRouteMatch(candidate));
 
     return PromiseWrapper.all(matchPromises).then(mostSpecific);
   }
