@@ -27,13 +27,16 @@ import 'ng_deps_linker.dart';
 /// Returns an empty [NgMeta] if there are no `Directive`-annotated classes or
 /// `DirectiveAlias` annotated constants in `entryPoint`.
 Future<NgMeta> linkDirectiveMetadata(
-    AssetReader reader, AssetId entryPoint) async {
-  var ngMeta = await _readNgMeta(reader, entryPoint);
+    AssetReader reader, AssetId assetId) async {
+  var ngMeta = await _readNgMeta(reader, assetId);
   if (ngMeta == null || ngMeta.isEmpty) return null;
 
   await Future.wait([
-    linkNgDeps(ngMeta.ngDeps, reader, entryPoint, _urlResolver),
-    _timeLinkRecursive(ngMeta, reader, entryPoint)
+    linkNgDeps(ngMeta.ngDeps, reader, assetId, _urlResolver),
+    logElapsedAsync(() async {
+      await _linkRecursive(ngMeta, reader, assetId, new Set<String>());
+      return ngMeta;
+    }, operationName: 'linkDirectiveMetadata', assetId: assetId)
   ]);
   return ngMeta;
 }
@@ -48,16 +51,6 @@ Future<NgMeta> _readNgMeta(AssetReader reader, AssetId ngMetaAssetId) async {
 }
 
 final _urlResolver = const TransformerUrlResolver();
-
-Future<NgMeta> _timeLinkRecursive(
-    NgMeta ngMeta, AssetReader reader, AssetId assetId) async {
-  final timer = new Stopwatch()..start();
-  await _linkRecursive(ngMeta, reader, assetId, new Set<String>());
-  timer.stop();
-  logger.fine(
-      '[linkDirectiveMetadata] took ${timer.elapsedMilliseconds} ms on $assetId');
-  return ngMeta;
-}
 
 Future _linkRecursive(NgMeta ngMeta, AssetReader reader, AssetId assetId,
     Set<String> seen) async {

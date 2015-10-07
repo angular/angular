@@ -51,6 +51,24 @@ BuildLogger get logger {
   return current == null ? new PrintLogger() : current;
 }
 
+/// Writes a log entry at `LogLevel.FINE` granularity with the time taken by
+/// `asyncOperation`.
+///
+/// Returns the result of executing `asyncOperation`.
+Future logElapsedAsync(Future asyncOperation(),
+    {String operationName: 'unknown', AssetId assetId}) async {
+  final timer = new Stopwatch()..start();
+  final result = await asyncOperation();
+  timer.stop();
+  final buf =
+      new StringBuffer('[$operationName] took ${timer.elapsedMilliseconds} ms');
+  if (assetId != null) {
+    buf.write(' on $assetId');
+  }
+  logger.fine(buf.toString(), asset: assetId);
+  return result;
+}
+
 class PrintLogger implements BuildLogger {
   @override
   final String detailsUri = '';

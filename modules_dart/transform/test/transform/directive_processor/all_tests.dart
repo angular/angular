@@ -1,9 +1,7 @@
 library angular2.test.transform.directive_processor.all_tests;
 
 import 'dart:async';
-import 'dart:convert';
 
-import 'package:barback/barback.dart';
 import 'package:angular2/src/core/change_detection/change_detection.dart';
 import 'package:angular2/src/core/linker/interfaces.dart' show LifecycleHooks;
 import 'package:angular2/src/core/dom/html_adapter.dart';
@@ -13,13 +11,13 @@ import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/common/model/reflection_info_model.pb.dart';
-import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
 import 'package:angular2/src/transform/common/ng_meta.dart';
+import 'package:barback/barback.dart';
 import 'package:code_transformers/messages/build_logger.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:guinness/guinness.dart';
-import 'package:source_span/source_span.dart';
 import '../common/read_file.dart';
+import '../common/recording_logger.dart';
 
 var formatter = new DartFormatter();
 
@@ -448,31 +446,3 @@ Future<NgMeta> _testCreateModel(String inputPath,
 
 AssetId _assetIdForPath(String path) =>
     new AssetId('angular2', 'test/transform/directive_processor/$path');
-
-class RecordingLogger implements BuildLogger {
-  @override
-  final String detailsUri = '';
-  @override
-  final bool convertErrorsToWarnings = false;
-
-  bool hasErrors = false;
-
-  List<String> logs = [];
-
-  void _record(prefix, msg) => logs.add('$prefix: $msg');
-
-  void info(msg, {AssetId asset, SourceSpan span}) => _record('INFO', msg);
-
-  void fine(msg, {AssetId asset, SourceSpan span}) => _record('FINE', msg);
-
-  void warning(msg, {AssetId asset, SourceSpan span}) => _record('WARN', msg);
-
-  void error(msg, {AssetId asset, SourceSpan span}) {
-    hasErrors = true;
-    _record('ERROR', msg);
-  }
-
-  Future writeOutput() => throw new UnimplementedError();
-  Future addLogFilesFromAsset(AssetId id, [int nextNumber = 1]) =>
-      throw new UnimplementedError();
-}

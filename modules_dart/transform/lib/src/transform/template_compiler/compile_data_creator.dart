@@ -21,13 +21,9 @@ import 'package:code_transformers/assets.dart';
 /// created objects.
 Future<CompileDataResults> createCompileData(
     AssetReader reader, AssetId assetId) async {
-  final timer = new Stopwatch()..start();
-  final data =
-      await new _CompileDataCreator(reader, assetId).createCompileData();
-  timer.stop();
-  logger.fine(
-      '[createCompileData] took ${timer.elapsedMilliseconds} ms on $assetId');
-  return data;
+  return logElapsedAsync(() {
+    return new _CompileDataCreator(reader, assetId).createCompileData();
+  }, operationName: 'createCompileData', assetId: assetId);
 }
 
 class CompileDataResults {

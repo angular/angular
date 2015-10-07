@@ -26,24 +26,22 @@ Future<NgMeta> createNgMeta(AssetReader reader, AssetId assetId,
   var parsedCode =
       parseCompilationUnit(codeWithParts, name: '${assetId.path} and parts');
 
-  final timer = new Stopwatch()..start();
-  var ngDepsVisitor = new NgDepsVisitor(assetId, annotationMatcher);
-  parsedCode.accept(ngDepsVisitor);
-  timer.stop();
-  logger.fine('[createNgDeps] took ${timer.elapsedMilliseconds} ms on $assetId');
+  final ngDepsVisitor = await logElapsedAsync(() async {
+    var ngDepsVisitor = new NgDepsVisitor(assetId, annotationMatcher);
+    parsedCode.accept(ngDepsVisitor);
+    return ngDepsVisitor;
+  }, operationName: 'createNgDeps', assetId: assetId);
 
-  timer..reset()..start();
-  var ngMeta = new NgMeta(ngDeps: ngDepsVisitor.model);
+  return logElapsedAsync(() async {
+    var ngMeta = new NgMeta(ngDeps: ngDepsVisitor.model);
 
-  var templateCompiler = createTemplateCompiler(reader);
-  var ngMetaVisitor = new _NgMetaVisitor(
-      ngMeta, assetId, annotationMatcher, _interfaceMatcher, templateCompiler);
-  parsedCode.accept(ngMetaVisitor);
-  await ngMetaVisitor.whenDone();
-  timer.stop();
-  logger.fine('[createNgMeta] took ${timer.elapsedMilliseconds} ms on $assetId');
-
-  return ngMeta;
+    var templateCompiler = createTemplateCompiler(reader);
+    var ngMetaVisitor = new _NgMetaVisitor(ngMeta, assetId, annotationMatcher,
+        _interfaceMatcher, templateCompiler);
+    parsedCode.accept(ngMetaVisitor);
+    await ngMetaVisitor.whenDone();
+    return ngMeta;
+  }, operationName: 'createNgMeta', assetId: assetId);
 }
 
 // TODO(kegluneq): Allow the caller to provide an InterfaceMatcher.
