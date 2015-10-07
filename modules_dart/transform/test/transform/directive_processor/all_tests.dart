@@ -442,7 +442,7 @@ Future<NgMeta> _testCreateModel(String inputPath,
     }
 
     var annotationMatcher = new AnnotationMatcher()..addAll(customDescriptors);
-    return createNgDeps(reader, inputId, annotationMatcher);
+    return createNgMeta(reader, inputId, annotationMatcher);
   });
 }
 

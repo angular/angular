@@ -19,9 +19,15 @@ import 'package:code_transformers/assets.dart';
 ///
 /// The returned value wraps the [NgDeps] at `entryPoint` as well as these
 /// created objects.
-Future<CompileDataResults> createCompileData(AssetReader reader,
-    AssetId entryPoint) async {
-  return new _CompileDataCreator(reader, entryPoint).createCompileData();
+Future<CompileDataResults> createCompileData(
+    AssetReader reader, AssetId assetId) async {
+  final timer = new Stopwatch()..start();
+  final data =
+      await new _CompileDataCreator(reader, assetId).createCompileData();
+  timer.stop();
+  logger.fine(
+      '[createCompileData] took ${timer.elapsedMilliseconds} ms on $assetId');
+  return data;
 }
 
 class CompileDataResults {
