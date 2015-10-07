@@ -1231,8 +1231,8 @@ export function main() {
            try {
              tcb.createAsync(ComponentWithoutView);
            } catch (e) {
-             expect(e.message).toEqual(
-                 `No View annotation found on component ${stringify(ComponentWithoutView)}`);
+             expect(e.message)
+                 .toContain(`must have either 'template', 'templateUrl', or '@View' set.`);
              return null;
            }
          }));
@@ -1696,6 +1696,21 @@ export function main() {
                         });
                   }));
       }
+
+      it('should support defining views in the component decorator',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(MyComp, new ViewMetadata({
+                              template: '<component-with-template></component-with-template>',
+                              directives: [ComponentWithTempalte]
+                            }))
+               .createAsync(MyComp)
+               .then((rootTC) => {
+                 rootTC.detectChanges();
+                 var native = rootTC.debugElement.componentViewChildren[0].nativeElement;
+                 expect(native).toHaveText("No View Decorator: 123");
+                 async.done();
+               });
+         }));
     });
   });
 }
@@ -2249,6 +2264,14 @@ class OtherDuplicateDir {
 @Directive({selector: 'directive-throwing-error'})
 class DirectiveThrowingAnError {
   constructor() { throw new BaseException("BOOM"); }
+}
+
+@Component({
+  selector: 'component-with-template',
+  directives: [NgFor], template: `No View Decorator: <div *ng-for="#item of items">{{item}}</div>`
+})
+class ComponentWithTempalte {
+  items = [1, 2, 3];
 }
 
 @Directive({selector: 'with-prop-decorators'})

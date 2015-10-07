@@ -1,7 +1,8 @@
 import {Injectable} from 'angular2/src/core/di';
 import {ViewMetadata} from '../metadata/view';
+import {ComponentMetadata} from '../metadata/directives';
 
-import {Type, stringify, isBlank} from 'angular2/src/core/facade/lang';
+import {Type, stringify, isBlank, isPresent} from 'angular2/src/core/facade/lang';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {Map, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 
@@ -24,13 +25,70 @@ export class ViewResolver {
   }
 
   _resolve(component: Type): ViewMetadata {
-    var annotations = reflector.annotations(component);
-    for (var i = 0; i < annotations.length; i++) {
-      var annotation = annotations[i];
-      if (annotation instanceof ViewMetadata) {
-        return annotation;
+    var compMeta: ComponentMetadata;
+    var viewMeta: ViewMetadata;
+
+    reflector.annotations(component).forEach(m => {
+      if (m instanceof ViewMetadata) {
+        viewMeta = m;
+      }
+      if (m instanceof ComponentMetadata) {
+        compMeta = m;
+      }
+    });
+
+    if (isPresent(compMeta)) {
+      if (isBlank(compMeta.template) && isBlank(compMeta.templateUrl) && isBlank(viewMeta)) {
+        throw new BaseException(
+            `Component '${stringify(component)}' must have either 'template', 'templateUrl', or '@View' set.`);
+
+      } else if (isPresent(compMeta.template) && isPresent(viewMeta)) {
+        this._throwMixingViewAndComponent("template", component);
+
+      } else if (isPresent(compMeta.templateUrl) && isPresent(viewMeta)) {
+        this._throwMixingViewAndComponent("templateUrl", component);
+
+      } else if (isPresent(compMeta.directives) && isPresent(viewMeta)) {
+        this._throwMixingViewAndComponent("directives", component);
+
+      } else if (isPresent(compMeta.pipes) && isPresent(viewMeta)) {
+        this._throwMixingViewAndComponent("pipes", component);
+
+      } else if (isPresent(compMeta.encapsulation) && isPresent(viewMeta)) {
+        this._throwMixingViewAndComponent("encapsulation", component);
+
+      } else if (isPresent(compMeta.styles) && isPresent(viewMeta)) {
+        this._throwMixingViewAndComponent("styles", component);
+
+      } else if (isPresent(compMeta.styleUrls) && isPresent(viewMeta)) {
+        this._throwMixingViewAndComponent("styleUrls", component);
+
+      } else if (isPresent(viewMeta)) {
+        return viewMeta;
+
+      } else {
+        return new ViewMetadata({
+          templateUrl: compMeta.templateUrl,
+          template: compMeta.template,
+          directives: compMeta.directives,
+          pipes: compMeta.pipes,
+          encapsulation: compMeta.encapsulation,
+          styles: compMeta.styles,
+          styleUrls: compMeta.styleUrls
+        });
+      }
+    } else {
+      if (isBlank(viewMeta)) {
+        throw new BaseException(`No View decorator found on component '${stringify(component)}'`);
+      } else {
+        return viewMeta;
       }
     }
-    throw new BaseException(`No View annotation found on component ${stringify(component)}`);
+    return null;
+  }
+
+  _throwMixingViewAndComponent(propertyName: string, component: Type): void {
+    throw new BaseException(
+        `Component '${stringify(component)}' cannot have both '${propertyName}' and '@View' set at the same time"`);
   }
 }
