@@ -380,7 +380,7 @@ export function main() {
              run(rootComp, [dir], 1)
                  .then((data) => {
                    expect(data[0][2])
-                       .toEqual(['someEmptyVar', '$implicit', 'someVar', 'someValue']);
+                       .toEqual(['someVar', 'someValue', 'someEmptyVar', '$implicit']);
                    async.done();
                  });
            }));
