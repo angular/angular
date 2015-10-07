@@ -13,11 +13,6 @@ import {ObservableWrapper, PromiseWrapper, Promise} from 'angular2/src/core/faca
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {isPresent} from 'angular2/src/core/facade/lang';
 
-interface RecordData {
-  id: string, subject: string, content: string, email: string, firstName: string, lastName: string,
-      date: string, draft?: boolean
-}
-
 class InboxRecord {
   id: string = '';
   subject: string = '';
@@ -28,13 +23,29 @@ class InboxRecord {
   date: string = '';
   draft: boolean = false;
 
-  constructor(data: RecordData = null) {
+  constructor(data: {
+    id: string,
+    subject: string,
+    content: string,
+    email: string,
+    firstName: string,
+    lastName: string,
+    date: string, draft?: boolean
+  } = null) {
     if (isPresent(data)) {
       this.setData(data);
     }
   }
 
-  setData(record: RecordData) {
+  setData(record: {
+    id: string,
+    subject: string,
+    content: string,
+    email: string,
+    firstName: string,
+    lastName: string,
+    date: string, draft?: boolean
+  }) {
     this.id = record['id'];
     this.subject = record['subject'];
     this.content = record['content'];
@@ -48,26 +59,26 @@ class InboxRecord {
 
 @Injectable()
 class DbService {
-  getData(): Promise<RecordData[]> {
+  getData(): Promise<any[]> {
     var p = PromiseWrapper.completer();
     p.resolve(db.data);
     return p.promise;
   }
 
-  drafts(): Promise<RecordData[]> {
+  drafts(): Promise<any[]> {
     return PromiseWrapper.then(this.getData(), (data) => {
       return ListWrapper.filter(data,
                                 (record => isPresent(record['draft']) && record['draft'] == true));
     });
   }
 
-  emails(): Promise<RecordData[]> {
+  emails(): Promise<any[]> {
     return PromiseWrapper.then(this.getData(), (data) => {
       return ListWrapper.filter(data, (record => !isPresent(record['draft'])));
     });
   }
 
-  email(id): Promise<RecordData> {
+  email(id): Promise<any> {
     return PromiseWrapper.then(this.getData(), (data) => {
       for (var i = 0; i < data.length; i++) {
         var entry = data[i];

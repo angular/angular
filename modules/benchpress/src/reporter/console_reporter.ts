@@ -85,7 +85,7 @@ export class ConsoleReporter extends Reporter {
     return PromiseWrapper.resolve(null);
   }
 
-  _printStringRow(parts, fill = ' ') {
+  _printStringRow(parts: any[], fill = ' ') {
     this._print(
         parts.map(part => ConsoleReporter._lpad(part, this._columnWidth, fill)).join(' | '));
   }

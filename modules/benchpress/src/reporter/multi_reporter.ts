@@ -1,5 +1,4 @@
 import {bind, Binding, Injector, OpaqueToken} from 'angular2/src/core/di';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 
 import {MeasureValues} from '../measure_values';

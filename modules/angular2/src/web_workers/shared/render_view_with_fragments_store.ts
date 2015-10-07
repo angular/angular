@@ -136,7 +136,7 @@ export class RenderViewWithFragmentsStore {
     }
 
     var viewRef = this.deserializeRenderViewRef(obj['viewRef']);
-    var fragments = obj['fragmentRefs'].map(val => this.deserializeRenderFragmentRef(val));
+    var fragments = (<any[]>obj['fragmentRefs']).map(val => this.deserializeRenderFragmentRef(val));
 
     return new RenderViewWithFragments(viewRef, fragments);
   }

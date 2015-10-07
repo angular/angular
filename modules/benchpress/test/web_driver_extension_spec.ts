@@ -11,14 +11,13 @@ import {
   xit,
 } from 'angular2/test_lib';
 
-import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {isPresent, StringWrapper} from 'angular2/src/core/facade/lang';
 import {PromiseWrapper} from 'angular2/src/core/facade/async';
 
 import {WebDriverExtension, bind, Injector, Options} from 'benchpress/common';
 
 export function main() {
-  function createExtension(ids, caps) {
+  function createExtension(ids: any[], caps) {
     return PromiseWrapper.wrap(() => {
       return Injector.resolveAndCreate([
                        ids.map(id => bind(id).toValue(new MockExtension(id))),
