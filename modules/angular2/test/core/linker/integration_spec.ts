@@ -1701,7 +1701,7 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MyComp, new ViewMetadata({
                               template: '<component-with-template></component-with-template>',
-                              directives: [ComponentWithTempalte]
+                              directives: [ComponentWithTemplate]
                             }))
                .createAsync(MyComp)
                .then((rootTC) => {
@@ -2270,7 +2270,7 @@ class DirectiveThrowingAnError {
   selector: 'component-with-template',
   directives: [NgFor], template: `No View Decorator: <div *ng-for="#item of items">{{item}}</div>`
 })
-class ComponentWithTempalte {
+class ComponentWithTemplate {
   items = [1, 2, 3];
 }
 

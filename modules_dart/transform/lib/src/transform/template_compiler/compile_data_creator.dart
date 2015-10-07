@@ -195,7 +195,6 @@ class _DirectiveDependenciesVisitor extends Object
   /// reflector.
   @override
   Object visitInstanceCreationExpression(InstanceCreationExpression node) {
-//    if (_isViewAnnotation(node)) {
     if (_isViewAnnotation(node) || _isComponentAnnotation(node)) {
       compileData = new NormalizedComponentWithViewDirectives(
           null, <CompileDirectiveMetadata>[]);

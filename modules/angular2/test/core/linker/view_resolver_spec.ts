@@ -26,13 +26,13 @@ class ComponentWithTemplate {
 class ComponentWithViewTemplate {
 }
 
-@Component({selector: 'sample'})
-class ComponentWithoutView {
-}
-
 @Component({selector: 'sample', templateUrl: "some template url"})
 @View({template: "some template"})
 class ComponentWithViewTemplateUrl {
+}
+
+@Component({selector: 'sample'})
+class ComponentWithoutView {
 }
 
 @View({template: "some template"})
