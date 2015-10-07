@@ -957,7 +957,7 @@ gulp.task('!bundle.js.min', ['build.js.prod'], function() {
 
   return q.all([
     bundler.bundle(bundleConfig, 'angular2/angular2', './dist/build/angular2.min.js', minBundleConfig),
-    bundler.bundle(bundleConfig, 'angular2/http', './dist/build/http.min.js', minBundleConfig),
+    bundler.bundle(bundleConfig, 'angular2/http - angular2/angular2', './dist/build/http.min.js', minBundleConfig),
     bundler.bundle(bundleConfig, 'angular2/router - angular2/angular2', './dist/js/bundle/router.dev.min.js', minBundleConfig)
   ]);
 });
