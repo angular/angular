@@ -1,5 +1,5 @@
 import {bootstrap} from 'angular2/bootstrap';
-import {ElementRef, Component, Directive, View, Injectable} from 'angular2/core';
+import {ElementRef, Component, Directive, Injectable} from 'angular2/core';
 import {Renderer} from 'angular2/render';
 
 export function main() {
