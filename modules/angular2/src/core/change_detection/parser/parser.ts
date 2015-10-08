@@ -29,7 +29,6 @@ import {
   Binary,
   PrefixNot,
   Conditional,
-  If,
   BindingPipe,
   Chain,
   KeyedRead,
@@ -429,19 +428,6 @@ export class _ParseAST {
       this.advance();
       return new LiteralPrimitive(false);
 
-    } else if (this.parseAction && this.next.isKeywordIf()) {
-      this.advance();
-      this.expectCharacter($LPAREN);
-      let condition = this.parseExpression();
-      this.expectCharacter($RPAREN);
-      let ifExp = this.parseExpressionOrBlock();
-      let elseExp;
-      if (this.next.isKeywordElse()) {
-        this.advance();
-        elseExp = this.parseExpressionOrBlock();
-      }
-      return new If(condition, ifExp, elseExp);
-
     } else if (this.optionalCharacter($LBRACKET)) {
       var elements = this.parseExpressionList($RBRACKET);
       this.expectCharacter($RBRACKET);
@@ -540,16 +526,6 @@ export class _ParseAST {
       positionals.push(this.parsePipe());
     } while (this.optionalCharacter($COMMA));
     return positionals;
-  }
-
-  parseExpressionOrBlock(): AST {
-    if (this.optionalCharacter($LBRACE)) {
-      let block = this.parseBlockContent();
-      this.expectCharacter($RBRACE);
-      return block;
-    }
-
-    return this.parseExpression();
   }
 
   parseBlockContent(): AST {
@@ -688,6 +664,4 @@ class SimpleExpressionChecker implements AstVisitor {
   }
 
   visitChain(ast: Chain) { this.simple = false; }
-
-  visitIf(ast: If) { this.simple = false; }
 }
