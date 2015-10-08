@@ -100,6 +100,22 @@ export function main() {
        }));
 
 
+    it('should work in an app with async components defined with "loader"',
+       inject([AsyncTestCompleter], (async) => {
+         bootstrap(ConciseAsyncAppCmp,
+                   [bind(ROUTER_PRIMARY_COMPONENT).toValue(AsyncAppCmp), testBindings])
+             .then((applicationRef) => {
+               var router = applicationRef.hostComponent.router;
+               router.subscribe((_) => {
+                 expect(el).toHaveText('root { hello }');
+                 expect(applicationRef.hostComponent.location.path()).toEqual('/hello');
+                 async.done();
+               });
+               router.navigateByUrl('/hello');
+             });
+       }));
+
+
     it('should work in an app with a constructor component',
        inject([AsyncTestCompleter], (async) => {
          bootstrap(
@@ -184,6 +200,15 @@ function HelloLoader(): Promise<any> {
   {path: '/hello', component: {type: 'loader', loader: HelloLoader}},
 ])
 class AsyncAppCmp {
+  constructor(public router: Router, public location: LocationStrategy) {}
+}
+
+@Component({selector: 'app-cmp'})
+@View({template: `root { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
+@RouteConfig([
+  {path: '/hello', loader: HelloLoader},
+])
+class ConciseAsyncAppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}
 }
 

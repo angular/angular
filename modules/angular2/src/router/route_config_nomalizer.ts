@@ -13,9 +13,12 @@ export function normalizeRouteConfig(config: RouteDefinition): RouteDefinition {
     return <RouteDefinition>config;
   }
 
-  if ((!config.component) == (!config.redirectTo)) {
+  if ((+!!config.component) + (+!!config.redirectTo) + (+!!config.loader) != 1) {
     throw new BaseException(
         `Route config should contain exactly one "component", "loader", or "redirectTo" property.`);
+  }
+  if (config.loader) {
+    return new AsyncRoute({path: config.path, loader: config.loader, as: config.as});
   }
   if (config.component) {
     if (typeof config.component == 'object') {
