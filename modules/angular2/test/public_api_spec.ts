@@ -1150,6 +1150,8 @@ var NG_API = [
   'RenderElementRef.renderView',
   'RenderElementRef.renderView=',
   'RenderEventDispatcher:dart',
+  'RenderNgContentCmd.index',
+  'RenderNgContentCmd.index=',
   'Stream:dart',
   'Stream.any():dart',
   'Stream.asBroadcastStream():dart',
