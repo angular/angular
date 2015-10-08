@@ -17,7 +17,10 @@ class NgDepsModel extends GeneratedMessage {
         ExportModel.create)
     ..pp(5, 'reflectables', PbFieldType.PM, ReflectionInfoModel.$checkItem,
         ReflectionInfoModel.create)
-    ..a(6, 'sourceFile', PbFieldType.OS);
+    ..a(6, 'sourceFile', PbFieldType.OS)
+    ..p(7, 'getters', PbFieldType.PS)
+    ..p(8, 'setters', PbFieldType.PS)
+    ..p(9, 'methods', PbFieldType.PS);
 
   NgDepsModel() : super();
   NgDepsModel.fromBuffer(List<int> i,
@@ -63,6 +66,12 @@ class NgDepsModel extends GeneratedMessage {
 
   bool hasSourceFile() => $_has(5, 6);
   void clearSourceFile() => clearField(6);
+
+  List<String> get getters => $_get(6, 7, null);
+
+  List<String> get setters => $_get(7, 8, null);
+
+  List<String> get methods => $_get(8, 9, null);
 }
 
 class _ReadonlyNgDepsModel extends NgDepsModel with ReadonlyMessageMixin {}
@@ -94,12 +103,15 @@ const NgDepsModel$json = const {
       '6': '.angular2.src.transform.common.model.proto.ReflectionInfoModel'
     },
     const {'1': 'source_file', '3': 6, '4': 1, '5': 9},
+    const {'1': 'getters', '3': 7, '4': 3, '5': 9},
+    const {'1': 'setters', '3': 8, '4': 3, '5': 9},
+    const {'1': 'methods', '3': 9, '4': 3, '5': 9},
   ],
 };
 
 /**
  * Generated with:
- * ng_deps_model.proto (83fe43a087fdd0a7ebee360cd6b669570df4d216)
+ * ng_deps_model.proto (ab93a7f3c411be8a6dafe914f8aae56027e1bac6)
  * libprotoc 2.6.1
  * dart-protoc-plugin (af5fc2bf1de367a434c3b1847ab260510878ffc0)
  */
