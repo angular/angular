@@ -21,6 +21,7 @@ import {
 } from 'angular2/test_lib';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {AppViewListener} from 'angular2/src/core/linker/view_listener';
 
 import {
   bind,
@@ -38,6 +39,8 @@ import {By} from 'angular2/src/core/debug';
 
 export function main() {
   describe('projection', () => {
+    beforeEachBindings(() => [bind(AppViewListener).toClass(AppViewListener)]);
+
     it('should support simple components',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(MainComp, new ViewMetadata({
@@ -464,6 +467,38 @@ export function main() {
              });
        }));
 
+    it('should allow to switch the order of nested components via ng-content',
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         tcb.overrideView(
+                MainComp,
+                new ViewMetadata(
+                    {template: `<cmp-a><cmp-b></cmp-b></cmp-a>`, directives: [CmpA, CmpB]}))
+             .createAsync(MainComp)
+             .then((main) => {
+               main.detectChanges();
+               expect(DOM.getInnerHTML(main.debugElement.nativeElement))
+                   .toEqual(
+                       '<cmp-a><cmp-b><cmp-d><d>cmp-d</d></cmp-d></cmp-b><cmp-c><c>cmp-c</c></cmp-c></cmp-a>');
+               async.done();
+             });
+       }));
+
+    it('should create nested components in the right order',
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         tcb.overrideView(
+                MainComp,
+                new ViewMetadata(
+                    {template: `<cmp-a1></cmp-a1><cmp-a2></cmp-a2>`, directives: [CmpA1, CmpA2]}))
+             .createAsync(MainComp)
+             .then((main) => {
+               main.detectChanges();
+               expect(DOM.getInnerHTML(main.debugElement.nativeElement))
+                   .toEqual(
+                       '<cmp-a1>a1<cmp-b11>b11</cmp-b11><cmp-b12>b12</cmp-b12></cmp-a1><cmp-a2>a2<cmp-b21>b21</cmp-b21><cmp-b22>b22</cmp-b22></cmp-a2>');
+               async.done();
+             });
+       }));
+
   });
 }
 
@@ -599,4 +634,66 @@ class Tab {
 })
 class Tree {
   depth = 0;
+}
+
+
+@Component({selector: 'cmp-d'})
+@View({template: `<d>{{tagName}}</d>`})
+class CmpD {
+  tagName: string;
+  constructor(elementRef: ElementRef) {
+    this.tagName = DOM.tagName(elementRef.nativeElement).toLowerCase();
+  }
+}
+
+
+@Component({selector: 'cmp-c'})
+@View({template: `<c>{{tagName}}</c>`})
+class CmpC {
+  tagName: string;
+  constructor(elementRef: ElementRef) {
+    this.tagName = DOM.tagName(elementRef.nativeElement).toLowerCase();
+  }
+}
+
+
+@Component({selector: 'cmp-b'})
+@View({template: `<ng-content></ng-content><cmp-d></cmp-d>`, directives: [CmpD]})
+class CmpB {
+}
+
+
+@Component({selector: 'cmp-a'})
+@View({template: `<ng-content></ng-content><cmp-c></cmp-c>`, directives: [CmpC]})
+class CmpA {
+}
+
+@Component({selector: 'cmp-b11'})
+@View({template: `{{'b11'}}`, directives: []})
+class CmpB11 {
+}
+
+@Component({selector: 'cmp-b12'})
+@View({template: `{{'b12'}}`, directives: []})
+class CmpB12 {
+}
+
+@Component({selector: 'cmp-b21'})
+@View({template: `{{'b21'}}`, directives: []})
+class CmpB21 {
+}
+
+@Component({selector: 'cmp-b22'})
+@View({template: `{{'b22'}}`, directives: []})
+class CmpB22 {
+}
+
+@Component({selector: 'cmp-a1'})
+@View({template: `{{'a1'}}<cmp-b11></cmp-b11><cmp-b12></cmp-b12>`, directives: [CmpB11, CmpB12]})
+class CmpA1 {
+}
+
+@Component({selector: 'cmp-a2'})
+@View({template: `{{'a2'}}<cmp-b21></cmp-b21><cmp-b22></cmp-b22>`, directives: [CmpB21, CmpB22]})
+class CmpA2 {
 }

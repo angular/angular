@@ -163,7 +163,7 @@ class RenderTemplateCmdSerializer implements RenderCommandVisitor {
     };
   }
   visitNgContent(cmd: RenderNgContentCmd, context: any): any {
-    return {'deserializerIndex': 1, 'ngContentIndex': cmd.ngContentIndex};
+    return {'deserializerIndex': 1, 'index': cmd.index, 'ngContentIndex': cmd.ngContentIndex};
   }
   visitBeginElement(cmd: RenderBeginElementCmd, context: any): any {
     return {
@@ -209,7 +209,7 @@ var RENDER_TEMPLATE_CMD_SERIALIZER = new RenderTemplateCmdSerializer();
 var RENDER_TEMPLATE_CMD_DESERIALIZERS = [
   (data: {[key: string]: any}) =>
       new WebWorkerTextCmd(data['isBound'], data['ngContentIndex'], data['value']),
-  (data: {[key: string]: any}) => new WebWorkerNgContentCmd(data['ngContentIndex']),
+  (data: {[key: string]: any}) => new WebWorkerNgContentCmd(data['index'], data['ngContentIndex']),
   (data: {[key: string]: any}) =>
       new WebWorkerBeginElementCmd(data['isBound'], data['ngContentIndex'], data['name'],
                                    data['attrNameAndValues'], data['eventTargetAndNames']),

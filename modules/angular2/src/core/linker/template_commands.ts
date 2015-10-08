@@ -72,14 +72,14 @@ export function text(value: string, isBound: boolean, ngContentIndex: number): T
 
 export class NgContentCmd implements TemplateCmd, RenderNgContentCmd {
   isBound: boolean = false;
-  constructor(public ngContentIndex: number) {}
+  constructor(public index: number, public ngContentIndex: number) {}
   visit(visitor: RenderCommandVisitor, context: any): any {
     return visitor.visitNgContent(this, context);
   }
 }
 
-export function ngContent(ngContentIndex: number): NgContentCmd {
-  return new NgContentCmd(ngContentIndex);
+export function ngContent(index: number, ngContentIndex: number): NgContentCmd {
+  return new NgContentCmd(index, ngContentIndex);
 }
 
 export interface IBeginElementCmd extends TemplateCmd, RenderBeginElementCmd {

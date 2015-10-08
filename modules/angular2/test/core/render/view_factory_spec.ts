@@ -49,8 +49,8 @@ function endComponent() {
   return appCmds.endComponent();
 }
 
-function ngContent(ngContentIndex: number) {
-  return appCmds.ngContent(ngContentIndex);
+function ngContent(index: number, ngContentIndex: number) {
+  return appCmds.ngContent(index, ngContentIndex);
 }
 
 export function main() {
@@ -369,6 +369,50 @@ export function main() {
            expect(mapAttrs(view.boundElements, 'id')).toEqual(['1.1', '1.2', '2.1', '3.1']);
          });
 
+      it('should process nested components in depth first order', () => {
+        componentTemplates.set(0, [
+          beginComponent('b11-comp', ['id', '2.1'], [], false, null, 2),
+          endComponent(),
+          beginComponent('b12-comp', ['id', '2.2'], [], false, null, 3),
+          endComponent(),
+        ]);
+        componentTemplates.set(1, [
+          beginComponent('b21-comp', ['id', '3.1'], [], false, null, 4),
+          endComponent(),
+          beginComponent('b22-comp', ['id', '3.2'], [], false, null, 5),
+          endComponent(),
+        ]);
+        componentTemplates.set(2, [
+          beginElement('b11', ['id', '4.11'], [], true, null),
+          endElement(),
+        ]);
+        componentTemplates.set(3, [
+          beginElement('b12', ['id', '4.12'], [], true, null),
+          endElement(),
+        ]);
+        componentTemplates.set(4, [
+          beginElement('b21', ['id', '4.21'], [], true, null),
+          endElement(),
+        ]);
+        componentTemplates.set(5, [
+          beginElement('b22', ['id', '4.22'], [], true, null),
+          endElement(),
+        ]);
+
+        var view = createRenderView(
+            [
+              beginComponent('a1-comp', ['id', '1.1'], [], false, null, 0),
+              endComponent(),
+              beginComponent('a2-comp', ['id', '1.2'], [], false, null, 1),
+              endComponent(),
+            ],
+            null, nodeFactory);
+
+        expect(mapAttrs(view.boundElements, 'id'))
+            .toEqual(['1.1', '1.2', '2.1', '2.2', '4.11', '4.12', '3.1', '3.2', '4.21', '4.22']);
+      });
+
+
       it('should store bound text nodes after the bound text nodes of the main template', () => {
         componentTemplates.set(0, [
           text('2.1', true, null),
@@ -442,9 +486,9 @@ export function main() {
       it('should project commands based on their ngContentIndex', () => {
         componentTemplates.set(0, [
           text('(', false, null),
-          ngContent(null),
+          ngContent(0, null),
           text(',', false, null),
-          ngContent(null),
+          ngContent(1, null),
           text(')', false, null)
         ]);
         var view = createRenderView(
@@ -460,9 +504,9 @@ export function main() {
 
       it('should reproject nodes over multiple ng-content commands', () => {
         componentTemplates.set(
-            0, [beginComponent('b-comp', [], [], false, null, 1), ngContent(0), endComponent()]);
-        componentTemplates.set(1,
-                               [text('(', false, null), ngContent(null), text(')', false, null)]);
+            0, [beginComponent('b-comp', [], [], false, null, 1), ngContent(0, 0), endComponent()]);
+        componentTemplates.set(
+            1, [text('(', false, null), ngContent(0, null), text(')', false, null)]);
         var view = createRenderView(
             [
               beginComponent('a-comp', [], [], false, null, 0),

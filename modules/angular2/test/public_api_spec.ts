@@ -1106,6 +1106,8 @@ var NG_API = [
   '{RenderEmbeddedTemplateCmd}.isMerged',
   '{RenderEmbeddedTemplateCmd}.isMerged=',
   '{RenderNgContentCmd}',
+  '{RenderNgContentCmd}.index',
+  '{RenderNgContentCmd}.index=',
   '{RenderNgContentCmd}.ngContentIndex',
   '{RenderNgContentCmd}.ngContentIndex=',
   '{RenderTemplateCmd}',

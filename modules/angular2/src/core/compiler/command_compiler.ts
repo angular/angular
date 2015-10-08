@@ -74,7 +74,7 @@ export class CommandCompiler {
 
 interface CommandFactory<R> {
   createText(value: string, isBound: boolean, ngContentIndex: number): R;
-  createNgContent(ngContentIndex: number): R;
+  createNgContent(index: number, ngContentIndex: number): R;
   createBeginElement(name: string, attrNameAndValues: string[], eventTargetAndNames: string[],
                      variableNameAndValues: string[], directives: CompileDirectiveMetadata[],
                      isBound: boolean, ngContentIndex: number): R;
@@ -114,7 +114,9 @@ class RuntimeCommandFactory implements CommandFactory<TemplateCmd> {
   createText(value: string, isBound: boolean, ngContentIndex: number): TemplateCmd {
     return text(value, isBound, ngContentIndex);
   }
-  createNgContent(ngContentIndex: number): TemplateCmd { return ngContent(ngContentIndex); }
+  createNgContent(index: number, ngContentIndex: number): TemplateCmd {
+    return ngContent(index, ngContentIndex);
+  }
   createBeginElement(name: string, attrNameAndValues: string[], eventTargetAndNames: string[],
                      variableNameAndValues: string[], directives: CompileDirectiveMetadata[],
                      isBound: boolean, ngContentIndex: number): TemplateCmd {
@@ -169,8 +171,8 @@ class CodegenCommandFactory implements CommandFactory<string> {
   createText(value: string, isBound: boolean, ngContentIndex: number): string {
     return `${TEMPLATE_COMMANDS_MODULE_REF}text(${escapeSingleQuoteString(value)}, ${isBound}, ${ngContentIndex})`;
   }
-  createNgContent(ngContentIndex: number): string {
-    return `${TEMPLATE_COMMANDS_MODULE_REF}ngContent(${ngContentIndex})`;
+  createNgContent(index: number, ngContentIndex: number): string {
+    return `${TEMPLATE_COMMANDS_MODULE_REF}ngContent(${index}, ${ngContentIndex})`;
   }
   createBeginElement(name: string, attrNameAndValues: string[], eventTargetAndNames: string[],
                      variableNameAndValues: string[], directives: CompileDirectiveMetadata[],
@@ -221,7 +223,7 @@ class CommandBuilderVisitor<R> implements TemplateAstVisitor {
 
   visitNgContent(ast: NgContentAst, context: any): any {
     this.transitiveNgContentCount++;
-    this.result.push(this.commandFactory.createNgContent(ast.ngContentIndex));
+    this.result.push(this.commandFactory.createNgContent(ast.index, ast.ngContentIndex));
     return null;
   }
   visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
