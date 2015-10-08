@@ -59,11 +59,14 @@ DtsSerializer.prototype = {
   },
 
   interfaceOrClass: function(buffer, ast, isInterface) {
-    if (ast.abstract) {
-      buffer.push('abstract ');
+    if (isInterface) {
+      buffer.push('interface ');
+    } else {
+      if (ast.abstract) {
+        buffer.push('abstract ');
+      }
+      buffer.push('class ');
     }
-
-    buffer.push(isInterface ? 'interface ' : 'class ');
     buffer.push(ast.name);
     buffer.push(ast.typeParams);
     buffer.push(ast.heritage);

@@ -11,7 +11,7 @@ import {
 import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
-import {ComponentRef_} from "../../../angular2/src/core/linker/dynamic_component_loader";
+import {ComponentRef_} from "angular2/src/core/linker/dynamic_component_loader";
 
 var testList = null;
 

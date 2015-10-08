@@ -2,7 +2,6 @@ import {isPresent, isString, StringWrapper, isBlank} from 'angular2/src/core/fac
 import {DoCheck, OnDestroy} from 'angular2/lifecycle_hooks';
 import {Directive} from 'angular2/src/core/metadata';
 import {ElementRef} from 'angular2/src/core/linker';
-import {ElementRef_} from '../linker/element_ref';
 import {
   IterableDiffer,
   IterableDiffers,

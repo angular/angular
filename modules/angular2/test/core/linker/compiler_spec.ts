@@ -37,7 +37,9 @@ export function main() {
       protoViewFactorySpy = new SpyProtoViewFactory();
       someProtoView = new AppProtoView(null, null, null, null, null, null);
       protoViewFactorySpy.spy('createHost').andReturn(someProtoView);
-      return [bind(ProtoViewFactory).toValue(protoViewFactorySpy), bind(Compiler).toClass(Compiler_)];
+      var bindings =
+          [bind(ProtoViewFactory).toValue(protoViewFactorySpy), bind(Compiler).toClass(Compiler_)];
+      return bindings;
     });
 
     beforeEach(inject([Compiler], (_compiler) => {

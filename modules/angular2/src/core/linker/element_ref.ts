@@ -66,5 +66,6 @@ export class ElementRef_ extends ElementRef {
   }
 
   get renderView(): RenderViewRef { return (<ViewRef_>this.parentView).render; }
+  set renderView(ref: RenderViewRef) { unimplemented(); }
   get nativeElement(): any { return this._renderer.getNativeElementSync(this); }
 }

@@ -26,7 +26,7 @@ import {ListWrapper} from 'angular2/src/core/facade/collection';
 
 import {Inject} from 'angular2/src/core/di/decorators';
 import {reflector} from 'angular2/src/core/reflection/reflection';
-import {ComponentRef_} from "../../../angular2/src/core/linker/dynamic_component_loader";
+import {ComponentRef_} from "angular2/src/core/linker/dynamic_component_loader";
 
 export const BENCHMARK_TYPE = 'LargetableComponent.benchmarkType';
 export const LARGETABLE_ROWS = 'LargetableComponent.rows';
