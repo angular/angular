@@ -3,7 +3,7 @@ import {Component, View, ServiceMessageBrokerFactory, PRIMITIVE} from "angular2/
 
 const ECHO_CHANNEL = "ECHO";
 
-@Component({selector: 'app', viewBindings: [ServiceMessageBrokerFactory]})
+@Component({selector: 'app'})
 @View({template: "<h1>WebWorker MessageBroker Test</h1>"})
 export class App {
   constructor(private _serviceBrokerFactory: ServiceMessageBrokerFactory) {

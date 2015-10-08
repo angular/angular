@@ -7,7 +7,7 @@
 import {bind, Binding} from 'angular2/core';
 import {Http, Jsonp} from './src/http/http';
 import {XHRBackend, XHRConnection} from './src/http/backends/xhr_backend';
-import {JSONPBackend, JSONPConnection} from './src/http/backends/jsonp_backend';
+import {JSONPBackend, JSONPBackend_, JSONPConnection} from './src/http/backends/jsonp_backend';
 import {BrowserXhr} from './src/http/backends/browser_xhr';
 import {BrowserJsonp} from './src/http/backends/browser_jsonp';
 import {BaseRequestOptions, RequestOptions} from './src/http/base_request_options';
@@ -278,5 +278,5 @@ export const JSONP_BINDINGS: any[] = [
   BrowserJsonp,
   bind(RequestOptions).toClass(BaseRequestOptions),
   bind(ResponseOptions).toClass(BaseResponseOptions),
-  JSONPBackend
+  bind(JSONPBackend).toClass(JSONPBackend_)
 ];

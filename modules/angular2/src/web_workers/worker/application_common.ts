@@ -16,7 +16,14 @@ import {WebWorkerXHRImpl} from 'angular2/src/web_workers/worker/xhr_impl';
 import {AppRootUrl} from 'angular2/src/core/compiler/app_root_url';
 import {WebWorkerRenderer} from './renderer';
 import {Renderer} from 'angular2/src/core/render/api';
-import {ClientMessageBrokerFactory} from 'angular2/src/web_workers/shared/client_message_broker';
+import {
+  ClientMessageBrokerFactory,
+  ClientMessageBrokerFactory_
+} from 'angular2/src/web_workers/shared/client_message_broker';
+import {
+  ServiceMessageBrokerFactory,
+  ServiceMessageBrokerFactory_
+} from 'angular2/src/web_workers/shared/service_message_broker';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {
   platformCommon,
@@ -90,7 +97,8 @@ function webWorkerBindings(appComponentType, bus: MessageBus, initData: {[key: s
     compilerBindings(),
     Serializer,
     bind(MessageBus).toValue(bus),
-    ClientMessageBrokerFactory,
+    bind(ClientMessageBrokerFactory).toClass(ClientMessageBrokerFactory_),
+    bind(ServiceMessageBrokerFactory).toClass(ServiceMessageBrokerFactory_),
     WebWorkerRenderer,
     bind(Renderer).toAlias(WebWorkerRenderer),
     bind(ON_WEB_WORKER).toValue(true),
