@@ -1,4 +1,3 @@
-import {MapWrapper} from 'angular2/src/core/facade/collection';
 import {stringify, CONST, Type, isBlank} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {TypeLiteral} from './type_literal';
@@ -70,7 +69,7 @@ export class KeyRegistry {
     return newKey;
   }
 
-  get numberOfKeys(): number { return MapWrapper.size(this._allKeys); }
+  get numberOfKeys(): number { return this._allKeys.size; }
 }
 
 var _globalKeyRegistry = new KeyRegistry();

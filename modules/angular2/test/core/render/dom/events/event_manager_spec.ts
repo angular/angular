@@ -102,7 +102,7 @@ class FakeEventManagerPlugin extends EventManagerPlugin {
 
   addEventListener(element, eventName: string, handler: Function) {
     this._eventHandler.set(eventName, handler);
-    return () => { MapWrapper.delete(this._eventHandler, eventName); };
+    return () => { this._eventHandler.delete(eventName); };
   }
 }
 

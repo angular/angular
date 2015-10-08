@@ -608,12 +608,12 @@ class _DuplicateMap {
     var recordList: _DuplicateItemRecordList = this.map.get(key);
     // Remove the list of duplicates when it gets empty
     if (recordList.remove(record)) {
-      MapWrapper.delete(this.map, key);
+      this.map.delete(key);
     }
     return record;
   }
 
-  get isEmpty(): boolean { return MapWrapper.size(this.map) === 0; }
+  get isEmpty(): boolean { return this.map.size === 0; }
 
   clear() { this.map.clear(); }
 

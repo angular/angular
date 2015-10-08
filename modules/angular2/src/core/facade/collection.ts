@@ -91,10 +91,6 @@ export class MapWrapper {
     return r;
   }
   static createFromPairs(pairs: any[]): Map<any, any> { return createMapFromPairs(pairs); }
-  static forEach<K, V>(m: Map<K, V>, fn: /*(V, K) => void*/ Function) { m.forEach(<any>fn); }
-  static get<K, V>(map: Map<K, V>, key: K): V { return map.get(key); }
-  static size(m: Map<any, any>): number { return m.size; }
-  static delete<K>(m: Map<K, any>, k: K) { m.delete(k); }
   static clearValues(m: Map<any, any>) { _clearValues(m); }
   static iterable<T>(m: T): T { return m; }
   static keys<K>(m: Map<K, any>): K[] { return _arrayFromMap(m, false); }

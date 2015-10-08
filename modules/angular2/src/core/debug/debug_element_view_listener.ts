@@ -62,8 +62,8 @@ export class DebugElementViewListener implements AppViewListener {
 
   viewDestroyed(view: AppView) {
     var viewId = _allIdsByView.get(view);
-    MapWrapper.delete(_allIdsByView, view);
-    MapWrapper.delete(_allViewsById, viewId);
+    _allIdsByView.delete(view);
+    _allViewsById.delete(viewId);
   }
 }
 

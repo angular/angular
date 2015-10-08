@@ -328,9 +328,8 @@ export class Router {
     }
 
     var promises = [];
-    MapWrapper.forEach(this._auxRouters, (router, name) => {
-      promises.push(router.commit(instruction.auxInstruction[name]));
-    });
+    this._auxRouters.forEach(
+        (router, name) => { promises.push(router.commit(instruction.auxInstruction[name])); });
 
     return next.then((_) => PromiseWrapper.all(promises));
   }

@@ -1,4 +1,4 @@
-import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {stringify, looseIdentical, isJsObject, CONST, isBlank} from 'angular2/src/core/facade/lang';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {ChangeDetectorRef} from '../change_detector_ref';
@@ -197,7 +197,7 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
     for (var rec: KVChangeRecord = this._removalsHead; rec !== null; rec = rec._nextRemoved) {
       rec.previousValue = rec.currentValue;
       rec.currentValue = null;
-      MapWrapper.delete(this._records, rec.key);
+      this._records.delete(rec.key);
     }
   }
 
@@ -317,7 +317,7 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
 
   _forEach(obj, fn: Function) {
     if (obj instanceof Map) {
-      MapWrapper.forEach(obj, fn);
+      (<Map<any, any>>obj).forEach(<any>fn);
     } else {
       StringMapWrapper.forEach(obj, fn);
     }

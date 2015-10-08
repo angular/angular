@@ -105,7 +105,7 @@ export function stringifyElement(el): string {
     // Attributes in an ordered way
     var attributeMap = DOM.attributeMap(el);
     var keys = [];
-    MapWrapper.forEach(attributeMap, (v, k) => { keys.push(k); });
+    attributeMap.forEach((v, k) => keys.push(k));
     ListWrapper.sort(keys);
     for (let i = 0; i < keys.length; i++) {
       var key = keys[i];

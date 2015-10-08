@@ -53,7 +53,7 @@ function _convertLocalsToVariableBindings(locals: Locals): any[] {
   var variableBindings = [];
   var loc = locals;
   while (isPresent(loc) && isPresent(loc.current)) {
-    MapWrapper.forEach(loc.current, (v, k) => variableBindings.push(k));
+    loc.current.forEach((v, k) => variableBindings.push(k));
     loc = loc.parent;
   }
   return variableBindings;
