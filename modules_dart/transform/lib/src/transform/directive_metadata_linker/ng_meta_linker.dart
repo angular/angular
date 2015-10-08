@@ -27,14 +27,16 @@ import 'ng_deps_linker.dart';
 /// Returns an empty [NgMeta] if there are no `Directive`-annotated classes or
 /// `DirectiveAlias` annotated constants in `entryPoint`.
 Future<NgMeta> linkDirectiveMetadata(
-    AssetReader reader, AssetId entryPoint) async {
-  var ngMeta = await _readNgMeta(reader, entryPoint);
+    AssetReader reader, AssetId assetId) async {
+  var ngMeta = await _readNgMeta(reader, assetId);
   if (ngMeta == null || ngMeta.isEmpty) return null;
 
   await Future.wait([
-    linkNgDeps(ngMeta.ngDeps, reader, entryPoint, _urlResolver),
-    _linkDirectiveMetadataRecursive(
-        ngMeta, reader, entryPoint, new Set<String>())
+    linkNgDeps(ngMeta.ngDeps, reader, assetId, _urlResolver),
+    logElapsedAsync(() async {
+      await _linkRecursive(ngMeta, reader, assetId, new Set<String>());
+      return ngMeta;
+    }, operationName: 'linkDirectiveMetadata', assetId: assetId)
   ]);
   return ngMeta;
 }
@@ -50,8 +52,8 @@ Future<NgMeta> _readNgMeta(AssetReader reader, AssetId ngMetaAssetId) async {
 
 final _urlResolver = const TransformerUrlResolver();
 
-Future<NgMeta> _linkDirectiveMetadataRecursive(NgMeta ngMeta,
-    AssetReader reader, AssetId assetId, Set<String> seen) async {
+Future _linkRecursive(NgMeta ngMeta, AssetReader reader, AssetId assetId,
+    Set<String> seen) async {
   if (ngMeta == null ||
       ngMeta.ngDeps == null ||
       ngMeta.ngDeps.exports == null) {
@@ -59,30 +61,23 @@ Future<NgMeta> _linkDirectiveMetadataRecursive(NgMeta ngMeta,
   }
   var assetUri = toAssetUri(assetId);
 
-  return Future
-      .wait(ngMeta.ngDeps.exports
-          .where((export) => !isDartCoreUri(export.uri))
-          .map((export) =>
-              _urlResolver.resolve(assetUri, toMetaExtension(export.uri)))
-          .where((uri) => !seen.contains(uri))
-          .map((uri) async {
+  return Future.wait(ngMeta.ngDeps.exports
+      .where((export) => !isDartCoreUri(export.uri))
+      .map((export) =>
+          _urlResolver.resolve(assetUri, toMetaExtension(export.uri)))
+      .where((uri) => !seen.contains(uri))
+      .map((uri) async {
     seen.add(uri);
     try {
       final exportAssetId = fromUri(uri);
-      if (await reader.hasInput(exportAssetId)) {
-        var exportNgMetaJson = await reader.readAsString(exportAssetId);
-        if (exportNgMetaJson == null) return null;
-        var exportNgMeta = new NgMeta.fromJson(JSON.decode(exportNgMetaJson));
-        await _linkDirectiveMetadataRecursive(
-            exportNgMeta, reader, exportAssetId, seen);
-        if (exportNgMeta != null) {
-          ngMeta.addAll(exportNgMeta);
-        }
+      final exportNgMeta = await _readNgMeta(reader, exportAssetId);
+      if (exportNgMeta != null) {
+        await _linkRecursive(exportNgMeta, reader, exportAssetId, seen);
+        ngMeta.addAll(exportNgMeta);
       }
     } catch (err, st) {
       // Log and continue.
       logger.warning('Failed to fetch $uri. Message: $err.\n$st');
     }
-  }))
-      .then((_) => ngMeta);
+  }));
 }

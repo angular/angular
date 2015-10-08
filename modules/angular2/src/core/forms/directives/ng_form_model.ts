@@ -141,7 +141,7 @@ export class NgFormModel extends ControlContainer implements Form,
   }
 
   _updateDomValue() {
-    ListWrapper.forEach(this.directives, dir => {
+    this.directives.forEach(dir => {
       var ctrl: any = this.form.find(dir.path);
       dir.valueAccessor.writeValue(ctrl.value);
     });

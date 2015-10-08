@@ -28,8 +28,7 @@ export class MockXHR extends XHR {
     }
 
     do {
-      var request = ListWrapper.removeAt(this._requests, 0);
-      this._processRequest(request);
+      this._processRequest(this._requests.shift());
     } while (this._requests.length > 0);
 
     this.verifyNoOustandingExpectations();

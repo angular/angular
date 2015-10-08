@@ -6,6 +6,7 @@ import 'package:code_transformers/tests.dart';
 import 'package:dart_style/dart_style.dart';
 
 import '../common/read_file.dart';
+import 'deferred_files/expected/output.dart' as deferredOuts;
 
 main() {
   allTests();
@@ -14,6 +15,21 @@ main() {
 var formatter = new DartFormatter();
 var transform = new AngularTransformerGroup(
     new TransformerOptions(['web/index.dart'], formatCode: true));
+
+// Each test has its own directory for inputs & an `expected` directory for
+// expected outputs.
+//
+// In addition to these declared inputs, we inject a set of common inputs for
+// every test.
+const commonInputs = const {
+  'angular2|lib/src/core/metadata.dart': '../../../lib/src/core/metadata.dart',
+  'angular2|lib/src/core/application.dart': '../common/application.dart',
+  'angular2|lib/src/core/reflection/reflection_capabilities.dart':
+      '../common/reflection_capabilities.dart',
+  'angular2|lib/core.dart': '../../../lib/core.dart',
+  'angular2|lib/src/core/di/decorators.dart':
+      '../../../lib/src/core/di/decorators.dart',
+};
 
 class IntegrationTestConfig {
   final String name;
@@ -31,24 +47,6 @@ class IntegrationTestConfig {
 
 void allTests() {
   Html5LibDomAdapter.makeCurrent();
-
-  /*
-   * Each test has its own directory for inputs & an `expected` directory for
-   * expected outputs.
-   *
-   * In addition to these declared inputs, we inject a set of common inputs for
-   * every test.
-   */
-  var commonInputs = {
-    'angular2|lib/src/core/metadata.dart':
-        '../../../lib/src/core/metadata.dart',
-    'angular2|lib/src/core/application.dart': '../common/application.dart',
-    'angular2|lib/src/core/reflection/reflection_capabilities.dart':
-        '../common/reflection_capabilities.dart',
-    'angular2|lib/core.dart': '../../../lib/core.dart',
-    'angular2|lib/src/core/di/decorators.dart':
-        '../../../lib/src/core/di/decorators.dart',
-  };
 
   var tests = [
     new IntegrationTestConfig(
@@ -162,10 +160,33 @@ void allTests() {
           config.assetPathToInputPath,
           config.assetPathToExpectedOutputPath,
           []);
-//,
-//          StringFormatter.noNewlinesOrSurroundingWhitespace);
     }
   }
+
+  _testDeferredRewriter();
+}
+
+void _testDeferredRewriter() {
+  var inputs = {
+    'a|web/bar.dart': 'deferred_files/bar.dart',
+    'a|web/index.dart': 'deferred_files/index.dart'
+  };
+  inputs.addAll(commonInputs);
+  inputs.keys.forEach((k) => inputs[k] = _readFile(inputs[k]));
+  var outputs = {
+    'a|web/bar.ng_deps.dart':
+        _readFile('deferred_files/expected/bar.ng_deps.dart'),
+    'a|web/bar.dart': _readFile('deferred_files/expected/bar.dart'),
+    'a|web/index.dart': deferredOuts.indexContents
+  };
+  testPhases(
+      'should handle deferred imports in input files.',
+      [
+        [transform]
+      ],
+      inputs,
+      outputs,
+      []);
 }
 
 /// Smooths over differences in CWD between IDEs and running tests in Travis.

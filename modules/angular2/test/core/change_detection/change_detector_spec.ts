@@ -22,7 +22,7 @@ import {
   normalizeBool
 } from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
-import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {
   ChangeDispatcher,
@@ -67,7 +67,7 @@ const _DEFAULT_CONTEXT = CONST_EXPR(new Object());
  * can be found in the generated/change_detector_classes library.
  */
 export function main() {
-  ListWrapper.forEach(['dynamic', 'JIT', 'Pregen'], (cdType) => {
+  ['dynamic', 'JIT', 'Pregen'].forEach(cdType => {
     if (cdType == "JIT" && IS_DART) return;
     if (cdType == "Pregen" && !IS_DART) return;
 

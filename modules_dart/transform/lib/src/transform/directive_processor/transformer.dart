@@ -45,7 +45,7 @@ class DirectiveProcessor extends Transformer implements DeclaringTransformer {
       var primaryId = transform.primaryInput.id;
       var reader = new AssetReader.fromTransform(transform);
       var ngMeta =
-          await createNgDeps(reader, primaryId, options.annotationMatcher);
+          await createNgMeta(reader, primaryId, options.annotationMatcher);
       if (ngMeta == null || ngMeta.isEmpty) {
         return;
       }

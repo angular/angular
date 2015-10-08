@@ -1,5 +1,4 @@
 import {EventEmitter} from 'angular2/src/core/facade/async';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
 
 export class MockEventEmitter extends EventEmitter {
   private _nextFns: Function[] = [];
@@ -11,9 +10,7 @@ export class MockEventEmitter extends EventEmitter {
     return new MockDisposable();
   }
 
-  next(value: any) {
-    ListWrapper.forEach(this._nextFns, (fn) => { fn(value); });
-  }
+  next(value: any) { this._nextFns.forEach(fn => fn(value)); }
 }
 
 class MockDisposable {

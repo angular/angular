@@ -5,6 +5,7 @@ var bind = benchpress.bind;
 var Options = benchpress.Options;
 
 export function runClickBenchmark(config) {
+  browser.ignoreSynchronization = !config.waitForAngular2;
   var buttons = config.buttons.map(function(selector) { return $(selector); });
   config.work = function() { buttons.forEach(function(button) { button.click(); }); };
   return runBenchmark(config);
@@ -24,9 +25,7 @@ export function runBenchmark(config) {
           });
         }
         var url = encodeURI(config.url + '?' + urlParams.join('&'));
-        var getter = config.waitForAngular2 !== false ? browser.get(url) :
-                                                        browser.driver.get(browser.baseUrl + url);
-        return getter.then(function() {
+        return browser.get(url).then(function() {
           return global['benchpressRunner'].sample({
             id: config.id,
             execute: config.work,

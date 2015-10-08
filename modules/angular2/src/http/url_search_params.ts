@@ -10,7 +10,7 @@ function paramParser(rawParams: string = ''): Map<string, string[]> {
   var map = new Map<string, string[]>();
   if (rawParams.length > 0) {
     var params: string[] = StringWrapper.split(rawParams, new RegExp('&'));
-    ListWrapper.forEach(params, (param: string) => {
+    params.forEach((param: string) => {
       var split: string[] = StringWrapper.split(param, new RegExp('='));
       var key = split[0];
       var val = split[1];
@@ -127,9 +127,8 @@ export class URLSearchParams {
 
   toString(): string {
     var paramsList = [];
-    MapWrapper.forEach(this.paramsMap, (values, k) => {
-      ListWrapper.forEach(values, v => { paramsList.push(k + '=' + v); });
-    });
+    MapWrapper.forEach(this.paramsMap,
+                       (values, k) => { values.forEach(v => paramsList.push(k + '=' + v)); });
     return paramsList.join('&');
   }
 

@@ -427,7 +427,7 @@ export class Router {
     }
 
     if (rest[rest.length - 1] == '') {
-      ListWrapper.removeLast(rest);
+      rest.pop();
     }
 
     if (rest.length < 1) {

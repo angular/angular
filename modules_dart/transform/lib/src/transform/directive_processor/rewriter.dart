@@ -17,7 +17,7 @@ import 'package:angular2/src/core/compiler/template_compiler.dart';
 import 'inliner.dart';
 
 /// Generates an instance of [NgMeta] describing the file at `assetId`.
-Future<NgMeta> createNgDeps(AssetReader reader, AssetId assetId,
+Future<NgMeta> createNgMeta(AssetReader reader, AssetId assetId,
     AnnotationMatcher annotationMatcher) async {
   // TODO(kegluneq): Shortcut if we can determine that there are no
   // [Directive]s present, taking into account `export`s.
@@ -26,18 +26,22 @@ Future<NgMeta> createNgDeps(AssetReader reader, AssetId assetId,
   var parsedCode =
       parseCompilationUnit(codeWithParts, name: '${assetId.path} and parts');
 
-  var ngDepsVisitor = new NgDepsVisitor(assetId, annotationMatcher);
-  parsedCode.accept(ngDepsVisitor);
+  final ngDepsVisitor = await logElapsedAsync(() async {
+    var ngDepsVisitor = new NgDepsVisitor(assetId, annotationMatcher);
+    parsedCode.accept(ngDepsVisitor);
+    return ngDepsVisitor;
+  }, operationName: 'createNgDeps', assetId: assetId);
 
-  var ngMeta = new NgMeta(ngDeps: ngDepsVisitor.model);
+  return logElapsedAsync(() async {
+    var ngMeta = new NgMeta(ngDeps: ngDepsVisitor.model);
 
-  var templateCompiler = createTemplateCompiler(reader);
-  var ngMetaVisitor = new _NgMetaVisitor(
-      ngMeta, assetId, annotationMatcher, _interfaceMatcher, templateCompiler);
-  parsedCode.accept(ngMetaVisitor);
-  await ngMetaVisitor.whenDone();
-
-  return ngMeta;
+    var templateCompiler = createTemplateCompiler(reader);
+    var ngMetaVisitor = new _NgMetaVisitor(ngMeta, assetId, annotationMatcher,
+        _interfaceMatcher, templateCompiler);
+    parsedCode.accept(ngMetaVisitor);
+    await ngMetaVisitor.whenDone();
+    return ngMeta;
+  }, operationName: 'createNgMeta', assetId: assetId);
 }
 
 // TODO(kegluneq): Allow the caller to provide an InterfaceMatcher.

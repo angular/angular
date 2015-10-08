@@ -158,7 +158,7 @@ export class NgForm extends ControlContainer implements Form {
   }
 
   _findContainer(path: string[]): ControlGroup {
-    ListWrapper.removeLast(path);
+    path.pop();
     return ListWrapper.isEmpty(path) ? this.form : <ControlGroup>this.form.find(path);
   }
 

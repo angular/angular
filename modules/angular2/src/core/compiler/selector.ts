@@ -139,8 +139,7 @@ export class CssSelector {
         res += ']';
       }
     }
-    ListWrapper.forEach(this.notSelectors,
-                        (notSelector) => { res += ":not(" + notSelector.toString() + ")"; });
+    this.notSelectors.forEach(notSelector => res += `:not(${notSelector})`);
     return res;
   }
 }

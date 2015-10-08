@@ -1,5 +1,5 @@
 import {bind, Binding, Injector, OpaqueToken} from 'angular2/src/core/di';
-import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 
 import {Metric} from '../metric';
@@ -42,11 +42,10 @@ export class MultiMetric extends Metric {
   }
 }
 
-function mergeStringMaps(maps): Object {
+function mergeStringMaps(maps: any[]): Object {
   var result = {};
-  ListWrapper.forEach(maps, (map) => {
-    StringMapWrapper.forEach(map, (value, prop) => { result[prop] = value; });
-  });
+  maps.forEach(
+      map => { StringMapWrapper.forEach(map, (value, prop) => { result[prop] = value; }); });
   return result;
 }
 

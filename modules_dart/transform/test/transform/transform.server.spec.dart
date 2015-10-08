@@ -5,6 +5,7 @@ import 'package:unittest/unittest.dart' hide expect;
 import 'package:unittest/vm_config.dart';
 
 import 'common/async_string_writer_tests.dart' as asyncStringWriter;
+import 'common/code/ng_deps_code_tests.dart' as ngDepsCode;
 import 'common/ng_meta_test.dart' as ngMetaTest;
 import 'common/url_resolver_tests.dart' as urlResolver;
 import 'bind_generator/all_tests.dart' as bindGenerator;
@@ -20,6 +21,7 @@ import 'stylesheet_compiler/all_tests.dart' as stylesheetCompiler;
 main() {
   useVMConfiguration();
   describe('AsyncStringWriter', asyncStringWriter.allTests);
+  describe('NgDepsCode', ngDepsCode.allTests);
   describe('NgMeta', ngMetaTest.allTests);
   describe('Bind Generator', bindGenerator.allTests);
   describe('Directive Metadata Linker', directiveMeta.allTests);

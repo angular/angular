@@ -140,15 +140,13 @@ abstract class NgDepsWriterMixin
       ..prefix = REFLECTOR_PREFIX);
 
     // We do not support `partUris`, so skip outputting them.
-    for (var importModel in model.imports) {
-      // Ignore deferred imports here so as to not load the deferred libraries
-      // code in the current library causing much of the code to not be
-      // deferred. Instead `DeferredRewriter` will rewrite the code as to load
-      // `ng_deps` in a deferred way.
-      if (importModel.isDeferred) return;
 
-      writeImportModel(importModel);
-    }
+    // Ignore deferred imports here so as to not load the deferred libraries
+    // code in the current library causing much of the code to not be
+    // deferred. Instead `DeferredRewriter` will rewrite the code as to load
+    // `ng_deps` in a deferred way.
+    model.imports.where((i) => !i.isDeferred).forEach(writeImportModel);
+
     writeExportModel(new ExportModel()..uri = model.sourceFile);
     model.exports.forEach(writeExportModel);
 

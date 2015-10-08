@@ -498,10 +498,10 @@ function _createListOfBindings(flattenedBindings: Map<number, any>): any[] {
   return MapWrapper.values(flattenedBindings);
 }
 
-function _normalizeBindings(bindings: Array<Type | Binding | any[]>,
+function _normalizeBindings(bindings: Array<Type | Binding | BindingBuilder | any[]>,
                             res: Map<number, _NormalizedBinding | _NormalizedBinding[]>):
     Map<number, _NormalizedBinding | _NormalizedBinding[]> {
-  ListWrapper.forEach(bindings, (b) => {
+  bindings.forEach(b => {
     if (b instanceof Type) {
       _normalizeBinding(bind(b).toClass(b), res);
 

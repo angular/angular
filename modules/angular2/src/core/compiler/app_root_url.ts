@@ -12,14 +12,5 @@ import {isBlank} from 'angular2/src/core/facade/lang';
  */
 @Injectable()
 export class AppRootUrl {
-  private _value: string;
-
-  constructor(value: string) { this._value = value; }
-
-  /**
-   * Returns the base URL of the currently running application.
-   */
-  get value() { return this._value; }
-
-  set value(value: string) { this._value = value; }
+  constructor(public value: string) {}
 }

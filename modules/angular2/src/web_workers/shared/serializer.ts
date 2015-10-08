@@ -7,7 +7,7 @@ import {
 } from "angular2/src/core/facade/lang";
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
-import {ListWrapper, Map, StringMapWrapper, MapWrapper} from "angular2/src/core/facade/collection";
+import {Map, StringMapWrapper, MapWrapper} from "angular2/src/core/facade/collection";
 import {
   RenderProtoViewRef,
   RenderViewRef,
@@ -52,9 +52,7 @@ export class Serializer {
       return null;
     }
     if (isArray(obj)) {
-      var serializedObj = [];
-      ListWrapper.forEach(obj, (val) => { serializedObj.push(this.serialize(val, type)); });
-      return serializedObj;
+      return (<any[]>obj).map(v => this.serialize(v, type));
     }
     if (type == PRIMITIVE) {
       return obj;
@@ -80,7 +78,7 @@ export class Serializer {
     }
     if (isArray(map)) {
       var obj: any[] = [];
-      ListWrapper.forEach(map, (val) => { obj.push(this.deserialize(val, type, data)); });
+      (<any[]>map).forEach(val => obj.push(this.deserialize(val, type, data)));
       return obj;
     }
     if (type == PRIMITIVE) {

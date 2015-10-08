@@ -10,6 +10,7 @@ import 'package:angular2/src/core/facade/lang.dart';
 import 'package:angular2/src/core/reflection/reflection.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/code/source_module.dart';
+import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/ng_compiler.dart';
 import 'package:angular2/src/transform/common/ng_deps.dart';
@@ -21,14 +22,14 @@ import 'reflection/processor.dart' as reg;
 import 'reflection/reflection_capabilities.dart';
 import 'compile_data_creator.dart';
 
-/// Reads the `.ng_deps.dart` file represented by `entryPoint` and parses any
+/// Reads the `.ng_deps.dart` file represented by `assetId` and parses any
 /// Angular 2 `View` annotations it declares to generate `getter`s,
 /// `setter`s, and `method`s that would otherwise be reflectively accessed.
 ///
 /// This method assumes a {@link DomAdapter} has been registered.
-Future<Outputs> processTemplates(AssetReader reader, AssetId entryPoint,
+Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
     {bool reflectPropertiesAsAttributes: false}) async {
-  var viewDefResults = await createCompileData(reader, entryPoint);
+  var viewDefResults = await createCompileData(reader, assetId);
   var codegen = null;
   if (viewDefResults.directiveMetadatas.isNotEmpty) {
     var processor = new reg.Processor();
@@ -44,16 +45,18 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId entryPoint,
   var compileData =
       viewDefResults.viewDefinitions.values.toList(growable: false);
   if (compileData.isEmpty) {
-    return new Outputs(entryPoint, ngDeps, codegen, null, null);
+    return new Outputs(assetId, ngDeps, codegen, null, null);
   }
 
   var savedReflectionCapabilities = reflector.reflectionCapabilities;
   reflector.reflectionCapabilities = const NullReflectionCapabilities();
-  var compiledTemplates = templateCompiler.compileTemplatesCodeGen(compileData);
+  final compiledTemplates = await logElapsedAsync(() async {
+    return templateCompiler.compileTemplatesCodeGen(compileData);
+  }, operationName: 'compileTemplatesCodegen', assetId: assetId);
   reflector.reflectionCapabilities = savedReflectionCapabilities;
 
-  return new Outputs(entryPoint, ngDeps, codegen,
-      viewDefResults.viewDefinitions, compiledTemplates);
+  return new Outputs(assetId, ngDeps, codegen, viewDefResults.viewDefinitions,
+      compiledTemplates);
 }
 
 AssetId templatesAssetId(AssetId ngDepsAssetId) =>
@@ -87,7 +90,8 @@ class Outputs {
       Map<RegisteredType,
           NormalizedComponentWithViewDirectives> compileDataMap) {
     var code = ngDeps.code;
-    if (accessors == null && (compileDataMap == null || compileDataMap.isEmpty)) return code;
+    if (accessors == null &&
+        (compileDataMap == null || compileDataMap.isEmpty)) return code;
 
     if (ngDeps.registeredTypes.isEmpty) return code;
     var beginRegistrationsIdx =
@@ -106,7 +110,8 @@ class Outputs {
       buf = new StringBuffer('${code.substring(0, beginRegistrationsIdx)}');
     }
     for (var registeredType in ngDeps.registeredTypes) {
-      if (compileDataMap != null && compileDataMap.containsKey(registeredType)) {
+      if (compileDataMap != null &&
+          compileDataMap.containsKey(registeredType)) {
         // We generated a template for this type, so add the generated
         // `CompiledTemplate` value as the final annotation in the list.
         var annotations = registeredType.annotations as ListLiteral;

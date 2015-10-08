@@ -30,10 +30,11 @@ class AngularTransformerGroup extends TransformerGroup {
       [new DirectiveProcessor(options)]
     ];
     phases.addAll([
-      [new DeferredRewriter(options), new DirectiveMetadataLinker()],
+      [new DirectiveMetadataLinker()],
       [new BindGenerator(options)],
       [new TemplateCompiler(options)],
       [new StylesheetCompiler()],
+      [new DeferredRewriter(options)]
     ]);
     return new AngularTransformerGroup._(phases,
         formatCode: options.formatCode);
