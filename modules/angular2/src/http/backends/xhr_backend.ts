@@ -64,7 +64,7 @@ export class XHRConnection implements Connection {
       };
 
       if (isPresent(req.headers)) {
-        req.headers.forEach((values, name) => { _xhr.setRequestHeader(name, values.join(',')); });
+        req.headers.forEach((values, name) => _xhr.setRequestHeader(name, values.join(',')));
       }
 
       _xhr.addEventListener('load', onLoad);

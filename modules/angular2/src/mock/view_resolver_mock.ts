@@ -80,7 +80,7 @@ export class MockViewResolver extends ViewResolver {
 
     if (isPresent(overrides) && isPresent(directives)) {
       directives = ListWrapper.clone(view.directives);
-      MapWrapper.forEach(overrides, (to, from) => {
+      overrides.forEach((to, from) => {
         var srcIndex = directives.indexOf(from);
         if (srcIndex == -1) {
           throw new BaseException(

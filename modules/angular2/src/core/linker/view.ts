@@ -336,8 +336,8 @@ export class AppProtoView {
     this.variableLocations = variableLocations;
     this.protoLocals = new Map<string, any>();
     if (isPresent(this.templateVariableBindings)) {
-      MapWrapper.forEach(this.templateVariableBindings,
-                         (templateName, _) => { this.protoLocals.set(templateName, null); });
+      this.templateVariableBindings.forEach(
+          (templateName, _) => { this.protoLocals.set(templateName, null); });
     }
     if (isPresent(variableLocations)) {
       // The view's locals needs to have a full set of variable names at construction time
@@ -345,8 +345,7 @@ export class AppProtoView {
       // want
       // to actually create variable bindings for the $implicit bindings, add to the
       // protoLocals manually.
-      MapWrapper.forEach(variableLocations,
-                         (_, templateName) => { this.protoLocals.set(templateName, null); });
+      variableLocations.forEach((_, templateName) => { this.protoLocals.set(templateName, null); });
     }
   }
 

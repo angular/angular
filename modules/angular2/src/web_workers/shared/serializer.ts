@@ -104,7 +104,7 @@ export class Serializer {
     var object = {};
     var serialize = isPresent(type);
 
-    MapWrapper.forEach(map, (value, key) => {
+    map.forEach((value, key) => {
       if (serialize) {
         object[key] = this.serialize(value, type);
       } else {

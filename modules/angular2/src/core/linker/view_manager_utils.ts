@@ -216,7 +216,7 @@ export class AppViewManagerUtils {
   _populateViewLocals(view: viewModule.AppView, elementInjector: eli.ElementInjector,
                       boundElementIdx: number): void {
     if (isPresent(elementInjector.getDirectiveVariableBindings())) {
-      MapWrapper.forEach(elementInjector.getDirectiveVariableBindings(), (directiveIndex, name) => {
+      elementInjector.getDirectiveVariableBindings().forEach((directiveIndex, name) => {
         if (isBlank(directiveIndex)) {
           view.locals.set(name, view.elementRefs[boundElementIdx].nativeElement);
         } else {

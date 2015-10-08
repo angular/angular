@@ -4,6 +4,7 @@ import {
   isListLikeIterable,
   Map,
   MapWrapper,
+  StringMapWrapper,
   ListWrapper,
 } from 'angular2/src/core/facade/collection';
 
@@ -36,23 +37,20 @@ import {
 export class Headers {
   _headersMap: Map<string, string[]>;
   constructor(headers?: Headers | {[key: string]: any}) {
-    if (isBlank(headers)) {
-      this._headersMap = new Map<string, string[]>();
+    if (headers instanceof Headers) {
+      this._headersMap = (<Headers>headers)._headersMap;
       return;
     }
 
-    if (headers instanceof Headers) {
-      this._headersMap = (<Headers>headers)._headersMap;
-    } else /*if (headers instanceof StringMap)*/ {
-      this._headersMap = MapWrapper.createFromStringMap<string[]>(<{[key: string]: any}>headers);
-      MapWrapper.forEach(this._headersMap, (v, k) => {
-        if (!isListLikeIterable(v)) {
-          var list = [];
-          list.push(v);
-          this._headersMap.set(k, list);
-        }
-      });
+    this._headersMap = new Map<string, string[]>();
+
+    if (isBlank(headers)) {
+      return;
     }
+
+    // headers instanceof StringMap
+    StringMapWrapper.forEach(
+        headers, (v, k) => { this._headersMap.set(k, isListLikeIterable(v) ? v : [v]); });
   }
 
   /**
@@ -68,10 +66,10 @@ export class Headers {
   /**
    * Deletes all header values for the given name.
    */
-  delete (name: string): void { MapWrapper.delete(this._headersMap, name); }
+  delete (name: string): void { this._headersMap.delete(name); }
 
   forEach(fn: (values: string[], name: string, headers: Map<string, string[]>) => void): void {
-    MapWrapper.forEach(this._headersMap, fn);
+    this._headersMap.forEach(fn);
   }
 
   /**

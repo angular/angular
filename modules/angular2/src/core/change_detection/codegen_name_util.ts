@@ -83,7 +83,7 @@ export class CodegenNameUtil {
   getLocalName(idx: number): string { return `l_${this._sanitizedNames[idx]}`; }
 
   getEventLocalName(eb: EventBinding, idx: number): string {
-    return `l_${MapWrapper.get(this._sanitizedEventNames, eb)[idx]}`;
+    return `l_${this._sanitizedEventNames.get(eb)[idx]}`;
   }
 
   getChangeName(idx: number): string { return `c_${this._sanitizedNames[idx]}`; }
@@ -118,7 +118,7 @@ export class CodegenNameUtil {
    */
   genInitEventLocals(): string {
     var res = [`${this.getLocalName(CONTEXT_INDEX)} = ${this.getFieldName(CONTEXT_INDEX)}`];
-    MapWrapper.forEach(this._sanitizedEventNames, (names, eb) => {
+    this._sanitizedEventNames.forEach((names, eb) => {
       for (var i = 0; i < names.length; ++i) {
         if (i !== CONTEXT_INDEX) {
           res.push(`${this.getEventLocalName(eb, i)}`);

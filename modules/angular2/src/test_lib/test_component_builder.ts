@@ -169,14 +169,12 @@ export class TestComponentBuilder {
   createAsync(rootComponentType: Type): Promise<RootTestComponent> {
     var mockDirectiveResolver = this._injector.get(DirectiveResolver);
     var mockViewResolver = this._injector.get(ViewResolver);
-    MapWrapper.forEach(this._viewOverrides,
-                       (view, type) => { mockViewResolver.setView(type, view); });
-    MapWrapper.forEach(this._templateOverrides,
-                       (template, type) => { mockViewResolver.setInlineTemplate(type, template); });
-    MapWrapper.forEach(this._directiveOverrides, (overrides, component) => {
-      MapWrapper.forEach(overrides, (to, from) => {
-        mockViewResolver.overrideViewDirective(component, from, to);
-      });
+    this._viewOverrides.forEach((view, type) => mockViewResolver.setView(type, view));
+    this._templateOverrides.forEach((template, type) =>
+                                        mockViewResolver.setInlineTemplate(type, template));
+    this._directiveOverrides.forEach((overrides, component) => {
+      overrides.forEach(
+          (to, from) => { mockViewResolver.overrideViewDirective(component, from, to); });
     });
 
     this._bindingsOverrides.forEach((bindings, type) =>

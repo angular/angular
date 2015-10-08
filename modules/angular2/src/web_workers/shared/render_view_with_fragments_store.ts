@@ -54,13 +54,13 @@ export class RenderViewWithFragmentsStore {
     this._removeRef(view);
     var fragments = this._viewFragments.get(view);
     fragments.forEach((fragment) => { this._removeRef(fragment); });
-    MapWrapper.delete(this._viewFragments, view);
+    this._viewFragments.delete(view);
   }
 
   private _removeRef(ref: RenderViewRef | RenderFragmentRef) {
     var index = this._lookupByView.get(ref);
-    MapWrapper.delete(this._lookupByView, ref);
-    MapWrapper.delete(this._lookupByIndex, index);
+    this._lookupByView.delete(ref);
+    this._lookupByIndex.delete(index);
   }
 
   serializeRenderViewRef(viewRef: RenderViewRef): number {
