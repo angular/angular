@@ -1,6 +1,6 @@
-import {NgZone_} from 'angular2/src/core/zone/ng_zone';
+import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
-export class MockNgZone extends NgZone_ {
+export class MockNgZone extends NgZone {
   _onEventDone: () => void;
 
   constructor() { super({enableLongStackTrace: false}); }

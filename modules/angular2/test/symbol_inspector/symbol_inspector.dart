@@ -52,7 +52,7 @@ class ExportedSymbol {
       names.add('$name()');
     } else if (declaration is ClassMirror) {
       var classMirror = declaration as ClassMirror;
-      if (classMirror.isAbstract) name = '{$name}';
+      if (classMirror.isAbstract) name = '$name';
       names.add(name);
       classMirror.staticMembers.forEach(members('$name#', names));
       classMirror.instanceMembers.forEach(members('$name.', names));

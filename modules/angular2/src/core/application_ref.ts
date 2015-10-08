@@ -1,4 +1,4 @@
-import {NgZone, NgZone_} from 'angular2/src/core/zone/ng_zone';
+import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {Type, isBlank, isPresent, assertionsEnabled} from 'angular2/src/core/facade/lang';
 import {bind, Binding, Injector, OpaqueToken} from 'angular2/src/core/di';
 import {
@@ -112,7 +112,7 @@ export function applicationCommonBindings(): Array<Type | Binding | any[]> {
  * Create an Angular zone.
  */
 export function createNgZone(): NgZone {
-  return new NgZone_({enableLongStackTrace: assertionsEnabled()});
+  return new NgZone({enableLongStackTrace: assertionsEnabled()});
 }
 
 var _platform: PlatformRef;
@@ -240,7 +240,7 @@ export class PlatformRef_ extends PlatformRef {
       try {
         injector = this.injector.resolveAndCreateChild(bindings);
         exceptionHandler = injector.get(ExceptionHandler);
-        (<NgZone_>zone).overrideOnErrorHandler((e, s) => exceptionHandler.call(e, s));
+        zone.overrideOnErrorHandler((e, s) => exceptionHandler.call(e, s));
       } catch (e) {
         if (isPresent(exceptionHandler)) {
           exceptionHandler.call(e, e.stack);

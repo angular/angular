@@ -4,7 +4,6 @@ import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {isPresent} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from '../profile/profile';
-import {NgZone_} from "../zone/ng_zone";
 
 /**
  * Provides access to explicitly trigger change detection in an application.
@@ -72,7 +71,7 @@ export class LifeCycle_ extends LifeCycle {
     if (isPresent(changeDetector)) {
       this._changeDetectors.push(changeDetector);
     }
-    (<NgZone_>zone).overrideOnTurnDone(() => this.tick());
+    zone.overrideOnTurnDone(() => this.tick());
   }
 
   tick() {

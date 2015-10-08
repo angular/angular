@@ -293,7 +293,3 @@ class NgZone {
         zoneValues: {'_innerZone': true});
   }
 }
-
-class NgZone_ extends NgZone {
-  NgZone_({bool enableLongStackTrace}) : super(enableLongStackTrace: enableLongStackTrace);
-}
