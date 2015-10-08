@@ -73,6 +73,8 @@ var NG_API = [
   'AppRootUrl.value',
   'AppRootUrl.value=',
   'AppViewManager',
+  /*
+  Abstract methods
   'AppViewManager.attachViewInContainer()',
   'AppViewManager.createEmbeddedViewInContainer()',
   'AppViewManager.createHostViewInContainer()',
@@ -84,12 +86,16 @@ var NG_API = [
   'AppViewManager.getHostElement()',
   'AppViewManager.getNamedElementInComponentView()',
   'AppViewManager.getViewContainer()',
+  */
   'ApplicationRef',
+  /*
+  Abstract methods
   'ApplicationRef.bootstrap()',
   'ApplicationRef.dispose()',
   'ApplicationRef.injector',
   'ApplicationRef.registerBootstrapListener()',
   'ApplicationRef.zone',
+  */
   'AsyncPipe',
   'AsyncPipe.onDestroy()',
   'AsyncPipe.transform()',
@@ -137,10 +143,12 @@ var NG_API = [
   'ChangeDetectionStrategy',
   'ChangeDetectionStrategy.index',
   'ChangeDetectorRef',
+  /*
+   Abstract methods
   'ChangeDetectorRef.detach()',
   'ChangeDetectorRef.detectChanges()',
   'ChangeDetectorRef.markForCheck()',
-  'ChangeDetectorRef.reattach()',
+  'ChangeDetectorRef.reattach()',*/
   'CheckboxControlValueAccessor',
   'CheckboxControlValueAccessor.onChange',
   'CheckboxControlValueAccessor.onChange=',
@@ -151,8 +159,11 @@ var NG_API = [
   'CheckboxControlValueAccessor.writeValue()',
   'Class:js',
   'Compiler',
+  /*
+   Abstract methods
   'Compiler.compileInHost()',
   'Compiler.clearCache()',
+  */
   'Component',
   'Component.bindings',
   'Component.changeDetection',
@@ -196,7 +207,10 @@ var NG_API = [
   'ComponentRef',
   'ComponentRef.componentType',
   'ComponentRef.componentType=',
+  /*
+   Abstract method
   'ComponentRef.dispose()',
+  */
   'ComponentRef.hostComponent',
   'ComponentRef.hostComponentType',
   'ComponentRef.hostView',
@@ -352,14 +366,16 @@ var NG_API = [
   'DebugElement.componentInstance',
   'DebugElement.componentViewChildren',
   'DebugElement.elementRef',
+  /*
+   Abstract methods
   'DebugElement.getDirectiveInstance()',
   'DebugElement.getLocal()',
   'DebugElement.hasDirective()',
   'DebugElement.inject()',
+  */
   'DebugElement.nativeElement',
   'DebugElement.query()',
   'DebugElement.queryAll()',
-  'DebugElement.triggerEventHandler()',
   'DecimalPipe',
   'DecimalPipe.transform()',
   'DefaultValidators',
@@ -410,9 +426,12 @@ var NG_API = [
   'DirectiveResolver',
   'DirectiveResolver.resolve()',
   'DynamicComponentLoader',
+  /*
+   Abstract methods
   'DynamicComponentLoader.loadAsRoot()',
   'DynamicComponentLoader.loadIntoLocation()',
   'DynamicComponentLoader.loadNextToLocation()',
+  */
   'ELEMENT_PROBE_BINDINGS',
   'ElementRef',
   'ElementRef.boundElementIndex',
@@ -514,7 +533,10 @@ var NG_API = [
   'Injector.resolveAndCreateChild()',
   'Injector.resolveAndInstantiate()',
   'InstantiationError',
+  /*
+   Abstract method
   'InstantiationError.addKey()',
+  */
   'InstantiationError.causeKey',
   'InstantiationError.context',
   'InstantiationError.injectors',
@@ -548,8 +570,11 @@ var NG_API = [
   'KeyValueDiffers.factories',
   'KeyValueDiffers.find()',
   'LifeCycle',  // TODO: replace with ApplicationRef
+  /*
+   Abstract methods
   'LifeCycle.registerWith()',
   'LifeCycle.tick()',
+  */
   'LowerCasePipe',
   'LowerCasePipe.transform()',
   'NG_VALIDATORS',
@@ -744,12 +769,15 @@ var NG_API = [
   'NgSwitchWhen',
   'NgSwitchWhen.ngSwitchWhen=',
   'NgZone',
+  /*
+   Abstract methods
   'NgZone.overrideOnErrorHandler()',
   'NgZone.overrideOnEventDone()',
   'NgZone.overrideOnTurnDone()',
   'NgZone.overrideOnTurnStart()',
   'NgZone.run()',
   'NgZone.runOutsideAngular()',
+  */
   'NoAnnotationError',
   'NoAnnotationError.message',
   'NoAnnotationError.stackTrace',
@@ -798,9 +826,12 @@ var NG_API = [
   'PipeMetadata.name',
   'PipeMetadata.pure',
   'PlatformRef',
+  /*
+   Abstract methods
   'PlatformRef.application()',
   'PlatformRef.asyncApplication()',
   'PlatformRef.dispose()',
+  */
   'PlatformRef.injector',
   'Predicate:dart',
   'Input',
@@ -864,6 +895,8 @@ var NG_API = [
   'RenderViewWithFragments.viewRef',
   'RenderViewWithFragments.viewRef=',
   'Renderer',
+  /*
+   Abstract methods
   'Renderer.attachFragmentAfterElement()',
   'Renderer.attachFragmentAfterFragment()',
   'Renderer.createProtoView()',
@@ -871,17 +904,18 @@ var NG_API = [
   'Renderer.createRootHostView()',
   'Renderer.createView()',
   'Renderer.dehydrateView()',
-  'Renderer.destroyView()',
-  'Renderer.detachFragment()',
-  'Renderer.getNativeElementSync()',
-  'Renderer.hydrateView()',
-  'Renderer.invokeElementMethod()',
-  'Renderer.setElementAttribute()',
-  'Renderer.setElementClass()',
-  'Renderer.setElementProperty()',
-  'Renderer.setElementStyle()',
-  'Renderer.setEventDispatcher()',
-  'Renderer.setText()',
+   'Renderer.destroyView()',
+   'Renderer.detachFragment()',
+   'Renderer.getNativeElementSync()',
+   'Renderer.hydrateView()',
+   'Renderer.invokeElementMethod()',
+   'Renderer.setElementAttribute()',
+   'Renderer.setElementClass()',
+   'Renderer.setElementProperty()',
+   'Renderer.setElementStyle()',
+   'Renderer.setEventDispatcher()',
+   'Renderer.setText()',
+  */
   'ResolvedBinding',
   'ResolvedBinding.key',
   'ResolvedBinding.key=',
@@ -925,7 +959,10 @@ var NG_API = [
   'TemplateRef',
   'TemplateRef.elementRef',
   'TemplateRef.elementRef=',
-  'TemplateRef.hasLocal()',
+  /*
+   Abstract method
+   'TemplateRef.hasLocal()',
+  */
   'TemplateRef.protoViewRef',
   'Type:js',
   'Title',
@@ -985,16 +1022,20 @@ var NG_API = [
   'ViewChildrenMetadata.varBindings',
   'ViewContainerRef',
   'ViewContainerRef.clear()',
-  'ViewContainerRef.createEmbeddedView()',
-  'ViewContainerRef.createHostView()',
-  'ViewContainerRef.detach()',
+  /*
+   Abstract methods
+   'ViewContainerRef.createEmbeddedView()',
+   'ViewContainerRef.createHostView()',
+   'ViewContainerRef.detach()',
+  */
   'ViewContainerRef.element',
   'ViewContainerRef.element=',
-  'ViewContainerRef.get()',
-  'ViewContainerRef.indexOf()',
-  'ViewContainerRef.insert()',
+  /*
+   'ViewContainerRef.get()',
+   'ViewContainerRef.indexOf()',
+   'ViewContainerRef.insert()',
+  */
   'ViewContainerRef.length',
-  'ViewContainerRef.remove()',
   'ViewContainerRef.viewManager',
   'ViewContainerRef.viewManager=',
   'ViewEncapsulation#Emulated',
@@ -1032,7 +1073,10 @@ var NG_API = [
   'ViewRef.changeDetectorRef=',
   'ViewRef.render',
   'ViewRef.renderFragment',
-  'ViewRef.setLocal()',
+  /*
+   Abstract method
+   'ViewRef.setLocal()',
+  */
   'WrappedException',
   'WrappedException.context',
   'WrappedException.message',
