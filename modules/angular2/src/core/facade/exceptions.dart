@@ -30,3 +30,7 @@ class WrappedException extends Error {
 Error makeTypeError([String message = ""]) {
   return new BaseException(message);
 }
+
+dynamic unimplemented() {
+  throw new BaseException('unimplemented');
+}

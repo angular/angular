@@ -90,7 +90,6 @@ import {TemplateRef} from 'angular2/src/core/linker/template_ref';
 
 import {DomRenderer} from 'angular2/src/core/render/dom/dom_renderer';
 import {IS_DART} from '../../platform';
-import {Compiler_} from "angular2/src/core/linker/compiler";
 
 const ANCHOR_ELEMENT = CONST_EXPR(new OpaqueToken('AnchorElement'));
 
