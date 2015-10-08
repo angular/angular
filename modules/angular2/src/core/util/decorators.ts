@@ -1,4 +1,4 @@
-import {global, Type, isFunction, stringify} from 'angular2/src/core/facade/lang';
+import {ConcreteType, global, Type, isFunction, stringify} from 'angular2/src/core/facade/lang';
 
 /**
  * Declares the interface to be used with {@link Class}.
@@ -71,7 +71,7 @@ export interface TypeDecorator {
   /**
    * Generate a class from the definition and annotate it with {@link TypeDecorator#annotations}.
    */
-  Class(obj: ClassDefinition): Type;
+  Class(obj: ClassDefinition): ConcreteType;
 }
 
 function extractAnnotation(annotation: any): any {
@@ -205,7 +205,7 @@ function applyParams(fnOrArray: (Function | any[]), key: string): Function {
  * });
  * ```
  */
-export function Class(clsDef: ClassDefinition): Type {
+export function Class(clsDef: ClassDefinition): ConcreteType {
   var constructor = applyParams(
       clsDef.hasOwnProperty('constructor') ? clsDef.constructor : undefined, 'constructor');
   var proto = constructor.prototype;
@@ -228,7 +228,7 @@ export function Class(clsDef: ClassDefinition): Type {
     Reflect.defineMetadata('annotations', this.annotations, constructor);
   }
 
-  return <Type>constructor;
+  return <ConcreteType>constructor;
 }
 
 var Reflect = global.Reflect;

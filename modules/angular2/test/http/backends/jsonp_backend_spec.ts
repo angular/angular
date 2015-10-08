@@ -13,7 +13,12 @@ import {
 } from 'angular2/test_lib';
 import {ObservableWrapper} from 'angular2/src/core/facade/async';
 import {BrowserJsonp} from 'angular2/src/http/backends/browser_jsonp';
-import {JSONPConnection, JSONPBackend} from 'angular2/src/http/backends/jsonp_backend';
+import {
+  JSONPConnection,
+  JSONPConnection_,
+  JSONPBackend,
+  JSONPBackend_
+} from 'angular2/src/http/backends/jsonp_backend';
 import {bind, Injector} from 'angular2/core';
 import {isPresent, StringWrapper} from 'angular2/src/core/facade/lang';
 import {TimerWrapper} from 'angular2/src/core/facade/async';
@@ -70,7 +75,7 @@ export function main() {
         bind(ResponseOptions)
             .toClass(BaseResponseOptions),
         bind(BrowserJsonp).toClass(MockBrowserJsonp),
-        JSONPBackend
+        bind(JSONPBackend).toClass(JSONPBackend_)
       ]);
       backend = injector.get(JSONPBackend);
       let base = new BaseRequestOptions();
@@ -89,8 +94,8 @@ export function main() {
     describe('JSONPConnection', () => {
       it('should use the injected BaseResponseOptions to create the response',
          inject([AsyncTestCompleter], async => {
-           let connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp(),
-                                                new ResponseOptions({type: ResponseTypes.Error}));
+           let connection = new JSONPConnection_(sampleRequest, new MockBrowserJsonp(),
+                                                 new ResponseOptions({type: ResponseTypes.Error}));
            connection.response.subscribe(res => {
              expect(res.type).toBe(ResponseTypes.Error);
              async.done();
@@ -100,7 +105,7 @@ export function main() {
          }));
 
       it('should ignore load/callback when disposed', inject([AsyncTestCompleter], async => {
-           var connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp());
+           var connection = new JSONPConnection_(sampleRequest, new MockBrowserJsonp());
            let spy = new SpyObject();
            let loadSpy = spy.spy('load');
            let errorSpy = spy.spy('error');
@@ -123,7 +128,7 @@ export function main() {
 
       it('should report error if loaded without invoking callback',
          inject([AsyncTestCompleter], async => {
-           let connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp());
+           let connection = new JSONPConnection_(sampleRequest, new MockBrowserJsonp());
            connection.response.subscribe(
                res => {
                  expect("response listener called").toBe(false);
@@ -138,7 +143,7 @@ export function main() {
          }));
 
       it('should report error if script contains error', inject([AsyncTestCompleter], async => {
-           let connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp());
+           let connection = new JSONPConnection_(sampleRequest, new MockBrowserJsonp());
 
            connection.response.subscribe(
                res => {
@@ -160,13 +165,13 @@ export function main() {
               let base = new BaseRequestOptions();
               let req = new Request(
                   base.merge(new RequestOptions({url: 'https://google.com', method: method})));
-              expect(() => new JSONPConnection(req, new MockBrowserJsonp()).response.subscribe())
+              expect(() => new JSONPConnection_(req, new MockBrowserJsonp()).response.subscribe())
                   .toThrowError();
             });
       });
 
       it('should respond with data passed to callback', inject([AsyncTestCompleter], async => {
-           let connection = new JSONPConnection(sampleRequest, new MockBrowserJsonp());
+           let connection = new JSONPConnection_(sampleRequest, new MockBrowserJsonp());
 
            connection.response.subscribe(res => {
              expect(res.json()).toEqual(({fake_payload: true, blob_id: 12345}));

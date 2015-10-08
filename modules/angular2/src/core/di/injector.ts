@@ -13,6 +13,7 @@ import {
   NoBindingError,
   CyclicDependencyError,
   InstantiationError,
+  InstantiationError_,
   InvalidBindingError,
   OutOfBoundsError,
   MixingMultiBindingsWithRegularBindings
@@ -865,7 +866,7 @@ export class Injector {
           break;
       }
     } catch (e) {
-      throw new InstantiationError(this, e, e.stack, binding.key);
+      throw new InstantiationError_(this, e, e.stack, binding.key);
     }
     return obj;
   }

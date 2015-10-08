@@ -82,7 +82,7 @@ import {
 import {QueryList} from 'angular2/src/core/linker/query_list';
 
 import {ViewContainerRef} from 'angular2/src/core/linker/view_container_ref';
-import {ViewRef} from 'angular2/src/core/linker/view_ref';
+import {ViewRef, ViewRef_} from 'angular2/src/core/linker/view_ref';
 
 import {Compiler} from 'angular2/src/core/linker/compiler';
 import {ElementRef} from 'angular2/src/core/linker/element_ref';
@@ -1017,7 +1017,6 @@ export function main() {
          }));
 
       describe('dynamic ViewContainers', () => {
-
         it('should allow to create a ViewContainerRef at any bound location',
            inject([TestComponentBuilder, AsyncTestCompleter, Compiler],
                   (tcb: TestComponentBuilder, async, compiler) => {
@@ -2231,7 +2230,7 @@ class SomeImperativeViewport {
     }
     if (value) {
       this.view = this.vc.createEmbeddedView(this.templateRef);
-      var nodes = this.renderer.getRootNodes(this.view.renderFragment);
+      var nodes = this.renderer.getRootNodes((<ViewRef_>this.view).renderFragment);
       for (var i = 0; i < nodes.length; i++) {
         DOM.appendChild(this.anchor, nodes[i]);
       }

@@ -4,6 +4,7 @@ import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {isPresent} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from '../profile/profile';
+import {NgZone_} from "../zone/ng_zone";
 
 /**
  * Provides access to explicitly trigger change detection in an application.
@@ -31,35 +32,7 @@ import {wtfLeave, wtfCreateScope, WtfScopeFn} from '../profile/profile';
  * });
  * ```
  */
-@Injectable()
-export class LifeCycle {
-  static _tickScope: WtfScopeFn = wtfCreateScope('LifeCycle#tick()');
-
-  _changeDetectors: ChangeDetector[];
-  _enforceNoNewChanges: boolean;
-  _runningTick: boolean = false;
-
-  /**
-   * @internal
-   */
-  constructor(changeDetector: ChangeDetector = null, enforceNoNewChanges: boolean = false) {
-    this._changeDetectors = [];
-    if (isPresent(changeDetector)) {
-      this._changeDetectors.push(changeDetector);
-    }
-    this._enforceNoNewChanges = enforceNoNewChanges;
-  }
-
-  /**
-   * @internal
-   */
-  registerWith(zone: NgZone, changeDetector: ChangeDetector = null) {
-    if (isPresent(changeDetector)) {
-      this._changeDetectors.push(changeDetector);
-    }
-    zone.overrideOnTurnDone(() => this.tick());
-  }
-
+export abstract class LifeCycle {
   /**
    *  Invoke this method to explicitly process change detection and its side-effects.
    *
@@ -75,12 +48,39 @@ export class LifeCycle {
    *  complete.
    *
    */
+  abstract tick();
+}
+
+@Injectable()
+export class LifeCycle_ extends LifeCycle {
+  static _tickScope: WtfScopeFn = wtfCreateScope('LifeCycle#tick()');
+
+  _changeDetectors: ChangeDetector[];
+  _enforceNoNewChanges: boolean;
+  _runningTick: boolean = false;
+
+  constructor(changeDetector: ChangeDetector = null, enforceNoNewChanges: boolean = false) {
+    super();
+    this._changeDetectors = [];
+    if (isPresent(changeDetector)) {
+      this._changeDetectors.push(changeDetector);
+    }
+    this._enforceNoNewChanges = enforceNoNewChanges;
+  }
+
+  registerWith(zone: NgZone, changeDetector: ChangeDetector = null) {
+    if (isPresent(changeDetector)) {
+      this._changeDetectors.push(changeDetector);
+    }
+    (<NgZone_>zone).overrideOnTurnDone(() => this.tick());
+  }
+
   tick() {
     if (this._runningTick) {
       throw new BaseException("LifeCycle.tick is called recursively");
     }
 
-    var s = LifeCycle._tickScope();
+    var s = LifeCycle_._tickScope();
     try {
       this._runningTick = true;
       this._changeDetectors.forEach((detector) => detector.detectChanges());

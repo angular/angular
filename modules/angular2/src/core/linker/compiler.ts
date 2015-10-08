@@ -15,12 +15,14 @@ import {CompiledHostTemplate} from 'angular2/src/core/linker/template_commands';
  * Most applications should instead use higher-level {@link DynamicComponentLoader} service, which
  * both compiles and instantiates a Component.
  */
+export abstract class Compiler {
+  abstract compileInHost(componentType: Type): Promise<ProtoViewRef>;
+  abstract clearCache();
+}
+
 @Injectable()
-export class Compiler {
-  /**
-   * @internal
-   */
-  constructor(private _protoViewFactory: ProtoViewFactory) {}
+export class Compiler_ extends Compiler {
+  constructor(private _protoViewFactory: ProtoViewFactory) { super(); }
 
   compileInHost(componentType: Type): Promise<ProtoViewRef> {
     var metadatas = reflector.annotations(componentType);

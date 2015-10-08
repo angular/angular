@@ -32,74 +32,23 @@ import {createRenderView, NodeFactory} from '../view_factory';
 import {DefaultRenderView, DefaultRenderFragmentRef, DefaultProtoViewRef} from '../view';
 import {camelCaseToDashCase} from './util';
 
-@Injectable()
-export class DomRenderer implements Renderer, NodeFactory<Node> {
-  private _componentCmds: Map<number, RenderTemplateCmd[]> = new Map<number, RenderTemplateCmd[]>();
-  private _nativeShadowStyles: Map<number, string[]> = new Map<number, string[]>();
-  private _document;
+export abstract class DomRenderer extends Renderer implements NodeFactory<Node> {
+  abstract registerComponentTemplate(templateId: number, commands: RenderTemplateCmd[],
+                                     styles: string[], nativeShadow: boolean);
 
-  /**
-   * @internal
-   */
-  constructor(private _eventManager: EventManager,
-              private _domSharedStylesHost: DomSharedStylesHost, private _animate: AnimationBuilder,
-              @Inject(DOCUMENT) document) {
-    this._document = document;
-  }
-
-  registerComponentTemplate(templateId: number, commands: RenderTemplateCmd[], styles: string[],
-                            nativeShadow: boolean) {
-    this._componentCmds.set(templateId, commands);
-    if (nativeShadow) {
-      this._nativeShadowStyles.set(templateId, styles);
-    } else {
-      this._domSharedStylesHost.addStyles(styles);
-    }
-  }
-
-  resolveComponentTemplate(templateId: number): RenderTemplateCmd[] {
-    return this._componentCmds.get(templateId);
-  }
+  abstract resolveComponentTemplate(templateId: number): RenderTemplateCmd[];
 
   createProtoView(cmds: RenderTemplateCmd[]): RenderProtoViewRef {
     return new DefaultProtoViewRef(cmds);
   }
 
-  _createRootHostViewScope: WtfScopeFn = wtfCreateScope('DomRenderer#createRootHostView()');
-  createRootHostView(hostProtoViewRef: RenderProtoViewRef, fragmentCount: number,
-                     hostElementSelector: string): RenderViewWithFragments {
-    var s = this._createRootHostViewScope();
-    var element = DOM.querySelector(this._document, hostElementSelector);
-    if (isBlank(element)) {
-      wtfLeave(s);
-      throw new BaseException(`The selector "${hostElementSelector}" did not match any elements`);
-    }
-    return wtfLeave(s, this._createView(hostProtoViewRef, element));
-  }
+  abstract createRootHostView(hostProtoViewRef: RenderProtoViewRef, fragmentCount: number,
+                              hostElementSelector: string): RenderViewWithFragments;
 
-  _createViewScope = wtfCreateScope('DomRenderer#createView()');
-  createView(protoViewRef: RenderProtoViewRef, fragmentCount: number): RenderViewWithFragments {
-    var s = this._createViewScope();
-    return wtfLeave(s, this._createView(protoViewRef, null));
-  }
+  abstract createView(protoViewRef: RenderProtoViewRef, fragmentCount: number):
+      RenderViewWithFragments;
 
-  private _createView(protoViewRef: RenderProtoViewRef,
-                      inplaceElement: HTMLElement): RenderViewWithFragments {
-    var view = createRenderView((<DefaultProtoViewRef>protoViewRef).cmds, inplaceElement, this);
-    var sdRoots = view.nativeShadowRoots;
-    for (var i = 0; i < sdRoots.length; i++) {
-      this._domSharedStylesHost.addHost(sdRoots[i]);
-    }
-    return new RenderViewWithFragments(view, view.fragments);
-  }
-
-  destroyView(viewRef: RenderViewRef) {
-    var view = <DefaultRenderView<Node>>viewRef;
-    var sdRoots = view.nativeShadowRoots;
-    for (var i = 0; i < sdRoots.length; i++) {
-      this._domSharedStylesHost.removeHost(sdRoots[i]);
-    }
-  }
+  abstract destroyView(viewRef: RenderViewRef);
 
   getNativeElementSync(location: RenderElementRef): any {
     return resolveInternalDomView(location.renderView).boundElements[location.boundElementIndex];
@@ -130,35 +79,14 @@ export class DomRenderer implements Renderer, NodeFactory<Node> {
    * Performs animations if necessary
    * @param node
    */
-  animateNodeEnter(node: Node) {
-    if (DOM.isElementNode(node) && DOM.hasClass(node, 'ng-animate')) {
-      DOM.addClass(node, 'ng-enter');
-      this._animate.css()
-          .addAnimationClass('ng-enter-active')
-          .start(<HTMLElement>node)
-          .onComplete(() => { DOM.removeClass(node, 'ng-enter'); });
-    }
-  }
+  abstract animateNodeEnter(node: Node);
 
   /**
    * If animations are necessary, performs animations then removes the element; otherwise, it just
    * removes the element.
    * @param node
    */
-  animateNodeLeave(node: Node) {
-    if (DOM.isElementNode(node) && DOM.hasClass(node, 'ng-animate')) {
-      DOM.addClass(node, 'ng-leave');
-      this._animate.css()
-          .addAnimationClass('ng-leave-active')
-          .start(<HTMLElement>node)
-          .onComplete(() => {
-            DOM.removeClass(node, 'ng-leave');
-            DOM.remove(node);
-          });
-    } else {
-      DOM.remove(node);
-    }
-  }
+  abstract animateNodeLeave(node: Node);
 
   attachFragmentAfterElement(elementRef: RenderElementRef, fragmentRef: RenderFragmentRef) {
     var parentView = resolveInternalDomView(elementRef.renderView);
@@ -168,15 +96,7 @@ export class DomRenderer implements Renderer, NodeFactory<Node> {
     this.animateNodesEnter(nodes);
   }
 
-  _detachFragmentScope = wtfCreateScope('DomRenderer#detachFragment()');
-  detachFragment(fragmentRef: RenderFragmentRef) {
-    var s = this._detachFragmentScope();
-    var fragmentNodes = resolveInternalDomFragment(fragmentRef);
-    for (var i = 0; i < fragmentNodes.length; i++) {
-      this.animateNodeLeave(fragmentNodes[i]);
-    }
-    wtfLeave(s);
-  }
+  abstract detachFragment(fragmentRef: RenderFragmentRef);
 
   hydrateView(viewRef: RenderViewRef) { resolveInternalDomView(viewRef).hydrate(); }
 
@@ -185,38 +105,13 @@ export class DomRenderer implements Renderer, NodeFactory<Node> {
   createTemplateAnchor(attrNameAndValues: string[]): Node {
     return this.createElement('script', attrNameAndValues);
   }
-  createElement(name: string, attrNameAndValues: string[]): Node {
-    var el = DOM.createElement(name);
-    this._setAttributes(el, attrNameAndValues);
-    return el;
-  }
-  mergeElement(existing: Node, attrNameAndValues: string[]) {
-    DOM.clearNodes(existing);
-    this._setAttributes(existing, attrNameAndValues);
-  }
-  private _setAttributes(node: Node, attrNameAndValues: string[]) {
-    for (var attrIdx = 0; attrIdx < attrNameAndValues.length; attrIdx += 2) {
-      DOM.setAttribute(node, attrNameAndValues[attrIdx], attrNameAndValues[attrIdx + 1]);
-    }
-  }
-  createShadowRoot(host: Node, templateId: number): Node {
-    var sr = DOM.createShadowRoot(host);
-    var styles = this._nativeShadowStyles.get(templateId);
-    for (var i = 0; i < styles.length; i++) {
-      DOM.appendChild(sr, DOM.createStyleElement(styles[i]));
-    }
-    return sr;
-  }
+  abstract createElement(name: string, attrNameAndValues: string[]): Node;
+  abstract mergeElement(existing: Node, attrNameAndValues: string[]);
+  abstract createShadowRoot(host: Node, templateId: number): Node;
   createText(value: string): Node { return DOM.createTextNode(isPresent(value) ? value : ''); }
   appendChild(parent: Node, child: Node) { DOM.appendChild(parent, child); }
-  on(element: Node, eventName: string, callback: Function) {
-    this._eventManager.addEventListener(<HTMLElement>element, eventName,
-                                        decoratePreventDefault(callback));
-  }
-  globalOn(target: string, eventName: string, callback: Function): Function {
-    return this._eventManager.addGlobalEventListener(target, eventName,
-                                                     decoratePreventDefault(callback));
-  }
+  abstract on(element: Node, eventName: string, callback: Function);
+  abstract globalOn(target: string, eventName: string, callback: Function): Function;
 
   setElementProperty(location: RenderElementRef, propertyName: string, propertyValue: any): void {
     var view = resolveInternalDomView(location.renderView);
@@ -270,6 +165,135 @@ export class DomRenderer implements Renderer, NodeFactory<Node> {
 
   setEventDispatcher(viewRef: RenderViewRef, dispatcher: RenderEventDispatcher): void {
     resolveInternalDomView(viewRef).setEventDispatcher(dispatcher);
+  }
+}
+
+@Injectable()
+export class DomRenderer_ extends DomRenderer {
+  private _componentCmds: Map<number, RenderTemplateCmd[]> = new Map<number, RenderTemplateCmd[]>();
+  private _nativeShadowStyles: Map<number, string[]> = new Map<number, string[]>();
+  private _document;
+
+  constructor(private _eventManager: EventManager,
+              private _domSharedStylesHost: DomSharedStylesHost, private _animate: AnimationBuilder,
+              @Inject(DOCUMENT) document) {
+    super();
+    this._document = document;
+  }
+
+  registerComponentTemplate(templateId: number, commands: RenderTemplateCmd[], styles: string[],
+                            nativeShadow: boolean) {
+    this._componentCmds.set(templateId, commands);
+    if (nativeShadow) {
+      this._nativeShadowStyles.set(templateId, styles);
+    } else {
+      this._domSharedStylesHost.addStyles(styles);
+    }
+  }
+
+  resolveComponentTemplate(templateId: number): RenderTemplateCmd[] {
+    return this._componentCmds.get(templateId);
+  }
+
+  _createRootHostViewScope: WtfScopeFn = wtfCreateScope('DomRenderer#createRootHostView()');
+  createRootHostView(hostProtoViewRef: RenderProtoViewRef, fragmentCount: number,
+                     hostElementSelector: string): RenderViewWithFragments {
+    var s = this._createRootHostViewScope();
+    var element = DOM.querySelector(this._document, hostElementSelector);
+    if (isBlank(element)) {
+      wtfLeave(s);
+      throw new BaseException(`The selector "${hostElementSelector}" did not match any elements`);
+    }
+    return wtfLeave(s, this._createView(hostProtoViewRef, element));
+  }
+
+  _createViewScope = wtfCreateScope('DomRenderer#createView()');
+  createView(protoViewRef: RenderProtoViewRef, fragmentCount: number): RenderViewWithFragments {
+    var s = this._createViewScope();
+    return wtfLeave(s, this._createView(protoViewRef, null));
+  }
+
+  private _createView(protoViewRef: RenderProtoViewRef,
+                      inplaceElement: HTMLElement): RenderViewWithFragments {
+    var view = createRenderView((<DefaultProtoViewRef>protoViewRef).cmds, inplaceElement, this);
+    var sdRoots = view.nativeShadowRoots;
+    for (var i = 0; i < sdRoots.length; i++) {
+      this._domSharedStylesHost.addHost(sdRoots[i]);
+    }
+    return new RenderViewWithFragments(view, view.fragments);
+  }
+
+  destroyView(viewRef: RenderViewRef) {
+    var view = <DefaultRenderView<Node>>viewRef;
+    var sdRoots = view.nativeShadowRoots;
+    for (var i = 0; i < sdRoots.length; i++) {
+      this._domSharedStylesHost.removeHost(sdRoots[i]);
+    }
+  }
+
+  animateNodeEnter(node: Node) {
+    if (DOM.isElementNode(node) && DOM.hasClass(node, 'ng-animate')) {
+      DOM.addClass(node, 'ng-enter');
+      this._animate.css()
+          .addAnimationClass('ng-enter-active')
+          .start(<HTMLElement>node)
+          .onComplete(() => { DOM.removeClass(node, 'ng-enter'); });
+    }
+  }
+
+  animateNodeLeave(node: Node) {
+    if (DOM.isElementNode(node) && DOM.hasClass(node, 'ng-animate')) {
+      DOM.addClass(node, 'ng-leave');
+      this._animate.css()
+          .addAnimationClass('ng-leave-active')
+          .start(<HTMLElement>node)
+          .onComplete(() => {
+            DOM.removeClass(node, 'ng-leave');
+            DOM.remove(node);
+          });
+    } else {
+      DOM.remove(node);
+    }
+  }
+
+  _detachFragmentScope = wtfCreateScope('DomRenderer#detachFragment()');
+  detachFragment(fragmentRef: RenderFragmentRef) {
+    var s = this._detachFragmentScope();
+    var fragmentNodes = resolveInternalDomFragment(fragmentRef);
+    for (var i = 0; i < fragmentNodes.length; i++) {
+      this.animateNodeLeave(fragmentNodes[i]);
+    }
+    wtfLeave(s);
+  }
+  createElement(name: string, attrNameAndValues: string[]): Node {
+    var el = DOM.createElement(name);
+    this._setAttributes(el, attrNameAndValues);
+    return el;
+  }
+  mergeElement(existing: Node, attrNameAndValues: string[]) {
+    DOM.clearNodes(existing);
+    this._setAttributes(existing, attrNameAndValues);
+  }
+  private _setAttributes(node: Node, attrNameAndValues: string[]) {
+    for (var attrIdx = 0; attrIdx < attrNameAndValues.length; attrIdx += 2) {
+      DOM.setAttribute(node, attrNameAndValues[attrIdx], attrNameAndValues[attrIdx + 1]);
+    }
+  }
+  createShadowRoot(host: Node, templateId: number): Node {
+    var sr = DOM.createShadowRoot(host);
+    var styles = this._nativeShadowStyles.get(templateId);
+    for (var i = 0; i < styles.length; i++) {
+      DOM.appendChild(sr, DOM.createStyleElement(styles[i]));
+    }
+    return sr;
+  }
+  on(element: Node, eventName: string, callback: Function) {
+    this._eventManager.addEventListener(<HTMLElement>element, eventName,
+                                        decoratePreventDefault(callback));
+  }
+  globalOn(target: string, eventName: string, callback: Function): Function {
+    return this._eventManager.addGlobalEventListener(target, eventName,
+                                                     decoratePreventDefault(callback));
   }
 }
 

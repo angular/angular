@@ -1,4 +1,4 @@
-import {Compiler, internalCreateProtoView} from 'angular2/src/core/linker/compiler';
+import {Compiler, Compiler_, internalCreateProtoView} from 'angular2/src/core/linker/compiler';
 import {ProtoViewRef} from 'angular2/src/core/linker/view_ref';
 import {ProtoViewFactory} from 'angular2/src/core/linker/proto_view_factory';
 import {TemplateCompiler} from './template_compiler';
@@ -7,11 +7,10 @@ import {Injectable} from 'angular2/src/core/di';
 import {Type} from 'angular2/src/core/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 
+export abstract class RuntimeCompiler extends Compiler {}
+
 @Injectable()
-export class RuntimeCompiler extends Compiler {
-  /**
-   * @internal
-   */
+export class RuntimeCompiler_ extends Compiler_ implements RuntimeCompiler {
   constructor(_protoViewFactory: ProtoViewFactory, private _templateCompiler: TemplateCompiler) {
     super(_protoViewFactory);
   }

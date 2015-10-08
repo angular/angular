@@ -29,7 +29,7 @@ import {
 } from 'angular2/src/core/linker/dynamic_component_loader';
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
 import {Renderer} from 'angular2/src/core/render/api';
-import {DomRenderer, DOCUMENT} from 'angular2/src/core/render/render';
+import {DomRenderer, DomRenderer_, DOCUMENT} from 'angular2/src/core/render/render';
 import {
   SharedStylesHost,
   DomSharedStylesHost
@@ -55,7 +55,7 @@ export function applicationDomBindings(): Array<Type | Binding | any[]> {
     new Binding(EVENT_MANAGER_PLUGINS, {toClass: DomEventsPlugin, multi: true}),
     new Binding(EVENT_MANAGER_PLUGINS, {toClass: KeyEventsPlugin, multi: true}),
     new Binding(EVENT_MANAGER_PLUGINS, {toClass: HammerGesturesPlugin, multi: true}),
-    DomRenderer,
+    bind(DomRenderer).toClass(DomRenderer_),
     bind(Renderer).toAlias(DomRenderer),
     DomSharedStylesHost,
     bind(SharedStylesHost).toAlias(DomSharedStylesHost),

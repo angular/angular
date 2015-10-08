@@ -21,6 +21,7 @@ import {bind, Inject, Injector, LifeCycle} from 'angular2/core';
 import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
 import {IS_DART} from '../platform';
+import {ComponentRef_} from "angular2/src/core/linker/dynamic_component_loader";
 
 @Component({selector: 'hello-app'})
 @View({template: '{{greeting}} world!'})
@@ -178,7 +179,7 @@ export function main() {
          var refPromise = bootstrap(HelloRootCmp4, testBindings);
 
          refPromise.then((ref) => {
-           expect(ref.hostComponent.lc).toBe(ref.injector.get(LifeCycle));
+           expect(ref.hostComponent.lc).toBe((<ComponentRef_>ref).injector.get(LifeCycle));
            async.done();
          });
        }));

@@ -13,7 +13,8 @@ import {Type} from 'angular2/src/core/facade/lang';
 import {
   ClientMessageBroker,
   UiArguments,
-  ClientMessageBrokerFactory
+  ClientMessageBrokerFactory,
+  ClientMessageBrokerFactory_
 } from 'angular2/src/web_workers/shared/client_message_broker';
 import {WebWorkerXHRImpl} from "angular2/src/web_workers/worker/xhr_impl";
 import {PromiseWrapper} from "angular2/src/core/facade/async";
@@ -43,7 +44,7 @@ export function main() {
   });
 }
 
-class MockMessageBrokerFactory extends ClientMessageBrokerFactory {
+class MockMessageBrokerFactory extends ClientMessageBrokerFactory_ {
   constructor(private _messageBroker: ClientMessageBroker) { super(null, null); }
   createMessageBroker(channel: string, runInZone = true) { return this._messageBroker; }
 }

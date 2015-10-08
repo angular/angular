@@ -24,7 +24,7 @@ export {ROUTE_DATA} from './src/router/route_data';
 import {LocationStrategy} from './src/router/location_strategy';
 import {PathLocationStrategy} from './src/router/path_location_strategy';
 import {Router, RootRouter} from './src/router/router';
-import {RouterOutlet} from './src/router/router_outlet';
+import {RouterOutlet, RouterOutlet_} from './src/router/router_outlet';
 import {RouterLink} from './src/router/router_link';
 import {RouteRegistry} from './src/router/route_registry';
 import {Location} from './src/router/location';
@@ -130,6 +130,7 @@ export const ROUTER_BINDINGS: any[] = CONST_EXPR([
   RouteRegistry,
   CONST_EXPR(new Binding(LocationStrategy, {toClass: PathLocationStrategy})),
   Location,
+  CONST_EXPR(new Binding(RouterOutlet, {toClass: RouterOutlet_})),
   CONST_EXPR(
       new Binding(Router,
                   {

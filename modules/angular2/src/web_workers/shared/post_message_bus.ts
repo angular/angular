@@ -7,7 +7,7 @@ import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptio
 import {EventEmitter} from 'angular2/src/core/facade/async';
 import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {Injectable} from "angular2/src/core/di";
-import {NgZone} from 'angular2/src/core/zone/ng_zone';
+import {NgZone, NgZone_} from 'angular2/src/core/zone/ng_zone';
 
 /**
  * A TypeScript implementation of {@link MessageBus} for communicating via JavaScript's
@@ -41,7 +41,7 @@ export class PostMessageBusSink implements MessageBusSink {
 
   attachToZone(zone: NgZone): void {
     this._zone = zone;
-    this._zone.overrideOnEventDone(() => this._handleOnEventDone(), false);
+    (<NgZone_>this._zone).overrideOnEventDone(() => this._handleOnEventDone(), false);
   }
 
   initChannel(channel: string, runInZone: boolean = true): void {

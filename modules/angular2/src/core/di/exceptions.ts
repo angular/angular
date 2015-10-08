@@ -1,6 +1,6 @@
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {stringify, isBlank} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+import {BaseException, WrappedException, unimplemented} from 'angular2/src/core/facade/exceptions';
 import {Key} from './key';
 import {Injector} from './injector';
 
@@ -134,14 +134,23 @@ export class CyclicDependencyError extends AbstractBindingError {
  * }
  * ```
  */
-export class InstantiationError extends WrappedException {
+export abstract class InstantiationError extends WrappedException {
+  constructor(message, originalException, originalStack, context) {
+    super(message, originalException, originalStack, context);
+  }
+  abstract addKey(injector: Injector, key: Key): void;
+  get wrapperMessage(): string { return unimplemented(); };
+  get causeKey(): Key { return unimplemented(); };
+  get context() { return unimplemented(); };
+}
+
+export class InstantiationError_ extends InstantiationError {
   /** @internal */
   keys: Key[];
 
   /** @internal */
   injectors: Injector[];
 
-  /** @internal */
   constructor(injector: Injector, originalException, originalStack, key: Key) {
     super("DI Exception", originalException, originalStack, null);
     this.keys = [key];

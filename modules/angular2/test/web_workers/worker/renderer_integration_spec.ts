@@ -26,6 +26,7 @@ import {
 import {WebWorkerRenderer} from "angular2/src/web_workers/worker/renderer";
 import {
   ClientMessageBrokerFactory,
+  ClientMessageBrokerFactory_,
   UiArguments,
   FnArg
 } from "angular2/src/web_workers/shared/client_message_broker";
@@ -37,7 +38,7 @@ import {
   RenderFragmentRef,
   Renderer
 } from "angular2/src/core/render/api";
-import {DomRenderer} from 'angular2/src/core/render/dom/dom_renderer';
+import {DomRenderer, DomRenderer_} from 'angular2/src/core/render/dom/dom_renderer';
 import {DefaultRenderView} from 'angular2/src/core/render/view';
 import {
   RenderProtoViewRefStore,
@@ -50,7 +51,10 @@ import {
 import {WebWorkerApplication} from 'angular2/src/web_workers/ui/impl';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {createPairedMessageBuses, PairedMessageBuses} from '../shared/web_worker_test_util';
-import {ServiceMessageBrokerFactory} from 'angular2/src/web_workers/shared/service_message_broker';
+import {
+  ServiceMessageBrokerFactory,
+  ServiceMessageBrokerFactory_
+} from 'angular2/src/web_workers/shared/service_message_broker';
 import {WebWorkerEventDispatcher} from 'angular2/src/web_workers/worker/event_dispatcher';
 
 
@@ -63,10 +67,11 @@ export function main() {
     var workerMessageBus = messageBuses.worker;
 
     // set up the worker side
-    var webWorkerBrokerFactory = new ClientMessageBrokerFactory(workerMessageBus, workerSerializer);
+    var webWorkerBrokerFactory =
+        new ClientMessageBrokerFactory_(workerMessageBus, workerSerializer);
 
     // set up the ui side
-    var uiMessageBrokerFactory = new ServiceMessageBrokerFactory(uiMessageBus, uiSerializer);
+    var uiMessageBrokerFactory = new ServiceMessageBrokerFactory_(uiMessageBus, uiSerializer);
     var renderer = new MessageBasedRenderer(uiMessageBrokerFactory, uiMessageBus, uiSerializer,
                                             uiRenderProtoViewStore, uiRenderViewStore, domRenderer);
     renderer.start();
@@ -101,7 +106,8 @@ export function main() {
         bind(RenderProtoViewRefStore)
             .toValue(uiRenderProtoViewStore),
         bind(RenderViewWithFragmentsStore).toValue(uiRenderViewStore),
-        bind(Renderer).toClass(DomRenderer)
+        bind(DomRenderer).toClass(DomRenderer_),
+        bind(Renderer).toAlias(DomRenderer)
       ]);
       var uiSerializer = uiInjector.get(Serializer);
       var domRenderer = uiInjector.get(DomRenderer);

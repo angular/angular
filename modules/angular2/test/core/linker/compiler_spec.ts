@@ -24,6 +24,7 @@ import {Compiler} from 'angular2/src/core/linker/compiler';
 import {ProtoViewFactory} from 'angular2/src/core/linker/proto_view_factory';
 import {reflector, ReflectionInfo} from 'angular2/src/core/reflection/reflection';
 import {AppProtoView} from 'angular2/src/core/linker/view';
+import {Compiler_} from "angular2/src/core/linker/compiler";
 
 export function main() {
   describe('Compiler', () => {
@@ -36,7 +37,9 @@ export function main() {
       protoViewFactorySpy = new SpyProtoViewFactory();
       someProtoView = new AppProtoView(null, null, null, null, null, null);
       protoViewFactorySpy.spy('createHost').andReturn(someProtoView);
-      return [bind(ProtoViewFactory).toValue(protoViewFactorySpy), Compiler];
+      var bindings =
+          [bind(ProtoViewFactory).toValue(protoViewFactorySpy), bind(Compiler).toClass(Compiler_)];
+      return bindings;
     });
 
     beforeEach(inject([Compiler], (_compiler) => {

@@ -1,4 +1,5 @@
 import {Map, MapWrapper, StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+import {unimplemented} from 'angular2/src/core/facade/exceptions';
 import {isPresent, isBlank, normalizeBlank, Type} from 'angular2/src/core/facade/lang';
 import {Promise} from 'angular2/src/core/facade/async';
 
@@ -140,42 +141,55 @@ function stringifyAux(instruction: Instruction): string {
  *
  * You should not modify this object. It should be treated as immutable.
  */
-export class ComponentInstruction {
+export abstract class ComponentInstruction {
   reuse: boolean = false;
-
-  /**
-   * @internal
-   */
-  constructor(public urlPath: string, public urlParams: string[],
-              private _recognizer: PathRecognizer, public params: {[key: string]: any} = null) {}
+  public urlPath: string;
+  public urlParams: string[];
+  public params: {[key: string]: any};
 
   /**
    * Returns the component type of the represented route, or `null` if this instruction
    * hasn't been resolved.
    */
-  get componentType() { return this._recognizer.handler.componentType; }
+  get componentType() { return unimplemented(); };
 
   /**
    * Returns a promise that will resolve to component type of the represented route.
    * If this instruction references an {@link AsyncRoute}, the `loader` function of that route
    * will run.
    */
-  resolveComponentType(): Promise<Type> { return this._recognizer.handler.resolveComponentType(); }
+  abstract resolveComponentType(): Promise<Type>;
 
   /**
    * Returns the specificity of the route associated with this `Instruction`.
    */
-  get specificity() { return this._recognizer.specificity; }
+  get specificity() { return unimplemented(); };
 
   /**
    * Returns `true` if the component type of this instruction has no child {@link RouteConfig},
    * or `false` if it does.
    */
-  get terminal() { return this._recognizer.terminal; }
+  get terminal() { return unimplemented(); };
 
   /**
    * Returns the route data of the given route that was specified in the {@link RouteDefinition},
    * or `null` if no route data was specified.
    */
+  abstract routeData(): Object;
+}
+
+export class ComponentInstruction_ extends ComponentInstruction {
+  constructor(urlPath: string, urlParams: string[], private _recognizer: PathRecognizer,
+              params: {[key: string]: any} = null) {
+    super();
+    this.urlPath = urlPath;
+    this.urlParams = urlParams;
+    this.params = params;
+  }
+
+  get componentType() { return this._recognizer.handler.componentType; }
+  resolveComponentType(): Promise<Type> { return this._recognizer.handler.resolveComponentType(); }
+  get specificity() { return this._recognizer.specificity; }
+  get terminal() { return this._recognizer.terminal; }
   routeData(): Object { return this._recognizer.handler.data; }
 }

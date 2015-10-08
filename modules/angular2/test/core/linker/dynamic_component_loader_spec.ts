@@ -24,6 +24,7 @@ import {DynamicComponentLoader} from 'angular2/src/core/linker/dynamic_component
 import {ElementRef} from 'angular2/src/core/linker/element_ref';
 import {DOCUMENT} from 'angular2/src/core/render/render';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {RootTestComponent_} from "angular2/src/test_lib/test_component_builder";
 
 export function main() {
   describe('DynamicComponentLoader', function() {
@@ -231,7 +232,7 @@ export function main() {
                   DOM.appendChild(doc.body, rootEl);
                   loader.loadAsRoot(ChildComp, null, injector)
                       .then((componentRef) => {
-                        var el = new RootTestComponent(componentRef);
+                        var el = new RootTestComponent_(componentRef);
                         expect(rootEl.parentNode).toBe(doc.body);
 
                         el.detectChanges();

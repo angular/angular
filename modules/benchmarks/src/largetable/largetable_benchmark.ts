@@ -26,6 +26,7 @@ import {ListWrapper} from 'angular2/src/core/facade/collection';
 
 import {Inject} from 'angular2/src/core/di/decorators';
 import {reflector} from 'angular2/src/core/reflection/reflection';
+import {ComponentRef_} from "angular2/src/core/linker/dynamic_component_loader";
 
 export const BENCHMARK_TYPE = 'LargetableComponent.benchmarkType';
 export const LARGETABLE_ROWS = 'LargetableComponent.rows';
@@ -124,7 +125,7 @@ export function main() {
   function initNg2() {
     bootstrap(AppComponent, _createBindings())
         .then((ref) => {
-          var injector = ref.injector;
+          var injector = (<ComponentRef_>ref).injector;
           app = ref.hostComponent;
           lifecycle = injector.get(LifeCycle);
           bindAction('#ng2DestroyDom', ng2DestroyDom);

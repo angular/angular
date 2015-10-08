@@ -23,6 +23,7 @@ import {
 } from 'angular2/src/test_lib/benchmark_util';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
+import {ComponentRef_} from "angular2/src/core/linker/dynamic_component_loader";
 
 function createBindings(): Binding[] {
   var viewCacheCapacity = getStringParameter('viewcache') == 'true' ? 10000 : 1;
@@ -93,7 +94,7 @@ export function main() {
   function initNg2() {
     bootstrap(AppComponent, createBindings())
         .then((ref) => {
-          var injector = ref.injector;
+          var injector = (<ComponentRef_>ref).injector;
           lifeCycle = injector.get(LifeCycle);
 
           app = ref.hostComponent;

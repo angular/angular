@@ -17,9 +17,15 @@ import {SpyRenderer, SpyAppViewPool, SpyAppViewListener, SpyProtoViewFactory} fr
 import {Injector, bind} from 'angular2/core';
 
 import {AppProtoView, AppView, AppViewContainer, ViewType} from 'angular2/src/core/linker/view';
-import {ProtoViewRef, ViewRef, internalView} from 'angular2/src/core/linker/view_ref';
+import {
+  ProtoViewRef,
+  ProtoViewRef_,
+  ViewRef,
+  ViewRef_,
+  internalView
+} from 'angular2/src/core/linker/view_ref';
 import {ElementRef} from 'angular2/src/core/linker/element_ref';
-import {TemplateRef} from 'angular2/src/core/linker/template_ref';
+import {TemplateRef, TemplateRef_} from 'angular2/src/core/linker/template_ref';
 import {
   Renderer,
   RenderViewRef,
@@ -27,7 +33,7 @@ import {
   RenderFragmentRef,
   RenderViewWithFragments
 } from 'angular2/src/core/render/api';
-import {AppViewManager} from 'angular2/src/core/linker/view_manager';
+import {AppViewManager, AppViewManager_} from 'angular2/src/core/linker/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/linker/view_manager_utils';
 
 import {
@@ -51,9 +57,9 @@ export function main() {
     var manager: AppViewManager;
     var createdRenderViews: RenderViewWithFragments[];
 
-    function wrapPv(protoView: AppProtoView): ProtoViewRef { return new ProtoViewRef(protoView); }
+    function wrapPv(protoView: AppProtoView): ProtoViewRef { return new ProtoViewRef_(protoView); }
 
-    function wrapView(view: AppView): ViewRef { return new ViewRef(view); }
+    function wrapView(view: AppView): ViewRef { return new ViewRef_(view); }
 
     function resetSpies() {
       viewListener.spy('viewCreated').reset();
@@ -73,7 +79,7 @@ export function main() {
       viewListener = new SpyAppViewListener();
       viewPool = new SpyAppViewPool();
       linker = new SpyProtoViewFactory();
-      manager = new AppViewManager(viewPool, viewListener, utils, renderer, linker);
+      manager = new AppViewManager_(viewPool, viewListener, utils, renderer, linker);
       createdRenderViews = [];
 
       renderer.spy('createRootHostView')
@@ -196,7 +202,7 @@ export function main() {
           hostView =
               internalView(<ViewRef>manager.createRootHostView(wrapPv(hostProtoView), null, null));
           vcRef = hostView.elementRefs[1];
-          templateRef = new TemplateRef(hostView.elementRefs[1]);
+          templateRef = new TemplateRef_(hostView.elementRefs[1]);
           resetSpies();
         });
 
@@ -348,7 +354,7 @@ export function main() {
           hostView =
               internalView(<ViewRef>manager.createRootHostView(wrapPv(hostProtoView), null, null));
           vcRef = hostView.elementRefs[1];
-          templateRef = new TemplateRef(hostView.elementRefs[1]);
+          templateRef = new TemplateRef_(hostView.elementRefs[1]);
           firstChildView =
               internalView(manager.createEmbeddedViewInContainer(vcRef, 0, templateRef));
           resetSpies();
@@ -420,7 +426,7 @@ export function main() {
             hostView = internalView(
                 <ViewRef>manager.createRootHostView(wrapPv(hostProtoView), null, null));
             vcRef = hostView.elementRefs[1];
-            templateRef = new TemplateRef(hostView.elementRefs[1]);
+            templateRef = new TemplateRef_(hostView.elementRefs[1]);
             firstChildView =
                 internalView(manager.createEmbeddedViewInContainer(vcRef, 0, templateRef));
             secondChildView =
@@ -473,7 +479,7 @@ export function main() {
             hostView = internalView(
                 <ViewRef>manager.createRootHostView(wrapPv(hostProtoView), null, null));
             vcRef = hostView.elementRefs[1];
-            templateRef = new TemplateRef(hostView.elementRefs[1]);
+            templateRef = new TemplateRef_(hostView.elementRefs[1]);
             nestedChildViews = [];
             childViews = [];
             nestedVcRefs = [];
