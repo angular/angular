@@ -104,7 +104,7 @@ export class DirectiveAst implements TemplateAst {
 }
 
 export class NgContentAst implements TemplateAst {
-  constructor(public ngContentIndex: number, public sourceInfo: string) {}
+  constructor(public index: number, public ngContentIndex: number, public sourceInfo: string) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
     return visitor.visitNgContent(this, context);
   }

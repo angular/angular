@@ -85,7 +85,13 @@ export interface RenderBeginCmd extends RenderTemplateCmd {
 
 export interface RenderTextCmd extends RenderBeginCmd { value: string; }
 
-export interface RenderNgContentCmd { ngContentIndex: number; }
+export interface RenderNgContentCmd {
+  // The index of this NgContent element
+  index: number;
+  // The index of the NgContent element into which this
+  // NgContent element should be projected (if any)
+  ngContentIndex: number;
+}
 
 export interface RenderBeginElementCmd extends RenderBeginCmd {
   name: string;

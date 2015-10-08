@@ -30,7 +30,7 @@ export class WebWorkerTextCmd implements RenderTextCmd {
 }
 
 export class WebWorkerNgContentCmd implements RenderNgContentCmd {
-  constructor(public ngContentIndex: number) {}
+  constructor(public index: number, public ngContentIndex: number) {}
   visit(visitor: RenderCommandVisitor, context: any): any {
     return visitor.visitNgContent(this, context);
   }

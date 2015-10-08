@@ -96,6 +96,8 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   selectorMatcher: SelectorMatcher;
   errors: string[] = [];
   directivesIndex = new Map<CompileDirectiveMetadata, number>();
+  ngContentCount: number = 0;
+
   constructor(directives: CompileDirectiveMetadata[], private _exprParser: Parser,
               private _schemaRegistry: ElementSchemaRegistry) {
     this.selectorMatcher = new SelectorMatcher();
@@ -207,7 +209,8 @@ class TemplateParseVisitor implements HtmlAstVisitor {
         hasInlineTemplates ? null : component.findNgContentIndex(elementCssSelector);
     var parsedElement;
     if (preparsedElement.type === PreparsedElementType.NG_CONTENT) {
-      parsedElement = new NgContentAst(elementNgContentIndex, element.sourceInfo);
+      parsedElement =
+          new NgContentAst(this.ngContentCount++, elementNgContentIndex, element.sourceInfo);
     } else if (isTemplateElement) {
       this._assertNoComponentsNorElementBindingsOnTemplate(directives, elementProps, events,
                                                            element.sourceInfo);
