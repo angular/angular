@@ -23,6 +23,7 @@ module.exports = function makeNodeTree(destinationPath) {
       'angular2/test/animate/**',
       'angular2/test/core/zone/**',
       'angular2/test/test_lib/fake_async_spec.ts',
+      'angular2/test/test_lib/test_lib_public_spec.ts',
       'angular2/test/core/compiler/xhr_impl_spec.ts',
       'angular2/test/core/forms/**',
       'angular2/test/tools/tools_spec.ts',
