@@ -38,7 +38,7 @@ import {
   RenderFragmentRef,
   Renderer
 } from "angular2/src/core/render/api";
-import {DomRenderer} from 'angular2/src/core/render/dom/dom_renderer';
+import {DomRenderer, DomRenderer_} from 'angular2/src/core/render/dom/dom_renderer';
 import {DefaultRenderView} from 'angular2/src/core/render/view';
 import {
   RenderProtoViewRefStore,
@@ -106,7 +106,8 @@ export function main() {
         bind(RenderProtoViewRefStore)
             .toValue(uiRenderProtoViewStore),
         bind(RenderViewWithFragmentsStore).toValue(uiRenderViewStore),
-        bind(Renderer).toClass(DomRenderer)
+        bind(DomRenderer).toClass(DomRenderer_),
+        bind(Renderer).toAlias(DomRenderer)
       ]);
       var uiSerializer = uiInjector.get(Serializer);
       var domRenderer = uiInjector.get(DomRenderer);

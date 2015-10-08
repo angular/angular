@@ -30,7 +30,7 @@ import {
   BindingWithVisibility,
   DependencyProvider
 } from 'angular2/src/core/di/injector';
-import {resolveBinding, ResolvedFactory} from 'angular2/src/core/di/binding';
+import {resolveBinding, ResolvedFactory, ResolvedBinding_} from 'angular2/src/core/di/binding';
 
 import {AttributeMetadata, QueryMetadata} from '../metadata/di';
 
@@ -53,7 +53,6 @@ import {PipeBinding} from '../pipes/pipe_binding';
 
 import {LifecycleHooks} from './interfaces';
 import {ViewContainerRef_} from "./view_container_ref";
-import {ResolvedBinding_} from "../di/binding";
 
 var _staticKeys;
 

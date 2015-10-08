@@ -60,7 +60,7 @@ module.exports = new Package('angular-v2-docs', [jsdocPackage, nunjucksPackage, 
     {
       id: 'angular2/router',
       references: ['./angular2.d.ts'],
-      remapTypes: {Type: 'ng.Type', InjectableReference: 'ng.InjectableReference'},
+      remapTypes: {Type: 'ng.Type', InjectableReference: 'ng.InjectableReference', ElementRef: 'ng.ElementRef', DynamicComponentLoader: 'ng.DynamicComponentLoader'},
       modules: {'angular2/router': {namespace: 'ngRouter', id: 'angular2/router'}}
     },
     {

@@ -74,7 +74,7 @@ function _componentBindings(appComponentType: Type): Array<Type | Binding | any[
                     return componentRef;
                   });
             },
-            [bind(DynamicComponentLoader).toClass(DynamicComponentLoader_), Injector]),
+            [DynamicComponentLoader, Injector]),
 
     bind(appComponentType)
         .toFactory((p: Promise<any>) => p.then(ref => ref.instance), [APP_COMPONENT_REF_PROMISE]),

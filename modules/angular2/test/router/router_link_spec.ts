@@ -32,7 +32,7 @@ import {
 } from 'angular2/router';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {ComponentInstruction_} from "../../src/router/instruction";
+import {ComponentInstruction_} from "angular2/src/router/instruction";
 
 var dummyInstruction = new Instruction(new ComponentInstruction_('detail', [], null), null, {});
 

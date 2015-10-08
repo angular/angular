@@ -53,7 +53,7 @@ class SpyView extends SpyObject implements AppView {
 }
 
 @proxy
-class SpyElementRef extends SpyObject implements ElementRef {
+class SpyElementRef extends SpyObject implements ElementRef_ {
   noSuchMethod(m) => super.noSuchMethod(m);
 }
 

@@ -14,7 +14,7 @@ import {
   inject
 } from 'angular2/test_lib';
 import {SpyChangeDetector} from '../spies';
-import {LifeCycle_} from "../../../src/core/life_cycle/life_cycle";
+import {LifeCycle_} from "angular2/src/core/life_cycle/life_cycle";
 
 export function main() {
   describe("LifeCycle", () => {

@@ -108,7 +108,6 @@ class FakeEventManagerPlugin extends EventManagerPlugin {
 
 class FakeNgZone extends NgZone_ {
   constructor() { super({enableLongStackTrace: false}); }
-
   run(fn) { fn(); }
 
   runOutsideAngular(fn) { return fn(); }

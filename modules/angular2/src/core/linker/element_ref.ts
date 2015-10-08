@@ -1,7 +1,6 @@
 import {BaseException, unimplemented} from 'angular2/src/core/facade/exceptions';
 import {ViewRef, ViewRef_} from './view_ref';
 import {RenderViewRef, RenderElementRef, Renderer} from 'angular2/src/core/render/api';
-import {ChangeDetectorRef} from "../change_detection/change_detector_ref";
 
 /**
  * Represents a location in a View that has an injection, change-detection and render context
