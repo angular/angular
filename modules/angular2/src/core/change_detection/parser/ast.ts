@@ -1,5 +1,4 @@
-import {isBlank, isPresent, FunctionWrapper} from "angular2/src/core/facade/lang";
-import {Map, ListWrapper, StringMapWrapper} from "angular2/src/core/facade/collection";
+import {ListWrapper} from "angular2/src/core/facade/collection";
 
 export class AST {
   visit(visitor: AstVisitor): any { return null; }
@@ -27,11 +26,6 @@ export class Chain extends AST {
 export class Conditional extends AST {
   constructor(public condition: AST, public trueExp: AST, public falseExp: AST) { super(); }
   visit(visitor: AstVisitor): any { return visitor.visitConditional(this); }
-}
-
-export class If extends AST {
-  constructor(public condition: AST, public trueExp: AST, public falseExp?: AST) { super(); }
-  visit(visitor: AstVisitor): any { return visitor.visitIf(this); }
 }
 
 export class PropertyRead extends AST {
@@ -133,7 +127,6 @@ export interface AstVisitor {
   visitChain(ast: Chain): any;
   visitConditional(ast: Conditional): any;
   visitFunctionCall(ast: FunctionCall): any;
-  visitIf(ast: If): any;
   visitImplicitReceiver(ast: ImplicitReceiver): any;
   visitInterpolation(ast: Interpolation): any;
   visitKeyedRead(ast: KeyedRead): any;
@@ -158,12 +151,6 @@ export class RecursiveAstVisitor implements AstVisitor {
   }
   visitChain(ast: Chain): any { return this.visitAll(ast.expressions); }
   visitConditional(ast: Conditional): any {
-    ast.condition.visit(this);
-    ast.trueExp.visit(this);
-    ast.falseExp.visit(this);
-    return null;
-  }
-  visitIf(ast: If): any {
     ast.condition.visit(this);
     ast.trueExp.visit(this);
     ast.falseExp.visit(this);
@@ -301,9 +288,4 @@ export class AstTransformer implements AstVisitor {
   }
 
   visitChain(ast: Chain): Chain { return new Chain(this.visitAll(ast.expressions)); }
-
-  visitIf(ast: If): If {
-    let falseExp = isPresent(ast.falseExp) ? ast.falseExp.visit(this) : null;
-    return new If(ast.condition.visit(this), ast.trueExp.visit(this), falseExp);
-  }
 }

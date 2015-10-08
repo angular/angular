@@ -173,13 +173,6 @@ export function main() {
         });
       });
 
-      describe("if", () => {
-        it('should parse if statements', () => {
-          checkAction("if (true) a = 0");
-          checkAction("if (true) {a = 0;}", "if (true) a = 0");
-        });
-      });
-
       describe("assignment", () => {
         it("should support field assignments", () => {
           checkAction("a = 12");
