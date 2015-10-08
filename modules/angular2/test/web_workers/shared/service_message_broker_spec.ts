@@ -12,10 +12,7 @@ import {
 } from 'angular2/test_lib';
 import {createPairedMessageBuses} from '../shared/web_worker_test_util';
 import {Serializer, PRIMITIVE} from 'angular2/src/web_workers/shared/serializer';
-import {
-  ServiceMessageBroker,
-  ServiceMessageBroker_
-} from 'angular2/src/web_workers/shared/service_message_broker';
+import {ServiceMessageBroker} from 'angular2/src/web_workers/shared/service_message_broker';
 import {ObservableWrapper, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {bind} from 'angular2/core';
 import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';
@@ -49,7 +46,7 @@ export function main() {
     });
     it("should call registered method with correct arguments",
        inject([Serializer], (serializer) => {
-         var broker = new ServiceMessageBroker_(messageBuses.ui, serializer, CHANNEL);
+         var broker = new ServiceMessageBroker(messageBuses.ui, serializer, CHANNEL);
          broker.registerMethod(TEST_METHOD, [PRIMITIVE, PRIMITIVE], (arg1, arg2) => {
            expect(arg1).toEqual(PASSED_ARG_1);
            expect(arg2).toEqual(PASSED_ARG_2);
@@ -59,7 +56,7 @@ export function main() {
        }));
 
     it("should return promises to the worker", inject([Serializer], (serializer) => {
-         var broker = new ServiceMessageBroker_(messageBuses.ui, serializer, CHANNEL);
+         var broker = new ServiceMessageBroker(messageBuses.ui, serializer, CHANNEL);
          broker.registerMethod(TEST_METHOD, [PRIMITIVE], (arg1) => {
            expect(arg1).toEqual(PASSED_ARG_1);
            return PromiseWrapper.wrap(() => { return RESULT; });

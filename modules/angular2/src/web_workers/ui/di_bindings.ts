@@ -18,7 +18,7 @@ import {HammerGesturesPlugin} from 'angular2/src/core/render/dom/events/hammer_g
 import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 import {Renderer} from 'angular2/src/core/render/api';
 import {AppRootUrl} from 'angular2/src/core/compiler/app_root_url';
-import {DomRenderer, DOCUMENT} from 'angular2/src/core/render/render';
+import {DomRenderer, DomRenderer_, DOCUMENT} from 'angular2/src/core/render/render';
 import {APP_ID_RANDOM_BINDING} from 'angular2/src/core/application_tokens';
 import {ElementSchemaRegistry} from 'angular2/src/core/compiler/schema/element_schema_registry';
 import {
@@ -30,13 +30,16 @@ import {
 } from 'angular2/src/core/render/dom/shared_styles_host';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {AppViewManager} from 'angular2/src/core/linker/view_manager';
+import {AppViewManager, AppViewManager_} from 'angular2/src/core/linker/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/linker/view_manager_utils';
 import {AppViewListener} from 'angular2/src/core/linker/view_listener';
 import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
 import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
-import {DynamicComponentLoader} from 'angular2/src/core/linker/dynamic_component_loader';
+import {
+  DynamicComponentLoader,
+  DynamicComponentLoader_
+} from 'angular2/src/core/linker/dynamic_component_loader';
 import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {Testability} from 'angular2/src/core/testability/testability';
 import {XHR} from 'angular2/src/core/compiler/xhr';
@@ -71,7 +74,7 @@ function _injectorBindings(): any[] {
     new Binding(EVENT_MANAGER_PLUGINS, {toClass: DomEventsPlugin, multi: true}),
     new Binding(EVENT_MANAGER_PLUGINS, {toClass: KeyEventsPlugin, multi: true}),
     new Binding(EVENT_MANAGER_PLUGINS, {toClass: HammerGesturesPlugin, multi: true}),
-    DomRenderer,
+    bind(DomRenderer).toClass(DomRenderer_),
     bind(Renderer).toAlias(DomRenderer),
     APP_ID_RANDOM_BINDING,
     DomSharedStylesHost,
@@ -83,7 +86,7 @@ function _injectorBindings(): any[] {
     RenderProtoViewRefStore,
     AppViewPool,
     bind(APP_VIEW_POOL_CAPACITY).toValue(10000),
-    AppViewManager,
+    bind(AppViewManager).toClass(AppViewManager_),
     AppViewManagerUtils,
     AppViewListener,
     ProtoViewFactory,
@@ -95,7 +98,7 @@ function _injectorBindings(): any[] {
     bind(ExceptionHandler).toFactory(() => new ExceptionHandler(DOM), []),
     bind(XHR).toValue(new XHRImpl()),
     UrlResolver,
-    DynamicComponentLoader,
+    bind(DynamicComponentLoader).toClass(DynamicComponentLoader_),
     Testability,
     AnchorBasedAppRootUrl,
     bind(AppRootUrl).toAlias(AnchorBasedAppRootUrl),

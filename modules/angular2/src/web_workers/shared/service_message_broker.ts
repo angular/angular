@@ -10,26 +10,18 @@ import {
   ObservableWrapper
 } from 'angular2/src/core/facade/async';
 
-export abstract class ServiceMessageBrokerFactory {
+
+@Injectable()
+export class ServiceMessageBrokerFactory {
+  constructor(private _messageBus: MessageBus, public _serializer: Serializer) {}
+
   /**
    * Initializes the given channel and attaches a new {@link ServiceMessageBroker} to it.
    */
-  abstract createMessageBroker(channel: string, runInZone?: boolean): ServiceMessageBroker;
-}
-
-@Injectable()
-export class ServiceMessageBrokerFactory_ extends ServiceMessageBrokerFactory {
-  constructor(private _messageBus: MessageBus, public _serializer: Serializer) { super(); }
-
   createMessageBroker(channel: string, runInZone: boolean = true): ServiceMessageBroker {
     this._messageBus.initChannel(channel, runInZone);
-    return new ServiceMessageBroker_(this._messageBus, this._serializer, channel);
+    return new ServiceMessageBroker(this._messageBus, this._serializer, channel);
   }
-}
-
-export abstract class ServiceMessageBroker {
-  abstract registerMethod(methodName: string, signature: Type[], method: Function,
-                          returnType?: Type): void;
 }
 
 /**
@@ -38,12 +30,11 @@ export abstract class ServiceMessageBroker {
  * the UIMessageBroker deserializes its arguments and calls the registered method.
  * If that method returns a promise, the UIMessageBroker returns the result to the worker.
  */
-export class ServiceMessageBroker_ extends ServiceMessageBroker {
+export class ServiceMessageBroker {
   private _sink: EventEmitter;
   private _methods: Map<string, Function> = new Map<string, Function>();
 
   constructor(messageBus: MessageBus, private _serializer: Serializer, public channel) {
-    super();
     this._sink = messageBus.to(channel);
     var source = messageBus.from(channel);
     ObservableWrapper.subscribe(source, (message) => this._handleMessage(message));
