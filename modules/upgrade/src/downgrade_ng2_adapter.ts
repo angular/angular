@@ -149,10 +149,9 @@ export class DowngradeNg2ComponentAdapter {
         }
         var emitter = this.component[output.prop];
         if (emitter) {
-          emitter.observer({
-            next: assignExpr ? ((setter) => (value) => setter(this.scope, value))(setter) :
-                               ((getter) => (value) => getter(this.scope, {$event: value}))(getter)
-          });
+          emitter.subscribe(
+              assignExpr ? ((setter) => (value) => setter(this.scope, value))(setter) :
+                           ((getter) => (value) => getter(this.scope, {$event: value}))(getter));
         } else {
           throw new Error(`Missing emitter '${output.prop}' on component '${this.info.selector}'!`);
         }

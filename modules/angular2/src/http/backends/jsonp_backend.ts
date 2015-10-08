@@ -8,9 +8,8 @@ import {BrowserJsonp} from './browser_jsonp';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {makeTypeError} from 'angular2/src/core/facade/exceptions';
 import {StringWrapper, isPresent} from 'angular2/src/core/facade/lang';
-// todo(robwormald): temporary until https://github.com/angular/angular/issues/4390 decided
-var Rx = require('@reactivex/rxjs/dist/cjs/Rx');
-var {Observable} = Rx;
+import {Observable} from 'angular2/core';
+
 export abstract class JSONPConnection implements Connection {
   readyState: ReadyStates;
   request: Request;

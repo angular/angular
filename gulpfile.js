@@ -420,7 +420,7 @@ gulp.task('serve.e2e.dart', ['build.js.cjs'], function(neverDone) {
 // d.ts generation
 var Dgeni = require('dgeni');
 
-gulp.task('docs/typings', [], function() {
+gulp.task('docs/typings', function() {
   try {
     var dgeni = new Dgeni([require('./docs/typescript-definition-package')]);
     return dgeni.generate();
@@ -448,7 +448,7 @@ function runKarma(configFile, done) {
 
 gulp.task('test.js', function(done) {
   runSequence('test.unit.tools/ci', 'test.transpiler.unittest', 'test.unit.js/ci',
-              'test.unit.cjs/ci', 'test.typings', 'test.typings.npm', sequenceComplete(done));
+              'test.unit.cjs/ci', 'test.typings.npm', sequenceComplete(done));
 });
 
 gulp.task('test.dart', function(done) {
@@ -1130,7 +1130,7 @@ var JS_DEV_DEPS = [
 
 // Splice in RX license if rx is in the bundle.
 function insertRXLicense(source) {
-  var n = source.indexOf('System.register("@reactivex/rxjs/dist/cjs/Subject"');
+  var n = source.indexOf('System.register("@reactivex/rxjs/dist/cjs/Rx"');
   if (n >= 0) {
     var rxLicense = licenseWrap('node_modules/@reactivex/rxjs/LICENSE.txt');
     return source.slice(0, n) + rxLicense + source.slice(n);

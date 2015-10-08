@@ -71,8 +71,8 @@ export class MdInput {
 
   // Events emitted by this directive. We use these special 'md-' events to communicate
   // to the parent MdInputContainer.
-  mdChange: EventEmitter;
-  mdFocusChange: EventEmitter;
+  mdChange: EventEmitter<any>;
+  mdFocusChange: EventEmitter<any>;
 
   constructor(@Attribute('value') value: string, @SkipSelf() @Host() container: MdInputContainer,
               @Attribute('id') id: string) {

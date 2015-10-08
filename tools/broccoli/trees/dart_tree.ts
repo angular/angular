@@ -17,6 +17,7 @@ var global_excludes = [
   'angular2/http*',
   'angular2/examples/*/ts/**/*',
   'angular2/src/http/**/*',
+  'angular2/src/rx/**/*',
   'angular2/test/http/**/*',
   'playground/src/http/**/*',
   'playground/test/http/**/*',
@@ -59,6 +60,9 @@ function stripModulePrefix(relativePath: string): string {
 
 function getSourceTree() {
   var tsInputTree = modulesFunnel(['**/*.js', '**/*.ts', '**/*.dart'], ['angular1_router/**/*']);
+  var rxTree = new Funnel('node_modules', {include: ['@reactivex/**/*.d.ts'], destDir: '/'});
+
+  tsInputTree = mergeTrees([tsInputTree, rxTree]);
   var transpiled = ts2dart(tsInputTree, {
     generateLibraryName: true,
     generateSourceMap: false,

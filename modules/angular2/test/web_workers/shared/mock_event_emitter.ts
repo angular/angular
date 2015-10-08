@@ -1,12 +1,12 @@
 import {EventEmitter} from 'angular2/src/core/facade/async';
 
-export class MockEventEmitter extends EventEmitter {
+export class MockEventEmitter<T> extends EventEmitter<T> {
   private _nextFns: Function[] = [];
 
   constructor() { super(); }
 
-  observer(generator: any): any {
-    this._nextFns.push(generator.next);
+  subscribe(next: any): any {
+    this._nextFns.push(next);
     return new MockDisposable();
   }
 

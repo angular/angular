@@ -16,7 +16,7 @@ import {ObservableWrapper, EventEmitter, PromiseWrapper} from 'angular2/src/core
 
 export function main() {
   describe('EventEmitter', () => {
-    var emitter: EventEmitter;
+    var emitter: EventEmitter<any>;
 
     beforeEach(() => { emitter = new EventEmitter(); });
 

@@ -244,7 +244,7 @@ class UpgradeNg1ComponentAdapter implements OnChanges, DoCheck {
         if (typeof value == 'number' && isNaN(value) && typeof last == 'number' && isNaN(last)) {
           // ignore because NaN != NaN
         } else {
-          var eventEmitter: EventEmitter = this[this.propOuts[i]];
+          var eventEmitter: EventEmitter<any> = this[this.propOuts[i]];
           eventEmitter.next(lastValues[i] = value);
         }
       }

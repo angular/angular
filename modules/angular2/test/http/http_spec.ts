@@ -30,8 +30,7 @@ import {
   Jsonp
 } from 'angular2/http';
 
-var Rx = require('@reactivex/rxjs/dist/cjs/Rx');
-let{Observable, Subject} = Rx;
+import {Observable} from 'angular2/src/core/facade/async';
 
 class SpyObserver extends SpyObject {
   onNext: Function;

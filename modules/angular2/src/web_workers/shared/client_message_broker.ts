@@ -44,7 +44,7 @@ export abstract class ClientMessageBroker {
 
 export class ClientMessageBroker_ extends ClientMessageBroker {
   private _pending: Map<string, PromiseCompleter<any>> = new Map<string, PromiseCompleter<any>>();
-  private _sink: EventEmitter;
+  private _sink: EventEmitter<any>;
   /** @internal */
   public _serializer: Serializer;
 
