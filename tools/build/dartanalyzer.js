@@ -177,6 +177,10 @@ _AnalyzerOutputLine.prototype = {
       if (this.sourcePath.match(/_analyzer\.dart/)) {
         return true;
       }
+      // TODO remove it once ts2dart propertly generates abstract getters
+      if (this.errorMsg.match(/unimplemented/)) {
+        return true;
+      }
     }
 
     if (this.errorCode.match(/DEPRECATED_MEMBER_USE/i)) {
