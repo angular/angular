@@ -255,30 +255,26 @@ export class Binding {
  * expect(injector.get('message')).toEqual('Hello');
  * ```
  */
-export abstract class ResolvedBinding {
+export interface ResolvedBinding {
   /**
    * A key, usually a `Type`.
    */
-  public key: Key;
+  key: Key;
 
   /**
    * Factory function which can return an instance of an object represented by a key.
    */
-  public resolvedFactories: ResolvedFactory[];
+  resolvedFactories: ResolvedFactory[];
 
   /**
    * Indicates if the binding is a multi-binding or a regular binding.
    */
-  public multiBinding: boolean;
+  multiBinding: boolean;
 }
 
-export class ResolvedBinding_ extends ResolvedBinding {
-  constructor(key: Key, resolvedFactories: ResolvedFactory[], multiBinding: boolean) {
-    super();
-    this.key = key;
-    this.resolvedFactories = resolvedFactories;
-    this.multiBinding = multiBinding;
-  }
+export class ResolvedBinding_ implements ResolvedBinding {
+  constructor(public key: Key, public resolvedFactories: ResolvedFactory[],
+              public multiBinding: boolean) {}
 
   get resolvedFactory(): ResolvedFactory { return this.resolvedFactories[0]; }
 }

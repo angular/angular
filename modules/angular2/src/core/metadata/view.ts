@@ -115,7 +115,7 @@ export class ViewMetadata {
    * }
    * ```
    */
-  directives: Array<Type | Function | any[]>;
+  directives: Array<Type | any[]>;
 
   pipes: Array<Type | any[]>;
 

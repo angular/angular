@@ -15,6 +15,14 @@ import {ViewRef, HostViewRef} from './view_ref';
  */
 export abstract class ComponentRef {
   /**
+   * The injector provided {@link DynamicComponentLoader#loadAsRoot}.
+   *
+   * TODO(i): this api is useless and should be replaced by an injector retrieved from
+   *     the HostElementRef, which is currently not possible.
+   */
+  injector: Injector;
+
+  /**
    * Location of the Host Element of this Component Instance.
    */
   location: ElementRef;
@@ -54,14 +62,6 @@ export abstract class ComponentRef {
 }
 
 export class ComponentRef_ extends ComponentRef {
-  /**
-   * The injector provided {@link DynamicComponentLoader#loadAsRoot}.
-   *
-   * TODO(i): this api is useless and should be replaced by an injector retrieved from
-   *     the HostElementRef, which is currently not possible.
-   */
-  injector: Injector;
-
   /**
    * TODO(i): refactor into public/private fields
    */

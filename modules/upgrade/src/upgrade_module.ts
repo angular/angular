@@ -34,7 +34,7 @@ import {
 } from './constants';
 import {Ng2ComponentFacade} from './ng2_facade';
 import {ExportedNg1Component} from './ng1_facade';
-import {NgZone_} from "../../angular2/src/core/zone/ng_zone";
+import {NgZone_} from "angular2/src/core/zone/ng_zone";
 
 var moduleCount: number = 0;
 

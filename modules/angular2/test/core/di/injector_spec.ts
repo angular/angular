@@ -18,6 +18,7 @@ import {
   Binding
 } from 'angular2/core';
 import {DependencyMetadata} from 'angular2/src/core/di/metadata';
+import {ResolvedBinding_} from 'angular2/src/core/di/binding';
 
 import {
   InjectorInlineStrategy,
@@ -577,7 +578,7 @@ export function main() {
         var bindings = Injector.resolve([Engine, [BrokenEngine]]);
         bindings.forEach(function(b) {
           if (isBlank(b)) return;  // the result is a sparse array
-          expect(b instanceof ResolvedBinding).toBe(true);
+          expect(b instanceof ResolvedBinding_).toBe(true);
         });
       });
 

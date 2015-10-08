@@ -13,12 +13,7 @@ import {Map} from 'angular2/src/core/facade/collection';
  *
  * <!-- TODO: this is created by Renderer#createProtoView in the new compiler -->
  */
-export abstract class RenderProtoViewRef {}
-
-export class RenderProtoViewRef_ extends RenderProtoViewRef {
-  constructor() { super(); }
-}
-
+export class RenderProtoViewRef {}
 
 /**
  * Represents a list of sibling Nodes that can be moved by the {@link Renderer} independently of

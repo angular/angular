@@ -57,9 +57,9 @@ import {APP_ID} from 'angular2/src/core/application_tokens';
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {Log} from './utils';
 import {compilerBindings} from 'angular2/src/core/compiler/compiler';
-import {DomRenderer_} from "../core/render/dom/dom_renderer";
-import {DynamicComponentLoader_} from "../core/linker/dynamic_component_loader";
-import {AppViewManager_} from "../core/linker/view_manager";
+import {DomRenderer_} from "angular2/src/core/render/dom/dom_renderer";
+import {DynamicComponentLoader_} from "angular2/src/core/linker/dynamic_component_loader";
+import {AppViewManager_} from "angular2/src/core/linker/view_manager";
 
 /**
  * Returns the root injector bindings.

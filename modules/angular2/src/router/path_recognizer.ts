@@ -12,7 +12,7 @@ import {Map, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collec
 
 import {RouteHandler} from './route_handler';
 import {Url, RootUrl, serializeParams} from './url_parser';
-import {ComponentInstruction, ComponentInstruction_} from "./instruction";
+import {ComponentInstruction, ComponentInstruction_} from './instruction';
 
 class TouchMap {
   map: {[key: string]: string} = {};

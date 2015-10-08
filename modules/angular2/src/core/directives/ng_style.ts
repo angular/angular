@@ -7,7 +7,6 @@ import {ElementRef} from 'angular2/src/core/linker';
 import {Directive} from 'angular2/src/core/metadata';
 import {Renderer} from 'angular2/src/core/render';
 import {isPresent, isBlank, print} from 'angular2/src/core/facade/lang';
-import {ElementRef_} from "../linker/element_ref";
 
 /**
  * The `NgStyle` directive changes styles based on a result of expression evaluation.
