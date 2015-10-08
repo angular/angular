@@ -159,11 +159,15 @@ export function createTestInjector(providers: Array<Type | Provider | any[]>): I
  * @return {FunctionWithParamTokens}
  */
 export function inject(tokens: any[], fn: Function): FunctionWithParamTokens {
-  return new FunctionWithParamTokens(tokens, fn);
+  return new FunctionWithParamTokens(tokens, fn, false);
+}
+
+export function injectAsync(tokens: any[], fn: Function): FunctionWithParamTokens {
+  return new FunctionWithParamTokens(tokens, fn, true);
 }
 
 export class FunctionWithParamTokens {
-  constructor(private _tokens: any[], private _fn: Function) {}
+  constructor(private _tokens: any[], private _fn: Function, public isAsync: boolean) {}
 
   /**
    * Returns the value of the executed function.
