@@ -648,6 +648,7 @@ var NG_API = [
   'NgFor',
   'NgFor.doCheck()',
   'NgFor.ngForOf=',
+  'NgFor.ngForTemplate=',
   'NgForm',
   'NgForm.addControl()',
   'NgForm.addControlGroup()',
