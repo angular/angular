@@ -1,4 +1,4 @@
-library examples.src.hello_world.unusual_component_files;
+library playground.src.hello_world.unusual_component_files;
 
 import 'package:angular2/angular2.dart'
     show Component, Directive, View, NgElement;

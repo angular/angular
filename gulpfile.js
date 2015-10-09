@@ -352,7 +352,7 @@ function proxyServeDart() {
   return jsserve(gulp, gulpPlugins, {
     port: 8002,
     proxies: [
-      {route: '/examples', url: 'http://localhost:8004'},
+      {route: '/playground', url: 'http://localhost:8004'},
       {route: '/benchmarks_external', url: 'http://localhost:8008'},
       {route: '/benchmarks', url: 'http://localhost:8006'}
     ]
@@ -393,7 +393,7 @@ gulp.task('serve.dart', function(done) {
 
 gulp.task('serve/examples.dart', pubserve(gulp, gulpPlugins, {
   command: DART_SDK.PUB,
-  path: CONFIG.dest.dart + '/examples',
+  path: CONFIG.dest.dart + '/playground',
   port: 8004
 }));
 

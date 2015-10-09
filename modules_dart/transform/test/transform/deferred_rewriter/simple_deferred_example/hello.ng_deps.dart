@@ -1,4 +1,4 @@
-library examples.src.hello_world.absolute_url_expression_files.ng_deps.dart;
+library playground.src.hello_world.absolute_url_expression_files.ng_deps.dart;
 
 import 'hello.dart';
 export 'hello.dart';

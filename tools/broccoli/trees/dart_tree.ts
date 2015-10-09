@@ -18,10 +18,10 @@ var global_excludes = [
   'angular2/examples/*/ts/**/*',
   'angular2/src/http/**/*',
   'angular2/test/http/**/*',
-  'examples/src/http/**/*',
-  'examples/test/http/**/*',
-  'examples/src/jsonp/**/*',
-  'examples/test/jsonp/**/*',
+  'playground/src/http/**/*',
+  'playground/test/http/**/*',
+  'playground/src/jsonp/**/*',
+  'playground/test/jsonp/**/*',
   'upgrade/**/*'
 ];
 
@@ -79,8 +79,8 @@ function fixDartFolderLayout(sourceTree) {
       {pattern: /^benchmarks\//, insertion: 'web'},
       {pattern: /^benchmarks_external\/test\//, insertion: ''},
       {pattern: /^benchmarks_external\//, insertion: 'web'},
-      {pattern: /^examples\/test\//, insertion: ''},
-      {pattern: /^examples\//, insertion: 'web/'},
+      {pattern: /^playground\/test\//, insertion: ''},
+      {pattern: /^playground\//, insertion: 'web/'},
       {pattern: /^[^\/]*\/test\//, insertion: ''},
       {pattern: /^./, insertion: 'lib'},  // catch all.
     ];
@@ -115,7 +115,7 @@ function getHtmlSourcesTree() {
 
 function getExamplesJsonTree() {
   // Copy JSON files
-  return modulesFunnel(['examples/**/*.json']);
+  return modulesFunnel(['playground/**/*.json']);
 }
 
 
@@ -154,7 +154,7 @@ function getDocsTree() {
   var docs = modulesFunnel(['**/*.md', '**/*.png', '**/*.html', '**/*.css', '**/*.scss'],
                            ['**/*.js.md', '**/*.dart.md', 'angular1_router/**/*']);
 
-  var assets = modulesFunnel(['examples/**/*.json']);
+  var assets = modulesFunnel(['playground/**/*.json']);
 
   return mergeTrees([licenses, mdTree, docs, assets]);
 }
