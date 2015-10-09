@@ -42,7 +42,7 @@ export class MultiMetric extends Metric {
   }
 }
 
-function mergeStringMaps(maps: any[]): Object {
+function mergeStringMaps(maps: { [key: string]: string }[]): Object {
   var result = {};
   maps.forEach(
       map => { StringMapWrapper.forEach(map, (value, prop) => { result[prop] = value; }); });

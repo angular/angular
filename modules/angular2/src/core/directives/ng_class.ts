@@ -108,12 +108,12 @@ export class NgClass implements DoCheck, OnDestroy {
     this._initialClasses.forEach(className => this._toggleClass(className, !isCleanup));
   }
 
-  private _applyClasses(rawClassVal, isCleanup: boolean) {
+  private _applyClasses(rawClassVal: string[] | {[key: string]: string}, isCleanup: boolean) {
     if (isPresent(rawClassVal)) {
       if (isListLikeIterable(rawClassVal)) {
         (<string[]>rawClassVal).forEach(className => this._toggleClass(className, !isCleanup));
       } else {
-        StringMapWrapper.forEach(rawClassVal, (expVal, className) => {
+        StringMapWrapper.forEach(<{[k: string]: string}>rawClassVal, (expVal, className) => {
           if (expVal) this._toggleClass(className, !isCleanup);
         });
       }

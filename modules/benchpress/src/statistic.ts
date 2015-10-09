@@ -5,14 +5,14 @@ export class Statistic {
     return Statistic.calculateStandardDeviation(sample, mean) / mean * 100;
   }
 
-  static calculateMean(samples: any[]) {
+  static calculateMean(samples: number[]) {
     var total = 0;
     // TODO: use reduce
     samples.forEach(x => total += x);
     return total / samples.length;
   }
 
-  static calculateStandardDeviation(samples: any[], mean) {
+  static calculateStandardDeviation(samples: number[], mean) {
     var deviation = 0;
     // TODO: use reduce
     samples.forEach(x => deviation += Math.pow(x - mean, 2));

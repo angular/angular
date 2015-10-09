@@ -212,13 +212,15 @@ function _createProtoQueryRefs(bindings: BindingWithVisibility[]): ProtoQueryRef
   var res = [];
   ListWrapper.forEachWithIndex(bindings, (b, i) => {
     if (b.binding instanceof DirectiveBinding) {
+      var directiveBinding = <DirectiveBinding>b.binding;
       // field queries
-      var queries: QueryMetadataWithSetter[] = b.binding.queries;
+      var queries: QueryMetadataWithSetter[] = directiveBinding.queries;
       queries.forEach(q => res.push(new ProtoQueryRef(i, q.setter, q.metadata)));
 
       // queries passed into the constructor.
       // TODO: remove this after constructor queries are no longer supported
-      var deps: DirectiveDependency[] = b.binding.resolvedFactories[0].dependencies;
+      var deps: DirectiveDependency[] =
+          <DirectiveDependency[]>directiveBinding.resolvedFactory.dependencies;
       deps.forEach(d => {
         if (isPresent(d.queryDecorator)) res.push(new ProtoQueryRef(i, null, d.queryDecorator));
       });
