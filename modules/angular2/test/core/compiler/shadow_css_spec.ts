@@ -155,10 +155,14 @@ export function main() {
       expect(css).toEqual('x[a] y[a] {}');
     });
 
-    it('should pass through @import directives', () => {
-      var styleStr = '@import url("https://fonts.googleapis.com/css?family=Roboto");';
-      var css = s(styleStr, 'a');
-      expect(css).toEqual(styleStr);
-    });
+    // TODO: can't work in Firefox, see https://bugzilla.mozilla.org/show_bug.cgi?id=625013
+    // Issue opened to track that: https://github.com/angular/angular/issues/4628
+    if (!browserDetection.isFirefox) {
+      it('should pass through @import directives', () => {
+        var styleStr = '@import url("https://fonts.googleapis.com/css?family=Roboto");';
+        var css = s(styleStr, 'a');
+        expect(css).toEqual(styleStr);
+      });
+    }
   });
 }
