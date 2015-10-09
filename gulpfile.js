@@ -359,19 +359,19 @@ function proxyServeDart() {
 
 // ------------------
 // web servers
-gulp.task('serve.js.dev', ['build.js.dev'], function(neverDone) {
+gulp.task('serve.js.dev', ['build.js.material'], function(neverDone) {
   watch('modules/**', { ignoreInitial: true }, '!broccoli.js.dev');
   jsServeDev();
 });
 
 gulp.task('serve.js.prod', jsServeProd);
 
-gulp.task('serve.e2e.dev', ['build.js.dev', 'build.js.cjs', 'build.css.material'], function(neverDone) {
+gulp.task('serve.e2e.dev', ['build.js.material', 'build.js.cjs'], function(neverDone) {
   watch('modules/**', { ignoreInitial: true }, ['!broccoli.js.dev', '!build.js.cjs']);
   jsServeDev();
 });
 
-gulp.task('serve.e2e.prod', ['build.js.prod', 'build.js.cjs', 'build.css.material'], function(neverDone) {
+gulp.task('serve.e2e.prod', ['build.js.material', 'build.js.cjs'], function(neverDone) {
   watch('modules/**', { ignoreInitial: true }, ['!broccoli.js.prod', '!build.js.cjs']);
   jsServeProd();
 });
@@ -1188,7 +1188,11 @@ gulp.task('!build/change_detect.dart', function(done) {
 
 // ------------
 // angular material testing rules
-gulp.task('build.css.material', function() {
+gulp.task('build.css.material', function(done) {
+  runSequence('clean.css.material', '!build.css.material', sequenceComplete(done));
+});
+
+gulp.task('!build.css.material', function() {
   return gulp.src('modules/*/src/**/*.scss')
       .pipe(sass())
       .pipe(autoprefixer())
@@ -1197,6 +1201,9 @@ gulp.task('build.css.material', function() {
       .pipe(gulp.dest(CONFIG.dest.js.dart2js + '/examples/packages'));
 });
 
+gulp.task('clean.css.material', function() {
+  return del(['dist/**/angular2_material']);
+});
 
 gulp.task('build.js.material', function(done) {
   runSequence('build.js.dev', 'build.css.material', sequenceComplete(done));
