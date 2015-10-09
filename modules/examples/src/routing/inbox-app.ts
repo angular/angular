@@ -11,7 +11,7 @@ import {
 import * as db from './data';
 import {ObservableWrapper, PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
-import {isPresent} from 'angular2/src/core/facade/lang';
+import {isPresent, DateWrapper} from 'angular2/src/core/facade/lang';
 
 class InboxRecord {
   id: string = '';
@@ -20,7 +20,7 @@ class InboxRecord {
   email: string = '';
   firstName: string = '';
   lastName: string = '';
-  date: string = '';
+  date: string;
   draft: boolean = false;
 
   constructor(data: {
@@ -108,10 +108,21 @@ class InboxCmp {
   items: InboxRecord[] = [];
   ready: boolean = false;
 
-  constructor(public router: Router, db: DbService) {
+  constructor(public router: Router, db: DbService, params: RouteParams) {
+    var sortType = params.get('sort');
+    var sortEmailsByDate = isPresent(sortType) && sortType == "date";
+
     PromiseWrapper.then(db.emails(), emails => {
       this.ready = true;
       this.items = emails.map(data => new InboxRecord(data));
+
+      if (sortEmailsByDate) {
+        ListWrapper.sort(this.items,
+                         (a, b) => DateWrapper.toMillis(DateWrapper.fromISOString(a.date)) <
+                                           DateWrapper.toMillis(DateWrapper.fromISOString(b.date)) ?
+                                       -1 :
+                                       1);
+      }
     });
   }
 }

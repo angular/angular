@@ -15,4 +15,10 @@
   <span class="btn medium primary">
     <a [router-link]="record.draft ? ['../Drafts'] : ['../Inbox']" class="back-button">Back</a>
   </span>
+
+  <hr />
+
+  <a [router-link]="['../Inbox', { sort: 'date'} ]" class="sort-button">
+    View Latest Messages
+  </a>
 </div>
