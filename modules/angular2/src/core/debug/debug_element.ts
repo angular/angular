@@ -70,9 +70,9 @@ export abstract class DebugElement {
    * @return {DebugElement[]}
    */
   queryAll(predicate: Predicate<DebugElement>, scope: Function = Scope.all): DebugElement[] {
-    var elementsInScope = scope(this);
+    var elementsInScope: any[] = scope(this);
 
-    return ListWrapper.filter(elementsInScope, predicate);
+    return elementsInScope.filter(predicate);
   }
 }
 

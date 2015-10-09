@@ -120,14 +120,14 @@ export class DirectiveDependency extends Dependency {
   }
 
   /** @internal */
-  static _attributeName(properties): string {
-    var p = <AttributeMetadata>ListWrapper.find(properties, (p) => p instanceof AttributeMetadata);
+  static _attributeName(properties: any[]): string {
+    var p = <AttributeMetadata>properties.find(p => p instanceof AttributeMetadata);
     return isPresent(p) ? p.attributeName : null;
   }
 
   /** @internal */
-  static _query(properties): QueryMetadata {
-    return <QueryMetadata>ListWrapper.find(properties, (p) => p instanceof QueryMetadata);
+  static _query(properties: any[]): QueryMetadata {
+    return <QueryMetadata>properties.find(p => p instanceof QueryMetadata);
   }
 }
 

@@ -54,7 +54,7 @@ export class Reflector {
       throw new BaseException('Usage tracking is disabled');
     }
     var allTypes = MapWrapper.keys(this._injectableInfo);
-    return ListWrapper.filter(allTypes, (key) => { return !SetWrapper.has(this._usedKeys, key); });
+    return allTypes.filter(key => !SetWrapper.has(this._usedKeys, key));
   }
 
   registerFunction(func: Function, funcInfo: ReflectionInfo): void {

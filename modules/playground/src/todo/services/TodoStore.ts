@@ -31,7 +31,7 @@ export class Store {
   remove(record: KeyModel): void { this._spliceOut(record); }
 
   removeBy(callback: Predicate<KeyModel>): void {
-    var records = ListWrapper.filter(this.list, callback);
+    var records = this.list.filter(callback);
     ListWrapper.removeAll(this.list, records);
   }
 

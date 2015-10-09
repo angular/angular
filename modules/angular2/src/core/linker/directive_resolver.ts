@@ -35,7 +35,7 @@ export class DirectiveResolver {
   resolve(type: Type): DirectiveMetadata {
     var typeMetadata = reflector.annotations(resolveForwardRef(type));
     if (isPresent(typeMetadata)) {
-      var metadata = ListWrapper.find(typeMetadata, _isDirectiveMetadata);
+      var metadata = typeMetadata.find(_isDirectiveMetadata);
       if (isPresent(metadata)) {
         var propertyMetadata = reflector.propMetadata(type);
         return this._mergeWithPropertyMetadata(metadata, propertyMetadata);

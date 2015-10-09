@@ -7,7 +7,6 @@ import {
   ConcreteType
 } from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
-import {ListWrapper} from 'angular2/src/facade/collection';
 import {GetterFn, SetterFn, MethodFn} from './types';
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 
@@ -88,9 +87,9 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     var result;
 
     if (typeof paramTypes === 'undefined') {
-      result = ListWrapper.createFixedSize(paramAnnotations.length);
+      result = new Array(paramAnnotations.length);
     } else {
-      result = ListWrapper.createFixedSize(paramTypes.length);
+      result = new Array(paramTypes.length);
     }
 
     for (var i = 0; i < result.length; i++) {
@@ -123,7 +122,10 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
         return this._zipTypesAndAnnotaions(paramTypes, paramAnnotations);
       }
     }
-    return ListWrapper.createFixedSize((<any>typeOrFunc).length);
+    // The array has to be filled with `undefined` because holes would be skipped by `some`
+    let parameters = new Array((<any>typeOrFunc.length));
+    parameters.fill(undefined);
+    return parameters;
   }
 
   annotations(typeOrFunc: Type): any[] {

@@ -187,26 +187,8 @@ export class ListWrapper {
     if (!array || array.length == 0) return null;
     return array[array.length - 1];
   }
-  static find<T>(list: T[], pred: Predicate<T>): T {
-    for (var i = 0; i < list.length; ++i) {
-      if (pred(list[i])) return list[i];
-    }
-    return null;
-  }
   static indexOf<T>(array: T[], value: T, startIndex: number = 0): number {
     return array.indexOf(value, startIndex);
-  }
-  static reduce<T, E>(list: T[],
-                      fn: (accumValue: E, currentValue: T, currentIndex: number, array: T[]) => E,
-                      init: E): E {
-    return list.reduce(fn, init);
-  }
-  static filter<T>(array: T[], pred: Predicate<T>): T[] { return array.filter(pred); }
-  static any(list: any[], pred: Function): boolean {
-    for (var i = 0; i < list.length; ++i) {
-      if (pred(list[i])) return true;
-    }
-    return false;
   }
   static contains<T>(list: T[], el: T): boolean { return list.indexOf(el) !== -1; }
   static reversed<T>(array: T[]): T[] {

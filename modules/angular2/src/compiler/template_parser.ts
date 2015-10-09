@@ -227,7 +227,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
                                               elementNgContentIndex, element.sourceInfo);
     } else {
       this._assertOnlyOneComponent(directives, element.sourceInfo);
-      var elementExportAsVars = ListWrapper.filter(vars, varAst => varAst.value.length === 0);
+      var elementExportAsVars = vars.filter(varAst => varAst.value.length === 0);
       parsedElement =
           new ElementAst(nodeName, attrs, elementProps, events, elementExportAsVars, directives,
                          children, elementNgContentIndex, element.sourceInfo);

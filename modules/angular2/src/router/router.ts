@@ -526,10 +526,10 @@ class ChildRouter extends Router {
  * Returns: ['', 'a', 'b', {c: 2}]
  */
 function splitAndFlattenLinkParams(linkParams: any[]): any[] {
-  return ListWrapper.reduce(linkParams, (accumulation, item) => {
+  return linkParams.reduce((accumulation: any[], item) => {
     if (isString(item)) {
-      let parts: String[] = item.split('/');
-      return accumulation.concat(parts);
+      let strItem: string = item;
+      return accumulation.concat(strItem.split('/'));
     }
     accumulation.push(item);
     return accumulation;

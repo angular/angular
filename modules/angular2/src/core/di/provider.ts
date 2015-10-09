@@ -630,7 +630,7 @@ function _constructDependencies(factoryFunction: Function, dependencies: any[]):
 function _dependenciesFor(typeOrFunc): Dependency[] {
   var params = reflector.parameters(typeOrFunc);
   if (isBlank(params)) return [];
-  if (ListWrapper.any(params, (p) => isBlank(p))) {
+  if (params.some(isBlank)) {
     throw new NoAnnotationError(typeOrFunc, params);
   }
   return params.map((p: any[]) => _extractToken(typeOrFunc, p, params));

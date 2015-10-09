@@ -101,8 +101,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
 
   /** @internal */
   _matchingEventBindings(eventName: string, elIndex: number): EventBinding[] {
-    return ListWrapper.filter(this._eventBindings,
-                              eb => eb.eventName == eventName && eb.elIndex === elIndex);
+    return this._eventBindings.filter(eb => eb.eventName == eventName && eb.elIndex === elIndex);
   }
 
   hydrateDirectives(directives: any): void {

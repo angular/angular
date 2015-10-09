@@ -31,16 +31,17 @@ function _find(control: AbstractControl, path: Array<string | number>| string) {
   }
   if (path instanceof Array && ListWrapper.isEmpty(path)) return null;
 
-  return ListWrapper.reduce(<Array<string | number>>path, (v, name) => {
-    if (v instanceof ControlGroup) {
-      return isPresent(v.controls[name]) ? v.controls[name] : null;
-    } else if (v instanceof ControlArray) {
-      var index = <number>name;
-      return isPresent(v.at(index)) ? v.at(index) : null;
-    } else {
-      return null;
-    }
-  }, control);
+  return (<Array<string | number>>path)
+      .reduce((v, name) => {
+        if (v instanceof ControlGroup) {
+          return isPresent(v.controls[name]) ? v.controls[name] : null;
+        } else if (v instanceof ControlArray) {
+          var index = <number>name;
+          return isPresent(v.at(index)) ? v.at(index) : null;
+        } else {
+          return null;
+        }
+      }, control);
 }
 
 function toObservable(r: any): Observable<any> {
@@ -480,7 +481,7 @@ export class ControlArray extends AbstractControl {
 
   /** @internal */
   _anyControlsHaveStatus(status: string): boolean {
-    return ListWrapper.any(this.controls, c => c.status == status);
+    return this.controls.some(c => c.status == status);
   }
 
 

@@ -270,7 +270,7 @@ export function main() {
           var formValidator = (c) => ({"custom": true});
           var f = new NgFormModel([formValidator], []);
           f.form = formModel;
-          f.onChanges({"form":<any>formModel});
+          f.onChanges({"form": new SimpleChange(null, null)});
 
           expect(formModel.errors).toEqual({"custom": true});
         });
@@ -278,7 +278,7 @@ export function main() {
         it("should set up an async validator", fakeAsync(() => {
              var f = new NgFormModel([], [asyncValidator("expected")]);
              f.form = formModel;
-             f.onChanges({"form":<any>formModel});
+             f.onChanges({"form": new SimpleChange(null, null)});
 
              tick();
 

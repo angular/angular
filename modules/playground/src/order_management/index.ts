@@ -66,7 +66,7 @@ class DataService {
   }
 
   itemsFor(order: Order): OrderItem[] {
-    return ListWrapper.filter(this.orderItems, i => i.orderId === order.orderId);
+    return this.orderItems.filter(i => i.orderId === order.orderId);
   }
 
   addItemForOrder(order: Order): void {
