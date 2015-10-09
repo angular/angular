@@ -60,8 +60,7 @@ export class RuntimeMetadataResolver {
         inputs: dirMeta.inputs,
         outputs: dirMeta.outputs,
         host: dirMeta.host,
-        lifecycleHooks: ListWrapper.filter(LIFECYCLE_HOOKS_VALUES,
-                                           hook => hasLifecycleHook(hook, directiveType))
+        lifecycleHooks: LIFECYCLE_HOOKS_VALUES.filter(hook => hasLifecycleHook(hook, directiveType))
       });
       this._cache.set(directiveType, meta);
     }

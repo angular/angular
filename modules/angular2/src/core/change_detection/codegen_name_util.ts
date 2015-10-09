@@ -180,7 +180,7 @@ export class CodegenNameUtil {
    * Generates statements destroying all pipe variables.
    */
   genPipeOnDestroy(): string {
-    return ListWrapper.filter(this._records, (r) => { return r.isPipeRecord(); })
+    return this._records.filter(r => r.isPipeRecord())
         .map(r => `${this._utilName}.callPipeOnDestroy(${this.getPipeName(r.selfIndex)});`)
         .join('\n');
   }

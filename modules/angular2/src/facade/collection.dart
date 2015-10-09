@@ -108,25 +108,16 @@ class ListWrapper {
       new List.generate(size, (_) => null, growable: true);
 
   static bool contains(List m, k) => m.contains(k);
-  static List filter(List list, bool fn(item)) => list.where(fn).toList();
   static int indexOf(List list, value, [int startIndex = 0]) =>
       list.indexOf(value, startIndex);
   static int lastIndexOf(List list, value, [int startIndex = null]) =>
       list.lastIndexOf(value, startIndex == null ? list.length : startIndex);
-  static find(List list, bool fn(item)) =>
-      list.firstWhere(fn, orElse: () => null);
-  static bool any(List list, bool fn(item)) => list.any(fn);
 
   static void forEachWithIndex(List list, fn(item, index)) {
     for (var i = 0; i < list.length; ++i) {
       fn(list[i], i);
     }
   }
-
-  static reduce(List list, fn(a, b), init) {
-    return list.fold(init, fn);
-  }
-
   static first(List list) => list.isEmpty ? null : list.first;
   static last(List list) => list.isEmpty ? null : list.last;
   static List reversed(List list) => list.reversed.toList();

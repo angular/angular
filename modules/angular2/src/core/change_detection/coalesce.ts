@@ -120,9 +120,8 @@ function _mayBeAddRecord(record: ProtoRecord, dstRecords: ProtoRecord[], exclude
  */
 function _findFirstMatch(record: ProtoRecord, dstRecords: ProtoRecord[],
                          excludedIdxs: number[]): ProtoRecord {
-  return ListWrapper.find(
-      dstRecords,
-      // TODO(vicb): optimize notReusableIndexes.indexOf (sorted array)
+  return dstRecords.find(
+      // TODO(vicb): optimize excludedIdxs.indexOf (sorted array)
       rr => excludedIdxs.indexOf(rr.selfIndex) == -1 && rr.mode !== RecordType.DirectiveLifecycle &&
             _haveSameDirIndex(rr, record) && rr.mode === record.mode &&
             looseIdentical(rr.funcOrValue, record.funcOrValue) &&

@@ -71,7 +71,7 @@ export class KeyValueDiffers {
   }
 
   find(kv: Object): KeyValueDifferFactory {
-    var factory = ListWrapper.find(this.factories, f => f.supports(kv));
+    var factory = this.factories.find(f => f.supports(kv));
     if (isPresent(factory)) {
       return factory;
     } else {

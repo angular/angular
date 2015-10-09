@@ -201,9 +201,8 @@ export class ChromeDriverExtension extends WebDriverExtension {
 
   private _isEvent(eventCategories: string[], eventName: string, expectedCategories: string[],
                    expectedName: string = null): boolean {
-    var hasCategories = ListWrapper.reduce(expectedCategories, (value, cat) => {
-      return value && ListWrapper.contains(eventCategories, cat);
-    }, true);
+    var hasCategories = expectedCategories.reduce(
+        (value, cat) => { return value && ListWrapper.contains(eventCategories, cat); }, true);
     return isBlank(expectedName) ? hasCategories :
                                    hasCategories && StringWrapper.equals(eventName, expectedName);
   }

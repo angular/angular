@@ -5,7 +5,6 @@ import {Injectable} from 'angular2/src/core/di';
 import {Type, isBlank, stringify} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
-import {ListWrapper} from 'angular2/src/facade/collection';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {CompiledHostTemplate} from 'angular2/src/core/linker/template_commands';
 
@@ -31,7 +30,7 @@ export class Compiler_ extends Compiler {
 
   compileInHost(componentType: Type): Promise<ProtoViewRef> {
     var metadatas = reflector.annotations(componentType);
-    var compiledHostTemplate = ListWrapper.find(metadatas, _isCompiledHostTemplate);
+    var compiledHostTemplate = metadatas.find(_isCompiledHostTemplate);
 
     if (isBlank(compiledHostTemplate)) {
       throw new BaseException(

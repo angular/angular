@@ -80,7 +80,7 @@ export class Validators {
    */
   static compose(validators: Function[]): Function {
     if (isBlank(validators)) return null;
-    var presentValidators = ListWrapper.filter(validators, isPresent);
+    var presentValidators = validators.filter(isPresent);
     if (presentValidators.length == 0) return null;
 
     return function(control: modelModule.AbstractControl) {
@@ -90,7 +90,7 @@ export class Validators {
 
   static composeAsync(validators: Function[]): Function {
     if (isBlank(validators)) return null;
-    let presentValidators = ListWrapper.filter(validators, isPresent);
+    var presentValidators = validators.filter(isPresent);
     if (presentValidators.length == 0) return null;
 
     return function(control: modelModule.AbstractControl) {
@@ -109,7 +109,7 @@ function _executeValidators(control: modelModule.AbstractControl, validators: Fu
 }
 
 function _mergeErrors(arrayOfErrors: any[]): {[key: string]: any} {
-  var res = ListWrapper.reduce(arrayOfErrors, (res, errors) => {
+  var res = arrayOfErrors.reduce((res, errors) => {
     return isPresent(errors) ? StringMapWrapper.merge(<any>res, <any>errors) : res;
   }, {});
   return StringMapWrapper.isEmpty(res) ? null : res;

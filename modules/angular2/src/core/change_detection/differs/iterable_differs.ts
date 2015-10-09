@@ -71,7 +71,7 @@ export class IterableDiffers {
   }
 
   find(iterable: Object): IterableDifferFactory {
-    var factory = ListWrapper.find(this.factories, f => f.supports(iterable));
+    var factory = this.factories.find(f => f.supports(iterable));
     if (isPresent(factory)) {
       return factory;
     } else {

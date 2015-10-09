@@ -4,7 +4,6 @@ import {
   CompileTemplateMetadata
 } from './directive_metadata';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
-import {ListWrapper} from 'angular2/src/facade/collection';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 
@@ -55,9 +54,9 @@ export class TemplateNormalizer {
     var allStyles = templateMeta.styles.concat(visitor.styles);
 
     var allStyleAbsUrls =
-        ListWrapper.filter(visitor.styleUrls, isStyleUrlResolvable)
+        visitor.styleUrls.filter(isStyleUrlResolvable)
             .map(url => this._urlResolver.resolve(templateAbsUrl, url))
-            .concat(ListWrapper.filter(templateMeta.styleUrls, isStyleUrlResolvable)
+            .concat(templateMeta.styleUrls.filter(isStyleUrlResolvable)
                         .map(url => this._urlResolver.resolve(directiveType.moduleUrl, url)));
 
     var allResolvedStyles = allStyles.map(style => {

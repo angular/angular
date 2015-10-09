@@ -1,5 +1,6 @@
 import {bootstrap} from 'angular2/bootstrap';
 import {
+  ControlGroup,
   NgIf,
   NgFor,
   Component,
@@ -11,7 +12,6 @@ import {
   Provider,
   FORM_DIRECTIVES,
   NgControl,
-  ControlGroup,
   Validators,
   NgForm
 } from 'angular2/core';
@@ -81,7 +81,8 @@ class ShowError {
   constructor(@Host() formDir: NgForm) { this.formDir = formDir; }
 
   get errorMessage(): string {
-    var control = (<ControlGroup>this.formDir.form).find(this.controlPath);
+    var form: ControlGroup = this.formDir.form;
+    var control = form.find(this.controlPath);
     if (isPresent(control) && control.touched) {
       for (var i = 0; i < this.errorTypes.length; ++i) {
         if (control.hasError(this.errorTypes[i])) {
