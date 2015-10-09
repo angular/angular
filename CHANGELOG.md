@@ -1,3 +1,32 @@
+<a name="2.0.0-alpha.40"></a>
+# 2.0.0-alpha.40 (2015-10-09)
+
+
+### Bug Fixes
+
+* **analyzer:** fix dart analyzer errors ([14fa007](https://github.com/angular/angular/commit/14fa007))
+* **core:** make .toRx() return Subject ([4a36fd8](https://github.com/angular/angular/commit/4a36fd8)), closes [#4521](https://github.com/angular/angular/issues/4521) [#4540](https://github.com/angular/angular/issues/4540)
+* **core:** remove NgZone_ and use NgZone instead ([bba0248](https://github.com/angular/angular/commit/bba0248))
+* **css:** when compiling CSS, leave absolute imports alone ([04b3dee](https://github.com/angular/angular/commit/04b3dee)), closes [#4592](https://github.com/angular/angular/issues/4592)
+* **dart/transform:** Run DeferredRewriter in the correct phase ([811d4c0](https://github.com/angular/angular/commit/811d4c0))
+* **dart/transform:** Sanitize generated library names ([ba6e0e1](https://github.com/angular/angular/commit/ba6e0e1))
+* **dart/transform:** Write correct ng_deps without deferred imports ([c94f239](https://github.com/angular/angular/commit/c94f239)), closes [#4587](https://github.com/angular/angular/issues/4587)
+* **location:** improve the 'No base href set' error message ([15ab6f6](https://github.com/angular/angular/commit/15ab6f6))
+* **render:** recurse into components/embedded templates not until all elements in a view have ([6d4bd5d](https://github.com/angular/angular/commit/6d4bd5d)), closes [#4551](https://github.com/angular/angular/issues/4551) [#4601](https://github.com/angular/angular/issues/4601)
+* **tests:** fix tests ([8b725c7](https://github.com/angular/angular/commit/8b725c7))
+* **tests:** fixes public api spec ([d60c7a9](https://github.com/angular/angular/commit/d60c7a9))
+* **typings:** update test.typings for abstract superclasses ([5458036](https://github.com/angular/angular/commit/5458036))
+* **web-workers:** fix bindings ([1100c9b](https://github.com/angular/angular/commit/1100c9b))
+* **XhrBackend:** setRequestHeader takes a string arg ([6b00b60](https://github.com/angular/angular/commit/6b00b60)), closes [#4597](https://github.com/angular/angular/issues/4597)
+
+### Features
+
+* **core:** add syntax sugar to make @View optional ([bd31b01](https://github.com/angular/angular/commit/bd31b01))
+* **dart/transform:** Track timing of transform tasks ([0757265](https://github.com/angular/angular/commit/0757265))
+* **router:** allow async routes to be defined with "loader" ([ee32b1b](https://github.com/angular/angular/commit/ee32b1b))
+* **transformers:** update transformers to handle components without @View ([a2e7ae5](https://github.com/angular/angular/commit/a2e7ae5))
+* **upgrade:** support binding of Ng1 form Ng2 ([8e1d2fb](https://github.com/angular/angular/commit/8e1d2fb)), closes [#4542](https://github.com/angular/angular/issues/4542)
+
 <a name="2.0.0-alpha.39"></a>
 # 2.0.0-alpha.39 (2015-10-06)
 
@@ -1214,3 +1243,7 @@ After
     })
 
 * no longer cache ref
+
+
+
+
