@@ -50,6 +50,8 @@ export abstract class DomRenderer extends Renderer implements NodeFactory<Node> 
 
   abstract destroyView(viewRef: RenderViewRef);
 
+  abstract createRootContentInsertionPoint();
+
   getNativeElementSync(location: RenderElementRef): any {
     return resolveInternalDomView(location.renderView).boundElements[location.boundElementIndex];
   }
@@ -281,6 +283,9 @@ export class DomRenderer_ extends DomRenderer {
     for (var attrIdx = 0; attrIdx < attrNameAndValues.length; attrIdx += 2) {
       DOM.setAttribute(node, attrNameAndValues[attrIdx], attrNameAndValues[attrIdx + 1]);
     }
+  }
+  createRootContentInsertionPoint(): Node {
+    return DOM.createComment('root-content-insertion-point');
   }
   createShadowRoot(host: Node, templateId: number): Node {
     var sr = DOM.createShadowRoot(host);

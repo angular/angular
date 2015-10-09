@@ -23,7 +23,8 @@ export function createRenderView(fragmentCmds: RenderTemplateCmd[], inplaceEleme
     fragments.push(new DefaultRenderFragmentRef(context.fragments[i]));
   }
   view = new DefaultRenderView<any>(fragments, context.boundTextNodes, context.boundElements,
-                                    context.nativeShadowRoots, context.globalEventAdders);
+                                    context.nativeShadowRoots, context.globalEventAdders,
+                                    context.rootContentInsertionPoints);
   return view;
 }
 
@@ -31,6 +32,7 @@ export interface NodeFactory<N> {
   resolveComponentTemplate(templateId: number): RenderTemplateCmd[];
   createTemplateAnchor(attrNameAndValues: string[]): N;
   createElement(name: string, attrNameAndValues: string[]): N;
+  createRootContentInsertionPoint(): N;
   mergeElement(existing: N, attrNameAndValues: string[]);
   createShadowRoot(host: N, templateId: number): N;
   createText(value: string): N;
@@ -41,7 +43,9 @@ export interface NodeFactory<N> {
 
 class BuildContext<N> {
   constructor(private _eventDispatcher: Function, public factory: NodeFactory<N>,
-              private _inplaceElement: N) {}
+              private _inplaceElement: N) {
+    this.isHost = isPresent((_inplaceElement));
+  }
   private _builders: RenderViewBuilder<N>[] = [];
 
   globalEventAdders: Function[] = [];
@@ -49,6 +53,9 @@ class BuildContext<N> {
   boundTextNodes: N[] = [];
   nativeShadowRoots: N[] = [];
   fragments: N[][] = [];
+  rootContentInsertionPoints: N[] = [];
+  componentCount: number = 0;
+  isHost: boolean;
 
   build(fragmentCmds: RenderTemplateCmd[]) {
     this.enqueueFragmentBuilder(null, fragmentCmds);
@@ -65,6 +72,7 @@ class BuildContext<N> {
   }
 
   enqueueComponentBuilder(component: Component<N>) {
+    this.componentCount++;
     this._builders.push(new RenderViewBuilder<N>(
         component, null, this.factory.resolveComponentTemplate(component.cmd.templateId)));
   }
@@ -131,10 +139,20 @@ class RenderViewBuilder<N> implements RenderCommandVisitor {
   }
   visitNgContent(cmd: RenderNgContentCmd, context: BuildContext<N>): any {
     if (isPresent(this.parentComponent)) {
-      var projectedNodes = this.parentComponent.project(cmd.index);
-      for (var i = 0; i < projectedNodes.length; i++) {
-        var node = projectedNodes[i];
-        this._addChild(node, cmd.ngContentIndex, context);
+      if (this.parentComponent.isRoot) {
+        var insertionPoint = context.factory.createRootContentInsertionPoint();
+        if (this.parent instanceof Component) {
+          context.factory.appendChild((<Component<N>>this.parent).shadowRoot, insertionPoint);
+        } else {
+          context.factory.appendChild(<N>this.parent, insertionPoint);
+        }
+        context.rootContentInsertionPoints.push(insertionPoint);
+      } else {
+        var projectedNodes = this.parentComponent.project(cmd.index);
+        for (var i = 0; i < projectedNodes.length; i++) {
+          var node = projectedNodes[i];
+          this._addChild(node, cmd.ngContentIndex, context);
+        }
       }
     }
     return null;
@@ -154,7 +172,8 @@ class RenderViewBuilder<N> implements RenderCommandVisitor {
       root = context.factory.createShadowRoot(el, cmd.templateId);
       context.nativeShadowRoots.push(root);
     }
-    var component = new Component(el, root, cmd);
+    var isRoot = context.componentCount === 0 && context.isHost;
+    var component = new Component(el, root, cmd, isRoot);
     context.enqueueComponentBuilder(component);
     this.parentStack.push(component);
     return null;
@@ -213,7 +232,8 @@ class RenderViewBuilder<N> implements RenderCommandVisitor {
 class Component<N> {
   private contentNodesByNgContentIndex: N[][] = [];
 
-  constructor(public hostElement: N, public shadowRoot: N, public cmd: RenderBeginComponentCmd) {}
+  constructor(public hostElement: N, public shadowRoot: N, public cmd: RenderBeginComponentCmd,
+              public isRoot: boolean) {}
   addContentNode(ngContentIndex: number, node: N, context: BuildContext<N>) {
     if (isBlank(ngContentIndex)) {
       if (this.cmd.nativeShadow) {

@@ -517,6 +517,16 @@ export function main() {
         expect(stringifyFragment(view.fragments[0].nodes))
             .toEqual('<a-comp><b-comp>(hello)</b-comp></a-comp>');
       });
+
+
+      it('should store content injection points for root component in a view', () => {
+        componentTemplates.set(0, [ngContent(0, null)]);
+        var view =
+            createRenderView([beginComponent('a-comp', [], [], false, null, 0), endComponent()],
+                             DOM.createElement('root'), nodeFactory);
+        expect(stringifyFragment(view.rootContentInsertionPoints))
+            .toEqual('<root-content-insertion-point></root-content-insertion-point>');
+      });
     });
   });
 }
@@ -571,6 +581,9 @@ class DomNodeFactory implements NodeFactory<Node> {
     return root;
   }
   createText(value: string): Node { return DOM.createTextNode(isPresent(value) ? value : ''); }
+  createRootContentInsertionPoint(): Node {
+    return DOM.createElement('root-content-insertion-point');
+  }
   appendChild(parent: Node, child: Node) { DOM.appendChild(parent, child); }
   on(element: Node, eventName: string, callback: Function) {
     this._localEventListeners.push(new LocalEventListener(element, eventName, callback));

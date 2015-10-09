@@ -169,16 +169,19 @@ function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function 
     return {
       restrict: 'E',
       require: REQUIRE_INJECTOR,
-      link: (scope: angular.IScope, element: angular.IAugmentedJQuery, attrs: angular.IAttributes,
-             parentInjector: any, transclude: angular.ITranscludeFunction): void => {
-        var facade =
-            new Ng2ComponentFacade(element[0].id = idPrefix + (idCount++), info, element, attrs,
-                                   scope, <Injector>parentInjector, parse, viewManager, protoView);
-
-        facade.setupInputs();
-        facade.bootstrapNg2();
-        facade.setupOutputs();
-        facade.registerCleanup();
+      link: {
+        post: (scope: angular.IScope, element: angular.IAugmentedJQuery, attrs: angular.IAttributes,
+               parentInjector: any, transclude: angular.ITranscludeFunction): void => {
+          var domElement = <any>element[0];
+          var facade =
+              new Ng2ComponentFacade(idPrefix + (idCount++), info, element, attrs, scope,
+                                     <Injector>parentInjector, parse, viewManager, protoView);
+          facade.setupInputs();
+          facade.bootstrapNg2();
+          facade.projectContent();
+          facade.setupOutputs();
+          facade.registerCleanup();
+        }
       }
     };
   }

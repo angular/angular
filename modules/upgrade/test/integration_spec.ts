@@ -18,17 +18,18 @@ export function main() {
   describe('upgrade: ng1 to ng2', () => {
     it('should have angular 1 loaded', () => expect(angular.version.major).toBe(1));
 
-    it('should instantiate ng2 in ng1 template', inject([AsyncTestCompleter], (async) => {
+    it('should instantiate ng2 in ng1 template and project content',
+       inject([AsyncTestCompleter], (async) => {
          var Ng2 = Component({selector: 'ng2'})
-                       .View({template: `{{ 'NG2' }}`})
+                       .View({template: `{{ 'NG2' }}(<ng-content></ng-content>)`})
                        .Class({constructor: function() {}});
 
-         var element = html("<div>{{ 'ng1-' }}<ng2>~~</ng2>{{ '-ng1' }}</div>");
+         var element = html("<div>{{ 'ng1[' }}<ng2>~{{ 'ng-content' }}~</ng2>{{ ']' }}</div>");
 
          var upgradeModule: UpgradeModule = createUpgradeModule();
          upgradeModule.importNg2Component(Ng2);
          upgradeModule.bootstrap(element).ready(() => {
-           expect(document.body.textContent).toEqual("ng1-NG2-ng1");
+           expect(document.body.textContent).toEqual("ng1[NG2(~ng-content~)]");
            async.done();
          });
        }));

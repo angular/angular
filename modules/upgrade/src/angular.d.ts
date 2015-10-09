@@ -25,7 +25,7 @@ declare namespace angular {
     require?: string;
     restrict?: string;
     scope?: {[key: string]: string};
-    link?: Function;
+    link?: {pre?: Function, post?: Function};
   }
   interface IAttributes {
     $observe(attr: string, fn: (v: string) => void);
@@ -33,6 +33,10 @@ declare namespace angular {
   interface ITranscludeFunction {}
   interface IAugmentedJQuery {
     bind(name: string, fn: () => void);
+    data(name: string, value?: any);
+    contents(): IAugmentedJQuery;
+    length: number;
+    [index: number]: Node;
   }
   interface IParseService {
     (expression: string): ICompiledExpression;
@@ -40,7 +44,7 @@ declare namespace angular {
   interface ICompiledExpression {
     assign(context: any, value: any): any;
   }
-  function element(e: Element);
+  function element(e: Element): IAugmentedJQuery;
   function bootstrap(e: Element, modules: IModule[], config: IAngularBootstrapConfig);
 
   namespace auto {

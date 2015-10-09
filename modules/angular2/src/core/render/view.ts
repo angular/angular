@@ -25,7 +25,7 @@ export class DefaultRenderView<N> extends RenderViewRef {
 
   constructor(public fragments: DefaultRenderFragmentRef<N>[], public boundTextNodes: N[],
               public boundElements: N[], public nativeShadowRoots: N[],
-              public globalEventAdders: Function[]) {
+              public globalEventAdders: Function[], public rootContentInsertionPoints: N[]) {
     super();
   }
 

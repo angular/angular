@@ -5,10 +5,13 @@ import {
   HostViewRef,
   Injector,
   ProtoViewRef,
-  SimpleChange
+  SimpleChange,
+  ViewRef
 } from 'angular2/angular2';
 import {NG1_SCOPE} from './constants';
 import {ComponentInfo} from './metadata';
+import {ViewRef_} from "../../angular2/src/core/linker/view_ref";
+import Element = protractor.Element;
 
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true
@@ -21,13 +24,17 @@ export class Ng2ComponentFacade {
   hostViewRef: HostViewRef = null;
   changeDetector: ChangeDetectorRef = null;
   componentScope: angular.IScope;
+  childNodes: Node[];
+  contentInserctionPoint: Node = null;
 
   constructor(private id: string, private info: ComponentInfo,
               private element: angular.IAugmentedJQuery, private attrs: angular.IAttributes,
               private scope: angular.IScope, private parentInjector: Injector,
               private parse: angular.IParseService, private viewManager: AppViewManager,
               private protoView: ProtoViewRef) {
+    (<any>this.element[0]).id = id;
     this.componentScope = scope.$new();
+    this.childNodes = <Node[]><any>element.contents();
   }
 
   bootstrapNg2() {
@@ -35,9 +42,11 @@ export class Ng2ComponentFacade {
         this.parentInjector.resolveAndCreateChild([bind(NG1_SCOPE).toValue(this.componentScope)]);
     this.hostViewRef =
         this.viewManager.createRootHostView(this.protoView, '#' + this.id, childInjector);
+    var renderer: any = (<any>this.hostViewRef).render;
     var hostElement = this.viewManager.getHostElement(this.hostViewRef);
     this.changeDetector = this.hostViewRef.changeDetectorRef;
     this.component = this.viewManager.getComponent(hostElement);
+    this.contentInserctionPoint = renderer.rootContentInsertionPoints[0];
   }
 
   setupInputs() {
@@ -92,6 +101,16 @@ export class Ng2ComponentFacade {
       });
     }
     this.componentScope.$watch(() => this.changeDetector.detectChanges());
+  }
+
+  projectContent() {
+    var childNodes = this.childNodes;
+    if (this.contentInserctionPoint) {
+      var parent = this.contentInserctionPoint.parentNode;
+      for (var i = 0, ii = childNodes.length; i < ii; i++) {
+        parent.insertBefore(childNodes[i], this.contentInserctionPoint);
+      }
+    }
   }
 
   setupOutputs() {
