@@ -1,4 +1,4 @@
-library examples.src.hello_world.template_files.property;
+library playground.src.hello_world.template_files.property;
 
 import 'package:angular2/angular2.dart'
     show Component, Directive, View, NgElement;
