@@ -12,11 +12,11 @@ import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {Injectable} from 'angular2/src/core/di';
 
 var modifierKeys = ['alt', 'control', 'meta', 'shift'];
-var modifierKeyGetters: {[key: string]: Function} = {
-  'alt': (event) => event.altKey,
-  'control': (event) => event.ctrlKey,
-  'meta': (event) => event.metaKey,
-  'shift': (event) => event.shiftKey
+var modifierKeyGetters: {[key: string]: (event: KeyboardEvent) => boolean} = {
+  'alt': (event: KeyboardEvent) => event.altKey,
+  'control': (event: KeyboardEvent) => event.ctrlKey,
+  'meta': (event: KeyboardEvent) => event.metaKey,
+  'shift': (event: KeyboardEvent) => event.shiftKey
 };
 
 @Injectable()
@@ -69,7 +69,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     return result;
   }
 
-  static getEventFullKey(event: Event): string {
+  static getEventFullKey(event: KeyboardEvent): string {
     var fullKey = '';
     var key = DOM.getEventKey(event);
     key = key.toLowerCase();
@@ -91,7 +91,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
   }
 
   static eventCallback(element: HTMLElement, fullKey: any, handler: (Event) => any, zone: NgZone):
-      (event: Event) => void {
+      (event: KeyboardEvent) => void {
     return (event) => {
       if (StringWrapper.equals(KeyEventsPlugin.getEventFullKey(event), fullKey)) {
         zone.run(() => handler(event));
