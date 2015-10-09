@@ -90,6 +90,7 @@ var NG_API = [
   'ApplicationRef:js',
   'ApplicationRef.injector:js',
   'ApplicationRef.zone:js',
+  'ApplicationRef.componentTypes:js',
   /*
   Abstract methods
   'ApplicationRef.bootstrap()',

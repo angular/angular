@@ -232,9 +232,10 @@ export class PlatformRef_ extends PlatformRef {
 
   private _initApp(zone: NgZone, bindings: Array<Type | Binding | any[]>): ApplicationRef {
     var injector: Injector;
+    var app: ApplicationRef;
     zone.run(() => {
       bindings.push(bind(NgZone).toValue(zone));
-      bindings.push(bind(ApplicationRef).toValue(this));
+      bindings.push(bind(ApplicationRef).toFactory((): ApplicationRef => app, []));
 
       var exceptionHandler;
       try {
@@ -249,7 +250,7 @@ export class PlatformRef_ extends PlatformRef {
         }
       }
     });
-    var app = new ApplicationRef_(this, zone, injector);
+    app = new ApplicationRef_(this, zone, injector);
     this._applications.push(app);
     return app;
   }
@@ -313,11 +314,17 @@ export abstract class ApplicationRef {
    * Dispose of this application and all of its components.
    */
   abstract dispose(): void;
+
+  /**
+   * Get a list of component types registered to this application.
+   */
+  get componentTypes(): Type[] { return unimplemented(); };
 }
 
 export class ApplicationRef_ extends ApplicationRef {
   private _bootstrapListeners: Function[] = [];
   private _rootComponents: ComponentRef[] = [];
+  private _rootComponentTypes: Type[] = [];
 
   constructor(private _platform: PlatformRef_, private _zone: NgZone, private _injector: Injector) {
     super();
@@ -335,6 +342,7 @@ export class ApplicationRef_ extends ApplicationRef {
         componentBindings.push(bindings);
       }
       var exceptionHandler = this._injector.get(ExceptionHandler);
+      this._rootComponentTypes.push(componentType);
       try {
         var injector: Injector = this._injector.resolveAndCreateChild(componentBindings);
         var compRefToken: Promise<ComponentRef> = injector.get(APP_COMPONENT_REF_PROMISE);
@@ -370,4 +378,6 @@ export class ApplicationRef_ extends ApplicationRef {
     this._rootComponents.forEach((ref) => ref.dispose());
     this._platform._applicationDisposed(this);
   }
+
+  get componentTypes(): any[] { return this._rootComponentTypes; }
 }

@@ -17,7 +17,7 @@ import {OpaqueToken, Injectable, Optional, Inject} from 'angular2/src/core/di';
  *
  * ```
  * import {Component, View} from 'angular2/angular2';
- * import {ROUTER_DIRECTIVES, routerBindings, RouteConfig} from 'angular2/router';
+ * import {ROUTER_DIRECTIVES, ROUTER_BINDINGS, RouteConfig} from 'angular2/router';
  *
  * @Component({...})
  * @View({directives: [ROUTER_DIRECTIVES]})
@@ -29,7 +29,7 @@ import {OpaqueToken, Injectable, Optional, Inject} from 'angular2/src/core/di';
  * }
  *
  * bootstrap(AppCmp, [
- *   routerBindings(AppCmp),
+ *   ROUTER_BINDINGS,
  *   PathLocationStrategy,
  *   bind(APP_BASE_HREF).toValue('/my/app')
  * ]);
@@ -59,7 +59,7 @@ export const APP_BASE_HREF: OpaqueToken = CONST_EXPR(new OpaqueToken('appBaseHre
  * import {Component, View} from 'angular2/angular2';
  * import {
  *   ROUTER_DIRECTIVES,
- *   routerBindings,
+ *   ROUTER_BINDINGS,
  *   RouteConfig,
  *   Location
  * } from 'angular2/router';
@@ -75,7 +75,7 @@ export const APP_BASE_HREF: OpaqueToken = CONST_EXPR(new OpaqueToken('appBaseHre
  *   }
  * }
  *
- * bootstrap(AppCmp, [routerBindings(AppCmp)]);
+ * bootstrap(AppCmp, [ROUTER_BINDINGS]);
  * ```
  */
 @Injectable()

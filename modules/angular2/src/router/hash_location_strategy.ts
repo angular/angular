@@ -18,7 +18,7 @@ import {EventListener, History, Location} from 'angular2/src/core/facade/browser
  * import {Component, View} from 'angular2/angular2';
  * import {
  *   ROUTER_DIRECTIVES,
- *   routerBindings,
+ *   ROUTER_BINDINGS,
  *   RouteConfig,
  *   Location
  * } from 'angular2/router';
@@ -34,9 +34,7 @@ import {EventListener, History, Location} from 'angular2/src/core/facade/browser
  *   }
  * }
  *
- * bootstrap(AppCmp, [
- *   routerBindings(AppCmp)
- * ]);
+ * bootstrap(AppCmp, [ROUTER_BINDINGS]);
  * ```
  */
 @Injectable()
