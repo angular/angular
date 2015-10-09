@@ -90,7 +90,7 @@ export class NgZone {
   _onTurnStart: () => void;
   _onTurnDone: () => void;
   _onEventDone: () => void;
-  _onErrorHandler: (error, stack) => void;
+  _onErrorHandler: (error: any, stack: any) => void;
 
   // Number of microtasks pending from _innerZone (& descendants)
   _pendingMicrotasks: number;

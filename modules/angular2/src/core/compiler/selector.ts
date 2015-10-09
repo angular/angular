@@ -260,7 +260,7 @@ export class SelectorMatcher {
    * @param matchedCallback This callback will be called with the object handed into `addSelectable`
    * @return boolean true if a match was found
   */
-  match(cssSelector: CssSelector, matchedCallback: (CssSelector, any) => void): boolean {
+  match(cssSelector: CssSelector, matchedCallback: (c: CssSelector, a: any) => void): boolean {
     var result = false;
     var element = cssSelector.element;
     var classNames = cssSelector.classNames;
@@ -313,7 +313,7 @@ export class SelectorMatcher {
   }
 
   _matchTerminal(map: Map<string, SelectorContext[]>, name, cssSelector: CssSelector,
-                 matchedCallback: (CssSelector, any) => void): boolean {
+                 matchedCallback: (c: CssSelector, a: any) => void): boolean {
     if (isBlank(map) || isBlank(name)) {
       return false;
     }
@@ -336,7 +336,7 @@ export class SelectorMatcher {
   }
 
   _matchPartial(map: Map<string, SelectorMatcher>, name, cssSelector: CssSelector,
-                matchedCallback /*: (CssSelector, any) => void*/): boolean {
+                matchedCallback /*: (c: CssSelector, a: any) => void*/): boolean {
     if (isBlank(map) || isBlank(name)) {
       return false;
     }
@@ -367,7 +367,7 @@ export class SelectorContext {
     this.notSelectors = selector.notSelectors;
   }
 
-  finalize(cssSelector: CssSelector, callback: (CssSelector, any) => void): boolean {
+  finalize(cssSelector: CssSelector, callback: (c: CssSelector, a: any) => void): boolean {
     var result = true;
     if (this.notSelectors.length > 0 &&
         (isBlank(this.listContext) || !this.listContext.alreadyMatched)) {
