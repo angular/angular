@@ -16,7 +16,7 @@ import {Url} from './url_parser';
  *
  * ```
  * import {bootstrap, Component, View} from 'angular2/angular2';
- * import {Router, ROUTER_DIRECTIVES, routerBindings, RouteConfig} from 'angular2/router';
+ * import {Router, ROUTER_DIRECTIVES, ROUTER_BINDINGS, RouteConfig} from 'angular2/router';
  *
  * @Component({...})
  * @View({directives: [ROUTER_DIRECTIVES]})
@@ -34,7 +34,7 @@ import {Url} from './url_parser';
  *   }
  * }
  *
- * bootstrap(AppCmp, routerBindings(AppCmp));
+ * bootstrap(AppCmp, ROUTER_BINDINGS);
  * ```
  */
 export class RouteParams {
@@ -54,7 +54,7 @@ export class RouteParams {
  *
  * ```
  * import {bootstrap, Component, View} from 'angular2/angular2';
- * import {Router, ROUTER_DIRECTIVES, routerBindings, RouteConfig} from 'angular2/router';
+ * import {Router, ROUTER_DIRECTIVES, ROUTER_BINDINGS, RouteConfig} from 'angular2/router';
  *
  * @Component({...})
  * @View({directives: [ROUTER_DIRECTIVES]})
@@ -68,7 +68,7 @@ export class RouteParams {
  *   }
  * }
  *
- * bootstrap(AppCmp, routerBindings(AppCmp));
+ * bootstrap(AppCmp, ROUTER_BINDINGS);
  * ```
  */
 export class Instruction {

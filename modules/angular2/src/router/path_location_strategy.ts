@@ -10,7 +10,7 @@ import {LocationStrategy} from './location_strategy';
  * browser's URL.
  *
  * `PathLocationStrategy` is the default binding for {@link LocationStrategy}
- * provided in {@link routerBindings} and {@link ROUTER_BINDINGS}.
+ * provided in {@link ROUTER_BINDINGS}.
  *
  * If you're using `PathLocationStrategy`, you must provide a binding for
  * {@link APP_BASE_HREF} to a string representing the URL prefix that should
@@ -27,7 +27,7 @@ import {LocationStrategy} from './location_strategy';
  * import {
  *   APP_BASE_HREF
  *   ROUTER_DIRECTIVES,
- *   routerBindings,
+ *   ROUTER_BINDINGS,
  *   RouteConfig,
  *   Location
  * } from 'angular2/router';
@@ -44,7 +44,7 @@ import {LocationStrategy} from './location_strategy';
  * }
  *
  * bootstrap(AppCmp, [
- *   routerBindings(AppCmp), // includes binding to PathLocationStrategy
+ *   ROUTER_BINDINGS, // includes binding to PathLocationStrategy
  *   bind(APP_BASE_HREF).toValue('/my/app')
  * ]);
  * ```
