@@ -39,7 +39,7 @@ import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
  * - `<li template="ng-for #item of items; #i = index">...</li>`
  * - `<template ng-for #item [ng-for-of]="items" #i="index"><li>...</li></template>`
  */
-@Directive({selector: '[ng-for][ng-for-of]', inputs: ['ngForOf']})
+@Directive({selector: '[ng-for][ng-for-of]', inputs: ['ngForOf', 'ngForTemplate']})
 export class NgFor implements DoCheck {
   _ngForOf: any;
   private _differ: IterableDiffer;
@@ -53,6 +53,8 @@ export class NgFor implements DoCheck {
       this._differ = this._iterableDiffers.find(value).create(this._cdr);
     }
   }
+
+  set ngForTemplate(value: TemplateRef) { this._templateRef = value; }
 
   doCheck() {
     if (isPresent(this._differ)) {
