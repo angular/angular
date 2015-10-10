@@ -800,7 +800,7 @@ gulp.task('!pre.test.typings.layoutNodeModule', ['build.js.cjs'], function() {
 });
 gulp.task('!pre.test.typings.copyTypingsSpec', function() {
   return gulp
-    .src(['typing_spec/basic_spec.ts'], {base: 'typing_spec'})
+    .src(['typing_spec/*.ts'], {base: 'typing_spec'})
     .pipe(gulp.dest(path.join(tmpdir)));
 });
 gulp.task('test.typings', [
