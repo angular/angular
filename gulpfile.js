@@ -1191,8 +1191,59 @@ gulp.task('bundles.js', [
   '!bundle.web_worker.js.dev.deps',
   '!bundle.js.sfx.dev.deps',
   '!router.bundle.js.dev',
+  '!bundles.cjs',
   '!bundle.testing',
   '!bundle.copy']);
+
+gulp.task('!bundles.cjs.angular2', ['build.js.dev'], function(done) {
+  var webpack = require('webpack');
+  webpack({
+    entry: ['angular2/angular2.js'],
+    resolve: {
+        root: __dirname + '/dist/js/dev/es5',
+        packageAlias: '' //this option is added to ignore "broken" package.json in our dist folder
+    },
+    output: {
+        filename: 'dist/js/bundle/angular2.cjs.dev.js',
+        libraryTarget: 'commonjs2'
+    }
+  }, done);
+});
+
+gulp.task('!bundles.cjs.http', ['build.js.dev'], function(done) {
+  var webpack = require('webpack');
+  webpack({
+    entry: ['angular2/http.js'],
+    resolve: {
+        root: __dirname + '/dist/js/dev/es5',
+        packageAlias: '' //this option is added to ignore "broken" package.json in our dist folder
+    },
+    externals: ['angular2/angular2'],
+    output: {
+        filename: 'dist/js/bundle/http.cjs.dev.js',
+        libraryTarget: 'commonjs2'
+    }
+  }, done);
+});
+
+gulp.task('!bundles.cjs.router', ['build.js.dev'], function(done) {
+  var webpack = require('webpack');
+  webpack({
+    entry: ['angular2/router.js'],
+    resolve: {
+        root: __dirname + '/dist/js/dev/es5',
+        packageAlias: '' //this option is added to ignore "broken" package.json in our dist folder
+    },
+    externals: ['angular2/angular2'],
+    output: {
+        filename: 'dist/js/bundle/router.cjs.dev.js',
+        libraryTarget: 'commonjs2'
+    }
+  }, done);
+});
+
+
+gulp.task('!bundles.cjs', ['!bundles.cjs.angular2', '!bundles.cjs.http', '!bundles.cjs.router']);
 
 gulp.task('build.js', ['build.js.dev', 'build.js.prod', 'build.js.cjs', 'bundles.js', 'benchpress.bundle']);
 
