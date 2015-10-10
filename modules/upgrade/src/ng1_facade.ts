@@ -57,7 +57,7 @@ export class ExportedNg1Component {
     var scope = directive.scope;
     if (typeof scope == 'object') {
       for (var name in scope) {
-        if (scope.hasOwnProperty(name)) {
+        if ((<any>scope).hasOwnProperty(name)) {
           var localName = scope[name];
           var type = localName.charAt(0);
           localName = localName.substr(1) || name;
@@ -96,7 +96,7 @@ export class ExportedNg1Component {
   static resolve(exportedComponents: {[name: string]: ExportedNg1Component},
                  injector: angular.auto.IInjectorService) {
     for (var name in exportedComponents) {
-      if (exportedComponents.hasOwnProperty(name)) {
+      if ((<any>exportedComponents).hasOwnProperty(name)) {
         var exportedComponent = exportedComponents[name];
         exportedComponent.extractBindings(injector);
       }

@@ -57,7 +57,7 @@ export class UpgradeModule {
   }
 
   exportAsNg2Component(name: string): Type {
-    if (this.exportedNg1Components.hasOwnProperty(name)) {
+    if ((<any>this.exportedNg1Components).hasOwnProperty(name)) {
       return this.exportedNg1Components[name].type;
     } else {
       return (this.exportedNg1Components[name] = new ExportedNg1Component(name)).type;
