@@ -68,7 +68,7 @@ export class AttributeMetadata extends DependencyMetadata {
  *
  * The preferred solution is to query for `Pane` directives using this decorator.
  *
- * ```javascript
+ * ```typescript
  * @Component({
  *   selector: 'pane',
  *   inputs: ['title']
@@ -104,12 +104,13 @@ export class AttributeMetadata extends DependencyMetadata {
  * <seeker>
  *   <div #findme>...</div>
  * </seeker>
- *
+ * ```
+ * ```typescript
  * @Component({
- *   selector: 'foo'
+ *   selector: 'seeker'
  * })
  * @View(...)
- * class seeker {
+ * class Seeker {
  *   constructor(@Query('findme') elList: QueryList<ElementRef>) {...}
  * }
  * ```
@@ -124,9 +125,10 @@ export class AttributeMetadata extends DependencyMetadata {
  *   <div #find-me>...</div>
  *   <div #find-me-too>...</div>
  * </seeker>
- *
+ * ```
+ * ```typescript
  *  @Component({
- *   selector: 'foo'
+ *   selector: 'seeker'
  * })
  * @View(...)
  * class Seeker {
