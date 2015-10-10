@@ -571,7 +571,13 @@ function _extractToken(typeOrFunc, metadata /*any[] | any*/, params: any[][]): D
   var optional = false;
 
   if (!isArray(metadata)) {
-    return _createDependency(metadata, optional, null, null, depProps);
+    if (metadata instanceof InjectMetadata) {
+      var metaArrayWrapper = ListWrapper.createFixedSize(1);
+      metaArrayWrapper[0] = metadata;
+      metadata = metaArrayWrapper;
+    } else {
+      return _createDependency(metadata, optional, null, null, depProps);
+    }
   }
 
   var lowerBoundVisibility = null;

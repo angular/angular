@@ -643,6 +643,15 @@ export function main() {
       });
     });
 
+    it('should allow declaring dependencies with flat arrays', () => {
+      var resolved =
+          Injector.resolve([bind('token').toFactory(e => e, [new InjectMetadata("dep")])]);
+      var nestedResolved =
+          Injector.resolve([bind('token').toFactory(e => e, [[new InjectMetadata("dep")]])]);
+      expect(resolved[0].resolvedFactories[0].dependencies[0].key.token)
+          .toEqual(nestedResolved[0].resolvedFactories[0].dependencies[0].key.token);
+    });
+
     describe("displayName", () => {
       it("should work", () => {
         expect(Injector.resolveAndCreate([Engine, BrokenEngine]).displayName)
