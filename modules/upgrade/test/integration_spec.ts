@@ -34,24 +34,26 @@ export function main() {
          });
        }));
 
-    it('should instantiate ng1 in ng2 template', inject([AsyncTestCompleter], (async) => {
-         var upgradeModule: UpgradeModule = createUpgradeModule();
+    it('should instantiate ng1 in ng2 template and project content',
+       inject([AsyncTestCompleter], (async) => {
+         var upgrMod: UpgradeModule = createUpgradeModule();
 
          var Ng2 = Component({selector: 'ng2-1'})
                        .View({
-                         template: `{{ 'ng2(' }}<ng1></ng1>{{ ')' }}`,
-                         directives: [upgradeModule.exportAsNg2Component('ng1')]
+                         template: `{{ 'ng2(' }}<ng1>{{'transclude'}}</ng1>{{ ')' }}`,
+                         directives: [upgrMod.exportAsNg2Component('ng1')]
                        })
                        .Class({constructor: function() {}});
 
-         upgradeModule.ng1Module.directive('ng1',
-                                           () => { return {template: 'ng1 {{ "WORKS" }}!'}; });
-         upgradeModule.importNg2Component(Ng2);
+         upgrMod.ng1Module.directive('ng1', () => {
+           return {transclude: true, template: '{{ "ng1" }}(<ng-transclude></ng-transclude>)'};
+         });
+         upgrMod.importNg2Component(Ng2);
 
          var element = html("<div>{{'ng1('}}<ng2-1></ng2-1>{{')'}}</div>");
 
-         upgradeModule.bootstrap(element).ready(() => {
-           expect(document.body.textContent).toEqual("ng1(ng2(ng1 WORKS!))");
+         upgrMod.bootstrap(element).ready(() => {
+           expect(document.body.textContent).toEqual("ng1(ng2(ng1(transclude)))");
            async.done();
          });
        }));
