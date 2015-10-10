@@ -3,7 +3,7 @@ import {ReadyStates, RequestMethods} from '../enums';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
-import {Injectable} from 'angular2/src/core/di';
+import {Injectable} from 'angular2/angular2';
 import {BrowserJsonp} from './browser_jsonp';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {makeTypeError} from 'angular2/src/core/facade/exceptions';

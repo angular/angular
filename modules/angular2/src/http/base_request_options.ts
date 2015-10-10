@@ -2,7 +2,7 @@ import {isPresent, isString} from 'angular2/src/core/facade/lang';
 import {Headers} from './headers';
 import {RequestMethods} from './enums';
 import {RequestOptionsArgs} from './interfaces';
-import {Injectable} from 'angular2/src/core/di';
+import {Injectable} from 'angular2/angular2';
 import {URLSearchParams} from './url_search_params';
 import {normalizeMethodName} from './http_utils';
 
