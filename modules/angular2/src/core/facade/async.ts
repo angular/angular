@@ -60,7 +60,9 @@ export namespace NodeJS {
 }
 
 export class TimerWrapper {
-  static setTimeout(fn: (...args: any[]) => void, millis: number): NodeJS.Timer { return global.setTimeout(fn, millis); }
+  static setTimeout(fn: (...args: any[]) => void, millis: number): NodeJS.Timer {
+    return global.setTimeout(fn, millis);
+  }
   static clearTimeout(id: NodeJS.Timer): void { global.clearTimeout(id); }
 
   static setInterval(fn: (...args: any[]) => void, millis: number): NodeJS.Timer {
@@ -132,6 +134,7 @@ export class Observable {
  * Once a reference implementation of the spec is available, switch to it.
  */
 export class EventEmitter extends Observable {
+  /** @internal */
   _subject = new Subject();
 
   observer(generator: any): any {

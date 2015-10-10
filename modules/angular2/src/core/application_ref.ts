@@ -204,6 +204,7 @@ export abstract class PlatformRef {
 }
 
 export class PlatformRef_ extends PlatformRef {
+  /** @internal */
   _applications: ApplicationRef[] = [];
 
   constructor(private _injector: Injector, private _dispose: () => void) { super(); }
@@ -256,6 +257,7 @@ export class PlatformRef_ extends PlatformRef {
     this._dispose();
   }
 
+  /** @internal */
   _applicationDisposed(app: ApplicationRef): void { ListWrapper.remove(this._applications, app); }
 }
 

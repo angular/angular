@@ -140,6 +140,7 @@ export class NgFormModel extends ControlContainer implements Form,
     return false;
   }
 
+  /** @internal */
   _updateDomValue() {
     this.directives.forEach(dir => {
       var ctrl: any = this.form.find(dir.path);

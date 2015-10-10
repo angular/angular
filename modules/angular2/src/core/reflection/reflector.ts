@@ -19,10 +19,15 @@ export class ReflectionInfo {
 }
 
 export class Reflector {
+  /** @internal */
   _injectableInfo = new Map<any, ReflectionInfo>();
+  /** @internal */
   _getters = new Map<string, GetterFn>();
+  /** @internal */
   _setters = new Map<string, SetterFn>();
+  /** @internal */
   _methods = new Map<string, MethodFn>();
+  /** @internal */
   _usedKeys: Set<any>;
   reflectionCapabilities: PlatformReflectionCapabilities;
 
@@ -135,6 +140,7 @@ export class Reflector {
     }
   }
 
+  /** @internal */
   _getReflectionInfo(typeOrFunc) {
     if (isPresent(this._usedKeys)) {
       this._usedKeys.add(typeOrFunc);
@@ -142,6 +148,7 @@ export class Reflector {
     return this._injectableInfo.get(typeOrFunc);
   }
 
+  /** @internal */
   _containsReflectionInfo(typeOrFunc) { return this._injectableInfo.has(typeOrFunc); }
 
   importUri(type: Type): string { return this.reflectionCapabilities.importUri(type); }

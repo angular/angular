@@ -96,6 +96,7 @@ export class FormBuilder {
     }
   }
 
+  /** @internal */
   _reduceControls(controlsConfig: any): {[key: string]: modelModule.AbstractControl} {
     var controls: {[key: string]: modelModule.AbstractControl} = {};
     StringMapWrapper.forEach(controlsConfig, (controlConfig, controlName) => {
@@ -104,6 +105,7 @@ export class FormBuilder {
     return controls;
   }
 
+  /** @internal */
   _createControl(controlConfig: any): modelModule.AbstractControl {
     if (controlConfig instanceof modelModule.Control ||
         controlConfig instanceof modelModule.ControlGroup ||

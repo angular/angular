@@ -19,7 +19,13 @@ export abstract class ServiceMessageBrokerFactory {
 
 @Injectable()
 export class ServiceMessageBrokerFactory_ extends ServiceMessageBrokerFactory {
-  constructor(private _messageBus: MessageBus, public _serializer: Serializer) { super(); }
+  /** @internal */
+  public _serializer: Serializer;
+
+  constructor(private _messageBus: MessageBus, _serializer: Serializer) {
+    super();
+    this._serializer = _serializer;
+  }
 
   createMessageBroker(channel: string, runInZone: boolean = true): ServiceMessageBroker {
     this._messageBus.initChannel(channel, runInZone);

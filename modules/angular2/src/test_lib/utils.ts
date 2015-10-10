@@ -9,6 +9,7 @@ import {
 } from 'angular2/src/core/facade/lang';
 
 export class Log {
+  /** @internal */
   _result: any[];
 
   constructor() { this._result = []; }

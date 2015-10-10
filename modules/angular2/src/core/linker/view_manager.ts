@@ -219,6 +219,7 @@ export class AppViewManager_ extends AppViewManager {
     return this._utils.getComponentInstance(hostView, boundElementIndex);
   }
 
+  /** @internal */
   _createRootHostViewScope: WtfScopeFn = wtfCreateScope('AppViewManager#createRootHostView()');
 
   createRootHostView(hostProtoViewRef: ProtoViewRef, overrideSelector: string,
@@ -239,6 +240,7 @@ export class AppViewManager_ extends AppViewManager {
     return wtfLeave(s, hostView.ref);
   }
 
+  /** @internal */
   _destroyRootHostViewScope: WtfScopeFn = wtfCreateScope('AppViewManager#destroyRootHostView()');
 
   destroyRootHostView(hostViewRef: HostViewRef) {
@@ -254,6 +256,7 @@ export class AppViewManager_ extends AppViewManager {
     wtfLeave(s);
   }
 
+  /** @internal */
   _createEmbeddedViewInContainerScope: WtfScopeFn =
       wtfCreateScope('AppViewManager#createEmbeddedViewInContainer()');
 
@@ -269,6 +272,7 @@ export class AppViewManager_ extends AppViewManager {
                                                    templateRef.elementRef, null));
   }
 
+  /** @internal */
   _createHostViewInContainerScope: WtfScopeFn =
       wtfCreateScope('AppViewManager#createHostViewInContainer()');
 
@@ -289,6 +293,7 @@ export class AppViewManager_ extends AppViewManager {
   /**
    *
    * See {@link AppViewManager#destroyViewInContainer}.
+   * @internal
    */
   _createViewInContainer(viewContainerLocation: ElementRef, index: number,
                          protoView: viewModule.AppProtoView, context: ElementRef,
@@ -320,6 +325,7 @@ export class AppViewManager_ extends AppViewManager {
     return view.ref;
   }
 
+  /** @internal */
   _attachRenderView(parentView: viewModule.AppView, boundElementIndex: number, index: number,
                     view: viewModule.AppView) {
     var elementRef = parentView.elementRefs[boundElementIndex];
@@ -331,6 +337,7 @@ export class AppViewManager_ extends AppViewManager {
     }
   }
 
+  /** @internal */
   _destroyViewInContainerScope = wtfCreateScope('AppViewMananger#destroyViewInContainer()');
 
   destroyViewInContainer(viewContainerLocation: ElementRef, index: number) {
@@ -341,6 +348,7 @@ export class AppViewManager_ extends AppViewManager {
     wtfLeave(s);
   }
 
+  /** @internal */
   _attachViewInContainerScope = wtfCreateScope('AppViewMananger#attachViewInContainer()');
 
   // TODO(i): refactor detachViewInContainer+attachViewInContainer to moveViewInContainer
@@ -361,6 +369,7 @@ export class AppViewManager_ extends AppViewManager {
     return wtfLeave(s, viewRef);
   }
 
+  /** @internal */
   _detachViewInContainerScope = wtfCreateScope('AppViewMananger#detachViewInContainer()');
 
   // TODO(i): refactor detachViewInContainer+attachViewInContainer to moveViewInContainer
@@ -375,6 +384,7 @@ export class AppViewManager_ extends AppViewManager {
     return wtfLeave(s, view.ref);
   }
 
+  /** @internal */
   _createMainView(protoView: viewModule.AppProtoView,
                   renderViewWithFragments: RenderViewWithFragments): viewModule.AppView {
     var mergedParentView =
@@ -384,6 +394,7 @@ export class AppViewManager_ extends AppViewManager {
     return mergedParentView;
   }
 
+  /** @internal */
   _createPooledView(protoView: viewModule.AppProtoView): viewModule.AppView {
     var view = this._viewPool.getView(protoView);
     if (isBlank(view)) {
@@ -394,6 +405,7 @@ export class AppViewManager_ extends AppViewManager {
     return view;
   }
 
+  /** @internal */
   _destroyPooledView(view: viewModule.AppView) {
     var wasReturned = this._viewPool.returnView(view);
     if (!wasReturned) {
@@ -402,6 +414,7 @@ export class AppViewManager_ extends AppViewManager {
     }
   }
 
+  /** @internal */
   _destroyViewInContainer(parentView: viewModule.AppView, boundElementIndex: number,
                           index: number) {
     var viewContainer = parentView.viewContainers[boundElementIndex];
@@ -422,6 +435,7 @@ export class AppViewManager_ extends AppViewManager {
     }
   }
 
+  /** @internal */
   _viewDehydrateRecurse(view: viewModule.AppView) {
     if (view.hydrated()) {
       this._utils.dehydrateView(view);

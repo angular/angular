@@ -83,6 +83,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
         `Cannot create a factory for '${stringify(t)}' because its constructor has more than 20 arguments`);
   }
 
+  /** @internal */
   _zipTypesAndAnnotaions(paramTypes, paramAnnotations): any[][] {
     var result;
 

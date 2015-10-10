@@ -80,7 +80,9 @@ export const APP_BASE_HREF: OpaqueToken = CONST_EXPR(new OpaqueToken('appBaseHre
  */
 @Injectable()
 export class Location {
+  /** @internal */
   _subject: EventEmitter = new EventEmitter();
+  /** @internal */
   _baseHref: string;
 
   constructor(public platformStrategy: LocationStrategy,

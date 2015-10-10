@@ -62,7 +62,9 @@ import {isPresent, isBlank, print} from 'angular2/src/core/facade/lang';
  */
 @Directive({selector: '[ng-style]', inputs: ['rawStyle: ng-style']})
 export class NgStyle implements DoCheck {
+  /** @internal */
   _rawStyle;
+  /** @internal */
   _differ: KeyValueDiffer;
 
   constructor(private _differs: KeyValueDiffers, private _ngEl: ElementRef,

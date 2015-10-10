@@ -40,8 +40,10 @@ export class CodegenNameUtil {
   /**
    * Record names sanitized for use as fields.
    * See [sanitizeName] for details.
+   * @internal
    */
   _sanitizedNames: string[];
+  /** @internal */
   _sanitizedEventNames = new Map<EventBinding, string[]>();
 
   constructor(private _records: ProtoRecord[], private _eventBindings: EventBinding[],
@@ -62,6 +64,7 @@ export class CodegenNameUtil {
     }
   }
 
+  /** @internal */
   _addFieldPrefix(name: string): string { return `${_FIELD_PREFIX}${name}`; }
 
   getDispatcherName(): string { return this._addFieldPrefix(_DISPATCHER_ACCESSOR); }

@@ -312,6 +312,7 @@ export class SelectorMatcher {
     return result;
   }
 
+  /** @internal */
   _matchTerminal(map: Map<string, SelectorContext[]>, name, cssSelector: CssSelector,
                  matchedCallback: (c: CssSelector, a: any) => void): boolean {
     if (isBlank(map) || isBlank(name)) {
@@ -335,6 +336,7 @@ export class SelectorMatcher {
     return result;
   }
 
+  /** @internal */
   _matchPartial(map: Map<string, SelectorMatcher>, name, cssSelector: CssSelector,
                 matchedCallback /*: (c: CssSelector, a: any) => void*/): boolean {
     if (isBlank(map) || isBlank(name)) {

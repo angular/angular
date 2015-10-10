@@ -54,8 +54,11 @@ export abstract class LifeCycle {
 export class LifeCycle_ extends LifeCycle {
   static _tickScope: WtfScopeFn = wtfCreateScope('LifeCycle#tick()');
 
+  /** @internal */
   _changeDetectors: ChangeDetector[];
+  /** @internal */
   _enforceNoNewChanges: boolean;
+  /** @internal */
   _runningTick: boolean = false;
 
   constructor(changeDetector: ChangeDetector = null, enforceNoNewChanges: boolean = false) {

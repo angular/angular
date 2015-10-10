@@ -129,6 +129,7 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
     return this.isDirty;
   }
 
+  /** @internal */
   _reset() {
     if (this.isDirty) {
       var record: KVChangeRecord;
@@ -176,6 +177,7 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
     }
   }
 
+  /** @internal */
   _truncate(lastRecord: KVChangeRecord, record: KVChangeRecord) {
     while (record !== null) {
       if (lastRecord === null) {
@@ -201,11 +203,13 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
     }
   }
 
+  /** @internal */
   _isInRemovals(record: KVChangeRecord) {
     return record === this._removalsHead || record._nextRemoved !== null ||
            record._prevRemoved !== null;
   }
 
+  /** @internal */
   _addToRemovals(record: KVChangeRecord) {
     // todo(vicb) assert
     // assert(record._next == null);
@@ -222,6 +226,7 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
     }
   }
 
+  /** @internal */
   _removeFromSeq(prev: KVChangeRecord, record: KVChangeRecord) {
     var next = record._next;
     if (prev === null) {
@@ -236,6 +241,7 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
     //})());
   }
 
+  /** @internal */
   _removeFromRemovals(record: KVChangeRecord) {
     // todo(vicb) assert
     // assert(record._next == null);
@@ -257,6 +263,7 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
     record._prevRemoved = record._nextRemoved = null;
   }
 
+  /** @internal */
   _addToAdditions(record: KVChangeRecord) {
     // todo(vicb): assert
     // assert(record._next == null);
@@ -272,6 +279,7 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
     }
   }
 
+  /** @internal */
   _addToChanges(record: KVChangeRecord) {
     // todo(vicb) assert
     // assert(record._nextAdded == null);
@@ -315,6 +323,7 @@ export class DefaultKeyValueDiffer implements KeyValueDiffer {
            "removals: " + removals.join(', ') + "\n";
   }
 
+  /** @internal */
   _forEach(obj, fn: Function) {
     if (obj instanceof Map) {
       (<Map<any, any>>obj).forEach(<any>fn);
@@ -329,11 +338,17 @@ export class KVChangeRecord {
   previousValue: any = null;
   currentValue: any = null;
 
+  /** @internal */
   _nextPrevious: KVChangeRecord = null;
+  /** @internal */
   _next: KVChangeRecord = null;
+  /** @internal */
   _nextAdded: KVChangeRecord = null;
+  /** @internal */
   _nextRemoved: KVChangeRecord = null;
+  /** @internal */
   _prevRemoved: KVChangeRecord = null;
+  /** @internal */
   _nextChanged: KVChangeRecord = null;
 
   constructor(public key: any) {}

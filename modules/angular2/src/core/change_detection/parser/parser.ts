@@ -58,9 +58,11 @@ class ParseException extends BaseException {
 
 @Injectable()
 export class Parser {
+  /** @internal */
   _reflector: Reflector;
 
-  constructor(public _lexer: Lexer, providedReflector: Reflector = null) {
+  constructor(/** @internal */
+              public _lexer: Lexer, providedReflector: Reflector = null) {
     this._reflector = isPresent(providedReflector) ? providedReflector : reflector;
   }
 

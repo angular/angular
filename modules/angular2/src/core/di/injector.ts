@@ -196,6 +196,7 @@ export class ProtoInjectorDynamicStrategy implements ProtoInjectorStrategy {
 }
 
 export class ProtoInjector {
+  /** @internal */
   _strategy: ProtoInjectorStrategy;
   numberOfBindings: number;
 
@@ -522,16 +523,24 @@ export class Injector {
     return new Injector(proto, null, null);
   }
 
+  /** @internal */
   _strategy: InjectorStrategy;
+  /** @internal */
   _isHost: boolean = false;
+  /** @internal */
   _constructionCounter: number = 0;
-
+  /** @internal */
+  public _proto: any /* ProtoInjector */;
+  /** @internal */
+  public _parent: Injector;
   /**
    * Private
    */
-  constructor(public _proto: any /* ProtoInjector */, public _parent: Injector = null,
+  constructor(_proto: any /* ProtoInjector */, _parent: Injector = null,
               private _depProvider: any /* DependencyProvider */ = null,
               private _debugContext: Function = null) {
+    this._proto = _proto;
+    this._parent = _parent;
     this._strategy = _proto._strategy.createInjectorStrategy(this);
   }
 
@@ -739,6 +748,7 @@ export class Injector {
     return this._instantiateBinding(binding, Visibility.PublicAndPrivate);
   }
 
+  /** @internal */
   _new(binding: ResolvedBinding, visibility: Visibility): any {
     if (this._constructionCounter++ > this._strategy.getMaxNumberOfObjects()) {
       throw new CyclicDependencyError(this, binding.key);
@@ -899,6 +909,7 @@ export class Injector {
     }
   }
 
+  /** @internal */
   _throwOrNull(key: Key, optional: boolean): any {
     if (optional) {
       return null;
@@ -907,11 +918,13 @@ export class Injector {
     }
   }
 
+  /** @internal */
   _getByKeySelf(key: Key, optional: boolean, bindingVisibility: Visibility): any {
     var obj = this._strategy.getObjByKeyId(key.id, bindingVisibility);
     return (obj !== UNDEFINED) ? obj : this._throwOrNull(key, optional);
   }
 
+  /** @internal */
   _getByKeyHost(key: Key, optional: boolean, bindingVisibility: Visibility,
                 lowerBoundVisibility: Object): any {
     var inj = this;
@@ -938,11 +951,13 @@ export class Injector {
     return this._throwOrNull(key, optional);
   }
 
+  /** @internal */
   _getPrivateDependency(key: Key, optional: boolean, inj: Injector): any {
     var obj = inj._parent._strategy.getObjByKeyId(key.id, Visibility.Private);
     return (obj !== UNDEFINED) ? obj : this._throwOrNull(key, optional);
   }
 
+  /** @internal */
   _getByKeyDefault(key: Key, optional: boolean, bindingVisibility: Visibility,
                    lowerBoundVisibility: Object): any {
     var inj = this;

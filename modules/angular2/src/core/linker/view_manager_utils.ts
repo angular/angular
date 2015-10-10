@@ -172,6 +172,7 @@ export class AppViewManagerUtils {
                       contextView.locals);
   }
 
+  /** @internal */
   _hydrateView(initView: viewModule.AppView, imperativelyCreatedInjector: Injector,
                hostElementInjector: eli.ElementInjector, context: Object, parentLocals: Locals) {
     var viewIdx = initView.viewOffset;
@@ -213,6 +214,7 @@ export class AppViewManagerUtils {
     }
   }
 
+  /** @internal */
   _populateViewLocals(view: viewModule.AppView, elementInjector: eli.ElementInjector,
                       boundElementIdx: number): void {
     if (isPresent(elementInjector.getDirectiveVariableBindings())) {
@@ -226,6 +228,7 @@ export class AppViewManagerUtils {
     }
   }
 
+  /** @internal */
   _setUpEventEmitters(view: viewModule.AppView, elementInjector: eli.ElementInjector,
                       boundElementIndex: number) {
     var emitters = elementInjector.getEventEmitterAccessors();

@@ -5,7 +5,9 @@ import {DOCUMENT} from './dom_tokens';
 
 @Injectable()
 export class SharedStylesHost {
+  /** @internal */
   _styles: string[] = [];
+  /** @internal */
   _stylesSet = new Set<string>();
 
   constructor() {}
@@ -34,6 +36,7 @@ export class DomSharedStylesHost extends SharedStylesHost {
     super();
     this._hostNodes.add(doc.head);
   }
+  /** @internal */
   _addStylesToHost(styles: string[], host: Node) {
     for (var i = 0; i < styles.length; i++) {
       var style = styles[i];

@@ -11,6 +11,7 @@ import {reflector} from 'angular2/src/core/reflection/reflection';
 
 @Injectable()
 export class ViewResolver {
+  /** @internal */
   _cache = new Map<Type, ViewMetadata>();
 
   resolve(component: Type): ViewMetadata {
@@ -24,6 +25,7 @@ export class ViewResolver {
     return view;
   }
 
+  /** @internal */
   _resolve(component: Type): ViewMetadata {
     var compMeta: ComponentMetadata;
     var viewMeta: ViewMetadata;
@@ -87,6 +89,7 @@ export class ViewResolver {
     return null;
   }
 
+  /** @internal */
   _throwMixingViewAndComponent(propertyName: string, component: Type): void {
     throw new BaseException(
         `Component '${stringify(component)}' cannot have both '${propertyName}' and '@View' set at the same time"`);

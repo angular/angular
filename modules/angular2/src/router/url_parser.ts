@@ -22,6 +22,7 @@ export class Url {
 
   segmentToString(): string { return this.path + this._matrixParamsToString(); }
 
+  /** @internal */
   _auxToString(): string {
     return this.auxiliary.length > 0 ?
                ('(' + this.auxiliary.map(sibling => sibling.toString()).join('//') + ')') :
@@ -36,6 +37,7 @@ export class Url {
     return ';' + serializeParams(this.params).join(';');
   }
 
+  /** @internal */
   _childString(): string { return isPresent(this.child) ? ('/' + this.child.toString()) : ''; }
 }
 

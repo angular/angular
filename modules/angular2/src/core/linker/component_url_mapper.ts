@@ -24,6 +24,7 @@ export class ComponentUrlMapper {
 }
 
 export class RuntimeComponentUrlMapper extends ComponentUrlMapper {
+  /** @internal */
   _componentUrls = new Map<Type, string>();
 
   constructor() { super(); }

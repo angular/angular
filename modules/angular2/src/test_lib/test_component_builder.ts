@@ -30,7 +30,9 @@ export abstract class RootTestComponent {
 }
 
 export class RootTestComponent_ extends RootTestComponent {
+  /** @internal */
   _componentRef: ComponentRef;
+  /** @internal */
   _componentParentView: AppView;
 
   constructor(componentRef: ComponentRef) {
@@ -55,15 +57,21 @@ var _nextRootElementId = 0;
  */
 @Injectable()
 export class TestComponentBuilder {
+  /** @internal */
   _bindingsOverrides = new Map<Type, any[]>();
+  /** @internal */
   _directiveOverrides = new Map<Type, Map<Type, Type>>();
+  /** @internal */
   _templateOverrides = new Map<Type, string>();
+  /** @internal */
   _viewBindingsOverrides = new Map<Type, any[]>();
+  /** @internal */
   _viewOverrides = new Map<Type, ViewMetadata>();
 
 
   constructor(private _injector: Injector) {}
 
+  /** @internal */
   _clone(): TestComponentBuilder {
     var clone = new TestComponentBuilder(this._injector);
     clone._viewOverrides = MapWrapper.clone(this._viewOverrides);

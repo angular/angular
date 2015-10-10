@@ -368,6 +368,7 @@ export class Parse5DomAdapter extends DomAdapter {
   hasClass(element, classname: string): boolean {
     return ListWrapper.contains(this.classList(element), classname);
   }
+  /** @internal */
   _readStyleAttribute(element) {
     var styleMap = {};
     var attributes = element.attribs;
@@ -383,6 +384,7 @@ export class Parse5DomAdapter extends DomAdapter {
     }
     return styleMap;
   }
+  /** @internal */
   _writeStyleAttribute(element, styleMap) {
     var styleAttrValue = "";
     for (var key in styleMap) {
@@ -486,6 +488,7 @@ export class Parse5DomAdapter extends DomAdapter {
       el.href = baseUrl + '/../' + href;
     }
   }
+  /** @internal */
   _buildRules(parsedRules, css?) {
     var rules = [];
     for (var i = 0; i < parsedRules.length; i++) {

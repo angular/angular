@@ -6,9 +6,13 @@ import {ViewMetadata} from '../core/metadata';
 import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
 
 export class MockViewResolver extends ViewResolver {
+  /** @internal */
   _views = new Map<Type, ViewMetadata>();
+  /** @internal */
   _inlineTemplates = new Map<Type, string>();
+  /** @internal */
   _viewCache = new Map<Type, ViewMetadata>();
+  /** @internal */
   _directiveOverrides = new Map<Type, Map<Type, Type>>();
 
   constructor() { super(); }
@@ -103,6 +107,8 @@ export class MockViewResolver extends ViewResolver {
   }
 
   /**
+   * @internal
+   *
    * Once a component has been compiled, the AppProtoView is stored in the compiler cache.
    *
    * Then it should not be possible to override the component configuration after the component

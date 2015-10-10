@@ -77,6 +77,7 @@ export abstract class DebugElement {
 }
 
 export class DebugElement_ extends DebugElement {
+  /** @internal */
   _elementInjector: ElementInjector;
 
   constructor(private _parentView: AppView, private _boundElementIndex: number) {
@@ -134,6 +135,7 @@ export class DebugElement_ extends DebugElement {
 
   getLocal(name: string): any { return this._parentView.locals.get(name); }
 
+  /** @internal */
   _getChildElements(view: AppView, parentBoundElementIndex: number): DebugElement[] {
     var els = [];
     var parentElementBinder = null;

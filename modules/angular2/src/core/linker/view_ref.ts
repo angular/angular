@@ -98,8 +98,12 @@ export abstract class ViewRef implements HostViewRef {
 
 export class ViewRef_ extends ViewRef {
   private _changeDetectorRef: ChangeDetectorRef = null;
-
-  constructor(public _view: viewModule.AppView) { super(); }
+  /** @internal */
+  public _view: viewModule.AppView;
+  constructor(_view: viewModule.AppView) {
+    super();
+    this._view = _view;
+  }
 
   /**
    * Return `RenderViewRef`
@@ -166,5 +170,10 @@ export class ViewRef_ extends ViewRef {
 export abstract class ProtoViewRef {}
 
 export class ProtoViewRef_ extends ProtoViewRef {
-  constructor(public _protoView: viewModule.AppProtoView) { super(); }
+  /** @internal */
+  public _protoView: viewModule.AppProtoView;
+  constructor(_protoView: viewModule.AppProtoView) {
+    super();
+    this._protoView = _protoView;
+  }
 }
