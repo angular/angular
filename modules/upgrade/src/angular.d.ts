@@ -7,7 +7,14 @@ declare namespace angular {
     run(a: any);
   }
   interface ICompileService {
-    (element: Element): (IScope) => void;
+    (element: Element, transclude?: Function): ILinkFn;
+  }
+  interface ILinkFn {
+    (scope: IScope, cloneAttachFn?: Function, options?: ILinkFnOptions): void
+  }
+  interface ILinkFnOptions {
+    parentBoundTranscludeFn?: Function, transcludeControllers?: {[key: string]: any},
+        futureParentElement?: Node
   }
   interface IRootScopeService {
     $new(): IScope;

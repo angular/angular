@@ -112,8 +112,16 @@ class Ng1ComponentFacade implements OnChanges, DoCheck {
               private inputs: string[], private outputs: string[], private propOuts: string[],
               private checkProperties: string[], private propertyMap: {[key: string]: string}) {
     var chailTail = scope.$$childTail;  // remember where the next scope is inserted
-    compile(elementRef.nativeElement)(scope);
-
+    var element: Element = elementRef.nativeElement;
+    var childNodes: Node[] = [];
+    var childNode;
+    while (childNode = element.firstChild) {
+      element.removeChild(childNode);
+      childNodes.push(childNode);
+    }
+    element.appendChild(element.ownerDocument.createElement('ng-transclude'));
+    compile(element)(scope, null,
+                     {parentBoundTranscludeFn: (scope, cloneAttach) => cloneAttach(childNodes)});
     // If we are first scope take it, otherwise take the next one in list.
     this.componentScope = chailTail ? chailTail.$$nextSibling : scope.$$childHead;
 
