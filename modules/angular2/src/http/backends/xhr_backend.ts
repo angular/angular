@@ -3,7 +3,7 @@ import {ReadyStates, RequestMethods, ResponseTypes} from '../enums';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
-import {Injectable} from 'angular2/src/core/di';
+import {Injectable} from 'angular2/angular2';
 import {BrowserXhr} from './browser_xhr';
 import {isPresent} from 'angular2/src/core/facade/lang';
 // todo(robwormald): temporary until https://github.com/angular/angular/issues/4390 decided
