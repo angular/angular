@@ -1,5 +1,5 @@
 import {RequestMethods} from './enums';
-import {RequestOptions} from './base_request_options';
+import {RequestArgs} from './interfaces';
 import {Headers} from './headers';
 import {normalizeMethodName} from './http_utils';
 import {
@@ -61,7 +61,7 @@ export class Request {
   url: string;
   // TODO: support URLSearchParams | FormData | Blob | ArrayBuffer
   private _body: string;
-  constructor(requestOptions: RequestOptions) {
+  constructor(requestOptions: RequestArgs) {
     // TODO: assert that url is present
     let url = requestOptions.url;
     this.url = requestOptions.url;
