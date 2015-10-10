@@ -197,8 +197,8 @@ import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
  * }
  * ```
  *
- * This directive would be instantiated with a {@link QueryList} which contains `Dependency` 4 and
- * 6. Here, `Dependency` 5 would not be included, because it is not a direct child.
+ * This directive would be instantiated with a {@link QueryList} which contains `Dependency` 4 
+ * and 6. Here, `Dependency` 5 would not be included, because it is not a direct child.
  *
  * ### Injecting a live collection of descendant directives
  *
