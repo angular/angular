@@ -1,4 +1,4 @@
-import {isPresent, isBlank, Type, isString} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank, Type, isString, StringWrapper} from 'angular2/src/core/facade/lang';
 import {SetWrapper, StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {
   TemplateCmd,
@@ -44,6 +44,8 @@ export var TEMPLATE_COMMANDS_MODULE_REF =
     moduleRef(`package:angular2/src/core/linker/template_commands${MODULE_SUFFIX}`);
 
 const IMPLICIT_TEMPLATE_VAR = '\$implicit';
+const CLASS_ATTR = 'class';
+const STYLE_ATTR = 'style';
 
 @Injectable()
 export class CommandCompiler {
@@ -211,14 +213,14 @@ class CommandBuilderVisitor<R> implements TemplateAstVisitor {
 
   private _readAttrNameAndValues(directives: CompileDirectiveMetadata[],
                                  attrAsts: TemplateAst[]): string[] {
-    var attrNameAndValues: string[] = visitAndReturnContext(this, attrAsts, []);
+    var attrs = keyValueArrayToMap(visitAndReturnContext(this, attrAsts, []));
     directives.forEach(directiveMeta => {
       StringMapWrapper.forEach(directiveMeta.hostAttributes, (value, name) => {
-        attrNameAndValues.push(name);
-        attrNameAndValues.push(value);
+        var prevValue = attrs[name];
+        attrs[name] = isPresent(prevValue) ? mergeAttributeValue(name, prevValue, value) : value;
       });
     });
-    return removeKeyValueArrayDuplicates(attrNameAndValues);
+    return mapToKeyValueArray(attrs);
   }
 
   visitNgContent(ast: NgContentAst, context: any): any {
@@ -326,6 +328,36 @@ function removeKeyValueArrayDuplicates(keyValueArray: string[]): string[] {
     }
   }
   return resultKeyValueArray;
+}
+
+function keyValueArrayToMap(keyValueArr: string[]): {[key: string]: string} {
+  var data: {[key: string]: string} = {};
+  for (var i = 0; i < keyValueArr.length; i += 2) {
+    data[keyValueArr[i]] = keyValueArr[i + 1];
+  }
+  return data;
+}
+
+function mapToKeyValueArray(data: {[key: string]: string}): string[] {
+  var entryArray = [];
+  StringMapWrapper.forEach(data, (value, name) => { entryArray.push([name, value]); });
+  // We need to sort to get a defined output order
+  // for tests and for caching generated artifacts...
+  ListWrapper.sort(entryArray, (entry1, entry2) => StringWrapper.compare(entry1[0], entry2[0]));
+  var keyValueArray = [];
+  entryArray.forEach((entry) => {
+    keyValueArray.push(entry[0]);
+    keyValueArray.push(entry[1]);
+  });
+  return keyValueArray;
+}
+
+function mergeAttributeValue(attrName: string, attrValue1: string, attrValue2: string): string {
+  if (attrName == CLASS_ATTR || attrName == STYLE_ATTR) {
+    return `${attrValue1} ${attrValue2}`;
+  } else {
+    return attrValue2;
+  }
 }
 
 class DirectiveContext {

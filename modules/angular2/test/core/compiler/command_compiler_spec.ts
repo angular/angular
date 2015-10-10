@@ -218,6 +218,48 @@ export function main() {
                  });
            }));
 
+        it('should merge element attributes with host attributes',
+           inject([AsyncTestCompleter], (async) => {
+             var rootComp = createComp({
+               type: RootCompTypeMeta,
+               template: '<div class="origclass" style="origstyle" role="origrole" attr1>'
+             });
+             var dir = CompileDirectiveMetadata.create({
+               selector: 'div',
+               isComponent: false,
+               type: SomeDirTypeMeta,
+               host: {'class': 'newclass', 'style': 'newstyle', 'role': 'newrole', 'attr2': ''}
+             });
+             run(rootComp, [dir])
+                 .then((data) => {
+                   expect(data).toEqual([
+                     [
+                       BEGIN_ELEMENT,
+                       'div',
+                       [
+                         'attr1',
+                         '',
+                         'attr2',
+                         '',
+                         'class',
+                         'origclass newclass',
+                         'role',
+                         'newrole',
+                         'style',
+                         'origstyle newstyle'
+                       ],
+                       [],
+                       [],
+                       ['SomeDirType'],
+                       true,
+                       null
+                     ],
+                     [END_ELEMENT]
+                   ]);
+                   async.done();
+                 });
+           }));
+
         it('should emulate style encapsulation', inject([AsyncTestCompleter], (async) => {
              var rootComp = createComp({
                type: RootCompTypeMeta,
