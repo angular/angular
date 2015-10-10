@@ -62,6 +62,7 @@ export class NgSwitch {
     this._switchValue = value;
   }
 
+  /** @internal */
   _onWhenValueChanged(oldWhen, newWhen, view: SwitchView): void {
     this._deregisterView(oldWhen, view);
     this._registerView(newWhen, view);
@@ -85,6 +86,7 @@ export class NgSwitch {
     }
   }
 
+  /** @internal */
   _emptyAllActiveViews(): void {
     var activeContainers = this._activeViews;
     for (var i = 0; i < activeContainers.length; i++) {
@@ -93,6 +95,7 @@ export class NgSwitch {
     this._activeViews = [];
   }
 
+  /** @internal */
   _activateViews(views: SwitchView[]): void {
     // TODO(vicb): assert(this._activeViews.length === 0);
     if (isPresent(views)) {
@@ -103,6 +106,7 @@ export class NgSwitch {
     }
   }
 
+  /** @internal */
   _registerView(value, view: SwitchView): void {
     var views = this._valueViews.get(value);
     if (isBlank(views)) {
@@ -112,6 +116,7 @@ export class NgSwitch {
     views.push(view);
   }
 
+  /** @internal */
   _deregisterView(value, view: SwitchView): void {
     // `_WHEN_DEFAULT` is used a marker for non-registered whens
     if (value === _WHEN_DEFAULT) return;
@@ -142,7 +147,9 @@ export class NgSwitch {
 @Directive({selector: '[ng-switch-when]', inputs: ['ngSwitchWhen']})
 export class NgSwitchWhen {
   // `_WHEN_DEFAULT` is used as a marker for a not yet initialized value
+  /** @internal */
   _value: any = _WHEN_DEFAULT;
+  /** @internal */
   _view: SwitchView;
 
   constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef,

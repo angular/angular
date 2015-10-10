@@ -7,6 +7,7 @@ export class MockLocationStrategy extends LocationStrategy {
   internalPath: string = '/';
   internalTitle: string = '';
   urlChanges: string[] = [];
+  /** @internal */
   _subject: EventEmitter = new EventEmitter();
   constructor() { super(); }
 

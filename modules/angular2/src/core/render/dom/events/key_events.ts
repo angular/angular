@@ -90,8 +90,8 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     return fullKey;
   }
 
-  static eventCallback(element: HTMLElement, fullKey: any, handler: (e: Event) => any, zone: NgZone):
-      (event: KeyboardEvent) => void {
+  static eventCallback(element: HTMLElement, fullKey: any, handler: (e: Event) => any,
+                       zone: NgZone): (event: KeyboardEvent) => void {
     return (event) => {
       if (StringWrapper.equals(KeyEventsPlugin.getEventFullKey(event), fullKey)) {
         zone.run(() => handler(event));

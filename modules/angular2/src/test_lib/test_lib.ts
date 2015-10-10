@@ -392,6 +392,7 @@ export class SpyObject {
     return object;
   }
 
+  /** @internal */
   _createGuinnessCompatibleSpy(name): GuinessCompatibleSpy {
     var newSpy: GuinessCompatibleSpy = <any>jasmine.createSpy(name);
     newSpy.andCallFake = <any>newSpy.and.callFake;

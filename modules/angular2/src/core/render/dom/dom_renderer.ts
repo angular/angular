@@ -195,6 +195,7 @@ export class DomRenderer_ extends DomRenderer {
     return this._componentCmds.get(templateId);
   }
 
+  /** @internal */
   _createRootHostViewScope: WtfScopeFn = wtfCreateScope('DomRenderer#createRootHostView()');
   createRootHostView(hostProtoViewRef: RenderProtoViewRef, fragmentCount: number,
                      hostElementSelector: string): RenderViewWithFragments {
@@ -207,6 +208,7 @@ export class DomRenderer_ extends DomRenderer {
     return wtfLeave(s, this._createView(hostProtoViewRef, element));
   }
 
+  /** @internal */
   _createViewScope = wtfCreateScope('DomRenderer#createView()');
   createView(protoViewRef: RenderProtoViewRef, fragmentCount: number): RenderViewWithFragments {
     var s = this._createViewScope();
@@ -256,6 +258,7 @@ export class DomRenderer_ extends DomRenderer {
     }
   }
 
+  /** @internal */
   _detachFragmentScope = wtfCreateScope('DomRenderer#detachFragment()');
   detachFragment(fragmentRef: RenderFragmentRef) {
     var s = this._detachFragmentScope();

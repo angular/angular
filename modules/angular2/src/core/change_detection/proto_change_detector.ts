@@ -38,9 +38,13 @@ import {coalesce} from './coalesce';
 import {ProtoRecord, RecordType} from './proto_record';
 
 export class DynamicProtoChangeDetector implements ProtoChangeDetector {
+  /** @internal */
   _propertyBindingRecords: ProtoRecord[];
+  /** @internal */
   _propertyBindingTargets: BindingTarget[];
+  /** @internal */
   _eventBindingRecords: EventBinding[];
+  /** @internal */
   _directiveIndices: DirectiveIndex[];
 
   constructor(private _definition: ChangeDetectorDefinition) {
@@ -96,6 +100,7 @@ export class ProtoRecordBuilder {
     }
   }
 
+  /** @internal */
   _setArgumentToPureFunction(startIndex: number): void {
     for (var i = startIndex; i < this.records.length; ++i) {
       var rec = this.records[i];
@@ -111,6 +116,7 @@ export class ProtoRecordBuilder {
     }
   }
 
+  /** @internal */
   _appendRecords(b: BindingRecord, variableNames: string[], bindingIndex: number) {
     if (b.isDirectiveLifecycle()) {
       this.records.push(new ProtoRecord(RecordType.DirectiveLifecycle, b.lifecycleEvent, null, [],

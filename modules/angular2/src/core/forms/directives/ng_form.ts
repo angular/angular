@@ -157,10 +157,12 @@ export class NgForm extends ControlContainer implements Form {
     return false;
   }
 
+  /** @internal */
   _findContainer(path: string[]): ControlGroup {
     path.pop();
     return ListWrapper.isEmpty(path) ? this.form : <ControlGroup>this.form.find(path);
   }
 
+  /** @internal */
   _later(fn): void { PromiseWrapper.then(PromiseWrapper.resolve(null), fn, (_) => {}); }
 }

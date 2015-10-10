@@ -41,6 +41,7 @@ import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
  */
 @Directive({selector: '[ng-for][ng-for-of]', inputs: ['ngForOf', 'ngForTemplate']})
 export class NgFor implements DoCheck {
+  /** @internal */
   _ngForOf: any;
   private _differ: IterableDiffer;
 

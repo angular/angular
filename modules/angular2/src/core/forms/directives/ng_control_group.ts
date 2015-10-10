@@ -58,6 +58,7 @@ const controlGroupBinding =
 })
 export class NgControlGroup extends ControlContainer implements OnInit,
     OnDestroy {
+  /** @internal */
   _parent: ControlContainer;
   constructor(@Host() @SkipSelf() _parent: ControlContainer) {
     super();

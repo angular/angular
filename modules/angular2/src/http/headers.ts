@@ -35,6 +35,7 @@ import {
  * ```
  */
 export class Headers {
+  /** @internal */
   _headersMap: Map<string, string[]>;
   constructor(headers?: Headers | {[key: string]: any}) {
     if (headers instanceof Headers) {

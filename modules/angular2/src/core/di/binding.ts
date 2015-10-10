@@ -183,6 +183,7 @@ export class Binding {
    */
   dependencies: Object[];
 
+  /** @internal */
   _multi: boolean;
 
   constructor(token, {toClass, toValue, toAlias, toFactory, deps, multi}: {

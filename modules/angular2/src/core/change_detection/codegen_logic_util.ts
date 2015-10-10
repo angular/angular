@@ -111,6 +111,7 @@ export class CodegenLogicUtil {
     return `${getLocalName(protoRec.selfIndex)} = ${rhs};`;
   }
 
+  /** @internal */
   _observe(exp: string, rec: ProtoRecord): string {
     // This is an experimental feature. Works only in Dart.
     if (this._changeDetection === ChangeDetectionStrategy.OnPushObserve) {
@@ -138,6 +139,7 @@ export class CodegenLogicUtil {
     return `[${bs.join(", ")}]`;
   }
 
+  /** @internal */
   _genInterpolation(protoRec: ProtoRecord): string {
     var iVals = [];
     for (var i = 0; i < protoRec.args.length; ++i) {

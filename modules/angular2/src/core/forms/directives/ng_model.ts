@@ -41,7 +41,9 @@ const formControlBinding = CONST_EXPR(new Binding(NgControl, {toAlias: forwardRe
   exportAs: 'form'
 })
 export class NgModel extends NgControl implements OnChanges {
+  /** @internal */
   _control = new Control();
+  /** @internal */
   _added = false;
   update = new EventEmitter();
   model: any;

@@ -204,6 +204,7 @@ export class Router {
     });
   }
 
+  /** @internal */
   _navigate(instruction: Instruction, _skipLocationChange: boolean): Promise<any> {
     return this._settleInstruction(instruction)
         .then((_) => this._canReuse(instruction))
@@ -230,6 +231,7 @@ export class Router {
   // guaranteed that the `componentType`s for the terminal async routes have been loaded by the time
   // we begin navigation. The method below simply traverses instructions and resolves any components
   // for which `componentType` is not present
+  /** @internal */
   _settleInstruction(instruction: Instruction): Promise<any> {
     var unsettledInstructions: Array<Promise<any>> = [];
     if (isBlank(instruction.component.componentType)) {
@@ -257,6 +259,7 @@ export class Router {
   /*
    * Recursively set reuse flags
    */
+  /** @internal */
   _canReuse(instruction: Instruction): Promise<any> {
     if (isBlank(this._outlet)) {
       return _resolveToFalse;
@@ -335,8 +338,10 @@ export class Router {
   }
 
 
+  /** @internal */
   _startNavigating(): void { this.navigating = true; }
 
+  /** @internal */
   _finishNavigating(): void { this.navigating = false; }
 
 
@@ -454,6 +459,7 @@ export class Router {
 }
 
 export class RootRouter extends Router {
+  /** @internal */
   _location: Location;
 
   constructor(registry: RouteRegistry, location: Location, primaryComponent: Type) {

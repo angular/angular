@@ -178,6 +178,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
 
   afterViewLifecycleCallbacksInternal(): void {}
 
+  /** @internal */
   _detectChangesInLightDomChildren(throwOnChange: boolean): void {
     var c = this.lightDomChildren;
     for (var i = 0; i < c.length; ++i) {
@@ -185,6 +186,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     }
   }
 
+  /** @internal */
   _detectChangesInShadowDomChildren(throwOnChange: boolean): void {
     var c = this.shadowDomChildren;
     for (var i = 0; i < c.length; ++i) {

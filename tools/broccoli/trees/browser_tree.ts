@@ -231,10 +231,9 @@ module.exports = function makeBrowserTree(options, destinationPath) {
 
   htmlTree = mergeTrees([htmlTree, scripts, polymer, react]);
 
-  var typingsTree = new Funnel('modules', {
-    include: ['angular2/typings/**/*.d.ts',
-              'angular2/manual_typings/*.d.ts'],
-    destDir: '/'});
+  var typingsTree = new Funnel(
+      'modules',
+      {include: ['angular2/typings/**/*.d.ts', 'angular2/manual_typings/*.d.ts'], destDir: '/'});
 
   // Add a line to the end of our top-level .d.ts file.
   // This HACK for transitive typings is a workaround for

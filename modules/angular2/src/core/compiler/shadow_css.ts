@@ -162,6 +162,7 @@ export class ShadowCss {
     return this._scopeCssText(cssText, selector, hostSelector);
   }
 
+  /** @internal */
   _insertDirectives(cssText: string): string {
     cssText = this._insertPolyfillDirectivesInCssText(cssText);
     return this._insertPolyfillRulesInCssText(cssText);
@@ -181,6 +182,7 @@ export class ShadowCss {
    * scopeName menu-item {
    *
   **/
+  /** @internal */
   _insertPolyfillDirectivesInCssText(cssText: string): string {
     // Difference with webcomponents.js: does not handle comments
     return StringWrapper.replaceAllMapped(cssText, _cssContentNextSelectorRe,
@@ -202,6 +204,7 @@ export class ShadowCss {
    * scopeName menu-item {...}
    *
   **/
+  /** @internal */
   _insertPolyfillRulesInCssText(cssText: string): string {
     // Difference with webcomponents.js: does not handle comments
     return StringWrapper.replaceAllMapped(cssText, _cssContentRuleRe, function(m) {
@@ -220,6 +223,7 @@ export class ShadowCss {
    *
    *  scopeName .foo { ... }
   */
+  /** @internal */
   _scopeCssText(cssText: string, scopeSelector: string, hostSelector: string): string {
     var unscoped = this._extractUnscopedRulesFromCssText(cssText);
     cssText = this._insertPolyfillHostInCssText(cssText);
@@ -249,6 +253,7 @@ export class ShadowCss {
    * menu-item {...}
    *
   **/
+  /** @internal */
   _extractUnscopedRulesFromCssText(cssText: string): string {
     // Difference with webcomponents.js: does not handle comments
     var r = '', m;
@@ -269,6 +274,7 @@ export class ShadowCss {
    *
    * scopeName.foo > .bar
   */
+  /** @internal */
   _convertColonHost(cssText: string): string {
     return this._convertColonRule(cssText, _cssColonHostRe, this._colonHostPartReplacer);
   }
@@ -288,11 +294,13 @@ export class ShadowCss {
    *
    * scopeName.foo .bar { ... }
   */
+  /** @internal */
   _convertColonHostContext(cssText: string): string {
     return this._convertColonRule(cssText, _cssColonHostContextRe,
                                   this._colonHostContextPartReplacer);
   }
 
+  /** @internal */
   _convertColonRule(cssText: string, regExp: RegExp, partReplacer: Function): string {
     // p1 = :host, p2 = contents of (), p3 rest of rule
     return StringWrapper.replaceAllMapped(cssText, regExp, function(m) {
@@ -311,6 +319,7 @@ export class ShadowCss {
     });
   }
 
+  /** @internal */
   _colonHostContextPartReplacer(host: string, part: string, suffix: string): string {
     if (StringWrapper.contains(part, _polyfillHost)) {
       return this._colonHostPartReplacer(host, part, suffix);
@@ -319,6 +328,7 @@ export class ShadowCss {
     }
   }
 
+  /** @internal */
   _colonHostPartReplacer(host: string, part: string, suffix: string): string {
     return host + StringWrapper.replace(part, _polyfillHost, '') + suffix;
   }
@@ -327,6 +337,7 @@ export class ShadowCss {
    * Convert combinators like ::shadow and pseudo-elements like ::content
    * by replacing with space.
   */
+  /** @internal */
   _convertShadowDOMSelectors(cssText: string): string {
     for (var i = 0; i < _shadowDOMSelectorsRe.length; i++) {
       cssText = StringWrapper.replaceAll(cssText, _shadowDOMSelectorsRe[i], ' ');
@@ -335,6 +346,7 @@ export class ShadowCss {
   }
 
   // change a selector like 'div' to 'name div'
+  /** @internal */
   _scopeRules(cssRules, scopeSelector: string, hostSelector: string): string {
     var cssText = '';
     if (isPresent(cssRules)) {
@@ -370,6 +382,7 @@ export class ShadowCss {
     return cssText;
   }
 
+  /** @internal */
   _ieSafeCssTextFromKeyFrameRule(rule): string {
     var cssText = '@keyframes ' + rule.name + ' {';
     for (var i = 0; i < rule.cssRules.length; i++) {
@@ -380,6 +393,7 @@ export class ShadowCss {
     return cssText;
   }
 
+  /** @internal */
   _scopeSelector(selector: string, scopeSelector: string, hostSelector: string,
                  strict: boolean): string {
     var r = [], parts = selector.split(',');
@@ -396,11 +410,13 @@ export class ShadowCss {
     return r.join(', ');
   }
 
+  /** @internal */
   _selectorNeedsScoping(selector: string, scopeSelector: string): boolean {
     var re = this._makeScopeMatcher(scopeSelector);
     return !isPresent(RegExpWrapper.firstMatch(re, selector));
   }
 
+  /** @internal */
   _makeScopeMatcher(scopeSelector: string): RegExp {
     var lre = /\[/g;
     var rre = /\]/g;
@@ -409,12 +425,14 @@ export class ShadowCss {
     return RegExpWrapper.create('^(' + scopeSelector + ')' + _selectorReSuffix, 'm');
   }
 
+  /** @internal */
   _applySelectorScope(selector: string, scopeSelector: string, hostSelector: string): string {
     // Difference from webcomponentsjs: scopeSelector could not be an array
     return this._applySimpleSelectorScope(selector, scopeSelector, hostSelector);
   }
 
   // scope via name and [is=name]
+  /** @internal */
   _applySimpleSelectorScope(selector: string, scopeSelector: string, hostSelector: string): string {
     if (isPresent(RegExpWrapper.firstMatch(_polyfillHostRe, selector))) {
       var replaceBy = this.strictStyling ? `[${hostSelector}]` : scopeSelector;
@@ -427,6 +445,7 @@ export class ShadowCss {
 
   // return a selector with [name] suffix on each simple selector
   // e.g. .foo.bar > .zot becomes .foo[name].bar[name] > .zot[name]
+  /** @internal */
   _applyStrictSelectorScope(selector: string, scopeSelector: string): string {
     var isRe = /\[is=([^\]]*)\]/g;
     scopeSelector = StringWrapper.replaceAllMapped(scopeSelector, isRe, (m) => m[1]);
@@ -452,12 +471,14 @@ export class ShadowCss {
     return scoped;
   }
 
+  /** @internal */
   _insertPolyfillHostInCssText(selector: string): string {
     selector = StringWrapper.replaceAll(selector, _colonHostContextRe, _polyfillHostContext);
     selector = StringWrapper.replaceAll(selector, _colonHostRe, _polyfillHost);
     return selector;
   }
 
+  /** @internal */
   _propertiesFromRule(rule): string {
     var cssText = rule.style.cssText;
     // TODO(sorvell): Safari cssom incorrectly removes quotes from the content

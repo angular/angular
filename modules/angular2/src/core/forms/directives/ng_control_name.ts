@@ -80,11 +80,13 @@ const controlNameBinding =
 })
 export class NgControlName extends NgControl implements OnChanges,
     OnDestroy {
+  /** @internal */
   _parent: ControlContainer;
   update = new EventEmitter();
   model: any;
   viewModel: any;
   validators: Function[];
+  /** @internal */
   _added = false;
 
   constructor(@Host() @SkipSelf() parent: ControlContainer,

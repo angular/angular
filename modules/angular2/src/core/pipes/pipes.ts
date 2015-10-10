@@ -37,6 +37,7 @@ export class ProtoPipes {
 
 
 export class Pipes implements cd.Pipes {
+  /** @internal */
   _config: {[key: string]: cd.SelectedPipe} = {};
 
   constructor(public proto: ProtoPipes, public injector: Injector) {}

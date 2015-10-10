@@ -99,6 +99,7 @@ export class RouteRecognizer {
     return solutions;
   }
 
+  /** @internal */
   _redirect(urlParse: Url): Url {
     for (var i = 0; i < this.redirects.length; i += 1) {
       let redirector = this.redirects[i];

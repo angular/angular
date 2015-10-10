@@ -957,6 +957,7 @@ export class ComponentMetadata extends DirectiveMetadata {
 @CONST()
 export class PipeMetadata extends InjectableMetadata {
   name: string;
+  /** @internal */
   _pure: boolean;
 
   constructor({name, pure}: {name: string, pure: boolean}) {

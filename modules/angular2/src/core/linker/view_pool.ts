@@ -9,7 +9,9 @@ export const APP_VIEW_POOL_CAPACITY = CONST_EXPR(new OpaqueToken('AppViewPool.vi
 
 @Injectable()
 export class AppViewPool {
+  /** @internal */
   _poolCapacityPerProtoView: number;
+  /** @internal */
   _pooledViewsPerProtoView = new Map<viewModule.AppProtoView, Array<viewModule.AppView>>();
 
   constructor(@Inject(APP_VIEW_POOL_CAPACITY) poolCapacityPerProtoView) {

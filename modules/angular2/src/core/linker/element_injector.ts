@@ -78,6 +78,7 @@ export class StaticKeys {
 }
 
 export class TreeNode<T extends TreeNode<any>> {
+  /** @internal */
   _parent: T;
   constructor(parent: T) {
     if (isPresent(parent)) {
@@ -102,6 +103,7 @@ export class DirectiveDependency extends Dependency {
     this._verify();
   }
 
+  /** @internal */
   _verify(): void {
     var count = 0;
     if (isPresent(this.queryDecorator)) count++;
@@ -288,12 +290,15 @@ export class ProtoElementInjector {
     resolvedViewBindings.forEach(b => bd.push(new BindingWithVisibility(b, Visibility.Private)));
   }
 
+  /** @internal */
+  public _firstBindingIsComponent: boolean;
 
 
   constructor(public parent: ProtoElementInjector, public index: number,
               bwv: BindingWithVisibility[], public distanceToParent: number,
-              public _firstBindingIsComponent: boolean,
+              _firstBindingIsComponent: boolean,
               public directiveVariableBindings: Map<string, number>) {
+    this._firstBindingIsComponent = _firstBindingIsComponent;
     var length = bwv.length;
     this.protoInjector = new ProtoInjector(bwv);
     this.eventEmitterAccessors = ListWrapper.createFixedSize(length);
@@ -327,10 +332,12 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
 
   private _injector: Injector;
   private _strategy: _ElementInjectorStrategy;
+  /** @internal */
+  public _proto: ProtoElementInjector;
 
-  constructor(public _proto: ProtoElementInjector, parent: ElementInjector) {
+  constructor(_proto: ProtoElementInjector, parent: ElementInjector) {
     super(parent);
-
+    this._proto = _proto;
     this._injector =
         new Injector(this._proto.protoInjector, null, this, () => this._debugContext());
 

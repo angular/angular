@@ -22,7 +22,12 @@ export abstract class ClientMessageBrokerFactory {
 
 @Injectable()
 export class ClientMessageBrokerFactory_ extends ClientMessageBrokerFactory {
-  constructor(private _messageBus: MessageBus, public _serializer: Serializer) { super(); }
+  /** @internal */
+  public _serializer: Serializer;
+  constructor(private _messageBus: MessageBus, _serializer: Serializer) {
+    super();
+    this._serializer = _serializer;
+  }
 
   /**
    * Initializes the given channel and attaches a new {@link ClientMessageBroker} to it.
@@ -40,10 +45,13 @@ export abstract class ClientMessageBroker {
 export class ClientMessageBroker_ extends ClientMessageBroker {
   private _pending: Map<string, PromiseCompleter<any>> = new Map<string, PromiseCompleter<any>>();
   private _sink: EventEmitter;
+  /** @internal */
+  public _serializer: Serializer;
 
-  constructor(messageBus: MessageBus, public _serializer: Serializer, public channel) {
+  constructor(messageBus: MessageBus, _serializer: Serializer, public channel) {
     super();
     this._sink = messageBus.to(channel);
+    this._serializer = _serializer;
     var source = messageBus.from(channel);
     ObservableWrapper.subscribe(source,
                                 (message: {[key: string]: any}) => this._handleMessage(message));

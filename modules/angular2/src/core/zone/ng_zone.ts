@@ -3,7 +3,10 @@ import {normalizeBlank, isPresent, global} from 'angular2/src/core/facade/lang';
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from '../profile/profile';
 
 
-export interface NgZoneZone extends Zone { _innerZone: boolean; }
+export interface NgZoneZone extends Zone {
+  /** @internal */
+  _innerZone: boolean;
+}
 
 /**
  * An injectable service for executing work inside or outside of the Angular zone.
@@ -78,36 +81,50 @@ export interface NgZoneZone extends Zone { _innerZone: boolean; }
  * ```
  */
 export class NgZone {
+  /** @internal */
   _runScope: WtfScopeFn = wtfCreateScope(`NgZone#run()`);
+  /** @internal */
   _microtaskScope: WtfScopeFn = wtfCreateScope(`NgZone#microtask()`);
 
   // Code executed in _mountZone does not trigger the onTurnDone.
+  /** @internal */
   _mountZone;
   // _innerZone is the child of _mountZone. Any code executed in this zone will trigger the
   // onTurnDone hook at the end of the current VM turn.
+  /** @internal */
   _innerZone;
 
+  /** @internal */
   _onTurnStart: () => void;
+  /** @internal */
   _onTurnDone: () => void;
+  /** @internal */
   _onEventDone: () => void;
+  /** @internal */
   _onErrorHandler: (error: any, stack: any) => void;
 
   // Number of microtasks pending from _innerZone (& descendants)
+  /** @internal */
   _pendingMicrotasks: number = 0;
   // Whether some code has been executed in the _innerZone (& descendants) in the current turn
+  /** @internal */
   _hasExecutedCodeInInnerZone: boolean = false;
   // run() call depth in _mountZone. 0 at the end of a macrotask
   // zone.run(() => {         // top-level call
   //   zone.run(() => {});    // nested call -> in-turn
   // });
+  /** @internal */
   _nestedRun: number = 0;
 
   // TODO(vicb): implement this class properly for node.js environment
   // This disabled flag is only here to please cjs tests
+  /** @internal */
   _disabled: boolean;
 
+  /** @internal */
   _inVmTurnDone: boolean = false;
 
+  /** @internal */
   _pendingTimeouts: number[] = [];
 
   /**
@@ -227,6 +244,7 @@ export class NgZone {
     }
   }
 
+  /** @internal */
   _createInnerZone(zone, enableLongStackTrace) {
     var microtaskScope = this._microtaskScope;
     var ngZone = this;
@@ -315,6 +333,7 @@ export class NgZone {
         });
   }
 
+  /** @internal */
   _onError(zone, e): void {
     if (isPresent(this._onErrorHandler)) {
       var trace = [normalizeBlank(e.stack)];

@@ -41,13 +41,19 @@ function _find(control: AbstractControl, path: Array<string | number>| string) {
  * Omitting from external API doc as this is really an abstract internal concept.
  */
 export class AbstractControl {
+  /** @internal */
   _value: any;
+  /** @internal */
   _status: string;
+  /** @internal */
   _errors: {[key: string]: any};
+  /** @internal */
   _pristine: boolean = true;
+  /** @internal */
   _touched: boolean = false;
+  /** @internal */
   _parent: ControlGroup | ControlArray;
-
+  /** @internal */
   _valueChanges: EventEmitter;
 
   constructor(public validator: Function) {}
@@ -128,6 +134,7 @@ export class AbstractControl {
     return isPresent(this.getError(errorCode, path));
   }
 
+  /** @internal */
   _updateValue(): void {}
 }
 
@@ -148,6 +155,7 @@ export class AbstractControl {
  * ### Example ([live demo](http://plnkr.co/edit/23DESOpbNnBpBHZt1BR4?p=preview))
  */
 export class Control extends AbstractControl {
+  /** @internal */
   _onChange: Function;
 
   constructor(value: any = null, validator: Function = Validators.nullValidator) {
@@ -234,12 +242,15 @@ export class ControlGroup extends AbstractControl {
     return c && this._included(controlName);
   }
 
+  /** @internal */
   _setParentForControls() {
     StringMapWrapper.forEach(this.controls, (control, name) => { control.setParent(this); });
   }
 
+  /** @internal */
   _updateValue() { this._value = this._reduceValue(); }
 
+  /** @internal */
   _reduceValue() {
     return this._reduceChildren({}, (acc, control, name) => {
       acc[name] = control.value;
@@ -247,6 +258,7 @@ export class ControlGroup extends AbstractControl {
     });
   }
 
+  /** @internal */
   _reduceChildren(initValue: any, fn: Function) {
     var res = initValue;
     StringMapWrapper.forEach(this.controls, (control, name) => {
@@ -257,6 +269,7 @@ export class ControlGroup extends AbstractControl {
     return res;
   }
 
+  /** @internal */
   _included(controlName: string): boolean {
     var isOptional = StringMapWrapper.contains(this._optionals, controlName);
     return !isOptional || StringMapWrapper.get(this._optionals, controlName);
@@ -331,8 +344,10 @@ export class ControlArray extends AbstractControl {
    */
   get length(): number { return this.controls.length; }
 
+  /** @internal */
   _updateValue(): void { this._value = this.controls.map((control) => control.value); }
 
+  /** @internal */
   _setParentForControls(): void {
     this.controls.forEach((control) => { control.setParent(this); });
   }

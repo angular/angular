@@ -72,6 +72,7 @@ const formControlBinding =
 export class NgFormControl extends NgControl implements OnChanges {
   form: Control;
   update = new EventEmitter();
+  /** @internal */
   _added = false;
   model: any;
   viewModel: any;

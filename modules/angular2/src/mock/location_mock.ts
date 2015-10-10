@@ -4,8 +4,11 @@ import {Location} from 'angular2/src/router/location';
 
 export class SpyLocation implements Location {
   urlChanges: string[] = [];
+  /** @internal */
   _path: string = '';
+  /** @internal */
   _subject: EventEmitter = new EventEmitter();
+  /** @internal */
   _baseHref: string = '';
 
   setInitialPath(url: string) { this._path = url; }
