@@ -53,7 +53,7 @@ export var LIFECYCLE_HOOKS_VALUES = [
  * @Component({selector: 'my-cmp'})
  * @View({template: `<p>myProp = {{myProp}}</p>`})
  * class MyComponent implements OnChanges {
- *   @Property() myProp: any;
+ *   @Input() myProp: any;
  *
  *   onChanges(changes: {[propName: string]: SimpleChange}) {
  *     console.log('onChanges - myProp = ' + changes['myProp'].currentValue);
@@ -151,7 +151,7 @@ export interface OnInit { onInit(); }
  *   directives: [NgFor]
  * })
  * class CustomCheckComponent implements DoCheck {
- *   @Property() list: any[];
+ *   @Input() list: any[];
  *   differ: any;
  *   logs = [];
  *
@@ -233,7 +233,7 @@ export interface OnDestroy { onDestroy(); }
  * @Component({selector: 'child-cmp'})
  * @View({template: `{{where}} child`})
  * class ChildComponent {
- *   @Property() where: string;
+ *   @Input() where: string;
  * }
  *
  * @Component({selector: 'parent-cmp'})
@@ -281,7 +281,7 @@ export interface AfterContentInit { afterContentInit(); }
  * @Component({selector: 'child-cmp'})
  * @View({template: `{{where}} child`})
  * class ChildComponent {
- *   @Property() where: string;
+ *   @Input() where: string;
  * }
  *
  * @Component({selector: 'parent-cmp'})
@@ -331,7 +331,7 @@ export interface AfterContentChecked { afterContentChecked(); }
  * @Component({selector: 'child-cmp'})
  * @View({template: `{{where}} child`})
  * class ChildComponent {
- *   @Property() where: string;
+ *   @Input() where: string;
  * }
  *
  * @Component({selector: 'parent-cmp'})
@@ -379,7 +379,7 @@ export interface AfterViewInit { afterViewInit(); }
  * @Component({selector: 'child-cmp'})
  * @View({template: `{{where}} child`})
  * class ChildComponent {
- *   @Property() where: string;
+ *   @Input() where: string;
  * }
  *
  * @Component({selector: 'parent-cmp'})
