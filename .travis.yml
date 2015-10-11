@@ -20,9 +20,7 @@ env:
   - SAUCE_USERNAME=angular-ci
   - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
   - ARCH=linux-x64
-  # TODO: change DART_DEV_VERSION to "latest" again once
-  # https://github.com/angular/angular/issues/4467 is solved
-  - DART_DEV_VERSION=1.13.0-dev.3.1
+  - DART_DEV_VERSION=latest
   - DART_STABLE_VERSION=latest
   # Token for tsd to increase github rate limit
   # See https://github.com/DefinitelyTyped/tsd#tsdrc
