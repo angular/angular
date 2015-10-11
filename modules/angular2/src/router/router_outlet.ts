@@ -3,9 +3,16 @@ import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
-import {Directive, Attribute} from 'angular2/src/core/metadata';
-import {DynamicComponentLoader, ComponentRef, ElementRef} from 'angular2/src/core/linker';
-import {Injector, provide, Dependency} from 'angular2/angular2';
+import {
+  Directive,
+  Attribute,
+  DynamicComponentLoader,
+  ComponentRef,
+  ElementRef,
+  Injector,
+  provide,
+  Dependency
+} from 'angular2/angular2';
 
 import * as routerMod from './router';
 import {ComponentInstruction, RouteParams} from './instruction';
