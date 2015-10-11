@@ -63,6 +63,6 @@ const ParameterModel$json = const {
 /**
  * Generated with:
  * parameter_model.proto (2a97dcb9a65b199f50fba67120a85590bceb083a)
- * libprotoc 2.5.0
+ * libprotoc 2.6.1
  * dart-protoc-plugin (cc35f743de982a4916588b9c505dd21c7fe87d17)
  */

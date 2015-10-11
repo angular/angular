@@ -117,6 +117,6 @@ const ExportModel$json = const {
 /**
  * Generated with:
  * import_export_model.proto (c018d2ad92db2d341631d813ace70925d1ccbb9b)
- * libprotoc 2.5.0
+ * libprotoc 2.6.1
  * dart-protoc-plugin (cc35f743de982a4916588b9c505dd21c7fe87d17)
  */
