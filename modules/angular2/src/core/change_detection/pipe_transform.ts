@@ -33,14 +33,15 @@
 export interface PipeTransform { transform(value: any, args: any[]): any; }
 
 /**
- * To create a stateful Pipe, you should implement this interface.
+ * To create a stateful Pipe, you should implement this interface and set the `pure`
+ * parameter to `false` in the {@link PipeMetadata}.
  *
  * A stateful pipe may produce different output, given the same input. It is
  * likely that a stateful pipe may contain state that should be cleaned up when
  * a binding is destroyed. For example, a subscription to a stream of data may need to
  * be disposed, or an interval may need to be cleared.
  *
- * ### Example ([live demo](http://plnkr.co/edit/hlaejwQAmWayxwc5YXQE?p=preview))
+ * ### Example ([live demo](http://plnkr.co/edit/i8pm5brO4sPaLxBx56MR?p=preview))
  *
  * In this example, a pipe is created to countdown its input value, updating it every
  * 50ms. Because it maintains an internal interval, it automatically clears
@@ -48,7 +49,7 @@ export interface PipeTransform { transform(value: any, args: any[]): any; }
  *
  * ```
  * import {Pipe, PipeTransform} from 'angular2/angular2'
- * @Pipe({name: 'countdown'})
+ * @Pipe({name: 'countdown', pure: false})
  * class CountDown implements PipeTransform, PipeOnDestroy {
  *   remainingTime:Number;
  *   interval:SetInterval;
