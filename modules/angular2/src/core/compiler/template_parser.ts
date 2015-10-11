@@ -361,7 +361,8 @@ class TemplateParseVisitor implements HtmlAstVisitor {
 
   private _parseAssignmentEvent(name: string, expression: string, sourceInfo: string,
                                 targetMatchableAttrs: string[][], targetEvents: BoundEventAst[]) {
-    this._parseEvent(name, `${expression}=$event`, sourceInfo, targetMatchableAttrs, targetEvents);
+    this._parseEvent(`${name}-change`, `${expression}=$event`, sourceInfo, targetMatchableAttrs,
+                     targetEvents);
   }
 
   private _parseEvent(name: string, expression: string, sourceInfo: string,

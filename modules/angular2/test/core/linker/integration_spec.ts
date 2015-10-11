@@ -839,9 +839,9 @@ export function main() {
                  rootTC.debugElement.componentInstance.ctxProp = 'one';
                  rootTC.detectChanges();
 
-                 expect(dir.value).toEqual('one');
+                 expect(dir.control).toEqual('one');
 
-                 ObservableWrapper.subscribe(dir.control, (_) => {
+                 ObservableWrapper.subscribe(dir.controlChange, (_) => {
                    expect(rootTC.debugElement.componentInstance.ctxProp).toEqual('two');
                    async.done();
                  });
@@ -2072,15 +2072,13 @@ class ToolbarComponent {
   }
 }
 
-@Directive({selector: '[two-way]', inputs: ['value: control'], outputs: ['control']})
+@Directive({selector: '[two-way]', inputs: ['control'], outputs: ['controlChange']})
 @Injectable()
 class DirectiveWithTwoWayBinding {
-  control: EventEmitter;
-  value: any;
+  controlChange = new EventEmitter();
+  control = null;
 
-  constructor() { this.control = new EventEmitter(); }
-
-  triggerChange(value) { ObservableWrapper.callNext(this.control, value); }
+  triggerChange(value) { ObservableWrapper.callNext(this.controlChange, value); }
 }
 
 @Injectable()

@@ -111,8 +111,12 @@ export function main() {
                Component({
                  selector: 'ng2',
                  inputs: ['literal', 'interpolate', 'oneWayA', 'oneWayB', 'twoWayA', 'twoWayB'],
-                 outputs:
-                     ['eventA', 'eventB', 'twoWayAEmitter: twoWayA', 'twoWayBEmitter: twoWayB']
+                 outputs: [
+                   'eventA',
+                   'eventB',
+                   'twoWayAEmitter: twoWayAChange',
+                   'twoWayBEmitter: twoWayBChange'
+                 ]
                })
                    .View({
                      template:

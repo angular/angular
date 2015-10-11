@@ -282,7 +282,7 @@ export function main() {
                    ],
                    [
                      BoundEventAst,
-                     'prop',
+                     'propChange',
                      null,
                      'v = $event',
                      'TestComp > div:nth-child(0)[[(prop)]=v]'
@@ -305,7 +305,7 @@ export function main() {
                    ],
                    [
                      BoundEventAst,
-                     'prop',
+                     'propChange',
                      null,
                      'v = $event',
                      'TestComp > div:nth-child(0)[bindon-prop=v]'

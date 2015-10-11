@@ -120,15 +120,23 @@ export class Ng2ComponentFacade {
       var output = outputs[j];
       var expr = null;
       var assignExpr = false;
+
+      var bindonAttr =
+          output.bindonAttr ? output.bindonAttr.substring(0, output.bindonAttr.length - 6) : null;
+      var bracketParenAttr =
+          output.bracketParenAttr ?
+              `[(${output.bracketParenAttr.substring(2, output.bracketParenAttr.length - 8)})]` :
+              null;
+
       if (attrs.hasOwnProperty(output.onAttr)) {
         expr = attrs[output.onAttr];
       } else if (attrs.hasOwnProperty(output.parenAttr)) {
         expr = attrs[output.parenAttr];
-      } else if (attrs.hasOwnProperty(output.bindonAttr)) {
-        expr = attrs[output.bindonAttr];
+      } else if (attrs.hasOwnProperty(bindonAttr)) {
+        expr = attrs[bindonAttr];
         assignExpr = true;
-      } else if (attrs.hasOwnProperty(output.bracketParenAttr)) {
-        expr = attrs[output.bracketParenAttr];
+      } else if (attrs.hasOwnProperty(bracketParenAttr)) {
+        expr = attrs[bracketParenAttr];
         assignExpr = true;
       }
 
