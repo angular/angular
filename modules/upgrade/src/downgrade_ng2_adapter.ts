@@ -101,7 +101,7 @@ export class DowngradeNg2ComponentAdapter {
         this.component.onChanges(inputChanges);
       });
     }
-    this.componentScope.$watch(() => this.changeDetector.detectChanges());
+    this.componentScope.$watch(() => this.changeDetector && this.changeDetector.detectChanges());
   }
 
   projectContent() {

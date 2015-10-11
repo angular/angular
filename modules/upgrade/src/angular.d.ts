@@ -7,7 +7,7 @@ declare namespace angular {
     run(a: any);
   }
   interface ICompileService {
-    (element: Element, transclude?: Function): ILinkFn;
+    (element: Element | NodeList | string, transclude?: Function): ILinkFn;
   }
   interface ILinkFn {
     (scope: IScope, cloneAttachFn?: Function, options?: ILinkFnOptions): void
@@ -17,7 +17,8 @@ declare namespace angular {
         futureParentElement?: Node
   }
   interface IRootScopeService {
-    $new(): IScope;
+    $new(isolate?: boolean): IScope;
+    $id: string;
     $watch(expr: any, fn?: (a1?: any, a2?: any) => void);
     $apply(): any;
     $apply(exp: string): any;
@@ -29,19 +30,53 @@ declare namespace angular {
   interface IScope extends IRootScopeService {}
   interface IAngularBootstrapConfig {}
   interface IDirective {
-    require?: string;
+    compile?: IDirectiveCompileFn;
+    controller?: any;
+    controllerAs?: string;
+    bindToController?: boolean | Object;
+    link?: IDirectiveLinkFn | IDirectivePrePost;
+    name?: string;
+    priority?: number;
+    replace?: boolean;
+    require?: any;
     restrict?: string;
-    scope?: {[key: string]: string};
-    link?: {pre?: Function, post?: Function};
+    scope?: any;
+    template?: any;
+    templateUrl?: any;
+    terminal?: boolean;
+    transclude?: any;
+  }
+  interface IDirectiveCompileFn {
+    (templateElement: IAugmentedJQuery, templateAttributes: IAttributes,
+     transclude: ITranscludeFunction): IDirectivePrePost;
+  }
+  interface IDirectivePrePost {
+    pre?: IDirectiveLinkFn;
+    post?: IDirectiveLinkFn;
+  }
+  interface IDirectiveLinkFn {
+    (scope: IScope, instanceElement: IAugmentedJQuery, instanceAttributes: IAttributes,
+     controller: any, transclude: ITranscludeFunction): void;
   }
   interface IAttributes {
     $observe(attr: string, fn: (v: string) => void);
   }
-  interface ITranscludeFunction {}
+  interface ITranscludeFunction {
+    // If the scope is provided, then the cloneAttachFn must be as well.
+    (scope: IScope, cloneAttachFn: ICloneAttachFunction): IAugmentedJQuery;
+    // If one argument is provided, then it's assumed to be the cloneAttachFn.
+    (cloneAttachFn?: ICloneAttachFunction): IAugmentedJQuery;
+  }
+  interface ICloneAttachFunction {
+    // Let's hint but not force cloneAttachFn's signature
+    (clonedElement?: IAugmentedJQuery, scope?: IScope): any;
+  }
   interface IAugmentedJQuery {
     bind(name: string, fn: () => void);
     data(name: string, value?: any);
+    inheritedData(name: string, value?: any);
     contents(): IAugmentedJQuery;
+    parent(): IAugmentedJQuery;
     length: number;
     [index: number]: Node;
   }
@@ -53,6 +88,19 @@ declare namespace angular {
   }
   function element(e: Element): IAugmentedJQuery;
   function bootstrap(e: Element, modules: string[], config: IAngularBootstrapConfig);
+  interface IHttpBackendService {
+    (method: string, url: string, post?: any, callback?: Function, headers?: any, timeout?: number,
+     withCredentials?: boolean): void;
+  }
+  interface ICacheObject {
+    put<T>(key: string, value?: T): T;
+    get(key: string): any;
+  }
+  interface ITemplateCacheService extends ICacheObject {}
+  interface IControllerService {
+    (controllerConstructor: Function, locals?: any, later?: any, ident?: any): any;
+    (controllerName: string, locals?: any): any;
+  }
 
   namespace auto {
     interface IInjectorService {

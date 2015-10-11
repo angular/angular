@@ -18,13 +18,12 @@ import {applicationCommonBindings} from 'angular2/src/core/application_ref';
 import {compilerProviders} from 'angular2/src/core/compiler/compiler';
 
 import {getComponentInfo, ComponentInfo} from './metadata';
-import {onError} from './util';
+import {onError, controllerKey} from './util';
 import {
   NG1_COMPILE,
   NG1_INJECTOR,
   NG1_PARSE,
   NG1_ROOT_SCOPE,
-  NG1_REQUIRE_INJECTOR_REF,
   NG1_SCOPE,
   NG2_APP_VIEW_MANAGER,
   NG2_COMPILER,
@@ -70,8 +69,10 @@ var upgradeCount: number = 0;
  * 7. Whenever an adapter component is instantiated the host element is owned by the the framework
  *    doing the instantiation. The other framework then instantiates and owns the view for that
  *    component. This implies that component bindings will always follow the semantics of the
- *    instantiation framework, but with Angular v2 syntax.
+ *    instantiation framework. The syntax is always that of Angular v2 syntax.
  * 8. AngularJS v1 is always bootstrapped first and owns the bottom most view.
+ * 9. The new application is running in Angular v2 zone, and therefore it no longer needs calls to
+ *    `$apply()`.
  *
  * ## Example
  *
@@ -81,7 +82,7 @@ var upgradeCount: number = 0;
  *
  * module.directive('ng1', function() {
  *   return {
- *      scope: { title: '@' },
+ *      scope: { title: '=' },
  *      template: 'ng1[Hello {{title}}!](<span ng-transclude></span>)'
  *   };
  * });
@@ -127,8 +128,8 @@ export class UpgradeAdapter {
   }
 
   bootstrap(element: Element, modules?: any[],
-            config?: angular.IAngularBootstrapConfig): UpgradeRef {
-    var upgrade = new UpgradeRef();
+            config?: angular.IAngularBootstrapConfig): UpgradeAdapterRef {
+    var upgrade = new UpgradeAdapterRef();
     var ng1Injector: angular.auto.IInjectorService = null;
     var platformRef: PlatformRef = platform();
     var applicationRef: ApplicationRef = platformRef.application([
@@ -147,6 +148,7 @@ export class UpgradeAdapter {
     var rootScope: angular.IRootScopeService;
     var protoViewRefMap: ProtoViewRefMap = {};
     var ng1Module = angular.module(this.idPrefix, modules);
+    var ng1compilePromise: Promise<any> = null;
     ng1Module.value(NG2_INJECTOR, injector)
         .value(NG2_ZONE, ngZone)
         .value(NG2_COMPILER, compiler)
@@ -176,22 +178,23 @@ export class UpgradeAdapter {
           (injector: angular.auto.IInjectorService, rootScope: angular.IRootScopeService) => {
             ng1Injector = injector;
             ngZone.overrideOnTurnDone(() => rootScope.$apply());
-            UpgradeNg1ComponentAdapterBuilder.resolve(this.downgradedComponents, injector);
+            ng1compilePromise =
+                UpgradeNg1ComponentAdapterBuilder.resolve(this.downgradedComponents, injector);
           }
         ]);
 
-    angular.element(element).data(NG1_REQUIRE_INJECTOR_REF, injector);
+    angular.element(element).data(controllerKey(NG2_INJECTOR), injector);
     ngZone.run(() => { angular.bootstrap(element, [this.idPrefix], config); });
-    this.compileNg2Components(compiler, protoViewRefMap)
-        .then((protoViewRefMap: ProtoViewRefMap) => {
+    Promise.all([this.compileNg2Components(compiler, protoViewRefMap), ng1compilePromise])
+        .then(() => {
           ngZone.run(() => {
             rootScopePrototype.$apply = original$applyFn;  // restore original $apply
             while (delayApplyExps.length) {
               rootScope.$apply(delayApplyExps.shift());
             }
-            upgrade.readyFn && upgrade.readyFn();
+            (<any>upgrade)._bootstrapDone(applicationRef, ng1Injector);
           });
-        });
+        }, onError);
     return upgrade;
   }
 
@@ -214,7 +217,7 @@ export class UpgradeAdapter {
 }
 
 interface ProtoViewRefMap {
-  [selector: string]: ProtoViewRef
+  [selector: string]: ProtoViewRef;
 }
 
 function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function {
@@ -246,8 +249,38 @@ function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function 
   return directiveFactory;
 }
 
-export class UpgradeRef {
-  readyFn: Function;
+/**
+ * Use `UgradeAdapterRef` to control a hybrid AngularJS v1 / Angular v2 application.
+ */
+export class UpgradeAdapterRef {
+  /* @internal */
+  private _readyFn: (upgradeAdapterRef?: UpgradeAdapterRef) => void = null;
 
-  ready(fn: Function) { this.readyFn = fn; }
+  public applicationRef: ApplicationRef = null;
+  public ng1Injector: angular.auto.IInjectorService = null;
+
+  /* @internal */
+  private _bootstrapDone(applicationRef: ApplicationRef,
+                         ng1Injector: angular.auto.IInjectorService) {
+    this.applicationRef = applicationRef;
+    this.ng1Injector = ng1Injector;
+    this._readyFn && this._readyFn(this);
+  }
+
+  /**
+   * Register a callback function which is notified upon successful hybrid AngularJS v1 / Angular v2
+   * application has been bootstrapped.
+   *
+   * The `ready` callback function is invoked inside the Angular v2 zone, therefore it does not
+   * require a call to `$apply()`.
+   */
+  public ready(fn: (upgradeAdapterRef?: UpgradeAdapterRef) => void) { this._readyFn = fn; }
+
+  /**
+   * Dispose of running hybrid AngularJS v1 / Angular v2 application.
+   */
+  public dispose() {
+    this.ng1Injector.get(NG1_ROOT_SCOPE).$destroy();
+    this.applicationRef.dispose();
+  }
 }
