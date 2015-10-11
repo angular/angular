@@ -11344,17 +11344,6 @@
         "type-detect": {
           "version": "0.1.2"
         },
-        "universal-analytics": {
-          "version": "0.3.9",
-          "dependencies": {
-            "underscore": {
-              "version": "1.8.3"
-            },
-            "async": {
-              "version": "0.2.10"
-            }
-          }
-        },
         "update-notifier": {
           "version": "0.2.2",
           "dependencies": {
@@ -11647,6 +11636,208 @@
     "typescript": {
       "version": "1.6.2"
     },
+    "universal-analytics": {
+      "version": "0.3.9",
+      "dependencies": {
+        "request": {
+          "version": "2.65.0",
+          "dependencies": {
+            "bl": {
+              "version": "1.0.0",
+              "dependencies": {
+                "readable-stream": {
+                  "version": "2.0.2",
+                  "dependencies": {
+                    "core-util-is": {
+                      "version": "1.0.1"
+                    },
+                    "inherits": {
+                      "version": "2.0.1"
+                    },
+                    "isarray": {
+                      "version": "0.0.1"
+                    },
+                    "process-nextick-args": {
+                      "version": "1.0.3"
+                    },
+                    "string_decoder": {
+                      "version": "0.10.31"
+                    },
+                    "util-deprecate": {
+                      "version": "1.0.2"
+                    }
+                  }
+                }
+              }
+            },
+            "caseless": {
+              "version": "0.11.0"
+            },
+            "extend": {
+              "version": "3.0.0"
+            },
+            "forever-agent": {
+              "version": "0.6.1"
+            },
+            "form-data": {
+              "version": "1.0.0-rc3",
+              "dependencies": {
+                "async": {
+                  "version": "1.4.2"
+                }
+              }
+            },
+            "json-stringify-safe": {
+              "version": "5.0.1"
+            },
+            "mime-types": {
+              "version": "2.1.7",
+              "dependencies": {
+                "mime-db": {
+                  "version": "1.19.0"
+                }
+              }
+            },
+            "qs": {
+              "version": "5.2.0"
+            },
+            "tunnel-agent": {
+              "version": "0.4.1"
+            },
+            "tough-cookie": {
+              "version": "2.2.0"
+            },
+            "http-signature": {
+              "version": "0.11.0",
+              "dependencies": {
+                "assert-plus": {
+                  "version": "0.1.5"
+                },
+                "asn1": {
+                  "version": "0.1.11"
+                },
+                "ctype": {
+                  "version": "0.5.3"
+                }
+              }
+            },
+            "oauth-sign": {
+              "version": "0.8.0"
+            },
+            "hawk": {
+              "version": "3.1.0",
+              "dependencies": {
+                "hoek": {
+                  "version": "2.16.3"
+                },
+                "boom": {
+                  "version": "2.9.0"
+                },
+                "cryptiles": {
+                  "version": "2.0.5"
+                },
+                "sntp": {
+                  "version": "1.0.9"
+                }
+              }
+            },
+            "aws-sign2": {
+              "version": "0.6.0"
+            },
+            "stringstream": {
+              "version": "0.0.4"
+            },
+            "combined-stream": {
+              "version": "1.0.5",
+              "dependencies": {
+                "delayed-stream": {
+                  "version": "1.0.0"
+                }
+              }
+            },
+            "isstream": {
+              "version": "0.1.2"
+            },
+            "har-validator": {
+              "version": "2.0.2",
+              "dependencies": {
+                "chalk": {
+                  "version": "1.1.1",
+                  "dependencies": {
+                    "ansi-styles": {
+                      "version": "2.1.0"
+                    },
+                    "escape-string-regexp": {
+                      "version": "1.0.3"
+                    },
+                    "has-ansi": {
+                      "version": "2.0.0",
+                      "dependencies": {
+                        "ansi-regex": {
+                          "version": "2.0.0"
+                        }
+                      }
+                    },
+                    "strip-ansi": {
+                      "version": "3.0.0",
+                      "dependencies": {
+                        "ansi-regex": {
+                          "version": "2.0.0"
+                        }
+                      }
+                    },
+                    "supports-color": {
+                      "version": "2.0.0"
+                    }
+                  }
+                },
+                "commander": {
+                  "version": "2.8.1",
+                  "dependencies": {
+                    "graceful-readlink": {
+                      "version": "1.0.1"
+                    }
+                  }
+                },
+                "is-my-json-valid": {
+                  "version": "2.12.2",
+                  "dependencies": {
+                    "generate-function": {
+                      "version": "2.0.0"
+                    },
+                    "generate-object-property": {
+                      "version": "1.2.0",
+                      "dependencies": {
+                        "is-property": {
+                          "version": "1.0.2"
+                        }
+                      }
+                    },
+                    "jsonpointer": {
+                      "version": "2.0.0"
+                    }
+                  }
+                },
+                "pinkie-promise": {
+                  "version": "1.0.0",
+                  "dependencies": {
+                    "pinkie": {
+                      "version": "1.0.0"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "underscore": {
+          "version": "1.8.3"
+        },
+        "async": {
+          "version": "0.2.10"
+        }
+      }
+    },
     "vinyl": {
       "version": "0.4.6",
       "dependencies": {
@@ -11685,5 +11876,5 @@
     }
   },
   "name": "angular",
-  "version": "2.0.0-alpha.39"
+  "version": "2.0.0-alpha.40"
 }

@@ -17,6 +17,7 @@ var merge = require('merge');
 var merge2 = require('merge2');
 var path = require('path');
 var licenseWrap = require('./tools/build/licensewrap');
+var analytics = require('./tools/analytics/analytics');
 
 var watch = require('./tools/build/watch');
 
@@ -1297,3 +1298,7 @@ process.on('beforeExit', function() {
     gulp.start('cleanup.builder');
   }
 });
+
+
+gulp.on('task_stop', (e) => { analytics.build('gulp ' + e.task, e.duration*1000)});
+gulp.on('task_err', (e) => { analytics.build('gulp ' + e.task + ' (errored)', e.duration*1000)});
