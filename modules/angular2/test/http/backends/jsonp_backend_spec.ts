@@ -19,7 +19,7 @@ import {
   JSONPBackend,
   JSONPBackend_
 } from 'angular2/src/http/backends/jsonp_backend';
-import {bind, Injector} from 'angular2/core';
+import {provide, Injector} from 'angular2/core';
 import {isPresent, StringWrapper} from 'angular2/src/core/facade/lang';
 import {TimerWrapper} from 'angular2/src/core/facade/async';
 import {Request} from 'angular2/src/http/static_request';
@@ -72,10 +72,9 @@ export function main() {
 
     beforeEach(() => {
       let injector = Injector.resolveAndCreate([
-        bind(ResponseOptions)
-            .toClass(BaseResponseOptions),
-        bind(BrowserJsonp).toClass(MockBrowserJsonp),
-        bind(JSONPBackend).toClass(JSONPBackend_)
+        provide(ResponseOptions, {asClass: BaseResponseOptions}),
+        provide(BrowserJsonp, {asClass: MockBrowserJsonp}),
+        provide(JSONPBackend, {asClass: JSONPBackend_})
       ]);
       backend = injector.get(JSONPBackend);
       let base = new BaseRequestOptions();

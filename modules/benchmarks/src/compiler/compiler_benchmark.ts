@@ -12,7 +12,8 @@ import {
   View,
   ViewContainerRef,
   bind,
-  Binding,
+  provide,
+  Provider,
   NgIf,
   ViewMetadata
 } from 'angular2/core';
@@ -22,17 +23,20 @@ import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
 
 import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
 
-function _createBindings(): Binding[] {
+function _createBindings(): Provider[] {
   var multiplyTemplatesBy = getIntParameter('elements');
   return [
-    bind(ViewResolver)
-        .toFactory(() => new MultiplyViewResolver(
-                       multiplyTemplatesBy,
-                       [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]),
-                   []),
+    provide(ViewResolver,
+            {
+              asFactory: () => new MultiplyViewResolver(
+                             multiplyTemplatesBy,
+                             [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]),
+              deps: []
+            }),
     // Use DynamicChangeDetector as that is the only one that Dart supports as well
     // so that we can compare the numbers between JS and Dart
-    bind(ChangeDetectorGenConfig).toValue(new ChangeDetectorGenConfig(false, false, false, false))
+    provide(ChangeDetectorGenConfig,
+            {asValue: new ChangeDetectorGenConfig(false, false, false, false)})
   ];
 }
 

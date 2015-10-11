@@ -14,7 +14,7 @@ import {
   TestComponentBuilder
 } from 'angular2/test_lib';
 
-import {Injectable, NgIf, bind} from 'angular2/core';
+import {Injectable, NgIf, provide} from 'angular2/core';
 import {Directive, Component, View, ViewMetadata} from 'angular2/src/core/metadata';
 
 @Component({selector: 'child-comp'})
@@ -83,7 +83,7 @@ class TestBindingsComp {
   constructor(private fancyService: FancyService) {}
 }
 
-@Component({selector: 'my-service-comp', viewBindings: [FancyService]})
+@Component({selector: 'my-service-comp', viewProviders: [FancyService]})
 @View({template: `injected value: {{fancyService.value}}`})
 class TestViewBindingsComp {
   constructor(private fancyService: FancyService) {}
@@ -174,10 +174,11 @@ export function main() {
              });
        }));
 
-    it('should override a binding',
+    it('should override a provider',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
-         tcb.overrideBindings(TestBindingsComp, [bind(FancyService).toClass(MockFancyService)])
+         tcb.overrideProviders(TestBindingsComp,
+                               [provide(FancyService, {asClass: MockFancyService})])
              .createAsync(TestBindingsComp)
              .then((rootTestComponent) => {
                rootTestComponent.detectChanges();
@@ -191,8 +192,8 @@ export function main() {
     it('should override a viewBinding',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
-         tcb.overrideViewBindings(TestViewBindingsComp,
-                                  [bind(FancyService).toClass(MockFancyService)])
+         tcb.overrideViewProviders(TestViewBindingsComp,
+                                   [provide(FancyService, {asClass: MockFancyService})])
              .createAsync(TestViewBindingsComp)
              .then((rootTestComponent) => {
                rootTestComponent.detectChanges();

@@ -12,7 +12,7 @@ import {
   inject,
   beforeEachBindings
 } from 'angular2/test_lib';
-import {bind} from 'angular2/src/core/di';
+import {provide} from 'angular2/src/core/di';
 
 import {CONST_EXPR, stringify} from 'angular2/src/core/facade/lang';
 import {MapWrapper} from 'angular2/src/core/facade/collection';
@@ -45,7 +45,7 @@ import {
 
 import {evalModule} from './eval_module';
 
-import {TEST_BINDINGS} from './test_bindings';
+import {TEST_PROVIDERS} from './test_bindings';
 import {TestDispatcher, TestPipes} from './change_detector_mocks';
 import {
   codeGenValueFn,
@@ -60,7 +60,7 @@ var THIS_MODULE_REF = moduleRef(THIS_MODULE_URL);
 
 export function main() {
   describe('ChangeDetectorCompiler', () => {
-    beforeEachBindings(() => TEST_BINDINGS);
+    beforeEachBindings(() => TEST_PROVIDERS);
 
     var parser: TemplateParser;
     var compiler: ChangeDetectionCompiler;
@@ -83,8 +83,8 @@ export function main() {
 
       describe('no jit', () => {
         beforeEachBindings(() => [
-          bind(ChangeDetectorGenConfig)
-              .toValue(new ChangeDetectorGenConfig(true, true, false, false))
+          provide(ChangeDetectorGenConfig,
+                  {asValue: new ChangeDetectorGenConfig(true, true, false, false)})
         ]);
         it('should watch element properties', () => {
           expect(detectChanges(compiler, '<div [el-prop]="someProp">'))
@@ -94,8 +94,8 @@ export function main() {
 
       describe('jit', () => {
         beforeEachBindings(() => [
-          bind(ChangeDetectorGenConfig)
-              .toValue(new ChangeDetectorGenConfig(true, true, false, true))
+          provide(ChangeDetectorGenConfig,
+                  {asValue: new ChangeDetectorGenConfig(true, true, false, true)})
         ]);
         it('should watch element properties', () => {
           expect(detectChanges(compiler, '<div [el-prop]="someProp">'))

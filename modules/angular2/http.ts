@@ -4,7 +4,7 @@
  * The http module provides services to perform http requests. To get started, see the {@link Http}
  * class.
  */
-import {bind, Binding} from 'angular2/core';
+import {provide, Provider} from 'angular2/core';
 import {Http, Jsonp} from './src/http/http';
 import {XHRBackend, XHRConnection} from './src/http/backends/xhr_backend';
 import {JSONPBackend, JSONPBackend_, JSONPConnection} from './src/http/backends/jsonp_backend';
@@ -40,18 +40,18 @@ export {URLSearchParams} from './src/http/url_search_params';
 /**
  * Provides a basic set of injectables to use the {@link Http} service in any application.
  *
- * The `HTTP_BINDINGS` should be included either in a component's injector,
+ * The `HTTP_PROVIDERS` should be included either in a component's injector,
  * or in the root injector when bootstrapping an application.
  *
  * ### Example ([live demo](http://plnkr.co/edit/snj7Nv?p=preview))
  *
  * ```
  * import {bootstrap, Component, NgFor, View} from 'angular2/angular2';
- * import {HTTP_BINDINGS, Http} from 'angular2/http';
+ * import {HTTP_PROVIDERS, Http} from 'angular2/http';
  *
  * @Component({
  *   selector: 'app',
- *   bindings: [HTTP_BINDINGS]
+ *   providers: [HTTP_PROVIDERS]
  * })
  * @View({
  *   template: `
@@ -83,11 +83,11 @@ export {URLSearchParams} from './src/http/url_search_params';
  *   .catch(err => console.error(err));
  * ```
  *
- * The primary public API included in `HTTP_BINDINGS` is the {@link Http} class.
- * However, other bindings required by `Http` are included,
+ * The primary public API included in `HTTP_PROVIDERS` is the {@link Http} class.
+ * However, other providers required by `Http` are included,
  * which may be beneficial to override in certain cases.
  *
- * The bindings included in `HTTP_BINDINGS` include:
+ * The providers included in `HTTP_PROVIDERS` include:
  *  * {@link Http}
  *  * {@link XHRBackend}
  *  * `BrowserXHR` - Private factory to create `XMLHttpRequest` instances
@@ -96,38 +96,38 @@ export {URLSearchParams} from './src/http/url_search_params';
  *
  * There may be cases where it makes sense to extend the base request options,
  * such as to add a search string to be appended to all URLs.
- * To accomplish this, a new binding for {@link RequestOptions} should
- * be added in the same injector as `HTTP_BINDINGS`.
+ * To accomplish this, a new provider for {@link RequestOptions} should
+ * be added in the same injector as `HTTP_PROVIDERS`.
  *
  * ### Example ([live demo](http://plnkr.co/edit/aCMEXi?p=preview))
  *
  * ```
- * import {bind, bootstrap} from 'angular2/angular2';
- * import {HTTP_BINDINGS, BaseRequestOptions, RequestOptions} from 'angular2/http';
+ * import {provide, bootstrap} from 'angular2/angular2';
+ * import {HTTP_PROVIDERS, BaseRequestOptions, RequestOptions} from 'angular2/http';
  *
  * class MyOptions extends BaseRequestOptions {
  *   search: string = 'coreTeam=true';
  * }
  *
- * bootstrap(App, [HTTP_BINDINGS, bind(RequestOptions).toClass(MyOptions)])
+ * bootstrap(App, [HTTP_PROVIDERS, provide(RequestOptions, {asClass: MyOptions})])
  *   .catch(err => console.error(err));
  * ```
  *
  * Likewise, to use a mock backend for unit tests, the {@link XHRBackend}
- * binding should be bound to {@link MockBackend}.
+ * provider should be bound to {@link MockBackend}.
  *
  * ### Example ([live demo](http://plnkr.co/edit/7LWALD?p=preview))
  *
  * ```
- * import {bind, Injector} from 'angular2/angular2';
- * import {HTTP_BINDINGS, Http, Response, XHRBackend, MockBackend} from 'angular2/http';
+ * import {provide, Injector} from 'angular2/angular2';
+ * import {HTTP_PROVIDERS, Http, Response, XHRBackend, MockBackend} from 'angular2/http';
  *
  * var people = [{name: 'Jeff'}, {name: 'Tobias'}];
  *
  * var injector = Injector.resolveAndCreate([
- *   HTTP_BINDINGS,
+ *   HTTP_PROVIDERS,
  *   MockBackend,
- *   bind(XHRBackend).toAlias(MockBackend)
+ *   provide(XHRBackend, {asAlias: MockBackend})
  * ]);
  * var http = injector.get(Http);
  * var backend = injector.get(MockBackend);
@@ -150,34 +150,40 @@ export {URLSearchParams} from './src/http/url_search_params';
  * });
  * ```
  */
-export const HTTP_BINDINGS: any[] = [
+export const HTTP_PROVIDERS: any[] = [
   // TODO(pascal): use factory type annotations once supported in DI
   // issue: https://github.com/angular/angular/issues/3183
-  bind(Http)
-      .toFactory((xhrBackend, requestOptions) => { return new Http(xhrBackend, requestOptions);},
-                 [XHRBackend, RequestOptions]),
+  provide(Http,
+          {
+            asFactory: (xhrBackend, requestOptions) => new Http(xhrBackend, requestOptions),
+            deps: [XHRBackend, RequestOptions]
+          }),
   BrowserXhr,
-  bind(RequestOptions).toClass(BaseRequestOptions),
-  bind(ResponseOptions).toClass(BaseResponseOptions),
+  provide(RequestOptions, {asClass: BaseRequestOptions}),
+  provide(ResponseOptions, {asClass: BaseResponseOptions}),
   XHRBackend
 ];
 
+/**
+ * @deprecated
+ */
+export const HTTP_BINDINGS = HTTP_PROVIDERS;
 
 /**
- * Provides a basic set of bindings to use the {@link Jsonp} service in any application.
+ * Provides a basic set of providers to use the {@link Jsonp} service in any application.
  *
- * The `JSONP_BINDINGS` should be included either in a component's injector,
+ * The `JSONP_PROVIDERS` should be included either in a component's injector,
  * or in the root injector when bootstrapping an application.
  *
  * ### Example ([live demo](http://plnkr.co/edit/vmeN4F?p=preview))
  *
  * ```
  * import {Component, NgFor, View} from 'angular2/angular2';
- * import {JSONP_BINDINGS, Jsonp} from 'angular2/http';
+ * import {JSONP_PROVIDERS, Jsonp} from 'angular2/http';
  *
  * @Component({
  *   selector: 'app',
- *   bindings: [JSONP_BINDINGS]
+ *   providers: [JSONP_PROVIDERS]
  * })
  * @View({
  *   template: `
@@ -202,11 +208,11 @@ export const HTTP_BINDINGS: any[] = [
  * }
  * ```
  *
- * The primary public API included in `JSONP_BINDINGS` is the {@link Jsonp} class.
- * However, other bindings required by `Jsonp` are included,
+ * The primary public API included in `JSONP_PROVIDERS` is the {@link Jsonp} class.
+ * However, other providers required by `Jsonp` are included,
  * which may be beneficial to override in certain cases.
  *
- * The bindings included in `JSONP_BINDINGS` include:
+ * The providers included in `JSONP_PROVIDERS` include:
  *  * {@link Jsonp}
  *  * {@link JSONPBackend}
  *  * `BrowserJsonp` - Private factory
@@ -215,37 +221,37 @@ export const HTTP_BINDINGS: any[] = [
  *
  * There may be cases where it makes sense to extend the base request options,
  * such as to add a search string to be appended to all URLs.
- * To accomplish this, a new binding for {@link RequestOptions} should
- * be added in the same injector as `JSONP_BINDINGS`.
+ * To accomplish this, a new provider for {@link RequestOptions} should
+ * be added in the same injector as `JSONP_PROVIDERS`.
  *
  * ### Example ([live demo](http://plnkr.co/edit/TFug7x?p=preview))
  *
  * ```
- * import {bind, bootstrap} from 'angular2/angular2';
- * import {JSONP_BINDINGS, BaseRequestOptions, RequestOptions} from 'angular2/http';
+ * import {provide, bootstrap} from 'angular2/angular2';
+ * import {JSONP_PROVIDERS, BaseRequestOptions, RequestOptions} from 'angular2/http';
  *
  * class MyOptions extends BaseRequestOptions {
  *   search: string = 'coreTeam=true';
  * }
  *
- * bootstrap(App, [JSONP_BINDINGS, bind(RequestOptions).toClass(MyOptions)])
+ * bootstrap(App, [JSONP_PROVIDERS, provide(RequestOptions, {asClass: MyOptions})])
  *   .catch(err => console.error(err));
  * ```
  *
  * Likewise, to use a mock backend for unit tests, the {@link JSONPBackend}
- * binding should be bound to {@link MockBackend}.
+ * provider should be bound to {@link MockBackend}.
  *
  * ### Example ([live demo](http://plnkr.co/edit/HDqZWL?p=preview))
  *
  * ```
- * import {bind, Injector} from 'angular2/angular2';
- * import {JSONP_BINDINGS, Jsonp, Response, JSONPBackend, MockBackend} from 'angular2/http';
+ * import {provide, Injector} from 'angular2/angular2';
+ * import {JSONP_PROVIDERS, Jsonp, Response, JSONPBackend, MockBackend} from 'angular2/http';
  *
  * var people = [{name: 'Jeff'}, {name: 'Tobias'}];
  * var injector = Injector.resolveAndCreate([
- *   JSONP_BINDINGS,
+ *   JSONP_PROVIDERS,
  *   MockBackend,
- *   bind(JSONPBackend).toAlias(MockBackend)
+ *   provide(JSONPBackend, {asAlias: MockBackend})
  * ]);
  * var jsonp = injector.get(Jsonp);
  * var backend = injector.get(MockBackend);
@@ -268,15 +274,21 @@ export const HTTP_BINDINGS: any[] = [
  * });
  * ```
  */
-export const JSONP_BINDINGS: any[] = [
+export const JSONP_PROVIDERS: any[] = [
   // TODO(pascal): use factory type annotations once supported in DI
   // issue: https://github.com/angular/angular/issues/3183
-  bind(Jsonp)
-      .toFactory(
-          (jsonpBackend, requestOptions) => { return new Jsonp(jsonpBackend, requestOptions);},
-          [JSONPBackend, RequestOptions]),
+  provide(Jsonp,
+          {
+            asFactory: (jsonpBackend, requestOptions) => new Jsonp(jsonpBackend, requestOptions),
+            deps: [JSONPBackend, RequestOptions]
+          }),
   BrowserJsonp,
-  bind(RequestOptions).toClass(BaseRequestOptions),
-  bind(ResponseOptions).toClass(BaseResponseOptions),
-  bind(JSONPBackend).toClass(JSONPBackend_)
+  provide(RequestOptions, {asClass: BaseRequestOptions}),
+  provide(ResponseOptions, {asClass: BaseResponseOptions}),
+  provide(JSONPBackend, {asClass: JSONPBackend_})
 ];
+
+/**
+ * @deprecated
+ */
+export const JSON_BINDINGS = JSONP_PROVIDERS;

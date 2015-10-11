@@ -42,9 +42,9 @@ import {
   CompiledTemplate
 } from 'angular2/src/core/linker/template_commands';
 
-import {Component, View, Directive, bind} from 'angular2/core';
+import {Component, View, Directive, provide} from 'angular2/core';
 
-import {TEST_BINDINGS} from './test_bindings';
+import {TEST_PROVIDERS} from './test_bindings';
 import {TestDispatcher, TestPipes} from './change_detector_mocks';
 import {
   codeGenValueFn,
@@ -64,7 +64,7 @@ export function main() {
     var compiler: TemplateCompiler;
     var runtimeMetadataResolver: RuntimeMetadataResolver;
 
-    beforeEachBindings(() => [bind(APP_ID).toValue(APP_ID_VALUE), TEST_BINDINGS]);
+    beforeEachBindings(() => [provide(APP_ID, {asValue: APP_ID_VALUE}), TEST_PROVIDERS]);
     beforeEach(inject([TemplateCompiler, RuntimeMetadataResolver],
                       (_compiler, _runtimeMetadataResolver) => {
                         compiler = _compiler;

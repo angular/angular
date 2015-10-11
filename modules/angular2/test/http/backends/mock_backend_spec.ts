@@ -14,7 +14,7 @@ import {
 import {ObservableWrapper} from 'angular2/src/core/facade/async';
 import {BrowserXhr} from 'angular2/src/http/backends/browser_xhr';
 import {MockConnection, MockBackend} from 'angular2/src/http/backends/mock_backend';
-import {bind, Injector} from 'angular2/core';
+import {provide, Injector} from 'angular2/core';
 import {Request} from 'angular2/src/http/static_request';
 import {Response} from 'angular2/src/http/static_response';
 import {Headers} from 'angular2/src/http/headers';
@@ -35,7 +35,7 @@ export function main() {
 
     beforeEach(() => {
       var injector = Injector.resolveAndCreate(
-          [bind(ResponseOptions).toClass(BaseResponseOptions), MockBackend]);
+          [provide(ResponseOptions, {asClass: BaseResponseOptions}), MockBackend]);
       backend = injector.get(MockBackend);
       var base = new BaseRequestOptions();
       sampleRequest1 = new Request(base.merge(new RequestOptions({url: 'https://google.com'})));

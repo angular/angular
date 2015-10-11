@@ -1,8 +1,8 @@
 // Public API for Application
-import {Binding} from './di';
+import {Provider} from './di';
 import {Type, isPresent} from 'angular2/src/core/facade/lang';
 import {Promise} from 'angular2/src/core/facade/async';
-import {compilerBindings} from 'angular2/src/core/compiler/compiler';
+import {compilerProviders} from 'angular2/src/core/compiler/compiler';
 import {commonBootstrap} from './application_common';
 import {ComponentRef} from './linker/dynamic_component_loader';
 
@@ -19,9 +19,9 @@ export {
 
 /// See [commonBootstrap] for detailed documentation.
 export function bootstrap(appComponentType: /*Type*/ any,
-                          appBindings: Array<Type | Binding | any[]> = null):
+                          appBindings: Array<Type | Provider | any[]> = null):
     Promise<ComponentRef> {
-  var bindings = [compilerBindings()];
+  var bindings = [compilerProviders()];
   if (isPresent(appBindings)) {
     bindings.push(appBindings);
   }

@@ -18,11 +18,11 @@ export 'package:angular2/src/core/linker/dynamic_component_loader.dart' show Com
 ///
 /// See [commonBootstrap] for detailed documentation.
 Future<ComponentRef> bootstrap(Type appComponentType,
-    [List componentInjectableBindings]) {
+    [List componentInjectableProviders]) {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
-  var bindings = [compilerBindings()];
-  if (componentInjectableBindings != null) {
-    bindings.add(componentInjectableBindings);
+  var providers = [compilerProviders()];
+  if (componentInjectableProviders != null) {
+    providers.add(componentInjectableProviders);
   }
-  return commonBootstrap(appComponentType, bindings);
+  return commonBootstrap(appComponentType, providers);
 }

@@ -14,7 +14,14 @@ import {
 import {DateWrapper, Json, RegExpWrapper, isPresent} from 'angular2/src/core/facade/lang';
 import {PromiseWrapper} from 'angular2/src/core/facade/async';
 
-import {bind, Injector, SampleDescription, MeasureValues, Options} from 'benchpress/common';
+import {
+  bind,
+  provide,
+  Injector,
+  SampleDescription,
+  MeasureValues,
+  Options
+} from 'benchpress/common';
 
 
 import {JsonFileReporter} from 'benchpress/src/reporter/json_file_reporter';
@@ -26,7 +33,8 @@ export function main() {
     function createReporter({sampleId, descriptions, metrics, path}) {
       var bindings = [
         JsonFileReporter.BINDINGS,
-        bind(SampleDescription).toValue(new SampleDescription(sampleId, descriptions, metrics)),
+        provide(SampleDescription,
+                {asValue: new SampleDescription(sampleId, descriptions, metrics)}),
         bind(JsonFileReporter.PATH).toValue(path),
         bind(Options.NOW).toValue(() => DateWrapper.fromMillis(1234)),
         bind(Options.WRITE_FILE)

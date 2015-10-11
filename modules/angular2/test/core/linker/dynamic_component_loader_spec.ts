@@ -270,7 +270,7 @@ class ChildComp {
 
 class DynamicallyCreatedComponentService {}
 
-@Component({selector: 'hello-cmp', viewBindings: [DynamicallyCreatedComponentService]})
+@Component({selector: 'hello-cmp', viewProviders: [DynamicallyCreatedComponentService]})
 @View({template: "{{greeting}}"})
 class DynamicallyCreatedCmp implements OnDestroy {
   greeting: string;

@@ -12,7 +12,7 @@ import {
   inject,
   beforeEachBindings
 } from 'angular2/test_lib';
-import {bind} from 'angular2/src/core/di';
+import {provide} from 'angular2/src/core/di';
 import {SpyXHR} from '../spies';
 import {XHR} from 'angular2/src/core/compiler/xhr';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
@@ -28,7 +28,7 @@ import {
 } from 'angular2/src/core/compiler/directive_metadata';
 import {SourceExpression, SourceModule} from 'angular2/src/core/compiler/source_module';
 import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
-import {TEST_BINDINGS} from './test_bindings';
+import {TEST_PROVIDERS} from './test_bindings';
 import {
   codeGenValueFn,
   codeGenExportVariable,
@@ -51,7 +51,7 @@ export function main() {
 
     beforeEachBindings(() => {
       xhr = <any>new SpyXHR();
-      return [TEST_BINDINGS, bind(XHR).toValue(xhr)];
+      return [TEST_PROVIDERS, provide(XHR, {asValue: xhr})];
     });
 
     var compiler: StyleCompiler;

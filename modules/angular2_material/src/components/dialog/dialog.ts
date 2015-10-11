@@ -1,5 +1,6 @@
 import {
   bind,
+  provide,
   forwardRef,
   Component,
   ComponentRef,
@@ -8,7 +9,7 @@ import {
   ElementRef,
   Host,
   Injectable,
-  ResolvedBinding,
+  ResolvedProvider,
   SkipSelf,
   Injector,
   View,
@@ -54,7 +55,7 @@ export class MdDialog {
     // Create the dialogRef here so that it can be injected into the content component.
     var dialogRef = new MdDialogRef();
 
-    var bindings = Injector.resolve([bind(MdDialogRef).toValue(dialogRef)]);
+    var bindings = Injector.resolve([provide(MdDialogRef, {asValue: dialogRef})]);
 
     var backdropRefPromise = this._openBackdrop(elementRef, bindings);
 
@@ -101,7 +102,7 @@ export class MdDialog {
   }
 
   /** Loads the dialog backdrop (transparent overlay over the rest of the page). */
-  _openBackdrop(elementRef: ElementRef, bindings: ResolvedBinding[]): Promise<ComponentRef> {
+  _openBackdrop(elementRef: ElementRef, bindings: ResolvedProvider[]): Promise<ComponentRef> {
     return this.componentLoader.loadNextToLocation(MdBackdrop, elementRef, bindings)
         .then((componentRef) => {
           // TODO(tbosch): clean this up when we have custom renderers

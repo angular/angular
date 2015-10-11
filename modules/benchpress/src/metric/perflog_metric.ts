@@ -9,7 +9,7 @@ import {
 } from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {bind, Binding, OpaqueToken} from 'angular2/src/core/di';
+import {bind, provide, Provider, OpaqueToken} from 'angular2/src/core/di';
 
 import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
 import {Metric} from '../metric';
@@ -20,7 +20,7 @@ import {Options} from '../common_options';
  */
 export class PerflogMetric extends Metric {
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): Binding[] { return _BINDINGS; }
+  static get BINDINGS(): Provider[] { return _PROVIDERS; }
   // TODO(tbosch): use static values when our transpiler supports them
   static get SET_TIMEOUT(): OpaqueToken { return _SET_TIMEOUT; }
 
@@ -331,7 +331,7 @@ var _MARK_NAME_FRAME_CAPUTRE = 'frameCapture';
 // using 17ms as a somewhat looser threshold, instead of 16.6666ms
 var _FRAME_TIME_SMOOTH_THRESHOLD = 17;
 
-var _BINDINGS = [
+var _PROVIDERS = [
   bind(PerflogMetric)
       .toFactory(
           (driverExtension, setTimeout, microMetrics, forceGc, captureFrames) =>
@@ -343,5 +343,5 @@ var _BINDINGS = [
             Options.FORCE_GC,
             Options.CAPTURE_FRAMES
           ]),
-  bind(_SET_TIMEOUT).toValue((fn, millis) => TimerWrapper.setTimeout(fn, millis))
+  provide(_SET_TIMEOUT, {asValue: (fn, millis) => TimerWrapper.setTimeout(fn, millis)})
 ];

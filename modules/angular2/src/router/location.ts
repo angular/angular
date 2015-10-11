@@ -9,7 +9,7 @@ import {OpaqueToken, Injectable, Optional, Inject} from 'angular2/src/core/di';
  * The `APP_BASE_HREF` token represents the base href to be used with the
  * {@link PathLocationStrategy}.
  *
- * If you're using {@link PathLocationStrategy}, you must provide a binding to a string
+ * If you're using {@link PathLocationStrategy}, you must provide a provider to a string
  * representing the URL prefix that should be preserved when generating and recognizing
  * URLs.
  *
@@ -17,7 +17,7 @@ import {OpaqueToken, Injectable, Optional, Inject} from 'angular2/src/core/di';
  *
  * ```
  * import {Component, View} from 'angular2/angular2';
- * import {ROUTER_DIRECTIVES, ROUTER_BINDINGS, RouteConfig} from 'angular2/router';
+ * import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
  *
  * @Component({...})
  * @View({directives: [ROUTER_DIRECTIVES]})
@@ -29,9 +29,9 @@ import {OpaqueToken, Injectable, Optional, Inject} from 'angular2/src/core/di';
  * }
  *
  * bootstrap(AppCmp, [
- *   ROUTER_BINDINGS,
+ *   ROUTER_PROVIDERS,
  *   PathLocationStrategy,
- *   bind(APP_BASE_HREF).toValue('/my/app')
+ *   provide(APP_BASE_HREF, {asValue: '/my/app'})
  * ]);
  * ```
  */
@@ -59,7 +59,7 @@ export const APP_BASE_HREF: OpaqueToken = CONST_EXPR(new OpaqueToken('appBaseHre
  * import {Component, View} from 'angular2/angular2';
  * import {
  *   ROUTER_DIRECTIVES,
- *   ROUTER_BINDINGS,
+ *   ROUTER_PROVIDERS,
  *   RouteConfig,
  *   Location
  * } from 'angular2/router';
@@ -75,7 +75,7 @@ export const APP_BASE_HREF: OpaqueToken = CONST_EXPR(new OpaqueToken('appBaseHre
  *   }
  * }
  *
- * bootstrap(AppCmp, [ROUTER_BINDINGS]);
+ * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
  * ```
  */
 @Injectable()
@@ -91,7 +91,7 @@ export class Location {
 
     if (isBlank(browserBaseHref)) {
       throw new BaseException(
-          `No base href set. Either provide a binding for the APP_BASE_HREF token or add a base element to the document.`);
+          `No base href set. Either provide a provider for the APP_BASE_HREF token or add a base element to the document.`);
     }
 
     this._baseHref = stripTrailingSlash(stripIndexHtml(browserBaseHref));

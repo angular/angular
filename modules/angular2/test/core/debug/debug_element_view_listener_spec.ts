@@ -15,7 +15,7 @@ import {
 } from 'angular2/test_lib';
 import {global} from 'angular2/src/core/facade/lang';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
-import {bind, Component, Directive, Injectable, View} from 'angular2/core';
+import {provide, Component, Directive, Injectable, View} from 'angular2/core';
 import {inspectNativeElement} from 'angular2/src/core/debug';
 import {IS_DART} from '../../platform';
 
@@ -28,7 +28,7 @@ class MyComp {
 
 export function main() {
   describe('element probe', function() {
-    beforeEachBindings(() => [bind(APP_VIEW_POOL_CAPACITY).toValue(0)]);
+    beforeEachBindings(() => [provide(APP_VIEW_POOL_CAPACITY, {asValue: 0})]);
 
     it('should return a TestElement from a dom element',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {

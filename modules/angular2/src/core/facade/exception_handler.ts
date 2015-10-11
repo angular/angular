@@ -27,7 +27,7 @@ class _ArrayLogger {
  *   }
  * }
  *
- * bootstrap(MyApp, [bind(ExceptionHandler).toClass(MyExceptionHandler)])
+ * bootstrap(MyApp, [provide(ExceptionHandler, {asClass: MyExceptionHandler})])
  *
  * ```
  */

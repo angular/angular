@@ -14,7 +14,7 @@ import {
 import {ObservableWrapper} from 'angular2/src/core/facade/async';
 import {BrowserXhr} from 'angular2/src/http/backends/browser_xhr';
 import {XHRConnection, XHRBackend} from 'angular2/src/http/backends/xhr_backend';
-import {bind, Injector} from 'angular2/core';
+import {provide, Injector} from 'angular2/core';
 import {Request} from 'angular2/src/http/static_request';
 import {Response} from 'angular2/src/http/static_response';
 import {Headers} from 'angular2/src/http/headers';
@@ -75,9 +75,8 @@ export function main() {
 
     beforeEach(() => {
       var injector = Injector.resolveAndCreate([
-        bind(ResponseOptions)
-            .toClass(BaseResponseOptions),
-        bind(BrowserXhr).toClass(MockBrowserXHR),
+        provide(ResponseOptions, {asClass: BaseResponseOptions}),
+        provide(BrowserXhr, {asClass: MockBrowserXHR}),
         XHRBackend
       ]);
       backend = injector.get(XHRBackend);

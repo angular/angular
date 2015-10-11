@@ -25,6 +25,7 @@ import {AppViewListener} from 'angular2/src/core/linker/view_listener';
 
 import {
   bind,
+  provide,
   forwardRef,
   Component,
   Directive,
@@ -39,7 +40,7 @@ import {By} from 'angular2/src/core/debug';
 
 export function main() {
   describe('projection', () => {
-    beforeEachBindings(() => [bind(AppViewListener).toClass(AppViewListener)]);
+    beforeEachBindings(() => [provide(AppViewListener, {asClass: AppViewListener})]);
 
     it('should support simple components',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {

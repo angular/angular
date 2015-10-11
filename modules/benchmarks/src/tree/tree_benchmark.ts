@@ -6,7 +6,8 @@ import {
   View,
   ViewContainerRef,
   bind,
-  Binding,
+  provide,
+  Provider,
   NgIf
 } from 'angular2/core';
 
@@ -24,9 +25,9 @@ import {
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 
-function createBindings(): Binding[] {
+function createProviders(): Provider[] {
   var viewCacheCapacity = getStringParameter('viewcache') == 'true' ? 10000 : 1;
-  return [bind(APP_VIEW_POOL_CAPACITY).toValue(viewCacheCapacity)];
+  return [provide(APP_VIEW_POOL_CAPACITY, {asValue: viewCacheCapacity})];
 }
 
 var BASELINE_TREE_TEMPLATE;
@@ -37,7 +38,7 @@ export function main() {
   var maxDepth = getIntParameter('depth');
 
   BASELINE_TREE_TEMPLATE = DOM.createTemplate(
-      '<span>_<template class="ng-binding"></template><template class="ng-binding"></template></span>');
+      '<span>_<template class="ng-provider"></template><template class="ng-provider"></template></span>');
   BASELINE_IF_TEMPLATE = DOM.createTemplate('<span template="if"><tree></tree></span>');
 
   var app;
@@ -91,7 +92,7 @@ export function main() {
   function noop() {}
 
   function initNg2() {
-    bootstrap(AppComponent, createBindings())
+    bootstrap(AppComponent, createProviders())
         .then((ref) => {
           var injector = ref.injector;
           lifeCycle = injector.get(LifeCycle);

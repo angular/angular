@@ -1,5 +1,5 @@
 import {StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {bind, Binding, OpaqueToken} from 'angular2/src/core/di';
+import {bind, provide, Provider, OpaqueToken} from 'angular2/src/core/di';
 import {Validator} from './validator';
 import {Metric} from './metric';
 import {Options} from './common_options';
@@ -9,7 +9,7 @@ import {Options} from './common_options';
  */
 export class SampleDescription {
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): Binding[] { return _BINDINGS; }
+  static get BINDINGS(): Provider[] { return _PROVIDERS; }
   description: {[key: string]: any};
 
   constructor(public id: string, descriptions: Array<{[key: string]: any}>,
@@ -23,7 +23,7 @@ export class SampleDescription {
   toJson() { return {'id': this.id, 'description': this.description, 'metrics': this.metrics}; }
 }
 
-var _BINDINGS = [
+var _PROVIDERS = [
   bind(SampleDescription)
       .toFactory((metric, id, forceGc, userAgent, validator, defaultDesc, userDesc) =>
                      new SampleDescription(id,

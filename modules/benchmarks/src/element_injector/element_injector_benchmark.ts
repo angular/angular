@@ -1,7 +1,7 @@
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
 import {Injectable, Injector} from 'angular2/core';
-import {ProtoElementInjector, DirectiveBinding} from 'angular2/src/core/linker/element_injector';
+import {ProtoElementInjector, DirectiveProvider} from 'angular2/src/core/linker/element_injector';
 import {getIntParameter, bindAction, microBenchmark} from 'angular2/src/test_lib/benchmark_util';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 
@@ -12,12 +12,12 @@ export function main() {
   var iterations = getIntParameter('iterations');
 
   reflector.reflectionCapabilities = new ReflectionCapabilities();
-  var bindings = [
-    DirectiveBinding.createFromType(A, null),
-    DirectiveBinding.createFromType(B, null),
-    DirectiveBinding.createFromType(C, null)
+  var providers = [
+    DirectiveProvider.createFromType(A, null),
+    DirectiveProvider.createFromType(B, null),
+    DirectiveProvider.createFromType(C, null)
   ];
-  var proto = ProtoElementInjector.create(null, 0, bindings, false, 0, null);
+  var proto = ProtoElementInjector.create(null, 0, providers, false, 0, null);
   var elementInjector = proto.instantiate(null);
 
   function instantiate() {

@@ -1,7 +1,7 @@
 import {NgFor, View, Component, FORM_DIRECTIVES} from 'angular2/web_worker/worker';
 import {Store, Todo, TodoFactory} from './services/TodoStore';
 
-@Component({selector: 'todo-app', viewBindings: [Store, TodoFactory]})
+@Component({selector: 'todo-app', viewProviders: [Store, TodoFactory]})
 @View({templateUrl: 'todo.html', directives: [NgFor, FORM_DIRECTIVES]})
 export class TodoApp {
   todoEdit: Todo = null;

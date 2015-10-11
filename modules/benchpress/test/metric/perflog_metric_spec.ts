@@ -21,6 +21,7 @@ import {
   WebDriverExtension,
   PerfLogFeatures,
   bind,
+  provide,
   Injector,
   Options
 } from 'benchpress/common';
@@ -41,7 +42,7 @@ export function main() {
       microMetrics = StringMapWrapper.create();
     }
     var bindings = [
-      Options.DEFAULT_BINDINGS,
+      Options.DEFAULT_PROVIDERS,
       PerflogMetric.BINDINGS,
       bind(Options.MICRO_METRICS).toValue(microMetrics),
       bind(PerflogMetric.SET_TIMEOUT)

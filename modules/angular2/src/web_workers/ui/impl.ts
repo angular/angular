@@ -24,7 +24,7 @@ import {
 } from 'angular2/src/web_workers/shared/service_message_broker';
 
 /**
- * Creates a zone, sets up the DI bindings
+ * Creates a zone, sets up the DI providers
  * And then creates a new WebWorkerMain object to handle messages from the worker
  */
 export function bootstrapUICommon(bus: MessageBus): WebWorkerApplication {

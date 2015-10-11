@@ -10,9 +10,9 @@ import {LocationStrategy} from './location_strategy';
  * browser's URL.
  *
  * `PathLocationStrategy` is the default binding for {@link LocationStrategy}
- * provided in {@link ROUTER_BINDINGS}.
+ * provided in {@link ROUTER_PROVIDERS}.
  *
- * If you're using `PathLocationStrategy`, you must provide a binding for
+ * If you're using `PathLocationStrategy`, you must provide a provider for
  * {@link APP_BASE_HREF} to a string representing the URL prefix that should
  * be preserved when generating and recognizing URLs.
  *
@@ -23,11 +23,11 @@ import {LocationStrategy} from './location_strategy';
  * ## Example
  *
  * ```
- * import {Component, View, bind} from 'angular2/angular2';
+ * import {Component, View, provide} from 'angular2/angular2';
  * import {
  *   APP_BASE_HREF
  *   ROUTER_DIRECTIVES,
- *   ROUTER_BINDINGS,
+ *   ROUTER_PROVIDERS,
  *   RouteConfig,
  *   Location
  * } from 'angular2/router';
@@ -44,8 +44,8 @@ import {LocationStrategy} from './location_strategy';
  * }
  *
  * bootstrap(AppCmp, [
- *   ROUTER_BINDINGS, // includes binding to PathLocationStrategy
- *   bind(APP_BASE_HREF).toValue('/my/app')
+ *   ROUTER_PROVIDERS, // includes binding to PathLocationStrategy
+ *   provide(APP_BASE_HREF, {asValue: '/my/app'})
  * ]);
  * ```
  */

@@ -1,10 +1,10 @@
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {Type, isBlank, isPresent, assertionsEnabled} from 'angular2/src/core/facade/lang';
-import {bind, Binding, Injector, OpaqueToken} from 'angular2/src/core/di';
+import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
 import {
   APP_COMPONENT_REF_PROMISE,
   APP_COMPONENT,
-  APP_ID_RANDOM_BINDING
+  APP_ID_RANDOM_PROVIDER
 } from './application_tokens';
 import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/core/facade/async';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
@@ -44,67 +44,71 @@ import {AppViewManager_} from "./linker/view_manager";
 import {Compiler_} from "./linker/compiler";
 
 /**
- * Constructs the set of bindings meant for use at the platform level.
+ * Constructs the set of providers meant for use at the platform level.
  *
- * These are bindings that should be singletons shared among all Angular applications
+ * These are providers that should be singletons shared among all Angular applications
  * running on the page.
  */
-export function platformBindings(): Array<Type | Binding | any[]> {
-  return [bind(Reflector).toValue(reflector), TestabilityRegistry];
+export function platformBindings(): Array<Type | Provider | any[]> {
+  return [provide(Reflector, {asValue: reflector}), TestabilityRegistry];
 }
 
 /**
- * Construct bindings specific to an individual root component.
+ * Construct providers specific to an individual root component.
  */
-function _componentBindings(appComponentType: Type): Array<Type | Binding | any[]> {
+function _componentProviders(appComponentType: Type): Array<Type | Provider | any[]> {
   return [
-    bind(APP_COMPONENT)
-        .toValue(appComponentType),
-    bind(APP_COMPONENT_REF_PROMISE)
-        .toFactory(
-            (dynamicComponentLoader, injector: Injector) => {
-              // TODO(rado): investigate whether to support bindings on root component.
-              return dynamicComponentLoader.loadAsRoot(appComponentType, null, injector)
-                  .then((componentRef) => {
-                    if (isPresent(componentRef.location.nativeElement)) {
-                      injector.get(TestabilityRegistry)
-                          .registerApplication(componentRef.location.nativeElement,
-                                               injector.get(Testability));
-                    }
-                    return componentRef;
-                  });
-            },
-            [DynamicComponentLoader, Injector]),
-
-    bind(appComponentType)
-        .toFactory((p: Promise<any>) => p.then(ref => ref.instance), [APP_COMPONENT_REF_PROMISE]),
+    provide(APP_COMPONENT, {asValue: appComponentType}),
+    provide(APP_COMPONENT_REF_PROMISE,
+            {
+              asFactory: (dynamicComponentLoader, injector: Injector) => {
+                // TODO(rado): investigate whether to support bindings on root component.
+                return dynamicComponentLoader.loadAsRoot(appComponentType, null, injector)
+                    .then((componentRef) => {
+                      if (isPresent(componentRef.location.nativeElement)) {
+                        injector.get(TestabilityRegistry)
+                            .registerApplication(componentRef.location.nativeElement,
+                                                 injector.get(Testability));
+                      }
+                      return componentRef;
+                    });
+              },
+              deps: [DynamicComponentLoader, Injector]
+            }),
+    provide(appComponentType,
+            {
+              asFactory: (p: Promise<any>) => p.then(ref => ref.instance),
+              deps: [APP_COMPONENT_REF_PROMISE]
+            }),
   ];
 }
 
 /**
- * Construct a default set of bindings which should be included in any Angular
+ * Construct a default set of providers which should be included in any Angular
  * application, regardless of whether it runs on the UI thread or in a web worker.
  */
-export function applicationCommonBindings(): Array<Type | Binding | any[]> {
+export function applicationCommonBindings(): Array<Type | Provider | any[]> {
   return [
-    bind(Compiler)
-        .toClass(Compiler_),
-    APP_ID_RANDOM_BINDING,
+    provide(Compiler, {asClass: Compiler_}),
+    APP_ID_RANDOM_PROVIDER,
     AppViewPool,
-    bind(APP_VIEW_POOL_CAPACITY).toValue(10000),
-    bind(AppViewManager).toClass(AppViewManager_),
+    provide(APP_VIEW_POOL_CAPACITY, {asValue: 10000}),
+    provide(AppViewManager, {asClass: AppViewManager_}),
     AppViewManagerUtils,
     AppViewListener,
     ProtoViewFactory,
     ViewResolver,
     DEFAULT_PIPES,
-    bind(IterableDiffers).toValue(defaultIterableDiffers),
-    bind(KeyValueDiffers).toValue(defaultKeyValueDiffers),
+    provide(IterableDiffers, {asValue: defaultIterableDiffers}),
+    provide(KeyValueDiffers, {asValue: defaultKeyValueDiffers}),
     DirectiveResolver,
     PipeResolver,
-    bind(DynamicComponentLoader).toClass(DynamicComponentLoader_),
-    bind(LifeCycle).toFactory((exceptionHandler) => new LifeCycle_(null, assertionsEnabled()),
-                              [ExceptionHandler]),
+    provide(DynamicComponentLoader, {asClass: DynamicComponentLoader_}),
+    provide(LifeCycle,
+            {
+              asFactory: (exceptionHandler) => new LifeCycle_(null, assertionsEnabled()),
+              deps: [ExceptionHandler]
+            })
   ];
 }
 
@@ -117,7 +121,7 @@ export function createNgZone(): NgZone {
 
 var _platform: PlatformRef;
 
-export function platformCommon(bindings?: Array<Type | Binding | any[]>, initializer?: () => void):
+export function platformCommon(bindings?: Array<Type | Provider | any[]>, initializer?: () => void):
     PlatformRef {
   if (isPresent(_platform)) {
     if (isBlank(bindings)) {
@@ -148,7 +152,7 @@ export function platformCommon(bindings?: Array<Type | Binding | any[]>, initial
 export abstract class PlatformRef {
   /**
    * Retrieve the platform {@link Injector}, which is the parent injector for
-   * every Angular application on the page and provides singleton bindings.
+   * every Angular application on the page and provides singleton providers.
    */
   get injector(): Injector { return unimplemented(); };
 
@@ -163,10 +167,10 @@ export abstract class PlatformRef {
    *
    * # Application Bindings
    *
-   * Angular applications require numerous bindings to be properly instantiated.
-   * When using `application()` to create a new app on the page, these bindings
+   * Angular applications require numerous providers to be properly instantiated.
+   * When using `application()` to create a new app on the page, these providers
    * must be provided. Fortunately, there are helper functions to configure
-   * typical bindings, as shown in the example below.
+   * typical providers, as shown in the example below.
    *
    * # Example
    * ```
@@ -180,21 +184,21 @@ export abstract class PlatformRef {
    *
    * See the {@link bootstrap} documentation for more details.
    */
-  abstract application(bindings: Array<Type | Binding | any[]>): ApplicationRef;
+  abstract application(bindings: Array<Type | Provider | any[]>): ApplicationRef;
 
   /**
-   * Instantiate a new Angular application on the page, using bindings which
+   * Instantiate a new Angular application on the page, using providers which
    * are only available asynchronously. One such use case is to initialize an
    * application running in a web worker.
    *
    * # Usage
    *
    * `bindingFn` is a function that will be called in the new application's zone.
-   * It should return a {@link Promise} to a list of bindings to be used for the
+   * It should return a {@link Promise} to a list of providers to be used for the
    * new application. Once this promise resolves, the application will be
    * constructed in the same manner as a normal `application()`.
    */
-  abstract asyncApplication(bindingFn: (zone: NgZone) => Promise<Array<Type | Binding | any[]>>):
+  abstract asyncApplication(bindingFn: (zone: NgZone) => Promise<Array<Type | Provider | any[]>>):
       Promise<ApplicationRef>;
 
   /**
@@ -211,33 +215,33 @@ export class PlatformRef_ extends PlatformRef {
 
   get injector(): Injector { return this._injector; }
 
-  application(bindings: Array<Type | Binding | any[]>): ApplicationRef {
+  application(bindings: Array<Type | Provider | any[]>): ApplicationRef {
     var app = this._initApp(createNgZone(), bindings);
     return app;
   }
 
   asyncApplication(bindingFn: (zone: NgZone) =>
-                       Promise<Array<Type | Binding | any[]>>): Promise<ApplicationRef> {
+                       Promise<Array<Type | Provider | any[]>>): Promise<ApplicationRef> {
     var zone = createNgZone();
     var completer = PromiseWrapper.completer();
     zone.run(() => {
-      PromiseWrapper.then(bindingFn(zone), (bindings: Array<Type | Binding | any[]>) => {
+      PromiseWrapper.then(bindingFn(zone), (bindings: Array<Type | Provider | any[]>) => {
         completer.resolve(this._initApp(zone, bindings));
       });
     });
     return completer.promise;
   }
 
-  private _initApp(zone: NgZone, bindings: Array<Type | Binding | any[]>): ApplicationRef {
+  private _initApp(zone: NgZone, providers: Array<Type | Provider | any[]>): ApplicationRef {
     var injector: Injector;
     var app: ApplicationRef;
     zone.run(() => {
-      bindings.push(bind(NgZone).toValue(zone));
-      bindings.push(bind(ApplicationRef).toFactory((): ApplicationRef => app, []));
+      providers.push(provide(NgZone, {asValue: zone}));
+      providers.push(provide(ApplicationRef, {asFactory: (): ApplicationRef => app, deps: []}));
 
       var exceptionHandler;
       try {
-        injector = this.injector.resolveAndCreateChild(bindings);
+        injector = this.injector.resolveAndCreateChild(providers);
         exceptionHandler = injector.get(ExceptionHandler);
         zone.overrideOnErrorHandler((e, s) => exceptionHandler.call(e, s));
       } catch (e) {
@@ -285,18 +289,18 @@ export abstract class ApplicationRef {
    *
    * # Optional Bindings
    *
-   * Bindings for the given component can optionally be overridden via the `bindings`
-   * parameter. These bindings will only apply for the root component being added and any
+   * Bindings for the given component can optionally be overridden via the `providers`
+   * parameter. These providers will only apply for the root component being added and any
    * child components under it.
    *
    * # Example
    * ```
    * var app = platform.application([applicationCommonBindings(), applicationDomBindings()];
    * app.bootstrap(FirstRootComponent);
-   * app.bootstrap(SecondRootComponent, [bind(OverrideBinding).toClass(OverriddenBinding)]);
+   * app.bootstrap(SecondRootComponent, [provide(OverrideBinding, {asClass: OverriddenBinding})]);
    * ```
    */
-  abstract bootstrap(componentType: Type, bindings?: Array<Type | Binding | any[]>):
+  abstract bootstrap(componentType: Type, bindings?: Array<Type | Provider | any[]>):
       Promise<ComponentRef>;
 
   /**
@@ -333,17 +337,18 @@ export class ApplicationRef_ extends ApplicationRef {
     this._bootstrapListeners.push(listener);
   }
 
-  bootstrap(componentType: Type, bindings?: Array<Type | Binding | any[]>): Promise<ComponentRef> {
+  bootstrap(componentType: Type,
+            providers?: Array<Type | Provider | any[]>): Promise<ComponentRef> {
     var completer = PromiseWrapper.completer();
     this._zone.run(() => {
-      var componentBindings = _componentBindings(componentType);
-      if (isPresent(bindings)) {
-        componentBindings.push(bindings);
+      var componentProviders = _componentProviders(componentType);
+      if (isPresent(providers)) {
+        componentProviders.push(providers);
       }
       var exceptionHandler = this._injector.get(ExceptionHandler);
       this._rootComponentTypes.push(componentType);
       try {
-        var injector: Injector = this._injector.resolveAndCreateChild(componentBindings);
+        var injector: Injector = this._injector.resolveAndCreateChild(componentProviders);
         var compRefToken: Promise<ComponentRef> = injector.get(APP_COMPONENT_REF_PROMISE);
         var tick = (componentRef) => {
           var appChangeDetector = internalView(componentRef.hostView).changeDetector;

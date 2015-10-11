@@ -21,7 +21,7 @@ import {
   ProtoElementInjector,
   ElementInjector,
   PreBuiltObjects,
-  DirectiveBinding
+  DirectiveProvider
 } from './element_injector';
 import {ElementBinder} from './element_binder';
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';

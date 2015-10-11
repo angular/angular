@@ -3,14 +3,14 @@ import {isPresent, isBlank, Type, isArray, isNumber} from 'angular2/src/core/fac
 
 import {RenderProtoViewRef} from 'angular2/src/core/render/api';
 
-import {Injectable, Binding, resolveForwardRef, Inject} from 'angular2/src/core/di';
+import {Injectable, Provider, resolveForwardRef, Inject} from 'angular2/src/core/di';
 
-import {PipeBinding} from '../pipes/pipe_binding';
+import {PipeProvider} from '../pipes/pipe_provider';
 import {ProtoPipes} from '../pipes/pipes';
 
 import {AppProtoView, AppProtoViewMergeInfo, ViewType} from './view';
 import {ElementBinder} from './element_binder';
-import {ProtoElementInjector, DirectiveBinding} from './element_injector';
+import {ProtoElementInjector, DirectiveProvider} from './element_injector';
 import {DirectiveResolver} from './directive_resolver';
 import {ViewResolver} from './view_resolver';
 import {PipeResolver} from './pipe_resolver';
@@ -55,7 +55,7 @@ export class ProtoViewFactory {
     var result = this._cache.get(compiledTemplate.id);
     if (isBlank(result)) {
       var templateData = compiledTemplate.getData(this._appId);
-      var emptyMap: {[key: string]: PipeBinding} = {};
+      var emptyMap: {[key: string]: PipeProvider} = {};
       result = new AppProtoView(templateData.commands, ViewType.HOST, true,
                                 templateData.changeDetectorFactory, null, new ProtoPipes(emptyMap));
       this._cache.set(compiledTemplate.id, result);
@@ -76,7 +76,7 @@ export class ProtoViewFactory {
 
       nestedProtoView = new AppProtoView(compiledTemplateData.commands, ViewType.COMPONENT, true,
                                          compiledTemplateData.changeDetectorFactory, null,
-                                         ProtoPipes.fromBindings(boundPipes));
+                                         ProtoPipes.fromProviders(boundPipes));
       // Note: The cache is updated before recursing
       // to be able to resolve cycles
       this._cache.set(cmd.template.id, nestedProtoView);
@@ -112,9 +112,9 @@ export class ProtoViewFactory {
                    initializer.variableLocations);
   }
 
-  private _bindPipe(typeOrBinding): PipeBinding {
-    let meta = this._pipeResolver.resolve(typeOrBinding);
-    return PipeBinding.createFromType(typeOrBinding, meta);
+  private _bindPipe(typeOrProvider): PipeProvider {
+    let meta = this._pipeResolver.resolve(typeOrProvider);
+    return PipeProvider.createFromType(typeOrProvider, meta);
   }
 
   private _flattenPipes(view: ViewMetadata): any[] {
@@ -245,12 +245,12 @@ function _createElementBinder(directiveResolver: DirectiveResolver, nestedProtoV
   if (isBlank(parentProtoElementInjector)) {
     distanceToParentPei = -1;
   }
-  var componentDirectiveBinding: DirectiveBinding = null;
+  var componentDirectiveProvider: DirectiveProvider = null;
   var isEmbeddedTemplate = false;
-  var directiveBindings: DirectiveBinding[] =
-      beginElementCmd.directives.map(type => bindDirective(directiveResolver, type));
+  var directiveProviders: DirectiveProvider[] =
+      beginElementCmd.directives.map(type => provideDirective(directiveResolver, type));
   if (beginElementCmd instanceof BeginComponentCmd) {
-    componentDirectiveBinding = directiveBindings[0];
+    componentDirectiveProvider = directiveProviders[0];
   } else if (beginElementCmd instanceof EmbeddedTemplateCmd) {
     isEmbeddedTemplate = true;
   }
@@ -262,29 +262,29 @@ function _createElementBinder(directiveResolver: DirectiveResolver, nestedProtoV
   //   so that, when hydrating, $implicit can be set to the element.
   // - <template> elements need their own ElementInjector so that we can query their TemplateRef
   var hasVariables = beginElementCmd.variableNameAndValues.length > 0;
-  if (directiveBindings.length > 0 || hasVariables || isEmbeddedTemplate) {
+  if (directiveProviders.length > 0 || hasVariables || isEmbeddedTemplate) {
     var directiveVariableBindings = new Map<string, number>();
     if (!isEmbeddedTemplate) {
-      directiveVariableBindings =
-          createDirectiveVariableBindings(beginElementCmd.variableNameAndValues, directiveBindings);
+      directiveVariableBindings = createDirectiveVariableBindings(
+          beginElementCmd.variableNameAndValues, directiveProviders);
     }
     protoElementInjector = ProtoElementInjector.create(
-        parentProtoElementInjector, boundElementIndex, directiveBindings,
-        isPresent(componentDirectiveBinding), distanceToParentPei, directiveVariableBindings);
+        parentProtoElementInjector, boundElementIndex, directiveProviders,
+        isPresent(componentDirectiveProvider), distanceToParentPei, directiveVariableBindings);
     protoElementInjector.attributes = arrayToMap(beginElementCmd.attrNameAndValues, false);
   }
 
   return new ElementBinder(boundElementIndex, parentElementBinder, distanceToParentBinder,
-                           protoElementInjector, componentDirectiveBinding, nestedProtoView);
+                           protoElementInjector, componentDirectiveProvider, nestedProtoView);
 }
 
-function bindDirective(directiveResolver: DirectiveResolver, type: Type): DirectiveBinding {
+function provideDirective(directiveResolver: DirectiveResolver, type: Type): DirectiveProvider {
   let annotation = directiveResolver.resolve(type);
-  return DirectiveBinding.createFromType(type, annotation);
+  return DirectiveProvider.createFromType(type, annotation);
 }
 
 export function createDirectiveVariableBindings(variableNameAndValues: Array<string | number>,
-                                                directiveBindings: DirectiveBinding[]):
+                                                directiveProviders: DirectiveProvider[]):
     Map<string, number> {
   var directiveVariableBindings = new Map<string, number>();
   for (var i = 0; i < variableNameAndValues.length; i += 2) {
@@ -313,7 +313,7 @@ function arrayToMap(arr: string[], inverse: boolean): Map<string, string> {
   return result;
 }
 
-function _flattenList(tree: any[], out: Array<Type | Binding | any[]>): void {
+function _flattenList(tree: any[], out: Array<Type | Provider | any[]>): void {
   for (var i = 0; i < tree.length; i++) {
     var item = resolveForwardRef(tree[i]);
     if (isArray(item)) {

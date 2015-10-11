@@ -33,12 +33,12 @@ import {
   SimpleChange
 } from 'angular2/core';
 
-import {TEST_BINDINGS} from './test_bindings';
+import {TEST_PROVIDERS} from './test_bindings';
 import {MODULE_SUFFIX, IS_DART} from 'angular2/src/core/compiler/util';
 
 export function main() {
   describe('RuntimeMetadataResolver', () => {
-    beforeEachBindings(() => TEST_BINDINGS);
+    beforeEachBindings(() => TEST_PROVIDERS);
 
     describe('getMetadata', () => {
       it('should read metadata',

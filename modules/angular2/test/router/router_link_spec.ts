@@ -16,7 +16,7 @@ import {
 
 import {SpyRouter, SpyLocation} from './spies';
 
-import {bind, Component, View} from 'angular2/core';
+import {provide, Component, View} from 'angular2/core';
 import {By} from 'angular2/src/core/debug';
 
 import {
@@ -40,9 +40,10 @@ export function main() {
   describe('router-link directive', function() {
     var tcb: TestComponentBuilder;
 
-    beforeEachBindings(
-        () =>
-            [bind(Location).toValue(makeDummyLocation()), bind(Router).toValue(makeDummyRouter())]);
+    beforeEachBindings(() => [
+      provide(Location, {asValue: makeDummyLocation()}),
+      provide(Router, {asValue: makeDummyRouter()})
+    ]);
 
     beforeEach(inject([TestComponentBuilder], (tcBuilder) => { tcb = tcBuilder; }));
 

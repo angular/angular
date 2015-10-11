@@ -14,13 +14,13 @@ import {
 import {isPresent, StringWrapper} from 'angular2/src/core/facade/lang';
 import {PromiseWrapper} from 'angular2/src/core/facade/async';
 
-import {WebDriverExtension, bind, Injector, Options} from 'benchpress/common';
+import {WebDriverExtension, bind, provide, Injector, Options} from 'benchpress/common';
 
 export function main() {
   function createExtension(ids: any[], caps) {
     return PromiseWrapper.wrap(() => {
       return Injector.resolveAndCreate([
-                       ids.map(id => bind(id).toValue(new MockExtension(id))),
+                       ids.map(id => provide(id, {asValue: new MockExtension(id)})),
                        bind(Options.CAPABILITIES).toValue(caps),
                        WebDriverExtension.bindTo(ids)
                      ])

@@ -108,22 +108,18 @@ export class DirectiveResolver {
     var mergedQueries =
         isPresent(dm.queries) ? StringMapWrapper.merge(dm.queries, queries) : queries;
 
-    // TODO: remove after migrating from properties to inputs
-    if (mergedInputs.length == 0 && isPresent(dm.properties)) mergedInputs = dm.properties;
-    if (mergedOutputs.length == 0 && isPresent(dm.events)) mergedOutputs = dm.events;
-
     if (dm instanceof ComponentMetadata) {
       return new ComponentMetadata({
         selector: dm.selector,
         inputs: mergedInputs,
         outputs: mergedOutputs,
         host: mergedHost,
-        bindings: dm.bindings,
         exportAs: dm.exportAs,
         moduleId: dm.moduleId,
         queries: mergedQueries,
         changeDetection: dm.changeDetection,
-        viewBindings: dm.viewBindings
+        providers: dm.providers,
+        viewProviders: dm.viewProviders
       });
 
     } else {
@@ -132,10 +128,10 @@ export class DirectiveResolver {
         inputs: mergedInputs,
         outputs: mergedOutputs,
         host: mergedHost,
-        bindings: dm.bindings,
         exportAs: dm.exportAs,
         moduleId: dm.moduleId,
-        queries: mergedQueries
+        queries: mergedQueries,
+        providers: dm.providers
       });
     }
   }

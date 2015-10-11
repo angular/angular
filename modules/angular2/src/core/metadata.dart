@@ -19,7 +19,8 @@ class Directive extends DirectiveMetadata {
   @deprecated List<String> properties,
   @deprecated List<String> events,
   Map<String, String> host,
-  List bindings, String exportAs, String moduleId,
+  @deprecated List bindings,
+  List providers, String exportAs, String moduleId,
   Map<String, dynamic> queries})
     : super(
     selector: selector,
@@ -29,6 +30,7 @@ class Directive extends DirectiveMetadata {
     events: events,
     host: host,
     bindings: bindings,
+    providers: providers,
     exportAs: exportAs,
     moduleId: moduleId,
     queries: queries);
@@ -43,9 +45,10 @@ class Component extends ComponentMetadata {
   @deprecated List<String> properties,
   @deprecated List<String> events,
   Map<String, String> host,
-  List bindings, String exportAs, String moduleId,
+  @deprecated List bindings, List providers, String exportAs, String moduleId,
   Map<String, dynamic> queries,
-  List viewBindings, ChangeDetectionStrategy changeDetection,
+  @deprecated List viewBindings,
+  List viewProviders, ChangeDetectionStrategy changeDetection,
   String templateUrl, String template, dynamic directives,
   dynamic pipes, ViewEncapsulation encapsulation, List<String> styles,
   List<String> styleUrls
@@ -58,9 +61,11 @@ class Component extends ComponentMetadata {
     events: events,
     host: host,
     bindings: bindings,
+    providers: providers,
     exportAs: exportAs,
     moduleId: moduleId,
     viewBindings: viewBindings,
+    viewProviders: viewProviders,
     queries: queries,
     changeDetection: changeDetection,
     templateUrl: templateUrl,

@@ -15,7 +15,7 @@ import {
   xit,
 } from 'angular2/test_lib';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {Component, View, NgFor, bind} from 'angular2/angular2';
+import {Component, View, NgFor, provide} from 'angular2/angular2';
 import {NgClass} from 'angular2/src/core/directives/ng_class';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 
@@ -29,7 +29,7 @@ export function main() {
   describe('binding to CSS class list', () => {
 
     describe('viewpool support', () => {
-      beforeEachBindings(() => { return [bind(APP_VIEW_POOL_CAPACITY).toValue(100)]; });
+      beforeEachBindings(() => { return [provide(APP_VIEW_POOL_CAPACITY, {asValue: 100})]; });
 
       it('should clean up when the directive is destroyed',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {

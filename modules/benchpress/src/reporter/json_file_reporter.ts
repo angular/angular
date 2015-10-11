@@ -1,7 +1,7 @@
 import {DateWrapper, isPresent, isBlank, Json} from 'angular2/src/core/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 
-import {bind, Binding, OpaqueToken} from 'angular2/src/core/di';
+import {bind, provide, Provider, OpaqueToken} from 'angular2/src/core/di';
 
 import {Reporter} from '../reporter';
 import {SampleDescription} from '../sample_description';
@@ -15,7 +15,7 @@ export class JsonFileReporter extends Reporter {
   // TODO(tbosch): use static values when our transpiler supports them
   static get PATH(): OpaqueToken { return _PATH; }
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): Binding[] { return _BINDINGS; }
+  static get BINDINGS(): Provider[] { return _PROVIDERS; }
 
   _writeFile: Function;
   _path: string;
@@ -47,10 +47,10 @@ export class JsonFileReporter extends Reporter {
 }
 
 var _PATH = new OpaqueToken('JsonFileReporter.path');
-var _BINDINGS = [
+var _PROVIDERS = [
   bind(JsonFileReporter)
       .toFactory((sampleDescription, path, writeFile, now) =>
                      new JsonFileReporter(sampleDescription, path, writeFile, now),
                  [SampleDescription, _PATH, Options.WRITE_FILE, Options.NOW]),
-  bind(_PATH).toValue('.')
+  provide(_PATH, {asValue: '.'})
 ];

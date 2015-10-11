@@ -1,4 +1,4 @@
-import {bind, Binding} from 'angular2/src/core/di';
+import {bind, provide, Provider} from 'angular2/src/core/di';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
@@ -6,7 +6,7 @@ import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptio
  * A metric is measures values
  */
 export abstract class Metric {
-  static bindTo(delegateToken): Binding[] {
+  static bindTo(delegateToken): Provider[] {
     return [bind(Metric).toFactory((delegate) => delegate, [delegateToken])];
   }
 

@@ -1,6 +1,6 @@
 /// <reference path="../angular2/typings/node/node.d.ts" />
 
-import {bind} from 'angular2/src/core/di';
+import {bind, provide} from 'angular2/src/core/di';
 import {Options} from './common';
 
 export * from './common';
@@ -13,7 +13,7 @@ var fs = require('fs');
 // find another way...
 // Note: Can't do the `require` call in a facade as it can't be loaded into the browser
 // for our unit tests via karma.
-Options.DEFAULT_BINDINGS.push(bind(Options.WRITE_FILE).toValue(writeFile));
+Options.DEFAULT_PROVIDERS.push(bind(Options.WRITE_FILE).toValue(writeFile));
 
 function writeFile(filename, content): Promise<any> {
   return new Promise(function(resolve, reject) {

@@ -1,4 +1,4 @@
-import {bind, Binding, Injector, OpaqueToken} from 'angular2/src/core/di';
+import {bind, provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
 
 import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
@@ -12,7 +12,7 @@ import {Options} from './common_options';
  * Needs one implementation for every supported Browser.
  */
 export abstract class WebDriverExtension {
-  static bindTo(childTokens: any[]): Binding[] {
+  static bindTo(childTokens: any[]): Provider[] {
     var res = [
       bind(_CHILDREN)
           .toFactory((injector: Injector) => childTokens.map(token => injector.get(token)),

@@ -466,13 +466,13 @@ export class DirectiveMetadata extends InjectableMetadata {
    * ```
    *
    */
-  inputs: string[];
-
-  /**
-   * @deprecated
-   * Same as `inputs`. This is to enable easier migration.
-   */
-  properties: string[];
+  get inputs(): string[] {
+    return isPresent(this._properties) && this._properties.length > 0 ? this._properties :
+                                                                        this._inputs;
+  }
+  get properties(): string[] { return this.inputs; }
+  private _inputs: string[];
+  private _properties: string[];
 
   /**
    * Enumerates the set of event-bound output properties.
@@ -519,13 +519,12 @@ export class DirectiveMetadata extends InjectableMetadata {
    * ```
    *
    */
-  outputs: string[];
-
-  /**
-   * @deprecated
-   * Same as `outputs`. This is to enable easier migration.
-   */
-  events: string[];
+  get outputs(): string[] {
+    return isPresent(this._events) && this._events.length > 0 ? this._events : this._outputs;
+  }
+  get events(): string[] { return this.outputs; }
+  private _outputs: string[];
+  private _events: string[];
 
   /**
    * Specify the events, actions, properties and attributes related to the host element.
@@ -665,7 +664,14 @@ export class DirectiveMetadata extends InjectableMetadata {
    * }
    * ```
    */
-  bindings: any[];
+  get providers(): any[] {
+    return isPresent(this._bindings) && this._bindings.length > 0 ? this._bindings :
+                                                                    this._providers;
+  }
+  /** @deprecated */
+  get bindings(): any[] { return this.providers; }
+  private _providers: any[];
+  private _bindings: any[];
 
   /**
    * Defines the name that can be used in the template to assign this directive to a variable.
@@ -751,33 +757,32 @@ export class DirectiveMetadata extends InjectableMetadata {
    */
   queries: {[key: string]: any};
 
-  constructor({selector, inputs, outputs, properties, events, host, bindings, exportAs, moduleId,
-               queries}: {
+  constructor({selector, inputs, outputs, properties, events, host, bindings, providers, exportAs,
+               moduleId, queries}: {
     selector?: string,
     inputs?: string[],
     outputs?: string[],
     properties?: string[],
     events?: string[],
     host?: {[key: string]: string},
-    bindings?: any[],
+    providers?: any[],
+    /** @deprecated */ bindings?: any[],
     exportAs?: string,
     moduleId?: string,
     queries?: {[key: string]: any}
   } = {}) {
     super();
     this.selector = selector;
-    this.inputs = inputs;
-    this.outputs = outputs;
+    this._inputs = inputs;
+    this._properties = properties;
+    this._outputs = outputs;
+    this._events = events;
     this.host = host;
-
-    // TODO: remove this once properties and events are removed.
-    this.properties = properties;
-    this.events = events;
-
     this.exportAs = exportAs;
     this.moduleId = moduleId;
     this.queries = queries;
-    this.bindings = bindings;
+    this._providers = providers;
+    this._bindings = bindings;
   }
 }
 
@@ -792,7 +797,7 @@ export class DirectiveMetadata extends InjectableMetadata {
  * When a component is instantiated, Angular
  * - creates a shadow DOM for the component.
  * - loads the selected template into the shadow DOM.
- * - creates all the injectable objects configured with `bindings` and `viewBindings`.
+ * - creates all the injectable objects configured with `providers` and `viewProviders`.
  *
  * All template expressions and statements are then evaluated against the component instance.
  *
@@ -862,7 +867,7 @@ export class ComponentMetadata extends DirectiveMetadata {
    *
    * @Component({
    *   selector: 'greet',
-   *   viewBindings: [
+   *   viewProviders: [
    *     Greeter
    *   ]
    * })
@@ -875,7 +880,13 @@ export class ComponentMetadata extends DirectiveMetadata {
    *
    * ```
    */
-  viewBindings: any[];
+  get viewProviders(): any[] {
+    return isPresent(this._viewBindings) && this._viewBindings.length > 0 ? this._viewBindings :
+                                                                            this._viewProviders;
+  }
+  get viewBindings(): any[] { return this.viewProviders; }
+  private _viewProviders: any[];
+  private _viewBindings: any[];
 
   templateUrl: string;
 
@@ -892,18 +903,21 @@ export class ComponentMetadata extends DirectiveMetadata {
   encapsulation: ViewEncapsulation;
 
   constructor({selector, inputs, outputs, properties, events, host, exportAs, moduleId, bindings,
-               viewBindings, changeDetection = ChangeDetectionStrategy.Default, queries,
-               templateUrl, template, styleUrls, styles, directives, pipes, encapsulation}: {
+               providers, viewBindings, viewProviders,
+               changeDetection = ChangeDetectionStrategy.Default, queries, templateUrl, template,
+               styleUrls, styles, directives, pipes, encapsulation}: {
     selector?: string,
     inputs?: string[],
     outputs?: string[],
     properties?: string[],
     events?: string[],
     host?: {[key: string]: string},
-    bindings?: any[],
+    /** @deprecated */ bindings?: any[],
+    providers?: any[],
     exportAs?: string,
     moduleId?: string,
-    viewBindings?: any[],
+    /** @deprecated */ viewBindings?: any[],
+    viewProviders?: any[],
     queries?: {[key: string]: any},
     changeDetection?: ChangeDetectionStrategy,
     templateUrl?: string,
@@ -924,12 +938,13 @@ export class ComponentMetadata extends DirectiveMetadata {
       exportAs: exportAs,
       moduleId: moduleId,
       bindings: bindings,
+      providers: providers,
       queries: queries
     });
 
     this.changeDetection = changeDetection;
-    this.viewBindings = viewBindings;
-
+    this._viewProviders = viewProviders;
+    this._viewBindings = viewBindings;
     this.templateUrl = templateUrl;
     this.template = template;
     this.styleUrls = styleUrls;

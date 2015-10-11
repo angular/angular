@@ -2,7 +2,7 @@ import {isBlank, isPresent, CONST} from 'angular2/src/core/facade/lang';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {ChangeDetectorRef} from '../change_detector_ref';
-import {Binding, SkipSelfMetadata, OptionalMetadata, Injectable} from 'angular2/src/core/di';
+import {Provider, SkipSelfMetadata, OptionalMetadata, Injectable} from 'angular2/src/core/di';
 
 export interface IterableDiffer {
   diff(object: Object): any;
@@ -36,7 +36,7 @@ export class IterableDiffers {
   }
 
   /**
-   * Takes an array of {@link IterableDifferFactory} and returns a binding used to extend the
+   * Takes an array of {@link IterableDifferFactory} and returns a provider used to extend the
    * inherited {@link IterableDiffers} instance with the provided factories and return a new
    * {@link IterableDiffers} instance.
    *
@@ -48,14 +48,14 @@ export class IterableDiffers {
    *
    * ```
    * @Component({
-   *   viewBindings: [
+   *   viewProviders: [
    *     IterableDiffers.extend([new ImmutableListDiffer()])
    *   ]
    * })
    * ```
    */
-  static extend(factories: IterableDifferFactory[]): Binding {
-    return new Binding(IterableDiffers, {
+  static extend(factories: IterableDifferFactory[]): Provider {
+    return new Provider(IterableDiffers, {
       toFactory: (parent: IterableDiffers) => {
         if (isBlank(parent)) {
           // Typically would occur when calling IterableDiffers.extend inside of dependencies passed

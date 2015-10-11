@@ -1,4 +1,4 @@
-import {bind, Binding} from 'angular2/src/core/di';
+import {bind, provide, Provider} from 'angular2/src/core/di';
 import {
   Json,
   isPresent,
@@ -14,7 +14,7 @@ import {Promise} from 'angular2/src/core/facade/async';
 
 export class IOsDriverExtension extends WebDriverExtension {
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): Binding[] { return _BINDINGS; }
+  static get BINDINGS(): Provider[] { return _PROVIDERS; }
 
   constructor(private _driver: WebDriverAdapter) { super(); }
 
@@ -127,7 +127,7 @@ function createMarkEndEvent(name, time) {
   return createEvent('e', name, time);
 }
 
-var _BINDINGS = [
+var _PROVIDERS = [
   bind(IOsDriverExtension)
       .toFactory((driver) => new IOsDriverExtension(driver), [WebDriverAdapter])
 ];

@@ -74,7 +74,7 @@ class ShowError {
 }
 
 
-@Component({selector: 'model-driven-forms', viewBindings: [FormBuilder]})
+@Component({selector: 'model-driven-forms', viewProviders: [FormBuilder]})
 @View({
   template: `
     <h1>Checkout Form (Model Driven)</h1>

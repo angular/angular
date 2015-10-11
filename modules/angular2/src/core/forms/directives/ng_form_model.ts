@@ -4,7 +4,7 @@ import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
 
 import {OnChanges} from 'angular2/lifecycle_hooks';
 import {Directive} from 'angular2/src/core/metadata';
-import {forwardRef, Binding} from 'angular2/src/core/di';
+import {forwardRef, Provider} from 'angular2/src/core/di';
 import {NgControl} from './ng_control';
 import {NgControlGroup} from './ng_control_group';
 import {ControlContainer} from './control_container';
@@ -12,8 +12,8 @@ import {Form} from './form_interface';
 import {Control, ControlGroup} from '../model';
 import {setUpControl} from './shared';
 
-const formDirectiveBinding =
-    CONST_EXPR(new Binding(ControlContainer, {toAlias: forwardRef(() => NgFormModel)}));
+const formDirectiveProvider =
+    CONST_EXPR(new Provider(ControlContainer, {toAlias: forwardRef(() => NgFormModel)}));
 
 /**
  * Binds an existing control group to a DOM element.
@@ -91,7 +91,7 @@ const formDirectiveBinding =
  */
 @Directive({
   selector: '[ng-form-model]',
-  bindings: [formDirectiveBinding],
+  bindings: [formDirectiveProvider],
   inputs: ['form: ng-form-model'],
   host: {'(submit)': 'onSubmit()'},
   outputs: ['ngSubmit'],

@@ -1,6 +1,6 @@
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {unimplemented} from 'angular2/src/core/facade/exceptions';
-import {ResolvedBinding} from 'angular2/src/core/di';
+import {ResolvedProvider} from 'angular2/src/core/di';
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
 
 import * as avmModule from './view_manager';
@@ -75,13 +75,13 @@ export abstract class ViewContainerRef {
    *
    * If `index` is not specified, the new View will be inserted as the last View in the container.
    *
-   * You can optionally specify `dynamicallyCreatedBindings`, which configure the {@link Injector}
+   * You can optionally specify `dynamicallyCreatedProviders`, which configure the {@link Injector}
    * that will be created for the Host View.
    *
    * Returns the {@link HostViewRef} of the Host View created for the newly instantiated Component.
    */
   abstract createHostView(protoViewRef?: ProtoViewRef, index?: number,
-                          dynamicallyCreatedBindings?: ResolvedBinding[]): HostViewRef;
+                          dynamicallyCreatedProviders?: ResolvedProvider[]): HostViewRef;
 
   /**
    * Inserts a View identified by a {@link ViewRef} into the container at the specified `index`.
@@ -136,10 +136,10 @@ export class ViewContainerRef_ extends ViewContainerRef {
   }
 
   createHostView(protoViewRef: ProtoViewRef = null, index: number = -1,
-                 dynamicallyCreatedBindings: ResolvedBinding[] = null): HostViewRef {
+                 dynamicallyCreatedProviders: ResolvedProvider[] = null): HostViewRef {
     if (index == -1) index = this.length;
     return this.viewManager.createHostViewInContainer(this.element, index, protoViewRef,
-                                                      dynamicallyCreatedBindings);
+                                                      dynamicallyCreatedProviders);
   }
 
   // TODO(i): refactor insert+remove into move

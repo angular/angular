@@ -4,7 +4,7 @@ import {
   PostMessageBusSource
 } from 'angular2/src/web_workers/shared/post_message_bus';
 import {Type} from "angular2/src/core/facade/lang";
-import {Binding, Injectable} from "angular2/src/core/di";
+import {Provider, Injectable} from "angular2/src/core/di";
 import {Map} from 'angular2/src/core/facade/collection';
 import {Promise} from 'angular2/src/core/facade/async';
 import {bootstrapWebWorkerCommon} from "angular2/src/web_workers/worker/application_common";
@@ -28,7 +28,7 @@ var _postMessage: PostMessageInterface = <any>postMessage;
  * See the bootstrap() docs for more details.
  */
 export function bootstrapWebWorker(
-    appComponentType: Type, componentInjectableBindings: Array<Type | Binding | any[]> = null):
+    appComponentType: Type, componentInjectableProviders: Array<Type | Provider | any[]> = null):
     Promise<ComponentRef> {
   Parse5DomAdapter.makeCurrent();
   var sink = new PostMessageBusSink({
@@ -40,5 +40,5 @@ export function bootstrapWebWorker(
   var source = new PostMessageBusSource();
   var bus = new PostMessageBus(sink, source);
 
-  return bootstrapWebWorkerCommon(appComponentType, bus, componentInjectableBindings);
+  return bootstrapWebWorkerCommon(appComponentType, bus, componentInjectableProviders);
 }

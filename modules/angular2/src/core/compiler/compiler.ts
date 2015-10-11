@@ -8,7 +8,7 @@ export {
 export {SourceModule, SourceWithImports} from './source_module';
 
 import {assertionsEnabled, Type} from 'angular2/src/core/facade/lang';
-import {bind, Binding} from 'angular2/src/core/di';
+import {provide, Provider} from 'angular2/src/core/di';
 import {TemplateParser} from 'angular2/src/core/compiler/template_parser';
 import {HtmlParser} from 'angular2/src/core/compiler/html_parser';
 import {TemplateNormalizer} from 'angular2/src/core/compiler/template_normalizer';
@@ -29,7 +29,7 @@ import {AppRootUrl} from 'angular2/src/core/compiler/app_root_url';
 import {AnchorBasedAppRootUrl} from 'angular2/src/core/compiler/anchor_based_app_root_url';
 import {Parser, Lexer} from 'angular2/src/core/change_detection/change_detection';
 
-export function compilerBindings(): Array<Type | Binding | any[]> {
+export function compilerProviders(): Array<Type | Provider | any[]> {
   return [
     Lexer,
     Parser,
@@ -40,16 +40,18 @@ export function compilerBindings(): Array<Type | Binding | any[]> {
     StyleCompiler,
     CommandCompiler,
     ChangeDetectionCompiler,
-    bind(ChangeDetectorGenConfig)
-        .toValue(
-            new ChangeDetectorGenConfig(assertionsEnabled(), assertionsEnabled(), false, true)),
+    provide(ChangeDetectorGenConfig,
+            {
+              asValue:
+                  new ChangeDetectorGenConfig(assertionsEnabled(), assertionsEnabled(), false, true)
+            }),
     TemplateCompiler,
-    bind(RuntimeCompiler).toClass(RuntimeCompiler_),
-    bind(Compiler).toAlias(RuntimeCompiler),
+    provide(RuntimeCompiler, {asClass: RuntimeCompiler_}),
+    provide(Compiler, {asAlias: RuntimeCompiler}),
     DomElementSchemaRegistry,
-    bind(ElementSchemaRegistry).toAlias(DomElementSchemaRegistry),
+    provide(ElementSchemaRegistry, {asAlias: DomElementSchemaRegistry}),
     AnchorBasedAppRootUrl,
-    bind(AppRootUrl).toAlias(AnchorBasedAppRootUrl),
+    provide(AppRootUrl, {asAlias: AnchorBasedAppRootUrl}),
     UrlResolver
   ];
 }

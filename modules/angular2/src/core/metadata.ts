@@ -153,6 +153,7 @@ export interface DirectiveFactory {
     events?: string[],
     host?: {[key: string]: string},
     bindings?: any[],
+    providers?: any[],
     exportAs?: string,
     moduleId?: string,
     queries?: {[key: string]: any}
@@ -165,6 +166,7 @@ export interface DirectiveFactory {
     events?: string[],
     host?: {[key: string]: string},
     bindings?: any[],
+    providers?: any[],
     exportAs?: string,
     moduleId?: string,
     queries?: {[key: string]: any}
@@ -222,11 +224,14 @@ export interface ComponentFactory {
     properties?: string[],
     events?: string[],
     host?: {[key: string]: string},
+    /* @deprecated */
     bindings?: any[],
+    providers?: any[],
     exportAs?: string,
     moduleId?: string,
     queries?: {[key: string]: any},
     viewBindings?: any[],
+    viewProviders?: any[],
     changeDetection?: ChangeDetectionStrategy,
     templateUrl?: string,
     template?: string,
@@ -243,11 +248,15 @@ export interface ComponentFactory {
     properties?: string[],
     events?: string[],
     host?: {[key: string]: string},
+    /* @deprecated */
     bindings?: any[],
+    providers?: any[],
     exportAs?: string,
     moduleId?: string,
     queries?: {[key: string]: any},
+    /* @deprecated */
     viewBindings?: any[],
+    viewProviders?: any[],
     changeDetection?: ChangeDetectionStrategy,
     templateUrl?: string,
     template?: string,

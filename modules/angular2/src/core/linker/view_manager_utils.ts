@@ -1,4 +1,4 @@
-import {Injector, Binding, Injectable, ResolvedBinding} from 'angular2/src/core/di';
+import {Injector, Provider, Injectable, ResolvedProvider} from 'angular2/src/core/di';
 import {ListWrapper, MapWrapper, Map, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import * as eli from './element_injector';
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
@@ -156,7 +156,7 @@ export class AppViewManagerUtils {
 
   hydrateViewInContainer(parentView: viewModule.AppView, boundElementIndex: number,
                          contextView: viewModule.AppView, contextBoundElementIndex: number,
-                         index: number, imperativelyCreatedBindings: ResolvedBinding[]) {
+                         index: number, imperativelyCreatedProviders: ResolvedProvider[]) {
     if (isBlank(contextView)) {
       contextView = parentView;
       contextBoundElementIndex = boundElementIndex;
@@ -165,8 +165,8 @@ export class AppViewManagerUtils {
     var view = viewContainer.views[index];
     var elementInjector = contextView.elementInjectors[contextBoundElementIndex];
 
-    var injector = isPresent(imperativelyCreatedBindings) ?
-                       Injector.fromResolvedBindings(imperativelyCreatedBindings) :
+    var injector = isPresent(imperativelyCreatedProviders) ?
+                       Injector.fromResolvedProviders(imperativelyCreatedProviders) :
                        null;
     this._hydrateView(view, injector, elementInjector.getHost(), contextView.context,
                       contextView.locals);

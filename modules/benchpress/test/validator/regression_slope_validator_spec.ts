@@ -7,6 +7,7 @@ import {
   RegressionSlopeValidator,
   Injector,
   bind,
+  provide,
   MeasureValues
 } from 'benchpress/common';
 

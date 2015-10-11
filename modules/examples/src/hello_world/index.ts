@@ -42,7 +42,7 @@ class RedDec {
   selector: 'hello-app',
   // These are services that would be created if a class in the component's
   // template tries to inject them.
-  viewBindings: [GreetingService],
+  viewProviders: [GreetingService],
   // Expressions in the template (like {{greeting}}) are evaluated in the
   // context of the HelloCmp class below.
   template: `<div class="greeting">{{greeting}} <span red>world</span>!</div>

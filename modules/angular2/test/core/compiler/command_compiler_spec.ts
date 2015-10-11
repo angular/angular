@@ -43,7 +43,7 @@ import {
   codeGenExportVariable,
   MODULE_SUFFIX
 } from 'angular2/src/core/compiler/util';
-import {TEST_BINDINGS} from './test_bindings';
+import {TEST_PROVIDERS} from './test_bindings';
 
 const BEGIN_ELEMENT = 'BEGIN_ELEMENT';
 const END_ELEMENT = 'END_ELEMENT';
@@ -78,7 +78,7 @@ var NESTED_COMPONENT = new CompiledTemplate(45, () => []);
 
 export function main() {
   describe('CommandCompiler', () => {
-    beforeEachBindings(() => TEST_BINDINGS);
+    beforeEachBindings(() => TEST_PROVIDERS);
 
     var parser: TemplateParser;
     var commandCompiler: CommandCompiler;

@@ -21,6 +21,7 @@ import {
   Metric,
   Reporter,
   bind,
+  provide,
   Injector,
   Options,
   MeasureValues
@@ -51,13 +52,13 @@ export function main() {
         driver = new MockDriverAdapter([]);
       }
       var bindings = [
-        Options.DEFAULT_BINDINGS,
+        Options.DEFAULT_PROVIDERS,
         Sampler.BINDINGS,
-        bind(Metric).toValue(metric),
-        bind(Reporter).toValue(reporter),
-        bind(WebDriverAdapter).toValue(driver),
+        provide(Metric, {asValue: metric}),
+        provide(Reporter, {asValue: reporter}),
+        provide(WebDriverAdapter, {asValue: driver}),
         bind(Options.EXECUTE).toValue(execute),
-        bind(Validator).toValue(validator),
+        provide(Validator, {asValue: validator}),
         bind(Options.NOW).toValue(() => DateWrapper.fromMillis(time++))
       ];
       if (isPresent(prepare)) {

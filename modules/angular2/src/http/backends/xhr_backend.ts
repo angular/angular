@@ -91,13 +91,13 @@ export class XHRConnection implements Connection {
  * #Example
  *
  * ```
- * import {Http, MyNodeBackend, HTTP_BINDINGS, BaseRequestOptions} from 'angular2/http';
+ * import {Http, MyNodeBackend, HTTP_PROVIDERS, BaseRequestOptions} from 'angular2/http';
  * @Component({
- *   viewBindings: [
- *     HTTP_BINDINGS,
- *     bind(Http).toFactory((backend, options) => {
+ *   viewProviders: [
+ *     HTTP_PROVIDERS,
+ *     provide(Http, {asFactory: (backend, options) => {
  *       return new Http(backend, options);
- *     }, [MyNodeBackend, BaseRequestOptions])]
+ *     }, deps: [MyNodeBackend, BaseRequestOptions]})]
  * })
  * class MyComponent {
  *   constructor(http:Http) {

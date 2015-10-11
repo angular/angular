@@ -1,4 +1,4 @@
-import {Key, Injector, ResolvedBinding, Binding, bind, Injectable} from 'angular2/src/core/di';
+import {Key, Injector, ResolvedProvider, Provider, provide, Injectable} from 'angular2/src/core/di';
 import {Compiler} from './compiler';
 import {isType, Type, stringify, isPresent} from 'angular2/src/core/facade/lang';
 import {Promise} from 'angular2/src/core/facade/async';
@@ -161,7 +161,7 @@ export abstract class DynamicComponentLoader {
    * location within the Component View of this Component Instance is specified via `anchorName`
    * Template Variable Name.
    *
-   * You can optionally provide `bindings` to configure the {@link Injector} provisioned for this
+   * You can optionally provide `providers` to configure the {@link Injector} provisioned for this
    * Component Instance.
    *
    * Returns a promise for the {@link ComponentRef} representing the newly created Component.
@@ -209,13 +209,13 @@ export abstract class DynamicComponentLoader {
    * ```
    */
   abstract loadIntoLocation(type: Type, hostLocation: ElementRef, anchorName: string,
-                            bindings?: ResolvedBinding[]): Promise<ComponentRef>;
+                            providers?: ResolvedProvider[]): Promise<ComponentRef>;
 
   /**
    * Creates an instance of a Component and attaches it to the View Container found at the
    * `location` specified as {@link ElementRef}.
    *
-   * You can optionally provide `bindings` to configure the {@link Injector} provisioned for this
+   * You can optionally provide `providers` to configure the {@link Injector} provisioned for this
    * Component Instance.
    *
    * Returns a promise for the {@link ComponentRef} representing the newly created Component.
@@ -256,7 +256,7 @@ export abstract class DynamicComponentLoader {
    * <child-component>Child</child-component>
    * ```
    */
-  abstract loadNextToLocation(type: Type, location: ElementRef, bindings?: ResolvedBinding[]):
+  abstract loadNextToLocation(type: Type, location: ElementRef, providers?: ResolvedProvider[]):
       Promise<ComponentRef>;
 }
 
@@ -283,17 +283,18 @@ export class DynamicComponentLoader_ extends DynamicComponentLoader {
   }
 
   loadIntoLocation(type: Type, hostLocation: ElementRef, anchorName: string,
-                   bindings: ResolvedBinding[] = null): Promise<ComponentRef> {
+                   providers: ResolvedProvider[] = null): Promise<ComponentRef> {
     return this.loadNextToLocation(
-        type, this._viewManager.getNamedElementInComponentView(hostLocation, anchorName), bindings);
+        type, this._viewManager.getNamedElementInComponentView(hostLocation, anchorName),
+        providers);
   }
 
   loadNextToLocation(type: Type, location: ElementRef,
-                     bindings: ResolvedBinding[] = null): Promise<ComponentRef> {
+                     providers: ResolvedProvider[] = null): Promise<ComponentRef> {
     return this._compiler.compileInHost(type).then(hostProtoViewRef => {
       var viewContainer = this._viewManager.getViewContainer(location);
       var hostViewRef =
-          viewContainer.createHostView(hostProtoViewRef, viewContainer.length, bindings);
+          viewContainer.createHostView(hostProtoViewRef, viewContainer.length, providers);
       var newLocation = this._viewManager.getHostElement(hostViewRef);
       var component = this._viewManager.getComponent(newLocation);
 

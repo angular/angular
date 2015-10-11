@@ -14,12 +14,12 @@ import {
 import {bootstrap} from 'angular2/bootstrap';
 import {Component, Directive, View} from 'angular2/src/core/metadata';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {bind} from 'angular2/core';
+import {provide} from 'angular2/core';
 import {DOCUMENT} from 'angular2/src/core/render/render';
 import {Type} from 'angular2/src/core/facade/lang';
 
 import {
-  ROUTER_BINDINGS,
+  ROUTER_PROVIDERS,
   Router,
   RouteConfig,
   APP_BASE_HREF,
@@ -48,10 +48,10 @@ export function main() {
       var logger = new _ArrayLogger();
       var exceptionHandler = new ExceptionHandler(logger, true);
       testBindings = [
-        ROUTER_BINDINGS,
-        bind(LocationStrategy).toClass(MockLocationStrategy),
-        bind(DOCUMENT).toValue(fakeDoc),
-        bind(ExceptionHandler).toValue(exceptionHandler)
+        ROUTER_PROVIDERS,
+        provide(LocationStrategy, {asClass: MockLocationStrategy}),
+        provide(DOCUMENT, {asValue: fakeDoc}),
+        provide(ExceptionHandler, {asValue: exceptionHandler})
       ];
     });
 

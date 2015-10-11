@@ -1,9 +1,9 @@
 import {
   Injector,
   Inject,
-  Binding,
+  Provider,
   Injectable,
-  ResolvedBinding,
+  ResolvedProvider,
   forwardRef
 } from 'angular2/src/core/di';
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
@@ -159,7 +159,7 @@ export abstract class AppViewManager {
    */
   abstract createHostViewInContainer(viewContainerLocation: ElementRef, index: number,
                                      protoViewRef: ProtoViewRef,
-                                     imperativelyCreatedInjector: ResolvedBinding[]): HostViewRef;
+                                     imperativelyCreatedInjector: ResolvedProvider[]): HostViewRef;
 
   /**
    * Destroys an Embedded or Host View attached to a View Container at the specified `index`.
@@ -278,7 +278,7 @@ export class AppViewManager_ extends AppViewManager {
 
   createHostViewInContainer(viewContainerLocation: ElementRef, index: number,
                             protoViewRef: ProtoViewRef,
-                            imperativelyCreatedInjector: ResolvedBinding[]): HostViewRef {
+                            imperativelyCreatedInjector: ResolvedProvider[]): HostViewRef {
     var s = this._createHostViewInContainerScope();
     var protoView = internalProtoView(protoViewRef);
     if (protoView.type !== viewModule.ViewType.HOST) {
@@ -297,7 +297,7 @@ export class AppViewManager_ extends AppViewManager {
    */
   _createViewInContainer(viewContainerLocation: ElementRef, index: number,
                          protoView: viewModule.AppProtoView, context: ElementRef,
-                         imperativelyCreatedInjector: ResolvedBinding[]): ViewRef {
+                         imperativelyCreatedInjector: ResolvedProvider[]): ViewRef {
     var parentView = internalView((<ElementRef_>viewContainerLocation).parentView);
     var boundElementIndex = (<ElementRef_>viewContainerLocation).boundElementIndex;
     var contextView = internalView((<ElementRef_>context).parentView);

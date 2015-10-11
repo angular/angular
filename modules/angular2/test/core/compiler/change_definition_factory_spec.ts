@@ -37,11 +37,11 @@ import {
 } from 'angular2/src/core/compiler/change_definition_factory';
 import {TestDirective, TestDispatcher, TestPipes} from './change_detector_mocks';
 
-import {TEST_BINDINGS} from './test_bindings';
+import {TEST_PROVIDERS} from './test_bindings';
 
 export function main() {
   describe('ChangeDefinitionFactory', () => {
-    beforeEachBindings(() => TEST_BINDINGS);
+    beforeEachBindings(() => TEST_PROVIDERS);
 
     var parser: TemplateParser;
     var dispatcher: TestDispatcher;

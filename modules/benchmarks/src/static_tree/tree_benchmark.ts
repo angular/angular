@@ -6,7 +6,8 @@ import {
   View,
   ViewContainerRef,
   bind,
-  Binding,
+  provide,
+  Provider,
   NgIf
 } from 'angular2/core';
 import {ComponentRef_} from 'angular2/src/core/linker/dynamic_component_loader';
@@ -25,9 +26,9 @@ import {
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 
-function createBindings(): Binding[] {
+function createBindings(): Provider[] {
   var viewCacheCapacity = getStringParameter('viewcache') == 'true' ? 10000 : 0;
-  return [bind(APP_VIEW_POOL_CAPACITY).toValue(viewCacheCapacity)];
+  return [provide(APP_VIEW_POOL_CAPACITY, {asValue: viewCacheCapacity})];
 }
 
 function setupReflector() {

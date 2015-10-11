@@ -14,7 +14,8 @@ import {
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {
   bind,
-  Binding,
+  provide,
+  Provider,
   Injector,
   ViewMetadata,
   Component,
@@ -103,27 +104,27 @@ export function main() {
       var uiRenderProtoViewStore = new RenderProtoViewRefStore(false);
       uiRenderViewStore = new RenderViewWithFragmentsStore(false);
       uiInjector = createTestInjector([
-        bind(RenderProtoViewRefStore)
-            .toValue(uiRenderProtoViewStore),
-        bind(RenderViewWithFragmentsStore).toValue(uiRenderViewStore),
-        bind(DomRenderer).toClass(DomRenderer_),
-        bind(Renderer).toAlias(DomRenderer)
+        provide(RenderProtoViewRefStore, {asValue: uiRenderProtoViewStore}),
+        provide(RenderViewWithFragmentsStore, {asValue: uiRenderViewStore}),
+        provide(DomRenderer, {asClass: DomRenderer_}),
+        provide(Renderer, {asAlias: DomRenderer})
       ]);
       var uiSerializer = uiInjector.get(Serializer);
       var domRenderer = uiInjector.get(DomRenderer);
       var workerRenderProtoViewStore = new RenderProtoViewRefStore(true);
       var workerRenderViewStore = new RenderViewWithFragmentsStore(true);
       return [
-        bind(RenderProtoViewRefStore)
-            .toValue(workerRenderProtoViewStore),
-        bind(RenderViewWithFragmentsStore).toValue(workerRenderViewStore),
-        bind(Renderer).toFactory(
-            (workerSerializer) => {
-              return createWorkerRenderer(workerSerializer, uiSerializer, domRenderer,
-                                          uiRenderProtoViewStore, uiRenderViewStore,
-                                          workerRenderProtoViewStore, workerRenderViewStore);
-            },
-            [Serializer])
+        provide(RenderProtoViewRefStore, {asValue: workerRenderProtoViewStore}),
+        provide(RenderViewWithFragmentsStore, {asValue: workerRenderViewStore}),
+        provide(Renderer,
+                {
+                  asFactory: (workerSerializer) => {
+                    return createWorkerRenderer(workerSerializer, uiSerializer, domRenderer,
+                                                uiRenderProtoViewStore, uiRenderViewStore,
+                                                workerRenderProtoViewStore, workerRenderViewStore);
+                  },
+                  deps: [Serializer]
+                })
       ];
     });
 

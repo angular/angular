@@ -15,7 +15,7 @@ import {
   xit
 } from 'angular2/test_lib';
 
-import {bind, Component, View, Injector, Inject} from 'angular2/core';
+import {provide, Component, View, Injector, Inject} from 'angular2/core';
 import {CONST, NumberWrapper, isPresent, Json} from 'angular2/src/core/facade/lang';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 
@@ -48,10 +48,13 @@ export function main() {
     beforeEachBindings(() => [
       RouteRegistry,
       DirectiveResolver,
-      bind(Location).toClass(SpyLocation),
-      bind(Router)
-          .toFactory((registry, location) => { return new RootRouter(registry, location, MyComp); },
-                     [RouteRegistry, Location])
+      provide(Location, {asClass: SpyLocation}),
+      provide(Router,
+              {
+                asFactory:
+                    (registry, location) => { return new RootRouter(registry, location, MyComp); },
+                deps: [RouteRegistry, Location]
+              })
     ]);
 
     beforeEach(inject([TestComponentBuilder, Router], (tcBuilder, router) => {

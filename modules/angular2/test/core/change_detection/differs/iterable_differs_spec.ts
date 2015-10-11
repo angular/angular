@@ -1,7 +1,7 @@
 import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
 import {SpyIterableDifferFactory} from '../../spies';
 import {IterableDiffers} from 'angular2/src/core/change_detection/differs/iterable_differs';
-import {Injector, bind} from 'angular2/core';
+import {Injector, provide} from 'angular2/core';
 
 export function main() {
   describe('IterableDiffers', function() {
@@ -50,7 +50,7 @@ export function main() {
 
       it('should extend di-inherited diffesr', () => {
         var parent = new IterableDiffers([factory1]);
-        var injector = Injector.resolveAndCreate([bind(IterableDiffers).toValue(parent)]);
+        var injector = Injector.resolveAndCreate([provide(IterableDiffers, {asValue: parent})]);
         var childInjector = injector.resolveAndCreateChild([IterableDiffers.extend([factory2])]);
 
         expect(injector.get(IterableDiffers).factories).toEqual([factory1]);

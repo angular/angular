@@ -28,7 +28,7 @@ import {RouterOutlet} from './src/router/router_outlet';
 import {RouterLink} from './src/router/router_link';
 import {RouteRegistry} from './src/router/route_registry';
 import {Location} from './src/router/location';
-import {bind, OpaqueToken, Binding} from './core';
+import {provide, OpaqueToken, Provider} from './core';
 import {CONST_EXPR} from './src/core/facade/lang';
 import {ApplicationRef} from './src/core/application_ref';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
@@ -44,7 +44,7 @@ import {BaseException} from 'angular2/src/core/facade/exceptions';
  * import {Component, View} from 'angular2/angular2';
  * import {
  *   ROUTER_DIRECTIVES,
- *   ROUTER_BINDINGS,
+ *   ROUTER_PROVIDERS,
  *   RouteConfig
  * } from 'angular2/router';
  *
@@ -57,7 +57,7 @@ import {BaseException} from 'angular2/src/core/facade/exceptions';
  *   // ...
  * }
  *
- * bootstrap(AppCmp, [ROUTER_BINDINGS]);
+ * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
  * ```
  */
 export const ROUTER_PRIMARY_COMPONENT: OpaqueToken =
@@ -72,7 +72,7 @@ export const ROUTER_PRIMARY_COMPONENT: OpaqueToken =
  *
  * ```
  * import {Component, View} from 'angular2/angular2';
- * import {ROUTER_DIRECTIVES, ROUTER_BINDINGS, RouteConfig} from 'angular2/router';
+ * import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
  *
  * @Component({...})
  * @View({directives: [ROUTER_DIRECTIVES]})
@@ -83,13 +83,13 @@ export const ROUTER_PRIMARY_COMPONENT: OpaqueToken =
  *    // ...
  * }
  *
- * bootstrap(AppCmp, ROUTER_BINDINGS);
+ * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
  * ```
  */
 export const ROUTER_DIRECTIVES: any[] = CONST_EXPR([RouterOutlet, RouterLink]);
 
 /**
- * A list of {@link Binding}s. To use the router, you must add this to your application.
+ * A list of {@link Provider}s. To use the router, you must add this to your application.
  *
  * ## Example ([live demo](http://plnkr.co/edit/iRUP8B5OUbxCWQ3AcIDm))
  *
@@ -97,7 +97,7 @@ export const ROUTER_DIRECTIVES: any[] = CONST_EXPR([RouterOutlet, RouterLink]);
  * import {Component, View} from 'angular2/angular2';
  * import {
  *   ROUTER_DIRECTIVES,
- *   ROUTER_BINDINGS,
+ *   ROUTER_PROVIDERS,
  *   RouteConfig
  * } from 'angular2/router';
  *
@@ -110,22 +110,28 @@ export const ROUTER_DIRECTIVES: any[] = CONST_EXPR([RouterOutlet, RouterLink]);
  *   // ...
  * }
  *
- * bootstrap(AppCmp, [ROUTER_BINDINGS]);
+ * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
  * ```
  */
-export const ROUTER_BINDINGS: any[] = CONST_EXPR([
+export const ROUTER_PROVIDERS: any[] = CONST_EXPR([
   RouteRegistry,
-  CONST_EXPR(new Binding(LocationStrategy, {toClass: PathLocationStrategy})),
+  CONST_EXPR(new Provider(LocationStrategy, {toClass: PathLocationStrategy})),
   Location,
-  CONST_EXPR(new Binding(Router,
-                         {
-                           toFactory: routerFactory,
-                           deps: CONST_EXPR([RouteRegistry, Location, ROUTER_PRIMARY_COMPONENT])
-                         })),
-  CONST_EXPR(new Binding(
+  CONST_EXPR(
+      new Provider(Router,
+                   {
+                     toFactory: routerFactory,
+                     deps: CONST_EXPR([RouteRegistry, Location, ROUTER_PRIMARY_COMPONENT])
+                   })),
+  CONST_EXPR(new Provider(
       ROUTER_PRIMARY_COMPONENT,
       {toFactory: routerPrimaryComponentFactory, deps: CONST_EXPR([ApplicationRef])}))
 ]);
+
+/**
+ * @deprecated
+ */
+export const ROUTER_BINDINGS = ROUTER_PROVIDERS;
 
 function routerFactory(registry, location, primaryComponent) {
   return new RootRouter(registry, location, primaryComponent);

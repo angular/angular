@@ -3,7 +3,7 @@ import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {OnChanges} from 'angular2/lifecycle_hooks';
 import {SimpleChange} from 'angular2/src/core/change_detection';
 import {Query, Directive} from 'angular2/src/core/metadata';
-import {forwardRef, Binding, Inject, Optional} from 'angular2/src/core/di';
+import {forwardRef, Provider, Inject, Optional} from 'angular2/src/core/di';
 import {NgControl} from './ng_control';
 import {Control} from '../model';
 import {Validators, NG_VALIDATORS} from '../validators';
@@ -11,7 +11,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor'
 import {setUpControl, isPropertyUpdated, selectValueAccessor} from './shared';
 
 const formControlBinding =
-    CONST_EXPR(new Binding(NgControl, {toAlias: forwardRef(() => NgFormControl)}));
+    CONST_EXPR(new Provider(NgControl, {toAlias: forwardRef(() => NgFormControl)}));
 
 /**
  * Binds an existing {@link Control} to a DOM element.

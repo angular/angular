@@ -1,4 +1,4 @@
-import {bind, Binding} from 'angular2/src/core/di';
+import {bind, provide, Provider} from 'angular2/src/core/di';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {
   Json,
@@ -24,7 +24,7 @@ import {Options} from '../common_options';
  */
 export class ChromeDriverExtension extends WebDriverExtension {
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): Binding[] { return _BINDINGS; }
+  static get BINDINGS(): Provider[] { return _PROVIDERS; }
 
   private _majorChromeVersion: number;
 
@@ -241,7 +241,7 @@ function normalizeEvent(chromeEvent: {[key: string]: any}, data: {[key: string]:
   return result;
 }
 
-var _BINDINGS = [
+var _PROVIDERS = [
   bind(ChromeDriverExtension)
       .toFactory((driver, userAgent) => new ChromeDriverExtension(driver, userAgent),
                  [WebDriverAdapter, Options.USER_AGENT])

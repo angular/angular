@@ -10,9 +10,9 @@ import {
   inject,
   beforeEachBindings
 } from 'angular2/test_lib';
-import {bind} from 'angular2/src/core/di';
+import {provide} from 'angular2/src/core/di';
 
-import {TEST_BINDINGS} from './test_bindings';
+import {TEST_PROVIDERS} from './test_bindings';
 import {isPresent} from 'angular2/src/core/facade/lang';
 import {TemplateParser, splitClasses} from 'angular2/src/core/compiler/template_parser';
 import {
@@ -48,9 +48,12 @@ var expressionUnparser = new Unparser();
 export function main() {
   describe('TemplateParser', () => {
     beforeEachBindings(() => [
-      TEST_BINDINGS,
-      bind(ElementSchemaRegistry)
-          .toValue(new MockSchemaRegistry({'invalidProp': false}, {'mappedAttr': 'mappedProp'}))
+      TEST_PROVIDERS,
+      provide(ElementSchemaRegistry,
+              {
+                asValue: new MockSchemaRegistry({'invalidProp': false},
+                                                {'mappedAttr': 'mappedProp'})
+              })
     ]);
 
     var parser: TemplateParser;
