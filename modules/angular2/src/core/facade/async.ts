@@ -104,8 +104,9 @@ export class Observable {
  * title gets clicked:
  *
  * ```
- * @Component({selector: 'zippy'})
- * @View({template: `
+ * @Component({
+ *   selector: 'zippy',
+ *   template: `
  *   <div class="zippy">
  *     <div (click)="toggle()">Toggle</div>
  *     <div [hidden]="!visible">

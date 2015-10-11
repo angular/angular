@@ -39,10 +39,8 @@ export {
  * import {CanActivate} from 'angular2/router';
  *
  * @Component({
- *   selector: 'control-panel-cmp'
- * })
- * @View({
- *  template: '<div>Control Panel: ...</div>'
+ *   selector: 'control-panel-cmp',
+ *   template: '<div>Control Panel: ...</div>'
  * })
  * @CanActivate(() => checkIfUserIsLoggedIn())
  * class ControlPanelCmp {

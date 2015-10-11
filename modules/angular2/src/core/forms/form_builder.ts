@@ -10,14 +10,12 @@ import * as modelModule from './model';
  * # Example
  *
  * ```
- * import {Component, View, bootstrap} from 'angular2/angular2';
+ * import {Component, bootstrap} from 'angular2/angular2';
  * import {FormBuilder, Validators, FORM_DIRECTIVES, ControlGroup} from 'angular2/core';
  *
  * @Component({
  *   selector: 'login-comp',
- *   viewProviders: [FormBuilder]
- * })
- * @View({
+ *   viewProviders: [FormBuilder],
  *   template: `
  *     <form [control-group]="loginForm">
  *       Login <input control="login">

@@ -34,9 +34,7 @@ export * from './directives/observable_list_diff';
  * import {OtherDirective} from './myDirectives';
  *
  * @Component({
- *  selector: 'my-component'
- * })
- * @View({
+ *   selector: 'my-component',
  *   templateUrl: 'myComponent.html',
  *   directives: [NgClass, NgIf, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault, OtherDirective]
  * })
@@ -51,9 +49,7 @@ export * from './directives/observable_list_diff';
  * import {OtherDirective} from './myDirectives';
  *
  * @Component({
- *  selector: 'my-component'
- * })
- * @View({
+ *   selector: 'my-component',
  *   templateUrl: 'myComponent.html',
  *   directives: [CORE_DIRECTIVES, OtherDirective]
  * })

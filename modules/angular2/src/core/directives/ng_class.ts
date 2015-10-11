@@ -30,13 +30,11 @@ import {StringMapWrapper, isListLikeIterable} from 'angular2/src/core/facade/col
  * ### Example ([live demo](http://plnkr.co/edit/a4YdtmWywhJ33uqfpPPn?p=preview)):
  *
  * ```
- * import {Component, View, NgClass} from 'angular2/angular2';
+ * import {Component, NgClass} from 'angular2/angular2';
  *
  * @Component({
- *    selector: 'toggle-button',
- *    inputs: ['isDisabled']
- * })
- * @View({
+ *   selector: 'toggle-button',
+ *   inputs: ['isDisabled'],
  *   template: `
  *      <div class="button" [ng-class]="{active: isOn, disabled: isDisabled}"
  *          (click)="toggle(!isOn)">

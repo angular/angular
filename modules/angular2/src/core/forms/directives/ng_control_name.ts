@@ -28,8 +28,8 @@ const controlNameBinding =
  * changes.
  *
  *  ```
- * @Component({selector: "login-comp"})
- * @View({
+ * @Component({
+ *      selector: "login-comp",
  *      directives: [FORM_DIRECTIVES],
  *      template: `
  *        <form #f="form" (submit)='onLogIn(f.value)'>
@@ -50,8 +50,8 @@ const controlNameBinding =
  * We can also use ng-model to bind a domain model to the form.
  *
  *  ```
- * @Component({selector: "login-comp"})
- * @View({
+ * @Component({
+ *      selector: "login-comp",
  *      directives: [FORM_DIRECTIVES],
  *      template: `
  *        <form (submit)='onLogIn()'>

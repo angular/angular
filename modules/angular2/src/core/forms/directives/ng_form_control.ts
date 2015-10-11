@@ -24,9 +24,7 @@ const formControlBinding =
  *
  *  ```typescript
  * @Component({
- *   selector: 'my-app'
- * })
- * @View({
+ *   selector: 'my-app',
  *   template: `
  *     <div>
  *       <h2>NgFormControl Example</h2>
@@ -51,8 +49,8 @@ const formControlBinding =
  * ### Example ([live demo](http://plnkr.co/edit/yHMLuHO7DNgT8XvtjTDH?p=preview))
  *
  *  ```typescript
- * @Component({selector: "login-comp"})
- * @View({
+ * @Component({
+ *      selector: "login-comp",
  *      directives: [FORM_DIRECTIVES],
  *      template: "<input type='text' [ng-form-control]='loginControl' [(ng-model)]='login'>"
  *      })

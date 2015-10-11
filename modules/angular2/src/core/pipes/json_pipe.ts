@@ -12,9 +12,7 @@ import {Pipe} from 'angular2/src/core/metadata';
  *
  *  ```
  * @Component({
- *   selector: "user-cmp"
- * })
- * @View({
+ *   selector: "user-cmp",
  *   template: "User: {{ user | json }}"
  * })
  * class Username {

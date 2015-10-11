@@ -23,8 +23,8 @@ const controlGroupBinding =
  * We can work with each group separately: check its validity, get its value, listen to its changes.
  *
  *  ```
- * @Component({selector: "signup-comp"})
- * @View({
+ * @Component({
+ *      selector: "signup-comp",
  *      directives: [FORM_DIRECTIVES],
  *      template: `
  *              <form #f="form" (submit)='onSignUp(f.value)'>

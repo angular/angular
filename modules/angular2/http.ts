@@ -51,9 +51,7 @@ export {URLSearchParams} from './src/http/url_search_params';
  *
  * @Component({
  *   selector: 'app',
- *   providers: [HTTP_PROVIDERS]
- * })
- * @View({
+ *   providers: [HTTP_PROVIDERS],
  *   template: `
  *     <div>
  *       <h1>People</h1>
@@ -183,9 +181,7 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
  *
  * @Component({
  *   selector: 'app',
- *   providers: [JSONP_PROVIDERS]
- * })
- * @View({
+ *   providers: [JSONP_PROVIDERS],
  *   template: `
  *     <div>
  *       <h1>People</h1>

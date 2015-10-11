@@ -42,9 +42,7 @@ const formDirectiveProvider =
  *
  *  ```typescript
  * @Component({
- *   selector: 'my-app'
- * })
- * @View({
+ *   selector: 'my-app',
  *   template: `
  *     <div>
  *       <p>Submit the form to see the data object Angular builds</p>

@@ -23,12 +23,10 @@ import {isPresent, isBlank, print} from 'angular2/src/core/facade/lang';
  * ### Example ([live demo](http://plnkr.co/edit/YamGS6GkUh9GqWNQhCyM?p=preview)):
  *
  * ```
- * import {Component, View, NgStyle} from 'angular2/angular2';
+ * import {Component, NgStyle} from 'angular2/angular2';
  *
  * @Component({
- *  selector: 'ng-style-example'
- * })
- * @View({
+ *  selector: 'ng-style-example',
  *  template: `
  *    <h1 [ng-style]="{'font-style': style, 'font-size': size, 'font-weight': weight}">
  *      Change style of this text!

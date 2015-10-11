@@ -23,14 +23,12 @@ var __ignore_me = global;
  *
  * ## Example
  * ```
- * import {Component, View} from 'angular2/angular2';
+ * import {Component} from 'angular2/angular2';
  * import {OnActivate, ComponentInstruction} from 'angular2/router';
  *
  * @Component({
- *   selector: 'my-cmp'
- * })
- * @View({
- *  template: '<div>hello!</div>'
+ *   selector: 'my-cmp',
+ *   template: '<div>hello!</div>'
  * })
  * class MyCmp implements OnActivate {
  *   onActivate(next: ComponentInstruction, prev: ComponentInstruction) {
@@ -56,14 +54,12 @@ export interface OnActivate {
  *
  * ## Example
  * ```
- * import {Component, View} from 'angular2/angular2';
+ * import {Component} from 'angular2/angular2';
  * import {CanReuse, OnReuse, ComponentInstruction} from 'angular2/router';
  *
  * @Component({
- *   selector: 'my-cmp'
- * })
- * @View({
- *  template: '<div>hello!</div>'
+ *   selector: 'my-cmp',
+ *   template: '<div>hello!</div>'
  * })
  * class MyCmp implements CanReuse, OnReuse {
  *   canReuse(next: ComponentInstruction, prev: ComponentInstruction) {
@@ -92,14 +88,12 @@ export interface OnReuse {
  *
  * ## Example
  * ```
- * import {Component, View} from 'angular2/angular2';
+ * import {Component} from 'angular2/angular2';
  * import {OnDeactivate, ComponentInstruction} from 'angular2/router';
  *
  * @Component({
- *   selector: 'my-cmp'
- * })
- * @View({
- *  template: '<div>hello!</div>'
+ *   selector: 'my-cmp',
+ *   template: '<div>hello!</div>'
  * })
  * class MyCmp implements OnDeactivate {
  *   onDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
@@ -129,14 +123,12 @@ export interface OnDeactivate {
  *
  * ## Example
  * ```
- * import {Component, View} from 'angular2/angular2';
+ * import {Component} from 'angular2/angular2';
  * import {CanReuse, OnReuse, ComponentInstruction} from 'angular2/router';
  *
  * @Component({
- *   selector: 'my-cmp'
- * })
- * @View({
- *  template: '<div>hello!</div>'
+ *   selector: 'my-cmp',
+ *   template: '<div>hello!</div>'
  * })
  * class MyCmp implements CanReuse, OnReuse {
  *   canReuse(next: ComponentInstruction, prev: ComponentInstruction) {
@@ -169,14 +161,12 @@ export interface CanReuse {
  *
  * ## Example
  * ```
- * import {Component, View} from 'angular2/angular2';
+ * import {Component} from 'angular2/angular2';
  * import {CanDeactivate, ComponentInstruction} from 'angular2/router';
  *
  * @Component({
- *   selector: 'my-cmp'
- * })
- * @View({
- *  template: '<div>hello!</div>'
+ *   selector: 'my-cmp',
+ *   template: '<div>hello!</div>'
  * })
  * class MyCmp implements CanDeactivate {
  *   canDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {

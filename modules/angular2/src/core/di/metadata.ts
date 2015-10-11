@@ -212,9 +212,7 @@ export class SkipSelfMetadata {
  *
  * @Component({
  *   selector: 'parent-cmp',
- *   providers: [HostService]
- * })
- * @View({
+ *   providers: [HostService],
  *   template: `
  *     Dir: <child-directive></child-directive>
  *   `,
@@ -225,9 +223,7 @@ export class SkipSelfMetadata {
  *
  * @Component({
  *   selector: 'app',
- *   providers: [OtherService]
- * })
- * @View({
+ *   providers: [OtherService],
  *   template: `
  *     Parent: <parent-cmp></parent-cmp>
  *   `,
