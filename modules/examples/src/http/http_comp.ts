@@ -17,7 +17,7 @@ export class HttpCmp {
   people: Array<Object>;
   constructor(http: Http) {
     http.get('./people.json')
-        .map((res: Response) => res.json())
-        .subscribe((people: Array<Object>) => this.people = people);
+      .map((res: Response) => res.json())
+      .subscribe((people: Array<Object>) => this.people = people);
   }
 }
