@@ -1,4 +1,4 @@
-import {Injectable, Injector, Key, bind} from "angular2/core";
+import {Injectable, Injector, Key, bind, provide} from "angular2/core";
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
 import {getIntParameter, bindAction, microBenchmark} from 'angular2/src/test_lib/benchmark_util';
@@ -27,9 +27,9 @@ export function main() {
                           .resolveAndCreateChild([])
                           .resolveAndCreateChild([]);
 
-  var variousBindings = [A, bind(B).toClass(C), [D, [E]], bind(F).toValue(6)];
+  var variousProviders = [A, provide(B, {asClass: C}), [D, [E]], provide(F, {asValue: 6})];
 
-  var variousBindingsResolved = Injector.resolve(variousBindings);
+  var variousProvidersResolved = Injector.resolve(variousProviders);
 
   function getByToken() {
     for (var i = 0; i < iterations; ++i) {
@@ -59,20 +59,20 @@ export function main() {
   }
 
   /**
-   * Creates an injector with a variety of binding types.
+   * Creates an injector with a variety of provider types.
    */
   function createVariety() {
     for (var i = 0; i < iterations; ++i) {
-      Injector.resolveAndCreate(variousBindings);
+      Injector.resolveAndCreate(variousProviders);
     }
   }
 
   /**
-   * Same as [createVariety] but resolves bindings ahead of time.
+   * Same as [createVariety] but resolves providers ahead of time.
    */
   function createVarietyResolved() {
     for (var i = 0; i < iterations; ++i) {
-      Injector.fromResolvedBindings(variousBindingsResolved);
+      Injector.fromResolvedProviders(variousProvidersResolved);
     }
   }
 

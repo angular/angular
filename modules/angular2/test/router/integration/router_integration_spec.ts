@@ -17,13 +17,13 @@ import {
 import {bootstrap} from 'angular2/bootstrap';
 import {Component, Directive, View} from 'angular2/src/core/metadata';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {bind} from 'angular2/core';
+import {provide} from 'angular2/core';
 import {DOCUMENT} from 'angular2/src/core/render/render';
 import {RouteConfig, Route, Redirect} from 'angular2/src/router/route_config_decorator';
 import {PromiseWrapper} from 'angular2/src/core/facade/async';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {
-  ROUTER_BINDINGS,
+  ROUTER_PROVIDERS,
   ROUTER_PRIMARY_COMPONENT,
   RouteParams,
   Router,
@@ -37,8 +37,9 @@ import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
 
 export function main() {
   describe('router injectables', () => {
-    beforeEachBindings(
-        () => { return [ROUTER_BINDINGS, bind(LocationStrategy).toClass(MockLocationStrategy)]; });
+    beforeEachBindings(() => {
+      return [ROUTER_PROVIDERS, provide(LocationStrategy, {asClass: MockLocationStrategy})];
+    });
 
     // do not refactor out the `bootstrap` functionality. We still want to
     // keep this test around so we can ensure that bootstrapping a router works
@@ -50,10 +51,10 @@ export function main() {
 
            bootstrap(AppCmp,
                      [
-                       ROUTER_BINDINGS,
-                       bind(ROUTER_PRIMARY_COMPONENT).toValue(AppCmp),
-                       bind(LocationStrategy).toClass(MockLocationStrategy),
-                       bind(DOCUMENT).toValue(fakeDoc)
+                       ROUTER_PROVIDERS,
+                       provide(ROUTER_PRIMARY_COMPONENT, {asValue: AppCmp}),
+                       provide(LocationStrategy, {asClass: MockLocationStrategy}),
+                       provide(DOCUMENT, {asValue: fakeDoc})
                      ])
                .then((applicationRef) => {
                  var router = applicationRef.hostComponent.router;
@@ -67,7 +68,8 @@ export function main() {
     });
 
     describe('broken app', () => {
-      beforeEachBindings(() => { return [bind(ROUTER_PRIMARY_COMPONENT).toValue(BrokenAppCmp)]; });
+      beforeEachBindings(
+          () => { return [provide(ROUTER_PRIMARY_COMPONENT, {asValue: BrokenAppCmp})]; });
 
       it('should rethrow exceptions from component constructors',
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
@@ -84,7 +86,7 @@ export function main() {
 
     describe('back button app', () => {
       beforeEachBindings(
-          () => { return [bind(ROUTER_PRIMARY_COMPONENT).toValue(HierarchyAppCmp)]; });
+          () => { return [provide(ROUTER_PRIMARY_COMPONENT, {asValue: HierarchyAppCmp})]; });
 
       it('should change the url without pushing a new history state for back navigations',
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
@@ -136,7 +138,7 @@ export function main() {
 
     describe('hierarchical app', () => {
       beforeEachBindings(
-          () => { return [bind(ROUTER_PRIMARY_COMPONENT).toValue(HierarchyAppCmp)]; });
+          () => { return [provide(ROUTER_PRIMARY_COMPONENT, {asValue: HierarchyAppCmp})]; });
 
       it('should bootstrap an app with a hierarchy',
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
@@ -156,7 +158,7 @@ export function main() {
          }));
 
       describe('custom app base ref', () => {
-        beforeEachBindings(() => { return [bind(APP_BASE_HREF).toValue('/my/app')]; });
+        beforeEachBindings(() => { return [provide(APP_BASE_HREF, {asValue: '/my/app'})]; });
         it('should bootstrap',
            inject([AsyncTestCompleter, TestComponentBuilder],
                   (async, tcb: TestComponentBuilder) => {
@@ -180,7 +182,7 @@ export function main() {
 
     describe('querystring params app', () => {
       beforeEachBindings(
-          () => { return [bind(ROUTER_PRIMARY_COMPONENT).toValue(QueryStringAppCmp)]; });
+          () => { return [provide(ROUTER_PRIMARY_COMPONENT, {asValue: QueryStringAppCmp})]; });
 
       it('should recognize and return querystring params with the injected RouteParams',
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {

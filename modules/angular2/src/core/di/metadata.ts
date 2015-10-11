@@ -17,7 +17,7 @@ import {CONST, CONST_EXPR, stringify, isBlank, isPresent} from "angular2/src/cor
  * }
  *
  * var injector = Injector.resolveAndCreate([
- *  bind("MyEngine").toClass(Engine),
+ *  provide("MyEngine", {asClass: Engine}),
  *  Car
  * ]);
  *
@@ -212,7 +212,7 @@ export class SkipSelfMetadata {
  *
  * @Component({
  *   selector: 'parent-cmp',
- *   bindings: [HostService]
+ *   providers: [HostService]
  * })
  * @View({
  *   template: `
@@ -225,7 +225,7 @@ export class SkipSelfMetadata {
  *
  * @Component({
  *   selector: 'app',
- *   bindings: [OtherService]
+ *   providers: [OtherService]
  * })
  * @View({
  *   template: `

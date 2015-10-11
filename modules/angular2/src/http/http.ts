@@ -39,8 +39,8 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  * #Example
  *
  * ```typescript
- * import {Http, HTTP_BINDINGS} from 'angular2/http';
- * @Component({selector: 'http-app', viewBindings: [HTTP_BINDINGS]})
+ * import {Http, HTTP_PROVIDERS} from 'angular2/http';
+ * @Component({selector: 'http-app', viewProviders: [HTTP_PROVIDERS]})
  * @View({templateUrl: 'people.html'})
  * class PeopleComponent {
  *   constructor(http: Http) {
@@ -63,7 +63,7 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  *
  * The default construct used to perform requests, `XMLHttpRequest`, is abstracted as a "Backend" (
  * {@link XHRBackend} in this case), which could be mocked with dependency injection by replacing
- * the {@link XHRBackend} binding, as in the following example:
+ * the {@link XHRBackend} provider, as in the following example:
  *
  * #Example
  *
@@ -72,11 +72,11 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  * var injector = Injector.resolveAndCreate([
  *   BaseRequestOptions,
  *   MockBackend,
- *   bind(Http).toFactory(
+ *   provide(Http, {asFactory:
  *       function(backend, defaultOptions) {
  *         return new Http(backend, defaultOptions);
  *       },
- *       [MockBackend, BaseRequestOptions])
+ *       deps: [MockBackend, BaseRequestOptions]})
  * ]);
  * var http = injector.get(Http);
  * http.get('request-from-mock-backend.json').subscribe((res:Response) => doSomething(res));

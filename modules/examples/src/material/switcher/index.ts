@@ -1,5 +1,5 @@
 import {bootstrap} from 'angular2/bootstrap';
-import {bind, Component, View, ViewEncapsulation} from 'angular2/core';
+import {bind, provide, Component, View, ViewEncapsulation} from 'angular2/core';
 import {MdSwitch} from 'angular2_material/src/components/switcher/switch';
 import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
@@ -26,5 +26,5 @@ class DemoApp {
 
 export function main() {
   commonDemoSetup();
-  bootstrap(DemoApp, [bind(UrlResolver).toValue(new DemoUrlResolver())]);
+  bootstrap(DemoApp, [provide(UrlResolver, {asValue: new DemoUrlResolver()})]);
 }

@@ -20,6 +20,7 @@ import {
   WebDriverAdapter,
   Injector,
   bind,
+  provide,
   Options
 } from 'benchpress/common';
 

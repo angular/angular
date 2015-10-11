@@ -108,7 +108,7 @@ while (inj) {
     inj = inj.parent;
   }
 }
-throw new NoBindingError(requestedKey);
+throw new NoProviderError(requestedKey);
 ```
 
 So in the following example
@@ -160,7 +160,7 @@ var child = parent.resolveAndCreateChild([
   bind(Engine).toClass(TurboEngine)
 ]);
 
-parent.get(Car); // will throw NoBindingError
+parent.get(Car); // will throw NoProviderError
 ```
 
 

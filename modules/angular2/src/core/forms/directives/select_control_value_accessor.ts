@@ -1,4 +1,4 @@
-import {Self, forwardRef, Binding} from 'angular2/src/core/di';
+import {Self, forwardRef, Provider} from 'angular2/src/core/di';
 import {Renderer} from 'angular2/src/core/render';
 import {ElementRef, QueryList} from 'angular2/src/core/linker';
 import {Query, Directive} from 'angular2/src/core/metadata';
@@ -8,7 +8,7 @@ import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor'
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {setProperty} from './shared';
 
-const SELECT_VALUE_ACCESSOR = CONST_EXPR(new Binding(
+const SELECT_VALUE_ACCESSOR = CONST_EXPR(new Provider(
     NG_VALUE_ACCESSOR, {toAlias: forwardRef(() => SelectControlValueAccessor), multi: true}));
 
 /**

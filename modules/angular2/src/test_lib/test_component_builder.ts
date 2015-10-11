@@ -1,4 +1,4 @@
-import {Injector, bind, Injectable} from 'angular2/src/core/di';
+import {Injector, provide, Injectable} from 'angular2/src/core/di';
 
 import {Type, isPresent, isBlank} from 'angular2/src/core/facade/lang';
 import {Promise} from 'angular2/src/core/facade/async';
@@ -130,43 +130,59 @@ export class TestComponentBuilder {
   }
 
   /**
-   * Overrides one or more injectables configured via `bindings` metadata property of a directive or
+   * Overrides one or more injectables configured via `providers` metadata property of a directive
+   * or
    * component.
-   * Very useful when certain bindings need to be mocked out.
+   * Very useful when certain providers need to be mocked out.
    *
-   * The bindings specified via this method are appended to the existing `bindings` causing the
-   * duplicated bindings to
+   * The providers specified via this method are appended to the existing `providers` causing the
+   * duplicated providers to
    * be overridden.
    *
    * @param {Type} component
-   * @param {any[]} bindings
+   * @param {any[]} providers
    *
    * @return {TestComponentBuilder}
    */
-  overrideBindings(type: Type, bindings: any[]): TestComponentBuilder {
+  overrideProviders(type: Type, providers: any[]): TestComponentBuilder {
     var clone = this._clone();
-    clone._bindingsOverrides.set(type, bindings);
+    clone._bindingsOverrides.set(type, providers);
     return clone;
   }
 
   /**
-   * Overrides one or more injectables configured via `bindings` metadata property of a directive or
+   * @deprecated
+   */
+  overrideBindings(type: Type, providers: any[]): TestComponentBuilder {
+    return this.overrideProviders(type, providers);
+  }
+
+  /**
+   * Overrides one or more injectables configured via `providers` metadata property of a directive
+   * or
    * component.
-   * Very useful when certain bindings need to be mocked out.
+   * Very useful when certain providers need to be mocked out.
    *
-   * The bindings specified via this method are appended to the existing `bindings` causing the
-   * duplicated bindings to
+   * The providers specified via this method are appended to the existing `providers` causing the
+   * duplicated providers to
    * be overridden.
    *
    * @param {Type} component
-   * @param {any[]} bindings
+   * @param {any[]} providers
    *
    * @return {TestComponentBuilder}
    */
-  overrideViewBindings(type: Type, bindings: any[]): TestComponentBuilder {
+  overrideViewProviders(type: Type, providers: any[]): TestComponentBuilder {
     var clone = this._clone();
-    clone._viewBindingsOverrides.set(type, bindings);
+    clone._viewBindingsOverrides.set(type, providers);
     return clone;
+  }
+
+  /**
+   * @deprecated
+   */
+  overrideViewBindings(type: Type, providers: any[]): TestComponentBuilder {
+    return this.overrideViewProviders(type, providers);
   }
 
   /**

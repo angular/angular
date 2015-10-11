@@ -7,7 +7,7 @@ import {
   View,
   Host,
   forwardRef,
-  Binding,
+  Provider,
   EventEmitter,
   FORM_DIRECTIVES,
   Injectable
@@ -189,7 +189,7 @@ class OrderDetailsComponent {
   addItem(): void { this._service.addItemForOrder(this.order); }
 }
 
-@Component({selector: 'order-management-app', viewBindings: [DataService]})
+@Component({selector: 'order-management-app', bindings: [DataService]})
 @View({
   template: `
     <order-list-cmp></order-list-cmp>

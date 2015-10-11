@@ -12,7 +12,7 @@ import {
 } from 'angular2/test_lib';
 import {Serializer} from 'angular2/src/web_workers/shared/serializer';
 import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';
-import {bind} from 'angular2/core';
+import {provide} from 'angular2/core';
 import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_proto_view_ref_store';
 import {
   RenderViewWithFragmentsStore,
@@ -27,8 +27,7 @@ import {EVENT_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
 export function main() {
   describe("EventDispatcher", () => {
     beforeEachBindings(() => [
-      bind(ON_WEB_WORKER)
-          .toValue(true),
+      provide(ON_WEB_WORKER, {asValue: true}),
       RenderProtoViewRefStore,
       RenderViewWithFragmentsStore
     ]);

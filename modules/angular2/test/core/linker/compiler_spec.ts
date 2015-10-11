@@ -13,7 +13,7 @@ import {
   beforeEachBindings
 } from 'angular2/test_lib';
 
-import {Component, View, bind} from 'angular2/core';
+import {Component, View, provide} from 'angular2/core';
 import {SpyProtoViewFactory} from '../spies';
 import {
   CompiledHostTemplate,
@@ -37,10 +37,10 @@ export function main() {
       protoViewFactorySpy = new SpyProtoViewFactory();
       someProtoView = new AppProtoView(null, null, null, null, null, null);
       protoViewFactorySpy.spy('createHost').andReturn(someProtoView);
-      var factoryBinding = bind(ProtoViewFactory).toValue(protoViewFactorySpy);
-      var classBinding = bind(Compiler).toClass(Compiler_);
-      var bindings = [factoryBinding, classBinding];
-      return bindings;
+      var factory = provide(ProtoViewFactory, {asValue: protoViewFactorySpy});
+      var classProvider = provide(Compiler, {asClass: Compiler_});
+      var providers = [factory, classProvider];
+      return providers;
     });
 
     beforeEach(inject([Compiler], (_compiler) => {

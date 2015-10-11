@@ -117,15 +117,15 @@ export class RequestOptions {
  * ### Example ([live demo](http://plnkr.co/edit/LEKVSx?p=preview))
  *
  * ```typescript
- * import {bind, bootstrap} from 'angular2/angular2';
- * import {HTTP_BINDINGS, Http, BaseRequestOptions, RequestOptions} from 'angular2/http';
+ * import {provide, bootstrap} from 'angular2/angular2';
+ * import {HTTP_PROVIDERS, Http, BaseRequestOptions, RequestOptions} from 'angular2/http';
  * import {App} from './myapp';
  *
  * class MyOptions extends BaseRequestOptions {
  *   search: string = 'coreTeam=true';
  * }
  *
- * bootstrap(App, [HTTP_BINDINGS, bind(RequestOptions).toClass(MyOptions)]);
+ * bootstrap(App, [HTTP_PROVIDERS, provide(RequestOptions, {asClass: MyOptions})]);
  * ```
  *
  * The options could also be extended when manually creating a {@link Request}

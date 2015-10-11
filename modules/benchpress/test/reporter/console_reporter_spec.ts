@@ -6,6 +6,7 @@ import {
   SampleState,
   Reporter,
   bind,
+  provide,
   Injector,
   ConsoleReporter,
   SampleDescription,
@@ -28,7 +29,8 @@ export function main() {
       }
       var bindings = [
         ConsoleReporter.BINDINGS,
-        bind(SampleDescription).toValue(new SampleDescription(sampleId, descriptions, metrics)),
+        provide(SampleDescription,
+                {asValue: new SampleDescription(sampleId, descriptions, metrics)}),
         bind(ConsoleReporter.PRINT).toValue((line) => log.push(line))
       ];
       if (isPresent(columnWidth)) {

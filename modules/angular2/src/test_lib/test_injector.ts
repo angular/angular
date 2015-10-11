@@ -1,4 +1,4 @@
-import {bind, Binding} from 'angular2/src/core/di';
+import {provide, Provider} from 'angular2/src/core/di';
 import {DEFAULT_PIPES} from 'angular2/src/core/pipes';
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
 import {MockAnimationBuilder} from 'angular2/src/mock/animation_builder_mock';
@@ -38,7 +38,7 @@ import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
 import {TestComponentBuilder} from './test_component_builder';
 
 import {Injector} from 'angular2/src/core/di';
-import {ELEMENT_PROBE_BINDINGS} from 'angular2/src/core/debug';
+import {ELEMENT_PROBE_PROVIDERS} from 'angular2/src/core/debug';
 
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {FunctionWrapper, Type} from 'angular2/src/core/facade/lang';
@@ -56,27 +56,24 @@ import {
 import {APP_ID} from 'angular2/src/core/application_tokens';
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {Log} from './utils';
-import {compilerBindings} from 'angular2/src/core/compiler/compiler';
+import {compilerProviders} from 'angular2/src/core/compiler/compiler';
 import {DomRenderer_} from "angular2/src/core/render/dom/dom_renderer";
 import {DynamicComponentLoader_} from "angular2/src/core/linker/dynamic_component_loader";
 import {AppViewManager_} from "angular2/src/core/linker/view_manager";
 
 /**
- * Returns the root injector bindings.
+ * Returns the root injector providers.
  *
  * This must be kept in sync with the _rootBindings in application.js
  *
  * @returns {any[]}
  */
-function _getRootBindings() {
-  return [
-    bind(Reflector)
-        .toValue(reflector),
-  ];
+function _getRootProviders() {
+  return [provide(Reflector, {asValue: reflector})];
 }
 
 /**
- * Returns the application injector bindings.
+ * Returns the application injector providers.
  *
  * This must be kept in sync with _injectorBindings() in application.js
  *
@@ -93,43 +90,44 @@ function _getAppBindings() {
   }
 
   return [
-    compilerBindings(),
-    bind(ChangeDetectorGenConfig).toValue(new ChangeDetectorGenConfig(true, true, false, true)),
-    bind(DOCUMENT).toValue(appDoc),
-    bind(DomRenderer).toClass(DomRenderer_),
-    bind(Renderer).toAlias(DomRenderer),
-    bind(APP_ID).toValue('a'),
+    compilerProviders(),
+    provide(ChangeDetectorGenConfig,
+            {asValue: new ChangeDetectorGenConfig(true, true, false, true)}),
+    provide(DOCUMENT, {asValue: appDoc}),
+    provide(DomRenderer, {asClass: DomRenderer_}),
+    provide(Renderer, {asAlias: DomRenderer}),
+    provide(APP_ID, {asValue: 'a'}),
     DomSharedStylesHost,
-    bind(SharedStylesHost).toAlias(DomSharedStylesHost),
+    provide(SharedStylesHost, {asAlias: DomSharedStylesHost}),
     AppViewPool,
-    bind(AppViewManager).toClass(AppViewManager_),
+    provide(AppViewManager, {asClass: AppViewManager_}),
     AppViewManagerUtils,
     Serializer,
-    ELEMENT_PROBE_BINDINGS,
-    bind(APP_VIEW_POOL_CAPACITY).toValue(500),
+    ELEMENT_PROBE_PROVIDERS,
+    provide(APP_VIEW_POOL_CAPACITY, {asValue: 500}),
     ProtoViewFactory,
-    bind(DirectiveResolver).toClass(MockDirectiveResolver),
-    bind(ViewResolver).toClass(MockViewResolver),
+    provide(DirectiveResolver, {asClass: MockDirectiveResolver}),
+    provide(ViewResolver, {asClass: MockViewResolver}),
     DEFAULT_PIPES,
-    bind(IterableDiffers).toValue(defaultIterableDiffers),
-    bind(KeyValueDiffers).toValue(defaultKeyValueDiffers),
+    provide(IterableDiffers, {asValue: defaultIterableDiffers}),
+    provide(KeyValueDiffers, {asValue: defaultKeyValueDiffers}),
     Log,
-    bind(DynamicComponentLoader).toClass(DynamicComponentLoader_),
+    provide(DynamicComponentLoader, {asClass: DynamicComponentLoader_}),
     PipeResolver,
-    bind(ExceptionHandler).toValue(new ExceptionHandler(DOM)),
-    bind(LocationStrategy).toClass(MockLocationStrategy),
-    bind(XHR).toClass(MockXHR),
+    provide(ExceptionHandler, {asValue: new ExceptionHandler(DOM)}),
+    provide(LocationStrategy, {asClass: MockLocationStrategy}),
+    provide(XHR, {asClass: MockXHR}),
     TestComponentBuilder,
-    bind(NgZone).toClass(MockNgZone),
-    bind(AnimationBuilder).toClass(MockAnimationBuilder),
+    provide(NgZone, {asClass: MockNgZone}),
+    provide(AnimationBuilder, {asClass: MockAnimationBuilder}),
     EventManager,
-    new Binding(EVENT_MANAGER_PLUGINS, {toClass: DomEventsPlugin, multi: true})
+    new Provider(EVENT_MANAGER_PLUGINS, {toClass: DomEventsPlugin, multi: true})
   ];
 }
 
-export function createTestInjector(bindings: Array<Type | Binding | any[]>): Injector {
-  var rootInjector = Injector.resolveAndCreate(_getRootBindings());
-  return rootInjector.resolveAndCreateChild(ListWrapper.concat(_getAppBindings(), bindings));
+export function createTestInjector(providers: Array<Type | Provider | any[]>): Injector {
+  var rootInjector = Injector.resolveAndCreate(_getRootProviders());
+  return rootInjector.resolveAndCreateChild(ListWrapper.concat(_getAppBindings(), providers));
 }
 
 /**

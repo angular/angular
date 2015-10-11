@@ -1,5 +1,5 @@
 import {bootstrap} from 'angular2/bootstrap';
-import {bind, Component, NgFor, UrlResolver, View, ViewEncapsulation} from 'angular2/core';
+import {bind, provide, Component, NgFor, UrlResolver, View, ViewEncapsulation} from 'angular2/core';
 import {MdButton, MdAnchor} from 'angular2_material/src/components/button/button';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
 
@@ -40,5 +40,5 @@ class DemoApp {
 
 export function main() {
   commonDemoSetup();
-  bootstrap(DemoApp, [bind(UrlResolver).toValue(new DemoUrlResolver())]);
+  bootstrap(DemoApp, [provide(UrlResolver, {asValue: new DemoUrlResolver()})]);
 }

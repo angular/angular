@@ -85,7 +85,7 @@ export abstract class ChangeDetectorRef {
    * }
    *
    * @Component({
-   *   selector: 'app', bindings: [DataProvider]
+   *   selector: 'app', providers: [DataProvider]
    * })
    * @View({
    *   template: `
@@ -166,7 +166,7 @@ export abstract class ChangeDetectorRef {
    *
    * @Component({
    *   selector: 'app',
-   *   bindings: [DataProvider]
+   *   providers: [DataProvider]
    * })
    * @View({
    *   template: `

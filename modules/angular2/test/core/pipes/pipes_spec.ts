@@ -10,9 +10,9 @@ import {
   afterEach
 } from 'angular2/test_lib';
 
-import {Injector, Inject, bind, Pipe, PipeTransform} from 'angular2/core';
+import {Injector, Inject, provide, Pipe, PipeTransform} from 'angular2/core';
 import {ProtoPipes, Pipes} from 'angular2/src/core/pipes/pipes';
-import {PipeBinding} from 'angular2/src/core/pipes/pipe_binding';
+import {PipeProvider} from 'angular2/src/core/pipes/pipe_provider';
 
 class PipeA implements PipeTransform {
   transform(a, b) {}
@@ -31,32 +31,32 @@ export function main() {
     var injector;
 
     beforeEach(
-        () => { injector = Injector.resolveAndCreate([bind('dep').toValue('dependency')]); });
+        () => { injector = Injector.resolveAndCreate([provide('dep', {asValue: 'dependency'})]); });
 
     it('should instantiate a pipe', () => {
       var proto =
-          ProtoPipes.fromBindings([PipeBinding.createFromType(PipeA, new Pipe({name: 'a'}))]);
+          ProtoPipes.fromProviders([PipeProvider.createFromType(PipeA, new Pipe({name: 'a'}))]);
       var pipes = new Pipes(proto, injector);
 
       expect(pipes.get("a").pipe).toBeAnInstanceOf(PipeA);
     });
 
     it('should throw when no pipe found', () => {
-      var proto = ProtoPipes.fromBindings([]);
+      var proto = ProtoPipes.fromProviders([]);
       var pipes = new Pipes(proto, injector);
       expect(() => pipes.get("invalid")).toThrowErrorWith("Cannot find pipe 'invalid'");
     });
 
     it('should inject dependencies from the provided injector', () => {
       var proto =
-          ProtoPipes.fromBindings([PipeBinding.createFromType(PipeB, new Pipe({name: 'b'}))]);
+          ProtoPipes.fromProviders([PipeProvider.createFromType(PipeB, new Pipe({name: 'b'}))]);
       var pipes = new Pipes(proto, injector);
       expect((<any>pipes.get("b").pipe).dep).toEqual("dependency");
     });
 
     it('should cache pure pipes', () => {
-      var proto = ProtoPipes.fromBindings(
-          [PipeBinding.createFromType(PipeA, new Pipe({name: 'a', pure: true}))]);
+      var proto = ProtoPipes.fromProviders(
+          [PipeProvider.createFromType(PipeA, new Pipe({name: 'a', pure: true}))]);
       var pipes = new Pipes(proto, injector);
 
       expect(pipes.get("a").pure).toEqual(true);
@@ -64,8 +64,8 @@ export function main() {
     });
 
     it('should NOT cache impure pipes', () => {
-      var proto = ProtoPipes.fromBindings(
-          [PipeBinding.createFromType(PipeA, new Pipe({name: 'a', pure: false}))]);
+      var proto = ProtoPipes.fromProviders(
+          [PipeProvider.createFromType(PipeA, new Pipe({name: 'a', pure: false}))]);
       var pipes = new Pipes(proto, injector);
 
       expect(pipes.get("a").pure).toEqual(false);

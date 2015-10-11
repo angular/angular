@@ -19,7 +19,8 @@ import {
   IOsDriverExtension,
   WebDriverAdapter,
   Injector,
-  bind
+  bind,
+  provide
 } from 'benchpress/common';
 
 import {TraceEventFactory} from '../trace_event_factory';
@@ -36,11 +37,12 @@ export function main() {
         perfRecords = [];
       }
       log = [];
-      extension = Injector.resolveAndCreate([
-                            IOsDriverExtension.BINDINGS,
-                            bind(WebDriverAdapter).toValue(new MockDriverAdapter(log, perfRecords))
-                          ])
-                      .get(IOsDriverExtension);
+      extension =
+          Injector.resolveAndCreate([
+                    IOsDriverExtension.BINDINGS,
+                    provide(WebDriverAdapter, {asValue: new MockDriverAdapter(log, perfRecords)})
+                  ])
+              .get(IOsDriverExtension);
       return extension;
     }
 

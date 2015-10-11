@@ -26,7 +26,7 @@ import {
  *
  * ```typescript
  * import {Injectable, Injector} from 'angular2/angular2';
- * import {HTTP_BINDINGS, Http, Request, RequestMethods} from 'angular2/http';
+ * import {HTTP_PROVIDERS, Http, Request, RequestMethods} from 'angular2/http';
  *
  * @Injectable()
  * class AutoAuthenticator {
@@ -40,7 +40,7 @@ import {
  *   }
  * }
  *
- * var injector = Injector.resolveAndCreate([HTTP_BINDINGS, AutoAuthenticator]);
+ * var injector = Injector.resolveAndCreate([HTTP_PROVIDERS, AutoAuthenticator]);
  * var authenticator = injector.get(AutoAuthenticator);
  * authenticator.request('people.json').subscribe(res => {
  *   //URL should have included '?password=123'

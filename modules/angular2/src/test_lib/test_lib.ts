@@ -3,7 +3,7 @@ import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {global, isFunction, Math} from 'angular2/src/core/facade/lang';
 import {NgZoneZone} from 'angular2/src/core/zone/ng_zone';
 
-import {bind} from 'angular2/src/core/di';
+import {provide} from 'angular2/src/core/di';
 
 import {createTestInjector, FunctionWithParamTokens, inject} from './test_injector';
 import {browserDetection} from './utils';
@@ -53,12 +53,12 @@ var runnerStack = [];
 var inIt = false;
 var globalTimeOut = browserDetection.isSlow ? 3000 : jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
-var testBindings;
+var testProviders;
 
 /**
  * Mechanism to run `beforeEach()` functions of Angular tests.
  *
- * Note: Jasmine own `beforeEach` is used by this library to handle DI bindings.
+ * Note: Jasmine own `beforeEach` is used by this library to handle DI providers.
  */
 class BeforeEachRunner {
   private _fns: Array<FunctionWithParamTokens | SyncTestFn> = [];
@@ -75,8 +75,8 @@ class BeforeEachRunner {
   }
 }
 
-// Reset the test bindings before each test
-jsmBeforeEach(() => { testBindings = []; });
+// Reset the test providers before each test
+jsmBeforeEach(() => { testProviders = []; });
 
 function _describe(jsmFn, ...args) {
   var parentRunner = runnerStack.length === 0 ? null : runnerStack[runnerStack.length - 1];
@@ -110,23 +110,30 @@ export function beforeEach(fn: FunctionWithParamTokens | SyncTestFn): void {
 }
 
 /**
- * Allows overriding default bindings defined in test_injector.js.
+ * Allows overriding default providers defined in test_injector.js.
  *
- * The given function must return a list of DI bindings.
+ * The given function must return a list of DI providers.
  *
  * Example:
  *
  *   beforeEachBindings(() => [
- *     bind(Compiler).toClass(MockCompiler),
- *     bind(SomeToken).toValue(myValue),
+ *     provide(Compiler, {asClass: MockCompiler}),
+ *     provide(SomeToken, {asValue: myValue}),
  *   ]);
  */
-export function beforeEachBindings(fn): void {
+export function beforeEachProviders(fn): void {
   jsmBeforeEach(() => {
     var bindings = fn();
     if (!bindings) return;
-    testBindings = [...testBindings, ...bindings];
+    testProviders = [...testProviders, ...bindings];
   });
+}
+
+/**
+ * @deprecated
+ */
+export function beforeEachBindings(fn): void {
+  beforeEachProviders(fn);
 }
 
 function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | AnyTestFn,
@@ -140,16 +147,15 @@ function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | An
 
     if (testFn.hasToken(AsyncTestCompleter)) {
       jsmFn(name, (done) => {
-        var completerBinding =
-            bind(AsyncTestCompleter)
-                .toFactory(() => {
-                  // Mark the test as async when an AsyncTestCompleter is injected in an it()
-                  if (!inIt)
-                    throw new Error('AsyncTestCompleter can only be injected in an "it()"');
-                  return new AsyncTestCompleter(done);
-                });
+        var completerProvider = provide(AsyncTestCompleter, {
+          asFactory: () => {
+            // Mark the test as async when an AsyncTestCompleter is injected in an it()
+            if (!inIt) throw new Error('AsyncTestCompleter can only be injected in an "it()"');
+            return new AsyncTestCompleter(done);
+          }
+        });
 
-        var injector = createTestInjector([...testBindings, completerBinding]);
+        var injector = createTestInjector([...testProviders, completerProvider]);
         runner.run(injector);
 
         inIt = true;
@@ -158,7 +164,7 @@ function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | An
       }, timeOut);
     } else {
       jsmFn(name, () => {
-        var injector = createTestInjector(testBindings);
+        var injector = createTestInjector(testProviders);
         runner.run(injector);
         testFn.execute(injector);
       }, timeOut);
@@ -169,13 +175,13 @@ function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | An
 
     if ((<any>testFn).length === 0) {
       jsmFn(name, () => {
-        var injector = createTestInjector(testBindings);
+        var injector = createTestInjector(testProviders);
         runner.run(injector);
         (<SyncTestFn>testFn)();
       }, timeOut);
     } else {
       jsmFn(name, (done) => {
-        var injector = createTestInjector(testBindings);
+        var injector = createTestInjector(testProviders);
         runner.run(injector);
         (<AsyncTestFn>testFn)(done);
       }, timeOut);

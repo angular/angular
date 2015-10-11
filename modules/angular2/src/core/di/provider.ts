@@ -25,8 +25,8 @@ import {
 } from './metadata';
 import {
   NoAnnotationError,
-  MixingMultiBindingsWithRegularBindings,
-  InvalidBindingError
+  MixingMultiProvidersWithRegularProvidersError,
+  InvalidProviderError
 } from './exceptions';
 import {resolveForwardRef} from './forward_ref';
 
@@ -42,22 +42,22 @@ const _EMPTY_LIST = CONST_EXPR([]);
 /**
  * Describes how the {@link Injector} should instantiate a given token.
  *
- * See {@link bind}.
+ * See {@link provide}.
  *
  * ### Example ([live demo](http://plnkr.co/edit/GNAyj6K6PfYg2NBzgwZ5?p%3Dpreview&p=preview))
  *
  * ```javascript
  * var injector = Injector.resolveAndCreate([
- *   new Binding("message", { toValue: 'Hello' })
+ *   new Provider("message", { toValue: 'Hello' })
  * ]);
  *
  * expect(injector.get("message")).toEqual('Hello');
  * ```
  */
 @CONST()
-export class Binding {
+export class Provider {
   /**
-   * Token used when retrieving this binding. Usually, it is a type {@link `Type`}.
+   * Token used when retrieving this provider. Usually, it is a type {@link `Type`}.
    */
   token;
 
@@ -77,11 +77,11 @@ export class Binding {
    *
    * var injectorClass = Injector.resolveAndCreate([
    *   Car,
-   *   new Binding(Vehicle, { toClass: Car })
+   *   new Provider(Vehicle, { toClass: Car })
    * ]);
    * var injectorAlias = Injector.resolveAndCreate([
    *   Car,
-   *   new Binding(Vehicle, { toAlias: Car })
+   *   new Provider(Vehicle, { toAlias: Car })
    * ]);
    *
    * expect(injectorClass.get(Vehicle)).not.toBe(injectorClass.get(Car));
@@ -100,7 +100,7 @@ export class Binding {
    *
    * ```javascript
    * var injector = Injector.resolveAndCreate([
-   *   new Binding("message", { toValue: 'Hello' })
+   *   new Provider("message", { toValue: 'Hello' })
    * ]);
    *
    * expect(injector.get("message")).toEqual('Hello');
@@ -126,11 +126,11 @@ export class Binding {
    *
    * var injectorAlias = Injector.resolveAndCreate([
    *   Car,
-   *   new Binding(Vehicle, { toAlias: Car })
+   *   new Provider(Vehicle, { toAlias: Car })
    * ]);
    * var injectorClass = Injector.resolveAndCreate([
    *   Car,
-   *   new Binding(Vehicle, { toClass: Car })
+   *   new Provider(Vehicle, { toClass: Car })
    * ]);
    *
    * expect(injectorAlias.get(Vehicle)).toBe(injectorAlias.get(Car));
@@ -149,8 +149,8 @@ export class Binding {
    *
    * ```typescript
    * var injector = Injector.resolveAndCreate([
-   *   new Binding(Number, { toFactory: () => { return 1+2; }}),
-   *   new Binding(String, { toFactory: (value) => { return "Value: " + value; },
+   *   new Provider(Number, { toFactory: () => { return 1+2; }}),
+   *   new Provider(String, { toFactory: (value) => { return "Value: " + value; },
    *                       deps: [Number] })
    * ]);
    *
@@ -170,8 +170,8 @@ export class Binding {
    *
    * ```typescript
    * var injector = Injector.resolveAndCreate([
-   *   new Binding(Number, { toFactory: () => { return 1+2; }}),
-   *   new Binding(String, { toFactory: (value) => { return "Value: " + value; },
+   *   new Provider(Number, { toFactory: () => { return 1+2; }}),
+   *   new Provider(String, { toFactory: (value) => { return "Value: " + value; },
    *                       deps: [Number] })
    * ]);
    *
@@ -205,40 +205,63 @@ export class Binding {
 
   // TODO: Provide a full working example after alpha38 is released.
   /**
-   * Creates multiple bindings matching the same token (a multi-binding).
+   * Creates multiple providers matching the same token (a multi-provider).
    *
-   * Multi-bindings are used for creating pluggable service, where the system comes
-   * with some default bindings, and the user can register additonal bindings.
-   * The combination of the default bindings and the additional bindings will be
+   * Multi-providers are used for creating pluggable service, where the system comes
+   * with some default providers, and the user can register additonal providers.
+   * The combination of the default providers and the additional providers will be
    * used to drive the behavior of the system.
    *
    * ### Example
    *
    * ```typescript
    * var injector = Injector.resolveAndCreate([
-   *   new Binding("Strings", { toValue: "String1", multi: true}),
-   *   new Binding("Strings", { toValue: "String2", multi: true})
+   *   new Provider("Strings", { toValue: "String1", multi: true}),
+   *   new Provider("Strings", { toValue: "String2", multi: true})
    * ]);
    *
    * expect(injector.get("Strings")).toEqual(["String1", "String2"]);
    * ```
    *
-   * Multi-bindings and regular bindings cannot be mixed. The following
+   * Multi-providers and regular providers cannot be mixed. The following
    * will throw an exception:
    *
    * ```typescript
    * var injector = Injector.resolveAndCreate([
-   *   new Binding("Strings", { toValue: "String1", multi: true }),
-   *   new Binding("Strings", { toValue: "String2"})
+   *   new Provider("Strings", { toValue: "String1", multi: true }),
+   *   new Provider("Strings", { toValue: "String2"})
    * ]);
    * ```
    */
   get multi(): boolean { return normalizeBool(this._multi); }
 }
 
+/**
+ * @deprecated
+ */
+@CONST()
+export class Binding extends Provider {
+  constructor(token, {toClass, toValue, toAlias, toFactory, deps, multi}: {
+    toClass?: Type,
+    toValue?: any,
+    toAlias?: any,
+    toFactory?: Function,
+    deps?: Object[],
+    multi?: boolean
+  }) {
+    super(token, {
+      toClass: toClass,
+      toValue: toValue,
+      toAlias: toAlias,
+      toFactory: toFactory,
+      deps: deps,
+      multi: multi
+    });
+  }
+}
 
 /**
- * An internal resolved representation of a {@link Binding} used by the {@link Injector}.
+ * An internal resolved representation of a {@link Provider} used by the {@link Injector}.
  *
  * It is usually created automatically by `Injector.resolveAndCreate`.
  *
@@ -247,13 +270,13 @@ export class Binding {
  * ### Example ([live demo](http://plnkr.co/edit/RfEnhh8kUEI0G3qsnIeT?p%3Dpreview&p=preview))
  *
  * ```typescript
- * var resolvedBindings = Injector.resolve([new Binding('message', {toValue: 'Hello'})]);
- * var injector = Injector.fromResolvedBindings(resolvedBindings);
+ * var resolvedProviders = Injector.resolve([new Provider('message', {toValue: 'Hello'})]);
+ * var injector = Injector.fromResolvedProviders(resolvedProviders);
  *
  * expect(injector.get('message')).toEqual('Hello');
  * ```
  */
-export interface ResolvedBinding {
+export interface ResolvedProvider {
   /**
    * A key, usually a `Type`.
    */
@@ -265,20 +288,25 @@ export interface ResolvedBinding {
   resolvedFactories: ResolvedFactory[];
 
   /**
-   * Indicates if the binding is a multi-binding or a regular binding.
+   * Indicates if the provider is a multi-provider or a regular provider.
    */
-  multiBinding: boolean;
+  multiProvider: boolean;
 }
 
-export class ResolvedBinding_ implements ResolvedBinding {
+/**
+ * @deprecated
+ */
+export interface ResolvedBinding extends ResolvedProvider {}
+
+export class ResolvedProvider_ implements ResolvedBinding {
   constructor(public key: Key, public resolvedFactories: ResolvedFactory[],
-              public multiBinding: boolean) {}
+              public multiProvider: boolean) {}
 
   get resolvedFactory(): ResolvedFactory { return this.resolvedFactories[0]; }
 }
 
 /**
- * An internal resolved representation of a factory function created by resolving {@link Binding}.
+ * An internal resolved representation of a factory function created by resolving {@link Provider}.
  */
 export class ResolvedFactory {
   constructor(
@@ -294,22 +322,49 @@ export class ResolvedFactory {
 }
 
 /**
- * Creates a {@link Binding}.
+ * @deprecated
+ * Creates a {@link Provider}.
  *
- * To construct a {@link Binding}, bind a `token` to either a class, a value, a factory function, or
+ * To construct a {@link Provider}, bind a `token` to either a class, a value, a factory function,
+ * or
  * to an alias to another `token`.
- * See {@link BindingBuilder} for more details.
+ * See {@link ProviderBuilder} for more details.
  *
  * The `token` is most commonly a class or {@link angular2/di/OpaqueToken}.
  */
-export function bind(token): BindingBuilder {
-  return new BindingBuilder(token);
+export function bind(token): ProviderBuilder {
+  return new ProviderBuilder(token);
+}
+
+/**
+ * Creates a {@link Provider}.
+ *
+ * See {@link Provider} for more details.
+ *
+ * <!-- TODO: improve the docs -->
+ */
+export function provide(token, {asClass, asValue, asAlias, asFactory, deps, multi}: {
+  asClass?: Type,
+  asValue?: any,
+  asAlias?: any,
+  asFactory?: Function,
+  deps?: Object[],
+  multi?: boolean
+}): Provider {
+  return new Provider(token, {
+    toClass: asClass,
+    toValue: asValue,
+    toAlias: asAlias,
+    toFactory: asFactory,
+    deps: deps,
+    multi: multi
+  });
 }
 
 /**
  * Helper class for the {@link bind} function.
  */
-export class BindingBuilder {
+export class ProviderBuilder {
   constructor(public token) {}
 
   /**
@@ -327,11 +382,11 @@ export class BindingBuilder {
    *
    * var injectorClass = Injector.resolveAndCreate([
    *   Car,
-   *   bind(Vehicle).toClass(Car)
+   *   provide(Vehicle, {asClass: Car})
    * ]);
    * var injectorAlias = Injector.resolveAndCreate([
    *   Car,
-   *   bind(Vehicle).toAlias(Car)
+   *   provide(Vehicle, {asAlias: Car})
    * ]);
    *
    * expect(injectorClass.get(Vehicle)).not.toBe(injectorClass.get(Car));
@@ -341,12 +396,12 @@ export class BindingBuilder {
    * expect(injectorAlias.get(Vehicle) instanceof Car).toBe(true);
    * ```
    */
-  toClass(type: Type): Binding {
+  toClass(type: Type): Provider {
     if (!isType(type)) {
       throw new BaseException(
-          `Trying to create a class binding but "${stringify(type)}" is not a class!`);
+          `Trying to create a class provider but "${stringify(type)}" is not a class!`);
     }
-    return new Binding(this.token, {toClass: type});
+    return new Provider(this.token, {toClass: type});
   }
 
   /**
@@ -356,13 +411,13 @@ export class BindingBuilder {
    *
    * ```typescript
    * var injector = Injector.resolveAndCreate([
-   *   bind('message').toValue('Hello')
+   *   provide('message', {asValue: 'Hello'})
    * ]);
    *
    * expect(injector.get('message')).toEqual('Hello');
    * ```
    */
-  toValue(value: any): Binding { return new Binding(this.token, {toValue: value}); }
+  toValue(value: any): Provider { return new Provider(this.token, {toValue: value}); }
 
   /**
    * Binds a DI token as an alias for an existing token.
@@ -383,11 +438,11 @@ export class BindingBuilder {
    *
    * var injectorAlias = Injector.resolveAndCreate([
    *   Car,
-   *   bind(Vehicle).toAlias(Car)
+   *   provide(Vehicle, {asAlias: Car})
    * ]);
    * var injectorClass = Injector.resolveAndCreate([
    *   Car,
-   *   bind(Vehicle).toClass(Car)
+   *   provide(Vehicle, {asClass: Car})
    * ]);
    *
    * expect(injectorAlias.get(Vehicle)).toBe(injectorAlias.get(Car));
@@ -397,11 +452,11 @@ export class BindingBuilder {
    * expect(injectorClass.get(Vehicle) instanceof Car).toBe(true);
    * ```
    */
-  toAlias(aliasToken: /*Type*/ any): Binding {
+  toAlias(aliasToken: /*Type*/ any): Provider {
     if (isBlank(aliasToken)) {
       throw new BaseException(`Can not alias ${stringify(this.token)} to a blank value!`);
     }
-    return new Binding(this.token, {toAlias: aliasToken});
+    return new Provider(this.token, {toAlias: aliasToken});
   }
 
   /**
@@ -411,69 +466,69 @@ export class BindingBuilder {
    *
    * ```typescript
    * var injector = Injector.resolveAndCreate([
-   *   bind(Number).toFactory(() => { return 1+2; }),
-   *   bind(String).toFactory((v) => { return "Value: " + v; }, [Number])
+   *   provide(Number, {asFactory: () => { return 1+2; }}),
+   *   provide(String, {asFactory: (v) => { return "Value: " + v; }, deps: [Number]})
    * ]);
    *
    * expect(injector.get(Number)).toEqual(3);
    * expect(injector.get(String)).toEqual('Value: 3');
    * ```
    */
-  toFactory(factory: Function, dependencies?: any[]): Binding {
+  toFactory(factory: Function, dependencies?: any[]): Provider {
     if (!isFunction(factory)) {
       throw new BaseException(
-          `Trying to create a factory binding but "${stringify(factory)}" is not a function!`);
+          `Trying to create a factory provider but "${stringify(factory)}" is not a function!`);
     }
-    return new Binding(this.token, {toFactory: factory, deps: dependencies});
+    return new Provider(this.token, {toFactory: factory, deps: dependencies});
   }
 }
 
 /**
- * Resolve a single binding.
+ * Resolve a single provider.
  */
-export function resolveFactory(binding: Binding): ResolvedFactory {
+export function resolveFactory(provider: Provider): ResolvedFactory {
   var factoryFn: Function;
   var resolvedDeps;
-  if (isPresent(binding.toClass)) {
-    var toClass = resolveForwardRef(binding.toClass);
+  if (isPresent(provider.toClass)) {
+    var toClass = resolveForwardRef(provider.toClass);
     factoryFn = reflector.factory(toClass);
     resolvedDeps = _dependenciesFor(toClass);
-  } else if (isPresent(binding.toAlias)) {
+  } else if (isPresent(provider.toAlias)) {
     factoryFn = (aliasInstance) => aliasInstance;
-    resolvedDeps = [Dependency.fromKey(Key.get(binding.toAlias))];
-  } else if (isPresent(binding.toFactory)) {
-    factoryFn = binding.toFactory;
-    resolvedDeps = _constructDependencies(binding.toFactory, binding.dependencies);
+    resolvedDeps = [Dependency.fromKey(Key.get(provider.toAlias))];
+  } else if (isPresent(provider.toFactory)) {
+    factoryFn = provider.toFactory;
+    resolvedDeps = _constructDependencies(provider.toFactory, provider.dependencies);
   } else {
-    factoryFn = () => binding.toValue;
+    factoryFn = () => provider.toValue;
     resolvedDeps = _EMPTY_LIST;
   }
   return new ResolvedFactory(factoryFn, resolvedDeps);
 }
 
 /**
- * Converts the {@link Binding} into {@link ResolvedBinding}.
+ * Converts the {@link Provider} into {@link ResolvedProvider}.
  *
- * {@link Injector} internally only uses {@link ResolvedBinding}, {@link Binding} contains
- * convenience binding syntax.
+ * {@link Injector} internally only uses {@link ResolvedProvider}, {@link Provider} contains
+ * convenience provider syntax.
  */
-export function resolveBinding(binding: Binding): ResolvedBinding {
-  return new ResolvedBinding_(Key.get(binding.token), [resolveFactory(binding)], false);
+export function resolveProvider(provider: Provider): ResolvedProvider {
+  return new ResolvedProvider_(Key.get(provider.token), [resolveFactory(provider)], false);
 }
 
 /**
- * Resolve a list of Bindings.
+ * Resolve a list of Providers.
  */
-export function resolveBindings(bindings: Array<Type | Binding | any[]>): ResolvedBinding[] {
-  var normalized = _createListOfBindings(
-      _normalizeBindings(bindings, new Map<number, _NormalizedBinding | _NormalizedBinding[]>()));
+export function resolveProviders(providers: Array<Type | Provider | any[]>): ResolvedProvider[] {
+  var normalized = _createListOfProviders(_normalizeProviders(
+      providers, new Map<number, _NormalizedProvider | _NormalizedProvider[]>()));
   return normalized.map(b => {
-    if (b instanceof _NormalizedBinding) {
-      return new ResolvedBinding_(b.key, [b.resolvedFactory], false);
+    if (b instanceof _NormalizedProvider) {
+      return new ResolvedProvider_(b.key, [b.resolvedFactory], false);
 
     } else {
-      var arr = <_NormalizedBinding[]>b;
-      return new ResolvedBinding_(arr[0].key, arr.map(_ => _.resolvedFactory), true);
+      var arr = <_NormalizedProvider[]>b;
+      return new ResolvedProvider_(arr[0].key, arr.map(_ => _.resolvedFactory), true);
     }
   });
 }
@@ -481,66 +536,66 @@ export function resolveBindings(bindings: Array<Type | Binding | any[]>): Resolv
 /**
  * The algorithm works as follows:
  *
- * [Binding] -> [_NormalizedBinding|[_NormalizedBinding]] -> [ResolvedBinding]
+ * [Provider] -> [_NormalizedProvider|[_NormalizedProvider]] -> [ResolvedProvider]
  *
- * _NormalizedBinding is essentially a resolved binding before it was grouped by key.
+ * _NormalizedProvider is essentially a resolved provider before it was grouped by key.
  */
-class _NormalizedBinding {
+class _NormalizedProvider {
   constructor(public key: Key, public resolvedFactory: ResolvedFactory) {}
 }
 
-function _createListOfBindings(flattenedBindings: Map<number, any>): any[] {
-  return MapWrapper.values(flattenedBindings);
+function _createListOfProviders(flattenedProviders: Map<number, any>): any[] {
+  return MapWrapper.values(flattenedProviders);
 }
 
-function _normalizeBindings(bindings: Array<Type | Binding | BindingBuilder | any[]>,
-                            res: Map<number, _NormalizedBinding | _NormalizedBinding[]>):
-    Map<number, _NormalizedBinding | _NormalizedBinding[]> {
-  bindings.forEach(b => {
+function _normalizeProviders(providers: Array<Type | Provider | ProviderBuilder | any[]>,
+                             res: Map<number, _NormalizedProvider | _NormalizedProvider[]>):
+    Map<number, _NormalizedProvider | _NormalizedProvider[]> {
+  providers.forEach(b => {
     if (b instanceof Type) {
-      _normalizeBinding(bind(b).toClass(b), res);
+      _normalizeProvider(provide(b, {asClass: b}), res);
 
-    } else if (b instanceof Binding) {
-      _normalizeBinding(b, res);
+    } else if (b instanceof Provider) {
+      _normalizeProvider(b, res);
 
     } else if (b instanceof Array) {
-      _normalizeBindings(b, res);
+      _normalizeProviders(b, res);
 
-    } else if (b instanceof BindingBuilder) {
-      throw new InvalidBindingError(b.token);
+    } else if (b instanceof ProviderBuilder) {
+      throw new InvalidProviderError(b.token);
 
     } else {
-      throw new InvalidBindingError(b);
+      throw new InvalidProviderError(b);
     }
   });
 
   return res;
 }
 
-function _normalizeBinding(b: Binding, res: Map<number, _NormalizedBinding | _NormalizedBinding[]>):
-    void {
+function _normalizeProvider(b: Provider,
+                            res: Map<number, _NormalizedProvider | _NormalizedProvider[]>): void {
   var key = Key.get(b.token);
   var factory = resolveFactory(b);
-  var normalized = new _NormalizedBinding(key, factory);
+  var normalized = new _NormalizedProvider(key, factory);
 
   if (b.multi) {
-    var existingBinding = res.get(key.id);
+    var existingProvider = res.get(key.id);
 
-    if (existingBinding instanceof Array) {
-      existingBinding.push(normalized);
+    if (existingProvider instanceof Array) {
+      existingProvider.push(normalized);
 
-    } else if (isBlank(existingBinding)) {
+    } else if (isBlank(existingProvider)) {
       res.set(key.id, [normalized]);
 
     } else {
-      throw new MixingMultiBindingsWithRegularBindings(existingBinding, b);
+      throw new MixingMultiProvidersWithRegularProvidersError(existingProvider, b);
     }
 
   } else {
-    var existingBinding = res.get(key.id);
+    var existingProvider = res.get(key.id);
 
-    if (existingBinding instanceof Array) {
-      throw new MixingMultiBindingsWithRegularBindings(existingBinding, b);
+    if (existingProvider instanceof Array) {
+      throw new MixingMultiProvidersWithRegularProvidersError(existingProvider, b);
     }
 
     res.set(key.id, normalized);

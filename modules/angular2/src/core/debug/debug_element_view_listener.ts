@@ -1,6 +1,6 @@
 import {CONST_EXPR, isPresent, NumberWrapper, StringWrapper} from 'angular2/src/core/facade/lang';
 import {MapWrapper, Map, ListWrapper} from 'angular2/src/core/facade/collection';
-import {Injectable, bind, Binding} from 'angular2/src/core/di';
+import {Injectable, provide, Provider} from 'angular2/src/core/di';
 import {AppViewListener} from 'angular2/src/core/linker/view_listener';
 import {AppView} from 'angular2/src/core/linker/view';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
@@ -67,7 +67,9 @@ export class DebugElementViewListener implements AppViewListener {
   }
 }
 
-export const ELEMENT_PROBE_BINDINGS: any[] = CONST_EXPR([
+export const ELEMENT_PROBE_PROVIDERS: any[] = CONST_EXPR([
   DebugElementViewListener,
-  CONST_EXPR(new Binding(AppViewListener, {toAlias: DebugElementViewListener})),
+  CONST_EXPR(new Provider(AppViewListener, {toAlias: DebugElementViewListener})),
 ]);
+
+export const ELEMENT_PROBE_BINDINGS = ELEMENT_PROBE_PROVIDERS;

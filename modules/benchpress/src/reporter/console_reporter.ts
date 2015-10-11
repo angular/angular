@@ -2,7 +2,7 @@ import {print, isPresent, isBlank, NumberWrapper} from 'angular2/src/core/facade
 import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {Math} from 'angular2/src/core/facade/math';
-import {bind, Binding, OpaqueToken} from 'angular2/src/core/di';
+import {bind, provide, Provider, OpaqueToken} from 'angular2/src/core/di';
 
 import {Statistic} from '../statistic';
 import {Reporter} from '../reporter';
@@ -18,7 +18,7 @@ export class ConsoleReporter extends Reporter {
   // TODO(tbosch): use static values when our transpiler supports them
   static get COLUMN_WIDTH(): OpaqueToken { return _COLUMN_WIDTH; }
   // TODO(tbosch): use static values when our transpiler supports them
-  static get BINDINGS(): Binding[] { return _BINDINGS; }
+  static get BINDINGS(): Provider[] { return _PROVIDERS; }
 
 
   static _lpad(value, columnWidth, fill = ' ') {
@@ -93,11 +93,11 @@ export class ConsoleReporter extends Reporter {
 
 var _PRINT = new OpaqueToken('ConsoleReporter.print');
 var _COLUMN_WIDTH = new OpaqueToken('ConsoleReporter.columnWidth');
-var _BINDINGS = [
+var _PROVIDERS = [
   bind(ConsoleReporter)
       .toFactory((columnWidth, sampleDescription, print) =>
                      new ConsoleReporter(columnWidth, sampleDescription, print),
                  [_COLUMN_WIDTH, SampleDescription, _PRINT]),
-  bind(_COLUMN_WIDTH).toValue(18),
-  bind(_PRINT).toValue(print)
+  provide(_COLUMN_WIDTH, {asValue: 18}),
+  provide(_PRINT, {asValue: print})
 ];

@@ -22,13 +22,13 @@ import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
 import {TemplateNormalizer} from 'angular2/src/core/compiler/template_normalizer';
 import {XHR} from 'angular2/src/core/compiler/xhr';
 import {MockXHR} from 'angular2/src/core/compiler/xhr_mock';
-import {TEST_BINDINGS} from './test_bindings';
+import {TEST_PROVIDERS} from './test_bindings';
 
 export function main() {
   describe('TemplateNormalizer', () => {
     var dirType: CompileTypeMetadata;
 
-    beforeEachBindings(() => TEST_BINDINGS);
+    beforeEachBindings(() => TEST_PROVIDERS);
 
     beforeEach(() => {
       dirType = new CompileTypeMetadata({moduleUrl: 'package:some/module/a.js', name: 'SomeComp'});

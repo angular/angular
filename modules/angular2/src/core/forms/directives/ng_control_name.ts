@@ -3,7 +3,7 @@ import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {OnChanges, OnDestroy} from 'angular2/lifecycle_hooks';
 import {SimpleChange} from 'angular2/src/core/change_detection';
 import {Query, Directive} from 'angular2/src/core/metadata';
-import {forwardRef, Host, SkipSelf, Binding, Inject, Optional} from 'angular2/src/core/di';
+import {forwardRef, Host, SkipSelf, Provider, Inject, Optional} from 'angular2/src/core/di';
 
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
@@ -14,7 +14,7 @@ import {Validators, NG_VALIDATORS} from '../validators';
 
 
 const controlNameBinding =
-    CONST_EXPR(new Binding(NgControl, {toAlias: forwardRef(() => NgControlName)}));
+    CONST_EXPR(new Provider(NgControl, {toAlias: forwardRef(() => NgControlName)}));
 
 /**
  * Creates and binds a control with a specified name to a DOM element.

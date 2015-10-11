@@ -23,7 +23,7 @@ import {
   SpyPreBuiltObjects
 } from '../spies';
 
-import {Injector, bind} from 'angular2/core';
+import {Injector, provide} from 'angular2/core';
 import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
 
 import {
@@ -34,7 +34,7 @@ import {
 } from 'angular2/src/core/linker/view';
 import {ElementBinder} from 'angular2/src/core/linker/element_binder';
 import {
-  DirectiveBinding,
+  DirectiveProvider,
   ElementInjector,
   PreBuiltObjects,
   ProtoElementInjector
@@ -238,12 +238,12 @@ export function createEmptyElBinder(parent: ElementBinder = null) {
 }
 
 export function createNestedElBinder(nestedProtoView: AppProtoView) {
-  var componentBinding = null;
+  var componentProvider = null;
   if (nestedProtoView.type === ViewType.COMPONENT) {
     var annotation = new DirectiveResolver().resolve(SomeComponent);
-    componentBinding = DirectiveBinding.createFromType(SomeComponent, annotation);
+    componentProvider = DirectiveProvider.createFromType(SomeComponent, annotation);
   }
-  return new ElementBinder(0, null, 0, createProtoElInjector(), componentBinding, nestedProtoView);
+  return new ElementBinder(0, null, 0, createProtoElInjector(), componentProvider, nestedProtoView);
 }
 
 function _createProtoView(type: ViewType, binders: ElementBinder[] = null) {

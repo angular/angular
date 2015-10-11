@@ -5,7 +5,7 @@ import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptio
 
 import {Directive, Attribute} from 'angular2/src/core/metadata';
 import {DynamicComponentLoader, ComponentRef, ElementRef} from 'angular2/src/core/linker';
-import {Injector, bind, Dependency} from 'angular2/src/core/di';
+import {Injector, provide, Dependency} from 'angular2/src/core/di';
 
 import * as routerMod from './router';
 import {ComponentInstruction, RouteParams} from './instruction';
@@ -50,13 +50,12 @@ export class RouterOutlet {
     var componentType = nextInstruction.componentType;
     var childRouter = this._parentRouter.childRouter(componentType);
 
-    var bindings = Injector.resolve([
-      bind(ROUTE_DATA)
-          .toValue(nextInstruction.routeData()),
-      bind(RouteParams).toValue(new RouteParams(nextInstruction.params)),
-      bind(routerMod.Router).toValue(childRouter)
+    var providers = Injector.resolve([
+      provide(ROUTE_DATA, {asValue: nextInstruction.routeData()}),
+      provide(RouteParams, {asValue: new RouteParams(nextInstruction.params)}),
+      provide(routerMod.Router, {asValue: childRouter})
     ]);
-    return this._loader.loadNextToLocation(componentType, this._elementRef, bindings)
+    return this._loader.loadNextToLocation(componentType, this._elementRef, providers)
         .then((componentRef) => {
           this._componentRef = componentRef;
           if (hasLifecycleHook(hookMod.onActivate, componentType)) {

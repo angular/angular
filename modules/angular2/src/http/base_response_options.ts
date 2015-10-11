@@ -115,15 +115,16 @@ export class ResponseOptions {
  * ### Example ([live demo](http://plnkr.co/edit/qv8DLT?p=preview))
  *
  * ```typescript
- * import {bind, bootstrap} from 'angular2/angular2';
- * import {HTTP_BINDINGS, Headers, Http, BaseResponseOptions, ResponseOptions} from 'angular2/http';
+ * import {provide, bootstrap} from 'angular2/angular2';
+ * import {HTTP_PROVIDERS, Headers, Http, BaseResponseOptions, ResponseOptions} from
+ * 'angular2/http';
  * import {App} from './myapp';
  *
  * class MyOptions extends BaseResponseOptions {
  *   headers:Headers = new Headers({network: 'github'});
  * }
  *
- * bootstrap(App, [HTTP_BINDINGS, bind(ResponseOptions).toClass(MyOptions)]);
+ * bootstrap(App, [HTTP_PROVIDERS, provide(ResponseOptions, {asClass: MyOptions})]);
  * ```
  *
  * The options could also be extended when manually creating a {@link Response}

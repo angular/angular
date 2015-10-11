@@ -91,7 +91,7 @@ export class MockConnection implements Connection {
 /**
  * A mock backend for testing the {@link Http} service.
  *
- * This class can be injected in tests, and should be used to override bindings
+ * This class can be injected in tests, and should be used to override providers
  * to other backends, such as {@link XHRBackend}.
  *
  * #Example
@@ -102,9 +102,9 @@ export class MockConnection implements Connection {
  *   var connection;
  *   var injector = Injector.resolveAndCreate([
  *     MockBackend,
- *     bind(Http).toFactory((backend, defaultOptions) => {
+ *     provide(Http, {asFactory: (backend, defaultOptions) => {
  *       return new Http(backend, defaultOptions)
- *     }, [MockBackend, DefaultOptions])]);
+ *     }, deps: [MockBackend, DefaultOptions]})]);
  *   var http = injector.get(Http);
  *   var backend = injector.get(MockBackend);
  *   //Assign any newly-created connection to local variable
@@ -137,9 +137,9 @@ export class MockBackend implements ConnectionBackend {
    *   var text; //this will be set from mock response
    *   var injector = Injector.resolveAndCreate([
    *     MockBackend,
-   *     bind(Http).toFactory(backend, options) {
+   *     provide(Http, {asFactory: (backend, options) {
    *       return new Http(backend, options);
-   *     }, [MockBackend, BaseRequestOptions]]);
+   *     }, deps: [MockBackend, BaseRequestOptions]}]);
    *   var backend = injector.get(MockBackend);
    *   var http = injector.get(Http);
    *   backend.connections.subscribe(c => connection = c);

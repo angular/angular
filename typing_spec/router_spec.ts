@@ -2,7 +2,7 @@
 ///<reference path="../dist/docs/typings/angular2/router.d.ts"/>
 
 import {Component, bootstrap, View} from 'angular2/angular2';
-import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_BINDINGS} from 'angular2/router';
+import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS} from 'angular2/router';
 
 @Component({
   selector: 'my-app'
@@ -31,4 +31,4 @@ class MyAppComponent {
   constructor() { this.name = 'Alice'; }
 }
 
-bootstrap(MyAppComponent, ROUTER_BINDINGS);
+bootstrap(MyAppComponent, ROUTER_PROVIDERS);

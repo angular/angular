@@ -7,7 +7,7 @@ import {
   View,
   Host,
   forwardRef,
-  Binding,
+  Provider,
   FORM_DIRECTIVES,
   Injectable
 } from 'angular2/core';

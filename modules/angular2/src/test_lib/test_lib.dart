@@ -20,7 +20,7 @@ import 'package:angular2/src/core/dom/dom_adapter.dart' show DOM;
 import 'package:angular2/src/core/reflection/reflection.dart';
 import 'package:angular2/src/core/reflection/reflection_capabilities.dart';
 
-import 'package:angular2/src/core/di/binding.dart' show bind;
+import 'package:angular2/src/core/di/provider.dart' show bind;
 import 'package:angular2/src/core/di/injector.dart' show Injector;
 import 'package:angular2/src/core/facade/collection.dart' show StringMapWrapper;
 
@@ -162,11 +162,16 @@ void beforeEach(fn) {
  *     bind(SomeToken).toValue(myValue),
  *   ]);
  */
-void beforeEachBindings(Function fn) {
+void beforeEachProviders(Function fn) {
   gns.beforeEach(() {
     var bindings = fn();
     if (bindings != null) _testBindings.addAll(bindings);
   }, priority: 2);
+}
+
+@Deprecated('using beforeEachProviders instead')
+void beforeEachBindings(Function fn) {
+  beforeEachProviders(fn);
 }
 
 void _it(gnsFn, name, fn) {

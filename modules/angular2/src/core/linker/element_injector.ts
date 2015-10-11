@@ -13,11 +13,11 @@ import {
   Injector,
   Key,
   Dependency,
-  bind,
-  Binding,
-  ResolvedBinding,
-  NoBindingError,
-  AbstractBindingError,
+  provide,
+  Provider,
+  ResolvedProvider,
+  NoProviderError,
+  AbstractProviderError,
   CyclicDependencyError,
   resolveForwardRef
 } from 'angular2/src/core/di';
@@ -27,10 +27,10 @@ import {
   Visibility,
   InjectorInlineStrategy,
   InjectorDynamicStrategy,
-  BindingWithVisibility,
+  ProviderWithVisibility,
   DependencyProvider
 } from 'angular2/src/core/di/injector';
-import {resolveBinding, ResolvedFactory, ResolvedBinding_} from 'angular2/src/core/di/binding';
+import {resolveProvider, ResolvedFactory, ResolvedProvider_} from 'angular2/src/core/di/provider';
 
 import {AttributeMetadata, QueryMetadata} from '../metadata/di';
 
@@ -49,7 +49,7 @@ import {QueryList} from './query_list';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {SetterFn} from 'angular2/src/core/reflection/types';
 import {EventConfig} from 'angular2/src/core/linker/event_config';
-import {PipeBinding} from '../pipes/pipe_binding';
+import {PipeProvider} from 'angular2/src/core/pipes/pipe_provider';
 
 import {LifecycleHooks} from './interfaces';
 import {ViewContainerRef_} from "./view_container_ref";
@@ -129,12 +129,12 @@ export class DirectiveDependency extends Dependency {
   }
 }
 
-export class DirectiveBinding extends ResolvedBinding_ {
+export class DirectiveProvider extends ResolvedProvider_ {
   public callOnDestroy: boolean;
 
   constructor(key: Key, factory: Function, deps: Dependency[], public metadata: DirectiveMetadata,
-              public bindings: Array<Type | Binding | any[]>,
-              public viewBindings: Array<Type | Binding | any[]>) {
+              public providers: Array<Type | Provider | any[]>,
+              public viewProviders: Array<Type | Provider | any[]>) {
     super(key, [new ResolvedFactory(factory, deps)], false);
     this.callOnDestroy = hasLifecycleHook(LifecycleHooks.OnDestroy, key.token);
   }
@@ -157,24 +157,25 @@ export class DirectiveBinding extends ResolvedBinding_ {
                                                                           [];
   }
 
-  static createFromBinding(binding: Binding, meta: DirectiveMetadata): DirectiveBinding {
+  static createFromProvider(provider: Provider, meta: DirectiveMetadata): DirectiveProvider {
     if (isBlank(meta)) {
       meta = new DirectiveMetadata();
     }
 
-    var rb = resolveBinding(binding);
+    var rb = resolveProvider(provider);
     var rf = rb.resolvedFactories[0];
     var deps = rf.dependencies.map(DirectiveDependency.createFrom);
 
-    var bindings = isPresent(meta.bindings) ? meta.bindings : [];
-    var viewBindigs =
-        meta instanceof ComponentMetadata && isPresent(meta.viewBindings) ? meta.viewBindings : [];
-    return new DirectiveBinding(rb.key, rf.factory, deps, meta, bindings, viewBindigs);
+    var providers = isPresent(meta.providers) ? meta.providers : [];
+    var viewBindigs = meta instanceof ComponentMetadata && isPresent(meta.viewProviders) ?
+                          meta.viewProviders :
+                          [];
+    return new DirectiveProvider(rb.key, rf.factory, deps, meta, providers, viewBindigs);
   }
 
-  static createFromType(type: Type, annotation: DirectiveMetadata): DirectiveBinding {
-    var binding = new Binding(type, {toClass: type});
-    return DirectiveBinding.createFromBinding(binding, annotation);
+  static createFromType(type: Type, annotation: DirectiveMetadata): DirectiveProvider {
+    var provider = new Provider(type, {toClass: type});
+    return DirectiveProvider.createFromProvider(provider, annotation);
   }
 }
 
@@ -200,29 +201,29 @@ export class EventEmitterAccessor {
   }
 }
 
-function _createEventEmitterAccessors(bwv: BindingWithVisibility): EventEmitterAccessor[] {
-  var binding = bwv.binding;
-  if (!(binding instanceof DirectiveBinding)) return [];
-  var db = <DirectiveBinding>binding;
+function _createEventEmitterAccessors(bwv: ProviderWithVisibility): EventEmitterAccessor[] {
+  var provider = bwv.provider;
+  if (!(provider instanceof DirectiveProvider)) return [];
+  var db = <DirectiveProvider>provider;
   return db.eventEmitters.map(eventConfig => {
     var parsedEvent = EventConfig.parse(eventConfig);
     return new EventEmitterAccessor(parsedEvent.eventName, reflector.getter(parsedEvent.fieldName));
   });
 }
 
-function _createProtoQueryRefs(bindings: BindingWithVisibility[]): ProtoQueryRef[] {
+function _createProtoQueryRefs(providers: ProviderWithVisibility[]): ProtoQueryRef[] {
   var res = [];
-  ListWrapper.forEachWithIndex(bindings, (b, i) => {
-    if (b.binding instanceof DirectiveBinding) {
-      var directiveBinding = <DirectiveBinding>b.binding;
+  ListWrapper.forEachWithIndex(providers, (b, i) => {
+    if (b.provider instanceof DirectiveProvider) {
+      var directiveProvider = <DirectiveProvider>b.provider;
       // field queries
-      var queries: QueryMetadataWithSetter[] = directiveBinding.queries;
+      var queries: QueryMetadataWithSetter[] = directiveProvider.queries;
       queries.forEach(q => res.push(new ProtoQueryRef(i, q.setter, q.metadata)));
 
       // queries passed into the constructor.
       // TODO: remove this after constructor queries are no longer supported
       var deps: DirectiveDependency[] =
-          <DirectiveDependency[]>directiveBinding.resolvedFactory.dependencies;
+          <DirectiveDependency[]>directiveProvider.resolvedFactory.dependencies;
       deps.forEach(d => {
         if (isPresent(d.queryDecorator)) res.push(new ProtoQueryRef(i, null, d.queryDecorator));
       });
@@ -238,67 +239,67 @@ export class ProtoElementInjector {
   protoQueryRefs: ProtoQueryRef[];
   protoInjector: ProtoInjector;
 
-  static create(parent: ProtoElementInjector, index: number, bindings: DirectiveBinding[],
-                firstBindingIsComponent: boolean, distanceToParent: number,
+  static create(parent: ProtoElementInjector, index: number, providers: DirectiveProvider[],
+                firstProviderIsComponent: boolean, distanceToParent: number,
                 directiveVariableBindings: Map<string, number>): ProtoElementInjector {
     var bd = [];
 
-    ProtoElementInjector._createDirectiveBindingWithVisibility(bindings, bd,
-                                                               firstBindingIsComponent);
-    if (firstBindingIsComponent) {
-      ProtoElementInjector._createViewBindingsWithVisibility(bindings, bd);
+    ProtoElementInjector._createDirectiveProviderWithVisibility(providers, bd,
+                                                                firstProviderIsComponent);
+    if (firstProviderIsComponent) {
+      ProtoElementInjector._createViewProvidersWithVisibility(providers, bd);
     }
 
-    ProtoElementInjector._createBindingsWithVisibility(bindings, bd);
-    return new ProtoElementInjector(parent, index, bd, distanceToParent, firstBindingIsComponent,
+    ProtoElementInjector._createProvidersWithVisibility(providers, bd);
+    return new ProtoElementInjector(parent, index, bd, distanceToParent, firstProviderIsComponent,
                                     directiveVariableBindings);
   }
 
-  private static _createDirectiveBindingWithVisibility(dirBindings: DirectiveBinding[],
-                                                       bd: BindingWithVisibility[],
-                                                       firstBindingIsComponent: boolean) {
-    dirBindings.forEach(dirBinding => {
-      bd.push(ProtoElementInjector._createBindingWithVisibility(firstBindingIsComponent, dirBinding,
-                                                                dirBindings, dirBinding));
+  private static _createDirectiveProviderWithVisibility(dirProviders: DirectiveProvider[],
+                                                        bd: ProviderWithVisibility[],
+                                                        firstProviderIsComponent: boolean) {
+    dirProviders.forEach(dirProvider => {
+      bd.push(ProtoElementInjector._createProviderWithVisibility(
+          firstProviderIsComponent, dirProvider, dirProviders, dirProvider));
     });
   }
 
-  private static _createBindingsWithVisibility(dirBindings: DirectiveBinding[],
-                                               bd: BindingWithVisibility[]) {
-    var bindingsFromAllDirectives = [];
-    dirBindings.forEach(dirBinding => {
-      bindingsFromAllDirectives =
-          ListWrapper.concat(bindingsFromAllDirectives, dirBinding.bindings);
+  private static _createProvidersWithVisibility(dirProviders: DirectiveProvider[],
+                                                bd: ProviderWithVisibility[]) {
+    var providersFromAllDirectives = [];
+    dirProviders.forEach(dirProvider => {
+      providersFromAllDirectives =
+          ListWrapper.concat(providersFromAllDirectives, dirProvider.providers);
     });
 
-    var resolved = Injector.resolve(bindingsFromAllDirectives);
-    resolved.forEach(b => bd.push(new BindingWithVisibility(b, Visibility.Public)));
+    var resolved = Injector.resolve(providersFromAllDirectives);
+    resolved.forEach(b => bd.push(new ProviderWithVisibility(b, Visibility.Public)));
   }
 
-  private static _createBindingWithVisibility(firstBindingIsComponent: boolean,
-                                              dirBinding: DirectiveBinding,
-                                              dirBindings: DirectiveBinding[],
-                                              binding: ResolvedBinding) {
-    var isComponent = firstBindingIsComponent && dirBindings[0] === dirBinding;
-    return new BindingWithVisibility(binding,
-                                     isComponent ? Visibility.PublicAndPrivate : Visibility.Public);
+  private static _createProviderWithVisibility(firstProviderIsComponent: boolean,
+                                               dirProvider: DirectiveProvider,
+                                               dirProviders: DirectiveProvider[],
+                                               provider: ResolvedProvider) {
+    var isComponent = firstProviderIsComponent && dirProviders[0] === dirProvider;
+    return new ProviderWithVisibility(
+        provider, isComponent ? Visibility.PublicAndPrivate : Visibility.Public);
   }
 
-  private static _createViewBindingsWithVisibility(dirBindings: DirectiveBinding[],
-                                                   bd: BindingWithVisibility[]) {
-    var resolvedViewBindings = Injector.resolve(dirBindings[0].viewBindings);
-    resolvedViewBindings.forEach(b => bd.push(new BindingWithVisibility(b, Visibility.Private)));
+  private static _createViewProvidersWithVisibility(dirProviders: DirectiveProvider[],
+                                                    bd: ProviderWithVisibility[]) {
+    var resolvedViewProviders = Injector.resolve(dirProviders[0].viewProviders);
+    resolvedViewProviders.forEach(b => bd.push(new ProviderWithVisibility(b, Visibility.Private)));
   }
 
   /** @internal */
-  public _firstBindingIsComponent: boolean;
+  public _firstProviderIsComponent: boolean;
 
 
   constructor(public parent: ProtoElementInjector, public index: number,
-              bwv: BindingWithVisibility[], public distanceToParent: number,
-              _firstBindingIsComponent: boolean,
+              bwv: ProviderWithVisibility[], public distanceToParent: number,
+              _firstProviderIsComponent: boolean,
               public directiveVariableBindings: Map<string, number>) {
-    this._firstBindingIsComponent = _firstBindingIsComponent;
+    this._firstProviderIsComponent = _firstProviderIsComponent;
     var length = bwv.length;
     this.protoInjector = new ProtoInjector(bwv);
     this.eventEmitterAccessors = ListWrapper.createFixedSize(length);
@@ -316,7 +317,7 @@ export class ProtoElementInjector {
 
   get hasBindings(): boolean { return this.eventEmitterAccessors.length > 0; }
 
-  getBindingAtIndex(index: number): any { return this.protoInjector.getBindingAtIndex(index); }
+  getProviderAtIndex(index: number): any { return this.protoInjector.getProviderAtIndex(index); }
 }
 
 class _Context {
@@ -456,12 +457,12 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
 
   isComponentKey(key: Key): boolean { return this._strategy.isComponentKey(key); }
 
-  getDependency(injector: Injector, binding: ResolvedBinding, dep: Dependency): any {
+  getDependency(injector: Injector, provider: ResolvedProvider, dep: Dependency): any {
     var key: Key = dep.key;
 
-    if (binding instanceof DirectiveBinding) {
+    if (provider instanceof DirectiveProvider) {
       var dirDep = <DirectiveDependency>dep;
-      var dirBin = binding;
+      var dirProvider = provider;
       var staticKeys = StaticKeys.instance();
 
 
@@ -475,7 +476,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
       if (dirDep.key.id === StaticKeys.instance().changeDetectorRefId) {
         // We provide the component's view change detector to components and
         // the surrounding component's change detector to directives.
-        if (dirBin.metadata instanceof ComponentMetadata) {
+        if (dirProvider.metadata instanceof ComponentMetadata) {
           var componentView = this._preBuiltObjects.view.getNestedView(
               this._preBuiltObjects.elementRef.boundElementIndex);
           return componentView.changeDetector.ref;
@@ -498,12 +499,12 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
             return null;
           }
 
-          throw new NoBindingError(null, dirDep.key);
+          throw new NoProviderError(null, dirDep.key);
         }
         return this._preBuiltObjects.templateRef;
       }
 
-    } else if (binding instanceof PipeBinding) {
+    } else if (provider instanceof PipeProvider) {
       if (dep.key.id === StaticKeys.instance().changeDetectorRefId) {
         var componentView = this._preBuiltObjects.view.getNestedView(
             this._preBuiltObjects.elementRef.boundElementIndex);
@@ -753,7 +754,7 @@ interface _ElementInjectorStrategy {
 }
 
 /**
- * Strategy used by the `ElementInjector` when the number of bindings is 10 or less.
+ * Strategy used by the `ElementInjector` when the number of providers is 10 or less.
  * In such a case, inlining fields is beneficial for performances.
  */
 class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
@@ -764,26 +765,26 @@ class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
     var p = i.protoStrategy;
     i.resetConstructionCounter();
 
-    if (p.binding0 instanceof DirectiveBinding && isPresent(p.keyId0) && i.obj0 === UNDEFINED)
-      i.obj0 = i.instantiateBinding(p.binding0, p.visibility0);
-    if (p.binding1 instanceof DirectiveBinding && isPresent(p.keyId1) && i.obj1 === UNDEFINED)
-      i.obj1 = i.instantiateBinding(p.binding1, p.visibility1);
-    if (p.binding2 instanceof DirectiveBinding && isPresent(p.keyId2) && i.obj2 === UNDEFINED)
-      i.obj2 = i.instantiateBinding(p.binding2, p.visibility2);
-    if (p.binding3 instanceof DirectiveBinding && isPresent(p.keyId3) && i.obj3 === UNDEFINED)
-      i.obj3 = i.instantiateBinding(p.binding3, p.visibility3);
-    if (p.binding4 instanceof DirectiveBinding && isPresent(p.keyId4) && i.obj4 === UNDEFINED)
-      i.obj4 = i.instantiateBinding(p.binding4, p.visibility4);
-    if (p.binding5 instanceof DirectiveBinding && isPresent(p.keyId5) && i.obj5 === UNDEFINED)
-      i.obj5 = i.instantiateBinding(p.binding5, p.visibility5);
-    if (p.binding6 instanceof DirectiveBinding && isPresent(p.keyId6) && i.obj6 === UNDEFINED)
-      i.obj6 = i.instantiateBinding(p.binding6, p.visibility6);
-    if (p.binding7 instanceof DirectiveBinding && isPresent(p.keyId7) && i.obj7 === UNDEFINED)
-      i.obj7 = i.instantiateBinding(p.binding7, p.visibility7);
-    if (p.binding8 instanceof DirectiveBinding && isPresent(p.keyId8) && i.obj8 === UNDEFINED)
-      i.obj8 = i.instantiateBinding(p.binding8, p.visibility8);
-    if (p.binding9 instanceof DirectiveBinding && isPresent(p.keyId9) && i.obj9 === UNDEFINED)
-      i.obj9 = i.instantiateBinding(p.binding9, p.visibility9);
+    if (p.provider0 instanceof DirectiveProvider && isPresent(p.keyId0) && i.obj0 === UNDEFINED)
+      i.obj0 = i.instantiateProvider(p.provider0, p.visibility0);
+    if (p.provider1 instanceof DirectiveProvider && isPresent(p.keyId1) && i.obj1 === UNDEFINED)
+      i.obj1 = i.instantiateProvider(p.provider1, p.visibility1);
+    if (p.provider2 instanceof DirectiveProvider && isPresent(p.keyId2) && i.obj2 === UNDEFINED)
+      i.obj2 = i.instantiateProvider(p.provider2, p.visibility2);
+    if (p.provider3 instanceof DirectiveProvider && isPresent(p.keyId3) && i.obj3 === UNDEFINED)
+      i.obj3 = i.instantiateProvider(p.provider3, p.visibility3);
+    if (p.provider4 instanceof DirectiveProvider && isPresent(p.keyId4) && i.obj4 === UNDEFINED)
+      i.obj4 = i.instantiateProvider(p.provider4, p.visibility4);
+    if (p.provider5 instanceof DirectiveProvider && isPresent(p.keyId5) && i.obj5 === UNDEFINED)
+      i.obj5 = i.instantiateProvider(p.provider5, p.visibility5);
+    if (p.provider6 instanceof DirectiveProvider && isPresent(p.keyId6) && i.obj6 === UNDEFINED)
+      i.obj6 = i.instantiateProvider(p.provider6, p.visibility6);
+    if (p.provider7 instanceof DirectiveProvider && isPresent(p.keyId7) && i.obj7 === UNDEFINED)
+      i.obj7 = i.instantiateProvider(p.provider7, p.visibility7);
+    if (p.provider8 instanceof DirectiveProvider && isPresent(p.keyId8) && i.obj8 === UNDEFINED)
+      i.obj8 = i.instantiateProvider(p.provider8, p.visibility8);
+    if (p.provider9 instanceof DirectiveProvider && isPresent(p.keyId9) && i.obj9 === UNDEFINED)
+      i.obj9 = i.instantiateProvider(p.provider9, p.visibility9);
   }
 
   dehydrate() {
@@ -805,34 +806,44 @@ class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
     var i = this.injectorStrategy;
     var p = i.protoStrategy;
 
-    if (p.binding0 instanceof DirectiveBinding && (<DirectiveBinding>p.binding0).callOnDestroy) {
+    if (p.provider0 instanceof DirectiveProvider &&
+        (<DirectiveProvider>p.provider0).callOnDestroy) {
       i.obj0.onDestroy();
     }
-    if (p.binding1 instanceof DirectiveBinding && (<DirectiveBinding>p.binding1).callOnDestroy) {
+    if (p.provider1 instanceof DirectiveProvider &&
+        (<DirectiveProvider>p.provider1).callOnDestroy) {
       i.obj1.onDestroy();
     }
-    if (p.binding2 instanceof DirectiveBinding && (<DirectiveBinding>p.binding2).callOnDestroy) {
+    if (p.provider2 instanceof DirectiveProvider &&
+        (<DirectiveProvider>p.provider2).callOnDestroy) {
       i.obj2.onDestroy();
     }
-    if (p.binding3 instanceof DirectiveBinding && (<DirectiveBinding>p.binding3).callOnDestroy) {
+    if (p.provider3 instanceof DirectiveProvider &&
+        (<DirectiveProvider>p.provider3).callOnDestroy) {
       i.obj3.onDestroy();
     }
-    if (p.binding4 instanceof DirectiveBinding && (<DirectiveBinding>p.binding4).callOnDestroy) {
+    if (p.provider4 instanceof DirectiveProvider &&
+        (<DirectiveProvider>p.provider4).callOnDestroy) {
       i.obj4.onDestroy();
     }
-    if (p.binding5 instanceof DirectiveBinding && (<DirectiveBinding>p.binding5).callOnDestroy) {
+    if (p.provider5 instanceof DirectiveProvider &&
+        (<DirectiveProvider>p.provider5).callOnDestroy) {
       i.obj5.onDestroy();
     }
-    if (p.binding6 instanceof DirectiveBinding && (<DirectiveBinding>p.binding6).callOnDestroy) {
+    if (p.provider6 instanceof DirectiveProvider &&
+        (<DirectiveProvider>p.provider6).callOnDestroy) {
       i.obj6.onDestroy();
     }
-    if (p.binding7 instanceof DirectiveBinding && (<DirectiveBinding>p.binding7).callOnDestroy) {
+    if (p.provider7 instanceof DirectiveProvider &&
+        (<DirectiveProvider>p.provider7).callOnDestroy) {
       i.obj7.onDestroy();
     }
-    if (p.binding8 instanceof DirectiveBinding && (<DirectiveBinding>p.binding8).callOnDestroy) {
+    if (p.provider8 instanceof DirectiveProvider &&
+        (<DirectiveProvider>p.provider8).callOnDestroy) {
       i.obj8.onDestroy();
     }
-    if (p.binding9 instanceof DirectiveBinding && (<DirectiveBinding>p.binding9).callOnDestroy) {
+    if (p.provider9 instanceof DirectiveProvider &&
+        (<DirectiveProvider>p.provider9).callOnDestroy) {
       i.obj9.onDestroy();
     }
   }
@@ -840,7 +851,7 @@ class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
   getComponent(): any { return this.injectorStrategy.obj0; }
 
   isComponentKey(key: Key): boolean {
-    return this._ei._proto._firstBindingIsComponent && isPresent(key) &&
+    return this._ei._proto._firstProviderIsComponent && isPresent(key) &&
            key.id === this.injectorStrategy.protoStrategy.keyId0;
   }
 
@@ -848,51 +859,51 @@ class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
     var i = this.injectorStrategy;
     var p = i.protoStrategy;
 
-    if (isPresent(p.binding0) && p.binding0.key.token === query.selector) {
-      if (i.obj0 === UNDEFINED) i.obj0 = i.instantiateBinding(p.binding0, p.visibility0);
+    if (isPresent(p.provider0) && p.provider0.key.token === query.selector) {
+      if (i.obj0 === UNDEFINED) i.obj0 = i.instantiateProvider(p.provider0, p.visibility0);
       list.push(i.obj0);
     }
-    if (isPresent(p.binding1) && p.binding1.key.token === query.selector) {
-      if (i.obj1 === UNDEFINED) i.obj1 = i.instantiateBinding(p.binding1, p.visibility1);
+    if (isPresent(p.provider1) && p.provider1.key.token === query.selector) {
+      if (i.obj1 === UNDEFINED) i.obj1 = i.instantiateProvider(p.provider1, p.visibility1);
       list.push(i.obj1);
     }
-    if (isPresent(p.binding2) && p.binding2.key.token === query.selector) {
-      if (i.obj2 === UNDEFINED) i.obj2 = i.instantiateBinding(p.binding2, p.visibility2);
+    if (isPresent(p.provider2) && p.provider2.key.token === query.selector) {
+      if (i.obj2 === UNDEFINED) i.obj2 = i.instantiateProvider(p.provider2, p.visibility2);
       list.push(i.obj2);
     }
-    if (isPresent(p.binding3) && p.binding3.key.token === query.selector) {
-      if (i.obj3 === UNDEFINED) i.obj3 = i.instantiateBinding(p.binding3, p.visibility3);
+    if (isPresent(p.provider3) && p.provider3.key.token === query.selector) {
+      if (i.obj3 === UNDEFINED) i.obj3 = i.instantiateProvider(p.provider3, p.visibility3);
       list.push(i.obj3);
     }
-    if (isPresent(p.binding4) && p.binding4.key.token === query.selector) {
-      if (i.obj4 === UNDEFINED) i.obj4 = i.instantiateBinding(p.binding4, p.visibility4);
+    if (isPresent(p.provider4) && p.provider4.key.token === query.selector) {
+      if (i.obj4 === UNDEFINED) i.obj4 = i.instantiateProvider(p.provider4, p.visibility4);
       list.push(i.obj4);
     }
-    if (isPresent(p.binding5) && p.binding5.key.token === query.selector) {
-      if (i.obj5 === UNDEFINED) i.obj5 = i.instantiateBinding(p.binding5, p.visibility5);
+    if (isPresent(p.provider5) && p.provider5.key.token === query.selector) {
+      if (i.obj5 === UNDEFINED) i.obj5 = i.instantiateProvider(p.provider5, p.visibility5);
       list.push(i.obj5);
     }
-    if (isPresent(p.binding6) && p.binding6.key.token === query.selector) {
-      if (i.obj6 === UNDEFINED) i.obj6 = i.instantiateBinding(p.binding6, p.visibility6);
+    if (isPresent(p.provider6) && p.provider6.key.token === query.selector) {
+      if (i.obj6 === UNDEFINED) i.obj6 = i.instantiateProvider(p.provider6, p.visibility6);
       list.push(i.obj6);
     }
-    if (isPresent(p.binding7) && p.binding7.key.token === query.selector) {
-      if (i.obj7 === UNDEFINED) i.obj7 = i.instantiateBinding(p.binding7, p.visibility7);
+    if (isPresent(p.provider7) && p.provider7.key.token === query.selector) {
+      if (i.obj7 === UNDEFINED) i.obj7 = i.instantiateProvider(p.provider7, p.visibility7);
       list.push(i.obj7);
     }
-    if (isPresent(p.binding8) && p.binding8.key.token === query.selector) {
-      if (i.obj8 === UNDEFINED) i.obj8 = i.instantiateBinding(p.binding8, p.visibility8);
+    if (isPresent(p.provider8) && p.provider8.key.token === query.selector) {
+      if (i.obj8 === UNDEFINED) i.obj8 = i.instantiateProvider(p.provider8, p.visibility8);
       list.push(i.obj8);
     }
-    if (isPresent(p.binding9) && p.binding9.key.token === query.selector) {
-      if (i.obj9 === UNDEFINED) i.obj9 = i.instantiateBinding(p.binding9, p.visibility9);
+    if (isPresent(p.provider9) && p.provider9.key.token === query.selector) {
+      if (i.obj9 === UNDEFINED) i.obj9 = i.instantiateProvider(p.provider9, p.visibility9);
       list.push(i.obj9);
     }
   }
 }
 
 /**
- * Strategy used by the `ElementInjector` when the number of bindings is 10 or less.
+ * Strategy used by the `ElementInjector` when the number of providers is 10 or less.
  * In such a case, inlining fields is beneficial for performances.
  */
 class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
@@ -904,9 +915,9 @@ class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
     inj.resetConstructionCounter();
 
     for (var i = 0; i < p.keyIds.length; i++) {
-      if (p.bindings[i] instanceof DirectiveBinding && isPresent(p.keyIds[i]) &&
+      if (p.providers[i] instanceof DirectiveProvider && isPresent(p.keyIds[i]) &&
           inj.objs[i] === UNDEFINED) {
-        inj.objs[i] = inj.instantiateBinding(p.bindings[i], p.visibilities[i]);
+        inj.objs[i] = inj.instantiateProvider(p.providers[i], p.visibilities[i]);
       }
     }
   }
@@ -920,9 +931,9 @@ class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
     var ist = this.injectorStrategy;
     var p = ist.protoStrategy;
 
-    for (var i = 0; i < p.bindings.length; i++) {
-      if (p.bindings[i] instanceof DirectiveBinding &&
-          (<DirectiveBinding>p.bindings[i]).callOnDestroy) {
+    for (var i = 0; i < p.providers.length; i++) {
+      if (p.providers[i] instanceof DirectiveProvider &&
+          (<DirectiveProvider>p.providers[i]).callOnDestroy) {
         ist.objs[i].onDestroy();
       }
     }
@@ -932,17 +943,17 @@ class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
 
   isComponentKey(key: Key): boolean {
     var p = this.injectorStrategy.protoStrategy;
-    return this._ei._proto._firstBindingIsComponent && isPresent(key) && key.id === p.keyIds[0];
+    return this._ei._proto._firstProviderIsComponent && isPresent(key) && key.id === p.keyIds[0];
   }
 
   addDirectivesMatchingQuery(query: QueryMetadata, list: any[]): void {
     var ist = this.injectorStrategy;
     var p = ist.protoStrategy;
 
-    for (var i = 0; i < p.bindings.length; i++) {
-      if (p.bindings[i].key.token === query.selector) {
+    for (var i = 0; i < p.providers.length; i++) {
+      if (p.providers[i].key.token === query.selector) {
         if (ist.objs[i] === UNDEFINED) {
-          ist.objs[i] = ist.instantiateBinding(p.bindings[i], p.visibilities[i]);
+          ist.objs[i] = ist.instantiateProvider(p.providers[i], p.visibilities[i]);
         }
         list.push(ist.objs[i]);
       }
@@ -1025,7 +1036,7 @@ export class QueryRef {
 
   private _visitInjector(inj: ElementInjector, aggregator: any[]) {
     if (this.protoQueryRef.query.isVarBindingQuery) {
-      this._aggregateVariableBindings(inj, aggregator);
+      this._aggregateVariableBinding(inj, aggregator);
     } else {
       this._aggregateDirective(inj, aggregator);
     }
@@ -1049,7 +1060,7 @@ export class QueryRef {
     }
   }
 
-  private _aggregateVariableBindings(inj: ElementInjector, aggregator: any[]): void {
+  private _aggregateVariableBinding(inj: ElementInjector, aggregator: any[]): void {
     var vb = this.protoQueryRef.query.varBindings;
     for (var i = 0; i < vb.length; ++i) {
       if (inj.hasVariableBinding(vb[i])) {

@@ -11,7 +11,7 @@ import {
   xit,
   SpyObject
 } from 'angular2/test_lib';
-import {Injector, bind} from 'angular2/core';
+import {Injector, provide} from 'angular2/core';
 import {MockBackend, MockConnection} from 'angular2/src/http/backends/mock_backend';
 import {
   BaseRequestOptions,
@@ -22,8 +22,8 @@ import {
   Response,
   ResponseOptions,
   URLSearchParams,
-  JSONP_BINDINGS,
-  HTTP_BINDINGS,
+  JSONP_PROVIDERS,
+  HTTP_PROVIDERS,
   XHRBackend,
   JSONPBackend,
   Http,
@@ -58,14 +58,16 @@ export function main() {
 
     it('should allow using jsonpInjectables and httpInjectables in same injector',
        inject([AsyncTestCompleter], (async) => {
-         parentInjector = Injector.resolveAndCreate(
-             [bind(XHRBackend).toClass(MockBackend), bind(JSONPBackend).toClass(MockBackend)]);
+         parentInjector = Injector.resolveAndCreate([
+           provide(XHRBackend, {asClass: MockBackend}),
+           provide(JSONPBackend, {asClass: MockBackend})
+         ]);
 
          childInjector = parentInjector.resolveAndCreateChild([
-           HTTP_BINDINGS,
-           JSONP_BINDINGS,
-           bind(XHRBackend).toClass(MockBackend),
-           bind(JSONPBackend).toClass(MockBackend)
+           HTTP_PROVIDERS,
+           JSONP_PROVIDERS,
+           provide(XHRBackend, {asClass: MockBackend}),
+           provide(JSONPBackend, {asClass: MockBackend})
          ]);
 
          http = childInjector.get(Http);
@@ -110,16 +112,22 @@ export function main() {
       injector = Injector.resolveAndCreate([
         BaseRequestOptions,
         MockBackend,
-        bind(Http).toFactory(
-            function(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
-              return new Http(backend, defaultOptions);
-            },
-            [MockBackend, BaseRequestOptions]),
-        bind(Jsonp).toFactory(
-            function(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
-              return new Jsonp(backend, defaultOptions);
-            },
-            [MockBackend, BaseRequestOptions])
+        provide(
+            Http,
+            {
+              asFactory: function(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
+                return new Http(backend, defaultOptions);
+              },
+              deps: [MockBackend, BaseRequestOptions]
+            }),
+        provide(
+            Jsonp,
+            {
+              asFactory: function(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
+                return new Jsonp(backend, defaultOptions);
+              },
+              deps: [MockBackend, BaseRequestOptions]
+            })
       ]);
       http = injector.get(Http);
       jsonp = injector.get(Jsonp);

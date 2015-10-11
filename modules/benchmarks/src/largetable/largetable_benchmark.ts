@@ -13,6 +13,7 @@ import {
   Directive,
   View,
   bind,
+  provide,
   NgFor,
   NgSwitch,
   NgSwitchWhen,
@@ -36,9 +37,9 @@ function _createBindings() {
   return [
     bind(BENCHMARK_TYPE)
         .toValue(getStringParameter('benchmarkType')),
-    bind(LARGETABLE_ROWS).toValue(getIntParameter('rows')),
-    bind(LARGETABLE_COLS).toValue(getIntParameter('columns')),
-    bind(APP_VIEW_POOL_CAPACITY).toValue(viewCacheCapacity)
+    provide(LARGETABLE_ROWS, {asValue: getIntParameter('rows')}),
+    provide(LARGETABLE_COLS, {asValue: getIntParameter('columns')}),
+    provide(APP_VIEW_POOL_CAPACITY, {asValue: viewCacheCapacity})
   ];
 }
 

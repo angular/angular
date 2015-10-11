@@ -1,5 +1,5 @@
-import {Injector, bind, OpaqueToken, Binding} from 'angular2/src/core/di';
-import {FORM_BINDINGS} from 'angular2/src/core/forms';
+import {Injector, provide, OpaqueToken, Provider} from 'angular2/src/core/di';
+import {FORM_PROVIDERS} from 'angular2/src/core/forms';
 import {
   NumberWrapper,
   Type,
@@ -42,7 +42,7 @@ import {SETUP_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
 import {WebWorkerEventDispatcher} from 'angular2/src/web_workers/worker/event_dispatcher';
 import {ComponentRef} from 'angular2/src/core/linker/dynamic_component_loader';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {compilerBindings} from 'angular2/src/core/compiler/compiler';
+import {compilerProviders} from 'angular2/src/core/compiler/compiler';
 
 /**
  * Initialize the Angular 'platform' on the page in a manner suitable for applications
@@ -51,25 +51,25 @@ import {compilerBindings} from 'angular2/src/core/compiler/compiler';
  *
  * See {@link PlatformRef} for details on the Angular platform.
  *
- * # Without specified bindings
+ * # Without specified providers
  *
- * If no bindings are specified, `platform`'s behavior depends on whether an existing
+ * If no providers are specified, `platform`'s behavior depends on whether an existing
  * platform exists:
  *
  * If no platform exists, a new one will be created with the default {@link platformBindings}.
  *
- * If a platform already exists, it will be returned (regardless of what bindings it
+ * If a platform already exists, it will be returned (regardless of what providers it
  * was created with). This is a convenience feature, allowing for multiple applications
  * to be loaded into the same platform without awareness of each other.
  *
- * # With specified bindings
+ * # With specified providers
  *
- * It is also possible to specify bindings to be made in the new platform. These bindings
+ * It is also possible to specify providers to be made in the new platform. These providers
  * will be shared between all applications on the page. For example, an abstraction for
  * the browser cookie jar should be bound at the platform level, because there is only one
  * cookie jar regardless of how many applications on the age will be accessing it.
  *
- * If bindings are specified directly, `platform` will create the Angular platform with
+ * If providers are specified directly, `platform` will create the Angular platform with
  * them if a platform did not exist already. If it did exist, however, an error will be
  * thrown.
  *
@@ -80,7 +80,7 @@ import {compilerBindings} from 'angular2/src/core/compiler/compiler';
  * web worker context. Applications that need direct access to the DOM should
  * use `platform` from `core/application_common` instead.
  */
-export function platform(bindings?: Array<Type | Binding | any[]>): PlatformRef {
+export function platform(bindings?: Array<Type | Provider | any[]>): PlatformRef {
   return platformCommon(bindings);
 }
 
@@ -91,30 +91,30 @@ class PrintLogger {
   logGroupEnd() {}
 }
 
-function webWorkerBindings(appComponentType, bus: MessageBus, initData: {[key: string]: any}):
-    Array<Type | Binding | any[]> {
+function webWorkerProviders(appComponentType, bus: MessageBus, initData: {[key: string]: any}):
+    Array<Type | Provider | any[]> {
   return [
-    compilerBindings(),
+    compilerProviders(),
     Serializer,
-    bind(MessageBus).toValue(bus),
-    bind(ClientMessageBrokerFactory).toClass(ClientMessageBrokerFactory_),
-    bind(ServiceMessageBrokerFactory).toClass(ServiceMessageBrokerFactory_),
+    provide(MessageBus, {asValue: bus}),
+    provide(ClientMessageBrokerFactory, {asClass: ClientMessageBrokerFactory_}),
+    provide(ServiceMessageBrokerFactory, {asClass: ServiceMessageBrokerFactory_}),
     WebWorkerRenderer,
-    bind(Renderer).toAlias(WebWorkerRenderer),
-    bind(ON_WEB_WORKER).toValue(true),
+    provide(Renderer, {asAlias: WebWorkerRenderer}),
+    provide(ON_WEB_WORKER, {asValue: true}),
     RenderViewWithFragmentsStore,
     RenderProtoViewRefStore,
-    bind(ExceptionHandler).toFactory(() => new ExceptionHandler(new PrintLogger()), []),
+    provide(ExceptionHandler, {asFactory: () => new ExceptionHandler(new PrintLogger()), deps: []}),
     WebWorkerXHRImpl,
-    bind(XHR).toAlias(WebWorkerXHRImpl),
-    bind(AppRootUrl).toValue(new AppRootUrl(initData['rootUrl'])),
+    provide(XHR, {asAlias: WebWorkerXHRImpl}),
+    provide(AppRootUrl, {asValue: new AppRootUrl(initData['rootUrl'])}),
     WebWorkerEventDispatcher,
-    FORM_BINDINGS
+    FORM_PROVIDERS
   ];
 }
 
 export function bootstrapWebWorkerCommon(appComponentType: Type, bus: MessageBus,
-                                         appBindings: Array<Type | Binding | any[]> = null):
+                                         appProviders: Array<Type | Provider | any[]> = null):
     Promise<ComponentRef> {
   var bootstrapProcess: PromiseCompleter<any> = PromiseWrapper.completer();
   var appPromise = platform().asyncApplication((zone: NgZone) => {
@@ -128,9 +128,9 @@ export function bootstrapWebWorkerCommon(appComponentType: Type, bus: MessageBus
     var emitter = bus.from(SETUP_CHANNEL);
     subscription = ObservableWrapper.subscribe(emitter, (message: {[key: string]: any}) => {
       var bindings =
-          [applicationCommonBindings(), webWorkerBindings(appComponentType, bus, message)];
-      if (isPresent(appBindings)) {
-        bindings.push(appBindings);
+          [applicationCommonBindings(), webWorkerProviders(appComponentType, bus, message)];
+      if (isPresent(appProviders)) {
+        bindings.push(appProviders);
       }
       bootstrapProcess.resolve(bindings);
       ObservableWrapper.dispose(subscription);

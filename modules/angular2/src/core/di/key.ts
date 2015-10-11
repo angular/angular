@@ -16,7 +16,7 @@ export {TypeLiteral} from './type_literal';
  * injector to store created objects in a more efficient way.
  *
  * `Key` should not be created directly. {@link Injector} creates keys automatically when resolving
- * bindings.
+ * providers.
  */
 export class Key {
   /**

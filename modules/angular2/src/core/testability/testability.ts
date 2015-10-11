@@ -72,7 +72,12 @@ export class Testability {
   // check for stability.
   isAngularEventPending(): boolean { return this._isAngularEventPending; }
 
-  findBindings(using: any, binding: string, exactMatch: boolean): any[] {
+  findBindings(using: any, provider: string, exactMatch: boolean): any[] {
+    // TODO(juliemr): implement.
+    return [];
+  }
+
+  findProviders(using: any, provider: string, exactMatch: boolean): any[] {
     // TODO(juliemr): implement.
     return [];
   }

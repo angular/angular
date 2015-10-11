@@ -16,6 +16,7 @@ import {
   SampleDescription,
   Validator,
   bind,
+  provide,
   Injector,
   Metric,
   Options,

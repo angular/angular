@@ -1,5 +1,5 @@
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
-import {bind, Binding} from 'angular2/src/core/di';
+import {bind, provide, Provider} from 'angular2/src/core/di';
 import {WebDriverAdapter} from '../web_driver_adapter';
 
 import * as webdriver from 'selenium-webdriver';
@@ -8,7 +8,7 @@ import * as webdriver from 'selenium-webdriver';
  * Adapter for the selenium-webdriver.
  */
 export class SeleniumWebDriverAdapter extends WebDriverAdapter {
-  static get PROTRACTOR_BINDINGS(): Binding[] { return _PROTRACTOR_BINDINGS; }
+  static get PROTRACTOR_BINDINGS(): Provider[] { return _PROTRACTOR_BINDINGS; }
 
   constructor(private _driver: any) { super(); }
 
@@ -21,8 +21,9 @@ export class SeleniumWebDriverAdapter extends WebDriverAdapter {
         (data) => completer.resolve(convertToLocalProcess(data)), completer.reject);
     return completer.promise;
   }
+  b
 
-  waitFor(callback): Promise<any> {
+      waitFor(callback): Promise<any> {
     return this._convertPromise(this._driver.controlFlow().execute(callback));
   }
 

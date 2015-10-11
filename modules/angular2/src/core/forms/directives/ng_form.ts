@@ -7,7 +7,7 @@ import {
 import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {isPresent, isBlank, CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {Directive} from 'angular2/src/core/metadata';
-import {forwardRef, Binding} from 'angular2/src/core/di';
+import {forwardRef, Provider} from 'angular2/src/core/di';
 import {NgControl} from './ng_control';
 import {Form} from './form_interface';
 import {NgControlGroup} from './ng_control_group';
@@ -15,8 +15,8 @@ import {ControlContainer} from './control_container';
 import {AbstractControl, ControlGroup, Control} from '../model';
 import {setUpControl} from './shared';
 
-const formDirectiveBinding =
-    CONST_EXPR(new Binding(ControlContainer, {toAlias: forwardRef(() => NgForm)}));
+const formDirectiveProvider =
+    CONST_EXPR(new Provider(ControlContainer, {toAlias: forwardRef(() => NgForm)}));
 
 /**
  * If `NgForm` is bound in a component, `<form>` elements in that component will be
@@ -81,7 +81,7 @@ const formDirectiveBinding =
  */
 @Directive({
   selector: 'form:not([ng-no-form]):not([ng-form-model]),ng-form,[ng-form]',
-  bindings: [formDirectiveBinding],
+  bindings: [formDirectiveProvider],
   host: {
     '(submit)': 'onSubmit()',
   },

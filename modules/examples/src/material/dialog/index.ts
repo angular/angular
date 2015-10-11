@@ -1,6 +1,7 @@
 import {bootstrap} from 'angular2/bootstrap';
 import {
   bind,
+  provide,
   ElementRef,
   ComponentRef,
   Component,
@@ -19,7 +20,7 @@ import {isPresent} from 'angular2/src/core/facade/lang';
 
 @Component({
   selector: 'demo-app',
-  viewBindings: [MdDialog],
+  viewProviders: [MdDialog],
 })
 @View({
   templateUrl: './demo_app.html',
@@ -101,5 +102,5 @@ class SimpleDialogComponent {
 
 export function main() {
   commonDemoSetup();
-  bootstrap(DemoApp, [bind(UrlResolver).toValue(new DemoUrlResolver())]);
+  bootstrap(DemoApp, [provide(UrlResolver, {asValue: new DemoUrlResolver()})]);
 }

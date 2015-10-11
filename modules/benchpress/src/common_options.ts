@@ -1,8 +1,8 @@
-import {bind, Binding, OpaqueToken} from 'angular2/src/core/di';
+import {bind, provide, Provider, OpaqueToken} from 'angular2/src/core/di';
 import {DateWrapper} from 'angular2/src/core/facade/lang';
 
 export class Options {
-  static get DEFAULT_BINDINGS(): Binding[] { return _DEFAULT_BINDINGS; }
+  static get DEFAULT_PROVIDERS(): Provider[] { return _DEFAULT_PROVIDERS; }
   // TODO(tbosch): use static initializer when our transpiler supports it
   static get SAMPLE_ID() { return _SAMPLE_ID; }
   // TODO(tbosch): use static initializer when our transpiler supports it
@@ -42,13 +42,13 @@ var _NOW = new OpaqueToken('Options.now');
 var _WRITE_FILE = new OpaqueToken('Options.writeFile');
 var _CAPTURE_FRAMES = new OpaqueToken('Options.frameCapture');
 
-var _DEFAULT_BINDINGS = [
+var _DEFAULT_PROVIDERS = [
   bind(_DEFAULT_DESCRIPTION)
       .toValue({}),
-  bind(_SAMPLE_DESCRIPTION).toValue({}),
-  bind(_FORCE_GC).toValue(false),
-  bind(_PREPARE).toValue(false),
-  bind(_MICRO_METRICS).toValue({}),
-  bind(_NOW).toValue(() => DateWrapper.now()),
-  bind(_CAPTURE_FRAMES).toValue(false)
+  provide(_SAMPLE_DESCRIPTION, {asValue: {}}),
+  provide(_FORCE_GC, {asValue: false}),
+  provide(_PREPARE, {asValue: false}),
+  provide(_MICRO_METRICS, {asValue: {}}),
+  provide(_NOW, {asValue: () => DateWrapper.now()}),
+  provide(_CAPTURE_FRAMES, {asValue: false})
 ];

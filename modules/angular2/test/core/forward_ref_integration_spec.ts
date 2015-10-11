@@ -12,6 +12,7 @@ import {
 } from 'angular2/test_lib';
 import {
   bind,
+  provide,
   forwardRef,
   resolveForwardRef,
   Component,
@@ -39,7 +40,7 @@ export function main() {
   });
 }
 
-@Component({selector: 'app', viewBindings: [forwardRef(() => Frame)]})
+@Component({selector: 'app', viewProviders: [forwardRef(() => Frame)]})
 @View({
   template: `<door><lock></lock></door>`,
   directives: [forwardRef(() => Door), forwardRef(() => Lock)]

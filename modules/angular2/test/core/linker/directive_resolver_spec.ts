@@ -47,8 +47,6 @@ class SomeDirectiveWithProperties {
 class SomeDirectiveWithEvents {
 }
 
-
-
 @Directive({selector: 'someDirective'})
 class SomeDirectiveWithSetterProps {
   @Input("renamed")
@@ -143,11 +141,6 @@ export function main() {
         expect(directiveMetadata.inputs).toEqual(['a: renamed']);
       });
 
-      it('should use properties as inputs', () => {
-        var directiveMetadata = resolver.resolve(SomeDirectiveWithProperties);
-        expect(directiveMetadata.inputs).toEqual(['a']);
-      });
-
     });
 
     describe('outputs', () => {
@@ -159,11 +152,6 @@ export function main() {
       it('should work with getters and setters', () => {
         var directiveMetadata = resolver.resolve(SomeDirectiveWithGetterOutputs);
         expect(directiveMetadata.outputs).toEqual(['a: renamed']);
-      });
-
-      it('should use events as outputs', () => {
-        var directiveMetadata = resolver.resolve(SomeDirectiveWithEvents);
-        expect(directiveMetadata.outputs).toEqual(['a']);
       });
     });
 

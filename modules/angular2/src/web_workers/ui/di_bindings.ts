@@ -1,6 +1,6 @@
 // TODO (jteplitz602): This whole file is nearly identical to core/application.ts.
 // There should be a way to refactor application so that this file is unnecessary. See #3277
-import {Injector, bind, Binding} from "angular2/src/core/di";
+import {Injector, provide, Provider} from "angular2/src/core/di";
 import {DEFAULT_PIPES} from 'angular2/src/core/pipes';
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
 import {BrowserDetails} from 'angular2/src/animate/browser_details';
@@ -19,7 +19,7 @@ import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view
 import {Renderer} from 'angular2/src/core/render/api';
 import {AppRootUrl} from 'angular2/src/core/compiler/app_root_url';
 import {DomRenderer, DomRenderer_, DOCUMENT} from 'angular2/src/core/render/render';
-import {APP_ID_RANDOM_BINDING} from 'angular2/src/core/application_tokens';
+import {APP_ID_RANDOM_PROVIDER} from 'angular2/src/core/application_tokens';
 import {ElementSchemaRegistry} from 'angular2/src/core/compiler/schema/element_schema_registry';
 import {
   DomElementSchemaRegistry
@@ -68,31 +68,30 @@ import {
 var _rootInjector: Injector;
 
 // Contains everything that is safe to share between applications.
-var _rootBindings = [bind(Reflector).toValue(reflector)];
+var _rootProviders = [provide(Reflector, {asValue: reflector})];
 
 // TODO: This code is nearly identical to core/application. There should be a way to only write it
 // once
-function _injectorBindings(): any[] {
+function _injectorProviders(): any[] {
   return [
-    bind(DOCUMENT)
-        .toValue(DOM.defaultDoc()),
+    provide(DOCUMENT, {asValue: DOM.defaultDoc()}),
     EventManager,
-    new Binding(EVENT_MANAGER_PLUGINS, {toClass: DomEventsPlugin, multi: true}),
-    new Binding(EVENT_MANAGER_PLUGINS, {toClass: KeyEventsPlugin, multi: true}),
-    new Binding(EVENT_MANAGER_PLUGINS, {toClass: HammerGesturesPlugin, multi: true}),
-    bind(DomRenderer).toClass(DomRenderer_),
-    bind(Renderer).toAlias(DomRenderer),
-    APP_ID_RANDOM_BINDING,
+    new Provider(EVENT_MANAGER_PLUGINS, {toClass: DomEventsPlugin, multi: true}),
+    new Provider(EVENT_MANAGER_PLUGINS, {toClass: KeyEventsPlugin, multi: true}),
+    new Provider(EVENT_MANAGER_PLUGINS, {toClass: HammerGesturesPlugin, multi: true}),
+    provide(DomRenderer, {asClass: DomRenderer_}),
+    provide(Renderer, {asAlias: DomRenderer}),
+    APP_ID_RANDOM_PROVIDER,
     DomSharedStylesHost,
-    bind(SharedStylesHost).toAlias(DomSharedStylesHost),
+    provide(SharedStylesHost, {asAlias: DomSharedStylesHost}),
     Serializer,
-    bind(ON_WEB_WORKER).toValue(false),
-    bind(ElementSchemaRegistry).toValue(new DomElementSchemaRegistry()),
+    provide(ON_WEB_WORKER, {asValue: false}),
+    provide(ElementSchemaRegistry, {asValue: new DomElementSchemaRegistry()}),
     RenderViewWithFragmentsStore,
     RenderProtoViewRefStore,
     AppViewPool,
-    bind(APP_VIEW_POOL_CAPACITY).toValue(10000),
-    bind(AppViewManager).toClass(AppViewManager_),
+    provide(APP_VIEW_POOL_CAPACITY, {asValue: 10000}),
+    provide(AppViewManager, {asClass: AppViewManager_}),
     AppViewManagerUtils,
     AppViewListener,
     ProtoViewFactory,
@@ -101,28 +100,28 @@ function _injectorBindings(): any[] {
     DirectiveResolver,
     Parser,
     Lexer,
-    bind(ExceptionHandler).toFactory(() => new ExceptionHandler(DOM), []),
-    bind(XHR).toValue(new XHRImpl()),
+    provide(ExceptionHandler, {asFactory: () => new ExceptionHandler(DOM), deps: []}),
+    provide(XHR, {asValue: new XHRImpl()}),
     UrlResolver,
-    bind(DynamicComponentLoader).toClass(DynamicComponentLoader_),
+    provide(DynamicComponentLoader, {asClass: DynamicComponentLoader_}),
     Testability,
     AnchorBasedAppRootUrl,
-    bind(AppRootUrl).toAlias(AnchorBasedAppRootUrl),
+    provide(AppRootUrl, {asAlias: AnchorBasedAppRootUrl}),
     WebWorkerApplication,
     WebWorkerSetup,
     MessageBasedXHRImpl,
     MessageBasedRenderer,
-    bind(ServiceMessageBrokerFactory).toClass(ServiceMessageBrokerFactory_),
-    bind(ClientMessageBrokerFactory).toClass(ClientMessageBrokerFactory_),
+    provide(ServiceMessageBrokerFactory, {asClass: ServiceMessageBrokerFactory_}),
+    provide(ClientMessageBrokerFactory, {asClass: ClientMessageBrokerFactory_}),
     BrowserDetails,
-    AnimationBuilder,
+    AnimationBuilder
   ];
 }
 
 export function createInjector(zone: NgZone, bus: MessageBus): Injector {
   BrowserDomAdapter.makeCurrent();
-  _rootBindings.push(bind(NgZone).toValue(zone));
-  _rootBindings.push(bind(MessageBus).toValue(bus));
-  var injector: Injector = Injector.resolveAndCreate(_rootBindings);
-  return injector.resolveAndCreateChild(_injectorBindings());
+  _rootProviders.push(provide(NgZone, {asValue: zone}));
+  _rootProviders.push(provide(MessageBus, {asValue: bus}));
+  var injector: Injector = Injector.resolveAndCreate(_rootProviders);
+  return injector.resolveAndCreateChild(_injectorProviders());
 }

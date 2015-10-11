@@ -41,12 +41,17 @@ import {FormBuilder} from './forms/form_builder';
 import {CONST_EXPR, Type} from './facade/lang';
 
 /**
- * Shorthand set of bindings used for building Angular forms.
+ * Shorthand set of providers used for building Angular forms.
  *
  * ### Example:
  *
  * ```typescript
- * bootstrap(MyApp, [FORM_BINDINGS]);
+ * bootstrap(MyApp, [FORM_PROVIDERS]);
  * ```
  */
-export const FORM_BINDINGS: Type[] = CONST_EXPR([FormBuilder]);
+export const FORM_PROVIDERS: Type[] = CONST_EXPR([FormBuilder]);
+
+/**
+ * @deprecated
+ */
+export const FORM_BINDINGS = FORM_PROVIDERS;

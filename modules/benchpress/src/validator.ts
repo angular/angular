@@ -1,4 +1,4 @@
-import {bind, Binding} from 'angular2/src/core/di';
+import {bind, provide, Provider} from 'angular2/src/core/di';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
 import {MeasureValues} from './measure_values';
@@ -9,7 +9,7 @@ import {MeasureValues} from './measure_values';
  * in the correct way.
  */
 export abstract class Validator {
-  static bindTo(delegateToken): Binding[] {
+  static bindTo(delegateToken): Provider[] {
     return [bind(Validator).toFactory((delegate) => delegate, [delegateToken])];
   }
 
