@@ -437,9 +437,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    * ```typescript
    * @Component({
    *   selector: 'bank-account',
-   *   inputs: ['bankName', 'id: account-id']
-   * })
-   * @View({
+   *   inputs: ['bankName', 'id: account-id'],
    *   template: `
    *     Bank Name: {{bankName}}
    *     Account Id: {{id}}
@@ -453,8 +451,8 @@ export class DirectiveMetadata extends InjectableMetadata {
    *   normalizedBankName: string;
    * }
    *
-   * @Component({selector: 'app'})
-   * @View({
+   * @Component({
+   *   selector: 'app',
    *   template: `
    *     <bank-account bank-name="RBC" account-id="4747"></bank-account>
    *   `,
@@ -503,8 +501,8 @@ export class DirectiveMetadata extends InjectableMetadata {
    *   }
    * }
    *
-   * @Component({selector: 'app'})
-   * @View({
+   * @Component({
+   *   selector: 'app',
    *   template: `
    *     <interval-dir (every-second)="everySecond()" (every-five-seconds)="everyFiveSeconds()">
    *     </interval-dir>
@@ -564,8 +562,8 @@ export class DirectiveMetadata extends InjectableMetadata {
    *   }
    * }
    *
-   * @Component({selector: 'app'})
-   * @View({
+   * @Component({
+   *   selector: 'app',
    *   template: `<button counting>Increment</button>`,
    *   directives: [CountClicks]
    * })
@@ -600,8 +598,8 @@ export class DirectiveMetadata extends InjectableMetadata {
    *   get invalid { return this.control.invalid; }
    * }
    *
-   * @Component({selector: 'app'})
-   * @View({
+   * @Component({
+   *   selector: 'app',
    *   template: `<input [(ng-model)]="prop">`,
    *   directives: [FORM_DIRECTIVES, NgModelStatus]
    * })
@@ -688,8 +686,6 @@ export class DirectiveMetadata extends InjectableMetadata {
    *
    * @Component({
    *   selector: 'main',
-   * })
-   * @View({
    *   template: `<child-dir #c="child"></child-dir>`,
    *   directives: [ChildDir]
    * })
@@ -735,9 +731,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    *   queries: {
    *     contentChildren: new ContentChildren(ChildDirective),
    *     viewChildren: new ViewChildren(ChildDirective)
-   *   }
-   * })
-   * @View({
+   *   },
    *   template: '<child-directive></child-directive>',
    *   directives: [ChildDirective]
    * })
@@ -812,9 +806,7 @@ export class DirectiveMetadata extends InjectableMetadata {
  *
  * ```
  * @Component({
- *   selector: 'greet'
- * })
- * @View({
+ *   selector: 'greet',
  *   template: 'Hello {{name}}!'
  * })
  * class Greet {
@@ -869,9 +861,7 @@ export class ComponentMetadata extends DirectiveMetadata {
    *   selector: 'greet',
    *   viewProviders: [
    *     Greeter
-   *   ]
-   * })
-   * @View({
+   *   ],
    *   template: `<needs-greeter></needs-greeter>`,
    *   directives: [NeedsGreeter]
    * })
@@ -998,8 +988,8 @@ export class PipeMetadata extends InjectableMetadata {
  * The following example creates a component with two input properties.
  *
  * ```typescript
- * @Component({selector: 'bank-account'})
- * @View({
+ * @Component({
+ *   selector: 'bank-account',
  *   template: `
  *     Bank Name: {{bankName}}
  *     Account Id: {{id}}
@@ -1013,8 +1003,8 @@ export class PipeMetadata extends InjectableMetadata {
  *   normalizedBankName: string;
  * }
  *
- * @Component({selector: 'app'})
- * @View({
+ * @Component({
+ *   selector: 'app',
  *   template: `
  *     <bank-account bank-name="RBC" account-id="4747"></bank-account>
  *   `,
@@ -1060,8 +1050,8 @@ export class InputMetadata {
  *   }
  * }
  *
- * @Component({selector: 'app'})
- * @View({
+ * @Component({
+ *   selector: 'app',
  *   template: `
  *     <interval-dir (every-second)="everySecond()" (every-five-seconds)="everyFiveSeconds()">
  *     </interval-dir>
@@ -1103,8 +1093,8 @@ export class OutputMetadata {
  *   @HostBinding('[class.invalid]') get invalid { return this.control.invalid; }
  * }
  *
- * @Component({selector: 'app'})
- * @View({
+ * @Component({
+ *   selector: 'app',
  *   template: `<input [(ng-model)]="prop">`,
  *   directives: [FORM_DIRECTIVES, NgModelStatus]
  * })
@@ -1144,8 +1134,8 @@ export class HostBindingMetadata {
  *   }
  * }
  *
- * @Component({selector: 'app'})
- * @View({
+ * @Component({
+ *   selector: 'app',
  *   template: `<button counting>Increment</button>`,
  *   directives: [CountClicks]
  * })

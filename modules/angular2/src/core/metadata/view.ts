@@ -48,9 +48,7 @@ export var VIEW_ENCAPSULATION_VALUES =
  *
  * ```
  * @Component({
- *   selector: 'greet'
- * })
- * @View({
+ *   selector: 'greet',
  *   template: 'Hello {{name}}!',
  *   directives: [GreetUser, Bold]
  * })
@@ -102,9 +100,7 @@ export class ViewMetadata {
    *
    * ```javascript
    * @Component({
-   *     selector: 'my-component'
-   *   })
-   * @View({
+   *   selector: 'my-component',
    *   directives: [NgFor]
    *   template: '
    *   <ul>

@@ -10,8 +10,11 @@ export abstract class ChangeDetectorRef {
    * ### Example ([live demo](http://plnkr.co/edit/GC512b?p=preview))
    *
    * ```typescript
-   * @Component({selector: 'cmp', changeDetection: ChangeDetectionStrategy.OnPush})
-   * @View({template: `Number of ticks: {{numberOfTicks}}`})
+   * @Component({
+   *   selector: 'cmp',
+   *   changeDetection: ChangeDetectionStrategy.OnPush,
+   *   template: `Number of ticks: {{numberOfTicks}}`
+   * })
    * class Cmp {
    *   numberOfTicks = 0;
    *
@@ -26,9 +29,7 @@ export abstract class ChangeDetectorRef {
    *
    * @Component({
    *   selector: 'app',
-   *   changeDetection: ChangeDetectionStrategy.OnPush
-   * })
-   * @View({
+   *   changeDetection: ChangeDetectionStrategy.OnPush,
    *   template: `
    *     <cmp><cmp>
    *   `,
@@ -68,8 +69,8 @@ export abstract class ChangeDetectorRef {
    *   }
    * }
    *
-   * @Component({selector: 'giant-list'})
-   * @View({
+   * @Component({
+   *   selector: 'giant-list',
    *   template: `
    *     <li *ng-for="#d of dataProvider.data">Data {{d}}</lig>
    *   `,
@@ -85,9 +86,8 @@ export abstract class ChangeDetectorRef {
    * }
    *
    * @Component({
-   *   selector: 'app', providers: [DataProvider]
-   * })
-   * @View({
+   *   selector: 'app',
+   *   providers: [DataProvider],
    *   template: `
    *     <giant-list><giant-list>
    *   `,
@@ -149,8 +149,9 @@ export abstract class ChangeDetectorRef {
    *   }
    * }
    *
-   * @Component({selector: 'live-data', inputs: ['live']})
-   * @View({
+   * @Component({
+   *   selector: 'live-data',
+   *   inputs: ['live'],
    *   template: `Data: {{dataProvider.data}}`
    * })
    * class LiveData {
@@ -166,9 +167,7 @@ export abstract class ChangeDetectorRef {
    *
    * @Component({
    *   selector: 'app',
-   *   providers: [DataProvider]
-   * })
-   * @View({
+   *   providers: [DataProvider],
    *   template: `
    *     Live Update: <input type="checkbox" [(ng-model)]="live">
    *     <live-data [live]="live"><live-data>

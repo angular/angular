@@ -26,9 +26,7 @@ export interface NgZoneZone extends Zone {
  * import {Component, View, NgIf, NgZone} from 'angular2/angular2';
  *
  * @Component({
- *   selector: 'ng-zone-demo'
- * })
- * @View({
+ *   selector: 'ng-zone-demo'.
  *   template: `
  *     <h2>Demo: NgZone</h2>
  *

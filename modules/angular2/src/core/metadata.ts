@@ -179,10 +179,9 @@ export interface DirectiveFactory {
  * ## Example as TypeScript Decorator
  *
  * ```
- * import {Component, View} from "angular2/angular2";
+ * import {Component} from "angular2/angular2";
  *
  * @Component({...})
- * @View({...})
  * class MyComponent {
  *   constructor() {
  *     ...
@@ -195,7 +194,6 @@ export interface DirectiveFactory {
  * ```
  * var MyComponent = ng
  *   .Component({...})
- *   .View({...})
  *   .Class({
  *     constructor: function() {
  *       ...
@@ -211,8 +209,7 @@ export interface DirectiveFactory {
  * };
  *
  * MyComponent.annotations = [
- *   new ng.Component({...}),
- *   new ng.View({...})
+ *   new ng.Component({...})
  * ]
  * ```
  */
@@ -338,10 +335,9 @@ export interface ViewFactory {
  * ## Example as TypeScript Decorator
  *
  * ```
- * import {Attribute, Component, View} from "angular2/angular2";
+ * import {Attribute, Component} from "angular2/angular2";
  *
  * @Component({...})
- * @View({...})
  * class MyComponent {
  *   constructor(@Attribute('title') title: string) {
  *     ...
@@ -354,7 +350,6 @@ export interface ViewFactory {
  * ```
  * var MyComponent = ng
  *   .Component({...})
- *   .View({...})
  *   .Class({
  *     constructor: [new ng.Attribute('title'), function(title) {
  *       ...
@@ -370,8 +365,7 @@ export interface ViewFactory {
  * };
  *
  * MyComponent.annotations = [
- *   new ng.Component({...}),
- *   new ng.View({...})
+ *   new ng.Component({...})
  * ]
  * MyComponent.parameters = [
  *   [new ng.Attribute('title')]
@@ -389,10 +383,9 @@ export interface AttributeFactory {
  * ### Example as TypeScript Decorator
  *
  * ```
- * import {Query, QueryList, Component, View} from "angular2/angular2";
+ * import {Query, QueryList, Component} from "angular2/angular2";
  *
  * @Component({...})
- * @View({...})
  * class MyComponent {
  *   constructor(@Query(SomeType) queryList: QueryList<SomeType>) {
  *     ...
@@ -405,7 +398,6 @@ export interface AttributeFactory {
  * ```
  * var MyComponent = ng
  *   .Component({...})
- *   .View({...})
  *   .Class({
  *     constructor: [new ng.Query(SomeType), function(queryList) {
  *       ...
@@ -421,8 +413,7 @@ export interface AttributeFactory {
  * };
  *
  * MyComponent.annotations = [
- *   new ng.Component({...}),
- *   new ng.View({...})
+ *   new ng.Component({...})
  * ]
  * MyComponent.parameters = [
  *   [new ng.Query(SomeType)]

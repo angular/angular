@@ -138,9 +138,7 @@ export function platform(bindings?: Array<Type | Provider | any[]>): PlatformRef
  *
  * ```
  * @Component({
- *    selector: 'my-app'
- * })
- * @View({
+ *    selector: 'my-app',
  *    template: 'Hello {{ name }}!'
  * })
  * class MyApp {

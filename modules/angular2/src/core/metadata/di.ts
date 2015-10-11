@@ -73,15 +73,12 @@ export class AttributeMetadata extends DependencyMetadata {
  *   selector: 'pane',
  *   inputs: ['title']
  * })
- * @View(...)
  * class Pane {
  *   title:string;
  * }
  *
  * @Component({
- *   selector: 'tabs'
- * })
- * @View({
+ *  selector: 'tabs',
  *  template: `
  *    <ul>
  *      <li *ng-for="#pane of panes">{{pane.title}}</li>
@@ -105,10 +102,7 @@ export class AttributeMetadata extends DependencyMetadata {
  *   <div #findme>...</div>
  * </seeker>
  *
- * @Component({
- *   selector: 'foo'
- * })
- * @View(...)
+ * @Component({ selector: 'foo' })
  * class seeker {
  *   constructor(@Query('findme') elList: QueryList<ElementRef>) {...}
  * }
@@ -128,7 +122,6 @@ export class AttributeMetadata extends DependencyMetadata {
  *  @Component({
  *   selector: 'foo'
  * })
- * @View(...)
  * class Seeker {
  *   constructor(@Query('findMe, findMeToo') elList: QueryList<ElementRef>) {...}
  * }
@@ -316,9 +309,10 @@ export class ViewQueryMetadata extends QueryMetadata {
  *
  * ```
  * @Component({
- *   selector: 'someDir'
+ *   selector: 'someDir',
+ *   templateUrl: 'someTemplate',
+ *   directives: [ItemDirective]
  * })
- * @View({templateUrl: 'someTemplate', directives: [ItemDirective]})
  * class SomeDir {
  *   @ViewChildren(ItemDirective) viewChildren: QueryList<ItemDirective>;
  *
@@ -342,9 +336,10 @@ export class ViewChildrenMetadata extends ViewQueryMetadata {
  *
  * ```
  * @Component({
- *   selector: 'someDir'
+ *   selector: 'someDir',
+ *   templateUrl: 'someTemplate',
+ *   directives: [ItemDirective]
  * })
- * @View({templateUrl: 'someTemplate', directives: [ItemDirective]})
  * class SomeDir {
  *   @ViewChild(ItemDirective) viewChild:ItemDirective;
  *

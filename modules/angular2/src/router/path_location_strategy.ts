@@ -23,7 +23,7 @@ import {LocationStrategy} from './location_strategy';
  * ## Example
  *
  * ```
- * import {Component, View, provide} from 'angular2/angular2';
+ * import {Component, provide} from 'angular2/angular2';
  * import {
  *   APP_BASE_HREF
  *   ROUTER_DIRECTIVES,
@@ -32,8 +32,7 @@ import {LocationStrategy} from './location_strategy';
  *   Location
  * } from 'angular2/router';
  *
- * @Component({...})
- * @View({directives: [ROUTER_DIRECTIVES]})
+ * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([
  *  {...},
  * ])

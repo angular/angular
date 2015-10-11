@@ -16,11 +16,10 @@ import {OpaqueToken, Injectable, Optional, Inject} from 'angular2/src/core/di';
  * ## Example
  *
  * ```
- * import {Component, View} from 'angular2/angular2';
+ * import {Component} from 'angular2/angular2';
  * import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
  *
- * @Component({...})
- * @View({directives: [ROUTER_DIRECTIVES]})
+ * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([
  *  {...},
  * ])
@@ -56,7 +55,7 @@ export const APP_BASE_HREF: OpaqueToken = CONST_EXPR(new OpaqueToken('appBaseHre
  * ## Example
  *
  * ```
- * import {Component, View} from 'angular2/angular2';
+ * import {Component} from 'angular2/angular2';
  * import {
  *   ROUTER_DIRECTIVES,
  *   ROUTER_PROVIDERS,
@@ -64,8 +63,7 @@ export const APP_BASE_HREF: OpaqueToken = CONST_EXPR(new OpaqueToken('appBaseHre
  *   Location
  * } from 'angular2/router';
  *
- * @Component({...})
- * @View({directives: [ROUTER_DIRECTIVES]})
+ * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([
  *  {...},
  * ])

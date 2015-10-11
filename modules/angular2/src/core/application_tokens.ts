@@ -12,7 +12,6 @@ export const APP_COMPONENT_REF_PROMISE = CONST_EXPR(new OpaqueToken('Promise<Com
  *
  * ```
  * @Component(...)
- * @View(...)
  * class MyApp {
  *   ...
  * }

@@ -40,11 +40,9 @@ export {NgControlStatus} from './directives/ng_control_status';
  * ### Example:
  *
  * ```typescript
- * @View({
- *   directives: [FORM_DIRECTIVES]
- * })
  * @Component({
- *   selector: 'my-app'
+ *   selector: 'my-app',
+ *   directives: [FORM_DIRECTIVES]
  * })
  * class MyApp {}
  * ```

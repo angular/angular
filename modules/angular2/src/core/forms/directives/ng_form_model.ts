@@ -25,9 +25,7 @@ const formDirectiveProvider =
  *
  *  ```typescript
  * @Component({
- *   selector: 'my-app'
- * })
- * @View({
+ *   selector: 'my-app',
  *   template: `
  *     <div>
  *       <h2>NgFormModel Example</h2>
@@ -60,8 +58,8 @@ const formDirectiveProvider =
  * We can also use ng-model to bind a domain model to the form.
  *
  *  ```typescript
- * @Component({selector: "login-comp"})
- * @View({
+ * @Component({
+ *      selector: "login-comp",
  *      directives: [FORM_DIRECTIVES],
  *      template: `
  *        <form [ng-form-model]='loginForm'>

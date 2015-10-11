@@ -10,8 +10,8 @@ import {BaseException, WrappedException} from "angular2/src/core/facade/exceptio
  * ### Example
  *
  * ```typescript
- * @Component({selector: 'parent'})
- * @View({
+ * @Component({
+ *   selector: 'parent',
  *   template: `
  *     <child [prop]="parentProp"></child>
  *   `,
@@ -55,9 +55,7 @@ export class ExpressionChangedAfterItHasBeenCheckedException extends BaseExcepti
  * }
  *
  * @Component({
- *   selector: 'app'
- * })
- * @View({
+ *   selector: 'app',
  *   template: `
  *     <child [prop]="field.first"></child>
  *   `,

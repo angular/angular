@@ -40,8 +40,11 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  *
  * ```typescript
  * import {Http, HTTP_PROVIDERS} from 'angular2/http';
- * @Component({selector: 'http-app', viewProviders: [HTTP_PROVIDERS]})
- * @View({templateUrl: 'people.html'})
+ * @Component({
+ *   selector: 'http-app',
+ *   viewProviders: [HTTP_PROVIDERS],
+ *   templateUrl: 'people.html'
+ * })
  * class PeopleComponent {
  *   constructor(http: Http) {
  *     http.get('people.json')

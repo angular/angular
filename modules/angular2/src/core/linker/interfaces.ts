@@ -50,8 +50,10 @@ export var LIFECYCLE_HOOKS_VALUES = [
  * ### Example ([live example](http://plnkr.co/edit/AHrB6opLqHDBPkt4KpdT?p=preview)):
  *
  * ```typescript
- * @Component({selector: 'my-cmp'})
- * @View({template: `<p>myProp = {{myProp}}</p>`})
+ * @Component({
+ *   selector: 'my-cmp',
+ *   template: `<p>myProp = {{myProp}}</p>`
+ * })
  * class MyComponent implements OnChanges {
  *   @Property() myProp: any;
  *
@@ -60,8 +62,8 @@ export var LIFECYCLE_HOOKS_VALUES = [
  *   }
  * }
  *
- * @Component({selector: 'app'})
- * @View({
+ * @Component({
+ *   selector: 'app',
  *   template: `
  *     <button (click)="value = value + 1">Change MyComponent</button>
  *     <my-cmp [my-prop]="value"></my-cmp>`,
@@ -87,8 +89,10 @@ export interface OnChanges { onChanges(changes: {[key: string]: SimpleChange}); 
  * ### Example ([live example](http://plnkr.co/edit/1MBypRryXd64v4pV03Yn?p=preview))
  *
  * ```typescript
- * @Component({selector: 'my-cmp'})
- * @View({template: `<p>my-component</p>`})
+ * @Component({
+ *   selector: 'my-cmp',
+ *   template: `<p>my-component</p>`
+ * })
  * class MyComponent implements OnInit, OnDestroy {
  *   onInit() {
  *     console.log('onInit');
@@ -99,8 +103,8 @@ export interface OnChanges { onChanges(changes: {[key: string]: SimpleChange}); 
  *   }
  * }
  *
- * @Component({selector: 'app'})
- * @View({
+ * @Component({
+ *   selector: 'app',
  *   template: `
  *     <button (click)="hasChild = !hasChild">
  *       {{hasChild ? 'Destroy' : 'Create'}} MyComponent
@@ -141,8 +145,8 @@ export interface OnInit { onInit(); }
  * array `list`:
  *
  * ```typescript
- * @Component({selector: 'custom-check'})
- * @View({
+ * @Component({
+ *   selector: 'custom-check',
  *   template: `
  *     <p>Changes:</p>
  *     <ul>
@@ -169,8 +173,8 @@ export interface OnInit { onInit(); }
  *   }
  * }
  *
- * @Component({selector: 'app'})
- * @View({
+ * @Component({
+ *   selector: 'app',
  *   template: `
  *     <button (click)="list.push(list.length)">Push</button>
  *     <button (click)="list.pop()">Pop</button>
@@ -193,8 +197,10 @@ export interface DoCheck { doCheck(); }
  * ### Example ([live example](http://plnkr.co/edit/1MBypRryXd64v4pV03Yn?p=preview))
  *
  * ```typesript
- * @Component({selector: 'my-cmp'})
- * @View({template: `<p>my-component</p>`})
+ * @Component({
+ *   selector: 'my-cmp',
+ *   template: `<p>my-component</p>`
+ * })
  * class MyComponent implements OnInit, OnDestroy {
  *   onInit() {
  *     console.log('onInit');
@@ -205,8 +211,8 @@ export interface DoCheck { doCheck(); }
  *   }
  * }
  *
- * @Component({selector: 'app'})
- * @View({
+ * @Component({
+ *   selector: 'app',
  *   template: `
  *     <button (click)="hasChild = !hasChild">
  *       {{hasChild ? 'Destroy' : 'Create'}} MyComponent
@@ -230,14 +236,18 @@ export interface OnDestroy { onDestroy(); }
  * ### Example ([live demo](http://plnkr.co/edit/plamXUpsLQbIXpViZhUO?p=preview))
  *
  * ```typescript
- * @Component({selector: 'child-cmp'})
- * @View({template: `{{where}} child`})
+ * @Component({
+ *   selector: 'child-cmp',
+ *   template: `{{where}} child`
+ * })
  * class ChildComponent {
  *   @Property() where: string;
  * }
  *
- * @Component({selector: 'parent-cmp'})
- * @View({template: `<ng-content></ng-content>`})
+ * @Component({
+ *   selector: 'parent-cmp',
+ *   template: `<ng-content></ng-content>`
+ * })
  * class ParentComponent implements AfterContentInit {
  *   @ContentChild(ChildComponent) contentChild: ChildComponent;
  *
@@ -256,8 +266,8 @@ export interface OnDestroy { onDestroy(); }
  *   }
  * }
  *
- * @Component({selector: 'app'})
- * @View({
+ * @Component({
+ *   selector: 'app',
  *   template: `
  *     <parent-cmp>
  *       <child-cmp where="content"></child-cmp>
@@ -278,14 +288,12 @@ export interface AfterContentInit { afterContentInit(); }
  * ### Example ([live demo](http://plnkr.co/edit/tGdrytNEKQnecIPkD7NU?p=preview))
  *
  * ```typescript
- * @Component({selector: 'child-cmp'})
- * @View({template: `{{where}} child`})
+ * @Component({selector: 'child-cmp', template: `{{where}} child`})
  * class ChildComponent {
  *   @Property() where: string;
  * }
  *
- * @Component({selector: 'parent-cmp'})
- * @View({template: `<ng-content></ng-content>`})
+ * @Component({selector: 'parent-cmp', template: `<ng-content></ng-content>`})
  * class ParentComponent implements AfterContentChecked {
  *   @ContentChild(ChildComponent) contentChild: ChildComponent;
  *
@@ -304,8 +312,8 @@ export interface AfterContentInit { afterContentInit(); }
  *   }
  * }
  *
- * @Component({selector: 'app'})
- * @View({
+ * @Component({
+ *   selector: 'app',
  *   template: `
  *     <parent-cmp>
  *       <button (click)="hasContent = !hasContent">Toggle content child</button>
@@ -328,14 +336,13 @@ export interface AfterContentChecked { afterContentChecked(); }
  * ### Example ([live demo](http://plnkr.co/edit/LhTKVMEM0fkJgyp4CI1W?p=preview))
  *
  * ```typescript
- * @Component({selector: 'child-cmp'})
- * @View({template: `{{where}} child`})
+ * @Component({selector: 'child-cmp', template: `{{where}} child`})
  * class ChildComponent {
  *   @Property() where: string;
  * }
  *
- * @Component({selector: 'parent-cmp'})
- * @View({
+ * @Component({
+ *   selector: 'parent-cmp',
  *   template: `<child-cmp where="view"></child-cmp>`,
  *   directives: [ChildComponent]
  * })
@@ -357,8 +364,8 @@ export interface AfterContentChecked { afterContentChecked(); }
  *   }
  * }
  *
- * @Component({selector: 'app'})
- * @View({
+ * @Component({
+ *   selector: 'app',
  *   template: `<parent-cmp></parent-cmp>`,
  *   directives: [ParentComponent]
  * })
@@ -376,14 +383,13 @@ export interface AfterViewInit { afterViewInit(); }
  * ### Example ([live demo](http://plnkr.co/edit/0qDGHcPQkc25CXhTNzKU?p=preview))
  *
  * ```typescript
- * @Component({selector: 'child-cmp'})
- * @View({template: `{{where}} child`})
+ * @Component({selector: 'child-cmp', template: `{{where}} child`})
  * class ChildComponent {
  *   @Property() where: string;
  * }
  *
- * @Component({selector: 'parent-cmp'})
- * @View({
+ * @Component({
+ *   selector: 'parent-cmp',
  *   template: `
  *     <button (click)="showView = !showView">Toggle view child</button>
  *     <child-cmp *ng-if="showView" where="view"></child-cmp>`,
@@ -408,8 +414,8 @@ export interface AfterViewInit { afterViewInit(); }
  *   }
  * }
  *
- * @Component({selector: 'app'})
- * @View({
+ * @Component({
+ *   selector: 'app',
  *   template: `<parent-cmp></parent-cmp>`,
  *   directives: [ParentComponent]
  * })

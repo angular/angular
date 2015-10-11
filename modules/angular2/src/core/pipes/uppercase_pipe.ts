@@ -13,9 +13,7 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
  *
  *  ```
  * @Component({
- *   selector: "username-cmp"
- * })
- * @View({
+ *   selector: "username-cmp",
  *   template: "Username: {{ user | uppercase }}"
  * })
  * class Username {

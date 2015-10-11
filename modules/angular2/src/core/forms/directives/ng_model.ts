@@ -24,8 +24,8 @@ const formControlBinding =
  *
  * ### Example ([live demo](http://plnkr.co/edit/R3UX5qDaUqFO2VYR0UzH?p=preview))
  *  ```typescript
- * @Component({selector: "search-comp"})
- * @View({
+ * @Component({
+ *      selector: "search-comp",
  *      directives: [FORM_DIRECTIVES],
  *      template: `<input type='text' [(ng-model)]="searchQuery">`
  *      })

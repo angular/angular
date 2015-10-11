@@ -47,9 +47,7 @@ var _observableStrategy = new ObservableStrategy();
  * ```
  * import {Observable} from 'angular2/core';
  * @Component({
- *   selector: "task-cmp"
- * })
- * @View({
+ *   selector: "task-cmp",
  *   template: "Time: {{ time | async }}"
  * })
  * class Task {

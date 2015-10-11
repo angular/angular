@@ -23,8 +23,7 @@ import {EventListener, History, Location} from 'angular2/src/core/facade/browser
  *   Location
  * } from 'angular2/router';
  *
- * @Component({...})
- * @View({directives: [ROUTER_DIRECTIVES]})
+ * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([
  *  {...},
  * ])

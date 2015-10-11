@@ -15,18 +15,16 @@ import {Url} from './url_parser';
  * ## Example
  *
  * ```
- * import {bootstrap, Component, View} from 'angular2/angular2';
+ * import {bootstrap, Component} from 'angular2/angular2';
  * import {Router, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
  *
- * @Component({...})
- * @View({directives: [ROUTER_DIRECTIVES]})
+ * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([
  *  {path: '/user/:id', component: UserCmp, as: 'UserCmp'},
  * ])
  * class AppCmp {}
  *
- * @Component({...})
- * @View({ template: 'user: {{id}}' })
+ * @Component({ template: 'user: {{id}}' })
  * class UserCmp {
  *   string: id;
  *   constructor(params: RouteParams) {
@@ -53,11 +51,10 @@ export class RouteParams {
  * ## Example
  *
  * ```
- * import {bootstrap, Component, View} from 'angular2/angular2';
+ * import {bootstrap, Component} from 'angular2/angular2';
  * import {Router, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
  *
- * @Component({...})
- * @View({directives: [ROUTER_DIRECTIVES]})
+ * @Component({directives: [ROUTER_DIRECTIVES]})
  * @RouteConfig([
  *  {...},
  * ])
