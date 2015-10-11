@@ -5,7 +5,7 @@ import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptio
 
 import {Directive, Attribute} from 'angular2/src/core/metadata';
 import {DynamicComponentLoader, ComponentRef, ElementRef} from 'angular2/src/core/linker';
-import {Injector, provide, Dependency} from 'angular2/src/core/di';
+import {Injector, provide, Dependency} from 'angular2/angular2';
 
 import * as routerMod from './router';
 import {ComponentInstruction, RouteParams} from './instruction';

@@ -3,7 +3,7 @@ import {StringWrapper, isPresent, CONST_EXPR} from 'angular2/src/core/facade/lan
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {isBlank} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
-import {OpaqueToken, Injectable, Optional, Inject} from 'angular2/src/core/di';
+import {OpaqueToken, Injectable, Optional, Inject} from 'angular2/angular2';
 
 /**
  * The `APP_BASE_HREF` token represents the base href to be used with the
