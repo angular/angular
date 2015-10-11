@@ -3,7 +3,7 @@ import {ChangeDetectionStrategy} from './constants';
 
 export abstract class ChangeDetectorRef {
   /**
-   * Marks all {@link OnPush} ancestors as to be checked.
+   * Marks all {@link ChangeDetectionStrategy#OnPush} ancestors as to be checked.
    *
    * <!-- TODO: Add a link to a chapter on OnPush components -->
    *
@@ -47,7 +47,8 @@ export abstract class ChangeDetectorRef {
    *
    * The detached change detector will not be checked until it is reattached.
    *
-   * This can also be used in combination with {@link detectChanges} to implement local change
+   * This can also be used in combination with {@link ChangeDetectorRef#detectChanges} to implement
+   * local change
    * detection checks.
    *
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->
@@ -104,7 +105,8 @@ export abstract class ChangeDetectorRef {
   /**
    * Checks the change detector and its children.
    *
-   * This can also be used in combination with {@link detach} to implement local change detection
+   * This can also be used in combination with {@link ChangeDetectorRef#detach} to implement local
+   * change detection
    * checks.
    *
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->

@@ -580,7 +580,7 @@ export var Input: InputFactory = makePropDecorator(InputMetadata);
 /**
  * {@link OutputMetadata} factory function.
  *
- * See {@link OutputMetadatas}.
+ * See {@link OutputMetadata}.
  */
 export var Output: OutputFactory = makePropDecorator(OutputMetadata);
 

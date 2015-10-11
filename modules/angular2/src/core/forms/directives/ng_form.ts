@@ -30,7 +30,7 @@ const formDirectiveProvider =
  * # Structure
  *
  * An Angular form is a collection of {@link Control}s in some hierarchy.
- * `Control`s can be at the top level or can be organized in {@link ControlGroups}
+ * `Control`s can be at the top level or can be organized in {@link ControlGroup}s
  * or {@link ControlArray}s. This hierarchy is reflected in the form's `value`, a
  * JSON object that mirrors the form structure.
  *
