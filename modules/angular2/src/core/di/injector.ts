@@ -457,7 +457,7 @@ export class Injector {
    * });
    * ```
    *
-   * See {@link fromResolvedProviders} for more info.
+   * See {@link Injector#fromResolvedProviders} for more info.
    */
   static resolve(providers: Array<Type | Provider | any[]>): ResolvedProvider[] {
     return resolveProviders(providers);
@@ -487,7 +487,7 @@ export class Injector {
    *
    * This function is slower than the corresponding `fromResolvedProviders`
    * because it needs to resolve the passed-in providers first.
-   * See {@link resolve} and {@link fromResolvedProviders}.
+   * See {@link Injector#resolve} and {@link Injector#fromResolvedProviders}.
    */
   static resolveAndCreate(providers: Array<Type | Provider | any[]>): Injector {
     var resolvedProviders = Injector.resolve(providers);
@@ -658,7 +658,7 @@ export class Injector {
    *
    * This function is slower than the corresponding `createChildFromResolved`
    * because it needs to resolve the passed-in providers first.
-   * See {@link resolve} and {@link createChildFromResolved}.
+   * See {@link Injector#resolve} and {@link Injector#createChildFromResolved}.
    */
   resolveAndCreateChild(providers: Array<Type | Provider | any[]>): Injector {
     var resolvedProviders = Injector.resolve(providers);

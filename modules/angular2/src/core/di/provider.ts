@@ -57,7 +57,7 @@ const _EMPTY_LIST = CONST_EXPR([]);
 @CONST()
 export class Provider {
   /**
-   * Token used when retrieving this provider. Usually, it is a type {@link `Type`}.
+   * Token used when retrieving this provider. Usually, it is a type {@link Type}.
    */
   token;
 
