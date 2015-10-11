@@ -37,7 +37,7 @@ const formControlBinding = CONST_EXPR(new Binding(NgControl, {toAlias: forwardRe
   selector: '[ng-model]:not([ng-control]):not([ng-form-control])',
   bindings: [formControlBinding],
   inputs: ['model: ngModel'],
-  outputs: ['update: ngModel'],
+  outputs: ['update: ngModelChange'],
   exportAs: 'form'
 })
 export class NgModel extends NgControl implements OnChanges {

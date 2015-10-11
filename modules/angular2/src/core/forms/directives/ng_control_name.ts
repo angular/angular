@@ -75,7 +75,7 @@ const controlNameBinding =
   selector: '[ng-control]',
   bindings: [controlNameBinding],
   inputs: ['name: ngControl', 'model: ngModel'],
-  outputs: ['update: ngModel'],
+  outputs: ['update: ngModelChange'],
   exportAs: 'form'
 })
 export class NgControlName extends NgControl implements OnChanges,

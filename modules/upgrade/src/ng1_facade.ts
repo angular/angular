@@ -63,6 +63,7 @@ export class ExportedNg1Component {
           localName = localName.substr(1) || name;
           var outputName = 'output_' + name;
           var outputNameRename = outputName + ': ' + name;
+          var outputNameRenameChange = outputName + ': ' + name + 'Change';
           var inputName = 'input_' + name;
           var inputNameRename = inputName + ': ' + name;
           switch (type) {
@@ -70,7 +71,7 @@ export class ExportedNg1Component {
               this.propertyOutputs.push(outputName);
               this.checkProperties.push(localName);
               this.outputs.push(outputName);
-              this.outputsRename.push(outputNameRename);
+              this.outputsRename.push(outputNameRenameChange);
               this.propertyMap[outputName] = localName;
             // don't break; let it fall through to '@'
             case '@':
