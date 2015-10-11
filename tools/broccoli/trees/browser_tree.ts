@@ -50,6 +50,7 @@ const kServedPaths = [
   'playground/src/routing',
   'playground/src/sourcemap',
   'playground/src/todo',
+  'playground/src/upgrade',
   'playground/src/zippy_component',
   'playground/src/async',
   'playground/src/material/button',
