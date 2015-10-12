@@ -30,7 +30,6 @@ import {
 
 import {MockDirectiveResolver} from 'angular2/src/mock/directive_resolver_mock';
 import {MockViewResolver} from 'angular2/src/mock/view_resolver_mock';
-import {MockXHR} from 'angular2/src/core/compiler/xhr_mock';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
 import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
@@ -116,7 +115,7 @@ function _getAppBindings() {
     PipeResolver,
     provide(ExceptionHandler, {asValue: new ExceptionHandler(DOM)}),
     provide(LocationStrategy, {asClass: MockLocationStrategy}),
-    provide(XHR, {asClass: MockXHR}),
+    XHR,
     TestComponentBuilder,
     provide(NgZone, {asClass: MockNgZone}),
     provide(AnimationBuilder, {asClass: MockAnimationBuilder}),
