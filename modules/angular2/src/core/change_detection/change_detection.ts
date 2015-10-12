@@ -30,7 +30,7 @@ export {
   DebugContext,
   ChangeDetectorGenConfig
 } from './interfaces';
-export {ChangeDetectionStrategy, CHANGE_DECTION_STRATEGY_VALUES} from './constants';
+export {ChangeDetectionStrategy, CHANGE_DETECTION_STRATEGY_VALUES} from './constants';
 export {DynamicProtoChangeDetector} from './proto_change_detector';
 export {JitProtoChangeDetector} from './jit_proto_change_detector';
 export {BindingRecord, BindingTarget} from './binding_record';

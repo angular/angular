@@ -41,7 +41,7 @@ export enum ChangeDetectionStrategy {
   OnPushObserve
 }
 
-export var CHANGE_DECTION_STRATEGY_VALUES = [
+export var CHANGE_DETECTION_STRATEGY_VALUES = [
   ChangeDetectionStrategy.CheckOnce,
   ChangeDetectionStrategy.Checked,
   ChangeDetectionStrategy.CheckAlways,
