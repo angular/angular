@@ -48,7 +48,7 @@ const _EMPTY_LIST = CONST_EXPR([]);
  *
  * ```javascript
  * var injector = Injector.resolveAndCreate([
- *   new Provider("message", { toValue: 'Hello' })
+ *   new Provider("message", { useValue: 'Hello' })
  * ]);
  *
  * expect(injector.get("message")).toEqual('Hello');
@@ -66,7 +66,8 @@ export class Provider {
    *
    * ### Example ([live demo](http://plnkr.co/edit/RSTG86qgmoxCyj9SWPwY?p=preview))
    *
-   * Because `toAlias` and `toClass` are often confused, the example contains both use cases for
+   * Because `useExisting` and `useClass` are often confused, the example contains both use cases
+   * for
    * easy
    * comparison.
    *
@@ -77,11 +78,11 @@ export class Provider {
    *
    * var injectorClass = Injector.resolveAndCreate([
    *   Car,
-   *   new Provider(Vehicle, { toClass: Car })
+   *   new Provider(Vehicle, { useClass: Car })
    * ]);
    * var injectorAlias = Injector.resolveAndCreate([
    *   Car,
-   *   new Provider(Vehicle, { toAlias: Car })
+   *   new Provider(Vehicle, { useExisting: Car })
    * ]);
    *
    * expect(injectorClass.get(Vehicle)).not.toBe(injectorClass.get(Car));
@@ -91,7 +92,7 @@ export class Provider {
    * expect(injectorAlias.get(Vehicle) instanceof Car).toBe(true);
    * ```
    */
-  toClass: Type;
+  useClass: Type;
 
   /**
    * Binds a DI token to a value.
@@ -100,23 +101,24 @@ export class Provider {
    *
    * ```javascript
    * var injector = Injector.resolveAndCreate([
-   *   new Provider("message", { toValue: 'Hello' })
+   *   new Provider("message", { useValue: 'Hello' })
    * ]);
    *
    * expect(injector.get("message")).toEqual('Hello');
    * ```
    */
-  toValue;
+  useValue;
 
   /**
-   * Binds a DI token as an alias for an existing token.
+   * Binds a DI token to an existing token.
    *
-   * An alias means that {@link Injector} returns the same instance as if the alias token was used.
-   * This is in contrast to `toClass` where a separate instance of `toClass` is returned.
+   * {@link Injector} returns the same instance as if the provided token was used.
+   * This is in contrast to `useClass` where a separate instance of `useClass` is returned.
    *
    * ### Example ([live demo](http://plnkr.co/edit/QsatsOJJ6P8T2fMe9gr8?p=preview))
    *
-   * Because `toAlias` and `toClass` are often confused the example contains both use cases for easy
+   * Because `useExisting` and `useClass` are often confused the example contains both use cases for
+   * easy
    * comparison.
    *
    * ```typescript
@@ -126,11 +128,11 @@ export class Provider {
    *
    * var injectorAlias = Injector.resolveAndCreate([
    *   Car,
-   *   new Provider(Vehicle, { toAlias: Car })
+   *   new Provider(Vehicle, { useExisting: Car })
    * ]);
    * var injectorClass = Injector.resolveAndCreate([
    *   Car,
-   *   new Provider(Vehicle, { toClass: Car })
+   *   new Provider(Vehicle, { useClass: Car })
    * ]);
    *
    * expect(injectorAlias.get(Vehicle)).toBe(injectorAlias.get(Car));
@@ -140,7 +142,7 @@ export class Provider {
    * expect(injectorClass.get(Vehicle) instanceof Car).toBe(true);
    * ```
    */
-  toAlias;
+  useExisting;
 
   /**
    * Binds a DI token to a function which computes the value.
@@ -149,8 +151,8 @@ export class Provider {
    *
    * ```typescript
    * var injector = Injector.resolveAndCreate([
-   *   new Provider(Number, { toFactory: () => { return 1+2; }}),
-   *   new Provider(String, { toFactory: (value) => { return "Value: " + value; },
+   *   new Provider(Number, { useFactory: () => { return 1+2; }}),
+   *   new Provider(String, { useFactory: (value) => { return "Value: " + value; },
    *                       deps: [Number] })
    * ]);
    *
@@ -160,7 +162,7 @@ export class Provider {
    *
    * Used in conjuction with dependencies.
    */
-  toFactory: Function;
+  useFactory: Function;
 
   /**
    * Specifies a set of dependencies
@@ -170,8 +172,8 @@ export class Provider {
    *
    * ```typescript
    * var injector = Injector.resolveAndCreate([
-   *   new Provider(Number, { toFactory: () => { return 1+2; }}),
-   *   new Provider(String, { toFactory: (value) => { return "Value: " + value; },
+   *   new Provider(Number, { useFactory: () => { return 1+2; }}),
+   *   new Provider(String, { useFactory: (value) => { return "Value: " + value; },
    *                       deps: [Number] })
    * ]);
    *
@@ -179,26 +181,26 @@ export class Provider {
    * expect(injector.get(String)).toEqual('Value: 3');
    * ```
    *
-   * Used in conjunction with `toFactory`.
+   * Used in conjunction with `useFactory`.
    */
   dependencies: Object[];
 
   /** @internal */
   _multi: boolean;
 
-  constructor(token, {toClass, toValue, toAlias, toFactory, deps, multi}: {
-    toClass?: Type,
-    toValue?: any,
-    toAlias?: any,
-    toFactory?: Function,
+  constructor(token, {useClass, useValue, useExisting, useFactory, deps, multi}: {
+    useClass?: Type,
+    useValue?: any,
+    useExisting?: any,
+    useFactory?: Function,
     deps?: Object[],
     multi?: boolean
   }) {
     this.token = token;
-    this.toClass = toClass;
-    this.toValue = toValue;
-    this.toAlias = toAlias;
-    this.toFactory = toFactory;
+    this.useClass = useClass;
+    this.useValue = useValue;
+    this.useExisting = useExisting;
+    this.useFactory = useFactory;
     this.dependencies = deps;
     this._multi = multi;
   }
@@ -216,8 +218,8 @@ export class Provider {
    *
    * ```typescript
    * var injector = Injector.resolveAndCreate([
-   *   new Provider("Strings", { toValue: "String1", multi: true}),
-   *   new Provider("Strings", { toValue: "String2", multi: true})
+   *   new Provider("Strings", { useValue: "String1", multi: true}),
+   *   new Provider("Strings", { useValue: "String2", multi: true})
    * ]);
    *
    * expect(injector.get("Strings")).toEqual(["String1", "String2"]);
@@ -228,8 +230,8 @@ export class Provider {
    *
    * ```typescript
    * var injector = Injector.resolveAndCreate([
-   *   new Provider("Strings", { toValue: "String1", multi: true }),
-   *   new Provider("Strings", { toValue: "String2"})
+   *   new Provider("Strings", { useValue: "String1", multi: true }),
+   *   new Provider("Strings", { useValue: "String2"})
    * ]);
    * ```
    */
@@ -245,19 +247,37 @@ export class Binding extends Provider {
     toClass?: Type,
     toValue?: any,
     toAlias?: any,
-    toFactory?: Function,
-    deps?: Object[],
-    multi?: boolean
+    toFactory: Function, deps?: Object[], multi?: boolean
   }) {
     super(token, {
-      toClass: toClass,
-      toValue: toValue,
-      toAlias: toAlias,
-      toFactory: toFactory,
+      useClass: toClass,
+      useValue: toValue,
+      useExisting: toAlias,
+      useFactory: toFactory,
       deps: deps,
       multi: multi
     });
   }
+
+  /**
+   * @deprecated
+   */
+  get toClass() { return this.useClass; }
+
+  /**
+   * @deprecated
+   */
+  get toAlias() { return this.useExisting; }
+
+  /**
+   * @deprecated
+   */
+  get toFactory() { return this.useFactory; }
+
+  /**
+   * @deprecated
+   */
+  get toValue() { return this.useValue; }
 }
 
 /**
@@ -270,7 +290,7 @@ export class Binding extends Provider {
  * ### Example ([live demo](http://plnkr.co/edit/RfEnhh8kUEI0G3qsnIeT?p%3Dpreview&p=preview))
  *
  * ```typescript
- * var resolvedProviders = Injector.resolve([new Provider('message', {toValue: 'Hello'})]);
+ * var resolvedProviders = Injector.resolve([new Provider('message', {useValue: 'Hello'})]);
  * var injector = Injector.fromResolvedProviders(resolvedProviders);
  *
  * expect(injector.get('message')).toEqual('Hello');
@@ -327,7 +347,7 @@ export class ResolvedFactory {
  *
  * To construct a {@link Provider}, bind a `token` to either a class, a value, a factory function,
  * or
- * to an alias to another `token`.
+ * to an existing `token`.
  * See {@link ProviderBuilder} for more details.
  *
  * The `token` is most commonly a class or {@link angular2/di/OpaqueToken}.
@@ -343,19 +363,19 @@ export function bind(token): ProviderBuilder {
  *
  * <!-- TODO: improve the docs -->
  */
-export function provide(token, {asClass, asValue, asAlias, asFactory, deps, multi}: {
-  asClass?: Type,
-  asValue?: any,
-  asAlias?: any,
-  asFactory?: Function,
+export function provide(token, {useClass, useValue, useExisting, useFactory, deps, multi}: {
+  useClass?: Type,
+  useValue?: any,
+  useExisting?: any,
+  useFactory?: Function,
   deps?: Object[],
   multi?: boolean
 }): Provider {
   return new Provider(token, {
-    toClass: asClass,
-    toValue: asValue,
-    toAlias: asAlias,
-    toFactory: asFactory,
+    useClass: useClass,
+    useValue: useValue,
+    useExisting: useExisting,
+    useFactory: useFactory,
     deps: deps,
     multi: multi
   });
@@ -382,11 +402,11 @@ export class ProviderBuilder {
    *
    * var injectorClass = Injector.resolveAndCreate([
    *   Car,
-   *   provide(Vehicle, {asClass: Car})
+   *   provide(Vehicle, {useClass: Car})
    * ]);
    * var injectorAlias = Injector.resolveAndCreate([
    *   Car,
-   *   provide(Vehicle, {asAlias: Car})
+   *   provide(Vehicle, {useExisting: Car})
    * ]);
    *
    * expect(injectorClass.get(Vehicle)).not.toBe(injectorClass.get(Car));
@@ -401,7 +421,7 @@ export class ProviderBuilder {
       throw new BaseException(
           `Trying to create a class provider but "${stringify(type)}" is not a class!`);
     }
-    return new Provider(this.token, {toClass: type});
+    return new Provider(this.token, {useClass: type});
   }
 
   /**
@@ -411,19 +431,19 @@ export class ProviderBuilder {
    *
    * ```typescript
    * var injector = Injector.resolveAndCreate([
-   *   provide('message', {asValue: 'Hello'})
+   *   provide('message', {useValue: 'Hello'})
    * ]);
    *
    * expect(injector.get('message')).toEqual('Hello');
    * ```
    */
-  toValue(value: any): Provider { return new Provider(this.token, {toValue: value}); }
+  toValue(value: any): Provider { return new Provider(this.token, {useValue: value}); }
 
   /**
-   * Binds a DI token as an alias for an existing token.
+   * Binds a DI token to an existing token.
    *
-   * An alias means that we will return the same instance as if the alias token was used. (This is
-   * in contrast to `toClass` where a separate instance of `toClass` will be returned.)
+   * Angular will return the same instance as if the provided token was used. (This is
+   * in contrast to `useClass` where a separate instance of `useClass` will be returned.)
    *
    * ### Example ([live demo](http://plnkr.co/edit/uBaoF2pN5cfc5AfZapNw?p=preview))
    *
@@ -438,11 +458,11 @@ export class ProviderBuilder {
    *
    * var injectorAlias = Injector.resolveAndCreate([
    *   Car,
-   *   provide(Vehicle, {asAlias: Car})
+   *   provide(Vehicle, {useExisting: Car})
    * ]);
    * var injectorClass = Injector.resolveAndCreate([
    *   Car,
-   *   provide(Vehicle, {asClass: Car})
+   *   provide(Vehicle, {useClass: Car})
    * ]);
    *
    * expect(injectorAlias.get(Vehicle)).toBe(injectorAlias.get(Car));
@@ -456,7 +476,7 @@ export class ProviderBuilder {
     if (isBlank(aliasToken)) {
       throw new BaseException(`Can not alias ${stringify(this.token)} to a blank value!`);
     }
-    return new Provider(this.token, {toAlias: aliasToken});
+    return new Provider(this.token, {useExisting: aliasToken});
   }
 
   /**
@@ -466,8 +486,8 @@ export class ProviderBuilder {
    *
    * ```typescript
    * var injector = Injector.resolveAndCreate([
-   *   provide(Number, {asFactory: () => { return 1+2; }}),
-   *   provide(String, {asFactory: (v) => { return "Value: " + v; }, deps: [Number]})
+   *   provide(Number, {useFactory: () => { return 1+2; }}),
+   *   provide(String, {useFactory: (v) => { return "Value: " + v; }, deps: [Number]})
    * ]);
    *
    * expect(injector.get(Number)).toEqual(3);
@@ -479,7 +499,7 @@ export class ProviderBuilder {
       throw new BaseException(
           `Trying to create a factory provider but "${stringify(factory)}" is not a function!`);
     }
-    return new Provider(this.token, {toFactory: factory, deps: dependencies});
+    return new Provider(this.token, {useFactory: factory, deps: dependencies});
   }
 }
 
@@ -489,18 +509,18 @@ export class ProviderBuilder {
 export function resolveFactory(provider: Provider): ResolvedFactory {
   var factoryFn: Function;
   var resolvedDeps;
-  if (isPresent(provider.toClass)) {
-    var toClass = resolveForwardRef(provider.toClass);
-    factoryFn = reflector.factory(toClass);
-    resolvedDeps = _dependenciesFor(toClass);
-  } else if (isPresent(provider.toAlias)) {
+  if (isPresent(provider.useClass)) {
+    var useClass = resolveForwardRef(provider.useClass);
+    factoryFn = reflector.factory(useClass);
+    resolvedDeps = _dependenciesFor(useClass);
+  } else if (isPresent(provider.useExisting)) {
     factoryFn = (aliasInstance) => aliasInstance;
-    resolvedDeps = [Dependency.fromKey(Key.get(provider.toAlias))];
-  } else if (isPresent(provider.toFactory)) {
-    factoryFn = provider.toFactory;
-    resolvedDeps = _constructDependencies(provider.toFactory, provider.dependencies);
+    resolvedDeps = [Dependency.fromKey(Key.get(provider.useExisting))];
+  } else if (isPresent(provider.useFactory)) {
+    factoryFn = provider.useFactory;
+    resolvedDeps = _constructDependencies(provider.useFactory, provider.dependencies);
   } else {
-    factoryFn = () => provider.toValue;
+    factoryFn = () => provider.useValue;
     resolvedDeps = _EMPTY_LIST;
   }
   return new ResolvedFactory(factoryFn, resolvedDeps);
@@ -553,7 +573,7 @@ function _normalizeProviders(providers: Array<Type | Provider | ProviderBuilder 
     Map<number, _NormalizedProvider | _NormalizedProvider[]> {
   providers.forEach(b => {
     if (b instanceof Type) {
-      _normalizeProvider(provide(b, {asClass: b}), res);
+      _normalizeProvider(provide(b, {useClass: b}), res);
 
     } else if (b instanceof Provider) {
       _normalizeProvider(b, res);

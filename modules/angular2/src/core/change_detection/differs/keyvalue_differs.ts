@@ -56,7 +56,7 @@ export class KeyValueDiffers {
    */
   static extend(factories: KeyValueDifferFactory[]): Provider {
     return new Provider(KeyValueDiffers, {
-      toFactory: (parent: KeyValueDiffers) => {
+      useFactory: (parent: KeyValueDiffers) => {
         if (isBlank(parent)) {
           // Typically would occur when calling KeyValueDiffers.extend inside of dependencies passed
           // to

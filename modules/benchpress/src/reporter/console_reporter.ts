@@ -98,6 +98,6 @@ var _PROVIDERS = [
       .toFactory((columnWidth, sampleDescription, print) =>
                      new ConsoleReporter(columnWidth, sampleDescription, print),
                  [_COLUMN_WIDTH, SampleDescription, _PRINT]),
-  provide(_COLUMN_WIDTH, {asValue: 18}),
-  provide(_PRINT, {asValue: print})
+  provide(_COLUMN_WIDTH, {useValue: 18}),
+  provide(_PRINT, {useValue: print})
 ];

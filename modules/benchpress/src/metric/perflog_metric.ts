@@ -343,5 +343,5 @@ var _PROVIDERS = [
             Options.FORCE_GC,
             Options.CAPTURE_FRAMES
           ]),
-  provide(_SET_TIMEOUT, {asValue: (fn, millis) => TimerWrapper.setTimeout(fn, millis)})
+  provide(_SET_TIMEOUT, {useValue: (fn, millis) => TimerWrapper.setTimeout(fn, millis)})
 ];

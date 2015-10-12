@@ -50,7 +50,7 @@ import {Compiler_} from "./linker/compiler";
  * running on the page.
  */
 export function platformBindings(): Array<Type | Provider | any[]> {
-  return [provide(Reflector, {asValue: reflector}), TestabilityRegistry];
+  return [provide(Reflector, {useValue: reflector}), TestabilityRegistry];
 }
 
 /**
@@ -58,10 +58,10 @@ export function platformBindings(): Array<Type | Provider | any[]> {
  */
 function _componentProviders(appComponentType: Type): Array<Type | Provider | any[]> {
   return [
-    provide(APP_COMPONENT, {asValue: appComponentType}),
+    provide(APP_COMPONENT, {useValue: appComponentType}),
     provide(APP_COMPONENT_REF_PROMISE,
             {
-              asFactory: (dynamicComponentLoader, injector: Injector) => {
+              useFactory: (dynamicComponentLoader, injector: Injector) => {
                 // TODO(rado): investigate whether to support bindings on root component.
                 return dynamicComponentLoader.loadAsRoot(appComponentType, null, injector)
                     .then((componentRef) => {
@@ -77,7 +77,7 @@ function _componentProviders(appComponentType: Type): Array<Type | Provider | an
             }),
     provide(appComponentType,
             {
-              asFactory: (p: Promise<any>) => p.then(ref => ref.instance),
+              useFactory: (p: Promise<any>) => p.then(ref => ref.instance),
               deps: [APP_COMPONENT_REF_PROMISE]
             }),
   ];
@@ -89,24 +89,24 @@ function _componentProviders(appComponentType: Type): Array<Type | Provider | an
  */
 export function applicationCommonBindings(): Array<Type | Provider | any[]> {
   return [
-    provide(Compiler, {asClass: Compiler_}),
+    provide(Compiler, {useClass: Compiler_}),
     APP_ID_RANDOM_PROVIDER,
     AppViewPool,
-    provide(APP_VIEW_POOL_CAPACITY, {asValue: 10000}),
-    provide(AppViewManager, {asClass: AppViewManager_}),
+    provide(APP_VIEW_POOL_CAPACITY, {useValue: 10000}),
+    provide(AppViewManager, {useClass: AppViewManager_}),
     AppViewManagerUtils,
     AppViewListener,
     ProtoViewFactory,
     ViewResolver,
     DEFAULT_PIPES,
-    provide(IterableDiffers, {asValue: defaultIterableDiffers}),
-    provide(KeyValueDiffers, {asValue: defaultKeyValueDiffers}),
+    provide(IterableDiffers, {useValue: defaultIterableDiffers}),
+    provide(KeyValueDiffers, {useValue: defaultKeyValueDiffers}),
     DirectiveResolver,
     PipeResolver,
-    provide(DynamicComponentLoader, {asClass: DynamicComponentLoader_}),
+    provide(DynamicComponentLoader, {useClass: DynamicComponentLoader_}),
     provide(LifeCycle,
             {
-              asFactory: (exceptionHandler) => new LifeCycle_(null, assertionsEnabled()),
+              useFactory: (exceptionHandler) => new LifeCycle_(null, assertionsEnabled()),
               deps: [ExceptionHandler]
             })
   ];
@@ -236,8 +236,8 @@ export class PlatformRef_ extends PlatformRef {
     var injector: Injector;
     var app: ApplicationRef;
     zone.run(() => {
-      providers.push(provide(NgZone, {asValue: zone}));
-      providers.push(provide(ApplicationRef, {asFactory: (): ApplicationRef => app, deps: []}));
+      providers.push(provide(NgZone, {useValue: zone}));
+      providers.push(provide(ApplicationRef, {useFactory: (): ApplicationRef => app, deps: []}));
 
       var exceptionHandler;
       try {
@@ -297,7 +297,7 @@ export abstract class ApplicationRef {
    * ```
    * var app = platform.application([applicationCommonBindings(), applicationDomBindings()];
    * app.bootstrap(FirstRootComponent);
-   * app.bootstrap(SecondRootComponent, [provide(OverrideBinding, {asClass: OverriddenBinding})]);
+   * app.bootstrap(SecondRootComponent, [provide(OverrideBinding, {useClass: OverriddenBinding})]);
    * ```
    */
   abstract bootstrap(componentType: Type, bindings?: Array<Type | Provider | any[]>):

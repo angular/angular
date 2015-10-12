@@ -17,7 +17,7 @@ import {CONST, CONST_EXPR, stringify, isBlank, isPresent} from "angular2/src/cor
  * }
  *
  * var injector = Injector.resolveAndCreate([
- *  provide("MyEngine", {asClass: Engine}),
+ *  provide("MyEngine", {useClass: Engine}),
  *  Car
  * ]);
  *

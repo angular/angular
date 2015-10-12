@@ -24,4 +24,4 @@ const DEFAULT_PIPES_LIST = CONST_EXPR([
 export const DEFAULT_PIPES_TOKEN: OpaqueToken = CONST_EXPR(new OpaqueToken("Default Pipes"));
 
 export const DEFAULT_PIPES: Provider =
-    CONST_EXPR(new Provider(DEFAULT_PIPES_TOKEN, {toValue: DEFAULT_PIPES_LIST}));
+    CONST_EXPR(new Provider(DEFAULT_PIPES_TOKEN, {useValue: DEFAULT_PIPES_LIST}));

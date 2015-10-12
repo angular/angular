@@ -68,30 +68,30 @@ import {
 var _rootInjector: Injector;
 
 // Contains everything that is safe to share between applications.
-var _rootProviders = [provide(Reflector, {asValue: reflector})];
+var _rootProviders = [provide(Reflector, {useValue: reflector})];
 
 // TODO: This code is nearly identical to core/application. There should be a way to only write it
 // once
 function _injectorProviders(): any[] {
   return [
-    provide(DOCUMENT, {asValue: DOM.defaultDoc()}),
+    provide(DOCUMENT, {useValue: DOM.defaultDoc()}),
     EventManager,
-    new Provider(EVENT_MANAGER_PLUGINS, {toClass: DomEventsPlugin, multi: true}),
-    new Provider(EVENT_MANAGER_PLUGINS, {toClass: KeyEventsPlugin, multi: true}),
-    new Provider(EVENT_MANAGER_PLUGINS, {toClass: HammerGesturesPlugin, multi: true}),
-    provide(DomRenderer, {asClass: DomRenderer_}),
-    provide(Renderer, {asAlias: DomRenderer}),
+    new Provider(EVENT_MANAGER_PLUGINS, {useClass: DomEventsPlugin, multi: true}),
+    new Provider(EVENT_MANAGER_PLUGINS, {useClass: KeyEventsPlugin, multi: true}),
+    new Provider(EVENT_MANAGER_PLUGINS, {useClass: HammerGesturesPlugin, multi: true}),
+    provide(DomRenderer, {useClass: DomRenderer_}),
+    provide(Renderer, {useExisting: DomRenderer}),
     APP_ID_RANDOM_PROVIDER,
     DomSharedStylesHost,
-    provide(SharedStylesHost, {asAlias: DomSharedStylesHost}),
+    provide(SharedStylesHost, {useExisting: DomSharedStylesHost}),
     Serializer,
-    provide(ON_WEB_WORKER, {asValue: false}),
-    provide(ElementSchemaRegistry, {asValue: new DomElementSchemaRegistry()}),
+    provide(ON_WEB_WORKER, {useValue: false}),
+    provide(ElementSchemaRegistry, {useValue: new DomElementSchemaRegistry()}),
     RenderViewWithFragmentsStore,
     RenderProtoViewRefStore,
     AppViewPool,
-    provide(APP_VIEW_POOL_CAPACITY, {asValue: 10000}),
-    provide(AppViewManager, {asClass: AppViewManager_}),
+    provide(APP_VIEW_POOL_CAPACITY, {useValue: 10000}),
+    provide(AppViewManager, {useClass: AppViewManager_}),
     AppViewManagerUtils,
     AppViewListener,
     ProtoViewFactory,
@@ -100,19 +100,19 @@ function _injectorProviders(): any[] {
     DirectiveResolver,
     Parser,
     Lexer,
-    provide(ExceptionHandler, {asFactory: () => new ExceptionHandler(DOM), deps: []}),
-    provide(XHR, {asValue: new XHRImpl()}),
+    provide(ExceptionHandler, {useFactory: () => new ExceptionHandler(DOM), deps: []}),
+    provide(XHR, {useValue: new XHRImpl()}),
     UrlResolver,
-    provide(DynamicComponentLoader, {asClass: DynamicComponentLoader_}),
+    provide(DynamicComponentLoader, {useClass: DynamicComponentLoader_}),
     Testability,
     AnchorBasedAppRootUrl,
-    provide(AppRootUrl, {asAlias: AnchorBasedAppRootUrl}),
+    provide(AppRootUrl, {useExisting: AnchorBasedAppRootUrl}),
     WebWorkerApplication,
     WebWorkerSetup,
     MessageBasedXHRImpl,
     MessageBasedRenderer,
-    provide(ServiceMessageBrokerFactory, {asClass: ServiceMessageBrokerFactory_}),
-    provide(ClientMessageBrokerFactory, {asClass: ClientMessageBrokerFactory_}),
+    provide(ServiceMessageBrokerFactory, {useClass: ServiceMessageBrokerFactory_}),
+    provide(ClientMessageBrokerFactory, {useClass: ClientMessageBrokerFactory_}),
     BrowserDetails,
     AnimationBuilder
   ];
@@ -120,8 +120,8 @@ function _injectorProviders(): any[] {
 
 export function createInjector(zone: NgZone, bus: MessageBus): Injector {
   BrowserDomAdapter.makeCurrent();
-  _rootProviders.push(provide(NgZone, {asValue: zone}));
-  _rootProviders.push(provide(MessageBus, {asValue: bus}));
+  _rootProviders.push(provide(NgZone, {useValue: zone}));
+  _rootProviders.push(provide(MessageBus, {useValue: bus}));
   var injector: Injector = Injector.resolveAndCreate(_rootProviders);
   return injector.resolveAndCreateChild(_injectorProviders());
 }

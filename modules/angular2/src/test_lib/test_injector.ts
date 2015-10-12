@@ -68,7 +68,7 @@ import {AppViewManager_} from "angular2/src/core/linker/view_manager";
  * @returns {any[]}
  */
 function _getRootProviders() {
-  return [provide(Reflector, {asValue: reflector})];
+  return [provide(Reflector, {useValue: reflector})];
 }
 
 /**
@@ -91,36 +91,36 @@ function _getAppBindings() {
   return [
     compilerProviders(),
     provide(ChangeDetectorGenConfig,
-            {asValue: new ChangeDetectorGenConfig(true, true, false, true)}),
-    provide(DOCUMENT, {asValue: appDoc}),
-    provide(DomRenderer, {asClass: DomRenderer_}),
-    provide(Renderer, {asAlias: DomRenderer}),
-    provide(APP_ID, {asValue: 'a'}),
+            {useValue: new ChangeDetectorGenConfig(true, true, false, true)}),
+    provide(DOCUMENT, {useValue: appDoc}),
+    provide(DomRenderer, {useClass: DomRenderer_}),
+    provide(Renderer, {useExisting: DomRenderer}),
+    provide(APP_ID, {useValue: 'a'}),
     DomSharedStylesHost,
-    provide(SharedStylesHost, {asAlias: DomSharedStylesHost}),
+    provide(SharedStylesHost, {useExisting: DomSharedStylesHost}),
     AppViewPool,
-    provide(AppViewManager, {asClass: AppViewManager_}),
+    provide(AppViewManager, {useClass: AppViewManager_}),
     AppViewManagerUtils,
     Serializer,
     ELEMENT_PROBE_PROVIDERS,
-    provide(APP_VIEW_POOL_CAPACITY, {asValue: 500}),
+    provide(APP_VIEW_POOL_CAPACITY, {useValue: 500}),
     ProtoViewFactory,
-    provide(DirectiveResolver, {asClass: MockDirectiveResolver}),
-    provide(ViewResolver, {asClass: MockViewResolver}),
+    provide(DirectiveResolver, {useClass: MockDirectiveResolver}),
+    provide(ViewResolver, {useClass: MockViewResolver}),
     DEFAULT_PIPES,
-    provide(IterableDiffers, {asValue: defaultIterableDiffers}),
-    provide(KeyValueDiffers, {asValue: defaultKeyValueDiffers}),
+    provide(IterableDiffers, {useValue: defaultIterableDiffers}),
+    provide(KeyValueDiffers, {useValue: defaultKeyValueDiffers}),
     Log,
-    provide(DynamicComponentLoader, {asClass: DynamicComponentLoader_}),
+    provide(DynamicComponentLoader, {useClass: DynamicComponentLoader_}),
     PipeResolver,
-    provide(ExceptionHandler, {asValue: new ExceptionHandler(DOM)}),
-    provide(LocationStrategy, {asClass: MockLocationStrategy}),
+    provide(ExceptionHandler, {useValue: new ExceptionHandler(DOM)}),
+    provide(LocationStrategy, {useClass: MockLocationStrategy}),
     XHR,
     TestComponentBuilder,
-    provide(NgZone, {asClass: MockNgZone}),
-    provide(AnimationBuilder, {asClass: MockAnimationBuilder}),
+    provide(NgZone, {useClass: MockNgZone}),
+    provide(AnimationBuilder, {useClass: MockAnimationBuilder}),
     EventManager,
-    new Provider(EVENT_MANAGER_PLUGINS, {toClass: DomEventsPlugin, multi: true})
+    new Provider(EVENT_MANAGER_PLUGINS, {useClass: DomEventsPlugin, multi: true})
   ];
 }
 

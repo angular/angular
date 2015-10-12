@@ -7,7 +7,7 @@ import {isBlank, CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {setProperty} from './shared';
 
 const DEFAULT_VALUE_ACCESSOR = CONST_EXPR(new Provider(
-    NG_VALUE_ACCESSOR, {toAlias: forwardRef(() => DefaultValueAccessor), multi: true}));
+    NG_VALUE_ACCESSOR, {useExisting: forwardRef(() => DefaultValueAccessor), multi: true}));
 
 /**
  * The default accessor for writing a value and listening to changes that is used by the

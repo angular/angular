@@ -44,7 +44,7 @@ import {LocationStrategy} from './location_strategy';
  *
  * bootstrap(AppCmp, [
  *   ROUTER_PROVIDERS, // includes binding to PathLocationStrategy
- *   provide(APP_BASE_HREF, {asValue: '/my/app'})
+ *   provide(APP_BASE_HREF, {useValue: '/my/app'})
  * ]);
  * ```
  */

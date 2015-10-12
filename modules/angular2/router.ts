@@ -112,17 +112,17 @@ export const ROUTER_DIRECTIVES: any[] = CONST_EXPR([RouterOutlet, RouterLink]);
  */
 export const ROUTER_PROVIDERS: any[] = CONST_EXPR([
   RouteRegistry,
-  CONST_EXPR(new Provider(LocationStrategy, {toClass: PathLocationStrategy})),
+  CONST_EXPR(new Provider(LocationStrategy, {useClass: PathLocationStrategy})),
   Location,
   CONST_EXPR(
       new Provider(Router,
                    {
-                     toFactory: routerFactory,
+                     useFactory: routerFactory,
                      deps: CONST_EXPR([RouteRegistry, Location, ROUTER_PRIMARY_COMPONENT])
                    })),
   CONST_EXPR(new Provider(
       ROUTER_PRIMARY_COMPONENT,
-      {toFactory: routerPrimaryComponentFactory, deps: CONST_EXPR([ApplicationRef])}))
+      {useFactory: routerPrimaryComponentFactory, deps: CONST_EXPR([ApplicationRef])}))
 ]);
 
 /**

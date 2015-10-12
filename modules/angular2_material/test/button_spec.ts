@@ -37,7 +37,7 @@ export function main() {
       // Need to use the real XHR implementation (instead of the mock) so we can actually request
       // the template files, since Angular 2 doesn't have anything like $templateCache. This should
       // eventually be replaced with a preprocessor that inlines templates.
-      provide(XHR, {asClass: XHRImpl})
+      provide(XHR, {useClass: XHRImpl})
     ]);
 
     beforeEach(inject([TestComponentBuilder], (tcb) => { builder = tcb; }));

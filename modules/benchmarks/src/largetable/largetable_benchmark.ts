@@ -35,11 +35,10 @@ export const LARGETABLE_COLS = 'LargetableComponent.cols';
 function _createBindings() {
   var viewCacheCapacity = getStringParameter('viewcache') == 'true' ? 10000 : 1;
   return [
-    bind(BENCHMARK_TYPE)
-        .toValue(getStringParameter('benchmarkType')),
-    provide(LARGETABLE_ROWS, {asValue: getIntParameter('rows')}),
-    provide(LARGETABLE_COLS, {asValue: getIntParameter('columns')}),
-    provide(APP_VIEW_POOL_CAPACITY, {asValue: viewCacheCapacity})
+    provide(BENCHMARK_TYPE, {useValue: getStringParameter('benchmarkType')}),
+    provide(LARGETABLE_ROWS, {useValue: getIntParameter('rows')}),
+    provide(LARGETABLE_COLS, {useValue: getIntParameter('columns')}),
+    provide(APP_VIEW_POOL_CAPACITY, {useValue: viewCacheCapacity})
   ];
 }
 

@@ -51,7 +51,7 @@ export function main() {
 
     beforeEachBindings(() => {
       xhr = <any>new SpyXHR();
-      return [TEST_PROVIDERS, provide(XHR, {asValue: xhr})];
+      return [TEST_PROVIDERS, provide(XHR, {useValue: xhr})];
     });
 
     var compiler: StyleCompiler;

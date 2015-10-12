@@ -10,7 +10,7 @@ export class PipeProvider extends ResolvedProvider_ {
   }
 
   static createFromType(type: Type, metadata: PipeMetadata): PipeProvider {
-    var provider = new Provider(type, {toClass: type});
+    var provider = new Provider(type, {useClass: type});
     var rb = resolveProvider(provider);
     return new PipeProvider(metadata.name, metadata.pure, rb.key, rb.resolvedFactories,
                             rb.multiProvider);

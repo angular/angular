@@ -41,8 +41,8 @@ export function main() {
     var tcb: TestComponentBuilder;
 
     beforeEachBindings(() => [
-      provide(Location, {asValue: makeDummyLocation()}),
-      provide(Router, {asValue: makeDummyRouter()})
+      provide(Location, {useValue: makeDummyLocation()}),
+      provide(Router, {useValue: makeDummyRouter()})
     ]);
 
     beforeEach(inject([TestComponentBuilder], (tcBuilder) => { tcb = tcBuilder; }));

@@ -59,15 +59,15 @@ export function main() {
     it('should allow using jsonpInjectables and httpInjectables in same injector',
        inject([AsyncTestCompleter], (async) => {
          parentInjector = Injector.resolveAndCreate([
-           provide(XHRBackend, {asClass: MockBackend}),
-           provide(JSONPBackend, {asClass: MockBackend})
+           provide(XHRBackend, {useClass: MockBackend}),
+           provide(JSONPBackend, {useClass: MockBackend})
          ]);
 
          childInjector = parentInjector.resolveAndCreateChild([
            HTTP_PROVIDERS,
            JSONP_PROVIDERS,
-           provide(XHRBackend, {asClass: MockBackend}),
-           provide(JSONPBackend, {asClass: MockBackend})
+           provide(XHRBackend, {useClass: MockBackend}),
+           provide(JSONPBackend, {useClass: MockBackend})
          ]);
 
          http = childInjector.get(Http);
@@ -115,7 +115,7 @@ export function main() {
         provide(
             Http,
             {
-              asFactory: function(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
+              useFactory: function(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
                 return new Http(backend, defaultOptions);
               },
               deps: [MockBackend, BaseRequestOptions]
@@ -123,7 +123,7 @@ export function main() {
         provide(
             Jsonp,
             {
-              asFactory: function(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
+              useFactory: function(backend: ConnectionBackend, defaultOptions: BaseRequestOptions) {
                 return new Jsonp(backend, defaultOptions);
               },
               deps: [MockBackend, BaseRequestOptions]

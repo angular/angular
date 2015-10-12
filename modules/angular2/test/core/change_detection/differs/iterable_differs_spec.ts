@@ -50,7 +50,7 @@ export function main() {
 
       it('should extend di-inherited diffesr', () => {
         var parent = new IterableDiffers([factory1]);
-        var injector = Injector.resolveAndCreate([provide(IterableDiffers, {asValue: parent})]);
+        var injector = Injector.resolveAndCreate([provide(IterableDiffers, {useValue: parent})]);
         var childInjector = injector.resolveAndCreateChild([IterableDiffers.extend([factory2])]);
 
         expect(injector.get(IterableDiffers).factories).toEqual([factory1]);

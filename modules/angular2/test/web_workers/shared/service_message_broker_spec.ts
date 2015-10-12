@@ -33,7 +33,7 @@ export function main() {
   const ID = "methodId";
 
   beforeEachBindings(() => [
-    provide(ON_WEB_WORKER, {asValue: true}),
+    provide(ON_WEB_WORKER, {useValue: true}),
     RenderProtoViewRefStore,
     RenderViewWithFragmentsStore
   ]);

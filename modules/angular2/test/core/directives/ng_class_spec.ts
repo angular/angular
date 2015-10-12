@@ -29,7 +29,7 @@ export function main() {
   describe('binding to CSS class list', () => {
 
     describe('viewpool support', () => {
-      beforeEachBindings(() => { return [provide(APP_VIEW_POOL_CAPACITY, {asValue: 100})]; });
+      beforeEachBindings(() => { return [provide(APP_VIEW_POOL_CAPACITY, {useValue: 100})]; });
 
       it('should clean up when the directive is destroyed',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {

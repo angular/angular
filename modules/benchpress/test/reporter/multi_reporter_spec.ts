@@ -19,7 +19,7 @@ import {Reporter, MultiReporter, bind, provide, Injector, MeasureValues} from 'b
 export function main() {
   function createReporters(ids: any[]) {
     var r = Injector.resolveAndCreate([
-                      ids.map(id => provide(id, {asValue: new MockReporter(id)})),
+                      ids.map(id => provide(id, {useValue: new MockReporter(id)})),
                       MultiReporter.createBindings(ids)
                     ])
                 .get(MultiReporter);

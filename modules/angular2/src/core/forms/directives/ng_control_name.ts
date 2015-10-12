@@ -14,7 +14,7 @@ import {Validators, NG_VALIDATORS} from '../validators';
 
 
 const controlNameBinding =
-    CONST_EXPR(new Provider(NgControl, {toAlias: forwardRef(() => NgControlName)}));
+    CONST_EXPR(new Provider(NgControl, {useExisting: forwardRef(() => NgControlName)}));
 
 /**
  * Creates and binds a control with a specified name to a DOM element.

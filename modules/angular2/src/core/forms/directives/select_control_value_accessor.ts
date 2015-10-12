@@ -9,7 +9,7 @@ import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {setProperty} from './shared';
 
 const SELECT_VALUE_ACCESSOR = CONST_EXPR(new Provider(
-    NG_VALUE_ACCESSOR, {toAlias: forwardRef(() => SelectControlValueAccessor), multi: true}));
+    NG_VALUE_ACCESSOR, {useExisting: forwardRef(() => SelectControlValueAccessor), multi: true}));
 
 /**
  * Marks `<option>` as dynamic, so Angular can be notified when options change.

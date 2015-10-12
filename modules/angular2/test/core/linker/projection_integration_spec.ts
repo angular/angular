@@ -40,7 +40,7 @@ import {By} from 'angular2/src/core/debug';
 
 export function main() {
   describe('projection', () => {
-    beforeEachBindings(() => [provide(AppViewListener, {asClass: AppViewListener})]);
+    beforeEachBindings(() => [provide(AppViewListener, {useClass: AppViewListener})]);
 
     it('should support simple components',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {

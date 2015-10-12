@@ -30,7 +30,7 @@ import {OpaqueToken, Injectable, Optional, Inject} from 'angular2/src/core/di';
  * bootstrap(AppCmp, [
  *   ROUTER_PROVIDERS,
  *   PathLocationStrategy,
- *   provide(APP_BASE_HREF, {asValue: '/my/app'})
+ *   provide(APP_BASE_HREF, {useValue: '/my/app'})
  * ]);
  * ```
  */

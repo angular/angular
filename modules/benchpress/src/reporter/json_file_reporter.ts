@@ -52,5 +52,5 @@ var _PROVIDERS = [
       .toFactory((sampleDescription, path, writeFile, now) =>
                      new JsonFileReporter(sampleDescription, path, writeFile, now),
                  [SampleDescription, _PATH, Options.WRITE_FILE, Options.NOW]),
-  provide(_PATH, {asValue: '.'})
+  provide(_PATH, {useValue: '.'})
 ];

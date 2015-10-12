@@ -30,7 +30,7 @@ export function main() {
       var bindings = [
         ConsoleReporter.BINDINGS,
         provide(SampleDescription,
-                {asValue: new SampleDescription(sampleId, descriptions, metrics)}),
+                {useValue: new SampleDescription(sampleId, descriptions, metrics)}),
         bind(ConsoleReporter.PRINT).toValue((line) => log.push(line))
       ];
       if (isPresent(columnWidth)) {

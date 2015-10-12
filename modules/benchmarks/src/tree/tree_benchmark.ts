@@ -27,7 +27,7 @@ import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 
 function createProviders(): Provider[] {
   var viewCacheCapacity = getStringParameter('viewcache') == 'true' ? 10000 : 1;
-  return [provide(APP_VIEW_POOL_CAPACITY, {asValue: viewCacheCapacity})];
+  return [provide(APP_VIEW_POOL_CAPACITY, {useValue: viewCacheCapacity})];
 }
 
 var BASELINE_TREE_TEMPLATE;

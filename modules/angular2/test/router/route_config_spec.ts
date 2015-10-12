@@ -49,9 +49,9 @@ export function main() {
       var exceptionHandler = new ExceptionHandler(logger, true);
       testBindings = [
         ROUTER_PROVIDERS,
-        provide(LocationStrategy, {asClass: MockLocationStrategy}),
-        provide(DOCUMENT, {asValue: fakeDoc}),
-        provide(ExceptionHandler, {asValue: exceptionHandler})
+        provide(LocationStrategy, {useClass: MockLocationStrategy}),
+        provide(DOCUMENT, {useValue: fakeDoc}),
+        provide(ExceptionHandler, {useValue: exceptionHandler})
       ];
     });
 

@@ -37,8 +37,8 @@ export function main() {
       protoViewFactorySpy = new SpyProtoViewFactory();
       someProtoView = new AppProtoView(null, null, null, null, null, null);
       protoViewFactorySpy.spy('createHost').andReturn(someProtoView);
-      var factory = provide(ProtoViewFactory, {asValue: protoViewFactorySpy});
-      var classProvider = provide(Compiler, {asClass: Compiler_});
+      var factory = provide(ProtoViewFactory, {useValue: protoViewFactorySpy});
+      var classProvider = provide(Compiler, {useClass: Compiler_});
       var providers = [factory, classProvider];
       return providers;
     });

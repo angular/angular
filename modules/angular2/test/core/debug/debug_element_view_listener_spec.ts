@@ -28,7 +28,7 @@ class MyComp {
 
 export function main() {
   describe('element probe', function() {
-    beforeEachBindings(() => [provide(APP_VIEW_POOL_CAPACITY, {asValue: 0})]);
+    beforeEachBindings(() => [provide(APP_VIEW_POOL_CAPACITY, {useValue: 0})]);
 
     it('should return a TestElement from a dom element',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {

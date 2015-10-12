@@ -104,21 +104,21 @@ export function main() {
       var uiRenderProtoViewStore = new RenderProtoViewRefStore(false);
       uiRenderViewStore = new RenderViewWithFragmentsStore(false);
       uiInjector = createTestInjector([
-        provide(RenderProtoViewRefStore, {asValue: uiRenderProtoViewStore}),
-        provide(RenderViewWithFragmentsStore, {asValue: uiRenderViewStore}),
-        provide(DomRenderer, {asClass: DomRenderer_}),
-        provide(Renderer, {asAlias: DomRenderer})
+        provide(RenderProtoViewRefStore, {useValue: uiRenderProtoViewStore}),
+        provide(RenderViewWithFragmentsStore, {useValue: uiRenderViewStore}),
+        provide(DomRenderer, {useClass: DomRenderer_}),
+        provide(Renderer, {useExisting: DomRenderer})
       ]);
       var uiSerializer = uiInjector.get(Serializer);
       var domRenderer = uiInjector.get(DomRenderer);
       var workerRenderProtoViewStore = new RenderProtoViewRefStore(true);
       var workerRenderViewStore = new RenderViewWithFragmentsStore(true);
       return [
-        provide(RenderProtoViewRefStore, {asValue: workerRenderProtoViewStore}),
-        provide(RenderViewWithFragmentsStore, {asValue: workerRenderViewStore}),
+        provide(RenderProtoViewRefStore, {useValue: workerRenderProtoViewStore}),
+        provide(RenderViewWithFragmentsStore, {useValue: workerRenderViewStore}),
         provide(Renderer,
                 {
-                  asFactory: (workerSerializer) => {
+                  useFactory: (workerSerializer) => {
                     return createWorkerRenderer(workerSerializer, uiSerializer, domRenderer,
                                                 uiRenderProtoViewStore, uiRenderViewStore,
                                                 workerRenderProtoViewStore, workerRenderViewStore);

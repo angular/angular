@@ -107,7 +107,7 @@ export {URLSearchParams} from './src/http/url_search_params';
  *   search: string = 'coreTeam=true';
  * }
  *
- * bootstrap(App, [HTTP_PROVIDERS, provide(RequestOptions, {asClass: MyOptions})])
+ * bootstrap(App, [HTTP_PROVIDERS, provide(RequestOptions, {useClass: MyOptions})])
  *   .catch(err => console.error(err));
  * ```
  *
@@ -125,7 +125,7 @@ export {URLSearchParams} from './src/http/url_search_params';
  * var injector = Injector.resolveAndCreate([
  *   HTTP_PROVIDERS,
  *   MockBackend,
- *   provide(XHRBackend, {asAlias: MockBackend})
+ *   provide(XHRBackend, {useExisting: MockBackend})
  * ]);
  * var http = injector.get(Http);
  * var backend = injector.get(MockBackend);
@@ -153,12 +153,12 @@ export const HTTP_PROVIDERS: any[] = [
   // issue: https://github.com/angular/angular/issues/3183
   provide(Http,
           {
-            asFactory: (xhrBackend, requestOptions) => new Http(xhrBackend, requestOptions),
+            useFactory: (xhrBackend, requestOptions) => new Http(xhrBackend, requestOptions),
             deps: [XHRBackend, RequestOptions]
           }),
   BrowserXhr,
-  provide(RequestOptions, {asClass: BaseRequestOptions}),
-  provide(ResponseOptions, {asClass: BaseResponseOptions}),
+  provide(RequestOptions, {useClass: BaseRequestOptions}),
+  provide(ResponseOptions, {useClass: BaseResponseOptions}),
   XHRBackend
 ];
 
@@ -230,7 +230,7 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
  *   search: string = 'coreTeam=true';
  * }
  *
- * bootstrap(App, [JSONP_PROVIDERS, provide(RequestOptions, {asClass: MyOptions})])
+ * bootstrap(App, [JSONP_PROVIDERS, provide(RequestOptions, {useClass: MyOptions})])
  *   .catch(err => console.error(err));
  * ```
  *
@@ -247,7 +247,7 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
  * var injector = Injector.resolveAndCreate([
  *   JSONP_PROVIDERS,
  *   MockBackend,
- *   provide(JSONPBackend, {asAlias: MockBackend})
+ *   provide(JSONPBackend, {useExisting: MockBackend})
  * ]);
  * var jsonp = injector.get(Jsonp);
  * var backend = injector.get(MockBackend);
@@ -275,13 +275,13 @@ export const JSONP_PROVIDERS: any[] = [
   // issue: https://github.com/angular/angular/issues/3183
   provide(Jsonp,
           {
-            asFactory: (jsonpBackend, requestOptions) => new Jsonp(jsonpBackend, requestOptions),
+            useFactory: (jsonpBackend, requestOptions) => new Jsonp(jsonpBackend, requestOptions),
             deps: [JSONPBackend, RequestOptions]
           }),
   BrowserJsonp,
-  provide(RequestOptions, {asClass: BaseRequestOptions}),
-  provide(ResponseOptions, {asClass: BaseResponseOptions}),
-  provide(JSONPBackend, {asClass: JSONPBackend_})
+  provide(RequestOptions, {useClass: BaseRequestOptions}),
+  provide(ResponseOptions, {useClass: BaseResponseOptions}),
+  provide(JSONPBackend, {useClass: JSONPBackend_})
 ];
 
 /**

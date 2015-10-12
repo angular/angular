@@ -54,11 +54,11 @@ export function main() {
       var bindings = [
         Options.DEFAULT_PROVIDERS,
         Sampler.BINDINGS,
-        provide(Metric, {asValue: metric}),
-        provide(Reporter, {asValue: reporter}),
-        provide(WebDriverAdapter, {asValue: driver}),
+        provide(Metric, {useValue: metric}),
+        provide(Reporter, {useValue: reporter}),
+        provide(WebDriverAdapter, {useValue: driver}),
         bind(Options.EXECUTE).toValue(execute),
-        provide(Validator, {asValue: validator}),
+        provide(Validator, {useValue: validator}),
         bind(Options.NOW).toValue(() => DateWrapper.fromMillis(time++))
       ];
       if (isPresent(prepare)) {

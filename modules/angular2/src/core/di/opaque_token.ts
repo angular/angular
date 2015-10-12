@@ -9,7 +9,7 @@ import {CONST} from 'angular2/src/core/facade/lang';
  * var t = new OpaqueToken("value");
  *
  * var injector = Injector.resolveAndCreate([
- *   provide(t, {asValue: "providedValue"})
+ *   provide(t, {useValue: "providedValue"})
  * ]);
  *
  * expect(injector.get(t)).toEqual("bindingValue");

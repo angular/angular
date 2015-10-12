@@ -75,8 +75,8 @@ export function main() {
 
     beforeEach(() => {
       var injector = Injector.resolveAndCreate([
-        provide(ResponseOptions, {asClass: BaseResponseOptions}),
-        provide(BrowserXhr, {asClass: MockBrowserXHR}),
+        provide(ResponseOptions, {useClass: BaseResponseOptions}),
+        provide(BrowserXhr, {useClass: MockBrowserXHR}),
         XHRBackend
       ]);
       backend = injector.get(XHRBackend);

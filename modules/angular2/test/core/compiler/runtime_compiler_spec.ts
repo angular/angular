@@ -39,7 +39,7 @@ export function main() {
         protoViewFactorySpy = new SpyProtoViewFactory();
         someProtoView = new AppProtoView(null, null, null, null, null, null);
         protoViewFactorySpy.spy('createHost').andReturn(someProtoView);
-        return [provide(ProtoViewFactory, {asValue: protoViewFactorySpy})];
+        return [provide(ProtoViewFactory, {useValue: protoViewFactorySpy})];
       });
 
       it('should compile the template via TemplateCompiler',

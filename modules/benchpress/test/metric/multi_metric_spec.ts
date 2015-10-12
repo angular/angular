@@ -19,7 +19,7 @@ import {Metric, MultiMetric, bind, provide, Injector} from 'benchpress/common';
 export function main() {
   function createMetric(ids: any[]) {
     var m = Injector.resolveAndCreate([
-                      ids.map(id => provide(id, {asValue: new MockMetric(id)})),
+                      ids.map(id => provide(id, {useValue: new MockMetric(id)})),
                       MultiMetric.createBindings(ids)
                     ])
                 .get(MultiMetric);

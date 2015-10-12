@@ -102,7 +102,7 @@ export class MockConnection implements Connection {
  *   var connection;
  *   var injector = Injector.resolveAndCreate([
  *     MockBackend,
- *     provide(Http, {asFactory: (backend, defaultOptions) => {
+ *     provide(Http, {useFactory: (backend, defaultOptions) => {
  *       return new Http(backend, defaultOptions)
  *     }, deps: [MockBackend, DefaultOptions]})]);
  *   var http = injector.get(Http);
@@ -137,7 +137,7 @@ export class MockBackend implements ConnectionBackend {
    *   var text; //this will be set from mock response
    *   var injector = Injector.resolveAndCreate([
    *     MockBackend,
-   *     provide(Http, {asFactory: (backend, options) {
+   *     provide(Http, {useFactory: (backend, options) {
    *       return new Http(backend, options);
    *     }, deps: [MockBackend, BaseRequestOptions]}]);
    *   var backend = injector.get(MockBackend);

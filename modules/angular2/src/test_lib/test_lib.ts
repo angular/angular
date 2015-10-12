@@ -117,8 +117,8 @@ export function beforeEach(fn: FunctionWithParamTokens | SyncTestFn): void {
  * Example:
  *
  *   beforeEachBindings(() => [
- *     provide(Compiler, {asClass: MockCompiler}),
- *     provide(SomeToken, {asValue: myValue}),
+ *     provide(Compiler, {useClass: MockCompiler}),
+ *     provide(SomeToken, {useValue: myValue}),
  *   ]);
  */
 export function beforeEachProviders(fn): void {
@@ -148,7 +148,7 @@ function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | An
     if (testFn.hasToken(AsyncTestCompleter)) {
       jsmFn(name, (done) => {
         var completerProvider = provide(AsyncTestCompleter, {
-          asFactory: () => {
+          useFactory: () => {
             // Mark the test as async when an AsyncTestCompleter is injected in an it()
             if (!inIt) throw new Error('AsyncTestCompleter can only be injected in an "it()"');
             return new AsyncTestCompleter(done);

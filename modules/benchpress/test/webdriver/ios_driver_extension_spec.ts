@@ -40,7 +40,7 @@ export function main() {
       extension =
           Injector.resolveAndCreate([
                     IOsDriverExtension.BINDINGS,
-                    provide(WebDriverAdapter, {asValue: new MockDriverAdapter(log, perfRecords)})
+                    provide(WebDriverAdapter, {useValue: new MockDriverAdapter(log, perfRecords)})
                   ])
               .get(IOsDriverExtension);
       return extension;

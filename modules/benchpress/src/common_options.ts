@@ -45,10 +45,10 @@ var _CAPTURE_FRAMES = new OpaqueToken('Options.frameCapture');
 var _DEFAULT_PROVIDERS = [
   bind(_DEFAULT_DESCRIPTION)
       .toValue({}),
-  provide(_SAMPLE_DESCRIPTION, {asValue: {}}),
-  provide(_FORCE_GC, {asValue: false}),
-  provide(_PREPARE, {asValue: false}),
-  provide(_MICRO_METRICS, {asValue: {}}),
-  provide(_NOW, {asValue: () => DateWrapper.now()}),
-  provide(_CAPTURE_FRAMES, {asValue: false})
+  provide(_SAMPLE_DESCRIPTION, {useValue: {}}),
+  provide(_FORCE_GC, {useValue: false}),
+  provide(_PREPARE, {useValue: false}),
+  provide(_MICRO_METRICS, {useValue: {}}),
+  provide(_NOW, {useValue: () => DateWrapper.now()}),
+  provide(_CAPTURE_FRAMES, {useValue: false})
 ];

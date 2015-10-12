@@ -44,7 +44,7 @@ function creditCardValidator(c): {[key: string]: boolean} {
 }
 
 const creditCardValidatorBinding =
-    CONST_EXPR(new Provider(NG_VALIDATORS, {toValue: creditCardValidator, multi: true}));
+    CONST_EXPR(new Provider(NG_VALIDATORS, {useValue: creditCardValidator, multi: true}));
 
 @Directive({selector: '[credit-card]', bindings: [creditCardValidatorBinding]})
 class CreditCardValidator {

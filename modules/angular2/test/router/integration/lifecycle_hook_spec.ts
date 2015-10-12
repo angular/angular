@@ -64,10 +64,10 @@ export function main() {
     beforeEachBindings(() => [
       RouteRegistry,
       DirectiveResolver,
-      provide(Location, {asClass: SpyLocation}),
+      provide(Location, {useClass: SpyLocation}),
       provide(Router,
               {
-                asFactory:
+                useFactory:
                     (registry, location) => { return new RootRouter(registry, location, MyComp); },
                 deps: [RouteRegistry, Location]
               })
