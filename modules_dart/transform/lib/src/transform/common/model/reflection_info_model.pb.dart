@@ -116,6 +116,6 @@ const ReflectionInfoModel$json = const {
 /**
  * Generated with:
  * reflection_info_model.proto (71d723738054f1276f792a2672a956ef9be94a4c)
- * libprotoc 2.5.0
+ * libprotoc 2.6.1
  * dart-protoc-plugin (cc35f743de982a4916588b9c505dd21c7fe87d17)
  */
