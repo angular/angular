@@ -69,7 +69,7 @@ export class DebugElementViewListener implements AppViewListener {
 
 export const ELEMENT_PROBE_PROVIDERS: any[] = CONST_EXPR([
   DebugElementViewListener,
-  CONST_EXPR(new Provider(AppViewListener, {toAlias: DebugElementViewListener})),
+  CONST_EXPR(new Provider(AppViewListener, {useExisting: DebugElementViewListener})),
 ]);
 
 export const ELEMENT_PROBE_BINDINGS = ELEMENT_PROBE_PROVIDERS;

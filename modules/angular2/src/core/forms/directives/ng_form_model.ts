@@ -13,7 +13,7 @@ import {Control, ControlGroup} from '../model';
 import {setUpControl} from './shared';
 
 const formDirectiveProvider =
-    CONST_EXPR(new Provider(ControlContainer, {toAlias: forwardRef(() => NgFormModel)}));
+    CONST_EXPR(new Provider(ControlContainer, {useExisting: forwardRef(() => NgFormModel)}));
 
 /**
  * Binds an existing control group to a DOM element.

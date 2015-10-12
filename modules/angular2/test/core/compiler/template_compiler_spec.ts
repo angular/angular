@@ -64,7 +64,7 @@ export function main() {
     var compiler: TemplateCompiler;
     var runtimeMetadataResolver: RuntimeMetadataResolver;
 
-    beforeEachBindings(() => [provide(APP_ID, {asValue: APP_ID_VALUE}), TEST_PROVIDERS]);
+    beforeEachBindings(() => [provide(APP_ID, {useValue: APP_ID_VALUE}), TEST_PROVIDERS]);
     beforeEach(inject([TemplateCompiler, RuntimeMetadataResolver],
                       (_compiler, _runtimeMetadataResolver) => {
                         compiler = _compiler;

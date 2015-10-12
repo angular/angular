@@ -51,8 +51,8 @@ export function main() {
       TEST_PROVIDERS,
       provide(ElementSchemaRegistry,
               {
-                asValue: new MockSchemaRegistry({'invalidProp': false},
-                                                {'mappedAttr': 'mappedProp'})
+                useValue: new MockSchemaRegistry({'invalidProp': false},
+                                                 {'mappedAttr': 'mappedProp'})
               })
     ]);
 

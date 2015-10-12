@@ -30,8 +30,9 @@ export function main() {
   describe("Pipes", () => {
     var injector;
 
-    beforeEach(
-        () => { injector = Injector.resolveAndCreate([provide('dep', {asValue: 'dependency'})]); });
+    beforeEach(() => {
+      injector = Injector.resolveAndCreate([provide('dep', {useValue: 'dependency'})]);
+    });
 
     it('should instantiate a pipe', () => {
       var proto =

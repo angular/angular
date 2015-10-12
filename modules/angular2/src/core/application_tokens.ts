@@ -43,7 +43,7 @@ function _appIdRandomProviderFactory() {
  * Bindings that will generate a random APP_ID_TOKEN.
  */
 export const APP_ID_RANDOM_PROVIDER: Provider =
-    CONST_EXPR(new Provider(APP_ID, {toFactory: _appIdRandomProviderFactory, deps: []}));
+    CONST_EXPR(new Provider(APP_ID, {useFactory: _appIdRandomProviderFactory, deps: []}));
 
 function _randomChar(): string {
   return StringWrapper.fromCharCode(97 + Math.floor(Math.random() * 25));

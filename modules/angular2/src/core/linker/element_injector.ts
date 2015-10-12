@@ -174,7 +174,7 @@ export class DirectiveProvider extends ResolvedProvider_ {
   }
 
   static createFromType(type: Type, annotation: DirectiveMetadata): DirectiveProvider {
-    var provider = new Provider(type, {toClass: type});
+    var provider = new Provider(type, {useClass: type});
     return DirectiveProvider.createFromProvider(provider, annotation);
   }
 }

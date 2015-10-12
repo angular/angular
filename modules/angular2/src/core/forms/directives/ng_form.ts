@@ -16,7 +16,7 @@ import {AbstractControl, ControlGroup, Control} from '../model';
 import {setUpControl} from './shared';
 
 const formDirectiveProvider =
-    CONST_EXPR(new Provider(ControlContainer, {toAlias: forwardRef(() => NgForm)}));
+    CONST_EXPR(new Provider(ControlContainer, {useExisting: forwardRef(() => NgForm)}));
 
 /**
  * If `NgForm` is bound in a component, `<form>` elements in that component will be

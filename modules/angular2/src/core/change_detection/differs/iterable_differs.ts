@@ -56,7 +56,7 @@ export class IterableDiffers {
    */
   static extend(factories: IterableDifferFactory[]): Provider {
     return new Provider(IterableDiffers, {
-      toFactory: (parent: IterableDiffers) => {
+      useFactory: (parent: IterableDiffers) => {
         if (isBlank(parent)) {
           // Typically would occur when calling IterableDiffers.extend inside of dependencies passed
           // to

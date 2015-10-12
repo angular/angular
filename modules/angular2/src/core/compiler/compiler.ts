@@ -42,16 +42,16 @@ export function compilerProviders(): Array<Type | Provider | any[]> {
     ChangeDetectionCompiler,
     provide(ChangeDetectorGenConfig,
             {
-              asValue:
+              useValue:
                   new ChangeDetectorGenConfig(assertionsEnabled(), assertionsEnabled(), false, true)
             }),
     TemplateCompiler,
-    provide(RuntimeCompiler, {asClass: RuntimeCompiler_}),
-    provide(Compiler, {asAlias: RuntimeCompiler}),
+    provide(RuntimeCompiler, {useClass: RuntimeCompiler_}),
+    provide(Compiler, {useExisting: RuntimeCompiler}),
     DomElementSchemaRegistry,
-    provide(ElementSchemaRegistry, {asAlias: DomElementSchemaRegistry}),
+    provide(ElementSchemaRegistry, {useExisting: DomElementSchemaRegistry}),
     AnchorBasedAppRootUrl,
-    provide(AppRootUrl, {asAlias: AnchorBasedAppRootUrl}),
+    provide(AppRootUrl, {useExisting: AnchorBasedAppRootUrl}),
     UrlResolver
   ];
 }

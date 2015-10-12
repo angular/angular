@@ -125,7 +125,7 @@ export class RequestOptions {
  *   search: string = 'coreTeam=true';
  * }
  *
- * bootstrap(App, [HTTP_PROVIDERS, provide(RequestOptions, {asClass: MyOptions})]);
+ * bootstrap(App, [HTTP_PROVIDERS, provide(RequestOptions, {useClass: MyOptions})]);
  * ```
  *
  * The options could also be extended when manually creating a {@link Request}

@@ -10,5 +10,5 @@ export function main() {
 }
 
 function createBindings(): any[] {
-  return [provide(APP_VIEW_POOL_CAPACITY, {asValue: 100000})];
+  return [provide(APP_VIEW_POOL_CAPACITY, {useValue: 100000})];
 }

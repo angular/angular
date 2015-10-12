@@ -10,7 +10,7 @@ import {ControlGroup} from '../model';
 import {Form} from './form_interface';
 
 const controlGroupBinding =
-    CONST_EXPR(new Provider(ControlContainer, {toAlias: forwardRef(() => NgControlGroup)}));
+    CONST_EXPR(new Provider(ControlContainer, {useExisting: forwardRef(() => NgControlGroup)}));
 
 /**
  * Creates and binds a control group to a DOM element.

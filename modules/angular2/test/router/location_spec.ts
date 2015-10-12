@@ -27,7 +27,7 @@ export function main() {
       locationStrategy = new MockLocationStrategy();
       locationStrategy.internalBaseHref = baseHref;
       let injector = Injector.resolveAndCreate(
-          [Location, provide(LocationStrategy, {asValue: locationStrategy}), provider]);
+          [Location, provide(LocationStrategy, {useValue: locationStrategy}), provider]);
       return location = injector.get(Location);
     }
 
@@ -71,7 +71,7 @@ export function main() {
     });
 
     it('should use optional base href param', () => {
-      let location = makeLocation('/', provide(APP_BASE_HREF, {asValue: '/my/custom/href'}));
+      let location = makeLocation('/', provide(APP_BASE_HREF, {useValue: '/my/custom/href'}));
       location.go('user/btford');
       expect(locationStrategy.path()).toEqual('/my/custom/href/user/btford');
     });

@@ -9,5 +9,5 @@ import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_ca
 export function main() {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
   bootstrap(InboxApp,
-            [ROUTER_PROVIDERS, provide(LocationStrategy, {asClass: HashLocationStrategy})]);
+            [ROUTER_PROVIDERS, provide(LocationStrategy, {useClass: HashLocationStrategy})]);
 }

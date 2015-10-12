@@ -27,7 +27,7 @@ import {EVENT_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
 export function main() {
   describe("EventDispatcher", () => {
     beforeEachBindings(() => [
-      provide(ON_WEB_WORKER, {asValue: true}),
+      provide(ON_WEB_WORKER, {useValue: true}),
       RenderProtoViewRefStore,
       RenderViewWithFragmentsStore
     ]);

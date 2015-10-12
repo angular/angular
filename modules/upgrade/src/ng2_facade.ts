@@ -40,7 +40,7 @@ export class Ng2ComponentFacade {
 
   bootstrapNg2() {
     var childInjector = this.parentInjector.resolveAndCreateChild(
-        [provide(NG1_SCOPE, {asValue: this.componentScope})]);
+        [provide(NG1_SCOPE, {useValue: this.componentScope})]);
     this.hostViewRef =
         this.viewManager.createRootHostView(this.protoView, '#' + this.id, childInjector);
     var renderer: any = (<any>this.hostViewRef).render;

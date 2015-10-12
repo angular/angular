@@ -75,7 +75,7 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  * var injector = Injector.resolveAndCreate([
  *   BaseRequestOptions,
  *   MockBackend,
- *   provide(Http, {asFactory:
+ *   provide(Http, {useFactory:
  *       function(backend, defaultOptions) {
  *         return new Http(backend, defaultOptions);
  *       },

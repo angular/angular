@@ -68,7 +68,7 @@ export class Runner {
             sampleBindings,
             bind(Options.CAPABILITIES).toValue(capabilities),
             bind(Options.USER_AGENT).toValue(userAgent),
-            provide(WebDriverAdapter, {asValue: adapter})
+            provide(WebDriverAdapter, {useValue: adapter})
           ]);
 
           var sampler = injector.get(Sampler);

@@ -95,7 +95,7 @@ export class XHRConnection implements Connection {
  * @Component({
  *   viewProviders: [
  *     HTTP_PROVIDERS,
- *     provide(Http, {asFactory: (backend, options) => {
+ *     provide(Http, {useFactory: (backend, options) => {
  *       return new Http(backend, options);
  *     }, deps: [MyNodeBackend, BaseRequestOptions]})]
  * })

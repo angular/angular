@@ -11,7 +11,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor'
 import {setUpControl, isPropertyUpdated, selectValueAccessor} from './shared';
 
 const formControlBinding =
-    CONST_EXPR(new Provider(NgControl, {toAlias: forwardRef(() => NgFormControl)}));
+    CONST_EXPR(new Provider(NgControl, {useExisting: forwardRef(() => NgFormControl)}));
 
 /**
  * Binds an existing {@link Control} to a DOM element.

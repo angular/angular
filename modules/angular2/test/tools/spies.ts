@@ -7,7 +7,7 @@ export class SpyComponentRef extends SpyObject {
   injector;
   constructor() {
     super();
-    this.injector = Injector.resolveAndCreate([provide(LifeCycle, {asValue: {tick: () => {}}})]);
+    this.injector = Injector.resolveAndCreate([provide(LifeCycle, {useValue: {tick: () => {}}})]);
   }
 }
 

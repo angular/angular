@@ -28,7 +28,7 @@ import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 
 function createBindings(): Provider[] {
   var viewCacheCapacity = getStringParameter('viewcache') == 'true' ? 10000 : 0;
-  return [provide(APP_VIEW_POOL_CAPACITY, {asValue: viewCacheCapacity})];
+  return [provide(APP_VIEW_POOL_CAPACITY, {useValue: viewCacheCapacity})];
 }
 
 function setupReflector() {

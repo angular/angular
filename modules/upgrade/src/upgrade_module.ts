@@ -73,8 +73,8 @@ export class UpgradeModule {
       applicationCommonBindings(),
       applicationDomBindings(),
       compilerProviders(),
-      provide(NG1_INJECTOR, {asFactory: () => ng1Injector}),
-      provide(NG1_COMPILE, {asFactory: () => ng1Injector.get(NG1_COMPILE)})
+      provide(NG1_INJECTOR, {useFactory: () => ng1Injector}),
+      provide(NG1_COMPILE, {useFactory: () => ng1Injector.get(NG1_COMPILE)})
     ];
 
     var platformRef: PlatformRef = platform();

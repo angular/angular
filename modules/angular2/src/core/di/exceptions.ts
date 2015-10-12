@@ -91,8 +91,8 @@ export class NoProviderError extends AbstractProviderError {
  *
  * ```typescript
  * var injector = Injector.resolveAndCreate([
- *   provide("one", {asFactory: (two) => "two", deps: [[new Inject("two")]]}),
- *   provide("two", {asFactory: (one) => "one", deps: [[new Inject("one")]]})
+ *   provide("one", {useFactory: (two) => "two", deps: [[new Inject("two")]]}),
+ *   provide("two", {useFactory: (one) => "one", deps: [[new Inject("one")]]})
  * ]);
  *
  * expect(() => injector.get("one")).toThrowError();
@@ -252,8 +252,8 @@ export class OutOfBoundsError extends BaseException {
  *
  * ```typescript
  * expect(() => Injector.resolveAndCreate([
- *   new Provider("Strings", {toValue: "string1", multi: true}),
- *   new Provider("Strings", {toValue: "string2", multi: false})
+ *   new Provider("Strings", {useValue: "string1", multi: true}),
+ *   new Provider("Strings", {useValue: "string2", multi: false})
  * ])).toThrowError();
  * ```
  */

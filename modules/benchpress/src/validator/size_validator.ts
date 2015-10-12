@@ -36,5 +36,5 @@ var _SAMPLE_SIZE = new OpaqueToken('SizeValidator.sampleSize');
 var _PROVIDERS = [
   bind(SizeValidator)
       .toFactory((size) => new SizeValidator(size), [_SAMPLE_SIZE]),
-  provide(_SAMPLE_SIZE, {asValue: 10})
+  provide(_SAMPLE_SIZE, {useValue: 10})
 ];

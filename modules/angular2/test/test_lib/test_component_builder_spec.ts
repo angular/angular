@@ -178,7 +178,7 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.overrideProviders(TestBindingsComp,
-                               [provide(FancyService, {asClass: MockFancyService})])
+                               [provide(FancyService, {useClass: MockFancyService})])
              .createAsync(TestBindingsComp)
              .then((rootTestComponent) => {
                rootTestComponent.detectChanges();
@@ -193,7 +193,7 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.overrideViewProviders(TestViewBindingsComp,
-                                   [provide(FancyService, {asClass: MockFancyService})])
+                                   [provide(FancyService, {useClass: MockFancyService})])
              .createAsync(TestViewBindingsComp)
              .then((rootTestComponent) => {
                rootTestComponent.detectChanges();

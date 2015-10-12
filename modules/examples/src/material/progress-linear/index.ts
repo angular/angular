@@ -26,5 +26,5 @@ class DemoApp {
 
 export function main() {
   commonDemoSetup();
-  bootstrap(DemoApp, [provide(UrlResolver, {asValue: new DemoUrlResolver()})]);
+  bootstrap(DemoApp, [provide(UrlResolver, {useValue: new DemoUrlResolver()})]);
 }

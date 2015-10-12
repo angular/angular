@@ -57,6 +57,6 @@ var _PROVIDERS = [
   bind(RegressionSlopeValidator)
       .toFactory((sampleSize, metric) => new RegressionSlopeValidator(sampleSize, metric),
                  [_SAMPLE_SIZE, _METRIC]),
-  provide(_SAMPLE_SIZE, {asValue: 10}),
-  provide(_METRIC, {asValue: 'scriptTime'})
+  provide(_SAMPLE_SIZE, {useValue: 10}),
+  provide(_METRIC, {useValue: 'scriptTime'})
 ];

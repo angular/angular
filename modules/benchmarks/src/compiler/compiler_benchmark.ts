@@ -28,15 +28,15 @@ function _createBindings(): Provider[] {
   return [
     provide(ViewResolver,
             {
-              asFactory: () => new MultiplyViewResolver(
-                             multiplyTemplatesBy,
-                             [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]),
+              useFactory: () => new MultiplyViewResolver(
+                              multiplyTemplatesBy,
+                              [BenchmarkComponentNoBindings, BenchmarkComponentWithBindings]),
               deps: []
             }),
     // Use DynamicChangeDetector as that is the only one that Dart supports as well
     // so that we can compare the numbers between JS and Dart
     provide(ChangeDetectorGenConfig,
-            {asValue: new ChangeDetectorGenConfig(false, false, false, false)})
+            {useValue: new ChangeDetectorGenConfig(false, false, false, false)})
   ];
 }
 

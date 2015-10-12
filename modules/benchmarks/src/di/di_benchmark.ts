@@ -27,7 +27,7 @@ export function main() {
                           .resolveAndCreateChild([])
                           .resolveAndCreateChild([]);
 
-  var variousProviders = [A, provide(B, {asClass: C}), [D, [E]], provide(F, {asValue: 6})];
+  var variousProviders = [A, provide(B, {useClass: C}), [D, [E]], provide(F, {useValue: 6})];
 
   var variousProvidersResolved = Injector.resolve(variousProviders);
 

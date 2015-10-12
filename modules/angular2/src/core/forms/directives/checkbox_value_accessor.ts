@@ -8,7 +8,7 @@ import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {setProperty} from './shared';
 
 const CHECKBOX_VALUE_ACCESSOR = CONST_EXPR(new Provider(
-    NG_VALUE_ACCESSOR, {toAlias: forwardRef(() => CheckboxControlValueAccessor), multi: true}));
+    NG_VALUE_ACCESSOR, {useExisting: forwardRef(() => CheckboxControlValueAccessor), multi: true}));
 
 /**
  * The accessor for writing a value and listening to changes on a checkbox input element.

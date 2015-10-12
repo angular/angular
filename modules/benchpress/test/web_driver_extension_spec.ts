@@ -20,7 +20,7 @@ export function main() {
   function createExtension(ids: any[], caps) {
     return PromiseWrapper.wrap(() => {
       return Injector.resolveAndCreate([
-                       ids.map(id => provide(id, {asValue: new MockExtension(id)})),
+                       ids.map(id => provide(id, {useValue: new MockExtension(id)})),
                        bind(Options.CAPABILITIES).toValue(caps),
                        WebDriverExtension.bindTo(ids)
                      ])

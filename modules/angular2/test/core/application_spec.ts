@@ -89,7 +89,7 @@ export function main() {
       DOM.appendChild(fakeDoc.body, el2);
       DOM.appendChild(el, lightDom);
       DOM.setText(lightDom, 'loading');
-      testProviders = [provide(DOCUMENT, {asValue: fakeDoc})];
+      testProviders = [provide(DOCUMENT, {useValue: fakeDoc})];
     });
 
     it('should throw if bootstrapped Directive is not a Component',
@@ -98,7 +98,7 @@ export function main() {
          var exceptionHandler = new ExceptionHandler(logger, false);
          var refPromise =
              bootstrap(HelloRootDirectiveIsNotCmp,
-                       [testProviders, provide(ExceptionHandler, {asValue: exceptionHandler})]);
+                       [testProviders, provide(ExceptionHandler, {useValue: exceptionHandler})]);
 
          PromiseWrapper.then(refPromise, null, (exception) => {
            expect(exception).toContainError(
@@ -114,7 +114,7 @@ export function main() {
          var exceptionHandler = new ExceptionHandler(logger, IS_DART ? false : true);
 
          var refPromise =
-             bootstrap(HelloRootCmp, [provide(ExceptionHandler, {asValue: exceptionHandler})]);
+             bootstrap(HelloRootCmp, [provide(ExceptionHandler, {useValue: exceptionHandler})]);
          PromiseWrapper.then(refPromise, null, (reason) => {
            expect(reason.message).toContain('The selector "hello-app" did not match any elements');
            async.done();
@@ -129,7 +129,7 @@ export function main() {
            var exceptionHandler = new ExceptionHandler(logger, IS_DART ? false : true);
 
            var refPromise =
-               bootstrap(HelloRootCmp, [provide(ExceptionHandler, {asValue: exceptionHandler})]);
+               bootstrap(HelloRootCmp, [provide(ExceptionHandler, {useValue: exceptionHandler})]);
            PromiseWrapper.then(refPromise, null, (reason) => {
              expect(logger.res.join(""))
                  .toContain('The selector "hello-app" did not match any elements');
@@ -166,7 +166,7 @@ export function main() {
     it("should make the provided bindings available to the application component",
        inject([AsyncTestCompleter], (async) => {
          var refPromise = bootstrap(
-             HelloRootCmp3, [testProviders, provide("appBinding", {asValue: "BoundValue"})]);
+             HelloRootCmp3, [testProviders, provide("appBinding", {useValue: "BoundValue"})]);
 
          refPromise.then((ref) => {
            expect(ref.hostComponent.appBinding).toEqual("BoundValue");

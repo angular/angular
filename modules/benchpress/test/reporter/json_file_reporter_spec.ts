@@ -34,7 +34,7 @@ export function main() {
       var bindings = [
         JsonFileReporter.BINDINGS,
         provide(SampleDescription,
-                {asValue: new SampleDescription(sampleId, descriptions, metrics)}),
+                {useValue: new SampleDescription(sampleId, descriptions, metrics)}),
         bind(JsonFileReporter.PATH).toValue(path),
         bind(Options.NOW).toValue(() => DateWrapper.fromMillis(1234)),
         bind(Options.WRITE_FILE)

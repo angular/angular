@@ -563,7 +563,7 @@ export class Injector {
    *
    * ```typescript
    * var injector = Injector.resolveAndCreate([
-   *   provide("validToken", {asValue: "Value"})
+   *   provide("validToken", {useValue: "Value"})
    * ]);
    * expect(injector.get("validToken")).toEqual("Value");
    * expect(() => injector.get("invalidToken")).toThrowError();
@@ -588,7 +588,7 @@ export class Injector {
    *
    * ```typescript
    * var injector = Injector.resolveAndCreate([
-   *   provide("validToken", {asValue: "Value"})
+   *   provide("validToken", {useValue: "Value"})
    * ]);
    * expect(injector.getOptional("validToken")).toEqual("Value");
    * expect(injector.getOptional("invalidToken")).toBe(null);
