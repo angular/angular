@@ -40,28 +40,28 @@ class NgDepsModel extends GeneratedMessage {
     if (v is! NgDepsModel) checkItemFailed(v, 'NgDepsModel');
   }
 
-  String get libraryUri => getField(1);
+  String get libraryUri => $_get(0, 1, '');
   void set libraryUri(String v) {
-    setField(1, v);
+    $_setString(0, 1, v);
   }
 
-  bool hasLibraryUri() => hasField(1);
+  bool hasLibraryUri() => $_has(0, 1);
   void clearLibraryUri() => clearField(1);
 
-  List<String> get partUris => getField(2);
+  List<String> get partUris => $_get(1, 2, null);
 
-  List<ImportModel> get imports => getField(3);
+  List<ImportModel> get imports => $_get(2, 3, null);
 
-  List<ExportModel> get exports => getField(4);
+  List<ExportModel> get exports => $_get(3, 4, null);
 
-  List<ReflectionInfoModel> get reflectables => getField(5);
+  List<ReflectionInfoModel> get reflectables => $_get(4, 5, null);
 
-  String get sourceFile => getField(6);
+  String get sourceFile => $_get(5, 6, '');
   void set sourceFile(String v) {
-    setField(6, v);
+    $_setString(5, 6, v);
   }
 
-  bool hasSourceFile() => hasField(6);
+  bool hasSourceFile() => $_has(5, 6);
   void clearSourceFile() => clearField(6);
 }
 
@@ -100,6 +100,6 @@ const NgDepsModel$json = const {
 /**
  * Generated with:
  * ng_deps_model.proto (83fe43a087fdd0a7ebee360cd6b669570df4d216)
- * libprotoc 2.5.0
- * dart-protoc-plugin (cc35f743de982a4916588b9c505dd21c7fe87d17)
+ * libprotoc 2.6.1
+ * dart-protoc-plugin (af5fc2bf1de367a434c3b1847ab260510878ffc0)
  */
