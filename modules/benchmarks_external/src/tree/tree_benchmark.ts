@@ -27,7 +27,7 @@ angular.module('app', [])
                    var transcludeFn;
                    return {
                      compile: function(element, attrs) {
-                       var expr = $parse(attrs.treeIf);
+                       var expr = $parse('!!' + attrs.treeIf);
                        var template = '<tree data="' + attrs.treeIf + '"></tree>';
                        var transclude;
                        return function($scope, $element, $attrs) {

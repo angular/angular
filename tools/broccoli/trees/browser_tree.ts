@@ -220,7 +220,9 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   var scripts = mergeTrees(servingTrees);
   var polymerFiles = new Funnel('.', {
     files: [
-      'bower_components/polymer/lib/polymer.html',
+      'bower_components/polymer/polymer.html',
+      'bower_components/polymer/polymer-micro.html',
+      'bower_components/polymer/polymer-mini.html',
       'tools/build/snippets/url_params_to_form.js'
     ]
   });

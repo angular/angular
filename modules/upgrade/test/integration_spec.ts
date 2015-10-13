@@ -402,6 +402,7 @@ export function main() {
                scope: {title: '@'},
                bindToController: true, template: '{{ctl.status}}',
                require: 'ng1',
+               controllerAs: 'ctrl',
                controller: Class({constructor: function() { this.status = 'WORKS'; }}),
                link: function(scope, element, attrs, linkController) {
                  expect(scope.$root).toEqual($rootScope);
@@ -439,6 +440,7 @@ export function main() {
                scope: {title: '@'},
                bindToController: true, template: '{{parent.parent}}:{{ng1.status}}',
                require: ['ng1', '^parent', '?^^notFound'],
+               controllerAs: 'ctrl',
                controller: Class({constructor: function() { this.status = 'WORKS'; }}),
                link: function(scope, element, attrs, linkControllers) {
                  expect(linkControllers[0].status).toEqual('WORKS');
