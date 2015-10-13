@@ -8,6 +8,14 @@ export interface NgZoneZone extends Zone {
   _innerZone: boolean;
 }
 
+export interface ZeroArgFunction {
+  (): void;
+}
+
+export interface ErrorHandlingFn {
+  (error: any, stackTrace: any): void;
+}
+
 /**
  * An injectable service for executing work inside or outside of the Angular zone.
  *
@@ -93,13 +101,13 @@ export class NgZone {
   _innerZone;
 
   /** @internal */
-  _onTurnStart: () => void;
+  _onTurnStart: ZeroArgFunction;
   /** @internal */
-  _onTurnDone: () => void;
+  _onTurnDone: ZeroArgFunction;
   /** @internal */
-  _onEventDone: () => void;
+  _onEventDone: ZeroArgFunction;
   /** @internal */
-  _onErrorHandler: (error: any, stack: any) => void;
+  _onErrorHandler: ErrorHandlingFn;
 
   // Number of microtasks pending from _innerZone (& descendants)
   /** @internal */
@@ -148,7 +156,7 @@ export class NgZone {
    *
    * Setting the hook overrides any previously set hook.
    */
-  overrideOnTurnStart(onTurnStartHook: () => void): void {
+  overrideOnTurnStart(onTurnStartHook: ZeroArgFunction): void {
     this._onTurnStart = normalizeBlank(onTurnStartHook);
   }
 
@@ -162,7 +170,7 @@ export class NgZone {
    *
    * Setting the hook overrides any previously set hook.
    */
-  overrideOnTurnDone(onTurnDoneHook: () => void): void {
+  overrideOnTurnDone(onTurnDoneHook: ZeroArgFunction): void {
     this._onTurnDone = normalizeBlank(onTurnDoneHook);
   }
 
@@ -177,7 +185,7 @@ export class NgZone {
    *
    * Setting the hook overrides any previously set hook.
    */
-  overrideOnEventDone(onEventDoneFn: () => void, opt_waitForAsync: boolean = false): void {
+  overrideOnEventDone(onEventDoneFn: ZeroArgFunction, opt_waitForAsync: boolean = false): void {
     var normalizedOnEventDone = normalizeBlank(onEventDoneFn);
     if (opt_waitForAsync) {
       this._onEventDone = () => {
@@ -195,7 +203,7 @@ export class NgZone {
    *
    * Setting the hook overrides any previously set hook.
    */
-  overrideOnErrorHandler(errorHandler: (error: Error, stack: string) => void) {
+  overrideOnErrorHandler(errorHandler: ErrorHandlingFn) {
     this._onErrorHandler = normalizeBlank(errorHandler);
   }
 
