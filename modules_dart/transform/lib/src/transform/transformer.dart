@@ -36,10 +36,10 @@ class AngularTransformerGroup extends TransformerGroup {
         [new DirectiveProcessor(options)],
         [new DirectiveMetadataLinker()],
         [
-          new TemplateCompiler(options),
+          new DeferredRewriter(options),
           new StylesheetCompiler(),
+          new TemplateCompiler(options)
         ],
-        [new DeferredRewriter(options)]
       ];
     }
     return new AngularTransformerGroup._(phases,

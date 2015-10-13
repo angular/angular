@@ -7,8 +7,8 @@ import 'package:analyzer/src/generated/ast.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';
+import 'package:angular2/src/transform/common/url_resolver.dart';
 import 'package:barback/barback.dart';
-import 'package:code_transformers/assets.dart';
 import 'package:quiver/iterables.dart' as it;
 
 class Rewriter {
@@ -77,6 +77,7 @@ class _FindDeferredLibraries extends Object with RecursiveAstVisitor<Object> {
   var loadLibraryInvocations = new List<MethodInvocation>();
   final AssetReader _reader;
   final AssetId _entryPoint;
+  final _urlResolver = const TransformerUrlResolver();
 
   _FindDeferredLibraries(this._reader, this._entryPoint);
 
@@ -109,16 +110,17 @@ class _FindDeferredLibraries extends Object with RecursiveAstVisitor<Object> {
     return true;
   }
 
-  // Remove all deferredImports that do not have a ng_dep file
+  // Remove all deferredImports that do not have an associated ng_meta file
   // then remove all loadLibrary invocations that are not in the set of
   // prefixes that are left.
   Future cull() async {
+    var baseUri = toAssetUri(_entryPoint);
+
     // Determine whether a deferred import has ng_deps.
     var hasInputs = await Future.wait(deferredImports
         .map((import) => stringLiteralToString(import.uri))
-        .map((uri) => toDepsExtension(uri))
-        .map((depsUri) => uriToAssetId(_entryPoint, depsUri, logger, null,
-            errorOnAbsolute: false))
+        .map((uri) => toMetaExtension(uri))
+        .map((metaUri) => fromUri(_urlResolver.resolve(baseUri, metaUri)))
         .map((asset) => _reader.hasInput(asset)));
 
     // Filter out any deferred imports that do not have ng_deps.
