@@ -1,3 +1,64 @@
+<a name="2.0.0-alpha.41"></a>
+# 2.0.0-alpha.41 (2015-10-13)
+
+
+### Bug Fixes
+
+* **compiler:** merge `class` and `style` attributes from the element with the host attributes ([eacc8e3](https://github.com/angular/angular/commit/eacc8e3)), closes [#4583](https://github.com/angular/angular/issues/4583) [#4680](https://github.com/angular/angular/issues/4680)
+* **compiler:** shadow CSS @import test in some browsers ([0def28e](https://github.com/angular/angular/commit/0def28e)), closes [#4629](https://github.com/angular/angular/issues/4629)
+* **docs:** Updated docs for default router location strategy ([075011f](https://github.com/angular/angular/commit/075011f)), closes [#4517](https://github.com/angular/angular/issues/4517)
+* **router:** properly read and serialize query params ([8bc40d3](https://github.com/angular/angular/commit/8bc40d3)), closes [#3957](https://github.com/angular/angular/issues/3957) [#4225](https://github.com/angular/angular/issues/4225) [#3784](https://github.com/angular/angular/issues/3784)
+* **test_lib:** don't mock out XHR via MockXHR by default in tests ([6abed8d](https://github.com/angular/angular/commit/6abed8d)), closes [#4539](https://github.com/angular/angular/issues/4539) [#4682](https://github.com/angular/angular/issues/4682)
+* **typings:** add more missing typings. ([aab0c57](https://github.com/angular/angular/commit/aab0c57)), closes [#4636](https://github.com/angular/angular/issues/4636)
+* **typings:** fix typings which were previously unchecked ([c178ad4](https://github.com/angular/angular/commit/c178ad4)), closes [#4625](https://github.com/angular/angular/issues/4625)
+* **typings:** missing types in ListWrapper typings ([597f79e](https://github.com/angular/angular/commit/597f79e))
+
+### Features
+
+* **core:** desugar [()] to [prop] and (prop-change) ([7c6130c](https://github.com/angular/angular/commit/7c6130c)), closes [#4658](https://github.com/angular/angular/issues/4658)
+* **di:** change the params of Provider and provide to start with "use" ([1aeafd3](https://github.com/angular/angular/commit/1aeafd3)), closes [#4684](https://github.com/angular/angular/issues/4684)
+* **di:** rename Binding into Provider ([1eb0162](https://github.com/angular/angular/commit/1eb0162)), closes [#4416](https://github.com/angular/angular/issues/4416) [#4654](https://github.com/angular/angular/issues/4654)
+* **ngFor:** support a custom template ([6207b1a](https://github.com/angular/angular/commit/6207b1a)), closes [#4637](https://github.com/angular/angular/issues/4637)
+* **ngUpgrade:** support for content project from ng1->ng2 ([cd90e6e](https://github.com/angular/angular/commit/cd90e6e))
+* **ngUpgrade:** transclude content from ng2->ng1 ([19c1bd7](https://github.com/angular/angular/commit/19c1bd7)), closes [#4640](https://github.com/angular/angular/issues/4640)
+
+
+### BREAKING CHANGES
+
+- `angular2/test_lib` is now called `angular2/testing`
+  - `test_lib.js` -> `testing.js`
+  - `import {...} from 'angular2/test_lib'` -> `import {...} from 'angular2/testing'`
+- [()] desugaring changed:
+
+  Before:
+  ```
+  <cmp [(prop)]="field"> was desugared to <cmp [prop]="field" (prop)="field=$event">
+  ```
+  After:
+  ```
+  <cmp [(prop)]="field"> is desugared to <cmp [prop]="field" (prop-change)="field=$event">
+  ```
+
+
+### API DEPRECATION
+
+- "DI Binding" terminology has changed to "DI Providers" to avoid conflicts/confusion with data-binding. All commonly used apis that use "bind" or "binding" in the name still work but are deprecated and will be removed in future alpha releases. Please update your code:
+  - `bind` -> `provide`
+  - `@Component(bindings: ...)` -> `@Component(providers: ...)`
+  - `@Component(viewBindings: ...)` -> `@Component(viewProviders: ...)`
+  - `HTTP_BINDINGS` -> `HTTP_PROVIDERS`
+  - `JSONP_BINDINGS` -> `JSONP_PROVIDERS`
+  - `ROUTER_BINDINGS` -> `ROUTER_PROVIDERS`
+  - `FORM_BINDINGS` -> `FORM_PROVIDERS`
+  - `ELEMENT_PROBE_BINDINGS` -> `ELEMENT_PROBE_PROVIDERS`
+  - `NoBindingError` -> `NoProviderError`
+  - `AbstractBindingError` -> `AbstractProviderError`
+  - `InvalidBindingError` -> `InvalidProviderError`
+  - `beforeEachBindings` -> `beforeEachProviders`
+  - `Binding` -> `Provider`
+
+
+
 <a name="2.0.0-alpha.40"></a>
 # 2.0.0-alpha.40 (2015-10-09)
 
