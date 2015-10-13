@@ -361,7 +361,7 @@ function proxyServeDart() {
 
 // ------------------
 // web servers
-gulp.task('serve.js.dev', ['build.js.dev'], function(neverDone) {
+gulp.task('serve.js.dev', ['build.js'], function(neverDone) {
   watch('modules/**', { ignoreInitial: true }, '!broccoli.js.dev');
   jsServeDev();
 });
