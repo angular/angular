@@ -32,6 +32,38 @@ export function main() {
          () => { expect(Validators.required(new Control("not empty"))).toEqual(null); });
     });
 
+    describe("minLength", () => {
+      it("should not error on an empty string",
+         () => { expect(Validators.minLength(2)(new Control(""))).toEqual(null); });
+
+      it("should not error on null",
+         () => { expect(Validators.minLength(2)(new Control(null))).toEqual(null); });
+
+      it("should not error on valid strings",
+         () => { expect(Validators.minLength(2)(new Control("aa"))).toEqual(null); });
+
+      it("should error on short strings", () => {
+        expect(Validators.minLength(2)(new Control("a")))
+            .toEqual({"minlength": {"requiredLength": 2, "actualLength": 1}});
+      });
+    });
+
+    describe("maxLength", () => {
+      it("should not error on an empty string",
+         () => { expect(Validators.maxLength(2)(new Control(""))).toEqual(null); });
+
+      it("should not error on null",
+         () => { expect(Validators.maxLength(2)(new Control(null))).toEqual(null); });
+
+      it("should not error on valid strings",
+         () => { expect(Validators.maxLength(2)(new Control("aa"))).toEqual(null); });
+
+      it("should error on short strings", () => {
+        expect(Validators.maxLength(2)(new Control("aaa")))
+            .toEqual({"maxlength": {"requiredLength": 2, "actualLength": 3}});
+      });
+    });
+
     describe("compose", () => {
       it("should return a null validator when given null",
          () => { expect(Validators.compose(null)).toBe(Validators.nullValidator); });

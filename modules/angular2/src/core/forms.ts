@@ -34,7 +34,11 @@ export {
 } from './forms/directives/select_control_value_accessor';
 export {FORM_DIRECTIVES} from './forms/directives';
 export {NG_VALIDATORS, Validators} from './forms/validators';
-export {DefaultValidators} from './forms/directives/validators';
+export {
+  RequiredValidator,
+  MinLengthValidator,
+  MaxLengthValidator
+} from './forms/directives/validators';
 export {FormBuilder} from './forms/form_builder';
 
 import {FormBuilder} from './forms/form_builder';

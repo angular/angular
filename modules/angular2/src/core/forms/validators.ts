@@ -21,6 +21,26 @@ export class Validators {
     return isBlank(control.value) || control.value == "" ? {"required": true} : null;
   }
 
+  static minLength(minLength: number): Function {
+    return (control: modelModule.Control): {[key: string]: any} => {
+      if (isPresent(Validators.required(control))) return null;
+      var v: string = control.value;
+      return v.length < minLength ?
+                 {"minlength": {"requiredLength": minLength, "actualLength": v.length}} :
+                 null;
+    };
+  }
+
+  static maxLength(maxLength: number): Function {
+    return (control: modelModule.Control): {[key: string]: any} => {
+      if (isPresent(Validators.required(control))) return null;
+      var v: string = control.value;
+      return v.length > maxLength ?
+                 {"maxlength": {"requiredLength": maxLength, "actualLength": v.length}} :
+                 null;
+    };
+  }
+
   static nullValidator(c: any): {[key: string]: boolean} { return null; }
 
   static compose(validators: Function[]): Function {
