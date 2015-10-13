@@ -511,6 +511,10 @@ gulp.task('test.unit.js', ['build.js.dev'], function (done) {
   );
 });
 
+gulp.task('watch.js.dev', ['build.js.dev'], function (done) {
+  watch('modules/**', ['!broccoli.js.dev']);
+});
+
 gulp.task('test.unit.js.sauce', ['build.js.dev'], function (done) {
   var browserConf = getBrowsersFromCLI();
   if (browserConf.isSauce) {
@@ -594,6 +598,29 @@ gulp.task('test.unit.dart', function (done) {
         '!test.unit.dart/karma-run'
       ]);
     }
+  );
+});
+
+gulp.task('watch.dart.dev', function (done) {
+  runSequence(
+      'build/tree.dart',
+      'build/pure-packages.dart',
+      '!build/pubget.angular2.dart',
+      '!build/change_detect.dart',
+      '!build/remove-pub-symlinks',
+      'build.dart.material.css',
+      function(error) {
+        // if initial build failed (likely due to build or formatting step) then exit
+        // otherwise karma server doesn't start and we can't continue running properly
+        if (error) {
+          done(error);
+          return;
+        }
+
+        watch(['modules/angular2/**'], { ignoreInitial: true }, [
+          '!build/tree.dart'
+        ]);
+      }
   );
 });
 
