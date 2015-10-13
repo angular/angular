@@ -1,3 +1,23 @@
+<a name="2.0.0-alpha.42"></a>
+# 2.0.0-alpha.42 (2015-10-13)
+
+This is a quick follow-up release to 41 to fix the d.ts distribution with our
+npm package. See #4706 for more info.
+
+### Bug Fixes
+
+* **build:** Fix serve.js.dev to build bundles ([3b03660](https://github.com/angular/angular/commit/3b03660)), closes [#4700](https://github.com/angular/angular/issues/4700)
+* **docs:** minor @link fixes. ([3a801c1](https://github.com/angular/angular/commit/3a801c1)), closes [#4696](https://github.com/angular/angular/issues/4696)
+* **publish:** emit type declarations with CJS build ([57649d1](https://github.com/angular/angular/commit/57649d1)), closes [#4706](https://github.com/angular/angular/issues/4706) [#4708](https://github.com/angular/angular/issues/4708)
+* **test:** command compiler attr merge test in IE ([e15e242](https://github.com/angular/angular/commit/e15e242))
+
+### Features
+
+* **build:** add tasks to watch and recompile js and dart ([50e922f](https://github.com/angular/angular/commit/50e922f))
+* **forms:** add minlength and maxlength validators ([e82a35d](https://github.com/angular/angular/commit/e82a35d)), closes [#4705](https://github.com/angular/angular/issues/4705)
+
+
+
 <a name="2.0.0-alpha.41"></a>
 # 2.0.0-alpha.41 (2015-10-13)
 
