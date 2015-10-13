@@ -8,7 +8,7 @@ import {
   expect,
   beforeEach,
   afterEach
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {PipeProvider} from 'angular2/src/core/pipes/pipe_provider';
 import {Pipe} from 'angular2/src/core/metadata';

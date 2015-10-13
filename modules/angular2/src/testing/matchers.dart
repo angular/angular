@@ -1,4 +1,4 @@
-library test_lib.matchers;
+library testing.matchers;
 
 import 'dart:async';
 

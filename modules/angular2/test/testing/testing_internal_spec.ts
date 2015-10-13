@@ -9,7 +9,7 @@ import {
   beforeEach,
   proxy,
   containsRegexp
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {MapWrapper} from 'angular2/src/core/facade/collection';
@@ -29,7 +29,7 @@ class SpyTestObj extends SpyObject {
 
 
 export function main() {
-  describe('test_lib', () => {
+  describe('testing', () => {
     describe('equality', () => {
       it('should structurally compare objects', () => {
         var expected = new TestObj(new TestObj({'one': [1, 2]}));

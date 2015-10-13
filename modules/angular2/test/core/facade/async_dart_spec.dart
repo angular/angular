@@ -1,7 +1,7 @@
 /// This file contains tests that make sense only in Dart
 library angular2.test.facade.async_dart_spec;
 
-import 'package:angular2/test_lib.dart';
+import 'package:angular2/testing_internal.dart';
 import 'package:angular2/src/core/facade/async.dart';
 
 class MockException implements Error {

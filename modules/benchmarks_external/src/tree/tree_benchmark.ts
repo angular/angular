@@ -1,5 +1,5 @@
 // tree benchmark in AngularJS 1.x
-import {getIntParameter, bindAction} from 'angular2/src/test_lib/benchmark_util';
+import {getIntParameter, bindAction} from 'angular2/src/testing/benchmark_util';
 declare var angular: any;
 
 export function main() {

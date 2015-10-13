@@ -12,7 +12,7 @@ import {
   Log,
   isInInnerZone,
   browserDetection
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {PromiseCompleter, PromiseWrapper, TimerWrapper} from 'angular2/src/core/facade/async';
 import {BaseException} from 'angular2/src/core/facade/exceptions';

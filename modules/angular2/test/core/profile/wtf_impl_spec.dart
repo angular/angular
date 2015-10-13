@@ -1,7 +1,7 @@
 /// This file contains tests that make sense only in Dart
 library angular2.test.core.wtf_impl;
 
-import 'package:angular2/test_lib.dart';
+import 'package:angular2/testing_internal.dart';
 import 'package:angular2/src/core/profile/wtf_impl.dart' as impl;
 
 main() {

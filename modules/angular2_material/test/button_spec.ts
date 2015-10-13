@@ -11,7 +11,7 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {DebugElement} from 'angular2/src/core/debug/debug_element';
 
 import {Component, View, ViewMetadata, UrlResolver, bind, provide} from 'angular2/core';

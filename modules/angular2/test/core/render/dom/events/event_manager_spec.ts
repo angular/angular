@@ -8,7 +8,7 @@ import {
   expect,
   beforeEach,
   el
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {
   EventManager,
   EventManagerPlugin,

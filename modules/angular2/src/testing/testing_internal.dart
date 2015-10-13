@@ -1,4 +1,4 @@
-library test_lib.test_lib;
+library angular2.src.testing.testing_internal;
 
 import 'dart:async';
 

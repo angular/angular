@@ -9,7 +9,7 @@ import {
   beforeEachBindings,
   SpyObject,
   proxy
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {Serializer} from 'angular2/src/web_workers/shared/serializer';
 import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';
 import {provide} from 'angular2/core';

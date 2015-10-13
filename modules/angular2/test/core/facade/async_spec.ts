@@ -10,7 +10,7 @@ import {
   SpyObject,
   AsyncTestCompleter,
   inject
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {ObservableWrapper, EventEmitter, PromiseWrapper} from 'angular2/src/core/facade/async';
 

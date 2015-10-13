@@ -1,4 +1,4 @@
-import {runClickBenchmark, verifyNoBrowserErrors} from 'angular2/src/test_lib/perf_util';
+import {runClickBenchmark, verifyNoBrowserErrors} from 'angular2/src/testing/perf_util';
 
 describe('polymer tree benchmark', function() {
 

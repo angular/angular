@@ -8,12 +8,11 @@ import {
   expect,
   tick,
   beforeEach,
-  dispatchEvent,
   inject,
   injectAsync,
   beforeEachProviders,
   TestComponentBuilder
-} from 'angular2/test';
+} from 'angular2/testing';
 
 import {Injectable, NgIf, bind} from 'angular2/core';
 import {Directive, Component, View, ViewMetadata} from 'angular2/angular2';

@@ -12,7 +12,7 @@ import {
   fakeAsync,
   tick,
   inject
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {ControlGroup, Control, ControlArray, Validators} from 'angular2/core';
 import {ObservableWrapper} from 'angular2/src/core/facade/async';
 

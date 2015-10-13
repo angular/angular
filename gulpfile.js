@@ -299,7 +299,7 @@ gulp.task('lint', ['build.tools'], function() {
       "requireParameterType": true
     }
   };
-  return gulp.src(['modules/angular2/src/**/*.ts', '!modules/angular2/src/test_lib/**'])
+  return gulp.src(['modules/angular2/src/**/*.ts', '!modules/angular2/src/testing/**'])
       .pipe(tslint({
         tslint: require('tslint'),
         configuration: tslintConfig,
@@ -1044,8 +1044,8 @@ gulp.task('!bundle.testing', ['build.js.dev'], function() {
   devBundleConfig.paths = merge(true, devBundleConfig.paths, {"*": "dist/js/dev/es5/*.js"});
   return bundler.bundle(
     devBundleConfig,
-    'angular2/test_lib + angular2/mock - angular2/angular2',
-    './dist/js/bundle/test_lib.js',
+    'angular2/testing + angular2/mock - angular2/angular2',
+    './dist/js/bundle/testing.js',
     { sourceMaps: true });
 });
 

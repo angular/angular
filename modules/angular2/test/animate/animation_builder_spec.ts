@@ -1,4 +1,4 @@
-import {el, describe, it, iit, expect, inject, SpyObject} from 'angular2/test_lib';
+import {el, describe, it, iit, expect, inject, SpyObject} from 'angular2/testing_internal';
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 

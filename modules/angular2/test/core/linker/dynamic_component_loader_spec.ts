@@ -14,7 +14,7 @@ import {
   xit,
   TestComponentBuilder,
   RootTestComponent
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {OnDestroy} from 'angular2/lifecycle_hooks';
 import {Injector, NgIf} from 'angular2/core';
@@ -24,7 +24,7 @@ import {DynamicComponentLoader} from 'angular2/src/core/linker/dynamic_component
 import {ElementRef} from 'angular2/src/core/linker/element_ref';
 import {DOCUMENT} from 'angular2/src/core/render/render';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {RootTestComponent_} from "angular2/src/test_lib/test_component_builder";
+import {RootTestComponent_} from "angular2/src/testing/test_component_builder";
 
 export function main() {
   describe('DynamicComponentLoader', function() {

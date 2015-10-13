@@ -6,7 +6,7 @@ import {
   bindAction,
   windowProfile,
   windowProfileEnd
-} from 'angular2/src/test_lib/benchmark_util';
+} from 'angular2/src/testing/benchmark_util';
 import {bootstrap} from 'angular2/bootstrap';
 import {
   Component,

@@ -1,4 +1,4 @@
-library test_lib.fake_async;
+library testing.fake_async;
 
 import 'dart:async' show runZoned, ZoneSpecification;
 import 'package:quiver/testing/async.dart' as quiver;

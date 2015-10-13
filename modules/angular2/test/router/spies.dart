@@ -1,7 +1,7 @@
 library router.spies;
 
 import 'package:angular2/router.dart';
-import 'package:angular2/test_lib.dart';
+import 'package:angular2/testing_internal.dart';
 
 @proxy
 class SpyLocation extends SpyObject implements Location {

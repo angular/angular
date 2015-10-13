@@ -13,7 +13,7 @@ import {
   beforeEachBindings,
   it,
   xit
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {provide, Component, Injector, Inject, View} from 'angular2/core';
 import {isPresent} from 'angular2/src/core/facade/lang';

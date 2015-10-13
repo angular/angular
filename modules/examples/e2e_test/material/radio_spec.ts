@@ -1,4 +1,4 @@
-import {verifyNoBrowserErrors} from 'angular2/src/test_lib/e2e_util';
+import {verifyNoBrowserErrors} from 'angular2/src/testing/e2e_util';
 
 describe('md-radio-button', function() {
   var url = 'examples/src/material/radio/index.html';

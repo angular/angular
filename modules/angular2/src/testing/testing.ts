@@ -10,7 +10,7 @@ import {createTestInjector, FunctionWithParamTokens, inject, injectAsync} from '
 
 export {inject, injectAsync} from './test_injector';
 
-export {expect} from './matchers';
+export {expect, NgMatchers} from './matchers';
 
 var _global: jasmine.GlobalPolluter = <any>(typeof window === 'undefined' ? global : window);
 

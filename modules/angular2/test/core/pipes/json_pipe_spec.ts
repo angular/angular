@@ -11,7 +11,7 @@ import {
   inject,
   proxy,
   SpyObject
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {Json, RegExp, NumberWrapper, StringWrapper} from 'angular2/src/core/facade/lang';
 
 import {JsonPipe} from 'angular2/core';

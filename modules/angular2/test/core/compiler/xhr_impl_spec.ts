@@ -8,7 +8,7 @@ import {
   inject,
   it,
   xit
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {XHRImpl} from 'angular2/src/core/compiler/xhr_impl';
 import {PromiseWrapper} from 'angular2/src/core/facade/async';

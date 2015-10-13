@@ -10,7 +10,7 @@ import {
   it,
   xit,
   SpyObject
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {Injector, provide} from 'angular2/core';
 import {MockBackend, MockConnection} from 'angular2/src/http/backends/mock_backend';
 import {

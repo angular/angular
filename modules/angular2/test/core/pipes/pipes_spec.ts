@@ -8,7 +8,7 @@ import {
   expect,
   beforeEach,
   afterEach
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {Injector, Inject, provide, Pipe, PipeTransform} from 'angular2/core';
 import {ProtoPipes, Pipes} from 'angular2/src/core/pipes/pipes';

@@ -9,7 +9,7 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {PromiseWrapper} from 'angular2/src/core/facade/async';
 import {Json, isBlank, isPresent} from 'angular2/src/core/facade/lang';

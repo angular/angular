@@ -12,7 +12,7 @@ import {
   Log,
   tick,
   xit
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {TimerWrapper, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {Parser} from 'angular2/src/core/change_detection/change_detection';

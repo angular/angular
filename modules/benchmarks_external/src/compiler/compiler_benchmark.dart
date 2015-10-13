@@ -4,7 +4,7 @@ library compiler_benchmark_ng10;
 import 'package:angular/angular.dart';
 import 'package:angular/application_factory.dart';
 import 'dart:html';
-import 'package:angular2/src/test_lib/benchmark_util.dart';
+import 'package:angular2/src/testing/benchmark_util.dart';
 
 main() {
   var count = getIntParameter('elements');

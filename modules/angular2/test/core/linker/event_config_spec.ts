@@ -1,5 +1,5 @@
 import {EventConfig} from 'angular2/src/core/linker/event_config';
-import {ddescribe, describe, expect, it} from 'angular2/test_lib';
+import {ddescribe, describe, expect, it} from 'angular2/testing_internal';
 
 export function main() {
   describe('EventConfig', () => {

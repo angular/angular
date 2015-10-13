@@ -11,7 +11,7 @@ import {
   inject,
   SpyObject,
   browserDetection
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {SpyChangeDetectorRef} from './spies';
 
 import {isBlank} from 'angular2/src/core/facade/lang';

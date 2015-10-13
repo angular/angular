@@ -11,7 +11,7 @@ import {
   xit,
   TestComponentBuilder,
   beforeEachBindings
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {MapWrapper} from 'angular2/src/core/facade/collection';
 import {
   CompileDirectiveMetadata,

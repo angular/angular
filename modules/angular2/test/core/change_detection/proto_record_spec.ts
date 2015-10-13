@@ -1,4 +1,13 @@
-import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
+import {
+  ddescribe,
+  describe,
+  it,
+  iit,
+  xit,
+  expect,
+  beforeEach,
+  afterEach
+} from 'angular2/testing_internal';
 import {isBlank} from 'angular2/src/core/facade/lang';
 
 import {RecordType, ProtoRecord} from 'angular2/src/core/change_detection/proto_record';

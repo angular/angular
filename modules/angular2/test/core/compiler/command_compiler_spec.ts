@@ -11,7 +11,7 @@ import {
   AsyncTestCompleter,
   inject,
   beforeEachBindings
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {CONST_EXPR, stringify, isType, Type, isBlank} from 'angular2/src/core/facade/lang';
 import {MapWrapper} from 'angular2/src/core/facade/collection';

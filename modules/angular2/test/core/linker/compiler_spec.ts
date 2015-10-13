@@ -11,7 +11,7 @@ import {
   AsyncTestCompleter,
   inject,
   beforeEachBindings
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {Component, View, provide} from 'angular2/core';
 import {SpyProtoViewFactory} from '../spies';

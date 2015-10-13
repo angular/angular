@@ -11,7 +11,7 @@ import {
   AsyncTestCompleter,
   inject,
   beforeEachBindings
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {provide} from 'angular2/src/core/di';
 import {SpyXHR} from '../spies';
 import {XHR} from 'angular2/src/core/compiler/xhr';

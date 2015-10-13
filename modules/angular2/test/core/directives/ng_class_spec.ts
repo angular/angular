@@ -13,7 +13,7 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {Component, View, NgFor, provide} from 'angular2/angular2';
 import {NgClass} from 'angular2/src/core/directives/ng_class';

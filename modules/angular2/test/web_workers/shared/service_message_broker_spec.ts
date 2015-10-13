@@ -9,7 +9,7 @@ import {
   beforeEachBindings,
   SpyObject,
   proxy
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {createPairedMessageBuses} from '../shared/web_worker_test_util';
 import {Serializer, PRIMITIVE} from 'angular2/src/web_workers/shared/serializer';
 import {

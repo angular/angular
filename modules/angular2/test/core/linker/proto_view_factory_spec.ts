@@ -9,7 +9,7 @@ import {
   iit,
   inject,
   it
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 export function main() {
   describe('ProtoViewFactory', () => {

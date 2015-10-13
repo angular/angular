@@ -8,7 +8,7 @@ import {
   xit,
   expect,
   SpyObject
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {SpyElementRef, SpyDomAdapter} from '../spies';
 
 import {DOM, DomAdapter} from 'angular2/src/core/dom/dom_adapter';

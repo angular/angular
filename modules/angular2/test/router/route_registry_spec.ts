@@ -8,7 +8,7 @@ import {
   inject,
   beforeEach,
   SpyObject
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {Type} from 'angular2/src/core/facade/lang';

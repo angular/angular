@@ -1,4 +1,4 @@
-import {describe, it, iit, ddescribe, expect, beforeEach} from 'angular2/test_lib';
+import {describe, it, iit, ddescribe, expect, beforeEach} from 'angular2/testing_internal';
 import {Reflector, ReflectionInfo} from 'angular2/src/core/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
 import {

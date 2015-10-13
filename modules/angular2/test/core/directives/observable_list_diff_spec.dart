@@ -1,6 +1,6 @@
 library angular2.test.directives.observable_list_iterable_diff_spec;
 
-import 'package:angular2/test_lib.dart';
+import 'package:angular2/testing_internal.dart';
 import 'package:observe/observe.dart' show ObservableList;
 import 'package:angular2/core.dart' show ObservableListDiffFactory, ChangeDetectorRef;
 

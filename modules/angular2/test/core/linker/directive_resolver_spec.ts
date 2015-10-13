@@ -1,4 +1,4 @@
-import {ddescribe, describe, it, iit, expect, beforeEach} from 'angular2/test_lib';
+import {ddescribe, describe, it, iit, expect, beforeEach} from 'angular2/testing_internal';
 import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 import {
   DirectiveMetadata,

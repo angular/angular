@@ -14,7 +14,7 @@ import {
   xit,
   Log,
   SpyObject
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {
   SpyChangeDetector,

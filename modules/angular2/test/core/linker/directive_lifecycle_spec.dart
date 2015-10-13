@@ -1,6 +1,6 @@
 library angular2.test.core.compiler.directive_lifecycle_spec;
 
-import 'package:angular2/test_lib.dart';
+import 'package:angular2/testing_internal.dart';
 import 'package:angular2/src/core/linker/directive_lifecycle_reflector.dart';
 import 'package:angular2/src/core/linker/interfaces.dart';
 

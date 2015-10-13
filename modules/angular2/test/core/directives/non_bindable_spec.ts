@@ -10,7 +10,7 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {Component, Directive, View} from 'angular2/core';
 import {ElementRef} from 'angular2/src/core/linker/element_ref';

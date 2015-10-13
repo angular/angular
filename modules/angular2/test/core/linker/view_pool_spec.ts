@@ -14,7 +14,7 @@ import {
   xit,
   SpyObject,
   proxy
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {AppViewPool} from 'angular2/src/core/linker/view_pool';
 import {AppProtoView, AppView} from 'angular2/src/core/linker/view';
 import {MapWrapper, Map} from 'angular2/src/core/facade/collection';

@@ -13,7 +13,7 @@ import {
   beforeEachBindings,
   it,
   xit
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {provide, Component, View, Injector, Inject} from 'angular2/core';
 import {CONST, NumberWrapper, isPresent, Json} from 'angular2/src/core/facade/lang';

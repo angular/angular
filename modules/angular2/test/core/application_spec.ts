@@ -9,7 +9,7 @@ import {
   it,
   xdescribe,
   xit
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {isPresent, stringify} from 'angular2/src/core/facade/lang';
 import {bootstrap} from 'angular2/bootstrap';
 import {ApplicationRef} from 'angular2/src/core/application_ref';

@@ -1,4 +1,4 @@
-library test_lib.lang_utils;
+library testing.lang_utils;
 
 import 'dart:mirrors';
 

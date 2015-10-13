@@ -9,7 +9,7 @@ import {
   it,
   xdescribe,
   xit
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {getSymbolsFromLibrary} from './symbol_inspector';
 import {SymbolsDiff} from './symbol_differ';

@@ -12,7 +12,7 @@ import {
   it,
   xit,
   TestComponentBuilder
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {Injectable, NgIf, provide} from 'angular2/core';
 import {Directive, Component, View, ViewMetadata} from 'angular2/src/core/metadata';

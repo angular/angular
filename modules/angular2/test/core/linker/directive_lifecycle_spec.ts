@@ -11,7 +11,7 @@ import {
   it,
   SpyObject,
   proxy
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {hasLifecycleHook} from 'angular2/src/core/linker/directive_lifecycle_reflector';
 import {LifecycleHooks} from 'angular2/src/core/linker/interfaces';

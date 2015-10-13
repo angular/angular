@@ -1,4 +1,4 @@
-import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular2/test_lib';
+import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular2/testing_internal';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {SelectorMatcher} from 'angular2/src/core/compiler/selector';
 import {CssSelector} from 'angular2/src/core/compiler/selector';

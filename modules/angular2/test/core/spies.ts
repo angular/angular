@@ -24,7 +24,7 @@ import {
   ProtoElementInjector
 } from 'angular2/src/core/linker/element_injector';
 
-import {SpyObject, proxy} from 'angular2/test_lib';
+import {SpyObject, proxy} from 'angular2/testing_internal';
 
 export class SpyDependencyProvider extends SpyObject {}
 

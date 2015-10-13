@@ -9,7 +9,7 @@ import {
   it,
   xdescribe,
   xit,
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {Component, View, Inject, EventEmitter} from 'angular2/angular2';
 import {createUpgradeModule, UpgradeModule} from 'upgrade/upgrade';

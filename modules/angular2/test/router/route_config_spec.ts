@@ -9,7 +9,7 @@ import {
   it,
   xdescribe,
   xit,
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {bootstrap} from 'angular2/bootstrap';
 import {Component, Directive, View} from 'angular2/src/core/metadata';

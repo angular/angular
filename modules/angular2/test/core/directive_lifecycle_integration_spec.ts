@@ -11,7 +11,7 @@ import {
   xit,
   Log,
   TestComponentBuilder
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {
   OnChanges,

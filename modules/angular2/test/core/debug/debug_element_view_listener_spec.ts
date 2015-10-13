@@ -12,7 +12,7 @@ import {
   it,
   xit,
   TestComponentBuilder,
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {global} from 'angular2/src/core/facade/lang';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 import {provide, Component, Directive, Injectable, View} from 'angular2/core';

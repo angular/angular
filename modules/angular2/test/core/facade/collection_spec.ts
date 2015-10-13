@@ -1,4 +1,4 @@
-import {describe, it, expect, beforeEach, ddescribe, iit, xit} from 'angular2/test_lib';
+import {describe, it, expect, beforeEach, ddescribe, iit, xit} from 'angular2/testing_internal';
 
 import {ListWrapper, StringMapWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
 

@@ -8,7 +8,7 @@ import {
   inject,
   beforeEach,
   SpyObject
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {PathRecognizer} from 'angular2/src/router/path_recognizer';
 import {parser, Url, RootUrl} from 'angular2/src/router/url_parser';

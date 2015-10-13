@@ -1,6 +1,6 @@
 library angular2.test.web_workers.debug_tools.web_socket_server_message_bus;
 
-import "package:angular2/test_lib.dart"
+import "package:angular2/testing_internal.dart"
     show
         AsyncTestCompleter,
         inject,

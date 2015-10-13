@@ -10,7 +10,7 @@ import {
   beforeEach,
   beforeEachBindings,
   SpyObject
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {Injector, provide} from 'angular2/core';
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';

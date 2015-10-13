@@ -1,4 +1,4 @@
-import {describe, it, iit, ddescribe, expect, BrowserDetection} from 'angular2/test_lib';
+import {describe, it, iit, ddescribe, expect, BrowserDetection} from 'angular2/testing_internal';
 import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 export function main() {
