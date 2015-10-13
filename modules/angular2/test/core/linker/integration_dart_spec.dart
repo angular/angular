@@ -241,7 +241,7 @@ class ThrowingComponent2 {
   }
 }
 
-@proxy()
+@proxy
 class PropModel implements Map {
   final String foo = 'foo-prop';
 
