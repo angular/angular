@@ -2,9 +2,11 @@ library angular2.test.transform.inliner_for_test.all_tests;
 
 import 'dart:async';
 
+import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
-import 'package:angular2/src/transform/inliner_for_test.dart';
+import 'package:angular2/src/transform/common/options.dart';
+import 'package:angular2/src/transform/inliner_for_test/transformer.dart';
 import 'package:barback/barback.dart';
 import 'package:code_transformers/tests.dart';
 import 'package:guinness/guinness.dart';
@@ -18,12 +20,14 @@ main() {
 }
 
 DartFormatter formatter = new DartFormatter();
+AnnotationMatcher annotationMatcher;
 
 void allTests() {
   AssetReader absoluteReader;
 
   beforeEach(() {
     absoluteReader = new TestAssetReader();
+    annotationMatcher = new AnnotationMatcher();
   });
 
   it('should inline `templateUrl` values', () async {
@@ -83,18 +87,46 @@ void allTests() {
     expect(output).toContain("{{greeting}}");
   });
 
+  it('should not inline values outside of View/Component annotations',
+      () async {
+    var output = await _testInline(
+        absoluteReader, _assetId('false_match_files/hello.dart'));
+
+    expect(output).toBeNotNull();
+    expect(output).not.toContain('{{greeting}}');
+    expect(output).toContain('.greeting { .color: blue; }');
+  });
+
+  it('should not modify files with no `templateUrl` or `styleUrls` values.',
+      () async {
+    var output = await _testInline(
+        absoluteReader, _assetId('no_modify_files/hello.dart'));
+
+    expect(output).toBeNull();
+  });
+
+  it('should not strip property annotations.', () async {
+    // Regression test for https://github.com/dart-lang/sdk/issues/24578
+    var output = await _testInline(
+        absoluteReader, _assetId('prop_annotations_files/hello.dart'));
+
+    expect(output).toContain('@Attribute(\'thing\')');
+  });
+
   _runAbsoluteUrlEndToEndTest();
   _runMultiStylesEndToEndTest();
 }
 
 Future<String> _testInline(AssetReader reader, AssetId assetId) {
-  return log.setZoned(new RecordingLogger(), () => inline(reader, assetId));
+  return log.setZoned(
+      new RecordingLogger(), () => inline(reader, assetId, annotationMatcher));
 }
 
 AssetId _assetId(String path) => new AssetId('a', 'inliner_for_test/$path');
 
 void _runAbsoluteUrlEndToEndTest() {
-  InlinerForTest transformer = new InlinerForTest(formatCode: true);
+  var options = new TransformerOptions([], inlineViews: true, formatCode: true);
+  InlinerForTest transformer = new InlinerForTest(options);
   var inputMap = {
     'a|absolute_url_expression_files/hello.dart':
         _readFile('absolute_url_expression_files/hello.dart'),
@@ -119,7 +151,8 @@ void _runAbsoluteUrlEndToEndTest() {
 }
 
 void _runMultiStylesEndToEndTest() {
-  InlinerForTest transformer = new InlinerForTest(formatCode: true);
+  var options = new TransformerOptions([], inlineViews: true, formatCode: true);
+  InlinerForTest transformer = new InlinerForTest(options);
   var inputMap = {
     'pkg|web/hello.dart': _readFile('multiple_style_urls_files/hello.dart'),
     'pkg|web/template.css': _readFile('multiple_style_urls_files/template.css'),
