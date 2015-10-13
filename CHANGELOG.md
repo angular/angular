@@ -16,7 +16,11 @@ npm package. See #4706 for more info.
 * **build:** add tasks to watch and recompile js and dart ([50e922f](https://github.com/angular/angular/commit/50e922f))
 * **forms:** add minlength and maxlength validators ([e82a35d](https://github.com/angular/angular/commit/e82a35d)), closes [#4705](https://github.com/angular/angular/issues/4705)
 
+### BREAKING CHANGES
 
+- TypeScript typings are now included in the distribution. If you have installed external typings
+  (eg. using tsd to fetch files from DefinitelyTyped), you need to remove them. TypeScript will give
+  a `Duplicate identifier` error if the same type definition appears twice.
 
 <a name="2.0.0-alpha.41"></a>
 # 2.0.0-alpha.41 (2015-10-13)
@@ -59,7 +63,6 @@ npm package. See #4706 for more info.
   ```
   <cmp [(prop)]="field"> is desugared to <cmp [prop]="field" (prop-change)="field=$event">
   ```
-
 
 ### API DEPRECATION
 
