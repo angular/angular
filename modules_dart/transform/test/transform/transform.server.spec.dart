@@ -8,7 +8,6 @@ import 'common/async_string_writer_tests.dart' as asyncStringWriter;
 import 'common/code/ng_deps_code_tests.dart' as ngDepsCode;
 import 'common/ng_meta_test.dart' as ngMetaTest;
 import 'common/url_resolver_tests.dart' as urlResolver;
-import 'bind_generator/all_tests.dart' as bindGenerator;
 import 'deferred_rewriter/all_tests.dart' as deferredRewriter;
 import 'directive_metadata_linker/all_tests.dart' as directiveMeta;
 import 'directive_processor/all_tests.dart' as directiveProcessor;
@@ -23,7 +22,6 @@ main() {
   describe('AsyncStringWriter', asyncStringWriter.allTests);
   describe('NgDepsCode', ngDepsCode.allTests);
   describe('NgMeta', ngMetaTest.allTests);
-  describe('Bind Generator', bindGenerator.allTests);
   describe('Directive Metadata Linker', directiveMeta.allTests);
   describe('Directive Processor', directiveProcessor.allTests);
   describe('Inliner For Test', inliner.allTests);
