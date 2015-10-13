@@ -831,7 +831,7 @@ gulp.task('test.typings', ['!pre.test.typings'], function() {
 var tmpdir = path.join(os.tmpdir(), 'test.typings',  new Date().getTime().toString());
 gulp.task('!pre.test.typings.layoutNodeModule', function() {
   return gulp
-    .src(['dist/js/dev/es5/angular2/**/*'], {base: 'dist/js/dev/es5'})
+    .src(['dist/js/cjs/angular2/**/*'], {base: 'dist/js/cjs'})
     .pipe(gulp.dest(path.join(tmpdir, 'node_modules')));
 });
 gulp.task('!pre.test.typings.copyTypingsSpec', function() {
