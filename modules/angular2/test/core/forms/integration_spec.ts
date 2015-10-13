@@ -349,23 +349,43 @@ export function main() {
     describe("validations", () => {
       it("should use validators defined in html",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var form = new ControlGroup({"login": new Control("aa")});
+           var form = new ControlGroup(
+               {"login": new Control(""), "min": new Control(""), "max": new Control("")});
 
            var t = `<div [ng-form-model]="form">
                   <input type="text" ng-control="login" required>
+                  <input type="text" ng-control="min" minlength="3">
+                  <input type="text" ng-control="max" maxlength="3">
                  </div>`;
 
            tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
              rootTC.debugElement.componentInstance.form = form;
              rootTC.detectChanges();
+
+             var required = rootTC.debugElement.query(By.css("[required]"));
+             var minLength = rootTC.debugElement.query(By.css("[minlength]"));
+             var maxLength = rootTC.debugElement.query(By.css("[maxlength]"));
+
+             required.nativeElement.value = "";
+             minLength.nativeElement.value = "1";
+             maxLength.nativeElement.value = "1234";
+             dispatchEvent(required.nativeElement, "change");
+             dispatchEvent(minLength.nativeElement, "change");
+             dispatchEvent(maxLength.nativeElement, "change");
+
+             expect(form.hasError("required", ["login"])).toEqual(true);
+             expect(form.hasError("minlength", ["min"])).toEqual(true);
+             expect(form.hasError("maxlength", ["max"])).toEqual(true);
+
+             required.nativeElement.value = "1";
+             minLength.nativeElement.value = "123";
+             maxLength.nativeElement.value = "123";
+             dispatchEvent(required.nativeElement, "change");
+             dispatchEvent(minLength.nativeElement, "change");
+             dispatchEvent(maxLength.nativeElement, "change");
+
              expect(form.valid).toEqual(true);
 
-             var input = rootTC.debugElement.query(By.css("input"));
-
-             input.nativeElement.value = "";
-             dispatchEvent(input.nativeElement, "change");
-
-             expect(form.valid).toEqual(false);
              async.done();
            });
          }));

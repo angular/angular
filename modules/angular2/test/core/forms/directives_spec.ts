@@ -28,7 +28,6 @@ import {
   NgForm,
   NgModel,
   NgFormControl,
-  DefaultValidators,
   NgControl,
   DefaultValueAccessor,
   CheckboxControlValueAccessor,
