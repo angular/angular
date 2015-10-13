@@ -101,11 +101,9 @@ class NgMeta {
   }
 
   /// Serialized representation of this instance.
-  Map toJson({bool withNgDeps: true}) {
+  Map toJson() {
     var result = {};
-    if (withNgDeps) {
-      result[_NG_DEPS_KEY] = isNgDepsEmpty ? null : ngDeps.writeToJsonMap();
-    }
+    result[_NG_DEPS_KEY] = isNgDepsEmpty ? null : ngDeps.writeToJsonMap();
 
     types.forEach((k, v) {
       result[k] = {_KIND_KEY: _TYPE_VALUE, _VALUE_KEY: v.toJson()};
