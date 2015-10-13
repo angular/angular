@@ -52,7 +52,7 @@ declare namespace angular {
     assign(context: any, value: any): any;
   }
   function element(e: Element): IAugmentedJQuery;
-  function bootstrap(e: Element, modules: IModule[], config: IAngularBootstrapConfig);
+  function bootstrap(e: Element, modules: string[], config: IAngularBootstrapConfig);
 
   namespace auto {
     interface IInjectorService {

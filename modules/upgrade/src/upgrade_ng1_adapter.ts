@@ -16,7 +16,7 @@ const INITIAL_VALUE = {
 };
 
 
-export class ExportedNg1Component {
+export class UpgradeNg1ComponentAdapterBuilder {
   type: Type;
   inputs: string[] = [];
   inputsRename: string[] = [];
@@ -38,9 +38,9 @@ export class ExportedNg1Component {
                 ElementRef,
                 function(compile: angular.ICompileService, scope: angular.IScope,
                          elementRef: ElementRef) {
-                  return new Ng1ComponentFacade(compile, scope, elementRef, self.inputs,
-                                                self.outputs, self.propertyOutputs,
-                                                self.checkProperties, self.propertyMap);
+                  return new UpgradeNg1ComponentAdapter(compile, scope, elementRef, self.inputs,
+                                                        self.outputs, self.propertyOutputs,
+                                                        self.checkProperties, self.propertyMap);
                 }
               ],
               onChanges: function() { /* needs to be here for ng2 to properly detect it */ },
@@ -94,7 +94,7 @@ export class ExportedNg1Component {
     }
   }
 
-  static resolve(exportedComponents: {[name: string]: ExportedNg1Component},
+  static resolve(exportedComponents: {[name: string]: UpgradeNg1ComponentAdapterBuilder},
                  injector: angular.auto.IInjectorService) {
     for (var name in exportedComponents) {
       if ((<any>exportedComponents).hasOwnProperty(name)) {
@@ -105,7 +105,7 @@ export class ExportedNg1Component {
   }
 }
 
-class Ng1ComponentFacade implements OnChanges, DoCheck {
+class UpgradeNg1ComponentAdapter implements OnChanges, DoCheck {
   componentScope: angular.IScope = null;
   checkLastValues: any[] = [];
 
