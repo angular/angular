@@ -3,7 +3,6 @@ library angular2.src.transform.transformer;
 import 'package:barback/barback.dart';
 import 'package:dart_style/dart_style.dart';
 
-import 'bind_generator/transformer.dart';
 import 'common/formatter.dart' as formatter;
 import 'common/options.dart';
 import 'common/options_reader.dart';
@@ -36,7 +35,6 @@ class AngularTransformerGroup extends TransformerGroup {
         [new ReflectionRemover(options)],
         [new DirectiveProcessor(options)],
         [new DirectiveMetadataLinker()],
-        [new BindGenerator(options)],
         [
           new TemplateCompiler(options),
           new StylesheetCompiler(),
