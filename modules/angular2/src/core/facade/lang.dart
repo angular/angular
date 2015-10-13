@@ -266,6 +266,10 @@ class DateWrapper {
     return new DateTime(year, month, day, hour, minutes, seconds, milliseconds);
   }
 
+  static DateTime fromISOString(String str) {
+    return DateTime.parse(str);
+  }
+
   static DateTime fromMillis(int ms) {
     return new DateTime.fromMillisecondsSinceEpoch(ms, isUtc: true);
   }

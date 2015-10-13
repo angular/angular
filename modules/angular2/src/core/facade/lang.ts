@@ -325,6 +325,7 @@ export class DateWrapper {
                 minutes: number = 0, seconds: number = 0, milliseconds: number = 0): Date {
     return new Date(year, month - 1, day, hour, minutes, seconds, milliseconds);
   }
+  static fromISOString(str: string): Date { return new Date(str); }
   static fromMillis(ms: number): Date { return new Date(ms); }
   static toMillis(date: Date): number { return date.getTime(); }
   static now(): Date { return new Date(); }
