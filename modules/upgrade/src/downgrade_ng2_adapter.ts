@@ -18,7 +18,7 @@ const INITIAL_VALUE = {
   __UNINITIALIZED__: true
 };
 
-export class Ng2ComponentFacade {
+export class DowngradeNg2ComponentAdapter {
   component: any = null;
   inputChangeCount: number = 0;
   inputChanges: {[key: string]: SimpleChange} = null;
