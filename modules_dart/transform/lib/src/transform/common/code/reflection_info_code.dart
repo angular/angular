@@ -180,14 +180,17 @@ class _PropertyMetadataVisitor
   List<PropertyMetadataModel> visitFieldDeclaration(FieldDeclaration node) {
     var retVal = null;
     for (var variable in node.fields.variables) {
-      var propModel = new PropertyMetadataModel()..name = '${variable.name}';
+      var propModel = null;
       for (var meta in node.metadata) {
         var annotationModel = meta.accept(_annotationVisitor);
         if (annotationModel != null) {
+          if (propModel == null) {
+            propModel = new PropertyMetadataModel()..name = '${variable.name}';
+          }
           propModel.annotations.add(annotationModel);
         }
       }
-      if (propModel.annotations.isNotEmpty) {
+      if (propModel != null && propModel.annotations.isNotEmpty) {
         if (retVal == null) {
           retVal = <PropertyMetadataModel>[];
         }
@@ -200,14 +203,17 @@ class _PropertyMetadataVisitor
   @override
   List<PropertyMetadataModel> visitMethodDeclaration(MethodDeclaration node) {
     if (node.isGetter || node.isSetter) {
-      var propModel = new PropertyMetadataModel()..name = '${node.name}';
+      var propModel = null;
       for (var meta in node.metadata) {
         var annotationModel = meta.accept(_annotationVisitor);
         if (annotationModel != null) {
+          if (propModel == null) {
+            propModel = new PropertyMetadataModel()..name = '${node.name}';
+          }
           propModel.annotations.add(annotationModel);
         }
       }
-      if (propModel.annotations.isNotEmpty) {
+      if (propModel != null && propModel.annotations.isNotEmpty) {
         return <PropertyMetadataModel>[propModel];
       }
     }

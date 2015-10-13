@@ -40,8 +40,8 @@ class AngularTransformerGroup extends TransformerGroup {
         [
           new TemplateCompiler(options),
           new StylesheetCompiler(),
-          new DeferredRewriter(options)
-        ]
+        ],
+        [new DeferredRewriter(options)]
       ];
     }
     return new AngularTransformerGroup._(phases,

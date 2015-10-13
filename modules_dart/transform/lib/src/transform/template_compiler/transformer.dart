@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:angular2/src/core/dom/html_adapter.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
+import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
 import 'package:angular2/src/transform/common/formatter.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/common/names.dart';
@@ -24,7 +25,7 @@ class TemplateCompiler extends Transformer {
   TemplateCompiler(this.options);
 
   @override
-  bool isPrimary(AssetId id) => id.path.endsWith(DEPS_EXTENSION);
+  bool isPrimary(AssetId id) => id.path.endsWith(META_EXTENSION);
 
   @override
   Future apply(Transform transform) async {
@@ -34,19 +35,25 @@ class TemplateCompiler extends Transformer {
       var reader = new AssetReader.fromTransform(transform);
       var outputs = await processTemplates(reader, primaryId,
           reflectPropertiesAsAttributes: options.reflectPropertiesAsAttributes);
-      var ngDepsCode = '';
+      var ngDepsCode = _emptyNgDepsContents;
       var templatesCode = '';
       if (outputs != null) {
-        if (outputs.ngDepsCode != null) {
-          ngDepsCode = formatter.format(outputs.ngDepsCode);
+        if (outputs.ngDeps != null) {
+          final buf = new StringBuffer();
+          final writer = new NgDepsWriter(buf);
+          writer.writeNgDepsModel(outputs.ngDeps);
+          ngDepsCode = formatter.format(buf.toString());
         }
         if (outputs.templatesCode != null) {
           templatesCode = formatter.format(outputs.templatesCode);
         }
       }
-      transform.addOutput(new Asset.fromString(primaryId, ngDepsCode));
+      transform.addOutput(
+          new Asset.fromString(ngDepsAssetId(primaryId), ngDepsCode));
       transform.addOutput(
           new Asset.fromString(templatesAssetId(primaryId), templatesCode));
     });
   }
 }
+
+const _emptyNgDepsContents = 'initReflector() {}\n';

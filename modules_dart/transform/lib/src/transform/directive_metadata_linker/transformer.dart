@@ -4,8 +4,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:angular2/src/transform/common/asset_reader.dart';
-import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
-import 'package:angular2/src/transform/common/formatter.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:barback/barback.dart';
@@ -34,34 +32,14 @@ class DirectiveMetadataLinker extends Transformer {
       return linkDirectiveMetadata(
           new AssetReader.fromTransform(transform), primaryId).then((ngMeta) {
         if (ngMeta != null) {
-          if (!ngMeta.types.isEmpty || !ngMeta.aliases.isEmpty) {
+          if (!ngMeta.isEmpty) {
             transform.addOutput(new Asset.fromString(
-                primaryId, _encoder.convert(ngMeta.toJson(withNgDeps: false))));
+                primaryId, _encoder.convert(ngMeta.toJson())));
           } else {
             // Not outputting an asset could confuse barback.
             transform.addOutput(new Asset.fromString(primaryId, ''));
           }
-
-          var depsAssetId = _depsAssetId(primaryId);
-          if (!ngMeta.isNgDepsEmpty) {
-            var buf = new StringBuffer();
-            var writer = new NgDepsWriter(buf);
-            writer.writeNgDepsModel(ngMeta.ngDeps);
-            var formattedCode =
-                formatter.format(buf.toString(), uri: depsAssetId.path);
-            transform
-                .addOutput(new Asset.fromString(depsAssetId, formattedCode));
-          } else {
-            transform.addOutput(
-                new Asset.fromString(depsAssetId, _emptyNgDepsContents));
-          }
-        }
-      });
+        } });
     });
   }
 }
-
-AssetId _depsAssetId(AssetId primaryId) =>
-    new AssetId(primaryId.package, toDepsExtension(primaryId.path));
-
-const _emptyNgDepsContents = 'initReflector() {}';
