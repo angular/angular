@@ -194,7 +194,7 @@ export abstract class PlatformRef {
    * # Usage
    *
    * `bindingFn` is a function that will be called in the new application's zone.
-   * It should return a {@link Promise} to a list of providers to be used for the
+   * It should return a `Promise` to a list of providers to be used for the
    * new application. Once this promise resolves, the application will be
    * constructed in the same manner as a normal `application()`.
    */
