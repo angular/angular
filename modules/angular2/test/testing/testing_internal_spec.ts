@@ -8,12 +8,15 @@ import {
   SpyObject,
   beforeEach,
   proxy,
+  inject,
   containsRegexp
 } from 'angular2/testing_internal';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {MapWrapper} from 'angular2/src/core/facade/collection';
 import {RegExpWrapper} from 'angular2/src/core/facade/lang';
+import {XHR} from 'angular2/src/core/compiler/xhr';
+import {XHRImpl} from 'angular2/src/core/compiler/xhr_impl';
 
 class TestObj {
   prop;
@@ -142,6 +145,11 @@ export function main() {
         expect(RegExpWrapper.firstMatch(containsRegexp('axb'), 'a.b')).toBeFalsy();
       });
 
+    });
+
+    describe('test injector', () => {
+      it('provides a real XHR instance',
+         inject([XHR], (xhr) => { expect(xhr).toBeAnInstanceOf(XHRImpl); }));
     });
   });
 }
