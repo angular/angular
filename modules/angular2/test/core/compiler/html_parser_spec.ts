@@ -81,6 +81,14 @@ export function main() {
               ]);
         });
 
+        it('should parse and lower case attributes on regular elements', () => {
+          expect(humanizeDom(parser.parse('<div FoO="bar"></div>', 'TestComp')))
+              .toEqual([
+                [HtmlElementAst, 'div', 'TestComp > div:nth-child(0)'],
+                [HtmlAttrAst, 'foo', 'bar', 'TestComp > div:nth-child(0)[foo=bar]']
+              ]);
+        });
+
         it('should parse attributes on template elements', () => {
           expect(humanizeDom(parser.parse('<template k="v"></template>', 'TestComp')))
               .toEqual([
