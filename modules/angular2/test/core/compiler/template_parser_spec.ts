@@ -845,9 +845,45 @@ Property binding a not used by any directive on an embedded template in TestComp
 
       });
 
-      it('should ignore <link rel="stylesheet"> elements but include them for source info', () => {
-        expect(humanizeTemplateAsts(parse('<link rel="stylesheet"></link>a', [])))
-            .toEqual([[TextAst, 'a', 'TestComp > #text(a):nth-child(1)']]);
+      describe('<link rel="stylesheet">', () => {
+
+        it('should keep <link rel="stylesheet"> elements if they have an absolute non package: url',
+           () => {
+             expect(humanizeTemplateAsts(
+                        parse('<link rel="stylesheet" href="http://someurl"></link>a', [])))
+                 .toEqual([
+                   [ElementAst, 'link', 'TestComp > link:nth-child(0)'],
+                   [
+                     AttrAst,
+                     'href',
+                     'http://someurl',
+                     'TestComp > link:nth-child(0)[href=http://someurl]'
+                   ],
+                   [AttrAst, 'rel', 'stylesheet', 'TestComp > link:nth-child(0)[rel=stylesheet]'],
+                   [TextAst, 'a', 'TestComp > #text(a):nth-child(1)']
+                 ]);
+           });
+
+        it('should keep <link rel="stylesheet"> elements if they have no uri', () => {
+          expect(humanizeTemplateAsts(parse('<link rel="stylesheet"></link>a', [])))
+              .toEqual([
+                [ElementAst, 'link', 'TestComp > link:nth-child(0)'],
+                [AttrAst, 'rel', 'stylesheet', 'TestComp > link:nth-child(0)[rel=stylesheet]'],
+                [TextAst, 'a', 'TestComp > #text(a):nth-child(1)']
+              ]);
+        });
+
+        it('should ignore <link rel="stylesheet"> elements if they have a relative uri', () => {
+          expect(
+              humanizeTemplateAsts(parse('<link rel="stylesheet" href="./other.css"></link>a', [])))
+              .toEqual([[TextAst, 'a', 'TestComp > #text(a):nth-child(1)']]);
+        });
+
+        it('should ignore <link rel="stylesheet"> elements if they have a package: uri', () => {
+          expect(humanizeTemplateAsts(
+                     parse('<link rel="stylesheet" href="package:somePackage"></link>a', [])))
+              .toEqual([[TextAst, 'a', 'TestComp > #text(a):nth-child(1)']]);
+        });
 
       });
 

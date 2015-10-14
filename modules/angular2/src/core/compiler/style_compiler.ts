@@ -6,7 +6,7 @@ import {StringWrapper, isBlank} from 'angular2/src/core/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 import {ShadowCss} from 'angular2/src/core/compiler/shadow_css';
 import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
-import {resolveStyleUrls} from './style_url_resolver';
+import {extractStyleUrls} from './style_url_resolver';
 import {
   escapeSingleQuoteString,
   IS_DART,
@@ -58,7 +58,7 @@ export class StyleCompiler {
   }
 
   compileStylesheetCodeGen(stylesheetUrl: string, cssText: string): SourceModule[] {
-    var styleWithImports = resolveStyleUrls(this._urlResolver, stylesheetUrl, cssText);
+    var styleWithImports = extractStyleUrls(this._urlResolver, stylesheetUrl, cssText);
     return [
       this._styleModule(
           stylesheetUrl, false,
@@ -78,7 +78,7 @@ export class StyleCompiler {
       var result = this._styleCache.get(cacheKey);
       if (isBlank(result)) {
         result = this._xhr.get(absUrl).then((style) => {
-          var styleWithImports = resolveStyleUrls(this._urlResolver, absUrl, style);
+          var styleWithImports = extractStyleUrls(this._urlResolver, absUrl, style);
           return this._loadStyles([styleWithImports.style], styleWithImports.styleUrls,
                                   encapsulate);
         });
