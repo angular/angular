@@ -102,8 +102,8 @@ export class AttributeMetadata extends DependencyMetadata {
  *   <div #findme>...</div>
  * </seeker>
  *
- * @Component({ selector: 'foo' })
- * class seeker {
+ * @Component({ selector: 'seeker' })
+ * class Seeker {
  *   constructor(@Query('findme') elList: QueryList<ElementRef>) {...}
  * }
  * ```
@@ -120,7 +120,7 @@ export class AttributeMetadata extends DependencyMetadata {
  * </seeker>
  *
  *  @Component({
- *   selector: 'foo'
+ *   selector: 'seeker'
  * })
  * class Seeker {
  *   constructor(@Query('findMe, findMeToo') elList: QueryList<ElementRef>) {...}
