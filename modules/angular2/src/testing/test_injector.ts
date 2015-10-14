@@ -18,6 +18,7 @@ import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 import {PipeResolver} from 'angular2/src/core/linker/pipe_resolver';
 import {DynamicComponentLoader} from 'angular2/src/core/linker/dynamic_component_loader';
 import {XHR} from 'angular2/src/core/compiler/xhr';
+import {XHRImpl} from 'angular2/src/core/compiler/xhr_impl';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
@@ -115,7 +116,7 @@ function _getAppBindings() {
     PipeResolver,
     provide(ExceptionHandler, {useValue: new ExceptionHandler(DOM)}),
     provide(LocationStrategy, {useClass: MockLocationStrategy}),
-    XHR,
+    provide(XHR, {useClass: XHRImpl}),
     TestComponentBuilder,
     provide(NgZone, {useClass: MockNgZone}),
     provide(AnimationBuilder, {useClass: MockAnimationBuilder}),
