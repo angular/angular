@@ -354,6 +354,14 @@ export function main() {
             expect(val.dispatcher.loggedValues).toEqual(['value one two default']);
           });
 
+          it('should associate pipes right-to-left', () => {
+            var registry = new FakePipes('pipe', () => new MultiArgPipe());
+            var person = new Person('value');
+            var val = _createChangeDetector("name | pipe:'a':'b' | pipe:0:1:2", person, registry);
+            val.changeDetector.detectChanges();
+            expect(val.dispatcher.loggedValues).toEqual(['value a b default 0 1 2']);
+          });
+
           it('should not reevaluate pure pipes unless its context or arg changes', () => {
             var pipe = new CountingPipe();
             var registry = new FakePipes('pipe', () => pipe, {pure: true});
