@@ -61,12 +61,23 @@ void changeDetectorTests() {
         'template_compiler/directive_aliases_files/hello2.ng_deps.dart';
     // Except for the directive argument in the View annotation, the generated
     // change detectors are identical.
+    var output1 = (await process(new AssetId('a', input1Path))).templatesCode;
+    var output2 = (await process(new AssetId('a', input2Path))).templatesCode;
+    _formatThenExpectEquals(output1, output2);
+  });
+
+  it('should handle `directives` regardless of annotation ordering', () async {
+    // Input 2 is the same as input1, but has the @View annotation listed first.
+    var input1Path = 'template_compiler/annotation_ordering_files/'
+        'component_first.ng_deps.dart';
+    var input2Path = 'template_compiler/annotation_ordering_files/'
+        'view_first.ng_deps.dart';
+    // Except for the type name, the generated change detectors are identical.
     var output1 = (await process(new AssetId('a', input1Path)))
-        .ngDepsCode
-        .replaceFirst(
-            'directives: const [alias1]', 'directives: const [GoodbyeCmp]')
-        .replaceFirst('hello1', 'hello2');
-    var output2 = (await process(new AssetId('a', input2Path))).ngDepsCode;
+        .templatesCode
+        .replaceAll('ComponentFirst', 'ViewFirst')
+        .replaceAll('component_first', 'view_first');
+    var output2 = (await process(new AssetId('a', input2Path))).templatesCode;
     _formatThenExpectEquals(output1, output2);
   });
 }
