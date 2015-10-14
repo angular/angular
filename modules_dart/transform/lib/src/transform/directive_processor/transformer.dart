@@ -13,14 +13,13 @@ import 'package:barback/barback.dart';
 import 'rewriter.dart';
 
 /// Transformer responsible for processing all .dart assets and creating
-/// .ng_deps.dart files which register @Injectable annotated classes with the
-/// reflector.
+/// .ng_summary.json files which summarize those assets.
 ///
-/// This will also create .ng_deps.dart files for classes annotated
-/// with @Component, @View, @Directive, etc.
+/// See `angular2/src/transform/common/ng_meta.dart` for the structure of these
+/// output files.
 ///
-/// This transformer is the first phase in a two-phase transform. It should
-/// be followed by {@link DirectiveLinker}.
+/// This transformer is part of a multi-phase transform.
+/// See `angular2/src/transform/transformer.dart` for transformer ordering.
 class DirectiveProcessor extends Transformer {
   final TransformerOptions options;
   final _encoder = const JsonEncoder.withIndent('  ');
@@ -42,12 +41,12 @@ class DirectiveProcessor extends Transformer {
         return;
       }
       transform.addOutput(new Asset.fromString(
-          _ngMetaAssetId(primaryId), _encoder.convert(ngMeta.toJson())));
+          _ngSummaryAssetId(primaryId), _encoder.convert(ngMeta.toJson())));
     });
   }
 }
 
-AssetId _ngMetaAssetId(AssetId primaryInputId) {
+AssetId _ngSummaryAssetId(AssetId primaryInputId) {
   return new AssetId(
-      primaryInputId.package, toMetaExtension(primaryInputId.path));
+      primaryInputId.package, toSummaryExtension(primaryInputId.path));
 }

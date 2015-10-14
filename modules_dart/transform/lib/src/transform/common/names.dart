@@ -8,9 +8,7 @@ const CSS_EXTENSION = '.css';
 const SHIMMED_STYLESHEET_EXTENSION = '.css.shim.dart';
 const NON_SHIMMED_STYLESHEET_EXTENSION = '.css.dart';
 const DEPS_EXTENSION = '.ng_deps.dart';
-const DEPS_JSON_EXTENSION = '.ng_deps.json';
 const META_EXTENSION = '.ng_meta.json';
-const TEMPLATE_EXTENSION = '.template.dart';
 const REFLECTION_CAPABILITIES_NAME = 'ReflectionCapabilities';
 const REFLECTOR_IMPORT = 'package:angular2/src/core/reflection/reflection.dart';
 const REFLECTOR_PREFIX = '_ngRef';
@@ -18,14 +16,16 @@ const REGISTER_TYPE_METHOD_NAME = 'registerType';
 const REGISTER_GETTERS_METHOD_NAME = 'registerGetters';
 const REGISTER_SETTERS_METHOD_NAME = 'registerSetters';
 const REGISTER_METHODS_METHOD_NAME = 'registerMethods';
+const SUMMARY_META_EXTENSION = '.ng_summary.json';
+const TEMPLATE_EXTENSION = '.template.dart';
 
 /// Note that due to the implementation of `_toExtension`, ordering is
 /// important. For example, putting '.dart' first in this list will cause
 /// incorrect behavior.
 const ALL_EXTENSIONS = const [
   DEPS_EXTENSION,
-  DEPS_JSON_EXTENSION,
   META_EXTENSION,
+  SUMMARY_META_EXTENSION,
   TEMPLATE_EXTENSION,
   '.dart'
 ];
@@ -38,10 +38,6 @@ String toMetaExtension(String uri) =>
 String toDepsExtension(String uri) =>
     _toExtension(uri, ALL_EXTENSIONS, DEPS_EXTENSION);
 
-/// Returns `uri` with its extension updated to [DEPS_JSON_EXTENSION].
-String toJsonExtension(String uri) =>
-    _toExtension(uri, ALL_EXTENSIONS, DEPS_JSON_EXTENSION);
-
 /// Returns `uri` with its extension updated to [TEMPLATES_EXTENSION].
 String toTemplateExtension(String uri) =>
     _toExtension(uri, ALL_EXTENSIONS, TEMPLATE_EXTENSION);
@@ -53,6 +49,10 @@ String toShimmedStylesheetExtension(String uri) =>
 /// Returns `uri` with its extension updated to [NON_SHIMMED_STYLESHEET_EXTENSION].
 String toNonShimmedStylesheetExtension(String uri) =>
     _toExtension(uri, const [CSS_EXTENSION], NON_SHIMMED_STYLESHEET_EXTENSION);
+
+/// Returns `uri` with its extension updated to [SUMMARY_META_EXTENSION].
+String toSummaryExtension(String uri) =>
+    _toExtension(uri, ALL_EXTENSIONS, SUMMARY_META_EXTENSION);
 
 /// Returns `uri` with its extension updated to `toExtension` if its
 /// extension is currently in `fromExtension`.

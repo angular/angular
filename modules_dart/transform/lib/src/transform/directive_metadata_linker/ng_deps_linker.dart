@@ -33,9 +33,11 @@ Future<NgDepsModel> linkNgDeps(NgDepsModel ngDepsModel, AssetReader reader,
       return ngDepsModel;
     }
 
+    final seen = new Set<String>();
     for (var i = ngDepsModel.imports.length - 1; i >= 0; --i) {
       var import = ngDepsModel.imports[i];
-      if (linkedDepsMap.containsKey(import.uri)) {
+      if (linkedDepsMap.containsKey(import.uri) && !seen.contains(import.uri)) {
+        seen.add(import.uri);
         var linkedModel = new ImportModel()
           ..isNgDeps = true
           ..uri = toDepsExtension(import.uri)
@@ -46,7 +48,8 @@ Future<NgDepsModel> linkNgDeps(NgDepsModel ngDepsModel, AssetReader reader,
     }
     for (var i = 0, iLen = ngDepsModel.exports.length; i < iLen; ++i) {
       var export = ngDepsModel.exports[i];
-      if (linkedDepsMap.containsKey(export.uri)) {
+      if (linkedDepsMap.containsKey(export.uri) && !seen.contains(export.uri)) {
+        seen.add(export.uri);
         var linkedModel = new ImportModel()
           ..isNgDeps = true
           ..uri = toDepsExtension(export.uri)
@@ -73,16 +76,15 @@ Future<Map<String, String>> _processNgImports(NgDepsModel model,
   return Future
       .wait(
           importsAndExports.where(_isNotDartDirective).map((dynamic directive) {
-    // The uri of the import or export with .dart replaced with .ng_meta.json.
-    // This is the json file containing Angular 2 codegen info, if one exists.
-    var linkedJsonUri =
-        resolver.resolve(assetUri, toMetaExtension(directive.uri));
-    return reader.hasInput(fromUri(linkedJsonUri)).then((hasInput) {
+    // Check whether the import or export generated summary NgMeta information.
+    final summaryJsonUri =
+        resolver.resolve(assetUri, toSummaryExtension(directive.uri));
+    return reader.hasInput(fromUri(summaryJsonUri)).then((hasInput) {
       if (hasInput) {
-        retVal[directive.uri] = linkedJsonUri;
+        retVal[directive.uri] = summaryJsonUri;
       }
     }, onError: (err, stack) {
-      logger.warning('Error while looking for $linkedJsonUri. '
+      logger.warning('Error while looking for $summaryJsonUri. '
           'Message: $err\n'
           'Stack: $stack');
     });
