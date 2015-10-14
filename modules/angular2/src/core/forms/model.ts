@@ -107,12 +107,12 @@ export class AbstractControl {
 
     this._updateValue();
 
+    this._errors = this.validator(this);
+    this._status = isPresent(this._errors) ? INVALID : VALID;
+
     if (emitEvent) {
       ObservableWrapper.callNext(this._valueChanges, this._value);
     }
-
-    this._errors = this.validator(this);
-    this._status = isPresent(this._errors) ? INVALID : VALID;
 
     if (isPresent(this._parent) && !onlySelf) {
       this._parent.updateValueAndValidity({onlySelf: onlySelf, emitEvent: emitEvent});
