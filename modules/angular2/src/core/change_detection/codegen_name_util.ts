@@ -9,7 +9,6 @@ import {EventBinding} from './event_binding';
 // The names of these fields must be kept in sync with abstract_change_detector.ts or change
 // detection will fail.
 const _ALREADY_CHECKED_ACCESSOR = "alreadyChecked";
-const _CONTEXT_ACCESSOR = "context";
 const _PROP_BINDING_INDEX = "propertyBindingIndex";
 const _DIRECTIVES_ACCESSOR = "directiveIndices";
 const _DISPATCHER_ACCESSOR = "dispatcher";
@@ -17,6 +16,7 @@ const _LOCALS_ACCESSOR = "locals";
 const _MODE_ACCESSOR = "mode";
 const _PIPES_ACCESSOR = "pipes";
 const _PROTOS_ACCESSOR = "protos";
+export const CONTEXT_ACCESSOR = "context";
 
 // `context` is always first.
 export const CONTEXT_INDEX = 0;
@@ -49,14 +49,14 @@ export class CodegenNameUtil {
   constructor(private _records: ProtoRecord[], private _eventBindings: EventBinding[],
               private _directiveRecords: any[], private _utilName: string) {
     this._sanitizedNames = ListWrapper.createFixedSize(this._records.length + 1);
-    this._sanitizedNames[CONTEXT_INDEX] = _CONTEXT_ACCESSOR;
+    this._sanitizedNames[CONTEXT_INDEX] = CONTEXT_ACCESSOR;
     for (var i = 0, iLen = this._records.length; i < iLen; ++i) {
       this._sanitizedNames[i + 1] = sanitizeName(`${this._records[i].name}${i}`);
     }
 
     for (var ebIndex = 0; ebIndex < _eventBindings.length; ++ebIndex) {
       var eb = _eventBindings[ebIndex];
-      var names = [_CONTEXT_ACCESSOR];
+      var names = [CONTEXT_ACCESSOR];
       for (var i = 0, iLen = eb.records.length; i < iLen; ++i) {
         names.push(sanitizeName(`${eb.records[i].name}${i}_${ebIndex}`));
       }

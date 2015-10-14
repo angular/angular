@@ -4,7 +4,6 @@ import 'bar.dart';
 import 'package:angular2/src/core/reflection/reflection.dart' as _ngRef;
 import 'package:angular2/src/core/metadata.dart';
 import 'package:angular2/src/core/metadata.ng_deps.dart' as i0;
-import 'foo.dart' as prefix;
 import 'bar.template.dart' as _templates;
 export 'bar.dart';
 
@@ -15,17 +14,13 @@ void initReflector() {
   _ngRef.reflector
     ..registerType(
         MyComponent,
-        new _ngRef.ReflectionInfo(
-            const [
-          const Component(selector: 'soup'),
+        new _ngRef.ReflectionInfo(const [
+          const Component(
+              queries: const {'queryField': const ContentChild('child')},
+              selector: '[soup]'),
           const View(template: ''),
           _templates.HostMyComponentTemplate
-        ],
-            const [
-          const [prefix.MyContext],
-          const [String]
-        ],
-            (prefix.MyContext c, String inValue) =>
-                new MyComponent(c, inValue)));
+        ], const [], () => new MyComponent()))
+    ..registerSetters({'queryField': (o, v) => o.queryField = v});
   i0.initReflector();
 }
