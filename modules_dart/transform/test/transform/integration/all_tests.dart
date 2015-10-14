@@ -130,6 +130,16 @@ void allTests() {
         outputs: {
       'a|web/bar.ng_deps.dart':
           'directive_chain_files/expected/bar.ng_deps.dart'
+    }),
+    new IntegrationTestConfig(
+        'should handle empty ng_deps files that define directive aliases.',
+        inputs: {
+      'a|web/foo.dart': 'empty_ng_deps_files/foo.dart',
+      'a|web/bar.dart': 'empty_ng_deps_files/bar.dart'
+    },
+        outputs: {
+      'a|web/foo.ng_deps.dart': 'empty_ng_deps_files/expected/foo.ng_deps.dart',
+      'a|web/bar.ng_deps.dart': 'empty_ng_deps_files/expected/bar.ng_deps.dart'
     })
   ];
 
