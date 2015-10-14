@@ -408,6 +408,7 @@ var _availableDefinitions = [
   'name | pipe',
   '(name | pipe).length',
   "name | pipe:'one':address.city",
+  "name | pipe:'a':'b' | pipe:0:1:2",
   'value',
   'a',
   'address.city',

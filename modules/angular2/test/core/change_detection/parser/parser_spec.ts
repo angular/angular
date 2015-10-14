@@ -6,14 +6,6 @@ import {Unparser} from './unparser';
 import {Lexer} from 'angular2/src/core/change_detection/parser/lexer';
 import {BindingPipe, LiteralPrimitive, AST} from 'angular2/src/core/change_detection/parser/ast';
 
-class TestData {
-  constructor(public a?: any, public b?: any, public fnReturnValue?: any) {}
-
-  fn() { return this.fnReturnValue; }
-
-  add(a, b) { return a + b; }
-}
-
 export function main() {
   function createParser() { return new Parser(new Lexer(), reflector); }
 
@@ -229,8 +221,8 @@ export function main() {
           checkBinding('a[b] | c', '(a[b] | c)');
           checkBinding('a?.b | c', '(a?.b | c)');
           checkBinding('true | a', '(true | a)');
-          checkBinding('a | b:c | d', '(a | b:(c | d))');
-          checkBinding('(a | b:c) | d', '((a | b:c) | d)');
+          checkBinding('a | b:c | d', '((a | b:c) | d)');
+          checkBinding('a | b:(c | d)', '(a | b:(c | d))');
         });
 
         it('should only allow identifier or keyword as formatter names', () => {
