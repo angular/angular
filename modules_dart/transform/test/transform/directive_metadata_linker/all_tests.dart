@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
+import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/model/import_export_model.pb.dart';
 import 'package:angular2/src/transform/directive_metadata_linker/ng_meta_linker.dart';
 import 'package:barback/barback.dart';
@@ -49,9 +50,9 @@ void allTests() {
     bazNgMeta = new NgMeta(ngDeps: new NgDepsModel());
     barNgMeta.types[bazComponentMeta.type.name] = bazComponentMeta;
 
-    fooAssetId = new AssetId('a', 'lib/foo.ng_meta.json');
-    barAssetId = new AssetId('a', 'lib/bar.ng_meta.json');
-    bazAssetId = new AssetId('a', 'lib/baz.ng_meta.json');
+    fooAssetId = new AssetId('a', toSummaryExtension('lib/foo.dart'));
+    barAssetId = new AssetId('a', toSummaryExtension('lib/bar.dart'));
+    bazAssetId = new AssetId('a', toSummaryExtension('lib/baz.dart'));
     updateReader();
   });
 
@@ -102,7 +103,7 @@ void allTests() {
       fooNgMeta.ngDeps.exports
           .add(new ExportModel()..uri = 'package:bar/bar.dart');
       updateReader();
-      reader.addAsset(new AssetId('bar', 'lib/bar.ng_meta.json'),
+      reader.addAsset(new AssetId('bar', toSummaryExtension('lib/bar.dart')),
           JSON.encode(barNgMeta.toJson()));
 
       var extracted = await _testLink(reader, fooAssetId);
