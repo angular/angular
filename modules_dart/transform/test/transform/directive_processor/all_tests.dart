@@ -419,6 +419,27 @@ void allTests() {
       expect(ngMeta.types['HelloCmp'].template.templateUrl)
           .toEqual('asset:other_package/lib/template.html');
     });
+
+    it('should handle prefixed annotations', () async {
+      var model =
+          (await _testCreateModel('prefixed_annotations_files/soup.dart'))
+              .ngDeps;
+
+      expect(model.reflectables.isEmpty).toBeFalse();
+      final annotations = model.reflectables.first.annotations;
+      final viewAnnotation =
+          annotations.firstWhere((m) => m.isView, orElse: () => null);
+      final componentAnnotation =
+          annotations.firstWhere((m) => m.isComponent, orElse: () => null);
+      expect(viewAnnotation).toBeNotNull();
+      expect(viewAnnotation.namedParameters.first.name).toEqual('template');
+      expect(viewAnnotation.namedParameters.first.value).toContain('SoupView');
+      expect(componentAnnotation).toBeNotNull();
+      expect(componentAnnotation.namedParameters.first.name)
+          .toEqual('selector');
+      expect(componentAnnotation.namedParameters.first.value)
+          .toContain('[soup]');
+    });
   });
 }
 

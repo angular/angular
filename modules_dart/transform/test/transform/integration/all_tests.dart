@@ -110,7 +110,7 @@ void allTests() {
       'a|web/bar.ng_deps.dart': 'event_getter_files/expected/bar.ng_deps.dart'
     }),
     new IntegrationTestConfig(
-        'should handle Directive depenedencies declared on a View.',
+        'should handle Directive dependencies declared on a View.',
         inputs: {
       'a|web/index.dart': 'directive_dep_files/index.dart',
       'a|web/foo.dart': 'directive_dep_files/foo.dart',
@@ -140,7 +140,30 @@ void allTests() {
         outputs: {
       'a|web/foo.ng_deps.dart': 'empty_ng_deps_files/expected/foo.ng_deps.dart',
       'a|web/bar.ng_deps.dart': 'empty_ng_deps_files/expected/bar.ng_deps.dart'
-    })
+    }),
+    new IntegrationTestConfig(
+        'should generate setters for annotated properties.',
+        inputs: {
+      'a|web/bar.dart': 'queries_prop_annotation_files/bar.dart'
+    },
+        outputs: {
+      'a|web/bar.ng_deps.dart':
+          'queries_prop_annotation_files/expected/bar.ng_deps.dart'
+    }),
+    new IntegrationTestConfig(
+        'should generate setters for `queries` values in Directives.',
+        inputs: {
+      'a|web/bar.dart': 'queries_class_annotation_files/bar.dart'
+    },
+        outputs: {
+      'a|web/bar.ng_deps.dart':
+          'queries_class_annotation_files/expected/bar.ng_deps.dart'
+    }),
+    new IntegrationTestConfig(
+        'should handle @override annotations in properties on Directives.',
+        inputs: {'a|web/bar.dart': 'override_annotation_files/bar.dart'},
+        outputs:
+            {'a|web/bar.ng_deps.dart': 'override_annotation_files/expected/bar.ng_deps.dart'})
   ];
 
   var cache = {};
