@@ -212,7 +212,8 @@ class TemplateParseVisitor implements HtmlAstVisitor {
       parsedElement =
           new NgContentAst(this.ngContentCount++, elementNgContentIndex, element.sourceInfo);
     } else if (isTemplateElement) {
-      this._assertNoComponentsNorElementBindingsOnTemplate(directives, elementProps, events,
+      this._assertAllEventsPublishedByDirectives(directives, events, element.sourceInfo);
+      this._assertNoComponentsNorElementBindingsOnTemplate(directives, elementProps,
                                                            element.sourceInfo);
       parsedElement = new EmbeddedTemplateAst(attrs, vars, directives, children,
                                               elementNgContentIndex, element.sourceInfo);
@@ -231,7 +232,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
       var templateElementProps: BoundElementPropertyAst[] = this._createElementPropertyAsts(
           element.name, templateElementOrDirectiveProps, templateDirectives);
       this._assertNoComponentsNorElementBindingsOnTemplate(templateDirectives, templateElementProps,
-                                                           [], element.sourceInfo);
+                                                           element.sourceInfo);
       parsedElement = new EmbeddedTemplateAst([], templateVars, templateDirectives, [parsedElement],
                                               component.findNgContentIndex(templateCssSelector),
                                               element.sourceInfo);
@@ -559,7 +560,6 @@ class TemplateParseVisitor implements HtmlAstVisitor {
 
   private _assertNoComponentsNorElementBindingsOnTemplate(directives: DirectiveAst[],
                                                           elementProps: BoundElementPropertyAst[],
-                                                          events: BoundEventAst[],
                                                           sourceInfo: string) {
     var componentTypeNames: string[] = this._findComponentDirectiveNames(directives);
     if (componentTypeNames.length > 0) {
@@ -570,9 +570,20 @@ class TemplateParseVisitor implements HtmlAstVisitor {
       this._reportError(
           `Property binding ${prop.name} not used by any directive on an embedded template in ${prop.sourceInfo}`);
     });
+  }
+
+  private _assertAllEventsPublishedByDirectives(directives: DirectiveAst[], events: BoundEventAst[],
+                                                sourceInfo: string) {
+    var allDirectiveEvents = new Set<string>();
+    directives.forEach(directive => {
+      StringMapWrapper.forEach(directive.directive.outputs,
+                               (eventName, _) => { allDirectiveEvents.add(eventName); });
+    });
     events.forEach(event => {
-      this._reportError(
-          `Event binding ${event.name} on an embedded template in ${event.sourceInfo}`);
+      if (isPresent(event.target) || !SetWrapper.has(allDirectiveEvents, event.name)) {
+        this._reportError(
+            `Event binding ${event.fullName} not emitted by any directive on an embedded template in ${sourceInfo}`);
+      }
     });
   }
 }
