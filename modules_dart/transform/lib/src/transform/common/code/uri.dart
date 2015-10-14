@@ -61,7 +61,7 @@ bool _canImportRelative(Uri importUri, {Uri from}) {
 bool _canPackageImport(Uri assetImport) {
   if (assetImport == null) throw new ArgumentError.notNull('assetImport');
   if (!assetImport.isAbsolute || assetImport.scheme != 'asset') {
-    throw new ArgumentError.value(assetImport, 'assetImport',
+    throw new ArgumentError.value(assetImport.toString(), 'assetImport',
         'Must be an absolute uri using the asset: scheme');
   }
   return assetImport.pathSegments.length >= 2 &&
