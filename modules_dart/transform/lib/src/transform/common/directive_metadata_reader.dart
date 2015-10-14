@@ -12,6 +12,8 @@ import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/interface_matcher.dart';
 import 'package:barback/barback.dart' show AssetId;
 
+import 'dumb_eval.dart';
+
 class DirectiveMetadataReader {
   final _DirectiveMetadataVisitor _visitor;
   final TemplateCompiler _templateCompiler;
@@ -53,22 +55,11 @@ class DirectiveMetadataReader {
   }
 }
 
-/// Visitor that attempts to evaluate a provided `node` syntactically.
-///
-/// This lack of semantic information means it cannot do much - for
-/// example, it can create a list from a list literal and combine adjacent
-/// strings but cannot determine that an identifier is a constant string,
-/// even if that identifier is defined in the same [CompilationUnit].
-///
-/// Returns the result of evaluation or [ConstantEvaluator.NOT_A_CONSTANT]
-/// where appropriate.
-final ConstantEvaluator _evaluator = new ConstantEvaluator();
-
 /// Evaluates the [Map] represented by `expression` and adds all `key`,
 /// `value` pairs to `map`. If `expression` does not evaluate to a [Map],
 /// throws a descriptive [FormatException].
 void _populateMap(Expression expression, Map map, String propertyName) {
-  var evaluated = expression.accept(_evaluator);
+  var evaluated = dumbEval(expression);
   if (evaluated is! Map) {
     throw new FormatException(
         'Angular 2 expects a Map but could not understand the value for '
@@ -87,7 +78,7 @@ void _populateMap(Expression expression, Map map, String propertyName) {
 /// descriptive [FormatException].
 void _populateList(
     Expression expression, List<String> list, String propertyName) {
-  var evaluated = expression.accept(_evaluator);
+  var evaluated = dumbEval(expression);
   if (evaluated is! List) {
     throw new FormatException(
         'Angular 2 expects a List but could not understand the value for '
@@ -100,7 +91,7 @@ void _populateList(
 /// Evaluates `node` and expects that the result will be a string. If not,
 /// throws a [FormatException].
 String _expressionToString(Expression node, String nodeDescription) {
-  var value = node.accept(_evaluator);
+  var value = dumbEval(node);
   if (value is! String) {
     throw new FormatException(
         'Angular 2 could not understand the value '

@@ -7,6 +7,7 @@ import 'package:analyzer/src/generated/ast.dart';
 import 'package:angular2/src/core/compiler/xhr.dart' show XHR;
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
+import 'package:angular2/src/transform/common/dumb_eval.dart';
 import 'package:angular2/src/transform/common/async_string_writer.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/options.dart';
@@ -119,7 +120,7 @@ class _ViewPropInliner extends RecursiveAstVisitor<Object> {
 
   @override
   Object visitNamedExpression(NamedExpression node) {
-    if (_isInlining && node is NamedExpression) {
+    if (_isInlining) {
       if (node.name is! Label || node.name.label is! SimpleIdentifier) {
         throw new FormatException(
             'Angular 2 currently only supports simple identifiers in directives.',
@@ -141,7 +142,7 @@ class _ViewPropInliner extends RecursiveAstVisitor<Object> {
   }
 
   void _populateStyleUrls(NamedExpression node) {
-    var urls = _dumbEval(node.expression);
+    var urls = dumbEval(node.expression);
     if (urls is! List) {
       logger.warning('styleUrls is not a List of Strings (${node.expression})');
       return;
@@ -162,7 +163,7 @@ class _ViewPropInliner extends RecursiveAstVisitor<Object> {
   }
 
   void _populateTemplateUrl(NamedExpression node) {
-    var url = _dumbEval(node.expression);
+    var url = dumbEval(node.expression);
     if (url is! String) {
       logger.warning('template url is not a String (${node.expression})');
       return;
@@ -184,16 +185,4 @@ class _ViewPropInliner extends RecursiveAstVisitor<Object> {
       return '';
     });
   }
-}
-
-final _constantEvaluator = new ConstantEvaluator();
-
-dynamic _dumbEval(Expression expr) {
-  var val;
-  if (expr is SimpleStringLiteral) {
-    val = stringLiteralToString(expr);
-  } else {
-    val = expr.accept(_constantEvaluator);
-  }
-  return val != ConstantEvaluator.NOT_A_CONSTANT ? val : null;
 }
