@@ -79,6 +79,7 @@ var upgradeCount: number = 0;
  * ```
  * var adapter = new UpgradeAdapter();
  * var module = angular.module('myExample', []);
+ * module.directive('ng2', adapter.downgradeNg2Component(Ng2));
  *
  * module.directive('ng1', function() {
  *   return {
@@ -97,7 +98,7 @@ var upgradeCount: number = 0;
  * class Ng2 {
  * }
  *
- * document.body = '<ng2 name="World">project</ng2>';
+ * document.body.innerHTML = '<ng2 name="World">project</ng2>';
  *
  * adapter.bootstrap(document.body, ['myExample']).ready(function() {
  *   expect(document.body.textContent).toEqual(
@@ -113,12 +114,133 @@ export class UpgradeAdapter {
   /* @internal */
   private downgradedComponents: {[name: string]: UpgradeNg1ComponentAdapterBuilder} = {};
 
+  /**
+   * Allows Angular v2 Component to be used from AngularJS v1.
+   *
+   * Use `downgradeNg2Component` to create an AngularJS v1 Directive Definition Factory from
+   * Angular v2 Component. The adapter will bootstrap Angular v2 component from within the
+   * AngularJS v1 template.
+   *
+   * ## Mental Model
+   *
+   * 1. The component is instantiated by being listed in AngularJS v1 template. This means that the
+   *    host element is controlled by AngularJS v1, but the component's view will be controlled by
+   *    Angular v2.
+   * 2. Even thought the component is instantiated in AngularJS v1, it will be using Angular v2
+   *    syntax. This has to be done, this way because we must follow Angular v2 components do not
+   *    declare how the attributes should be interpreted.
+   *
+   * ## Supported Features
+   *
+   * - Bindings:
+   *   - Attribute: `<comp name="World">`
+   *   - Interpolation:  `<comp greeting="Hello {{name}}!">`
+   *   - Expression:  `<comp [name]="username">`
+   *   - Event:  `<comp (close)="doSomething()">`
+   * - Content projection: yes
+   *
+   * ## Example
+   *
+   * ```
+   * var adapter = new UpgradeAdapter();
+   * var module = angular.module('myExample', []);
+   * module.directive('greet', adapter.downgradeNg2Component(Greeter));
+   *
+   * @Component({
+   *   selector: 'greet',
+   *   template: '{{salutation}} {{name}}! - <ng-content></ng-content>'
+   * })
+   * class Greeter {
+   *   @Input() salutation: string;
+   *   @Input() name: string;
+   * }
+   *
+   * document.body.innerHTML =
+   *   'ng1 template: <greet salutation="Hello" [name]="world">text</greet>';
+   *
+   * adapter.bootstrap(document.body, ['myExample']).ready(function() {
+   *   expect(document.body.textContent).toEqual("ng1 template: Hello world! - text");
+   * });
+   * ```
+   */
   downgradeNg2Component(type: Type): Function {
     this.upgradedComponents.push(type);
     var info: ComponentInfo = getComponentInfo(type);
     return ng1ComponentDirective(info, `${this.idPrefix}${info.selector}_c`);
   }
 
+  /**
+   * Allows AngularJS v1 Component to be used from Angular v2.
+   *
+   * Use `upgradeNg1Component` to create an Angular v2 component from AngularJS v1 Component
+   * directive. The adapter will bootstrap AngularJS v1 component from within the Angular v2
+   * template.
+   *
+   * ## Mental Model
+   *
+   * 1. The component is instantiated by being listed in Angular v2 template. This means that the
+   *    host element is controlled by Angular v2, but the component's view will be controlled by
+   *    AngularJS v1.
+   *
+   * ## Supported Features
+   *
+   * - Bindings:
+   *   - Attribute: `<comp name="World">`
+   *   - Interpolation:  `<comp greeting="Hello {{name}}!">`
+   *   - Expression:  `<comp [name]="username">`
+   *   - Event:  `<comp (close)="doSomething()">`
+   * - Transclusion: yes
+   * - Only some of the features of
+   *   [Directive Definition Object](https://docs.angularjs.org/api/ng/service/$compile) are
+   *   supported:
+   *   - `compile`: not supported because the host element is owned by Angular v2, which does
+   *     not allow modifying DOM structure during compilation.
+   *   - `controller`: supported. (NOTE: injection of `$attrs` and `$transclude` is not supported.)
+   *   - `controllerAs': supported.
+   *   - `bindToController': supported.
+   *   - `link': supported. (NOTE: only pre-link function is supported.)
+   *   - `name': supported.
+   *   - `priority': ignored.
+   *   - `replace': not supported.
+   *   - `require`: supported.
+   *   - `restrict`: must be set to 'E'.
+   *   - `scope`: supported.
+   *   - `template`: supported.
+   *   - `templateUrl`: supported.
+   *   - `terminal`: ignored.
+   *   - `transclude`: supported.
+   *
+   *
+   * ## Example
+   *
+   * ```
+   * var adapter = new UpgradeAdapter();
+   * var module = angular.module('myExample', []);
+   *
+   * module.directive('greet', function() {
+   *   return {
+   *     scope: {salutation: '=', name: '=' },
+   *     template: '{{salutation}} {{name}}! - <span ng-transclude></span>'
+   *   };
+   * });
+   *
+   * module.directive('ng2', adapter.downgradeNg2Component(Ng2));
+   *
+   * @Component({
+   *   selector: 'ng2',
+   *   template: 'ng2 template: <greet salutation="Hello" [name]="world">text</greet>'
+   *   directives: [adapter.upgradeNg1Component('greet')]
+   * })
+   * class Ng2 {
+   * }
+   *
+   * document.body.innerHTML = '<ng2></ng2>';
+   *
+   * adapter.bootstrap(document.body, ['myExample']).ready(function() {
+   *   expect(document.body.textContent).toEqual("ng2 template: Hello world! - text");
+   * });
+   * ```
+   */
   upgradeNg1Component(name: string): Type {
     if ((<any>this.downgradedComponents).hasOwnProperty(name)) {
       return this.downgradedComponents[name].type;
@@ -127,6 +249,45 @@ export class UpgradeAdapter {
     }
   }
 
+  /**
+   * Bootstrap a hybrid AngularJS v1 / Angular v2 application.
+   *
+   * This `bootstrap` method is a direct replacement (takes same arguments) for AngularJS v1
+   * [`bootstrap`](https://docs.angularjs.org/api/ng/function/angular.bootstrap) method. Unlike
+   * AngularJS v1, this bootstrap is asynchronous.
+   *
+   * ## Example
+   *
+   * ```
+   * var adapter = new UpgradeAdapter();
+   * var module = angular.module('myExample', []);
+   * module.directive('ng2', adapter.downgradeNg2Component(Ng2));
+   *
+   * module.directive('ng1', function() {
+   *   return {
+   *      scope: { title: '=' },
+   *      template: 'ng1[Hello {{title}}!](<span ng-transclude></span>)'
+   *   };
+   * });
+   *
+   *
+   * @Component({
+   *   selector: 'ng2',
+   *   inputs: ['name'],
+   *   template: 'ng2[<ng1 [title]="name">transclude</ng1>](<ng-content></ng-content>)',
+   *   directives: [adapter.upgradeNg1Component('ng1')]
+   * })
+   * class Ng2 {
+   * }
+   *
+   * document.body.innerHTML = '<ng2 name="World">project</ng2>';
+   *
+   * adapter.bootstrap(document.body, ['myExample']).ready(function() {
+   *   expect(document.body.textContent).toEqual(
+   *       "ng2[ng1[Hello World!](transclude)](project)");
+   * });
+   * ```
+   */
   bootstrap(element: Element, modules?: any[],
             config?: angular.IAngularBootstrapConfig): UpgradeAdapterRef {
     var upgrade = new UpgradeAdapterRef();
