@@ -242,6 +242,16 @@ export function main() {
            expect(template.styleUrls).toEqual([]);
          }));
 
+      it('should ignore link elements with absolute urls but non package: scheme',
+         inject([TemplateNormalizer], (normalizer: TemplateNormalizer) => {
+           var template = normalizer.normalizeLoadedTemplate(
+               dirType,
+               new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}),
+               '<link href="http://some/external.css" rel="stylesheet"></link>',
+               'package:some/module/');
+           expect(template.styleUrls).toEqual([]);
+         }));
+
       it('should extract @import style urls into styleAbsUrl',
          inject([TemplateNormalizer], (normalizer: TemplateNormalizer) => {
            var template = normalizer.normalizeLoadedTemplate(
@@ -252,7 +262,7 @@ export function main() {
            expect(template.styleUrls).toEqual(['package:some/module/test.css']);
          }));
 
-      it('should resolve relative urls in inline styles',
+      it('should not resolve relative urls in inline styles',
          inject([TemplateNormalizer], (normalizer: TemplateNormalizer) => {
            var template = normalizer.normalizeLoadedTemplate(
                dirType, new CompileTemplateMetadata({
@@ -261,8 +271,7 @@ export function main() {
                  styleUrls: []
                }),
                '', 'package:some/module/id');
-           expect(template.styles)
-               .toEqual(['.foo{background-image: url(\'package:some/module/double.jpg\');']);
+           expect(template.styles).toEqual(['.foo{background-image: url(\'double.jpg\');']);
          }));
 
       it('should resolve relative style urls in styleUrls',

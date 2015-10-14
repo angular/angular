@@ -40,6 +40,8 @@ import {CssSelector, SelectorMatcher} from 'angular2/src/core/compiler/selector'
 import {ElementSchemaRegistry} from 'angular2/src/core/compiler/schema/element_schema_registry';
 import {preparseElement, PreparsedElement, PreparsedElementType} from './template_preparser';
 
+import {isStyleUrlResolvable} from './style_url_resolver';
+
 import {
   HtmlAstVisitor,
   HtmlAst,
@@ -165,10 +167,16 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     var nodeName = element.name;
     var preparsedElement = preparseElement(element);
     if (preparsedElement.type === PreparsedElementType.SCRIPT ||
-        preparsedElement.type === PreparsedElementType.STYLE ||
-        preparsedElement.type === PreparsedElementType.STYLESHEET) {
+        preparsedElement.type === PreparsedElementType.STYLE) {
       // Skipping <script> for security reasons
-      // Skipping <style> and stylesheets as we already processed them
+      // Skipping <style> as we already processed them
+      // in the StyleCompiler
+      return null;
+    }
+    if (preparsedElement.type === PreparsedElementType.STYLESHEET &&
+        isStyleUrlResolvable(preparsedElement.hrefAttr)) {
+      // Skipping stylesheets with either relative urls or package scheme as we already processed
+      // them
       // in the StyleCompiler
       return null;
     }

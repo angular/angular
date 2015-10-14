@@ -4,12 +4,13 @@ import {
   CompileTemplateMetadata
 } from './directive_metadata';
 import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 
 import {XHR} from 'angular2/src/core/compiler/xhr';
 import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
-import {resolveStyleUrls} from './style_url_resolver';
+import {extractStyleUrls, isStyleUrlResolvable} from './style_url_resolver';
 import {Injectable} from 'angular2/src/core/di';
 import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
 
@@ -57,9 +58,9 @@ export class TemplateNormalizer {
         visitor.styleUrls.map(url => this._urlResolver.resolve(templateAbsUrl, url))
             .concat(templateMeta.styleUrls.map(
                 url => this._urlResolver.resolve(directiveType.moduleUrl, url)));
-
+    allStyleAbsUrls = ListWrapper.filter(allStyleAbsUrls, isStyleUrlResolvable);
     var allResolvedStyles = allStyles.map(style => {
-      var styleWithImports = resolveStyleUrls(this._urlResolver, templateAbsUrl, style);
+      var styleWithImports = extractStyleUrls(this._urlResolver, templateAbsUrl, style);
       styleWithImports.styleUrls.forEach(styleUrl => allStyleAbsUrls.push(styleUrl));
       return styleWithImports.style;
     });
