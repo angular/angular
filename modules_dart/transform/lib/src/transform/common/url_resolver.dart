@@ -46,7 +46,7 @@ Uri toAssetScheme(Uri absoluteUri) {
 
   if (!absoluteUri.isAbsolute) {
     throw new ArgumentError.value(
-        absoluteUri, 'absoluteUri', 'Value passed must be an absolute uri');
+        absoluteUri.toString(), 'absoluteUri', 'Value passed must be an absolute uri');
   }
   if (absoluteUri.scheme == 'asset') {
     if (absoluteUri.pathSegments.length < 3) {
@@ -54,7 +54,7 @@ Uri toAssetScheme(Uri absoluteUri) {
           'An asset: URI must have at least 3 path '
           'segments, for example '
           'asset:<package-name>/<first-level-dir>/<path-to-dart-file>.',
-          absoluteUri);
+          absoluteUri.toString());
     }
     return absoluteUri;
   }
@@ -68,7 +68,7 @@ Uri toAssetScheme(Uri absoluteUri) {
         'A package: URI must have at least 2 path '
         'segments, for example '
         'package:<package-name>/<path-to-dart-file>',
-        absoluteUri);
+        absoluteUri.toString());
   }
 
   var pathSegments = absoluteUri.pathSegments.toList()..insert(1, 'lib');
