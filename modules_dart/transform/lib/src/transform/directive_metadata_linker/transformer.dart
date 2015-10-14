@@ -64,7 +64,8 @@ class DirectiveMetadataLinker extends Transformer
             transform
                 .addOutput(new Asset.fromString(depsAssetId, formattedCode));
           } else {
-            transform.addOutput(new Asset.fromString(depsAssetId, ''));
+            transform.addOutput(
+                new Asset.fromString(depsAssetId, _emptyNgDepsContents));
           }
         }
       });
@@ -74,3 +75,5 @@ class DirectiveMetadataLinker extends Transformer
 
 AssetId _depsAssetId(AssetId primaryId) =>
     new AssetId(primaryId.package, toDepsExtension(primaryId.path));
+
+const _emptyNgDepsContents = 'initReflector() {}';
