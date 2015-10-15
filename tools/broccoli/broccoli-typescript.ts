@@ -1,5 +1,4 @@
 /// <reference path="../typings/node/node.d.ts" />
-/// <reference path="../../node_modules/typescript/lib/typescript.d.ts" />
 
 import fs = require('fs');
 import fse = require('fs-extra');
@@ -38,12 +37,18 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
   static excludeExtensions = ['.d.ts'];
 
   constructor(public inputPath: string, public cachePath: string, public options) {
-    this.tsOpts = Object.create(options);
+    if (options.rootFilePaths) {
+      this.rootFilePaths = options.rootFilePaths.splice(0);
+      delete options.rootFilePaths;
+    } else {
+      this.rootFilePaths = [];
+    }
+
+    // in tsc 1.7.x this api was renamed to parseJsonConfigFileContent
+    // the conversion is a bit awkward, see https://github.com/Microsoft/TypeScript/issues/5276
+    this.tsOpts = ts.parseConfigFile({compilerOptions: options, files: []}, null, null).options;
     this.tsOpts.outDir = this.cachePath;
-    this.tsOpts.target = (<any>ts).ScriptTarget[options.target];
-    this.tsOpts.module = (<any>ts).ModuleKind[options.module];
-    this.tsOpts.experimentalDecorators = true;
-    this.rootFilePaths = options.rootFilePaths ? options.rootFilePaths.splice(0) : [];
+
     this.tsServiceHost = new CustomLanguageServiceHost(this.tsOpts, this.rootFilePaths,
                                                        this.fileRegistry, this.inputPath);
     this.tsService = ts.createLanguageService(this.tsServiceHost, ts.createDocumentRegistry());
