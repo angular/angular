@@ -285,7 +285,7 @@ function setUpChangeDetection(protoChangeDetectorFactory: Function, iterations, 
   for (var i = 0; i < iterations; ++i) {
     var cd = proto.instantiate(dispatcher);
     cd.hydrate(object, null, new FakeDirectives(targetObj), null);
-    parentCd.addChild(cd);
+    parentCd.addContentChild(cd);
   }
   return parentCd;
 }

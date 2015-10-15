@@ -102,7 +102,7 @@ export class AppViewManagerUtils {
       currentView.init(protoView.changeDetectorFactory(currentView), elementInjectors,
                        rootElementInjectors, preBuiltObjects, views, elementRefs, viewContainers);
       if (isPresent(parentView) && protoView.type === viewModule.ViewType.COMPONENT) {
-        parentView.changeDetector.addShadowDomChild(currentView.changeDetector);
+        parentView.changeDetector.addViewChild(currentView.changeDetector);
       }
       elementOffset += protoView.elementBinders.length;
       textOffset += protoView.textBindingCount;
@@ -122,7 +122,7 @@ export class AppViewManagerUtils {
       contextView = parentView;
       contextBoundElementIndex = boundElementIndex;
     }
-    parentView.changeDetector.addChild(view.changeDetector);
+    parentView.changeDetector.addContentChild(view.changeDetector);
     var viewContainer = parentView.viewContainers[boundElementIndex];
     if (isBlank(viewContainer)) {
       viewContainer = new viewModule.AppViewContainer();
