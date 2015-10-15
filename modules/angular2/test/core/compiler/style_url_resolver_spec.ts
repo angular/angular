@@ -96,6 +96,11 @@ export function main() {
 
     it('should not resolve urls with other schema',
        () => { expect(isStyleUrlResolvable('http://otherurl')).toBe(false); });
+
+    it('should not resolve urls with absolute paths', () => {
+      expect(isStyleUrlResolvable('/otherurl')).toBe(false);
+      expect(isStyleUrlResolvable('//otherurl')).toBe(false);
+    });
   });
 }
 
