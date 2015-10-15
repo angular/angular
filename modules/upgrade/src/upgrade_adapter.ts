@@ -7,10 +7,12 @@ import {
   ApplicationRef,
   AppViewManager,
   Compiler,
+  Inject,
   Injector,
   NgZone,
   PlatformRef,
   ProtoViewRef,
+  Provider,
   Type
 } from 'angular2/angular2';
 import {applicationDomBindings} from 'angular2/src/core/application_common';
@@ -113,6 +115,8 @@ export class UpgradeAdapter {
   private upgradedComponents: Type[] = [];
   /* @internal */
   private downgradedComponents: {[name: string]: UpgradeNg1ComponentAdapterBuilder} = {};
+  /* @internal */
+  private providers: Array<Type | Provider | any[]> = [];
 
   /**
    * Allows Angular v2 Component to be used from AngularJS v1.
@@ -298,7 +302,8 @@ export class UpgradeAdapter {
       applicationDomBindings(),
       compilerProviders(),
       provide(NG1_INJECTOR, {useFactory: () => ng1Injector}),
-      provide(NG1_COMPILE, {useFactory: () => ng1Injector.get(NG1_COMPILE)})
+      provide(NG1_COMPILE, {useFactory: () => ng1Injector.get(NG1_COMPILE)}),
+      this.providers
     ]);
     var injector: Injector = applicationRef.injector;
     var ngZone: NgZone = injector.get(NgZone);
@@ -349,14 +354,123 @@ export class UpgradeAdapter {
     Promise.all([this.compileNg2Components(compiler, protoViewRefMap), ng1compilePromise])
         .then(() => {
           ngZone.run(() => {
-            rootScopePrototype.$apply = original$applyFn;  // restore original $apply
-            while (delayApplyExps.length) {
-              rootScope.$apply(delayApplyExps.shift());
+            if (rootScopePrototype) {
+              rootScopePrototype.$apply = original$applyFn;  // restore original $apply
+              while (delayApplyExps.length) {
+                rootScope.$apply(delayApplyExps.shift());
+              }
+              (<any>upgrade)._bootstrapDone(applicationRef, ng1Injector);
+              rootScopePrototype = null;
             }
-            (<any>upgrade)._bootstrapDone(applicationRef, ng1Injector);
           });
         }, onError);
     return upgrade;
+  }
+
+  /**
+   * Adds a provider to the top level environment of a hybrid AngularJS v1 / Angular v2 application.
+   *
+   * In hybrid AngularJS v1 / Angular v2 application, there is no one root Angular v2 component,
+   * for this reason we provide an application global way of registering providers which is
+   * consistent with single global injection in AngularJS v1.
+   *
+   * ## Example
+   *
+   * ```
+   * class Greeter {
+   *   greet(name) {
+   *     alert('Hello ' + name + '!');
+   *   }
+   * }
+   *
+   * @Component({
+   *   selector: 'app',
+   *   template: ''
+   * })
+   * class App {
+   *   constructor(greeter: Greeter) {
+   *     this.greeter('World');
+   *   }
+   * }
+   *
+   * var adapter = new UpgradeAdapter();
+   * adapter.addProvider(Greeter);
+   *
+   * var module = angular.module('myExample', []);
+   * module.directive('app', adapter.downgradeNg2Component(App));
+   *
+   * document.body.innerHTML = '<app></app>'
+   * adapter.bootstrap(document.body, ['myExample']);
+   *```
+   */
+  public addProvider(provider: Type | Provider | any[]): void { this.providers.push(provider); }
+
+  /**
+   * Allows AngularJS v1 service to be accessible from Angular v2.
+   *
+   *
+   * ## Example
+   *
+   * ```
+   * class Login { ... }
+   * class Server { ... }
+   *
+   * @Injectable()
+   * class Example {
+   *   constructor(@Inject('server') server, login: Login) {
+   *     ...
+   *   }
+   * }
+   *
+   * var module = angular.module('myExample', []);
+   * module.service('server', Server);
+   * module.service('login', Login);
+   *
+   * var adapter = new UpgradeAdapter();
+   * adapter.upgradeNg1Provider('server');
+   * adapter.upgradeNg1Provider('login', {asToken: Login});
+   * adapter.addProvider(Example);
+   *
+   * adapter.bootstrap(document.body, ['myExample']).ready((ref) => {
+   *   var example: Example = ref.ng2Injector.get(Example);
+   * });
+   *
+   * ```
+   */
+  public upgradeNg1Provider(name: string, options?: {asToken: any}) {
+    var token = options && options.asToken || name;
+    this.providers.push(provide(token, {
+      useFactory: (ng1Injector: angular.auto.IInjectorService) => ng1Injector.get(name),
+      deps: [NG1_INJECTOR]
+    }));
+  }
+
+  /**
+   * Allows Angular v2 service to be accessible from AngularJS v1.
+   *
+   *
+   * ## Example
+   *
+   * ```
+   * class Example {
+   * }
+   *
+   * var adapter = new UpgradeAdapter();
+   * adapter.addProvider(Example);
+   *
+   * var module = angular.module('myExample', []);
+   * module.factory('example', adapter.downgradeNg2Provider(Example));
+   *
+   * adapter.bootstrap(document.body, ['myExample']).ready((ref) => {
+   *   var example: Example = ref.ng1Injector.get('example');
+   * });
+   *
+   * ```
+   */
+  public downgradeNg2Provider(token: any): Function {
+    var factory = function(injector: Injector) { return injector.get(token); };
+    factory.$inject = [NG2_INJECTOR];
+    return factory;
   }
 
   /* @internal */
@@ -417,14 +531,18 @@ export class UpgradeAdapterRef {
   /* @internal */
   private _readyFn: (upgradeAdapterRef?: UpgradeAdapterRef) => void = null;
 
-  public applicationRef: ApplicationRef = null;
+  public ng1RootScope: angular.IRootScopeService = null;
   public ng1Injector: angular.auto.IInjectorService = null;
+  public ng2ApplicationRef: ApplicationRef = null;
+  public ng2Injector: Injector = null;
 
   /* @internal */
   private _bootstrapDone(applicationRef: ApplicationRef,
                          ng1Injector: angular.auto.IInjectorService) {
-    this.applicationRef = applicationRef;
+    this.ng2ApplicationRef = applicationRef;
+    this.ng2Injector = applicationRef.injector;
     this.ng1Injector = ng1Injector;
+    this.ng1RootScope = ng1Injector.get(NG1_ROOT_SCOPE);
     this._readyFn && this._readyFn(this);
   }
 
@@ -442,6 +560,6 @@ export class UpgradeAdapterRef {
    */
   public dispose() {
     this.ng1Injector.get(NG1_ROOT_SCOPE).$destroy();
-    this.applicationRef.dispose();
+    this.ng2ApplicationRef.dispose();
   }
 }
