@@ -4,8 +4,6 @@
 <script src="angular.js"></script>
 <script src="url_params_to_form.js"></script>
 <script src="system.src.js"></script>
-<!-- Benchmark code uses DOM Adapters, which requires Reflect metadata !-->
-<script src="Reflect.js"></script>
 <script>
   System.config({
     baseURL: '/',
@@ -14,3 +12,4 @@
   var filename = '@@PATH/@@FILENAME';
   System.import(filename).then(function(m) { m.main(); }, console.error.bind(console));
 </script>
+
