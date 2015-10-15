@@ -1,50 +1,50 @@
 'use strict';
 
-var autoprefixer = require('gulp-autoprefixer');
-var clangFormat = require('clang-format');
-var del = require('del');
-var exec = require('child_process').exec;
-var fork = require('child_process').fork;
-var gulp = require('gulp');
-var gulpFormat = require('gulp-clang-format');
-var gulpPlugins = require('gulp-load-plugins')();
-var sass = require('gulp-sass');
-var shell = require('gulp-shell');
-var spawn = require('child_process').spawn;
-var runSequence = require('run-sequence');
-var madge = require('madge');
-var merge = require('merge');
-var merge2 = require('merge2');
-var path = require('path');
-var q = require('q');
-var licenseWrap = require('./tools/build/licensewrap');
-var analytics = require('./tools/analytics/analytics');
+var autoprefixer = require('gulp-autoprefixer'),
+    clangFormat = require('clang-format'),
+    del = require('del'),
+    exec = require('child_process').exec,
+    fork = require('child_process').fork,
+    gulp = require('gulp'),
+    gulpFormat = require('gulp-clang-format'),
+    gulpPlugins = require('gulp-load-plugins')(),
+    sass = require('gulp-sass'),
+    shell = require('gulp-shell'),
+    spawn = require('child_process').spawn,
+    runSequence = require('run-sequence'),
+    madge = require('madge'),
+    merge = require('merge'),
+    merge2 = require('merge2'),
+    path = require('path'),
+    q = require('q'),
+    licenseWrap = require('./tools/build/licensewrap'),
+    analytics = require('./tools/analytics/analytics'),
 
-var watch = require('./tools/build/watch');
+    watch = require('./tools/build/watch'),
 
-var pubget = require('./tools/build/pubget');
-var proto = require('./tools/build/proto');
-var linknodemodules = require('./tools/build/linknodemodules');
-var pubbuild = require('./tools/build/pubbuild');
-var dartanalyzer = require('./tools/build/dartanalyzer');
-var dartapidocs = require('./tools/build/dartapidocs');
-var jsserve = require('./tools/build/jsserve');
-var pubserve = require('./tools/build/pubserve');
-var karma = require('karma');
-var minimist = require('minimist');
-var runServerDartTests = require('./tools/build/run_server_dart_tests');
-var sourcemaps = require('gulp-sourcemaps');
-var tsc = require('gulp-typescript');
-var util = require('./tools/build/util');
-var bundler = require('./tools/build/bundle');
-var replace = require('gulp-replace');
-var insert = require('gulp-insert');
-var buildRouter = require('./modules/angular1_router/build');
-var uglify = require('gulp-uglify');
-var shouldLog = require('./tools/build/logging');
-var dartSdk = require('./tools/build/dart');
-var sauceConf = require('./sauce.conf');
-var os = require('os');
+    pubget = require('./tools/build/pubget'),
+    proto = require('./tools/build/proto'),
+    linknodemodules = require('./tools/build/linknodemodules'),
+    pubbuild = require('./tools/build/pubbuild'),
+    dartanalyzer = require('./tools/build/dartanalyzer'),
+    dartapidocs = require('./tools/build/dartapidocs'),
+    jsserve = require('./tools/build/jsserve'),
+    pubserve = require('./tools/build/pubserve'),
+    karma = require('karma'),
+    minimist = require('minimist'),
+    runServerDartTests = require('./tools/build/run_server_dart_tests'),
+    sourcemaps = require('gulp-sourcemaps'),
+    tsc = require('gulp-typescript'),
+    util = require('./tools/build/util'),
+    bundler = require('./tools/build/bundle'),
+    replace = require('gulp-replace'),
+    insert = require('gulp-insert'),
+    buildRouter = require('./modules/angular1_router/build'),
+    uglify = require('gulp-uglify'),
+    shouldLog = require('./tools/build/logging'),
+    dartSdk = require('./tools/build/dart'),
+    sauceConf = require('./sauce.conf'),
+    os = require('os');
 
 require('./tools/check-environment')({
   requiredNpmVersion: '>=2.14.5',
@@ -469,14 +469,14 @@ gulp.task('test.all.dart', shell.task(['./scripts/ci/test_dart.sh']));
 //     These tests run in the browser and are allowed to access
 //     HTML DOM APIs.
 function getBrowsersFromCLI() {
-  var isSauce = false;
-  var args = minimist(process.argv.slice(2));
-  var rawInput = args.browsers ? args.browsers : 'DartiumWithWebPlatform';
-  var inputList = rawInput.replace(' ', '').split(',');
-  var outputList = [];
+  var isSauce = false,
+      args = minimist(process.argv.slice(2)),
+      rawInput = args.browsers ? args.browsers : 'DartiumWithWebPlatform',
+      inputList = rawInput.replace(' ', '').split(','),
+      outputList = [];
   for (var i = 0; i < inputList.length; i++) {
-    var input = inputList[i];
-    var karmaChromeLauncher = require('karma-chrome-launcher');
+    var input = inputList[i],
+        karmaChromeLauncher = require('karma-chrome-launcher');
     if (sauceConf.customLaunchers.hasOwnProperty(input) || karmaChromeLauncher.hasOwnProperty("launcher:" + input)) {
       // In case of non-sauce browsers, or browsers defined in karma-chrome-launcher (Chrome, ChromeCanary and Dartium):
       // overrides everything, ignoring other options
@@ -859,9 +859,9 @@ gulp.task('test.typings.npm', [
 //
 // This task is expected to be run after build/tree.dart
 gulp.task('build/pure-packages.dart', function() {
-  var through2 = require('through2');
-  var yaml = require('js-yaml');
-  var originalPrefix = '../../dist/dart/';
+  var through2 = require('through2'),
+      yaml = require('js-yaml'),
+      originalPrefix = '../../dist/dart/';
 
   return gulp
     .src([
@@ -1222,14 +1222,14 @@ gulp.task('build.change_detect.dart', function(done) {
 });
 
 gulp.task('!build/change_detect.dart', function(done) {
-  var fs = require('fs');
-  var changeDetectDir = path.join(CONFIG.dest.dart, 'angular2/test/core/change_detection/');
-  var srcDir = path.join(changeDetectDir, 'generator');
-  var destDir = path.join(changeDetectDir, 'generated');
+  var fs = require('fs'),
+      changeDetectDir = path.join(CONFIG.dest.dart, 'angular2/test/core/change_detection/'),
+      srcDir = path.join(changeDetectDir, 'generator'),
+      destDir = path.join(changeDetectDir, 'generated');
 
-  var dartStream = fs.createWriteStream(path.join(destDir, 'change_detector_classes.dart'));
-  var genMain = path.join(srcDir, 'gen_change_detectors.dart');
-  var proc = spawn(DART_SDK.VM, [genMain], { stdio:['ignore', 'pipe', 'inherit'] });
+  var dartStream = fs.createWriteStream(path.join(destDir, 'change_detector_classes.dart')),
+      genMain = path.join(srcDir, 'gen_change_detectors.dart'),
+      proc = spawn(DART_SDK.VM, [genMain], { stdio:['ignore', 'pipe', 'inherit'] });
   proc.on('error', function(code) {
     done(new Error('Failed while generating change detector classes. Please run manually: ' +
                    DART_SDK.VM + ' ' + dartArgs.join(' ')));
