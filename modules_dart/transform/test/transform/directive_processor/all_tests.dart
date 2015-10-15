@@ -10,6 +10,7 @@ import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart' as log;
+import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
 import 'package:angular2/src/transform/common/model/reflection_info_model.pb.dart';
 import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:barback/barback.dart';
@@ -439,6 +440,58 @@ void allTests() {
           .toEqual('selector');
       expect(componentAnnotation.namedParameters.first.value)
           .toContain('[soup]');
+    });
+  });
+
+  describe('directives', () {
+    final reflectableNamed = (NgDepsModel model, String name) {
+      return model.reflectables
+          .firstWhere((r) => r.name == name, orElse: () => null);
+    };
+
+    it('should populate `directives` from @View value specified second.',
+        () async {
+      var model =
+          (await _testCreateModel('directives_files/components.dart')).ngDeps;
+      final componentFirst = reflectableNamed(model, 'ComponentFirst');
+      expect(componentFirst).toBeNotNull();
+      expect(componentFirst.directives).toBeNotNull();
+      expect(componentFirst.directives.length).toEqual(2);
+      expect(componentFirst.directives.first)
+          .toEqual(new PrefixedDirective()..name = 'Dep');
+      expect(componentFirst.directives[1]).toEqual(new PrefixedDirective()
+        ..name = 'Dep'
+        ..prefix = 'dep2');
+    });
+
+    it('should populate `directives` from @View value specified first.',
+        () async {
+      var model =
+          (await _testCreateModel('directives_files/components.dart')).ngDeps;
+      final viewFirst = reflectableNamed(model, 'ViewFirst');
+      expect(viewFirst).toBeNotNull();
+      expect(viewFirst.directives).toBeNotNull();
+      expect(viewFirst.directives.length).toEqual(2);
+      expect(viewFirst.directives.first).toEqual(new PrefixedDirective()
+        ..name = 'Dep'
+        ..prefix = 'dep2');
+      expect(viewFirst.directives[1])
+          .toEqual(new PrefixedDirective()..name = 'Dep');
+    });
+
+    it('should populate `directives` from @Component value with no @View.',
+        () async {
+      var model =
+          (await _testCreateModel('directives_files/components.dart')).ngDeps;
+      final componentOnly = reflectableNamed(model, 'ComponentOnly');
+      expect(componentOnly).toBeNotNull();
+      expect(componentOnly.directives).toBeNotNull();
+      expect(componentOnly.directives.length).toEqual(2);
+      expect(componentOnly.directives.first)
+          .toEqual(new PrefixedDirective()..name = 'Dep');
+      expect(componentOnly.directives[1]).toEqual(new PrefixedDirective()
+        ..name = 'Dep'
+        ..prefix = 'dep2');
     });
   });
 }

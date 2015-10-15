@@ -83,6 +83,10 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
 
     if (node.metadata != null) {
       node.metadata.forEach((node) {
+        final extractedDirectives = _extractDirectives(node);
+        if (extractedDirectives != null) {
+          model.directives.addAll(extractedDirectives);
+        }
         model.annotations.add(_annotationVisitor.visitAnnotation(node));
       });
     }
@@ -135,6 +139,36 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
         ++i;
       }
     }
+  }
+
+  Iterable<PrefixedDirective> _extractDirectives(Annotation node) {
+    var shouldProcess = _annotationMatcher.isComponent(node, assetId);
+    shouldProcess = shouldProcess || _annotationMatcher.isView(node, assetId);
+
+    if (node.arguments == null && node.arguments.arguments == null) return null;
+    final directivesNode = node.arguments.arguments.firstWhere((arg) {
+      return arg is NamedExpression && '${arg.name.label}' == 'directives';
+    }, orElse: () => null);
+    if (directivesNode == null) return null;
+
+    if (directivesNode.expression is! ListLiteral) {
+      logger.warning('Angular 2 expects a list literal for `directives` '
+          'but found a ${directivesNode.expression.runtimeType}');
+      return null;
+    }
+    final directives = <PrefixedDirective>[];
+    for (var dep in (directivesNode.expression as ListLiteral).elements) {
+      if (dep is PrefixedIdentifier) {
+        directives.add(new PrefixedDirective()
+          ..prefix = '${dep.prefix}'
+          ..name = '${dep.identifier}');
+      } else if (dep is Identifier) {
+        directives.add(new PrefixedDirective()..name = '${dep}');
+      } else {
+        logger.warning('Found unexpected value $dep in `directives`.');
+      }
+    }
+    return directives;
   }
 
   @override

@@ -76,8 +76,7 @@ void allTests() {
 
   Future<String> process(AssetId assetId) {
     logger = new RecordingLogger();
-    return log.setZoned(logger,
-        () => processTemplates(reader, assetId));
+    return log.setZoned(logger, () => processTemplates(reader, assetId));
   }
 
   // TODO(tbosch): This is just a temporary test that makes sure that the dart
@@ -88,10 +87,9 @@ void allTests() {
     final viewAnnotation = new AnnotationModel()
       ..name = 'View'
       ..isView = true;
-    viewAnnotation.namedParameters.add(new NamedParameter()
-      ..name = 'directives'
-      ..value = 'const [NgFor]');
     fooNgMeta.ngDeps.reflectables.first.annotations.add(viewAnnotation);
+    fooNgMeta.ngDeps.reflectables.first.directives
+        .add(new PrefixedDirective()..name = 'NgFor');
     fooNgMeta.ngDeps.imports.add(
         new ImportModel()..uri = 'package:angular2/src/directives/ng_for.dart');
 
@@ -155,6 +153,8 @@ void allTests() {
       ..name = 'directives'
       ..value = 'const [${barComponentMeta.type.name}]');
     fooNgMeta.ngDeps.reflectables.first.annotations.add(viewAnnotation);
+    fooNgMeta.ngDeps.reflectables.first.directives
+        .add(new PrefixedDirective()..name = barComponentMeta.type.name);
     fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'bar.dart');
     barComponentMeta.template =
         new CompileTemplateMetadata(template: 'BarTemplate');
@@ -176,69 +176,6 @@ void allTests() {
       ..toContain("import 'bar.template.dart'");
   });
 
-  it('should handle `directives` regardless of annotation ordering', () async {
-    fooComponentMeta.template =
-    new CompileTemplateMetadata(template: '<${barComponentMeta.selector}>');
-    final viewAnnotation = new AnnotationModel()
-      ..name = 'View'
-      ..isView = true;
-    final directivesParameter = new NamedParameter()
-      ..name = 'directives'
-      ..value = 'const [${barComponentMeta.type.name}]';
-    viewAnnotation.namedParameters.add(directivesParameter);
-    final componentAnnotation = new AnnotationModel()
-      ..name = 'Component'
-      ..isComponent = true;
-    fooNgMeta.ngDeps.reflectables.first.annotations
-        .addAll([viewAnnotation, componentAnnotation]);
-    fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'bar.dart');
-    barComponentMeta.template =
-    new CompileTemplateMetadata(template: 'BarTemplate');
-    updateReader();
-
-    final viewFirstOutputs = await process(fooAssetId);
-
-    fooNgMeta.ngDeps.reflectables.first.annotations.clear();
-    fooNgMeta.ngDeps.reflectables.first.annotations
-        .addAll([componentAnnotation, viewAnnotation]);
-    updateReader();
-
-    final componentFirstOutputs = await process(fooAssetId);
-
-    expect(viewFirstOutputs.templatesCode).toEqual(componentFirstOutputs.templatesCode);
-  });
-
-  it('should handle `directives` on @Component or @View', () async {
-    fooComponentMeta.template =
-    new CompileTemplateMetadata(template: '<${barComponentMeta.selector}>');
-    final viewAnnotation = new AnnotationModel()
-      ..name = 'View'
-      ..isView = true;
-    final directivesParameter = new NamedParameter()
-      ..name = 'directives'
-      ..value = 'const [${barComponentMeta.type.name}]';
-    viewAnnotation.namedParameters.add(directivesParameter);
-    final componentAnnotation = new AnnotationModel()
-      ..name = 'Component'
-      ..isComponent = true;
-    fooNgMeta.ngDeps.reflectables.first.annotations
-        .addAll([viewAnnotation, componentAnnotation]);
-    fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'bar.dart');
-    barComponentMeta.template =
-    new CompileTemplateMetadata(template: 'BarTemplate');
-    updateReader();
-
-    final onViewOutputs = await process(fooAssetId);
-
-    viewAnnotation.namedParameters.clear();
-    componentAnnotation.namedParameters.add(directivesParameter);
-    updateReader();
-
-    final onComponentOutputs = await process(fooAssetId);
-
-    expect(onComponentOutputs.templatesCode).toEqual(onViewOutputs.templatesCode);
-  });
-
   it('should parse `View` directives with a single prefixed dependency.',
       () async {
     fooComponentMeta.template =
@@ -246,10 +183,10 @@ void allTests() {
     final componentAnnotation = new AnnotationModel()
       ..name = 'View'
       ..isView = true;
-    componentAnnotation.namedParameters.add(new NamedParameter()
-      ..name = 'directives'
-      ..value = 'const [prefix.${barComponentMeta.type.name}]');
     fooNgMeta.ngDeps.reflectables.first.annotations.add(componentAnnotation);
+    fooNgMeta.ngDeps.reflectables.first.directives.add(new PrefixedDirective()
+      ..name = barComponentMeta.type.name
+      ..prefix = 'prefix');
     fooNgMeta.ngDeps.imports.add(new ImportModel()
       ..uri = 'bar.dart'
       ..prefix = 'prefix');
@@ -279,11 +216,9 @@ void allTests() {
     final componentAnnotation = new AnnotationModel()
       ..name = 'View'
       ..isView = true;
-    final directivesParam = new NamedParameter()
-      ..name = 'directives'
-      ..value = 'const [directiveAlias]';
-    componentAnnotation.namedParameters.add(directivesParam);
     fooNgMeta.ngDeps.reflectables.first.annotations.add(componentAnnotation);
+    fooNgMeta.ngDeps.reflectables.first.directives
+        .add(new PrefixedDirective()..name = 'directiveAlias');
     fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'bar.dart');
 
     fooNgMeta.aliases['directiveAlias'] = [barComponentMeta.type.name];

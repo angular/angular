@@ -38,58 +38,6 @@ class CompileDataResults {
       this.ngMeta, this.viewDefinitions, this.directiveMetadatas);
 }
 
-class _PrefixedDirectiveName {
-  final String prefix;
-  final String directiveName;
-
-  _PrefixedDirectiveName(String prefix, this.directiveName)
-      : this.prefix = prefix == null ? '' : prefix;
-
-  @override
-  String toString() {
-    if (prefix.isEmpty) {
-      return directiveName;
-    } else {
-      return '${prefix}.${directiveName}';
-    }
-  }
-}
-
-String _directivesValue(ReflectionInfoModel model, bool test(AnnotationModel)) {
-  final viewAnnotation =  model.annotations.firstWhere(test, orElse: () => null);
-  if (viewAnnotation == null) return null;
-  final directivesParam = viewAnnotation.namedParameters
-        .firstWhere((p) => p.name == 'directives', orElse: () => null);
-  return directivesParam != null ? directivesParam.value : null;
-}
-
-// TODO(kegluneq): Parse this value when creating [NgDepsModel]?
-/// Find the `directives` parameter on the @View annotation and make sure that
-/// all necessary [CompileDirectiveMetadata] objects are available.
-Iterable<_PrefixedDirectiveName> _getDirectiveDeps(ReflectionInfoModel model) {
-  var directives = _directivesValue(model, (m) => m.isView);
-  if (directives == null) {
-    directives = _directivesValue(model, (m) => m.isComponent);
-  }
-  if (directives == null) return const [];
-  directives = directives.trim();
-  for (var toTrim in ['const [', '[']) {
-    if (directives.startsWith(toTrim) && directives.endsWith(']')) {
-      directives =
-          directives.substring(toTrim.length, directives.length - 1).trim();
-    }
-  }
-  if (directives.length == 0) return const [];
-  return directives.split(',').map((p) {
-    var parts = p.trim().split('.');
-    if (parts.length == 1) {
-      return new _PrefixedDirectiveName(null, parts[0]);
-    } else {
-      return new _PrefixedDirectiveName(parts[0], parts[1]);
-    }
-  });
-}
-
 /// Creates [ViewDefinition] objects for all `View` `Directive`s defined in
 /// `entryPoint`.
 class _CompileDataCreator {
@@ -127,7 +75,7 @@ class _CompileDataCreator {
         if (compileDirectiveMetadata.template != null) {
           final compileDatum = new NormalizedComponentWithViewDirectives(
               compileDirectiveMetadata, <CompileDirectiveMetadata>[]);
-          for (var dep in _getDirectiveDeps(reflectable)) {
+          for (var dep in reflectable.directives) {
             if (!ngMetaMap.containsKey(dep.prefix)) {
               logger.warning(
                   'Missing prefix "${dep.prefix}" '
@@ -137,11 +85,10 @@ class _CompileDataCreator {
             }
             final depNgMeta = ngMetaMap[dep.prefix];
 
-            if (depNgMeta.types.containsKey(dep.directiveName)) {
-              compileDatum.directives.add(depNgMeta.types[dep.directiveName]);
-            } else if (depNgMeta.aliases.containsKey(dep.directiveName)) {
-              compileDatum.directives
-                  .addAll(depNgMeta.flatten(dep.directiveName));
+            if (depNgMeta.types.containsKey(dep.name)) {
+              compileDatum.directives.add(depNgMeta.types[dep.name]);
+            } else if (depNgMeta.aliases.containsKey(dep.name)) {
+              compileDatum.directives.addAll(depNgMeta.flatten(dep.name));
             } else {
               logger.warning('Could not find Directive entry for $dep. '
                   'Please be aware that Dart transformers have limited support for '

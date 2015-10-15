@@ -13,6 +13,15 @@ message PropertyMetadataModel {
   repeated AnnotationModel annotations = 2;
 }
 
+message PrefixedDirective {
+  // The prefix used to reference this Directive, if any.
+  optional string prefix = 1;
+
+  // The name of the Directive or directive alias.
+  // See https://goo.gl/d8XPt0 for info on directive aliases.
+  optional string name = 2;
+}
+
 message ReflectionInfoModel {
   // The (potentially prefixed) name of this Injectable.
   // This can be a `Type` or a function name.
@@ -32,4 +41,8 @@ message ReflectionInfoModel {
 
   // Entries for all properties with associated metadata.
   repeated PropertyMetadataModel propertyMetadata = 7;
+
+  // Directive dependencies parsed from the @View or @Component `directives`
+  // parameter.
+  repeated PrefixedDirective directives = 8;
 }
