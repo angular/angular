@@ -9346,28 +9346,6 @@
                     },
                     "ultron": {
                       "version": "1.0.2"
-                    },
-                    "bufferutil": {
-                      "version": "1.2.1",
-                      "dependencies": {
-                        "bindings": {
-                          "version": "1.2.1"
-                        },
-                        "nan": {
-                          "version": "2.0.9"
-                        }
-                      }
-                    },
-                    "utf-8-validate": {
-                      "version": "1.2.1",
-                      "dependencies": {
-                        "bindings": {
-                          "version": "1.2.1"
-                        },
-                        "nan": {
-                          "version": "2.0.9"
-                        }
-                      }
                     }
                   }
                 }
@@ -9488,28 +9466,6 @@
                         },
                         "ultron": {
                           "version": "1.0.2"
-                        },
-                        "bufferutil": {
-                          "version": "1.2.1",
-                          "dependencies": {
-                            "bindings": {
-                              "version": "1.2.1"
-                            },
-                            "nan": {
-                              "version": "2.0.9"
-                            }
-                          }
-                        },
-                        "utf-8-validate": {
-                          "version": "1.2.1",
-                          "dependencies": {
-                            "bindings": {
-                              "version": "1.2.1"
-                            },
-                            "nan": {
-                              "version": "2.0.9"
-                            }
-                          }
                         }
                       }
                     },
@@ -10651,28 +10607,6 @@
             },
             "ultron": {
               "version": "1.0.2"
-            },
-            "bufferutil": {
-              "version": "1.2.1",
-              "dependencies": {
-                "bindings": {
-                  "version": "1.2.1"
-                },
-                "nan": {
-                  "version": "2.0.9"
-                }
-              }
-            },
-            "utf-8-validate": {
-              "version": "1.2.1",
-              "dependencies": {
-                "bindings": {
-                  "version": "1.2.1"
-                },
-                "nan": {
-                  "version": "2.0.9"
-                }
-              }
             }
           }
         },
@@ -10734,10 +10668,10 @@
       }
     },
     "systemjs": {
-      "version": "0.18.10",
+      "version": "0.19.4",
       "dependencies": {
         "es6-module-loader": {
-          "version": "0.17.6"
+          "version": "0.17.8"
         },
         "when": {
           "version": "3.7.3"
@@ -11876,5 +11810,5 @@
     }
   },
   "name": "angular",
-  "version": "2.0.0-alpha.40"
+  "version": "2.0.0-alpha.42"
 }
