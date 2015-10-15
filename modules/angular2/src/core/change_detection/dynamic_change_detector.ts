@@ -7,7 +7,7 @@ import {EventBinding} from './event_binding';
 import {BindingRecord, BindingTarget} from './binding_record';
 import {DirectiveRecord, DirectiveIndex} from './directive_record';
 import {Locals} from './parser/locals';
-import {ChangeDetectorGenConfig} from './interfaces';
+import {ChangeDispatcher, ChangeDetectorGenConfig} from './interfaces';
 import {ChangeDetectionUtil, SimpleChange} from './change_detection_util';
 import {ChangeDetectionStrategy, ChangeDetectorState} from './constants';
 import {ProtoRecord, RecordType} from './proto_record';
@@ -19,7 +19,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   prevContexts: any[];
   directives: any = null;
 
-  constructor(id: string, dispatcher: any, numberOfPropertyProtoRecords: number,
+  constructor(id: string, dispatcher: ChangeDispatcher, numberOfPropertyProtoRecords: number,
               propertyBindingTargets: BindingTarget[], directiveIndices: DirectiveIndex[],
               strategy: ChangeDetectionStrategy, private _records: ProtoRecord[],
               private _eventBindings: EventBinding[], private _directiveRecords: DirectiveRecord[],
@@ -195,7 +195,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   }
 
   /** @internal */
-  _updateDirectiveOrElement(change, bindingRecord) {
+  private _updateDirectiveOrElement(change, bindingRecord) {
     if (isBlank(bindingRecord.directiveRecord)) {
       super.notifyDispatcher(change.currentValue);
     } else {
@@ -209,7 +209,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   }
 
   /** @internal */
-  _addChange(bindingRecord: BindingRecord, change, changes) {
+  private _addChange(bindingRecord: BindingRecord, change, changes) {
     if (bindingRecord.callOnChanges()) {
       return super.addChange(changes, change.previousValue, change.currentValue);
     } else {
@@ -218,13 +218,16 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   }
 
   /** @internal */
-  _getDirectiveFor(directiveIndex) { return this.directives.getDirectiveFor(directiveIndex); }
+  private _getDirectiveFor(directiveIndex) {
+    return this.directives.getDirectiveFor(directiveIndex);
+  }
 
   /** @internal */
-  _getDetectorFor(directiveIndex) { return this.directives.getDetectorFor(directiveIndex); }
+  private _getDetectorFor(directiveIndex) { return this.directives.getDetectorFor(directiveIndex); }
 
   /** @internal */
-  _check(proto: ProtoRecord, throwOnChange: boolean, values: any[], locals: Locals): SimpleChange {
+  private _check(proto: ProtoRecord, throwOnChange: boolean, values: any[],
+                 locals: Locals): SimpleChange {
     if (proto.isPipeRecord()) {
       return this._pipeCheck(proto, throwOnChange, values);
     } else {
@@ -233,7 +236,8 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   }
 
   /** @internal */
-  _referenceCheck(proto: ProtoRecord, throwOnChange: boolean, values: any[], locals: Locals) {
+  private _referenceCheck(proto: ProtoRecord, throwOnChange: boolean, values: any[],
+                          locals: Locals) {
     if (this._pureFuncAndArgsDidNotChange(proto)) {
       this._setChanged(proto, false);
       return null;
@@ -272,7 +276,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   }
 
   /** @internal */
-  _calculateCurrValue(proto: ProtoRecord, values: any[], locals: Locals) {
+  private _calculateCurrValue(proto: ProtoRecord, values: any[], locals: Locals) {
     switch (proto.mode) {
       case RecordType.Self:
         return this._readContext(proto, values);
@@ -340,7 +344,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   }
 
   /** @internal */
-  _pipeCheck(proto: ProtoRecord, throwOnChange: boolean, values: any[]) {
+  private _pipeCheck(proto: ProtoRecord, throwOnChange: boolean, values: any[]) {
     var context = this._readContext(proto, values);
     var selectedPipe = this._pipeFor(proto, context);
     if (!selectedPipe.pure || this._argsOrContextChanged(proto)) {
@@ -379,7 +383,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   }
 
   /** @internal */
-  _pipeFor(proto: ProtoRecord, context) {
+  private _pipeFor(proto: ProtoRecord, context) {
     var storedPipe = this._readPipe(proto);
     if (isPresent(storedPipe)) return storedPipe;
 
@@ -389,7 +393,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   }
 
   /** @internal */
-  _readContext(proto: ProtoRecord, values: any[]) {
+  private _readContext(proto: ProtoRecord, values: any[]) {
     if (proto.contextIndex == -1) {
       return this._getDirectiveFor(proto.directiveIndex);
     }
@@ -397,29 +401,29 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   }
 
   /** @internal */
-  _readSelf(proto: ProtoRecord, values: any[]) { return values[proto.selfIndex]; }
+  private _readSelf(proto: ProtoRecord, values: any[]) { return values[proto.selfIndex]; }
 
   /** @internal */
-  _writeSelf(proto: ProtoRecord, value, values: any[]) { values[proto.selfIndex] = value; }
+  private _writeSelf(proto: ProtoRecord, value, values: any[]) { values[proto.selfIndex] = value; }
 
   /** @internal */
-  _readPipe(proto: ProtoRecord) { return this.localPipes[proto.selfIndex]; }
+  private _readPipe(proto: ProtoRecord) { return this.localPipes[proto.selfIndex]; }
 
   /** @internal */
-  _writePipe(proto: ProtoRecord, value) { this.localPipes[proto.selfIndex] = value; }
+  private _writePipe(proto: ProtoRecord, value) { this.localPipes[proto.selfIndex] = value; }
 
   /** @internal */
-  _setChanged(proto: ProtoRecord, value: boolean) {
+  private _setChanged(proto: ProtoRecord, value: boolean) {
     if (proto.argumentToPureFunction) this.changes[proto.selfIndex] = value;
   }
 
   /** @internal */
-  _pureFuncAndArgsDidNotChange(proto: ProtoRecord): boolean {
+  private _pureFuncAndArgsDidNotChange(proto: ProtoRecord): boolean {
     return proto.isPureFunction() && !this._argsChanged(proto);
   }
 
   /** @internal */
-  _argsChanged(proto: ProtoRecord): boolean {
+  private _argsChanged(proto: ProtoRecord): boolean {
     var args = proto.args;
     for (var i = 0; i < args.length; ++i) {
       if (this.changes[args[i]]) {
@@ -430,12 +434,12 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   }
 
   /** @internal */
-  _argsOrContextChanged(proto: ProtoRecord): boolean {
+  private _argsOrContextChanged(proto: ProtoRecord): boolean {
     return this._argsChanged(proto) || this.changes[proto.contextIndex];
   }
 
   /** @internal */
-  _readArgs(proto: ProtoRecord, values: any[]) {
+  private _readArgs(proto: ProtoRecord, values: any[]) {
     var res = ListWrapper.createFixedSize(proto.args.length);
     var args = proto.args;
     for (var i = 0; i < args.length; ++i) {
