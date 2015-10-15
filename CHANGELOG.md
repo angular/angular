@@ -25,7 +25,7 @@
 # 2.0.0-alpha.42 (2015-10-13)
 
 This is a quick follow-up release to 41 to fix the d.ts distribution with our
-npm package. See #4706 for more info.
+npm package. See [#4706](https://github.com/angular/angular/issues/4706) for more info.
 
 ### Bug Fixes
 
