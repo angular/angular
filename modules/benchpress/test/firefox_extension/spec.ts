@@ -10,6 +10,7 @@ var assertEventsContainsName = function(events, eventName) {
       break;
     }
   }
+  console.log('events: ' + JSON.stringify(events));
   expect(found).toBeTruthy();
 };
 
