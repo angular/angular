@@ -80,9 +80,7 @@ export function createEventRecords(definition: ChangeDetectorDefinition): EventB
 }
 
 export class ProtoRecordBuilder {
-  records: ProtoRecord[];
-
-  constructor() { this.records = []; }
+  records: ProtoRecord[] = [];
 
   add(b: BindingRecord, variableNames: string[], bindingIndex: number) {
     var oldLast = ListWrapper.last(this.records);
@@ -265,8 +263,7 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
     return this._addRecord(RecordType.Chain, "chain", null, args, null, 0);
   }
 
-  /** @internal */
-  _visitAll(asts: any[]) {
+  private _visitAll(asts: any[]) {
     var res = ListWrapper.createFixedSize(asts.length);
     for (var i = 0; i < asts.length; ++i) {
       res[i] = asts[i].visit(this);
@@ -274,8 +271,10 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
     return res;
   }
 
-  /** @internal */
-  _addRecord(type, name, funcOrValue, args, fixedArgs, context) {
+  /**
+   * Adds a `ProtoRecord` and returns its selfIndex.
+   */
+  private _addRecord(type, name, funcOrValue, args, fixedArgs, context): number {
     var selfIndex = this._records.length + 1;
     if (context instanceof DirectiveIndex) {
       this._records.push(new ProtoRecord(type, name, funcOrValue, args, fixedArgs, -1, context,
