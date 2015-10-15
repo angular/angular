@@ -1,3 +1,26 @@
+<a name="2.0.0-alpha.44"></a>
+# 2.0.0-alpha.44 (2015-10-15)
+
+
+### Bug Fixes
+
+* **compiler:** attribute case in IE9 ([b89c5bc](https://github.com/angular/angular/commit/b89c5bc)), closes [#4743](https://github.com/angular/angular/issues/4743)
+* **compiler:** explicitly support event bindings also on `<template>` elements ([cec8b58](https://github.com/angular/angular/commit/cec8b58)), closes [#4712](https://github.com/angular/angular/issues/4712)
+* **dart/transform:** Handle empty .ng_deps.dart files ([5a50597](https://github.com/angular/angular/commit/5a50597))
+* **dart/transform:** Parse directives agnostic of annotation order ([efddc90](https://github.com/angular/angular/commit/efddc90))
+* **forms:** emit value changes after errors and status are set ([b716d23](https://github.com/angular/angular/commit/b716d23)), closes [#4714](https://github.com/angular/angular/issues/4714)
+* **style_compiler:** don’t resolve absolute urls that start with a `/` during compilation ([a941fb0](https://github.com/angular/angular/commit/a941fb0)), closes [#4763](https://github.com/angular/angular/issues/4763)
+* **style_compiler:** don’t touch urls in stylesheets and keep stylesheets with absolute urls in templ ([7dde18b](https://github.com/angular/angular/commit/7dde18b)), closes [#4740](https://github.com/angular/angular/issues/4740)
+* **testing:** let DOM adapter dictate XHR implementation for tests ([d7ab5d4](https://github.com/angular/angular/commit/d7ab5d4))
+* **transformers:** show nice error message when an invalid uri is found ([6436f96](https://github.com/angular/angular/commit/6436f96)), closes [#4731](https://github.com/angular/angular/issues/4731)
+
+### Features
+
+* **forms:** add input[type=number] value accessor ([65c737f](https://github.com/angular/angular/commit/65c737f)), closes [#4014](https://github.com/angular/angular/issues/4014) [#4761](https://github.com/angular/angular/issues/4761)
+* **ngUpgrade:** add support for upgrade/downgrade of injectables ([d896e43](https://github.com/angular/angular/commit/d896e43)), closes [#4766](https://github.com/angular/angular/issues/4766)
+* **ngUpgrade:** faster ng2->ng1 adapter by only compiling ng1 once ([053b7a5](https://github.com/angular/angular/commit/053b7a5))
+* **query:** add filter and reduce to QueryList ([bfbf18d](https://github.com/angular/angular/commit/bfbf18d)), closes [#4710](https://github.com/angular/angular/issues/4710)
+
 <a name="2.0.0-alpha.42"></a>
 # 2.0.0-alpha.42 (2015-10-13)
 
