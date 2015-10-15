@@ -11,7 +11,7 @@ import {
   xit,
 } from 'angular2/testing_internal';
 
-import {Component, Class, Inject, EventEmitter} from 'angular2/angular2';
+import {Component, Class, Inject, EventEmitter, ApplicationRef, provide} from 'angular2/angular2';
 import {UpgradeAdapter} from 'upgrade/upgrade';
 
 export function main() {
@@ -466,6 +466,40 @@ export function main() {
                });
          }));
 
+    });
+
+    describe('injection', () => {
+      function SomeToken() {}
+
+      it('should export ng2 instance to ng1', inject([AsyncTestCompleter], (async) => {
+           var adapter = new UpgradeAdapter();
+           var module = angular.module('myExample', []);
+           adapter.addProvider(provide(SomeToken, {useValue: 'correct_value'}));
+           module.factory('someToken', adapter.downgradeNg2Provider(SomeToken));
+           adapter.bootstrap(html('<div>'), ['myExample'])
+               .ready((ref) => {
+                 expect(ref.ng1Injector.get('someToken')).toBe('correct_value');
+                 ref.dispose();
+                 async.done();
+               });
+         }));
+
+      it('should export ng1 instance to ng2', inject([AsyncTestCompleter], (async) => {
+           var adapter = new UpgradeAdapter();
+           var module = angular.module('myExample', []);
+           module.value('testValue', 'secreteToken');
+           adapter.upgradeNg1Provider('testValue');
+           adapter.upgradeNg1Provider('testValue', {asToken: 'testToken'});
+           adapter.upgradeNg1Provider('testValue', {asToken: String});
+           adapter.bootstrap(html('<div>'), ['myExample'])
+               .ready((ref) => {
+                 expect(ref.ng2Injector.get('testValue')).toBe('secreteToken');
+                 expect(ref.ng2Injector.get(String)).toBe('secreteToken');
+                 expect(ref.ng2Injector.get('testToken')).toBe('secreteToken');
+                 ref.dispose();
+                 async.done();
+               });
+         }));
     });
 
     describe('examples', () => {
