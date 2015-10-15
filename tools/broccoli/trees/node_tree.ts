@@ -33,21 +33,20 @@ module.exports = function makeNodeTree(destinationPath) {
   });
 
   var typescriptTree = compileWithTypescript(modulesTree, {
-    allowNonTsExtensions: false,
     emitDecoratorMetadata: true,
     experimentalDecorators: true,
     declaration: true,
     stripInternal: true,
     mapRoot: '', /* force sourcemaps to use relative path */
-    module: 'CommonJS',
-    moduleResolution: 1 /* classic */,
+    module: 'commonjs',
+    moduleResolution: 'classic',
     noEmitOnError: true,
     rootDir: '.',
     rootFilePaths:
         ['angular2/manual_typings/globals.d.ts', 'angular2/typings/es6-shim/es6-shim.d.ts'],
     sourceMap: true,
     sourceRoot: '.',
-    target: 'ES5'
+    target: 'es5'
   });
 
   // Now we add the LICENSE file into all the folders that will become npm packages

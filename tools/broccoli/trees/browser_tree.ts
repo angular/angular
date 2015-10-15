@@ -112,34 +112,33 @@ module.exports = function makeBrowserTree(options, destinationPath) {
 
   // Use TypeScript to transpile the *.ts files to ES6
   var es6Tree = compileWithTypescript(modulesTree, {
-    allowNonTsExtensions: false,
     declaration: false,
     emitDecoratorMetadata: true,
+    experimentalDecorators: true,
     mapRoot: '',  // force sourcemaps to use relative path
     noEmitOnError: false,
     rootDir: '.',
     rootFilePaths: ['angular2/manual_typings/globals-es6.d.ts'],
     sourceMap: true,
     sourceRoot: '.',
-    target: 'ES6'
+    target: 'es6'
   });
 
   // Use TypeScript to transpile the *.ts files to ES5
   var typescriptOptions = {
-    allowNonTsExtensions: false,
     declaration: true,
     stripInternal: true,
     emitDecoratorMetadata: true,
     experimentalDecorators: true,
     mapRoot: '',  // force sourcemaps to use relative path
-    module: 'CommonJS',
-    moduleResolution: 1 /* classic */,
+    module: 'commonjs',
+    moduleResolution: 'classic',
     noEmitOnError: true,
     rootDir: '.',
     rootFilePaths: ['angular2/manual_typings/globals.d.ts'],
     sourceMap: true,
     sourceRoot: '.',
-    target: 'ES5'
+    target: 'es5'
   };
   var es5Tree = compileWithTypescript(es5ModulesTree, typescriptOptions);
 
