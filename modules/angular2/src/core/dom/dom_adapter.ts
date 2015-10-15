@@ -1,4 +1,4 @@
-import {isBlank} from 'angular2/src/core/facade/lang';
+import {isBlank, Type} from 'angular2/src/core/facade/lang';
 
 export var DOM: DomAdapter;
 
@@ -22,6 +22,8 @@ export abstract class DomAdapter {
   abstract log(error);
   abstract logGroup(error);
   abstract logGroupEnd();
+
+  abstract getXHR(): Type;
 
   /**
    * Maps attribute names to their corresponding property names for cases

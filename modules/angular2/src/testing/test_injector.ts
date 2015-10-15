@@ -115,7 +115,7 @@ function _getAppBindings() {
     PipeResolver,
     provide(ExceptionHandler, {useValue: new ExceptionHandler(DOM)}),
     provide(LocationStrategy, {useClass: MockLocationStrategy}),
-    XHR,
+    provide(XHR, {useClass: DOM.getXHR()}),
     TestComponentBuilder,
     provide(NgZone, {useClass: MockNgZone}),
     provide(AnimationBuilder, {useClass: MockAnimationBuilder}),
