@@ -1,5 +1,5 @@
 {
-  "name": "angular",
+  "name": "angular-srcs",
   "version": "2.0.0-alpha.42",
   "branchPattern": "2.0.*",
   "description": "Angular 2 - a web framework for modern web apps",

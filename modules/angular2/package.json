@@ -13,13 +13,5 @@
     "zone.js": "<%= packageJson.dependencies['zone.js'] %>"
   },
   "devDependencies": <%= JSON.stringify(packageJson.defaultDevDependencies) %>,
-  "typings": "./angular2.d.ts",
-  "typescript": {
-    "definitions": [
-      "bundles/typings/angular2/angular2.d.ts",
-      "bundles/typings/angular2/http.d.ts",
-      "bundles/typings/angular2/router.d.ts",
-      "bundles/typings/angular2/testing.d.ts"
-    ]
-  }
+  "typings": "./angular2.d.ts"
 }
