@@ -15,7 +15,7 @@ export class StyleWithImports {
 }
 
 export function isStyleUrlResolvable(url: string): boolean {
-  if (isBlank(url) || url.length === 0) return false;
+  if (isBlank(url) || url.length === 0 || url[0] == '/') return false;
   var schemeMatch = RegExpWrapper.firstMatch(_urlWithSchemaRe, url);
   return isBlank(schemeMatch) || schemeMatch[1] == 'package';
 }
@@ -42,4 +42,4 @@ export function extractStyleUrls(resolver: UrlResolver, baseUrl: string, cssText
 var _cssImportRe = /@import\s+(?:url\()?\s*(?:(?:['"]([^'"]*))|([^;\)\s]*))[^;]*;?/g;
 // TODO: can't use /^[^:/?#.]+:/g due to clang-format bug:
 //       https://github.com/angular/angular/issues/4596
-var _urlWithSchemaRe = /^['"]?([a-zA-Z\-\+\.]+):/g;
+var _urlWithSchemaRe = /^([a-zA-Z\-\+\.]+):/g;
