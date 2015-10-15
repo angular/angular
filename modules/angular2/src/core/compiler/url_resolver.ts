@@ -3,6 +3,11 @@ import {isPresent, isBlank, RegExpWrapper, normalizeBlank} from 'angular2/src/co
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 
+export function createWithoutPackagePrefix(): UrlResolver {
+  return new UrlResolver();
+}
+
+
 /**
  * Used by the {@link Compiler} when resolving HTML and CSS template URLs.
  *
