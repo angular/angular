@@ -11,11 +11,13 @@ import {
   isPresent,
   isBlank,
   global,
+  Type,
   setValueOnPath,
   DateWrapper
 } from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {SelectorMatcher, CssSelector} from 'angular2/src/core/compiler/selector';
+import {XHR} from 'angular2/src/core/compiler/xhr';
 
 var _attrToPropMap: {[key: string]: string} = {
   'class': 'className',
@@ -60,6 +62,8 @@ export class Parse5DomAdapter extends DomAdapter {
   logGroup(error) { console.error(error); }
 
   logGroupEnd() {}
+
+  getXHR(): Type { return XHR; }
 
   get attrToPropMap() { return _attrToPropMap; }
 
