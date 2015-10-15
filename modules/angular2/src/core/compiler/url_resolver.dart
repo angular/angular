@@ -1,6 +1,10 @@
 library angular2.src.services.url_resolver;
 
-import 'package:angular2/src/core/di.dart' show Injectable;
+import 'package:angular2/src/core/di.dart' show Injectable, Provider;
+
+UrlResolver createWithoutPackagePrefix() {
+  return new UrlResolver.withUrlPrefix(null);
+}
 
 @Injectable()
 class UrlResolver {
@@ -28,14 +32,15 @@ class UrlResolver {
    */
   String resolve(String baseUrl, String url) {
     Uri uri = Uri.parse(url);
-
-    if (uri.scheme == 'package') {
-      return '$_packagePrefix/${uri.path}';
+    if (!uri.isAbsolute) {
+      Uri baseUri = Uri.parse(baseUrl);
+      uri = baseUri.resolveUri(uri);
     }
 
-    if (uri.isAbsolute) return uri.toString();
-
-    Uri baseUri = Uri.parse(baseUrl);
-    return baseUri.resolveUri(uri).toString();
+    if (_packagePrefix != null && uri.scheme == 'package') {
+      return '$_packagePrefix/${uri.path}';
+    } else {
+      return uri.toString();
+    }
   }
 }
