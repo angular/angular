@@ -274,6 +274,28 @@ export function main() {
            });
          }));
 
+      it("should support <type=number>",
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var t = `<div [ng-form-model]="form">
+                  <input type="number" ng-control="num">
+                </div>`;
+
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+             rootTC.debugElement.componentInstance.form =
+                 new ControlGroup({"num": new Control(10)});
+             rootTC.detectChanges();
+
+             var input = rootTC.debugElement.query(By.css("input"));
+             expect(input.nativeElement.value).toEqual("10");
+
+             input.nativeElement.value = "20";
+             dispatchEvent(input.nativeElement, "change");
+
+             expect(rootTC.debugElement.componentInstance.form.value).toEqual({"num": 20});
+             async.done();
+           });
+         }));
+
       it("should support <select>",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var t = `<div [ng-form-model]="form">

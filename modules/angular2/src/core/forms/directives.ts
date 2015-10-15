@@ -7,6 +7,7 @@ import {NgFormModel} from './directives/ng_form_model';
 import {NgForm} from './directives/ng_form';
 import {DefaultValueAccessor} from './directives/default_value_accessor';
 import {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor';
+import {NumberValueAccessor} from './directives/number_value_accessor';
 import {NgControlStatus} from './directives/ng_control_status';
 import {
   SelectControlValueAccessor,
@@ -58,6 +59,7 @@ export const FORM_DIRECTIVES: Type[] = CONST_EXPR([
 
   NgSelectOption,
   DefaultValueAccessor,
+  NumberValueAccessor,
   CheckboxControlValueAccessor,
   SelectControlValueAccessor,
   NgControlStatus,
