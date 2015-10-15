@@ -23,7 +23,7 @@ export const CONTEXT_ACCESSOR = "context";
 export const CONTEXT_INDEX = 0;
 const _FIELD_PREFIX = 'this.';
 
-var _whiteSpaceRegExp = RegExpWrapper.create("\\W", "g");
+var _whiteSpaceRegExp = /\W/g;
 
 /**
  * Returns `s` with all non-identifier characters removed.
