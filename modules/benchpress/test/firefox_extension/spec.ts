@@ -25,7 +25,9 @@ describe('firefox extension', function() {
     browser.executeScript('window.startProfiler()')
         .then(function() { console.log('started measuring perf'); });
 
-    browser.executeScript('window.forceGC()');
+    browser.executeScript('return document.querySelector("hello-app").' + 
+        'querySelector(".greeting").click()'); // causes render to happen
+    browser.executeScript('window.forceGC()'); // causes gc to happen
 
     browser.executeAsyncScript('var cb = arguments[0]; window.getProfile(cb);')
         .then(function(profile) {
