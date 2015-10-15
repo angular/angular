@@ -164,5 +164,11 @@ export function main() {
         expect(css).toEqual(styleStr);
       });
     }
+
+    it('should leave calc() unchanged', () => {
+      var styleStr = 'a {height:calc(100% - 55px);}';
+      var css = s(styleStr, 'a');
+      expect(css).toEqual(styleStr);
+    });
   });
 }
