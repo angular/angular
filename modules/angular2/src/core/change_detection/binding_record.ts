@@ -47,7 +47,6 @@ export class BindingRecord {
     return isBlank(this.directiveRecord) || this.directiveRecord.isDefaultChangeDetection();
   }
 
-
   static createDirectiveDoCheck(directiveRecord: DirectiveRecord): BindingRecord {
     return new BindingRecord(DIRECTIVE_LIFECYCLE, null, 0, null, null, "DoCheck", directiveRecord);
   }

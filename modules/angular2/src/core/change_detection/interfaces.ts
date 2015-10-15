@@ -22,10 +22,10 @@ export interface ChangeDetector {
   mode: ChangeDetectionStrategy;
   ref: ChangeDetectorRef;
 
-  addChild(cd: ChangeDetector): void;
-  addShadowDomChild(cd: ChangeDetector): void;
-  removeChild(cd: ChangeDetector): void;
-  removeShadowDomChild(cd: ChangeDetector): void;
+  addContentChild(cd: ChangeDetector): void;
+  addViewChild(cd: ChangeDetector): void;
+  removeContentChild(cd: ChangeDetector): void;
+  removeViewChild(cd: ChangeDetector): void;
   remove(): void;
   hydrate(context: any, locals: Locals, directives: any, pipes: any): void;
   dehydrate(): void;

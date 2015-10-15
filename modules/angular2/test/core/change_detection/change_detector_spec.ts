@@ -634,7 +634,7 @@ export function main() {
               it('should be called before processing view children', () => {
                 var parent = _createWithoutHydrate('directNoDispatcher').changeDetector;
                 var child = _createWithoutHydrate('directNoDispatcher').changeDetector;
-                parent.addShadowDomChild(child);
+                parent.addViewChild(child);
 
                 var orderOfOperations = [];
 
@@ -753,7 +753,7 @@ export function main() {
               it('should be called after processing view children', () => {
                 var parent = _createWithoutHydrate('directNoDispatcher').changeDetector;
                 var child = _createWithoutHydrate('directNoDispatcher').changeDetector;
-                parent.addShadowDomChild(child);
+                parent.addViewChild(child);
 
                 var orderOfOperations = [];
 
@@ -902,32 +902,32 @@ export function main() {
           child = _createChangeDetector('"str"').changeDetector;
         });
 
-        it('should add light dom children', () => {
-          parent.addChild(child);
+        it('should add content children', () => {
+          parent.addContentChild(child);
 
-          expect(parent.lightDomChildren.length).toEqual(1);
-          expect(parent.lightDomChildren[0]).toBe(child);
+          expect(parent.contentChildren.length).toEqual(1);
+          expect(parent.contentChildren[0]).toBe(child);
         });
 
-        it('should add shadow dom children', () => {
-          parent.addShadowDomChild(child);
+        it('should add view children', () => {
+          parent.addViewChild(child);
 
-          expect(parent.shadowDomChildren.length).toEqual(1);
-          expect(parent.shadowDomChildren[0]).toBe(child);
+          expect(parent.viewChildren.length).toEqual(1);
+          expect(parent.viewChildren[0]).toBe(child);
         });
 
-        it('should remove light dom children', () => {
-          parent.addChild(child);
-          parent.removeChild(child);
+        it('should remove content children', () => {
+          parent.addContentChild(child);
+          parent.removeContentChild(child);
 
-          expect(parent.lightDomChildren).toEqual([]);
+          expect(parent.contentChildren).toEqual([]);
         });
 
-        it('should remove shadow dom children', () => {
-          parent.addShadowDomChild(child);
-          parent.removeShadowDomChild(child);
+        it('should remove view children', () => {
+          parent.addViewChild(child);
+          parent.removeViewChild(child);
 
-          expect(parent.shadowDomChildren.length).toEqual(0);
+          expect(parent.viewChildren.length).toEqual(0);
         });
       });
 
@@ -1142,7 +1142,7 @@ export function main() {
         function changeDetector(mode, parent) {
           var val = _createChangeDetector('10');
           val.changeDetector.mode = mode;
-          if (isPresent(parent)) parent.addChild(val.changeDetector);
+          if (isPresent(parent)) parent.addContentChild(val.changeDetector);
           return val.changeDetector;
         }
 
