@@ -7,6 +7,6 @@
  *
  */
 export * from './src/testing/testing';
-export * from './src/testing/test_component_builder';
+export {RootTestComponent, TestComponentBuilder} from './src/testing/test_component_builder';
 export * from './src/testing/test_injector';
 export * from './src/testing/fake_async';
