@@ -9,11 +9,11 @@ import {
   afterEach,
   el
 } from 'angular2/testing_internal';
-import {ControlGroup, Control, Validators} from 'angular2/core';
+import {ControlGroup, Control, Validators, AbstractControl, ControlArray} from 'angular2/core';
 
 export function main() {
   function validator(key: string, error: any) {
-    return function(c: Control) {
+    return function(c: AbstractControl) {
       var r = {};
       r[key] = error;
       return r;
@@ -87,10 +87,10 @@ export function main() {
     describe("controlGroupValidator", () => {
       it("should collect errors from the child controls", () => {
         var one = new Control("one", validator("a", true));
-        var two = new Control("one", validator("b", true));
+        var two = new Control("two", validator("b", true));
         var g = new ControlGroup({"one": one, "two": two});
 
-        expect(Validators.group(g)).toEqual({"a": [one], "b": [two]});
+        expect(Validators.group(g)).toEqual({"controls": {"a": [one], "b": [two]}});
       });
 
       it("should not include controls that have no errors", () => {
@@ -98,13 +98,53 @@ export function main() {
         var two = new Control("two");
         var g = new ControlGroup({"one": one, "two": two});
 
-        expect(Validators.group(g)).toEqual({"a": [one]});
+        expect(Validators.group(g)).toEqual({"controls": {"a": [one]}});
       });
 
       it("should return null when no errors", () => {
         var g = new ControlGroup({"one": new Control("one")});
 
         expect(Validators.group(g)).toEqual(null);
+      });
+
+      it("should return control errors mixed with group errors", () => {
+        var one = new Control("one", validator("a", true));
+        var g = new ControlGroup({"one": one}, null,
+                                 Validators.compose([validator("b", true), Validators.group]));
+
+        expect(g.validator(g)).toEqual({"controls": {"a": [one]}, "b": true});
+      });
+    });
+
+    describe("controlArrayValidator", () => {
+      it("should collect errors from the child controls", () => {
+        var one = new Control("one", validator("a", true));
+        var two = new Control("two", validator("b", true));
+        var a = new ControlArray([one, two]);
+
+        expect(Validators.array(a)).toEqual({"controls": {"a": [one], "b": [two]}});
+      });
+
+      it("should not include controls that have no errors", () => {
+        var one = new Control("one", validator("a", true));
+        var two = new Control("two");
+        var a = new ControlArray([one, two]);
+
+        expect(Validators.array(a)).toEqual({"controls": {"a": [one]}});
+      });
+
+      it("should return null when no errors", () => {
+        var a = new ControlArray([new Control("one")]);
+
+        expect(Validators.array(a)).toEqual(null);
+      });
+
+      it("should return control errors mixed with group errors", () => {
+        var one = new Control("one", validator("a", true));
+        var a =
+            new ControlArray([one], Validators.compose([validator("b", true), Validators.array]));
+
+        expect(a.validator(a)).toEqual({"controls": {"a": [one]}, "b": true});
       });
     });
   });
