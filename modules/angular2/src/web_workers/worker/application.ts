@@ -33,7 +33,6 @@ export function bootstrapWebWorker(
   Parse5DomAdapter.makeCurrent();
   var sink = new PostMessageBusSink({
     postMessage: (message: any, transferrables?:[ArrayBuffer]) => {
-      console.log("Sending", message);
       _postMessage(message, transferrables);
     }
   });

@@ -10,7 +10,6 @@ System.config({
 System.import("examples/src/web_workers/images/background_index")
     .then(
         function(m) {
-          console.log("running main");
           try {
             m.main();
           } catch (e) {
