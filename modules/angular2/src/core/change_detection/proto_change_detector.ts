@@ -226,9 +226,28 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
 
   visitBinary(ast: Binary): number {
     var left = ast.left.visit(this);
-    var right = ast.right.visit(this);
-    return this._addRecord(RecordType.PrimitiveOp, _operationToPrimitiveName(ast.operation),
-                           _operationToFunction(ast.operation), [left, right], null, 0);
+    switch (ast.operation) {
+      case '&&':
+        var branchEnd = [null];
+        this._addRecord(RecordType.SkipRecordsIfNot, "SkipRecordsIfNot", null, [], branchEnd, left);
+        var right = ast.right.visit(this);
+        branchEnd[0] = right;
+        return this._addRecord(RecordType.PrimitiveOp, "cond", ChangeDetectionUtil.cond,
+                               [left, right, left], null, 0);
+
+      case '||':
+        var branchEnd = [null];
+        this._addRecord(RecordType.SkipRecordsIf, "SkipRecordsIf", null, [], branchEnd, left);
+        var right = ast.right.visit(this);
+        branchEnd[0] = right;
+        return this._addRecord(RecordType.PrimitiveOp, "cond", ChangeDetectionUtil.cond,
+                               [left, left, right], null, 0);
+
+      default:
+        var right = ast.right.visit(this);
+        return this._addRecord(RecordType.PrimitiveOp, _operationToPrimitiveName(ast.operation),
+                               _operationToFunction(ast.operation), [left, right], null, 0);
+    }
   }
 
   visitPrefixNot(ast: PrefixNot): number {
@@ -238,11 +257,20 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
   }
 
   visitConditional(ast: Conditional): number {
-    var c = ast.condition.visit(this);
-    var t = ast.trueExp.visit(this);
-    var f = ast.falseExp.visit(this);
-    return this._addRecord(RecordType.PrimitiveOp, "cond", ChangeDetectionUtil.cond, [c, t, f],
-                           null, 0);
+    var condition = ast.condition.visit(this);
+    var startOfFalseBranch = [null];
+    var endOfFalseBranch = [null];
+    this._addRecord(RecordType.SkipRecordsIfNot, "SkipRecordsIfNot", null, [], startOfFalseBranch,
+                    condition);
+    var whenTrue = ast.trueExp.visit(this);
+    var skip =
+        this._addRecord(RecordType.SkipRecords, "SkipRecords", null, [], endOfFalseBranch, 0);
+    var whenFalse = ast.falseExp.visit(this);
+    startOfFalseBranch[0] = skip;
+    endOfFalseBranch[0] = whenFalse;
+
+    return this._addRecord(RecordType.PrimitiveOp, "cond", ChangeDetectionUtil.cond,
+                           [condition, whenTrue, whenFalse], null, 0);
   }
 
   visitPipe(ast: BindingPipe): number {
@@ -350,10 +378,6 @@ function _operationToPrimitiveName(operation: string): string {
       return "operation_less_or_equals_then";
     case '>=':
       return "operation_greater_or_equals_then";
-    case '&&':
-      return "operation_logical_and";
-    case '||':
-      return "operation_logical_or";
     default:
       throw new BaseException(`Unsupported operation ${operation}`);
   }
@@ -387,10 +411,6 @@ function _operationToFunction(operation: string): Function {
       return ChangeDetectionUtil.operation_less_or_equals_then;
     case '>=':
       return ChangeDetectionUtil.operation_greater_or_equals_then;
-    case '&&':
-      return ChangeDetectionUtil.operation_logical_and;
-    case '||':
-      return ChangeDetectionUtil.operation_logical_or;
     default:
       throw new BaseException(`Unsupported operation ${operation}`);
   }

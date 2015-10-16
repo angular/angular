@@ -54,15 +54,38 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     var values = ListWrapper.createFixedSize(eb.records.length);
     values[0] = this.values[0];
 
-    for (var i = 0; i < eb.records.length; ++i) {
-      var proto = eb.records[i];
-      var res = this._calculateCurrValue(proto, values, locals);
-      if (proto.lastInBinding) {
-        this._markPathAsCheckOnce(proto);
-        return res;
+    for (var protoIdx = 0; protoIdx < eb.records.length; ++protoIdx) {
+      var proto = eb.records[protoIdx];
+
+      if (proto.isSkipRecord()) {
+        protoIdx += this._computeSkipLength(protoIdx, proto, values);
       } else {
-        this._writeSelf(proto, res, values);
+        var res = this._calculateCurrValue(proto, values, locals);
+        if (proto.lastInBinding) {
+          this._markPathAsCheckOnce(proto);
+          return res;
+        } else {
+          this._writeSelf(proto, res, values);
+        }
       }
+    }
+
+    throw new BaseException("Cannot be reached");
+  }
+
+  private _computeSkipLength(protoIndex: number, proto: ProtoRecord, values: any[]): number {
+    if (proto.mode === RecordType.SkipRecords) {
+      return proto.fixedArgs[0] - protoIndex - 1;
+    }
+
+    if (proto.mode === RecordType.SkipRecordsIf) {
+      let condition = this._readContext(proto, values);
+      return condition ? proto.fixedArgs[0] - protoIndex - 1 : 0;
+    }
+
+    if (proto.mode === RecordType.SkipRecordsIfNot) {
+      let condition = this._readContext(proto, values);
+      return condition ? 0 : proto.fixedArgs[0] - protoIndex - 1;
     }
 
     throw new BaseException("Cannot be reached");
@@ -122,8 +145,8 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
 
     var changes = null;
     var isChanged = false;
-    for (var i = 0; i < protos.length; ++i) {
-      var proto: ProtoRecord = protos[i];
+    for (var protoIdx = 0; protoIdx < protos.length; ++protoIdx) {
+      var proto: ProtoRecord = protos[protoIdx];
       var bindingRecord = proto.bindingRecord;
       var directiveRecord = bindingRecord.directiveRecord;
 
@@ -140,7 +163,8 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
         } else if (proto.name === "OnChanges" && isPresent(changes) && !throwOnChange) {
           this._getDirectiveFor(directiveRecord.directiveIndex).onChanges(changes);
         }
-
+      } else if (proto.isSkipRecord()) {
+        protoIdx += this._computeSkipLength(protoIdx, proto, this.values);
       } else {
         var change = this._check(proto, throwOnChange, this.values, this.locals);
         if (isPresent(change)) {

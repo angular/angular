@@ -31,6 +31,7 @@ const CHANGES_LOCAL = "changes";
 export class ChangeDetectorJITGenerator {
   private _logic: CodegenLogicUtil;
   private _names: CodegenNameUtil;
+  private _endOfBlockIdxs: number[];
   private id: string;
   private changeDetectionStrategy: ChangeDetectionStrategy;
   private records: ProtoRecord[];
@@ -91,7 +92,7 @@ export class ChangeDetectorJITGenerator {
         var ${IS_CHANGED_LOCAL} = false;
         var ${CHANGES_LOCAL} = null;
 
-        ${this.records.map((r) => this._genRecord(r)).join("\n")}
+        ${this._genAllRecords(this.records)}
       }
 
       ${this._maybeGenHandleEventInternal()}
@@ -144,10 +145,28 @@ export class ChangeDetectorJITGenerator {
 
   /** @internal */
   _genEventBinding(eb: EventBinding): string {
-    var recs = eb.records.map(r => this._genEventBindingEval(eb, r)).join("\n");
+    let codes: String[] = [];
+    this._endOfBlockIdxs = [];
+
+    ListWrapper.forEachWithIndex(eb.records, (r, i) => {
+      let code;
+
+      if (r.isConditionalSkipRecord()) {
+        code = this._genConditionalSkip(r, this._names.getEventLocalName(eb, i));
+      } else if (r.isUnconditionalSkipRecord()) {
+        code = this._genUnconditionalSkip(r);
+      } else {
+        code = this._genEventBindingEval(eb, r);
+      }
+
+      code += this._genEndOfSkipBlock(i);
+
+      codes.push(code);
+    });
+
     return `
     if (eventName === "${eb.eventName}" && elIndex === ${eb.elIndex}) {
-      ${recs}
+      ${codes.join("\n")}
     }`;
   }
 
@@ -235,20 +254,65 @@ export class ChangeDetectorJITGenerator {
   }
 
   /** @internal */
-  _genRecord(r: ProtoRecord): string {
-    var rec;
-    if (r.isLifeCycleRecord()) {
-      rec = this._genDirectiveLifecycle(r);
-    } else if (r.isPipeRecord()) {
-      rec = this._genPipeCheck(r);
-    } else {
-      rec = this._genReferenceCheck(r);
+  _genAllRecords(rs: ProtoRecord[]): string {
+    var codes: String[] = [];
+    this._endOfBlockIdxs = [];
+
+    for (let i = 0; i < rs.length; i++) {
+      let code;
+      let r = rs[i];
+
+      if (r.isLifeCycleRecord()) {
+        code = this._genDirectiveLifecycle(r);
+      } else if (r.isPipeRecord()) {
+        code = this._genPipeCheck(r);
+      } else if (r.isConditionalSkipRecord()) {
+        code = this._genConditionalSkip(r, this._names.getLocalName(r.contextIndex));
+      } else if (r.isUnconditionalSkipRecord()) {
+        code = this._genUnconditionalSkip(r);
+      } else {
+        code = this._genReferenceCheck(r);
+      }
+
+      code = `
+        ${this._maybeFirstInBinding(r)}
+        ${code}
+        ${this._maybeGenLastInDirective(r)}
+        ${this._genEndOfSkipBlock(i)}
+      `;
+
+      codes.push(code);
     }
-    return `
-      ${this._maybeFirstInBinding(r)}
-      ${rec}
-      ${this._maybeGenLastInDirective(r)}
-    `;
+
+    return codes.join("\n");
+  }
+
+  /** @internal */
+  _genConditionalSkip(r: ProtoRecord, condition: string): string {
+    let maybeNegate = r.mode === RecordType.SkipRecordsIf ? '!' : '';
+    this._endOfBlockIdxs.push(r.fixedArgs[0] - 1);
+
+    return `if (${maybeNegate}${condition}) {`;
+  }
+
+  /** @internal */
+  _genUnconditionalSkip(r: ProtoRecord): string {
+    this._endOfBlockIdxs.pop();
+    this._endOfBlockIdxs.push(r.fixedArgs[0] - 1);
+    return `} else {`;
+  }
+
+  /** @internal */
+  _genEndOfSkipBlock(protoIndex: number): string {
+    if (!ListWrapper.isEmpty(this._endOfBlockIdxs)) {
+      let endOfBlock = ListWrapper.last(this._endOfBlockIdxs);
+      if (protoIndex === endOfBlock) {
+        this._endOfBlockIdxs.pop();
+        return '}';
+      }
+    }
+
+    return '';
   }
 
   /** @internal */
@@ -401,8 +465,8 @@ export class ChangeDetectorJITGenerator {
   /** @internal */
   _maybeFirstInBinding(r: ProtoRecord): string {
     var prev = ChangeDetectionUtil.protoByIndex(this.records, r.selfIndex - 1);
-    var firstInBindng = isBlank(prev) || prev.bindingRecord !== r.bindingRecord;
-    return firstInBindng && !r.bindingRecord.isDirectiveLifecycle() ?
+    var firstInBinding = isBlank(prev) || prev.bindingRecord !== r.bindingRecord;
+    return firstInBinding && !r.bindingRecord.isDirectiveLifecycle() ?
                `${this._names.getPropertyBindingIndex()} = ${r.propertyBindingIndex};` :
                '';
   }
