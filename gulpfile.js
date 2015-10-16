@@ -489,7 +489,7 @@ gulp.task('test.unit.js', ['build.js.dev'], function (done) {
   runSequence(
     '!test.unit.js/karma-server',
     function() {
-      watch('modules/**', [
+      watch('modules/**', { ignoreInitial: true }, [
         '!broccoli.js.dev',
         '!test.unit.js/karma-run'
       ]);
@@ -517,8 +517,16 @@ gulp.task('test.unit.js.sauce', ['build.js.dev'], function (done) {
   }
 });
 
-gulp.task('!test.unit.js/karma-server', function() {
-  new karma.Server({configFile: __dirname + '/karma-js.conf.js', reporters: 'dots'}).start();
+gulp.task('!test.unit.js/karma-server', function(done) {
+  var watchStarted = false;
+  var server = new karma.Server({configFile: __dirname + '/karma-js.conf.js', reporters: 'dots'});
+  server.on('run_complete', function () {
+    if (!watchStarted) {
+      watchStarted = true;
+      done();
+    }
+  });
+  server.start();
 });
 
 
