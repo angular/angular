@@ -18,7 +18,10 @@ export enum RecordType {
   CollectionLiteral,
   SafeMethodInvoke,
   DirectiveLifecycle,
-  Chain
+  Chain,
+  SkipRecordsIf,     // Skip records when the condition is true
+  SkipRecordsIfNot,  // Skip records when the condition is false
+  SkipRecords        // Skip records unconditionally
 }
 
 export class ProtoRecord {
@@ -41,6 +44,16 @@ export class ProtoRecord {
   }
 
   isPipeRecord(): boolean { return this.mode === RecordType.Pipe; }
+
+  isConditionalSkipRecord(): boolean {
+    return this.mode === RecordType.SkipRecordsIfNot || this.mode === RecordType.SkipRecordsIf;
+  }
+
+  isUnconditionalSkipRecord(): boolean { return this.mode === RecordType.SkipRecords; }
+
+  isSkipRecord(): boolean {
+    return this.isConditionalSkipRecord() || this.isUnconditionalSkipRecord();
+  }
 
   isLifeCycleRecord(): boolean { return this.mode === RecordType.DirectiveLifecycle; }
 }

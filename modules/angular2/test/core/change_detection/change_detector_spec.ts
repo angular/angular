@@ -111,6 +111,54 @@ export function main() {
         return val.dispatcher.log;
       }
 
+      describe('short-circuit', () => {
+        it('should support short-circuit for the ternary operator', () => {
+          var address = new Address('Sunnyvale', '94085');
+          expect(_bindSimpleValue('true ? city : zipcode', address))
+              .toEqual(['propName=Sunnyvale']);
+          expect(address.cityGetterCalls).toEqual(1);
+          expect(address.zipCodeGetterCalls).toEqual(0);
+
+          address = new Address('Sunnyvale', '94085');
+          expect(_bindSimpleValue('false ? city : zipcode', address)).toEqual(['propName=94085']);
+          expect(address.cityGetterCalls).toEqual(0);
+          expect(address.zipCodeGetterCalls).toEqual(1);
+        });
+
+        it('should support short-circuit for the && operator', () => {
+          var logical = new Logical();
+          expect(_bindSimpleValue('getTrue() && getTrue()', logical)).toEqual(['propName=true']);
+          expect(logical.trueCalls).toEqual(2);
+
+          logical = new Logical();
+          expect(_bindSimpleValue('getFalse() && getTrue()', logical)).toEqual(['propName=false']);
+          expect(logical.falseCalls).toEqual(1);
+          expect(logical.trueCalls).toEqual(0);
+        });
+
+        it('should support short-circuit for the || operator', () => {
+          var logical = new Logical();
+          expect(_bindSimpleValue('getFalse() || getFalse()', logical)).toEqual(['propName=false']);
+          expect(logical.falseCalls).toEqual(2);
+
+          logical = new Logical();
+          expect(_bindSimpleValue('getTrue() || getFalse()', logical)).toEqual(['propName=true']);
+          expect(logical.falseCalls).toEqual(0);
+          expect(logical.trueCalls).toEqual(1);
+        });
+
+        it('should support nested short-circuits', () => {
+          var address = new Address('Sunnyvale', '94085');
+          var person = new Person('Victor', address);
+          expect(_bindSimpleValue(
+                     'name == "Victor" ? (true ? address.city : address.zipcode) : address.zipcode',
+                     person))
+              .toEqual(['propName=Sunnyvale']);
+          expect(address.cityGetterCalls).toEqual(1);
+          expect(address.zipCodeGetterCalls).toEqual(0);
+        });
+      });
+
       it('should support literals',
          () => { expect(_bindSimpleValue('10')).toEqual(['propName=10']); });
 
@@ -1299,6 +1347,13 @@ export function main() {
           res = val.changeDetector.handleEvent("event", 0, locals);
           expect(res).toBe(false);
         });
+
+        it('should support short-circuiting', () => {
+          d.a = 0;
+          var val = _createChangeDetector('(event)="true ? a = a + 1 : a = a + 1"', d, null);
+          val.changeDetector.handleEvent("event", 0, locals);
+          expect(d.a).toEqual(1);
+        });
       });
     });
   });
@@ -1417,9 +1472,41 @@ class Person {
 }
 
 class Address {
-  constructor(public city: string) {}
+  cityGetterCalls: number = 0;
+  zipCodeGetterCalls: number = 0;
+
+  constructor(public _city: string, public _zipcode = null) {}
+
+  get city() {
+    this.cityGetterCalls++;
+    return this._city;
+  }
+
+  get zipcode() {
+    this.zipCodeGetterCalls++;
+    return this._zipcode;
+  }
+
+  set city(v) { this._city = v; }
+
+  set zipcode(v) { this._zipcode = v; }
 
   toString(): string { return isBlank(this.city) ? '-' : this.city }
+}
+
+class Logical {
+  trueCalls: number = 0;
+  falseCalls: number = 0;
+
+  getTrue() {
+    this.trueCalls++;
+    return true;
+  }
+
+  getFalse() {
+    this.falseCalls++;
+    return false;
+  }
 }
 
 class Uninitialized {
