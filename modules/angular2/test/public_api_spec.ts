@@ -1321,6 +1321,8 @@ var NG_API = [
    Abstract method
    'ViewRef.setLocal()',
   */
+  'ViewResolver',
+  'ViewResolver.resolve()',
   'WrappedException',
   'WrappedException.context',
   'WrappedException.message',
