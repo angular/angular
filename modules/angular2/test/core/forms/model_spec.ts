@@ -479,6 +479,24 @@ export function main() {
         });
       });
 
+      describe("pending", () => {
+        var c: Control;
+        var a: ControlArray;
+
+        beforeEach(() => {
+          c = new Control('value');
+          a = new ControlArray([c]);
+        });
+
+        it("should be false after creating a control", () => { expect(a.pending).toEqual(false); });
+
+        it("should be false after changing the value of the control", () => {
+          c.markAsPending();
+
+          expect(a.pending).toEqual(true);
+        });
+      });
+
       describe("valueChanges", () => {
         var a: ControlArray;
         var c1, c2;
