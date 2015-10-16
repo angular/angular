@@ -1,5 +1,5 @@
 import {Component, View, NgFor} from 'angular2/angular2';
-import {Http} from 'angular2/http';
+import {Http, Response} from 'angular2/http';
 
 @Component({selector: 'http-app'})
 @View({
@@ -14,8 +14,10 @@ import {Http} from 'angular2/http';
   `
 })
 export class HttpCmp {
-  people: Object;
+  people: Array<Object>;
   constructor(http: Http) {
-    http.get('./people.json').map(res => res.json()).subscribe(res => this.people = res);
+    http.get('./people.json')
+      .map((res: Response) => res.json())
+      .subscribe((people: Array<Object>) => this.people = people);
   }
 }
