@@ -1,11 +1,11 @@
 {
-  "name": "angular",
-  "version": "2.0.0-alpha.42",
+  "name": "angular-srcs",
+  "version": "2.0.0-alpha.44",
   "dependencies": {
     "@reactivex/rxjs": {
-      "version": "5.0.0-alpha.4",
-      "from": "@reactivex/rxjs@5.0.0-alpha.4",
-      "resolved": "https://registry.npmjs.org/@reactivex/rxjs/-/rxjs-5.0.0-alpha.4.tgz"
+      "version": "5.0.0-alpha.6",
+      "from": "@reactivex/rxjs@5.0.0-alpha.6",
+      "resolved": "https://registry.npmjs.org/@reactivex/rxjs/-/rxjs-5.0.0-alpha.6.tgz"
     },
     "angular": {
       "version": "1.3.5",

@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "@reactivex/rxjs": {
-      "version": "5.0.0-alpha.4"
+      "version": "5.0.0-alpha.6"
     },
     "angular": {
       "version": "1.3.5"
@@ -11875,6 +11875,6 @@
       }
     }
   },
-  "name": "angular",
-  "version": "2.0.0-alpha.42"
+  "name": "angular-srcs",
+  "version": "2.0.0-alpha.44"
 }
