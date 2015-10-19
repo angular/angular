@@ -41,7 +41,7 @@ export interface PipeTransform { transform(value: any, args: any[]): any; }
  * be disposed, or an interval may need to be cleared.
  *
  * ### Example ([live demo](http://plnkr.co/edit/hlaejwQAmWayxwc5YXQE?p=preview))
- *
+ *  //TODO FIX the plnkr. Currenty it is the 'Hello world' app.
  * In this example, a pipe is created to countdown its input value, updating it every
  * 50ms. Because it maintains an internal interval, it automatically clears
  * the interval when the binding is destroyed or the countdown completes.
