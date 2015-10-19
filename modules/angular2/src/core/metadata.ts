@@ -107,7 +107,7 @@ export interface ViewDecorator extends TypeDecorator {
 /**
  * {@link DirectiveMetadata} factory for creating annotations, decorators or DSL.
  *
- * ## Example as TypeScript Decorator
+ * ### Example as TypeScript Decorator
  *
  * ```
  * import {Directive} from "angular2/angular2";
@@ -120,7 +120,7 @@ export interface ViewDecorator extends TypeDecorator {
  * }
  * ```
  *
- * ## Example as ES5 DSL
+ * ### Example as ES5 DSL
  *
  * ```
  * var MyDirective = ng
@@ -132,7 +132,7 @@ export interface ViewDecorator extends TypeDecorator {
  *   })
  * ```
  *
- * ## Example as ES5 annotation
+ * ### Example as ES5 annotation
  *
  * ```
  * var MyDirective = function() {
@@ -176,7 +176,7 @@ export interface DirectiveFactory {
 /**
  * {@link ComponentMetadata} factory for creating annotations, decorators or DSL.
  *
- * ## Example as TypeScript Decorator
+ * ### Example as TypeScript Decorator
  *
  * ```
  * import {Component} from "angular2/angular2";
@@ -189,7 +189,7 @@ export interface DirectiveFactory {
  * }
  * ```
  *
- * ## Example as ES5 DSL
+ * ### Example as ES5 DSL
  *
  * ```
  * var MyComponent = ng
@@ -201,7 +201,7 @@ export interface DirectiveFactory {
  *   })
  * ```
  *
- * ## Example as ES5 annotation
+ * ### Example as ES5 annotation
  *
  * ```
  * var MyComponent = function() {
@@ -268,7 +268,7 @@ export interface ComponentFactory {
 /**
  * {@link ViewMetadata} factory for creating annotations, decorators or DSL.
  *
- * ## Example as TypeScript Decorator
+ * ### Example as TypeScript Decorator
  *
  * ```
  * import {Component, View} from "angular2/angular2";
@@ -282,7 +282,7 @@ export interface ComponentFactory {
  * }
  * ```
  *
- * ## Example as ES5 DSL
+ * ### Example as ES5 DSL
  *
  * ```
  * var MyComponent = ng
@@ -295,7 +295,7 @@ export interface ComponentFactory {
  *   })
  * ```
  *
- * ## Example as ES5 annotation
+ * ### Example as ES5 annotation
  *
  * ```
  * var MyComponent = function() {
@@ -332,7 +332,7 @@ export interface ViewFactory {
 /**
  * {@link AttributeMetadata} factory for creating annotations, decorators or DSL.
  *
- * ## Example as TypeScript Decorator
+ * ### Example as TypeScript Decorator
  *
  * ```
  * import {Attribute, Component} from "angular2/angular2";
@@ -345,7 +345,7 @@ export interface ViewFactory {
  * }
  * ```
  *
- * ## Example as ES5 DSL
+ * ### Example as ES5 DSL
  *
  * ```
  * var MyComponent = ng
@@ -357,7 +357,7 @@ export interface ViewFactory {
  *   })
  * ```
  *
- * ## Example as ES5 annotation
+ * ### Example as ES5 annotation
  *
  * ```
  * var MyComponent = function(title) {
@@ -449,7 +449,7 @@ export interface ViewChildFactory {
 /**
  * {@link PipeMetadata} factory for creating decorators.
  *
- * ## Example as TypeScript Decorator
+ * ### Example as TypeScript Decorator
  *
  * ```
  * import {Pipe} from "angular2/angular2";
@@ -528,7 +528,7 @@ export interface HostListenerFactory {
  * When the component class implements some {@link angular2/lifecycle_hooks} the callbacks are
  * called by the change detection at defined points in time during the life of the component.
  *
- * ## Example
+ * ### Example
  *
  * ```
  * @Component({
@@ -613,7 +613,7 @@ export var Component: ComponentFactory =
  * {@link DirectiveMetadata} directives only
  * - `bindingPropagation: BindingPropagation` to control change detection in a more granular way.
  *
- * ## Example
+ * ### Example
  *
  * The following example demonstrates how dependency injection resolves constructor arguments in
  * practice.
@@ -782,7 +782,7 @@ export var Component: ComponentFactory =
  * If none can be
  * found, the injector supplies `null` instead of throwing an error.
  *
- * ## Example
+ * ### Example
  *
  * Here we use a decorator directive to simply define basic tool-tip behavior.
  *
@@ -870,7 +870,7 @@ export var Component: ComponentFactory =
  * When the directive class implements some {@link angular2/lifecycle_hooks} the callbacks are
  * called by the change detection at defined points in time during the life of the directive.
  *
- * ## Example
+ * ### Example
  *
  * Let's suppose we want to implement the `unless` behavior, to conditionally include a template.
  *
@@ -942,7 +942,7 @@ export var Directive: DirectiveFactory = <DirectiveFactory>makeDecorator(Directi
  *
  * For details on the `@Component` annotation, see {@link ComponentMetadata}.
  *
- * ## Example
+ * ### Example
  *
  * ```
  * @Component({
@@ -975,7 +975,7 @@ export var View: ViewFactory =
  *
  * For details on the `@Component` annotation, see {@link ComponentMetadata}.
  *
- * ## Example
+ * ### Example
  *
  * ```
  * @Component({
@@ -1242,7 +1242,7 @@ export var ViewQuery: QueryFactory = makeParamDecorator(ViewQueryMetadata);
 /**
  * Declare reusable pipe function.
  *
- * ## Example
+ * ### Example
  *
  * ```
  * @Pipe({

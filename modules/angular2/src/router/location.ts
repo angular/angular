@@ -13,7 +13,7 @@ import {OpaqueToken, Injectable, Optional, Inject} from 'angular2/angular2';
  * representing the URL prefix that should be preserved when generating and recognizing
  * URLs.
  *
- * ## Example
+ * ### Example
  *
  * ```
  * import {Component} from 'angular2/angular2';
@@ -52,7 +52,7 @@ export const APP_BASE_HREF: OpaqueToken = CONST_EXPR(new OpaqueToken('appBaseHre
  * - `my/app/user/123` **is not** normalized
  * - `/my/app/user/123/` **is not** normalized
  *
- * ## Example
+ * ### Example
  *
  * ```
  * import {Component} from 'angular2/angular2';

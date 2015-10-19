@@ -33,7 +33,7 @@ export {
  * If `CanActivate` returns or resolves to `true`, navigation continues, the component is
  * instantiated, and the {@link OnActivate} hook of that component is called if implemented.
  *
- * ## Example
+ * ### Example
  * ```
  * import {Component} from 'angular2/angular2';
  * import {CanActivate} from 'angular2/router';

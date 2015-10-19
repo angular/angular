@@ -20,7 +20,7 @@ import {LocationStrategy, normalizeQueryParams} from './location_strategy';
  * `location.go('/foo')`, the browser's URL will become
  * `example.com/my/app/foo`.
  *
- * ## Example
+ * ### Example
  *
  * ```
  * import {Component, provide} from 'angular2/angular2';

@@ -14,7 +14,7 @@ const SELECT_VALUE_ACCESSOR = CONST_EXPR(new Provider(
 /**
  * Marks `<option>` as dynamic, so Angular can be notified when options change.
  *
- * #Example:
+ * ### Example
  *
  * ```
  * <select ng-control="city">

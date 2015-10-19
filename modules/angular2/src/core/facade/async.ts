@@ -49,7 +49,7 @@ export class Observable {
 /**
  * Use by directives and components to emit custom Events.
  *
- * ## Examples
+ * ### Examples
  *
  * In the following example, `Zippy` alternatively emits `open` and `close` events when its
  * title gets clicked:

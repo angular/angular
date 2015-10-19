@@ -16,7 +16,7 @@ import {Pipe} from '../metadata';
  *
  * The ending index of the subset to return is specified by the optional `end` parameter.
  *
- * # Usage
+ *##Usage
  *
  *     expression | slice:start[:end]
  *
@@ -44,7 +44,7 @@ import {Pipe} from '../metadata';
  * When operating on a [List], the returned list is always a copy even when all
  * the elements are being returned.
  *
- * # Examples
+ * ### Examples
  *
  * ## List Example
  *

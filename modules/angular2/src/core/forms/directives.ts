@@ -38,7 +38,7 @@ export {NgControlStatus} from './directives/ng_control_status';
  *
  *  This is a shorthand for importing them each individually.
  *
- * ### Example:
+ * ### Example
  *
  * ```typescript
  * @Component({

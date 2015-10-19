@@ -12,7 +12,7 @@ import {EventListener, History, Location} from 'angular2/src/core/facade/browser
  * For instance, if you call `location.go('/foo')`, the browser's URL will become
  * `example.com#/foo`.
  *
- * ## Example
+ * ### Example
  *
  * ```
  * import {Component, View} from 'angular2/angular2';

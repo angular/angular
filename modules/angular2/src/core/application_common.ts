@@ -72,7 +72,7 @@ export function applicationDomBindings(): Array<Type | Provider | any[]> {
  *
  * See {@link PlatformRef} for details on the Angular platform.
  *
- * # Without specified providers
+ *##Without specified providers
  *
  * If no providers are specified, `platform`'s behavior depends on whether an existing
  * platform exists:
@@ -83,7 +83,7 @@ export function applicationDomBindings(): Array<Type | Provider | any[]> {
  * was created with). This is a convenience feature, allowing for multiple applications
  * to be loaded into the same platform without awareness of each other.
  *
- * # With specified providers
+ *##With specified providers
  *
  * It is also possible to specify providers to be made in the new platform. These providers
  * will be shared between all applications on the page. For example, an abstraction for
@@ -94,7 +94,7 @@ export function applicationDomBindings(): Array<Type | Provider | any[]> {
  * them if a platform did not exist already. If it did exist, however, an error will be
  * thrown.
  *
- * # DOM Applications
+ *##DOM Applications
  *
  * This version of `platform` initializes Angular to run in the UI thread, with direct
  * DOM access. Web-worker applications should call `platform` from
@@ -208,7 +208,7 @@ export function platform(bindings?: Array<Type | Provider | any[]>): PlatformRef
  * to that application.
  *
  *
- * # API
+ *##API
  * - `appComponentType`: The root component which should act as the application. This is
  *   a reference to a `Type` which is annotated with `@Component(...)`.
  * - `componentInjectableBindings`: An additional set of providers that can be added to the

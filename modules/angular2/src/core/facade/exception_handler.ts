@@ -17,7 +17,7 @@ class _ArrayLogger {
  * intercept error handling,
  * write a custom exception handler that replaces this default as appropriate for your app.
  *
- * # Example
+ * ### Example
  *
  * ```javascript
  *

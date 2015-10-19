@@ -221,7 +221,7 @@ function ngOutletFillContentDirective($compile) {
  * ## Use
  * The directive uses a simple syntax: `ng-link="componentName({ param: paramValue })"`
  *
- * ## Example
+ * ### Example
  *
  * ```js
  * angular.module('myApp', ['ngComponentRouter'])

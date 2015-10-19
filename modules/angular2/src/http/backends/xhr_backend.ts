@@ -88,7 +88,7 @@ export class XHRConnection implements Connection {
  * overridden if a different backend implementation should be used,
  * such as in a node backend.
  *
- * #Example
+ * ### Example
  *
  * ```
  * import {Http, MyNodeBackend, HTTP_PROVIDERS, BaseRequestOptions} from 'angular2/http';

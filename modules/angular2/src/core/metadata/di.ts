@@ -14,7 +14,7 @@ import {DependencyMetadata} from 'angular2/src/core/di/metadata';
  *
  * The directive can inject constant string literals of host element attributes.
  *
- * ## Example
+ * ### Example
  *
  * Suppose we have an `<input>` element and want to know its `type`.
  *

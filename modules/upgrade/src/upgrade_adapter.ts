@@ -76,7 +76,7 @@ var upgradeCount: number = 0;
  * 9. The new application is running in Angular v2 zone, and therefore it no longer needs calls to
  *    `$apply()`.
  *
- * ## Example
+ * ### Example
  *
  * ```
  * var adapter = new UpgradeAdapter();
@@ -143,7 +143,7 @@ export class UpgradeAdapter {
    *   - Event:  `<comp (close)="doSomething()">`
    * - Content projection: yes
    *
-   * ## Example
+   * ### Example
    *
    * ```
    * var adapter = new UpgradeAdapter();
@@ -215,7 +215,7 @@ export class UpgradeAdapter {
    *   - `transclude`: supported.
    *
    *
-   * ## Example
+   * ### Example
    *
    * ```
    * var adapter = new UpgradeAdapter();
@@ -260,7 +260,7 @@ export class UpgradeAdapter {
    * [`bootstrap`](https://docs.angularjs.org/api/ng/function/angular.bootstrap) method. Unlike
    * AngularJS v1, this bootstrap is asynchronous.
    *
-   * ## Example
+   * ### Example
    *
    * ```
    * var adapter = new UpgradeAdapter();
@@ -374,7 +374,7 @@ export class UpgradeAdapter {
    * for this reason we provide an application global way of registering providers which is
    * consistent with single global injection in AngularJS v1.
    *
-   * ## Example
+   * ### Example
    *
    * ```
    * class Greeter {
@@ -409,7 +409,7 @@ export class UpgradeAdapter {
    * Allows AngularJS v1 service to be accessible from Angular v2.
    *
    *
-   * ## Example
+   * ### Example
    *
    * ```
    * class Login { ... }
@@ -449,7 +449,7 @@ export class UpgradeAdapter {
    * Allows Angular v2 service to be accessible from AngularJS v1.
    *
    *
-   * ## Example
+   * ### Example
    *
    * ```
    * class Example {

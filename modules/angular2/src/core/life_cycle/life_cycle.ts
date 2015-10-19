@@ -15,7 +15,7 @@ import {wtfLeave, wtfCreateScope, WtfScopeFn} from '../profile/profile';
  *
  * Each Angular application has a single `LifeCycle` instance.
  *
- * # Example
+ * ### Example
  *
  * This is a contrived example, since the bootstrap automatically runs inside of the `Zone`, which
  * invokes
