@@ -43,7 +43,7 @@ export interface HostViewRef {
  * removing nested Views via a {@link ViewContainer}. Each View can contain many View Containers.
  * <!-- /TODO -->
  *
- * ## Example
+ * ### Example
  *
  * Given this template...
  *
@@ -139,7 +139,7 @@ export class ViewRef_ extends ViewRef {
  * {@link Compiler#compileInHost} API.
  *
  *
- * ## Example
+ * ### Example
  *
  * Given this template:
  *

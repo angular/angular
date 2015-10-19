@@ -107,7 +107,7 @@ export abstract class DynamicComponentLoader {
    * Returns a promise for the {@link ComponentRef} representing the newly created Component.
    *
    *
-   * ## Example
+   * ### Example
    *
    * ```
    * @ng.Component({
@@ -167,7 +167,7 @@ export abstract class DynamicComponentLoader {
    * Returns a promise for the {@link ComponentRef} representing the newly created Component.
    *
    *
-   * ## Example
+   * ### Example
    *
    * ```
    * @ng.Component({
@@ -221,7 +221,7 @@ export abstract class DynamicComponentLoader {
    * Returns a promise for the {@link ComponentRef} representing the newly created Component.
    *
    *
-   * ## Example
+   * ### Example
    *
    * ```
    * @ng.Component({

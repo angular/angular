@@ -21,7 +21,7 @@ var __ignore_me = global;
  * If `onActivate` returns a promise, the route change will wait until the promise settles to
  * instantiate and activate child components.
  *
- * ## Example
+ * ### Example
  * ```
  * import {Component} from 'angular2/angular2';
  * import {OnActivate, ComponentInstruction} from 'angular2/router';
@@ -52,7 +52,7 @@ export interface OnActivate {
  * representing the current route being navigated to, and the second parameter representing the
  * previous route or `null`.
  *
- * ## Example
+ * ### Example
  * ```
  * import {Component} from 'angular2/angular2';
  * import {CanReuse, OnReuse, ComponentInstruction} from 'angular2/router';
@@ -86,7 +86,7 @@ export interface OnReuse {
  *
  * If `onDeactivate` returns a promise, the route change will wait until the promise settles.
  *
- * ## Example
+ * ### Example
  * ```
  * import {Component} from 'angular2/angular2';
  * import {OnDeactivate, ComponentInstruction} from 'angular2/router';
@@ -121,7 +121,7 @@ export interface OnDeactivate {
  *
  * If `canReuse` throws or rejects, the navigation will be cancelled.
  *
- * ## Example
+ * ### Example
  * ```
  * import {Component} from 'angular2/angular2';
  * import {CanReuse, OnReuse, ComponentInstruction} from 'angular2/router';
@@ -159,7 +159,7 @@ export interface CanReuse {
  *
  * If `canDeactivate` throws or rejects, the navigation is also cancelled.
  *
- * ## Example
+ * ### Example
  * ```
  * import {Component} from 'angular2/angular2';
  * import {CanDeactivate, ComponentInstruction} from 'angular2/router';

@@ -29,7 +29,7 @@ export class SwitchView {
  * evaluated. If a matching expression is not found via a when attribute then an element with the
  * default attribute is displayed.
  *
- * # Example:
+ * ### Example
  *
  * ```
  * <ANY [ng-switch]="expression">

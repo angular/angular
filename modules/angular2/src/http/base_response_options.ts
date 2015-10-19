@@ -72,7 +72,7 @@ export class ResponseOptions {
    * This may be useful when sharing a base `ResponseOptions` object inside tests,
    * where certain properties may change from test to test.
    *
-   * Example ([live demo](http://plnkr.co/edit/1lXquqFfgduTFBWjNoRE?p=preview))
+   * ### Example ([live demo](http://plnkr.co/edit/1lXquqFfgduTFBWjNoRE?p=preview))
    *
    * ```typescript
    * import {ResponseOptions, Response} from 'angular2/http';

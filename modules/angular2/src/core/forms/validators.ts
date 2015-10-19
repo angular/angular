@@ -10,7 +10,7 @@ export const NG_VALIDATORS: OpaqueToken = CONST_EXPR(new OpaqueToken("NgValidato
 /**
  * Provides a set of validators used by form controls.
  *
- * # Example
+ * ### Example
  *
  * ```
  * var loginControl = new Control("", Validators.required)

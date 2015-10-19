@@ -13,7 +13,7 @@ const NUMBER_VALUE_ACCESSOR = CONST_EXPR(new Provider(
  * The accessor for writing a number value and listening to changes that is used by the
  * {@link NgModel}, {@link NgFormControl}, and {@link NgControlName} directives.
  *
- *  # Example
+ *  ### Example
  *  ```
  *  <input type="number" [(ng-model)]="age">
  *  ```

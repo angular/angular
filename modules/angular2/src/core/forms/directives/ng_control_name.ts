@@ -21,7 +21,7 @@ const controlNameBinding =
  *
  * This directive can only be used as a child of {@link NgForm} or {@link NgFormModel}.
 
- * # Example
+ * ### Example
  *
  * In this example, we create the login and password controls.
  * We can work with each control separately: check its validity, get its value, listen to its

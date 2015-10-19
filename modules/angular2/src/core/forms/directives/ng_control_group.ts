@@ -17,7 +17,7 @@ const controlGroupBinding =
  *
  * This directive can only be used as a child of {@link NgForm} or {@link NgFormModel}.
  *
- * # Example
+ * ### Example
  *
  * In this example, we create the credentials and personal control groups.
  * We can work with each group separately: check its validity, get its value, listen to its changes.

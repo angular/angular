@@ -76,7 +76,7 @@ export abstract class AppViewManager {
    * Use {@link AppViewManager#destroyRootHostView} to destroy the created Component and it's Host
    * View.
    *
-   * ## Example
+   * ### Example
    *
    * ```
    * @ng.Component({

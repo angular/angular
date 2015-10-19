@@ -6,7 +6,7 @@ import {Pipe} from 'angular2/src/core/metadata';
 /**
  * Implements json transforms to any object.
  *
- * # Example
+ * ### Example
  *
  * In this example we transform the user object to json.
  *

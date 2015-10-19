@@ -167,7 +167,7 @@ function applyParams(fnOrArray: (Function | any[]), key: string): Function {
  * }
  * ```
  *
- * ## Example with parameter annotations
+ * ### Example with parameter annotations
  *
  * ```
  * var MyService = ng.Class({
@@ -187,7 +187,7 @@ function applyParams(fnOrArray: (Function | any[]), key: string): Function {
  * }
  * ```
  *
- * ## Example with inheritance
+ * ### Example with inheritance
  *
  * ```
  * var Shape = ng.Class({

@@ -47,7 +47,7 @@ import {CONST_EXPR, Type} from './facade/lang';
 /**
  * Shorthand set of providers used for building Angular forms.
  *
- * ### Example:
+ * ### Example
  *
  * ```typescript
  * bootstrap(MyApp, [FORM_PROVIDERS]);

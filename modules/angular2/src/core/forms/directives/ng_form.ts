@@ -22,19 +22,19 @@ const formDirectiveProvider =
  * If `NgForm` is bound in a component, `<form>` elements in that component will be
  * upgraded to use the Angular form system.
  *
- * # Typical Use
+ *##Typical Use
  *
  * Include `FORM_DIRECTIVES` in the `directives` section of a {@link View} annotation
  * to use `NgForm` and its associated controls.
  *
- * # Structure
+ *##Structure
  *
  * An Angular form is a collection of `Control`s in some hierarchy.
  * `Control`s can be at the top level or can be organized in `ControlGroup`s
  * or `ControlArray`s. This hierarchy is reflected in the form's `value`, a
  * JSON object that mirrors the form structure.
  *
- * # Submission
+ *##Submission
  *
  * The `ng-submit` event signals when the user triggers a form submission.
  *

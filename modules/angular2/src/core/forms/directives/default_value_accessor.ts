@@ -13,7 +13,7 @@ const DEFAULT_VALUE_ACCESSOR = CONST_EXPR(new Provider(
  * The default accessor for writing a value and listening to changes that is used by the
  * {@link NgModel}, {@link NgFormControl}, and {@link NgControlName} directives.
  *
- *  # Example
+ *  ### Example
  *  ```
  *  <input type="text" [(ng-model)]="searchQuery">
  *  ```

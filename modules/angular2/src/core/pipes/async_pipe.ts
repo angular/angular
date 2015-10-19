@@ -40,7 +40,7 @@ var _observableStrategy = new ObservableStrategy();
  * emitted.
  * When a new value is emitted, the `async` pipe marks the component to be checked for changes.
  *
- * # Example
+ * ### Example
  * The example below binds the `time` Observable to the view. Every 500ms, the `time` Observable
  * updates the view with the current time.
  *

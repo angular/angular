@@ -7,7 +7,7 @@ import * as modelModule from './model';
 /**
  * Creates a form object from a user-specified configuration.
  *
- * # Example
+ * ### Example
  *
  * ```
  * import {Component, bootstrap} from 'angular2/angular2';

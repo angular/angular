@@ -22,7 +22,7 @@ export class RouteConfig {
  * - `data` is an optional property of any type representing arbitrary route metadata for the given
  * route. It is injectable via the {@link ROUTE_DATA} token.
  *
- * ## Example
+ * ### Example
  * ```
  * import {RouteConfig} from 'angular2/router';
  *
@@ -62,7 +62,7 @@ export class Route implements RouteDefinition {
  * - `data` is an optional property of any type representing arbitrary route metadata for the given
  * route. It is injectable via the {@link ROUTE_DATA} token.
  *
- * ## Example
+ * ### Example
  * ```
  * import {RouteConfig, AuxRoute} from 'angular2/router';
  *
@@ -99,7 +99,7 @@ export class AuxRoute implements RouteDefinition {
  * - `data` is an optional property of any type representing arbitrary route metadata for the given
  * route. It is injectable via the {@link ROUTE_DATA} token.
  *
- * ## Example
+ * ### Example
  * ```
  * import {RouteConfig} from 'angular2/router';
  *
@@ -131,7 +131,7 @@ export class AsyncRoute implements RouteDefinition {
  * - `path` is a string that uses the route matcher DSL.
  * - `redirectTo` is a string representing the new URL to be matched against.
  *
- * ## Example
+ * ### Example
  * ```
  * import {RouteConfig} from 'angular2/router';
  *
