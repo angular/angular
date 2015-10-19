@@ -7,7 +7,6 @@ import 'package:angular2/src/core/compiler/directive_metadata.dart';
 import 'package:angular2/src/core/compiler/template_compiler.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
-import 'package:angular2/src/transform/common/model/import_export_model.pb.dart';
 import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
 import 'package:angular2/src/transform/common/model/reflection_info_model.pb.dart';
 import 'package:angular2/src/transform/common/names.dart';
@@ -32,10 +31,8 @@ class CompileDataResults {
   final NgMeta ngMeta;
   final Map<ReflectionInfoModel,
       NormalizedComponentWithViewDirectives> viewDefinitions;
-  final List<CompileDirectiveMetadata> directiveMetadatas;
 
-  CompileDataResults._(
-      this.ngMeta, this.viewDefinitions, this.directiveMetadatas);
+  CompileDataResults._(this.ngMeta, this.viewDefinitions);
 }
 
 /// Creates [ViewDefinition] objects for all `View` `Directive`s defined in
@@ -44,7 +41,6 @@ class _CompileDataCreator {
   final AssetReader reader;
   final AssetId entryPoint;
   final NgMeta ngMeta;
-  final directiveMetadatas = <CompileDirectiveMetadata>[];
 
   _CompileDataCreator(this.reader, this.entryPoint, this.ngMeta);
 
@@ -62,7 +58,7 @@ class _CompileDataCreator {
 
   Future<CompileDataResults> createCompileData() async {
     if (ngDeps == null || ngDeps.reflectables == null) {
-      return new CompileDataResults._(ngMeta, const {}, directiveMetadatas);
+      return new CompileDataResults._(ngMeta, const {});
     }
 
     final compileData =
@@ -100,30 +96,30 @@ class _CompileDataCreator {
         }
       }
     }
-    return new CompileDataResults._(ngMeta, compileData, directiveMetadatas);
+    return new CompileDataResults._(ngMeta, compileData);
   }
 
-  /// Creates a map from [AssetId] to import prefix for `.dart` libraries
-  /// imported by `entryPoint`, excluding any `.ng_deps.dart` files it imports.
-  /// Unprefixed imports have `null` as their value. `entryPoint` is included
-  /// in the map with no prefix.
-  Future<Map<AssetId, String>> _createImportAssetToPrefixMap() async {
-    final importAssetToPrefix = <AssetId, String>{entryPoint: null};
-    if (ngDeps == null || ngDeps.imports == null || ngDeps.imports.isEmpty) {
-      return importAssetToPrefix;
-    }
+  /// Creates a map from import prefix to the asset: uris of all `.dart`
+  /// libraries visible from `entryPoint`, excluding `dart:` and `.ng_deps.dart`
+  /// files it imports. Unprefixed imports have the empty string as their key.
+  /// `entryPoint` is included in the map with no prefix.
+  Map<String, Iterable<String>> _createPrefixToImportsMap() {
     final baseUri = toAssetUri(entryPoint);
+    final map = <String, Set<String>>{'': new Set<String>()..add(baseUri)};
+    if (ngDeps == null || ngDeps.imports == null || ngDeps.imports.isEmpty) {
+      return map;
+    }
     final resolver = const TransformerUrlResolver();
 
-    for (ImportModel model in ngMeta.ngDeps.imports) {
-      if (model.uri.endsWith('.dart') && !model.isNgDeps) {
-        var prefix =
-            model.prefix != null && model.prefix.isEmpty ? null : model.prefix;
-        importAssetToPrefix[fromUri(resolver.resolve(baseUri, model.uri))] =
-            prefix;
-      }
-    }
-    return importAssetToPrefix;
+    ngMeta.ngDeps.imports
+        .where((model) => !model.isNgDeps && !isDartCoreUri(model.uri))
+        .forEach((model) {
+      var prefix = model.prefix == null ? '' : model.prefix;
+      map
+          .putIfAbsent(prefix, () => new Set<String>())
+          .add(resolver.resolve(baseUri, model.uri));
+    });
+    return map;
   }
 
   /// Reads the `.ng_meta.json` files associated with all of `entryPoint`'s
@@ -155,29 +151,24 @@ class _CompileDataCreator {
   /// }
   /// ```
   Future<Map<String, NgMeta>> _extractNgMeta() async {
-    var importAssetToPrefix = await _createImportAssetToPrefixMap();
+    var prefixToImports = _createPrefixToImportsMap();
 
-    var retVal = <String, NgMeta>{};
-    for (var importAssetId in importAssetToPrefix.keys) {
-      var prefix = importAssetToPrefix[importAssetId];
-      if (prefix == null) prefix = '';
-      var ngMeta = retVal.putIfAbsent(prefix, () => new NgMeta.empty());
-      var metaAssetId = new AssetId(
-          importAssetId.package, toMetaExtension(importAssetId.path));
-      if (await reader.hasInput(metaAssetId)) {
-        try {
-          var jsonString = await reader.readAsString(metaAssetId);
-          if (jsonString != null && jsonString.isNotEmpty) {
-            var json = JSON.decode(jsonString);
-            var newMetadata = new NgMeta.fromJson(json);
-            if (importAssetId == entryPoint) {
-              this.directiveMetadatas.addAll(newMetadata.types.values);
+    final retVal = <String, NgMeta>{};
+    for (var prefix in prefixToImports.keys) {
+      var ngMeta = retVal[prefix] = new NgMeta.empty();
+      for (var importAssetUri in prefixToImports[prefix]) {
+        var metaAssetId = fromUri(toMetaExtension(importAssetUri));
+        if (await reader.hasInput(metaAssetId)) {
+          try {
+            var jsonString = await reader.readAsString(metaAssetId);
+            if (jsonString != null && jsonString.isNotEmpty) {
+              var newMetadata = new NgMeta.fromJson(JSON.decode(jsonString));
+              ngMeta.addAll(newMetadata);
             }
-            ngMeta.addAll(newMetadata);
+          } catch (ex, stackTrace) {
+            logger.warning('Failed to decode: $ex, $stackTrace',
+                asset: metaAssetId);
           }
-        } catch (ex, stackTrace) {
-          logger.warning('Failed to decode: $ex, $stackTrace',
-              asset: metaAssetId);
         }
       }
     }
