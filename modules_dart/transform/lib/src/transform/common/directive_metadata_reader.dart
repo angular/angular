@@ -12,7 +12,7 @@ import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/interface_matcher.dart';
 import 'package:barback/barback.dart' show AssetId;
 
-import 'dumb_eval.dart';
+import 'naive_eval.dart';
 
 class DirectiveMetadataReader {
   final _DirectiveMetadataVisitor _visitor;
@@ -59,7 +59,7 @@ class DirectiveMetadataReader {
 /// `value` pairs to `map`. If `expression` does not evaluate to a [Map],
 /// throws a descriptive [FormatException].
 void _populateMap(Expression expression, Map map, String propertyName) {
-  var evaluated = dumbEval(expression);
+  var evaluated = naiveEval(expression);
   if (evaluated is! Map) {
     throw new FormatException(
         'Angular 2 expects a Map but could not understand the value for '
@@ -78,7 +78,7 @@ void _populateMap(Expression expression, Map map, String propertyName) {
 /// descriptive [FormatException].
 void _populateList(
     Expression expression, List<String> list, String propertyName) {
-  var evaluated = dumbEval(expression);
+  var evaluated = naiveEval(expression);
   if (evaluated is! List) {
     throw new FormatException(
         'Angular 2 expects a List but could not understand the value for '
@@ -91,7 +91,7 @@ void _populateList(
 /// Evaluates `node` and expects that the result will be a string. If not,
 /// throws a [FormatException].
 String _expressionToString(Expression node, String nodeDescription) {
-  var value = dumbEval(node);
+  var value = naiveEval(node);
   if (value is! String) {
     throw new FormatException(
         'Angular 2 could not understand the value '

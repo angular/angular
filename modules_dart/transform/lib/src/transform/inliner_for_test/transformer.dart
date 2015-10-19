@@ -7,7 +7,7 @@ import 'package:analyzer/src/generated/ast.dart';
 import 'package:angular2/src/core/compiler/xhr.dart' show XHR;
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
-import 'package:angular2/src/transform/common/dumb_eval.dart';
+import 'package:angular2/src/transform/common/naive_eval.dart';
 import 'package:angular2/src/transform/common/async_string_writer.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/options.dart';
@@ -142,7 +142,7 @@ class _ViewPropInliner extends RecursiveAstVisitor<Object> {
   }
 
   void _populateStyleUrls(NamedExpression node) {
-    var urls = dumbEval(node.expression);
+    var urls = naiveEval(node.expression);
     if (urls is! List) {
       logger.warning('styleUrls is not a List of Strings (${node.expression})');
       return;
@@ -163,7 +163,7 @@ class _ViewPropInliner extends RecursiveAstVisitor<Object> {
   }
 
   void _populateTemplateUrl(NamedExpression node) {
-    var url = dumbEval(node.expression);
+    var url = naiveEval(node.expression);
     if (url is! String) {
       logger.warning('template url is not a String (${node.expression})');
       return;

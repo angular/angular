@@ -1,10 +1,10 @@
-library angular2.transform.common.dumb_eval;
+library angular2.transform.common.naive_eval;
 
 import 'package:analyzer/analyzer.dart';
 
 final _constantEvaluator = new ConstantEvaluator();
 
-/// The value returned if the result of `dumbEval` is not a constant.
+/// The value returned if the result of `naiveEval` is not a constant.
 final NOT_A_CONSTANT = ConstantEvaluator.NOT_A_CONSTANT;
 
 /// Performs a very limited syntactic evaluation of `expr`.
@@ -15,7 +15,7 @@ final NOT_A_CONSTANT = ConstantEvaluator.NOT_A_CONSTANT;
 /// even if that identifier is defined in the same [CompilationUnit].
 ///
 /// Returns the result of evaluation or [NOT_A_CONSTANT] where appropriate.
-dynamic dumbEval(Expression expr) {
+dynamic naiveEval(Expression expr) {
   var val;
   if (expr is SimpleStringLiteral) {
     val = stringLiteralToString(expr);

@@ -3,7 +3,7 @@ library angular2.transform.common.code.queries_code;
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
-import 'package:angular2/src/transform/common/dumb_eval.dart';
+import 'package:angular2/src/transform/common/naive_eval.dart';
 import 'package:barback/barback.dart';
 
 /// Visitor responsbile for processing a [ClassDeclaration] and extracting any
@@ -125,7 +125,7 @@ class _QueriesAnnotationVisitor extends SimpleAstVisitor<Iterable<String>> {
       }
       final queries = node.expression as MapLiteral;
       for (var entry in queries.entries) {
-        var queryField = dumbEval(entry.key);
+        var queryField = naiveEval(entry.key);
         if (queryField != NOT_A_CONSTANT) {
           _queryFields.add(queryField.toString());
         }
