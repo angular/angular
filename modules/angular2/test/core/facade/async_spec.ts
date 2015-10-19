@@ -56,6 +56,36 @@ export function main() {
       expect(called).toBe(false);
     });
 
+    it('delivers events asynchronously', inject([AsyncTestCompleter], (async) => {
+         var e = new EventEmitter();
+         var log = [];
+         ObservableWrapper.subscribe(e, (x) => {
+           log.push(x);
+           expect(log).toEqual([1, 3, 2]);
+           async.done();
+         });
+         log.push(1);
+         ObservableWrapper.callNext(e, 2);
+         log.push(3);
+       }));
+
+    it('delivers events synchronously', () => {
+      var e = new EventEmitter(false);
+      var log = [];
+      ObservableWrapper.subscribe(e, (x) => { log.push(x); });
+      log.push(1);
+      ObservableWrapper.callNext(e, 2);
+      log.push(3);
+      expect(log).toEqual([1, 2, 3]);
+    });
+
+    it('reports whether it has subscribers', () => {
+      var e = new EventEmitter(false);
+      expect(ObservableWrapper.hasSubscribers(e)).toBe(false);
+      ObservableWrapper.subscribe(e, (_) => {});
+      expect(ObservableWrapper.hasSubscribers(e)).toBe(true);
+    });
+
     // TODO: vsavkin: add tests cases
     // should call dispose on the subscription if generator returns {done:true}
     // should call dispose on the subscription on throw

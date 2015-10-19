@@ -32,6 +32,11 @@ export class ObservableWrapper {
 
   static isObservable(obs: any): boolean { return obs instanceof Observable; }
 
+  /**
+   * Returns whether `obs` has any subscribers listening to events.
+   */
+  static hasSubscribers(obs: EventEmitter): boolean { return obs._subject.observers.length > 0; }
+
   static dispose(subscription: any) { subscription.unsubscribe(); }
 
   static callNext(emitter: EventEmitter, value: any) { emitter.next(value); }
@@ -88,9 +93,22 @@ export class Observable {
 export class EventEmitter extends Observable {
   /** @internal */
   _subject = new Subject();
+  /** @internal */
+  _isAsync: boolean;
+
+  /**
+   * Creates an instance of [EventEmitter], which depending on [isAsync],
+   * delivers events synchronously or asynchronously.
+   */
+  constructor(isAsync: boolean = true) {
+    super();
+    this._isAsync = isAsync;
+  }
 
   observer(generator: any): any {
-    return this._subject.subscribe((value) => { setTimeout(() => generator.next(value)); },
+    var schedulerFn = this._isAsync ? (value) => { setTimeout(() => generator.next(value)); } :
+                                      (value) => { generator.next(value); };
+    return this._subject.subscribe(schedulerFn,
                                    (error) => generator.throw ? generator.throw(error) : null,
                                    () => generator.return ? generator.return () : null);
   }

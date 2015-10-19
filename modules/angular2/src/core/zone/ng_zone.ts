@@ -1,19 +1,22 @@
 import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {normalizeBlank, isPresent, global} from 'angular2/src/core/facade/lang';
+import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from '../profile/profile';
-
 
 export interface NgZoneZone extends Zone {
   /** @internal */
   _innerZone: boolean;
 }
 
-export interface ZeroArgFunction {
-  (): void;
-}
+export interface ZeroArgFunction { (): void; }
 
-export interface ErrorHandlingFn {
-  (error: any, stackTrace: any): void;
+export interface ErrorHandlingFn { (error: any, stackTrace: any): void; }
+
+/**
+ * Stores error information; delivered via [NgZone.onError] stream.
+ */
+export class NgZoneError {
+  constructor(public error: any, public stackTrace: any) {}
 }
 
 /**
@@ -109,6 +112,15 @@ export class NgZone {
   /** @internal */
   _onErrorHandler: ErrorHandlingFn;
 
+  /** @internal */
+  _onTurnStartEvents: EventEmitter;
+  /** @internal */
+  _onTurnDoneEvents: EventEmitter;
+  /** @internal */
+  _onEventDoneEvents: EventEmitter;
+  /** @internal */
+  _onErrorEvents: EventEmitter;
+
   // Number of microtasks pending from _innerZone (& descendants)
   /** @internal */
   _pendingMicrotasks: number = 0;
@@ -146,6 +158,10 @@ export class NgZone {
       this._disabled = true;
       this._mountZone = null;
     }
+    this._onTurnStartEvents = new EventEmitter(false);
+    this._onTurnDoneEvents = new EventEmitter(false);
+    this._onEventDoneEvents = new EventEmitter(false);
+    this._onErrorEvents = new EventEmitter(false);
   }
 
   /**
@@ -155,9 +171,22 @@ export class NgZone {
    * The hook is called once per browser task that is handled by Angular.
    *
    * Setting the hook overrides any previously set hook.
+   *
+   * @deprecated this API will be removed in the future. Use `onTurnStart` instead.
    */
   overrideOnTurnStart(onTurnStartHook: ZeroArgFunction): void {
     this._onTurnStart = normalizeBlank(onTurnStartHook);
+  }
+
+  /**
+   * Notifies subscribers just before Angular event turn starts.
+   *
+   * Emits an event once per browser task that is handled by Angular.
+   */
+  get onTurnStart(): /* Subject */ any { return this._onTurnStartEvents; }
+
+  _notifyOnTurnStart(parentRun): void {
+    parentRun.call(this._innerZone, () => { this._onTurnStartEvents.next(null); });
   }
 
   /**
@@ -169,9 +198,23 @@ export class NgZone {
    * The hook is called once per browser task that is handled by Angular.
    *
    * Setting the hook overrides any previously set hook.
+   *
+   * @deprecated this API will be removed in the future. Use `onTurnDone` instead.
    */
   overrideOnTurnDone(onTurnDoneHook: ZeroArgFunction): void {
     this._onTurnDone = normalizeBlank(onTurnDoneHook);
+  }
+
+  /**
+   * Notifies subscribers immediately after Angular zone is done processing
+   * the current turn and any microtasks scheduled from that turn.
+   *
+   * Used by Angular as a signal to kick off change-detection.
+   */
+  get onTurnDone() { return this._onTurnDoneEvents; }
+
+  _notifyOnTurnDone(parentRun): void {
+    parentRun.call(this._innerZone, () => { this._onTurnDoneEvents.next(null); });
   }
 
   /**
@@ -184,6 +227,8 @@ export class NgZone {
    * This hook is useful for validating application state (e.g. in a test).
    *
    * Setting the hook overrides any previously set hook.
+   *
+   * @deprecated this API will be removed in the future. Use `onEventDone` instead.
    */
   overrideOnEventDone(onEventDoneFn: ZeroArgFunction, opt_waitForAsync: boolean = false): void {
     var normalizedOnEventDone = normalizeBlank(onEventDoneFn);
@@ -199,13 +244,49 @@ export class NgZone {
   }
 
   /**
+   * Notifies subscribers immediately after the final `onTurnDone` callback
+   * before ending VM event.
+   *
+   * This event is useful for validating application state (e.g. in a test).
+   */
+  get onEventDone() { return this._onEventDoneEvents; }
+
+  _notifyOnEventDone(): void {
+    this.runOutsideAngular(() => { this._onEventDoneEvents.next(null); });
+  }
+
+  /**
+   * Whether there are any outstanding microtasks.
+   */
+  get hasPendingMicrotasks(): boolean { return this._pendingMicrotasks > 0; }
+
+  /**
+   * Whether there are any outstanding timers.
+   */
+  get hasPendingTimers(): boolean { return this._pendingTimeouts.length > 0; }
+
+  /**
+   * Whether there are any outstanding asychnronous tasks of any kind that are
+   * scheduled to run within Angular zone.
+   *
+   * Useful as a signal of UI stability. For example, when a test reaches a
+   * point when [hasPendingAsyncTasks] is `false` it might be a good time to run
+   * test expectations.
+   */
+  get hasPendingAsyncTasks(): boolean { return this.hasPendingMicrotasks || this.hasPendingTimers; }
+
+  /**
    * Sets the zone hook that is called when an error is thrown in the Angular zone.
    *
    * Setting the hook overrides any previously set hook.
+   *
+   * @deprecated this API will be removed in the future. Use `onError` instead.
    */
   overrideOnErrorHandler(errorHandler: ErrorHandlingFn) {
     this._onErrorHandler = normalizeBlank(errorHandler);
   }
+
+  get onError() { return this._onErrorEvents; }
 
   /**
    * Executes the `fn` function synchronously within the Angular zone and returns value returned by
@@ -257,10 +338,10 @@ export class NgZone {
     var errorHandling;
 
     if (enableLongStackTrace) {
-      errorHandling = StringMapWrapper.merge(Zone.longStackTraceZone,
-                                             {onError: function(e) { ngZone._onError(this, e); }});
+      errorHandling = StringMapWrapper.merge(
+          Zone.longStackTraceZone, {onError: function(e) { ngZone._notifyOnError(this, e); }});
     } else {
-      errorHandling = {onError: function(e) { ngZone._onError(this, e); }};
+      errorHandling = {onError: function(e) { ngZone._notifyOnError(this, e); }};
     }
 
     return zone.fork(errorHandling)
@@ -271,6 +352,7 @@ export class NgZone {
                 ngZone._nestedRun++;
                 if (!ngZone._hasExecutedCodeInInnerZone) {
                   ngZone._hasExecutedCodeInInnerZone = true;
+                  ngZone._notifyOnTurnStart(parentRun);
                   if (ngZone._onTurnStart) {
                     parentRun.call(ngZone._innerZone, ngZone._onTurnStart);
                   }
@@ -285,18 +367,24 @@ export class NgZone {
                 // to run()).
                 if (ngZone._pendingMicrotasks == 0 && ngZone._nestedRun == 0 &&
                     !this._inVmTurnDone) {
-                  if (ngZone._onTurnDone && ngZone._hasExecutedCodeInInnerZone) {
+                  if (ngZone._hasExecutedCodeInInnerZone) {
                     try {
                       this._inVmTurnDone = true;
-                      parentRun.call(ngZone._innerZone, ngZone._onTurnDone);
+                      ngZone._notifyOnTurnDone(parentRun);
+                      if (ngZone._onTurnDone) {
+                        parentRun.call(ngZone._innerZone, ngZone._onTurnDone);
+                      }
                     } finally {
                       this._inVmTurnDone = false;
                       ngZone._hasExecutedCodeInInnerZone = false;
                     }
                   }
 
-                  if (ngZone._pendingMicrotasks === 0 && isPresent(ngZone._onEventDone)) {
-                    ngZone.runOutsideAngular(ngZone._onEventDone);
+                  if (ngZone._pendingMicrotasks === 0) {
+                    ngZone._notifyOnEventDone();
+                    if (isPresent(ngZone._onEventDone)) {
+                      ngZone.runOutsideAngular(ngZone._onEventDone);
+                    }
                   }
                 }
               }
@@ -340,17 +428,22 @@ export class NgZone {
   }
 
   /** @internal */
-  _onError(zone, e): void {
-    if (isPresent(this._onErrorHandler)) {
+  _notifyOnError(zone, e): void {
+    if (isPresent(this._onErrorHandler) || ObservableWrapper.hasSubscribers(this._onErrorEvents)) {
       var trace = [normalizeBlank(e.stack)];
 
       while (zone && zone.constructedAtException) {
         trace.push(zone.constructedAtException.get());
         zone = zone.parent;
       }
-      this._onErrorHandler(e, trace);
+      if (ObservableWrapper.hasSubscribers(this._onErrorEvents)) {
+        ObservableWrapper.callNext(this._onErrorEvents, new NgZoneError(e, trace));
+      }
+      if (isPresent(this._onErrorHandler)) {
+        this._onErrorHandler(e, trace);
+      }
     } else {
-      console.log('## _onError ##');
+      console.log('## _notifyOnError ##');
       console.log(e.stack);
       throw e;
     }

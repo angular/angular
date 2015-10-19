@@ -35,6 +35,13 @@ class ObservableWrapper {
     return obs is Stream;
   }
 
+  /**
+   * Returns whether `emitter` has any subscribers listening to events.
+   */
+  static bool hasSubscribers(EventEmitter emitter) {
+    return emitter._controller.hasListener;
+  }
+
   static void dispose(StreamSubscription s) {
     s.cancel();
   }
@@ -55,8 +62,10 @@ class ObservableWrapper {
 class EventEmitter extends Stream {
   StreamController<dynamic> _controller;
 
-  EventEmitter() {
-    _controller = new StreamController.broadcast();
+  /// Creates an instance of [EventEmitter], which depending on [isAsync],
+  /// delivers events synchronously or asynchronously.
+  EventEmitter([bool isAsync = true]) {
+    _controller = new StreamController.broadcast(sync: !isAsync);
   }
 
   StreamSubscription listen(void onData(dynamic line),
