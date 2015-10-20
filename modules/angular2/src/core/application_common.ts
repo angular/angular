@@ -38,13 +38,13 @@ import {EXCEPTION_PROVIDER} from './platform_bindings';
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
 import {BrowserDetails} from 'angular2/src/animate/browser_details';
 import {wtfInit} from './profile/wtf_init';
-import {platformCommon, PlatformRef, applicationCommonBindings} from './application_ref';
+import {platformCommon, PlatformRef, applicationCommonProviders} from './application_ref';
 
 /**
  * A default set of providers which apply only to an Angular application running on
  * the UI thread.
  */
-export function applicationDomBindings(): Array<Type | Provider | any[]> {
+export function applicationDomProviders(): Array<Type | Provider | any[]> {
   if (isBlank(DOM)) {
     throw "Must set a root DOM adapter first.";
   }
@@ -66,6 +66,8 @@ export function applicationDomBindings(): Array<Type | Provider | any[]> {
     FORM_PROVIDERS
   ];
 }
+
+export const applicationDomBindings = applicationDomProviders;
 
 /**
  * Initialize the Angular 'platform' on the page.
@@ -100,8 +102,8 @@ export function applicationDomBindings(): Array<Type | Provider | any[]> {
  * DOM access. Web-worker applications should call `platform` from
  * `src/web_workers/worker/application_common` instead.
  */
-export function platform(bindings?: Array<Type | Provider | any[]>): PlatformRef {
-  return platformCommon(bindings, () => {
+export function platform(providers?: Array<Type | Provider | any[]>): PlatformRef {
+  return platformCommon(providers, () => {
     BrowserDomAdapter.makeCurrent();
     wtfInit();
     BrowserGetTestability.init();
@@ -219,12 +221,12 @@ export function platform(bindings?: Array<Type | Provider | any[]>): PlatformRef
  * Returns a `Promise` of {@link ComponentRef}.
  */
 export function commonBootstrap(appComponentType: /*Type*/ any,
-                                appBindings: Array<Type | Provider | any[]> = null):
+                                appProviders: Array<Type | Provider | any[]> = null):
     Promise<ComponentRef> {
   var p = platform();
-  var bindings = [applicationCommonBindings(), applicationDomBindings()];
-  if (isPresent(appBindings)) {
-    bindings.push(appBindings);
+  var bindings = [applicationCommonProviders(), applicationDomProviders()];
+  if (isPresent(appProviders)) {
+    bindings.push(appProviders);
   }
   return p.application(bindings).bootstrap(appComponentType);
 }
