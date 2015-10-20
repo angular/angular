@@ -1,10 +1,10 @@
 {
-  "name": "angular",
-  "version": "2.0.0-alpha.42",
+  "name": "angular-srcs",
+  "version": "2.0.0-alpha.44",
   "dependencies": {
     "@reactivex/rxjs": {
       "version": "5.0.0-alpha.4",
-      "from": "@reactivex/rxjs@5.0.0-alpha.4",
+      "from": "https://registry.npmjs.org/@reactivex/rxjs/-/rxjs-5.0.0-alpha.4.tgz",
       "resolved": "https://registry.npmjs.org/@reactivex/rxjs/-/rxjs-5.0.0-alpha.4.tgz"
     },
     "angular": {
@@ -4147,13 +4147,13 @@
       }
     },
     "clang-format": {
-      "version": "1.0.28",
-      "from": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.28.tgz",
-      "resolved": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.28.tgz",
+      "version": "1.0.32",
+      "from": "clang-format@1.0.32",
+      "resolved": "https://registry.npmjs.org/clang-format/-/clang-format-1.0.32.tgz",
       "dependencies": {
         "resolve": {
           "version": "1.1.6",
-          "from": "https://registry.npmjs.org/resolve/-/resolve-1.1.6.tgz",
+          "from": "resolve@>=1.1.6 <2.0.0",
           "resolved": "https://registry.npmjs.org/resolve/-/resolve-1.1.6.tgz"
         }
       }

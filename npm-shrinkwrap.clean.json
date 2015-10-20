@@ -2686,7 +2686,7 @@
       }
     },
     "clang-format": {
-      "version": "1.0.28",
+      "version": "1.0.32",
       "dependencies": {
         "resolve": {
           "version": "1.1.6"
@@ -11875,6 +11875,6 @@
       }
     }
   },
-  "name": "angular",
-  "version": "2.0.0-alpha.42"
+  "name": "angular-srcs",
+  "version": "2.0.0-alpha.44"
 }
