@@ -10,6 +10,7 @@ import 'package:angular2/src/core/linker/interfaces.dart' show LifecycleHooks;
 import 'package:angular2/src/core/metadata/view.dart' show ViewEncapsulation;
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/interface_matcher.dart';
+import 'package:angular2/src/transform/common/logging.dart';
 import 'package:barback/barback.dart' show AssetId;
 
 import 'naive_eval.dart';
@@ -173,6 +174,21 @@ class _DirectiveMetadataVisitor extends Object
         template: _template);
   }
 
+  /// Ensures that we do not specify View values on an `@Component` annotation
+  /// when there is a @View annotation present.
+  void _validateTemplates() {
+    if (_cmpTemplate != null && _viewTemplate != null) {
+      var name = '(Unknown)';
+      if (_type != null && _type.name != null && _type.name.isNotEmpty) {
+        name = _type.name;
+      }
+      logger.warning(
+          'Cannot specify view parameters on @Component when a @View '
+          'is present. Component name: ${name}',
+          asset: _assetId);
+    }
+  }
+
   @override
   Object visitAnnotation(Annotation node) {
     var isComponent = _annotationMatcher.isComponent(node, _assetId);
@@ -187,14 +203,14 @@ class _DirectiveMetadataVisitor extends Object
       _isComponent = isComponent;
       _hasMetadata = true;
       if (isComponent) {
-        var t = new _CompileTemplateMetadataVisitor().visitAnnotation(node);
-        if (t.template != null || t.templateUrl != null) {
-          _cmpTemplate = t;
-        }
+        _cmpTemplate =
+            new _CompileTemplateMetadataVisitor().visitAnnotation(node);
+        _validateTemplates();
       }
       super.visitAnnotation(node);
     } else if (_annotationMatcher.isView(node, _assetId)) {
       if (_viewTemplate != null) {
+        // TODO(kegluneq): Support multiple views on a single class.
         throw new FormatException(
             'Only one View is allowed per class. '
             'Found unexpected "$node".',
@@ -202,6 +218,7 @@ class _DirectiveMetadataVisitor extends Object
       }
       _viewTemplate =
           new _CompileTemplateMetadataVisitor().visitAnnotation(node);
+      _validateTemplates();
     }
 
     // Annotation we do not recognize - no need to visit.
@@ -353,15 +370,23 @@ class _LifecycleHookVisitor extends SimpleAstVisitor<List<LifecycleHooks>> {
 /// [CompileTemplateMetadata].
 class _CompileTemplateMetadataVisitor
     extends RecursiveAstVisitor<CompileTemplateMetadata> {
-  ViewEncapsulation _encapsulation = ViewEncapsulation.Emulated;
-  String _template = null;
-  String _templateUrl = null;
-  List<String> _styles = null;
-  List<String> _styleUrls = null;
+  ViewEncapsulation _encapsulation;
+  String _template;
+  String _templateUrl;
+  List<String> _styles;
+  List<String> _styleUrls;
 
   @override
   CompileTemplateMetadata visitAnnotation(Annotation node) {
     super.visitAnnotation(node);
+
+    if (_encapsulation == null &&
+        _template == null &&
+        _templateUrl == null &&
+        _styles == null &&
+        _styleUrls == null) {
+      return null;
+    }
 
     return new CompileTemplateMetadata(
         encapsulation: _encapsulation,
