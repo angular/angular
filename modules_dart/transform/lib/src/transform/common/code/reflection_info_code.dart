@@ -25,9 +25,6 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
   final ParameterVisitor _parameterVisitor = new ParameterVisitor();
   final _PropertyMetadataVisitor _propMetadataVisitor;
 
-  /// Whether an Angular 2 `Reflection` has been found.
-  bool _foundNgReflection = false;
-
   ReflectionInfoVisitor._(this.assetId, this._annotationMatcher,
       this._annotationVisitor, this._propMetadataVisitor);
 
@@ -37,8 +34,6 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
     return new ReflectionInfoVisitor._(assetId, annotationMatcher,
         annotationVisitor, new _PropertyMetadataVisitor(annotationVisitor));
   }
-
-  bool get shouldCreateNgDeps => _foundNgReflection;
 
   ConstructorDeclaration _getCtor(ClassDeclaration node) {
     int numCtorsFound = 0;
@@ -82,13 +77,26 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
     }
 
     if (node.metadata != null) {
+      var componentDirectives, viewDirectives;
       node.metadata.forEach((node) {
-        final extractedDirectives = _extractDirectives(node);
-        if (extractedDirectives != null) {
-          model.directives.addAll(extractedDirectives);
+        if (_annotationMatcher.isComponent(node, assetId)) {
+          componentDirectives = _extractDirectives(node);
+        } else if (_annotationMatcher.isView(node, assetId)) {
+          viewDirectives = _extractDirectives(node);
         }
         model.annotations.add(_annotationVisitor.visitAnnotation(node));
       });
+      if (componentDirectives != null && componentDirectives.isNotEmpty) {
+        if (viewDirectives != null) {
+          logger.warning(
+              'Cannot specify view parameters on @Component when a @View '
+              'is present. Component name: ${model.name}',
+              asset: assetId);
+        }
+        model.directives.addAll(componentDirectives);
+      } else if (viewDirectives != null) {
+        model.directives.addAll(viewDirectives);
+      }
     }
     if (ctor != null &&
         ctor.parameters != null &&
@@ -141,20 +149,26 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
     }
   }
 
+  /// Returns [PrefixedDirective] values parsed from the value of the
+  /// `directives` parameter of the provided `node`.
+  /// This will always return a non-null value, so if there are no `directives`
+  /// specified on `node`, it will return an empty iterable.
   Iterable<PrefixedDirective> _extractDirectives(Annotation node) {
-    var shouldProcess = _annotationMatcher.isComponent(node, assetId);
-    shouldProcess = shouldProcess || _annotationMatcher.isView(node, assetId);
+    assert(_annotationMatcher.isComponent(node, assetId) ||
+        _annotationMatcher.isView(node, assetId));
 
-    if (node.arguments == null && node.arguments.arguments == null) return null;
+    if (node.arguments == null && node.arguments.arguments == null) {
+      return const [];
+    }
     final directivesNode = node.arguments.arguments.firstWhere((arg) {
       return arg is NamedExpression && '${arg.name.label}' == 'directives';
     }, orElse: () => null);
-    if (directivesNode == null) return null;
+    if (directivesNode == null) return const [];
 
     if (directivesNode.expression is! ListLiteral) {
       logger.warning('Angular 2 expects a list literal for `directives` '
           'but found a ${directivesNode.expression.runtimeType}');
-      return null;
+      return const [];
     }
     final directives = <PrefixedDirective>[];
     for (var dep in (directivesNode.expression as ListLiteral).elements) {

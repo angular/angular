@@ -493,6 +493,44 @@ void allTests() {
         ..name = 'Dep'
         ..prefix = 'dep2');
     });
+
+    it('should warn if @Component has a `template` and @View is present.',
+        () async {
+      final logger = new RecordingLogger();
+      final model = await _testCreateModel('bad_directives_files/template.dart',
+          logger: logger);
+      var warning =
+          logger.logs.firstWhere((l) => l.contains('WARN'), orElse: () => null);
+      expect(warning).toBeNotNull();
+      expect(warning.toLowerCase())
+          .toContain('cannot specify view parameters on @component');
+    });
+
+    it('should warn if @Component has a `templateUrl` and @View is present.',
+        () async {
+      final logger = new RecordingLogger();
+      final model = await _testCreateModel(
+          'bad_directives_files/template_url.dart',
+          logger: logger);
+      var warning =
+          logger.logs.firstWhere((l) => l.contains('WARN'), orElse: () => null);
+      expect(warning).toBeNotNull();
+      expect(warning.toLowerCase())
+          .toContain('cannot specify view parameters on @component');
+    });
+
+    it('should warn if @Component has `directives` and @View is present.',
+        () async {
+      final logger = new RecordingLogger();
+      final model = await _testCreateModel(
+          'bad_directives_files/directives.dart',
+          logger: logger);
+      var warning =
+          logger.logs.firstWhere((l) => l.contains('WARN'), orElse: () => null);
+      expect(warning).toBeNotNull();
+      expect(warning.toLowerCase())
+          .toContain('cannot specify view parameters on @component');
+    });
   });
 }
 
