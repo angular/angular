@@ -15,8 +15,8 @@ import {
   Provider,
   Type
 } from 'angular2/angular2';
-import {applicationDomBindings} from 'angular2/src/core/application_common';
-import {applicationCommonBindings} from 'angular2/src/core/application_ref';
+import {applicationDomProviders} from 'angular2/src/core/application_common';
+import {applicationCommonProviders} from 'angular2/src/core/application_ref';
 import {compilerProviders} from 'angular2/src/core/compiler/compiler';
 
 import {getComponentInfo, ComponentInfo} from './metadata';
@@ -298,8 +298,8 @@ export class UpgradeAdapter {
     var ng1Injector: angular.auto.IInjectorService = null;
     var platformRef: PlatformRef = platform();
     var applicationRef: ApplicationRef = platformRef.application([
-      applicationCommonBindings(),
-      applicationDomBindings(),
+      applicationCommonProviders(),
+      applicationDomProviders(),
       compilerProviders(),
       provide(NG1_INJECTOR, {useFactory: () => ng1Injector}),
       provide(NG1_COMPILE, {useFactory: () => ng1Injector.get(NG1_COMPILE)}),
