@@ -10,8 +10,12 @@ void initReflector(reflector) {
   reflector
     ..registerType(
         ToolTip,
-        new ReflectionInfo(const [
-          const Directive(
-              selector: '[tool-tip]')
-        ], const [], () => new ToolTip(), null, const {'queryField': const [const ContentChild('child')]}));
+        new ReflectionInfo(
+            const [const Directive(selector: '[tool-tip]')],
+            const [],
+            () => new ToolTip(),
+            null,
+            const {
+              'queryField': const [const ContentChild('child')]
+            }));
 }

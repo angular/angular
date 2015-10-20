@@ -94,8 +94,9 @@ main() {
             async.done();
           });
 
-          controller
-              .add(JSON.encode([{'channel': CHANNEL, 'message': MESSAGE}]));
+          controller.add(JSON.encode([
+            {'channel': CHANNEL, 'message': MESSAGE}
+          ]));
         }));
   });
 }

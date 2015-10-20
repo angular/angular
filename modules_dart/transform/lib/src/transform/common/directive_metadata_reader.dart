@@ -171,7 +171,7 @@ class _DirectiveMetadataVisitor extends Object
         type: _type,
         isComponent: _isComponent,
         dynamicLoadable: true,
-    // NOTE(kegluneq): For future optimization.
+        // NOTE(kegluneq): For future optimization.
         selector: _selector,
         exportAs: _exportAs,
         changeDetection: _changeDetection,
@@ -190,7 +190,7 @@ class _DirectiveMetadataVisitor extends Object
       if (_hasMetadata) {
         throw new FormatException(
             'Only one Directive is allowed per class. '
-                'Found unexpected "$node".',
+            'Found unexpected "$node".',
             '$node' /* source */);
       }
       _isComponent = isComponent;
@@ -203,13 +203,14 @@ class _DirectiveMetadataVisitor extends Object
       }
       super.visitAnnotation(node);
     } else if (_annotationMatcher.isView(node, _assetId)) {
-      if (_viewTemplate!= null) {
+      if (_viewTemplate != null) {
         throw new FormatException(
             'Only one View is allowed per class. '
             'Found unexpected "$node".',
             '$node' /* source */);
       }
-      _viewTemplate = new _CompileTemplateMetadataVisitor().visitAnnotation(node);
+      _viewTemplate =
+          new _CompileTemplateMetadataVisitor().visitAnnotation(node);
     }
 
     // Annotation we do not recognize - no need to visit.

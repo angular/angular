@@ -7,5 +7,3 @@ import 'package:angular2/testing_internal.dart';
 class SpyMessageBroker extends SpyObject implements ClientMessageBroker {
   noSuchMethod(m) => super.noSuchMethod(m);
 }
-
-

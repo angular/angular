@@ -6,8 +6,7 @@ import 'package:angular2/src/core/facade/async.dart';
 /**
  * See query_list.ts
  */
-class QueryList<T> extends Object
-    with IterableMixin<T> {
+class QueryList<T> extends Object with IterableMixin<T> {
   List<T> _results = [];
   EventEmitter _emitter = new EventEmitter();
 

@@ -214,7 +214,6 @@ class NgZone {
           try {
             _inVmTurnDone = true;
             parent.run(_innerZone, _onTurnDone);
-
           } finally {
             _inVmTurnDone = false;
             _hasExecutedCodeInInnerZone = false;

@@ -10,7 +10,7 @@ import "dart:convert";
 
 main() {
   describe("bootstrapWebWorkerCommon", () {
-    it ("should bootstrap on a Dart VM",  () {
+    it("should bootstrap on a Dart VM", () {
       reflector.reflectionCapabilities = new ReflectionCapabilities();
       var buses = createPairedMessageBuses();
       bootstrapWebWorkerCommon(App, buses.worker);

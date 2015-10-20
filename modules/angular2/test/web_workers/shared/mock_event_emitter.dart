@@ -10,7 +10,8 @@ class MockEventEmitter extends EventEmitter {
   @override
   StreamSubscription listen(void onData(dynamic line),
       {void onError(Error error), void onDone(), bool cancelOnError}) {
-    return controller.stream.listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+    return controller.stream.listen(onData,
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
   @override

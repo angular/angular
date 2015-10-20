@@ -67,7 +67,6 @@ void testSetup() {
   }, priority: 1);
 }
 
-
 /**
  * Allows overriding default bindings defined in test_injector.js.
  *
@@ -93,14 +92,16 @@ void beforeEachBindings(Function fn) {
 }
 
 void beforeEach(fn) {
-  if (fn is! FunctionWithParamTokens) fn = new FunctionWithParamTokens([], fn, false);
+  if (fn is! FunctionWithParamTokens) fn =
+      new FunctionWithParamTokens([], fn, false);
   gns.beforeEach(() {
     fn.execute(_injector);
   });
 }
 
 void _it(gnsFn, name, fn) {
-  if (fn is! FunctionWithParamTokens) fn = new FunctionWithParamTokens([], fn, false);
+  if (fn is! FunctionWithParamTokens) fn =
+      new FunctionWithParamTokens([], fn, false);
   gnsFn(name, () {
     _inIt = true;
     fn.execute(_injector);
@@ -139,7 +140,9 @@ class SpyObject extends gns.SpyObject {
       _spyFuncs.putIfAbsent(funcName, () => new SpyFunction(funcName));
 
   void prop(String funcName, value) {
-    _spyFuncs.putIfAbsent("get:${funcName}", () => new SpyFunction(funcName)).andReturn(value);
+    _spyFuncs
+        .putIfAbsent("get:${funcName}", () => new SpyFunction(funcName))
+        .andReturn(value);
   }
 
   static stub([object = null, config = null, overrides = null]) {

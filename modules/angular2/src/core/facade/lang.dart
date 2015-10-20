@@ -94,7 +94,7 @@ class StringWrapper {
     start = _startOffset(s, start);
     end = _endOffset(s, end);
     //in JS if start > end an empty string is returned
-    if(end != null && start > end) {
+    if (end != null && start > end) {
       return "";
     }
     return s.substring(start, end);

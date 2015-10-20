@@ -5,7 +5,8 @@ import "package:angular2/src/web_workers/worker/application_common.dart"
     show bootstrapWebWorkerCommon;
 import "package:angular2/src/core/facade/async.dart" show Future;
 import "package:angular2/src/core/facade/lang.dart" show Type, BaseException;
-import "package:angular2/src/core/linker/dynamic_component_loader.dart" show ComponentRef;
+import "package:angular2/src/core/linker/dynamic_component_loader.dart"
+    show ComponentRef;
 import "dart:isolate";
 import "dart:async";
 import 'dart:core';
@@ -22,8 +23,7 @@ import 'package:angular2/src/core/dom/webworker_adapter.dart';
  * bootstrap() in a regular Angular application
  * See the bootstrap() docs for more details.
  */
-Future<ComponentRef> bootstrapWebWorker(
-    SendPort replyTo, Type appComponentType,
+Future<ComponentRef> bootstrapWebWorker(SendPort replyTo, Type appComponentType,
     [List<dynamic> componentInjectableBindings = null]) {
   WebWorkerDomAdapter.makeCurrent();
   ReceivePort rPort = new ReceivePort();
