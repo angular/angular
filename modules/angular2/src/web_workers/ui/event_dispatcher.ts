@@ -81,6 +81,7 @@ export class EventDispatcher implements RenderEventDispatcher {
       case "ratechange":
       case "readystatechange":
       case "reset":
+      case "scroll":
       case "seeked":
       case "seeking":
       case "stalled":
