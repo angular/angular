@@ -295,8 +295,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
       } else if (isPresent(
                      bindParts[2])) {  // match: var-name / var-name="iden" / #name / #name="iden"
         var identifier = bindParts[5];
-        this._parseVariable(identifier, attrValue, attr.sourceInfo, targetMatchableAttrs,
-                            targetVars);
+        this._parseVariable(identifier, attrValue, attr.sourceInfo, targetVars);
 
       } else if (isPresent(bindParts[3])) {  // match: on-event
         this._parseEvent(bindParts[5], attrValue, attr.sourceInfo, targetMatchableAttrs,
@@ -338,9 +337,8 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   }
 
   private _parseVariable(identifier: string, value: string, sourceInfo: any,
-                         targetMatchableAttrs: string[][], targetVars: VariableAst[]) {
+                         targetVars: VariableAst[]) {
     targetVars.push(new VariableAst(dashCaseToCamelCase(identifier), value, sourceInfo));
-    targetMatchableAttrs.push([identifier, value]);
   }
 
   private _parseProperty(name: string, expression: string, sourceInfo: any,

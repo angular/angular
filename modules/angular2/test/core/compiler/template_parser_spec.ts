@@ -379,19 +379,6 @@ export function main() {
               ]);
         });
 
-        it('should locate directives in variable bindings', () => {
-          var dirA = CompileDirectiveMetadata.create(
-              {selector: '[a=b]', exportAs: 'b', type: new CompileTypeMetadata({name: 'DirA'})});
-          var dirB = CompileDirectiveMetadata.create(
-              {selector: '[b]', type: new CompileTypeMetadata({name: 'DirB'})});
-          expect(humanizeTemplateAsts(parse('<div #a="b">', [dirA, dirB])))
-              .toEqual([
-                [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [DirectiveAst, dirA, 'TestComp > div:nth-child(0)'],
-                [VariableAst, 'a', 'b', 'TestComp > div:nth-child(0)[#a=b]']
-              ]);
-        });
-
         it('should parse directive host properties', () => {
           var dirA = CompileDirectiveMetadata.create({
             selector: 'div',
@@ -537,9 +524,10 @@ export function main() {
         it('should assign variables to directives via exportAs', () => {
           var dirA = CompileDirectiveMetadata.create(
               {selector: '[a]', type: new CompileTypeMetadata({name: 'DirA'}), exportAs: 'dirA'});
-          expect(humanizeTemplateAsts(parse('<div #a="dirA"></div>', [dirA])))
+          expect(humanizeTemplateAsts(parse('<div a #a="dirA"></div>', [dirA])))
               .toEqual([
                 [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
+                [AttrAst, 'a', '', 'TestComp > div:nth-child(0)[a=]'],
                 [DirectiveAst, dirA, 'TestComp > div:nth-child(0)'],
                 [VariableAst, 'a', 'dirA', 'TestComp > div:nth-child(0)[#a=dirA]']
               ]);
@@ -566,9 +554,10 @@ There is no directive with "exportAs" set to "dirA" at TestComp > div:nth-child(
             type: new CompileTypeMetadata({name: 'DirA'}),
             exportAs: 'dirA', template: new CompileTemplateMetadata({ngContentSelectors: []})
           });
-          expect(humanizeTemplateAsts(parse('<div #a></div>', [dirA])))
+          expect(humanizeTemplateAsts(parse('<div a #a></div>', [dirA])))
               .toEqual([
                 [ElementAst, 'div', 'TestComp > div:nth-child(0)'],
+                [AttrAst, 'a', '', 'TestComp > div:nth-child(0)[a=]'],
                 [VariableAst, 'a', '', 'TestComp > div:nth-child(0)[#a=]'],
                 [DirectiveAst, dirA, 'TestComp > div:nth-child(0)'],
                 [VariableAst, 'a', '', 'TestComp > div:nth-child(0)[#a=]']
