@@ -8,7 +8,8 @@ library change_detection.change_detection_jit_generator;
 /// `src/transform/template_compiler/change_detector_codegen.dart` for details.
 class ChangeDetectorJITGenerator {
   String typeName;
-  ChangeDetectorJITGenerator(definition, changeDetectionUtilVarName, abstractChangeDetectorVarName) {}
+  ChangeDetectorJITGenerator(
+      definition, changeDetectionUtilVarName, abstractChangeDetectorVarName) {}
 
   generate() {
     throw "Jit Change Detection is not supported in Dart";

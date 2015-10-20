@@ -18,6 +18,7 @@ void expectSinkSendsEncodedJson(SpyObject socket, MessageBusSink sink,
 }
 
 void expectMessageEquality(String message, Map expectedData, String channel) {
-  expect(JSON.decode(message))
-      .toEqual([{'channel': channel, 'message': expectedData}]);
+  expect(JSON.decode(message)).toEqual([
+    {'channel': channel, 'message': expectedData}
+  ]);
 }

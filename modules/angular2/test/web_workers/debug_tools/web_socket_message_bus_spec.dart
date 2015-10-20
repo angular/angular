@@ -50,8 +50,9 @@ main() {
           });
 
           var event = new SpyMessageEvent();
-          event.spy("get:data").andCallFake(
-              () => JSON.encode([{'channel': CHANNEL, 'message': MESSAGE}]));
+          event.spy("get:data").andCallFake(() => JSON.encode([
+                {'channel': CHANNEL, 'message': MESSAGE}
+              ]));
           controller.add(event);
         }));
   });

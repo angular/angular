@@ -47,7 +47,8 @@ const _ON_AFTER_CONTENT_INIT_INTERFACES = const [
       'AfterContentInit', 'package:angular2/src/core/linker/interfaces.dart')
 ];
 const _ON_AFTER_CONTENT_CHECKED_INTERFACES = const [
-  const ClassDescriptor('AfterContentChecked', 'package:angular2/angular2.dart'),
+  const ClassDescriptor(
+      'AfterContentChecked', 'package:angular2/angular2.dart'),
   const ClassDescriptor(
       'AfterContentChecked', 'package:angular2/lifecycle_hooks.dart'),
   const ClassDescriptor(
@@ -112,12 +113,13 @@ class InterfaceMatcher extends ClassMatcherBase {
       firstMatch(typeName, assetId), _ON_AFTER_CONTENT_INIT_INTERFACES);
 
   /// Checks if an [Identifier] implements [AfterContentChecked].
-  bool isAfterContentChecked(Identifier typeName, AssetId assetId) => implements(
-      firstMatch(typeName, assetId), _ON_AFTER_CONTENT_CHECKED_INTERFACES);
+  bool isAfterContentChecked(Identifier typeName, AssetId assetId) =>
+      implements(
+          firstMatch(typeName, assetId), _ON_AFTER_CONTENT_CHECKED_INTERFACES);
 
   /// Checks if an [Identifier] implements [AfterViewInit].
-  bool isAfterViewInit(Identifier typeName, AssetId assetId) => implements(
-      firstMatch(typeName, assetId), _ON_AFTER_VIEW_INIT_INTERFACES);
+  bool isAfterViewInit(Identifier typeName, AssetId assetId) =>
+      implements(firstMatch(typeName, assetId), _ON_AFTER_VIEW_INIT_INTERFACES);
 
   /// Checks if an [Identifier] implements [AfterViewChecked].
   bool isAfterViewChecked(Identifier typeName, AssetId assetId) => implements(

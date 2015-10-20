@@ -83,7 +83,8 @@ class SpyProtoViewFactory extends SpyObject implements ProtoViewFactory {
 }
 
 @proxy
-class SpyProtoElementInjector extends SpyObject implements ProtoElementInjector {
+class SpyProtoElementInjector extends SpyObject
+    implements ProtoElementInjector {
   noSuchMethod(m) => super.noSuchMethod(m);
 }
 
@@ -108,7 +109,8 @@ class SpyXHR extends SpyObject implements XHR {
 }
 
 @proxy
-class SpyRenderEventDispatcher extends SpyObject implements RenderEventDispatcher {
+class SpyRenderEventDispatcher extends SpyObject
+    implements RenderEventDispatcher {
   noSuchMethod(m) => super.noSuchMethod(m);
 }
 

@@ -45,8 +45,8 @@ Uri toAssetScheme(Uri absoluteUri) {
   if (absoluteUri == null) throw new ArgumentError.notNull('absoluteUri');
 
   if (!absoluteUri.isAbsolute) {
-    throw new ArgumentError.value(
-        absoluteUri.toString(), 'absoluteUri', 'Value passed must be an absolute uri');
+    throw new ArgumentError.value(absoluteUri.toString(), 'absoluteUri',
+        'Value passed must be an absolute uri');
   }
   if (absoluteUri.scheme == 'asset') {
     if (absoluteUri.pathSegments.length < 3) {

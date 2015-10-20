@@ -340,13 +340,13 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
     throw 'not implemented';
   }
 
-  bool isPageRule(rule)  => (rule.type == 6);
+  bool isPageRule(rule) => (rule.type == 6);
 
   bool isStyleRule(rule) => (rule.type == 1);
 
   bool isMediaRule(rule) => (rule.type == 4);
 
-  bool isKeyframesRule(rule)  => (rule.type == 7);
+  bool isKeyframesRule(rule) => (rule.type == 7);
 
   String getHref(element) {
     throw 'not implemented';

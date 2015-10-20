@@ -18,22 +18,19 @@ List<EmulatedCssRule> parseAndEmulateCssRules(String css) {
 
 /// Converts `csslib` [rules] to their emulated counterparts.
 List<EmulatedCssRule> emulateRules(Iterable<cssv.TreeNode> rules) {
-  return rules
-    .map((cssv.TreeNode node) {
-      if (node is cssv.RuleSet) {
-        if (node.declarationGroup.span.text.isEmpty) {
-          // Skip CSS matchers with no bodies
-          return null;
-        }
-        return new EmulatedCssStyleRule(node);
-      } else if (node is cssv.MediaDirective) {
-        return new EmulatedCssMedialRule(node);
-      } else if (node is cssv.ImportDirective) {
-        return new EmulatedCssImportRule(node);
+  return rules.map((cssv.TreeNode node) {
+    if (node is cssv.RuleSet) {
+      if (node.declarationGroup.span.text.isEmpty) {
+        // Skip CSS matchers with no bodies
+        return null;
       }
-    })
-    .where((r) => r != null)
-    .toList();
+      return new EmulatedCssStyleRule(node);
+    } else if (node is cssv.MediaDirective) {
+      return new EmulatedCssMedialRule(node);
+    } else if (node is cssv.ImportDirective) {
+      return new EmulatedCssImportRule(node);
+    }
+  }).where((r) => r != null).toList();
 }
 
 /// Emulates [CSSRule](https://developer.mozilla.org/en-US/docs/Web/API/CSSRule)
@@ -98,8 +95,8 @@ class EmulatedMediaList {
   String mediaText;
 
   EmulatedMediaList(cssv.MediaDirective directive) {
-    this.mediaText = directive.mediaQueries
-        .map((q) => q.span.text).join(' and ');
+    this.mediaText =
+        directive.mediaQueries.map((q) => q.span.text).join(' and ');
   }
 }
 
