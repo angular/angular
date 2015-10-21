@@ -46,7 +46,7 @@ export class Validators {
   static compose(validators: Function[]): Function {
     if (isBlank(validators)) return Validators.nullValidator;
 
-    return function(control: modelModule.Control) {
+    return function(control: modelModule.AbstractControl) {
       var res = ListWrapper.reduce(validators, (res, validator) => {
         var errors = validator(control);
         return isPresent(errors) ? StringMapWrapper.merge(<any>res, <any>errors) : res;
@@ -55,24 +55,24 @@ export class Validators {
     };
   }
 
-  static group(group: modelModule.ControlGroup): {[key: string]: any[]} {
+  static group(group: modelModule.ControlGroup): {[key: string]: any} {
     var res: {[key: string]: any[]} = {};
     StringMapWrapper.forEach(group.controls, (control, name) => {
       if (group.contains(name) && isPresent(control.errors)) {
         Validators._mergeErrors(control, res);
       }
     });
-    return StringMapWrapper.isEmpty(res) ? null : res;
+    return StringMapWrapper.isEmpty(res) ? null : {'controls': res};
   }
 
-  static array(array: modelModule.ControlArray): {[key: string]: any[]} {
+  static array(array: modelModule.ControlArray): {[key: string]: any} {
     var res: {[key: string]: any[]} = {};
     array.controls.forEach((control) => {
       if (isPresent(control.errors)) {
         Validators._mergeErrors(control, res);
       }
     });
-    return StringMapWrapper.isEmpty(res) ? null : res;
+    return StringMapWrapper.isEmpty(res) ? null : {'controls': res};
   }
 
   static _mergeErrors(control: modelModule.AbstractControl, res: {[key: string]: any[]}): void {

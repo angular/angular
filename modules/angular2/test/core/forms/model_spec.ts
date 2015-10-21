@@ -192,7 +192,7 @@ export function main() {
 
           expect(g.valid).toEqual(false);
 
-          expect(g.errors).toEqual({"required": [one]});
+          expect(g.errors).toEqual({"controls": {"required": [one]}});
         });
 
         it("should run the validator with the value changes", () => {
@@ -445,7 +445,7 @@ export function main() {
           ]);
 
           expect(a.valid).toBe(false);
-          expect(a.errors).toEqual({"required": [a.controls[1]]});
+          expect(a.errors).toEqual({"controls": {"required": [a.controls[1]]}});
         });
 
         it("should run the validator when the value changes", () => {
