@@ -19,7 +19,7 @@ import 'remove_reflection_capabilities.dart';
 /// have already been run and that a .ng_deps.dart file has been generated for
 /// {@link options.entryPoint}. The instantiation of {@link ReflectionCapabilities} is
 /// replaced by calling `setupReflection` in that .ng_deps.dart file.
-class ReflectionRemover extends Transformer implements DeclaringTransformer {
+class ReflectionRemover extends Transformer {
   final TransformerOptions options;
 
   ReflectionRemover(this.options);
@@ -27,12 +27,6 @@ class ReflectionRemover extends Transformer implements DeclaringTransformer {
   @override
   bool isPrimary(AssetId id) => options.entryPointGlobs != null &&
       options.entryPointGlobs.any((g) => g.matches(id.path));
-
-  @override
-  declareOutputs(DeclaringTransform transform) {
-    transform.consumePrimary();
-    transform.declareOutput(transform.primaryId);
-  }
 
   @override
   Future apply(Transform transform) async {
@@ -51,7 +45,6 @@ class ReflectionRemover extends Transformer implements DeclaringTransformer {
       var transformedCode = await removeReflectionCapabilities(
           new AssetReader.fromTransform(transform), primaryId,
           mirrorMode: mirrorMode, writeStaticInit: writeStaticInit);
-      transform.consumePrimary();
       transform.addOutput(new Asset.fromString(primaryId, transformedCode));
     });
   }

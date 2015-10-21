@@ -17,7 +17,7 @@ import 'package:barback/barback.dart';
 import 'package:dart_style/dart_style.dart';
 
 /// Processes .dart files and inlines `templateUrl` and styleUrls` values.
-class InlinerForTest extends Transformer implements DeclaringTransformer {
+class InlinerForTest extends Transformer {
   final DartFormatter _formatter;
   final AnnotationMatcher _annotationMatcher;
 
@@ -29,16 +29,9 @@ class InlinerForTest extends Transformer implements DeclaringTransformer {
   bool isPrimary(AssetId id) => id.extension.endsWith('dart');
 
   @override
-  declareOutputs(DeclaringTransform transform) {
-    transform.consumePrimary();
-    transform.declareOutput(transform.primaryId);
-  }
-
-  @override
   Future apply(Transform transform) async {
     return initZoned(transform, () async {
       var primaryId = transform.primaryInput.id;
-      transform.consumePrimary();
       var inlinedCode = await inline(new AssetReader.fromTransform(transform),
           primaryId, _annotationMatcher);
       if (inlinedCode == null || inlinedCode.isEmpty) {

@@ -20,21 +20,11 @@ import 'ng_meta_linker.dart';
 ///
 /// See `common/ng_meta.dart` for the JSON format of these files are serialized
 /// to.
-class DirectiveMetadataLinker extends Transformer
-    implements DeclaringTransformer {
+class DirectiveMetadataLinker extends Transformer {
   final _encoder = const JsonEncoder.withIndent('  ');
 
   @override
   bool isPrimary(AssetId id) => id.path.endsWith(META_EXTENSION);
-
-  @override
-  declareOutputs(DeclaringTransform transform) {
-    // TODO(kegluenq): We should consume this, but doing so causes barback to
-    // incorrectly determine what assets are available in this phase.
-    // transform.consumePrimary();
-    transform.declareOutput(transform.primaryId);
-    transform.declareOutput(_depsAssetId(transform.primaryId));
-  }
 
   @override
   Future apply(Transform transform) {
@@ -43,8 +33,6 @@ class DirectiveMetadataLinker extends Transformer
 
       return linkDirectiveMetadata(
           new AssetReader.fromTransform(transform), primaryId).then((ngMeta) {
-        // See above
-        // transform.consumePrimary();
         if (ngMeta != null) {
           if (!ngMeta.types.isEmpty || !ngMeta.aliases.isEmpty) {
             transform.addOutput(new Asset.fromString(

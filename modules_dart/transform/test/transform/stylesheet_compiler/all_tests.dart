@@ -41,17 +41,6 @@ allTests() {
         .toBe(false);
   });
 
-  it('should declare outputs', () {
-    var transform = new FakeDeclaringTransform()
-      ..primaryId = new AssetId('somepackage', 'lib/style.css');
-    subject.declareOutputs(transform);
-    expect(transform.outputs.length).toBe(2);
-    expect(transform.outputs[0].toString())
-        .toEqual('somepackage|lib/style.css.dart');
-    expect(transform.outputs[1].toString())
-        .toEqual('somepackage|lib/style.css.shim.dart');
-  });
-
   it('should compile stylesheets', () async {
     var cssFile = new Asset.fromString(
         new AssetId('somepackage', 'lib/style.css'), SIMPLE_CSS);

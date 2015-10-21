@@ -16,7 +16,7 @@ import 'generator.dart';
 ///
 /// These setters are registered in the same `setupReflection` function with
 /// the `registerType` calls.
-class BindGenerator extends Transformer implements DeclaringTransformer {
+class BindGenerator extends Transformer {
   final TransformerOptions options;
 
   BindGenerator(this.options);
@@ -25,18 +25,11 @@ class BindGenerator extends Transformer implements DeclaringTransformer {
   bool isPrimary(AssetId id) => id.path.endsWith(DEPS_EXTENSION);
 
   @override
-  declareOutputs(DeclaringTransform transform) {
-    transform.consumePrimary();
-    transform.declareOutput(transform.primaryId);
-  }
-
-  @override
   Future apply(Transform transform) async {
     await log.initZoned(transform, () async {
       var primaryId = transform.primaryInput.id;
       var reader = new AssetReader.fromTransform(transform);
       var transformedCode = await createNgSettersAndGetters(reader, primaryId);
-      transform.consumePrimary();
       transform.addOutput(new Asset.fromString(
           primaryId, formatter.format(transformedCode, uri: primaryId.path)));
     });
