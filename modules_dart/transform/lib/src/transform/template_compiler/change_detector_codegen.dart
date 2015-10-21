@@ -354,7 +354,7 @@ class _CodegenState {
     var pipeType = r.name;
 
     var init = '''
-      if (${_genPrefix}$_IDENTICAL_CHECK_FN($pipe, ${_genPrefix}$_UTIL.uninitialized)) {
+      if ($pipe == ${_genPrefix}$_UTIL.uninitialized) {
         $pipe = ${_names.getPipesAccessorName()}.get('$pipeType');
       }
     ''';
@@ -368,7 +368,7 @@ class _CodegenState {
     var condition = '''!${pipe}.pure || (${contexOrArgCheck.join(" || ")})''';
 
     var check = '''
-      if (${_genPrefix}$_NOT_IDENTICAL_CHECK_FN($oldValue, $newValue)) {
+      if (${_genPrefix}$_UTIL.looseNotIdentical($oldValue, $newValue)) {
         $newValue = ${_genPrefix}$_UTIL.unwrapValue($newValue);
         ${_genChangeMarker(r)}
         ${_genUpdateDirectiveOrElement(r)}
@@ -394,7 +394,7 @@ class _CodegenState {
     ''';
 
     var check = '''
-      if (${_genPrefix}$_NOT_IDENTICAL_CHECK_FN($newValue, $oldValue)) {
+      if (${_genPrefix}$_UTIL.looseNotIdentical($newValue, $oldValue)) {
         ${_genChangeMarker(r)}
         ${_genUpdateDirectiveOrElement(r)}
         ${_genAddToChanges(r)}
@@ -532,8 +532,6 @@ const _CHANGES_LOCAL = 'changes';
 const _GEN_PREFIX = '_gen';
 const _GEN_PREFIX_WITH_DOT = _GEN_PREFIX + '.';
 const _GEN_RECORDS_METHOD_NAME = '_createRecords';
-const _IDENTICAL_CHECK_FN = 'looseIdentical';
-const _NOT_IDENTICAL_CHECK_FN = 'looseNotIdentical';
 const _IS_CHANGED_LOCAL = 'isChanged';
 const _PREGEN_PROTO_CHANGE_DETECTOR_IMPORT =
     'package:angular2/src/core/change_detection/pregen_proto_change_detector.dart';

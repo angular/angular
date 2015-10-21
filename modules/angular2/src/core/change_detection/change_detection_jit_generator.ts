@@ -284,7 +284,7 @@ export class ChangeDetectorJITGenerator {
     var condition = `!${pipe}.pure || (${contexOrArgCheck.join(" || ")})`;
 
     var check = `
-      if (${oldValue} !== ${newValue}) {
+      if (${this.changeDetectionUtilVarName}.looseNotIdentical(${oldValue}, ${newValue})) {
         ${newValue} = ${this.changeDetectionUtilVarName}.unwrapValue(${newValue})
         ${this._genChangeMarker(r)}
         ${this._genUpdateDirectiveOrElement(r)}
@@ -311,7 +311,7 @@ export class ChangeDetectorJITGenerator {
     `;
 
     var check = `
-      if (${newValue} !== ${oldValue}) {
+      if (${this.changeDetectionUtilVarName}.looseNotIdentical(${oldValue}, ${newValue})) {
         ${this._genChangeMarker(r)}
         ${this._genUpdateDirectiveOrElement(r)}
         ${this._genAddToChanges(r)}
