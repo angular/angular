@@ -12,18 +12,12 @@ import 'package:barback/barback.dart';
 import 'processor.dart';
 
 /// Pre-compiles CSS stylesheet files to Dart code for Angular 2.
-class StylesheetCompiler extends Transformer implements DeclaringTransformer {
+class StylesheetCompiler extends Transformer {
   StylesheetCompiler();
 
   @override
   bool isPrimary(AssetId id) {
     return id.path.endsWith(CSS_EXTENSION);
-  }
-
-  @override
-  declareOutputs(DeclaringTransform transform) {
-    transform.declareOutput(nonShimmedStylesheetAssetId(transform.primaryId));
-    transform.declareOutput(shimmedStylesheetAssetId(transform.primaryId));
   }
 
   @override

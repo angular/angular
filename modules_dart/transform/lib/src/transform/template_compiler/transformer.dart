@@ -18,20 +18,13 @@ import 'generator.dart';
 /// extracting information about what reflection is necessary to render and
 /// use that template. It then generates code in place of those reflective
 /// accesses.
-class TemplateCompiler extends Transformer implements DeclaringTransformer {
+class TemplateCompiler extends Transformer {
   final TransformerOptions options;
 
   TemplateCompiler(this.options);
 
   @override
   bool isPrimary(AssetId id) => id.path.endsWith(DEPS_EXTENSION);
-
-  @override
-  declareOutputs(DeclaringTransform transform) {
-    transform.consumePrimary();
-    transform.declareOutput(transform.primaryId);
-    transform.declareOutput(templatesAssetId(transform.primaryId));
-  }
 
   @override
   Future apply(Transform transform) async {
@@ -41,7 +34,6 @@ class TemplateCompiler extends Transformer implements DeclaringTransformer {
       var reader = new AssetReader.fromTransform(transform);
       var outputs = await processTemplates(reader, primaryId,
           reflectPropertiesAsAttributes: options.reflectPropertiesAsAttributes);
-      transform.consumePrimary();
       var ngDepsCode = '';
       var templatesCode = '';
       if (outputs != null) {
