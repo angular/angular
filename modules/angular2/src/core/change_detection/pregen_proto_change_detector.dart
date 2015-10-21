@@ -49,8 +49,3 @@ class PregenProtoChangeDetector extends ProtoChangeDetector {
   @override
   instantiate(dynamic dispatcher) => _instantiateMethod(dispatcher);
 }
-
-/// Provided as an optimization to cut down on '!' characters in generated
-/// change detectors. See https://github.com/angular/angular/issues/3248 for
-/// for details.
-bool looseNotIdentical(a, b) => !looseIdentical(a, b);

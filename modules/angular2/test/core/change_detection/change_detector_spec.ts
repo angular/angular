@@ -17,8 +17,10 @@ import {
   CONST_EXPR,
   isPresent,
   isBlank,
+  isNumber,
   isJsObject,
   FunctionWrapper,
+  NumberWrapper,
   normalizeBool
 } from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
@@ -256,6 +258,19 @@ export function main() {
         var person = new Person('Victor');
         var td = new TestData(person);
         expect(_bindSimpleValue('a.sayHi("Jim")', td)).toEqual(['propName=Hi, Jim']);
+      });
+
+      it('should support NaN', () => {
+        var person = new Person('misko');
+        person.age = NumberWrapper.NaN;
+        var val = _createChangeDetector('age', person);
+
+        val.changeDetector.detectChanges();
+        expect(val.dispatcher.log).toEqual(['propName=NaN']);
+        val.dispatcher.clear();
+
+        val.changeDetector.detectChanges();
+        expect(val.dispatcher.log).toEqual([]);
       });
 
       it('should do simple watching', () => {
@@ -1420,7 +1435,13 @@ class TestDispatcher implements ChangeDispatcher {
 
   getDebugContext(a, b) { return null; }
 
-  _asString(value) { return (isBlank(value) ? 'null' : value.toString()); }
+  _asString(value) {
+    if (isNumber(value) && NumberWrapper.isNaN(value)) {
+      return 'NaN';
+    }
+
+    return isBlank(value) ? 'null' : value.toString();
+  }
 }
 
 class _ChangeDetectorAndDispatcher {

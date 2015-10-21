@@ -1,4 +1,11 @@
-import {CONST_EXPR, isPresent, isBlank, Type, StringWrapper} from 'angular2/src/core/facade/lang';
+import {
+  CONST_EXPR,
+  isPresent,
+  isBlank,
+  Type,
+  StringWrapper,
+  looseIdentical
+} from 'angular2/src/core/facade/lang';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {ProtoRecord} from './proto_record';
@@ -202,4 +209,6 @@ export class ChangeDetectionUtil {
   static directiveIndex(elementIndex: number, directiveIndex: number): DirectiveIndex {
     return new DirectiveIndex(elementIndex, directiveIndex);
   }
+
+  static looseNotIdentical(a: any, b: any): boolean { return !looseIdentical(a, b); }
 }

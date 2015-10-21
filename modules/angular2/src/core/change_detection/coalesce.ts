@@ -1,4 +1,4 @@
-import {isPresent, isBlank, looseIdentical} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank, looseIdentical, StringWrapper} from 'angular2/src/core/facade/lang';
 import {ListWrapper, Map} from 'angular2/src/core/facade/collection';
 import {RecordType, ProtoRecord} from './proto_record';
 
@@ -52,7 +52,7 @@ function _findMatching(r: ProtoRecord, rs: ProtoRecord[]) {
   return ListWrapper.find(
       rs, (rr) => rr.mode !== RecordType.DirectiveLifecycle && _sameDirIndex(rr, r) &&
                   rr.mode === r.mode && looseIdentical(rr.funcOrValue, r.funcOrValue) &&
-                  rr.contextIndex === r.contextIndex && looseIdentical(rr.name, r.name) &&
+                  rr.contextIndex === r.contextIndex && StringWrapper.equals(rr.name, r.name) &&
                   ListWrapper.equals(rr.args, r.args));
 }
 

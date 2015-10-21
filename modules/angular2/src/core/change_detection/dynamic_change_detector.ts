@@ -245,7 +245,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
 
     if (proto.shouldBeChecked()) {
       var prevValue = this._readSelf(proto, values);
-      if (!isSame(prevValue, currValue)) {
+      if (ChangeDetectionUtil.looseNotIdentical(prevValue, currValue)) {
         if (proto.lastInBinding) {
           var change = ChangeDetectionUtil.simpleChange(prevValue, currValue);
           if (throwOnChange) this.throwOnChangeError(prevValue, currValue);
@@ -348,7 +348,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
 
       if (proto.shouldBeChecked()) {
         var prevValue = this._readSelf(proto, values);
-        if (!isSame(prevValue, currValue)) {
+        if (ChangeDetectionUtil.looseNotIdentical(prevValue, currValue)) {
           currValue = ChangeDetectionUtil.unwrapValue(currValue);
 
           if (proto.lastInBinding) {
@@ -442,11 +442,4 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     }
     return res;
   }
-}
-
-function isSame(a, b): boolean {
-  if (a === b) return true;
-  if (a instanceof String && b instanceof String && a == b) return true;
-  if ((a !== a) && (b !== b)) return true;
-  return false;
 }

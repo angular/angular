@@ -418,7 +418,8 @@ var _availableDefinitions = [
   'a()(99)',
   'a.sayHi("Jim")',
   'passThrough([12])',
-  'invalidFn(1)'
+  'invalidFn(1)',
+  'age'
 ];
 
 var _availableEventDefinitions = [
