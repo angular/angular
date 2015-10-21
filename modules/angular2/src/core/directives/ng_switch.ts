@@ -33,9 +33,9 @@ export class SwitchView {
  *
  * ```
  * <ANY [ng-switch]="expression">
- *   <template [ng-switch-when]="whenExpression1">...</template>
- *   <template [ng-switch-when]="whenExpression1">...</template>
- *   <template ng-switch-default>...</template>
+ *   <ANY *ng-switch-when="whenExpression1">...</ANY>
+ *   <ANY *ng-switch-when="whenExpression1">...</ANY>
+ *   <ANY *ng-switch-default>...</ANY>
  * </ANY>
  * ```
  */
@@ -138,10 +138,10 @@ export class NgSwitch {
  *
  * ```
  * // match against a context variable
- * <template [ng-switch-when]="contextVariable">...</template>
+ * <ANY *ng-switch-when="contextVariable">...</ANY>
  *
  * // match against a constant string
- * <template ng-switch-when="stringValue">...</template>
+ * <ANY *ng-switch-when="'stringValue'">...</ANY>
  * ```
  */
 @Directive({selector: '[ng-switch-when]', inputs: ['ngSwitchWhen']})
@@ -171,7 +171,7 @@ export class NgSwitchWhen {
  * Example:
  *
  * ```
- * <template ng-switch-default>...</template>
+ * <ANY *ng-switch-default>...</ANY>
  * ```
  */
 @Directive({selector: '[ng-switch-default]'})
