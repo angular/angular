@@ -10,7 +10,7 @@ import {
   afterEach,
   AsyncTestCompleter,
   inject
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {IS_DART} from '../../platform';
 
 import {evalModule} from './eval_module';

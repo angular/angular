@@ -22,7 +22,8 @@ module.exports = function makeNodeTree(destinationPath) {
       // the following code and tests are not compatible with CJS/node environment
       'angular2/test/animate/**',
       'angular2/test/core/zone/**',
-      'angular2/test/test_lib/fake_async_spec.ts',
+      'angular2/test/testing/fake_async_spec.ts',
+      'angular2/test/testing/testing_public_spec.ts',
       'angular2/test/core/compiler/xhr_impl_spec.ts',
       'angular2/test/core/forms/**',
       'angular2/test/tools/tools_spec.ts',
@@ -32,20 +33,20 @@ module.exports = function makeNodeTree(destinationPath) {
   });
 
   var typescriptTree = compileWithTypescript(modulesTree, {
-    allowNonTsExtensions: false,
     emitDecoratorMetadata: true,
     experimentalDecorators: true,
-    declaration: false,
+    declaration: true,
+    stripInternal: true,
     mapRoot: '', /* force sourcemaps to use relative path */
-    module: 'CommonJS',
-    moduleResolution: 1 /* classic */,
+    module: 'commonjs',
+    moduleResolution: 'classic',
     noEmitOnError: true,
     rootDir: '.',
     rootFilePaths:
         ['angular2/manual_typings/globals.d.ts', 'angular2/typings/es6-shim/es6-shim.d.ts'],
     sourceMap: true,
     sourceRoot: '.',
-    target: 'ES5'
+    target: 'es5'
   });
 
   // Now we add the LICENSE file into all the folders that will become npm packages
@@ -76,7 +77,10 @@ module.exports = function makeNodeTree(destinationPath) {
   packageJsons =
       renderLodashTemplate(packageJsons, {context: {'packageJson': COMMON_PACKAGE_JSON}});
 
-  var nodeTree = mergeTrees([typescriptTree, docs, packageJsons]);
+  var typingsTree = new Funnel(
+      'modules',
+      {include: ['angular2/typings/**/*.d.ts', 'angular2/manual_typings/*.d.ts'], destDir: '/'});
+  var nodeTree = mergeTrees([typescriptTree, docs, packageJsons, typingsTree]);
 
   // Transform all tests to make them runnable in node
   nodeTree = replace(nodeTree, {
@@ -98,6 +102,22 @@ module.exports = function makeNodeTree(destinationPath) {
   nodeTree = replace(nodeTree, {
     files: ['**/*.js'],
     patterns: [{match: /^/, replacement: function() { return `'use strict';` }}]
+  });
+
+  // Add a line to the end of our top-level .d.ts file.
+  // This HACK for transitive typings is a workaround for
+  // https://github.com/Microsoft/TypeScript/issues/5097
+  //
+  // This allows users to get our top-level dependencies like es6-shim.d.ts
+  // to appear when they compile against angular2.
+  //
+  // This carries the risk that the user brings their own copy of that file
+  // (or any other symbols exported here) and they will get a compiler error
+  // because of the duplicate definitions.
+  // TODO(alexeagle): remove this when typescript releases a fix
+  nodeTree = replace(nodeTree, {
+    files: ['angular2/angular2.d.ts'],
+    patterns: [{match: /$/, replacement: 'import "./manual_typings/globals.d.ts";\n'}]
   });
 
   return destCopy(nodeTree, destinationPath);

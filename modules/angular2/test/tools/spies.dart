@@ -1,4 +1,4 @@
-import 'package:angular2/test_lib.dart' show SpyObject;
+import 'package:angular2/testing_internal.dart' show SpyObject;
 import 'package:angular2/core.dart' show LifeCycle, Injector, bind;
 import 'package:angular2/src/core/linker/dynamic_component_loader.dart'
     show ComponentRef_;

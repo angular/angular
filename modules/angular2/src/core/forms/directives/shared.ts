@@ -10,6 +10,7 @@ import {ControlValueAccessor} from './control_value_accessor';
 import {ElementRef, QueryList} from 'angular2/src/core/linker';
 import {Renderer} from 'angular2/src/core/render';
 import {DefaultValueAccessor} from './default_value_accessor';
+import {NumberValueAccessor} from './number_value_accessor';
 import {CheckboxControlValueAccessor} from './checkbox_value_accessor';
 import {SelectControlValueAccessor} from './select_control_value_accessor';
 
@@ -72,7 +73,7 @@ export function selectValueAccessor(dir: NgControl, valueAccessors: ControlValue
     if (v instanceof DefaultValueAccessor) {
       defaultAccessor = v;
 
-    } else if (v instanceof CheckboxControlValueAccessor ||
+    } else if (v instanceof CheckboxControlValueAccessor || v instanceof NumberValueAccessor ||
                v instanceof SelectControlValueAccessor) {
       if (isPresent(builtinAccessor))
         _throwError(dir, "More than one built-in value accessor matches");

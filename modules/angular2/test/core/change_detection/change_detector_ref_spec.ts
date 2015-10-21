@@ -9,7 +9,7 @@ import {
   afterEach,
   tick,
   fakeAsync
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {
   ChangeDetectorRef,

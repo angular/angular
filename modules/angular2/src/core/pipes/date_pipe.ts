@@ -26,7 +26,7 @@ var defaultLocale: string = 'en-US';
  *
  * Formats a date value to a string based on the requested format.
  *
- * # Usage
+ *##Usage
  *
  *     expression | date[:format]
  *
@@ -67,7 +67,7 @@ var defaultLocale: string = 'en-US';
  *
  * Timezone of the formatted text will be the local system timezone of the end-users machine.
  *
- * # Examples
+ * ### Examples
  *
  * Assuming `dateObj` is (year: 2015, month: 6, day: 15, hour: 21, minute: 43, second: 11)
  * in the _local_ time and locale is 'en-US':

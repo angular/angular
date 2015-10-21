@@ -8,7 +8,7 @@ import {
   inject,
   it,
   xit
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {URLSearchParams} from 'angular2/src/http/url_search_params';
 
 export function main() {

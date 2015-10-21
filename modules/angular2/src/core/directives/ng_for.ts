@@ -23,7 +23,7 @@ import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
  * * When an item is removed, its template instance is removed from the DOM.
  * * When items are reordered, their respective templates are reordered in the DOM.
  *
- * # Example
+ * ### Example
  *
  * ```
  * <ul>
@@ -33,7 +33,7 @@ import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
  * </ul>
  * ```
  *
- * # Syntax
+ *##Syntax
  *
  * - `<li *ng-for="#item of items; #i = index">...</li>`
  * - `<li template="ng-for #item of items; #i = index">...</li>`

@@ -10,7 +10,7 @@ import {
 import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {
   ChangeDetectionStrategy,
-  CHANGE_DECTION_STRATEGY_VALUES
+  CHANGE_DETECTION_STRATEGY_VALUES
 } from 'angular2/src/core/change_detection/change_detection';
 import {ViewEncapsulation, VIEW_ENCAPSULATION_VALUES} from 'angular2/src/core/metadata/view';
 import {CssSelector} from 'angular2/src/core/compiler/selector';
@@ -215,7 +215,7 @@ export class CompileDirectiveMetadata {
       exportAs: data['exportAs'],
       type: isPresent(data['type']) ? CompileTypeMetadata.fromJson(data['type']) : data['type'],
       changeDetection: isPresent(data['changeDetection']) ?
-                           CHANGE_DECTION_STRATEGY_VALUES[data['changeDetection']] :
+                           CHANGE_DETECTION_STRATEGY_VALUES[data['changeDetection']] :
                            data['changeDetection'],
       inputs: data['inputs'],
       outputs: data['outputs'],

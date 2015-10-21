@@ -34,7 +34,11 @@ export {
 } from './forms/directives/select_control_value_accessor';
 export {FORM_DIRECTIVES} from './forms/directives';
 export {NG_VALIDATORS, Validators} from './forms/validators';
-export {DefaultValidators} from './forms/directives/validators';
+export {
+  RequiredValidator,
+  MinLengthValidator,
+  MaxLengthValidator
+} from './forms/directives/validators';
 export {FormBuilder} from './forms/form_builder';
 
 import {FormBuilder} from './forms/form_builder';
@@ -43,7 +47,7 @@ import {CONST_EXPR, Type} from './facade/lang';
 /**
  * Shorthand set of providers used for building Angular forms.
  *
- * ### Example:
+ * ### Example
  *
  * ```typescript
  * bootstrap(MyApp, [FORM_PROVIDERS]);

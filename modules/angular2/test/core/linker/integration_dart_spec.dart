@@ -4,7 +4,7 @@ library angular2.test.di.integration_dart_spec;
 import 'package:angular2/angular2.dart';
 import 'package:angular2/core.dart';
 import 'package:angular2/src/core/debug.dart';
-import 'package:angular2/test_lib.dart';
+import 'package:angular2/testing_internal.dart';
 import 'package:observe/observe.dart';
 import 'package:angular2/src/core/change_detection/differs/default_iterable_differ.dart';
 import 'package:angular2/src/core/change_detection/change_detection.dart';
@@ -149,7 +149,8 @@ main() {
               .createAsync(Dummy)
               .then((tc) {
             tc.detectChanges();
-            var cmp = tc.debugElement.componentViewChildren[0].inject(OnChangeComponent);
+            var cmp = tc.debugElement.componentViewChildren[0]
+                .inject(OnChangeComponent);
             expect(cmp.prop).toEqual('hello');
             expect(cmp.changes.containsKey('prop')).toEqual(true);
             async.done();
@@ -171,12 +172,14 @@ main() {
                       directives: [ComponentWithObservableList]))
               .createAsync(Dummy)
               .then((tc) {
-            tc.debugElement.componentInstance.value = new ObservableList.from([1, 2]);
+            tc.debugElement.componentInstance.value =
+                new ObservableList.from([1, 2]);
 
             tc.detectChanges();
 
             expect(log.result()).toEqual("check");
-            expect(asNativeElements(tc.debugElement.componentViewChildren)).toHaveText('12');
+            expect(asNativeElements(tc.debugElement.componentViewChildren))
+                .toHaveText('12');
 
             tc.detectChanges();
 
@@ -195,7 +198,8 @@ main() {
                 .toHaveText('123');
 
             // we replaced the list => a check
-            tc.debugElement.componentInstance.value = new ObservableList.from([5, 6, 7]);
+            tc.debugElement.componentInstance.value =
+                new ObservableList.from([5, 6, 7]);
 
             tc.detectChanges();
 
@@ -241,7 +245,7 @@ class ThrowingComponent2 {
   }
 }
 
-@proxy()
+@proxy
 class PropModel implements Map {
   final String foo = 'foo-prop';
 
@@ -264,9 +268,7 @@ class NoPropertyAccess {
   final model = new PropModel();
 }
 
-@Component(
-    selector: 'on-change',
-    inputs: const ['prop'])
+@Component(selector: 'on-change', inputs: const ['prop'])
 @View(template: '')
 class OnChangeComponent implements OnChanges {
   Map changes;
@@ -297,8 +299,7 @@ class ComponentWithObservableList {
   Iterable list;
 }
 
-@Directive(
-    selector: 'directive-logging-checks')
+@Directive(selector: 'directive-logging-checks')
 class DirectiveLoggingChecks implements DoCheck {
   Log log;
 

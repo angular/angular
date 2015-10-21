@@ -11,7 +11,7 @@ import {
   AsyncTestCompleter,
   inject,
   beforeEachBindings
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {CONST_EXPR, stringify, isType, Type, isBlank} from 'angular2/src/core/facade/lang';
 import {MapWrapper} from 'angular2/src/core/facade/collection';
@@ -222,7 +222,7 @@ export function main() {
            inject([AsyncTestCompleter], (async) => {
              var rootComp = createComp({
                type: RootCompTypeMeta,
-               template: '<div class="origclass" style="origstyle" role="origrole" attr1>'
+               template: '<div class="origclass" style="color: red;" role="origrole" attr1>'
              });
              var dir = CompileDirectiveMetadata.create({
                selector: 'div',
@@ -246,7 +246,7 @@ export function main() {
                          'role',
                          'newrole',
                          'style',
-                         'origstyle newstyle'
+                         'color: red; newstyle'
                        ],
                        [],
                        [],

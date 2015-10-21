@@ -1,6 +1,6 @@
 {
-  "name": "angular",
-  "version": "2.0.0-alpha.40",
+  "name": "angular-srcs",
+  "version": "2.0.0-alpha.44",
   "branchPattern": "2.0.*",
   "description": "Angular 2 - a web framework for modern web apps",
   "homepage": "https://github.com/angular/angular",
@@ -28,7 +28,7 @@
     "test": "gulp test.all.js && gulp test.all.dart"
   },
   "dependencies": {
-    "@reactivex/rxjs": "0.0.0-prealpha.3",
+    "@reactivex/rxjs": "5.0.0-alpha.4",
     "reflect-metadata": "0.1.1",
     "zone.js": "0.5.8"
   },

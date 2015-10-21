@@ -1,59 +1,10 @@
 import {global, isPresent} from 'angular2/src/core/facade/lang';
+// We make sure promises are in a separate file so that we can use promises
+// without depending on rxjs.
+import {PromiseWrapper, Promise, PromiseCompleter} from 'angular2/src/core/facade/promise';
+export {PromiseWrapper, Promise, PromiseCompleter} from 'angular2/src/core/facade/promise';
 // TODO(jeffbcross): use ES6 import once typings are available
 var Subject = require('@reactivex/rxjs/dist/cjs/Subject');
-
-export {Promise};
-
-export interface PromiseCompleter<R> {
-  promise: Promise<R>;
-  resolve: (value?: R | PromiseLike<R>) => void;
-  reject: (error?: any, stackTrace?: string) => void;
-}
-
-export class PromiseWrapper {
-  static resolve<T>(obj: T): Promise<T> { return Promise.resolve(obj); }
-
-  static reject(obj: any, _): Promise<any> { return Promise.reject(obj); }
-
-  // Note: We can't rename this method into `catch`, as this is not a valid
-  // method name in Dart.
-  static catchError<T>(promise: Promise<T>,
-                       onError: (error: any) => T | PromiseLike<T>): Promise<T> {
-    return promise.catch(onError);
-  }
-
-  static all(promises: any[]): Promise<any> {
-    if (promises.length == 0) return Promise.resolve([]);
-    return Promise.all(promises);
-  }
-
-  static then<T, U>(promise: Promise<T>, success: (value: T) => U | PromiseLike<U>,
-                    rejection?: (error: any, stack?: any) => U | PromiseLike<U>): Promise<U> {
-    return promise.then(success, rejection);
-  }
-
-  static wrap<T>(computation: () => T): Promise<T> {
-    return new Promise((res, rej) => {
-      try {
-        res(computation());
-      } catch (e) {
-        rej(e);
-      }
-    });
-  }
-
-  static completer(): PromiseCompleter<any> {
-    var resolve;
-    var reject;
-
-    var p = new Promise(function(res, rej) {
-      resolve = res;
-      reject = rej;
-    });
-
-    return {promise: p, resolve: resolve, reject: reject};
-  }
-}
 
 export namespace NodeJS {
   export interface Timer {}
@@ -98,7 +49,7 @@ export class Observable {
 /**
  * Use by directives and components to emit custom Events.
  *
- * ## Examples
+ * ### Examples
  *
  * In the following example, `Zippy` alternatively emits `open` and `close` events when its
  * title gets clicked:

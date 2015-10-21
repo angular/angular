@@ -1,3 +1,111 @@
+<a name="2.0.0-alpha.44"></a>
+# 2.0.0-alpha.44 (2015-10-15)
+
+
+### Bug Fixes
+
+* **compiler:** attribute case in IE9 ([b89c5bc](https://github.com/angular/angular/commit/b89c5bc)), closes [#4743](https://github.com/angular/angular/issues/4743)
+* **compiler:** explicitly support event bindings also on `<template>` elements ([cec8b58](https://github.com/angular/angular/commit/cec8b58)), closes [#4712](https://github.com/angular/angular/issues/4712)
+* **dart/transform:** Handle empty .ng_deps.dart files ([5a50597](https://github.com/angular/angular/commit/5a50597))
+* **dart/transform:** Parse directives agnostic of annotation order ([efddc90](https://github.com/angular/angular/commit/efddc90))
+* **forms:** emit value changes after errors and status are set ([b716d23](https://github.com/angular/angular/commit/b716d23)), closes [#4714](https://github.com/angular/angular/issues/4714)
+* **style_compiler:** don’t resolve absolute urls that start with a `/` during compilation ([a941fb0](https://github.com/angular/angular/commit/a941fb0)), closes [#4763](https://github.com/angular/angular/issues/4763)
+* **style_compiler:** don’t touch urls in stylesheets and keep stylesheets with absolute urls in templ ([7dde18b](https://github.com/angular/angular/commit/7dde18b)), closes [#4740](https://github.com/angular/angular/issues/4740)
+* **testing:** let DOM adapter dictate XHR implementation for tests ([d7ab5d4](https://github.com/angular/angular/commit/d7ab5d4))
+* **transformers:** show nice error message when an invalid uri is found ([6436f96](https://github.com/angular/angular/commit/6436f96)), closes [#4731](https://github.com/angular/angular/issues/4731)
+
+### Features
+
+* **forms:** add input[type=number] value accessor ([65c737f](https://github.com/angular/angular/commit/65c737f)), closes [#4014](https://github.com/angular/angular/issues/4014) [#4761](https://github.com/angular/angular/issues/4761)
+* **ngUpgrade:** add support for upgrade/downgrade of injectables ([d896e43](https://github.com/angular/angular/commit/d896e43)), closes [#4766](https://github.com/angular/angular/issues/4766)
+* **ngUpgrade:** faster ng2->ng1 adapter by only compiling ng1 once ([053b7a5](https://github.com/angular/angular/commit/053b7a5))
+* **query:** add filter and reduce to QueryList ([bfbf18d](https://github.com/angular/angular/commit/bfbf18d)), closes [#4710](https://github.com/angular/angular/issues/4710)
+
+<a name="2.0.0-alpha.42"></a>
+# 2.0.0-alpha.42 (2015-10-13)
+
+This is a quick follow-up release to 41 to fix the d.ts distribution with our
+npm package. See #4706 for more info.
+
+### Bug Fixes
+
+* **build:** Fix serve.js.dev to build bundles ([3b03660](https://github.com/angular/angular/commit/3b03660)), closes [#4700](https://github.com/angular/angular/issues/4700)
+* **docs:** minor @link fixes. ([3a801c1](https://github.com/angular/angular/commit/3a801c1)), closes [#4696](https://github.com/angular/angular/issues/4696)
+* **publish:** emit type declarations with CJS build ([57649d1](https://github.com/angular/angular/commit/57649d1)), closes [#4706](https://github.com/angular/angular/issues/4706) [#4708](https://github.com/angular/angular/issues/4708)
+* **test:** command compiler attr merge test in IE ([e15e242](https://github.com/angular/angular/commit/e15e242))
+
+### Features
+
+* **build:** add tasks to watch and recompile js and dart ([50e922f](https://github.com/angular/angular/commit/50e922f))
+* **forms:** add minlength and maxlength validators ([e82a35d](https://github.com/angular/angular/commit/e82a35d)), closes [#4705](https://github.com/angular/angular/issues/4705)
+
+### BREAKING CHANGES
+
+- TypeScript typings are now included in the distribution. If you have installed external typings
+  (eg. using tsd to fetch files from DefinitelyTyped), you need to remove them. TypeScript will give
+  a `Duplicate identifier` error if the same type definition appears twice.
+
+<a name="2.0.0-alpha.41"></a>
+# 2.0.0-alpha.41 (2015-10-13)
+
+
+### Bug Fixes
+
+* **compiler:** merge `class` and `style` attributes from the element with the host attributes ([eacc8e3](https://github.com/angular/angular/commit/eacc8e3)), closes [#4583](https://github.com/angular/angular/issues/4583) [#4680](https://github.com/angular/angular/issues/4680)
+* **compiler:** shadow CSS @import test in some browsers ([0def28e](https://github.com/angular/angular/commit/0def28e)), closes [#4629](https://github.com/angular/angular/issues/4629)
+* **docs:** Updated docs for default router location strategy ([075011f](https://github.com/angular/angular/commit/075011f)), closes [#4517](https://github.com/angular/angular/issues/4517)
+* **router:** properly read and serialize query params ([8bc40d3](https://github.com/angular/angular/commit/8bc40d3)), closes [#3957](https://github.com/angular/angular/issues/3957) [#4225](https://github.com/angular/angular/issues/4225) [#3784](https://github.com/angular/angular/issues/3784)
+* **test_lib:** don't mock out XHR via MockXHR by default in tests ([6abed8d](https://github.com/angular/angular/commit/6abed8d)), closes [#4539](https://github.com/angular/angular/issues/4539) [#4682](https://github.com/angular/angular/issues/4682)
+* **typings:** add more missing typings. ([aab0c57](https://github.com/angular/angular/commit/aab0c57)), closes [#4636](https://github.com/angular/angular/issues/4636)
+* **typings:** fix typings which were previously unchecked ([c178ad4](https://github.com/angular/angular/commit/c178ad4)), closes [#4625](https://github.com/angular/angular/issues/4625)
+* **typings:** missing types in ListWrapper typings ([597f79e](https://github.com/angular/angular/commit/597f79e))
+
+### Features
+
+* **typings**: `*.d.ts` files are now bundled with npm package, `tsd link` or `tsd install` no longer needed ([95f9846](https://github.com/angular/angular/commit/95f9846))
+* **core:** desugar [()] to [prop] and (prop-change) ([7c6130c](https://github.com/angular/angular/commit/7c6130c)), closes [#4658](https://github.com/angular/angular/issues/4658)
+* **di:** change the params of Provider and provide to start with "use" ([1aeafd3](https://github.com/angular/angular/commit/1aeafd3)), closes [#4684](https://github.com/angular/angular/issues/4684)
+* **di:** rename Binding into Provider ([1eb0162](https://github.com/angular/angular/commit/1eb0162)), closes [#4416](https://github.com/angular/angular/issues/4416) [#4654](https://github.com/angular/angular/issues/4654)
+* **ngFor:** support a custom template ([6207b1a](https://github.com/angular/angular/commit/6207b1a)), closes [#4637](https://github.com/angular/angular/issues/4637)
+* **ngUpgrade:** support for content project from ng1->ng2 ([cd90e6e](https://github.com/angular/angular/commit/cd90e6e))
+* **ngUpgrade:** transclude content from ng2->ng1 ([19c1bd7](https://github.com/angular/angular/commit/19c1bd7)), closes [#4640](https://github.com/angular/angular/issues/4640)
+
+
+### BREAKING CHANGES
+
+- `angular2/test_lib` is now called `angular2/testing`
+  - `test_lib.js` -> `testing.js`
+  - `import {...} from 'angular2/test_lib'` -> `import {...} from 'angular2/testing'`
+- [()] desugaring changed:
+
+  Before:
+  ```
+  <cmp [(prop)]="field"> was desugared to <cmp [prop]="field" (prop)="field=$event">
+  ```
+  After:
+  ```
+  <cmp [(prop)]="field"> is desugared to <cmp [prop]="field" (prop-change)="field=$event">
+  ```
+
+### API DEPRECATION
+
+- "DI Binding" terminology has changed to "DI Providers" to avoid conflicts/confusion with data-binding. All commonly used apis that use "bind" or "binding" in the name still work but are deprecated and will be removed in future alpha releases. Please update your code:
+  - `bind` -> `provide`
+  - `@Component(bindings: ...)` -> `@Component(providers: ...)`
+  - `@Component(viewBindings: ...)` -> `@Component(viewProviders: ...)`
+  - `HTTP_BINDINGS` -> `HTTP_PROVIDERS`
+  - `JSONP_BINDINGS` -> `JSONP_PROVIDERS`
+  - `ROUTER_BINDINGS` -> `ROUTER_PROVIDERS`
+  - `FORM_BINDINGS` -> `FORM_PROVIDERS`
+  - `ELEMENT_PROBE_BINDINGS` -> `ELEMENT_PROBE_PROVIDERS`
+  - `NoBindingError` -> `NoProviderError`
+  - `AbstractBindingError` -> `AbstractProviderError`
+  - `InvalidBindingError` -> `InvalidProviderError`
+  - `beforeEachBindings` -> `beforeEachProviders`
+  - `Binding` -> `Provider`
+
+
+
 <a name="2.0.0-alpha.40"></a>
 # 2.0.0-alpha.40 (2015-10-09)
 

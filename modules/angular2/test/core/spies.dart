@@ -13,7 +13,7 @@ import 'package:angular2/src/core/linker/view_pool.dart';
 import 'package:angular2/src/core/linker/view_listener.dart';
 import 'package:angular2/src/core/linker/element_injector.dart';
 import 'package:angular2/src/core/dom/dom_adapter.dart';
-import 'package:angular2/test_lib.dart';
+import 'package:angular2/testing_internal.dart';
 import 'package:angular2/src/core/compiler/xhr.dart';
 
 @proxy
@@ -83,7 +83,8 @@ class SpyProtoViewFactory extends SpyObject implements ProtoViewFactory {
 }
 
 @proxy
-class SpyProtoElementInjector extends SpyObject implements ProtoElementInjector {
+class SpyProtoElementInjector extends SpyObject
+    implements ProtoElementInjector {
   noSuchMethod(m) => super.noSuchMethod(m);
 }
 
@@ -108,7 +109,8 @@ class SpyXHR extends SpyObject implements XHR {
 }
 
 @proxy
-class SpyRenderEventDispatcher extends SpyObject implements RenderEventDispatcher {
+class SpyRenderEventDispatcher extends SpyObject
+    implements RenderEventDispatcher {
   noSuchMethod(m) => super.noSuchMethod(m);
 }
 

@@ -8,7 +8,7 @@ import {
   beforeEach,
   afterEach,
   el
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {Control, FormBuilder, Validators} from 'angular2/core';
 
 export function main() {

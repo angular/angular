@@ -1,4 +1,13 @@
-import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from 'angular2/test_lib';
+import {
+  ddescribe,
+  describe,
+  it,
+  iit,
+  xit,
+  expect,
+  beforeEach,
+  afterEach
+} from 'angular2/testing_internal';
 
 import {HtmlParser} from 'angular2/src/core/compiler/html_parser';
 import {
@@ -69,6 +78,14 @@ export function main() {
               .toEqual([
                 [HtmlElementAst, 'div', 'TestComp > div:nth-child(0)'],
                 [HtmlAttrAst, 'k', 'v', 'TestComp > div:nth-child(0)[k=v]']
+              ]);
+        });
+
+        it('should parse and lower case attributes on regular elements', () => {
+          expect(humanizeDom(parser.parse('<div FoO="bar"></div>', 'TestComp')))
+              .toEqual([
+                [HtmlElementAst, 'div', 'TestComp > div:nth-child(0)'],
+                [HtmlAttrAst, 'foo', 'bar', 'TestComp > div:nth-child(0)[foo=bar]']
               ]);
         });
 

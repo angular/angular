@@ -16,6 +16,7 @@ var madge = require('madge');
 var merge = require('merge');
 var merge2 = require('merge2');
 var path = require('path');
+var q = require('q');
 var licenseWrap = require('./tools/build/licensewrap');
 var analytics = require('./tools/analytics/analytics');
 
@@ -298,7 +299,7 @@ gulp.task('lint', ['build.tools'], function() {
       "requireParameterType": true
     }
   };
-  return gulp.src(['modules/angular2/src/**/*.ts', '!modules/angular2/src/test_lib/**'])
+  return gulp.src(['modules/angular2/src/**/*.ts', '!modules/angular2/src/testing/**'])
       .pipe(tslint({
         tslint: require('tslint'),
         configuration: tslintConfig,
@@ -351,7 +352,7 @@ function proxyServeDart() {
   return jsserve(gulp, gulpPlugins, {
     port: 8002,
     proxies: [
-      {route: '/examples', url: 'http://localhost:8004'},
+      {route: '/playground', url: 'http://localhost:8004'},
       {route: '/benchmarks_external', url: 'http://localhost:8008'},
       {route: '/benchmarks', url: 'http://localhost:8006'}
     ]
@@ -360,7 +361,7 @@ function proxyServeDart() {
 
 // ------------------
 // web servers
-gulp.task('serve.js.dev', ['build.js.dev'], function(neverDone) {
+gulp.task('serve.js.dev', ['build.js'], function(neverDone) {
   watch('modules/**', { ignoreInitial: true }, '!broccoli.js.dev');
   jsServeDev();
 });
@@ -392,7 +393,7 @@ gulp.task('serve.dart', function(done) {
 
 gulp.task('serve/examples.dart', pubserve(gulp, gulpPlugins, {
   command: DART_SDK.PUB,
-  path: CONFIG.dest.dart + '/examples',
+  path: CONFIG.dest.dart + '/playground',
   port: 8004
 }));
 
@@ -510,6 +511,10 @@ gulp.task('test.unit.js', ['build.js.dev'], function (done) {
   );
 });
 
+gulp.task('watch.js.dev', ['build.js.dev'], function (done) {
+  watch('modules/**', ['!broccoli.js.dev']);
+});
+
 gulp.task('test.unit.js.sauce', ['build.js.dev'], function (done) {
   var browserConf = getBrowsersFromCLI();
   if (browserConf.isSauce) {
@@ -593,6 +598,29 @@ gulp.task('test.unit.dart', function (done) {
         '!test.unit.dart/karma-run'
       ]);
     }
+  );
+});
+
+gulp.task('watch.dart.dev', function (done) {
+  runSequence(
+      'build/tree.dart',
+      'build/pure-packages.dart',
+      '!build/pubget.angular2.dart',
+      '!build/change_detect.dart',
+      '!build/remove-pub-symlinks',
+      'build.dart.material.css',
+      function(error) {
+        // if initial build failed (likely due to build or formatting step) then exit
+        // otherwise karma server doesn't start and we can't continue running properly
+        if (error) {
+          done(error);
+          return;
+        }
+
+        watch(['modules/angular2/**'], { ignoreInitial: true }, [
+          '!build/tree.dart'
+        ]);
+      }
   );
 });
 
@@ -803,7 +831,7 @@ gulp.task('test.typings', ['!pre.test.typings'], function() {
 var tmpdir = path.join(os.tmpdir(), 'test.typings',  new Date().getTime().toString());
 gulp.task('!pre.test.typings.layoutNodeModule', function() {
   return gulp
-    .src(['dist/js/dev/es5/angular2/**/*'], {base: 'dist/js/dev/es5'})
+    .src(['dist/js/cjs/angular2/**/*'], {base: 'dist/js/cjs'})
     .pipe(gulp.dest(path.join(tmpdir, 'node_modules')));
 });
 gulp.task('!pre.test.typings.copyTypingsSpec', function() {
@@ -969,59 +997,45 @@ var bundleConfig = {
 
 // production build
 gulp.task('!bundle.js.prod', ['build.js.prod'], function() {
-  return bundler.bundle(
-      bundleConfig,
-      'angular2/angular2',
-      './dist/build/angular2.js',
-      {
-        sourceMaps: true
-      }).
-      then(function(){
-        return bundler.bundle(
-          bundleConfig,
-          'angular2/http',
-          './dist/build/http.js',
-          {
-            sourceMaps: true
-          }
-        );
-      });
+  var bundlerConfig = {
+    sourceMaps: true
+  };
+
+  return q.all([
+    bundler.bundle(bundleConfig, 'angular2/angular2', './dist/build/angular2.js', bundlerConfig),
+    bundler.bundle(bundleConfig, 'angular2/http - angular2/angular2', './dist/build/http.js', bundlerConfig)
+  ]);
 });
 
 // minified production build
 gulp.task('!bundle.js.min', ['build.js.prod'], function() {
-  var q = require('q');
-  var minBundleConfig = {
+  var bundlerConfig = {
     sourceMaps: true,
     minify: true
   };
 
   return q.all([
-    bundler.bundle(bundleConfig, 'angular2/angular2', './dist/build/angular2.min.js', minBundleConfig),
-    bundler.bundle(bundleConfig, 'angular2/http - angular2/angular2', './dist/build/http.min.js', minBundleConfig),
-    bundler.bundle(bundleConfig, 'angular2/router - angular2/angular2', './dist/js/bundle/router.dev.min.js', minBundleConfig)
+    bundler.bundle(bundleConfig, 'angular2/angular2', './dist/build/angular2.min.js', bundlerConfig),
+    bundler.bundle(bundleConfig, 'angular2/http - angular2/angular2', './dist/build/http.min.js', bundlerConfig),
+    bundler.bundle(bundleConfig, 'angular2/router - angular2/angular2', './dist/js/bundle/router.dev.min.js', bundlerConfig)
   ]);
 });
 
 // development build
 gulp.task('!bundle.js.dev', ['build.js.dev'], function() {
+  var bundlerConfig = {
+    sourceMaps: true
+  };
+
   var devBundleConfig = merge(true, bundleConfig);
-  devBundleConfig.paths =
-      merge(true, devBundleConfig.paths, {
+  devBundleConfig.paths = merge(true, devBundleConfig.paths, {
        "*": "dist/js/dev/es5/*.js"
       });
-  return bundler.bundle(
-      devBundleConfig,
-      'angular2/angular2',
-      './dist/build/angular2.dev.js',
-      { sourceMaps: true }).
-      then(function() {
-        return bundler.bundle(
-          devBundleConfig,
-          'angular2/http',
-          './dist/build/http.dev.js',
-          { sourceMaps: true });
-      });
+
+  return q.all([
+    bundler.bundle(devBundleConfig, 'angular2/angular2', './dist/build/angular2.dev.js', bundlerConfig),
+    bundler.bundle(devBundleConfig, 'angular2/http - angular2/angular2', './dist/build/http.dev.js', bundlerConfig)
+  ]);
 });
 
 // WebWorker build
@@ -1057,8 +1071,8 @@ gulp.task('!bundle.testing', ['build.js.dev'], function() {
   devBundleConfig.paths = merge(true, devBundleConfig.paths, {"*": "dist/js/dev/es5/*.js"});
   return bundler.bundle(
     devBundleConfig,
-    'angular2/test_lib + angular2/mock - angular2/angular2',
-    './dist/js/bundle/test_lib.js',
+    'angular2/testing + angular2/mock - angular2/angular2',
+    './dist/js/bundle/testing.js',
     { sourceMaps: true });
 });
 

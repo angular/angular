@@ -33,20 +33,20 @@ class NamedParameter extends GeneratedMessage {
     if (v is! NamedParameter) checkItemFailed(v, 'NamedParameter');
   }
 
-  String get name => getField(1);
+  String get name => $_get(0, 1, '');
   void set name(String v) {
-    setField(1, v);
+    $_setString(0, 1, v);
   }
 
-  bool hasName() => hasField(1);
+  bool hasName() => $_has(0, 1);
   void clearName() => clearField(1);
 
-  String get value => getField(2);
+  String get value => $_get(1, 2, '');
   void set value(String v) {
-    setField(2, v);
+    $_setString(1, 2, v);
   }
 
-  bool hasValue() => hasField(2);
+  bool hasValue() => $_has(1, 2);
   void clearValue() => clearField(2);
 }
 
@@ -88,56 +88,56 @@ class AnnotationModel extends GeneratedMessage {
     if (v is! AnnotationModel) checkItemFailed(v, 'AnnotationModel');
   }
 
-  String get name => getField(1);
+  String get name => $_get(0, 1, '');
   void set name(String v) {
-    setField(1, v);
+    $_setString(0, 1, v);
   }
 
-  bool hasName() => hasField(1);
+  bool hasName() => $_has(0, 1);
   void clearName() => clearField(1);
 
-  List<String> get parameters => getField(2);
+  List<String> get parameters => $_get(1, 2, null);
 
-  List<NamedParameter> get namedParameters => getField(3);
+  List<NamedParameter> get namedParameters => $_get(2, 3, null);
 
-  bool get isView => getField(4);
+  bool get isView => $_get(3, 4, false);
   void set isView(bool v) {
-    setField(4, v);
+    $_setBool(3, 4, v);
   }
 
-  bool hasIsView() => hasField(4);
+  bool hasIsView() => $_has(3, 4);
   void clearIsView() => clearField(4);
 
-  bool get isDirective => getField(5);
+  bool get isDirective => $_get(4, 5, false);
   void set isDirective(bool v) {
-    setField(5, v);
+    $_setBool(4, 5, v);
   }
 
-  bool hasIsDirective() => hasField(5);
+  bool hasIsDirective() => $_has(4, 5);
   void clearIsDirective() => clearField(5);
 
-  bool get isComponent => getField(6);
+  bool get isComponent => $_get(5, 6, false);
   void set isComponent(bool v) {
-    setField(6, v);
+    $_setBool(5, 6, v);
   }
 
-  bool hasIsComponent() => hasField(6);
+  bool hasIsComponent() => $_has(5, 6);
   void clearIsComponent() => clearField(6);
 
-  bool get isInjectable => getField(7);
+  bool get isInjectable => $_get(6, 7, false);
   void set isInjectable(bool v) {
-    setField(7, v);
+    $_setBool(6, 7, v);
   }
 
-  bool hasIsInjectable() => hasField(7);
+  bool hasIsInjectable() => $_has(6, 7);
   void clearIsInjectable() => clearField(7);
 
-  bool get isConstObject => getField(8);
+  bool get isConstObject => $_get(7, 8, false);
   void set isConstObject(bool v) {
-    setField(8, v);
+    $_setBool(7, 8, v);
   }
 
-  bool hasIsConstObject() => hasField(8);
+  bool hasIsConstObject() => $_has(7, 8);
   void clearIsConstObject() => clearField(8);
 }
 
@@ -175,6 +175,6 @@ const AnnotationModel$json = const {
 /**
  * Generated with:
  * annotation_model.proto (93cb7c1fba2e56d937fec054b6e119a2a2b9afe7)
- * libprotoc 2.5.0
- * dart-protoc-plugin (cc35f743de982a4916588b9c505dd21c7fe87d17)
+ * libprotoc 2.6.1
+ * dart-protoc-plugin (af5fc2bf1de367a434c3b1847ab260510878ffc0)
  */

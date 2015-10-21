@@ -9,7 +9,7 @@ import {
   afterEach,
   inject,
   beforeEachBindings
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {provide} from 'angular2/src/core/di';
 
 import {TEST_PROVIDERS} from './test_bindings';
@@ -267,6 +267,19 @@ export function main() {
               ]);
         });
 
+        it('should allow events on explicit embedded templates that are emitted by a directive',
+           () => {
+             var dirA = CompileDirectiveMetadata.create({
+               selector: 'template',
+               outputs: ['e'],
+               type: new CompileTypeMetadata({name: 'DirA'})
+             });
+             expect(humanizeTemplateAsts(parse('<template (e)="f"></template>', [dirA])))
+                 .toEqual([
+                   [EmbeddedTemplateAst, 'TestComp > template:nth-child(0)'],
+                   [DirectiveAst, dirA, 'TestComp > template:nth-child(0)'],
+                 ]);
+           });
       });
 
       describe('bindon', () => {
@@ -804,7 +817,7 @@ Parser Error: Unexpected token 'b' at column 3 in [a b] in TestComp > div:nth-ch
 More than one component: DirB,DirA in TestComp > div:nth-child(0)`);
       });
 
-      it('should not allow components or element nor event bindings on explicit embedded templates',
+      it('should not allow components or element bindings nor dom events on explicit embedded templates',
          () => {
            var dirA = CompileDirectiveMetadata.create({
              selector: '[a]',
@@ -814,9 +827,9 @@ More than one component: DirB,DirA in TestComp > div:nth-child(0)`);
            });
            expect(() => parse('<template [a]="b" (e)="f"></template>', [dirA]))
                .toThrowError(`Template parse errors:
+Event binding e not emitted by any directive on an embedded template in TestComp > template:nth-child(0)
 Components on an embedded template: DirA in TestComp > template:nth-child(0)
-Property binding a not used by any directive on an embedded template in TestComp > template:nth-child(0)[[a]=b]
-Event binding e on an embedded template in TestComp > template:nth-child(0)[(e)=f]`);
+Property binding a not used by any directive on an embedded template in TestComp > template:nth-child(0)[[a]=b]`);
          });
 
       it('should not allow components or element bindings on inline embedded templates', () => {
@@ -845,9 +858,45 @@ Property binding a not used by any directive on an embedded template in TestComp
 
       });
 
-      it('should ignore <link rel="stylesheet"> elements but include them for source info', () => {
-        expect(humanizeTemplateAsts(parse('<link rel="stylesheet"></link>a', [])))
-            .toEqual([[TextAst, 'a', 'TestComp > #text(a):nth-child(1)']]);
+      describe('<link rel="stylesheet">', () => {
+
+        it('should keep <link rel="stylesheet"> elements if they have an absolute non package: url',
+           () => {
+             expect(humanizeTemplateAsts(
+                        parse('<link rel="stylesheet" href="http://someurl"></link>a', [])))
+                 .toEqual([
+                   [ElementAst, 'link', 'TestComp > link:nth-child(0)'],
+                   [
+                     AttrAst,
+                     'href',
+                     'http://someurl',
+                     'TestComp > link:nth-child(0)[href=http://someurl]'
+                   ],
+                   [AttrAst, 'rel', 'stylesheet', 'TestComp > link:nth-child(0)[rel=stylesheet]'],
+                   [TextAst, 'a', 'TestComp > #text(a):nth-child(1)']
+                 ]);
+           });
+
+        it('should keep <link rel="stylesheet"> elements if they have no uri', () => {
+          expect(humanizeTemplateAsts(parse('<link rel="stylesheet"></link>a', [])))
+              .toEqual([
+                [ElementAst, 'link', 'TestComp > link:nth-child(0)'],
+                [AttrAst, 'rel', 'stylesheet', 'TestComp > link:nth-child(0)[rel=stylesheet]'],
+                [TextAst, 'a', 'TestComp > #text(a):nth-child(1)']
+              ]);
+        });
+
+        it('should ignore <link rel="stylesheet"> elements if they have a relative uri', () => {
+          expect(
+              humanizeTemplateAsts(parse('<link rel="stylesheet" href="./other.css"></link>a', [])))
+              .toEqual([[TextAst, 'a', 'TestComp > #text(a):nth-child(1)']]);
+        });
+
+        it('should ignore <link rel="stylesheet"> elements if they have a package: uri', () => {
+          expect(humanizeTemplateAsts(
+                     parse('<link rel="stylesheet" href="package:somePackage"></link>a', [])))
+              .toEqual([[TextAst, 'a', 'TestComp > #text(a):nth-child(1)']]);
+        });
 
       });
 

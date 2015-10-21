@@ -1,4 +1,4 @@
-import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular2/test_lib';
+import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular2/testing_internal';
 import {
   isPresent,
   RegExpWrapper,

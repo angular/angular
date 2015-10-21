@@ -2,7 +2,7 @@ library angular2.test.web_workers.debug_tools.message_bus_common;
 
 import "dart:convert" show JSON;
 import "package:angular2/src/web_workers/shared/message_bus.dart";
-import "package:angular2/test_lib.dart"
+import "package:angular2/testing_internal.dart"
     show AsyncTestCompleter, expect, SpyObject;
 
 var MESSAGE = const {'test': 10};
@@ -18,6 +18,7 @@ void expectSinkSendsEncodedJson(SpyObject socket, MessageBusSink sink,
 }
 
 void expectMessageEquality(String message, Map expectedData, String channel) {
-  expect(JSON.decode(message))
-      .toEqual([{'channel': channel, 'message': expectedData}]);
+  expect(JSON.decode(message)).toEqual([
+    {'channel': channel, 'message': expectedData}
+  ]);
 }

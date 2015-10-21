@@ -1,6 +1,6 @@
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {Injectable} from 'angular2/angular2';
-import {LocationStrategy} from './location_strategy';
+import {LocationStrategy, normalizeQueryParams} from './location_strategy';
 import {EventListener, History, Location} from 'angular2/src/core/facade/browser';
 
 /**
@@ -12,7 +12,7 @@ import {EventListener, History, Location} from 'angular2/src/core/facade/browser
  * For instance, if you call `location.go('/foo')`, the browser's URL will become
  * `example.com#/foo`.
  *
- * ## Example
+ * ### Example
  *
  * ```
  * import {Component, View} from 'angular2/angular2';
@@ -61,11 +61,18 @@ export class HashLocationStrategy extends LocationStrategy {
     // Dart will complain if a call to substring is
     // executed with a position value that extends the
     // length of string.
-    return path.length > 0 ? path.substring(1) : path;
+    return (path.length > 0 ? path.substring(1) : path) +
+           normalizeQueryParams(this._location.search);
   }
 
-  pushState(state: any, title: string, url: string) {
-    this._history.pushState(state, title, '#' + url);
+  pushState(state: any, title: string, path: string, queryParams: string) {
+    var url = path + normalizeQueryParams(queryParams);
+    if (url.length == 0) {
+      url = this._location.pathname;
+    } else {
+      url = '#' + url;
+    }
+    this._history.pushState(state, title, url);
   }
 
   forward(): void { this._history.forward(); }

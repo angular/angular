@@ -1,4 +1,4 @@
-library examples.src.hello_world.index_common_dart;
+library playground.src.hello_world.index_common_dart;
 
 import 'hello.template.dart' as _templates;
 

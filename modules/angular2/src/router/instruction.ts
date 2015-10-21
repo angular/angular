@@ -12,7 +12,7 @@ import {Url} from './url_parser';
  *
  * You can inject `RouteParams` into the constructor of a component to use it.
  *
- * ## Example
+ * ### Example
  *
  * ```
  * import {bootstrap, Component} from 'angular2/angular2';
@@ -48,7 +48,7 @@ export class RouteParams {
  * `Instruction`s can be created using {@link Router#generate}, and can be used to
  * perform route changes with {@link Router#navigateByInstruction}.
  *
- * ## Example
+ * ### Example
  *
  * ```
  * import {bootstrap, Component} from 'angular2/angular2';
@@ -94,12 +94,18 @@ export class PrimaryInstruction {
 }
 
 export function stringifyInstruction(instruction: Instruction): string {
-  var params = instruction.component.urlParams.length > 0 ?
-                   ('?' + instruction.component.urlParams.join('&')) :
-                   '';
+  return stringifyInstructionPath(instruction) + stringifyInstructionQuery(instruction);
+}
 
+export function stringifyInstructionPath(instruction: Instruction): string {
   return instruction.component.urlPath + stringifyAux(instruction) +
-         stringifyPrimary(instruction.child) + params;
+         stringifyPrimary(instruction.child);
+}
+
+export function stringifyInstructionQuery(instruction: Instruction): string {
+  return instruction.component.urlParams.length > 0 ?
+             ('?' + instruction.component.urlParams.join('&')) :
+             '';
 }
 
 function stringifyPrimary(instruction: Instruction): string {

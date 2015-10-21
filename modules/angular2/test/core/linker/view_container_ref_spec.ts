@@ -12,7 +12,7 @@ import {
   beforeEachBindings,
   it,
   xit
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {SpyView, SpyAppViewManager} from '../spies';
 import {AppView, AppViewContainer} from 'angular2/src/core/linker/view';

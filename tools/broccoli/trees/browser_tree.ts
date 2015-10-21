@@ -36,34 +36,35 @@ const kServedPaths = [
   'benchmarks_external/src/static_tree',
 
   // Relative (to /modules) paths to example directories
-  'examples/src/animate',
-  'examples/src/benchpress',
-  'examples/src/model_driven_forms',
-  'examples/src/template_driven_forms',
-  'examples/src/person_management',
-  'examples/src/order_management',
-  'examples/src/gestures',
-  'examples/src/hello_world',
-  'examples/src/http',
-  'examples/src/jsonp',
-  'examples/src/key_events',
-  'examples/src/routing',
-  'examples/src/sourcemap',
-  'examples/src/todo',
-  'examples/src/zippy_component',
-  'examples/src/async',
-  'examples/src/material/button',
-  'examples/src/material/checkbox',
-  'examples/src/material/dialog',
-  'examples/src/material/grid_list',
-  'examples/src/material/input',
-  'examples/src/material/progress-linear',
-  'examples/src/material/radio',
-  'examples/src/material/switcher',
-  'examples/src/web_workers/kitchen_sink',
-  'examples/src/web_workers/todo',
-  'examples/src/web_workers/images',
-  'examples/src/web_workers/message_broker'
+  'playground/src/animate',
+  'playground/src/benchpress',
+  'playground/src/model_driven_forms',
+  'playground/src/template_driven_forms',
+  'playground/src/person_management',
+  'playground/src/order_management',
+  'playground/src/gestures',
+  'playground/src/hello_world',
+  'playground/src/http',
+  'playground/src/jsonp',
+  'playground/src/key_events',
+  'playground/src/routing',
+  'playground/src/sourcemap',
+  'playground/src/todo',
+  'playground/src/upgrade',
+  'playground/src/zippy_component',
+  'playground/src/async',
+  'playground/src/material/button',
+  'playground/src/material/checkbox',
+  'playground/src/material/dialog',
+  'playground/src/material/grid_list',
+  'playground/src/material/input',
+  'playground/src/material/progress-linear',
+  'playground/src/material/radio',
+  'playground/src/material/switcher',
+  'playground/src/web_workers/kitchen_sink',
+  'playground/src/web_workers/todo',
+  'playground/src/web_workers/images',
+  'playground/src/web_workers/message_broker'
 ];
 
 
@@ -106,40 +107,39 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   };
 
   modulesTree = replace(modulesTree, {
-    files: ["examples*/**/*.js"],
+    files: ["playground*/**/*.js"],
     patterns: [{match: /\$SCRIPTS\$/, replacement: jsReplace('SCRIPTS')}]
   });
 
   // Use TypeScript to transpile the *.ts files to ES6
   var es6Tree = compileWithTypescript(modulesTree, {
-    allowNonTsExtensions: false,
     declaration: false,
     emitDecoratorMetadata: true,
+    experimentalDecorators: true,
     mapRoot: '',  // force sourcemaps to use relative path
     noEmitOnError: false,
     rootDir: '.',
     rootFilePaths: ['angular2/manual_typings/globals-es6.d.ts'],
     sourceMap: true,
     sourceRoot: '.',
-    target: 'ES6'
+    target: 'es6'
   });
 
   // Use TypeScript to transpile the *.ts files to ES5
   var typescriptOptions = {
-    allowNonTsExtensions: false,
     declaration: true,
     stripInternal: true,
     emitDecoratorMetadata: true,
     experimentalDecorators: true,
     mapRoot: '',  // force sourcemaps to use relative path
-    module: 'CommonJS',
-    moduleResolution: 1 /* classic */,
+    module: 'commonjs',
+    moduleResolution: 'classic',
     noEmitOnError: true,
     rootDir: '.',
     rootFilePaths: ['angular2/manual_typings/globals.d.ts'],
     sourceMap: true,
     sourceRoot: '.',
-    target: 'ES5'
+    target: 'es5'
   };
   var es5Tree = compileWithTypescript(es5ModulesTree, typescriptOptions);
 
@@ -177,10 +177,10 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     return funnels;
   }
 
-  var htmlTree = new Funnel(modulesTree,
-                            {include: ['*/src/**/*.html', '**/examples/**/*.html'], destDir: '/'});
+  var htmlTree = new Funnel(
+      modulesTree, {include: ['*/src/**/*.html', '**/playground/**/*.html'], destDir: '/'});
   htmlTree = replace(htmlTree, {
-    files: ['examples*/**/*.html'],
+    files: ['playground*/**/*.html'],
     patterns: [
       {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS')},
       scriptPathPatternReplacement,
@@ -210,7 +210,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   // We need to replace the regular angular bundle with the web-worker bundle
   // for web-worker e2e tests.
   htmlTree = replace(htmlTree, {
-    files: ['examples*/**/web_workers/**/*.html'],
+    files: ['playground*/**/web_workers/**/*.html'],
     patterns: [{match: "/bundle/angular2.dev.js", replacement: "/bundle/web_worker/ui.dev.js"}]
   });
 

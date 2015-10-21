@@ -40,8 +40,14 @@ class RegisteredType {
   factory RegisteredType.fromMethodInvocation(MethodInvocation registerMethod) {
     var visitor = new _ParseRegisterTypeVisitor();
     registerMethod.accept(visitor);
-    return new RegisteredType._(visitor.typeName, registerMethod, visitor.info,
-        visitor.factoryFn, visitor.parameters, visitor.annotations, visitor.propMetadata);
+    return new RegisteredType._(
+        visitor.typeName,
+        registerMethod,
+        visitor.info,
+        visitor.factoryFn,
+        visitor.parameters,
+        visitor.annotations,
+        visitor.propMetadata);
   }
 }
 

@@ -22,7 +22,7 @@ module.exports = function(config) {
       'node_modules/zone.js/dist/jasmine-patch.js',
 
       // Including systemjs because it defines `__eval`, which produces correct stack traces.
-      'modules/angular2/src/test_lib/shims_for_IE.js',
+      'modules/angular2/src/testing/shims_for_IE.js',
       'node_modules/systemjs/dist/system.src.js',
       {pattern: 'node_modules/@reactivex/rxjs/**', included: false, watched: false, served: true},
       'node_modules/reflect-metadata/Reflect.js',

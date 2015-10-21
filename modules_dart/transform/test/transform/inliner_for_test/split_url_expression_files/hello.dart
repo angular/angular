@@ -1,4 +1,4 @@
-library examples.src.hello_world.split_url_expression_files;
+library playground.src.hello_world.split_url_expression_files;
 
 import 'package:angular2/angular2.dart'
     show Component, Directive, View, NgElement;

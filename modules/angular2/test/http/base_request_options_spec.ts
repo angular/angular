@@ -8,7 +8,7 @@ import {
   inject,
   it,
   xit
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {BaseRequestOptions, RequestOptions} from 'angular2/src/http/base_request_options';
 import {RequestMethods} from 'angular2/src/http/enums';
 

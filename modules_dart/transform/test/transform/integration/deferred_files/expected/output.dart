@@ -16,3 +16,23 @@ void main() {
   });
 }
 ''';
+
+const barContents = '''
+library bar;
+
+import 'package:angular2/src/core/metadata.dart';
+
+import 'dep.ng_deps.dart' deferred as dep;
+
+@Component(selector: '[soup]')
+@View(template: '')
+class MyComponent {
+  void doDeferredThing() {
+    dep.loadLibrary().then((_) {dep.initReflector();}).then((_) {
+      dep.doImmediateThing();
+    });
+  }
+}
+
+void execImmediate() {}
+''';

@@ -12,7 +12,7 @@ import {
   beforeEachBindings,
   it,
   xit
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {SpyRenderer, SpyAppViewPool, SpyAppViewListener, SpyProtoViewFactory} from '../spies';
 import {Injector, provide} from 'angular2/core';
 

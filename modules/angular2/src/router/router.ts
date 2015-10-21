@@ -15,7 +15,13 @@ import {
 } from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {RouteRegistry} from './route_registry';
-import {ComponentInstruction, Instruction, stringifyInstruction} from './instruction';
+import {
+  ComponentInstruction,
+  Instruction,
+  stringifyInstruction,
+  stringifyInstructionPath,
+  stringifyInstructionQuery
+} from './instruction';
 import {RouterOutlet} from './router_outlet';
 import {Location} from './location';
 import {getCanActivateHook} from './route_lifecycle_reflector';
@@ -135,7 +141,7 @@ export class Router {
   /**
    * Dynamically update the routing configuration and trigger a navigation.
    *
-   * # Usage
+   *##Usage
    *
    * ```
    * router.config([
@@ -154,7 +160,7 @@ export class Router {
    * Navigate based on the provided Route Link DSL. It's preferred to navigate with this method
    * over `navigateByUrl`.
    *
-   * # Usage
+   *##Usage
    *
    * This method takes an array representing the Route Link DSL:
    * ```
@@ -472,13 +478,14 @@ export class RootRouter extends Router {
   }
 
   commit(instruction: Instruction, _skipLocationChange: boolean = false): Promise<any> {
-    var emitUrl = stringifyInstruction(instruction);
-    if (emitUrl.length > 0) {
-      emitUrl = '/' + emitUrl;
+    var emitPath = stringifyInstructionPath(instruction);
+    var emitQuery = stringifyInstructionQuery(instruction);
+    if (emitPath.length > 0) {
+      emitPath = '/' + emitPath;
     }
     var promise = super.commit(instruction);
     if (!_skipLocationChange) {
-      promise = promise.then((_) => { this._location.go(emitUrl); });
+      promise = promise.then((_) => { this._location.go(emitPath, emitQuery); });
     }
     return promise;
   }

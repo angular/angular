@@ -19,7 +19,7 @@ import {
   tick,
   clearPendingTimers,
   RootTestComponent
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
@@ -800,10 +800,35 @@ export function main() {
                });
          }));
 
-      it('should support events via EventEmitter',
+      it('should support events via EventEmitter on regular elements',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MyComp, new ViewMetadata({
                               template: '<div emitter listener></div>',
+                              directives: [DirectiveEmitingEvent, DirectiveListeningEvent]
+                            }))
+
+               .createAsync(MyComp)
+               .then((rootTC) => {
+
+                 var tc = rootTC.debugElement.componentViewChildren[0];
+                 var emitter = tc.inject(DirectiveEmitingEvent);
+                 var listener = tc.inject(DirectiveListeningEvent);
+
+                 expect(listener.msg).toEqual('');
+
+                 ObservableWrapper.subscribe(emitter.event, (_) => {
+                   expect(listener.msg).toEqual('fired !');
+                   async.done();
+                 });
+
+                 emitter.fireEvent('fired !');
+               });
+         }));
+
+      it('should support events via EventEmitter on template elements',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(MyComp, new ViewMetadata({
+                              template: '<template emitter listener></template>',
                               directives: [DirectiveEmitingEvent, DirectiveListeningEvent]
                             }))
 

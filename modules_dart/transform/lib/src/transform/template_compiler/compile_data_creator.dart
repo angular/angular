@@ -172,6 +172,7 @@ class _CompileDataCreator {
     return retVal;
   }
 }
+
 /// Visitor responsible for processing the `annotations` property of a
 /// [RegisterType] object, extracting the `directives` dependencies, and adding
 /// their associated [CompileDirectiveMetadata] to the `directives` of a
@@ -198,8 +199,14 @@ class _DirectiveDependenciesVisitor extends Object
   @override
   Object visitInstanceCreationExpression(InstanceCreationExpression node) {
     if (_isViewAnnotation(node) || _isComponentAnnotation(node)) {
-      compileData = new NormalizedComponentWithViewDirectives(
-          null, <CompileDirectiveMetadata>[]);
+      if (compileData == null) {
+        compileData = new NormalizedComponentWithViewDirectives(
+            null, <CompileDirectiveMetadata>[]);
+      } else {
+        // This is set above, after the visitor is finished. If this value is
+        // non-null it indicates that we forgot to call `reset()`.
+        assert(compileData.component == null);
+      }
       node.visitChildren(this);
     }
     return null;
@@ -212,7 +219,7 @@ class _DirectiveDependenciesVisitor extends Object
     if (node.name is! Label || node.name.label is! SimpleIdentifier) {
       logger.error(
           'Angular 2 currently only supports simple identifiers in directives.'
-              ' Source: ${node}');
+          ' Source: ${node}');
       return null;
     }
     if ('${node.name.label}' == 'directives') {
@@ -244,7 +251,7 @@ class _DirectiveDependenciesVisitor extends Object
       } else {
         logger.error(
             'Angular 2 currently only supports simple and prefixed identifiers '
-                'as values for "directives". Source: $node');
+            'as values for "directives". Source: $node');
         return;
       }
       if (ngMeta.types.containsKey(name)) {

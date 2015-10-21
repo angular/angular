@@ -90,8 +90,8 @@ export class RouterOutlet {
   }
 
   /**
-   * Called by the {@link Router} when an outlet reuses a component across navigations.
-   * This method in turn is responsible for calling the `onReuse` hook of its child.
+   * Called by the {@link Router} when an outlet disposes of a component's contents.
+   * This method in turn is responsible for calling the `onDeactivate` hook of its child.
    */
   deactivate(nextInstruction: ComponentInstruction): Promise<any> {
     var next = _resolveToTrue;

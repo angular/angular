@@ -10,7 +10,7 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {Component, View} from 'angular2/angular2';
 

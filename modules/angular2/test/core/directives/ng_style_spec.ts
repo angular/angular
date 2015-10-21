@@ -12,7 +12,7 @@ import {
   inject,
   it,
   xit,
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 

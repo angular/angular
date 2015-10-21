@@ -5,6 +5,7 @@ import 'package:html/dom.dart';
 
 import 'dom_adapter.dart';
 import 'emulated_css.dart';
+import '../compiler/xhr.dart';
 
 const _attrToPropMap = const {
   'innerHtml': 'innerHTML',
@@ -65,6 +66,9 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
   dynamic getBoundingClientRect(el) {
     throw 'not implemented';
   }
+
+  @override
+  Type getXHR() => XHR;
 
   Element parse(String templateHtml) => parser.parse(templateHtml).firstChild;
   query(selector) {
@@ -336,13 +340,13 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
     throw 'not implemented';
   }
 
-  bool isPageRule(rule)  => (rule.type == 6);
+  bool isPageRule(rule) => (rule.type == 6);
 
   bool isStyleRule(rule) => (rule.type == 1);
 
   bool isMediaRule(rule) => (rule.type == 4);
 
-  bool isKeyframesRule(rule)  => (rule.type == 7);
+  bool isKeyframesRule(rule) => (rule.type == 7);
 
   String getHref(element) {
     throw 'not implemented';

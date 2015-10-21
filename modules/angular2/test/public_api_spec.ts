@@ -9,7 +9,7 @@ import {
   it,
   xdescribe,
   xit
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {getSymbolsFromLibrary} from './symbol_inspector/symbol_inspector';
 import {SymbolsDiff} from './symbol_inspector/symbol_differ';
@@ -396,7 +396,13 @@ var NG_API = [
   'DebugElement.queryAll()',
   'DecimalPipe',
   'DecimalPipe.transform()',
-  'DefaultValidators',
+  'RequiredValidator',
+  'MinLengthValidator',
+  'MinLengthValidator.minLength',
+  'MinLengthValidator.minLength=',
+  'MaxLengthValidator',
+  'MaxLengthValidator.maxLength',
+  'MaxLengthValidator.maxLength=',
   'DefaultValueAccessor',
   'DefaultValueAccessor.onChange',
   'DefaultValueAccessor.onChange=',
@@ -995,6 +1001,8 @@ var NG_API = [
   'Validators#group()',
   'Validators#nullValidator()',
   'Validators#required()',
+  'Validators#minLength()',
+  'Validators#maxLength()',
   'Validators',
   'View',
   'View.directives',

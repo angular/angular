@@ -10,7 +10,7 @@ export const NG_VALIDATORS: OpaqueToken = CONST_EXPR(new OpaqueToken("NgValidato
 /**
  * Provides a set of validators used by form controls.
  *
- * # Example
+ * ### Example
  *
  * ```
  * var loginControl = new Control("", Validators.required)
@@ -19,6 +19,26 @@ export const NG_VALIDATORS: OpaqueToken = CONST_EXPR(new OpaqueToken("NgValidato
 export class Validators {
   static required(control: modelModule.Control): {[key: string]: boolean} {
     return isBlank(control.value) || control.value == "" ? {"required": true} : null;
+  }
+
+  static minLength(minLength: number): Function {
+    return (control: modelModule.Control): {[key: string]: any} => {
+      if (isPresent(Validators.required(control))) return null;
+      var v: string = control.value;
+      return v.length < minLength ?
+                 {"minlength": {"requiredLength": minLength, "actualLength": v.length}} :
+                 null;
+    };
+  }
+
+  static maxLength(maxLength: number): Function {
+    return (control: modelModule.Control): {[key: string]: any} => {
+      if (isPresent(Validators.required(control))) return null;
+      var v: string = control.value;
+      return v.length > maxLength ?
+                 {"maxlength": {"requiredLength": maxLength, "actualLength": v.length}} :
+                 null;
+    };
   }
 
   static nullValidator(c: any): {[key: string]: boolean} { return null; }

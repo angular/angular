@@ -170,7 +170,7 @@ class ListWrapper {
     from = _startOffset(l, from);
     to = _endOffset(l, to);
     //in JS if from > to an empty array is returned
-    if(to != null && from > to) {
+    if (to != null && from > to) {
       return [];
     }
     return l.sublist(from, to);
@@ -210,7 +210,6 @@ class ListWrapper {
     if (end == null) return len;
     return end < 0 ? max(len + end, 0) : min(end, len);
   }
-
 
   static maximum(List l, fn(item)) {
     if (l.length == 0) {

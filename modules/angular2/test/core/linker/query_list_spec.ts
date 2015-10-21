@@ -9,7 +9,8 @@ import {
   el,
   fakeAsync,
   tick
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
+import {IS_DART} from '../../platform';
 
 import {MapWrapper, ListWrapper, iterateListLike} from 'angular2/src/core/facade/collection';
 import {StringWrapper} from 'angular2/src/core/facade/lang';
@@ -45,6 +46,28 @@ export function main() {
       queryList.reset(['one', 'two']);
       expect(queryList.map((x) => x)).toEqual(['one', 'two']);
     });
+
+    if (!IS_DART) {
+      it('should support filter', () => {
+        queryList.reset(['one', 'two']);
+        expect((<any>queryList).filter((x) => x == "one")).toEqual(['one']);
+      });
+
+      it('should support reduce', () => {
+        queryList.reset(["one", "two"]);
+        expect((<any>queryList).reduce((a, x) => a + x, "start:")).toEqual("start:onetwo");
+      });
+
+      it('should support toArray', () => {
+        queryList.reset(["one", "two"]);
+        expect((<any>queryList).reduce((a, x) => a + x, "start:")).toEqual("start:onetwo");
+      });
+
+      it('should support toArray', () => {
+        queryList.reset(["one", "two"]);
+        expect((<any>queryList).toArray()).toEqual(["one", "two"]);
+      });
+    }
 
     it('should support toString', () => {
       queryList.reset(['one', 'two']);

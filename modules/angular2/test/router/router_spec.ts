@@ -9,7 +9,7 @@ import {
   inject,
   beforeEach,
   beforeEachBindings
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {SpyRouterOutlet} from './spies';
 import {Type} from 'angular2/src/core/facade/lang';
 import {Promise, PromiseWrapper, ObservableWrapper} from 'angular2/src/core/facade/async';

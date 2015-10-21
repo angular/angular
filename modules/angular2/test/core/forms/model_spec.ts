@@ -12,9 +12,10 @@ import {
   fakeAsync,
   tick,
   inject
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {ControlGroup, Control, ControlArray, Validators} from 'angular2/core';
 import {ObservableWrapper} from 'angular2/src/core/facade/async';
+import {IS_DART} from '../../platform';
 
 export function main() {
   describe("Form Model", () => {
@@ -116,7 +117,7 @@ export function main() {
       describe("valueChanges", () => {
         var c;
 
-        beforeEach(() => { c = new Control("old"); });
+        beforeEach(() => { c = new Control("old", Validators.required); });
 
         it("should fire an event after the value has been updated",
            inject([AsyncTestCompleter], (async) => {
@@ -127,6 +128,19 @@ export function main() {
              });
              c.updateValue("new");
            }));
+
+        // TODO: remove the if statement after making observable delivery sync
+        if (!IS_DART) {
+          it("should update set errors and status before emitting an event",
+             inject([AsyncTestCompleter], (async) => {
+               c.valueChanges.toRx().subscribe(value => {
+                 expect(c.valid).toEqual(false);
+                 expect(c.errors).toEqual({"required": true});
+                 async.done();
+               });
+               c.updateValue("");
+             }));
+        }
 
         it("should return a cold observable", inject([AsyncTestCompleter], (async) => {
              c.updateValue("will be ignored");

@@ -1,4 +1,11 @@
-import {AsyncTestCompleter, beforeEach, inject, describe, it, expect} from "angular2/test_lib";
+import {
+  AsyncTestCompleter,
+  beforeEach,
+  inject,
+  describe,
+  it,
+  expect
+} from "angular2/testing_internal";
 import {
   RenderViewWithFragments,
   RenderViewRef,

@@ -72,7 +72,7 @@ export class RequestOptions {
    * the `options` object. If these values should be merged, it should be done prior to calling
    * `merge` on the `RequestOptions` instance.
    *
-   * Example ([live demo](http://plnkr.co/edit/6w8XA8YTkDRcPYpdB9dk?p=preview))
+   * ### Example ([live demo](http://plnkr.co/edit/6w8XA8YTkDRcPYpdB9dk?p=preview))
    *
    * ```typescript
    * import {RequestOptions, Request, RequestMethods} from 'angular2/http';

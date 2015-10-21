@@ -159,20 +159,20 @@ export abstract class PlatformRef {
   /**
    * Instantiate a new Angular application on the page.
    *
-   * # What is an application?
+   *##What is an application?
    *
    * Each Angular application has its own zone, change detection, compiler,
    * renderer, and other framework components. An application hosts one or more
    * root components, which can be initialized via `ApplicationRef.bootstrap()`.
    *
-   * # Application Bindings
+   *##Application Bindings
    *
    * Angular applications require numerous providers to be properly instantiated.
    * When using `application()` to create a new app on the page, these providers
    * must be provided. Fortunately, there are helper functions to configure
    * typical providers, as shown in the example below.
    *
-   * # Example
+   * ### Example
    * ```
    * var myAppBindings = [MyAppService];
    *
@@ -180,7 +180,7 @@ export abstract class PlatformRef {
    *   .application([applicationCommonBindings(), applicationDomBindings(), myAppBindings])
    *   .bootstrap(MyTopLevelComponent);
    * ```
-   * # See Also
+   *##See Also
    *
    * See the {@link bootstrap} documentation for more details.
    */
@@ -191,10 +191,10 @@ export abstract class PlatformRef {
    * are only available asynchronously. One such use case is to initialize an
    * application running in a web worker.
    *
-   * # Usage
+   *##Usage
    *
    * `bindingFn` is a function that will be called in the new application's zone.
-   * It should return a {@link Promise} to a list of providers to be used for the
+   * It should return a `Promise` to a list of providers to be used for the
    * new application. Once this promise resolves, the application will be
    * constructed in the same manner as a normal `application()`.
    */
@@ -281,19 +281,19 @@ export abstract class ApplicationRef {
   /**
    * Bootstrap a new component at the root level of the application.
    *
-   * # Bootstrap process
+   *##Bootstrap process
    *
    * When bootstrapping a new root component into an application, Angular mounts the
    * specified application component onto DOM elements identified by the [componentType]'s
    * selector and kicks off automatic change detection to finish initializing the component.
    *
-   * # Optional Bindings
+   *##Optional Bindings
    *
    * Bindings for the given component can optionally be overridden via the `providers`
    * parameter. These providers will only apply for the root component being added and any
    * child components under it.
    *
-   * # Example
+   * ### Example
    * ```
    * var app = platform.application([applicationCommonBindings(), applicationDomBindings()];
    * app.bootstrap(FirstRootComponent);

@@ -2,7 +2,7 @@ library angular2.test.web_workers.debug_tools.multi_client_server_message_bus;
 
 import "dart:io";
 import "dart:async";
-import "package:angular2/test_lib.dart"
+import "package:angular2/testing_internal.dart"
     show
         AsyncTestCompleter,
         inject,
@@ -79,8 +79,9 @@ main() {
       var random = new Random();
       for (var i = 0; i < numMessages; i++) {
         var message = {'value': random.nextInt(MAX)};
-        messageHistory
-            .add(JSON.encode([{'channel': CHANNEL, 'message': message}]));
+        messageHistory.add(JSON.encode([
+          {'channel': CHANNEL, 'message': message}
+        ]));
       }
       // copy the message history to ensure the test fails if the wrapper modifies the list
       return new List.from(messageHistory);
@@ -189,8 +190,7 @@ main() {
               messageHistory, resultMarkers, result.socket);
           socket.setPrimary(true);
 
-          var source =
-              new MultiClientServerMessageBusSource();
+          var source = new MultiClientServerMessageBusSource();
           source.onResult.listen((result) => async.done());
           source.initChannel(CHANNEL, false);
           source.addConnection(socket);

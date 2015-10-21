@@ -18,7 +18,7 @@ import {
   RootTestComponent,
   fakeAsync,
   tick
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {AppViewListener} from 'angular2/src/core/linker/view_listener';

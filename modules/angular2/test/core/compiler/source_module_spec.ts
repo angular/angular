@@ -10,7 +10,7 @@ import {
   it,
   xit,
   TestComponentBuilder
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 
 import {SourceModule, moduleRef} from 'angular2/src/core/compiler/source_module';
 

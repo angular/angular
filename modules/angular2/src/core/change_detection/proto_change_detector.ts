@@ -12,7 +12,6 @@ import {
   Binary,
   Chain,
   Conditional,
-  If,
   BindingPipe,
   FunctionCall,
   ImplicitReceiver,
@@ -265,8 +264,6 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
     var args = ast.expressions.map(e => e.visit(this));
     return this._addRecord(RecordType.Chain, "chain", null, args, null, 0);
   }
-
-  visitIf(ast: If) { throw new BaseException('Not supported'); }
 
   _visitAll(asts: any[]) {
     var res = ListWrapper.createFixedSize(asts.length);

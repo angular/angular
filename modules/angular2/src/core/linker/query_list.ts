@@ -37,9 +37,24 @@ export class QueryList<T> {
   get last(): T { return ListWrapper.last(this._results); }
 
   /**
-   * returns a new list with the passsed in function applied to each element.
+   * returns a new array with the passed in function applied to each element.
    */
   map<U>(fn: (item: T) => U): U[] { return this._results.map(fn); }
+
+  /**
+   * returns a filtered array.
+   */
+  filter(fn: (item: T) => boolean): T[] { return this._results.filter(fn); }
+
+  /**
+   * returns a reduced value.
+   */
+  reduce<U>(fn: (acc: U, item: T) => U, init: U): U { return this._results.reduce(fn, init); }
+
+  /**
+   * converts QueryList into an array
+   */
+  toArray(): T[] { return ListWrapper.clone(this._results); }
 
   [getSymbolIterator()](): any { return this._results[getSymbolIterator()](); }
 

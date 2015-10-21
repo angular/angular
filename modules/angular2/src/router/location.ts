@@ -13,7 +13,7 @@ import {OpaqueToken, Injectable, Optional, Inject} from 'angular2/angular2';
  * representing the URL prefix that should be preserved when generating and recognizing
  * URLs.
  *
- * ## Example
+ * ### Example
  *
  * ```
  * import {Component} from 'angular2/angular2';
@@ -52,7 +52,7 @@ export const APP_BASE_HREF: OpaqueToken = CONST_EXPR(new OpaqueToken('appBaseHre
  * - `my/app/user/123` **is not** normalized
  * - `/my/app/user/123/` **is not** normalized
  *
- * ## Example
+ * ### Example
  *
  * ```
  * import {Component} from 'angular2/angular2';
@@ -125,9 +125,9 @@ export class Location {
    * Changes the browsers URL to the normalized version of the given URL, and pushes a
    * new item onto the platform's history.
    */
-  go(url: string): void {
-    var finalUrl = this.normalizeAbsolutely(url);
-    this.platformStrategy.pushState(null, '', finalUrl);
+  go(path: string, query: string = ''): void {
+    var absolutePath = this.normalizeAbsolutely(path);
+    this.platformStrategy.pushState(null, '', absolutePath, query);
   }
 
   /**

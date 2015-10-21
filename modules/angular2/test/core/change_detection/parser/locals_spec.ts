@@ -1,4 +1,4 @@
-import {ddescribe, describe, it, xit, iit, expect, beforeEach} from 'angular2/test_lib';
+import {ddescribe, describe, it, xit, iit, expect, beforeEach} from 'angular2/testing_internal';
 
 import {Locals} from 'angular2/src/core/change_detection/parser/locals';
 

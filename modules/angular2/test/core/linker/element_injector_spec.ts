@@ -14,7 +14,7 @@ import {
   AsyncTestCompleter,
   el,
   containsRegexp
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {SpyView, SpyElementRef} from '../spies';
 import {isBlank, isPresent, stringify} from 'angular2/src/core/facade/lang';
 import {

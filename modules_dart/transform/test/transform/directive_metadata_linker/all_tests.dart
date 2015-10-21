@@ -164,6 +164,24 @@ void allTests() {
       expect(linkedImport.isNgDeps).toBeTrue();
       expect(linkedImport.prefix.startsWith('i')).toBeTrue();
     });
+
+    it('should not chain `deferred` libraries.', () async {
+      fooNgMeta.ngDeps
+        ..libraryUri = 'test.foo'
+        ..imports.add(new ImportModel()
+          ..uri = 'bar.dart'
+          ..isDeferred = true
+          ..prefix = 'dep');
+      barNgMeta.ngDeps.libraryUri = 'test.bar';
+      updateReader();
+
+      var linked = (await _testLink(reader, fooAssetId)).ngDeps;
+      expect(linked).toBeNotNull();
+      var linkedImport = linked.imports.firstWhere(
+          (i) => i.uri.endsWith('bar.ng_deps.dart'),
+          orElse: () => null);
+      expect(linkedImport).toBeNull();
+    });
   });
 }
 

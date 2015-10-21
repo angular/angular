@@ -1,3 +1,5 @@
-// Test library and utilities for internal use.
-export * from './test';
-export * from './src/test_lib/utils';
+/*
+ * @deprecated Please use testing_internal instead
+ */
+
+export * from './testing_internal';

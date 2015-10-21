@@ -2,7 +2,7 @@ library bar;
 
 import 'package:angular2/src/core/metadata.dart';
 
-import 'deps/my_dep.dart' deferred as dep;
+import 'dep.dart' deferred as dep;
 
 @Component(selector: '[soup]')
 @View(template: '')

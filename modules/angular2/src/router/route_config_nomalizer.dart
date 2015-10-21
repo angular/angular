@@ -9,6 +9,7 @@ RouteDefinition normalizeRouteConfig(RouteDefinition config) {
 
 void assertComponentExists(Type component, String path) {
   if (component == null) {
-    throw new BaseException('Component for route "${path}" is not defined, or is not a class.');
+    throw new BaseException(
+        'Component for route "${path}" is not defined, or is not a class.');
   }
 }

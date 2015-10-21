@@ -130,6 +130,16 @@ void allTests() {
         outputs: {
       'a|web/bar.ng_deps.dart':
           'directive_chain_files/expected/bar.ng_deps.dart'
+    }),
+    new IntegrationTestConfig(
+        'should handle empty ng_deps files that define directive aliases.',
+        inputs: {
+      'a|web/foo.dart': 'empty_ng_deps_files/foo.dart',
+      'a|web/bar.dart': 'empty_ng_deps_files/bar.dart'
+    },
+        outputs: {
+      'a|web/foo.ng_deps.dart': 'empty_ng_deps_files/expected/foo.ng_deps.dart',
+      'a|web/bar.ng_deps.dart': 'empty_ng_deps_files/expected/bar.ng_deps.dart'
     })
   ];
 
@@ -169,6 +179,7 @@ void allTests() {
 void _testDeferredRewriter() {
   var inputs = {
     'a|web/bar.dart': 'deferred_files/bar.dart',
+    'a|web/dep.dart': 'deferred_files/dep.dart',
     'a|web/index.dart': 'deferred_files/index.dart'
   };
   inputs.addAll(commonInputs);
@@ -176,7 +187,7 @@ void _testDeferredRewriter() {
   var outputs = {
     'a|web/bar.ng_deps.dart':
         _readFile('deferred_files/expected/bar.ng_deps.dart'),
-    'a|web/bar.dart': _readFile('deferred_files/expected/bar.dart'),
+    'a|web/bar.dart': deferredOuts.barContents,
     'a|web/index.dart': deferredOuts.indexContents
   };
   testPhases(

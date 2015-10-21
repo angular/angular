@@ -65,7 +65,9 @@ bool _isNotDartDirective(dynamic model) => !isDartCoreUri(model.uri);
 /// associated `.ng_deps.json` file, if one exists.
 Future<Map<String, String>> _processNgImports(NgDepsModel model,
     AssetReader reader, AssetId assetId, UrlResolver resolver) async {
-  final importsAndExports = new List.from(model.imports)..addAll(model.exports);
+  final importsAndExports =
+      new List.from(model.imports.where((i) => !i.isDeferred))
+        ..addAll(model.exports);
   final retVal = <String, String>{};
   final assetUri = toAssetUri(assetId);
   return Future

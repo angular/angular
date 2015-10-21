@@ -6,8 +6,7 @@ import 'package:angular2/src/core/facade/async.dart';
 /**
  * See query_list.ts
  */
-class QueryList<T> extends Object
-    with IterableMixin<T> {
+class QueryList<T> extends Object with IterableMixin<T> {
   List<T> _results = [];
   EventEmitter _emitter = new EventEmitter();
 
@@ -20,11 +19,6 @@ class QueryList<T> extends Object
   T get last => _results.last;
   String toString() {
     return _results.toString();
-  }
-
-  List map(fn(T)) {
-    // Note: we need to return a list instead of iterable to match JS.
-    return this._results.map(fn).toList();
   }
 
   /** @internal */

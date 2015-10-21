@@ -13,7 +13,7 @@ const CHECKBOX_VALUE_ACCESSOR = CONST_EXPR(new Provider(
 /**
  * The accessor for writing a value and listening to changes on a checkbox input element.
  *
- *  # Example
+ *  ### Example
  *  ```
  *  <input type="checkbox" [ng-control]="rememberLogin">
  *  ```

@@ -20,11 +20,18 @@ class WrappedException extends Error {
   final originalStack;
 
   WrappedException(
-      [this.wrapperMessage, this.originalException, this.originalStack, this.context]);
+      [this.wrapperMessage,
+      this.originalException,
+      this.originalStack,
+      this.context]);
 
-  get message { return ExceptionHandler.exceptionToString(this); }
+  get message {
+    return ExceptionHandler.exceptionToString(this);
+  }
 
-  String toString() { return this.message; }
+  String toString() {
+    return this.message;
+  }
 }
 
 Error makeTypeError([String message = ""]) {

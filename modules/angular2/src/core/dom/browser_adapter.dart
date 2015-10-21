@@ -98,7 +98,7 @@ final _keyCodeToKeyMap = const {
 final bool _supportsTemplateElement = () {
   try {
     return new TemplateElement().content != null;
-  } catch(_) {
+  } catch (_) {
     return false;
   }
 }();
@@ -216,7 +216,8 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   String nodeName(Node el) => el.nodeName;
   String nodeValue(Node el) => el.nodeValue;
   String type(InputElement el) => el.type;
-  Node content(TemplateElement el) => _supportsTemplateElement ? el.content : el;
+  Node content(TemplateElement el) =>
+      _supportsTemplateElement ? el.content : el;
   Node firstChild(el) => el.firstChild;
   Node nextSibling(Node el) => el.nextNode;
   Element parentElement(Node el) => el.parent;
@@ -456,7 +457,7 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   setGlobalVar(String path, value) {
     var parts = path.split('.');
     var obj = js.context;
-    while(parts.length > 1) {
+    while (parts.length > 1) {
       var name = parts.removeAt(0);
       if (obj.hasProperty(name)) {
         obj = obj[name];

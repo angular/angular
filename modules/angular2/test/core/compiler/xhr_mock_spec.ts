@@ -8,7 +8,7 @@ import {
   iit,
   inject,
   it,
-} from 'angular2/test_lib';
+} from 'angular2/testing_internal';
 import {MockXHR} from 'angular2/src/core/compiler/xhr_mock';
 import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
 import {isPresent} from 'angular2/src/core/facade/lang';

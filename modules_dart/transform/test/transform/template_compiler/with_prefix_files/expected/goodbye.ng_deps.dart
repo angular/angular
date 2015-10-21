@@ -1,4 +1,4 @@
-library examples.hello_world.index_common_dart.ng_deps.dart;
+library playground.hello_world.index_common_dart.ng_deps.dart;
 
 import 'goodbye.template.dart' as _templates;
 

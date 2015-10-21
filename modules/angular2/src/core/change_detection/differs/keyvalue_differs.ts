@@ -44,7 +44,7 @@ export class KeyValueDiffers {
          * which will only be applied to the injector for this component and its children.
          * This step is all that's required to make a new {@link KeyValueDiffer} available.
    *
-   * # Example
+   * ### Example
    *
    * ```
    * @Component({

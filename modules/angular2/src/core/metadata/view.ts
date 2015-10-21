@@ -44,7 +44,7 @@ export var VIEW_ENCAPSULATION_VALUES =
  *
  * For details on the `@Component` annotation, see {@link ComponentMetadata}.
  *
- * ## Example
+ * ### Example
  *
  * ```
  * @Component({
@@ -96,7 +96,7 @@ export class ViewMetadata {
    *
    * Directives must be listed explicitly to provide proper component encapsulation.
    *
-   * ## Example
+   * ### Example
    *
    * ```javascript
    * @Component({

@@ -1,4 +1,4 @@
-import {ddescribe, describe, it, expect} from 'angular2/test_lib';
+import {ddescribe, describe, it, expect} from 'angular2/testing_internal';
 
 import {Lexer, Token} from 'angular2/src/core/change_detection/parser/lexer';
 

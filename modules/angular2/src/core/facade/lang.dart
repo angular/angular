@@ -94,7 +94,7 @@ class StringWrapper {
     start = _startOffset(s, start);
     end = _endOffset(s, end);
     //in JS if start > end an empty string is returned
-    if(end != null && start > end) {
+    if (end != null && start > end) {
       return "";
     }
     return s.substring(start, end);
@@ -264,6 +264,10 @@ class DateWrapper {
       int seconds = 0,
       int milliseconds = 0]) {
     return new DateTime(year, month, day, hour, minutes, seconds, milliseconds);
+  }
+
+  static DateTime fromISOString(String str) {
+    return DateTime.parse(str);
   }
 
   static DateTime fromMillis(int ms) {

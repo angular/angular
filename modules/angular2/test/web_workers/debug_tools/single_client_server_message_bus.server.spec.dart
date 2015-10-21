@@ -2,7 +2,7 @@ library angular2.test.web_workers.debug_tools.single_client_server_message_bus;
 
 import "dart:io";
 import "dart:async";
-import "package:angular2/test_lib.dart"
+import "package:angular2/testing_internal.dart"
     show
         AsyncTestCompleter,
         inject,
@@ -94,8 +94,9 @@ main() {
             async.done();
           });
 
-          controller
-              .add(JSON.encode([{'channel': CHANNEL, 'message': MESSAGE}]));
+          controller.add(JSON.encode([
+            {'channel': CHANNEL, 'message': MESSAGE}
+          ]));
         }));
   });
 }

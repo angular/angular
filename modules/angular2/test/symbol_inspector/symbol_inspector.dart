@@ -89,8 +89,8 @@ class LibraryInfo {
   }
 }
 
-Iterable<Symbol> _getUsedSymbols(DeclarationMirror decl, seenDecls, path, onlyType) {
-
+Iterable<Symbol> _getUsedSymbols(
+    DeclarationMirror decl, seenDecls, path, onlyType) {
   if (seenDecls.containsKey(decl.qualifiedName)) return [];
   seenDecls[decl.qualifiedName] = true;
 
@@ -111,12 +111,10 @@ Iterable<Symbol> _getUsedSymbols(DeclarationMirror decl, seenDecls, path, onlyTy
       used.addAll(_getUsedSymbols(p.type, seenDecls, path, onlyType));
     });
     used.addAll(_getUsedSymbols(ftdecl.returnType, seenDecls, path, onlyType));
-  }
-  else if (decl is TypeMirror) {
+  } else if (decl is TypeMirror) {
     var tdecl = decl;
     used.add(tdecl.qualifiedName);
   }
-
 
   if (!onlyType) {
     if (decl is ClassMirror) {
@@ -128,15 +126,13 @@ Iterable<Symbol> _getUsedSymbols(DeclarationMirror decl, seenDecls, path, onlyTy
           print("Got error [$e] when visiting $d\n$s");
         }
       });
-
     }
 
     if (decl is MethodMirror) {
       MethodMirror mdecl = decl;
-      if (mdecl.parameters != null)
-        mdecl.parameters.forEach((p) {
-          used.addAll(_getUsedSymbols(p.type, seenDecls, path, true));
-        });
+      if (mdecl.parameters != null) mdecl.parameters.forEach((p) {
+        used.addAll(_getUsedSymbols(p.type, seenDecls, path, true));
+      });
       used.addAll(_getUsedSymbols(mdecl.returnType, seenDecls, path, true));
     }
 
@@ -208,7 +204,6 @@ LibraryInfo extractSymbols(LibraryMirror lib, [String printPrefix = ""]) {
   });
   return new LibraryInfo(exportedSymbols, used);
 }
-
 
 var _SYMBOL_NAME = new RegExp('"(.*)"');
 unwrapSymbol(sym) => _SYMBOL_NAME.firstMatch(sym.toString()).group(1);

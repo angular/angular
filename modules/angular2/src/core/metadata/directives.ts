@@ -67,7 +67,7 @@ import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
  * {@link DirectiveMetadata} directives only
  * - `bindingPropagation: BindingPropagation` to control change detection in a more granular way.
  *
- * ## Example
+ * ### Example
  *
  * The following example demonstrates how dependency injection resolves constructor arguments in
  * practice.
@@ -236,7 +236,7 @@ import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
  * If none can be
  * found, the injector supplies `null` instead of throwing an error.
  *
- * ## Example
+ * ### Example
  *
  * Here we use a decorator directive to simply define basic tool-tip behavior.
  *
@@ -324,7 +324,7 @@ import {ViewEncapsulation} from 'angular2/src/core/metadata/view';
  * When the directive class implements some {@link angular2/lifecycle_hooks} the callbacks are
  * called by the change detection at defined points in time during the life of the directive.
  *
- * ## Example
+ * ### Example
  *
  * Let's suppose we want to implement the `unless` behavior, to conditionally include a template.
  *
@@ -399,7 +399,7 @@ export class DirectiveMetadata extends InjectableMetadata {
    * - `selector1, selector2`: select if either `selector1` or `selector2` matches.
    *
    *
-   * ## Example
+   * ### Example
    *
    * Suppose we have a directive with an `input[type=text]` selector.
    *
@@ -802,7 +802,7 @@ export class DirectiveMetadata extends InjectableMetadata {
  * When the component class implements some {@link angular2/lifecycle_hooks} the callbacks are
  * called by the change detection at defined points in time during the life of the component.
  *
- * ## Example
+ * ### Example
  *
  * ```
  * @Component({
@@ -948,7 +948,7 @@ export class ComponentMetadata extends DirectiveMetadata {
 /**
  * Declare reusable pipe function.
  *
- * ## Example
+ * ### Example
  *
  * ```
  * @Pipe({
