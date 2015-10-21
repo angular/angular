@@ -4,7 +4,6 @@ import 'dart:async';
 
 import 'package:analyzer/analyzer.dart';
 import 'package:barback/barback.dart';
-import 'package:code_transformers/messages/build_logger.dart';
 import 'package:source_span/source_span.dart';
 
 typedef _SimpleCallback();
@@ -14,9 +13,9 @@ final _key = #loggingZonedLoggerKey;
 
 /// Executes {@link fn} inside a new {@link Zone} with its own logger.
 Future<dynamic> initZoned(Transform t, _SimpleCallback fn) =>
-    setZoned(new BuildLogger(t), fn);
+    setZoned(t.logger, fn);
 
-Future<dynamic> setZoned(BuildLogger logger, _SimpleCallback fn) async {
+Future<dynamic> setZoned(TransformLogger logger, _SimpleCallback fn) async {
   return runZoned(() async {
     try {
       return await fn();
@@ -46,8 +45,8 @@ Future<dynamic> setZoned(BuildLogger logger, _SimpleCallback fn) async {
 }
 
 /// The logger for the current {@link Zone}.
-BuildLogger get logger {
-  var current = Zone.current[_key] as BuildLogger;
+TransformLogger get logger {
+  var current = Zone.current[_key] as TransformLogger;
   return current == null ? new PrintLogger() : current;
 }
 
@@ -69,25 +68,25 @@ Future logElapsedAsync(Future asyncOperation(),
   return result;
 }
 
-class PrintLogger implements BuildLogger {
-  @override
-  final String detailsUri = '';
-  @override
-  final bool convertErrorsToWarnings = false;
-
+class PrintLogger implements TransformLogger {
   void _printWithPrefix(prefix, msg) => print('$prefix: $msg');
+
+  @override
   void info(msg, {AssetId asset, SourceSpan span}) =>
       _printWithPrefix('INFO', msg);
+
+  @override
   void fine(msg, {AssetId asset, SourceSpan span}) =>
       _printWithPrefix('FINE', msg);
+
+  @override
   void warning(msg, {AssetId asset, SourceSpan span}) =>
       _printWithPrefix('WARN', msg);
+
+  @override
   void error(msg, {AssetId asset, SourceSpan span}) {
     throw new PrintLoggerError(msg, asset, span);
   }
-
-  Future writeOutput() => null;
-  Future addLogFilesFromAsset(AssetId id, [int nextNumber = 1]) => null;
 }
 
 class PrintLoggerError extends Error {

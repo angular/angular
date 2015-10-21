@@ -13,7 +13,6 @@ import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/common/model/reflection_info_model.pb.dart';
 import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:barback/barback.dart';
-import 'package:code_transformers/messages/build_logger.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:guinness/guinness.dart';
 import '../common/read_file.dart';
@@ -427,7 +426,7 @@ Future<NgMeta> _testCreateModel(String inputPath,
     {List<AnnotationDescriptor> customDescriptors: const [],
     AssetId assetId,
     AssetReader reader,
-    BuildLogger logger}) {
+    TransformLogger logger}) {
   if (logger == null) logger = new RecordingLogger();
   return log.setZoned(logger, () async {
     var inputId = _assetIdForPath(inputPath);
