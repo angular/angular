@@ -54,7 +54,6 @@ export function main() {
     var jsonpBackend: MockBackend;
     var xhrBackend: MockBackend;
     var jsonp: Jsonp;
-    var http: Http;
 
     it('should allow using jsonpInjectables and httpInjectables in same injector',
        inject([AsyncTestCompleter], (async) => {
