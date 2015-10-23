@@ -59,11 +59,13 @@ export class TemplateNormalizer {
             .concat(templateMeta.styleUrls.map(
                 url => this._urlResolver.resolve(directiveType.moduleUrl, url)));
     allStyleAbsUrls = ListWrapper.filter(allStyleAbsUrls, isStyleUrlResolvable);
+
     var allResolvedStyles = allStyles.map(style => {
       var styleWithImports = extractStyleUrls(this._urlResolver, templateAbsUrl, style);
       styleWithImports.styleUrls.forEach(styleUrl => allStyleAbsUrls.push(styleUrl));
       return styleWithImports.style;
     });
+
     var encapsulation = templateMeta.encapsulation;
     if (encapsulation === ViewEncapsulation.Emulated && allResolvedStyles.length === 0 &&
         allStyleAbsUrls.length === 0) {
