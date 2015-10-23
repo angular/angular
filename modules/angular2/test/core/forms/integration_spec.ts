@@ -1,4 +1,4 @@
-import {Component, Directive, View} from 'angular2/angular2';
+import {Component, Directive, View, Output, EventEmitter} from 'angular2/angular2';
 import {
   RootTestComponent,
   afterEach,
@@ -32,6 +32,7 @@ import {
 } from 'angular2/core';
 import {By} from 'angular2/src/core/debug';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
+import {ObservableWrapper} from 'angular2/src/core/facade/async';
 
 export function main() {
   describe("integration tests", () => {
@@ -366,6 +367,29 @@ export function main() {
              async.done();
            });
          }));
+
+      it("should support custom value accessors on non builtin input elements that fire a change event without a 'target' property",
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var t = `<div [ng-form-model]="form">
+                  <my-input ng-control="name"></my-input>
+                </div>`;
+
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
+             rootTC.debugElement.componentInstance.form =
+                 new ControlGroup({"name": new Control("aa")});
+             rootTC.detectChanges();
+             var input = rootTC.debugElement.query(By.css("my-input"));
+             expect(input.componentInstance.value).toEqual("!aa!");
+
+             input.componentInstance.value = "!bb!";
+             ObservableWrapper.subscribe(input.componentInstance.onChange, (value) => {
+               expect(rootTC.debugElement.componentInstance.form.value).toEqual({"name": "bb"});
+               async.done();
+             });
+             input.componentInstance.dispatchChangeEvent();
+           });
+         }));
+
     });
 
     describe("validations", () => {
@@ -872,8 +896,26 @@ class WrappedValue implements ControlValueAccessor {
   handleOnChange(value) { this.onChange(value.substring(1, value.length - 1)); }
 }
 
+@Component({selector: "my-input", template: ''})
+class MyInput implements ControlValueAccessor {
+  @Output('change') onChange: EventEmitter = new EventEmitter();
+  value: string;
+
+  constructor(cd: NgControl) { cd.valueAccessor = this; }
+
+  writeValue(value) { this.value = `!${value}!`; }
+
+  registerOnChange(fn) { ObservableWrapper.subscribe(this.onChange, fn); }
+
+  registerOnTouched(fn) {}
+
+  dispatchChangeEvent() {
+    ObservableWrapper.callNext(this.onChange, this.value.substring(1, this.value.length - 1));
+  }
+}
+
 @Component({selector: "my-comp"})
-@View({directives: [FORM_DIRECTIVES, WrappedValue, NgIf, NgFor]})
+@View({directives: [FORM_DIRECTIVES, WrappedValue, MyInput, NgIf, NgFor]})
 class MyComp {
   form: any;
   name: string;
