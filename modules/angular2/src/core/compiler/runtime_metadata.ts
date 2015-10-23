@@ -10,7 +10,7 @@ import {
 import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {MapWrapper, StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import * as cpl from './directive_metadata';
-import * as dirAnn from 'angular2/src/core/metadata/directives';
+import * as md from 'angular2/src/core/metadata/directives';
 import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
 import {ViewMetadata} from 'angular2/src/core/metadata/view';
@@ -33,35 +33,35 @@ export class RuntimeMetadataResolver {
   getMetadata(directiveType: Type): cpl.CompileDirectiveMetadata {
     var meta = this._cache.get(directiveType);
     if (isBlank(meta)) {
-      var directiveAnnotation = this._directiveResolver.resolve(directiveType);
-      var moduleUrl = calcModuleUrl(directiveType, directiveAnnotation);
+      var dirMeta = this._directiveResolver.resolve(directiveType);
+      var moduleUrl = calcModuleUrl(directiveType, dirMeta);
       var templateMeta = null;
       var changeDetectionStrategy = null;
 
-      if (directiveAnnotation instanceof dirAnn.ComponentMetadata) {
-        var compAnnotation = <dirAnn.ComponentMetadata>directiveAnnotation;
-        var viewAnnotation = this._viewResolver.resolve(directiveType);
+      if (dirMeta instanceof md.ComponentMetadata) {
+        var cmpMeta = <md.ComponentMetadata>dirMeta;
+        var viewMeta = this._viewResolver.resolve(directiveType);
         templateMeta = new cpl.CompileTemplateMetadata({
-          encapsulation: viewAnnotation.encapsulation,
-          template: viewAnnotation.template,
-          templateUrl: viewAnnotation.templateUrl,
-          styles: viewAnnotation.styles,
-          styleUrls: viewAnnotation.styleUrls
+          encapsulation: viewMeta.encapsulation,
+          template: viewMeta.template,
+          templateUrl: viewMeta.templateUrl,
+          styles: viewMeta.styles,
+          styleUrls: viewMeta.styleUrls
         });
-        changeDetectionStrategy = compAnnotation.changeDetection;
+        changeDetectionStrategy = cmpMeta.changeDetection;
       }
       meta = cpl.CompileDirectiveMetadata.create({
-        selector: directiveAnnotation.selector,
-        exportAs: directiveAnnotation.exportAs,
+        selector: dirMeta.selector,
+        exportAs: dirMeta.exportAs,
         isComponent: isPresent(templateMeta),
         dynamicLoadable: true,
         type: new cpl.CompileTypeMetadata(
             {name: stringify(directiveType), moduleUrl: moduleUrl, runtime: directiveType}),
         template: templateMeta,
         changeDetection: changeDetectionStrategy,
-        inputs: directiveAnnotation.inputs,
-        outputs: directiveAnnotation.outputs,
-        host: directiveAnnotation.host,
+        inputs: dirMeta.inputs,
+        outputs: dirMeta.outputs,
+        host: dirMeta.host,
         lifecycleHooks: ListWrapper.filter(LIFECYCLE_HOOKS_VALUES,
                                            hook => hasLifecycleHook(hook, directiveType))
       });
@@ -112,9 +112,9 @@ function isValidDirective(value: Type): boolean {
   return isPresent(value) && (value instanceof Type);
 }
 
-function calcModuleUrl(type: Type, directiveAnnotation: dirAnn.DirectiveMetadata): string {
-  if (isPresent(directiveAnnotation.moduleId)) {
-    return `package:${directiveAnnotation.moduleId}${MODULE_SUFFIX}`;
+function calcModuleUrl(type: Type, dirMeta: md.DirectiveMetadata): string {
+  if (isPresent(dirMeta.moduleId)) {
+    return `package:${dirMeta.moduleId}${MODULE_SUFFIX}`;
   } else {
     return reflector.importUri(type);
   }
