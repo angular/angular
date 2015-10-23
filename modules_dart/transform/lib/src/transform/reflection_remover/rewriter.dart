@@ -1,12 +1,12 @@
 library angular2.transform.reflection_remover.rewriter;
 
 import 'package:analyzer/src/generated/ast.dart';
+import 'package:angular2/src/transform/common/ast_tester.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/mirror_mode.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:path/path.dart' as path;
 
-import 'ast_tester.dart';
 import 'codegen.dart';
 
 class Rewriter {
@@ -62,9 +62,9 @@ class _RewriterVisitor extends Object with RecursiveAstVisitor<Object> {
   Object visitImportDirective(ImportDirective node) {
     buf.write(_rewriter._code.substring(_currentIndex, node.offset));
     _currentIndex = node.offset;
-    if (_rewriter._tester.isReflectionCapabilitiesImport(node)) {
+    if (_rewriter._tester.hasReflectionCapabilitiesUri(node)) {
       _rewriteReflectionCapabilitiesImport(node);
-    } else if (_rewriter._tester.isBootstrapImport(node)) {
+    } else if (_rewriter._tester.hasBootstrapUri(node)) {
       _rewriteBootstrapImportToStatic(node);
     }
     if (!_importAdded && _rewriter._writeStaticInit) {
@@ -112,10 +112,10 @@ class _RewriterVisitor extends Object with RecursiveAstVisitor<Object> {
 
   _rewriteBootstrapImportToStatic(ImportDirective node) {
     if (_rewriter._writeStaticInit) {
-      // rewrite `bootstrap.dart` to `bootstrap_static.dart`
+      // rewrite bootstrap import to its static version.
       buf.write(_rewriter._code.substring(_currentIndex, node.offset));
       // TODO(yjbanov): handle import "..." show/hide ...
-      buf.write("import 'package:angular2/bootstrap_static.dart';");
+      buf.write("import '$BOOTSTRAP_STATIC_URI';");
     } else {
       // leave it as is
       buf.write(_rewriter._code.substring(_currentIndex, node.end));

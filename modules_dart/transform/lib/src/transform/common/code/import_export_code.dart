@@ -1,7 +1,10 @@
 library angular2.transform.common.code.import_export_code;
 
 import 'package:analyzer/analyzer.dart';
+import 'package:angular2/src/transform/common/ast_tester.dart';
 import 'package:angular2/src/transform/common/model/import_export_model.pb.dart';
+
+const _astTester = const AstTester();
 
 /// Visitor responsible for parsing [ImportDirective]s into [ImportModel]s.
 class ImportVisitor extends SimpleAstVisitor<ImportModel> {
@@ -9,8 +12,16 @@ class ImportVisitor extends SimpleAstVisitor<ImportModel> {
   ImportModel visitImportDirective(ImportDirective node) {
     if (node.isSynthetic) return null;
 
+    /// We skip this, as it transitively imports 'dart:mirrors'
+    if (_astTester.hasReflectionCapabilitiesUri(node)) return null;
+    String uri = stringLiteralToString(node.uri);
+    // The bootstrap code also transitively imports 'dart:mirrors'
+    if (_astTester.hasBootstrapUri(node)) {
+      uri = BOOTSTRAP_STATIC_URI;
+    }
+
     var model = new ImportModel()
-      ..uri = stringLiteralToString(node.uri)
+      ..uri = uri
       ..isDeferred = node.deferredKeyword != null;
     if (node.prefix != null) {
       model.prefix = node.prefix.name;
@@ -26,7 +37,15 @@ class ExportVisitor extends SimpleAstVisitor<ExportModel> {
   ExportModel visitExportDirective(ExportDirective node) {
     if (node.isSynthetic) return null;
 
-    var model = new ExportModel()..uri = stringLiteralToString(node.uri);
+    /// We skip this, as it transitively imports 'dart:mirrors'
+    if (_astTester.hasReflectionCapabilitiesUri(node)) return null;
+    String uri = stringLiteralToString(node.uri);
+    // The bootstrap code also transitively imports 'dart:mirrors'
+    if (_astTester.hasBootstrapUri(node)) {
+      uri = BOOTSTRAP_STATIC_URI;
+    }
+
+    var model = new ExportModel()..uri = uri;
     _populateCombinators(node, model);
     return model;
   }
