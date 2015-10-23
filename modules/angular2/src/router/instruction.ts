@@ -26,7 +26,7 @@ import {Url} from './url_parser';
  *
  * @Component({ template: 'user: {{id}}' })
  * class UserCmp {
- *   string: id;
+ *   id: string;
  *   constructor(params: RouteParams) {
  *     this.id = params.get('id');
  *   }
