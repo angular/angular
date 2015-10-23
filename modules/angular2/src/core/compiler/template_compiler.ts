@@ -56,28 +56,22 @@ export class TemplateCompiler {
       // For non components there is nothing to be normalized yet.
       return PromiseWrapper.resolve(directive);
     }
-    var normalizedTemplatePromise;
-    if (directive.isComponent) {
-      normalizedTemplatePromise =
-          this._templateNormalizer.normalizeTemplate(directive.type, directive.template);
-    } else {
-      normalizedTemplatePromise = PromiseWrapper.resolve(null);
-    }
-    return normalizedTemplatePromise.then(
-        (normalizedTemplate) => new CompileDirectiveMetadata({
-          type: directive.type,
-          isComponent: directive.isComponent,
-          dynamicLoadable: directive.dynamicLoadable,
-          selector: directive.selector,
-          exportAs: directive.exportAs,
-          changeDetection: directive.changeDetection,
-          inputs: directive.inputs,
-          outputs: directive.outputs,
-          hostListeners: directive.hostListeners,
-          hostProperties: directive.hostProperties,
-          hostAttributes: directive.hostAttributes,
-          lifecycleHooks: directive.lifecycleHooks, template: normalizedTemplate
-        }));
+
+    return this._templateNormalizer.normalizeTemplate(directive.type, directive.template)
+        .then((normalizedTemplate: CompileTemplateMetadata) => new CompileDirectiveMetadata({
+                type: directive.type,
+                isComponent: directive.isComponent,
+                dynamicLoadable: directive.dynamicLoadable,
+                selector: directive.selector,
+                exportAs: directive.exportAs,
+                changeDetection: directive.changeDetection,
+                inputs: directive.inputs,
+                outputs: directive.outputs,
+                hostListeners: directive.hostListeners,
+                hostProperties: directive.hostProperties,
+                hostAttributes: directive.hostAttributes,
+                lifecycleHooks: directive.lifecycleHooks, template: normalizedTemplate
+              }));
   }
 
   compileHostComponentRuntime(type: Type): Promise<CompiledHostTemplate> {
