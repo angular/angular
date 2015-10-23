@@ -827,22 +827,26 @@ export function main() {
 
       it('should support events via EventEmitter on template elements',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           tcb.overrideView(MyComp, new ViewMetadata({
-                              template: '<template emitter listener></template>',
-                              directives: [DirectiveEmitingEvent, DirectiveListeningEvent]
-                            }))
+           tcb.overrideView(
+                  MyComp, new ViewMetadata({
+                    template: '<template emitter listener (event)="ctxProp=$event"></template>',
+                    directives: [DirectiveEmitingEvent, DirectiveListeningEvent]
+                  }))
 
                .createAsync(MyComp)
                .then((rootTC) => {
 
                  var tc = rootTC.debugElement.componentViewChildren[0];
                  var emitter = tc.inject(DirectiveEmitingEvent);
+                 var myComp = tc.inject(MyComp);
                  var listener = tc.inject(DirectiveListeningEvent);
 
+                 myComp.ctxProp = '';
                  expect(listener.msg).toEqual('');
 
                  ObservableWrapper.subscribe(emitter.event, (_) => {
                    expect(listener.msg).toEqual('fired !');
+                   expect(myComp.ctxProp).toEqual('fired !');
                    async.done();
                  });
 

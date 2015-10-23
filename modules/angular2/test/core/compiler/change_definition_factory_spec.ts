@@ -90,8 +90,22 @@ export function main() {
       expect(dispatcher.log).toEqual(['textNode(null)=someValue']);
     });
 
-    it('should handle events', () => {
+    it('should handle events on regular elements', () => {
       var changeDetector = createChangeDetector('<div on-click="onEvent($event)">', [], 0);
+
+      eventLocals.set('$event', 'click');
+      changeDetector.handleEvent('click', 0, eventLocals);
+      expect(context.eventLog).toEqual(['click']);
+    });
+
+    it('should handle events on template elements', () => {
+      var dirMeta = CompileDirectiveMetadata.create({
+        type: new CompileTypeMetadata({name: 'SomeDir'}),
+        selector: 'template',
+        outputs: ['click']
+      });
+      var changeDetector =
+          createChangeDetector('<template on-click="onEvent($event)">', [dirMeta], 0);
 
       eventLocals.set('$event', 'click');
       changeDetector.handleEvent('click', 0, eventLocals);

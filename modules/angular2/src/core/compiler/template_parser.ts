@@ -223,7 +223,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
       this._assertAllEventsPublishedByDirectives(directives, events, element.sourceInfo);
       this._assertNoComponentsNorElementBindingsOnTemplate(directives, elementProps,
                                                            element.sourceInfo);
-      parsedElement = new EmbeddedTemplateAst(attrs, vars, directives, children,
+      parsedElement = new EmbeddedTemplateAst(attrs, events, vars, directives, children,
                                               elementNgContentIndex, element.sourceInfo);
     } else {
       this._assertOnlyOneComponent(directives, element.sourceInfo);
@@ -241,9 +241,9 @@ class TemplateParseVisitor implements HtmlAstVisitor {
           element.name, templateElementOrDirectiveProps, templateDirectives);
       this._assertNoComponentsNorElementBindingsOnTemplate(templateDirectives, templateElementProps,
                                                            element.sourceInfo);
-      parsedElement = new EmbeddedTemplateAst([], templateVars, templateDirectives, [parsedElement],
-                                              component.findNgContentIndex(templateCssSelector),
-                                              element.sourceInfo);
+      parsedElement = new EmbeddedTemplateAst(
+          [], [], templateVars, templateDirectives, [parsedElement],
+          component.findNgContentIndex(templateCssSelector), element.sourceInfo);
     }
     return parsedElement;
   }

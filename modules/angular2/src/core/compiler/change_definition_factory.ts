@@ -58,6 +58,7 @@ class ProtoViewVisitor implements TemplateAstVisitor {
 
   visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
     this.boundElementCount++;
+    templateVisitAll(this, ast.outputs);
     for (var i = 0; i < ast.directives.length; i++) {
       ast.directives[i].visit(this, i);
     }

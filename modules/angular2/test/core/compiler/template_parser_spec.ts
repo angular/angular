@@ -277,6 +277,7 @@ export function main() {
              expect(humanizeTemplateAsts(parse('<template (e)="f"></template>', [dirA])))
                  .toEqual([
                    [EmbeddedTemplateAst, 'TestComp > template:nth-child(0)'],
+                   [BoundEventAst, 'e', null, 'f', 'TestComp > template:nth-child(0)[(e)=f]'],
                    [DirectiveAst, dirA, 'TestComp > template:nth-child(0)'],
                  ]);
            });
@@ -978,6 +979,7 @@ class TemplateHumanizer implements TemplateAstVisitor {
   visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any {
     this.result.push([EmbeddedTemplateAst, ast.sourceInfo]);
     templateVisitAll(this, ast.attrs);
+    templateVisitAll(this, ast.outputs);
     templateVisitAll(this, ast.vars);
     templateVisitAll(this, ast.directives);
     templateVisitAll(this, ast.children);

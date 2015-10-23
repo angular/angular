@@ -77,7 +77,7 @@ export class ElementAst implements TemplateAst {
 }
 
 export class EmbeddedTemplateAst implements TemplateAst {
-  constructor(public attrs: AttrAst[], public vars: VariableAst[],
+  constructor(public attrs: AttrAst[], public outputs: BoundEventAst[], public vars: VariableAst[],
               public directives: DirectiveAst[], public children: TemplateAst[],
               public ngContentIndex: number, public sourceInfo: string) {}
   visit(visitor: TemplateAstVisitor, context: any): any {
