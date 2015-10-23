@@ -106,36 +106,27 @@ export abstract class DynamicComponentLoader {
    *
    * Returns a promise for the {@link ComponentRef} representing the newly created Component.
    *
-   *
    * ### Example
    *
    * ```
-   * @ng.Component({
-   *   selector: 'child-component'
-   * })
-   * @ng.View({
+   * @Component({
+   *   selector: 'child-component',
    *   template: 'Child'
    * })
    * class ChildComponent {
    * }
    *
-   *
-   *
-   * @ng.Component({
-   *   selector: 'my-app'
-   * })
-   * @ng.View({
-   *   template: `
-   *     Parent (<child id="child"></child>)
-   *   `
+   * @Component({
+   *   selector: 'my-app',
+   *   template: 'Parent (<child id="child"></child>)'
    * })
    * class MyApp {
-   *   constructor(dynamicComponentLoader: ng.DynamicComponentLoader, injector: ng.Injector) {
-   *     dynamicComponentLoader.loadAsRoot(ChildComponent, '#child', injector);
+   *   constructor(dcl: DynamicComponentLoader, injector: Injector) {
+   *     dcl.loadAsRoot(ChildComponent, '#child', injector);
    *   }
    * }
    *
-   * ng.bootstrap(MyApp);
+   * bootstrap(MyApp);
    * ```
    *
    * Resulting DOM:
@@ -143,9 +134,7 @@ export abstract class DynamicComponentLoader {
    * ```
    * <my-app>
    *   Parent (
-   *     <child id="child">
-   *        Child
-   *     </child>
+   *     <child id="child">Child</child>
    *   )
    * </my-app>
    * ```
@@ -166,35 +155,27 @@ export abstract class DynamicComponentLoader {
    *
    * Returns a promise for the {@link ComponentRef} representing the newly created Component.
    *
-   *
    * ### Example
    *
    * ```
-   * @ng.Component({
-   *   selector: 'child-component'
-   * })
-   * @ng.View({
+   * @Component({
+   *   selector: 'child-component',
    *   template: 'Child'
    * })
    * class ChildComponent {
    * }
    *
-   *
-   * @ng.Component({
-   *   selector: 'my-app'
-   * })
-   * @ng.View({
-   *   template: `
-   *     Parent (<div #child></div>)
-   *   `
+   * @Component({
+   *   selector: 'my-app',
+   *   template: 'Parent (<div #child></div>)'
    * })
    * class MyApp {
-   *   constructor(dynamicComponentLoader: ng.DynamicComponentLoader, elementRef: ng.ElementRef) {
-   *     dynamicComponentLoader.loadIntoLocation(ChildComponent, elementRef, 'child');
+   *   constructor(dcl: DynamicComponentLoader, elementRef: ElementRef) {
+   *     dcl.loadIntoLocation(ChildComponent, elementRef, 'child');
    *   }
    * }
    *
-   * ng.bootstrap(MyApp);
+   * bootstrap(MyApp);
    * ```
    *
    * Resulting DOM:
@@ -224,29 +205,24 @@ export abstract class DynamicComponentLoader {
    * ### Example
    *
    * ```
-   * @ng.Component({
-   *   selector: 'child-component'
-   * })
-   * @ng.View({
+   * @Component({
+   *   selector: 'child-component',
    *   template: 'Child'
    * })
    * class ChildComponent {
    * }
    *
-   *
-   * @ng.Component({
-   *   selector: 'my-app'
-   * })
-   * @ng.View({
-   *   template: `Parent`
+   * @Component({
+   *   selector: 'my-app',
+   *   template: 'Parent'
    * })
    * class MyApp {
-   *   constructor(dynamicComponentLoader: ng.DynamicComponentLoader, elementRef: ng.ElementRef) {
-   *     dynamicComponentLoader.loadNextToLocation(ChildComponent, elementRef);
+   *   constructor(dcl: DynamicComponentLoader, elementRef: ElementRef) {
+   *     dcl.loadNextToLocation(ChildComponent, elementRef);
    *   }
    * }
    *
-   * ng.bootstrap(MyApp);
+   * bootstrap(MyApp);
    * ```
    *
    * Resulting DOM:
