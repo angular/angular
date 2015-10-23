@@ -16,6 +16,10 @@ import {
 } from 'angular2/src/core/metadata';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 
+function _isDirectiveMetadata(type: any): boolean {
+  return type instanceof DirectiveMetadata;
+}
+
 /*
  * Resolve a `Type` for {@link DirectiveMetadata}.
  *
@@ -31,14 +35,13 @@ export class DirectiveResolver {
   resolve(type: Type): DirectiveMetadata {
     var typeMetadata = reflector.annotations(resolveForwardRef(type));
     if (isPresent(typeMetadata)) {
-      for (var i = 0; i < typeMetadata.length; i++) {
-        var metadata = typeMetadata[i];
-        if (metadata instanceof DirectiveMetadata) {
-          var propertyMetadata = reflector.propMetadata(type);
-          return this._mergeWithPropertyMetadata(metadata, propertyMetadata);
-        }
+      var metadata = ListWrapper.find(typeMetadata, _isDirectiveMetadata);
+      if (isPresent(metadata)) {
+        var propertyMetadata = reflector.propMetadata(type);
+        return this._mergeWithPropertyMetadata(metadata, propertyMetadata);
       }
     }
+
     throw new BaseException(`No Directive annotation found on ${stringify(type)}`);
   }
 

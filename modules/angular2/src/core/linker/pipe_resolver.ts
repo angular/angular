@@ -1,8 +1,13 @@
 import {resolveForwardRef, Injectable} from 'angular2/src/core/di';
 import {Type, isPresent, stringify} from 'angular2/src/core/facade/lang';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {PipeMetadata} from 'angular2/src/core/metadata';
 import {reflector} from 'angular2/src/core/reflection/reflection';
+
+function _isPipeMetadata(type: any): boolean {
+  return type instanceof PipeMetadata;
+}
 
 /**
  * Resolve a `Type` for {@link PipeMetadata}.
@@ -19,11 +24,9 @@ export class PipeResolver {
   resolve(type: Type): PipeMetadata {
     var metas = reflector.annotations(resolveForwardRef(type));
     if (isPresent(metas)) {
-      for (var i = 0; i < metas.length; i++) {
-        var annotation = metas[i];
-        if (annotation instanceof PipeMetadata) {
-          return annotation;
-        }
+      var annotation = ListWrapper.find(metas, _isPipeMetadata);
+      if (isPresent(annotation)) {
+        return annotation;
       }
     }
     throw new BaseException(`No Pipe decorator found on ${stringify(type)}`);
