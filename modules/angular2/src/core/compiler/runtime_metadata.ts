@@ -79,15 +79,15 @@ export class RuntimeMetadataResolver {
             `Unexpected directive value '${stringify(directives[i])}' on the View of component '${stringify(component)}'`);
       }
     }
-    return removeDuplicatedDirectives(directives.map(type => this.getMetadata(type)));
+
+    return removeDuplicates(directives).map(type => this.getMetadata(type));
   }
 }
 
-function removeDuplicatedDirectives(directives: cpl.CompileDirectiveMetadata[]):
-    cpl.CompileDirectiveMetadata[] {
-  var directivesMap = new Map<Type, cpl.CompileDirectiveMetadata>();
-  directives.forEach((dirMeta) => { directivesMap.set(dirMeta.type.runtime, dirMeta); });
-  return MapWrapper.values(directivesMap);
+function removeDuplicates(items: any[]): any[] {
+  let m = new Map<any, any>();
+  items.forEach(i => m.set(i, null));
+  return MapWrapper.keys(m);
 }
 
 function flattenDirectives(view: ViewMetadata): Type[] {
