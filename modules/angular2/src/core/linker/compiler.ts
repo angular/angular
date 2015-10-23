@@ -5,6 +5,7 @@ import {Injectable} from 'angular2/src/core/di';
 import {Type, isBlank, stringify} from 'angular2/src/core/facade/lang';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {CompiledHostTemplate} from 'angular2/src/core/linker/template_commands';
 
@@ -20,20 +21,18 @@ export abstract class Compiler {
   abstract clearCache();
 }
 
+function _isCompiledHostTemplate(type: any): boolean {
+  return type instanceof CompiledHostTemplate;
+}
+
 @Injectable()
 export class Compiler_ extends Compiler {
   constructor(private _protoViewFactory: ProtoViewFactory) { super(); }
 
   compileInHost(componentType: Type): Promise<ProtoViewRef> {
     var metadatas = reflector.annotations(componentType);
-    var compiledHostTemplate = null;
-    for (var i = 0; i < metadatas.length; i++) {
-      var metadata = metadatas[i];
-      if (metadata instanceof CompiledHostTemplate) {
-        compiledHostTemplate = metadata;
-        break;
-      }
-    }
+    var compiledHostTemplate = ListWrapper.find(metadatas, _isCompiledHostTemplate);
+
     if (isBlank(compiledHostTemplate)) {
       throw new BaseException(
           `No precompiled template for component ${stringify(componentType)} found`);
