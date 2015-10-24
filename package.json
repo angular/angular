@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@reactivex/rxjs": "5.0.0-alpha.4",
-    "reflect-metadata": "0.1.1",
+    "reflect-metadata": "0.1.2",
     "zone.js": "0.5.8"
   },
   "devDependencies": {
