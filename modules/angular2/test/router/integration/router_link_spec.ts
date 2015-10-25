@@ -76,8 +76,8 @@ export function main() {
        inject([AsyncTestCompleter], (async) => {
          location.setBaseHref('/my/base');
          compile('<a href="hello" [router-link]="[\'./User\']"></a>')
-             .then((_) =>
-                       router.config([new Route({path: '/user', component: UserCmp, name: 'User'})]))
+             .then((_) => router.config(
+                       [new Route({path: '/user', component: UserCmp, name: 'User'})]))
              .then((_) => router.navigateByUrl('/a/b'))
              .then((_) => {
                rootTC.detectChanges();
@@ -89,8 +89,8 @@ export function main() {
 
     it('should generate link hrefs without params', inject([AsyncTestCompleter], (async) => {
          compile('<a href="hello" [router-link]="[\'./User\']"></a>')
-             .then((_) =>
-                       router.config([new Route({path: '/user', component: UserCmp, name: 'User'})]))
+             .then((_) => router.config(
+                       [new Route({path: '/user', component: UserCmp, name: 'User'})]))
              .then((_) => router.navigateByUrl('/a/b'))
              .then((_) => {
                rootTC.detectChanges();
@@ -119,8 +119,9 @@ export function main() {
     it('should generate link hrefs from a child to its sibling',
        inject([AsyncTestCompleter], (async) => {
          compile()
-             .then((_) => router.config(
-                       [new Route({path: '/page/:number', component: SiblingPageCmp, name: 'Page'})]))
+             .then(
+                 (_) => router.config(
+                     [new Route({path: '/page/:number', component: SiblingPageCmp, name: 'Page'})]))
              .then((_) => router.navigateByUrl('/page/1'))
              .then((_) => {
                rootTC.detectChanges();

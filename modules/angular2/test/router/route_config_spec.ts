@@ -179,17 +179,16 @@ export function main() {
                    })}));
 
     it('should throw if a config has multiple alias properties "as" and "name"',
-       inject(
-           [AsyncTestCompleter],
-           (async) => {
-               bootstrap(MultipleAliasCmp, testBindings)
-                   .catch((e) => {
-                     expect(e.originalException)
-                         .toContainError(
-                             `Route config should contain exactly one "as" or "name" property.`);
-                     async.done();
-                     return null;
-                   })}));
+       inject([AsyncTestCompleter],
+              (async) => {
+                  bootstrap(MultipleAliasCmp, testBindings)
+                      .catch((e) => {
+                        expect(e.originalException)
+                            .toContainError(
+                                `Route config should contain exactly one "as" or "name" property.`);
+                        async.done();
+                        return null;
+                      })}));
   });
 }
 

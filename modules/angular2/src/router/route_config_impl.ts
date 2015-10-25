@@ -19,7 +19,8 @@ export class RouteConfig {
  * - `path` is a string that uses the route matcher DSL.
  * - `component` a component type.
  * - `name` is an optional `CamelCase` string representing the name of the route.
- * - `as` is an alias to `name`, @deprecated this property will be removed in the future. Use `name` instead.
+ * - `as` is an alias to `name`, @deprecated this property will be removed in the future. Use `name`
+ * instead.
  * - `data` is an optional property of any type representing arbitrary route metadata for the given
  * route. It is injectable via the {@link ROUTE_DATA} token.
  *
@@ -62,7 +63,8 @@ export class Route implements RouteDefinition {
  * - `path` is a string that uses the route matcher DSL.
  * - `component` a component type.
  * - `name` is an optional `CamelCase` string representing the name of the route.
- * - `as` is an alias to `name`, @deprecated this property will be removed in the future. Use `name` instead.
+ * - `as` is an alias to `name`, @deprecated this property will be removed in the future. Use `name`
+ * instead.
  * - `data` is an optional property of any type representing arbitrary route metadata for the given
  * route. It is injectable via the {@link ROUTE_DATA} token.
  *
@@ -103,7 +105,8 @@ export class AuxRoute implements RouteDefinition {
  * - `path` is a string that uses the route matcher DSL.
  * - `loader` is a function that returns a promise that resolves to a component.
  * - `name` is an optional `CamelCase` string representing the name of the route.
- * - `as` is an alias to `name`, @deprecated this property will be removed in the future. Use `name` instead.
+ * - `as` is an alias to `name`, @deprecated this property will be removed in the future. Use `name`
+ * instead.
  * - `data` is an optional property of any type representing arbitrary route metadata for the given
  * route. It is injectable via the {@link ROUTE_DATA} token.
  *

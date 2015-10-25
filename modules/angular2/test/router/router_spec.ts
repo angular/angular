@@ -81,8 +81,8 @@ export function main() {
          var outlet = makeDummyOutlet();
 
          router.registerPrimaryOutlet(outlet)
-             .then((_) =>
-                       router.config([new Route({path: '/a', component: DummyComponent, name: 'A'})]))
+             .then((_) => router.config(
+                       [new Route({path: '/a', component: DummyComponent, name: 'A'})]))
              .then((_) => router.navigate(['/A']))
              .then((_) => {
                expect(outlet.spy('activate')).toHaveBeenCalled();
@@ -144,7 +144,8 @@ export function main() {
     });
 
     it('should generate URLs from the root component when the path starts with /', () => {
-      router.config([new Route({path: '/first/...', component: DummyParentComp, name: 'FirstCmp'})]);
+      router.config(
+          [new Route({path: '/first/...', component: DummyParentComp, name: 'FirstCmp'})]);
 
       var instruction = router.generate(['/FirstCmp', 'SecondCmp']);
       expect(stringifyInstruction(instruction)).toEqual('first/second');
@@ -200,8 +201,9 @@ export function main() {
 
       it('should serialize parameters that are not part of the route definition as query string params',
          () => {
-           router.config(
-               [new Route({path: '/one/two/:three', component: DummyComponent, name: 'NumberUrl'})]);
+           router.config([
+             new Route({path: '/one/two/:three', component: DummyComponent, name: 'NumberUrl'})
+           ]);
 
            var instruction = router.generate(['/NumberUrl', {'three': 'three', 'four': 'four'}]);
            var path = stringifyInstruction(instruction);
