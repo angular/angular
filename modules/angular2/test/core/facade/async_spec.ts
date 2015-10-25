@@ -16,7 +16,7 @@ import {ObservableWrapper, EventEmitter, PromiseWrapper} from 'angular2/src/core
 
 export function main() {
   describe('EventEmitter', () => {
-    var emitter: EventEmitter;
+    var emitter: EventEmitter<any>;
 
     beforeEach(() => { emitter = new EventEmitter(); });
 
@@ -34,18 +34,18 @@ export function main() {
            expect(error).toEqual("Boom");
            async.done();
          });
-         ObservableWrapper.callThrow(emitter, "Boom");
+         ObservableWrapper.callError(emitter, "Boom");
        }));
 
     it("should work when no throw callback is provided", inject([AsyncTestCompleter], (async) => {
          ObservableWrapper.subscribe(emitter, (_) => {}, (_) => { async.done(); });
-         ObservableWrapper.callThrow(emitter, "Boom");
+         ObservableWrapper.callError(emitter, "Boom");
        }));
 
     it("should call the return callback", inject([AsyncTestCompleter], (async) => {
          ObservableWrapper.subscribe(emitter, (_) => {}, (_) => {}, () => { async.done(); });
 
-         ObservableWrapper.callReturn(emitter);
+         ObservableWrapper.callComplete(emitter);
        }));
 
     it("should subscribe to the wrapper asynchronously", () => {

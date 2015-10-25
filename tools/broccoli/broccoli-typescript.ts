@@ -230,6 +230,8 @@ class CustomLanguageServiceHost implements ts.LanguageServiceHost {
     } else if (this.compilerOptions.moduleResolution === ts.ModuleResolutionKind.NodeJs &&
                tsFilePath.match(/^node_modules/)) {
       absoluteTsFilePath = path.resolve(tsFilePath);
+    } else if (tsFilePath.match(/^@reactivex/)) {
+      absoluteTsFilePath = path.resolve('node_modules', tsFilePath);
     } else {
       absoluteTsFilePath = path.join(this.treeInputPath, tsFilePath);
     }

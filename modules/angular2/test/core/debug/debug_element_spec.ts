@@ -89,7 +89,7 @@ class ParentComp {
 @Directive({selector: 'custom-emitter', outputs: ['myevent']})
 @Injectable()
 class CustomEmitter {
-  myevent: EventEmitter;
+  myevent: EventEmitter<any>;
 
   constructor() { this.myevent = new EventEmitter(); }
 }

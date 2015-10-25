@@ -133,7 +133,7 @@ export function main() {
         if (!IS_DART) {
           it("should update set errors and status before emitting an event",
              inject([AsyncTestCompleter], (async) => {
-               c.valueChanges.toRx().subscribe(value => {
+               c.valueChanges.subscribe(value => {
                  expect(c.valid).toEqual(false);
                  expect(c.errors).toEqual({"required": true});
                  async.done();

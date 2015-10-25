@@ -149,7 +149,7 @@ export class DowngradeNg2ComponentAdapter {
         }
         var emitter = this.component[output.prop];
         if (emitter) {
-          emitter.observer({
+          emitter.subscribe({
             next: assignExpr ? ((setter) => (value) => setter(this.scope, value))(setter) :
                                ((getter) => (value) => getter(this.scope, {$event: value}))(getter)
           });

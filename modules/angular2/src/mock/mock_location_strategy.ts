@@ -8,7 +8,7 @@ export class MockLocationStrategy extends LocationStrategy {
   internalTitle: string = '';
   urlChanges: string[] = [];
   /** @internal */
-  _subject: EventEmitter = new EventEmitter();
+  _subject: EventEmitter<any> = new EventEmitter();
   constructor() { super(); }
 
   simulatePopState(url: string): void {

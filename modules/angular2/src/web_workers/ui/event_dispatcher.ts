@@ -14,7 +14,7 @@ import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 
 export class EventDispatcher implements RenderEventDispatcher {
-  constructor(private _viewRef: RenderViewRef, private _sink: EventEmitter,
+  constructor(private _viewRef: RenderViewRef, private _sink: EventEmitter<any>,
               private _serializer: Serializer) {}
 
   dispatchRenderEvent(elementIndex: number, eventName: string, locals: Map<string, any>): boolean {

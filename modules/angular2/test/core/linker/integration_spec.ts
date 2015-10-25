@@ -1976,7 +1976,7 @@ class DoublePipe implements PipeTransform {
 @Injectable()
 class DirectiveEmitingEvent {
   msg: string;
-  event: EventEmitter;
+  event: EventEmitter<any>;
 
   constructor() {
     this.msg = '';
@@ -2002,7 +2002,7 @@ class DirectiveUpdatingHostProperties {
 @Directive({selector: '[update-host-actions]', host: {'@setAttr': 'setAttribute'}})
 @Injectable()
 class DirectiveUpdatingHostActions {
-  setAttr: EventEmitter;
+  setAttr: EventEmitter<any>;
 
   constructor() { this.setAttr = new EventEmitter(); }
 

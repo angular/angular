@@ -51,7 +51,7 @@ export abstract class AbstractControl {
   _value: any;
 
   /** @internal */
-  _valueChanges: EventEmitter;
+  _valueChanges: EventEmitter<any>;
 
   private _status: string;
   private _errors: {[key: string]: any};
@@ -86,7 +86,8 @@ export abstract class AbstractControl {
 
   get untouched(): boolean { return !this._touched; }
 
-  get valueChanges(): Observable { return this._valueChanges; }
+  get valueChanges(): Observable<any> { return this._valueChanges; }
+
   get pending(): boolean { return this._status == PENDING; }
 
   markAsTouched(): void { this._touched = true; }

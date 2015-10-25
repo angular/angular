@@ -7,8 +7,8 @@ import {ObservableWrapper} from 'angular2/src/core/facade/async';
 export class Zippy {
   visible: boolean = true;
   title: string = '';
-  openHandler: EventEmitter = new EventEmitter();
-  closeHandler: EventEmitter = new EventEmitter();
+  openHandler: EventEmitter<any> = new EventEmitter();
+  closeHandler: EventEmitter<any> = new EventEmitter();
 
   toggle() {
     this.visible = !this.visible;
