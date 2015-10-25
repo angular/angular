@@ -53,8 +53,8 @@ class NoteIndexCmp {
   directives: [ROUTER_DIRECTIVES]
 })
 @RouteConfig([
-  {path: '/note/:id', component: NoteCmp, as: 'NoteCmp'},
-  {path: '/', component: NoteIndexCmp, as: 'NoteIndexCmp'}
+  {path: '/note/:id', component: NoteCmp, name: 'NoteCmp'},
+  {path: '/', component: NoteIndexCmp, name: 'NoteIndexCmp'}
 ])
 class AppCmp {
 }

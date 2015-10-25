@@ -44,8 +44,8 @@ class MyCmp implements CanReuse,
   directives: [ROUTER_DIRECTIVES]
 })
 @RouteConfig([
-  {path: '/', component: MyCmp, as: 'HomeCmp'},
-  {path: '/:name', component: MyCmp, as: 'HomeCmp'}
+  {path: '/', component: MyCmp, name: 'HomeCmp'},
+  {path: '/:name', component: MyCmp, name: 'HomeCmp'}
 ])
 class AppCmp {
 }

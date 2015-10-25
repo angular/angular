@@ -43,8 +43,8 @@ class HomeCmp {
   directives: [ROUTER_DIRECTIVES]
 })
 @RouteConfig([
-  {path: '/user-settings/:id', component: ControlPanelCmp, as: 'ControlPanelCmp'},
-  {path: '/', component: HomeCmp, as: 'HomeCmp'}
+  {path: '/user-settings/:id', component: ControlPanelCmp, name: 'ControlPanelCmp'},
+  {path: '/', component: HomeCmp, name: 'HomeCmp'}
 ])
 class AppCmp {
 }

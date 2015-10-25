@@ -33,8 +33,8 @@ class MyCmp implements OnActivate {
   directives: [ROUTER_DIRECTIVES]
 })
 @RouteConfig([
-  {path: '/', component: MyCmp, as: 'HomeCmp'},
-  {path: '/:param', component: MyCmp, as: 'ParamCmp'}
+  {path: '/', component: MyCmp, name: 'HomeCmp'},
+  {path: '/:param', component: MyCmp, name: 'ParamCmp'}
 ])
 class AppCmp {
 }

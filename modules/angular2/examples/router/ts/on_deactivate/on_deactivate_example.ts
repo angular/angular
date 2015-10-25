@@ -46,8 +46,8 @@ class MyCmp implements OnDeactivate {
   directives: [ROUTER_DIRECTIVES, NgFor]
 })
 @RouteConfig([
-  {path: '/', component: MyCmp, as: 'HomeCmp'},
-  {path: '/:param', component: MyCmp, as: 'ParamCmp'}
+  {path: '/', component: MyCmp, name: 'HomeCmp'},
+  {path: '/:param', component: MyCmp, name: 'ParamCmp'}
 ])
 class AppCmp {
   constructor(public logService: LogService) {}

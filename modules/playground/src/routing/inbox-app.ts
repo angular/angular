@@ -145,9 +145,9 @@ class DraftsCmp {
 @Component({selector: 'inbox-app', viewProviders: [DbService]})
 @View({templateUrl: "inbox-app.html", directives: [RouterOutlet, RouterLink]})
 @RouteConfig([
-  new Route({path: '/', component: InboxCmp, as: 'Inbox'}),
-  new Route({path: '/drafts', component: DraftsCmp, as: 'Drafts'}),
-  new Route({path: '/detail/:id', component: InboxDetailCmp, as: 'DetailPage'})
+  new Route({path: '/', component: InboxCmp, name: 'Inbox'}),
+  new Route({path: '/drafts', component: DraftsCmp, name: 'Drafts'}),
+  new Route({path: '/detail/:id', component: InboxDetailCmp, name: 'DetailPage'})
 ])
 export class InboxApp {
   router: Router;

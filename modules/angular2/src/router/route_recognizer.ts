@@ -38,10 +38,10 @@ export class RouteRecognizer {
   config(config: RouteDefinition): boolean {
     var handler;
 
-    if (isPresent(config.as) && config.as[0].toUpperCase() != config.as[0]) {
-      var suggestedAlias = config.as[0].toUpperCase() + config.as.substring(1);
+    if (isPresent(config.name) && config.name[0].toUpperCase() != config.name[0]) {
+      var suggestedName = config.name[0].toUpperCase() + config.name.substring(1);
       throw new BaseException(
-          `Route '${config.path}' with alias '${config.as}' does not begin with an uppercase letter. Route aliases should be CamelCase like '${suggestedAlias}'.`);
+          `Route "${config.path}" with name "${config.name}" does not begin with an uppercase letter. Route names should be CamelCase like "${suggestedName}".`);
     }
 
     if (config instanceof AuxRoute) {
@@ -72,8 +72,8 @@ export class RouteRecognizer {
     });
 
     this.matchers.push(recognizer);
-    if (isPresent(config.as)) {
-      this.names.set(config.as, recognizer);
+    if (isPresent(config.name)) {
+      this.names.set(config.name, recognizer);
     }
     return recognizer.terminal;
   }

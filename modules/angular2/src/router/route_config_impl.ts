@@ -1,4 +1,4 @@
-import {CONST, Type} from 'angular2/src/core/facade/lang';
+import {CONST, Type, isPresent} from 'angular2/src/core/facade/lang';
 import {RouteDefinition} from './route_definition';
 export {RouteDefinition} from './route_definition';
 
@@ -18,7 +18,7 @@ export class RouteConfig {
  * It has the following properties:
  * - `path` is a string that uses the route matcher DSL.
  * - `component` a component type.
- * - `as` is an optional `CamelCase` string representing the name of the route.
+ * - `name` is an optional `CamelCase` string representing the name of the route.
  * - `data` is an optional property of any type representing arbitrary route metadata for the given
  * route. It is injectable via {@link RouteData}.
  *
@@ -27,7 +27,7 @@ export class RouteConfig {
  * import {RouteConfig} from 'angular2/router';
  *
  * @RouteConfig([
- *   {path: '/home', component: HomeCmp, as: 'HomeCmp' }
+ *   {path: '/home', component: HomeCmp, name: 'HomeCmp' }
  * ])
  * class MyApp {}
  * ```
@@ -37,15 +37,15 @@ export class Route implements RouteDefinition {
   data: {[key: string]: any};
   path: string;
   component: Type;
-  as: string;
+  name: string;
   // added next two properties to work around https://github.com/Microsoft/TypeScript/issues/4107
   loader: Function;
   redirectTo: string;
-  constructor({path, component, as,
-               data}: {path: string, component: Type, as?: string, data?: {[key: string]: any}}) {
+  constructor({path, component, name,
+               data}: {path: string, component: Type, name?: string, data?: {[key: string]: any}}) {
     this.path = path;
     this.component = component;
-    this.as = as;
+    this.name = name;
     this.loader = null;
     this.redirectTo = null;
     this.data = data;
@@ -58,7 +58,7 @@ export class Route implements RouteDefinition {
  * It takes an object with the following properties:
  * - `path` is a string that uses the route matcher DSL.
  * - `component` a component type.
- * - `as` is an optional `CamelCase` string representing the name of the route.
+ * - `name` is an optional `CamelCase` string representing the name of the route.
  * - `data` is an optional property of any type representing arbitrary route metadata for the given
  * route. It is injectable via {@link RouteData}.
  *
@@ -77,14 +77,14 @@ export class AuxRoute implements RouteDefinition {
   data: {[key: string]: any} = null;
   path: string;
   component: Type;
-  as: string;
+  name: string;
   // added next two properties to work around https://github.com/Microsoft/TypeScript/issues/4107
   loader: Function = null;
   redirectTo: string = null;
-  constructor({path, component, as}: {path: string, component: Type, as?: string}) {
+  constructor({path, component, name}: {path: string, component: Type, name?: string}) {
     this.path = path;
     this.component = component;
-    this.as = as;
+    this.name = name;
   }
 }
 
@@ -95,7 +95,7 @@ export class AuxRoute implements RouteDefinition {
  * It has the following properties:
  * - `path` is a string that uses the route matcher DSL.
  * - `loader` is a function that returns a promise that resolves to a component.
- * - `as` is an optional `CamelCase` string representing the name of the route.
+ * - `name` is an optional `CamelCase` string representing the name of the route.
  * - `data` is an optional property of any type representing arbitrary route metadata for the given
  * route. It is injectable via {@link RouteData}.
  *
@@ -104,7 +104,7 @@ export class AuxRoute implements RouteDefinition {
  * import {RouteConfig} from 'angular2/router';
  *
  * @RouteConfig([
- *   {path: '/home', loader: () => Promise.resolve(MyLoadedCmp), as: 'MyLoadedCmp'}
+ *   {path: '/home', loader: () => Promise.resolve(MyLoadedCmp), name: 'MyLoadedCmp'}
  * ])
  * class MyApp {}
  * ```
@@ -114,12 +114,12 @@ export class AsyncRoute implements RouteDefinition {
   data: {[key: string]: any};
   path: string;
   loader: Function;
-  as: string;
-  constructor({path, loader, as,
-               data}: {path: string, loader: Function, as?: string, data?: {[key: string]: any}}) {
+  name: string;
+  constructor({path, loader, name, data}:
+                  {path: string, loader: Function, name?: string, data?: {[key: string]: any}}) {
     this.path = path;
     this.loader = loader;
-    this.as = as;
+    this.name = name;
     this.data = data;
   }
 }
@@ -147,7 +147,7 @@ export class AsyncRoute implements RouteDefinition {
 export class Redirect implements RouteDefinition {
   path: string;
   redirectTo: string;
-  as: string = null;
+  name: string = null;
   // added next property to work around https://github.com/Microsoft/TypeScript/issues/4107
   loader: Function = null;
   data: any = null;
