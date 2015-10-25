@@ -95,6 +95,14 @@ export DART_SDK="$DART_EDITOR_DIR/dart-sdk"
 PATH+=":$DART_SDK/bin"
 ```
 
+And specify where the pub’s dependencies are downloaded. By default, this directory is located under .pub_cache 
+in your home directory (on Mac and Linux), or in AppData\Roaming\Pub\Cache (on Windows).
+
+```shell
+# PUB_CACHE: location of pub dependencies
+export PUB_CACHE="/Users/<user>/.pub-cache"
+```
+
 ## Installing NPM Modules and Dart Packages
 
 Next, install the JavaScript modules and Dart packages needed to build and test Angular:
