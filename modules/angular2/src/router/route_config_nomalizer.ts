@@ -20,6 +20,9 @@ export function normalizeRouteConfig(config: RouteDefinition): RouteDefinition {
   if ((+!!config.as) + (+!!config.name) != 1) {
     throw new BaseException(`Route config should contain exactly one "as" or "name" property.`);
   }
+  if (config.as) {
+    config.name = config.as;
+  }
   if (config.loader) {
     return new AsyncRoute({path: config.path, loader: config.loader, name: config.name});
   }

@@ -48,7 +48,7 @@ export class Route implements RouteDefinition {
                   {path: string, component: Type, name?: string, as?: string, data?: any}) {
     this.path = path;
     this.component = component;
-    this.name = name || as;
+    this.name = name;
     this.as = as;
     this.loader = null;
     this.redirectTo = null;
@@ -92,7 +92,7 @@ export class AuxRoute implements RouteDefinition {
                   {path: string, component: Type, name?: string, as?: string}) {
     this.path = path;
     this.component = component;
-    this.name = name || as;
+    this.name = name;
     this.as = as;
   }
 }
@@ -131,7 +131,7 @@ export class AsyncRoute implements RouteDefinition {
                   {path: string, loader: Function, name?: string, as?: string, data?: any}) {
     this.path = path;
     this.loader = loader;
-    this.name = name || as;
+    this.name = name;
     this.as = as;
     this.data = data;
   }
