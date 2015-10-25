@@ -156,11 +156,37 @@ export function main() {
        inject(
            [AsyncTestCompleter],
            (async) => {
+               bootstrap(BadAliasNameCmp, testBindings)
+                   .catch((e) => {
+                     expect(e.originalException)
+                         .toContainError(
+                             `Route '/child' with alias 'child' does not begin with an uppercase letter. Route aliases should be CamelCase like 'Child'.`);
+                     async.done();
+                     return null;
+                   })}));
+
+    it('should throw if a config has an invalid alias name with "as"',
+       inject(
+           [AsyncTestCompleter],
+           (async) => {
                bootstrap(BadAliasCmp, testBindings)
                    .catch((e) => {
                      expect(e.originalException)
                          .toContainError(
                              `Route '/child' with alias 'child' does not begin with an uppercase letter. Route aliases should be CamelCase like 'Child'.`);
+                     async.done();
+                     return null;
+                   })}));
+
+    it('should throw if a config has multiple alias properties "as" and "name"',
+       inject(
+           [AsyncTestCompleter],
+           (async) => {
+               bootstrap(MultipleAliasCmp, testBindings)
+                   .catch((e) => {
+                     expect(e.originalException)
+                         .toContainError(
+                             `Route config should contain exactly one "as" or "name" property.`);
                      async.done();
                      return null;
                    })}));
@@ -232,8 +258,20 @@ class WrongConfigCmp {
 
 @Component({selector: 'app-cmp'})
 @View({template: `root { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
+@RouteConfig([{path: '/child', component: HelloCmp, name: 'child'}])
+class BadAliasNameCmp {
+}
+
+@Component({selector: 'app-cmp'})
+@View({template: `root { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
 @RouteConfig([{path: '/child', component: HelloCmp, as: 'child'}])
 class BadAliasCmp {
+}
+
+@Component({selector: 'app-cmp'})
+@View({template: `root { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
+@RouteConfig([{path: '/child', component: HelloCmp, as: 'Child', name: 'Child'}])
+class MultipleAliasCmp {
 }
 
 @Component({selector: 'app-cmp'})
