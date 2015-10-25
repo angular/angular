@@ -68,7 +68,7 @@ export class MdRadioGroup implements OnChanges {
   /** The ID of the selected radio button. */
   selectedRadioId: string;
 
-  change: EventEmitter;
+  change: EventEmitter<any>;
 
   tabindex: number;
 

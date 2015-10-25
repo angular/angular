@@ -51,7 +51,7 @@ import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 
 var cmpInstanceCount;
 var log: string[];
-var eventBus: EventEmitter;
+var eventBus: EventEmitter<any>;
 var completer: PromiseCompleter<any>;
 
 export function main() {

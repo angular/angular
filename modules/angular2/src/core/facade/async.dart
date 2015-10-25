@@ -50,21 +50,48 @@ class ObservableWrapper {
     emitter.add(value);
   }
 
-  static void callThrow(EventEmitter emitter, error) {
+  static void callError(EventEmitter emitter, error) {
     emitter.addError(error);
   }
 
-  static void callReturn(EventEmitter emitter) {
+  static void callComplete(EventEmitter emitter) {
     emitter.close();
   }
 }
 
-class EventEmitter extends Stream {
+class EventEmitter<T> extends Stream<T> {
   StreamController<dynamic> _controller;
 
   /// Creates an instance of [EventEmitter], which depending on [isAsync],
   /// delivers events synchronously or asynchronously.
   EventEmitter([bool isAsync = true]) {
+    _controller = new StreamController.broadcast(sync: !isAsync);
+  }
+
+  StreamSubscription listen(void onData(dynamic line),
+      {void onError(Error error), void onDone(), bool cancelOnError}) {
+    return _controller.stream.listen(onData,
+        onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+  }
+
+  void add(value) {
+    _controller.add(value);
+  }
+
+  void addError(error) {
+    _controller.addError(error);
+  }
+
+  void close() {
+    _controller.close();
+  }
+}
+
+//todo(robwormald): maybe fix in ts2dart?
+class Subject<T> extends Stream<T> {
+  StreamController<dynamic> _controller;
+
+  Subject([bool isAsync = true]) {
     _controller = new StreamController.broadcast(sync: !isAsync);
   }
 

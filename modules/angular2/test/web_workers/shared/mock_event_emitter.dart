@@ -4,7 +4,7 @@ import 'dart:core';
 import 'dart:async';
 import "package:angular2/src/core/facade/async.dart";
 
-class MockEventEmitter extends EventEmitter {
+class MockEventEmitter<T> extends EventEmitter<T> {
   final controller = new StreamController.broadcast(sync: true);
 
   @override

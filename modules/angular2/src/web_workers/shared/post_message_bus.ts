@@ -27,9 +27,9 @@ export class PostMessageBus implements MessageBus {
     this.sink.initChannel(channel, runInZone);
   }
 
-  from(channel: string): EventEmitter { return this.source.from(channel); }
+  from(channel: string): EventEmitter<any> { return this.source.from(channel); }
 
-  to(channel: string): EventEmitter { return this.sink.to(channel); }
+  to(channel: string): EventEmitter<any> { return this.sink.to(channel); }
 }
 
 export class PostMessageBusSink implements MessageBusSink {
@@ -52,19 +52,17 @@ export class PostMessageBusSink implements MessageBusSink {
     var emitter = new EventEmitter();
     var channelInfo = new _Channel(emitter, runInZone);
     this._channels[channel] = channelInfo;
-    emitter.observer({
-      next: (data: Object) => {
-        var message = {channel: channel, message: data};
-        if (runInZone) {
-          this._messageBuffer.push(message);
-        } else {
-          this._sendMessages([message]);
-        }
+    emitter.subscribe((data: Object) => {
+      var message = {channel: channel, message: data};
+      if (runInZone) {
+        this._messageBuffer.push(message);
+      } else {
+        this._sendMessages([message]);
       }
     });
   }
 
-  to(channel: string): EventEmitter {
+  to(channel: string): EventEmitter<any> {
     if (StringMapWrapper.contains(this._channels, channel)) {
       return this._channels[channel].emitter;
     } else {
@@ -107,7 +105,7 @@ export class PostMessageBusSource implements MessageBusSource {
     this._channels[channel] = channelInfo;
   }
 
-  from(channel: string): EventEmitter {
+  from(channel: string): EventEmitter<any> {
     if (StringMapWrapper.contains(this._channels, channel)) {
       return this._channels[channel].emitter;
     } else {
@@ -140,7 +138,7 @@ export class PostMessageBusSource implements MessageBusSource {
  * keeps track of if it should run in the zone.
  */
 class _Channel {
-  constructor(public emitter: EventEmitter, public runInZone: boolean) {}
+  constructor(public emitter: EventEmitter<any>, public runInZone: boolean) {}
 }
 
 // TODO(jteplitz602) Replace this with the definition in lib.webworker.d.ts(#3492)

@@ -9,7 +9,7 @@ export class SpyLocation implements Location {
   /** @internal */
   _query: string = '';
   /** @internal */
-  _subject: EventEmitter = new EventEmitter();
+  _subject: EventEmitter<any> = new EventEmitter();
   /** @internal */
   _baseHref: string = '';
 

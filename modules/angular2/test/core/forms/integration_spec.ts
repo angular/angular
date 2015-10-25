@@ -907,7 +907,7 @@ class WrappedValue implements ControlValueAccessor {
 
 @Component({selector: "my-input", template: ''})
 class MyInput implements ControlValueAccessor {
-  @Output('change') onChange: EventEmitter = new EventEmitter();
+  @Output('change') onChange: EventEmitter<any> = new EventEmitter();
   value: string;
 
   constructor(cd: NgControl) { cd.valueAccessor = this; }
