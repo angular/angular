@@ -488,12 +488,23 @@ export function main() {
           a = new ControlArray([c]);
         });
 
-        it("should be false after creating a control", () => { expect(a.pending).toEqual(false); });
+        it("should be false after creating a control", () => {
+          expect(c.pending).toEqual(false);
+          expect(a.pending).toEqual(false);
+        });
 
-        it("should be false after changing the value of the control", () => {
+        it("should be true after changing the value of the control", () => {
           c.markAsPending();
 
+          expect(c.pending).toEqual(true);
           expect(a.pending).toEqual(true);
+        });
+
+        it("should not update the parent when onlySelf = true", () => {
+          c.markAsPending({onlySelf: true});
+
+          expect(c.pending).toEqual(true);
+          expect(a.pending).toEqual(false);
         });
       });
 
