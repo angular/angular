@@ -11,6 +11,7 @@ import {LocationStrategy} from 'angular2/src/router/location_strategy';
 export class MockLocationStrategy extends LocationStrategy {
   internalBaseHref: string = '/';
   internalPath: string = '/';
+  internalSearch: string = '';
   internalTitle: string = '';
   urlChanges: string[] = [];
   /** @internal */
@@ -24,6 +25,8 @@ export class MockLocationStrategy extends LocationStrategy {
 
   path(): string { return this.internalPath; }
 
+  search(): any { return this.internalSearch; }
+
   prepareExternalUrl(internal: string): string {
     if (internal.startsWith('/') && this.internalBaseHref.endsWith('/')) {
       return this.internalBaseHref + internal.substring(1);
@@ -34,8 +37,10 @@ export class MockLocationStrategy extends LocationStrategy {
   pushState(ctx: any, title: string, path: string, query: string): void {
     this.internalTitle = title;
 
-    var url = path + (query.length > 0 ? ('?' + query) : '');
+    query = query.length > 0 ? ('?' + query) : '';
+    var url = path + query;
     this.internalPath = url;
+    this.internalSearch = query;
 
     var externalUrl = this.prepareExternalUrl(url);
     this.urlChanges.push(externalUrl);

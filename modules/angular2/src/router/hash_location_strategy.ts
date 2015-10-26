@@ -77,6 +77,8 @@ export class HashLocationStrategy extends LocationStrategy {
            normalizeQueryParams(this._platformLocation.search);
   }
 
+  search(): string { return this._platformLocation.search; }
+
   prepareExternalUrl(internal: string): string {
     var url = joinWithSlash(this._baseHref, internal);
     return url.length > 0 ? ('#' + url) : url;

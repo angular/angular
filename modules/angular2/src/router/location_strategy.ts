@@ -20,6 +20,7 @@ import {OpaqueToken} from 'angular2/core';
 export abstract class LocationStrategy {
   abstract path(): string;
   abstract prepareExternalUrl(internal: string): string;
+  abstract search(): any;
   abstract pushState(state: any, title: string, url: string, queryParams: string): void;
   abstract replaceState(state: any, title: string, url: string, queryParams: string): void;
   abstract forward(): void;
