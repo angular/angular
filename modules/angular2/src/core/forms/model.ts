@@ -13,6 +13,12 @@ export const VALID = "VALID";
  */
 export const INVALID = "INVALID";
 
+/**
+ * Indicates that a Control is pending, i.e. that async validation is occuring and
+ * errors are not yet available for the input value.
+ */
+export const PENDING = "PENDING";
+
 export function isControl(control: Object): boolean {
   return control instanceof AbstractControl;
 }
@@ -75,6 +81,7 @@ export class AbstractControl {
   get untouched(): boolean { return !this._touched; }
 
   get valueChanges(): Observable { return this._valueChanges; }
+  get pending(): boolean { return this._status == PENDING; }
 
   markAsTouched(): void { this._touched = true; }
 
@@ -84,6 +91,15 @@ export class AbstractControl {
 
     if (isPresent(this._parent) && !onlySelf) {
       this._parent.markAsDirty({onlySelf: onlySelf});
+    }
+  }
+
+  markAsPending({onlySelf}: {onlySelf?: boolean} = {}): void {
+    onlySelf = normalizeBool(onlySelf);
+    this._status = PENDING;
+
+    if (isPresent(this._parent) && !onlySelf) {
+      this._parent.markAsPending({onlySelf: onlySelf});
     }
   }
 
