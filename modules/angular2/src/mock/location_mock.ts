@@ -44,8 +44,8 @@ export class SpyLocation implements Location {
   }
 
   subscribe(onNext: (value: any) => void, onThrow: (error: any) => void = null,
-            onReturn: () => void = null) {
-    ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);
+            onReturn: () => void = null): Object {
+    return ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);
   }
 
   // TODO: remove these once Location is an interface, and can be implemented cleanly
