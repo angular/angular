@@ -87,7 +87,7 @@ export function main() {
        () => { expect(isStyleUrlResolvable('package:someUrl.css')).toBe(true); });
 
     it('should resolve asset: urls',
-       () => { expect(isStyleUrlResolvable('package:someUrl.css')).toBe(true); });
+       () => { expect(isStyleUrlResolvable('asset:someUrl.css')).toBe(true); });
 
     it('should not resolve empty urls', () => {
       expect(isStyleUrlResolvable(null)).toBe(false);
