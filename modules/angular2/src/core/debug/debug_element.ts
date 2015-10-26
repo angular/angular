@@ -5,7 +5,7 @@ import {unimplemented} from 'angular2/src/core/facade/exceptions';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {ElementInjector} from 'angular2/src/core/linker/element_injector';
-import {AppView} from 'angular2/src/core/linker/view';
+import {AppView, ViewType} from 'angular2/src/core/linker/view';
 import {internalView} from 'angular2/src/core/linker/view_ref';
 import {ElementRef, ElementRef_} from 'angular2/src/core/linker/element_ref';
 
@@ -107,7 +107,7 @@ export class DebugElement_ extends DebugElement {
   get componentViewChildren(): DebugElement[] {
     var shadowView = this._parentView.getNestedView(this._boundElementIndex);
 
-    if (!isPresent(shadowView)) {
+    if (!isPresent(shadowView) || shadowView.proto.type !== ViewType.COMPONENT) {
       // The current element is not a component.
       return [];
     }
