@@ -59,7 +59,7 @@ export class Router {
   private _auxRouters = new Map<string, Router>();
   private _childRouter: Router;
 
-  private _subject: EventEmitter = new EventEmitter();
+  private _subject: EventEmitter<any> = new EventEmitter();
 
 
   constructor(public registry: RouteRegistry, public parent: Router, public hostComponent: any) {}

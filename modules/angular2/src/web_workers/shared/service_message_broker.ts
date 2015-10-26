@@ -45,7 +45,7 @@ export abstract class ServiceMessageBroker {
  * If that method returns a promise, the UIMessageBroker returns the result to the worker.
  */
 export class ServiceMessageBroker_ extends ServiceMessageBroker {
-  private _sink: EventEmitter;
+  private _sink: EventEmitter<any>;
   private _methods: Map<string, Function> = new Map<string, Function>();
 
   constructor(messageBus: MessageBus, private _serializer: Serializer, public channel) {

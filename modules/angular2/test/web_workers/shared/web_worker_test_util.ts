@@ -13,11 +13,11 @@ import {NgZone} from 'angular2/src/core/zone/ng_zone';
  * Such that whatever goes into one's sink comes out the others source.
  */
 export function createPairedMessageBuses(): PairedMessageBuses {
-  var firstChannels: {[key: string]: MockEventEmitter} = {};
+  var firstChannels: {[key: string]: MockEventEmitter<any>} = {};
   var workerMessageBusSink = new MockMessageBusSink(firstChannels);
   var uiMessageBusSource = new MockMessageBusSource(firstChannels);
 
-  var secondChannels: {[key: string]: MockEventEmitter} = {};
+  var secondChannels: {[key: string]: MockEventEmitter<any>} = {};
   var uiMessageBusSink = new MockMessageBusSink(secondChannels);
   var workerMessageBusSource = new MockMessageBusSource(secondChannels);
 
@@ -30,7 +30,7 @@ export class PairedMessageBuses {
 }
 
 export class MockMessageBusSource implements MessageBusSource {
-  constructor(private _channels: {[key: string]: MockEventEmitter}) {}
+  constructor(private _channels: {[key: string]: MockEventEmitter<any>}) {}
 
   initChannel(channel: string, runInZone = true) {
     if (!StringMapWrapper.contains(this._channels, channel)) {
@@ -38,7 +38,7 @@ export class MockMessageBusSource implements MessageBusSource {
     }
   }
 
-  from(channel: string): MockEventEmitter {
+  from(channel: string): MockEventEmitter<any> {
     if (!StringMapWrapper.contains(this._channels, channel)) {
       throw new BaseException(`${channel} is not set up. Did you forget to call initChannel?`);
     }
@@ -49,7 +49,7 @@ export class MockMessageBusSource implements MessageBusSource {
 }
 
 export class MockMessageBusSink implements MessageBusSink {
-  constructor(private _channels: {[key: string]: MockEventEmitter}) {}
+  constructor(private _channels: {[key: string]: MockEventEmitter<any>}) {}
 
   initChannel(channel: string, runInZone = true) {
     if (!StringMapWrapper.contains(this._channels, channel)) {
@@ -57,7 +57,7 @@ export class MockMessageBusSink implements MessageBusSink {
     }
   }
 
-  to(channel: string): MockEventEmitter {
+  to(channel: string): MockEventEmitter<any> {
     if (!StringMapWrapper.contains(this._channels, channel)) {
       this._channels[channel] = new MockEventEmitter();
     }
@@ -79,9 +79,9 @@ export class MockMessageBus extends MessageBus {
     this.source.initChannel(channel, runInZone);
   }
 
-  to(channel: string): MockEventEmitter { return this.sink.to(channel); }
+  to(channel: string): MockEventEmitter<any> { return this.sink.to(channel); }
 
-  from(channel: string): MockEventEmitter { return this.source.from(channel); }
+  from(channel: string): MockEventEmitter<any> { return this.source.from(channel); }
 
   attachToZone(zone: NgZone) {}
 }

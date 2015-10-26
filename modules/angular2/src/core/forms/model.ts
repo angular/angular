@@ -54,7 +54,7 @@ export class AbstractControl {
   /** @internal */
   _parent: ControlGroup | ControlArray;
   /** @internal */
-  _valueChanges: EventEmitter;
+  _valueChanges: EventEmitter<any>;
 
   constructor(public validator: Function) {}
 
@@ -74,7 +74,7 @@ export class AbstractControl {
 
   get untouched(): boolean { return !this._touched; }
 
-  get valueChanges(): Observable { return this._valueChanges; }
+  get valueChanges(): Observable<any> { return this._valueChanges; }
 
   markAsTouched(): void { this._touched = true; }
 

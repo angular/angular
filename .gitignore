@@ -33,6 +33,7 @@ pubspec.lock
 modules/.settings
 .vscode
 modules/.vscode
+modules/angular2/src/rx
 
 # Don't check in secret files
 *secret.js

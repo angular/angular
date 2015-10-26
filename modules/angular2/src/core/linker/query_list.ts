@@ -31,7 +31,7 @@ export class QueryList<T> {
   private _results: Array<T> = [];
   private _emitter = new EventEmitter();
 
-  get changes(): Observable { return this._emitter; }
+  get changes(): Observable<any> { return this._emitter; }
   get length(): number { return this._results.length; }
   get first(): T { return ListWrapper.first(this._results); }
   get last(): T { return ListWrapper.last(this._results); }

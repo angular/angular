@@ -113,13 +113,13 @@ export class NgZone {
   _onErrorHandler: ErrorHandlingFn;
 
   /** @internal */
-  _onTurnStartEvents: EventEmitter;
+  _onTurnStartEvents: EventEmitter<any>;
   /** @internal */
-  _onTurnDoneEvents: EventEmitter;
+  _onTurnDoneEvents: EventEmitter<any>;
   /** @internal */
-  _onEventDoneEvents: EventEmitter;
+  _onEventDoneEvents: EventEmitter<any>;
   /** @internal */
-  _onErrorEvents: EventEmitter;
+  _onErrorEvents: EventEmitter<any>;
 
   // Number of microtasks pending from _innerZone (& descendants)
   /** @internal */
