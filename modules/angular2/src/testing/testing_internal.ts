@@ -38,6 +38,7 @@ var jsmXIt = _global.xit;
 
 var runnerStack = [];
 var inIt = false;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 500;
 var globalTimeOut = browserDetection.isSlow ? 3000 : jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
 var testProviders;
