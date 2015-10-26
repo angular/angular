@@ -98,6 +98,7 @@ var NG_API = [
   'ApplicationRef.bootstrap()',
   'ApplicationRef.dispose()',
   'ApplicationRef.registerBootstrapListener()',
+  'ApplicationRef.registerDisposeListener()',
   */
   'AsyncPipe',
   'AsyncPipe.onDestroy()',
@@ -873,6 +874,7 @@ var NG_API = [
   'PlatformRef.application()',
   'PlatformRef.asyncApplication()',
   'PlatformRef.dispose()',
+  'PlatformRef.registerDisposeListener()',
   */
   'PlatformRef.injector',
   'Predicate:dart',
