@@ -113,12 +113,12 @@ export const ROUTER_PROVIDERS: any[] = CONST_EXPR([
   RouteRegistry,
   CONST_EXPR(new Provider(LocationStrategy, {useClass: PathLocationStrategy})),
   Location,
-  CONST_EXPR(
-      new Provider(Router,
-                   {
-                     useFactory: routerFactory,
-                     deps: CONST_EXPR([RouteRegistry, Location, ROUTER_PRIMARY_COMPONENT])
-                   })),
+  CONST_EXPR(new Provider(
+      Router,
+      {
+        useFactory: routerFactory,
+        deps: CONST_EXPR([RouteRegistry, Location, ROUTER_PRIMARY_COMPONENT, ApplicationRef])
+      })),
   CONST_EXPR(new Provider(
       ROUTER_PRIMARY_COMPONENT,
       {useFactory: routerPrimaryComponentFactory, deps: CONST_EXPR([ApplicationRef])}))
@@ -129,8 +129,10 @@ export const ROUTER_PROVIDERS: any[] = CONST_EXPR([
  */
 export const ROUTER_BINDINGS = ROUTER_PROVIDERS;
 
-function routerFactory(registry, location, primaryComponent) {
-  return new RootRouter(registry, location, primaryComponent);
+function routerFactory(registry, location, primaryComponent, appRef) {
+  var rootRouter = new RootRouter(registry, location, primaryComponent);
+  appRef.registerDisposeListener(() => rootRouter.dispose());
+  return rootRouter;
 }
 
 function routerPrimaryComponentFactory(app) {

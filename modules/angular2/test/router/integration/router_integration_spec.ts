@@ -34,11 +34,17 @@ import {
 
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
+import {ApplicationRef} from 'angular2/src/core/application_ref';
+import {MockApplicationRef} from 'angular2/src/mock/mock_application_ref';
 
 export function main() {
   describe('router injectables', () => {
     beforeEachBindings(() => {
-      return [ROUTER_PROVIDERS, provide(LocationStrategy, {useClass: MockLocationStrategy})];
+      return [
+        ROUTER_PROVIDERS,
+        provide(LocationStrategy, {useClass: MockLocationStrategy}),
+        provide(ApplicationRef, {useClass: MockApplicationRef})
+      ];
     });
 
     // do not refactor out the `bootstrap` functionality. We still want to

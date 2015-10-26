@@ -467,12 +467,13 @@ export class Router {
 export class RootRouter extends Router {
   /** @internal */
   _location: Location;
+  _locationSub: Object;
 
   constructor(registry: RouteRegistry, location: Location, primaryComponent: Type) {
     super(registry, null, primaryComponent);
     this._location = location;
-    this._location.subscribe((change) =>
-                                 this.navigateByUrl(change['url'], isPresent(change['pop'])));
+    this._locationSub = this._location.subscribe(
+        (change) => this.navigateByUrl(change['url'], isPresent(change['pop'])));
     this.registry.configFromComponent(primaryComponent);
     this.navigateByUrl(location.path());
   }
@@ -488,6 +489,13 @@ export class RootRouter extends Router {
       promise = promise.then((_) => { this._location.go(emitPath, emitQuery); });
     }
     return promise;
+  }
+
+  dispose(): void {
+    if (isPresent(this._locationSub)) {
+      ObservableWrapper.dispose(this._locationSub);
+      this._locationSub = null;
+    }
   }
 }
 
