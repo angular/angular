@@ -432,8 +432,21 @@ export class Router {
         }
       }
     } else if (first != '.') {
-      throw new BaseException(
-          `Link "${ListWrapper.toJSON(linkParams)}" must start with "/", "./", or "../"`);
+      // For a link with no leading `./`, `/`, or `../`, we look for a sibling and child.
+      // If both exist, we throw. Otherwise, we prefer whichever exists.
+      var childRouteExists = this.registry.hasRoute(first, this.hostComponent);
+      var parentRouteExists =
+          isPresent(this.parent) && this.registry.hasRoute(first, this.parent.hostComponent);
+
+      if (parentRouteExists && childRouteExists) {
+        let msg =
+            `Link "${ListWrapper.toJSON(linkParams)}" is ambiguous, use "./" or "../" to disambiguate.`;
+        throw new BaseException(msg);
+      }
+      if (parentRouteExists) {
+        router = this.parent;
+      }
+      rest = linkParams;
     }
 
     if (rest[rest.length - 1] == '') {
@@ -445,7 +458,7 @@ export class Router {
       throw new BaseException(msg);
     }
 
-    // TODO: structural cloning and whatnot
+    var nextInstruction = this.registry.generate(rest, router.hostComponent);
 
     var url = [];
     var parent = router.parent;
@@ -453,8 +466,6 @@ export class Router {
       url.unshift(parent._currentInstruction);
       parent = parent.parent;
     }
-
-    var nextInstruction = this.registry.generate(rest, router.hostComponent);
 
     while (url.length > 0) {
       nextInstruction = url.pop().replaceChild(nextInstruction);

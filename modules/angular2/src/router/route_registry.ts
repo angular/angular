@@ -254,6 +254,14 @@ export class RouteRegistry {
     return instruction;
   }
 
+  public hasRoute(name: string, parentComponent: any): boolean {
+    var componentRecognizer: RouteRecognizer = this._rules.get(parentComponent);
+    if (isBlank(componentRecognizer)) {
+      return false;
+    }
+    return componentRecognizer.hasRoute(name);
+  }
+
   // if the child includes a redirect like : "/" -> "/something",
   // we want to honor that redirection when creating the link
   private _generateRedirects(componentCursor: Type): Instruction {

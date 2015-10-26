@@ -19,6 +19,7 @@ import {
 
 import {NumberWrapper} from 'angular2/src/core/facade/lang';
 import {PromiseWrapper} from 'angular2/src/core/facade/async';
+import {ListWrapper} from 'angular2/src/core/facade/collection';
 
 import {provide, Component, DirectiveResolver, View} from 'angular2/core';
 
@@ -129,6 +130,58 @@ export function main() {
                                            .nativeElement,
                                        'href'))
                    .toEqual('/page/2');
+               async.done();
+             });
+       }));
+
+    it('should generate link hrefs from a child to its sibling with no leading slash',
+       inject([AsyncTestCompleter], (async) => {
+         compile()
+             .then((_) => router.config([
+               new Route({path: '/page/:number', component: NoPrefixSiblingPageCmp, as: 'Page'})
+             ]))
+             .then((_) => router.navigateByUrl('/page/1'))
+             .then((_) => {
+               rootTC.detectChanges();
+               expect(DOM.getAttribute(rootTC.debugElement.componentViewChildren[1]
+                                           .componentViewChildren[0]
+                                           .nativeElement,
+                                       'href'))
+                   .toEqual('/page/2');
+               async.done();
+             });
+       }));
+
+    it('should generate link hrefs to a child with no leading slash',
+       inject([AsyncTestCompleter], (async) => {
+         compile()
+             .then((_) => router.config([
+               new Route({path: '/book/:title/...', component: NoPrefixBookCmp, as: 'Book'})
+             ]))
+             .then((_) => router.navigateByUrl('/book/1984/page/1'))
+             .then((_) => {
+               rootTC.detectChanges();
+               expect(DOM.getAttribute(rootTC.debugElement.componentViewChildren[1]
+                                           .componentViewChildren[0]
+                                           .nativeElement,
+                                       'href'))
+                   .toEqual('/book/1984/page/100');
+               async.done();
+             });
+       }));
+
+    it('should throw when links without a leading slash are ambiguous',
+       inject([AsyncTestCompleter], (async) => {
+         compile()
+             .then((_) => router.config([
+               new Route({path: '/book/:title/...', component: AmbiguousBookCmp, as: 'Book'})
+             ]))
+             .then((_) => router.navigateByUrl('/book/1984/page/1'))
+             .then((_) => {
+               var link = ListWrapper.toJSON(['Book', {number: 100}]);
+               expect(() => rootTC.detectChanges())
+                   .toThrowErrorWith(
+                       `Link "${link}" is ambiguous, use "./" or "../" to disambiguate.`);
                async.done();
              });
        }));
@@ -337,6 +390,21 @@ class SiblingPageCmp {
   }
 }
 
+@Component({selector: 'page-cmp'})
+@View({
+  template:
+      `page #{{pageNumber}} | <a href="hello" [router-link]="[\'Page\', {number: nextPage}]">next</a>`,
+  directives: [RouterLink]
+})
+class NoPrefixSiblingPageCmp {
+  pageNumber: number;
+  nextPage: number;
+  constructor(params: RouteParams) {
+    this.pageNumber = NumberWrapper.parseInt(params.get('number'), 10);
+    this.nextPage = this.pageNumber + 1;
+  }
+}
+
 @Component({selector: 'hello-cmp'})
 @View({template: 'hello'})
 class HelloCmp {
@@ -374,6 +442,30 @@ class ParentCmp {
 })
 @RouteConfig([new Route({path: '/page/:number', component: SiblingPageCmp, as: 'Page'})])
 class BookCmp {
+  title: string;
+  constructor(params: RouteParams) { this.title = params.get('title'); }
+}
+
+@Component({selector: 'book-cmp'})
+@View({
+  template: `<a href="hello" [router-link]="[\'Page\', {number: 100}]">{{title}}</a> |
+    <router-outlet></router-outlet>`,
+  directives: ROUTER_DIRECTIVES
+})
+@RouteConfig([new Route({path: '/page/:number', component: SiblingPageCmp, as: 'Page'})])
+class NoPrefixBookCmp {
+  title: string;
+  constructor(params: RouteParams) { this.title = params.get('title'); }
+}
+
+@Component({selector: 'book-cmp'})
+@View({
+  template: `<a href="hello" [router-link]="[\'Book\', {number: 100}]">{{title}}</a> |
+    <router-outlet></router-outlet>`,
+  directives: ROUTER_DIRECTIVES
+})
+@RouteConfig([new Route({path: '/page/:number', component: SiblingPageCmp, as: 'Book'})])
+class AmbiguousBookCmp {
   title: string;
   constructor(params: RouteParams) { this.title = params.get('title'); }
 }

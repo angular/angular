@@ -61,7 +61,6 @@ export function main() {
              });
        }));
 
-
     it('should activate viewports and update URL on navigate',
        inject([AsyncTestCompleter], (async) => {
          var outlet = makeDummyOutlet();
@@ -105,7 +104,6 @@ export function main() {
              });
        }));
 
-
     it('should navigate after being configured', inject([AsyncTestCompleter], (async) => {
          var outlet = makeDummyOutlet();
 
@@ -120,14 +118,6 @@ export function main() {
                async.done();
              });
        }));
-
-
-    it('should throw when linkParams does not start with a "/" or "./"', () => {
-      expect(() => router.generate(['FirstCmp', 'SecondCmp']))
-          .toThrowError(
-              `Link "${ListWrapper.toJSON(['FirstCmp', 'SecondCmp'])}" must start with "/", "./", or "../"`);
-    });
-
 
     it('should throw when linkParams does not include a route name', () => {
       expect(() => router.generate(['./']))
