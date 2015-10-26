@@ -1,4 +1,5 @@
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {OnChanges} from 'angular2/lifecycle_hooks';
 import {SimpleChange} from 'angular2/src/core/change_detection';
@@ -8,7 +9,7 @@ import {NgControl} from './ng_control';
 import {Control} from '../model';
 import {Validators, NG_VALIDATORS} from '../validators';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
-import {setUpControl, isPropertyUpdated, isControlChanged, selectValueAccessor} from './shared';
+import {setUpControl, isPropertyUpdated, selectValueAccessor} from './shared';
 
 const formControlBinding =
     CONST_EXPR(new Provider(NgControl, {useExisting: forwardRef(() => NgFormControl)}));
@@ -82,7 +83,7 @@ export class NgFormControl extends NgControl implements OnChanges {
   }
 
   onChanges(changes: {[key: string]: SimpleChange}): void {
-    if (isControlChanged(changes)) {
+    if (this._isControlChanged(changes)) {
       setUpControl(this.form, this);
       this.form.updateValidity();
     }
@@ -101,5 +102,9 @@ export class NgFormControl extends NgControl implements OnChanges {
   viewToModelUpdate(newValue: any): void {
     this.viewModel = newValue;
     ObservableWrapper.callNext(this.update, newValue);
+  }
+
+  private _isControlChanged(changes: {[key: string]: any}): boolean {
+    return StringMapWrapper.contains(changes, "form");
   }
 }
