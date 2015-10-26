@@ -151,6 +151,11 @@ export function platformCommon(bindings?: Array<Type | Provider | any[]>, initia
  */
 export abstract class PlatformRef {
   /**
+   * Register a listener to be called when the platform is disposed.
+   */
+  abstract registerDisposeListener(dispose: () => void): void;
+
+  /**
    * Retrieve the platform {@link Injector}, which is the parent injector for
    * every Angular application on the page and provides singleton providers.
    */
@@ -210,8 +215,11 @@ export abstract class PlatformRef {
 export class PlatformRef_ extends PlatformRef {
   /** @internal */
   _applications: ApplicationRef[] = [];
+  _disposeListeners: Function[] = [];
 
   constructor(private _injector: Injector, private _dispose: () => void) { super(); }
+
+  registerDisposeListener(dispose: () => void): void { this._disposeListeners.push(dispose); }
 
   get injector(): Injector { return this._injector; }
 
@@ -259,6 +267,7 @@ export class PlatformRef_ extends PlatformRef {
 
   dispose(): void {
     this._applications.forEach((app) => app.dispose());
+    this._disposeListeners.forEach((dispose) => dispose());
     this._dispose();
   }
 
@@ -277,6 +286,11 @@ export abstract class ApplicationRef {
    * a new root component.
    */
   abstract registerBootstrapListener(listener: (ref: ComponentRef) => void): void;
+
+  /**
+   * Register a listener to be called when the application is disposed.
+   */
+  abstract registerDisposeListener(dispose: () => void): void;
 
   /**
    * Bootstrap a new component at the root level of the application.
@@ -326,6 +340,7 @@ export abstract class ApplicationRef {
 
 export class ApplicationRef_ extends ApplicationRef {
   private _bootstrapListeners: Function[] = [];
+  private _disposeListeners: Function[] = [];
   private _rootComponents: ComponentRef[] = [];
   private _rootComponentTypes: Type[] = [];
 
@@ -336,6 +351,8 @@ export class ApplicationRef_ extends ApplicationRef {
   registerBootstrapListener(listener: (ref: ComponentRef) => void): void {
     this._bootstrapListeners.push(listener);
   }
+
+  registerDisposeListener(dispose: () => void): void { this._disposeListeners.push(dispose); }
 
   bootstrap(componentType: Type,
             providers?: Array<Type | Provider | any[]>): Promise<ComponentRef> {
@@ -380,6 +397,7 @@ export class ApplicationRef_ extends ApplicationRef {
   dispose(): void {
     // TODO(alxhub): Dispose of the NgZone.
     this._rootComponents.forEach((ref) => ref.dispose());
+    this._disposeListeners.forEach((dispose) => dispose());
     this._platform._applicationDisposed(this);
   }
 
