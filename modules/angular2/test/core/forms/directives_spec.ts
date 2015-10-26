@@ -38,6 +38,7 @@ import {
 
 import {selectValueAccessor} from 'angular2/src/core/forms/directives/shared';
 
+import {SimpleChange} from 'angular2/src/core/change_detection';
 
 class DummyControlValueAccessor implements ControlValueAccessor {
   writtenValue;
@@ -275,6 +276,16 @@ export function main() {
     describe("NgFormControl", () => {
       var controlDir;
       var control;
+      var checkProperties = function(control) {
+        expect(controlDir.control).toBe(control);
+        expect(controlDir.value).toBe(control.value);
+        expect(controlDir.valid).toBe(control.valid);
+        expect(controlDir.errors).toBe(control.errors);
+        expect(controlDir.pristine).toBe(control.pristine);
+        expect(controlDir.dirty).toBe(control.dirty);
+        expect(controlDir.touched).toBe(control.touched);
+        expect(controlDir.untouched).toBe(control.untouched);
+      };
 
       beforeEach(() => {
         controlDir = new NgFormControl([], [defaultAccessor]);
@@ -284,15 +295,14 @@ export function main() {
         controlDir.form = control;
       });
 
-      it("should reexport control properties", () => {
-        expect(controlDir.control).toBe(control);
-        expect(controlDir.value).toBe(control.value);
-        expect(controlDir.valid).toBe(control.valid);
-        expect(controlDir.errors).toBe(control.errors);
-        expect(controlDir.pristine).toBe(control.pristine);
-        expect(controlDir.dirty).toBe(control.dirty);
-        expect(controlDir.touched).toBe(control.touched);
-        expect(controlDir.untouched).toBe(control.untouched);
+      it("should reexport control properties", () => { checkProperties(control); });
+
+      it("should reexport new control properties", () => {
+        var newControl = new Control(null);
+        controlDir.form = newControl;
+        controlDir.onChanges({"form": new SimpleChange(control, newControl)});
+
+        checkProperties(newControl);
       });
 
       it("should set up validator", () => {
@@ -301,7 +311,7 @@ export function main() {
         expect(control.valid).toBe(true);
 
         // this will add the required validator and recalculate the validity
-        controlDir.onChanges({});
+        controlDir.onChanges({"form": new SimpleChange(null, control)});
 
         expect(control.valid).toBe(false);
       });
