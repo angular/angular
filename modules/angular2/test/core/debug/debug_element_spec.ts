@@ -18,7 +18,7 @@ import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 
-import {Injectable, NgFor} from 'angular2/core';
+import {Injectable, NgFor, NgIf} from 'angular2/core';
 import {By, Scope} from 'angular2/src/core/debug';
 
 import {
@@ -61,14 +61,24 @@ class ChildComp {
   constructor() { this.childBinding = 'Original'; }
 }
 
+@Component({selector: 'cond-content-comp', viewProviders: [Logger]})
+@View({
+  template: `<div class="child" message="child" *ng-if="false"><ng-content></ng-content></div>`,
+  directives: [NgIf, MessageDir]
+})
+@Injectable()
+class ConditionalContentComp {
+}
+
 @Component({selector: 'parent-comp', viewProviders: [Logger]})
 @View({
   template: `<div class="parent" message="parent">
                <span class="parentnested" message="nestedparent">Parent</span>
              </div>
              <span class="parent" [inner-html]="parentBinding"></span>
-             <child-comp class="child-comp-class"></child-comp>`,
-  directives: [ChildComp, MessageDir]
+             <child-comp class="child-comp-class"></child-comp>
+             <cond-content-comp class="cond-content-comp-class"></cond-content-comp>`,
+  directives: [ChildComp, MessageDir, ConditionalContentComp]
 })
 @Injectable()
 class ParentComp {
@@ -135,11 +145,13 @@ export function main() {
                expect(childEls.length).toEqual(0);
 
                var rootCompChildren = rootTestComponent.debugElement.componentViewChildren;
-               // The root component has 3 elements in its shadow view.
-               expect(rootCompChildren.length).toEqual(3);
+               // The root component has 4 elements in its shadow view.
+               expect(rootCompChildren.length).toEqual(4);
                expect(DOM.hasClass(rootCompChildren[0].nativeElement, 'parent')).toBe(true);
                expect(DOM.hasClass(rootCompChildren[1].nativeElement, 'parent')).toBe(true);
                expect(DOM.hasClass(rootCompChildren[2].nativeElement, 'child-comp-class'))
+                   .toBe(true);
+               expect(DOM.hasClass(rootCompChildren[3].nativeElement, 'cond-content-comp-class'))
                    .toBe(true);
 
                var nested = rootCompChildren[0].children;
@@ -157,6 +169,14 @@ export function main() {
                var childNested = childCompChildren[0].children;
                expect(childNested.length).toEqual(1);
                expect(DOM.hasClass(childNested[0].nativeElement, 'childnested')).toBe(true);
+
+               var conditionalContentComp = rootCompChildren[3];
+               expect(conditionalContentComp.children.length).toEqual(0);
+
+               expect(conditionalContentComp.componentViewChildren.length).toEqual(1);
+               var ngIfWithProjectedNgContent = conditionalContentComp.componentViewChildren[0];
+               expect(ngIfWithProjectedNgContent.children.length).toBe(0);
+               expect(ngIfWithProjectedNgContent.componentViewChildren.length).toBe(0);
 
                async.done();
              });
