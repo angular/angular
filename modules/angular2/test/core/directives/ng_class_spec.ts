@@ -14,7 +14,7 @@ import {
   it,
   xit,
 } from 'angular2/testing_internal';
-import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, StringMapWrapper, SetWrapper} from 'angular2/src/core/facade/collection';
 import {Component, View, NgFor, provide} from 'angular2/angular2';
 import {NgClass} from 'angular2/src/core/directives/ng_class';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
@@ -253,6 +253,29 @@ export function main() {
          }));
     });
 
+    describe('expressions evaluating to sets', () => {
+
+      it('should add and remove classes if the set instance changed',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = '<div [ng-class]="setExpr"></div>';
+
+           tcb.overrideTemplate(TestComponent, template)
+               .createAsync(TestComponent)
+               .then((rootTC) => {
+                 var setExpr = new Set<string>();
+                 setExpr.add('bar');
+                 rootTC.debugElement.componentInstance.setExpr = setExpr;
+                 detectChangesAndCheck(rootTC, 'bar');
+
+                 setExpr = new Set<string>();
+                 setExpr.add('baz');
+                 rootTC.debugElement.componentInstance.setExpr = setExpr;
+                 detectChangesAndCheck(rootTC, 'baz');
+
+                 async.done();
+               });
+         }));
+    });
     describe('expressions evaluating to string', () => {
 
       it('should add classes specified in a string literal',
@@ -452,6 +475,9 @@ class TestComponent {
   condition: boolean = true;
   items: any[];
   arrExpr: string[] = ['foo'];
+  setExpr: Set<string> = new Set<string>();
   objExpr = {'foo': true, 'bar': false};
   strExpr = 'foo';
+
+  constructor() { this.setExpr.add('foo'); }
 }

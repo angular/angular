@@ -1,4 +1,4 @@
-import {isPresent, isString, StringWrapper, isBlank} from 'angular2/src/core/facade/lang';
+import {isPresent, isString, StringWrapper, isBlank, isArray} from 'angular2/src/core/facade/lang';
 import {DoCheck, OnDestroy} from 'angular2/lifecycle_hooks';
 import {Directive} from 'angular2/src/core/metadata';
 import {ElementRef} from 'angular2/src/core/linker';
@@ -146,10 +146,13 @@ export class NgClass implements DoCheck, OnDestroy {
     this._initialClasses.forEach(className => this._toggleClass(className, !isCleanup));
   }
 
-  private _applyClasses(rawClassVal: string[] | {[key: string]: string}, isCleanup: boolean) {
+  private _applyClasses(rawClassVal: string[] | Set<string>| {[key: string]: string},
+                        isCleanup: boolean) {
     if (isPresent(rawClassVal)) {
-      if (isListLikeIterable(rawClassVal)) {
+      if (isArray(rawClassVal)) {
         (<string[]>rawClassVal).forEach(className => this._toggleClass(className, !isCleanup));
+      } else if (rawClassVal instanceof Set) {
+        (<Set<string>>rawClassVal).forEach(className => this._toggleClass(className, !isCleanup));
       } else {
         StringMapWrapper.forEach(<{[k: string]: string}>rawClassVal, (expVal, className) => {
           if (expVal) this._toggleClass(className, !isCleanup);
