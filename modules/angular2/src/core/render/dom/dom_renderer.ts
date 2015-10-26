@@ -322,15 +322,6 @@ function moveNodesAfterSibling(sibling, nodes) {
   }
 }
 
-function moveChildNodes(source: Node, target: Node) {
-  var currChild = DOM.firstChild(source);
-  while (isPresent(currChild)) {
-    var nextChild = DOM.nextSibling(currChild);
-    DOM.appendChild(target, currChild);
-    currChild = nextChild;
-  }
-}
-
 function decoratePreventDefault(eventHandler: Function): Function {
   return (event) => {
     var allowDefaultBehavior = eventHandler(event);

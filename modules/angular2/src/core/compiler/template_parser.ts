@@ -628,10 +628,6 @@ class BoundElementOrDirectiveProperty {
               public sourceInfo: string) {}
 }
 
-class ParseError {
-  constructor(public message: string, public sourceInfo: string) {}
-}
-
 export function splitClasses(classAttrValue: string): string[] {
   return StringWrapper.split(classAttrValue.trim(), /\s+/g);
 }

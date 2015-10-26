@@ -252,9 +252,3 @@ class Component<N> {
                [];
   }
 }
-
-function addAll(source: any[], target: any[]) {
-  for (var i = 0; i < source.length; i++) {
-    target.push(source[i]);
-  }
-}
