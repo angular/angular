@@ -17,7 +17,7 @@ export class StyleWithImports {
 export function isStyleUrlResolvable(url: string): boolean {
   if (isBlank(url) || url.length === 0 || url[0] == '/') return false;
   var schemeMatch = RegExpWrapper.firstMatch(_urlWithSchemaRe, url);
-  return isBlank(schemeMatch) || schemeMatch[1] == 'package';
+  return isBlank(schemeMatch) || schemeMatch[1] == 'package' || schemeMatch[1] == 'asset';
 }
 
 /**
