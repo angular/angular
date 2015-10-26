@@ -391,10 +391,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   _readContext(proto: ProtoRecord, values: any[]) {
     if (proto.contextIndex == -1) {
       return this._getDirectiveFor(proto.directiveIndex);
-    } else {
-      return values[proto.contextIndex];
     }
-
     return values[proto.contextIndex];
   }
 

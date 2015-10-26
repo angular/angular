@@ -20,10 +20,6 @@ import {reflector} from 'angular2/src/core/reflection/reflection';
 import {Injectable} from 'angular2/src/core/di';
 import {MODULE_SUFFIX} from './util';
 
-// group 1: "property" from "[property]"
-// group 2: "event" from "(event)"
-var HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$/g;
-
 @Injectable()
 export class RuntimeMetadataResolver {
   private _cache = new Map<Type, cpl.CompileDirectiveMetadata>();
