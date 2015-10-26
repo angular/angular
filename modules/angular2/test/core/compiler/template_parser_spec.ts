@@ -670,6 +670,17 @@ There is no directive with "exportAs" set to "dirA" at TestComp > div:nth-child(
                 [ElementAst, 'div', 'TestComp > div:nth-child(0)']
               ]);
         });
+
+        it('should work with *... and empty value', () => {
+          expect(humanizeTemplateAsts(parse('<div *ng-if>', [ngIf])))
+              .toEqual([
+                [EmbeddedTemplateAst, 'TestComp > div:nth-child(0)'],
+                [DirectiveAst, ngIf, 'TestComp > div:nth-child(0)'],
+                [BoundDirectivePropertyAst, 'ngIf', 'null', 'TestComp > div:nth-child(0)[*ng-if=]'],
+                [ElementAst, 'div', 'TestComp > div:nth-child(0)']
+              ]);
+        });
+
       });
 
     });

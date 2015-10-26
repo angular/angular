@@ -272,6 +272,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
                                  targetMatchableAttrs, targetProps);
         } else {
           targetMatchableAttrs.push([dashCaseKey, '']);
+          this._parseLiteralAttr(dashCaseKey, null, attr.sourceInfo, targetProps);
         }
       }
       return true;
