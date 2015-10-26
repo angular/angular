@@ -67,6 +67,8 @@ export class PathLocationStrategy extends LocationStrategy {
 
   getBaseHref(): string { return this._baseHref; }
 
+  prepareExternalUrl(internal: string): string { return this._baseHref + internal; }
+
   path(): string { return this._location.pathname + normalizeQueryParams(this._location.search); }
 
   pushState(state: any, title: string, url: string, queryParams: string) {

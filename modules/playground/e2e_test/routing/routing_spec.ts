@@ -23,7 +23,7 @@ describe('routing inbox-app', () => {
     it('should build a link which points to the detail page', () => {
       browser.get(URL);
       waitForElement('#item-15');
-      expect(element(by.css('#item-15')).getAttribute('href')).toMatch(/\/detail\/15$/);
+      expect(element(by.css('#item-15')).getAttribute('href')).toMatch(/#\/detail\/15$/);
       element(by.css('#item-15')).click();
       waitForElement('#record-id');
       expect(browser.getCurrentUrl()).toMatch(/\/detail\/15$/);
@@ -47,7 +47,7 @@ describe('routing inbox-app', () => {
       element(by.linkText('Drafts')).click();
       waitForElement('.inbox-item-record');
       expect(element.all(by.css('.inbox-item-record')).count()).toEqual(2);
-      expect(element(by.css('#item-201')).getAttribute('href')).toMatch(/\/detail\/201$/);
+      expect(element(by.css('#item-201')).getAttribute('href')).toMatch(/#\/detail\/201$/);
       element(by.css('#item-201')).click();
       waitForElement('#record-id');
       expect(browser.getCurrentUrl()).toMatch(/\/detail\/201$/);

@@ -18,6 +18,8 @@ export class MockLocationStrategy extends LocationStrategy {
 
   path(): string { return this.internalPath; }
 
+  prepareExternalUrl(internal: string): string { return internal; }
+
   simulateUrlPop(pathname: string): void {
     ObservableWrapper.callNext(this._subject, {'url': pathname});
   }

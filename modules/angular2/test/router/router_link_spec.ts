@@ -53,7 +53,7 @@ export function main() {
              .then((testComponent) => {
                testComponent.detectChanges();
                let anchorElement = testComponent.debugElement.query(By.css('a')).nativeElement;
-               expect(DOM.getAttribute(anchorElement, 'href')).toEqual('/detail');
+               expect(DOM.getAttribute(anchorElement, 'href')).toEqual('detail');
                async.done();
              });
        }));
@@ -99,7 +99,7 @@ class TestComponent {
 
 function makeDummyLocation() {
   var dl = new SpyLocation();
-  dl.spy('normalizeAbsolutely').andCallFake((url) => url);
+  dl.spy('prepareExternalUrl').andCallFake((url) => url);
   return dl;
 }
 

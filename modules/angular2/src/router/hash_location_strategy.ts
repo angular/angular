@@ -65,12 +65,16 @@ export class HashLocationStrategy extends LocationStrategy {
            normalizeQueryParams(this._location.search);
   }
 
+  prepareExternalUrl(internal: string): string {
+    return internal.length > 0 ? ('#' + internal) : internal;
+  }
+
   pushState(state: any, title: string, path: string, queryParams: string) {
     var url = path + normalizeQueryParams(queryParams);
     if (url.length == 0) {
       url = this._location.pathname;
     } else {
-      url = '#' + url;
+      url = this.prepareExternalUrl(url);
     }
     this._history.pushState(state, title, url);
   }

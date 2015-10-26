@@ -33,27 +33,16 @@ export function main() {
 
     beforeEach(makeLocation);
 
-    it('should normalize relative urls on navigate', () => {
-      location.go('user/btford');
-      expect(locationStrategy.path()).toEqual('/my/app/user/btford');
-    });
-
     it('should not prepend urls with starting slash when an empty URL is provided',
-       () => { expect(location.normalizeAbsolutely('')).toEqual(locationStrategy.getBaseHref()); });
+       () => { expect(location.prepareExternalUrl('')).toEqual(locationStrategy.getBaseHref()); });
 
     it('should not prepend path with an extra slash when a baseHref has a trailing slash', () => {
       let location = makeLocation('/my/slashed/app/');
-      expect(location.normalizeAbsolutely('/page')).toEqual('/my/slashed/app/page');
+      expect(location.prepareExternalUrl('/page')).toEqual('/my/slashed/app/page');
     });
 
     it('should not append urls with leading slash on navigate', () => {
       location.go('/my/app/user/btford');
-      expect(locationStrategy.path()).toEqual('/my/app/user/btford');
-    });
-
-    it('should remove index.html from base href', () => {
-      let location = makeLocation('/my/app/index.html');
-      location.go('user/btford');
       expect(locationStrategy.path()).toEqual('/my/app/user/btford');
     });
 
@@ -64,17 +53,6 @@ export function main() {
            async.done();
          })
        }));
-
-    it('should normalize location path', () => {
-      locationStrategy.internalPath = '/my/app/user/btford';
-      expect(location.path()).toEqual('/user/btford');
-    });
-
-    it('should use optional base href param', () => {
-      let location = makeLocation('/', provide(APP_BASE_HREF, {useValue: '/my/custom/href'}));
-      location.go('user/btford');
-      expect(locationStrategy.path()).toEqual('/my/custom/href/user/btford');
-    });
 
     it('should throw when no base href is provided', () => {
       var locationStrategy = new MockLocationStrategy();

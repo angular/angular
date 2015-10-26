@@ -103,22 +103,25 @@ export class Location {
   path(): string { return this.normalize(this.platformStrategy.path()); }
 
   /**
-   * Given a string representing a URL, returns the normalized URL path.
+   * Given a string representing a URL, returns the normalized URL path without leading or
+   * trailing slashes
    */
   normalize(url: string): string {
     return stripTrailingSlash(_stripBaseHref(this._baseHref, stripIndexHtml(url)));
   }
 
   /**
-   * Given a string representing a URL, returns the normalized URL path.
+   * Given a string representing a URL, returns the platform-specific external URL path.
    * If the given URL doesn't begin with a leading slash (`'/'`), this method adds one
-   * before normalizing.
+   * before normalizing. This method will also add a hash if `HashLocationStrategy` is
+   * used, or the `APP_BASE_HREF` if the `PathLocationStrategy` is in use.
    */
-  normalizeAbsolutely(url: string): string {
+  prepareExternalUrl(url: string): string {
     if (!url.startsWith('/')) {
       url = '/' + url;
     }
-    return stripTrailingSlash(_addBaseHref(this._baseHref, url));
+    return this.platformStrategy.prepareExternalUrl(
+        stripTrailingSlash(_addBaseHref(this._baseHref, url)));
   }
 
   /**
@@ -126,8 +129,7 @@ export class Location {
    * new item onto the platform's history.
    */
   go(path: string, query: string = ''): void {
-    var absolutePath = this.normalizeAbsolutely(path);
-    this.platformStrategy.pushState(null, '', absolutePath, query);
+    this.platformStrategy.pushState(null, '', path, query);
   }
 
   /**

@@ -60,9 +60,8 @@ export class RouterLink {
     this._routeParams = changes;
     this._navigationInstruction = this._router.generate(this._routeParams);
 
-    // TODO: is this the right spot for this?
-    var navigationHref = '/' + stringifyInstruction(this._navigationInstruction);
-    this.visibleHref = this._location.normalizeAbsolutely(navigationHref);
+    var navigationHref = stringifyInstruction(this._navigationInstruction);
+    this.visibleHref = this._location.prepareExternalUrl(navigationHref);
   }
 
   onClick(): boolean {

@@ -21,10 +21,15 @@ export class SpyLocation implements Location {
 
   simulateUrlPop(pathname: string) { ObservableWrapper.callNext(this._subject, {'url': pathname}); }
 
-  normalizeAbsolutely(url: string): string { return this._baseHref + url; }
+  prepareExternalUrl(url: string): string {
+    if (url.length > 0 && !url.startsWith('/')) {
+      url = '/' + url;
+    }
+    return this._baseHref + url;
+  }
 
   go(path: string, query: string = '') {
-    path = this.normalizeAbsolutely(path);
+    path = this.prepareExternalUrl(path);
     if (this._path == path && this._query == query) {
       return;
     }
