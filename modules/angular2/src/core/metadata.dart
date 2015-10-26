@@ -129,6 +129,7 @@ class Attribute extends AttributeMetadata {
 /**
  * See: [QueryMetadata] for docs.
  */
+@Deprecated("Use ContentChildren/ContentChild instead")
 class Query extends QueryMetadata {
   const Query(dynamic /*Type | string*/ selector, {bool descendants: false})
       : super(selector, descendants: descendants);
@@ -153,6 +154,7 @@ class ContentChild extends ContentChildMetadata {
 /**
  * See: [ViewQueryMetadata] for docs.
  */
+@Deprecated("Use ViewChildren/ViewChild instead")
 class ViewQuery extends ViewQueryMetadata {
   const ViewQuery(dynamic /*Type | string*/ selector)
       : super(selector, descendants: true);
