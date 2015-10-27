@@ -50,6 +50,8 @@ addons:
   firefox: "38.0"
 
 before_install:
+- node tools/analytics/build-analytics start ci job
+- node tools/analytics/build-analytics start ci before_install
 - echo ${TSDRC} > .tsdrc
 - export DISPLAY=:99.0
 - export GIT_SHA=$(git rev-parse HEAD)
@@ -58,23 +60,33 @@ before_install:
 - sh -e /etc/init.d/xvfb start
 - if [[ -e SKIP_TRAVIS_TESTS ]]; then { cat SKIP_TRAVIS_TESTS ; exit 0; } fi
 - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ] && SAUCE_USERNAME="angular2-ci" && SAUCE_ACCESS_KEY="693ebc16208a-0b5b-1614-8d66-a2662f4e" || true'
+- node tools/analytics/build-analytics success ci before_install
 
 install:
+  - node tools/analytics/build-analytics start ci install
   # Check the size of caches
   - du -sh ./node_modules || true
   # Install npm dependecies
   - npm install
+  - node tools/analytics/build-analytics success ci install
 
 before_script:
+- node tools/analytics/build-analytics start ci before_script
 - mkdir -p $LOGS_DIR
 - ./scripts/ci/presubmit-queue-setup.sh
+- node tools/analytics/build-analytics success ci before_script
 
 script:
+- node tools/analytics/build-analytics start ci script
 - ./scripts/ci/build_and_test.sh ${MODE}
+- node tools/analytics/build-analytics success ci script
 
 after_script:
+- node tools/analytics/build-analytics start ci after_script
 - ./scripts/ci/print-logs.sh
 - ./scripts/ci/after-script.sh
+- node tools/analytics/build-analytics success ci after_script
+- if [[ $TRAVIS_TEST_RESULT -eq 0 ]]; then node tools/analytics/build-analytics success ci job; else node tools/analytics/build-analytics error ci job; fi
 
 notifications:
   webhooks:
