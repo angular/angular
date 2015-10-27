@@ -73,7 +73,7 @@ var angularBuilder = {
   rebuildBrowserProdTree: throwToolsBuildMissingError,
   rebuildNodeTree: throwToolsBuildMissingError,
   rebuildDartTree: throwToolsBuildMissingError,
-  mock: true
+  uninitialized: true
 };
 
 
@@ -1291,7 +1291,7 @@ gulp.task('benchpress.bundle', ['build/clean.benchpress.bundle', 'build.js.cjs']
 
 // register cleanup listener for ctrl+c/kill used to quit any persistent task (autotest or serve tasks)
 process.on('SIGINT', function() {
-  if (!angularBuilder.mock) {
+  if (!angularBuilder.uninitialized) {
     runSequence('cleanup.builder', function () {
       process.exit();
     });
@@ -1309,7 +1309,7 @@ process.on('beforeExit', function() {
 
   beforeExitRan = true;
 
-  if (!angularBuilder.mock) {
+  if (!angularBuilder.uninitialized) {
     gulp.start('cleanup.builder');
   }
 });
