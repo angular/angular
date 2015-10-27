@@ -948,12 +948,14 @@ export class ComponentMetadata extends DirectiveMetadata {
 /**
  * Declare reusable pipe function.
  *
+ * A "pure" pipe is only re-evaluated when any of its input or arguments changes.
+ *
+ * When not specified, pipes default to being pure.
+ *
  * ### Example
  *
  * ```
- * @Pipe({
- *   name: 'lowercase'
- * })
+ * @Pipe({name: 'lowercase'})
  * class Lowercase {
  *   transform(v, args) { return v.toLowerCase(); }
  * }
@@ -965,7 +967,7 @@ export class PipeMetadata extends InjectableMetadata {
   /** @internal */
   _pure: boolean;
 
-  constructor({name, pure}: {name: string, pure: boolean}) {
+  constructor({name, pure}: {name: string, pure?: boolean}) {
     super();
     this.name = name;
     this._pure = pure;
