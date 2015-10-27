@@ -88,27 +88,24 @@ module.exports = function makeNodeTree(destinationPath) {
     patterns: [
       {
         match: /^/,
-        replacement: function() {
-          return `var parse5Adapter = require('angular2/src/core/dom/parse5_adapter');\n\r
-                  parse5Adapter.Parse5DomAdapter.makeCurrent();`;
-        }
+        replacement:
+            () => `var parse5Adapter = require('angular2/src/core/dom/parse5_adapter');\r\n` +
+                  `parse5Adapter.Parse5DomAdapter.makeCurrent();`
       },
-      {match: /$/, replacement: function(_, relativePath) { return "\r\n main(); \n\r"; }}
+      {match: /$/, replacement: (_, relativePath) => "\r\n main(); \r\n"}
     ]
   });
 
   // Prepend 'use strict' directive to all JS files.
   // See https://github.com/Microsoft/TypeScript/issues/3576
-  nodeTree = replace(nodeTree, {
-    files: ['**/*.js'],
-    patterns: [{match: /^/, replacement: function() { return `'use strict';` }}]
-  });
+  nodeTree = replace(
+      nodeTree, {files: ['**/*.js'], patterns: [{match: /^/, replacement: () => `'use strict';`}]});
 
   // Add a line to the end of our top-level .d.ts file.
   // This HACK for transitive typings is a workaround for
   // https://github.com/Microsoft/TypeScript/issues/5097
   //
-  // This allows users to get our top-level dependencies like es6-shim.d.ts
+  // This allows users to get our top-level dependencies like zone.d.ts
   // to appear when they compile against angular2.
   //
   // This carries the risk that the user brings their own copy of that file
@@ -117,7 +114,7 @@ module.exports = function makeNodeTree(destinationPath) {
   // TODO(alexeagle): remove this when typescript releases a fix
   nodeTree = replace(nodeTree, {
     files: ['angular2/angular2.d.ts'],
-    patterns: [{match: /$/, replacement: 'import "./manual_typings/globals.d.ts";\n'}]
+    patterns: [{match: /$/, replacement: 'import "./manual_typings/globals-es6.d.ts";\r\n'}]
   });
 
   return destCopy(nodeTree, destinationPath);
