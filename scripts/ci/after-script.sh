@@ -8,6 +8,9 @@ echo '*******************'
 if [ "$MODE" = "saucelabs" ]; then
   ./scripts/sauce/sauce_connect_teardown.sh
 fi
+if [ "$MODE" = "browserstack" ]; then
+  ./scripts/browserstack/teardown_tunnel.sh
+fi
 
 
 echo '---------------------'

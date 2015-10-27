@@ -43,7 +43,7 @@ var buildRouter = require('./modules/angular1_router/build');
 var uglify = require('gulp-uglify');
 var shouldLog = require('./tools/build/logging');
 var dartSdk = require('./tools/build/dart');
-var sauceConf = require('./sauce.conf');
+var browserProvidersConf = require('./browser-providers.conf.js');
 var os = require('os');
 
 require('./tools/check-environment')({
@@ -477,17 +477,17 @@ function getBrowsersFromCLI() {
   for (var i = 0; i < inputList.length; i++) {
     var input = inputList[i];
     var karmaChromeLauncher = require('karma-chrome-launcher');
-    if (sauceConf.customLaunchers.hasOwnProperty(input) || karmaChromeLauncher.hasOwnProperty("launcher:" + input)) {
+    if (browserProvidersConf.customLaunchers.hasOwnProperty(input) || karmaChromeLauncher.hasOwnProperty("launcher:" + input)) {
       // In case of non-sauce browsers, or browsers defined in karma-chrome-launcher (Chrome, ChromeCanary and Dartium):
       // overrides everything, ignoring other options
       outputList = [input];
       isSauce = false;
       break;
-    } else if (sauceConf.customLaunchers.hasOwnProperty("SL_" + input.toUpperCase())) {
+    } else if (browserProvidersConf.customLaunchers.hasOwnProperty("SL_" + input.toUpperCase())) {
       isSauce = true;
       outputList.push("SL_" + input.toUpperCase());
-    } else if (sauceConf.aliases.hasOwnProperty(input.toUpperCase())) {
-      outputList = outputList.concat(sauceConf.aliases[input]);
+    } else if (browserProvidersConf.sauceAliases.hasOwnProperty(input.toUpperCase())) {
+      outputList = outputList.concat(browserProvidersConf.sauceAliases[input]);
       isSauce = true;
     } else {
       throw new Error('ERROR: unknown browser found in getBrowsersFromCLI()');
@@ -667,9 +667,22 @@ gulp.task('test.unit.js.sauce/ci', function (done) {
         browserNoActivityTimeout: 240000,
         captureTimeout: 120000,
         reporters: ['dots', 'saucelabs'],
-        browsers: sauceConf.aliases.CI
+        browsers: browserProvidersConf.sauceAliases.CI
       },
       function(err) {done(); process.exit(err ? 1 : 0);}
+  ).start();
+});
+
+gulp.task('test.unit.js.browserstack/ci', function (done) {
+  new karma.Server({
+      configFile: __dirname + '/karma-js.conf.js',
+      singleRun: true,
+      browserNoActivityTimeout: 240000,
+      captureTimeout: 120000,
+      reporters: ['dots'],
+      browsers: browserProvidersConf.browserstackAliases.CI
+    },
+    function(err) {done(); process.exit(err ? 1 : 0);}
   ).start();
 });
 

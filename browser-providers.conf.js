@@ -124,10 +124,17 @@ var customLaunchers = {
     browserName: 'android',
     platform: 'Linux',
     version: '5.1'
+  },
+
+  'BS_Chrome': {
+    base: 'BrowserStack',
+    browser: 'chrome',
+    os: 'OS X',
+    os_version: 'Yosemite'
   }
 };
 
-var aliases = {
+var sauceAliases = {
   'ALL': Object.keys(customLaunchers).filter(function(item) {return customLaunchers[item].base == 'SauceLabs';}),
   'DESKTOP': ['SL_CHROME', 'SL_FIREFOX', 'SL_IE9', 'SL_IE10', 'SL_IE11', 'SL_EDGE', 'SL_SAFARI7', 'SL_SAFARI8', 'SL_SAFARI9.0'],
   'MOBILE': ['SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4', 'SL_ANDROID5.1', 'SL_IOS7', 'SL_IOS8', 'SL_IOS9'],
@@ -142,11 +149,19 @@ var aliases = {
          'SL_CHROMEDEV', 'SL_FIREFOXBETA']
 };
 
+var browserstackAliases = {
+  'ALL': Object.keys(customLaunchers).filter(function(item) {return customLaunchers[item].base == 'BrowserStack';}),
+  'DESKTOP': ['BS_Chrome'],
+  'CI': ['BS_Chrome'],
+};
+
 module.exports = {
   customLaunchers: customLaunchers,
-  aliases: aliases
+  sauceAliases: sauceAliases,
+  browserstackAliases: browserstackAliases
 }
 
 if (process.env.TRAVIS) {
   process.env.SAUCE_ACCESS_KEY = process.env.SAUCE_ACCESS_KEY.split('').reverse().join('');
+  process.env.BROWSER_STACK_ACCESS_KEY = process.env.BROWSER_STACK_ACCESS_KEY.split('').reverse().join('');
 }

@@ -1,4 +1,4 @@
-var sauceConf = require('./sauce.conf');
+var browserProvidersConf = require('./browser-providers.conf.js');
 
 // Karma configuration
 // Generated on Thu Sep 25 2014 11:52:02 GMT-0700 (PDT)
@@ -33,7 +33,7 @@ module.exports = function(config) {
 
     exclude: ['dist/js/dev/es5/**/e2e_test/**', 'dist/js/dev/es5/angular2/examples/**', 'dist/angular1_router.js'],
 
-    customLaunchers: sauceConf.customLaunchers,
+    customLaunchers: browserProvidersConf.customLaunchers,
 
     sauceLabs: {
       testName: 'Angular2',
@@ -48,18 +48,33 @@ module.exports = function(config) {
       }
     },
 
+    browserStack: {
+      project: 'Angular2',
+      startTunnel: false,
+      retryLimit: 1,
+      timeout: 600
+    },
+
     browsers: ['Chrome'],
 
     port: 9876
   });
 
-  if (process.env.TRAVIS && process.env.MODE === 'saucelabs') {
-    config.sauceLabs.build = 'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' + process.env.TRAVIS_BUILD_ID + ')';
-    config.sauceLabs.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
+  if (process.env.TRAVIS) {
+    var buildId = 'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' + process.env.TRAVIS_BUILD_ID + ')';
+    if (process.env.MODE === 'saucelabs') {
+      config.sauceLabs.build = buildId;
+      config.sauceLabs.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
 
-    // TODO(mlaval): remove once SauceLabs supports websockets.
-    // This speeds up the capturing a bit, as browsers don't even try to use websocket.
-    console.log('>>>> setting socket.io transport to polling <<<<');
-    config.transports = ['polling'];
+      // TODO(mlaval): remove once SauceLabs supports websockets.
+      // This speeds up the capturing a bit, as browsers don't even try to use websocket.
+      console.log('>>>> setting socket.io transport to polling <<<<');
+      config.transports = ['polling'];
+    }
+
+    if (process.env.MODE === 'browserstack') {
+      config.browserStack.build = buildId;
+      config.browserStack.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
+    }
   }
 };
