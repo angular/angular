@@ -1,7 +1,7 @@
 language: node_js
 sudo: false
 node_js:
-- '4.1.1'
+- '4.2.1'
 
 branches:
   except:
@@ -60,9 +60,6 @@ before_install:
 - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ] && SAUCE_USERNAME="angular2-ci" && SAUCE_ACCESS_KEY="693ebc16208a-0b5b-1614-8d66-a2662f4e" || true'
 
 install:
-  # Update npm
-  - npm install -g npm@2.14.5
-  - npm --version
   # Check the size of caches
   - du -sh ./node_modules || true
   # Install npm dependecies

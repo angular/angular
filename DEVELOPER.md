@@ -36,9 +36,9 @@ following products on your development machine:
   [Windows](http://windows.github.com)); [GitHub's Guide to Installing
   Git](https://help.github.com/articles/set-up-git) is a good source of information.
 
-* [Node.js](http://nodejs.org), (version `>=4.1.1 <5`) which is used to run a development web server, 
+* [Node.js](http://nodejs.org), (version `>=4.2.1 <5`) which is used to run a development web server, 
   run tests, and generate distributable files. We also use Node's Package Manager, `npm` 
-  (version `>=2.14.5 <3.0`), which comes with Node. Depending on your system, you can install Node either from 
+  (version `>=2.14.7 <3.0`), which comes with Node. Depending on your system, you can install Node either from 
   source or as a pre-packaged bundle.
 
 * [Chrome Canary](https://www.google.com/chrome/browser/canary.html), a version of Chrome with
