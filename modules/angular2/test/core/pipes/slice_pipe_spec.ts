@@ -7,14 +7,17 @@ import {
   expect,
   beforeEach,
   afterEach,
-  browserDetection
+  browserDetection,
+  inject,
+  TestComponentBuilder,
+  AsyncTestCompleter
 } from 'angular2/testing_internal';
 
-import {SlicePipe} from 'angular2/src/core/pipes';
+import {SlicePipe, Component} from 'angular2/core';
 
 export function main() {
   describe("SlicePipe", () => {
-    var list;
+    var list: number[];
     var str;
     var pipe;
 
@@ -85,5 +88,27 @@ export function main() {
 
     });
 
+    describe('integration', () => {
+      it('should work with mutable arrays',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.createAsync(TestComp).then((rootTC) => {
+             let mutable: number[] = [1, 2];
+             rootTC.debugElement.componentInstance.data = mutable;
+             rootTC.detectChanges();
+             expect(rootTC.debugElement.nativeElement).toHaveText('2');
+
+             mutable.push(3);
+             rootTC.detectChanges();
+             expect(rootTC.debugElement.nativeElement).toHaveText('2,3');
+
+             async.done();
+           });
+         }));
+    });
   });
+}
+
+@Component({selector: 'test-comp', template: '{{(data | slice:1).join(",") }}', pipes: [SlicePipe]})
+class TestComp {
+  data: any;
 }
