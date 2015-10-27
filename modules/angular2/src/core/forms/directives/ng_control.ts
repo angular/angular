@@ -14,7 +14,6 @@ export class NgControl extends AbstractControlDirective {
   valueAccessor: ControlValueAccessor = null;
 
   get validator(): Function { return null; }
-  get path(): string[] { return null; }
 
   viewToModelUpdate(newValue: any): void {}
 }

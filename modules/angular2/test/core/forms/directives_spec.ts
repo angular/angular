@@ -105,8 +105,12 @@ export function main() {
       var loginControlDir;
 
       beforeEach(() => {
-        form = new NgFormModel();
-        formModel = new ControlGroup({"login": new Control(null)});
+        form = new NgFormModel([]);
+        formModel = new ControlGroup({
+          "login": new Control(),
+          "passwords":
+              new ControlGroup({"password": new Control(), "passwordConfirm": new Control()})
+        });
         form.form = formModel;
 
         loginControlDir = new NgControlName(form, [], [defaultAccessor]);
@@ -167,6 +171,26 @@ export function main() {
         });
       });
 
+      describe("addControlGroup", () => {
+        var matchingPasswordsValidator = (g) => {
+          if (g.controls["password"].value != g.controls["passwordConfirm"].value) {
+            return {"differentPasswords": true};
+          } else {
+            return null;
+          }
+        };
+
+        it("should set up validator", () => {
+          var group = new NgControlGroup(form, [matchingPasswordsValidator]);
+          group.name = "passwords";
+          form.addControlGroup(group);
+
+          formModel.find(["passwords", "password"]).updateValue("somePassword");
+
+          expect(formModel.hasError("differentPasswords", ["passwords"])).toEqual(true);
+        });
+      });
+
       describe("removeControl", () => {
         it("should remove the directive to the list of directives included in the form", () => {
           form.addControl(loginControlDir);
@@ -181,9 +205,21 @@ export function main() {
 
           formModel.find(["login"]).updateValue("new value");
 
-          form.onChanges(null);
+          form.onChanges({});
 
           expect((<any>loginControlDir.valueAccessor).writtenValue).toEqual("new value");
+        });
+
+        it("should set up validator", () => {
+          var formValidator = (c) => ({"custom": true});
+          var f = new NgFormModel([formValidator]);
+          f.form = formModel;
+          f.onChanges({"form": formModel});
+
+          // trigger validation
+          formModel.controls["login"].updateValue("");
+
+          expect(formModel.errors).toEqual({"custom": true});
         });
       });
     });
@@ -195,10 +231,10 @@ export function main() {
       var personControlGroupDir;
 
       beforeEach(() => {
-        form = new NgForm();
+        form = new NgForm([]);
         formModel = form.form;
 
-        personControlGroupDir = new NgControlGroup(form);
+        personControlGroupDir = new NgControlGroup(form, []);
         personControlGroupDir.name = "person";
 
         loginControlDir = new NgControlName(personControlGroupDir, null, [defaultAccessor]);
@@ -246,6 +282,17 @@ export function main() {
 
         // should update the form's value and validity
       });
+
+      it("should set up validator", fakeAsync(() => {
+           var formValidator = (c) => ({"custom": true});
+           var f = new NgForm([formValidator]);
+           f.addControlGroup(personControlGroupDir);
+           f.addControl(loginControlDir);
+
+           flushMicrotasks();
+
+           expect(f.form.errors).toEqual({"custom": true});
+         }));
     });
 
     describe("NgControlGroup", () => {
@@ -255,9 +302,9 @@ export function main() {
       beforeEach(() => {
         formModel = new ControlGroup({"login": new Control(null)});
 
-        var parent = new NgFormModel();
+        var parent = new NgFormModel([]);
         parent.form = new ControlGroup({"group": formModel});
-        controlGroupDir = new NgControlGroup(parent);
+        controlGroupDir = new NgControlGroup(parent, []);
         controlGroupDir.name = "group";
       });
 
@@ -356,7 +403,7 @@ export function main() {
       beforeEach(() => {
         formModel = new Control("name");
 
-        var parent = new NgFormModel();
+        var parent = new NgFormModel([]);
         parent.form = new ControlGroup({"name": formModel});
         controlNameDir = new NgControlName(parent, [], [defaultAccessor]);
         controlNameDir.name = "name";
