@@ -1317,5 +1317,6 @@ process.on('beforeExit', function() {
 });
 
 
-gulp.on('task_stop', (e) => { analytics.build('gulp ' + e.task, e.duration*1000)});
-gulp.on('task_err', (e) => { analytics.build('gulp ' + e.task + ' (errored)', e.duration*1000)});
+gulp.on('task_start', (e) => { analytics.buildStart('gulp ' + e.task)});
+gulp.on('task_stop', (e) => { analytics.buildSuccess('gulp ' + e.task, e.duration*1000)});
+gulp.on('task_err', (e) => { analytics.buildError('gulp ' + e.task, e.duration*1000)});

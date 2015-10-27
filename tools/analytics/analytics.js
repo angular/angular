@@ -4,7 +4,13 @@ let execSync = require('child_process').execSync;
 let fs = require('fs');
 let path = require('path');
 let os = require('os');
-let ua = require('universal-analytics');
+let ua;
+
+try {
+  ua = require('universal-analytics');
+} catch(e) {
+  // ignore errors due to invoking analytics before the first npm install
+}
 
 const analyticsFile = path.resolve(path.join(__dirname, '..', '..', '.build-analytics'));
 const analyticsId = "UA-8594346-17"; // Owned by the Angular account
@@ -16,14 +22,15 @@ const analyticsOptions = {
 let cid = fs.existsSync(analyticsFile) ? fs.readFileSync(analyticsFile, 'utf-8') : null;
 let visitor;
 
-if (cid) {
-  visitor = ua(analyticsId, cid, analyticsOptions);
-} else {
-  visitor = ua(analyticsId, analyticsOptions);
-  cid = visitor.cid;
-  fs.writeFileSync(analyticsFile, cid, 'utf-8');
+if (ua) {
+  if (cid) {
+    visitor = ua(analyticsId, cid, analyticsOptions);
+  } else {
+    visitor = ua(analyticsId, analyticsOptions);
+    cid = visitor.cid;
+    fs.writeFileSync(analyticsFile, cid, 'utf-8');
+  }
 }
-
 
 // https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
 let customParams = {
@@ -80,28 +87,74 @@ function getDartVersion() {
 }
 
 
+function recordEvent(eventType, actionCategory, actionName, duration) {
+  // if universal-analytics is not yet installed, don't bother doing anything (e.g. when tracking initial npm install)
+  // build-analytics will however store the starting timestamp, so at least we can record the success/error event with duration
+  if (!ua) return;
+
+  if (duration) {
+    duration = Math.round(duration);
+  }
+
+  switch (eventType) {
+    case 'start':
+      visitor.
+        event(actionCategory, actionName + ' (start)', 'testLabel', null, customParams).
+        send();
+      break;
+    case 'success':
+      visitor.
+        event(actionCategory, actionName, 'testLabel', duration, customParams).
+        timing(actionCategory, actionName, duration, customParams).
+        send();
+      break;
+    case 'error':
+      visitor.
+        event(actionCategory, actionName + ' (errored)', 'testLabel', duration, customParams).
+        timing(actionCategory, actionName, duration, customParams).
+        send();
+      break;
+    default:
+      throw new Error(`unknown event type "${eventType}"`);
+  }
+}
+
+
 module.exports = {
-  install: (actionName, duration) => {
-    duration = Math.round(duration);
-    visitor.
-      event('install', actionName, 'testLabel', duration, customParams).
-      timing('install', actionName, duration, customParams).
-      send();
+
+  installStart: (actionName) => {
+    recordEvent('start', 'install', actionName);
   },
 
-  build: (actionName, duration) => {
-    duration = Math.round(duration);
-    visitor.
-      event('build', actionName, 'testLabel', duration, customParams).
-      timing('build', actionName, duration, customParams).
-      send();
+  installSuccess: (actionName, duration) => {
+    recordEvent('success', 'install', actionName, duration);
   },
 
-  test: (actionName, duration) => {
-    duration = Math.round(duration);
-    visitor.
-      event('test', actionName, 'testLabel', duration, customParams).
-      timing('test', actionName, duration, customParams).
-      send();
+  installError: (actionName, duration) => {
+    recordEvent('error', 'install', actionName, duration);
+  },
+
+  buildStart: (actionName) => {
+    recordEvent('start', 'build', actionName);
+  },
+
+  buildSuccess: (actionName, duration) => {
+    recordEvent('success', 'build', actionName, duration);
+  },
+
+  buildError: (actionName, duration) => {
+    recordEvent('error', 'build', actionName, duration);
+  },
+
+  ciStart: (actionName) => {
+    recordEvent('start', 'ci', actionName);
+  },
+
+  ciSuccess: (actionName, duration) => {
+    recordEvent('success', 'ci', actionName, duration);
+  },
+
+  ciError: (actionName, duration) => {
+    recordEvent('success', 'ci', actionName, duration);
   }
 };
