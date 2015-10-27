@@ -321,7 +321,15 @@ export class ControlGroup extends AbstractControl {
   _updateValue() { this._value = this._reduceValue(); }
 
   /** @internal */
-  _calculateControlsErrors() { return Validators.group(this); }
+  _calculateControlsErrors() {
+    var res = {};
+    StringMapWrapper.forEach(this.controls, (control, name) => {
+      if (this.contains(name) && isPresent(control.errors)) {
+        res[name] = control.errors;
+      }
+    });
+    return StringMapWrapper.isEmpty(res) ? null : res;
+  }
 
   /** @internal */
   _reduceValue() {
@@ -420,7 +428,17 @@ export class ControlArray extends AbstractControl {
   _updateValue(): void { this._value = this.controls.map((control) => control.value); }
 
   /** @internal */
-  _calculateControlsErrors() { return Validators.array(this); }
+  _calculateControlsErrors() {
+    var res = [];
+    var anyErrors = false;
+    this.controls.forEach((control) => {
+      res.push(control.errors);
+      if (isPresent(control.errors)) {
+        anyErrors = true;
+      }
+    });
+    return anyErrors ? res : null;
+  }
 
   /** @internal */
   _setParentForControls(): void {

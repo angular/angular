@@ -83,54 +83,5 @@ export function main() {
         expect(c(new Control(""))).toEqual(null);
       });
     });
-
-    describe("controlGroupValidator", () => {
-      it("should collect errors from the child controls", () => {
-        var one = new Control("one", validator("a", true));
-        var two = new Control("two", validator("b", true));
-        var g = new ControlGroup({"one": one, "two": two});
-
-        expect(Validators.group(g)).toEqual({"one": {"a": true}, "two": {"b": true}});
-      });
-
-      it("should not include controls that have no errors", () => {
-        var one = new Control("one", validator("a", true));
-        var two = new Control("two");
-        var g = new ControlGroup({"one": one, "two": two});
-
-        expect(Validators.group(g)).toEqual({"one": {"a": true}});
-      });
-
-      it("should return null when no errors", () => {
-        var g = new ControlGroup({"one": new Control("one")});
-
-        expect(Validators.group(g)).toEqual(null);
-      });
-    });
-
-    describe("controlArrayValidator", () => {
-      it("should collect errors from the child controls", () => {
-        var one = new Control("one", validator("a", true));
-        var two = new Control("two", validator("b", true));
-        var a = new ControlArray([one, two]);
-
-        expect(Validators.array(a)).toEqual([{"a": true}, {"b": true}]);
-      });
-
-      it("should not include controls that have no errors", () => {
-        var one = new Control("one");
-        var two = new Control("two", validator("a", true));
-        var three = new Control("three");
-        var a = new ControlArray([one, two, three]);
-
-        expect(Validators.array(a)).toEqual([null, {"a": true}, null]);
-      });
-
-      it("should return null when no errors", () => {
-        var a = new ControlArray([new Control("one")]);
-
-        expect(Validators.array(a)).toEqual(null);
-      });
-    });
   });
 }
