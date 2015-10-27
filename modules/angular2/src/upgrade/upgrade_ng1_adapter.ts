@@ -16,6 +16,7 @@ import {
   NG1_CONTROLLER
 } from './constants';
 import {controllerKey} from './util';
+import * as angular from './angular_js';
 
 const CAMEL_CASE = /([A-Z])/g;
 const INITIAL_VALUE = {
@@ -57,7 +58,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
             });
   }
 
-  extractDirective(injector: angular.auto.IInjectorService): angular.IDirective {
+  extractDirective(injector: angular.IInjectorService): angular.IDirective {
     var directives: angular.IDirective[] = injector.get(this.name + 'Directive');
     if (directives.length > 1) {
       throw new Error('Only support single directive definition for: ' + this.name);
@@ -141,7 +142,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
       throw new Error(`Directive '${this.name}' is not a component, it is missing template.`);
     }
     return null;
-    function compileHtml(html) {
+    function compileHtml(html): angular.ILinkFn {
       var div = document.createElement('div');
       div.innerHTML = html;
       return compile(div.childNodes);
@@ -149,7 +150,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
   }
 
   static resolve(exportedComponents: {[name: string]: UpgradeNg1ComponentAdapterBuilder},
-                 injector: angular.auto.IInjectorService): Promise<any> {
+                 injector: angular.IInjectorService): Promise<any> {
     var promises = [];
     var compile: angular.ICompileService = injector.get(NG1_COMPILE);
     var templateCache: angular.ITemplateCacheService = injector.get(NG1_TEMPLATE_CACHE);
@@ -162,7 +163,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
         exportedComponent.$controller = $controller;
         exportedComponent.extractBindings();
         var promise = exportedComponent.compileTemplate(compile, templateCache, httpBackend);
-        if (promise) promises.push(promise)
+        if (promise) promises.push(promise);
       }
     }
     return Promise.all(promises);
@@ -208,7 +209,7 @@ class UpgradeNg1ComponentAdapter implements OnChanges, DoCheck {
       for (var i = 0, ii = clonedElement.length; i < ii; i++) {
         element.appendChild(clonedElement[i]);
       }
-    }, {parentBoundTranscludeFn: (scope, cloneAttach) => { cloneAttach(childNodes) }});
+    }, {parentBoundTranscludeFn: (scope, cloneAttach) => { cloneAttach(childNodes); }});
 
     for (var i = 0; i < inputs.length; i++) {
       this[inputs[i]] = null;
@@ -223,16 +224,16 @@ class UpgradeNg1ComponentAdapter implements OnChanges, DoCheck {
     }
   }
 
-  onChanges(changes) {
+  onChanges(changes: {[name: string]: SimpleChange}) {
     for (var name in changes) {
-      if (changes.hasOwnProperty(name)) {
+      if ((<Object>changes).hasOwnProperty(name)) {
         var change: SimpleChange = changes[name];
         this.setComponentProperty(name, change.currentValue);
       }
     }
   }
 
-  doCheck() {
+  doCheck(): number {
     var count = 0;
     var destinationObj = this.destinationObj;
     var lastValues = this.checkLastValues;

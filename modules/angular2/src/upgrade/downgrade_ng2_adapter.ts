@@ -6,13 +6,12 @@ import {
   HostViewRef,
   Injector,
   ProtoViewRef,
-  SimpleChange,
-  ViewRef
+  SimpleChange
 } from 'angular2/angular2';
 import {NG1_SCOPE} from './constants';
 import {ComponentInfo} from './metadata';
-import {ViewRef_} from "../../angular2/src/core/linker/view_ref";
 import Element = protractor.Element;
+import * as angular from './angular_js';
 
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true
@@ -50,7 +49,7 @@ export class DowngradeNg2ComponentAdapter {
     this.contentInserctionPoint = renderer.rootContentInsertionPoints[0];
   }
 
-  setupInputs() {
+  setupInputs(): void {
     var attrs = this.attrs;
     var inputs = this.info.inputs;
     for (var i = 0; i < inputs.length; i++) {
@@ -67,7 +66,7 @@ export class DowngradeNg2ComponentAdapter {
               prevValue = value;
             }
             this.component[prop] = value;
-          }
+          };
         })(input.prop);
         attrs.$observe(input.attr, observeFn);
       } else if (attrs.hasOwnProperty(input.bindAttr)) {

@@ -25,7 +25,7 @@ import {SymbolsDiff} from './symbol_inspector/symbol_differ';
 // =================================================================================================
 // =================================================================================================
 
-var NG_API = [
+var NG_ALL = [
   'APP_COMPONENT',
   'APP_ID',
   'AbstractProviderError',
@@ -1449,6 +1449,22 @@ var NG_API = [
   'Stream.transform():dart',
   'Stream.where():dart',
 ];
+
+var NG_UPGRADE = [
+  'UpgradeAdapter:js',
+  'UpgradeAdapter.addProvider():js',
+  'UpgradeAdapter.bootstrap():js',
+  'UpgradeAdapter.compileNg2Components():js',
+  'UpgradeAdapter.downgradeNg2Component():js',
+  'UpgradeAdapter.downgradeNg2Provider():js',
+  'UpgradeAdapter.upgradeNg1Component():js',
+  'UpgradeAdapter.upgradeNg1Provider():js',
+  'UpgradeAdapterRef:js',
+  'UpgradeAdapterRef.dispose():js',
+  'UpgradeAdapterRef.ready():js'
+];
+
+var NG_API = [].concat(NG_ALL).concat(NG_UPGRADE);
 
 export function main() {
   /**
