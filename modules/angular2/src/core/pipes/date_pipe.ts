@@ -78,7 +78,7 @@ var defaultLocale: string = 'en-US';
  *     {{ dateObj | date:'mmss' }}        // output is '43:11'
  */
 @CONST()
-@Pipe({name: 'date'})
+@Pipe({name: 'date', pure: false})
 @Injectable()
 export class DatePipe implements PipeTransform {
   /** @internal */

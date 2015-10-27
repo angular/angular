@@ -67,7 +67,7 @@ import {Pipe} from '../metadata';
  *     {{ 'abcdefghij' | slice: 100 }}    // output is ''
  */
 
-@Pipe({name: 'slice'})
+@Pipe({name: 'slice', pure: false})
 @Injectable()
 export class SlicePipe implements PipeTransform {
   transform(value: any, args: any[] = null): any {
