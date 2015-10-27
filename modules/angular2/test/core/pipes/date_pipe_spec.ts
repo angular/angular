@@ -12,6 +12,7 @@ import {
 
 import {DatePipe} from 'angular2/core';
 import {DateWrapper} from 'angular2/src/core/facade/lang';
+import {PipeResolver} from 'angular2/src/core/linker/pipe_resolver';
 
 export function main() {
   describe("DatePipe", () => {
@@ -21,6 +22,10 @@ export function main() {
     beforeEach(() => {
       date = DateWrapper.create(2015, 6, 15, 21, 43, 11);
       pipe = new DatePipe();
+    });
+
+    it('should be marked as non-pure', () => {
+      expect(new PipeResolver().resolve(DatePipe).pure).toEqual(false);
     });
 
     describe("supports", () => {
