@@ -61,7 +61,7 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  * ### Example
  *
  * ```
- * http.get('people.json').observer({next: (value) => this.people = people});
+ * http.get('people.json').observer({next: (value) => this.people = value});
  * ```
  *
  * The default construct used to perform requests, `XMLHttpRequest`, is abstracted as a "Backend" (
