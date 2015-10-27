@@ -1,6 +1,6 @@
 'use strict';
 
-var sauceConf = require('../../sauce.conf');
+var browserProvidersConf = require('../../browser-providers.conf.js');
 
 // This runs the tests for the router in Angular 1.x
 
@@ -20,7 +20,7 @@ module.exports = function (config) {
       'test/**/*_spec.js'
     ],
 
-    customLaunchers: sauceConf.customLaunchers,
+    customLaunchers: browserProvidersConf.customLaunchers,
 
     browsers: ['ChromeCanary']
   };

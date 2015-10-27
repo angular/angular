@@ -1,4 +1,4 @@
-var sauceConf = require('./sauce.conf');
+var browserProvidersConf = require('./browser-providers.conf.js');
 
 var packageSources = {
   // Dependencies installed with `pub install`.
@@ -67,7 +67,7 @@ module.exports = function(config) {
     // Map packages to the correct urls where Karma serves them.
     proxies: proxyPaths,
 
-    customLaunchers: sauceConf.customLaunchers,
+    customLaunchers: browserProvidersConf.customLaunchers,
     browsers: ['DartiumWithWebPlatform'],
 
     port: 9877,

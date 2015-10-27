@@ -10,7 +10,7 @@ cd $SCRIPT_DIR/../..
 
 if [ "$MODE" = "dart_experimental" ]; then
   ${SCRIPT_DIR}/build_$MODE.sh
-elif [ "$MODE" = "saucelabs" ]; then
+elif [ "$MODE" = "saucelabs" ] || [ "$MODE" = "browserstack" ] ; then
   ${SCRIPT_DIR}/test_$MODE.sh
 elif [ "$MODE" = "lint" ]; then
   ./node_modules/.bin/gulp static-checks
