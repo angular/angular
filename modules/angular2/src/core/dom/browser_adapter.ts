@@ -182,6 +182,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return t;
   }
   createElement(tagName, doc = document): HTMLElement { return doc.createElement(tagName); }
+  createElementNS(ns, tagName, doc = document): Element { return doc.createElementNS(ns, tagName); }
   createTextNode(text: string, doc = document): Text { return doc.createTextNode(text); }
   createScriptTag(attrName: string, attrValue: string, doc = document): HTMLScriptElement {
     var el = <HTMLScriptElement>doc.createElement('SCRIPT');
@@ -225,6 +226,9 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   hasAttribute(element, attribute: string): boolean { return element.hasAttribute(attribute); }
   getAttribute(element, attribute: string): string { return element.getAttribute(attribute); }
   setAttribute(element, name: string, value: string) { element.setAttribute(name, value); }
+  setAttributeNS(ns: string, element, name: string, value: string) {
+    element.setAttributeNS(ns, name, value);
+  }
   removeAttribute(element, attribute: string) { element.removeAttribute(attribute); }
   templateAwareRoot(el): any { return this.isTemplateElement(el) ? this.content(el) : el; }
   createHtmlDocument(): HTMLDocument {
