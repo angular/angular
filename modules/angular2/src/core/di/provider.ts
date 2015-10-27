@@ -66,10 +66,8 @@ export class Provider {
    *
    * ### Example ([live demo](http://plnkr.co/edit/RSTG86qgmoxCyj9SWPwY?p=preview))
    *
-   * Because `useExisting` and `useClass` are often confused, the example contains both use cases
-   * for
-   * easy
-   * comparison.
+   * Because `useExisting` and `useClass` are often confused, the example contains
+   * both use cases for easy comparison.
    *
    * ```typescript
    * class Vehicle {}
@@ -117,9 +115,8 @@ export class Provider {
    *
    * ### Example ([live demo](http://plnkr.co/edit/QsatsOJJ6P8T2fMe9gr8?p=preview))
    *
-   * Because `useExisting` and `useClass` are often confused the example contains both use cases for
-   * easy
-   * comparison.
+   * Because `useExisting` and `useClass` are often confused the example contains
+   * both use cases for easy comparison.
    *
    * ```typescript
    * class Vehicle {}
@@ -392,8 +389,8 @@ export class ProviderBuilder {
    *
    * ### Example ([live demo](http://plnkr.co/edit/ZpBCSYqv6e2ud5KXLdxQ?p=preview))
    *
-   * Because `toAlias` and `toClass` are often confused, the example contains both use cases for
-   * easy comparison.
+   * Because `toAlias` and `toClass` are often confused, the example contains
+   * both use cases for easy comparison.
    *
    * ```typescript
    * class Vehicle {}
@@ -447,9 +444,8 @@ export class ProviderBuilder {
    *
    * ### Example ([live demo](http://plnkr.co/edit/uBaoF2pN5cfc5AfZapNw?p=preview))
    *
-   * Because `toAlias` and `toClass` are often confused, the example contains both use cases for
-   * easy
-   * comparison.
+   * Because `toAlias` and `toClass` are often confused, the example contains
+   * both use cases for easy comparison.
    *
    * ```typescript
    * class Vehicle {}
