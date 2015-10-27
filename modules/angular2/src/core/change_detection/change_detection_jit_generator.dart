@@ -9,7 +9,7 @@ library change_detection.change_detection_jit_generator;
 class ChangeDetectorJITGenerator {
   String typeName;
   ChangeDetectorJITGenerator(
-      definition, changeDetectionUtilVarName, abstractChangeDetectorVarName) {}
+      definition, changeDetectionUtilVarName, abstractChangeDetectorVarName, changeDetectorStateVarName) {}
 
   generate() {
     throw "Jit Change Detection is not supported in Dart";

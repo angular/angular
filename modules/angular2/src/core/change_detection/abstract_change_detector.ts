@@ -13,7 +13,7 @@ import {
 } from './exceptions';
 import {BindingTarget} from './binding_record';
 import {Locals} from './parser/locals';
-import {ChangeDetectionStrategy} from './constants';
+import {ChangeDetectionStrategy, ChangeDetectorState} from './constants';
 import {wtfCreateScope, wtfLeave, WtfScopeFn} from '../profile/profile';
 import {isObservable} from './observable_facade';
 
@@ -33,7 +33,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
 
   // The names of the below fields must be kept in sync with codegen_name_util.ts or
   // change detection will fail.
-  alreadyChecked: any = false;
+  state: ChangeDetectorState = ChangeDetectorState.NeverChecked;
   context: T;
   locals: Locals = null;
   mode: ChangeDetectionStrategy = null;
@@ -80,7 +80,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
 
   runDetectChanges(throwOnChange: boolean): void {
     if (this.mode === ChangeDetectionStrategy.Detached ||
-        this.mode === ChangeDetectionStrategy.Checked)
+        this.mode === ChangeDetectionStrategy.Checked || this.state === ChangeDetectorState.Errored)
       return;
     var s = _scope_check(this.id, throwOnChange);
 
@@ -95,7 +95,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     if (this.mode === ChangeDetectionStrategy.CheckOnce)
       this.mode = ChangeDetectionStrategy.Checked;
 
-    this.alreadyChecked = true;
+    this.state = ChangeDetectorState.CheckedBefore;
     wtfLeave(s);
   }
 
@@ -112,6 +112,10 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     try {
       this.detectChangesInRecordsInternal(throwOnChange);
     } catch (e) {
+      // throwOnChange errors aren't counted as fatal errors.
+      if (!(e instanceof ExpressionChangedAfterItHasBeenCheckedException)) {
+        this.state = ChangeDetectorState.Errored;
+      }
       this._throwError(e, e.stack);
     }
   }
@@ -137,7 +141,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     this.locals = locals;
     this.pipes = pipes;
     this.hydrateDirectives(directives);
-    this.alreadyChecked = false;
+    this.state = ChangeDetectorState.NeverChecked;
   }
 
   // Subclasses should override this method to hydrate any directives.

@@ -21,6 +21,7 @@ import {Injectable} from 'angular2/src/core/di';
 
 const ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
 const UTIL = "ChangeDetectionUtil";
+const CHANGE_DETECTOR_STATE = "ChangeDetectorState";
 
 var ABSTRACT_CHANGE_DETECTOR_MODULE = moduleRef(
     `package:angular2/src/core/change_detection/abstract_change_detector${MODULE_SUFFIX}`);
@@ -28,6 +29,8 @@ var UTIL_MODULE =
     moduleRef(`package:angular2/src/core/change_detection/change_detection_util${MODULE_SUFFIX}`);
 var PREGEN_PROTO_CHANGE_DETECTOR_MODULE = moduleRef(
     `package:angular2/src/core/change_detection/pregen_proto_change_detector${MODULE_SUFFIX}`);
+var CONSTANTS_MODULE =
+    moduleRef(`package:angular2/src/core/change_detection/constants${MODULE_SUFFIX}`);
 
 @Injectable()
 export class ChangeDetectionCompiler {
@@ -46,7 +49,9 @@ export class ChangeDetectionCompiler {
       var proto = new DynamicProtoChangeDetector(definition);
       return (dispatcher) => proto.instantiate(dispatcher);
     } else {
-      return new ChangeDetectorJITGenerator(definition, UTIL, ABSTRACT_CHANGE_DETECTOR).generate();
+      return new ChangeDetectorJITGenerator(definition, UTIL, ABSTRACT_CHANGE_DETECTOR,
+                                            CHANGE_DETECTOR_STATE)
+          .generate();
     }
   }
 
@@ -74,7 +79,8 @@ export class ChangeDetectionCompiler {
       } else {
         codegen = new ChangeDetectorJITGenerator(
             definition, `${UTIL_MODULE}${UTIL}`,
-            `${ABSTRACT_CHANGE_DETECTOR_MODULE}${ABSTRACT_CHANGE_DETECTOR}`);
+            `${ABSTRACT_CHANGE_DETECTOR_MODULE}${ABSTRACT_CHANGE_DETECTOR}`,
+            `${CONSTANTS_MODULE}${CHANGE_DETECTOR_STATE}`);
         factories.push(`function(dispatcher) { return new ${codegen.typeName}(dispatcher); }`);
         sourcePart = codegen.generateSource();
       }

@@ -431,10 +431,12 @@ export function main() {
         describe('updating directives', () => {
           var directive1;
           var directive2;
+          var directive3;
 
           beforeEach(() => {
             directive1 = new TestDirective();
             directive2 = new TestDirective();
+            directive3 = new TestDirective(null, null, true);
           });
 
           it('should happen directly, without invoking the dispatcher', () => {
@@ -509,6 +511,30 @@ export function main() {
                 cd.checkNoChanges();
 
                 expect(directive1.onInitCalled).toBe(false);
+              });
+
+              it('should not call onInit again if it throws', () => {
+                var cd = _createWithoutHydrate('directiveOnInit').changeDetector;
+
+                cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive3], []), null);
+                var errored = false;
+                // First pass fails, but onInit should be called.
+                try {
+                  cd.detectChanges();
+                } catch (e) {
+                  errored = true;
+                }
+                expect(errored).toBe(true);
+                expect(directive3.onInitCalled).toBe(true);
+                directive3.onInitCalled = false;
+
+                // Second change detection also fails, but this time onInit should not be called.
+                try {
+                  cd.detectChanges();
+                } catch (e) {
+                  throw new BaseException("Second detectChanges() should not have run detection.");
+                }
+                expect(directive3.onInitCalled).toBe(false);
               });
             });
 
@@ -1336,13 +1362,19 @@ class TestDirective {
   afterViewCheckedCalled = false;
   event;
 
-  constructor(public afterContentCheckedSpy = null, public afterViewCheckedSpy = null) {}
+  constructor(public afterContentCheckedSpy = null, public afterViewCheckedSpy = null,
+              public throwOnInit = false) {}
 
   onEvent(event) { this.event = event; }
 
   doCheck() { this.doCheckCalled = true; }
 
-  onInit() { this.onInitCalled = true; }
+  onInit() {
+    this.onInitCalled = true;
+    if (this.throwOnInit) {
+      throw "simulated onInit failure";
+    }
+  }
 
   onChanges(changes) {
     var r = {};
