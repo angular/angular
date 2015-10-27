@@ -1295,8 +1295,9 @@ process.on('SIGINT', function() {
     runSequence('cleanup.builder', function () {
       process.exit();
     });
+  } else {
+    process.exit();
   }
-  process.exit();
 });
 
 
