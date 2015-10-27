@@ -193,7 +193,7 @@ export function main() {
           expect(g.errors).toEqual({"someGroupError": true});
         });
 
-        it("update a value should reset errosr", () => {
+        it("should reset errors when updating a value", () => {
           var c = new Control("oldValue");
           var g = new ControlGroup({"one": c});
 
@@ -232,18 +232,26 @@ export function main() {
       });
 
       describe("controlsErrors", () => {
-        it("should run the validator with the initial value (valid)", () => {
+        it("should be null when no errors", () => {
           var g = new ControlGroup({"one": new Control('value', Validators.required)});
 
           expect(g.valid).toEqual(true);
           expect(g.controlsErrors).toEqual(null);
         });
 
-        it("should run the validator with the initial value (invalid)", () => {
+        it("should collect errors from the child controls", () => {
           var one = new Control(null, Validators.required);
           var g = new ControlGroup({"one": one});
 
           expect(g.valid).toEqual(false);
+          expect(g.controlsErrors).toEqual({"one": {"required": true}});
+        });
+
+        it("should not include controls that have no errors", () => {
+          var one = new Control(null, Validators.required);
+          var two = new Control("two");
+          var g = new ControlGroup({"one": one, "two": two});
+
           expect(g.controlsErrors).toEqual({"one": {"required": true}});
         });
 
@@ -501,7 +509,7 @@ export function main() {
       });
 
       describe("controlsErrors", () => {
-        it("should run the validator with the initial value (valid)", () => {
+        it("should return null when no errors", () => {
           var a = new ControlArray(
               [new Control(1, Validators.required), new Control(2, Validators.required)]);
 
@@ -509,7 +517,7 @@ export function main() {
           expect(a.controlsErrors).toBe(null);
         });
 
-        it("should run the validator with the initial value (invalid)", () => {
+        it("should collect errors from the child controls", () => {
           var a = new ControlArray([
             new Control(1, Validators.required),
             new Control(null, Validators.required),

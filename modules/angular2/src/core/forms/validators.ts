@@ -54,26 +54,4 @@ export class Validators {
       return StringMapWrapper.isEmpty(res) ? null : res;
     };
   }
-
-  static group(group: modelModule.ControlGroup): {[key: string]: any} {
-    var res: {[key: string]: any[]} = {};
-    StringMapWrapper.forEach(group.controls, (control, name) => {
-      if (group.contains(name) && isPresent(control.errors)) {
-        res[name] = control.errors;
-      }
-    });
-    return StringMapWrapper.isEmpty(res) ? null : res;
-  }
-
-  static array(array: modelModule.ControlArray): any[] {
-    var res: any[] = [];
-    var anyErrors: boolean = false;
-    array.controls.forEach((control) => {
-      res.push(control.errors);
-      if (isPresent(control.errors)) {
-        anyErrors = true;
-      }
-    });
-    return anyErrors ? res : null;
-  }
 }
