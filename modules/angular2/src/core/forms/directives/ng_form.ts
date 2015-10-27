@@ -7,13 +7,14 @@ import {
 import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 import {isPresent, isBlank, CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {Directive} from 'angular2/src/core/metadata';
-import {forwardRef, Provider} from 'angular2/src/core/di';
+import {forwardRef, Provider, Optional, Inject} from 'angular2/src/core/di';
 import {NgControl} from './ng_control';
 import {Form} from './form_interface';
 import {NgControlGroup} from './ng_control_group';
 import {ControlContainer} from './control_container';
 import {AbstractControl, ControlGroup, Control} from '../model';
-import {setUpControl} from './shared';
+import {setUpControl, setUpControlGroup} from './shared';
+import {Validators, NG_VALIDATORS} from '../validators';
 
 const formDirectiveProvider =
     CONST_EXPR(new Provider(ControlContainer, {useExisting: forwardRef(() => NgForm)}));
@@ -87,8 +88,13 @@ const formDirectiveProvider =
   exportAs: 'form'
 })
 export class NgForm extends ControlContainer implements Form {
-  form: ControlGroup = new ControlGroup({});
+  form: ControlGroup;
   ngSubmit = new EventEmitter();
+
+  constructor(@Optional() @Inject(NG_VALIDATORS) validators: Function[]) {
+    super();
+    this.form = new ControlGroup({}, null, Validators.compose(validators));
+  }
 
   get formDirective(): Form { return this; }
 
@@ -124,6 +130,7 @@ export class NgForm extends ControlContainer implements Form {
     this._later(_ => {
       var container = this._findContainer(dir.path);
       var group = new ControlGroup({});
+      setUpControlGroup(group, dir);
       container.addControl(dir.name, group);
       group.updateValueAndValidity({emitEvent: false});
     });

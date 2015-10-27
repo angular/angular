@@ -1,16 +1,18 @@
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
+import {SimpleChange} from 'angular2/src/core/change_detection';
 
 import {OnChanges} from 'angular2/lifecycle_hooks';
 import {Directive} from 'angular2/src/core/metadata';
-import {forwardRef, Provider} from 'angular2/src/core/di';
+import {forwardRef, Provider, Inject, Optional} from 'angular2/src/core/di';
 import {NgControl} from './ng_control';
 import {NgControlGroup} from './ng_control_group';
 import {ControlContainer} from './control_container';
 import {Form} from './form_interface';
 import {Control, ControlGroup} from '../model';
-import {setUpControl} from './shared';
+import {setUpControl, setUpControlGroup} from './shared';
+import {Validators, NG_VALIDATORS} from '../validators';
 
 const formDirectiveProvider =
     CONST_EXPR(new Provider(ControlContainer, {useExisting: forwardRef(() => NgFormModel)}));
@@ -100,8 +102,21 @@ export class NgFormModel extends ControlContainer implements Form,
   form: ControlGroup = null;
   directives: NgControl[] = [];
   ngSubmit = new EventEmitter();
+  private _validators: Function[];
 
-  onChanges(_): void { this._updateDomValue(); }
+  constructor(@Optional() @Inject(NG_VALIDATORS) validators: Function[]) {
+    super();
+    this._validators = validators;
+  }
+
+  onChanges(changes: {[key: string]: SimpleChange}): void {
+    if (StringMapWrapper.contains(changes, "form")) {
+      var c = Validators.compose(this._validators);
+      this.form.validator = Validators.compose([this.form.validator, c]);
+    }
+
+    this._updateDomValue();
+  }
 
   get formDirective(): Form { return this; }
 
@@ -120,7 +135,11 @@ export class NgFormModel extends ControlContainer implements Form,
 
   removeControl(dir: NgControl): void { ListWrapper.remove(this.directives, dir); }
 
-  addControlGroup(dir: NgControlGroup) {}
+  addControlGroup(dir: NgControlGroup) {
+    var ctrl: any = this.form.find(dir.path);
+    setUpControlGroup(ctrl, dir);
+    ctrl.updateValueAndValidity({emitEvent: false});
+  }
 
   removeControlGroup(dir: NgControlGroup) {}
 

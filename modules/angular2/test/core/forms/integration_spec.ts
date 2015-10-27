@@ -24,6 +24,8 @@ import {
   ControlGroup,
   ControlValueAccessor,
   FORM_DIRECTIVES,
+  NG_VALIDATORS,
+  Provider,
   NgControl,
   NgIf,
   NgFor,
@@ -398,10 +400,10 @@ export function main() {
            var form = new ControlGroup(
                {"login": new Control(""), "min": new Control(""), "max": new Control("")});
 
-           var t = `<div [ng-form-model]="form">
-                  <input type="text" ng-control="login" required>
-                  <input type="text" ng-control="min" minlength="3">
-                  <input type="text" ng-control="max" maxlength="3">
+           var t = `<div [ng-form-model]="form" login-is-empty-validator>
+                    <input type="text" ng-control="login" required>
+                    <input type="text" ng-control="min" minlength="3">
+                    <input type="text" ng-control="max" maxlength="3">
                  </div>`;
 
            tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
@@ -422,6 +424,8 @@ export function main() {
              expect(form.hasError("required", ["login"])).toEqual(true);
              expect(form.hasError("minlength", ["min"])).toEqual(true);
              expect(form.hasError("maxlength", ["max"])).toEqual(true);
+
+             expect(form.hasError("loginIsEmpty")).toEqual(true);
 
              required.nativeElement.value = "1";
              minLength.nativeElement.value = "123";
@@ -914,8 +918,22 @@ class MyInput implements ControlValueAccessor {
   }
 }
 
-@Component({selector: "my-comp"})
-@View({directives: [FORM_DIRECTIVES, WrappedValue, MyInput, NgIf, NgFor]})
+function loginIsEmptyGroupValidator(c: ControlGroup) {
+  return c.controls["login"].value == "" ? {"loginIsEmpty": true} : null;
+}
+
+@Directive({
+  selector: '[login-is-empty-validator]',
+  providers: [new Provider(NG_VALIDATORS, {useValue: loginIsEmptyGroupValidator, multi: true})]
+})
+class LoginIsEmptyValidator {
+}
+
+@Component({
+  selector: "my-comp",
+  template: '',
+  directives: [FORM_DIRECTIVES, WrappedValue, MyInput, NgIf, NgFor, LoginIsEmptyValidator]
+})
 class MyComp {
   form: any;
   name: string;

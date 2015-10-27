@@ -4,7 +4,9 @@ import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptio
 
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
-import {Control} from '../model';
+import {AbstractControlDirective} from './abstract_control_directive';
+import {NgControlGroup} from './ng_control_group';
+import {Control, ControlGroup} from '../model';
 import {Validators} from '../validators';
 import {ControlValueAccessor} from './control_value_accessor';
 import {ElementRef, QueryList} from 'angular2/src/core/linker';
@@ -42,7 +44,12 @@ export function setUpControl(control: Control, dir: NgControl): void {
   dir.valueAccessor.registerOnTouched(() => control.markAsTouched());
 }
 
-function _throwError(dir: NgControl, message: string): void {
+export function setUpControlGroup(control: ControlGroup, dir: NgControlGroup) {
+  if (isBlank(control)) _throwError(dir, "Cannot find control");
+  control.validator = Validators.compose([control.validator, dir.validator]);
+}
+
+function _throwError(dir: AbstractControlDirective, message: string): void {
   var path = dir.path.join(" -> ");
   throw new BaseException(`${message} '${path}'`);
 }

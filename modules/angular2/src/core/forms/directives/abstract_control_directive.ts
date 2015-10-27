@@ -21,4 +21,6 @@ export class AbstractControlDirective {
   get touched(): boolean { return isPresent(this.control) ? this.control.touched : null; }
 
   get untouched(): boolean { return isPresent(this.control) ? this.control.untouched : null; }
+
+  get path(): string[] { return null; }
 }
