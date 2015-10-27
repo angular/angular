@@ -346,7 +346,14 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   String tagName(Element element) => element.tagName;
 
   Map<String, String> attributeMap(Element element) {
-    return new Map.from(element.attributes);
+    var result = {};
+    result.addAll(element.attributes);
+    // TODO(tbosch): element.getNamespacedAttributes() somehow does not return the attribute value
+    var xlinkHref = element.getAttributeNS('http://www.w3.org/1999/xlink', 'href');
+    if (xlinkHref != null) {
+      result['xlink:href'] = xlinkHref;
+    }
+    return result;
   }
 
   bool hasAttribute(Element element, String attribute) =>

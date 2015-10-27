@@ -116,7 +116,7 @@ const SVG_ELEMENT_NAMES = CONST_EXPR({
   'vkern': true
 });
 
-const SVG_ATTR_NAMESPACES = CONST_EXPR({'href': XLINK_NAMESPACE});
+const SVG_ATTR_NAMESPACES = CONST_EXPR({'href': XLINK_NAMESPACE, 'xlink:href': XLINK_NAMESPACE});
 
 export abstract class DomRenderer extends Renderer implements NodeFactory<Node> {
   abstract registerComponentTemplate(templateId: number, commands: RenderTemplateCmd[],

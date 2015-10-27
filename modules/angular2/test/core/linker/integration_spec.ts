@@ -1745,22 +1745,24 @@ export function main() {
     if (DOM.supportsDOMEvents()) {
       describe('svg', () => {
         it('should support svg elements',
-           inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async) => {
-                    tcb.overrideView(MyComp, new ViewMetadata({template: '<svg><g></g></svg>'}))
-                        .createAsync(MyComp)
-                        .then((rootTC) => {
-                          var el = rootTC.debugElement.nativeElement;
-                          var svg = DOM.childNodes(el)[0];
-                          var g = DOM.childNodes(svg)[0];
-                          expect(DOM.getProperty(<Element>svg, 'namespaceURI'))
-                              .toEqual('http://www.w3.org/2000/svg');
-                          expect(DOM.getProperty(<Element>g, 'namespaceURI'))
-                              .toEqual('http://www.w3.org/2000/svg');
+           inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder,
+                                                               async) => {
+             tcb.overrideView(MyComp,
+                              new ViewMetadata({template: '<svg><use xlink:href="Port" /></svg>'}))
+                 .createAsync(MyComp)
+                 .then((rootTC) => {
+                   var el = rootTC.debugElement.nativeElement;
+                   var svg = DOM.childNodes(el)[0];
+                   var use = DOM.childNodes(svg)[0];
+                   expect(DOM.getProperty(<Element>svg, 'namespaceURI'))
+                       .toEqual('http://www.w3.org/2000/svg');
+                   expect(DOM.getProperty(<Element>use, 'namespaceURI'))
+                       .toEqual('http://www.w3.org/2000/svg');
+                   expect(DOM.getOuterHTML(<HTMLElement>use)).toContain('xmlns:xlink');
 
-                          async.done();
-                        });
-                  }));
+                   async.done();
+                 });
+           }));
 
       });
     }
