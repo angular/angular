@@ -21,12 +21,17 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 var defaultLocale: string = 'en-US';
 
 /**
- * WARNING: this pipe uses the Internationalization API.
- * Therefore it is only reliable in Chrome and Opera browsers.
- *
  * Formats a date value to a string based on the requested format.
  *
- *##Usage
+ * WARNINGS:
+ * - this pipe is marked as pure hence it will not be re-evaluated when the input is mutated.
+ *   Instead users should treat the date as an immutable object and change the reference when the
+ *   pipe needs to re-run (this is to avoid reformatting the date on every change detection run
+ *   which would be an expensive operation).
+ * - this pipe uses the Internationalization API. Therefore it is only reliable in Chrome and Opera
+ *   browsers.
+ *
+ * ## Usage
  *
  *     expression | date[:format]
  *
@@ -78,7 +83,7 @@ var defaultLocale: string = 'en-US';
  *     {{ dateObj | date:'mmss' }}        // output is '43:11'
  */
 @CONST()
-@Pipe({name: 'date', pure: false})
+@Pipe({name: 'date', pure: true})
 @Injectable()
 export class DatePipe implements PipeTransform {
   static _ALIASES: {[key: string]: String} = {

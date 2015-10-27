@@ -948,7 +948,7 @@ export class ComponentMetadata extends DirectiveMetadata {
 /**
  * Declare reusable pipe function.
  *
- * A "pure" pipe is only re-evaluated when any of its input or arguments changes.
+ * A "pure" pipe is only re-evaluated when either the input or any of the arguments change.
  *
  * When not specified, pipes default to being pure.
  *
