@@ -5,6 +5,7 @@ import {Pipe} from 'angular2/src/core/metadata';
 
 /**
  * Implements json transforms to any object.
+ * The json pipe runs all the time checking for changes on the transformed object.
  *
  * ### Example
  *
@@ -25,7 +26,7 @@ import {Pipe} from 'angular2/src/core/metadata';
  * ```
  */
 @CONST()
-@Pipe({name: 'json'})
+@Pipe({name: 'json', pure: false})
 @Injectable()
 export class JsonPipe implements PipeTransform {
   transform(value: any, args: any[] = null): string { return Json.stringify(value); }
