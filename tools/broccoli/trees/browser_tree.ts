@@ -127,8 +127,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
 
   // Use TypeScript to transpile the *.ts files to ES5
   var typescriptOptions = {
-    declaration: true,
-    stripInternal: true,
+    declaration: false,
     emitDecoratorMetadata: true,
     experimentalDecorators: true,
     mapRoot: '',  // force sourcemaps to use relative path
@@ -231,28 +230,8 @@ module.exports = function makeBrowserTree(options, destinationPath) {
 
   htmlTree = mergeTrees([htmlTree, scripts, polymer, react]);
 
-  var typingsTree = new Funnel(
-      'modules',
-      {include: ['angular2/typings/**/*.d.ts', 'angular2/manual_typings/*.d.ts'], destDir: '/'});
-
-  // Add a line to the end of our top-level .d.ts file.
-  // This HACK for transitive typings is a workaround for
-  // https://github.com/Microsoft/TypeScript/issues/5097
-  //
-  // This allows users to get our top-level dependencies like es6-shim.d.ts
-  // to appear when they compile against angular2.
-  //
-  // This carries the risk that the user brings their own copy of that file
-  // (or any other symbols exported here) and they will get a compiler error
-  // because of the duplicate definitions.
-  // TODO(alexeagle): remove this when typescript releases a fix
-  es5Tree = replace(es5Tree, {
-    files: ['angular2/angular2.d.ts'],
-    patterns: [{match: /$/, replacement: 'import "./manual_typings/globals.d.ts";\n'}]
-  });
-
-  es5Tree = mergeTrees([es5Tree, htmlTree, assetsTree, clientModules, typingsTree]);
-  es6Tree = mergeTrees([es6Tree, htmlTree, assetsTree, clientModules, typingsTree]);
+  es5Tree = mergeTrees([es5Tree, htmlTree, assetsTree, clientModules]);
+  es6Tree = mergeTrees([es6Tree, htmlTree, assetsTree, clientModules]);
 
   var mergedTree = mergeTrees([stew.mv(es6Tree, '/es6'), stew.mv(es5Tree, '/es5')]);
 
