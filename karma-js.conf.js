@@ -31,7 +31,7 @@ module.exports = function(config) {
       {pattern: 'modules/**/test/**/static_assets/**', included: false, watched: false}
     ],
 
-    exclude: ['dist/js/dev/es5/**/e2e_test/**', 'dist/angular1_router.js'],
+    exclude: ['dist/js/dev/es5/**/e2e_test/**', 'dist/js/dev/es5/angular2/examples/**', 'dist/angular1_router.js'],
 
     customLaunchers: sauceConf.customLaunchers,
 
