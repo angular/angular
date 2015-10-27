@@ -40,7 +40,7 @@ function _appIdRandomProviderFactory() {
 }
 
 /**
- * Bindings that will generate a random APP_ID_TOKEN.
+ * Providers that will generate a random APP_ID_TOKEN.
  */
 export const APP_ID_RANDOM_PROVIDER: Provider =
     CONST_EXPR(new Provider(APP_ID, {useFactory: _appIdRandomProviderFactory, deps: []}));

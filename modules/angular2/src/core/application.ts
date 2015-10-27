@@ -11,19 +11,19 @@ export {platform} from './application_common';
 export {
   PlatformRef,
   ApplicationRef,
-  applicationCommonBindings,
+  applicationCommonProviders,
   createNgZone,
   platformCommon,
-  platformBindings
+  platformProviders
 } from './application_ref';
 
 /// See [commonBootstrap] for detailed documentation.
 export function bootstrap(appComponentType: /*Type*/ any,
-                          appBindings: Array<Type | Provider | any[]> = null):
+                          appProviders: Array<Type | Provider | any[]> = null):
     Promise<ComponentRef> {
-  var bindings = [compilerProviders()];
-  if (isPresent(appBindings)) {
-    bindings.push(appBindings);
+  var providers = [compilerProviders()];
+  if (isPresent(appProviders)) {
+    providers.push(appProviders);
   }
-  return commonBootstrap(appComponentType, bindings);
+  return commonBootstrap(appComponentType, providers);
 }
