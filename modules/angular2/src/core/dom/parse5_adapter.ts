@@ -276,6 +276,7 @@ export class Parse5DomAdapter extends DomAdapter {
   createElement(tagName): HTMLElement {
     return treeAdapter.createElement(tagName, 'http://www.w3.org/1999/xhtml', []);
   }
+  createElementNS(ns, tagName): HTMLElement { throw 'not implemented'; }
   createTextNode(text: string): Text {
     var t = <any>this.createComment(text);
     t.type = 'text';
@@ -435,6 +436,7 @@ export class Parse5DomAdapter extends DomAdapter {
       }
     }
   }
+  setAttributeNS(element, ns: string, attribute: string, value: string) { throw 'not implemented'; }
   removeAttribute(element, attribute: string) {
     if (attribute) {
       StringMapWrapper.delete(element.attribs, attribute);

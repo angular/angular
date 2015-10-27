@@ -287,6 +287,11 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return doc.createElement(tagName);
   }
 
+  Element createElementNS(String ns, String tagName, [HtmlDocument doc = null]) {
+    if (doc == null) doc = document;
+    return doc.createElementNS(ns, tagName);
+  }
+
   Text createTextNode(String text, [HtmlDocument doc = null]) {
     return new Text(text);
   }
@@ -352,6 +357,10 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
 
   void setAttribute(Element element, String name, String value) {
     element.setAttribute(name, value);
+  }
+
+  void setAttributeNS(Element element, String ns, String name, String value) {
+    element.setAttributeNS(ns, name, value);
   }
 
   void removeAttribute(Element element, String name) {

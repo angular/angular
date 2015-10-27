@@ -215,6 +215,10 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
     return new Element.tag(tagName);
   }
 
+  createElementNS(ns, tagName, [doc]) {
+    throw 'not implemented';
+  }
+
   createTextNode(String text, [doc]) => new Text(text);
 
   createScriptTag(String attrName, String attrValue, [doc]) {
@@ -295,6 +299,10 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
 
   setAttribute(element, String name, String value) {
     element.attributes[name] = value;
+  }
+
+  setAttributeNS(element, String ns, String name, String value) {
+    throw 'not implemented';
   }
 
   removeAttribute(element, String attribute) {
