@@ -5,7 +5,6 @@ import {Pipe} from 'angular2/src/core/metadata';
 
 /**
  * Implements json transforms to any object.
- * The json pipe runs all the time checking for changes on the transformed object.
  *
  * ### Example
  *

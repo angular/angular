@@ -24,8 +24,8 @@ export function main() {
       pipe = new DatePipe();
     });
 
-    it('should be marked as non-pure',
-       () => { expect(new PipeResolver().resolve(DatePipe).pure).toEqual(false); });
+    it('should be marked as pure',
+       () => { expect(new PipeResolver().resolve(DatePipe).pure).toEqual(true); });
 
     describe("supports", () => {
       it("should support date", () => { expect(pipe.supports(date)).toBe(true); });
