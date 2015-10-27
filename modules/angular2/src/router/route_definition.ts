@@ -6,7 +6,7 @@ import {CONST, Type} from 'angular2/src/core/facade/lang';
  * Supported keys:
  * - `path` (required)
  * - `component`, `loader`,  `redirectTo` (requires exactly one of these)
- * - `as` (optional)
+ * - `name` or `as` (optional) (requires exactly one of these)
  * - `data` (optional)
  *
  * See also {@link Route}, {@link AsyncRoute}, {@link AuxRoute}, and {@link Redirect}.
@@ -17,6 +17,7 @@ export interface RouteDefinition {
   loader?: Function;
   redirectTo?: string;
   as?: string;
+  name?: string;
   data?: any;
 }
 

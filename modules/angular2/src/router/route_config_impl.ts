@@ -18,7 +18,9 @@ export class RouteConfig {
  * It has the following properties:
  * - `path` is a string that uses the route matcher DSL.
  * - `component` a component type.
- * - `as` is an optional `CamelCase` string representing the name of the route.
+ * - `name` is an optional `CamelCase` string representing the name of the route.
+ * - `as` is an alias to `name`, @deprecated this property will be removed in the future. Use `name`
+ * instead.
  * - `data` is an optional property of any type representing arbitrary route metadata for the given
  * route. It is injectable via the {@link ROUTE_DATA} token.
  *
@@ -38,13 +40,15 @@ export class Route implements RouteDefinition {
   path: string;
   component: Type;
   as: string;
+  name: string;
   // added next two properties to work around https://github.com/Microsoft/TypeScript/issues/4107
   loader: Function;
   redirectTo: string;
-  constructor({path, component, as, data}:
-                  {path: string, component: Type, as?: string, data?: any}) {
+  constructor({path, component, name, as, data}:
+                  {path: string, component: Type, name?: string, as?: string, data?: any}) {
     this.path = path;
     this.component = component;
+    this.name = name;
     this.as = as;
     this.loader = null;
     this.redirectTo = null;
@@ -58,7 +62,9 @@ export class Route implements RouteDefinition {
  * It takes an object with the following properties:
  * - `path` is a string that uses the route matcher DSL.
  * - `component` a component type.
- * - `as` is an optional `CamelCase` string representing the name of the route.
+ * - `name` is an optional `CamelCase` string representing the name of the route.
+ * - `as` is an alias to `name`, @deprecated this property will be removed in the future. Use `name`
+ * instead.
  * - `data` is an optional property of any type representing arbitrary route metadata for the given
  * route. It is injectable via the {@link ROUTE_DATA} token.
  *
@@ -78,12 +84,15 @@ export class AuxRoute implements RouteDefinition {
   path: string;
   component: Type;
   as: string;
+  name: string;
   // added next two properties to work around https://github.com/Microsoft/TypeScript/issues/4107
   loader: Function = null;
   redirectTo: string = null;
-  constructor({path, component, as}: {path: string, component: Type, as?: string}) {
+  constructor({path, component, name, as}:
+                  {path: string, component: Type, name?: string, as?: string}) {
     this.path = path;
     this.component = component;
+    this.name = name;
     this.as = as;
   }
 }
@@ -95,7 +104,9 @@ export class AuxRoute implements RouteDefinition {
  * It has the following properties:
  * - `path` is a string that uses the route matcher DSL.
  * - `loader` is a function that returns a promise that resolves to a component.
- * - `as` is an optional `CamelCase` string representing the name of the route.
+ * - `name` is an optional `CamelCase` string representing the name of the route.
+ * - `as` is an alias to `name`, @deprecated this property will be removed in the future. Use `name`
+ * instead.
  * - `data` is an optional property of any type representing arbitrary route metadata for the given
  * route. It is injectable via the {@link ROUTE_DATA} token.
  *
@@ -115,9 +126,12 @@ export class AsyncRoute implements RouteDefinition {
   path: string;
   loader: Function;
   as: string;
-  constructor({path, loader, as, data}: {path: string, loader: Function, as?: string, data?: any}) {
+  name: string;
+  constructor({path, loader, name, as, data}:
+                  {path: string, loader: Function, name?: string, as?: string, data?: any}) {
     this.path = path;
     this.loader = loader;
+    this.name = name;
     this.as = as;
     this.data = data;
   }
@@ -146,6 +160,7 @@ export class AsyncRoute implements RouteDefinition {
 export class Redirect implements RouteDefinition {
   path: string;
   redirectTo: string;
+  name: string = null;
   as: string = null;
   // added next property to work around https://github.com/Microsoft/TypeScript/issues/4107
   loader: Function = null;

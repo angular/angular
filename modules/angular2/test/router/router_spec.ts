@@ -80,8 +80,8 @@ export function main() {
          var outlet = makeDummyOutlet();
 
          router.registerPrimaryOutlet(outlet)
-             .then((_) =>
-                       router.config([new Route({path: '/a', component: DummyComponent, as: 'A'})]))
+             .then((_) => router.config(
+                       [new Route({path: '/a', component: DummyComponent, name: 'A'})]))
              .then((_) => router.navigate(['/A']))
              .then((_) => {
                expect(outlet.spy('activate')).toHaveBeenCalled();
@@ -134,7 +134,8 @@ export function main() {
     });
 
     it('should generate URLs from the root component when the path starts with /', () => {
-      router.config([new Route({path: '/first/...', component: DummyParentComp, as: 'FirstCmp'})]);
+      router.config(
+          [new Route({path: '/first/...', component: DummyParentComp, name: 'FirstCmp'})]);
 
       var instruction = router.generate(['/FirstCmp', 'SecondCmp']);
       expect(stringifyInstruction(instruction)).toEqual('first/second');
@@ -148,7 +149,7 @@ export function main() {
          var outlet = makeDummyOutlet();
 
          router.registerPrimaryOutlet(outlet);
-         router.config([new AsyncRoute({path: '/first', loader: loader, as: 'FirstCmp'})]);
+         router.config([new AsyncRoute({path: '/first', loader: loader, name: 'FirstCmp'})]);
 
          var instruction = router.generate(['/FirstCmp']);
          router.navigateByInstruction(instruction)
@@ -164,8 +165,8 @@ export function main() {
 
          router.registerPrimaryOutlet(outlet)
              .then((_) => router.config([
-               new Route({path: '/a', component: DummyComponent, as: 'A'}),
-               new Route({path: '/b', component: DummyComponent, as: 'B'})
+               new Route({path: '/a', component: DummyComponent, name: 'A'}),
+               new Route({path: '/b', component: DummyComponent, name: 'B'})
              ]))
              .then((_) => router.navigateByUrl('/a'))
              .then((_) => {
@@ -181,7 +182,7 @@ export function main() {
     describe('query string params', () => {
       it('should use query string params for the root route', () => {
         router.config(
-            [new Route({path: '/hi/how/are/you', component: DummyComponent, as: 'GreetingUrl'})]);
+            [new Route({path: '/hi/how/are/you', component: DummyComponent, name: 'GreetingUrl'})]);
 
         var instruction = router.generate(['/GreetingUrl', {'name': 'brad'}]);
         var path = stringifyInstruction(instruction);
@@ -190,8 +191,9 @@ export function main() {
 
       it('should serialize parameters that are not part of the route definition as query string params',
          () => {
-           router.config(
-               [new Route({path: '/one/two/:three', component: DummyComponent, as: 'NumberUrl'})]);
+           router.config([
+             new Route({path: '/one/two/:three', component: DummyComponent, name: 'NumberUrl'})
+           ]);
 
            var instruction = router.generate(['/NumberUrl', {'three': 'three', 'four': 'four'}]);
            var path = stringifyInstruction(instruction);
@@ -202,7 +204,7 @@ export function main() {
     describe('matrix params', () => {
       it('should generate matrix params for each non-root component', () => {
         router.config(
-            [new Route({path: '/first/...', component: DummyParentComp, as: 'FirstCmp'})]);
+            [new Route({path: '/first/...', component: DummyParentComp, name: 'FirstCmp'})]);
 
         var instruction =
             router.generate(['/FirstCmp', {'key': 'value'}, 'SecondCmp', {'project': 'angular'}]);
@@ -212,7 +214,7 @@ export function main() {
 
       it('should work with named params', () => {
         router.config(
-            [new Route({path: '/first/:token/...', component: DummyParentComp, as: 'FirstCmp'})]);
+            [new Route({path: '/first/:token/...', component: DummyParentComp, name: 'FirstCmp'})]);
 
         var instruction =
             router.generate(['/FirstCmp', {'token': 'min'}, 'SecondCmp', {'author': 'max'}]);
@@ -229,7 +231,7 @@ function loader(): Promise<Type> {
 
 class DummyComponent {}
 
-@RouteConfig([new Route({path: '/second', component: DummyComponent, as: 'SecondCmp'})])
+@RouteConfig([new Route({path: '/second', component: DummyComponent, name: 'SecondCmp'})])
 class DummyParentComp {
 }
 
