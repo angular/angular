@@ -55,10 +55,10 @@ export class TemplateNormalizer {
     var allStyles = templateMeta.styles.concat(visitor.styles);
 
     var allStyleAbsUrls =
-        visitor.styleUrls.map(url => this._urlResolver.resolve(templateAbsUrl, url))
-            .concat(templateMeta.styleUrls.map(
-                url => this._urlResolver.resolve(directiveType.moduleUrl, url)));
-    allStyleAbsUrls = ListWrapper.filter(allStyleAbsUrls, isStyleUrlResolvable);
+        ListWrapper.filter(visitor.styleUrls, isStyleUrlResolvable)
+            .map(url => this._urlResolver.resolve(templateAbsUrl, url))
+            .concat(ListWrapper.filter(templateMeta.styleUrls, isStyleUrlResolvable)
+                        .map(url => this._urlResolver.resolve(directiveType.moduleUrl, url)));
 
     var allResolvedStyles = allStyles.map(style => {
       var styleWithImports = extractStyleUrls(this._urlResolver, templateAbsUrl, style);

@@ -27,11 +27,14 @@ import {TEST_PROVIDERS} from './test_bindings';
 export function main() {
   describe('TemplateNormalizer', () => {
     var dirType: CompileTypeMetadata;
+    var dirTypeWithHttpUrl: CompileTypeMetadata;
 
     beforeEachBindings(() => TEST_PROVIDERS);
 
     beforeEach(() => {
       dirType = new CompileTypeMetadata({moduleUrl: 'package:some/module/a.js', name: 'SomeComp'});
+      dirTypeWithHttpUrl =
+          new CompileTypeMetadata({moduleUrl: 'http://some/module/a.js', name: 'SomeComp'});
     });
 
     describe('loadTemplate', () => {
@@ -282,6 +285,16 @@ export function main() {
                '', 'package:some/module/id');
            expect(template.styles).toEqual([]);
            expect(template.styleUrls).toEqual(['package:some/module/test.css']);
+         }));
+
+      it('should resolve relative style urls in styleUrls with http directive url',
+         inject([TemplateNormalizer], (normalizer: TemplateNormalizer) => {
+           var template = normalizer.normalizeLoadedTemplate(
+               dirTypeWithHttpUrl, new CompileTemplateMetadata(
+                                       {encapsulation: null, styles: [], styleUrls: ['test.css']}),
+               '', 'http://some/module/id');
+           expect(template.styles).toEqual([]);
+           expect(template.styleUrls).toEqual(['http://some/module/test.css']);
          }));
 
       it('should normalize ViewEncapsulation.Emulated to ViewEncapsulation.None if there are no stlyes nor stylesheets',
