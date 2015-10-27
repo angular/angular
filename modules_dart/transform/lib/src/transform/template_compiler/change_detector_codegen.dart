@@ -121,7 +121,7 @@ class _CodegenState {
 
     var names = new CodegenNameUtil(
         protoRecords, eventBindings, def.directiveRecords, '$genPrefix$_UTIL');
-    var logic = new CodegenLogicUtil(names, '$genPrefix$_UTIL', def.strategy);
+    var logic = new CodegenLogicUtil(names, '$genPrefix$_UTIL', '$genPrefix$_STATE', def.strategy);
     return new _CodegenState._(
         genPrefix,
         def.id,
@@ -503,7 +503,7 @@ class _CodegenState {
 
   String _genOnInit(ProtoRecord r) {
     var br = r.bindingRecord;
-    return 'if (!throwOnChange && !${_names.getAlreadyCheckedName()}) '
+    return 'if (!throwOnChange && ${_names.getStateName()} == ${_genPrefix}$_STATE.NeverChecked) '
         '${_names.getDirectiveName(br.directiveRecord.directiveIndex)}.onInit();';
   }
 
@@ -539,3 +539,4 @@ const _GEN_PROPERTY_BINDING_TARGETS_NAME =
     '${_GEN_PREFIX}_propertyBindingTargets';
 const _GEN_DIRECTIVE_INDICES_NAME = '${_GEN_PREFIX}_directiveIndices';
 const _UTIL = 'ChangeDetectionUtil';
+const _STATE = 'ChangeDetectorState';

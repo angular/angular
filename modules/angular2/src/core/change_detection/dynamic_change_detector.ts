@@ -9,7 +9,7 @@ import {DirectiveRecord, DirectiveIndex} from './directive_record';
 import {Locals} from './parser/locals';
 import {ChangeDetectorGenConfig} from './interfaces';
 import {ChangeDetectionUtil, SimpleChange} from './change_detection_util';
-import {ChangeDetectionStrategy} from './constants';
+import {ChangeDetectionStrategy, ChangeDetectorState} from './constants';
 import {ProtoRecord, RecordType} from './proto_record';
 
 export class DynamicChangeDetector extends AbstractChangeDetector<any> {
@@ -134,7 +134,8 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
       if (proto.isLifeCycleRecord()) {
         if (proto.name === "DoCheck" && !throwOnChange) {
           this._getDirectiveFor(directiveRecord.directiveIndex).doCheck();
-        } else if (proto.name === "OnInit" && !throwOnChange && !this.alreadyChecked) {
+        } else if (proto.name === "OnInit" && !throwOnChange &&
+                   this.state == ChangeDetectorState.NeverChecked) {
           this._getDirectiveFor(directiveRecord.directiveIndex).onInit();
         } else if (proto.name === "OnChanges" && isPresent(changes) && !throwOnChange) {
           this._getDirectiveFor(directiveRecord.directiveIndex).onChanges(changes);
@@ -170,7 +171,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     var dirs = this._directiveRecords;
     for (var i = dirs.length - 1; i >= 0; --i) {
       var dir = dirs[i];
-      if (dir.callAfterContentInit && !this.alreadyChecked) {
+      if (dir.callAfterContentInit && this.state == ChangeDetectorState.NeverChecked) {
         this._getDirectiveFor(dir.directiveIndex).afterContentInit();
       }
 
@@ -184,7 +185,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     var dirs = this._directiveRecords;
     for (var i = dirs.length - 1; i >= 0; --i) {
       var dir = dirs[i];
-      if (dir.callAfterViewInit && !this.alreadyChecked) {
+      if (dir.callAfterViewInit && this.state == ChangeDetectorState.NeverChecked) {
         this._getDirectiveFor(dir.directiveIndex).afterViewInit();
       }
       if (dir.callAfterViewChecked) {

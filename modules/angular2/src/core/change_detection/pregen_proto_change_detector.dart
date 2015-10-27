@@ -8,6 +8,8 @@ export 'package:angular2/src/core/change_detection/abstract_change_detector.dart
     show AbstractChangeDetector;
 export 'package:angular2/src/core/change_detection/change_detection.dart'
     show ChangeDetectionStrategy;
+export 'package:angular2/src/core/change_detection/constants.dart'
+    show ChangeDetectorState;
 export 'package:angular2/src/core/change_detection/directive_record.dart'
     show DirectiveIndex, DirectiveRecord;
 export 'package:angular2/src/core/change_detection/interfaces.dart'

@@ -6,12 +6,14 @@ import {BindingTarget} from './binding_record';
 import {DirectiveRecord} from './directive_record';
 import {ChangeDetectionStrategy} from './constants';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
+import {IS_DART} from 'angular2/src/core/compiler/util';
 
 /**
  * Class responsible for providing change detection logic for change detector classes.
  */
 export class CodegenLogicUtil {
   constructor(private _names: CodegenNameUtil, private _utilName: string,
+              private _changeDetectorStateName: string,
               private _changeDetection: ChangeDetectionStrategy) {}
 
   /**
@@ -182,12 +184,13 @@ export class CodegenLogicUtil {
 
   genContentLifecycleCallbacks(directiveRecords: DirectiveRecord[]): string[] {
     var res = [];
+    var eq = IS_DART ? '==' : '===';
     // NOTE(kegluneq): Order is important!
     for (var i = directiveRecords.length - 1; i >= 0; --i) {
       var dir = directiveRecords[i];
       if (dir.callAfterContentInit) {
         res.push(
-            `if(! ${this._names.getAlreadyCheckedName()}) ${this._names.getDirectiveName(dir.directiveIndex)}.afterContentInit();`);
+            `if(${this._names.getStateName()} ${eq} ${this._changeDetectorStateName}.NeverChecked) ${this._names.getDirectiveName(dir.directiveIndex)}.afterContentInit();`);
       }
 
       if (dir.callAfterContentChecked) {
@@ -199,12 +202,13 @@ export class CodegenLogicUtil {
 
   genViewLifecycleCallbacks(directiveRecords: DirectiveRecord[]): string[] {
     var res = [];
+    var eq = IS_DART ? '==' : '===';
     // NOTE(kegluneq): Order is important!
     for (var i = directiveRecords.length - 1; i >= 0; --i) {
       var dir = directiveRecords[i];
       if (dir.callAfterViewInit) {
         res.push(
-            `if(! ${this._names.getAlreadyCheckedName()}) ${this._names.getDirectiveName(dir.directiveIndex)}.afterViewInit();`);
+            `if(${this._names.getStateName()} ${eq} ${this._changeDetectorStateName}.NeverChecked) ${this._names.getDirectiveName(dir.directiveIndex)}.afterViewInit();`);
       }
 
       if (dir.callAfterViewChecked) {

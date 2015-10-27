@@ -13,7 +13,7 @@ import {codify} from './codegen_facade';
 import {EventBinding} from './event_binding';
 import {BindingTarget} from './binding_record';
 import {ChangeDetectorGenConfig, ChangeDetectorDefinition} from './interfaces';
-import {ChangeDetectionStrategy} from './constants';
+import {ChangeDetectionStrategy, ChangeDetectorState} from './constants';
 import {createPropertyRecords, createEventRecords} from './proto_change_detector';
 
 /**
@@ -41,7 +41,8 @@ export class ChangeDetectorJITGenerator {
   typeName: string;
 
   constructor(definition: ChangeDetectorDefinition, private changeDetectionUtilVarName: string,
-              private abstractChangeDetectorVarName: string) {
+              private abstractChangeDetectorVarName: string,
+              private changeDetectorStateVarName: string) {
     var propertyBindingRecords = createPropertyRecords(definition);
     var eventBindingRecords = createEventRecords(definition);
     var propertyBindingTargets = definition.bindingRecords.map(b => b.target);
@@ -55,8 +56,9 @@ export class ChangeDetectorJITGenerator {
     this.directiveRecords = definition.directiveRecords;
     this._names = new CodegenNameUtil(this.records, this.eventBindings, this.directiveRecords,
                                       this.changeDetectionUtilVarName);
-    this._logic = new CodegenLogicUtil(this._names, this.changeDetectionUtilVarName,
-                                       this.changeDetectionStrategy);
+    this._logic =
+        new CodegenLogicUtil(this._names, this.changeDetectionUtilVarName,
+                             this.changeDetectorStateVarName, this.changeDetectionStrategy);
     this.typeName = sanitizeName(`ChangeDetector_${this.id}`);
   }
 
@@ -68,7 +70,8 @@ export class ChangeDetectorJITGenerator {
       }
     `;
     return new Function(this.abstractChangeDetectorVarName, this.changeDetectionUtilVarName,
-                        factorySource)(AbstractChangeDetector, ChangeDetectionUtil);
+                        this.changeDetectorStateVarName, factorySource)(
+        AbstractChangeDetector, ChangeDetectionUtil, ChangeDetectorState);
   }
 
   generateSource(): string {
@@ -423,7 +426,7 @@ export class ChangeDetectorJITGenerator {
   /** @internal */
   _genOnInit(r: ProtoRecord): string {
     var br = r.bindingRecord;
-    return `if (!throwOnChange && !${this._names.getAlreadyCheckedName()}) ${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.onInit();`;
+    return `if (!throwOnChange && ${this._names.getStateName()} === ${this.changeDetectorStateVarName}.NeverChecked) ${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.onInit();`;
   }
 
   /** @internal */

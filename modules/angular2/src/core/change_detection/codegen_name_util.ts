@@ -8,7 +8,8 @@ import {EventBinding} from './event_binding';
 
 // The names of these fields must be kept in sync with abstract_change_detector.ts or change
 // detection will fail.
-const _ALREADY_CHECKED_ACCESSOR = "alreadyChecked";
+const _STATE_ACCESSOR = "state";
+const _CONTEXT_ACCESSOR = "context";
 const _PROP_BINDING_INDEX = "propertyBindingIndex";
 const _DIRECTIVES_ACCESSOR = "directiveIndices";
 const _DISPATCHER_ACCESSOR = "dispatcher";
@@ -77,7 +78,7 @@ export class CodegenNameUtil {
 
   getLocalsAccessorName(): string { return this._addFieldPrefix(_LOCALS_ACCESSOR); }
 
-  getAlreadyCheckedName(): string { return this._addFieldPrefix(_ALREADY_CHECKED_ACCESSOR); }
+  getStateName(): string { return this._addFieldPrefix(_STATE_ACCESSOR); }
 
   getModeName(): string { return this._addFieldPrefix(_MODE_ACCESSOR); }
 
