@@ -17,7 +17,7 @@ export function normalizeRouteConfig(config: RouteDefinition): RouteDefinition {
     throw new BaseException(
         `Route config should contain exactly one "component", "loader", or "redirectTo" property.`);
   }
-  if ((+!!config.as) + (+!!config.name) != 1) {
+  if (config.as && config.name) {
     throw new BaseException(`Route config should contain exactly one "as" or "name" property.`);
   }
   if (config.as) {
