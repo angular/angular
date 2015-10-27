@@ -85,7 +85,7 @@ export class NgFormControl extends NgControl implements OnChanges {
   onChanges(changes: {[key: string]: SimpleChange}): void {
     if (this._isControlChanged(changes)) {
       setUpControl(this.form, this);
-      this.form.updateValidity();
+      this.form.updateValueAndValidity({emitEvent: false});
     }
     if (isPropertyUpdated(changes, this.viewModel)) {
       this.form.updateValue(this.model);

@@ -90,7 +90,7 @@ export function main() {
         var two = new Control("two", validator("b", true));
         var g = new ControlGroup({"one": one, "two": two});
 
-        expect(Validators.group(g)).toEqual({"controls": {"one": {"a": true}, "two": {"b": true}}});
+        expect(Validators.group(g)).toEqual({"one": {"a": true}, "two": {"b": true}});
       });
 
       it("should not include controls that have no errors", () => {
@@ -98,35 +98,13 @@ export function main() {
         var two = new Control("two");
         var g = new ControlGroup({"one": one, "two": two});
 
-        expect(Validators.group(g)).toEqual({"controls": {"one": {"a": true}}});
+        expect(Validators.group(g)).toEqual({"one": {"a": true}});
       });
 
       it("should return null when no errors", () => {
         var g = new ControlGroup({"one": new Control("one")});
 
         expect(Validators.group(g)).toEqual(null);
-      });
-
-      it("should return control errors mixed with group errors", () => {
-        var one = new Control("one", validator("a", true));
-        var g = new ControlGroup({"one": one}, null,
-                                 Validators.compose([validator("b", true), Validators.group]));
-
-        expect(g.validator(g)).toEqual({"b": true, "controls": {"one": {"a": true}}});
-      });
-
-      it("should return nested control group errors mixed with group errors", () => {
-        var one = new Control("one", validator("a", true));
-        var g = new ControlGroup({"one": one}, null,
-                                 Validators.compose([validator("b", true), Validators.group]));
-        var two = new Control("two", validator("c", true));
-        var gTwo = new ControlGroup({"two": two, "group": g});
-
-        expect(gTwo.validator(gTwo))
-            .toEqual({
-              "controls":
-                  {"two": {"c": true}, "group": {"b": true, "controls": {"one": {"a": true}}}}
-            });
       });
     });
 
@@ -136,7 +114,7 @@ export function main() {
         var two = new Control("two", validator("b", true));
         var a = new ControlArray([one, two]);
 
-        expect(Validators.array(a)).toEqual({"controls": [{"a": true}, {"b": true}]});
+        expect(Validators.array(a)).toEqual([{"a": true}, {"b": true}]);
       });
 
       it("should not include controls that have no errors", () => {
@@ -145,29 +123,13 @@ export function main() {
         var three = new Control("three");
         var a = new ControlArray([one, two, three]);
 
-        expect(Validators.array(a)).toEqual({"controls": [null, {"a": true}, null]});
+        expect(Validators.array(a)).toEqual([null, {"a": true}, null]);
       });
 
       it("should return null when no errors", () => {
         var a = new ControlArray([new Control("one")]);
 
         expect(Validators.array(a)).toEqual(null);
-      });
-
-      it("should return control errors mixed with group errors", () => {
-        var one = new Control("one", validator("a", true));
-        var a =
-            new ControlArray([one], Validators.compose([validator("b", true), Validators.array]));
-
-        expect(a.validator(a)).toEqual({"b": true, "controls": [{"a": true}]});
-      });
-
-      it("should return nested array errors ", () => {
-        var one = new Control("one", validator("a", true));
-        var a = new ControlArray([one]);
-        var a2 = new ControlArray([a]);
-
-        expect(Validators.array(a2)).toEqual({"controls": [{"controls": [{"a": true}]}]});
       });
     });
   });

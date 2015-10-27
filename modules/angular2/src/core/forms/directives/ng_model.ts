@@ -61,7 +61,7 @@ export class NgModel extends NgControl implements OnChanges {
   onChanges(changes: {[key: string]: SimpleChange}) {
     if (!this._added) {
       setUpControl(this._control, this);
-      this._control.updateValidity();
+      this._control.updateValueAndValidity({emitEvent: false});
       this._added = true;
     }
 
