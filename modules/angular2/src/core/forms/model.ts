@@ -46,21 +46,19 @@ function _find(control: AbstractControl, path: Array<string | number>| string) {
 /**
  *
  */
-export class AbstractControl {
+export abstract class AbstractControl {
   /** @internal */
   _value: any;
-  /** @internal */
-  _status: string;
-  /** @internal */
-  _errors: {[key: string]: any};
-  /** @internal */
-  _pristine: boolean = true;
-  /** @internal */
-  _touched: boolean = false;
-  /** @internal */
-  _parent: ControlGroup | ControlArray;
+
   /** @internal */
   _valueChanges: EventEmitter;
+
+  private _status: string;
+  private _errors: {[key: string]: any};
+  private _controlsErrors: any;
+  private _pristine: boolean = true;
+  private _touched: boolean = false;
+  private _parent: ControlGroup | ControlArray;
 
   constructor(public validator: Function) {}
 
@@ -70,7 +68,15 @@ export class AbstractControl {
 
   get valid(): boolean { return this._status === VALID; }
 
+  /**
+   * Returns the errors of this control.
+   */
   get errors(): {[key: string]: any} { return this._errors; }
+
+  /**
+   * Returns the errors of the child controls.
+   */
+  get controlsErrors(): any { return this._controlsErrors; }
 
   get pristine(): boolean { return this._pristine; }
 
@@ -105,17 +111,6 @@ export class AbstractControl {
 
   setParent(parent: ControlGroup | ControlArray): void { this._parent = parent; }
 
-  updateValidity({onlySelf}: {onlySelf?: boolean} = {}): void {
-    onlySelf = normalizeBool(onlySelf);
-
-    this._errors = this.validator(this);
-    this._status = isPresent(this._errors) ? INVALID : VALID;
-
-    if (isPresent(this._parent) && !onlySelf) {
-      this._parent.updateValidity({onlySelf: onlySelf});
-    }
-  }
-
   updateValueAndValidity({onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
       void {
     onlySelf = normalizeBool(onlySelf);
@@ -124,7 +119,8 @@ export class AbstractControl {
     this._updateValue();
 
     this._errors = this.validator(this);
-    this._status = isPresent(this._errors) ? INVALID : VALID;
+    this._controlsErrors = this._calculateControlsErrors();
+    this._status = this._calculateStatus();
 
     if (emitEvent) {
       ObservableWrapper.callNext(this._valueChanges, this._value);
@@ -132,6 +128,38 @@ export class AbstractControl {
 
     if (isPresent(this._parent) && !onlySelf) {
       this._parent.updateValueAndValidity({onlySelf: onlySelf, emitEvent: emitEvent});
+    }
+  }
+
+  /**
+   * Sets errors on a control.
+   *
+   * This is used when validations are run not automatically, but manually by the user.
+   *
+   * Calling `setErrors` will also update the validity of the parent control.
+   *
+   * ## Usage
+   *
+   * ```
+   * var login = new Control("someLogin");
+   * login.setErrors({
+   *   "notUnique": true
+   * });
+   *
+   * expect(login.valid).toEqual(false);
+   * expect(login.errors).toEqual({"notUnique": true});
+   *
+   * login.updateValue("someOtherLogin");
+   *
+   * expect(login.valid).toEqual(true);
+   * ```
+   */
+  setErrors(errors: {[key: string]: any}): void {
+    this._errors = errors;
+    this._status = this._calculateStatus();
+
+    if (isPresent(this._parent)) {
+      this._parent._updateControlsErrors();
     }
   }
 
@@ -151,7 +179,23 @@ export class AbstractControl {
   }
 
   /** @internal */
-  _updateValue(): void {}
+  _updateControlsErrors(): void {
+    this._controlsErrors = this._calculateControlsErrors();
+    this._status = this._calculateStatus();
+
+    if (isPresent(this._parent)) {
+      this._parent._updateControlsErrors();
+    }
+  }
+
+  private _calculateStatus(): string {
+    return isPresent(this._errors) || isPresent(this._controlsErrors) ? INVALID : VALID;
+  }
+
+  /** @internal */
+  abstract _updateValue(): void;
+  /** @internal */
+  abstract _calculateControlsErrors(): any;
 }
 
 /**
@@ -177,7 +221,7 @@ export class Control extends AbstractControl {
   constructor(value: any = null, validator: Function = Validators.nullValidator) {
     super(validator);
     this._value = value;
-    this.updateValidity({onlySelf: true});
+    this.updateValueAndValidity({onlySelf: true, emitEvent: false});
     this._valueChanges = new EventEmitter();
   }
 
@@ -204,6 +248,16 @@ export class Control extends AbstractControl {
   }
 
   /**
+   * @internal
+   */
+  _updateValue() {}
+
+  /**
+   * @internal
+   */
+  _calculateControlsErrors() { return null; }
+
+  /**
    * Register a listener for change events.
    */
   registerOnChange(fn: Function): void { this._onChange = fn; }
@@ -226,14 +280,14 @@ export class ControlGroup extends AbstractControl {
   private _optionals: {[key: string]: boolean};
 
   constructor(public controls: {[key: string]: AbstractControl},
-              optionals: {[key: string]: boolean} = null, validator: Function = Validators.group) {
+              optionals: {[key: string]: boolean} = null,
+              validator: Function = Validators.nullValidator) {
     super(validator);
     this._optionals = isPresent(optionals) ? optionals : {};
     this._valueChanges = new EventEmitter();
 
     this._setParentForControls();
-    this._value = this._reduceValue();
-    this.updateValidity({onlySelf: true});
+    this.updateValueAndValidity({onlySelf: true, emitEvent: false});
   }
 
   addControl(name: string, control: AbstractControl): void {
@@ -265,6 +319,9 @@ export class ControlGroup extends AbstractControl {
 
   /** @internal */
   _updateValue() { this._value = this._reduceValue(); }
+
+  /** @internal */
+  _calculateControlsErrors() { return Validators.group(this); }
 
   /** @internal */
   _reduceValue() {
@@ -314,14 +371,13 @@ export class ControlGroup extends AbstractControl {
  * ### Example ([live demo](http://plnkr.co/edit/23DESOpbNnBpBHZt1BR4?p=preview))
  */
 export class ControlArray extends AbstractControl {
-  constructor(public controls: AbstractControl[], validator: Function = Validators.array) {
+  constructor(public controls: AbstractControl[], validator: Function = Validators.nullValidator) {
     super(validator);
 
     this._valueChanges = new EventEmitter();
 
     this._setParentForControls();
-    this._updateValue();
-    this.updateValidity({onlySelf: true});
+    this.updateValueAndValidity({onlySelf: true, emitEvent: false});
   }
 
   /**
@@ -362,6 +418,9 @@ export class ControlArray extends AbstractControl {
 
   /** @internal */
   _updateValue(): void { this._value = this.controls.map((control) => control.value); }
+
+  /** @internal */
+  _calculateControlsErrors() { return Validators.array(this); }
 
   /** @internal */
   _setParentForControls(): void {

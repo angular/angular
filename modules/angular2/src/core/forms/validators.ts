@@ -62,10 +62,10 @@ export class Validators {
         res[name] = control.errors;
       }
     });
-    return StringMapWrapper.isEmpty(res) ? null : {'controls': res};
+    return StringMapWrapper.isEmpty(res) ? null : res;
   }
 
-  static array(array: modelModule.ControlArray): {[key: string]: any} {
+  static array(array: modelModule.ControlArray): any[] {
     var res: any[] = [];
     var anyErrors: boolean = false;
     array.controls.forEach((control) => {
@@ -74,6 +74,6 @@ export class Validators {
         anyErrors = true;
       }
     });
-    return anyErrors ? {'controls': res} : null;
+    return anyErrors ? res : null;
   }
 }

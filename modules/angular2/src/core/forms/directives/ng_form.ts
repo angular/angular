@@ -104,7 +104,7 @@ export class NgForm extends ControlContainer implements Form {
       var ctrl = new Control();
       setUpControl(ctrl, dir);
       container.addControl(dir.name, ctrl);
-      ctrl.updateValidity();
+      ctrl.updateValueAndValidity({emitEvent: false});
     });
   }
 
@@ -115,7 +115,7 @@ export class NgForm extends ControlContainer implements Form {
       var container = this._findContainer(dir.path);
       if (isPresent(container)) {
         container.removeControl(dir.name);
-        container.updateValidity();
+        container.updateValueAndValidity({emitEvent: false});
       }
     });
   }
@@ -125,7 +125,7 @@ export class NgForm extends ControlContainer implements Form {
       var container = this._findContainer(dir.path);
       var group = new ControlGroup({});
       container.addControl(dir.name, group);
-      group.updateValidity();
+      group.updateValueAndValidity({emitEvent: false});
     });
   }
 
@@ -134,7 +134,7 @@ export class NgForm extends ControlContainer implements Form {
       var container = this._findContainer(dir.path);
       if (isPresent(container)) {
         container.removeControl(dir.name);
-        container.updateValidity();
+        container.updateValueAndValidity({emitEvent: false});
       }
     });
   }
