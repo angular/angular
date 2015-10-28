@@ -123,7 +123,8 @@ class _CodegenState {
 
     var names = new CodegenNameUtil(
         protoRecords, eventBindings, def.directiveRecords, '$genPrefix$_UTIL');
-    var logic = new CodegenLogicUtil(names, '$genPrefix$_UTIL', '$genPrefix$_STATE', def.strategy);
+    var logic = new CodegenLogicUtil(
+        names, '$genPrefix$_UTIL', '$genPrefix$_STATE', def.strategy);
     return new _CodegenState._(
         genPrefix,
         def.id,
@@ -162,8 +163,6 @@ class _CodegenState {
         }
 
         ${_maybeGenHandleEventInternal()}
-
-        ${_genCheckNoChanges()}
 
         ${_maybeGenAfterContentLifecycleCallbacks()}
 
@@ -515,23 +514,11 @@ class _CodegenState {
   }
 
   String _genThrowOnChangeCheck(String oldValue, String newValue) {
-    if (this._genConfig.genCheckNoChanges) {
-      return '''
-        if(throwOnChange) {
-          this.throwOnChangeError(${oldValue}, ${newValue});
-        }
-      ''';
-    } else {
-      return "";
-    }
-  }
-
-  String _genCheckNoChanges() {
-    if (this._genConfig.genCheckNoChanges) {
-      return 'void checkNoChanges() { runDetectChanges(true); }';
-    } else {
-      return '';
-    }
+    return '''
+      if(${_genPrefix}assertionsEnabled() && throwOnChange) {
+        this.throwOnChangeError(${oldValue}, ${newValue});
+      }
+    ''';
   }
 
   String _maybeFirstInBinding(ProtoRecord r) {

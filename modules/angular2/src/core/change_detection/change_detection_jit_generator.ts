@@ -1,4 +1,10 @@
-import {Type, isBlank, isPresent, StringWrapper} from 'angular2/src/core/facade/lang';
+import {
+  Type,
+  assertionsEnabled,
+  isBlank,
+  isPresent,
+  StringWrapper
+} from 'angular2/src/core/facade/lang';
 import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
@@ -96,8 +102,6 @@ export class ChangeDetectorJITGenerator {
       }
 
       ${this._maybeGenHandleEventInternal()}
-
-      ${this._genCheckNoChanges()}
 
       ${this._maybeGenAfterContentLifecycleCallbacks()}
 
@@ -434,21 +438,12 @@ export class ChangeDetectorJITGenerator {
 
   /** @internal */
   _genThrowOnChangeCheck(oldValue: string, newValue: string): string {
-    if (this.genConfig.genCheckNoChanges) {
+    if (assertionsEnabled()) {
       return `
         if(throwOnChange) {
           this.throwOnChangeError(${oldValue}, ${newValue});
         }
         `;
-    } else {
-      return '';
-    }
-  }
-
-  /** @internal */
-  _genCheckNoChanges(): string {
-    if (this.genConfig.genCheckNoChanges) {
-      return `${this.typeName}.prototype.checkNoChanges = function() { this.runDetectChanges(true); }`;
     } else {
       return '';
     }

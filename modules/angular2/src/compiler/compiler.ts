@@ -40,10 +40,7 @@ export function compilerProviders(): Array<Type | Provider | any[]> {
     CommandCompiler,
     ChangeDetectionCompiler,
     provide(ChangeDetectorGenConfig,
-            {
-              useValue:
-                  new ChangeDetectorGenConfig(assertionsEnabled(), assertionsEnabled(), false, true)
-            }),
+            {useValue: new ChangeDetectorGenConfig(assertionsEnabled(), false, true)}),
     TemplateCompiler,
     provide(RuntimeCompiler, {useClass: RuntimeCompiler_}),
     provide(Compiler, {useExisting: RuntimeCompiler}),

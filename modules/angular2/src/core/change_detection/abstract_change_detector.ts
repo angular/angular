@@ -1,5 +1,4 @@
-import {isPresent, isBlank, StringWrapper} from 'angular2/src/core/facade/lang';
-import {BaseException} from 'angular2/src/core/facade/exceptions';
+import {assertionsEnabled, isPresent, isBlank, StringWrapper} from 'angular2/src/core/facade/lang';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {ChangeDetectionUtil} from './change_detection_util';
 import {ChangeDetectorRef, ChangeDetectorRef_} from './change_detector_ref';
@@ -76,7 +75,11 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
 
   detectChanges(): void { this.runDetectChanges(false); }
 
-  checkNoChanges(): void { throw new BaseException("Not implemented"); }
+  checkNoChanges(): void {
+    if (assertionsEnabled()) {
+      this.runDetectChanges(true);
+    }
+  }
 
   runDetectChanges(throwOnChange: boolean): void {
     if (this.mode === ChangeDetectionStrategy.Detached ||
