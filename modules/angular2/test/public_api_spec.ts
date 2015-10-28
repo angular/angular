@@ -699,6 +699,7 @@ var NG_API = [
   'Subject.sampleTime():js',
   'Subject.scan():js',
   'Subject.share():js',
+  'Subject.shareBehavior():js',
   'Subject.shareReplay():js',
   'Subject.single():js',
   'Subject.skip():js',
