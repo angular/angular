@@ -294,14 +294,15 @@ gulp.task('lint', ['build.tools'], function() {
   // https://github.com/palantir/tslint#supported-rules
   var tslintConfig = {
     "rules": {
-      "semicolon": true,
+      "requireParameterType": true,
       "requireReturnType": true,
-      "requireParameterType": true
+      "semicolon": true,
+      "variable-name": [true, "ban-keywords"]
     }
   };
   return gulp.src(['modules/angular2/src/**/*.ts', '!modules/angular2/src/testing/**'])
       .pipe(tslint({
-        tslint: require('tslint'),
+        tslint: require('tslint').default,
         configuration: tslintConfig,
         rulesDirectory: 'dist/tools/tslint'
       }))

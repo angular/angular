@@ -1,16 +1,18 @@
-/// <reference path="../../node_modules/typescript/lib/typescriptServices.d.ts" />
-/// <reference path="../../node_modules/tslint/lib/tslint.d.ts" />
+import {RuleFailure} from 'tslint/lib/lint';
+import {AbstractRule} from 'tslint/lib/rules';
+import {RuleWalker} from 'tslint/lib/language/walker';
+import * as ts from 'tslint/node_modules/typescript';
 
-export class Rule extends Lint.Rules.AbstractRule {
+export class Rule extends AbstractRule {
   public static FAILURE_STRING = "missing type declaration";
 
-  public apply(sourceFile: ts.SourceFile): Lint.RuleFailure[] {
+  public apply(sourceFile: ts.SourceFile): RuleFailure[] {
     const typedefWalker = new TypedefWalker(sourceFile, this.getOptions());
     return this.applyWithWalker(typedefWalker);
   }
 }
 
-class TypedefWalker extends Lint.RuleWalker {
+class TypedefWalker extends RuleWalker {
   public visitMethodDeclaration(node: ts.MethodDeclaration) {
     if (node.name.getText().charAt(0) !== '_') {
       node.parameters.forEach((p: ts.ParameterDeclaration) => {
