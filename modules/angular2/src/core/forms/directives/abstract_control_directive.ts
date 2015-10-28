@@ -1,8 +1,9 @@
 import {AbstractControl} from '../model';
 import {isPresent} from 'angular2/src/core/facade/lang';
+import {unimplemented} from 'angular2/src/core/facade/exceptions';
 
-export class AbstractControlDirective {
-  get control(): AbstractControl { return null; }
+export abstract class AbstractControlDirective {
+  get control(): AbstractControl { return unimplemented(); }
 
   get value(): any { return isPresent(this.control) ? this.control.value : null; }
 
