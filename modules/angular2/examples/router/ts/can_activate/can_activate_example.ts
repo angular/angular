@@ -1,4 +1,4 @@
-import {bootstrap, bind, Component} from 'angular2/angular2';
+import {bootstrap, provide, Component} from 'angular2/angular2';
 import {
   CanActivate,
   RouteConfig,
@@ -51,6 +51,6 @@ class AppCmp {
 
 
 export function main() {
-  return bootstrap(AppCmp,
-                   [bind(APP_BASE_HREF).toValue('/angular2/examples/router/ts/can_activate')]);
+  return bootstrap(
+      AppCmp, [provide(APP_BASE_HREF, {useValue: '/angular2/examples/router/ts/can_activate'})]);
 }

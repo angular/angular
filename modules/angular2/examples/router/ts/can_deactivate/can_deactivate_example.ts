@@ -1,4 +1,4 @@
-import {bind, bootstrap, Component} from 'angular2/angular2';
+import {provide, bootstrap, Component} from 'angular2/angular2';
 import {
   CanDeactivate,
   RouteConfig,
@@ -61,6 +61,6 @@ class AppCmp {
 
 
 export function main() {
-  return bootstrap(AppCmp,
-                   [bind(APP_BASE_HREF).toValue('/angular2/examples/router/ts/can_deactivate')]);
+  return bootstrap(
+      AppCmp, [provide(APP_BASE_HREF, {useValue: '/angular2/examples/router/ts/can_deactivate'})]);
 }

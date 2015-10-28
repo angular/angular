@@ -1,4 +1,4 @@
-import {Component, bind, bootstrap} from 'angular2/angular2';
+import {Component, provide, bootstrap} from 'angular2/angular2';
 import {
   OnActivate,
   ComponentInstruction,
@@ -41,6 +41,6 @@ class AppCmp {
 
 
 export function main() {
-  return bootstrap(AppCmp,
-                   [bind(APP_BASE_HREF).toValue('/angular2/examples/router/ts/on_activate')]);
+  return bootstrap(
+      AppCmp, [provide(APP_BASE_HREF, {useValue: '/angular2/examples/router/ts/on_activate'})]);
 }

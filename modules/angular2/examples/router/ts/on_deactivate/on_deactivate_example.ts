@@ -1,4 +1,4 @@
-import {Component, Injectable, NgFor, bind, bootstrap} from 'angular2/angular2';
+import {Component, Injectable, NgFor, provide, bootstrap} from 'angular2/angular2';
 import {
   OnDeactivate,
   ComponentInstruction,
@@ -55,7 +55,8 @@ class AppCmp {
 
 
 export function main() {
-  return bootstrap(
-      AppCmp,
-      [bind(APP_BASE_HREF).toValue('/angular2/examples/router/ts/on_deactivate'), LogService]);
+  return bootstrap(AppCmp, [
+    provide(APP_BASE_HREF, {useValue: '/angular2/examples/router/ts/on_deactivate'}),
+    LogService
+  ]);
 }
