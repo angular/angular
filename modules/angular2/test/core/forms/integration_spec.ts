@@ -31,10 +31,13 @@ import {
   NgFor,
   NgForm,
   Validators,
+  forwardRef,
+  Validator
 } from 'angular2/core';
 import {By} from 'angular2/src/core/debug';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {ObservableWrapper} from 'angular2/src/core/facade/async';
+import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 
 export function main() {
   describe("integration tests", () => {

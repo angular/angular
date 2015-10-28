@@ -15,6 +15,7 @@ import {DefaultValueAccessor} from './default_value_accessor';
 import {NumberValueAccessor} from './number_value_accessor';
 import {CheckboxControlValueAccessor} from './checkbox_value_accessor';
 import {SelectControlValueAccessor} from './select_control_value_accessor';
+import {normalizeValidator} from './normalize_validator';
 
 
 export function controlPath(name: string, parent: ControlContainer): string[] {
@@ -57,6 +58,12 @@ function _throwError(dir: AbstractControlDirective, message: string): void {
 export function setProperty(renderer: Renderer, elementRef: ElementRef, propName: string,
                             propValue: any) {
   renderer.setElementProperty(elementRef, propName, propValue);
+}
+
+export function composeValidators(
+    validators: /* Array<Validator|Function> */ any[]): Function {
+  return isPresent(validators) ? Validators.compose(validators.map(normalizeValidator)) :
+                                 Validators.nullValidator;
 }
 
 export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any): boolean {
