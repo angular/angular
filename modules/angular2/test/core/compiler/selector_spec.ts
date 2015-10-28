@@ -233,6 +233,11 @@ export function main() {
   });
 
   describe('CssSelector.parse', () => {
+    it('should throw an error if the selector is an empty string', () => {
+      expect(function() { CssSelector.parse(''); })
+          .toThrowError('Selectors must not be an empty string');
+    });
+
     it('should detect element names', () => {
       var cssSelector = CssSelector.parse('sometag')[0];
       expect(cssSelector.element).toEqual('sometag');
