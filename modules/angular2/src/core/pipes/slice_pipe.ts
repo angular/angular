@@ -50,7 +50,7 @@ import {Pipe} from '../metadata';
  *
  * Assuming `var collection = ['a', 'b', 'c', 'd']`, this `ng-for` directive:
  *
- *     <li *ng-for="var i in collection | slice:1:3">{{i}}</li>
+ *     <li *ng-for="var i of collection | slice:1:3">{{i}}</li>
  *
  * produces the following:
  *
