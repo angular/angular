@@ -8,7 +8,7 @@ import {forwardRef, Host, SkipSelf, Provider, Inject, Optional} from 'angular2/s
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
-import {controlPath, isPropertyUpdated, selectValueAccessor} from './shared';
+import {controlPath, composeValidators, isPropertyUpdated, selectValueAccessor} from './shared';
 import {Control} from '../model';
 import {Validators, NG_VALIDATORS} from '../validators';
 
@@ -85,16 +85,17 @@ export class NgControlName extends NgControl implements OnChanges,
   update = new EventEmitter();
   model: any;
   viewModel: any;
-  validators: Function[];
+  private _validator: Function;
   /** @internal */
   _added = false;
 
   constructor(@Host() @SkipSelf() parent: ControlContainer,
-              @Optional() @Inject(NG_VALIDATORS) validators: Function[],
+              @Optional() @Inject(NG_VALIDATORS) validators:
+                  /* Array<Validator|Function> */ any[],
               @Optional() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[]) {
     super();
     this._parent = parent;
-    this.validators = validators;
+    this._validator = composeValidators(validators);
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
@@ -120,7 +121,7 @@ export class NgControlName extends NgControl implements OnChanges,
 
   get formDirective(): any { return this._parent.formDirective; }
 
-  get control(): Control { return this.formDirective.getControl(this); }
+  get validator(): Function { return this._validator; }
 
-  get validator(): Function { return Validators.compose(this.validators); }
+  get control(): Control { return this.formDirective.getControl(this); }
 }

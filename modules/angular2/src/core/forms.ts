@@ -37,7 +37,8 @@ export {NG_VALIDATORS, Validators} from './forms/validators';
 export {
   RequiredValidator,
   MinLengthValidator,
-  MaxLengthValidator
+  MaxLengthValidator,
+  Validator
 } from './forms/directives/validators';
 export {FormBuilder} from './forms/form_builder';
 

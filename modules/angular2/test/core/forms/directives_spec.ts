@@ -32,11 +32,12 @@ import {
   DefaultValueAccessor,
   CheckboxControlValueAccessor,
   SelectControlValueAccessor,
-  QueryList
+  QueryList,
+  Validator
 } from 'angular2/core';
 
 
-import {selectValueAccessor} from 'angular2/src/core/forms/directives/shared';
+import {selectValueAccessor, composeValidators} from 'angular2/src/core/forms/directives/shared';
 
 import {SimpleChange} from 'angular2/src/core/change_detection';
 
@@ -47,6 +48,10 @@ class DummyControlValueAccessor implements ControlValueAccessor {
   registerOnTouched(fn) {}
 
   writeValue(obj: any): void { this.writtenValue = obj; }
+}
+
+class CustomValidatorDirective implements Validator {
+  validate(c: Control): {[key: string]: any} { return {"custom": true}; }
 }
 
 export function main() {
@@ -97,6 +102,21 @@ export function main() {
           expect(() => selectValueAccessor(dir, [customAccessor, customAccessor])).toThrowError();
         });
       });
+
+      describe("composeValidators", () => {
+        it("should compose functions", () => {
+          var dummy1 = (_) => ({"dummy1": true});
+          var dummy2 = (_) => ({"dummy2": true});
+          var v = composeValidators([dummy1, dummy2]);
+          expect(v(new Control(""))).toEqual({"dummy1": true, "dummy2": true});
+        });
+
+        it("should compose validator directives", () => {
+          var dummy1 = (_) => ({"dummy1": true});
+          var v = composeValidators([dummy1, new CustomValidatorDirective()]);
+          expect(v(new Control(""))).toEqual({"dummy1": true, "custom": true});
+        });
+      });
     });
 
     describe("NgFormModel", () => {
@@ -113,7 +133,7 @@ export function main() {
         });
         form.form = formModel;
 
-        loginControlDir = new NgControlName(form, [], [defaultAccessor]);
+        loginControlDir = new NgControlName(form, [Validators.required], [defaultAccessor]);
         loginControlDir.name = "login";
         loginControlDir.valueAccessor = new DummyControlValueAccessor();
       });
@@ -147,8 +167,6 @@ export function main() {
         });
 
         it("should set up validator", () => {
-          loginControlDir.validators = [Validators.required];
-
           expect(formModel.find(["login"]).valid).toBe(true);
 
           // this will add the required validator and recalculate the validity
@@ -335,7 +353,7 @@ export function main() {
       };
 
       beforeEach(() => {
-        controlDir = new NgFormControl([], [defaultAccessor]);
+        controlDir = new NgFormControl([Validators.required], [defaultAccessor]);
         controlDir.valueAccessor = new DummyControlValueAccessor();
 
         control = new Control(null);
@@ -353,8 +371,6 @@ export function main() {
       });
 
       it("should set up validator", () => {
-        controlDir.validators = [Validators.required];
-
         expect(control.valid).toBe(true);
 
         // this will add the required validator and recalculate the validity
@@ -368,7 +384,7 @@ export function main() {
       var ngModel;
 
       beforeEach(() => {
-        ngModel = new NgModel([], [defaultAccessor]);
+        ngModel = new NgModel([Validators.required], [defaultAccessor]);
         ngModel.valueAccessor = new DummyControlValueAccessor();
       });
 
@@ -385,8 +401,6 @@ export function main() {
       });
 
       it("should set up validator", () => {
-        ngModel.validators = [Validators.required];
-
         expect(ngModel.control.valid).toBe(true);
 
         // this will add the required validator and recalculate the validity

@@ -1,5 +1,6 @@
 import {ControlValueAccessor} from './control_value_accessor';
 import {AbstractControlDirective} from './abstract_control_directive';
+import {unimplemented} from 'angular2/src/core/facade/exceptions';
 
 /**
  * A base class that all control directive extend.
@@ -13,7 +14,7 @@ export class NgControl extends AbstractControlDirective {
   name: string = null;
   valueAccessor: ControlValueAccessor = null;
 
-  get validator(): Function { return null; }
+  get validator(): Function { return unimplemented(); }
 
-  viewToModelUpdate(newValue: any): void {}
+  viewToModelUpdate(newValue: any): void { return unimplemented(); }
 }
