@@ -11,23 +11,23 @@ class NoReflectionCapabilities implements PlatformReflectionCapabilities {
     return false;
   }
 
-  Function factory(Type type) {
+  Function factory(type) {
     throw "Cannot find reflection information on ${stringify(type)}";
   }
 
-  List interfaces(Type type) {
+  List interfaces(type) {
     throw "Cannot find reflection information on ${stringify(type)}";
   }
 
-  List parameters(Type type) {
+  List parameters(type) {
     throw "Cannot find reflection information on ${stringify(type)}";
   }
 
-  List annotations(Type type) {
+  List annotations(type) {
     throw "Cannot find reflection information on ${stringify(type)}";
   }
 
-  Map propMetadata(Type type) {
+  Map propMetadata(type) {
     throw "Cannot find reflection information on ${stringify(type)}";
   }
 
@@ -43,7 +43,7 @@ class NoReflectionCapabilities implements PlatformReflectionCapabilities {
     throw "Cannot find method ${name}";
   }
 
-  String importUri(Type type) => './';
+  String importUri(type) => './';
 
   String moduleId(Type type) => './';
 }
