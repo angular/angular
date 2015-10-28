@@ -7,6 +7,7 @@ import {
 import {global} from 'angular2/src/core/facade/lang';
 
 class PublicTestability {
+  /** @internal */
   _testability: Testability;
 
   constructor(testability: Testability) { this._testability = testability; }

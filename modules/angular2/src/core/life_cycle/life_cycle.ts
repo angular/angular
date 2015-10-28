@@ -52,8 +52,8 @@ export abstract class LifeCycle {
 
 @Injectable()
 export class LifeCycle_ extends LifeCycle {
+  /** @internal */
   static _tickScope: WtfScopeFn = wtfCreateScope('LifeCycle#tick()');
-
   /** @internal */
   _changeDetectors: ChangeDetector[];
   /** @internal */
