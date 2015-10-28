@@ -54,7 +54,7 @@ mod.PageMod({
   contentScriptFile: data.url('installed_script.js'),
   onAttach: worker => {
     worker.port.on('startProfiler',
-                   (timeStarted) => profiler.start(/* = profiler memory */ 1000000, 1,
+                   (timeStarted) => profiler.start(/* = profiler memory */ 1000000, 0.1,
                                                    ['leaf', 'js', 'stackwalk', 'gc'], timeStarted));
     worker.port.on('stopProfiler', () => profiler.stop());
     worker.port.on('getProfile',
