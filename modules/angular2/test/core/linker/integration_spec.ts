@@ -1575,7 +1575,7 @@ export function main() {
     describe('logging property updates', () => {
       beforeEachBindings(() => [
         provide(ChangeDetectorGenConfig,
-                {useValue: new ChangeDetectorGenConfig(true, true, true, false)})
+                {useValue: new ChangeDetectorGenConfig(true, true, false)})
       ]);
 
       it('should reflect property values as attributes',

@@ -89,8 +89,7 @@ function _getAppBindings() {
 
   return [
     compilerProviders(),
-    provide(ChangeDetectorGenConfig,
-            {useValue: new ChangeDetectorGenConfig(true, true, false, true)}),
+    provide(ChangeDetectorGenConfig, {useValue: new ChangeDetectorGenConfig(true, false, true)}),
     provide(DOCUMENT, {useValue: appDoc}),
     provide(DomRenderer, {useClass: DomRenderer_}),
     provide(Renderer, {useExisting: DomRenderer}),

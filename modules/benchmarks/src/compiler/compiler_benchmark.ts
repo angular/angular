@@ -35,8 +35,7 @@ function _createBindings(): Provider[] {
             }),
     // Use DynamicChangeDetector as that is the only one that Dart supports as well
     // so that we can compare the numbers between JS and Dart
-    provide(ChangeDetectorGenConfig,
-            {useValue: new ChangeDetectorGenConfig(false, false, false, false)})
+    provide(ChangeDetectorGenConfig, {useValue: new ChangeDetectorGenConfig(false, false, false)})
   ];
 }
 

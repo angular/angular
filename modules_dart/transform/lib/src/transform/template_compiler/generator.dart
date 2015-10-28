@@ -28,8 +28,10 @@ import 'compile_data_creator.dart';
 ///
 /// This method assumes a {@link DomAdapter} has been registered.
 Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
-    {bool reflectPropertiesAsAttributes: false, List<String> ambientDirectives}) async {
-  var viewDefResults = await createCompileData(reader, assetId, ambientDirectives);
+    {bool reflectPropertiesAsAttributes: false,
+    List<String> ambientDirectives}) async {
+  var viewDefResults =
+      await createCompileData(reader, assetId, ambientDirectives);
   if (viewDefResults == null) return null;
   final directiveMetadatas = viewDefResults.ngMeta.types.values;
   if (directiveMetadatas.isNotEmpty) {
@@ -45,7 +47,7 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
   var templateCompiler = zone.templateCompiler;
   if (templateCompiler == null) {
     templateCompiler = createTemplateCompiler(reader,
-        changeDetectionConfig: new ChangeDetectorGenConfig(assertionsEnabled(),
+        changeDetectionConfig: new ChangeDetectorGenConfig(
             assertionsEnabled(), reflectPropertiesAsAttributes, false));
   }
 

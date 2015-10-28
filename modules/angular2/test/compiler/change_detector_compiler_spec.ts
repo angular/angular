@@ -80,7 +80,7 @@ export function main() {
       describe('no jit', () => {
         beforeEachBindings(() => [
           provide(ChangeDetectorGenConfig,
-                  {useValue: new ChangeDetectorGenConfig(true, true, false, false)})
+                  {useValue: new ChangeDetectorGenConfig(true, false, false)})
         ]);
         it('should watch element properties', () => {
           expect(detectChanges(compiler, '<div [el-prop]="someProp">'))
@@ -91,7 +91,7 @@ export function main() {
       describe('jit', () => {
         beforeEachBindings(() => [
           provide(ChangeDetectorGenConfig,
-                  {useValue: new ChangeDetectorGenConfig(true, true, false, true)})
+                  {useValue: new ChangeDetectorGenConfig(true, false, true)})
         ]);
         it('should watch element properties', () => {
           expect(detectChanges(compiler, '<div [el-prop]="someProp">'))

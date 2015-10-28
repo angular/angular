@@ -19,7 +19,7 @@ export 'package:angular2/src/core/change_detection/proto_record.dart'
     show ProtoRecord;
 export 'package:angular2/src/core/change_detection/change_detection_util.dart'
     show ChangeDetectionUtil;
-export 'package:angular2/src/core/facade/lang.dart' show looseIdentical;
+export 'package:angular2/src/core/facade/lang.dart' show assertionsEnabled, looseIdentical;
 
 typedef ProtoChangeDetector PregenProtoChangeDetectorFactory(
     ChangeDetectorDefinition definition);

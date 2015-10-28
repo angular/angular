@@ -64,7 +64,7 @@ export function main() {
       var protoChangeDetectors =
           createChangeDetectorDefinitions(new CompileTypeMetadata({name: 'SomeComp'}),
                                           ChangeDetectionStrategy.Default,
-                                          new ChangeDetectorGenConfig(true, true, false, false),
+                                          new ChangeDetectorGenConfig(true, false, false),
                                           parser.parse(template, directives, 'TestComp'))
               .map(definition => new DynamicProtoChangeDetector(definition));
       var changeDetector = protoChangeDetectors[protoViewIndex].instantiate(dispatcher);
