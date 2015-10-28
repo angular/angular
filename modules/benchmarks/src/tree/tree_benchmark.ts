@@ -11,7 +11,7 @@ import {
   NgIf
 } from 'angular2/core';
 
-import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
+import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {isPresent} from 'angular2/src/core/facade/lang';
 import {window, document, gc} from 'angular2/src/core/facade/browser';
@@ -42,7 +42,7 @@ export function main() {
   BASELINE_IF_TEMPLATE = DOM.createTemplate('<span template="if"><tree></tree></span>');
 
   var app;
-  var lifeCycle;
+  var appRef;
   var baselineRootTreeComponent;
   var count = 0;
 
@@ -50,7 +50,7 @@ export function main() {
     // TODO: We need an initial value as otherwise the getter for data.value will fail
     // --> this should be already caught in change detection!
     app.initData = new TreeNode('', null, null);
-    lifeCycle.tick();
+    appRef.tick();
   }
 
   function profile(create, destroy, name) {
@@ -86,7 +86,7 @@ export function main() {
     var values = count++ % 2 == 0 ? ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*'] :
                                     ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', '-'];
     app.initData = buildTree(maxDepth, values, 0);
-    lifeCycle.tick();
+    appRef.tick();
   }
 
   function noop() {}
@@ -95,7 +95,7 @@ export function main() {
     bootstrap(AppComponent, createProviders())
         .then((ref) => {
           var injector = ref.injector;
-          lifeCycle = injector.get(LifeCycle);
+          appRef = injector.get(ApplicationRef);
 
           app = ref.hostComponent;
           bindAction('#ng2DestroyDom', ng2DestroyDom);

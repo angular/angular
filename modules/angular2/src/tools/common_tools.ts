@@ -1,4 +1,4 @@
-import {LifeCycle} from 'angular2/angular2';
+import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {ComponentRef, ComponentRef_} from 'angular2/src/core/linker/dynamic_component_loader';
 import {isPresent, NumberWrapper} from 'angular2/src/core/facade/lang';
 import {performance, window} from 'angular2/src/core/facade/browser';
@@ -19,9 +19,11 @@ export class AngularTools {
  * corresponds to the `ng.profiler` in the dev console.
  */
 export class AngularProfiler {
-  lifeCycle: LifeCycle;
+  appRef: ApplicationRef;
 
-  constructor(ref: ComponentRef) { this.lifeCycle = (<ComponentRef_>ref).injector.get(LifeCycle); }
+  constructor(ref: ComponentRef) {
+    this.appRef = (<ComponentRef_>ref).injector.get(ApplicationRef);
+  }
 
   /**
    * Exercises change detection in a loop and then prints the average amount of
@@ -50,7 +52,7 @@ export class AngularProfiler {
     var start = DOM.performanceNow();
     var numTicks = 0;
     while (numTicks < 5 || (DOM.performanceNow() - start) < 500) {
-      this.lifeCycle.tick();
+      this.appRef.tick();
       numTicks++;
     }
     var end = DOM.performanceNow();

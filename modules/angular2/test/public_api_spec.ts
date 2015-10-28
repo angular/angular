@@ -102,6 +102,7 @@ var NG_API = [
   'ApplicationRef.dispose()',
   'ApplicationRef.registerBootstrapListener()',
   'ApplicationRef.registerDisposeListener()',
+  'ApplicationRef.tick()',
   */
   'AsyncPipe',
   'AsyncPipe.onDestroy()',
@@ -610,12 +611,6 @@ var NG_API = [
   'KeyValueDiffers',
   'KeyValueDiffers.factories',
   'KeyValueDiffers.find()',
-  'LifeCycle',  // TODO: replace with ApplicationRef
-                /*
-                 Abstract methods
-                'LifeCycle.registerWith()',
-                'LifeCycle.tick()',
-                */
   'LowerCasePipe',
   'LowerCasePipe.transform()',
   'NG_VALIDATORS',

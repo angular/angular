@@ -1,11 +1,13 @@
 import 'package:angular2/testing_internal.dart' show SpyObject;
-import 'package:angular2/core.dart' show LifeCycle, Injector, bind;
+import 'package:angular2/core.dart' show Injector, bind;
+import 'package:angular2/src/core/application_ref.dart' show ApplicationRef;
 import 'package:angular2/src/core/linker/dynamic_component_loader.dart'
     show ComponentRef_;
 import 'dart:js';
 
 @proxy
-class SpyLifeCycle extends SpyObject implements LifeCycle {
+class SpyApplicationRef extends SpyObject implements ApplicationRef {
+  tick() {}
   noSuchMethod(m) => super.noSuchMethod(m);
 }
 
@@ -15,7 +17,7 @@ class SpyComponentRef extends SpyObject implements ComponentRef_ {
 
   SpyComponentRef() {
     this.injector =
-        Injector.resolveAndCreate([bind(LifeCycle).toClass(SpyLifeCycle)]);
+        Injector.resolveAndCreate([bind(ApplicationRef).toClass(SpyApplicationRef)]);
   }
 
   noSuchMethod(m) => super.noSuchMethod(m);

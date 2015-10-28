@@ -20,5 +20,7 @@ export class MockApplicationRef extends ApplicationRef {
 
   dispose(): void {}
 
+  tick(): void {}
+
   get componentTypes(): Type[] { return null; };
 }

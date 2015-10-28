@@ -127,6 +127,14 @@ export abstract class ChangeDetectorRef {
   abstract detectChanges(): void;
 
   /**
+   * Checks the change detector and its children, and throws if any changes are detected.
+   *
+   * This is used in development mode to verify that running change detection doesn't introduce
+   * other changes.
+   */
+  abstract checkNoChanges(): void;
+
+  /**
    * Reattach the change detector to the change detector tree.
    *
    * This also marks OnPush ancestors as to be checked. This reattached change detector will be
@@ -192,6 +200,7 @@ export class ChangeDetectorRef_ extends ChangeDetectorRef {
   markForCheck(): void { this._cd.markPathToRootAsCheckOnce(); }
   detach(): void { this._cd.mode = ChangeDetectionStrategy.Detached; }
   detectChanges(): void { this._cd.detectChanges(); }
+  checkNoChanges(): void { this._cd.checkNoChanges(); }
   reattach(): void {
     this._cd.mode = ChangeDetectionStrategy.CheckAlways;
     this.markForCheck();
