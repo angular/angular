@@ -478,6 +478,7 @@ export class Router {
 export class RootRouter extends Router {
   /** @internal */
   _location: Location;
+  /** @internal */
   _locationSub: Object;
 
   constructor(registry: RouteRegistry, location: Location, primaryComponent: Type) {
