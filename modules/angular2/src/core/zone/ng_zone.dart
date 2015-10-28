@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:stack_trace/stack_trace.dart' show Chain;
 
 typedef void ZeroArgFunction();
-typedef void ErrorHandlingFn(error, stackTrace);
+typedef void ErrorHandlingFn(error, StackTrace stackTrace);
 
 /**
  * A `Timer` wrapper that lets you specify additional functions to call when it
@@ -339,12 +339,11 @@ class NgZone {
   // Called by Chain.capture() on errors when long stack traces are enabled
   void _onErrorWithLongStackTrace(error, Chain chain) {
     if (_onErrorHandler != null || _onErrorCtrl.hasListener) {
-      final traces = chain.terse.traces.map((t) => t.toString()).toList();
       if (_onErrorCtrl.hasListener) {
-        _onErrorCtrl.add(new NgZoneError(error, traces));
+        _onErrorCtrl.add(new NgZoneError(error, chain));
       }
       if (_onErrorHandler != null) {
-        _onErrorHandler(error, traces);
+        _onErrorHandler(error, chain);
       }
     } else {
       throw error;
