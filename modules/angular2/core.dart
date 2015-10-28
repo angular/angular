@@ -12,7 +12,6 @@ export 'package:angular2/src/core/application_ref.dart'
     hide ApplicationRef_, PlatformRef_;
 export 'package:angular2/src/core/services.dart';
 export 'package:angular2/src/core/linker.dart';
-export 'package:angular2/src/core/lifecycle.dart';
 export 'package:angular2/src/core/zone.dart';
 export 'package:angular2/src/core/render.dart';
 export 'package:angular2/src/core/directives.dart';

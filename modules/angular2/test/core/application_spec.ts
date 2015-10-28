@@ -17,7 +17,7 @@ import {Component, Directive, View} from 'angular2/core';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {DOCUMENT} from 'angular2/render';
 import {PromiseWrapper} from 'angular2/src/core/facade/async';
-import {provide, Inject, Injector, LifeCycle} from 'angular2/core';
+import {provide, Inject, Injector} from 'angular2/core';
 import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
 import {IS_DART} from '../platform';
@@ -54,9 +54,9 @@ class HelloRootCmp3 {
 @Component({selector: 'hello-app'})
 @View({template: ''})
 class HelloRootCmp4 {
-  lc;
+  appRef;
 
-  constructor(@Inject(LifeCycle) lc) { this.lc = lc; }
+  constructor(@Inject(ApplicationRef) appRef) { this.appRef = appRef; }
 }
 
 @Component({selector: 'hello-app'})
@@ -179,7 +179,7 @@ export function main() {
          var refPromise = bootstrap(HelloRootCmp4, testProviders);
 
          refPromise.then((ref) => {
-           expect(ref.hostComponent.lc).toBe((<ComponentRef_>ref).injector.get(LifeCycle));
+           expect(ref.hostComponent.appRef).toBe((<ComponentRef_>ref).injector.get(ApplicationRef));
            async.done();
          });
        }));

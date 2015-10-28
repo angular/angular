@@ -22,7 +22,6 @@ import {
 } from 'angular2/src/core/facade/exceptions';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {internalView} from 'angular2/src/core/linker/view_ref';
-import {LifeCycle, LifeCycle_} from 'angular2/src/core/life_cycle/life_cycle';
 import {
   IterableDiffers,
   defaultIterableDiffers,
@@ -42,6 +41,8 @@ import {Compiler} from 'angular2/src/core/linker/compiler';
 import {DynamicComponentLoader_} from "./linker/dynamic_component_loader";
 import {AppViewManager_} from "./linker/view_manager";
 import {Compiler_} from "./linker/compiler";
+import {wtfLeave, wtfCreateScope, WtfScopeFn} from './profile/profile';
+import {ChangeDetectorRef} from 'angular2/src/core/change_detection/change_detector_ref';
 
 /**
  * Constructs the set of providers meant for use at the platform level.
@@ -103,12 +104,7 @@ export function applicationCommonProviders(): Array<Type | Provider | any[]> {
     provide(KeyValueDiffers, {useValue: defaultKeyValueDiffers}),
     DirectiveResolver,
     PipeResolver,
-    provide(DynamicComponentLoader, {useClass: DynamicComponentLoader_}),
-    provide(LifeCycle,
-            {
-              useFactory: (exceptionHandler) => new LifeCycle_(null, assertionsEnabled()),
-              deps: [ExceptionHandler]
-            })
+    provide(DynamicComponentLoader, {useClass: DynamicComponentLoader_})
   ];
 }
 
@@ -334,19 +330,48 @@ export abstract class ApplicationRef {
   abstract dispose(): void;
 
   /**
+   * Invoke this method to explicitly process change detection and its side-effects.
+   *
+   * In development mode, `tick()` also performs a second change detection cycle to ensure that no
+   * further changes are detected. If additional changes are picked up during this second cycle,
+   * bindings in the app have side-effects that cannot be resolved in a single change detection
+   * pass.
+   * In this case, Angular throws an error, since an Angular application can only have one change
+   * detection pass during which all change detection must complete.
+   */
+  abstract tick(): void;
+
+  /**
    * Get a list of component types registered to this application.
    */
   get componentTypes(): Type[] { return unimplemented(); };
 }
 
 export class ApplicationRef_ extends ApplicationRef {
+  /** @internal */
+  static _tickScope: WtfScopeFn = wtfCreateScope('ApplicationRef#tick()');
+
+  /** @internal */
   private _bootstrapListeners: Function[] = [];
+  /** @internal */
   private _disposeListeners: Function[] = [];
+  /** @internal */
   private _rootComponents: ComponentRef[] = [];
+  /** @internal */
   private _rootComponentTypes: Type[] = [];
+  /** @internal */
+  private _changeDetectorRefs: ChangeDetectorRef[] = [];
+  /** @internal */
+  private _runningTick: boolean = false;
+  /** @internal */
+  private _enforceNoNewChanges: boolean = false;
 
   constructor(private _platform: PlatformRef_, private _zone: NgZone, private _injector: Injector) {
     super();
+    if (isPresent(this._zone)) {
+      this._zone.overrideOnTurnDone(() => this.tick());
+    }
+    this._enforceNoNewChanges = assertionsEnabled();
   }
 
   registerBootstrapListener(listener: (ref: ComponentRef) => void): void {
@@ -354,6 +379,10 @@ export class ApplicationRef_ extends ApplicationRef {
   }
 
   registerDisposeListener(dispose: () => void): void { this._disposeListeners.push(dispose); }
+
+  registerChangeDetector(changeDetector: ChangeDetectorRef): void {
+    this._changeDetectorRefs.push(changeDetector);
+  }
 
   bootstrap(componentType: Type,
             providers?: Array<Type | Provider | any[]>): Promise<ComponentRef> {
@@ -370,9 +399,8 @@ export class ApplicationRef_ extends ApplicationRef {
         var compRefToken: Promise<ComponentRef> = injector.get(APP_COMPONENT_REF_PROMISE);
         var tick = (componentRef) => {
           var appChangeDetector = internalView(componentRef.hostView).changeDetector;
-          var lc = injector.get(LifeCycle);
-          lc.registerWith(this._zone, appChangeDetector);
-          lc.tick();
+          this._changeDetectorRefs.push(appChangeDetector.ref);
+          this.tick();
           completer.resolve(componentRef);
           this._rootComponents.push(componentRef);
           this._bootstrapListeners.forEach((listener) => listener(componentRef));
@@ -394,6 +422,24 @@ export class ApplicationRef_ extends ApplicationRef {
   get injector(): Injector { return this._injector; }
 
   get zone(): NgZone { return this._zone; }
+
+  tick(): void {
+    if (this._runningTick) {
+      throw new BaseException("ApplicationRef.tick is called recursively");
+    }
+
+    var s = ApplicationRef_._tickScope();
+    try {
+      this._runningTick = true;
+      this._changeDetectorRefs.forEach((detector) => detector.detectChanges());
+      if (this._enforceNoNewChanges) {
+        this._changeDetectorRefs.forEach((detector) => detector.checkNoChanges());
+      }
+    } finally {
+      this._runningTick = false;
+      wtfLeave(s);
+    }
+  }
 
   dispose(): void {
     // TODO(alxhub): Dispose of the NgZone.

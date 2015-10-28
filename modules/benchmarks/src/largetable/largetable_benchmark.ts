@@ -17,9 +17,9 @@ import {
   NgFor,
   NgSwitch,
   NgSwitchWhen,
-  NgSwitchDefault,
-  LifeCycle
+  NgSwitchDefault
 } from 'angular2/core';
+import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 
@@ -65,7 +65,7 @@ export function main() {
   BASELINE_LARGETABLE_TEMPLATE = DOM.createTemplate('<table></table>');
 
   var app;
-  var lifecycle;
+  var appRef;
   var baselineRootLargetableComponent;
 
   function ng2DestroyDom() {
@@ -73,7 +73,7 @@ export function main() {
     // --> this should be already caught in change detection!
     app.data = null;
     app.benchmarkType = 'none';
-    lifecycle.tick();
+    appRef.tick();
   }
 
   function profile(create, destroy, name) {
@@ -116,7 +116,7 @@ export function main() {
     }
     app.data = data;
     app.benchmarkType = getStringParameter('benchmarkType');
-    lifecycle.tick();
+    appRef.tick();
   }
 
   function noop() {}
@@ -126,7 +126,7 @@ export function main() {
         .then((ref) => {
           var injector = ref.injector;
           app = ref.hostComponent;
-          lifecycle = injector.get(LifeCycle);
+          appRef = injector.get(ApplicationRef);
           bindAction('#ng2DestroyDom', ng2DestroyDom);
           bindAction('#ng2CreateDom', ng2CreateDom);
           bindAction('#ng2UpdateDomProfile', profile(ng2CreateDom, noop, 'ng2-update'));

@@ -11,7 +11,7 @@ import {
   NgIf
 } from 'angular2/core';
 import {ComponentRef_} from 'angular2/src/core/linker/dynamic_component_loader';
-import {LifeCycle} from 'angular2/src/core/life_cycle/life_cycle';
+import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
@@ -43,7 +43,7 @@ export function main() {
   setupReflector();
 
   var app;
-  var lifeCycle;
+  var appRef;
   var baselineRootTreeComponent;
   var count = 0;
 
@@ -86,19 +86,19 @@ export function main() {
 
   function ng2DestroyDom() {
     app.initData = null;
-    lifeCycle.tick();
+    appRef.tick();
   }
 
   function ng2CreateDom() {
     app.initData = createData();
-    lifeCycle.tick();
+    appRef.tick();
   }
 
   function initNg2() {
     bootstrap(AppComponentWithStaticTree, createBindings())
         .then((ref) => {
           var injector = (<ComponentRef_>ref).injector;
-          lifeCycle = injector.get(LifeCycle);
+          appRef = injector.get(ApplicationRef);
 
           app = (<ComponentRef_>ref).hostComponent;
           bindAction('#ng2DestroyDom', ng2DestroyDom);
