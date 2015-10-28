@@ -265,6 +265,7 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
     return this._addRecord(RecordType.Chain, "chain", null, args, null, 0);
   }
 
+  /** @internal */
   _visitAll(asts: any[]) {
     var res = ListWrapper.createFixedSize(asts.length);
     for (var i = 0; i < asts.length; ++i) {
@@ -273,6 +274,7 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
     return res;
   }
 
+  /** @internal */
   _addRecord(type, name, funcOrValue, args, fixedArgs, context) {
     var selfIndex = this._records.length + 1;
     if (context instanceof DirectiveIndex) {

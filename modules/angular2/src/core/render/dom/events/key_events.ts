@@ -99,6 +99,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     };
   }
 
+  /** @internal */
   static _normalizeKey(keyName: string): string {
     // TODO: switch to a StringMap if the mapping grows too much
     switch (keyName) {

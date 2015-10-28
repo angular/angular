@@ -294,6 +294,7 @@ gulp.task('lint', ['build.tools'], function() {
   // https://github.com/palantir/tslint#supported-rules
   var tslintConfig = {
     "rules": {
+      "requireInternalWithUnderscore": true,
       "requireParameterType": true,
       "requireReturnType": true,
       "semicolon": true,

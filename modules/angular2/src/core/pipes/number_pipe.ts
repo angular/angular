@@ -23,6 +23,7 @@ var _re = RegExpWrapper.create('^(\\d+)?\\.((\\d+)(\\-(\\d+))?)?$');
 @CONST()
 @Injectable()
 export class NumberPipe {
+  /** @internal */
   static _format(value: number, style: NumberFormatStyle, digits: string, currency: string = null,
                  currencyAsSymbol: boolean = false): string {
     if (isBlank(value)) return null;
