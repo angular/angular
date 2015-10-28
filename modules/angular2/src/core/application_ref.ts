@@ -215,6 +215,7 @@ export abstract class PlatformRef {
 export class PlatformRef_ extends PlatformRef {
   /** @internal */
   _applications: ApplicationRef[] = [];
+  /** @internal */
   _disposeListeners: Function[] = [];
 
   constructor(private _injector: Injector, private _dispose: () => void) { super(); }

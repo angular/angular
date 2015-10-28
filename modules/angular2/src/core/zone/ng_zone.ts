@@ -185,6 +185,7 @@ export class NgZone {
    */
   get onTurnStart(): /* Subject */ any { return this._onTurnStartEvents; }
 
+  /** @internal */
   _notifyOnTurnStart(parentRun): void {
     parentRun.call(this._innerZone, () => { this._onTurnStartEvents.next(null); });
   }
@@ -213,6 +214,7 @@ export class NgZone {
    */
   get onTurnDone() { return this._onTurnDoneEvents; }
 
+  /** @internal */
   _notifyOnTurnDone(parentRun): void {
     parentRun.call(this._innerZone, () => { this._onTurnDoneEvents.next(null); });
   }
@@ -251,6 +253,7 @@ export class NgZone {
    */
   get onEventDone() { return this._onEventDoneEvents; }
 
+  /** @internal */
   _notifyOnEventDone(): void {
     this.runOutsideAngular(() => { this._onEventDoneEvents.next(null); });
   }
