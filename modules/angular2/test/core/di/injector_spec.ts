@@ -646,15 +646,15 @@ export function main() {
         expect(provider.resolvedFactories[0].dependencies[0].properties)
             .toEqual([new CustomDependencyMetadata()]);
       });
-    });
 
-    it('should allow declaring dependencies with flat arrays', () => {
-      var resolved =
-          Injector.resolve([bind('token').toFactory(e => e, [new InjectMetadata("dep")])]);
-      var nestedResolved =
-          Injector.resolve([bind('token').toFactory(e => e, [[new InjectMetadata("dep")]])]);
-      expect(resolved[0].resolvedFactories[0].dependencies[0].key.token)
-          .toEqual(nestedResolved[0].resolvedFactories[0].dependencies[0].key.token);
+      it('should allow declaring dependencies with flat arrays', () => {
+        var resolved = Injector.resolve(
+            [provide('token', {useFactory: e => e, deps: [new InjectMetadata("dep")]})]);
+        var nestedResolved = Injector.resolve(
+            [provide('token', {useFactory: e => e, deps: [[new InjectMetadata("dep")]]})]);
+        expect(resolved[0].resolvedFactories[0].dependencies[0].key.token)
+            .toEqual(nestedResolved[0].resolvedFactories[0].dependencies[0].key.token);
+      });
     });
 
     describe("displayName", () => {

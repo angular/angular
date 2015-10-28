@@ -643,9 +643,7 @@ function _extractToken(typeOrFunc, metadata /*any[] | any*/, params: any[][]): D
 
   if (!isArray(metadata)) {
     if (metadata instanceof InjectMetadata) {
-      var metaArrayWrapper = ListWrapper.createFixedSize(1);
-      metaArrayWrapper[0] = metadata;
-      metadata = metaArrayWrapper;
+      return _createDependency(metadata.token, optional, null, null, depProps);
     } else {
       return _createDependency(metadata, optional, null, null, depProps);
     }
