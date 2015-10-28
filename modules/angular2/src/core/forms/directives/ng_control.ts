@@ -10,11 +10,11 @@ import {unimplemented} from 'angular2/src/core/facade/exceptions';
 // an abstract method in the public API, and we cannot reflect
 // on that in Dart due to https://github.com/dart-lang/sdk/issues/18721
 // Also we don't have abstract setters, see https://github.com/Microsoft/TypeScript/issues/4669
-export class NgControl extends AbstractControlDirective {
+export abstract class NgControl extends AbstractControlDirective {
   name: string = null;
   valueAccessor: ControlValueAccessor = null;
 
   get validator(): Function { return unimplemented(); }
 
-  viewToModelUpdate(newValue: any): void { return unimplemented(); }
+  abstract viewToModelUpdate(newValue: any): void;
 }
