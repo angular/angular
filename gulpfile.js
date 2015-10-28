@@ -417,22 +417,6 @@ gulp.task('serve.e2e.dart', ['build.js.cjs'], function(neverDone) {
 });
 
 
-// --------------
-// d.ts generation
-var Dgeni = require('dgeni');
-
-gulp.task('docs/typings', [], function() {
-  try {
-    var dgeni = new Dgeni([require('./docs/typescript-definition-package')]);
-    return dgeni.generate();
-  } catch(x) {
-    console.log(x);
-    console.log(x.stack);
-    throw x;
-  }
-});
-
-
 // ------------------
 // CI tests suites
 
@@ -449,7 +433,7 @@ function runKarma(configFile, done) {
 
 gulp.task('test.js', function(done) {
   runSequence('test.unit.tools/ci', 'test.transpiler.unittest', 'test.unit.js/ci',
-              'test.unit.cjs/ci', 'test.typings', 'test.typings.npm', sequenceComplete(done));
+              'test.unit.cjs/ci', 'test.typings', sequenceComplete(done));
 });
 
 gulp.task('test.dart', function(done) {
@@ -785,52 +769,22 @@ gulp.task('pre-test-checks', function(done) {
 // feedback while allowing tests to execute.
 gulp.task('static-checks', ['!build.tools'], function(done) {
   runSequence(
-    ['enforce-format', 'lint', 'test.typings'],
+    // We do not run test.typings here because it requires building, which is too slow.
+    ['enforce-format', 'lint'],
     sequenceComplete(done));
 });
 
 
-gulp.task('!pre.test.typings', ['docs/typings'], function() {
-  return gulp
-    .src([
-      'modules/angular2/typings/**/*'], {
-        base: 'modules/angular2/typings/**'
-      }
-    )
-    .pipe(gulp.dest('dist/docs/typings/*'));
-});
-
 // -----------------
 // Tests for the typings we deliver for TS users
 //
-// There are currently two mechanisms for this.
-// The first is the legacy, bundled .d.ts file produced by dgeni.
-// This is tested by 'test.typings'.
-//
-// The second is individual .d.ts files produced by the compiler,
+// Typings are contained in individual .d.ts files produced by the compiler,
 // distributed in our npm package, and loaded from node_modules by
 // the typescript compiler.
-// This is tested by 'test.typings.npm'.
-//
-// During the transition, we support both packaging/delivery types.
-// TODO(alexeagle): remove the dgeni bundle when users have switched
-
-gulp.task('test.typings', ['!pre.test.typings'], function() {
-  return gulp.src(['typing_spec/*.ts', 'dist/docs/typings/angular2/*.d.ts',
-                   'dist/docs/typings/http.d.ts',
-                   'dist/docs/typings/es6-shim/es6-shim.d.ts',
-                   'dist/docs/typings/jasmine/jasmine.d.ts'])
-      .pipe(tsc({target: 'ES5', module: 'commonjs',
-                 experimentalDecorators: true,
-                 noImplicitAny: true,
-                 // Don't use the version of typescript that gulp-typescript depends on, we need 1.5
-                 // see https://github.com/ivogabe/gulp-typescript#typescript-version
-                 typescript: require('typescript')}));
-});
 
 // Make sure the two typings tests are isolated, by running this one in a tempdir
 var tmpdir = path.join(os.tmpdir(), 'test.typings',  new Date().getTime().toString());
-gulp.task('!pre.test.typings.layoutNodeModule', function() {
+gulp.task('!pre.test.typings.layoutNodeModule', ['build.js.cjs'], function() {
   return gulp
     .src(['dist/js/cjs/angular2/**/*'], {base: 'dist/js/cjs'})
     .pipe(gulp.dest(path.join(tmpdir, 'node_modules')));
@@ -840,7 +794,7 @@ gulp.task('!pre.test.typings.copyTypingsSpec', function() {
     .src(['typing_spec/basic_spec.ts'], {base: 'typing_spec'})
     .pipe(gulp.dest(path.join(tmpdir)));
 });
-gulp.task('test.typings.npm', [
+gulp.task('test.typings', [
   '!pre.test.typings.layoutNodeModule',
   '!pre.test.typings.copyTypingsSpec'
 ], function() {
