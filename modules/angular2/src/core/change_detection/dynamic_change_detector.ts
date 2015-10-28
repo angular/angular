@@ -299,7 +299,6 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     }
   }
 
-  /** @internal */
   private _calculateCurrValue(proto: ProtoRecord, values: any[], locals: Locals) {
     switch (proto.mode) {
       case RecordType.Self:
@@ -367,7 +366,6 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     }
   }
 
-  /** @internal */
   private _pipeCheck(proto: ProtoRecord, throwOnChange: boolean, values: any[]) {
     var context = this._readContext(proto, values);
     var selectedPipe = this._pipeFor(proto, context);
@@ -406,7 +404,6 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     }
   }
 
-  /** @internal */
   private _pipeFor(proto: ProtoRecord, context) {
     var storedPipe = this._readPipe(proto);
     if (isPresent(storedPipe)) return storedPipe;
@@ -416,7 +413,6 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     return pipe;
   }
 
-  /** @internal */
   private _readContext(proto: ProtoRecord, values: any[]) {
     if (proto.contextIndex == -1) {
       return this._getDirectiveFor(proto.directiveIndex);
@@ -424,29 +420,22 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     return values[proto.contextIndex];
   }
 
-  /** @internal */
   private _readSelf(proto: ProtoRecord, values: any[]) { return values[proto.selfIndex]; }
 
-  /** @internal */
   private _writeSelf(proto: ProtoRecord, value, values: any[]) { values[proto.selfIndex] = value; }
 
-  /** @internal */
   private _readPipe(proto: ProtoRecord) { return this.localPipes[proto.selfIndex]; }
 
-  /** @internal */
   private _writePipe(proto: ProtoRecord, value) { this.localPipes[proto.selfIndex] = value; }
 
-  /** @internal */
   private _setChanged(proto: ProtoRecord, value: boolean) {
     if (proto.argumentToPureFunction) this.changes[proto.selfIndex] = value;
   }
 
-  /** @internal */
   private _pureFuncAndArgsDidNotChange(proto: ProtoRecord): boolean {
     return proto.isPureFunction() && !this._argsChanged(proto);
   }
 
-  /** @internal */
   private _argsChanged(proto: ProtoRecord): boolean {
     var args = proto.args;
     for (var i = 0; i < args.length; ++i) {
@@ -457,12 +446,10 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     return false;
   }
 
-  /** @internal */
   private _argsOrContextChanged(proto: ProtoRecord): boolean {
     return this._argsChanged(proto) || this.changes[proto.contextIndex];
   }
 
-  /** @internal */
   private _readArgs(proto: ProtoRecord, values: any[]) {
     var res = ListWrapper.createFixedSize(proto.args.length);
     var args = proto.args;
