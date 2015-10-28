@@ -54,8 +54,6 @@
     "conventional-changelog": "^0.2.1",
     "css": "mlaval/css#issue65",
     "del": "~1",
-    "dgeni": "^0.4.1",
-    "dgeni-packages": "^0.10.11",
     "es6-shim": "^0.33.3",
     "event-stream": "^3.1.5",
     "firefox-profile": "^0.3.4",
