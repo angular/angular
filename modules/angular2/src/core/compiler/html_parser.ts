@@ -40,16 +40,16 @@ function parseText(text: Text, indexInParent: number, parentSourceInfo: string):
                          `${parentSourceInfo} > #text(${value}):nth-child(${indexInParent})`);
 }
 
-function parseAttr(element: Element, parentSourceInfo: string, attrName: string, attrValue: string):
-    HtmlAttrAst {
+function parseAttr(element: Element, parentSourceInfo: string, attrName: string,
+                   attrValue: string): HtmlAttrAst {
   // TODO(tbosch): add source row/column source info from parse5 / package:html
   var lowerCaseAttrName = attrName.toLowerCase();
   return new HtmlAttrAst(lowerCaseAttrName, attrValue,
                          `${parentSourceInfo}[${lowerCaseAttrName}=${attrValue}]`);
 }
 
-function parseElement(element: Element, indexInParent: number, parentSourceInfo: string):
-    HtmlElementAst {
+function parseElement(element: Element, indexInParent: number,
+                      parentSourceInfo: string): HtmlElementAst {
   // normalize nodename always as lower case so that following build steps
   // can rely on this
   var nodeName = DOM.nodeName(element).toLowerCase();

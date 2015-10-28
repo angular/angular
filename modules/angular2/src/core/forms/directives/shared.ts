@@ -68,8 +68,8 @@ export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any)
 }
 
 // TODO: vsavkin remove it once https://github.com/angular/angular/issues/3011 is implemented
-export function selectValueAccessor(dir: NgControl, valueAccessors: ControlValueAccessor[]):
-    ControlValueAccessor {
+export function selectValueAccessor(dir: NgControl,
+                                    valueAccessors: ControlValueAccessor[]): ControlValueAccessor {
   if (isBlank(valueAccessors)) return null;
 
   var defaultAccessor;

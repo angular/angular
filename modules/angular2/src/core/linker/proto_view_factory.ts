@@ -283,9 +283,9 @@ function provideDirective(directiveResolver: DirectiveResolver, type: Type): Dir
   return DirectiveProvider.createFromType(type, annotation);
 }
 
-export function createDirectiveVariableBindings(variableNameAndValues: Array<string | number>,
-                                                directiveProviders: DirectiveProvider[]):
-    Map<string, number> {
+export function createDirectiveVariableBindings(
+    variableNameAndValues: Array<string | number>,
+    directiveProviders: DirectiveProvider[]): Map<string, number> {
   var directiveVariableBindings = new Map<string, number>();
   for (var i = 0; i < variableNameAndValues.length; i += 2) {
     var templateName = <string>variableNameAndValues[i];

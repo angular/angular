@@ -470,32 +470,32 @@ export function main() {
 
     it('should allow to switch the order of nested components via ng-content',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideView(
-                MainComp,
-                new ViewMetadata(
-                    {template: `<cmp-a><cmp-b></cmp-b></cmp-a>`, directives: [CmpA, CmpB]}))
+         tcb.overrideView(MainComp, new ViewMetadata({
+                            template: `<cmp-a><cmp-b></cmp-b></cmp-a>`,
+                            directives: [CmpA, CmpB],
+                          }))
              .createAsync(MainComp)
              .then((main) => {
                main.detectChanges();
                expect(DOM.getInnerHTML(main.debugElement.nativeElement))
-                   .toEqual(
-                       '<cmp-a><cmp-b><cmp-d><d>cmp-d</d></cmp-d></cmp-b><cmp-c><c>cmp-c</c></cmp-c></cmp-a>');
+                   .toEqual('<cmp-a><cmp-b><cmp-d><d>cmp-d</d></cmp-d></cmp-b>' +
+                            '<cmp-c><c>cmp-c</c></cmp-c></cmp-a>');
                async.done();
              });
        }));
 
     it('should create nested components in the right order',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideView(
-                MainComp,
-                new ViewMetadata(
-                    {template: `<cmp-a1></cmp-a1><cmp-a2></cmp-a2>`, directives: [CmpA1, CmpA2]}))
+         tcb.overrideView(MainComp, new ViewMetadata({
+                            template: `<cmp-a1></cmp-a1><cmp-a2></cmp-a2>`,
+                            directives: [CmpA1, CmpA2],
+                          }))
              .createAsync(MainComp)
              .then((main) => {
                main.detectChanges();
                expect(DOM.getInnerHTML(main.debugElement.nativeElement))
-                   .toEqual(
-                       '<cmp-a1>a1<cmp-b11>b11</cmp-b11><cmp-b12>b12</cmp-b12></cmp-a1><cmp-a2>a2<cmp-b21>b21</cmp-b21><cmp-b22>b22</cmp-b22></cmp-a2>');
+                   .toEqual('<cmp-a1>a1<cmp-b11>b11</cmp-b11><cmp-b12>b12</cmp-b12></cmp-a1>' +
+                            '<cmp-a2>a2<cmp-b21>b21</cmp-b21><cmp-b22>b22</cmp-b22></cmp-a2>');
                async.done();
              });
        }));

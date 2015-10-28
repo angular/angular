@@ -236,8 +236,8 @@ if (!(Reflect && Reflect.getMetadata)) {
   throw 'reflect-metadata shim is required when using class decorators';
 }
 
-export function makeDecorator(annotationCls, chainFn: (fn: Function) => void = null):
-    (...args: any[]) => (cls: any) => any {
+export function makeDecorator(
+    annotationCls, chainFn: (fn: Function) => void = null): (...args: any[]) => (cls: any) => any {
   function DecoratorFactory(objOrType): (cls: any) => any {
     var annotationInstance = new (<any>annotationCls)(objOrType);
     if (this instanceof annotationCls) {

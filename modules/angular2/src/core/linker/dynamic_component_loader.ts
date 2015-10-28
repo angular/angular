@@ -232,8 +232,8 @@ export abstract class DynamicComponentLoader {
    * <child-component>Child</child-component>
    * ```
    */
-  abstract loadNextToLocation(type: Type, location: ElementRef, providers?: ResolvedProvider[]):
-      Promise<ComponentRef>;
+  abstract loadNextToLocation(type: Type, location: ElementRef,
+                              providers?: ResolvedProvider[]): Promise<ComponentRef>;
 }
 
 @Injectable()

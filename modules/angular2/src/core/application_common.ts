@@ -218,9 +218,9 @@ export function platform(providers?: Array<Type | Provider | any[]>): PlatformRe
  *
  * Returns a `Promise` of {@link ComponentRef}.
  */
-export function commonBootstrap(appComponentType: /*Type*/ any,
-                                appProviders: Array<Type | Provider | any[]> = null):
-    Promise<ComponentRef> {
+export function commonBootstrap(
+    appComponentType: /*Type*/ any,
+    appProviders: Array<Type | Provider | any[]> = null): Promise<ComponentRef> {
   var p = platform();
   var bindings = [applicationCommonProviders(), applicationDomProviders()];
   if (isPresent(appProviders)) {

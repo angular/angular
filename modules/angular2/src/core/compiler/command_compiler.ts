@@ -200,8 +200,8 @@ class CodegenCommandFactory implements CommandFactory<string> {
   }
 }
 
-function visitAndReturnContext(visitor: TemplateAstVisitor, asts: TemplateAst[], context: any):
-    any {
+function visitAndReturnContext(visitor: TemplateAstVisitor, asts: TemplateAst[],
+                               context: any): any {
   templateVisitAll(visitor, asts, context);
   return context;
 }

@@ -74,8 +74,8 @@ export function main() {
             `a {color: green}@import ${IMPORT_REL_STYLESHEET_URL};`;
       });
 
-      function compile(styles: string[], styleAbsUrls: string[], encapsulation: ViewEncapsulation):
-          Promise<string[]> {
+      function compile(styles: string[], styleAbsUrls: string[],
+                       encapsulation: ViewEncapsulation): Promise<string[]> {
         // Note: Can't use MockXHR as the xhr is called recursively,
         // so we can't trigger flush.
         xhr.spy('get').andCallFake((url) => {
@@ -203,8 +203,8 @@ export function main() {
     });
 
     describe('compileComponentCodeGen', () => {
-      function compile(styles: string[], styleAbsUrls: string[], encapsulation: ViewEncapsulation):
-          Promise<string[]> {
+      function compile(styles: string[], styleAbsUrls: string[],
+                       encapsulation: ViewEncapsulation): Promise<string[]> {
         var sourceExpression = compiler.compileComponentCodeGen(
             `'${appId}'`, `${templateId}`,
             new CompileTemplateMetadata(

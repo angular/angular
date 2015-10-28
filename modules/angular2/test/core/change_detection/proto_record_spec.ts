@@ -13,15 +13,15 @@ import {isBlank} from 'angular2/src/core/facade/lang';
 import {RecordType, ProtoRecord} from 'angular2/src/core/change_detection/proto_record';
 
 export function main() {
-  function r({lastInBinding, mode, name, directiveIndex, argumentToPureFunction, referencedBySelf}:
-                 {
-                   lastInBinding?: any,
-                   mode?: any,
-                   name?: any,
-                   directiveIndex?: any,
-                   argumentToPureFunction?: boolean,
-                   referencedBySelf?: boolean
-                 } = {}) {
+  function r(
+      {lastInBinding, mode, name, directiveIndex, argumentToPureFunction, referencedBySelf}: {
+        lastInBinding?: any,
+        mode?: any,
+        name?: any,
+        directiveIndex?: any,
+        argumentToPureFunction?: boolean,
+        referencedBySelf?: boolean
+      } = {}) {
     if (isBlank(lastInBinding)) lastInBinding = false;
     if (isBlank(mode)) mode = RecordType.PropertyRead;
     if (isBlank(name)) name = "name";

@@ -28,15 +28,15 @@ export class BrowserGetTestability implements GetTestability {
   static init() { setTestabilityGetter(new BrowserGetTestability()); }
 
   addToWindow(registry: TestabilityRegistry): void {
-    global.getAngularTestability = function(elem: Element, findInAncestors: boolean = true):
-        PublicTestability {
-          var testability = registry.findTestabilityInTree(elem, findInAncestors);
+    global.getAngularTestability = function(elem: Element,
+                                            findInAncestors: boolean = true): PublicTestability {
+      var testability = registry.findTestabilityInTree(elem, findInAncestors);
 
-          if (testability == null) {
-            throw new Error('Could not find testability for element.');
-          }
-          return new PublicTestability(testability);
-        };
+      if (testability == null) {
+        throw new Error('Could not find testability for element.');
+      }
+      return new PublicTestability(testability);
+    };
     global.getAllAngularTestabilities = function(): PublicTestability[] {
       var testabilities = registry.getAllTestabilities();
       return testabilities.map((testability) => { return new PublicTestability(testability); });

@@ -55,8 +55,8 @@ export abstract class AppViewManager {
    * Throws an exception if the specified `hostLocation` is not a Host Element of a Component, or if
    * variable `variableName` couldn't be found in the Component View of this Component.
    */
-  abstract getNamedElementInComponentView(hostLocation: ElementRef, variableName: string):
-      ElementRef;
+  abstract getNamedElementInComponentView(hostLocation: ElementRef,
+                                          variableName: string): ElementRef;
 
   /**
    * Returns the component instance for the provided Host Element.

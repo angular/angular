@@ -372,7 +372,8 @@ export function main() {
            var ng1 = function() {
              return {
                scope: {title: '@'},
-               bindToController: true, template: '{{ctl.title}}',
+               bindToController: true,
+               template: '{{ctl.title}}',
                controllerAs: 'ctl',
                controller: Class({constructor: function() {}})
              };
@@ -400,7 +401,8 @@ export function main() {
            var ng1 = function($rootScope) {
              return {
                scope: {title: '@'},
-               bindToController: true, template: '{{ctl.status}}',
+               bindToController: true,
+               template: '{{ctl.status}}',
                require: 'ng1',
                controller: Class({constructor: function() { this.status = 'WORKS'; }}),
                link: function(scope, element, attrs, linkController) {
@@ -437,7 +439,8 @@ export function main() {
            var ng1 = function() {
              return {
                scope: {title: '@'},
-               bindToController: true, template: '{{parent.parent}}:{{ng1.status}}',
+               bindToController: true,
+               template: '{{parent.parent}}:{{ng1.status}}',
                require: ['ng1', '^parent', '?^^notFound'],
                controller: Class({constructor: function() { this.status = 'WORKS'; }}),
                link: function(scope, element, attrs, linkControllers) {
@@ -510,7 +513,8 @@ export function main() {
            module.directive('ng1', function() {
              return {
                scope: {title: '='},
-               transclude: true, template: 'ng1[Hello {{title}}!](<span ng-transclude></span>)'
+               transclude: true,
+               template: 'ng1[Hello {{title}}!](<span ng-transclude></span>)'
              };
            });
 

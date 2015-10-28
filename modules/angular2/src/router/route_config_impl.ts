@@ -41,8 +41,8 @@ export class Route implements RouteDefinition {
   // added next two properties to work around https://github.com/Microsoft/TypeScript/issues/4107
   loader: Function;
   redirectTo: string;
-  constructor({path, component, as, data}:
-                  {path: string, component: Type, as?: string, data?: {[key: string]: any}}) {
+  constructor({path, component, as,
+               data}: {path: string, component: Type, as?: string, data?: {[key: string]: any}}) {
     this.path = path;
     this.component = component;
     this.as = as;
@@ -115,8 +115,8 @@ export class AsyncRoute implements RouteDefinition {
   path: string;
   loader: Function;
   as: string;
-  constructor({path, loader, as, data}:
-                  {path: string, loader: Function, as?: string, data?: {[key: string]: any}}) {
+  constructor({path, loader, as,
+               data}: {path: string, loader: Function, as?: string, data?: {[key: string]: any}}) {
     this.path = path;
     this.loader = loader;
     this.as = as;
