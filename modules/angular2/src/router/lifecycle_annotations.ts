@@ -42,6 +42,6 @@ export {
  *
  * {@example router/ts/can_activate/can_activate_example.ts region='canActivate' }
  */
-export var CanActivate:
-    (hook: (next: ComponentInstruction, prev: ComponentInstruction) => Promise<boolean>| boolean) =>
-        ClassDecorator = makeDecorator(CanActivateAnnotation);
+export var CanActivate: (hook: (next: ComponentInstruction, prev: ComponentInstruction) =>
+                             Promise<boolean>| boolean) => ClassDecorator =
+    makeDecorator(CanActivateAnnotation);

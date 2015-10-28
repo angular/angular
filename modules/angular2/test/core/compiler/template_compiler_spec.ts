@@ -190,8 +190,8 @@ export function main() {
       });
 
       describe('compileTemplatesCodeGen', () => {
-        function normalizeComponent(component: Type):
-            Promise<NormalizedComponentWithViewDirectives> {
+        function normalizeComponent(
+            component: Type): Promise<NormalizedComponentWithViewDirectives> {
           var compAndViewDirMetas = [runtimeMetadataResolver.getMetadata(component)].concat(
               runtimeMetadataResolver.getViewDirectivesMetadata(component));
           return PromiseWrapper.all(compAndViewDirMetas.map(
@@ -316,8 +316,8 @@ class CompWithEmbeddedTemplate {
 class NonComponent {
 }
 
-function testableTemplateModule(sourceModule: SourceModule, normComp: CompileDirectiveMetadata):
-    SourceModule {
+function testableTemplateModule(sourceModule: SourceModule,
+                                normComp: CompileDirectiveMetadata): SourceModule {
   var resultExpression =
       `${THIS_MODULE_REF}humanizeTemplate(Host${normComp.type.name}Template.getTemplate())`;
   var testableSource = `${sourceModule.sourceWithModuleRefs}
@@ -332,9 +332,9 @@ function testableStylesModule(sourceModule: SourceModule): SourceModule {
 }
 
 // Attention: read by eval!
-export function humanizeTemplate(template: CompiledTemplate,
-                                 humanizedTemplates: Map<number, {[key: string]: any}> = null):
-    {[key: string]: any} {
+export function humanizeTemplate(
+    template: CompiledTemplate,
+    humanizedTemplates: Map<number, {[key: string]: any}> = null): {[key: string]: any} {
   if (isBlank(humanizedTemplates)) {
     humanizedTemplates = new Map<number, {[key: string]: any}>();
   }

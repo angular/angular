@@ -544,8 +544,8 @@ function splitAndFlattenLinkParams(linkParams: any[]): any[] {
   }, []);
 }
 
-function canActivateOne(nextInstruction: Instruction, prevInstruction: Instruction):
-    Promise<boolean> {
+function canActivateOne(nextInstruction: Instruction,
+                        prevInstruction: Instruction): Promise<boolean> {
   var next = _resolveToTrue;
   if (isPresent(nextInstruction.child)) {
     next = canActivateOne(nextInstruction.child,

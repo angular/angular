@@ -165,8 +165,8 @@ export class EmbeddedTemplateCmd implements TemplateCmd, IBeginElementCmd,
 
 export function embeddedTemplate(attrNameAndValues: string[], variableNameAndValues: string[],
                                  directives: Type[], isMerged: boolean, ngContentIndex: number,
-                                 changeDetectorFactory: Function, children: TemplateCmd[]):
-    EmbeddedTemplateCmd {
+                                 changeDetectorFactory: Function,
+                                 children: TemplateCmd[]): EmbeddedTemplateCmd {
   return new EmbeddedTemplateCmd(attrNameAndValues, variableNameAndValues, directives, isMerged,
                                  ngContentIndex, changeDetectorFactory, children);
 }

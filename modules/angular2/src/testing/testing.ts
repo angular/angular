@@ -144,22 +144,22 @@ export function beforeEach(fn: FunctionWithParamTokens | AnyTestFn): void {
   }
 }
 
-export function it(name: string, fn: FunctionWithParamTokens | AnyTestFn, timeOut: number = null):
-    void {
+export function it(name: string, fn: FunctionWithParamTokens | AnyTestFn,
+                   timeOut: number = null): void {
   return _it(jsmIt, name, fn, timeOut);
 }
 
-export function xit(name: string, fn: FunctionWithParamTokens | AnyTestFn, timeOut: number = null):
-    void {
+export function xit(name: string, fn: FunctionWithParamTokens | AnyTestFn,
+                    timeOut: number = null): void {
   return _it(jsmXIt, name, fn, timeOut);
 }
 
-export function iit(name: string, fn: FunctionWithParamTokens | AnyTestFn, timeOut: number = null):
-    void {
+export function iit(name: string, fn: FunctionWithParamTokens | AnyTestFn,
+                    timeOut: number = null): void {
   return _it(jsmIIt, name, fn, timeOut);
 }
 
-export function fit(name: string, fn: FunctionWithParamTokens | AnyTestFn, timeOut: number = null):
-    void {
+export function fit(name: string, fn: FunctionWithParamTokens | AnyTestFn,
+                    timeOut: number = null): void {
   return _it(jsmIIt, name, fn, timeOut);
 }

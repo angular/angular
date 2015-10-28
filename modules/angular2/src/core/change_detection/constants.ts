@@ -51,8 +51,8 @@ export var CHANGE_DETECTION_STRATEGY_VALUES = [
   ChangeDetectionStrategy.OnPushObserve
 ];
 
-export function isDefaultChangeDetectionStrategy(changeDetectionStrategy: ChangeDetectionStrategy):
-    boolean {
+export function isDefaultChangeDetectionStrategy(
+    changeDetectionStrategy: ChangeDetectionStrategy): boolean {
   return isBlank(changeDetectionStrategy) ||
          changeDetectionStrategy === ChangeDetectionStrategy.Default;
 }

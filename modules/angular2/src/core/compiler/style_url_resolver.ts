@@ -24,8 +24,8 @@ export function isStyleUrlResolvable(url: string): boolean {
  * Rewrites stylesheets by resolving and removing the @import urls that
  * are either relative or don't have a `package:` scheme
  */
-export function extractStyleUrls(resolver: UrlResolver, baseUrl: string, cssText: string):
-    StyleWithImports {
+export function extractStyleUrls(resolver: UrlResolver, baseUrl: string,
+                                 cssText: string): StyleWithImports {
   var foundUrls = [];
   var modifiedCssText = StringWrapper.replaceAllMapped(cssText, _cssImportRe, (m) => {
     var url = isPresent(m[1]) ? m[1] : m[2];

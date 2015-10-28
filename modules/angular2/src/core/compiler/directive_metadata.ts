@@ -159,7 +159,8 @@ export class CompileDirectiveMetadata {
       hostListeners: hostListeners,
       hostProperties: hostProperties,
       hostAttributes: hostAttributes,
-      lifecycleHooks: isPresent(lifecycleHooks) ? lifecycleHooks : [], template: template
+      lifecycleHooks: isPresent(lifecycleHooks) ? lifecycleHooks : [],
+      template: template
     });
   }
 

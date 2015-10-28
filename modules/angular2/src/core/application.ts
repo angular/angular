@@ -18,9 +18,9 @@ export {
 } from './application_ref';
 
 /// See [commonBootstrap] for detailed documentation.
-export function bootstrap(appComponentType: /*Type*/ any,
-                          appProviders: Array<Type | Provider | any[]> = null):
-    Promise<ComponentRef> {
+export function bootstrap(
+    appComponentType: /*Type*/ any,
+    appProviders: Array<Type | Provider | any[]> = null): Promise<ComponentRef> {
   var providers = [compilerProviders()];
   if (isPresent(appProviders)) {
     providers.push(appProviders);

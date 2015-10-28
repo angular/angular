@@ -31,7 +31,7 @@ import {
 } from 'angular2/http';
 
 var Rx = require('@reactivex/rxjs/dist/cjs/Rx');
-let{Observable, Subject} = Rx;
+let {Observable, Subject} = Rx;
 
 class SpyObserver extends SpyObject {
   onNext: Function;

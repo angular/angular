@@ -111,8 +111,8 @@ export abstract class AbstractControl {
 
   setParent(parent: ControlGroup | ControlArray): void { this._parent = parent; }
 
-  updateValueAndValidity({onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}):
-      void {
+  updateValueAndValidity(
+      {onlySelf, emitEvent}: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     onlySelf = normalizeBool(onlySelf);
     emitEvent = isPresent(emitEvent) ? emitEvent : true;
 
@@ -237,10 +237,11 @@ export class Control extends AbstractControl {
    * via an `onChange` event. This is the default behavior if `emitModelToViewChange` is not
    * specified.
    */
-  updateValue(value: any,
-              {onlySelf, emitEvent, emitModelToViewChange}:
-                  {onlySelf?: boolean, emitEvent?: boolean, emitModelToViewChange?: boolean} = {}):
-      void {
+  updateValue(value: any, {onlySelf, emitEvent, emitModelToViewChange}: {
+    onlySelf?: boolean,
+    emitEvent?: boolean,
+    emitModelToViewChange?: boolean
+  } = {}): void {
     emitModelToViewChange = isPresent(emitModelToViewChange) ? emitModelToViewChange : true;
     this._value = value;
     if (isPresent(this._onChange) && emitModelToViewChange) this._onChange(this._value);

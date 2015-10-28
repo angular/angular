@@ -209,8 +209,8 @@ export abstract class Renderer {
    *
    * Returns an instance of {@link RenderViewWithFragments}, representing the Render View.
    */
-  abstract createView(protoViewRef: RenderProtoViewRef, fragmentCount: number):
-      RenderViewWithFragments;
+  abstract createView(protoViewRef: RenderProtoViewRef,
+                      fragmentCount: number): RenderViewWithFragments;
 
   /**
    * Destroys a Render View specified via `viewRef`.

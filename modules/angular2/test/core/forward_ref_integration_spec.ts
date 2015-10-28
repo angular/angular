@@ -43,7 +43,7 @@ export function main() {
 @Component({selector: 'app', viewProviders: [forwardRef(() => Frame)]})
 @View({
   template: `<door><lock></lock></door>`,
-  directives: [forwardRef(() => Door), forwardRef(() => Lock)]
+  directives: [forwardRef(() => Door), forwardRef(() => Lock)],
 })
 class App {
 }
@@ -51,7 +51,7 @@ class App {
 @Component({selector: 'Lock'})
 @View({
   directives: [NgFor],
-  template: `{{frame.name}}(<span *ng-for="var lock of locks">{{lock.name}}</span>)`
+  template: `{{frame.name}}(<span *ng-for="var lock of locks">{{lock.name}}</span>)`,
 })
 class Door {
   locks: QueryList<Lock>;

@@ -686,8 +686,8 @@ function _extractToken(typeOrFunc, metadata /*any[] | any*/, params: any[][]): D
   }
 }
 
-function _createDependency(token, optional, lowerBoundVisibility, upperBoundVisibility, depProps):
-    Dependency {
+function _createDependency(token, optional, lowerBoundVisibility, upperBoundVisibility,
+                           depProps): Dependency {
   return new Dependency(Key.get(token), optional, lowerBoundVisibility, upperBoundVisibility,
                         depProps);
 }

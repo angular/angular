@@ -220,8 +220,8 @@ export class ChromeDriverExtension extends WebDriverExtension {
   }
 }
 
-function normalizeEvent(chromeEvent: {[key: string]: any}, data: {[key: string]: any}):
-    {[key: string]: any} {
+function normalizeEvent(chromeEvent: {[key: string]: any},
+                        data: {[key: string]: any}): {[key: string]: any} {
   var ph = chromeEvent['ph'];
   if (StringWrapper.equals(ph, 'S')) {
     ph = 'b';

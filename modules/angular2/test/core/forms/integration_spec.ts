@@ -78,27 +78,29 @@ export function main() {
        }));
 
     it("should emit ng-submit event on submit",
-       inject(
-           [TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
-             var t =
-                 `<div><form [ng-form-model]="form" (ng-submit)="name='updated'"></form><span>{{name}}</span></div>`;
+       inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
+                var t = `<div>
+                      <form [ng-form-model]="form" (ng-submit)="name='updated'"></form>
+                      <span>{{name}}</span>
+                    </div>`;
 
-             var rootTC: RootTestComponent;
+                var rootTC: RootTestComponent;
 
-             tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((root) => { rootTC = root; });
-             tick();
+                tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
+                    (root) => { rootTC = root; });
+                tick();
 
-             rootTC.debugElement.componentInstance.form = new ControlGroup({});
-             rootTC.debugElement.componentInstance.name = 'old';
+                rootTC.debugElement.componentInstance.form = new ControlGroup({});
+                rootTC.debugElement.componentInstance.name = 'old';
 
-             tick();
+                tick();
 
-             var form = rootTC.debugElement.query(By.css("form"));
-             dispatchEvent(form.nativeElement, "submit");
+                var form = rootTC.debugElement.query(By.css("form"));
+                dispatchEvent(form.nativeElement, "submit");
 
-             tick();
-             expect(rootTC.debugElement.componentInstance.name).toEqual('updated');
-           })));
+                tick();
+                expect(rootTC.debugElement.componentInstance.name).toEqual('updated');
+              })));
 
     it("should work with single controls",
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {

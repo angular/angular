@@ -6,7 +6,7 @@ import {Connection, ConnectionBackend} from '../interfaces';
 import {isPresent} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 var Rx = require('@reactivex/rxjs/dist/cjs/Rx');
-let{Subject, ReplaySubject} = Rx;
+let {Subject, ReplaySubject} = Rx;
 
 /**
  *

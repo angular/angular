@@ -120,8 +120,8 @@ export function main() {
       });
     }
 
-    function createDirective(type: CompileTypeMetadata, selector: string, exportAs: string = null):
-        CompileDirectiveMetadata {
+    function createDirective(type: CompileTypeMetadata, selector: string,
+                             exportAs: string = null): CompileDirectiveMetadata {
       return CompileDirectiveMetadata.create(
           {selector: selector, exportAs: exportAs, isComponent: false, type: type});
     }

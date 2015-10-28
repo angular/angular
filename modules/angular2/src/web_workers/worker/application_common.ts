@@ -91,8 +91,8 @@ class PrintLogger {
   logGroupEnd() {}
 }
 
-function webWorkerProviders(appComponentType, bus: MessageBus, initData: {[key: string]: any}):
-    Array<Type | Provider | any[]> {
+function webWorkerProviders(appComponentType, bus: MessageBus,
+                            initData: {[key: string]: any}): Array<Type | Provider | any[]> {
   return [
     compilerProviders(),
     Serializer,
@@ -114,9 +114,9 @@ function webWorkerProviders(appComponentType, bus: MessageBus, initData: {[key: 
   ];
 }
 
-export function bootstrapWebWorkerCommon(appComponentType: Type, bus: MessageBus,
-                                         appProviders: Array<Type | Provider | any[]> = null):
-    Promise<ComponentRef> {
+export function bootstrapWebWorkerCommon(
+    appComponentType: Type, bus: MessageBus,
+    appProviders: Array<Type | Provider | any[]> = null): Promise<ComponentRef> {
   var bootstrapProcess: PromiseCompleter<any> = PromiseWrapper.completer();
   var appPromise = platform().asyncApplication((zone: NgZone) => {
     // TODO(rado): prepopulate template cache, so applications with only

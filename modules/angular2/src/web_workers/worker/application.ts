@@ -28,8 +28,8 @@ var _postMessage: PostMessageInterface = <any>postMessage;
  * See the bootstrap() docs for more details.
  */
 export function bootstrapWebWorker(
-    appComponentType: Type, componentInjectableProviders: Array<Type | Provider | any[]> = null):
-    Promise<ComponentRef> {
+    appComponentType: Type,
+    componentInjectableProviders: Array<Type | Provider | any[]> = null): Promise<ComponentRef> {
   Parse5DomAdapter.makeCurrent();
   var sink = new PostMessageBusSink({
     postMessage: (message: any, transferrables?:[ArrayBuffer]) => {

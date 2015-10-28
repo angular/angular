@@ -288,16 +288,24 @@ function parentLoader() {
 }
 
 @Component({selector: 'parent-cmp'})
-@View({template: "inner { <router-outlet></router-outlet> }", directives: [RouterOutlet]})
-@RouteConfig(
-    [new Route({path: '/b', component: HelloCmp}), new Route({path: '/', component: HelloCmp})])
+@View({
+  template: "inner { <router-outlet></router-outlet> }",
+  directives: [RouterOutlet],
+})
+@RouteConfig([
+  new Route({path: '/b', component: HelloCmp}),
+  new Route({path: '/', component: HelloCmp}),
+])
 class ParentCmp {
   constructor() {}
 }
 
 
 @Component({selector: 'team-cmp'})
-@View({template: "team {{id}} { <router-outlet></router-outlet> }", directives: [RouterOutlet]})
+@View({
+  template: "team {{id}} { <router-outlet></router-outlet> }",
+  directives: [RouterOutlet],
+})
 @RouteConfig([new Route({path: '/user/:name', component: UserCmp})])
 class TeamCmp {
   id: string;
@@ -320,13 +328,13 @@ class ModalCmp {
 
 @Component({selector: 'aux-cmp'})
 @View({
-  template:
-      `main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`,
-  directives: [RouterOutlet]
+  template: 'main {<router-outlet></router-outlet>} | ' +
+                'aux {<router-outlet name="modal"></router-outlet>}',
+  directives: [RouterOutlet],
 })
 @RouteConfig([
   new Route({path: '/hello', component: HelloCmp}),
-  new AuxRoute({path: '/modal', component: ModalCmp})
+  new AuxRoute({path: '/modal', component: ModalCmp}),
 ])
 class AuxCmp {
 }

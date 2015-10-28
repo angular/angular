@@ -131,8 +131,8 @@ export abstract class DomRenderer extends Renderer implements NodeFactory<Node> 
   abstract createRootHostView(hostProtoViewRef: RenderProtoViewRef, fragmentCount: number,
                               hostElementSelector: string): RenderViewWithFragments;
 
-  abstract createView(protoViewRef: RenderProtoViewRef, fragmentCount: number):
-      RenderViewWithFragments;
+  abstract createView(protoViewRef: RenderProtoViewRef,
+                      fragmentCount: number): RenderViewWithFragments;
 
   abstract destroyView(viewRef: RenderViewRef);
 
@@ -207,8 +207,8 @@ export abstract class DomRenderer extends Renderer implements NodeFactory<Node> 
                     propertyValue);
   }
 
-  setElementAttribute(location: RenderElementRef, attributeName: string, attributeValue: string):
-      void {
+  setElementAttribute(location: RenderElementRef, attributeName: string,
+                      attributeValue: string): void {
     var view = resolveInternalDomView(location.renderView);
     var element = view.boundElements[location.boundElementIndex];
     var dashCasedAttributeName = camelCaseToDashCase(attributeName);

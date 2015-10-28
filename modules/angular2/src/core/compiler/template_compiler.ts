@@ -50,8 +50,8 @@ export class TemplateCompiler {
     this._appId = appId;
   }
 
-  normalizeDirectiveMetadata(directive:
-                                 CompileDirectiveMetadata): Promise<CompileDirectiveMetadata> {
+  normalizeDirectiveMetadata(directive: CompileDirectiveMetadata):
+      Promise<CompileDirectiveMetadata> {
     if (!directive.isComponent) {
       // For non components there is nothing to be normalized yet.
       return PromiseWrapper.resolve(directive);
@@ -70,7 +70,8 @@ export class TemplateCompiler {
                 hostListeners: directive.hostListeners,
                 hostProperties: directive.hostProperties,
                 hostAttributes: directive.hostAttributes,
-                lifecycleHooks: directive.lifecycleHooks, template: normalizedTemplate
+                lifecycleHooks: directive.lifecycleHooks,
+                template: normalizedTemplate
               }));
   }
 

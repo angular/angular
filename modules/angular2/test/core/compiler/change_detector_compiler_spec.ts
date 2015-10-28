@@ -108,9 +108,9 @@ export function main() {
     });
 
     describe('compileComponentCodeGen', () => {
-      function detectChanges(compiler: ChangeDetectionCompiler, template: string,
-                             directives: CompileDirectiveMetadata[] = CONST_EXPR([])):
-          Promise<string[]> {
+      function detectChanges(
+          compiler: ChangeDetectionCompiler, template: string,
+          directives: CompileDirectiveMetadata[] = CONST_EXPR([])): Promise<string[]> {
         var type =
             new CompileTypeMetadata({name: stringify(SomeComponent), moduleUrl: THIS_MODULE_URL});
         var parsedTemplate = parser.parse(template, directives, 'TestComp');
@@ -133,8 +133,8 @@ export function main() {
   });
 }
 
-function createTestableModule(source: SourceExpressions, changeDetectorIndex: number):
-    SourceModule {
+function createTestableModule(source: SourceExpressions,
+                              changeDetectorIndex: number): SourceModule {
   var resultExpression =
       `${THIS_MODULE_REF}testChangeDetector(([${source.expressions.join(',')}])[${changeDetectorIndex}])`;
   var testableSource = `${source.declarations.join('\n')}

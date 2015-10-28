@@ -52,7 +52,7 @@ class MessageDir {
                <span class="childnested" message="nestedchild">Child</span>
              </div>
              <span class="child" [inner-html]="childBinding"></span>`,
-  directives: [MessageDir]
+  directives: [MessageDir],
 })
 @Injectable()
 class ChildComp {
@@ -64,7 +64,7 @@ class ChildComp {
 @Component({selector: 'cond-content-comp', viewProviders: [Logger]})
 @View({
   template: `<div class="child" message="child" *ng-if="false"><ng-content></ng-content></div>`,
-  directives: [NgIf, MessageDir]
+  directives: [NgIf, MessageDir],
 })
 @Injectable()
 class ConditionalContentComp {
@@ -78,7 +78,7 @@ class ConditionalContentComp {
              <span class="parent" [inner-html]="parentBinding"></span>
              <child-comp class="child-comp-class"></child-comp>
              <cond-content-comp class="cond-content-comp-class"></cond-content-comp>`,
-  directives: [ChildComp, MessageDir, ConditionalContentComp]
+  directives: [ChildComp, MessageDir, ConditionalContentComp],
 })
 @Injectable()
 class ParentComp {
@@ -98,7 +98,7 @@ class CustomEmitter {
 @View({
   template: `<button (click)="handleClick()"></button>
              <custom-emitter (myevent)="handleCustom()"></custom-emitter>`,
-  directives: [CustomEmitter]
+  directives: [CustomEmitter],
 })
 @Injectable()
 class EventsComp {
@@ -121,7 +121,7 @@ class EventsComp {
             <ul message="list">
               <li *ng-for="#item of stuff" [inner-html]="item"></li>
             </ul>`,
-  directives: [NgFor, MessageDir]
+  directives: [NgFor, MessageDir],
 })
 @Injectable()
 class UsingFor {

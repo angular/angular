@@ -61,8 +61,9 @@ var _clearValues: {(m: Map<any, any>)} = (function() {
 var _arrayFromMap: {(m: Map<any, any>, getValues: boolean): any[]} = (function() {
   try {
     if ((<any>(new Map()).values()).next) {
-      return function createArrayFromMap(m: Map<any, any>, getValues: boolean):
-          any[] { return getValues ? (<any>Array).from(m.values()) : (<any>Array).from(m.keys()); };
+      return function createArrayFromMap(m: Map<any, any>, getValues: boolean): any[] {
+        return getValues ? (<any>Array).from(m.values()) : (<any>Array).from(m.keys());
+      };
     }
   } catch (e) {
   }
