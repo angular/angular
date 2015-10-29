@@ -28,6 +28,7 @@ import 'compile_data_creator.dart';
 Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
     {bool reflectPropertiesAsAttributes: false}) async {
   var viewDefResults = await createCompileData(reader, assetId);
+  if (viewDefResults == null) return null;
   final directiveMetadatas = viewDefResults.ngMeta.types.values;
   if (directiveMetadatas.isNotEmpty) {
     var processor = new reg.Processor();
