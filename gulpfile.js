@@ -787,7 +787,7 @@ gulp.task('static-checks', ['!build.tools'], function(done) {
 var tmpdir = path.join(os.tmpdir(), 'test.typings',  new Date().getTime().toString());
 gulp.task('!pre.test.typings.layoutNodeModule', ['build.js.cjs'], function() {
   return gulp
-    .src(['dist/js/cjs/angular2/**/*'], {base: 'dist/js/cjs'})
+    .src(['dist/js/cjs/angular2/**/*', 'node_modules/@reactivex/rxjs/dist/cjs/**'], {base: 'dist/js/cjs'})
     .pipe(gulp.dest(path.join(tmpdir, 'node_modules')));
 });
 gulp.task('!pre.test.typings.copyTypingsSpec', function() {
@@ -803,6 +803,7 @@ gulp.task('test.typings', [
     .pipe(tsc({target: 'ES5', module: 'commonjs',
       experimentalDecorators: true,
       noImplicitAny: true,
+      moduleResolution: 'node',
       typescript: require('typescript')}));
 });
 
