@@ -655,12 +655,12 @@ class Component {
 
   findNgContentIndex(selector: CssSelector): number {
     var ngContentIndices = [];
-    if (isPresent(this.wildcardNgContentIndex)) {
-      ngContentIndices.push(this.wildcardNgContentIndex);
-    }
     this.ngContentIndexMatcher.match(
         selector, (selector, ngContentIndex) => { ngContentIndices.push(ngContentIndex); });
     ListWrapper.sort(ngContentIndices);
+    if (isPresent(this.wildcardNgContentIndex)) {
+      ngContentIndices.push(this.wildcardNgContentIndex);
+    }
     return ngContentIndices.length > 0 ? ngContentIndices[0] : null;
   }
 }

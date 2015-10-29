@@ -754,6 +754,12 @@ There is no directive with "exportAs" set to "dirA" at TestComp > div:nth-child(
             .toEqual([['div', null], ['#text(hello)', 2], ['b', 1], ['a', 0]]);
       });
 
+      it('should project into wildcard ng-content last', () => {
+        expect(humanizeContentProjection(
+                   parse('<div>hello<a></a></div>', [createComp('div', ['*', 'a'])])))
+            .toEqual([['div', null], ['#text(hello)', 0], ['a', 1]]);
+      });
+
       it('should only project direct child nodes', () => {
         expect(humanizeContentProjection(
                    parse('<div><span><a></a></span><a></a></div>', [createComp('div', ['a'])])))
