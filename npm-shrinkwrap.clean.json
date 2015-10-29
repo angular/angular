@@ -2974,40 +2974,6 @@
         }
       }
     },
-    "css": {
-      "version": "2.2.0",
-      "resolved": "git://github.com/mlaval/css.git#9de8bc988d13c27d143486cf60ddf5f9deec0472",
-      "dependencies": {
-        "source-map": {
-          "version": "0.1.43",
-          "dependencies": {
-            "amdefine": {
-              "version": "0.1.0"
-            }
-          }
-        },
-        "source-map-resolve": {
-          "version": "0.3.1",
-          "dependencies": {
-            "source-map-url": {
-              "version": "0.3.0"
-            },
-            "atob": {
-              "version": "1.1.2"
-            },
-            "resolve-url": {
-              "version": "0.2.1"
-            }
-          }
-        },
-        "urix": {
-          "version": "0.1.0"
-        },
-        "inherits": {
-          "version": "2.0.1"
-        }
-      }
-    },
     "del": {
       "version": "1.1.1",
       "dependencies": {

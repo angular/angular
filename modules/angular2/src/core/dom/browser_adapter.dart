@@ -410,10 +410,6 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return document.adoptNode(node);
   }
 
-  bool isPageRule(CssRule rule) => rule is CssPageRule;
-  bool isStyleRule(CssRule rule) => rule is CssStyleRule;
-  bool isMediaRule(CssRule rule) => rule is CssMediaRule;
-  bool isKeyframesRule(CssRule rule) => rule is CssKeyframesRule;
   String getHref(AnchorElement element) {
     return element.href;
   }

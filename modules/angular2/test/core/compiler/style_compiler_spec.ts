@@ -140,7 +140,7 @@ export function main() {
                  .then(styles => {
                    compareStyles(styles, [
                      'div[_ngcontent-app1-23] {\ncolor: red;\n}',
-                     'span[_ngcontent-app1-23] {\ncolor: blue;\n}'
+                     'span[_ngcontent-app1-23] {color: blue}'
                    ]);
                    async.done();
                  });
@@ -152,8 +152,8 @@ export function main() {
                  .then(styles => {
                    compareStyles(styles, [
                      'div[_ngcontent-app1-23] {\ncolor: red;\n}',
-                     'a[_ngcontent-app1-23] {\ncolor: green;\n}',
-                     'span[_ngcontent-app1-23] {\ncolor: blue;\n}'
+                     'a[_ngcontent-app1-23] {color: green}',
+                     'span[_ngcontent-app1-23] {color: blue}'
                    ]);
                    async.done();
                  });
@@ -260,7 +260,7 @@ export function main() {
              compile(['div {color: red}'], [IMPORT_ABS_STYLESHEET_URL], encapsulation)
                  .then(styles => {
                    compareStyles(styles, [
-                     'div[_ngcontent-app1-23] {\ncolor: red;\n}',
+                     'div[_ngcontent-app1-23] {color: red}',
                      'span[_ngcontent-app1-23] {\ncolor: blue;\n}'
                    ]);
                    async.done();
@@ -281,8 +281,7 @@ export function main() {
       it('should compile plain css rules', inject([AsyncTestCompleter], (async) => {
            compile('div {color: red;}')
                .then(stylesAndShimStyles => {
-                 var expected =
-                     [['div {color: red;}'], ['div[_ngcontent-%COMP%] {\ncolor: red;\n}']];
+                 var expected = [['div {color: red;}'], ['div[_ngcontent-%COMP%] {color: red;}']];
                  compareStyles(stylesAndShimStyles[0], expected[0]);
                  compareStyles(stylesAndShimStyles[1], expected[1]);
                  async.done();
@@ -296,7 +295,7 @@ export function main() {
                  var expected = [
                    ['div {color: red}', 'span {color: blue}'],
                    [
-                     'div[_ngcontent-%COMP%] {\ncolor: red;\n}',
+                     'div[_ngcontent-%COMP%] {color: red}',
                      'span[_ngcontent-%COMP%] {\ncolor: blue;\n}'
                    ]
                  ];
