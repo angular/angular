@@ -1,4 +1,4 @@
-library angular2.transform.common.ast_tester;
+library angular2.transform.common.mirror_matcher;
 
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:angular2/src/transform/common/names.dart';
@@ -8,9 +8,13 @@ const BOOTSTRAP_URI = 'package:angular2/bootstrap.dart';
 const REFLECTION_CAPABILITIES_URI =
     'package:angular2/src/core/reflection/reflection_capabilities.dart';
 
-/// An object that checks for {@link ReflectionCapabilities} syntactically.
-class AstTester {
-  const AstTester();
+/// Syntactially checks for code related to the use of `dart:mirrors`.
+///
+/// Checks various [AstNode]s to determine if they are
+/// - Libraries that transitively import `dart:mirrors`
+/// - Instantiations of [ReflectionCapabilities]
+class MirrorMatcher {
+  const MirrorMatcher();
 
   bool isNewReflectionCapabilities(InstanceCreationExpression node) =>
       '${node.constructorName.type.name}' == REFLECTION_CAPABILITIES_NAME;
