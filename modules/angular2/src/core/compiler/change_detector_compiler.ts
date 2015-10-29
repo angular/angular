@@ -69,7 +69,7 @@ export class ChangeDetectionCompiler {
       // and have the same API for calling them!
       if (IS_DART) {
         codegen = new Codegen(PREGEN_PROTO_CHANGE_DETECTOR_MODULE);
-        var className = definition.id;
+        var className = `_${definition.id}`;
         var typeRef = (index === 0 && componentType.isHost) ?
                           'dynamic' :
                           `${moduleRef(componentType.moduleUrl)}${componentType.name}`;
