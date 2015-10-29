@@ -640,7 +640,6 @@ var NG_API = [
   'NgControl.value',
   'NgControl.valueAccessor',
   'NgControl.valueAccessor=',
-  'NgControl.viewToModelUpdate()',
   'NgControlGroup',
   'NgControlGroup.control',
   'NgControlGroup.dirty',
