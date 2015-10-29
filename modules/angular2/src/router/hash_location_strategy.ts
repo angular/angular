@@ -15,12 +15,14 @@ import {EventListener, History, Location} from 'angular2/src/core/facade/browser
  * ### Example
  *
  * ```
- * import {Component, View} from 'angular2/angular2';
+ * import {Component, provide} from 'angular2/angular2';
  * import {
  *   ROUTER_DIRECTIVES,
  *   ROUTER_PROVIDERS,
  *   RouteConfig,
- *   Location
+ *   Location,
+ *   LocationStrategy,
+ *   HashLocationStrategy
  * } from 'angular2/router';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
@@ -33,7 +35,10 @@ import {EventListener, History, Location} from 'angular2/src/core/facade/browser
  *   }
  * }
  *
- * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
+ * bootstrap(AppCmp, [
+ *   ROUTER_PROVIDERS,
+ *   provide(LocationStrategy, {useClass: HashLocationStrategy})
+ * ]);
  * ```
  */
 @Injectable()
