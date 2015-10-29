@@ -22,8 +22,8 @@ import 'package:barback/barback.dart';
 Future<CompileDataResults> createCompileData(
     AssetReader reader, AssetId assetId) async {
   return logElapsedAsync(() async {
-    return (await _CompileDataCreator.create(reader, assetId))
-        .createCompileData();
+    final creator = await _CompileDataCreator.create(reader, assetId);
+    return creator != null ? creator.createCompileData() : null;
   }, operationName: 'createCompileData', assetId: assetId);
 }
 

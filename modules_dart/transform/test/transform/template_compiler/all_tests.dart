@@ -318,6 +318,34 @@ void allTests() {
     expect(ngDeps.setters).toContain('text');
     expect(ngDeps.setters.length).toEqual(1);
   });
+
+  it('should gracefully handle null .ng_meta.json files', () async {
+    final dne =
+        new AssetId('package', 'lib/file_that_does_not_exist.ng_meta.json');
+
+    var didThrow = false;
+    await process(dne).then((out) {
+      expect(out).toBeNull();
+    }).catchError((_) {
+      didThrow = true;
+    });
+
+    expect(didThrow).toBeFalse();
+  });
+
+  it('should gracefully handle empty .ng_meta.json files', () async {
+    final emptyId = new AssetId('package', 'lib/empty.ng_meta.json');
+    reader.addAsset(emptyId, '');
+
+    var didThrow = false;
+    await process(emptyId).then((out) {
+      expect(out).toBeNull();
+    }).catchError((_) {
+      didThrow = true;
+    });
+
+    expect(didThrow).toBeFalse();
+  });
 }
 
 void _formatThenExpectEquals(String actual, String expected) {
