@@ -4,7 +4,6 @@ import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart';
 
 import 'dom_adapter.dart';
-import 'emulated_css.dart';
 import '../compiler/xhr.dart';
 
 const _attrToPropMap = const {
@@ -348,24 +347,12 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
     throw 'not implemented';
   }
 
-  bool isPageRule(rule) => (rule.type == 6);
-
-  bool isStyleRule(rule) => (rule.type == 1);
-
-  bool isMediaRule(rule) => (rule.type == 4);
-
-  bool isKeyframesRule(rule) => (rule.type == 7);
-
   String getHref(element) {
     throw 'not implemented';
   }
 
   void resolveAndSetHref(element, baseUrl, href) {
     throw 'not implemented';
-  }
-
-  List cssToRules(String css) {
-    return parseAndEmulateCssRules(css);
   }
 
   List getDistributedNodes(Node) {
@@ -377,13 +364,6 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
   }
 
   bool supportsNativeShadowDOM() {
-    return false;
-  }
-
-  bool supportsUnprefixedCssAnimation() {
-    // Currently during code transformation we do not know what
-    // browsers we are targetting. To play it safe, we assume
-    // unprefixed animations are not supported.
     return false;
   }
 

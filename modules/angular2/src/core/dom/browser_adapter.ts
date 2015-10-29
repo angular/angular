@@ -273,10 +273,6 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return document.importNode(toImport, true);
   }
   adoptNode(node: Node): any { return document.adoptNode(node); }
-  isPageRule(rule): boolean { return rule.type === CSSRule.PAGE_RULE; }
-  isStyleRule(rule): boolean { return rule.type === CSSRule.STYLE_RULE; }
-  isMediaRule(rule): boolean { return rule.type === CSSRule.MEDIA_RULE; }
-  isKeyframesRule(rule): boolean { return rule.type === CSSRule.KEYFRAMES_RULE; }
   getHref(el: Element): string { return (<any>el).href; }
   getEventKey(event): string {
     var key = event.key;

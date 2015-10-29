@@ -7,13 +7,11 @@ import {
   iit,
   SpyObject,
   el,
-  normalizeCSS,
-  browserDetection
+  normalizeCSS
 } from 'angular2/testing_internal';
-import {ShadowCss} from 'angular2/src/core/compiler/shadow_css';
+import {ShadowCss, splitCurlyBlocks} from 'angular2/src/core/compiler/shadow_css';
 
 import {RegExpWrapper, StringWrapper, isPresent} from 'angular2/src/core/facade/lang';
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 export function main() {
   describe('ShadowCss', function() {
@@ -35,7 +33,7 @@ export function main() {
 
     it('should handle invalid css', () => {
       var css = 'one {color: red;}garbage';
-      var expected = 'one[a] {color:red;}';
+      var expected = 'one[a] {color:red;}garbage';
       expect(s(css, 'a')).toEqual(expected);
     });
 
@@ -53,28 +51,20 @@ export function main() {
 
     it('should handle media rules with simple rules', () => {
       var css = '@media screen and (max-width: 800px) {div {font-size: 50px;}} div {}';
-      var expected = '@media screen and (max-width:800px) {div[a] {font-size:50px;}}div[a] {}';
+      var expected = '@media screen and (max-width:800px) {div[a] {font-size:50px;}} div[a] {}';
       expect(s(css, 'a')).toEqual(expected);
     });
 
     // Check that the browser supports unprefixed CSS animation
-    if (DOM.supportsUnprefixedCssAnimation()) {
-      it('should handle keyframes rules', () => {
-        var css = '@keyframes foo {0% {transform: translate(-50%) scaleX(0);}}';
-        var passRe =
-            /@(-webkit-)*keyframes foo {\s*0% {\s*transform:translate\(-50%\) scaleX\(0\);\s*}\s*}/g;
-        expect(RegExpWrapper.test(passRe, s(css, 'a'))).toEqual(true);
-      });
-    }
+    it('should handle keyframes rules', () => {
+      var css = '@keyframes foo {0% {transform:translate(-50%) scaleX(0);}}';
+      expect(s(css, 'a')).toEqual(css);
+    });
 
-    if (browserDetection.isWebkit) {
-      it('should handle -webkit-keyframes rules', () => {
-        var css = '@-webkit-keyframes foo {0% {-webkit-transform: translate(-50%) scaleX(0);}}';
-        var passRe =
-            /@-webkit-keyframes foo {\s*0% {\s*(-webkit-)*transform:translate\(-50%\) scaleX\(0\);\s*}}/g;
-        expect(RegExpWrapper.test(passRe, s(css, 'a'))).toEqual(true);
-      });
-    }
+    it('should handle -webkit-keyframes rules', () => {
+      var css = '@-webkit-keyframes foo {0% {-webkit-transform:translate(-50%) scaleX(0);}}';
+      expect(s(css, 'a')).toEqual(css);
+    });
 
     it('should handle complicated selectors', () => {
       expect(s('one::before {}', 'a')).toEqual('one[a]::before {}');
@@ -110,10 +100,10 @@ export function main() {
 
     it('should support polyfill-next-selector', () => {
       var css = s("polyfill-next-selector {content: 'x > y'} z {}", 'a');
-      expect(css).toEqual('x[a] > y[a] {}');
+      expect(css).toEqual('x[a] > y[a]{}');
 
       css = s('polyfill-next-selector {content: "x > y"} z {}', 'a');
-      expect(css).toEqual('x[a] > y[a] {}');
+      expect(css).toEqual('x[a] > y[a]{}');
     });
 
     it('should support polyfill-unscoped-rule', () => {
@@ -134,10 +124,10 @@ export function main() {
 
     it('should support polyfill-rule', () => {
       var css = s("polyfill-rule {content: ':host.foo .bar';color: blue;}", 'a', 'a-host');
-      expect(css).toEqual('[a-host].foo .bar {color:blue;}');
+      expect(css).toEqual('[a-host].foo .bar {;color:blue;}');
 
       css = s('polyfill-rule {content: ":host.foo .bar";color:blue;}', 'a', 'a-host');
-      expect(css).toEqual('[a-host].foo .bar {color:blue;}');
+      expect(css).toEqual('[a-host].foo .bar {;color:blue;}');
     });
 
     it('should handle ::shadow', () => {
@@ -155,23 +145,36 @@ export function main() {
       expect(css).toEqual('x[a] y[a] {}');
     });
 
-    // TODO: can't work in Firefox, see https://bugzilla.mozilla.org/show_bug.cgi?id=625013
-    // Issue opened to track that: https://github.com/angular/angular/issues/4628
-    if (!browserDetection.isFirefox) {
-      it('should pass through @import directives', () => {
-        var styleStr = '@import url("https://fonts.googleapis.com/css?family=Roboto");';
-        var css = s(styleStr, 'a');
-        expect(css).toEqual(styleStr);
-      });
-    }
+    it('should pass through @import directives', () => {
+      var styleStr = '@import url("https://fonts.googleapis.com/css?family=Roboto");';
+      var css = s(styleStr, 'a');
+      expect(css).toEqual(styleStr);
+    });
 
-    // Android browser does not support calc(), see http://caniuse.com/#feat=calc
-    if (!browserDetection.isAndroid) {
-      it('should leave calc() unchanged', () => {
-        var styleStr = 'a {height:calc(100% - 55px);}';
-        var css = s(styleStr, 'a');
-        expect(css).toEqual(styleStr);
-      });
-    }
+    it('should shim rules after @import', () => {
+      var styleStr = '@import url("a"); div {}';
+      var css = s(styleStr, 'a');
+      expect(css).toEqual('@import url("a"); div[a] {}');
+    });
+
+    it('should leave calc() unchanged', () => {
+      var styleStr = 'div {height:calc(100% - 55px);}';
+      var css = s(styleStr, 'a');
+      expect(css).toEqual('div[a] {height:calc(100% - 55px);}');
+    });
+  });
+
+  describe('splitCurlyBlocks', () => {
+    it('should split empty css', () => { expect(splitCurlyBlocks('')).toEqual([]); });
+
+    it('should split css rules without body',
+       () => { expect(splitCurlyBlocks('a')).toEqual(['a', '']); });
+
+    it('should split css rules with body',
+       () => { expect(splitCurlyBlocks('a {b}')).toEqual(['a ', '{b}']); });
+
+    it('should split css rules with nested rules', () => {
+      expect(splitCurlyBlocks('a {b {c}} d {e}')).toEqual(['a ', '{b {c}}', ' d ', '{e}']);
+    });
   });
 }

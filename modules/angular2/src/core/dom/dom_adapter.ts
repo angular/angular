@@ -111,17 +111,11 @@ export abstract class DomAdapter {
   abstract isShadowRoot(node): boolean;
   abstract importIntoDoc /*<T extends Node>*/ (node: Node /*T*/): Node /*T*/;
   abstract adoptNode /*<T extends Node>*/ (node: Node /*T*/): Node /*T*/;
-  abstract isPageRule(rule): boolean;
-  abstract isStyleRule(rule): boolean;
-  abstract isMediaRule(rule): boolean;
-  abstract isKeyframesRule(rule): boolean;
   abstract getHref(element): string;
   abstract getEventKey(event): string;
   abstract resolveAndSetHref(element, baseUrl: string, href: string);
-  abstract cssToRules(css: string): any[];
   abstract supportsDOMEvents(): boolean;
   abstract supportsNativeShadowDOM(): boolean;
-  abstract supportsUnprefixedCssAnimation(): boolean;
   abstract getGlobalEventTarget(target: string): any;
   abstract getHistory(): History;
   abstract getLocation(): Location;

@@ -1,4 +1,3 @@
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {
   StringWrapper,
@@ -144,8 +143,7 @@ export class ShadowCss {
   * Shim a style element with the given selector. Returns cssText that can
   * be included in the document via WebComponents.ShadowCSS.addCssToDocument(css).
   */
-  shimStyle(style: string, selector: string, hostSelector: string = ''): string {
-    var cssText = DOM.getText(style);
+  shimStyle(cssText: string, selector: string, hostSelector: string = ''): string {
     return this.shimCssText(cssText, selector, hostSelector);
   }
 
@@ -231,8 +229,7 @@ export class ShadowCss {
     cssText = this._convertColonHostContext(cssText);
     cssText = this._convertShadowDOMSelectors(cssText);
     if (isPresent(scopeSelector)) {
-      _withCssRules(cssText,
-                    (rules) => { cssText = this._scopeRules(rules, scopeSelector, hostSelector); });
+      cssText = this._scopeSelectors(cssText, scopeSelector, hostSelector);
     }
     cssText = cssText + '\n' + unscoped;
     return cssText.trim();
@@ -347,50 +344,37 @@ export class ShadowCss {
 
   // change a selector like 'div' to 'name div'
   /** @internal */
-  _scopeRules(cssRules, scopeSelector: string, hostSelector: string): string {
-    var cssText = '';
-    if (isPresent(cssRules)) {
-      for (var i = 0; i < cssRules.length; i++) {
-        var rule = cssRules[i];
-        if (DOM.isStyleRule(rule) || DOM.isPageRule(rule)) {
-          cssText += this._scopeSelector(rule.selectorText, scopeSelector, hostSelector,
-                                         this.strictStyling) +
-                     ' {\n';
-          cssText += this._propertiesFromRule(rule) + '\n}\n\n';
-        } else if (DOM.isMediaRule(rule)) {
-          cssText += '@media ' + rule.media.mediaText + ' {\n';
-          cssText += this._scopeRules(rule.cssRules, scopeSelector, hostSelector);
-          cssText += '\n}\n\n';
-        } else {
-          // KEYFRAMES_RULE in IE throws when we query cssText
-          // when it contains a -webkit- property.
-          // if this happens, we fallback to constructing the rule
-          // from the CSSRuleSet
-          // https://connect.microsoft.com/IE/feedbackdetail/view/955703/accessing-csstext-of-a-keyframe-rule-that-contains-a-webkit-property-via-cssom-generates-exception
-          try {
-            if (isPresent(rule.cssText)) {
-              cssText += rule.cssText + '\n\n';
-            }
-          } catch (x) {
-            if (DOM.isKeyframesRule(rule) && isPresent(rule.cssRules)) {
-              cssText += this._ieSafeCssTextFromKeyFrameRule(rule);
-            }
-          }
+  _scopeSelectors(cssText: string, scopeSelector: string, hostSelector: string): string {
+    var parts = splitCurlyBlocks(cssText);
+    var result = [];
+    for (var i = 0; i < parts.length; i += 2) {
+      var selectorTextWithCommands = parts[i];
+      var selectorStart = selectorTextWithCommands.lastIndexOf(';') + 1;
+      var selectorText =
+          selectorTextWithCommands.substring(selectorStart, selectorTextWithCommands.length);
+      var ruleContent = parts[i + 1];
+      var selectorMatch = RegExpWrapper.firstMatch(_singleSelectorRe, selectorText);
+      if (isPresent(selectorMatch) && ruleContent.length > 0) {
+        var selPrefix = selectorMatch[1];
+        var selAt = isPresent(selectorMatch[2]) ? selectorMatch[2] : '';
+        var selector = selectorMatch[3];
+        var selSuffix = selectorMatch[4];
+        if (selAt.length === 0 || selAt == '@page') {
+          var scopedSelector =
+              this._scopeSelector(selector, scopeSelector, hostSelector, this.strictStyling);
+          selectorText = `${selPrefix}${selAt}${scopedSelector}${selSuffix}`;
+        } else if (selAt == '@media' && ruleContent[0] == OPEN_CURLY &&
+                   ruleContent[ruleContent.length - 1] == CLOSE_CURLY) {
+          var scopedContent = this._scopeSelectors(ruleContent.substring(1, ruleContent.length - 1),
+                                                   scopeSelector, hostSelector);
+          ruleContent = `${OPEN_CURLY}${scopedContent}${CLOSE_CURLY}`;
         }
       }
+      result.push(selectorTextWithCommands.substring(0, selectorStart));
+      result.push(selectorText);
+      result.push(ruleContent);
     }
-    return cssText;
-  }
-
-  /** @internal */
-  _ieSafeCssTextFromKeyFrameRule(rule): string {
-    var cssText = '@keyframes ' + rule.name + ' {';
-    for (var i = 0; i < rule.cssRules.length; i++) {
-      var r = rule.cssRules[i];
-      cssText += ' ' + r.keyText + ' {' + r.style.cssText + '}';
-    }
-    cssText += ' }';
-    return cssText;
+    return result.join('');
   }
 
   /** @internal */
@@ -477,36 +461,6 @@ export class ShadowCss {
     selector = StringWrapper.replaceAll(selector, _colonHostRe, _polyfillHost);
     return selector;
   }
-
-  /** @internal */
-  _propertiesFromRule(rule): string {
-    var cssText = rule.style.cssText;
-    // TODO(sorvell): Safari cssom incorrectly removes quotes from the content
-    // property. (https://bugs.webkit.org/show_bug.cgi?id=118045)
-    // don't replace attr rules
-    var attrRe = /['"]+|attr/g;
-    if (rule.style.content.length > 0 &&
-        !isPresent(RegExpWrapper.firstMatch(attrRe, rule.style.content))) {
-      var contentRe = /content:[^;]*;/g;
-      cssText =
-          StringWrapper.replaceAll(cssText, contentRe, 'content: \'' + rule.style.content + '\';');
-    }
-    // TODO(sorvell): we can workaround this issue here, but we need a list
-    // of troublesome properties to fix https://github.com/Polymer/platform/issues/53
-    //
-    // inherit rules can be omitted from cssText
-    // TODO(sorvell): remove when Blink bug is fixed:
-    // https://code.google.com/p/chromium/issues/detail?id=358273
-    // var style = rule.style;
-    // for (var i = 0; i < style.length; i++) {
-    //  var name = style.item(i);
-    //  var value = style.getPropertyValue(name);
-    //  if (value == 'initial') {
-    //    cssText += name + ': initial; ';
-    //  }
-    //}
-    return cssText;
-  }
 }
 var _cssContentNextSelectorRe =
     /polyfill-next-selector[^}]*content:[\s]*?['"](.*?)['"][;\s]*}([^{]*?){/gim;
@@ -539,13 +493,34 @@ var _polyfillHostRe = RegExpWrapper.create(_polyfillHost, 'im');
 var _colonHostRe = /:host/gim;
 var _colonHostContextRe = /:host-context/gim;
 
-function _cssToRules(cssText: string) {
-  return DOM.cssToRules(cssText);
+var _singleSelectorRe = /^(\s*)(@\S+)?(.*?)(\s*)$/g;
+
+var _curlyRe = /([{}])/g;
+var OPEN_CURLY = '{';
+var CLOSE_CURLY = '}';
+
+export function splitCurlyBlocks(cssText:string):string[] {
+  var parts = StringWrapper.split(cssText, _curlyRe);
+  var result = [];
+  var bracketCount = 0;
+  var currentCurlyParts = [];
+  for (var partIndex = 0; partIndex<parts.length; partIndex++) {
+    var part = parts[partIndex];
+    currentCurlyParts.push(part);
+    if (part == OPEN_CURLY) {
+      bracketCount++;
+    } else if (part == CLOSE_CURLY) {
+      bracketCount--;
+    }
+    if (bracketCount === 0) {
+      result.push(currentCurlyParts.join(''));
+      currentCurlyParts = [];
+    }
+  }
+  result.push(currentCurlyParts.join(''));
+  if (result.length >= 2 && result[result.length-1] == '' && result[result.length-2] == '') {
+    result = result.slice(0, result.length-2);
+  }
+  return result;
 }
 
-function _withCssRules(cssText: string, callback: Function) {
-  // Difference from webcomponentjs: remove the workaround for an old bug in Chrome
-  if (isBlank(callback)) return;
-  var rules = _cssToRules(cssText);
-  callback(rules);
-}
