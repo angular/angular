@@ -25,13 +25,12 @@ export class TimerWrapper {
 
 export class ObservableWrapper {
   // TODO(vsavkin): when we use rxnext, try inferring the generic type from the first arg
-  static subscribe<T>(emitter: any, onNext: (value: T) => void,
-                      onError: (exception: any) => void = null,
-                      onComplete: () => void = null): Object {
+  static subscribe<T>(emitter: any, onNext: (value: T) => void, onError?: (exception: any) => void,
+                      onComplete?: () => void): Object {
     return emitter.subscribe({next: onNext, error: onError, complete: onComplete});
   }
 
-  static isObservable(obs: any): boolean { return obs instanceof EventEmitter; }
+  static isObservable(obs: any): boolean { return obs instanceof RxObservable; }
 
   /**
    * Returns whether `obs` has any subscribers listening to events.
