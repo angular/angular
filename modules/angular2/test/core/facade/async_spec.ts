@@ -12,7 +12,13 @@ import {
   inject
 } from 'angular2/testing_internal';
 
-import {ObservableWrapper, EventEmitter, PromiseWrapper} from 'angular2/src/core/facade/async';
+import {
+  ObservableWrapper,
+  Observable,
+  Subject,
+  EventEmitter,
+  PromiseWrapper
+} from 'angular2/src/core/facade/async';
 
 export function main() {
   describe('EventEmitter', () => {
@@ -90,6 +96,20 @@ export function main() {
     // should call dispose on the subscription if generator returns {done:true}
     // should call dispose on the subscription on throw
     // should call dispose on the subscription on return
+  });
+
+  describe("ObservableWrapper", () => {
+
+    it('should correctly check isObservable for EventEmitter', () => {
+      var e = new EventEmitter(false);
+      expect(ObservableWrapper.isObservable(e)).toBe(true);
+    });
+
+    it('should correctly check isObservable for Subject', () => {
+      var e = new Subject();
+      expect(ObservableWrapper.isObservable(e)).toBe(true);
+    });
+
   });
 
   // See ECMAScript 6 Spec 25.4.4.1
