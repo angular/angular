@@ -77,7 +77,7 @@ export function applicationDomProviders(): Array<Type | Provider | any[]> {
  * It is also possible to specify providers to be made in the new platform. These providers
  * will be shared between all applications on the page. For example, an abstraction for
  * the browser cookie jar should be bound at the platform level, because there is only one
- * cookie jar regardless of how many applications on the age will be accessing it.
+ * cookie jar regardless of how many applications on the page will be accessing it.
  *
  * If providers are specified directly, `platform` will create the Angular platform with
  * them if a platform did not exist already. If it did exist, however, an error will be
@@ -153,7 +153,7 @@ export function platform(providers?: Array<Type | Provider | any[]>): PlatformRe
  *     `componentInjectableBindings` argument.
  *  3. It creates a new `Zone` and connects it to the angular application's change detection
  *     domain instance.
- *  4. It creates a shadow DOM on the selected component's host element and loads the
+ *  4. It creates a (emulated) shadow DOM on the selected component's host element and loads the
  *     template into it.
  *  5. It instantiates the specified component.
  *  6. Finally, Angular performs change detection to apply the initial data providers for the
