@@ -60,8 +60,7 @@ export function setProperty(renderer: Renderer, elementRef: ElementRef, propName
   renderer.setElementProperty(elementRef, propName, propValue);
 }
 
-export function composeValidators(
-    validators: /* Array<Validator|Function> */ any[]): Function {
+export function composeValidators(validators: /* Array<Validator|Function> */ any[]): Function {
   return isPresent(validators) ? Validators.compose(validators.map(normalizeValidator)) :
                                  Validators.nullValidator;
 }
