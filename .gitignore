@@ -29,6 +29,7 @@ tmp
 pubspec.lock
 .c9
 .idea/
+.settings/
 *.swo
 modules/.settings
 .vscode
