@@ -46,8 +46,11 @@ function escapeString(input: string, re: RegExp): string {
 }
 
 export function codeGenExportVariable(name: string, isConst: boolean = false): string {
-  var declaration = IS_DART && isConst ? `const ${name}` : `var ${name}`;
-  return IS_DART ? `${declaration} = ` : `${declaration} = exports['${name}'] = `;
+  if (IS_DART) {
+    return isConst ? `const ${name} = ` : `final ${name} = `;
+  } else {
+    return `var ${name} = exports['${name}'] = `;
+  }
 }
 
 export function codeGenConcatArray(expression: string): string {
