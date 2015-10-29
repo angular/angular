@@ -52,6 +52,8 @@ let customParams = {
   cd6: process.env.TRAVIS_BRANCH,
   // Travis - Repo Slug  (angular/angular)
   cd7: process.env.TRAVIS_REPO_SLUG,
+  // Travis - Job ID (4.1)
+  cd12: process.env.TRAVIS_JOB_NUMBER,
   // HW - CPU Info
   cd8: `${os.cpus().length} x ${os.cpus()[0].model}`,
   // HW - Memory Info
