@@ -165,10 +165,13 @@ export function main() {
       });
     }
 
-    it('should leave calc() unchanged', () => {
-      var styleStr = 'a {height:calc(100% - 55px);}';
-      var css = s(styleStr, 'a');
-      expect(css).toEqual(styleStr);
-    });
+    // Android browser does not support calc(), see http://caniuse.com/#feat=calc
+    if (!browserDetection.isAndroid) {
+      it('should leave calc() unchanged', () => {
+        var styleStr = 'a {height:calc(100% - 55px);}';
+        var css = s(styleStr, 'a');
+        expect(css).toEqual(styleStr);
+      });
+    }
   });
 }
