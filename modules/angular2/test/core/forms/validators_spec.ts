@@ -82,6 +82,11 @@ export function main() {
         var c = Validators.compose([Validators.nullValidator, Validators.nullValidator]);
         expect(c(new Control(""))).toEqual(null);
       });
+
+      it("should ignore nulls", () => {
+        var c = Validators.compose([null, Validators.required]);
+        expect(c(new Control(""))).toEqual({"required": true});
+      });
     });
   });
 }
