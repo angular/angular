@@ -134,7 +134,7 @@ export function main() {
                  async.done();
                },
                err => {
-                 expect(StringWrapper.contains(err.message, 'did not invoke callback')).toBe(true);
+                 expect(err.text()).toEqual('JSONP injected script did not invoke callback.');
                  async.done();
                });
 
@@ -150,7 +150,7 @@ export function main() {
                  async.done();
                },
                err => {
-                 expect(err['message']).toBe('Oops!');
+                 expect(err.text()).toBe('Oops!');
                  async.done();
                });
 
