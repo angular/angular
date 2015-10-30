@@ -14,16 +14,32 @@ import {
   inject
 } from 'angular2/testing_internal';
 import {ControlGroup, Control, ControlArray, Validators} from 'angular2/core';
-import {ObservableWrapper} from 'angular2/src/core/facade/async';
+import {isPresent, CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {EventEmitter, TimerWrapper, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {IS_DART} from '../../platform';
+import {PromiseWrapper} from "angular2/src/core/facade/promise";
 
 export function main() {
+  function asyncValidator(expected, timeouts = CONST_EXPR({})) {
+    return (c) => {
+      var e = new EventEmitter();
+      var t = isPresent(timeouts[c.value]) ? timeouts[c.value] : 0;
+      var res = c.value != expected ? {"async": true} : null;
+
+      if (t == 0) {
+        PromiseWrapper.scheduleMicrotask(() => { ObservableWrapper.callNext(e, res); });
+      } else {
+        TimerWrapper.setTimeout(() => { ObservableWrapper.callNext(e, res); }, t);
+      }
+      return e;
+    };
+  }
+
   describe("Form Model", () => {
     describe("Control", () => {
       it("should default the value to null", () => {
         var c = new Control();
         expect(c.value).toBe(null);
-        expect(c.validator).toBe(Validators.nullValidator);
       });
 
       describe("validator", () => {
@@ -42,6 +58,60 @@ export function main() {
           var c = new Control(null, Validators.required);
           expect(c.errors).toEqual({"required": true});
         });
+      });
+
+      describe("asyncValidator", () => {
+        it("should run validator with the initial value", fakeAsync(() => {
+             var c = new Control("value", null, asyncValidator("expected"));
+             tick();
+
+             expect(c.valid).toEqual(false);
+             expect(c.errors).toEqual({"async": true});
+           }));
+
+        it("should rerun the validator when the value changes", fakeAsync(() => {
+             var c = new Control("value", null, asyncValidator("expected"));
+
+             c.updateValue("expected");
+             tick();
+
+             expect(c.valid).toEqual(true);
+           }));
+
+        it("should run the async validator only when the sync validator passes", fakeAsync(() => {
+             var c = new Control("", Validators.required, asyncValidator("expected"));
+             tick();
+
+             expect(c.errors).toEqual({"required": true});
+
+             c.updateValue("some value");
+             tick();
+
+             expect(c.errors).toEqual({"async": true});
+           }));
+
+        it("should mark the control as pending while running the async validation",
+           fakeAsync(() => {
+             var c = new Control("", null, asyncValidator("expected"));
+
+             expect(c.pending).toEqual(true);
+
+             tick();
+
+             expect(c.pending).toEqual(false);
+           }));
+
+        it("should only use the latest async validation run", fakeAsync(() => {
+             var c =
+                 new Control("", null, asyncValidator("expected", {"long": 200, "expected": 100}));
+
+             c.updateValue("long");
+             c.updateValue("expected");
+
+             tick(300);
+
+             expect(c.valid).toEqual(true);
+           }));
       });
 
       describe("dirty", () => {
@@ -154,7 +224,7 @@ export function main() {
 
       describe("setErrors", () => {
         it("should set errors on a control", () => {
-          var c = new Control("someValue", Validators.nullValidator);
+          var c = new Control("someValue");
 
           c.setErrors({"someError": true});
 
@@ -456,6 +526,42 @@ export function main() {
           expect(g.getError("required", ["invalid"])).toEqual(null);
         });
       });
+
+      describe("asyncValidator", () => {
+        it("should run the async validator", fakeAsync(() => {
+             var c = new Control("value");
+             var g = new ControlGroup({"one": c}, null, null, asyncValidator("expected"));
+
+             expect(g.pending).toEqual(true);
+
+             tick(1);
+
+             expect(g.errors).toEqual({"async": true});
+             expect(g.pending).toEqual(false);
+           }));
+
+        it("should set the parent group's status to pending", fakeAsync(() => {
+             var c = new Control("value", null, asyncValidator("expected"));
+             var g = new ControlGroup({"one": c});
+
+             expect(g.pending).toEqual(true);
+
+             tick(1);
+
+             expect(g.pending).toEqual(false);
+           }));
+
+        it("should run the parent group's async validator when children are pending",
+           fakeAsync(() => {
+             var c = new Control("value", null, asyncValidator("expected"));
+             var g = new ControlGroup({"one": c}, null, null, asyncValidator("expected"));
+
+             tick(1);
+
+             expect(g.errors).toEqual({"async": true});
+             expect(g.find(["one"]).errors).toEqual({"async": true});
+           }));
+      })
     });
 
     describe("ControlArray", () => {
@@ -697,6 +803,20 @@ export function main() {
           expect(g.find(["array", 0]).value).toEqual("111");
         });
       });
+
+      describe("asyncValidator", () => {
+        it("should run the async validator", fakeAsync(() => {
+             var c = new Control("value");
+             var g = new ControlArray([c], null, asyncValidator("expected"));
+
+             expect(g.pending).toEqual(true);
+
+             tick(1);
+
+             expect(g.errors).toEqual({"async": true});
+             expect(g.pending).toEqual(false);
+           }));
+      })
     });
   });
 }

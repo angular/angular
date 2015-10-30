@@ -40,6 +40,10 @@ export class PromiseWrapper {
     });
   }
 
+  static scheduleMicrotask(computation: () => any): void {
+    PromiseWrapper.then(PromiseWrapper.resolve(null), computation, (_) => {});
+  }
+
   static completer(): PromiseCompleter<any> {
     var resolve;
     var reject;

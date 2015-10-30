@@ -105,7 +105,7 @@ export class NgForm extends ControlContainer implements Form {
   get controls(): {[key: string]: AbstractControl} { return this.form.controls; }
 
   addControl(dir: NgControl): void {
-    this._later(_ => {
+    PromiseWrapper.scheduleMicrotask(() => {
       var container = this._findContainer(dir.path);
       var ctrl = new Control();
       setUpControl(ctrl, dir);
@@ -117,7 +117,7 @@ export class NgForm extends ControlContainer implements Form {
   getControl(dir: NgControl): Control { return <Control>this.form.find(dir.path); }
 
   removeControl(dir: NgControl): void {
-    this._later(_ => {
+    PromiseWrapper.scheduleMicrotask(() => {
       var container = this._findContainer(dir.path);
       if (isPresent(container)) {
         container.removeControl(dir.name);
@@ -127,7 +127,7 @@ export class NgForm extends ControlContainer implements Form {
   }
 
   addControlGroup(dir: NgControlGroup): void {
-    this._later(_ => {
+    PromiseWrapper.scheduleMicrotask(() => {
       var container = this._findContainer(dir.path);
       var group = new ControlGroup({});
       setUpControlGroup(group, dir);
@@ -137,7 +137,7 @@ export class NgForm extends ControlContainer implements Form {
   }
 
   removeControlGroup(dir: NgControlGroup): void {
-    this._later(_ => {
+    PromiseWrapper.scheduleMicrotask(() => {
       var container = this._findContainer(dir.path);
       if (isPresent(container)) {
         container.removeControl(dir.name);
@@ -151,7 +151,7 @@ export class NgForm extends ControlContainer implements Form {
   }
 
   updateModel(dir: NgControl, value: any): void {
-    this._later(_ => {
+    PromiseWrapper.scheduleMicrotask(() => {
       var ctrl = <Control>this.form.find(dir.path);
       ctrl.updateValue(value);
     });
@@ -167,7 +167,4 @@ export class NgForm extends ControlContainer implements Form {
     path.pop();
     return ListWrapper.isEmpty(path) ? this.form : <ControlGroup>this.form.find(path);
   }
-
-  /** @internal */
-  _later(fn): void { PromiseWrapper.then(PromiseWrapper.resolve(null), fn, (_) => {}); }
 }

@@ -1,6 +1,7 @@
 library angular2.core.facade.promise;
 
 import 'dart:async';
+import 'dart:async' as async;
 export 'dart:async' show Future;
 
 class PromiseWrapper {
@@ -27,6 +28,10 @@ class PromiseWrapper {
   // method name in Dart.
   static Future catchError(Future promise, Function onError) {
     return promise.catchError(onError);
+  }
+
+  static void scheduleMicrotask(fn) {
+    async.scheduleMicrotask(fn);
   }
 
   static PromiseCompleter<dynamic> completer() =>
