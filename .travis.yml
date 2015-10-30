@@ -32,13 +32,14 @@ env:
   # GITHUB_TOKEN_ANGULAR
   - secure: "fq/U7VDMWO8O8SnAQkdbkoSe2X92PVqg4d044HmRYVmcf6YbO48+xeGJ8yOk0pCBwl3ISO4Q2ot0x546kxfiYBuHkZetlngZxZCtQiFT9kyId8ZKcYdXaIW9OVdw3Gh3tQyUwDucfkVhqcs52D6NZjyE2aWZ4/d1V4kWRO/LMgo="
   matrix:
-    # Order: slowest build on top, so that we don't hog VMs while waiting for others to complete.
+    # Order: a slower build first, so that we don't occupy an idle travis worker waiting for others to complete.
     - MODE=dart DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
     - MODE=dart DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
     - MODE=saucelabs DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
     - MODE=dart_experimental DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
     - MODE=js DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
     - MODE=router DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
+    - MODE=build_only DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
     - MODE=lint DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
 
 matrix:
@@ -112,24 +113,12 @@ deploy:
     bucket: angular2-snapshots
     # don't delete generated files
     skip_cleanup: true
-    # serve to public at https://storage.googleapis.com/angular2-snapshots/SHA/dart_stable/dist.tgz
+    # serve to public at https://storage.googleapis.com/angular2-snapshots/SHA/dist.tgz
     acl: public-read
     # upload the .tgz archive created in scripts/ci/build_and_test.sh
     local-dir: deploy
     # create a "subdirectory" for each commit
-    upload-dir: $TRAVIS_COMMIT/dart_stable
+    upload-dir: $TRAVIS_COMMIT
     on:
       repo: angular/angular
-      condition: "$MODE = dart && $DART_CHANNEL = stable"
-  - provider: gcs
-    access_key_id: GOOGIOQTDBEOPBUAWFZQ
-    secret_access_key:
-      secure: "MEDggllZ5fw4wI9CEUi8WR6jKsKXqdRF/DLxSNC2JpzM5RlVeBm0uqjntYT1Cf1dASvQ2/+vZCUikL/3A48NcoEYRHXGmxu8D6t/SvleQD8Xv434xFOdsa2QqP/HiCtqCLOI5jJz1JVoB5nNyKKZ33ogTUL1LV1TfcrAioyizW8="
-    bucket: angular2-snapshots
-    skip_cleanup: true
-    acl: public-read
-    local-dir: deploy
-    upload-dir: $TRAVIS_COMMIT/js
-    on:
-      repo: angular/angular
-      condition: "$MODE = js"
+      condition: "$MODE = build_only"
