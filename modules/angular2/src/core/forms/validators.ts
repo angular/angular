@@ -1,5 +1,4 @@
-import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
-import {CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {isBlank, isPresent, CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {OpaqueToken} from 'angular2/src/core/di';
 
@@ -81,7 +80,7 @@ export class Validators {
 
     return function(control: modelModule.AbstractControl) {
       var res = ListWrapper.reduce(validators, (res, validator) => {
-        var errors = validator(control);
+        var errors = isPresent(validator) ? validator(control) : null;
         return isPresent(errors) ? StringMapWrapper.merge(<any>res, <any>errors) : res;
       }, {});
       return StringMapWrapper.isEmpty(res) ? null : res;
