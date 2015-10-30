@@ -50,12 +50,6 @@ export function main() {
       expect(g.validator).toBe(Validators.nullValidator);
     });
 
-    it("should use default validators when no validators are provided", () => {
-      var g = b.group({"login": "some value"});
-      expect(g.controls["login"].validator).toBe(Validators.nullValidator);
-      expect(g.validator).toBe(Validators.nullValidator);
-    });
-
     it("should create control arrays", () => {
       var c = b.control("three");
       var a = b.array(["one", ["two", Validators.required], c, b.array(['four'])]);

@@ -59,8 +59,9 @@ export abstract class AbstractControl {
   private _pristine: boolean = true;
   private _touched: boolean = false;
   private _parent: ControlGroup | ControlArray;
+  private _asyncValidationSubscription;
 
-  constructor(public validator: Function) {}
+  constructor(public validator: Function, public asyncValidator: Function) {}
 
   get value(): any { return this._value; }
 
@@ -119,9 +120,13 @@ export abstract class AbstractControl {
 
     this._updateValue();
 
-    this._errors = this.validator(this);
+    this._errors = this._runValidator();
     this._controlsErrors = this._calculateControlsErrors();
     this._status = this._calculateStatus();
+
+    if (this._status == VALID || this._status == PENDING) {
+      this._runAsyncValidator();
+    }
 
     if (emitEvent) {
       ObservableWrapper.callNext(this._valueChanges, this._value);
@@ -129,6 +134,23 @@ export abstract class AbstractControl {
 
     if (isPresent(this._parent) && !onlySelf) {
       this._parent.updateValueAndValidity({onlySelf: onlySelf, emitEvent: emitEvent});
+    }
+  }
+
+  private _runValidator() { return isPresent(this.validator) ? this.validator(this) : null; }
+
+  private _runAsyncValidator() {
+    if (isPresent(this.asyncValidator)) {
+      this._status = PENDING;
+      this._cancelExistingSubscription();
+      this._asyncValidationSubscription =
+          ObservableWrapper.subscribe(this.asyncValidator(this), res => this.setErrors(res));
+    }
+  }
+
+  private _cancelExistingSubscription(): void {
+    if (isPresent(this._asyncValidationSubscription)) {
+      ObservableWrapper.dispose(this._asyncValidationSubscription);
     }
   }
 
@@ -190,13 +212,18 @@ export abstract class AbstractControl {
   }
 
   private _calculateStatus(): string {
-    return isPresent(this._errors) || isPresent(this._controlsErrors) ? INVALID : VALID;
+    if (isPresent(this._errors)) return INVALID;
+    if (this._anyControlsHaveStatus(PENDING)) return PENDING;
+    if (this._anyControlsHaveStatus(INVALID)) return INVALID;
+    return VALID;
   }
 
   /** @internal */
   abstract _updateValue(): void;
   /** @internal */
   abstract _calculateControlsErrors(): any;
+  /** @internal */
+  abstract _anyControlsHaveStatus(status: string): boolean;
 }
 
 /**
@@ -219,8 +246,8 @@ export class Control extends AbstractControl {
   /** @internal */
   _onChange: Function;
 
-  constructor(value: any = null, validator: Function = Validators.nullValidator) {
-    super(validator);
+  constructor(value: any = null, validator: Function = null, asyncValidator: Function = null) {
+    super(validator, asyncValidator);
     this._value = value;
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
     this._valueChanges = new EventEmitter();
@@ -260,6 +287,11 @@ export class Control extends AbstractControl {
   _calculateControlsErrors() { return null; }
 
   /**
+   * @internal
+   */
+  _anyControlsHaveStatus(status: string): boolean { return false; }
+
+  /**
    * Register a listener for change events.
    */
   registerOnChange(fn: Function): void { this._onChange = fn; }
@@ -282,9 +314,9 @@ export class ControlGroup extends AbstractControl {
   private _optionals: {[key: string]: boolean};
 
   constructor(public controls: {[key: string]: AbstractControl},
-              optionals: {[key: string]: boolean} = null,
-              validator: Function = Validators.nullValidator) {
-    super(validator);
+              optionals: {[key: string]: boolean} = null, validator: Function = null,
+              asyncValidator: Function = null) {
+    super(validator, asyncValidator);
     this._optionals = isPresent(optionals) ? optionals : {};
     this._valueChanges = new EventEmitter();
 
@@ -349,6 +381,15 @@ export class ControlGroup extends AbstractControl {
   }
 
   /** @internal */
+  _anyControlsHaveStatus(status: string): boolean {
+    var res = false;
+    StringMapWrapper.forEach(this.controls, (control, name) => {
+      res = res || (this.contains(name) && control.status == status);
+    });
+    return res;
+  }
+
+  /** @internal */
   _reduceValue() {
     return this._reduceChildren({}, (acc, control, name) => {
       acc[name] = control.value;
@@ -396,8 +437,9 @@ export class ControlGroup extends AbstractControl {
  * ### Example ([live demo](http://plnkr.co/edit/23DESOpbNnBpBHZt1BR4?p=preview))
  */
 export class ControlArray extends AbstractControl {
-  constructor(public controls: AbstractControl[], validator: Function = Validators.nullValidator) {
-    super(validator);
+  constructor(public controls: AbstractControl[], validator: Function = null,
+              asyncValidator: Function = null) {
+    super(validator, asyncValidator);
 
     this._valueChanges = new EventEmitter();
 
@@ -456,6 +498,12 @@ export class ControlArray extends AbstractControl {
     });
     return anyErrors ? res : null;
   }
+
+  /** @internal */
+  _anyControlsHaveStatus(status: string): boolean {
+    return ListWrapper.any(this.controls, c => c.status == status);
+  }
+
 
   /** @internal */
   _setParentForControls(): void {

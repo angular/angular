@@ -38,6 +38,7 @@ import {By} from 'angular2/src/core/debug';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {ObservableWrapper} from 'angular2/src/core/facade/async';
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {PromiseWrapper} from "angular2/src/core/facade/promise";
 
 export function main() {
   describe("integration tests", () => {
@@ -445,7 +446,7 @@ export function main() {
            });
          }));
 
-      it("should use validators defined in the model",
+      it("should use sync validators defined in the model",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var form = new ControlGroup({"login": new Control("aa", Validators.required)});
 
@@ -467,6 +468,41 @@ export function main() {
              async.done();
            });
          }));
+
+      it("should use async validators defined in the model",
+         inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
+                  var control =
+                      new Control("", Validators.required, uniqLoginAsyncValidator("expected"));
+                  var form = new ControlGroup({"login": control});
+
+                  var t = `<div [ng-form-model]="form">
+                  <input type="text" ng-control="login">
+                 </div>`;
+
+                  var rootTC;
+                  tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((root) => rootTC = root);
+                  tick();
+
+                  rootTC.debugElement.componentInstance.form = form;
+                  rootTC.detectChanges();
+
+                  expect(form.hasError("required", ["login"])).toEqual(true);
+
+                  var input = rootTC.debugElement.query(By.css("input"));
+                  input.nativeElement.value = "wrong value";
+                  dispatchEvent(input.nativeElement, "change");
+
+                  expect(form.pending).toEqual(true);
+                  tick();
+
+                  expect(form.hasError("uniqLogin", ["login"])).toEqual(true);
+
+                  input.nativeElement.value = "expected";
+                  dispatchEvent(input.nativeElement, "change");
+                  tick();
+
+                  expect(form.valid).toEqual(true);
+                })));
     });
 
     describe("nested forms", () => {
@@ -921,6 +957,15 @@ class MyInput implements ControlValueAccessor {
   dispatchChangeEvent() {
     ObservableWrapper.callNext(this.onChange, this.value.substring(1, this.value.length - 1));
   }
+}
+
+function uniqLoginAsyncValidator(expectedValue: string) {
+  return (c) => {
+    var e = new EventEmitter();
+    var res = (c.value == expectedValue) ? null : {"uniqLogin": true};
+    PromiseWrapper.scheduleMicrotask(() => ObservableWrapper.callNext(e, res));
+    return e;
+  };
 }
 
 function loginIsEmptyGroupValidator(c: ControlGroup) {
