@@ -25,7 +25,8 @@
   "scripts": {
     "preinstall": "node tools/analytics/build-analytics start install npm-install; node tools/analytics/build-analytics start install npm-preinstall; node tools/npm/check-node-modules --purge; node tools/analytics/build-analytics success install npm-preinstall; node tools/analytics/build-analytics start install npm-install-net",
     "postinstall": "node tools/analytics/build-analytics success install npm-install-net; node tools/analytics/build-analytics start install npm-postinstall; node tools/npm/copy-npm-shrinkwrap && node tools/chromedriverpatch.js && webdriver-manager update && bower install && gulp pubget.dart && tsd reinstall --overwrite --clean --config modules/angular2/tsd.json && tsd reinstall --overwrite --clean --config tools/tsd.json && tsd reinstall --overwrite --config modules/angular1_router/tsd.json; node tools/analytics/build-analytics success install npm-postinstall; node tools/analytics/build-analytics success install npm-install",
-    "test": "gulp test.all.js && gulp test.all.dart"
+    "test": "gulp test.all.js && gulp test.all.dart",
+    "commit": "git-cz"
   },
   "dependencies": {
     "@reactivex/rxjs": "5.0.0-alpha.7",
@@ -51,7 +52,9 @@
     "canonical-path": "0.0.2",
     "chokidar": "^1.1.0",
     "clang-format": "^1.0.32",
+    "commitizen": "^2.3.0",
     "conventional-changelog": "^0.2.1",
+    "cz-conventional-changelog": "1.1.4",
     "del": "~1",
     "es6-shim": "^0.33.3",
     "event-stream": "^3.1.5",
@@ -135,5 +138,10 @@
     "which": "~1",
     "xtend": "^4.0.0",
     "yargs": "2.3.*"
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
+    }
   }
 }
