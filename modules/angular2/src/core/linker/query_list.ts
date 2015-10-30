@@ -18,7 +18,7 @@ import {Observable, EventEmitter} from 'angular2/src/core/facade/async';
  * NOTE: In the future this class will implement an `Observable` interface.
  *
  * ### Example ([live demo](http://plnkr.co/edit/RX8sJnQYl9FWuSCWme5z?p=preview))
- * ```javascript
+ * ```typescript
  * @Component({...})
  * class Container {
  *   constructor(@Query(Item) items: QueryList<Item>) {
