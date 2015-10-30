@@ -62,17 +62,42 @@ export function main() {
       expect(called).toBe(false);
     });
 
-    it('delivers events asynchronously', inject([AsyncTestCompleter], (async) => {
-         var e = new EventEmitter();
-         var log = [];
-         ObservableWrapper.subscribe(e, (x) => {
-           log.push(x);
-           expect(log).toEqual([1, 3, 2]);
-           async.done();
-         });
+    it("delivers next and error events asynchronously", inject([AsyncTestCompleter], (async) => {
+         let log = [];
+         ObservableWrapper.subscribe(emitter,
+                                     (x) => {
+                                       log.push(x);
+                                       expect(log).toEqual([1, 3, 5, 2]);
+                                     },
+                                     (err) => {
+                                       log.push(err);
+                                       expect(log).toEqual([1, 3, 5, 2, 4]);
+                                       async.done();
+                                     });
          log.push(1);
-         ObservableWrapper.callEmit(e, 2);
+         ObservableWrapper.callEmit(emitter, 2);
          log.push(3);
+         ObservableWrapper.callError(emitter, 4);
+         log.push(5);
+       }));
+
+    it("delivers next and complete events asynchronously", inject([AsyncTestCompleter], (async) => {
+         let log = [];
+         ObservableWrapper.subscribe(emitter,
+                                     (x) => {
+                                       log.push(x);
+                                       expect(log).toEqual([1, 3, 5, 2]);
+                                     },
+                                     null, () => {
+                                       log.push(4);
+                                       expect(log).toEqual([1, 3, 5, 2, 4]);
+                                       async.done();
+                                     });
+         log.push(1);
+         ObservableWrapper.callEmit(emitter, 2);
+         log.push(3);
+         ObservableWrapper.callComplete(emitter);
+         log.push(5);
        }));
 
     it('delivers events synchronously', () => {
@@ -108,6 +133,15 @@ export function main() {
     it('should correctly check isObservable for Subject', () => {
       var e = new Subject();
       expect(ObservableWrapper.isObservable(e)).toBe(true);
+    });
+
+    it('should subscribe to EventEmitters', () => {
+      let e = new EventEmitter(false);
+
+      ObservableWrapper.subscribe(e, (val) => {});
+
+      ObservableWrapper.callEmit(e, 1);
+      ObservableWrapper.callComplete(e);
     });
 
   });

@@ -126,6 +126,8 @@ export function isDate(obj): boolean {
   return obj instanceof Date && !isNaN(obj.valueOf());
 }
 
+export function noop() {}
+
 export function stringify(token): string {
   if (typeof token === 'string') {
     return token;
