@@ -10,7 +10,7 @@ import {
   afterEach
 } from 'angular2/testing_internal';
 
-import {Injector, Inject, provide, Pipe, PipeTransform} from 'angular2/core';
+import {Injector, Inject, provide, PipeMetadata, PipeTransform} from 'angular2/core';
 import {ProtoPipes, Pipes} from 'angular2/src/core/pipes/pipes';
 import {PipeProvider} from 'angular2/src/core/pipes/pipe_provider';
 
@@ -36,28 +36,28 @@ export function main() {
 
     it('should instantiate a pipe', () => {
       var proto =
-          ProtoPipes.fromProviders([PipeProvider.createFromType(PipeA, new Pipe({name: 'a'}))]);
+          new ProtoPipes({'a': PipeProvider.createFromType(PipeA, new PipeMetadata({name: 'a'}))});
       var pipes = new Pipes(proto, injector);
 
       expect(pipes.get("a").pipe).toBeAnInstanceOf(PipeA);
     });
 
     it('should throw when no pipe found', () => {
-      var proto = ProtoPipes.fromProviders([]);
+      var proto = new ProtoPipes({});
       var pipes = new Pipes(proto, injector);
       expect(() => pipes.get("invalid")).toThrowErrorWith("Cannot find pipe 'invalid'");
     });
 
     it('should inject dependencies from the provided injector', () => {
       var proto =
-          ProtoPipes.fromProviders([PipeProvider.createFromType(PipeB, new Pipe({name: 'b'}))]);
+          new ProtoPipes({'b': PipeProvider.createFromType(PipeB, new PipeMetadata({name: 'b'}))});
       var pipes = new Pipes(proto, injector);
       expect((<any>pipes.get("b").pipe).dep).toEqual("dependency");
     });
 
     it('should cache pure pipes', () => {
-      var proto = ProtoPipes.fromProviders(
-          [PipeProvider.createFromType(PipeA, new Pipe({name: 'a', pure: true}))]);
+      var proto = new ProtoPipes(
+          {'a': PipeProvider.createFromType(PipeA, new PipeMetadata({name: 'a', pure: true}))});
       var pipes = new Pipes(proto, injector);
 
       expect(pipes.get("a").pure).toEqual(true);
@@ -65,8 +65,8 @@ export function main() {
     });
 
     it('should NOT cache impure pipes', () => {
-      var proto = ProtoPipes.fromProviders(
-          [PipeProvider.createFromType(PipeA, new Pipe({name: 'a', pure: false}))]);
+      var proto = new ProtoPipes(
+          {'a': PipeProvider.createFromType(PipeA, new PipeMetadata({name: 'a', pure: false}))});
       var pipes = new Pipes(proto, injector);
 
       expect(pipes.get("a").pure).toEqual(false);

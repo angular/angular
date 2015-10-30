@@ -41,6 +41,7 @@ export class ProtoViewFactory {
   private _defaultPipes: Type[];
   private _appId: string;
 
+  // TODO(misko); defaultPipes should be Array<PipeProvider> for efficiency.
   constructor(private _renderer: Renderer, @Inject(DEFAULT_PIPES_TOKEN) defaultPipes: Type[],
               private _directiveResolver: DirectiveResolver, private _viewResolver: ViewResolver,
               private _pipeResolver: PipeResolver, @Inject(APP_ID) appId: string) {
@@ -72,17 +73,67 @@ export class ProtoViewFactory {
 
       this._renderer.registerComponentTemplate(cmd.templateId, compiledTemplateData.commands,
                                                compiledTemplateData.styles, cmd.nativeShadow);
-      var boundPipes = this._flattenPipes(view).map(pipe => this._bindPipe(pipe));
-
       nestedProtoView = new AppProtoView(compiledTemplateData.commands, ViewType.COMPONENT, true,
                                          compiledTemplateData.changeDetectorFactory, null,
-                                         ProtoPipes.fromProviders(boundPipes));
+                                         this._createProtoPipes(view));
       // Note: The cache is updated before recursing
       // to be able to resolve cycles
       this._cache.set(cmd.template.id, nestedProtoView);
       this._initializeProtoView(nestedProtoView, null);
     }
     return nestedProtoView;
+  }
+
+  private _createProtoPipes(view: ViewMetadata) {
+    var config: {[key: string]: PipeProvider} = {};
+
+    for (var i = 0; i < this._defaultPipes.length; i++) {
+      var pipeType = this._defaultPipes[0];
+      var meta = this._pipeResolver.resolve(pipeType);
+      var pipe = PipeProvider.createFromType(pipeType, meta);
+      config[pipe.name] = pipe;
+    }
+
+    var viewPipes: Array<Type | any[]> = view.pipes;
+    if (isPresent(viewPipes)) {
+      var arrayStack: any[][] = null;
+      var indexStack: number[] = null;
+      var i = 0, ii = viewPipes.length;
+      while (i < ii) {
+        var provider = viewPipes[i++];
+        if (isArray(provider)) {
+          if ((<Array<any>>provider).length != null) {
+            // we hit an array so we have to recurse into it. Save current position and try again.
+            if (indexStack === null) {
+              indexStack = [];
+              arrayStack = [];
+            }
+            indexStack.push(i);
+            arrayStack.push(viewPipes);
+            viewPipes = <Array<any>>provider;
+            i = 0;
+            ii = viewPipes.length;
+          }
+        } else {
+          var pipeType = <Type>provider;
+          var meta = this._pipeResolver.resolve(pipeType);
+          var pipe = PipeProvider.createFromType(pipeType, meta);
+          config[pipe.name] = pipe;
+
+          if (i == ii && indexStack !== null) {
+            viewPipes = arrayStack.pop();
+            i = indexStack.pop();
+            ii = viewPipes.length;
+            if (indexStack.length == 0) {
+              indexStack = null;
+              arrayStack = null;
+            }
+          }
+        }
+      }
+    }
+
+    return new ProtoPipes(config);
   }
 
   private _createEmbeddedTemplate(cmd: EmbeddedTemplateCmd, parent: AppProtoView): AppProtoView {
@@ -110,18 +161,6 @@ export class ProtoViewFactory {
                                   initializer.mergeViewCount);
     protoView.init(render, initializer.elementBinders, initializer.boundTextCount, mergeInfo,
                    initializer.variableLocations);
-  }
-
-  private _bindPipe(typeOrProvider): PipeProvider {
-    let meta = this._pipeResolver.resolve(typeOrProvider);
-    return PipeProvider.createFromType(typeOrProvider, meta);
-  }
-
-  private _flattenPipes(view: ViewMetadata): any[] {
-    if (isBlank(view.pipes)) return this._defaultPipes;
-    var pipes = ListWrapper.clone(this._defaultPipes);
-    _flattenList(view.pipes, pipes);
-    return pipes;
   }
 }
 
