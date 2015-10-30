@@ -387,13 +387,13 @@ gulp.task('!proxyServeDart', proxyServeDart);
 gulp.task('serve.dart', function(done) {
   runSequence([
     '!proxyServeDart',
-    'serve/examples.dart',
+    'serve/playground.dart',
     'serve/benchmarks.dart',
     'serve/benchmarks_external.dart'
   ], done);
 });
 
-gulp.task('serve/examples.dart', pubserve(gulp, gulpPlugins, {
+gulp.task('serve/playground.dart', pubserve(gulp, gulpPlugins, {
   command: DART_SDK.PUB,
   path: CONFIG.dest.dart + '/playground',
   port: 8004
