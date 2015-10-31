@@ -34,8 +34,8 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideTemplate(MyComp, '<div some-dir></div>')
              .createAsync(MyComp)
-             .then((rootTestComponent) => {
-               expect(inspectNativeElement(rootTestComponent.debugElement.nativeElement)
+             .then((componentFixture) => {
+               expect(inspectNativeElement(componentFixture.debugElement.nativeElement)
                           .componentInstance)
                    .toBeAnInstanceOf(MyComp);
 
@@ -47,10 +47,9 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideTemplate(MyComp, '')
              .createAsync(MyComp)
-             .then((rootTestComponent) => {
-               rootTestComponent.destroy();
-               expect(inspectNativeElement(rootTestComponent.debugElement.nativeElement))
-                   .toBe(null);
+             .then((componentFixture) => {
+               componentFixture.destroy();
+               expect(inspectNativeElement(componentFixture.debugElement.nativeElement)).toBe(null);
 
                async.done();
              });
@@ -62,8 +61,8 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideTemplate(MyComp, '')
                .createAsync(MyComp)
-               .then((rootTestComponent) => {
-                 expect(global['ng']['probe'](rootTestComponent.debugElement.nativeElement)
+               .then((componentFixture) => {
+                 expect(global['ng']['probe'](componentFixture.debugElement.nativeElement)
                             .componentInstance)
                      .toBeAnInstanceOf(MyComp);
 

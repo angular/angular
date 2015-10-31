@@ -1,6 +1,6 @@
 import {Component, Directive, View, Output, EventEmitter} from 'angular2/angular2';
 import {
-  RootTestComponent,
+  ComponentFixture,
   afterEach,
   AsyncTestCompleter,
   TestComponentBuilder,
@@ -51,12 +51,12 @@ export function main() {
                 <input type="text" ng-control="login">
                </div>`;
 
-         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-           rootTC.debugElement.componentInstance.form =
+         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           fixture.debugElement.componentInstance.form =
                new ControlGroup({"login": new Control("loginValue")});
-           rootTC.detectChanges();
+           fixture.detectChanges();
 
-           var input = rootTC.debugElement.query(By.css("input"));
+           var input = fixture.debugElement.query(By.css("input"));
            expect(input.nativeElement.value).toEqual("loginValue");
            async.done();
          });
@@ -70,10 +70,10 @@ export function main() {
                 <input type="text" ng-control="login">
               </div>`;
 
-         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-           rootTC.debugElement.componentInstance.form = form;
-           rootTC.detectChanges();
-           var input = rootTC.debugElement.query(By.css("input"));
+         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           fixture.debugElement.componentInstance.form = form;
+           fixture.detectChanges();
+           var input = fixture.debugElement.query(By.css("input"));
 
            input.nativeElement.value = "updatedValue";
            dispatchEvent(input.nativeElement, "change");
@@ -90,22 +90,22 @@ export function main() {
                       <span>{{name}}</span>
                     </div>`;
 
-                var rootTC: RootTestComponent;
+                var fixture: ComponentFixture;
 
                 tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
-                    (root) => { rootTC = root; });
+                    (root) => { fixture = root; });
                 tick();
 
-                rootTC.debugElement.componentInstance.form = new ControlGroup({});
-                rootTC.debugElement.componentInstance.name = 'old';
+                fixture.debugElement.componentInstance.form = new ControlGroup({});
+                fixture.debugElement.componentInstance.name = 'old';
 
                 tick();
 
-                var form = rootTC.debugElement.query(By.css("form"));
+                var form = fixture.debugElement.query(By.css("form"));
                 dispatchEvent(form.nativeElement, "submit");
 
                 tick();
-                expect(rootTC.debugElement.componentInstance.name).toEqual('updated');
+                expect(fixture.debugElement.componentInstance.name).toEqual('updated');
               })));
 
     it("should work with single controls",
@@ -114,11 +114,11 @@ export function main() {
 
          var t = `<div><input type="text" [ng-form-control]="form"></div>`;
 
-         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-           rootTC.debugElement.componentInstance.form = control;
-           rootTC.detectChanges();
+         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           fixture.debugElement.componentInstance.form = control;
+           fixture.detectChanges();
 
-           var input = rootTC.debugElement.query(By.css("input"));
+           var input = fixture.debugElement.query(By.css("input"));
            expect(input.nativeElement.value).toEqual("loginValue");
 
            input.nativeElement.value = "updatedValue";
@@ -135,16 +135,16 @@ export function main() {
                 <input type="text" ng-control="login">
                </div>`;
 
-         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-           rootTC.debugElement.componentInstance.form =
+         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           fixture.debugElement.componentInstance.form =
                new ControlGroup({"login": new Control("oldValue")});
-           rootTC.detectChanges();
+           fixture.detectChanges();
 
-           rootTC.debugElement.componentInstance.form =
+           fixture.debugElement.componentInstance.form =
                new ControlGroup({"login": new Control("newValue")});
-           rootTC.detectChanges();
+           fixture.detectChanges();
 
-           var input = rootTC.debugElement.query(By.css("input"));
+           var input = fixture.debugElement.query(By.css("input"));
            expect(input.nativeElement.value).toEqual("newValue");
            async.done();
          });
@@ -159,15 +159,15 @@ export function main() {
                 <input type="text" ng-control="login">
                </div>`;
 
-         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-           rootTC.debugElement.componentInstance.form = form;
-           rootTC.detectChanges();
+         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           fixture.debugElement.componentInstance.form = form;
+           fixture.detectChanges();
 
            login.updateValue("newValue");
 
-           rootTC.detectChanges();
+           fixture.detectChanges();
 
-           var input = rootTC.debugElement.query(By.css("input"));
+           var input = fixture.debugElement.query(By.css("input"));
            expect(input.nativeElement.value).toEqual("newValue");
            async.done();
          });
@@ -182,11 +182,11 @@ export function main() {
                 <input type="text" ng-control="login">
                </div>`;
 
-         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-           rootTC.debugElement.componentInstance.form = form;
-           rootTC.detectChanges();
+         tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+           fixture.debugElement.componentInstance.form = form;
+           fixture.detectChanges();
 
-           var loginEl = rootTC.debugElement.query(By.css("input"));
+           var loginEl = fixture.debugElement.query(By.css("input"));
            expect(login.touched).toBe(false);
 
            dispatchEvent(loginEl.nativeElement, "blur");
@@ -204,18 +204,18 @@ export function main() {
                   <input type="text" ng-control="text">
                 </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-             rootTC.debugElement.componentInstance.form =
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+             fixture.debugElement.componentInstance.form =
                  new ControlGroup({"text": new Control("old")});
-             rootTC.detectChanges();
+             fixture.detectChanges();
 
-             var input = rootTC.debugElement.query(By.css("input"));
+             var input = fixture.debugElement.query(By.css("input"));
              expect(input.nativeElement.value).toEqual("old");
 
              input.nativeElement.value = "new";
              dispatchEvent(input.nativeElement, "input");
 
-             expect(rootTC.debugElement.componentInstance.form.value).toEqual({"text": "new"});
+             expect(fixture.debugElement.componentInstance.form.value).toEqual({"text": "new"});
              async.done();
            });
          }));
@@ -226,17 +226,17 @@ export function main() {
                   <input ng-control="text">
                 </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-             rootTC.debugElement.componentInstance.form =
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+             fixture.debugElement.componentInstance.form =
                  new ControlGroup({"text": new Control("old")});
-             rootTC.detectChanges();
-             var input = rootTC.debugElement.query(By.css("input"));
+             fixture.detectChanges();
+             var input = fixture.debugElement.query(By.css("input"));
              expect(input.nativeElement.value).toEqual("old");
 
              input.nativeElement.value = "new";
              dispatchEvent(input.nativeElement, "input");
 
-             expect(rootTC.debugElement.componentInstance.form.value).toEqual({"text": "new"});
+             expect(fixture.debugElement.componentInstance.form.value).toEqual({"text": "new"});
              async.done();
            });
          }));
@@ -247,18 +247,18 @@ export function main() {
                   <textarea ng-control="text"></textarea>
                 </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-             rootTC.debugElement.componentInstance.form =
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+             fixture.debugElement.componentInstance.form =
                  new ControlGroup({"text": new Control('old')});
-             rootTC.detectChanges();
+             fixture.detectChanges();
 
-             var textarea = rootTC.debugElement.query(By.css("textarea"));
+             var textarea = fixture.debugElement.query(By.css("textarea"));
              expect(textarea.nativeElement.value).toEqual("old");
 
              textarea.nativeElement.value = "new";
              dispatchEvent(textarea.nativeElement, "input");
 
-             expect(rootTC.debugElement.componentInstance.form.value).toEqual({"text": 'new'});
+             expect(fixture.debugElement.componentInstance.form.value).toEqual({"text": 'new'});
              async.done();
            });
          }));
@@ -269,18 +269,18 @@ export function main() {
                   <input type="checkbox" ng-control="checkbox">
                 </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-             rootTC.debugElement.componentInstance.form =
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+             fixture.debugElement.componentInstance.form =
                  new ControlGroup({"checkbox": new Control(true)});
-             rootTC.detectChanges();
+             fixture.detectChanges();
 
-             var input = rootTC.debugElement.query(By.css("input"));
+             var input = fixture.debugElement.query(By.css("input"));
              expect(input.nativeElement.checked).toBe(true);
 
              input.nativeElement.checked = false;
              dispatchEvent(input.nativeElement, "change");
 
-             expect(rootTC.debugElement.componentInstance.form.value).toEqual({"checkbox": false});
+             expect(fixture.debugElement.componentInstance.form.value).toEqual({"checkbox": false});
              async.done();
            });
          }));
@@ -291,18 +291,18 @@ export function main() {
                   <input type="number" ng-control="num">
                 </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-             rootTC.debugElement.componentInstance.form =
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+             fixture.debugElement.componentInstance.form =
                  new ControlGroup({"num": new Control(10)});
-             rootTC.detectChanges();
+             fixture.detectChanges();
 
-             var input = rootTC.debugElement.query(By.css("input"));
+             var input = fixture.debugElement.query(By.css("input"));
              expect(input.nativeElement.value).toEqual("10");
 
              input.nativeElement.value = "20";
              dispatchEvent(input.nativeElement, "change");
 
-             expect(rootTC.debugElement.componentInstance.form.value).toEqual({"num": 20});
+             expect(fixture.debugElement.componentInstance.form.value).toEqual({"num": 20});
              async.done();
            });
          }));
@@ -316,20 +316,20 @@ export function main() {
                     </select>
                   </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-             rootTC.debugElement.componentInstance.form =
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+             fixture.debugElement.componentInstance.form =
                  new ControlGroup({"city": new Control("SF")});
-             rootTC.detectChanges();
+             fixture.detectChanges();
 
-             var select = rootTC.debugElement.query(By.css("select"));
-             var sfOption = rootTC.debugElement.query(By.css("option"));
+             var select = fixture.debugElement.query(By.css("select"));
+             var sfOption = fixture.debugElement.query(By.css("option"));
              expect(select.nativeElement.value).toEqual('SF');
              expect(sfOption.nativeElement.selected).toBe(true);
 
              select.nativeElement.value = 'NYC';
              dispatchEvent(select.nativeElement, "change");
 
-             expect(rootTC.debugElement.componentInstance.form.value).toEqual({"city": 'NYC'});
+             expect(fixture.debugElement.componentInstance.form.value).toEqual({"city": 'NYC'});
              expect(sfOption.nativeElement.selected).toBe(false);
              async.done();
            });
@@ -343,17 +343,18 @@ export function main() {
                       </select>
                   </div>`;
 
-                  var rootTC;
-                  tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rtc) => rootTC = rtc);
+                  var fixture;
+                  tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
+                      (compFixture) => fixture = compFixture);
                   tick();
 
-                  rootTC.debugElement.componentInstance.form =
+                  fixture.debugElement.componentInstance.form =
                       new ControlGroup({"city": new Control("NYC")});
-                  rootTC.debugElement.componentInstance.data = ['SF', 'NYC'];
-                  rootTC.detectChanges();
+                  fixture.debugElement.componentInstance.data = ['SF', 'NYC'];
+                  fixture.detectChanges();
                   tick();
 
-                  var select = rootTC.debugElement.query(By.css('select'));
+                  var select = fixture.debugElement.query(By.css('select'));
                   expect(select.nativeElement.value).toEqual('NYC');
                 })));
 
@@ -363,17 +364,17 @@ export function main() {
                   <input type="text" ng-control="name" wrapped-value>
                 </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-             rootTC.debugElement.componentInstance.form =
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+             fixture.debugElement.componentInstance.form =
                  new ControlGroup({"name": new Control("aa")});
-             rootTC.detectChanges();
-             var input = rootTC.debugElement.query(By.css("input"));
+             fixture.detectChanges();
+             var input = fixture.debugElement.query(By.css("input"));
              expect(input.nativeElement.value).toEqual("!aa!");
 
              input.nativeElement.value = "!bb!";
              dispatchEvent(input.nativeElement, "change");
 
-             expect(rootTC.debugElement.componentInstance.form.value).toEqual({"name": "bb"});
+             expect(fixture.debugElement.componentInstance.form.value).toEqual({"name": "bb"});
              async.done();
            });
          }));
@@ -384,16 +385,16 @@ export function main() {
                   <my-input ng-control="name"></my-input>
                 </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-             rootTC.debugElement.componentInstance.form =
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+             fixture.debugElement.componentInstance.form =
                  new ControlGroup({"name": new Control("aa")});
-             rootTC.detectChanges();
-             var input = rootTC.debugElement.query(By.css("my-input"));
+             fixture.detectChanges();
+             var input = fixture.debugElement.query(By.css("my-input"));
              expect(input.componentInstance.value).toEqual("!aa!");
 
              input.componentInstance.value = "!bb!";
              ObservableWrapper.subscribe(input.componentInstance.onChange, (value) => {
-               expect(rootTC.debugElement.componentInstance.form.value).toEqual({"name": "bb"});
+               expect(fixture.debugElement.componentInstance.form.value).toEqual({"name": "bb"});
                async.done();
              });
              input.componentInstance.dispatchChangeEvent();
@@ -414,13 +415,13 @@ export function main() {
                     <input type="text" ng-control="max" maxlength="3">
                  </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-             rootTC.debugElement.componentInstance.form = form;
-             rootTC.detectChanges();
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+             fixture.debugElement.componentInstance.form = form;
+             fixture.detectChanges();
 
-             var required = rootTC.debugElement.query(By.css("[required]"));
-             var minLength = rootTC.debugElement.query(By.css("[minlength]"));
-             var maxLength = rootTC.debugElement.query(By.css("[maxlength]"));
+             var required = fixture.debugElement.query(By.css("[required]"));
+             var minLength = fixture.debugElement.query(By.css("[minlength]"));
+             var maxLength = fixture.debugElement.query(By.css("[maxlength]"));
 
              required.nativeElement.value = "";
              minLength.nativeElement.value = "1";
@@ -485,12 +486,12 @@ export function main() {
                   <input type="text" ng-control="login">
                  </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-             rootTC.debugElement.componentInstance.form = form;
-             rootTC.detectChanges();
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+             fixture.debugElement.componentInstance.form = form;
+             fixture.detectChanges();
              expect(form.valid).toEqual(true);
 
-             var input = rootTC.debugElement.query(By.css("input"));
+             var input = fixture.debugElement.query(By.css("input"));
 
              input.nativeElement.value = "";
              dispatchEvent(input.nativeElement, "change");
@@ -510,16 +511,17 @@ export function main() {
                   <input type="text" ng-control="login">
                  </div>`;
 
-                  var rootTC;
-                  tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((root) => rootTC = root);
+                  var fixture;
+                  tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((root) => fixture =
+                                                                               root);
                   tick();
 
-                  rootTC.debugElement.componentInstance.form = form;
-                  rootTC.detectChanges();
+                  fixture.debugElement.componentInstance.form = form;
+                  fixture.detectChanges();
 
                   expect(form.hasError("required", ["login"])).toEqual(true);
 
-                  var input = rootTC.debugElement.query(By.css("input"));
+                  var input = fixture.debugElement.query(By.css("input"));
                   input.nativeElement.value = "wrong value";
                   dispatchEvent(input.nativeElement, "change");
 
@@ -548,11 +550,11 @@ export function main() {
                   </div>
               </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-             rootTC.debugElement.componentInstance.form = form;
-             rootTC.detectChanges();
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+             fixture.debugElement.componentInstance.form = form;
+             fixture.detectChanges();
 
-             var input = rootTC.debugElement.query(By.css("input"));
+             var input = fixture.debugElement.query(By.css("input"));
              expect(input.nativeElement.value).toEqual("value");
              async.done();
            });
@@ -569,10 +571,10 @@ export function main() {
                     </div>
                 </div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-             rootTC.debugElement.componentInstance.form = form;
-             rootTC.detectChanges();
-             var input = rootTC.debugElement.query(By.css("input"));
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+             fixture.debugElement.componentInstance.form = form;
+             fixture.detectChanges();
+             var input = fixture.debugElement.query(By.css("input"));
 
              input.nativeElement.value = "updatedValue";
              dispatchEvent(input.nativeElement, "change");
@@ -591,47 +593,49 @@ export function main() {
              var t =
                  `<div [ng-form-model]="form"><input type="text" ng-control="name" [(ng-model)]="name"></div>`;
 
-             var rootTC: RootTestComponent;
-             tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((root) => { rootTC = root; });
+             var fixture: ComponentFixture;
+             tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
+                 (root) => { fixture = root; });
              tick();
 
-             rootTC.debugElement.componentInstance.name = 'oldValue';
-             rootTC.debugElement.componentInstance.form = form;
-             rootTC.detectChanges();
+             fixture.debugElement.componentInstance.name = 'oldValue';
+             fixture.debugElement.componentInstance.form = form;
+             fixture.detectChanges();
 
-             var input = rootTC.debugElement.query(By.css("input")).nativeElement;
+             var input = fixture.debugElement.query(By.css("input")).nativeElement;
              expect(input.value).toEqual("oldValue");
 
              input.value = "updatedValue";
              dispatchEvent(input, "change");
 
              tick();
-             expect(rootTC.debugElement.componentInstance.name).toEqual("updatedValue");
+             expect(fixture.debugElement.componentInstance.name).toEqual("updatedValue");
            })));
 
     it("should support ng-model for single fields",
-       inject(
-           [TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
-             var form = new Control("");
+       inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
+                var form = new Control("");
 
-             var t = `<div><input type="text" [ng-form-control]="form" [(ng-model)]="name"></div>`;
+                var t =
+                    `<div><input type="text" [ng-form-control]="form" [(ng-model)]="name"></div>`;
 
-             var rootTC: RootTestComponent;
-             tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((root) => { rootTC = root; });
-             tick();
-             rootTC.debugElement.componentInstance.form = form;
-             rootTC.debugElement.componentInstance.name = "oldValue";
-             rootTC.detectChanges();
+                var fixture: ComponentFixture;
+                tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
+                    (root) => { fixture = root; });
+                tick();
+                fixture.debugElement.componentInstance.form = form;
+                fixture.debugElement.componentInstance.name = "oldValue";
+                fixture.detectChanges();
 
-             var input = rootTC.debugElement.query(By.css("input")).nativeElement;
-             expect(input.value).toEqual("oldValue");
+                var input = fixture.debugElement.query(By.css("input")).nativeElement;
+                expect(input.value).toEqual("oldValue");
 
-             input.value = "updatedValue";
-             dispatchEvent(input, "change");
-             tick();
+                input.value = "updatedValue";
+                dispatchEvent(input, "change");
+                tick();
 
-             expect(rootTC.debugElement.componentInstance.name).toEqual("updatedValue");
-           })));
+                expect(fixture.debugElement.componentInstance.name).toEqual("updatedValue");
+              })));
 
     describe("template-driven forms", () => {
       it("should add new controls and control groups",
@@ -642,14 +646,14 @@ export function main() {
                      </div>
                </form>`;
 
-                  var rootTC: RootTestComponent;
+                  var fixture: ComponentFixture;
                   tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
-                      (root) => { rootTC = root; });
+                      (root) => { fixture = root; });
                   tick();
-                  rootTC.debugElement.componentInstance.name = null;
-                  rootTC.detectChanges();
+                  fixture.debugElement.componentInstance.name = null;
+                  fixture.detectChanges();
 
-                  var form = rootTC.debugElement.componentViewChildren[0].inject(NgForm);
+                  var form = fixture.debugElement.componentViewChildren[0].inject(NgForm);
                   expect(form.controls['user']).not.toBeDefined();
 
                   tick();
@@ -662,17 +666,17 @@ export function main() {
          inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
                   var t = `<div><form (ng-submit)="name='updated'"></form></div>`;
 
-                  var rootTC: RootTestComponent;
+                  var fixture: ComponentFixture;
                   tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
-                      (root) => { rootTC = root; });
+                      (root) => { fixture = root; });
                   tick();
-                  rootTC.debugElement.componentInstance.name = 'old';
-                  var form = rootTC.debugElement.query(By.css("form"));
+                  fixture.debugElement.componentInstance.name = 'old';
+                  var form = fixture.debugElement.query(By.css("form"));
 
                   dispatchEvent(form.nativeElement, "submit");
                   tick();
 
-                  expect(rootTC.debugElement.componentInstance.name).toEqual("updated");
+                  expect(fixture.debugElement.componentInstance.name).toEqual("updated");
                 })));
 
       it("should not create a template-driven form when ng-no-form is used",
@@ -680,11 +684,11 @@ export function main() {
            var t = `<form ng-no-form>
                </form>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-             rootTC.debugElement.componentInstance.name = null;
-             rootTC.detectChanges();
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+             fixture.debugElement.componentInstance.name = null;
+             fixture.detectChanges();
 
-             expect(rootTC.debugElement.componentViewChildren.length).toEqual(0);
+             expect(fixture.debugElement.componentViewChildren.length).toEqual(0);
              async.done();
            });
          }));
@@ -697,20 +701,20 @@ export function main() {
                     </div>
                   </form>`;
 
-                  var rootTC: RootTestComponent;
+                  var fixture: ComponentFixture;
                   tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
-                      (root) => { rootTC = root; });
+                      (root) => { fixture = root; });
                   tick();
-                  rootTC.debugElement.componentInstance.name = 'show';
-                  rootTC.detectChanges();
+                  fixture.debugElement.componentInstance.name = 'show';
+                  fixture.detectChanges();
                   tick();
-                  var form = rootTC.debugElement.componentViewChildren[0].inject(NgForm);
+                  var form = fixture.debugElement.componentViewChildren[0].inject(NgForm);
 
 
                   expect(form.controls['login']).toBeDefined();
 
-                  rootTC.debugElement.componentInstance.name = 'hide';
-                  rootTC.detectChanges();
+                  fixture.debugElement.componentInstance.name = 'hide';
+                  fixture.detectChanges();
                   tick();
 
                   expect(form.controls['login']).not.toBeDefined();
@@ -725,19 +729,19 @@ export function main() {
                </form>`;
 
 
-                  var rootTC: RootTestComponent;
+                  var fixture: ComponentFixture;
                   tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
-                      (root) => { rootTC = root; });
+                      (root) => { fixture = root; });
                   tick();
-                  rootTC.debugElement.componentInstance.name = 'show';
-                  rootTC.detectChanges();
+                  fixture.debugElement.componentInstance.name = 'show';
+                  fixture.detectChanges();
                   tick();
-                  var form = rootTC.debugElement.componentViewChildren[0].inject(NgForm);
+                  var form = fixture.debugElement.componentViewChildren[0].inject(NgForm);
 
                   expect(form.controls['user']).toBeDefined();
 
-                  rootTC.debugElement.componentInstance.name = 'hide';
-                  rootTC.detectChanges();
+                  fixture.debugElement.componentInstance.name = 'hide';
+                  fixture.detectChanges();
                   tick();
 
                   expect(form.controls['user']).not.toBeDefined();
@@ -749,22 +753,22 @@ export function main() {
                       <input type="text" ng-control="name" [(ng-model)]="name">
                </form>`;
 
-                  var rootTC: RootTestComponent;
+                  var fixture: ComponentFixture;
                   tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
-                      (root) => { rootTC = root; });
+                      (root) => { fixture = root; });
                   tick();
-                  rootTC.debugElement.componentInstance.name = "oldValue";
-                  rootTC.detectChanges();
+                  fixture.debugElement.componentInstance.name = "oldValue";
+                  fixture.detectChanges();
                   tick();
 
-                  var input = rootTC.debugElement.query(By.css("input")).nativeElement;
+                  var input = fixture.debugElement.query(By.css("input")).nativeElement;
                   expect(input.value).toEqual("oldValue");
 
                   input.value = "updatedValue";
                   dispatchEvent(input, "change");
                   tick();
 
-                  expect(rootTC.debugElement.componentInstance.name).toEqual("updatedValue");
+                  expect(fixture.debugElement.componentInstance.name).toEqual("updatedValue");
                 })));
 
 
@@ -772,21 +776,21 @@ export function main() {
          inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
                   var t = `<div><input type="text" [(ng-model)]="name"></div>`;
 
-                  var rootTC: RootTestComponent;
+                  var fixture: ComponentFixture;
                   tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
-                      (root) => { rootTC = root; });
+                      (root) => { fixture = root; });
                   tick();
-                  rootTC.debugElement.componentInstance.name = "oldValue";
-                  rootTC.detectChanges();
+                  fixture.debugElement.componentInstance.name = "oldValue";
+                  fixture.detectChanges();
 
-                  var input = rootTC.debugElement.query(By.css("input")).nativeElement;
+                  var input = fixture.debugElement.query(By.css("input")).nativeElement;
                   expect(input.value).toEqual("oldValue");
 
                   input.value = "updatedValue";
                   dispatchEvent(input, "change");
                   tick();
 
-                  expect(rootTC.debugElement.componentInstance.name).toEqual("updatedValue");
+                  expect(fixture.debugElement.componentInstance.name).toEqual("updatedValue");
                 })));
     });
 
@@ -798,21 +802,21 @@ export function main() {
 
            var t = `<div><input type="text" [ng-form-control]="form"></div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-             rootTC.debugElement.componentInstance.form = form;
-             rootTC.detectChanges();
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+             fixture.debugElement.componentInstance.form = form;
+             fixture.detectChanges();
 
-             var input = rootTC.debugElement.query(By.css("input")).nativeElement;
+             var input = fixture.debugElement.query(By.css("input")).nativeElement;
              expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
              dispatchEvent(input, "blur");
-             rootTC.detectChanges();
+             fixture.detectChanges();
 
              expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-touched"]);
 
              input.value = "updatedValue";
              dispatchEvent(input, "change");
-             rootTC.detectChanges();
+             fixture.detectChanges();
 
              expect(sortedClassList(input)).toEqual(["ng-dirty", "ng-touched", "ng-valid"]);
              async.done();
@@ -825,21 +829,21 @@ export function main() {
 
            var t = `<form [ng-form-model]="form"><input type="text" ng-control="name"></form>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-             rootTC.debugElement.componentInstance.form = form;
-             rootTC.detectChanges();
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+             fixture.debugElement.componentInstance.form = form;
+             fixture.detectChanges();
 
-             var input = rootTC.debugElement.query(By.css("input")).nativeElement;
+             var input = fixture.debugElement.query(By.css("input")).nativeElement;
              expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-untouched"]);
 
              dispatchEvent(input, "blur");
-             rootTC.detectChanges();
+             fixture.detectChanges();
 
              expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-touched"]);
 
              input.value = "updatedValue";
              dispatchEvent(input, "change");
-             rootTC.detectChanges();
+             fixture.detectChanges();
 
              expect(sortedClassList(input)).toEqual(["ng-dirty", "ng-touched", "ng-valid"]);
              async.done();
@@ -850,21 +854,21 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var t = `<div><input [(ng-model)]="name" required></div>`;
 
-           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((rootTC) => {
-             rootTC.debugElement.componentInstance.name = "";
-             rootTC.detectChanges();
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+             fixture.debugElement.componentInstance.name = "";
+             fixture.detectChanges();
 
-             var input = rootTC.debugElement.query(By.css("input")).nativeElement;
+             var input = fixture.debugElement.query(By.css("input")).nativeElement;
              expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-untouched"]);
 
              dispatchEvent(input, "blur");
-             rootTC.detectChanges();
+             fixture.detectChanges();
 
              expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-touched"]);
 
              input.value = "updatedValue";
              dispatchEvent(input, "change");
-             rootTC.detectChanges();
+             fixture.detectChanges();
 
              expect(sortedClassList(input)).toEqual(["ng-dirty", "ng-touched", "ng-valid"]);
              async.done();
@@ -879,27 +883,27 @@ export function main() {
 
                   var t =
                       `<div><input type="text" [ng-form-control]="form" [(ng-model)]="name"></div>`;
-                  var rootTC: RootTestComponent;
+                  var fixture: ComponentFixture;
                   tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
-                      (root) => { rootTC = root; });
+                      (root) => { fixture = root; });
                   tick();
-                  rootTC.debugElement.componentInstance.form = form;
-                  rootTC.detectChanges();
+                  fixture.debugElement.componentInstance.form = form;
+                  fixture.detectChanges();
 
                   // In Firefox, effective text selection in the real DOM requires an actual focus
                   // of the field. This is not an issue in a new HTML document.
                   if (browserDetection.isFirefox) {
                     var fakeDoc = DOM.createHtmlDocument();
-                    DOM.appendChild(fakeDoc.body, rootTC.debugElement.nativeElement);
+                    DOM.appendChild(fakeDoc.body, fixture.debugElement.nativeElement);
                   }
 
-                  var input = rootTC.debugElement.query(By.css("input")).nativeElement;
+                  var input = fixture.debugElement.query(By.css("input")).nativeElement;
                   input.value = "aa";
                   input.selectionStart = 1;
                   dispatchEvent(input, "change");
 
                   tick();
-                  rootTC.detectChanges();
+                  fixture.detectChanges();
 
                   // selection start has not changed because we did not reset the value
                   expect(input.selectionStart).toEqual(1);
@@ -908,33 +912,33 @@ export function main() {
       it("should update the view when the model is set back to what used to be in the view",
          inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
                   var t = `<input type="text" [(ng-model)]="name">`;
-                  var rootTC: RootTestComponent;
+                  var fixture: ComponentFixture;
                   tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
-                      (root) => { rootTC = root; });
+                      (root) => { fixture = root; });
                   tick();
-                  rootTC.debugElement.componentInstance.name = "";
-                  rootTC.detectChanges();
+                  fixture.debugElement.componentInstance.name = "";
+                  fixture.detectChanges();
 
                   // Type "aa" into the input.
-                  var input = rootTC.debugElement.query(By.css("input")).nativeElement;
+                  var input = fixture.debugElement.query(By.css("input")).nativeElement;
                   input.value = "aa";
                   input.selectionStart = 1;
                   dispatchEvent(input, "change");
 
                   tick();
-                  rootTC.detectChanges();
-                  expect(rootTC.debugElement.componentInstance.name).toEqual("aa");
+                  fixture.detectChanges();
+                  expect(fixture.debugElement.componentInstance.name).toEqual("aa");
 
                   // Programatically update the input value to be "bb".
-                  rootTC.debugElement.componentInstance.name = "bb";
+                  fixture.debugElement.componentInstance.name = "bb";
                   tick();
-                  rootTC.detectChanges();
+                  fixture.detectChanges();
                   expect(input.value).toEqual("bb");
 
                   // Programatically set it back to "aa".
-                  rootTC.debugElement.componentInstance.name = "aa";
+                  fixture.debugElement.componentInstance.name = "aa";
                   tick();
-                  rootTC.detectChanges();
+                  fixture.detectChanges();
                   expect(input.value).toEqual("aa");
                 })));
       it("should not crash when validity is checked from a binding",
@@ -944,11 +948,11 @@ export function main() {
                   // fixed.
                   var t = `<form><div ng-control-group="x" #x="form">
                   <input type="text" ng-control="test"></div>{{x.valid}}</form>`;
-                  var rootTC: RootTestComponent;
+                  var fixture: ComponentFixture;
                   tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
-                      (root) => { rootTC = root; });
+                      (root) => { fixture = root; });
                   tick();
-                  rootTC.detectChanges();
+                  fixture.detectChanges();
                 })));
     });
   });

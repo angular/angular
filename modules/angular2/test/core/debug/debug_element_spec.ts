@@ -137,14 +137,14 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.createAsync(ParentComp)
-             .then((rootTestComponent) => {
-               rootTestComponent.detectChanges();
+             .then((componentFixture) => {
+               componentFixture.detectChanges();
 
-               var childEls = rootTestComponent.debugElement.children;
+               var childEls = componentFixture.debugElement.children;
                // The root is a lone component, and has no children in the light dom.
                expect(childEls.length).toEqual(0);
 
-               var rootCompChildren = rootTestComponent.debugElement.componentViewChildren;
+               var rootCompChildren = componentFixture.debugElement.componentViewChildren;
                // The root component has 4 elements in its shadow view.
                expect(rootCompChildren.length).toEqual(4);
                expect(DOM.hasClass(rootCompChildren[0].nativeElement, 'parent')).toBe(true);
@@ -185,10 +185,10 @@ export function main() {
     it('should list child elements within viewports',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
-         tcb.createAsync(UsingFor).then((rootTestComponent) => {
-           rootTestComponent.detectChanges();
+         tcb.createAsync(UsingFor).then((componentFixture) => {
+           componentFixture.detectChanges();
 
-           var childEls = rootTestComponent.debugElement.componentViewChildren;
+           var childEls = componentFixture.debugElement.componentViewChildren;
            // TODO should this count include the <template> element?
            expect(childEls.length).toEqual(5);
 
@@ -203,10 +203,10 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.createAsync(ParentComp)
-             .then((rootTestComponent) => {
-               rootTestComponent.detectChanges();
+             .then((componentFixture) => {
+               componentFixture.detectChanges();
 
-               var childTestEls = rootTestComponent.debugElement.queryAll(By.directive(MessageDir));
+               var childTestEls = componentFixture.debugElement.queryAll(By.directive(MessageDir));
 
                expect(childTestEls.length).toBe(4);
                expect(DOM.hasClass(childTestEls[0].nativeElement, 'parent')).toBe(true);
@@ -221,10 +221,10 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.createAsync(ParentComp)
-             .then((rootTestComponent) => {
-               rootTestComponent.detectChanges();
+             .then((componentFixture) => {
+               componentFixture.detectChanges();
 
-               var parentEl = rootTestComponent.debugElement.componentViewChildren[0];
+               var parentEl = componentFixture.debugElement.componentViewChildren[0];
 
                var childTestEls = parentEl.queryAll(By.directive(MessageDir), Scope.light);
 
@@ -239,11 +239,11 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.createAsync(ParentComp)
-             .then((rootTestComponent) => {
-               rootTestComponent.detectChanges();
+             .then((componentFixture) => {
+               componentFixture.detectChanges();
 
                var childTestEls =
-                   rootTestComponent.debugElement.queryAll(By.directive(MessageDir), Scope.view);
+                   componentFixture.debugElement.queryAll(By.directive(MessageDir), Scope.view);
 
                expect(childTestEls.length).toBe(2);
                expect(DOM.hasClass(childTestEls[0].nativeElement, 'parent')).toBe(true);
@@ -257,10 +257,10 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.createAsync(ParentComp)
-             .then((rootTestComponent) => {
-               rootTestComponent.detectChanges();
+             .then((componentFixture) => {
+               componentFixture.detectChanges();
 
-               expect(rootTestComponent.debugElement.componentViewChildren[0].inject(Logger).log)
+               expect(componentFixture.debugElement.componentViewChildren[0].inject(Logger).log)
                    .toEqual(['parent', 'nestedparent', 'child', 'nestedchild']);
 
                async.done();
@@ -271,19 +271,19 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
 
          tcb.createAsync(EventsComp)
-             .then((rootTestComponent) => {
-               rootTestComponent.detectChanges();
+             .then((componentFixture) => {
+               componentFixture.detectChanges();
 
-               expect(rootTestComponent.debugElement.componentInstance.clicked).toBe(false);
-               expect(rootTestComponent.debugElement.componentInstance.customed).toBe(false);
+               expect(componentFixture.debugElement.componentInstance.clicked).toBe(false);
+               expect(componentFixture.debugElement.componentInstance.customed).toBe(false);
 
-               rootTestComponent.debugElement.componentViewChildren[0].triggerEventHandler(
+               componentFixture.debugElement.componentViewChildren[0].triggerEventHandler(
                    'click', <Event>{});
-               expect(rootTestComponent.debugElement.componentInstance.clicked).toBe(true);
+               expect(componentFixture.debugElement.componentInstance.clicked).toBe(true);
 
-               rootTestComponent.debugElement.componentViewChildren[1].triggerEventHandler(
+               componentFixture.debugElement.componentViewChildren[1].triggerEventHandler(
                    'myevent', <Event>{});
-               expect(rootTestComponent.debugElement.componentInstance.customed).toBe(true);
+               expect(componentFixture.debugElement.componentInstance.customed).toBe(true);
 
                async.done();
              });

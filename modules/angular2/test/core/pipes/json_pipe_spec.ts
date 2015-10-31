@@ -55,15 +55,15 @@ export function main() {
     describe('integration', () => {
       it('should work with mutable objects',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           tcb.createAsync(TestComp).then((rootTC) => {
+           tcb.createAsync(TestComp).then((fixture) => {
              let mutable: number[] = [1];
-             rootTC.debugElement.componentInstance.data = mutable;
-             rootTC.detectChanges();
-             expect(rootTC.debugElement.nativeElement).toHaveText("[\n  1\n]");
+             fixture.debugElement.componentInstance.data = mutable;
+             fixture.detectChanges();
+             expect(fixture.debugElement.nativeElement).toHaveText("[\n  1\n]");
 
              mutable.push(2);
-             rootTC.detectChanges();
-             expect(rootTC.debugElement.nativeElement).toHaveText("[\n  1,\n  2\n]");
+             fixture.detectChanges();
+             expect(fixture.debugElement.nativeElement).toHaveText("[\n  1,\n  2\n]");
 
              async.done();
            });

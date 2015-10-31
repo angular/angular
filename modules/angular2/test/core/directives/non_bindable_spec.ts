@@ -22,9 +22,9 @@ export function main() {
          var template = '<div>{{text}}<span ng-non-bindable>{{text}}</span></div>';
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
-             .then((rootTC) => {
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('foo{{text}}');
+             .then((fixture) => {
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('foo{{text}}');
                async.done();
              });
        }));
@@ -34,12 +34,12 @@ export function main() {
          var template = '<div ng-non-bindable><span id=child test-dec>{{text}}</span></div>';
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
-             .then((rootTC) => {
-               rootTC.detectChanges();
+             .then((fixture) => {
+               fixture.detectChanges();
 
-               // We must use DOM.querySelector instead of rootTC.query here
+               // We must use DOM.querySelector instead of fixture.query here
                // since the elements inside are not compiled.
-               var span = DOM.querySelector(rootTC.debugElement.nativeElement, '#child');
+               var span = DOM.querySelector(fixture.debugElement.nativeElement, '#child');
                expect(DOM.hasClass(span, 'compiled')).toBeFalsy();
                async.done();
              });
@@ -50,9 +50,9 @@ export function main() {
          var template = '<div><span id=child ng-non-bindable test-dec>{{text}}</span></div>';
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
-             .then((rootTC) => {
-               rootTC.detectChanges();
-               var span = DOM.querySelector(rootTC.debugElement.nativeElement, '#child');
+             .then((fixture) => {
+               fixture.detectChanges();
+               var span = DOM.querySelector(fixture.debugElement.nativeElement, '#child');
                expect(DOM.hasClass(span, 'compiled')).toBeTruthy();
                async.done();
              });

@@ -15,7 +15,7 @@ import {
   containsRegexp,
   stringifyElement,
   TestComponentBuilder,
-  RootTestComponent,
+  ComponentFixture,
   fakeAsync,
   tick
 } from 'angular2/testing_internal';
@@ -293,7 +293,7 @@ export function main() {
                     {template: '<simple string-prop="text"></simple>', directives: [Simple]}))
              .overrideTemplate(Simple, '<ng-content></ng-content><p>P,</p>{{stringProp}}')
              .createAsync(MainComp)
-             .then((main: RootTestComponent) => {
+             .then((main: ComponentFixture) => {
 
                main.detectChanges();
 
@@ -314,7 +314,7 @@ export function main() {
                     {template: '<simple string-prop="text"></simple>', directives: [Simple]}))
              .overrideTemplate(Simple, '<style></style><p>P,</p>{{stringProp}}')
              .createAsync(MainComp)
-             .then((main: RootTestComponent) => {
+             .then((main: ComponentFixture) => {
 
                main.detectChanges();
                expect(main.debugElement.nativeElement).toHaveText('P,text');

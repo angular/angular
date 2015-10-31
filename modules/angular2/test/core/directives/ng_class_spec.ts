@@ -1,5 +1,5 @@
 import {
-  RootTestComponent,
+  ComponentFixture,
   AsyncTestCompleter,
   TestComponentBuilder,
   beforeEach,
@@ -19,9 +19,9 @@ import {Component, View, NgFor, provide} from 'angular2/angular2';
 import {NgClass} from 'angular2/src/core/directives/ng_class';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 
-function detectChangesAndCheck(rootTC: RootTestComponent, classes: string, elIndex: number = 0) {
-  rootTC.detectChanges();
-  expect(rootTC.debugElement.componentViewChildren[elIndex].nativeElement.className)
+function detectChangesAndCheck(fixture: ComponentFixture, classes: string, elIndex: number = 0) {
+  fixture.detectChanges();
+  expect(fixture.debugElement.componentViewChildren[elIndex].nativeElement.className)
       .toEqual(classes);
 }
 
@@ -36,12 +36,12 @@ export function main() {
            var template = '<div *ng-for="var item of items" [ng-class]="item"></div>';
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 rootTC.debugElement.componentInstance.items = [['0']];
-                 rootTC.detectChanges();
-                 rootTC.debugElement.componentInstance.items = [['1']];
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.items = [['0']];
+                 fixture.detectChanges();
+                 fixture.debugElement.componentInstance.items = [['1']];
 
-                 detectChangesAndCheck(rootTC, '1', 1);
+                 detectChangesAndCheck(fixture, '1', 1);
 
                  async.done();
                });
@@ -57,8 +57,8 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'foo');
+               .then((fixture) => {
+                 detectChangesAndCheck(fixture, 'foo');
                  async.done();
                });
          }));
@@ -70,8 +70,8 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'foo-bar fooBar');
+               .then((fixture) => {
+                 detectChangesAndCheck(fixture, 'foo-bar fooBar');
                  async.done();
                });
          }));
@@ -82,11 +82,11 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'foo');
+               .then((fixture) => {
+                 detectChangesAndCheck(fixture, 'foo');
 
-                 rootTC.debugElement.componentInstance.condition = false;
-                 detectChangesAndCheck(rootTC, 'bar');
+                 fixture.debugElement.componentInstance.condition = false;
+                 detectChangesAndCheck(fixture, 'bar');
 
                  async.done();
                });
@@ -98,17 +98,17 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'foo');
+               .then((fixture) => {
+                 detectChangesAndCheck(fixture, 'foo');
 
-                 StringMapWrapper.set(rootTC.debugElement.componentInstance.objExpr, 'bar', true);
-                 detectChangesAndCheck(rootTC, 'foo bar');
+                 StringMapWrapper.set(fixture.debugElement.componentInstance.objExpr, 'bar', true);
+                 detectChangesAndCheck(fixture, 'foo bar');
 
-                 StringMapWrapper.set(rootTC.debugElement.componentInstance.objExpr, 'baz', true);
-                 detectChangesAndCheck(rootTC, 'foo bar baz');
+                 StringMapWrapper.set(fixture.debugElement.componentInstance.objExpr, 'baz', true);
+                 detectChangesAndCheck(fixture, 'foo bar baz');
 
-                 StringMapWrapper.delete(rootTC.debugElement.componentInstance.objExpr, 'bar');
-                 detectChangesAndCheck(rootTC, 'foo baz');
+                 StringMapWrapper.delete(fixture.debugElement.componentInstance.objExpr, 'bar');
+                 detectChangesAndCheck(fixture, 'foo baz');
 
                  async.done();
                });
@@ -120,14 +120,14 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'foo');
+               .then((fixture) => {
+                 detectChangesAndCheck(fixture, 'foo');
 
-                 rootTC.debugElement.componentInstance.objExpr = {foo: true, bar: true};
-                 detectChangesAndCheck(rootTC, 'foo bar');
+                 fixture.debugElement.componentInstance.objExpr = {foo: true, bar: true};
+                 detectChangesAndCheck(fixture, 'foo bar');
 
-                 rootTC.debugElement.componentInstance.objExpr = {baz: true};
-                 detectChangesAndCheck(rootTC, 'baz');
+                 fixture.debugElement.componentInstance.objExpr = {baz: true};
+                 detectChangesAndCheck(fixture, 'baz');
 
                  async.done();
                });
@@ -139,14 +139,14 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'foo');
+               .then((fixture) => {
+                 detectChangesAndCheck(fixture, 'foo');
 
-                 rootTC.debugElement.componentInstance.objExpr = null;
-                 detectChangesAndCheck(rootTC, '');
+                 fixture.debugElement.componentInstance.objExpr = null;
+                 detectChangesAndCheck(fixture, '');
 
-                 rootTC.debugElement.componentInstance.objExpr = {'foo': false, 'bar': true};
-                 detectChangesAndCheck(rootTC, 'bar');
+                 fixture.debugElement.componentInstance.objExpr = {'foo': false, 'bar': true};
+                 detectChangesAndCheck(fixture, 'bar');
 
                  async.done();
                });
@@ -161,8 +161,8 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'foo bar foo-bar fooBar');
+               .then((fixture) => {
+                 detectChangesAndCheck(fixture, 'foo bar foo-bar fooBar');
                  async.done();
                });
          }));
@@ -173,18 +173,18 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 var arrExpr: string[] = rootTC.debugElement.componentInstance.arrExpr;
-                 detectChangesAndCheck(rootTC, 'foo');
+               .then((fixture) => {
+                 var arrExpr: string[] = fixture.debugElement.componentInstance.arrExpr;
+                 detectChangesAndCheck(fixture, 'foo');
 
                  arrExpr.push('bar');
-                 detectChangesAndCheck(rootTC, 'foo bar');
+                 detectChangesAndCheck(fixture, 'foo bar');
 
                  arrExpr[1] = 'baz';
-                 detectChangesAndCheck(rootTC, 'foo baz');
+                 detectChangesAndCheck(fixture, 'foo baz');
 
-                 ListWrapper.remove(rootTC.debugElement.componentInstance.arrExpr, 'baz');
-                 detectChangesAndCheck(rootTC, 'foo');
+                 ListWrapper.remove(fixture.debugElement.componentInstance.arrExpr, 'baz');
+                 detectChangesAndCheck(fixture, 'foo');
 
                  async.done();
                });
@@ -196,11 +196,11 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'foo');
+               .then((fixture) => {
+                 detectChangesAndCheck(fixture, 'foo');
 
-                 rootTC.debugElement.componentInstance.arrExpr = ['bar'];
-                 detectChangesAndCheck(rootTC, 'bar');
+                 fixture.debugElement.componentInstance.arrExpr = ['bar'];
+                 detectChangesAndCheck(fixture, 'bar');
 
                  async.done();
                });
@@ -212,11 +212,11 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'foo');
+               .then((fixture) => {
+                 detectChangesAndCheck(fixture, 'foo');
 
-                 rootTC.debugElement.componentInstance.arrExpr = ['bar'];
-                 detectChangesAndCheck(rootTC, 'foo bar');
+                 fixture.debugElement.componentInstance.arrExpr = ['bar'];
+                 detectChangesAndCheck(fixture, 'foo bar');
 
                  async.done();
                });
@@ -228,10 +228,10 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
+               .then((fixture) => {
 
-                 rootTC.debugElement.componentInstance.arrExpr = ['', '  '];
-                 detectChangesAndCheck(rootTC, 'foo');
+                 fixture.debugElement.componentInstance.arrExpr = ['', '  '];
+                 detectChangesAndCheck(fixture, 'foo');
 
                  async.done();
                });
@@ -243,10 +243,10 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
+               .then((fixture) => {
 
-                 rootTC.debugElement.componentInstance.arrExpr = [' bar  '];
-                 detectChangesAndCheck(rootTC, 'foo bar');
+                 fixture.debugElement.componentInstance.arrExpr = [' bar  '];
+                 detectChangesAndCheck(fixture, 'foo bar');
 
                  async.done();
                });
@@ -261,16 +261,16 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
+               .then((fixture) => {
                  var setExpr = new Set<string>();
                  setExpr.add('bar');
-                 rootTC.debugElement.componentInstance.setExpr = setExpr;
-                 detectChangesAndCheck(rootTC, 'bar');
+                 fixture.debugElement.componentInstance.setExpr = setExpr;
+                 detectChangesAndCheck(fixture, 'bar');
 
                  setExpr = new Set<string>();
                  setExpr.add('baz');
-                 rootTC.debugElement.componentInstance.setExpr = setExpr;
-                 detectChangesAndCheck(rootTC, 'baz');
+                 fixture.debugElement.componentInstance.setExpr = setExpr;
+                 detectChangesAndCheck(fixture, 'baz');
 
                  async.done();
                });
@@ -284,8 +284,8 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'foo bar foo-bar fooBar');
+               .then((fixture) => {
+                 detectChangesAndCheck(fixture, 'foo bar foo-bar fooBar');
                  async.done();
                });
          }));
@@ -296,15 +296,15 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'foo');
+               .then((fixture) => {
+                 detectChangesAndCheck(fixture, 'foo');
 
-                 rootTC.debugElement.componentInstance.strExpr = 'foo bar';
-                 detectChangesAndCheck(rootTC, 'foo bar');
+                 fixture.debugElement.componentInstance.strExpr = 'foo bar';
+                 detectChangesAndCheck(fixture, 'foo bar');
 
 
-                 rootTC.debugElement.componentInstance.strExpr = 'baz';
-                 detectChangesAndCheck(rootTC, 'baz');
+                 fixture.debugElement.componentInstance.strExpr = 'baz';
+                 detectChangesAndCheck(fixture, 'baz');
 
                  async.done();
                });
@@ -316,11 +316,11 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'foo');
+               .then((fixture) => {
+                 detectChangesAndCheck(fixture, 'foo');
 
-                 rootTC.debugElement.componentInstance.strExpr = null;
-                 detectChangesAndCheck(rootTC, '');
+                 fixture.debugElement.componentInstance.strExpr = null;
+                 detectChangesAndCheck(fixture, '');
 
                  async.done();
                });
@@ -332,11 +332,11 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'foo');
+               .then((fixture) => {
+                 detectChangesAndCheck(fixture, 'foo');
 
-                 rootTC.debugElement.componentInstance.strExpr = null;
-                 detectChangesAndCheck(rootTC, 'foo');
+                 fixture.debugElement.componentInstance.strExpr = null;
+                 detectChangesAndCheck(fixture, 'foo');
 
                  async.done();
                });
@@ -348,9 +348,9 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 rootTC.debugElement.componentInstance.strExpr = '';
-                 detectChangesAndCheck(rootTC, 'foo');
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.strExpr = '';
+                 detectChangesAndCheck(fixture, 'foo');
 
                  async.done();
                });
@@ -366,15 +366,15 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 StringMapWrapper.set(rootTC.debugElement.componentInstance.objExpr, 'bar', true);
-                 detectChangesAndCheck(rootTC, 'init foo bar');
+               .then((fixture) => {
+                 StringMapWrapper.set(fixture.debugElement.componentInstance.objExpr, 'bar', true);
+                 detectChangesAndCheck(fixture, 'init foo bar');
 
-                 StringMapWrapper.set(rootTC.debugElement.componentInstance.objExpr, 'foo', false);
-                 detectChangesAndCheck(rootTC, 'init bar');
+                 StringMapWrapper.set(fixture.debugElement.componentInstance.objExpr, 'foo', false);
+                 detectChangesAndCheck(fixture, 'init bar');
 
-                 rootTC.debugElement.componentInstance.objExpr = null;
-                 detectChangesAndCheck(rootTC, 'init foo');
+                 fixture.debugElement.componentInstance.objExpr = null;
+                 detectChangesAndCheck(fixture, 'init foo');
 
                  async.done();
                });
@@ -386,15 +386,15 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 StringMapWrapper.set(rootTC.debugElement.componentInstance.objExpr, 'bar', true);
-                 detectChangesAndCheck(rootTC, `init foo bar`);
+               .then((fixture) => {
+                 StringMapWrapper.set(fixture.debugElement.componentInstance.objExpr, 'bar', true);
+                 detectChangesAndCheck(fixture, `init foo bar`);
 
-                 StringMapWrapper.set(rootTC.debugElement.componentInstance.objExpr, 'foo', false);
-                 detectChangesAndCheck(rootTC, `init bar`);
+                 StringMapWrapper.set(fixture.debugElement.componentInstance.objExpr, 'foo', false);
+                 detectChangesAndCheck(fixture, `init bar`);
 
-                 rootTC.debugElement.componentInstance.objExpr = null;
-                 detectChangesAndCheck(rootTC, `init foo`);
+                 fixture.debugElement.componentInstance.objExpr = null;
+                 detectChangesAndCheck(fixture, `init foo`);
 
                  async.done();
                });
@@ -406,15 +406,15 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 StringMapWrapper.set(rootTC.debugElement.componentInstance.objExpr, 'bar', true);
-                 detectChangesAndCheck(rootTC, `init foo bar`);
+               .then((fixture) => {
+                 StringMapWrapper.set(fixture.debugElement.componentInstance.objExpr, 'bar', true);
+                 detectChangesAndCheck(fixture, `init foo bar`);
 
-                 StringMapWrapper.set(rootTC.debugElement.componentInstance.objExpr, 'foo', false);
-                 detectChangesAndCheck(rootTC, `init bar`);
+                 StringMapWrapper.set(fixture.debugElement.componentInstance.objExpr, 'foo', false);
+                 detectChangesAndCheck(fixture, `init bar`);
 
-                 rootTC.debugElement.componentInstance.objExpr = null;
-                 detectChangesAndCheck(rootTC, `init foo`);
+                 fixture.debugElement.componentInstance.objExpr = null;
+                 detectChangesAndCheck(fixture, `init foo`);
 
                  async.done();
                });
@@ -427,17 +427,17 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'init foo baz');
+               .then((fixture) => {
+                 detectChangesAndCheck(fixture, 'init foo baz');
 
-                 StringMapWrapper.set(rootTC.debugElement.componentInstance.objExpr, 'bar', true);
-                 detectChangesAndCheck(rootTC, 'init foo baz bar');
+                 StringMapWrapper.set(fixture.debugElement.componentInstance.objExpr, 'bar', true);
+                 detectChangesAndCheck(fixture, 'init foo baz bar');
 
-                 StringMapWrapper.set(rootTC.debugElement.componentInstance.objExpr, 'foo', false);
-                 detectChangesAndCheck(rootTC, 'init baz bar');
+                 StringMapWrapper.set(fixture.debugElement.componentInstance.objExpr, 'foo', false);
+                 detectChangesAndCheck(fixture, 'init baz bar');
 
-                 rootTC.debugElement.componentInstance.condition = false;
-                 detectChangesAndCheck(rootTC, 'init bar');
+                 fixture.debugElement.componentInstance.condition = false;
+                 detectChangesAndCheck(fixture, 'init bar');
 
                  async.done();
                });
@@ -449,17 +449,17 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 detectChangesAndCheck(rootTC, 'init foo');
+               .then((fixture) => {
+                 detectChangesAndCheck(fixture, 'init foo');
 
-                 StringMapWrapper.set(rootTC.debugElement.componentInstance.objExpr, 'bar', true);
-                 detectChangesAndCheck(rootTC, 'init foo bar');
+                 StringMapWrapper.set(fixture.debugElement.componentInstance.objExpr, 'bar', true);
+                 detectChangesAndCheck(fixture, 'init foo bar');
 
-                 rootTC.debugElement.componentInstance.strExpr = 'baz';
-                 detectChangesAndCheck(rootTC, 'init bar baz foo');
+                 fixture.debugElement.componentInstance.strExpr = 'baz';
+                 detectChangesAndCheck(fixture, 'init bar baz foo');
 
-                 rootTC.debugElement.componentInstance.objExpr = null;
-                 detectChangesAndCheck(rootTC, 'init baz');
+                 fixture.debugElement.componentInstance.objExpr = null;
+                 detectChangesAndCheck(fixture, 'init baz');
 
                  async.done();
                });
