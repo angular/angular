@@ -4,7 +4,7 @@ import {CONST, Type} from 'angular2/src/core/facade/lang';
  * `RouteDefinition` defines a route within a {@link RouteConfig} decorator.
  *
  * Supported keys:
- * - `path` (required)
+ * - `path` or `aux` (requires exactly one of these)
  * - `component`, `loader`,  `redirectTo` (requires exactly one of these)
  * - `name` or `as` (optional) (requires exactly one of these)
  * - `data` (optional)
@@ -12,7 +12,8 @@ import {CONST, Type} from 'angular2/src/core/facade/lang';
  * See also {@link Route}, {@link AsyncRoute}, {@link AuxRoute}, and {@link Redirect}.
  */
 export interface RouteDefinition {
-  path: string;
+  path?: string;
+  aux?: string;
   component?: Type | ComponentDefinition;
   loader?: Function;
   redirectTo?: string;

@@ -337,8 +337,11 @@ export class Router {
     }
 
     var promises = [];
-    this._auxRouters.forEach(
-        (router, name) => { promises.push(router.commit(instruction.auxInstruction[name])); });
+    this._auxRouters.forEach((router, name) => {
+      if (isPresent(instruction.auxInstruction[name])) {
+        promises.push(router.commit(instruction.auxInstruction[name]));
+      }
+    });
 
     return next.then((_) => PromiseWrapper.all(promises));
   }

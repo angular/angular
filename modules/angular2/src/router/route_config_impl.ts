@@ -38,16 +38,15 @@ export class Route implements RouteDefinition {
   path: string;
   component: Type;
   name: string;
-  // added next two properties to work around https://github.com/Microsoft/TypeScript/issues/4107
-  loader: Function;
-  redirectTo: string;
+  // added next three properties to work around https://github.com/Microsoft/TypeScript/issues/4107
+  aux: string = null;
+  loader: Function = null;
+  redirectTo: string = null;
   constructor({path, component, name,
                data}: {path: string, component: Type, name?: string, data?: {[key: string]: any}}) {
     this.path = path;
     this.component = component;
     this.name = name;
-    this.loader = null;
-    this.redirectTo = null;
     this.data = data;
   }
 }
@@ -78,7 +77,8 @@ export class AuxRoute implements RouteDefinition {
   path: string;
   component: Type;
   name: string;
-  // added next two properties to work around https://github.com/Microsoft/TypeScript/issues/4107
+  // added next three properties to work around https://github.com/Microsoft/TypeScript/issues/4107
+  aux: string = null;
   loader: Function = null;
   redirectTo: string = null;
   constructor({path, component, name}: {path: string, component: Type, name?: string}) {
@@ -115,6 +115,7 @@ export class AsyncRoute implements RouteDefinition {
   path: string;
   loader: Function;
   name: string;
+  aux: string = null;
   constructor({path, loader, name, data}:
                   {path: string, loader: Function, name?: string, data?: {[key: string]: any}}) {
     this.path = path;
@@ -148,9 +149,10 @@ export class Redirect implements RouteDefinition {
   path: string;
   redirectTo: string;
   name: string = null;
-  // added next property to work around https://github.com/Microsoft/TypeScript/issues/4107
+  // added next three properties to work around https://github.com/Microsoft/TypeScript/issues/4107
   loader: Function = null;
   data: any = null;
+  aux: string = null;
   constructor({path, redirectTo}: {path: string, redirectTo: string}) {
     this.path = path;
     this.redirectTo = redirectTo;
