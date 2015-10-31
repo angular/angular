@@ -254,8 +254,8 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     var templateBindingsSource = null;
     if (attr.name == TEMPLATE_ATTR) {
       templateBindingsSource = attr.value;
-    } else if (StringWrapper.startsWith(attr.name, TEMPLATE_ATTR_PREFIX)) {
-      var key = StringWrapper.substring(attr.name, TEMPLATE_ATTR_PREFIX.length);  // remove the star
+    } else if (attr.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
+      var key = attr.name.substring(TEMPLATE_ATTR_PREFIX.length);  // remove the star
       templateBindingsSource = (attr.value.length == 0) ? key : key + ' ' + attr.value;
     }
     if (isPresent(templateBindingsSource)) {
@@ -333,8 +333,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   }
 
   private _normalizeAttributeName(attrName: string): string {
-    return StringWrapper.startsWith(attrName, 'data-') ? StringWrapper.substring(attrName, 5) :
-                                                         attrName;
+    return attrName.startsWith('data-') ? attrName.substring(5) : attrName;
   }
 
   private _parseVariable(identifier: string, value: string, sourceInfo: any,

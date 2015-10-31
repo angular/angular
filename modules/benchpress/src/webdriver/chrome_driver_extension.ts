@@ -41,7 +41,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
     if (isBlank(v)) {
       return -1;
     }
-    v = StringWrapper.split(v, /\./g)[0];
+    v = v.split('.')[0];
     if (isBlank(v)) {
       return -1;
     }
@@ -197,9 +197,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
     return null;  // nothing useful in this event
   }
 
-  private _parseCategories(categories: string): string[] {
-    return StringWrapper.split(categories, /,/g);
-  }
+  private _parseCategories(categories: string): string[] { return categories.split(','); }
 
   private _isEvent(eventCategories: string[], eventName: string, expectedCategories: string[],
                    expectedName: string = null): boolean {

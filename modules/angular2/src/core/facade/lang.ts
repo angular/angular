@@ -176,16 +176,6 @@ export class StringWrapper {
     return s.slice(from, to === null ? undefined : to);
   }
 
-  static toUpperCase(s: string): string { return s.toUpperCase(); }
-
-  static toLowerCase(s: string): string { return s.toLowerCase(); }
-
-  static startsWith(s: string, start: string): boolean { return s.startsWith(start); }
-
-  static substring(s: string, start: number, end: number = null): string {
-    return s.substring(start, end === null ? undefined : end);
-  }
-
   static replaceAllMapped(s: string, from: RegExp, cb: Function): string {
     return s.replace(from, function(...matches) {
       // Remove offset & string from the result array

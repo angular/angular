@@ -1,4 +1,4 @@
-import {isString, StringWrapper, CONST, isBlank} from 'angular2/src/core/facade/lang';
+import {isString, CONST, isBlank} from 'angular2/src/core/facade/lang';
 import {Pipe} from 'angular2/src/core/metadata';
 import {Injectable} from 'angular2/src/core/di';
 import {PipeTransform, WrappedValue} from 'angular2/src/core/change_detection';
@@ -31,6 +31,6 @@ export class UpperCasePipe implements PipeTransform {
     if (!isString(value)) {
       throw new InvalidPipeArgumentException(UpperCasePipe, value);
     }
-    return StringWrapper.toUpperCase(value);
+    return value.toUpperCase();
   }
 }
