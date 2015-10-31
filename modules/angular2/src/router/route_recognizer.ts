@@ -26,6 +26,10 @@ import {ComponentInstruction} from './instruction';
 export class RouteRecognizer {
   names = new Map<string, PathRecognizer>();
 
+  // map from name to recognizer
+  auxNames = new Map<string, PathRecognizer>();
+
+  // map from starting path to recognizer
   auxRoutes = new Map<string, PathRecognizer>();
 
   // TODO: optimize this into a trie
@@ -48,8 +52,12 @@ export class RouteRecognizer {
       let path = config.path.startsWith('/') ? config.path.substring(1) : config.path;
       var recognizer = new PathRecognizer(config.path, handler);
       this.auxRoutes.set(path, recognizer);
+      if (isPresent(config.name)) {
+        this.auxNames.set(config.name, recognizer);
+      }
       return recognizer.terminal;
     }
+
     if (config instanceof Redirect) {
       this.redirects.push(new Redirector(config.path, config.redirectTo));
       return true;
@@ -122,6 +130,14 @@ export class RouteRecognizer {
 
   generate(name: string, params: any): ComponentInstruction {
     var pathRecognizer: PathRecognizer = this.names.get(name);
+    if (isBlank(pathRecognizer)) {
+      return null;
+    }
+    return pathRecognizer.generate(params);
+  }
+
+  generateAuxiliary(name: string, params: any): ComponentInstruction {
+    var pathRecognizer: PathRecognizer = this.auxNames.get(name);
     if (isBlank(pathRecognizer)) {
       return null;
     }

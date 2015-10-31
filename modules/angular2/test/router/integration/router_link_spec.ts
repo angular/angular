@@ -31,6 +31,7 @@ import {
   RouterLink,
   RouterOutlet,
   AsyncRoute,
+  AuxRoute,
   Route,
   RouteParams,
   RouteConfig,
@@ -198,7 +199,7 @@ export function main() {
                  name: 'ChildWithGrandchild'
                })
              ]))
-             .then((_) => router.navigate(['/ChildWithGrandchild']))
+             .then((_) => router.navigateByUrl('/child-with-grandchild/grandchild'))
              .then((_) => {
                fixture.detectChanges();
                expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[1]
@@ -230,6 +231,21 @@ export function main() {
                                            .nativeElement,
                                        'href'))
                    .toEqual('/book/1984/page/2');
+               async.done();
+             });
+       }));
+
+    it('should generate links to auxiliary routes', inject([AsyncTestCompleter], (async) => {
+         compile()
+             .then((_) => router.config([new Route({path: '/...', component: AuxLinkCmp})]))
+             .then((_) => router.navigateByUrl('/'))
+             .then((_) => {
+               rootTC.detectChanges();
+               expect(DOM.getAttribute(rootTC.debugElement.componentViewChildren[1]
+                                           .componentViewChildren[0]
+                                           .nativeElement,
+                                       'href'))
+                   .toEqual('/(aside)');
                async.done();
              });
        }));
@@ -470,4 +486,18 @@ class NoPrefixBookCmp {
 class AmbiguousBookCmp {
   title: string;
   constructor(params: RouteParams) { this.title = params.get('title'); }
+}
+
+@Component({selector: 'aux-cmp'})
+@View({
+  template:
+      `<a [router-link]="[\'./Hello\', [ \'Aside\' ] ]">aside</a> |
+    <router-outlet></router-outlet> | aside <router-outlet name="aside"></router-outlet>`,
+  directives: ROUTER_DIRECTIVES
+})
+@RouteConfig([
+  new Route({path: '/', component: HelloCmp, name: 'Hello'}),
+  new AuxRoute({path: '/aside', component: Hello2Cmp, name: 'Aside'})
+])
+class AuxLinkCmp {
 }
