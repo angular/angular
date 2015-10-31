@@ -5,13 +5,13 @@ import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 
 export class MockDirectiveResolver extends DirectiveResolver {
   private _providerOverrides = new Map<Type, any[]>();
-  private viewProviderOverrides = new Map<Type, any[]>();
+  private _viewProviderOverrides = new Map<Type, any[]>();
 
   resolve(type: Type): DirectiveMetadata {
     var dm = super.resolve(type);
 
     var providerOverrides = this._providerOverrides.get(type);
-    var viewProviderOverrides = this.viewProviderOverrides.get(type);
+    var viewProviderOverrides = this._viewProviderOverrides.get(type);
 
     var providers = dm.providers;
     if (isPresent(providerOverrides)) {
@@ -61,7 +61,7 @@ export class MockDirectiveResolver extends DirectiveResolver {
    * @deprecated
    */
   setViewBindingsOverride(type: Type, viewBindings: any[]): void {
-    this.viewProviderOverrides.set(type, viewBindings);
+    this._viewProviderOverrides.set(type, viewBindings);
   }
 
   setProvidersOverride(type: Type, bindings: any[]): void {
@@ -69,6 +69,6 @@ export class MockDirectiveResolver extends DirectiveResolver {
   }
 
   setViewProvidersOverride(type: Type, viewBindings: any[]): void {
-    this.viewProviderOverrides.set(type, viewBindings);
+    this._viewProviderOverrides.set(type, viewBindings);
   }
 }

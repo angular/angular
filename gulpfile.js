@@ -285,6 +285,7 @@ gulp.task('lint', ['build.tools'], function() {
   var tslintConfig = {
     "rules": {
       "requireInternalWithUnderscore": true,
+      "requirePrivateWithUnderscore": true,
       "requireParameterType": true,
       "requireReturnType": true,
       "semicolon": true,

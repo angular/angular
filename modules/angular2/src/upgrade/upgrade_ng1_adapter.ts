@@ -64,16 +64,16 @@ export class UpgradeNg1ComponentAdapterBuilder {
       throw new Error('Only support single directive definition for: ' + this.name);
     }
     var directive = directives[0];
-    if (directive.replace) this.notSupported('replace');
-    if (directive.terminal) this.notSupported('terminal');
+    if (directive.replace) this._notSupported('replace');
+    if (directive.terminal) this._notSupported('terminal');
     var link = directive.link;
     if (typeof link == 'object') {
-      if ((<angular.IDirectivePrePost>link).post) this.notSupported('link.post');
+      if ((<angular.IDirectivePrePost>link).post) this._notSupported('link.post');
     }
     return directive;
   }
 
-  private notSupported(feature: string) {
+  private _notSupported(feature: string) {
     throw new Error(`Upgraded directive '${this.name}' does not support '${feature}'.`);
   }
 
@@ -199,7 +199,7 @@ class UpgradeNg1ComponentAdapter implements OnChanges, DoCheck {
     if (link) {
       var attrs: angular.IAttributes = NOT_SUPPORTED;
       var transcludeFn: angular.ITranscludeFunction = NOT_SUPPORTED;
-      var linkController = this.resolveRequired($element, directive.require);
+      var linkController = this._resolveRequired($element, directive.require);
       (<angular.IDirectiveLinkFn>directive.link)(componentScope, $element, attrs, linkController,
                                                  transcludeFn);
     }
@@ -257,7 +257,7 @@ class UpgradeNg1ComponentAdapter implements OnChanges, DoCheck {
     this.destinationObj[this.propertyMap[name]] = value;
   }
 
-  private resolveRequired($element: angular.IAugmentedJQuery, require: string | string[]): any {
+  private _resolveRequired($element: angular.IAugmentedJQuery, require: string | string[]): any {
     if (!require) {
       return undefined;
     } else if (typeof require == 'string') {
@@ -289,7 +289,7 @@ class UpgradeNg1ComponentAdapter implements OnChanges, DoCheck {
     } else if (require instanceof Array) {
       var deps = [];
       for (var i = 0; i < require.length; i++) {
-        deps.push(this.resolveRequired($element, require[i]));
+        deps.push(this._resolveRequired($element, require[i]));
       }
       return deps;
     }
