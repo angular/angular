@@ -6,9 +6,7 @@ import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
 import {Injectable} from 'angular2/angular2';
 import {BrowserXhr} from './browser_xhr';
 import {isPresent} from 'angular2/src/core/facade/lang';
-// todo(robwormald): temporary until https://github.com/angular/angular/issues/4390 decided
-var Rx = require('@reactivex/rxjs/dist/cjs/Rx');
-var {Observable} = Rx;
+import {Observable} from 'angular2/angular2';
 /**
 * Creates connections using `XMLHttpRequest`. Given a fully-qualified
 * request, an `XHRConnection` will immediately create an `XMLHttpRequest` object and send the
@@ -23,7 +21,7 @@ export class XHRConnection implements Connection {
    * Response {@link EventEmitter} which emits a single {@link Response} value on load event of
    * `XMLHttpRequest`.
    */
-  response: any;  // TODO: Make generic of <Response>;
+  response: Observable<Response>;
   readyState: ReadyStates;
   constructor(req: Request, browserXHR: BrowserXhr, baseResponseOptions?: ResponseOptions) {
     this.request = req;

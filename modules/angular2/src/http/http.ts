@@ -3,10 +3,12 @@ import {makeTypeError} from 'angular2/src/core/facade/exceptions';
 import {Injectable} from 'angular2/angular2';
 import {RequestOptionsArgs, Connection, ConnectionBackend} from './interfaces';
 import {Request} from './static_request';
+import {Response} from './static_response';
 import {BaseRequestOptions, RequestOptions} from './base_request_options';
 import {RequestMethods} from './enums';
+import {Observable} from 'angular2/angular2';
 
-function httpRequest(backend: ConnectionBackend, request: Request): any {
+function httpRequest(backend: ConnectionBackend, request: Request): Observable<Response> {
   return backend.createConnection(request).response;
 }
 
@@ -96,7 +98,7 @@ export class Http {
    * object can be provided as the 2nd argument. The options object will be merged with the values
    * of {@link BaseRequestOptions} before performing the request.
    */
-  request(url: string | Request, options?: RequestOptionsArgs): any {
+  request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
     var responseObservable: any;
     if (isString(url)) {
       responseObservable = httpRequest(
@@ -113,7 +115,7 @@ export class Http {
   /**
    * Performs a request with `get` http method.
    */
-  get(url: string, options?: RequestOptionsArgs): any {
+  get(url: string, options?: RequestOptionsArgs): Observable<Response> {
     return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options,
                                                                RequestMethods.Get, url)));
   }
@@ -121,7 +123,7 @@ export class Http {
   /**
    * Performs a request with `post` http method.
    */
-  post(url: string, body: string, options?: RequestOptionsArgs): any {
+  post(url: string, body: string, options?: RequestOptionsArgs): Observable<Response> {
     return httpRequest(
         this._backend,
         new Request(mergeOptions(this._defaultOptions.merge(new RequestOptions({body: body})),
@@ -131,7 +133,7 @@ export class Http {
   /**
    * Performs a request with `put` http method.
    */
-  put(url: string, body: string, options?: RequestOptionsArgs): any {
+  put(url: string, body: string, options?: RequestOptionsArgs): Observable<Response> {
     return httpRequest(
         this._backend,
         new Request(mergeOptions(this._defaultOptions.merge(new RequestOptions({body: body})),
@@ -141,7 +143,7 @@ export class Http {
   /**
    * Performs a request with `delete` http method.
    */
-  delete (url: string, options?: RequestOptionsArgs): any {
+  delete (url: string, options?: RequestOptionsArgs): Observable<Response> {
     return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options,
                                                                RequestMethods.Delete, url)));
   }
@@ -149,7 +151,7 @@ export class Http {
   /**
    * Performs a request with `patch` http method.
    */
-  patch(url: string, body: string, options?: RequestOptionsArgs): any {
+  patch(url: string, body: string, options?: RequestOptionsArgs): Observable<Response> {
     return httpRequest(
         this._backend,
         new Request(mergeOptions(this._defaultOptions.merge(new RequestOptions({body: body})),
@@ -159,7 +161,7 @@ export class Http {
   /**
    * Performs a request with `head` http method.
    */
-  head(url: string, options?: RequestOptionsArgs): any {
+  head(url: string, options?: RequestOptionsArgs): Observable<Response> {
     return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options,
                                                                RequestMethods.Head, url)));
   }
@@ -177,7 +179,7 @@ export class Jsonp extends Http {
    * object can be provided as the 2nd argument. The options object will be merged with the values
    * of {@link BaseRequestOptions} before performing the request.
    */
-  request(url: string | Request, options?: RequestOptionsArgs): any {
+  request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
     var responseObservable: any;
     if (isString(url)) {
       url = new Request(mergeOptions(this._defaultOptions, options, RequestMethods.Get, url));

@@ -5,12 +5,9 @@ import {Response} from '../static_response';
 import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
 import {Injectable} from 'angular2/angular2';
 import {BrowserJsonp} from './browser_jsonp';
-import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {makeTypeError} from 'angular2/src/core/facade/exceptions';
 import {StringWrapper, isPresent} from 'angular2/src/core/facade/lang';
-// todo(robwormald): temporary until https://github.com/angular/angular/issues/4390 decided
-var Rx = require('@reactivex/rxjs/dist/cjs/Rx');
-var {Observable} = Rx;
+import {Observable} from 'angular2/angular2';
 
 const JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callback.';
 const JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
@@ -18,7 +15,7 @@ const JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
 export abstract class JSONPConnection implements Connection {
   readyState: ReadyStates;
   request: Request;
-  response: any;
+  response: Observable<Response>;
   abstract finished(data?: any): void;
 }
 
