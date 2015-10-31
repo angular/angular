@@ -30,9 +30,9 @@ export function main() {
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
-             .then((rootTC) => {
-               rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+             .then((fixture) => {
+               fixture.detectChanges();
+               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
                                    'max-width'))
                    .toEqual('40px');
 
@@ -46,19 +46,19 @@ export function main() {
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
-             .then((rootTC) => {
+             .then((fixture) => {
                var expr: Map<string, any>;
 
-               rootTC.debugElement.componentInstance.expr = {'max-width': '40px'};
-               rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+               fixture.debugElement.componentInstance.expr = {'max-width': '40px'};
+               fixture.detectChanges();
+               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
                                    'max-width'))
                    .toEqual('40px');
 
-               expr = rootTC.debugElement.componentInstance.expr;
+               expr = fixture.debugElement.componentInstance.expr;
                expr['max-width'] = '30%';
-               rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+               fixture.detectChanges();
+               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
                                    'max-width'))
                    .toEqual('30%');
 
@@ -72,16 +72,16 @@ export function main() {
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
-             .then((rootTC) => {
-               rootTC.debugElement.componentInstance.expr = {'max-width': '40px'};
-               rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+             .then((fixture) => {
+               fixture.debugElement.componentInstance.expr = {'max-width': '40px'};
+               fixture.detectChanges();
+               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
                                    'max-width'))
                    .toEqual('40px');
 
-               StringMapWrapper.delete(rootTC.debugElement.componentInstance.expr, 'max-width');
-               rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+               StringMapWrapper.delete(fixture.debugElement.componentInstance.expr, 'max-width');
+               fixture.detectChanges();
+               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
                                    'max-width'))
                    .toEqual('');
 
@@ -95,22 +95,22 @@ export function main() {
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
-             .then((rootTC) => {
-               rootTC.debugElement.componentInstance.expr = {'max-width': '40px'};
-               rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+             .then((fixture) => {
+               fixture.debugElement.componentInstance.expr = {'max-width': '40px'};
+               fixture.detectChanges();
+               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
                                    'max-width'))
                    .toEqual('40px');
-               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
                                    'font-size'))
                    .toEqual('12px');
 
-               StringMapWrapper.delete(rootTC.debugElement.componentInstance.expr, 'max-width');
-               rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+               StringMapWrapper.delete(fixture.debugElement.componentInstance.expr, 'max-width');
+               fixture.detectChanges();
+               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
                                    'max-width'))
                    .toEqual('');
-               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
                                    'font-size'))
                    .toEqual('12px');
 
@@ -124,23 +124,23 @@ export function main() {
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
-             .then((rootTC) => {
-               rootTC.debugElement.componentInstance.expr = {'max-width': '40px'};
-               rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+             .then((fixture) => {
+               fixture.debugElement.componentInstance.expr = {'max-width': '40px'};
+               fixture.detectChanges();
+               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
                                    'max-width'))
                    .toEqual('40px');
-               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
                                    'font-size'))
                    .toEqual('12px');
 
-               StringMapWrapper.delete(rootTC.debugElement.componentInstance.expr, 'max-width');
-               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+               StringMapWrapper.delete(fixture.debugElement.componentInstance.expr, 'max-width');
+               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
                                    'font-size'))
                    .toEqual('12px');
 
-               rootTC.detectChanges();
-               expect(DOM.getStyle(rootTC.debugElement.componentViewChildren[0].nativeElement,
+               fixture.detectChanges();
+               expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
                                    'max-width'))
                    .toEqual('');
 

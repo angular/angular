@@ -13,7 +13,7 @@ import {
   it,
   xit,
   TestComponentBuilder,
-  RootTestComponent
+  ComponentFixture
 } from 'angular2/testing_internal';
 
 import {OnDestroy} from 'angular2/lifecycle_hooks';
@@ -24,7 +24,7 @@ import {DynamicComponentLoader} from 'angular2/src/core/linker/dynamic_component
 import {ElementRef} from 'angular2/src/core/linker/element_ref';
 import {DOCUMENT} from 'angular2/src/core/render/render';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {RootTestComponent_} from "angular2/src/testing/test_component_builder";
+import {ComponentFixture_} from "angular2/src/testing/test_component_builder";
 
 export function main() {
   describe('DynamicComponentLoader', function() {
@@ -232,7 +232,7 @@ export function main() {
                   DOM.appendChild(doc.body, rootEl);
                   loader.loadAsRoot(ChildComp, null, injector)
                       .then((componentRef) => {
-                        var el = new RootTestComponent_(componentRef);
+                        var el = new ComponentFixture_(componentRef);
                         expect(rootEl.parentNode).toBe(doc.body);
 
                         el.detectChanges();

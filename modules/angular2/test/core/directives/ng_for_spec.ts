@@ -29,9 +29,9 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideTemplate(TestComponent, TEMPLATE)
              .createAsync(TestComponent)
-             .then((rootTC) => {
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('1;2;');
+             .then((fixture) => {
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('1;2;');
                async.done();
              });
        }));
@@ -40,13 +40,13 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideTemplate(TestComponent, TEMPLATE)
              .createAsync(TestComponent)
-             .then((rootTC) => {
-               rootTC.detectChanges();
+             .then((fixture) => {
+               fixture.detectChanges();
 
-               (<number[]>rootTC.debugElement.componentInstance.items).push(3);
-               rootTC.detectChanges();
+               (<number[]>fixture.debugElement.componentInstance.items).push(3);
+               fixture.detectChanges();
 
-               expect(rootTC.debugElement.nativeElement).toHaveText('1;2;3;');
+               expect(fixture.debugElement.nativeElement).toHaveText('1;2;3;');
                async.done();
              });
        }));
@@ -55,13 +55,13 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideTemplate(TestComponent, TEMPLATE)
              .createAsync(TestComponent)
-             .then((rootTC) => {
-               rootTC.detectChanges();
+             .then((fixture) => {
+               fixture.detectChanges();
 
-               ListWrapper.removeAt(rootTC.debugElement.componentInstance.items, 1);
-               rootTC.detectChanges();
+               ListWrapper.removeAt(fixture.debugElement.componentInstance.items, 1);
+               fixture.detectChanges();
 
-               expect(rootTC.debugElement.nativeElement).toHaveText('1;');
+               expect(fixture.debugElement.nativeElement).toHaveText('1;');
                async.done();
              });
        }));
@@ -70,14 +70,14 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideTemplate(TestComponent, TEMPLATE)
              .createAsync(TestComponent)
-             .then((rootTC) => {
-               rootTC.detectChanges();
+             .then((fixture) => {
+               fixture.detectChanges();
 
-               ListWrapper.removeAt(rootTC.debugElement.componentInstance.items, 0);
-               (<number[]>rootTC.debugElement.componentInstance.items).push(1);
-               rootTC.detectChanges();
+               ListWrapper.removeAt(fixture.debugElement.componentInstance.items, 0);
+               (<number[]>fixture.debugElement.componentInstance.items).push(1);
+               fixture.detectChanges();
 
-               expect(rootTC.debugElement.nativeElement).toHaveText('2;1;');
+               expect(fixture.debugElement.nativeElement).toHaveText('2;1;');
                async.done();
              });
        }));
@@ -86,14 +86,14 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideTemplate(TestComponent, TEMPLATE)
              .createAsync(TestComponent)
-             .then((rootTC) => {
-               rootTC.debugElement.componentInstance.items = [0, 1, 2, 3, 4, 5];
-               rootTC.detectChanges();
+             .then((fixture) => {
+               fixture.debugElement.componentInstance.items = [0, 1, 2, 3, 4, 5];
+               fixture.detectChanges();
 
-               rootTC.debugElement.componentInstance.items = [6, 2, 7, 0, 4, 8];
-               rootTC.detectChanges();
+               fixture.debugElement.componentInstance.items = [6, 2, 7, 0, 4, 8];
+               fixture.detectChanges();
 
-               expect(rootTC.debugElement.nativeElement).toHaveText('6;2;7;0;4;8;');
+               expect(fixture.debugElement.nativeElement).toHaveText('6;2;7;0;4;8;');
                async.done();
              });
        }));
@@ -104,25 +104,26 @@ export function main() {
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
-             .then((rootTC) => {
+             .then((fixture) => {
 
                // INIT
-               rootTC.debugElement.componentInstance.items = [{'name': 'misko'}, {'name': 'shyam'}];
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('misko;shyam;');
+               fixture.debugElement.componentInstance.items =
+                   [{'name': 'misko'}, {'name': 'shyam'}];
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('misko;shyam;');
 
                // GROW
-               (<any[]>rootTC.debugElement.componentInstance.items).push({'name': 'adam'});
-               rootTC.detectChanges();
+               (<any[]>fixture.debugElement.componentInstance.items).push({'name': 'adam'});
+               fixture.detectChanges();
 
-               expect(rootTC.debugElement.nativeElement).toHaveText('misko;shyam;adam;');
+               expect(fixture.debugElement.nativeElement).toHaveText('misko;shyam;adam;');
 
                // SHRINK
-               ListWrapper.removeAt(rootTC.debugElement.componentInstance.items, 2);
-               ListWrapper.removeAt(rootTC.debugElement.componentInstance.items, 0);
-               rootTC.detectChanges();
+               ListWrapper.removeAt(fixture.debugElement.componentInstance.items, 2);
+               ListWrapper.removeAt(fixture.debugElement.componentInstance.items, 0);
+               fixture.detectChanges();
 
-               expect(rootTC.debugElement.nativeElement).toHaveText('shyam;');
+               expect(fixture.debugElement.nativeElement).toHaveText('shyam;');
                async.done();
              });
        }));
@@ -132,9 +133,9 @@ export function main() {
          var template = '<ul><li template="ng-for #item of null">{{item}};</li></ul>';
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
-             .then((rootTC) => {
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('');
+             .then((fixture) => {
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('');
                async.done();
              });
        }));
@@ -143,17 +144,17 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideTemplate(TestComponent, TEMPLATE)
              .createAsync(TestComponent)
-             .then((rootTC) => {
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('1;2;');
+             .then((fixture) => {
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('1;2;');
 
-               rootTC.debugElement.componentInstance.items = null;
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('');
+               fixture.debugElement.componentInstance.items = null;
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('');
 
-               rootTC.debugElement.componentInstance.items = [1, 2, 3];
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('1;2;3;');
+               fixture.debugElement.componentInstance.items = [1, 2, 3];
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('1;2;3;');
                async.done();
              });
        }));
@@ -162,12 +163,12 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideTemplate(TestComponent, TEMPLATE)
              .createAsync(TestComponent)
-             .then((rootTC) => {
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('1;2;');
+             .then((fixture) => {
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('1;2;');
 
-               rootTC.debugElement.componentInstance.items = 'whaaa';
-               expect(() => rootTC.detectChanges()).toThrowError();
+               fixture.debugElement.componentInstance.items = 'whaaa';
+               expect(() => fixture.detectChanges()).toThrowError();
                async.done();
              });
        }));
@@ -176,11 +177,11 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideTemplate(TestComponent, TEMPLATE)
              .createAsync(TestComponent)
-             .then((rootTC) => {
+             .then((fixture) => {
                var a = new Foo();
-               rootTC.debugElement.componentInstance.items = [a, a];
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('foo;foo;');
+               fixture.debugElement.componentInstance.items = [a, a];
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('foo;foo;');
                async.done();
              });
        }));
@@ -197,16 +198,16 @@ export function main() {
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
-             .then((rootTC) => {
-               rootTC.debugElement.componentInstance.items = [['a', 'b'], ['c']];
-               rootTC.detectChanges();
-               rootTC.detectChanges();
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('a-2;b-2;|c-1;|');
+             .then((fixture) => {
+               fixture.debugElement.componentInstance.items = [['a', 'b'], ['c']];
+               fixture.detectChanges();
+               fixture.detectChanges();
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('a-2;b-2;|c-1;|');
 
-               rootTC.debugElement.componentInstance.items = [['e'], ['f', 'g']];
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('e-1;|f-2;g-2;|');
+               fixture.debugElement.componentInstance.items = [['e'], ['f', 'g']];
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('e-1;|f-2;g-2;|');
 
                async.done();
              });
@@ -221,14 +222,14 @@ export function main() {
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
-             .then((rootTC) => {
-               rootTC.debugElement.componentInstance.items = [['a', 'b'], ['c']];
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('a-2;b-2;c-1;');
+             .then((fixture) => {
+               fixture.debugElement.componentInstance.items = [['a', 'b'], ['c']];
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('a-2;b-2;c-1;');
 
-               rootTC.debugElement.componentInstance.items = [['e'], ['f', 'g']];
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('e-1;f-2;g-2;');
+               fixture.debugElement.componentInstance.items = [['e'], ['f', 'g']];
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('e-1;f-2;g-2;');
                async.done();
              });
        }));
@@ -240,14 +241,14 @@ export function main() {
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
-             .then((rootTC) => {
-               rootTC.debugElement.componentInstance.items = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('0123456789');
+             .then((fixture) => {
+               fixture.debugElement.componentInstance.items = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('0123456789');
 
-               rootTC.debugElement.componentInstance.items = [1, 2, 6, 7, 4, 3, 5, 8, 9, 0];
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('0123456789');
+               fixture.debugElement.componentInstance.items = [1, 2, 6, 7, 4, 3, 5, 8, 9, 0];
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('0123456789');
                async.done();
              });
        }));
@@ -259,14 +260,14 @@ export function main() {
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
-             .then((rootTC) => {
-               rootTC.debugElement.componentInstance.items = [0, 1, 2];
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('falsefalsetrue');
+             .then((fixture) => {
+               fixture.debugElement.componentInstance.items = [0, 1, 2];
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('falsefalsetrue');
 
-               rootTC.debugElement.componentInstance.items = [2, 1];
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('falsetrue');
+               fixture.debugElement.componentInstance.items = [2, 1];
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('falsetrue');
                async.done();
              });
        }));
@@ -278,14 +279,14 @@ export function main() {
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
-             .then((rootTC) => {
-               rootTC.debugElement.componentInstance.items = [0, 1, 2];
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('truefalsetrue');
+             .then((fixture) => {
+               fixture.debugElement.componentInstance.items = [0, 1, 2];
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('truefalsetrue');
 
-               rootTC.debugElement.componentInstance.items = [2, 1];
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('truefalse');
+               fixture.debugElement.componentInstance.items = [2, 1];
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('truefalse');
                async.done();
              });
        }));
@@ -297,14 +298,14 @@ export function main() {
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
-             .then((rootTC) => {
-               rootTC.debugElement.componentInstance.items = [0, 1, 2, 3];
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('falsetruefalsetrue');
+             .then((fixture) => {
+               fixture.debugElement.componentInstance.items = [0, 1, 2, 3];
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('falsetruefalsetrue');
 
-               rootTC.debugElement.componentInstance.items = [2, 1];
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('falsetrue');
+               fixture.debugElement.componentInstance.items = [2, 1];
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('falsetrue');
                async.done();
              });
        }));
@@ -318,10 +319,10 @@ export function main() {
                  ComponentUsingTestComponent,
                  '<test-cmp><li template="#item #i=index">{{i}}: {{item}};</li></test-cmp>')
              .createAsync(ComponentUsingTestComponent)
-             .then((rootTC) => {
-               var testComponent = rootTC.debugElement.componentViewChildren[0];
+             .then((fixture) => {
+               var testComponent = fixture.debugElement.componentViewChildren[0];
                testComponent.componentInstance.items = ['a', 'b', 'c'];
-               rootTC.detectChanges();
+               fixture.detectChanges();
                expect(testComponent.nativeElement).toHaveText('0: a;1: b;2: c;');
 
                async.done();

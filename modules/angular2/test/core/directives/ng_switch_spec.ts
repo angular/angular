@@ -29,17 +29,17 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 rootTC.detectChanges();
-                 expect(rootTC.debugElement.nativeElement).toHaveText('');
+               .then((fixture) => {
+                 fixture.detectChanges();
+                 expect(fixture.debugElement.nativeElement).toHaveText('');
 
-                 rootTC.debugElement.componentInstance.switchValue = 'a';
-                 rootTC.detectChanges();
-                 expect(rootTC.debugElement.nativeElement).toHaveText('when a');
+                 fixture.debugElement.componentInstance.switchValue = 'a';
+                 fixture.detectChanges();
+                 expect(fixture.debugElement.nativeElement).toHaveText('when a');
 
-                 rootTC.debugElement.componentInstance.switchValue = 'b';
-                 rootTC.detectChanges();
-                 expect(rootTC.debugElement.nativeElement).toHaveText('when b');
+                 fixture.debugElement.componentInstance.switchValue = 'b';
+                 fixture.detectChanges();
+                 expect(fixture.debugElement.nativeElement).toHaveText('when b');
 
                  async.done();
                });
@@ -55,17 +55,17 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 rootTC.detectChanges();
-                 expect(rootTC.debugElement.nativeElement).toHaveText('when default');
+               .then((fixture) => {
+                 fixture.detectChanges();
+                 expect(fixture.debugElement.nativeElement).toHaveText('when default');
 
-                 rootTC.debugElement.componentInstance.switchValue = 'a';
-                 rootTC.detectChanges();
-                 expect(rootTC.debugElement.nativeElement).toHaveText('when a');
+                 fixture.debugElement.componentInstance.switchValue = 'a';
+                 fixture.detectChanges();
+                 expect(fixture.debugElement.nativeElement).toHaveText('when a');
 
-                 rootTC.debugElement.componentInstance.switchValue = 'b';
-                 rootTC.detectChanges();
-                 expect(rootTC.debugElement.nativeElement).toHaveText('when default');
+                 fixture.debugElement.componentInstance.switchValue = 'b';
+                 fixture.detectChanges();
+                 expect(fixture.debugElement.nativeElement).toHaveText('when default');
 
                  async.done();
                });
@@ -85,18 +85,18 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 rootTC.detectChanges();
-                 expect(rootTC.debugElement.nativeElement)
+               .then((fixture) => {
+                 fixture.detectChanges();
+                 expect(fixture.debugElement.nativeElement)
                      .toHaveText('when default1;when default2;');
 
-                 rootTC.debugElement.componentInstance.switchValue = 'a';
-                 rootTC.detectChanges();
-                 expect(rootTC.debugElement.nativeElement).toHaveText('when a1;when a2;');
+                 fixture.debugElement.componentInstance.switchValue = 'a';
+                 fixture.detectChanges();
+                 expect(fixture.debugElement.nativeElement).toHaveText('when a1;when a2;');
 
-                 rootTC.debugElement.componentInstance.switchValue = 'b';
-                 rootTC.detectChanges();
-                 expect(rootTC.debugElement.nativeElement).toHaveText('when b1;when b2;');
+                 fixture.debugElement.componentInstance.switchValue = 'b';
+                 fixture.detectChanges();
+                 expect(fixture.debugElement.nativeElement).toHaveText('when b1;when b2;');
 
                  async.done();
                });
@@ -115,28 +115,28 @@ export function main() {
 
            tcb.overrideTemplate(TestComponent, template)
                .createAsync(TestComponent)
-               .then((rootTC) => {
-                 rootTC.debugElement.componentInstance.when1 = 'a';
-                 rootTC.debugElement.componentInstance.when2 = 'b';
-                 rootTC.debugElement.componentInstance.switchValue = 'a';
-                 rootTC.detectChanges();
-                 expect(rootTC.debugElement.nativeElement).toHaveText('when 1;');
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.when1 = 'a';
+                 fixture.debugElement.componentInstance.when2 = 'b';
+                 fixture.debugElement.componentInstance.switchValue = 'a';
+                 fixture.detectChanges();
+                 expect(fixture.debugElement.nativeElement).toHaveText('when 1;');
 
-                 rootTC.debugElement.componentInstance.switchValue = 'b';
-                 rootTC.detectChanges();
-                 expect(rootTC.debugElement.nativeElement).toHaveText('when 2;');
+                 fixture.debugElement.componentInstance.switchValue = 'b';
+                 fixture.detectChanges();
+                 expect(fixture.debugElement.nativeElement).toHaveText('when 2;');
 
-                 rootTC.debugElement.componentInstance.switchValue = 'c';
-                 rootTC.detectChanges();
-                 expect(rootTC.debugElement.nativeElement).toHaveText('when default;');
+                 fixture.debugElement.componentInstance.switchValue = 'c';
+                 fixture.detectChanges();
+                 expect(fixture.debugElement.nativeElement).toHaveText('when default;');
 
-                 rootTC.debugElement.componentInstance.when1 = 'c';
-                 rootTC.detectChanges();
-                 expect(rootTC.debugElement.nativeElement).toHaveText('when 1;');
+                 fixture.debugElement.componentInstance.when1 = 'c';
+                 fixture.detectChanges();
+                 expect(fixture.debugElement.nativeElement).toHaveText('when 1;');
 
-                 rootTC.debugElement.componentInstance.when1 = 'd';
-                 rootTC.detectChanges();
-                 expect(rootTC.debugElement.nativeElement).toHaveText('when default;');
+                 fixture.debugElement.componentInstance.when1 = 'd';
+                 fixture.detectChanges();
+                 expect(fixture.debugElement.nativeElement).toHaveText('when default;');
 
                  async.done();
                });

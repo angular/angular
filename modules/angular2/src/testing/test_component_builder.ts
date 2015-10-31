@@ -22,14 +22,14 @@ import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {DebugElement, DebugElement_} from 'angular2/src/core/debug/debug_element';
 
-export abstract class RootTestComponent {
+export abstract class ComponentFixture {
   debugElement: DebugElement;
 
   abstract detectChanges(): void;
   abstract destroy(): void;
 }
 
-export class RootTestComponent_ extends RootTestComponent {
+export class ComponentFixture_ extends ComponentFixture {
   /** @internal */
   _componentRef: ComponentRef;
   /** @internal */
@@ -53,7 +53,7 @@ export class RootTestComponent_ extends RootTestComponent {
 var _nextRootElementId = 0;
 
 /**
- * Builds a RootTestComponent for use in component level tests.
+ * Builds a ComponentFixture for use in component level tests.
  */
 @Injectable()
 export class TestComponentBuilder {
@@ -186,11 +186,11 @@ export class TestComponentBuilder {
   }
 
   /**
-   * Builds and returns a RootTestComponent.
+   * Builds and returns a ComponentFixture.
    *
-   * @return {Promise<RootTestComponent>}
+   * @return {Promise<ComponentFixture>}
    */
-  createAsync(rootComponentType: Type): Promise<RootTestComponent> {
+  createAsync(rootComponentType: Type): Promise<ComponentFixture> {
     var mockDirectiveResolver = this._injector.get(DirectiveResolver);
     var mockViewResolver = this._injector.get(ViewResolver);
     this._viewOverrides.forEach((view, type) => mockViewResolver.setView(type, view));
@@ -220,6 +220,6 @@ export class TestComponentBuilder {
 
     return this._injector.get(DynamicComponentLoader)
         .loadAsRoot(rootComponentType, `#${rootElId}`, this._injector)
-        .then((componentRef) => { return new RootTestComponent_(componentRef); });
+        .then((componentRef) => { return new ComponentFixture_(componentRef); });
   }
 }

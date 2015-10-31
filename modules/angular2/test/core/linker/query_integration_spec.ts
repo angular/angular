@@ -211,10 +211,10 @@ export function main() {
 
            tcb.overrideTemplate(MyComp, template)
                .createAsync(MyComp)
-               .then((rtc) => {
-                 rtc.debugElement.componentInstance.shouldShow = true;
-                 rtc.detectChanges();
-                 rtc.destroy();
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.shouldShow = true;
+                 fixture.detectChanges();
+                 fixture.destroy();
 
                  async.done();
                });
