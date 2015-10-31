@@ -247,16 +247,8 @@ var StringWrapper = {
     return s.split(re);
   },
 
-  substring: function(s, start, end) {
-    return s.substr(start, end);
-  },
-
   replaceAll: function(s, from, replace) {
     return s.replace(from, replace);
-  },
-
-  startsWith: function(s, start) {
-    return s.substr(0, start.length) === start;
   },
 
   replaceAllMapped: function(s, from, cb) {

@@ -1,7 +1,6 @@
 import {
   RegExp,
   RegExpWrapper,
-  StringWrapper,
   isBlank,
   isPresent,
   isType,
@@ -46,8 +45,7 @@ export class RouteRecognizer {
 
     if (config instanceof AuxRoute) {
       handler = new SyncRouteHandler(config.component, config.data);
-      let path =
-          StringWrapper.startsWith(config.path, '/') ? config.path.substring(1) : config.path;
+      let path = config.path.startsWith('/') ? config.path.substring(1) : config.path;
       var recognizer = new PathRecognizer(config.path, handler);
       this.auxRoutes.set(path, recognizer);
       return recognizer.terminal;
@@ -136,11 +134,11 @@ export class Redirector {
   toSegments: string[] = [];
 
   constructor(path: string, redirectTo: string) {
-    if (StringWrapper.startsWith(path, '/')) {
+    if (path.startsWith('/')) {
       path = path.substring(1);
     }
     this.segments = path.split('/');
-    if (StringWrapper.startsWith(redirectTo, '/')) {
+    if (redirectTo.startsWith('/')) {
       redirectTo = redirectTo.substring(1);
     }
     this.toSegments = redirectTo.split('/');

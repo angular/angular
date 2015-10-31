@@ -93,8 +93,8 @@ var wildcardMatcher = /^\*([^\/]+)$/g;
 function parsePathString(route: string): {[key: string]: any} {
   // normalize route as not starting with a "/". Recognition will
   // also normalize.
-  if (StringWrapper.startsWith(route, "/")) {
-    route = StringWrapper.substring(route, 1);
+  if (route.startsWith("/")) {
+    route = route.substring(1);
   }
 
   var segments = splitBySlash(route);

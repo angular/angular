@@ -99,7 +99,7 @@ var _singleTagWhitelist = ['br', 'hr', 'input'];
 export function stringifyElement(el): string {
   var result = '';
   if (DOM.isElementNode(el)) {
-    var tagName = StringWrapper.toLowerCase(DOM.tagName(el));
+    var tagName = DOM.tagName(el).toLowerCase();
 
     // Opening tag
     result += `<${tagName}`;

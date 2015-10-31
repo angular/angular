@@ -1,4 +1,4 @@
-import {isString, StringWrapper, CONST, isBlank} from 'angular2/src/core/facade/lang';
+import {isString, CONST, isBlank} from 'angular2/src/core/facade/lang';
 import {Injectable} from 'angular2/src/core/di';
 import {PipeTransform, WrappedValue} from 'angular2/src/core/change_detection';
 import {Pipe} from 'angular2/src/core/metadata';
@@ -32,6 +32,6 @@ export class LowerCasePipe implements PipeTransform {
     if (!isString(value)) {
       throw new InvalidPipeArgumentException(LowerCasePipe, value);
     }
-    return StringWrapper.toLowerCase(value);
+    return value.toLowerCase();
   }
 }
