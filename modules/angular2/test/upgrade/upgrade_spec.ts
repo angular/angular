@@ -10,11 +10,14 @@ import {
   xdescribe,
   xit,
 } from 'angular2/testing_internal';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {Component, Class, Inject, EventEmitter, ApplicationRef, provide} from 'angular2/angular2';
-import {UpgradeAdapter} from 'upgrade/upgrade';
+import {UpgradeAdapter} from 'angular2/upgrade';
+import * as angular from 'angular2/src/upgrade/angular_js';
 
 export function main() {
+  if (!DOM.supportsDOMEvents()) return;
   describe('adapter: ng1 to ng2', () => {
     it('should have angular 1 loaded', () => expect(angular.version.major).toBe(1));
 

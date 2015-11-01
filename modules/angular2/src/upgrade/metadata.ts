@@ -1,18 +1,9 @@
 import {Type, ComponentMetadata, DirectiveResolver, DirectiveMetadata} from 'angular2/angular2';
-import {stringify} from 'upgrade/src/util';
+import {stringify} from './util';
 
 var COMPONENT_SELECTOR = /^[\w|-]*$/;
 var SKEWER_CASE = /-(\w)/g;
 var directiveResolver = new DirectiveResolver();
-
-interface Reflect {
-  getOwnMetadata(name: string, type: Function): any;
-  defineMetadata(name: string, value: any, cls: Type): void;
-}
-var Reflect: Reflect = <Reflect>(<any>window).Reflect;
-if (!(Reflect && (<any>Reflect)['getOwnMetadata'])) {
-  throw 'reflect-metadata shim is required when using class decorators';
-}
 
 export interface AttrProp {
   prop: string;

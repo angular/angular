@@ -15,14 +15,16 @@ import replace from '../broccoli-replace';
 
 var global_excludes = [
   'angular2/http*',
+  'angular2/upgrade*',
   'angular2/examples/*/ts/**/*',
   'angular2/src/http/**/*',
   'angular2/test/http/**/*',
+  'angular2/src/upgrade/**/*',
+  'angular2/test/upgrade/**/*',
   'playground/src/http/**/*',
   'playground/test/http/**/*',
   'playground/src/jsonp/**/*',
-  'playground/test/jsonp/**/*',
-  'upgrade/**/*'
+  'playground/test/jsonp/**/*'
 ];
 
 
