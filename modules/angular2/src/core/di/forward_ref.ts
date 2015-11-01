@@ -20,6 +20,7 @@ export interface ForwardRefFn { (): any; }
  * yet defined.
  *
  * ### Example ([live demo](http://plnkr.co/edit/bRs0SX2OTQiJzqvjgl8P?p=preview))
+ * ###^^^^^^^^^^^^^^^^^^ not the right link!
  *
  * ```typescript
  * class Door {
