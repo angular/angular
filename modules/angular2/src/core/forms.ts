@@ -24,7 +24,7 @@ export {NgControl} from './forms/directives/ng_control';
 export {NgControlGroup} from './forms/directives/ng_control_group';
 export {NgFormModel} from './forms/directives/ng_form_model';
 export {NgForm} from './forms/directives/ng_form';
-export {ControlValueAccessor} from './forms/directives/control_value_accessor';
+export {ControlValueAccessor, NG_VALUE_ACCESSOR} from './forms/directives/control_value_accessor';
 export {DefaultValueAccessor} from './forms/directives/default_value_accessor';
 export {NgControlStatus} from './forms/directives/ng_control_status';
 export {CheckboxControlValueAccessor} from './forms/directives/checkbox_value_accessor';
