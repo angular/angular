@@ -13,6 +13,7 @@ export abstract class NgControl extends AbstractControlDirective {
   valueAccessor: ControlValueAccessor = null;
 
   get validator(): Function { return unimplemented(); }
+  get asyncValidator(): Function { return unimplemented(); }
 
   abstract viewToModelUpdate(newValue: any): void;
 }

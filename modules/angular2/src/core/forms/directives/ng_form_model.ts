@@ -11,8 +11,8 @@ import {NgControlGroup} from './ng_control_group';
 import {ControlContainer} from './control_container';
 import {Form} from './form_interface';
 import {Control, ControlGroup} from '../model';
-import {setUpControl, setUpControlGroup} from './shared';
-import {Validators, NG_VALIDATORS} from '../validators';
+import {setUpControl, setUpControlGroup, composeValidators, composeAsyncValidators} from './shared';
+import {Validators, NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
 
 const formDirectiveProvider =
     CONST_EXPR(new Provider(ControlContainer, {useExisting: forwardRef(() => NgFormModel)}));
@@ -102,17 +102,21 @@ export class NgFormModel extends ControlContainer implements Form,
   form: ControlGroup = null;
   directives: NgControl[] = [];
   ngSubmit = new EventEmitter();
-  private _validators: Function[];
 
-  constructor(@Optional() @Inject(NG_VALIDATORS) validators: Function[]) {
+  constructor(@Optional() @Inject(NG_VALIDATORS) private _validators: any[],
+              @Optional() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[]) {
     super();
-    this._validators = validators;
   }
 
   onChanges(changes: {[key: string]: SimpleChange}): void {
     if (StringMapWrapper.contains(changes, "form")) {
-      var c = Validators.compose(this._validators);
-      this.form.validator = Validators.compose([this.form.validator, c]);
+      var sync = composeValidators(this._validators);
+      this.form.validator = Validators.compose([this.form.validator, sync]);
+
+      var async = composeAsyncValidators(this._asyncValidators);
+      this.form.asyncValidator = Validators.composeAsync([this.form.asyncValidator, async]);
+
+      this.form.updateValueAndValidity({onlySelf: true, emitEvent: false});
     }
 
     this._updateDomValue();

@@ -5,10 +5,10 @@ import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 
 import {ControlContainer} from './control_container';
-import {controlPath} from './shared';
+import {controlPath, composeValidators, composeAsyncValidators} from './shared';
 import {ControlGroup} from '../model';
 import {Form} from './form_interface';
-import {Validators, NG_VALIDATORS} from '../validators';
+import {Validators, NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
 
 const controlGroupProvider =
     CONST_EXPR(new Provider(ControlContainer, {useExisting: forwardRef(() => NgControlGroup)}));
@@ -72,13 +72,11 @@ export class NgControlGroup extends ControlContainer implements OnInit,
   /** @internal */
   _parent: ControlContainer;
 
-  private _validators: Function[];
-
   constructor(@Host() @SkipSelf() parent: ControlContainer,
-              @Optional() @Inject(NG_VALIDATORS) validators: Function[]) {
+              @Optional() @Inject(NG_VALIDATORS) private _validators: any[],
+              @Optional() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[]) {
     super();
     this._parent = parent;
-    this._validators = validators;
   }
 
   onInit(): void { this.formDirective.addControlGroup(this); }
@@ -100,5 +98,7 @@ export class NgControlGroup extends ControlContainer implements OnInit,
    */
   get formDirective(): Form { return this._parent.formDirective; }
 
-  get validator(): Function { return Validators.compose(this._validators); }
+  get validator(): Function { return composeValidators(this._validators); }
+
+  get asyncValidator(): Function { return composeAsyncValidators(this._asyncValidators); }
 }

@@ -7,8 +7,14 @@ import {forwardRef, Provider, Inject, Optional} from 'angular2/src/core/di';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
 import {Control} from '../model';
-import {Validators, NG_VALIDATORS} from '../validators';
-import {setUpControl, isPropertyUpdated, selectValueAccessor, composeValidators} from './shared';
+import {Validators, NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
+import {
+  setUpControl,
+  isPropertyUpdated,
+  selectValueAccessor,
+  composeValidators,
+  composeAsyncValidators
+} from './shared';
 
 const formControlBinding =
     CONST_EXPR(new Provider(NgControl, {useExisting: forwardRef(() => NgModel)}));
@@ -49,13 +55,11 @@ export class NgModel extends NgControl implements OnChanges {
   update = new EventEmitter();
   model: any;
   viewModel: any;
-  private _validator: Function;
 
-  constructor(@Optional() @Inject(NG_VALIDATORS) validators:
-                  /* Array<Validator|Function> */ any[],
+  constructor(@Optional() @Inject(NG_VALIDATORS) private _validators: any[],
+              @Optional() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[],
               @Optional() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[]) {
     super();
-    this._validator = composeValidators(validators);
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
@@ -76,7 +80,9 @@ export class NgModel extends NgControl implements OnChanges {
 
   get path(): string[] { return []; }
 
-  get validator(): Function { return this._validator; }
+  get validator(): Function { return composeValidators(this._validators); }
+
+  get asyncValidator(): Function { return composeAsyncValidators(this._asyncValidators); }
 
   viewToModelUpdate(newValue: any): void {
     this.viewModel = newValue;
