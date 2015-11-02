@@ -75,14 +75,16 @@ export function main() {
 
     describe(`${cdType} Change Detector`, () => {
 
-      function _getProtoChangeDetector(def: ChangeDetectorDefinition) {
+      function _getChangeDetectorFactory(def: ChangeDetectorDefinition) {
         switch (cdType) {
           case 'dynamic':
-            return new DynamicProtoChangeDetector(def);
+            var dynProto = new DynamicProtoChangeDetector(def);
+            return (dispatcher) => dynProto.instantiate(dispatcher);
           case 'JIT':
-            return new JitProtoChangeDetector(def);
+            var jitProto = new JitProtoChangeDetector(def);
+            return (dispatcher) => jitProto.instantiate(dispatcher);
           case 'Pregen':
-            return getFactoryById(def.id)(def);
+            return getFactoryById(def.id);
           default:
             return null;
         }
@@ -90,7 +92,7 @@ export function main() {
 
       function _createWithoutHydrate(expression: string) {
         var dispatcher = new TestDispatcher();
-        var cd = _getProtoChangeDetector(getDefinition(expression).cdDef).instantiate(dispatcher);
+        var cd = _getChangeDetectorFactory(getDefinition(expression).cdDef)(dispatcher);
         return new _ChangeDetectorAndDispatcher(cd, dispatcher);
       }
 
@@ -99,8 +101,7 @@ export function main() {
                                      registry = null, dispatcher = null) {
         if (isBlank(dispatcher)) dispatcher = new TestDispatcher();
         var testDef = getDefinition(expression);
-        var protoCd = _getProtoChangeDetector(testDef.cdDef);
-        var cd = protoCd.instantiate(dispatcher);
+        var cd = _getChangeDetectorFactory(testDef.cdDef)(dispatcher);
         cd.hydrate(context, testDef.locals, null, registry);
         return new _ChangeDetectorAndDispatcher(cd, dispatcher);
       }

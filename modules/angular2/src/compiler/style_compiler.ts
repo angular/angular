@@ -9,21 +9,12 @@ import {UrlResolver} from 'angular2/src/compiler/url_resolver';
 import {extractStyleUrls} from './style_url_resolver';
 import {
   escapeSingleQuoteString,
-  codeGenConcatArray,
-  codeGenMapArray,
-  codeGenReplaceAll,
   codeGenExportVariable,
   codeGenToString,
   MODULE_SUFFIX
 } from './util';
 import {Injectable} from 'angular2/src/core/di';
-
-const COMPONENT_VARIABLE = '%COMP%';
-var COMPONENT_REGEX = /%COMP%/g;
-const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
-const HOST_ATTR_EXPR = `'_nghost-'+${COMPONENT_VARIABLE}`;
-const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
-const CONTENT_ATTR_EXPR = `'_ngcontent-'+${COMPONENT_VARIABLE}`;
+import {COMPONENT_VARIABLE, HOST_ATTR, CONTENT_ATTR} from 'angular2/src/core/render/view_factory';
 
 @Injectable()
 export class StyleCompiler {
@@ -32,28 +23,16 @@ export class StyleCompiler {
 
   constructor(private _xhr: XHR, private _urlResolver: UrlResolver) {}
 
-  compileComponentRuntime(appId: string, templateId: number,
-                          template: CompileTemplateMetadata): Promise<string[]> {
+  compileComponentRuntime(template: CompileTemplateMetadata): Promise<Array<string | any[]>> {
     var styles = template.styles;
     var styleAbsUrls = template.styleUrls;
     return this._loadStyles(styles, styleAbsUrls,
-                            template.encapsulation === ViewEncapsulation.Emulated)
-        .then(styles => styles.map(style => StringWrapper.replaceAll(
-                                       style, COMPONENT_REGEX, componentId(appId, templateId))));
+                            template.encapsulation === ViewEncapsulation.Emulated);
   }
 
-  compileComponentCodeGen(appIdExpression: string, templateIdExpression: string,
-                          template: CompileTemplateMetadata): SourceExpression {
+  compileComponentCodeGen(template: CompileTemplateMetadata): SourceExpression {
     var shim = template.encapsulation === ViewEncapsulation.Emulated;
-    var suffix;
-    if (shim) {
-      suffix = codeGenMapArray(
-          ['style'],
-          `style${codeGenReplaceAll(COMPONENT_VARIABLE, componentIdExpression(appIdExpression, templateIdExpression))}`);
-    } else {
-      suffix = '';
-    }
-    return this._styleCodeGen(template.styles, template.styleUrls, shim, suffix);
+    return this._styleCodeGen(template.styles, template.styleUrls, shim);
   }
 
   compileStylesheetCodeGen(stylesheetUrl: string, cssText: string): SourceModule[] {
@@ -61,17 +40,16 @@ export class StyleCompiler {
     return [
       this._styleModule(
           stylesheetUrl, false,
-          this._styleCodeGen([styleWithImports.style], styleWithImports.styleUrls, false, '')),
-      this._styleModule(
-          stylesheetUrl, true,
-          this._styleCodeGen([styleWithImports.style], styleWithImports.styleUrls, true, ''))
+          this._styleCodeGen([styleWithImports.style], styleWithImports.styleUrls, false)),
+      this._styleModule(stylesheetUrl, true, this._styleCodeGen([styleWithImports.style],
+                                                                styleWithImports.styleUrls, true))
     ];
   }
 
   clearCache() { this._styleCache.clear(); }
 
   private _loadStyles(plainStyles: string[], absUrls: string[],
-                      encapsulate: boolean): Promise<string[]> {
+                      encapsulate: boolean): Promise<Array<string | any[]>> {
     var promises = absUrls.map((absUrl) => {
       var cacheKey = `${absUrl}${encapsulate ? '.shim' : ''}`;
       var result = this._styleCache.get(cacheKey);
@@ -86,22 +64,23 @@ export class StyleCompiler {
       return result;
     });
     return PromiseWrapper.all(promises).then((nestedStyles: string[][]) => {
-      var result = plainStyles.map(plainStyle => this._shimIfNeeded(plainStyle, encapsulate));
-      nestedStyles.forEach(styles => styles.forEach(style => result.push(style)));
+      var result: Array<string | any[]> =
+          plainStyles.map(plainStyle => this._shimIfNeeded(plainStyle, encapsulate));
+      nestedStyles.forEach(styles => result.push(styles));
       return result;
     });
   }
 
-  private _styleCodeGen(plainStyles: string[], absUrls: string[], shim: boolean,
-                        suffix: string): SourceExpression {
-    var expressionSource = `(`;
-    expressionSource +=
-        `[${plainStyles.map( plainStyle => escapeSingleQuoteString(this._shimIfNeeded(plainStyle, shim)) ).join(',')}]`;
+  private _styleCodeGen(plainStyles: string[], absUrls: string[], shim: boolean): SourceExpression {
+    var arrayPrefix = IS_DART ? `const` : '';
+    var styleExpressions = plainStyles.map(
+        plainStyle => escapeSingleQuoteString(this._shimIfNeeded(plainStyle, shim)));
+
     for (var i = 0; i < absUrls.length; i++) {
       var moduleUrl = this._createModuleUrl(absUrls[i], shim);
-      expressionSource += codeGenConcatArray(`${moduleRef(moduleUrl)}STYLES`);
+      styleExpressions.push(`${moduleRef(moduleUrl)}STYLES`);
     }
-    expressionSource += `)${suffix}`;
+    var expressionSource = `${arrayPrefix} [${styleExpressions.join(',')}]`;
     return new SourceExpression([], expressionSource);
   }
 
@@ -121,30 +100,4 @@ export class StyleCompiler {
   private _createModuleUrl(stylesheetUrl: string, shim: boolean): string {
     return shim ? `${stylesheetUrl}.shim${MODULE_SUFFIX}` : `${stylesheetUrl}${MODULE_SUFFIX}`;
   }
-}
-
-export function shimContentAttribute(appId: string, templateId: number): string {
-  return StringWrapper.replaceAll(CONTENT_ATTR, COMPONENT_REGEX, componentId(appId, templateId));
-}
-
-export function shimContentAttributeExpr(appIdExpr: string, templateIdExpr: string): string {
-  return StringWrapper.replaceAll(CONTENT_ATTR_EXPR, COMPONENT_REGEX,
-                                  componentIdExpression(appIdExpr, templateIdExpr));
-}
-
-export function shimHostAttribute(appId: string, templateId: number): string {
-  return StringWrapper.replaceAll(HOST_ATTR, COMPONENT_REGEX, componentId(appId, templateId));
-}
-
-export function shimHostAttributeExpr(appIdExpr: string, templateIdExpr: string): string {
-  return StringWrapper.replaceAll(HOST_ATTR_EXPR, COMPONENT_REGEX,
-                                  componentIdExpression(appIdExpr, templateIdExpr));
-}
-
-function componentId(appId: string, templateId: number): string {
-  return `${appId}-${templateId}`;
-}
-
-function componentIdExpression(appIdExpression: string, templateIdExpression: string): string {
-  return `${appIdExpression}+'-'+${codeGenToString(templateIdExpression)}`;
 }

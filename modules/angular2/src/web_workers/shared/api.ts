@@ -53,7 +53,7 @@ export class WebWorkerEndElementCmd implements RenderTemplateCmd {
 export class WebWorkerBeginComponentCmd implements RenderBeginComponentCmd {
   constructor(public isBound: boolean, public ngContentIndex: number, public name: string,
               public attrNameAndValues: string[], public eventTargetAndNames: string[],
-              public nativeShadow: boolean, public templateId: number) {}
+              public templateId: string) {}
   visit(visitor: RenderCommandVisitor, context: any): any {
     return visitor.visitBeginComponent(this, context);
   }

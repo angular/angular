@@ -1,6 +1,6 @@
 import {isPresent, isBlank, Type, isArray, isNumber} from 'angular2/src/facade/lang';
 
-import {RenderProtoViewRef} from 'angular2/src/core/render/api';
+import {RenderProtoViewRef, RenderComponentTemplate} from 'angular2/src/core/render/api';
 
 import {Optional, Injectable, Provider, resolveForwardRef, Inject} from 'angular2/src/core/di';
 
@@ -13,12 +13,12 @@ import {ProtoElementInjector, DirectiveProvider} from './element_injector';
 import {DirectiveResolver} from './directive_resolver';
 import {ViewResolver} from './view_resolver';
 import {PipeResolver} from './pipe_resolver';
-import {ViewMetadata} from '../metadata/view';
+import {ViewMetadata, ViewEncapsulation} from '../metadata/view';
 import {AMBIENT_PIPES} from 'angular2/src/core/ambient';
 
 import {
   visitAllCommands,
-  CompiledTemplate,
+  CompiledComponentTemplate,
   CompiledHostTemplate,
   TemplateCmd,
   CommandVisitor,
@@ -36,7 +36,9 @@ import {APP_ID} from 'angular2/src/core/application_tokens';
 
 @Injectable()
 export class ProtoViewFactory {
-  private _cache: Map<number, AppProtoView> = new Map<number, AppProtoView>();
+  private _cache: Map<string, AppProtoView> = new Map<string, AppProtoView>();
+  private _nextTemplateId: number = 0;
+
   constructor(private _renderer: Renderer,
               @Optional() @Inject(AMBIENT_PIPES) private _ambientPipes: Array<Type | any[]>,
               private _directiveResolver: DirectiveResolver, private _viewResolver: ViewResolver,
@@ -45,13 +47,16 @@ export class ProtoViewFactory {
   clearCache() { this._cache.clear(); }
 
   createHost(compiledHostTemplate: CompiledHostTemplate): AppProtoView {
-    var compiledTemplate = compiledHostTemplate.getTemplate();
+    var compiledTemplate = compiledHostTemplate.template;
     var result = this._cache.get(compiledTemplate.id);
     if (isBlank(result)) {
-      var templateData = compiledTemplate.getData(this._appId);
       var emptyMap: {[key: string]: PipeProvider} = {};
-      result = new AppProtoView(templateData.commands, ViewType.HOST, true,
-                                templateData.changeDetectorFactory, null, new ProtoPipes(emptyMap));
+      var shortId = `${this._appId}-${this._nextTemplateId++}`;
+      this._renderer.registerComponentTemplate(new RenderComponentTemplate(
+          compiledTemplate.id, shortId, ViewEncapsulation.None, compiledTemplate.commands, []));
+      result =
+          new AppProtoView(compiledTemplate.id, compiledTemplate.commands, ViewType.HOST, true,
+                           compiledTemplate.changeDetectorFactory, null, new ProtoPipes(emptyMap));
       this._cache.set(compiledTemplate.id, result);
     }
     return result;
@@ -62,18 +67,19 @@ export class ProtoViewFactory {
     if (isBlank(nestedProtoView)) {
       var component = cmd.directives[0];
       var view = this._viewResolver.resolve(component);
-      var compiledTemplateData = cmd.template.getData(this._appId);
-
-      this._renderer.registerComponentTemplate(cmd.templateId, compiledTemplateData.commands,
-                                               compiledTemplateData.styles, cmd.nativeShadow);
+      var compiledTemplate = cmd.templateGetter();
+      var styles = _flattenStyleArr(compiledTemplate.styles, []);
+      var shortId = `${this._appId}-${this._nextTemplateId++}`;
+      this._renderer.registerComponentTemplate(new RenderComponentTemplate(
+          compiledTemplate.id, shortId, cmd.encapsulation, compiledTemplate.commands, styles));
       var boundPipes = this._flattenPipes(view).map(pipe => this._bindPipe(pipe));
 
-      nestedProtoView = new AppProtoView(compiledTemplateData.commands, ViewType.COMPONENT, true,
-                                         compiledTemplateData.changeDetectorFactory, null,
-                                         ProtoPipes.fromProviders(boundPipes));
+      nestedProtoView = new AppProtoView(
+          compiledTemplate.id, compiledTemplate.commands, ViewType.COMPONENT, true,
+          compiledTemplate.changeDetectorFactory, null, ProtoPipes.fromProviders(boundPipes));
       // Note: The cache is updated before recursing
       // to be able to resolve cycles
-      this._cache.set(cmd.template.id, nestedProtoView);
+      this._cache.set(compiledTemplate.id, nestedProtoView);
       this._initializeProtoView(nestedProtoView, null);
     }
     return nestedProtoView;
@@ -81,7 +87,7 @@ export class ProtoViewFactory {
 
   private _createEmbeddedTemplate(cmd: EmbeddedTemplateCmd, parent: AppProtoView): AppProtoView {
     var nestedProtoView = new AppProtoView(
-        cmd.children, ViewType.EMBEDDED, cmd.isMerged, cmd.changeDetectorFactory,
+        parent.templateId, cmd.children, ViewType.EMBEDDED, cmd.isMerged, cmd.changeDetectorFactory,
         arrayToMap(cmd.variableNameAndValues, true), new ProtoPipes(parent.pipes.config));
     if (cmd.isMerged) {
       this.initializeProtoViewIfNeeded(nestedProtoView);
@@ -91,7 +97,7 @@ export class ProtoViewFactory {
 
   initializeProtoViewIfNeeded(protoView: AppProtoView) {
     if (!protoView.isInitialized()) {
-      var render = this._renderer.createProtoView(protoView.templateCmds);
+      var render = this._renderer.createProtoView(protoView.templateId, protoView.templateCmds);
       this._initializeProtoView(protoView, render);
     }
   }
@@ -320,4 +326,16 @@ function _flattenArray(tree: any[], out: Array<Type | Provider | any[]>): void {
       out.push(item);
     }
   }
+}
+
+function _flattenStyleArr(arr: Array<string | any[]>, out: string[]): string[] {
+  for (var i = 0; i < arr.length; i++) {
+    var entry = arr[i];
+    if (isArray(entry)) {
+      _flattenStyleArr(<any[]>entry, out);
+    } else {
+      out.push(<string>entry);
+    }
+  }
+  return out;
 }

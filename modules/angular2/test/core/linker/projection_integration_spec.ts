@@ -444,6 +444,27 @@ export function main() {
          }));
     }
 
+    if (DOM.supportsDOMEvents()) {
+      it('should support emulated style encapsulation',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(MainComp, new ViewMetadata({
+                              template: '<div></div>',
+                              styles: ['div { color: red}'],
+                              encapsulation: ViewEncapsulation.Emulated
+                            }))
+               .createAsync(MainComp)
+               .then((main) => {
+                 var mainEl = main.debugElement.nativeElement;
+                 var div1 = DOM.firstChild(mainEl);
+                 var div2 = DOM.createElement('div');
+                 DOM.appendChild(mainEl, div2);
+                 expect(DOM.getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
+                 expect(DOM.getComputedStyle(div2).color).toEqual('rgb(0, 0, 0)');
+                 async.done();
+               });
+         }));
+    }
+
     it('should support nested conditionals that contain ng-contents',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(MainComp, new ViewMetadata({

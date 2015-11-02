@@ -17,7 +17,7 @@ import {SpyXHR} from './spies';
 import {XHR} from 'angular2/src/compiler/xhr';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 
-import {CONST_EXPR, isPresent, isBlank, StringWrapper} from 'angular2/src/facade/lang';
+import {CONST_EXPR, isPresent, isBlank, StringWrapper, isArray} from 'angular2/src/facade/lang';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 import {evalModule} from './eval_module';
 import {StyleCompiler} from 'angular2/src/compiler/style_compiler';
@@ -42,8 +42,6 @@ var IMPORT_ABS_STYLESHEET_URL_WITH_IMPORT =
 export function main() {
   describe('StyleCompiler', () => {
     var xhr: SpyXHR;
-    var templateId;
-    var appId;
 
     beforeEachBindings(() => {
       xhr = <any>new SpyXHR();
@@ -52,11 +50,7 @@ export function main() {
 
     var compiler: StyleCompiler;
 
-    beforeEach(inject([StyleCompiler], (_compiler) => {
-      templateId = 23;
-      appId = 'app1';
-      compiler = _compiler;
-    }));
+    beforeEach(inject([StyleCompiler], (_compiler) => { compiler = _compiler; }));
 
     describe('compileComponentRuntime', () => {
       var xhrUrlResults;
@@ -82,10 +76,8 @@ export function main() {
           }
           return PromiseWrapper.resolve(response);
         });
-        return compiler.compileComponentRuntime(
-            appId, templateId,
-            new CompileTemplateMetadata(
-                {styles: styles, styleUrls: styleAbsUrls, encapsulation: encapsulation}));
+        return compiler.compileComponentRuntime(new CompileTemplateMetadata(
+            {styles: styles, styleUrls: styleAbsUrls, encapsulation: encapsulation}));
       }
 
       describe('no shim', () => {
@@ -102,7 +94,7 @@ export function main() {
         it('should allow to import rules', inject([AsyncTestCompleter], (async) => {
              compile(['div {color: red}'], [IMPORT_ABS_STYLESHEET_URL], encapsulation)
                  .then(styles => {
-                   expect(styles).toEqual(['div {color: red}', 'span {color: blue}']);
+                   expect(styles).toEqual(['div {color: red}', ['span {color: blue}']]);
                    async.done();
                  });
            }));
@@ -111,7 +103,7 @@ export function main() {
              compile(['div {color: red}'], [IMPORT_ABS_STYLESHEET_URL_WITH_IMPORT], encapsulation)
                  .then(styles => {
                    expect(styles)
-                       .toEqual(['div {color: red}', 'a {color: green}', 'span {color: blue}']);
+                       .toEqual(['div {color: red}', ['a {color: green}', ['span {color: blue}']]]);
                    async.done();
                  });
            }));
@@ -124,8 +116,8 @@ export function main() {
              compile(['div {\ncolor: red;\n}', 'span {\ncolor: blue;\n}'], [], encapsulation)
                  .then(styles => {
                    compareStyles(styles, [
-                     'div[_ngcontent-app1-23] {\ncolor: red;\n}',
-                     'span[_ngcontent-app1-23] {\ncolor: blue;\n}'
+                     'div[_ngcontent-%COMP%] {\ncolor: red;\n}',
+                     'span[_ngcontent-%COMP%] {\ncolor: blue;\n}'
                    ]);
                    async.done();
                  });
@@ -135,8 +127,8 @@ export function main() {
              compile(['div {\ncolor: red;\n}'], [IMPORT_ABS_STYLESHEET_URL], encapsulation)
                  .then(styles => {
                    compareStyles(styles, [
-                     'div[_ngcontent-app1-23] {\ncolor: red;\n}',
-                     'span[_ngcontent-app1-23] {color: blue}'
+                     'div[_ngcontent-%COMP%] {\ncolor: red;\n}',
+                     ['span[_ngcontent-%COMP%] {color: blue}']
                    ]);
                    async.done();
                  });
@@ -147,9 +139,11 @@ export function main() {
                      encapsulation)
                  .then(styles => {
                    compareStyles(styles, [
-                     'div[_ngcontent-app1-23] {\ncolor: red;\n}',
-                     'a[_ngcontent-app1-23] {color: green}',
-                     'span[_ngcontent-app1-23] {color: blue}'
+                     'div[_ngcontent-%COMP%] {\ncolor: red;\n}',
+                     [
+                       'a[_ngcontent-%COMP%] {color: green}',
+                       ['span[_ngcontent-%COMP%] {color: blue}']
+                     ]
                    ]);
                    async.done();
                  });
@@ -162,8 +156,8 @@ export function main() {
                            compile([], [IMPORT_ABS_STYLESHEET_URL], ViewEncapsulation.None)
                          ])
                .then((styleArrays) => {
-                 expect(styleArrays[0]).toEqual(['span {color: blue}']);
-                 expect(styleArrays[1]).toEqual(['span {color: blue}']);
+                 expect(styleArrays[0]).toEqual([['span {color: blue}']]);
+                 expect(styleArrays[1]).toEqual([['span {color: blue}']]);
                  expect(xhrCount).toBe(1);
                  async.done();
                });
@@ -175,8 +169,8 @@ export function main() {
                  xhrUrlResults[IMPORT_ABS_STYLESHEET_URL] = 'span {color: black}';
                  return compile([], [IMPORT_ABS_STYLESHEET_URL], ViewEncapsulation.None)
                      .then((styles1) => {
-                       expect(styles0).toEqual(['span {color: blue}']);
-                       expect(styles1).toEqual(['span {color: blue}']);
+                       expect(styles0).toEqual([['span {color: blue}']]);
+                       expect(styles1).toEqual([['span {color: blue}']]);
                        expect(xhrCount).toBe(1);
                        async.done();
                      });
@@ -192,7 +186,7 @@ export function main() {
                })
                .then((styles) => {
                  expect(xhrCount).toBe(2);
-                 expect(styles).toEqual(['span {color: black}']);
+                 expect(styles).toEqual([['span {color: black}']]);
                  async.done();
                });
          }));
@@ -201,10 +195,8 @@ export function main() {
     describe('compileComponentCodeGen', () => {
       function compile(styles: string[], styleAbsUrls: string[],
                        encapsulation: ViewEncapsulation): Promise<string[]> {
-        var sourceExpression = compiler.compileComponentCodeGen(
-            `'${appId}'`, `${templateId}`,
-            new CompileTemplateMetadata(
-                {styles: styles, styleUrls: styleAbsUrls, encapsulation: encapsulation}));
+        var sourceExpression = compiler.compileComponentCodeGen(new CompileTemplateMetadata(
+            {styles: styles, styleUrls: styleAbsUrls, encapsulation: encapsulation}));
         var sourceWithImports = testableExpression(sourceExpression).getSourceWithImports();
         return evalModule(sourceWithImports.source, sourceWithImports.imports, null);
       };
@@ -232,7 +224,7 @@ export function main() {
         it('should allow to import rules', inject([AsyncTestCompleter], (async) => {
              compile(['div {color: red}'], [IMPORT_ABS_STYLESHEET_URL], encapsulation)
                  .then(styles => {
-                   expect(styles).toEqual(['div {color: red}', 'span {color: blue}']);
+                   expect(styles).toEqual(['div {color: red}', ['span {color: blue}']]);
                    async.done();
                  });
            }), 1000);
@@ -245,8 +237,8 @@ export function main() {
              compile(['div {\ncolor: red;\n}', 'span {\ncolor: blue;\n}'], [], encapsulation)
                  .then(styles => {
                    compareStyles(styles, [
-                     'div[_ngcontent-app1-23] {\ncolor: red;\n}',
-                     'span[_ngcontent-app1-23] {\ncolor: blue;\n}'
+                     'div[_ngcontent-%COMP%] {\ncolor: red;\n}',
+                     'span[_ngcontent-%COMP%] {\ncolor: blue;\n}'
                    ]);
                    async.done();
                  });
@@ -256,8 +248,8 @@ export function main() {
              compile(['div {color: red}'], [IMPORT_ABS_STYLESHEET_URL], encapsulation)
                  .then(styles => {
                    compareStyles(styles, [
-                     'div[_ngcontent-app1-23] {color: red}',
-                     'span[_ngcontent-app1-23] {\ncolor: blue;\n}'
+                     'div[_ngcontent-%COMP%] {color: red}',
+                     ['span[_ngcontent-%COMP%] {\ncolor: blue;\n}']
                    ]);
                    async.done();
                  });
@@ -289,10 +281,10 @@ export function main() {
            compile(`div {color: red}@import ${IMPORT_REL_STYLESHEET_URL};`)
                .then(stylesAndShimStyles => {
                  var expected = [
-                   ['div {color: red}', 'span {color: blue}'],
+                   ['div {color: red}', ['span {color: blue}']],
                    [
                      'div[_ngcontent-%COMP%] {color: red}',
-                     'span[_ngcontent-%COMP%] {\ncolor: blue;\n}'
+                     ['span[_ngcontent-%COMP%] {\ncolor: blue;\n}']
                    ]
                  ];
                  compareStyles(stylesAndShimStyles[0], expected[0]);
@@ -307,20 +299,27 @@ export function main() {
 
 function testableExpression(source: SourceExpression): SourceModule {
   var testableSource = `${source.declarations.join('\n')}
-  ${codeGenExportVariable('run')}${codeGenValueFn(['_'], source.expression)};`;
+  ${codeGenValueFn(['_'], source.expression, '_run')};
+  ${codeGenExportVariable('run')}_run;`;
   return new SourceModule(null, testableSource);
 }
 
 function testableModule(sourceModule: SourceModule): SourceModule {
   var testableSource = `${sourceModule.sourceWithModuleRefs}
-  ${codeGenExportVariable('run')}${codeGenValueFn(['_'], 'STYLES')};`;
+  ${codeGenValueFn(['_'], 'STYLES', '_run')};
+  ${codeGenExportVariable('run')}_run;`;
   return new SourceModule(sourceModule.moduleUrl, testableSource);
 }
 
 // Needed for Android browsers which add an extra space at the end of some lines
-function compareStyles(styles: string[], expectedStyles: string[]) {
+function compareStyles(styles: Array<string | any[]>, expectedStyles: Array<string | any[]>) {
   expect(styles.length).toEqual(expectedStyles.length);
   for (var i = 0; i < styles.length; i++) {
-    expect(StringWrapper.replaceAll(styles[i], /\s+\n/g, '\n')).toEqual(expectedStyles[i]);
+    var style = styles[i];
+    if (isArray(style)) {
+      compareStyles(<any[]>style, <any[]>expectedStyles[i]);
+    } else {
+      expect(StringWrapper.replaceAll(<string>style, /\s+\n/g, '\n')).toEqual(expectedStyles[i]);
+    }
   }
 }

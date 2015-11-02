@@ -22,7 +22,7 @@ void main(List<String> args) {
       buf.write(',');
     }
     buf.write(" '''${_escape(allDefs[i].cdDef.id)}''': "
-        "$className.$PROTO_CHANGE_DETECTOR_FACTORY_METHOD");
+        "$className.$CHANGE_DETECTOR_FACTORY_METHOD");
   }
   buf.write('};');
   print(new DartFormatter().format('''

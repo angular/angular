@@ -318,8 +318,8 @@ export class AppProtoView {
   textBindingCount = null;
   render: renderApi.RenderProtoViewRef = null;
 
-  constructor(public templateCmds: TemplateCmd[], public type: ViewType, public isMergable: boolean,
-              public changeDetectorFactory: Function,
+  constructor(public templateId: string, public templateCmds: TemplateCmd[], public type: ViewType,
+              public isMergable: boolean, public changeDetectorFactory: Function,
               public templateVariableBindings: Map<string, string>, public pipes: ProtoPipes) {
     this.ref = new ProtoViewRef_(this);
   }

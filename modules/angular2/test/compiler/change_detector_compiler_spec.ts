@@ -134,7 +134,8 @@ function createTestableModule(source: SourceExpressions,
   var resultExpression =
       `${THIS_MODULE_REF}testChangeDetector(([${source.expressions.join(',')}])[${changeDetectorIndex}])`;
   var testableSource = `${source.declarations.join('\n')}
-  ${codeGenExportVariable('run')}${codeGenValueFn(['_'], resultExpression)};`;
+  ${codeGenValueFn(['_'], resultExpression, '_run')};
+  ${codeGenExportVariable('run')}_run;`;
   return new SourceModule(null, testableSource);
 }
 
