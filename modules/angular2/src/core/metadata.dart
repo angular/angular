@@ -18,9 +18,9 @@ class Directive extends DirectiveMetadata {
       {String selector,
       List<String> inputs,
       List<String> outputs,
-      @Deprecated('Use `inputs` instead')
+      @Deprecated('Use `inputs` or `@Input` instead')
       List<String> properties,
-      @Deprecated('Use `outputs` instead')
+      @Deprecated('Use `outputs` or `@Output` instead')
       List<String> events,
       Map<String, String> host,
       @Deprecated('Use `providers` instead')
@@ -51,9 +51,9 @@ class Component extends ComponentMetadata {
       {String selector,
       List<String> inputs,
       List<String> outputs,
-      @Deprecated('Use `inputs` instead')
+      @Deprecated('Use `inputs` or `@Input` instead')
       List<String> properties,
-      @Deprecated('Use `outputs` instead')
+      @Deprecated('Use `outputs` or `@Output` instead')
       List<String> events,
       Map<String, String> host,
       @Deprecated('Use `providers` instead')
