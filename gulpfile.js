@@ -1065,11 +1065,8 @@ gulp.task('!bundle.js.sfx.dev', ['build.js.dev'], function() {
 });
 
 gulp.task('!bundle.js.prod.deps', ['!bundle.js.prod'], function() {
-  return merge2(bundler.modify(
-      ['node_modules/zone.js/dist/zone-microtask.js', 'node_modules/reflect-metadata/Reflect.js',
-      'dist/build/angular2.js'],
-      'angular2.js'
-    ),
+  return merge2(
+    addDevDependencies('angular2.min.js'),
     bundler.modify(
         ['node_modules/reflect-metadata/Reflect.js', 'dist/build/http.js'],
         'http.js'
@@ -1077,11 +1074,8 @@ gulp.task('!bundle.js.prod.deps', ['!bundle.js.prod'], function() {
 });
 
 gulp.task('!bundle.js.min.deps', ['!bundle.js.min'], function() {
-  return merge2(bundler.modify(
-      ['node_modules/zone.js/dist/zone-microtask.min.js',
-      'node_modules/reflect-metadata/Reflect.js', 'dist/build/angular2.min.js'],
-      'angular2.min.js'
-    ),
+  return merge2(
+    addDevDependencies('angular2.min.js'),
     bundler.modify(
         ['node_modules/reflect-metadata/Reflect.js', 'dist/build/http.min.js'],
         'http.min.js'
