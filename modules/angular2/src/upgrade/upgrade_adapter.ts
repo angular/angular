@@ -16,6 +16,7 @@ import {
 import {applicationDomProviders} from 'angular2/src/core/application_common';
 import {applicationCommonProviders} from 'angular2/src/core/application_ref';
 import {compilerProviders} from 'angular2/src/core/compiler/compiler';
+import {ObservableWrapper} from 'angular2/src/core/facade/async';
 
 import {getComponentInfo, ComponentInfo} from './metadata';
 import {onError, controllerKey} from './util';
@@ -342,7 +343,8 @@ export class UpgradeAdapter {
           '$rootScope',
           (injector: angular.IInjectorService, rootScope: angular.IRootScopeService) => {
             ng1Injector = injector;
-            ngZone.overrideOnTurnDone(() => rootScope.$apply());
+            ObservableWrapper.subscribe(ngZone.onTurnDone,
+                                        (_) => { ngZone.run(() => rootScope.$apply()); });
             ng1compilePromise =
                 UpgradeNg1ComponentAdapterBuilder.resolve(this.downgradedComponents, injector);
           }
