@@ -64,11 +64,11 @@ export class MockDirectiveResolver extends DirectiveResolver {
     this.viewProviderOverrides.set(type, viewBindings);
   }
 
-  setProvidersOverride(type: Type, bindings: any[]): void {
-    this._providerOverrides.set(type, bindings);
+  setProvidersOverride(type: Type, providers: any[]): void {
+    this._providerOverrides.set(type, providers);
   }
 
-  setViewProvidersOverride(type: Type, viewBindings: any[]): void {
-    this.viewProviderOverrides.set(type, viewBindings);
+  setViewProvidersOverride(type: Type, viewProviders: any[]): void {
+    this.viewProviderOverrides.set(type, viewProviders);
   }
 }
