@@ -61,6 +61,10 @@ class ObservableWrapper {
   static Stream fromPromise(Future f) {
     return new Stream.fromFuture(f);
   }
+
+  static Future toPromise(Stream s) {
+    return s.single;
+  }
 }
 
 class EventEmitter<T> extends Stream<T> {
