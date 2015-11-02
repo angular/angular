@@ -981,7 +981,8 @@ gulp.task('!bundle.js.prod', ['build.js.prod'], function() {
 
   return q.all([
     bundler.bundle(bundleConfig, 'angular2/angular2', './dist/build/angular2.js', bundlerConfig),
-    bundler.bundle(bundleConfig, 'angular2/http - angular2/angular2', './dist/build/http.js', bundlerConfig)
+    bundler.bundle(bundleConfig, 'angular2/http - angular2/angular2', './dist/build/http.js', bundlerConfig),
+    bundler.bundle(bundleConfig, 'angular2/router - angular2/angular2', './dist/build/router.js', bundlerConfig)
   ]);
 });
 
@@ -995,7 +996,7 @@ gulp.task('!bundle.js.min', ['build.js.prod'], function() {
   return q.all([
     bundler.bundle(bundleConfig, 'angular2/angular2', './dist/build/angular2.min.js', bundlerConfig),
     bundler.bundle(bundleConfig, 'angular2/http - angular2/angular2', './dist/build/http.min.js', bundlerConfig),
-    bundler.bundle(bundleConfig, 'angular2/router - angular2/angular2', './dist/js/bundle/router.dev.min.js', bundlerConfig)
+    bundler.bundle(bundleConfig, 'angular2/router - angular2/angular2', './dist/js/build/router.min.js', bundlerConfig)
   ]);
 });
 
@@ -1012,7 +1013,8 @@ gulp.task('!bundle.js.dev', ['build.js.dev'], function() {
 
   return q.all([
     bundler.bundle(devBundleConfig, 'angular2/angular2', './dist/build/angular2.dev.js', bundlerConfig),
-    bundler.bundle(devBundleConfig, 'angular2/http - angular2/angular2', './dist/build/http.dev.js', bundlerConfig)
+    bundler.bundle(devBundleConfig, 'angular2/http - angular2/angular2', './dist/build/http.dev.js', bundlerConfig),
+    bundler.bundle(bundleConfig, 'angular2/router - angular2/angular2', './dist/build/router.dev.js', bundlerConfig)
   ]);
 });
 
@@ -1032,16 +1034,6 @@ gulp.task("!bundle.web_worker.js.dev", ["build.js.dev"], function() {
           './dist/build/web_worker/worker.dev.js',
           { sourceMaps: true});
       });
-});
-
-gulp.task('!router.bundle.js.dev', ['build.js.dev'], function() {
-  var devBundleConfig = merge(true, bundleConfig);
-  devBundleConfig.paths = merge(true, devBundleConfig.paths, {"*": "dist/js/dev/es5/*.js"});
-  return bundler.bundle(
-    devBundleConfig,
-    'angular2/router - angular2/angular2',
-    './dist/js/bundle/router.dev.js',
-    { sourceMaps: true });
 });
 
 gulp.task('!bundle.testing', ['build.js.dev'], function() {
@@ -1154,8 +1146,7 @@ gulp.task('!bundle.copy', [
   '!bundle.js.dev.deps',
   '!bundle.js.min.deps',
   '!bundle.web_worker.js.dev.deps',
-  '!bundle.js.sfx.dev.deps',
-  '!router.bundle.js.dev'
+  '!bundle.js.sfx.dev.deps'
 ],
           function() {
             return merge2(gulp.src('dist/js/bundle/**').pipe(gulp.dest('dist/js/prod/es5/bundle')),
@@ -1168,7 +1159,6 @@ gulp.task('bundles.js', [
   '!bundle.js.min.deps',
   '!bundle.web_worker.js.dev.deps',
   '!bundle.js.sfx.dev.deps',
-  '!router.bundle.js.dev',
   '!bundle.testing',
   '!bundle.copy']);
 
