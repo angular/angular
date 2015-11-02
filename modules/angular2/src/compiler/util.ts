@@ -43,31 +43,19 @@ function escapeString(input: string, re: RegExp): string {
   });
 }
 
-export function codeGenExportVariable(name: string, isConst: boolean = false): string {
+export function codeGenExportVariable(name: string): string {
   if (IS_DART) {
-    return isConst ? `const ${name} = ` : `final ${name} = `;
+    return `const ${name} = `;
   } else {
     return `var ${name} = exports['${name}'] = `;
   }
 }
 
-export function codeGenConcatArray(expression: string): string {
-  return `${IS_DART ? '..addAll' : '.concat'}(${expression})`;
-}
-
-export function codeGenMapArray(argNames: string[], callback: string): string {
+export function codeGenConstConstructorCall(name: string): string {
   if (IS_DART) {
-    return `.map( (${argNames.join(',')}) => ${callback} ).toList()`;
+    return `const ${name}`;
   } else {
-    return `.map(function(${argNames.join(',')}) { return ${callback}; })`;
-  }
-}
-
-export function codeGenReplaceAll(pattern: string, expression: string): string {
-  if (IS_DART) {
-    return `.replaceAll('${pattern}', ${expression})`;
-  } else {
-    return `.replace(/${pattern}/g, ${expression})`;
+    return `new ${name}`;
   }
 }
 

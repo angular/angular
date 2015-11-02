@@ -3,6 +3,7 @@ import {ListWrapper, MapWrapper, Map, StringMapWrapper} from 'angular2/src/facad
 import {isPresent, isBlank, stringify} from 'angular2/src/facade/lang';
 
 import {
+  RenderComponentTemplate,
   RenderViewRef,
   RenderEventDispatcher,
   RenderTemplateCmd,
@@ -11,7 +12,9 @@ import {
 } from './api';
 
 export class DefaultProtoViewRef extends RenderProtoViewRef {
-  constructor(public cmds: RenderTemplateCmd[]) { super(); }
+  constructor(public template: RenderComponentTemplate, public cmds: RenderTemplateCmd[]) {
+    super();
+  }
 }
 
 export class DefaultRenderFragmentRef<N> extends RenderFragmentRef {

@@ -13,7 +13,15 @@ import {
   beforeEachBindings
 } from 'angular2/testing_internal';
 
-import {CONST_EXPR, stringify, isType, Type, isBlank} from 'angular2/src/facade/lang';
+import {
+  CONST_EXPR,
+  stringify,
+  isType,
+  Type,
+  isBlank,
+  serializeEnum,
+  IS_DART
+} from 'angular2/src/facade/lang';
 import {MapWrapper} from 'angular2/src/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 import {TemplateParser} from 'angular2/src/compiler/template_parser';
@@ -26,7 +34,7 @@ import {
   EmbeddedTemplateCmd,
   TemplateCmd,
   visitAllCommands,
-  CompiledTemplate
+  CompiledComponentTemplate
 } from 'angular2/src/core/linker/template_commands';
 import {CommandCompiler} from 'angular2/src/compiler/command_compiler';
 import {
@@ -41,6 +49,7 @@ import {
   escapeSingleQuoteString,
   codeGenValueFn,
   codeGenExportVariable,
+  codeGenConstConstructorCall,
   MODULE_SUFFIX
 } from 'angular2/src/compiler/util';
 import {TEST_PROVIDERS} from './test_bindings';
@@ -70,11 +79,8 @@ var SomeDirTypeMeta =
     new CompileTypeMetadata({name: 'SomeDir', runtime: SomeDir, moduleUrl: THIS_MODULE_URL});
 var ACompTypeMeta =
     new CompileTypeMetadata({name: 'AComp', runtime: AComp, moduleUrl: THIS_MODULE_URL});
-var compTypeTemplateId: Map<CompileTypeMetadata, number> =
-    MapWrapper.createFromPairs([[RootCompTypeMeta, 1], [SomeDirTypeMeta, 2], [ACompTypeMeta, 3]]);
-const APP_ID = 'app1';
-
-var NESTED_COMPONENT = new CompiledTemplate(45, () => []);
+var compTypeTemplateId: Map<CompileTypeMetadata, string> = MapWrapper.createFromPairs(
+    [[RootCompTypeMeta, 'rootCompId'], [SomeDirTypeMeta, 'someDirId'], [ACompTypeMeta, 'aCompId']]);
 
 export function main() {
   describe('CommandCompiler', () => {
@@ -260,22 +266,6 @@ export function main() {
                  });
            }));
 
-        it('should emulate style encapsulation', inject([AsyncTestCompleter], (async) => {
-             var rootComp = createComp({
-               type: RootCompTypeMeta,
-               template: '<div>',
-               encapsulation: ViewEncapsulation.Emulated
-             });
-             run(rootComp, [])
-                 .then((data) => {
-                   expect(data).toEqual([
-                     [BEGIN_ELEMENT, 'div', ['_ngcontent-app1-1', ''], [], [], [], false, null],
-                     [END_ELEMENT]
-                   ]);
-                   async.done();
-                 });
-           }));
-
         it('should create nested nodes', inject([AsyncTestCompleter], (async) => {
              var rootComp = createComp({type: RootCompTypeMeta, template: '<div>a</div>'});
              run(rootComp, [])
@@ -306,9 +296,9 @@ export function main() {
                        [null, 'click'],
                        ['someVar', 0],
                        ['ACompType'],
-                       false,
+                       serializeEnum(ViewEncapsulation.None),
                        null,
-                       3
+                       'aCompId'
                      ],
                      [END_COMPONENT]
                    ]);
@@ -316,43 +306,24 @@ export function main() {
                  });
            }));
 
-        it('should emulate style encapsulation on host elements',
-           inject([AsyncTestCompleter], (async) => {
-             var rootComp = createComp({
-               type: RootCompTypeMeta,
-               template: '<a></a>',
-               encapsulation: ViewEncapsulation.Emulated
-             });
-             var comp = createComp(
-                 {type: ACompTypeMeta, selector: 'a', encapsulation: ViewEncapsulation.Emulated});
-             run(rootComp, [comp])
-                 .then((data) => {
-                   expect(data).toEqual([
-                     [
-                       BEGIN_COMPONENT,
-                       'a',
-                       ['_nghost-app1-3', '', '_ngcontent-app1-1', ''],
-                       [],
-                       [],
-                       ['ACompType'],
-                       false,
-                       null,
-                       3
-                     ],
-                     [END_COMPONENT]
-                   ]);
-                   async.done();
-                 });
-           }));
-
-        it('should set nativeShadow flag', inject([AsyncTestCompleter], (async) => {
+        it('should store viewEncapsulation', inject([AsyncTestCompleter], (async) => {
              var rootComp = createComp({type: RootCompTypeMeta, template: '<a></a>'});
              var comp = createComp(
                  {type: ACompTypeMeta, selector: 'a', encapsulation: ViewEncapsulation.Native});
              run(rootComp, [comp])
                  .then((data) => {
                    expect(data).toEqual([
-                     [BEGIN_COMPONENT, 'a', [], [], [], ['ACompType'], true, null, 3],
+                     [
+                       BEGIN_COMPONENT,
+                       'a',
+                       [],
+                       [],
+                       [],
+                       ['ACompType'],
+                       serializeEnum(ViewEncapsulation.Native),
+                       null,
+                       'aCompId'
+                     ],
                      [END_COMPONENT]
                    ]);
                    async.done();
@@ -366,7 +337,17 @@ export function main() {
              run(rootComp, [comp])
                  .then((data) => {
                    expect(data).toEqual([
-                     [BEGIN_COMPONENT, 'a', [], [], [], ['ACompType'], false, null, 3],
+                     [
+                       BEGIN_COMPONENT,
+                       'a',
+                       [],
+                       [],
+                       [],
+                       ['ACompType'],
+                       serializeEnum(ViewEncapsulation.None),
+                       null,
+                       'aCompId'
+                     ],
                      [TEXT, 't', false, 0],
                      [END_COMPONENT]
                    ]);
@@ -472,7 +453,8 @@ export function main() {
     describe('compileComponentRuntime', () => {
       beforeEach(() => {
         componentTemplateFactory = (directive: CompileDirectiveMetadata) => {
-          return new CompiledTemplate(compTypeTemplateId.get(directive.type), () => []);
+          return () => new CompiledComponentTemplate(compTypeTemplateId.get(directive.type), null,
+                                                     null, null);
         };
       });
 
@@ -485,8 +467,7 @@ export function main() {
         var parsedTemplate =
             parser.parse(component.template.template, directives, component.type.name);
         var commands = commandCompiler.compileComponentRuntime(
-            component, APP_ID, compTypeTemplateId.get(component.type), parsedTemplate,
-            changeDetectorFactories, componentTemplateFactory);
+            component, parsedTemplate, changeDetectorFactories, componentTemplateFactory);
         return PromiseWrapper.resolve(humanize(commands));
       }
 
@@ -497,22 +478,34 @@ export function main() {
     describe('compileComponentCodeGen', () => {
       beforeEach(() => {
         componentTemplateFactory = (directive: CompileDirectiveMetadata) => {
-          return `new ${TEMPLATE_COMMANDS_MODULE_REF}CompiledTemplate(${compTypeTemplateId.get(directive.type)}, ${codeGenValueFn([], '{}')})`;
+          return `${directive.type.name}TemplateGetter`;
         };
       });
 
       function run(component: CompileDirectiveMetadata, directives: CompileDirectiveMetadata[],
                    embeddedTemplateCount: number = 0): Promise<any[][]> {
+        var testDeclarations = [];
         var changeDetectorFactoryExpressions = [];
         for (var i = 0; i < embeddedTemplateCount + 1; i++) {
-          changeDetectorFactoryExpressions.push(codeGenValueFn(['_'], `'cd${i}'`));
+          var fnName = `cd${i}`;
+          testDeclarations.push(`${codeGenValueFn(['_'], ` 'cd${i}' `, fnName)};`);
+          changeDetectorFactoryExpressions.push(fnName);
+        }
+        for (var i = 0; i < directives.length; i++) {
+          var directive = directives[i];
+          if (directive.isComponent) {
+            var nestedTemplate =
+                `${codeGenConstConstructorCall(TEMPLATE_COMMANDS_MODULE_REF+'CompiledComponentTemplate')}('${compTypeTemplateId.get(directive.type)}', null, null, null)`;
+            var getterName = `${directive.type.name}TemplateGetter`;
+            testDeclarations.push(`${codeGenValueFn([], nestedTemplate, getterName)};`)
+          }
         }
         var parsedTemplate =
             parser.parse(component.template.template, directives, component.type.name);
-        var sourceModule = commandCompiler.compileComponentCodeGen(
-            component, `'${APP_ID}'`, `${compTypeTemplateId.get(component.type)}`, parsedTemplate,
-            changeDetectorFactoryExpressions, componentTemplateFactory);
-        var testableModule = createTestableModule(sourceModule).getSourceWithImports();
+        var sourceExpression = commandCompiler.compileComponentCodeGen(
+            component, parsedTemplate, changeDetectorFactoryExpressions, componentTemplateFactory);
+        testDeclarations.forEach(decl => sourceExpression.declarations.push(decl));
+        var testableModule = createTestableModule(sourceExpression).getSourceWithImports();
         return evalModule(testableModule.source, testableModule.imports, null);
       }
 
@@ -569,9 +562,9 @@ class CommandHumanizer implements CommandVisitor {
       cmd.eventTargetAndNames,
       cmd.variableNameAndValues,
       cmd.directives.map(checkAndStringifyType),
-      cmd.nativeShadow,
+      serializeEnum(cmd.encapsulation),
       cmd.ngContentIndex,
-      cmd.template.id
+      cmd.templateId
     ]);
     return null;
   }
@@ -597,6 +590,8 @@ class CommandHumanizer implements CommandVisitor {
 function createTestableModule(source: SourceExpression): SourceModule {
   var resultExpression = `${THIS_MODULE_REF}humanize(${source.expression})`;
   var testableSource = `${source.declarations.join('\n')}
-  ${codeGenExportVariable('run')}${codeGenValueFn(['_'], resultExpression)};`;
+  ${codeGenValueFn(['_'], resultExpression, '_run')};
+  ${codeGenExportVariable('run')}_run;
+  `;
   return new SourceModule(null, testableSource);
 }

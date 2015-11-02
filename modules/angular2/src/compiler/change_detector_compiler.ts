@@ -63,7 +63,7 @@ export class ChangeDetectionCompiler {
     var index = 0;
     var sourceParts = changeDetectorDefinitions.map(definition => {
       var codegen: any;
-      var sourcePart;
+      var sourcePart: string;
       // TODO(tbosch): move the 2 code generators to the same place, one with .dart and one with .ts
       // suffix
       // and have the same API for calling them!
@@ -74,7 +74,7 @@ export class ChangeDetectionCompiler {
                           'dynamic' :
                           `${moduleRef(componentType.moduleUrl)}${componentType.name}`;
         codegen.generate(typeRef, className, definition);
-        factories.push(`(dispatcher) => new ${className}(dispatcher)`);
+        factories.push(`${className}.newChangeDetector`);
         sourcePart = codegen.toString();
       } else {
         codegen = new ChangeDetectorJITGenerator(

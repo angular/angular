@@ -18,7 +18,7 @@ import {PromiseWrapper} from 'angular2/src/facade/async';
 import {SpyProtoViewFactory} from '../core/spies';
 import {
   CompiledHostTemplate,
-  CompiledTemplate,
+  CompiledComponentTemplate,
   BeginComponentCmd
 } from 'angular2/src/core/linker/template_commands';
 import {RuntimeCompiler} from 'angular2/src/compiler/runtime_compiler';
@@ -37,7 +37,7 @@ export function main() {
 
       beforeEachBindings(() => {
         protoViewFactorySpy = new SpyProtoViewFactory();
-        someProtoView = new AppProtoView(null, null, null, null, null, null);
+        someProtoView = new AppProtoView(null, null, null, null, null, null, null);
         protoViewFactorySpy.spy('createHost').andReturn(someProtoView);
         return [provide(ProtoViewFactory, {useValue: protoViewFactorySpy})];
       });
@@ -52,8 +52,7 @@ export function main() {
                });
            compiler.compileInHost(SomeComponent)
                .then((_) => {
-                 var beginComponentCmd =
-                     <BeginComponentCmd>cht.getTemplate().getData('app1').commands[0];
+                 var beginComponentCmd = <BeginComponentCmd>cht.template.commands[0];
                  expect(beginComponentCmd.name).toEqual('some-comp');
                  async.done();
                });

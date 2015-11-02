@@ -176,12 +176,9 @@ class _CodegenState {
 
         ${_genDirectiveIndices()};
 
-        static ${_genPrefix}ProtoChangeDetector
-            $PROTO_CHANGE_DETECTOR_FACTORY_METHOD(
-            ${_genPrefix}ChangeDetectorDefinition def) {
-          return new ${_genPrefix}PregenProtoChangeDetector(
-              (a) => new $_changeDetectorTypeName(a),
-              def);
+        static ${_genPrefix}ChangeDetector
+            $CHANGE_DETECTOR_FACTORY_METHOD(a) {
+          return new $_changeDetectorTypeName(a);
         }
       }
     ''');
@@ -575,7 +572,7 @@ class _CodegenState {
   }
 }
 
-const PROTO_CHANGE_DETECTOR_FACTORY_METHOD = 'newProtoChangeDetector';
+const CHANGE_DETECTOR_FACTORY_METHOD = 'newChangeDetector';
 
 const _BASE_CLASS = 'AbstractChangeDetector';
 const _CHANGES_LOCAL = 'changes';

@@ -1,2 +1,4 @@
+import {CONST_EXPR} from 'angular2/src/facade/lang';
+
 // used by style_compiler_spec.ts
-export var STYLES = ['span[_ngcontent-%COMP%] {\ncolor: blue;\n}'];
+export const STYLES = CONST_EXPR(['span[_ngcontent-%COMP%] {\ncolor: blue;\n}']);
