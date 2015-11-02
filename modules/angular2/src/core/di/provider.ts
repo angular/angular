@@ -114,7 +114,7 @@ export class Provider {
    * This is in contrast to `useClass` where a separate instance of `useClass` is returned.
    *
    * ### Example ([live demo](http://plnkr.co/edit/QsatsOJJ6P8T2fMe9gr8?p=preview))
-   *
+   * ###^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Looks like it is not the right one, plnkr link has to be fixed.
    * Because `useExisting` and `useClass` are often confused the example contains
    * both use cases for easy comparison.
    *
