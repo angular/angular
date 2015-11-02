@@ -97,6 +97,20 @@ export function main() {
        }));
 
 
+    it('should work in an app with aux routes', inject([AsyncTestCompleter], (async) => {
+         bootstrap(AuxAppCmp, testBindings)
+             .then((applicationRef) => {
+               var router = applicationRef.hostComponent.router;
+               router.subscribe((_) => {
+                 expect(el).toHaveText('root { hello } aside { hello }');
+                 expect(applicationRef.hostComponent.location.path()).toEqual('/hello(aside)');
+                 async.done();
+               });
+               router.navigateByUrl('/hello(aside)');
+             });
+       }));
+
+
     it('should work in an app with async components defined with "loader"',
        inject([AsyncTestCompleter], (async) => {
          bootstrap(ConciseAsyncAppCmp, testBindings)
@@ -224,6 +238,13 @@ class AsyncAppCmp {
   {path: '/hello', loader: HelloLoader},
 ])
 class ConciseAsyncAppCmp {
+  constructor(public router: Router, public location: LocationStrategy) {}
+}
+
+@Component({selector: 'app-cmp'})
+@View({template: `root { <router-outlet></router-outlet> } aside { <router-outlet name="aside"></router-outlet> }`, directives: ROUTER_DIRECTIVES})
+@RouteConfig([{path: '/hello', component: HelloCmp}, {aux: 'aside', component: HelloCmp}])
+class AuxAppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}
 }
 

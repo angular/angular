@@ -26,6 +26,9 @@ export function normalizeRouteConfig(config: RouteDefinition): RouteDefinition {
   if (config.loader) {
     return new AsyncRoute({path: config.path, loader: config.loader, name: config.name});
   }
+  if (config.aux) {
+    return new AuxRoute({path: config.aux, component:<Type>config.component, name: config.name});
+  }
   if (config.component) {
     if (typeof config.component == 'object') {
       let componentDefinitionObject = <ComponentDefinition>config.component;

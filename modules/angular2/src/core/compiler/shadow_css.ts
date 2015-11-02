@@ -140,14 +140,6 @@ export class ShadowCss {
   constructor() {}
 
   /*
-  * Shim a style element with the given selector. Returns cssText that can
-  * be included in the document via WebComponents.ShadowCSS.addCssToDocument(css).
-  */
-  shimStyle(cssText: string, selector: string, hostSelector: string = ''): string {
-    return this.shimCssText(cssText, selector, hostSelector);
-  }
-
-  /*
   * Shim some cssText with the given selector. Returns cssText that can
   * be included in the document via WebComponents.ShadowCSS.addCssToDocument(css).
   *
@@ -156,12 +148,12 @@ export class ShadowCss {
   * - hostSelector is the attribute added to the host itself.
   */
   shimCssText(cssText: string, selector: string, hostSelector: string = ''): string {
+    cssText = stripComments(cssText);
     cssText = this._insertDirectives(cssText);
     return this._scopeCssText(cssText, selector, hostSelector);
   }
 
-  /** @internal */
-  _insertDirectives(cssText: string): string {
+  private _insertDirectives(cssText: string): string {
     cssText = this._insertPolyfillDirectivesInCssText(cssText);
     return this._insertPolyfillRulesInCssText(cssText);
   }
@@ -180,8 +172,7 @@ export class ShadowCss {
    * scopeName menu-item {
    *
   **/
-  /** @internal */
-  _insertPolyfillDirectivesInCssText(cssText: string): string {
+  private _insertPolyfillDirectivesInCssText(cssText: string): string {
     // Difference with webcomponents.js: does not handle comments
     return StringWrapper.replaceAllMapped(cssText, _cssContentNextSelectorRe,
                                           function(m) { return m[1] + '{'; });
@@ -202,8 +193,7 @@ export class ShadowCss {
    * scopeName menu-item {...}
    *
   **/
-  /** @internal */
-  _insertPolyfillRulesInCssText(cssText: string): string {
+  private _insertPolyfillRulesInCssText(cssText: string): string {
     // Difference with webcomponents.js: does not handle comments
     return StringWrapper.replaceAllMapped(cssText, _cssContentRuleRe, function(m) {
       var rule = m[0];
@@ -221,8 +211,7 @@ export class ShadowCss {
    *
    *  scopeName .foo { ... }
   */
-  /** @internal */
-  _scopeCssText(cssText: string, scopeSelector: string, hostSelector: string): string {
+  private _scopeCssText(cssText: string, scopeSelector: string, hostSelector: string): string {
     var unscoped = this._extractUnscopedRulesFromCssText(cssText);
     cssText = this._insertPolyfillHostInCssText(cssText);
     cssText = this._convertColonHost(cssText);
@@ -250,8 +239,7 @@ export class ShadowCss {
    * menu-item {...}
    *
   **/
-  /** @internal */
-  _extractUnscopedRulesFromCssText(cssText: string): string {
+  private _extractUnscopedRulesFromCssText(cssText: string): string {
     // Difference with webcomponents.js: does not handle comments
     var r = '', m;
     var matcher = RegExpWrapper.matcher(_cssContentUnscopedRuleRe, cssText);
@@ -271,8 +259,7 @@ export class ShadowCss {
    *
    * scopeName.foo > .bar
   */
-  /** @internal */
-  _convertColonHost(cssText: string): string {
+  private _convertColonHost(cssText: string): string {
     return this._convertColonRule(cssText, _cssColonHostRe, this._colonHostPartReplacer);
   }
 
@@ -291,14 +278,12 @@ export class ShadowCss {
    *
    * scopeName.foo .bar { ... }
   */
-  /** @internal */
-  _convertColonHostContext(cssText: string): string {
+  private _convertColonHostContext(cssText: string): string {
     return this._convertColonRule(cssText, _cssColonHostContextRe,
                                   this._colonHostContextPartReplacer);
   }
 
-  /** @internal */
-  _convertColonRule(cssText: string, regExp: RegExp, partReplacer: Function): string {
+  private _convertColonRule(cssText: string, regExp: RegExp, partReplacer: Function): string {
     // p1 = :host, p2 = contents of (), p3 rest of rule
     return StringWrapper.replaceAllMapped(cssText, regExp, function(m) {
       if (isPresent(m[2])) {
@@ -316,8 +301,7 @@ export class ShadowCss {
     });
   }
 
-  /** @internal */
-  _colonHostContextPartReplacer(host: string, part: string, suffix: string): string {
+  private _colonHostContextPartReplacer(host: string, part: string, suffix: string): string {
     if (StringWrapper.contains(part, _polyfillHost)) {
       return this._colonHostPartReplacer(host, part, suffix);
     } else {
@@ -325,8 +309,7 @@ export class ShadowCss {
     }
   }
 
-  /** @internal */
-  _colonHostPartReplacer(host: string, part: string, suffix: string): string {
+  private _colonHostPartReplacer(host: string, part: string, suffix: string): string {
     return host + StringWrapper.replace(part, _polyfillHost, '') + suffix;
   }
 
@@ -334,8 +317,7 @@ export class ShadowCss {
    * Convert combinators like ::shadow and pseudo-elements like ::content
    * by replacing with space.
   */
-  /** @internal */
-  _convertShadowDOMSelectors(cssText: string): string {
+  private _convertShadowDOMSelectors(cssText: string): string {
     for (var i = 0; i < _shadowDOMSelectorsRe.length; i++) {
       cssText = StringWrapper.replaceAll(cssText, _shadowDOMSelectorsRe[i], ' ');
     }
@@ -343,43 +325,22 @@ export class ShadowCss {
   }
 
   // change a selector like 'div' to 'name div'
-  /** @internal */
-  _scopeSelectors(cssText: string, scopeSelector: string, hostSelector: string): string {
-    var parts = splitCurlyBlocks(cssText);
-    var result = [];
-    for (var i = 0; i < parts.length; i += 2) {
-      var selectorTextWithCommands = parts[i];
-      var selectorStart = selectorTextWithCommands.lastIndexOf(';') + 1;
-      var selectorText =
-          selectorTextWithCommands.substring(selectorStart, selectorTextWithCommands.length);
-      var ruleContent = parts[i + 1];
-      var selectorMatch = RegExpWrapper.firstMatch(_singleSelectorRe, selectorText);
-      if (isPresent(selectorMatch) && ruleContent.length > 0) {
-        var selPrefix = selectorMatch[1];
-        var selAt = isPresent(selectorMatch[2]) ? selectorMatch[2] : '';
-        var selector = selectorMatch[3];
-        var selSuffix = selectorMatch[4];
-        if (selAt.length === 0 || selAt == '@page') {
-          var scopedSelector =
-              this._scopeSelector(selector, scopeSelector, hostSelector, this.strictStyling);
-          selectorText = `${selPrefix}${selAt}${scopedSelector}${selSuffix}`;
-        } else if (selAt == '@media' && ruleContent[0] == OPEN_CURLY &&
-                   ruleContent[ruleContent.length - 1] == CLOSE_CURLY) {
-          var scopedContent = this._scopeSelectors(ruleContent.substring(1, ruleContent.length - 1),
-                                                   scopeSelector, hostSelector);
-          ruleContent = `${OPEN_CURLY}${scopedContent}${CLOSE_CURLY}`;
-        }
+  private _scopeSelectors(cssText: string, scopeSelector: string, hostSelector: string): string {
+    return processRules(cssText, (rule: CssRule) => {
+      var selector = rule.selector;
+      var content = rule.content;
+      if (rule.selector[0] != '@' || rule.selector.startsWith('@page')) {
+        selector =
+            this._scopeSelector(rule.selector, scopeSelector, hostSelector, this.strictStyling);
+      } else if (rule.selector.startsWith('@media')) {
+        content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
       }
-      result.push(selectorTextWithCommands.substring(0, selectorStart));
-      result.push(selectorText);
-      result.push(ruleContent);
-    }
-    return result.join('');
+      return new CssRule(selector, content);
+    });
   }
 
-  /** @internal */
-  _scopeSelector(selector: string, scopeSelector: string, hostSelector: string,
-                 strict: boolean): string {
+  private _scopeSelector(selector: string, scopeSelector: string, hostSelector: string,
+                         strict: boolean): string {
     var r = [], parts = selector.split(',');
     for (var i = 0; i < parts.length; i++) {
       var p = parts[i];
@@ -394,14 +355,12 @@ export class ShadowCss {
     return r.join(', ');
   }
 
-  /** @internal */
-  _selectorNeedsScoping(selector: string, scopeSelector: string): boolean {
+  private _selectorNeedsScoping(selector: string, scopeSelector: string): boolean {
     var re = this._makeScopeMatcher(scopeSelector);
     return !isPresent(RegExpWrapper.firstMatch(re, selector));
   }
 
-  /** @internal */
-  _makeScopeMatcher(scopeSelector: string): RegExp {
+  private _makeScopeMatcher(scopeSelector: string): RegExp {
     var lre = /\[/g;
     var rre = /\]/g;
     scopeSelector = StringWrapper.replaceAll(scopeSelector, lre, '\\[');
@@ -409,15 +368,15 @@ export class ShadowCss {
     return RegExpWrapper.create('^(' + scopeSelector + ')' + _selectorReSuffix, 'm');
   }
 
-  /** @internal */
-  _applySelectorScope(selector: string, scopeSelector: string, hostSelector: string): string {
+  private _applySelectorScope(selector: string, scopeSelector: string,
+                              hostSelector: string): string {
     // Difference from webcomponentsjs: scopeSelector could not be an array
     return this._applySimpleSelectorScope(selector, scopeSelector, hostSelector);
   }
 
   // scope via name and [is=name]
-  /** @internal */
-  _applySimpleSelectorScope(selector: string, scopeSelector: string, hostSelector: string): string {
+  private _applySimpleSelectorScope(selector: string, scopeSelector: string,
+                                    hostSelector: string): string {
     if (isPresent(RegExpWrapper.firstMatch(_polyfillHostRe, selector))) {
       var replaceBy = this.strictStyling ? `[${hostSelector}]` : scopeSelector;
       selector = StringWrapper.replace(selector, _polyfillHostNoCombinator, replaceBy);
@@ -428,9 +387,8 @@ export class ShadowCss {
   }
 
   // return a selector with [name] suffix on each simple selector
-  // e.g. .foo.bar > .zot becomes .foo[name].bar[name] > .zot[name]
-  /** @internal */
-  _applyStrictSelectorScope(selector: string, scopeSelector: string): string {
+  // e.g. .foo.bar > .zot becomes .foo[name].bar[name] > .zot[name]  /** @internal */
+  private _applyStrictSelectorScope(selector: string, scopeSelector: string): string {
     var isRe = /\[is=([^\]]*)\]/g;
     scopeSelector = StringWrapper.replaceAllMapped(scopeSelector, isRe, (m) => m[1]);
     var splits = [' ', '>', '+', '~'], scoped = selector, attrName = '[' + scopeSelector + ']';
@@ -455,8 +413,7 @@ export class ShadowCss {
     return scoped;
   }
 
-  /** @internal */
-  _insertPolyfillHostInCssText(selector: string): string {
+  private _insertPolyfillHostInCssText(selector: string): string {
     selector = StringWrapper.replaceAll(selector, _colonHostContextRe, _polyfillHostContext);
     selector = StringWrapper.replaceAll(selector, _colonHostRe, _polyfillHost);
     return selector;
@@ -493,34 +450,72 @@ var _polyfillHostRe = RegExpWrapper.create(_polyfillHost, 'im');
 var _colonHostRe = /:host/gim;
 var _colonHostContextRe = /:host-context/gim;
 
-var _singleSelectorRe = /^(\s*)(@\S+)?(.*?)(\s*)$/g;
+var _commentRe = /\/\*[\s\S]*?\*\//g;
 
-var _curlyRe = /([{}])/g;
-var OPEN_CURLY = '{';
-var CLOSE_CURLY = '}';
-
-export function splitCurlyBlocks(cssText:string):string[] {
-  var parts = StringWrapper.split(cssText, _curlyRe);
-  var result = [];
-  var bracketCount = 0;
-  var currentCurlyParts = [];
-  for (var partIndex = 0; partIndex<parts.length; partIndex++) {
-    var part = parts[partIndex];
-    currentCurlyParts.push(part);
-    if (part == OPEN_CURLY) {
-      bracketCount++;
-    } else if (part == CLOSE_CURLY) {
-      bracketCount--;
-    }
-    if (bracketCount === 0) {
-      result.push(currentCurlyParts.join(''));
-      currentCurlyParts = [];
-    }
-  }
-  result.push(currentCurlyParts.join(''));
-  if (result.length >= 2 && result[result.length-1] == '' && result[result.length-2] == '') {
-    result = result.slice(0, result.length-2);
-  }
-  return result;
+function stripComments(input:string):string {
+  return StringWrapper.replaceAllMapped(input, _commentRe, (_) => '');
 }
 
+var _ruleRe = /(\s*)([^;\{\}]+?)(\s*)((?:{%BLOCK%}?\s*;?)|(?:\s*;))/g;
+var _curlyRe = /([{}])/g;
+const OPEN_CURLY = '{';
+const CLOSE_CURLY = '}';
+const BLOCK_PLACEHOLDER = '%BLOCK%';
+
+export class CssRule {
+  constructor(public selector:string, public content:string) {}
+}
+
+export function processRules(input:string, ruleCallback:Function):string {
+  var inputWithEscapedBlocks = escapeBlocks(input);
+  var nextBlockIndex = 0;
+  return StringWrapper.replaceAllMapped(inputWithEscapedBlocks.escapedString, _ruleRe, function(m) {
+    var selector = m[2];
+    var content = '';
+    var suffix = m[4];
+    var contentPrefix = '';
+    if (isPresent(m[4]) && m[4].startsWith('{'+BLOCK_PLACEHOLDER)) {
+      content = inputWithEscapedBlocks.blocks[nextBlockIndex++];
+      suffix = m[4].substring(BLOCK_PLACEHOLDER.length+1);
+      contentPrefix = '{';
+    }
+    var rule = ruleCallback(new CssRule(selector, content));
+    return `${m[1]}${rule.selector}${m[3]}${contentPrefix}${rule.content}${suffix}`;
+  });
+}
+
+class StringWithEscapedBlocks {
+  constructor(public escapedString:string, public blocks:string[]) {}
+}
+
+function escapeBlocks(input:string):StringWithEscapedBlocks {
+  var inputParts = StringWrapper.split(input, _curlyRe);
+  var resultParts = [];
+  var escapedBlocks = [];
+  var bracketCount = 0;
+  var currentBlockParts = [];
+  for (var partIndex = 0; partIndex<inputParts.length; partIndex++) {
+    var part = inputParts[partIndex];
+    if (part == CLOSE_CURLY) {
+      bracketCount--;
+    }
+    if (bracketCount > 0) {
+      currentBlockParts.push(part);
+    } else {
+      if (currentBlockParts.length > 0) {
+        escapedBlocks.push(currentBlockParts.join(''));
+        resultParts.push(BLOCK_PLACEHOLDER);
+        currentBlockParts = [];
+      }
+      resultParts.push(part);
+    }
+    if (part == OPEN_CURLY) {
+      bracketCount++;
+    }
+  }
+  if (currentBlockParts.length > 0) {
+    escapedBlocks.push(currentBlockParts.join(''));
+    resultParts.push(BLOCK_PLACEHOLDER);
+  }
+  return new StringWithEscapedBlocks(resultParts.join(''), escapedBlocks);
+}

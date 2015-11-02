@@ -43,6 +43,7 @@ const kServedPaths = [
   'playground/src/person_management',
   'playground/src/order_management',
   'playground/src/gestures',
+  'playground/src/hash_routing',
   'playground/src/hello_world',
   'playground/src/http',
   'playground/src/jsonp',

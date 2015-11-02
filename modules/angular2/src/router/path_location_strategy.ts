@@ -63,6 +63,7 @@ export class PathLocationStrategy extends LocationStrategy {
 
   onPopState(fn: EventListener): void {
     DOM.getGlobalEventTarget('window').addEventListener('popstate', fn, false);
+    DOM.getGlobalEventTarget('window').addEventListener('hashchange', fn, false);
   }
 
   getBaseHref(): string { return this._baseHref; }

@@ -137,13 +137,21 @@ export function stringifyInstruction(instruction: Instruction): string {
 
 export function stringifyInstructionPath(instruction: Instruction): string {
   return instruction.component.urlPath + stringifyAux(instruction) +
-         stringifyPrimary(instruction.child);
+         stringifyPrimaryPrefixed(instruction.child);
 }
 
 export function stringifyInstructionQuery(instruction: Instruction): string {
   return instruction.component.urlParams.length > 0 ?
              ('?' + instruction.component.urlParams.join('&')) :
              '';
+}
+
+function stringifyPrimaryPrefixed(instruction: Instruction): string {
+  var primary = stringifyPrimary(instruction);
+  if (primary.length > 0) {
+    primary = '/' + primary;
+  }
+  return primary;
 }
 
 function stringifyPrimary(instruction: Instruction): string {
@@ -153,8 +161,8 @@ function stringifyPrimary(instruction: Instruction): string {
   var params = instruction.component.urlParams.length > 0 ?
                    (';' + instruction.component.urlParams.join(';')) :
                    '';
-  return '/' + instruction.component.urlPath + params + stringifyAux(instruction) +
-         stringifyPrimary(instruction.child);
+  return instruction.component.urlPath + params + stringifyAux(instruction) +
+         stringifyPrimaryPrefixed(instruction.child);
 }
 
 function stringifyAux(instruction: Instruction): string {

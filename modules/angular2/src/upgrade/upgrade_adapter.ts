@@ -1,5 +1,3 @@
-///<reference path="./angular.d.ts"/>
-
 import {
   bind,
   provide,
@@ -36,6 +34,7 @@ import {
 } from './constants';
 import {DowngradeNg2ComponentAdapter} from './downgrade_ng2_adapter';
 import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
+import * as angular from './angular_js';
 
 var upgradeCount: number = 0;
 
@@ -295,7 +294,7 @@ export class UpgradeAdapter {
   bootstrap(element: Element, modules?: any[],
             config?: angular.IAngularBootstrapConfig): UpgradeAdapterRef {
     var upgrade = new UpgradeAdapterRef();
-    var ng1Injector: angular.auto.IInjectorService = null;
+    var ng1Injector: angular.IInjectorService = null;
     var platformRef: PlatformRef = platform();
     var applicationRef: ApplicationRef = platformRef.application([
       applicationCommonProviders(),
@@ -341,7 +340,7 @@ export class UpgradeAdapter {
         .run([
           '$injector',
           '$rootScope',
-          (injector: angular.auto.IInjectorService, rootScope: angular.IRootScopeService) => {
+          (injector: angular.IInjectorService, rootScope: angular.IRootScopeService) => {
             ng1Injector = injector;
             ngZone.overrideOnTurnDone(() => rootScope.$apply());
             ng1compilePromise =
@@ -440,7 +439,7 @@ export class UpgradeAdapter {
   public upgradeNg1Provider(name: string, options?: {asToken: any}) {
     var token = options && options.asToken || name;
     this.providers.push(provide(token, {
-      useFactory: (ng1Injector: angular.auto.IInjectorService) => ng1Injector.get(name),
+      useFactory: (ng1Injector: angular.IInjectorService) => ng1Injector.get(name),
       deps: [NG1_INJECTOR]
     }));
   }
@@ -469,7 +468,7 @@ export class UpgradeAdapter {
    */
   public downgradeNg2Provider(token: any): Function {
     var factory = function(injector: Injector) { return injector.get(token); };
-    factory.$inject = [NG2_INJECTOR];
+    (<any>factory).$inject = [NG2_INJECTOR];
     return factory;
   }
 
@@ -496,7 +495,7 @@ interface ProtoViewRefMap {
 }
 
 function ng1ComponentDirective(info: ComponentInfo, idPrefix: string): Function {
-  directiveFactory.$inject = [NG2_PROTO_VIEW_REF_MAP, NG2_APP_VIEW_MANAGER, NG1_PARSE];
+  (<any>directiveFactory).$inject = [NG2_PROTO_VIEW_REF_MAP, NG2_APP_VIEW_MANAGER, NG1_PARSE];
   function directiveFactory(protoViewRefMap: ProtoViewRefMap, viewManager: AppViewManager,
                             parse: angular.IParseService): angular.IDirective {
     var protoView: ProtoViewRef = protoViewRefMap[info.selector];
@@ -532,13 +531,12 @@ export class UpgradeAdapterRef {
   private _readyFn: (upgradeAdapterRef?: UpgradeAdapterRef) => void = null;
 
   public ng1RootScope: angular.IRootScopeService = null;
-  public ng1Injector: angular.auto.IInjectorService = null;
+  public ng1Injector: angular.IInjectorService = null;
   public ng2ApplicationRef: ApplicationRef = null;
   public ng2Injector: Injector = null;
 
   /* @internal */
-  private _bootstrapDone(applicationRef: ApplicationRef,
-                         ng1Injector: angular.auto.IInjectorService) {
+  private _bootstrapDone(applicationRef: ApplicationRef, ng1Injector: angular.IInjectorService) {
     this.ng2ApplicationRef = applicationRef;
     this.ng2Injector = applicationRef.injector;
     this.ng1Injector = ng1Injector;
