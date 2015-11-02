@@ -3,6 +3,7 @@ import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection
 import {OpaqueToken} from 'angular2/src/core/di';
 
 import * as modelModule from './model';
+import {PromiseWrapper} from "../facade/promise";
 
 /**
  * Providers for validators to be used for {@link Control}s in a form.
@@ -18,6 +19,7 @@ import * as modelModule from './model';
  * ```
  */
 export const NG_VALIDATORS: OpaqueToken = CONST_EXPR(new OpaqueToken("NgValidators"));
+export const NG_ASYNC_VALIDATORS: OpaqueToken = CONST_EXPR(new OpaqueToken("NgAsyncValidators"));
 
 /**
  * Provides a set of validators used by form controls.
@@ -76,14 +78,33 @@ export class Validators {
    * of the individual error maps.
    */
   static compose(validators: Function[]): Function {
-    if (isBlank(validators)) return Validators.nullValidator;
+    if (isBlank(validators)) return null;
+    var presentValidators = ListWrapper.filter(validators, isPresent);
+    if (presentValidators.length == 0) return null;
 
     return function(control: modelModule.AbstractControl) {
-      var res = ListWrapper.reduce(validators, (res, validator) => {
-        var errors = isPresent(validator) ? validator(control) : null;
-        return isPresent(errors) ? StringMapWrapper.merge(<any>res, <any>errors) : res;
-      }, {});
-      return StringMapWrapper.isEmpty(res) ? null : res;
+      return _mergeErrors(_executeValidators(control, presentValidators));
     };
   }
+
+  static composeAsync(validators: Function[]): Function {
+    if (isBlank(validators)) return null;
+    var presentValidators = ListWrapper.filter(validators, isPresent);
+    if (presentValidators.length == 0) return null;
+
+    return function(control: modelModule.AbstractControl) {
+      return PromiseWrapper.all(_executeValidators(control, presentValidators)).then(_mergeErrors);
+    };
+  }
+}
+
+function _executeValidators(control: modelModule.AbstractControl, validators: Function[]): any[] {
+  return validators.map(v => v(control));
+}
+
+function _mergeErrors(arrayOfErrors: any[]): {[key: string]: any} {
+  var res = ListWrapper.reduce(arrayOfErrors, (res, errors) => {
+    return isPresent(errors) ? StringMapWrapper.merge(<any>res, <any>errors) : res;
+  }, {});
+  return StringMapWrapper.isEmpty(res) ? null : res;
 }
