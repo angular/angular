@@ -20,6 +20,9 @@ import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 var defaultLocale: string = 'en-US';
 var _re = RegExpWrapper.create('^(\\d+)?\\.((\\d+)(\\-(\\d+))?)?$');
 
+/**
+ * Internal base class for numeric pipes.
+ */
 @CONST()
 @Injectable()
 export class NumberPipe {
@@ -78,11 +81,9 @@ export class NumberPipe {
  * For more information on the acceptable range for each of these numbers and other
  * details see your native internationalization library.
  *
- * ### Examples
+ * ### Example
  *
- *     {{ 123 | number }}              // output is 123
- *     {{ 123.1 | number: '.2-3' }}    // output is 123.10
- *     {{ 1 | number: '2.2' }}         // output is 01.00
+ * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='NumberPipe'}
  */
 @CONST()
 @Pipe({name: 'number'})
@@ -105,6 +106,10 @@ export class DecimalPipe extends NumberPipe implements PipeTransform {
  *     expression | percent[:digitInfo]
  *
  * For more information about `digitInfo` see {@link DecimalPipe}
+ *
+ * ### Example
+ *
+ * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='PercentPipe'}
  */
 @CONST()
 @Pipe({name: 'percent'})
@@ -131,6 +136,10 @@ export class PercentPipe extends NumberPipe implements PipeTransform {
  * symbol (e.g. $) or the currency code (e.g. USD) in the output. The default for this value
  * is `false`.
  * For more information about `digitInfo` see {@link DecimalPipe}
+ *
+ * ### Example
+ *
+ * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='CurrencyPipe'}
  */
 @CONST()
 @Pipe({name: 'currency'})
