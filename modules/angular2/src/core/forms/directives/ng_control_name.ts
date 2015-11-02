@@ -8,9 +8,15 @@ import {forwardRef, Host, SkipSelf, Provider, Inject, Optional} from 'angular2/s
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
-import {controlPath, composeValidators, isPropertyUpdated, selectValueAccessor} from './shared';
+import {
+  controlPath,
+  composeValidators,
+  composeAsyncValidators,
+  isPropertyUpdated,
+  selectValueAccessor
+} from './shared';
 import {Control} from '../model';
-import {Validators, NG_VALIDATORS} from '../validators';
+import {Validators, NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
 
 
 const controlNameBinding =
@@ -81,21 +87,18 @@ const controlNameBinding =
 export class NgControlName extends NgControl implements OnChanges,
     OnDestroy {
   /** @internal */
-  _parent: ControlContainer;
   update = new EventEmitter();
   model: any;
   viewModel: any;
-  private _validator: Function;
-  /** @internal */
-  _added = false;
+  private _added = false;
 
-  constructor(@Host() @SkipSelf() parent: ControlContainer,
-              @Optional() @Inject(NG_VALIDATORS) validators:
+  constructor(@Host() @SkipSelf() private _parent: ControlContainer,
+              @Optional() @Inject(NG_VALIDATORS) private _validators:
+                  /* Array<Validator|Function> */ any[],
+              @Optional() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators:
                   /* Array<Validator|Function> */ any[],
               @Optional() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[]) {
     super();
-    this._parent = parent;
-    this._validator = composeValidators(validators);
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
@@ -121,7 +124,9 @@ export class NgControlName extends NgControl implements OnChanges,
 
   get formDirective(): any { return this._parent.formDirective; }
 
-  get validator(): Function { return this._validator; }
+  get validator(): Function { return composeValidators(this._validators); }
+
+  get asyncValidator(): Function { return composeAsyncValidators(this._asyncValidators); }
 
   get control(): Control { return this.formDirective.getControl(this); }
 }

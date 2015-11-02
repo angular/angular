@@ -15,23 +15,24 @@ import {
 } from 'angular2/testing_internal';
 import {ControlGroup, Control, ControlArray, Validators} from 'angular2/core';
 import {isPresent, CONST_EXPR} from 'angular2/src/core/facade/lang';
-import {EventEmitter, TimerWrapper, ObservableWrapper} from 'angular2/src/core/facade/async';
+import {PromiseWrapper} from 'angular2/src/core/facade/promise';
+import {TimerWrapper, ObservableWrapper} from 'angular2/src/core/facade/async';
 import {IS_DART} from '../../platform';
-import {PromiseWrapper} from "angular2/src/core/facade/promise";
 
 export function main() {
   function asyncValidator(expected, timeouts = CONST_EXPR({})) {
     return (c) => {
-      var e = new EventEmitter();
+      var completer = PromiseWrapper.completer();
       var t = isPresent(timeouts[c.value]) ? timeouts[c.value] : 0;
       var res = c.value != expected ? {"async": true} : null;
 
       if (t == 0) {
-        PromiseWrapper.scheduleMicrotask(() => { ObservableWrapper.callNext(e, res); });
+        completer.resolve(res);
       } else {
-        TimerWrapper.setTimeout(() => { ObservableWrapper.callNext(e, res); }, t);
+        TimerWrapper.setTimeout(() => { completer.resolve(res); }, t);
       }
-      return e;
+
+      return completer.promise;
     };
   }
 

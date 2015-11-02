@@ -33,7 +33,7 @@ export {
   SelectControlValueAccessor
 } from './forms/directives/select_control_value_accessor';
 export {FORM_DIRECTIVES} from './forms/directives';
-export {NG_VALIDATORS, Validators} from './forms/validators';
+export {NG_VALIDATORS, NG_ASYNC_VALIDATORS, Validators} from './forms/validators';
 export {
   RequiredValidator,
   MinLengthValidator,
