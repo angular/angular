@@ -34,6 +34,10 @@ class PromiseWrapper {
     async.scheduleMicrotask(fn);
   }
 
+  static bool isPromise(obj) {
+    return obj is Future;
+  }
+
   static PromiseCompleter<dynamic> completer() =>
       new PromiseCompleter(new Completer());
 }
