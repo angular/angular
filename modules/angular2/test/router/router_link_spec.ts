@@ -56,7 +56,8 @@ export function main() {
          tcb.createAsync(TestComponent)
              .then((testComponent) => {
                testComponent.detectChanges();
-               let anchorElement = testComponent.debugElement.query(By.css('a')).nativeElement;
+               let anchorElement =
+                   testComponent.debugElement.query(By.css('a.detail-view')).nativeElement;
                expect(DOM.getAttribute(anchorElement, 'href')).toEqual('detail');
                async.done();
              });
@@ -70,8 +71,35 @@ export function main() {
              .then((testComponent) => {
                testComponent.detectChanges();
                // TODO: shouldn't this be just 'click' rather than '^click'?
-               testComponent.debugElement.query(By.css('a')).triggerEventHandler('click', null);
+               testComponent.debugElement.query(By.css('a.detail-view'))
+                   .triggerEventHandler('click', null);
                expect(router.spy('navigateByInstruction')).toHaveBeenCalledWith(dummyInstruction);
+               async.done();
+             });
+       }));
+
+    it('should call router.navigate when a link is clicked if target is _self',
+       inject([AsyncTestCompleter, Router], (async, router) => {
+
+         tcb.createAsync(TestComponent)
+             .then((testComponent) => {
+               testComponent.detectChanges();
+               testComponent.debugElement.query(By.css('a.detail-view-self'))
+                   .triggerEventHandler('click', null);
+               expect(router.spy('navigateByInstruction')).toHaveBeenCalledWith(dummyInstruction);
+               async.done();
+             });
+       }));
+
+    it('should NOT call router.navigate when a link is clicked if target is set to other than _self',
+       inject([AsyncTestCompleter, Router], (async, router) => {
+
+         tcb.createAsync(TestComponent)
+             .then((testComponent) => {
+               testComponent.detectChanges();
+               testComponent.debugElement.query(By.css('a.detail-view-blank'))
+                   .triggerEventHandler('click', null);
+               expect(router.spy('navigateByInstruction')).not.toHaveBeenCalled();
                async.done();
              });
        }));
@@ -94,7 +122,20 @@ class UserCmp {
 @View({
   template: `
     <div>
-      <a [router-link]="['/Detail']">detail view</a>
+      <a [router-link]="['/Detail']"
+         class="detail-view">
+           detail view
+      </a>
+      <a [router-link]="['/Detail']"
+         class="detail-view-self"
+         target="_self">
+           detail view with _self target
+      </a>
+      <a [router-link]="['/Detail']"
+         class="detail-view-blank"
+         target="_blank">
+           detail view with _blank target
+      </a>
     </div>`,
   directives: [RouterLink]
 })

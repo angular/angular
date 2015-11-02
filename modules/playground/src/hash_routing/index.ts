@@ -29,6 +29,9 @@ class GoodByeCmp {
     <nav>
       <a href="#/" id="hello-link">Navigate via href</a> |
       <a [router-link]="['/GoodbyeCmp']" id="goodbye-link">Navigate with Link DSL</a>
+      <a [router-link]="['/GoodbyeCmp']" id="goodbye-link-blank" target="_blank">
+        Navigate with Link DSL _blank target
+      </a>
     </nav>
     <router-outlet></router-outlet>
   `,
