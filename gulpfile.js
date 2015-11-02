@@ -1067,19 +1067,16 @@ gulp.task('!bundle.js.sfx.dev', ['build.js.dev'], function() {
 gulp.task('!bundle.js.prod.deps', ['!bundle.js.prod'], function() {
   return merge2(
     addDevDependencies('angular2.min.js'),
-    bundler.modify(
-        ['node_modules/reflect-metadata/Reflect.js', 'dist/build/http.js'],
-        'http.js'
-    )).pipe(gulp.dest('dist/js/bundle'));
+    bundler.modify(['dist/build/http.js'], 'http.js')
+  )
+    .pipe(gulp.dest('dist/js/bundle'));
 });
 
 gulp.task('!bundle.js.min.deps', ['!bundle.js.min'], function() {
   return merge2(
     addDevDependencies('angular2.min.js'),
-    bundler.modify(
-        ['node_modules/reflect-metadata/Reflect.js', 'dist/build/http.min.js'],
-        'http.min.js'
-    ))
+    bundler.modify(['dist/build/http.min.js'], 'http.min.js')
+  )
     .pipe(uglify())
     .pipe(gulp.dest('dist/js/bundle'));
 });
