@@ -821,6 +821,7 @@ var NG_ALL = [
   'LowerCasePipe',
   'LowerCasePipe.transform()',
   'NG_VALIDATORS',
+  'NG_VALUE_ACCESSOR',
   'NG_ASYNC_VALIDATORS',
   'NgClass',
   'NgClass.doCheck()',
