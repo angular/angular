@@ -10,7 +10,9 @@ import {
   Provider,
   EventEmitter,
   FORM_DIRECTIVES,
-  Injectable
+  Injectable,
+  Input,
+  Output
 } from 'angular2/core';
 
 import {ListWrapper} from 'angular2/src/core/facade/collection';
@@ -79,8 +81,8 @@ class DataService {
 
 // ---- components
 
-@Component({selector: 'order-list-cmp'})
-@View({
+@Component({
+  selector: 'order-list-cmp',
   template: `
     <h1>Orders</h1>
   	<div *ng-for="#order of orders" [class.warning]="order.total > order.limit">
@@ -116,8 +118,8 @@ class OrderListComponent {
 }
 
 
-@Component({selector: 'order-item-cmp', inputs: ['item'], outputs: ['delete']})
-@View({
+@Component({
+  selector: 'order-item-cmp',
   template: `
     <div>
       <div>
@@ -143,14 +145,14 @@ class OrderListComponent {
   directives: [FORM_DIRECTIVES]
 })
 class OrderItemComponent {
-  item: OrderItem;
-  delete = new EventEmitter();
+  @Input() item: OrderItem;
+  @Output() delete = new EventEmitter();
 
   onDelete(): void { this.delete.next(this.item); }
 }
 
-@Component({selector: 'order-details-cmp'})
-@View({
+@Component({
+  selector: 'order-details-cmp',
   template: `
     <div *ng-if="order !== null">
       <h1>Selected Order</h1>
@@ -189,8 +191,9 @@ class OrderDetailsComponent {
   addItem(): void { this._service.addItemForOrder(this.order); }
 }
 
-@Component({selector: 'order-management-app', bindings: [DataService]})
-@View({
+@Component({
+  selector: 'order-management-app',
+  providers: [DataService],
   template: `
     <order-list-cmp></order-list-cmp>
     <order-details-cmp></order-details-cmp>
