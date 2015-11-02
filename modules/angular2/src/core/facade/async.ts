@@ -48,6 +48,8 @@ export class ObservableWrapper {
   static fromPromise(promise: Promise<any>): Observable<any> {
     return RxObservable.fromPromise(promise);
   }
+
+  static toPromise(obj: Observable<any>): Promise<any> { return (<any>obj).toPromise(); }
 }
 
 /**
