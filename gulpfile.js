@@ -1066,8 +1066,9 @@ gulp.task('!bundle.js.sfx.dev', ['build.js.dev'], function() {
 
 gulp.task('!bundle.js.prod.deps', ['!bundle.js.prod'], function() {
   return merge2(
-    addDevDependencies('angular2.min.js'),
-    bundler.modify(['dist/build/http.js'], 'http.js')
+    addDevDependencies('angular2.js'),
+    bundler.modify(['dist/build/http.js'], 'http.js'),
+    bundler.modify(['dist/build/router.js'], 'router.js')
   )
     .pipe(gulp.dest('dist/js/bundle'));
 });
@@ -1075,7 +1076,8 @@ gulp.task('!bundle.js.prod.deps', ['!bundle.js.prod'], function() {
 gulp.task('!bundle.js.min.deps', ['!bundle.js.min'], function() {
   return merge2(
     addDevDependencies('angular2.min.js'),
-    bundler.modify(['dist/build/http.min.js'], 'http.min.js')
+    bundler.modify(['dist/build/http.min.js'], 'http.min.js'),
+    bundler.modify(['dist/build/router.min.js'], 'router.min.js')
   )
     .pipe(uglify())
     .pipe(gulp.dest('dist/js/bundle'));
@@ -1109,10 +1111,12 @@ function addDevDependencies(outputFile) {
 }
 
 gulp.task('!bundle.js.dev.deps', ['!bundle.js.dev'], function() {
-  var bundle = addDevDependencies('angular2.dev.js');
-  return merge2(bundle, bundler.modify(
-    ['dist/build/http.dev.js'], 'http.dev.js')
-      .pipe(gulp.dest('dist/js/bundle')));
+  return merge2(
+    addDevDependencies('angular2.dev.js'),
+    bundler.modify(['dist/build/http.dev.js'], 'http.dev.js'),
+    bundler.modify(['dist/build/router.dev.js'], 'router.dev.js')
+  )
+    .pipe(gulp.dest('dist/js/bundle'));
 });
 
 gulp.task('!bundle.js.sfx.dev.deps', ['!bundle.js.sfx.dev'], function() {
