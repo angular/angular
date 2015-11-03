@@ -34,6 +34,7 @@ pubspec.lock
 modules/.settings
 .vscode
 modules/.vscode
+angular.iml
 
 # Don't check in secret files
 *secret.js
