@@ -18,8 +18,6 @@ export abstract class AbstractControlDirective {
     return isPresent(this.control) ? this.control.errors : null;
   }
 
-  get controlsErrors(): any { return isPresent(this.control) ? this.control.controlsErrors : null; }
-
   get pristine(): boolean { return isPresent(this.control) ? this.control.pristine : null; }
 
   get dirty(): boolean { return isPresent(this.control) ? this.control.dirty : null; }

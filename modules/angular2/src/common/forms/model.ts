@@ -58,7 +58,6 @@ export abstract class AbstractControl {
   private _statusChanges: EventEmitter<any>;
   private _status: string;
   private _errors: {[key: string]: any};
-  private _controlsErrors: any;
   private _pristine: boolean = true;
   private _touched: boolean = false;
   private _parent: ControlGroup | ControlArray;
@@ -76,11 +75,6 @@ export abstract class AbstractControl {
    * Returns the errors of this control.
    */
   get errors(): {[key: string]: any} { return this._errors; }
-
-  /**
-   * Returns the errors of the child controls.
-   */
-  get controlsErrors(): any { return this._controlsErrors; }
 
   get pristine(): boolean { return this._pristine; }
 
@@ -126,7 +120,6 @@ export abstract class AbstractControl {
     this._updateValue();
 
     this._errors = this._runValidator();
-    this._controlsErrors = this._calculateControlsErrors();
     this._status = this._calculateStatus();
 
     if (this._status == VALID || this._status == PENDING) {
@@ -216,7 +209,6 @@ export abstract class AbstractControl {
 
   /** @internal */
   _updateControlsErrors(): void {
-    this._controlsErrors = this._calculateControlsErrors();
     this._status = this._calculateStatus();
 
     if (isPresent(this._parent)) {
@@ -240,8 +232,7 @@ export abstract class AbstractControl {
 
   /** @internal */
   abstract _updateValue(): void;
-  /** @internal */
-  abstract _calculateControlsErrors(): any;
+
   /** @internal */
   abstract _anyControlsHaveStatus(status: string): boolean;
 }
@@ -300,11 +291,6 @@ export class Control extends AbstractControl {
    * @internal
    */
   _updateValue() {}
-
-  /**
-   * @internal
-   */
-  _calculateControlsErrors() { return null; }
 
   /**
    * @internal
@@ -387,17 +373,6 @@ export class ControlGroup extends AbstractControl {
 
   /** @internal */
   _updateValue() { this._value = this._reduceValue(); }
-
-  /** @internal */
-  _calculateControlsErrors() {
-    var res = {};
-    StringMapWrapper.forEach(this.controls, (control, name) => {
-      if (this.contains(name) && isPresent(control.errors)) {
-        res[name] = control.errors;
-      }
-    });
-    return StringMapWrapper.isEmpty(res) ? null : res;
-  }
 
   /** @internal */
   _anyControlsHaveStatus(status: string): boolean {
@@ -502,19 +477,6 @@ export class ControlArray extends AbstractControl {
 
   /** @internal */
   _updateValue(): void { this._value = this.controls.map((control) => control.value); }
-
-  /** @internal */
-  _calculateControlsErrors() {
-    var res = [];
-    var anyErrors = false;
-    this.controls.forEach((control) => {
-      res.push(control.errors);
-      if (isPresent(control.errors)) {
-        anyErrors = true;
-      }
-    });
-    return anyErrors ? res : null;
-  }
 
   /** @internal */
   _anyControlsHaveStatus(status: string): boolean {
