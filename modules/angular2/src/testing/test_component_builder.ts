@@ -56,6 +56,10 @@ export class ComponentFixture_ extends ComponentFixture {
   }
 
   destroy(): void { this._componentRef.dispose(); }
+
+  get componentInstance(): any { return this.debugElement.componentInstance; }
+  get nativeElement(): any { return this.debugElement.nativeElement; }
+  get componentViewChildren(): DebugElement[] { return this.debugElement.componentViewChildren; }
 }
 
 var _nextRootElementId = 0;
