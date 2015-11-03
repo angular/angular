@@ -126,11 +126,110 @@ var customLaunchers = {
     version: '5.1'
   },
 
-  'BS_Chrome': {
+  'BS_CHROME': {
     base: 'BrowserStack',
     browser: 'chrome',
     os: 'OS X',
     os_version: 'Yosemite'
+  },
+  'BS_FIREFOX': {
+    base: 'BrowserStack',
+    browser: 'firefox',
+    os: 'Windows',
+    os_version: '10'
+  },
+  'BS_SAFARI7': {
+    base: 'BrowserStack',
+    browser: 'safari',
+    os: 'OS X',
+    os_version: 'Mavericks'
+  },
+  'BS_SAFARI8': {
+    base: 'BrowserStack',
+    browser: 'safari',
+    os: 'OS X',
+    os_version: 'Yosemite'
+  },
+  'BS_SAFARI9': {
+    base: 'BrowserStack',
+    browser: 'safari',
+    os: 'OS X',
+    os_version: 'El Capitan'
+  },
+  'BS_IOS7': {
+    base: 'BrowserStack',
+    device: 'iPhone 5S',
+    os: 'ios',
+    os_version: '7.0'
+  },
+  'BS_IOS8': {
+    base: 'BrowserStack',
+    device: 'iPhone 6',
+    os: 'ios',
+    os_version: '8.3'
+  },
+  'BS_IOS9': {
+    base: 'BrowserStack',
+    device: 'iPhone 6S',
+    os: 'ios',
+    os_version: '9.0'
+  },
+  'BS_IE9': {
+    base: 'BrowserStack',
+    browser: 'ie',
+    browser_version: '9.0',
+    os: 'Windows',
+    os_version: '7'
+  },
+  'BS_IE10': {
+    base: 'BrowserStack',
+    browser: 'ie',
+    browser_version: '10.0',
+    os: 'Windows',
+    os_version: '8'
+  },
+  'BS_IE11': {
+    base: 'BrowserStack',
+    browser: 'ie',
+    browser_version: '11.0',
+    os: 'Windows',
+    os_version: '10'
+  },
+  'BS_EDGE': {
+    base: 'BrowserStack',
+    browser: 'edge',
+    os: 'Windows',
+    os_version: '10'
+  },
+  'BS_ANDROID5': {
+    base: 'BrowserStack',
+    device: 'Google Nexus 5',
+    os: 'android',
+    os_version: '5.0'
+  },
+  'BS_ANDROID4.4': {
+    base: 'BrowserStack',
+    device: 'HTC One M8',
+    os: 'android',
+    os_version: '4.4'
+  },
+  'BS_ANDROID4.3': {
+    base: 'BrowserStack',
+    device: 'Samsung Galaxy S4',
+    os: 'android',
+    os_version: '4.3'
+  },
+  'BS_ANDROID4.2': {
+    base: 'BrowserStack',
+    device: 'Google Nexus 4',
+    os: 'android',
+    os_version: '4.2'
+  },
+  'BS_ANDROID4.1': {
+    base: 'BrowserStack',
+    device: 'Google Nexus 7',
+    os: 'android',
+    os_version: '4.1'
   }
 };
 
@@ -151,8 +250,14 @@ var sauceAliases = {
 
 var browserstackAliases = {
   'ALL': Object.keys(customLaunchers).filter(function(item) {return customLaunchers[item].base == 'BrowserStack';}),
-  'DESKTOP': ['BS_Chrome'],
-  'CI': ['BS_Chrome'],
+  'DESKTOP': ['BS_CHROME', 'BS_FIREFOX', 'BS_IE9', 'BS_IE10', 'BS_IE11', 'BS_EDGE', 'BS_SAFARI7', 'BS_SAFARI8', 'BS_SAFARI9'],
+  'MOBILE': ['BS_ANDROID4.1', 'BS_ANDROID4.2', 'BS_ANDROID4.3', 'BS_ANDROID4.4', 'BS_ANDROID5', 'BS_IOS7', 'BS_IOS8', 'BS_IOS9'],
+  'ANDROID': ['BS_ANDROID4.1', 'BS_ANDROID4.2', 'BS_ANDROID4.3', 'BS_ANDROID4.4', 'BS_ANDROID5'],
+  'IE': ['BS_IE9', 'BS_IE10', 'BS_IE11'],
+  'IOS': ['BS_IOS7', 'BS_IOS8', 'BS_IOS9'],
+  'SAFARI': ['BS_SAFARI7', 'BS_SAFARI8', 'BS_SAFARI9'],
+  'CI': ['BS_CHROME', 'BS_ANDROID5', 'BS_SAFARI7', 'BS_SAFARI8', 'BS_SAFARI9', 'BS_IOS7', 'BS_IOS8', 'BS_IOS9',
+    'BS_FIREFOX', 'BS_IE9', 'BS_IE10', 'BS_IE11', 'BS_EDGE', 'BS_ANDROID4.1', 'BS_ANDROID4.2', 'BS_ANDROID4.3', 'BS_ANDROID4.4']
 };
 
 module.exports = {
