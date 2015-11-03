@@ -7,7 +7,7 @@ cd $ROOT_DIR
 
 gulp clean
 # benchpress.bundle and bundles.js will implicitly build everything we need
-gulp benchpress.bundle bundles.js docs/typings
+gulp benchpress.bundle bundles.js
 
 NPM_DIR=$ROOT_DIR/dist/npm
 rm -fr $NPM_DIR
@@ -35,7 +35,6 @@ function publishModule {
     # Copy Bundles
     cp -r $ROOT_DIR/dist/js/bundle/$FILES $PUBLISH_DIR/bundles
     # Copy Typings
-    cp -r $ROOT_DIR/dist/docs/typings/angular2/$DTS_FILES $PUBLISH_DIR/bundles/typings/angular2
     cp -r $ROOT_DIR/modules/angular2/typings/es6-shim/$DTS_FILES $PUBLISH_DIR/bundles/typings/es6-shim
     cp -r $ROOT_DIR/modules/angular2/typings/jasmine/$DTS_FILES $PUBLISH_DIR/bundles/typings/jasmine
   fi
