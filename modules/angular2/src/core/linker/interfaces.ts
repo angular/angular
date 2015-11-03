@@ -225,7 +225,7 @@ export interface DoCheck { doCheck(); }
  * }
  *
  * bootstrap(App).catch(err => console.error(err));
- * * ```
+ * ```
  */
 export interface OnDestroy { onDestroy(); }
 
