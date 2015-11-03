@@ -241,6 +241,14 @@ bool isJsObject(o) {
   return false;
 }
 
+void lockDevMode() {
+  // lockDevMode() has no effect in Dart.
+}
+
+void enableDevMode() {
+  // enableDevMode() has no effect in Dart.
+}
+
 bool assertionsEnabled() {
   var k = false;
   assert((k = true));
