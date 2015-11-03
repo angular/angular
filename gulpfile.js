@@ -1052,16 +1052,17 @@ gulp.task('!bundle.testing', ['build.js.dev'], function() {
 // use System loader polyfills (like system.js and es6 loader).
 // see: https://github.com/systemjs/builder (SFX bundles).
 gulp.task('!bundle.js.sfx.dev', ['build.js.dev'], function() {
-  var devBundleConfig = merge(true, bundleConfig);
+  var bundlerConfig = {
+    sourceMaps: true
+  };
+
+  var devBundleConfig = merge(true, bundleConfig)
   devBundleConfig.paths = merge(true, devBundleConfig.paths, {'*': 'dist/js/dev/es5/*.js'});
-  return bundler.bundle(devBundleConfig, 'angular2/angular2_sfx',
-                        './dist/build/angular2.sfx.dev.js', {sourceMaps: true},
-                        /* self-executing */ true)
-      .then(function() {
-        return bundler.bundle(devBundleConfig, 'angular2/http', './dist/build/http.sfx.dev.js',
-                              {sourceMaps: true},
-                              /* self-executing */ true);
-      });
+
+  return q.all([
+    bundler.bundle(devBundleConfig, 'angular2/angular2_sfx', './dist/build/angular2.sfx.dev.js', bundlerConfig, /* self-executing */ true),
+    bundler.bundle(devBundleConfig, 'angular2/http', './dist/build/http.sfx.dev.js', bundlerConfig, /* self-executing */ true)
+  ]);
 });
 
 gulp.task('!bundle.js.prod.deps', ['!bundle.js.prod'], function() {
@@ -1121,12 +1122,10 @@ gulp.task('!bundle.js.dev.deps', ['!bundle.js.dev'], function() {
 
 gulp.task('!bundle.js.sfx.dev.deps', ['!bundle.js.sfx.dev'], function() {
   return merge2(
-    bundler.modify(JS_DEV_DEPS.concat(['dist/build/angular2.sfx.dev.js']),
-                        'angular2.sfx.dev.js')
-      .pipe(gulp.dest('dist/js/bundle')),
-    bundler.modify(['dist/build/http.sfx.dev.js'],
-                        'http.sfx.dev.js')
-      .pipe(gulp.dest('dist/js/bundle')));
+    addDevDependencies('angular2.sfx.dev.js'),
+    bundler.modify(['dist/build/http.sfx.dev.js'], 'http.sfx.dev.js')
+  )
+    .pipe(gulp.dest('dist/js/bundle'));
 });
 
 gulp.task('!bundle.web_worker.js.dev.deps', ['!bundle.web_worker.js.dev'], function() {
