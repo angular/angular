@@ -302,7 +302,6 @@ export function main() {
 
           c.setErrors({"someError": true});
 
-          expect(g.controlsErrors).toEqual({"one": {"someError": true}});
           expect(g.valid).toEqual(false);
         });
 
@@ -351,41 +350,6 @@ export function main() {
           (<Control>(g.controls["nested"].find("two"))).updateValue("333");
 
           expect(g.value).toEqual({"one": "111", "nested": {"two": "333"}});
-        });
-      });
-
-      describe("controlsErrors", () => {
-        it("should be null when no errors", () => {
-          var g = new ControlGroup({"one": new Control('value', Validators.required)});
-
-          expect(g.valid).toEqual(true);
-          expect(g.controlsErrors).toEqual(null);
-        });
-
-        it("should collect errors from the child controls", () => {
-          var one = new Control(null, Validators.required);
-          var g = new ControlGroup({"one": one});
-
-          expect(g.valid).toEqual(false);
-          expect(g.controlsErrors).toEqual({"one": {"required": true}});
-        });
-
-        it("should not include controls that have no errors", () => {
-          var one = new Control(null, Validators.required);
-          var two = new Control("two");
-          var g = new ControlGroup({"one": one, "two": two});
-
-          expect(g.controlsErrors).toEqual({"one": {"required": true}});
-        });
-
-        it("should run the validator with the value changes", () => {
-          var c = new Control(null, Validators.required);
-          var g = new ControlGroup({"one": c});
-
-          c.updateValue("some value");
-
-          expect(g.valid).toEqual(true);
-          expect(g.controlsErrors).toEqual(null);
         });
       });
 
@@ -664,39 +628,6 @@ export function main() {
         it("should be an empty array when there are no child controls", () => {
           var a = new ControlArray([]);
           expect(a.value).toEqual([]);
-        });
-      });
-
-      describe("controlsErrors", () => {
-        it("should return null when no errors", () => {
-          var a = new ControlArray(
-              [new Control(1, Validators.required), new Control(2, Validators.required)]);
-
-          expect(a.valid).toBe(true);
-          expect(a.controlsErrors).toBe(null);
-        });
-
-        it("should collect errors from the child controls", () => {
-          var a = new ControlArray([
-            new Control(1, Validators.required),
-            new Control(null, Validators.required),
-            new Control(2, Validators.required)
-          ]);
-
-          expect(a.valid).toBe(false);
-          expect(a.controlsErrors).toEqual([null, {"required": true}, null]);
-        });
-
-        it("should run the validator when the value changes", () => {
-          var a = new ControlArray([]);
-          var c = new Control(null, Validators.required);
-          a.push(c);
-          expect(a.valid).toBe(false);
-
-          c.updateValue("some value");
-
-          expect(a.valid).toBe(true);
-          expect(a.controlsErrors).toBe(null);
         });
       });
 
