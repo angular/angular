@@ -10,7 +10,7 @@ import {
   afterEach,
   AsyncTestCompleter,
   inject,
-  beforeEachBindings
+  beforeEachProviders
 } from 'angular2/testing_internal';
 
 import {stringify} from 'angular2/src/core/facade/lang';
@@ -30,15 +30,17 @@ import {
   AfterContentChecked,
   AfterViewInit,
   AfterViewChecked,
-  SimpleChange
+  SimpleChange,
+  provide
 } from 'angular2/core';
 
 import {TEST_PROVIDERS} from './test_bindings';
 import {MODULE_SUFFIX, IS_DART} from 'angular2/src/core/compiler/util';
+import {AMBIENT_DIRECTIVES} from 'angular2/src/core/compiler/ambient';
 
 export function main() {
   describe('RuntimeMetadataResolver', () => {
-    beforeEachBindings(() => TEST_PROVIDERS);
+    beforeEachProviders(() => TEST_PROVIDERS);
 
     describe('getMetadata', () => {
       it('should read metadata',
@@ -82,12 +84,29 @@ export function main() {
            expect(resolver.getViewDirectivesMetadata(ComponentWithEverything))
                .toEqual([resolver.getMetadata(DirectiveWithoutModuleId)]);
          }));
+
+      describe("ambient directives", () => {
+        beforeEachProviders(() => [provide(AMBIENT_DIRECTIVES, {useValue: [ADirective]})]);
+
+        it('should include ambient directives when available',
+           inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
+             expect(resolver.getViewDirectivesMetadata(ComponentWithEverything))
+                 .toEqual([
+                   resolver.getMetadata(ADirective),
+                   resolver.getMetadata(DirectiveWithoutModuleId)
+                 ]);
+           }));
+      });
     });
 
   });
 }
 
 
+
+@Directive({selector: 'a-directive'})
+class ADirective {
+}
 
 @Directive({selector: 'someSelector'})
 class DirectiveWithoutModuleId {

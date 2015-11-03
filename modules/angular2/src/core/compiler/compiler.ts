@@ -6,6 +6,7 @@ export {
   CompileTemplateMetadata
 } from './directive_metadata';
 export {SourceModule, SourceWithImports} from './source_module';
+export {AMBIENT_DIRECTIVES, AMBIENT_PIPES} from './ambient';
 
 import {assertionsEnabled, Type} from 'angular2/src/core/facade/lang';
 import {provide, Provider} from 'angular2/src/core/di';

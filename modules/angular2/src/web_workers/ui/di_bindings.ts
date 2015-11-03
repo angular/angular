@@ -1,7 +1,6 @@
 // TODO (jteplitz602): This whole file is nearly identical to core/application.ts.
 // There should be a way to refactor application so that this file is unnecessary. See #3277
 import {Injector, provide, Provider} from "angular2/src/core/di";
-import {DEFAULT_PIPES} from 'angular2/src/core/pipes';
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
 import {BrowserDetails} from 'angular2/src/animate/browser_details';
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
@@ -64,6 +63,8 @@ import {
   ClientMessageBrokerFactory,
   ClientMessageBrokerFactory_
 } from 'angular2/src/web_workers/shared/client_message_broker';
+import {AMBIENT_DIRECTIVES, AMBIENT_PIPES} from "angular2/src/core/compiler/ambient";
+import {COMMON_DIRECTIVES, COMMON_PIPES} from "angular2/common";
 
 var _rootInjector: Injector;
 
@@ -96,7 +97,8 @@ function _injectorProviders(): any[] {
     AppViewListener,
     ProtoViewFactory,
     ViewResolver,
-    DEFAULT_PIPES,
+    provide(AMBIENT_PIPES, {useValue: COMMON_PIPES, multi: true}),
+    provide(AMBIENT_DIRECTIVES, {useValue: COMMON_DIRECTIVES, multi: true}),
     DirectiveResolver,
     Parser,
     Lexer,

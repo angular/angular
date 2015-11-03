@@ -1,9 +1,8 @@
-import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {isPresent, isBlank, Type, isArray, isNumber} from 'angular2/src/core/facade/lang';
 
 import {RenderProtoViewRef} from 'angular2/src/core/render/api';
 
-import {Injectable, Provider, resolveForwardRef, Inject} from 'angular2/src/core/di';
+import {Optional, Injectable, Provider, resolveForwardRef, Inject} from 'angular2/src/core/di';
 
 import {PipeProvider} from '../pipes/pipe_provider';
 import {ProtoPipes} from '../pipes/pipes';
@@ -15,7 +14,7 @@ import {DirectiveResolver} from './directive_resolver';
 import {ViewResolver} from './view_resolver';
 import {PipeResolver} from './pipe_resolver';
 import {ViewMetadata} from '../metadata/view';
-import {DEFAULT_PIPES_TOKEN} from 'angular2/src/core/pipes';
+import {AMBIENT_PIPES} from 'angular2/src/core/compiler/ambient';
 
 import {
   visitAllCommands,
@@ -38,15 +37,10 @@ import {APP_ID} from 'angular2/src/core/application_tokens';
 @Injectable()
 export class ProtoViewFactory {
   private _cache: Map<number, AppProtoView> = new Map<number, AppProtoView>();
-  private _defaultPipes: Type[];
-  private _appId: string;
-
-  constructor(private _renderer: Renderer, @Inject(DEFAULT_PIPES_TOKEN) defaultPipes: Type[],
+  constructor(private _renderer: Renderer,
+              @Optional() @Inject(AMBIENT_PIPES) private _ambientPipes: Array<Type | any[]>,
               private _directiveResolver: DirectiveResolver, private _viewResolver: ViewResolver,
-              private _pipeResolver: PipeResolver, @Inject(APP_ID) appId: string) {
-    this._defaultPipes = defaultPipes;
-    this._appId = appId;
-  }
+              private _pipeResolver: PipeResolver, @Inject(APP_ID) private _appId: string) {}
 
   clearCache() { this._cache.clear(); }
 
@@ -118,9 +112,13 @@ export class ProtoViewFactory {
   }
 
   private _flattenPipes(view: ViewMetadata): any[] {
-    if (isBlank(view.pipes)) return this._defaultPipes;
-    var pipes = ListWrapper.clone(this._defaultPipes);
-    _flattenList(view.pipes, pipes);
+    let pipes = [];
+    if (isPresent(this._ambientPipes)) {
+      _flattenArray(this._ambientPipes, pipes);
+    }
+    if (isPresent(view.pipes)) {
+      _flattenArray(view.pipes, pipes);
+    }
     return pipes;
   }
 }
@@ -313,11 +311,11 @@ function arrayToMap(arr: string[], inverse: boolean): Map<string, string> {
   return result;
 }
 
-function _flattenList(tree: any[], out: Array<Type | Provider | any[]>): void {
+function _flattenArray(tree: any[], out: Array<Type | Provider | any[]>): void {
   for (var i = 0; i < tree.length; i++) {
     var item = resolveForwardRef(tree[i]);
     if (isArray(item)) {
-      _flattenList(item, out);
+      _flattenArray(item, out);
     } else {
       out.push(item);
     }

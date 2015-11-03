@@ -17,14 +17,16 @@ import {ViewMetadata} from 'angular2/src/core/metadata/view';
 import {hasLifecycleHook} from 'angular2/src/core/linker/directive_lifecycle_reflector';
 import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/linker/interfaces';
 import {reflector} from 'angular2/src/core/reflection/reflection';
-import {Injectable} from 'angular2/src/core/di';
+import {Injectable, Inject, Optional} from 'angular2/src/core/di';
+import {AMBIENT_DIRECTIVES} from 'angular2/src/core/compiler/ambient';
 import {MODULE_SUFFIX} from './util';
 
 @Injectable()
 export class RuntimeMetadataResolver {
   private _cache = new Map<Type, cpl.CompileDirectiveMetadata>();
 
-  constructor(private _directiveResolver: DirectiveResolver, private _viewResolver: ViewResolver) {}
+  constructor(private _directiveResolver: DirectiveResolver, private _viewResolver: ViewResolver,
+              @Optional() @Inject(AMBIENT_DIRECTIVES) private _ambientDirectives: Type[]) {}
 
   getMetadata(directiveType: Type): cpl.CompileDirectiveMetadata {
     var meta = this._cache.get(directiveType);
@@ -68,7 +70,7 @@ export class RuntimeMetadataResolver {
 
   getViewDirectivesMetadata(component: Type): cpl.CompileDirectiveMetadata[] {
     var view = this._viewResolver.resolve(component);
-    var directives = flattenDirectives(view);
+    var directives = flattenDirectives(view, this._ambientDirectives);
     for (var i = 0; i < directives.length; i++) {
       if (!isValidDirective(directives[i])) {
         throw new BaseException(
@@ -86,18 +88,22 @@ function removeDuplicates(items: any[]): any[] {
   return MapWrapper.keys(m);
 }
 
-function flattenDirectives(view: ViewMetadata): Type[] {
-  if (isBlank(view.directives)) return [];
-  var directives = [];
-  flattenList(view.directives, directives);
+function flattenDirectives(view: ViewMetadata, ambientDirectives: any[]): Type[] {
+  let directives = [];
+  if (isPresent(ambientDirectives)) {
+    flattenArray(ambientDirectives, directives);
+  }
+  if (isPresent(view.directives)) {
+    flattenArray(view.directives, directives);
+  }
   return directives;
 }
 
-function flattenList(tree: any[], out: Array<Type | any[]>): void {
+function flattenArray(tree: any[], out: Array<Type | any[]>): void {
   for (var i = 0; i < tree.length; i++) {
     var item = resolveForwardRef(tree[i]);
     if (isArray(item)) {
-      flattenList(item, out);
+      flattenArray(item, out);
     } else {
       out.push(item);
     }

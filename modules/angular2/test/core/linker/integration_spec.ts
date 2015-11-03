@@ -59,6 +59,8 @@ import {
   NgFor
 } from 'angular2/core';
 
+import {AsyncPipe} from 'angular2/common';
+
 import {
   PipeTransform,
   ChangeDetectorRef,
@@ -1867,8 +1869,12 @@ class PushCmpWithRef {
   propagate() { this.ref.markForCheck(); }
 }
 
-@Component({selector: 'push-cmp-with-async', changeDetection: ChangeDetectionStrategy.OnPush})
-@View({template: '{{field | async}}'})
+@Component({
+  selector: 'push-cmp-with-async',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '{{field | async}}',
+  pipes: [AsyncPipe]
+})
 @Injectable()
 class PushCmpWithAsyncPipe {
   numberOfChecks: number = 0;

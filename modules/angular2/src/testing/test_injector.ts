@@ -1,5 +1,4 @@
 import {provide, Provider} from 'angular2/src/core/di';
-import {DEFAULT_PIPES} from 'angular2/src/core/pipes';
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
 import {MockAnimationBuilder} from 'angular2/src/mock/animation_builder_mock';
 
@@ -107,7 +106,6 @@ function _getAppBindings() {
     ProtoViewFactory,
     provide(DirectiveResolver, {useClass: MockDirectiveResolver}),
     provide(ViewResolver, {useClass: MockViewResolver}),
-    DEFAULT_PIPES,
     provide(IterableDiffers, {useValue: defaultIterableDiffers}),
     provide(KeyValueDiffers, {useValue: defaultKeyValueDiffers}),
     Log,

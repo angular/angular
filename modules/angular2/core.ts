@@ -19,3 +19,4 @@ export * from './src/core/directives';
 export * from './src/core/forms';
 export * from './src/core/debug';
 export * from './src/core/change_detection';
+export * from './src/core/compiler/ambient';

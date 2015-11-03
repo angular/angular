@@ -38,7 +38,6 @@ import {AppViewManager} from 'angular2/src/core/linker/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/linker/view_manager_utils';
 import {AppViewListener} from 'angular2/src/core/linker/view_listener';
 import {ProtoViewFactory} from './linker/proto_view_factory';
-import {DEFAULT_PIPES} from 'angular2/src/core/pipes';
 import {ViewResolver} from './linker/view_resolver';
 import {DirectiveResolver} from './linker/directive_resolver';
 import {PipeResolver} from './linker/pipe_resolver';
@@ -48,6 +47,8 @@ import {AppViewManager_} from "./linker/view_manager";
 import {Compiler_} from "./linker/compiler";
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from './profile/profile';
 import {ChangeDetectorRef} from 'angular2/src/core/change_detection/change_detector_ref';
+import {AMBIENT_DIRECTIVES, AMBIENT_PIPES} from "angular2/src/core/compiler/ambient";
+import {COMMON_DIRECTIVES, COMMON_PIPES} from "angular2/common";
 
 /**
  * Constructs the set of providers meant for use at the platform level.
@@ -104,11 +105,12 @@ export function applicationCommonProviders(): Array<Type | Provider | any[]> {
     AppViewListener,
     ProtoViewFactory,
     ViewResolver,
-    DEFAULT_PIPES,
     provide(IterableDiffers, {useValue: defaultIterableDiffers}),
     provide(KeyValueDiffers, {useValue: defaultKeyValueDiffers}),
     DirectiveResolver,
     PipeResolver,
+    provide(AMBIENT_PIPES, {useValue: COMMON_PIPES, multi: true}),
+    provide(AMBIENT_DIRECTIVES, {useValue: COMMON_DIRECTIVES, multi: true}),
     provide(DynamicComponentLoader, {useClass: DynamicComponentLoader_})
   ];
 }
