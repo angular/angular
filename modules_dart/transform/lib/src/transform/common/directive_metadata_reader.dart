@@ -226,6 +226,95 @@ class _DirectiveMetadataVisitor extends Object
   }
 
   @override
+  Object visitFieldDeclaration(FieldDeclaration node) {
+    for (var variable in node.fields.variables) {
+      for (var meta in node.metadata) {
+        if (_isAnnotation(meta, 'Output')) {
+          final renamed = _getRenamedValue(meta);
+          if (renamed != null) {
+            _outputs.add('${variable.name}: ${renamed}');
+          } else {
+            _outputs.add('${variable.name}');
+          }
+        }
+
+        if (_isAnnotation(meta, 'Input')) {
+          final renamed = _getRenamedValue(meta);
+          if (renamed != null) {
+            _inputs.add('${variable.name}: ${renamed}');
+          } else {
+            _inputs.add('${variable.name}');
+          }
+        }
+
+        if (_isAnnotation(meta, 'HostBinding')) {
+          final renamed = _getRenamedValue(meta);
+          if (renamed != null) {
+            _host['[${renamed}]'] = '${variable.name}';
+          } else {
+            _host['[${variable.name}]'] = '${variable.name}';
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  @override
+  Object visitMethodDeclaration(MethodDeclaration node) {
+    for (var meta in node.metadata) {
+      if (_isAnnotation(meta, 'HostListener')) {
+        if (meta.arguments.arguments.length == 0 || meta.arguments.arguments.length > 2) {
+          throw new ArgumentError(
+              'Incorrect value passed to HostListener. Expected 1 or 2.');
+        }
+
+        final eventName = _getHostListenerEventName(meta);
+        final params = _getHostListenerParams(meta);
+        _host['(${eventName})'] = '${node.name}($params)';
+      }
+    }
+    return null;
+  }
+
+  //TODO Use AnnotationMatcher instead of string matching
+  bool _isAnnotation(Annotation node, String annotationName) {
+    var id = node.name;
+    final name = id is PrefixedIdentifier ? '${id.identifier}' : '$id';
+    return name == annotationName;
+  }
+
+  String _getRenamedValue(Annotation node) {
+    if (node.arguments.arguments.length == 1) {
+      final renamed = naiveEval(node.arguments.arguments.single);
+      if (renamed is! String) {
+        throw new ArgumentError(
+            'Incorrect value. Expected a String, but got "${renamed}".');
+      }
+      return renamed;
+    } else {
+      return null;
+    }
+  }
+
+  String _getHostListenerEventName(Annotation node) {
+    final name = naiveEval(node.arguments.arguments.first);
+    if (name is! String) {
+      throw new ArgumentError(
+          'Incorrect event name. Expected a String, but got "${name}".');
+    }
+    return name;
+  }
+
+  String _getHostListenerParams(Annotation node) {
+    if (node.arguments.arguments.length == 2) {
+      return naiveEval(node.arguments.arguments[1]).join(',');
+    } else {
+      return "";
+    }
+  }
+
+  @override
   Object visitClassDeclaration(ClassDeclaration node) {
     node.metadata.accept(this);
     if (this._hasMetadata) {
@@ -237,6 +326,8 @@ class _DirectiveMetadataVisitor extends Object
       _lifecycleHooks = node.implementsClause != null
           ? node.implementsClause.accept(_lifecycleVisitor)
           : const [];
+
+      node.members.accept(this);
     }
     return null;
   }

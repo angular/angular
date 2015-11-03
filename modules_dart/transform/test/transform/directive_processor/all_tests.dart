@@ -494,6 +494,34 @@ void allTests() {
         ..prefix = 'dep2');
     });
 
+    it('should merge `outputs` from the annotation and fields.',
+        () async {
+      var model = await _testCreateModel('directives_files/components.dart');
+      expect(model.types['ComponentWithOutputs'].outputs).
+        toEqual({'a': 'a', 'b': 'b', 'c': 'renamed'});
+    });
+
+    it('should merge `inputs` from the annotation and fields.',
+        () async {
+      var model = await _testCreateModel('directives_files/components.dart');
+      expect(model.types['ComponentWithInputs'].inputs).
+        toEqual({'a': 'a', 'b': 'b', 'c': 'renamed'});
+    });
+
+    it('should merge host bindings from the annotation and fields.',
+        () async {
+      var model = await _testCreateModel('directives_files/components.dart');
+      expect(model.types['ComponentWithHostBindings'].hostProperties).
+        toEqual({'a': 'a', 'b': 'b', 'renamed': 'c'});
+    });
+
+    it('should merge host listeners from the annotation and fields.',
+        () async {
+      var model = await _testCreateModel('directives_files/components.dart');
+      expect(model.types['ComponentWithHostListeners'].hostListeners).
+        toEqual({'a': 'onA()', 'b': 'onB()', 'c': 'onC(\$event.target,\$event.target.value)'});
+    });
+
     it('should warn if @Component has a `template` and @View is present.',
         () async {
       final logger = new RecordingLogger();
