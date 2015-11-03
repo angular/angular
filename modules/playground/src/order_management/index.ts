@@ -4,7 +4,6 @@ import {
   NgFor,
   Component,
   Directive,
-  View,
   Host,
   forwardRef,
   Provider,
