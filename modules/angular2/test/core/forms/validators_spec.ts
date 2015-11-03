@@ -7,9 +7,14 @@ import {
   expect,
   beforeEach,
   afterEach,
+  fakeAsync,
+  tick,
   el
 } from 'angular2/testing_internal';
 import {ControlGroup, Control, Validators, AbstractControl, ControlArray} from 'angular2/core';
+import {PromiseWrapper} from 'angular2/src/core/facade/promise';
+import {TimerWrapper} from 'angular2/src/core/facade/async';
+import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 
 export function main() {
   function validator(key: string, error: any) {
@@ -65,8 +70,8 @@ export function main() {
     });
 
     describe("compose", () => {
-      it("should return a null validator when given null",
-         () => { expect(Validators.compose(null)).toBe(Validators.nullValidator); });
+      it("should return null when given null",
+         () => { expect(Validators.compose(null)).toBe(null); });
 
       it("should collect errors from all the validators", () => {
         var c = Validators.compose([validator("a", true), validator("b", true)]);
@@ -87,6 +92,56 @@ export function main() {
         var c = Validators.compose([null, Validators.required]);
         expect(c(new Control(""))).toEqual({"required": true});
       });
+    });
+
+    describe("composeAsync", () => {
+      function asyncValidator(expected, response, timeout = 0) {
+        return (c) => {
+          var completer = PromiseWrapper.completer();
+          var res = c.value != expected ? response : null;
+          TimerWrapper.setTimeout(() => { completer.resolve(res); }, timeout);
+          return completer.promise;
+        };
+      }
+
+      it("should return null when given null",
+         () => { expect(Validators.composeAsync(null)).toEqual(null); });
+
+      it("should collect errors from all the validators", fakeAsync(() => {
+           var c = Validators.composeAsync([
+             asyncValidator("expected", {"one": true}),
+             asyncValidator("expected", {"two": true})
+           ]);
+
+           var value = null;
+           c(new Control("invalid")).then(v => value = v);
+
+           tick(1);
+
+           expect(value).toEqual({"one": true, "two": true});
+         }));
+
+      it("should return null when no errors", fakeAsync(() => {
+           var c = Validators.composeAsync([asyncValidator("expected", {"one": true})]);
+
+           var value = null;
+           c(new Control("expected")).then(v => value = v);
+
+           tick(1);
+
+           expect(value).toEqual(null);
+         }));
+
+      it("should ignore nulls", fakeAsync(() => {
+           var c = Validators.composeAsync([asyncValidator("expected", {"one": true}), null]);
+
+           var value = null;
+           c(new Control("invalid")).then(v => value = v);
+
+           tick(1);
+
+           expect(value).toEqual({"one": true});
+         }));
     });
   });
 }

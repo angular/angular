@@ -142,8 +142,9 @@ export abstract class AbstractControl {
     if (isPresent(this.asyncValidator)) {
       this._status = PENDING;
       this._cancelExistingSubscription();
+      var obs = ObservableWrapper.fromPromise(this.asyncValidator(this));
       this._asyncValidationSubscription =
-          ObservableWrapper.subscribe(this.asyncValidator(this), res => this.setErrors(res));
+          ObservableWrapper.subscribe(obs, res => this.setErrors(res));
     }
   }
 

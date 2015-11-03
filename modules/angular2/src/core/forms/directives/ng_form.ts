@@ -13,8 +13,8 @@ import {Form} from './form_interface';
 import {NgControlGroup} from './ng_control_group';
 import {ControlContainer} from './control_container';
 import {AbstractControl, ControlGroup, Control} from '../model';
-import {setUpControl, setUpControlGroup} from './shared';
-import {Validators, NG_VALIDATORS} from '../validators';
+import {setUpControl, setUpControlGroup, composeValidators, composeAsyncValidators} from './shared';
+import {Validators, NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
 
 const formDirectiveProvider =
     CONST_EXPR(new Provider(ControlContainer, {useExisting: forwardRef(() => NgForm)}));
@@ -91,9 +91,11 @@ export class NgForm extends ControlContainer implements Form {
   form: ControlGroup;
   ngSubmit = new EventEmitter();
 
-  constructor(@Optional() @Inject(NG_VALIDATORS) validators: Function[]) {
+  constructor(@Optional() @Inject(NG_VALIDATORS) validators: any[],
+              @Optional() @Inject(NG_ASYNC_VALIDATORS) asyncValidators: any[]) {
     super();
-    this.form = new ControlGroup({}, null, Validators.compose(validators));
+    this.form = new ControlGroup({}, null, composeValidators(validators),
+                                 composeAsyncValidators(asyncValidators));
   }
 
   get formDirective(): Form { return this; }

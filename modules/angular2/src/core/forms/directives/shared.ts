@@ -29,6 +29,7 @@ export function setUpControl(control: Control, dir: NgControl): void {
   if (isBlank(dir.valueAccessor)) _throwError(dir, "No value accessor for");
 
   control.validator = Validators.compose([control.validator, dir.validator]);
+  control.asyncValidator = Validators.composeAsync([control.asyncValidator, dir.asyncValidator]);
   dir.valueAccessor.writeValue(control.value);
 
   // view -> model
@@ -48,6 +49,7 @@ export function setUpControl(control: Control, dir: NgControl): void {
 export function setUpControlGroup(control: ControlGroup, dir: NgControlGroup) {
   if (isBlank(control)) _throwError(dir, "Cannot find control");
   control.validator = Validators.compose([control.validator, dir.validator]);
+  control.asyncValidator = Validators.composeAsync([control.asyncValidator, dir.asyncValidator]);
 }
 
 function _throwError(dir: AbstractControlDirective, message: string): void {
@@ -61,8 +63,12 @@ export function setProperty(renderer: Renderer, elementRef: ElementRef, propName
 }
 
 export function composeValidators(validators: /* Array<Validator|Function> */ any[]): Function {
-  return isPresent(validators) ? Validators.compose(validators.map(normalizeValidator)) :
-                                 Validators.nullValidator;
+  return isPresent(validators) ? Validators.compose(validators.map(normalizeValidator)) : null;
+}
+
+export function composeAsyncValidators(
+    validators: /* Array<Validator|Function> */ any[]): Function {
+  return isPresent(validators) ? Validators.composeAsync(validators.map(normalizeValidator)) : null;
 }
 
 export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any): boolean {

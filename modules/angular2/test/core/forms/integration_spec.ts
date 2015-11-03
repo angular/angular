@@ -20,11 +20,13 @@ import {
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {
+  Input,
   Control,
   ControlGroup,
   ControlValueAccessor,
   FORM_DIRECTIVES,
   NG_VALIDATORS,
+  NG_ASYNC_VALIDATORS,
   Provider,
   NgControl,
   NgIf,
@@ -401,7 +403,7 @@ export function main() {
     });
 
     describe("validations", () => {
-      it("should use validators defined in html",
+      it("should use sync validators defined in html",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            var form = new ControlGroup(
                {"login": new Control(""), "min": new Control(""), "max": new Control("")});
@@ -445,6 +447,35 @@ export function main() {
              async.done();
            });
          }));
+
+      it("should use async validators defined in the html",
+         inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
+                  var form = new ControlGroup({"login": new Control("")});
+
+                  var t = `<div [ng-form-model]="form">
+                    <input type="text" ng-control="login" uniq-login-validator="expected">
+                 </div>`;
+
+                  var rootTC;
+                  tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((root) => rootTC = root);
+                  tick();
+
+                  rootTC.debugElement.componentInstance.form = form;
+                  rootTC.detectChanges();
+
+                  expect(form.pending).toEqual(true);
+
+                  tick(100);
+
+                  expect(form.hasError("uniqLogin", ["login"])).toEqual(true);
+
+                  var input = rootTC.debugElement.query(By.css("input"));
+                  input.nativeElement.value = "expected";
+                  dispatchEvent(input.nativeElement, "change");
+                  tick(100);
+
+                  expect(form.valid).toEqual(true);
+                })));
 
       it("should use sync validators defined in the model",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
@@ -961,10 +992,10 @@ class MyInput implements ControlValueAccessor {
 
 function uniqLoginAsyncValidator(expectedValue: string) {
   return (c) => {
-    var e = new EventEmitter();
+    var completer = PromiseWrapper.completer();
     var res = (c.value == expectedValue) ? null : {"uniqLogin": true};
-    PromiseWrapper.scheduleMicrotask(() => ObservableWrapper.callNext(e, res));
-    return e;
+    completer.resolve(res);
+    return completer.promise;
   };
 }
 
@@ -979,10 +1010,31 @@ function loginIsEmptyGroupValidator(c: ControlGroup) {
 class LoginIsEmptyValidator {
 }
 
+@Directive({
+  selector: '[uniq-login-validator]',
+  providers: [
+    new Provider(NG_ASYNC_VALIDATORS,
+                 {useExisting: forwardRef(() => UniqLoginValidator), multi: true})
+  ]
+})
+class UniqLoginValidator implements Validator {
+  @Input('uniq-login-validator') expected;
+
+  validate(c) { return uniqLoginAsyncValidator(this.expected)(c); }
+}
+
 @Component({
   selector: "my-comp",
   template: '',
-  directives: [FORM_DIRECTIVES, WrappedValue, MyInput, NgIf, NgFor, LoginIsEmptyValidator]
+  directives: [
+    FORM_DIRECTIVES,
+    WrappedValue,
+    MyInput,
+    NgIf,
+    NgFor,
+    LoginIsEmptyValidator,
+    UniqLoginValidator
+  ]
 })
 class MyComp {
   form: any;

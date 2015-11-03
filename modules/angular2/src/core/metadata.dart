@@ -18,10 +18,13 @@ class Directive extends DirectiveMetadata {
       {String selector,
       List<String> inputs,
       List<String> outputs,
-      @deprecated List<String> properties,
-      @deprecated List<String> events,
+      @Deprecated('Use `inputs` or `@Input` instead')
+      List<String> properties,
+      @Deprecated('Use `outputs` or `@Output` instead')
+      List<String> events,
       Map<String, String> host,
-      @deprecated List bindings,
+      @Deprecated('Use `providers` instead')
+      List bindings,
       List providers,
       String exportAs,
       String moduleId,
@@ -48,15 +51,19 @@ class Component extends ComponentMetadata {
       {String selector,
       List<String> inputs,
       List<String> outputs,
-      @deprecated List<String> properties,
-      @deprecated List<String> events,
+      @Deprecated('Use `inputs` or `@Input` instead')
+      List<String> properties,
+      @Deprecated('Use `outputs` or `@Output` instead')
+      List<String> events,
       Map<String, String> host,
-      @deprecated List bindings,
+      @Deprecated('Use `providers` instead')
+      List bindings,
       List providers,
       String exportAs,
       String moduleId,
       Map<String, dynamic> queries,
-      @deprecated List viewBindings,
+      @Deprecated('Use `viewProviders` instead')
+      List viewBindings,
       List viewProviders,
       ChangeDetectionStrategy changeDetection,
       String templateUrl,

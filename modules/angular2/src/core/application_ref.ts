@@ -6,7 +6,12 @@ import {
   APP_COMPONENT,
   APP_ID_RANDOM_PROVIDER
 } from './application_tokens';
-import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/core/facade/async';
+import {
+  Promise,
+  PromiseWrapper,
+  PromiseCompleter,
+  ObservableWrapper
+} from 'angular2/src/core/facade/async';
 import {ListWrapper} from 'angular2/src/core/facade/collection';
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
@@ -369,7 +374,8 @@ export class ApplicationRef_ extends ApplicationRef {
   constructor(private _platform: PlatformRef_, private _zone: NgZone, private _injector: Injector) {
     super();
     if (isPresent(this._zone)) {
-      this._zone.overrideOnTurnDone(() => this.tick());
+      ObservableWrapper.subscribe(this._zone.onTurnDone,
+                                  (_) => { this._zone.run(() => { this.tick(); }); });
     }
     this._enforceNoNewChanges = assertionsEnabled();
   }

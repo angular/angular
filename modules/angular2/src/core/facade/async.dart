@@ -57,6 +57,10 @@ class ObservableWrapper {
   static void callComplete(EventEmitter emitter) {
     emitter.close();
   }
+
+  static Stream fromPromise(Future f) {
+    return new Stream.fromFuture(f);
+  }
 }
 
 class EventEmitter<T> extends Stream<T> {
