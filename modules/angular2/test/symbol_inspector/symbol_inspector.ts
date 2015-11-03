@@ -14,7 +14,7 @@ const IGNORE =
       originalException: true,
       originalStack: true,
       wrapperMessage: true,
-      wrapperStack: true
+      wrapperStack: true, '@@observable': true
     }
 
 function collectClassSymbols(symbols: string[], prefix: String, type: Function):
