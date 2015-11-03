@@ -24,6 +24,7 @@ interface BrowserNodeGlobal {
   zone: Zone;
   getAngularTestability: Function;
   getAllAngularTestabilities: Function;
+  angularDevMode: boolean;
   setTimeout: Function;
   clearTimeout: Function;
   setInterval: Function;

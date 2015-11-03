@@ -48,6 +48,7 @@ import {Compiler_} from "./linker/compiler";
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from './profile/profile';
 import {ChangeDetectorRef} from 'angular2/src/core/change_detection/change_detector_ref';
 import {AMBIENT_DIRECTIVES, AMBIENT_PIPES} from "angular2/src/core/ambient";
+import {lockDevMode} from 'angular2/src/core/facade/lang';
 import {COMMON_DIRECTIVES, COMMON_PIPES} from "angular2/common";
 
 /**
@@ -126,6 +127,7 @@ var _platform: PlatformRef;
 
 export function platformCommon(providers?: Array<Type | Provider | any[]>,
                                initializer?: () => void): PlatformRef {
+  lockDevMode();
   if (isPresent(_platform)) {
     if (isBlank(providers)) {
       return _platform;

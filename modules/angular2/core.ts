@@ -20,3 +20,4 @@ export * from './src/common/forms';
 export * from './src/core/debug';
 export * from './src/core/change_detection';
 export * from './src/core/ambient';
+export * from './src/core/dev_mode';
