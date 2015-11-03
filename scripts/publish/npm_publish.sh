@@ -29,7 +29,6 @@ function publishModule {
 
   if [ $NAME = "angular2" ]; then
     # Publish bundles and typings
-    mkdir -p $PUBLISH_DIR/bundles/typings/angular2
     mkdir -p $PUBLISH_DIR/bundles/typings/es6-shim
     mkdir -p $PUBLISH_DIR/bundles/typings/jasmine
     # Copy Bundles
