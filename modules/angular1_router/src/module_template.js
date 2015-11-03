@@ -31,7 +31,9 @@ function routerFactory($q, $location, $$directiveIntrospector, $browser, $rootSc
   // property in a route config
   exports.assertComponentExists = function () {};
 
-  angular.stringifyInstruction = exports.stringifyInstruction;
+  angular.stringifyInstruction = function (instruction) {
+    return instruction.toRootUrl();
+  };
 
   var RouteRegistry = exports.RouteRegistry;
   var RootRouter = exports.RootRouter;

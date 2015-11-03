@@ -18,7 +18,6 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 import {Router, RootRouter} from 'angular2/src/router/router';
 import {SpyLocation} from 'angular2/src/mock/location_mock';
 import {Location} from 'angular2/src/router/location';
-import {stringifyInstruction} from 'angular2/src/router/instruction';
 
 import {RouteRegistry} from 'angular2/src/router/route_registry';
 import {RouteConfig, AsyncRoute, Route} from 'angular2/src/router/route_config_decorator';
@@ -223,6 +222,11 @@ export function main() {
       });
     });
   });
+}
+
+
+function stringifyInstruction(instruction): string {
+  return instruction.toRootUrl();
 }
 
 function loader(): Promise<Type> {

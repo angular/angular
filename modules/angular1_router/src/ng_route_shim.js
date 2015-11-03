@@ -110,7 +110,7 @@
       routeMap[path] = routeCopy;
 
       if (route.redirectTo) {
-        routeDefinition.redirectTo = route.redirectTo;
+        routeDefinition.redirectTo = [routeMap[route.redirectTo].name];
       } else {
         if (routeCopy.controller && !routeCopy.controllerAs) {
           console.warn('Route for "' + path + '" should use "controllerAs".');
@@ -123,7 +123,7 @@
         }
 
         routeDefinition.component = directiveName;
-        routeDefinition.as = upperCase(directiveName);
+        routeDefinition.name = route.name || upperCase(directiveName);
 
         var directiveController = routeCopy.controller;
 
