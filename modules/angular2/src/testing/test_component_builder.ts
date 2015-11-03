@@ -22,12 +22,20 @@ import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {DebugElement, DebugElement_} from 'angular2/src/core/debug/debug_element';
 
-export abstract class ComponentFixture {
+
+/**
+ * @deprecated Use ComponentFixture
+ */
+export abstract class RootTestComponent {
   debugElement: DebugElement;
 
   abstract detectChanges(): void;
   abstract destroy(): void;
 }
+
+
+export abstract class ComponentFixture extends RootTestComponent {}
+
 
 export class ComponentFixture_ extends ComponentFixture {
   /** @internal */
