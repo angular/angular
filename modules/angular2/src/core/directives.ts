@@ -57,6 +57,29 @@ export * from './directives/observable_list_diff';
  *   ...
  * }
  * ```
+
+ * @cheatsheetSection
+ *       Built-in directives
+ *       `import {NgIf, ...} from 'angular2/angular2';`
+ * @cheatsheetItem
+ *       <section *ng-if="showSection">
+ *       Removes or recreates a portion of the DOM tree based on the showSection expression.
+ *       *ng-if
+ * @cheatsheetItem
+ *       <li *ng-for="#item of list">
+ *       Turns the li element and its contents into a template, and uses that to instantiate a view for each item in list.
+ *       '*ng-for'
+ * @cheatsheetItem
+ *       <div [ng-switch]="conditionExpression">\n  <template [ng-switch-when]="case1Exp">...</template>\n  <template ng-switch-when="case2LiteralString">...</template>\n  <template ng-switch-default>...</template>\n</div>
+ *       Conditionally swaps the contents of the div by selecting one of the embedded templates based on the current value of conditionExpression.
+ *       [ng-switch]
+ *       [ng-switch-when]
+ *       ng-switch-when
+ *       ng-switch-default
+ * @cheatsheetItem
+ *       <div [ng-class]="{active: isActive, disabled: isDisabled}">
+ *       Binds the presence of css classes on the element to the truthiness of the associated map values. The right-hand side expression should return {class-name: true/false} map.
+ *       [ng-class]
  */
 export const CORE_DIRECTIVES: Type[] =
     CONST_EXPR([NgClass, NgFor, NgIf, NgStyle, NgSwitch, NgSwitchWhen, NgSwitchDefault]);
