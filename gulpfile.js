@@ -454,8 +454,8 @@ gulp.task('test.all.dart', shell.task(['./scripts/ci/test_dart.sh']));
 // karma tests
 //     These tests run in the browser and are allowed to access
 //     HTML DOM APIs.
-function getBrowsersFromCLI() {
-  var isSauce = false;
+function getBrowsersFromCLI(provider) {
+  var isProvider = false;
   var args = minimist(process.argv.slice(2));
   var rawInput = args.browsers ? args.browsers : 'DartiumWithWebPlatform';
   var inputList = rawInput.replace(' ', '').split(',');
@@ -467,21 +467,24 @@ function getBrowsersFromCLI() {
       // In case of non-sauce browsers, or browsers defined in karma-chrome-launcher (Chrome, ChromeCanary and Dartium):
       // overrides everything, ignoring other options
       outputList = [input];
-      isSauce = false;
+      isProvider = false;
       break;
-    } else if (browserProvidersConf.customLaunchers.hasOwnProperty("SL_" + input.toUpperCase())) {
-      isSauce = true;
-      outputList.push("SL_" + input.toUpperCase());
-    } else if (browserProvidersConf.sauceAliases.hasOwnProperty(input.toUpperCase())) {
-      outputList = outputList.concat(browserProvidersConf.sauceAliases[input]);
-      isSauce = true;
+    } else if (provider && browserProvidersConf.customLaunchers.hasOwnProperty(provider + "_" + input.toUpperCase())) {
+      isProvider = true;
+      outputList.push(provider + "_" + input.toUpperCase());
+    } else if (provider && provider == 'SL' && browserProvidersConf.sauceAliases.hasOwnProperty(input.toUpperCase())) {
+      outputList = outputList.concat(browserProvidersConf.sauceAliases[input.toUpperCase()]);
+      isProvider = true;
+    } else if (provider && provider == 'BS' && browserProvidersConf.browserstackAliases.hasOwnProperty(input.toUpperCase())) {
+      outputList = outputList.concat(browserProvidersConf.browserstackAliases[input.toUpperCase()]);
+      isProvider = true;
     } else {
       throw new Error('ERROR: unknown browser found in getBrowsersFromCLI()');
     }
   }
   return {
     browsersToRun: outputList.filter(function(item, pos, self) {return self.indexOf(item) == pos;}),
-    isSauce: isSauce
+    isProvider: isProvider
   };
 }
 
@@ -502,20 +505,33 @@ gulp.task('watch.js.dev', ['build.js.dev'], function (done) {
 });
 
 gulp.task('test.unit.js.sauce', ['build.js.dev'], function (done) {
-  var browserConf = getBrowsersFromCLI();
-  if (browserConf.isSauce) {
-    new karma.Server({
-        configFile: __dirname + '/karma-js.conf.js',
-        singleRun: true,
-        browserNoActivityTimeout: 240000,
-        captureTimeout: 120000,
-        reporters: ['dots'],
-        browsers: browserConf.browsersToRun},
-      function(err) {done(); process.exit(err ? 1 : 0);}).start();
+  var browserConf = getBrowsersFromCLI('SL');
+  if (browserConf.isProvider) {
+    launchKarmaWithExternalBrowsers(['dots'], browserConf.browsersToRun, done);
   } else {
     throw new Error('ERROR: no Saucelabs browsers provided, add them with the --browsers option');
   }
 });
+
+gulp.task('test.unit.js.browserstack', ['build.js.dev'], function (done) {
+  var browserConf = getBrowsersFromCLI('BS');
+  if (browserConf.isProvider) {
+    launchKarmaWithExternalBrowsers(['dots'], browserConf.browsersToRun, done);
+  } else {
+    throw new Error('ERROR: no Browserstack browsers provided, add them with the --browsers option');
+  }
+});
+
+function launchKarmaWithExternalBrowsers(reporters, browsers, done) {
+  new karma.Server({
+    configFile: __dirname + '/karma-js.conf.js',
+    singleRun: true,
+    browserNoActivityTimeout: 240000,
+    captureTimeout: 120000,
+    reporters: reporters,
+    browsers: browsers},
+  function(err) {done(); process.exit(err ? 1 : 0);}).start();
+}
 
 gulp.task('!test.unit.js/karma-server', function(done) {
   var watchStarted = false;
@@ -655,29 +671,11 @@ gulp.task('test.unit.js/ci', function (done) {
 });
 
 gulp.task('test.unit.js.sauce/ci', function (done) {
-  new karma.Server({
-        configFile: __dirname + '/karma-js.conf.js',
-        singleRun: true,
-        browserNoActivityTimeout: 240000,
-        captureTimeout: 120000,
-        reporters: ['dots', 'saucelabs'],
-        browsers: browserProvidersConf.sauceAliases.CI
-      },
-      function(err) {done(); process.exit(err ? 1 : 0);}
-  ).start();
+  launchKarmaWithExternalBrowsers(['dots', 'saucelabs'], browserProvidersConf.sauceAliases.CI, done);
 });
 
 gulp.task('test.unit.js.browserstack/ci', function (done) {
-  new karma.Server({
-      configFile: __dirname + '/karma-js.conf.js',
-      singleRun: true,
-      browserNoActivityTimeout: 240000,
-      captureTimeout: 120000,
-      reporters: ['dots'],
-      browsers: browserProvidersConf.browserstackAliases.CI
-    },
-    function(err) {done(); process.exit(err ? 1 : 0);}
-  ).start();
+  launchKarmaWithExternalBrowsers(['dots'], browserProvidersConf.browserstackAliases.CI, done);
 });
 
 gulp.task('test.unit.dart/ci', function (done) {
