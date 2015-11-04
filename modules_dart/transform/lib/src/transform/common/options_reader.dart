@@ -13,6 +13,11 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
       _readBool(config, INIT_REFLECTOR_PARAM, defaultValue: true);
   var reflectPropertiesAsAttributes =
       _readBool(config, REFLECT_PROPERTIES_AS_ATTRIBUTES, defaultValue: false);
+  if (!config.containsKey(REFLECT_PROPERTIES_AS_ATTRIBUTES)) {
+    reflectPropertiesAsAttributes = _readBool(
+        config, REFLECT_PROPERTIES_AS_ATTRIBUTES_OLD,
+        defaultValue: false);
+  }
   var formatCode = _readBool(config, FORMAT_CODE_PARAM, defaultValue: false);
   String mirrorModeVal =
       config.containsKey(MIRROR_MODE_PARAM) ? config[MIRROR_MODE_PARAM] : '';
@@ -113,8 +118,9 @@ const CUSTOM_ANNOTATIONS_ERROR = '''
           superClass: ...''';
 
 void _warnDeprecated(Map config) {
-  if (config.containsKey(GENERATE_CHANGE_DETECTORS_PARAM)) {
-    print('${GENERATE_CHANGE_DETECTORS_PARAM} is no longer necessary for '
-        'Angular 2 apps. Please remove it from your pubspec.');
+  if (config.containsKey(REFLECT_PROPERTIES_AS_ATTRIBUTES_OLD)) {
+    print('${REFLECT_PROPERTIES_AS_ATTRIBUTES_OLD} has been renamed to '
+        '${REFLECT_PROPERTIES_AS_ATTRIBUTES}. Please update it in your '
+        'pubspec.');
   }
 }
