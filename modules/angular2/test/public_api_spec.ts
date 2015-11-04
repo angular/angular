@@ -740,6 +740,7 @@ var NG_ALL = [
 
   'OutputMetadata',
   'OutputMetadata.bindingPropertyName',
+  'enableDevMode():js',
   'ExpressionChangedAfterItHasBeenCheckedException',
   'ExpressionChangedAfterItHasBeenCheckedException.message',
   'ExpressionChangedAfterItHasBeenCheckedException.stackTrace',
