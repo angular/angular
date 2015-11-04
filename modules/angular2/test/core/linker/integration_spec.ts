@@ -193,6 +193,30 @@ export function main() {
                });
          }));
 
+      it('should remove style when when style expression evaluates to null',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(MyComp,
+                            new ViewMetadata({template: '<div [style.height.px]="ctxProp"></div>'}))
+
+               .createAsync(MyComp)
+               .then((fixture) => {
+
+                 fixture.debugElement.componentInstance.ctxProp = '10';
+                 fixture.detectChanges();
+                 expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
+                                     'height'))
+                     .toEqual('10px');
+
+                 fixture.debugElement.componentInstance.ctxProp = null;
+                 fixture.detectChanges();
+                 expect(DOM.getStyle(fixture.debugElement.componentViewChildren[0].nativeElement,
+                                     'height'))
+                     .toEqual('');
+
+                 async.done();
+               });
+         }));
+
       it('should consume binding to property names where attr name and property name do not match',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MyComp,
