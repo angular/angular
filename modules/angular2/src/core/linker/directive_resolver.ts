@@ -2,6 +2,7 @@ import {resolveForwardRef, Injectable} from 'angular2/src/core/di';
 import {Type, isPresent, isBlank, stringify} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+
 import {
   DirectiveMetadata,
   ComponentMetadata,
@@ -38,7 +39,7 @@ export class DirectiveResolver {
       var metadata = typeMetadata.find(_isDirectiveMetadata);
       if (isPresent(metadata)) {
         var propertyMetadata = reflector.propMetadata(type);
-        return this._mergeWithPropertyMetadata(metadata, propertyMetadata);
+        return this._mergeWithPropertyMetadata(metadata, propertyMetadata, type);
       }
     }
 
@@ -46,7 +47,8 @@ export class DirectiveResolver {
   }
 
   private _mergeWithPropertyMetadata(dm: DirectiveMetadata,
-                                     propertyMetadata: {[key: string]: any[]}): DirectiveMetadata {
+                                     propertyMetadata: {[key: string]: any[]},
+                                     directiveType: Type): DirectiveMetadata {
     var inputs = [];
     var outputs = [];
     var host: {[key: string]: string} = {};
@@ -100,13 +102,27 @@ export class DirectiveResolver {
         }
       });
     });
-    return this._merge(dm, inputs, outputs, host, queries);
+    return this._merge(dm, inputs, outputs, host, queries, directiveType);
   }
 
   private _merge(dm: DirectiveMetadata, inputs: string[], outputs: string[],
-                 host: {[key: string]: string}, queries: {[key: string]: any}): DirectiveMetadata {
+                 host: {[key: string]: string}, queries: {[key: string]: any},
+                 directiveType: Type): DirectiveMetadata {
     var mergedInputs = isPresent(dm.inputs) ? ListWrapper.concat(dm.inputs, inputs) : inputs;
-    var mergedOutputs = isPresent(dm.outputs) ? ListWrapper.concat(dm.outputs, outputs) : outputs;
+
+    var mergedOutputs;
+    if (isPresent(dm.outputs)) {
+      dm.outputs.forEach((propName: string) => {
+        if (ListWrapper.contains(outputs, propName)) {
+          throw new BaseException(
+              `Output event '${propName}' defined multiple times in '${stringify(directiveType)}'`);
+        }
+      });
+      mergedOutputs = ListWrapper.concat(dm.outputs, outputs);
+    } else {
+      mergedOutputs = outputs;
+    }
+
     var mergedHost = isPresent(dm.host) ? StringMapWrapper.merge(dm.host, host) : host;
     var mergedQueries =
         isPresent(dm.queries) ? StringMapWrapper.merge(dm.queries, queries) : queries;
