@@ -1,5 +1,5 @@
 import {bootstrap} from 'angular2/bootstrap';
-import {Component, View, NgFor} from 'angular2/core';
+import {Component, View} from 'angular2/core';
 import {Zippy} from './zippy';
 
 @Component({selector: 'zippy-app'})
@@ -12,7 +12,7 @@ import {Zippy} from './zippy';
       <li *ng-for="var log of logs">{{log}}</li>
     </ul>
   `,
-  directives: [Zippy, NgFor]
+  directives: [Zippy]
 })
 class ZippyApp {
   logs: string[] = [];
