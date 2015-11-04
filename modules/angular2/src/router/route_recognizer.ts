@@ -1,14 +1,5 @@
-import {
-  RegExp,
-  RegExpWrapper,
-  StringWrapper,
-  isBlank,
-  isPresent,
-  isType,
-  isStringMap,
-  Type
-} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+import {StringWrapper, isBlank, isPresent, Type} from 'angular2/src/core/facade/lang';
+import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {Map, MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {PathRecognizer, PathMatch} from './path_recognizer';

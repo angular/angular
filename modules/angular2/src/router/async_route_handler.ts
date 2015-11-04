@@ -1,5 +1,5 @@
 import {RouteHandler} from './route_handler';
-import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
+import {Promise} from 'angular2/src/core/facade/async';
 import {isPresent, Type} from 'angular2/src/core/facade/lang';
 
 export class AsyncRouteHandler implements RouteHandler {
