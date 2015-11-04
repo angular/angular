@@ -8,8 +8,7 @@ import {
   iit,
   inject,
   it,
-  xit,
-  SpyObject
+  xit
 } from 'angular2/testing_internal';
 import {Injector, provide} from 'angular2/core';
 import {MockBackend, MockConnection} from 'angular2/src/http/backends/mock_backend';
@@ -31,18 +30,6 @@ import {
 } from 'angular2/http';
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
-
-class SpyObserver extends SpyObject {
-  onNext: Function;
-  onError: Function;
-  onCompleted: Function;
-  constructor() {
-    super();
-    this.onNext = this.spy('onNext');
-    this.onError = this.spy('onError');
-    this.onCompleted = this.spy('onCompleted');
-  }
-}
 
 export function main() {
   describe('injectables', () => {
