@@ -162,7 +162,8 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
         this.renderer.setElementClass(elementRef, b.name, currentValue);
       } else if (b.isElementStyle()) {
         var unit = isPresent(b.unit) ? b.unit : '';
-        this.renderer.setElementStyle(elementRef, b.name, `${currentValue}${unit}`);
+        this.renderer.setElementStyle(elementRef, b.name,
+                                      isPresent(currentValue) ? `${currentValue}${unit}` : null);
       } else {
         throw new BaseException('Unsupported directive record');
       }
