@@ -32,4 +32,8 @@ message NgDepsModel {
   // The names of methods that should be registered in the Angular 2 reflection
   // framework.
   repeated string methods = 9;
+
+  // Imports for the .ng_deps.dart files associated with the declared `imports`
+  // and `exports` for this file.
+  repeated ImportModel dep_imports = 10;
 }

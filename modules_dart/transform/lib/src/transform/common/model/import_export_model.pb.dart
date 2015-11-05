@@ -11,8 +11,7 @@ class ImportModel extends GeneratedMessage {
     ..p(2, 'showCombinators', PbFieldType.PS)
     ..p(3, 'hideCombinators', PbFieldType.PS)
     ..a(4, 'prefix', PbFieldType.OS)
-    ..a(5, 'isDeferred', PbFieldType.OB)
-    ..a(6, 'isNgDeps', PbFieldType.OB);
+    ..a(5, 'isDeferred', PbFieldType.OB);
 
   ImportModel() : super();
   ImportModel.fromBuffer(List<int> i,
@@ -62,14 +61,6 @@ class ImportModel extends GeneratedMessage {
 
   bool hasIsDeferred() => $_has(4, 5);
   void clearIsDeferred() => clearField(5);
-
-  bool get isNgDeps => $_get(5, 6, false);
-  void set isNgDeps(bool v) {
-    $_setBool(5, 6, v);
-  }
-
-  bool hasIsNgDeps() => $_has(5, 6);
-  void clearIsNgDeps() => clearField(6);
 }
 
 class _ReadonlyImportModel extends ImportModel with ReadonlyMessageMixin {}
@@ -124,7 +115,6 @@ const ImportModel$json = const {
     const {'1': 'hide_combinators', '3': 3, '4': 3, '5': 9},
     const {'1': 'prefix', '3': 4, '4': 1, '5': 9},
     const {'1': 'is_deferred', '3': 5, '4': 1, '5': 8},
-    const {'1': 'is_ng_deps', '3': 6, '4': 1, '5': 8},
   ],
 };
 
@@ -139,7 +129,7 @@ const ExportModel$json = const {
 
 /**
  * Generated with:
- * import_export_model.proto (c018d2ad92db2d341631d813ace70925d1ccbb9b)
+ * import_export_model.proto (36a3a72d0884b84b451b7188ffa1fc93b44e7b62)
  * libprotoc 2.6.1
  * dart-protoc-plugin (af5fc2bf1de367a434c3b1847ab260510878ffc0)
  */

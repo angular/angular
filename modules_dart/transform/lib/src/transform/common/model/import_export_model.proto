@@ -16,8 +16,6 @@ message ImportModel {
   optional string prefix = 4;
 
   optional bool is_deferred = 5;
-
-  optional bool is_ng_deps = 6;
 }
 
 // See message above about wire-compatiblity with `ImportModel`.

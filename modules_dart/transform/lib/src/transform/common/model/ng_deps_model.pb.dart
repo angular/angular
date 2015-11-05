@@ -20,7 +20,9 @@ class NgDepsModel extends GeneratedMessage {
     ..a(6, 'sourceFile', PbFieldType.OS)
     ..p(7, 'getters', PbFieldType.PS)
     ..p(8, 'setters', PbFieldType.PS)
-    ..p(9, 'methods', PbFieldType.PS);
+    ..p(9, 'methods', PbFieldType.PS)
+    ..pp(10, 'depImports', PbFieldType.PM, ImportModel.$checkItem,
+        ImportModel.create);
 
   NgDepsModel() : super();
   NgDepsModel.fromBuffer(List<int> i,
@@ -72,6 +74,8 @@ class NgDepsModel extends GeneratedMessage {
   List<String> get setters => $_get(7, 8, null);
 
   List<String> get methods => $_get(8, 9, null);
+
+  List<ImportModel> get depImports => $_get(9, 10, null);
 }
 
 class _ReadonlyNgDepsModel extends NgDepsModel with ReadonlyMessageMixin {}
@@ -106,12 +110,19 @@ const NgDepsModel$json = const {
     const {'1': 'getters', '3': 7, '4': 3, '5': 9},
     const {'1': 'setters', '3': 8, '4': 3, '5': 9},
     const {'1': 'methods', '3': 9, '4': 3, '5': 9},
+    const {
+      '1': 'dep_imports',
+      '3': 10,
+      '4': 3,
+      '5': 11,
+      '6': '.angular2.src.transform.common.model.proto.ImportModel'
+    },
   ],
 };
 
 /**
  * Generated with:
- * ng_deps_model.proto (ab93a7f3c411be8a6dafe914f8aae56027e1bac6)
+ * ng_deps_model.proto (64702efcc1d7fb434f3652943ba051104960ffd5)
  * libprotoc 2.6.1
  * dart-protoc-plugin (af5fc2bf1de367a434c3b1847ab260510878ffc0)
  */
