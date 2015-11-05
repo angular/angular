@@ -74,9 +74,10 @@ void allTests() {
     updateReader();
   });
 
-  Future<String> process(AssetId assetId) {
+  Future<String> process(AssetId assetId, {List<String> ambientDirectives}) {
     logger = new RecordingLogger();
-    return log.setZoned(logger, () => processTemplates(reader, assetId));
+    return log.setZoned(logger, () => processTemplates(reader, assetId,
+        ambientDirectives: ambientDirectives));
   }
 
   // TODO(tbosch): This is just a temporary test that makes sure that the dart
@@ -345,6 +346,65 @@ void allTests() {
     });
 
     expect(didThrow).toBeFalse();
+  });
+
+  it('should include ambient directives.', () async {
+    fooComponentMeta.template = new CompileTemplateMetadata(template: '<bar/>');
+    final viewAnnotation = new AnnotationModel()
+      ..name = 'View'
+      ..isView = true;
+
+    barNgMeta.aliases['AMBIENT'] = [barComponentMeta.type.name];
+    updateReader();
+
+    final outputs = await process(fooAssetId, ambientDirectives: ['package:a/bar.dart#AMBIENT']);
+    final ngDeps = outputs.ngDeps;
+    expect(ngDeps).toBeNotNull();
+    expect(outputs.templatesCode)
+      ..toBeNotNull()
+      ..toContain(barComponentMeta.template.template);
+  });
+
+  it('should include ambient directives when it it a list.', () async {
+    fooComponentMeta.template = new CompileTemplateMetadata(template: '<bar/>');
+    final viewAnnotation = new AnnotationModel()
+      ..name = 'View'
+      ..isView = true;
+
+    barNgMeta.types['AMBIENT'] = barComponentMeta;
+    updateReader();
+
+    final outputs = await process(fooAssetId, ambientDirectives: ['package:a/bar.dart#AMBIENT']);
+    final ngDeps = outputs.ngDeps;
+    expect(ngDeps).toBeNotNull();
+    expect(outputs.templatesCode)
+      ..toBeNotNull()
+      ..toContain(barComponentMeta.template.template);
+  });
+
+  it('should work when ambient directives config is null.', () async {
+    final outputs = await process(fooAssetId, ambientDirectives: null);
+    final ngDeps = outputs.ngDeps;
+    expect(ngDeps).toBeNotNull();
+  });
+
+  it('should work when the ambient directives config is not formatted properly.', () async {
+    final outputs = await process(fooAssetId, ambientDirectives: ['INVALID']);
+    final ngDeps = outputs.ngDeps;
+    expect(ngDeps).toBeNotNull();
+  });
+
+  it('should work when the file with ambient directives cannot be found.', () async {
+    final outputs = await process(
+        fooAssetId, ambientDirectives: ['package:a/invalid.dart#AMBIENT']);
+    final ngDeps = outputs.ngDeps;
+    expect(ngDeps).toBeNotNull();
+  });
+
+  it('should work when the ambient directives token cannot be found.', () async {
+    final outputs = await process(fooAssetId, ambientDirectives: ['package:a/bar.dart#AMBIENT']);
+    final ngDeps = outputs.ngDeps;
+    expect(ngDeps).toBeNotNull();
   });
 }
 

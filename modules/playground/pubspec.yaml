@@ -17,7 +17,7 @@ dependency_overrides:
     path: ../angular2_material
 transformers:
 - angular2:
-    ambient_directives: 'angular2/lib/src/core/directives.dart:CORE_DIRECTIVES'
+    ambient_directives: 'package:angular2/src/core/directives.dart#CORE_DIRECTIVES'
     entry_points:
         - web/src/gestures/index.dart
         - web/src/hello_world/index.dart
