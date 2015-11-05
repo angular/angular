@@ -12,6 +12,8 @@ if (typeof window === 'undefined') {
   globalScope = <any>window;
 };
 
+export const IS_DART = false;
+
 // Need to declare a new variable for global here since TypeScript
 // exports the original value of the symbol.
 var _global: BrowserNodeGlobal = globalScope;

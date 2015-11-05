@@ -52,7 +52,7 @@ import {JitProtoChangeDetector} from 'angular2/src/core/change_detection/jit_pro
 import {getDefinition} from './change_detector_config';
 import {createObservableModel} from './change_detector_spec_util';
 import {getFactoryById} from './generated/change_detector_classes';
-import {IS_DART} from '../../platform';
+import {IS_DART} from 'angular2/src/core/facade/lang';
 
 const _DEFAULT_CONTEXT = CONST_EXPR(new Object());
 

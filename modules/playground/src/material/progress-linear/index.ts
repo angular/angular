@@ -1,7 +1,7 @@
 import {bootstrap} from 'angular2/bootstrap';
 import {bind, provide, Component, View, ViewEncapsulation} from 'angular2/core';
 import {MdProgressLinear} from 'angular2_material/src/components/progress-linear/progress_linear';
-import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
+import {UrlResolver} from 'angular2/src/compiler/url_resolver';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
 
 @Component({

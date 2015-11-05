@@ -10,10 +10,8 @@ import {
   fakeAsync,
   tick
 } from 'angular2/testing_internal';
-import {IS_DART} from '../../platform';
-
 import {MapWrapper, ListWrapper, iterateListLike} from 'angular2/src/core/facade/collection';
-import {StringWrapper} from 'angular2/src/core/facade/lang';
+import {IS_DART, StringWrapper} from 'angular2/src/core/facade/lang';
 import {ObservableWrapper} from 'angular2/src/core/facade/async';
 import {QueryList} from 'angular2/src/core/linker/query_list';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';

@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:analyzer/analyzer.dart';
 import 'package:barback/barback.dart' show AssetId;
 
-import 'package:angular2/src/core/compiler/template_compiler.dart';
+import 'package:angular2/src/compiler/template_compiler.dart';
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/code/ng_deps_code.dart';

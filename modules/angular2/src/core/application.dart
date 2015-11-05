@@ -7,7 +7,7 @@ import 'package:angular2/src/core/reflection/reflection_capabilities.dart'
     show ReflectionCapabilities;
 import 'application_common.dart';
 
-import 'package:angular2/src/core/compiler/compiler.dart';
+import 'package:angular2/src/compiler/compiler.dart';
 import 'package:angular2/src/core/linker/dynamic_component_loader.dart';
 export 'package:angular2/src/core/linker/dynamic_component_loader.dart'
     show ComponentRef;

@@ -22,7 +22,7 @@ import {
   AsyncRoute
 } from 'angular2/src/router/route_config_decorator';
 import {stringifyInstruction} from 'angular2/src/router/instruction';
-import {IS_DART} from '../platform';
+import {IS_DART} from 'angular2/src/core/facade/lang';
 
 export function main() {
   describe('RouteRegistry', () => {
