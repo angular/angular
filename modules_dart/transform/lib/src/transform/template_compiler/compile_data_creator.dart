@@ -22,7 +22,8 @@ import 'package:barback/barback.dart';
 Future<CompileDataResults> createCompileData(
     AssetReader reader, AssetId assetId, List<String> ambientDirectives) async {
   return logElapsedAsync(() async {
-    final creator = await _CompileDataCreator.create(reader, assetId, ambientDirectives);
+    final creator =
+        await _CompileDataCreator.create(reader, assetId, ambientDirectives);
     return creator != null ? creator.createCompileData() : null;
   }, operationName: 'createCompileData', assetId: assetId);
 }
@@ -43,10 +44,11 @@ class _CompileDataCreator {
   final NgMeta ngMeta;
   final List<String> ambientDirectives;
 
-  _CompileDataCreator(this.reader, this.entryPoint, this.ngMeta, this.ambientDirectives);
+  _CompileDataCreator(
+      this.reader, this.entryPoint, this.ngMeta, this.ambientDirectives);
 
-  static Future<_CompileDataCreator> create(
-      AssetReader reader, AssetId assetId, List<String> ambientDirectives) async {
+  static Future<_CompileDataCreator> create(AssetReader reader, AssetId assetId,
+      List<String> ambientDirectives) async {
     if (!(await reader.hasInput(assetId))) return null;
     final json = await reader.readAsString(assetId);
     if (json == null || json.isEmpty) return null;
@@ -119,7 +121,8 @@ class _CompileDataCreator {
     return res;
   }
 
-  Future<List<CompileDirectiveMetadata>> _readAmbientDirectivesFromUri(String uri, String token) async {
+  Future<List<CompileDirectiveMetadata>> _readAmbientDirectivesFromUri(
+      String uri, String token) async {
     final metaAssetId = fromUri(toMetaExtension(uri));
     if (await reader.hasInput(metaAssetId)) {
       try {
@@ -129,19 +132,16 @@ class _CompileDataCreator {
 
           if (newMetadata.types.containsKey(token)) {
             return [newMetadata.types[token]];
-
           } else if (newMetadata.aliases.containsKey(token)) {
             return newMetadata.flatten(token);
-
           } else {
-            log.warning('Could not resolve ambient directive ${token} in ${uri}',
+            log.warning(
+                'Could not resolve ambient directive ${token} in ${uri}',
                 asset: metaAssetId);
           }
-
         }
       } catch (ex, stackTrace) {
-        log.warning('Failed to decode: $ex, $stackTrace',
-            asset: metaAssetId);
+        log.warning('Failed to decode: $ex, $stackTrace', asset: metaAssetId);
       }
     }
     return [];
@@ -160,7 +160,7 @@ class _CompileDataCreator {
     final resolver = const TransformerUrlResolver();
 
     ngMeta.ngDeps.imports
-        .where((model) => !model.isNgDeps && !isDartCoreUri(model.uri))
+        .where((model) => !isDartCoreUri(model.uri))
         .forEach((model) {
       var prefix = model.prefix == null ? '' : model.prefix;
       map
