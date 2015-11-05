@@ -3,10 +3,10 @@ library bar.ng_deps.dart;
 import 'foo.dart';
 import 'package:angular2/src/core/reflection/reflection.dart' as _ngRef;
 import 'package:angular2/src/core/metadata.dart';
-import 'package:angular2/src/core/metadata.ng_deps.dart' as i0;
 import 'bar.dart';
-import 'bar.ng_deps.dart' as i1;
 import 'foo.template.dart' as _templates;
+import 'package:angular2/src/core/metadata.ng_deps.dart' as i0;
+import 'bar.ng_deps.dart' as i1;
 export 'foo.dart';
 
 var _visited = false;
