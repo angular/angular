@@ -130,7 +130,7 @@ class Pipe extends PipeMetadata {
  * See: [AttributeMetadata] for docs.
  */
 class Attribute extends AttributeMetadata {
-  const Attribute(String attributeName) : super(attributeName);
+  const Attribute([String attributeName = '']) : super(attributeName);
 }
 
 /**

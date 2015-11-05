@@ -140,6 +140,13 @@ class NeedsAttribute {
   }
 }
 
+class NeedsAllAttributes {
+  attributes: Map<string, string>;
+  constructor(@Attribute() attributes: Map<string, string>) {
+    this.attributes = attributes;
+  }
+}
+
 @Injectable()
 class NeedsAttributeNoType {
   fooAttribute;
@@ -866,6 +873,19 @@ export function main() {
             var needsAttribute = inj.get(NeedsAttributeNoType);
 
             expect(needsAttribute.fooAttribute).toEqual('bar');
+          });
+
+          it('should get all attributes', () => {
+            var attributes = new Map();
+            attributes.set( 'title', '');
+            attributes.set( 'foo', 'bar');
+
+            var inj = injector(ListWrapper.concat([NeedsAllAttributes], extraProviders), null, false, null, attributes);
+            var needsAllAttribute = inj.get(NeedsAllAttributes);
+            var allAttributes : Map<string, string> = needsAllAttribute.attributes;
+
+            expect(allAttributes.get('title')).toEqual('');
+            expect(allAttributes.get('foo')).toEqual('bar');
           });
         });
 

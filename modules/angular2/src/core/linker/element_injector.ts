@@ -517,8 +517,11 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     return UNDEFINED;
   }
 
-  private _buildAttribute(dep: DirectiveDependency): string {
+  private _buildAttribute(dep: DirectiveDependency): any {
     var attributes = this._proto.attributes;
+    if (dep.attributeName === '') {
+      return attributes;
+    }
     if (isPresent(attributes) && attributes.has(dep.attributeName)) {
       return attributes.get(dep.attributeName);
     } else {
