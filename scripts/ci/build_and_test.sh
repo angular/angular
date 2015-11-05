@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 
 MODE=$1
 
