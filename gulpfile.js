@@ -966,7 +966,7 @@ var bundleConfig = {
   // TODO: upgrade system builder and find a way to declare all input as cjs.
   meta: {
     'angular2/src/router/route_definition': {format: 'cjs'},
-    'angular2/src/core/directives/observable_list_diff': {format: 'cjs'},
+    'angular2/src/common/directives/observable_list_diff': {format: 'cjs'},
     'angular2/lifecycle_hooks': {format: 'cjs'}
   }
 };

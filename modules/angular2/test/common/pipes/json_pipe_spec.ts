@@ -10,7 +10,6 @@ import {
   AsyncTestCompleter,
   inject,
   proxy,
-  SpyObject,
   TestComponentBuilder
 } from 'angular2/testing_internal';
 import {Json, RegExp, NumberWrapper, StringWrapper} from 'angular2/src/core/facade/lang';

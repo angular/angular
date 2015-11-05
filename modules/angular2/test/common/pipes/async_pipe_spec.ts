@@ -9,10 +9,9 @@ import {
   afterEach,
   AsyncTestCompleter,
   inject,
-  SpyObject,
   browserDetection
 } from 'angular2/testing_internal';
-import {SpyChangeDetectorRef} from './spies';
+import {SpyChangeDetectorRef} from '../spies';
 
 import {isBlank} from 'angular2/src/core/facade/lang';
 import {AsyncPipe, WrappedValue} from 'angular2/core';

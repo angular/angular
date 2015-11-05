@@ -16,7 +16,7 @@ import {
 } from 'angular2/testing_internal';
 import {ListWrapper, StringMapWrapper, SetWrapper} from 'angular2/src/core/facade/collection';
 import {Component, View, NgFor, provide} from 'angular2/angular2';
-import {NgClass} from 'angular2/src/core/directives/ng_class';
+import {NgClass} from 'angular2/src/common/directives/ng_class';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 
 function detectChangesAndCheck(fixture: ComponentFixture, classes: string, elIndex: number = 0) {

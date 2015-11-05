@@ -107,13 +107,3 @@ class SpyRenderEventDispatcher extends SpyObject
     implements RenderEventDispatcher {
   noSuchMethod(m) => super.noSuchMethod(m);
 }
-
-@proxy
-class SpyNgControl extends SpyObject implements NgControl {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
-
-@proxy
-class SpyValueAccessor extends SpyObject implements ControlValueAccessor {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
