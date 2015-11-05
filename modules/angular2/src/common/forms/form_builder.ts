@@ -1,6 +1,6 @@
 import {Injectable} from 'angular2/src/core/di';
 import {StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {isPresent, isArray} from 'angular2/src/core/facade/lang';
+import {isPresent, isArray, CONST_EXPR, Type} from 'angular2/src/core/facade/lang';
 import * as modelModule from './model';
 
 
@@ -106,3 +106,19 @@ export class FormBuilder {
     }
   }
 }
+
+/**
+ * Shorthand set of providers used for building Angular forms.
+ *
+ * ### Example
+ *
+ * ```typescript
+ * bootstrap(MyApp, [FORM_PROVIDERS]);
+ * ```
+ */
+export const FORM_PROVIDERS: Type[] = CONST_EXPR([FormBuilder]);
+
+/**
+ * @deprecated
+ */
+export const FORM_BINDINGS = FORM_PROVIDERS;

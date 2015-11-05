@@ -1,4 +1,4 @@
-import {FORM_PROVIDERS} from 'angular2/src/core/forms';
+import {FORM_PROVIDERS} from 'angular2/src/common/forms';
 import {provide, Provider} from 'angular2/src/core/di';
 import {Type, isBlank, isPresent, stringify} from 'angular2/src/core/facade/lang';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';

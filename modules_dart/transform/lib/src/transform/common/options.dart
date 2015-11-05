@@ -41,7 +41,7 @@ class TransformerOptions {
   final bool reflectPropertiesAsAttributes;
 
   /// A set of directives that will be automatically passed-in to the template compiler
-  /// Format of an item in the list: angular2/lib/src/core/directives.dart#CORE_DIRECTIVES
+  /// Format of an item in the list: angular2/lib/src/common/directives.dart#CORE_DIRECTIVES
   final List<String> ambientDirectives;
 
   /// Whether to format generated code.

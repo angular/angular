@@ -1,5 +1,5 @@
 import {Injector, provide, OpaqueToken, Provider} from 'angular2/src/core/di';
-import {FORM_PROVIDERS} from 'angular2/src/core/forms';
+import {FORM_PROVIDERS} from 'angular2/src/common/forms';
 import {
   NumberWrapper,
   Type,

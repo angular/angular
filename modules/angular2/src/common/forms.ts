@@ -11,7 +11,6 @@
  * explicitly.
  *
  */
-
 export {AbstractControl, Control, ControlGroup, ControlArray} from './forms/model';
 
 export {AbstractControlDirective} from './forms/directives/abstract_control_directive';
@@ -40,23 +39,4 @@ export {
   MaxLengthValidator,
   Validator
 } from './forms/directives/validators';
-export {FormBuilder} from './forms/form_builder';
-
-import {FormBuilder} from './forms/form_builder';
-import {CONST_EXPR, Type} from './facade/lang';
-
-/**
- * Shorthand set of providers used for building Angular forms.
- *
- * ### Example
- *
- * ```typescript
- * bootstrap(MyApp, [FORM_PROVIDERS]);
- * ```
- */
-export const FORM_PROVIDERS: Type[] = CONST_EXPR([FormBuilder]);
-
-/**
- * @deprecated
- */
-export const FORM_BINDINGS = FORM_PROVIDERS;
+export {FormBuilder, FORM_PROVIDERS, FORM_BINDINGS} from './forms/form_builder';

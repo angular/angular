@@ -1,9 +1,9 @@
 import {isBlank, isPresent, CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {PromiseWrapper} from 'angular2/src/core/facade/promise';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {OpaqueToken} from 'angular2/src/core/di';
 
 import * as modelModule from './model';
-import {PromiseWrapper} from "../facade/promise";
 
 /**
  * Providers for validators to be used for {@link Control}s in a form.

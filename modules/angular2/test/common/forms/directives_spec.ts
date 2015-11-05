@@ -17,7 +17,6 @@ import {
 
 import {SpyNgControl, SpyValueAccessor} from '../spies';
 
-
 import {
   ControlGroup,
   Control,
@@ -38,7 +37,7 @@ import {
 } from 'angular2/core';
 
 
-import {selectValueAccessor, composeValidators} from 'angular2/src/core/forms/directives/shared';
+import {selectValueAccessor, composeValidators} from 'angular2/src/common/forms/directives/shared';
 import {TimerWrapper} from 'angular2/src/core/facade/async';
 import {PromiseWrapper} from 'angular2/src/core/facade/promise';
 import {SimpleChange} from 'angular2/src/core/change_detection';

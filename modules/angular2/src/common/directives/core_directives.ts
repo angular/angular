@@ -1,22 +1,9 @@
-/**
- * @module
- * @description
- * Common directives shipped with Angular.
- */
-
-import {CONST_EXPR, Type} from './facade/lang';
-import {NgClass} from './directives/ng_class';
-import {NgFor} from './directives/ng_for';
-import {NgIf} from './directives/ng_if';
-import {NgStyle} from './directives/ng_style';
-import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from './directives/ng_switch';
-
-export {NgClass} from './directives/ng_class';
-export {NgFor} from './directives/ng_for';
-export {NgIf} from './directives/ng_if';
-export {NgStyle} from './directives/ng_style';
-export {NgSwitch, NgSwitchWhen, NgSwitchDefault} from './directives/ng_switch';
-export * from './directives/observable_list_diff';
+import {CONST_EXPR, Type} from 'angular2/src/core/facade/lang';
+import {NgClass} from './ng_class';
+import {NgFor} from './ng_for';
+import {NgIf} from './ng_if';
+import {NgStyle} from './ng_style';
+import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from './ng_switch';
 
 /**
  * A collection of Angular core directives that are likely to be used in each and every Angular

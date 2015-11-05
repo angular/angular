@@ -6,7 +6,7 @@ import {Injectable} from 'angular2/src/core/di';
 import {PipeTransform, WrappedValue} from 'angular2/src/core/change_detection';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
-import {Pipe} from '../metadata';
+import {Pipe} from 'angular2/src/core/metadata';
 
 /**
  * Creates a new List or String containing only a subset (slice) of the
