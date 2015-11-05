@@ -6,7 +6,7 @@ import 'package:analyzer/analyzer.dart';
 import 'package:barback/barback.dart';
 import 'package:source_span/source_span.dart';
 
-import 'package:angular2/src/core/compiler/template_compiler.dart';
+import 'package:angular2/src/compiler/template_compiler.dart';
 
 typedef _SimpleCallback();
 

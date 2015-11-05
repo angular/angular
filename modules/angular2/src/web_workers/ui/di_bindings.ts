@@ -16,13 +16,11 @@ import {KeyEventsPlugin} from 'angular2/src/core/render/dom/events/key_events';
 import {HammerGesturesPlugin} from 'angular2/src/core/render/dom/events/hammer_gestures';
 import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 import {Renderer} from 'angular2/src/core/render/api';
-import {AppRootUrl} from 'angular2/src/core/compiler/app_root_url';
+import {AppRootUrl} from 'angular2/src/compiler/app_root_url';
 import {DomRenderer, DomRenderer_, DOCUMENT} from 'angular2/src/core/render/render';
 import {APP_ID_RANDOM_PROVIDER} from 'angular2/src/core/application_tokens';
-import {ElementSchemaRegistry} from 'angular2/src/core/compiler/schema/element_schema_registry';
-import {
-  DomElementSchemaRegistry
-} from 'angular2/src/core/compiler/schema/dom_element_schema_registry';
+import {ElementSchemaRegistry} from 'angular2/src/compiler/schema/element_schema_registry';
+import {DomElementSchemaRegistry} from 'angular2/src/compiler/schema/dom_element_schema_registry';
 import {
   SharedStylesHost,
   DomSharedStylesHost
@@ -39,17 +37,17 @@ import {
   DynamicComponentLoader,
   DynamicComponentLoader_
 } from 'angular2/src/core/linker/dynamic_component_loader';
-import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
+import {UrlResolver} from 'angular2/src/compiler/url_resolver';
 import {Testability} from 'angular2/src/core/testability/testability';
-import {XHR} from 'angular2/src/core/compiler/xhr';
-import {XHRImpl} from 'angular2/src/core/compiler/xhr_impl';
+import {XHR} from 'angular2/src/compiler/xhr';
+import {XHRImpl} from 'angular2/src/compiler/xhr_impl';
 import {Serializer} from 'angular2/src/web_workers/shared/serializer';
 import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';
 import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_proto_view_ref_store';
 import {
   RenderViewWithFragmentsStore
 } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
-import {AnchorBasedAppRootUrl} from 'angular2/src/core/compiler/anchor_based_app_root_url';
+import {AnchorBasedAppRootUrl} from 'angular2/src/compiler/anchor_based_app_root_url';
 import {WebWorkerApplication} from 'angular2/src/web_workers/ui/impl';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
@@ -63,7 +61,7 @@ import {
   ClientMessageBrokerFactory,
   ClientMessageBrokerFactory_
 } from 'angular2/src/web_workers/shared/client_message_broker';
-import {AMBIENT_DIRECTIVES, AMBIENT_PIPES} from "angular2/src/core/compiler/ambient";
+import {AMBIENT_DIRECTIVES, AMBIENT_PIPES} from "angular2/src/core/ambient";
 import {COMMON_DIRECTIVES, COMMON_PIPES} from "angular2/common";
 
 var _rootInjector: Injector;

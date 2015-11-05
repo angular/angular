@@ -17,6 +17,8 @@ class CONST {
   const CONST();
 }
 
+const IS_DART = true;
+
 bool isPresent(obj) => obj != null;
 bool isBlank(obj) => obj == null;
 bool isString(obj) => obj is String;

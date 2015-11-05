@@ -5,8 +5,8 @@ import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {BrowserGetTestability} from 'angular2/src/core/testability/browser_testability';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {Promise} from 'angular2/src/core/facade/async';
-import {XHR} from 'angular2/src/core/compiler/xhr';
-import {XHRImpl} from 'angular2/src/core/compiler/xhr_impl';
+import {XHR} from 'angular2/src/compiler/xhr';
+import {XHRImpl} from 'angular2/src/compiler/xhr_impl';
 
 import {
   EventManager,

@@ -14,7 +14,7 @@ import {DirectiveResolver} from './directive_resolver';
 import {ViewResolver} from './view_resolver';
 import {PipeResolver} from './pipe_resolver';
 import {ViewMetadata} from '../metadata/view';
-import {AMBIENT_PIPES} from 'angular2/src/core/compiler/ambient';
+import {AMBIENT_PIPES} from 'angular2/src/core/ambient';
 
 import {
   visitAllCommands,

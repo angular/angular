@@ -15,7 +15,7 @@ import {
 } from 'angular2/angular2';
 import {applicationDomProviders} from 'angular2/src/core/application_common';
 import {applicationCommonProviders} from 'angular2/src/core/application_ref';
-import {compilerProviders} from 'angular2/src/core/compiler/compiler';
+import {compilerProviders} from 'angular2/src/compiler/compiler';
 import {ObservableWrapper} from 'angular2/src/core/facade/async';
 
 import {getComponentInfo, ComponentInfo} from './metadata';

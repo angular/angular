@@ -1,6 +1,6 @@
 library angular2.transform.template_compiler.reflection.processor;
 
-import 'package:angular2/src/core/compiler/directive_metadata.dart';
+import 'package:angular2/src/compiler/directive_metadata.dart';
 
 import 'model.dart';
 

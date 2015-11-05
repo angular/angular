@@ -7,7 +7,7 @@ import 'package:analyzer/src/generated/ast.dart';
 import 'package:barback/barback.dart';
 import 'package:dart_style/dart_style.dart';
 
-import 'package:angular2/src/core/compiler/xhr.dart' show XHR;
+import 'package:angular2/src/compiler/xhr.dart' show XHR;
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/naive_eval.dart';

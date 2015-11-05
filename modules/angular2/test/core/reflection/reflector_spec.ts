@@ -18,7 +18,7 @@ import {
   propDecorator,
   HasGetterAndSetterDecorators
 } from './reflector_common';
-import {IS_DART} from '../../platform';
+import {IS_DART} from 'angular2/src/core/facade/lang';
 
 class AType {
   value;

@@ -3,8 +3,8 @@ library angular2.transform.template_compiler.compile_data_creator;
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:angular2/src/core/compiler/directive_metadata.dart';
-import 'package:angular2/src/core/compiler/template_compiler.dart';
+import 'package:angular2/src/compiler/directive_metadata.dart';
+import 'package:angular2/src/compiler/template_compiler.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';

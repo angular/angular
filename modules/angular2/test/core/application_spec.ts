@@ -10,7 +10,7 @@ import {
   xdescribe,
   xit
 } from 'angular2/testing_internal';
-import {isPresent, stringify} from 'angular2/src/core/facade/lang';
+import {IS_DART, isPresent, stringify} from 'angular2/src/core/facade/lang';
 import {bootstrap} from 'angular2/bootstrap';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {Component, Directive, View} from 'angular2/core';
@@ -20,7 +20,6 @@ import {PromiseWrapper} from 'angular2/src/core/facade/async';
 import {provide, Inject, Injector} from 'angular2/core';
 import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
-import {IS_DART} from '../platform';
 import {ComponentRef_} from "angular2/src/core/linker/dynamic_component_loader";
 
 @Component({selector: 'hello-app'})

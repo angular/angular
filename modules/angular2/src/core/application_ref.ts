@@ -47,7 +47,7 @@ import {AppViewManager_} from "./linker/view_manager";
 import {Compiler_} from "./linker/compiler";
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from './profile/profile';
 import {ChangeDetectorRef} from 'angular2/src/core/change_detection/change_detector_ref';
-import {AMBIENT_DIRECTIVES, AMBIENT_PIPES} from "angular2/src/core/compiler/ambient";
+import {AMBIENT_DIRECTIVES, AMBIENT_PIPES} from "angular2/src/core/ambient";
 import {COMMON_DIRECTIVES, COMMON_PIPES} from "angular2/common";
 
 /**

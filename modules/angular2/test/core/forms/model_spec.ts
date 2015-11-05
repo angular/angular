@@ -17,7 +17,7 @@ import {ControlGroup, Control, ControlArray, Validators} from 'angular2/core';
 import {isPresent, CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {PromiseWrapper} from 'angular2/src/core/facade/promise';
 import {TimerWrapper, ObservableWrapper} from 'angular2/src/core/facade/async';
-import {IS_DART} from '../../platform';
+import {IS_DART} from 'angular2/src/core/facade/lang';
 
 export function main() {
   function asyncValidator(expected, timeouts = CONST_EXPR({})) {

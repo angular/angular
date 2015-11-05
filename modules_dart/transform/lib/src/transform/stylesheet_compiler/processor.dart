@@ -2,7 +2,7 @@ library angular2.transform.stylesheet_compiler.processor;
 
 import 'dart:async';
 
-import 'package:angular2/src/core/compiler/source_module.dart';
+import 'package:angular2/src/compiler/source_module.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/code/source_module.dart';
 import 'package:angular2/src/transform/common/logging.dart';
