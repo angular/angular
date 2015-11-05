@@ -37,7 +37,8 @@ class TemplateCompiler extends Transformer {
       var primaryId = transform.primaryInput.id;
       var reader = new AssetReader.fromTransform(transform);
       var outputs = await processTemplates(reader, primaryId,
-          reflectPropertiesAsAttributes: options.reflectPropertiesAsAttributes);
+          reflectPropertiesAsAttributes: options.reflectPropertiesAsAttributes,
+          ambientDirectives: options.ambientDirectives);
       var ngDepsCode = _emptyNgDepsContents;
       var templatesCode = '';
       if (outputs != null) {

@@ -26,8 +26,8 @@ import 'compile_data_creator.dart';
 ///
 /// This method assumes a {@link DomAdapter} has been registered.
 Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
-    {bool reflectPropertiesAsAttributes: false}) async {
-  var viewDefResults = await createCompileData(reader, assetId);
+    {bool reflectPropertiesAsAttributes: false, List<String> ambientDirectives}) async {
+  var viewDefResults = await createCompileData(reader, assetId, ambientDirectives);
   if (viewDefResults == null) return null;
   final directiveMetadatas = viewDefResults.ngMeta.types.values;
   if (directiveMetadatas.isNotEmpty) {

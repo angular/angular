@@ -20,9 +20,9 @@ import 'package:barback/barback.dart';
 /// The returned value wraps the [NgDepsModel] at `assetId` as well as these
 /// created objects.
 Future<CompileDataResults> createCompileData(
-    AssetReader reader, AssetId assetId) async {
+    AssetReader reader, AssetId assetId, List<String> ambientDirectives) async {
   return logElapsedAsync(() async {
-    final creator = await _CompileDataCreator.create(reader, assetId);
+    final creator = await _CompileDataCreator.create(reader, assetId, ambientDirectives);
     return creator != null ? creator.createCompileData() : null;
   }, operationName: 'createCompileData', assetId: assetId);
 }
@@ -41,17 +41,18 @@ class _CompileDataCreator {
   final AssetReader reader;
   final AssetId entryPoint;
   final NgMeta ngMeta;
+  final List<String> ambientDirectives;
 
-  _CompileDataCreator(this.reader, this.entryPoint, this.ngMeta);
+  _CompileDataCreator(this.reader, this.entryPoint, this.ngMeta, this.ambientDirectives);
 
   static Future<_CompileDataCreator> create(
-      AssetReader reader, AssetId assetId) async {
+      AssetReader reader, AssetId assetId, List<String> ambientDirectives) async {
     if (!(await reader.hasInput(assetId))) return null;
     final json = await reader.readAsString(assetId);
     if (json == null || json.isEmpty) return null;
 
     final ngMeta = new NgMeta.fromJson(JSON.decode(json));
-    return new _CompileDataCreator(reader, assetId, ngMeta);
+    return new _CompileDataCreator(reader, assetId, ngMeta, ambientDirectives);
   }
 
   NgDepsModel get ngDeps => ngMeta.ngDeps;
@@ -64,6 +65,7 @@ class _CompileDataCreator {
     final compileData =
         <ReflectionInfoModel, NormalizedComponentWithViewDirectives>{};
     final ngMetaMap = await _extractNgMeta();
+    final ambientDirectives = await _readAmbientDirectives();
 
     for (var reflectable in ngDeps.reflectables) {
       if (ngMeta.types.containsKey(reflectable.name)) {
@@ -71,6 +73,8 @@ class _CompileDataCreator {
         if (compileDirectiveMetadata.template != null) {
           final compileDatum = new NormalizedComponentWithViewDirectives(
               compileDirectiveMetadata, <CompileDirectiveMetadata>[]);
+          compileDatum.directives.addAll(ambientDirectives);
+
           for (var dep in reflectable.directives) {
             if (!ngMetaMap.containsKey(dep.prefix)) {
               logger.warning(
@@ -97,6 +101,50 @@ class _CompileDataCreator {
       }
     }
     return new CompileDataResults._(ngMeta, compileData);
+  }
+
+  Future<List<CompileDirectiveMetadata>> _readAmbientDirectives() async {
+    if (ambientDirectives == null) return const [];
+
+    final res = [];
+    for (var ad in ambientDirectives) {
+      final parts = ad.split("#");
+      if (parts.length != 2) {
+        logger.warning('The ambient directives configuration option '
+            'must be in the following format: "URI#TOKEN"');
+        return const [];
+      }
+      res.addAll(await _readAmbientDirectivesFromUri(parts[0], parts[1]));
+    }
+    return res;
+  }
+
+  Future<List<CompileDirectiveMetadata>> _readAmbientDirectivesFromUri(String uri, String token) async {
+    final metaAssetId = fromUri(toMetaExtension(uri));
+    if (await reader.hasInput(metaAssetId)) {
+      try {
+        var jsonString = await reader.readAsString(metaAssetId);
+        if (jsonString != null && jsonString.isNotEmpty) {
+          var newMetadata = new NgMeta.fromJson(JSON.decode(jsonString));
+
+          if (newMetadata.types.containsKey(token)) {
+            return [newMetadata.types[token]];
+
+          } else if (newMetadata.aliases.containsKey(token)) {
+            return newMetadata.flatten(token);
+
+          } else {
+            logger.warning('Could not resolve ambient directive ${token} in ${uri}',
+                asset: metaAssetId);
+          }
+
+        }
+      } catch (ex, stackTrace) {
+        logger.warning('Failed to decode: $ex, $stackTrace',
+            asset: metaAssetId);
+      }
+    }
+    return [];
   }
 
   /// Creates a map from import prefix to the asset: uris of all `.dart`
