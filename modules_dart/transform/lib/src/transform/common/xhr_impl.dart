@@ -20,7 +20,7 @@ class XhrImpl implements XHR {
   Future<String> get(String url) async {
     final assetId = fromUri(url);
     if (!url.startsWith('asset:')) {
-      logger.warning('XhrImpl received unexpected url: $url');
+      log.warning('XhrImpl received unexpected url: $url');
     }
 
     if (!await _reader.hasInput(assetId)) {

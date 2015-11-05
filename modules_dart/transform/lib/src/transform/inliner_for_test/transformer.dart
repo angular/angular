@@ -4,18 +4,19 @@ import 'dart:async';
 
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/ast.dart';
+import 'package:barback/barback.dart';
+import 'package:dart_style/dart_style.dart';
+
 import 'package:angular2/src/core/compiler/xhr.dart' show XHR;
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/naive_eval.dart';
 import 'package:angular2/src/transform/common/async_string_writer.dart';
-import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/options.dart';
 import 'package:angular2/src/transform/common/url_resolver.dart';
 import 'package:angular2/src/transform/common/xhr_impl.dart';
+import 'package:angular2/src/transform/common/zone.dart' as zone;
 import 'package:angular2/src/transform/directive_processor/inliner.dart';
-import 'package:barback/barback.dart';
-import 'package:dart_style/dart_style.dart';
 
 /// Processes .dart files and inlines `templateUrl` and styleUrls` values.
 class InlinerForTest extends Transformer {
@@ -31,7 +32,7 @@ class InlinerForTest extends Transformer {
 
   @override
   Future apply(Transform transform) async {
-    return initZoned(transform, () async {
+    return zone.exec(() async {
       var primaryId = transform.primaryInput.id;
       var inlinedCode = await inline(new AssetReader.fromTransform(transform),
           primaryId, _annotationMatcher);
@@ -43,7 +44,7 @@ class InlinerForTest extends Transformer {
         }
         transform.addOutput(new Asset.fromString(primaryId, inlinedCode));
       }
-    });
+    }, log: transform.logger);
   }
 }
 
@@ -144,7 +145,8 @@ class _ViewPropInliner extends RecursiveAstVisitor<Object> {
   void _populateStyleUrls(NamedExpression node) {
     var urls = naiveEval(node.expression);
     if (urls is! List) {
-      logger.warning('styleUrls is not a List of Strings (${node.expression})');
+      zone.log
+          .warning('styleUrls is not a List of Strings (${node.expression})');
       return;
     }
     _writer.print(_code.substring(_lastIndex, node.offset));
@@ -156,7 +158,7 @@ class _ViewPropInliner extends RecursiveAstVisitor<Object> {
         _writer.asyncPrint(_readOrEmptyString(url));
         _writer.print("''', ");
       } else {
-        logger.warning('style url is not a String (${url})');
+        zone.log.warning('style url is not a String (${url})');
       }
     }
     _writer.println(']');
@@ -165,7 +167,7 @@ class _ViewPropInliner extends RecursiveAstVisitor<Object> {
   void _populateTemplateUrl(NamedExpression node) {
     var url = naiveEval(node.expression);
     if (url is! String) {
-      logger.warning('template url is not a String (${node.expression})');
+      zone.log.warning('template url is not a String (${node.expression})');
       return;
     }
     _writer.print(_code.substring(_lastIndex, node.offset));
@@ -181,7 +183,7 @@ class _ViewPropInliner extends RecursiveAstVisitor<Object> {
     final resolvedUri = _urlResolver.resolve(_baseUri.toString(), url);
 
     return _xhr.get(resolvedUri).catchError((_) {
-      logger.error('$_baseUri: could not read $url');
+      zone.log.error('$_baseUri: could not read $url');
       return '';
     });
   }

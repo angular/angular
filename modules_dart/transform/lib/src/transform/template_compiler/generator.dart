@@ -2,6 +2,9 @@ library angular2.transform.template_compiler.generator;
 
 import 'dart:async';
 
+import 'package:barback/barback.dart';
+import 'package:path/path.dart' as path;
+
 import 'package:angular2/src/core/change_detection/interfaces.dart';
 import 'package:angular2/src/core/facade/lang.dart';
 import 'package:angular2/src/core/reflection/reflection.dart';
@@ -13,8 +16,7 @@ import 'package:angular2/src/transform/common/model/import_export_model.pb.dart'
 import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/ng_compiler.dart';
-import 'package:barback/barback.dart';
-import 'package:path/path.dart' as path;
+import 'package:angular2/src/transform/common/zone.dart' as zone;
 
 import 'reflection/processor.dart' as reg;
 import 'reflection/reflection_capabilities.dart';
@@ -40,9 +42,12 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
     viewDefResults.ngMeta.ngDeps.methods
         .addAll(processor.methodNames.map((e) => e.sanitizedName));
   }
-  var templateCompiler = createTemplateCompiler(reader,
-      changeDetectionConfig: new ChangeDetectorGenConfig(assertionsEnabled(),
-          assertionsEnabled(), reflectPropertiesAsAttributes, false));
+  var templateCompiler = zone.templateCompiler;
+  if (templateCompiler == null) {
+    templateCompiler = createTemplateCompiler(reader,
+        changeDetectionConfig: new ChangeDetectorGenConfig(assertionsEnabled(),
+            assertionsEnabled(), reflectPropertiesAsAttributes, false));
+  }
 
   final compileData =
       viewDefResults.viewDefinitions.values.toList(growable: false);

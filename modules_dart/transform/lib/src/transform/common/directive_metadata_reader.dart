@@ -182,7 +182,7 @@ class _DirectiveMetadataVisitor extends Object
       if (_type != null && _type.name != null && _type.name.isNotEmpty) {
         name = _type.name;
       }
-      logger.warning(
+      log.warning(
           'Cannot specify view parameters on @Component when a @View '
           'is present. Component name: ${name}',
           asset: _assetId);
@@ -264,7 +264,8 @@ class _DirectiveMetadataVisitor extends Object
   Object visitMethodDeclaration(MethodDeclaration node) {
     for (var meta in node.metadata) {
       if (_isAnnotation(meta, 'HostListener')) {
-        if (meta.arguments.arguments.length == 0 || meta.arguments.arguments.length > 2) {
+        if (meta.arguments.arguments.length == 0 ||
+            meta.arguments.arguments.length > 2) {
           throw new ArgumentError(
               'Incorrect value passed to HostListener. Expected 1 or 2.');
         }

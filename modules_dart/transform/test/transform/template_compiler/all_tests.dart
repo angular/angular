@@ -4,14 +4,15 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:barback/barback.dart';
-import 'package:angular2/src/core/change_detection/codegen_name_util.dart'
-    show CONTEXT_ACCESSOR;
-import 'package:angular2/src/core/dom/html_adapter.dart';
-import 'package:angular2/src/transform/common/logging.dart' as log;
-import 'package:angular2/src/transform/template_compiler/generator.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:path/path.dart' as path;
 import 'package:guinness/guinness.dart';
+
+import 'package:angular2/src/core/change_detection/codegen_name_util.dart'
+    show CONTEXT_ACCESSOR;
+import 'package:angular2/src/core/dom/html_adapter.dart';
+import 'package:angular2/src/transform/template_compiler/generator.dart';
+import 'package:angular2/src/transform/common/zone.dart' as zone;
 
 import '../common/compile_directive_metadata/ng_for.ng_meta.dart' as ngMeta;
 import '../common/ng_meta_helper.dart';
@@ -76,8 +77,10 @@ void allTests() {
 
   Future<String> process(AssetId assetId, {List<String> ambientDirectives}) {
     logger = new RecordingLogger();
-    return log.setZoned(logger, () => processTemplates(reader, assetId,
-        ambientDirectives: ambientDirectives));
+    return zone.exec(
+        () => processTemplates(reader, assetId,
+            ambientDirectives: ambientDirectives),
+        log: logger);
   }
 
   // TODO(tbosch): This is just a temporary test that makes sure that the dart
@@ -357,7 +360,8 @@ void allTests() {
     barNgMeta.aliases['AMBIENT'] = [barComponentMeta.type.name];
     updateReader();
 
-    final outputs = await process(fooAssetId, ambientDirectives: ['package:a/bar.dart#AMBIENT']);
+    final outputs = await process(fooAssetId,
+        ambientDirectives: ['package:a/bar.dart#AMBIENT']);
     final ngDeps = outputs.ngDeps;
     expect(ngDeps).toBeNotNull();
     expect(outputs.templatesCode)
@@ -374,7 +378,8 @@ void allTests() {
     barNgMeta.types['AMBIENT'] = barComponentMeta;
     updateReader();
 
-    final outputs = await process(fooAssetId, ambientDirectives: ['package:a/bar.dart#AMBIENT']);
+    final outputs = await process(fooAssetId,
+        ambientDirectives: ['package:a/bar.dart#AMBIENT']);
     final ngDeps = outputs.ngDeps;
     expect(ngDeps).toBeNotNull();
     expect(outputs.templatesCode)
@@ -388,21 +393,25 @@ void allTests() {
     expect(ngDeps).toBeNotNull();
   });
 
-  it('should work when the ambient directives config is not formatted properly.', () async {
+  it('should work when the ambient directives config is not formatted properly.',
+      () async {
     final outputs = await process(fooAssetId, ambientDirectives: ['INVALID']);
     final ngDeps = outputs.ngDeps;
     expect(ngDeps).toBeNotNull();
   });
 
-  it('should work when the file with ambient directives cannot be found.', () async {
-    final outputs = await process(
-        fooAssetId, ambientDirectives: ['package:a/invalid.dart#AMBIENT']);
+  it('should work when the file with ambient directives cannot be found.',
+      () async {
+    final outputs = await process(fooAssetId,
+        ambientDirectives: ['package:a/invalid.dart#AMBIENT']);
     final ngDeps = outputs.ngDeps;
     expect(ngDeps).toBeNotNull();
   });
 
-  it('should work when the ambient directives token cannot be found.', () async {
-    final outputs = await process(fooAssetId, ambientDirectives: ['package:a/bar.dart#AMBIENT']);
+  it('should work when the ambient directives token cannot be found.',
+      () async {
+    final outputs = await process(fooAssetId,
+        ambientDirectives: ['package:a/bar.dart#AMBIENT']);
     final ngDeps = outputs.ngDeps;
     expect(ngDeps).toBeNotNull();
   });

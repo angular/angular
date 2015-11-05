@@ -56,7 +56,7 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
     if (numCtorsFound > 1) {
       var ctorName = ctor.name;
       if (ctorName != null) {
-        logger.warning('Found ${numCtorsFound} constructors for class '
+        log.warning('Found ${numCtorsFound} constructors for class '
             '${node.name}; using constructor ${ctorName}.');
       }
     }
@@ -88,7 +88,7 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
       });
       if (componentDirectives != null && componentDirectives.isNotEmpty) {
         if (viewDirectives != null) {
-          logger.warning(
+          log.warning(
               'Cannot specify view parameters on @Component when a @View '
               'is present. Component name: ${model.name}',
               asset: assetId);
@@ -166,7 +166,7 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
     if (directivesNode == null) return const [];
 
     if (directivesNode.expression is! ListLiteral) {
-      logger.warning('Angular 2 expects a list literal for `directives` '
+      log.warning('Angular 2 expects a list literal for `directives` '
           'but found a ${directivesNode.expression.runtimeType}');
       return const [];
     }
@@ -179,7 +179,7 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
       } else if (dep is Identifier) {
         directives.add(new PrefixedDirective()..name = '${dep}');
       } else {
-        logger.warning('Found unexpected value $dep in `directives`.');
+        log.warning('Found unexpected value $dep in `directives`.');
       }
     }
     return directives;

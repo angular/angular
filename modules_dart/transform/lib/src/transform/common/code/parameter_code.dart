@@ -68,7 +68,7 @@ class ParameterVisitor extends SimpleAstVisitor<ParameterModel> {
   @override
   ParameterModel visitFieldFormalParameter(FieldFormalParameter node) {
     if (node.parameters != null) {
-      logger.error('Parameters in ctor not supported '
+      log.error('Parameters in ctor not supported '
           '(${node.toSource()})');
     }
     var type = node.type;
@@ -82,7 +82,7 @@ class ParameterVisitor extends SimpleAstVisitor<ParameterModel> {
   @override
   ParameterModel visitFunctionTypedFormalParameter(
       FunctionTypedFormalParameter node) {
-    logger.error('Function typed formal parameters not supported '
+    log.error('Function typed formal parameters not supported '
         '(${node.toSource()})');
     return _visitNormalFormalParameter(node.metadata, null, node.identifier);
   }

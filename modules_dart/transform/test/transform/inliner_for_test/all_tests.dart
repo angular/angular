@@ -2,15 +2,16 @@ library angular2.test.transform.inliner_for_test.all_tests;
 
 import 'dart:async';
 
-import 'package:angular2/src/transform/common/annotation_matcher.dart';
-import 'package:angular2/src/transform/common/asset_reader.dart';
-import 'package:angular2/src/transform/common/logging.dart' as log;
-import 'package:angular2/src/transform/common/options.dart';
-import 'package:angular2/src/transform/inliner_for_test/transformer.dart';
 import 'package:barback/barback.dart';
 import 'package:code_transformers/tests.dart';
 import 'package:guinness/guinness.dart';
 import 'package:dart_style/dart_style.dart';
+
+import 'package:angular2/src/transform/common/annotation_matcher.dart';
+import 'package:angular2/src/transform/common/asset_reader.dart';
+import 'package:angular2/src/transform/common/options.dart';
+import 'package:angular2/src/transform/common/zone.dart' as zone;
+import 'package:angular2/src/transform/inliner_for_test/transformer.dart';
 
 import '../common/read_file.dart';
 import '../common/recording_logger.dart';
@@ -118,8 +119,8 @@ void allTests() {
 }
 
 Future<String> _testInline(AssetReader reader, AssetId assetId) {
-  return log.setZoned(
-      new RecordingLogger(), () => inline(reader, assetId, annotationMatcher));
+  return zone.exec(() => inline(reader, assetId, annotationMatcher),
+      log: new RecordingLogger());
 }
 
 AssetId _assetId(String path) => new AssetId('a', 'inliner_for_test/$path');

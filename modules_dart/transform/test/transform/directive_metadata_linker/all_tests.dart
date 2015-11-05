@@ -3,14 +3,15 @@ library angular2.test.transform.directive_metadata_linker.all_tests;
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:angular2/src/transform/common/asset_reader.dart';
-import 'package:angular2/src/transform/common/logging.dart' as log;
-import 'package:angular2/src/transform/common/names.dart';
-import 'package:angular2/src/transform/common/model/import_export_model.pb.dart';
-import 'package:angular2/src/transform/directive_metadata_linker/ng_meta_linker.dart';
 import 'package:barback/barback.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:guinness/guinness.dart';
+
+import 'package:angular2/src/transform/common/asset_reader.dart';
+import 'package:angular2/src/transform/common/names.dart';
+import 'package:angular2/src/transform/common/model/import_export_model.pb.dart';
+import 'package:angular2/src/transform/common/zone.dart' as zone;
+import 'package:angular2/src/transform/directive_metadata_linker/ng_meta_linker.dart';
 
 import '../common/ng_meta_helper.dart';
 import '../common/read_file.dart';
@@ -172,6 +173,6 @@ void allTests() {
 }
 
 Future<NgMeta> _testLink(AssetReader reader, AssetId assetId) {
-  return log.setZoned(
-      new RecordingLogger(), () => linkDirectiveMetadata(reader, assetId));
+  return zone.exec(() => linkDirectiveMetadata(reader, assetId),
+      log: new RecordingLogger());
 }

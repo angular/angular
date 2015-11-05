@@ -4,7 +4,7 @@ import 'package:analyzer/src/generated/ast.dart';
 import 'package:barback/barback.dart' show AssetId;
 import 'package:code_transformers/assets.dart';
 import 'package:path/path.dart' as path;
-import 'logging.dart' show logger;
+import 'logging.dart' show log;
 
 /// Checks if a given [Identifier] matches any of the given [ClassDescriptor]s.
 abstract class ClassMatcherBase {
@@ -53,7 +53,7 @@ abstract class ClassMatcherBase {
     if (superClass == null) {
       if (missingSuperClassWarning != null &&
           missingSuperClassWarning.isNotEmpty) {
-        logger.warning(missingSuperClassWarning);
+        log.warning(missingSuperClassWarning);
       }
       return false;
     }
@@ -87,7 +87,7 @@ ImportDirective _getMatchingImport(
       return false;
     } else {
       importMatch =
-          descriptor.assetId == uriToAssetId(assetId, uriString, logger, null);
+          descriptor.assetId == uriToAssetId(assetId, uriString, log, null);
     }
 
     if (!importMatch) return false;

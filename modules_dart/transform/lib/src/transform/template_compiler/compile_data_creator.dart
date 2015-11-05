@@ -77,7 +77,7 @@ class _CompileDataCreator {
 
           for (var dep in reflectable.directives) {
             if (!ngMetaMap.containsKey(dep.prefix)) {
-              logger.warning(
+              log.warning(
                   'Missing prefix "${dep.prefix}" '
                   'needed by "${dep}" from metadata map',
                   asset: entryPoint);
@@ -90,7 +90,7 @@ class _CompileDataCreator {
             } else if (depNgMeta.aliases.containsKey(dep.name)) {
               compileDatum.directives.addAll(depNgMeta.flatten(dep.name));
             } else {
-              logger.warning('Could not find Directive entry for $dep. '
+              log.warning('Could not find Directive entry for $dep. '
                   'Please be aware that Dart transformers have limited support for '
                   'reusable, pre-defined lists of Directives (aka '
                   '"directive aliases"). See https://goo.gl/d8XPt0 for details.');
@@ -110,7 +110,7 @@ class _CompileDataCreator {
     for (var ad in ambientDirectives) {
       final parts = ad.split("#");
       if (parts.length != 2) {
-        logger.warning('The ambient directives configuration option '
+        log.warning('The ambient directives configuration option '
             'must be in the following format: "URI#TOKEN"');
         return const [];
       }
@@ -134,13 +134,13 @@ class _CompileDataCreator {
             return newMetadata.flatten(token);
 
           } else {
-            logger.warning('Could not resolve ambient directive ${token} in ${uri}',
+            log.warning('Could not resolve ambient directive ${token} in ${uri}',
                 asset: metaAssetId);
           }
 
         }
       } catch (ex, stackTrace) {
-        logger.warning('Failed to decode: $ex, $stackTrace',
+        log.warning('Failed to decode: $ex, $stackTrace',
             asset: metaAssetId);
       }
     }
@@ -214,7 +214,7 @@ class _CompileDataCreator {
               ngMeta.addAll(newMetadata);
             }
           } catch (ex, stackTrace) {
-            logger.warning('Failed to decode: $ex, $stackTrace',
+            log.warning('Failed to decode: $ex, $stackTrace',
                 asset: metaAssetId);
           }
         }
