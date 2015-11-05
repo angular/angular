@@ -417,7 +417,14 @@ var _availableDefinitions = [
   'a.sayHi("Jim")',
   'passThrough([12])',
   'invalidFn(1)',
-  'age'
+  'age',
+  'true ? city : zipcode',
+  'false ? city : zipcode',
+  'getTrue() && getTrue()',
+  'getFalse() && getTrue()',
+  'getFalse() || getFalse()',
+  'getTrue() || getFalse()',
+  'name == "Victor" ? (true ? address.city : address.zipcode) : address.zipcode'
 ];
 
 var _availableEventDefinitions = [
@@ -427,7 +434,8 @@ var _availableEventDefinitions = [
   // '(event)="\$event=1"',
   '(event)="a=a+1; a=a+1;"',
   '(event)="false"',
-  '(event)="true"'
+  '(event)="true"',
+  '(event)="true ? a = a + 1 : a = a + 1"',
 ];
 
 var _availableHostEventDefinitions = ['(host-event)="onEvent(\$event)"'];

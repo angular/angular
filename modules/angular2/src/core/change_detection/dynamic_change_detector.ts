@@ -7,7 +7,7 @@ import {EventBinding} from './event_binding';
 import {BindingRecord, BindingTarget} from './binding_record';
 import {DirectiveRecord, DirectiveIndex} from './directive_record';
 import {Locals} from './parser/locals';
-import {ChangeDetectorGenConfig} from './interfaces';
+import {ChangeDispatcher, ChangeDetectorGenConfig} from './interfaces';
 import {ChangeDetectionUtil, SimpleChange} from './change_detection_util';
 import {ChangeDetectionStrategy, ChangeDetectorState} from './constants';
 import {ProtoRecord, RecordType} from './proto_record';
@@ -19,7 +19,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   prevContexts: any[];
   directives: any = null;
 
-  constructor(id: string, dispatcher: any, numberOfPropertyProtoRecords: number,
+  constructor(id: string, dispatcher: ChangeDispatcher, numberOfPropertyProtoRecords: number,
               propertyBindingTargets: BindingTarget[], directiveIndices: DirectiveIndex[],
               strategy: ChangeDetectionStrategy, private _records: ProtoRecord[],
               private _eventBindings: EventBinding[], private _directiveRecords: DirectiveRecord[],
@@ -54,15 +54,38 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     var values = ListWrapper.createFixedSize(eb.records.length);
     values[0] = this.values[0];
 
-    for (var i = 0; i < eb.records.length; ++i) {
-      var proto = eb.records[i];
-      var res = this._calculateCurrValue(proto, values, locals);
-      if (proto.lastInBinding) {
-        this._markPathAsCheckOnce(proto);
-        return res;
+    for (var protoIdx = 0; protoIdx < eb.records.length; ++protoIdx) {
+      var proto = eb.records[protoIdx];
+
+      if (proto.isSkipRecord()) {
+        protoIdx += this._computeSkipLength(protoIdx, proto, values);
       } else {
-        this._writeSelf(proto, res, values);
+        var res = this._calculateCurrValue(proto, values, locals);
+        if (proto.lastInBinding) {
+          this._markPathAsCheckOnce(proto);
+          return res;
+        } else {
+          this._writeSelf(proto, res, values);
+        }
       }
+    }
+
+    throw new BaseException("Cannot be reached");
+  }
+
+  private _computeSkipLength(protoIndex: number, proto: ProtoRecord, values: any[]): number {
+    if (proto.mode === RecordType.SkipRecords) {
+      return proto.fixedArgs[0] - protoIndex - 1;
+    }
+
+    if (proto.mode === RecordType.SkipRecordsIf) {
+      let condition = this._readContext(proto, values);
+      return condition ? proto.fixedArgs[0] - protoIndex - 1 : 0;
+    }
+
+    if (proto.mode === RecordType.SkipRecordsIfNot) {
+      let condition = this._readContext(proto, values);
+      return condition ? 0 : proto.fixedArgs[0] - protoIndex - 1;
     }
 
     throw new BaseException("Cannot be reached");
@@ -122,8 +145,8 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
 
     var changes = null;
     var isChanged = false;
-    for (var i = 0; i < protos.length; ++i) {
-      var proto: ProtoRecord = protos[i];
+    for (var protoIdx = 0; protoIdx < protos.length; ++protoIdx) {
+      var proto: ProtoRecord = protos[protoIdx];
       var bindingRecord = proto.bindingRecord;
       var directiveRecord = bindingRecord.directiveRecord;
 
@@ -140,7 +163,8 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
         } else if (proto.name === "OnChanges" && isPresent(changes) && !throwOnChange) {
           this._getDirectiveFor(directiveRecord.directiveIndex).onChanges(changes);
         }
-
+      } else if (proto.isSkipRecord()) {
+        protoIdx += this._computeSkipLength(protoIdx, proto, this.values);
       } else {
         var change = this._check(proto, throwOnChange, this.values, this.locals);
         if (isPresent(change)) {
@@ -195,7 +219,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   }
 
   /** @internal */
-  _updateDirectiveOrElement(change, bindingRecord) {
+  private _updateDirectiveOrElement(change, bindingRecord) {
     if (isBlank(bindingRecord.directiveRecord)) {
       super.notifyDispatcher(change.currentValue);
     } else {
@@ -209,7 +233,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   }
 
   /** @internal */
-  _addChange(bindingRecord: BindingRecord, change, changes) {
+  private _addChange(bindingRecord: BindingRecord, change, changes) {
     if (bindingRecord.callOnChanges()) {
       return super.addChange(changes, change.previousValue, change.currentValue);
     } else {
@@ -218,13 +242,16 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   }
 
   /** @internal */
-  _getDirectiveFor(directiveIndex) { return this.directives.getDirectiveFor(directiveIndex); }
+  private _getDirectiveFor(directiveIndex) {
+    return this.directives.getDirectiveFor(directiveIndex);
+  }
 
   /** @internal */
-  _getDetectorFor(directiveIndex) { return this.directives.getDetectorFor(directiveIndex); }
+  private _getDetectorFor(directiveIndex) { return this.directives.getDetectorFor(directiveIndex); }
 
   /** @internal */
-  _check(proto: ProtoRecord, throwOnChange: boolean, values: any[], locals: Locals): SimpleChange {
+  private _check(proto: ProtoRecord, throwOnChange: boolean, values: any[],
+                 locals: Locals): SimpleChange {
     if (proto.isPipeRecord()) {
       return this._pipeCheck(proto, throwOnChange, values);
     } else {
@@ -233,7 +260,8 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
   }
 
   /** @internal */
-  _referenceCheck(proto: ProtoRecord, throwOnChange: boolean, values: any[], locals: Locals) {
+  private _referenceCheck(proto: ProtoRecord, throwOnChange: boolean, values: any[],
+                          locals: Locals) {
     if (this._pureFuncAndArgsDidNotChange(proto)) {
       this._setChanged(proto, false);
       return null;
@@ -271,8 +299,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     }
   }
 
-  /** @internal */
-  _calculateCurrValue(proto: ProtoRecord, values: any[], locals: Locals) {
+  private _calculateCurrValue(proto: ProtoRecord, values: any[], locals: Locals) {
     switch (proto.mode) {
       case RecordType.Self:
         return this._readContext(proto, values);
@@ -339,8 +366,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     }
   }
 
-  /** @internal */
-  _pipeCheck(proto: ProtoRecord, throwOnChange: boolean, values: any[]) {
+  private _pipeCheck(proto: ProtoRecord, throwOnChange: boolean, values: any[]) {
     var context = this._readContext(proto, values);
     var selectedPipe = this._pipeFor(proto, context);
     if (!selectedPipe.pure || this._argsOrContextChanged(proto)) {
@@ -378,8 +404,7 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     }
   }
 
-  /** @internal */
-  _pipeFor(proto: ProtoRecord, context) {
+  private _pipeFor(proto: ProtoRecord, context) {
     var storedPipe = this._readPipe(proto);
     if (isPresent(storedPipe)) return storedPipe;
 
@@ -388,38 +413,30 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     return pipe;
   }
 
-  /** @internal */
-  _readContext(proto: ProtoRecord, values: any[]) {
+  private _readContext(proto: ProtoRecord, values: any[]) {
     if (proto.contextIndex == -1) {
       return this._getDirectiveFor(proto.directiveIndex);
     }
     return values[proto.contextIndex];
   }
 
-  /** @internal */
-  _readSelf(proto: ProtoRecord, values: any[]) { return values[proto.selfIndex]; }
+  private _readSelf(proto: ProtoRecord, values: any[]) { return values[proto.selfIndex]; }
 
-  /** @internal */
-  _writeSelf(proto: ProtoRecord, value, values: any[]) { values[proto.selfIndex] = value; }
+  private _writeSelf(proto: ProtoRecord, value, values: any[]) { values[proto.selfIndex] = value; }
 
-  /** @internal */
-  _readPipe(proto: ProtoRecord) { return this.localPipes[proto.selfIndex]; }
+  private _readPipe(proto: ProtoRecord) { return this.localPipes[proto.selfIndex]; }
 
-  /** @internal */
-  _writePipe(proto: ProtoRecord, value) { this.localPipes[proto.selfIndex] = value; }
+  private _writePipe(proto: ProtoRecord, value) { this.localPipes[proto.selfIndex] = value; }
 
-  /** @internal */
-  _setChanged(proto: ProtoRecord, value: boolean) {
+  private _setChanged(proto: ProtoRecord, value: boolean) {
     if (proto.argumentToPureFunction) this.changes[proto.selfIndex] = value;
   }
 
-  /** @internal */
-  _pureFuncAndArgsDidNotChange(proto: ProtoRecord): boolean {
+  private _pureFuncAndArgsDidNotChange(proto: ProtoRecord): boolean {
     return proto.isPureFunction() && !this._argsChanged(proto);
   }
 
-  /** @internal */
-  _argsChanged(proto: ProtoRecord): boolean {
+  private _argsChanged(proto: ProtoRecord): boolean {
     var args = proto.args;
     for (var i = 0; i < args.length; ++i) {
       if (this.changes[args[i]]) {
@@ -429,13 +446,11 @@ export class DynamicChangeDetector extends AbstractChangeDetector<any> {
     return false;
   }
 
-  /** @internal */
-  _argsOrContextChanged(proto: ProtoRecord): boolean {
+  private _argsOrContextChanged(proto: ProtoRecord): boolean {
     return this._argsChanged(proto) || this.changes[proto.contextIndex];
   }
 
-  /** @internal */
-  _readArgs(proto: ProtoRecord, values: any[]) {
+  private _readArgs(proto: ProtoRecord, values: any[]) {
     var res = ListWrapper.createFixedSize(proto.args.length);
     var args = proto.args;
     for (var i = 0; i < args.length; ++i) {
