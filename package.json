@@ -57,7 +57,7 @@
     "googleapis": "1.0.x",
     "gulp": "^3.8.8",
     "gulp-autoprefixer": "^3.1.0",
-    "gulp-clang-format": "^1.0.14",
+    "gulp-clang-format": "^1.0.23",
     "gulp-concat": "^2.5.2",
     "gulp-connect": "^1.0.10",
     "gulp-insert": "^0.5.0",
