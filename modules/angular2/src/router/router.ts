@@ -5,14 +5,7 @@ import {
   ObservableWrapper
 } from 'angular2/src/core/facade/async';
 import {Map, StringMapWrapper, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
-import {
-  isBlank,
-  isString,
-  StringWrapper,
-  isPresent,
-  Type,
-  isArray
-} from 'angular2/src/core/facade/lang';
+import {isBlank, isString, isPresent, Type, isArray} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 import {RouteRegistry} from './route_registry';
 import {
@@ -537,11 +530,11 @@ class ChildRouter extends Router {
  * Given: ['/a/b', {c: 2}]
  * Returns: ['', 'a', 'b', {c: 2}]
  */
-var SLASH = new RegExp('/');
 function splitAndFlattenLinkParams(linkParams: any[]): any[] {
   return ListWrapper.reduce(linkParams, (accumulation, item) => {
     if (isString(item)) {
-      return accumulation.concat(StringWrapper.split(item, SLASH));
+      let parts: String[] = item.split('/');
+      return accumulation.concat(parts);
     }
     accumulation.push(item);
     return accumulation;

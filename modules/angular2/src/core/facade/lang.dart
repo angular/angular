@@ -78,18 +78,6 @@ class StringWrapper {
     return s.replaceAll(from, replace);
   }
 
-  static String toUpperCase(String s) {
-    return s.toUpperCase();
-  }
-
-  static String toLowerCase(String s) {
-    return s.toLowerCase();
-  }
-
-  static startsWith(String s, String start) {
-    return s.startsWith(start);
-  }
-
   static String slice(String s, [int start = 0, int end]) {
     start = _startOffset(s, start);
     end = _endOffset(s, end);
@@ -97,10 +85,6 @@ class StringWrapper {
     if (end != null && start > end) {
       return "";
     }
-    return s.substring(start, end);
-  }
-
-  static String substring(String s, int start, [int end]) {
     return s.substring(start, end);
   }
 

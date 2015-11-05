@@ -1,11 +1,5 @@
 import {StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {
-  isPresent,
-  isBlank,
-  StringWrapper,
-  RegExpWrapper,
-  CONST_EXPR
-} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank, RegExpWrapper, CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
 
 /**
@@ -79,10 +73,10 @@ function matchUrlSegment(str: string): string {
 export class UrlParser {
   private _remaining: string;
 
-  peekStartsWith(str: string): boolean { return StringWrapper.startsWith(this._remaining, str); }
+  peekStartsWith(str: string): boolean { return this._remaining.startsWith(str); }
 
   capture(str: string): void {
-    if (!StringWrapper.startsWith(this._remaining, str)) {
+    if (!this._remaining.startsWith(str)) {
       throw new BaseException(`Expected "${str}".`);
     }
     this._remaining = this._remaining.substring(str.length);

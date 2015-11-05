@@ -46,8 +46,7 @@ export class JSONPConnection_ extends JSONPConnection {
       if (url.indexOf('=JSONP_CALLBACK&') > -1) {
         url = StringWrapper.replace(url, '=JSONP_CALLBACK&', `=${callback}&`);
       } else if (url.lastIndexOf('=JSONP_CALLBACK') === url.length - '=JSONP_CALLBACK'.length) {
-        url =
-            StringWrapper.substring(url, 0, url.length - '=JSONP_CALLBACK'.length) + `=${callback}`;
+        url = url.substring(0, url.length - '=JSONP_CALLBACK'.length) + `=${callback}`;
       }
 
       let script = this._script = _dom.build(url);
