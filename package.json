@@ -67,7 +67,6 @@
     "gulp-sass": "^2.0.4",
     "gulp-shell": "^0.5.1",
     "gulp-sourcemaps": "^1.6.0",
-    "gulp-traceur": "0.17.*",
     "gulp-tslint": "^3.5.0",
     "gulp-typescript": "^2.9.0",
     "gulp-uglify": "^1.2.0",
