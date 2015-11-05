@@ -143,10 +143,6 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   };
   var es5Tree = compileWithTypescript(es5ModulesTree, typescriptOptions);
 
-  // Now we add a few more files to the es6 tree that the es5 tree should not see
-  var extras = new Funnel('tools/build', {files: ['es5build.js'], destDir: 'angular2'});
-  es6Tree = mergeTrees([es6Tree, extras]);
-
   var vendorScriptsTree = flatten(new Funnel('.', {
     files: [
       'node_modules/es6-shim/es6-shim.js',
