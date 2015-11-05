@@ -182,7 +182,7 @@ class _DirectiveMetadataVisitor extends Object
       if (_type != null && _type.name != null && _type.name.isNotEmpty) {
         name = _type.name;
       }
-      logger.warning(
+      log.warning(
           'Cannot specify view parameters on @Component when a @View '
           'is present. Component name: ${name}',
           asset: _assetId);

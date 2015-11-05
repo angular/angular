@@ -91,7 +91,7 @@ class _RewriterVisitor extends Object with RecursiveAstVisitor<Object> {
   Object visitInstanceCreationExpression(InstanceCreationExpression node) {
     if (_rewriter._mirrorMatcher.isNewReflectionCapabilities(node) &&
         !reflectionCapabilityAssignments.contains(node.parent)) {
-      logger.error('Unexpected format in creation of '
+      log.error('Unexpected format in creation of '
           '${REFLECTION_CAPABILITIES_NAME}');
     }
     return super.visitInstanceCreationExpression(node);
@@ -132,7 +132,7 @@ class _RewriterVisitor extends Object with RecursiveAstVisitor<Object> {
       var args = node.argumentList.arguments;
       int numArgs = node.argumentList.arguments.length;
       if (numArgs < 1 || numArgs > 2) {
-        logger.warning('`bootstrap` does not support $numArgs arguments. '
+        log.warning('`bootstrap` does not support $numArgs arguments. '
             'Found bootstrap${node.argumentList}. Transform may not succeed.');
       }
 
@@ -168,7 +168,7 @@ class _RewriterVisitor extends Object with RecursiveAstVisitor<Object> {
   _rewriteReflectionCapabilitiesImport(ImportDirective node) {
     buf.write(_rewriter._code.substring(_currentIndex, node.offset));
     if ('${node.prefix}' == _rewriter._codegen.prefix) {
-      logger.warning(
+      log.warning(
           'Found import prefix "${_rewriter._codegen.prefix}" in source file.'
           ' Transform may not succeed.');
     }

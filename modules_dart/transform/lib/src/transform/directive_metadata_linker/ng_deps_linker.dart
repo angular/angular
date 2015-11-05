@@ -84,7 +84,7 @@ Future<Map<String, String>> _processNgImports(NgDepsModel model,
         retVal[directive.uri] = summaryJsonUri;
       }
     }, onError: (err, stack) {
-      logger.warning('Error while looking for $summaryJsonUri. '
+      log.warning('Error while looking for $summaryJsonUri. '
           'Message: $err\n'
           'Stack: $stack');
     });

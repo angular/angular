@@ -2,20 +2,22 @@ library angular2.test.transform.directive_processor.all_tests;
 
 import 'dart:async';
 
-import 'package:angular2/src/core/change_detection/change_detection.dart';
-import 'package:angular2/src/core/linker/interfaces.dart' show LifecycleHooks;
-import 'package:angular2/src/core/dom/html_adapter.dart';
-import 'package:angular2/src/transform/directive_processor/rewriter.dart';
-import 'package:angular2/src/transform/common/annotation_matcher.dart';
-import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
-import 'package:angular2/src/transform/common/asset_reader.dart';
-import 'package:angular2/src/transform/common/logging.dart' as log;
-import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
-import 'package:angular2/src/transform/common/model/reflection_info_model.pb.dart';
-import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:barback/barback.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:guinness/guinness.dart';
+
+import 'package:angular2/src/core/change_detection/change_detection.dart';
+import 'package:angular2/src/core/dom/html_adapter.dart';
+import 'package:angular2/src/core/linker/interfaces.dart' show LifecycleHooks;
+import 'package:angular2/src/transform/common/annotation_matcher.dart';
+import 'package:angular2/src/transform/common/asset_reader.dart';
+import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
+import 'package:angular2/src/transform/common/model/ng_deps_model.pb.dart';
+import 'package:angular2/src/transform/common/model/reflection_info_model.pb.dart';
+import 'package:angular2/src/transform/common/ng_meta.dart';
+import 'package:angular2/src/transform/common/zone.dart' as zone;
+import 'package:angular2/src/transform/directive_processor/rewriter.dart';
+
 import '../common/read_file.dart';
 import '../common/recording_logger.dart';
 
@@ -568,7 +570,7 @@ Future<NgMeta> _testCreateModel(String inputPath,
     AssetReader reader,
     TransformLogger logger}) {
   if (logger == null) logger = new RecordingLogger();
-  return log.setZoned(logger, () async {
+  return zone.exec(() async {
     var inputId = _assetIdForPath(inputPath);
     if (reader == null) {
       reader = new TestAssetReader();
@@ -580,7 +582,7 @@ Future<NgMeta> _testCreateModel(String inputPath,
 
     var annotationMatcher = new AnnotationMatcher()..addAll(customDescriptors);
     return createNgMeta(reader, inputId, annotationMatcher);
-  });
+  }, log: logger);
 }
 
 AssetId _assetIdForPath(String path) =>

@@ -1,12 +1,14 @@
 library angular2.transform.reflection_remover.transformer;
 
 import 'dart:async';
+
+import 'package:barback/barback.dart';
+
 import 'package:angular2/src/transform/common/asset_reader.dart';
-import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:angular2/src/transform/common/mirror_mode.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/options.dart';
-import 'package:barback/barback.dart';
+import 'package:angular2/src/transform/common/zone.dart' as zone;
 
 import 'remove_reflection_capabilities.dart';
 
@@ -30,14 +32,14 @@ class ReflectionRemover extends Transformer {
 
   @override
   Future apply(Transform transform) async {
-    await log.initZoned(transform, () async {
+    return zone.exec(() async {
       var primaryId = transform.primaryInput.id;
       var mirrorMode = options.mirrorMode;
       var writeStaticInit = options.initReflector;
       if (options.modeName == TRANSFORM_DYNAMIC_MODE) {
         mirrorMode = MirrorMode.debug;
         writeStaticInit = false;
-        log.logger.info('Running in "${options.modeName}", '
+        zone.log.info('Running in "${options.modeName}", '
             'mirrorMode: ${mirrorMode}, '
             'writeStaticInit: ${writeStaticInit}.');
       }
@@ -46,6 +48,6 @@ class ReflectionRemover extends Transformer {
           new AssetReader.fromTransform(transform), primaryId,
           mirrorMode: mirrorMode, writeStaticInit: writeStaticInit);
       transform.addOutput(new Asset.fromString(primaryId, transformedCode));
-    });
+    }, log: transform.logger);
   }
 }

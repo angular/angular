@@ -77,7 +77,7 @@ Future _linkRecursive(NgMeta ngMeta, AssetReader reader, AssetId assetId,
       }
     } catch (err, st) {
       // Log and continue.
-      logger.warning('Failed to fetch $uri. Message: $err.\n$st');
+      log.warning('Failed to fetch $uri. Message: $err.\n$st');
     }
   }));
 }
