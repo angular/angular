@@ -129,10 +129,9 @@ void allTests() {
 
       var linked = (await _testLink(reader, fooAssetId)).ngDeps;
       expect(linked).toBeNotNull();
-      var linkedImport =
-          linked.imports.firstWhere((i) => i.uri.endsWith('bar.ng_deps.dart'));
+      var linkedImport = linked.depImports
+          .firstWhere((i) => i.uri.endsWith('bar.ng_deps.dart'));
       expect(linkedImport).toBeNotNull();
-      expect(linkedImport.isNgDeps).toBeTrue();
       expect(linkedImport.prefix.startsWith('i')).toBeTrue();
     });
 
@@ -145,10 +144,9 @@ void allTests() {
 
       var linked = (await _testLink(reader, fooAssetId)).ngDeps;
       expect(linked).toBeNotNull();
-      var linkedImport =
-          linked.imports.firstWhere((i) => i.uri.endsWith('bar.ng_deps.dart'));
+      var linkedImport = linked.depImports
+          .firstWhere((i) => i.uri.endsWith('bar.ng_deps.dart'));
       expect(linkedImport).toBeNotNull();
-      expect(linkedImport.isNgDeps).toBeTrue();
       expect(linkedImport.prefix.startsWith('i')).toBeTrue();
     });
 
@@ -164,7 +162,7 @@ void allTests() {
 
       var linked = (await _testLink(reader, fooAssetId)).ngDeps;
       expect(linked).toBeNotNull();
-      var linkedImport = linked.imports.firstWhere(
+      var linkedImport = linked.depImports.firstWhere(
           (i) => i.uri.endsWith('bar.ng_deps.dart'),
           orElse: () => null);
       expect(linkedImport).toBeNull();
