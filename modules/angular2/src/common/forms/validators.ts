@@ -1,5 +1,6 @@
 import {isBlank, isPresent, CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {PromiseWrapper} from 'angular2/src/core/facade/promise';
+import {ObservableWrapper} from 'angular2/src/core/facade/async';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
 import {OpaqueToken} from 'angular2/src/core/di';
 
@@ -89,13 +90,18 @@ export class Validators {
 
   static composeAsync(validators: Function[]): Function {
     if (isBlank(validators)) return null;
-    var presentValidators = ListWrapper.filter(validators, isPresent);
+    let presentValidators = ListWrapper.filter(validators, isPresent);
     if (presentValidators.length == 0) return null;
 
     return function(control: modelModule.AbstractControl) {
-      return PromiseWrapper.all(_executeValidators(control, presentValidators)).then(_mergeErrors);
+      let promises = _executeValidators(control, presentValidators).map(_convertToPromise);
+      return PromiseWrapper.all(promises).then(_mergeErrors);
     };
   }
+}
+
+function _convertToPromise(obj: any): any {
+  return PromiseWrapper.isPromise(obj) ? obj : ObservableWrapper.toPromise(obj);
 }
 
 function _executeValidators(control: modelModule.AbstractControl, validators: Function[]): any[] {
