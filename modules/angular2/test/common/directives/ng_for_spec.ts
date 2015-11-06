@@ -329,6 +329,39 @@ export function main() {
              });
        }));
 
+    it('should use a default template if a custom one is null',
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         tcb.overrideTemplate(TestComponent, `<ul><template ng-for #item [ng-for-of]="items"
+         [ng-for-template]="contentTpl" #i="index">{{i}}: {{item}};</template></ul>`)
+             .overrideTemplate(ComponentUsingTestComponent, '<test-cmp></test-cmp>')
+             .createAsync(ComponentUsingTestComponent)
+             .then((fixture) => {
+               var testComponent = fixture.debugElement.componentViewChildren[0];
+               testComponent.componentInstance.items = ['a', 'b', 'c'];
+               fixture.detectChanges();
+               expect(testComponent.nativeElement).toHaveText('0: a;1: b;2: c;');
+
+               async.done();
+             });
+       }));
+
+    it('should use a custom template when both default and a custom one are present',
+       inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+         tcb.overrideTemplate(TestComponent, `<ul><template ng-for #item [ng-for-of]="items"
+         [ng-for-template]="contentTpl" #i="index">{{i}}=> {{item}};</template></ul>`)
+             .overrideTemplate(
+                 ComponentUsingTestComponent,
+                 '<test-cmp><li template="#item #i=index">{{i}}: {{item}};</li></test-cmp>')
+             .createAsync(ComponentUsingTestComponent)
+             .then((fixture) => {
+               var testComponent = fixture.debugElement.componentViewChildren[0];
+               testComponent.componentInstance.items = ['a', 'b', 'c'];
+               fixture.detectChanges();
+               expect(testComponent.nativeElement).toHaveText('0: a;1: b;2: c;');
+
+               async.done();
+             });
+       }));
   });
 }
 
