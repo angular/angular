@@ -43,9 +43,7 @@ function parseText(text: Text, indexInParent: number, parentSourceInfo: string):
 function parseAttr(element: Element, parentSourceInfo: string, attrName: string,
                    attrValue: string): HtmlAttrAst {
   // TODO(tbosch): add source row/column source info from parse5 / package:html
-  var lowerCaseAttrName = attrName.toLowerCase();
-  return new HtmlAttrAst(lowerCaseAttrName, attrValue,
-                         `${parentSourceInfo}[${lowerCaseAttrName}=${attrValue}]`);
+  return new HtmlAttrAst(attrName, attrValue, `${parentSourceInfo}[${attrName}=${attrValue}]`);
 }
 
 function parseElement(element: Element, indexInParent: number,

@@ -81,11 +81,11 @@ export function main() {
               ]);
         });
 
-        it('should parse and lower case attributes on regular elements', () => {
-          expect(humanizeDom(parser.parse('<div FoO="bar"></div>', 'TestComp')))
+        it('should parse attributes on svg elements case sensitive', () => {
+          expect(humanizeDom(parser.parse('<svg viewBox="0"></svg>', 'TestComp')))
               .toEqual([
-                [HtmlElementAst, 'div', 'TestComp > div:nth-child(0)'],
-                [HtmlAttrAst, 'foo', 'bar', 'TestComp > div:nth-child(0)[foo=bar]']
+                [HtmlElementAst, 'svg', 'TestComp > svg:nth-child(0)'],
+                [HtmlAttrAst, 'viewBox', '0', 'TestComp > svg:nth-child(0)[viewBox=0]']
               ]);
         });
 
