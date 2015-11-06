@@ -8,6 +8,7 @@
         "sourceMap": true,
         "sourceRoot": ".",
         "target": "es5",
-        "outDir": "../../dist/js/cjs"
+        "outDir": "../../dist/js/cjs",
+        "moduleResolution": "classic"
     }
 }
