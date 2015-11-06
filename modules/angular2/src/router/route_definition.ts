@@ -1,4 +1,4 @@
-import {CONST, Type} from 'angular2/src/core/facade/lang';
+import {Type} from 'angular2/src/core/facade/lang';
 
 /**
  * `RouteDefinition` defines a route within a {@link RouteConfig} decorator.

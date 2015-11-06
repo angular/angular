@@ -4,16 +4,9 @@ import {
   EventEmitter,
   ObservableWrapper
 } from 'angular2/src/core/facade/async';
-import {Map, StringMapWrapper, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
-import {
-  isBlank,
-  isString,
-  StringWrapper,
-  isPresent,
-  Type,
-  isArray
-} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+import {Map, StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+import {isBlank, isString, StringWrapper, isPresent, Type} from 'angular2/src/core/facade/lang';
+import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {RouteRegistry} from './route_registry';
 import {
   ComponentInstruction,

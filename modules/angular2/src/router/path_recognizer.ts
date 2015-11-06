@@ -1,14 +1,6 @@
-import {
-  RegExp,
-  RegExpWrapper,
-  RegExpMatcherWrapper,
-  StringWrapper,
-  isPresent,
-  isBlank
-} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
-
-import {Map, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {RegExpWrapper, StringWrapper, isPresent, isBlank} from 'angular2/src/core/facade/lang';
+import {BaseException} from 'angular2/src/core/facade/exceptions';
+import {Map, StringMapWrapper} from 'angular2/src/core/facade/collection';
 
 import {RouteHandler} from './route_handler';
 import {Url, RootUrl, serializeParams} from './url_parser';

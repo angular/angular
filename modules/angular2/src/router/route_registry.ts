@@ -1,7 +1,7 @@
 import {PathMatch} from './path_recognizer';
 import {RouteRecognizer} from './route_recognizer';
 import {Instruction, ComponentInstruction, PrimaryInstruction} from './instruction';
-import {ListWrapper, Map, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, Map} from 'angular2/src/core/facade/collection';
 import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
 import {
   isPresent,
@@ -9,12 +9,10 @@ import {
   isType,
   isString,
   isStringMap,
-  isFunction,
-  StringWrapper,
   Type,
   getTypeNameForDebugging
 } from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+import {BaseException} from 'angular2/src/core/facade/exceptions';
 import {
   RouteConfig,
   AsyncRoute,

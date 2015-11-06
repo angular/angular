@@ -1,4 +1,4 @@
-import {Type, isPresent} from 'angular2/src/core/facade/lang';
+import {Type} from 'angular2/src/core/facade/lang';
 import {RouteLifecycleHook, CanActivate} from './lifecycle_annotations_impl';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 

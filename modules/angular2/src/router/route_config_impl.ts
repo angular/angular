@@ -1,4 +1,4 @@
-import {CONST, Type, isPresent} from 'angular2/src/core/facade/lang';
+import {CONST, Type} from 'angular2/src/core/facade/lang';
 import {RouteDefinition} from './route_definition';
 export {RouteDefinition} from './route_definition';
 
