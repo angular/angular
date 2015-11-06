@@ -97,10 +97,11 @@ export class TreeNode<T extends TreeNode<any>> {
 }
 
 export class DirectiveDependency extends Dependency {
-  constructor(key: Key, optional: boolean, lowerBoundVisibility: Object,
-              upperBoundVisibility: Object, properties: any[], public attributeName: string,
-              public queryDecorator: QueryMetadata) {
-    super(key, optional, lowerBoundVisibility, upperBoundVisibility, properties);
+  constructor(key: Key, optional: boolean, noProviderErrorMessage: string,
+              lowerBoundVisibility: Object, upperBoundVisibility: Object, properties: any[],
+              public attributeName: string, public queryDecorator: QueryMetadata) {
+    super(key, optional, noProviderErrorMessage, lowerBoundVisibility, upperBoundVisibility,
+          properties);
     this._verify();
   }
 
@@ -115,9 +116,10 @@ export class DirectiveDependency extends Dependency {
   }
 
   static createFrom(d: Dependency): Dependency {
-    return new DirectiveDependency(
-        d.key, d.optional, d.lowerBoundVisibility, d.upperBoundVisibility, d.properties,
-        DirectiveDependency._attributeName(d.properties), DirectiveDependency._query(d.properties));
+    return new DirectiveDependency(d.key, d.optional, d.noProviderErrorMessage,
+                                   d.lowerBoundVisibility, d.upperBoundVisibility, d.properties,
+                                   DirectiveDependency._attributeName(d.properties),
+                                   DirectiveDependency._query(d.properties));
   }
 
   /** @internal */
@@ -503,7 +505,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
             return null;
           }
 
-          throw new NoProviderError(null, dirDep.key);
+          throw new NoProviderError(null, dirDep.key, dirDep.noProviderErrorMessage);
         }
         return this._preBuiltObjects.templateRef;
       }

@@ -7,6 +7,7 @@
 export {
   InjectMetadata,
   OptionalMetadata,
+  NoProviderErrorMessageMetadata,
   InjectableMetadata,
   SelfMetadata,
   HostMetadata,
@@ -26,7 +27,6 @@ export {
   ResolvedFactory,
   Dependency,
   bind,
-
   Provider,
   ResolvedProvider,
   provide

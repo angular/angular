@@ -18,6 +18,13 @@ class Optional extends OptionalMetadata {
 }
 
 /**
+ * {@link NoProviderErrorMessage}.
+ */
+class NoProviderErrorMessage extends NoProviderErrorMessageMetadata {
+  const NoProviderErrorMessage(String message) : super(message);
+}
+
+/**
  * {@link InjectableMetadata}.
  */
 class Injectable extends InjectableMetadata {

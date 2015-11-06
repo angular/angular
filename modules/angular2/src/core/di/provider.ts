@@ -18,6 +18,7 @@ import {
   InjectMetadata,
   InjectableMetadata,
   OptionalMetadata,
+  NoProviderErrorMessageMetadata,
   SelfMetadata,
   HostMetadata,
   SkipSelfMetadata,
@@ -31,10 +32,11 @@ import {
 import {resolveForwardRef} from './forward_ref';
 
 export class Dependency {
-  constructor(public key: Key, public optional: boolean, public lowerBoundVisibility: any,
-              public upperBoundVisibility: any, public properties: any[]) {}
+  constructor(public key: Key, public optional: boolean, public noProviderErrorMessage: string,
+              public lowerBoundVisibility: any, public upperBoundVisibility: any,
+              public properties: any[]) {}
 
-  static fromKey(key: Key): Dependency { return new Dependency(key, false, null, null, []); }
+  static fromKey(key: Key): Dependency { return new Dependency(key, false, '', null, null, []); }
 }
 
 const _EMPTY_LIST = CONST_EXPR([]);
@@ -640,12 +642,14 @@ function _extractToken(typeOrFunc, metadata /*any[] | any*/, params: any[][]): D
   var depProps = [];
   var token = null;
   var optional = false;
+  var noProviderErrorMessage = '';
 
   if (!isArray(metadata)) {
     if (metadata instanceof InjectMetadata) {
-      return _createDependency(metadata.token, optional, null, null, depProps);
+      return _createDependency(metadata.token, optional, noProviderErrorMessage, null, null,
+                               depProps);
     } else {
-      return _createDependency(metadata, optional, null, null, depProps);
+      return _createDependency(metadata, optional, noProviderErrorMessage, null, null, depProps);
     }
   }
 
@@ -663,6 +667,9 @@ function _extractToken(typeOrFunc, metadata /*any[] | any*/, params: any[][]): D
 
     } else if (paramMetadata instanceof OptionalMetadata) {
       optional = true;
+
+    } else if (paramMetadata instanceof NoProviderErrorMessageMetadata) {
+      noProviderErrorMessage = paramMetadata.message;
 
     } else if (paramMetadata instanceof SelfMetadata) {
       upperBoundVisibility = paramMetadata;
@@ -684,14 +691,15 @@ function _extractToken(typeOrFunc, metadata /*any[] | any*/, params: any[][]): D
   token = resolveForwardRef(token);
 
   if (isPresent(token)) {
-    return _createDependency(token, optional, lowerBoundVisibility, upperBoundVisibility, depProps);
+    return _createDependency(token, optional, noProviderErrorMessage, lowerBoundVisibility,
+                             upperBoundVisibility, depProps);
   } else {
     throw new NoAnnotationError(typeOrFunc, params);
   }
 }
 
-function _createDependency(token, optional, lowerBoundVisibility, upperBoundVisibility,
-                           depProps): Dependency {
-  return new Dependency(Key.get(token), optional, lowerBoundVisibility, upperBoundVisibility,
-                        depProps);
+function _createDependency(token, optional, noProviderErrorMessage, lowerBoundVisibility,
+                           upperBoundVisibility, depProps): Dependency {
+  return new Dependency(Key.get(token), optional, noProviderErrorMessage, lowerBoundVisibility,
+                        upperBoundVisibility, depProps);
 }

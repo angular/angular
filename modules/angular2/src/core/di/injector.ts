@@ -576,7 +576,7 @@ export class Injector {
    * ```
    */
   get(token: any): any {
-    return this._getByKey(Key.get(token), null, null, false, Visibility.PublicAndPrivate);
+    return this._getByKey(Key.get(token), null, null, false, '', Visibility.PublicAndPrivate);
   }
 
   /**
@@ -601,7 +601,7 @@ export class Injector {
    * ```
    */
   getOptional(token: any): any {
-    return this._getByKey(Key.get(token), null, null, true, Visibility.PublicAndPrivate);
+    return this._getByKey(Key.get(token), null, null, true, '', Visibility.PublicAndPrivate);
   }
 
   /**
@@ -893,50 +893,54 @@ export class Injector {
       return special;
     } else {
       return this._getByKey(dep.key, dep.lowerBoundVisibility, dep.upperBoundVisibility,
-                            dep.optional, providerVisibility);
+                            dep.optional, dep.noProviderErrorMessage, providerVisibility);
     }
   }
 
   private _getByKey(key: Key, lowerBoundVisibility: Object, upperBoundVisibility: Object,
-                    optional: boolean, providerVisibility: Visibility): any {
+                    optional: boolean, noProviderErrorMessage: string,
+                    providerVisibility: Visibility): any {
     if (key === INJECTOR_KEY) {
       return this;
     }
 
     if (upperBoundVisibility instanceof SelfMetadata) {
-      return this._getByKeySelf(key, optional, providerVisibility);
+      return this._getByKeySelf(key, optional, noProviderErrorMessage, providerVisibility);
 
     } else if (upperBoundVisibility instanceof HostMetadata) {
-      return this._getByKeyHost(key, optional, providerVisibility, lowerBoundVisibility);
+      return this._getByKeyHost(key, optional, noProviderErrorMessage, providerVisibility,
+                                lowerBoundVisibility);
 
     } else {
-      return this._getByKeyDefault(key, optional, providerVisibility, lowerBoundVisibility);
+      return this._getByKeyDefault(key, optional, noProviderErrorMessage, providerVisibility,
+                                   lowerBoundVisibility);
     }
   }
 
   /** @internal */
-  _throwOrNull(key: Key, optional: boolean): any {
+  _throwOrNull(key: Key, optional: boolean, noProviderErrorMessage: string): any {
     if (optional) {
       return null;
     } else {
-      throw new NoProviderError(this, key);
+      throw new NoProviderError(this, key, noProviderErrorMessage);
     }
   }
 
   /** @internal */
-  _getByKeySelf(key: Key, optional: boolean, providerVisibility: Visibility): any {
+  _getByKeySelf(key: Key, optional: boolean, noProviderErrorMessage: string,
+                providerVisibility: Visibility): any {
     var obj = this._strategy.getObjByKeyId(key.id, providerVisibility);
-    return (obj !== UNDEFINED) ? obj : this._throwOrNull(key, optional);
+    return (obj !== UNDEFINED) ? obj : this._throwOrNull(key, optional, noProviderErrorMessage);
   }
 
   /** @internal */
-  _getByKeyHost(key: Key, optional: boolean, providerVisibility: Visibility,
-                lowerBoundVisibility: Object): any {
+  _getByKeyHost(key: Key, optional: boolean, noProviderErrorMessage: string,
+                providerVisibility: Visibility, lowerBoundVisibility: Object): any {
     var inj = this;
 
     if (lowerBoundVisibility instanceof SkipSelfMetadata) {
       if (inj._isHost) {
-        return this._getPrivateDependency(key, optional, inj);
+        return this._getPrivateDependency(key, optional, noProviderErrorMessage, inj);
       } else {
         inj = inj._parent;
       }
@@ -947,24 +951,25 @@ export class Injector {
       if (obj !== UNDEFINED) return obj;
 
       if (isPresent(inj._parent) && inj._isHost) {
-        return this._getPrivateDependency(key, optional, inj);
+        return this._getPrivateDependency(key, optional, noProviderErrorMessage, inj);
       } else {
         inj = inj._parent;
       }
     }
 
-    return this._throwOrNull(key, optional);
+    return this._throwOrNull(key, optional, noProviderErrorMessage);
   }
 
   /** @internal */
-  _getPrivateDependency(key: Key, optional: boolean, inj: Injector): any {
+  _getPrivateDependency(key: Key, optional: boolean, noProviderErrorMessage: string,
+                        inj: Injector): any {
     var obj = inj._parent._strategy.getObjByKeyId(key.id, Visibility.Private);
-    return (obj !== UNDEFINED) ? obj : this._throwOrNull(key, optional);
+    return (obj !== UNDEFINED) ? obj : this._throwOrNull(key, optional, noProviderErrorMessage);
   }
 
   /** @internal */
-  _getByKeyDefault(key: Key, optional: boolean, providerVisibility: Visibility,
-                   lowerBoundVisibility: Object): any {
+  _getByKeyDefault(key: Key, optional: boolean, noProviderErrorMessage: string,
+                   providerVisibility: Visibility, lowerBoundVisibility: Object): any {
     var inj = this;
 
     if (lowerBoundVisibility instanceof SkipSelfMetadata) {
@@ -980,11 +985,11 @@ export class Injector {
       inj = inj._parent;
     }
 
-    return this._throwOrNull(key, optional);
+    return this._throwOrNull(key, optional, noProviderErrorMessage);
   }
 
   get displayName(): string {
-    return `Injector(providers: [${_mapProviders(this, b => ` "${b.key.displayName}" `).join(", ")}])`;
+    return `Injector(providers: [${_mapProviders(this, b => ` "${b.key.displayName}" `).join(', ')}])`;
   }
 
   toString(): string { return this.displayName; }

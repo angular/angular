@@ -73,6 +73,33 @@ export class OptionalMetadata {
 }
 
 /**
+ * A parameter metadata that specifies a custom error message. {@link Injector} throw the message if
+ * the dependency is not found.
+ *
+ * ### Example
+ *
+ * ```typescript
+ * class Engine {}
+ *
+ * @Injectable()
+ * class Car {
+ *   engine;
+ *   constructor(@NoProviderErrorMessage('cannot find Engine') engine:Engine) {
+ *     this.engine = engine;
+ *   }
+ * }
+ *
+ * var injector = Injector.resolveAndCreate([Car]);
+ * expect(()=>int.get(Car).engine).toThrowError('cannot find Engine');
+ * ```
+ */
+@CONST()
+export class NoProviderErrorMessageMetadata {
+  constructor(public message: string) {}
+  toString(): string { return `@NoProviderErrorMessage(${stringify(this.message)})`; }
+}
+
+/**
  * `DependencyMetadata` is used by the framework to extend DI.
  * This is internal to Angular and should not be used directly.
  */
@@ -194,7 +221,7 @@ export class SkipSelfMetadata {
  * `ChildDirective` depends on two services: `HostService` and `OtherService`.
  * `HostService` is defined at `ParentCmp`, and `OtherService` is defined at `App`.
  *
- *```typescript
+ * ```typescript
  * class OtherService {}
  * class HostService {}
  *
@@ -231,7 +258,7 @@ export class SkipSelfMetadata {
  * }
  *
  * bootstrap(App);
- *```
+ * ```
  */
 @CONST()
 export class HostMetadata {

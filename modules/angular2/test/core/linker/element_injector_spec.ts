@@ -37,8 +37,9 @@ import {
   ComponentMetadata,
   DirectiveMetadata
 } from 'angular2/src/core/metadata';
+
 import {OnDestroy} from 'angular2/core';
-import {provide, Injector, Provider, Optional, Inject, Injectable, Self, SkipSelf, InjectMetadata, Host, HostMetadata, SkipSelfMetadata} from 'angular2/core';
+import {provide, Injector, Provider, Optional, NoProviderErrorMessage, Inject, Injectable, Self, SkipSelf, InjectMetadata, Host, HostMetadata, SkipSelfMetadata} from 'angular2/core';
 import {ViewContainerRef, ViewContainerRef_} from 'angular2/src/core/linker/view_container_ref';
 import {TemplateRef, TemplateRef_} from 'angular2/src/core/linker/template_ref';
 import {ElementRef} from 'angular2/src/core/linker/element_ref';
@@ -100,7 +101,13 @@ class OptionallyNeedsDirective {
 }
 
 @Injectable()
-class NeeedsDirectiveFromHost {
+class NoProviderErrorMessageDirective {
+  dependency: SimpleDirective;
+  constructor(@Self() @NoProviderErrorMessage('cannot find provider') dependency: SimpleDirective) { this.dependency = dependency; }
+}
+
+@Injectable()
+class NeedsDirectiveFromHost {
   dependency: SimpleDirective;
   constructor(@Host() dependency: SimpleDirective) { this.dependency = dependency; }
 }
@@ -715,18 +722,18 @@ export function main() {
 
           it("should get directives from the host", () => {
             var child = parentChildInjectors(ListWrapper.concat([SimpleDirective], extraProviders),
-                                             [NeeedsDirectiveFromHost]);
+                                             [NeedsDirectiveFromHost]);
 
-            var d = child.get(NeeedsDirectiveFromHost);
+            var d = child.get(NeedsDirectiveFromHost);
 
-            expect(d).toBeAnInstanceOf(NeeedsDirectiveFromHost);
+            expect(d).toBeAnInstanceOf(NeedsDirectiveFromHost);
             expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
           });
 
           it("should throw when a dependency cannot be resolved", () => {
-            expect(() => injector(ListWrapper.concat([NeeedsDirectiveFromHost], extraProviders)))
+            expect(() => injector(ListWrapper.concat([NeedsDirectiveFromHost], extraProviders)))
                 .toThrowError(containsRegexp(
-                    `No provider for ${stringify(SimpleDirective) }! (${stringify(NeeedsDirectiveFromHost) } -> ${stringify(SimpleDirective) })`));
+                    `No provider for ${stringify(SimpleDirective) }! (${stringify(NeedsDirectiveFromHost) } -> ${stringify(SimpleDirective) })`));
           });
 
           it("should inject null when an optional dependency cannot be resolved", () => {
@@ -735,7 +742,12 @@ export function main() {
             expect(d.dependency).toEqual(null);
           });
 
-          it("should accept providers instead of types", () => {
+          it('should throw a custom error message when a dependency cannot be resolved', () => {
+            expect(() => injector(ListWrapper.concat([NoProviderErrorMessageDirective], extraProviders)))
+              .toThrowError('cannot find provider');
+          });
+
+          it('should accept providers instead of types', () => {
             var inj = injector(
                 ListWrapper.concat([provide(SimpleDirective, {useClass: SimpleDirective})], extraProviders));
             expect(inj.get(SimpleDirective)).toBeAnInstanceOf(SimpleDirective);
@@ -759,10 +771,10 @@ export function main() {
             var directiveProvider =
                 DirectiveProvider.createFromType(SimpleDirective, new ComponentMetadata());
             var shadow = hostShadowInjectors(ListWrapper.concat([directiveProvider], extraProviders),
-                                             [NeeedsDirectiveFromHost]);
+                                             [NeedsDirectiveFromHost]);
 
-            var d = shadow.get(NeeedsDirectiveFromHost);
-            expect(d).toBeAnInstanceOf(NeeedsDirectiveFromHost);
+            var d = shadow.get(NeedsDirectiveFromHost);
+            expect(d).toBeAnInstanceOf(NeedsDirectiveFromHost);
             expect(d.dependency).toBeAnInstanceOf(SimpleDirective);
           });
 

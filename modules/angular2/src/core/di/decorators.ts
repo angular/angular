@@ -1,12 +1,13 @@
 import {
   InjectMetadata,
   OptionalMetadata,
+  NoProviderErrorMessageMetadata,
   InjectableMetadata,
   SelfMetadata,
   HostMetadata,
   SkipSelfMetadata
 } from './metadata';
-import {makeDecorator, makeParamDecorator, TypeDecorator} from '../util/decorators';
+import {makeDecorator, makeParamDecorator} from '../util/decorators';
 
 /**
  * Factory for creating {@link InjectMetadata}.
@@ -22,6 +23,14 @@ export interface InjectFactory {
 export interface OptionalFactory {
   (): any;
   new (): OptionalMetadata;
+}
+
+/**
+ * Factory for creating {@link NoProviderErrorMessageMetadata}.
+ */
+export interface NoProviderErrorMessageFactory {
+  (message: string): any;
+  new (message: string): NoProviderErrorMessageMetadata;
 }
 
 /**
@@ -65,6 +74,13 @@ export var Inject: InjectFactory = makeParamDecorator(InjectMetadata);
  * Factory for creating {@link OptionalMetadata}.
  */
 export var Optional: OptionalFactory = makeParamDecorator(OptionalMetadata);
+
+/**
+ * Factory for creating {@link NoProviderErrorMessageMetadata}.
+ */
+export var NoProviderErrorMessage: NoProviderErrorMessageFactory =
+    makeParamDecorator(NoProviderErrorMessageMetadata);
+
 
 /**
  * Factory for creating {@link InjectableMetadata}.

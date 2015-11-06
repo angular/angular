@@ -76,10 +76,12 @@ export class AbstractProviderError extends BaseException {
  * ```
  */
 export class NoProviderError extends AbstractProviderError {
-  constructor(injector: Injector, key: Key) {
-    super(injector, key, function(keys: any[]) {
+  constructor(injector: Injector, key: Key, noProviderErrorMessage: string) {
+    super(injector, key, (keys: any[]) => {
       var first = stringify(ListWrapper.first(keys).token);
-      return `No provider for ${first}!${constructResolvingPath(keys)}`;
+      return noProviderErrorMessage === '' ?
+                 `No provider for ${first}!${constructResolvingPath(keys)}` :
+                 noProviderErrorMessage;
     });
   }
 }
