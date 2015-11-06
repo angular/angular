@@ -1,6 +1,9 @@
-@cheatsheetSection Component configuration
+@cheatsheetSection
+Component configuration
+@cheatsheetIndex 5
 @description
-`@Component extends @Directive`, so the @Directive configuration applies to components as well)
+`@Component` extends `@Directive`,
+so the `@Directive` configuration applies to components as well
 
 @cheatsheetItem
 `viewProviders: [MyService, provide(...)]`|`viewProviders:`
@@ -8,12 +11,14 @@ Array of dependency injection providers scoped to this component's view.
 
 
 @cheatsheetItem
-`template: 'Hello {{name}}'\ntemplateUrl: 'my-component.html'`|`template:`|`templateUrl:`
+`template: 'Hello {{name}}'
+templateUrl: 'my-component.html'`|`template:`|`templateUrl:`
 Inline template / external template url of the component's view.
 
 
 @cheatsheetItem
-`styles: ['.primary {color: red}']\nstyleUrls: ['my-component.css']`|`styles:`|`styleUrls:`
+`styles: ['.primary {color: red}']
+styleUrls: ['my-component.css']`|`styles:`|`styleUrls:`
 List of inline css styles / external stylesheet urls for styling component’s view.
 
 

@@ -1,4 +1,6 @@
-@cheatsheetSection Class decorators
+@cheatsheetSection
+Class decorators
+@cheatsheetIndex 3
 @description
 `import {Directive, ...} from 'angular2/angular2';`
 
