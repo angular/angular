@@ -1,5 +1,6 @@
 @cheatsheetSection
-@name Built-in directives
+Built-in directives
+@cheatsheetIndex 1
 @description
 `import {NgIf, ...} from 'angular2/angular2';`
 

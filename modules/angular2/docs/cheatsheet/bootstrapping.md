@@ -1,5 +1,6 @@
 @cheatsheetSection
-@name Bootstrapping
+Bootstrapping
+@cheatsheetIndex 0
 @description
 `import {bootstrap} from 'angular2/angular2';`
 
