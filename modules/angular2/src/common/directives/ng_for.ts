@@ -73,7 +73,11 @@ export class NgFor implements DoCheck {
     }
   }
 
-  set ngForTemplate(value: TemplateRef) { this._templateRef = value; }
+  set ngForTemplate(value: TemplateRef) {
+    if (isPresent(value)) {
+      this._templateRef = value;
+    }
+  }
 
   doCheck() {
     if (isPresent(this._differ)) {
