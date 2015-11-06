@@ -11850,6 +11850,7 @@
     },
     "karma-browserstack-launcher": {
       "version": "0.1.6",
+      "resolved": "git://github.com/mlaval/karma-browserstack-launcher.git#f3be494790d9ffb5dadb7fbf728ec770207a68d5",
       "dependencies": {
         "browserstack": {
           "version": "1.2.0"
