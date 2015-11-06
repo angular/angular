@@ -1,5 +1,6 @@
 import {StringWrapper, isPresent, isBlank, normalizeBool} from 'angular2/src/core/facade/lang';
 import {Observable, EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
+import {PromiseWrapper} from 'angular2/src/core/facade/promise';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
 
 /**
@@ -42,6 +43,10 @@ function _find(control: AbstractControl, path: Array<string | number>| string) {
   }, control);
 }
 
+function toObservable(r: any): Observable<any> {
+  return PromiseWrapper.isPromise(r) ? ObservableWrapper.fromPromise(r) : r;
+}
+
 /**
  *
  */
@@ -49,9 +54,8 @@ export abstract class AbstractControl {
   /** @internal */
   _value: any;
 
-  /** @internal */
-  _valueChanges: EventEmitter<any>;
-
+  private _valueChanges: EventEmitter<any>;
+  private _statusChanges: EventEmitter<any>;
   private _status: string;
   private _errors: {[key: string]: any};
   private _controlsErrors: any;
@@ -87,6 +91,8 @@ export abstract class AbstractControl {
   get untouched(): boolean { return !this._touched; }
 
   get valueChanges(): Observable<any> { return this._valueChanges; }
+
+  get statusChanges(): Observable<any> { return this._statusChanges; }
 
   get pending(): boolean { return this._status == PENDING; }
 
@@ -124,11 +130,12 @@ export abstract class AbstractControl {
     this._status = this._calculateStatus();
 
     if (this._status == VALID || this._status == PENDING) {
-      this._runAsyncValidator();
+      this._runAsyncValidator(emitEvent);
     }
 
     if (emitEvent) {
       ObservableWrapper.callNext(this._valueChanges, this._value);
+      ObservableWrapper.callNext(this._statusChanges, this._status);
     }
 
     if (isPresent(this._parent) && !onlySelf) {
@@ -138,13 +145,13 @@ export abstract class AbstractControl {
 
   private _runValidator() { return isPresent(this.validator) ? this.validator(this) : null; }
 
-  private _runAsyncValidator() {
+  private _runAsyncValidator(emitEvent: boolean): void {
     if (isPresent(this.asyncValidator)) {
       this._status = PENDING;
       this._cancelExistingSubscription();
-      var obs = ObservableWrapper.fromPromise(this.asyncValidator(this));
+      var obs = toObservable(this.asyncValidator(this));
       this._asyncValidationSubscription =
-          ObservableWrapper.subscribe(obs, res => this.setErrors(res));
+          ObservableWrapper.subscribe(obs, res => this.setErrors(res, {emitEvent: emitEvent}));
     }
   }
 
@@ -177,9 +184,15 @@ export abstract class AbstractControl {
    * expect(login.valid).toEqual(true);
    * ```
    */
-  setErrors(errors: {[key: string]: any}): void {
+  setErrors(errors: {[key: string]: any}, {emitEvent}: {emitEvent?: boolean} = {}): void {
+    emitEvent = isPresent(emitEvent) ? emitEvent : true;
+
     this._errors = errors;
     this._status = this._calculateStatus();
+
+    if (emitEvent) {
+      ObservableWrapper.callNext(this._statusChanges, this._status);
+    }
 
     if (isPresent(this._parent)) {
       this._parent._updateControlsErrors();
@@ -210,6 +223,13 @@ export abstract class AbstractControl {
       this._parent._updateControlsErrors();
     }
   }
+
+  /** @internal */
+  _initObservables() {
+    this._valueChanges = new EventEmitter();
+    this._statusChanges = new EventEmitter();
+  }
+
 
   private _calculateStatus(): string {
     if (isPresent(this._errors)) return INVALID;
@@ -250,7 +270,7 @@ export class Control extends AbstractControl {
     super(validator, asyncValidator);
     this._value = value;
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
-    this._valueChanges = new EventEmitter();
+    this._initObservables();
   }
 
   /**
@@ -318,8 +338,7 @@ export class ControlGroup extends AbstractControl {
               asyncValidator: Function = null) {
     super(validator, asyncValidator);
     this._optionals = isPresent(optionals) ? optionals : {};
-    this._valueChanges = new EventEmitter();
-
+    this._initObservables();
     this._setParentForControls();
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
   }
@@ -440,9 +459,7 @@ export class ControlArray extends AbstractControl {
   constructor(public controls: AbstractControl[], validator: Function = null,
               asyncValidator: Function = null) {
     super(validator, asyncValidator);
-
-    this._valueChanges = new EventEmitter();
-
+    this._initObservables();
     this._setParentForControls();
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
   }

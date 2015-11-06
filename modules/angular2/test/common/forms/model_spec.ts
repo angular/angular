@@ -14,10 +14,9 @@ import {
   inject
 } from 'angular2/testing_internal';
 import {ControlGroup, Control, ControlArray, Validators} from 'angular2/core';
-import {isPresent, CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {IS_DART, isPresent, CONST_EXPR} from 'angular2/src/core/facade/lang';
 import {PromiseWrapper} from 'angular2/src/core/facade/promise';
-import {TimerWrapper, ObservableWrapper} from 'angular2/src/core/facade/async';
-import {IS_DART} from 'angular2/src/core/facade/lang';
+import {TimerWrapper, ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
 
 export function main() {
   function asyncValidator(expected, timeouts = CONST_EXPR({})) {
@@ -34,6 +33,12 @@ export function main() {
 
       return completer.promise;
     };
+  }
+
+  function asyncValidatorReturningObservable(c) {
+    var e = new EventEmitter();
+    PromiseWrapper.scheduleMicrotask(() => ObservableWrapper.callNext(e, {"async": true}));
+    return e;
   }
 
   describe("Form Model", () => {
@@ -64,6 +69,14 @@ export function main() {
       describe("asyncValidator", () => {
         it("should run validator with the initial value", fakeAsync(() => {
              var c = new Control("value", null, asyncValidator("expected"));
+             tick();
+
+             expect(c.valid).toEqual(false);
+             expect(c.errors).toEqual({"async": true});
+           }));
+
+        it("should support validators returning observables", fakeAsync(() => {
+             var c = new Control("value", null, asyncValidatorReturningObservable);
              tick();
 
              expect(c.valid).toEqual(false);
@@ -185,7 +198,7 @@ export function main() {
            }));
       });
 
-      describe("valueChanges", () => {
+      describe("valueChanges & statusChanges", () => {
         var c;
 
         beforeEach(() => { c = new Control("old", Validators.required); });
@@ -198,6 +211,45 @@ export function main() {
                async.done();
              });
              c.updateValue("new");
+           }));
+
+        it("should fire an event after the status has been updated to invalid", fakeAsync(() => {
+             ObservableWrapper.subscribe(c.statusChanges, (status) => {
+               expect(c.status).toEqual('INVALID');
+               expect(status).toEqual('INVALID');
+             });
+
+             c.updateValue("");
+             tick();
+           }));
+
+        it("should fire an event after the status has been updated to pending", fakeAsync(() => {
+             var c = new Control("old", Validators.required, asyncValidator("expected"));
+
+             var log = [];
+             ObservableWrapper.subscribe(c.valueChanges, (value) => log.push(`value: '${value}'`));
+             ObservableWrapper.subscribe(c.statusChanges,
+                                         (status) => log.push(`status: '${status}'`));
+
+             c.updateValue("");
+             tick();
+
+             c.updateValue("nonEmpty");
+             tick();
+
+             c.updateValue("expected");
+             tick();
+
+             expect(log).toEqual([
+               "" + "value: ''",
+               "status: 'INVALID'",
+               "value: 'nonEmpty'",
+               "status: 'PENDING'",
+               "status: 'INVALID'",
+               "value: 'expected'",
+               "status: 'PENDING'",
+               "status: 'VALID'",
+             ]);
            }));
 
         // TODO: remove the if statement after making observable delivery sync

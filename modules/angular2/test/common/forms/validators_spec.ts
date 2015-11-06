@@ -13,7 +13,7 @@ import {
 } from 'angular2/testing_internal';
 import {ControlGroup, Control, Validators, AbstractControl, ControlArray} from 'angular2/core';
 import {PromiseWrapper} from 'angular2/src/core/facade/promise';
-import {TimerWrapper} from 'angular2/src/core/facade/async';
+import {EventEmitter, ObservableWrapper, TimerWrapper} from 'angular2/src/core/facade/async';
 import {CONST_EXPR} from 'angular2/src/core/facade/lang';
 
 export function main() {
@@ -95,12 +95,19 @@ export function main() {
     });
 
     describe("composeAsync", () => {
-      function asyncValidator(expected, response, timeout = 0) {
+      function asyncValidator(expected, response) {
         return (c) => {
-          var completer = PromiseWrapper.completer();
+          var emitter = new EventEmitter();
           var res = c.value != expected ? response : null;
-          TimerWrapper.setTimeout(() => { completer.resolve(res); }, timeout);
-          return completer.promise;
+
+          PromiseWrapper.scheduleMicrotask(() => {
+            ObservableWrapper.callNext(emitter, res);
+            // this is required because of a bug in ObservableWrapper
+            // where callComplete can fire before callNext
+            // remove this one the bug is fixed
+            TimerWrapper.setTimeout(() => { ObservableWrapper.callComplete(emitter); }, 0);
+          });
+          return emitter;
         };
       }
 
