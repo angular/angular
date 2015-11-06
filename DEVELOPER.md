@@ -7,6 +7,7 @@ JS and Dart versions. It also explains the basic mechanics of using `git`, `node
 * [Getting the Sources](#getting-the-sources)
 * [Environment Variable Setup](#environment-variable-setup)
 * [Installing NPM Modules and Dart Packages](#installing-npm-modules-and-dart-packages)
+* [Build commands](#build-commands)
 * [Running Tests Locally](#running-tests-locally)
 * [Formatting](#clang-format)
 * [Project Information](#project-information)
@@ -36,9 +37,9 @@ following products on your development machine:
   [Windows](http://windows.github.com)); [GitHub's Guide to Installing
   Git](https://help.github.com/articles/set-up-git) is a good source of information.
 
-* [Node.js](http://nodejs.org), (version `>=4.2.1 <5`) which is used to run a development web server, 
-  run tests, and generate distributable files. We also use Node's Package Manager, `npm` 
-  (version `>=2.14.7 <3.0`), which comes with Node. Depending on your system, you can install Node either from 
+* [Node.js](http://nodejs.org), (version `>=4.2.1 <5`) which is used to run a development web server,
+  run tests, and generate distributable files. We also use Node's Package Manager, `npm`
+  (version `>=2.14.7 <3.0`), which comes with Node. Depending on your system, you can install Node either from
   source or as a pre-packaged bundle.
 
 * [Chrome Canary](https://www.google.com/chrome/browser/canary.html), a version of Chrome with
@@ -95,7 +96,7 @@ export DART_SDK="$DART_EDITOR_DIR/dart-sdk"
 PATH+=":$DART_SDK/bin"
 ```
 
-And specify where the pub’s dependencies are downloaded. By default, this directory is located under .pub_cache 
+And specify where the pub’s dependencies are downloaded. By default, this directory is located under .pub_cache
 in your home directory (on Mac and Linux), or in AppData\Roaming\Pub\Cache (on Windows).
 
 ```shell
@@ -280,11 +281,11 @@ to some whitespace difference.
     - Working directory: `$ProjectFileDir$`
 * `clang-format` integrations are also available for many popular editors (`vim`, `emacs`,
   `Sublime Text`, etc.).
-  
+
 ## Generating the API documentation
 
 The following gulp task will generate the API docs in the `dist/angular.io/partials/api/angular2`:  
-  
+
 ```shell
 $(npm bin)/gulp docs/angular.io
 ```
@@ -294,8 +295,8 @@ You can serve the generated documentation to check how it would render on [angul
 - install dependencies as described in the [angular.io README](https://github.com/angular/angular.io/blob/master/README.md),
 - copy the generated documentation from your local angular repo at `angular/dist/angular.io/partials/api/angular2` to your local angular.io repo at `angular.io/public/docs/js/latest/api`,
 - run `harp compile` at the root of the angular.io repo to check the generated documentation for errors,
-- run `harp server` and open a browser at `http://localhost:9000/docs/js/latest/api/` to check the rendered documentation. 
- 
+- run `harp server` and open a browser at `http://localhost:9000/docs/js/latest/api/` to check the rendered documentation.
+
 ## Project Information
 
 ### Folder structure
