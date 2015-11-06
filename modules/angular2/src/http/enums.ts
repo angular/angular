@@ -1,5 +1,3 @@
-import {StringMapWrapper} from 'angular2/src/core/facade/collection';
-
 /**
  * Supported http methods.
  */
