@@ -11120,28 +11120,6 @@
                     },
                     "ultron": {
                       "version": "1.0.2"
-                    },
-                    "bufferutil": {
-                      "version": "1.2.1",
-                      "dependencies": {
-                        "bindings": {
-                          "version": "1.2.1"
-                        },
-                        "nan": {
-                          "version": "2.1.0"
-                        }
-                      }
-                    },
-                    "utf-8-validate": {
-                      "version": "1.2.1",
-                      "dependencies": {
-                        "bindings": {
-                          "version": "1.2.1"
-                        },
-                        "nan": {
-                          "version": "2.1.0"
-                        }
-                      }
                     }
                   }
                 }
@@ -11262,28 +11240,6 @@
                         },
                         "ultron": {
                           "version": "1.0.2"
-                        },
-                        "bufferutil": {
-                          "version": "1.2.1",
-                          "dependencies": {
-                            "bindings": {
-                              "version": "1.2.1"
-                            },
-                            "nan": {
-                              "version": "2.1.0"
-                            }
-                          }
-                        },
-                        "utf-8-validate": {
-                          "version": "1.2.1",
-                          "dependencies": {
-                            "bindings": {
-                              "version": "1.2.1"
-                            },
-                            "nan": {
-                              "version": "2.1.0"
-                            }
-                          }
                         }
                       }
                     },
@@ -12241,28 +12197,6 @@
                 },
                 "ultron": {
                   "version": "1.0.2"
-                },
-                "bufferutil": {
-                  "version": "1.2.1",
-                  "dependencies": {
-                    "bindings": {
-                      "version": "1.2.1"
-                    },
-                    "nan": {
-                      "version": "2.1.0"
-                    }
-                  }
-                },
-                "utf-8-validate": {
-                  "version": "1.2.1",
-                  "dependencies": {
-                    "bindings": {
-                      "version": "1.2.1"
-                    },
-                    "nan": {
-                      "version": "2.1.0"
-                    }
-                  }
                 }
               }
             },
@@ -12891,28 +12825,6 @@
             },
             "ultron": {
               "version": "1.0.2"
-            },
-            "bufferutil": {
-              "version": "1.2.1",
-              "dependencies": {
-                "bindings": {
-                  "version": "1.2.1"
-                },
-                "nan": {
-                  "version": "2.1.0"
-                }
-              }
-            },
-            "utf-8-validate": {
-              "version": "1.2.1",
-              "dependencies": {
-                "bindings": {
-                  "version": "1.2.1"
-                },
-                "nan": {
-                  "version": "2.1.0"
-                }
-              }
             }
           }
         },
@@ -13144,7 +13056,7 @@
       }
     },
     "ts2dart": {
-      "version": "0.7.12",
+      "version": "0.7.14",
       "dependencies": {
         "source-map": {
           "version": "0.4.4",
