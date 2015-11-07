@@ -12,7 +12,7 @@ import {
   TestComponentBuilder
 } from 'angular2/testing_internal';
 
-import {IS_DART} from 'angular2/src/core/facade/lang';
+import {IS_DART} from 'angular2/src/facade/lang';
 import {escapeSingleQuoteString, escapeDoubleQuoteString} from 'angular2/src/compiler/util';
 
 export function main() {

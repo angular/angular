@@ -6,7 +6,7 @@ import 'package:barback/barback.dart';
 import 'package:path/path.dart' as path;
 
 import 'package:angular2/src/core/change_detection/interfaces.dart';
-import 'package:angular2/src/core/facade/lang.dart';
+import 'package:angular2/src/facade/lang.dart';
 import 'package:angular2/src/core/reflection/reflection.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/code/source_module.dart';

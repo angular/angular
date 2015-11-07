@@ -1,10 +1,10 @@
 import {Injectable} from 'angular2/src/core/di';
-import {Map, MapWrapper} from 'angular2/src/core/facade/collection';
+import {Map, MapWrapper} from 'angular2/src/facade/collection';
 import {RenderViewRef, RenderEventDispatcher} from 'angular2/src/core/render/api';
 import {Serializer} from 'angular2/src/web_workers/shared/serializer';
 import {EVENT_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
-import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
+import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {deserializeGenericEvent} from './event_deserializer';
 
 @Injectable()

@@ -10,7 +10,7 @@ import {
 } from 'angular2/src/core/render/api';
 import {WebWorkerElementRef, WebWorkerTemplateCmd} from 'angular2/src/web_workers/shared/api';
 import {EVENT_CHANNEL, RENDERER_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
-import {Type} from 'angular2/src/core/facade/lang';
+import {Type} from 'angular2/src/facade/lang';
 import {bind} from './bind';
 import {EventDispatcher} from 'angular2/src/web_workers/ui/event_dispatcher';
 import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_proto_view_ref_store';

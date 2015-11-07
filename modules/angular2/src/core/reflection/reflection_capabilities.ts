@@ -5,9 +5,9 @@ import {
   global,
   stringify,
   ConcreteType
-} from 'angular2/src/core/facade/lang';
-import {BaseException} from 'angular2/src/core/facade/exceptions';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
+} from 'angular2/src/facade/lang';
+import {BaseException} from 'angular2/src/facade/exceptions';
+import {ListWrapper} from 'angular2/src/facade/collection';
 import {GetterFn, SetterFn, MethodFn} from './types';
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 

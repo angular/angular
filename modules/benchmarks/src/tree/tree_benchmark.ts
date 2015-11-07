@@ -13,8 +13,8 @@ import {
 
 import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {isPresent} from 'angular2/src/core/facade/lang';
-import {window, document, gc} from 'angular2/src/core/facade/browser';
+import {isPresent} from 'angular2/src/facade/lang';
+import {window, document, gc} from 'angular2/src/facade/browser';
 import {
   getIntParameter,
   getStringParameter,

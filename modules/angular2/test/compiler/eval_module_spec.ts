@@ -11,7 +11,7 @@ import {
   AsyncTestCompleter,
   inject
 } from 'angular2/testing_internal';
-import {IS_DART} from 'angular2/src/core/facade/lang';
+import {IS_DART} from 'angular2/src/facade/lang';
 
 import {evalModule} from './eval_module';
 

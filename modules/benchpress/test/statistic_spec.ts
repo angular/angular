@@ -11,7 +11,7 @@ import {
 
 import {Statistic} from 'benchpress/src/statistic';
 
-import {NaN} from 'angular2/src/core/facade/math';
+import {NaN} from 'angular2/src/facade/math';
 
 export function main() {
   describe('statistic', () => {

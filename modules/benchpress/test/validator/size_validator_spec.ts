@@ -8,8 +8,8 @@ import {
   beforeEach,
   afterEach
 } from 'angular2/testing_internal';
-import {Date, DateWrapper} from 'angular2/src/core/facade/lang';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
+import {Date, DateWrapper} from 'angular2/src/facade/lang';
+import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {Validator, SizeValidator, Injector, bind, provide, MeasureValues} from 'benchpress/common';
 

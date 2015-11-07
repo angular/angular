@@ -1,5 +1,5 @@
 import {Injectable} from 'angular2/angular2';
-import {isPresent, isJsObject} from 'angular2/src/core/facade/lang';
+import {isPresent, isJsObject} from 'angular2/src/facade/lang';
 import {Headers} from './headers';
 import {ResponseTypes} from './enums';
 import {ResponseOptionsArgs} from './interfaces';

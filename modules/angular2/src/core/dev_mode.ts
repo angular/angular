@@ -1,1 +1,1 @@
-export {enableDevMode} from 'angular2/src/core/facade/lang';
+export {enableDevMode} from 'angular2/src/facade/lang';

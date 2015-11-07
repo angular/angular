@@ -6,9 +6,9 @@ import {
   isType,
   isStringMap,
   Type
-} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
-import {Map, MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+} from 'angular2/src/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {Map, MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {PathRecognizer, PathMatch} from './path_recognizer';
 import {Route, AsyncRoute, AuxRoute, Redirect, RouteDefinition} from './route_config_impl';

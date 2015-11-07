@@ -1,5 +1,5 @@
 import {provide} from 'angular2/src/core/di';
-import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
+import {ExceptionHandler} from 'angular2/src/facade/exceptions';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 export const EXCEPTION_PROVIDER =

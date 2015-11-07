@@ -1,11 +1,11 @@
-import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {
   MessageBusSink,
   MessageBusSource,
   MessageBus
 } from 'angular2/src/web_workers/shared/message_bus';
 import {MockEventEmitter} from './mock_event_emitter';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
 /**

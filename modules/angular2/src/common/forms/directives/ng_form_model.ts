@@ -1,6 +1,6 @@
-import {CONST_EXPR} from 'angular2/src/core/facade/lang';
-import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
+import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 import {SimpleChange} from 'angular2/src/core/change_detection';
 
 import {OnChanges} from 'angular2/lifecycle_hooks';

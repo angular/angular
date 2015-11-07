@@ -1,5 +1,5 @@
-import {isPresent, isBlank, looseIdentical} from 'angular2/src/core/facade/lang';
-import {ListWrapper, Map} from 'angular2/src/core/facade/collection';
+import {isPresent, isBlank, looseIdentical} from 'angular2/src/facade/lang';
+import {ListWrapper, Map} from 'angular2/src/facade/collection';
 import {RecordType, ProtoRecord} from './proto_record';
 
 /**

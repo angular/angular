@@ -1,5 +1,5 @@
-import {Date, DateWrapper} from 'angular2/src/core/facade/lang';
-import {Map} from 'angular2/src/core/facade/collection';
+import {Date, DateWrapper} from 'angular2/src/facade/lang';
+import {Map} from 'angular2/src/facade/collection';
 
 export class MeasureValues {
   constructor(public runIndex: number, public timeStamp: Date,

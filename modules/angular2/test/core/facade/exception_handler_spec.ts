@@ -11,11 +11,7 @@ import {
   xit,
   Log
 } from 'angular2/testing_internal';
-import {
-  BaseException,
-  WrappedException,
-  ExceptionHandler
-} from 'angular2/src/core/facade/exceptions';
+import {BaseException, WrappedException, ExceptionHandler} from 'angular2/src/facade/exceptions';
 
 class _CustomException {
   context = "some context";

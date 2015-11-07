@@ -1,6 +1,6 @@
-import {StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {isPresent, isBlank, RegExpWrapper, CONST_EXPR} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+import {StringMapWrapper} from 'angular2/src/facade/collection';
+import {isPresent, isBlank, RegExpWrapper, CONST_EXPR} from 'angular2/src/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 
 /**
  * This class represents a parsed URL

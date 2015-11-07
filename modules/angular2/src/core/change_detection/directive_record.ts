@@ -1,4 +1,4 @@
-import {StringWrapper, normalizeBool, isBlank} from 'angular2/src/core/facade/lang';
+import {StringWrapper, normalizeBool, isBlank} from 'angular2/src/facade/lang';
 import {isDefaultChangeDetectionStrategy, ChangeDetectionStrategy} from './constants';
 
 export class DirectiveIndex {

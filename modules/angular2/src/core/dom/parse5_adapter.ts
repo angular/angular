@@ -3,7 +3,7 @@ var parser = new parse5.Parser(parse5.TreeAdapters.htmlparser2);
 var serializer = new parse5.Serializer(parse5.TreeAdapters.htmlparser2);
 var treeAdapter = parser.treeAdapter;
 
-import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {DomAdapter, setRootDomAdapter} from './dom_adapter';
 import {
   isPresent,
@@ -12,8 +12,8 @@ import {
   Type,
   setValueOnPath,
   DateWrapper
-} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+} from 'angular2/src/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {SelectorMatcher, CssSelector} from 'angular2/src/compiler/selector';
 import {XHR} from 'angular2/src/compiler/xhr';
 

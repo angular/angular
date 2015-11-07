@@ -7,12 +7,12 @@ import {
   CONST,
   isBlank,
   FunctionWrapper
-} from 'angular2/src/core/facade/lang';
-import {DateFormatter} from 'angular2/src/core/facade/intl';
+} from 'angular2/src/facade/lang';
+import {DateFormatter} from 'angular2/src/facade/intl';
 import {Injectable} from 'angular2/src/core/di';
 import {Pipe} from 'angular2/src/core/metadata';
 import {PipeTransform, WrappedValue} from 'angular2/src/core/change_detection';
-import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 

@@ -1,13 +1,7 @@
-import {
-  Type,
-  isArray,
-  isPresent,
-  serializeEnum,
-  deserializeEnum
-} from "angular2/src/core/facade/lang";
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+import {Type, isArray, isPresent, serializeEnum, deserializeEnum} from "angular2/src/facade/lang";
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 
-import {Map, StringMapWrapper, MapWrapper} from "angular2/src/core/facade/collection";
+import {Map, StringMapWrapper, MapWrapper} from "angular2/src/facade/collection";
 import {
   RenderProtoViewRef,
   RenderViewRef,

@@ -1,5 +1,5 @@
-import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
+import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
+import {ListWrapper} from 'angular2/src/facade/collection';
 import {Location} from 'angular2/src/router/location';
 
 export class SpyLocation implements Location {

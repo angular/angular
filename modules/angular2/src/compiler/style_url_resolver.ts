@@ -1,13 +1,7 @@
 // Some of the code comes from WebComponents.JS
 // https://github.com/webcomponents/webcomponentsjs/blob/master/src/HTMLImports/path.js
 
-import {
-  RegExp,
-  RegExpWrapper,
-  StringWrapper,
-  isPresent,
-  isBlank
-} from 'angular2/src/core/facade/lang';
+import {RegExp, RegExpWrapper, StringWrapper, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {UrlResolver} from 'angular2/src/compiler/url_resolver';
 
 export class StyleWithImports {

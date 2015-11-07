@@ -1,4 +1,4 @@
-import {CONST, Type, stringify, isPresent, isString} from 'angular2/src/core/facade/lang';
+import {CONST, Type, stringify, isPresent, isString} from 'angular2/src/facade/lang';
 import {resolveForwardRef} from 'angular2/src/core/di';
 import {DependencyMetadata} from 'angular2/src/core/di/metadata';
 

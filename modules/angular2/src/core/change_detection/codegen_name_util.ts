@@ -1,5 +1,5 @@
-import {RegExpWrapper, StringWrapper} from 'angular2/src/core/facade/lang';
-import {ListWrapper, MapWrapper, Map} from 'angular2/src/core/facade/collection';
+import {RegExpWrapper, StringWrapper} from 'angular2/src/facade/lang';
+import {ListWrapper, MapWrapper, Map} from 'angular2/src/facade/collection';
 
 import {DirectiveIndex} from './directive_record';
 

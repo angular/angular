@@ -4,7 +4,7 @@ import {
   GetTestability,
   setTestabilityGetter
 } from 'angular2/src/core/testability/testability';
-import {global} from 'angular2/src/core/facade/lang';
+import {global} from 'angular2/src/facade/lang';
 
 class PublicTestability {
   /** @internal */

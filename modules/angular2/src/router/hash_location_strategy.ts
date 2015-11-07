@@ -1,7 +1,7 @@
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {Injectable} from 'angular2/angular2';
 import {LocationStrategy, normalizeQueryParams} from './location_strategy';
-import {EventListener, History, Location} from 'angular2/src/core/facade/browser';
+import {EventListener, History, Location} from 'angular2/src/facade/browser';
 
 /**
  * `HashLocationStrategy` is a {@link LocationStrategy} used to configure the

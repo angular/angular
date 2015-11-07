@@ -1,6 +1,6 @@
 import {Directive, Attribute, Host, SkipSelf, AfterContentChecked} from 'angular2/angular2';
 
-import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
+import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 
 // TODO(jelbourn): validation (will depend on Forms API).
 // TODO(jelbourn): textarea resizing

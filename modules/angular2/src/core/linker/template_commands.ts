@@ -1,4 +1,4 @@
-import {Type, CONST_EXPR, CONST, isPresent, isBlank} from 'angular2/src/core/facade/lang';
+import {Type, CONST_EXPR, CONST, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {
   RenderTemplateCmd,
   RenderCommandVisitor,

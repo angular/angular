@@ -1,4 +1,4 @@
-import {isBlank} from 'angular2/src/core/facade/lang';
+import {isBlank} from 'angular2/src/facade/lang';
 import {Pipes} from 'angular2/src/core/change_detection/pipes';
 import {
   ProtoChangeDetector,

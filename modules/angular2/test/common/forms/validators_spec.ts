@@ -12,9 +12,9 @@ import {
   el
 } from 'angular2/testing_internal';
 import {ControlGroup, Control, Validators, AbstractControl, ControlArray} from 'angular2/core';
-import {PromiseWrapper} from 'angular2/src/core/facade/promise';
-import {EventEmitter, ObservableWrapper, TimerWrapper} from 'angular2/src/core/facade/async';
-import {CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {PromiseWrapper} from 'angular2/src/facade/promise';
+import {EventEmitter, ObservableWrapper, TimerWrapper} from 'angular2/src/facade/async';
+import {CONST_EXPR} from 'angular2/src/facade/lang';
 
 export function main() {
   function validator(key: string, error: any) {

@@ -1,5 +1,5 @@
-import {assertionsEnabled, isPresent, isBlank, StringWrapper} from 'angular2/src/core/facade/lang';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
+import {assertionsEnabled, isPresent, isBlank, StringWrapper} from 'angular2/src/facade/lang';
+import {ListWrapper} from 'angular2/src/facade/collection';
 import {ChangeDetectionUtil} from './change_detection_util';
 import {ChangeDetectorRef, ChangeDetectorRef_} from './change_detector_ref';
 import {DirectiveIndex} from './directive_record';

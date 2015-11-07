@@ -1,7 +1,7 @@
 library angular2.src.core.compiler.query_list;
 
 import 'dart:collection';
-import 'package:angular2/src/core/facade/async.dart';
+import 'package:angular2/src/facade/async.dart';
 
 /**
  * See query_list.ts

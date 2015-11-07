@@ -1,4 +1,4 @@
-import {global} from '../facade/lang';
+import {global} from 'angular2/src/facade/lang';
 
 export interface WtfScopeFn { (arg0?: any, arg1?: any): any; }
 

@@ -3,7 +3,7 @@ import {
   ListWrapper,
   StringMapWrapper,
   SetWrapper
-} from 'angular2/src/core/facade/collection';
+} from 'angular2/src/facade/collection';
 import {
   RegExpWrapper,
   isPresent,
@@ -12,9 +12,9 @@ import {
   stringify,
   assertionsEnabled,
   isBlank
-} from 'angular2/src/core/facade/lang';
+} from 'angular2/src/facade/lang';
 import {Injectable} from 'angular2/src/core/di';
-import {BaseException} from 'angular2/src/core/facade/exceptions';
+import {BaseException} from 'angular2/src/facade/exceptions';
 import {Parser, AST, ASTWithSource} from 'angular2/src/core/change_detection/change_detection';
 import {TemplateBinding} from 'angular2/src/core/change_detection/parser/ast';
 import {CompileDirectiveMetadata} from './directive_metadata';

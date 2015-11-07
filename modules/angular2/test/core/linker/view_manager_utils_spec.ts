@@ -24,7 +24,7 @@ import {
 } from '../spies';
 
 import {Injector, provide} from 'angular2/core';
-import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
+import {isBlank, isPresent} from 'angular2/src/facade/lang';
 
 import {
   AppProtoView,

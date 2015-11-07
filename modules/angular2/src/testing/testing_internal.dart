@@ -22,7 +22,7 @@ import 'package:angular2/src/core/reflection/reflection_capabilities.dart';
 
 import 'package:angular2/src/core/di/provider.dart' show bind;
 import 'package:angular2/src/core/di/injector.dart' show Injector;
-import 'package:angular2/src/core/facade/collection.dart' show StringMapWrapper;
+import 'package:angular2/src/facade/collection.dart' show StringMapWrapper;
 
 import 'test_injector.dart';
 export 'test_injector.dart' show inject;

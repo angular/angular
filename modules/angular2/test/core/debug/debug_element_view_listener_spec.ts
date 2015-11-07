@@ -13,11 +13,11 @@ import {
   xit,
   TestComponentBuilder,
 } from 'angular2/testing_internal';
-import {global} from 'angular2/src/core/facade/lang';
+import {global} from 'angular2/src/facade/lang';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 import {provide, Component, Directive, Injectable, View} from 'angular2/core';
 import {inspectNativeElement} from 'angular2/src/core/debug';
-import {IS_DART} from 'angular2/src/core/facade/lang';
+import {IS_DART} from 'angular2/src/facade/lang';
 
 @Component({selector: 'my-comp'})
 @View({directives: []})

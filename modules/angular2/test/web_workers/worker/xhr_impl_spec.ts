@@ -9,7 +9,7 @@ import {
   beforeEachBindings
 } from 'angular2/testing_internal';
 import {SpyMessageBroker} from './spies';
-import {Type} from 'angular2/src/core/facade/lang';
+import {Type} from 'angular2/src/facade/lang';
 import {
   ClientMessageBroker,
   UiArguments,
@@ -17,7 +17,7 @@ import {
   ClientMessageBrokerFactory_
 } from 'angular2/src/web_workers/shared/client_message_broker';
 import {WebWorkerXHRImpl} from "angular2/src/web_workers/worker/xhr_impl";
-import {PromiseWrapper} from "angular2/src/core/facade/async";
+import {PromiseWrapper} from "angular2/src/facade/async";
 
 export function main() {
   describe("WebWorkerXHRImpl", () => {

@@ -5,7 +5,7 @@ import {
 } from 'angular2/src/core/change_detection/change_detection_jit_generator';
 
 import {createChangeDetectorDefinitions} from './change_definition_factory';
-import {IS_DART, isJsObject, CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {IS_DART, isJsObject, CONST_EXPR} from 'angular2/src/facade/lang';
 
 import {
   ChangeDetectorGenConfig,

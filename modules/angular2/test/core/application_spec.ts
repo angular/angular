@@ -10,15 +10,15 @@ import {
   xdescribe,
   xit
 } from 'angular2/testing_internal';
-import {IS_DART, isPresent, stringify} from 'angular2/src/core/facade/lang';
+import {IS_DART, isPresent, stringify} from 'angular2/src/facade/lang';
 import {bootstrap} from 'angular2/bootstrap';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {Component, Directive, View} from 'angular2/core';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {DOCUMENT} from 'angular2/render';
-import {PromiseWrapper} from 'angular2/src/core/facade/async';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 import {provide, Inject, Injector} from 'angular2/core';
-import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
+import {ExceptionHandler} from 'angular2/src/facade/exceptions';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
 import {ComponentRef_} from "angular2/src/core/linker/dynamic_component_loader";
 

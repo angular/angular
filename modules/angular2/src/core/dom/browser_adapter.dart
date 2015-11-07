@@ -3,7 +3,7 @@ library angular.core.facade.dom;
 import 'dart:html';
 import 'dom_adapter.dart' show setRootDomAdapter;
 import 'generic_browser_adapter.dart' show GenericBrowserDomAdapter;
-import '../facade/browser.dart';
+import 'package:angular2/src/facade/browser.dart';
 import 'dart:js' as js;
 
 // WARNING: Do not expose outside this class. Parsing HTML using this

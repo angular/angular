@@ -5,7 +5,7 @@ import {
   RegExpMatcherWrapper,
   StringWrapper,
   CONST_EXPR
-} from 'angular2/src/core/facade/lang';
+} from 'angular2/src/facade/lang';
 
 export function main() {
   describe('RegExp', () => {

@@ -1,8 +1,8 @@
-import {global, isPresent} from 'angular2/src/core/facade/lang';
+import {global, isPresent} from 'angular2/src/facade/lang';
 // We make sure promises are in a separate file so that we can use promises
 // without depending on rxjs.
-import {PromiseWrapper, Promise, PromiseCompleter} from 'angular2/src/core/facade/promise';
-export {PromiseWrapper, Promise, PromiseCompleter} from 'angular2/src/core/facade/promise';
+import {PromiseWrapper, Promise, PromiseCompleter} from 'angular2/src/facade/promise';
+export {PromiseWrapper, Promise, PromiseCompleter} from 'angular2/src/facade/promise';
 import {Subject, Subscription, Observable as RxObservable} from '@reactivex/rxjs/dist/cjs/Rx';
 export {Subject} from '@reactivex/rxjs/dist/cjs/Rx';
 import Operator from '@reactivex/rxjs/dist/cjs/Operator';

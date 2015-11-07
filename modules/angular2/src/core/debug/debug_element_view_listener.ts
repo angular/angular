@@ -1,5 +1,5 @@
-import {CONST_EXPR, isPresent, NumberWrapper, StringWrapper} from 'angular2/src/core/facade/lang';
-import {MapWrapper, Map, ListWrapper} from 'angular2/src/core/facade/collection';
+import {CONST_EXPR, isPresent, NumberWrapper, StringWrapper} from 'angular2/src/facade/lang';
+import {MapWrapper, Map, ListWrapper} from 'angular2/src/facade/collection';
 import {Injectable, provide, Provider} from 'angular2/src/core/di';
 import {AppViewListener} from 'angular2/src/core/linker/view_listener';
 import {AppView} from 'angular2/src/core/linker/view';

@@ -5,7 +5,7 @@ import {Response} from '../static_response';
 import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
 import {Injectable} from 'angular2/angular2';
 import {BrowserXhr} from './browser_xhr';
-import {isPresent} from 'angular2/src/core/facade/lang';
+import {isPresent} from 'angular2/src/facade/lang';
 import {Observable} from 'angular2/angular2';
 /**
 * Creates connections using `XMLHttpRequest`. Given a fully-qualified

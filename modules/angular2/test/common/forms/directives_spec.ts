@@ -38,8 +38,8 @@ import {
 
 
 import {selectValueAccessor, composeValidators} from 'angular2/src/common/forms/directives/shared';
-import {TimerWrapper} from 'angular2/src/core/facade/async';
-import {PromiseWrapper} from 'angular2/src/core/facade/promise';
+import {TimerWrapper} from 'angular2/src/facade/async';
+import {PromiseWrapper} from 'angular2/src/facade/promise';
 import {SimpleChange} from 'angular2/src/core/change_detection';
 
 class DummyControlValueAccessor implements ControlValueAccessor {
@@ -135,7 +135,7 @@ export function main() {
 
     describe("NgFormModel", () => {
       var form;
-      var formModel;
+      var formModel: ControlGroup;
       var loginControlDir;
 
       beforeEach(() => {
@@ -188,7 +188,7 @@ export function main() {
              expect(formModel.hasError("required", ["login"])).toBe(true);
              expect(formModel.hasError("async", ["login"])).toBe(false);
 
-             formModel.find(["login"]).updateValue("invalid value");
+             (<Control>formModel.find(["login"])).updateValue("invalid value");
 
              // sync validator passes, running async validators
              expect(formModel.pending).toBe(true);
@@ -200,7 +200,7 @@ export function main() {
            }));
 
         it("should write value to the DOM", () => {
-          formModel.find(["login"]).updateValue("initValue");
+          (<Control>formModel.find(["login"])).updateValue("initValue");
 
           form.addControl(loginControlDir);
 
@@ -228,13 +228,15 @@ export function main() {
              group.name = "passwords";
              form.addControlGroup(group);
 
-             formModel.find(["passwords", "password"]).updateValue("somePassword");
-             formModel.find(["passwords", "passwordConfirm"]).updateValue("someOtherPassword");
+             (<Control>formModel.find(["passwords", "password"])).updateValue("somePassword");
+             (<Control>formModel.find(["passwords", "passwordConfirm"]))
+                 .updateValue("someOtherPassword");
 
              // sync validators are set
              expect(formModel.hasError("differentPasswords", ["passwords"])).toEqual(true);
 
-             formModel.find(["passwords", "passwordConfirm"]).updateValue("somePassword");
+             (<Control>formModel.find(["passwords", "passwordConfirm"]))
+                 .updateValue("somePassword");
 
              // sync validators pass, running async validators
              expect(formModel.pending).toBe(true);
@@ -257,7 +259,7 @@ export function main() {
         it("should update dom values of all the directives", () => {
           form.addControl(loginControlDir);
 
-          formModel.find(["login"]).updateValue("new value");
+          (<Control>formModel.find(["login"])).updateValue("new value");
 
           form.onChanges({});
 
@@ -268,7 +270,7 @@ export function main() {
           var formValidator = (c) => ({"custom": true});
           var f = new NgFormModel([formValidator], []);
           f.form = formModel;
-          f.onChanges({"form": formModel});
+          f.onChanges({"form":<any>formModel});
 
           expect(formModel.errors).toEqual({"custom": true});
         });
@@ -276,7 +278,7 @@ export function main() {
         it("should set up an async validator", fakeAsync(() => {
              var f = new NgFormModel([], [asyncValidator("expected")]);
              f.form = formModel;
-             f.onChanges({"form": formModel});
+             f.onChanges({"form":<any>formModel});
 
              tick();
 
@@ -287,7 +289,7 @@ export function main() {
 
     describe("NgForm", () => {
       var form;
-      var formModel;
+      var formModel: ControlGroup;
       var loginControlDir;
       var personControlGroupDir;
 

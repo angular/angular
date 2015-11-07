@@ -20,8 +20,8 @@ import {
   TimerWrapper,
   ObservableWrapper,
   EventEmitter
-} from 'angular2/src/core/facade/async';
-import {BaseException} from 'angular2/src/core/facade/exceptions';
+} from 'angular2/src/facade/async';
+import {BaseException} from 'angular2/src/facade/exceptions';
 
 import {NgZone, NgZoneError} from 'angular2/src/core/zone/ng_zone';
 

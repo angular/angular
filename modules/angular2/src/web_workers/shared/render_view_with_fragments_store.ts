@@ -5,7 +5,7 @@ import {
   RenderViewWithFragments
 } from "angular2/src/core/render/api";
 import {ON_WEB_WORKER} from "angular2/src/web_workers/shared/api";
-import {MapWrapper, ListWrapper} from "angular2/src/core/facade/collection";
+import {MapWrapper, ListWrapper} from "angular2/src/facade/collection";
 
 @Injectable()
 export class RenderViewWithFragmentsStore {

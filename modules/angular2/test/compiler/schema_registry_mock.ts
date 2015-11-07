@@ -1,5 +1,5 @@
 import {ElementSchemaRegistry} from 'angular2/src/compiler/schema/element_schema_registry';
-import {isPresent} from 'angular2/src/core/facade/lang';
+import {isPresent} from 'angular2/src/facade/lang';
 
 export class MockSchemaRegistry implements ElementSchemaRegistry {
   constructor(public existingProperties: {[key: string]: boolean},

@@ -1,10 +1,10 @@
 import {forwardRef, Provider, OpaqueToken} from 'angular2/src/core/di';
-import {CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {Attribute, Directive} from 'angular2/src/core/metadata';
 import {Validators, NG_VALIDATORS} from '../validators';
 import {Control} from '../model';
 import * as modelModule from '../model';
-import {NumberWrapper} from "angular2/src/core/facade/lang";
+import {NumberWrapper} from "angular2/src/facade/lang";
 
 
 /**

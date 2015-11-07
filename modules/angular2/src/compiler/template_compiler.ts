@@ -1,7 +1,7 @@
-import {IS_DART, Type, Json, isBlank, stringify} from 'angular2/src/core/facade/lang';
-import {BaseException} from 'angular2/src/core/facade/exceptions';
-import {ListWrapper, SetWrapper} from 'angular2/src/core/facade/collection';
-import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
+import {IS_DART, Type, Json, isBlank, stringify} from 'angular2/src/facade/lang';
+import {BaseException} from 'angular2/src/facade/exceptions';
+import {ListWrapper, SetWrapper} from 'angular2/src/facade/collection';
+import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 import {
   CompiledTemplate,
   TemplateCmd,

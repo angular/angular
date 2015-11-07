@@ -6,7 +6,7 @@ import {
   IterableDiffers
 } from 'angular2/src/core/change_detection';
 import {ViewContainerRef, TemplateRef, ViewRef} from 'angular2/src/core/linker';
-import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
 /**
  * The `NgFor` directive instantiates a template once per item from an iterable. The context for

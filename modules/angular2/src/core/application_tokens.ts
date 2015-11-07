@@ -1,5 +1,5 @@
 import {OpaqueToken, Provider} from 'angular2/src/core/di';
-import {CONST_EXPR, Math, StringWrapper} from 'angular2/src/core/facade/lang';
+import {CONST_EXPR, Math, StringWrapper} from 'angular2/src/facade/lang';
 
 /**
  *  @internal

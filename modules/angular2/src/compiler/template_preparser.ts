@@ -1,5 +1,5 @@
 import {HtmlElementAst} from './html_ast';
-import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
+import {isBlank, isPresent} from 'angular2/src/facade/lang';
 
 const NG_CONTENT_SELECT_ATTR = 'select';
 const NG_CONTENT_ELEMENT = 'ng-content';

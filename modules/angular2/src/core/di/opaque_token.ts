@@ -1,4 +1,4 @@
-import {CONST} from 'angular2/src/core/facade/lang';
+import {CONST} from 'angular2/src/facade/lang';
 
 /**
  * Creates a token that can be used in a DI Provider.

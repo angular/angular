@@ -5,7 +5,7 @@ export 'package:angular2/src/core/metadata.dart';
 export 'package:angular2/src/core/util.dart';
 export 'package:angular2/src/core/di.dart';
 export 'package:angular2/src/common/pipes.dart';
-export 'package:angular2/src/core/facade.dart';
+export 'package:angular2/src/facade/facade.dart';
 // Do not export application for dart. Must import from angular2/bootstrap
 //export 'package:angular2/src/core/application.dart';
 export 'package:angular2/src/core/application_ref.dart'

@@ -15,10 +15,10 @@ import {
 import {provide} from 'angular2/src/core/di';
 import {SpyXHR} from './spies';
 import {XHR} from 'angular2/src/compiler/xhr';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 
-import {CONST_EXPR, isPresent, isBlank, StringWrapper} from 'angular2/src/core/facade/lang';
-import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
+import {CONST_EXPR, isPresent, isBlank, StringWrapper} from 'angular2/src/facade/lang';
+import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 import {evalModule} from './eval_module';
 import {StyleCompiler} from 'angular2/src/compiler/style_compiler';
 import {

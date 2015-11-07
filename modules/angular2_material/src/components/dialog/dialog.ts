@@ -16,10 +16,10 @@ import {
   ViewEncapsulation
 } from 'angular2/core';
 
-import {ObservableWrapper, Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
-import {isPresent, Type} from 'angular2/src/core/facade/lang';
+import {ObservableWrapper, Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {isPresent, Type} from 'angular2/src/facade/lang';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {MouseEvent, KeyboardEvent} from 'angular2/src/core/facade/browser';
+import {MouseEvent, KeyboardEvent} from 'angular2/src/facade/browser';
 import {KeyCodes} from 'angular2_material/src/core/key_codes';
 
 // TODO(jelbourn): Opener of dialog can control where it is rendered.

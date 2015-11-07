@@ -10,7 +10,7 @@ import {
   SpyObject,
   proxy
 } from 'angular2/testing_internal';
-import {ObservableWrapper, TimerWrapper} from 'angular2/src/core/facade/async';
+import {ObservableWrapper, TimerWrapper} from 'angular2/src/facade/async';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {createConnectedMessageBus} from './message_bus_util';
 import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';

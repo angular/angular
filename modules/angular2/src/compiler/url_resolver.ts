@@ -1,7 +1,7 @@
 import {Injectable} from 'angular2/src/core/di';
-import {isPresent, isBlank, RegExpWrapper, normalizeBlank} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
+import {isPresent, isBlank, RegExpWrapper, normalizeBlank} from 'angular2/src/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {ListWrapper} from 'angular2/src/facade/collection';
 
 export function createWithoutPackagePrefix(): UrlResolver {
   return new UrlResolver();

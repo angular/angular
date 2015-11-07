@@ -14,7 +14,7 @@ import {
   FnArg,
   UiArguments
 } from "angular2/src/web_workers/shared/client_message_broker";
-import {isPresent, print} from "angular2/src/core/facade/lang";
+import {isPresent, print} from "angular2/src/facade/lang";
 import {Injectable} from "angular2/src/core/di";
 import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_proto_view_ref_store';
 import {

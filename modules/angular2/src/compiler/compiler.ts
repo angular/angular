@@ -8,7 +8,7 @@ export {
 export {SourceModule, SourceWithImports} from './source_module';
 export {AMBIENT_DIRECTIVES, AMBIENT_PIPES} from 'angular2/src/core/ambient';
 
-import {assertionsEnabled, Type} from 'angular2/src/core/facade/lang';
+import {assertionsEnabled, Type} from 'angular2/src/facade/lang';
 import {provide, Provider} from 'angular2/src/core/di';
 import {TemplateParser} from 'angular2/src/compiler/template_parser';
 import {HtmlParser} from 'angular2/src/compiler/html_parser';

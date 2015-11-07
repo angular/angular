@@ -13,7 +13,7 @@ import {
 import {provide} from 'angular2/src/core/di';
 
 import {TEST_PROVIDERS} from './test_bindings';
-import {isPresent} from 'angular2/src/core/facade/lang';
+import {isPresent} from 'angular2/src/facade/lang';
 import {TemplateParser, splitClasses} from 'angular2/src/compiler/template_parser';
 import {
   CompileDirectiveMetadata,

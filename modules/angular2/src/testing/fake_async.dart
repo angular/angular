@@ -2,7 +2,7 @@ library testing.fake_async;
 
 import 'dart:async' show runZoned, ZoneSpecification;
 import 'package:quiver/testing/async.dart' as quiver;
-import 'package:angular2/src/core/facade/exceptions.dart' show BaseException;
+import 'package:angular2/src/facade/exceptions.dart' show BaseException;
 
 const _u = const Object();
 

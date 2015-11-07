@@ -1,4 +1,4 @@
-import {Map} from 'angular2/src/core/facade/collection';
+import {Map} from 'angular2/src/facade/collection';
 
 /**
  * Represents an Angular ProtoView in the Rendering Context.

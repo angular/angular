@@ -16,7 +16,7 @@ import {
 } from 'angular2/testing_internal';
 
 import {provide, Component, View, Injector, Inject} from 'angular2/core';
-import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
+import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 
 import {RootRouter} from 'angular2/src/router/router';
 import {Router, RouterOutlet, RouterLink, RouteParams, RouteData} from 'angular2/router';

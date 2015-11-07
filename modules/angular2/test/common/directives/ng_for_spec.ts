@@ -13,7 +13,7 @@ import {
   xit,
 } from 'angular2/testing_internal';
 
-import {ListWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {Component, View, TemplateRef, ContentChild} from 'angular2/angular2';
 

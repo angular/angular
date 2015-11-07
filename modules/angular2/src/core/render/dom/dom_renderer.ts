@@ -1,13 +1,7 @@
 import {Inject, Injectable, OpaqueToken} from 'angular2/src/core/di';
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
-import {
-  isPresent,
-  isBlank,
-  RegExpWrapper,
-  CONST_EXPR,
-  stringify
-} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+import {isPresent, isBlank, RegExpWrapper, CONST_EXPR, stringify} from 'angular2/src/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 

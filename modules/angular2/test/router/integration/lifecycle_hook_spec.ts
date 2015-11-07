@@ -16,14 +16,14 @@ import {
 } from 'angular2/testing_internal';
 
 import {provide, Component, Injector, Inject, View} from 'angular2/core';
-import {isPresent} from 'angular2/src/core/facade/lang';
+import {isPresent} from 'angular2/src/facade/lang';
 import {
   Promise,
   PromiseWrapper,
   PromiseCompleter,
   EventEmitter,
   ObservableWrapper
-} from 'angular2/src/core/facade/async';
+} from 'angular2/src/facade/async';
 
 import {RootRouter} from 'angular2/src/router/router';
 import {Router, RouterOutlet, RouterLink, RouteParams} from 'angular2/router';

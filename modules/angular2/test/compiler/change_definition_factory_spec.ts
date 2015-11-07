@@ -12,7 +12,7 @@ import {
   TestComponentBuilder,
   beforeEachBindings
 } from 'angular2/testing_internal';
-import {MapWrapper} from 'angular2/src/core/facade/collection';
+import {MapWrapper} from 'angular2/src/facade/collection';
 import {
   CompileDirectiveMetadata,
   CompileTypeMetadata

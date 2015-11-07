@@ -1,8 +1,8 @@
 import {OnInit, OnDestroy} from 'angular2/lifecycle_hooks';
 import {Directive} from 'angular2/src/core/metadata';
 import {Optional, Inject, Host, SkipSelf, forwardRef, Provider} from 'angular2/src/core/di';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
-import {CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {ListWrapper} from 'angular2/src/facade/collection';
+import {CONST_EXPR} from 'angular2/src/facade/lang';
 
 import {ControlContainer} from './control_container';
 import {controlPath, composeValidators, composeAsyncValidators} from './shared';

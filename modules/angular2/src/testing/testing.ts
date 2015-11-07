@@ -2,7 +2,7 @@
  * Public Test Library for unit testing Angular2 Applications. Uses the
  * Jasmine framework.
  */
-import {global} from 'angular2/src/core/facade/lang';
+import {global} from 'angular2/src/facade/lang';
 
 import {bind} from 'angular2/src/core/di';
 

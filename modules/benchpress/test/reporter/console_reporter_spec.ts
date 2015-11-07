@@ -9,7 +9,7 @@ import {
   afterEach
 } from 'angular2/testing_internal';
 
-import {isBlank, isPresent, Date, DateWrapper} from 'angular2/src/core/facade/lang';
+import {isBlank, isPresent, Date, DateWrapper} from 'angular2/src/facade/lang';
 
 import {
   SampleState,

@@ -1,5 +1,5 @@
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {Type, isBlank, isPresent, assertionsEnabled} from 'angular2/src/core/facade/lang';
+import {Type, isBlank, isPresent, assertionsEnabled} from 'angular2/src/facade/lang';
 import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
 import {
   APP_COMPONENT_REF_PROMISE,
@@ -11,8 +11,8 @@ import {
   PromiseWrapper,
   PromiseCompleter,
   ObservableWrapper
-} from 'angular2/src/core/facade/async';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
+} from 'angular2/src/facade/async';
+import {ListWrapper} from 'angular2/src/facade/collection';
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
 import {
@@ -24,7 +24,7 @@ import {
   WrappedException,
   ExceptionHandler,
   unimplemented
-} from 'angular2/src/core/facade/exceptions';
+} from 'angular2/src/facade/exceptions';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {internalView} from 'angular2/src/core/linker/view_ref';
 import {
@@ -48,7 +48,7 @@ import {Compiler_} from "./linker/compiler";
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from './profile/profile';
 import {ChangeDetectorRef} from 'angular2/src/core/change_detection/change_detector_ref';
 import {AMBIENT_DIRECTIVES, AMBIENT_PIPES} from "angular2/src/core/ambient";
-import {lockDevMode} from 'angular2/src/core/facade/lang';
+import {lockDevMode} from 'angular2/src/facade/lang';
 import {COMMON_DIRECTIVES, COMMON_PIPES} from "angular2/common";
 
 /**

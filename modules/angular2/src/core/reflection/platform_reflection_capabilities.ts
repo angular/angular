@@ -1,4 +1,4 @@
-import {Type} from 'angular2/src/core/facade/lang';
+import {Type} from 'angular2/src/facade/lang';
 import {GetterFn, SetterFn, MethodFn} from './types';
 
 export interface PlatformReflectionCapabilities {

@@ -1,4 +1,4 @@
-import {PromiseWrapper, Promise, TimerWrapper} from 'angular2/src/core/facade/async';
+import {PromiseWrapper, Promise, TimerWrapper} from 'angular2/src/facade/async';
 import {
   isPresent,
   isBlank,
@@ -6,9 +6,9 @@ import {
   Math,
   RegExpWrapper,
   NumberWrapper
-} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
-import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+} from 'angular2/src/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {bind, provide, Provider, OpaqueToken} from 'angular2/src/core/di';
 
 import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';

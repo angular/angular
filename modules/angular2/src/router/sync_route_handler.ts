@@ -1,6 +1,6 @@
 import {RouteHandler} from './route_handler';
-import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
-import {Type} from 'angular2/src/core/facade/lang';
+import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {Type} from 'angular2/src/facade/lang';
 
 export class SyncRouteHandler implements RouteHandler {
   /** @internal */

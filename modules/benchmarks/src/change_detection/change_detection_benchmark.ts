@@ -1,5 +1,5 @@
 import {reflector} from 'angular2/src/core/reflection/reflection';
-import {isPresent} from 'angular2/src/core/facade/lang';
+import {isPresent} from 'angular2/src/facade/lang';
 import {getIntParameter, bindAction, microBenchmark} from 'angular2/src/testing/benchmark_util';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 
