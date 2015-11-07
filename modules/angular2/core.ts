@@ -7,7 +7,7 @@ export * from './src/core/metadata';
 export * from './src/core/util';
 export * from './src/core/di';
 export * from './src/common/pipes';
-export * from './src/core/facade';
+export * from './src/facade/facade';
 export * from './src/core/application';
 export * from './src/core/bootstrap';
 export * from './src/core/services';

@@ -1,8 +1,8 @@
 import {Directive} from 'angular2/src/core/metadata';
 import {Host} from 'angular2/src/core/di';
 import {ViewContainerRef, TemplateRef} from 'angular2/src/core/linker';
-import {isPresent, isBlank, normalizeBlank, CONST_EXPR} from 'angular2/src/core/facade/lang';
-import {ListWrapper, Map} from 'angular2/src/core/facade/collection';
+import {isPresent, isBlank, normalizeBlank, CONST_EXPR} from 'angular2/src/facade/lang';
+import {ListWrapper, Map} from 'angular2/src/facade/collection';
 
 const _WHEN_DEFAULT = CONST_EXPR(new Object());
 

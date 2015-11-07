@@ -11,7 +11,7 @@ import {
   defaultKeyValueDiffers,
   ChangeDetectorGenConfig
 } from 'angular2/src/core/change_detection/change_detection';
-import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
+import {ExceptionHandler} from 'angular2/src/facade/exceptions';
 import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
 import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 import {PipeResolver} from 'angular2/src/core/linker/pipe_resolver';
@@ -38,8 +38,8 @@ import {TestComponentBuilder} from './test_component_builder';
 import {Injector} from 'angular2/src/core/di';
 import {ELEMENT_PROBE_PROVIDERS} from 'angular2/src/core/debug';
 
-import {ListWrapper} from 'angular2/src/core/facade/collection';
-import {FunctionWrapper, Type} from 'angular2/src/core/facade/lang';
+import {ListWrapper} from 'angular2/src/facade/collection';
+import {FunctionWrapper, Type} from 'angular2/src/facade/lang';
 
 import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 import {AppViewManager} from 'angular2/src/core/linker/view_manager';

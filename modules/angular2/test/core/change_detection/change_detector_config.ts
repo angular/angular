@@ -1,5 +1,5 @@
-import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
+import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+import {isBlank, isPresent} from 'angular2/src/facade/lang';
 import {
   ChangeDetectionStrategy,
   BindingRecord,

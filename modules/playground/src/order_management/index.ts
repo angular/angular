@@ -14,7 +14,7 @@ import {
   Output
 } from 'angular2/core';
 
-import {ListWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/facade/collection';
 
 /**
  * You can find the Angular 1 implementation of this example here:
@@ -35,7 +35,7 @@ class Order {
               private _dataService: DataService) {}
 
   get items(): OrderItem[] { return this._dataService.itemsFor(this); }
-  get total(): number { return this.items.map(i => i.total).reduce((a, b) => a + b); }
+  get total(): number { return this.items.map(i => i.total).reduce((a, b) => a + b, 0); }
 }
 
 

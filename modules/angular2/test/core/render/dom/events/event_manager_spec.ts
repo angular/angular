@@ -15,7 +15,7 @@ import {
   DomEventsPlugin
 } from 'angular2/src/core/render/dom/events/event_manager';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {ListWrapper, Map, MapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 export function main() {

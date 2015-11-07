@@ -14,7 +14,7 @@ import {
 } from 'angular2/testing_internal';
 
 import {Component, View, provide} from 'angular2/core';
-import {PromiseWrapper} from 'angular2/src/core/facade/async';
+import {PromiseWrapper} from 'angular2/src/facade/async';
 import {SpyProtoViewFactory} from '../core/spies';
 import {
   CompiledHostTemplate,

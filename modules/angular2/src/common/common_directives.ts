@@ -1,4 +1,4 @@
-import {CONST_EXPR, Type} from 'angular2/src/core/facade/lang';
+import {CONST_EXPR, Type} from 'angular2/src/facade/lang';
 
 import {FORM_DIRECTIVES} from './forms';
 import {CORE_DIRECTIVES} from './directives';

@@ -10,7 +10,7 @@ import {JsonPipe} from './pipes/json_pipe';
 import {SlicePipe} from './pipes/slice_pipe';
 import {DatePipe} from './pipes/date_pipe';
 import {DecimalPipe, PercentPipe, CurrencyPipe} from './pipes/number_pipe';
-import {CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {CONST_EXPR} from 'angular2/src/facade/lang';
 
 export {AsyncPipe} from './pipes/async_pipe';
 export {DatePipe} from './pipes/date_pipe';

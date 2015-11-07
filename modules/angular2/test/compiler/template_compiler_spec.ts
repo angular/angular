@@ -13,9 +13,9 @@ import {
   beforeEachBindings
 } from 'angular2/testing_internal';
 
-import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
-import {Type, isPresent, isBlank, stringify, isString} from 'angular2/src/core/facade/lang';
-import {MapWrapper, SetWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {Type, isPresent, isBlank, stringify, isString} from 'angular2/src/facade/lang';
+import {MapWrapper, SetWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {RuntimeMetadataResolver} from 'angular2/src/compiler/runtime_metadata';
 import {
   TemplateCompiler,

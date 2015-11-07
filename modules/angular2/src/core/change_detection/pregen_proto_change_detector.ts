@@ -1,4 +1,4 @@
-import {BaseException} from 'angular2/src/core/facade/exceptions';
+import {BaseException} from 'angular2/src/facade/exceptions';
 
 import {ProtoChangeDetector, ChangeDetector} from './interfaces';
 import {coalesce} from './coalesce';

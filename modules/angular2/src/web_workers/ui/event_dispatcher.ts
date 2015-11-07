@@ -9,9 +9,9 @@ import {
   serializeGenericEvent,
   serializeEventWithTarget
 } from 'angular2/src/web_workers/ui/event_serializer';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
-import {StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {StringMapWrapper} from 'angular2/src/facade/collection';
+import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
 export class EventDispatcher implements RenderEventDispatcher {
   constructor(private _viewRef: RenderViewRef, private _sink: EventEmitter<any>,

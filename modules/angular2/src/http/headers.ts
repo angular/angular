@@ -1,12 +1,12 @@
-import {isPresent, isBlank, isJsObject, isType, StringWrapper} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+import {isPresent, isBlank, isJsObject, isType, StringWrapper} from 'angular2/src/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {
   isListLikeIterable,
   Map,
   MapWrapper,
   StringMapWrapper,
   ListWrapper,
-} from 'angular2/src/core/facade/collection';
+} from 'angular2/src/facade/collection';
 
 /**
  * Polyfill for [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers/Headers), as

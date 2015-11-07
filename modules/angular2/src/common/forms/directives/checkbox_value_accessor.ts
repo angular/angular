@@ -4,7 +4,7 @@ import {ElementRef} from 'angular2/src/core/linker';
 import {Self, forwardRef, Provider} from 'angular2/src/core/di';
 
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
-import {CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {setProperty} from './shared';
 
 const CHECKBOX_VALUE_ACCESSOR = CONST_EXPR(new Provider(

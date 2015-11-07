@@ -16,7 +16,7 @@ import {
   WebWorkerRenderViewRef,
   WebWorkerRenderFragmentRef
 } from "angular2/src/web_workers/shared/render_view_with_fragments_store";
-import {ListWrapper} from "angular2/src/core/facade/collection";
+import {ListWrapper} from "angular2/src/facade/collection";
 
 export function main() {
   describe("RenderViewWithFragmentsStore", () => {

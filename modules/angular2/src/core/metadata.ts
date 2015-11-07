@@ -55,7 +55,7 @@ import {
   TypeDecorator,
   Class
 } from './util/decorators';
-import {Type} from 'angular2/src/core/facade/lang';
+import {Type} from 'angular2/src/facade/lang';
 
 /**
  * Interface for the {@link DirectiveMetadata} decorator function.

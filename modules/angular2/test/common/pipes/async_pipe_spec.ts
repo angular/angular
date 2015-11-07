@@ -13,14 +13,14 @@ import {
 } from 'angular2/testing_internal';
 import {SpyChangeDetectorRef} from '../spies';
 
-import {isBlank} from 'angular2/src/core/facade/lang';
+import {isBlank} from 'angular2/src/facade/lang';
 import {AsyncPipe, WrappedValue} from 'angular2/core';
 import {
   EventEmitter,
   ObservableWrapper,
   PromiseWrapper,
   TimerWrapper
-} from 'angular2/src/core/facade/async';
+} from 'angular2/src/facade/async';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 export function main() {

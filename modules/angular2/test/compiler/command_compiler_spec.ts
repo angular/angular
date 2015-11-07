@@ -13,9 +13,9 @@ import {
   beforeEachBindings
 } from 'angular2/testing_internal';
 
-import {CONST_EXPR, stringify, isType, Type, isBlank} from 'angular2/src/core/facade/lang';
-import {MapWrapper} from 'angular2/src/core/facade/collection';
-import {PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
+import {CONST_EXPR, stringify, isType, Type, isBlank} from 'angular2/src/facade/lang';
+import {MapWrapper} from 'angular2/src/facade/collection';
+import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 import {TemplateParser} from 'angular2/src/compiler/template_parser';
 import {
   CommandVisitor,

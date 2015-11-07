@@ -5,9 +5,9 @@ import {
   Type,
   StringWrapper,
   looseIdentical
-} from 'angular2/src/core/facade/lang';
-import {BaseException} from 'angular2/src/core/facade/exceptions';
-import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+} from 'angular2/src/facade/lang';
+import {BaseException} from 'angular2/src/facade/exceptions';
+import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {ProtoRecord} from './proto_record';
 import {ChangeDetectionStrategy, isDefaultChangeDetectionStrategy} from './constants';
 import {implementsOnDestroy} from './pipe_lifecycle_reflector';

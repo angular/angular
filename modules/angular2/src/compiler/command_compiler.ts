@@ -1,5 +1,5 @@
-import {isPresent, isBlank, Type, isString, StringWrapper} from 'angular2/src/core/facade/lang';
-import {SetWrapper, StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+import {isPresent, isBlank, Type, isString, StringWrapper} from 'angular2/src/facade/lang';
+import {SetWrapper, StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {
   TemplateCmd,
   text,

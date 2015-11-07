@@ -1,5 +1,5 @@
 import {Injectable} from 'angular2/web_worker/worker';
-import {ListWrapper, Predicate} from 'angular2/src/core/facade/collection';
+import {ListWrapper, Predicate} from 'angular2/src/facade/collection';
 
 // base model for RecordStore
 export class KeyModel {

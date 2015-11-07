@@ -1,5 +1,5 @@
-import {ListWrapper} from 'angular2/src/core/facade/collection';
-import {Math} from 'angular2/src/core/facade/math';
+import {ListWrapper} from 'angular2/src/facade/collection';
+import {Math} from 'angular2/src/facade/math';
 
 import {Component, Directive, View} from 'angular2/angular2';
 

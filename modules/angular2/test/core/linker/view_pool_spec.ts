@@ -17,7 +17,7 @@ import {
 } from 'angular2/testing_internal';
 import {AppViewPool} from 'angular2/src/core/linker/view_pool';
 import {AppProtoView, AppView} from 'angular2/src/core/linker/view';
-import {MapWrapper, Map} from 'angular2/src/core/facade/collection';
+import {MapWrapper, Map} from 'angular2/src/facade/collection';
 
 export function main() {
   describe('AppViewPool', () => {

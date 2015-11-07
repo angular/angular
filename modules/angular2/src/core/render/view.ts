@@ -1,6 +1,6 @@
-import {BaseException} from 'angular2/src/core/facade/exceptions';
-import {ListWrapper, MapWrapper, Map, StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {isPresent, isBlank, stringify} from 'angular2/src/core/facade/lang';
+import {BaseException} from 'angular2/src/facade/exceptions';
+import {ListWrapper, MapWrapper, Map, StringMapWrapper} from 'angular2/src/facade/collection';
+import {isPresent, isBlank, stringify} from 'angular2/src/facade/lang';
 
 import {
   RenderViewRef,

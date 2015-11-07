@@ -5,10 +5,10 @@ import {
   stringify,
   CONST_EXPR,
   StringWrapper
-} from 'angular2/src/core/facade/lang';
-import {BaseException} from 'angular2/src/core/facade/exceptions';
-import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
-import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+} from 'angular2/src/facade/lang';
+import {BaseException} from 'angular2/src/facade/exceptions';
+import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
+import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {
   Injector,
   Key,

@@ -3,7 +3,7 @@ import {ElementRef} from 'angular2/src/core/linker';
 import {Renderer} from 'angular2/src/core/render';
 import {Self, forwardRef, Provider} from 'angular2/src/core/di';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
-import {isBlank, CONST_EXPR, NumberWrapper} from 'angular2/src/core/facade/lang';
+import {isBlank, CONST_EXPR, NumberWrapper} from 'angular2/src/facade/lang';
 import {setProperty} from './shared';
 
 const NUMBER_VALUE_ACCESSOR = CONST_EXPR(new Provider(

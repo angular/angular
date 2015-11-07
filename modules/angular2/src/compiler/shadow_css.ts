@@ -1,4 +1,4 @@
-import {ListWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/facade/collection';
 import {
   StringWrapper,
   RegExp,
@@ -6,7 +6,7 @@ import {
   RegExpMatcherWrapper,
   isPresent,
   isBlank
-} from 'angular2/src/core/facade/lang';
+} from 'angular2/src/facade/lang';
 
 /**
  * This file is a port of shadowCSS from webcomponents.js to TypeScript.

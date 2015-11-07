@@ -5,7 +5,7 @@ import {
   isBlank,
   isArray,
   getSymbolIterator
-} from 'angular2/src/core/facade/lang';
+} from 'angular2/src/facade/lang';
 
 export var Map = global.Map;
 export var Set = global.Set;

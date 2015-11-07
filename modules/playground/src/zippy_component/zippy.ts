@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, Output} from 'angular2/angular2';
-import {ObservableWrapper} from 'angular2/src/core/facade/async';
+import {ObservableWrapper} from 'angular2/src/facade/async';
 
 @Component({selector: 'zippy', templateUrl: 'zippy.html'})
 export class Zippy {

@@ -1,5 +1,5 @@
 import {AST} from 'angular2/src/core/change_detection/change_detection';
-import {isPresent} from 'angular2/src/core/facade/lang';
+import {isPresent} from 'angular2/src/facade/lang';
 import {CompileDirectiveMetadata} from './directive_metadata';
 
 export interface TemplateAst {

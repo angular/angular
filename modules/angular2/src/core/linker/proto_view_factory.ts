@@ -1,4 +1,4 @@
-import {isPresent, isBlank, Type, isArray, isNumber} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank, Type, isArray, isNumber} from 'angular2/src/facade/lang';
 
 import {RenderProtoViewRef} from 'angular2/src/core/render/api';
 

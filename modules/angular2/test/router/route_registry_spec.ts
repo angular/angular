@@ -10,8 +10,8 @@ import {
   SpyObject
 } from 'angular2/testing_internal';
 
-import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
-import {Type} from 'angular2/src/core/facade/lang';
+import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {Type} from 'angular2/src/facade/lang';
 
 import {RouteRegistry} from 'angular2/src/router/route_registry';
 import {
@@ -22,7 +22,7 @@ import {
   AsyncRoute
 } from 'angular2/src/router/route_config_decorator';
 import {stringifyInstruction} from 'angular2/src/router/instruction';
-import {IS_DART} from 'angular2/src/core/facade/lang';
+import {IS_DART} from 'angular2/src/facade/lang';
 
 export function main() {
   describe('RouteRegistry', () => {

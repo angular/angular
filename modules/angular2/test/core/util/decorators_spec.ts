@@ -11,7 +11,7 @@ import {
 } from 'angular2/testing_internal';
 
 import {makeDecorator, makeParamDecorator, Class} from 'angular2/src/core/util/decorators';
-import {global} from 'angular2/src/core/facade/lang';
+import {global} from 'angular2/src/facade/lang';
 import {Inject} from 'angular2/angular2';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 

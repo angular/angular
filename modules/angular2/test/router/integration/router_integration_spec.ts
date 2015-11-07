@@ -20,8 +20,8 @@ import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {provide} from 'angular2/core';
 import {DOCUMENT} from 'angular2/src/core/render/render';
 import {RouteConfig, Route, Redirect} from 'angular2/src/router/route_config_decorator';
-import {PromiseWrapper} from 'angular2/src/core/facade/async';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+import {PromiseWrapper} from 'angular2/src/facade/async';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {
   ROUTER_PROVIDERS,
   ROUTER_PRIMARY_COMPONENT,

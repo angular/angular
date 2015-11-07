@@ -1,7 +1,7 @@
-import {Map, MapWrapper, StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
-import {unimplemented} from 'angular2/src/core/facade/exceptions';
-import {isPresent, isBlank, normalizeBlank, Type, CONST_EXPR} from 'angular2/src/core/facade/lang';
-import {Promise} from 'angular2/src/core/facade/async';
+import {Map, MapWrapper, StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {unimplemented} from 'angular2/src/facade/exceptions';
+import {isPresent, isBlank, normalizeBlank, Type, CONST_EXPR} from 'angular2/src/facade/lang';
+import {Promise} from 'angular2/src/facade/async';
 
 import {PathRecognizer} from './path_recognizer';
 import {Url} from './url_parser';

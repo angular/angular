@@ -17,9 +17,9 @@ import {
   SpyObject
 } from 'angular2/testing_internal';
 
-import {NumberWrapper} from 'angular2/src/core/facade/lang';
-import {PromiseWrapper} from 'angular2/src/core/facade/async';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
+import {NumberWrapper} from 'angular2/src/facade/lang';
+import {PromiseWrapper} from 'angular2/src/facade/async';
+import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {provide, Component, DirectiveResolver, View} from 'angular2/core';
 

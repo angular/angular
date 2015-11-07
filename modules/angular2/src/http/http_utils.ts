@@ -1,6 +1,6 @@
-import {isString} from 'angular2/src/core/facade/lang';
+import {isString} from 'angular2/src/facade/lang';
 import {RequestMethods} from './enums';
-import {makeTypeError} from 'angular2/src/core/facade/exceptions';
+import {makeTypeError} from 'angular2/src/facade/exceptions';
 
 export function normalizeMethodName(method): RequestMethods {
   if (isString(method)) {
@@ -14,4 +14,4 @@ export function normalizeMethodName(method): RequestMethods {
   return method;
 }
 
-export {isJsObject} from 'angular2/src/core/facade/lang';
+export {isJsObject} from 'angular2/src/facade/lang';

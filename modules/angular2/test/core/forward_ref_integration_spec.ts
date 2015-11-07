@@ -23,7 +23,7 @@ import {
   QueryList,
   View
 } from 'angular2/core';
-import {Type} from 'angular2/src/core/facade/lang';
+import {Type} from 'angular2/src/facade/lang';
 import {asNativeElements} from 'angular2/src/core/debug';
 
 export function main() {

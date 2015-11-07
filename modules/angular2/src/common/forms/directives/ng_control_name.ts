@@ -1,5 +1,5 @@
-import {CONST_EXPR} from 'angular2/src/core/facade/lang';
-import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
+import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {OnChanges, OnDestroy} from 'angular2/lifecycle_hooks';
 import {SimpleChange} from 'angular2/src/core/change_detection';
 import {Query, Directive} from 'angular2/src/core/metadata';

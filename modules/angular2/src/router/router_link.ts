@@ -1,5 +1,5 @@
 import {Directive} from 'angular2/angular2';
-import {isString} from 'angular2/src/core/facade/lang';
+import {isString} from 'angular2/src/facade/lang';
 
 import {Router} from './router';
 import {Location} from './location';

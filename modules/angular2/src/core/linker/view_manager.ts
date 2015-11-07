@@ -6,8 +6,8 @@ import {
   ResolvedProvider,
   forwardRef
 } from 'angular2/src/core/di';
-import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
-import {BaseException} from 'angular2/src/core/facade/exceptions';
+import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {BaseException} from 'angular2/src/facade/exceptions';
 import * as viewModule from './view';
 import {ElementRef, ElementRef_} from './element_ref';
 import {ProtoViewRef, ViewRef, HostViewRef, internalView, internalProtoView} from './view_ref';

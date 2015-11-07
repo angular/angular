@@ -1,4 +1,4 @@
-import {StringWrapper, isBlank} from 'angular2/src/core/facade/lang';
+import {StringWrapper, isBlank} from 'angular2/src/facade/lang';
 
 var MODULE_REGEXP = /#MODULE\[([^\]]*)\]/g;
 

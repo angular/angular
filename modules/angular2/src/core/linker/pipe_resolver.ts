@@ -1,7 +1,7 @@
 import {resolveForwardRef, Injectable} from 'angular2/src/core/di';
-import {Type, isPresent, stringify} from 'angular2/src/core/facade/lang';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
-import {BaseException} from 'angular2/src/core/facade/exceptions';
+import {Type, isPresent, stringify} from 'angular2/src/facade/lang';
+import {ListWrapper} from 'angular2/src/facade/collection';
+import {BaseException} from 'angular2/src/facade/exceptions';
 import {PipeMetadata} from 'angular2/src/core/metadata';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 

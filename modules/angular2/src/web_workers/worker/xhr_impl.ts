@@ -1,5 +1,5 @@
 import {Injectable} from 'angular2/src/core/di';
-import {Promise} from 'angular2/src/core/facade/async';
+import {Promise} from 'angular2/src/facade/async';
 import {XHR} from 'angular2/src/compiler/xhr';
 import {
   FnArg,

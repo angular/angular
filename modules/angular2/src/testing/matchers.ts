@@ -1,5 +1,5 @@
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {global} from 'angular2/src/core/facade/lang';
+import {global} from 'angular2/src/facade/lang';
 
 
 export interface NgMatchers extends jasmine.Matchers {

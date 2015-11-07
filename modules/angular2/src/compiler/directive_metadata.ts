@@ -6,8 +6,8 @@ import {
   Type,
   RegExpWrapper,
   StringWrapper
-} from 'angular2/src/core/facade/lang';
-import {StringMapWrapper} from 'angular2/src/core/facade/collection';
+} from 'angular2/src/facade/lang';
+import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {
   ChangeDetectionStrategy,
   CHANGE_DETECTION_STRATEGY_VALUES

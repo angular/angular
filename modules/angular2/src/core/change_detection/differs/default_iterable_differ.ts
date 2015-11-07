@@ -1,11 +1,11 @@
-import {CONST} from 'angular2/src/core/facade/lang';
-import {BaseException} from 'angular2/src/core/facade/exceptions';
+import {CONST} from 'angular2/src/facade/lang';
+import {BaseException} from 'angular2/src/facade/exceptions';
 import {
   isListLikeIterable,
   iterateListLike,
   ListWrapper,
   MapWrapper
-} from 'angular2/src/core/facade/collection';
+} from 'angular2/src/facade/collection';
 
 import {
   isBlank,
@@ -14,7 +14,7 @@ import {
   getMapKey,
   looseIdentical,
   isArray
-} from 'angular2/src/core/facade/lang';
+} from 'angular2/src/facade/lang';
 
 import {ChangeDetectorRef} from '../change_detector_ref';
 import {IterableDiffer, IterableDifferFactory} from '../differs/iterable_differs';

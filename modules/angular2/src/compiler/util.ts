@@ -1,4 +1,4 @@
-import {IS_DART, StringWrapper, isBlank} from 'angular2/src/core/facade/lang';
+import {IS_DART, StringWrapper, isBlank} from 'angular2/src/facade/lang';
 
 var CAMEL_CASE_REGEXP = /([A-Z])/g;
 var DASH_CASE_REGEXP = /-([a-z])/g;

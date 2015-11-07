@@ -5,6 +5,7 @@ import {
   Validators,
   NgFormModel,
   FormBuilder,
+  ControlGroup,
   NgIf,
   NgFor,
   Component,
@@ -13,7 +14,7 @@ import {
   Host
 } from 'angular2/core';
 
-import {RegExpWrapper, print, isPresent} from 'angular2/src/core/facade/lang';
+import {RegExpWrapper, print, isPresent} from 'angular2/src/facade/lang';
 
 /**
  * Custom validator.
@@ -56,7 +57,7 @@ class ShowError {
   constructor(@Host() formDir: NgFormModel) { this.formDir = formDir; }
 
   get errorMessage(): string {
-    var control = this.formDir.form.find(this.controlPath);
+    var control = (<ControlGroup>this.formDir.form).find(this.controlPath);
     if (isPresent(control) && control.touched) {
       for (var i = 0; i < this.errorTypes.length; ++i) {
         if (control.hasError(this.errorTypes[i])) {

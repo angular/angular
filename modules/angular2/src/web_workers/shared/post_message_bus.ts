@@ -3,9 +3,9 @@ import {
   MessageBusSource,
   MessageBusSink
 } from "angular2/src/web_workers/shared/message_bus";
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
-import {EventEmitter} from 'angular2/src/core/facade/async';
-import {StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {EventEmitter} from 'angular2/src/facade/async';
+import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {Injectable} from "angular2/src/core/di";
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 

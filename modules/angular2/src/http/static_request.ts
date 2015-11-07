@@ -8,7 +8,7 @@ import {
   isPresent,
   isJsObject,
   StringWrapper
-} from 'angular2/src/core/facade/lang';
+} from 'angular2/src/facade/lang';
 
 // TODO(jeffbcross): properly implement body accessors
 /**

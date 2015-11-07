@@ -14,9 +14,9 @@ import {
 } from 'angular2/testing_internal';
 import {provide} from 'angular2/src/core/di';
 
-import {CONST_EXPR, stringify} from 'angular2/src/core/facade/lang';
-import {MapWrapper} from 'angular2/src/core/facade/collection';
-import {Promise} from 'angular2/src/core/facade/async';
+import {CONST_EXPR, stringify} from 'angular2/src/facade/lang';
+import {MapWrapper} from 'angular2/src/facade/collection';
+import {Promise} from 'angular2/src/facade/async';
 
 import {ChangeDetectionCompiler} from 'angular2/src/compiler/change_detector_compiler';
 

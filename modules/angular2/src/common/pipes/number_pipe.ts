@@ -7,13 +7,13 @@ import {
   RegExpWrapper,
   CONST,
   FunctionWrapper
-} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
-import {NumberFormatter, NumberFormatStyle} from 'angular2/src/core/facade/intl';
+} from 'angular2/src/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {NumberFormatter, NumberFormatStyle} from 'angular2/src/facade/intl';
 import {Injectable} from 'angular2/src/core/di';
 import {PipeTransform, WrappedValue} from 'angular2/src/core/change_detection';
 import {Pipe} from 'angular2/src/core/metadata';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 

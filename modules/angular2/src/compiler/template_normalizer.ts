@@ -3,10 +3,10 @@ import {
   CompileDirectiveMetadata,
   CompileTemplateMetadata
 } from './directive_metadata';
-import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
-import {BaseException} from 'angular2/src/core/facade/exceptions';
-import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
+import {isPresent, isBlank} from 'angular2/src/facade/lang';
+import {ListWrapper} from 'angular2/src/facade/collection';
+import {BaseException} from 'angular2/src/facade/exceptions';
+import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 
 import {XHR} from 'angular2/src/compiler/xhr';
 import {UrlResolver} from 'angular2/src/compiler/url_resolver';

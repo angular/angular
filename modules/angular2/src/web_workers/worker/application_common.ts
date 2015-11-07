@@ -8,9 +8,9 @@ import {
   assertionsEnabled,
   print,
   stringify
-} from 'angular2/src/core/facade/lang';
-import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
-import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/core/facade/async';
+} from 'angular2/src/facade/lang';
+import {ExceptionHandler} from 'angular2/src/facade/exceptions';
+import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/facade/async';
 import {XHR} from 'angular2/src/compiler/xhr';
 import {WebWorkerXHRImpl} from 'angular2/src/web_workers/worker/xhr_impl';
 import {AppRootUrl} from 'angular2/src/compiler/app_root_url';
@@ -37,7 +37,7 @@ import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_pr
 import {
   RenderViewWithFragmentsStore
 } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
-import {ObservableWrapper} from 'angular2/src/core/facade/async';
+import {ObservableWrapper} from 'angular2/src/facade/async';
 import {SETUP_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
 import {WebWorkerEventDispatcher} from 'angular2/src/web_workers/worker/event_dispatcher';
 import {ComponentRef} from 'angular2/src/core/linker/dynamic_component_loader';

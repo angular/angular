@@ -1,5 +1,5 @@
-import {isPresent} from 'angular2/src/core/facade/lang';
-import {unimplemented} from 'angular2/src/core/facade/exceptions';
+import {isPresent} from 'angular2/src/facade/lang';
+import {unimplemented} from 'angular2/src/facade/exceptions';
 import * as viewModule from './view';
 import {ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {RenderViewRef, RenderFragmentRef} from 'angular2/src/core/render/api';

@@ -5,8 +5,8 @@ import {Response} from '../static_response';
 import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
 import {Injectable} from 'angular2/angular2';
 import {BrowserJsonp} from './browser_jsonp';
-import {makeTypeError} from 'angular2/src/core/facade/exceptions';
-import {StringWrapper, isPresent} from 'angular2/src/core/facade/lang';
+import {makeTypeError} from 'angular2/src/facade/exceptions';
+import {StringWrapper, isPresent} from 'angular2/src/facade/lang';
 import {Observable} from 'angular2/angular2';
 
 const JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callback.';

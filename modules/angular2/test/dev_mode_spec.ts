@@ -11,7 +11,7 @@ import {
   xit
 } from 'angular2/testing_internal';
 
-import {assertionsEnabled} from 'angular2/src/core/facade/lang';
+import {assertionsEnabled} from 'angular2/src/facade/lang';
 
 export function main() {
   describe('dev mode', () => {

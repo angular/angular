@@ -1,4 +1,4 @@
-import {MapWrapper} from 'angular2/src/core/facade/collection';
+import {MapWrapper} from 'angular2/src/facade/collection';
 import {SimpleChange} from 'angular2/src/core/change_detection/change_detection_util';
 
 export enum LifecycleHooks {

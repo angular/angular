@@ -1,7 +1,7 @@
 // Public API for Application
 import {Provider} from './di';
-import {Type, isPresent} from 'angular2/src/core/facade/lang';
-import {Promise} from 'angular2/src/core/facade/async';
+import {Type, isPresent} from 'angular2/src/facade/lang';
+import {Promise} from 'angular2/src/facade/async';
 import {compilerProviders} from 'angular2/src/compiler/compiler';
 import {commonBootstrap} from './application_common';
 import {ComponentRef} from './linker/dynamic_component_loader';

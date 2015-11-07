@@ -3,7 +3,7 @@ import {
   MapWrapper,
   Map,
   StringMapWrapper,
-} from 'angular2/src/core/facade/collection';
+} from 'angular2/src/facade/collection';
 import {
   ChangeDetector,
   ChangeDispatcher,
@@ -21,8 +21,8 @@ import {
   DirectiveProvider
 } from './element_injector';
 import {ElementBinder} from './element_binder';
-import {isPresent} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+import {isPresent} from 'angular2/src/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import * as renderApi from 'angular2/src/core/render/api';
 import {RenderEventDispatcher} from 'angular2/src/core/render/api';
 import {ViewRef, ProtoViewRef, internalView} from './view_ref';

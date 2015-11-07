@@ -1,4 +1,4 @@
-import {isBlank, Type} from 'angular2/src/core/facade/lang';
+import {isBlank, Type} from 'angular2/src/facade/lang';
 
 export var DOM: DomAdapter;
 

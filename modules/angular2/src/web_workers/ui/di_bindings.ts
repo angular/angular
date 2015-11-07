@@ -32,7 +32,7 @@ import {AppViewManagerUtils} from 'angular2/src/core/linker/view_manager_utils';
 import {AppViewListener} from 'angular2/src/core/linker/view_listener';
 import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
 import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
-import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
+import {ExceptionHandler} from 'angular2/src/facade/exceptions';
 import {
   DynamicComponentLoader,
   DynamicComponentLoader_

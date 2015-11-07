@@ -1,4 +1,4 @@
-import {StringWrapper, RegExpWrapper, isJsObject} from 'angular2/src/core/facade/lang';
+import {StringWrapper, RegExpWrapper, isJsObject} from 'angular2/src/facade/lang';
 
 var IS_FIELD = RegExpWrapper.create('^\\w+[\\.|\\#]\\w+=?$');
 var IS_INTERFACE = RegExpWrapper.create('^\\{.+\\}');

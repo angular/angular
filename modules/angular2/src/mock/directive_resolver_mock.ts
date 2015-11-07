@@ -1,5 +1,5 @@
-import {Map, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
-import {Type, isPresent, stringify, isBlank, print} from 'angular2/src/core/facade/lang';
+import {Map, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {Type, isPresent, stringify, isBlank, print} from 'angular2/src/facade/lang';
 import {DirectiveMetadata, ComponentMetadata} from '../core/metadata';
 import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 

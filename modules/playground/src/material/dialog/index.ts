@@ -15,7 +15,7 @@ import {
   MdDialogConfig
 } from 'angular2_material/src/components/dialog/dialog';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
-import {isPresent} from 'angular2/src/core/facade/lang';
+import {isPresent} from 'angular2/src/facade/lang';
 
 
 @Component({
