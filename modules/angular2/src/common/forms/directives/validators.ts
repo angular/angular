@@ -1,5 +1,5 @@
 import {forwardRef, Provider, OpaqueToken} from 'angular2/src/core/di';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {CONST_EXPR, isPresent} from 'angular2/src/facade/lang';
 import {Attribute, Directive} from 'angular2/src/core/metadata';
 import {Validators, NG_VALIDATORS} from '../validators';
 import {Control} from '../model';
@@ -71,8 +71,11 @@ const MAX_LENGTH_VALIDATOR = CONST_EXPR(
 export class MaxLengthValidator implements Validator {
   private _validator: Function;
 
-  constructor(@Attribute("maxlength") minLength: string) {
-    this._validator = Validators.maxLength(NumberWrapper.parseInt(minLength, 10));
+  constructor(@Attribute("maxlength") maxLength: string,
+              @Attribute("maxLength") maxLengthWithCamelCase: string) {
+    // In IE9, maxlength attribute is always camel-cased
+    this._validator = Validators.maxLength(
+        NumberWrapper.parseInt(isPresent(maxLength) ? maxLength : maxLengthWithCamelCase, 10));
   }
 
   validate(c: Control): {[key: string]: any} { return this._validator(c); }
