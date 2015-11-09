@@ -19,5 +19,5 @@ export * from './src/common/directives';
 export * from './src/common/forms';
 export * from './src/core/debug';
 export * from './src/core/change_detection';
-export * from './src/core/ambient';
+export * from './src/core/platform_directives_and_pipes';
 export * from './src/core/dev_mode';

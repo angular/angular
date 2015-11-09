@@ -18,7 +18,7 @@ import {hasLifecycleHook} from 'angular2/src/core/linker/directive_lifecycle_ref
 import {LifecycleHooks, LIFECYCLE_HOOKS_VALUES} from 'angular2/src/core/linker/interfaces';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {Injectable, Inject, Optional} from 'angular2/src/core/di';
-import {AMBIENT_DIRECTIVES} from 'angular2/src/core/ambient';
+import {PLATFORM_DIRECTIVES} from 'angular2/src/core/platform_directives_and_pipes';
 import {MODULE_SUFFIX} from './util';
 
 @Injectable()
@@ -26,7 +26,7 @@ export class RuntimeMetadataResolver {
   private _cache = new Map<Type, cpl.CompileDirectiveMetadata>();
 
   constructor(private _directiveResolver: DirectiveResolver, private _viewResolver: ViewResolver,
-              @Optional() @Inject(AMBIENT_DIRECTIVES) private _ambientDirectives: Type[]) {}
+              @Optional() @Inject(PLATFORM_DIRECTIVES) private _platformDirectives: Type[]) {}
 
   getMetadata(directiveType: Type): cpl.CompileDirectiveMetadata {
     var meta = this._cache.get(directiveType);
@@ -69,7 +69,7 @@ export class RuntimeMetadataResolver {
 
   getViewDirectivesMetadata(component: Type): cpl.CompileDirectiveMetadata[] {
     var view = this._viewResolver.resolve(component);
-    var directives = flattenDirectives(view, this._ambientDirectives);
+    var directives = flattenDirectives(view, this._platformDirectives);
     for (var i = 0; i < directives.length; i++) {
       if (!isValidDirective(directives[i])) {
         throw new BaseException(
@@ -87,10 +87,10 @@ function removeDuplicates(items: any[]): any[] {
   return MapWrapper.keys(m);
 }
 
-function flattenDirectives(view: ViewMetadata, ambientDirectives: any[]): Type[] {
+function flattenDirectives(view: ViewMetadata, platformDirectives: any[]): Type[] {
   let directives = [];
-  if (isPresent(ambientDirectives)) {
-    flattenArray(ambientDirectives, directives);
+  if (isPresent(platformDirectives)) {
+    flattenArray(platformDirectives, directives);
   }
   if (isPresent(view.directives)) {
     flattenArray(view.directives, directives);

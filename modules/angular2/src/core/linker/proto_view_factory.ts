@@ -14,7 +14,7 @@ import {DirectiveResolver} from './directive_resolver';
 import {ViewResolver} from './view_resolver';
 import {PipeResolver} from './pipe_resolver';
 import {ViewMetadata, ViewEncapsulation} from '../metadata/view';
-import {AMBIENT_PIPES} from 'angular2/src/core/ambient';
+import {PLATFORM_PIPES} from 'angular2/src/core/platform_directives_and_pipes';
 
 import {
   visitAllCommands,
@@ -40,7 +40,7 @@ export class ProtoViewFactory {
   private _nextTemplateId: number = 0;
 
   constructor(private _renderer: Renderer,
-              @Optional() @Inject(AMBIENT_PIPES) private _ambientPipes: Array<Type | any[]>,
+              @Optional() @Inject(PLATFORM_PIPES) private _platformPipes: Array<Type | any[]>,
               private _directiveResolver: DirectiveResolver, private _viewResolver: ViewResolver,
               private _pipeResolver: PipeResolver, @Inject(APP_ID) private _appId: string) {}
 
@@ -119,8 +119,8 @@ export class ProtoViewFactory {
 
   private _flattenPipes(view: ViewMetadata): any[] {
     let pipes = [];
-    if (isPresent(this._ambientPipes)) {
-      _flattenArray(this._ambientPipes, pipes);
+    if (isPresent(this._platformPipes)) {
+      _flattenArray(this._platformPipes, pipes);
     }
     if (isPresent(view.pipes)) {
       _flattenArray(view.pipes, pipes);
