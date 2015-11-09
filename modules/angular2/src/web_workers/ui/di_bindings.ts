@@ -61,7 +61,7 @@ import {
   ClientMessageBrokerFactory,
   ClientMessageBrokerFactory_
 } from 'angular2/src/web_workers/shared/client_message_broker';
-import {AMBIENT_DIRECTIVES, AMBIENT_PIPES} from "angular2/src/core/ambient";
+import {PLATFORM_DIRECTIVES, PLATFORM_PIPES} from "angular2/src/core/platform_directives_and_pipes";
 import {COMMON_DIRECTIVES, COMMON_PIPES} from "angular2/common";
 
 var _rootInjector: Injector;
@@ -95,8 +95,8 @@ function _injectorProviders(): any[] {
     AppViewListener,
     ProtoViewFactory,
     ViewResolver,
-    provide(AMBIENT_PIPES, {useValue: COMMON_PIPES, multi: true}),
-    provide(AMBIENT_DIRECTIVES, {useValue: COMMON_DIRECTIVES, multi: true}),
+    provide(PLATFORM_PIPES, {useValue: COMMON_PIPES, multi: true}),
+    provide(PLATFORM_DIRECTIVES, {useValue: COMMON_DIRECTIVES, multi: true}),
     DirectiveResolver,
     Parser,
     Lexer,

@@ -75,11 +75,11 @@ void allTests() {
     updateReader();
   });
 
-  Future<String> process(AssetId assetId, {List<String> ambientDirectives}) {
+  Future<String> process(AssetId assetId, {List<String> platformDirectives}) {
     logger = new RecordingLogger();
     return zone.exec(
         () => processTemplates(reader, assetId,
-            ambientDirectives: ambientDirectives),
+            platformDirectives: platformDirectives),
         log: logger);
   }
 
@@ -351,17 +351,17 @@ void allTests() {
     expect(didThrow).toBeFalse();
   });
 
-  it('should include ambient directives.', () async {
+  it('should include platform directives.', () async {
     fooComponentMeta.template = new CompileTemplateMetadata(template: '<bar/>');
     final viewAnnotation = new AnnotationModel()
       ..name = 'View'
       ..isView = true;
 
-    barNgMeta.aliases['AMBIENT'] = [barComponentMeta.type.name];
+    barNgMeta.aliases['PLATFORM'] = [barComponentMeta.type.name];
     updateReader();
 
     final outputs = await process(fooAssetId,
-        ambientDirectives: ['package:a/bar.dart#AMBIENT']);
+        platformDirectives: ['package:a/bar.dart#PLATFORM']);
     final ngDeps = outputs.ngDeps;
     expect(ngDeps).toBeNotNull();
     expect(outputs.templatesCode)
@@ -369,17 +369,17 @@ void allTests() {
       ..toContain(barComponentMeta.template.template);
   });
 
-  it('should include ambient directives when it it a list.', () async {
+  it('should include platform directives when it it a list.', () async {
     fooComponentMeta.template = new CompileTemplateMetadata(template: '<bar/>');
     final viewAnnotation = new AnnotationModel()
       ..name = 'View'
       ..isView = true;
 
-    barNgMeta.types['AMBIENT'] = barComponentMeta;
+    barNgMeta.types['PLATFORM'] = barComponentMeta;
     updateReader();
 
     final outputs = await process(fooAssetId,
-        ambientDirectives: ['package:a/bar.dart#AMBIENT']);
+        platformDirectives: ['package:a/bar.dart#PLATFORM']);
     final ngDeps = outputs.ngDeps;
     expect(ngDeps).toBeNotNull();
     expect(outputs.templatesCode)
@@ -387,31 +387,31 @@ void allTests() {
       ..toContain(barComponentMeta.template.template);
   });
 
-  it('should work when ambient directives config is null.', () async {
-    final outputs = await process(fooAssetId, ambientDirectives: null);
+  it('should work when platform directives config is null.', () async {
+    final outputs = await process(fooAssetId, platformDirectives: null);
     final ngDeps = outputs.ngDeps;
     expect(ngDeps).toBeNotNull();
   });
 
-  it('should work when the ambient directives config is not formatted properly.',
+  it('should work when the platform directives config is not formatted properly.',
       () async {
-    final outputs = await process(fooAssetId, ambientDirectives: ['INVALID']);
+    final outputs = await process(fooAssetId, platformDirectives: ['INVALID']);
     final ngDeps = outputs.ngDeps;
     expect(ngDeps).toBeNotNull();
   });
 
-  it('should work when the file with ambient directives cannot be found.',
-      () async {
-    final outputs = await process(fooAssetId,
-        ambientDirectives: ['package:a/invalid.dart#AMBIENT']);
-    final ngDeps = outputs.ngDeps;
-    expect(ngDeps).toBeNotNull();
-  });
-
-  it('should work when the ambient directives token cannot be found.',
+  it('should work when the file with platform directives cannot be found.',
       () async {
     final outputs = await process(fooAssetId,
-        ambientDirectives: ['package:a/bar.dart#AMBIENT']);
+        platformDirectives: ['package:a/invalid.dart#PLATFORM']);
+    final ngDeps = outputs.ngDeps;
+    expect(ngDeps).toBeNotNull();
+  });
+
+  it('should work when the platform directives token cannot be found.',
+      () async {
+    final outputs = await process(fooAssetId,
+        platformDirectives: ['package:a/bar.dart#PLATFORM']);
     final ngDeps = outputs.ngDeps;
     expect(ngDeps).toBeNotNull();
   });

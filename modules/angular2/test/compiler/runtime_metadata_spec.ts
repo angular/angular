@@ -37,7 +37,7 @@ import {
 import {TEST_PROVIDERS} from './test_bindings';
 import {MODULE_SUFFIX} from 'angular2/src/compiler/util';
 import {IS_DART} from 'angular2/src/facade/lang';
-import {AMBIENT_DIRECTIVES} from 'angular2/src/core/ambient';
+import {PLATFORM_DIRECTIVES} from 'angular2/src/core/platform_directives_and_pipes';
 
 export function main() {
   describe('RuntimeMetadataResolver', () => {
@@ -85,10 +85,10 @@ export function main() {
                .toEqual([resolver.getMetadata(DirectiveWithoutModuleId)]);
          }));
 
-      describe("ambient directives", () => {
-        beforeEachProviders(() => [provide(AMBIENT_DIRECTIVES, {useValue: [ADirective]})]);
+      describe("platform directives", () => {
+        beforeEachProviders(() => [provide(PLATFORM_DIRECTIVES, {useValue: [ADirective]})]);
 
-        it('should include ambient directives when available',
+        it('should include platform directives when available',
            inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
              expect(resolver.getViewDirectivesMetadata(ComponentWithEverything))
                  .toEqual([

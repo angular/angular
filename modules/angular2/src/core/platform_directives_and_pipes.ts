@@ -8,7 +8,7 @@ import {CONST_EXPR} from "angular2/src/facade/lang";
  * ### Example
  *
  * ```typescript
- * import {AMBIENT_DIRECTIVES} from 'angular2/angular2';
+ * import {PLATFORM_DIRECTIVES} from 'angular2/angular2';
  * import {OtherDirective} from './myDirectives';
  *
  * @Component({
@@ -22,10 +22,10 @@ import {CONST_EXPR} from "angular2/src/facade/lang";
  *   ...
  * }
  *
- * bootstrap(MyComponent, [provide(AMBIENT_DIRECTIVES, {useValue: [OtherDirective], multi:true})]);
+ * bootstrap(MyComponent, [provide(PLATFORM_DIRECTIVES, {useValue: [OtherDirective], multi:true})]);
  * ```
  */
-export const AMBIENT_DIRECTIVES: OpaqueToken = CONST_EXPR(new OpaqueToken("Ambient Directives"));
+export const PLATFORM_DIRECTIVES: OpaqueToken = CONST_EXPR(new OpaqueToken("Platform Directives"));
 
 /**
  * A token that can be provided when bootstraping an application to make an array of pipes
@@ -34,7 +34,7 @@ export const AMBIENT_DIRECTIVES: OpaqueToken = CONST_EXPR(new OpaqueToken("Ambie
  * ### Example
  *
  * ```typescript
- * import {AMBIENT_PIPES} from 'angular2/angular2';
+ * import {PLATFORM_PIPES} from 'angular2/angular2';
  * import {OtherPipe} from './myPipe';
  *
  * @Component({
@@ -47,7 +47,7 @@ export const AMBIENT_DIRECTIVES: OpaqueToken = CONST_EXPR(new OpaqueToken("Ambie
  *   ...
  * }
  *
- * bootstrap(MyComponent, [provide(AMBIENT_PIPES, {useValue: [OtherPipe], multi:true})]);
+ * bootstrap(MyComponent, [provide(PLATFORM_PIPES, {useValue: [OtherPipe], multi:true})]);
  * ```
  */
-export const AMBIENT_PIPES: OpaqueToken = CONST_EXPR(new OpaqueToken("Ambient Pipes"));
+export const PLATFORM_PIPES: OpaqueToken = CONST_EXPR(new OpaqueToken("Platform Pipes"));

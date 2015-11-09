@@ -47,7 +47,7 @@ import {AppViewManager_} from "./linker/view_manager";
 import {Compiler_} from "./linker/compiler";
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from './profile/profile';
 import {ChangeDetectorRef} from 'angular2/src/core/change_detection/change_detector_ref';
-import {AMBIENT_DIRECTIVES, AMBIENT_PIPES} from "angular2/src/core/ambient";
+import {PLATFORM_DIRECTIVES, PLATFORM_PIPES} from "angular2/src/core/platform_directives_and_pipes";
 import {lockDevMode} from 'angular2/src/facade/lang';
 import {COMMON_DIRECTIVES, COMMON_PIPES} from "angular2/common";
 
@@ -110,8 +110,8 @@ export function applicationCommonProviders(): Array<Type | Provider | any[]> {
     provide(KeyValueDiffers, {useValue: defaultKeyValueDiffers}),
     DirectiveResolver,
     PipeResolver,
-    provide(AMBIENT_PIPES, {useValue: COMMON_PIPES, multi: true}),
-    provide(AMBIENT_DIRECTIVES, {useValue: COMMON_DIRECTIVES, multi: true}),
+    provide(PLATFORM_PIPES, {useValue: COMMON_PIPES, multi: true}),
+    provide(PLATFORM_DIRECTIVES, {useValue: COMMON_DIRECTIVES, multi: true}),
     provide(DynamicComponentLoader, {useClass: DynamicComponentLoader_})
   ];
 }
