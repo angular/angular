@@ -225,18 +225,27 @@ bool isJsObject(o) {
   return false;
 }
 
+bool _forceDevMode = false;
+bool _devModeLocked = false;
+
 void lockDevMode() {
-  // lockDevMode() has no effect in Dart.
+  _devModeLocked = true;
 }
 
 void enableDevMode() {
-  // enableDevMode() has no effect in Dart.
+  if (_forceDevMode) {
+    return;
+  }
+  if (_devModeLocked) {
+    throw new Exception("Cannot enable dev mode after platform setup.");
+  }
+  _forceDevMode = true;
 }
 
 bool assertionsEnabled() {
   var k = false;
   assert((k = true));
-  return k;
+  return _forceDevMode || k;
 }
 
 // Can't be all uppercase as our transpiler would think it is a special directive...
