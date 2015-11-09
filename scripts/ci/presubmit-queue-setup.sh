@@ -2,7 +2,7 @@
 set -e -o pipefail
 
 if [ "$TRAVIS_REPO_SLUG" = "angular/angular" ]; then
-  if [[ $TRAVIS_BRANCH == "presubmit-"* ]]; then
+  if [[ $TRAVIS_BRANCH == "presubmit-"* || $MODE == "build_only" ]]; then
 
     echo '*********************'
     echo '** PRESUBMIT SETUP **'
@@ -14,8 +14,10 @@ if [ "$TRAVIS_REPO_SLUG" = "angular/angular" ]; then
     git config user.name "`git --no-pager show -s --format='%cN' HEAD`"
     git config user.email "`git --no-pager show -s --format='%cE' HEAD`"
 
-    git remote add upstream https://github.com/angular/angular.git
-    git fetch upstream master
-    git rebase upstream/master
+    if [[ $TRAVIS_BRANCH == "presubmit-"* ]]; then
+      git remote add upstream https://github.com/angular/angular.git
+      git fetch upstream master
+      git rebase upstream/master
+    fi
   fi
 fi
