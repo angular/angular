@@ -6,7 +6,6 @@ import {
   CONST_EXPR,
   serializeEnum
 } from 'angular2/src/facade/lang';
-import {BaseException} from 'angular2/src/facade/exceptions';
 import {ParseLocation, ParseError, ParseSourceFile, ParseSourceSpan} from './parse_util';
 import {getHtmlTagDefinition, HtmlTagContentType, NAMED_ENTITIES} from './html_tags';
 
@@ -50,6 +49,7 @@ export function tokenizeHtml(sourceContent: string, sourceUrl: string): HtmlToke
 const $EOF = 0;
 const $TAB = 9;
 const $LF = 10;
+const $FF = 12;
 const $CR = 13;
 
 const $SPACE = 32;
@@ -247,17 +247,22 @@ class _HtmlTokenizer {
     }
   }
 
-  private _readChar(decodeEntities: boolean): string {
+  private _readChar(decodeEntities: boolean, extraNotCharRef: number = null): string {
     if (decodeEntities && this.peek === $AMPERSAND) {
       var start = this._getLocation();
-      this._attemptUntilChar($SEMICOLON);
       this._advance();
-      var entitySrc = this.input.substring(start.offset + 1, this.index - 1);
-      var decodedEntity = decodeEntity(entitySrc);
-      if (isPresent(decodedEntity)) {
-        return decodedEntity;
+      if (isCharRefStart(this.peek, extraNotCharRef)) {
+        this._attemptUntilChar($SEMICOLON);
+        this._advance();
+        var entitySrc = this.input.substring(start.offset + 1, this.index - 1);
+        var decodedEntity = decodeEntity(entitySrc);
+        if (isPresent(decodedEntity)) {
+          return decodedEntity;
+        } else {
+          throw this._createError(unknownEntityErrorMsg(entitySrc), start);
+        }
       } else {
-        throw this._createError(unknownEntityErrorMsg(entitySrc), start);
+        return '&';
       }
     } else {
       var index = this.index;
@@ -389,7 +394,7 @@ class _HtmlTokenizer {
       this._advance();
       var parts = [];
       while (this.peek !== quoteChar) {
-        parts.push(this._readChar(true));
+        parts.push(this._readChar(true, quoteChar));
       }
       value = parts.join('');
       this._advance();
@@ -440,7 +445,13 @@ function isWhitespace(code: number): boolean {
 
 function isNameEnd(code: number): boolean {
   return isWhitespace(code) || code === $GT || code === $SLASH || code === $SQ || code === $DQ ||
-         code === $EQ
+         code === $EQ;
+}
+
+// http://www.w3.org/TR/html5/syntax.html#consume-a-character-reference
+function isCharRefStart(code: number, extraNotCharRef: number): boolean {
+  return code != $TAB && code != $LF && code != $FF && code != $SPACE && code != $LT &&
+         code != $AMPERSAND && code != $EOF && code !== extraNotCharRef;
 }
 
 function isPrefixEnd(code: number): boolean {

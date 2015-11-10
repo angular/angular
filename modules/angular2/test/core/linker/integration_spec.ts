@@ -9,7 +9,7 @@ import {
   expect,
   iit,
   inject,
-  beforeEachBindings,
+  beforeEachProviders,
   it,
   xit,
   containsRegexp,
@@ -99,7 +99,7 @@ const ANCHOR_ELEMENT = CONST_EXPR(new OpaqueToken('AnchorElement'));
 export function main() {
   describe('integration tests', function() {
 
-    beforeEachBindings(() => [provide(ANCHOR_ELEMENT, {useValue: el('<div></div>')})]);
+    beforeEachProviders(() => [provide(ANCHOR_ELEMENT, {useValue: el('<div></div>')})]);
 
     describe('react to record changes', function() {
       it('should consume text node changes',
@@ -536,21 +536,21 @@ export function main() {
                           })}));
 
         it('should assign a directive to a var-',
-           inject([TestComponentBuilder, AsyncTestCompleter],
-                  (tcb: TestComponentBuilder, async) => {
-                    tcb.overrideView(MyComp, new ViewMetadata({
-                                       template: '<p><div export-dir #localdir="dir"></div></p>',
-                                       directives: [ExportDir]
-                                     }))
+           inject(
+               [TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+                 tcb.overrideView(MyComp, new ViewMetadata({
+                                    template: '<div><div export-dir #localdir="dir"></div></div>',
+                                    directives: [ExportDir]
+                                  }))
 
-                        .createAsync(MyComp)
-                        .then((fixture) => {
-                          expect(fixture.debugElement.componentViewChildren[0].getLocal('localdir'))
-                              .toBeAnInstanceOf(ExportDir);
+                     .createAsync(MyComp)
+                     .then((fixture) => {
+                       expect(fixture.debugElement.componentViewChildren[0].getLocal('localdir'))
+                           .toBeAnInstanceOf(ExportDir);
 
-                          async.done();
-                        });
-                  }));
+                       async.done();
+                     });
+               }));
 
         it('should make the assigned component accessible in property bindings',
            inject(
@@ -616,9 +616,9 @@ export function main() {
         it('should assign the element instance to a user-defined variable',
            inject([TestComponentBuilder, AsyncTestCompleter],
                   (tcb: TestComponentBuilder, async) => {
-                      tcb.overrideView(MyComp,
-                                       new ViewMetadata(
-                                           {template: '<p><div var-alice><i>Hello</i></div></p>'}))
+                      tcb.overrideView(MyComp, new ViewMetadata({
+                                         template: '<div><div var-alice><i>Hello</i></div></div>'
+                                       }))
 
                           .createAsync(MyComp)
                           .then((fixture) => {
@@ -1514,7 +1514,7 @@ export function main() {
 
                      PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) => {
                        expect(e.message).toEqual(
-                           `Template parse errors:\nCan't bind to 'unknown' since it isn't a known native property in MyComp > div:nth-child(0)[unknown={{ctxProp}}]`);
+                           `Template parse errors:\nCan't bind to 'unknown' since it isn't a known native property ("<div unknown="{{ctxProp}}"></div>"): MyComp@0:5`);
                        async.done();
                        return null;
                      });
@@ -1572,7 +1572,7 @@ export function main() {
     });
 
     describe('logging property updates', () => {
-      beforeEachBindings(() => [
+      beforeEachProviders(() => [
         provide(ChangeDetectorGenConfig,
                 {useValue: new ChangeDetectorGenConfig(true, true, false)})
       ]);
