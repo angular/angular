@@ -12,7 +12,8 @@ import {
 } from 'angular2/testing_internal';
 import {IS_DART, isPresent, stringify} from 'angular2/src/facade/lang';
 import {bootstrap} from 'angular2/bootstrap';
-import {ApplicationRef} from 'angular2/src/core/application_ref';
+import {platform, applicationDomProviders} from 'angular2/src/core/application_common';
+import {applicationCommonProviders, ApplicationRef} from 'angular2/src/core/application_ref';
 import {Component, Directive, View} from 'angular2/core';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {DOCUMENT} from 'angular2/render';
@@ -21,6 +22,7 @@ import {provide, Inject, Injector} from 'angular2/core';
 import {ExceptionHandler} from 'angular2/src/facade/exceptions';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
 import {ComponentRef_} from "angular2/src/core/linker/dynamic_component_loader";
+import {compilerProviders} from 'angular2/src/compiler/compiler';
 
 @Component({selector: 'hello-app'})
 @View({template: '{{greeting}} world!'})
@@ -158,6 +160,21 @@ export function main() {
              .then((refs) => {
                expect(el).toHaveText('hello world!');
                expect(el2).toHaveText('hello world, again!');
+               async.done();
+             });
+       }));
+    it('should unregister change detectors when components are disposed',
+       inject([AsyncTestCompleter], (async) => {
+         var app = platform().application([
+           applicationCommonProviders(),
+           applicationDomProviders(),
+           compilerProviders(),
+           testProviders
+         ]);
+         app.bootstrap(HelloRootCmp)
+             .then((ref) => {
+               ref.dispose();
+               expect(() => app.tick()).not.toThrow();
                async.done();
              });
        }));
