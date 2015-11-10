@@ -19,7 +19,7 @@ var _allViewsById = new Map<number, AppView>();
 var _nextId = 0;
 
 function _setElementId(element, indices: number[]) {
-  if (isPresent(element)) {
+  if (isPresent(element) && DOM.isElementNode(element)) {
     DOM.setData(element, NG_ID_PROPERTY, indices.join(NG_ID_SEPARATOR));
   }
 }
