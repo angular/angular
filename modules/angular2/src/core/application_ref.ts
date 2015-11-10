@@ -69,10 +69,15 @@ function _componentProviders(appComponentType: Type): Array<Type | Provider | an
     provide(APP_COMPONENT, {useValue: appComponentType}),
     provide(APP_COMPONENT_REF_PROMISE,
             {
-              useFactory: (dynamicComponentLoader, injector: Injector) => {
+              useFactory: (dynamicComponentLoader: DynamicComponentLoader, appRef: ApplicationRef_,
+                           injector: Injector) => {
+                // Save the ComponentRef for disposal later.
+                var ref: ComponentRef;
                 // TODO(rado): investigate whether to support providers on root component.
-                return dynamicComponentLoader.loadAsRoot(appComponentType, null, injector)
+                return dynamicComponentLoader.loadAsRoot(appComponentType, null, injector,
+                                                         () => { appRef._unloadComponent(ref); })
                     .then((componentRef) => {
+                      ref = componentRef;
                       if (isPresent(componentRef.location.nativeElement)) {
                         injector.get(TestabilityRegistry)
                             .registerApplication(componentRef.location.nativeElement,
@@ -81,7 +86,7 @@ function _componentProviders(appComponentType: Type): Array<Type | Provider | an
                       return componentRef;
                     });
               },
-              deps: [DynamicComponentLoader, Injector]
+              deps: [DynamicComponentLoader, ApplicationRef, Injector]
             }),
     provide(appComponentType,
             {
@@ -394,6 +399,10 @@ export class ApplicationRef_ extends ApplicationRef {
     this._changeDetectorRefs.push(changeDetector);
   }
 
+  unregisterChangeDetector(changeDetector: ChangeDetectorRef): void {
+    ListWrapper.remove(this._changeDetectorRefs, changeDetector);
+  }
+
   bootstrap(componentType: Type,
             providers?: Array<Type | Provider | any[]>): Promise<ComponentRef> {
     var completer = PromiseWrapper.completer();
@@ -408,12 +417,8 @@ export class ApplicationRef_ extends ApplicationRef {
         var injector: Injector = this._injector.resolveAndCreateChild(componentProviders);
         var compRefToken: Promise<ComponentRef> = injector.get(APP_COMPONENT_REF_PROMISE);
         var tick = (componentRef) => {
-          var appChangeDetector = internalView(componentRef.hostView).changeDetector;
-          this._changeDetectorRefs.push(appChangeDetector.ref);
-          this.tick();
+          this._loadComponent(componentRef);
           completer.resolve(componentRef);
-          this._rootComponents.push(componentRef);
-          this._bootstrapListeners.forEach((listener) => listener(componentRef));
         };
 
         var tickResult = PromiseWrapper.then(compRefToken, tick);
@@ -427,6 +432,24 @@ export class ApplicationRef_ extends ApplicationRef {
       }
     });
     return completer.promise;
+  }
+
+  /** @internal */
+  _loadComponent(ref): void {
+    var appChangeDetector = internalView(ref.hostView).changeDetector;
+    this._changeDetectorRefs.push(appChangeDetector.ref);
+    this.tick();
+    this._rootComponents.push(ref);
+    this._bootstrapListeners.forEach((listener) => listener(ref));
+  }
+
+  /** @internal */
+  _unloadComponent(ref): void {
+    if (!ListWrapper.contains(this._rootComponents, ref)) {
+      return;
+    }
+    this.unregisterChangeDetector(internalView(ref.hostView).changeDetector.ref);
+    ListWrapper.remove(this._rootComponents, ref);
   }
 
   get injector(): Injector { return this._injector; }
