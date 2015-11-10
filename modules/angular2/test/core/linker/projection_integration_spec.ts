@@ -569,7 +569,7 @@ class Empty {
 
 @Component({selector: 'multiple-content-tags'})
 @View({
-  template: '(<ng-content select=".left"></ng-content>, <ng-content></ng-content>)',
+  template: '(<ng-content SELECT=".left"></ng-content>, <ng-content></ng-content>)',
   directives: []
 })
 class MultipleContentTagsComponent {
