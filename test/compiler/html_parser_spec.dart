@@ -1,0 +1,158 @@
+library angular2.test.compiler.html_parser_spec;
+
+import "package:angular2/testing_internal.dart"
+    show ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach;
+import "package:angular2/src/compiler/html_parser.dart" show HtmlParser;
+import "package:angular2/src/compiler/html_ast.dart"
+    show
+        HtmlAst,
+        HtmlAstVisitor,
+        HtmlElementAst,
+        HtmlAttrAst,
+        HtmlTextAst,
+        htmlVisitAll;
+
+main() {
+  describe("DomParser", () {
+    HtmlParser parser;
+    beforeEach(() {
+      parser = new HtmlParser();
+    });
+    describe("parse", () {
+      describe("text nodes", () {
+        it("should parse root level text nodes", () {
+          expect(humanizeDom(parser.parse("a", "TestComp"))).toEqual([
+            [HtmlTextAst, "a", "TestComp > #text(a):nth-child(0)"]
+          ]);
+        });
+        it("should parse text nodes inside regular elements", () {
+          expect(humanizeDom(parser.parse("<div>a</div>", "TestComp")))
+              .toEqual([
+            [HtmlElementAst, "div", "TestComp > div:nth-child(0)"],
+            [
+              HtmlTextAst,
+              "a",
+              "TestComp > div:nth-child(0) > #text(a):nth-child(0)"
+            ]
+          ]);
+        });
+        it("should parse text nodes inside template elements", () {
+          expect(humanizeDom(
+              parser.parse("<template>a</template>", "TestComp"))).toEqual([
+            [HtmlElementAst, "template", "TestComp > template:nth-child(0)"],
+            [
+              HtmlTextAst,
+              "a",
+              "TestComp > template:nth-child(0) > #text(a):nth-child(0)"
+            ]
+          ]);
+        });
+      });
+      describe("elements", () {
+        it("should parse root level elements", () {
+          expect(humanizeDom(parser.parse("<div></div>", "TestComp"))).toEqual([
+            [HtmlElementAst, "div", "TestComp > div:nth-child(0)"]
+          ]);
+        });
+        it("should parse elements inside of regular elements", () {
+          expect(humanizeDom(
+              parser.parse("<div><span></span></div>", "TestComp"))).toEqual([
+            [HtmlElementAst, "div", "TestComp > div:nth-child(0)"],
+            [
+              HtmlElementAst,
+              "span",
+              "TestComp > div:nth-child(0) > span:nth-child(0)"
+            ]
+          ]);
+        });
+        it("should parse elements inside of template elements", () {
+          expect(humanizeDom(parser.parse(
+              "<template><span></span></template>", "TestComp"))).toEqual([
+            [HtmlElementAst, "template", "TestComp > template:nth-child(0)"],
+            [
+              HtmlElementAst,
+              "span",
+              "TestComp > template:nth-child(0) > span:nth-child(0)"
+            ]
+          ]);
+        });
+      });
+      describe("attributes", () {
+        it("should parse attributes on regular elements", () {
+          expect(humanizeDom(parser.parse("<div k=\"v\"></div>", "TestComp")))
+              .toEqual([
+            [HtmlElementAst, "div", "TestComp > div:nth-child(0)"],
+            [HtmlAttrAst, "k", "v", "TestComp > div:nth-child(0)[k=v]"]
+          ]);
+        });
+        it("should parse attributes on svg elements case sensitive", () {
+          expect(humanizeDom(
+              parser.parse("<svg viewBox=\"0\"></svg>", "TestComp"))).toEqual([
+            [HtmlElementAst, "svg", "TestComp > svg:nth-child(0)"],
+            [
+              HtmlAttrAst,
+              "viewBox",
+              "0",
+              "TestComp > svg:nth-child(0)[viewBox=0]"
+            ]
+          ]);
+        });
+        it("should parse attributes on template elements", () {
+          expect(humanizeDom(
+                  parser.parse("<template k=\"v\"></template>", "TestComp")))
+              .toEqual([
+            [HtmlElementAst, "template", "TestComp > template:nth-child(0)"],
+            [HtmlAttrAst, "k", "v", "TestComp > template:nth-child(0)[k=v]"]
+          ]);
+        });
+      });
+    });
+    describe("unparse", () {
+      it("should unparse text nodes", () {
+        expect(parser.unparse(parser.parse("a", null))).toEqual("a");
+      });
+      it("should unparse elements", () {
+        expect(parser.unparse(parser.parse("<a></a>", null)))
+            .toEqual("<a></a>");
+      });
+      it("should unparse attributes", () {
+        expect(parser.unparse(parser.parse("<div a b=\"c\"></div>", null)))
+            .toEqual("<div a=\"\" b=\"c\"></div>");
+      });
+      it("should unparse nested elements", () {
+        expect(parser.unparse(parser.parse("<div><a></a></div>", null)))
+            .toEqual("<div><a></a></div>");
+      });
+      it("should unparse nested text nodes", () {
+        expect(parser.unparse(parser.parse("<div>a</div>", null)))
+            .toEqual("<div>a</div>");
+      });
+    });
+  });
+}
+
+List<dynamic> humanizeDom(List<HtmlAst> asts) {
+  var humanizer = new Humanizer();
+  htmlVisitAll(humanizer, asts);
+  return humanizer.result;
+}
+
+class Humanizer implements HtmlAstVisitor {
+  List<dynamic> result = [];
+  dynamic visitElement(HtmlElementAst ast, dynamic context) {
+    this.result.add([HtmlElementAst, ast.name, ast.sourceInfo]);
+    htmlVisitAll(this, ast.attrs);
+    htmlVisitAll(this, ast.children);
+    return null;
+  }
+
+  dynamic visitAttr(HtmlAttrAst ast, dynamic context) {
+    this.result.add([HtmlAttrAst, ast.name, ast.value, ast.sourceInfo]);
+    return null;
+  }
+
+  dynamic visitText(HtmlTextAst ast, dynamic context) {
+    this.result.add([HtmlTextAst, ast.value, ast.sourceInfo]);
+    return null;
+  }
+}
