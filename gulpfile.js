@@ -1138,6 +1138,50 @@ gulp.task('!bundle.web_worker.js.dev.deps', ['!bundle.web_worker.js.dev'], funct
                 addDevDependencies("web_worker/worker.dev.js")));
 });
 
+gulp.task('bundles.js.umd', ['build.js.dev'], function() {
+
+  function rxExternalImport(context, request, callback) {
+      // Use globally defined RxJS
+    if(/^@reactivex/.test(request)) {
+        var rxImport = request.substring('@reactivex/rxjs/dist/cjs/'.length);
+        return callback(null, "var Rx" + (rxImport === 'Rx' ? '' : '.' + rxImport));
+    }
+    callback();
+  }
+
+
+  var webpack = q.denodeify(require('webpack'));
+  var resolveOptions = {
+    root: __dirname + '/dist/js/dev/es5',
+    packageAlias: '' //this option is added to ignore "broken" package.json in our dist folder
+  };
+
+  var externalOptions = [{
+    'angular2/angular2': 'var ng'
+  }, rxExternalImport];
+
+  return q.all([
+    webpack({
+      entry: ['angular2/angular2.js'],
+      resolve: resolveOptions,
+      externals: [rxExternalImport],
+      output: {filename: 'dist/js/bundle/angular2.umd.dev.js', library: 'ng', libraryTarget: 'umd'}
+    }),
+    webpack({
+      entry: ['angular2/http.js'],
+      resolve: resolveOptions,
+      externals: externalOptions,
+      output: {filename: 'dist/js/bundle/http.umd.dev.js', library: 'ngHttp', libraryTarget: 'umd'}
+    }),
+    webpack({
+      entry: ['angular2/router.js'],
+      resolve: resolveOptions,
+      externals: externalOptions,
+      output: {filename: 'dist/js/bundle/router.umd.dev.js', library: 'ngRouter', libraryTarget: 'umd'}
+    })
+  ]);
+});
+
 // We need to duplicate the deps of bundles.js so that this task runs after
 // all the bundle files are created.
 gulp.task('!bundle.copy', [
@@ -1158,6 +1202,7 @@ gulp.task('bundles.js', [
   '!bundle.js.min.deps',
   '!bundle.web_worker.js.dev.deps',
   '!bundle.js.sfx.dev.deps',
+  'bundles.js.umd',
   '!bundle.testing',
   '!bundle.copy']);
 
