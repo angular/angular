@@ -151,6 +151,48 @@ export function main() {
                  async.done();
                });
          }));
+
+
+      it('should allow multiple classes per expression',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = '<div [ng-class]="objExpr"></div>';
+
+           tcb.overrideTemplate(TestComponent, template)
+               .createAsync(TestComponent)
+               .then((fixture) => {
+
+                 fixture.debugElement.componentInstance.objExpr = {
+                   'bar baz': true,
+                   'bar1 baz1': true
+                 };
+                 detectChangesAndCheck(fixture, 'bar baz bar1 baz1');
+
+                 fixture.debugElement.componentInstance.objExpr = {
+                   'bar baz': false,
+                   'bar1 baz1': true
+                 };
+                 detectChangesAndCheck(fixture, 'bar1 baz1');
+
+
+                 async.done();
+               });
+         }));
+
+      it('should split by one or more spaces between classes',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = '<div [ng-class]="objExpr"></div>';
+
+           tcb.overrideTemplate(TestComponent, template)
+               .createAsync(TestComponent)
+               .then((fixture) => {
+
+                 fixture.debugElement.componentInstance.objExpr = {'foo bar     baz': true};
+                 detectChangesAndCheck(fixture, 'foo bar baz');
+
+                 async.done();
+               });
+         }));
+
     });
 
     describe('expressions evaluating to lists', () => {
@@ -247,6 +289,26 @@ export function main() {
 
                  fixture.debugElement.componentInstance.arrExpr = [' bar  '];
                  detectChangesAndCheck(fixture, 'foo bar');
+
+                 async.done();
+               });
+         }));
+
+
+      it('should allow multiple classes per item in arrays',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var template = '<div [ng-class]="arrExpr"></div>';
+
+           tcb.overrideTemplate(TestComponent, template)
+               .createAsync(TestComponent)
+               .then((fixture) => {
+
+                 fixture.debugElement.componentInstance.arrExpr =
+                     ['foo bar baz', 'foo1 bar1   baz1'];
+                 detectChangesAndCheck(fixture, 'foo bar baz foo1 bar1 baz1');
+
+                 fixture.debugElement.componentInstance.arrExpr = ['foo bar   baz foobar'];
+                 detectChangesAndCheck(fixture, 'foo bar baz foobar');
 
                  async.done();
                });
