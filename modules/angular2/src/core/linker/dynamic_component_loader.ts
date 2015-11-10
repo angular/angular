@@ -249,10 +249,10 @@ export class DynamicComponentLoader_ extends DynamicComponentLoader {
       var component = this._viewManager.getComponent(newLocation);
 
       var dispose = () => {
-        this._viewManager.destroyRootHostView(hostViewRef);
         if (isPresent(onDispose)) {
           onDispose();
         }
+        this._viewManager.destroyRootHostView(hostViewRef);
       };
       return new ComponentRef_(newLocation, component, type, injector, dispose);
     });
