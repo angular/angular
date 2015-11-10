@@ -6,7 +6,6 @@ import {
   CONST_EXPR,
   serializeEnum
 } from 'angular2/src/facade/lang';
-import {BaseException} from 'angular2/src/facade/exceptions';
 import {ParseLocation, ParseError, ParseSourceFile, ParseSourceSpan} from './parse_util';
 import {getHtmlTagDefinition, HtmlTagContentType, NAMED_ENTITIES} from './html_tags';
 
@@ -50,12 +49,14 @@ export function tokenizeHtml(sourceContent: string, sourceUrl: string): HtmlToke
 const $EOF = 0;
 const $TAB = 9;
 const $LF = 10;
+const $FF = 12;
 const $CR = 13;
 
 const $SPACE = 32;
 
 const $BANG = 33;
 const $DQ = 34;
+const $HASH = 35;
 const $$ = 36;
 const $AMPERSAND = 38;
 const $SQ = 39;
@@ -76,7 +77,9 @@ const $Z = 90;
 const $LBRACKET = 91;
 const $RBRACKET = 93;
 const $a = 97;
+const $f = 102;
 const $z = 122;
+const $x = 120;
 
 const $NBSP = 160;
 
@@ -86,7 +89,7 @@ function unexpectedCharacterErrorMsg(charCode: number): string {
 }
 
 function unknownEntityErrorMsg(entitySrc: string): string {
-  return `Unknown entity "${entitySrc}"`;
+  return `Unknown entity "${entitySrc}" - use the "&#<decimal>;" or  "&#x<hex>;" syntax`;
 }
 
 class ControlFlowError {
@@ -249,20 +252,47 @@ class _HtmlTokenizer {
 
   private _readChar(decodeEntities: boolean): string {
     if (decodeEntities && this.peek === $AMPERSAND) {
-      var start = this._getLocation();
-      this._attemptUntilChar($SEMICOLON);
-      this._advance();
-      var entitySrc = this.input.substring(start.offset + 1, this.index - 1);
-      var decodedEntity = decodeEntity(entitySrc);
-      if (isPresent(decodedEntity)) {
-        return decodedEntity;
-      } else {
-        throw this._createError(unknownEntityErrorMsg(entitySrc), start);
-      }
+      return this._decodeEntity();
     } else {
       var index = this.index;
       this._advance();
       return this.input[index];
+    }
+  }
+
+  private _decodeEntity(): string {
+    var start = this._getLocation();
+    this._advance();
+    if (this._attemptChar($HASH)) {
+      let isHex = this._attemptChar($x);
+      let numberStart = this._getLocation().offset;
+      this._attemptUntilFn(isDigitEntityEnd);
+      if (this.peek != $SEMICOLON) {
+        throw this._createError(unexpectedCharacterErrorMsg(this.peek), this._getLocation());
+      }
+      this._advance();
+      let strNum = this.input.substring(numberStart, this.index - 1);
+      try {
+        let charCode = NumberWrapper.parseInt(strNum, isHex ? 16 : 10);
+        return StringWrapper.fromCharCode(charCode);
+      } catch (e) {
+        let entity = this.input.substring(start.offset + 1, this.index - 1);
+        throw this._createError(unknownEntityErrorMsg(entity), start);
+      }
+    } else {
+      let startPosition = this._savePosition();
+      this._attemptUntilFn(isNamedEntityEnd);
+      if (this.peek != $SEMICOLON) {
+        this._restorePosition(startPosition);
+        return '&';
+      }
+      this._advance();
+      let name = this.input.substring(start.offset + 1, this.index - 1);
+      let char = NAMED_ENTITIES[name];
+      if (isBlank(char)) {
+        throw this._createError(unknownEntityErrorMsg(name), start);
+      }
+      return char;
     }
   }
 
@@ -428,6 +458,15 @@ class _HtmlTokenizer {
     }
     this._endToken([parts.join('')]);
   }
+
+  private _savePosition(): number[] { return [this.peek, this.index, this.column, this.line]; }
+
+  private _restorePosition(position: number[]): void {
+    this.peek = position[0];
+    this.index = position[1];
+    this.column = position[2];
+    this.line = position[3];
+  }
 }
 
 function isNotWhitespace(code: number): boolean {
@@ -440,39 +479,29 @@ function isWhitespace(code: number): boolean {
 
 function isNameEnd(code: number): boolean {
   return isWhitespace(code) || code === $GT || code === $SLASH || code === $SQ || code === $DQ ||
-         code === $EQ
+         code === $EQ;
 }
 
 function isPrefixEnd(code: number): boolean {
   return (code < $a || $z < code) && (code < $A || $Z < code) && (code < $0 || code > $9);
 }
 
+function isDigitEntityEnd(code: number): boolean {
+  return code == $SEMICOLON || code == $EOF || !isAsciiHexDigit(code);
+}
+
+function isNamedEntityEnd(code: number): boolean {
+  return code == $SEMICOLON || code == $EOF || !isAsciiLetter(code);
+}
+
 function isTextEnd(code: number): boolean {
   return code === $LT || code === $EOF;
 }
 
-function decodeEntity(entity: string): string {
-  var i = 0;
-  var isNumber = entity.length > i && entity[i] == '#';
-  if (isNumber) i++;
-  var isHex = entity.length > i && entity[i] == 'x';
-  if (isHex) i++;
-  var value = entity.substring(i);
-  var result = null;
-  if (isNumber) {
-    var charCode;
-    try {
-      charCode = NumberWrapper.parseInt(value, isHex ? 16 : 10);
-    } catch (e) {
-      return null;
-    }
-    result = StringWrapper.fromCharCode(charCode);
-  } else {
-    result = NAMED_ENTITIES[value];
-  }
-  if (isPresent(result)) {
-    return result;
-  } else {
-    return null;
-  }
+function isAsciiLetter(code: number): boolean {
+  return code >= $a && code <= $z;
+}
+
+function isAsciiHexDigit(code: number): boolean {
+  return code >= $a && code <= $f || code >= $0 && code <= $9;
 }

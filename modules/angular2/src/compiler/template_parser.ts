@@ -64,7 +64,7 @@ import {dashCaseToCamelCase, camelCaseToDashCase, splitAtColon} from './util';
 // Group 7 = idenitifer inside []
 // Group 8 = identifier inside ()
 var BIND_NAME_REGEXP =
-    /^(?:(?:(?:(bind-)|(var-|#)|(on-)|(bindon-))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/g;
+    /^(?:(?:(?:(bind-)|(var-|#)|(on-)|(bindon-))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/ig;
 
 const TEMPLATE_ELEMENT = 'template';
 const TEMPLATE_ATTR = 'template';
@@ -218,7 +218,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
       }
     });
 
-    var isTemplateElement = nodeName == TEMPLATE_ELEMENT;
+    var isTemplateElement = nodeName.toLowerCase() == TEMPLATE_ELEMENT;
     var elementCssSelector = createElementCssSelector(nodeName, matchableAttrs);
     var directives = this._createDirectiveAsts(
         element.name, this._parseDirectives(this.selectorMatcher, elementCssSelector),
@@ -266,7 +266,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
                                       targetProps: BoundElementOrDirectiveProperty[],
                                       targetVars: VariableAst[]): boolean {
     var templateBindingsSource = null;
-    if (attr.name == TEMPLATE_ATTR) {
+    if (attr.name.toLowerCase() == TEMPLATE_ATTR) {
       templateBindingsSource = attr.value;
     } else if (attr.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
       var key = attr.name.substring(TEMPLATE_ATTR_PREFIX.length);  // remove the star
@@ -347,7 +347,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   }
 
   private _normalizeAttributeName(attrName: string): string {
-    return attrName.startsWith('data-') ? attrName.substring(5) : attrName;
+    return attrName.toLowerCase().startsWith('data-') ? attrName.substring(5) : attrName;
   }
 
   private _parseVariable(identifier: string, value: string, sourceSpan: ParseSourceSpan,
@@ -542,21 +542,25 @@ class TemplateParseVisitor implements HtmlAstVisitor {
             `Can't bind to '${boundPropertyName}' since it isn't a known native property`,
             sourceSpan);
       }
-    } else if (parts[0] == ATTRIBUTE_PREFIX) {
-      boundPropertyName = dashCaseToCamelCase(parts[1]);
-      bindingType = PropertyBindingType.Attribute;
-    } else if (parts[0] == CLASS_PREFIX) {
-      // keep original case!
-      boundPropertyName = parts[1];
-      bindingType = PropertyBindingType.Class;
-    } else if (parts[0] == STYLE_PREFIX) {
-      unit = parts.length > 2 ? parts[2] : null;
-      boundPropertyName = dashCaseToCamelCase(parts[1]);
-      bindingType = PropertyBindingType.Style;
     } else {
-      this._reportError(`Invalid property name ${name}`, sourceSpan);
-      bindingType = null;
+      let lcPrefix = parts[0].toLowerCase();
+      if (lcPrefix == ATTRIBUTE_PREFIX) {
+        boundPropertyName = dashCaseToCamelCase(parts[1]);
+        bindingType = PropertyBindingType.Attribute;
+      } else if (lcPrefix == CLASS_PREFIX) {
+        // keep original case!
+        boundPropertyName = parts[1];
+        bindingType = PropertyBindingType.Class;
+      } else if (lcPrefix == STYLE_PREFIX) {
+        unit = parts.length > 2 ? parts[2] : null;
+        boundPropertyName = dashCaseToCamelCase(parts[1]);
+        bindingType = PropertyBindingType.Style;
+      } else {
+        this._reportError(`Invalid property name ${name}`, sourceSpan);
+        bindingType = null;
+      }
     }
+
     return new BoundElementPropertyAst(boundPropertyName, bindingType, ast, unit, sourceSpan);
   }
 
