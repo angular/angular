@@ -47,7 +47,7 @@ var browserProvidersConf = require('./browser-providers.conf.js');
 var os = require('os');
 
 require('./tools/check-environment')({
-  requiredNpmVersion: '>=2.14.7',
+  requiredNpmVersion: '>=2.14.7 <3.0.0',
   requiredNodeVersion: '>=4.2.1'
 });
 
