@@ -5,11 +5,11 @@
 library angular2.src.facade.browser;
 
 import 'dart:js' show context;
+import 'dart:html' show Location, window;
 
 export 'dart:html'
     show
         document,
-        location,
         window,
         Element,
         Node,
@@ -20,6 +20,8 @@ export 'dart:html'
         History,
         Location,
         EventListener;
+
+Location get location => window.location;
 
 final _gc = context['gc'];
 
