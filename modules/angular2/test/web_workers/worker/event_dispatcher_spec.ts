@@ -6,7 +6,7 @@ import {
   expect,
   beforeEach,
   createTestInjector,
-  beforeEachBindings,
+  beforeEachProviders,
   SpyObject,
   proxy
 } from 'angular2/testing_internal';
@@ -26,7 +26,7 @@ import {EVENT_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
 
 export function main() {
   describe("EventDispatcher", () => {
-    beforeEachBindings(() => [
+    beforeEachProviders(() => [
       provide(ON_WEB_WORKER, {useValue: true}),
       RenderProtoViewRefStore,
       RenderViewWithFragmentsStore

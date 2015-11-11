@@ -2,7 +2,7 @@ import {
   AsyncTestCompleter,
   TestComponentBuilder,
   beforeEach,
-  beforeEachBindings,
+  beforeEachProviders,
   ddescribe,
   describe,
   el,

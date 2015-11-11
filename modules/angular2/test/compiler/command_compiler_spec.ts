@@ -10,7 +10,7 @@ import {
   afterEach,
   AsyncTestCompleter,
   inject,
-  beforeEachBindings
+  beforeEachProviders
 } from 'angular2/testing_internal';
 
 import {
@@ -84,7 +84,7 @@ var compTypeTemplateId: Map<CompileTypeMetadata, string> = MapWrapper.createFrom
 
 export function main() {
   describe('CommandCompiler', () => {
-    beforeEachBindings(() => TEST_PROVIDERS);
+    beforeEachProviders(() => TEST_PROVIDERS);
 
     var parser: TemplateParser;
     var commandCompiler: CommandCompiler;

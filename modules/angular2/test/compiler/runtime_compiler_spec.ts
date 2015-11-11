@@ -10,7 +10,7 @@ import {
   afterEach,
   AsyncTestCompleter,
   inject,
-  beforeEachBindings
+  beforeEachProviders
 } from 'angular2/testing_internal';
 
 import {Component, View, provide} from 'angular2/core';
@@ -35,7 +35,7 @@ export function main() {
       var protoViewFactorySpy;
       var someProtoView;
 
-      beforeEachBindings(() => {
+      beforeEachProviders(() => {
         protoViewFactorySpy = new SpyProtoViewFactory();
         someProtoView = new AppProtoView(null, null, null, null, null, null, null);
         protoViewFactorySpy.spy('createHost').andReturn(someProtoView);

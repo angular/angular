@@ -8,7 +8,7 @@ import {
   expect,
   beforeEach,
   createTestInjector,
-  beforeEachBindings,
+  beforeEachProviders,
   TestComponentBuilder
 } from "angular2/testing_internal";
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
@@ -100,7 +100,7 @@ export function main() {
     var uiInjector: Injector;
     var uiRenderViewStore: RenderViewWithFragmentsStore;
 
-    beforeEachBindings(() => {
+    beforeEachProviders(() => {
       var uiRenderProtoViewStore = new RenderProtoViewRefStore(false);
       uiRenderViewStore = new RenderViewWithFragmentsStore(false);
       uiInjector = createTestInjector([

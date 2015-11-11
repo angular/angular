@@ -9,7 +9,7 @@ import {
   inject,
   it,
   xit,
-  beforeEachBindings,
+  beforeEachProviders,
   SpyObject,
 } from 'angular2/testing_internal';
 

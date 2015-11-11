@@ -104,16 +104,16 @@ export function beforeEach(fn: FunctionWithParamTokens | SyncTestFn): void {
  *
  * Example:
  *
- *   beforeEachBindings(() => [
+ *   beforeEachProviders(() => [
  *     provide(Compiler, {useClass: MockCompiler}),
  *     provide(SomeToken, {useValue: myValue}),
  *   ]);
  */
 export function beforeEachProviders(fn): void {
   jsmBeforeEach(() => {
-    var bindings = fn();
-    if (!bindings) return;
-    testProviders = [...testProviders, ...bindings];
+    var providers = fn();
+    if (!providers) return;
+    testProviders = [...testProviders, ...providers];
   });
 }
 

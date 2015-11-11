@@ -6,7 +6,7 @@ import {
   expect,
   beforeEach,
   createTestInjector,
-  beforeEachBindings,
+  beforeEachProviders,
   SpyObject,
   proxy
 } from 'angular2/testing_internal';
@@ -32,7 +32,7 @@ export function main() {
   const RESULT = 20;
   const ID = "methodId";
 
-  beforeEachBindings(() => [
+  beforeEachProviders(() => [
     provide(ON_WEB_WORKER, {useValue: true}),
     RenderProtoViewRefStore,
     RenderViewWithFragmentsStore
