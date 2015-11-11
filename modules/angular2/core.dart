@@ -3,6 +3,7 @@ library angular2.core;
 // Public Core API
 export 'package:angular2/src/core/metadata.dart';
 export 'package:angular2/src/core/util.dart';
+export 'package:angular2/src/core/dev_mode.dart';
 export 'package:angular2/src/core/di.dart';
 export 'package:angular2/src/common/pipes.dart';
 export 'package:angular2/src/facade/facade.dart';
