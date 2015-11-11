@@ -225,19 +225,28 @@ class RenderViewBuilder<N> implements RenderCommandVisitor {
                         componentTemplate: RenderComponentTemplate): N {
     var el: N = context.consumeInplaceElement();
     var attrNameAndValues = cmd.attrNameAndValues;
-    if (this.template.encapsulation === ViewEncapsulation.Emulated) {
+    var templateEmulatedEncapsulation = this.template.encapsulation === ViewEncapsulation.Emulated;
+    var componentEmulatedEncapsulation =
+        isPresent(componentTemplate) &&
+        componentTemplate.encapsulation === ViewEncapsulation.Emulated;
+    var newAttrLength = attrNameAndValues.length + (templateEmulatedEncapsulation ? 2 : 0) +
+                        (componentEmulatedEncapsulation ? 2 : 0);
+    if (newAttrLength > attrNameAndValues.length) {
       // Note: Need to clone attrNameAndValues to make it writable!
-      if (isPresent(componentTemplate)) {
-        attrNameAndValues = attrNameAndValues.concat([
-          _shimContentAttribute(this.template.shortId),
-          '',
-          _shimHostAttribute(componentTemplate.shortId),
-          ''
-        ]);
-      } else {
-        attrNameAndValues =
-            attrNameAndValues.concat([_shimContentAttribute(this.template.shortId), '']);
+      var newAttrNameAndValues = ListWrapper.createFixedSize(newAttrLength);
+      var attrIndex;
+      for (attrIndex = 0; attrIndex < attrNameAndValues.length; attrIndex++) {
+        newAttrNameAndValues[attrIndex] = attrNameAndValues[attrIndex];
       }
+      if (templateEmulatedEncapsulation) {
+        newAttrNameAndValues[attrIndex++] = _shimContentAttribute(this.template.shortId);
+        newAttrNameAndValues[attrIndex++] = '';
+      }
+      if (componentEmulatedEncapsulation) {
+        newAttrNameAndValues[attrIndex++] = _shimHostAttribute(componentTemplate.shortId);
+        newAttrNameAndValues[attrIndex++] = '';
+      }
+      attrNameAndValues = newAttrNameAndValues;
     }
     if (isPresent(el)) {
       context.factory.mergeElement(el, attrNameAndValues);
