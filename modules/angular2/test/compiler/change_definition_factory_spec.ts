@@ -10,7 +10,7 @@ import {
   it,
   xit,
   TestComponentBuilder,
-  beforeEachBindings
+  beforeEachProviders
 } from 'angular2/testing_internal';
 import {MapWrapper} from 'angular2/src/facade/collection';
 import {
@@ -39,7 +39,7 @@ import {TEST_PROVIDERS} from './test_bindings';
 
 export function main() {
   describe('ChangeDefinitionFactory', () => {
-    beforeEachBindings(() => TEST_PROVIDERS);
+    beforeEachProviders(() => TEST_PROVIDERS);
 
     var parser: TemplateParser;
     var dispatcher: TestDispatcher;

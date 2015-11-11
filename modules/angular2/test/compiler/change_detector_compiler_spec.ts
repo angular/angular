@@ -10,7 +10,7 @@ import {
   afterEach,
   AsyncTestCompleter,
   inject,
-  beforeEachBindings
+  beforeEachProviders
 } from 'angular2/testing_internal';
 import {provide} from 'angular2/src/core/di';
 
@@ -56,7 +56,7 @@ var THIS_MODULE_REF = moduleRef(THIS_MODULE_URL);
 
 export function main() {
   describe('ChangeDetectorCompiler', () => {
-    beforeEachBindings(() => TEST_PROVIDERS);
+    beforeEachProviders(() => TEST_PROVIDERS);
 
     var parser: TemplateParser;
     var compiler: ChangeDetectionCompiler;
@@ -78,7 +78,7 @@ export function main() {
       }
 
       describe('no jit', () => {
-        beforeEachBindings(() => [
+        beforeEachProviders(() => [
           provide(ChangeDetectorGenConfig,
                   {useValue: new ChangeDetectorGenConfig(true, false, false)})
         ]);
@@ -89,7 +89,7 @@ export function main() {
       });
 
       describe('jit', () => {
-        beforeEachBindings(() => [
+        beforeEachProviders(() => [
           provide(ChangeDetectorGenConfig,
                   {useValue: new ChangeDetectorGenConfig(true, false, true)})
         ]);

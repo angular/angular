@@ -10,7 +10,7 @@ import {
   it,
   xit,
   TestComponentBuilder,
-  beforeEachBindings
+  beforeEachProviders
 } from 'angular2/testing_internal';
 
 import {
@@ -29,7 +29,7 @@ export function main() {
     var dirType: CompileTypeMetadata;
     var dirTypeWithHttpUrl: CompileTypeMetadata;
 
-    beforeEachBindings(() => TEST_PROVIDERS);
+    beforeEachProviders(() => TEST_PROVIDERS);
 
     beforeEach(() => {
       dirType = new CompileTypeMetadata({moduleUrl: 'package:some/module/a.js', name: 'SomeComp'});

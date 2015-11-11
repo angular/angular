@@ -10,7 +10,7 @@ import {
   afterEach,
   AsyncTestCompleter,
   inject,
-  beforeEachBindings
+  beforeEachProviders
 } from 'angular2/testing_internal';
 import {provide} from 'angular2/src/core/di';
 import {SpyXHR} from './spies';
@@ -43,7 +43,7 @@ export function main() {
   describe('StyleCompiler', () => {
     var xhr: SpyXHR;
 
-    beforeEachBindings(() => {
+    beforeEachProviders(() => {
       xhr = <any>new SpyXHR();
       return [TEST_PROVIDERS, provide(XHR, {useValue: xhr})];
     });

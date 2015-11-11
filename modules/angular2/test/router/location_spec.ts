@@ -8,7 +8,7 @@ import {
   expect,
   inject,
   beforeEach,
-  beforeEachBindings,
+  beforeEachProviders,
   SpyObject
 } from 'angular2/testing_internal';
 
