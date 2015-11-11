@@ -19,3 +19,4 @@ export 'package:angular2/src/common/directives.dart';
 export 'package:angular2/src/common/forms.dart';
 export 'package:angular2/src/core/debug.dart';
 export 'package:angular2/src/core/change_detection.dart';
+export 'package:angular2/src/core/platform_directives_and_pipes.dart';
