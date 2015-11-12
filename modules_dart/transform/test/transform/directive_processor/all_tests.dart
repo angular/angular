@@ -498,14 +498,14 @@ void allTests() {
 
     it('should merge `outputs` from the annotation and fields.', () async {
       var model = await _testCreateModel('directives_files/components.dart');
-      expect(model.types['ComponentWithOutputs'].outputs)
-          .toEqual({'a': 'a', 'b': 'b', 'c': 'renamed'});
+      expect(model.types['ComponentWithOutputs'].outputs).toEqual(
+          {'a': 'a', 'b': 'b', 'c': 'renamed', 'd': 'd', 'e': 'get-renamed'});
     });
 
     it('should merge `inputs` from the annotation and fields.', () async {
       var model = await _testCreateModel('directives_files/components.dart');
-      expect(model.types['ComponentWithInputs'].inputs)
-          .toEqual({'a': 'a', 'b': 'b', 'c': 'renamed'});
+      expect(model.types['ComponentWithInputs'].inputs).toEqual(
+          {'a': 'a', 'b': 'b', 'c': 'renamed', 'd': 'd', 'e': 'set-renamed'});
     });
 
     it('should merge host bindings from the annotation and fields.', () async {
