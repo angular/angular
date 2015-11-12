@@ -90,7 +90,7 @@ class DbService {
 }
 
 @Component({selector: 'inbox-detail'})
-@View({templateUrl: "inbox-detail.html", directives: [NgFor, RouterLink]})
+@View({templateUrl: 'inbox-detail.html', directives: [NgFor, RouterLink]})
 class InboxDetailCmp {
   record: InboxRecord = new InboxRecord();
   ready: boolean = false;
@@ -102,7 +102,7 @@ class InboxDetailCmp {
 }
 
 @Component({selector: 'inbox'})
-@View({templateUrl: "inbox.html", directives: [NgFor, RouterLink]})
+@View({templateUrl: 'inbox.html', directives: [NgFor, RouterLink]})
 class InboxCmp {
   items: InboxRecord[] = [];
   ready: boolean = false;
@@ -128,7 +128,7 @@ class InboxCmp {
 
 
 @Component({selector: 'drafts'})
-@View({templateUrl: "drafts.html", directives: [NgFor, RouterLink]})
+@View({templateUrl: 'drafts.html', directives: [NgFor, RouterLink]})
 class DraftsCmp {
   items: InboxRecord[] = [];
   ready: boolean = false;
@@ -142,7 +142,7 @@ class DraftsCmp {
 }
 
 @Component({selector: 'inbox-app', viewProviders: [DbService]})
-@View({templateUrl: "inbox-app.html", directives: [RouterOutlet, RouterLink]})
+@View({templateUrl: 'inbox-app.html', directives: [RouterOutlet, RouterLink]})
 @RouteConfig([
   new Route({path: '/', component: InboxCmp, name: 'Inbox'}),
   new Route({path: '/drafts', component: DraftsCmp, name: 'Drafts'}),
