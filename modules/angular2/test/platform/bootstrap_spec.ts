@@ -11,10 +11,10 @@ import {
   xit
 } from 'angular2/testing_internal';
 import {IS_DART, isPresent, stringify} from 'angular2/src/facade/lang';
-import {bootstrap} from 'angular2/bootstrap';
-import {platform, applicationDomProviders} from 'angular2/src/core/application_common';
-import {applicationCommonProviders, ApplicationRef} from 'angular2/src/core/application_ref';
-import {Component, Directive, View} from 'angular2/core';
+import {bootstrap} from 'angular2/platform/browser';
+import {ApplicationRef} from 'angular2/src/core/application_ref';
+import {Component, Directive, View, platform} from 'angular2/core';
+import {BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS} from 'angular2/platform/browser';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {DOCUMENT} from 'angular2/render';
 import {PromiseWrapper} from 'angular2/src/facade/async';
@@ -22,7 +22,6 @@ import {provide, Inject, Injector} from 'angular2/core';
 import {ExceptionHandler} from 'angular2/src/facade/exceptions';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
 import {ComponentRef_} from "angular2/src/core/linker/dynamic_component_loader";
-import {compilerProviders} from 'angular2/src/compiler/compiler';
 
 @Component({selector: 'hello-app'})
 @View({template: '{{greeting}} world!'})
@@ -163,14 +162,10 @@ export function main() {
                async.done();
              });
        }));
+
     it('should unregister change detectors when components are disposed',
        inject([AsyncTestCompleter], (async) => {
-         var app = platform().application([
-           applicationCommonProviders(),
-           applicationDomProviders(),
-           compilerProviders(),
-           testProviders
-         ]);
+         var app = platform(BROWSER_PROVIDERS).application([BROWSER_APP_PROVIDERS, testProviders]);
          app.bootstrap(HelloRootCmp)
              .then((ref) => {
                ref.dispose();
