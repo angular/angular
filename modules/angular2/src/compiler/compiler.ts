@@ -8,7 +8,7 @@ export {
 export {SourceModule, SourceWithImports} from './source_module';
 export {PLATFORM_DIRECTIVES, PLATFORM_PIPES} from 'angular2/src/core/platform_directives_and_pipes';
 
-import {assertionsEnabled, Type} from 'angular2/src/facade/lang';
+import {assertionsEnabled, Type, CONST_EXPR} from 'angular2/src/facade/lang';
 import {provide, Provider} from 'angular2/src/core/di';
 import {TemplateParser} from 'angular2/src/compiler/template_parser';
 import {HtmlParser} from 'angular2/src/compiler/html_parser';
@@ -28,26 +28,27 @@ import {AppRootUrl} from 'angular2/src/compiler/app_root_url';
 import {AnchorBasedAppRootUrl} from 'angular2/src/compiler/anchor_based_app_root_url';
 import {Parser, Lexer} from 'angular2/src/core/change_detection/change_detection';
 
-export function compilerProviders(): Array<Type | Provider | any[]> {
-  return [
-    Lexer,
-    Parser,
-    HtmlParser,
-    TemplateParser,
-    TemplateNormalizer,
-    RuntimeMetadataResolver,
-    StyleCompiler,
-    CommandCompiler,
-    ChangeDetectionCompiler,
-    provide(ChangeDetectorGenConfig,
-            {useValue: new ChangeDetectorGenConfig(assertionsEnabled(), false, true)}),
-    TemplateCompiler,
-    provide(RuntimeCompiler, {useClass: RuntimeCompiler_}),
-    provide(Compiler, {useExisting: RuntimeCompiler}),
-    DomElementSchemaRegistry,
-    provide(ElementSchemaRegistry, {useExisting: DomElementSchemaRegistry}),
-    AnchorBasedAppRootUrl,
-    provide(AppRootUrl, {useExisting: AnchorBasedAppRootUrl}),
-    UrlResolver
-  ];
+function _createChangeDetectorGenConfig() {
+  return new ChangeDetectorGenConfig(assertionsEnabled(), false, true);
 }
+
+export const COMPILER_PROVIDERS: Array<Type | Provider | any[]> = CONST_EXPR([
+  Lexer,
+  Parser,
+  HtmlParser,
+  TemplateParser,
+  TemplateNormalizer,
+  RuntimeMetadataResolver,
+  StyleCompiler,
+  CommandCompiler,
+  ChangeDetectionCompiler,
+  new Provider(ChangeDetectorGenConfig, {useFactory: _createChangeDetectorGenConfig, deps: []}),
+  TemplateCompiler,
+  new Provider(RuntimeCompiler, {useClass: RuntimeCompiler_}),
+  new Provider(Compiler, {useExisting: RuntimeCompiler}),
+  DomElementSchemaRegistry,
+  new Provider(ElementSchemaRegistry, {useExisting: DomElementSchemaRegistry}),
+  AnchorBasedAppRootUrl,
+  new Provider(AppRootUrl, {useExisting: AnchorBasedAppRootUrl}),
+  UrlResolver
+]);

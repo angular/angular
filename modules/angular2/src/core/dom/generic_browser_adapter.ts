@@ -1,7 +1,7 @@
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {isPresent, isFunction, Type} from 'angular2/src/facade/lang';
 import {DomAdapter} from './dom_adapter';
-import {XHRImpl} from 'angular2/src/compiler/xhr_impl';
+import {XHRImpl} from 'angular2/src/platform/browser/xhr_impl';
 
 
 /**
