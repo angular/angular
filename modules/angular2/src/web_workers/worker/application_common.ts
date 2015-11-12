@@ -26,12 +26,11 @@ import {
 } from 'angular2/src/web_workers/shared/service_message_broker';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {
+  platformCommon,
   PlatformRef,
   ApplicationRef,
-  APPLICATION_COMMON_PROVIDERS,
-  PLATFORM_COMMON_PROVIDERS
-} from 'angular2/core';
-import * as core from 'angular2/core';
+  applicationCommonProviders
+} from 'angular2/src/core/application_ref';
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {ON_WEB_WORKER} from "angular2/src/web_workers/shared/api";
 import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_proto_view_ref_store';
@@ -43,7 +42,7 @@ import {SETUP_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
 import {WebWorkerEventDispatcher} from 'angular2/src/web_workers/worker/event_dispatcher';
 import {ComponentRef} from 'angular2/src/core/linker/dynamic_component_loader';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {COMPILER_PROVIDERS} from 'angular2/src/compiler/compiler';
+import {compilerProviders} from 'angular2/src/compiler/compiler';
 
 /**
  * Initialize the Angular 'platform' on the page in a manner suitable for applications
@@ -74,17 +73,15 @@ import {COMPILER_PROVIDERS} from 'angular2/src/compiler/compiler';
  * them if a platform did not exist already. If it did exist, however, an error will be
  * thrown.
  *
- *##For Web Worker Applications
+ *##For Web Worker Appplications
  *
  * This version of `platform` initializes Angular for use with applications
  * that do not directly touch the DOM, such as applications which run in a
  * web worker context. Applications that need direct access to the DOM should
  * use `platform` from `core/application_common` instead.
  */
-export function platform(providers?: Array<Type | Provider | any[]>): PlatformRef {
-  let platformProviders =
-      isPresent(providers) ? [PLATFORM_COMMON_PROVIDERS, providers] : PLATFORM_COMMON_PROVIDERS;
-  return core.platform(platformProviders);
+export function platform(bindings?: Array<Type | Provider | any[]>): PlatformRef {
+  return platformCommon(bindings);
 }
 
 class PrintLogger {
@@ -97,7 +94,7 @@ class PrintLogger {
 function webWorkerProviders(appComponentType, bus: MessageBus,
                             initData: {[key: string]: any}): Array<Type | Provider | any[]> {
   return [
-    COMPILER_PROVIDERS,
+    compilerProviders(),
     Serializer,
     provide(MessageBus, {useValue: bus}),
     provide(ClientMessageBrokerFactory, {useClass: ClientMessageBrokerFactory_}),
@@ -132,7 +129,7 @@ export function bootstrapWebWorkerCommon(
     var emitter = bus.from(SETUP_CHANNEL);
     subscription = ObservableWrapper.subscribe(emitter, (message: {[key: string]: any}) => {
       var bindings =
-          [APPLICATION_COMMON_PROVIDERS, webWorkerProviders(appComponentType, bus, message)];
+          [applicationCommonProviders(), webWorkerProviders(appComponentType, bus, message)];
       if (isPresent(appProviders)) {
         bindings.push(appProviders);
       }

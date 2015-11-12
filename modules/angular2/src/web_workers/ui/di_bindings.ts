@@ -40,7 +40,7 @@ import {
 import {UrlResolver} from 'angular2/src/compiler/url_resolver';
 import {Testability} from 'angular2/src/core/testability/testability';
 import {XHR} from 'angular2/src/compiler/xhr';
-import {XHRImpl} from 'angular2/src/platform/browser/xhr_impl';
+import {XHRImpl} from 'angular2/src/compiler/xhr_impl';
 import {Serializer} from 'angular2/src/web_workers/shared/serializer';
 import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';
 import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_proto_view_ref_store';

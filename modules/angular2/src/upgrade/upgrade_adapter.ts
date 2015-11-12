@@ -13,10 +13,10 @@ import {
   Provider,
   Type
 } from 'angular2/angular2';
-import {APPLICATION_COMMON_PROVIDERS} from 'angular2/core';
-import {COMPILER_PROVIDERS} from 'angular2/src/compiler/compiler';
+import {applicationDomProviders} from 'angular2/src/core/application_common';
+import {applicationCommonProviders} from 'angular2/src/core/application_ref';
+import {compilerProviders} from 'angular2/src/compiler/compiler';
 import {ObservableWrapper} from 'angular2/src/facade/async';
-import {BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS} from 'angular2/platform/browser';
 
 import {getComponentInfo, ComponentInfo} from './metadata';
 import {onError, controllerKey} from './util';
@@ -296,9 +296,11 @@ export class UpgradeAdapter {
             config?: angular.IAngularBootstrapConfig): UpgradeAdapterRef {
     var upgrade = new UpgradeAdapterRef();
     var ng1Injector: angular.IInjectorService = null;
-    var platformRef: PlatformRef = platform(BROWSER_PROVIDERS);
+    var platformRef: PlatformRef = platform();
     var applicationRef: ApplicationRef = platformRef.application([
-      BROWSER_APP_PROVIDERS,
+      applicationCommonProviders(),
+      applicationDomProviders(),
+      compilerProviders(),
       provide(NG1_INJECTOR, {useFactory: () => ng1Injector}),
       provide(NG1_COMPILE, {useFactory: () => ng1Injector.get(NG1_COMPILE)}),
       this.providers

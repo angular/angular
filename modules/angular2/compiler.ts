@@ -5,4 +5,3 @@
  */
 export * from './src/compiler/url_resolver';
 export * from './src/compiler/xhr';
-export * from './src/compiler/compiler';

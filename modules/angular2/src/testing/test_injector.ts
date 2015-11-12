@@ -54,7 +54,7 @@ import {
 import {APP_ID} from 'angular2/src/core/application_tokens';
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {Log} from './utils';
-import {COMPILER_PROVIDERS} from 'angular2/src/compiler/compiler';
+import {compilerProviders} from 'angular2/src/compiler/compiler';
 import {DomRenderer_} from "angular2/src/core/render/dom/dom_renderer";
 import {DynamicComponentLoader_} from "angular2/src/core/linker/dynamic_component_loader";
 import {AppViewManager_} from "angular2/src/core/linker/view_manager";
@@ -88,7 +88,7 @@ function _getAppBindings() {
   }
 
   return [
-    COMPILER_PROVIDERS,
+    compilerProviders(),
     provide(ChangeDetectorGenConfig, {useValue: new ChangeDetectorGenConfig(true, false, true)}),
     provide(DOCUMENT, {useValue: appDoc}),
     provide(DomRenderer, {useClass: DomRenderer_}),
