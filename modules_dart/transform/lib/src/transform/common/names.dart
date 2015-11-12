@@ -30,6 +30,20 @@ const ALL_EXTENSIONS = const [
   '.dart'
 ];
 
+/// Whether `uri` was created by a transform phase.
+///
+/// This may return false positives for problematic inputs.
+/// This just tests file extensions known to be created by the transformer, so
+/// any files named like transformer outputs will be reported as generated.
+bool isGenerated(String uri) {
+  return const [
+    DEPS_EXTENSION,
+    NON_SHIMMED_STYLESHEET_EXTENSION,
+    SHIMMED_STYLESHEET_EXTENSION,
+    TEMPLATE_EXTENSION,
+  ].any((ext) => uri.endsWith(ext));
+}
+
 /// Returns `uri` with its extension updated to [META_EXTENSION].
 String toMetaExtension(String uri) =>
     _toExtension(uri, ALL_EXTENSIONS, META_EXTENSION);
