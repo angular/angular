@@ -36,7 +36,7 @@ if (ua) {
 // https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
 let customParams = {
   // OS Platform (darwin, win32, linux)
-  cd1: os.platform,
+  cd1: os.platform(),
   // Node.js Version (v4.1.2)
   cd2: process.version,
   // npm Version (2.14.7)
