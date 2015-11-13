@@ -233,7 +233,7 @@ gulp.task('build/pubbuild.dart',
 // formatting
 
 function doCheckFormat() {
-  return gulp.src(['modules/**/*.ts', 'tools/**/*.ts', '!**/typings/**/*.d.ts'])
+  return gulp.src(['modules/**/*.ts', 'tools/**/*.ts', '!**/typings/**/*.d.ts', 'gulpfile.js'])
       .pipe(gulpFormat.checkFormat('file', clangFormat));
 }
 
