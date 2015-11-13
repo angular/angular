@@ -2,7 +2,6 @@ library angular.events;
 
 import 'dart:html';
 import './hammer_common.dart';
-import 'package:angular2/src/facade/exceptions.dart' show BaseException;
 import "package:angular2/src/core/di.dart" show Injectable;
 
 import 'dart:js' as js;
@@ -12,12 +11,7 @@ class HammerGesturesPlugin extends HammerGesturesPluginCommon {
   bool supports(String eventName) {
     if (!super.supports(eventName)) return false;
 
-    if (!js.context.hasProperty('Hammer')) {
-      throw new BaseException(
-          'Hammer.js is not loaded, can not bind ${eventName} event');
-    }
-
-    return true;
+    return js.context.hasProperty('Hammer');
   }
 
   addEventListener(Element element, String eventName, Function handler) {

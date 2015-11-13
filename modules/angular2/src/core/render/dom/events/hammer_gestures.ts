@@ -8,11 +8,7 @@ export class HammerGesturesPlugin extends HammerGesturesPluginCommon {
   supports(eventName: string): boolean {
     if (!super.supports(eventName)) return false;
 
-    if (!isPresent(window['Hammer'])) {
-      throw new BaseException(`Hammer.js is not loaded, can not bind ${eventName} event`);
-    }
-
-    return true;
+    return isPresent(window['Hammer']);
   }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function) {
