@@ -155,7 +155,8 @@ function ngOutletDirective($animate, $q: ng.IQService, $router) {
         }
 
         this.controller.$$routeParams = instruction.params;
-        this.controller.$$template = '<div ' + dashCase(componentName) + '></div>';
+        this.controller.$$template =
+            '<' + dashCase(componentName) + '></' + dashCase(componentName) + '>';
         this.controller.$$router = this.router.childRouter(instruction.componentType);
 
         let newScope = scope.$new();
