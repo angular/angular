@@ -46,10 +46,36 @@ var dartSdk = require('./tools/build/dart');
 var browserProvidersConf = require('./browser-providers.conf.js');
 var os = require('os');
 
-require('./tools/check-environment')({
-  requiredNpmVersion: '>=2.14.7',
-  requiredNodeVersion: '>=4.2.1'
-});
+require('./tools/check-environment')(
+    {requiredNpmVersion: '>=2.14.7', requiredNodeVersion: '>=4.2.1'});
+
+var cliArgs = minimist(process.argv.slice(2));
+
+if (cliArgs.projects) {
+  // normalize for analytics
+  cliArgs.projects.split(',').sort().join(',');
+}
+
+// --projects=angular2,angular2_material => {angular2: true, angular2_material: true}
+var allProjects =
+    'angular1_router,angular2,angular2_material,benchmarks,benchmarks_external,benchpress,playground';
+var cliArgsProjects = (cliArgs.projects || allProjects)
+                          .split(',')
+                          .reduce((map, projectName) => {
+                            map[projectName] = true;
+                            return map;
+                          }, {});
+
+function printModulesWarning() {
+  if (!cliArgs.projects && !process.env.CI) {
+    // if users didn't specify projects to build, tell them why and how they should
+    console.warn(
+        "Pro Tip: Did you know that you can speed up your build by specifying project name(s)?");
+    console.warn("         It's like pressing the turbo button in the old days, but better!");
+    console.warn("         Examples: --project=angular2 or --project=angular2,angular2_material");
+  }
+}
+
 
 // Make it easy to quiet down portions of the build.
 // --logs=all -> log everything (This is the default)
@@ -162,7 +188,7 @@ gulp.task('build/tree.dart', ['build/clean.dart', 'build.tools'],
 
 
 gulp.task('!build/tree.dart',
-          function() { return angularBuilder.rebuildDartTree(); });
+          function() { return angularBuilder.rebuildDartTree(cliArgsProjects); });
 
 
 // ------------
@@ -444,15 +470,19 @@ function getBrowsersFromCLI(provider) {
 }
 
 gulp.task('test.unit.js', ['build.js.dev'], function(done) {
+  printModulesWarning();
   runSequence('!test.unit.js/karma-server', function() {
     watch('modules/**', {ignoreInitial: true}, ['!broccoli.js.dev', '!test.unit.js/karma-run']);
   });
 });
 
-gulp.task('watch.js.dev', ['build.js.dev'],
-          function(done) { watch('modules/**', ['!broccoli.js.dev']); });
+gulp.task('watch.js.dev', ['build.js.dev'], function(done) {
+  printModulesWarning();
+  watch('modules/**', ['!broccoli.js.dev']);
+});
 
 gulp.task('test.unit.js.sauce', ['build.js.dev'], function(done) {
+  printModulesWarning();
   var browserConf = getBrowsersFromCLI('SL');
   if (browserConf.isProvider) {
     launchKarmaWithExternalBrowsers(['dots'], browserConf.browsersToRun, done);
@@ -462,6 +492,7 @@ gulp.task('test.unit.js.sauce', ['build.js.dev'], function(done) {
 });
 
 gulp.task('test.unit.js.browserstack', ['build.js.dev'], function(done) {
+  printModulesWarning();
   var browserConf = getBrowsersFromCLI('BS');
   if (browserConf.isProvider) {
     launchKarmaWithExternalBrowsers(['dots'], browserConf.browsersToRun, done);
@@ -535,6 +566,7 @@ gulp.task('!test.unit.router/karma-run', function(done) {
 gulp.task('buildRouter.dev', function() { buildRouter(); });
 
 gulp.task('test.unit.dart', function(done) {
+  printModulesWarning();
   runSequence('build/tree.dart', 'build/pure-packages.dart', '!build/pubget.angular2.dart',
               '!build/change_detect.dart', '!build/remove-pub-symlinks', 'build.dart.material.css',
               '!test.unit.dart/karma-server', '!test.unit.dart/karma-run', function(error) {
@@ -632,12 +664,9 @@ gulp.task('test.unit.cjs/ci', function(done) {
 
 
 gulp.task('test.unit.cjs', ['build/clean.js', 'build.tools'], function(neverDone) {
-
+  printModulesWarning();
   treatTestErrorsAsFatal = false;
-
-  var buildAndTest = ['!build.js.cjs', 'test.unit.cjs/ci'];
-
-  watch('modules/**', buildAndTest);
+  watch('modules/**', ['!build.js.cjs', 'test.unit.cjs/ci']);
 });
 
 // Use this target to continuously run dartvm unit-tests (such as transformer
@@ -812,12 +841,11 @@ gulp.task('!build.tools', function() {
 gulp.task('broccoli.js.dev', ['build.tools'],
           function(done) { runSequence('!broccoli.js.dev', sequenceComplete(done)); });
 
-gulp.task('!broccoli.js.dev', () => {
-  return angularBuilder.rebuildBrowserDevTree();
-});
+gulp.task('!broccoli.js.dev',
+          () => { return angularBuilder.rebuildBrowserDevTree(cliArgsProjects); });
 
 gulp.task('!broccoli.js.prod',
-          function() { return angularBuilder.rebuildBrowserProdTree(); });
+          function() { return angularBuilder.rebuildBrowserProdTree(cliArgsProjects); });
 
 gulp.task('build.js.dev', ['build/clean.js'], function(done) {
   runSequence('broccoli.js.dev', 'build.css.material', sequenceComplete(done));
@@ -840,7 +868,7 @@ var firstBuildJsCjs = true;
  * private task
  */
 gulp.task('!build.js.cjs', function() {
-  return angularBuilder.rebuildNodeTree()
+  return angularBuilder.rebuildNodeTree(cliArgsProjects)
       .then(function() {
         if (firstBuildJsCjs) {
           firstBuildJsCjs = false;
