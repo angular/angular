@@ -2,7 +2,14 @@
 
 let execSync = require('child_process').execSync;
 let fs = require('fs');
-let minimist = require('minimist');
+
+let minimist;
+try {
+  minimist = require('minimist');
+} catch (e) {
+  minimist = function(){ return {projects: ""}; };
+}
+
 let path = require('path');
 let os = require('os');
 let ua;
