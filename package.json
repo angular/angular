@@ -75,7 +75,7 @@
     "jpm": "1.0.0",
     "js-yaml": "^3.2.7",
     "karma": "^0.13.10",
-    "karma-browserstack-launcher": "mlaval/karma-browserstack-launcher#global_poll",
+    "karma-browserstack-launcher": "^0.1.7",
     "karma-chrome-launcher": "^0.2.0",
     "karma-dart": "^0.3.0",
     "karma-jasmine": "^0.3.6",
