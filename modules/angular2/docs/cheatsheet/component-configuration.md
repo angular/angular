@@ -1,6 +1,6 @@
 @cheatsheetSection
 Component configuration
-@cheatsheetIndex 5
+@cheatsheetIndex 6
 @description
 `@Component` extends `@Directive`,
 so the `@Directive` configuration applies to components as well
