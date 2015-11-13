@@ -3,9 +3,9 @@
   "version": "2.0.0-alpha.45",
   "dependencies": {
     "@reactivex/rxjs": {
-      "version": "5.0.0-alpha.7",
-      "from": "https://registry.npmjs.org/@reactivex/rxjs/-/rxjs-5.0.0-alpha.7.tgz",
-      "resolved": "https://registry.npmjs.org/@reactivex/rxjs/-/rxjs-5.0.0-alpha.7.tgz"
+      "version": "5.0.0-alpha.8",
+      "from": "@reactivex/rxjs@5.0.0-alpha.8",
+      "resolved": "http://registry.npmjs.org/@reactivex/rxjs/-/rxjs-5.0.0-alpha.8.tgz"
     },
     "angular": {
       "version": "1.4.7",
