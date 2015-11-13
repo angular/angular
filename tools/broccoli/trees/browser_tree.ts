@@ -118,8 +118,6 @@ module.exports = function makeBrowserTree(options, destinationPath) {
 
   var es5ModulesTree = mergeTrees([modulesTree, es6PolyfillTypings]);
 
-  es5ModulesTree = stew.debug(es5ModulesTree, {name: 'debug-es5'});
-
   var scriptPathPatternReplacement = {
     match: '@@PATH',
     replacement: function(replacement, relativePath) {
