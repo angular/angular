@@ -70,26 +70,55 @@ const kServedPaths = [
 
 
 module.exports = function makeBrowserTree(options, destinationPath) {
-  var modulesTree = new Funnel('modules', {
-    include: ['**/**'],
-    exclude: [
-      '**/*.cjs',
-      'benchmarks/e2e_test/**',
-      'angular1_router/**',
-      // Exclude ES6 polyfill typings when tsc target=ES6
-      'angular2/typings/es6-*/**',
-    ],
-    destDir: '/'
-  });
+  var modules = options.projects;
+
+  if (modules.angular2) {
+    var angular2Tree = new Funnel('modules/angular2', {
+      include: ['**/**'],
+      exclude: [
+        // Exclude ES6 polyfill typings when tsc target=ES6
+        'typings/es6-*/**',
+      ],
+      destDir: '/angular2/'
+    });
+  }
+
+  if (modules.angular2_material) {
+    var angular2MaterialTree =
+        new Funnel('modules/angular2_material',
+                   {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/angular2_material/'});
+  }
+
+  if (modules.benchmarks) {
+    var benchmarksTree =
+        new Funnel('modules/benchmarks',
+                   {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/benchmarks/'});
+  }
+
+  if (modules.benchmarks_external) {
+    var benchmarksExternalTree = new Funnel(
+        'modules/benchmarks_external',
+        {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/benchmarks_external/'});
+  }
+
+  if (modules.playground) {
+    var playgroundTree =
+        new Funnel('modules/playground',
+                   {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/playground/'});
+  }
+
+  var modulesTree = mergeTrees(
+      [angular2Tree, angular2MaterialTree, benchmarksTree, benchmarksExternalTree, playgroundTree]);
 
   var clientModules = new Funnel(
       'node_modules', {include: ['@reactivex/**/**', 'parse5/**/**', 'css/**/**'], destDir: '/'});
 
-  var es5ModulesTree = new Funnel('modules', {
-    include: ['**/**'],
-    exclude: ['**/*.cjs', 'angular1_router/**', 'benchmarks/e2e_test/**'],
-    destDir: '/'
-  });
+  var es6PolyfillTypings =
+      new Funnel('modules', {include: ['angular2/typings/es6-*/**'], destDir: '/'});
+
+  var es5ModulesTree = mergeTrees([modulesTree, es6PolyfillTypings]);
+
+  es5ModulesTree = stew.debug(es5ModulesTree, {name: 'debug-es5'});
 
   var scriptPathPatternReplacement = {
     match: '@@PATH',
@@ -119,7 +148,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     experimentalDecorators: true,
     mapRoot: '',  // force sourcemaps to use relative path
     noEmitOnError: false,
-    rootDir: '.',
+    rootDir: './',
     rootFilePaths: ['angular2/manual_typings/globals-es6.d.ts'],
     sourceMap: true,
     sourceRoot: '.',
@@ -127,7 +156,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   });
 
   // Use TypeScript to transpile the *.ts files to ES5
-  var typescriptOptions = {
+  var es5Tree = compileWithTypescript(es5ModulesTree, {
     declaration: false,
     emitDecoratorMetadata: true,
     experimentalDecorators: true,
@@ -135,13 +164,12 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     module: 'commonjs',
     moduleResolution: 'classic',
     noEmitOnError: true,
-    rootDir: '.',
+    rootDir: './',
     rootFilePaths: ['angular2/manual_typings/globals.d.ts'],
     sourceMap: true,
     sourceRoot: '.',
     target: 'es5'
-  };
-  var es5Tree = compileWithTypescript(es5ModulesTree, typescriptOptions);
+  });
 
   var vendorScriptsTree = flatten(new Funnel('.', {
     files: [
@@ -173,61 +201,80 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     return funnels;
   }
 
+
+  if (modules.angular2_material || modules.benchmarks || modules.benchmarks_external ||
+      modules.playground) {
+    var assetsTree = new Funnel(
+        modulesTree, {include: ['**/*'], exclude: ['**/*.{html,ts,dart}'], destDir: '/'});
+  }
+
   var htmlTree = new Funnel(
       modulesTree, {include: ['*/src/**/*.html', '**/playground/**/*.html'], destDir: '/'});
-  htmlTree = replace(htmlTree, {
-    files: ['playground*/**/*.html'],
-    patterns: [
-      {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS')},
-      scriptPathPatternReplacement,
-      scriptFilePatternReplacement
-    ]
-  });
 
+  if (modules.benchmarks || modules.benchmarks_external || modules.playground) {
+    htmlTree = replace(htmlTree, {
+      files: ['playground*/**/*.html'],
+      patterns: [
+        {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS')},
+        scriptPathPatternReplacement,
+        scriptFilePatternReplacement
+      ]
+    });
+  }
 
-  htmlTree = replace(htmlTree, {
-    files: ['benchmarks/**'],
-    patterns: [
-      {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS_benchmarks')},
-      scriptPathPatternReplacement,
-      scriptFilePatternReplacement
-    ]
-  });
+  if (modules.benchmarks) {
+    htmlTree = replace(htmlTree, {
+      files: ['benchmarks/**'],
+      patterns: [
+        {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS_benchmarks')},
+        scriptPathPatternReplacement,
+        scriptFilePatternReplacement
+      ]
+    });
+  }
 
-  htmlTree = replace(htmlTree, {
-    files: ['benchmarks_external/**'],
-    patterns: [
-      {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS_benchmarks_external')},
-      scriptPathPatternReplacement,
-      scriptFilePatternReplacement
-    ]
-  });
+  if (modules.benchmarks_external) {
+    htmlTree = replace(htmlTree, {
+      files: ['benchmarks_external/**'],
+      patterns: [
+        {match: /\$SCRIPTS\$/, replacement: htmlReplace('SCRIPTS_benchmarks_external')},
+        scriptPathPatternReplacement,
+        scriptFilePatternReplacement
+      ]
+    });
+  }
 
-  // We need to replace the regular angular bundle with the web-worker bundle
-  // for web-worker e2e tests.
-  htmlTree = replace(htmlTree, {
-    files: ['playground*/**/web_workers/**/*.html'],
-    patterns: [{match: "/bundle/angular2.dev.js", replacement: "/bundle/web_worker/ui.dev.js"}]
-  });
+  if (modules.playground) {
+    // We need to replace the regular angular bundle with the web-worker bundle
+    // for web-worker e2e tests.
+    htmlTree = replace(htmlTree, {
+      files: ['playground*/**/web_workers/**/*.html'],
+      patterns: [{match: "/bundle/angular2.dev.js", replacement: "/bundle/web_worker/ui.dev.js"}]
+    });
+  }
 
-  var assetsTree =
-      new Funnel(modulesTree, {include: ['**/*'], exclude: ['**/*.{html,ts,dart}'], destDir: '/'});
+  if (modules.benchmarks || modules.benchmarks_external) {
+    var scripts = mergeTrees(servingTrees);
+  }
 
-  var scripts = mergeTrees(servingTrees);
-  var polymerFiles = new Funnel('.', {
-    files: [
-      'bower_components/polymer/polymer.html',
-      'bower_components/polymer/polymer-micro.html',
-      'bower_components/polymer/polymer-mini.html',
-      'tools/build/snippets/url_params_to_form.js'
-    ]
-  });
-  var polymer = stew.mv(flatten(polymerFiles), 'benchmarks_external/src/tree/polymer');
+  if (modules.benchmarks_external) {
+    var polymerFiles = new Funnel('.', {
+      files: [
+        'bower_components/polymer/polymer.html',
+        'bower_components/polymer/polymer-micro.html',
+        'bower_components/polymer/polymer-mini.html',
+        'tools/build/snippets/url_params_to_form.js'
+      ]
+    });
+    var polymer = stew.mv(flatten(polymerFiles), 'benchmarks_external/src/tree/polymer');
 
-  var reactFiles = new Funnel('.', {files: ['node_modules/react/dist/react.min.js']});
-  var react = stew.mv(flatten(reactFiles), 'benchmarks_external/src/tree/react');
+    var reactFiles = new Funnel('.', {files: ['node_modules/react/dist/react.min.js']});
+    var react = stew.mv(flatten(reactFiles), 'benchmarks_external/src/tree/react');
+  }
 
-  htmlTree = mergeTrees([htmlTree, scripts, polymer, react]);
+  if (modules.benchmarks || modules.benchmarks_external || modules.playground) {
+    htmlTree = mergeTrees([htmlTree, scripts, polymer, react]);
+  }
 
   es5Tree = mergeTrees([es5Tree, htmlTree, assetsTree, clientModules]);
   es6Tree = mergeTrees([es6Tree, htmlTree, assetsTree, clientModules]);

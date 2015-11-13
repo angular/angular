@@ -12,7 +12,7 @@ var stew = require('broccoli-stew');
 var projectRootDir = path.normalize(path.join(__dirname, '..', '..', '..', '..'));
 
 
-module.exports = function makeNodeTree(destinationPath) {
+module.exports = function makeNodeTree(projects, destinationPath) {
   // list of npm packages that this build will create
   var outputPackages = ['angular2', 'benchpress'];
 

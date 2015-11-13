@@ -47,6 +47,12 @@ class DiffingTSCompiler implements DiffingBroccoliPlugin {
     // in tsc 1.7.x this api was renamed to parseJsonConfigFileContent
     // the conversion is a bit awkward, see https://github.com/Microsoft/TypeScript/issues/5276
     this.tsOpts = ts.parseConfigFile({compilerOptions: options, files: []}, null, null).options;
+
+    // TODO: the above turns rootDir set to './' into an empty string - looks like a tsc bug
+    //       check back when we upgrade to 1.7.x
+    if (this.tsOpts.rootDir === '') {
+      this.tsOpts.rootDir = './';
+    }
     this.tsOpts.outDir = this.cachePath;
 
     this.tsServiceHost = new CustomLanguageServiceHost(this.tsOpts, this.rootFilePaths,

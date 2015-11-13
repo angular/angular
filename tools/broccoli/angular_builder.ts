@@ -7,6 +7,10 @@ var path = require('path');
 var printSlowTrees = require('broccoli-slow-trees');
 var Q = require('q');
 
+type ProjectMap = {
+  [key: string]: boolean
+};
+
 /**
  * BroccoliBuilder facade for all of our build pipelines.
  */
@@ -21,26 +25,26 @@ export class AngularBuilder {
   constructor(public options: AngularBuilderOptions) { this.outputPath = options.outputPath; }
 
 
-  public rebuildBrowserDevTree(): Promise<BuildResult> {
-    this.browserDevBuilder = this.browserDevBuilder || this.makeBrowserDevBuilder();
+  public rebuildBrowserDevTree(projects: ProjectMap): Promise<BuildResult> {
+    this.browserDevBuilder = this.browserDevBuilder || this.makeBrowserDevBuilder(projects);
     return this.rebuild(this.browserDevBuilder, 'js.dev');
   }
 
 
-  public rebuildBrowserProdTree(): Promise<BuildResult> {
-    this.browserProdBuilder = this.browserProdBuilder || this.makeBrowserProdBuilder();
+  public rebuildBrowserProdTree(projects: ProjectMap): Promise<BuildResult> {
+    this.browserProdBuilder = this.browserProdBuilder || this.makeBrowserProdBuilder(projects);
     return this.rebuild(this.browserProdBuilder, 'js.prod');
   }
 
 
-  public rebuildNodeTree(): Promise<BuildResult> {
-    this.nodeBuilder = this.nodeBuilder || this.makeNodeBuilder();
+  public rebuildNodeTree(projects: ProjectMap): Promise<BuildResult> {
+    this.nodeBuilder = this.nodeBuilder || this.makeNodeBuilder(projects);
     return this.rebuild(this.nodeBuilder, 'js.cjs');
   }
 
 
-  public rebuildDartTree(): Promise<BuildResult> {
-    this.dartBuilder = this.dartBuilder || this.makeDartBuilder();
+  public rebuildDartTree(projects: ProjectMap): Promise<BuildResult> {
+    this.dartBuilder = this.dartBuilder || this.makeDartBuilder(projects);
     return this.rebuild(this.dartBuilder, 'dart');
   }
 
@@ -54,31 +58,32 @@ export class AngularBuilder {
   }
 
 
-  private makeBrowserDevBuilder(): BroccoliBuilder {
-    let tree = makeBrowserTree({name: 'dev', typeAssertions: true},
+  private makeBrowserDevBuilder(projects: ProjectMap): BroccoliBuilder {
+    let tree = makeBrowserTree({name: 'dev', typeAssertions: true, projects: projects},
                                path.join(this.outputPath, 'js', 'dev'));
     return new broccoli.Builder(tree);
   }
 
 
-  private makeBrowserProdBuilder(): BroccoliBuilder {
-    let tree = makeBrowserTree({name: 'prod', typeAssertions: false},
+  private makeBrowserProdBuilder(projects: ProjectMap): BroccoliBuilder {
+    let tree = makeBrowserTree({name: 'prod', typeAssertions: false, projects: projects},
                                path.join(this.outputPath, 'js', 'prod'));
     return new broccoli.Builder(tree);
   }
 
 
-  private makeNodeBuilder(): BroccoliBuilder {
-    let tree = makeNodeTree(path.join(this.outputPath, 'js', 'cjs'));
+  private makeNodeBuilder(projects: ProjectMap): BroccoliBuilder {
+    let tree = makeNodeTree(projects, path.join(this.outputPath, 'js', 'cjs'));
     return new broccoli.Builder(tree);
   }
 
 
-  private makeDartBuilder(): BroccoliBuilder {
+  private makeDartBuilder(projects: ProjectMap): BroccoliBuilder {
     let options = {
       outputPath: path.join(this.outputPath, 'dart'),
       dartSDK: this.options.dartSDK,
-      logs: this.options.logs
+      logs: this.options.logs,
+      projects: projects
     };
     let tree = makeDartTree(options);
     return new broccoli.Builder(tree);
