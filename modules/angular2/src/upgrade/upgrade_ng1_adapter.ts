@@ -78,11 +78,18 @@ export class UpgradeNg1ComponentAdapterBuilder {
   }
 
   extractBindings() {
-    var scope = this.directive.scope;
-    if (typeof scope == 'object') {
-      for (var name in scope) {
-        if ((<any>scope).hasOwnProperty(name)) {
-          var localName = scope[name];
+    var btcIsObject = typeof this.directive.bindToController === 'object';
+    if (btcIsObject && Object.keys(this.directive.scope).length) {
+      throw new Error(
+          `Binding definitions on scope and controller at the same time are not supported.`);
+    }
+
+    var context = (btcIsObject) ? this.directive.bindToController : this.directive.scope;
+
+    if (typeof context == 'object') {
+      for (var name in context) {
+        if ((<any>context).hasOwnProperty(name)) {
+          var localName = context[name];
           var type = localName.charAt(0);
           localName = localName.substr(1) || name;
           var outputName = 'output_' + name;
@@ -109,7 +116,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
               this.propertyMap[outputName] = localName;
               break;
             default:
-              var json = JSON.stringify(scope);
+              var json = JSON.stringify(context);
               throw new Error(
                   `Unexpected mapping '${type}' in '${json}' in '${this.name}' directive.`);
           }

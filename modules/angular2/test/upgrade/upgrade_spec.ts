@@ -397,6 +397,35 @@ export function main() {
                });
          }));
 
+      it('should support bindToController with bindings', inject([AsyncTestCompleter], (async) => {
+           var adapter = new UpgradeAdapter();
+           var ng1Module = angular.module('ng1', []);
+
+           var ng1 = function() {
+             return {
+               scope: {},
+               bindToController: {title: '@'},
+               template: '{{ctl.title}}',
+               controllerAs: 'ctl',
+               controller: Class({constructor: function() {}})
+             };
+           };
+           ng1Module.directive('ng1', ng1);
+           var Ng2 = Component({
+                       selector: 'ng2',
+                       template: '<ng1 title="WORKS"></ng1>',
+                       directives: [adapter.upgradeNg1Component('ng1')]
+                     }).Class({constructor: function() {}});
+           ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
+           var element = html(`<div><ng2></ng2></div>`);
+           adapter.bootstrap(element, ['ng1'])
+               .ready((ref) => {
+                 expect(multiTrim(document.body.textContent)).toEqual('WORKS');
+                 ref.dispose();
+                 async.done();
+               });
+         }));
+
       it('should support single require in linking fn', inject([AsyncTestCompleter], (async) => {
            var adapter = new UpgradeAdapter();
            var ng1Module = angular.module('ng1', []);
