@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0-alpha.45",
+  "version": "2.0.0-alpha.46",
   "dependencies": {
     "@reactivex/rxjs": {
       "version": "5.0.0-alpha.7",
@@ -17408,13 +17408,13 @@
       }
     },
     "karma-browserstack-launcher": {
-      "version": "0.1.6",
-      "from": "git://github.com/mlaval/karma-browserstack-launcher.git#f3be494790d9ffb5dadb7fbf728ec770207a68d5",
-      "resolved": "git://github.com/mlaval/karma-browserstack-launcher.git#f3be494790d9ffb5dadb7fbf728ec770207a68d5",
+      "version": "0.1.7",
+      "from": "karma-browserstack-launcher@latest",
+      "resolved": "https://registry.npmjs.org/karma-browserstack-launcher/-/karma-browserstack-launcher-0.1.7.tgz",
       "dependencies": {
         "browserstack": {
           "version": "1.2.0",
-          "from": "https://registry.npmjs.org/browserstack/-/browserstack-1.2.0.tgz",
+          "from": "browserstack@1.2.0",
           "resolved": "https://registry.npmjs.org/browserstack/-/browserstack-1.2.0.tgz"
         }
       }
@@ -20019,34 +20019,34 @@
     },
     "ts2dart": {
       "version": "0.7.14",
-      "from": "ts2dart@0.7.14",
+      "from": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.14.tgz",
       "resolved": "https://registry.npmjs.org/ts2dart/-/ts2dart-0.7.14.tgz",
       "dependencies": {
         "source-map": {
           "version": "0.4.4",
-          "from": "source-map@>=0.4.2 <0.5.0",
+          "from": "https://registry.npmjs.org/source-map/-/source-map-0.4.4.tgz",
           "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.4.4.tgz",
           "dependencies": {
             "amdefine": {
               "version": "1.0.0",
-              "from": "amdefine@>=0.0.4",
+              "from": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.0.tgz",
               "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.0.tgz"
             }
           }
         },
         "source-map-support": {
           "version": "0.3.3",
-          "from": "source-map-support@>=0.3.1 <0.4.0",
+          "from": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.3.3.tgz",
           "resolved": "https://registry.npmjs.org/source-map-support/-/source-map-support-0.3.3.tgz",
           "dependencies": {
             "source-map": {
               "version": "0.1.32",
-              "from": "source-map@0.1.32",
+              "from": "https://registry.npmjs.org/source-map/-/source-map-0.1.32.tgz",
               "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.1.32.tgz",
               "dependencies": {
                 "amdefine": {
                   "version": "1.0.0",
-                  "from": "amdefine@>=0.0.4",
+                  "from": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.0.tgz",
                   "resolved": "https://registry.npmjs.org/amdefine/-/amdefine-1.0.0.tgz"
                 }
               }
