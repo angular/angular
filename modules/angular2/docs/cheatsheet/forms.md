@@ -1,6 +1,6 @@
 @cheatsheetSection
 Forms
-@cheatsheetIndex 2
+@cheatsheetIndex 3
 @description
 `import {FORM_DIRECTIVES} from 'angular2/angular2';`
 

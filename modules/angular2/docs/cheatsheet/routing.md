@@ -1,6 +1,6 @@
 @cheatsheetSection
 Routing and navigation
-@cheatsheetIndex 8
+@cheatsheetIndex 10
 @description
 `import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, ...} from 'angular2/router';`
 

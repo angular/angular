@@ -1,6 +1,6 @@
 @cheatsheetSection
 Directive and component change detection and lifecycle hooks
-@cheatsheetIndex 6
+@cheatsheetIndex 8
 @description
 (implemented as class methods)
 
