@@ -13,7 +13,6 @@ import {
   ObservableWrapper
 } from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
 import {TestabilityRegistry, Testability} from 'angular2/src/core/testability/testability';
 import {
   ComponentRef,
@@ -27,39 +26,10 @@ import {
 } from 'angular2/src/facade/exceptions';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {internalView} from 'angular2/src/core/linker/view_ref';
-import {
-  IterableDiffers,
-  defaultIterableDiffers,
-  KeyValueDiffers,
-  defaultKeyValueDiffers
-} from 'angular2/src/core/change_detection/change_detection';
-import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
-import {AppViewManager} from 'angular2/src/core/linker/view_manager';
-import {AppViewManagerUtils} from 'angular2/src/core/linker/view_manager_utils';
-import {AppViewListener} from 'angular2/src/core/linker/view_listener';
-import {ProtoViewFactory} from './linker/proto_view_factory';
-import {ViewResolver} from './linker/view_resolver';
-import {DirectiveResolver} from './linker/directive_resolver';
-import {PipeResolver} from './linker/pipe_resolver';
-import {Compiler} from 'angular2/src/core/linker/compiler';
-import {DynamicComponentLoader_} from "./linker/dynamic_component_loader";
-import {AppViewManager_} from "./linker/view_manager";
-import {Compiler_} from "./linker/compiler";
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from './profile/profile';
 import {ChangeDetectorRef} from 'angular2/src/core/change_detection/change_detector_ref';
-import {PLATFORM_DIRECTIVES, PLATFORM_PIPES} from "angular2/src/core/platform_directives_and_pipes";
 import {lockDevMode} from 'angular2/src/facade/lang';
-import {COMMON_DIRECTIVES, COMMON_PIPES} from "angular2/common";
 
-/**
- * Constructs the set of providers meant for use at the platform level.
- *
- * These are providers that should be singletons shared among all Angular applications
- * running on the page.
- */
-export function platformProviders(): Array<Type | Provider | any[]> {
-  return [provide(Reflector, {useValue: reflector}), TestabilityRegistry];
-}
 
 /**
  * Construct providers specific to an individual root component.
@@ -97,31 +67,6 @@ function _componentProviders(appComponentType: Type): Array<Type | Provider | an
 }
 
 /**
- * Construct a default set of providers which should be included in any Angular
- * application, regardless of whether it runs on the UI thread or in a web worker.
- */
-export function applicationCommonProviders(): Array<Type | Provider | any[]> {
-  return [
-    provide(Compiler, {useClass: Compiler_}),
-    APP_ID_RANDOM_PROVIDER,
-    AppViewPool,
-    provide(APP_VIEW_POOL_CAPACITY, {useValue: 10000}),
-    provide(AppViewManager, {useClass: AppViewManager_}),
-    AppViewManagerUtils,
-    AppViewListener,
-    ProtoViewFactory,
-    ViewResolver,
-    provide(IterableDiffers, {useValue: defaultIterableDiffers}),
-    provide(KeyValueDiffers, {useValue: defaultKeyValueDiffers}),
-    DirectiveResolver,
-    PipeResolver,
-    provide(PLATFORM_PIPES, {useValue: COMMON_PIPES, multi: true}),
-    provide(PLATFORM_DIRECTIVES, {useValue: COMMON_DIRECTIVES, multi: true}),
-    provide(DynamicComponentLoader, {useClass: DynamicComponentLoader_})
-  ];
-}
-
-/**
  * Create an Angular zone.
  */
 export function createNgZone(): NgZone {
@@ -129,25 +74,41 @@ export function createNgZone(): NgZone {
 }
 
 var _platform: PlatformRef;
+var _platformProviders: any[];
 
-export function platformCommon(providers?: Array<Type | Provider | any[]>,
-                               initializer?: () => void): PlatformRef {
+/**
+ * Initialize the Angular 'platform' on the page.
+ *
+ * See {@link PlatformRef} for details on the Angular platform.
+ *
+ * It is also possible to specify providers to be made in the new platform. These providers
+ * will be shared between all applications on the page. For example, an abstraction for
+ * the browser cookie jar should be bound at the platform level, because there is only one
+ * cookie jar regardless of how many applications on the page will be accessing it.
+ *
+ * The platform function can be called multiple times as long as the same list of providers
+ * is passed into each call. If the platform function is called with a different set of
+ * provides, Angular will throw an exception.
+ */
+export function platform(providers?: Array<Type | Provider | any[]>): PlatformRef {
   lockDevMode();
   if (isPresent(_platform)) {
-    if (isBlank(providers)) {
+    if (ListWrapper.equals(_platformProviders, providers)) {
       return _platform;
+    } else {
+      throw new BaseException("platform cannot be initialized with different sets of providers.");
     }
-    throw "platform() can only be called once per page";
+  } else {
+    return _createPlatform(providers);
   }
+}
 
-  if (isPresent(initializer)) {
-    initializer();
-  }
-
-  if (isBlank(providers)) {
-    providers = platformProviders();
-  }
-  _platform = new PlatformRef_(Injector.resolveAndCreate(providers), () => { _platform = null; });
+function _createPlatform(providers?: Array<Type | Provider | any[]>): PlatformRef {
+  _platformProviders = providers;
+  _platform = new PlatformRef_(Injector.resolveAndCreate(providers), () => {
+    _platform = null;
+    _platformProviders = null;
+  });
   return _platform;
 }
 
@@ -192,7 +153,7 @@ export abstract class PlatformRef {
    * var myAppProviders = [MyAppService];
    *
    * platform()
-   *   .application([applicationCommonProviders(), applicationDomProviders(), myAppProviders])
+   *   .application([myAppProviders])
    *   .bootstrap(MyTopLevelComponent);
    * ```
    *##See Also
@@ -255,8 +216,10 @@ export class PlatformRef_ extends PlatformRef {
     var injector: Injector;
     var app: ApplicationRef;
     zone.run(() => {
-      providers.push(provide(NgZone, {useValue: zone}));
-      providers.push(provide(ApplicationRef, {useFactory: (): ApplicationRef => app, deps: []}));
+      providers = ListWrapper.concat(providers, [
+        provide(NgZone, {useValue: zone}),
+        provide(ApplicationRef, {useFactory: (): ApplicationRef => app, deps: []})
+      ]);
 
       var exceptionHandler;
       try {
@@ -320,7 +283,7 @@ export abstract class ApplicationRef {
    *
    * ### Example
    * ```
-   * var app = platform.application([applicationCommonProviders(), applicationDomProviders()];
+   * var app = platform.application([appProviders];
    * app.bootstrap(FirstRootComponent);
    * app.bootstrap(SecondRootComponent, [provide(OverrideBinding, {useClass: OverriddenBinding})]);
    * ```
