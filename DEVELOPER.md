@@ -249,12 +249,7 @@ Your life will be easier if you include the formatter in your standard workflow.
 likely forget to check the formatting, and waste time waiting for a build on Travis that fails due
 to some whitespace difference.
 
-* Install clang-format with `npm install -g clang-format`.
-* Use `clang-format -i [file name]` to format a file (or multiple).
-  Note that `clang-format` tries to load a `clang-format` node module close to the sources being
-  formatted, or from the `$CWD`, and only then uses the globally installed one - so the version used
-  should automatically match the one required by the project.
-  Use `clang-format -version` in case you get confused.
+* Use `$(npm bin)/clang-format -i [file name]` to format a file (or multiple).
 * Use `gulp enforce-format` to check if your code is `clang-format` clean. This also gives
   you a command line to format your code.
 * `clang-format` also includes a git hook, run `git clang-format` to format all files you
@@ -276,7 +271,7 @@ to some whitespace difference.
     - Synchronize files after execution: checked
     - Open console: not checked
     - Show in: Editor menu
-    - Program: [path to clang-format, try `$ echo $(npm config get prefix)/bin/clang-format`]
+    - Program: `$ProjectFileDir$/node_modules/.bin/clang-format`
     - Parameters: `-i -style=file $FilePath$`
     - Working directory: `$ProjectFileDir$`
 * `clang-format` integrations are also available for many popular editors (`vim`, `emacs`,
