@@ -1,5 +1,11 @@
 'use strict';
 
+// THIS CHECK SHOULD BE THE FIRST THING IN THIS FILE
+// This is to ensure that we catch env issues before we error while requiring other dependencies.
+require('./tools/check-environment')(
+    {requiredNpmVersion: '>=2.14.7 <3.0.0', requiredNodeVersion: '>=4.2.1 <5.0.0'});
+
+
 var del = require('del');
 var gulp = require('gulp');
 var gulpPlugins = require('gulp-load-plugins')();
@@ -26,8 +32,6 @@ var dartSdk = require('./tools/build/dart');
 var browserProvidersConf = require('./browser-providers.conf.js');
 
 
-require('./tools/check-environment')(
-    {requiredNpmVersion: '>=2.14.7', requiredNodeVersion: '>=4.2.1'});
 
 var cliArgs = minimist(process.argv.slice(2));
 
