@@ -5,8 +5,7 @@ import {ReadyStates} from '../enums';
 import {Connection, ConnectionBackend} from '../interfaces';
 import {isPresent} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-var Rx = require('@reactivex/rxjs/dist/cjs/Rx');
-let {Subject, ReplaySubject} = Rx;
+import {Subject, ReplaySubject} from '@reactivex/rxjs/dist/cjs/Rx';
 
 /**
  *
