@@ -53,7 +53,7 @@ function publishRepo {
   )
 }
 
-if [ "$TRAVIS_REPO_SLUG" = "angular/angular" && "$MODE" == "build_only" ]; then
+if [[ "$TRAVIS_REPO_SLUG" = "angular/angular" && "$MODE" == "build_only" ]]; then
   publishRepo "js" "${JS_BUILD_ARTIFACTS_DIR}"
   publishRepo "dart" "${DART_BUILD_ARTIFACTS_DIR}"
   echo "Finished publishing build artifacts"
