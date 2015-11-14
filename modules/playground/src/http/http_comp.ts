@@ -16,8 +16,6 @@ import {Http, Response} from 'angular2/http';
 export class HttpCmp {
   people: Object[];
   constructor(http: Http) {
-    http.get('./people.json')
-        .map((res: Response) => res.json())
-        .subscribe((people: Array<Object>) => this.people = people);
+    http.get('./people.json').subscribe(res => { this.people = res.json(); });
   }
 }
