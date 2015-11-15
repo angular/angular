@@ -1040,30 +1040,21 @@ gulp.task('!bundle.web_worker.js.dev.deps', ['!bundle.web_worker.js.dev'], funct
       addDevDependencies("web_worker/ui.dev.js", addDevDependencies("web_worker/worker.dev.js")));
 });
 
-// We need to duplicate the deps of bundles.js so that this task runs after
-// all the bundle files are created.
-gulp.task('!bundle.copy',
+gulp.task('!bundle.copy', function() {
+  return merge2(gulp.src('dist/js/bundle/**').pipe(gulp.dest('dist/js/prod/es5/bundle')),
+                gulp.src('dist/js/bundle/**').pipe(gulp.dest('dist/js/dev/es5/bundle')));
+});
+
+gulp.task('bundles.js',
           [
             '!bundle.js.prod.deps',
             '!bundle.js.dev.deps',
             '!bundle.js.min.deps',
             '!bundle.web_worker.js.dev.deps',
-            '!bundle.js.sfx.dev.deps'
+            '!bundle.js.sfx.dev.deps',
+            '!bundle.testing'
           ],
-          function() {
-            return merge2(gulp.src('dist/js/bundle/**').pipe(gulp.dest('dist/js/prod/es5/bundle')),
-                          gulp.src('dist/js/bundle/**').pipe(gulp.dest('dist/js/dev/es5/bundle')));
-          });
-
-gulp.task('bundles.js', [
-  '!bundle.js.prod.deps',
-  '!bundle.js.dev.deps',
-  '!bundle.js.min.deps',
-  '!bundle.web_worker.js.dev.deps',
-  '!bundle.js.sfx.dev.deps',
-  '!bundle.testing',
-  '!bundle.copy'
-]);
+          function(done) { runSequence('!bundle.copy', done); });
 
 gulp.task('build.js',
           ['build.js.dev', 'build.js.prod', 'build.js.cjs', 'bundles.js', 'benchpress.bundle']);
