@@ -111,6 +111,7 @@
     "tslint": "^3.0.0-dev.1",
     "typescript": "^1.6.2",
     "universal-analytics": "^0.3.9",
+    "webpack": "^1.12.6",
     "which": "~1",
     "yargs": "2.3.*"
   }

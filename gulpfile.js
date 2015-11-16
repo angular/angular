@@ -37,6 +37,7 @@ var sourcemaps = require('gulp-sourcemaps');
 var tsc = require('gulp-typescript');
 var util = require('./tools/build/util');
 var bundler = require('./tools/build/bundle');
+var rename = require('gulp-rename');
 var replace = require('gulp-replace');
 var insert = require('gulp-insert');
 var buildRouter = require('./modules/angular1_router/build');
@@ -1013,6 +1014,55 @@ gulp.task('!bundle.js.sfx.dev', ['build.js.dev'], function() {
       });
 });
 
+gulp.task('!bundles.js.umd', ['build.js.dev'], function() {
+  var webpack = q.denodeify(require('webpack'));
+
+  function resolveOptions(devOrProd) {
+    return {
+      root: __dirname + '/dist/js/' + devOrProd + '/es5',
+      packageAlias: ''  // this option is added to ignore "broken" package.json in our dist folder
+    };
+  }
+
+  function outputOptions(outFileName, devOrProd) {
+    return {
+      filename:
+          'dist/js/bundle/' + outFileName + '.umd' + (devOrProd === 'dev' ? '.dev' : '') + '.js',
+      library: 'ng',
+      libraryTarget: 'umd'
+    };
+  }
+
+  function webPackConf(entryPoints, outFileName, devOrProd) {
+    return {
+      entry: entryPoints,
+      resolve: resolveOptions(devOrProd),
+      output: outputOptions(outFileName, devOrProd)
+    };
+  }
+
+  return q.all([
+    webpack(webPackConf(['angular2/angular2.js'], 'angular2', 'dev')),
+    webpack(webPackConf(['angular2/angular2.js'], 'angular2', 'prod')),
+    webpack(webPackConf(['angular2/angular2.js', 'angular2/http.js', 'angular2/router.js'],
+                        'angular2_all', 'dev')),
+    webpack(webPackConf(['angular2/angular2.js', 'angular2/http.js', 'angular2/router.js'],
+                        'angular2_all', 'prod'))
+  ]);
+});
+
+gulp.task('bundles.js.umd.min', ['!bundles.js.umd', '!bundle.external.deps'], function() {
+  // minify production bundles
+  return gulp.src([
+               'dist/js/bundle/external-dependencies.js',
+               'dist/js/bundle/angular2.umd.js',
+               'dist/js/bundle/angular2_all.umd.js'
+             ])
+      .pipe(uglify())
+      .pipe(rename({extname: '.min.js'}))
+      .pipe(gulp.dest('dist/js/bundle'));
+});
+
 gulp.task('!bundle.js.prod.deps', ['!bundle.js.prod'], function() {
   return merge2(addDevDependencies('angular2.js'),
                 bundler.modify(['dist/build/http.js'], 'http.js'),
@@ -1028,9 +1078,8 @@ gulp.task('!bundle.js.min.deps', ['!bundle.js.min'], function() {
       .pipe(gulp.dest('dist/js/bundle'));
 });
 
-gulp.task('!bundle.external.deps', ['clean'], function() {
-  return addDevDependencies('external-dependencies.js');
-});
+gulp.task('!bundle.external.deps', ['clean'],
+          function() { return addDevDependencies('external-dependencies.js'); });
 
 var JS_DEV_DEPS = [
   licenseWrap('node_modules/zone.js/LICENSE', true),
@@ -1094,6 +1143,7 @@ gulp.task('bundles.js',
             '!bundle.js.min.deps',
             '!bundle.web_worker.js.dev.deps',
             '!bundle.js.sfx.dev.deps',
+            'bundles.js.umd.min',
             '!bundle.testing',
             '!bundle.external.deps'
           ],
