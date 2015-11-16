@@ -3,6 +3,9 @@ library angular2.transform.directive_processor.rewriter;
 import 'dart:async';
 
 import 'package:analyzer/analyzer.dart';
+import 'package:barback/barback.dart' show AssetId;
+
+import 'package:angular2/src/compiler/template_compiler.dart';
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/code/ng_deps_code.dart';
@@ -11,8 +14,7 @@ import 'package:angular2/src/transform/common/interface_matcher.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/ng_compiler.dart';
 import 'package:angular2/src/transform/common/ng_meta.dart';
-import 'package:barback/barback.dart' show AssetId;
-import 'package:angular2/src/core/compiler/template_compiler.dart';
+import 'package:angular2/src/transform/common/zone.dart' as zone;
 
 import 'inliner.dart';
 
@@ -35,7 +37,10 @@ Future<NgMeta> createNgMeta(AssetReader reader, AssetId assetId,
   return logElapsedAsync(() async {
     var ngMeta = new NgMeta(ngDeps: ngDepsVisitor.model);
 
-    var templateCompiler = createTemplateCompiler(reader);
+    var templateCompiler = zone.templateCompiler;
+    if (templateCompiler == null) {
+      templateCompiler = createTemplateCompiler(reader);
+    }
     var ngMetaVisitor = new _NgMetaVisitor(ngMeta, assetId, annotationMatcher,
         _interfaceMatcher, templateCompiler);
     parsedCode.accept(ngMetaVisitor);
@@ -91,7 +96,7 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
             compileDirectiveMetadata;
       }
     }).catchError((err) {
-      logger.error('ERROR: $err');
+      log.error('ERROR: $err');
     }));
     return null;
   }

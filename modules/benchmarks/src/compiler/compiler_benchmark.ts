@@ -1,9 +1,9 @@
 import {bootstrap} from 'angular2/bootstrap';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {PromiseWrapper} from 'angular2/src/core/facade/async';
-import {ListWrapper, Map, MapWrapper} from 'angular2/src/core/facade/collection';
-import {DateWrapper, Type, print, isPresent} from 'angular2/src/core/facade/lang';
+import {PromiseWrapper} from 'angular2/src/facade/async';
+import {ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
+import {DateWrapper, Type, print, isPresent} from 'angular2/src/facade/lang';
 
 import {
   Compiler,
@@ -35,8 +35,7 @@ function _createBindings(): Provider[] {
             }),
     // Use DynamicChangeDetector as that is the only one that Dart supports as well
     // so that we can compare the numbers between JS and Dart
-    provide(ChangeDetectorGenConfig,
-            {useValue: new ChangeDetectorGenConfig(false, false, false, false)})
+    provide(ChangeDetectorGenConfig, {useValue: new ChangeDetectorGenConfig(false, false, false)})
   ];
 }
 

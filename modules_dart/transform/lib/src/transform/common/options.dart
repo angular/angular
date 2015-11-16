@@ -8,13 +8,13 @@ import 'mirror_mode.dart';
 const CUSTOM_ANNOTATIONS_PARAM = 'custom_annotations';
 const ENTRY_POINT_PARAM = 'entry_points';
 const FORMAT_CODE_PARAM = 'format_code';
-// TODO(kegluenq): Remove this after 30 Oct (i/4433).
-const GENERATE_CHANGE_DETECTORS_PARAM = 'generate_change_detectors';
-const REFLECT_PROPERTIES_AS_ATTRIBUTES = 'reflectPropertiesAsAttributes';
+const REFLECT_PROPERTIES_AS_ATTRIBUTES = 'reflect_properties_as_attributes';
+// TODO(kegluenq): Remove this after 30 Nov (i/5108).
+const REFLECT_PROPERTIES_AS_ATTRIBUTES_OLD = 'reflectPropertiesAsAttributes';
+const PLATFORM_DIRECTIVES = 'platform_directives';
 const INIT_REFLECTOR_PARAM = 'init_reflector';
 const INLINE_VIEWS_PARAM = 'inline_views';
 const MIRROR_MODE_PARAM = 'mirror_mode';
-const OPTIMIZATION_PHASES_PARAM = 'optimization_phases';
 
 /// Provides information necessary to transform an Angular2 app.
 class TransformerOptions {
@@ -35,7 +35,14 @@ class TransformerOptions {
   /// The [AnnotationMatcher] which is used to identify angular annotations.
   final AnnotationMatcher annotationMatcher;
 
+  /// Whether to reflect property values as attributes.
+  /// If this is `true`, the change detection code will echo set property values
+  /// as attributes on DOM elements, which may aid in application debugging.
   final bool reflectPropertiesAsAttributes;
+
+  /// A set of directives that will be automatically passed-in to the template compiler
+  /// Format of an item in the list: angular2/lib/src/common/directives.dart#CORE_DIRECTIVES
+  final List<String> platformDirectives;
 
   /// Whether to format generated code.
   /// Code that is only modified will never be formatted because doing so may
@@ -57,6 +64,7 @@ class TransformerOptions {
       this.initReflector,
       this.annotationMatcher,
       {this.reflectPropertiesAsAttributes,
+      this.platformDirectives,
       this.inlineViews,
       this.formatCode});
 
@@ -67,6 +75,7 @@ class TransformerOptions {
       List<ClassDescriptor> customAnnotationDescriptors: const [],
       bool inlineViews: false,
       bool reflectPropertiesAsAttributes: true,
+      List<String> platformDirectives,
       bool formatCode: false}) {
     var annotationMatcher = new AnnotationMatcher()
       ..addAll(customAnnotationDescriptors);
@@ -76,6 +85,7 @@ class TransformerOptions {
     return new TransformerOptions._internal(entryPoints, entryPointGlobs,
         modeName, mirrorMode, initReflector, annotationMatcher,
         reflectPropertiesAsAttributes: reflectPropertiesAsAttributes,
+        platformDirectives: platformDirectives,
         inlineViews: inlineViews,
         formatCode: formatCode);
   }

@@ -1,5 +1,5 @@
-import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
+import {ListWrapper, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+import {isBlank, isPresent} from 'angular2/src/facade/lang';
 import {
   ChangeDetectionStrategy,
   BindingRecord,
@@ -65,7 +65,7 @@ export const PROP_NAME = 'propName';
  * In this case, we expect `id` and `expression` to be the same string.
  */
 export function getDefinition(id: string): TestDefinition {
-  var genConfig = new ChangeDetectorGenConfig(true, true, true, true);
+  var genConfig = new ChangeDetectorGenConfig(true, true, true);
   var testDef = null;
   if (StringMapWrapper.contains(_ExpressionWithLocals.availableDefinitions, id)) {
     let val = StringMapWrapper.get(_ExpressionWithLocals.availableDefinitions, id);
@@ -121,7 +121,7 @@ export function getDefinition(id: string): TestDefinition {
                                              [_DirectiveUpdating.recordNoCallbacks], genConfig);
     testDef = new TestDefinition(id, cdDef, null);
   } else if (id == "updateElementProduction") {
-    var genConfig = new ChangeDetectorGenConfig(false, false, false, true);
+    var genConfig = new ChangeDetectorGenConfig(false, false, true);
     var records = _createBindingRecords("name");
     let cdDef = new ChangeDetectorDefinition(id, null, [], records, [], [], genConfig);
     testDef = new TestDefinition(id, cdDef, null);
@@ -167,7 +167,7 @@ class _ExpressionWithLocals {
     var variableBindings = _convertLocalsToVariableBindings(this.locals);
     var bindingRecords = _createBindingRecords(this._expression);
     var directiveRecords = [];
-    var genConfig = new ChangeDetectorGenConfig(true, true, true, true);
+    var genConfig = new ChangeDetectorGenConfig(true, true, true);
     return new ChangeDetectorDefinition('(empty id)', strategy, variableBindings, bindingRecords,
                                         [], directiveRecords, genConfig);
   }
@@ -231,7 +231,7 @@ class _ExpressionWithMode {
                              _createHostEventRecords("(host-event)='false'", dirRecordWithOnPush))
     }
 
-    var genConfig = new ChangeDetectorGenConfig(true, true, true, true);
+    var genConfig = new ChangeDetectorGenConfig(true, true, true);
 
     return new ChangeDetectorDefinition('(empty id)', this._strategy, variableBindings,
                                         bindingRecords, eventRecords, directiveRecords, genConfig);
@@ -260,7 +260,7 @@ class _DirectiveUpdating {
   createChangeDetectorDefinition(): ChangeDetectorDefinition {
     var strategy = null;
     var variableBindings = [];
-    var genConfig = new ChangeDetectorGenConfig(true, true, true, true);
+    var genConfig = new ChangeDetectorGenConfig(true, true, true);
 
     return new ChangeDetectorDefinition('(empty id)', strategy, variableBindings,
                                         this._bindingRecords, [], this._directiveRecords,
@@ -417,7 +417,14 @@ var _availableDefinitions = [
   'a.sayHi("Jim")',
   'passThrough([12])',
   'invalidFn(1)',
-  'age'
+  'age',
+  'true ? city : zipcode',
+  'false ? city : zipcode',
+  'getTrue() && getTrue()',
+  'getFalse() && getTrue()',
+  'getFalse() || getFalse()',
+  'getTrue() || getFalse()',
+  'name == "Victor" ? (true ? address.city : address.zipcode) : address.zipcode'
 ];
 
 var _availableEventDefinitions = [
@@ -427,7 +434,8 @@ var _availableEventDefinitions = [
   // '(event)="\$event=1"',
   '(event)="a=a+1; a=a+1;"',
   '(event)="false"',
-  '(event)="true"'
+  '(event)="true"',
+  '(event)="true ? a = a + 1 : a = a + 1"',
 ];
 
 var _availableHostEventDefinitions = ['(host-event)="onEvent(\$event)"'];

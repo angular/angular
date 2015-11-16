@@ -9,9 +9,9 @@ import {
   isType,
   isFunction,
   normalizeBool
-} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
-import {MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+} from 'angular2/src/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {Key} from './key';
 import {
@@ -630,7 +630,7 @@ function _constructDependencies(factoryFunction: Function, dependencies: any[]):
 function _dependenciesFor(typeOrFunc): Dependency[] {
   var params = reflector.parameters(typeOrFunc);
   if (isBlank(params)) return [];
-  if (ListWrapper.any(params, (p) => isBlank(p))) {
+  if (params.some(isBlank)) {
     throw new NoAnnotationError(typeOrFunc, params);
   }
   return params.map((p: any[]) => _extractToken(typeOrFunc, p, params));

@@ -1,5 +1,5 @@
-import {isBlank} from 'angular2/src/core/facade/lang';
-import {BaseException} from 'angular2/src/core/facade/exceptions';
+import {isBlank} from 'angular2/src/facade/lang';
+import {BaseException} from 'angular2/src/facade/exceptions';
 import * as eiModule from './element_injector';
 import {DirectiveProvider} from './element_injector';
 import * as viewModule from './view';

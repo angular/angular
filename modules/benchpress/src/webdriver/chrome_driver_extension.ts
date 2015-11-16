@@ -1,5 +1,5 @@
 import {bind, provide, Provider} from 'angular2/src/core/di';
-import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {
   Json,
   isPresent,
@@ -7,12 +7,12 @@ import {
   RegExpWrapper,
   StringWrapper,
   NumberWrapper
-} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+} from 'angular2/src/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 
 import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
 import {WebDriverAdapter} from '../web_driver_adapter';
-import {Promise} from 'angular2/src/core/facade/async';
+import {Promise} from 'angular2/src/facade/async';
 import {Options} from '../common_options';
 
 /**
@@ -41,7 +41,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
     if (isBlank(v)) {
       return -1;
     }
-    v = StringWrapper.split(v, /\./g)[0];
+    v = v.split('.')[0];
     if (isBlank(v)) {
       return -1;
     }
@@ -197,15 +197,12 @@ export class ChromeDriverExtension extends WebDriverExtension {
     return null;  // nothing useful in this event
   }
 
-  private _parseCategories(categories: string): string[] {
-    return StringWrapper.split(categories, /,/g);
-  }
+  private _parseCategories(categories: string): string[] { return categories.split(','); }
 
   private _isEvent(eventCategories: string[], eventName: string, expectedCategories: string[],
                    expectedName: string = null): boolean {
-    var hasCategories = ListWrapper.reduce(expectedCategories, (value, cat) => {
-      return value && ListWrapper.contains(eventCategories, cat);
-    }, true);
+    var hasCategories = expectedCategories.reduce(
+        (value, cat) => { return value && ListWrapper.contains(eventCategories, cat); }, true);
     return isBlank(expectedName) ? hasCategories :
                                    hasCategories && StringWrapper.equals(eventName, expectedName);
   }

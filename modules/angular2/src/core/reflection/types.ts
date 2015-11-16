@@ -1,4 +1,4 @@
-import {Type} from 'angular2/src/core/facade/lang';
+import {Type} from 'angular2/src/facade/lang';
 
 export type SetterFn = (obj: any, value: any) => void;
 export type GetterFn = (obj: any) => any;

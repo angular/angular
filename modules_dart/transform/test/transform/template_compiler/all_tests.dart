@@ -4,14 +4,15 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:barback/barback.dart';
-import 'package:angular2/src/core/change_detection/codegen_name_util.dart'
-    show CONTEXT_ACCESSOR;
-import 'package:angular2/src/core/dom/html_adapter.dart';
-import 'package:angular2/src/transform/common/logging.dart' as log;
-import 'package:angular2/src/transform/template_compiler/generator.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:path/path.dart' as path;
 import 'package:guinness/guinness.dart';
+
+import 'package:angular2/src/core/change_detection/codegen_name_util.dart'
+    show CONTEXT_ACCESSOR;
+import 'package:angular2/src/core/dom/html_adapter.dart';
+import 'package:angular2/src/transform/template_compiler/generator.dart';
+import 'package:angular2/src/transform/common/zone.dart' as zone;
 
 import '../common/compile_directive_metadata/ng_for.ng_meta.dart' as ngMeta;
 import '../common/ng_meta_helper.dart';
@@ -74,9 +75,12 @@ void allTests() {
     updateReader();
   });
 
-  Future<String> process(AssetId assetId) {
+  Future<String> process(AssetId assetId, {List<String> platformDirectives}) {
     logger = new RecordingLogger();
-    return log.setZoned(logger, () => processTemplates(reader, assetId));
+    return zone.exec(
+        () => processTemplates(reader, assetId,
+            platformDirectives: platformDirectives),
+        log: logger);
   }
 
   // TODO(tbosch): This is just a temporary test that makes sure that the dart
@@ -345,6 +349,71 @@ void allTests() {
     });
 
     expect(didThrow).toBeFalse();
+  });
+
+  it('should include platform directives.', () async {
+    fooComponentMeta.template = new CompileTemplateMetadata(template: '<bar/>');
+    final viewAnnotation = new AnnotationModel()
+      ..name = 'View'
+      ..isView = true;
+
+    barNgMeta.aliases['PLATFORM'] = [barComponentMeta.type.name];
+    updateReader();
+
+    final outputs = await process(fooAssetId,
+        platformDirectives: ['package:a/bar.dart#PLATFORM']);
+    final ngDeps = outputs.ngDeps;
+    expect(ngDeps).toBeNotNull();
+    expect(outputs.templatesCode)
+      ..toBeNotNull()
+      ..toContain(barComponentMeta.template.template);
+  });
+
+  it('should include platform directives when it it a list.', () async {
+    fooComponentMeta.template = new CompileTemplateMetadata(template: '<bar/>');
+    final viewAnnotation = new AnnotationModel()
+      ..name = 'View'
+      ..isView = true;
+
+    barNgMeta.types['PLATFORM'] = barComponentMeta;
+    updateReader();
+
+    final outputs = await process(fooAssetId,
+        platformDirectives: ['package:a/bar.dart#PLATFORM']);
+    final ngDeps = outputs.ngDeps;
+    expect(ngDeps).toBeNotNull();
+    expect(outputs.templatesCode)
+      ..toBeNotNull()
+      ..toContain(barComponentMeta.template.template);
+  });
+
+  it('should work when platform directives config is null.', () async {
+    final outputs = await process(fooAssetId, platformDirectives: null);
+    final ngDeps = outputs.ngDeps;
+    expect(ngDeps).toBeNotNull();
+  });
+
+  it('should work when the platform directives config is not formatted properly.',
+      () async {
+    final outputs = await process(fooAssetId, platformDirectives: ['INVALID']);
+    final ngDeps = outputs.ngDeps;
+    expect(ngDeps).toBeNotNull();
+  });
+
+  it('should work when the file with platform directives cannot be found.',
+      () async {
+    final outputs = await process(fooAssetId,
+        platformDirectives: ['package:a/invalid.dart#PLATFORM']);
+    final ngDeps = outputs.ngDeps;
+    expect(ngDeps).toBeNotNull();
+  });
+
+  it('should work when the platform directives token cannot be found.',
+      () async {
+    final outputs = await process(fooAssetId,
+        platformDirectives: ['package:a/bar.dart#PLATFORM']);
+    final ngDeps = outputs.ngDeps;
+    expect(ngDeps).toBeNotNull();
   });
 }
 

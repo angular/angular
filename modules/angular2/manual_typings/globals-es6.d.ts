@@ -8,7 +8,13 @@
 /// <reference path="../typings/hammerjs/hammerjs.d.ts"/>
 /// <reference path="../typings/jasmine/jasmine.d.ts"/>
 /// <reference path="../typings/angular-protractor/angular-protractor.d.ts"/>
+
+// TODO: ideally the node.d.ts reference should be scoped only for files that need and not to all
+//       the code including client code
+/// <reference path="../typings/node/node.d.ts" />
+
 declare var assert: any;
+
 
 interface BrowserNodeGlobal {
   Object: typeof Object;
@@ -24,6 +30,7 @@ interface BrowserNodeGlobal {
   zone: Zone;
   getAngularTestability: Function;
   getAllAngularTestabilities: Function;
+  angularDevMode: boolean;
   setTimeout: Function;
   clearTimeout: Function;
   setInterval: Function;

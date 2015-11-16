@@ -1,5 +1,5 @@
-import {CONST_EXPR, isPresent, NumberWrapper, StringWrapper} from 'angular2/src/core/facade/lang';
-import {MapWrapper, Map, ListWrapper} from 'angular2/src/core/facade/collection';
+import {CONST_EXPR, isPresent, NumberWrapper, StringWrapper} from 'angular2/src/facade/lang';
+import {MapWrapper, Map, ListWrapper} from 'angular2/src/facade/collection';
 import {Injectable, provide, Provider} from 'angular2/src/core/di';
 import {AppViewListener} from 'angular2/src/core/linker/view_listener';
 import {AppView} from 'angular2/src/core/linker/view';
@@ -19,7 +19,7 @@ var _allViewsById = new Map<number, AppView>();
 var _nextId = 0;
 
 function _setElementId(element, indices: number[]) {
-  if (isPresent(element)) {
+  if (isPresent(element) && DOM.isElementNode(element)) {
     DOM.setData(element, NG_ID_PROPERTY, indices.join(NG_ID_SEPARATOR));
   }
 }

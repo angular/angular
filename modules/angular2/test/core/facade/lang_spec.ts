@@ -5,7 +5,7 @@ import {
   RegExpMatcherWrapper,
   StringWrapper,
   CONST_EXPR
-} from 'angular2/src/core/facade/lang';
+} from 'angular2/src/facade/lang';
 
 export function main() {
   describe('RegExp', () => {
@@ -42,24 +42,7 @@ export function main() {
   });
 
   describe('String', () => {
-    var upper, lower, s;
-
-    beforeEach(() => {
-      upper = 'SOMETHING';
-      lower = 'something';
-    });
-
-    it('should upper case a string', () => {
-      var str = StringWrapper.toUpperCase(lower);
-
-      expect(str).toEqual(upper);
-    });
-
-    it('should lower case a string', () => {
-      var str = StringWrapper.toLowerCase(upper);
-
-      expect(str).toEqual(lower);
-    });
+    var s;
 
     describe('slice', () => {
       beforeEach(() => { s = "abcdefghij"; });

@@ -1,7 +1,6 @@
 import {resolveForwardRef, Injectable} from 'angular2/src/core/di';
-import {Type, isPresent, stringify} from 'angular2/src/core/facade/lang';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
-import {BaseException} from 'angular2/src/core/facade/exceptions';
+import {Type, isPresent, stringify} from 'angular2/src/facade/lang';
+import {BaseException} from 'angular2/src/facade/exceptions';
 import {PipeMetadata} from 'angular2/src/core/metadata';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 
@@ -24,7 +23,7 @@ export class PipeResolver {
   resolve(type: Type): PipeMetadata {
     var metas = reflector.annotations(resolveForwardRef(type));
     if (isPresent(metas)) {
-      var annotation = ListWrapper.find(metas, _isPipeMetadata);
+      var annotation = metas.find(_isPipeMetadata);
       if (isPresent(annotation)) {
         return annotation;
       }

@@ -4,16 +4,17 @@ import {
   NgFor,
   Component,
   Directive,
-  View,
   Host,
   forwardRef,
   Provider,
   EventEmitter,
   FORM_DIRECTIVES,
-  Injectable
+  Injectable,
+  Input,
+  Output
 } from 'angular2/core';
 
-import {ListWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/facade/collection';
 
 /**
  * You can find the Angular 1 implementation of this example here:
@@ -34,7 +35,7 @@ class Order {
               private _dataService: DataService) {}
 
   get items(): OrderItem[] { return this._dataService.itemsFor(this); }
-  get total(): number { return this.items.map(i => i.total).reduce((a, b) => a + b); }
+  get total(): number { return this.items.map(i => i.total).reduce((a, b) => a + b, 0); }
 }
 
 
@@ -65,7 +66,7 @@ class DataService {
   }
 
   itemsFor(order: Order): OrderItem[] {
-    return ListWrapper.filter(this.orderItems, i => i.orderId === order.orderId);
+    return this.orderItems.filter(i => i.orderId === order.orderId);
   }
 
   addItemForOrder(order: Order): void {
@@ -79,8 +80,8 @@ class DataService {
 
 // ---- components
 
-@Component({selector: 'order-list-cmp'})
-@View({
+@Component({
+  selector: 'order-list-cmp',
   template: `
     <h1>Orders</h1>
   	<div *ng-for="#order of orders" [class.warning]="order.total > order.limit">
@@ -116,8 +117,8 @@ class OrderListComponent {
 }
 
 
-@Component({selector: 'order-item-cmp', inputs: ['item'], outputs: ['delete']})
-@View({
+@Component({
+  selector: 'order-item-cmp',
   template: `
     <div>
       <div>
@@ -143,14 +144,14 @@ class OrderListComponent {
   directives: [FORM_DIRECTIVES]
 })
 class OrderItemComponent {
-  item: OrderItem;
-  delete = new EventEmitter();
+  @Input() item: OrderItem;
+  @Output() delete = new EventEmitter();
 
   onDelete(): void { this.delete.next(this.item); }
 }
 
-@Component({selector: 'order-details-cmp'})
-@View({
+@Component({
+  selector: 'order-details-cmp',
   template: `
     <div *ng-if="order !== null">
       <h1>Selected Order</h1>
@@ -189,8 +190,9 @@ class OrderDetailsComponent {
   addItem(): void { this._service.addItemForOrder(this.order); }
 }
 
-@Component({selector: 'order-management-app', bindings: [DataService]})
-@View({
+@Component({
+  selector: 'order-management-app',
+  providers: [DataService],
   template: `
     <order-list-cmp></order-list-cmp>
     <order-details-cmp></order-details-cmp>

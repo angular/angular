@@ -6,7 +6,8 @@ import {
   RenderEventDispatcher,
   RenderViewWithFragments,
   RenderFragmentRef,
-  RenderTemplateCmd
+  RenderTemplateCmd,
+  RenderComponentTemplate
 } from 'angular2/src/core/render/api';
 import {
   ClientMessageBroker,
@@ -14,7 +15,7 @@ import {
   FnArg,
   UiArguments
 } from "angular2/src/web_workers/shared/client_message_broker";
-import {isPresent, print} from "angular2/src/core/facade/lang";
+import {isPresent, print} from "angular2/src/facade/lang";
 import {Injectable} from "angular2/src/core/di";
 import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_proto_view_ref_store';
 import {
@@ -35,23 +36,20 @@ export class WebWorkerRenderer implements Renderer {
     this._messageBroker = messageBrokerFactory.createMessageBroker(RENDERER_CHANNEL);
   }
 
-  registerComponentTemplate(templateId: number, commands: RenderTemplateCmd[], styles: string[],
-                            nativeShadow: boolean) {
-    var fnArgs = [
-      new FnArg(templateId, null),
-      new FnArg(commands, WebWorkerTemplateCmd),
-      new FnArg(styles, null),
-      new FnArg(nativeShadow, null)
-    ];
+  registerComponentTemplate(template: RenderComponentTemplate) {
+    var fnArgs = [new FnArg(template, RenderComponentTemplate)];
     var args = new UiArguments("registerComponentTemplate", fnArgs);
     this._messageBroker.runOnService(args, null);
   }
 
-  createProtoView(cmds: RenderTemplateCmd[]): RenderProtoViewRef {
+  createProtoView(componentTemplateId: string, cmds: RenderTemplateCmd[]): RenderProtoViewRef {
     var renderProtoViewRef = this._renderProtoViewRefStore.allocate();
 
-    var fnArgs: FnArg[] =
-        [new FnArg(cmds, WebWorkerTemplateCmd), new FnArg(renderProtoViewRef, RenderProtoViewRef)];
+    var fnArgs: FnArg[] = [
+      new FnArg(componentTemplateId, null),
+      new FnArg(cmds, WebWorkerTemplateCmd),
+      new FnArg(renderProtoViewRef, RenderProtoViewRef)
+    ];
     var args: UiArguments = new UiArguments("createProtoView", fnArgs);
     this._messageBroker.runOnService(args, null);
     return renderProtoViewRef;

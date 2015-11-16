@@ -10,14 +10,17 @@ import {
   fakeAsync,
   tick
 } from 'angular2/testing_internal';
-import {IS_DART} from '../../platform';
-
-import {MapWrapper, ListWrapper, iterateListLike} from 'angular2/src/core/facade/collection';
-import {StringWrapper} from 'angular2/src/core/facade/lang';
-import {ObservableWrapper} from 'angular2/src/core/facade/async';
+import {MapWrapper, ListWrapper, iterateListLike} from 'angular2/src/facade/collection';
+import {IS_DART, StringWrapper} from 'angular2/src/facade/lang';
+import {ObservableWrapper} from 'angular2/src/facade/async';
 import {QueryList} from 'angular2/src/core/linker/query_list';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
+interface _JsQueryList {
+  filter(c: any): any;
+  reduce(a: any, b: any): any;
+  toArray(): any;
+}
 
 export function main() {
   describe('QueryList', () => {
@@ -50,22 +53,22 @@ export function main() {
     if (!IS_DART) {
       it('should support filter', () => {
         queryList.reset(['one', 'two']);
-        expect((<any>queryList).filter((x) => x == "one")).toEqual(['one']);
+        expect((<_JsQueryList>queryList).filter((x) => x == "one")).toEqual(['one']);
       });
 
       it('should support reduce', () => {
         queryList.reset(["one", "two"]);
-        expect((<any>queryList).reduce((a, x) => a + x, "start:")).toEqual("start:onetwo");
+        expect((<_JsQueryList>queryList).reduce((a, x) => a + x, "start:")).toEqual("start:onetwo");
       });
 
       it('should support toArray', () => {
         queryList.reset(["one", "two"]);
-        expect((<any>queryList).reduce((a, x) => a + x, "start:")).toEqual("start:onetwo");
+        expect((<_JsQueryList>queryList).reduce((a, x) => a + x, "start:")).toEqual("start:onetwo");
       });
 
       it('should support toArray', () => {
         queryList.reset(["one", "two"]);
-        expect((<any>queryList).toArray()).toEqual(["one", "two"]);
+        expect((<_JsQueryList>queryList).toArray()).toEqual(["one", "two"]);
       });
     }
 

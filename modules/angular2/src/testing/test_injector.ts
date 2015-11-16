@@ -1,5 +1,4 @@
 import {provide, Provider} from 'angular2/src/core/di';
-import {DEFAULT_PIPES} from 'angular2/src/core/pipes';
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
 import {MockAnimationBuilder} from 'angular2/src/mock/animation_builder_mock';
 
@@ -12,12 +11,12 @@ import {
   defaultKeyValueDiffers,
   ChangeDetectorGenConfig
 } from 'angular2/src/core/change_detection/change_detection';
-import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
+import {ExceptionHandler} from 'angular2/src/facade/exceptions';
 import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
 import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 import {PipeResolver} from 'angular2/src/core/linker/pipe_resolver';
 import {DynamicComponentLoader} from 'angular2/src/core/linker/dynamic_component_loader';
-import {XHR} from 'angular2/src/core/compiler/xhr';
+import {XHR} from 'angular2/src/compiler/xhr';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
@@ -39,8 +38,8 @@ import {TestComponentBuilder} from './test_component_builder';
 import {Injector} from 'angular2/src/core/di';
 import {ELEMENT_PROBE_PROVIDERS} from 'angular2/src/core/debug';
 
-import {ListWrapper} from 'angular2/src/core/facade/collection';
-import {FunctionWrapper, Type} from 'angular2/src/core/facade/lang';
+import {ListWrapper} from 'angular2/src/facade/collection';
+import {FunctionWrapper, Type} from 'angular2/src/facade/lang';
 
 import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 import {AppViewManager} from 'angular2/src/core/linker/view_manager';
@@ -55,7 +54,7 @@ import {
 import {APP_ID} from 'angular2/src/core/application_tokens';
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {Log} from './utils';
-import {compilerProviders} from 'angular2/src/core/compiler/compiler';
+import {COMPILER_PROVIDERS} from 'angular2/src/compiler/compiler';
 import {DomRenderer_} from "angular2/src/core/render/dom/dom_renderer";
 import {DynamicComponentLoader_} from "angular2/src/core/linker/dynamic_component_loader";
 import {AppViewManager_} from "angular2/src/core/linker/view_manager";
@@ -89,9 +88,8 @@ function _getAppBindings() {
   }
 
   return [
-    compilerProviders(),
-    provide(ChangeDetectorGenConfig,
-            {useValue: new ChangeDetectorGenConfig(true, true, false, true)}),
+    COMPILER_PROVIDERS,
+    provide(ChangeDetectorGenConfig, {useValue: new ChangeDetectorGenConfig(true, false, true)}),
     provide(DOCUMENT, {useValue: appDoc}),
     provide(DomRenderer, {useClass: DomRenderer_}),
     provide(Renderer, {useExisting: DomRenderer}),
@@ -107,7 +105,6 @@ function _getAppBindings() {
     ProtoViewFactory,
     provide(DirectiveResolver, {useClass: MockDirectiveResolver}),
     provide(ViewResolver, {useClass: MockViewResolver}),
-    DEFAULT_PIPES,
     provide(IterableDiffers, {useValue: defaultIterableDiffers}),
     provide(KeyValueDiffers, {useValue: defaultKeyValueDiffers}),
     Log,

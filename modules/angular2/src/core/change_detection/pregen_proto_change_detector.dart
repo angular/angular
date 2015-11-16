@@ -1,7 +1,7 @@
 library angular2.src.change_detection.pregen_proto_change_detector;
 
 import 'package:angular2/src/core/change_detection/interfaces.dart';
-import 'package:angular2/src/core/facade/lang.dart' show looseIdentical;
+import 'package:angular2/src/facade/lang.dart' show looseIdentical;
 
 export 'dart:core' show List;
 export 'package:angular2/src/core/change_detection/abstract_change_detector.dart'
@@ -19,7 +19,7 @@ export 'package:angular2/src/core/change_detection/proto_record.dart'
     show ProtoRecord;
 export 'package:angular2/src/core/change_detection/change_detection_util.dart'
     show ChangeDetectionUtil;
-export 'package:angular2/src/core/facade/lang.dart' show looseIdentical;
+export 'package:angular2/src/facade/lang.dart' show assertionsEnabled, looseIdentical;
 
 typedef ProtoChangeDetector PregenProtoChangeDetectorFactory(
     ChangeDetectorDefinition definition);

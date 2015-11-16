@@ -1,6 +1,6 @@
-import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {normalizeBlank, isPresent, global} from 'angular2/src/core/facade/lang';
-import {ObservableWrapper, EventEmitter} from 'angular2/src/core/facade/async';
+import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+import {normalizeBlank, isPresent, global} from 'angular2/src/facade/lang';
+import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from '../profile/profile';
 
 export interface NgZoneZone extends Zone {

@@ -1,4 +1,4 @@
-import {Type} from 'angular2/src/core/facade/lang';
+import {Type} from 'angular2/src/facade/lang';
 import {ResolvedFactory, resolveProvider, ResolvedProvider_} from 'angular2/src/core/di/provider';
 import {Key, ResolvedProvider, Provider} from 'angular2/src/core/di';
 import {PipeMetadata} from '../metadata/directives';

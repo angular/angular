@@ -1,5 +1,5 @@
 import {Injector, provide, OpaqueToken, Provider} from 'angular2/src/core/di';
-import {FORM_PROVIDERS} from 'angular2/src/core/forms';
+import {FORM_PROVIDERS} from 'angular2/src/common/forms';
 import {
   NumberWrapper,
   Type,
@@ -8,12 +8,12 @@ import {
   assertionsEnabled,
   print,
   stringify
-} from 'angular2/src/core/facade/lang';
-import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
-import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/core/facade/async';
-import {XHR} from 'angular2/src/core/compiler/xhr';
+} from 'angular2/src/facade/lang';
+import {ExceptionHandler} from 'angular2/src/facade/exceptions';
+import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/facade/async';
+import {XHR} from 'angular2/src/compiler/xhr';
 import {WebWorkerXHRImpl} from 'angular2/src/web_workers/worker/xhr_impl';
-import {AppRootUrl} from 'angular2/src/core/compiler/app_root_url';
+import {AppRootUrl} from 'angular2/src/compiler/app_root_url';
 import {WebWorkerRenderer} from './renderer';
 import {Renderer} from 'angular2/src/core/render/api';
 import {
@@ -26,23 +26,24 @@ import {
 } from 'angular2/src/web_workers/shared/service_message_broker';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {
-  platformCommon,
   PlatformRef,
   ApplicationRef,
-  applicationCommonProviders
-} from 'angular2/src/core/application_ref';
+  APPLICATION_COMMON_PROVIDERS,
+  PLATFORM_COMMON_PROVIDERS
+} from 'angular2/core';
+import * as core from 'angular2/core';
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {ON_WEB_WORKER} from "angular2/src/web_workers/shared/api";
 import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_proto_view_ref_store';
 import {
   RenderViewWithFragmentsStore
 } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
-import {ObservableWrapper} from 'angular2/src/core/facade/async';
+import {ObservableWrapper} from 'angular2/src/facade/async';
 import {SETUP_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
 import {WebWorkerEventDispatcher} from 'angular2/src/web_workers/worker/event_dispatcher';
 import {ComponentRef} from 'angular2/src/core/linker/dynamic_component_loader';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {compilerProviders} from 'angular2/src/core/compiler/compiler';
+import {COMPILER_PROVIDERS} from 'angular2/src/compiler/compiler';
 
 /**
  * Initialize the Angular 'platform' on the page in a manner suitable for applications
@@ -73,15 +74,17 @@ import {compilerProviders} from 'angular2/src/core/compiler/compiler';
  * them if a platform did not exist already. If it did exist, however, an error will be
  * thrown.
  *
- *##For Web Worker Appplications
+ *##For Web Worker Applications
  *
  * This version of `platform` initializes Angular for use with applications
  * that do not directly touch the DOM, such as applications which run in a
  * web worker context. Applications that need direct access to the DOM should
  * use `platform` from `core/application_common` instead.
  */
-export function platform(bindings?: Array<Type | Provider | any[]>): PlatformRef {
-  return platformCommon(bindings);
+export function platform(providers?: Array<Type | Provider | any[]>): PlatformRef {
+  let platformProviders =
+      isPresent(providers) ? [PLATFORM_COMMON_PROVIDERS, providers] : PLATFORM_COMMON_PROVIDERS;
+  return core.platform(platformProviders);
 }
 
 class PrintLogger {
@@ -94,7 +97,7 @@ class PrintLogger {
 function webWorkerProviders(appComponentType, bus: MessageBus,
                             initData: {[key: string]: any}): Array<Type | Provider | any[]> {
   return [
-    compilerProviders(),
+    COMPILER_PROVIDERS,
     Serializer,
     provide(MessageBus, {useValue: bus}),
     provide(ClientMessageBrokerFactory, {useClass: ClientMessageBrokerFactory_}),
@@ -129,7 +132,7 @@ export function bootstrapWebWorkerCommon(
     var emitter = bus.from(SETUP_CHANNEL);
     subscription = ObservableWrapper.subscribe(emitter, (message: {[key: string]: any}) => {
       var bindings =
-          [applicationCommonProviders(), webWorkerProviders(appComponentType, bus, message)];
+          [APPLICATION_COMMON_PROVIDERS, webWorkerProviders(appComponentType, bus, message)];
       if (isPresent(appProviders)) {
         bindings.push(appProviders);
       }

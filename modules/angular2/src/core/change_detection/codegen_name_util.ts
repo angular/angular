@@ -1,5 +1,5 @@
-import {RegExpWrapper, StringWrapper} from 'angular2/src/core/facade/lang';
-import {ListWrapper, MapWrapper, Map} from 'angular2/src/core/facade/collection';
+import {RegExpWrapper, StringWrapper} from 'angular2/src/facade/lang';
+import {ListWrapper, MapWrapper, Map} from 'angular2/src/facade/collection';
 
 import {DirectiveIndex} from './directive_record';
 
@@ -23,7 +23,7 @@ export const CONTEXT_ACCESSOR = "context";
 export const CONTEXT_INDEX = 0;
 const _FIELD_PREFIX = 'this.';
 
-var _whiteSpaceRegExp = RegExpWrapper.create("\\W", "g");
+var _whiteSpaceRegExp = /\W/g;
 
 /**
  * Returns `s` with all non-identifier characters removed.
@@ -180,7 +180,7 @@ export class CodegenNameUtil {
    * Generates statements destroying all pipe variables.
    */
   genPipeOnDestroy(): string {
-    return ListWrapper.filter(this._records, (r) => { return r.isPipeRecord(); })
+    return this._records.filter(r => r.isPipeRecord())
         .map(r => `${this._utilName}.callPipeOnDestroy(${this.getPipeName(r.selfIndex)});`)
         .join('\n');
   }

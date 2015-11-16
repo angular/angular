@@ -1,13 +1,7 @@
-import {
-  Type,
-  isArray,
-  isPresent,
-  serializeEnum,
-  deserializeEnum
-} from "angular2/src/core/facade/lang";
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+import {Type, isArray, isPresent, serializeEnum, deserializeEnum} from "angular2/src/facade/lang";
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 
-import {Map, StringMapWrapper, MapWrapper} from "angular2/src/core/facade/collection";
+import {Map, StringMapWrapper, MapWrapper} from "angular2/src/facade/collection";
 import {
   RenderProtoViewRef,
   RenderViewRef,
@@ -19,7 +13,8 @@ import {
   RenderNgContentCmd,
   RenderBeginElementCmd,
   RenderBeginComponentCmd,
-  RenderEmbeddedTemplateCmd
+  RenderEmbeddedTemplateCmd,
+  RenderComponentTemplate
 } from "angular2/src/core/render/api";
 import {
   WebWorkerElementRef,
@@ -37,6 +32,7 @@ import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_pr
 import {
   RenderViewWithFragmentsStore
 } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
+import {ViewEncapsulation, VIEW_ENCAPSULATION_VALUES} from 'angular2/src/core/metadata/view';
 
 // PRIMITIVE is any type that does not need to be serialized (string, number, boolean)
 // We set it to String so that it is considered a Type.
@@ -47,7 +43,7 @@ export class Serializer {
   constructor(private _protoViewStore: RenderProtoViewRefStore,
               private _renderViewStore: RenderViewWithFragmentsStore) {}
 
-  serialize(obj: any, type: Type): Object {
+  serialize(obj: any, type: any): Object {
     if (!isPresent(obj)) {
       return null;
     }
@@ -67,12 +63,16 @@ export class Serializer {
       return this._serializeWorkerElementRef(obj);
     } else if (type == WebWorkerTemplateCmd) {
       return serializeTemplateCmd(obj);
+    } else if (type === RenderComponentTemplate) {
+      return this._serializeRenderTemplate(obj);
+    } else if (type === ViewEncapsulation) {
+      return serializeEnum(obj);
     } else {
       throw new BaseException("No serializer for " + type.toString());
     }
   }
 
-  deserialize(map: any, type: Type, data?: any): any {
+  deserialize(map: any, type: any, data?: any): any {
     if (!isPresent(map)) {
       return null;
     }
@@ -95,6 +95,10 @@ export class Serializer {
       return this._deserializeWorkerElementRef(map);
     } else if (type == WebWorkerTemplateCmd) {
       return deserializeTemplateCmd(map);
+    } else if (type === RenderComponentTemplate) {
+      return this._deserializeRenderTemplate(map);
+    } else if (type === ViewEncapsulation) {
+      return VIEW_ENCAPSULATION_VALUES[map];
     } else {
       throw new BaseException("No deserializer for " + type.toString());
     }
@@ -143,7 +147,26 @@ export class Serializer {
     return new WebWorkerElementRef(this.deserialize(map['renderView'], RenderViewRef),
                                    map['boundElementIndex']);
   }
+
+
+  private _serializeRenderTemplate(obj: RenderComponentTemplate): Object {
+    return {
+      'id': obj.id,
+      'shortId': obj.shortId,
+      'encapsulation': this.serialize(obj.encapsulation, ViewEncapsulation),
+      'commands': this.serialize(obj.commands, WebWorkerTemplateCmd),
+      'styles': this.serialize(obj.styles, PRIMITIVE)
+    };
+  }
+
+  private _deserializeRenderTemplate(map: {[key: string]: any}): RenderComponentTemplate {
+    return new RenderComponentTemplate(map['id'], map['shortId'],
+                                       this.deserialize(map['encapsulation'], ViewEncapsulation),
+                                       this.deserialize(map['commands'], WebWorkerTemplateCmd),
+                                       this.deserialize(map['styles'], PRIMITIVE));
+  }
 }
+
 
 function serializeTemplateCmd(cmd: RenderTemplateCmd): Object {
   return cmd.visit(RENDER_TEMPLATE_CMD_SERIALIZER, null);
@@ -184,7 +207,6 @@ class RenderTemplateCmdSerializer implements RenderCommandVisitor {
       'name': cmd.name,
       'attrNameAndValues': cmd.attrNameAndValues,
       'eventTargetAndNames': cmd.eventTargetAndNames,
-      'nativeShadow': cmd.nativeShadow,
       'templateId': cmd.templateId
     };
   }
@@ -216,7 +238,7 @@ var RENDER_TEMPLATE_CMD_DESERIALIZERS = [
   (data: {[key: string]: any}) => new WebWorkerEndElementCmd(),
   (data: {[key: string]: any}) => new WebWorkerBeginComponentCmd(
       data['isBound'], data['ngContentIndex'], data['name'], data['attrNameAndValues'],
-      data['eventTargetAndNames'], data['nativeShadow'], data['templateId']),
+      data['eventTargetAndNames'], data['templateId']),
   (data: {[key: string]: any}) => new WebWorkerEndComponentCmd(),
   (data: {[key: string]: any}) => new WebWorkerEmbeddedTemplateCmd(
       data['isBound'], data['ngContentIndex'], data['name'], data['attrNameAndValues'],

@@ -1,21 +1,19 @@
-import {Component, View, EventEmitter} from 'angular2/angular2';
-import {ObservableWrapper} from 'angular2/src/core/facade/async';
+import {Component, EventEmitter, Input, Output} from 'angular2/angular2';
+import {ObservableWrapper} from 'angular2/src/facade/async';
 
-@Component(
-    {selector: 'zippy', inputs: ['title'], outputs: ['openHandler: open', 'closeHandler: close']})
-@View({templateUrl: 'zippy.html'})
+@Component({selector: 'zippy', templateUrl: 'zippy.html'})
 export class Zippy {
   visible: boolean = true;
-  title: string = '';
-  openHandler: EventEmitter<any> = new EventEmitter();
-  closeHandler: EventEmitter<any> = new EventEmitter();
+  @Input() title: string = '';
+  @Output() open: EventEmitter<any> = new EventEmitter();
+  @Output() close: EventEmitter<any> = new EventEmitter();
 
   toggle() {
     this.visible = !this.visible;
     if (this.visible) {
-      ObservableWrapper.callNext(this.openHandler, null);
+      ObservableWrapper.callNext(this.open, null);
     } else {
-      ObservableWrapper.callNext(this.closeHandler, null);
+      ObservableWrapper.callNext(this.close, null);
     }
   }
 }

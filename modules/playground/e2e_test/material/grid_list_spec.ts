@@ -1,6 +1,7 @@
 import {verifyNoBrowserErrors} from 'angular2/src/testing/e2e_util';
 
-describe('md-grid-list', function() {
+// TODO: Enable tests once #5132 is fixed.
+xdescribe('md-grid-list', function() {
   var url = 'playground/src/material/grid_list/index.html';
 
   beforeEach(() => { browser.get(url); });

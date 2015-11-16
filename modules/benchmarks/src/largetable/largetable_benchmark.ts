@@ -1,5 +1,5 @@
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {window, document, gc} from 'angular2/src/core/facade/browser';
+import {window, document, gc} from 'angular2/src/facade/browser';
 import {
   getIntParameter,
   getStringParameter,
@@ -23,7 +23,7 @@ import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 
-import {ListWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {Inject} from 'angular2/src/core/di/decorators';
 import {reflector} from 'angular2/src/core/reflection/reflection';

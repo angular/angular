@@ -157,6 +157,7 @@ abstract class NgDepsWriterMixin
     // deferred. Instead `DeferredRewriter` will rewrite the code as to load
     // `ng_deps` in a deferred way.
     model.imports.where((i) => !i.isDeferred).forEach(writeImportModel);
+    model.depImports.where((i) => !i.isDeferred).forEach(writeImportModel);
 
     writeExportModel(new ExportModel()..uri = model.sourceFile);
     model.exports.forEach(writeExportModel);
@@ -202,11 +203,9 @@ abstract class NgDepsWriterMixin
       buffer.writeln(';');
     }
 
-    // Call the setup method for our imports that are `.ng_deps` imports.
-    for (var importModel in model.imports) {
-      if (importModel.isNgDeps) {
-        buffer.writeln('${importModel.prefix}.${SETUP_METHOD_NAME}();');
-      }
+    // Call the setup method for our dependencies.
+    for (var importModel in model.depImports) {
+      buffer.writeln('${importModel.prefix}.${SETUP_METHOD_NAME}();');
     }
 
     buffer.writeln('}');

@@ -1,6 +1,6 @@
-import {isBlank, isPresent, CONST} from 'angular2/src/core/facade/lang';
-import {BaseException} from 'angular2/src/core/facade/exceptions';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
+import {isBlank, isPresent, CONST} from 'angular2/src/facade/lang';
+import {BaseException} from 'angular2/src/facade/exceptions';
+import {ListWrapper} from 'angular2/src/facade/collection';
 import {ChangeDetectorRef} from '../change_detector_ref';
 import {Provider, SkipSelfMetadata, OptionalMetadata, Injectable} from 'angular2/src/core/di';
 
@@ -71,7 +71,7 @@ export class IterableDiffers {
   }
 
   find(iterable: Object): IterableDifferFactory {
-    var factory = ListWrapper.find(this.factories, f => f.supports(iterable));
+    var factory = this.factories.find(f => f.supports(iterable));
     if (isPresent(factory)) {
       return factory;
     } else {

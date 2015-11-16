@@ -22,10 +22,10 @@ export interface ChangeDetector {
   mode: ChangeDetectionStrategy;
   ref: ChangeDetectorRef;
 
-  addChild(cd: ChangeDetector): void;
-  addShadowDomChild(cd: ChangeDetector): void;
-  removeChild(cd: ChangeDetector): void;
-  removeShadowDomChild(cd: ChangeDetector): void;
+  addContentChild(cd: ChangeDetector): void;
+  addViewChild(cd: ChangeDetector): void;
+  removeContentChild(cd: ChangeDetector): void;
+  removeViewChild(cd: ChangeDetector): void;
   remove(): void;
   hydrate(context: any, locals: Locals, directives: any, pipes: any): void;
   dehydrate(): void;
@@ -39,8 +39,8 @@ export interface ChangeDetector {
 export interface ProtoChangeDetector { instantiate(dispatcher: ChangeDispatcher): ChangeDetector; }
 
 export class ChangeDetectorGenConfig {
-  constructor(public genCheckNoChanges: boolean, public genDebugInfo: boolean,
-              public logBindingUpdate: boolean, public useJit: boolean) {}
+  constructor(public genDebugInfo: boolean, public logBindingUpdate: boolean,
+              public useJit: boolean) {}
 }
 
 export class ChangeDetectorDefinition {

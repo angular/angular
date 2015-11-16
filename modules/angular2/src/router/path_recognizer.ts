@@ -5,10 +5,10 @@ import {
   StringWrapper,
   isPresent,
   isBlank
-} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+} from 'angular2/src/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 
-import {Map, MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {Map, MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {RouteHandler} from './route_handler';
 import {Url, RootUrl, serializeParams} from './url_parser';
@@ -93,8 +93,8 @@ var wildcardMatcher = /^\*([^\/]+)$/g;
 function parsePathString(route: string): {[key: string]: any} {
   // normalize route as not starting with a "/". Recognition will
   // also normalize.
-  if (StringWrapper.startsWith(route, "/")) {
-    route = StringWrapper.substring(route, 1);
+  if (route.startsWith("/")) {
+    route = route.substring(1);
   }
 
   var segments = splitBySlash(route);

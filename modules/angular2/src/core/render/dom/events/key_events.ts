@@ -5,8 +5,8 @@ import {
   StringWrapper,
   RegExpWrapper,
   NumberWrapper
-} from 'angular2/src/core/facade/lang';
-import {StringMapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+} from 'angular2/src/facade/lang';
+import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {EventManagerPlugin} from './event_manager';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {Injectable} from 'angular2/src/core/di';

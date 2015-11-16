@@ -16,8 +16,8 @@ import {
 
 import {Injectable, NgIf, bind} from 'angular2/core';
 import {Directive, Component, View, ViewMetadata} from 'angular2/angular2';
-import {XHR} from 'angular2/src/core/compiler/xhr';
-import {XHRImpl} from 'angular2/src/core/compiler/xhr_impl';
+import {XHR} from 'angular2/src/compiler/xhr';
+import {XHRImpl} from 'angular2/src/platform/browser/xhr_impl';
 
 // Services, and components for the tests.
 
@@ -243,23 +243,23 @@ export function main() {
     it('should instantiate a component with valid DOM',
        injectAsync([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
-         return tcb.createAsync(ChildComp).then((rootTestComponent) => {
-           rootTestComponent.detectChanges();
+         return tcb.createAsync(ChildComp).then((componentFixture) => {
+           componentFixture.detectChanges();
 
-           expect(rootTestComponent.debugElement.nativeElement).toHaveText('Original Child');
+           expect(componentFixture.debugElement.nativeElement).toHaveText('Original Child');
          });
        }));
 
     it('should allow changing members of the component',
        injectAsync([TestComponentBuilder], (tcb: TestComponentBuilder) => {
 
-         return tcb.createAsync(MyIfComp).then((rootTestComponent) => {
-           rootTestComponent.detectChanges();
-           expect(rootTestComponent.debugElement.nativeElement).toHaveText('MyIf()');
+         return tcb.createAsync(MyIfComp).then((componentFixture) => {
+           componentFixture.detectChanges();
+           expect(componentFixture.debugElement.nativeElement).toHaveText('MyIf()');
 
-           rootTestComponent.debugElement.componentInstance.showMore = true;
-           rootTestComponent.detectChanges();
-           expect(rootTestComponent.debugElement.nativeElement).toHaveText('MyIf(More)');
+           componentFixture.debugElement.componentInstance.showMore = true;
+           componentFixture.detectChanges();
+           expect(componentFixture.debugElement.nativeElement).toHaveText('MyIf(More)');
          });
        }));
 
@@ -268,9 +268,9 @@ export function main() {
 
          return tcb.overrideTemplate(MockChildComp, '<span>Mock</span>')
              .createAsync(MockChildComp)
-             .then((rootTestComponent) => {
-               rootTestComponent.detectChanges();
-               expect(rootTestComponent.debugElement.nativeElement).toHaveText('Mock');
+             .then((componentFixture) => {
+               componentFixture.detectChanges();
+               expect(componentFixture.debugElement.nativeElement).toHaveText('Mock');
 
              });
        }));
@@ -282,9 +282,9 @@ export function main() {
                        ChildComp,
                        new ViewMetadata({template: '<span>Modified {{childBinding}}</span>'}))
              .createAsync(ChildComp)
-             .then((rootTestComponent) => {
-               rootTestComponent.detectChanges();
-               expect(rootTestComponent.debugElement.nativeElement).toHaveText('Modified Child');
+             .then((componentFixture) => {
+               componentFixture.detectChanges();
+               expect(componentFixture.debugElement.nativeElement).toHaveText('Modified Child');
 
              });
        }));
@@ -294,9 +294,9 @@ export function main() {
 
          return tcb.overrideDirective(ParentComp, ChildComp, MockChildComp)
              .createAsync(ParentComp)
-             .then((rootTestComponent) => {
-               rootTestComponent.detectChanges();
-               expect(rootTestComponent.debugElement.nativeElement).toHaveText('Parent(Mock)');
+             .then((componentFixture) => {
+               componentFixture.detectChanges();
+               expect(componentFixture.debugElement.nativeElement).toHaveText('Parent(Mock)');
 
              });
        }));
@@ -308,9 +308,9 @@ export function main() {
          return tcb.overrideDirective(ParentComp, ChildComp, ChildWithChildComp)
              .overrideDirective(ChildWithChildComp, ChildChildComp, MockChildChildComp)
              .createAsync(ParentComp)
-             .then((rootTestComponent) => {
-               rootTestComponent.detectChanges();
-               expect(rootTestComponent.debugElement.nativeElement)
+             .then((componentFixture) => {
+               componentFixture.detectChanges();
+               expect(componentFixture.debugElement.nativeElement)
                    .toHaveText('Parent(Original Child(ChildChild Mock))');
 
              });
@@ -322,9 +322,9 @@ export function main() {
          return tcb.overrideProviders(TestProvidersComp,
                                       [bind(FancyService).toClass(MockFancyService)])
              .createAsync(TestProvidersComp)
-             .then((rootTestComponent) => {
-               rootTestComponent.detectChanges();
-               expect(rootTestComponent.debugElement.nativeElement)
+             .then((componentFixture) => {
+               componentFixture.detectChanges();
+               expect(componentFixture.debugElement.nativeElement)
                    .toHaveText('injected value: mocked out value');
              });
        }));
@@ -336,9 +336,9 @@ export function main() {
          return tcb.overrideViewProviders(TestViewProvidersComp,
                                           [bind(FancyService).toClass(MockFancyService)])
              .createAsync(TestViewProvidersComp)
-             .then((rootTestComponent) => {
-               rootTestComponent.detectChanges();
-               expect(rootTestComponent.debugElement.nativeElement)
+             .then((componentFixture) => {
+               componentFixture.detectChanges();
+               expect(componentFixture.debugElement.nativeElement)
                    .toHaveText('injected value: mocked out value');
              });
        }));

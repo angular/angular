@@ -3,8 +3,10 @@ library angular2.transform.common.directive_metadata_reader;
 import 'dart:async';
 
 import 'package:analyzer/analyzer.dart';
-import 'package:angular2/src/core/compiler/directive_metadata.dart';
-import 'package:angular2/src/core/compiler/template_compiler.dart';
+
+import 'package:angular2/src/compiler/directive_metadata.dart';
+import 'package:angular2/src/compiler/template_compiler.dart';
+
 import 'package:angular2/src/core/change_detection/change_detection.dart';
 import 'package:angular2/src/core/linker/interfaces.dart' show LifecycleHooks;
 import 'package:angular2/src/core/metadata/view.dart' show ViewEncapsulation;
@@ -182,7 +184,7 @@ class _DirectiveMetadataVisitor extends Object
       if (_type != null && _type.name != null && _type.name.isNotEmpty) {
         name = _type.name;
       }
-      logger.warning(
+      log.warning(
           'Cannot specify view parameters on @Component when a @View '
           'is present. Component name: ${name}',
           asset: _assetId);
@@ -226,6 +228,103 @@ class _DirectiveMetadataVisitor extends Object
   }
 
   @override
+  Object visitFieldDeclaration(FieldDeclaration node) {
+    for (var variable in node.fields.variables) {
+      for (var meta in node.metadata) {
+        if (_isAnnotation(meta, 'Output')) {
+          _addPropertyToType(_outputs, variable.name.toString(), meta);
+        }
+
+        if (_isAnnotation(meta, 'Input')) {
+          _addPropertyToType(_inputs, variable.name.toString(), meta);
+        }
+
+        if (_isAnnotation(meta, 'HostBinding')) {
+          final renamed = _getRenamedValue(meta);
+          if (renamed != null) {
+            _host['[${renamed}]'] = '${variable.name}';
+          } else {
+            _host['[${variable.name}]'] = '${variable.name}';
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  @override
+  Object visitMethodDeclaration(MethodDeclaration node) {
+    for (var meta in node.metadata) {
+      if (_isAnnotation(meta, 'Output') && node.isGetter) {
+        _addPropertyToType(_outputs, node.name.toString(), meta);
+      }
+
+      if (_isAnnotation(meta, 'Input') && node.isSetter) {
+        _addPropertyToType(_inputs, node.name.toString(), meta);
+      }
+
+      if (_isAnnotation(meta, 'HostListener')) {
+        if (meta.arguments.arguments.length == 0 ||
+            meta.arguments.arguments.length > 2) {
+          throw new ArgumentError(
+              'Incorrect value passed to HostListener. Expected 1 or 2.');
+        }
+
+        final eventName = _getHostListenerEventName(meta);
+        final params = _getHostListenerParams(meta);
+        _host['(${eventName})'] = '${node.name}($params)';
+      }
+    }
+    return null;
+  }
+
+  void _addPropertyToType(List type, String name, Annotation meta) {
+    final renamed = _getRenamedValue(meta);
+    if (renamed != null) {
+      type.add('${name}: ${renamed}');
+    } else {
+      type.add('${name}');
+    }
+  }
+
+  //TODO Use AnnotationMatcher instead of string matching
+  bool _isAnnotation(Annotation node, String annotationName) {
+    var id = node.name;
+    final name = id is PrefixedIdentifier ? '${id.identifier}' : '$id';
+    return name == annotationName;
+  }
+
+  String _getRenamedValue(Annotation node) {
+    if (node.arguments.arguments.length == 1) {
+      final renamed = naiveEval(node.arguments.arguments.single);
+      if (renamed is! String) {
+        throw new ArgumentError(
+            'Incorrect value. Expected a String, but got "${renamed}".');
+      }
+      return renamed;
+    } else {
+      return null;
+    }
+  }
+
+  String _getHostListenerEventName(Annotation node) {
+    final name = naiveEval(node.arguments.arguments.first);
+    if (name is! String) {
+      throw new ArgumentError(
+          'Incorrect event name. Expected a String, but got "${name}".');
+    }
+    return name;
+  }
+
+  String _getHostListenerParams(Annotation node) {
+    if (node.arguments.arguments.length == 2) {
+      return naiveEval(node.arguments.arguments[1]).join(',');
+    } else {
+      return "";
+    }
+  }
+
+  @override
   Object visitClassDeclaration(ClassDeclaration node) {
     node.metadata.accept(this);
     if (this._hasMetadata) {
@@ -237,6 +336,8 @@ class _DirectiveMetadataVisitor extends Object
       _lifecycleHooks = node.implementsClause != null
           ? node.implementsClause.accept(_lifecycleVisitor)
           : const [];
+
+      node.members.accept(this);
     }
     return null;
   }

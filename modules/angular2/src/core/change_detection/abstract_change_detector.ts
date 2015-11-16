@@ -1,6 +1,5 @@
-import {isPresent, isBlank, StringWrapper} from 'angular2/src/core/facade/lang';
-import {BaseException} from 'angular2/src/core/facade/exceptions';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
+import {assertionsEnabled, isPresent, isBlank, StringWrapper} from 'angular2/src/facade/lang';
+import {ListWrapper} from 'angular2/src/facade/collection';
 import {ChangeDetectionUtil} from './change_detection_util';
 import {ChangeDetectorRef, ChangeDetectorRef_} from './change_detector_ref';
 import {DirectiveIndex} from './directive_record';
@@ -26,8 +25,8 @@ class _Context {
 }
 
 export class AbstractChangeDetector<T> implements ChangeDetector {
-  lightDomChildren: any[] = [];
-  shadowDomChildren: any[] = [];
+  contentChildren: any[] = [];
+  viewChildren: any[] = [];
   parent: ChangeDetector;
   ref: ChangeDetectorRef;
 
@@ -50,21 +49,21 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
     this.ref = new ChangeDetectorRef_(this);
   }
 
-  addChild(cd: ChangeDetector): void {
-    this.lightDomChildren.push(cd);
+  addContentChild(cd: ChangeDetector): void {
+    this.contentChildren.push(cd);
     cd.parent = this;
   }
 
-  removeChild(cd: ChangeDetector): void { ListWrapper.remove(this.lightDomChildren, cd); }
+  removeContentChild(cd: ChangeDetector): void { ListWrapper.remove(this.contentChildren, cd); }
 
-  addShadowDomChild(cd: ChangeDetector): void {
-    this.shadowDomChildren.push(cd);
+  addViewChild(cd: ChangeDetector): void {
+    this.viewChildren.push(cd);
     cd.parent = this;
   }
 
-  removeShadowDomChild(cd: ChangeDetector): void { ListWrapper.remove(this.shadowDomChildren, cd); }
+  removeViewChild(cd: ChangeDetector): void { ListWrapper.remove(this.viewChildren, cd); }
 
-  remove(): void { this.parent.removeChild(this); }
+  remove(): void { this.parent.removeContentChild(this); }
 
   handleEvent(eventName: string, elIndex: number, locals: Locals): boolean {
     var res = this.handleEventInternal(eventName, elIndex, locals);
@@ -76,7 +75,11 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
 
   detectChanges(): void { this.runDetectChanges(false); }
 
-  checkNoChanges(): void { throw new BaseException("Not implemented"); }
+  checkNoChanges(): void {
+    if (assertionsEnabled()) {
+      this.runDetectChanges(true);
+    }
+  }
 
   runDetectChanges(throwOnChange: boolean): void {
     if (this.mode === ChangeDetectionStrategy.Detached ||
@@ -86,10 +89,10 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
 
     this.detectChangesInRecords(throwOnChange);
 
-    this._detectChangesInLightDomChildren(throwOnChange);
+    this._detectChangesContentChildren(throwOnChange);
     if (!throwOnChange) this.afterContentLifecycleCallbacks();
 
-    this._detectChangesInShadowDomChildren(throwOnChange);
+    this._detectChangesInViewChildren(throwOnChange);
     if (!throwOnChange) this.afterViewLifecycleCallbacks();
 
     if (this.mode === ChangeDetectionStrategy.CheckOnce)
@@ -130,7 +133,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
 
   // This method is not intended to be overridden. Subclasses should instead provide an
   // implementation of `hydrateDirectives`.
-  hydrate(context: T, locals: Locals, directives: any, pipes: any): void {
+  hydrate(context: T, locals: Locals, directives: any, pipes: Pipes): void {
     this.mode = ChangeDetectionUtil.changeDetectionMode(this.strategy);
     this.context = context;
 
@@ -183,16 +186,16 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   afterViewLifecycleCallbacksInternal(): void {}
 
   /** @internal */
-  _detectChangesInLightDomChildren(throwOnChange: boolean): void {
-    var c = this.lightDomChildren;
+  _detectChangesContentChildren(throwOnChange: boolean): void {
+    var c = this.contentChildren;
     for (var i = 0; i < c.length; ++i) {
       c[i].runDetectChanges(throwOnChange);
     }
   }
 
   /** @internal */
-  _detectChangesInShadowDomChildren(throwOnChange: boolean): void {
-    var c = this.shadowDomChildren;
+  _detectChangesInViewChildren(throwOnChange: boolean): void {
+    var c = this.viewChildren;
     for (var i = 0; i < c.length; ++i) {
       c[i].runDetectChanges(throwOnChange);
     }

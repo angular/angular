@@ -1,5 +1,5 @@
-import {Directive} from '../core/metadata';
-import {StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {Directive} from 'angular2/angular2';
+import {isString} from 'angular2/src/facade/lang';
 
 import {Router} from './router';
 import {Location} from './location';
@@ -36,7 +36,7 @@ import {Instruction, stringifyInstruction} from './instruction';
  */
 @Directive({
   selector: '[router-link]',
-  inputs: ['routeParams: routerLink'],
+  inputs: ['routeParams: routerLink', 'target: target'],
   host: {
     '(click)': 'onClick()',
     '[attr.href]': 'visibleHref',
@@ -48,6 +48,7 @@ export class RouterLink {
 
   // the url displayed on the anchor element.
   visibleHref: string;
+  target: string;
 
   // the instruction passed to the router to navigate
   private _navigationInstruction: Instruction;
@@ -65,7 +66,11 @@ export class RouterLink {
   }
 
   onClick(): boolean {
-    this._router.navigateByInstruction(this._navigationInstruction);
-    return false;
+    // If no target, or if target is _self, prevent default browser behavior
+    if (!isString(this.target) || this.target == '_self') {
+      this._router.navigateByInstruction(this._navigationInstruction);
+      return false;
+    }
+    return true;
   }
 }

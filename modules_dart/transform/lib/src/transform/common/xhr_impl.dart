@@ -1,7 +1,7 @@
 library angular2.transform.template_compiler.xhr_impl;
 
 import 'dart:async';
-import 'package:angular2/src/core/compiler/xhr.dart' show XHR;
+import 'package:angular2/src/compiler/xhr.dart' show XHR;
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/url_resolver.dart';
@@ -20,7 +20,7 @@ class XhrImpl implements XHR {
   Future<String> get(String url) async {
     final assetId = fromUri(url);
     if (!url.startsWith('asset:')) {
-      logger.warning('XhrImpl received unexpected url: $url');
+      log.warning('XhrImpl received unexpected url: $url');
     }
 
     if (!await _reader.hasInput(assetId)) {

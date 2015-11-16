@@ -22,9 +22,9 @@ import {
   FunctionWrapper,
   NumberWrapper,
   normalizeBool
-} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
-import {MapWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+} from 'angular2/src/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {MapWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {
   ChangeDispatcher,
@@ -52,7 +52,7 @@ import {JitProtoChangeDetector} from 'angular2/src/core/change_detection/jit_pro
 import {getDefinition} from './change_detector_config';
 import {createObservableModel} from './change_detector_spec_util';
 import {getFactoryById} from './generated/change_detector_classes';
-import {IS_DART} from '../../platform';
+import {IS_DART} from 'angular2/src/facade/lang';
 
 const _DEFAULT_CONTEXT = CONST_EXPR(new Object());
 
@@ -75,14 +75,16 @@ export function main() {
 
     describe(`${cdType} Change Detector`, () => {
 
-      function _getProtoChangeDetector(def: ChangeDetectorDefinition) {
+      function _getChangeDetectorFactory(def: ChangeDetectorDefinition) {
         switch (cdType) {
           case 'dynamic':
-            return new DynamicProtoChangeDetector(def);
+            var dynProto = new DynamicProtoChangeDetector(def);
+            return (dispatcher) => dynProto.instantiate(dispatcher);
           case 'JIT':
-            return new JitProtoChangeDetector(def);
+            var jitProto = new JitProtoChangeDetector(def);
+            return (dispatcher) => jitProto.instantiate(dispatcher);
           case 'Pregen':
-            return getFactoryById(def.id)(def);
+            return getFactoryById(def.id);
           default:
             return null;
         }
@@ -90,7 +92,7 @@ export function main() {
 
       function _createWithoutHydrate(expression: string) {
         var dispatcher = new TestDispatcher();
-        var cd = _getProtoChangeDetector(getDefinition(expression).cdDef).instantiate(dispatcher);
+        var cd = _getChangeDetectorFactory(getDefinition(expression).cdDef)(dispatcher);
         return new _ChangeDetectorAndDispatcher(cd, dispatcher);
       }
 
@@ -99,8 +101,7 @@ export function main() {
                                      registry = null, dispatcher = null) {
         if (isBlank(dispatcher)) dispatcher = new TestDispatcher();
         var testDef = getDefinition(expression);
-        var protoCd = _getProtoChangeDetector(testDef.cdDef);
-        var cd = protoCd.instantiate(dispatcher);
+        var cd = _getChangeDetectorFactory(testDef.cdDef)(dispatcher);
         cd.hydrate(context, testDef.locals, null, registry);
         return new _ChangeDetectorAndDispatcher(cd, dispatcher);
       }
@@ -110,6 +111,54 @@ export function main() {
         val.changeDetector.detectChanges();
         return val.dispatcher.log;
       }
+
+      describe('short-circuit', () => {
+        it('should support short-circuit for the ternary operator', () => {
+          var address = new Address('Sunnyvale', '94085');
+          expect(_bindSimpleValue('true ? city : zipcode', address))
+              .toEqual(['propName=Sunnyvale']);
+          expect(address.cityGetterCalls).toEqual(1);
+          expect(address.zipCodeGetterCalls).toEqual(0);
+
+          address = new Address('Sunnyvale', '94085');
+          expect(_bindSimpleValue('false ? city : zipcode', address)).toEqual(['propName=94085']);
+          expect(address.cityGetterCalls).toEqual(0);
+          expect(address.zipCodeGetterCalls).toEqual(1);
+        });
+
+        it('should support short-circuit for the && operator', () => {
+          var logical = new Logical();
+          expect(_bindSimpleValue('getTrue() && getTrue()', logical)).toEqual(['propName=true']);
+          expect(logical.trueCalls).toEqual(2);
+
+          logical = new Logical();
+          expect(_bindSimpleValue('getFalse() && getTrue()', logical)).toEqual(['propName=false']);
+          expect(logical.falseCalls).toEqual(1);
+          expect(logical.trueCalls).toEqual(0);
+        });
+
+        it('should support short-circuit for the || operator', () => {
+          var logical = new Logical();
+          expect(_bindSimpleValue('getFalse() || getFalse()', logical)).toEqual(['propName=false']);
+          expect(logical.falseCalls).toEqual(2);
+
+          logical = new Logical();
+          expect(_bindSimpleValue('getTrue() || getFalse()', logical)).toEqual(['propName=true']);
+          expect(logical.falseCalls).toEqual(0);
+          expect(logical.trueCalls).toEqual(1);
+        });
+
+        it('should support nested short-circuits', () => {
+          var address = new Address('Sunnyvale', '94085');
+          var person = new Person('Victor', address);
+          expect(_bindSimpleValue(
+                     'name == "Victor" ? (true ? address.city : address.zipcode) : address.zipcode',
+                     person))
+              .toEqual(['propName=Sunnyvale']);
+          expect(address.cityGetterCalls).toEqual(1);
+          expect(address.zipCodeGetterCalls).toEqual(0);
+        });
+      });
 
       it('should support literals',
          () => { expect(_bindSimpleValue('10')).toEqual(['propName=10']); });
@@ -634,7 +683,7 @@ export function main() {
               it('should be called before processing view children', () => {
                 var parent = _createWithoutHydrate('directNoDispatcher').changeDetector;
                 var child = _createWithoutHydrate('directNoDispatcher').changeDetector;
-                parent.addShadowDomChild(child);
+                parent.addViewChild(child);
 
                 var orderOfOperations = [];
 
@@ -753,7 +802,7 @@ export function main() {
               it('should be called after processing view children', () => {
                 var parent = _createWithoutHydrate('directNoDispatcher').changeDetector;
                 var child = _createWithoutHydrate('directNoDispatcher').changeDetector;
-                parent.addShadowDomChild(child);
+                parent.addViewChild(child);
 
                 var orderOfOperations = [];
 
@@ -902,32 +951,32 @@ export function main() {
           child = _createChangeDetector('"str"').changeDetector;
         });
 
-        it('should add light dom children', () => {
-          parent.addChild(child);
+        it('should add content children', () => {
+          parent.addContentChild(child);
 
-          expect(parent.lightDomChildren.length).toEqual(1);
-          expect(parent.lightDomChildren[0]).toBe(child);
+          expect(parent.contentChildren.length).toEqual(1);
+          expect(parent.contentChildren[0]).toBe(child);
         });
 
-        it('should add shadow dom children', () => {
-          parent.addShadowDomChild(child);
+        it('should add view children', () => {
+          parent.addViewChild(child);
 
-          expect(parent.shadowDomChildren.length).toEqual(1);
-          expect(parent.shadowDomChildren[0]).toBe(child);
+          expect(parent.viewChildren.length).toEqual(1);
+          expect(parent.viewChildren[0]).toBe(child);
         });
 
-        it('should remove light dom children', () => {
-          parent.addChild(child);
-          parent.removeChild(child);
+        it('should remove content children', () => {
+          parent.addContentChild(child);
+          parent.removeContentChild(child);
 
-          expect(parent.lightDomChildren).toEqual([]);
+          expect(parent.contentChildren).toEqual([]);
         });
 
-        it('should remove shadow dom children', () => {
-          parent.addShadowDomChild(child);
-          parent.removeShadowDomChild(child);
+        it('should remove view children', () => {
+          parent.addViewChild(child);
+          parent.removeViewChild(child);
 
-          expect(parent.shadowDomChildren.length).toEqual(0);
+          expect(parent.viewChildren.length).toEqual(0);
         });
       });
 
@@ -1142,7 +1191,7 @@ export function main() {
         function changeDetector(mode, parent) {
           var val = _createChangeDetector('10');
           val.changeDetector.mode = mode;
-          if (isPresent(parent)) parent.addChild(val.changeDetector);
+          if (isPresent(parent)) parent.addContentChild(val.changeDetector);
           return val.changeDetector;
         }
 
@@ -1299,6 +1348,13 @@ export function main() {
           res = val.changeDetector.handleEvent("event", 0, locals);
           expect(res).toBe(false);
         });
+
+        it('should support short-circuiting', () => {
+          d.a = 0;
+          var val = _createChangeDetector('(event)="true ? a = a + 1 : a = a + 1"', d, null);
+          val.changeDetector.handleEvent("event", 0, locals);
+          expect(d.a).toEqual(1);
+        });
       });
     });
   });
@@ -1417,9 +1473,41 @@ class Person {
 }
 
 class Address {
-  constructor(public city: string) {}
+  cityGetterCalls: number = 0;
+  zipCodeGetterCalls: number = 0;
+
+  constructor(public _city: string, public _zipcode = null) {}
+
+  get city() {
+    this.cityGetterCalls++;
+    return this._city;
+  }
+
+  get zipcode() {
+    this.zipCodeGetterCalls++;
+    return this._zipcode;
+  }
+
+  set city(v) { this._city = v; }
+
+  set zipcode(v) { this._zipcode = v; }
 
   toString(): string { return isBlank(this.city) ? '-' : this.city }
+}
+
+class Logical {
+  trueCalls: number = 0;
+  falseCalls: number = 0;
+
+  getTrue() {
+    this.trueCalls++;
+    return true;
+  }
+
+  getFalse() {
+    this.falseCalls++;
+    return false;
+  }
 }
 
 class Uninitialized {

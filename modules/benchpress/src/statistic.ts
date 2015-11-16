@@ -1,4 +1,4 @@
-import {Math} from 'angular2/src/core/facade/math';
+import {Math} from 'angular2/src/facade/math';
 
 export class Statistic {
   static calculateCoefficientOfVariation(sample, mean) {

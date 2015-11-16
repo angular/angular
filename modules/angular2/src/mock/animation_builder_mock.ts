@@ -8,7 +8,7 @@ import {BrowserDetails} from 'angular2/src/animate/browser_details';
 @Injectable()
 export class MockAnimationBuilder extends AnimationBuilder {
   constructor() { super(null); }
-  css(): MockCssAnimationBuilder { return new MockCssAnimationBuilder(); }
+  css(): CssAnimationBuilder { return new MockCssAnimationBuilder(); }
 }
 
 class MockCssAnimationBuilder extends CssAnimationBuilder {

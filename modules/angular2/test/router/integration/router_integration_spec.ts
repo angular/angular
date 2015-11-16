@@ -20,8 +20,8 @@ import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {provide} from 'angular2/core';
 import {DOCUMENT} from 'angular2/src/core/render/render';
 import {RouteConfig, Route, Redirect} from 'angular2/src/router/route_config_decorator';
-import {PromiseWrapper} from 'angular2/src/core/facade/async';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+import {PromiseWrapper} from 'angular2/src/facade/async';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {
   ROUTER_PROVIDERS,
   ROUTER_PRIMARY_COMPONENT,
@@ -79,10 +79,10 @@ export function main() {
 
       it('should rethrow exceptions from component constructors',
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
-           tcb.createAsync(AppCmp).then((rootTC) => {
-             var router = rootTC.debugElement.componentInstance.router;
+           tcb.createAsync(AppCmp).then((fixture) => {
+             var router = fixture.debugElement.componentInstance.router;
              PromiseWrapper.catchError(router.navigateByUrl('/cause-error'), (error) => {
-               expect(rootTC.debugElement.nativeElement).toHaveText('outer { oh no }');
+               expect(fixture.debugElement.nativeElement).toHaveText('outer { oh no }');
                expect(error).toContainError('oops!');
                async.done();
              });
@@ -98,8 +98,8 @@ export function main() {
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
 
            tcb.createAsync(HierarchyAppCmp)
-               .then((rootTC) => {
-                 var router = rootTC.debugElement.componentInstance.router;
+               .then((fixture) => {
+                 var router = fixture.debugElement.componentInstance.router;
                  var position = 0;
                  var flipped = false;
                  var history =
@@ -110,8 +110,8 @@ export function main() {
                      ]
 
                      router.subscribe((_) => {
-                       var location = rootTC.debugElement.componentInstance.location;
-                       var element = rootTC.debugElement.nativeElement;
+                       var location = fixture.debugElement.componentInstance.location;
+                       var element = fixture.debugElement.nativeElement;
                        var path = location.path();
 
                        var entry = history[position];
@@ -150,12 +150,12 @@ export function main() {
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
 
            tcb.createAsync(HierarchyAppCmp)
-               .then((rootTC) => {
-                 var router = rootTC.debugElement.componentInstance.router;
+               .then((fixture) => {
+                 var router = fixture.debugElement.componentInstance.router;
                  router.subscribe((_) => {
-                   expect(rootTC.debugElement.nativeElement)
+                   expect(fixture.debugElement.nativeElement)
                        .toHaveText('root { parent { hello } }');
-                   expect(rootTC.debugElement.componentInstance.location.path())
+                   expect(fixture.debugElement.componentInstance.location.path())
                        .toEqual('/parent/child');
                    async.done();
                  });
@@ -171,12 +171,12 @@ export function main() {
                   (async, tcb: TestComponentBuilder) => {
 
                     tcb.createAsync(HierarchyAppCmp)
-                        .then((rootTC) => {
-                          var router = rootTC.debugElement.componentInstance.router;
+                        .then((fixture) => {
+                          var router = fixture.debugElement.componentInstance.router;
                           router.subscribe((_) => {
-                            expect(rootTC.debugElement.nativeElement)
+                            expect(fixture.debugElement.nativeElement)
                                 .toHaveText('root { parent { hello } }');
-                            expect(rootTC.debugElement.componentInstance.location.path())
+                            expect(fixture.debugElement.componentInstance.location.path())
                                 .toEqual('/my/app/parent/child');
                             async.done();
                           });
@@ -194,12 +194,12 @@ export function main() {
       it('should recognize and return querystring params with the injected RouteParams',
          inject([AsyncTestCompleter, TestComponentBuilder], (async, tcb: TestComponentBuilder) => {
            tcb.createAsync(QueryStringAppCmp)
-               .then((rootTC) => {
-                 var router = rootTC.debugElement.componentInstance.router;
+               .then((fixture) => {
+                 var router = fixture.debugElement.componentInstance.router;
                  router.subscribe((_) => {
-                   rootTC.detectChanges();
+                   fixture.detectChanges();
 
-                   expect(rootTC.debugElement.nativeElement)
+                   expect(fixture.debugElement.nativeElement)
                        .toHaveText('qParam = search-for-something');
                    /*
                    expect(applicationRef.hostComponent.location.path())
@@ -207,7 +207,7 @@ export function main() {
                    async.done();
                  });
                  router.navigateByUrl('/qs?q=search-for-something');
-                 rootTC.detectChanges();
+                 fixture.detectChanges();
                });
          }));
     });

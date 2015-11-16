@@ -1,6 +1,6 @@
 library angular2.transform.common.ng_meta;
 
-import 'package:angular2/src/core/compiler/directive_metadata.dart';
+import 'package:angular2/src/compiler/directive_metadata.dart';
 import 'logging.dart';
 import 'model/ng_deps_model.pb.dart';
 import 'url_resolver.dart' show isDartCoreUri;
@@ -79,7 +79,7 @@ class NgMeta {
         var ngDepsJsonMap = json[key];
         if (ngDepsJsonMap == null) continue;
         if (ngDepsJsonMap is! Map) {
-          logger.warning(
+          log.warning(
               'Unexpected value $ngDepsJsonMap for key "$key" in NgMeta.');
           continue;
         }
@@ -87,7 +87,7 @@ class NgMeta {
       } else {
         var entry = json[key];
         if (entry is! Map) {
-          logger.warning('Unexpected value $entry for key "$key" in NgMeta.');
+          log.warning('Unexpected value $entry for key "$key" in NgMeta.');
           continue;
         }
         if (entry[_KIND_KEY] == _TYPE_VALUE) {
@@ -128,7 +128,7 @@ class NgMeta {
     var seen = new Set();
     helper(name) {
       if (!seen.add(name)) {
-        logger.warning('Circular alias dependency for "$name".');
+        log.warning('Circular alias dependency for "$name".');
         return;
       }
       if (types.containsKey(name)) {
@@ -136,7 +136,7 @@ class NgMeta {
       } else if (aliases.containsKey(name)) {
         aliases[name].forEach(helper);
       } else {
-        logger.warning('Unknown alias: "$name".');
+        log.warning('Unknown alias: "$name".');
       }
     }
     helper(alias);

@@ -4,7 +4,7 @@ import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart';
 
 import 'dom_adapter.dart';
-import '../compiler/xhr.dart';
+import 'package:angular2/src/compiler/xhr.dart';
 
 const _attrToPropMap = const {
   'innerHtml': 'innerHTML',

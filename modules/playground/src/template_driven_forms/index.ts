@@ -1,5 +1,6 @@
 import {bootstrap} from 'angular2/bootstrap';
 import {
+  ControlGroup,
   NgIf,
   NgFor,
   Component,
@@ -15,7 +16,7 @@ import {
   NgForm
 } from 'angular2/core';
 
-import {RegExpWrapper, print, isPresent, CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {RegExpWrapper, print, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
 
 /**
  * A domain model we are binding the form controls to.
@@ -80,7 +81,8 @@ class ShowError {
   constructor(@Host() formDir: NgForm) { this.formDir = formDir; }
 
   get errorMessage(): string {
-    var control = this.formDir.form.find(this.controlPath);
+    var form: ControlGroup = this.formDir.form;
+    var control = form.find(this.controlPath);
     if (isPresent(control) && control.touched) {
       for (var i = 0; i < this.errorTypes.length; ++i) {
         if (control.hasError(this.errorTypes[i])) {

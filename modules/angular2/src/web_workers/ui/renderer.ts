@@ -6,11 +6,12 @@ import {
   RenderFragmentRef,
   RenderProtoViewRef,
   Renderer,
-  RenderTemplateCmd
+  RenderTemplateCmd,
+  RenderComponentTemplate
 } from 'angular2/src/core/render/api';
 import {WebWorkerElementRef, WebWorkerTemplateCmd} from 'angular2/src/web_workers/shared/api';
 import {EVENT_CHANNEL, RENDERER_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
-import {Type} from 'angular2/src/core/facade/lang';
+import {Type} from 'angular2/src/facade/lang';
 import {bind} from './bind';
 import {EventDispatcher} from 'angular2/src/web_workers/ui/event_dispatcher';
 import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_proto_view_ref_store';
@@ -31,10 +32,9 @@ export class MessageBasedRenderer {
     var broker = this._brokerFactory.createMessageBroker(RENDERER_CHANNEL);
     this._bus.initChannel(EVENT_CHANNEL);
 
-    broker.registerMethod("registerComponentTemplate",
-                          [PRIMITIVE, WebWorkerTemplateCmd, PRIMITIVE, PRIMITIVE],
+    broker.registerMethod("registerComponentTemplate", [RenderComponentTemplate],
                           bind(this._renderer.registerComponentTemplate, this._renderer));
-    broker.registerMethod("createProtoView", [WebWorkerTemplateCmd, PRIMITIVE],
+    broker.registerMethod("createProtoView", [PRIMITIVE, WebWorkerTemplateCmd, PRIMITIVE],
                           bind(this._createProtoView, this));
     broker.registerMethod("createRootHostView",
                           [RenderProtoViewRef, PRIMITIVE, PRIMITIVE, PRIMITIVE],
@@ -73,8 +73,9 @@ export class MessageBasedRenderer {
     this._renderViewWithFragmentsStore.remove(viewRef);
   }
 
-  private _createProtoView(cmds: RenderTemplateCmd[], refIndex: number) {
-    var protoViewRef = this._renderer.createProtoView(cmds);
+  private _createProtoView(componentTemplateId: string, cmds: RenderTemplateCmd[],
+                           refIndex: number) {
+    var protoViewRef = this._renderer.createProtoView(componentTemplateId, cmds);
     this._renderProtoViewRefStore.store(protoViewRef, refIndex);
   }
 

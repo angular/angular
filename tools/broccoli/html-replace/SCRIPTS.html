@@ -10,7 +10,8 @@
       // TODO(rado): These helpers don't end up in the bundle, thus they should
       // not even be in src/*. Move them!
       'angular2/src/testing/benchmark_util': {defaultExtension: 'js'},
-      'angular2/src/core/facade/browser': {defaultExtension: 'js'},
+      'angular2/src/facade/browser': {defaultExtension: 'js'},
+      'angular2/bootstrap': {defaultExtension: 'js'},
     }
   });
 </script>
@@ -18,6 +19,7 @@
 <script src="/bundle/http.js"></script>
 <script src="/bundle/router.dev.js"></script>
 <script>
+  window.angularDevMode = true;
   var filename = '@@PATH/@@FILENAME';
   System.import(filename).then(function(m) { m.main(); }, console.error.bind(console));
 </script>

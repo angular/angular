@@ -14,7 +14,6 @@ import 'package:angular2/src/core/linker/view_listener.dart';
 import 'package:angular2/src/core/linker/element_injector.dart';
 import 'package:angular2/src/core/dom/dom_adapter.dart';
 import 'package:angular2/testing_internal.dart';
-import 'package:angular2/src/core/compiler/xhr.dart';
 
 @proxy
 class SpyDependencyProvider extends SpyObject implements DependencyProvider {
@@ -104,22 +103,7 @@ class SpyDomAdapter extends SpyObject implements DomAdapter {
 }
 
 @proxy
-class SpyXHR extends SpyObject implements XHR {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
-
-@proxy
 class SpyRenderEventDispatcher extends SpyObject
     implements RenderEventDispatcher {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
-
-@proxy
-class SpyNgControl extends SpyObject implements NgControl {
-  noSuchMethod(m) => super.noSuchMethod(m);
-}
-
-@proxy
-class SpyValueAccessor extends SpyObject implements ControlValueAccessor {
   noSuchMethod(m) => super.noSuchMethod(m);
 }

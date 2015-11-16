@@ -9,6 +9,7 @@ module.exports = function (config) {
     frameworks: ['jasmine'],
 
     files: [
+      '../../node_modules/es6-shim/es6-shim.js',
       '../../node_modules/angular/angular.js',
       '../../node_modules/angular-animate/angular-animate.js',
       '../../node_modules/angular-mocks/angular-mocks.js',

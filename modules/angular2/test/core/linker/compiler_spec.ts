@@ -17,7 +17,7 @@ import {Component, View, provide} from 'angular2/core';
 import {SpyProtoViewFactory} from '../spies';
 import {
   CompiledHostTemplate,
-  CompiledTemplate,
+  CompiledComponentTemplate,
   BeginComponentCmd
 } from 'angular2/src/core/linker/template_commands';
 import {Compiler} from 'angular2/src/core/linker/compiler';
@@ -35,7 +35,7 @@ export function main() {
 
     beforeEachBindings(() => {
       protoViewFactorySpy = new SpyProtoViewFactory();
-      someProtoView = new AppProtoView(null, null, null, null, null, null);
+      someProtoView = new AppProtoView(null, null, null, null, null, null, null);
       protoViewFactorySpy.spy('createHost').andReturn(someProtoView);
       var factory = provide(ProtoViewFactory, {useValue: protoViewFactorySpy});
       var classProvider = provide(Compiler, {useClass: Compiler_});
@@ -45,7 +45,7 @@ export function main() {
 
     beforeEach(inject([Compiler], (_compiler) => {
       compiler = _compiler;
-      cht = new CompiledHostTemplate(() => new CompiledTemplate(23, null));
+      cht = new CompiledHostTemplate(new CompiledComponentTemplate('aCompId', null, null, null));
       reflector.registerType(SomeComponent, new ReflectionInfo([cht]));
     }));
 

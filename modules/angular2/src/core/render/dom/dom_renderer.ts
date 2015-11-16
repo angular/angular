@@ -5,9 +5,10 @@ import {
   isBlank,
   RegExpWrapper,
   CONST_EXPR,
-  stringify
-} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+  stringify,
+  StringWrapper
+} from 'angular2/src/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
@@ -24,13 +25,15 @@ import {
   RenderFragmentRef,
   RenderViewWithFragments,
   RenderTemplateCmd,
-  RenderEventDispatcher
+  RenderEventDispatcher,
+  RenderComponentTemplate
 } from '../api';
 
 import {DOCUMENT} from './dom_tokens';
-import {createRenderView, NodeFactory} from '../view_factory';
+import {createRenderView, NodeFactory, encapsulateStyles} from '../view_factory';
 import {DefaultRenderView, DefaultRenderFragmentRef, DefaultProtoViewRef} from '../view';
 import {camelCaseToDashCase} from './util';
+import {ViewEncapsulation} from 'angular2/src/core/metadata';
 
 // TODO(tbosch): solve SVG properly once https://github.com/angular/angular/issues/4417 is done
 const XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink';
@@ -83,7 +86,10 @@ const SVG_ELEMENT_NAMES = CONST_EXPR({
   'font-face-uri': true,
   'foreignObject': true,
   'g': true,
-  'glyph': true,
+  // TODO(tbosch): this needs to be disabled
+  // because of an internal project.
+  // We will fix SVG soon, so this will go away...
+  // 'glyph': true,
   'glyphRef': true,
   'hkern': true,
   'image': true,
@@ -119,14 +125,12 @@ const SVG_ELEMENT_NAMES = CONST_EXPR({
 const SVG_ATTR_NAMESPACES = CONST_EXPR({'href': XLINK_NAMESPACE, 'xlink:href': XLINK_NAMESPACE});
 
 export abstract class DomRenderer extends Renderer implements NodeFactory<Node> {
-  abstract registerComponentTemplate(templateId: number, commands: RenderTemplateCmd[],
-                                     styles: string[], nativeShadow: boolean);
+  abstract registerComponentTemplate(template: RenderComponentTemplate);
 
-  abstract resolveComponentTemplate(templateId: number): RenderTemplateCmd[];
+  abstract resolveComponentTemplate(templateId: string): RenderComponentTemplate;
 
-  createProtoView(cmds: RenderTemplateCmd[]): RenderProtoViewRef {
-    return new DefaultProtoViewRef(cmds);
-  }
+  abstract createProtoView(componentTemplateId: string,
+                           cmds: RenderTemplateCmd[]): RenderProtoViewRef;
 
   abstract createRootHostView(hostProtoViewRef: RenderProtoViewRef, fragmentCount: number,
                               hostElementSelector: string): RenderViewWithFragments;
@@ -190,12 +194,10 @@ export abstract class DomRenderer extends Renderer implements NodeFactory<Node> 
 
   dehydrateView(viewRef: RenderViewRef) { resolveInternalDomView(viewRef).dehydrate(); }
 
-  createTemplateAnchor(attrNameAndValues: string[]): Node {
-    return this.createElement('script', attrNameAndValues);
-  }
+  createTemplateAnchor(attrNameAndValues: string[]): Node { return DOM.createComment('template'); }
   abstract createElement(name: string, attrNameAndValues: string[]): Node;
   abstract mergeElement(existing: Node, attrNameAndValues: string[]);
-  abstract createShadowRoot(host: Node, templateId: number): Node;
+  abstract createShadowRoot(host: Node, templateId: string): Node;
   createText(value: string): Node { return DOM.createTextNode(isPresent(value) ? value : ''); }
   appendChild(parent: Node, child: Node) { DOM.appendChild(parent, child); }
   abstract on(element: Node, eventName: string, callback: Function);
@@ -258,8 +260,8 @@ export abstract class DomRenderer extends Renderer implements NodeFactory<Node> 
 
 @Injectable()
 export class DomRenderer_ extends DomRenderer {
-  private _componentCmds: Map<number, RenderTemplateCmd[]> = new Map<number, RenderTemplateCmd[]>();
-  private _nativeShadowStyles: Map<number, string[]> = new Map<number, string[]>();
+  private _componentTpls: Map<string, RenderComponentTemplate> =
+      new Map<string, RenderComponentTemplate>();
   private _document;
 
   constructor(private _eventManager: EventManager,
@@ -269,18 +271,20 @@ export class DomRenderer_ extends DomRenderer {
     this._document = document;
   }
 
-  registerComponentTemplate(templateId: number, commands: RenderTemplateCmd[], styles: string[],
-                            nativeShadow: boolean) {
-    this._componentCmds.set(templateId, commands);
-    if (nativeShadow) {
-      this._nativeShadowStyles.set(templateId, styles);
-    } else {
-      this._domSharedStylesHost.addStyles(styles);
+  registerComponentTemplate(template: RenderComponentTemplate) {
+    this._componentTpls.set(template.id, template);
+    if (template.encapsulation !== ViewEncapsulation.Native) {
+      var encapsulatedStyles = encapsulateStyles(template);
+      this._domSharedStylesHost.addStyles(encapsulatedStyles);
     }
   }
 
-  resolveComponentTemplate(templateId: number): RenderTemplateCmd[] {
-    return this._componentCmds.get(templateId);
+  createProtoView(componentTemplateId: string, cmds: RenderTemplateCmd[]): RenderProtoViewRef {
+    return new DefaultProtoViewRef(this._componentTpls.get(componentTemplateId), cmds);
+  }
+
+  resolveComponentTemplate(templateId: string): RenderComponentTemplate {
+    return this._componentTpls.get(templateId);
   }
 
   /** @internal */
@@ -305,7 +309,8 @@ export class DomRenderer_ extends DomRenderer {
 
   private _createView(protoViewRef: RenderProtoViewRef,
                       inplaceElement: HTMLElement): RenderViewWithFragments {
-    var view = createRenderView((<DefaultProtoViewRef>protoViewRef).cmds, inplaceElement, this);
+    var dpvr = <DefaultProtoViewRef>protoViewRef;
+    var view = createRenderView(dpvr.template, dpvr.cmds, inplaceElement, this);
     var sdRoots = view.nativeShadowRoots;
     for (var i = 0; i < sdRoots.length; i++) {
       this._domSharedStylesHost.addHost(sdRoots[i]);
@@ -381,11 +386,11 @@ export class DomRenderer_ extends DomRenderer {
   createRootContentInsertionPoint(): Node {
     return DOM.createComment('root-content-insertion-point');
   }
-  createShadowRoot(host: Node, templateId: number): Node {
+  createShadowRoot(host: Node, templateId: string): Node {
     var sr = DOM.createShadowRoot(host);
-    var styles = this._nativeShadowStyles.get(templateId);
-    for (var i = 0; i < styles.length; i++) {
-      DOM.appendChild(sr, DOM.createStyleElement(styles[i]));
+    var tpl = this._componentTpls.get(templateId);
+    for (var i = 0; i < tpl.styles.length; i++) {
+      DOM.appendChild(sr, DOM.createStyleElement(tpl.styles[i]));
     }
     return sr;
   }

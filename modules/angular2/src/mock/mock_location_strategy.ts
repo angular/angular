@@ -1,4 +1,4 @@
-import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
+import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
 
 

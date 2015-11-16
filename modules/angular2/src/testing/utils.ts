@@ -1,12 +1,6 @@
-import {ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {
-  isPresent,
-  isString,
-  RegExpWrapper,
-  StringWrapper,
-  RegExp
-} from 'angular2/src/core/facade/lang';
+import {isPresent, isString, RegExpWrapper, StringWrapper, RegExp} from 'angular2/src/facade/lang';
 
 export class Log {
   /** @internal */
@@ -99,7 +93,7 @@ var _singleTagWhitelist = ['br', 'hr', 'input'];
 export function stringifyElement(el): string {
   var result = '';
   if (DOM.isElementNode(el)) {
-    var tagName = StringWrapper.toLowerCase(DOM.tagName(el));
+    var tagName = DOM.tagName(el).toLowerCase();
 
     // Opening tag
     result += `<${tagName}`;

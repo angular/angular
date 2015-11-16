@@ -7,6 +7,7 @@ library angular2;
  */
 export 'package:angular2/core.dart'
     hide forwardRef, resolveForwardRef, ForwardRefFn;
+export 'package:angular2/common.dart';
 export 'package:angular2/profile.dart';
 export 'package:angular2/lifecycle_hooks.dart';
 export 'package:angular2/src/core/application_tokens.dart'

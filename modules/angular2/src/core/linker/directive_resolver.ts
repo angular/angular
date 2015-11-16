@@ -1,7 +1,7 @@
 import {resolveForwardRef, Injectable} from 'angular2/src/core/di';
-import {Type, isPresent, isBlank, stringify} from 'angular2/src/core/facade/lang';
-import {BaseException} from 'angular2/src/core/facade/exceptions';
-import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {Type, isPresent, isBlank, stringify} from 'angular2/src/facade/lang';
+import {BaseException} from 'angular2/src/facade/exceptions';
+import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {
   DirectiveMetadata,
   ComponentMetadata,
@@ -35,7 +35,7 @@ export class DirectiveResolver {
   resolve(type: Type): DirectiveMetadata {
     var typeMetadata = reflector.annotations(resolveForwardRef(type));
     if (isPresent(typeMetadata)) {
-      var metadata = ListWrapper.find(typeMetadata, _isDirectiveMetadata);
+      var metadata = typeMetadata.find(_isDirectiveMetadata);
       if (isPresent(metadata)) {
         var propertyMetadata = reflector.propMetadata(type);
         return this._mergeWithPropertyMetadata(metadata, propertyMetadata);

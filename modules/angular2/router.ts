@@ -28,8 +28,8 @@ import {RouterLink} from './src/router/router_link';
 import {RouteRegistry} from './src/router/route_registry';
 import {Location} from './src/router/location';
 import {ApplicationRef, provide, OpaqueToken, Provider} from 'angular2/angular2';
-import {CONST_EXPR} from './src/core/facade/lang';
-import {BaseException} from 'angular2/src/core/facade/exceptions';
+import {CONST_EXPR} from './src/facade/lang';
+import {BaseException} from 'angular2/src/facade/exceptions';
 
 
 /**

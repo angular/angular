@@ -1,4 +1,4 @@
-import {global} from 'angular2/src/core/facade/lang';
+import {global} from 'angular2/src/facade/lang';
 import {ComponentRef} from 'angular2/src/core/linker/dynamic_component_loader';
 import {AngularTools} from './common_tools';
 

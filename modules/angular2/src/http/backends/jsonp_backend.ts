@@ -1,20 +1,21 @@
 import {ConnectionBackend, Connection} from '../interfaces';
-import {ReadyStates, RequestMethods} from '../enums';
+import {ReadyStates, RequestMethods, ResponseTypes} from '../enums';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
 import {Injectable} from 'angular2/angular2';
 import {BrowserJsonp} from './browser_jsonp';
-import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
-import {makeTypeError} from 'angular2/src/core/facade/exceptions';
-import {StringWrapper, isPresent} from 'angular2/src/core/facade/lang';
-// todo(robwormald): temporary until https://github.com/angular/angular/issues/4390 decided
-var Rx = require('@reactivex/rxjs/dist/cjs/Rx');
-var {Observable} = Rx;
+import {makeTypeError} from 'angular2/src/facade/exceptions';
+import {StringWrapper, isPresent} from 'angular2/src/facade/lang';
+import {Observable} from 'angular2/angular2';
+
+const JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callback.';
+const JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
+
 export abstract class JSONPConnection implements Connection {
   readyState: ReadyStates;
   request: Request;
-  response: any;
+  response: Observable<Response>;
   abstract finished(data?: any): void;
 }
 
@@ -28,7 +29,7 @@ export class JSONPConnection_ extends JSONPConnection {
               private baseResponseOptions?: ResponseOptions) {
     super();
     if (req.method !== RequestMethods.Get) {
-      throw makeTypeError("JSONP requests must use GET request method.");
+      throw makeTypeError(JSONP_ERR_WRONG_METHOD);
     }
     this.request = req;
     this.response = new Observable(responseObserver => {
@@ -45,8 +46,7 @@ export class JSONPConnection_ extends JSONPConnection {
       if (url.indexOf('=JSONP_CALLBACK&') > -1) {
         url = StringWrapper.replace(url, '=JSONP_CALLBACK&', `=${callback}&`);
       } else if (url.lastIndexOf('=JSONP_CALLBACK') === url.length - '=JSONP_CALLBACK'.length) {
-        url =
-            StringWrapper.substring(url, 0, url.length - '=JSONP_CALLBACK'.length) + `=${callback}`;
+        url = url.substring(0, url.length - '=JSONP_CALLBACK'.length) + `=${callback}`;
       }
 
       let script = this._script = _dom.build(url);
@@ -56,7 +56,12 @@ export class JSONPConnection_ extends JSONPConnection {
         this.readyState = ReadyStates.Done;
         _dom.cleanup(script);
         if (!this._finished) {
-          responseObserver.error(makeTypeError('JSONP injected script did not invoke callback.'));
+          let responseOptions =
+              new ResponseOptions({body: JSONP_ERR_NO_CALLBACK, type: ResponseTypes.Error});
+          if (isPresent(baseResponseOptions)) {
+            responseOptions = baseResponseOptions.merge(responseOptions);
+          }
+          responseObserver.error(new Response(responseOptions));
           return;
         }
 
@@ -73,7 +78,11 @@ export class JSONPConnection_ extends JSONPConnection {
         if (this.readyState === ReadyStates.Cancelled) return;
         this.readyState = ReadyStates.Done;
         _dom.cleanup(script);
-        responseObserver.error(error);
+        let responseOptions = new ResponseOptions({body: error.message, type: ResponseTypes.Error});
+        if (isPresent(baseResponseOptions)) {
+          responseOptions = baseResponseOptions.merge(responseOptions);
+        }
+        responseObserver.error(new Response(responseOptions));
       };
 
       script.addEventListener('load', onLoad);

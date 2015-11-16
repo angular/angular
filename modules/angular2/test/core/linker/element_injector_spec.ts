@@ -16,13 +16,13 @@ import {
   containsRegexp
 } from 'angular2/testing_internal';
 import {SpyView, SpyElementRef} from '../spies';
-import {isBlank, isPresent, stringify} from 'angular2/src/core/facade/lang';
+import {isBlank, isPresent, stringify} from 'angular2/src/facade/lang';
 import {
   ListWrapper,
   MapWrapper,
   StringMapWrapper,
   iterateListLike
-} from 'angular2/src/core/facade/collection';
+} from 'angular2/src/facade/collection';
 import {
   ProtoElementInjector,
   ElementInjector,

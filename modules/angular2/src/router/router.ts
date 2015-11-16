@@ -1,19 +1,7 @@
-import {
-  Promise,
-  PromiseWrapper,
-  EventEmitter,
-  ObservableWrapper
-} from 'angular2/src/core/facade/async';
-import {Map, StringMapWrapper, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
-import {
-  isBlank,
-  isString,
-  StringWrapper,
-  isPresent,
-  Type,
-  isArray
-} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+import {Promise, PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
+import {Map, StringMapWrapper, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {isBlank, isString, isPresent, Type, isArray} from 'angular2/src/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {RouteRegistry} from './route_registry';
 import {
   ComponentInstruction,
@@ -537,11 +525,11 @@ class ChildRouter extends Router {
  * Given: ['/a/b', {c: 2}]
  * Returns: ['', 'a', 'b', {c: 2}]
  */
-var SLASH = new RegExp('/');
 function splitAndFlattenLinkParams(linkParams: any[]): any[] {
-  return ListWrapper.reduce(linkParams, (accumulation, item) => {
+  return linkParams.reduce((accumulation: any[], item) => {
     if (isString(item)) {
-      return accumulation.concat(StringWrapper.split(item, SLASH));
+      let strItem: string = item;
+      return accumulation.concat(strItem.split('/'));
     }
     accumulation.push(item);
     return accumulation;

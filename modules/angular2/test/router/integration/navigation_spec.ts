@@ -1,5 +1,5 @@
 import {
-  RootTestComponent,
+  ComponentFixture,
   AsyncTestCompleter,
   TestComponentBuilder,
   beforeEach,
@@ -16,7 +16,7 @@ import {
 } from 'angular2/testing_internal';
 
 import {provide, Component, View, Injector, Inject} from 'angular2/core';
-import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
+import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 
 import {RootRouter} from 'angular2/src/router/router';
 import {Router, RouterOutlet, RouterLink, RouteParams, RouteData} from 'angular2/router';
@@ -41,7 +41,7 @@ export function main() {
   describe('navigation', () => {
 
     var tcb: TestComponentBuilder;
-    var rootTC: RootTestComponent;
+    var fixture: ComponentFixture;
     var rtr;
 
     beforeEachBindings(() => [
@@ -70,7 +70,7 @@ export function main() {
                                 directives: [RouterOutlet, RouterLink]
                               }))
           .createAsync(MyComp)
-          .then((tc) => { rootTC = tc; });
+          .then((tc) => { fixture = tc; });
     }
 
     it('should work in a simple case', inject([AsyncTestCompleter], (async) => {
@@ -78,8 +78,8 @@ export function main() {
              .then((_) => rtr.config([new Route({path: '/test', component: HelloCmp})]))
              .then((_) => rtr.navigateByUrl('/test'))
              .then((_) => {
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('hello');
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('hello');
                async.done();
              });
        }));
@@ -91,13 +91,13 @@ export function main() {
              .then((_) => rtr.config([new Route({path: '/user/:name', component: UserCmp})]))
              .then((_) => rtr.navigateByUrl('/user/brian'))
              .then((_) => {
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('hello brian');
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('hello brian');
              })
              .then((_) => rtr.navigateByUrl('/user/igor'))
              .then((_) => {
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('hello igor');
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('hello igor');
                async.done();
              });
        }));
@@ -108,8 +108,8 @@ export function main() {
              .then((_) => rtr.config([new Route({path: '/a/...', component: ParentCmp})]))
              .then((_) => rtr.navigateByUrl('/a/b'))
              .then((_) => {
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('outer { inner { hello } }');
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('outer { inner { hello } }');
                async.done();
              });
        }));
@@ -120,8 +120,8 @@ export function main() {
              .then((_) => rtr.config([new Route({path: '/a/...', component: ParentCmp})]))
              .then((_) => rtr.navigateByUrl('/a'))
              .then((_) => {
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('outer { inner { hello } }');
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('outer { inner { hello } }');
                async.done();
              });
        }));
@@ -132,8 +132,8 @@ export function main() {
              .then((_) => rtr.config([new AsyncRoute({path: '/a/...', loader: parentLoader})]))
              .then((_) => rtr.navigateByUrl('/a/b'))
              .then((_) => {
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('outer { inner { hello } }');
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('outer { inner { hello } }');
                async.done();
              });
        }));
@@ -148,8 +148,8 @@ export function main() {
              ]))
              .then((_) => rtr.navigateByUrl('/original'))
              .then((_) => {
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('hello');
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('hello');
                expect(location.urlChanges).toEqual(['/redirected']);
                async.done();
              });
@@ -161,15 +161,15 @@ export function main() {
              .then((_) => rtr.config([new Route({path: '/team/:id/...', component: TeamCmp})]))
              .then((_) => rtr.navigateByUrl('/team/angular/user/rado'))
              .then((_) => {
-               rootTC.detectChanges();
+               fixture.detectChanges();
                expect(cmpInstanceCount).toBe(1);
-               expect(rootTC.debugElement.nativeElement).toHaveText('team angular { hello rado }');
+               expect(fixture.debugElement.nativeElement).toHaveText('team angular { hello rado }');
              })
              .then((_) => rtr.navigateByUrl('/team/angular/user/victor'))
              .then((_) => {
-               rootTC.detectChanges();
+               fixture.detectChanges();
                expect(cmpInstanceCount).toBe(1);
-               expect(rootTC.debugElement.nativeElement)
+               expect(fixture.debugElement.nativeElement)
                    .toHaveText('team angular { hello victor }');
                async.done();
              });
@@ -181,17 +181,17 @@ export function main() {
              .then((_) => rtr.config([new Route({path: '/team/:id/...', component: TeamCmp})]))
              .then((_) => rtr.navigateByUrl('/team/angular/user/rado'))
              .then((_) => {
-               rootTC.detectChanges();
+               fixture.detectChanges();
                expect(cmpInstanceCount).toBe(1);
                expect(childCmpInstanceCount).toBe(1);
-               expect(rootTC.debugElement.nativeElement).toHaveText('team angular { hello rado }');
+               expect(fixture.debugElement.nativeElement).toHaveText('team angular { hello rado }');
              })
              .then((_) => rtr.navigateByUrl('/team/dart/user/rado'))
              .then((_) => {
-               rootTC.detectChanges();
+               fixture.detectChanges();
                expect(cmpInstanceCount).toBe(2);
                expect(childCmpInstanceCount).toBe(2);
-               expect(rootTC.debugElement.nativeElement).toHaveText('team dart { hello rado }');
+               expect(fixture.debugElement.nativeElement).toHaveText('team dart { hello rado }');
                async.done();
              });
        }));
@@ -203,8 +203,8 @@ export function main() {
              ]))
              .then((_) => rtr.navigateByUrl('/route-data'))
              .then((_) => {
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('true');
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('true');
                async.done();
              });
        }));
@@ -218,8 +218,8 @@ export function main() {
              ]))
              .then((_) => rtr.navigateByUrl('/route-data'))
              .then((_) => {
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('true');
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('true');
                async.done();
              });
        }));
@@ -231,8 +231,8 @@ export function main() {
                        [new Route({path: '/route-data-default', component: RouteDataCmp})]))
              .then((_) => rtr.navigateByUrl('/route-data-default'))
              .then((_) => {
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('');
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('');
                async.done();
              });
        }));
@@ -243,8 +243,9 @@ export function main() {
                .then((_) => rtr.config([new Route({path: '/...', component: AuxCmp})]))
                .then((_) => rtr.navigateByUrl('/hello(modal)'))
                .then((_) => {
-                 rootTC.detectChanges();
-                 expect(rootTC.debugElement.nativeElement).toHaveText('main {hello} | aux {modal}');
+                 fixture.detectChanges();
+                 expect(fixture.debugElement.nativeElement)
+                     .toHaveText('main {hello} | aux {modal}');
                  async.done();
                });
          }));

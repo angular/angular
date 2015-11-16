@@ -1,11 +1,13 @@
 library angular2.test.transform.deferred_rewriter.all_tests;
 
 import 'package:barback/barback.dart';
-import 'package:angular2/src/transform/deferred_rewriter/transformer.dart';
-import 'package:angular2/src/transform/common/logging.dart' as log;
 import 'package:dart_style/dart_style.dart';
 import 'package:guinness/guinness.dart';
 import 'package:path/path.dart' as path;
+
+import 'package:angular2/src/transform/common/zone.dart' as zone;
+import 'package:angular2/src/transform/deferred_rewriter/transformer.dart';
+
 import '../common/read_file.dart';
 import '../common/recording_logger.dart';
 
@@ -35,22 +37,24 @@ void allTests() {
 
 void _testRewriteDeferredLibraries(String name, String inputPath) {
   it(name, () {
-    return log.setZoned(new RecordingLogger(), () async {
+    return zone.exec(() async {
       var inputId = _assetIdForPath(inputPath);
       var reader = new TestAssetReader();
       var expectedPath = path.join(
           path.dirname(inputPath), 'expected', path.basename(inputPath));
       var expectedId = _assetIdForPath(expectedPath);
 
-      var output = await rewriteDeferredLibraries(reader, inputId);
-      var input = await reader.readAsString(expectedId);
-      if (input == null) {
-        // Null input signals no output. Ensure that is true.
-        expect(output).toBeNull();
+      var actualOutput = await rewriteDeferredLibraries(reader, inputId);
+      var expectedOutput = await reader.readAsString(expectedId);
+      if (expectedOutput == null) {
+        // Null expectedOutput signals no output. Ensure that is true.
+        expect(actualOutput).toBeNull();
       } else {
-        expect(formatter.format(output)).toEqual(formatter.format(input));
+        expect(actualOutput).toBeNotNull();
+        expect(formatter.format(actualOutput))
+            .toEqual(formatter.format(expectedOutput));
       }
-    });
+    }, log: new RecordingLogger());
   });
 }
 

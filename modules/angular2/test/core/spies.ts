@@ -16,7 +16,6 @@ import {AppViewListener} from 'angular2/src/core/linker/view_listener';
 import {ProtoViewFactory} from 'angular2/src/core/linker/proto_view_factory';
 import {DomAdapter} from 'angular2/src/core/dom/dom_adapter';
 import {ClientMessageBroker} from 'angular2/src/web_workers/shared/client_message_broker';
-import {XHR} from 'angular2/src/core/compiler/xhr';
 
 import {
   ElementInjector,
@@ -98,10 +97,6 @@ export class SpyDomAdapter extends SpyObject {
   constructor() { super(DomAdapter); }
 }
 
-export class SpyXHR extends SpyObject {
-  constructor() { super(XHR); }
-}
-
 export class SpyRenderEventDispatcher extends SpyObject {
   constructor() {
     // Note: RenderEventDispatcher is an interface,
@@ -111,7 +106,3 @@ export class SpyRenderEventDispatcher extends SpyObject {
     this.spy('dispatchRenderEvent');
   }
 }
-
-export class SpyNgControl extends SpyObject {}
-
-export class SpyValueAccessor extends SpyObject {}

@@ -1,4 +1,4 @@
-import {ListWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper} from 'angular2/src/facade/collection';
 import {bind, provide, Provider, OpaqueToken} from 'angular2/src/core/di';
 
 import {Validator} from '../validator';

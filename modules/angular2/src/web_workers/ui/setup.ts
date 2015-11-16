@@ -1,8 +1,8 @@
 import {SETUP_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
-import {EventEmitter, ObservableWrapper} from 'angular2/src/core/facade/async';
+import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
-import {AnchorBasedAppRootUrl} from 'angular2/src/core/compiler/anchor_based_app_root_url';
-import {StringWrapper} from 'angular2/src/core/facade/lang';
+import {AnchorBasedAppRootUrl} from 'angular2/src/compiler/anchor_based_app_root_url';
+import {StringWrapper} from 'angular2/src/facade/lang';
 import {Injectable} from 'angular2/src/core/di';
 
 @Injectable()

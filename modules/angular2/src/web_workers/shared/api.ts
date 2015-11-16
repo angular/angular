@@ -1,4 +1,4 @@
-import {CONST_EXPR} from "angular2/src/core/facade/lang";
+import {CONST_EXPR} from "angular2/src/facade/lang";
 import {OpaqueToken} from "angular2/src/core/di";
 import {
   RenderElementRef,
@@ -53,7 +53,7 @@ export class WebWorkerEndElementCmd implements RenderTemplateCmd {
 export class WebWorkerBeginComponentCmd implements RenderBeginComponentCmd {
   constructor(public isBound: boolean, public ngContentIndex: number, public name: string,
               public attrNameAndValues: string[], public eventTargetAndNames: string[],
-              public nativeShadow: boolean, public templateId: number) {}
+              public templateId: string) {}
   visit(visitor: RenderCommandVisitor, context: any): any {
     return visitor.visitBeginComponent(this, context);
   }

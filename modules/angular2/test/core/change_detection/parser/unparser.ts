@@ -23,7 +23,7 @@ import {
 } from 'angular2/src/core/change_detection/parser/ast';
 
 
-import {StringWrapper, isPresent, isString} from 'angular2/src/core/facade/lang';
+import {StringWrapper, isPresent, isString} from 'angular2/src/facade/lang';
 
 export class Unparser implements AstVisitor {
   private static _quoteRegExp = /"/g;

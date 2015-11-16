@@ -11,8 +11,8 @@ import {
   xit,
 } from 'angular2/testing_internal';
 
-import {PromiseWrapper} from 'angular2/src/core/facade/async';
-import {Json, isBlank} from 'angular2/src/core/facade/lang';
+import {PromiseWrapper} from 'angular2/src/facade/async';
+import {Json, isBlank} from 'angular2/src/facade/lang';
 
 import {
   WebDriverExtension,

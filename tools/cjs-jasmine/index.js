@@ -6,6 +6,8 @@ var path = require('path');
 require('es6-shim/es6-shim.js');
 require('reflect-metadata/Reflect');
 
+global.angularDevMode = true;
+
 var jrunner = new JasmineRunner();
 
 // Tun on full stack traces in errors to help debugging

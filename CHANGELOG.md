@@ -1,3 +1,81 @@
+<a name="2.0.0-alpha.46"></a>
+# 2.0.0-alpha.46 (2015-11-11)
+
+
+### Bug Fixes
+
+* **core:** Export dev mode API in Dart. ([a3e6406](https://github.com/angular/angular/commit/a3e6406)), closes [#5233](https://github.com/angular/angular/issues/5233)
+* **core:** reexport PLATFORM_DIRECTIVES and PLATFORM_PIPES in dart ([01ebff4](https://github.com/angular/angular/commit/01ebff4))
+* **core:** various dart-specific fixes for core and facades ([4a43230](https://github.com/angular/angular/commit/4a43230))
+* **renderer:** apply host element encapsulation also if the parent component is not encapsulate ([344776f](https://github.com/angular/angular/commit/344776f)), closes [#5240](https://github.com/angular/angular/issues/5240)
+* **analyzer:** fix dart analyzer errors ([56e7364](https://github.com/angular/angular/commit/56e7364)), closes [#4992](https://github.com/angular/angular/issues/4992)
+* **benchmarks:** fix tracing categories to work with Dartium ([64bd963](https://github.com/angular/angular/commit/64bd963)), closes [#5209](https://github.com/angular/angular/issues/5209)
+* **build:** EMFILE error on Windows when executing JS unit tests ([1dc8a0a](https://github.com/angular/angular/commit/1dc8a0a)), closes [#4525](https://github.com/angular/angular/issues/4525) [#4796](https://github.com/angular/angular/issues/4796)
+* **build:** reorder bundling step ([5fecb3b](https://github.com/angular/angular/commit/5fecb3b)), closes [#5208](https://github.com/angular/angular/issues/5208)
+* **compiler:** don’t lowercase attributes to support svg ([6133f2c](https://github.com/angular/angular/commit/6133f2c)), closes [#5166](https://github.com/angular/angular/issues/5166)
+* **compiler:** remove style when [style.foo]='exp' evaluates to null ([f1989e7](https://github.com/angular/angular/commit/f1989e7)), closes [#5110](https://github.com/angular/angular/issues/5110) [#5114](https://github.com/angular/angular/issues/5114)
+* **core:** Add an error state for ChangeDetectors that is set when bindings or lifecycle ev ([d1b54d6](https://github.com/angular/angular/commit/d1b54d6)), closes [#4323](https://github.com/angular/angular/issues/4323) [#4953](https://github.com/angular/angular/issues/4953)
+* **core:** Provide setDevMode() to enable/disable development mode in Javascript. ([4bb9c46](https://github.com/angular/angular/commit/4bb9c46))
+* **core:** Unload components when individually disposed. ([1ff1792](https://github.com/angular/angular/commit/1ff1792))
+* **dart/transform:** Gracefully handle empty .ng_meta.json files ([a87c5d9](https://github.com/angular/angular/commit/a87c5d9))
+* **forms:** Export the NG_VALUE_ACCESSOR binding token. ([fee5dea](https://github.com/angular/angular/commit/fee5dea))
+* **forms:** update compose to handle null validators ([9d58f46](https://github.com/angular/angular/commit/9d58f46))
+* **http:** use Observable<Response> on Http methods ([a9b1270](https://github.com/angular/angular/commit/a9b1270)), closes [#5017](https://github.com/angular/angular/issues/5017)
+* **http:** use Response for JSONP errors ([31687ef](https://github.com/angular/angular/commit/31687ef))
+* **JsonPipe:** marks json pipe as not pure Marked json pipe as not pure so that it runs all the ([fc016b5](https://github.com/angular/angular/commit/fc016b5)), closes [#4821](https://github.com/angular/angular/issues/4821)
+* **material:** Disable md-grid-list tests until #5132 is fixed. ([0b11051](https://github.com/angular/angular/commit/0b11051))
+* **ng-content:** wildcard ng-content has to go last. ([39626a9](https://github.com/angular/angular/commit/39626a9)), closes [#5016](https://github.com/angular/angular/issues/5016)
+* **NgFor:** allow default templates with ng-for-template ([2d0c8f1](https://github.com/angular/angular/commit/2d0c8f1)), closes [#5161](https://github.com/angular/angular/issues/5161)
+* **Pipe:** pure is an optional argument ([7ba426c](https://github.com/angular/angular/commit/7ba426c))
+* **Pipes:** mark date & slice as non-pure ([2f1f83a](https://github.com/angular/angular/commit/2f1f83a))
+* **playground:** fix the inbox example ([6240245](https://github.com/angular/angular/commit/6240245))
+* remove deprecated zone API usage in testability ([3593d85](https://github.com/angular/angular/commit/3593d85)), closes [#5084](https://github.com/angular/angular/issues/5084)
+* **router:** properly serialize aux routes ([23784a2](https://github.com/angular/angular/commit/23784a2))
+* remove internal usages of deprecated overrideOnTurnDone ([c814dfb](https://github.com/angular/angular/commit/c814dfb)), closes [#5079](https://github.com/angular/angular/issues/5079)
+* **router:** respond to hashchange events ([53bddec](https://github.com/angular/angular/commit/53bddec)), closes [#5013](https://github.com/angular/angular/issues/5013)
+* **RouterLink:** do not prevent default behavior if target set on anchor element ([a69e7fe](https://github.com/angular/angular/commit/a69e7fe)), closes [#4233](https://github.com/angular/angular/issues/4233) [#5082](https://github.com/angular/angular/issues/5082)
+* **setup:** set tsconfig so that it works in editors ([fb8b815](https://github.com/angular/angular/commit/fb8b815))
+* **shadow_css:** strip comments and fix logic for parsing rules. ([d8775e0](https://github.com/angular/angular/commit/d8775e0)), closes [#5037](https://github.com/angular/angular/issues/5037) [#5011](https://github.com/angular/angular/issues/5011)
+* **test:** "integration tests svg should support svg elements" fails in non-Chrome browsers ([c4964e7](https://github.com/angular/angular/commit/c4964e7)), closes [#4987](https://github.com/angular/angular/issues/4987) [#5000](https://github.com/angular/angular/issues/5000)
+* **test:** Android browser does not support calc() a CSS unit value ([e37799a](https://github.com/angular/angular/commit/e37799a)), closes [#5001](https://github.com/angular/angular/issues/5001)
+* **WebWorker:** Don't send messages when the buffer is empty ([8485ef9](https://github.com/angular/angular/commit/8485ef9)), closes [#4138](https://github.com/angular/angular/issues/4138)
+* **WebWorker:** Fix bug causing multi browser demo to crash ([eba7073](https://github.com/angular/angular/commit/eba7073)), closes [#4839](https://github.com/angular/angular/issues/4839)
+
+### Features
+
+* **change_detect:** Guard `checkNoChanges` behind `assertionsEnabled` ([63e853d](https://github.com/angular/angular/commit/63e853d)), closes [#4560](https://github.com/angular/angular/issues/4560)
+* **ChangeDetector:** Add support for short-circuiting ([7e92d2e](https://github.com/angular/angular/commit/7e92d2e))
+* **core:** add support for ambient directives ([5948aba](https://github.com/angular/angular/commit/5948aba))
+* **core:** add support for ambient directives to dart transformers ([4909fed](https://github.com/angular/angular/commit/4909fed)), closes [#5129](https://github.com/angular/angular/issues/5129)
+* **core:** make transformers handle @Input/@Output/@HostBinding/@HostListener ([16bc238](https://github.com/angular/angular/commit/16bc238)), closes [#5080](https://github.com/angular/angular/issues/5080)
+* **core:** renam AMBIENT_DIRECTIVES and AMBIENT_PIPES into PLATFORM_DIRECTIVES and PLATFORM ([e27665c](https://github.com/angular/angular/commit/e27665c)), closes [#5201](https://github.com/angular/angular/issues/5201)
+* **dart:** Support forcing dev mode via enableDevMode in Dart. ([a8d9dbf](https://github.com/angular/angular/commit/a8d9dbf)), closes [#5193](https://github.com/angular/angular/issues/5193)
+* **dart/transform:** Simplify dependency imports ([9d0b61b](https://github.com/angular/angular/commit/9d0b61b))
+* **facade:** add a way to convert observables into promises ([2c201d3](https://github.com/angular/angular/commit/2c201d3))
+* **facade:** add a way to detect if an object is a Promise ([fc50829](https://github.com/angular/angular/commit/fc50829))
+* **facade:** add ObservableWrapper.fromPromise ([53bd6e1](https://github.com/angular/angular/commit/53bd6e1))
+* **facade:** add support for async validators returning observables ([4439106](https://github.com/angular/angular/commit/4439106)), closes [#5032](https://github.com/angular/angular/issues/5032)
+* **forms:** add support for adding async validators via template ([31c12af](https://github.com/angular/angular/commit/31c12af))
+* **forms:** add support for async validations ([bb2b961](https://github.com/angular/angular/commit/bb2b961))
+* **forms:** implements a combinator for composing async validators ([cf449dd](https://github.com/angular/angular/commit/cf449dd))
+* **forms:** remove controlsErrors ([7343ef0](https://github.com/angular/angular/commit/7343ef0)), closes [#5102](https://github.com/angular/angular/issues/5102)
+* **forms:** update FormBuilder to support async validations ([1c322f1](https://github.com/angular/angular/commit/1c322f1)), closes [#5020](https://github.com/angular/angular/issues/5020)
+* **forms:** Use the DefaultValueAccessor for controls with an ng-default-control attribute. ([f21e782](https://github.com/angular/angular/commit/f21e782)), closes [#5076](https://github.com/angular/angular/issues/5076)
+* **router:** provide RouteConfig object for AuxRoute ([0ebe283](https://github.com/angular/angular/commit/0ebe283)), closes [#4319](https://github.com/angular/angular/issues/4319)
+
+### Performance Improvements
+
+* **dart/transform:** Restrict visibility/mutability of codegen ([45b33c5](https://github.com/angular/angular/commit/45b33c5)), closes [#5009](https://github.com/angular/angular/issues/5009)
+
+
+### BREAKING CHANGES
+
+* AMBIENT_DIRECTIVES -> PLATFORM_DIRECTIVES
+* AMBIENT_PIPES -> PLATFORM_PIPES
+
+* Previously, the controlsErrors getter of ControlGroup and ControlArray returned the errors of their direct children. This was confusing because the result did not include the errors of nested children (ControlGroup -> ControlGroup -> Control). Making controlsErrors to include such errors would require inventing some custom serialization format, which applications would have to understand.
+Since controlsErrors was just a convenience method, and it was causing confusing, we are removing it. If you want to get the errors of the whole form serialized into a single object, you can manually traverse the form and accumulate the errors. This way you have more control over how the errors are serialized.
+
 <a name="2.0.0-alpha.45"></a>
 # 2.0.0-alpha.45 (2015-10-29)
 
@@ -1471,6 +1549,8 @@ After
     })
 
 * no longer cache ref
+
+
 
 
 

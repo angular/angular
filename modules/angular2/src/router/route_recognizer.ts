@@ -1,15 +1,14 @@
 import {
   RegExp,
   RegExpWrapper,
-  StringWrapper,
   isBlank,
   isPresent,
   isType,
   isStringMap,
   Type
-} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
-import {Map, MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+} from 'angular2/src/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {Map, MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 
 import {PathRecognizer, PathMatch} from './path_recognizer';
 import {Route, AsyncRoute, AuxRoute, Redirect, RouteDefinition} from './route_config_impl';
@@ -46,8 +45,7 @@ export class RouteRecognizer {
 
     if (config instanceof AuxRoute) {
       handler = new SyncRouteHandler(config.component, config.data);
-      let path =
-          StringWrapper.startsWith(config.path, '/') ? config.path.substring(1) : config.path;
+      let path = config.path.startsWith('/') ? config.path.substring(1) : config.path;
       var recognizer = new PathRecognizer(config.path, handler);
       this.auxRoutes.set(path, recognizer);
       return recognizer.terminal;
@@ -136,11 +134,11 @@ export class Redirector {
   toSegments: string[] = [];
 
   constructor(path: string, redirectTo: string) {
-    if (StringWrapper.startsWith(path, '/')) {
+    if (path.startsWith('/')) {
       path = path.substring(1);
     }
     this.segments = path.split('/');
-    if (StringWrapper.startsWith(redirectTo, '/')) {
+    if (redirectTo.startsWith('/')) {
       redirectTo = redirectTo.substring(1);
     }
     this.toSegments = redirectTo.split('/');

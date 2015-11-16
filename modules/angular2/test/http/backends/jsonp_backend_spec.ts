@@ -11,7 +11,7 @@ import {
   xit,
   SpyObject
 } from 'angular2/testing_internal';
-import {ObservableWrapper} from 'angular2/src/core/facade/async';
+import {ObservableWrapper} from 'angular2/src/facade/async';
 import {BrowserJsonp} from 'angular2/src/http/backends/browser_jsonp';
 import {
   JSONPConnection,
@@ -20,11 +20,11 @@ import {
   JSONPBackend_
 } from 'angular2/src/http/backends/jsonp_backend';
 import {provide, Injector} from 'angular2/core';
-import {isPresent, StringWrapper} from 'angular2/src/core/facade/lang';
-import {TimerWrapper} from 'angular2/src/core/facade/async';
+import {isPresent, StringWrapper} from 'angular2/src/facade/lang';
+import {TimerWrapper} from 'angular2/src/facade/async';
 import {Request} from 'angular2/src/http/static_request';
 import {Response} from 'angular2/src/http/static_response';
-import {Map} from 'angular2/src/core/facade/collection';
+import {Map} from 'angular2/src/facade/collection';
 import {RequestOptions, BaseRequestOptions} from 'angular2/src/http/base_request_options';
 import {BaseResponseOptions, ResponseOptions} from 'angular2/src/http/base_response_options';
 import {ResponseTypes, ReadyStates, RequestMethods} from 'angular2/src/http/enums';
@@ -134,7 +134,7 @@ export function main() {
                  async.done();
                },
                err => {
-                 expect(StringWrapper.contains(err.message, 'did not invoke callback')).toBe(true);
+                 expect(err.text()).toEqual('JSONP injected script did not invoke callback.');
                  async.done();
                });
 
@@ -150,7 +150,7 @@ export function main() {
                  async.done();
                },
                err => {
-                 expect(err['message']).toBe('Oops!');
+                 expect(err.text()).toBe('Oops!');
                  async.done();
                });
 

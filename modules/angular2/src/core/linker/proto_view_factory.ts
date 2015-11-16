@@ -1,9 +1,8 @@
-import {ListWrapper} from 'angular2/src/core/facade/collection';
-import {isPresent, isBlank, Type, isArray, isNumber} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank, Type, isArray, isNumber} from 'angular2/src/facade/lang';
 
-import {RenderProtoViewRef} from 'angular2/src/core/render/api';
+import {RenderProtoViewRef, RenderComponentTemplate} from 'angular2/src/core/render/api';
 
-import {Injectable, Provider, resolveForwardRef, Inject} from 'angular2/src/core/di';
+import {Optional, Injectable, Provider, resolveForwardRef, Inject} from 'angular2/src/core/di';
 
 import {PipeProvider} from '../pipes/pipe_provider';
 import {ProtoPipes} from '../pipes/pipes';
@@ -14,12 +13,12 @@ import {ProtoElementInjector, DirectiveProvider} from './element_injector';
 import {DirectiveResolver} from './directive_resolver';
 import {ViewResolver} from './view_resolver';
 import {PipeResolver} from './pipe_resolver';
-import {ViewMetadata} from '../metadata/view';
-import {DEFAULT_PIPES_TOKEN} from 'angular2/src/core/pipes';
+import {ViewMetadata, ViewEncapsulation} from '../metadata/view';
+import {PLATFORM_PIPES} from 'angular2/src/core/platform_directives_and_pipes';
 
 import {
   visitAllCommands,
-  CompiledTemplate,
+  CompiledComponentTemplate,
   CompiledHostTemplate,
   TemplateCmd,
   CommandVisitor,
@@ -37,27 +36,27 @@ import {APP_ID} from 'angular2/src/core/application_tokens';
 
 @Injectable()
 export class ProtoViewFactory {
-  private _cache: Map<number, AppProtoView> = new Map<number, AppProtoView>();
-  private _defaultPipes: Type[];
-  private _appId: string;
+  private _cache: Map<string, AppProtoView> = new Map<string, AppProtoView>();
+  private _nextTemplateId: number = 0;
 
-  constructor(private _renderer: Renderer, @Inject(DEFAULT_PIPES_TOKEN) defaultPipes: Type[],
+  constructor(private _renderer: Renderer,
+              @Optional() @Inject(PLATFORM_PIPES) private _platformPipes: Array<Type | any[]>,
               private _directiveResolver: DirectiveResolver, private _viewResolver: ViewResolver,
-              private _pipeResolver: PipeResolver, @Inject(APP_ID) appId: string) {
-    this._defaultPipes = defaultPipes;
-    this._appId = appId;
-  }
+              private _pipeResolver: PipeResolver, @Inject(APP_ID) private _appId: string) {}
 
   clearCache() { this._cache.clear(); }
 
   createHost(compiledHostTemplate: CompiledHostTemplate): AppProtoView {
-    var compiledTemplate = compiledHostTemplate.getTemplate();
+    var compiledTemplate = compiledHostTemplate.template;
     var result = this._cache.get(compiledTemplate.id);
     if (isBlank(result)) {
-      var templateData = compiledTemplate.getData(this._appId);
       var emptyMap: {[key: string]: PipeProvider} = {};
-      result = new AppProtoView(templateData.commands, ViewType.HOST, true,
-                                templateData.changeDetectorFactory, null, new ProtoPipes(emptyMap));
+      var shortId = `${this._appId}-${this._nextTemplateId++}`;
+      this._renderer.registerComponentTemplate(new RenderComponentTemplate(
+          compiledTemplate.id, shortId, ViewEncapsulation.None, compiledTemplate.commands, []));
+      result =
+          new AppProtoView(compiledTemplate.id, compiledTemplate.commands, ViewType.HOST, true,
+                           compiledTemplate.changeDetectorFactory, null, new ProtoPipes(emptyMap));
       this._cache.set(compiledTemplate.id, result);
     }
     return result;
@@ -68,18 +67,19 @@ export class ProtoViewFactory {
     if (isBlank(nestedProtoView)) {
       var component = cmd.directives[0];
       var view = this._viewResolver.resolve(component);
-      var compiledTemplateData = cmd.template.getData(this._appId);
-
-      this._renderer.registerComponentTemplate(cmd.templateId, compiledTemplateData.commands,
-                                               compiledTemplateData.styles, cmd.nativeShadow);
+      var compiledTemplate = cmd.templateGetter();
+      var styles = _flattenStyleArr(compiledTemplate.styles, []);
+      var shortId = `${this._appId}-${this._nextTemplateId++}`;
+      this._renderer.registerComponentTemplate(new RenderComponentTemplate(
+          compiledTemplate.id, shortId, cmd.encapsulation, compiledTemplate.commands, styles));
       var boundPipes = this._flattenPipes(view).map(pipe => this._bindPipe(pipe));
 
-      nestedProtoView = new AppProtoView(compiledTemplateData.commands, ViewType.COMPONENT, true,
-                                         compiledTemplateData.changeDetectorFactory, null,
-                                         ProtoPipes.fromProviders(boundPipes));
+      nestedProtoView = new AppProtoView(
+          compiledTemplate.id, compiledTemplate.commands, ViewType.COMPONENT, true,
+          compiledTemplate.changeDetectorFactory, null, ProtoPipes.fromProviders(boundPipes));
       // Note: The cache is updated before recursing
       // to be able to resolve cycles
-      this._cache.set(cmd.template.id, nestedProtoView);
+      this._cache.set(compiledTemplate.id, nestedProtoView);
       this._initializeProtoView(nestedProtoView, null);
     }
     return nestedProtoView;
@@ -87,7 +87,7 @@ export class ProtoViewFactory {
 
   private _createEmbeddedTemplate(cmd: EmbeddedTemplateCmd, parent: AppProtoView): AppProtoView {
     var nestedProtoView = new AppProtoView(
-        cmd.children, ViewType.EMBEDDED, cmd.isMerged, cmd.changeDetectorFactory,
+        parent.templateId, cmd.children, ViewType.EMBEDDED, cmd.isMerged, cmd.changeDetectorFactory,
         arrayToMap(cmd.variableNameAndValues, true), new ProtoPipes(parent.pipes.config));
     if (cmd.isMerged) {
       this.initializeProtoViewIfNeeded(nestedProtoView);
@@ -97,7 +97,7 @@ export class ProtoViewFactory {
 
   initializeProtoViewIfNeeded(protoView: AppProtoView) {
     if (!protoView.isInitialized()) {
-      var render = this._renderer.createProtoView(protoView.templateCmds);
+      var render = this._renderer.createProtoView(protoView.templateId, protoView.templateCmds);
       this._initializeProtoView(protoView, render);
     }
   }
@@ -118,9 +118,13 @@ export class ProtoViewFactory {
   }
 
   private _flattenPipes(view: ViewMetadata): any[] {
-    if (isBlank(view.pipes)) return this._defaultPipes;
-    var pipes = ListWrapper.clone(this._defaultPipes);
-    _flattenList(view.pipes, pipes);
+    let pipes = [];
+    if (isPresent(this._platformPipes)) {
+      _flattenArray(this._platformPipes, pipes);
+    }
+    if (isPresent(view.pipes)) {
+      _flattenArray(view.pipes, pipes);
+    }
     return pipes;
   }
 }
@@ -313,13 +317,25 @@ function arrayToMap(arr: string[], inverse: boolean): Map<string, string> {
   return result;
 }
 
-function _flattenList(tree: any[], out: Array<Type | Provider | any[]>): void {
+function _flattenArray(tree: any[], out: Array<Type | Provider | any[]>): void {
   for (var i = 0; i < tree.length; i++) {
     var item = resolveForwardRef(tree[i]);
     if (isArray(item)) {
-      _flattenList(item, out);
+      _flattenArray(item, out);
     } else {
       out.push(item);
     }
   }
+}
+
+function _flattenStyleArr(arr: Array<string | any[]>, out: string[]): string[] {
+  for (var i = 0; i < arr.length; i++) {
+    var entry = arr[i];
+    if (isArray(entry)) {
+      _flattenStyleArr(<any[]>entry, out);
+    } else {
+      out.push(<string>entry);
+    }
+  }
+  return out;
 }

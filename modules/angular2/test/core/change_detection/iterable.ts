@@ -1,4 +1,4 @@
-import {getSymbolIterator} from 'angular2/src/core/facade/lang';
+import {getSymbolIterator} from 'angular2/src/facade/lang';
 
 export class TestIterable {
   list: number[];

@@ -2,6 +2,14 @@
 
 let execSync = require('child_process').execSync;
 let fs = require('fs');
+
+let minimist;
+try {
+  minimist = require('minimist');
+} catch (e) {
+  minimist = function(){ return {projects: ""}; };
+}
+
 let path = require('path');
 let os = require('os');
 let ua;
@@ -35,7 +43,7 @@ if (ua) {
 // https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
 let customParams = {
   // OS Platform (darwin, win32, linux)
-  cd1: os.platform,
+  cd1: os.platform(),
   // Node.js Version (v4.1.2)
   cd2: process.version,
   // npm Version (2.14.7)
@@ -58,6 +66,8 @@ let customParams = {
   cd8: `${os.cpus().length} x ${os.cpus()[0].model}`,
   // HW - Memory Info
   cd9: `${Math.round(os.totalmem()/1024/1024/1024)}GB`,
+  // gulp --projects (angular2,angular2_material)
+  cd13: minimist(process.argv.slice(2)).projects
 };
 
 

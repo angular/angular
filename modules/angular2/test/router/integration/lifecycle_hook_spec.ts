@@ -1,5 +1,5 @@
 import {
-  RootTestComponent,
+  ComponentFixture,
   AsyncTestCompleter,
   TestComponentBuilder,
   beforeEach,
@@ -16,14 +16,14 @@ import {
 } from 'angular2/testing_internal';
 
 import {provide, Component, Injector, Inject, View} from 'angular2/core';
-import {isPresent} from 'angular2/src/core/facade/lang';
+import {isPresent} from 'angular2/src/facade/lang';
 import {
   Promise,
   PromiseWrapper,
   PromiseCompleter,
   EventEmitter,
   ObservableWrapper
-} from 'angular2/src/core/facade/async';
+} from 'angular2/src/facade/async';
 
 import {RootRouter} from 'angular2/src/router/router';
 import {Router, RouterOutlet, RouterLink, RouteParams} from 'angular2/router';
@@ -58,7 +58,7 @@ export function main() {
   describe('Router lifecycle hooks', () => {
 
     var tcb: TestComponentBuilder;
-    var rootTC: RootTestComponent;
+    var fixture: ComponentFixture;
     var rtr;
 
     beforeEachBindings(() => [
@@ -87,7 +87,7 @@ export function main() {
                                 directives: [RouterOutlet, RouterLink]
                               }))
           .createAsync(MyComp)
-          .then((tc) => { rootTC = tc; });
+          .then((tc) => { fixture = tc; });
     }
 
     it('should call the onActivate hook', inject([AsyncTestCompleter], (async) => {
@@ -95,8 +95,8 @@ export function main() {
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => rtr.navigateByUrl('/on-activate'))
              .then((_) => {
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('activate cmp');
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('activate cmp');
                expect(log).toEqual(['activate: null -> /on-activate']);
                async.done();
              });
@@ -114,8 +114,8 @@ export function main() {
                });
                rtr.navigateByUrl('/parent-activate/child-activate')
                    .then((_) => {
-                     rootTC.detectChanges();
-                     expect(rootTC.debugElement.nativeElement).toHaveText('parent {activate cmp}');
+                     fixture.detectChanges();
+                     expect(fixture.debugElement.nativeElement).toHaveText('parent {activate cmp}');
                      expect(log).toEqual([
                        'parent activate: null -> /parent-activate',
                        'activate: null -> /child-activate'
@@ -131,8 +131,8 @@ export function main() {
              .then((_) => rtr.navigateByUrl('/on-deactivate'))
              .then((_) => rtr.navigateByUrl('/a'))
              .then((_) => {
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('A');
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('A');
                expect(log).toEqual(['deactivate: /on-deactivate -> /a']);
                async.done();
              });
@@ -147,13 +147,13 @@ export function main() {
                ObservableWrapper.subscribe<string>(eventBus, (ev) => {
                  if (ev.startsWith('deactivate')) {
                    completer.resolve(true);
-                   rootTC.detectChanges();
-                   expect(rootTC.debugElement.nativeElement).toHaveText('parent {deactivate cmp}');
+                   fixture.detectChanges();
+                   expect(fixture.debugElement.nativeElement).toHaveText('parent {deactivate cmp}');
                  }
                });
                rtr.navigateByUrl('/a').then((_) => {
-                 rootTC.detectChanges();
-                 expect(rootTC.debugElement.nativeElement).toHaveText('A');
+                 fixture.detectChanges();
+                 expect(fixture.debugElement.nativeElement).toHaveText('A');
                  expect(log).toEqual([
                    'deactivate: /child-deactivate -> null',
                    'parent deactivate: /parent-deactivate -> /a'
@@ -169,16 +169,16 @@ export function main() {
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => rtr.navigateByUrl('/on-reuse/1/a'))
              .then((_) => {
-               rootTC.detectChanges();
+               fixture.detectChanges();
                expect(log).toEqual([]);
-               expect(rootTC.debugElement.nativeElement).toHaveText('reuse {A}');
+               expect(fixture.debugElement.nativeElement).toHaveText('reuse {A}');
                expect(cmpInstanceCount).toBe(1);
              })
              .then((_) => rtr.navigateByUrl('/on-reuse/2/b'))
              .then((_) => {
-               rootTC.detectChanges();
+               fixture.detectChanges();
                expect(log).toEqual(['reuse: /on-reuse/1 -> /on-reuse/2']);
-               expect(rootTC.debugElement.nativeElement).toHaveText('reuse {B}');
+               expect(fixture.debugElement.nativeElement).toHaveText('reuse {B}');
                expect(cmpInstanceCount).toBe(1);
                async.done();
              });
@@ -191,16 +191,16 @@ export function main() {
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => rtr.navigateByUrl('/never-reuse/1/a'))
              .then((_) => {
-               rootTC.detectChanges();
+               fixture.detectChanges();
                expect(log).toEqual([]);
-               expect(rootTC.debugElement.nativeElement).toHaveText('reuse {A}');
+               expect(fixture.debugElement.nativeElement).toHaveText('reuse {A}');
                expect(cmpInstanceCount).toBe(1);
              })
              .then((_) => rtr.navigateByUrl('/never-reuse/2/b'))
              .then((_) => {
-               rootTC.detectChanges();
+               fixture.detectChanges();
                expect(log).toEqual([]);
-               expect(rootTC.debugElement.nativeElement).toHaveText('reuse {B}');
+               expect(fixture.debugElement.nativeElement).toHaveText('reuse {B}');
                expect(cmpInstanceCount).toBe(2);
                async.done();
              });
@@ -218,8 +218,8 @@ export function main() {
                });
                rtr.navigateByUrl('/can-activate/a')
                    .then((_) => {
-                     rootTC.detectChanges();
-                     expect(rootTC.debugElement.nativeElement).toHaveText('canActivate {A}');
+                     fixture.detectChanges();
+                     expect(fixture.debugElement.nativeElement).toHaveText('canActivate {A}');
                      expect(log).toEqual(['canActivate: null -> /can-activate']);
                      async.done();
                    });
@@ -238,8 +238,8 @@ export function main() {
                });
                rtr.navigateByUrl('/can-activate/a')
                    .then((_) => {
-                     rootTC.detectChanges();
-                     expect(rootTC.debugElement.nativeElement).toHaveText('');
+                     fixture.detectChanges();
+                     expect(fixture.debugElement.nativeElement).toHaveText('');
                      expect(log).toEqual(['canActivate: null -> /can-activate']);
                      async.done();
                    });
@@ -252,8 +252,8 @@ export function main() {
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => rtr.navigateByUrl('/can-deactivate/a'))
              .then((_) => {
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('canDeactivate {A}');
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('canDeactivate {A}');
                expect(log).toEqual([]);
 
                ObservableWrapper.subscribe<string>(eventBus, (ev) => {
@@ -263,8 +263,8 @@ export function main() {
                });
 
                rtr.navigateByUrl('/a').then((_) => {
-                 rootTC.detectChanges();
-                 expect(rootTC.debugElement.nativeElement).toHaveText('A');
+                 fixture.detectChanges();
+                 expect(fixture.debugElement.nativeElement).toHaveText('A');
                  expect(log).toEqual(['canDeactivate: /can-deactivate -> /a']);
                  async.done();
                });
@@ -277,8 +277,8 @@ export function main() {
              .then((_) => rtr.config([new Route({path: '/...', component: LifecycleCmp})]))
              .then((_) => rtr.navigateByUrl('/can-deactivate/a'))
              .then((_) => {
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('canDeactivate {A}');
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('canDeactivate {A}');
                expect(log).toEqual([]);
 
                ObservableWrapper.subscribe<string>(eventBus, (ev) => {
@@ -288,8 +288,8 @@ export function main() {
                });
 
                rtr.navigateByUrl('/a').then((_) => {
-                 rootTC.detectChanges();
-                 expect(rootTC.debugElement.nativeElement).toHaveText('canDeactivate {A}');
+                 fixture.detectChanges();
+                 expect(fixture.debugElement.nativeElement).toHaveText('canDeactivate {A}');
                  expect(log).toEqual(['canDeactivate: /can-deactivate -> /a']);
                  async.done();
                });

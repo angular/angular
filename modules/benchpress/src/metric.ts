@@ -1,6 +1,6 @@
 import {bind, provide, Provider} from 'angular2/src/core/di';
-import {Promise, PromiseWrapper} from 'angular2/src/core/facade/async';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 
 /**
  * A metric is measures values

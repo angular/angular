@@ -36,10 +36,9 @@ export function main() {
 
     describe('button[md-button]', () => {
       it('should handle a click on the button', inject([AsyncTestCompleter], (async) => {
-           builder.createAsync(TestApp).then(rootTestComponent => {
-             let testComponent = rootTestComponent.debugElement.componentInstance;
-             let buttonDebugElement =
-                 getChildDebugElement(rootTestComponent.debugElement, 'button');
+           builder.createAsync(TestApp).then(fixture => {
+             let testComponent = fixture.debugElement.componentInstance;
+             let buttonDebugElement = getChildDebugElement(fixture.debugElement, 'button');
 
              buttonDebugElement.nativeElement.click();
              expect(testComponent.clickCount).toBe(1);
@@ -49,10 +48,9 @@ export function main() {
          }), 1000);
 
       it('should disable the button', inject([AsyncTestCompleter], (async) => {
-           builder.createAsync(TestApp).then(rootTestComponent => {
-             let testAppComponent = rootTestComponent.debugElement.componentInstance;
-             let buttonDebugElement =
-                 getChildDebugElement(rootTestComponent.debugElement, 'button');
+           builder.createAsync(TestApp).then(fixture => {
+             let testAppComponent = fixture.debugElement.componentInstance;
+             let buttonDebugElement = getChildDebugElement(fixture.debugElement, 'button');
              let buttonElement = buttonDebugElement.nativeElement;
 
              // The button should initially be enabled.
@@ -60,7 +58,7 @@ export function main() {
 
              // After the disabled binding has been changed.
              testAppComponent.isDisabled = true;
-             rootTestComponent.detectChanges();
+             fixture.detectChanges();
 
              // The button should should now be disabled.
              expect(buttonElement.disabled).toBe(true);
@@ -82,9 +80,9 @@ export function main() {
       });
 
       it('should remove disabled anchors from tab order', inject([AsyncTestCompleter], (async) => {
-           builder.createAsync(TestApp).then(rootTestComponent => {
-             let testAppComponent = rootTestComponent.debugElement.componentInstance;
-             let anchorDebugElement = getChildDebugElement(rootTestComponent.debugElement, 'a');
+           builder.createAsync(TestApp).then(fixture => {
+             let testAppComponent = fixture.debugElement.componentInstance;
+             let anchorDebugElement = getChildDebugElement(fixture.debugElement, 'a');
              let anchorElement = anchorDebugElement.nativeElement;
 
              // The anchor should initially be in the tab order.
@@ -92,7 +90,7 @@ export function main() {
 
              // After the disabled binding has been changed.
              testAppComponent.isDisabled = true;
-             rootTestComponent.detectChanges();
+             fixture.detectChanges();
 
              // The anchor should now be out of the tab order.
              expect(anchorElement.tabIndex).toBe(-1);

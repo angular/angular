@@ -1,7 +1,7 @@
 import {Injector, Provider, Injectable, ResolvedProvider} from 'angular2/src/core/di';
-import {ListWrapper, MapWrapper, Map, StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {ListWrapper, MapWrapper, Map, StringMapWrapper} from 'angular2/src/facade/collection';
 import * as eli from './element_injector';
-import {isPresent, isBlank} from 'angular2/src/core/facade/lang';
+import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import * as viewModule from './view';
 import * as avmModule from './view_manager';
 import {ElementRef, ElementRef_} from './element_ref';
@@ -102,7 +102,7 @@ export class AppViewManagerUtils {
       currentView.init(protoView.changeDetectorFactory(currentView), elementInjectors,
                        rootElementInjectors, preBuiltObjects, views, elementRefs, viewContainers);
       if (isPresent(parentView) && protoView.type === viewModule.ViewType.COMPONENT) {
-        parentView.changeDetector.addShadowDomChild(currentView.changeDetector);
+        parentView.changeDetector.addViewChild(currentView.changeDetector);
       }
       elementOffset += protoView.elementBinders.length;
       textOffset += protoView.textBindingCount;
@@ -122,7 +122,7 @@ export class AppViewManagerUtils {
       contextView = parentView;
       contextBoundElementIndex = boundElementIndex;
     }
-    parentView.changeDetector.addChild(view.changeDetector);
+    parentView.changeDetector.addContentChild(view.changeDetector);
     var viewContainer = parentView.viewContainers[boundElementIndex];
     if (isBlank(viewContainer)) {
       viewContainer = new viewModule.AppViewContainer();

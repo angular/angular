@@ -1,4 +1,6 @@
-import {Map} from 'angular2/src/core/facade/collection';
+import {unimplemented} from 'angular2/src/facade/exceptions';
+import {Map} from 'angular2/src/facade/collection';
+import {ViewEncapsulation} from 'angular2/src/core/metadata';
 
 /**
  * Represents an Angular ProtoView in the Rendering Context.
@@ -69,37 +71,40 @@ export class RenderFragmentRef {}
 // TODO(i): refactor into an interface
 export class RenderViewRef {}
 
-export interface RenderTemplateCmd { visit(visitor: RenderCommandVisitor, context: any): any; }
-
-export interface RenderBeginCmd extends RenderTemplateCmd {
-  ngContentIndex: number;
-  isBound: boolean;
+export abstract class RenderTemplateCmd {
+  abstract visit(visitor: RenderCommandVisitor, context: any): any;
 }
 
-export interface RenderTextCmd extends RenderBeginCmd { value: string; }
+export abstract class RenderBeginCmd extends RenderTemplateCmd {
+  get ngContentIndex(): number { return unimplemented(); };
+  get isBound(): boolean { return unimplemented(); };
+}
 
-export interface RenderNgContentCmd {
+export abstract class RenderTextCmd extends RenderBeginCmd {
+  get value(): string { return unimplemented(); };
+}
+
+export abstract class RenderNgContentCmd extends RenderTemplateCmd {
   // The index of this NgContent element
-  index: number;
+  get index(): number { return unimplemented(); };
   // The index of the NgContent element into which this
   // NgContent element should be projected (if any)
-  ngContentIndex: number;
+  get ngContentIndex(): number { return unimplemented(); };
 }
 
-export interface RenderBeginElementCmd extends RenderBeginCmd {
-  name: string;
-  attrNameAndValues: string[];
-  eventTargetAndNames: string[];
+export abstract class RenderBeginElementCmd extends RenderBeginCmd {
+  get name(): string { return unimplemented(); };
+  get attrNameAndValues(): string[] { return unimplemented(); };
+  get eventTargetAndNames(): string[] { return unimplemented(); };
 }
 
-export interface RenderBeginComponentCmd extends RenderBeginElementCmd {
-  nativeShadow: boolean;
-  templateId: number;
+export abstract class RenderBeginComponentCmd extends RenderBeginElementCmd {
+  get templateId(): string { return unimplemented(); };
 }
 
-export interface RenderEmbeddedTemplateCmd extends RenderBeginElementCmd {
-  isMerged: boolean;
-  children: RenderTemplateCmd[];
+export abstract class RenderEmbeddedTemplateCmd extends RenderBeginElementCmd {
+  get isMerged(): boolean { return unimplemented(); };
+  get children(): RenderTemplateCmd[] { return unimplemented(); };
 }
 
 export interface RenderCommandVisitor {
@@ -156,6 +161,10 @@ export interface RenderElementRef {
   boundElementIndex: number;
 }
 
+export class RenderComponentTemplate {
+  constructor(public id: string, public shortId: string, public encapsulation: ViewEncapsulation,
+              public commands: RenderTemplateCmd[], public styles: string[]) {}
+}
 
 /**
  * Injectable service that provides a low-level interface for modifying the UI.
@@ -177,13 +186,13 @@ export abstract class Renderer {
    * Once a template is registered it can be referenced via {@link RenderBeginComponentCmd} when
    * {@link #createProtoView creating Render ProtoView}.
    */
-  abstract registerComponentTemplate(templateId: number, commands: RenderTemplateCmd[],
-                                     styles: string[], nativeShadow: boolean);
+  abstract registerComponentTemplate(template: RenderComponentTemplate);
 
   /**
    * Creates a {@link RenderProtoViewRef} from an array of {@link RenderTemplateCmd}`s.
    */
-  abstract createProtoView(cmds: RenderTemplateCmd[]): RenderProtoViewRef;
+  abstract createProtoView(componentTemplateId: string,
+                           cmds: RenderTemplateCmd[]): RenderProtoViewRef;
 
   /**
    * Creates a Root Host View based on the provided `hostProtoViewRef`.

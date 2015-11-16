@@ -1,5 +1,5 @@
 import {
-  RootTestComponent,
+  ComponentFixture,
   AsyncTestCompleter,
   beforeEach,
   ddescribe,
@@ -17,9 +17,9 @@ import {
   SpyObject
 } from 'angular2/testing_internal';
 
-import {NumberWrapper} from 'angular2/src/core/facade/lang';
-import {PromiseWrapper} from 'angular2/src/core/facade/async';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
+import {NumberWrapper} from 'angular2/src/facade/lang';
+import {PromiseWrapper} from 'angular2/src/facade/async';
+import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {provide, Component, DirectiveResolver, View} from 'angular2/core';
 
@@ -43,7 +43,7 @@ import {DOM} from 'angular2/src/core/dom/dom_adapter';
 export function main() {
   describe('router-link directive', function() {
     var tcb: TestComponentBuilder;
-    var rootTC: RootTestComponent;
+    var fixture: ComponentFixture;
     var router, location;
 
     beforeEachBindings(() => [
@@ -70,7 +70,7 @@ export function main() {
                                 directives: [RouterOutlet, RouterLink]
                               }))
           .createAsync(MyComp)
-          .then((tc) => { rootTC = tc; });
+          .then((tc) => { fixture = tc; });
     }
 
     it('should generate absolute hrefs that include the base href',
@@ -81,8 +81,8 @@ export function main() {
                        [new Route({path: '/user', component: UserCmp, name: 'User'})]))
              .then((_) => router.navigateByUrl('/a/b'))
              .then((_) => {
-               rootTC.detectChanges();
-               expect(getHref(rootTC)).toEqual('/my/base/user');
+               fixture.detectChanges();
+               expect(getHref(fixture)).toEqual('/my/base/user');
                async.done();
              });
        }));
@@ -94,8 +94,8 @@ export function main() {
                        [new Route({path: '/user', component: UserCmp, name: 'User'})]))
              .then((_) => router.navigateByUrl('/a/b'))
              .then((_) => {
-               rootTC.detectChanges();
-               expect(getHref(rootTC)).toEqual('/user');
+               fixture.detectChanges();
+               expect(getHref(fixture)).toEqual('/user');
                async.done();
              });
        }));
@@ -107,10 +107,10 @@ export function main() {
                        [new Route({path: '/user/:name', component: UserCmp, name: 'User'})]))
              .then((_) => router.navigateByUrl('/a/b'))
              .then((_) => {
-               rootTC.debugElement.componentInstance.name = 'brian';
-               rootTC.detectChanges();
-               expect(rootTC.debugElement.nativeElement).toHaveText('brian');
-               expect(DOM.getAttribute(rootTC.debugElement.componentViewChildren[0].nativeElement,
+               fixture.debugElement.componentInstance.name = 'brian';
+               fixture.detectChanges();
+               expect(fixture.debugElement.nativeElement).toHaveText('brian');
+               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[0].nativeElement,
                                        'href'))
                    .toEqual('/user/brian');
                async.done();
@@ -125,8 +125,8 @@ export function main() {
                      [new Route({path: '/page/:number', component: SiblingPageCmp, name: 'Page'})]))
              .then((_) => router.navigateByUrl('/page/1'))
              .then((_) => {
-               rootTC.detectChanges();
-               expect(DOM.getAttribute(rootTC.debugElement.componentViewChildren[1]
+               fixture.detectChanges();
+               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[1]
                                            .componentViewChildren[0]
                                            .nativeElement,
                                        'href'))
@@ -144,8 +144,8 @@ export function main() {
              ]))
              .then((_) => router.navigateByUrl('/page/1'))
              .then((_) => {
-               rootTC.detectChanges();
-               expect(DOM.getAttribute(rootTC.debugElement.componentViewChildren[1]
+               fixture.detectChanges();
+               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[1]
                                            .componentViewChildren[0]
                                            .nativeElement,
                                        'href'))
@@ -162,8 +162,8 @@ export function main() {
              ]))
              .then((_) => router.navigateByUrl('/book/1984/page/1'))
              .then((_) => {
-               rootTC.detectChanges();
-               expect(DOM.getAttribute(rootTC.debugElement.componentViewChildren[1]
+               fixture.detectChanges();
+               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[1]
                                            .componentViewChildren[0]
                                            .nativeElement,
                                        'href'))
@@ -181,7 +181,7 @@ export function main() {
              .then((_) => router.navigateByUrl('/book/1984/page/1'))
              .then((_) => {
                var link = ListWrapper.toJSON(['Book', {number: 100}]);
-               expect(() => rootTC.detectChanges())
+               expect(() => fixture.detectChanges())
                    .toThrowErrorWith(
                        `Link "${link}" is ambiguous, use "./" or "../" to disambiguate.`);
                async.done();
@@ -200,8 +200,8 @@ export function main() {
              ]))
              .then((_) => router.navigate(['/ChildWithGrandchild']))
              .then((_) => {
-               rootTC.detectChanges();
-               expect(DOM.getAttribute(rootTC.debugElement.componentViewChildren[1]
+               fixture.detectChanges();
+               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[1]
                                            .componentViewChildren[0]
                                            .nativeElement,
                                        'href'))
@@ -217,14 +217,14 @@ export function main() {
                        [new Route({path: '/book/:title/...', component: BookCmp, name: 'Book'})]))
              .then((_) => router.navigateByUrl('/book/1984/page/1'))
              .then((_) => {
-               rootTC.detectChanges();
-               expect(DOM.getAttribute(rootTC.debugElement.componentViewChildren[1]
+               fixture.detectChanges();
+               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[1]
                                            .componentViewChildren[0]
                                            .nativeElement,
                                        'href'))
                    .toEqual('/book/1984/page/100');
 
-               expect(DOM.getAttribute(rootTC.debugElement.componentViewChildren[1]
+               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[1]
                                            .componentViewChildren[2]
                                            .componentViewChildren[0]
                                            .nativeElement,
@@ -245,9 +245,9 @@ export function main() {
                                 <a [router-link]="['./BetterChild']" class="better-child-link">Better Child</a>
                                 <router-outlet></router-outlet>`))
                .then((_) => {
-                 var element = rootTC.debugElement.nativeElement;
+                 var element = fixture.debugElement.nativeElement;
 
-                 rootTC.detectChanges();
+                 fixture.detectChanges();
 
                  var link1 = DOM.querySelector(element, '.child-link');
                  var link2 = DOM.querySelector(element, '.better-child-link');
@@ -256,7 +256,7 @@ export function main() {
                  expect(link2).not.toHaveCssClass('router-link-active');
 
                  router.subscribe((_) => {
-                   rootTC.detectChanges();
+                   fixture.detectChanges();
 
                    expect(link1).not.toHaveCssClass('router-link-active');
                    expect(link2).toHaveCssClass('router-link-active');
@@ -280,9 +280,9 @@ export function main() {
                                 <a [router-link]="['./ChildWithGrandchild/Grandchild']" class="child-with-grandchild-link">Better Child</a>
                                 <router-outlet></router-outlet>`))
                .then((_) => {
-                 var element = rootTC.debugElement.nativeElement;
+                 var element = fixture.debugElement.nativeElement;
 
-                 rootTC.detectChanges();
+                 fixture.detectChanges();
 
                  var link1 = DOM.querySelector(element, '.child-link');
                  var link2 = DOM.querySelector(element, '.child-with-grandchild-link');
@@ -291,7 +291,7 @@ export function main() {
                  expect(link2).not.toHaveCssClass('router-link-active');
 
                  router.subscribe((_) => {
-                   rootTC.detectChanges();
+                   fixture.detectChanges();
 
                    expect(link1).not.toHaveCssClass('router-link-active');
                    expect(link2).toHaveCssClass('router-link-active');
@@ -312,7 +312,7 @@ export function main() {
     describe('when clicked', () => {
 
       var clickOnElement = function(view) {
-        var anchorEl = rootTC.debugElement.componentViewChildren[0].nativeElement;
+        var anchorEl = fixture.debugElement.componentViewChildren[0].nativeElement;
         var dispatchedEvent = DOM.createMouseEvent('click');
         DOM.dispatchEvent(anchorEl, dispatchedEvent);
         return dispatchedEvent;
@@ -324,9 +324,9 @@ export function main() {
                          [new Route({path: '/user', component: UserCmp, name: 'User'})]))
                .then((_) => router.navigateByUrl('/a/b'))
                .then((_) => {
-                 rootTC.detectChanges();
+                 fixture.detectChanges();
 
-                 var dispatchedEvent = clickOnElement(rootTC);
+                 var dispatchedEvent = clickOnElement(fixture);
                  expect(DOM.isPrevented(dispatchedEvent)).toBe(true);
 
                  // router navigation is async.
@@ -345,9 +345,9 @@ export function main() {
                          [new Route({path: '/user', component: UserCmp, name: 'User'})]))
                .then((_) => router.navigateByUrl('/a/b'))
                .then((_) => {
-                 rootTC.detectChanges();
+                 fixture.detectChanges();
 
-                 var dispatchedEvent = clickOnElement(rootTC);
+                 var dispatchedEvent = clickOnElement(fixture);
                  expect(DOM.isPrevented(dispatchedEvent)).toBe(true);
 
                  // router navigation is async.
@@ -361,7 +361,7 @@ export function main() {
   });
 }
 
-function getHref(tc: RootTestComponent) {
+function getHref(tc: ComponentFixture) {
   return DOM.getAttribute(tc.debugElement.componentViewChildren[0].nativeElement, 'href');
 }
 

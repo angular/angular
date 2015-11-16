@@ -1,7 +1,7 @@
 library benchmarks.src.naive_infinite_scroll.scroll_area;
 
-import "package:angular2/src/core/facade/collection.dart" show ListWrapper;
-import "package:angular2/src/core/facade/math.dart" show Math;
+import "package:angular2/src/facade/collection.dart" show ListWrapper;
+import "package:angular2/src/facade/math.dart" show Math;
 import "package:angular2/angular2.dart" show Component, Directive, View, ChangeDetectionStrategy;
 import "common.dart"
     show

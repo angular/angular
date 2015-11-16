@@ -1,7 +1,7 @@
 library angular2.test.transform.common.annotation_matcher_test;
 
 import 'package:angular2/src/core/render/api.dart';
-import 'package:angular2/src/core/compiler/directive_metadata.dart';
+import 'package:angular2/src/compiler/directive_metadata.dart';
 import 'package:angular2/src/transform/common/ng_meta.dart';
 import 'package:guinness/guinness.dart';
 

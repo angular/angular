@@ -24,7 +24,7 @@ import {
 } from '../spies';
 
 import {Injector, provide} from 'angular2/core';
-import {isBlank, isPresent} from 'angular2/src/core/facade/lang';
+import {isBlank, isPresent} from 'angular2/src/facade/lang';
 
 import {
   AppProtoView,
@@ -250,8 +250,8 @@ function _createProtoView(type: ViewType, binders: ElementBinder[] = null) {
   if (isBlank(binders)) {
     binders = [];
   }
-  var res = new AppProtoView([], type, true, (_) => new SpyChangeDetector(), new Map<string, any>(),
-                             null);
+  var res = new AppProtoView(null, [], type, true, (_) => new SpyChangeDetector(),
+                             new Map<string, any>(), null);
   var mergedElementCount = 0;
   var mergedEmbeddedViewCount = 0;
   var mergedViewCount = 1;

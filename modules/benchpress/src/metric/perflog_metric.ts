@@ -1,4 +1,4 @@
-import {PromiseWrapper, Promise, TimerWrapper} from 'angular2/src/core/facade/async';
+import {PromiseWrapper, Promise, TimerWrapper} from 'angular2/src/facade/async';
 import {
   isPresent,
   isBlank,
@@ -6,9 +6,9 @@ import {
   Math,
   RegExpWrapper,
   NumberWrapper
-} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
-import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
+} from 'angular2/src/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {bind, provide, Provider, OpaqueToken} from 'angular2/src/core/di';
 
 import {WebDriverExtension, PerfLogFeatures} from '../web_driver_extension';
@@ -308,14 +308,12 @@ export class PerflogMetric extends Metric {
   }
 
   _addFrameMetrics(result: {[key: string]: any}, frameTimes: any[]) {
-    result['frameTime.mean'] =
-        ListWrapper.reduce(frameTimes, (a, b) => a + b, 0) / frameTimes.length;
+    result['frameTime.mean'] = frameTimes.reduce((a, b) => a + b, 0) / frameTimes.length;
     var firstFrame = frameTimes[0];
-    result['frameTime.worst'] = ListWrapper.reduce(frameTimes, (a, b) => a > b ? a : b, firstFrame);
-    result['frameTime.best'] = ListWrapper.reduce(frameTimes, (a, b) => a < b ? a : b, firstFrame);
+    result['frameTime.worst'] = frameTimes.reduce((a, b) => a > b ? a : b, firstFrame);
+    result['frameTime.best'] = frameTimes.reduce((a, b) => a < b ? a : b, firstFrame);
     result['frameTime.smooth'] =
-        ListWrapper.filter(frameTimes, (a) => a < _FRAME_TIME_SMOOTH_THRESHOLD).length /
-        frameTimes.length;
+        frameTimes.filter(t => t < _FRAME_TIME_SMOOTH_THRESHOLD).length / frameTimes.length;
   }
 
   _markName(index) { return `${_MARK_NAME_PREFIX}${index}`; }

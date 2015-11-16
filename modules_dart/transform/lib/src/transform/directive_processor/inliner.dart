@@ -54,11 +54,11 @@ Future<String> _getAllDeclarations(AssetReader reader, AssetId assetId,
   var asyncWriter = new AsyncStringWriter(code.substring(0, partsStart));
   visitor.parts.forEach((partDirective) {
     var uri = stringLiteralToString(partDirective.uri);
-    var partAssetId = uriToAssetId(assetId, uri, logger, null /* span */,
+    var partAssetId = uriToAssetId(assetId, uri, log, null /* span */,
         errorOnAbsolute: false);
     asyncWriter.asyncPrint(reader.readAsString(partAssetId).then((partCode) {
       if (partCode == null || partCode.isEmpty) {
-        logger.warning('Empty part at "${partDirective.uri}. Ignoring.',
+        log.warning('Empty part at "${partDirective.uri}. Ignoring.',
             asset: partAssetId);
         return '';
       }
@@ -66,7 +66,7 @@ Future<String> _getAllDeclarations(AssetReader reader, AssetId assetId,
       var parsedDirectives = parseDirectives(partCode, name: uri).directives;
       return partCode.substring(parsedDirectives.last.end);
     }).catchError((err, stackTrace) {
-      logger.warning(
+      log.warning(
           'Failed while reading part at ${partDirective.uri}. Ignoring.\n'
           'Error: $err\n'
           'Stack Trace: $stackTrace',

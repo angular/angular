@@ -1,4 +1,4 @@
-import {Map, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
+import {Map, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {
   ResolvedProvider,
   Provider,
@@ -16,7 +16,7 @@ import {
   InvalidProviderError,
   OutOfBoundsError
 } from './exceptions';
-import {FunctionWrapper, Type, isPresent, isBlank, CONST_EXPR} from 'angular2/src/core/facade/lang';
+import {FunctionWrapper, Type, isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
 import {Key} from './key';
 import {SelfMetadata, HostMetadata, SkipSelfMetadata} from './metadata';
 

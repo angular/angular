@@ -2,7 +2,7 @@ import {IterableDiffers, IterableDifferFactory} from './differs/iterable_differs
 import {DefaultIterableDifferFactory} from './differs/default_iterable_differ';
 import {KeyValueDiffers, KeyValueDifferFactory} from './differs/keyvalue_differs';
 import {DefaultKeyValueDifferFactory} from './differs/default_keyvalue_differ';
-import {CONST, CONST_EXPR, isPresent} from 'angular2/src/core/facade/lang';
+import {CONST, CONST_EXPR, isPresent} from 'angular2/src/facade/lang';
 
 export {
   ASTWithSource,

@@ -7,6 +7,7 @@ JS and Dart versions. It also explains the basic mechanics of using `git`, `node
 * [Getting the Sources](#getting-the-sources)
 * [Environment Variable Setup](#environment-variable-setup)
 * [Installing NPM Modules and Dart Packages](#installing-npm-modules-and-dart-packages)
+* [Build commands](#build-commands)
 * [Running Tests Locally](#running-tests-locally)
 * [Formatting](#clang-format)
 * [Project Information](#project-information)
@@ -36,9 +37,9 @@ following products on your development machine:
   [Windows](http://windows.github.com)); [GitHub's Guide to Installing
   Git](https://help.github.com/articles/set-up-git) is a good source of information.
 
-* [Node.js](http://nodejs.org), (version `>=4.2.1 <5`) which is used to run a development web server, 
-  run tests, and generate distributable files. We also use Node's Package Manager, `npm` 
-  (version `>=2.14.7 <3.0`), which comes with Node. Depending on your system, you can install Node either from 
+* [Node.js](http://nodejs.org), (version `>=4.2.1 <5`) which is used to run a development web server,
+  run tests, and generate distributable files. We also use Node's Package Manager, `npm`
+  (version `>=2.14.7 <3.0`), which comes with Node. Depending on your system, you can install Node either from
   source or as a pre-packaged bundle.
 
 * [Chrome Canary](https://www.google.com/chrome/browser/canary.html), a version of Chrome with
@@ -95,7 +96,7 @@ export DART_SDK="$DART_EDITOR_DIR/dart-sdk"
 PATH+=":$DART_SDK/bin"
 ```
 
-And specify where the pub’s dependencies are downloaded. By default, this directory is located under .pub_cache 
+And specify where the pub’s dependencies are downloaded. By default, this directory is located under .pub_cache
 in your home directory (on Mac and Linux), or in AppData\Roaming\Pub\Cache (on Windows).
 
 ```shell
@@ -145,12 +146,6 @@ You can selectively build either the JS or Dart versions as follows:
 * `$(npm bin)/gulp build.js`
 * `$(npm bin)/gulp build.dart`
 
-Also note that in order for the whole test suite to succeed you will need to generate the type definitions by running:
-
-```shell
-$(npm bin)/gulp docs/typings
-```
-
 To clean out the `dist` folder, run:
 
 ```shell
@@ -195,6 +190,27 @@ tests respectively.
 **Note**: **watch mode** needs symlinks to work, so if you're using windows, ensure you have the
 rights to built them in your operating system.
 
+### Unit tests with Sauce Labs or Browser Stack
+
+First, in a terminal, create a tunnel with [Sauce Connect](https://docs.saucelabs.com/reference/sauce-connect/) or [Browser Stack Local](https://www.browserstack.com/local-testing#command-line), and valid credentials.  
+
+Then, in another terminal:
+ - Define the credentials as environment variables, e.g.:
+```
+export SAUCE_USERNAME='my_user'; export SAUCE_ACCESS_KEY='my_key';
+export BROWSER_STACK_USERNAME='my_user'; export BROWSER_STACK_ACCESS_KEY='my_key';
+```
+ - Then run `gulp test.unit.js.(saucelabs|browserstack) --browsers=option1,option2,..,optionN`  
+The options are any mix of browsers and aliases which are defined in the [browser-providers.conf.js](https://github.com/angular/angular/blob/master/browser-providers.conf.js) file.  
+They are case insensitive, and the `SL_` or `BS_` prefix must not be added for browsers.
+
+Some examples of commands:
+```
+gulp test.unit.js.saucelabs --browsers=Safari8,ie11  //run in Sauce Labs with Safari 8 and IE11
+gulp test.unit.js.browserstack --browsers=Safari,IE  //run in Browser Stack with Safari 7, Safari 8, Safari 9, IE 9, IE 10 and IE 11
+gulp test.unit.js.saucelabs --browsers=IOS,safari8,android5.1  //run in Sauce Labs with iOS 7, iOS 8, iOs 9, Safari 8 and Android 5.1
+```
+
 ### E2E tests
 
 1. `$(npm bin)/gulp build.js.cjs` (builds benchpress and tests into `dist/js/cjs` folder).
@@ -233,12 +249,7 @@ Your life will be easier if you include the formatter in your standard workflow.
 likely forget to check the formatting, and waste time waiting for a build on Travis that fails due
 to some whitespace difference.
 
-* Install clang-format with `npm install -g clang-format`.
-* Use `clang-format -i [file name]` to format a file (or multiple).
-  Note that `clang-format` tries to load a `clang-format` node module close to the sources being
-  formatted, or from the `$CWD`, and only then uses the globally installed one - so the version used
-  should automatically match the one required by the project.
-  Use `clang-format -version` in case you get confused.
+* Use `$(npm bin)/clang-format -i [file name]` to format a file (or multiple).
 * Use `gulp enforce-format` to check if your code is `clang-format` clean. This also gives
   you a command line to format your code.
 * `clang-format` also includes a git hook, run `git clang-format` to format all files you
@@ -260,16 +271,16 @@ to some whitespace difference.
     - Synchronize files after execution: checked
     - Open console: not checked
     - Show in: Editor menu
-    - Program: [path to clang-format, try `$ echo $(npm config get prefix)/bin/clang-format`]
+    - Program: `$ProjectFileDir$/node_modules/.bin/clang-format`
     - Parameters: `-i -style=file $FilePath$`
     - Working directory: `$ProjectFileDir$`
 * `clang-format` integrations are also available for many popular editors (`vim`, `emacs`,
   `Sublime Text`, etc.).
-  
+
 ## Generating the API documentation
 
 The following gulp task will generate the API docs in the `dist/angular.io/partials/api/angular2`:  
-  
+
 ```shell
 $(npm bin)/gulp docs/angular.io
 ```
@@ -279,8 +290,8 @@ You can serve the generated documentation to check how it would render on [angul
 - install dependencies as described in the [angular.io README](https://github.com/angular/angular.io/blob/master/README.md),
 - copy the generated documentation from your local angular repo at `angular/dist/angular.io/partials/api/angular2` to your local angular.io repo at `angular.io/public/docs/js/latest/api`,
 - run `harp compile` at the root of the angular.io repo to check the generated documentation for errors,
-- run `harp server` and open a browser at `http://localhost:9000/docs/js/latest/api/` to check the rendered documentation. 
- 
+- run `harp server` and open a browser at `http://localhost:9000/docs/js/latest/api/` to check the rendered documentation.
+
 ## Project Information
 
 ### Folder structure

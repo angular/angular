@@ -1,10 +1,10 @@
 import {Injectable} from 'angular2/src/core/di';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {Map, MapWrapper, ListWrapper} from 'angular2/src/core/facade/collection';
-import {CONST, CONST_EXPR} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+import {Map, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {CONST, CONST_EXPR} from 'angular2/src/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {NgZone} from '../zone/ng_zone';
-import {PromiseWrapper} from 'angular2/src/core/facade/async';
+import {PromiseWrapper, ObservableWrapper} from 'angular2/src/facade/async';
 
 
 /**
@@ -24,11 +24,17 @@ export class Testability {
 
   /** @internal */
   _watchAngularEvents(_ngZone: NgZone): void {
-    _ngZone.overrideOnTurnStart(() => { this._isAngularEventPending = true; });
-    _ngZone.overrideOnEventDone(() => {
-      this._isAngularEventPending = false;
-      this._runCallbacksIfReady();
-    }, true);
+    ObservableWrapper.subscribe(_ngZone.onTurnStart,
+                                (_) => { this._isAngularEventPending = true; });
+
+    _ngZone.runOutsideAngular(() => {
+      ObservableWrapper.subscribe(_ngZone.onEventDone, (_) => {
+        if (!_ngZone.hasPendingTimers) {
+          this._isAngularEventPending = false;
+          this._runCallbacksIfReady();
+        }
+      });
+    });
   }
 
   increasePendingRequestCount(): number {

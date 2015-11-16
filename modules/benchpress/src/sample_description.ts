@@ -1,4 +1,4 @@
-import {StringMapWrapper} from 'angular2/src/core/facade/collection';
+import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {bind, provide, Provider, OpaqueToken} from 'angular2/src/core/di';
 import {Validator} from './validator';
 import {Metric} from './metric';

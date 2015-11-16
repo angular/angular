@@ -1,7 +1,6 @@
 // TODO (jteplitz602): This whole file is nearly identical to core/application.ts.
 // There should be a way to refactor application so that this file is unnecessary. See #3277
 import {Injector, provide, Provider} from "angular2/src/core/di";
-import {DEFAULT_PIPES} from 'angular2/src/core/pipes';
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
 import {BrowserDetails} from 'angular2/src/animate/browser_details';
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
@@ -17,13 +16,11 @@ import {KeyEventsPlugin} from 'angular2/src/core/render/dom/events/key_events';
 import {HammerGesturesPlugin} from 'angular2/src/core/render/dom/events/hammer_gestures';
 import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 import {Renderer} from 'angular2/src/core/render/api';
-import {AppRootUrl} from 'angular2/src/core/compiler/app_root_url';
+import {AppRootUrl} from 'angular2/src/compiler/app_root_url';
 import {DomRenderer, DomRenderer_, DOCUMENT} from 'angular2/src/core/render/render';
 import {APP_ID_RANDOM_PROVIDER} from 'angular2/src/core/application_tokens';
-import {ElementSchemaRegistry} from 'angular2/src/core/compiler/schema/element_schema_registry';
-import {
-  DomElementSchemaRegistry
-} from 'angular2/src/core/compiler/schema/dom_element_schema_registry';
+import {ElementSchemaRegistry} from 'angular2/src/compiler/schema/element_schema_registry';
+import {DomElementSchemaRegistry} from 'angular2/src/compiler/schema/dom_element_schema_registry';
 import {
   SharedStylesHost,
   DomSharedStylesHost
@@ -35,22 +32,22 @@ import {AppViewManagerUtils} from 'angular2/src/core/linker/view_manager_utils';
 import {AppViewListener} from 'angular2/src/core/linker/view_listener';
 import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
 import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
-import {ExceptionHandler} from 'angular2/src/core/facade/exceptions';
+import {ExceptionHandler} from 'angular2/src/facade/exceptions';
 import {
   DynamicComponentLoader,
   DynamicComponentLoader_
 } from 'angular2/src/core/linker/dynamic_component_loader';
-import {UrlResolver} from 'angular2/src/core/compiler/url_resolver';
+import {UrlResolver} from 'angular2/src/compiler/url_resolver';
 import {Testability} from 'angular2/src/core/testability/testability';
-import {XHR} from 'angular2/src/core/compiler/xhr';
-import {XHRImpl} from 'angular2/src/core/compiler/xhr_impl';
+import {XHR} from 'angular2/src/compiler/xhr';
+import {XHRImpl} from 'angular2/src/platform/browser/xhr_impl';
 import {Serializer} from 'angular2/src/web_workers/shared/serializer';
 import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';
 import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_proto_view_ref_store';
 import {
   RenderViewWithFragmentsStore
 } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
-import {AnchorBasedAppRootUrl} from 'angular2/src/core/compiler/anchor_based_app_root_url';
+import {AnchorBasedAppRootUrl} from 'angular2/src/compiler/anchor_based_app_root_url';
 import {WebWorkerApplication} from 'angular2/src/web_workers/ui/impl';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
@@ -64,6 +61,8 @@ import {
   ClientMessageBrokerFactory,
   ClientMessageBrokerFactory_
 } from 'angular2/src/web_workers/shared/client_message_broker';
+import {PLATFORM_DIRECTIVES, PLATFORM_PIPES} from "angular2/src/core/platform_directives_and_pipes";
+import {COMMON_DIRECTIVES, COMMON_PIPES} from "angular2/common";
 
 var _rootInjector: Injector;
 
@@ -96,7 +95,8 @@ function _injectorProviders(): any[] {
     AppViewListener,
     ProtoViewFactory,
     ViewResolver,
-    DEFAULT_PIPES,
+    provide(PLATFORM_PIPES, {useValue: COMMON_PIPES, multi: true}),
+    provide(PLATFORM_DIRECTIVES, {useValue: COMMON_DIRECTIVES, multi: true}),
     DirectiveResolver,
     Parser,
     Lexer,

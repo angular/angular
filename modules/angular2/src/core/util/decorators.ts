@@ -1,4 +1,4 @@
-import {ConcreteType, global, Type, isFunction, stringify} from 'angular2/src/core/facade/lang';
+import {ConcreteType, global, Type, isFunction, stringify} from 'angular2/src/facade/lang';
 
 /**
  * Declares the interface to be used with {@link Class}.

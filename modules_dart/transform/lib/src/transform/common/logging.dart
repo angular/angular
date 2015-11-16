@@ -1,53 +1,16 @@
-library angular2.transform.common.logging;
+library angular2.src.transform.common.logging;
 
 import 'dart:async';
 
-import 'package:analyzer/analyzer.dart';
 import 'package:barback/barback.dart';
 import 'package:source_span/source_span.dart';
 
-typedef _SimpleCallback();
+import 'zone.dart' as zone show log;
 
-// The key used to store the logger on the current zone.
-final _key = #loggingZonedLoggerKey;
-
-/// Executes {@link fn} inside a new {@link Zone} with its own logger.
-Future<dynamic> initZoned(Transform t, _SimpleCallback fn) =>
-    setZoned(t.logger, fn);
-
-Future<dynamic> setZoned(TransformLogger logger, _SimpleCallback fn) async {
-  return runZoned(() async {
-    try {
-      return await fn();
-    } on AnalyzerError catch (e) {
-      // Do not worry about printing the stack trace, barback will handle that
-      // on its own when it catches the rethrown exception.
-      logger
-          .error('  Failed with ${e.runtimeType}\n${_friendlyError(e.error)}');
-      rethrow;
-    } on AnalyzerErrorGroup catch (eGroup) {
-      // See above re: stack trace.
-      var numErrors = eGroup.errors.length;
-      if (numErrors == 1) {
-        logger.error(_friendlyError(eGroup.errors[0].error));
-      } else {
-        var buf = new StringBuffer();
-        buf.writeln('  Failed with ${numErrors} errors');
-        for (var i = 0; i < numErrors; ++i) {
-          buf.writeln(
-              'Error ${i + 1}: ${_friendlyError(eGroup.errors[i].error)}');
-        }
-        logger.error('$buf');
-      }
-      rethrow;
-    }
-  }, zoneValues: {_key: logger});
-}
-
-/// The logger for the current {@link Zone}.
-TransformLogger get logger {
-  var current = Zone.current[_key] as TransformLogger;
-  return current == null ? new PrintLogger() : current;
+/// The [TransformLogger] for the current {@link Zone}.
+TransformLogger get log {
+  var log = zone.log;
+  return log != null ? log : new PrintLogger();
 }
 
 /// Writes a log entry at `LogLevel.FINE` granularity with the time taken by
@@ -64,10 +27,14 @@ Future logElapsedAsync(Future asyncOperation(),
   if (assetId != null) {
     buf.write(' on $assetId');
   }
-  logger.fine(buf.toString(), asset: assetId);
+  log.fine(buf.toString(), asset: assetId);
   return result;
 }
 
+/// Prints logged messages to the console.
+///
+/// A simple implementation of [TransformLogger] that prints messages to the
+/// console and discards `asset` and `span` information.
 class PrintLogger implements TransformLogger {
   void _printWithPrefix(prefix, msg) => print('$prefix: $msg');
 
@@ -101,19 +68,5 @@ class PrintLoggerError extends Error {
     return 'Message: ${Error.safeToString(message)}, '
         'Asset: ${Error.safeToString(asset)}, '
         'Span: ${Error.safeToString(span)}.';
-  }
-}
-
-/// Generate a human-readable error message from `error`.
-String _friendlyError(AnalysisError error) {
-  if (error.source != null) {
-    var file =
-        new SourceFile(error.source.contents.data, url: error.source.fullName);
-
-    return file
-        .span(error.offset, error.offset + error.length)
-        .message(error.message, color: false);
-  } else {
-    return '<unknown location>: ${error.message}';
   }
 }

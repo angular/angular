@@ -9,9 +9,9 @@ import {
   RouteParams
 } from 'angular2/router';
 import * as db from './data';
-import {ObservableWrapper, PromiseWrapper, Promise} from 'angular2/src/core/facade/async';
-import {ListWrapper} from 'angular2/src/core/facade/collection';
-import {isPresent, DateWrapper} from 'angular2/src/core/facade/lang';
+import {ObservableWrapper, PromiseWrapper, Promise} from 'angular2/src/facade/async';
+import {ListWrapper} from 'angular2/src/facade/collection';
+import {isPresent, DateWrapper} from 'angular2/src/facade/lang';
 
 class InboxRecord {
   id: string = '';
@@ -66,15 +66,14 @@ class DbService {
   }
 
   drafts(): Promise<any[]> {
-    return PromiseWrapper.then(this.getData(), (data) => {
-      return ListWrapper.filter(data,
-                                (record => isPresent(record['draft']) && record['draft'] == true));
+    return PromiseWrapper.then(this.getData(), (data: any[]) => {
+      return data.filter(record => isPresent(record['draft']) && record['draft'] == true);
     });
   }
 
   emails(): Promise<any[]> {
-    return PromiseWrapper.then(this.getData(), (data) => {
-      return ListWrapper.filter(data, (record => !isPresent(record['draft'])));
+    return PromiseWrapper.then(this.getData(), (data: any[]) => {
+      return data.filter(record => !isPresent(record['draft']));
     });
   }
 

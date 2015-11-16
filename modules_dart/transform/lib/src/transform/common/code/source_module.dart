@@ -1,7 +1,7 @@
 library angular2.transform.common.code.source_module;
 
 import 'package:analyzer/src/generated/scanner.dart' show Keyword;
-import 'package:angular2/src/core/compiler/source_module.dart';
+import 'package:angular2/src/compiler/source_module.dart';
 
 import 'uri.dart';
 

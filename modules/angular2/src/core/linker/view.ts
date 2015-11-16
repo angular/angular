@@ -3,7 +3,7 @@ import {
   MapWrapper,
   Map,
   StringMapWrapper,
-} from 'angular2/src/core/facade/collection';
+} from 'angular2/src/facade/collection';
 import {
   ChangeDetector,
   ChangeDispatcher,
@@ -21,8 +21,8 @@ import {
   DirectiveProvider
 } from './element_injector';
 import {ElementBinder} from './element_binder';
-import {isPresent} from 'angular2/src/core/facade/lang';
-import {BaseException, WrappedException} from 'angular2/src/core/facade/exceptions';
+import {isPresent} from 'angular2/src/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import * as renderApi from 'angular2/src/core/render/api';
 import {RenderEventDispatcher} from 'angular2/src/core/render/api';
 import {ViewRef, ProtoViewRef, internalView} from './view_ref';
@@ -162,7 +162,8 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
         this.renderer.setElementClass(elementRef, b.name, currentValue);
       } else if (b.isElementStyle()) {
         var unit = isPresent(b.unit) ? b.unit : '';
-        this.renderer.setElementStyle(elementRef, b.name, `${currentValue}${unit}`);
+        this.renderer.setElementStyle(elementRef, b.name,
+                                      isPresent(currentValue) ? `${currentValue}${unit}` : null);
       } else {
         throw new BaseException('Unsupported directive record');
       }
@@ -317,8 +318,8 @@ export class AppProtoView {
   textBindingCount = null;
   render: renderApi.RenderProtoViewRef = null;
 
-  constructor(public templateCmds: TemplateCmd[], public type: ViewType, public isMergable: boolean,
-              public changeDetectorFactory: Function,
+  constructor(public templateId: string, public templateCmds: TemplateCmd[], public type: ViewType,
+              public isMergable: boolean, public changeDetectorFactory: Function,
               public templateVariableBindings: Map<string, string>, public pipes: ProtoPipes) {
     this.ref = new ProtoViewRef_(this);
   }

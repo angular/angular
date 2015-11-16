@@ -138,12 +138,12 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(MyComp, new ViewMetadata({template: '<div>{{ctxProp}}</div>'}))
              .createAsync(MyComp)
-             .then((rootTC) => {
-               var renderEl = getRenderElement(rootTC.debugElement.elementRef);
+             .then((fixture) => {
+               var renderEl = getRenderElement(fixture.debugElement.elementRef);
                expect(renderEl).toHaveText('');
 
-               rootTC.debugElement.componentInstance.ctxProp = 'Hello World!';
-               rootTC.detectChanges();
+               fixture.debugElement.componentInstance.ctxProp = 'Hello World!';
+               fixture.detectChanges();
                expect(renderEl).toHaveText('Hello World!');
                async.done();
 
@@ -156,7 +156,7 @@ export function main() {
          tcb.overrideView(MyComp, new ViewMetadata(
                                       {template: '<input [title]="y" style="position:absolute">'}))
              .createAsync(MyComp)
-             .then((rootTC) => {
+             .then((fixture) => {
                var checkSetters = (elr) => {
                  var el = getRenderElement(elr);
                  renderer.setElementProperty(elr, 'tabIndex', 1);
@@ -177,9 +177,9 @@ export function main() {
                };
 
                // root element
-               checkSetters(rootTC.debugElement.elementRef);
+               checkSetters(fixture.debugElement.elementRef);
                // nested elements
-               checkSetters(rootTC.debugElement.componentViewChildren[0].elementRef);
+               checkSetters(fixture.debugElement.componentViewChildren[0].elementRef);
 
                async.done();
              });
@@ -192,17 +192,17 @@ export function main() {
                             directives: [NgIf]
                           }))
              .createAsync(MyComp)
-             .then((rootTC) => {
+             .then((fixture) => {
 
-               var rootEl = getRenderElement(rootTC.debugElement.elementRef);
+               var rootEl = getRenderElement(fixture.debugElement.elementRef);
                expect(rootEl).toHaveText('');
 
-               rootTC.debugElement.componentInstance.ctxBoolProp = true;
-               rootTC.detectChanges();
+               fixture.debugElement.componentInstance.ctxBoolProp = true;
+               fixture.detectChanges();
                expect(rootEl).toHaveText('hello');
 
-               rootTC.debugElement.componentInstance.ctxBoolProp = false;
-               rootTC.detectChanges();
+               fixture.debugElement.componentInstance.ctxBoolProp = false;
+               fixture.detectChanges();
                expect(rootEl).toHaveText('');
 
                async.done();
@@ -216,8 +216,8 @@ export function main() {
                   tcb.overrideView(MyComp,
                                    new ViewMetadata({template: '<input [title]="y"></input>'}))
                       .createAsync(MyComp)
-                      .then((rootTC) => {
-                        var elRef = rootTC.debugElement.componentViewChildren[0].elementRef;
+                      .then((fixture) => {
+                        var elRef = fixture.debugElement.componentViewChildren[0].elementRef;
                         renderer.invokeElementMethod(elRef, 'setAttribute', ['a', 'b']);
 
                         expect(DOM.getAttribute(getRenderElement(elRef), 'a')).toEqual('b');

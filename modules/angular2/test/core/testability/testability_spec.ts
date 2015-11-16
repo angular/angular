@@ -13,8 +13,8 @@ import {
 } from 'angular2/testing_internal';
 import {Testability} from 'angular2/src/core/testability/testability';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {normalizeBlank} from 'angular2/src/core/facade/lang';
-import {PromiseWrapper} from 'angular2/src/core/facade/async';
+import {normalizeBlank} from 'angular2/src/facade/lang';
+import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
 // Schedules a microtasks (using a resolved promise .then())
 function microTask(fn: Function): void {
@@ -22,22 +22,21 @@ function microTask(fn: Function): void {
 }
 
 class MockNgZone extends NgZone {
-  _onTurnStart: () => void;
-  _onEventDone: () => void;
+  _onTurnStartStream: EventEmitter<any>;
+  get onTurnStart() { return this._onTurnStartStream; }
 
-  constructor() { super({enableLongStackTrace: false}); }
+  _onEventDoneStream: EventEmitter<any>;
+  get onEventDone() { return this._onEventDoneStream; }
 
-  start(): void { this._onTurnStart(); }
-
-  finish(): void { this._onEventDone(); }
-
-  overrideOnTurnStart(onTurnStartFn: Function): void {
-    this._onTurnStart = normalizeBlank(onTurnStartFn);
+  constructor() {
+    super({enableLongStackTrace: false});
+    this._onTurnStartStream = new EventEmitter(false);
+    this._onEventDoneStream = new EventEmitter(false);
   }
 
-  overrideOnEventDone(onEventDoneFn: Function, waitForAsync: boolean = false): void {
-    this._onEventDone = normalizeBlank(onEventDoneFn);
-  }
+  start(): void { ObservableWrapper.callNext(this._onTurnStartStream, null); }
+
+  finish(): void { ObservableWrapper.callNext(this._onEventDoneStream, null); }
 }
 
 export function main() {

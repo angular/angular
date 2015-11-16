@@ -1,7 +1,7 @@
-import {ListWrapper, StringMapWrapper} from 'angular2/src/core/facade/collection';
-import {isPresent, isFunction, StringWrapper, Type} from 'angular2/src/core/facade/lang';
+import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
+import {isPresent, isFunction, Type} from 'angular2/src/facade/lang';
 import {DomAdapter} from './dom_adapter';
-import {XHRImpl} from 'angular2/src/core/compiler/xhr_impl';
+import {XHRImpl} from 'angular2/src/platform/browser/xhr_impl';
 
 
 /**
@@ -20,7 +20,7 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
         var domPrefixes = ['Webkit', 'Moz', 'O', 'ms'];
         for (var i = 0; i < domPrefixes.length; i++) {
           if (isPresent(this.getStyle(element, domPrefixes[i] + 'AnimationName'))) {
-            this._animationPrefix = '-' + StringWrapper.toLowerCase(domPrefixes[i]) + '-';
+            this._animationPrefix = '-' + domPrefixes[i].toLowerCase() + '-';
             break;
           }
         }

@@ -1,8 +1,8 @@
 import {Injector, provide, Injectable} from 'angular2/src/core/di';
 
-import {Type, isPresent, isBlank} from 'angular2/src/core/facade/lang';
-import {Promise} from 'angular2/src/core/facade/async';
-import {ListWrapper, MapWrapper} from 'angular2/src/core/facade/collection';
+import {Type, isPresent, isBlank} from 'angular2/src/facade/lang';
+import {Promise} from 'angular2/src/facade/async';
+import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
 import {ViewMetadata} from '../core/metadata';
 
@@ -22,6 +22,10 @@ import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {DebugElement, DebugElement_} from 'angular2/src/core/debug/debug_element';
 
+
+/**
+ * @deprecated Use ComponentFixture
+ */
 export abstract class RootTestComponent {
   debugElement: DebugElement;
 
@@ -29,7 +33,11 @@ export abstract class RootTestComponent {
   abstract destroy(): void;
 }
 
-export class RootTestComponent_ extends RootTestComponent {
+
+export abstract class ComponentFixture extends RootTestComponent {}
+
+
+export class ComponentFixture_ extends ComponentFixture {
   /** @internal */
   _componentRef: ComponentRef;
   /** @internal */
@@ -53,7 +61,7 @@ export class RootTestComponent_ extends RootTestComponent {
 var _nextRootElementId = 0;
 
 /**
- * Builds a RootTestComponent for use in component level tests.
+ * Builds a ComponentFixture for use in component level tests.
  */
 @Injectable()
 export class TestComponentBuilder {
@@ -186,11 +194,11 @@ export class TestComponentBuilder {
   }
 
   /**
-   * Builds and returns a RootTestComponent.
+   * Builds and returns a ComponentFixture.
    *
-   * @return {Promise<RootTestComponent>}
+   * @return {Promise<ComponentFixture>}
    */
-  createAsync(rootComponentType: Type): Promise<RootTestComponent> {
+  createAsync(rootComponentType: Type): Promise<ComponentFixture> {
     var mockDirectiveResolver = this._injector.get(DirectiveResolver);
     var mockViewResolver = this._injector.get(ViewResolver);
     this._viewOverrides.forEach((view, type) => mockViewResolver.setView(type, view));
@@ -220,6 +228,6 @@ export class TestComponentBuilder {
 
     return this._injector.get(DynamicComponentLoader)
         .loadAsRoot(rootComponentType, `#${rootElId}`, this._injector)
-        .then((componentRef) => { return new RootTestComponent_(componentRef); });
+        .then((componentRef) => { return new ComponentFixture_(componentRef); });
   }
 }

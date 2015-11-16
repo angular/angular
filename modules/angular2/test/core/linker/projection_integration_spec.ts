@@ -15,7 +15,7 @@ import {
   containsRegexp,
   stringifyElement,
   TestComponentBuilder,
-  RootTestComponent,
+  ComponentFixture,
   fakeAsync,
   tick
 } from 'angular2/testing_internal';
@@ -293,7 +293,7 @@ export function main() {
                     {template: '<simple string-prop="text"></simple>', directives: [Simple]}))
              .overrideTemplate(Simple, '<ng-content></ng-content><p>P,</p>{{stringProp}}')
              .createAsync(MainComp)
-             .then((main: RootTestComponent) => {
+             .then((main: ComponentFixture) => {
 
                main.detectChanges();
 
@@ -314,7 +314,7 @@ export function main() {
                     {template: '<simple string-prop="text"></simple>', directives: [Simple]}))
              .overrideTemplate(Simple, '<style></style><p>P,</p>{{stringProp}}')
              .createAsync(MainComp)
-             .then((main: RootTestComponent) => {
+             .then((main: ComponentFixture) => {
 
                main.detectChanges();
                expect(main.debugElement.nativeElement).toHaveText('P,text');
@@ -439,6 +439,27 @@ export function main() {
                  var childNodes = DOM.childNodes(main.debugElement.nativeElement);
                  expect(childNodes[0]).toHaveText('div {color: red}SIMPLE1(A)');
                  expect(childNodes[1]).toHaveText('div {color: blue}SIMPLE2(B)');
+                 async.done();
+               });
+         }));
+    }
+
+    if (DOM.supportsDOMEvents()) {
+      it('should support emulated style encapsulation',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(MainComp, new ViewMetadata({
+                              template: '<div></div>',
+                              styles: ['div { color: red}'],
+                              encapsulation: ViewEncapsulation.Emulated
+                            }))
+               .createAsync(MainComp)
+               .then((main) => {
+                 var mainEl = main.debugElement.nativeElement;
+                 var div1 = DOM.firstChild(mainEl);
+                 var div2 = DOM.createElement('div');
+                 DOM.appendChild(mainEl, div2);
+                 expect(DOM.getComputedStyle(div1).color).toEqual('rgb(255, 0, 0)');
+                 expect(DOM.getComputedStyle(div2).color).toEqual('rgb(0, 0, 0)');
                  async.done();
                });
          }));

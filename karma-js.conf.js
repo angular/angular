@@ -52,7 +52,8 @@ module.exports = function(config) {
       project: 'Angular2',
       startTunnel: false,
       retryLimit: 1,
-      timeout: 600
+      timeout: 600,
+      pollingTimeout: 10000
     },
 
     browsers: ['Chrome'],

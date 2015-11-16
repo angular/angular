@@ -1,5 +1,5 @@
-import {ListWrapper} from 'angular2/src/core/facade/collection';
-import {isPresent} from 'angular2/src/core/facade/lang';
+import {ListWrapper} from 'angular2/src/facade/collection';
+import {isPresent} from 'angular2/src/facade/lang';
 
 import {ProtoChangeDetector, ChangeDetector, ChangeDetectorDefinition} from './interfaces';
 import {ChangeDetectorJITGenerator} from './change_detection_jit_generator';
