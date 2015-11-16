@@ -178,10 +178,10 @@ export function main() {
                            assertChange('twoWayA', 'initModelA');
                            assertChange('twoWayB', 'initModelB');
 
-                           this.twoWayAEmitter.next('newA');
-                           this.twoWayBEmitter.next('newB');
-                           this.eventA.next('aFired');
-                           this.eventB.next('bFired');
+                           this.twoWayAEmitter.emit('newA');
+                           this.twoWayBEmitter.emit('newB');
+                           this.eventA.emit('aFired');
+                           this.eventB.emit('bFired');
                            break;
                          case 1:
                            assertChange('twoWayA', 'newA');

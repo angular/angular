@@ -32,7 +32,7 @@ export function main() {
            async.done();
          });
 
-         ObservableWrapper.callNext(emitter, 99);
+         ObservableWrapper.callEmit(emitter, 99);
        }));
 
     it("should call the throw callback", inject([AsyncTestCompleter], (async) => {
@@ -58,7 +58,7 @@ export function main() {
       var called = false;
       ObservableWrapper.subscribe(emitter, (value) => { called = true; });
 
-      ObservableWrapper.callNext(emitter, 99);
+      ObservableWrapper.callEmit(emitter, 99);
       expect(called).toBe(false);
     });
 
@@ -71,7 +71,7 @@ export function main() {
            async.done();
          });
          log.push(1);
-         ObservableWrapper.callNext(e, 2);
+         ObservableWrapper.callEmit(e, 2);
          log.push(3);
        }));
 
@@ -80,7 +80,7 @@ export function main() {
       var log = [];
       ObservableWrapper.subscribe(e, (x) => { log.push(x); });
       log.push(1);
-      ObservableWrapper.callNext(e, 2);
+      ObservableWrapper.callEmit(e, 2);
       log.push(3);
       expect(log).toEqual([1, 2, 3]);
     });

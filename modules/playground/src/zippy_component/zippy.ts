@@ -11,9 +11,9 @@ export class Zippy {
   toggle() {
     this.visible = !this.visible;
     if (this.visible) {
-      ObservableWrapper.callNext(this.open, null);
+      ObservableWrapper.callEmit(this.open, null);
     } else {
-      ObservableWrapper.callNext(this.close, null);
+      ObservableWrapper.callEmit(this.close, null);
     }
   }
 }

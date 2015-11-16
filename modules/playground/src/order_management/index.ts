@@ -147,7 +147,7 @@ class OrderItemComponent {
   @Input() item: OrderItem;
   @Output() delete = new EventEmitter();
 
-  onDelete(): void { this.delete.next(this.item); }
+  onDelete(): void { this.delete.emit(this.item); }
 }
 
 @Component({

@@ -46,7 +46,7 @@ export function main() {
            inject([AsyncTestCompleter], (async) => {
              pipe.transform(emitter);
 
-             ObservableWrapper.callNext(emitter, message);
+             ObservableWrapper.callEmit(emitter, message);
 
              TimerWrapper.setTimeout(() => {
                expect(pipe.transform(emitter)).toEqual(new WrappedValue(message));
@@ -58,7 +58,7 @@ export function main() {
         it("should return same value when nothing has changed since the last call",
            inject([AsyncTestCompleter], (async) => {
              pipe.transform(emitter);
-             ObservableWrapper.callNext(emitter, message);
+             ObservableWrapper.callEmit(emitter, message);
 
              TimerWrapper.setTimeout(() => {
                pipe.transform(emitter);
@@ -75,7 +75,7 @@ export function main() {
              expect(pipe.transform(newEmitter)).toBe(null);
 
              // this should not affect the pipe
-             ObservableWrapper.callNext(emitter, message);
+             ObservableWrapper.callEmit(emitter, message);
 
              TimerWrapper.setTimeout(() => {
                expect(pipe.transform(newEmitter)).toBe(null);
@@ -86,7 +86,7 @@ export function main() {
         it("should request a change detection check upon receiving a new value",
            inject([AsyncTestCompleter], (async) => {
              pipe.transform(emitter);
-             ObservableWrapper.callNext(emitter, message);
+             ObservableWrapper.callEmit(emitter, message);
 
              TimerWrapper.setTimeout(() => {
                expect(ref.spy('markForCheck')).toHaveBeenCalled();
@@ -103,7 +103,7 @@ export function main() {
              pipe.transform(emitter);
              pipe.onDestroy();
 
-             ObservableWrapper.callNext(emitter, message);
+             ObservableWrapper.callEmit(emitter, message);
 
              TimerWrapper.setTimeout(() => {
                expect(pipe.transform(emitter)).toBe(null);

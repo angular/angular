@@ -20,7 +20,7 @@ export class WebWorkerSetup {
 
     ObservableWrapper.subscribe(source, (message: string) => {
       if (StringWrapper.equals(message, "ready")) {
-        ObservableWrapper.callNext(sink, {"rootUrl": this.rootUrl});
+        ObservableWrapper.callEmit(sink, {"rootUrl": this.rootUrl});
       }
     });
   }

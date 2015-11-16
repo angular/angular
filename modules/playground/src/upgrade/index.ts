@@ -54,7 +54,7 @@ class Pane {
         <table cellpadding="3">
           <tr>
             <td><ng-content></ng-content></td>
-            <td><user [handle]="user" (reset)="reset.next()"></user></td>
+            <td><user [handle]="user" (reset)="reset.emit()"></user></td>
           </tr>
         </table>
       </pane>

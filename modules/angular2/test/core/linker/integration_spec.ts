@@ -2016,7 +2016,7 @@ class DirectiveEmitingEvent {
     this.event = new EventEmitter();
   }
 
-  fireEvent(msg: string) { ObservableWrapper.callNext(this.event, msg); }
+  fireEvent(msg: string) { ObservableWrapper.callEmit(this.event, msg); }
 }
 
 @Directive({selector: '[update-host-attributes]', host: {'role': 'button'}})
@@ -2039,7 +2039,7 @@ class DirectiveUpdatingHostActions {
 
   constructor() { this.setAttr = new EventEmitter(); }
 
-  triggerSetAttr(attrValue) { ObservableWrapper.callNext(this.setAttr, ["key", attrValue]); }
+  triggerSetAttr(attrValue) { ObservableWrapper.callEmit(this.setAttr, ["key", attrValue]); }
 }
 
 @Directive({selector: '[listener]', host: {'(event)': 'onEvent($event)'}})
@@ -2174,7 +2174,7 @@ class DirectiveWithTwoWayBinding {
   controlChange = new EventEmitter();
   control = null;
 
-  triggerChange(value) { ObservableWrapper.callNext(this.controlChange, value); }
+  triggerChange(value) { ObservableWrapper.callEmit(this.controlChange, value); }
 }
 
 @Injectable()
@@ -2382,5 +2382,5 @@ class DirectiveWithPropDecorators {
     this.target = target;
   }
 
-  fireEvent(msg) { ObservableWrapper.callNext(this.event, msg); }
+  fireEvent(msg) { ObservableWrapper.callEmit(this.event, msg); }
 }

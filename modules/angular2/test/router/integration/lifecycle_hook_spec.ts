@@ -404,7 +404,7 @@ function logHook(name: string, next: ComponentInstruction, prev: ComponentInstru
   var message = name + ': ' + (isPresent(prev) ? ('/' + prev.urlPath) : 'null') + ' -> ' +
                 (isPresent(next) ? ('/' + next.urlPath) : 'null');
   log.push(message);
-  ObservableWrapper.callNext(eventBus, message);
+  ObservableWrapper.callEmit(eventBus, message);
 }
 
 @Component({selector: 'activate-cmp'})

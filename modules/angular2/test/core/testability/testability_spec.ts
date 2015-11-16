@@ -34,9 +34,9 @@ class MockNgZone extends NgZone {
     this._onEventDoneStream = new EventEmitter(false);
   }
 
-  start(): void { ObservableWrapper.callNext(this._onTurnStartStream, null); }
+  start(): void { ObservableWrapper.callEmit(this._onTurnStartStream, null); }
 
-  finish(): void { ObservableWrapper.callNext(this._onEventDoneStream, null); }
+  finish(): void { ObservableWrapper.callEmit(this._onEventDoneStream, null); }
 }
 
 export function main() {

@@ -66,5 +66,5 @@ export class QueryList<T> {
   reset(res: T[]): void { this._results = res; }
 
   /** @internal */
-  notifyOnChanges(): void { this._emitter.next(this); }
+  notifyOnChanges(): void { this._emitter.emit(this); }
 }
