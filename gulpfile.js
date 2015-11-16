@@ -919,7 +919,7 @@ gulp.task('!bundle.js.min', ['build.js.prod'], function() {
           bundler.bundle(bundleConfig, 'angular2/http - angular2/angular2',
                          './dist/build/http.min.js', bundlerConfig),
           bundler.bundle(bundleConfig, 'angular2/router - angular2/angular2',
-                         './dist/js/build/router.min.js', bundlerConfig)
+                         './dist/build/router.min.js', bundlerConfig)
         ]);
       });
 });
