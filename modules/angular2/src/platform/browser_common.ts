@@ -1,7 +1,6 @@
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
 
-import {XHR} from 'angular2/compiler';
 import {
   PLATFORM_DIRECTIVES,
   PLATFORM_PIPES,
@@ -15,7 +14,6 @@ import {
 } from "angular2/core";
 import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS} from "angular2/common";
 import {Renderer} from 'angular2/render';
-import {XHRImpl} from "angular2/src/platform/browser/xhr_impl";
 import {Testability} from 'angular2/src/core/testability/testability';
 
 // TODO change these imports once dom_adapter is moved out of core
@@ -60,7 +58,6 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
   new Provider(DomRenderer, {useClass: DomRenderer_}),
   new Provider(Renderer, {useExisting: DomRenderer}),
   new Provider(SharedStylesHost, {useExisting: DomSharedStylesHost}),
-  new Provider(XHR, {useClass: XHRImpl}),
   DomSharedStylesHost,
   Testability,
   BrowserDetails,
