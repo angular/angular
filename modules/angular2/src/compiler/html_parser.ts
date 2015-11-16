@@ -9,22 +9,34 @@ import {
   serializeEnum,
   CONST_EXPR
 } from 'angular2/src/facade/lang';
-
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
 import {HtmlAst, HtmlAttrAst, HtmlTextAst, HtmlElementAst} from './html_ast';
 
+import {escapeDoubleQuoteString} from './util';
 import {Injectable} from 'angular2/src/core/di';
 import {HtmlToken, HtmlTokenType, tokenizeHtml} from './html_lexer';
 import {ParseError, ParseLocation, ParseSourceSpan} from './parse_util';
 import {HtmlTagDefinition, getHtmlTagDefinition} from './html_tags';
 
+// TODO: remove this, just provide a plain error message!
+export enum HtmlTreeErrorType {
+  UnexpectedClosingTag
+}
+
+const HTML_ERROR_TYPE_MSGS = CONST_EXPR(['Unexpected closing tag']);
+
+
 export class HtmlTreeError extends ParseError {
-  static create(elementName: string, location: ParseLocation, msg: string): HtmlTreeError {
-    return new HtmlTreeError(elementName, location, msg);
+  static create(type: HtmlTreeErrorType, elementName: string,
+                location: ParseLocation): HtmlTreeError {
+    return new HtmlTreeError(type, HTML_ERROR_TYPE_MSGS[serializeEnum(type)], elementName,
+                             location);
   }
 
-  constructor(public elementName: string, location: ParseLocation, msg: string) {
+  constructor(public type: HtmlTreeErrorType, msg: string, public elementName: string,
+              location: ParseLocation) {
     super(location, msg);
   }
 }
@@ -43,8 +55,11 @@ export class HtmlParser {
   }
 }
 
+var NS_PREFIX_RE = /^@[^:]+/g;
+
 class TreeBuilder {
   private index: number = -1;
+  private length: number;
   private peek: HtmlToken;
 
   private rootNodes: HtmlAst[] = [];
@@ -114,7 +129,7 @@ class TreeBuilder {
     while (this.peek.type === HtmlTokenType.ATTR_NAME) {
       attrs.push(this._consumeAttr(this._advance()));
     }
-    var fullName = getElementFullName(prefix, name, this._getParentElement());
+    var fullName = elementName(prefix, name, this._getParentElement());
     var voidElement = false;
     // Note: There could have been a tokenizer error
     // so that we don't get a token for the end tag...
@@ -135,13 +150,15 @@ class TreeBuilder {
   }
 
   private _pushElement(el: HtmlElementAst) {
-    for (var stackIndex = this.elementStack.length - 1; stackIndex >= 0; stackIndex--) {
+    var stackIndex = this.elementStack.length - 1;
+    while (stackIndex >= 0) {
       var parentEl = this.elementStack[stackIndex];
-      if (getHtmlTagDefinition(parentEl.name).isClosedByChild(el.name)) {
-        ListWrapper.splice(this.elementStack, stackIndex, this.elementStack.length - stackIndex);
+      if (!getHtmlTagDefinition(parentEl.name).isClosedByChild(el.name)) {
         break;
       }
+      stackIndex--;
     }
+    this.elementStack.splice(stackIndex, this.elementStack.length - 1 - stackIndex);
 
     var tagDef = getHtmlTagDefinition(el.name);
     var parentEl = this._getParentElement();
@@ -158,29 +175,35 @@ class TreeBuilder {
 
   private _consumeEndTag(endTagToken: HtmlToken) {
     var fullName =
-        getElementFullName(endTagToken.parts[0], endTagToken.parts[1], this._getParentElement());
+        elementName(endTagToken.parts[0], endTagToken.parts[1], this._getParentElement());
     if (!this._popElement(fullName)) {
-      this.errors.push(HtmlTreeError.create(fullName, endTagToken.sourceSpan.start,
-                                            `Unexpected closing tag "${endTagToken.parts[1]}"`));
+      this.errors.push(HtmlTreeError.create(HtmlTreeErrorType.UnexpectedClosingTag, fullName,
+                                            endTagToken.sourceSpan.start));
     }
   }
 
   private _popElement(fullName: string): boolean {
-    for (let stackIndex = this.elementStack.length - 1; stackIndex >= 0; stackIndex--) {
+    var stackIndex = this.elementStack.length - 1;
+    var hasError = false;
+    while (stackIndex >= 0) {
       var el = this.elementStack[stackIndex];
-      if (el.name.toLowerCase() == fullName.toLowerCase()) {
-        ListWrapper.splice(this.elementStack, stackIndex, this.elementStack.length - stackIndex);
-        return true;
+      if (el.name == fullName) {
+        break;
       }
       if (!getHtmlTagDefinition(el.name).closedByParent) {
-        return false;
+        hasError = true;
+        break;
       }
+      stackIndex--;
     }
-    return false;
+    if (!hasError) {
+      this.elementStack.splice(stackIndex, this.elementStack.length - stackIndex);
+    }
+    return !hasError;
   }
 
   private _consumeAttr(attrName: HtmlToken): HtmlAttrAst {
-    var fullName = mergeNsAndName(attrName.parts[0], attrName.parts[1]);
+    var fullName = elementName(attrName.parts[0], attrName.parts[1], null);
     var end = attrName.sourceSpan.end;
     var value = '';
     if (this.peek.type === HtmlTokenType.ATTR_VALUE) {
@@ -205,23 +228,19 @@ class TreeBuilder {
   }
 }
 
-function mergeNsAndName(prefix: string, localName: string): string {
-  return isPresent(prefix) ? `@${prefix}:${localName}` : localName;
-}
-
-function getElementFullName(prefix: string, localName: string,
-                            parentElement: HtmlElementAst): string {
+function elementName(prefix: string, localName: string, parentElement: HtmlElementAst) {
   if (isBlank(prefix)) {
     prefix = getHtmlTagDefinition(localName).implicitNamespacePrefix;
-    if (isBlank(prefix) && isPresent(parentElement)) {
-      prefix = namespacePrefix(parentElement.name);
-    }
   }
-
-  return mergeNsAndName(prefix, localName);
+  if (isBlank(prefix) && isPresent(parentElement)) {
+    prefix = namespacePrefix(parentElement.name);
+  }
+  if (isPresent(prefix)) {
+    return `@${prefix}:${localName}`;
+  } else {
+    return localName;
+  }
 }
-
-var NS_PREFIX_RE = /^@([^:]+)/g;
 
 function namespacePrefix(elementName: string): string {
   var match = RegExpWrapper.firstMatch(NS_PREFIX_RE, elementName);

@@ -1,22 +1,8 @@
-import {
-  ddescribe,
-  describe,
-  it,
-  iit,
-  xit,
-  expect,
-  beforeEach,
-  afterEach
-} from 'angular2/testing_internal';
-import {BaseException} from 'angular2/src/facade/exceptions';
+import {ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach} from '../../test_lib';
+import {BaseException} from '../../src/facade/exceptions';
 
-import {
-  tokenizeHtml,
-  HtmlToken,
-  HtmlTokenType,
-  HtmlTokenError
-} from 'angular2/src/compiler/html_lexer';
-import {ParseSourceSpan, ParseLocation, ParseSourceFile} from 'angular2/src/compiler/parse_util';
+import {tokenizeHtml, HtmlToken, HtmlTokenType} from '../../src/compiler/html_lexer';
+import {ParseSourceSpan, ParseLocation} from '../../src/compiler/parse_util';
 
 export function main() {
   describe('HtmlLexer', () => {
@@ -277,17 +263,6 @@ export function main() {
             ]);
       });
 
-      it('should parse attributes with "&" in values', () => {
-        expect(tokenizeAndHumanizeParts('<t a="b && c &">'))
-            .toEqual([
-              [HtmlTokenType.TAG_OPEN_START, null, 't'],
-              [HtmlTokenType.ATTR_NAME, null, 'a'],
-              [HtmlTokenType.ATTR_VALUE, 'b && c &'],
-              [HtmlTokenType.TAG_OPEN_END],
-              [HtmlTokenType.EOF]
-            ]);
-      });
-
       it('should store the locations', () => {
         expect(tokenizeAndHumanizeSourceSpans('<t a=b>'))
             .toEqual([
@@ -387,11 +362,6 @@ export function main() {
       it('should parse entities', () => {
         expect(tokenizeAndHumanizeParts('a&amp;b'))
             .toEqual([[HtmlTokenType.TEXT, 'a&b'], [HtmlTokenType.EOF]]);
-      });
-
-      it('should parse text starting with "&"', () => {
-        expect(tokenizeAndHumanizeParts('a && b &'))
-            .toEqual([[HtmlTokenType.TEXT, 'a && b &'], [HtmlTokenType.EOF]]);
       });
 
       it('should store the locations', () => {
@@ -514,17 +484,6 @@ export function main() {
             ]);
       });
 
-    });
-
-    describe('errors', () => {
-      it('should include 2 lines of context in message', () => {
-        let src = "111\n222\n333\nE\n444\n555\n666\n";
-        let file = new ParseSourceFile(src, 'file://');
-        let location = new ParseLocation(file, 12, 123, 456);
-        let error = new HtmlTokenError('**ERROR**', null, location);
-        expect(error.toString())
-            .toEqual(`**ERROR** ("\n222\n333\nE\n444\n555\n"): file://@123:456`);
-      });
     });
 
   });
