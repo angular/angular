@@ -1,25 +1,23 @@
 import {isPresent} from 'angular2/src/facade/lang';
 
-import {ParseSourceSpan} from './parse_util';
-
 export interface HtmlAst {
-  sourceSpan: ParseSourceSpan;
+  sourceInfo: string;
   visit(visitor: HtmlAstVisitor, context: any): any;
 }
 
 export class HtmlTextAst implements HtmlAst {
-  constructor(public value: string, public sourceSpan: ParseSourceSpan) {}
+  constructor(public value: string, public sourceInfo: string) {}
   visit(visitor: HtmlAstVisitor, context: any): any { return visitor.visitText(this, context); }
 }
 
 export class HtmlAttrAst implements HtmlAst {
-  constructor(public name: string, public value: string, public sourceSpan: ParseSourceSpan) {}
+  constructor(public name: string, public value: string, public sourceInfo: string) {}
   visit(visitor: HtmlAstVisitor, context: any): any { return visitor.visitAttr(this, context); }
 }
 
 export class HtmlElementAst implements HtmlAst {
   constructor(public name: string, public attrs: HtmlAttrAst[], public children: HtmlAst[],
-              public sourceSpan: ParseSourceSpan) {}
+              public sourceInfo: string) {}
   visit(visitor: HtmlAstVisitor, context: any): any { return visitor.visitElement(this, context); }
 }
 
