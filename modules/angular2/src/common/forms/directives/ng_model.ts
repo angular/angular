@@ -86,6 +86,6 @@ export class NgModel extends NgControl implements OnChanges {
 
   viewToModelUpdate(newValue: any): void {
     this.viewModel = newValue;
-    ObservableWrapper.callNext(this.update, newValue);
+    ObservableWrapper.callEmit(this.update, newValue);
   }
 }

@@ -125,7 +125,7 @@ export class MdRadioGroup implements OnChanges {
     this.value = value;
     this.selectedRadioId = id;
     this.activedescendant = id;
-    ObservableWrapper.callNext(this.change, null);
+    ObservableWrapper.callEmit(this.change, null);
   }
 
   /** Registers a child radio button with this group. */
@@ -179,7 +179,7 @@ export class MdRadioGroup implements OnChanges {
 
     this.radioDispatcher.notify(this.name_);
     radio.checked = true;
-    ObservableWrapper.callNext(this.change, null);
+    ObservableWrapper.callEmit(this.change, null);
 
     this.value = radio.value;
     this.selectedRadioId = radio.id;

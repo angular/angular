@@ -53,7 +53,7 @@ export function main() {
            expect(arg1).toEqual(PASSED_ARG_1);
            expect(arg2).toEqual(PASSED_ARG_2);
          });
-         ObservableWrapper.callNext(messageBuses.worker.to(CHANNEL),
+         ObservableWrapper.callEmit(messageBuses.worker.to(CHANNEL),
                                     {'method': TEST_METHOD, 'args': [PASSED_ARG_1, PASSED_ARG_2]});
        }));
 
@@ -63,7 +63,7 @@ export function main() {
            expect(arg1).toEqual(PASSED_ARG_1);
            return PromiseWrapper.wrap(() => { return RESULT; });
          });
-         ObservableWrapper.callNext(messageBuses.worker.to(CHANNEL),
+         ObservableWrapper.callEmit(messageBuses.worker.to(CHANNEL),
                                     {'method': TEST_METHOD, 'id': ID, 'args': [PASSED_ARG_1]});
          ObservableWrapper.subscribe(messageBuses.worker.from(CHANNEL), (data: any) => {
            expect(data.type).toEqual("result");

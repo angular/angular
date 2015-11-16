@@ -990,7 +990,7 @@ class MyInput implements ControlValueAccessor {
   registerOnTouched(fn) {}
 
   dispatchChangeEvent() {
-    ObservableWrapper.callNext(this.onChange, this.value.substring(1, this.value.length - 1));
+    ObservableWrapper.callEmit(this.onChange, this.value.substring(1, this.value.length - 1));
   }
 }
 

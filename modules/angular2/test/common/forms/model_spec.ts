@@ -37,7 +37,7 @@ export function main() {
 
   function asyncValidatorReturningObservable(c) {
     var e = new EventEmitter();
-    PromiseWrapper.scheduleMicrotask(() => ObservableWrapper.callNext(e, {"async": true}));
+    PromiseWrapper.scheduleMicrotask(() => ObservableWrapper.callEmit(e, {"async": true}));
     return e;
   }
 

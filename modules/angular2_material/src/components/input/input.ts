@@ -85,10 +85,10 @@ export class MdInput {
 
   updateValue(event) {
     this.value = event.target.value;
-    ObservableWrapper.callNext(this.mdChange, this.value);
+    ObservableWrapper.callEmit(this.mdChange, this.value);
   }
 
   setHasFocus(hasFocus: boolean) {
-    ObservableWrapper.callNext(this.mdFocusChange, hasFocus);
+    ObservableWrapper.callEmit(this.mdFocusChange, hasFocus);
   }
 }

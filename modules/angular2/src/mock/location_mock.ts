@@ -19,7 +19,7 @@ export class SpyLocation implements Location {
 
   path(): string { return this._path; }
 
-  simulateUrlPop(pathname: string) { ObservableWrapper.callNext(this._subject, {'url': pathname}); }
+  simulateUrlPop(pathname: string) { ObservableWrapper.callEmit(this._subject, {'url': pathname}); }
 
   prepareExternalUrl(url: string): string {
     if (url.length > 0 && !url.startsWith('/')) {

@@ -276,6 +276,9 @@ var ObservableWrapper = {
   callNext: function(ob, val) {
     ob.fn(val);
   },
+  callEmit: function(ob, val) {
+    ob.fn(val);
+  },
 
   subscribe: function(ob, fn) {
     ob.fn = fn;

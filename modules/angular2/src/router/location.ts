@@ -94,7 +94,7 @@ export class Location {
 
     this._baseHref = stripTrailingSlash(stripIndexHtml(browserBaseHref));
     this.platformStrategy.onPopState(
-        (_) => { ObservableWrapper.callNext(this._subject, {'url': this.path(), 'pop': true}); });
+        (_) => { ObservableWrapper.callEmit(this._subject, {'url': this.path(), 'pop': true}); });
   }
 
   /**

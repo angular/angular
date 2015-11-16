@@ -39,7 +39,12 @@ export class ObservableWrapper {
 
   static dispose(subscription: any) { subscription.unsubscribe(); }
 
+  /**
+   * @deprecated - use callEmit() instead
+   */
   static callNext(emitter: EventEmitter<any>, value: any) { emitter.next(value); }
+
+  static callEmit(emitter: EventEmitter<any>, value: any) { emitter.emit(value); }
 
   static callError(emitter: EventEmitter<any>, error: any) { emitter.error(error); }
 
@@ -78,9 +83,9 @@ export class ObservableWrapper {
  *   toggle() {
  *     this.visible = !this.visible;
  *     if (this.visible) {
- *       this.open.next(null);
+ *       this.open.emit(null);
  *     } else {
- *       this.close.next(null);
+ *       this.close.emit(null);
  *     }
  *   }
  * }
@@ -103,6 +108,13 @@ export class EventEmitter<T> extends Subject<T> {
     super();
     this._isAsync = isAsync;
   }
+
+  emit(value: T) { super.next(value); }
+
+  /**
+   * @deprecated - use .emit(value) instead
+   */
+  next(value: any) { super.next(value); }
 
   subscribe(generatorOrNext?: any, error?: any, complete?: any): any {
     if (generatorOrNext && typeof generatorOrNext === 'object') {

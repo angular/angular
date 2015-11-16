@@ -10,7 +10,7 @@ export class MockEventEmitter<T> extends EventEmitter<T> {
     return new MockDisposable();
   }
 
-  next(value: any) { this._nextFns.forEach(fn => fn(value)); }
+  emit(value: any) { this._nextFns.forEach(fn => fn(value)); }
 }
 
 class MockDisposable {

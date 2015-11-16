@@ -13,7 +13,7 @@ export class MockLocationStrategy extends LocationStrategy {
 
   simulatePopState(url: string): void {
     this.internalPath = url;
-    ObservableWrapper.callNext(this._subject, null);
+    ObservableWrapper.callEmit(this._subject, null);
   }
 
   path(): string { return this.internalPath; }
@@ -21,7 +21,7 @@ export class MockLocationStrategy extends LocationStrategy {
   prepareExternalUrl(internal: string): string { return internal; }
 
   simulateUrlPop(pathname: string): void {
-    ObservableWrapper.callNext(this._subject, {'url': pathname});
+    ObservableWrapper.callEmit(this._subject, {'url': pathname});
   }
 
   pushState(ctx: any, title: string, path: string, query: string): void {
