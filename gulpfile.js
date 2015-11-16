@@ -1025,6 +1025,10 @@ gulp.task('!bundle.js.min.deps', ['!bundle.js.min'], function() {
       .pipe(gulp.dest('dist/js/bundle'));
 });
 
+gulp.task('!bundle.external.deps', ['clean'], function() {
+  return addDevDependencies('external-dependencies.js');
+});
+
 var JS_DEV_DEPS = [
   licenseWrap('node_modules/zone.js/LICENSE', true),
   'node_modules/zone.js/dist/zone-microtask.js',
@@ -1087,7 +1091,8 @@ gulp.task('bundles.js',
             '!bundle.js.min.deps',
             '!bundle.web_worker.js.dev.deps',
             '!bundle.js.sfx.dev.deps',
-            '!bundle.testing'
+            '!bundle.testing',
+            '!bundle.external.deps'
           ],
           function(done) { runSequence('!bundle.copy', '!bundles.js.checksize', done); });
 
