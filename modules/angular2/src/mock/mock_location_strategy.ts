@@ -18,7 +18,12 @@ export class MockLocationStrategy extends LocationStrategy {
 
   path(): string { return this.internalPath; }
 
-  prepareExternalUrl(internal: string): string { return internal; }
+  prepareExternalUrl(internal: string): string {
+    if (internal.startsWith('/') && this.internalBaseHref.endsWith('/')) {
+      return this.internalBaseHref + internal.substring(1);
+    }
+    return this.internalBaseHref + internal;
+  }
 
   simulateUrlPop(pathname: string): void {
     ObservableWrapper.callNext(this._subject, {'url': pathname});
@@ -29,7 +34,9 @@ export class MockLocationStrategy extends LocationStrategy {
 
     var url = path + (query.length > 0 ? ('?' + query) : '');
     this.internalPath = url;
-    this.urlChanges.push(url);
+
+    var external = this.prepareExternalUrl(url);
+    this.urlChanges.push(external);
   }
 
   onPopState(fn: (value: any) => void): void { ObservableWrapper.subscribe(this._subject, fn); }

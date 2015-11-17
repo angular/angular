@@ -1,7 +1,9 @@
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {Injectable} from 'angular2/angular2';
+import {Injectable, Inject} from 'angular2/angular2';
 import {EventListener, History, Location} from 'angular2/src/facade/browser';
-import {LocationStrategy, normalizeQueryParams} from './location_strategy';
+import {isBlank} from 'angular2/src/facade/lang';
+import {BaseException} from 'angular2/src/facade/exceptions';
+import {LocationStrategy, APP_BASE_HREF, normalizeQueryParams} from './location_strategy';
 
 /**
  * `PathLocationStrategy` is a {@link LocationStrategy} used to configure the
@@ -54,11 +56,21 @@ export class PathLocationStrategy extends LocationStrategy {
   private _history: History;
   private _baseHref: string;
 
-  constructor() {
+  constructor(@Inject(APP_BASE_HREF) href?: string) {
     super();
+
+    if (isBlank(href)) {
+      href = DOM.getBaseHref();
+    }
+
+    if (isBlank(href)) {
+      throw new BaseException(
+          `No base href set. Please provide a value for the APP_BASE_HREF token or add a base element to the document.`);
+    }
+
     this._location = DOM.getLocation();
     this._history = DOM.getHistory();
-    this._baseHref = DOM.getBaseHref();
+    this._baseHref = href;
   }
 
   onPopState(fn: EventListener): void {
@@ -68,12 +80,18 @@ export class PathLocationStrategy extends LocationStrategy {
 
   getBaseHref(): string { return this._baseHref; }
 
-  prepareExternalUrl(internal: string): string { return this._baseHref + internal; }
+  prepareExternalUrl(internal: string): string {
+    if (internal.startsWith('/') && this._baseHref.endsWith('/')) {
+      return this._baseHref + internal.substring(1);
+    }
+    return this._baseHref + internal;
+  }
 
   path(): string { return this._location.pathname + normalizeQueryParams(this._location.search); }
 
   pushState(state: any, title: string, url: string, queryParams: string) {
-    this._history.pushState(state, title, (url + normalizeQueryParams(queryParams)));
+    var externalUrl = this.prepareExternalUrl(url + normalizeQueryParams(queryParams));
+    this._history.pushState(state, title, externalUrl);
   }
 
   forward(): void { this._history.forward(); }

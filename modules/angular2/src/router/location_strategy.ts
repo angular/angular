@@ -1,3 +1,6 @@
+import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {OpaqueToken} from 'angular2/angular2';
+
 /**
  * `LocationStrategy` is responsible for representing and reading route state
  * from the the browser's URL. Angular provides two strategies:
@@ -23,6 +26,38 @@ export abstract class LocationStrategy {
   abstract onPopState(fn: (_: any) => any): void;
   abstract getBaseHref(): string;
 }
+
+
+/**
+ * The `APP_BASE_HREF` token represents the base href to be used with the
+ * {@link PathLocationStrategy}.
+ *
+ * If you're using {@link PathLocationStrategy}, you must provide a provider to a string
+ * representing the URL prefix that should be preserved when generating and recognizing
+ * URLs.
+ *
+ * ### Example
+ *
+ * ```
+ * import {Component} from 'angular2/angular2';
+ * import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
+ *
+ * @Component({directives: [ROUTER_DIRECTIVES]})
+ * @RouteConfig([
+ *  {...},
+ * ])
+ * class AppCmp {
+ *   // ...
+ * }
+ *
+ * bootstrap(AppCmp, [
+ *   ROUTER_PROVIDERS,
+ *   PathLocationStrategy,
+ *   provide(APP_BASE_HREF, {useValue: '/my/app'})
+ * ]);
+ * ```
+ */
+export const APP_BASE_HREF: OpaqueToken = CONST_EXPR(new OpaqueToken('appBaseHref'));
 
 export function normalizeQueryParams(params: string): string {
   return (params.length > 0 && params.substring(0, 1) != '?') ? ('?' + params) : params;
