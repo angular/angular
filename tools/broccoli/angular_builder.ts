@@ -11,6 +11,13 @@ type ProjectMap = {
   [key: string]: boolean
 };
 
+type Options = {
+  projects: ProjectMap;
+noTypeChecks: boolean;
+generateEs6: boolean;
+}
+;
+
 /**
  * BroccoliBuilder facade for all of our build pipelines.
  */
@@ -25,20 +32,20 @@ export class AngularBuilder {
   constructor(public options: AngularBuilderOptions) { this.outputPath = options.outputPath; }
 
 
-  public rebuildBrowserDevTree(projects: ProjectMap): Promise<BuildResult> {
-    this.browserDevBuilder = this.browserDevBuilder || this.makeBrowserDevBuilder(projects);
+  public rebuildBrowserDevTree(opts: Options): Promise<BuildResult> {
+    this.browserDevBuilder = this.browserDevBuilder || this.makeBrowserDevBuilder(opts);
     return this.rebuild(this.browserDevBuilder, 'js.dev');
   }
 
 
-  public rebuildBrowserProdTree(projects: ProjectMap): Promise<BuildResult> {
-    this.browserProdBuilder = this.browserProdBuilder || this.makeBrowserProdBuilder(projects);
+  public rebuildBrowserProdTree(opts: Options): Promise<BuildResult> {
+    this.browserProdBuilder = this.browserProdBuilder || this.makeBrowserProdBuilder(opts);
     return this.rebuild(this.browserProdBuilder, 'js.prod');
   }
 
 
-  public rebuildNodeTree(projects: ProjectMap): Promise<BuildResult> {
-    this.nodeBuilder = this.nodeBuilder || this.makeNodeBuilder(projects);
+  public rebuildNodeTree(opts: Options): Promise<BuildResult> {
+    this.nodeBuilder = this.nodeBuilder || this.makeNodeBuilder(opts.projects);
     return this.rebuild(this.nodeBuilder, 'js.cjs');
   }
 
@@ -58,16 +65,30 @@ export class AngularBuilder {
   }
 
 
-  private makeBrowserDevBuilder(projects: ProjectMap): BroccoliBuilder {
-    let tree = makeBrowserTree({name: 'dev', typeAssertions: true, projects: projects},
-                               path.join(this.outputPath, 'js', 'dev'));
+  private makeBrowserDevBuilder(opts: Options): BroccoliBuilder {
+    let tree = makeBrowserTree(
+        {
+          name: 'dev',
+          typeAssertions: true,
+          projects: opts.projects,
+          noTypeChecks: opts.noTypeChecks,
+          generateEs6: opts.generateEs6
+        },
+        path.join(this.outputPath, 'js', 'dev'));
     return new broccoli.Builder(tree);
   }
 
 
-  private makeBrowserProdBuilder(projects: ProjectMap): BroccoliBuilder {
-    let tree = makeBrowserTree({name: 'prod', typeAssertions: false, projects: projects},
-                               path.join(this.outputPath, 'js', 'prod'));
+  private makeBrowserProdBuilder(opts: Options): BroccoliBuilder {
+    let tree = makeBrowserTree(
+        {
+          name: 'prod',
+          typeAssertions: false,
+          projects: opts.projects,
+          noTypeChecks: opts.noTypeChecks,
+          generateEs6: opts.generateEs6
+        },
+        path.join(this.outputPath, 'js', 'prod'));
     return new broccoli.Builder(tree);
   }
 
@@ -128,11 +149,14 @@ function broccoliNodeToBuildNode(broccoliNode) {
 
   return new BuildNode(tree.description || tree.constructor.name,
                        tree.inputPath ? [tree.inputPath] : tree.inputPaths, tree.cachePath,
-                       tree.outputPath, broccoliNode.subtrees.map(broccoliNodeToBuildNode));
+                       tree.outputPath, broccoliNode.selfTime / (1000 * 1000 * 1000),
+                       broccoliNode.totalTime / (1000 * 1000 * 1000),
+                       broccoliNode.subtrees.map(broccoliNodeToBuildNode));
 }
 
 
 class BuildNode {
   constructor(public pluginName: string, public inputPaths: string[], public cachePath: string,
-              public outputPath: string, public inputNodes: BroccoliNode[]) {}
+              public outputPath: string, public selfTime: number, public totalTime: number,
+              public inputNodes: BroccoliNode[]) {}
 }

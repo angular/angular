@@ -9,8 +9,6 @@ import {NgControlGroup} from './ng_control_group';
 import {Control, ControlGroup} from '../model';
 import {Validators} from '../validators';
 import {ControlValueAccessor} from './control_value_accessor';
-import {ElementRef, QueryList} from 'angular2/src/core/linker';
-import {Renderer} from 'angular2/src/core/render';
 import {DefaultValueAccessor} from './default_value_accessor';
 import {NumberValueAccessor} from './number_value_accessor';
 import {CheckboxControlValueAccessor} from './checkbox_value_accessor';
@@ -55,11 +53,6 @@ export function setUpControlGroup(control: ControlGroup, dir: NgControlGroup) {
 function _throwError(dir: AbstractControlDirective, message: string): void {
   var path = dir.path.join(" -> ");
   throw new BaseException(`${message} '${path}'`);
-}
-
-export function setProperty(renderer: Renderer, elementRef: ElementRef, propName: string,
-                            propValue: any) {
-  renderer.setElementProperty(elementRef, propName, propValue);
 }
 
 export function composeValidators(validators: /* Array<Validator|Function> */ any[]): Function {

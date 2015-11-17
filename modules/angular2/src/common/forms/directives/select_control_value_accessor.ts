@@ -6,7 +6,6 @@ import {Query, Directive} from 'angular2/src/core/metadata';
 import {ObservableWrapper} from 'angular2/src/facade/async';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
-import {setProperty} from './shared';
 
 const SELECT_VALUE_ACCESSOR = CONST_EXPR(new Provider(
     NG_VALUE_ACCESSOR, {useExisting: forwardRef(() => SelectControlValueAccessor), multi: true}));
@@ -50,7 +49,7 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
 
   writeValue(value: any): void {
     this.value = value;
-    setProperty(this._renderer, this._elementRef, "value", value);
+    this._renderer.setElementProperty(this._elementRef, 'value', value);
   }
 
   registerOnChange(fn: () => any): void { this.onChange = fn; }

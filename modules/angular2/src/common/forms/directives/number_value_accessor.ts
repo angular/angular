@@ -4,7 +4,6 @@ import {Renderer} from 'angular2/src/core/render';
 import {Self, forwardRef, Provider} from 'angular2/src/core/di';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
 import {isBlank, CONST_EXPR, NumberWrapper} from 'angular2/src/facade/lang';
-import {setProperty} from './shared';
 
 const NUMBER_VALUE_ACCESSOR = CONST_EXPR(new Provider(
     NG_VALUE_ACCESSOR, {useExisting: forwardRef(() => NumberValueAccessor), multi: true}));
@@ -34,7 +33,9 @@ export class NumberValueAccessor implements ControlValueAccessor {
 
   constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}
 
-  writeValue(value: number): void { setProperty(this._renderer, this._elementRef, 'value', value); }
+  writeValue(value: number): void {
+    this._renderer.setElementProperty(this._elementRef, 'value', value);
+  }
 
   registerOnChange(fn: (_: number) => void): void {
     this.onChange = (value) => { fn(NumberWrapper.parseFloat(value)); };
