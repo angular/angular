@@ -5,26 +5,21 @@ import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
 import {BrowserDetails} from 'angular2/src/animate/browser_details';
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
 import {Parser, Lexer} from 'angular2/src/core/change_detection/change_detection';
-import {
-  EventManager,
-  DomEventsPlugin,
-  EVENT_MANAGER_PLUGINS
-} from 'angular2/src/core/render/dom/events/event_manager';
+import {EventManager, EVENT_MANAGER_PLUGINS} from 'angular2/core';
 import {ProtoViewFactory} from 'angular2/src/core/linker/proto_view_factory';
-import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
-import {KeyEventsPlugin} from 'angular2/src/core/render/dom/events/key_events';
-import {HammerGesturesPlugin} from 'angular2/src/core/render/dom/events/hammer_gestures';
+import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
+import {KeyEventsPlugin} from 'angular2/src/platform/dom/events/key_events';
+import {HammerGesturesPlugin} from 'angular2/src/platform/dom/events/hammer_gestures';
 import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 import {Renderer} from 'angular2/src/core/render/api';
 import {AppRootUrl} from 'angular2/src/compiler/app_root_url';
-import {DomRenderer, DomRenderer_, DOCUMENT} from 'angular2/src/core/render/render';
+import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
+import {DomRenderer, DomRenderer_} from 'angular2/src/platform/dom/dom_renderer';
+import {DomEventsPlugin} from 'angular2/src/platform/dom/events/dom_events';
 import {APP_ID_RANDOM_PROVIDER} from 'angular2/src/core/application_tokens';
 import {ElementSchemaRegistry} from 'angular2/src/compiler/schema/element_schema_registry';
 import {DomElementSchemaRegistry} from 'angular2/src/compiler/schema/dom_element_schema_registry';
-import {
-  SharedStylesHost,
-  DomSharedStylesHost
-} from 'angular2/src/core/render/dom/shared_styles_host';
+import {SharedStylesHost, DomSharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {AppViewManager, AppViewManager_} from 'angular2/src/core/linker/view_manager';

@@ -1,7 +1,6 @@
 import {ddescribe, describe, it, iit, xit, expect, afterEach} from 'angular2/testing_internal';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-
-import {Title} from 'angular2/src/core/services/title';
+import {Title} from 'angular2/platform/browser';
 
 export function main() {
   describe('title service', () => {

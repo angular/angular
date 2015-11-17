@@ -10,7 +10,7 @@ import {Promise} from 'angular2/src/facade/async';
 import {bootstrapWebWorkerCommon} from "angular2/src/web_workers/worker/application_common";
 import {ComponentRef} from "angular2/src/core/linker/dynamic_component_loader";
 export * from "angular2/src/web_workers/shared/message_bus";
-import {Parse5DomAdapter} from 'angular2/src/core/dom/parse5_adapter';
+import {Parse5DomAdapter} from 'angular2/src/platform/server/parse5_adapter';
 
 // TODO(jteplitz602) remove this and compile with lib.webworker.d.ts (#3492)
 interface PostMessageInterface {

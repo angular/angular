@@ -9,11 +9,8 @@ import {
   beforeEach,
   el
 } from 'angular2/testing_internal';
-import {
-  EventManager,
-  EventManagerPlugin,
-  DomEventsPlugin
-} from 'angular2/src/core/render/dom/events/event_manager';
+import {EventManager, EventManagerPlugin} from 'angular2/core';
+import {DomEventsPlugin} from 'angular2/src/platform/dom/events/dom_events';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';

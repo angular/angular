@@ -1,13 +1,6 @@
 import {bootstrap} from 'angular2/bootstrap';
-import {
-  bind,
-  provide,
-  Component,
-  Directive,
-  UrlResolver,
-  View,
-  ViewEncapsulation
-} from 'angular2/core';
+import {bind, provide, Component, Directive, View, ViewEncapsulation} from 'angular2/core';
+import {UrlResolver} from 'angular2/compiler';
 import {MdCheckbox} from 'angular2_material/src/components/checkbox/checkbox';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';
 

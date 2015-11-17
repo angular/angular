@@ -10,7 +10,7 @@ import "package:angular2/src/core/linker/dynamic_component_loader.dart"
 import "dart:isolate";
 import "dart:async";
 import 'dart:core';
-import 'package:angular2/src/core/dom/webworker_adapter.dart';
+import 'package:angular2/src/platform/server/webworker_adapter.dart';
 
 /**
  * Bootstrapping a Webworker Application

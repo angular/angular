@@ -1,5 +1,4 @@
 import {Injectable} from 'angular2/src/core/di';
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {Map, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {CONST, CONST_EXPR} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
@@ -94,39 +93,38 @@ export class TestabilityRegistry {
   /** @internal */
   _applications = new Map<any, Testability>();
 
-  constructor() { testabilityGetter.addToWindow(this); }
+  constructor() { _testabilityGetter.addToWindow(this); }
 
   registerApplication(token: any, testability: Testability) {
     this._applications.set(token, testability);
   }
 
+  getTestability(elem: any): Testability { return this._applications.get(elem); }
+
   getAllTestabilities(): Testability[] { return MapWrapper.values(this._applications); }
 
   findTestabilityInTree(elem: Node, findInAncestors: boolean = true): Testability {
-    if (elem == null) {
-      return null;
-    }
-    if (this._applications.has(elem)) {
-      return this._applications.get(elem);
-    } else if (!findInAncestors) {
-      return null;
-    }
-    if (DOM.isShadowRoot(elem)) {
-      return this.findTestabilityInTree(DOM.getHost(elem));
-    }
-    return this.findTestabilityInTree(DOM.parentElement(elem));
+    return _testabilityGetter.findTestabilityInTree(this, elem, findInAncestors);
   }
 }
 
-export interface GetTestability { addToWindow(registry: TestabilityRegistry): void; }
+export interface GetTestability {
+  addToWindow(registry: TestabilityRegistry): void;
+  findTestabilityInTree(registry: TestabilityRegistry, elem: any,
+                        findInAncestors: boolean): Testability;
+}
 
 @CONST()
-class NoopGetTestability implements GetTestability {
+class _NoopGetTestability implements GetTestability {
   addToWindow(registry: TestabilityRegistry): void {}
+  findTestabilityInTree(registry: TestabilityRegistry, elem: any,
+                        findInAncestors: boolean): Testability {
+    return null;
+  }
 }
 
 export function setTestabilityGetter(getter: GetTestability): void {
-  testabilityGetter = getter;
+  _testabilityGetter = getter;
 }
 
-var testabilityGetter: GetTestability = CONST_EXPR(new NoopGetTestability());
+var _testabilityGetter: GetTestability = CONST_EXPR(new _NoopGetTestability());

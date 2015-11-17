@@ -1,9 +1,8 @@
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {ListWrapper} from 'angular2/src/facade/collection';
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {Injectable, Inject, OpaqueToken} from 'angular2/src/core/di';
+import {NgZone} from 'angular2/src/core/zone/ng_zone';
+import {ListWrapper} from 'angular2/src/facade/collection';
 
 export const EVENT_MANAGER_PLUGINS: OpaqueToken =
     CONST_EXPR(new OpaqueToken("EventManagerPlugins"));
@@ -54,28 +53,5 @@ export class EventManagerPlugin {
 
   addGlobalEventListener(element: string, eventName: string, handler: Function): Function {
     throw "not implemented";
-  }
-}
-
-@Injectable()
-export class DomEventsPlugin extends EventManagerPlugin {
-  manager: EventManager;
-
-  // This plugin should come last in the list of plugins, because it accepts all
-  // events.
-  supports(eventName: string): boolean { return true; }
-
-  addEventListener(element: HTMLElement, eventName: string, handler: Function) {
-    var zone = this.manager.getZone();
-    var outsideHandler = (event) => zone.run(() => handler(event));
-    this.manager.getZone().runOutsideAngular(() => { DOM.on(element, eventName, outsideHandler); });
-  }
-
-  addGlobalEventListener(target: string, eventName: string, handler: Function): Function {
-    var element = DOM.getGlobalEventTarget(target);
-    var zone = this.manager.getZone();
-    var outsideHandler = (event) => zone.run(() => handler(event));
-    return this.manager.getZone().runOutsideAngular(
-        () => { return DOM.onAndCancel(element, eventName, outsideHandler); });
   }
 }

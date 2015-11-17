@@ -8,7 +8,7 @@ import {
   expect,
   iit,
   inject,
-  beforeEachBindings,
+  beforeEachProviders,
   it,
   xit,
   TestComponentBuilder,
@@ -16,7 +16,7 @@ import {
 import {global} from 'angular2/src/facade/lang';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 import {provide, Component, Directive, Injectable, View} from 'angular2/core';
-import {inspectNativeElement} from 'angular2/src/core/debug';
+import {inspectNativeElement} from 'angular2/platform/browser';
 import {IS_DART} from 'angular2/src/facade/lang';
 
 @Component({selector: 'my-comp'})
@@ -28,7 +28,7 @@ class MyComp {
 
 export function main() {
   describe('element probe', function() {
-    beforeEachBindings(() => [provide(APP_VIEW_POOL_CAPACITY, {useValue: 0})]);
+    beforeEachProviders(() => [provide(APP_VIEW_POOL_CAPACITY, {useValue: 0})]);
 
     it('should return a TestElement from a dom element',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {

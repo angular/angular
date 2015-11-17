@@ -7,7 +7,7 @@ import {
   NumberWrapper
 } from 'angular2/src/facade/lang';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
-import {EventManagerPlugin} from './event_manager';
+import {EventManagerPlugin} from 'angular2/core';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {Injectable} from 'angular2/src/core/di';
 

@@ -89,8 +89,9 @@ module.exports = function makeNodeTree(projects, destinationPath) {
       {
         match: /^/,
         replacement:
-            () => `var parse5Adapter = require('angular2/src/core/dom/parse5_adapter');\r\n` +
-                  `parse5Adapter.Parse5DomAdapter.makeCurrent();`
+            () =>
+                `var parse5Adapter = require('angular2/src/platform/server/parse5_adapter');\r\n` +
+                `parse5Adapter.Parse5DomAdapter.makeCurrent();`
       },
       {match: /$/, replacement: (_, relativePath) => "\r\n main(); \r\n"}
     ]

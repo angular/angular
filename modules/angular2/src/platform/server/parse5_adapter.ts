@@ -4,7 +4,7 @@ var serializer = new parse5.Serializer(parse5.TreeAdapters.htmlparser2);
 var treeAdapter = parser.treeAdapter;
 
 import {MapWrapper, ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
-import {DomAdapter, setRootDomAdapter} from './dom_adapter';
+import {DomAdapter, setRootDomAdapter} from 'angular2/core';
 import {
   isPresent,
   isBlank,

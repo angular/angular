@@ -24,7 +24,7 @@ import {Compiler} from './linker/compiler';
 import {Compiler_} from "./linker/compiler";
 import {DynamicComponentLoader} from './linker/dynamic_component_loader';
 import {DynamicComponentLoader_} from "./linker/dynamic_component_loader";
-import {EventManager} from './render/dom/events/event_manager';
+import {EventManager} from './render';
 
 /**
  * A default set of providers which should be included in any Angular

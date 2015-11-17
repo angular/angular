@@ -20,7 +20,6 @@ import {FunctionWrapper, Type, isPresent, isBlank, CONST_EXPR} from 'angular2/sr
 import {Key} from './key';
 import {SelfMetadata, HostMetadata, SkipSelfMetadata} from './metadata';
 
-
 // Threshold for the dynamic version
 const _MAX_CONSTRUCTION_COUNTER = 10;
 

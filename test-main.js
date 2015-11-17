@@ -21,7 +21,7 @@ System.config({
 window.angularDevMode = true;
 
 // Import all the specs, execute their `main()` method and kick off Karma (Jasmine).
-System.import('angular2/src/core/dom/browser_adapter').then(function(browser_adapter) {
+System.import('angular2/src/platform/browser/browser_adapter').then(function(browser_adapter) {
   browser_adapter.BrowserDomAdapter.makeCurrent();
 }).then(function() {
   return Promise.all(

@@ -11,6 +11,7 @@ import destCopy from '../broccoli-dest-copy';
 import flatten from '../broccoli-flatten';
 import mergeTrees from '../broccoli-merge-trees';
 import replace from '../broccoli-replace';
+import checkImports from '../broccoli-check-imports';
 
 
 const kServedPaths = [
@@ -132,6 +133,9 @@ module.exports = function makeBrowserTree(options, destinationPath) {
       return parts[parts.length - 1].replace('html', 'js');
     }
   };
+
+  // Check that imports do not break barrel boundaries
+  modulesTree = checkImports(modulesTree);
 
   modulesTree = replace(modulesTree, {
     files: ["playground*/**/*.js"],

@@ -37,9 +37,8 @@ import {
   AfterViewChecked
 } from 'angular2/core';
 
-import {asNativeElements} from 'angular2/src/core/debug';
-
-import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
+import {asNativeElements} from 'angular2/core';
+import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
 
 export function main() {
   BrowserDomAdapter.makeCurrent();

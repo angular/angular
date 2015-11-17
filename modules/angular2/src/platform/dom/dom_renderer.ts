@@ -1,5 +1,6 @@
 import {Inject, Injectable, OpaqueToken} from 'angular2/src/core/di';
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
+
 import {
   isPresent,
   isBlank,
@@ -8,14 +9,10 @@ import {
   stringify,
   StringWrapper
 } from 'angular2/src/facade/lang';
+
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
-
-import {EventManager} from './events/event_manager';
-
 import {DomSharedStylesHost} from './shared_styles_host';
-import {WtfScopeFn, wtfLeave, wtfCreateScope} from '../../profile/profile';
+import {WtfScopeFn, wtfLeave, wtfCreateScope} from 'angular2/src/core/profile/profile';
 
 import {
   Renderer,
@@ -26,14 +23,27 @@ import {
   RenderViewWithFragments,
   RenderTemplateCmd,
   RenderEventDispatcher,
-  RenderComponentTemplate
-} from '../api';
+  RenderComponentTemplate,
+  EventManager
+} from 'angular2/core';
 
 import {DOCUMENT} from './dom_tokens';
-import {createRenderView, NodeFactory, encapsulateStyles} from '../view_factory';
-import {DefaultRenderView, DefaultRenderFragmentRef, DefaultProtoViewRef} from '../view';
+import {
+  createRenderView,
+  NodeFactory,
+  encapsulateStyles
+} from 'angular2/src/core/render/view_factory';
+import {
+  DefaultRenderView,
+  DefaultRenderFragmentRef,
+  DefaultProtoViewRef
+} from 'angular2/src/core/render/view';
 import {camelCaseToDashCase} from './util';
 import {ViewEncapsulation} from 'angular2/src/core/metadata';
+
+
+// TODO move it once DomAdapter is moved
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 // TODO(tbosch): solve SVG properly once https://github.com/angular/angular/issues/4417 is done
 const XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink';

@@ -24,7 +24,7 @@ import {
   View
 } from 'angular2/core';
 import {Type} from 'angular2/src/facade/lang';
-import {asNativeElements} from 'angular2/src/core/debug';
+import {asNativeElements} from 'angular2/core';
 
 export function main() {
   describe("forwardRef integration", function() {

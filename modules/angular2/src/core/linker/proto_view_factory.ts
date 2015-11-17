@@ -30,7 +30,7 @@ import {
   NgContentCmd
 } from './template_commands';
 
-import {Renderer} from 'angular2/render';
+import {Renderer} from 'angular2/src/core/render/api';
 import {APP_ID} from 'angular2/src/core/application_tokens';
 
 

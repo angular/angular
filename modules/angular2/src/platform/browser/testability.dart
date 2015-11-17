@@ -1,6 +1,6 @@
 library testability.browser_testability;
 
-import './testability.dart';
+import 'package:angular2/core.dart';
 
 import 'dart:html';
 import 'dart:js' as js;
@@ -107,20 +107,20 @@ class BrowserGetTestability implements GetTestability {
       js.context['ngTestabilityRegistries'] = jsRegistry = new js.JsArray();
       js.context['getAngularTestability'] =
           _jsify((Element elem, [bool findInAncestors = true]) {
-        var registry = js.context['ngTestabilityRegistries'];
-        for (int i = 0; i < registry.length; i++) {
-          var result = registry[i]
-              .callMethod('getAngularTestability', [elem, findInAncestors]);
-          if (result != null) return result;
-        }
-        throw 'Could not find testability for element.';
-      });
+            var registry = js.context['ngTestabilityRegistries'];
+            for (int i = 0; i < registry.length; i++) {
+              var result = registry[i]
+                  .callMethod('getAngularTestability', [elem, findInAncestors]);
+              if (result != null) return result;
+            }
+            throw 'Could not find testability for element.';
+          });
       js.context['getAllAngularTestabilities'] = _jsify(() {
         var registry = js.context['ngTestabilityRegistries'];
         var result = [];
         for (int i = 0; i < registry.length; i++) {
           var testabilities =
-              registry[i].callMethod('getAllAngularTestabilities');
+          registry[i].callMethod('getAllAngularTestabilities');
           if (testabilities != null) result.addAll(testabilities);
         }
         return _jsify(result);
@@ -129,15 +129,31 @@ class BrowserGetTestability implements GetTestability {
     jsRegistry.add(this._createRegistry(registry));
   }
 
+  findTestabilityInTree(TestabilityRegistry registry, dynamic elem, bool findInAncestors) {
+    if (elem == null) {
+      return null;
+    }
+    var t = registry.getTestability(elem);
+    if (t != null) {
+      return t;
+    } else if (!findInAncestors) {
+      return null;
+    }
+    if (DOM.isShadowRoot(elem)) {
+      return this.findTestabilityInTree(registry, DOM.getHost(elem), true);
+    }
+    return this.findTestabilityInTree(registry, DOM.parentElement(elem), true);
+  }
+
   js.JsObject _createRegistry(TestabilityRegistry registry) {
     var object = new js.JsObject(js.context['Object']);
     object['getAngularTestability'] =
         _jsify((Element elem, bool findInAncestors) {
-      var testability = registry.findTestabilityInTree(elem, findInAncestors);
-      return testability == null
-          ? null
-          : _jsify(new PublicTestability(testability));
-    });
+          var testability = registry.findTestabilityInTree(elem, findInAncestors);
+          return testability == null
+              ? null
+              : _jsify(new PublicTestability(testability));
+        });
     object['getAllAngularTestabilities'] = _jsify(() {
       var publicTestabilities = registry
           .getAllTestabilities()

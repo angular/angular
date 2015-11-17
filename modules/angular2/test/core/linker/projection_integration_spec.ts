@@ -9,7 +9,7 @@ import {
   expect,
   iit,
   inject,
-  beforeEachBindings,
+  beforeEachProviders,
   it,
   xit,
   containsRegexp,
@@ -36,11 +36,11 @@ import {
   ViewEncapsulation,
   ViewMetadata
 } from 'angular2/core';
-import {By} from 'angular2/src/core/debug';
+import {By} from 'angular2/platform/browser';
 
 export function main() {
   describe('projection', () => {
-    beforeEachBindings(() => [provide(AppViewListener, {useClass: AppViewListener})]);
+    beforeEachProviders(() => [provide(AppViewListener, {useClass: AppViewListener})]);
 
     it('should support simple components',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {

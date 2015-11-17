@@ -9,11 +9,11 @@ import {
   expect,
   SpyObject
 } from 'angular2/testing_internal';
-import {SpyElementRef, SpyDomAdapter} from '../spies';
+import {SpyElementRef, SpyDomAdapter} from '../../core/spies';
 
 import {DOM, DomAdapter} from 'angular2/src/core/dom/dom_adapter';
 
-import {Ruler, Rectangle} from 'angular2/src/core/services/ruler';
+import {Ruler, Rectangle} from 'angular2/src/platform/browser/ruler';
 import {createRectangle} from './rectangle_mock';
 
 function assertDimensions(rect: Rectangle, left, right, top, bottom, width, height) {

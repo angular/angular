@@ -3,7 +3,7 @@ import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_ca
 import {Injectable, Injector} from 'angular2/core';
 import {ProtoElementInjector, DirectiveProvider} from 'angular2/src/core/linker/element_injector';
 import {getIntParameter, bindAction, microBenchmark} from 'angular2/src/testing/benchmark_util';
-import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
+import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
 
 var count = 0;
 

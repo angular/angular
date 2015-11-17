@@ -23,7 +23,7 @@ import {
   windowProfile,
   windowProfileEnd
 } from 'angular2/src/testing/benchmark_util';
-import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
+import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 
 function createBindings(): Provider[] {

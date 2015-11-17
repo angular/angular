@@ -1,5 +1,6 @@
 import {bootstrap} from 'angular2/bootstrap';
-import {bind, provide, Component, UrlResolver, View, ViewEncapsulation} from 'angular2/core';
+import {bind, provide, Component, View, ViewEncapsulation} from 'angular2/core';
+import {UrlResolver} from 'angular2/compiler';
 import {MdRadioButton, MdRadioGroup} from 'angular2_material/src/components/radio/radio_button';
 import {MdRadioDispatcher} from 'angular2_material/src/components/radio/radio_dispatcher';
 import {commonDemoSetup, DemoUrlResolver} from '../demo_common';

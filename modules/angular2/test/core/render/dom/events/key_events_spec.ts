@@ -9,7 +9,7 @@ import {
   beforeEach,
   el
 } from 'angular2/testing_internal';
-import {KeyEventsPlugin} from 'angular2/src/core/render/dom/events/key_events';
+import {KeyEventsPlugin} from 'angular2/src/platform/dom/events/key_events';
 
 export function main() {
   describe('KeyEvents', () => {

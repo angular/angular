@@ -1,4 +1,12 @@
-export {BROWSER_PROVIDERS} from 'angular2/src/platform/browser_common';
+export {
+  BROWSER_PROVIDERS,
+  ELEMENT_PROBE_BINDINGS,
+  ELEMENT_PROBE_PROVIDERS,
+  inspectNativeElement,
+  BrowserDomAdapter,
+  By,
+  Title
+} from 'angular2/src/platform/browser_common';
 
 import {Type, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
 import {Promise} from 'angular2/src/facade/promise';

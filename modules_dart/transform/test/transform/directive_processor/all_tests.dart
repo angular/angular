@@ -7,7 +7,7 @@ import 'package:dart_style/dart_style.dart';
 import 'package:guinness/guinness.dart';
 
 import 'package:angular2/src/core/change_detection/change_detection.dart';
-import 'package:angular2/src/core/dom/html_adapter.dart';
+import 'package:angular2/src/platform/server/html_adapter.dart';
 import 'package:angular2/src/core/linker/interfaces.dart' show LifecycleHooks;
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';

@@ -1,6 +1,6 @@
 import {isBlank, Type} from 'angular2/src/facade/lang';
 
-export var DOM: DomAdapter;
+export var DOM: DomAdapter = null;
 
 export function setRootDomAdapter(adapter: DomAdapter) {
   if (isBlank(DOM)) {

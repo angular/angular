@@ -5,7 +5,7 @@ import {AppViewListener} from 'angular2/src/core/linker/view_listener';
 import {AppView} from 'angular2/src/core/linker/view';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {Renderer} from 'angular2/src/core/render/api';
-import {DebugElement, DebugElement_} from './debug_element';
+import {DebugElement, DebugElement_} from 'angular2/src/core/debug/debug_element';
 
 const NG_ID_PROPERTY = 'ngid';
 const INSPECT_GLOBAL_NAME = 'ng.probe';

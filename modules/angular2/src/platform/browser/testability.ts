@@ -1,10 +1,17 @@
+import {Map, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {CONST, CONST_EXPR, global, isPresent} from 'angular2/src/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {PromiseWrapper, ObservableWrapper} from 'angular2/src/facade/async';
+
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
+
 import {
+  Injectable,
   TestabilityRegistry,
   Testability,
   GetTestability,
   setTestabilityGetter
-} from 'angular2/src/core/testability/testability';
-import {global} from 'angular2/src/facade/lang';
+} from 'angular2/core';
 
 class PublicTestability {
   /** @internal */
@@ -29,18 +36,34 @@ export class BrowserGetTestability implements GetTestability {
   static init() { setTestabilityGetter(new BrowserGetTestability()); }
 
   addToWindow(registry: TestabilityRegistry): void {
-    global.getAngularTestability = function(elem: Element,
-                                            findInAncestors: boolean = true): PublicTestability {
+    global.getAngularTestability = (elem: any, findInAncestors: boolean = true) => {
       var testability = registry.findTestabilityInTree(elem, findInAncestors);
-
       if (testability == null) {
         throw new Error('Could not find testability for element.');
       }
       return new PublicTestability(testability);
     };
-    global.getAllAngularTestabilities = function(): PublicTestability[] {
+
+    global.getAllAngularTestabilities = () => {
       var testabilities = registry.getAllTestabilities();
       return testabilities.map((testability) => { return new PublicTestability(testability); });
     };
+  }
+
+  findTestabilityInTree(registry: TestabilityRegistry, elem: any,
+                        findInAncestors: boolean): Testability {
+    if (elem == null) {
+      return null;
+    }
+    var t = registry.getTestability(elem);
+    if (isPresent(t)) {
+      return t;
+    } else if (!findInAncestors) {
+      return null;
+    }
+    if (DOM.isShadowRoot(elem)) {
+      return this.findTestabilityInTree(registry, DOM.getHost(elem), true);
+    }
+    return this.findTestabilityInTree(registry, DOM.parentElement(elem), true);
   }
 }

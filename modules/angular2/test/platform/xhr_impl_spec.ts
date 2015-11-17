@@ -16,8 +16,8 @@ import {PromiseWrapper} from 'angular2/src/facade/async';
 export function main() {
   describe('XHRImpl', () => {
     var xhr: XHRImpl;
-    var url200 = '/base/modules/angular2/test/core/services/static_assets/200.html';
-    var url404 = '/base/modules/angular2/test/core/services/static_assets/404.html';
+    var url200 = '/base/modules/angular2/test/platform/browser/static_assets/200.html';
+    var url404 = '/base/modules/angular2/test/platform/browser/static_assets/404.html';
 
     beforeEach(() => { xhr = new XHRImpl(); });
 
