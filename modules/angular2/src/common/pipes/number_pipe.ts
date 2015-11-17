@@ -66,7 +66,7 @@ export class NumberPipe {
  * Formats a number as local text. i.e. group sizing and separator and other locale-specific
  * configurations are based on the active locale.
  *
- *##Usage
+ * ### Usage
  *
  *     expression | number[:digitInfo]
  *
@@ -101,7 +101,7 @@ export class DecimalPipe extends NumberPipe implements PipeTransform {
  *
  * Formats a number as local percent.
  *
- *##Usage
+ * ### Usage
  *
  *     expression | percent[:digitInfo]
  *
@@ -127,7 +127,7 @@ export class PercentPipe extends NumberPipe implements PipeTransform {
  *
  * Formats a number as local currency.
  *
- *##Usage
+ * ### Usage
  *
  *     expression | currency[:currencyCode[:symbolDisplay[:digitInfo]]]
  *

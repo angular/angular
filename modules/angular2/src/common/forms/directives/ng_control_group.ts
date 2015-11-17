@@ -18,7 +18,7 @@ const controlGroupProvider =
  *
  * This directive can only be used as a child of {@link NgForm} or {@link NgFormModel}.
  *
- * # Example ([live demo](http://plnkr.co/edit/7EJ11uGeaggViYM6T5nq?p=preview))
+ * ### Example ([live demo](http://plnkr.co/edit/7EJ11uGeaggViYM6T5nq?p=preview))
  *
  * ```typescript
  * @Component({

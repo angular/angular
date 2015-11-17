@@ -18,7 +18,7 @@ import {isBlank} from 'angular2/src/facade/lang';
  * </div>
  * ```
  *
- *##Syntax
+ * ### Syntax
  *
  * - `<div *ng-if="condition">...</div>`
  * - `<div template="ng-if condition">...</div>`
