@@ -194,9 +194,7 @@ export abstract class DomRenderer extends Renderer implements NodeFactory<Node> 
 
   dehydrateView(viewRef: RenderViewRef) { resolveInternalDomView(viewRef).dehydrate(); }
 
-  createTemplateAnchor(attrNameAndValues: string[]): Node {
-    return this.createElement('script', attrNameAndValues);
-  }
+  createTemplateAnchor(attrNameAndValues: string[]): Node { return DOM.createComment('template'); }
   abstract createElement(name: string, attrNameAndValues: string[]): Node;
   abstract mergeElement(existing: Node, attrNameAndValues: string[]);
   abstract createShadowRoot(host: Node, templateId: string): Node;
