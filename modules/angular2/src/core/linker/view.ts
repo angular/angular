@@ -182,7 +182,7 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
     var eiCount = this.proto.elementBinders.length;
     var ei = this.elementInjectors;
     for (var i = eiCount - 1; i >= 0; i--) {
-      if (isPresent(ei[i + this.elementOffset])) ei[i + this.elementOffset].afterContentChecked();
+      if (isPresent(ei[i + this.elementOffset])) ei[i + this.elementOffset].ngAfterContentChecked();
     }
   }
 
@@ -190,7 +190,7 @@ export class AppView implements ChangeDispatcher, RenderEventDispatcher {
     var eiCount = this.proto.elementBinders.length;
     var ei = this.elementInjectors;
     for (var i = eiCount - 1; i >= 0; i--) {
-      if (isPresent(ei[i + this.elementOffset])) ei[i + this.elementOffset].afterViewChecked();
+      if (isPresent(ei[i + this.elementOffset])) ei[i + this.elementOffset].ngAfterViewChecked();
     }
   }
 

@@ -131,11 +131,11 @@ export function main() {
                  template: "ignore: {{ignore}}; " +
                                "literal: {{literal}}; interpolate: {{interpolate}}; " +
                                "oneWayA: {{oneWayA}}; oneWayB: {{oneWayB}}; " +
-                               "twoWayA: {{twoWayA}}; twoWayB: {{twoWayB}}; ({{onChangesCount}})"
+                               "twoWayA: {{twoWayA}}; twoWayB: {{twoWayB}}; ({{ngOnChangesCount}})"
                })
                    .Class({
                      constructor: function() {
-                       this.onChangesCount = 0;
+                       this.ngOnChangesCount = 0;
                        this.ignore = '-';
                        this.literal = '?';
                        this.interpolate = '?';
@@ -148,7 +148,7 @@ export function main() {
                        this.twoWayAEmitter = new EventEmitter();
                        this.twoWayBEmitter = new EventEmitter();
                      },
-                     onChanges: function(changes) {
+                     ngOnChanges: function(changes) {
                        var assert = (prop, value) => {
                          if (this[prop] != value) {
                            throw new Error(
@@ -168,7 +168,7 @@ export function main() {
                          }
                        };
 
-                       switch (this.onChangesCount++) {
+                       switch (this.ngOnChangesCount++) {
                          case 0:
                            assert('ignore', '-');
                            assertChange('literal', 'Text');

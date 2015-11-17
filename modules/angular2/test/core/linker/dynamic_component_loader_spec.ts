@@ -283,7 +283,7 @@ class DynamicallyCreatedCmp implements OnDestroy {
     this.dynamicallyCreatedComponentService = a;
   }
 
-  onDestroy() { this.destroyed = true; }
+  ngOnDestroy() { this.destroyed = true; }
 }
 
 @Component({selector: 'dummy'})

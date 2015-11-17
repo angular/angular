@@ -41,7 +41,7 @@ export var LIFECYCLE_HOOKS_VALUES = [
 /**
  * Implement this interface to get notified when any data-bound property of your directive changes.
  *
- * `onChanges` is called right after the data-bound properties have been checked and before view
+ * `ngOnChanges` is called right after the data-bound properties have been checked and before view
  * and content children are checked if at least one of them has changed.
  *
  * The `changes` parameter contains an entry for each of the changed data-bound property. The key is
@@ -57,8 +57,8 @@ export var LIFECYCLE_HOOKS_VALUES = [
  * class MyComponent implements OnChanges {
  *   @Input() myProp: any;
  *
- *   onChanges(changes: {[propName: string]: SimpleChange}) {
- *     console.log('onChanges - myProp = ' + changes['myProp'].currentValue);
+ *   ngOnChanges(changes: {[propName: string]: SimpleChange}) {
+ *     console.log('ngOnChanges - myProp = ' + changes['myProp'].currentValue);
  *   }
  * }
  *
@@ -76,13 +76,13 @@ export var LIFECYCLE_HOOKS_VALUES = [
  * bootstrap(App).catch(err => console.error(err));
  * ```
  */
-export interface OnChanges { onChanges(changes: {[key: string]: SimpleChange}); }
+export interface OnChanges { ngOnChanges(changes: {[key: string]: SimpleChange}); }
 
 /**
  * Implement this interface to execute custom initialization logic after your directive's
  * data-bound properties have been initialized.
  *
- * `onInit` is called right after the directive's data-bound properties have been checked for the
+ * `ngOnInit` is called right after the directive's data-bound properties have been checked for the
  * first time, and before any of its children have been checked. It is invoked only once when the
  * directive is instantiated.
  *
@@ -94,12 +94,12 @@ export interface OnChanges { onChanges(changes: {[key: string]: SimpleChange}); 
  *   template: `<p>my-component</p>`
  * })
  * class MyComponent implements OnInit, OnDestroy {
- *   onInit() {
- *     console.log('onInit');
+ *   ngOnInit() {
+ *     console.log('ngOnInit');
  *   }
  *
- *   onDestroy() {
- *     console.log('onDestroy');
+ *   ngOnDestroy() {
+ *     console.log('ngOnDestroy');
  *   }
  * }
  *
@@ -119,29 +119,29 @@ export interface OnChanges { onChanges(changes: {[key: string]: SimpleChange}); 
  * bootstrap(App).catch(err => console.error(err));
  *  ```
  */
-export interface OnInit { onInit(); }
+export interface OnInit { ngOnInit(); }
 
 /**
  * Implement this interface to override the default change detection algorithm for your directive.
  *
- * `doCheck` gets called to check the changes in the directives instead of the default algorithm.
+ * `ngDoCheck` gets called to check the changes in the directives instead of the default algorithm.
  *
  * The default change detection algorithm looks for differences by comparing bound-property values
  * by reference across change detection runs. When `DoCheck` is implemented, the default algorithm
- * is disabled and `doCheck` is responsible for checking for changes.
+ * is disabled and `ngDoCheck` is responsible for checking for changes.
  *
  * Implementing this interface allows improving performance by using insights about the component,
  * its implementation and data types of its properties.
  *
  * Note that a directive should not implement both `DoCheck` and {@link OnChanges} at the same time.
- * `onChanges` would not be called when a directive implements `DoCheck`. Reaction to the changes
- * have to be handled from within the `doCheck` callback.
+ * `ngOnChanges` would not be called when a directive implements `DoCheck`. Reaction to the changes
+ * have to be handled from within the `ngDoCheck` callback.
  *
  * Use {@link KeyValueDiffers} and {@link IterableDiffers} to add your custom check mechanisms.
  *
  * ### Example ([live demo](http://plnkr.co/edit/QpnIlF0CR2i5bcYbHEUJ?p=preview))
  *
- * In the following example `doCheck` uses an {@link IterableDiffers} to detect the updates to the
+ * In the following example `ngDoCheck` uses an {@link IterableDiffers} to detect the updates to the
  * array `list`:
  *
  * ```typescript
@@ -163,7 +163,7 @@ export interface OnInit { onInit(); }
  *     this.differ = differs.find([]).create(null);
  *   }
  *
- *   doCheck() {
+ *   ngDoCheck() {
  *     var changes = this.differ.diff(this.list);
  *
  *     if (changes) {
@@ -186,12 +186,12 @@ export interface OnInit { onInit(); }
  * }
  * ```
  */
-export interface DoCheck { doCheck(); }
+export interface DoCheck { ngDoCheck(); }
 
 /**
  * Implement this interface to get notified when your directive is destroyed.
  *
- * `onDestroy` callback is typically used for any custom cleanup that needs to occur when the
+ * `ngOnDestroy` callback is typically used for any custom cleanup that needs to occur when the
  * instance is destroyed
  *
  * ### Example ([live example](http://plnkr.co/edit/1MBypRryXd64v4pV03Yn?p=preview))
@@ -202,12 +202,12 @@ export interface DoCheck { doCheck(); }
  *   template: `<p>my-component</p>`
  * })
  * class MyComponent implements OnInit, OnDestroy {
- *   onInit() {
- *     console.log('onInit');
+ *   ngOnInit() {
+ *     console.log('ngOnInit');
  *   }
  *
- *   onDestroy() {
- *     console.log('onDestroy');
+ *   ngOnDestroy() {
+ *     console.log('ngOnDestroy');
  *   }
  * }
  *
@@ -227,7 +227,7 @@ export interface DoCheck { doCheck(); }
  * bootstrap(App).catch(err => console.error(err));
  * ```
  */
-export interface OnDestroy { onDestroy(); }
+export interface OnDestroy { ngOnDestroy(); }
 
 /**
  * Implement this interface to get notified when your directive's content has been fully
@@ -256,7 +256,7 @@ export interface OnDestroy { onDestroy(); }
  *     console.log(this.getMessage(this.contentChild));
  *   }
  *
- *   afterContentInit() {
+ *   ngAfterContentInit() {
  *     // contentChild is updated after the content has been checked
  *     console.log('AfterContentInit: ' + this.getMessage(this.contentChild));
  *   }
@@ -280,7 +280,7 @@ export interface OnDestroy { onDestroy(); }
  * bootstrap(App).catch(err => console.error(err));
  * ```
  */
-export interface AfterContentInit { afterContentInit(); }
+export interface AfterContentInit { ngAfterContentInit(); }
 
 /**
  * Implement this interface to get notified after every check of your directive's content.
@@ -302,7 +302,7 @@ export interface AfterContentInit { afterContentInit(); }
  *     console.log(this.getMessage(this.contentChild));
  *   }
  *
- *   afterContentChecked() {
+ *   ngAfterContentChecked() {
  *     // contentChild is updated after the content has been checked
  *     console.log('AfterContentChecked: ' + this.getMessage(this.contentChild));
  *   }
@@ -328,7 +328,7 @@ export interface AfterContentInit { afterContentInit(); }
  * bootstrap(App).catch(err => console.error(err));
  * ```
  */
-export interface AfterContentChecked { afterContentChecked(); }
+export interface AfterContentChecked { ngAfterContentChecked(); }
 
 /**
  * Implement this interface to get notified when your component's view has been fully initialized.
@@ -354,9 +354,9 @@ export interface AfterContentChecked { afterContentChecked(); }
  *     console.log(this.getMessage(this.viewChild));
  *   }
  *
- *   afterViewInit() {
+ *   ngAfterViewInit() {
  *     // viewChild is updated after the view has been initialized
- *     console.log('afterViewInit: ' + this.getMessage(this.viewChild));
+ *     console.log('ngAfterViewInit: ' + this.getMessage(this.viewChild));
  *   }
  *
  *   private getMessage(cmp: ChildComponent): string {
@@ -375,7 +375,7 @@ export interface AfterContentChecked { afterContentChecked(); }
  * bootstrap(App).catch(err => console.error(err));
  * ```
  */
-export interface AfterViewInit { afterViewInit(); }
+export interface AfterViewInit { ngAfterViewInit(); }
 
 /**
  * Implement this interface to get notified after every check of your component's view.
@@ -404,7 +404,7 @@ export interface AfterViewInit { afterViewInit(); }
  *     console.log(this.getMessage(this.viewChild));
  *   }
  *
- *   afterViewChecked() {
+ *   ngAfterViewChecked() {
  *     // viewChild is updated after the view has been checked
  *     console.log('AfterViewChecked: ' + this.getMessage(this.viewChild));
  *   }
@@ -425,4 +425,4 @@ export interface AfterViewInit { afterViewInit(); }
  * bootstrap(App).catch(err => console.error(err));
  * ```
  */
-export interface AfterViewChecked { afterViewChecked(); }
+export interface AfterViewChecked { ngAfterViewChecked(); }

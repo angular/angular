@@ -238,8 +238,8 @@ class DummyParentComp {
 function makeDummyOutlet() {
   var ref = new SpyRouterOutlet();
   ref.spy('canActivate').andCallFake((_) => PromiseWrapper.resolve(true));
-  ref.spy('canReuse').andCallFake((_) => PromiseWrapper.resolve(false));
-  ref.spy('canDeactivate').andCallFake((_) => PromiseWrapper.resolve(true));
+  ref.spy('routerCanReuse').andCallFake((_) => PromiseWrapper.resolve(false));
+  ref.spy('routerCanDeactivate').andCallFake((_) => PromiseWrapper.resolve(true));
   ref.spy('activate').andCallFake((_) => PromiseWrapper.resolve(true));
   return ref;
 }

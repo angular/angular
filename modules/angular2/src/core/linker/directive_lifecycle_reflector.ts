@@ -8,21 +8,21 @@ export function hasLifecycleHook(lcInterface: LifecycleHooks, token): boolean {
 
   switch (lcInterface) {
     case LifecycleHooks.AfterContentInit:
-      return !!proto.afterContentInit;
+      return !!proto.ngAfterContentInit;
     case LifecycleHooks.AfterContentChecked:
-      return !!proto.afterContentChecked;
+      return !!proto.ngAfterContentChecked;
     case LifecycleHooks.AfterViewInit:
-      return !!proto.afterViewInit;
+      return !!proto.ngAfterViewInit;
     case LifecycleHooks.AfterViewChecked:
-      return !!proto.afterViewChecked;
+      return !!proto.ngAfterViewChecked;
     case LifecycleHooks.OnChanges:
-      return !!proto.onChanges;
+      return !!proto.ngOnChanges;
     case LifecycleHooks.DoCheck:
-      return !!proto.doCheck;
+      return !!proto.ngDoCheck;
     case LifecycleHooks.OnDestroy:
-      return !!proto.onDestroy;
+      return !!proto.ngOnDestroy;
     case LifecycleHooks.OnInit:
-      return !!proto.onInit;
+      return !!proto.ngOnInit;
     default:
       return false;
   }

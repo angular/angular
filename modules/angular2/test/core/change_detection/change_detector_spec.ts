@@ -468,13 +468,13 @@ export function main() {
         it('should notify the dispatcher after content children have checked', () => {
           var val = _createChangeDetector('name', new Person('bob'));
           val.changeDetector.detectChanges();
-          expect(val.dispatcher.afterContentCheckedCalled).toEqual(true);
+          expect(val.dispatcher.ngAfterContentCheckedCalled).toEqual(true);
         });
 
         it('should notify the dispatcher after view children have been checked', () => {
           var val = _createChangeDetector('name', new Person('bob'));
           val.changeDetector.detectChanges();
-          expect(val.dispatcher.afterViewCheckedCalled).toEqual(true);
+          expect(val.dispatcher.ngAfterViewCheckedCalled).toEqual(true);
         });
 
         describe('updating directives', () => {
@@ -498,7 +498,7 @@ export function main() {
           });
 
           describe('lifecycle', () => {
-            describe('onChanges', () => {
+            describe('ngOnChanges', () => {
               it('should notify the directive when a group of records changes', () => {
                 var cd = _createWithoutHydrate('groupChanges').changeDetector;
                 cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1, directive2], []),
@@ -509,32 +509,32 @@ export function main() {
               });
             });
 
-            describe('doCheck', () => {
+            describe('ngDoCheck', () => {
               it('should notify the directive when it is checked', () => {
                 var cd = _createWithoutHydrate('directiveDoCheck').changeDetector;
 
                 cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []), null);
                 cd.detectChanges();
 
-                expect(directive1.doCheckCalled).toBe(true);
-                directive1.doCheckCalled = false;
+                expect(directive1.ngDoCheckCalled).toBe(true);
+                directive1.ngDoCheckCalled = false;
 
                 cd.detectChanges();
-                expect(directive1.doCheckCalled).toBe(true);
+                expect(directive1.ngDoCheckCalled).toBe(true);
               });
 
-              it('should not call doCheck in detectNoChanges', () => {
+              it('should not call ngDoCheck in detectNoChanges', () => {
                 var cd = _createWithoutHydrate('directiveDoCheck').changeDetector;
 
                 cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []), null);
 
                 cd.checkNoChanges();
 
-                expect(directive1.doCheckCalled).toBe(false);
+                expect(directive1.ngDoCheckCalled).toBe(false);
               });
             });
 
-            describe('onInit', () => {
+            describe('ngOnInit', () => {
               it('should notify the directive after it has been checked the first time', () => {
                 var cd = _createWithoutHydrate('directiveOnInit').changeDetector;
 
@@ -543,51 +543,51 @@ export function main() {
 
                 cd.detectChanges();
 
-                expect(directive1.onInitCalled).toBe(true);
+                expect(directive1.ngOnInitCalled).toBe(true);
 
-                directive1.onInitCalled = false;
+                directive1.ngOnInitCalled = false;
 
                 cd.detectChanges();
 
-                expect(directive1.onInitCalled).toBe(false);
+                expect(directive1.ngOnInitCalled).toBe(false);
               });
 
-              it('should not call onInit in detectNoChanges', () => {
+              it('should not call ngOnInit in detectNoChanges', () => {
                 var cd = _createWithoutHydrate('directiveOnInit').changeDetector;
 
                 cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []), null);
 
                 cd.checkNoChanges();
 
-                expect(directive1.onInitCalled).toBe(false);
+                expect(directive1.ngOnInitCalled).toBe(false);
               });
 
-              it('should not call onInit again if it throws', () => {
+              it('should not call ngOnInit again if it throws', () => {
                 var cd = _createWithoutHydrate('directiveOnInit').changeDetector;
 
                 cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive3], []), null);
                 var errored = false;
-                // First pass fails, but onInit should be called.
+                // First pass fails, but ngOnInit should be called.
                 try {
                   cd.detectChanges();
                 } catch (e) {
                   errored = true;
                 }
                 expect(errored).toBe(true);
-                expect(directive3.onInitCalled).toBe(true);
-                directive3.onInitCalled = false;
+                expect(directive3.ngOnInitCalled).toBe(true);
+                directive3.ngOnInitCalled = false;
 
-                // Second change detection also fails, but this time onInit should not be called.
+                // Second change detection also fails, but this time ngOnInit should not be called.
                 try {
                   cd.detectChanges();
                 } catch (e) {
                   throw new BaseException("Second detectChanges() should not have run detection.");
                 }
-                expect(directive3.onInitCalled).toBe(false);
+                expect(directive3.ngOnInitCalled).toBe(false);
               });
             });
 
-            describe('afterContentInit', () => {
+            describe('ngAfterContentInit', () => {
               it('should be called after processing the content children', () => {
                 var cd = _createWithoutHydrate('emptyWithDirectiveRecords').changeDetector;
                 cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1, directive2], []),
@@ -595,38 +595,38 @@ export function main() {
 
                 cd.detectChanges();
 
-                expect(directive1.afterContentInitCalled).toBe(true);
-                expect(directive2.afterContentInitCalled).toBe(true);
+                expect(directive1.ngAfterContentInitCalled).toBe(true);
+                expect(directive2.ngAfterContentInitCalled).toBe(true);
 
                 // reset directives
-                directive1.afterContentInitCalled = false;
-                directive2.afterContentInitCalled = false;
+                directive1.ngAfterContentInitCalled = false;
+                directive2.ngAfterContentInitCalled = false;
 
                 // Verify that checking should not call them.
                 cd.checkNoChanges();
 
-                expect(directive1.afterContentInitCalled).toBe(false);
-                expect(directive2.afterContentInitCalled).toBe(false);
+                expect(directive1.ngAfterContentInitCalled).toBe(false);
+                expect(directive2.ngAfterContentInitCalled).toBe(false);
 
                 // re-verify that changes should not call them
                 cd.detectChanges();
 
-                expect(directive1.afterContentInitCalled).toBe(false);
-                expect(directive2.afterContentInitCalled).toBe(false);
+                expect(directive1.ngAfterContentInitCalled).toBe(false);
+                expect(directive2.ngAfterContentInitCalled).toBe(false);
               });
 
-              it('should not be called when afterContentInit is false', () => {
+              it('should not be called when ngAfterContentInit is false', () => {
                 var cd = _createWithoutHydrate('noCallbacks').changeDetector;
 
                 cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []), null);
 
                 cd.detectChanges();
 
-                expect(directive1.afterContentInitCalled).toEqual(false);
+                expect(directive1.ngAfterContentInitCalled).toEqual(false);
               });
             });
 
-            describe('afterContentChecked', () => {
+            describe('ngAfterContentChecked', () => {
               it('should be called after processing all the children', () => {
                 var cd = _createWithoutHydrate('emptyWithDirectiveRecords').changeDetector;
                 cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1, directive2], []),
@@ -634,50 +634,50 @@ export function main() {
 
                 cd.detectChanges();
 
-                expect(directive1.afterContentCheckedCalled).toBe(true);
-                expect(directive2.afterContentCheckedCalled).toBe(true);
+                expect(directive1.ngAfterContentCheckedCalled).toBe(true);
+                expect(directive2.ngAfterContentCheckedCalled).toBe(true);
 
                 // reset directives
-                directive1.afterContentCheckedCalled = false;
-                directive2.afterContentCheckedCalled = false;
+                directive1.ngAfterContentCheckedCalled = false;
+                directive2.ngAfterContentCheckedCalled = false;
 
                 // Verify that checking should not call them.
                 cd.checkNoChanges();
 
-                expect(directive1.afterContentCheckedCalled).toBe(false);
-                expect(directive2.afterContentCheckedCalled).toBe(false);
+                expect(directive1.ngAfterContentCheckedCalled).toBe(false);
+                expect(directive2.ngAfterContentCheckedCalled).toBe(false);
 
                 // re-verify that changes are still detected
                 cd.detectChanges();
 
-                expect(directive1.afterContentCheckedCalled).toBe(true);
-                expect(directive2.afterContentCheckedCalled).toBe(true);
+                expect(directive1.ngAfterContentCheckedCalled).toBe(true);
+                expect(directive2.ngAfterContentCheckedCalled).toBe(true);
               });
 
-              it('should not be called when afterContentChecked is false', () => {
+              it('should not be called when ngAfterContentChecked is false', () => {
                 var cd = _createWithoutHydrate('noCallbacks').changeDetector;
 
                 cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []), null);
 
                 cd.detectChanges();
 
-                expect(directive1.afterContentCheckedCalled).toEqual(false);
+                expect(directive1.ngAfterContentCheckedCalled).toEqual(false);
               });
 
               it('should be called in reverse order so the child is always notified before the parent',
                  () => {
                    var cd = _createWithoutHydrate('emptyWithDirectiveRecords').changeDetector;
 
-                   var onChangesDoneCalls = [];
+                   var ngOnChangesDoneCalls = [];
                    var td1;
-                   td1 = new TestDirective(() => onChangesDoneCalls.push(td1));
+                   td1 = new TestDirective(() => ngOnChangesDoneCalls.push(td1));
                    var td2;
-                   td2 = new TestDirective(() => onChangesDoneCalls.push(td2));
+                   td2 = new TestDirective(() => ngOnChangesDoneCalls.push(td2));
                    cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([td1, td2], []), null);
 
                    cd.detectChanges();
 
-                   expect(onChangesDoneCalls).toEqual([td2, td1]);
+                   expect(ngOnChangesDoneCalls).toEqual([td2, td1]);
                  });
 
               it('should be called before processing view children', () => {
@@ -705,7 +705,7 @@ export function main() {
             });
 
 
-            describe('afterViewInit', () => {
+            describe('ngAfterViewInit', () => {
               it('should be called after processing the view children', () => {
                 var cd = _createWithoutHydrate('emptyWithDirectiveRecords').changeDetector;
                 cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1, directive2], []),
@@ -713,39 +713,39 @@ export function main() {
 
                 cd.detectChanges();
 
-                expect(directive1.afterViewInitCalled).toBe(true);
-                expect(directive2.afterViewInitCalled).toBe(true);
+                expect(directive1.ngAfterViewInitCalled).toBe(true);
+                expect(directive2.ngAfterViewInitCalled).toBe(true);
 
                 // reset directives
-                directive1.afterViewInitCalled = false;
-                directive2.afterViewInitCalled = false;
+                directive1.ngAfterViewInitCalled = false;
+                directive2.ngAfterViewInitCalled = false;
 
                 // Verify that checking should not call them.
                 cd.checkNoChanges();
 
-                expect(directive1.afterViewInitCalled).toBe(false);
-                expect(directive2.afterViewInitCalled).toBe(false);
+                expect(directive1.ngAfterViewInitCalled).toBe(false);
+                expect(directive2.ngAfterViewInitCalled).toBe(false);
 
                 // re-verify that changes should not call them
                 cd.detectChanges();
 
-                expect(directive1.afterViewInitCalled).toBe(false);
-                expect(directive2.afterViewInitCalled).toBe(false);
+                expect(directive1.ngAfterViewInitCalled).toBe(false);
+                expect(directive2.ngAfterViewInitCalled).toBe(false);
               });
 
 
-              it('should not be called when afterViewInit is false', () => {
+              it('should not be called when ngAfterViewInit is false', () => {
                 var cd = _createWithoutHydrate('noCallbacks').changeDetector;
 
                 cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []), null);
 
                 cd.detectChanges();
 
-                expect(directive1.afterViewInitCalled).toEqual(false);
+                expect(directive1.ngAfterViewInitCalled).toEqual(false);
               });
             });
 
-            describe('afterViewChecked', () => {
+            describe('ngAfterViewChecked', () => {
               it('should be called after processing the view children', () => {
                 var cd = _createWithoutHydrate('emptyWithDirectiveRecords').changeDetector;
                 cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1, directive2], []),
@@ -753,50 +753,50 @@ export function main() {
 
                 cd.detectChanges();
 
-                expect(directive1.afterViewCheckedCalled).toBe(true);
-                expect(directive2.afterViewCheckedCalled).toBe(true);
+                expect(directive1.ngAfterViewCheckedCalled).toBe(true);
+                expect(directive2.ngAfterViewCheckedCalled).toBe(true);
 
                 // reset directives
-                directive1.afterViewCheckedCalled = false;
-                directive2.afterViewCheckedCalled = false;
+                directive1.ngAfterViewCheckedCalled = false;
+                directive2.ngAfterViewCheckedCalled = false;
 
                 // Verify that checking should not call them.
                 cd.checkNoChanges();
 
-                expect(directive1.afterViewCheckedCalled).toBe(false);
-                expect(directive2.afterViewCheckedCalled).toBe(false);
+                expect(directive1.ngAfterViewCheckedCalled).toBe(false);
+                expect(directive2.ngAfterViewCheckedCalled).toBe(false);
 
                 // re-verify that changes should call them
                 cd.detectChanges();
 
-                expect(directive1.afterViewCheckedCalled).toBe(true);
-                expect(directive2.afterViewCheckedCalled).toBe(true);
+                expect(directive1.ngAfterViewCheckedCalled).toBe(true);
+                expect(directive2.ngAfterViewCheckedCalled).toBe(true);
               });
 
-              it('should not be called when afterViewChecked is false', () => {
+              it('should not be called when ngAfterViewChecked is false', () => {
                 var cd = _createWithoutHydrate('noCallbacks').changeDetector;
 
                 cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([directive1], []), null);
 
                 cd.detectChanges();
 
-                expect(directive1.afterViewCheckedCalled).toEqual(false);
+                expect(directive1.ngAfterViewCheckedCalled).toEqual(false);
               });
 
               it('should be called in reverse order so the child is always notified before the parent',
                  () => {
                    var cd = _createWithoutHydrate('emptyWithDirectiveRecords').changeDetector;
 
-                   var onChangesDoneCalls = [];
+                   var ngOnChangesDoneCalls = [];
                    var td1;
-                   td1 = new TestDirective(null, () => onChangesDoneCalls.push(td1));
+                   td1 = new TestDirective(null, () => ngOnChangesDoneCalls.push(td1));
                    var td2;
-                   td2 = new TestDirective(null, () => onChangesDoneCalls.push(td2));
+                   td2 = new TestDirective(null, () => ngOnChangesDoneCalls.push(td2));
                    cd.hydrate(_DEFAULT_CONTEXT, null, new FakeDirectives([td1, td2], []), null);
 
                    cd.detectChanges();
 
-                   expect(onChangesDoneCalls).toEqual([td2, td1]);
+                   expect(ngOnChangesDoneCalls).toEqual([td2, td1]);
                  });
 
               it('should be called after processing view children', () => {
@@ -1408,51 +1408,51 @@ class TestDirective {
   a;
   b;
   changes;
-  doCheckCalled = false;
-  onInitCalled = false;
+  ngDoCheckCalled = false;
+  ngOnInitCalled = false;
 
-  afterContentInitCalled = false;
-  afterContentCheckedCalled = false;
+  ngAfterContentInitCalled = false;
+  ngAfterContentCheckedCalled = false;
 
-  afterViewInitCalled = false;
-  afterViewCheckedCalled = false;
+  ngAfterViewInitCalled = false;
+  ngAfterViewCheckedCalled = false;
   event;
 
-  constructor(public afterContentCheckedSpy = null, public afterViewCheckedSpy = null,
+  constructor(public ngAfterContentCheckedSpy = null, public ngAfterViewCheckedSpy = null,
               public throwOnInit = false) {}
 
   onEvent(event) { this.event = event; }
 
-  doCheck() { this.doCheckCalled = true; }
+  ngDoCheck() { this.ngDoCheckCalled = true; }
 
-  onInit() {
-    this.onInitCalled = true;
+  ngOnInit() {
+    this.ngOnInitCalled = true;
     if (this.throwOnInit) {
-      throw "simulated onInit failure";
+      throw "simulated ngOnInit failure";
     }
   }
 
-  onChanges(changes) {
+  ngOnChanges(changes) {
     var r = {};
     StringMapWrapper.forEach(changes, (c, key) => r[key] = c.currentValue);
     this.changes = r;
   }
 
-  afterContentInit() { this.afterContentInitCalled = true; }
+  ngAfterContentInit() { this.ngAfterContentInitCalled = true; }
 
-  afterContentChecked() {
-    this.afterContentCheckedCalled = true;
-    if (isPresent(this.afterContentCheckedSpy)) {
-      this.afterContentCheckedSpy();
+  ngAfterContentChecked() {
+    this.ngAfterContentCheckedCalled = true;
+    if (isPresent(this.ngAfterContentCheckedSpy)) {
+      this.ngAfterContentCheckedSpy();
     }
   }
 
-  afterViewInit() { this.afterViewInitCalled = true; }
+  ngAfterViewInit() { this.ngAfterViewInitCalled = true; }
 
-  afterViewChecked() {
-    this.afterViewCheckedCalled = true;
-    if (isPresent(this.afterViewCheckedSpy)) {
-      this.afterViewCheckedSpy();
+  ngAfterViewChecked() {
+    this.ngAfterViewCheckedCalled = true;
+    if (isPresent(this.ngAfterViewCheckedSpy)) {
+      this.ngAfterViewCheckedSpy();
     }
   }
 }
@@ -1531,8 +1531,8 @@ class TestDispatcher implements ChangeDispatcher {
   log: string[];
   debugLog: string[];
   loggedValues: any[];
-  afterContentCheckedCalled: boolean = false;
-  afterViewCheckedCalled: boolean = false;
+  ngAfterContentCheckedCalled: boolean = false;
+  ngAfterViewCheckedCalled: boolean = false;
 
   constructor() { this.clear(); }
 
@@ -1540,7 +1540,7 @@ class TestDispatcher implements ChangeDispatcher {
     this.log = [];
     this.debugLog = [];
     this.loggedValues = [];
-    this.afterContentCheckedCalled = true;
+    this.ngAfterContentCheckedCalled = true;
   }
 
   notifyOnBinding(target, value) {
@@ -1550,8 +1550,8 @@ class TestDispatcher implements ChangeDispatcher {
 
   logBindingUpdate(target, value) { this.debugLog.push(`${target.name}=${this._asString(value)}`); }
 
-  notifyAfterContentChecked() { this.afterContentCheckedCalled = true; }
-  notifyAfterViewChecked() { this.afterViewCheckedCalled = true; }
+  notifyAfterContentChecked() { this.ngAfterContentCheckedCalled = true; }
+  notifyAfterViewChecked() { this.ngAfterViewCheckedCalled = true; }
 
   getDebugContext(a, b) { return null; }
 

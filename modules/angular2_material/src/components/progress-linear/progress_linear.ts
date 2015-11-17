@@ -60,7 +60,7 @@ export class MdProgressLinear implements OnChanges {
     }
   }
 
-  onChanges(_) {
+  ngOnChanges(_) {
     // If the mode does not use a value, or if there is no value, do nothing.
     if (this.mode == ProgressMode.QUERY || this.mode == ProgressMode.INDETERMINATE ||
         isBlank(this.value)) {

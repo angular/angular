@@ -102,7 +102,7 @@ export class MdRadioGroup implements OnChanges {
   }
 
   /** Change handler invoked when bindings are resolved or when bindings have changed. */
-  onChanges(_) {
+  ngOnChanges(_) {
     // If the component has a disabled attribute with no value, it will set disabled = ''.
     this.disabled = isPresent(this.disabled) && this.disabled !== false;
 
@@ -263,7 +263,7 @@ export class MdRadioButton implements OnInit {
   }
 
   /** Change handler invoked when bindings are resolved or when bindings have changed. */
-  onInit() {
+  ngOnInit() {
     if (isPresent(this.radioGroup)) {
       this.name = this.radioGroup.getName();
     }
