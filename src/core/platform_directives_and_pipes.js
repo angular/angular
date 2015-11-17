@@ -7,7 +7,7 @@ var lang_1 = require("angular2/src/facade/lang");
  * ### Example
  *
  * ```typescript
- * import {AMBIENT_DIRECTIVES} from 'angular2/angular2';
+ * import {PLATFORM_DIRECTIVES} from 'angular2/angular2';
  * import {OtherDirective} from './myDirectives';
  *
  * @Component({
@@ -21,10 +21,10 @@ var lang_1 = require("angular2/src/facade/lang");
  *   ...
  * }
  *
- * bootstrap(MyComponent, [provide(AMBIENT_DIRECTIVES, {useValue: [OtherDirective], multi:true})]);
+ * bootstrap(MyComponent, [provide(PLATFORM_DIRECTIVES, {useValue: [OtherDirective], multi:true})]);
  * ```
  */
-exports.AMBIENT_DIRECTIVES = lang_1.CONST_EXPR(new di_1.OpaqueToken("Ambient Directives"));
+exports.PLATFORM_DIRECTIVES = lang_1.CONST_EXPR(new di_1.OpaqueToken("Platform Directives"));
 /**
  * A token that can be provided when bootstraping an application to make an array of pipes
  * available in every component of the application.
@@ -32,7 +32,7 @@ exports.AMBIENT_DIRECTIVES = lang_1.CONST_EXPR(new di_1.OpaqueToken("Ambient Dir
  * ### Example
  *
  * ```typescript
- * import {AMBIENT_PIPES} from 'angular2/angular2';
+ * import {PLATFORM_PIPES} from 'angular2/angular2';
  * import {OtherPipe} from './myPipe';
  *
  * @Component({
@@ -45,8 +45,8 @@ exports.AMBIENT_DIRECTIVES = lang_1.CONST_EXPR(new di_1.OpaqueToken("Ambient Dir
  *   ...
  * }
  *
- * bootstrap(MyComponent, [provide(AMBIENT_PIPES, {useValue: [OtherPipe], multi:true})]);
+ * bootstrap(MyComponent, [provide(PLATFORM_PIPES, {useValue: [OtherPipe], multi:true})]);
  * ```
  */
-exports.AMBIENT_PIPES = lang_1.CONST_EXPR(new di_1.OpaqueToken("Ambient Pipes"));
-//# sourceMappingURL=ambient.js.map
+exports.PLATFORM_PIPES = lang_1.CONST_EXPR(new di_1.OpaqueToken("Platform Pipes"));
+//# sourceMappingURL=platform_directives_and_pipes.js.map

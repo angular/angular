@@ -30,7 +30,7 @@ var formControlBinding = lang_1.CONST_EXPR(new di_1.Provider(ng_control_1.NgCont
 /**
  * Binds a domain model to a form control.
  *
- *##Usage
+ * ### Usage
  *
  * `ng-model` binds an existing domain model to a form control. For a
  * two-way binding, use `[(ng-model)]` to ensure the model updates in

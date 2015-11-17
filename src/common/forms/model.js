@@ -250,7 +250,7 @@ exports.AbstractControl = AbstractControl;
  * `Control` is one of the three fundamental building blocks used to define forms in Angular, along
  * with {@link ControlGroup} and {@link ControlArray}.
  *
- * ##Usage
+ * ## Usage
  *
  * By default, a `Control` is created for every `<input>` or other form component.
  * With {@link NgFormControl} or {@link NgFormModel} an existing {@link Control} can be
@@ -416,7 +416,7 @@ exports.ControlGroup = ControlGroup;
  * along with {@link Control} and {@link ControlGroup}. {@link ControlGroup} can also contain
  * other controls, but is of fixed length.
  *
- * ##Adding or removing controls
+ * ## Adding or removing controls
  *
  * To change the controls in the array, use the `push`, `insert`, or `removeAt` methods
  * in `ControlArray` itself. These methods ensure the controls are properly tracked in the

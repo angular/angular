@@ -15,7 +15,6 @@ var render_1 = require('angular2/src/core/render');
 var di_1 = require('angular2/src/core/di');
 var control_value_accessor_1 = require('./control_value_accessor');
 var lang_1 = require('angular2/src/facade/lang');
-var shared_1 = require('./shared');
 var DEFAULT_VALUE_ACCESSOR = lang_1.CONST_EXPR(new di_1.Provider(control_value_accessor_1.NG_VALUE_ACCESSOR, { useExisting: di_1.forwardRef(function () { return DefaultValueAccessor; }), multi: true }));
 /**
  * The default accessor for writing a value and listening to changes that is used by the
@@ -35,7 +34,7 @@ var DefaultValueAccessor = (function () {
     }
     DefaultValueAccessor.prototype.writeValue = function (value) {
         var normalizedValue = lang_1.isBlank(value) ? '' : value;
-        shared_1.setProperty(this._renderer, this._elementRef, 'value', normalizedValue);
+        this._renderer.setElementProperty(this._elementRef, 'value', normalizedValue);
     };
     DefaultValueAccessor.prototype.registerOnChange = function (fn) { this.onChange = fn; };
     DefaultValueAccessor.prototype.registerOnTouched = function (fn) { this.onTouched = fn; };

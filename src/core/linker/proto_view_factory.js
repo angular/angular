@@ -24,14 +24,14 @@ var directive_resolver_1 = require('./directive_resolver');
 var view_resolver_1 = require('./view_resolver');
 var pipe_resolver_1 = require('./pipe_resolver');
 var view_2 = require('../metadata/view');
-var ambient_1 = require('angular2/src/core/ambient');
+var platform_directives_and_pipes_1 = require('angular2/src/core/platform_directives_and_pipes');
 var template_commands_1 = require('./template_commands');
 var render_1 = require('angular2/render');
 var application_tokens_1 = require('angular2/src/core/application_tokens');
 var ProtoViewFactory = (function () {
-    function ProtoViewFactory(_renderer, _ambientPipes, _directiveResolver, _viewResolver, _pipeResolver, _appId) {
+    function ProtoViewFactory(_renderer, _platformPipes, _directiveResolver, _viewResolver, _pipeResolver, _appId) {
         this._renderer = _renderer;
-        this._ambientPipes = _ambientPipes;
+        this._platformPipes = _platformPipes;
         this._directiveResolver = _directiveResolver;
         this._viewResolver = _viewResolver;
         this._pipeResolver = _pipeResolver;
@@ -97,8 +97,8 @@ var ProtoViewFactory = (function () {
     };
     ProtoViewFactory.prototype._flattenPipes = function (view) {
         var pipes = [];
-        if (lang_1.isPresent(this._ambientPipes)) {
-            _flattenArray(this._ambientPipes, pipes);
+        if (lang_1.isPresent(this._platformPipes)) {
+            _flattenArray(this._platformPipes, pipes);
         }
         if (lang_1.isPresent(view.pipes)) {
             _flattenArray(view.pipes, pipes);
@@ -108,7 +108,7 @@ var ProtoViewFactory = (function () {
     ProtoViewFactory = __decorate([
         di_1.Injectable(),
         __param(1, di_1.Optional()),
-        __param(1, di_1.Inject(ambient_1.AMBIENT_PIPES)),
+        __param(1, di_1.Inject(platform_directives_and_pipes_1.PLATFORM_PIPES)),
         __param(5, di_1.Inject(application_tokens_1.APP_ID)), 
         __metadata('design:paramtypes', [render_1.Renderer, Array, directive_resolver_1.DirectiveResolver, view_resolver_1.ViewResolver, pipe_resolver_1.PipeResolver, String])
     ], ProtoViewFactory);

@@ -25,7 +25,7 @@ exports.NG_ASYNC_VALIDATORS = lang_1.CONST_EXPR(new di_1.OpaqueToken("NgAsyncVal
  * controls and returns a {@link StringMap} of errors. A null map means that
  * validation has passed.
  *
- * # Example
+ * ### Example
  *
  * ```typescript
  * var loginControl = new Control("", Validators.required)

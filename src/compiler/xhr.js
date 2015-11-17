@@ -1,4 +1,4 @@
-// TODO: vsavkin rename it into TemplateLoader and do not reexport it via DomAdapter
+// TODO: vsavkin rename it into TemplateLoader
 var XHR = (function () {
     function XHR() {
     }

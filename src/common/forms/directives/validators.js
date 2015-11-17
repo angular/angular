@@ -22,7 +22,7 @@ var REQUIRED_VALIDATOR = lang_1.CONST_EXPR(new di_1.Provider(validators_1.NG_VAL
  * A Directive that adds the `required` validator to any controls marked with the
  * `required` attribute, via the {@link NG_VALIDATORS} binding.
  *
- * # Example
+ * ### Example
  *
  * ```
  * <input ng-control="fullName" required>

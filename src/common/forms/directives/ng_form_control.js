@@ -56,7 +56,7 @@ var formControlBinding = lang_1.CONST_EXPR(new di_1.Provider(ng_control_1.NgCont
  * }
  *  ```
  *
- *##ng-model
+ * ###ng-model
  *
  * We can also use `ng-model` to bind a domain model to the form.
  *

@@ -11,7 +11,7 @@ var IGNORE = {
     originalException: true,
     originalStack: true,
     wrapperMessage: true,
-    wrapperStack: true
+    wrapperStack: true, '@@observable': true
 };
 function collectClassSymbols(symbols, prefix, type) {
     // static

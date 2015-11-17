@@ -181,20 +181,27 @@ var RenderViewBuilder = (function () {
     RenderViewBuilder.prototype._beginElement = function (cmd, context, componentTemplate) {
         var el = context.consumeInplaceElement();
         var attrNameAndValues = cmd.attrNameAndValues;
-        if (this.template.encapsulation === metadata_1.ViewEncapsulation.Emulated) {
+        var templateEmulatedEncapsulation = this.template.encapsulation === metadata_1.ViewEncapsulation.Emulated;
+        var componentEmulatedEncapsulation = lang_1.isPresent(componentTemplate) &&
+            componentTemplate.encapsulation === metadata_1.ViewEncapsulation.Emulated;
+        var newAttrLength = attrNameAndValues.length + (templateEmulatedEncapsulation ? 2 : 0) +
+            (componentEmulatedEncapsulation ? 2 : 0);
+        if (newAttrLength > attrNameAndValues.length) {
             // Note: Need to clone attrNameAndValues to make it writable!
-            if (lang_1.isPresent(componentTemplate)) {
-                attrNameAndValues = attrNameAndValues.concat([
-                    _shimContentAttribute(this.template.shortId),
-                    '',
-                    _shimHostAttribute(componentTemplate.shortId),
-                    ''
-                ]);
+            var newAttrNameAndValues = collection_1.ListWrapper.createFixedSize(newAttrLength);
+            var attrIndex;
+            for (attrIndex = 0; attrIndex < attrNameAndValues.length; attrIndex++) {
+                newAttrNameAndValues[attrIndex] = attrNameAndValues[attrIndex];
             }
-            else {
-                attrNameAndValues =
-                    attrNameAndValues.concat([_shimContentAttribute(this.template.shortId), '']);
+            if (templateEmulatedEncapsulation) {
+                newAttrNameAndValues[attrIndex++] = _shimContentAttribute(this.template.shortId);
+                newAttrNameAndValues[attrIndex++] = '';
             }
+            if (componentEmulatedEncapsulation) {
+                newAttrNameAndValues[attrIndex++] = _shimHostAttribute(componentTemplate.shortId);
+                newAttrNameAndValues[attrIndex++] = '';
+            }
+            attrNameAndValues = newAttrNameAndValues;
         }
         if (lang_1.isPresent(el)) {
             context.factory.mergeElement(el, attrNameAndValues);

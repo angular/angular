@@ -14,9 +14,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 var testing_internal_1 = require('angular2/testing_internal');
 var lang_1 = require('angular2/src/facade/lang');
-var bootstrap_1 = require('angular2/bootstrap');
+var browser_1 = require('angular2/platform/browser');
 var application_ref_1 = require('angular2/src/core/application_ref');
 var core_1 = require('angular2/core');
+var browser_2 = require('angular2/platform/browser');
 var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
 var render_1 = require('angular2/render');
 var async_1 = require('angular2/src/facade/async');
@@ -97,6 +98,19 @@ var HelloRootDirectiveIsNotCmp = (function () {
     ], HelloRootDirectiveIsNotCmp);
     return HelloRootDirectiveIsNotCmp;
 })();
+var HelloOnDestroyTickCmp = (function () {
+    function HelloOnDestroyTickCmp(appRef) {
+        this.appRef = appRef;
+    }
+    HelloOnDestroyTickCmp.prototype.onDestroy = function () { this.appRef.tick(); };
+    HelloOnDestroyTickCmp = __decorate([
+        core_1.Component({ selector: 'hello-app' }),
+        core_1.View({ template: '' }),
+        __param(0, core_2.Inject(application_ref_1.ApplicationRef)), 
+        __metadata('design:paramtypes', [Object])
+    ], HelloOnDestroyTickCmp);
+    return HelloOnDestroyTickCmp;
+})();
 var _ArrayLogger = (function () {
     function _ArrayLogger() {
         this.res = [];
@@ -125,7 +139,7 @@ function main() {
         testing_internal_1.it('should throw if bootstrapped Directive is not a Component', testing_internal_1.inject([testing_internal_1.AsyncTestCompleter], function (async) {
             var logger = new _ArrayLogger();
             var exceptionHandler = new exceptions_1.ExceptionHandler(logger, false);
-            var refPromise = bootstrap_1.bootstrap(HelloRootDirectiveIsNotCmp, [testProviders, core_2.provide(exceptions_1.ExceptionHandler, { useValue: exceptionHandler })]);
+            var refPromise = browser_1.bootstrap(HelloRootDirectiveIsNotCmp, [testProviders, core_2.provide(exceptions_1.ExceptionHandler, { useValue: exceptionHandler })]);
             async_1.PromiseWrapper.then(refPromise, null, function (exception) {
                 testing_internal_1.expect(exception).toContainError("Could not compile '" + lang_1.stringify(HelloRootDirectiveIsNotCmp) + "' because it is not a component.");
                 testing_internal_1.expect(logger.res.join("")).toContain("Could not compile");
@@ -136,7 +150,7 @@ function main() {
         testing_internal_1.it('should throw if no element is found', testing_internal_1.inject([testing_internal_1.AsyncTestCompleter], function (async) {
             var logger = new _ArrayLogger();
             var exceptionHandler = new exceptions_1.ExceptionHandler(logger, lang_1.IS_DART ? false : true);
-            var refPromise = bootstrap_1.bootstrap(HelloRootCmp, [core_2.provide(exceptions_1.ExceptionHandler, { useValue: exceptionHandler })]);
+            var refPromise = browser_1.bootstrap(HelloRootCmp, [core_2.provide(exceptions_1.ExceptionHandler, { useValue: exceptionHandler })]);
             async_1.PromiseWrapper.then(refPromise, null, function (reason) {
                 testing_internal_1.expect(reason.message).toContain('The selector "hello-app" did not match any elements');
                 async.done();
@@ -147,7 +161,7 @@ function main() {
             testing_internal_1.it('should invoke the default exception handler when bootstrap fails', testing_internal_1.inject([testing_internal_1.AsyncTestCompleter], function (async) {
                 var logger = new _ArrayLogger();
                 var exceptionHandler = new exceptions_1.ExceptionHandler(logger, lang_1.IS_DART ? false : true);
-                var refPromise = bootstrap_1.bootstrap(HelloRootCmp, [core_2.provide(exceptions_1.ExceptionHandler, { useValue: exceptionHandler })]);
+                var refPromise = browser_1.bootstrap(HelloRootCmp, [core_2.provide(exceptions_1.ExceptionHandler, { useValue: exceptionHandler })]);
                 async_1.PromiseWrapper.then(refPromise, null, function (reason) {
                     testing_internal_1.expect(logger.res.join(""))
                         .toContain('The selector "hello-app" did not match any elements');
@@ -157,19 +171,19 @@ function main() {
             }));
         }
         testing_internal_1.it('should create an injector promise', function () {
-            var refPromise = bootstrap_1.bootstrap(HelloRootCmp, testProviders);
+            var refPromise = browser_1.bootstrap(HelloRootCmp, testProviders);
             testing_internal_1.expect(refPromise).not.toBe(null);
         });
         testing_internal_1.it('should display hello world', testing_internal_1.inject([testing_internal_1.AsyncTestCompleter], function (async) {
-            var refPromise = bootstrap_1.bootstrap(HelloRootCmp, testProviders);
+            var refPromise = browser_1.bootstrap(HelloRootCmp, testProviders);
             refPromise.then(function (ref) {
                 testing_internal_1.expect(el).toHaveText('hello world!');
                 async.done();
             });
         }));
         testing_internal_1.it('should support multiple calls to bootstrap', testing_internal_1.inject([testing_internal_1.AsyncTestCompleter], function (async) {
-            var refPromise1 = bootstrap_1.bootstrap(HelloRootCmp, testProviders);
-            var refPromise2 = bootstrap_1.bootstrap(HelloRootCmp2, testProviders);
+            var refPromise1 = browser_1.bootstrap(HelloRootCmp, testProviders);
+            var refPromise2 = browser_1.bootstrap(HelloRootCmp2, testProviders);
             async_1.PromiseWrapper.all([refPromise1, refPromise2])
                 .then(function (refs) {
                 testing_internal_1.expect(el).toHaveText('hello world!');
@@ -177,23 +191,39 @@ function main() {
                 async.done();
             });
         }));
+        testing_internal_1.it('should not crash if change detection is invoked when the root component is disposed', testing_internal_1.inject([testing_internal_1.AsyncTestCompleter], function (async) {
+            browser_1.bootstrap(HelloOnDestroyTickCmp, testProviders)
+                .then(function (ref) {
+                testing_internal_1.expect(function () { return ref.dispose(); }).not.toThrow();
+                async.done();
+            });
+        }));
+        testing_internal_1.it('should unregister change detectors when components are disposed', testing_internal_1.inject([testing_internal_1.AsyncTestCompleter], function (async) {
+            var app = core_1.platform(browser_2.BROWSER_PROVIDERS).application([browser_2.BROWSER_APP_PROVIDERS, testProviders]);
+            app.bootstrap(HelloRootCmp)
+                .then(function (ref) {
+                ref.dispose();
+                testing_internal_1.expect(function () { return app.tick(); }).not.toThrow();
+                async.done();
+            });
+        }));
         testing_internal_1.it("should make the provided bindings available to the application component", testing_internal_1.inject([testing_internal_1.AsyncTestCompleter], function (async) {
-            var refPromise = bootstrap_1.bootstrap(HelloRootCmp3, [testProviders, core_2.provide("appBinding", { useValue: "BoundValue" })]);
+            var refPromise = browser_1.bootstrap(HelloRootCmp3, [testProviders, core_2.provide("appBinding", { useValue: "BoundValue" })]);
             refPromise.then(function (ref) {
                 testing_internal_1.expect(ref.hostComponent.appBinding).toEqual("BoundValue");
                 async.done();
             });
         }));
         testing_internal_1.it("should avoid cyclic dependencies when root component requires Lifecycle through DI", testing_internal_1.inject([testing_internal_1.AsyncTestCompleter], function (async) {
-            var refPromise = bootstrap_1.bootstrap(HelloRootCmp4, testProviders);
+            var refPromise = browser_1.bootstrap(HelloRootCmp4, testProviders);
             refPromise.then(function (ref) {
                 testing_internal_1.expect(ref.hostComponent.appRef).toBe(ref.injector.get(application_ref_1.ApplicationRef));
                 async.done();
             });
         }));
         testing_internal_1.it('should register each application with the testability registry', testing_internal_1.inject([testing_internal_1.AsyncTestCompleter], function (async) {
-            var refPromise1 = bootstrap_1.bootstrap(HelloRootCmp, testProviders);
-            var refPromise2 = bootstrap_1.bootstrap(HelloRootCmp2, testProviders);
+            var refPromise1 = browser_1.bootstrap(HelloRootCmp, testProviders);
+            var refPromise2 = browser_1.bootstrap(HelloRootCmp2, testProviders);
             async_1.PromiseWrapper.all([refPromise1, refPromise2])
                 .then(function (refs) {
                 var registry = refs[0].injector.get(testability_1.TestabilityRegistry);
@@ -209,4 +239,4 @@ function main() {
     });
 }
 exports.main = main;
-//# sourceMappingURL=application_spec.js.map
+//# sourceMappingURL=bootstrap_spec.js.map

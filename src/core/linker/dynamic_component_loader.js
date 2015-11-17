@@ -103,10 +103,10 @@ var DynamicComponentLoader_ = (function (_super) {
             var newLocation = _this._viewManager.getHostElement(hostViewRef);
             var component = _this._viewManager.getComponent(newLocation);
             var dispose = function () {
-                _this._viewManager.destroyRootHostView(hostViewRef);
                 if (lang_1.isPresent(onDispose)) {
                     onDispose();
                 }
+                _this._viewManager.destroyRootHostView(hostViewRef);
             };
             return new ComponentRef_(newLocation, component, type, injector, dispose);
         });

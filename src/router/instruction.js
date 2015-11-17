@@ -48,7 +48,7 @@ exports.RouteParams = RouteParams;
  *
  * You can inject `RouteData` into the constructor of a component to use it.
  *
- * ## Example
+ * ### Example
  *
  * ```
  * import {bootstrap, Component, View} from 'angular2/angular2';

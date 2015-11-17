@@ -44,10 +44,6 @@ function _throwError(dir, message) {
     var path = dir.path.join(" -> ");
     throw new exceptions_1.BaseException(message + " '" + path + "'");
 }
-function setProperty(renderer, elementRef, propName, propValue) {
-    renderer.setElementProperty(elementRef, propName, propValue);
-}
-exports.setProperty = setProperty;
 function composeValidators(validators) {
     return lang_1.isPresent(validators) ? validators_1.Validators.compose(validators.map(normalize_validator_1.normalizeValidator)) : null;
 }

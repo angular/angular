@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var promise_1 = require('angular2/src/facade/promise');
 var lang_1 = require('angular2/src/facade/lang');
-var xhr_1 = require('./xhr');
+var xhr_1 = require('angular2/src/compiler/xhr');
 var XHRImpl = (function (_super) {
     __extends(XHRImpl, _super);
     function XHRImpl() {

@@ -32,12 +32,6 @@ function main() {
                 async.done();
             });
         }));
-        testing_internal_1.it('should throw when no base href is provided', function () {
-            var locationStrategy = new mock_location_strategy_1.MockLocationStrategy();
-            locationStrategy.internalBaseHref = null;
-            testing_internal_1.expect(function () { return new location_1.Location(locationStrategy); })
-                .toThrowError("No base href set. Either provide a provider for the APP_BASE_HREF token or add a base element to the document.");
-        });
         testing_internal_1.it('should revert to the previous path when a back() operation is executed', function () {
             var locationStrategy = new mock_location_strategy_1.MockLocationStrategy();
             var location = new location_1.Location(locationStrategy);

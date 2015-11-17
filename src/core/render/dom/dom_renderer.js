@@ -82,7 +82,10 @@ var SVG_ELEMENT_NAMES = lang_1.CONST_EXPR({
     'font-face-uri': true,
     'foreignObject': true,
     'g': true,
-    'glyph': true,
+    // TODO(tbosch): this needs to be disabled
+    // because of an internal project.
+    // We will fix SVG soon, so this will go away...
+    // 'glyph': true,
     'glyphRef': true,
     'hkern': true,
     'image': true,

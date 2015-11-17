@@ -19,7 +19,6 @@ var metadata_1 = require('angular2/src/core/metadata');
 var async_1 = require('angular2/src/facade/async');
 var control_value_accessor_1 = require('./control_value_accessor');
 var lang_1 = require('angular2/src/facade/lang');
-var shared_1 = require('./shared');
 var SELECT_VALUE_ACCESSOR = lang_1.CONST_EXPR(new di_1.Provider(control_value_accessor_1.NG_VALUE_ACCESSOR, { useExisting: di_1.forwardRef(function () { return SelectControlValueAccessor; }), multi: true }));
 /**
  * Marks `<option>` as dynamic, so Angular can be notified when options change.
@@ -55,7 +54,7 @@ var SelectControlValueAccessor = (function () {
     }
     SelectControlValueAccessor.prototype.writeValue = function (value) {
         this.value = value;
-        shared_1.setProperty(this._renderer, this._elementRef, "value", value);
+        this._renderer.setElementProperty(this._elementRef, 'value', value);
     };
     SelectControlValueAccessor.prototype.registerOnChange = function (fn) { this.onChange = fn; };
     SelectControlValueAccessor.prototype.registerOnTouched = function (fn) { this.onTouched = fn; };

@@ -24,13 +24,13 @@ var directive_lifecycle_reflector_1 = require('angular2/src/core/linker/directiv
 var interfaces_1 = require('angular2/src/core/linker/interfaces');
 var reflection_1 = require('angular2/src/core/reflection/reflection');
 var di_2 = require('angular2/src/core/di');
-var ambient_1 = require('angular2/src/core/ambient');
+var platform_directives_and_pipes_1 = require('angular2/src/core/platform_directives_and_pipes');
 var util_1 = require('./util');
 var RuntimeMetadataResolver = (function () {
-    function RuntimeMetadataResolver(_directiveResolver, _viewResolver, _ambientDirectives) {
+    function RuntimeMetadataResolver(_directiveResolver, _viewResolver, _platformDirectives) {
         this._directiveResolver = _directiveResolver;
         this._viewResolver = _viewResolver;
-        this._ambientDirectives = _ambientDirectives;
+        this._platformDirectives = _platformDirectives;
         this._cache = new Map();
     }
     RuntimeMetadataResolver.prototype.getMetadata = function (directiveType) {
@@ -72,7 +72,7 @@ var RuntimeMetadataResolver = (function () {
     RuntimeMetadataResolver.prototype.getViewDirectivesMetadata = function (component) {
         var _this = this;
         var view = this._viewResolver.resolve(component);
-        var directives = flattenDirectives(view, this._ambientDirectives);
+        var directives = flattenDirectives(view, this._platformDirectives);
         for (var i = 0; i < directives.length; i++) {
             if (!isValidDirective(directives[i])) {
                 throw new exceptions_1.BaseException("Unexpected directive value '" + lang_1.stringify(directives[i]) + "' on the View of component '" + lang_1.stringify(component) + "'");
@@ -83,7 +83,7 @@ var RuntimeMetadataResolver = (function () {
     RuntimeMetadataResolver = __decorate([
         di_2.Injectable(),
         __param(2, di_2.Optional()),
-        __param(2, di_2.Inject(ambient_1.AMBIENT_DIRECTIVES)), 
+        __param(2, di_2.Inject(platform_directives_and_pipes_1.PLATFORM_DIRECTIVES)), 
         __metadata('design:paramtypes', [directive_resolver_1.DirectiveResolver, view_resolver_1.ViewResolver, Array])
     ], RuntimeMetadataResolver);
     return RuntimeMetadataResolver;
@@ -94,10 +94,10 @@ function removeDuplicates(items) {
     items.forEach(function (i) { return m.set(i, null); });
     return collection_1.MapWrapper.keys(m);
 }
-function flattenDirectives(view, ambientDirectives) {
+function flattenDirectives(view, platformDirectives) {
     var directives = [];
-    if (lang_1.isPresent(ambientDirectives)) {
-        flattenArray(ambientDirectives, directives);
+    if (lang_1.isPresent(platformDirectives)) {
+        flattenArray(platformDirectives, directives);
     }
     if (lang_1.isPresent(view.directives)) {
         flattenArray(view.directives, directives);

@@ -11,7 +11,8 @@ var api_1 = require('angular2/src/core/render/api');
 var client_message_broker_1 = require('angular2/src/web_workers/shared/client_message_broker');
 var service_message_broker_1 = require('angular2/src/web_workers/shared/service_message_broker');
 var message_bus_1 = require('angular2/src/web_workers/shared/message_bus');
-var application_ref_1 = require('angular2/src/core/application_ref');
+var core_1 = require('angular2/core');
+var core = require('angular2/core');
 var serializer_1 = require("angular2/src/web_workers/shared/serializer");
 var api_2 = require("angular2/src/web_workers/shared/api");
 var render_proto_view_ref_store_1 = require('angular2/src/web_workers/shared/render_proto_view_ref_store');
@@ -27,7 +28,7 @@ var compiler_1 = require('angular2/src/compiler/compiler');
  *
  * See {@link PlatformRef} for details on the Angular platform.
  *
- *##Without specified providers
+ * ### Without specified providers
  *
  * If no providers are specified, `platform`'s behavior depends on whether an existing
  * platform exists:
@@ -38,7 +39,7 @@ var compiler_1 = require('angular2/src/compiler/compiler');
  * was created with). This is a convenience feature, allowing for multiple applications
  * to be loaded into the same platform without awareness of each other.
  *
- *##With specified providers
+ * ### With specified providers
  *
  * It is also possible to specify providers to be made in the new platform. These providers
  * will be shared between all applications on the page. For example, an abstraction for
@@ -49,15 +50,16 @@ var compiler_1 = require('angular2/src/compiler/compiler');
  * them if a platform did not exist already. If it did exist, however, an error will be
  * thrown.
  *
- *##For Web Worker Appplications
+ * ### For Web Worker Applications
  *
  * This version of `platform` initializes Angular for use with applications
  * that do not directly touch the DOM, such as applications which run in a
  * web worker context. Applications that need direct access to the DOM should
  * use `platform` from `core/application_common` instead.
  */
-function platform(bindings) {
-    return application_ref_1.platformCommon(bindings);
+function platform(providers) {
+    var platformProviders = lang_1.isPresent(providers) ? [core_1.PLATFORM_COMMON_PROVIDERS, providers] : core_1.PLATFORM_COMMON_PROVIDERS;
+    return core.platform(platformProviders);
 }
 exports.platform = platform;
 var PrintLogger = (function () {
@@ -71,7 +73,7 @@ var PrintLogger = (function () {
 })();
 function webWorkerProviders(appComponentType, bus, initData) {
     return [
-        compiler_1.compilerProviders(),
+        compiler_1.COMPILER_PROVIDERS,
         serializer_1.Serializer,
         di_1.provide(message_bus_1.MessageBus, { useValue: bus }),
         di_1.provide(client_message_broker_1.ClientMessageBrokerFactory, { useClass: client_message_broker_1.ClientMessageBrokerFactory_ }),
@@ -101,7 +103,7 @@ function bootstrapWebWorkerCommon(appComponentType, bus, appProviders) {
         var subscription;
         var emitter = bus.from(messaging_api_1.SETUP_CHANNEL);
         subscription = async_2.ObservableWrapper.subscribe(emitter, function (message) {
-            var bindings = [application_ref_1.applicationCommonProviders(), webWorkerProviders(appComponentType, bus, message)];
+            var bindings = [core_1.APPLICATION_COMMON_PROVIDERS, webWorkerProviders(appComponentType, bus, message)];
             if (lang_1.isPresent(appProviders)) {
                 bindings.push(appProviders);
             }

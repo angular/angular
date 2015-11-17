@@ -9,39 +9,13 @@ var di_1 = require('angular2/src/core/di');
 var application_tokens_1 = require('./application_tokens');
 var async_1 = require('angular2/src/facade/async');
 var collection_1 = require('angular2/src/facade/collection');
-var reflection_1 = require('angular2/src/core/reflection/reflection');
 var testability_1 = require('angular2/src/core/testability/testability');
 var dynamic_component_loader_1 = require('angular2/src/core/linker/dynamic_component_loader');
 var exceptions_1 = require('angular2/src/facade/exceptions');
 var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
 var view_ref_1 = require('angular2/src/core/linker/view_ref');
-var change_detection_1 = require('angular2/src/core/change_detection/change_detection');
-var view_pool_1 = require('angular2/src/core/linker/view_pool');
-var view_manager_1 = require('angular2/src/core/linker/view_manager');
-var view_manager_utils_1 = require('angular2/src/core/linker/view_manager_utils');
-var view_listener_1 = require('angular2/src/core/linker/view_listener');
-var proto_view_factory_1 = require('./linker/proto_view_factory');
-var view_resolver_1 = require('./linker/view_resolver');
-var directive_resolver_1 = require('./linker/directive_resolver');
-var pipe_resolver_1 = require('./linker/pipe_resolver');
-var compiler_1 = require('angular2/src/core/linker/compiler');
-var dynamic_component_loader_2 = require("./linker/dynamic_component_loader");
-var view_manager_2 = require("./linker/view_manager");
-var compiler_2 = require("./linker/compiler");
 var profile_1 = require('./profile/profile');
-var ambient_1 = require("angular2/src/core/ambient");
 var lang_2 = require('angular2/src/facade/lang');
-var common_1 = require("angular2/common");
-/**
- * Constructs the set of providers meant for use at the platform level.
- *
- * These are providers that should be singletons shared among all Angular applications
- * running on the page.
- */
-function platformProviders() {
-    return [di_1.provide(reflection_1.Reflector, { useValue: reflection_1.reflector }), testability_1.TestabilityRegistry];
-}
-exports.platformProviders = platformProviders;
 /**
  * Construct providers specific to an individual root component.
  */
@@ -49,10 +23,13 @@ function _componentProviders(appComponentType) {
     return [
         di_1.provide(application_tokens_1.APP_COMPONENT, { useValue: appComponentType }),
         di_1.provide(application_tokens_1.APP_COMPONENT_REF_PROMISE, {
-            useFactory: function (dynamicComponentLoader, injector) {
+            useFactory: function (dynamicComponentLoader, appRef, injector) {
+                // Save the ComponentRef for disposal later.
+                var ref;
                 // TODO(rado): investigate whether to support providers on root component.
-                return dynamicComponentLoader.loadAsRoot(appComponentType, null, injector)
+                return dynamicComponentLoader.loadAsRoot(appComponentType, null, injector, function () { appRef._unloadComponent(ref); })
                     .then(function (componentRef) {
+                    ref = componentRef;
                     if (lang_1.isPresent(componentRef.location.nativeElement)) {
                         injector.get(testability_1.TestabilityRegistry)
                             .registerApplication(componentRef.location.nativeElement, injector.get(testability_1.Testability));
@@ -60,7 +37,7 @@ function _componentProviders(appComponentType) {
                     return componentRef;
                 });
             },
-            deps: [dynamic_component_loader_1.DynamicComponentLoader, di_1.Injector]
+            deps: [dynamic_component_loader_1.DynamicComponentLoader, ApplicationRef, di_1.Injector]
         }),
         di_1.provide(appComponentType, {
             useFactory: function (p) { return p.then(function (ref) { return ref.instance; }); },
@@ -69,31 +46,6 @@ function _componentProviders(appComponentType) {
     ];
 }
 /**
- * Construct a default set of providers which should be included in any Angular
- * application, regardless of whether it runs on the UI thread or in a web worker.
- */
-function applicationCommonProviders() {
-    return [
-        di_1.provide(compiler_1.Compiler, { useClass: compiler_2.Compiler_ }),
-        application_tokens_1.APP_ID_RANDOM_PROVIDER,
-        view_pool_1.AppViewPool,
-        di_1.provide(view_pool_1.APP_VIEW_POOL_CAPACITY, { useValue: 10000 }),
-        di_1.provide(view_manager_1.AppViewManager, { useClass: view_manager_2.AppViewManager_ }),
-        view_manager_utils_1.AppViewManagerUtils,
-        view_listener_1.AppViewListener,
-        proto_view_factory_1.ProtoViewFactory,
-        view_resolver_1.ViewResolver,
-        di_1.provide(change_detection_1.IterableDiffers, { useValue: change_detection_1.defaultIterableDiffers }),
-        di_1.provide(change_detection_1.KeyValueDiffers, { useValue: change_detection_1.defaultKeyValueDiffers }),
-        directive_resolver_1.DirectiveResolver,
-        pipe_resolver_1.PipeResolver,
-        di_1.provide(ambient_1.AMBIENT_PIPES, { useValue: common_1.COMMON_PIPES, multi: true }),
-        di_1.provide(ambient_1.AMBIENT_DIRECTIVES, { useValue: common_1.COMMON_DIRECTIVES, multi: true }),
-        di_1.provide(dynamic_component_loader_1.DynamicComponentLoader, { useClass: dynamic_component_loader_2.DynamicComponentLoader_ })
-    ];
-}
-exports.applicationCommonProviders = applicationCommonProviders;
-/**
  * Create an Angular zone.
  */
 function createNgZone() {
@@ -101,24 +53,44 @@ function createNgZone() {
 }
 exports.createNgZone = createNgZone;
 var _platform;
-function platformCommon(providers, initializer) {
+var _platformProviders;
+/**
+ * Initialize the Angular 'platform' on the page.
+ *
+ * See {@link PlatformRef} for details on the Angular platform.
+ *
+ * It is also possible to specify providers to be made in the new platform. These providers
+ * will be shared between all applications on the page. For example, an abstraction for
+ * the browser cookie jar should be bound at the platform level, because there is only one
+ * cookie jar regardless of how many applications on the page will be accessing it.
+ *
+ * The platform function can be called multiple times as long as the same list of providers
+ * is passed into each call. If the platform function is called with a different set of
+ * provides, Angular will throw an exception.
+ */
+function platform(providers) {
     lang_2.lockDevMode();
     if (lang_1.isPresent(_platform)) {
-        if (lang_1.isBlank(providers)) {
+        if (collection_1.ListWrapper.equals(_platformProviders, providers)) {
             return _platform;
         }
-        throw "platform() can only be called once per page";
+        else {
+            throw new exceptions_1.BaseException("platform cannot be initialized with different sets of providers.");
+        }
     }
-    if (lang_1.isPresent(initializer)) {
-        initializer();
+    else {
+        return _createPlatform(providers);
     }
-    if (lang_1.isBlank(providers)) {
-        providers = platformProviders();
-    }
-    _platform = new PlatformRef_(di_1.Injector.resolveAndCreate(providers), function () { _platform = null; });
+}
+exports.platform = platform;
+function _createPlatform(providers) {
+    _platformProviders = providers;
+    _platform = new PlatformRef_(di_1.Injector.resolveAndCreate(providers), function () {
+        _platform = null;
+        _platformProviders = null;
+    });
     return _platform;
 }
-exports.platformCommon = platformCommon;
 /**
  * The Angular platform is the entry point for Angular on a web page. Each page
  * has exactly one platform, and services (such as reflection) which are common
@@ -180,8 +152,10 @@ var PlatformRef_ = (function (_super) {
         var injector;
         var app;
         zone.run(function () {
-            providers.push(di_1.provide(ng_zone_1.NgZone, { useValue: zone }));
-            providers.push(di_1.provide(ApplicationRef, { useFactory: function () { return app; }, deps: [] }));
+            providers = collection_1.ListWrapper.concat(providers, [
+                di_1.provide(ng_zone_1.NgZone, { useValue: zone }),
+                di_1.provide(ApplicationRef, { useFactory: function () { return app; }, deps: [] })
+            ]);
             var exceptionHandler;
             try {
                 injector = _this.injector.resolveAndCreateChild(providers);
@@ -283,6 +257,9 @@ var ApplicationRef_ = (function (_super) {
     ApplicationRef_.prototype.registerChangeDetector = function (changeDetector) {
         this._changeDetectorRefs.push(changeDetector);
     };
+    ApplicationRef_.prototype.unregisterChangeDetector = function (changeDetector) {
+        collection_1.ListWrapper.remove(this._changeDetectorRefs, changeDetector);
+    };
     ApplicationRef_.prototype.bootstrap = function (componentType, providers) {
         var _this = this;
         var completer = async_1.PromiseWrapper.completer();
@@ -297,12 +274,8 @@ var ApplicationRef_ = (function (_super) {
                 var injector = _this._injector.resolveAndCreateChild(componentProviders);
                 var compRefToken = injector.get(application_tokens_1.APP_COMPONENT_REF_PROMISE);
                 var tick = function (componentRef) {
-                    var appChangeDetector = view_ref_1.internalView(componentRef.hostView).changeDetector;
-                    _this._changeDetectorRefs.push(appChangeDetector.ref);
-                    _this.tick();
+                    _this._loadComponent(componentRef);
                     completer.resolve(componentRef);
-                    _this._rootComponents.push(componentRef);
-                    _this._bootstrapListeners.forEach(function (listener) { return listener(componentRef); });
                 };
                 var tickResult = async_1.PromiseWrapper.then(compRefToken, tick);
                 async_1.PromiseWrapper.then(tickResult, function (_) { });
@@ -314,6 +287,22 @@ var ApplicationRef_ = (function (_super) {
             }
         });
         return completer.promise;
+    };
+    /** @internal */
+    ApplicationRef_.prototype._loadComponent = function (ref) {
+        var appChangeDetector = view_ref_1.internalView(ref.hostView).changeDetector;
+        this._changeDetectorRefs.push(appChangeDetector.ref);
+        this.tick();
+        this._rootComponents.push(ref);
+        this._bootstrapListeners.forEach(function (listener) { return listener(ref); });
+    };
+    /** @internal */
+    ApplicationRef_.prototype._unloadComponent = function (ref) {
+        if (!collection_1.ListWrapper.contains(this._rootComponents, ref)) {
+            return;
+        }
+        this.unregisterChangeDetector(view_ref_1.internalView(ref.hostView).changeDetector.ref);
+        collection_1.ListWrapper.remove(this._rootComponents, ref);
     };
     Object.defineProperty(ApplicationRef_.prototype, "injector", {
         get: function () { return this._injector; },

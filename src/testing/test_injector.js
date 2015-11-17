@@ -62,7 +62,7 @@ function _getAppBindings() {
         appDoc = null;
     }
     return [
-        compiler_1.compilerProviders(),
+        compiler_1.COMPILER_PROVIDERS,
         di_1.provide(change_detection_1.ChangeDetectorGenConfig, { useValue: new change_detection_1.ChangeDetectorGenConfig(true, false, true) }),
         di_1.provide(render_1.DOCUMENT, { useValue: appDoc }),
         di_1.provide(render_1.DomRenderer, { useClass: dom_renderer_1.DomRenderer_ }),

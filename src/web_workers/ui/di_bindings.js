@@ -30,7 +30,7 @@ var dynamic_component_loader_1 = require('angular2/src/core/linker/dynamic_compo
 var url_resolver_1 = require('angular2/src/compiler/url_resolver');
 var testability_1 = require('angular2/src/core/testability/testability');
 var xhr_1 = require('angular2/src/compiler/xhr');
-var xhr_impl_1 = require('angular2/src/compiler/xhr_impl');
+var xhr_impl_1 = require('angular2/src/platform/browser/xhr_impl');
 var serializer_1 = require('angular2/src/web_workers/shared/serializer');
 var api_2 = require('angular2/src/web_workers/shared/api');
 var render_proto_view_ref_store_1 = require('angular2/src/web_workers/shared/render_proto_view_ref_store');
@@ -43,7 +43,7 @@ var xhr_impl_2 = require('angular2/src/web_workers/ui/xhr_impl');
 var setup_1 = require('angular2/src/web_workers/ui/setup');
 var service_message_broker_1 = require('angular2/src/web_workers/shared/service_message_broker');
 var client_message_broker_1 = require('angular2/src/web_workers/shared/client_message_broker');
-var ambient_1 = require("angular2/src/core/ambient");
+var platform_directives_and_pipes_1 = require("angular2/src/core/platform_directives_and_pipes");
 var common_1 = require("angular2/common");
 var _rootInjector;
 // Contains everything that is safe to share between applications.
@@ -74,8 +74,8 @@ function _injectorProviders() {
         view_listener_1.AppViewListener,
         proto_view_factory_1.ProtoViewFactory,
         view_resolver_1.ViewResolver,
-        di_1.provide(ambient_1.AMBIENT_PIPES, { useValue: common_1.COMMON_PIPES, multi: true }),
-        di_1.provide(ambient_1.AMBIENT_DIRECTIVES, { useValue: common_1.COMMON_DIRECTIVES, multi: true }),
+        di_1.provide(platform_directives_and_pipes_1.PLATFORM_PIPES, { useValue: common_1.COMMON_PIPES, multi: true }),
+        di_1.provide(platform_directives_and_pipes_1.PLATFORM_DIRECTIVES, { useValue: common_1.COMMON_DIRECTIVES, multi: true }),
         directive_resolver_1.DirectiveResolver,
         change_detection_1.Parser,
         change_detection_1.Lexer,

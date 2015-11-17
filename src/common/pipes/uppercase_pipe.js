@@ -18,18 +18,7 @@ var invalid_pipe_argument_exception_1 = require('./invalid_pipe_argument_excepti
  *
  * ### Example
  *
- * In this example we transform the user text uppercase.
- *
- *  ```
- * @Component({
- *   selector: "username-cmp",
- *   template: "Username: {{ user | uppercase }}"
- * })
- * class Username {
- *   user:string;
- * }
- *
- * ```
+ * {@example core/pipes/ts/lowerupper_pipe/lowerupper_pipe_example.ts region='LowerUpperPipe'}
  */
 var UpperCasePipe = (function () {
     function UpperCasePipe() {

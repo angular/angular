@@ -14,22 +14,11 @@ var di_1 = require('angular2/src/core/di');
 var metadata_1 = require('angular2/src/core/metadata');
 var invalid_pipe_argument_exception_1 = require('./invalid_pipe_argument_exception');
 /**
- * Implements lowercase transforms to text.
+ * Transforms text to lowercase.
  *
  * ### Example
  *
- * In this example we transform the user text lowercase.
- *
- *  ```
- * @Component({
- *   selector: "username-cmp",
- *   template: "Username: {{ user | lowercase }}"
- * })
- * class Username {
- *   user:string;
- * }
- *
- * ```
+ * {@example core/pipes/ts/lowerupper_pipe/lowerupper_pipe_example.ts region='LowerUpperPipe'}
  */
 var LowerCasePipe = (function () {
     function LowerCasePipe() {

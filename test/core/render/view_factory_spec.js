@@ -434,9 +434,9 @@ function main() {
                 });
                 testing_internal_1.it('should add marker attributes to host elements and content elements of nested components', function () {
                     componentTemplates.set('0', new api_1.RenderComponentTemplate('innerComp', 'innerid', metadata_1.ViewEncapsulation.Emulated, [beginElement('div', [], [], false, null), endElement()], []));
-                    var view = view_factory_1.createRenderView(encapsulatedTpl, [beginComponent('my-comp', [], [], null, '0'), endComponent()], null, nodeFactory);
+                    var view = view_factory_1.createRenderView(defaultCmpTpl, [beginComponent('my-comp', [], [], null, '0'), endComponent()], null, nodeFactory);
                     testing_internal_1.expect(stringifyFragment(view.fragments[0].nodes))
-                        .toEqual('<my-comp _ngcontent-shortid="" _nghost-innerid=""><div _ngcontent-innerid=""></div></my-comp>');
+                        .toEqual('<my-comp _nghost-innerid=""><div _ngcontent-innerid=""></div></my-comp>');
                 });
             });
         });

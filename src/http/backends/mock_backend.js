@@ -14,8 +14,7 @@ var static_request_1 = require('../static_request');
 var enums_1 = require('../enums');
 var lang_1 = require('angular2/src/facade/lang');
 var exceptions_1 = require('angular2/src/facade/exceptions');
-var Rx = require('@reactivex/rxjs/dist/cjs/Rx');
-var Subject = Rx.Subject, ReplaySubject = Rx.ReplaySubject;
+var Rx_1 = require('@reactivex/rxjs/dist/cjs/Rx');
 /**
  *
  * Mock Connection to represent a {@link Connection} for tests.
@@ -23,7 +22,7 @@ var Subject = Rx.Subject, ReplaySubject = Rx.ReplaySubject;
  **/
 var MockConnection = (function () {
     function MockConnection(req) {
-        this.response = new ReplaySubject(1).take(1);
+        this.response = new Rx_1.ReplaySubject(1).take(1);
         this.readyState = enums_1.ReadyStates.Open;
         this.request = req;
     }
@@ -110,9 +109,9 @@ var MockBackend = (function () {
     function MockBackend() {
         var _this = this;
         this.connectionsArray = [];
-        this.connections = new Subject();
+        this.connections = new Rx_1.Subject();
         this.connections.subscribe(function (connection) { return _this.connectionsArray.push(connection); });
-        this.pendingConnections = new Subject();
+        this.pendingConnections = new Rx_1.Subject();
     }
     /**
      * Checks all connections, and raises an exception if any connection has not received a response.

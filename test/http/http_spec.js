@@ -7,8 +7,7 @@ var testing_internal_1 = require('angular2/testing_internal');
 var core_1 = require('angular2/core');
 var mock_backend_1 = require('angular2/src/http/backends/mock_backend');
 var http_1 = require('angular2/http');
-var Rx = require('@reactivex/rxjs/dist/cjs/Rx');
-var Observable = Rx.Observable, Subject = Rx.Subject;
+var Rx_1 = require('@reactivex/rxjs/dist/cjs/Rx');
 var SpyObserver = (function (_super) {
     __extends(SpyObserver, _super);
     function SpyObserver() {
@@ -95,7 +94,7 @@ function main() {
         testing_internal_1.afterEach(function () { return backend.verifyNoPendingRequests(); });
         testing_internal_1.describe('Http', function () {
             testing_internal_1.describe('.request()', function () {
-                testing_internal_1.it('should return an Observable', function () { testing_internal_1.expect(http.request(url)).toBeAnInstanceOf(Observable); });
+                testing_internal_1.it('should return an Observable', function () { testing_internal_1.expect(http.request(url)).toBeAnInstanceOf(Rx_1.Observable); });
                 testing_internal_1.it('should accept a fully-qualified request as its only parameter', testing_internal_1.inject([testing_internal_1.AsyncTestCompleter], function (async) {
                     backend.connections.subscribe(function (c) {
                         testing_internal_1.expect(c.request.url).toBe('https://google.com');

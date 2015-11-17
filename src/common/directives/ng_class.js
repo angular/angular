@@ -172,7 +172,15 @@ var NgClass = (function () {
     NgClass.prototype._toggleClass = function (className, enabled) {
         className = className.trim();
         if (className.length > 0) {
-            this._renderer.setElementClass(this._ngEl, className, enabled);
+            if (className.indexOf(' ') > -1) {
+                var classes = className.split(/\s+/g);
+                for (var i = 0, len = classes.length; i < len; i++) {
+                    this._renderer.setElementClass(this._ngEl, classes[i], enabled);
+                }
+            }
+            else {
+                this._renderer.setElementClass(this._ngEl, className, enabled);
+            }
         }
     };
     NgClass = __decorate([

@@ -1,8 +1,6 @@
 var angular2_1 = require('angular2/angular2');
-var application_common_1 = require('angular2/src/core/application_common');
-var application_ref_1 = require('angular2/src/core/application_ref');
-var compiler_1 = require('angular2/src/compiler/compiler');
 var async_1 = require('angular2/src/facade/async');
+var browser_1 = require('angular2/platform/browser');
 var metadata_1 = require('./metadata');
 var util_1 = require('./util');
 var constants_1 = require('./constants');
@@ -267,11 +265,9 @@ var UpgradeAdapter = (function () {
         var _this = this;
         var upgrade = new UpgradeAdapterRef();
         var ng1Injector = null;
-        var platformRef = angular2_1.platform();
+        var platformRef = angular2_1.platform(browser_1.BROWSER_PROVIDERS);
         var applicationRef = platformRef.application([
-            application_ref_1.applicationCommonProviders(),
-            application_common_1.applicationDomProviders(),
-            compiler_1.compilerProviders(),
+            browser_1.BROWSER_APP_PROVIDERS,
             angular2_1.provide(constants_1.NG1_INJECTOR, { useFactory: function () { return ng1Injector; } }),
             angular2_1.provide(constants_1.NG1_COMPILE, { useFactory: function () { return ng1Injector.get(constants_1.NG1_COMPILE); } }),
             this.providers

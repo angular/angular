@@ -1,5 +1,5 @@
 var testing_internal_1 = require('angular2/testing_internal');
-var xhr_impl_1 = require('angular2/src/compiler/xhr_impl');
+var xhr_impl_1 = require('angular2/src/platform/browser/xhr_impl');
 var async_1 = require('angular2/src/facade/async');
 function main() {
     testing_internal_1.describe('XHRImpl', function () {

@@ -1,3 +1,5 @@
+var lang_1 = require('angular2/src/facade/lang');
+var angular2_1 = require('angular2/angular2');
 /**
  * `LocationStrategy` is responsible for representing and reading route state
  * from the the browser's URL. Angular provides two strategies:
@@ -20,6 +22,36 @@ var LocationStrategy = (function () {
     return LocationStrategy;
 })();
 exports.LocationStrategy = LocationStrategy;
+/**
+ * The `APP_BASE_HREF` token represents the base href to be used with the
+ * {@link PathLocationStrategy}.
+ *
+ * If you're using {@link PathLocationStrategy}, you must provide a provider to a string
+ * representing the URL prefix that should be preserved when generating and recognizing
+ * URLs.
+ *
+ * ### Example
+ *
+ * ```
+ * import {Component} from 'angular2/angular2';
+ * import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
+ *
+ * @Component({directives: [ROUTER_DIRECTIVES]})
+ * @RouteConfig([
+ *  {...},
+ * ])
+ * class AppCmp {
+ *   // ...
+ * }
+ *
+ * bootstrap(AppCmp, [
+ *   ROUTER_PROVIDERS,
+ *   PathLocationStrategy,
+ *   provide(APP_BASE_HREF, {useValue: '/my/app'})
+ * ]);
+ * ```
+ */
+exports.APP_BASE_HREF = lang_1.CONST_EXPR(new angular2_1.OpaqueToken('appBaseHref'));
 function normalizeQueryParams(params) {
     return (params.length > 0 && params.substring(0, 1) != '?') ? ('?' + params) : params;
 }

@@ -43,21 +43,16 @@ var _observableStrategy = new ObservableStrategy();
  * When a new value is emitted, the `async` pipe marks the component to be checked for changes.
  *
  * ### Example
- * The example below binds the `time` Observable to the view. Every 500ms, the `time` Observable
- * updates the view with the current time.
  *
- * ```
- * import {Observable} from 'angular2/core';
- * @Component({
- *   selector: "task-cmp",
- *   template: "Time: {{ time | async }}"
- * })
- * class Task {
- *   time = new Observable<number>(observer => {
- *     setInterval(_ =>
- *       observer.next(new Date().getTime()), 500);
- *   });
- * }
+ * This example binds a `Promise` to the view. Clicking the `Resolve` button resolves the
+ * promise.
+ *
+ * {@example core/pipes/ts/async_pipe/async_pipe_example.ts region='AsyncPipe'}
+ *
+ * It's also possible to use `async` with Observables. The example below binds the `time` Observable
+ * to the view. Every 500ms, the `time` Observable updates the view with the current time.
+ *
+ * ```typescript
  * ```
  */
 var AsyncPipe = (function () {

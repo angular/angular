@@ -108,6 +108,34 @@ function main() {
                     async.done();
                 });
             }));
+            testing_internal_1.it('should allow multiple classes per expression', testing_internal_1.inject([testing_internal_1.TestComponentBuilder, testing_internal_1.AsyncTestCompleter], function (tcb, async) {
+                var template = '<div [ng-class]="objExpr"></div>';
+                tcb.overrideTemplate(TestComponent, template)
+                    .createAsync(TestComponent)
+                    .then(function (fixture) {
+                    fixture.debugElement.componentInstance.objExpr = {
+                        'bar baz': true,
+                        'bar1 baz1': true
+                    };
+                    detectChangesAndCheck(fixture, 'bar baz bar1 baz1');
+                    fixture.debugElement.componentInstance.objExpr = {
+                        'bar baz': false,
+                        'bar1 baz1': true
+                    };
+                    detectChangesAndCheck(fixture, 'bar1 baz1');
+                    async.done();
+                });
+            }));
+            testing_internal_1.it('should split by one or more spaces between classes', testing_internal_1.inject([testing_internal_1.TestComponentBuilder, testing_internal_1.AsyncTestCompleter], function (tcb, async) {
+                var template = '<div [ng-class]="objExpr"></div>';
+                tcb.overrideTemplate(TestComponent, template)
+                    .createAsync(TestComponent)
+                    .then(function (fixture) {
+                    fixture.debugElement.componentInstance.objExpr = { 'foo bar     baz': true };
+                    detectChangesAndCheck(fixture, 'foo bar baz');
+                    async.done();
+                });
+            }));
         });
         testing_internal_1.describe('expressions evaluating to lists', function () {
             testing_internal_1.it('should add classes specified in a list literal', testing_internal_1.inject([testing_internal_1.TestComponentBuilder, testing_internal_1.AsyncTestCompleter], function (tcb, async) {
@@ -174,6 +202,19 @@ function main() {
                     .then(function (fixture) {
                     fixture.debugElement.componentInstance.arrExpr = [' bar  '];
                     detectChangesAndCheck(fixture, 'foo bar');
+                    async.done();
+                });
+            }));
+            testing_internal_1.it('should allow multiple classes per item in arrays', testing_internal_1.inject([testing_internal_1.TestComponentBuilder, testing_internal_1.AsyncTestCompleter], function (tcb, async) {
+                var template = '<div [ng-class]="arrExpr"></div>';
+                tcb.overrideTemplate(TestComponent, template)
+                    .createAsync(TestComponent)
+                    .then(function (fixture) {
+                    fixture.debugElement.componentInstance.arrExpr =
+                        ['foo bar baz', 'foo1 bar1   baz1'];
+                    detectChangesAndCheck(fixture, 'foo bar baz foo1 bar1 baz1');
+                    fixture.debugElement.componentInstance.arrExpr = ['foo bar   baz foobar'];
+                    detectChangesAndCheck(fixture, 'foo bar baz foobar');
                     async.done();
                 });
             }));

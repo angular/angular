@@ -17,7 +17,7 @@ var core_1 = require('angular2/core');
 var test_bindings_1 = require('./test_bindings');
 var util_1 = require('angular2/src/compiler/util');
 var lang_2 = require('angular2/src/facade/lang');
-var ambient_1 = require('angular2/src/core/ambient');
+var platform_directives_and_pipes_1 = require('angular2/src/core/platform_directives_and_pipes');
 function main() {
     testing_internal_1.describe('RuntimeMetadataResolver', function () {
         testing_internal_1.beforeEachProviders(function () { return test_bindings_1.TEST_PROVIDERS; });
@@ -55,9 +55,9 @@ function main() {
                 testing_internal_1.expect(resolver.getViewDirectivesMetadata(ComponentWithEverything))
                     .toEqual([resolver.getMetadata(DirectiveWithoutModuleId)]);
             }));
-            testing_internal_1.describe("ambient directives", function () {
-                testing_internal_1.beforeEachProviders(function () { return [core_1.provide(ambient_1.AMBIENT_DIRECTIVES, { useValue: [ADirective] })]; });
-                testing_internal_1.it('should include ambient directives when available', testing_internal_1.inject([runtime_metadata_1.RuntimeMetadataResolver], function (resolver) {
+            testing_internal_1.describe("platform directives", function () {
+                testing_internal_1.beforeEachProviders(function () { return [core_1.provide(platform_directives_and_pipes_1.PLATFORM_DIRECTIVES, { useValue: [ADirective] })]; });
+                testing_internal_1.it('should include platform directives when available', testing_internal_1.inject([runtime_metadata_1.RuntimeMetadataResolver], function (resolver) {
                     testing_internal_1.expect(resolver.getViewDirectivesMetadata(ComponentWithEverything))
                         .toEqual([
                         resolver.getMetadata(ADirective),

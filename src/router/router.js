@@ -105,7 +105,7 @@ var Router = (function () {
     /**
      * Dynamically update the routing configuration and trigger a navigation.
      *
-     *##Usage
+     * ### Usage
      *
      * ```
      * router.config([
@@ -123,7 +123,7 @@ var Router = (function () {
      * Navigate based on the provided Route Link DSL. It's preferred to navigate with this method
      * over `navigateByUrl`.
      *
-     *##Usage
+     * ### Usage
      *
      * This method takes an array representing the Route Link DSL:
      * ```

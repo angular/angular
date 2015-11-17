@@ -18,7 +18,7 @@ var testing_1 = require('angular2/testing');
 var core_1 = require('angular2/core');
 var angular2_1 = require('angular2/angular2');
 var xhr_1 = require('angular2/src/compiler/xhr');
-var xhr_impl_1 = require('angular2/src/compiler/xhr_impl');
+var xhr_impl_1 = require('angular2/src/platform/browser/xhr_impl');
 // Services, and components for the tests.
 var ChildComp = (function () {
     function ChildComp() {

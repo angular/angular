@@ -21,7 +21,12 @@ var MockLocationStrategy = (function (_super) {
         async_1.ObservableWrapper.callNext(this._subject, null);
     };
     MockLocationStrategy.prototype.path = function () { return this.internalPath; };
-    MockLocationStrategy.prototype.prepareExternalUrl = function (internal) { return internal; };
+    MockLocationStrategy.prototype.prepareExternalUrl = function (internal) {
+        if (internal.startsWith('/') && this.internalBaseHref.endsWith('/')) {
+            return this.internalBaseHref + internal.substring(1);
+        }
+        return this.internalBaseHref + internal;
+    };
     MockLocationStrategy.prototype.simulateUrlPop = function (pathname) {
         async_1.ObservableWrapper.callNext(this._subject, { 'url': pathname });
     };
@@ -29,7 +34,8 @@ var MockLocationStrategy = (function (_super) {
         this.internalTitle = title;
         var url = path + (query.length > 0 ? ('?' + query) : '');
         this.internalPath = url;
-        this.urlChanges.push(url);
+        var external = this.prepareExternalUrl(url);
+        this.urlChanges.push(external);
     };
     MockLocationStrategy.prototype.onPopState = function (fn) { async_1.ObservableWrapper.subscribe(this._subject, fn); };
     MockLocationStrategy.prototype.getBaseHref = function () { return this.internalBaseHref; };

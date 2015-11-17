@@ -15,7 +15,6 @@ var render_1 = require('angular2/src/core/render');
 var di_1 = require('angular2/src/core/di');
 var control_value_accessor_1 = require('./control_value_accessor');
 var lang_1 = require('angular2/src/facade/lang');
-var shared_1 = require('./shared');
 var NUMBER_VALUE_ACCESSOR = lang_1.CONST_EXPR(new di_1.Provider(control_value_accessor_1.NG_VALUE_ACCESSOR, { useExisting: di_1.forwardRef(function () { return NumberValueAccessor; }), multi: true }));
 /**
  * The accessor for writing a number value and listening to changes that is used by the
@@ -33,7 +32,9 @@ var NumberValueAccessor = (function () {
         this.onChange = function (_) { };
         this.onTouched = function () { };
     }
-    NumberValueAccessor.prototype.writeValue = function (value) { shared_1.setProperty(this._renderer, this._elementRef, 'value', value); };
+    NumberValueAccessor.prototype.writeValue = function (value) {
+        this._renderer.setElementProperty(this._elementRef, 'value', value);
+    };
     NumberValueAccessor.prototype.registerOnChange = function (fn) {
         this.onChange = function (value) { fn(lang_1.NumberWrapper.parseFloat(value)); };
     };

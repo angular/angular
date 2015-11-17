@@ -23,6 +23,9 @@ var collection_1 = require('angular2/src/facade/collection');
 var invalid_pipe_argument_exception_1 = require('./invalid_pipe_argument_exception');
 var defaultLocale = 'en-US';
 var _re = lang_1.RegExpWrapper.create('^(\\d+)?\\.((\\d+)(\\-(\\d+))?)?$');
+/**
+ * Internal base class for numeric pipes.
+ */
 var NumberPipe = (function () {
     function NumberPipe() {
     }
@@ -74,7 +77,7 @@ exports.NumberPipe = NumberPipe;
  * Formats a number as local text. i.e. group sizing and separator and other locale-specific
  * configurations are based on the active locale.
  *
- *##Usage
+ * ### Usage
  *
  *     expression | number[:digitInfo]
  *
@@ -89,11 +92,9 @@ exports.NumberPipe = NumberPipe;
  * For more information on the acceptable range for each of these numbers and other
  * details see your native internationalization library.
  *
- * ### Examples
+ * ### Example
  *
- *     {{ 123 | number }}              // output is 123
- *     {{ 123.1 | number: '.2-3' }}    // output is 123.10
- *     {{ 1 | number: '2.2' }}         // output is 01.00
+ * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='NumberPipe'}
  */
 var DecimalPipe = (function (_super) {
     __extends(DecimalPipe, _super);
@@ -119,11 +120,15 @@ exports.DecimalPipe = DecimalPipe;
  *
  * Formats a number as local percent.
  *
- *##Usage
+ * ### Usage
  *
  *     expression | percent[:digitInfo]
  *
  * For more information about `digitInfo` see {@link DecimalPipe}
+ *
+ * ### Example
+ *
+ * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='PercentPipe'}
  */
 var PercentPipe = (function (_super) {
     __extends(PercentPipe, _super);
@@ -149,7 +154,7 @@ exports.PercentPipe = PercentPipe;
  *
  * Formats a number as local currency.
  *
- *##Usage
+ * ### Usage
  *
  *     expression | currency[:currencyCode[:symbolDisplay[:digitInfo]]]
  *
@@ -158,6 +163,10 @@ exports.PercentPipe = PercentPipe;
  * symbol (e.g. $) or the currency code (e.g. USD) in the output. The default for this value
  * is `false`.
  * For more information about `digitInfo` see {@link DecimalPipe}
+ *
+ * ### Example
+ *
+ * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='CurrencyPipe'}
  */
 var CurrencyPipe = (function (_super) {
     __extends(CurrencyPipe, _super);
