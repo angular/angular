@@ -54,7 +54,8 @@ import {
   Inject,
   Host,
   SkipSelf,
-  SkipSelfMetadata
+  SkipSelfMetadata,
+  OnDestroy
 } from 'angular2/core';
 
 import {NgIf, NgFor} from 'angular2/common';
@@ -1999,8 +2000,8 @@ class SomeViewport {
 }
 
 @Pipe({name: 'double'})
-class DoublePipe implements PipeTransform {
-  onDestroy() {}
+class DoublePipe implements PipeTransform, OnDestroy {
+  ngOnDestroy() {}
   transform(value, args = null) { return `${value}${value}`; }
 }
 
