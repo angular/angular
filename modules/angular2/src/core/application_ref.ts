@@ -135,13 +135,13 @@ export abstract class PlatformRef {
   /**
    * Instantiate a new Angular application on the page.
    *
-   *##What is an application?
+   * ### What is an application?
    *
    * Each Angular application has its own zone, change detection, compiler,
    * renderer, and other framework components. An application hosts one or more
    * root components, which can be initialized via `ApplicationRef.bootstrap()`.
    *
-   *##Application Providers
+   * ### Application Providers
    *
    * Angular applications require numerous providers to be properly instantiated.
    * When using `application()` to create a new app on the page, these providers
@@ -156,7 +156,7 @@ export abstract class PlatformRef {
    *   .application([myAppProviders])
    *   .bootstrap(MyTopLevelComponent);
    * ```
-   *##See Also
+   * ### See Also
    *
    * See the {@link bootstrap} documentation for more details.
    */
@@ -167,7 +167,7 @@ export abstract class PlatformRef {
    * are only available asynchronously. One such use case is to initialize an
    * application running in a web worker.
    *
-   *##Usage
+   * ### Usage
    *
    * `bindingFn` is a function that will be called in the new application's zone.
    * It should return a `Promise` to a list of providers to be used for the
@@ -269,13 +269,13 @@ export abstract class ApplicationRef {
   /**
    * Bootstrap a new component at the root level of the application.
    *
-   *##Bootstrap process
+   * ### Bootstrap process
    *
    * When bootstrapping a new root component into an application, Angular mounts the
    * specified application component onto DOM elements identified by the [componentType]'s
    * selector and kicks off automatic change detection to finish initializing the component.
    *
-   *##Optional Providers
+   * ### Optional Providers
    *
    * Providers for the given component can optionally be overridden via the `providers`
    * parameter. These providers will only apply for the root component being added and any

@@ -15,7 +15,7 @@ import {isPresent, isBlank, print} from 'angular2/src/facade/lang';
  * corresponding element styles are updated based on changes to this object. Style names to update
  * are taken from the object's keys, and values - from the corresponding object's values.
  *
- *##Syntax
+ * ### Syntax
  *
  * - `<div [ng-style]="{'font-style': style}"></div>`
  * - `<div [ng-style]="styleExp"></div>` - here the `styleExp` must evaluate to an object

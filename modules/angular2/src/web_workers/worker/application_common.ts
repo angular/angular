@@ -52,7 +52,7 @@ import {COMPILER_PROVIDERS} from 'angular2/src/compiler/compiler';
  *
  * See {@link PlatformRef} for details on the Angular platform.
  *
- *##Without specified providers
+ * ### Without specified providers
  *
  * If no providers are specified, `platform`'s behavior depends on whether an existing
  * platform exists:
@@ -63,7 +63,7 @@ import {COMPILER_PROVIDERS} from 'angular2/src/compiler/compiler';
  * was created with). This is a convenience feature, allowing for multiple applications
  * to be loaded into the same platform without awareness of each other.
  *
- *##With specified providers
+ * ### With specified providers
  *
  * It is also possible to specify providers to be made in the new platform. These providers
  * will be shared between all applications on the page. For example, an abstraction for
@@ -74,7 +74,7 @@ import {COMPILER_PROVIDERS} from 'angular2/src/compiler/compiler';
  * them if a platform did not exist already. If it did exist, however, an error will be
  * thrown.
  *
- *##For Web Worker Applications
+ * ### For Web Worker Applications
  *
  * This version of `platform` initializes Angular for use with applications
  * that do not directly touch the DOM, such as applications which run in a

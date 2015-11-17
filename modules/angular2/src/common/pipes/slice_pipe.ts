@@ -16,7 +16,7 @@ import {Pipe} from 'angular2/src/core/metadata';
  *
  * The ending index of the subset to return is specified by the optional `end` parameter.
  *
- *##Usage
+ * ### Usage
  *
  *     expression | slice:start[:end]
  *

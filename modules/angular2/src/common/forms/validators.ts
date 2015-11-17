@@ -29,7 +29,7 @@ export const NG_ASYNC_VALIDATORS: OpaqueToken = CONST_EXPR(new OpaqueToken("NgAs
  * controls and returns a {@link StringMap} of errors. A null map means that
  * validation has passed.
  *
- * # Example
+ * ### Example
  *
  * ```typescript
  * var loginControl = new Control("", Validators.required)
