@@ -58,13 +58,14 @@ if (cliArgs.projects) {
 
 // --projects=angular2,angular2_material => {angular2: true, angular2_material: true}
 var allProjects =
-    'angular1_router,angular2,angular2_material,benchmarks,benchmarks_external,benchpress,playground';
+    'angular1_router,angular2,angular2_material,benchmarks,benchmarks_external,benchpress,playground,bundle_deps';
 var cliArgsProjects = (cliArgs.projects || allProjects)
                           .split(',')
                           .reduce((map, projectName) => {
                             map[projectName] = true;
                             return map;
                           }, {});
+var generateEs6 = !cliArgs.projects;
 
 function printModulesWarning() {
   if (!cliArgs.projects && !process.env.CI) {
@@ -302,11 +303,11 @@ gulp.task('lint', ['build.tools'], function() {
 // ------------
 // check circular dependencies in Node.js context
 gulp.task('build/checkCircularDependencies', function(done) {
-  var dependencyObject = madge(CONFIG.dest.js.dev.es6, {
-    format: 'es6',
-    paths: [CONFIG.dest.js.dev.es6],
+  var dependencyObject = madge(CONFIG.dest.js.dev.es5, {
+    format: 'cjs',
+    paths: [CONFIG.dest.js.dev.es5],
     extensions: ['.js'],
-    onParseFile: function(data) { data.src = data.src.replace(/import \* as/g, "//import * as"); }
+    onParseFile: function(data) { data.src = data.src.replace(/\/\* circular \*\//g, "//"); }
   });
   var circularDependencies = dependencyObject.circular().getArray();
   if (circularDependencies.length > 0) {
@@ -841,11 +842,15 @@ gulp.task('!build.tools', function() {
 gulp.task('broccoli.js.dev', ['build.tools'],
           function(done) { runSequence('!broccoli.js.dev', sequenceComplete(done)); });
 
-gulp.task('!broccoli.js.dev',
-          () => { return angularBuilder.rebuildBrowserDevTree(cliArgsProjects); });
+gulp.task(
+    '!broccoli.js.dev',
+    () => angularBuilder.rebuildBrowserDevTree(
+        {generateEs6: generateEs6, projects: cliArgsProjects, noTypeChecks: cliArgs.noTypeChecks}));
 
-gulp.task('!broccoli.js.prod',
-          function() { return angularBuilder.rebuildBrowserProdTree(cliArgsProjects); });
+gulp.task(
+    '!broccoli.js.prod',
+    () => angularBuilder.rebuildBrowserProdTree(
+        {generateEs6: generateEs6, projects: cliArgsProjects, noTypeChecks: cliArgs.noTypeChecks}));
 
 gulp.task('build.js.dev', ['build/clean.js'], function(done) {
   runSequence('broccoli.js.dev', 'build.css.material', sequenceComplete(done));
@@ -868,7 +873,9 @@ var firstBuildJsCjs = true;
  * private task
  */
 gulp.task('!build.js.cjs', function() {
-  return angularBuilder.rebuildNodeTree(cliArgsProjects)
+  return angularBuilder
+      .rebuildNodeTree(
+          {generateEs6: generateEs6, projects: cliArgsProjects, noTypeChecks: cliArgs.noTypeChecks})
       .then(function() {
         if (firstBuildJsCjs) {
           firstBuildJsCjs = false;

@@ -4,7 +4,6 @@ import {Renderer} from 'angular2/src/core/render';
 import {Self, forwardRef, Provider} from 'angular2/src/core/di';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
 import {isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
-import {setProperty} from './shared';
 
 const DEFAULT_VALUE_ACCESSOR = CONST_EXPR(new Provider(
     NG_VALUE_ACCESSOR, {useExisting: forwardRef(() => DefaultValueAccessor), multi: true}));
@@ -39,7 +38,7 @@ export class DefaultValueAccessor implements ControlValueAccessor {
 
   writeValue(value: any): void {
     var normalizedValue = isBlank(value) ? '' : value;
-    setProperty(this._renderer, this._elementRef, 'value', normalizedValue);
+    this._renderer.setElementProperty(this._elementRef, 'value', normalizedValue);
   }
 
   registerOnChange(fn: (_: any) => void): void { this.onChange = fn; }

@@ -70,7 +70,9 @@ const kServedPaths = [
 
 
 module.exports = function makeBrowserTree(options, destinationPath) {
-  var modules = options.projects;
+  const modules = options.projects;
+  const noTypeChecks = options.noTypeChecks;
+  const generateEs6 = options.generateEs6;
 
   if (modules.angular2) {
     var angular2Tree = new Funnel('modules/angular2', {
@@ -110,9 +112,6 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   var modulesTree = mergeTrees(
       [angular2Tree, angular2MaterialTree, benchmarksTree, benchmarksExternalTree, playgroundTree]);
 
-  var clientModules = new Funnel(
-      'node_modules', {include: ['@reactivex/**/**', 'parse5/**/**', 'css/**/**'], destDir: '/'});
-
   var es6PolyfillTypings =
       new Funnel('modules', {include: ['angular2/typings/es6-*/**'], destDir: '/'});
 
@@ -139,20 +138,6 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     patterns: [{match: /\$SCRIPTS\$/, replacement: jsReplace('SCRIPTS')}]
   });
 
-  // Use TypeScript to transpile the *.ts files to ES6
-  var es6Tree = compileWithTypescript(modulesTree, {
-    declaration: false,
-    emitDecoratorMetadata: true,
-    experimentalDecorators: true,
-    mapRoot: '',  // force sourcemaps to use relative path
-    noEmitOnError: false,
-    rootDir: './',
-    rootFilePaths: ['angular2/manual_typings/globals-es6.d.ts'],
-    sourceMap: true,
-    sourceRoot: '.',
-    target: 'es6'
-  });
-
   // Use TypeScript to transpile the *.ts files to ES5
   var es5Tree = compileWithTypescript(es5ModulesTree, {
     declaration: false,
@@ -161,7 +146,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     mapRoot: '',  // force sourcemaps to use relative path
     module: 'commonjs',
     moduleResolution: 'classic',
-    noEmitOnError: true,
+    noEmitOnError: !noTypeChecks,
     rootDir: './',
     rootFilePaths: ['angular2/manual_typings/globals.d.ts'],
     sourceMap: true,
@@ -274,10 +259,32 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     htmlTree = mergeTrees([htmlTree, scripts, polymer, react]);
   }
 
-  es5Tree = mergeTrees([es5Tree, htmlTree, assetsTree, clientModules]);
-  es6Tree = mergeTrees([es6Tree, htmlTree, assetsTree, clientModules]);
+  // this is needed only for creating a bundle
+  // typescript resolves dependencies automatically
+  if (modules.bundle_deps) {
+    var nodeModules = new Funnel(
+        'node_modules', {include: ['@reactivex/**/**', 'parse5/**/**', 'css/**/**'], destDir: '/'});
+  }
 
-  var mergedTree = mergeTrees([stew.mv(es6Tree, '/es6'), stew.mv(es5Tree, '/es5')]);
+  if (generateEs6) {
+    // Use TypeScript to transpile the *.ts files to ES6
+    var es6Tree = compileWithTypescript(modulesTree, {
+      declaration: false,
+      emitDecoratorMetadata: true,
+      experimentalDecorators: true,
+      mapRoot: '',  // force sourcemaps to use relative path
+      noEmitOnError: false,
+      rootDir: './',
+      rootFilePaths: ['angular2/manual_typings/globals-es6.d.ts'],
+      sourceMap: true,
+      sourceRoot: '.',
+      target: 'es6'
+    });
 
+    es6Tree = stew.mv(mergeTrees([es6Tree, htmlTree, assetsTree, nodeModules]), '/es6');
+  }
+  es5Tree = stew.mv(mergeTrees([es5Tree, htmlTree, assetsTree, nodeModules]), '/es5');
+
+  var mergedTree = mergeTrees([es6Tree, es5Tree]);
   return destCopy(mergedTree, destinationPath);
 };

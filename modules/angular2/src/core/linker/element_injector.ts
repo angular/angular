@@ -34,8 +34,8 @@ import {resolveProvider, ResolvedFactory, ResolvedProvider_} from 'angular2/src/
 
 import {AttributeMetadata, QueryMetadata} from '../metadata/di';
 
-import * as viewModule from './view';
-import * as avmModule from './view_manager';
+import {AppViewContainer, AppView} from './view';
+/* circular */ import * as avmModule from './view_manager';
 import {ViewContainerRef} from './view_container_ref';
 import {ElementRef} from './element_ref';
 import {TemplateRef} from './template_ref';
@@ -183,8 +183,8 @@ export class DirectiveProvider extends ResolvedProvider_ {
 
 // TODO(rado): benchmark and consider rolling in as ElementInjector fields.
 export class PreBuiltObjects {
-  nestedView: viewModule.AppView = null;
-  constructor(public viewManager: avmModule.AppViewManager, public view: viewModule.AppView,
+  nestedView: AppView = null;
+  constructor(public viewManager: avmModule.AppViewManager, public view: AppView,
               public elementRef: ElementRef, public templateRef: TemplateRef) {}
 }
 
@@ -195,7 +195,7 @@ export class QueryMetadataWithSetter {
 export class EventEmitterAccessor {
   constructor(public eventName: string, public getter: Function) {}
 
-  subscribe(view: viewModule.AppView, boundElementIndex: number, directive: Object): Object {
+  subscribe(view: AppView, boundElementIndex: number, directive: Object): Object {
     var eventEmitter = this.getter(directive);
     return ObservableWrapper.subscribe<Event>(
         eventEmitter,
@@ -235,7 +235,7 @@ function _createProtoQueryRefs(providers: ProviderWithVisibility[]): ProtoQueryR
 }
 
 export class ProtoElementInjector {
-  view: viewModule.AppView;
+  view: AppView;
   attributes: Map<string, string>;
   eventEmitterAccessors: EventEmitterAccessor[][];
   protoQueryRefs: ProtoQueryRef[];
@@ -451,9 +451,9 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     return new ViewContainerRef_(this._preBuiltObjects.viewManager, this.getElementRef());
   }
 
-  getNestedView(): viewModule.AppView { return this._preBuiltObjects.nestedView; }
+  getNestedView(): AppView { return this._preBuiltObjects.nestedView; }
 
-  getView(): viewModule.AppView { return this._preBuiltObjects.view; }
+  getView(): AppView { return this._preBuiltObjects.view; }
 
   directParent(): ElementInjector { return this._proto.distanceToParent < 2 ? this.parent : null; }
 
@@ -1044,13 +1044,13 @@ export class QueryRef {
     }
   }
 
-  private _visitViewContainer(vc: viewModule.AppViewContainer, aggregator: any[]) {
+  private _visitViewContainer(vc: AppViewContainer, aggregator: any[]) {
     for (var j = 0; j < vc.views.length; j++) {
       this._visitView(vc.views[j], aggregator);
     }
   }
 
-  private _visitView(view: viewModule.AppView, aggregator: any[]) {
+  private _visitView(view: AppView, aggregator: any[]) {
     for (var i = view.elementOffset; i < view.elementOffset + view.ownBindersCount; i++) {
       var inj = view.elementInjectors[i];
       if (isBlank(inj)) continue;
