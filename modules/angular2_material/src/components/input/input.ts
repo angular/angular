@@ -30,7 +30,7 @@ export class MdInputContainer implements AfterContentChecked {
     this.inputHasFocus = false;
   }
 
-  afterContentChecked() {
+  ngAfterContentChecked() {
     // Enforce that this directive actually contains a text input.
     if (this._input == null) {
       throw 'No <input> or <textarea> found inside of <md-input-container>';

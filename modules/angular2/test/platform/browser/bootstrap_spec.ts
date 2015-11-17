@@ -76,7 +76,7 @@ class HelloOnDestroyTickCmp implements OnDestroy {
   appRef: ApplicationRef;
   constructor(@Inject(ApplicationRef) appRef) { this.appRef = appRef; }
 
-  onDestroy(): void { this.appRef.tick(); }
+  ngOnDestroy(): void { this.appRef.tick(); }
 }
 
 class _ArrayLogger {

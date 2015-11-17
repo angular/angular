@@ -85,7 +85,7 @@ export class MdAnchor extends MdButton implements OnChanges {
   }
 
   /** Invoked when a change is detected. */
-  onChanges(_) {
+  ngOnChanges(_) {
     // A disabled anchor should not be in the tab flow.
     this.tabIndex = this.disabled ? -1 : 0;
   }

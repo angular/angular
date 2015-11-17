@@ -10,40 +10,40 @@ The class constructor is called before any other lifecycle hook. Use it to injec
 
 
 @cheatsheetItem
-`onChanges(changeRecord) { ... }`|`onChanges(changeRecord)`
+`ngOnChanges(changeRecord) { ... }`|`ngOnChanges(changeRecord)`
 Called after every change to input properties and before processing content or child views.
 
 
 @cheatsheetItem
-`onInit() { ... }`|`onInit()`
-Called after the constructor, initializing input properties, and the first call to onChanges.
+`ngOnInit() { ... }`|`ngOnInit()`
+Called after the constructor, initializing input properties, and the first call to ngOnChanges.
 
 
 @cheatsheetItem
-`doCheck() { ... }`|`doCheck()`
+`ngDoCheck() { ... }`|`ngDoCheck()`
 Called every time that the input properties of a component or a directive are checked. Use it to extend change detection by performing a custom check.
 
 
 @cheatsheetItem
-`afterContentInit() { ... }`|`afterContentInit()`
-Called after onInit when the component's or directive's content has been initialized.
+`ngAfterContentInit() { ... }`|`ngAfterContentInit()`
+Called after ngOnInit when the component's or directive's content has been initialized.
 
 
 @cheatsheetItem
-`afterContentChecked() { ... }`|`afterContentChecked()`
+`ngAfterContentChecked() { ... }`|`ngAfterContentChecked()`
 Called after every check of the component's or directive's content.
 
 
 @cheatsheetItem
-`afterViewInit() { ... }`|`afterViewInit()`
-Called after afterContentInit when the component's view has been initialized. Applies to components only.
+`ngAfterViewInit() { ... }`|`ngAfterViewInit()`
+Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
 
 
 @cheatsheetItem
-`afterViewChecked() { ... }`|`afterViewChecked()`
+`ngAfterViewChecked() { ... }`|`ngAfterViewChecked()`
 Called after every check of the component's view. Applies to components only.
 
 
 @cheatsheetItem
-`onDestroy() { ... }`|`onDestroy()`
+`ngOnDestroy() { ... }`|`ngOnDestroy()`
 Called once, before the instance is destroyed.

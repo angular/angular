@@ -35,7 +35,7 @@ describe('Navigation lifecycle', function () {
     var spy = jasmine.createSpy('activate');
     registerComponent('activateCmp', {
       template: '<p>hello</p>',
-      $onActivate: spy
+      $routerOnActivate: spy
     });
 
     $router.config([
@@ -53,7 +53,7 @@ describe('Navigation lifecycle', function () {
   it('should pass instruction into the activate hook of a controller', function () {
     var spy = jasmine.createSpy('activate');
     registerComponent('userCmp', {
-      $onActivate: spy
+      $routerOnActivate: spy
     });
 
     $router.config([
@@ -72,7 +72,7 @@ describe('Navigation lifecycle', function () {
     var spy = jasmine.createSpy('activate');
     var activate = registerComponent('activateCmp', {
       template: 'hi',
-      $onActivate: spy
+      $routerOnActivate: spy
     });
 
     $router.config([
@@ -113,7 +113,7 @@ describe('Navigation lifecycle', function () {
   it('should run the deactivate hook of controllers', function () {
     var spy = jasmine.createSpy('deactivate');
     registerComponent('deactivateCmp', {
-      $onDeactivate: spy
+      $routerOnDeactivate: spy
     });
 
     $router.config([
@@ -133,7 +133,7 @@ describe('Navigation lifecycle', function () {
   it('should pass instructions into the deactivate hook of controllers', function () {
     var spy = jasmine.createSpy('deactivate');
     registerComponent('deactivateCmp', {
-      $onDeactivate: spy
+      $routerOnDeactivate: spy
     });
 
     $router.config([
@@ -155,13 +155,13 @@ describe('Navigation lifecycle', function () {
     var log = [];
 
     registerComponent('activateCmp', {
-      $onActivate: function () {
+      $routerOnActivate: function () {
         log.push('activate');
       }
     });
 
     registerComponent('deactivateCmp', {
-      $onDeactivate: function () {
+      $routerOnDeactivate: function () {
         log.push('deactivate');
       }
     });
@@ -180,7 +180,7 @@ describe('Navigation lifecycle', function () {
     expect(log).toEqual(['deactivate', 'activate']);
   });
 
-  it('should reuse a component when the canReuse hook returns true', function () {
+  it('should reuse a component when the routerCanReuse hook returns true', function () {
     var log = [];
     var cmpInstanceCount = 0;
 
@@ -195,10 +195,10 @@ describe('Navigation lifecycle', function () {
         {path: '/b', component: 'twoCmp'}
       ],
       controller: ReuseCmp,
-      $canReuse: function () {
+      $routerCanReuse: function () {
         return true;
       },
-      $onReuse: function (next, prev) {
+      $routerOnReuse: function (next, prev) {
         log.push('reuse: ' + prev.urlPath + ' -> ' + next.urlPath);
       }
     });
@@ -223,7 +223,7 @@ describe('Navigation lifecycle', function () {
   });
 
 
-  it('should not reuse a component when the canReuse hook returns false', function () {
+  it('should not reuse a component when the routerCanReuse hook returns false', function () {
     var log = [];
     var cmpInstanceCount = 0;
 
@@ -237,10 +237,10 @@ describe('Navigation lifecycle', function () {
         {path: '/b', component: 'twoCmp'}
       ],
       controller: NeverReuseCmp,
-      $canReuse: function () {
+      $routerCanReuse: function () {
         return false;
       },
-      $onReuse: function (next, prev) {
+      $routerOnReuse: function (next, prev) {
         log.push('reuse: ' + prev.urlPath + ' -> ' + next.urlPath);
       }
     });
@@ -271,7 +271,7 @@ describe('Navigation lifecycle', function () {
     var spy = jasmine.createSpy('activate');
     registerComponent('activateCmp', {
       $canActivate: canActivateSpy,
-      $onActivate: spy
+      $routerOnActivate: spy
     });
 
     $router.config([
@@ -293,7 +293,7 @@ describe('Navigation lifecycle', function () {
     registerComponent('activateCmp', {
       template: 'hi',
       $canActivate: canActivateSpy,
-      $onActivate: activateSpy
+      $routerOnActivate: activateSpy
     });
 
     $router.config([
@@ -317,7 +317,7 @@ describe('Navigation lifecycle', function () {
       $canActivate: function () {
         return $q.when(true);
       },
-      $onActivate: spy
+      $routerOnActivate: spy
     });
 
     $router.config([
@@ -356,10 +356,10 @@ describe('Navigation lifecycle', function () {
   }));
 
 
-  it('should not navigate when canDeactivate returns false', function () {
+  it('should not navigate when routerCanDeactivate returns false', function () {
     registerComponent('activateCmp', {
       template: 'hi',
-      $canDeactivate: function () {
+      $routerCanDeactivate: function () {
         return false;
       }
     });
@@ -380,10 +380,10 @@ describe('Navigation lifecycle', function () {
   });
 
 
-  it('should navigate when canDeactivate returns true', function () {
+  it('should navigate when routerCanDeactivate returns true', function () {
     registerComponent('activateCmp', {
       template: 'hi',
-      $canDeactivate: function () {
+      $routerCanDeactivate: function () {
         return true;
       }
     });
@@ -411,7 +411,7 @@ describe('Navigation lifecycle', function () {
       $canActivate: function () {
         return true;
       },
-      $onActivate: spy
+      $routerOnActivate: spy
     });
 
     $router.config([
@@ -427,10 +427,10 @@ describe('Navigation lifecycle', function () {
   });
 
 
-  it('should pass instructions into the canDeactivate hook of controllers', function () {
-    var spy = jasmine.createSpy('canDeactivate').and.returnValue(true);
+  it('should pass instructions into the routerCanDeactivate hook of controllers', function () {
+    var spy = jasmine.createSpy('routerCanDeactivate').and.returnValue(true);
     registerComponent('deactivateCmp', {
-      $canDeactivate: spy
+      $routerCanDeactivate: spy
     });
 
     $router.config([
@@ -451,7 +451,7 @@ describe('Navigation lifecycle', function () {
   function registerComponent(name, options) {
     var controller = options.controller || function () {};
 
-    ['$onActivate', '$onDeactivate', '$onReuse', '$canReuse', '$canDeactivate'].forEach(function (hookName) {
+    ['$routerOnActivate', '$routerOnDeactivate', '$routerOnReuse', '$routerCanReuse', '$routerCanDeactivate'].forEach(function (hookName) {
       if (options[hookName]) {
         controller.prototype[hookName] = options[hookName];
       }

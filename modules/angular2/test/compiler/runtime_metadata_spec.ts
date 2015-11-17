@@ -136,12 +136,12 @@ class DirectiveWithoutModuleId {
 class ComponentWithEverything implements OnChanges,
     OnInit, DoCheck, OnDestroy, AfterContentInit, AfterContentChecked, AfterViewInit,
     AfterViewChecked {
-  onChanges(changes: {[key: string]: SimpleChange}): void {}
-  onInit(): void {}
-  doCheck(): void {}
-  onDestroy(): void {}
-  afterContentInit(): void {}
-  afterContentChecked(): void {}
-  afterViewInit(): void {}
-  afterViewChecked(): void {}
+  ngOnChanges(changes: {[key: string]: SimpleChange}): void {}
+  ngOnInit(): void {}
+  ngDoCheck(): void {}
+  ngOnDestroy(): void {}
+  ngAfterContentInit(): void {}
+  ngAfterContentChecked(): void {}
+  ngAfterViewInit(): void {}
+  ngAfterViewChecked(): void {}
 }

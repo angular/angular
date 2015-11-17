@@ -189,11 +189,11 @@ export class CodegenLogicUtil {
       var dir = directiveRecords[i];
       if (dir.callAfterContentInit) {
         res.push(
-            `if(${this._names.getStateName()} ${eq} ${this._changeDetectorStateName}.NeverChecked) ${this._names.getDirectiveName(dir.directiveIndex)}.afterContentInit();`);
+            `if(${this._names.getStateName()} ${eq} ${this._changeDetectorStateName}.NeverChecked) ${this._names.getDirectiveName(dir.directiveIndex)}.ngAfterContentInit();`);
       }
 
       if (dir.callAfterContentChecked) {
-        res.push(`${this._names.getDirectiveName(dir.directiveIndex)}.afterContentChecked();`);
+        res.push(`${this._names.getDirectiveName(dir.directiveIndex)}.ngAfterContentChecked();`);
       }
     }
     return res;
@@ -207,11 +207,11 @@ export class CodegenLogicUtil {
       var dir = directiveRecords[i];
       if (dir.callAfterViewInit) {
         res.push(
-            `if(${this._names.getStateName()} ${eq} ${this._changeDetectorStateName}.NeverChecked) ${this._names.getDirectiveName(dir.directiveIndex)}.afterViewInit();`);
+            `if(${this._names.getStateName()} ${eq} ${this._changeDetectorStateName}.NeverChecked) ${this._names.getDirectiveName(dir.directiveIndex)}.ngAfterViewInit();`);
       }
 
       if (dir.callAfterViewChecked) {
-        res.push(`${this._names.getDirectiveName(dir.directiveIndex)}.afterViewChecked();`);
+        res.push(`${this._names.getDirectiveName(dir.directiveIndex)}.ngAfterViewChecked();`);
       }
     }
     return res;

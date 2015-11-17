@@ -16,12 +16,12 @@ class LogService {
 }
 
 
-// #docregion onDeactivate
+// #docregion routerOnDeactivate
 @Component({selector: 'my-cmp', template: `<div>hello</div>`})
 class MyCmp implements OnDeactivate {
   constructor(private logService: LogService) {}
 
-  onDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
+  routerOnDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
     this.logService.addLog(
         `Navigating from "${prev ? prev.urlPath : 'null'}" to "${next.urlPath}"`);
   }

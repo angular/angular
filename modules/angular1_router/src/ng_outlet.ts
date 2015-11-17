@@ -106,21 +106,21 @@ function ngOutletDirective($animate, $q: ng.IQService, $router) {
         let next = $q.when(true);
         let previousInstruction = this.currentInstruction;
         this.currentInstruction = instruction;
-        if (this.currentController && this.currentController.$onReuse) {
+        if (this.currentController && this.currentController.$routerOnReuse) {
           next = $q.when(
-              this.currentController.$onReuse(this.currentInstruction, previousInstruction));
+              this.currentController.$routerOnReuse(this.currentInstruction, previousInstruction));
         }
 
         return next;
       }
 
-      canReuse(nextInstruction) {
+      routerCanReuse(nextInstruction) {
         let result;
         if (!this.currentInstruction ||
             this.currentInstruction.componentType !== nextInstruction.componentType) {
           result = false;
-        } else if (this.currentController && this.currentController.$canReuse) {
-          result = this.currentController.$canReuse(nextInstruction, this.currentInstruction);
+        } else if (this.currentController && this.currentController.$routerCanReuse) {
+          result = this.currentController.$routerCanReuse(nextInstruction, this.currentInstruction);
         } else {
           result = nextInstruction === this.currentInstruction ||
                    angular.equals(nextInstruction.params, this.currentInstruction.params);
@@ -128,18 +128,18 @@ function ngOutletDirective($animate, $q: ng.IQService, $router) {
         return $q.when(result);
       }
 
-      canDeactivate(instruction) {
-        if (this.currentController && this.currentController.$canDeactivate) {
+      routerCanDeactivate(instruction) {
+        if (this.currentController && this.currentController.$routerCanDeactivate) {
           return $q.when(
-              this.currentController.$canDeactivate(instruction, this.currentInstruction));
+              this.currentController.$routerCanDeactivate(instruction, this.currentInstruction));
         }
         return $q.when(true);
       }
 
       deactivate(instruction) {
-        if (this.currentController && this.currentController.$onDeactivate) {
+        if (this.currentController && this.currentController.$routerOnDeactivate) {
           return $q.when(
-              this.currentController.$onDeactivate(instruction, this.currentInstruction));
+              this.currentController.$routerOnDeactivate(instruction, this.currentInstruction));
         }
         return $q.when();
       }
@@ -172,8 +172,8 @@ function ngOutletDirective($animate, $q: ng.IQService, $router) {
         // by debug mode
         this.currentController = this.currentElement.children().eq(0).controller(componentName);
 
-        if (this.currentController && this.currentController.$onActivate) {
-          return this.currentController.$onActivate(instruction, previousInstruction);
+        if (this.currentController && this.currentController.$routerOnActivate) {
+          return this.currentController.$routerOnActivate(instruction, previousInstruction);
         }
         return $q.when();
       }

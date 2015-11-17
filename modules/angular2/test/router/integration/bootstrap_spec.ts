@@ -274,7 +274,7 @@ class AppWithViewChildren implements AfterViewInit {
 
   constructor(public router: Router, public location: LocationStrategy) {}
 
-  afterViewInit() { this.helloCmp.message = 'Ahoy'; }
+  ngAfterViewInit() { this.helloCmp.message = 'Ahoy'; }
 }
 
 @Component({

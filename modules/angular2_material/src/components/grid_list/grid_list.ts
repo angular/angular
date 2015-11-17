@@ -86,7 +86,7 @@ export class MdGridList implements AfterContentChecked {
     }
   }
 
-  afterContentChecked() {
+  ngAfterContentChecked() {
     this.layoutTiles();
   }
 
@@ -267,7 +267,7 @@ export class MdGridTile implements OnDestroy,
    * Change handler invoked when bindings are resolved or when bindings have changed.
    * Notifies grid-list that a re-layout is required.
    */
-  onChanges(_) {
+  ngOnChanges(_) {
     if (!this.isRegisteredWithGridList) {
       this.gridList.addTile(this);
       this.isRegisteredWithGridList = true;
@@ -277,7 +277,7 @@ export class MdGridTile implements OnDestroy,
   /**
    * Destructor function. Deregisters this tile from the containing grid-list.
    */
-  onDestroy() {
+  ngOnDestroy() {
     this.gridList.removeTile(this);
   }
 }
