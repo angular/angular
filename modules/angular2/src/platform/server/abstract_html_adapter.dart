@@ -6,6 +6,8 @@ import 'package:html/dom.dart';
 import 'package:angular2/platform/common_dom.dart';
 import 'package:angular2/src/compiler/xhr.dart';
 
+import 'package:angular2/src/facade/lang.dart' show isBlank, isPresent;
+
 const _attrToPropMap = const {
   'innerHtml': 'innerHTML',
   'readonly': 'readOnly',
@@ -262,6 +264,10 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
   hasClass(element, String classname) => element.classes.contains(classname);
 
   setStyle(element, String stylename, String stylevalue) {
+    throw 'not implemented';
+  }
+
+  bool hasStyle(Element element, String styleName, [String styleValue]) {
     throw 'not implemented';
   }
 

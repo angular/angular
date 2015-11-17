@@ -4,6 +4,7 @@ import 'dart:html';
 import 'package:angular2/platform/common_dom.dart' show setRootDomAdapter;
 import 'generic_browser_adapter.dart' show GenericBrowserDomAdapter;
 import 'package:angular2/src/facade/browser.dart';
+import 'package:angular2/src/facade/lang.dart' show isBlank, isPresent;
 import 'dart:js' as js;
 
 // WARNING: Do not expose outside this class. Parsing HTML using this
@@ -333,6 +334,11 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
 
   void setStyle(Element element, String stylename, String stylevalue) {
     element.style.setProperty(stylename, stylevalue);
+  }
+
+  bool hasStyle(Element element, String stylename, [String stylevalue]) {
+    var value = this.getStyle(element, stylename);
+    return isPresent(stylevalue) ? value == stylevalue : value.length > 0;
   }
 
   void removeStyle(Element element, String stylename) {

@@ -109,6 +109,29 @@ export function main() {
         expect(el).not.toHaveCssClass('fatias');
       });
     });
+
+    describe('toHaveCssStyle', () => {
+      it('should assert that the CSS style is present', () => {
+        var el = document.createElement('div');
+        expect(el).not.toHaveCssStyle('width');
+
+        el.style.setProperty('width', '100px');
+        expect(el).toHaveCssStyle('width');
+      });
+
+      it('should assert that the styles are matched against the element', () => {
+        var el = document.createElement('div');
+        expect(el).not.toHaveCssStyle({width: '100px', height: '555px'});
+
+        el.style.setProperty('width', '100px');
+        expect(el).toHaveCssStyle({width: '100px'});
+        expect(el).not.toHaveCssStyle({width: '100px', height: '555px'});
+
+        el.style.setProperty('height', '555px');
+        expect(el).toHaveCssStyle({height: '555px'});
+        expect(el).toHaveCssStyle({width: '100px', height: '555px'});
+      });
+    });
   });
 
   describe('using the test injector with the inject helper', () => {
