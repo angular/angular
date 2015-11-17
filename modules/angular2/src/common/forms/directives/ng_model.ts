@@ -22,21 +22,21 @@ const formControlBinding =
 /**
  * Binds a domain model to a form control.
  *
- *##Usage
+ * ## Usage
  *
  * `ng-model` binds an existing domain model to a form control. For a
  * two-way binding, use `[(ng-model)]` to ensure the model updates in
  * both directions.
  *
  * ### Example ([live demo](http://plnkr.co/edit/R3UX5qDaUqFO2VYR0UzH?p=preview))
- *  ```typescript
+ * ```typescript
  * @Component({
- *      selector: "search-comp",
- *      directives: [FORM_DIRECTIVES],
- *      template: `<input type='text' [(ng-model)]="searchQuery">`
- *      })
+ *    selector: "search-comp",
+ *    directives: [FORM_DIRECTIVES],
+ *    template: `<input type='text' [(ng-model)]="searchQuery">`
+ * })
  * class SearchComp {
- *  searchQuery: string;
+ *    searchQuery: string;
  * }
  *  ```
  */
