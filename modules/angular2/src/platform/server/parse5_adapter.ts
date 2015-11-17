@@ -371,6 +371,10 @@ export class Parse5DomAdapter extends DomAdapter {
   hasClass(element, classname: string): boolean {
     return ListWrapper.contains(this.classList(element), classname);
   }
+  hasStyle(element, stylename: string, stylevalue: string = null): boolean {
+    var value = this.getStyle(element, stylename) || '';
+    return stylevalue ? value == stylevalue : value.length > 0;
+  }
   /** @internal */
   _readStyleAttribute(element) {
     var styleMap = {};

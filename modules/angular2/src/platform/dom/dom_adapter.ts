@@ -89,6 +89,7 @@ export abstract class DomAdapter {
   abstract setStyle(element, stylename: string, stylevalue: string);
   abstract removeStyle(element, stylename: string);
   abstract getStyle(element, stylename: string): string;
+  abstract hasStyle(element, stylename: string, stylevalue?: string): boolean;
   abstract tagName(element): string;
   abstract attributeMap(element): Map<string, string>;
   abstract hasAttribute(element, attribute: string): boolean;
