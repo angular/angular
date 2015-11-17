@@ -35,7 +35,6 @@ import {
   DirectiveRecord,
   DirectiveIndex,
   PipeTransform,
-  PipeOnDestroy,
   ChangeDetectionStrategy,
   WrappedValue,
   DynamicProtoChangeDetector,
@@ -48,6 +47,7 @@ import {
 
 import {SelectedPipe, Pipes} from 'angular2/src/core/change_detection/pipes';
 import {JitProtoChangeDetector} from 'angular2/src/core/change_detection/jit_proto_change_detector';
+import {OnDestroy} from 'angular2/src/core/linker/interfaces';
 
 import {getDefinition} from './change_detector_config';
 import {createObservableModel} from './change_detector_spec_util';
@@ -1228,7 +1228,7 @@ export function main() {
           expect(cd.hydrated()).toBe(true);
         });
 
-        it('should destroy all active pipes implementing onDestroy during dehyration', () => {
+        it('should destroy all active pipes implementing ngOnDestroy during dehyration', () => {
           var pipe = new PipeWithOnDestroy();
           var registry = new FakePipes('pipe', () => pipe);
           var cd = _createChangeDetector('name | pipe', new Person('bob'), registry).changeDetector;
@@ -1239,7 +1239,7 @@ export function main() {
           expect(pipe.destroyCalled).toBe(true);
         });
 
-        it('should not call onDestroy all pipes that do not implement onDestroy', () => {
+        it('should not call ngOnDestroy all pipes that do not implement ngOnDestroy', () => {
           var pipe = new CountingPipe();
           var registry = new FakePipes('pipe', () => pipe);
           var cd = _createChangeDetector('name | pipe', new Person('bob'), registry).changeDetector;
@@ -1365,9 +1365,9 @@ class CountingPipe implements PipeTransform {
   transform(value, args = null) { return `${value} state:${this.state ++}`; }
 }
 
-class PipeWithOnDestroy implements PipeTransform, PipeOnDestroy {
+class PipeWithOnDestroy implements PipeTransform, OnDestroy {
   destroyCalled: boolean = false;
-  onDestroy() { this.destroyCalled = true; }
+  ngOnDestroy() { this.destroyCalled = true; }
 
   transform(value, args = null) { return null; }
 }

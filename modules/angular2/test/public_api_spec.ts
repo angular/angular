@@ -108,7 +108,7 @@ var NG_ALL = [
   'ApplicationRef.tick()',
   */
   'AsyncPipe',
-  'AsyncPipe.onDestroy()',
+  'AsyncPipe.ngOnDestroy()',
   'AsyncPipe.transform()',
   'Attribute',
   'Attribute.attributeName',
@@ -1425,7 +1425,6 @@ var NG_ALL = [
   'OnChanges:dart',
   'OnDestroy:dart',
   'OnInit:dart',
-  'PipeOnDestroy:dart',
   'PipeTransform:dart',
   'reflector',
   'RenderBeginCmd:dart',
