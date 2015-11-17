@@ -4,7 +4,7 @@ import "package:angular2/src/facade/collection.dart"
     show ListWrapper, StringMapWrapper;
 import "package:angular2/src/facade/lang.dart" show isPresent, isFunction, Type;
 import "dom_adapter.dart" show DomAdapter;
-import "package:angular2/src/compiler/xhr_impl.dart" show XHRImpl;
+import "package:angular2/src/platform/browser/xhr_impl.dart" show XHRImpl;
 
 /**
  * Provides DOM operations in any browser environment.

@@ -1,3 +1,7 @@
+library angular2.src.router.location_strategy;
+
+import "package:angular2/angular2.dart" show OpaqueToken;
+
 /**
  * `LocationStrategy` is responsible for representing and reading route state
  * from the the browser's URL. Angular provides two strategies:
@@ -14,8 +18,6 @@
  *
  * See these two classes for more.
  */
-library angular2.src.router.location_strategy;
-
 abstract class LocationStrategy {
   String path();
   String prepareExternalUrl(String internal);
@@ -26,6 +28,36 @@ abstract class LocationStrategy {
   String getBaseHref();
 }
 
+/**
+ * The `APP_BASE_HREF` token represents the base href to be used with the
+ * [PathLocationStrategy].
+ *
+ * If you're using [PathLocationStrategy], you must provide a provider to a string
+ * representing the URL prefix that should be preserved when generating and recognizing
+ * URLs.
+ *
+ * ### Example
+ *
+ * ```
+ * import {Component} from 'angular2/angular2';
+ * import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
+ *
+ * @Component({directives: [ROUTER_DIRECTIVES]})
+ * @RouteConfig([
+ *  {...},
+ * ])
+ * class AppCmp {
+ *   // ...
+ * }
+ *
+ * bootstrap(AppCmp, [
+ *   ROUTER_PROVIDERS,
+ *   PathLocationStrategy,
+ *   provide(APP_BASE_HREF, {useValue: '/my/app'})
+ * ]);
+ * ```
+ */
+const OpaqueToken APP_BASE_HREF = const OpaqueToken("appBaseHref");
 String normalizeQueryParams(String params) {
   return (params.length > 0 && params.substring(0, 1) != "?")
       ? ("?" + params)

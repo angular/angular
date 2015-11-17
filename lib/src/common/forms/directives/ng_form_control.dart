@@ -52,7 +52,7 @@ const formControlBinding =
  * }
  *  ```
  *
- *##ng-model
+ * ###ng-model
  *
  * We can also use `ng-model` to bind a domain model to the form.
  *

@@ -32,5 +32,6 @@ main() {
   describe('Url Resolver', urlResolver.allTests);
   // NOTE(kegluneq): These use `code_transformers#testPhases`, which is not
   // designed to work with `guinness`.
+  group('Inliner For Test e2e', inliner.endToEndTests);
   group('Transformer Pipeline', integration.allTests);
 }

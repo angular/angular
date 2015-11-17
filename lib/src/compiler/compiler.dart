@@ -5,8 +5,8 @@ export "template_compiler.dart" show TemplateCompiler;
 export "directive_metadata.dart"
     show CompileDirectiveMetadata, CompileTypeMetadata, CompileTemplateMetadata;
 export "source_module.dart" show SourceModule, SourceWithImports;
-export "package:angular2/src/core/ambient.dart"
-    show AMBIENT_DIRECTIVES, AMBIENT_PIPES;
+export "package:angular2/src/core/platform_directives_and_pipes.dart"
+    show PLATFORM_DIRECTIVES, PLATFORM_PIPES;
 import "package:angular2/src/facade/lang.dart" show assertionsEnabled, Type;
 import "package:angular2/src/core/di.dart" show provide, Provider;
 import "package:angular2/src/compiler/template_parser.dart" show TemplateParser;
@@ -38,27 +38,30 @@ import "package:angular2/src/compiler/anchor_based_app_root_url.dart"
 import "package:angular2/src/core/change_detection/change_detection.dart"
     show Parser, Lexer;
 
-List<dynamic /* Type | Provider | List < dynamic > */ > compilerProviders() {
-  return [
-    Lexer,
-    Parser,
-    HtmlParser,
-    TemplateParser,
-    TemplateNormalizer,
-    RuntimeMetadataResolver,
-    StyleCompiler,
-    CommandCompiler,
-    ChangeDetectionCompiler,
-    provide(ChangeDetectorGenConfig,
-        useValue:
-            new ChangeDetectorGenConfig(assertionsEnabled(), false, true)),
-    TemplateCompiler,
-    provide(RuntimeCompiler, useClass: RuntimeCompiler_),
-    provide(Compiler, useExisting: RuntimeCompiler),
-    DomElementSchemaRegistry,
-    provide(ElementSchemaRegistry, useExisting: DomElementSchemaRegistry),
-    AnchorBasedAppRootUrl,
-    provide(AppRootUrl, useExisting: AnchorBasedAppRootUrl),
-    UrlResolver
-  ];
+_createChangeDetectorGenConfig() {
+  return new ChangeDetectorGenConfig(assertionsEnabled(), false, true);
 }
+
+const List<
+        dynamic /* Type | Provider | List < dynamic > */ > COMPILER_PROVIDERS =
+    const [
+  Lexer,
+  Parser,
+  HtmlParser,
+  TemplateParser,
+  TemplateNormalizer,
+  RuntimeMetadataResolver,
+  StyleCompiler,
+  CommandCompiler,
+  ChangeDetectionCompiler,
+  const Provider(ChangeDetectorGenConfig,
+      useFactory: _createChangeDetectorGenConfig, deps: const []),
+  TemplateCompiler,
+  const Provider(RuntimeCompiler, useClass: RuntimeCompiler_),
+  const Provider(Compiler, useExisting: RuntimeCompiler),
+  DomElementSchemaRegistry,
+  const Provider(ElementSchemaRegistry, useExisting: DomElementSchemaRegistry),
+  AnchorBasedAppRootUrl,
+  const Provider(AppRootUrl, useExisting: AnchorBasedAppRootUrl),
+  UrlResolver
+];

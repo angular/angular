@@ -7,7 +7,6 @@ import "package:angular2/src/core/di.dart" show Self, Provider;
 import "control_value_accessor.dart"
     show NG_VALUE_ACCESSOR, ControlValueAccessor;
 import "package:angular2/src/facade/lang.dart" show isBlank;
-import "shared.dart" show setProperty;
 
 const DEFAULT_VALUE_ACCESSOR = const Provider(NG_VALUE_ACCESSOR,
     useExisting: DefaultValueAccessor, multi: true);
@@ -38,7 +37,9 @@ class DefaultValueAccessor implements ControlValueAccessor {
   DefaultValueAccessor(this._renderer, this._elementRef) {}
   void writeValue(dynamic value) {
     var normalizedValue = isBlank(value) ? "" : value;
-    setProperty(this._renderer, this._elementRef, "value", normalizedValue);
+    this
+        ._renderer
+        .setElementProperty(this._elementRef, "value", normalizedValue);
   }
 
   void registerOnChange(dynamic /* (_: any) => void */ fn) {

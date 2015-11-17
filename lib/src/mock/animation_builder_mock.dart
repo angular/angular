@@ -15,7 +15,7 @@ class MockAnimationBuilder extends AnimationBuilder {
   MockAnimationBuilder() : super(null) {
     /* super call moved to initializer */;
   }
-  MockCssAnimationBuilder css() {
+  CssAnimationBuilder css() {
     return new MockCssAnimationBuilder();
   }
 }

@@ -20,10 +20,10 @@ import 'package:barback/barback.dart';
 /// The returned value wraps the [NgDepsModel] at `assetId` as well as these
 /// created objects.
 Future<CompileDataResults> createCompileData(
-    AssetReader reader, AssetId assetId, List<String> ambientDirectives) async {
+    AssetReader reader, AssetId assetId, List<String> platformDirectives) async {
   return logElapsedAsync(() async {
     final creator =
-        await _CompileDataCreator.create(reader, assetId, ambientDirectives);
+        await _CompileDataCreator.create(reader, assetId, platformDirectives);
     return creator != null ? creator.createCompileData() : null;
   }, operationName: 'createCompileData', assetId: assetId);
 }
@@ -42,19 +42,19 @@ class _CompileDataCreator {
   final AssetReader reader;
   final AssetId entryPoint;
   final NgMeta ngMeta;
-  final List<String> ambientDirectives;
+  final List<String> platformDirectives;
 
   _CompileDataCreator(
-      this.reader, this.entryPoint, this.ngMeta, this.ambientDirectives);
+      this.reader, this.entryPoint, this.ngMeta, this.platformDirectives);
 
   static Future<_CompileDataCreator> create(AssetReader reader, AssetId assetId,
-      List<String> ambientDirectives) async {
+      List<String> platformDirectives) async {
     if (!(await reader.hasInput(assetId))) return null;
     final json = await reader.readAsString(assetId);
     if (json == null || json.isEmpty) return null;
 
     final ngMeta = new NgMeta.fromJson(JSON.decode(json));
-    return new _CompileDataCreator(reader, assetId, ngMeta, ambientDirectives);
+    return new _CompileDataCreator(reader, assetId, ngMeta, platformDirectives);
   }
 
   NgDepsModel get ngDeps => ngMeta.ngDeps;
@@ -67,7 +67,7 @@ class _CompileDataCreator {
     final compileData =
         <ReflectionInfoModel, NormalizedComponentWithViewDirectives>{};
     final ngMetaMap = await _extractNgMeta();
-    final ambientDirectives = await _readAmbientDirectives();
+    final platformDirectives = await _readPlatformDirectives();
 
     for (var reflectable in ngDeps.reflectables) {
       if (ngMeta.types.containsKey(reflectable.name)) {
@@ -75,7 +75,7 @@ class _CompileDataCreator {
         if (compileDirectiveMetadata.template != null) {
           final compileDatum = new NormalizedComponentWithViewDirectives(
               compileDirectiveMetadata, <CompileDirectiveMetadata>[]);
-          compileDatum.directives.addAll(ambientDirectives);
+          compileDatum.directives.addAll(platformDirectives);
 
           for (var dep in reflectable.directives) {
             if (!ngMetaMap.containsKey(dep.prefix)) {
@@ -105,23 +105,23 @@ class _CompileDataCreator {
     return new CompileDataResults._(ngMeta, compileData);
   }
 
-  Future<List<CompileDirectiveMetadata>> _readAmbientDirectives() async {
-    if (ambientDirectives == null) return const [];
+  Future<List<CompileDirectiveMetadata>> _readPlatformDirectives() async {
+    if (platformDirectives == null) return const [];
 
     final res = [];
-    for (var ad in ambientDirectives) {
+    for (var ad in platformDirectives) {
       final parts = ad.split("#");
       if (parts.length != 2) {
-        log.warning('The ambient directives configuration option '
+        log.warning('The platform directives configuration option '
             'must be in the following format: "URI#TOKEN"');
         return const [];
       }
-      res.addAll(await _readAmbientDirectivesFromUri(parts[0], parts[1]));
+      res.addAll(await _readPlatformDirectivesFromUri(parts[0], parts[1]));
     }
     return res;
   }
 
-  Future<List<CompileDirectiveMetadata>> _readAmbientDirectivesFromUri(
+  Future<List<CompileDirectiveMetadata>> _readPlatformDirectivesFromUri(
       String uri, String token) async {
     final metaAssetId = fromUri(toMetaExtension(uri));
     if (await reader.hasInput(metaAssetId)) {
@@ -136,7 +136,7 @@ class _CompileDataCreator {
             return newMetadata.flatten(token);
           } else {
             log.warning(
-                'Could not resolve ambient directive ${token} in ${uri}',
+                'Could not resolve platform directive ${token} in ${uri}',
                 asset: metaAssetId);
           }
         }

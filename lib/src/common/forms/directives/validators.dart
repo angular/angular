@@ -35,7 +35,7 @@ const REQUIRED_VALIDATOR =
  * A Directive that adds the `required` validator to any controls marked with the
  * `required` attribute, via the [NG_VALIDATORS] binding.
  *
- * # Example
+ * ### Example
  *
  * ```
  * <input ng-control="fullName" required>

@@ -27,12 +27,13 @@ import "package:angular2/src/web_workers/shared/service_message_broker.dart"
     show ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_;
 import "package:angular2/src/web_workers/shared/message_bus.dart"
     show MessageBus;
-import "package:angular2/src/core/application_ref.dart"
+import "package:angular2/core.dart"
     show
-        platformCommon,
         PlatformRef,
         ApplicationRef,
-        applicationCommonProviders;
+        APPLICATION_COMMON_PROVIDERS,
+        PLATFORM_COMMON_PROVIDERS;
+import "package:angular2/core.dart" as core;
 import "package:angular2/src/web_workers/shared/serializer.dart"
     show Serializer;
 import "package:angular2/src/web_workers/shared/api.dart" show ON_WEB_WORKER;
@@ -48,7 +49,7 @@ import "package:angular2/src/web_workers/worker/event_dispatcher.dart"
 import "package:angular2/src/core/linker/dynamic_component_loader.dart"
     show ComponentRef;
 import "package:angular2/src/core/zone/ng_zone.dart" show NgZone;
-import "package:angular2/src/compiler/compiler.dart" show compilerProviders;
+import "package:angular2/src/compiler/compiler.dart" show COMPILER_PROVIDERS;
 
 /**
  * Initialize the Angular 'platform' on the page in a manner suitable for applications
@@ -57,7 +58,7 @@ import "package:angular2/src/compiler/compiler.dart" show compilerProviders;
  *
  * See [PlatformRef] for details on the Angular platform.
  *
- *##Without specified providers
+ * ### Without specified providers
  *
  * If no providers are specified, `platform`'s behavior depends on whether an existing
  * platform exists:
@@ -68,7 +69,7 @@ import "package:angular2/src/compiler/compiler.dart" show compilerProviders;
  * was created with). This is a convenience feature, allowing for multiple applications
  * to be loaded into the same platform without awareness of each other.
  *
- *##With specified providers
+ * ### With specified providers
  *
  * It is also possible to specify providers to be made in the new platform. These providers
  * will be shared between all applications on the page. For example, an abstraction for
@@ -79,7 +80,7 @@ import "package:angular2/src/compiler/compiler.dart" show compilerProviders;
  * them if a platform did not exist already. If it did exist, however, an error will be
  * thrown.
  *
- *##For Web Worker Appplications
+ * ### For Web Worker Applications
  *
  * This version of `platform` initializes Angular for use with applications
  * that do not directly touch the DOM, such as applications which run in a
@@ -87,8 +88,11 @@ import "package:angular2/src/compiler/compiler.dart" show compilerProviders;
  * use `platform` from `core/application_common` instead.
  */
 PlatformRef platform(
-    [List<dynamic /* Type | Provider | List < dynamic > */ > bindings]) {
-  return platformCommon(bindings);
+    [List<dynamic /* Type | Provider | List < dynamic > */ > providers]) {
+  var platformProviders = isPresent(providers)
+      ? [PLATFORM_COMMON_PROVIDERS, providers]
+      : PLATFORM_COMMON_PROVIDERS;
+  return core.platform(platformProviders);
 }
 
 class PrintLogger {
@@ -101,7 +105,7 @@ class PrintLogger {
 List<dynamic /* Type | Provider | List < dynamic > */ > webWorkerProviders(
     appComponentType, MessageBus bus, Map<String, dynamic> initData) {
   return [
-    compilerProviders(),
+    COMPILER_PROVIDERS,
     Serializer,
     provide(MessageBus, useValue: bus),
     provide(ClientMessageBrokerFactory, useClass: ClientMessageBrokerFactory_),
@@ -140,7 +144,7 @@ Future<ComponentRef> bootstrapWebWorkerCommon(
     subscription = ObservableWrapper.subscribe(emitter,
         (Map<String, dynamic> message) {
       var bindings = [
-        applicationCommonProviders(),
+        APPLICATION_COMMON_PROVIDERS,
         webWorkerProviders(appComponentType, bus, message)
       ];
       if (isPresent(appProviders)) {

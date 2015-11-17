@@ -1,10 +1,13 @@
 library angular2.src.router.path_location_strategy;
 
 import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
-import "package:angular2/angular2.dart" show Injectable;
+import "package:angular2/angular2.dart" show Injectable, Inject;
 import "package:angular2/src/facade/browser.dart"
     show EventListener, History, Location;
-import "location_strategy.dart" show LocationStrategy, normalizeQueryParams;
+import "package:angular2/src/facade/lang.dart" show isBlank;
+import "package:angular2/src/facade/exceptions.dart" show BaseException;
+import "location_strategy.dart"
+    show LocationStrategy, APP_BASE_HREF, normalizeQueryParams;
 
 /**
  * `PathLocationStrategy` is a [LocationStrategy] used to configure the
@@ -56,11 +59,18 @@ class PathLocationStrategy extends LocationStrategy {
   Location _location;
   History _history;
   String _baseHref;
-  PathLocationStrategy() : super() {
+  PathLocationStrategy([@Inject(APP_BASE_HREF) String href]) : super() {
     /* super call moved to initializer */;
+    if (isBlank(href)) {
+      href = DOM.getBaseHref();
+    }
+    if (isBlank(href)) {
+      throw new BaseException(
+          '''No base href set. Please provide a value for the APP_BASE_HREF token or add a base element to the document.''');
+    }
     this._location = DOM.getLocation();
     this._history = DOM.getHistory();
-    this._baseHref = DOM.getBaseHref();
+    this._baseHref = href;
   }
   void onPopState(EventListener fn) {
     DOM.getGlobalEventTarget("window").addEventListener("popstate", fn, false);
@@ -74,6 +84,9 @@ class PathLocationStrategy extends LocationStrategy {
   }
 
   String prepareExternalUrl(String internal) {
+    if (internal.startsWith("/") && this._baseHref.endsWith("/")) {
+      return this._baseHref + internal.substring(1);
+    }
     return this._baseHref + internal;
   }
 
@@ -83,9 +96,9 @@ class PathLocationStrategy extends LocationStrategy {
   }
 
   pushState(dynamic state, String title, String url, String queryParams) {
-    this
-        ._history
-        .pushState(state, title, (url + normalizeQueryParams(queryParams)));
+    var externalUrl =
+        this.prepareExternalUrl(url + normalizeQueryParams(queryParams));
+    this._history.pushState(state, title, externalUrl);
   }
 
   void forward() {

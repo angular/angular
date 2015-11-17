@@ -13,8 +13,6 @@ import "ng_control_group.dart" show NgControlGroup;
 import "../model.dart" show Control, ControlGroup;
 import "../validators.dart" show Validators;
 import "control_value_accessor.dart" show ControlValueAccessor;
-import "package:angular2/src/core/linker.dart" show ElementRef, QueryList;
-import "package:angular2/src/core/render.dart" show Renderer;
 import "default_value_accessor.dart" show DefaultValueAccessor;
 import "number_value_accessor.dart" show NumberValueAccessor;
 import "checkbox_value_accessor.dart" show CheckboxControlValueAccessor;
@@ -57,11 +55,6 @@ setUpControlGroup(ControlGroup control, NgControlGroup dir) {
 void _throwError(AbstractControlDirective dir, String message) {
   var path = dir.path.join(" -> ");
   throw new BaseException('''${ message} \'${ path}\'''');
-}
-
-setProperty(Renderer renderer, ElementRef elementRef, String propName,
-    dynamic propValue) {
-  renderer.setElementProperty(elementRef, propName, propValue);
 }
 
 Function composeValidators(List<dynamic> validators) {

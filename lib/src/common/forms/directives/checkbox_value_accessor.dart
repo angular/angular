@@ -6,7 +6,6 @@ import "package:angular2/src/core/linker.dart" show ElementRef;
 import "package:angular2/src/core/di.dart" show Self, Provider;
 import "control_value_accessor.dart"
     show NG_VALUE_ACCESSOR, ControlValueAccessor;
-import "shared.dart" show setProperty;
 
 const CHECKBOX_VALUE_ACCESSOR = const Provider(NG_VALUE_ACCESSOR,
     useExisting: CheckboxControlValueAccessor, multi: true);
@@ -34,7 +33,7 @@ class CheckboxControlValueAccessor implements ControlValueAccessor {
   var onTouched = () {};
   CheckboxControlValueAccessor(this._renderer, this._elementRef) {}
   void writeValue(dynamic value) {
-    setProperty(this._renderer, this._elementRef, "checked", value);
+    this._renderer.setElementProperty(this._elementRef, "checked", value);
   }
 
   void registerOnChange(dynamic /* (_: any) => {} */ fn) {

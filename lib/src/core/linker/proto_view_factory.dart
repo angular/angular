@@ -15,7 +15,8 @@ import "directive_resolver.dart" show DirectiveResolver;
 import "view_resolver.dart" show ViewResolver;
 import "pipe_resolver.dart" show PipeResolver;
 import "../metadata/view.dart" show ViewMetadata, ViewEncapsulation;
-import "package:angular2/src/core/ambient.dart" show AMBIENT_PIPES;
+import "package:angular2/src/core/platform_directives_and_pipes.dart"
+    show PLATFORM_PIPES;
 import "template_commands.dart"
     show
         visitAllCommands,
@@ -35,7 +36,7 @@ import "package:angular2/src/core/application_tokens.dart" show APP_ID;
 @Injectable()
 class ProtoViewFactory {
   Renderer _renderer;
-  List<dynamic /* Type | List < dynamic > */ > _ambientPipes;
+  List<dynamic /* Type | List < dynamic > */ > _platformPipes;
   DirectiveResolver _directiveResolver;
   ViewResolver _viewResolver;
   PipeResolver _pipeResolver;
@@ -44,7 +45,7 @@ class ProtoViewFactory {
   num _nextTemplateId = 0;
   ProtoViewFactory(
       this._renderer,
-      @Optional() @Inject(AMBIENT_PIPES) this._ambientPipes,
+      @Optional() @Inject(PLATFORM_PIPES) this._platformPipes,
       this._directiveResolver,
       this._viewResolver,
       this._pipeResolver,
@@ -154,8 +155,8 @@ class ProtoViewFactory {
 
   List<dynamic> _flattenPipes(ViewMetadata view) {
     var pipes = [];
-    if (isPresent(this._ambientPipes)) {
-      _flattenArray(this._ambientPipes, pipes);
+    if (isPresent(this._platformPipes)) {
+      _flattenArray(this._platformPipes, pipes);
     }
     if (isPresent(view.pipes)) {
       _flattenArray(view.pipes, pipes);

@@ -53,7 +53,7 @@ import "package:angular2/src/compiler/url_resolver.dart" show UrlResolver;
 import "package:angular2/src/core/testability/testability.dart"
     show Testability;
 import "package:angular2/src/compiler/xhr.dart" show XHR;
-import "package:angular2/src/compiler/xhr_impl.dart" show XHRImpl;
+import "package:angular2/src/platform/browser/xhr_impl.dart" show XHRImpl;
 import "package:angular2/src/web_workers/shared/serializer.dart"
     show Serializer;
 import "package:angular2/src/web_workers/shared/api.dart" show ON_WEB_WORKER;
@@ -76,8 +76,8 @@ import "package:angular2/src/web_workers/shared/service_message_broker.dart"
     show ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_;
 import "package:angular2/src/web_workers/shared/client_message_broker.dart"
     show ClientMessageBrokerFactory, ClientMessageBrokerFactory_;
-import "package:angular2/src/core/ambient.dart"
-    show AMBIENT_DIRECTIVES, AMBIENT_PIPES;
+import "package:angular2/src/core/platform_directives_and_pipes.dart"
+    show PLATFORM_DIRECTIVES, PLATFORM_PIPES;
 import "package:angular2/common.dart" show COMMON_DIRECTIVES, COMMON_PIPES;
 
 Injector _rootInjector;
@@ -111,8 +111,8 @@ List<dynamic> _injectorProviders() {
     AppViewListener,
     ProtoViewFactory,
     ViewResolver,
-    provide(AMBIENT_PIPES, useValue: COMMON_PIPES, multi: true),
-    provide(AMBIENT_DIRECTIVES, useValue: COMMON_DIRECTIVES, multi: true),
+    provide(PLATFORM_PIPES, useValue: COMMON_PIPES, multi: true),
+    provide(PLATFORM_DIRECTIVES, useValue: COMMON_DIRECTIVES, multi: true),
     DirectiveResolver,
     Parser,
     Lexer,

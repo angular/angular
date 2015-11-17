@@ -31,8 +31,8 @@ import "package:angular2/src/core/di/injector.dart"
 import "package:angular2/src/core/di/provider.dart"
     show resolveProvider, ResolvedFactory, ResolvedProvider_;
 import "../metadata/di.dart" show AttributeMetadata, QueryMetadata;
-import "view.dart" as viewModule;
-import "view_manager.dart" as avmModule;
+import "view.dart" show AppViewContainer, AppView;
+/* circular */ import "view_manager.dart" as avmModule;
 import "view_container_ref.dart" show ViewContainerRef;
 import "element_ref.dart" show ElementRef;
 import "template_ref.dart" show TemplateRef;
@@ -199,10 +199,10 @@ class DirectiveProvider extends ResolvedProvider_ {
 // TODO(rado): benchmark and consider rolling in as ElementInjector fields.
 class PreBuiltObjects {
   avmModule.AppViewManager viewManager;
-  viewModule.AppView view;
+  AppView view;
   ElementRef elementRef;
   TemplateRef templateRef;
-  viewModule.AppView nestedView = null;
+  AppView nestedView = null;
   PreBuiltObjects(
       this.viewManager, this.view, this.elementRef, this.templateRef) {}
 }
@@ -217,8 +217,7 @@ class EventEmitterAccessor {
   String eventName;
   Function getter;
   EventEmitterAccessor(this.eventName, this.getter) {}
-  Object subscribe(
-      viewModule.AppView view, num boundElementIndex, Object directive) {
+  Object subscribe(AppView view, num boundElementIndex, Object directive) {
     var eventEmitter = this.getter(directive);
     return ObservableWrapper.subscribe(
         eventEmitter,
@@ -268,7 +267,7 @@ class ProtoElementInjector {
   num index;
   num distanceToParent;
   Map<String, num> directiveVariableBindings;
-  viewModule.AppView view;
+  AppView view;
   Map<String, String> attributes;
   List<List<EventEmitterAccessor>> eventEmitterAccessors;
   List<ProtoQueryRef> protoQueryRefs;
@@ -515,11 +514,11 @@ class ElementInjector extends TreeNode<ElementInjector>
         this._preBuiltObjects.viewManager, this.getElementRef());
   }
 
-  viewModule.AppView getNestedView() {
+  AppView getNestedView() {
     return this._preBuiltObjects.nestedView;
   }
 
-  viewModule.AppView getView() {
+  AppView getView() {
     return this._preBuiltObjects.view;
   }
 
@@ -1195,14 +1194,13 @@ class QueryRef {
     }
   }
 
-  _visitViewContainer(
-      viewModule.AppViewContainer vc, List<dynamic> aggregator) {
+  _visitViewContainer(AppViewContainer vc, List<dynamic> aggregator) {
     for (var j = 0; j < vc.views.length; j++) {
       this._visitView(vc.views[j], aggregator);
     }
   }
 
-  _visitView(viewModule.AppView view, List<dynamic> aggregator) {
+  _visitView(AppView view, List<dynamic> aggregator) {
     for (var i = view.elementOffset;
         i < view.elementOffset + view.ownBindersCount;
         i++) {

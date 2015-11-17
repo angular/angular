@@ -7,7 +7,6 @@ import "package:angular2/src/core/di.dart" show Self, Provider;
 import "control_value_accessor.dart"
     show NG_VALUE_ACCESSOR, ControlValueAccessor;
 import "package:angular2/src/facade/lang.dart" show isBlank, NumberWrapper;
-import "shared.dart" show setProperty;
 
 const NUMBER_VALUE_ACCESSOR = const Provider(NG_VALUE_ACCESSOR,
     useExisting: NumberValueAccessor, multi: true);
@@ -37,7 +36,7 @@ class NumberValueAccessor implements ControlValueAccessor {
   var onTouched = () {};
   NumberValueAccessor(this._renderer, this._elementRef) {}
   void writeValue(num value) {
-    setProperty(this._renderer, this._elementRef, "value", value);
+    this._renderer.setElementProperty(this._elementRef, "value", value);
   }
 
   void registerOnChange(dynamic /* (_: number) => void */ fn) {

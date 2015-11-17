@@ -8,22 +8,11 @@ import "package:angular2/src/core/metadata.dart" show Pipe;
 import "invalid_pipe_argument_exception.dart" show InvalidPipeArgumentException;
 
 /**
- * Implements lowercase transforms to text.
+ * Transforms text to lowercase.
  *
  * ### Example
  *
- * In this example we transform the user text lowercase.
- *
- *  ```
- * @Component({
- *   selector: "username-cmp",
- *   template: "Username: {{ user | lowercase }}"
- * })
- * class Username {
- *   user:string;
- * }
- *
- * ```
+ * {@example core/pipes/ts/lowerupper_pipe/lowerupper_pipe_example.ts region='LowerUpperPipe'}
  */
 @Pipe(name: "lowercase")
 @Injectable()

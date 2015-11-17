@@ -54,7 +54,7 @@ import "package:angular2/src/core/application_tokens.dart" show APP_ID;
 import "package:angular2/src/web_workers/shared/serializer.dart"
     show Serializer;
 import "utils.dart" show Log;
-import "package:angular2/src/compiler/compiler.dart" show compilerProviders;
+import "package:angular2/src/compiler/compiler.dart" show COMPILER_PROVIDERS;
 import "package:angular2/src/core/render/dom/dom_renderer.dart"
     show DomRenderer_;
 import "package:angular2/src/core/linker/dynamic_component_loader.dart"
@@ -89,7 +89,7 @@ _getAppBindings() {
     appDoc = null;
   }
   return [
-    compilerProviders(),
+    COMPILER_PROVIDERS,
     provide(ChangeDetectorGenConfig,
         useValue: new ChangeDetectorGenConfig(true, false, true)),
     provide(DOCUMENT, useValue: appDoc),

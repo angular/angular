@@ -7,25 +7,10 @@ import "package:angular2/src/core/change_detection.dart"
 import "package:angular2/src/core/metadata.dart" show Pipe;
 
 /**
- * Implements json transforms to any object.
+ * Transforms any input value using `JSON.stringify`. Useful for debugging.
  *
  * ### Example
- *
- * In this example we transform the user object to json.
- *
- *  ```
- * @Component({
- *   selector: "user-cmp",
- *   template: "User: {{ user | json }}"
- * })
- * class Username {
- *  user:Object
- *  constructor() {
- *    this.user = { name: "PatrickJS" };
- *  }
- * }
- *
- * ```
+ * {@example core/pipes/ts/json_pipe/json_pipe_example.ts region='JsonPipe'}
  */
 @Pipe(name: "json", pure: false)
 @Injectable()

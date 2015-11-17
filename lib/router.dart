@@ -10,10 +10,10 @@ export "src/router/router_outlet.dart" show RouterOutlet;
 export "src/router/router_link.dart" show RouterLink;
 export "src/router/instruction.dart" show RouteParams, RouteData;
 export "src/router/route_registry.dart" show RouteRegistry;
-export "src/router/location_strategy.dart" show LocationStrategy;
+export "src/router/location_strategy.dart" show LocationStrategy, APP_BASE_HREF;
 export "src/router/hash_location_strategy.dart" show HashLocationStrategy;
 export "src/router/path_location_strategy.dart" show PathLocationStrategy;
-export "src/router/location.dart" show Location, APP_BASE_HREF;
+export "src/router/location.dart" show Location;
 export "src/router/route_config_decorator.dart";
 export "src/router/route_definition.dart";
 export "src/router/interfaces.dart"

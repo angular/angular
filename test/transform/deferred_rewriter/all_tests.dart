@@ -44,13 +44,15 @@ void _testRewriteDeferredLibraries(String name, String inputPath) {
           path.dirname(inputPath), 'expected', path.basename(inputPath));
       var expectedId = _assetIdForPath(expectedPath);
 
-      var output = await rewriteDeferredLibraries(reader, inputId);
-      var input = await reader.readAsString(expectedId);
-      if (input == null) {
-        // Null input signals no output. Ensure that is true.
-        expect(output).toBeNull();
+      var actualOutput = await rewriteDeferredLibraries(reader, inputId);
+      var expectedOutput = await reader.readAsString(expectedId);
+      if (expectedOutput == null) {
+        // Null expectedOutput signals no output. Ensure that is true.
+        expect(actualOutput).toBeNull();
       } else {
-        expect(formatter.format(output)).toEqual(formatter.format(input));
+        expect(actualOutput).toBeNotNull();
+        expect(formatter.format(actualOutput))
+            .toEqual(formatter.format(expectedOutput));
       }
     }, log: new RecordingLogger());
   });

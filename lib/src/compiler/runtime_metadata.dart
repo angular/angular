@@ -18,17 +18,18 @@ import "package:angular2/src/core/linker/interfaces.dart"
     show LifecycleHooks, LIFECYCLE_HOOKS_VALUES;
 import "package:angular2/src/core/reflection/reflection.dart" show reflector;
 import "package:angular2/src/core/di.dart" show Injectable, Inject, Optional;
-import "package:angular2/src/core/ambient.dart" show AMBIENT_DIRECTIVES;
+import "package:angular2/src/core/platform_directives_and_pipes.dart"
+    show PLATFORM_DIRECTIVES;
 import "util.dart" show MODULE_SUFFIX;
 
 @Injectable()
 class RuntimeMetadataResolver {
   DirectiveResolver _directiveResolver;
   ViewResolver _viewResolver;
-  List<Type> _ambientDirectives;
+  List<Type> _platformDirectives;
   var _cache = new Map<Type, cpl.CompileDirectiveMetadata>();
   RuntimeMetadataResolver(this._directiveResolver, this._viewResolver,
-      @Optional() @Inject(AMBIENT_DIRECTIVES) this._ambientDirectives) {}
+      @Optional() @Inject(PLATFORM_DIRECTIVES) this._platformDirectives) {}
   cpl.CompileDirectiveMetadata getMetadata(Type directiveType) {
     var meta = this._cache[directiveType];
     if (isBlank(meta)) {
@@ -71,7 +72,7 @@ class RuntimeMetadataResolver {
 
   List<cpl.CompileDirectiveMetadata> getViewDirectivesMetadata(Type component) {
     var view = this._viewResolver.resolve(component);
-    var directives = flattenDirectives(view, this._ambientDirectives);
+    var directives = flattenDirectives(view, this._platformDirectives);
     for (var i = 0; i < directives.length; i++) {
       if (!isValidDirective(directives[i])) {
         throw new BaseException(
@@ -91,10 +92,10 @@ List<dynamic> removeDuplicates(List<dynamic> items) {
 }
 
 List<Type> flattenDirectives(
-    ViewMetadata view, List<dynamic> ambientDirectives) {
+    ViewMetadata view, List<dynamic> platformDirectives) {
   var directives = [];
-  if (isPresent(ambientDirectives)) {
-    flattenArray(ambientDirectives, directives);
+  if (isPresent(platformDirectives)) {
+    flattenArray(platformDirectives, directives);
   }
   if (isPresent(view.directives)) {
     flattenArray(view.directives, directives);

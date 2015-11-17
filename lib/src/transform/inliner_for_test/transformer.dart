@@ -1,6 +1,7 @@
 library angular2.src.transform.inliner_for_test.transformer;
 
 import 'dart:async';
+import 'dart:convert' show LineSplitter;
 
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/ast.dart';
@@ -49,6 +50,7 @@ class InlinerForTest extends Transformer {
 }
 
 /// Reads the code at `assetId`, inlining values where possible.
+///
 /// Returns the code at `assetId` with the following modifications:
 /// - `part` Directives are inlined
 /// - `templateUrl` values are inlined as `template` values.
@@ -73,6 +75,10 @@ Future<String> inline(AssetReader reader, AssetId assetId,
 final _urlResolver = const TransformerUrlResolver();
 
 class _ViewPropInliner extends RecursiveAstVisitor<Object> {
+  /// The prefixes given to inlined names.
+  static const _inlinedTemplateBase = '_template';
+  static const _inlinedStyleBase = '_style';
+
   final AssetId _assetId;
 
   /// The code we are operating on.
@@ -83,6 +89,9 @@ class _ViewPropInliner extends RecursiveAstVisitor<Object> {
   final AsyncStringWriter _writer;
   final XHR _xhr;
   final AnnotationMatcher _annotationMatcher;
+
+  /// Variable name, string to be inlined pairs.
+  final _inlinedValues = <_InlinedValue>[];
 
   /// The final index of the last substring we wrote.
   int _lastIndex = 0;
@@ -105,6 +114,7 @@ class _ViewPropInliner extends RecursiveAstVisitor<Object> {
     final retVal = super.visitCompilationUnit(node);
     if (modifiedSource) {
       _writer.print(_code.substring(_lastIndex));
+      _inlinedValues.forEach((v) => _writer.asyncPrint(v.asyncToString()));
     }
     return retVal;
   }
@@ -142,6 +152,18 @@ class _ViewPropInliner extends RecursiveAstVisitor<Object> {
     return super.visitNamedExpression(node);
   }
 
+  /// Counts the newline characters in the code represented by `node`.
+  int _countNewlines(AstNode node) {
+    if (node.offset == null ||
+        node.offset < 0 ||
+        node.end == null ||
+        node.end < 0) {
+      return 0;
+    }
+    return LineSplitter.split(_code.substring(node.offset, node.end)).length -
+        1;
+  }
+
   void _populateStyleUrls(NamedExpression node) {
     var urls = naiveEval(node.expression);
     if (urls is! List) {
@@ -154,14 +176,16 @@ class _ViewPropInliner extends RecursiveAstVisitor<Object> {
     _writer.print('styles: const [');
     for (var url in urls) {
       if (url is String) {
-        _writer.print("r'''");
-        _writer.asyncPrint(_readOrEmptyString(url));
-        _writer.print("''', ");
+        final inlinedVal = _addInlineValue(url, varBase: _inlinedStyleBase);
+        _writer.print('${inlinedVal.name},');
       } else {
         zone.log.warning('style url is not a String (${url})');
       }
     }
-    _writer.println(']');
+    _writer.print(']');
+    for (var i = 0, n = _countNewlines(node); i < n; ++i) {
+      _writer.println('');
+    }
   }
 
   void _populateTemplateUrl(NamedExpression node) {
@@ -172,9 +196,11 @@ class _ViewPropInliner extends RecursiveAstVisitor<Object> {
     }
     _writer.print(_code.substring(_lastIndex, node.offset));
     _lastIndex = node.end;
-    _writer.print("template: r'''");
-    _writer.asyncPrint(_readOrEmptyString(url));
-    _writer.println("'''");
+    final inlinedVal = _addInlineValue(url, varBase: _inlinedTemplateBase);
+    _writer.print('template: ${inlinedVal.name}');
+    for (var i = 0, n = _countNewlines(node); i < n; ++i) {
+      _writer.println('');
+    }
   }
 
   /// Attempts to read the content from [url]. If [url] is relative, uses
@@ -186,5 +212,29 @@ class _ViewPropInliner extends RecursiveAstVisitor<Object> {
       zone.log.error('$_baseUri: could not read $url');
       return '';
     });
+  }
+
+  /// Adds a url to be inlined and requests its content.
+  ///
+  /// `varBase` is the base of the variable name the inlined value will be
+  /// assigned to.
+  /// Returns the created [_InlinedValue] object.
+  _InlinedValue _addInlineValue(String url, {String varBase}) {
+    final val = new _InlinedValue(
+        '${varBase}${_inlinedValues.length}', _readOrEmptyString(url));
+    _inlinedValues.add(val);
+    return val;
+  }
+}
+
+class _InlinedValue {
+  final String name;
+  final Future<String> futureValue;
+
+  _InlinedValue(this.name, this.futureValue);
+
+  /// Returns a const declaration of the inlined value.
+  Future<String> asyncToString() async {
+    return "const $name = r'''${await futureValue}''';";
   }
 }

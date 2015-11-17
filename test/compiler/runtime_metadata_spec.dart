@@ -39,7 +39,8 @@ import "package:angular2/core.dart"
 import "test_bindings.dart" show TEST_PROVIDERS;
 import "package:angular2/src/compiler/util.dart" show MODULE_SUFFIX;
 import "package:angular2/src/facade/lang.dart" show IS_DART;
-import "package:angular2/src/core/ambient.dart" show AMBIENT_DIRECTIVES;
+import "package:angular2/src/core/platform_directives_and_pipes.dart"
+    show PLATFORM_DIRECTIVES;
 
 main() {
   describe("RuntimeMetadataResolver", () {
@@ -93,12 +94,12 @@ main() {
             expect(resolver.getViewDirectivesMetadata(ComponentWithEverything))
                 .toEqual([resolver.getMetadata(DirectiveWithoutModuleId)]);
           }));
-      describe("ambient directives", () {
+      describe("platform directives", () {
         beforeEachProviders(() => [
-              provide(AMBIENT_DIRECTIVES, useValue: [ADirective])
+              provide(PLATFORM_DIRECTIVES, useValue: [ADirective])
             ]);
         it(
-            "should include ambient directives when available",
+            "should include platform directives when available",
             inject([RuntimeMetadataResolver],
                 (RuntimeMetadataResolver resolver) {
               expect(resolver

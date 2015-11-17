@@ -18,7 +18,7 @@ import "package:angular2/src/core/metadata.dart" show Pipe;
  *
  * The ending index of the subset to return is specified by the optional `end` parameter.
  *
- *##Usage
+ * ### Usage
  *
  *     expression | slice:start[:end]
  *
@@ -46,13 +46,11 @@ import "package:angular2/src/core/metadata.dart" show Pipe;
  * When operating on a [List], the returned list is always a copy even when all
  * the elements are being returned.
  *
- * ### Examples
- *
  * ## List Example
  *
- * Assuming `var collection = ['a', 'b', 'c', 'd']`, this `ng-for` directive:
+ * This `ng-for` example:
  *
- *     <li *ng-for="var i of collection | slice:1:3">{{i}}</li>
+ * {@example core/pipes/ts/slice_pipe/slice_pipe_example.ts region='SlicePipe_list'}
  *
  * produces the following:
  *
@@ -61,12 +59,7 @@ import "package:angular2/src/core/metadata.dart" show Pipe;
  *
  * ## String Examples
  *
- *     {{ 'abcdefghij' | slice:0:4 }}       // output is 'abcd'
- *     {{ 'abcdefghij' | slice:4:0 }}       // output is ''
- *     {{ 'abcdefghij' | slice:-4 }}      // output is 'ghij'
- *     {{ 'abcdefghij' | slice:-4,-2 }}      // output is 'gh'
- *     {{ 'abcdefghij' | slice: -100 }}    // output is 'abcdefghij'
- *     {{ 'abcdefghij' | slice: 100 }}    // output is ''
+ * {@example core/pipes/ts/slice_pipe/slice_pipe_example.ts region='SlicePipe_string'}
  */
 @Pipe(name: "slice", pure: false)
 @Injectable()

@@ -14,9 +14,9 @@ import "package:angular2/testing_internal.dart"
         beforeEachBindings,
         SpyObject;
 import "package:angular2/core.dart" show Injector, provide;
-import "package:angular2/src/router/location.dart" show Location, APP_BASE_HREF;
+import "package:angular2/src/router/location.dart" show Location;
 import "package:angular2/src/router/location_strategy.dart"
-    show LocationStrategy;
+    show LocationStrategy, APP_BASE_HREF;
 import "package:angular2/src/mock/mock_location_strategy.dart"
     show MockLocationStrategy;
 
@@ -59,12 +59,6 @@ main() {
             async.done();
           });
         }));
-    it("should throw when no base href is provided", () {
-      var locationStrategy = new MockLocationStrategy();
-      locationStrategy.internalBaseHref = null;
-      expect(() => new Location(locationStrategy)).toThrowError(
-          '''No base href set. Either provide a provider for the APP_BASE_HREF token or add a base element to the document.''');
-    });
     it("should revert to the previous path when a back() operation is executed",
         () {
       var locationStrategy = new MockLocationStrategy();

@@ -23,6 +23,9 @@ import "invalid_pipe_argument_exception.dart" show InvalidPipeArgumentException;
 String defaultLocale = "en-US";
 var _re = RegExpWrapper.create("^(\\d+)?\\.((\\d+)(\\-(\\d+))?)?\$");
 
+/**
+ * Internal base class for numeric pipes.
+ */
 @Injectable()
 class NumberPipe {
   /** @internal */
@@ -67,7 +70,7 @@ class NumberPipe {
  * Formats a number as local text. i.e. group sizing and separator and other locale-specific
  * configurations are based on the active locale.
  *
- *##Usage
+ * ### Usage
  *
  *     expression | number[:digitInfo]
  *
@@ -82,11 +85,9 @@ class NumberPipe {
  * For more information on the acceptable range for each of these numbers and other
  * details see your native internationalization library.
  *
- * ### Examples
+ * ### Example
  *
- *     {{ 123 | number }}              // output is 123
- *     {{ 123.1 | number: '.2-3' }}    // output is 123.10
- *     {{ 1 | number: '2.2' }}         // output is 01.00
+ * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='NumberPipe'}
  */
 @Pipe(name: "number")
 @Injectable()
@@ -105,11 +106,15 @@ class DecimalPipe extends NumberPipe implements PipeTransform {
  *
  * Formats a number as local percent.
  *
- *##Usage
+ * ### Usage
  *
  *     expression | percent[:digitInfo]
  *
  * For more information about `digitInfo` see [DecimalPipe]
+ *
+ * ### Example
+ *
+ * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='PercentPipe'}
  */
 @Pipe(name: "percent")
 @Injectable()
@@ -128,7 +133,7 @@ class PercentPipe extends NumberPipe implements PipeTransform {
  *
  * Formats a number as local currency.
  *
- *##Usage
+ * ### Usage
  *
  *     expression | currency[:currencyCode[:symbolDisplay[:digitInfo]]]
  *
@@ -137,6 +142,10 @@ class PercentPipe extends NumberPipe implements PipeTransform {
  * symbol (e.g. $) or the currency code (e.g. USD) in the output. The default for this value
  * is `false`.
  * For more information about `digitInfo` see [DecimalPipe]
+ *
+ * ### Example
+ *
+ * {@example core/pipes/ts/number_pipe/number_pipe_example.ts region='CurrencyPipe'}
  */
 @Pipe(name: "currency")
 @Injectable()

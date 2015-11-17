@@ -1,4 +1,4 @@
-library angular2.test.compiler.xhr_impl_spec;
+library angular2.test.platform.xhr_impl_spec;
 
 import "package:angular2/testing_internal.dart"
     show
@@ -11,7 +11,7 @@ import "package:angular2/testing_internal.dart"
         inject,
         it,
         xit;
-import "package:angular2/src/compiler/xhr_impl.dart" show XHRImpl;
+import "package:angular2/src/platform/browser/xhr_impl.dart" show XHRImpl;
 import "package:angular2/src/facade/async.dart" show PromiseWrapper;
 
 main() {

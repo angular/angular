@@ -7,7 +7,6 @@ import "package:angular2/src/core/metadata.dart" show Query, Directive;
 import "package:angular2/src/facade/async.dart" show ObservableWrapper;
 import "control_value_accessor.dart"
     show NG_VALUE_ACCESSOR, ControlValueAccessor;
-import "shared.dart" show setProperty;
 
 const SELECT_VALUE_ACCESSOR = const Provider(NG_VALUE_ACCESSOR,
     useExisting: SelectControlValueAccessor, multi: true);
@@ -52,7 +51,7 @@ class SelectControlValueAccessor implements ControlValueAccessor {
   }
   void writeValue(dynamic value) {
     this.value = value;
-    setProperty(this._renderer, this._elementRef, "value", value);
+    this._renderer.setElementProperty(this._elementRef, "value", value);
   }
 
   void registerOnChange(dynamic /* () => any */ fn) {

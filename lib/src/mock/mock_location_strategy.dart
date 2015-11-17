@@ -25,7 +25,10 @@ class MockLocationStrategy extends LocationStrategy {
   }
 
   String prepareExternalUrl(String internal) {
-    return internal;
+    if (internal.startsWith("/") && this.internalBaseHref.endsWith("/")) {
+      return this.internalBaseHref + internal.substring(1);
+    }
+    return this.internalBaseHref + internal;
   }
 
   void simulateUrlPop(String pathname) {
@@ -36,7 +39,8 @@ class MockLocationStrategy extends LocationStrategy {
     this.internalTitle = title;
     var url = path + (query.length > 0 ? ("?" + query) : "");
     this.internalPath = url;
-    this.urlChanges.add(url);
+    var external = this.prepareExternalUrl(url);
+    this.urlChanges.add(external);
   }
 
   void onPopState(dynamic /* (value: any) => void */ fn) {

@@ -678,12 +678,12 @@ main() {
               [beginElement("div", [], [], false, null), endElement()],
               []);
           var view = createRenderView(
-              encapsulatedTpl,
+              defaultCmpTpl,
               [beginComponent("my-comp", [], [], null, "0"), endComponent()],
               null,
               nodeFactory);
           expect(stringifyFragment(view.fragments[0].nodes)).toEqual(
-              "<my-comp _ngcontent-shortid=\"\" _nghost-innerid=\"\"><div _ngcontent-innerid=\"\"></div></my-comp>");
+              "<my-comp _nghost-innerid=\"\"><div _ngcontent-innerid=\"\"></div></my-comp>");
         });
       });
     });

@@ -31,7 +31,7 @@ const OpaqueToken NG_ASYNC_VALIDATORS = const OpaqueToken("NgAsyncValidators");
  * controls and returns a [StringMap] of errors. A null map means that
  * validation has passed.
  *
- * # Example
+ * ### Example
  *
  * ```typescript
  * var loginControl = new Control("", Validators.required)

@@ -21,7 +21,7 @@ import "package:angular2/src/facade/lang.dart" show isBlank;
  * </div>
  * ```
  *
- *##Syntax
+ * ### Syntax
  *
  * - `<div *ng-if="condition">...</div>`
  * - `<div template="ng-if condition">...</div>`

@@ -232,21 +232,11 @@ class _DirectiveMetadataVisitor extends Object
     for (var variable in node.fields.variables) {
       for (var meta in node.metadata) {
         if (_isAnnotation(meta, 'Output')) {
-          final renamed = _getRenamedValue(meta);
-          if (renamed != null) {
-            _outputs.add('${variable.name}: ${renamed}');
-          } else {
-            _outputs.add('${variable.name}');
-          }
+          _addPropertyToType(_outputs, variable.name.toString(), meta);
         }
 
         if (_isAnnotation(meta, 'Input')) {
-          final renamed = _getRenamedValue(meta);
-          if (renamed != null) {
-            _inputs.add('${variable.name}: ${renamed}');
-          } else {
-            _inputs.add('${variable.name}');
-          }
+          _addPropertyToType(_inputs, variable.name.toString(), meta);
         }
 
         if (_isAnnotation(meta, 'HostBinding')) {
@@ -265,6 +255,14 @@ class _DirectiveMetadataVisitor extends Object
   @override
   Object visitMethodDeclaration(MethodDeclaration node) {
     for (var meta in node.metadata) {
+      if (_isAnnotation(meta, 'Output') && node.isGetter) {
+        _addPropertyToType(_outputs, node.name.toString(), meta);
+      }
+
+      if (_isAnnotation(meta, 'Input') && node.isSetter) {
+        _addPropertyToType(_inputs, node.name.toString(), meta);
+      }
+
       if (_isAnnotation(meta, 'HostListener')) {
         if (meta.arguments.arguments.length == 0 ||
             meta.arguments.arguments.length > 2) {
@@ -278,6 +276,15 @@ class _DirectiveMetadataVisitor extends Object
       }
     }
     return null;
+  }
+
+  void _addPropertyToType(List type, String name, Annotation meta) {
+    final renamed = _getRenamedValue(meta);
+    if (renamed != null) {
+      type.add('${name}: ${renamed}');
+    } else {
+      type.add('${name}');
+    }
   }
 
   //TODO Use AnnotationMatcher instead of string matching

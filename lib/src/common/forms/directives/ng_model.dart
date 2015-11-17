@@ -24,7 +24,7 @@ const formControlBinding = const Provider(NgControl, useExisting: NgModel);
 /**
  * Binds a domain model to a form control.
  *
- *##Usage
+ * ### Usage
  *
  * `ng-model` binds an existing domain model to a form control. For a
  * two-way binding, use `[(ng-model)]` to ensure the model updates in

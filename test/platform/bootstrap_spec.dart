@@ -1,4 +1,4 @@
-library angular2.test.core.application_spec;
+library angular2.test.platform.bootstrap_spec;
 
 import "package:angular2/testing_internal.dart"
     show
@@ -14,9 +14,12 @@ import "package:angular2/testing_internal.dart"
         xit;
 import "package:angular2/src/facade/lang.dart"
     show IS_DART, isPresent, stringify;
-import "package:angular2/bootstrap.dart" show bootstrap;
+import "package:angular2/platform/browser.dart" show bootstrap;
 import "package:angular2/src/core/application_ref.dart" show ApplicationRef;
-import "package:angular2/core.dart" show Component, Directive, View;
+import "package:angular2/core.dart"
+    show Component, Directive, View, OnDestroy, platform;
+import "package:angular2/platform/browser.dart"
+    show BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS;
 import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 import "package:angular2/render.dart" show DOCUMENT;
 import "package:angular2/src/facade/async.dart" show PromiseWrapper;
@@ -74,6 +77,18 @@ class HelloRootMissingTemplate {}
 
 @Directive(selector: "hello-app")
 class HelloRootDirectiveIsNotCmp {}
+
+@Component(selector: "hello-app")
+@View(template: "")
+class HelloOnDestroyTickCmp implements OnDestroy {
+  ApplicationRef appRef;
+  HelloOnDestroyTickCmp(@Inject(ApplicationRef) appRef) {
+    this.appRef = appRef;
+  }
+  void onDestroy() {
+    this.appRef.tick();
+  }
+}
 
 class _ArrayLogger {
   List<dynamic> res = [];
@@ -176,6 +191,25 @@ main() {
           PromiseWrapper.all([refPromise1, refPromise2]).then((refs) {
             expect(el).toHaveText("hello world!");
             expect(el2).toHaveText("hello world, again!");
+            async.done();
+          });
+        }));
+    it(
+        "should not crash if change detection is invoked when the root component is disposed",
+        inject([AsyncTestCompleter], (async) {
+          bootstrap(HelloOnDestroyTickCmp, testProviders).then((ref) {
+            expect(() => ref.dispose()).not.toThrow();
+            async.done();
+          });
+        }));
+    it(
+        "should unregister change detectors when components are disposed",
+        inject([AsyncTestCompleter], (async) {
+          var app = platform(BROWSER_PROVIDERS)
+              .application([BROWSER_APP_PROVIDERS, testProviders]);
+          app.bootstrap(HelloRootCmp).then((ref) {
+            ref.dispose();
+            expect(() => app.tick()).not.toThrow();
             async.done();
           });
         }));

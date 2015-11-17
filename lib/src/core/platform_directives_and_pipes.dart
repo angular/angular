@@ -1,4 +1,4 @@
-library angular2.src.core.ambient;
+library angular2.src.core.platform_directives_and_pipes;
 
 import "package:angular2/src/core/di.dart" show OpaqueToken;
 
@@ -9,7 +9,7 @@ import "package:angular2/src/core/di.dart" show OpaqueToken;
  * ### Example
  *
  * ```typescript
- * import {AMBIENT_DIRECTIVES} from 'angular2/angular2';
+ * import {PLATFORM_DIRECTIVES} from 'angular2/angular2';
  * import {OtherDirective} from './myDirectives';
  *
  * @Component({
@@ -23,10 +23,11 @@ import "package:angular2/src/core/di.dart" show OpaqueToken;
  *   ...
  * }
  *
- * bootstrap(MyComponent, [provide(AMBIENT_DIRECTIVES, {useValue: [OtherDirective], multi:true})]);
+ * bootstrap(MyComponent, [provide(PLATFORM_DIRECTIVES, {useValue: [OtherDirective], multi:true})]);
  * ```
  */
-const OpaqueToken AMBIENT_DIRECTIVES = const OpaqueToken("Ambient Directives");
+const OpaqueToken PLATFORM_DIRECTIVES =
+    const OpaqueToken("Platform Directives");
 /**
  * A token that can be provided when bootstraping an application to make an array of pipes
  * available in every component of the application.
@@ -34,7 +35,7 @@ const OpaqueToken AMBIENT_DIRECTIVES = const OpaqueToken("Ambient Directives");
  * ### Example
  *
  * ```typescript
- * import {AMBIENT_PIPES} from 'angular2/angular2';
+ * import {PLATFORM_PIPES} from 'angular2/angular2';
  * import {OtherPipe} from './myPipe';
  *
  * @Component({
@@ -47,7 +48,7 @@ const OpaqueToken AMBIENT_DIRECTIVES = const OpaqueToken("Ambient Directives");
  *   ...
  * }
  *
- * bootstrap(MyComponent, [provide(AMBIENT_PIPES, {useValue: [OtherPipe], multi:true})]);
+ * bootstrap(MyComponent, [provide(PLATFORM_PIPES, {useValue: [OtherPipe], multi:true})]);
  * ```
  */
-const OpaqueToken AMBIENT_PIPES = const OpaqueToken("Ambient Pipes");
+const OpaqueToken PLATFORM_PIPES = const OpaqueToken("Platform Pipes");
