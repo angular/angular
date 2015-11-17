@@ -14,6 +14,8 @@ REPO_URL="https://github.com/angular/angular.git"
 SHA=`git rev-parse HEAD`
 SHORT_SHA=`git rev-parse --short HEAD`
 COMMIT_MSG=`git log --oneline | head -n1`
+COMMITTER_USER_NAME=`git --no-pager show -s --format='%cN' HEAD`
+COMMITTER_USER_EMAIL=`git --no-pager show -s --format='%cE' HEAD`
 
 function publishRepo {
   LANG=$1
@@ -47,6 +49,10 @@ function publishRepo {
     cd $REPO_DIR && \
     git add --all && \
     git commit -m "${COMMIT_MSG}" && \
+    git config credential.helper "store --file=.git/credentials" && \
+    echo "https://${GITHUB_TOKEN_ANGULAR}:@github.com" > .git/credentials && \
+    git config user.name "${COMMITTER_USER_NAME}" && \
+    git config user.email "${COMMITTER_USER_EMAIL}" && \
     git push origin $BUILD_BRANCH && \
     git tag "2.0.0-build.${SHORT_SHA}.${LANG}" && \
     git push origin --tags
