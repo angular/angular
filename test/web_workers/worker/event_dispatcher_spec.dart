@@ -56,7 +56,7 @@ main() {
               serializer.serialize(viewRef, RenderViewRef), RenderViewRef);
           webWorkerEventDispatcher.registerEventDispatcher(
               viewRef, eventDispatcher);
-          ObservableWrapper.callNext(messageBuses.ui.to(EVENT_CHANNEL), {
+          ObservableWrapper.callEmit(messageBuses.ui.to(EVENT_CHANNEL), {
             "viewRef": viewRef.serialize(),
             "elementIndex": elementIndex,
             "eventName": eventName,

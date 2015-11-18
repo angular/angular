@@ -4,7 +4,7 @@ import "package:angular2/testing_internal.dart"
     show
         AsyncTestCompleter,
         beforeEach,
-        beforeEachProviders,
+        beforeEachBindings,
         ddescribe,
         describe,
         expect,
@@ -19,10 +19,10 @@ import "package:angular2/bootstrap.dart" show bootstrap;
 import "package:angular2/src/core/metadata.dart"
     show Component, Directive, View;
 import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
-import "package:angular2/core.dart" show provide, ViewChild, AfterViewInit;
+import "package:angular2/core.dart" show provide;
 import "package:angular2/src/platform/dom/dom_tokens.dart" show DOCUMENT;
 import "package:angular2/src/router/route_config_decorator.dart"
-    show RouteConfig, Route, Redirect, AuxRoute;
+    show RouteConfig, Route, Redirect;
 import "package:angular2/src/facade/async.dart" show PromiseWrapper;
 import "package:angular2/src/facade/exceptions.dart"
     show BaseException, WrappedException;
@@ -45,7 +45,7 @@ import "package:angular2/src/mock/mock_application_ref.dart"
 
 main() {
   describe("router injectables", () {
-    beforeEachProviders(() {
+    beforeEachBindings(() {
       return [
         ROUTER_PROVIDERS,
         provide(LocationStrategy, useClass: MockLocationStrategy),
@@ -79,7 +79,7 @@ main() {
           }));
     });
     describe("broken app", () {
-      beforeEachProviders(() {
+      beforeEachBindings(() {
         return [provide(ROUTER_PRIMARY_COMPONENT, useValue: BrokenAppCmp)];
       });
       it(
@@ -99,7 +99,7 @@ main() {
           }));
     });
     describe("back button app", () {
-      beforeEachProviders(() {
+      beforeEachBindings(() {
         return [provide(ROUTER_PRIMARY_COMPONENT, useValue: HierarchyAppCmp)];
       });
       it(
@@ -151,7 +151,7 @@ main() {
           1000);
     });
     describe("hierarchical app", () {
-      beforeEachProviders(() {
+      beforeEachBindings(() {
         return [provide(ROUTER_PRIMARY_COMPONENT, useValue: HierarchyAppCmp)];
       });
       it(
@@ -172,7 +172,7 @@ main() {
           }));
       // TODO(btford): mock out level lower than LocationStrategy once that level exists
       xdescribe("custom app base ref", () {
-        beforeEachProviders(() {
+        beforeEachBindings(() {
           return [provide(APP_BASE_HREF, useValue: "/my/app")];
         });
         it(
@@ -195,7 +195,7 @@ main() {
     });
     // TODO: add a test in which the child component has bindings
     describe("querystring params app", () {
-      beforeEachProviders(() {
+      beforeEachBindings(() {
         return [provide(ROUTER_PRIMARY_COMPONENT, useValue: QueryStringAppCmp)];
       });
       it(
@@ -218,43 +218,16 @@ main() {
             });
           }));
     });
-    describe("retrieving components loaded via outlet via @ViewChild", () {
-      TestComponentBuilder tcb = null;
-      beforeEachProviders(
-          () => [provide(ROUTER_PRIMARY_COMPONENT, useValue: AppCmp)]);
-      beforeEach(inject([TestComponentBuilder], (testComponentBuilder) {
-        tcb = testComponentBuilder;
-      }));
-      it(
-          "should get a reference and pass data to components loaded inside of outlets",
-          inject([AsyncTestCompleter], (async) {
-            tcb.createAsync(AppWithViewChildren).then((fixture) {
-              var appInstance = fixture.debugElement.componentInstance;
-              var router = appInstance.router;
-              router.subscribe((_) {
-                fixture.detectChanges();
-                expect(appInstance.helloCmp).toBeAnInstanceOf(HelloCmp);
-                expect(appInstance.helloCmp.message).toBe("Ahoy");
-                async.done();
-              });
-              router.navigateByUrl("/rainbow(pony)");
-            });
-          }));
-    });
   });
 }
 
 @Component(selector: "hello-cmp")
 @View(template: "hello")
-class HelloCmp {
-  String message;
-}
+class HelloCmp {}
 
 @Component(selector: "hello2-cmp")
 @View(template: "hello2")
-class Hello2Cmp {
-  String greeting;
-}
+class Hello2Cmp {}
 
 @Component(selector: "app-cmp")
 @View(
@@ -265,28 +238,6 @@ class AppCmp {
   Router router;
   LocationStrategy location;
   AppCmp(this.router, this.location) {}
-}
-
-@Component(
-    selector: "app-cmp",
-    template: '''
-    Hello routing!
-    <router-outlet></router-outlet>
-    <router-outlet name="pony"></router-outlet>''',
-    directives: ROUTER_DIRECTIVES)
-@RouteConfig(const [
-  const Route(path: "/rainbow", component: HelloCmp),
-  const AuxRoute(name: "pony", path: "pony", component: Hello2Cmp)
-])
-class AppWithViewChildren implements AfterViewInit {
-  Router router;
-  LocationStrategy location;
-  @ViewChild(HelloCmp) HelloCmp helloCmp;
-  @ViewChild(Hello2Cmp) Hello2Cmp hello2Cmp;
-  AppWithViewChildren(this.router, this.location) {}
-  afterViewInit() {
-    this.helloCmp.message = "Ahoy";
-  }
 }
 
 @Component(selector: "parent-cmp")

@@ -121,7 +121,7 @@ class NgControlName extends NgControl implements OnChanges, OnDestroy {
 
   void viewToModelUpdate(dynamic newValue) {
     this.viewModel = newValue;
-    ObservableWrapper.callNext(this.update, newValue);
+    ObservableWrapper.callEmit(this.update, newValue);
   }
 
   List<String> get path {

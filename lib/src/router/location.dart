@@ -56,7 +56,7 @@ class Location {
     var browserBaseHref = this.platformStrategy.getBaseHref();
     this._baseHref = stripTrailingSlash(stripIndexHtml(browserBaseHref));
     this.platformStrategy.onPopState((_) {
-      ObservableWrapper.callNext(
+      ObservableWrapper.callEmit(
           this._subject, {"url": this.path(), "pop": true});
     });
   }

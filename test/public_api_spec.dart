@@ -684,6 +684,7 @@ var NG_ALL = [
   */
   "EventEmitter.mapTo():js",
   "EventEmitter.next():js",
+  "EventEmitter.emit():js",
   "EventEmitter.materialize():js",
   "EventEmitter.merge():js",
   "EventEmitter.mergeAll():js",
