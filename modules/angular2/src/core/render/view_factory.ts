@@ -116,12 +116,16 @@ class BuildContext<N> {
 
   addEventListener(boundElementIndex: number, target: string, eventName: string) {
     if (isPresent(target)) {
-      var handler =
+      let handler =
           createEventHandler(boundElementIndex, `${target}:${eventName}`, this._eventDispatcher);
       this.globalEventAdders.push(createGlobalEventAdder(target, eventName, handler, this.factory));
     } else {
-      var handler = createEventHandler(boundElementIndex, eventName, this._eventDispatcher);
-      this.factory.on(this.boundElements[boundElementIndex], eventName, handler);
+      let element: any = this.boundElements[boundElementIndex];
+      if (eventName === 'change' && element.type === 'text') {
+        return;
+      }
+      let handler = createEventHandler(boundElementIndex, eventName, this._eventDispatcher);
+      this.factory.on(element, eventName, handler);
     }
   }
 }
