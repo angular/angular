@@ -15460,6 +15460,8 @@ System.register("angular2/src/core/application_tokens", ["angular2/src/core/di",
   function _randomChar() {
     return lang_1.StringWrapper.fromCharCode(97 + lang_1.Math.floor(lang_1.Math.random() * 25));
   }
+  exports.PLATFORM_INITIALIZER = lang_1.CONST_EXPR(new di_1.OpaqueToken("Platform Initializer"));
+  exports.APP_INITIALIZER = lang_1.CONST_EXPR(new di_1.OpaqueToken("Application Initializer"));
   global.define = __define;
   return module.exports;
 });
@@ -25498,13 +25500,29 @@ System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng
     }
   }
   exports.platform = platform;
+  function disposePlatform() {
+    if (lang_1.isPresent(_platform)) {
+      _platform.dispose();
+      _platform = null;
+    }
+  }
+  exports.disposePlatform = disposePlatform;
   function _createPlatform(providers) {
     _platformProviders = providers;
-    _platform = new PlatformRef_(di_1.Injector.resolveAndCreate(providers), function() {
+    var injector = di_1.Injector.resolveAndCreate(providers);
+    _platform = new PlatformRef_(injector, function() {
       _platform = null;
       _platformProviders = null;
     });
+    _runPlatformInitializers(injector);
     return _platform;
+  }
+  function _runPlatformInitializers(injector) {
+    var inits = injector.getOptional(application_tokens_1.PLATFORM_INITIALIZER);
+    if (lang_1.isPresent(inits))
+      inits.forEach(function(init) {
+        return init();
+      });
   }
   var PlatformRef = (function() {
     function PlatformRef() {}
@@ -25581,10 +25599,11 @@ System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng
       });
       app = new ApplicationRef_(this, zone, injector);
       this._applications.push(app);
+      _runAppInitializers(injector);
       return app;
     };
     PlatformRef_.prototype.dispose = function() {
-      this._applications.forEach(function(app) {
+      collection_1.ListWrapper.clone(this._applications).forEach(function(app) {
         return app.dispose();
       });
       this._disposeListeners.forEach(function(dispose) {
@@ -25598,6 +25617,13 @@ System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng
     return PlatformRef_;
   })(PlatformRef);
   exports.PlatformRef_ = PlatformRef_;
+  function _runAppInitializers(injector) {
+    var inits = injector.getOptional(application_tokens_1.APP_INITIALIZER);
+    if (lang_1.isPresent(inits))
+      inits.forEach(function(init) {
+        return init();
+      });
+  }
   var ApplicationRef = (function() {
     function ApplicationRef() {}
     Object.defineProperty(ApplicationRef.prototype, "injector", {
@@ -25743,7 +25769,7 @@ System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng
       }
     };
     ApplicationRef_.prototype.dispose = function() {
-      this._rootComponents.forEach(function(ref) {
+      collection_1.ListWrapper.clone(this._rootComponents).forEach(function(ref) {
         return ref.dispose();
       });
       this._disposeListeners.forEach(function(dispose) {
@@ -29639,6 +29665,8 @@ System.register("angular2/core", ["angular2/src/core/metadata", "angular2/src/co
   var application_tokens_1 = require("angular2/src/core/application_tokens");
   exports.APP_ID = application_tokens_1.APP_ID;
   exports.APP_COMPONENT = application_tokens_1.APP_COMPONENT;
+  exports.APP_INITIALIZER = application_tokens_1.APP_INITIALIZER;
+  exports.PLATFORM_INITIALIZER = application_tokens_1.PLATFORM_INITIALIZER;
   __export(require("angular2/src/core/zone"));
   __export(require("angular2/src/core/render"));
   __export(require("angular2/src/common/directives"));
@@ -35906,7 +35934,10 @@ System.register("angular2/src/platform/browser_common", ["angular2/src/facade/la
   exports.By = by_1.By;
   var browser_adapter_2 = require("angular2/src/platform/browser/browser_adapter");
   exports.BrowserDomAdapter = browser_adapter_2.BrowserDomAdapter;
-  exports.BROWSER_PROVIDERS = lang_1.CONST_EXPR([core_1.PLATFORM_COMMON_PROVIDERS]);
+  exports.BROWSER_PROVIDERS = lang_1.CONST_EXPR([core_1.PLATFORM_COMMON_PROVIDERS, new di_1.Provider(core_1.PLATFORM_INITIALIZER, {
+    useValue: initDomAdapter,
+    multi: true
+  })]);
   function _exceptionHandler() {
     return new core_1.ExceptionHandler(dom_adapter_1.DOM, false);
   }
@@ -36626,7 +36657,6 @@ System.register("angular2/platform/browser", ["angular2/src/platform/browser_com
   exports.BROWSER_APP_PROVIDERS = lang_1.CONST_EXPR([browser_common_2.BROWSER_APP_COMMON_PROVIDERS, compiler_1.COMPILER_PROVIDERS, new di_1.Provider(compiler_2.XHR, {useClass: xhr_impl_1.XHRImpl})]);
   function bootstrap(appComponentType, customProviders) {
     core_1.reflector.reflectionCapabilities = new reflection_capabilities_1.ReflectionCapabilities();
-    browser_common_2.initDomAdapter();
     var appProviders = lang_1.isPresent(customProviders) ? [exports.BROWSER_APP_PROVIDERS, customProviders] : exports.BROWSER_APP_PROVIDERS;
     return core_1.platform(browser_common_2.BROWSER_PROVIDERS).application(appProviders).bootstrap(appComponentType);
   }

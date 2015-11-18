@@ -24,6 +24,10 @@ export declare function createNgZone(): NgZone;
  */
 export declare function platform(providers?: Array<Type | Provider | any[]>): PlatformRef;
 /**
+ * Dispose the existing platform.
+ */
+export declare function disposePlatform(): void;
+/**
  * The Angular platform is the entry point for Angular on a web page. Each page
  * has exactly one platform, and services (such as reflection) which are common
  * to every Angular application running on the page are bound in its scope.

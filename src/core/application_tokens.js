@@ -41,4 +41,12 @@ exports.APP_ID_RANDOM_PROVIDER = lang_1.CONST_EXPR(new di_1.Provider(exports.APP
 function _randomChar() {
     return lang_1.StringWrapper.fromCharCode(97 + lang_1.Math.floor(lang_1.Math.random() * 25));
 }
+/**
+ * A function that will be executed when a platform is initialized.
+ */
+exports.PLATFORM_INITIALIZER = lang_1.CONST_EXPR(new di_1.OpaqueToken("Platform Initializer"));
+/**
+ * A function that will be executed when an application is initialized.
+ */
+exports.APP_INITIALIZER = lang_1.CONST_EXPR(new di_1.OpaqueToken("Application Initializer"));
 //# sourceMappingURL=application_tokens.js.map

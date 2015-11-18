@@ -4,7 +4,6 @@ var core_1 = require("angular2/core");
 var common_1 = require("angular2/common");
 var render_1 = require('angular2/render');
 var testability_1 = require('angular2/src/core/testability/testability');
-// TODO change these imports once dom_adapter is moved out of core
 var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
 var dom_events_1 = require('angular2/src/platform/dom/events/dom_events');
 var key_events_1 = require('angular2/src/platform/dom/events/key_events');
@@ -30,7 +29,10 @@ var by_1 = require('angular2/src/platform/browser/debug/by');
 exports.By = by_1.By;
 var browser_adapter_2 = require('./browser/browser_adapter');
 exports.BrowserDomAdapter = browser_adapter_2.BrowserDomAdapter;
-exports.BROWSER_PROVIDERS = lang_1.CONST_EXPR([core_1.PLATFORM_COMMON_PROVIDERS]);
+exports.BROWSER_PROVIDERS = lang_1.CONST_EXPR([
+    core_1.PLATFORM_COMMON_PROVIDERS,
+    new di_1.Provider(core_1.PLATFORM_INITIALIZER, { useValue: initDomAdapter, multi: true }),
+]);
 function _exceptionHandler() {
     return new core_1.ExceptionHandler(dom_adapter_1.DOM, false);
 }
@@ -56,7 +58,6 @@ exports.BROWSER_APP_COMMON_PROVIDERS = lang_1.CONST_EXPR([
     animation_builder_1.AnimationBuilder
 ]);
 function initDomAdapter() {
-    // TODO: refactor into a generic init function
     browser_adapter_1.BrowserDomAdapter.makeCurrent();
     wtf_init_1.wtfInit();
     testability_2.BrowserGetTestability.init();

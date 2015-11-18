@@ -19,7 +19,6 @@ exports.BROWSER_APP_PROVIDERS = browser_common_2.BROWSER_APP_COMMON_PROVIDERS;
  * See {@link bootstrap} for more information.
  */
 function bootstrapStatic(appComponentType, customProviders, initReflector) {
-    browser_common_2.initDomAdapter();
     if (lang_1.isPresent(initReflector)) {
         initReflector();
     }

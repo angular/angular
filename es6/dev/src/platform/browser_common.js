@@ -1,6 +1,6 @@
 import { CONST_EXPR } from 'angular2/src/facade/lang';
 import { Provider } from 'angular2/src/core/di';
-import { PLATFORM_DIRECTIVES, PLATFORM_PIPES, ExceptionHandler, APPLICATION_COMMON_PROVIDERS, PLATFORM_COMMON_PROVIDERS, EVENT_MANAGER_PLUGINS } from "angular2/core";
+import { PLATFORM_DIRECTIVES, PLATFORM_PIPES, ExceptionHandler, APPLICATION_COMMON_PROVIDERS, PLATFORM_COMMON_PROVIDERS, EVENT_MANAGER_PLUGINS, PLATFORM_INITIALIZER } from "angular2/core";
 import { COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS } from "angular2/common";
 import { Renderer } from 'angular2/render';
 import { Testability } from 'angular2/src/core/testability/testability';
@@ -22,7 +22,10 @@ export { Title } from 'angular2/src/platform/browser/title';
 export { ELEMENT_PROBE_PROVIDERS, ELEMENT_PROBE_BINDINGS, inspectNativeElement } from 'angular2/src/platform/browser/debug/debug_element_view_listener';
 export { By } from 'angular2/src/platform/browser/debug/by';
 export { BrowserDomAdapter } from './browser/browser_adapter';
-export const BROWSER_PROVIDERS = CONST_EXPR([PLATFORM_COMMON_PROVIDERS]);
+export const BROWSER_PROVIDERS = CONST_EXPR([
+    PLATFORM_COMMON_PROVIDERS,
+    new Provider(PLATFORM_INITIALIZER, { useValue: initDomAdapter, multi: true }),
+]);
 function _exceptionHandler() {
     return new ExceptionHandler(DOM, false);
 }
@@ -48,7 +51,6 @@ export const BROWSER_APP_COMMON_PROVIDERS = CONST_EXPR([
     AnimationBuilder
 ]);
 export function initDomAdapter() {
-    // TODO: refactor into a generic init function
     BrowserDomAdapter.makeCurrent();
     wtfInit();
     BrowserGetTestability.init();
