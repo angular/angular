@@ -114,12 +114,13 @@ class _FindDeferredLibraries extends Object with RecursiveAstVisitor<Object> {
 
   bool hasDeferredLibrariesToRewrite() {
     if (deferredImports.isEmpty) {
-      log.fine('There are no deferred library imports.');
+      log.fine('There are no deferred library imports.', asset: _entryPoint);
       return false;
     }
     if (loadLibraryInvocations.isEmpty) {
       log.fine(
-          'There are no loadLibrary invocations that need to be rewritten.');
+          'There are no loadLibrary invocations that need to be rewritten.',
+          asset: _entryPoint);
       return false;
     }
     return true;
