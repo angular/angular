@@ -9,6 +9,7 @@ export 'package:angular2/src/common/pipes.dart';
 export 'package:angular2/src/facade/facade.dart';
 export 'package:angular2/src/core/application_ref.dart'
     hide ApplicationRef_, PlatformRef_;
+export 'package:angular2/src/core/application_tokens.dart' show APP_ID, APP_COMPONENT, APP_INITIALIZER, PLATFORM_INITIALIZER;
 export 'package:angular2/src/core/linker.dart';
 export 'package:angular2/src/core/zone.dart';
 export 'package:angular2/src/core/render.dart';

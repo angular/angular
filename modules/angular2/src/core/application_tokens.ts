@@ -48,3 +48,14 @@ export const APP_ID_RANDOM_PROVIDER: Provider =
 function _randomChar(): string {
   return StringWrapper.fromCharCode(97 + Math.floor(Math.random() * 25));
 }
+
+/**
+ * A function that will be executed when a platform is initialized.
+ */
+export const PLATFORM_INITIALIZER: OpaqueToken =
+    CONST_EXPR(new OpaqueToken("Platform Initializer"));
+
+/**
+ * A function that will be executed when an application is initialized.
+ */
+export const APP_INITIALIZER: OpaqueToken = CONST_EXPR(new OpaqueToken("Application Initializer"));
