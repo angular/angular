@@ -90,7 +90,7 @@ after_script:
 - node tools/analytics/build-analytics start ci after_script
 - ./scripts/ci/print-logs.sh
 - ./scripts/ci/after-script.sh
-- ./scripts/ci/publish-build-artifacts.sh
+- ./scripts/publish/publish-build-artifacts.sh
 - node tools/analytics/build-analytics success ci after_script
 - if [[ $TRAVIS_TEST_RESULT -eq 0 ]]; then node tools/analytics/build-analytics success ci job; else node tools/analytics/build-analytics error ci job; fi
 
