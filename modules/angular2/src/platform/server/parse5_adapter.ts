@@ -371,9 +371,9 @@ export class Parse5DomAdapter extends DomAdapter {
   hasClass(element, classname: string): boolean {
     return ListWrapper.contains(this.classList(element), classname);
   }
-  hasStyle(element, stylename: string, stylevalue: string = null): boolean {
-    var value = this.getStyle(element, stylename) || '';
-    return stylevalue ? value == stylevalue : value.length > 0;
+  hasStyle(element, styleName: string, styleValue: string = null): boolean {
+    var value = this.getStyle(element, styleName) || '';
+    return styleValue ? value == styleValue : value.length > 0;
   }
   /** @internal */
   _readStyleAttribute(element) {
@@ -402,15 +402,15 @@ export class Parse5DomAdapter extends DomAdapter {
     }
     element.attribs["style"] = styleAttrValue;
   }
-  setStyle(element, stylename: string, stylevalue: string) {
+  setStyle(element, styleName: string, styleValue: string) {
     var styleMap = this._readStyleAttribute(element);
-    styleMap[stylename] = stylevalue;
+    styleMap[styleName] = styleValue;
     this._writeStyleAttribute(element, styleMap);
   }
-  removeStyle(element, stylename: string) { this.setStyle(element, stylename, null); }
-  getStyle(element, stylename: string): string {
+  removeStyle(element, styleName: string) { this.setStyle(element, styleName, null); }
+  getStyle(element, styleName: string): string {
     var styleMap = this._readStyleAttribute(element);
-    return styleMap.hasOwnProperty(stylename) ? styleMap[stylename] : "";
+    return styleMap.hasOwnProperty(styleName) ? styleMap[styleName] : "";
   }
   tagName(element): string { return element.tagName == "style" ? "STYLE" : element.tagName; }
   attributeMap(element): Map<string, string> {

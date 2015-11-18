@@ -207,9 +207,9 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   }
   removeStyle(element, stylename: string) { element.style[stylename] = null; }
   getStyle(element, stylename: string): string { return element.style[stylename]; }
-  hasStyle(element, stylename: string, stylevalue: string = null): boolean {
-    var value = this.getStyle(element, stylename) || '';
-    return stylevalue ? value == stylevalue : value.length > 0;
+  hasStyle(element, styleName: string, styleValue: string = null): boolean {
+    var value = this.getStyle(element, styleName) || '';
+    return styleValue ? value == styleValue : value.length > 0;
   }
   tagName(element): string { return element.tagName; }
   attributeMap(element): Map<string, string> {

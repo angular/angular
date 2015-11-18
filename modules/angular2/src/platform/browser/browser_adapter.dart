@@ -332,21 +332,21 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   bool hasClass(Element element, String classname) =>
       element.classes.contains(classname);
 
-  void setStyle(Element element, String stylename, String stylevalue) {
-    element.style.setProperty(stylename, stylevalue);
+  void setStyle(Element element, String styleName, String styleValue) {
+    element.style.setProperty(styleName, styleValue);
   }
 
-  bool hasStyle(Element element, String stylename, [String stylevalue]) {
-    var value = this.getStyle(element, stylename);
-    return isPresent(stylevalue) ? value == stylevalue : value.length > 0;
+  bool hasStyle(Element element, String styleName, [String styleValue]) {
+    var value = this.getStyle(element, styleName);
+    return isPresent(styleValue) ? value == styleValue : value.length > 0;
   }
 
-  void removeStyle(Element element, String stylename) {
-    element.style.removeProperty(stylename);
+  void removeStyle(Element element, String styleName) {
+    element.style.removeProperty(styleName);
   }
 
-  String getStyle(Element element, String stylename) {
-    return element.style.getPropertyValue(stylename);
+  String getStyle(Element element, String styleName) {
+    return element.style.getPropertyValue(styleName);
   }
 
   String tagName(Element element) => element.tagName;
