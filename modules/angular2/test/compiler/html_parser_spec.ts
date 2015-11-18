@@ -82,10 +82,15 @@ export function main() {
         });
 
         it('should parse attributes on svg elements case sensitive', () => {
-          expect(humanizeDom(parser.parse('<svg viewBox="0"></svg>', 'TestComp')))
+          expect(humanizeDom(parser.parse('<svg viewBox="0 0 0 0"></svg>', 'TestComp')))
               .toEqual([
                 [HtmlElementAst, 'svg', 'TestComp > svg:nth-child(0)'],
-                [HtmlAttrAst, 'viewBox', '0', 'TestComp > svg:nth-child(0)[viewBox=0]']
+                [
+                  HtmlAttrAst,
+                  'viewBox',
+                  '0 0 0 0',
+                  'TestComp > svg:nth-child(0)[viewBox=0 0 0 0]'
+                ]
               ]);
         });
 
