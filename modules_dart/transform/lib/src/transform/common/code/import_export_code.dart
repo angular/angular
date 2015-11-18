@@ -1,7 +1,9 @@
 library angular2.transform.common.code.import_export_code;
 
 import 'package:analyzer/analyzer.dart';
+
 import 'package:angular2/src/transform/common/mirror_matcher.dart';
+import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/model/import_export_model.pb.dart';
 
 const _mirrorMatcher = const MirrorMatcher();
@@ -12,21 +14,17 @@ class ImportVisitor extends SimpleAstVisitor<ImportModel> {
   ImportModel visitImportDirective(ImportDirective node) {
     if (node.isSynthetic) return null;
 
-    /// We skip this, as it transitively imports 'dart:mirrors'
+    // This transitively imports 'dart:mirrors'.
     if (_mirrorMatcher.hasReflectionCapabilitiesUri(node)) return null;
-    String uri = stringLiteralToString(node.uri);
-    // The bootstrap code also transitively imports 'dart:mirrors'
-    if (_mirrorMatcher.hasBootstrapUri(node)) {
-      uri = BOOTSTRAP_STATIC_URI;
-    }
 
-    var model = new ImportModel()
-      ..uri = uri
+    final model = new ImportModel()
+      ..uri = stringLiteralToString(node.uri)
       ..isDeferred = node.deferredKeyword != null;
     if (node.prefix != null) {
       model.prefix = node.prefix.name;
     }
     _populateCombinators(node, model);
+    _updateIfBootstrap(node, model);
     return model;
   }
 }
@@ -37,17 +35,32 @@ class ExportVisitor extends SimpleAstVisitor<ExportModel> {
   ExportModel visitExportDirective(ExportDirective node) {
     if (node.isSynthetic) return null;
 
-    /// We skip this, as it transitively imports 'dart:mirrors'
+    // This transitively imports 'dart:mirrors'.
     if (_mirrorMatcher.hasReflectionCapabilitiesUri(node)) return null;
-    String uri = stringLiteralToString(node.uri);
-    // The bootstrap code also transitively imports 'dart:mirrors'
-    if (_mirrorMatcher.hasBootstrapUri(node)) {
-      uri = BOOTSTRAP_STATIC_URI;
-    }
 
-    var model = new ExportModel()..uri = uri;
+    var model = new ExportModel()..uri = stringLiteralToString(node.uri);
     _populateCombinators(node, model);
+    _updateIfBootstrap(node, model);
     return model;
+  }
+}
+
+/// Ensures that the bootstrap import is not retained in .ng_deps.
+///
+/// If `model` has a combinator referencing `BOOTSTRAP_NAME`, rewrite it to
+/// `BOOTSTRAP_STATIC_NAME`.
+/// `model` should be an [ImportModel] or an [ExportModel].
+void _updateIfBootstrap(NamespaceDirective node, dynamic model) {
+  if (_mirrorMatcher.hasBootstrapUri(node)) {
+    model.uri = BOOTSTRAP_STATIC_URI;
+    [model.showCombinators, model.hideCombinators]
+        .forEach((List<String> cList) {
+      for (var i = 0; i < cList.length; ++i) {
+        if (cList[i] == BOOTSTRAP_NAME) {
+          cList[i] = BOOTSTRAP_STATIC_NAME;
+        }
+      }
+    });
   }
 }
 
