@@ -179,7 +179,7 @@ class _ViewPropInliner extends RecursiveAstVisitor<Object> {
         final inlinedVal = _addInlineValue(url, varBase: _inlinedStyleBase);
         _writer.print('${inlinedVal.name},');
       } else {
-        zone.log.warning('style url is not a String (${url})');
+        zone.log.warning('style url is not a String (${url})', asset: _assetId);
       }
     }
     _writer.print(']');
@@ -191,7 +191,8 @@ class _ViewPropInliner extends RecursiveAstVisitor<Object> {
   void _populateTemplateUrl(NamedExpression node) {
     var url = naiveEval(node.expression);
     if (url is! String) {
-      zone.log.warning('template url is not a String (${node.expression})');
+      zone.log.warning('template url is not a String (${node.expression})',
+          asset: _assetId);
       return;
     }
     _writer.print(_code.substring(_lastIndex, node.offset));
@@ -209,7 +210,7 @@ class _ViewPropInliner extends RecursiveAstVisitor<Object> {
     final resolvedUri = _urlResolver.resolve(_baseUri.toString(), url);
 
     return _xhr.get(resolvedUri).catchError((_) {
-      zone.log.error('$_baseUri: could not read $url');
+      zone.log.error('$_baseUri: could not read $url', asset: _assetId);
       return '';
     });
   }
