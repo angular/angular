@@ -1,6 +1,6 @@
 export { BROWSER_PROVIDERS, ELEMENT_PROBE_BINDINGS, ELEMENT_PROBE_PROVIDERS, inspectNativeElement, BrowserDomAdapter, By, Title } from 'angular2/src/platform/browser_common';
 import { isPresent } from 'angular2/src/facade/lang';
-import { BROWSER_PROVIDERS, BROWSER_APP_COMMON_PROVIDERS, initDomAdapter } from 'angular2/src/platform/browser_common';
+import { BROWSER_PROVIDERS, BROWSER_APP_COMMON_PROVIDERS } from 'angular2/src/platform/browser_common';
 import { platform } from 'angular2/core';
 /**
  * An array of providers that should be passed into `application()` when bootstrapping a component
@@ -12,7 +12,6 @@ export const BROWSER_APP_PROVIDERS = BROWSER_APP_COMMON_PROVIDERS;
  * See {@link bootstrap} for more information.
  */
 export function bootstrapStatic(appComponentType, customProviders, initReflector) {
-    initDomAdapter();
     if (isPresent(initReflector)) {
         initReflector();
     }

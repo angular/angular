@@ -109,7 +109,6 @@ exports.BROWSER_APP_PROVIDERS = lang_1.CONST_EXPR([
  */
 function bootstrap(appComponentType, customProviders) {
     core_1.reflector.reflectionCapabilities = new reflection_capabilities_1.ReflectionCapabilities();
-    browser_common_2.initDomAdapter();
     var appProviders = lang_1.isPresent(customProviders) ? [exports.BROWSER_APP_PROVIDERS, customProviders] : exports.BROWSER_APP_PROVIDERS;
     return core_1.platform(browser_common_2.BROWSER_PROVIDERS).application(appProviders).bootstrap(appComponentType);
 }
