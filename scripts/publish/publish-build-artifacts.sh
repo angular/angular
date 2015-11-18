@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e -x
 
-DART_BUILD_ARTIFACTS_DIR="dist/dart/angular2"
-JS_BUILD_ARTIFACTS_DIR="dist/js/prod/es5/angular2"
+DART_BUILD_ARTIFACTS_DIR="dist/pub/angular2"
+JS_BUILD_ARTIFACTS_DIR="dist/npm/angular2"
 
 DART_BUILD_BRANCH="builds-dart"
 JS_BUILD_BRANCH="builds-js"
@@ -60,7 +60,10 @@ function publishRepo {
 }
 
 if [[ "$TRAVIS_REPO_SLUG" = "angular/angular" && "$MODE" == "build_only" ]]; then
+  scripts/publish/npm_prepare.sh angular2
   publishRepo "js" "${JS_BUILD_ARTIFACTS_DIR}"
+
+  scripts/publish/pub_prepare.sh angular2
   publishRepo "dart" "${DART_BUILD_ARTIFACTS_DIR}"
   echo "Finished publishing build artifacts"
 fi
