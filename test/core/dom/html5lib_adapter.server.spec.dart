@@ -2,7 +2,7 @@ library angular2.dom.html5lib_adapter.test;
 
 import 'package:guinness/guinness.dart';
 import 'package:unittest/unittest.dart' hide expect;
-import 'package:angular2/src/core/dom/html_adapter.dart';
+import 'package:angular2/src/platform/server/html_adapter.dart';
 
 // A smoke-test of the adapter. It is primarily tested by the compiler.
 main() {

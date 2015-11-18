@@ -1,4 +1,4 @@
-library angular2.test.core.services.ruler_spec;
+library angular2.test.platform.browser.ruler_spec;
 
 import "package:angular2/testing_internal.dart"
     show
@@ -11,9 +11,9 @@ import "package:angular2/testing_internal.dart"
         xit,
         expect,
         SpyObject;
-import "../spies.dart" show SpyElementRef, SpyDomAdapter;
+import "../../core/spies.dart" show SpyElementRef, SpyDomAdapter;
 import "package:angular2/src/core/dom/dom_adapter.dart" show DOM, DomAdapter;
-import "package:angular2/src/core/services/ruler.dart" show Ruler, Rectangle;
+import "package:angular2/src/platform/browser/ruler.dart" show Ruler, Rectangle;
 import "rectangle_mock.dart" show createRectangle;
 
 assertDimensions(Rectangle rect, left, right, top, bottom, width, height) {

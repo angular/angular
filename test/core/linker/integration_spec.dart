@@ -82,8 +82,7 @@ import "package:angular2/src/core/linker/view_ref.dart" show ViewRef, ViewRef_;
 import "package:angular2/src/core/linker/compiler.dart" show Compiler;
 import "package:angular2/src/core/linker/element_ref.dart" show ElementRef;
 import "package:angular2/src/core/linker/template_ref.dart" show TemplateRef;
-import "package:angular2/src/core/render/dom/dom_renderer.dart"
-    show DomRenderer;
+import "package:angular2/src/platform/dom/dom_renderer.dart" show DomRenderer;
 import "package:angular2/src/facade/lang.dart" show IS_DART;
 
 const ANCHOR_ELEMENT = const OpaqueToken("AnchorElement");

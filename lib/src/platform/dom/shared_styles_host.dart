@@ -1,4 +1,4 @@
-library angular2.src.core.render.dom.shared_styles_host;
+library angular2.src.platform.dom.shared_styles_host;
 
 import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/core/di.dart" show Inject, Injectable;

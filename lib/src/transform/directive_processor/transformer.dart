@@ -5,7 +5,7 @@ import 'dart:convert';
 
 import 'package:barback/barback.dart';
 
-import 'package:angular2/src/core/dom/html_adapter.dart';
+import 'package:angular2/src/platform/server/html_adapter.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/options.dart';

@@ -1,4 +1,4 @@
-library angular2.src.core.services.ruler;
+library angular2.src.platform.browser.ruler;
 
 import "package:angular2/src/facade/async.dart" show Future, PromiseWrapper;
 import "package:angular2/src/core/dom/dom_adapter.dart" show DomAdapter;

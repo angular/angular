@@ -26,8 +26,7 @@ import "package:angular2/src/core/linker/dynamic_component_loader.dart"
 import "package:angular2/src/compiler/xhr.dart" show XHR;
 import "package:angular2/src/core/zone/ng_zone.dart" show NgZone;
 import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
-import "package:angular2/src/core/render/dom/events/event_manager.dart"
-    show EventManager, DomEventsPlugin, EVENT_MANAGER_PLUGINS;
+import "package:angular2/core.dart" show EventManager, EVENT_MANAGER_PLUGINS;
 import "package:angular2/src/mock/directive_resolver_mock.dart"
     show MockDirectiveResolver;
 import "package:angular2/src/mock/view_resolver_mock.dart"
@@ -39,7 +38,8 @@ import "package:angular2/src/router/location_strategy.dart"
 import "package:angular2/src/mock/ng_zone_mock.dart" show MockNgZone;
 import "test_component_builder.dart" show TestComponentBuilder;
 import "package:angular2/src/core/di.dart" show Injector;
-import "package:angular2/src/core/debug.dart" show ELEMENT_PROBE_PROVIDERS;
+import "package:angular2/src/platform/browser/debug/debug_element_view_listener.dart"
+    show ELEMENT_PROBE_PROVIDERS;
 import "package:angular2/src/facade/collection.dart" show ListWrapper;
 import "package:angular2/src/facade/lang.dart" show FunctionWrapper, Type;
 import "package:angular2/src/core/linker/view_pool.dart"
@@ -48,15 +48,20 @@ import "package:angular2/src/core/linker/view_manager.dart" show AppViewManager;
 import "package:angular2/src/core/linker/view_manager_utils.dart"
     show AppViewManagerUtils;
 import "package:angular2/src/core/render/api.dart" show Renderer;
-import "package:angular2/src/core/render/render.dart"
-    show DomRenderer, DOCUMENT, SharedStylesHost, DomSharedStylesHost;
+import "package:angular2/src/platform/dom/dom_tokens.dart" show DOCUMENT;
+import "package:angular2/src/platform/dom/dom_renderer.dart" show DomRenderer;
+import "package:angular2/src/platform/dom/shared_styles_host.dart"
+    show DomSharedStylesHost;
+import "package:angular2/src/platform/dom/shared_styles_host.dart"
+    show SharedStylesHost;
+import "package:angular2/src/platform/dom/events/dom_events.dart"
+    show DomEventsPlugin;
 import "package:angular2/src/core/application_tokens.dart" show APP_ID;
 import "package:angular2/src/web_workers/shared/serializer.dart"
     show Serializer;
 import "utils.dart" show Log;
 import "package:angular2/src/compiler/compiler.dart" show COMPILER_PROVIDERS;
-import "package:angular2/src/core/render/dom/dom_renderer.dart"
-    show DomRenderer_;
+import "package:angular2/src/platform/dom/dom_renderer.dart" show DomRenderer_;
 import "package:angular2/src/core/linker/dynamic_component_loader.dart"
     show DynamicComponentLoader_;
 import "package:angular2/src/core/linker/view_manager.dart"

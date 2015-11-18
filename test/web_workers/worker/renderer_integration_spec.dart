@@ -43,7 +43,7 @@ import "package:angular2/src/core/render/api.dart"
         RenderViewRef,
         RenderFragmentRef,
         Renderer;
-import "package:angular2/src/core/render/dom/dom_renderer.dart"
+import "package:angular2/src/platform/dom/dom_renderer.dart"
     show DomRenderer, DomRenderer_;
 import "package:angular2/src/core/render/view.dart" show DefaultRenderView;
 import "package:angular2/src/web_workers/shared/render_proto_view_ref_store.dart"

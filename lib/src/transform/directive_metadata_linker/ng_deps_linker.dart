@@ -2,7 +2,7 @@ library angular2.transform.directive_metadata_linker.ng_deps_linker;
 
 import 'dart:async';
 
-import 'package:angular2/src/core/services.dart';
+import 'package:angular2/compiler.dart' show UrlResolver;
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/transform/common/logging.dart';
 import 'package:angular2/src/transform/common/names.dart';

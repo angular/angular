@@ -18,9 +18,9 @@ main() {
   describe("XHRImpl", () {
     XHRImpl xhr;
     var url200 =
-        "/base/modules/angular2/test/core/services/static_assets/200.html";
+        "/base/modules/angular2/test/platform/browser/static_assets/200.html";
     var url404 =
-        "/base/modules/angular2/test/core/services/static_assets/404.html";
+        "/base/modules/angular2/test/platform/browser/static_assets/404.html";
     beforeEach(() {
       xhr = new XHRImpl();
     });

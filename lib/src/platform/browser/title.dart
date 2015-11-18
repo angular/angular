@@ -1,4 +1,4 @@
-library angular2.src.core.services.title;
+library angular2.src.platform.browser.title;
 
 import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 

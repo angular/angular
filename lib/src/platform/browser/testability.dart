@@ -1,6 +1,6 @@
 library testability.browser_testability;
 
-import './testability.dart';
+import 'package:angular2/core.dart';
 
 import 'dart:html';
 import 'dart:js' as js;
@@ -127,6 +127,23 @@ class BrowserGetTestability implements GetTestability {
       });
     }
     jsRegistry.add(this._createRegistry(registry));
+  }
+
+  findTestabilityInTree(
+      TestabilityRegistry registry, dynamic elem, bool findInAncestors) {
+    if (elem == null) {
+      return null;
+    }
+    var t = registry.getTestability(elem);
+    if (t != null) {
+      return t;
+    } else if (!findInAncestors) {
+      return null;
+    }
+    if (DOM.isShadowRoot(elem)) {
+      return this.findTestabilityInTree(registry, DOM.getHost(elem), true);
+    }
+    return this.findTestabilityInTree(registry, DOM.parentElement(elem), true);
   }
 
   js.JsObject _createRegistry(TestabilityRegistry registry) {

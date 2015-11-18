@@ -1,4 +1,4 @@
-library angular2.src.core.debug.debug_element_view_listener;
+library angular2.src.platform.browser.debug.debug_element_view_listener;
 
 import "package:angular2/src/facade/lang.dart"
     show isPresent, NumberWrapper, StringWrapper;
@@ -10,7 +10,8 @@ import "package:angular2/src/core/linker/view_listener.dart"
 import "package:angular2/src/core/linker/view.dart" show AppView;
 import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/core/render/api.dart" show Renderer;
-import "debug_element.dart" show DebugElement, DebugElement_;
+import "package:angular2/src/core/debug/debug_element.dart"
+    show DebugElement, DebugElement_;
 
 const NG_ID_PROPERTY = "ngid";
 const INSPECT_GLOBAL_NAME = "ng.probe";

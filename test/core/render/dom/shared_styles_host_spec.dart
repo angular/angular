@@ -18,7 +18,7 @@ import "package:angular2/testing_internal.dart"
         SpyObject,
         proxy;
 import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
-import "package:angular2/src/core/render/dom/shared_styles_host.dart"
+import "package:angular2/src/platform/dom/shared_styles_host.dart"
     show DomSharedStylesHost;
 
 main() {

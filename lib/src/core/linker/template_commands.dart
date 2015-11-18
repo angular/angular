@@ -2,7 +2,7 @@ library angular2.src.core.linker.template_commands;
 
 import "package:angular2/src/facade/lang.dart" show Type, isPresent, isBlank;
 import "package:angular2/src/facade/exceptions.dart" show unimplemented;
-import "package:angular2/src/core/render/render.dart"
+import "package:angular2/src/core/render/api.dart"
     show
         RenderTemplateCmd,
         RenderCommandVisitor,

@@ -1,4 +1,4 @@
-library angular2.src.core.render.dom.dom_renderer;
+library angular2.src.platform.dom.dom_renderer;
 
 import "package:angular2/src/core/di.dart" show Inject, Injectable, OpaqueToken;
 import "package:angular2/src/animate/animation_builder.dart"
@@ -7,11 +7,10 @@ import "package:angular2/src/facade/lang.dart"
     show isPresent, isBlank, RegExpWrapper, stringify, StringWrapper;
 import "package:angular2/src/facade/exceptions.dart"
     show BaseException, WrappedException;
-import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
-import "events/event_manager.dart" show EventManager;
 import "shared_styles_host.dart" show DomSharedStylesHost;
-import "../../profile/profile.dart" show WtfScopeFn, wtfLeave, wtfCreateScope;
-import "../api.dart"
+import "package:angular2/src/core/profile/profile.dart"
+    show WtfScopeFn, wtfLeave, wtfCreateScope;
+import "package:angular2/core.dart"
     show
         Renderer,
         RenderProtoViewRef,
@@ -21,14 +20,17 @@ import "../api.dart"
         RenderViewWithFragments,
         RenderTemplateCmd,
         RenderEventDispatcher,
-        RenderComponentTemplate;
+        RenderComponentTemplate,
+        EventManager;
 import "dom_tokens.dart" show DOCUMENT;
-import "../view_factory.dart"
+import "package:angular2/src/core/render/view_factory.dart"
     show createRenderView, NodeFactory, encapsulateStyles;
-import "../view.dart"
+import "package:angular2/src/core/render/view.dart"
     show DefaultRenderView, DefaultRenderFragmentRef, DefaultProtoViewRef;
 import "util.dart" show camelCaseToDashCase;
 import "package:angular2/src/core/metadata.dart" show ViewEncapsulation;
+// TODO move it once DomAdapter is moved
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 
 // TODO(tbosch): solve SVG properly once https://github.com/angular/angular/issues/4417 is done
 const XLINK_NAMESPACE = "http://www.w3.org/1999/xlink";

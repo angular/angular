@@ -1,4 +1,4 @@
-library angular2.test.core.debug.debug_element_view_listener_spec;
+library angular2.test.platform.browser.debug.debug_element_view_listener_spec;
 
 import "package:angular2/testing_internal.dart"
     show
@@ -11,7 +11,7 @@ import "package:angular2/testing_internal.dart"
         expect,
         iit,
         inject,
-        beforeEachBindings,
+        beforeEachProviders,
         it,
         xit,
         TestComponentBuilder;
@@ -20,7 +20,7 @@ import "package:angular2/src/core/linker/view_pool.dart"
     show APP_VIEW_POOL_CAPACITY;
 import "package:angular2/core.dart"
     show provide, Component, Directive, Injectable, View;
-import "package:angular2/src/core/debug.dart" show inspectNativeElement;
+import "package:angular2/platform/browser.dart" show inspectNativeElement;
 import "package:angular2/src/facade/lang.dart" show IS_DART;
 
 @Component(selector: "my-comp")
@@ -32,7 +32,7 @@ class MyComp {
 
 main() {
   describe("element probe", () {
-    beforeEachBindings(() => [provide(APP_VIEW_POOL_CAPACITY, useValue: 0)]);
+    beforeEachProviders(() => [provide(APP_VIEW_POOL_CAPACITY, useValue: 0)]);
     it(
         "should return a TestElement from a dom element",
         inject([TestComponentBuilder, AsyncTestCompleter],

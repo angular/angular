@@ -40,8 +40,7 @@ import "package:angular2/src/core/linker/directive_resolver.dart"
 import "package:angular2/src/core/metadata.dart" show Component;
 import "package:angular2/src/core/linker/view_manager_utils.dart"
     show AppViewManagerUtils;
-import "package:angular2/src/core/render/render.dart"
-    show RenderViewWithFragments;
+import "package:angular2/render.dart" show RenderViewWithFragments;
 
 main() {
   // TODO(tbosch): add more tests here!

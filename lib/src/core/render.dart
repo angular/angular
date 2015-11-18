@@ -1,7 +1,7 @@
 // Public API for render
 library angular2.src.core.render;
 
-export "render/render.dart"
+export "render/api.dart"
     show
         RenderEventDispatcher,
         Renderer,
@@ -10,7 +10,6 @@ export "render/render.dart"
         RenderProtoViewRef,
         RenderFragmentRef,
         RenderViewWithFragments,
-        DOCUMENT,
         RenderTemplateCmd,
         RenderCommandVisitor,
         RenderTextCmd,
@@ -18,4 +17,7 @@ export "render/render.dart"
         RenderBeginElementCmd,
         RenderBeginComponentCmd,
         RenderEmbeddedTemplateCmd,
-        RenderBeginCmd;
+        RenderBeginCmd,
+        RenderComponentTemplate;
+export "render/event_manager.dart"
+    show EventManager, EventManagerPlugin, EVENT_MANAGER_PLUGINS;

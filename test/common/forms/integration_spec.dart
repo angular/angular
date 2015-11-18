@@ -37,7 +37,7 @@ import "package:angular2/core.dart"
         NgForm,
         Validators,
         Validator;
-import "package:angular2/src/core/debug.dart" show By;
+import "package:angular2/platform/browser.dart" show By;
 import "package:angular2/src/facade/collection.dart" show ListWrapper;
 import "package:angular2/src/facade/async.dart" show ObservableWrapper;
 import "package:angular2/src/facade/promise.dart" show PromiseWrapper;

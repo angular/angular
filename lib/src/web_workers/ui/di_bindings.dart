@@ -11,29 +11,31 @@ import "package:angular2/src/core/reflection/reflection.dart"
     show Reflector, reflector;
 import "package:angular2/src/core/change_detection/change_detection.dart"
     show Parser, Lexer;
-import "package:angular2/src/core/render/dom/events/event_manager.dart"
-    show EventManager, DomEventsPlugin, EVENT_MANAGER_PLUGINS;
+import "package:angular2/core.dart" show EventManager, EVENT_MANAGER_PLUGINS;
 import "package:angular2/src/core/linker/proto_view_factory.dart"
     show ProtoViewFactory;
-import "package:angular2/src/core/dom/browser_adapter.dart"
+import "package:angular2/src/platform/browser/browser_adapter.dart"
     show BrowserDomAdapter;
-import "package:angular2/src/core/render/dom/events/key_events.dart"
+import "package:angular2/src/platform/dom/events/key_events.dart"
     show KeyEventsPlugin;
-import "package:angular2/src/core/render/dom/events/hammer_gestures.dart"
+import "package:angular2/src/platform/dom/events/hammer_gestures.dart"
     show HammerGesturesPlugin;
 import "package:angular2/src/core/linker/view_pool.dart"
     show AppViewPool, APP_VIEW_POOL_CAPACITY;
 import "package:angular2/src/core/render/api.dart" show Renderer;
 import "package:angular2/src/compiler/app_root_url.dart" show AppRootUrl;
-import "package:angular2/src/core/render/render.dart"
-    show DomRenderer, DomRenderer_, DOCUMENT;
+import "package:angular2/src/platform/dom/dom_tokens.dart" show DOCUMENT;
+import "package:angular2/src/platform/dom/dom_renderer.dart"
+    show DomRenderer, DomRenderer_;
+import "package:angular2/src/platform/dom/events/dom_events.dart"
+    show DomEventsPlugin;
 import "package:angular2/src/core/application_tokens.dart"
     show APP_ID_RANDOM_PROVIDER;
 import "package:angular2/src/compiler/schema/element_schema_registry.dart"
     show ElementSchemaRegistry;
 import "package:angular2/src/compiler/schema/dom_element_schema_registry.dart"
     show DomElementSchemaRegistry;
-import "package:angular2/src/core/render/dom/shared_styles_host.dart"
+import "package:angular2/src/platform/dom/shared_styles_host.dart"
     show SharedStylesHost, DomSharedStylesHost;
 import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/core/zone/ng_zone.dart" show NgZone;

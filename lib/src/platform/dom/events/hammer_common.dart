@@ -1,6 +1,6 @@
-library angular2.src.core.render.dom.events.hammer_common;
+library angular2.src.platform.dom.events.hammer_common;
 
-import "event_manager.dart" show EventManagerPlugin;
+import "package:angular2/core.dart" show EventManagerPlugin;
 import "package:angular2/src/facade/collection.dart" show StringMapWrapper;
 
 var _eventNames = {

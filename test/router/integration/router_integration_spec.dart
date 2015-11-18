@@ -20,7 +20,7 @@ import "package:angular2/src/core/metadata.dart"
     show Component, Directive, View;
 import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 import "package:angular2/core.dart" show provide;
-import "package:angular2/src/core/render/render.dart" show DOCUMENT;
+import "package:angular2/src/platform/dom/dom_tokens.dart" show DOCUMENT;
 import "package:angular2/src/router/route_config_decorator.dart"
     show RouteConfig, Route, Redirect;
 import "package:angular2/src/facade/async.dart" show PromiseWrapper;

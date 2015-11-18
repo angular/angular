@@ -1,7 +1,14 @@
 library angular2.platform.browser_static;
 
 export "package:angular2/src/platform/browser_common.dart"
-    show BROWSER_PROVIDERS;
+    show
+        BROWSER_PROVIDERS,
+        ELEMENT_PROBE_BINDINGS,
+        ELEMENT_PROBE_PROVIDERS,
+        inspectNativeElement,
+        BrowserDomAdapter,
+        By,
+        Title;
 import "package:angular2/src/facade/lang.dart" show Type, isPresent;
 import "package:angular2/src/facade/promise.dart" show Future;
 import "package:angular2/src/platform/browser_common.dart"

@@ -12,7 +12,7 @@ import "package:angular2/testing_internal.dart"
         expect,
         iit,
         inject,
-        beforeEachBindings,
+        beforeEachProviders,
         it,
         xit,
         containsRegexp,
@@ -36,11 +36,11 @@ import "package:angular2/core.dart"
         ViewContainerRef,
         ViewEncapsulation,
         ViewMetadata;
-import "package:angular2/src/core/debug.dart" show By;
+import "package:angular2/platform/browser.dart" show By;
 
 main() {
   describe("projection", () {
-    beforeEachBindings(
+    beforeEachProviders(
         () => [provide(AppViewListener, useClass: AppViewListener)]);
     it(
         "should support simple components",

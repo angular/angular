@@ -1,6 +1,6 @@
 library angular2.src.testing.benchmark_util;
 
-import "package:angular2/src/core/dom/browser_adapter.dart"
+import "package:angular2/src/platform/browser/browser_adapter.dart"
     show BrowserDomAdapter;
 import "package:angular2/src/facade/browser.dart" show document, window;
 import "package:angular2/src/facade/lang.dart" show NumberWrapper, isBlank;

@@ -3,8 +3,7 @@ library angular2.src.animate.animation;
 import "package:angular2/src/facade/lang.dart"
     show DateWrapper, StringWrapper, RegExpWrapper, NumberWrapper, isPresent;
 import "package:angular2/src/facade/math.dart" show Math;
-import "package:angular2/src/core/render/dom/util.dart"
-    show camelCaseToDashCase;
+import "package:angular2/src/platform/dom/util.dart" show camelCaseToDashCase;
 import "package:angular2/src/facade/collection.dart" show StringMapWrapper;
 import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 import "browser_details.dart" show BrowserDetails;

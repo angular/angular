@@ -27,8 +27,7 @@ import "package:angular2/src/core/render/api.dart" show RenderEventDispatcher;
 import "view_ref.dart" show ViewRef, ProtoViewRef, internalView;
 import "element_ref.dart" show ElementRef;
 import "package:angular2/src/core/pipes/pipes.dart" show ProtoPipes;
-import "package:angular2/src/core/render/dom/util.dart"
-    show camelCaseToDashCase;
+import "package:angular2/src/core/render/util.dart" show camelCaseToDashCase;
 import "template_commands.dart" show TemplateCmd;
 import "view_ref.dart" show ViewRef_, ProtoViewRef_;
 export "package:angular2/src/core/change_detection/interfaces.dart"

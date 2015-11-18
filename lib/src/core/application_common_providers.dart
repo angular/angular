@@ -24,7 +24,7 @@ import "linker/compiler.dart" show Compiler;
 import "linker/compiler.dart" show Compiler_;
 import "linker/dynamic_component_loader.dart" show DynamicComponentLoader;
 import "linker/dynamic_component_loader.dart" show DynamicComponentLoader_;
-import "render/dom/events/event_manager.dart" show EventManager;
+import "render.dart" show EventManager;
 
 /**
  * A default set of providers which should be included in any Angular

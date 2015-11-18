@@ -1,9 +1,9 @@
-library angular2.test.core.services.title_spec;
+library angular2.test.platform.browser.title_spec;
 
 import "package:angular2/testing_internal.dart"
     show ddescribe, describe, it, iit, xit, expect, afterEach;
 import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
-import "package:angular2/src/core/services/title.dart" show Title;
+import "package:angular2/platform/browser.dart" show Title;
 
 main() {
   describe("title service", () {

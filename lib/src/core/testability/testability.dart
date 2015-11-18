@@ -1,7 +1,6 @@
 library angular2.src.core.testability.testability;
 
 import "package:angular2/src/core/di.dart" show Injectable;
-import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/facade/collection.dart"
     show Map, MapWrapper, ListWrapper;
 import "package:angular2/src/facade/exceptions.dart"
@@ -103,10 +102,14 @@ class TestabilityRegistry {
   /** @internal */
   var _applications = new Map<dynamic, Testability>();
   TestabilityRegistry() {
-    testabilityGetter.addToWindow(this);
+    _testabilityGetter.addToWindow(this);
   }
   registerApplication(dynamic token, Testability testability) {
     this._applications[token] = testability;
+  }
+
+  Testability getTestability(dynamic elem) {
+    return this._applications[elem];
   }
 
   List<Testability> getAllTestabilities() {
@@ -115,32 +118,29 @@ class TestabilityRegistry {
 
   Testability findTestabilityInTree(dynamic elem,
       [bool findInAncestors = true]) {
-    if (elem == null) {
-      return null;
-    }
-    if (this._applications.containsKey(elem)) {
-      return this._applications[elem];
-    } else if (!findInAncestors) {
-      return null;
-    }
-    if (DOM.isShadowRoot(elem)) {
-      return this.findTestabilityInTree(DOM.getHost(elem));
-    }
-    return this.findTestabilityInTree(DOM.parentElement(elem));
+    return _testabilityGetter.findTestabilityInTree(
+        this, elem, findInAncestors);
   }
 }
 
 abstract class GetTestability {
   void addToWindow(TestabilityRegistry registry);
+  Testability findTestabilityInTree(
+      TestabilityRegistry registry, dynamic elem, bool findInAncestors);
 }
 
-class NoopGetTestability implements GetTestability {
+class _NoopGetTestability implements GetTestability {
   void addToWindow(TestabilityRegistry registry) {}
-  const NoopGetTestability();
+  Testability findTestabilityInTree(
+      TestabilityRegistry registry, dynamic elem, bool findInAncestors) {
+    return null;
+  }
+
+  const _NoopGetTestability();
 }
 
 void setTestabilityGetter(GetTestability getter) {
-  testabilityGetter = getter;
+  _testabilityGetter = getter;
 }
 
-GetTestability testabilityGetter = const NoopGetTestability();
+GetTestability _testabilityGetter = const _NoopGetTestability();

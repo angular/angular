@@ -2,7 +2,7 @@ library angular2.src.core.dom.dom_adapter;
 
 import "package:angular2/src/facade/lang.dart" show isBlank, Type;
 
-DomAdapter DOM;
+DomAdapter DOM = null;
 setRootDomAdapter(DomAdapter adapter) {
   if (isBlank(DOM)) {
     DOM = adapter;

@@ -1,4 +1,4 @@
-library angular2.src.core.render.dom.util;
+library angular2.src.core.render.util;
 
 import "package:angular2/src/facade/lang.dart" show StringWrapper;
 

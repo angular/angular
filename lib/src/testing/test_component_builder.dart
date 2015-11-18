@@ -15,7 +15,7 @@ import "package:angular2/src/core/linker/view_ref.dart"
 import "package:angular2/src/core/linker/dynamic_component_loader.dart"
     show DynamicComponentLoader, ComponentRef;
 import "utils.dart" show el;
-import "package:angular2/src/core/render/render.dart" show DOCUMENT;
+import "package:angular2/src/platform/dom/dom_tokens.dart" show DOCUMENT;
 import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/core/debug/debug_element.dart"
     show DebugElement, DebugElement_;

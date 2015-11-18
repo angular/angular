@@ -2,7 +2,7 @@ library angular2.test.core.render.dom.events.key_events_spec;
 
 import "package:angular2/testing_internal.dart"
     show describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, el;
-import "package:angular2/src/core/render/dom/events/key_events.dart"
+import "package:angular2/src/platform/dom/events/key_events.dart"
     show KeyEventsPlugin;
 
 main() {

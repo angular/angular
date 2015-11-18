@@ -11,7 +11,7 @@ import "package:angular2/src/web_workers/shared/message_bus.dart"
     show MessageBus, MessageBusSink;
 import "package:angular2/src/core/application_ref.dart" show createNgZone;
 import "package:angular2/src/core/di.dart" show Injectable;
-import "package:angular2/src/core/dom/browser_adapter.dart"
+import "package:angular2/src/platform/browser/browser_adapter.dart"
     show BrowserDomAdapter;
 import "package:angular2/src/core/profile/wtf_init.dart" show wtfInit;
 import "package:angular2/src/web_workers/ui/setup.dart" show WebWorkerSetup;

@@ -30,7 +30,7 @@ import "template_commands.dart"
         IBeginElementCmd,
         TextCmd,
         NgContentCmd;
-import "package:angular2/render.dart" show Renderer;
+import "package:angular2/src/core/render/api.dart" show Renderer;
 import "package:angular2/src/core/application_tokens.dart" show APP_ID;
 
 @Injectable()
