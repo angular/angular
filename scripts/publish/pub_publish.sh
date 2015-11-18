@@ -21,17 +21,12 @@ gulp build.dart.material
 
 PKG_DIR=$ROOT_DIR/dist/pub
 rm -fr $PKG_DIR
-FILES='!(e2e_test|pubspec.lock)'
 
 function publishModule {
   NAME=$1
   PUBLISH_DIR=$PKG_DIR/$NAME
-  rm -fr $PUBLISH_DIR
-  mkdir -p $PUBLISH_DIR
 
-  cp -RP $ROOT_DIR/dist/dart/$NAME/$FILES $PUBLISH_DIR
-
-  node scripts/publish/pubspec_cleaner.js --pubspec-file=$PUBLISH_DIR/pubspec.yaml
+  scripts/publish/pub_prepare.sh $NAME
 
   if [[ "$DRY_RUN" == "false" ]]; then
     (cd $PUBLISH_DIR && pub publish -f)
