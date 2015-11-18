@@ -92,7 +92,7 @@ var EventDispatcher = (function () {
         }
         var serializedLocals = collection_1.StringMapWrapper.create();
         collection_1.StringMapWrapper.set(serializedLocals, '$event', serializedEvent);
-        async_1.ObservableWrapper.callEmit(this._sink, {
+        async_1.ObservableWrapper.callNext(this._sink, {
             "viewRef": this._serializer.serialize(this._viewRef, api_1.RenderViewRef),
             "elementIndex": elementIndex,
             "eventName": eventName,

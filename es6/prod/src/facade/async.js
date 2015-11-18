@@ -23,11 +23,7 @@ export class ObservableWrapper {
      */
     static hasSubscribers(obs) { return obs.observers.length > 0; }
     static dispose(subscription) { subscription.unsubscribe(); }
-    /**
-     * @deprecated - use callEmit() instead
-     */
     static callNext(emitter, value) { emitter.next(value); }
-    static callEmit(emitter, value) { emitter.emit(value); }
     static callError(emitter, error) { emitter.error(error); }
     static callComplete(emitter) { emitter.complete(); }
     static fromPromise(promise) {
@@ -61,9 +57,9 @@ export class ObservableWrapper {
  *   toggle() {
  *     this.visible = !this.visible;
  *     if (this.visible) {
- *       this.open.emit(null);
+ *       this.open.next(null);
  *     } else {
- *       this.close.emit(null);
+ *       this.close.next(null);
  *     }
  *   }
  * }
@@ -83,11 +79,6 @@ export class EventEmitter extends Subject {
         super();
         this._isAsync = isAsync;
     }
-    emit(value) { super.next(value); }
-    /**
-     * @deprecated - use .emit(value) instead
-     */
-    next(value) { super.next(value); }
     subscribe(generatorOrNext, error, complete) {
         if (generatorOrNext && typeof generatorOrNext === 'object') {
             let schedulerFn = this._isAsync ?

@@ -142,7 +142,7 @@ export class NgZone {
     get onTurnStart() { return this._onTurnStartEvents; }
     /** @internal */
     _notifyOnTurnStart(parentRun) {
-        parentRun.call(this._innerZone, () => { this._onTurnStartEvents.emit(null); });
+        parentRun.call(this._innerZone, () => { this._onTurnStartEvents.next(null); });
     }
     /**
      * Sets the zone hook that is called immediately after Angular zone is done processing the current
@@ -168,7 +168,7 @@ export class NgZone {
     get onTurnDone() { return this._onTurnDoneEvents; }
     /** @internal */
     _notifyOnTurnDone(parentRun) {
-        parentRun.call(this._innerZone, () => { this._onTurnDoneEvents.emit(null); });
+        parentRun.call(this._innerZone, () => { this._onTurnDoneEvents.next(null); });
     }
     /**
      * Sets the zone hook that is called immediately after the `onTurnDone` callback is called and any
@@ -205,7 +205,7 @@ export class NgZone {
     get onEventDone() { return this._onEventDoneEvents; }
     /** @internal */
     _notifyOnEventDone() {
-        this.runOutsideAngular(() => { this._onEventDoneEvents.emit(null); });
+        this.runOutsideAngular(() => { this._onEventDoneEvents.next(null); });
     }
     /**
      * Whether there are any outstanding microtasks.
@@ -383,7 +383,7 @@ export class NgZone {
                 zone = zone.parent;
             }
             if (ObservableWrapper.hasSubscribers(this._onErrorEvents)) {
-                ObservableWrapper.callEmit(this._onErrorEvents, new NgZoneError(e, trace));
+                ObservableWrapper.callNext(this._onErrorEvents, new NgZoneError(e, trace));
             }
             if (isPresent(this._onErrorHandler)) {
                 this._onErrorHandler(e, trace);

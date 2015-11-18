@@ -110,7 +110,7 @@ export class NgFormControl extends NgControl implements OnChanges {
 
   viewToModelUpdate(newValue: any): void {
     this.viewModel = newValue;
-    ObservableWrapper.callEmit(this.update, newValue);
+    ObservableWrapper.callNext(this.update, newValue);
   }
 
   private _isControlChanged(changes: {[key: string]: any}): boolean {

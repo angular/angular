@@ -125,9 +125,9 @@ export class PostMessageBusSource implements MessageBusSource {
     if (StringMapWrapper.contains(this._channels, channel)) {
       var channelInfo = this._channels[channel];
       if (channelInfo.runInZone) {
-        this._zone.run(() => { channelInfo.emitter.emit(data.message); });
+        this._zone.run(() => { channelInfo.emitter.next(data.message); });
       } else {
-        channelInfo.emitter.emit(data.message);
+        channelInfo.emitter.next(data.message);
       }
     }
   }

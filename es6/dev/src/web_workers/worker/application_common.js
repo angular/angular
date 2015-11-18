@@ -107,7 +107,7 @@ export function bootstrapWebWorkerCommon(appComponentType, bus, appProviders = n
             bootstrapProcess.resolve(bindings);
             ObservableWrapper.dispose(subscription);
         });
-        ObservableWrapper.callEmit(bus.to(SETUP_CHANNEL), "ready");
+        ObservableWrapper.callNext(bus.to(SETUP_CHANNEL), "ready");
         return bootstrapProcess.promise;
     });
     return PromiseWrapper.then(appPromise, (app) => app.bootstrap(appComponentType));

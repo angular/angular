@@ -117,7 +117,7 @@ export class NgControlName extends NgControl implements OnChanges,
 
   viewToModelUpdate(newValue: any): void {
     this.viewModel = newValue;
-    ObservableWrapper.callEmit(this.update, newValue);
+    ObservableWrapper.callNext(this.update, newValue);
   }
 
   get path(): string[] { return controlPath(this.name, this._parent); }

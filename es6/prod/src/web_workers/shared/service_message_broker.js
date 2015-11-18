@@ -72,7 +72,7 @@ export class ServiceMessageBroker_ extends ServiceMessageBroker {
     }
     _wrapWebWorkerPromise(id, promise, type) {
         PromiseWrapper.then(promise, (result) => {
-            ObservableWrapper.callEmit(this._sink, { 'type': 'result', 'value': this._serializer.serialize(result, type), 'id': id });
+            ObservableWrapper.callNext(this._sink, { 'type': 'result', 'value': this._serializer.serialize(result, type), 'id': id });
         });
     }
 }

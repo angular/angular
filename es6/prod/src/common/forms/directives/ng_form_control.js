@@ -93,7 +93,7 @@ export let NgFormControl = class extends NgControl {
     get control() { return this.form; }
     viewToModelUpdate(newValue) {
         this.viewModel = newValue;
-        ObservableWrapper.callEmit(this.update, newValue);
+        ObservableWrapper.callNext(this.update, newValue);
     }
     _isControlChanged(changes) {
         return StringMapWrapper.contains(changes, "form");

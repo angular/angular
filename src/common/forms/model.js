@@ -146,8 +146,8 @@ var AbstractControl = (function () {
             this._runAsyncValidator(emitEvent);
         }
         if (emitEvent) {
-            async_1.ObservableWrapper.callEmit(this._valueChanges, this._value);
-            async_1.ObservableWrapper.callEmit(this._statusChanges, this._status);
+            async_1.ObservableWrapper.callNext(this._valueChanges, this._value);
+            async_1.ObservableWrapper.callNext(this._statusChanges, this._status);
         }
         if (lang_1.isPresent(this._parent) && !onlySelf) {
             this._parent.updateValueAndValidity({ onlySelf: onlySelf, emitEvent: emitEvent });
@@ -198,7 +198,7 @@ var AbstractControl = (function () {
         this._errors = errors;
         this._status = this._calculateStatus();
         if (emitEvent) {
-            async_1.ObservableWrapper.callEmit(this._statusChanges, this._status);
+            async_1.ObservableWrapper.callNext(this._statusChanges, this._status);
         }
         if (lang_1.isPresent(this._parent)) {
             this._parent._updateControlsErrors();

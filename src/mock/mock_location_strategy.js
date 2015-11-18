@@ -18,7 +18,7 @@ var MockLocationStrategy = (function (_super) {
     }
     MockLocationStrategy.prototype.simulatePopState = function (url) {
         this.internalPath = url;
-        async_1.ObservableWrapper.callEmit(this._subject, null);
+        async_1.ObservableWrapper.callNext(this._subject, null);
     };
     MockLocationStrategy.prototype.path = function () { return this.internalPath; };
     MockLocationStrategy.prototype.prepareExternalUrl = function (internal) {
@@ -28,7 +28,7 @@ var MockLocationStrategy = (function (_super) {
         return this.internalBaseHref + internal;
     };
     MockLocationStrategy.prototype.simulateUrlPop = function (pathname) {
-        async_1.ObservableWrapper.callEmit(this._subject, { 'url': pathname });
+        async_1.ObservableWrapper.callNext(this._subject, { 'url': pathname });
     };
     MockLocationStrategy.prototype.pushState = function (ctx, title, path, query) {
         this.internalTitle = title;

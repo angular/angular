@@ -93,8 +93,8 @@ export class AbstractControl {
             this._runAsyncValidator(emitEvent);
         }
         if (emitEvent) {
-            ObservableWrapper.callEmit(this._valueChanges, this._value);
-            ObservableWrapper.callEmit(this._statusChanges, this._status);
+            ObservableWrapper.callNext(this._valueChanges, this._value);
+            ObservableWrapper.callNext(this._statusChanges, this._status);
         }
         if (isPresent(this._parent) && !onlySelf) {
             this._parent.updateValueAndValidity({ onlySelf: onlySelf, emitEvent: emitEvent });
@@ -143,7 +143,7 @@ export class AbstractControl {
         this._errors = errors;
         this._status = this._calculateStatus();
         if (emitEvent) {
-            ObservableWrapper.callEmit(this._statusChanges, this._status);
+            ObservableWrapper.callNext(this._statusChanges, this._status);
         }
         if (isPresent(this._parent)) {
             this._parent._updateControlsErrors();

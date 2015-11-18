@@ -12,7 +12,7 @@ export class MockLocationStrategy extends LocationStrategy {
     }
     simulatePopState(url) {
         this.internalPath = url;
-        ObservableWrapper.callEmit(this._subject, null);
+        ObservableWrapper.callNext(this._subject, null);
     }
     path() { return this.internalPath; }
     prepareExternalUrl(internal) {
@@ -22,7 +22,7 @@ export class MockLocationStrategy extends LocationStrategy {
         return this.internalBaseHref + internal;
     }
     simulateUrlPop(pathname) {
-        ObservableWrapper.callEmit(this._subject, { 'url': pathname });
+        ObservableWrapper.callNext(this._subject, { 'url': pathname });
     }
     pushState(ctx, title, path, query) {
         this.internalTitle = title;

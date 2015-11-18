@@ -101,7 +101,7 @@ export class EventDispatcher implements RenderEventDispatcher {
     var serializedLocals = StringMapWrapper.create();
     StringMapWrapper.set(serializedLocals, '$event', serializedEvent);
 
-    ObservableWrapper.callEmit(this._sink, {
+    ObservableWrapper.callNext(this._sink, {
       "viewRef": this._serializer.serialize(this._viewRef, RenderViewRef),
       "elementIndex": elementIndex,
       "eventName": eventName,

@@ -16,7 +16,7 @@ var SpyLocation = (function () {
     SpyLocation.prototype.setInitialPath = function (url) { this._path = url; };
     SpyLocation.prototype.setBaseHref = function (url) { this._baseHref = url; };
     SpyLocation.prototype.path = function () { return this._path; };
-    SpyLocation.prototype.simulateUrlPop = function (pathname) { async_1.ObservableWrapper.callEmit(this._subject, { 'url': pathname }); };
+    SpyLocation.prototype.simulateUrlPop = function (pathname) { async_1.ObservableWrapper.callNext(this._subject, { 'url': pathname }); };
     SpyLocation.prototype.prepareExternalUrl = function (url) {
         if (url.length > 0 && !url.startsWith('/')) {
             url = '/' + url;

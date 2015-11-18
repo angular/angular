@@ -119,7 +119,7 @@ var ClientMessageBroker_ = (function (_super) {
         if (id != null) {
             message['id'] = id;
         }
-        async_1.ObservableWrapper.callEmit(this._sink, message);
+        async_1.ObservableWrapper.callNext(this._sink, message);
         return promise;
     };
     ClientMessageBroker_.prototype._handleMessage = function (message) {

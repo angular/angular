@@ -93,7 +93,7 @@ var ServiceMessageBroker_ = (function (_super) {
     ServiceMessageBroker_.prototype._wrapWebWorkerPromise = function (id, promise, type) {
         var _this = this;
         async_1.PromiseWrapper.then(promise, function (result) {
-            async_1.ObservableWrapper.callEmit(_this._sink, { 'type': 'result', 'value': _this._serializer.serialize(result, type), 'id': id });
+            async_1.ObservableWrapper.callNext(_this._sink, { 'type': 'result', 'value': _this._serializer.serialize(result, type), 'id': id });
         });
     };
     return ServiceMessageBroker_;

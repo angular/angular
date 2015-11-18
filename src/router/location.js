@@ -60,7 +60,7 @@ var Location = (function () {
         this._subject = new async_1.EventEmitter();
         var browserBaseHref = this.platformStrategy.getBaseHref();
         this._baseHref = stripTrailingSlash(stripIndexHtml(browserBaseHref));
-        this.platformStrategy.onPopState(function (_) { async_1.ObservableWrapper.callEmit(_this._subject, { 'url': _this.path(), 'pop': true }); });
+        this.platformStrategy.onPopState(function (_) { async_1.ObservableWrapper.callNext(_this._subject, { 'url': _this.path(), 'pop': true }); });
     }
     /**
      * Returns the normalized URL path.

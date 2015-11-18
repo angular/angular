@@ -101,7 +101,7 @@ export let NgControlName = class extends NgControl {
     onDestroy() { this.formDirective.removeControl(this); }
     viewToModelUpdate(newValue) {
         this.viewModel = newValue;
-        ObservableWrapper.callEmit(this.update, newValue);
+        ObservableWrapper.callNext(this.update, newValue);
     }
     get path() { return controlPath(this.name, this._parent); }
     get formDirective() { return this._parent.formDirective; }
