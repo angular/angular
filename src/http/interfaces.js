@@ -1,4 +1,4 @@
-/**
+'use strict';/**
  * Abstract class from which real backends are derived.
  *
  * The primary purpose of a `ConnectionBackend` is to create new connections to fulfill a given

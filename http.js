@@ -1,4 +1,4 @@
-/**
+'use strict';/**
  * @module
  * @description
  * The http module provides services to perform http requests. To get started, see the {@link Http}

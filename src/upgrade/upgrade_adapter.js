@@ -1,4 +1,4 @@
-var angular2_1 = require('angular2/angular2');
+'use strict';var angular2_1 = require('angular2/angular2');
 var async_1 = require('angular2/src/facade/async');
 var browser_1 = require('angular2/platform/browser');
 var metadata_1 = require('./metadata');

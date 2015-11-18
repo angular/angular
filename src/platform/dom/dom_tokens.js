@@ -1,4 +1,4 @@
-var di_1 = require('angular2/src/core/di');
+'use strict';var di_1 = require('angular2/src/core/di');
 var lang_1 = require('angular2/src/facade/lang');
 /**
  * A DI Token representing the main rendering context. In a browser this is the DOM Document.

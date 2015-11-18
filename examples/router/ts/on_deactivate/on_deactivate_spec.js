@@ -1,4 +1,4 @@
-var e2e_util_1 = require('angular2/src/testing/e2e_util');
+'use strict';var e2e_util_1 = require('angular2/src/testing/e2e_util');
 function waitForElement(selector) {
     var EC = protractor.ExpectedConditions;
     // Waits for the element with id 'abc' to be present on the dom.

@@ -1,4 +1,4 @@
-var collection_1 = require('angular2/src/facade/collection');
+'use strict';var collection_1 = require('angular2/src/facade/collection');
 var lang_1 = require('angular2/src/facade/lang');
 /**
  * This file is a port of shadowCSS from webcomponents.js to TypeScript.

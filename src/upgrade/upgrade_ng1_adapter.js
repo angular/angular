@@ -1,4 +1,4 @@
-var angular2_1 = require('angular2/angular2');
+'use strict';var angular2_1 = require('angular2/angular2');
 var constants_1 = require('./constants');
 var util_1 = require('./util');
 var angular = require('./angular_js');

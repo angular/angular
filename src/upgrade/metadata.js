@@ -1,4 +1,4 @@
-var angular2_1 = require('angular2/angular2');
+'use strict';var angular2_1 = require('angular2/angular2');
 var COMPONENT_SELECTOR = /^[\w|-]*$/;
 var SKEWER_CASE = /-(\w)/g;
 var directiveResolver = new angular2_1.DirectiveResolver();

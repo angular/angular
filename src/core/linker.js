@@ -1,4 +1,4 @@
-// Public API for compiler
+'use strict';// Public API for compiler
 var directive_resolver_1 = require('./linker/directive_resolver');
 exports.DirectiveResolver = directive_resolver_1.DirectiveResolver;
 var view_resolver_1 = require('./linker/view_resolver');

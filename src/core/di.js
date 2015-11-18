@@ -1,4 +1,4 @@
-/**
+'use strict';/**
  * @module
  * @description
  * The `di` module provides dependency injection container services.

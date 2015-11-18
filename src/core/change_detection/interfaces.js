@@ -1,4 +1,4 @@
-var DebugContext = (function () {
+'use strict';var DebugContext = (function () {
     function DebugContext(element, componentElement, directive, context, locals, injector) {
         this.element = element;
         this.componentElement = componentElement;

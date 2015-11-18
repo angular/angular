@@ -1,4 +1,4 @@
-var webdriver = require('selenium-webdriver');
+'use strict';var webdriver = require('selenium-webdriver');
 exports.browser = global['browser'];
 exports.$ = global['$'];
 function clickAll(buttonSelectors) {

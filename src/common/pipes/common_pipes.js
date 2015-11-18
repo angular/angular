@@ -1,4 +1,4 @@
-/**
+'use strict';/**
  * @module
  * @description
  * This module provides a set of common Pipes.

@@ -1,4 +1,4 @@
-function stringify(obj) {
+'use strict';function stringify(obj) {
     if (typeof obj == 'function')
         return obj.name || obj.toString();
     return '' + obj;

@@ -1,4 +1,4 @@
-function __export(m) {
+'use strict';function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 var post_message_bus_1 = require('angular2/src/web_workers/shared/post_message_bus');

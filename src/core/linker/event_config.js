@@ -1,4 +1,4 @@
-exports.EVENT_TARGET_SEPARATOR = ':';
+'use strict';exports.EVENT_TARGET_SEPARATOR = ':';
 var EventConfig = (function () {
     function EventConfig(fieldName, eventName, isLongForm) {
         this.fieldName = fieldName;
