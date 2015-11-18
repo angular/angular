@@ -3,6 +3,7 @@ library angular2.src.transform.transformer;
 import 'package:barback/barback.dart';
 import 'package:dart_style/dart_style.dart';
 
+import 'common/eager_transformer_wrapper.dart';
 import 'common/formatter.dart' as formatter;
 import 'common/options.dart';
 import 'common/options_reader.dart';
@@ -41,6 +42,10 @@ class AngularTransformerGroup extends TransformerGroup {
           new TemplateCompiler(options)
         ],
       ];
+    }
+    if (options.modeName == BarbackMode.RELEASE || !options.lazyTransformers) {
+      phases = phases
+          .map((phase) => phase.map((t) => new EagerTransformerWrapper(t)));
     }
     return new AngularTransformerGroup._(phases,
         formatCode: options.formatCode);

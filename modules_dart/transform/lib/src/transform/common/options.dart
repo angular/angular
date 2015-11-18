@@ -15,6 +15,7 @@ const PLATFORM_DIRECTIVES = 'platform_directives';
 const INIT_REFLECTOR_PARAM = 'init_reflector';
 const INLINE_VIEWS_PARAM = 'inline_views';
 const MIRROR_MODE_PARAM = 'mirror_mode';
+const LAZY_TRANSFORMERS = 'lazy_transformers';
 
 /// Provides information necessary to transform an Angular2 app.
 class TransformerOptions {
@@ -56,6 +57,13 @@ class TransformerOptions {
   /// at any time.
   final bool inlineViews;
 
+  /// Whether to make transformers lazy.
+  /// If this is `true`, and in `debug` mode only, the transformers will be
+  /// lazy (will only build assets that are requested).
+  /// This is undocumented, for testing purposes only, and may change or break
+  /// at any time.
+  final bool lazyTransformers;
+
   TransformerOptions._internal(
       this.entryPoints,
       this.entryPointGlobs,
@@ -66,6 +74,7 @@ class TransformerOptions {
       {this.reflectPropertiesAsAttributes,
       this.platformDirectives,
       this.inlineViews,
+      this.lazyTransformers,
       this.formatCode});
 
   factory TransformerOptions(List<String> entryPoints,
@@ -76,6 +85,7 @@ class TransformerOptions {
       bool inlineViews: false,
       bool reflectPropertiesAsAttributes: true,
       List<String> platformDirectives,
+      bool lazyTransformers: false,
       bool formatCode: false}) {
     var annotationMatcher = new AnnotationMatcher()
       ..addAll(customAnnotationDescriptors);
@@ -87,6 +97,7 @@ class TransformerOptions {
         reflectPropertiesAsAttributes: reflectPropertiesAsAttributes,
         platformDirectives: platformDirectives,
         inlineViews: inlineViews,
+        lazyTransformers: lazyTransformers,
         formatCode: formatCode);
   }
 }
