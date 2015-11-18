@@ -18042,7 +18042,7 @@ System.register("angular2/src/core/linker/query_list", ["angular2/src/facade/col
       this._results = res;
     };
     QueryList.prototype.notifyOnChanges = function() {
-      this._emitter.next(this);
+      this._emitter.emit(this);
     };
     return QueryList;
   })();
@@ -18576,7 +18576,7 @@ System.register("angular2/src/core/zone/ng_zone", ["angular2/src/facade/collecti
     NgZone.prototype._notifyOnTurnStart = function(parentRun) {
       var _this = this;
       parentRun.call(this._innerZone, function() {
-        _this._onTurnStartEvents.next(null);
+        _this._onTurnStartEvents.emit(null);
       });
     };
     NgZone.prototype.overrideOnTurnDone = function(onTurnDoneHook) {
@@ -18592,7 +18592,7 @@ System.register("angular2/src/core/zone/ng_zone", ["angular2/src/facade/collecti
     NgZone.prototype._notifyOnTurnDone = function(parentRun) {
       var _this = this;
       parentRun.call(this._innerZone, function() {
-        _this._onTurnDoneEvents.next(null);
+        _this._onTurnDoneEvents.emit(null);
       });
     };
     NgZone.prototype.overrideOnEventDone = function(onEventDoneFn, opt_waitForAsync) {
@@ -18621,7 +18621,7 @@ System.register("angular2/src/core/zone/ng_zone", ["angular2/src/facade/collecti
     NgZone.prototype._notifyOnEventDone = function() {
       var _this = this;
       this.runOutsideAngular(function() {
-        _this._onEventDoneEvents.next(null);
+        _this._onEventDoneEvents.emit(null);
       });
     };
     Object.defineProperty(NgZone.prototype, "hasPendingMicrotasks", {
@@ -18773,7 +18773,7 @@ System.register("angular2/src/core/zone/ng_zone", ["angular2/src/facade/collecti
           zone = zone.parent;
         }
         if (async_1.ObservableWrapper.hasSubscribers(this._onErrorEvents)) {
-          async_1.ObservableWrapper.callNext(this._onErrorEvents, new NgZoneError(e, trace));
+          async_1.ObservableWrapper.callEmit(this._onErrorEvents, new NgZoneError(e, trace));
         }
         if (lang_1.isPresent(this._onErrorHandler)) {
           this._onErrorHandler(e, trace);
@@ -19420,8 +19420,8 @@ System.register("angular2/src/common/forms/model", ["angular2/src/facade/lang", 
         this._runAsyncValidator(emitEvent);
       }
       if (emitEvent) {
-        async_1.ObservableWrapper.callNext(this._valueChanges, this._value);
-        async_1.ObservableWrapper.callNext(this._statusChanges, this._status);
+        async_1.ObservableWrapper.callEmit(this._valueChanges, this._value);
+        async_1.ObservableWrapper.callEmit(this._statusChanges, this._status);
       }
       if (lang_1.isPresent(this._parent) && !onlySelf) {
         this._parent.updateValueAndValidity({
@@ -19455,7 +19455,7 @@ System.register("angular2/src/common/forms/model", ["angular2/src/facade/lang", 
       this._errors = errors;
       this._status = this._calculateStatus();
       if (emitEvent) {
-        async_1.ObservableWrapper.callNext(this._statusChanges, this._status);
+        async_1.ObservableWrapper.callEmit(this._statusChanges, this._status);
       }
       if (lang_1.isPresent(this._parent)) {
         this._parent._updateControlsErrors();
@@ -20369,7 +20369,7 @@ System.register("angular2/src/common/forms/directives/ng_form_control", ["angula
     });
     NgFormControl.prototype.viewToModelUpdate = function(newValue) {
       this.viewModel = newValue;
-      async_1.ObservableWrapper.callNext(this.update, newValue);
+      async_1.ObservableWrapper.callEmit(this.update, newValue);
     };
     NgFormControl.prototype._isControlChanged = function(changes) {
       return collection_1.StringMapWrapper.contains(changes, "form");
@@ -20492,7 +20492,7 @@ System.register("angular2/src/common/forms/directives/ng_model", ["angular2/src/
     });
     NgModel.prototype.viewToModelUpdate = function(newValue) {
       this.viewModel = newValue;
-      async_1.ObservableWrapper.callNext(this.update, newValue);
+      async_1.ObservableWrapper.callEmit(this.update, newValue);
     };
     NgModel = __decorate([metadata_1.Directive({
       selector: '[ng-model]:not([ng-control]):not([ng-form-control])',
@@ -20740,7 +20740,7 @@ System.register("angular2/src/common/forms/directives/ng_form_model", ["angular2
       ctrl.updateValue(value);
     };
     NgFormModel.prototype.onSubmit = function() {
-      async_1.ObservableWrapper.callNext(this.ngSubmit, null);
+      async_1.ObservableWrapper.callEmit(this.ngSubmit, null);
       return false;
     };
     NgFormModel.prototype._updateDomValue = function() {
@@ -20906,7 +20906,7 @@ System.register("angular2/src/common/forms/directives/ng_form", ["angular2/src/f
       });
     };
     NgForm.prototype.onSubmit = function() {
-      async_1.ObservableWrapper.callNext(this.ngSubmit, null);
+      async_1.ObservableWrapper.callEmit(this.ngSubmit, null);
       return false;
     };
     NgForm.prototype._findContainer = function(path) {
@@ -29699,7 +29699,7 @@ System.register("angular2/src/upgrade/upgrade_ng1_adapter", ["angular2/angular2"
         var emitter = this[outputs[j]] = new angular2_1.EventEmitter();
         this.setComponentProperty(outputs[j], (function(emitter) {
           return function(value) {
-            return emitter.next(value);
+            return emitter.emit(value);
           };
         })(emitter));
       }
@@ -29727,7 +29727,7 @@ System.register("angular2/src/upgrade/upgrade_ng1_adapter", ["angular2/angular2"
         if (value !== last) {
           if (typeof value == 'number' && isNaN(value) && typeof last == 'number' && isNaN(last)) {} else {
             var eventEmitter = this[this.propOuts[i]];
-            eventEmitter.next(lastValues[i] = value);
+            eventEmitter.emit(lastValues[i] = value);
           }
         }
       }
@@ -31744,7 +31744,7 @@ System.register("angular2/src/common/forms/directives/ng_control_name", ["angula
     };
     NgControlName.prototype.viewToModelUpdate = function(newValue) {
       this.viewModel = newValue;
-      async_1.ObservableWrapper.callNext(this.update, newValue);
+      async_1.ObservableWrapper.callEmit(this.update, newValue);
     };
     Object.defineProperty(NgControlName.prototype, "path", {
       get: function() {
@@ -38066,6 +38066,9 @@ System.register("angular2/src/facade/async", ["angular2/src/facade/lang", "angul
     ObservableWrapper.callNext = function(emitter, value) {
       emitter.next(value);
     };
+    ObservableWrapper.callEmit = function(emitter, value) {
+      emitter.emit(value);
+    };
     ObservableWrapper.callError = function(emitter, error) {
       emitter.error(error);
     };
@@ -38090,6 +38093,12 @@ System.register("angular2/src/facade/async", ["angular2/src/facade/lang", "angul
       _super.call(this);
       this._isAsync = isAsync;
     }
+    EventEmitter.prototype.emit = function(value) {
+      _super.prototype.next.call(this, value);
+    };
+    EventEmitter.prototype.next = function(value) {
+      _super.prototype.next.call(this, value);
+    };
     EventEmitter.prototype.subscribe = function(generatorOrNext, error, complete) {
       if (generatorOrNext && typeof generatorOrNext === 'object') {
         var schedulerFn = this._isAsync ? function(value) {

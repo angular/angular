@@ -115,7 +115,7 @@ var NgFormControl = (function (_super) {
     });
     NgFormControl.prototype.viewToModelUpdate = function (newValue) {
         this.viewModel = newValue;
-        async_1.ObservableWrapper.callNext(this.update, newValue);
+        async_1.ObservableWrapper.callEmit(this.update, newValue);
     };
     NgFormControl.prototype._isControlChanged = function (changes) {
         return collection_1.StringMapWrapper.contains(changes, "form");

@@ -16,7 +16,7 @@ export class SpyLocation {
     setInitialPath(url) { this._path = url; }
     setBaseHref(url) { this._baseHref = url; }
     path() { return this._path; }
-    simulateUrlPop(pathname) { ObservableWrapper.callNext(this._subject, { 'url': pathname }); }
+    simulateUrlPop(pathname) { ObservableWrapper.callEmit(this._subject, { 'url': pathname }); }
     prepareExternalUrl(url) {
         if (url.length > 0 && !url.startsWith('/')) {
             url = '/' + url;

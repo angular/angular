@@ -107,7 +107,7 @@ var NgControlName = (function (_super) {
     NgControlName.prototype.onDestroy = function () { this.formDirective.removeControl(this); };
     NgControlName.prototype.viewToModelUpdate = function (newValue) {
         this.viewModel = newValue;
-        async_1.ObservableWrapper.callNext(this.update, newValue);
+        async_1.ObservableWrapper.callEmit(this.update, newValue);
     };
     Object.defineProperty(NgControlName.prototype, "path", {
         get: function () { return shared_1.controlPath(this.name, this._parent); },

@@ -194,7 +194,7 @@ class UpgradeNg1ComponentAdapter {
         }
         for (var j = 0; j < outputs.length; j++) {
             var emitter = this[outputs[j]] = new EventEmitter();
-            this.setComponentProperty(outputs[j], ((emitter) => (value) => emitter.next(value))(emitter));
+            this.setComponentProperty(outputs[j], ((emitter) => (value) => emitter.emit(value))(emitter));
         }
         for (var k = 0; k < propOuts.length; k++) {
             this[propOuts[k]] = new EventEmitter();
@@ -222,7 +222,7 @@ class UpgradeNg1ComponentAdapter {
                 }
                 else {
                     var eventEmitter = this[this.propOuts[i]];
-                    eventEmitter.next(lastValues[i] = value);
+                    eventEmitter.emit(lastValues[i] = value);
                 }
             }
         }

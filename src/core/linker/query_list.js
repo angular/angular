@@ -73,7 +73,7 @@ var QueryList = (function () {
      */
     QueryList.prototype.reset = function (res) { this._results = res; };
     /** @internal */
-    QueryList.prototype.notifyOnChanges = function () { this._emitter.next(this); };
+    QueryList.prototype.notifyOnChanges = function () { this._emitter.emit(this); };
     return QueryList;
 })();
 exports.QueryList = QueryList;

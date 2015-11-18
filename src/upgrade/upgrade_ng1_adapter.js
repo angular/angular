@@ -197,7 +197,7 @@ var UpgradeNg1ComponentAdapter = (function () {
         }
         for (var j = 0; j < outputs.length; j++) {
             var emitter = this[outputs[j]] = new angular2_1.EventEmitter();
-            this.setComponentProperty(outputs[j], (function (emitter) { return function (value) { return emitter.next(value); }; })(emitter));
+            this.setComponentProperty(outputs[j], (function (emitter) { return function (value) { return emitter.emit(value); }; })(emitter));
         }
         for (var k = 0; k < propOuts.length; k++) {
             this[propOuts[k]] = new angular2_1.EventEmitter();
@@ -225,7 +225,7 @@ var UpgradeNg1ComponentAdapter = (function () {
                 }
                 else {
                     var eventEmitter = this[this.propOuts[i]];
-                    eventEmitter.next(lastValues[i] = value);
+                    eventEmitter.emit(lastValues[i] = value);
                 }
             }
         }

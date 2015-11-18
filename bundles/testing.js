@@ -244,7 +244,7 @@ System.register("angular2/src/mock/mock_location_strategy", ["angular2/src/facad
     }
     MockLocationStrategy.prototype.simulatePopState = function(url) {
       this.internalPath = url;
-      async_1.ObservableWrapper.callNext(this._subject, null);
+      async_1.ObservableWrapper.callEmit(this._subject, null);
     };
     MockLocationStrategy.prototype.path = function() {
       return this.internalPath;
@@ -256,7 +256,7 @@ System.register("angular2/src/mock/mock_location_strategy", ["angular2/src/facad
       return this.internalBaseHref + internal;
     };
     MockLocationStrategy.prototype.simulateUrlPop = function(pathname) {
-      async_1.ObservableWrapper.callNext(this._subject, {'url': pathname});
+      async_1.ObservableWrapper.callEmit(this._subject, {'url': pathname});
     };
     MockLocationStrategy.prototype.pushState = function(ctx, title, path, query) {
       this.internalTitle = title;

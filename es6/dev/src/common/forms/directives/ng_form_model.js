@@ -137,7 +137,7 @@ export let NgFormModel = class extends ControlContainer {
         ctrl.updateValue(value);
     }
     onSubmit() {
-        ObservableWrapper.callNext(this.ngSubmit, null);
+        ObservableWrapper.callEmit(this.ngSubmit, null);
         return false;
     }
     /** @internal */

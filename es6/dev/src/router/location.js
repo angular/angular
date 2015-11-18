@@ -59,7 +59,7 @@ export let Location = class {
         this._subject = new EventEmitter();
         var browserBaseHref = this.platformStrategy.getBaseHref();
         this._baseHref = stripTrailingSlash(stripIndexHtml(browserBaseHref));
-        this.platformStrategy.onPopState((_) => { ObservableWrapper.callNext(this._subject, { 'url': this.path(), 'pop': true }); });
+        this.platformStrategy.onPopState((_) => { ObservableWrapper.callEmit(this._subject, { 'url': this.path(), 'pop': true }); });
     }
     /**
      * Returns the normalized URL path.

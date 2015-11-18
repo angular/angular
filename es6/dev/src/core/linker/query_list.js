@@ -57,6 +57,6 @@ export class QueryList {
      */
     reset(res) { this._results = res; }
     /** @internal */
-    notifyOnChanges() { this._emitter.next(this); }
+    notifyOnChanges() { this._emitter.emit(this); }
 }
 //# sourceMappingURL=query_list.js.map

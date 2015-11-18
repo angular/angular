@@ -901,7 +901,7 @@ System.register("angular2/src/router/location", ["angular2/src/router/location_s
       var browserBaseHref = this.platformStrategy.getBaseHref();
       this._baseHref = stripTrailingSlash(stripIndexHtml(browserBaseHref));
       this.platformStrategy.onPopState(function(_) {
-        async_1.ObservableWrapper.callNext(_this._subject, {
+        async_1.ObservableWrapper.callEmit(_this._subject, {
           'url': _this.path(),
           'pop': true
         });
@@ -1946,7 +1946,7 @@ System.register("angular2/src/router/router", ["angular2/src/facade/async", "ang
       return async_1.PromiseWrapper.all(unsettledInstructions);
     };
     Router.prototype._emitNavigationFinish = function(url) {
-      async_1.ObservableWrapper.callNext(this._subject, url);
+      async_1.ObservableWrapper.callEmit(this._subject, url);
     };
     Router.prototype._afterPromiseFinishNavigating = function(promise) {
       var _this = this;

@@ -155,7 +155,7 @@ var NgFormModel = (function (_super) {
         ctrl.updateValue(value);
     };
     NgFormModel.prototype.onSubmit = function () {
-        async_1.ObservableWrapper.callNext(this.ngSubmit, null);
+        async_1.ObservableWrapper.callEmit(this.ngSubmit, null);
         return false;
     };
     /** @internal */

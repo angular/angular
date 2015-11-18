@@ -110,7 +110,7 @@ function bootstrapWebWorkerCommon(appComponentType, bus, appProviders) {
             bootstrapProcess.resolve(bindings);
             async_2.ObservableWrapper.dispose(subscription);
         });
-        async_2.ObservableWrapper.callNext(bus.to(messaging_api_1.SETUP_CHANNEL), "ready");
+        async_2.ObservableWrapper.callEmit(bus.to(messaging_api_1.SETUP_CHANNEL), "ready");
         return bootstrapProcess.promise;
     });
     return async_1.PromiseWrapper.then(appPromise, function (app) { return app.bootstrap(appComponentType); });

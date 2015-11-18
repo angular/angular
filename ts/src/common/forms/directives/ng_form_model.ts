@@ -157,7 +157,7 @@ export class NgFormModel extends ControlContainer implements Form,
   }
 
   onSubmit(): boolean {
-    ObservableWrapper.callNext(this.ngSubmit, null);
+    ObservableWrapper.callEmit(this.ngSubmit, null);
     return false;
   }
 
