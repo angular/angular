@@ -1,4 +1,4 @@
-'use strict';var e2e_util_1 = require('./e2e_util');
+var e2e_util_1 = require('./e2e_util');
 exports.verifyNoBrowserErrors = e2e_util_1.verifyNoBrowserErrors;
 var benchpress = global['benchpress'];
 var bind = benchpress.bind;

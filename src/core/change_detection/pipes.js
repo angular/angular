@@ -1,4 +1,4 @@
-'use strict';var SelectedPipe = (function () {
+var SelectedPipe = (function () {
     function SelectedPipe(pipe, pure) {
         this.pipe = pipe;
         this.pure = pure;

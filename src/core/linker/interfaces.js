@@ -1,4 +1,4 @@
-'use strict';(function (LifecycleHooks) {
+(function (LifecycleHooks) {
     LifecycleHooks[LifecycleHooks["OnInit"] = 0] = "OnInit";
     LifecycleHooks[LifecycleHooks["OnDestroy"] = 1] = "OnDestroy";
     LifecycleHooks[LifecycleHooks["DoCheck"] = 2] = "DoCheck";

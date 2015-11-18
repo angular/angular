@@ -1,4 +1,4 @@
-'use strict';var lang_1 = require('angular2/src/facade/lang');
+var lang_1 = require('angular2/src/facade/lang');
 var collection_1 = require('angular2/src/facade/collection');
 var change_detection_util_1 = require('./change_detection_util');
 var change_detector_ref_1 = require('./change_detector_ref');

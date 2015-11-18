@@ -1,4 +1,4 @@
-'use strict';// Index to be used if Http is ever configured as a standalone npm package.
+// Index to be used if Http is ever configured as a standalone npm package.
 // require('reflect-metadata');
 // require('es6-shim');
 // import {HTTP_PROVIDERS, JSONP_PROVIDERS, Http, Jsonp} from './http';

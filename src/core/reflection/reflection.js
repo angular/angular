@@ -1,4 +1,4 @@
-'use strict';var reflector_1 = require('./reflector');
+var reflector_1 = require('./reflector');
 var reflector_2 = require('./reflector');
 exports.Reflector = reflector_2.Reflector;
 exports.ReflectionInfo = reflector_2.ReflectionInfo;

@@ -1,4 +1,4 @@
-'use strict';var lang_1 = require('angular2/src/facade/lang');
+var lang_1 = require('angular2/src/facade/lang');
 var exceptions_1 = require('angular2/src/facade/exceptions');
 var collection_1 = require('angular2/src/facade/collection');
 var url_parser_1 = require('./url_parser');

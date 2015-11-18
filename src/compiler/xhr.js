@@ -1,4 +1,4 @@
-'use strict';// TODO: vsavkin rename it into TemplateLoader
+// TODO: vsavkin rename it into TemplateLoader
 var XHR = (function () {
     function XHR() {
     }

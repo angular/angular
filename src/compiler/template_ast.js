@@ -1,4 +1,4 @@
-'use strict';var lang_1 = require('angular2/src/facade/lang');
+var lang_1 = require('angular2/src/facade/lang');
 var TextAst = (function () {
     function TextAst(value, ngContentIndex, sourceInfo) {
         this.value = value;

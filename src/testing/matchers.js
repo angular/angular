@@ -1,4 +1,4 @@
-'use strict';var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
+var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
 var lang_1 = require('angular2/src/facade/lang');
 var _global = (typeof window === 'undefined' ? lang_1.global : window);
 exports.expect = _global.expect;

@@ -1,4 +1,4 @@
-'use strict';var lang_1 = require('angular2/src/facade/lang');
+var lang_1 = require('angular2/src/facade/lang');
 var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
 var By = (function () {
     function By() {

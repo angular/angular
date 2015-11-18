@@ -1,4 +1,4 @@
-'use strict';var lang_1 = require('angular2/src/facade/lang');
+var lang_1 = require('angular2/src/facade/lang');
 var forms_1 = require('./forms');
 var directives_1 = require('./directives');
 /**

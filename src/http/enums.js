@@ -1,4 +1,4 @@
-'use strict';/**
+/**
  * Supported http methods.
  */
 (function (RequestMethods) {

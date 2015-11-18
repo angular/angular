@@ -1,4 +1,4 @@
-'use strict';var lang_1 = require('angular2/src/facade/lang');
+var lang_1 = require('angular2/src/facade/lang');
 var interfaces_1 = require('./interfaces');
 function hasLifecycleHook(lcInterface, token) {
     if (!(token instanceof lang_1.Type))
