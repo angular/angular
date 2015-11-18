@@ -1,20 +1,15 @@
 import {bootstrap} from 'angular2/bootstrap';
+import {Component, Directive, View, Host, forwardRef, Provider} from 'angular2/core';
 import {
   ControlGroup,
   NgIf,
   NgFor,
-  Component,
-  Directive,
-  View,
-  Host,
   NG_VALIDATORS,
-  forwardRef,
-  Provider,
   FORM_DIRECTIVES,
   NgControl,
   Validators,
   NgForm
-} from 'angular2/core';
+} from 'angular2/common';
 
 import {RegExpWrapper, print, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
 

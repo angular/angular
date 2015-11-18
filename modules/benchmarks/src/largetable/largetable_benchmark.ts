@@ -8,17 +8,8 @@ import {
   windowProfileEnd
 } from 'angular2/src/testing/benchmark_util';
 import {bootstrap} from 'angular2/bootstrap';
-import {
-  Component,
-  Directive,
-  View,
-  bind,
-  provide,
-  NgFor,
-  NgSwitch,
-  NgSwitchWhen,
-  NgSwitchDefault
-} from 'angular2/core';
+import {Component, Directive, View, bind, provide} from 'angular2/core';
+import {NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/common';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';

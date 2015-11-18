@@ -14,7 +14,7 @@ import {
 } from './common';
 import {generateOfferings} from './random_data';
 import {ScrollItemComponent} from './scroll_item';
-import {NgFor} from 'angular2/core';
+import {NgFor} from 'angular2/common';
 
 @Component({
   selector: 'scroll-area',

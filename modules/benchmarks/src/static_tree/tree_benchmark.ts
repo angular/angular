@@ -1,4 +1,5 @@
 import {bootstrap} from 'angular2/bootstrap';
+import {NgIf} from 'angular2/common';
 import {
   Compiler,
   Component,
@@ -7,8 +8,7 @@ import {
   ViewContainerRef,
   bind,
   provide,
-  Provider,
-  NgIf
+  Provider
 } from 'angular2/core';
 import {ComponentRef_} from 'angular2/src/core/linker/dynamic_component_loader';
 import {ApplicationRef} from 'angular2/src/core/application_ref';

@@ -1,7 +1,13 @@
-import {Self, forwardRef, Provider} from 'angular2/src/core/di';
-import {Renderer} from 'angular2/src/core/render';
-import {ElementRef, QueryList} from 'angular2/src/core/linker';
-import {Query, Directive} from 'angular2/src/core/metadata';
+import {
+  Query,
+  Directive,
+  Renderer,
+  Self,
+  forwardRef,
+  Provider,
+  ElementRef,
+  QueryList
+} from 'angular2/core';
 
 import {ObservableWrapper} from 'angular2/src/facade/async';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';

@@ -19,23 +19,21 @@ import {
 } from 'angular2/testing_internal';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {Input, Provider, forwardRef} from 'angular2/core';
 import {
-  Input,
   Control,
   ControlGroup,
   ControlValueAccessor,
   FORM_DIRECTIVES,
   NG_VALIDATORS,
   NG_ASYNC_VALIDATORS,
-  Provider,
   NgControl,
   NgIf,
   NgFor,
   NgForm,
   Validators,
-  forwardRef,
   Validator
-} from 'angular2/core';
+} from 'angular2/common';
 import {By} from 'angular2/platform/browser';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {ObservableWrapper} from 'angular2/src/facade/async';

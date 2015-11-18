@@ -14,7 +14,8 @@ import {
 } from 'angular2/testing_internal';
 import {Json, RegExp, NumberWrapper, StringWrapper} from 'angular2/src/facade/lang';
 
-import {JsonPipe, Component} from 'angular2/core';
+import {Component} from 'angular2/core';
+import {JsonPipe} from 'angular2/common';
 
 export function main() {
   describe("JsonPipe", () => {

@@ -11,7 +11,7 @@ import {
   tick,
   el
 } from 'angular2/testing_internal';
-import {ControlGroup, Control, Validators, AbstractControl, ControlArray} from 'angular2/core';
+import {ControlGroup, Control, Validators, AbstractControl, ControlArray} from 'angular2/common';
 import {PromiseWrapper} from 'angular2/src/facade/promise';
 import {EventEmitter, ObservableWrapper, TimerWrapper} from 'angular2/src/facade/async';
 import {CONST_EXPR} from 'angular2/src/facade/lang';

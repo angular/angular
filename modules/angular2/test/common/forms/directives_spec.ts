@@ -17,6 +17,8 @@ import {
 
 import {SpyNgControl, SpyValueAccessor} from '../spies';
 
+import {QueryList} from 'angular2/core';
+
 import {
   ControlGroup,
   Control,
@@ -32,9 +34,8 @@ import {
   DefaultValueAccessor,
   CheckboxControlValueAccessor,
   SelectControlValueAccessor,
-  QueryList,
   Validator
-} from 'angular2/core';
+} from 'angular2/common';
 
 
 import {selectValueAccessor, composeValidators} from 'angular2/src/common/forms/directives/shared';

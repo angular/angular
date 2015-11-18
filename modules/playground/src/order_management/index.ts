@@ -1,18 +1,16 @@
 import {bootstrap} from 'angular2/bootstrap';
 import {
-  NgIf,
-  NgFor,
   Component,
   Directive,
   Host,
   forwardRef,
   Provider,
   EventEmitter,
-  FORM_DIRECTIVES,
   Injectable,
   Input,
   Output
 } from 'angular2/core';
+import {NgIf, NgFor, FORM_DIRECTIVES} from 'angular2/common';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
 

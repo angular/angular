@@ -9,7 +9,7 @@ import {
   afterEach
 } from 'angular2/testing_internal';
 
-import {LowerCasePipe} from 'angular2/core';
+import {LowerCasePipe} from 'angular2/common';
 
 export function main() {
   describe("LowerCasePipe", () => {

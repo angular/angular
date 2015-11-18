@@ -18,11 +18,11 @@ import {
   Component,
   Directive,
   Inject,
-  NgFor,
   Query,
   QueryList,
   View
 } from 'angular2/core';
+import {NgFor} from 'angular2/common';
 import {Type} from 'angular2/src/facade/lang';
 import {asNativeElements} from 'angular2/core';
 

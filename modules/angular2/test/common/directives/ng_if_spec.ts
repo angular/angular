@@ -14,7 +14,8 @@ import {
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
-import {Component, View, NgIf} from 'angular2/core';
+import {Component, View} from 'angular2/core';
+import {NgIf} from 'angular2/common';
 
 import {IS_DART} from 'angular2/src/facade/lang';
 

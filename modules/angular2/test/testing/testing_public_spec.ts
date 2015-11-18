@@ -14,7 +14,8 @@ import {
   TestComponentBuilder
 } from 'angular2/testing';
 
-import {Injectable, NgIf, bind} from 'angular2/core';
+import {Injectable, bind} from 'angular2/core';
+import {NgIf} from 'angular2/common';
 import {Directive, Component, View, ViewMetadata} from 'angular2/angular2';
 import {XHR} from 'angular2/src/compiler/xhr';
 import {XHRImpl} from 'angular2/src/platform/browser/xhr_impl';
