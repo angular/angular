@@ -29,7 +29,7 @@ main() {
             expect(value).toEqual(99);
             async.done();
           });
-          ObservableWrapper.callNext(emitter, 99);
+          ObservableWrapper.callEmit(emitter, 99);
         }));
     it(
         "should call the throw callback",
@@ -61,7 +61,7 @@ main() {
       ObservableWrapper.subscribe(emitter, (value) {
         called = true;
       });
-      ObservableWrapper.callNext(emitter, 99);
+      ObservableWrapper.callEmit(emitter, 99);
       expect(called).toBe(false);
     });
     it(
@@ -75,7 +75,7 @@ main() {
             async.done();
           });
           log.add(1);
-          ObservableWrapper.callNext(e, 2);
+          ObservableWrapper.callEmit(e, 2);
           log.add(3);
         }));
     it("delivers events synchronously", () {
@@ -85,7 +85,7 @@ main() {
         log.add(x);
       });
       log.add(1);
-      ObservableWrapper.callNext(e, 2);
+      ObservableWrapper.callEmit(e, 2);
       log.add(3);
       expect(log).toEqual([1, 2, 3]);
     });

@@ -24,7 +24,7 @@ class WebWorkerSetup {
     var source = this._bus.from(SETUP_CHANNEL);
     ObservableWrapper.subscribe(source, (String message) {
       if (StringWrapper.equals(message, "ready")) {
-        ObservableWrapper.callNext(sink, {"rootUrl": this.rootUrl});
+        ObservableWrapper.callEmit(sink, {"rootUrl": this.rootUrl});
       }
     });
   }

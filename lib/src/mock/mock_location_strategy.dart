@@ -17,7 +17,7 @@ class MockLocationStrategy extends LocationStrategy {
   }
   void simulatePopState(String url) {
     this.internalPath = url;
-    ObservableWrapper.callNext(this._subject, null);
+    ObservableWrapper.callEmit(this._subject, null);
   }
 
   String path() {
@@ -32,7 +32,7 @@ class MockLocationStrategy extends LocationStrategy {
   }
 
   void simulateUrlPop(String pathname) {
-    ObservableWrapper.callNext(this._subject, {"url": pathname});
+    ObservableWrapper.callEmit(this._subject, {"url": pathname});
   }
 
   void pushState(dynamic ctx, String title, String path, String query) {

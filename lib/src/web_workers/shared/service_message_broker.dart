@@ -88,7 +88,7 @@ class ServiceMessageBroker_ extends ServiceMessageBroker {
 
   void _wrapWebWorkerPromise(String id, Future<dynamic> promise, Type type) {
     PromiseWrapper.then(promise, (dynamic result) {
-      ObservableWrapper.callNext(this._sink, {
+      ObservableWrapper.callEmit(this._sink, {
         "type": "result",
         "value": this._serializer.serialize(result, type),
         "id": id

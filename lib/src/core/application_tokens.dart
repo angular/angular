@@ -46,14 +46,3 @@ const Provider APP_ID_RANDOM_PROVIDER = const Provider(APP_ID,
 String _randomChar() {
   return StringWrapper.fromCharCode(97 + Math.floor(Math.random() * 25));
 }
-
-/**
- * A function that will be executed when a platform is initialized.
- */
-const OpaqueToken PLATFORM_INITIALIZER =
-    const OpaqueToken("Platform Initializer");
-/**
- * A function that will be executed when an application is initialized.
- */
-const OpaqueToken APP_INITIALIZER =
-    const OpaqueToken("Application Initializer");

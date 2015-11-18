@@ -2140,7 +2140,7 @@ class DirectiveEmitingEvent {
     this.event = new EventEmitter();
   }
   fireEvent(String msg) {
-    ObservableWrapper.callNext(this.event, msg);
+    ObservableWrapper.callEmit(this.event, msg);
   }
 }
 
@@ -2166,7 +2166,7 @@ class DirectiveUpdatingHostActions {
     this.setAttr = new EventEmitter();
   }
   triggerSetAttr(attrValue) {
-    ObservableWrapper.callNext(this.setAttr, ["key", attrValue]);
+    ObservableWrapper.callEmit(this.setAttr, ["key", attrValue]);
   }
 }
 
@@ -2333,7 +2333,7 @@ class DirectiveWithTwoWayBinding {
   var controlChange = new EventEmitter();
   var control = null;
   triggerChange(value) {
-    ObservableWrapper.callNext(this.controlChange, value);
+    ObservableWrapper.callEmit(this.controlChange, value);
   }
 }
 
@@ -2543,6 +2543,6 @@ class DirectiveWithPropDecorators {
   }
 
   fireEvent(msg) {
-    ObservableWrapper.callNext(this.event, msg);
+    ObservableWrapper.callEmit(this.event, msg);
   }
 }

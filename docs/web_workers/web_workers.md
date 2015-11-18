@@ -230,7 +230,7 @@ import {bootstrap} from 'angular2/web_worker/ui';
 var instance = bootstrap("loader.js");
 var bus = instance.bus;
 bus.initChannel("My Custom Channel");
-bus.to("My Custom Channel").next("hello from the UI");
+bus.to("My Custom Channel").emit("hello from the UI");
 ```
 ```TypeScript
 // background_index.ts, which is running on the WebWorker

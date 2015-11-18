@@ -28,7 +28,7 @@ class SpyLocation implements Location {
   }
 
   simulateUrlPop(String pathname) {
-    ObservableWrapper.callNext(this._subject, {"url": pathname});
+    ObservableWrapper.callEmit(this._subject, {"url": pathname});
   }
 
   String prepareExternalUrl(String url) {

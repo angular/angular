@@ -13,13 +13,13 @@ import "package:angular2/core.dart"
         reflector,
         APPLICATION_COMMON_PROVIDERS,
         PLATFORM_COMMON_PROVIDERS,
-        EVENT_MANAGER_PLUGINS,
-        PLATFORM_INITIALIZER;
+        EVENT_MANAGER_PLUGINS;
 import "package:angular2/common.dart"
     show COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS;
 import "package:angular2/render.dart" show Renderer;
 import "package:angular2/src/core/testability/testability.dart"
     show Testability;
+// TODO change these imports once dom_adapter is moved out of core
 import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/platform/dom/events/dom_events.dart"
     show DomEventsPlugin;
@@ -52,10 +52,7 @@ export "package:angular2/src/platform/browser/debug/debug_element_view_listener.
 export "package:angular2/src/platform/browser/debug/by.dart" show By;
 export "browser/browser_adapter.dart" show BrowserDomAdapter;
 
-const List<dynamic> BROWSER_PROVIDERS = const [
-  PLATFORM_COMMON_PROVIDERS,
-  const Provider(PLATFORM_INITIALIZER, useValue: initDomAdapter, multi: true)
-];
+const List<dynamic> BROWSER_PROVIDERS = const [PLATFORM_COMMON_PROVIDERS];
 ExceptionHandler _exceptionHandler() {
   return new ExceptionHandler(DOM, false);
 }
@@ -85,6 +82,7 @@ const List<dynamic> BROWSER_APP_COMMON_PROVIDERS = const [
   AnimationBuilder
 ];
 initDomAdapter() {
+  // TODO: refactor into a generic init function
   BrowserDomAdapter.makeCurrent();
   wtfInit();
   BrowserGetTestability.init();

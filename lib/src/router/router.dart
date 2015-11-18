@@ -250,7 +250,7 @@ class Router {
   }
 
   void _emitNavigationFinish(url) {
-    ObservableWrapper.callNext(this._subject, url);
+    ObservableWrapper.callEmit(this._subject, url);
   }
 
   Future<dynamic> _afterPromiseFinishNavigating(Future<dynamic> promise) {

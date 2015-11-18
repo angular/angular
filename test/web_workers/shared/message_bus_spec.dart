@@ -41,7 +41,7 @@ main() {
             async.done();
           });
           var toEmitter = bus.to(CHANNEL);
-          ObservableWrapper.callNext(toEmitter, MESSAGE);
+          ObservableWrapper.callEmit(toEmitter, MESSAGE);
         }));
     it(
         "should broadcast",
@@ -63,7 +63,7 @@ main() {
             ObservableWrapper.subscribe(emitter, emitHandler);
           }
           var toEmitter = bus.to(CHANNEL);
-          ObservableWrapper.callNext(toEmitter, MESSAGE);
+          ObservableWrapper.callEmit(toEmitter, MESSAGE);
         }));
     it(
         "should keep channels independent",
@@ -92,9 +92,9 @@ main() {
             }
           });
           var firstToEmitter = bus.to(CHANNEL_ONE);
-          ObservableWrapper.callNext(firstToEmitter, MESSAGE_ONE);
+          ObservableWrapper.callEmit(firstToEmitter, MESSAGE_ONE);
           var secondToEmitter = bus.to(CHANNEL_TWO);
-          ObservableWrapper.callNext(secondToEmitter, MESSAGE_TWO);
+          ObservableWrapper.callEmit(secondToEmitter, MESSAGE_TWO);
         }));
   });
   describe("PostMessageBusSink", () {
@@ -123,7 +123,7 @@ main() {
           ObservableWrapper.subscribe(bus.from(CHANNEL), (message) {
             wasCalled = true;
           });
-          ObservableWrapper.callNext(bus.to(CHANNEL), "hi");
+          ObservableWrapper.callEmit(bus.to(CHANNEL), "hi");
           flushMessages(() {
             expect(wasCalled).toBeFalsy();
             zone.simulateZoneExit();
@@ -142,7 +142,7 @@ main() {
           ObservableWrapper.subscribe(bus.from(CHANNEL), (message) {
             wasCalled = true;
           });
-          ObservableWrapper.callNext(bus.to(CHANNEL), "hi");
+          ObservableWrapper.callEmit(bus.to(CHANNEL), "hi");
           flushMessages(() {
             expect(wasCalled).toBeTruthy();
             async.done();

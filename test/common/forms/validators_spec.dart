@@ -102,10 +102,10 @@ main() {
           var emitter = new EventEmitter();
           var res = c.value != expected ? response : null;
           PromiseWrapper.scheduleMicrotask(() {
-            ObservableWrapper.callNext(emitter, res);
+            ObservableWrapper.callEmit(emitter, res);
             // this is required because of a bug in ObservableWrapper
 
-            // where callComplete can fire before callNext
+            // where callComplete can fire before callEmit
 
             // remove this one the bug is fixed
             TimerWrapper.setTimeout(() {
