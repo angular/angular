@@ -21,9 +21,9 @@ import {
   Component,
   View,
   Injectable,
-  ElementRef,
-  NgIf
+  ElementRef
 } from 'angular2/core';
+import {NgIf} from 'angular2/common';
 import {WebWorkerRenderer} from "angular2/src/web_workers/worker/renderer";
 import {
   ClientMessageBrokerFactory,

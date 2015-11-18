@@ -7,9 +7,9 @@ import {
   ViewContainerRef,
   bind,
   provide,
-  Provider,
-  NgIf
+  Provider
 } from 'angular2/core';
+import {NgIf} from 'angular2/common';
 
 import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';

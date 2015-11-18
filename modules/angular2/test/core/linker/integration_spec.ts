@@ -54,10 +54,10 @@ import {
   Inject,
   Host,
   SkipSelf,
-  SkipSelfMetadata,
-  NgIf,
-  NgFor
+  SkipSelfMetadata
 } from 'angular2/core';
+
+import {NgIf, NgFor} from 'angular2/common';
 
 import {AsyncPipe} from 'angular2/common';
 

@@ -4,7 +4,7 @@ import "package:angular2/src/facade/collection.dart"
     show List, ListWrapper, Map;
 import "common.dart"
     show Company, Opportunity, Offering, Account, CustomDate, STATUS_LIST;
-import "package:angular2/core.dart" show NgFor;
+import "package:angular2/common.dart" show NgFor;
 import "package:angular2/angular2.dart" show Component, Directive, View, ChangeDetectionStrategy;
 
 class HasStyle {

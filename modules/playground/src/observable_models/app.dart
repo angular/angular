@@ -3,7 +3,7 @@ library benchmarks.src.naive_infinite_scroll.app;
 import "package:angular2/src/facade/collection.dart" show List, ListWrapper;
 import "scroll_area.dart" show ScrollAreaComponent;
 import "package:angular2/angular2.dart" show Component, Directive, View, IterableDiffers, SkipSelf, Binding;
-import "package:angular2/core.dart" show ObservableListDiffFactory, NgIf, NgFor;
+import "package:angular2/common.dart" show ObservableListDiffFactory, NgIf, NgFor;
 import 'package:observe/observe.dart' show ObservableList;
 
 createDiffers(IterableDiffers parent) {

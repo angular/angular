@@ -18,7 +18,8 @@ import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
-import {Injectable, NgFor, NgIf} from 'angular2/core';
+import {Injectable} from 'angular2/core';
+import {NgFor, NgIf} from 'angular2/common';
 import {Scope} from 'angular2/core';
 import {By} from 'angular2/platform/browser';
 

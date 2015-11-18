@@ -13,7 +13,8 @@ import {
   AsyncTestCompleter
 } from 'angular2/testing_internal';
 
-import {SlicePipe, Component} from 'angular2/core';
+import {Component} from 'angular2/core';
+import {SlicePipe} from 'angular2/common';
 
 export function main() {
   describe("SlicePipe", () => {

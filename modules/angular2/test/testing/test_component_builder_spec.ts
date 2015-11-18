@@ -14,7 +14,8 @@ import {
   TestComponentBuilder
 } from 'angular2/testing_internal';
 
-import {Injectable, NgIf, provide} from 'angular2/core';
+import {Injectable, provide} from 'angular2/core';
+import {NgIf} from 'angular2/common';
 import {Directive, Component, View, ViewMetadata} from 'angular2/src/core/metadata';
 
 @Component({selector: 'child-comp'})

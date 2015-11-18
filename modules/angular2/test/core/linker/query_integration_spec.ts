@@ -19,8 +19,6 @@ import {
   Component,
   Directive,
   Injectable,
-  NgIf,
-  NgFor,
   Optional,
   TemplateRef,
   Query,
@@ -36,7 +34,7 @@ import {
   AfterContentChecked,
   AfterViewChecked
 } from 'angular2/core';
-
+import {NgIf, NgFor} from 'angular2/common';
 import {asNativeElements} from 'angular2/core';
 import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
 

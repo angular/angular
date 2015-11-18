@@ -9,7 +9,7 @@ import {
   afterEach,
   el
 } from 'angular2/testing_internal';
-import {Control, FormBuilder} from 'angular2/core';
+import {Control, FormBuilder} from 'angular2/common';
 import {PromiseWrapper} from 'angular2/src/facade/promise';
 
 export function main() {

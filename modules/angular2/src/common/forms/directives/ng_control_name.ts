@@ -1,9 +1,19 @@
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-import {OnChanges, OnDestroy} from 'angular2/lifecycle_hooks';
-import {SimpleChange} from 'angular2/src/core/change_detection';
-import {Query, Directive} from 'angular2/src/core/metadata';
-import {forwardRef, Host, SkipSelf, Provider, Inject, Optional} from 'angular2/src/core/di';
+
+import {
+  OnChanges,
+  OnDestroy,
+  SimpleChange,
+  Query,
+  Directive,
+  forwardRef,
+  Host,
+  SkipSelf,
+  Provider,
+  Inject,
+  Optional
+} from 'angular2/core';
 
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';

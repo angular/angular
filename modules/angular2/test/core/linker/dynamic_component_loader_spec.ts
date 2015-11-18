@@ -17,7 +17,8 @@ import {
 } from 'angular2/testing_internal';
 
 import {OnDestroy} from 'angular2/lifecycle_hooks';
-import {Injector, NgIf, inspectElement} from 'angular2/core';
+import {Injector, inspectElement} from 'angular2/core';
+import {NgIf} from 'angular2/common';
 import {By} from 'angular2/platform/browser';
 import {Component, View, ViewMetadata} from 'angular2/src/core/metadata';
 import {DynamicComponentLoader} from 'angular2/src/core/linker/dynamic_component_loader';

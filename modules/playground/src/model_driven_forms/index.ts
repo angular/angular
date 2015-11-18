@@ -7,12 +7,9 @@ import {
   NgFormModel,
   FormBuilder,
   NgIf,
-  NgFor,
-  Component,
-  Directive,
-  View,
-  Host
-} from 'angular2/core';
+  NgFor
+} from 'angular2/common';
+import {Component, Directive, View, Host} from 'angular2/core';
 
 import {RegExpWrapper, print, isPresent} from 'angular2/src/facade/lang';
 

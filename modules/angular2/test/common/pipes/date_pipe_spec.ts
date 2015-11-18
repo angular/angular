@@ -10,7 +10,7 @@ import {
   browserDetection
 } from 'angular2/testing_internal';
 
-import {DatePipe} from 'angular2/core';
+import {DatePipe} from 'angular2/common';
 import {DateWrapper} from 'angular2/src/facade/lang';
 import {PipeResolver} from 'angular2/src/core/linker/pipe_resolver';
 

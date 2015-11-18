@@ -14,7 +14,6 @@ import {
   bind,
   provide,
   Provider,
-  NgIf,
   ViewMetadata
 } from 'angular2/core';
 
