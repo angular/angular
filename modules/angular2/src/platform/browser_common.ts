@@ -11,13 +11,13 @@ import {
   reflector,
   APPLICATION_COMMON_PROVIDERS,
   PLATFORM_COMMON_PROVIDERS,
-  EVENT_MANAGER_PLUGINS
+  EVENT_MANAGER_PLUGINS,
+  PLATFORM_INITIALIZER
 } from "angular2/core";
 import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS} from "angular2/common";
 import {Renderer} from 'angular2/render';
 import {Testability} from 'angular2/src/core/testability/testability';
 
-// TODO change these imports once dom_adapter is moved out of core
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {DomEventsPlugin} from 'angular2/src/platform/dom/events/dom_events';
 import {KeyEventsPlugin} from 'angular2/src/platform/dom/events/key_events';
@@ -42,8 +42,10 @@ export {
 export {By} from 'angular2/src/platform/browser/debug/by';
 export {BrowserDomAdapter} from './browser/browser_adapter';
 
-export const BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    CONST_EXPR([PLATFORM_COMMON_PROVIDERS]);
+export const BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
+  PLATFORM_COMMON_PROVIDERS,
+  new Provider(PLATFORM_INITIALIZER, {useValue: initDomAdapter, multi: true}),
+]);
 
 function _exceptionHandler(): ExceptionHandler {
   return new ExceptionHandler(DOM, false);
@@ -73,7 +75,6 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
 ]);
 
 export function initDomAdapter() {
-  // TODO: refactor into a generic init function
   BrowserDomAdapter.makeCurrent();
   wtfInit();
   BrowserGetTestability.init();

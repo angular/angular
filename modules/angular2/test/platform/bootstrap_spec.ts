@@ -1,6 +1,7 @@
 import {
   AsyncTestCompleter,
   beforeEach,
+  afterEach,
   ddescribe,
   describe,
   expect,
@@ -8,6 +9,7 @@ import {
   inject,
   it,
   xdescribe,
+  Log,
   xit
 } from 'angular2/testing_internal';
 import {IS_DART, isPresent, stringify} from 'angular2/src/facade/lang';
@@ -18,7 +20,8 @@ import {BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS} from 'angular2/platform/browse
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 import {PromiseWrapper} from 'angular2/src/facade/async';
-import {provide, Inject, Injector} from 'angular2/core';
+import {provide, Inject, Injector, PLATFORM_INITIALIZER, APP_INITIALIZER} from 'angular2/core';
+import {disposePlatform} from 'angular2/src/core/application_ref';
 import {ExceptionHandler} from 'angular2/src/facade/exceptions';
 import {Testability, TestabilityRegistry} from 'angular2/src/core/testability/testability';
 import {ComponentRef_} from "angular2/src/core/linker/dynamic_component_loader";
@@ -100,6 +103,8 @@ export function main() {
       DOM.setText(lightDom, 'loading');
       testProviders = [provide(DOCUMENT, {useValue: fakeDoc})];
     });
+
+    afterEach(disposePlatform);
 
     it('should throw if bootstrapped Directive is not a Component',
        inject([AsyncTestCompleter], (async) => {
@@ -211,6 +216,23 @@ export function main() {
            expect(ref.hostComponent.appRef).toBe((<ComponentRef_>ref).injector.get(ApplicationRef));
            async.done();
          });
+       }));
+
+    it("should run platform initializers", inject([Log], (log: Log) => {
+         let p = platform([
+           BROWSER_PROVIDERS,
+           provide(PLATFORM_INITIALIZER, {useValue: log.fn("platform_init1"), multi: true}),
+           provide(PLATFORM_INITIALIZER, {useValue: log.fn("platform_init2"), multi: true})
+         ]);
+         expect(log.result()).toEqual("platform_init1; platform_init2");
+         log.clear();
+         p.application([
+           BROWSER_APP_PROVIDERS,
+           provide(APP_INITIALIZER, {useValue: log.fn("app_init1"), multi: true}),
+           provide(APP_INITIALIZER, {useValue: log.fn("app_init2"), multi: true})
+         ]);
+
+         expect(log.result()).toEqual("app_init1; app_init2");
        }));
 
     it('should register each application with the testability registry',
