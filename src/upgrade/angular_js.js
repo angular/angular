@@ -1,4 +1,4 @@
-function noNg() {
+'use strict';function noNg() {
     throw new Error('AngularJS v1.x is not loaded!');
 }
 var angular = { bootstrap: noNg, module: noNg, element: noNg, version: noNg };

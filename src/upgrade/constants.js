@@ -1,4 +1,4 @@
-exports.NG2_APP_VIEW_MANAGER = 'ng2.AppViewManager';
+'use strict';exports.NG2_APP_VIEW_MANAGER = 'ng2.AppViewManager';
 exports.NG2_COMPILER = 'ng2.Compiler';
 exports.NG2_INJECTOR = 'ng2.Injector';
 exports.NG2_PROTO_VIEW_REF_MAP = 'ng2.ProtoViewRefMap';

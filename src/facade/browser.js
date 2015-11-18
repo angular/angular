@@ -1,4 +1,4 @@
-/**
+'use strict';/**
  * JS version of browser APIs. This library can only run in the browser.
  */
 var win = window;

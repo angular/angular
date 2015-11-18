@@ -1,4 +1,4 @@
-// Some of the code comes from WebComponents.JS
+'use strict';// Some of the code comes from WebComponents.JS
 // https://github.com/webcomponents/webcomponentsjs/blob/master/src/HTMLImports/path.js
 var lang_1 = require('angular2/src/facade/lang');
 var StyleWithImports = (function () {

@@ -1,4 +1,4 @@
-var async_1 = require('angular2/src/facade/async');
+'use strict';var async_1 = require('angular2/src/facade/async');
 var SpyLocation = (function () {
     function SpyLocation() {
         this.urlChanges = [];

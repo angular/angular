@@ -1,4 +1,4 @@
-(function (NumberFormatStyle) {
+'use strict';(function (NumberFormatStyle) {
     NumberFormatStyle[NumberFormatStyle["Decimal"] = 0] = "Decimal";
     NumberFormatStyle[NumberFormatStyle["Percent"] = 1] = "Percent";
     NumberFormatStyle[NumberFormatStyle["Currency"] = 2] = "Currency";

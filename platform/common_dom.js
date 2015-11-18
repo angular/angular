@@ -1,4 +1,4 @@
-/**
+'use strict';/**
  * This is a set of classes and objects that can be used both in the browser and on the server.
  */
 var dom_renderer_1 = require('angular2/src/platform/dom/dom_renderer');

@@ -1,4 +1,4 @@
-/**
+'use strict';/**
  * @module
  * @description
  * This module is used for handling user input, by defining and building a {@link ControlGroup} that

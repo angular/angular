@@ -1,4 +1,4 @@
-// TODO (jteplitz602): This whole file is nearly identical to core/application.ts.
+'use strict';// TODO (jteplitz602): This whole file is nearly identical to core/application.ts.
 // There should be a way to refactor application so that this file is unnecessary. See #3277
 var di_1 = require("angular2/src/core/di");
 var animation_builder_1 = require('angular2/src/animate/animation_builder');

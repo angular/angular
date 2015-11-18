@@ -1,4 +1,4 @@
-function getTypeOf(instance) {
+'use strict';function getTypeOf(instance) {
     return instance.constructor;
 }
 exports.getTypeOf = getTypeOf;
