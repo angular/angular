@@ -1,4 +1,4 @@
-'use strict';/*
+/*
  * Debugging and profiling tools for Angular 2
  */
 var tools_1 = require('angular2/src/tools/tools');

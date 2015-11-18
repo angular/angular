@@ -1,4 +1,4 @@
-'use strict';var lang_1 = require('angular2/src/facade/lang');
+var lang_1 = require('angular2/src/facade/lang');
 var AsyncRouteHandler = (function () {
     function AsyncRouteHandler(_loader, data) {
         this._loader = _loader;

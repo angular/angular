@@ -1,4 +1,4 @@
-'use strict';var di_1 = require('angular2/src/core/di');
+var di_1 = require('angular2/src/core/di');
 var lang_1 = require('angular2/src/facade/lang');
 /**
  *  @internal

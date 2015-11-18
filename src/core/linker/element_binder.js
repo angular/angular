@@ -1,4 +1,4 @@
-'use strict';var lang_1 = require('angular2/src/facade/lang');
+var lang_1 = require('angular2/src/facade/lang');
 var exceptions_1 = require('angular2/src/facade/exceptions');
 var ElementBinder = (function () {
     function ElementBinder(index, parent, distanceToParent, protoElementInjector, componentDirective, nestedProtoView) {

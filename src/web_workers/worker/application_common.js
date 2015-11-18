@@ -1,4 +1,4 @@
-'use strict';var di_1 = require('angular2/src/core/di');
+var di_1 = require('angular2/src/core/di');
 var forms_1 = require('angular2/src/common/forms');
 var lang_1 = require('angular2/src/facade/lang');
 var exceptions_1 = require('angular2/src/facade/exceptions');

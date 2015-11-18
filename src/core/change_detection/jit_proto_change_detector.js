@@ -1,4 +1,4 @@
-'use strict';var change_detection_jit_generator_1 = require('./change_detection_jit_generator');
+var change_detection_jit_generator_1 = require('./change_detection_jit_generator');
 var JitProtoChangeDetector = (function () {
     function JitProtoChangeDetector(definition) {
         this.definition = definition;

@@ -1,4 +1,4 @@
-'use strict';var application_ref_1 = require('angular2/src/core/application_ref');
+var application_ref_1 = require('angular2/src/core/application_ref');
 var lang_1 = require('angular2/src/facade/lang');
 var browser_1 = require('angular2/src/facade/browser');
 var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');

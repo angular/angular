@@ -1,4 +1,4 @@
-'use strict';var iterable_differs_1 = require('./differs/iterable_differs');
+var iterable_differs_1 = require('./differs/iterable_differs');
 var default_iterable_differ_1 = require('./differs/default_iterable_differ');
 var keyvalue_differs_1 = require('./differs/keyvalue_differs');
 var default_keyvalue_differ_1 = require('./differs/default_keyvalue_differ');

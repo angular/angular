@@ -1,4 +1,4 @@
-'use strict';var headers_1 = require('./headers');
+var headers_1 = require('./headers');
 var http_utils_1 = require('./http_utils');
 var lang_1 = require('angular2/src/facade/lang');
 // TODO(jeffbcross): properly implement body accessors

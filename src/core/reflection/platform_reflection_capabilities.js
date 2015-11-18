@@ -1,1 +1,1 @@
-'use strict';//# sourceMappingURL=platform_reflection_capabilities.js.map
+//# sourceMappingURL=platform_reflection_capabilities.js.map

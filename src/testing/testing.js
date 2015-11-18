@@ -1,4 +1,4 @@
-'use strict';/**
+/**
  * Public Test Library for unit testing Angular2 Applications. Uses the
  * Jasmine framework.
  */

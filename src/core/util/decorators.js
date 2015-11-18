@@ -1,4 +1,4 @@
-'use strict';var lang_1 = require('angular2/src/facade/lang');
+var lang_1 = require('angular2/src/facade/lang');
 function extractAnnotation(annotation) {
     if (lang_1.isFunction(annotation) && annotation.hasOwnProperty('annotation')) {
         // it is a decorator, extract annotation

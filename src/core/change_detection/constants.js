@@ -1,4 +1,4 @@
-'use strict';var lang_1 = require('angular2/src/facade/lang');
+var lang_1 = require('angular2/src/facade/lang');
 (function (ChangeDetectorState) {
     /**
      * `NeverChecked` means that the change detector has not been checked yet, and

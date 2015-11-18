@@ -1,4 +1,4 @@
-'use strict';function isObservable(value) {
+function isObservable(value) {
     return false;
 }
 exports.isObservable = isObservable;

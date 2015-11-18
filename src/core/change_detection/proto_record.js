@@ -1,4 +1,4 @@
-'use strict';(function (RecordType) {
+(function (RecordType) {
     RecordType[RecordType["Self"] = 0] = "Self";
     RecordType[RecordType["Const"] = 1] = "Const";
     RecordType[RecordType["PrimitiveOp"] = 2] = "PrimitiveOp";

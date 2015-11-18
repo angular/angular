@@ -1,4 +1,4 @@
-'use strict';var async_1 = require('angular2/src/facade/async');
+var async_1 = require('angular2/src/facade/async');
 exports.EventEmitter = async_1.EventEmitter;
 exports.Observable = async_1.Observable;
 /**

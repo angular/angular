@@ -1,4 +1,4 @@
-'use strict';function implementsOnDestroy(pipe) {
+function implementsOnDestroy(pipe) {
     return pipe.constructor.prototype.onDestroy;
 }
 exports.implementsOnDestroy = implementsOnDestroy;

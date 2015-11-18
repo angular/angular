@@ -1,4 +1,4 @@
-'use strict';/**
+/**
  * @module
  * @description
  * Change detection enables data binding in Angular.

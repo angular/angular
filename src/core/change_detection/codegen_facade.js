@@ -1,4 +1,4 @@
-'use strict';/**
+/**
  * Converts `funcOrValue` to a string which can be used in generated code.
  */
 function codify(obj) {

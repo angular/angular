@@ -1,4 +1,4 @@
-'use strict';var route_config_decorator_1 = require('./route_config_decorator');
+var route_config_decorator_1 = require('./route_config_decorator');
 var lang_1 = require('angular2/src/facade/lang');
 var exceptions_1 = require('angular2/src/facade/exceptions');
 /**

@@ -1,4 +1,4 @@
-'use strict';/*
+/*
  * This file is the entry point for the main thread
  * It takes care of spawning the worker and sending it the initial init message
  * It also acts and the messenger between the worker thread and the renderer running on the UI

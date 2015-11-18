@@ -1,4 +1,4 @@
-'use strict';var exceptions_1 = require('angular2/src/facade/exceptions');
+var exceptions_1 = require('angular2/src/facade/exceptions');
 var PregenProtoChangeDetector = (function () {
     function PregenProtoChangeDetector() {
     }

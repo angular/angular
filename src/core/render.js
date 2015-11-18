@@ -1,4 +1,4 @@
-'use strict';// Public API for render
+// Public API for render
 var api_1 = require('./render/api');
 exports.Renderer = api_1.Renderer;
 exports.RenderViewRef = api_1.RenderViewRef;
