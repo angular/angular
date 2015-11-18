@@ -22,7 +22,7 @@ var view_resolver_1 = require('angular2/src/core/linker/view_resolver');
 var view_ref_1 = require('angular2/src/core/linker/view_ref');
 var dynamic_component_loader_1 = require('angular2/src/core/linker/dynamic_component_loader');
 var utils_1 = require('./utils');
-var render_1 = require('angular2/src/core/render/render');
+var dom_tokens_1 = require('angular2/src/platform/dom/dom_tokens');
 var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
 var debug_element_1 = require('angular2/src/core/debug/debug_element');
 /**
@@ -203,7 +203,7 @@ var TestComponentBuilder = (function () {
         this._viewBindingsOverrides.forEach(function (bindings, type) { return mockDirectiveResolver.setViewBindingsOverride(type, bindings); });
         var rootElId = "root" + _nextRootElementId++;
         var rootEl = utils_1.el("<div id=\"" + rootElId + "\"></div>");
-        var doc = this._injector.get(render_1.DOCUMENT);
+        var doc = this._injector.get(dom_tokens_1.DOCUMENT);
         // TODO(juliemr): can/should this be optional?
         var oldRoots = dom_adapter_1.DOM.querySelectorAll(doc, '[id^=root]');
         for (var i = 0; i < oldRoots.length; i++) {

@@ -13,7 +13,7 @@ var testing_internal_1 = require('angular2/testing_internal');
 var lang_1 = require('angular2/src/facade/lang');
 var view_pool_1 = require('angular2/src/core/linker/view_pool');
 var core_1 = require('angular2/core');
-var debug_1 = require('angular2/src/core/debug');
+var browser_1 = require('angular2/platform/browser');
 var lang_2 = require('angular2/src/facade/lang');
 var MyComp = (function () {
     function MyComp() {
@@ -28,12 +28,12 @@ var MyComp = (function () {
 })();
 function main() {
     testing_internal_1.describe('element probe', function () {
-        testing_internal_1.beforeEachBindings(function () { return [core_1.provide(view_pool_1.APP_VIEW_POOL_CAPACITY, { useValue: 0 })]; });
+        testing_internal_1.beforeEachProviders(function () { return [core_1.provide(view_pool_1.APP_VIEW_POOL_CAPACITY, { useValue: 0 })]; });
         testing_internal_1.it('should return a TestElement from a dom element', testing_internal_1.inject([testing_internal_1.TestComponentBuilder, testing_internal_1.AsyncTestCompleter], function (tcb, async) {
             tcb.overrideTemplate(MyComp, '<div some-dir></div>')
                 .createAsync(MyComp)
                 .then(function (componentFixture) {
-                testing_internal_1.expect(debug_1.inspectNativeElement(componentFixture.debugElement.nativeElement)
+                testing_internal_1.expect(browser_1.inspectNativeElement(componentFixture.debugElement.nativeElement)
                     .componentInstance)
                     .toBeAnInstanceOf(MyComp);
                 async.done();
@@ -44,7 +44,7 @@ function main() {
                 .createAsync(MyComp)
                 .then(function (componentFixture) {
                 componentFixture.destroy();
-                testing_internal_1.expect(debug_1.inspectNativeElement(componentFixture.debugElement.nativeElement)).toBe(null);
+                testing_internal_1.expect(browser_1.inspectNativeElement(componentFixture.debugElement.nativeElement)).toBe(null);
                 async.done();
             });
         }));

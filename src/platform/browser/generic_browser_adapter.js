@@ -5,7 +5,7 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var collection_1 = require('angular2/src/facade/collection');
 var lang_1 = require('angular2/src/facade/lang');
-var dom_adapter_1 = require('./dom_adapter');
+var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
 var xhr_impl_1 = require('angular2/src/platform/browser/xhr_impl');
 /**
  * Provides DOM operations in any browser environment.

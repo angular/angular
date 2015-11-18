@@ -4,7 +4,7 @@ function __export(m) {
 var post_message_bus_1 = require('angular2/src/web_workers/shared/post_message_bus');
 var application_common_1 = require("angular2/src/web_workers/worker/application_common");
 __export(require("angular2/src/web_workers/shared/message_bus"));
-var parse5_adapter_1 = require('angular2/src/core/dom/parse5_adapter');
+var parse5_adapter_1 = require('angular2/src/platform/server/parse5_adapter');
 var _postMessage = postMessage;
 /**
  * Bootstrapping a Webworker Application

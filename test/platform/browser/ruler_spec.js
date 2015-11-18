@@ -1,7 +1,7 @@
 var testing_internal_1 = require('angular2/testing_internal');
-var spies_1 = require('../spies');
+var spies_1 = require('../../core/spies');
 var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
-var ruler_1 = require('angular2/src/core/services/ruler');
+var ruler_1 = require('angular2/src/platform/browser/ruler');
 var rectangle_mock_1 = require('./rectangle_mock');
 function assertDimensions(rect, left, right, top, bottom, width, height) {
     testing_internal_1.expect(rect.left).toEqual(left);

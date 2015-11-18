@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var event_manager_1 = require('./event_manager');
+var core_1 = require('angular2/core');
 var collection_1 = require('angular2/src/facade/collection');
 var _eventNames = {
     // pan
@@ -52,6 +52,6 @@ var HammerGesturesPluginCommon = (function (_super) {
         return collection_1.StringMapWrapper.contains(_eventNames, eventName);
     };
     return HammerGesturesPluginCommon;
-})(event_manager_1.EventManagerPlugin);
+})(core_1.EventManagerPlugin);
 exports.HammerGesturesPluginCommon = HammerGesturesPluginCommon;
 //# sourceMappingURL=hammer_common.js.map

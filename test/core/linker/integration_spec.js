@@ -31,7 +31,7 @@ var view_container_ref_1 = require('angular2/src/core/linker/view_container_ref'
 var compiler_1 = require('angular2/src/core/linker/compiler');
 var element_ref_1 = require('angular2/src/core/linker/element_ref');
 var template_ref_1 = require('angular2/src/core/linker/template_ref');
-var dom_renderer_1 = require('angular2/src/core/render/dom/dom_renderer');
+var dom_renderer_1 = require('angular2/src/platform/dom/dom_renderer');
 var lang_2 = require('angular2/src/facade/lang');
 var ANCHOR_ELEMENT = lang_1.CONST_EXPR(new core_1.OpaqueToken('AnchorElement'));
 function main() {

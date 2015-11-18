@@ -1,5 +1,5 @@
 var testing_internal_1 = require('angular2/testing_internal');
-var key_events_1 = require('angular2/src/core/render/dom/events/key_events');
+var key_events_1 = require('angular2/src/platform/dom/events/key_events');
 function main() {
     testing_internal_1.describe('KeyEvents', function () {
         testing_internal_1.it('should ignore unrecognized events', function () {

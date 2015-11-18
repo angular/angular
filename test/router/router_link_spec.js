@@ -12,7 +12,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var testing_internal_1 = require('angular2/testing_internal');
 var spies_1 = require('./spies');
 var core_1 = require('angular2/core');
-var debug_1 = require('angular2/src/core/debug');
+var browser_1 = require('angular2/platform/browser');
 var router_1 = require('angular2/router');
 var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
 var instruction_1 = require('angular2/src/router/instruction');
@@ -32,7 +32,7 @@ function main() {
             tcb.createAsync(TestComponent)
                 .then(function (testComponent) {
                 testComponent.detectChanges();
-                var anchorElement = testComponent.debugElement.query(debug_1.By.css('a.detail-view')).nativeElement;
+                var anchorElement = testComponent.debugElement.query(browser_1.By.css('a.detail-view')).nativeElement;
                 testing_internal_1.expect(dom_adapter_1.DOM.getAttribute(anchorElement, 'href')).toEqual('detail');
                 async.done();
             });
@@ -42,7 +42,7 @@ function main() {
                 .then(function (testComponent) {
                 testComponent.detectChanges();
                 // TODO: shouldn't this be just 'click' rather than '^click'?
-                testComponent.debugElement.query(debug_1.By.css('a.detail-view'))
+                testComponent.debugElement.query(browser_1.By.css('a.detail-view'))
                     .triggerEventHandler('click', null);
                 testing_internal_1.expect(router.spy('navigateByInstruction')).toHaveBeenCalledWith(dummyInstruction);
                 async.done();
@@ -52,7 +52,7 @@ function main() {
             tcb.createAsync(TestComponent)
                 .then(function (testComponent) {
                 testComponent.detectChanges();
-                testComponent.debugElement.query(debug_1.By.css('a.detail-view-self'))
+                testComponent.debugElement.query(browser_1.By.css('a.detail-view-self'))
                     .triggerEventHandler('click', null);
                 testing_internal_1.expect(router.spy('navigateByInstruction')).toHaveBeenCalledWith(dummyInstruction);
                 async.done();
@@ -62,7 +62,7 @@ function main() {
             tcb.createAsync(TestComponent)
                 .then(function (testComponent) {
                 testComponent.detectChanges();
-                testComponent.debugElement.query(debug_1.By.css('a.detail-view-blank'))
+                testComponent.debugElement.query(browser_1.By.css('a.detail-view-blank'))
                     .triggerEventHandler('click', null);
                 testing_internal_1.expect(router.spy('navigateByInstruction')).not.toHaveBeenCalled();
                 async.done();

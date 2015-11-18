@@ -13,7 +13,7 @@ var angular2_1 = require('angular2/angular2');
 var testing_internal_1 = require('angular2/testing_internal');
 var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
 var core_1 = require('angular2/core');
-var debug_1 = require('angular2/src/core/debug');
+var browser_1 = require('angular2/platform/browser');
 var collection_1 = require('angular2/src/facade/collection');
 var async_1 = require('angular2/src/facade/async');
 var promise_1 = require("angular2/src/facade/promise");
@@ -25,7 +25,7 @@ function main() {
                 fixture.debugElement.componentInstance.form =
                     new core_1.ControlGroup({ "login": new core_1.Control("loginValue") });
                 fixture.detectChanges();
-                var input = fixture.debugElement.query(debug_1.By.css("input"));
+                var input = fixture.debugElement.query(browser_1.By.css("input"));
                 testing_internal_1.expect(input.nativeElement.value).toEqual("loginValue");
                 async.done();
             });
@@ -36,7 +36,7 @@ function main() {
             tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(function (fixture) {
                 fixture.debugElement.componentInstance.form = form;
                 fixture.detectChanges();
-                var input = fixture.debugElement.query(debug_1.By.css("input"));
+                var input = fixture.debugElement.query(browser_1.By.css("input"));
                 input.nativeElement.value = "updatedValue";
                 testing_internal_1.dispatchEvent(input.nativeElement, "change");
                 testing_internal_1.expect(form.value).toEqual({ "login": "updatedValue" });
@@ -51,7 +51,7 @@ function main() {
             fixture.debugElement.componentInstance.form = new core_1.ControlGroup({});
             fixture.debugElement.componentInstance.name = 'old';
             testing_internal_1.tick();
-            var form = fixture.debugElement.query(debug_1.By.css("form"));
+            var form = fixture.debugElement.query(browser_1.By.css("form"));
             testing_internal_1.dispatchEvent(form.nativeElement, "submit");
             testing_internal_1.tick();
             testing_internal_1.expect(fixture.debugElement.componentInstance.name).toEqual('updated');
@@ -62,7 +62,7 @@ function main() {
             tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(function (fixture) {
                 fixture.debugElement.componentInstance.form = control;
                 fixture.detectChanges();
-                var input = fixture.debugElement.query(debug_1.By.css("input"));
+                var input = fixture.debugElement.query(browser_1.By.css("input"));
                 testing_internal_1.expect(input.nativeElement.value).toEqual("loginValue");
                 input.nativeElement.value = "updatedValue";
                 testing_internal_1.dispatchEvent(input.nativeElement, "change");
@@ -79,7 +79,7 @@ function main() {
                 fixture.debugElement.componentInstance.form =
                     new core_1.ControlGroup({ "login": new core_1.Control("newValue") });
                 fixture.detectChanges();
-                var input = fixture.debugElement.query(debug_1.By.css("input"));
+                var input = fixture.debugElement.query(browser_1.By.css("input"));
                 testing_internal_1.expect(input.nativeElement.value).toEqual("newValue");
                 async.done();
             });
@@ -93,7 +93,7 @@ function main() {
                 fixture.detectChanges();
                 login.updateValue("newValue");
                 fixture.detectChanges();
-                var input = fixture.debugElement.query(debug_1.By.css("input"));
+                var input = fixture.debugElement.query(browser_1.By.css("input"));
                 testing_internal_1.expect(input.nativeElement.value).toEqual("newValue");
                 async.done();
             });
@@ -105,7 +105,7 @@ function main() {
             tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(function (fixture) {
                 fixture.debugElement.componentInstance.form = form;
                 fixture.detectChanges();
-                var loginEl = fixture.debugElement.query(debug_1.By.css("input"));
+                var loginEl = fixture.debugElement.query(browser_1.By.css("input"));
                 testing_internal_1.expect(login.touched).toBe(false);
                 testing_internal_1.dispatchEvent(loginEl.nativeElement, "blur");
                 testing_internal_1.expect(login.touched).toBe(true);
@@ -119,7 +119,7 @@ function main() {
                     fixture.debugElement.componentInstance.form =
                         new core_1.ControlGroup({ "text": new core_1.Control("old") });
                     fixture.detectChanges();
-                    var input = fixture.debugElement.query(debug_1.By.css("input"));
+                    var input = fixture.debugElement.query(browser_1.By.css("input"));
                     testing_internal_1.expect(input.nativeElement.value).toEqual("old");
                     input.nativeElement.value = "new";
                     testing_internal_1.dispatchEvent(input.nativeElement, "input");
@@ -133,7 +133,7 @@ function main() {
                     fixture.debugElement.componentInstance.form =
                         new core_1.ControlGroup({ "text": new core_1.Control("old") });
                     fixture.detectChanges();
-                    var input = fixture.debugElement.query(debug_1.By.css("input"));
+                    var input = fixture.debugElement.query(browser_1.By.css("input"));
                     testing_internal_1.expect(input.nativeElement.value).toEqual("old");
                     input.nativeElement.value = "new";
                     testing_internal_1.dispatchEvent(input.nativeElement, "input");
@@ -147,7 +147,7 @@ function main() {
                     fixture.debugElement.componentInstance.form =
                         new core_1.ControlGroup({ "text": new core_1.Control('old') });
                     fixture.detectChanges();
-                    var textarea = fixture.debugElement.query(debug_1.By.css("textarea"));
+                    var textarea = fixture.debugElement.query(browser_1.By.css("textarea"));
                     testing_internal_1.expect(textarea.nativeElement.value).toEqual("old");
                     textarea.nativeElement.value = "new";
                     testing_internal_1.dispatchEvent(textarea.nativeElement, "input");
@@ -161,7 +161,7 @@ function main() {
                     fixture.debugElement.componentInstance.form =
                         new core_1.ControlGroup({ "checkbox": new core_1.Control(true) });
                     fixture.detectChanges();
-                    var input = fixture.debugElement.query(debug_1.By.css("input"));
+                    var input = fixture.debugElement.query(browser_1.By.css("input"));
                     testing_internal_1.expect(input.nativeElement.checked).toBe(true);
                     input.nativeElement.checked = false;
                     testing_internal_1.dispatchEvent(input.nativeElement, "change");
@@ -175,7 +175,7 @@ function main() {
                     fixture.debugElement.componentInstance.form =
                         new core_1.ControlGroup({ "num": new core_1.Control(10) });
                     fixture.detectChanges();
-                    var input = fixture.debugElement.query(debug_1.By.css("input"));
+                    var input = fixture.debugElement.query(browser_1.By.css("input"));
                     testing_internal_1.expect(input.nativeElement.value).toEqual("10");
                     input.nativeElement.value = "20";
                     testing_internal_1.dispatchEvent(input.nativeElement, "change");
@@ -189,8 +189,8 @@ function main() {
                     fixture.debugElement.componentInstance.form =
                         new core_1.ControlGroup({ "city": new core_1.Control("SF") });
                     fixture.detectChanges();
-                    var select = fixture.debugElement.query(debug_1.By.css("select"));
-                    var sfOption = fixture.debugElement.query(debug_1.By.css("option"));
+                    var select = fixture.debugElement.query(browser_1.By.css("select"));
+                    var sfOption = fixture.debugElement.query(browser_1.By.css("option"));
                     testing_internal_1.expect(select.nativeElement.value).toEqual('SF');
                     testing_internal_1.expect(sfOption.nativeElement.selected).toBe(true);
                     select.nativeElement.value = 'NYC';
@@ -210,7 +210,7 @@ function main() {
                 fixture.debugElement.componentInstance.data = ['SF', 'NYC'];
                 fixture.detectChanges();
                 testing_internal_1.tick();
-                var select = fixture.debugElement.query(debug_1.By.css('select'));
+                var select = fixture.debugElement.query(browser_1.By.css('select'));
                 testing_internal_1.expect(select.nativeElement.value).toEqual('NYC');
             })));
             testing_internal_1.it("should support custom value accessors", testing_internal_1.inject([testing_internal_1.TestComponentBuilder, testing_internal_1.AsyncTestCompleter], function (tcb, async) {
@@ -219,7 +219,7 @@ function main() {
                     fixture.debugElement.componentInstance.form =
                         new core_1.ControlGroup({ "name": new core_1.Control("aa") });
                     fixture.detectChanges();
-                    var input = fixture.debugElement.query(debug_1.By.css("input"));
+                    var input = fixture.debugElement.query(browser_1.By.css("input"));
                     testing_internal_1.expect(input.nativeElement.value).toEqual("!aa!");
                     input.nativeElement.value = "!bb!";
                     testing_internal_1.dispatchEvent(input.nativeElement, "change");
@@ -233,7 +233,7 @@ function main() {
                     fixture.debugElement.componentInstance.form =
                         new core_1.ControlGroup({ "name": new core_1.Control("aa") });
                     fixture.detectChanges();
-                    var input = fixture.debugElement.query(debug_1.By.css("my-input"));
+                    var input = fixture.debugElement.query(browser_1.By.css("my-input"));
                     testing_internal_1.expect(input.componentInstance.value).toEqual("!aa!");
                     input.componentInstance.value = "!bb!";
                     async_1.ObservableWrapper.subscribe(input.componentInstance.onChange, function (value) {
@@ -251,9 +251,9 @@ function main() {
                 tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(function (fixture) {
                     fixture.debugElement.componentInstance.form = form;
                     fixture.detectChanges();
-                    var required = fixture.debugElement.query(debug_1.By.css("[required]"));
-                    var minLength = fixture.debugElement.query(debug_1.By.css("[minlength]"));
-                    var maxLength = fixture.debugElement.query(debug_1.By.css("[maxlength]"));
+                    var required = fixture.debugElement.query(browser_1.By.css("[required]"));
+                    var minLength = fixture.debugElement.query(browser_1.By.css("[minlength]"));
+                    var maxLength = fixture.debugElement.query(browser_1.By.css("[maxlength]"));
                     required.nativeElement.value = "";
                     minLength.nativeElement.value = "1";
                     maxLength.nativeElement.value = "1234";
@@ -285,7 +285,7 @@ function main() {
                 testing_internal_1.expect(form.pending).toEqual(true);
                 testing_internal_1.tick(100);
                 testing_internal_1.expect(form.hasError("uniqLogin", ["login"])).toEqual(true);
-                var input = rootTC.debugElement.query(debug_1.By.css("input"));
+                var input = rootTC.debugElement.query(browser_1.By.css("input"));
                 input.nativeElement.value = "expected";
                 testing_internal_1.dispatchEvent(input.nativeElement, "change");
                 testing_internal_1.tick(100);
@@ -298,7 +298,7 @@ function main() {
                     fixture.debugElement.componentInstance.form = form;
                     fixture.detectChanges();
                     testing_internal_1.expect(form.valid).toEqual(true);
-                    var input = fixture.debugElement.query(debug_1.By.css("input"));
+                    var input = fixture.debugElement.query(browser_1.By.css("input"));
                     input.nativeElement.value = "";
                     testing_internal_1.dispatchEvent(input.nativeElement, "change");
                     testing_internal_1.expect(form.valid).toEqual(false);
@@ -316,7 +316,7 @@ function main() {
                 fixture.debugElement.componentInstance.form = form;
                 fixture.detectChanges();
                 testing_internal_1.expect(form.hasError("required", ["login"])).toEqual(true);
-                var input = fixture.debugElement.query(debug_1.By.css("input"));
+                var input = fixture.debugElement.query(browser_1.By.css("input"));
                 input.nativeElement.value = "wrong value";
                 testing_internal_1.dispatchEvent(input.nativeElement, "change");
                 testing_internal_1.expect(form.pending).toEqual(true);
@@ -335,7 +335,7 @@ function main() {
                 tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(function (fixture) {
                     fixture.debugElement.componentInstance.form = form;
                     fixture.detectChanges();
-                    var input = fixture.debugElement.query(debug_1.By.css("input"));
+                    var input = fixture.debugElement.query(browser_1.By.css("input"));
                     testing_internal_1.expect(input.nativeElement.value).toEqual("value");
                     async.done();
                 });
@@ -346,7 +346,7 @@ function main() {
                 tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(function (fixture) {
                     fixture.debugElement.componentInstance.form = form;
                     fixture.detectChanges();
-                    var input = fixture.debugElement.query(debug_1.By.css("input"));
+                    var input = fixture.debugElement.query(browser_1.By.css("input"));
                     input.nativeElement.value = "updatedValue";
                     testing_internal_1.dispatchEvent(input.nativeElement, "change");
                     testing_internal_1.expect(form.value).toEqual({ "nested": { "login": "updatedValue" } });
@@ -363,7 +363,7 @@ function main() {
             fixture.debugElement.componentInstance.name = 'oldValue';
             fixture.debugElement.componentInstance.form = form;
             fixture.detectChanges();
-            var input = fixture.debugElement.query(debug_1.By.css("input")).nativeElement;
+            var input = fixture.debugElement.query(browser_1.By.css("input")).nativeElement;
             testing_internal_1.expect(input.value).toEqual("oldValue");
             input.value = "updatedValue";
             testing_internal_1.dispatchEvent(input, "change");
@@ -379,7 +379,7 @@ function main() {
             fixture.debugElement.componentInstance.form = form;
             fixture.debugElement.componentInstance.name = "oldValue";
             fixture.detectChanges();
-            var input = fixture.debugElement.query(debug_1.By.css("input")).nativeElement;
+            var input = fixture.debugElement.query(browser_1.By.css("input")).nativeElement;
             testing_internal_1.expect(input.value).toEqual("oldValue");
             input.value = "updatedValue";
             testing_internal_1.dispatchEvent(input, "change");
@@ -406,7 +406,7 @@ function main() {
                 tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(function (root) { fixture = root; });
                 testing_internal_1.tick();
                 fixture.debugElement.componentInstance.name = 'old';
-                var form = fixture.debugElement.query(debug_1.By.css("form"));
+                var form = fixture.debugElement.query(browser_1.By.css("form"));
                 testing_internal_1.dispatchEvent(form.nativeElement, "submit");
                 testing_internal_1.tick();
                 testing_internal_1.expect(fixture.debugElement.componentInstance.name).toEqual("updated");
@@ -458,7 +458,7 @@ function main() {
                 fixture.debugElement.componentInstance.name = "oldValue";
                 fixture.detectChanges();
                 testing_internal_1.tick();
-                var input = fixture.debugElement.query(debug_1.By.css("input")).nativeElement;
+                var input = fixture.debugElement.query(browser_1.By.css("input")).nativeElement;
                 testing_internal_1.expect(input.value).toEqual("oldValue");
                 input.value = "updatedValue";
                 testing_internal_1.dispatchEvent(input, "change");
@@ -472,7 +472,7 @@ function main() {
                 testing_internal_1.tick();
                 fixture.debugElement.componentInstance.name = "oldValue";
                 fixture.detectChanges();
-                var input = fixture.debugElement.query(debug_1.By.css("input")).nativeElement;
+                var input = fixture.debugElement.query(browser_1.By.css("input")).nativeElement;
                 testing_internal_1.expect(input.value).toEqual("oldValue");
                 input.value = "updatedValue";
                 testing_internal_1.dispatchEvent(input, "change");
@@ -487,7 +487,7 @@ function main() {
                 tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(function (fixture) {
                     fixture.debugElement.componentInstance.form = form;
                     fixture.detectChanges();
-                    var input = fixture.debugElement.query(debug_1.By.css("input")).nativeElement;
+                    var input = fixture.debugElement.query(browser_1.By.css("input")).nativeElement;
                     testing_internal_1.expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
                     testing_internal_1.dispatchEvent(input, "blur");
                     fixture.detectChanges();
@@ -505,7 +505,7 @@ function main() {
                 tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(function (fixture) {
                     fixture.debugElement.componentInstance.form = form;
                     fixture.detectChanges();
-                    var input = fixture.debugElement.query(debug_1.By.css("input")).nativeElement;
+                    var input = fixture.debugElement.query(browser_1.By.css("input")).nativeElement;
                     testing_internal_1.expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-untouched"]);
                     testing_internal_1.dispatchEvent(input, "blur");
                     fixture.detectChanges();
@@ -522,7 +522,7 @@ function main() {
                 tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(function (fixture) {
                     fixture.debugElement.componentInstance.name = "";
                     fixture.detectChanges();
-                    var input = fixture.debugElement.query(debug_1.By.css("input")).nativeElement;
+                    var input = fixture.debugElement.query(browser_1.By.css("input")).nativeElement;
                     testing_internal_1.expect(sortedClassList(input)).toEqual(["ng-invalid", "ng-pristine", "ng-untouched"]);
                     testing_internal_1.dispatchEvent(input, "blur");
                     fixture.detectChanges();
@@ -550,7 +550,7 @@ function main() {
                     var fakeDoc = dom_adapter_1.DOM.createHtmlDocument();
                     dom_adapter_1.DOM.appendChild(fakeDoc.body, fixture.debugElement.nativeElement);
                 }
-                var input = fixture.debugElement.query(debug_1.By.css("input")).nativeElement;
+                var input = fixture.debugElement.query(browser_1.By.css("input")).nativeElement;
                 input.value = "aa";
                 input.selectionStart = 1;
                 testing_internal_1.dispatchEvent(input, "change");
@@ -567,7 +567,7 @@ function main() {
                 fixture.debugElement.componentInstance.name = "";
                 fixture.detectChanges();
                 // Type "aa" into the input.
-                var input = fixture.debugElement.query(debug_1.By.css("input")).nativeElement;
+                var input = fixture.debugElement.query(browser_1.By.css("input")).nativeElement;
                 input.value = "aa";
                 input.selectionStart = 1;
                 testing_internal_1.dispatchEvent(input, "change");

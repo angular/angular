@@ -10,7 +10,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var di_1 = require('angular2/src/core/di');
-var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
 var collection_1 = require('angular2/src/facade/collection');
 var lang_1 = require('angular2/src/facade/lang');
 var exceptions_1 = require('angular2/src/facade/exceptions');
@@ -97,27 +96,16 @@ var TestabilityRegistry = (function () {
     function TestabilityRegistry() {
         /** @internal */
         this._applications = new collection_1.Map();
-        testabilityGetter.addToWindow(this);
+        _testabilityGetter.addToWindow(this);
     }
     TestabilityRegistry.prototype.registerApplication = function (token, testability) {
         this._applications.set(token, testability);
     };
+    TestabilityRegistry.prototype.getTestability = function (elem) { return this._applications.get(elem); };
     TestabilityRegistry.prototype.getAllTestabilities = function () { return collection_1.MapWrapper.values(this._applications); };
     TestabilityRegistry.prototype.findTestabilityInTree = function (elem, findInAncestors) {
         if (findInAncestors === void 0) { findInAncestors = true; }
-        if (elem == null) {
-            return null;
-        }
-        if (this._applications.has(elem)) {
-            return this._applications.get(elem);
-        }
-        else if (!findInAncestors) {
-            return null;
-        }
-        if (dom_adapter_1.DOM.isShadowRoot(elem)) {
-            return this.findTestabilityInTree(dom_adapter_1.DOM.getHost(elem));
-        }
-        return this.findTestabilityInTree(dom_adapter_1.DOM.parentElement(elem));
+        return _testabilityGetter.findTestabilityInTree(this, elem, findInAncestors);
     };
     TestabilityRegistry = __decorate([
         di_1.Injectable(), 
@@ -126,19 +114,22 @@ var TestabilityRegistry = (function () {
     return TestabilityRegistry;
 })();
 exports.TestabilityRegistry = TestabilityRegistry;
-var NoopGetTestability = (function () {
-    function NoopGetTestability() {
+var _NoopGetTestability = (function () {
+    function _NoopGetTestability() {
     }
-    NoopGetTestability.prototype.addToWindow = function (registry) { };
-    NoopGetTestability = __decorate([
+    _NoopGetTestability.prototype.addToWindow = function (registry) { };
+    _NoopGetTestability.prototype.findTestabilityInTree = function (registry, elem, findInAncestors) {
+        return null;
+    };
+    _NoopGetTestability = __decorate([
         lang_1.CONST(), 
         __metadata('design:paramtypes', [])
-    ], NoopGetTestability);
-    return NoopGetTestability;
+    ], _NoopGetTestability);
+    return _NoopGetTestability;
 })();
 function setTestabilityGetter(getter) {
-    testabilityGetter = getter;
+    _testabilityGetter = getter;
 }
 exports.setTestabilityGetter = setTestabilityGetter;
-var testabilityGetter = lang_1.CONST_EXPR(new NoopGetTestability());
+var _testabilityGetter = lang_1.CONST_EXPR(new _NoopGetTestability());
 //# sourceMappingURL=testability.js.map

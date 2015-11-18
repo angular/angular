@@ -11,11 +11,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var testing_internal_1 = require('angular2/testing_internal');
 var core_1 = require('angular2/core');
-var debug_1 = require('angular2/src/core/debug');
+var browser_1 = require('angular2/platform/browser');
 var metadata_1 = require('angular2/src/core/metadata');
 var dynamic_component_loader_1 = require('angular2/src/core/linker/dynamic_component_loader');
 var element_ref_1 = require('angular2/src/core/linker/element_ref');
-var render_1 = require('angular2/src/core/render/render');
+var dom_tokens_1 = require('angular2/src/platform/dom/dom_tokens');
 var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
 var test_component_builder_1 = require("angular2/src/testing/test_component_builder");
 function main() {
@@ -55,7 +55,7 @@ function main() {
                     .then(function (tc) {
                     tc.debugElement.componentInstance.ctxBoolProp = true;
                     tc.detectChanges();
-                    var childCompEl = tc.debugElement.query(debug_1.By.css('child-cmp'));
+                    var childCompEl = tc.debugElement.query(browser_1.By.css('child-cmp'));
                     loader.loadIntoLocation(DynamicallyLoaded, childCompEl.elementRef, 'loc')
                         .then(function (ref) {
                         testing_internal_1.expect(tc.debugElement.nativeElement)
@@ -155,7 +155,7 @@ function main() {
             }));
         });
         testing_internal_1.describe('loadAsRoot', function () {
-            testing_internal_1.it('should allow to create, update and destroy components', testing_internal_1.inject([testing_internal_1.AsyncTestCompleter, dynamic_component_loader_1.DynamicComponentLoader, render_1.DOCUMENT, core_1.Injector], function (async, loader, doc, injector) {
+            testing_internal_1.it('should allow to create, update and destroy components', testing_internal_1.inject([testing_internal_1.AsyncTestCompleter, dynamic_component_loader_1.DynamicComponentLoader, dom_tokens_1.DOCUMENT, core_1.Injector], function (async, loader, doc, injector) {
                 var rootEl = testing_internal_1.el('<child-cmp></child-cmp>');
                 dom_adapter_1.DOM.appendChild(doc.body, rootEl);
                 loader.loadAsRoot(ChildComp, null, injector)

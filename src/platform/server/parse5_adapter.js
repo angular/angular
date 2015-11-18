@@ -8,7 +8,7 @@ var parser = new parse5.Parser(parse5.TreeAdapters.htmlparser2);
 var serializer = new parse5.Serializer(parse5.TreeAdapters.htmlparser2);
 var treeAdapter = parser.treeAdapter;
 var collection_1 = require('angular2/src/facade/collection');
-var dom_adapter_1 = require('./dom_adapter');
+var core_1 = require('angular2/core');
 var lang_1 = require('angular2/src/facade/lang');
 var exceptions_1 = require('angular2/src/facade/exceptions');
 var selector_1 = require('angular2/src/compiler/selector');
@@ -30,7 +30,7 @@ var Parse5DomAdapter = (function (_super) {
     function Parse5DomAdapter() {
         _super.apply(this, arguments);
     }
-    Parse5DomAdapter.makeCurrent = function () { dom_adapter_1.setRootDomAdapter(new Parse5DomAdapter()); };
+    Parse5DomAdapter.makeCurrent = function () { core_1.setRootDomAdapter(new Parse5DomAdapter()); };
     Parse5DomAdapter.prototype.hasProperty = function (element, name) {
         return _HTMLElementPropertyList.indexOf(name) > -1;
     };
@@ -554,7 +554,7 @@ var Parse5DomAdapter = (function (_super) {
     Parse5DomAdapter.prototype.invoke = function (el, methodName, args) { throw new Error('not implemented'); };
     Parse5DomAdapter.prototype.getEventKey = function (event) { throw new Error('not implemented'); };
     return Parse5DomAdapter;
-})(dom_adapter_1.DomAdapter);
+})(core_1.DomAdapter);
 exports.Parse5DomAdapter = Parse5DomAdapter;
 // TODO: build a proper list, this one is all the keys of a HTMLInputElement
 var _HTMLElementPropertyList = [

@@ -19,7 +19,7 @@ var element_injector_1 = require('angular2/src/core/linker/element_injector');
 var directive_resolver_1 = require('angular2/src/core/linker/directive_resolver');
 var metadata_1 = require('angular2/src/core/metadata');
 var view_manager_utils_1 = require('angular2/src/core/linker/view_manager_utils');
-var render_1 = require('angular2/src/core/render/render');
+var render_1 = require('angular2/render');
 function main() {
     // TODO(tbosch): add more tests here!
     testing_internal_1.describe('AppViewManagerUtils', function () {

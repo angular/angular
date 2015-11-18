@@ -4,19 +4,20 @@ var __extends = (this && this.__extends) || function (d, b) {
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var testing_internal_1 = require('angular2/testing_internal');
-var event_manager_1 = require('angular2/src/core/render/dom/events/event_manager');
+var core_1 = require('angular2/core');
+var dom_events_1 = require('angular2/src/platform/dom/events/dom_events');
 var ng_zone_1 = require('angular2/src/core/zone/ng_zone');
 var collection_1 = require('angular2/src/facade/collection');
 var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
 function main() {
     var domEventPlugin;
-    testing_internal_1.beforeEach(function () { domEventPlugin = new event_manager_1.DomEventsPlugin(); });
+    testing_internal_1.beforeEach(function () { domEventPlugin = new dom_events_1.DomEventsPlugin(); });
     testing_internal_1.describe('EventManager', function () {
         testing_internal_1.it('should delegate event bindings to plugins that are passed in from the most generic one to the most specific one', function () {
             var element = testing_internal_1.el('<div></div>');
             var handler = function (e) { return e; };
             var plugin = new FakeEventManagerPlugin(['click']);
-            var manager = new event_manager_1.EventManager([domEventPlugin, plugin], new FakeNgZone());
+            var manager = new core_1.EventManager([domEventPlugin, plugin], new FakeNgZone());
             manager.addEventListener(element, 'click', handler);
             testing_internal_1.expect(plugin._eventHandler.get('click')).toBe(handler);
         });
@@ -26,7 +27,7 @@ function main() {
             var dblClickHandler = function (e) { return e; };
             var plugin1 = new FakeEventManagerPlugin(['dblclick']);
             var plugin2 = new FakeEventManagerPlugin(['click', 'dblclick']);
-            var manager = new event_manager_1.EventManager([plugin2, plugin1], new FakeNgZone());
+            var manager = new core_1.EventManager([plugin2, plugin1], new FakeNgZone());
             manager.addEventListener(element, 'click', clickHandler);
             manager.addEventListener(element, 'dblclick', dblClickHandler);
             testing_internal_1.expect(plugin1._eventHandler.has('click')).toBe(false);
@@ -37,7 +38,7 @@ function main() {
         testing_internal_1.it('should throw when no plugin can handle the event', function () {
             var element = testing_internal_1.el('<div></div>');
             var plugin = new FakeEventManagerPlugin(['dblclick']);
-            var manager = new event_manager_1.EventManager([plugin], new FakeNgZone());
+            var manager = new core_1.EventManager([plugin], new FakeNgZone());
             testing_internal_1.expect(function () { return manager.addEventListener(element, 'click', null); })
                 .toThrowError('No event manager plugin found for event click');
         });
@@ -49,7 +50,7 @@ function main() {
             var dispatchedEvent = dom_adapter_1.DOM.createMouseEvent('click');
             var receivedEvent = null;
             var handler = function (e) { receivedEvent = e; };
-            var manager = new event_manager_1.EventManager([domEventPlugin], new FakeNgZone());
+            var manager = new core_1.EventManager([domEventPlugin], new FakeNgZone());
             manager.addEventListener(element, 'click', handler);
             dom_adapter_1.DOM.dispatchEvent(child, dispatchedEvent);
             testing_internal_1.expect(receivedEvent).toBe(dispatchedEvent);
@@ -60,7 +61,7 @@ function main() {
             var dispatchedEvent = dom_adapter_1.DOM.createMouseEvent('click');
             var receivedEvent = null;
             var handler = function (e) { receivedEvent = e; };
-            var manager = new event_manager_1.EventManager([domEventPlugin], new FakeNgZone());
+            var manager = new core_1.EventManager([domEventPlugin], new FakeNgZone());
             var remover = manager.addGlobalEventListener("document", 'click', handler);
             dom_adapter_1.DOM.dispatchEvent(element, dispatchedEvent);
             testing_internal_1.expect(receivedEvent).toBe(dispatchedEvent);
@@ -86,7 +87,7 @@ var FakeEventManagerPlugin = (function (_super) {
         return function () { _this._eventHandler.delete(eventName); };
     };
     return FakeEventManagerPlugin;
-})(event_manager_1.EventManagerPlugin);
+})(core_1.EventManagerPlugin);
 var FakeNgZone = (function (_super) {
     __extends(FakeNgZone, _super);
     function FakeNgZone() {

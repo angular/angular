@@ -14,7 +14,7 @@ var bootstrap_1 = require('angular2/bootstrap');
 var metadata_1 = require('angular2/src/core/metadata');
 var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
 var core_1 = require('angular2/core');
-var render_1 = require('angular2/src/core/render/render');
+var dom_tokens_1 = require('angular2/src/platform/dom/dom_tokens');
 var route_config_decorator_1 = require('angular2/src/router/route_config_decorator');
 var async_1 = require('angular2/src/facade/async');
 var exceptions_1 = require('angular2/src/facade/exceptions');
@@ -43,7 +43,7 @@ function main() {
                     router_1.ROUTER_PROVIDERS,
                     core_1.provide(router_1.ROUTER_PRIMARY_COMPONENT, { useValue: AppCmp }),
                     core_1.provide(location_strategy_1.LocationStrategy, { useClass: mock_location_strategy_1.MockLocationStrategy }),
-                    core_1.provide(render_1.DOCUMENT, { useValue: fakeDoc })
+                    core_1.provide(dom_tokens_1.DOCUMENT, { useValue: fakeDoc })
                 ])
                     .then(function (applicationRef) {
                     var router = applicationRef.hostComponent.router;

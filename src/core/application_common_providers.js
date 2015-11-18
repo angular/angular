@@ -15,7 +15,7 @@ var compiler_1 = require('./linker/compiler');
 var compiler_2 = require("./linker/compiler");
 var dynamic_component_loader_1 = require('./linker/dynamic_component_loader');
 var dynamic_component_loader_2 = require("./linker/dynamic_component_loader");
-var event_manager_1 = require('./render/dom/events/event_manager');
+var render_1 = require('./render');
 /**
  * A default set of providers which should be included in any Angular
  * application, regardless of the platform it runs onto.
@@ -35,6 +35,6 @@ exports.APPLICATION_COMMON_PROVIDERS = lang_1.CONST_EXPR([
     directive_resolver_1.DirectiveResolver,
     pipe_resolver_1.PipeResolver,
     new di_1.Provider(dynamic_component_loader_1.DynamicComponentLoader, { useClass: dynamic_component_loader_2.DynamicComponentLoader_ }),
-    event_manager_1.EventManager
+    render_1.EventManager
 ]);
 //# sourceMappingURL=application_common_providers.js.map

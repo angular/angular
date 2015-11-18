@@ -11,29 +11,32 @@ __export(require('angular2/src/facade/facade'));
 // web_worker exports its own
 // export * from '../src/core/application';
 __export(require('../src/core/application_ref'));
-__export(require('../src/core/services'));
+__export(require('../src/platform/browser/ruler'));
+__export(require('../src/platform/browser/title'));
+__export(require('../src/compiler/url_resolver'));
 __export(require('../src/core/linker'));
 __export(require('../src/core/zone'));
 // Do not export render in web_worker
 // export * from '../src/core/render';
 // Add special import for just render API
 // TODO: Hard coded exports from render that need to be cleaned up
-var render_1 = require('../src/core/render/render');
-exports.Renderer = render_1.Renderer;
-exports.RenderViewRef = render_1.RenderViewRef;
-exports.RenderProtoViewRef = render_1.RenderProtoViewRef;
-exports.RenderFragmentRef = render_1.RenderFragmentRef;
-exports.RenderViewWithFragments = render_1.RenderViewWithFragments;
-exports.RenderTemplateCmd = render_1.RenderTemplateCmd;
-exports.RenderTextCmd = render_1.RenderTextCmd;
-exports.RenderNgContentCmd = render_1.RenderNgContentCmd;
-exports.RenderBeginElementCmd = render_1.RenderBeginElementCmd;
-exports.RenderBeginComponentCmd = render_1.RenderBeginComponentCmd;
-exports.RenderEmbeddedTemplateCmd = render_1.RenderEmbeddedTemplateCmd;
-exports.RenderBeginCmd = render_1.RenderBeginCmd;
+var api_1 = require('../src/core/render/api');
+exports.Renderer = api_1.Renderer;
+exports.RenderViewRef = api_1.RenderViewRef;
+exports.RenderProtoViewRef = api_1.RenderProtoViewRef;
+exports.RenderFragmentRef = api_1.RenderFragmentRef;
+exports.RenderViewWithFragments = api_1.RenderViewWithFragments;
+exports.RenderTemplateCmd = api_1.RenderTemplateCmd;
+exports.RenderTextCmd = api_1.RenderTextCmd;
+exports.RenderNgContentCmd = api_1.RenderNgContentCmd;
+exports.RenderBeginElementCmd = api_1.RenderBeginElementCmd;
+exports.RenderBeginComponentCmd = api_1.RenderBeginComponentCmd;
+exports.RenderEmbeddedTemplateCmd = api_1.RenderEmbeddedTemplateCmd;
+exports.RenderBeginCmd = api_1.RenderBeginCmd;
 __export(require('../src/common/directives'));
 __export(require('../src/common/forms'));
-__export(require('../src/core/debug'));
+var debug_element_1 = require('../src/core/debug/debug_element');
+exports.DebugElement = debug_element_1.DebugElement;
 __export(require('../src/core/change_detection'));
 __export(require('../profile'));
 __export(require('../src/web_workers/worker/application'));

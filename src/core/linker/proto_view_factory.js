@@ -26,7 +26,7 @@ var pipe_resolver_1 = require('./pipe_resolver');
 var view_2 = require('../metadata/view');
 var platform_directives_and_pipes_1 = require('angular2/src/core/platform_directives_and_pipes');
 var template_commands_1 = require('./template_commands');
-var render_1 = require('angular2/render');
+var api_2 = require('angular2/src/core/render/api');
 var application_tokens_1 = require('angular2/src/core/application_tokens');
 var ProtoViewFactory = (function () {
     function ProtoViewFactory(_renderer, _platformPipes, _directiveResolver, _viewResolver, _pipeResolver, _appId) {
@@ -110,7 +110,7 @@ var ProtoViewFactory = (function () {
         __param(1, di_1.Optional()),
         __param(1, di_1.Inject(platform_directives_and_pipes_1.PLATFORM_PIPES)),
         __param(5, di_1.Inject(application_tokens_1.APP_ID)), 
-        __metadata('design:paramtypes', [render_1.Renderer, Array, directive_resolver_1.DirectiveResolver, view_resolver_1.ViewResolver, pipe_resolver_1.PipeResolver, String])
+        __metadata('design:paramtypes', [api_2.Renderer, Array, directive_resolver_1.DirectiveResolver, view_resolver_1.ViewResolver, pipe_resolver_1.PipeResolver, String])
     ], ProtoViewFactory);
     return ProtoViewFactory;
 })();

@@ -19,7 +19,7 @@ var application_ref_1 = require('angular2/src/core/application_ref');
 var core_1 = require('angular2/core');
 var browser_2 = require('angular2/platform/browser');
 var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
-var render_1 = require('angular2/render');
+var dom_tokens_1 = require('angular2/src/platform/dom/dom_tokens');
 var async_1 = require('angular2/src/facade/async');
 var core_2 = require('angular2/core');
 var exceptions_1 = require('angular2/src/facade/exceptions');
@@ -134,7 +134,7 @@ function main() {
             dom_adapter_1.DOM.appendChild(fakeDoc.body, el2);
             dom_adapter_1.DOM.appendChild(el, lightDom);
             dom_adapter_1.DOM.setText(lightDom, 'loading');
-            testProviders = [core_2.provide(render_1.DOCUMENT, { useValue: fakeDoc })];
+            testProviders = [core_2.provide(dom_tokens_1.DOCUMENT, { useValue: fakeDoc })];
         });
         testing_internal_1.it('should throw if bootstrapped Directive is not a Component', testing_internal_1.inject([testing_internal_1.AsyncTestCompleter], function (async) {
             var logger = new _ArrayLogger();

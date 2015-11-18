@@ -12,7 +12,7 @@ var dynamic_component_loader_1 = require('angular2/src/core/linker/dynamic_compo
 var xhr_1 = require('angular2/src/compiler/xhr');
 var ng_zone_1 = require('angular2/src/core/zone/ng_zone');
 var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
-var event_manager_1 = require('angular2/src/core/render/dom/events/event_manager');
+var core_1 = require('angular2/core');
 var directive_resolver_mock_1 = require('angular2/src/mock/directive_resolver_mock');
 var view_resolver_mock_1 = require('angular2/src/mock/view_resolver_mock');
 var mock_location_strategy_1 = require('angular2/src/mock/mock_location_strategy');
@@ -20,19 +20,23 @@ var location_strategy_1 = require('angular2/src/router/location_strategy');
 var ng_zone_mock_1 = require('angular2/src/mock/ng_zone_mock');
 var test_component_builder_1 = require('./test_component_builder');
 var di_2 = require('angular2/src/core/di');
-var debug_1 = require('angular2/src/core/debug');
+var debug_element_view_listener_1 = require('angular2/src/platform/browser/debug/debug_element_view_listener');
 var collection_1 = require('angular2/src/facade/collection');
 var lang_1 = require('angular2/src/facade/lang');
 var view_pool_1 = require('angular2/src/core/linker/view_pool');
 var view_manager_1 = require('angular2/src/core/linker/view_manager');
 var view_manager_utils_1 = require('angular2/src/core/linker/view_manager_utils');
 var api_1 = require('angular2/src/core/render/api');
-var render_1 = require('angular2/src/core/render/render');
+var dom_tokens_1 = require('angular2/src/platform/dom/dom_tokens');
+var dom_renderer_1 = require('angular2/src/platform/dom/dom_renderer');
+var shared_styles_host_1 = require('angular2/src/platform/dom/shared_styles_host');
+var shared_styles_host_2 = require('angular2/src/platform/dom/shared_styles_host');
+var dom_events_1 = require('angular2/src/platform/dom/events/dom_events');
 var application_tokens_1 = require('angular2/src/core/application_tokens');
 var serializer_1 = require("angular2/src/web_workers/shared/serializer");
 var utils_1 = require('./utils');
 var compiler_1 = require('angular2/src/compiler/compiler');
-var dom_renderer_1 = require("angular2/src/core/render/dom/dom_renderer");
+var dom_renderer_2 = require("angular2/src/platform/dom/dom_renderer");
 var dynamic_component_loader_2 = require("angular2/src/core/linker/dynamic_component_loader");
 var view_manager_2 = require("angular2/src/core/linker/view_manager");
 /**
@@ -64,17 +68,17 @@ function _getAppBindings() {
     return [
         compiler_1.COMPILER_PROVIDERS,
         di_1.provide(change_detection_1.ChangeDetectorGenConfig, { useValue: new change_detection_1.ChangeDetectorGenConfig(true, false, true) }),
-        di_1.provide(render_1.DOCUMENT, { useValue: appDoc }),
-        di_1.provide(render_1.DomRenderer, { useClass: dom_renderer_1.DomRenderer_ }),
-        di_1.provide(api_1.Renderer, { useExisting: render_1.DomRenderer }),
+        di_1.provide(dom_tokens_1.DOCUMENT, { useValue: appDoc }),
+        di_1.provide(dom_renderer_1.DomRenderer, { useClass: dom_renderer_2.DomRenderer_ }),
+        di_1.provide(api_1.Renderer, { useExisting: dom_renderer_1.DomRenderer }),
         di_1.provide(application_tokens_1.APP_ID, { useValue: 'a' }),
-        render_1.DomSharedStylesHost,
-        di_1.provide(render_1.SharedStylesHost, { useExisting: render_1.DomSharedStylesHost }),
+        shared_styles_host_1.DomSharedStylesHost,
+        di_1.provide(shared_styles_host_2.SharedStylesHost, { useExisting: shared_styles_host_1.DomSharedStylesHost }),
         view_pool_1.AppViewPool,
         di_1.provide(view_manager_1.AppViewManager, { useClass: view_manager_2.AppViewManager_ }),
         view_manager_utils_1.AppViewManagerUtils,
         serializer_1.Serializer,
-        debug_1.ELEMENT_PROBE_PROVIDERS,
+        debug_element_view_listener_1.ELEMENT_PROBE_PROVIDERS,
         di_1.provide(view_pool_1.APP_VIEW_POOL_CAPACITY, { useValue: 500 }),
         proto_view_factory_1.ProtoViewFactory,
         di_1.provide(directive_resolver_1.DirectiveResolver, { useClass: directive_resolver_mock_1.MockDirectiveResolver }),
@@ -90,8 +94,8 @@ function _getAppBindings() {
         test_component_builder_1.TestComponentBuilder,
         di_1.provide(ng_zone_1.NgZone, { useClass: ng_zone_mock_1.MockNgZone }),
         di_1.provide(animation_builder_1.AnimationBuilder, { useClass: animation_builder_mock_1.MockAnimationBuilder }),
-        event_manager_1.EventManager,
-        new di_1.Provider(event_manager_1.EVENT_MANAGER_PLUGINS, { useClass: event_manager_1.DomEventsPlugin, multi: true })
+        core_1.EventManager,
+        new di_1.Provider(core_1.EVENT_MANAGER_PLUGINS, { useClass: dom_events_1.DomEventsPlugin, multi: true })
     ];
 }
 function createTestInjector(providers) {

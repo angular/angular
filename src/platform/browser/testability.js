@@ -1,5 +1,6 @@
-var testability_1 = require('angular2/src/core/testability/testability');
 var lang_1 = require('angular2/src/facade/lang');
+var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
+var core_1 = require('angular2/core');
 var PublicTestability = (function () {
     function PublicTestability(testability) {
         this._testability = testability;
@@ -17,7 +18,7 @@ var PublicTestability = (function () {
 var BrowserGetTestability = (function () {
     function BrowserGetTestability() {
     }
-    BrowserGetTestability.init = function () { testability_1.setTestabilityGetter(new BrowserGetTestability()); };
+    BrowserGetTestability.init = function () { core_1.setTestabilityGetter(new BrowserGetTestability()); };
     BrowserGetTestability.prototype.addToWindow = function (registry) {
         lang_1.global.getAngularTestability = function (elem, findInAncestors) {
             if (findInAncestors === void 0) { findInAncestors = true; }
@@ -32,7 +33,23 @@ var BrowserGetTestability = (function () {
             return testabilities.map(function (testability) { return new PublicTestability(testability); });
         };
     };
+    BrowserGetTestability.prototype.findTestabilityInTree = function (registry, elem, findInAncestors) {
+        if (elem == null) {
+            return null;
+        }
+        var t = registry.getTestability(elem);
+        if (lang_1.isPresent(t)) {
+            return t;
+        }
+        else if (!findInAncestors) {
+            return null;
+        }
+        if (dom_adapter_1.DOM.isShadowRoot(elem)) {
+            return this.findTestabilityInTree(registry, dom_adapter_1.DOM.getHost(elem), true);
+        }
+        return this.findTestabilityInTree(registry, dom_adapter_1.DOM.parentElement(elem), true);
+    };
     return BrowserGetTestability;
 })();
 exports.BrowserGetTestability = BrowserGetTestability;
-//# sourceMappingURL=browser_testability.js.map
+//# sourceMappingURL=testability.js.map

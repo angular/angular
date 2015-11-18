@@ -16,8 +16,8 @@ var testing_internal_1 = require('angular2/testing_internal');
 var lang_1 = require('angular2/src/facade/lang');
 var async_1 = require('angular2/src/facade/async');
 var core_1 = require('angular2/core');
-var debug_1 = require('angular2/src/core/debug');
-var browser_adapter_1 = require('angular2/src/core/dom/browser_adapter');
+var core_2 = require('angular2/core');
+var browser_adapter_1 = require('angular2/src/platform/browser/browser_adapter');
 function main() {
     browser_adapter_1.BrowserDomAdapter.makeCurrent();
     testing_internal_1.describe('Query API', function () {
@@ -32,7 +32,7 @@ function main() {
                     .createAsync(MyComp)
                     .then(function (view) {
                     view.detectChanges();
-                    testing_internal_1.expect(debug_1.asNativeElements(view.debugElement.componentViewChildren))
+                    testing_internal_1.expect(core_2.asNativeElements(view.debugElement.componentViewChildren))
                         .toHaveText('2|3|');
                     async.done();
                 });
@@ -101,7 +101,7 @@ function main() {
                     .createAsync(MyComp)
                     .then(function (view) {
                     view.detectChanges();
-                    testing_internal_1.expect(debug_1.asNativeElements(view.debugElement.componentViewChildren))
+                    testing_internal_1.expect(core_2.asNativeElements(view.debugElement.componentViewChildren))
                         .toHaveText('2|3|4|');
                     async.done();
                 });
@@ -114,7 +114,7 @@ function main() {
                     .createAsync(MyComp)
                     .then(function (view) {
                     view.detectChanges();
-                    testing_internal_1.expect(debug_1.asNativeElements(view.debugElement.componentViewChildren))
+                    testing_internal_1.expect(core_2.asNativeElements(view.debugElement.componentViewChildren))
                         .toHaveText('2|3|');
                     async.done();
                 });
@@ -127,10 +127,10 @@ function main() {
                     .createAsync(MyComp)
                     .then(function (view) {
                     view.detectChanges();
-                    testing_internal_1.expect(debug_1.asNativeElements(view.debugElement.componentViewChildren)).toHaveText('2|');
+                    testing_internal_1.expect(core_2.asNativeElements(view.debugElement.componentViewChildren)).toHaveText('2|');
                     view.debugElement.componentInstance.shouldShow = true;
                     view.detectChanges();
-                    testing_internal_1.expect(debug_1.asNativeElements(view.debugElement.componentViewChildren))
+                    testing_internal_1.expect(core_2.asNativeElements(view.debugElement.componentViewChildren))
                         .toHaveText('2|3|');
                     async.done();
                 });
@@ -156,11 +156,11 @@ function main() {
                     .createAsync(MyComp)
                     .then(function (view) {
                     view.detectChanges();
-                    testing_internal_1.expect(debug_1.asNativeElements(view.debugElement.componentViewChildren))
+                    testing_internal_1.expect(core_2.asNativeElements(view.debugElement.componentViewChildren))
                         .toHaveText('2|1d|2d|3d|');
                     view.debugElement.componentInstance.list = ['3d', '2d'];
                     view.detectChanges();
-                    testing_internal_1.expect(debug_1.asNativeElements(view.debugElement.componentViewChildren))
+                    testing_internal_1.expect(core_2.asNativeElements(view.debugElement.componentViewChildren))
                         .toHaveText('2|3d|2d|');
                     async.done();
                 });
@@ -311,7 +311,7 @@ function main() {
                     .createAsync(MyComp)
                     .then(function (view) {
                     view.detectChanges();
-                    testing_internal_1.expect(debug_1.asNativeElements(view.debugElement.componentViewChildren))
+                    testing_internal_1.expect(core_2.asNativeElements(view.debugElement.componentViewChildren))
                         .toHaveText('hello|world|');
                     async.done();
                 });

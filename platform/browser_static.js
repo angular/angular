@@ -1,5 +1,11 @@
 var browser_common_1 = require('angular2/src/platform/browser_common');
 exports.BROWSER_PROVIDERS = browser_common_1.BROWSER_PROVIDERS;
+exports.ELEMENT_PROBE_BINDINGS = browser_common_1.ELEMENT_PROBE_BINDINGS;
+exports.ELEMENT_PROBE_PROVIDERS = browser_common_1.ELEMENT_PROBE_PROVIDERS;
+exports.inspectNativeElement = browser_common_1.inspectNativeElement;
+exports.BrowserDomAdapter = browser_common_1.BrowserDomAdapter;
+exports.By = browser_common_1.By;
+exports.Title = browser_common_1.Title;
 var lang_1 = require('angular2/src/facade/lang');
 var browser_common_2 = require('angular2/src/platform/browser_common');
 var core_1 = require('angular2/core');

@@ -21,16 +21,16 @@ var di_1 = require('angular2/src/core/di');
 var animation_builder_1 = require('angular2/src/animate/animation_builder');
 var lang_1 = require('angular2/src/facade/lang');
 var exceptions_1 = require('angular2/src/facade/exceptions');
-var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
-var event_manager_1 = require('./events/event_manager');
 var shared_styles_host_1 = require('./shared_styles_host');
-var profile_1 = require('../../profile/profile');
-var api_1 = require('../api');
+var profile_1 = require('angular2/src/core/profile/profile');
+var core_1 = require('angular2/core');
 var dom_tokens_1 = require('./dom_tokens');
-var view_factory_1 = require('../view_factory');
-var view_1 = require('../view');
+var view_factory_1 = require('angular2/src/core/render/view_factory');
+var view_1 = require('angular2/src/core/render/view');
 var util_1 = require('./util');
 var metadata_1 = require('angular2/src/core/metadata');
+// TODO move it once DomAdapter is moved
+var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
 // TODO(tbosch): solve SVG properly once https://github.com/angular/angular/issues/4417 is done
 var XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink';
 var SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
@@ -207,7 +207,7 @@ var DomRenderer = (function (_super) {
         resolveInternalDomView(viewRef).setEventDispatcher(dispatcher);
     };
     return DomRenderer;
-})(api_1.Renderer);
+})(core_1.Renderer);
 exports.DomRenderer = DomRenderer;
 var DomRenderer_ = (function (_super) {
     __extends(DomRenderer_, _super);
@@ -258,7 +258,7 @@ var DomRenderer_ = (function (_super) {
         for (var i = 0; i < sdRoots.length; i++) {
             this._domSharedStylesHost.addHost(sdRoots[i]);
         }
-        return new api_1.RenderViewWithFragments(view, view.fragments);
+        return new core_1.RenderViewWithFragments(view, view.fragments);
     };
     DomRenderer_.prototype.destroyView = function (viewRef) {
         var view = viewRef;
@@ -342,7 +342,7 @@ var DomRenderer_ = (function (_super) {
     DomRenderer_ = __decorate([
         di_1.Injectable(),
         __param(3, di_1.Inject(dom_tokens_1.DOCUMENT)), 
-        __metadata('design:paramtypes', [event_manager_1.EventManager, shared_styles_host_1.DomSharedStylesHost, animation_builder_1.AnimationBuilder, Object])
+        __metadata('design:paramtypes', [core_1.EventManager, shared_styles_host_1.DomSharedStylesHost, animation_builder_1.AnimationBuilder, Object])
     ], DomRenderer_);
     return DomRenderer_;
 })(DomRenderer);

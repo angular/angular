@@ -13,7 +13,8 @@ var testing_internal_1 = require('angular2/testing_internal');
 var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
 var async_1 = require('angular2/src/facade/async');
 var core_1 = require('angular2/core');
-var debug_1 = require('angular2/src/core/debug');
+var core_2 = require('angular2/core');
+var browser_1 = require('angular2/platform/browser');
 var metadata_1 = require('angular2/src/core/metadata');
 var Logger = (function () {
     function Logger() {
@@ -184,7 +185,7 @@ function main() {
             tcb.createAsync(ParentComp)
                 .then(function (componentFixture) {
                 componentFixture.detectChanges();
-                var childTestEls = componentFixture.debugElement.queryAll(debug_1.By.directive(MessageDir));
+                var childTestEls = componentFixture.debugElement.queryAll(browser_1.By.directive(MessageDir));
                 testing_internal_1.expect(childTestEls.length).toBe(4);
                 testing_internal_1.expect(dom_adapter_1.DOM.hasClass(childTestEls[0].nativeElement, 'parent')).toBe(true);
                 testing_internal_1.expect(dom_adapter_1.DOM.hasClass(childTestEls[1].nativeElement, 'parentnested')).toBe(true);
@@ -198,7 +199,7 @@ function main() {
                 .then(function (componentFixture) {
                 componentFixture.detectChanges();
                 var parentEl = componentFixture.debugElement.componentViewChildren[0];
-                var childTestEls = parentEl.queryAll(debug_1.By.directive(MessageDir), debug_1.Scope.light);
+                var childTestEls = parentEl.queryAll(browser_1.By.directive(MessageDir), core_2.Scope.light);
                 testing_internal_1.expect(childTestEls.length).toBe(1);
                 testing_internal_1.expect(dom_adapter_1.DOM.hasClass(childTestEls[0].nativeElement, 'parentnested')).toBe(true);
                 async.done();
@@ -208,7 +209,7 @@ function main() {
             tcb.createAsync(ParentComp)
                 .then(function (componentFixture) {
                 componentFixture.detectChanges();
-                var childTestEls = componentFixture.debugElement.queryAll(debug_1.By.directive(MessageDir), debug_1.Scope.view);
+                var childTestEls = componentFixture.debugElement.queryAll(browser_1.By.directive(MessageDir), core_2.Scope.view);
                 testing_internal_1.expect(childTestEls.length).toBe(2);
                 testing_internal_1.expect(dom_adapter_1.DOM.hasClass(childTestEls[0].nativeElement, 'parent')).toBe(true);
                 testing_internal_1.expect(dom_adapter_1.DOM.hasClass(childTestEls[1].nativeElement, 'parentnested')).toBe(true);

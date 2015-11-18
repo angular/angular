@@ -1,6 +1,6 @@
 var lang_1 = require('angular2/src/facade/lang');
 var math_1 = require('angular2/src/facade/math');
-var util_1 = require('angular2/src/core/render/dom/util');
+var util_1 = require('angular2/src/platform/dom/util');
 var collection_1 = require('angular2/src/facade/collection');
 var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
 var Animation = (function () {

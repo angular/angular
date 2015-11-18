@@ -7,4 +7,7 @@ __export(require('./profile'));
 __export(require('./lifecycle_hooks'));
 __export(require('./platform/browser'));
 __export(require('./upgrade'));
+var compiler_1 = require('./compiler');
+exports.UrlResolver = compiler_1.UrlResolver;
+exports.AppRootUrl = compiler_1.AppRootUrl;
 //# sourceMappingURL=angular2.js.map

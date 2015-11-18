@@ -13,10 +13,10 @@ var testing_internal_1 = require('angular2/testing_internal');
 var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
 var view_listener_1 = require('angular2/src/core/linker/view_listener');
 var core_1 = require('angular2/core');
-var debug_1 = require('angular2/src/core/debug');
+var browser_1 = require('angular2/platform/browser');
 function main() {
     testing_internal_1.describe('projection', function () {
-        testing_internal_1.beforeEachBindings(function () { return [core_1.provide(view_listener_1.AppViewListener, { useClass: view_listener_1.AppViewListener })]; });
+        testing_internal_1.beforeEachProviders(function () { return [core_1.provide(view_listener_1.AppViewListener, { useClass: view_listener_1.AppViewListener })]; });
         testing_internal_1.it('should support simple components', testing_internal_1.inject([testing_internal_1.TestComponentBuilder, testing_internal_1.AsyncTestCompleter], function (tcb, async) {
             tcb.overrideView(MainComp, new core_1.ViewMetadata({
                 template: '<simple>' +
@@ -131,7 +131,7 @@ function main() {
             }))
                 .createAsync(MainComp)
                 .then(function (main) {
-                var viewportDirectives = main.debugElement.queryAll(debug_1.By.directive(ManualViewportDirective))
+                var viewportDirectives = main.debugElement.queryAll(browser_1.By.directive(ManualViewportDirective))
                     .map(function (de) { return de.inject(ManualViewportDirective); });
                 testing_internal_1.expect(main.debugElement.nativeElement).toHaveText('(, B)');
                 viewportDirectives.forEach(function (d) { return d.show(); });
@@ -166,7 +166,7 @@ function main() {
             }))
                 .createAsync(MainComp)
                 .then(function (main) {
-                var viewportDirective = main.debugElement.query(debug_1.By.directive(ManualViewportDirective))
+                var viewportDirective = main.debugElement.query(browser_1.By.directive(ManualViewportDirective))
                     .inject(ManualViewportDirective);
                 testing_internal_1.expect(main.debugElement.nativeElement).toHaveText('OUTER(INNER(INNERINNER(,BC)))');
                 viewportDirective.show();
@@ -185,7 +185,7 @@ function main() {
             }))
                 .createAsync(MainComp)
                 .then(function (main) {
-                var viewportDirective = main.debugElement.query(debug_1.By.directive(ManualViewportDirective))
+                var viewportDirective = main.debugElement.query(browser_1.By.directive(ManualViewportDirective))
                     .inject(ManualViewportDirective);
                 testing_internal_1.expect(main.debugElement.nativeElement).toHaveText('(, BC)');
                 viewportDirective.show();
@@ -230,9 +230,9 @@ function main() {
             }))
                 .createAsync(MainComp)
                 .then(function (main) {
-                var sourceDirective = main.debugElement.query(debug_1.By.directive(ManualViewportDirective))
+                var sourceDirective = main.debugElement.query(browser_1.By.directive(ManualViewportDirective))
                     .inject(ManualViewportDirective);
-                var projectDirective = main.debugElement.query(debug_1.By.directive(ProjectDirective)).inject(ProjectDirective);
+                var projectDirective = main.debugElement.query(browser_1.By.directive(ProjectDirective)).inject(ProjectDirective);
                 testing_internal_1.expect(main.debugElement.nativeElement).toHaveText('START()END');
                 projectDirective.show(sourceDirective.templateRef);
                 testing_internal_1.expect(main.debugElement.nativeElement).toHaveText('START(A)END');
@@ -247,9 +247,9 @@ function main() {
             }))
                 .createAsync(MainComp)
                 .then(function (main) {
-                var sourceDirective = main.debugElement.query(debug_1.By.directive(ManualViewportDirective))
+                var sourceDirective = main.debugElement.query(browser_1.By.directive(ManualViewportDirective))
                     .inject(ManualViewportDirective);
-                var projectDirective = main.debugElement.query(debug_1.By.directive(ProjectDirective)).inject(ProjectDirective);
+                var projectDirective = main.debugElement.query(browser_1.By.directive(ProjectDirective)).inject(ProjectDirective);
                 testing_internal_1.expect(main.debugElement.nativeElement).toHaveText('SIMPLE()START()END');
                 projectDirective.show(sourceDirective.templateRef);
                 testing_internal_1.expect(main.debugElement.nativeElement).toHaveText('SIMPLE()START(A)END');
@@ -267,9 +267,9 @@ function main() {
             }))
                 .createAsync(MainComp)
                 .then(function (main) {
-                var sourceDirective = main.debugElement.query(debug_1.By.directive(ManualViewportDirective))
+                var sourceDirective = main.debugElement.query(browser_1.By.directive(ManualViewportDirective))
                     .inject(ManualViewportDirective);
-                var projectDirective = main.debugElement.query(debug_1.By.directive(ProjectDirective)).inject(ProjectDirective);
+                var projectDirective = main.debugElement.query(browser_1.By.directive(ProjectDirective)).inject(ProjectDirective);
                 testing_internal_1.expect(main.debugElement.nativeElement).toHaveText('(, B)START()END');
                 projectDirective.show(sourceDirective.templateRef);
                 testing_internal_1.expect(main.debugElement.nativeElement).toHaveText('(, B)START(A)END');
@@ -288,7 +288,7 @@ function main() {
                 .createAsync(MainComp)
                 .then(function (main) {
                 main.detectChanges();
-                var manualDirective = main.debugElement.query(debug_1.By.directive(ManualViewportDirective))
+                var manualDirective = main.debugElement.query(browser_1.By.directive(ManualViewportDirective))
                     .inject(ManualViewportDirective);
                 testing_internal_1.expect(main.debugElement.nativeElement).toHaveText('TREE(0:)');
                 manualDirective.show();

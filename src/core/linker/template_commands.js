@@ -16,7 +16,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var lang_1 = require('angular2/src/facade/lang');
 var exceptions_1 = require('angular2/src/facade/exceptions');
-var render_1 = require('angular2/src/core/render/render');
+var api_1 = require('angular2/src/core/render/api');
 var metadata_1 = require('angular2/src/core/metadata');
 // Export ViewEncapsulation so that compiled templates only need to depend
 // on template_commands.
@@ -110,7 +110,7 @@ var IBeginElementCmd = (function (_super) {
         configurable: true
     });
     return IBeginElementCmd;
-})(render_1.RenderBeginElementCmd);
+})(api_1.RenderBeginElementCmd);
 exports.IBeginElementCmd = IBeginElementCmd;
 var BeginElementCmd = (function () {
     function BeginElementCmd(name, attrNameAndValues, eventTargetAndNames, variableNameAndValues, directives, isBound, ngContentIndex) {

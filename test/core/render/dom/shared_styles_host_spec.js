@@ -1,6 +1,6 @@
 var testing_internal_1 = require('angular2/testing_internal');
 var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
-var shared_styles_host_1 = require('angular2/src/core/render/dom/shared_styles_host');
+var shared_styles_host_1 = require('angular2/src/platform/dom/shared_styles_host');
 function main() {
     testing_internal_1.describe('DomSharedStylesHost', function () {
         var doc;

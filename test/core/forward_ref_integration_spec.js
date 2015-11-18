@@ -14,13 +14,13 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 var testing_internal_1 = require('angular2/testing_internal');
 var core_1 = require('angular2/core');
-var debug_1 = require('angular2/src/core/debug');
+var core_2 = require('angular2/core');
 function main() {
     testing_internal_1.describe("forwardRef integration", function () {
         testing_internal_1.it('should instantiate components which are declared using forwardRef', testing_internal_1.inject([testing_internal_1.TestComponentBuilder, testing_internal_1.AsyncTestCompleter], function (tcb, async) {
             tcb.createAsync(App).then(function (tc) {
                 tc.detectChanges();
-                testing_internal_1.expect(debug_1.asNativeElements(tc.debugElement.componentViewChildren))
+                testing_internal_1.expect(core_2.asNativeElements(tc.debugElement.componentViewChildren))
                     .toHaveText('frame(lock)');
                 async.done();
             });
