@@ -35,6 +35,7 @@ import "symbol_inspector/symbol_differ.dart" show SymbolsDiff;
 // =================================================================================================
 var NG_ALL = [
   "APP_COMPONENT",
+  "APP_INITIALIZER",
   "APP_ID",
   "AbstractProviderError",
   "AbstractProviderError.addKey()",
@@ -1393,6 +1394,7 @@ var NG_ALL = [
   "resolveForwardRef():js",
   "wtfCreateScope():js",
   "PLATFORM_COMMON_PROVIDERS",
+  "PLATFORM_INITIALIZER",
   "wtfCreateScope:dart",
   "wtfEndTimeRange():js",
   "wtfEndTimeRange:dart",

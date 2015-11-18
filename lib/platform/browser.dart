@@ -13,7 +13,7 @@ export "package:angular2/src/platform/browser_common.dart"
 import "package:angular2/src/facade/lang.dart" show Type, isPresent;
 import "package:angular2/src/facade/promise.dart" show Future;
 import "package:angular2/src/platform/browser_common.dart"
-    show BROWSER_PROVIDERS, BROWSER_APP_COMMON_PROVIDERS, initDomAdapter;
+    show BROWSER_PROVIDERS, BROWSER_APP_COMMON_PROVIDERS;
 import "package:angular2/compiler.dart" show COMPILER_PROVIDERS;
 import "package:angular2/core.dart" show ComponentRef, platform, reflector;
 import "package:angular2/src/core/reflection/reflection_capabilities.dart"
@@ -117,7 +117,6 @@ const List<dynamic> BROWSER_APP_PROVIDERS = const [
 Future<ComponentRef> bootstrap(Type appComponentType,
     [List<dynamic> customProviders]) {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
-  initDomAdapter();
   var appProviders = isPresent(customProviders)
       ? [BROWSER_APP_PROVIDERS, customProviders]
       : BROWSER_APP_PROVIDERS;

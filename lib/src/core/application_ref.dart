@@ -6,7 +6,12 @@ import "package:angular2/src/facade/lang.dart"
 import "package:angular2/src/core/di.dart"
     show provide, Provider, Injector, OpaqueToken;
 import "application_tokens.dart"
-    show APP_COMPONENT_REF_PROMISE, APP_COMPONENT, APP_ID_RANDOM_PROVIDER;
+    show
+        APP_COMPONENT_REF_PROMISE,
+        APP_COMPONENT,
+        APP_ID_RANDOM_PROVIDER,
+        PLATFORM_INITIALIZER,
+        APP_INITIALIZER;
 import "package:angular2/src/facade/async.dart"
     show Future, PromiseWrapper, PromiseCompleter, ObservableWrapper;
 import "package:angular2/src/facade/collection.dart" show ListWrapper;
@@ -92,14 +97,31 @@ PlatformRef platform(
   }
 }
 
+/**
+ * Dispose the existing platform.
+ */
+void disposePlatform() {
+  if (isPresent(_platform)) {
+    _platform.dispose();
+    _platform = null;
+  }
+}
+
 PlatformRef _createPlatform(
     [List<dynamic /* Type | Provider | List < dynamic > */ > providers]) {
   _platformProviders = providers;
-  _platform = new PlatformRef_(Injector.resolveAndCreate(providers), () {
+  var injector = Injector.resolveAndCreate(providers);
+  _platform = new PlatformRef_(injector, () {
     _platform = null;
     _platformProviders = null;
   });
+  _runPlatformInitializers(injector);
   return _platform;
+}
+
+void _runPlatformInitializers(Injector injector) {
+  List<Function> inits = injector.getOptional(PLATFORM_INITIALIZER);
+  if (isPresent(inits)) inits.forEach((init) => init());
 }
 
 /**
@@ -236,11 +258,12 @@ class PlatformRef_ extends PlatformRef {
     });
     app = new ApplicationRef_(this, zone, injector);
     this._applications.add(app);
+    _runAppInitializers(injector);
     return app;
   }
 
   void dispose() {
-    this._applications.forEach((app) => app.dispose());
+    ListWrapper.clone(this._applications).forEach((app) => app.dispose());
     this._disposeListeners.forEach((dispose) => dispose());
     this._dispose();
   }
@@ -249,6 +272,11 @@ class PlatformRef_ extends PlatformRef {
   void _applicationDisposed(ApplicationRef app) {
     ListWrapper.remove(this._applications, app);
   }
+}
+
+void _runAppInitializers(Injector injector) {
+  List<Function> inits = injector.getOptional(APP_INITIALIZER);
+  if (isPresent(inits)) inits.forEach((init) => init());
 }
 
 /**
@@ -455,7 +483,7 @@ class ApplicationRef_ extends ApplicationRef {
 
   void dispose() {
     // TODO(alxhub): Dispose of the NgZone.
-    this._rootComponents.forEach((ref) => ref.dispose());
+    ListWrapper.clone(this._rootComponents).forEach((ref) => ref.dispose());
     this._disposeListeners.forEach((dispose) => dispose());
     this._platform._applicationDisposed(this);
   }
