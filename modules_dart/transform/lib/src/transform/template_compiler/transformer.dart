@@ -23,13 +23,19 @@ import 'generator.dart';
 ///
 /// This transformer is part of a multi-phase transform.
 /// See `angular2/src/transform/transformer.dart` for transformer ordering.
-class TemplateCompiler extends Transformer {
+class TemplateCompiler extends Transformer implements LazyTransformer {
   final TransformerOptions options;
 
   TemplateCompiler(this.options);
 
   @override
   bool isPrimary(AssetId id) => id.path.endsWith(META_EXTENSION);
+
+  @override
+  declareOutputs(DeclaringTransform transform) {
+    transform.declareOutput(ngDepsAssetId(transform.primaryId));
+    transform.declareOutput(templatesAssetId(transform.primaryId));
+  }
 
   @override
   Future apply(Transform transform) async {

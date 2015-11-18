@@ -12,7 +12,7 @@ import 'package:angular2/src/transform/common/zone.dart' as zone;
 import 'processor.dart';
 
 /// Pre-compiles CSS stylesheet files to Dart code for Angular 2.
-class StylesheetCompiler extends Transformer {
+class StylesheetCompiler extends Transformer implements LazyTransformer {
   StylesheetCompiler();
 
   @override
@@ -21,12 +21,28 @@ class StylesheetCompiler extends Transformer {
   }
 
   @override
+  declareOutputs(DeclaringTransform transform) {
+    // Note: we check this assumption below.
+    _getExpectedOutputs(transform.primaryId).forEach(transform.declareOutput);
+  }
+
+  List<AssetId> _getExpectedOutputs(AssetId cssId) =>
+      [shimmedStylesheetAssetId(cssId), nonShimmedStylesheetAssetId(cssId)];
+
+  @override
   Future apply(Transform transform) async {
     final reader = new AssetReader.fromTransform(transform);
     return zone.exec(() async {
       Html5LibDomAdapter.makeCurrent();
-      var outputs = await processStylesheet(reader, transform.primaryInput.id);
+      var primaryId = transform.primaryInput.id;
+      var outputs = await processStylesheet(reader, primaryId);
+      var expectedIds = _getExpectedOutputs(primaryId);
       outputs.forEach((Asset compiledStylesheet) {
+        var id = compiledStylesheet.id;
+        if (!expectedIds.contains(id)) {
+          throw new StateError(
+              'Unexpected output for css processing of $primaryId: $id');
+        }
         transform.addOutput(compiledStylesheet);
       });
     }, log: transform.logger);

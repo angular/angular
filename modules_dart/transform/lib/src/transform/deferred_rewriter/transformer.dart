@@ -14,10 +14,15 @@ import 'rewriter.dart';
 /// Transformer responsible for rewriting deferred library loads to enable
 /// initializing the reflector in a deferred way to keep the code with the
 /// deferred library.
-class DeferredRewriter extends Transformer {
+class DeferredRewriter extends Transformer implements LazyTransformer {
   final TransformerOptions options;
 
   DeferredRewriter(this.options);
+
+  @override
+  declareOutputs(DeclaringTransform transform) {
+    transform.declareOutput(transform.primaryId);
+  }
 
   @override
   bool isPrimary(AssetId id) =>

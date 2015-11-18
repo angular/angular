@@ -21,7 +21,7 @@ import 'rewriter.dart';
 ///
 /// This transformer is part of a multi-phase transform.
 /// See `angular2/src/transform/transformer.dart` for transformer ordering.
-class DirectiveProcessor extends Transformer {
+class DirectiveProcessor extends Transformer implements LazyTransformer {
   final TransformerOptions options;
   final _encoder = const JsonEncoder.withIndent('  ');
 
@@ -29,6 +29,11 @@ class DirectiveProcessor extends Transformer {
 
   @override
   bool isPrimary(AssetId id) => id.extension.endsWith('dart');
+
+  @override
+  declareOutputs(DeclaringTransform transform) {
+    transform.declareOutput(_ngSummaryAssetId(transform.primaryId));
+  }
 
   @override
   Future apply(Transform transform) async {

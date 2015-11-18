@@ -21,7 +21,7 @@ import 'remove_reflection_capabilities.dart';
 /// have already been run and that a .ng_deps.dart file has been generated for
 /// {@link options.entryPoint}. The instantiation of {@link ReflectionCapabilities} is
 /// replaced by calling `setupReflection` in that .ng_deps.dart file.
-class ReflectionRemover extends Transformer {
+class ReflectionRemover extends Transformer implements LazyTransformer {
   final TransformerOptions options;
 
   ReflectionRemover(this.options);
@@ -29,6 +29,11 @@ class ReflectionRemover extends Transformer {
   @override
   bool isPrimary(AssetId id) => options.entryPointGlobs != null &&
       options.entryPointGlobs.any((g) => g.matches(id.path));
+
+  @override
+  declareOutputs(DeclaringTransform transform) {
+    transform.declareOutput(transform.primaryId);
+  }
 
   @override
   Future apply(Transform transform) async {
