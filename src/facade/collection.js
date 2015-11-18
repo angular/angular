@@ -1,4 +1,4 @@
-var lang_1 = require('angular2/src/facade/lang');
+'use strict';var lang_1 = require('angular2/src/facade/lang');
 exports.Map = lang_1.global.Map;
 exports.Set = lang_1.global.Set;
 // Safari and Internet Explorer do not support the iterable parameter to the

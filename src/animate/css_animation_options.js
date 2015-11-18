@@ -1,4 +1,4 @@
-var CssAnimationOptions = (function () {
+'use strict';var CssAnimationOptions = (function () {
     function CssAnimationOptions() {
         /** classes to be added to the element */
         this.classesToAdd = [];

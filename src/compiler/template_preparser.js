@@ -1,4 +1,4 @@
-var lang_1 = require('angular2/src/facade/lang');
+'use strict';var lang_1 = require('angular2/src/facade/lang');
 var NG_CONTENT_SELECT_ATTR = 'select';
 var NG_CONTENT_ELEMENT = 'ng-content';
 var LINK_ELEMENT = 'link';

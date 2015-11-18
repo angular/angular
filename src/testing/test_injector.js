@@ -1,4 +1,4 @@
-var di_1 = require('angular2/src/core/di');
+'use strict';var di_1 = require('angular2/src/core/di');
 var animation_builder_1 = require('angular2/src/animate/animation_builder');
 var animation_builder_mock_1 = require('angular2/src/mock/animation_builder_mock');
 var proto_view_factory_1 = require('angular2/src/core/linker/proto_view_factory');

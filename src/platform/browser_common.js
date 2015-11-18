@@ -1,4 +1,4 @@
-var lang_1 = require('angular2/src/facade/lang');
+'use strict';var lang_1 = require('angular2/src/facade/lang');
 var di_1 = require('angular2/src/core/di');
 var core_1 = require("angular2/core");
 var common_1 = require("angular2/common");

@@ -1,4 +1,4 @@
-var api_1 = require('angular2/src/core/render/api');
+'use strict';var api_1 = require('angular2/src/core/render/api');
 var event_serializer_1 = require('angular2/src/web_workers/ui/event_serializer');
 var exceptions_1 = require('angular2/src/facade/exceptions');
 var collection_1 = require('angular2/src/facade/collection');

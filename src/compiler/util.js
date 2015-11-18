@@ -1,4 +1,4 @@
-var lang_1 = require('angular2/src/facade/lang');
+'use strict';var lang_1 = require('angular2/src/facade/lang');
 var CAMEL_CASE_REGEXP = /([A-Z])/g;
 var DASH_CASE_REGEXP = /-([a-z])/g;
 var SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\$/g;

@@ -1,4 +1,4 @@
-var browser_adapter_1 = require('angular2/src/platform/browser/browser_adapter');
+'use strict';var browser_adapter_1 = require('angular2/src/platform/browser/browser_adapter');
 var browser_1 = require('angular2/src/facade/browser');
 var lang_1 = require('angular2/src/facade/lang');
 var exceptions_1 = require('angular2/src/facade/exceptions');

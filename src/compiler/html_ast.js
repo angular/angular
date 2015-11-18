@@ -1,4 +1,4 @@
-var lang_1 = require('angular2/src/facade/lang');
+'use strict';var lang_1 = require('angular2/src/facade/lang');
 var HtmlTextAst = (function () {
     function HtmlTextAst(value, sourceInfo) {
         this.value = value;

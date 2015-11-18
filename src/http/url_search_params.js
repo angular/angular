@@ -1,4 +1,4 @@
-var lang_1 = require('angular2/src/facade/lang');
+'use strict';var lang_1 = require('angular2/src/facade/lang');
 var collection_1 = require('angular2/src/facade/collection');
 function paramParser(rawParams) {
     if (rawParams === void 0) { rawParams = ''; }

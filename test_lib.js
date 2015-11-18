@@ -1,4 +1,4 @@
-/*
+'use strict';/*
  * @deprecated Please use testing_internal instead
  */
 function __export(m) {

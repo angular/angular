@@ -1,4 +1,4 @@
-var EventBinding = (function () {
+'use strict';var EventBinding = (function () {
     function EventBinding(eventName, elIndex, dirIndex, records) {
         this.eventName = eventName;
         this.elIndex = elIndex;

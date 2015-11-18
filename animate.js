@@ -1,4 +1,4 @@
-var animation_1 = require('./src/animate/animation');
+'use strict';var animation_1 = require('./src/animate/animation');
 exports.Animation = animation_1.Animation;
 var animation_builder_1 = require('./src/animate/animation_builder');
 exports.AnimationBuilder = animation_builder_1.AnimationBuilder;

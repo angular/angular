@@ -1,4 +1,4 @@
-// Public API for Facade
+'use strict';// Public API for Facade
 var lang_1 = require('./lang');
 exports.Type = lang_1.Type;
 var async_1 = require('./async');

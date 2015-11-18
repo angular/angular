@@ -1,4 +1,4 @@
-var ElementSchemaRegistry = (function () {
+'use strict';var ElementSchemaRegistry = (function () {
     function ElementSchemaRegistry() {
     }
     ElementSchemaRegistry.prototype.hasProperty = function (tagName, propName) { return true; };

@@ -1,4 +1,4 @@
-var runtime_compiler_1 = require("./runtime_compiler");
+'use strict';var runtime_compiler_1 = require("./runtime_compiler");
 var template_compiler_1 = require('./template_compiler');
 exports.TemplateCompiler = template_compiler_1.TemplateCompiler;
 var directive_metadata_1 = require('./directive_metadata');

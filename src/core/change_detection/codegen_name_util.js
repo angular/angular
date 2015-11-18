@@ -1,4 +1,4 @@
-var lang_1 = require('angular2/src/facade/lang');
+'use strict';var lang_1 = require('angular2/src/facade/lang');
 var collection_1 = require('angular2/src/facade/collection');
 // The names of these fields must be kept in sync with abstract_change_detector.ts or change
 // detection will fail.

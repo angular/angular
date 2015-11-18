@@ -1,4 +1,4 @@
-var metadata_1 = require('./metadata');
+'use strict';var metadata_1 = require('./metadata');
 var decorators_1 = require('../util/decorators');
 /**
  * Factory for creating {@link InjectMetadata}.

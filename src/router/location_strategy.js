@@ -1,4 +1,4 @@
-var lang_1 = require('angular2/src/facade/lang');
+'use strict';var lang_1 = require('angular2/src/facade/lang');
 var angular2_1 = require('angular2/angular2');
 /**
  * `LocationStrategy` is responsible for representing and reading route state

@@ -1,4 +1,4 @@
-var lang_1 = require('angular2/src/facade/lang');
+'use strict';var lang_1 = require('angular2/src/facade/lang');
 var promise_1 = require('angular2/src/facade/promise');
 var async_1 = require('angular2/src/facade/async');
 var collection_1 = require('angular2/src/facade/collection');

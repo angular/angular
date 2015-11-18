@@ -1,4 +1,4 @@
-var collection_1 = require('angular2/src/facade/collection');
+'use strict';var collection_1 = require('angular2/src/facade/collection');
 var provider_1 = require('./provider');
 var exceptions_1 = require('./exceptions');
 var lang_1 = require('angular2/src/facade/lang');

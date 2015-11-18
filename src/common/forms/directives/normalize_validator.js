@@ -1,4 +1,4 @@
-function normalizeValidator(validator) {
+'use strict';function normalizeValidator(validator) {
     if (validator.validate !== undefined) {
         return function (c) { return validator.validate(c); };
     }
