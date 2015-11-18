@@ -140,7 +140,7 @@ class _RewriterVisitor extends Object with RecursiveAstVisitor<Object> {
           _setupAdded ? '' : ', () { ${_getStaticReflectorInitBlock()} }';
 
       // rewrite `bootstrap(...)` to `bootstrapStatic(...)`
-      buf.write('bootstrapStatic(${args[0]}');
+      buf.write('$BOOTSTRAP_STATIC_NAME(${args[0]}');
       if (numArgs == 1) {
         // bootstrap args are positional, so before we pass reflectorInit code
         // we need to pass `null` for DI bindings.
