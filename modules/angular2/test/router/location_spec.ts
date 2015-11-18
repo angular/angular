@@ -14,8 +14,9 @@ import {
 
 import {Injector, provide} from 'angular2/core';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
-import {Location, APP_BASE_HREF} from 'angular2/src/router/location';
-import {LocationStrategy} from 'angular2/src/router/location_strategy';
+
+import {Location} from 'angular2/src/router/location';
+import {LocationStrategy, APP_BASE_HREF} from 'angular2/src/router/location_strategy';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
 
 export function main() {
@@ -53,14 +54,6 @@ export function main() {
            async.done();
          })
        }));
-
-    it('should throw when no base href is provided', () => {
-      var locationStrategy = new MockLocationStrategy();
-      locationStrategy.internalBaseHref = null;
-      expect(() => new Location(locationStrategy))
-          .toThrowError(
-              `No base href set. Either provide a provider for the APP_BASE_HREF token or add a base element to the document.`);
-    });
 
     it('should revert to the previous path when a back() operation is executed', () => {
       var locationStrategy = new MockLocationStrategy();

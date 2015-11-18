@@ -1,6 +1,6 @@
 @cheatsheetSection
 Directive and component change detection and lifecycle hooks
-@cheatsheetIndex 6
+@cheatsheetIndex 8
 @description
 (implemented as class methods)
 
@@ -36,7 +36,7 @@ Called after every check of the component's or directive's content.
 
 @cheatsheetItem
 `afterViewInit() { ... }`|`afterViewInit()`
-Called after onContentInit when the component's view has been initialized. Applies to components only.
+Called after afterContentInit when the component's view has been initialized. Applies to components only.
 
 
 @cheatsheetItem

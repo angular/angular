@@ -1,21 +1,36 @@
-export {BROWSER_PROVIDERS} from 'angular2/src/platform/browser_common';
+export {
+  BROWSER_PROVIDERS,
+  ELEMENT_PROBE_BINDINGS,
+  ELEMENT_PROBE_PROVIDERS,
+  inspectNativeElement,
+  BrowserDomAdapter,
+  By,
+  Title,
+  DOCUMENT
+} from 'angular2/src/platform/browser_common';
 
 import {Type, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
 import {Promise} from 'angular2/src/facade/promise';
 import {
   BROWSER_PROVIDERS,
   BROWSER_APP_COMMON_PROVIDERS,
-  initBrowser
+  initDomAdapter
 } from 'angular2/src/platform/browser_common';
 import {COMPILER_PROVIDERS} from 'angular2/compiler';
 import {ComponentRef, platform, reflector} from 'angular2/core';
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
+import {XHRImpl} from "angular2/src/platform/browser/xhr_impl";
+import {XHR} from 'angular2/compiler';
+import {Provider} from 'angular2/src/core/di';
 
 /**
  * An array of providers that should be passed into `application()` when bootstrapping a component.
  */
-export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    CONST_EXPR([BROWSER_APP_COMMON_PROVIDERS, COMPILER_PROVIDERS]);
+export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
+  BROWSER_APP_COMMON_PROVIDERS,
+  COMPILER_PROVIDERS,
+  new Provider(XHR, {useClass: XHRImpl}),
+]);
 
 /**
  * Bootstrapping for Angular applications.
@@ -105,7 +120,7 @@ export function bootstrap(
     appComponentType: Type,
     customProviders?: Array<any /*Type | Provider | any[]*/>): Promise<ComponentRef> {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
-  initBrowser();
+  initDomAdapter();
 
   let appProviders =
       isPresent(customProviders) ? [BROWSER_APP_PROVIDERS, customProviders] : BROWSER_APP_PROVIDERS;

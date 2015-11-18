@@ -21,7 +21,7 @@ class DeferredRewriter extends Transformer {
 
   @override
   bool isPrimary(AssetId id) =>
-      id.extension.endsWith('dart') && !id.path.endsWith(DEPS_EXTENSION);
+      id.extension.endsWith('dart') && _isNotGenerated(id);
 
   @override
   Future apply(Transform transform) async {
@@ -35,6 +35,8 @@ class DeferredRewriter extends Transformer {
     }, log: transform.logger);
   }
 }
+
+bool _isNotGenerated(AssetId id) => !isGenerated(id.path);
 
 // Visible for testing
 Future<String> rewriteDeferredLibraries(AssetReader reader, AssetId id) async {

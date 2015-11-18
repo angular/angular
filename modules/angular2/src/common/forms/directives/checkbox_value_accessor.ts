@@ -5,7 +5,6 @@ import {Self, forwardRef, Provider} from 'angular2/src/core/di';
 
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
-import {setProperty} from './shared';
 
 const CHECKBOX_VALUE_ACCESSOR = CONST_EXPR(new Provider(
     NG_VALUE_ACCESSOR, {useExisting: forwardRef(() => CheckboxControlValueAccessor), multi: true}));
@@ -30,7 +29,9 @@ export class CheckboxControlValueAccessor implements ControlValueAccessor {
 
   constructor(private _renderer: Renderer, private _elementRef: ElementRef) {}
 
-  writeValue(value: any): void { setProperty(this._renderer, this._elementRef, "checked", value); }
+  writeValue(value: any): void {
+    this._renderer.setElementProperty(this._elementRef, 'checked', value);
+  }
   registerOnChange(fn: (_: any) => {}): void { this.onChange = fn; }
   registerOnTouched(fn: () => {}): void { this.onTouched = fn; }
 }

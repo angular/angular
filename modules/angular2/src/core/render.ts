@@ -7,7 +7,6 @@ export {
   RenderProtoViewRef,
   RenderFragmentRef,
   RenderViewWithFragments,
-  DOCUMENT,
   RenderTemplateCmd,
   RenderCommandVisitor,
   RenderTextCmd,
@@ -15,5 +14,8 @@ export {
   RenderBeginElementCmd,
   RenderBeginComponentCmd,
   RenderEmbeddedTemplateCmd,
-  RenderBeginCmd
-} from './render/render';
+  RenderBeginCmd,
+  RenderComponentTemplate
+} from './render/api';
+
+export {EventManager, EventManagerPlugin, EVENT_MANAGER_PLUGINS} from './render/event_manager';

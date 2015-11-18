@@ -2,7 +2,7 @@ import {Injectable, Injector, Key, bind, provide} from "angular2/core";
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
 import {getIntParameter, bindAction, microBenchmark} from 'angular2/src/testing/benchmark_util';
-import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
+import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
 
 var count = 0;
 

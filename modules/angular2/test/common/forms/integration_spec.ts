@@ -36,7 +36,7 @@ import {
   forwardRef,
   Validator
 } from 'angular2/core';
-import {By} from 'angular2/src/core/debug';
+import {By} from 'angular2/platform/browser';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {ObservableWrapper} from 'angular2/src/facade/async';
 import {CONST_EXPR} from 'angular2/src/facade/lang';

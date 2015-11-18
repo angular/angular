@@ -1,11 +1,19 @@
-export {BROWSER_PROVIDERS} from 'angular2/src/platform/browser_common';
+export {
+  BROWSER_PROVIDERS,
+  ELEMENT_PROBE_BINDINGS,
+  ELEMENT_PROBE_PROVIDERS,
+  inspectNativeElement,
+  BrowserDomAdapter,
+  By,
+  Title
+} from 'angular2/src/platform/browser_common';
 
 import {Type, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';
 import {Promise} from 'angular2/src/facade/promise';
 import {
   BROWSER_PROVIDERS,
   BROWSER_APP_COMMON_PROVIDERS,
-  initBrowser
+  initDomAdapter
 } from 'angular2/src/platform/browser_common';
 import {ComponentRef, platform, reflector} from 'angular2/core';
 
@@ -23,7 +31,7 @@ export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
 export function bootstrapStatic(appComponentType: Type,
                                 customProviders?: Array<any /*Type | Provider | any[]*/>,
                                 initReflector?: Function): Promise<ComponentRef> {
-  initBrowser();
+  initDomAdapter();
   if (isPresent(initReflector)) {
     initReflector();
   }

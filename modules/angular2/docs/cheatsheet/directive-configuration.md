@@ -1,6 +1,6 @@
 @cheatsheetSection
 Directive configuration
-@cheatsheetIndex 4
+@cheatsheetIndex 5
 @description
 `@Directive({ property1: value1, ... }) )`
 

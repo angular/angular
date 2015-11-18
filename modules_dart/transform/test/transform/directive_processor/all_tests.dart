@@ -7,7 +7,7 @@ import 'package:dart_style/dart_style.dart';
 import 'package:guinness/guinness.dart';
 
 import 'package:angular2/src/core/change_detection/change_detection.dart';
-import 'package:angular2/src/core/dom/html_adapter.dart';
+import 'package:angular2/src/platform/server/html_adapter.dart';
 import 'package:angular2/src/core/linker/interfaces.dart' show LifecycleHooks;
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
@@ -498,14 +498,14 @@ void allTests() {
 
     it('should merge `outputs` from the annotation and fields.', () async {
       var model = await _testCreateModel('directives_files/components.dart');
-      expect(model.types['ComponentWithOutputs'].outputs)
-          .toEqual({'a': 'a', 'b': 'b', 'c': 'renamed'});
+      expect(model.types['ComponentWithOutputs'].outputs).toEqual(
+          {'a': 'a', 'b': 'b', 'c': 'renamed', 'd': 'd', 'e': 'get-renamed'});
     });
 
     it('should merge `inputs` from the annotation and fields.', () async {
       var model = await _testCreateModel('directives_files/components.dart');
-      expect(model.types['ComponentWithInputs'].inputs)
-          .toEqual({'a': 'a', 'b': 'b', 'c': 'renamed'});
+      expect(model.types['ComponentWithInputs'].inputs).toEqual(
+          {'a': 'a', 'b': 'b', 'c': 'renamed', 'd': 'd', 'e': 'set-renamed'});
     });
 
     it('should merge host bindings from the annotation and fields.', () async {

@@ -17,7 +17,7 @@ import {
 import {SpyRouter, SpyLocation} from './spies';
 
 import {provide, Component, View} from 'angular2/core';
-import {By} from 'angular2/src/core/debug';
+import {By} from 'angular2/platform/browser';
 
 import {
   Location,

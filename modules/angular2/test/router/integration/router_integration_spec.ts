@@ -18,7 +18,7 @@ import {bootstrap} from 'angular2/bootstrap';
 import {Component, Directive, View} from 'angular2/src/core/metadata';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {provide} from 'angular2/core';
-import {DOCUMENT} from 'angular2/src/core/render/render';
+import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 import {RouteConfig, Route, Redirect} from 'angular2/src/router/route_config_decorator';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';

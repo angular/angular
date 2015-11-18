@@ -1,9 +1,6 @@
 import {Type, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper, Predicate} from 'angular2/src/facade/collection';
 import {unimplemented} from 'angular2/src/facade/exceptions';
-
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
-
 import {ElementInjector} from 'angular2/src/core/linker/element_injector';
 import {AppView, ViewType} from 'angular2/src/core/linker/view';
 import {internalView} from 'angular2/src/core/linker/view_ref';
@@ -201,20 +198,5 @@ export class Scope {
       scope = scope.concat(Scope.light(child));
     });
     return scope;
-  }
-}
-
-export class By {
-  static all(): Function { return (debugElement) => true; }
-
-  static css(selector: string): Predicate<DebugElement> {
-    return (debugElement) => {
-      return isPresent(debugElement.nativeElement) ?
-                 DOM.elementMatches(debugElement.nativeElement, selector) :
-                 false;
-    };
-  }
-  static directive(type: Type): Predicate<DebugElement> {
-    return (debugElement) => { return debugElement.hasDirective(type); };
   }
 }

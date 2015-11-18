@@ -1,6 +1,6 @@
 @cheatsheetSection
 Dependency injection configuration
-@cheatsheetIndex 7
+@cheatsheetIndex 9
 @description
 `import {provide} from 'angular2/angular2';`
 

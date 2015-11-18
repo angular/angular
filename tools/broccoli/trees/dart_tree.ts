@@ -16,7 +16,7 @@ import replace from '../broccoli-replace';
 var global_excludes = [
   'angular2/http*',
   'angular2/upgrade*',
-  'angular2/examples/*/ts/**/*',
+  'angular2/examples/**/ts/**/*',
   'angular2/src/http/**/*',
   'angular2/test/http/**/*',
   'angular2/src/upgrade/**/*',

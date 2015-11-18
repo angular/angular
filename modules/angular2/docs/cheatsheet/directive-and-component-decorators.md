@@ -1,6 +1,6 @@
 @cheatsheetSection
 Class field decorators for directives and components
-@cheatsheetIndex 6
+@cheatsheetIndex 7
 @description
 `import {Input, ...} from 'angular2/angular2';`
 

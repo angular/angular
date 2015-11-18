@@ -201,6 +201,12 @@ var customLaunchers = {
     os: 'Windows',
     os_version: '10'
   },
+  'BS_WINDOWSPHONE' : {
+    base: 'BrowserStack',
+    device: 'Nokia Lumia 930',
+    os: 'winphone',
+    os_version: '8.1'
+  },
   'BS_ANDROID5': {
     base: 'BrowserStack',
     device: 'Google Nexus 5',
@@ -251,13 +257,13 @@ var sauceAliases = {
 var browserstackAliases = {
   'ALL': Object.keys(customLaunchers).filter(function(item) {return customLaunchers[item].base == 'BrowserStack';}),
   'DESKTOP': ['BS_CHROME', 'BS_FIREFOX', 'BS_IE9', 'BS_IE10', 'BS_IE11', 'BS_EDGE', 'BS_SAFARI7', 'BS_SAFARI8', 'BS_SAFARI9'],
-  'MOBILE': ['BS_ANDROID4.1', 'BS_ANDROID4.2', 'BS_ANDROID4.3', 'BS_ANDROID4.4', 'BS_ANDROID5', 'BS_IOS7', 'BS_IOS8', 'BS_IOS9'],
-  'ANDROID': ['BS_ANDROID4.1', 'BS_ANDROID4.2', 'BS_ANDROID4.3', 'BS_ANDROID4.4', 'BS_ANDROID5'],
+  'MOBILE': ['BS_ANDROID4.3', 'BS_ANDROID4.4', 'BS_IOS7', 'BS_IOS8', 'BS_IOS9', 'BS_WINDOWSPHONE'],
+  'ANDROID': ['BS_ANDROID4.3', 'BS_ANDROID4.4'],
   'IE': ['BS_IE9', 'BS_IE10', 'BS_IE11'],
   'IOS': ['BS_IOS7', 'BS_IOS8', 'BS_IOS9'],
   'SAFARI': ['BS_SAFARI7', 'BS_SAFARI8', 'BS_SAFARI9'],
-  'CI': ['BS_CHROME', 'BS_ANDROID5', 'BS_SAFARI7', 'BS_SAFARI8', 'BS_SAFARI9', 'BS_IOS7', 'BS_IOS8', 'BS_IOS9',
-    'BS_FIREFOX', 'BS_IE9', 'BS_IE10', 'BS_IE11', 'BS_EDGE', 'BS_ANDROID4.1', 'BS_ANDROID4.2', 'BS_ANDROID4.3', 'BS_ANDROID4.4']
+  'CI': ['BS_CHROME', 'BS_SAFARI7', 'BS_SAFARI8', 'BS_SAFARI9', 'BS_IOS7', 'BS_IOS8', 'BS_IOS9',
+    'BS_FIREFOX', 'BS_IE9', 'BS_IE10', 'BS_IE11', 'BS_EDGE', 'BS_WINDOWSPHONE', 'BS_ANDROID4.3', 'BS_ANDROID4.4']
 };
 
 module.exports = {

@@ -10,7 +10,7 @@ import 'package:guinness/guinness.dart';
 
 import 'package:angular2/src/core/change_detection/codegen_name_util.dart'
     show CONTEXT_ACCESSOR;
-import 'package:angular2/src/core/dom/html_adapter.dart';
+import 'package:angular2/src/platform/server/html_adapter.dart';
 import 'package:angular2/src/transform/template_compiler/generator.dart';
 import 'package:angular2/src/transform/common/zone.dart' as zone;
 

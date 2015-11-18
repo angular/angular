@@ -8,7 +8,7 @@ import {
   RenderNgContentCmd,
   RenderBeginComponentCmd,
   RenderEmbeddedTemplateCmd
-} from 'angular2/src/core/render/render';
+} from 'angular2/src/core/render/api';
 import {ViewEncapsulation} from 'angular2/src/core/metadata';
 // Export ViewEncapsulation so that compiled templates only need to depend
 // on template_commands.

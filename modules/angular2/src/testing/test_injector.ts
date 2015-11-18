@@ -21,12 +21,7 @@ import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
-import {
-  EventManager,
-  DomEventsPlugin,
-  EVENT_MANAGER_PLUGINS
-} from 'angular2/src/core/render/dom/events/event_manager';
-
+import {EventManager, EVENT_MANAGER_PLUGINS} from 'angular2/core';
 import {MockDirectiveResolver} from 'angular2/src/mock/directive_resolver_mock';
 import {MockViewResolver} from 'angular2/src/mock/view_resolver_mock';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
@@ -36,7 +31,9 @@ import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
 import {TestComponentBuilder} from './test_component_builder';
 
 import {Injector} from 'angular2/src/core/di';
-import {ELEMENT_PROBE_PROVIDERS} from 'angular2/src/core/debug';
+import {
+  ELEMENT_PROBE_PROVIDERS
+} from 'angular2/src/platform/browser/debug/debug_element_view_listener';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {FunctionWrapper, Type} from 'angular2/src/facade/lang';
@@ -45,17 +42,18 @@ import {AppViewPool, APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view
 import {AppViewManager} from 'angular2/src/core/linker/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/linker/view_manager_utils';
 import {Renderer} from 'angular2/src/core/render/api';
-import {
-  DomRenderer,
-  DOCUMENT,
-  SharedStylesHost,
-  DomSharedStylesHost
-} from 'angular2/src/core/render/render';
+
+import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
+import {DomRenderer} from 'angular2/src/platform/dom/dom_renderer';
+import {DomSharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';
+import {SharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';
+import {DomEventsPlugin} from 'angular2/src/platform/dom/events/dom_events';
+
 import {APP_ID} from 'angular2/src/core/application_tokens';
 import {Serializer} from "angular2/src/web_workers/shared/serializer";
 import {Log} from './utils';
 import {COMPILER_PROVIDERS} from 'angular2/src/compiler/compiler';
-import {DomRenderer_} from "angular2/src/core/render/dom/dom_renderer";
+import {DomRenderer_} from "angular2/src/platform/dom/dom_renderer";
 import {DynamicComponentLoader_} from "angular2/src/core/linker/dynamic_component_loader";
 import {AppViewManager_} from "angular2/src/core/linker/view_manager";
 

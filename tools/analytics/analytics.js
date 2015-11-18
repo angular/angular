@@ -2,6 +2,14 @@
 
 let execSync = require('child_process').execSync;
 let fs = require('fs');
+
+let minimist;
+try {
+  minimist = require('minimist');
+} catch (e) {
+  minimist = function(){ return {projects: ""}; };
+}
+
 let path = require('path');
 let os = require('os');
 let ua;
@@ -35,7 +43,7 @@ if (ua) {
 // https://developers.google.com/analytics/devguides/collection/protocol/v1/parameters
 let customParams = {
   // OS Platform (darwin, win32, linux)
-  cd1: os.platform,
+  cd1: os.platform(),
   // Node.js Version (v4.1.2)
   cd2: process.version,
   // npm Version (2.14.7)
@@ -58,6 +66,8 @@ let customParams = {
   cd8: `${os.cpus().length} x ${os.cpus()[0].model}`,
   // HW - Memory Info
   cd9: `${Math.round(os.totalmem()/1024/1024/1024)}GB`,
+  // gulp --projects (angular2,angular2_material)
+  cd13: minimist(process.argv.slice(2)).projects
 };
 
 
@@ -89,7 +99,7 @@ function getDartVersion() {
 }
 
 
-function recordEvent(eventType, actionCategory, actionName, duration) {
+function recordEvent(eventType, actionCategory, actionName, duration, label) {
   // if universal-analytics is not yet installed, don't bother doing anything (e.g. when tracking initial npm install)
   // build-analytics will however store the starting timestamp, so at least we can record the success/error event with duration
   if (!ua) return;
@@ -101,19 +111,19 @@ function recordEvent(eventType, actionCategory, actionName, duration) {
   switch (eventType) {
     case 'start':
       visitor.
-        event(actionCategory, actionName + ' (start)', 'testLabel', null, customParams).
+        event(actionCategory, actionName + ' (start)', label, null, customParams).
         send();
       break;
     case 'success':
       visitor.
-        event(actionCategory, actionName, 'testLabel', duration, customParams).
-        timing(actionCategory, actionName, duration, customParams).
+        event(actionCategory, actionName, label, duration, customParams).
+        timing(actionCategory, actionName, duration, label, customParams).
         send();
       break;
     case 'error':
       visitor.
-        event(actionCategory, actionName + ' (errored)', 'testLabel', duration, customParams).
-        timing(actionCategory, actionName, duration, customParams).
+        event(actionCategory, actionName + ' (errored)', label, duration, customParams).
+        timing(actionCategory, actionName, duration, label, customParams).
         send();
       break;
     default:
@@ -158,5 +168,9 @@ module.exports = {
 
   ciError: (actionName, duration) => {
     recordEvent('success', 'ci', actionName, duration);
+  },
+
+  bundleSize: (filePath, sizeInBytes, compressionLevel) => {
+    recordEvent('success', 'payload', compressionLevel, sizeInBytes, filePath);
   }
 };

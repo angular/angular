@@ -2,7 +2,7 @@ import {
   AsyncTestCompleter,
   TestComponentBuilder,
   beforeEach,
-  beforeEachBindings,
+  beforeEachProviders,
   ddescribe,
   describe,
   el,
@@ -14,7 +14,8 @@ import {
 } from 'angular2/testing_internal';
 import {DebugElement} from 'angular2/src/core/debug/debug_element';
 
-import {Component, View, ViewMetadata, UrlResolver, bind, provide} from 'angular2/core';
+import {Component, View, ViewMetadata, bind, provide} from 'angular2/core';
+import {UrlResolver} from 'angular2/compiler';
 
 import {MdButton, MdAnchor} from 'angular2_material/src/components/button/button';
 
@@ -25,11 +26,10 @@ export function main() {
   describe('MdButton', () => {
     let builder: TestComponentBuilder;
 
-    beforeEachBindings(() => [
+    beforeEachProviders(() => [
       // Need a custom URL resolver for ng-material template files in order for them to work
       // with both JS and Dart output.
-      bind(UrlResolver)
-          .toValue(new TestUrlResolver()),
+      provide(UrlResolver, {useValue: new TestUrlResolver()})
     ]);
 
     beforeEach(inject([TestComponentBuilder], (tcb) => { builder = tcb; }));

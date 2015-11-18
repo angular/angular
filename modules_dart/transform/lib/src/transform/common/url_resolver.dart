@@ -1,6 +1,6 @@
 library angular2.transform.template_compiler.url_resolver;
 
-import 'package:angular2/src/core/services.dart';
+import 'package:angular2/compiler.dart';
 import 'package:barback/barback.dart';
 
 class TransformerUrlResolver implements UrlResolver {

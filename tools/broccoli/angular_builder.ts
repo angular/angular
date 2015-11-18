@@ -7,6 +7,17 @@ var path = require('path');
 var printSlowTrees = require('broccoli-slow-trees');
 var Q = require('q');
 
+type ProjectMap = {
+  [key: string]: boolean
+};
+
+type Options = {
+  projects: ProjectMap;
+noTypeChecks: boolean;
+generateEs6: boolean;
+}
+;
+
 /**
  * BroccoliBuilder facade for all of our build pipelines.
  */
@@ -21,26 +32,26 @@ export class AngularBuilder {
   constructor(public options: AngularBuilderOptions) { this.outputPath = options.outputPath; }
 
 
-  public rebuildBrowserDevTree(): Promise<BuildResult> {
-    this.browserDevBuilder = this.browserDevBuilder || this.makeBrowserDevBuilder();
+  public rebuildBrowserDevTree(opts: Options): Promise<BuildResult> {
+    this.browserDevBuilder = this.browserDevBuilder || this.makeBrowserDevBuilder(opts);
     return this.rebuild(this.browserDevBuilder, 'js.dev');
   }
 
 
-  public rebuildBrowserProdTree(): Promise<BuildResult> {
-    this.browserProdBuilder = this.browserProdBuilder || this.makeBrowserProdBuilder();
+  public rebuildBrowserProdTree(opts: Options): Promise<BuildResult> {
+    this.browserProdBuilder = this.browserProdBuilder || this.makeBrowserProdBuilder(opts);
     return this.rebuild(this.browserProdBuilder, 'js.prod');
   }
 
 
-  public rebuildNodeTree(): Promise<BuildResult> {
-    this.nodeBuilder = this.nodeBuilder || this.makeNodeBuilder();
+  public rebuildNodeTree(opts: Options): Promise<BuildResult> {
+    this.nodeBuilder = this.nodeBuilder || this.makeNodeBuilder(opts.projects);
     return this.rebuild(this.nodeBuilder, 'js.cjs');
   }
 
 
-  public rebuildDartTree(): Promise<BuildResult> {
-    this.dartBuilder = this.dartBuilder || this.makeDartBuilder();
+  public rebuildDartTree(projects: ProjectMap): Promise<BuildResult> {
+    this.dartBuilder = this.dartBuilder || this.makeDartBuilder(projects);
     return this.rebuild(this.dartBuilder, 'dart');
   }
 
@@ -54,31 +65,46 @@ export class AngularBuilder {
   }
 
 
-  private makeBrowserDevBuilder(): BroccoliBuilder {
-    let tree = makeBrowserTree({name: 'dev', typeAssertions: true},
-                               path.join(this.outputPath, 'js', 'dev'));
+  private makeBrowserDevBuilder(opts: Options): BroccoliBuilder {
+    let tree = makeBrowserTree(
+        {
+          name: 'dev',
+          typeAssertions: true,
+          projects: opts.projects,
+          noTypeChecks: opts.noTypeChecks,
+          generateEs6: opts.generateEs6
+        },
+        path.join(this.outputPath, 'js', 'dev'));
     return new broccoli.Builder(tree);
   }
 
 
-  private makeBrowserProdBuilder(): BroccoliBuilder {
-    let tree = makeBrowserTree({name: 'prod', typeAssertions: false},
-                               path.join(this.outputPath, 'js', 'prod'));
+  private makeBrowserProdBuilder(opts: Options): BroccoliBuilder {
+    let tree = makeBrowserTree(
+        {
+          name: 'prod',
+          typeAssertions: false,
+          projects: opts.projects,
+          noTypeChecks: opts.noTypeChecks,
+          generateEs6: opts.generateEs6
+        },
+        path.join(this.outputPath, 'js', 'prod'));
     return new broccoli.Builder(tree);
   }
 
 
-  private makeNodeBuilder(): BroccoliBuilder {
-    let tree = makeNodeTree(path.join(this.outputPath, 'js', 'cjs'));
+  private makeNodeBuilder(projects: ProjectMap): BroccoliBuilder {
+    let tree = makeNodeTree(projects, path.join(this.outputPath, 'js', 'cjs'));
     return new broccoli.Builder(tree);
   }
 
 
-  private makeDartBuilder(): BroccoliBuilder {
+  private makeDartBuilder(projects: ProjectMap): BroccoliBuilder {
     let options = {
       outputPath: path.join(this.outputPath, 'dart'),
       dartSDK: this.options.dartSDK,
-      logs: this.options.logs
+      logs: this.options.logs,
+      projects: projects
     };
     let tree = makeDartTree(options);
     return new broccoli.Builder(tree);
@@ -123,11 +149,14 @@ function broccoliNodeToBuildNode(broccoliNode) {
 
   return new BuildNode(tree.description || tree.constructor.name,
                        tree.inputPath ? [tree.inputPath] : tree.inputPaths, tree.cachePath,
-                       tree.outputPath, broccoliNode.subtrees.map(broccoliNodeToBuildNode));
+                       tree.outputPath, broccoliNode.selfTime / (1000 * 1000 * 1000),
+                       broccoliNode.totalTime / (1000 * 1000 * 1000),
+                       broccoliNode.subtrees.map(broccoliNodeToBuildNode));
 }
 
 
 class BuildNode {
   constructor(public pluginName: string, public inputPaths: string[], public cachePath: string,
-              public outputPath: string, public inputNodes: BroccoliNode[]) {}
+              public outputPath: string, public selfTime: number, public totalTime: number,
+              public inputNodes: BroccoliNode[]) {}
 }

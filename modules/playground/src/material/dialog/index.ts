@@ -5,10 +5,10 @@ import {
   ElementRef,
   ComponentRef,
   Component,
-  UrlResolver,
   View,
   ViewEncapsulation
 } from 'angular2/core';
+import {UrlResolver} from 'angular2/compiler';
 import {
   MdDialog,
   MdDialogRef,

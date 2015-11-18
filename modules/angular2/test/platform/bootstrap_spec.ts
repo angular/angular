@@ -13,10 +13,10 @@ import {
 import {IS_DART, isPresent, stringify} from 'angular2/src/facade/lang';
 import {bootstrap} from 'angular2/platform/browser';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
-import {Component, Directive, View, platform} from 'angular2/core';
+import {Component, Directive, View, OnDestroy, platform} from 'angular2/core';
 import {BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS} from 'angular2/platform/browser';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {DOCUMENT} from 'angular2/render';
+import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {provide, Inject, Injector} from 'angular2/core';
 import {ExceptionHandler} from 'angular2/src/facade/exceptions';
@@ -65,6 +65,15 @@ class HelloRootMissingTemplate {
 
 @Directive({selector: 'hello-app'})
 class HelloRootDirectiveIsNotCmp {
+}
+
+@Component({selector: 'hello-app'})
+@View({template: ''})
+class HelloOnDestroyTickCmp implements OnDestroy {
+  appRef: ApplicationRef;
+  constructor(@Inject(ApplicationRef) appRef) { this.appRef = appRef; }
+
+  onDestroy(): void { this.appRef.tick(); }
 }
 
 class _ArrayLogger {
@@ -159,6 +168,15 @@ export function main() {
              .then((refs) => {
                expect(el).toHaveText('hello world!');
                expect(el2).toHaveText('hello world, again!');
+               async.done();
+             });
+       }));
+
+    it('should not crash if change detection is invoked when the root component is disposed',
+       inject([AsyncTestCompleter], (async) => {
+         bootstrap(HelloOnDestroyTickCmp, testProviders)
+             .then((ref) => {
+               expect(() => ref.dispose()).not.toThrow();
                async.done();
              });
        }));

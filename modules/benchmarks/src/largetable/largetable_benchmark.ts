@@ -20,7 +20,7 @@ import {
   NgSwitchDefault
 } from 'angular2/core';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
-import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
+import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 
 import {ListWrapper} from 'angular2/src/facade/collection';

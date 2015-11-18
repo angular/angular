@@ -39,7 +39,7 @@ import {
   RenderFragmentRef,
   Renderer
 } from "angular2/src/core/render/api";
-import {DomRenderer, DomRenderer_} from 'angular2/src/core/render/dom/dom_renderer';
+import {DomRenderer, DomRenderer_} from 'angular2/src/platform/dom/dom_renderer';
 import {DefaultRenderView} from 'angular2/src/core/render/view';
 import {
   RenderProtoViewRefStore,

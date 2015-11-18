@@ -1,6 +1,7 @@
 library angular2.test.transform.inliner_for_test.all_tests;
 
 import 'dart:async';
+import 'dart:convert' show LineSplitter;
 
 import 'package:barback/barback.dart';
 import 'package:code_transformers/tests.dart';
@@ -18,6 +19,7 @@ import '../common/recording_logger.dart';
 
 main() {
   allTests();
+  endToEndTests();
 }
 
 DartFormatter formatter = new DartFormatter();
@@ -36,7 +38,7 @@ void allTests() {
         absoluteReader, _assetId('url_expression_files/hello.dart'));
     expect(output).toBeNotNull();
     expect(() => formatter.format(output)).not.toThrow();
-    expect(output).toContain("template: r'''{{greeting}}'''");
+    expect(output).toContain("r'''{{greeting}}'''");
   });
 
   it(
@@ -57,9 +59,8 @@ void allTests() {
     expect(output).toBeNotNull();
     expect(() => formatter.format(output)).not.toThrow();
 
-    expect(output).toContain("template: r'''{{greeting}}'''");
-    expect(output).toContain("styles: const ["
-        "r'''.greeting { .color: blue; }''', ]");
+    expect(output).toContain("r'''{{greeting}}'''");
+    expect(output).toContain("r'''.greeting { .color: blue; }'''");
   });
 
   it('should inline multiple `styleUrls` values expressed as absolute urls.',
@@ -114,6 +115,56 @@ void allTests() {
     expect(output).toContain('@Attribute(\'thing\')');
   });
 
+  it('should maintain line numbers for long `templateUrl` values', () async {
+    // Regression test for https://github.com/angular/angular/issues/5281
+    final templateUrlVal =
+        'supersupersupersupersupersupersupersupersupersupersupersuper'
+        'superlongtemplate.html';
+    absoluteReader.addAsset(
+        _assetId('multiline_template/$templateUrlVal'), '{{greeting}}');
+    var output = await _testInline(
+        absoluteReader, _assetId('multiline_template/hello.dart'));
+    expect(output).toBeNotNull();
+    expect(() => formatter.format(output)).not.toThrow();
+    expect(output)
+      ..toContain("r'''{{greeting}}'''")
+      ..toContain('template: _template0\n');
+  });
+
+  it('should maintain line numbers when replacing values', () async {
+    // Regression test for https://github.com/angular/angular/issues/5281
+    final templateUrlVal =
+        'supersupersupersupersupersupersupersupersupersupersupersuper'
+        'superlongtemplate.html';
+    final t1Styles = '.body { color: green; }';
+    final t2Styles = '.div { color: red; }';
+    absoluteReader.addAsset(
+        _assetId('multiline_template/$templateUrlVal'), '{{greeting}}');
+    absoluteReader.addAsset(
+        _assetId('multiline_template/pretty_longish_template.css'), t1Styles);
+    absoluteReader.addAsset(
+        _assetId('multiline_template/other_pretty_longish_template.css'),
+        t2Styles);
+    var output = await _testInline(
+        absoluteReader, _assetId('multiline_template/hello.dart'));
+    expect(output).toBeNotNull();
+    expect(() => formatter.format(output)).not.toThrow();
+    expect(output)
+      ..toContain("r'''{{greeting}}'''")
+      ..toContain("r'''$t1Styles'''")
+      ..toContain("r'''$t2Styles'''");
+
+    final splitter = const LineSplitter();
+    final inputLines =
+        splitter.convert(_readFile('multiline_template/hello.dart'));
+    final outputLines = splitter.convert(output);
+
+    expect(outputLines.indexOf('class HelloCmp {}'))
+        .toEqual(inputLines.indexOf('class HelloCmp {}'));
+  });
+}
+
+void endToEndTests() {
   _runAbsoluteUrlEndToEndTest();
   _runMultiStylesEndToEndTest();
 }

@@ -1,5 +1,5 @@
 import {bootstrap} from 'angular2/bootstrap';
-import {BrowserDomAdapter} from 'angular2/src/core/dom/browser_adapter';
+import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
 import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper, Map, MapWrapper} from 'angular2/src/facade/collection';

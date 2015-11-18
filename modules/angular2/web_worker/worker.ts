@@ -8,7 +8,9 @@ export * from 'angular2/src/facade/facade';
 // web_worker exports its own
 // export * from '../src/core/application';
 export * from '../src/core/application_ref';
-export * from '../src/core/services';
+export * from '../src/platform/browser/ruler';
+export * from '../src/platform/browser/title';
+export * from '../src/compiler/url_resolver';
 export * from '../src/core/linker';
 export * from '../src/core/zone';
 // Do not export render in web_worker
@@ -31,10 +33,10 @@ export {
   RenderBeginComponentCmd,
   RenderEmbeddedTemplateCmd,
   RenderBeginCmd
-} from '../src/core/render/render';
+} from '../src/core/render/api';
 export * from '../src/common/directives';
 export * from '../src/common/forms';
-export * from '../src/core/debug';
+export {DebugElement} from '../src/core/debug/debug_element';
 export * from '../src/core/change_detection';
 
 export * from '../profile';

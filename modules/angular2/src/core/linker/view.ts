@@ -28,7 +28,7 @@ import {RenderEventDispatcher} from 'angular2/src/core/render/api';
 import {ViewRef, ProtoViewRef, internalView} from './view_ref';
 import {ElementRef} from './element_ref';
 import {ProtoPipes} from 'angular2/src/core/pipes/pipes';
-import {camelCaseToDashCase} from 'angular2/src/core/render/dom/util';
+import {camelCaseToDashCase} from 'angular2/src/core/render/util';
 import {TemplateCmd} from './template_commands';
 import {ViewRef_, ProtoViewRef_} from "./view_ref";
 
