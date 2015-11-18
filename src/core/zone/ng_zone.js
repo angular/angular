@@ -150,7 +150,7 @@ var NgZone = (function () {
     /** @internal */
     NgZone.prototype._notifyOnTurnStart = function (parentRun) {
         var _this = this;
-        parentRun.call(this._innerZone, function () { _this._onTurnStartEvents.next(null); });
+        parentRun.call(this._innerZone, function () { _this._onTurnStartEvents.emit(null); });
     };
     /**
      * Sets the zone hook that is called immediately after Angular zone is done processing the current
@@ -181,7 +181,7 @@ var NgZone = (function () {
     /** @internal */
     NgZone.prototype._notifyOnTurnDone = function (parentRun) {
         var _this = this;
-        parentRun.call(this._innerZone, function () { _this._onTurnDoneEvents.next(null); });
+        parentRun.call(this._innerZone, function () { _this._onTurnDoneEvents.emit(null); });
     };
     /**
      * Sets the zone hook that is called immediately after the `onTurnDone` callback is called and any
@@ -225,7 +225,7 @@ var NgZone = (function () {
     /** @internal */
     NgZone.prototype._notifyOnEventDone = function () {
         var _this = this;
-        this.runOutsideAngular(function () { _this._onEventDoneEvents.next(null); });
+        this.runOutsideAngular(function () { _this._onEventDoneEvents.emit(null); });
     };
     Object.defineProperty(NgZone.prototype, "hasPendingMicrotasks", {
         /**
@@ -423,7 +423,7 @@ var NgZone = (function () {
                 zone = zone.parent;
             }
             if (async_1.ObservableWrapper.hasSubscribers(this._onErrorEvents)) {
-                async_1.ObservableWrapper.callNext(this._onErrorEvents, new NgZoneError(e, trace));
+                async_1.ObservableWrapper.callEmit(this._onErrorEvents, new NgZoneError(e, trace));
             }
             if (lang_1.isPresent(this._onErrorHandler)) {
                 this._onErrorHandler(e, trace);

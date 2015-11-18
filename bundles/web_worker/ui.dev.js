@@ -18291,7 +18291,7 @@ System.register("angular2/src/core/linker/query_list", ["angular2/src/facade/col
       this._results = res;
     };
     QueryList.prototype.notifyOnChanges = function() {
-      this._emitter.next(this);
+      this._emitter.emit(this);
     };
     return QueryList;
   })();
@@ -18628,8 +18628,6 @@ System.register("angular2/src/core/application_tokens", ["angular2/src/core/di",
   function _randomChar() {
     return lang_1.StringWrapper.fromCharCode(97 + lang_1.Math.floor(lang_1.Math.random() * 25));
   }
-  exports.PLATFORM_INITIALIZER = lang_1.CONST_EXPR(new di_1.OpaqueToken("Platform Initializer"));
-  exports.APP_INITIALIZER = lang_1.CONST_EXPR(new di_1.OpaqueToken("Application Initializer"));
   global.define = __define;
   return module.exports;
 });
@@ -19798,8 +19796,8 @@ System.register("angular2/src/common/forms/model", ["angular2/src/facade/lang", 
         this._runAsyncValidator(emitEvent);
       }
       if (emitEvent) {
-        async_1.ObservableWrapper.callNext(this._valueChanges, this._value);
-        async_1.ObservableWrapper.callNext(this._statusChanges, this._status);
+        async_1.ObservableWrapper.callEmit(this._valueChanges, this._value);
+        async_1.ObservableWrapper.callEmit(this._statusChanges, this._status);
       }
       if (lang_1.isPresent(this._parent) && !onlySelf) {
         this._parent.updateValueAndValidity({
@@ -19833,7 +19831,7 @@ System.register("angular2/src/common/forms/model", ["angular2/src/facade/lang", 
       this._errors = errors;
       this._status = this._calculateStatus();
       if (emitEvent) {
-        async_1.ObservableWrapper.callNext(this._statusChanges, this._status);
+        async_1.ObservableWrapper.callEmit(this._statusChanges, this._status);
       }
       if (lang_1.isPresent(this._parent)) {
         this._parent._updateControlsErrors();
@@ -20747,7 +20745,7 @@ System.register("angular2/src/common/forms/directives/ng_form_control", ["angula
     });
     NgFormControl.prototype.viewToModelUpdate = function(newValue) {
       this.viewModel = newValue;
-      async_1.ObservableWrapper.callNext(this.update, newValue);
+      async_1.ObservableWrapper.callEmit(this.update, newValue);
     };
     NgFormControl.prototype._isControlChanged = function(changes) {
       return collection_1.StringMapWrapper.contains(changes, "form");
@@ -20870,7 +20868,7 @@ System.register("angular2/src/common/forms/directives/ng_model", ["angular2/src/
     });
     NgModel.prototype.viewToModelUpdate = function(newValue) {
       this.viewModel = newValue;
-      async_1.ObservableWrapper.callNext(this.update, newValue);
+      async_1.ObservableWrapper.callEmit(this.update, newValue);
     };
     NgModel = __decorate([metadata_1.Directive({
       selector: '[ng-model]:not([ng-control]):not([ng-form-control])',
@@ -21118,7 +21116,7 @@ System.register("angular2/src/common/forms/directives/ng_form_model", ["angular2
       ctrl.updateValue(value);
     };
     NgFormModel.prototype.onSubmit = function() {
-      async_1.ObservableWrapper.callNext(this.ngSubmit, null);
+      async_1.ObservableWrapper.callEmit(this.ngSubmit, null);
       return false;
     };
     NgFormModel.prototype._updateDomValue = function() {
@@ -21284,7 +21282,7 @@ System.register("angular2/src/common/forms/directives/ng_form", ["angular2/src/f
       });
     };
     NgForm.prototype.onSubmit = function() {
-      async_1.ObservableWrapper.callNext(this.ngSubmit, null);
+      async_1.ObservableWrapper.callEmit(this.ngSubmit, null);
       return false;
     };
     NgForm.prototype._findContainer = function(path) {
@@ -23289,7 +23287,7 @@ System.register("angular2/src/web_workers/shared/service_message_broker", ["angu
     ServiceMessageBroker_.prototype._wrapWebWorkerPromise = function(id, promise, type) {
       var _this = this;
       async_1.PromiseWrapper.then(promise, function(result) {
-        async_1.ObservableWrapper.callNext(_this._sink, {
+        async_1.ObservableWrapper.callEmit(_this._sink, {
           'type': 'result',
           'value': _this._serializer.serialize(result, type),
           'id': id
@@ -23406,7 +23404,7 @@ System.register("angular2/src/web_workers/ui/setup", ["angular2/src/web_workers/
       var source = this._bus.from(messaging_api_1.SETUP_CHANNEL);
       async_1.ObservableWrapper.subscribe(source, function(message) {
         if (lang_1.StringWrapper.equals(message, "ready")) {
-          async_1.ObservableWrapper.callNext(sink, {"rootUrl": _this.rootUrl});
+          async_1.ObservableWrapper.callEmit(sink, {"rootUrl": _this.rootUrl});
         }
       });
     };
@@ -23553,7 +23551,7 @@ System.register("angular2/src/web_workers/shared/client_message_broker", ["angul
       if (id != null) {
         message['id'] = id;
       }
-      async_1.ObservableWrapper.callNext(this._sink, message);
+      async_1.ObservableWrapper.callEmit(this._sink, message);
       return promise;
     };
     ClientMessageBroker_.prototype._handleMessage = function(message) {
@@ -27251,29 +27249,13 @@ System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng
     }
   }
   exports.platform = platform;
-  function disposePlatform() {
-    if (lang_1.isPresent(_platform)) {
-      _platform.dispose();
-      _platform = null;
-    }
-  }
-  exports.disposePlatform = disposePlatform;
   function _createPlatform(providers) {
     _platformProviders = providers;
-    var injector = di_1.Injector.resolveAndCreate(providers);
-    _platform = new PlatformRef_(injector, function() {
+    _platform = new PlatformRef_(di_1.Injector.resolveAndCreate(providers), function() {
       _platform = null;
       _platformProviders = null;
     });
-    _runPlatformInitializers(injector);
     return _platform;
-  }
-  function _runPlatformInitializers(injector) {
-    var inits = injector.getOptional(application_tokens_1.PLATFORM_INITIALIZER);
-    if (lang_1.isPresent(inits))
-      inits.forEach(function(init) {
-        return init();
-      });
   }
   var PlatformRef = (function() {
     function PlatformRef() {}
@@ -27350,11 +27332,10 @@ System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng
       });
       app = new ApplicationRef_(this, zone, injector);
       this._applications.push(app);
-      _runAppInitializers(injector);
       return app;
     };
     PlatformRef_.prototype.dispose = function() {
-      collection_1.ListWrapper.clone(this._applications).forEach(function(app) {
+      this._applications.forEach(function(app) {
         return app.dispose();
       });
       this._disposeListeners.forEach(function(dispose) {
@@ -27368,13 +27349,6 @@ System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng
     return PlatformRef_;
   })(PlatformRef);
   exports.PlatformRef_ = PlatformRef_;
-  function _runAppInitializers(injector) {
-    var inits = injector.getOptional(application_tokens_1.APP_INITIALIZER);
-    if (lang_1.isPresent(inits))
-      inits.forEach(function(init) {
-        return init();
-      });
-  }
   var ApplicationRef = (function() {
     function ApplicationRef() {}
     Object.defineProperty(ApplicationRef.prototype, "injector", {
@@ -27520,7 +27494,7 @@ System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng
       }
     };
     ApplicationRef_.prototype.dispose = function() {
-      collection_1.ListWrapper.clone(this._rootComponents).forEach(function(ref) {
+      this._rootComponents.forEach(function(ref) {
         return ref.dispose();
       });
       this._disposeListeners.forEach(function(dispose) {
@@ -28502,7 +28476,7 @@ System.register("angular2/src/web_workers/ui/event_dispatcher", ["angular2/src/c
       }
       var serializedLocals = collection_1.StringMapWrapper.create();
       collection_1.StringMapWrapper.set(serializedLocals, '$event', serializedEvent);
-      async_1.ObservableWrapper.callNext(this._sink, {
+      async_1.ObservableWrapper.callEmit(this._sink, {
         "viewRef": this._serializer.serialize(this._viewRef, api_1.RenderViewRef),
         "elementIndex": elementIndex,
         "eventName": eventName,
@@ -29345,7 +29319,7 @@ System.register("angular2/src/core/zone/ng_zone", ["angular2/src/facade/collecti
     NgZone.prototype._notifyOnTurnStart = function(parentRun) {
       var _this = this;
       parentRun.call(this._innerZone, function() {
-        _this._onTurnStartEvents.next(null);
+        _this._onTurnStartEvents.emit(null);
       });
     };
     NgZone.prototype.overrideOnTurnDone = function(onTurnDoneHook) {
@@ -29361,7 +29335,7 @@ System.register("angular2/src/core/zone/ng_zone", ["angular2/src/facade/collecti
     NgZone.prototype._notifyOnTurnDone = function(parentRun) {
       var _this = this;
       parentRun.call(this._innerZone, function() {
-        _this._onTurnDoneEvents.next(null);
+        _this._onTurnDoneEvents.emit(null);
       });
     };
     NgZone.prototype.overrideOnEventDone = function(onEventDoneFn, opt_waitForAsync) {
@@ -29390,7 +29364,7 @@ System.register("angular2/src/core/zone/ng_zone", ["angular2/src/facade/collecti
     NgZone.prototype._notifyOnEventDone = function() {
       var _this = this;
       this.runOutsideAngular(function() {
-        _this._onEventDoneEvents.next(null);
+        _this._onEventDoneEvents.emit(null);
       });
     };
     Object.defineProperty(NgZone.prototype, "hasPendingMicrotasks", {
@@ -29542,7 +29516,7 @@ System.register("angular2/src/core/zone/ng_zone", ["angular2/src/facade/collecti
           zone = zone.parent;
         }
         if (async_1.ObservableWrapper.hasSubscribers(this._onErrorEvents)) {
-          async_1.ObservableWrapper.callNext(this._onErrorEvents, new NgZoneError(e, trace));
+          async_1.ObservableWrapper.callEmit(this._onErrorEvents, new NgZoneError(e, trace));
         }
         if (lang_1.isPresent(this._onErrorHandler)) {
           this._onErrorHandler(e, trace);
@@ -31108,7 +31082,7 @@ System.register("angular2/src/common/forms/directives/ng_control_name", ["angula
     };
     NgControlName.prototype.viewToModelUpdate = function(newValue) {
       this.viewModel = newValue;
-      async_1.ObservableWrapper.callNext(this.update, newValue);
+      async_1.ObservableWrapper.callEmit(this.update, newValue);
     };
     Object.defineProperty(NgControlName.prototype, "path", {
       get: function() {
@@ -35610,10 +35584,10 @@ System.register("angular2/src/web_workers/shared/post_message_bus", ["angular2/s
         var channelInfo = this._channels[channel];
         if (channelInfo.runInZone) {
           this._zone.run(function() {
-            channelInfo.emitter.next(data.message);
+            channelInfo.emitter.emit(data.message);
           });
         } else {
-          channelInfo.emitter.next(data.message);
+          channelInfo.emitter.emit(data.message);
         }
       }
     };
@@ -35774,6 +35748,9 @@ System.register("angular2/src/facade/async", ["angular2/src/facade/lang", "angul
     ObservableWrapper.callNext = function(emitter, value) {
       emitter.next(value);
     };
+    ObservableWrapper.callEmit = function(emitter, value) {
+      emitter.emit(value);
+    };
     ObservableWrapper.callError = function(emitter, error) {
       emitter.error(error);
     };
@@ -35798,6 +35775,12 @@ System.register("angular2/src/facade/async", ["angular2/src/facade/lang", "angul
       _super.call(this);
       this._isAsync = isAsync;
     }
+    EventEmitter.prototype.emit = function(value) {
+      _super.prototype.next.call(this, value);
+    };
+    EventEmitter.prototype.next = function(value) {
+      _super.prototype.next.call(this, value);
+    };
     EventEmitter.prototype.subscribe = function(generatorOrNext, error, complete) {
       if (generatorOrNext && typeof generatorOrNext === 'object') {
         var schedulerFn = this._isAsync ? function(value) {
@@ -35919,8 +35902,6 @@ System.register("angular2/core", ["angular2/src/core/metadata", "angular2/src/co
   var application_tokens_1 = require("angular2/src/core/application_tokens");
   exports.APP_ID = application_tokens_1.APP_ID;
   exports.APP_COMPONENT = application_tokens_1.APP_COMPONENT;
-  exports.APP_INITIALIZER = application_tokens_1.APP_INITIALIZER;
-  exports.PLATFORM_INITIALIZER = application_tokens_1.PLATFORM_INITIALIZER;
   __export(require("angular2/src/core/zone"));
   __export(require("angular2/src/core/render"));
   __export(require("angular2/src/common/directives"));

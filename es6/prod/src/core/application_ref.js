@@ -1,7 +1,7 @@
 import { NgZone } from 'angular2/src/core/zone/ng_zone';
 import { isPresent, assertionsEnabled } from 'angular2/src/facade/lang';
 import { provide, Injector } from 'angular2/src/core/di';
-import { APP_COMPONENT_REF_PROMISE, APP_COMPONENT, PLATFORM_INITIALIZER, APP_INITIALIZER } from './application_tokens';
+import { APP_COMPONENT_REF_PROMISE, APP_COMPONENT } from './application_tokens';
 import { PromiseWrapper, ObservableWrapper } from 'angular2/src/facade/async';
 import { ListWrapper } from 'angular2/src/facade/collection';
 import { TestabilityRegistry, Testability } from 'angular2/src/core/testability/testability';
@@ -76,29 +76,13 @@ export function platform(providers) {
         return _createPlatform(providers);
     }
 }
-/**
- * Dispose the existing platform.
- */
-export function disposePlatform() {
-    if (isPresent(_platform)) {
-        _platform.dispose();
-        _platform = null;
-    }
-}
 function _createPlatform(providers) {
     _platformProviders = providers;
-    let injector = Injector.resolveAndCreate(providers);
-    _platform = new PlatformRef_(injector, () => {
+    _platform = new PlatformRef_(Injector.resolveAndCreate(providers), () => {
         _platform = null;
         _platformProviders = null;
     });
-    _runPlatformInitializers(injector);
     return _platform;
-}
-function _runPlatformInitializers(injector) {
-    let inits = injector.getOptional(PLATFORM_INITIALIZER);
-    if (isPresent(inits))
-        inits.forEach(init => init());
 }
 /**
  * The Angular platform is the entry point for Angular on a web page. Each page
@@ -167,21 +151,15 @@ export class PlatformRef_ extends PlatformRef {
         });
         app = new ApplicationRef_(this, zone, injector);
         this._applications.push(app);
-        _runAppInitializers(injector);
         return app;
     }
     dispose() {
-        ListWrapper.clone(this._applications).forEach((app) => app.dispose());
+        this._applications.forEach((app) => app.dispose());
         this._disposeListeners.forEach((dispose) => dispose());
         this._dispose();
     }
     /** @internal */
     _applicationDisposed(app) { ListWrapper.remove(this._applications, app); }
-}
-function _runAppInitializers(injector) {
-    let inits = injector.getOptional(APP_INITIALIZER);
-    if (isPresent(inits))
-        inits.forEach(init => init());
 }
 /**
  * A reference to an Angular application running on a page.
@@ -304,7 +282,7 @@ export class ApplicationRef_ extends ApplicationRef {
     }
     dispose() {
         // TODO(alxhub): Dispose of the NgZone.
-        ListWrapper.clone(this._rootComponents).forEach((ref) => ref.dispose());
+        this._rootComponents.forEach((ref) => ref.dispose());
         this._disposeListeners.forEach((dispose) => dispose());
         this._platform._applicationDisposed(this);
     }

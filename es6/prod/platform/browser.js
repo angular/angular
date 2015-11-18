@@ -1,6 +1,6 @@
 export { BROWSER_PROVIDERS, ELEMENT_PROBE_BINDINGS, ELEMENT_PROBE_PROVIDERS, inspectNativeElement, BrowserDomAdapter, By, Title, DOCUMENT } from 'angular2/src/platform/browser_common';
 import { isPresent, CONST_EXPR } from 'angular2/src/facade/lang';
-import { BROWSER_PROVIDERS, BROWSER_APP_COMMON_PROVIDERS } from 'angular2/src/platform/browser_common';
+import { BROWSER_PROVIDERS, BROWSER_APP_COMMON_PROVIDERS, initDomAdapter } from 'angular2/src/platform/browser_common';
 import { COMPILER_PROVIDERS } from 'angular2/compiler';
 import { platform, reflector } from 'angular2/core';
 import { ReflectionCapabilities } from 'angular2/src/core/reflection/reflection_capabilities';
@@ -101,6 +101,7 @@ export const BROWSER_APP_PROVIDERS = CONST_EXPR([
  */
 export function bootstrap(appComponentType, customProviders) {
     reflector.reflectionCapabilities = new ReflectionCapabilities();
+    initDomAdapter();
     let appProviders = isPresent(customProviders) ? [BROWSER_APP_PROVIDERS, customProviders] : BROWSER_APP_PROVIDERS;
     return platform(BROWSER_PROVIDERS).application(appProviders).bootstrap(appComponentType);
 }

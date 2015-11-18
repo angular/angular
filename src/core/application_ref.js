@@ -83,30 +83,13 @@ function platform(providers) {
     }
 }
 exports.platform = platform;
-/**
- * Dispose the existing platform.
- */
-function disposePlatform() {
-    if (lang_1.isPresent(_platform)) {
-        _platform.dispose();
-        _platform = null;
-    }
-}
-exports.disposePlatform = disposePlatform;
 function _createPlatform(providers) {
     _platformProviders = providers;
-    var injector = di_1.Injector.resolveAndCreate(providers);
-    _platform = new PlatformRef_(injector, function () {
+    _platform = new PlatformRef_(di_1.Injector.resolveAndCreate(providers), function () {
         _platform = null;
         _platformProviders = null;
     });
-    _runPlatformInitializers(injector);
     return _platform;
-}
-function _runPlatformInitializers(injector) {
-    var inits = injector.getOptional(application_tokens_1.PLATFORM_INITIALIZER);
-    if (lang_1.isPresent(inits))
-        inits.forEach(function (init) { return init(); });
 }
 /**
  * The Angular platform is the entry point for Angular on a web page. Each page
@@ -190,11 +173,10 @@ var PlatformRef_ = (function (_super) {
         });
         app = new ApplicationRef_(this, zone, injector);
         this._applications.push(app);
-        _runAppInitializers(injector);
         return app;
     };
     PlatformRef_.prototype.dispose = function () {
-        collection_1.ListWrapper.clone(this._applications).forEach(function (app) { return app.dispose(); });
+        this._applications.forEach(function (app) { return app.dispose(); });
         this._disposeListeners.forEach(function (dispose) { return dispose(); });
         this._dispose();
     };
@@ -203,11 +185,6 @@ var PlatformRef_ = (function (_super) {
     return PlatformRef_;
 })(PlatformRef);
 exports.PlatformRef_ = PlatformRef_;
-function _runAppInitializers(injector) {
-    var inits = injector.getOptional(application_tokens_1.APP_INITIALIZER);
-    if (lang_1.isPresent(inits))
-        inits.forEach(function (init) { return init(); });
-}
 /**
  * A reference to an Angular application running on a page.
  *
@@ -356,7 +333,7 @@ var ApplicationRef_ = (function (_super) {
     };
     ApplicationRef_.prototype.dispose = function () {
         // TODO(alxhub): Dispose of the NgZone.
-        collection_1.ListWrapper.clone(this._rootComponents).forEach(function (ref) { return ref.dispose(); });
+        this._rootComponents.forEach(function (ref) { return ref.dispose(); });
         this._disposeListeners.forEach(function (dispose) { return dispose(); });
         this._platform._applicationDisposed(this);
     };

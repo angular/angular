@@ -30,11 +30,3 @@ export declare const APP_ID: OpaqueToken;
  * Providers that will generate a random APP_ID_TOKEN.
  */
 export declare const APP_ID_RANDOM_PROVIDER: Provider;
-/**
- * A function that will be executed when a platform is initialized.
- */
-export declare const PLATFORM_INITIALIZER: OpaqueToken;
-/**
- * A function that will be executed when an application is initialized.
- */
-export declare const APP_INITIALIZER: OpaqueToken;

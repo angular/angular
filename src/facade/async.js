@@ -38,7 +38,11 @@ var ObservableWrapper = (function () {
      */
     ObservableWrapper.hasSubscribers = function (obs) { return obs.observers.length > 0; };
     ObservableWrapper.dispose = function (subscription) { subscription.unsubscribe(); };
+    /**
+     * @deprecated - use callEmit() instead
+     */
     ObservableWrapper.callNext = function (emitter, value) { emitter.next(value); };
+    ObservableWrapper.callEmit = function (emitter, value) { emitter.emit(value); };
     ObservableWrapper.callError = function (emitter, error) { emitter.error(error); };
     ObservableWrapper.callComplete = function (emitter) { emitter.complete(); };
     ObservableWrapper.fromPromise = function (promise) {
@@ -74,9 +78,9 @@ exports.ObservableWrapper = ObservableWrapper;
  *   toggle() {
  *     this.visible = !this.visible;
  *     if (this.visible) {
- *       this.open.next(null);
+ *       this.open.emit(null);
  *     } else {
- *       this.close.next(null);
+ *       this.close.emit(null);
  *     }
  *   }
  * }
@@ -98,6 +102,11 @@ var EventEmitter = (function (_super) {
         _super.call(this);
         this._isAsync = isAsync;
     }
+    EventEmitter.prototype.emit = function (value) { _super.prototype.next.call(this, value); };
+    /**
+     * @deprecated - use .emit(value) instead
+     */
+    EventEmitter.prototype.next = function (value) { _super.prototype.next.call(this, value); };
     EventEmitter.prototype.subscribe = function (generatorOrNext, error, complete) {
         if (generatorOrNext && typeof generatorOrNext === 'object') {
             var schedulerFn = this._isAsync ?

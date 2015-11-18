@@ -20,8 +20,6 @@ exports.ApplicationRef = application_ref_1.ApplicationRef;
 var application_tokens_1 = require('./src/core/application_tokens');
 exports.APP_ID = application_tokens_1.APP_ID;
 exports.APP_COMPONENT = application_tokens_1.APP_COMPONENT;
-exports.APP_INITIALIZER = application_tokens_1.APP_INITIALIZER;
-exports.PLATFORM_INITIALIZER = application_tokens_1.PLATFORM_INITIALIZER;
 __export(require('./src/core/zone'));
 __export(require('./src/core/render'));
 __export(require('./src/common/directives'));

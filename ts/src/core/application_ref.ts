@@ -4,9 +4,7 @@ import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
 import {
   APP_COMPONENT_REF_PROMISE,
   APP_COMPONENT,
-  APP_ID_RANDOM_PROVIDER,
-  PLATFORM_INITIALIZER,
-  APP_INITIALIZER
+  APP_ID_RANDOM_PROVIDER
 } from './application_tokens';
 import {
   Promise,
@@ -31,6 +29,7 @@ import {internalView} from 'angular2/src/core/linker/view_ref';
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from './profile/profile';
 import {ChangeDetectorRef} from 'angular2/src/core/change_detection/change_detector_ref';
 import {lockDevMode} from 'angular2/src/facade/lang';
+
 
 /**
  * Construct providers specific to an individual root component.
@@ -104,30 +103,13 @@ export function platform(providers?: Array<Type | Provider | any[]>): PlatformRe
   }
 }
 
-/**
- * Dispose the existing platform.
- */
-export function disposePlatform(): void {
-  if (isPresent(_platform)) {
-    _platform.dispose();
-    _platform = null;
-  }
-}
-
 function _createPlatform(providers?: Array<Type | Provider | any[]>): PlatformRef {
   _platformProviders = providers;
-  let injector = Injector.resolveAndCreate(providers);
-  _platform = new PlatformRef_(injector, () => {
+  _platform = new PlatformRef_(Injector.resolveAndCreate(providers), () => {
     _platform = null;
     _platformProviders = null;
   });
-  _runPlatformInitializers(injector);
   return _platform;
-}
-
-function _runPlatformInitializers(injector: Injector): void {
-  let inits: Function[] = injector.getOptional(PLATFORM_INITIALIZER);
-  if (isPresent(inits)) inits.forEach(init => init());
 }
 
 /**
@@ -254,23 +236,17 @@ export class PlatformRef_ extends PlatformRef {
     });
     app = new ApplicationRef_(this, zone, injector);
     this._applications.push(app);
-    _runAppInitializers(injector);
     return app;
   }
 
   dispose(): void {
-    ListWrapper.clone(this._applications).forEach((app) => app.dispose());
+    this._applications.forEach((app) => app.dispose());
     this._disposeListeners.forEach((dispose) => dispose());
     this._dispose();
   }
 
   /** @internal */
   _applicationDisposed(app: ApplicationRef): void { ListWrapper.remove(this._applications, app); }
-}
-
-function _runAppInitializers(injector: Injector): void {
-  let inits: Function[] = injector.getOptional(APP_INITIALIZER);
-  if (isPresent(inits)) inits.forEach(init => init());
 }
 
 /**
@@ -463,7 +439,7 @@ export class ApplicationRef_ extends ApplicationRef {
 
   dispose(): void {
     // TODO(alxhub): Dispose of the NgZone.
-    ListWrapper.clone(this._rootComponents).forEach((ref) => ref.dispose());
+    this._rootComponents.forEach((ref) => ref.dispose());
     this._disposeListeners.forEach((dispose) => dispose());
     this._platform._applicationDisposed(this);
   }

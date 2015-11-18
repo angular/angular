@@ -187,7 +187,7 @@ export class NgZone {
 
   /** @internal */
   _notifyOnTurnStart(parentRun): void {
-    parentRun.call(this._innerZone, () => { this._onTurnStartEvents.next(null); });
+    parentRun.call(this._innerZone, () => { this._onTurnStartEvents.emit(null); });
   }
 
   /**
@@ -216,7 +216,7 @@ export class NgZone {
 
   /** @internal */
   _notifyOnTurnDone(parentRun): void {
-    parentRun.call(this._innerZone, () => { this._onTurnDoneEvents.next(null); });
+    parentRun.call(this._innerZone, () => { this._onTurnDoneEvents.emit(null); });
   }
 
   /**
@@ -255,7 +255,7 @@ export class NgZone {
 
   /** @internal */
   _notifyOnEventDone(): void {
-    this.runOutsideAngular(() => { this._onEventDoneEvents.next(null); });
+    this.runOutsideAngular(() => { this._onEventDoneEvents.emit(null); });
   }
 
   /**
@@ -440,7 +440,7 @@ export class NgZone {
         zone = zone.parent;
       }
       if (ObservableWrapper.hasSubscribers(this._onErrorEvents)) {
-        ObservableWrapper.callNext(this._onErrorEvents, new NgZoneError(e, trace));
+        ObservableWrapper.callEmit(this._onErrorEvents, new NgZoneError(e, trace));
       }
       if (isPresent(this._onErrorHandler)) {
         this._onErrorHandler(e, trace);

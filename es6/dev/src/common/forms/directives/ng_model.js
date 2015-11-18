@@ -72,7 +72,7 @@ export let NgModel = class extends NgControl {
     get asyncValidator() { return composeAsyncValidators(this._asyncValidators); }
     viewToModelUpdate(newValue) {
         this.viewModel = newValue;
-        ObservableWrapper.callNext(this.update, newValue);
+        ObservableWrapper.callEmit(this.update, newValue);
     }
 };
 NgModel = __decorate([

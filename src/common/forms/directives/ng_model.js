@@ -94,7 +94,7 @@ var NgModel = (function (_super) {
     });
     NgModel.prototype.viewToModelUpdate = function (newValue) {
         this.viewModel = newValue;
-        async_1.ObservableWrapper.callNext(this.update, newValue);
+        async_1.ObservableWrapper.callEmit(this.update, newValue);
     };
     NgModel = __decorate([
         metadata_1.Directive({

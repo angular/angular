@@ -201,7 +201,7 @@ export class Router {
         });
         return PromiseWrapper.all(unsettledInstructions);
     }
-    _emitNavigationFinish(url) { ObservableWrapper.callNext(this._subject, url); }
+    _emitNavigationFinish(url) { ObservableWrapper.callEmit(this._subject, url); }
     _afterPromiseFinishNavigating(promise) {
         return PromiseWrapper.catchError(promise.then((_) => this._finishNavigating()), (err) => {
             this._finishNavigating();

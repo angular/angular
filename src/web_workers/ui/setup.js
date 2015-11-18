@@ -27,7 +27,7 @@ var WebWorkerSetup = (function () {
         var source = this._bus.from(messaging_api_1.SETUP_CHANNEL);
         async_1.ObservableWrapper.subscribe(source, function (message) {
             if (lang_1.StringWrapper.equals(message, "ready")) {
-                async_1.ObservableWrapper.callNext(sink, { "rootUrl": _this.rootUrl });
+                async_1.ObservableWrapper.callEmit(sink, { "rootUrl": _this.rootUrl });
             }
         });
     };

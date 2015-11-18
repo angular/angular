@@ -21,7 +21,11 @@ export declare class ObservableWrapper {
      */
     static hasSubscribers(obs: EventEmitter<any>): boolean;
     static dispose(subscription: any): void;
+    /**
+     * @deprecated - use callEmit() instead
+     */
     static callNext(emitter: EventEmitter<any>, value: any): void;
+    static callEmit(emitter: EventEmitter<any>, value: any): void;
     static callError(emitter: EventEmitter<any>, error: any): void;
     static callComplete(emitter: EventEmitter<any>): void;
     static fromPromise(promise: Promise<any>): Observable<any>;
@@ -53,9 +57,9 @@ export declare class ObservableWrapper {
  *   toggle() {
  *     this.visible = !this.visible;
  *     if (this.visible) {
- *       this.open.next(null);
+ *       this.open.emit(null);
  *     } else {
- *       this.close.next(null);
+ *       this.close.emit(null);
  *     }
  *   }
  * }
@@ -72,6 +76,11 @@ export declare class EventEmitter<T> extends Subject<T> {
      * delivers events synchronously or asynchronously.
      */
     constructor(isAsync?: boolean);
+    emit(value: T): void;
+    /**
+     * @deprecated - use .emit(value) instead
+     */
+    next(value: any): void;
     subscribe(generatorOrNext?: any, error?: any, complete?: any): any;
 }
 export declare class Observable<T> extends RxObservable<T> {

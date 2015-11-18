@@ -10,12 +10,7 @@ export * from './src/common/pipes';
 export * from './src/facade/facade';
 export * from './src/core/linker';
 export {platform, createNgZone, PlatformRef, ApplicationRef} from './src/core/application_ref';
-export {
-  APP_ID,
-  APP_COMPONENT,
-  APP_INITIALIZER,
-  PLATFORM_INITIALIZER
-} from './src/core/application_tokens';
+export {APP_ID, APP_COMPONENT} from './src/core/application_tokens';
 export * from './src/core/zone';
 export * from './src/core/render';
 export * from './src/common/directives';
