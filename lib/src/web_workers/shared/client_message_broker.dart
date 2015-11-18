@@ -115,7 +115,7 @@ class ClientMessageBroker_ extends ClientMessageBroker {
     if (id != null) {
       message["id"] = id;
     }
-    ObservableWrapper.callEmit(this._sink, message);
+    ObservableWrapper.callNext(this._sink, message);
     return promise;
   }
 

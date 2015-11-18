@@ -153,7 +153,7 @@ Future<ComponentRef> bootstrapWebWorkerCommon(
       bootstrapProcess.resolve(bindings);
       ObservableWrapper.dispose(subscription);
     });
-    ObservableWrapper.callEmit(bus.to(SETUP_CHANNEL), "ready");
+    ObservableWrapper.callNext(bus.to(SETUP_CHANNEL), "ready");
     return bootstrapProcess.promise;
   });
   return PromiseWrapper.then(

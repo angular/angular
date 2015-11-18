@@ -41,7 +41,7 @@ main() {
   asyncValidatorReturningObservable(c) {
     var e = new EventEmitter();
     PromiseWrapper.scheduleMicrotask(
-        () => ObservableWrapper.callEmit(e, {"async": true}));
+        () => ObservableWrapper.callNext(e, {"async": true}));
     return e;
   }
   describe("Form Model", () {

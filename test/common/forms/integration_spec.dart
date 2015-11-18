@@ -922,7 +922,7 @@ class MyInput implements ControlValueAccessor {
 
   registerOnTouched(fn) {}
   dispatchChangeEvent() {
-    ObservableWrapper.callEmit(
+    ObservableWrapper.callNext(
         this.onChange, this.value.substring(1, this.value.length - 1));
   }
 }

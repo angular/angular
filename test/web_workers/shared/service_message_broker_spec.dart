@@ -55,7 +55,7 @@ main() {
             expect(arg1).toEqual(PASSED_ARG_1);
             expect(arg2).toEqual(PASSED_ARG_2);
           });
-          ObservableWrapper.callEmit(messageBuses.worker.to(CHANNEL), {
+          ObservableWrapper.callNext(messageBuses.worker.to(CHANNEL), {
             "method": TEST_METHOD,
             "args": [PASSED_ARG_1, PASSED_ARG_2]
           });
@@ -71,7 +71,7 @@ main() {
               return RESULT;
             });
           });
-          ObservableWrapper.callEmit(messageBuses.worker.to(CHANNEL), {
+          ObservableWrapper.callNext(messageBuses.worker.to(CHANNEL), {
             "method": TEST_METHOD,
             "id": ID,
             "args": [PASSED_ARG_1]

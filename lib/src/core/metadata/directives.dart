@@ -501,8 +501,8 @@ class DirectiveMetadata extends InjectableMetadata {
    *   five5Secs = new EventEmitter();
    *
    *   constructor() {
-   *     setInterval(() => this.everySecond.emit("event"), 1000);
-   *     setInterval(() => this.five5Secs.emit("event"), 5000);
+   *     setInterval(() => this.everySecond.next("event"), 1000);
+   *     setInterval(() => this.five5Secs.next("event"), 5000);
    *   }
    * }
    *
@@ -1042,8 +1042,8 @@ class InputMetadata {
  *   @Output('everyFiveSeconds') five5Secs = new EventEmitter();
  *
  *   constructor() {
- *     setInterval(() => this.everySecond.emit("event"), 1000);
- *     setInterval(() => this.five5Secs.emit("event"), 5000);
+ *     setInterval(() => this.everySecond.next("event"), 1000);
+ *     setInterval(() => this.five5Secs.next("event"), 5000);
  *   }
  * }
  *

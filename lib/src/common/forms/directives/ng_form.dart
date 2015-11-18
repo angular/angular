@@ -170,7 +170,7 @@ class NgForm extends ControlContainer implements Form {
   }
 
   bool onSubmit() {
-    ObservableWrapper.callEmit(this.ngSubmit, null);
+    ObservableWrapper.callNext(this.ngSubmit, null);
     return false;
   }
 

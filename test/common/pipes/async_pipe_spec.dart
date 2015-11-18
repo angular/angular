@@ -40,7 +40,7 @@ main() {
             "should return the latest available value wrapped",
             inject([AsyncTestCompleter], (async) {
               pipe.transform(emitter);
-              ObservableWrapper.callEmit(emitter, message);
+              ObservableWrapper.callNext(emitter, message);
               TimerWrapper.setTimeout(() {
                 expect(pipe.transform(emitter))
                     .toEqual(new WrappedValue(message));
@@ -51,7 +51,7 @@ main() {
             "should return same value when nothing has changed since the last call",
             inject([AsyncTestCompleter], (async) {
               pipe.transform(emitter);
-              ObservableWrapper.callEmit(emitter, message);
+              ObservableWrapper.callNext(emitter, message);
               TimerWrapper.setTimeout(() {
                 pipe.transform(emitter);
                 expect(pipe.transform(emitter)).toBe(message);
@@ -65,7 +65,7 @@ main() {
               var newEmitter = new EventEmitter();
               expect(pipe.transform(newEmitter)).toBe(null);
               // this should not affect the pipe
-              ObservableWrapper.callEmit(emitter, message);
+              ObservableWrapper.callNext(emitter, message);
               TimerWrapper.setTimeout(() {
                 expect(pipe.transform(newEmitter)).toBe(null);
                 async.done();
@@ -75,7 +75,7 @@ main() {
             "should request a change detection check upon receiving a new value",
             inject([AsyncTestCompleter], (async) {
               pipe.transform(emitter);
-              ObservableWrapper.callEmit(emitter, message);
+              ObservableWrapper.callNext(emitter, message);
               TimerWrapper.setTimeout(() {
                 expect(ref.spy("markForCheck")).toHaveBeenCalled();
                 async.done();
@@ -91,7 +91,7 @@ main() {
             inject([AsyncTestCompleter], (async) {
               pipe.transform(emitter);
               pipe.onDestroy();
-              ObservableWrapper.callEmit(emitter, message);
+              ObservableWrapper.callNext(emitter, message);
               TimerWrapper.setTimeout(() {
                 expect(pipe.transform(emitter)).toBe(null);
                 async.done();

@@ -398,7 +398,7 @@ logHook(String name, ComponentInstruction next, ComponentInstruction prev) {
       " -> " +
       (isPresent(next) ? ("/" + next.urlPath) : "null");
   log.add(message);
-  ObservableWrapper.callEmit(eventBus, message);
+  ObservableWrapper.callNext(eventBus, message);
 }
 
 @Component(selector: "activate-cmp")
