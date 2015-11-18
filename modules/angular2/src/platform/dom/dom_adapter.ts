@@ -86,10 +86,10 @@ export abstract class DomAdapter {
   abstract addClass(element, classname: string);
   abstract removeClass(element, classname: string);
   abstract hasClass(element, classname: string): boolean;
-  abstract setStyle(element, stylename: string, stylevalue: string);
-  abstract removeStyle(element, stylename: string);
-  abstract getStyle(element, stylename: string): string;
-  abstract hasStyle(element, stylename: string, stylevalue?: string): boolean;
+  abstract setStyle(element, styleName: string, styleValue: string);
+  abstract removeStyle(element, styleName: string);
+  abstract getStyle(element, styleName: string): string;
+  abstract hasStyle(element, styleName: string, styleValue?: string): boolean;
   abstract tagName(element): string;
   abstract attributeMap(element): Map<string, string>;
   abstract hasAttribute(element, attribute: string): boolean;

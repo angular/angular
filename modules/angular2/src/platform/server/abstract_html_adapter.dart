@@ -263,7 +263,7 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
 
   hasClass(element, String classname) => element.classes.contains(classname);
 
-  setStyle(element, String stylename, String stylevalue) {
+  setStyle(element, String styleName, String styleValue) {
     throw 'not implemented';
   }
 
@@ -271,11 +271,11 @@ abstract class AbstractHtml5LibAdapter implements DomAdapter {
     throw 'not implemented';
   }
 
-  removeStyle(element, String stylename) {
+  removeStyle(element, String styleName) {
     throw 'not implemented';
   }
 
-  getStyle(element, String stylename) {
+  getStyle(element, String styleName) {
     throw 'not implemented';
   }
 
