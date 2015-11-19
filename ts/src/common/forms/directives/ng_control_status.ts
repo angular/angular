@@ -1,5 +1,4 @@
-import {Directive} from 'angular2/src/core/metadata';
-import {Self} from 'angular2/src/core/di';
+import {Directive, Self} from 'angular2/core';
 import {NgControl} from './ng_control';
 import {isBlank, isPresent} from 'angular2/src/facade/lang';
 

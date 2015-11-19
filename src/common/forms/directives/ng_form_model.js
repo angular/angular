@@ -20,12 +20,11 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var lang_1 = require('angular2/src/facade/lang');
 var collection_1 = require('angular2/src/facade/collection');
 var async_1 = require('angular2/src/facade/async');
-var metadata_1 = require('angular2/src/core/metadata');
-var di_1 = require('angular2/src/core/di');
+var core_1 = require('angular2/core');
 var control_container_1 = require('./control_container');
 var shared_1 = require('./shared');
 var validators_1 = require('../validators');
-var formDirectiveProvider = lang_1.CONST_EXPR(new di_1.Provider(control_container_1.ControlContainer, { useExisting: di_1.forwardRef(function () { return NgFormModel; }) }));
+var formDirectiveProvider = lang_1.CONST_EXPR(new core_1.Provider(control_container_1.ControlContainer, { useExisting: core_1.forwardRef(function () { return NgFormModel; }) }));
 /**
  * Binds an existing control group to a DOM element.
  *
@@ -167,7 +166,7 @@ var NgFormModel = (function (_super) {
         });
     };
     NgFormModel = __decorate([
-        metadata_1.Directive({
+        core_1.Directive({
             selector: '[ng-form-model]',
             bindings: [formDirectiveProvider],
             inputs: ['form: ng-form-model'],
@@ -175,10 +174,10 @@ var NgFormModel = (function (_super) {
             outputs: ['ngSubmit'],
             exportAs: 'form'
         }),
-        __param(0, di_1.Optional()),
-        __param(0, di_1.Inject(validators_1.NG_VALIDATORS)),
-        __param(1, di_1.Optional()),
-        __param(1, di_1.Inject(validators_1.NG_ASYNC_VALIDATORS)), 
+        __param(0, core_1.Optional()),
+        __param(0, core_1.Inject(validators_1.NG_VALIDATORS)),
+        __param(1, core_1.Optional()),
+        __param(1, core_1.Inject(validators_1.NG_ASYNC_VALIDATORS)), 
         __metadata('design:paramtypes', [Array, Array])
     ], NgFormModel);
     return NgFormModel;

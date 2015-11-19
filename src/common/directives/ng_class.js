@@ -10,10 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var lang_1 = require('angular2/src/facade/lang');
-var metadata_1 = require('angular2/src/core/metadata');
-var linker_1 = require('angular2/src/core/linker');
-var change_detection_1 = require('angular2/src/core/change_detection');
-var render_1 = require('angular2/src/core/render');
+var core_1 = require('angular2/core');
 var collection_1 = require('angular2/src/facade/collection');
 /**
  * The `NgClass` directive conditionally adds and removes CSS classes on an HTML element based on
@@ -184,8 +181,8 @@ var NgClass = (function () {
         }
     };
     NgClass = __decorate([
-        metadata_1.Directive({ selector: '[ng-class]', inputs: ['rawClass: ng-class', 'initialClasses: class'] }), 
-        __metadata('design:paramtypes', [change_detection_1.IterableDiffers, change_detection_1.KeyValueDiffers, linker_1.ElementRef, render_1.Renderer])
+        core_1.Directive({ selector: '[ng-class]', inputs: ['rawClass: ng-class', 'initialClasses: class'] }), 
+        __metadata('design:paramtypes', [core_1.IterableDiffers, core_1.KeyValueDiffers, core_1.ElementRef, core_1.Renderer])
     ], NgClass);
     return NgClass;
 })();

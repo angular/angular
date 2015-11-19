@@ -17,8 +17,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var lang_1 = require('angular2/src/facade/lang');
 var exceptions_1 = require('angular2/src/facade/exceptions');
 var intl_1 = require('angular2/src/facade/intl');
-var di_1 = require('angular2/src/core/di');
-var metadata_1 = require('angular2/src/core/metadata');
+var core_1 = require('angular2/core');
 var collection_1 = require('angular2/src/facade/collection');
 var invalid_pipe_argument_exception_1 = require('./invalid_pipe_argument_exception');
 var defaultLocale = 'en-US';
@@ -64,7 +63,7 @@ var NumberPipe = (function () {
     };
     NumberPipe = __decorate([
         lang_1.CONST(),
-        di_1.Injectable(), 
+        core_1.Injectable(), 
         __metadata('design:paramtypes', [])
     ], NumberPipe);
     return NumberPipe;
@@ -107,8 +106,8 @@ var DecimalPipe = (function (_super) {
     };
     DecimalPipe = __decorate([
         lang_1.CONST(),
-        metadata_1.Pipe({ name: 'number' }),
-        di_1.Injectable(), 
+        core_1.Pipe({ name: 'number' }),
+        core_1.Injectable(), 
         __metadata('design:paramtypes', [])
     ], DecimalPipe);
     return DecimalPipe;
@@ -141,8 +140,8 @@ var PercentPipe = (function (_super) {
     };
     PercentPipe = __decorate([
         lang_1.CONST(),
-        metadata_1.Pipe({ name: 'percent' }),
-        di_1.Injectable(), 
+        core_1.Pipe({ name: 'percent' }),
+        core_1.Injectable(), 
         __metadata('design:paramtypes', [])
     ], PercentPipe);
     return PercentPipe;
@@ -181,8 +180,8 @@ var CurrencyPipe = (function (_super) {
     };
     CurrencyPipe = __decorate([
         lang_1.CONST(),
-        metadata_1.Pipe({ name: 'currency' }),
-        di_1.Injectable(), 
+        core_1.Pipe({ name: 'currency' }),
+        core_1.Injectable(), 
         __metadata('design:paramtypes', [])
     ], CurrencyPipe);
     return CurrencyPipe;

@@ -9,7 +9,7 @@
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var di_1 = require('angular2/src/core/di');
+var core_1 = require('angular2/core');
 var collection_1 = require('angular2/src/facade/collection');
 var lang_1 = require('angular2/src/facade/lang');
 var modelModule = require('./model');
@@ -117,7 +117,7 @@ var FormBuilder = (function () {
         }
     };
     FormBuilder = __decorate([
-        di_1.Injectable(), 
+        core_1.Injectable(), 
         __metadata('design:paramtypes', [])
     ], FormBuilder);
     return FormBuilder;

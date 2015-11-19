@@ -1,4 +1,4 @@
-import { OnInit, OnDestroy } from 'angular2/lifecycle_hooks';
+import { OnInit, OnDestroy } from 'angular2/core';
 import { ControlContainer } from './control_container';
 import { ControlGroup } from '../model';
 import { Form } from './form_interface';

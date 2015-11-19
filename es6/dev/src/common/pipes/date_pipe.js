@@ -11,8 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { isDate, isNumber, isPresent, DateWrapper, CONST, isBlank } from 'angular2/src/facade/lang';
 import { DateFormatter } from 'angular2/src/facade/intl';
-import { Injectable } from 'angular2/src/core/di';
-import { Pipe } from 'angular2/src/core/metadata';
+import { Pipe, Injectable } from 'angular2/core';
 import { StringMapWrapper } from 'angular2/src/facade/collection';
 import { InvalidPipeArgumentException } from './invalid_pipe_argument_exception';
 // TODO: move to a global configurable location along with other i18n components.

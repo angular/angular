@@ -1,4 +1,4 @@
-import { PipeTransform } from 'angular2/src/core/change_detection';
+import { PipeTransform } from 'angular2/core';
 /**
  * Formats a date value to a string based on the requested format.
  *

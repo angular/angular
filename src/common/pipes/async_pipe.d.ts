@@ -1,5 +1,5 @@
 import { Promise, Observable, EventEmitter } from 'angular2/src/facade/async';
-import { ChangeDetectorRef, PipeOnDestroy, PipeTransform } from 'angular2/src/core/change_detection';
+import { ChangeDetectorRef, PipeOnDestroy, PipeTransform } from 'angular2/core';
 /**
  * The `async` pipe subscribes to an Observable or Promise and returns the latest value it has
  * emitted.

@@ -9,9 +9,7 @@
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var metadata_1 = require('angular2/src/core/metadata');
-var change_detection_1 = require('angular2/src/core/change_detection');
-var linker_1 = require('angular2/src/core/linker');
+var core_1 = require('angular2/core');
 var lang_1 = require('angular2/src/facade/lang');
 /**
  * The `NgFor` directive instantiates a template once per item from an iterable. The context for
@@ -154,8 +152,8 @@ var NgFor = (function () {
         return tuples;
     };
     NgFor = __decorate([
-        metadata_1.Directive({ selector: '[ng-for][ng-for-of]', inputs: ['ngForOf', 'ngForTemplate'] }), 
-        __metadata('design:paramtypes', [linker_1.ViewContainerRef, linker_1.TemplateRef, change_detection_1.IterableDiffers, change_detection_1.ChangeDetectorRef])
+        core_1.Directive({ selector: '[ng-for][ng-for-of]', inputs: ['ngForOf', 'ngForTemplate'] }), 
+        __metadata('design:paramtypes', [core_1.ViewContainerRef, core_1.TemplateRef, core_1.IterableDiffers, core_1.ChangeDetectorRef])
     ], NgFor);
     return NgFor;
 })();

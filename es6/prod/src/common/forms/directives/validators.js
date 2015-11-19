@@ -12,9 +12,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { forwardRef, Provider } from 'angular2/src/core/di';
+import { forwardRef, Provider, Attribute, Directive } from 'angular2/core';
 import { CONST_EXPR } from 'angular2/src/facade/lang';
-import { Attribute, Directive } from 'angular2/src/core/metadata';
 import { Validators, NG_VALIDATORS } from '../validators';
 import { NumberWrapper } from "angular2/src/facade/lang";
 const REQUIRED_VALIDATOR = CONST_EXPR(new Provider(NG_VALIDATORS, { useValue: Validators.required, multi: true }));

@@ -2,7 +2,7 @@
 var promise_1 = require('angular2/src/facade/promise');
 var async_1 = require('angular2/src/facade/async');
 var collection_1 = require('angular2/src/facade/collection');
-var di_1 = require('angular2/src/core/di');
+var core_1 = require('angular2/core');
 /**
  * Providers for validators to be used for {@link Control}s in a form.
  *
@@ -16,8 +16,8 @@ var di_1 = require('angular2/src/core/di');
  * ];
  * ```
  */
-exports.NG_VALIDATORS = lang_1.CONST_EXPR(new di_1.OpaqueToken("NgValidators"));
-exports.NG_ASYNC_VALIDATORS = lang_1.CONST_EXPR(new di_1.OpaqueToken("NgAsyncValidators"));
+exports.NG_VALIDATORS = lang_1.CONST_EXPR(new core_1.OpaqueToken("NgValidators"));
+exports.NG_ASYNC_VALIDATORS = lang_1.CONST_EXPR(new core_1.OpaqueToken("NgAsyncValidators"));
 /**
  * Provides a set of validators used by form controls.
  *
