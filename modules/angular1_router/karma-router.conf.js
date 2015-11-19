@@ -23,7 +23,7 @@ module.exports = function (config) {
 
     customLaunchers: browserProvidersConf.customLaunchers,
 
-    browsers: ['ChromeCanary']
+    browsers: ['Chrome']
   };
 
   config.set(options);

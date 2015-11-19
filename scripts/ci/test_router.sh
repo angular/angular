@@ -7,4 +7,4 @@ SCRIPT_DIR=$(dirname $0)
 source $SCRIPT_DIR/env_dart.sh
 cd $SCRIPT_DIR/../..
 
-./node_modules/.bin/gulp test.unit.router/ci --browsers=${KARMA_BROWSERS:-ChromeCanary}
+./node_modules/.bin/gulp test.unit.router/ci --browsers=${KARMA_BROWSERS:-Chrome}
