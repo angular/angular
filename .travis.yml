@@ -10,6 +10,7 @@ branches:
 cache:
   directories:
     - $HOME/.pub-cache
+    - $HOME/.chrome/chromium
 
 before_cache:
   # Undo the pollution of the typescript_next build
@@ -17,8 +18,10 @@ before_cache:
 
 env:
   global:
-  - KARMA_BROWSERS=DartiumWithWebPlatform
-  - E2E_BROWSERS=Dartium
+  - KARMA_DART_BROWSERS=DartiumWithWebPlatform
+  # No sandbox mode is needed for Chromium in Travis, it crashes otherwise: https://sites.google.com/a/chromium.org/chromedriver/help/chrome-doesn-t-start
+  - KARMA_JS_BROWSERS=ChromeNoSandbox
+  - E2E_BROWSERS=ChromeOnTravis
   - LOGS_DIR=/tmp/angular-build/logs
   - SAUCE_USERNAME=angular-ci
   - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
@@ -67,6 +70,8 @@ before_install:
 - node tools/analytics/build-analytics start ci job
 - node tools/analytics/build-analytics start ci before_install
 - echo ${TSDRC} > .tsdrc
+- ./scripts/ci/install_chromium.sh
+- export CHROME_BIN=$HOME/.chrome/chromium/chrome-linux/chrome
 - export DISPLAY=:99.0
 - export GIT_SHA=$(git rev-parse HEAD)
 - ./scripts/ci/init_android.sh

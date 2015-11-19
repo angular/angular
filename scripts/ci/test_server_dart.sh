@@ -35,4 +35,4 @@ trap killAllServers EXIT
 sleep 3
 
 ./node_modules/.bin/gulp test.transpiler.unittest
-./node_modules/.bin/gulp test.server.dart --browsers=$KARMA_BROWSERS
+./node_modules/.bin/gulp test.server.dart --browsers=$KARMA_DART_BROWSERS
