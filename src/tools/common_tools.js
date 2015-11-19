@@ -1,7 +1,7 @@
 'use strict';var application_ref_1 = require('angular2/src/core/application_ref');
 var lang_1 = require('angular2/src/facade/lang');
 var browser_1 = require('angular2/src/facade/browser');
-var dom_adapter_1 = require('angular2/src/platform/dom/dom_adapter');
+var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
 /**
  * Entry point for all Angular debug tools. This object corresponds to the `ng`
  * global variable accessible in the dev console.

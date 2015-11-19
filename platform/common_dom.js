@@ -1,10 +1,6 @@
 'use strict';/**
  * This is a set of classes and objects that can be used both in the browser and on the server.
  */
-var dom_adapter_1 = require('angular2/src/platform/dom/dom_adapter');
-exports.DOM = dom_adapter_1.DOM;
-exports.setRootDomAdapter = dom_adapter_1.setRootDomAdapter;
-exports.DomAdapter = dom_adapter_1.DomAdapter;
 var dom_renderer_1 = require('angular2/src/platform/dom/dom_renderer');
 exports.DomRenderer = dom_renderer_1.DomRenderer;
 var dom_tokens_1 = require('angular2/src/platform/dom/dom_tokens');

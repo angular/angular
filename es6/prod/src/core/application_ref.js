@@ -1,5 +1,5 @@
 import { NgZone } from 'angular2/src/core/zone/ng_zone';
-import { isPresent, assertionsEnabled, print } from 'angular2/src/facade/lang';
+import { isPresent, assertionsEnabled } from 'angular2/src/facade/lang';
 import { provide, Injector } from 'angular2/src/core/di';
 import { APP_COMPONENT_REF_PROMISE, APP_COMPONENT, PLATFORM_INITIALIZER, APP_INITIALIZER } from './application_tokens';
 import { PromiseWrapper, ObservableWrapper } from 'angular2/src/facade/async';
@@ -7,6 +7,7 @@ import { ListWrapper } from 'angular2/src/facade/collection';
 import { TestabilityRegistry, Testability } from 'angular2/src/core/testability/testability';
 import { DynamicComponentLoader } from 'angular2/src/core/linker/dynamic_component_loader';
 import { BaseException, ExceptionHandler, unimplemented } from 'angular2/src/facade/exceptions';
+import { DOM } from 'angular2/src/core/dom/dom_adapter';
 import { internalView } from 'angular2/src/core/linker/view_ref';
 import { wtfLeave, wtfCreateScope } from './profile/profile';
 import { lockDevMode } from 'angular2/src/facade/lang';
@@ -160,7 +161,7 @@ export class PlatformRef_ extends PlatformRef {
                     exceptionHandler.call(e, e.stack);
                 }
                 else {
-                    print(e.toString());
+                    DOM.logError(e);
                 }
             }
         });

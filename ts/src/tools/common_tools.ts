@@ -2,7 +2,7 @@ import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {ComponentRef, ComponentRef_} from 'angular2/src/core/linker/dynamic_component_loader';
 import {isPresent, NumberWrapper} from 'angular2/src/facade/lang';
 import {performance, window} from 'angular2/src/facade/browser';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 /**
  * Entry point for all Angular debug tools. This object corresponds to the `ng`

@@ -20,7 +20,7 @@ import {APP_ID_RANDOM_PROVIDER} from 'angular2/src/core/application_tokens';
 import {ElementSchemaRegistry} from 'angular2/src/compiler/schema/element_schema_registry';
 import {DomElementSchemaRegistry} from 'angular2/src/compiler/schema/dom_element_schema_registry';
 import {SharedStylesHost, DomSharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {AppViewManager, AppViewManager_} from 'angular2/src/core/linker/view_manager';
 import {AppViewManagerUtils} from 'angular2/src/core/linker/view_manager_utils';

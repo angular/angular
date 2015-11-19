@@ -2,7 +2,7 @@ import { DateWrapper, StringWrapper, RegExpWrapper, NumberWrapper, isPresent } f
 import { Math } from 'angular2/src/facade/math';
 import { camelCaseToDashCase } from 'angular2/src/platform/dom/util';
 import { StringMapWrapper } from 'angular2/src/facade/collection';
-import { DOM } from 'angular2/src/platform/dom/dom_adapter';
+import { DOM } from 'angular2/src/core/dom/dom_adapter';
 export class Animation {
     /**
      * Stores the start time and starts the animation

@@ -1,7 +1,7 @@
 library angular2.dom.htmlAdapter;
 
 import 'abstract_html_adapter.dart';
-import 'package:angular2/platform/common_dom.dart';
+import 'package:angular2/core.dart' show setRootDomAdapter;
 import 'dart:io';
 
 class Html5LibDomAdapter extends AbstractHtml5LibAdapter {

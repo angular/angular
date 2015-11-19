@@ -519,12 +519,12 @@ System.register("angular2/src/mock/ng_zone_mock", ["angular2/src/core/zone/ng_zo
   return module.exports;
 });
 
-System.register("angular2/src/testing/utils", ["angular2/src/facade/collection", "angular2/src/platform/dom/dom_adapter", "angular2/src/facade/lang"], true, function(require, exports, module) {
+System.register("angular2/src/testing/utils", ["angular2/src/facade/collection", "angular2/src/core/dom/dom_adapter", "angular2/src/facade/lang"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
   var collection_1 = require("angular2/src/facade/collection");
-  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
+  var dom_adapter_1 = require("angular2/src/core/dom/dom_adapter");
   var lang_1 = require("angular2/src/facade/lang");
   var Log = (function() {
     function Log() {
@@ -1103,11 +1103,11 @@ System.register("angular2/src/web_workers/shared/render_view_with_fragments_stor
   return module.exports;
 });
 
-System.register("angular2/src/testing/matchers", ["angular2/src/platform/dom/dom_adapter", "angular2/src/facade/lang"], true, function(require, exports, module) {
+System.register("angular2/src/testing/matchers", ["angular2/src/core/dom/dom_adapter", "angular2/src/facade/lang"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
+  var dom_adapter_1 = require("angular2/src/core/dom/dom_adapter");
   var lang_1 = require("angular2/src/facade/lang");
   var _global = (typeof window === 'undefined' ? lang_1.global : window);
   exports.expect = _global.expect;
@@ -1394,7 +1394,7 @@ System.register("angular2/src/testing/fake_async", ["angular2/src/facade/lang", 
   return module.exports;
 });
 
-System.register("angular2/src/testing/test_component_builder", ["angular2/src/core/di", "angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/src/core/linker/directive_resolver", "angular2/src/core/linker/view_resolver", "angular2/src/core/linker/view_ref", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/testing/utils", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_adapter", "angular2/src/core/debug/debug_element"], true, function(require, exports, module) {
+System.register("angular2/src/testing/test_component_builder", ["angular2/src/core/di", "angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/src/core/linker/directive_resolver", "angular2/src/core/linker/view_resolver", "angular2/src/core/linker/view_ref", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/testing/utils", "angular2/src/platform/dom/dom_tokens", "angular2/src/core/dom/dom_adapter", "angular2/src/core/debug/debug_element"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -1438,7 +1438,7 @@ System.register("angular2/src/testing/test_component_builder", ["angular2/src/co
   var dynamic_component_loader_1 = require("angular2/src/core/linker/dynamic_component_loader");
   var utils_1 = require("angular2/src/testing/utils");
   var dom_tokens_1 = require("angular2/src/platform/dom/dom_tokens");
-  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
+  var dom_adapter_1 = require("angular2/src/core/dom/dom_adapter");
   var debug_element_1 = require("angular2/src/core/debug/debug_element");
   var RootTestComponent = (function() {
     function RootTestComponent() {}
@@ -1812,7 +1812,7 @@ System.register("angular2/src/web_workers/shared/serializer", ["angular2/src/fac
   return module.exports;
 });
 
-System.register("angular2/src/testing/test_injector", ["angular2/src/core/di", "angular2/src/animate/animation_builder", "angular2/src/mock/animation_builder_mock", "angular2/src/core/linker/proto_view_factory", "angular2/src/core/reflection/reflection", "angular2/src/core/change_detection/change_detection", "angular2/src/facade/exceptions", "angular2/src/core/linker/view_resolver", "angular2/src/core/linker/directive_resolver", "angular2/src/core/linker/pipe_resolver", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/compiler/xhr", "angular2/src/core/zone/ng_zone", "angular2/src/platform/dom/dom_adapter", "angular2/core", "angular2/src/mock/directive_resolver_mock", "angular2/src/mock/view_resolver_mock", "angular2/src/mock/mock_location_strategy", "angular2/src/router/location_strategy", "angular2/src/mock/ng_zone_mock", "angular2/src/testing/test_component_builder", "angular2/src/core/di", "angular2/src/platform/browser/debug/debug_element_view_listener", "angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/core/linker/view_pool", "angular2/src/core/linker/view_manager", "angular2/src/core/linker/view_manager_utils", "angular2/src/core/render/api", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/events/dom_events", "angular2/src/core/application_tokens", "angular2/src/web_workers/shared/serializer", "angular2/src/testing/utils", "angular2/src/compiler/compiler", "angular2/src/platform/dom/dom_renderer", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/core/linker/view_manager"], true, function(require, exports, module) {
+System.register("angular2/src/testing/test_injector", ["angular2/src/core/di", "angular2/src/animate/animation_builder", "angular2/src/mock/animation_builder_mock", "angular2/src/core/linker/proto_view_factory", "angular2/src/core/reflection/reflection", "angular2/src/core/change_detection/change_detection", "angular2/src/facade/exceptions", "angular2/src/core/linker/view_resolver", "angular2/src/core/linker/directive_resolver", "angular2/src/core/linker/pipe_resolver", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/compiler/xhr", "angular2/src/core/zone/ng_zone", "angular2/src/core/dom/dom_adapter", "angular2/core", "angular2/src/mock/directive_resolver_mock", "angular2/src/mock/view_resolver_mock", "angular2/src/mock/mock_location_strategy", "angular2/src/router/location_strategy", "angular2/src/mock/ng_zone_mock", "angular2/src/testing/test_component_builder", "angular2/src/core/di", "angular2/src/platform/browser/debug/debug_element_view_listener", "angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/core/linker/view_pool", "angular2/src/core/linker/view_manager", "angular2/src/core/linker/view_manager_utils", "angular2/src/core/render/api", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/events/dom_events", "angular2/src/core/application_tokens", "angular2/src/web_workers/shared/serializer", "angular2/src/testing/utils", "angular2/src/compiler/compiler", "angular2/src/platform/dom/dom_renderer", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/core/linker/view_manager"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -1829,7 +1829,7 @@ System.register("angular2/src/testing/test_injector", ["angular2/src/core/di", "
   var dynamic_component_loader_1 = require("angular2/src/core/linker/dynamic_component_loader");
   var xhr_1 = require("angular2/src/compiler/xhr");
   var ng_zone_1 = require("angular2/src/core/zone/ng_zone");
-  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
+  var dom_adapter_1 = require("angular2/src/core/dom/dom_adapter");
   var core_1 = require("angular2/core");
   var directive_resolver_mock_1 = require("angular2/src/mock/directive_resolver_mock");
   var view_resolver_mock_1 = require("angular2/src/mock/view_resolver_mock");

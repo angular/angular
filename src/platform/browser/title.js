@@ -1,4 +1,4 @@
-'use strict';var dom_adapter_1 = require('angular2/src/platform/dom/dom_adapter');
+'use strict';var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
 /**
  * A service that can be used to get and set the title of a current HTML document.
  *

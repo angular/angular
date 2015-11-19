@@ -682,7 +682,7 @@ System.register("angular2/src/router/route_config_decorator", ["angular2/src/rou
   return module.exports;
 });
 
-System.register("angular2/src/router/hash_location_strategy", ["angular2/src/platform/dom/dom_adapter", "angular2/angular2", "angular2/src/router/location_strategy"], true, function(require, exports, module) {
+System.register("angular2/src/router/hash_location_strategy", ["angular2/src/core/dom/dom_adapter", "angular2/angular2", "angular2/src/router/location_strategy"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -717,7 +717,7 @@ System.register("angular2/src/router/hash_location_strategy", ["angular2/src/pla
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
       return Reflect.metadata(k, v);
   };
-  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
+  var dom_adapter_1 = require("angular2/src/core/dom/dom_adapter");
   var angular2_1 = require("angular2/angular2");
   var location_strategy_1 = require("angular2/src/router/location_strategy");
   var HashLocationStrategy = (function(_super) {
@@ -763,7 +763,7 @@ System.register("angular2/src/router/hash_location_strategy", ["angular2/src/pla
   return module.exports;
 });
 
-System.register("angular2/src/router/path_location_strategy", ["angular2/src/platform/dom/dom_adapter", "angular2/angular2", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/router/location_strategy"], true, function(require, exports, module) {
+System.register("angular2/src/router/path_location_strategy", ["angular2/src/core/dom/dom_adapter", "angular2/angular2", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/router/location_strategy"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -803,7 +803,7 @@ System.register("angular2/src/router/path_location_strategy", ["angular2/src/pla
       decorator(target, key, paramIndex);
     };
   };
-  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
+  var dom_adapter_1 = require("angular2/src/core/dom/dom_adapter");
   var angular2_1 = require("angular2/angular2");
   var lang_1 = require("angular2/src/facade/lang");
   var exceptions_1 = require("angular2/src/facade/exceptions");
