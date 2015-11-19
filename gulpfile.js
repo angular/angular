@@ -411,12 +411,12 @@ function runKarma(configFile, done) {
 }
 
 gulp.task('test.js', function(done) {
-  runSequence('test.unit.tools/ci', 'test.transpiler.unittest', 'test.unit.js/ci',
+  runSequence('test.unit.tools/ci', 'test.unit.js/ci',
               'test.unit.cjs/ci', 'test.typings', sequenceComplete(done));
 });
 
 gulp.task('test.dart', function(done) {
-  runSequence('versions.dart', 'test.transpiler.unittest', 'test.unit.dart/ci',
+  runSequence('versions.dart', 'test.unit.dart/ci',
               sequenceComplete(done));
 });
 
@@ -714,11 +714,6 @@ gulp.task('test.unit.tools', ['build/clean.tools'], function(done) {
 //     These tests run on the VM on the command-line and are
 //     allowed to access the file system and network.
 gulp.task('test.server.dart', runServerDartTests(gulp, gulpPlugins, {dest: 'dist/dart'}));
-
-// -----------------
-// test builders
-gulp.task('test.transpiler.unittest',
-          function(done) { runJasmineTests(['tools/transpiler/unittest/**/*.js'], done); });
 
 // -----------------
 // Pre-test checks
