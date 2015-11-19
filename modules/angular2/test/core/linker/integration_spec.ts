@@ -89,7 +89,7 @@ import {ViewContainerRef} from 'angular2/src/core/linker/view_container_ref';
 import {ViewRef, ViewRef_} from 'angular2/src/core/linker/view_ref';
 
 import {Compiler} from 'angular2/src/core/linker/compiler';
-import {ElementRef} from 'angular2/src/core/linker/element_ref';
+import {ElementRef, ElementRef_} from 'angular2/src/core/linker/element_ref';
 import {TemplateRef} from 'angular2/src/core/linker/template_ref';
 
 import {DomRenderer} from 'angular2/src/platform/dom/dom_renderer';
@@ -1597,6 +1597,22 @@ export function main() {
                  async.done();
                });
          }));
+
+      it('should reflect property values on template comments',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var tpl = '<template [ng-if]="ctxBoolProp"></template>';
+           tcb.overrideView(MyComp, new ViewMetadata({template: tpl, directives: [NgIf]}))
+
+               .createAsync(MyComp)
+               .then((fixture) => {
+                 fixture.debugElement.componentInstance.ctxBoolProp = true;
+                 fixture.detectChanges();
+
+                 expect(DOM.getInnerHTML(fixture.debugElement.nativeElement))
+                     .toContain('"ng\-reflect\-ng\-if"\: "true"');
+                 async.done();
+               });
+         }));
     });
 
     describe('different proto view storages', () => {
@@ -1773,6 +1789,7 @@ export function main() {
          }));
     });
 
+
     if (DOM.supportsDOMEvents()) {
       describe('svg', () => {
         it('should support svg elements',
@@ -1928,8 +1945,8 @@ class PushCmpWithAsyncPipe {
 @Injectable()
 class MyComp {
   ctxProp: string;
-  ctxNumProp;
-  ctxBoolProp;
+  ctxNumProp: number;
+  ctxBoolProp: boolean;
   constructor() {
     this.ctxProp = 'initial value';
     this.ctxNumProp = 0;
