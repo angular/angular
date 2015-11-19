@@ -430,9 +430,10 @@ gulp.task('test.all.dart', shell.task(['./scripts/ci/test_dart.sh']));
 // karma tests
 //     These tests run in the browser and are allowed to access
 //     HTML DOM APIs.
-function getBrowsersFromCLI(provider) {
+function getBrowsersFromCLI(provider, isDart) {
   var isProvider = false;
-  var rawInput = cliArgs.browsers ? cliArgs.browsers : 'DartiumWithWebPlatform';
+  var rawInput =
+      cliArgs.browsers ? cliArgs.browsers : (isDart ? 'DartiumWithWebPlatform' : 'Chrome');
   var inputList = rawInput.replace(' ', '').split(',');
   var outputList = [];
   for (var i = 0; i < inputList.length; i++) {
@@ -646,7 +647,7 @@ gulp.task('test.unit.js.browserstack/ci', function(done) {
 });
 
 gulp.task('test.unit.dart/ci', function(done) {
-  var browserConf = getBrowsersFromCLI();
+  var browserConf = getBrowsersFromCLI(null, true);
   new karma.Server(
                {
                  configFile: __dirname + '/karma-dart.conf.js',
