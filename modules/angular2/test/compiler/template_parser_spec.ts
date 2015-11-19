@@ -14,7 +14,11 @@ import {provide} from 'angular2/src/core/di';
 
 import {TEST_PROVIDERS} from './test_bindings';
 import {isPresent} from 'angular2/src/facade/lang';
-import {TemplateParser, splitClasses} from 'angular2/src/compiler/template_parser';
+import {
+  TemplateParser,
+  splitClasses,
+  TEMPLATE_TRANSFORMS
+} from 'angular2/src/compiler/template_parser';
 import {
   CompileDirectiveMetadata,
   CompileTypeMetadata,
@@ -68,6 +72,22 @@ export function main() {
     function parse(template: string, directives: CompileDirectiveMetadata[]): TemplateAst[] {
       return parser.parse(template, directives, 'TestComp');
     }
+
+    describe('template transform', () => {
+      beforeEachProviders(
+          () => [provide(TEMPLATE_TRANSFORMS, {useValue: new FooAstTransformer(), multi: true})]);
+
+      it('should transform TemplateAST',
+         () => { expect(humanizeTplAst(parse('<div>', []))).toEqual([[ElementAst, 'foo']]); });
+
+      describe('multiple', () => {
+        beforeEachProviders(
+            () => [provide(TEMPLATE_TRANSFORMS, {useValue: new BarAstTransformer(), multi: true})]);
+
+        it('should compose transformers',
+           () => { expect(humanizeTplAst(parse('<div>', []))).toEqual([[ElementAst, 'bar']]); });
+      });
+    });
 
     describe('parse', () => {
       describe('nodes without bindings', () => {
@@ -1067,4 +1087,30 @@ class TemplateContentProjectionHumanizer implements TemplateAstVisitor {
   }
   visitDirective(ast: DirectiveAst, context: any): any { return null; }
   visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any { return null; }
+}
+
+class FooAstTransformer implements TemplateAstVisitor {
+  visitNgContent(ast: NgContentAst, context: any): any { throw 'not implemented'; }
+  visitEmbeddedTemplate(ast: EmbeddedTemplateAst, context: any): any { throw 'not implemented'; }
+  visitElement(ast: ElementAst, context: any): any {
+    if (ast.name != 'div') return ast;
+    return new ElementAst('foo', [], [], [], [], [], [], ast.ngContentIndex, ast.sourceSpan);
+  }
+  visitVariable(ast: VariableAst, context: any): any { throw 'not implemented'; }
+  visitEvent(ast: BoundEventAst, context: any): any { throw 'not implemented'; }
+  visitElementProperty(ast: BoundElementPropertyAst, context: any): any { throw 'not implemented'; }
+  visitAttr(ast: AttrAst, context: any): any { throw 'not implemented'; }
+  visitBoundText(ast: BoundTextAst, context: any): any { throw 'not implemented'; }
+  visitText(ast: TextAst, context: any): any { throw 'not implemented'; }
+  visitDirective(ast: DirectiveAst, context: any): any { throw 'not implemented'; }
+  visitDirectiveProperty(ast: BoundDirectivePropertyAst, context: any): any {
+    throw 'not implemented';
+  }
+}
+
+class BarAstTransformer extends FooAstTransformer {
+  visitElement(ast: ElementAst, context: any): any {
+    if (ast.name != 'foo') return ast;
+    return new ElementAst('bar', [], [], [], [], [], [], ast.ngContentIndex, ast.sourceSpan);
+  }
 }
