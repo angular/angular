@@ -17,7 +17,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var di_1 = require('angular2/src/core/di');
 var lang_1 = require('angular2/src/facade/lang');
 var collection_1 = require('angular2/src/facade/collection');
-var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
+var dom_adapter_1 = require('angular2/src/platform/dom/dom_adapter');
 var element_schema_registry_1 = require('./element_schema_registry');
 var DomElementSchemaRegistry = (function (_super) {
     __extends(DomElementSchemaRegistry, _super);

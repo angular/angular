@@ -1,7 +1,7 @@
 library angular2.dom.webWorkerAdapter;
 
 import 'abstract_html_adapter.dart';
-import 'package:angular2/core.dart' show setRootDomAdapter;
+import 'package:angular2/platform/common_dart.dart';
 
 class WebWorkerDomAdapter extends AbstractHtml5LibAdapter {
   static void makeCurrent() {

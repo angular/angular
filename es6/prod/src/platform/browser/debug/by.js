@@ -1,5 +1,5 @@
 import { isPresent } from 'angular2/src/facade/lang';
-import { DOM } from 'angular2/src/core/dom/dom_adapter';
+import { DOM } from 'angular2/src/platform/dom/dom_adapter';
 export class By {
     static all() { return (debugElement) => true; }
     static css(selector) {

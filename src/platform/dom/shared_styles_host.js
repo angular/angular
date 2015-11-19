@@ -17,7 +17,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
+var dom_adapter_1 = require('angular2/src/platform/dom/dom_adapter');
 var di_1 = require('angular2/src/core/di');
 var collection_1 = require('angular2/src/facade/collection');
 var dom_tokens_1 = require('./dom_tokens');
