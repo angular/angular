@@ -5,7 +5,7 @@
 };
 var collection_1 = require('angular2/src/facade/collection');
 var lang_1 = require('angular2/src/facade/lang');
-var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
+var dom_adapter_1 = require('angular2/src/platform/dom/dom_adapter');
 var generic_browser_adapter_1 = require('./generic_browser_adapter');
 var _attrToPropMap = {
     'class': 'className',

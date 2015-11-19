@@ -18,7 +18,7 @@ import { internalView } from 'angular2/src/core/linker/view_ref';
 import { DynamicComponentLoader } from 'angular2/src/core/linker/dynamic_component_loader';
 import { el } from './utils';
 import { DOCUMENT } from 'angular2/src/platform/dom/dom_tokens';
-import { DOM } from 'angular2/src/core/dom/dom_adapter';
+import { DOM } from 'angular2/src/platform/dom/dom_adapter';
 import { DebugElement_ } from 'angular2/src/core/debug/debug_element';
 /**
  * @deprecated Use ComponentFixture

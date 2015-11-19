@@ -1,4 +1,4 @@
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {Injectable} from 'angular2/angular2';
 import {LocationStrategy, normalizeQueryParams} from './location_strategy';
 import {EventListener, History, Location} from 'angular2/src/facade/browser';
