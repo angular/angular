@@ -4,14 +4,10 @@ import "package:angular2/src/facade/lang.dart"
     show isBlank, isPresent, isPromise;
 import "package:angular2/src/facade/async.dart"
     show Future, ObservableWrapper, Stream, EventEmitter;
-import "package:angular2/core.dart"
-    show
-        Pipe,
-        Injectable,
-        ChangeDetectorRef,
-        PipeOnDestroy,
-        PipeTransform,
-        WrappedValue;
+import "package:angular2/src/core/metadata.dart" show Pipe;
+import "package:angular2/src/core/di.dart" show Injectable;
+import "package:angular2/src/core/change_detection.dart"
+    show ChangeDetectorRef, PipeOnDestroy, PipeTransform, WrappedValue;
 import "invalid_pipe_argument_exception.dart" show InvalidPipeArgumentException;
 
 class ObservableStrategy {

@@ -1,7 +1,9 @@
 library angular2.src.common.directives.ng_switch;
 
-import "package:angular2/core.dart"
-    show Directive, Host, ViewContainerRef, TemplateRef;
+import "package:angular2/src/core/metadata.dart" show Directive;
+import "package:angular2/src/core/di.dart" show Host;
+import "package:angular2/src/core/linker.dart"
+    show ViewContainerRef, TemplateRef;
 import "package:angular2/src/facade/lang.dart" show isPresent, isBlank;
 import "package:angular2/src/facade/collection.dart" show ListWrapper, Map;
 

@@ -15,8 +15,7 @@ import "package:angular2/testing_internal.dart"
         it,
         xit,
         TestComponentBuilder;
-import "package:angular2/core.dart" show Injectable, provide;
-import "package:angular2/common.dart" show NgIf;
+import "package:angular2/core.dart" show Injectable, NgIf, provide;
 import "package:angular2/src/core/metadata.dart"
     show Directive, Component, View, ViewMetadata;
 

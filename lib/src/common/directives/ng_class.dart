@@ -2,17 +2,12 @@ library angular2.src.common.directives.ng_class;
 
 import "package:angular2/src/facade/lang.dart"
     show isPresent, isString, StringWrapper, isBlank, isArray;
-import "package:angular2/core.dart"
-    show
-        DoCheck,
-        OnDestroy,
-        Directive,
-        ElementRef,
-        IterableDiffer,
-        IterableDiffers,
-        KeyValueDiffer,
-        KeyValueDiffers,
-        Renderer;
+import "package:angular2/lifecycle_hooks.dart" show DoCheck, OnDestroy;
+import "package:angular2/src/core/metadata.dart" show Directive;
+import "package:angular2/src/core/linker.dart" show ElementRef;
+import "package:angular2/src/core/change_detection.dart"
+    show IterableDiffer, IterableDiffers, KeyValueDiffer, KeyValueDiffers;
+import "package:angular2/src/core/render.dart" show Renderer;
 import "package:angular2/src/facade/collection.dart"
     show StringMapWrapper, isListLikeIterable;
 

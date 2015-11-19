@@ -1,6 +1,6 @@
 library angular2.src.common.forms.form_builder;
 
-import "package:angular2/core.dart" show Injectable;
+import "package:angular2/src/core/di.dart" show Injectable;
 import "package:angular2/src/facade/collection.dart" show StringMapWrapper;
 import "package:angular2/src/facade/lang.dart" show isPresent, isArray, Type;
 import "model.dart" as modelModule;

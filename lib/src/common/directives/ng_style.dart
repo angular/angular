@@ -1,13 +1,11 @@
 library angular2.src.common.directives.ng_style;
 
-import "package:angular2/core.dart"
-    show
-        DoCheck,
-        KeyValueDiffer,
-        KeyValueDiffers,
-        ElementRef,
-        Directive,
-        Renderer;
+import "package:angular2/lifecycle_hooks.dart" show DoCheck;
+import "package:angular2/src/core/change_detection.dart"
+    show KeyValueDiffer, KeyValueDiffers;
+import "package:angular2/src/core/linker.dart" show ElementRef;
+import "package:angular2/src/core/metadata.dart" show Directive;
+import "package:angular2/src/core/render.dart" show Renderer;
 import "package:angular2/src/facade/lang.dart" show isPresent, isBlank, print;
 
 /**

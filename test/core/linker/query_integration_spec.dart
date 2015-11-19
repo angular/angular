@@ -20,6 +20,8 @@ import "package:angular2/core.dart"
         Component,
         Directive,
         Injectable,
+        NgIf,
+        NgFor,
         Optional,
         TemplateRef,
         Query,
@@ -34,7 +36,6 @@ import "package:angular2/core.dart"
         AfterViewInit,
         AfterContentChecked,
         AfterViewChecked;
-import "package:angular2/common.dart" show NgIf, NgFor;
 import "package:angular2/core.dart" show asNativeElements;
 import "package:angular2/src/platform/browser/browser_adapter.dart"
     show BrowserDomAdapter;

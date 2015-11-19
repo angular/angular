@@ -5,7 +5,8 @@ import "package:angular2/src/facade/async.dart"
 import "package:angular2/src/facade/collection.dart"
     show StringMapWrapper, ListWrapper;
 import "package:angular2/src/facade/lang.dart" show isPresent, isBlank;
-import "package:angular2/core.dart" show Directive, Provider, Optional, Inject;
+import "package:angular2/src/core/metadata.dart" show Directive;
+import "package:angular2/src/core/di.dart" show Provider, Optional, Inject;
 import "ng_control.dart" show NgControl;
 import "form_interface.dart" show Form;
 import "ng_control_group.dart" show NgControlGroup;

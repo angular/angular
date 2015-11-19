@@ -11,8 +11,7 @@ import "package:angular2/testing_internal.dart"
         beforeEach,
         afterEach,
         browserDetection;
-import "package:angular2/common.dart"
-    show DecimalPipe, PercentPipe, CurrencyPipe;
+import "package:angular2/core.dart" show DecimalPipe, PercentPipe, CurrencyPipe;
 
 main() {
   // TODO(mlaval): enable tests when Intl API is no longer used, see

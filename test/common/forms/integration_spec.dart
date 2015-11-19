@@ -20,16 +20,17 @@ import "package:angular2/testing_internal.dart"
         iit,
         xit,
         browserDetection;
-import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
-import "package:angular2/core.dart" show Input, Provider;
-import "package:angular2/common.dart"
+import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/core.dart"
     show
+        Input,
         Control,
         ControlGroup,
         ControlValueAccessor,
         FORM_DIRECTIVES,
         NG_VALIDATORS,
         NG_ASYNC_VALIDATORS,
+        Provider,
         NgControl,
         NgIf,
         NgFor,

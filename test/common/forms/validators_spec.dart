@@ -13,7 +13,7 @@ import "package:angular2/testing_internal.dart"
         fakeAsync,
         tick,
         el;
-import "package:angular2/common.dart"
+import "package:angular2/core.dart"
     show ControlGroup, Control, Validators, AbstractControl, ControlArray;
 import "package:angular2/src/facade/promise.dart" show PromiseWrapper;
 import "package:angular2/src/facade/async.dart"

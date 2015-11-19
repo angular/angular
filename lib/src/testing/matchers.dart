@@ -4,7 +4,7 @@ import 'dart:async';
 
 import 'package:guinness/guinness.dart' as gns;
 
-import 'package:angular2/src/core/dom/dom_adapter.dart' show DOM;
+import 'package:angular2/src/platform/dom/dom_adapter.dart' show DOM;
 
 Expect expect(actual, [matcher]) {
   final expect = new Expect(actual);

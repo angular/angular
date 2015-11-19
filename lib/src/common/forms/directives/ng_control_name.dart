@@ -2,18 +2,11 @@ library angular2.src.common.forms.directives.ng_control_name;
 
 import "package:angular2/src/facade/async.dart"
     show EventEmitter, ObservableWrapper;
-import "package:angular2/core.dart"
-    show
-        OnChanges,
-        OnDestroy,
-        SimpleChange,
-        Query,
-        Directive,
-        Host,
-        SkipSelf,
-        Provider,
-        Inject,
-        Optional;
+import "package:angular2/lifecycle_hooks.dart" show OnChanges, OnDestroy;
+import "package:angular2/src/core/change_detection.dart" show SimpleChange;
+import "package:angular2/src/core/metadata.dart" show Query, Directive;
+import "package:angular2/src/core/di.dart"
+    show Host, SkipSelf, Provider, Inject, Optional;
 import "control_container.dart" show ControlContainer;
 import "ng_control.dart" show NgControl;
 import "control_value_accessor.dart"

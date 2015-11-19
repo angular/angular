@@ -2,8 +2,10 @@ library angular2.src.common.forms.directives.ng_model;
 
 import "package:angular2/src/facade/async.dart"
     show EventEmitter, ObservableWrapper;
-import "package:angular2/core.dart"
-    show OnChanges, SimpleChange, Query, Directive, Provider, Inject, Optional;
+import "package:angular2/lifecycle_hooks.dart" show OnChanges;
+import "package:angular2/src/core/change_detection.dart" show SimpleChange;
+import "package:angular2/src/core/metadata.dart" show Query, Directive;
+import "package:angular2/src/core/di.dart" show Provider, Inject, Optional;
 import "control_value_accessor.dart"
     show ControlValueAccessor, NG_VALUE_ACCESSOR;
 import "ng_control.dart" show NgControl;

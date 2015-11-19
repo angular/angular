@@ -2,7 +2,7 @@ library angular2.test.common.forms.form_builder_spec;
 
 import "package:angular2/testing_internal.dart"
     show ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach, el;
-import "package:angular2/common.dart" show Control, FormBuilder;
+import "package:angular2/core.dart" show Control, FormBuilder;
 import "package:angular2/src/facade/promise.dart" show PromiseWrapper;
 
 main() {

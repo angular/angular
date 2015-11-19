@@ -25,7 +25,7 @@ import "package:angular2/src/core/linker/dynamic_component_loader.dart"
     show DynamicComponentLoader;
 import "package:angular2/src/compiler/xhr.dart" show XHR;
 import "package:angular2/src/core/zone/ng_zone.dart" show NgZone;
-import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
 import "package:angular2/core.dart" show EventManager, EVENT_MANAGER_PLUGINS;
 import "package:angular2/src/mock/directive_resolver_mock.dart"
     show MockDirectiveResolver;

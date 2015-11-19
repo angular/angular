@@ -22,7 +22,7 @@ import "package:angular2/testing_internal.dart"
         tick,
         clearPendingTimers,
         ComponentFixture;
-import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/facade/lang.dart"
     show
         Type,
@@ -52,8 +52,9 @@ import "package:angular2/core.dart"
         Inject,
         Host,
         SkipSelf,
-        SkipSelfMetadata;
-import "package:angular2/common.dart" show NgIf, NgFor;
+        SkipSelfMetadata,
+        NgIf,
+        NgFor;
 import "package:angular2/common.dart" show AsyncPipe;
 import "package:angular2/src/core/change_detection/change_detection.dart"
     show

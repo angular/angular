@@ -2,7 +2,7 @@ library angular2.test.common.pipes.lowercase_pipe_spec;
 
 import "package:angular2/testing_internal.dart"
     show ddescribe, describe, it, iit, xit, expect, beforeEach, afterEach;
-import "package:angular2/common.dart" show LowerCasePipe;
+import "package:angular2/core.dart" show LowerCasePipe;
 
 main() {
   describe("LowerCasePipe", () {

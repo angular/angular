@@ -1,7 +1,9 @@
 library angular2.src.common.forms.directives.number_value_accessor;
 
-import "package:angular2/core.dart"
-    show Directive, ElementRef, Renderer, Self, Provider;
+import "package:angular2/src/core/metadata.dart" show Directive;
+import "package:angular2/src/core/linker.dart" show ElementRef;
+import "package:angular2/src/core/render.dart" show Renderer;
+import "package:angular2/src/core/di.dart" show Self, Provider;
 import "control_value_accessor.dart"
     show NG_VALUE_ACCESSOR, ControlValueAccessor;
 import "package:angular2/src/facade/lang.dart" show isBlank, NumberWrapper;

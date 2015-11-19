@@ -13,7 +13,7 @@ import "package:angular2/testing_internal.dart"
         createTestInjector,
         beforeEachBindings,
         TestComponentBuilder;
-import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
 import "package:angular2/core.dart"
     show
         bind,
@@ -24,8 +24,8 @@ import "package:angular2/core.dart"
         Component,
         View,
         Injectable,
-        ElementRef;
-import "package:angular2/common.dart" show NgIf;
+        ElementRef,
+        NgIf;
 import "package:angular2/src/web_workers/worker/renderer.dart"
     show WebWorkerRenderer;
 import "package:angular2/src/web_workers/shared/client_message_broker.dart"

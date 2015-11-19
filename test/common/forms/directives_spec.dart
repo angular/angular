@@ -17,8 +17,7 @@ import "package:angular2/testing_internal.dart"
         inject,
         tick;
 import "../spies.dart" show SpyNgControl, SpyValueAccessor;
-import "package:angular2/core.dart" show QueryList;
-import "package:angular2/common.dart"
+import "package:angular2/core.dart"
     show
         ControlGroup,
         Control,
@@ -34,6 +33,7 @@ import "package:angular2/common.dart"
         DefaultValueAccessor,
         CheckboxControlValueAccessor,
         SelectControlValueAccessor,
+        QueryList,
         Validator;
 import "package:angular2/src/common/forms/directives/shared.dart"
     show selectValueAccessor, composeValidators;

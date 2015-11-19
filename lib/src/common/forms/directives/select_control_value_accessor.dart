@@ -1,7 +1,9 @@
 library angular2.src.common.forms.directives.select_control_value_accessor;
 
-import "package:angular2/core.dart"
-    show Query, Directive, Renderer, Self, Provider, ElementRef, QueryList;
+import "package:angular2/src/core/di.dart" show Self, Provider;
+import "package:angular2/src/core/render.dart" show Renderer;
+import "package:angular2/src/core/linker.dart" show ElementRef, QueryList;
+import "package:angular2/src/core/metadata.dart" show Query, Directive;
 import "package:angular2/src/facade/async.dart" show ObservableWrapper;
 import "control_value_accessor.dart"
     show NG_VALUE_ACCESSOR, ControlValueAccessor;

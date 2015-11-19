@@ -18,8 +18,7 @@ import "package:angular2/testing_internal.dart"
         TestComponentBuilder,
         ComponentFixture;
 import "package:angular2/lifecycle_hooks.dart" show OnDestroy;
-import "package:angular2/core.dart" show Injector, inspectElement;
-import "package:angular2/common.dart" show NgIf;
+import "package:angular2/core.dart" show Injector, NgIf, inspectElement;
 import "package:angular2/platform/browser.dart" show By;
 import "package:angular2/src/core/metadata.dart"
     show Component, View, ViewMetadata;
@@ -27,7 +26,7 @@ import "package:angular2/src/core/linker/dynamic_component_loader.dart"
     show DynamicComponentLoader;
 import "package:angular2/src/core/linker/element_ref.dart" show ElementRef;
 import "package:angular2/src/platform/dom/dom_tokens.dart" show DOCUMENT;
-import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/testing/test_component_builder.dart"
     show ComponentFixture_;
 
