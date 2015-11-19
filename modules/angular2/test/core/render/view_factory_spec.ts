@@ -25,7 +25,7 @@ import {
   RenderComponentTemplate
 } from 'angular2/src/core/render/api';
 import {SpyRenderEventDispatcher} from '../spies';
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {ViewEncapsulation} from 'angular2/src/core/metadata';
 
 function beginElement(name: string, attrNameAndValues: string[], eventTargetAndNames: string[],

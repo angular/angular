@@ -18,8 +18,7 @@ import {
   browserDetection
 } from 'angular2/testing_internal';
 
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
-import {Input, Provider, forwardRef} from 'angular2/core';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {
   Control,
   ControlGroup,
@@ -34,6 +33,7 @@ import {
   Validators,
   Validator
 } from 'angular2/common';
+import {Input, Provider, forwardRef} from 'angular2/core';
 import {By} from 'angular2/platform/browser';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {ObservableWrapper} from 'angular2/src/facade/async';

@@ -22,7 +22,7 @@ import {
   PromiseWrapper,
   TimerWrapper
 } from 'angular2/src/facade/async';
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
 export function main() {
   describe("AsyncPipe", () => {

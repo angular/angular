@@ -42,7 +42,7 @@ import {camelCaseToDashCase} from './util';
 import {ViewEncapsulation} from 'angular2/src/core/metadata';
 
 // TODO move it once DomAdapter is moved
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
 const NAMESPACE_URIS =
     CONST_EXPR({'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg'});

@@ -14,7 +14,7 @@ import {
 } from 'angular2/testing_internal';
 
 // import {MapWrapper} from 'angular2/src/facade/collection';
-// import {DOM} from 'angular2/src/core/dom/dom_adapter';
+// import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
 // import {DomTestbed, TestRootView, elRef} from './dom_testbed';
 

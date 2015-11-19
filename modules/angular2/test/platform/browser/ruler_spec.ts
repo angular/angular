@@ -11,7 +11,7 @@ import {
 } from 'angular2/testing_internal';
 import {SpyElementRef, SpyDomAdapter} from '../../core/spies';
 
-import {DOM, DomAdapter} from 'angular2/src/core/dom/dom_adapter';
+import {DOM, DomAdapter} from 'angular2/src/platform/dom/dom_adapter';
 
 import {Ruler, Rectangle} from 'angular2/src/platform/browser/ruler';
 import {createRectangle} from './rectangle_mock';

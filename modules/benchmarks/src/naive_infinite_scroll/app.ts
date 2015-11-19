@@ -3,7 +3,7 @@ import {getIntParameter, bindAction} from 'angular2/src/testing/benchmark_util';
 import {TimerWrapper} from 'angular2/src/facade/async';
 import {ScrollAreaComponent} from './scroll_area';
 import {NgIf, NgFor} from 'angular2/common';
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {document} from 'angular2/src/facade/browser';
 
 import {Component, Directive, View} from 'angular2/angular2';

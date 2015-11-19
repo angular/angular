@@ -13,7 +13,7 @@ import {
 
 import {Component, View} from 'angular2/angular2';
 import {getComponentInfo, parseFields} from 'angular2/src/upgrade/metadata';
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
 export function main() {
   if (!DOM.supportsDOMEvents()) return;

@@ -3,7 +3,7 @@ import {MapWrapper, Map, ListWrapper} from 'angular2/src/facade/collection';
 import {Injectable, provide, Provider} from 'angular2/src/core/di';
 import {AppViewListener} from 'angular2/src/core/linker/view_listener';
 import {AppView} from 'angular2/src/core/linker/view';
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {Renderer} from 'angular2/src/core/render/api';
 import {DebugElement, DebugElement_} from 'angular2/src/core/debug/debug_element';
 

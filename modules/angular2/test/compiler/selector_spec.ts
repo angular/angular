@@ -1,5 +1,5 @@
 import {describe, it, expect, beforeEach, ddescribe, iit, xit, el} from 'angular2/testing_internal';
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {SelectorMatcher} from 'angular2/src/compiler/selector';
 import {CssSelector} from 'angular2/src/compiler/selector';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';

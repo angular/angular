@@ -14,7 +14,7 @@ import {MapWrapper, ListWrapper, iterateListLike} from 'angular2/src/facade/coll
 import {IS_DART, StringWrapper} from 'angular2/src/facade/lang';
 import {ObservableWrapper} from 'angular2/src/facade/async';
 import {QueryList} from 'angular2/src/core/linker/query_list';
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
 interface _JsQueryList {
   filter(c: any): any;

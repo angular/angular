@@ -31,7 +31,7 @@ import {
   ComponentInstruction
 } from 'angular2/router';
 
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {ComponentInstruction_} from 'angular2/src/router/instruction';
 import {PathRecognizer} from 'angular2/src/router/path_recognizer';
 import {SyncRouteHandler} from 'angular2/src/router/sync_route_handler';

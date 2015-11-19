@@ -11,7 +11,7 @@ import {
   containsRegexp
 } from 'angular2/testing_internal';
 
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {MapWrapper} from 'angular2/src/facade/collection';
 import {RegExpWrapper} from 'angular2/src/facade/lang';
 
