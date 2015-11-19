@@ -1054,34 +1054,9 @@ gulp.task('!bundle.copy', function() {
 });
 
 gulp.task('!bundles.js.checksize', function() {
-  var gzip = require('gulp-gzip');
-  var path = require('path');
-
-  return merge2(gulp.src('dist/js/bundle/**').on('data', checkFileSizeFactory('uncompressed')),
-                gulp.src('dist/js/bundle/**')
-                    .pipe(gzip({gzipOptions: {level: 1}}))  // code.angular.js
-                    .on('data', checkFileSizeFactory('gzip level=1')),
-                gulp.src('dist/js/bundle/**')
-                    .pipe(gzip({gzipOptions: {level: 2}}))  // github pages, most common
-                    .on('data', checkFileSizeFactory('gzip level=2', true)),
-                gulp.src('dist/js/bundle/**')
-                    .pipe(gzip({gzipOptions: {level: 6}}))  // default gzip level
-                    .on('data', checkFileSizeFactory('gzip level=6')),
-                gulp.src('dist/js/bundle/**')
-                    .pipe(gzip({gzipOptions: {level: 9}}))  // max gzip level
-                    .on('data', checkFileSizeFactory('gzip level=9')));
-
-  function checkFileSizeFactory(compressionLevel, printToConsole) {
-    return function checkFileSize(file) {
-      if (file.isNull()) return;
-      var filePath =
-          path.relative(path.join('dist', 'js', 'bundle'), file.path).replace('\.gz', '');
-      analytics.bundleSize(filePath, file.contents.length, compressionLevel);
-      if (printToConsole) {
-        console.log(`  ${filePath} => ${file.contents.length} bytes (${compressionLevel})`)
-      }
-    }
-  }
+  var reportSize = require('./tools/analytics/reportsize');
+  return reportSize('dist/js/bundle/**', {printToConsole: false,
+                    reportAnalytics: true});
 });
 
 gulp.task('bundles.js',
