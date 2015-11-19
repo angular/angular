@@ -11,7 +11,7 @@ import "package:angular2/testing_internal.dart"
         beforeEach,
         afterEach,
         browserDetection;
-import "package:angular2/core.dart" show DatePipe;
+import "package:angular2/common.dart" show DatePipe;
 import "package:angular2/src/facade/lang.dart" show DateWrapper;
 import "package:angular2/src/core/linker/pipe_resolver.dart" show PipeResolver;
 

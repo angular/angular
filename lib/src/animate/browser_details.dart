@@ -2,7 +2,7 @@ library angular2.src.animate.browser_details;
 
 import "package:angular2/src/core/di.dart" show Injectable;
 import "package:angular2/src/facade/math.dart" show Math;
-import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 
 @Injectable()
 class BrowserDetails {

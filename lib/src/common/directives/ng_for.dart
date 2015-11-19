@@ -1,11 +1,15 @@
 library angular2.src.common.directives.ng_for;
 
-import "package:angular2/lifecycle_hooks.dart" show DoCheck;
-import "package:angular2/src/core/metadata.dart" show Directive;
-import "package:angular2/src/core/change_detection.dart"
-    show ChangeDetectorRef, IterableDiffer, IterableDiffers;
-import "package:angular2/src/core/linker.dart"
-    show ViewContainerRef, TemplateRef, ViewRef;
+import "package:angular2/core.dart"
+    show
+        DoCheck,
+        Directive,
+        ChangeDetectorRef,
+        IterableDiffer,
+        IterableDiffers,
+        ViewContainerRef,
+        TemplateRef,
+        ViewRef;
 import "package:angular2/src/facade/lang.dart" show isPresent, isBlank;
 
 /**

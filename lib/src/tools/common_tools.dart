@@ -5,7 +5,7 @@ import "package:angular2/src/core/linker/dynamic_component_loader.dart"
     show ComponentRef, ComponentRef_;
 import "package:angular2/src/facade/lang.dart" show isPresent, NumberWrapper;
 import "package:angular2/src/facade/browser.dart" show performance, window;
-import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 
 /**
  * Entry point for all Angular debug tools. This object corresponds to the `ng`

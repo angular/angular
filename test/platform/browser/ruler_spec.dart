@@ -12,8 +12,7 @@ import "package:angular2/testing_internal.dart"
         expect,
         SpyObject;
 import "../../core/spies.dart" show SpyElementRef, SpyDomAdapter;
-import "package:angular2/src/platform/dom/dom_adapter.dart"
-    show DOM, DomAdapter;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM, DomAdapter;
 import "package:angular2/src/platform/browser/ruler.dart" show Ruler, Rectangle;
 import "rectangle_mock.dart" show createRectangle;
 

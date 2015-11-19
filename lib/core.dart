@@ -1,27 +1,28 @@
+/**
+ * @module
+ * @description
+ * Starting point to import all public core APIs.
+ */
 library angular2.core;
 
-// Public Core API
-export 'package:angular2/src/core/metadata.dart';
-export 'package:angular2/src/core/util.dart';
-export 'package:angular2/src/core/dev_mode.dart';
-export 'package:angular2/src/core/di.dart';
-export 'package:angular2/src/common/pipes.dart';
-export 'package:angular2/src/facade/facade.dart';
-export 'package:angular2/src/core/application_ref.dart'
-    hide ApplicationRef_, PlatformRef_;
-export 'package:angular2/src/core/application_tokens.dart'
+export "src/core/metadata.dart";
+export "src/core/util.dart";
+export "src/core/dev_mode.dart";
+export "src/core/di.dart";
+export "src/facade/facade.dart";
+export "src/core/application_ref.dart"
+    show platform, createNgZone, PlatformRef, ApplicationRef;
+export "src/core/application_tokens.dart"
     show APP_ID, APP_COMPONENT, APP_INITIALIZER, PLATFORM_INITIALIZER;
-export 'package:angular2/src/core/linker.dart';
-export 'package:angular2/src/core/zone.dart';
-export 'package:angular2/src/core/render.dart';
-export 'package:angular2/src/common/directives.dart';
-export 'package:angular2/src/common/forms.dart';
-export 'package:angular2/src/core/debug/debug_element.dart'
+export "src/core/zone.dart";
+export "src/core/render.dart";
+export "src/core/linker.dart";
+export "src/core/debug/debug_element.dart"
     show DebugElement, Scope, inspectElement, asNativeElements;
-export 'package:angular2/src/core/testability/testability.dart';
-export 'package:angular2/src/core/change_detection.dart';
-export 'package:angular2/src/core/platform_directives_and_pipes.dart';
-export 'package:angular2/src/core/platform_common_providers.dart';
-export 'package:angular2/src/core/application_common_providers.dart';
-export 'package:angular2/src/core/reflection/reflection.dart';
-export 'package:angular2/src/platform/dom/dom_adapter.dart';
+export "src/core/testability/testability.dart";
+export "src/core/change_detection.dart";
+export "src/core/platform_directives_and_pipes.dart";
+export "src/core/platform_common_providers.dart";
+export "src/core/application_common_providers.dart";
+export "src/core/reflection/reflection.dart";
+export "src/core/dom/dom_adapter.dart";

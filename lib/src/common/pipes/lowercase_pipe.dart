@@ -1,10 +1,8 @@
 library angular2.src.common.pipes.lowercase_pipe;
 
 import "package:angular2/src/facade/lang.dart" show isString, isBlank;
-import "package:angular2/src/core/di.dart" show Injectable;
-import "package:angular2/src/core/change_detection.dart"
-    show PipeTransform, WrappedValue;
-import "package:angular2/src/core/metadata.dart" show Pipe;
+import "package:angular2/core.dart"
+    show Injectable, PipeTransform, WrappedValue, Pipe;
 import "invalid_pipe_argument_exception.dart" show InvalidPipeArgumentException;
 
 /**

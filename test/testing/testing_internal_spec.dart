@@ -12,7 +12,7 @@ import "package:angular2/testing_internal.dart"
         beforeEach,
         proxy,
         containsRegexp;
-import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/facade/collection.dart" show MapWrapper;
 import "package:angular2/src/facade/lang.dart" show RegExpWrapper;
 

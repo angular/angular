@@ -1,7 +1,7 @@
 library angular2.src.common.forms.directives.validators;
 
-import "package:angular2/src/core/di.dart" show Provider, OpaqueToken;
-import "package:angular2/src/core/metadata.dart" show Attribute, Directive;
+import "package:angular2/core.dart"
+    show Provider, OpaqueToken, Attribute, Directive;
 import "../validators.dart" show Validators, NG_VALIDATORS;
 import "../model.dart" show Control;
 import "../model.dart" as modelModule;

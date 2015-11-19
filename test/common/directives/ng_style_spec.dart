@@ -17,7 +17,7 @@ import "package:angular2/testing_internal.dart"
         xit;
 import "package:angular2/src/facade/collection.dart" show StringMapWrapper;
 import "package:angular2/angular2.dart" show Component, View;
-import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/common/directives/ng_style.dart" show NgStyle;
 
 main() {

@@ -10,10 +10,8 @@ import "package:angular2/src/facade/lang.dart"
         isBlank,
         FunctionWrapper;
 import "package:angular2/src/facade/intl.dart" show DateFormatter;
-import "package:angular2/src/core/di.dart" show Injectable;
-import "package:angular2/src/core/metadata.dart" show Pipe;
-import "package:angular2/src/core/change_detection.dart"
-    show PipeTransform, WrappedValue;
+import "package:angular2/core.dart"
+    show PipeTransform, WrappedValue, Pipe, Injectable;
 import "package:angular2/src/facade/collection.dart"
     show StringMapWrapper, ListWrapper;
 import "invalid_pipe_argument_exception.dart" show InvalidPipeArgumentException;

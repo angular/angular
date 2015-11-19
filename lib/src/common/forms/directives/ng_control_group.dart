@@ -1,10 +1,15 @@
 library angular2.src.common.forms.directives.ng_control_group;
 
-import "package:angular2/lifecycle_hooks.dart" show OnInit, OnDestroy;
-import "package:angular2/src/core/metadata.dart" show Directive;
-import "package:angular2/src/core/di.dart"
-    show Optional, Inject, Host, SkipSelf, Provider;
-import "package:angular2/src/facade/collection.dart" show ListWrapper;
+import "package:angular2/core.dart"
+    show
+        OnInit,
+        OnDestroy,
+        Directive,
+        Optional,
+        Inject,
+        Host,
+        SkipSelf,
+        Provider;
 import "control_container.dart" show ControlContainer;
 import "shared.dart"
     show controlPath, composeValidators, composeAsyncValidators;

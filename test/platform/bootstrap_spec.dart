@@ -22,7 +22,7 @@ import "package:angular2/core.dart"
     show Component, Directive, View, OnDestroy, platform;
 import "package:angular2/platform/browser.dart"
     show BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS;
-import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/platform/dom/dom_tokens.dart" show DOCUMENT;
 import "package:angular2/src/facade/async.dart" show PromiseWrapper;
 import "package:angular2/core.dart"

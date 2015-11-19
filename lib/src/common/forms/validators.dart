@@ -5,7 +5,7 @@ import "package:angular2/src/facade/promise.dart" show PromiseWrapper;
 import "package:angular2/src/facade/async.dart" show ObservableWrapper;
 import "package:angular2/src/facade/collection.dart"
     show ListWrapper, StringMapWrapper;
-import "package:angular2/src/core/di.dart" show OpaqueToken;
+import "package:angular2/core.dart" show OpaqueToken;
 import "model.dart" as modelModule;
 
 /**

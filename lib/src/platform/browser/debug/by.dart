@@ -2,7 +2,7 @@ library angular2.src.platform.browser.debug.by;
 
 import "package:angular2/src/facade/lang.dart" show Type, isPresent, isBlank;
 import "package:angular2/src/facade/collection.dart" show Predicate;
-import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 import "package:angular2/core.dart" show DebugElement;
 
 class By {

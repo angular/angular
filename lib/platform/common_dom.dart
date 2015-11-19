@@ -3,8 +3,6 @@
  */
 library angular2.platform.common_dom;
 
-export "package:angular2/src/platform/dom/dom_adapter.dart"
-    show DOM, setRootDomAdapter, DomAdapter;
 export "package:angular2/src/platform/dom/dom_renderer.dart" show DomRenderer;
 export "package:angular2/src/platform/dom/dom_tokens.dart" show DOCUMENT;
 export "package:angular2/src/platform/dom/shared_styles_host.dart"

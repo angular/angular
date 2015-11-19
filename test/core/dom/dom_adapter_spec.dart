@@ -15,7 +15,7 @@ import "package:angular2/testing_internal.dart"
         beforeEachBindings,
         SpyObject,
         stringifyElement;
-import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 
 main() {
   describe("dom adapter", () {
