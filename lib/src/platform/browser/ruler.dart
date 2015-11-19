@@ -1,7 +1,7 @@
 library angular2.src.platform.browser.ruler;
 
 import "package:angular2/src/facade/async.dart" show Future, PromiseWrapper;
-import "package:angular2/src/core/dom/dom_adapter.dart" show DomAdapter;
+import "package:angular2/src/platform/dom/dom_adapter.dart" show DomAdapter;
 import "package:angular2/src/core/linker/element_ref.dart" show ElementRef;
 
 class Rectangle {

@@ -1,7 +1,7 @@
 library angular2.src.compiler.anchor_based_app_root_url;
 
 import "package:angular2/src/compiler/app_root_url.dart" show AppRootUrl;
-import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/core/di.dart" show Injectable;
 
 /**

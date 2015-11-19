@@ -20,8 +20,7 @@ import "package:angular2/testing_internal.dart"
         iit,
         xit,
         browserDetection;
-import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
-import "package:angular2/core.dart" show Input, Provider;
+import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
 import "package:angular2/common.dart"
     show
         Control,
@@ -36,6 +35,7 @@ import "package:angular2/common.dart"
         NgForm,
         Validators,
         Validator;
+import "package:angular2/core.dart" show Input, Provider;
 import "package:angular2/platform/browser.dart" show By;
 import "package:angular2/src/facade/collection.dart" show ListWrapper;
 import "package:angular2/src/facade/async.dart" show ObservableWrapper;

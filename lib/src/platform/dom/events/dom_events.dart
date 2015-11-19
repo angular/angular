@@ -1,6 +1,6 @@
 library angular2.src.platform.dom.events.dom_events;
 
-import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
 import "package:angular2/core.dart"
     show Injectable, EventManagerPlugin, EventManager;
 

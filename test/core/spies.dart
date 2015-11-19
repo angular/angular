@@ -12,7 +12,7 @@ import 'package:angular2/src/core/linker/proto_view_factory.dart';
 import 'package:angular2/src/core/linker/view_pool.dart';
 import 'package:angular2/src/core/linker/view_listener.dart';
 import 'package:angular2/src/core/linker/element_injector.dart';
-import 'package:angular2/src/core/dom/dom_adapter.dart';
+import 'package:angular2/src/platform/dom/dom_adapter.dart';
 import 'package:angular2/testing_internal.dart';
 
 @proxy

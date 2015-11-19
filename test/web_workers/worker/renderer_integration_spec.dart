@@ -13,7 +13,7 @@ import "package:angular2/testing_internal.dart"
         createTestInjector,
         beforeEachBindings,
         TestComponentBuilder;
-import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
 import "package:angular2/core.dart"
     show
         bind,
