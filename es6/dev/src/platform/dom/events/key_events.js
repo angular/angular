@@ -9,7 +9,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { DOM } from 'angular2/src/platform/dom/dom_adapter';
+import { DOM } from 'angular2/src/core/dom/dom_adapter';
 import { isPresent, StringWrapper } from 'angular2/src/facade/lang';
 import { StringMapWrapper, ListWrapper } from 'angular2/src/facade/collection';
 import { EventManagerPlugin } from 'angular2/core';

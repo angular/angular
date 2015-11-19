@@ -11,9 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var lang_1 = require('angular2/src/facade/lang');
 var async_1 = require('angular2/src/facade/async');
-var metadata_1 = require('angular2/src/core/metadata');
-var di_1 = require('angular2/src/core/di');
-var change_detection_1 = require('angular2/src/core/change_detection');
+var core_1 = require('angular2/core');
 var invalid_pipe_argument_exception_1 = require('./invalid_pipe_argument_exception');
 var ObservableStrategy = (function () {
     function ObservableStrategy() {
@@ -89,7 +87,7 @@ var AsyncPipe = (function () {
         }
         else {
             this._latestReturnedValue = this._latestValue;
-            return change_detection_1.WrappedValue.wrap(this._latestValue);
+            return core_1.WrappedValue.wrap(this._latestValue);
         }
     };
     /** @internal */
@@ -128,9 +126,9 @@ var AsyncPipe = (function () {
         }
     };
     AsyncPipe = __decorate([
-        metadata_1.Pipe({ name: 'async', pure: false }),
-        di_1.Injectable(), 
-        __metadata('design:paramtypes', [change_detection_1.ChangeDetectorRef])
+        core_1.Pipe({ name: 'async', pure: false }),
+        core_1.Injectable(), 
+        __metadata('design:paramtypes', [core_1.ChangeDetectorRef])
     ], AsyncPipe);
     return AsyncPipe;
 })();

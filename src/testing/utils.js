@@ -1,5 +1,5 @@
 'use strict';var collection_1 = require('angular2/src/facade/collection');
-var dom_adapter_1 = require('angular2/src/platform/dom/dom_adapter');
+var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
 var lang_1 = require('angular2/src/facade/lang');
 var Log = (function () {
     function Log() {

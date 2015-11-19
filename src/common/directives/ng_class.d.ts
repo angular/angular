@@ -1,7 +1,4 @@
-import { DoCheck, OnDestroy } from 'angular2/lifecycle_hooks';
-import { ElementRef } from 'angular2/src/core/linker';
-import { IterableDiffers, KeyValueDiffers } from 'angular2/src/core/change_detection';
-import { Renderer } from 'angular2/src/core/render';
+import { DoCheck, OnDestroy, ElementRef, IterableDiffers, KeyValueDiffers, Renderer } from 'angular2/core';
 /**
  * The `NgClass` directive conditionally adds and removes CSS classes on an HTML element based on
  * an expression's evaluation result.

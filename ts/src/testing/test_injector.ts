@@ -19,7 +19,7 @@ import {DynamicComponentLoader} from 'angular2/src/core/linker/dynamic_component
 import {XHR} from 'angular2/src/compiler/xhr';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 
 import {EventManager, EVENT_MANAGER_PLUGINS} from 'angular2/core';
 import {MockDirectiveResolver} from 'angular2/src/mock/directive_resolver_mock';

@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var di_1 = require('angular2/src/core/di');
 var math_1 = require('angular2/src/facade/math');
-var dom_adapter_1 = require('angular2/src/platform/dom/dom_adapter');
+var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
 var BrowserDetails = (function () {
     function BrowserDetails() {
         this.elapsedTimeIncludesDelay = false;

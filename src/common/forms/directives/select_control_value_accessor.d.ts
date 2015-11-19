@@ -1,5 +1,4 @@
-import { Renderer } from 'angular2/src/core/render';
-import { ElementRef, QueryList } from 'angular2/src/core/linker';
+import { Renderer, ElementRef, QueryList } from 'angular2/core';
 import { ControlValueAccessor } from './control_value_accessor';
 /**
  * Marks `<option>` as dynamic, so Angular can be notified when options change.

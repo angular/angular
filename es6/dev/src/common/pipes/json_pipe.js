@@ -10,8 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import { Json, CONST } from 'angular2/src/facade/lang';
-import { Injectable } from 'angular2/src/core/di';
-import { Pipe } from 'angular2/src/core/metadata';
+import { Injectable, Pipe } from 'angular2/core';
 /**
  * Transforms any input value using `JSON.stringify`. Useful for debugging.
  *

@@ -1,4 +1,4 @@
-import { OpaqueToken } from 'angular2/src/core/di';
+import { OpaqueToken } from 'angular2/core';
 import * as modelModule from './model';
 /**
  * Providers for validators to be used for {@link Control}s in a form.

@@ -10,10 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import { isPresent, isString, isArray } from 'angular2/src/facade/lang';
-import { Directive } from 'angular2/src/core/metadata';
-import { ElementRef } from 'angular2/src/core/linker';
-import { IterableDiffers, KeyValueDiffers } from 'angular2/src/core/change_detection';
-import { Renderer } from 'angular2/src/core/render';
+import { Directive, ElementRef, IterableDiffers, KeyValueDiffers, Renderer } from 'angular2/core';
 import { StringMapWrapper, isListLikeIterable } from 'angular2/src/facade/collection';
 /**
  * The `NgClass` directive conditionally adds and removes CSS classes on an HTML element based on

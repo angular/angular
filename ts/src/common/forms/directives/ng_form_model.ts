@@ -1,11 +1,15 @@
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {ListWrapper, StringMapWrapper} from 'angular2/src/facade/collection';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
-import {SimpleChange} from 'angular2/src/core/change_detection';
-
-import {OnChanges} from 'angular2/lifecycle_hooks';
-import {Directive} from 'angular2/src/core/metadata';
-import {forwardRef, Provider, Inject, Optional} from 'angular2/src/core/di';
+import {
+  SimpleChange,
+  OnChanges,
+  Directive,
+  forwardRef,
+  Provider,
+  Inject,
+  Optional
+} from 'angular2/core';
 import {NgControl} from './ng_control';
 import {NgControlGroup} from './ng_control_group';
 import {ControlContainer} from './control_container';

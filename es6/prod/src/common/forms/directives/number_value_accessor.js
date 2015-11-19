@@ -9,10 +9,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Directive } from 'angular2/src/core/metadata';
-import { ElementRef } from 'angular2/src/core/linker';
-import { Renderer } from 'angular2/src/core/render';
-import { forwardRef, Provider } from 'angular2/src/core/di';
+import { Directive, ElementRef, Renderer, forwardRef, Provider } from 'angular2/core';
 import { NG_VALUE_ACCESSOR } from './control_value_accessor';
 import { CONST_EXPR, NumberWrapper } from 'angular2/src/facade/lang';
 const NUMBER_VALUE_ACCESSOR = CONST_EXPR(new Provider(NG_VALUE_ACCESSOR, { useExisting: forwardRef(() => NumberValueAccessor), multi: true }));

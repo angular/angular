@@ -1,5 +1,5 @@
 import { Type } from 'angular2/src/facade/lang';
-import { DomAdapter } from 'angular2/src/platform/dom/dom_adapter';
+import { DomAdapter } from 'angular2/src/core/dom/dom_adapter';
 /**
  * Provides DOM operations in any browser environment.
  */

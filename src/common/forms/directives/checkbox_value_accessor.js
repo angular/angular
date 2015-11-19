@@ -9,13 +9,10 @@
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var metadata_1 = require('angular2/src/core/metadata');
-var render_1 = require('angular2/src/core/render');
-var linker_1 = require('angular2/src/core/linker');
-var di_1 = require('angular2/src/core/di');
+var core_1 = require('angular2/core');
 var control_value_accessor_1 = require('./control_value_accessor');
 var lang_1 = require('angular2/src/facade/lang');
-var CHECKBOX_VALUE_ACCESSOR = lang_1.CONST_EXPR(new di_1.Provider(control_value_accessor_1.NG_VALUE_ACCESSOR, { useExisting: di_1.forwardRef(function () { return CheckboxControlValueAccessor; }), multi: true }));
+var CHECKBOX_VALUE_ACCESSOR = lang_1.CONST_EXPR(new core_1.Provider(control_value_accessor_1.NG_VALUE_ACCESSOR, { useExisting: core_1.forwardRef(function () { return CheckboxControlValueAccessor; }), multi: true }));
 /**
  * The accessor for writing a value and listening to changes on a checkbox input element.
  *
@@ -37,12 +34,12 @@ var CheckboxControlValueAccessor = (function () {
     CheckboxControlValueAccessor.prototype.registerOnChange = function (fn) { this.onChange = fn; };
     CheckboxControlValueAccessor.prototype.registerOnTouched = function (fn) { this.onTouched = fn; };
     CheckboxControlValueAccessor = __decorate([
-        metadata_1.Directive({
+        core_1.Directive({
             selector: 'input[type=checkbox][ng-control],input[type=checkbox][ng-form-control],input[type=checkbox][ng-model]',
             host: { '(change)': 'onChange($event.target.checked)', '(blur)': 'onTouched()' },
             bindings: [CHECKBOX_VALUE_ACCESSOR]
         }), 
-        __metadata('design:paramtypes', [render_1.Renderer, linker_1.ElementRef])
+        __metadata('design:paramtypes', [core_1.Renderer, core_1.ElementRef])
     ], CheckboxControlValueAccessor);
     return CheckboxControlValueAccessor;
 })();

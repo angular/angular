@@ -1,4 +1,4 @@
-import { PipeTransform } from 'angular2/src/core/change_detection';
+import { PipeTransform } from 'angular2/core';
 /**
  * Transforms any input value using `JSON.stringify`. Useful for debugging.
  *

@@ -1,5 +1,4 @@
-import { OnChanges, OnDestroy } from 'angular2/lifecycle_hooks';
-import { SimpleChange } from 'angular2/src/core/change_detection';
+import { OnChanges, OnDestroy, SimpleChange } from 'angular2/core';
 import { ControlContainer } from './control_container';
 import { NgControl } from './ng_control';
 import { ControlValueAccessor } from './control_value_accessor';

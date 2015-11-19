@@ -9,9 +9,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Directive } from 'angular2/src/core/metadata';
-import { ChangeDetectorRef, IterableDiffers } from 'angular2/src/core/change_detection';
-import { ViewContainerRef, TemplateRef } from 'angular2/src/core/linker';
+import { Directive, ChangeDetectorRef, IterableDiffers, ViewContainerRef, TemplateRef } from 'angular2/core';
 import { isPresent, isBlank } from 'angular2/src/facade/lang';
 /**
  * The `NgFor` directive instantiates a template once per item from an iterable. The context for

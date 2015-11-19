@@ -23,7 +23,7 @@ var view_ref_1 = require('angular2/src/core/linker/view_ref');
 var dynamic_component_loader_1 = require('angular2/src/core/linker/dynamic_component_loader');
 var utils_1 = require('./utils');
 var dom_tokens_1 = require('angular2/src/platform/dom/dom_tokens');
-var dom_adapter_1 = require('angular2/src/platform/dom/dom_adapter');
+var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
 var debug_element_1 = require('angular2/src/core/debug/debug_element');
 /**
  * @deprecated Use ComponentFixture

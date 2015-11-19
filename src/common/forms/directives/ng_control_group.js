@@ -17,13 +17,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var metadata_1 = require('angular2/src/core/metadata');
-var di_1 = require('angular2/src/core/di');
+var core_1 = require('angular2/core');
 var lang_1 = require('angular2/src/facade/lang');
 var control_container_1 = require('./control_container');
 var shared_1 = require('./shared');
 var validators_1 = require('../validators');
-var controlGroupProvider = lang_1.CONST_EXPR(new di_1.Provider(control_container_1.ControlContainer, { useExisting: di_1.forwardRef(function () { return NgControlGroup; }) }));
+var controlGroupProvider = lang_1.CONST_EXPR(new core_1.Provider(control_container_1.ControlContainer, { useExisting: core_1.forwardRef(function () { return NgControlGroup; }) }));
 /**
  * Creates and binds a control group to a DOM element.
  *
@@ -117,18 +116,18 @@ var NgControlGroup = (function (_super) {
         configurable: true
     });
     NgControlGroup = __decorate([
-        metadata_1.Directive({
+        core_1.Directive({
             selector: '[ng-control-group]',
             providers: [controlGroupProvider],
             inputs: ['name: ng-control-group'],
             exportAs: 'form'
         }),
-        __param(0, di_1.Host()),
-        __param(0, di_1.SkipSelf()),
-        __param(1, di_1.Optional()),
-        __param(1, di_1.Inject(validators_1.NG_VALIDATORS)),
-        __param(2, di_1.Optional()),
-        __param(2, di_1.Inject(validators_1.NG_ASYNC_VALIDATORS)), 
+        __param(0, core_1.Host()),
+        __param(0, core_1.SkipSelf()),
+        __param(1, core_1.Optional()),
+        __param(1, core_1.Inject(validators_1.NG_VALIDATORS)),
+        __param(2, core_1.Optional()),
+        __param(2, core_1.Inject(validators_1.NG_ASYNC_VALIDATORS)), 
         __metadata('design:paramtypes', [control_container_1.ControlContainer, Array, Array])
     ], NgControlGroup);
     return NgControlGroup;

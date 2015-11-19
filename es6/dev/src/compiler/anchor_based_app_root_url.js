@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import { AppRootUrl } from "angular2/src/compiler/app_root_url";
-import { DOM } from "angular2/src/platform/dom/dom_adapter";
+import { DOM } from "angular2/src/core/dom/dom_adapter";
 import { Injectable } from "angular2/src/core/di";
 /**
  * Extension of {@link AppRootUrl} that uses a DOM anchor tag to set the root url to

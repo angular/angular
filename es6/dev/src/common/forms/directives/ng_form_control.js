@@ -15,8 +15,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 import { CONST_EXPR } from 'angular2/src/facade/lang';
 import { StringMapWrapper } from 'angular2/src/facade/collection';
 import { EventEmitter, ObservableWrapper } from 'angular2/src/facade/async';
-import { Directive } from 'angular2/src/core/metadata';
-import { forwardRef, Provider, Inject, Optional } from 'angular2/src/core/di';
+import { Directive, forwardRef, Provider, Inject, Optional } from 'angular2/core';
 import { NgControl } from './ng_control';
 import { NG_VALIDATORS, NG_ASYNC_VALIDATORS } from '../validators';
 import { NG_VALUE_ACCESSOR } from './control_value_accessor';

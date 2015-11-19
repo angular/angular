@@ -24,7 +24,7 @@ import { createRenderView, encapsulateStyles } from 'angular2/src/core/render/vi
 import { DefaultProtoViewRef } from 'angular2/src/core/render/view';
 import { camelCaseToDashCase } from './util';
 import { ViewEncapsulation } from 'angular2/src/core/metadata';
-import { DOM } from 'angular2/src/platform/dom/dom_adapter';
+import { DOM } from 'angular2/src/core/dom/dom_adapter';
 const NAMESPACE_URIS = CONST_EXPR({ 'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg' });
 export class DomRenderer extends Renderer {
     getNativeElementSync(location) {

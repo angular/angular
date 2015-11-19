@@ -1,6 +1,5 @@
 import { EventEmitter } from 'angular2/src/facade/async';
-import { SimpleChange } from 'angular2/src/core/change_detection';
-import { OnChanges } from 'angular2/lifecycle_hooks';
+import { SimpleChange, OnChanges } from 'angular2/core';
 import { NgControl } from './ng_control';
 import { NgControlGroup } from './ng_control_group';
 import { ControlContainer } from './control_container';

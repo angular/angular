@@ -12,7 +12,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { DOM } from 'angular2/src/platform/dom/dom_adapter';
+import { DOM } from 'angular2/src/core/dom/dom_adapter';
 import { Injectable, Inject } from 'angular2/angular2';
 import { isBlank } from 'angular2/src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';

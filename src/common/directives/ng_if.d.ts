@@ -1,4 +1,4 @@
-import { ViewContainerRef, TemplateRef } from 'angular2/src/core/linker';
+import { ViewContainerRef, TemplateRef } from 'angular2/core';
 /**
  * Removes or recreates a portion of the DOM tree based on an {expression}.
  *

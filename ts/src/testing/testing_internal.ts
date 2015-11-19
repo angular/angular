@@ -1,4 +1,4 @@
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {global, isFunction, Math} from 'angular2/src/facade/lang';
 import {NgZoneZone} from 'angular2/src/core/zone/ng_zone';
