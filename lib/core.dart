@@ -25,3 +25,4 @@ export "src/core/platform_directives_and_pipes.dart";
 export "src/core/platform_common_providers.dart";
 export "src/core/application_common_providers.dart";
 export "src/core/reflection/reflection.dart";
+export "src/core/dom/dom_adapter.dart";

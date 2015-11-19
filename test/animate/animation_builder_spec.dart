@@ -4,7 +4,7 @@ import "package:angular2/testing_internal.dart"
     show el, describe, it, iit, expect, inject, SpyObject;
 import "package:angular2/src/animate/animation_builder.dart"
     show AnimationBuilder;
-import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 
 main() {
   describe("AnimationBuilder", () {

@@ -1,6 +1,6 @@
 library angular2.src.platform.browser.title;
 
-import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 
 /**
  * A service that can be used to get and set the title of a current HTML document.

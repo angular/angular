@@ -3,7 +3,7 @@ library angular2.src.platform.browser.generic_browser_adapter;
 import "package:angular2/src/facade/collection.dart"
     show ListWrapper, StringMapWrapper;
 import "package:angular2/src/facade/lang.dart" show isPresent, isFunction, Type;
-import "package:angular2/src/platform/dom/dom_adapter.dart" show DomAdapter;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DomAdapter;
 import "package:angular2/src/platform/browser/xhr_impl.dart" show XHRImpl;
 
 /**

@@ -30,7 +30,7 @@ import "package:angular2/src/core/render/view.dart"
 import "util.dart" show camelCaseToDashCase;
 import "package:angular2/src/core/metadata.dart" show ViewEncapsulation;
 // TODO move it once DomAdapter is moved
-import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 
 const NAMESPACE_URIS = const {
   "xlink": "http://www.w3.org/1999/xlink",

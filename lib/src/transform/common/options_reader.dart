@@ -42,6 +42,8 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
       reflectPropertiesAsAttributes: reflectPropertiesAsAttributes,
       platformDirectives: platformDirectives,
       inlineViews: _readBool(config, INLINE_VIEWS_PARAM, defaultValue: false),
+      lazyTransformers:
+          _readBool(config, LAZY_TRANSFORMERS, defaultValue: false),
       formatCode: formatCode);
 }
 

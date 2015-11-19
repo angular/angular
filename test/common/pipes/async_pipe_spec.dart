@@ -19,7 +19,7 @@ import "package:angular2/common.dart" show AsyncPipe;
 import "package:angular2/core.dart" show WrappedValue;
 import "package:angular2/src/facade/async.dart"
     show EventEmitter, ObservableWrapper, PromiseWrapper, TimerWrapper;
-import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 
 main() {
   describe("AsyncPipe", () {

@@ -13,7 +13,7 @@ import "package:angular2/testing_internal.dart"
         inject,
         it,
         xit;
-import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 import "package:angular2/core.dart" show Component, Directive, View;
 import "package:angular2/src/core/linker/element_ref.dart" show ElementRef;
 

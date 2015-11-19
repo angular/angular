@@ -2,7 +2,7 @@ library angular2.src.core.application_ref;
 
 import "package:angular2/src/core/zone/ng_zone.dart" show NgZone;
 import "package:angular2/src/facade/lang.dart"
-    show Type, isBlank, isPresent, assertionsEnabled, print;
+    show Type, isBlank, isPresent, assertionsEnabled;
 import "package:angular2/src/core/di.dart"
     show provide, Provider, Injector, OpaqueToken;
 import "application_tokens.dart"
@@ -21,6 +21,7 @@ import "package:angular2/src/core/linker/dynamic_component_loader.dart"
     show ComponentRef, DynamicComponentLoader;
 import "package:angular2/src/facade/exceptions.dart"
     show BaseException, WrappedException, ExceptionHandler, unimplemented;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/core/linker/view_ref.dart" show internalView;
 import "profile/profile.dart" show wtfLeave, wtfCreateScope, WtfScopeFn;
 import "package:angular2/src/core/change_detection/change_detector_ref.dart"
@@ -251,7 +252,7 @@ class PlatformRef_ extends PlatformRef {
         if (isPresent(exceptionHandler)) {
           exceptionHandler.call(e, e_stack);
         } else {
-          print(e.toString());
+          DOM.logError(e);
         }
       }
     });

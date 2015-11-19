@@ -30,11 +30,16 @@ import 'ng_meta_linker.dart';
 ///
 /// This transformer is part of a multi-phase transform.
 /// See `angular2/src/transform/transformer.dart` for transformer ordering.
-class DirectiveMetadataLinker extends Transformer {
+class DirectiveMetadataLinker extends Transformer implements LazyTransformer {
   final _encoder = const JsonEncoder.withIndent('  ');
 
   @override
   bool isPrimary(AssetId id) => id.path.endsWith(SUMMARY_META_EXTENSION);
+
+  @override
+  declareOutputs(DeclaringTransform transform) {
+    transform.declareOutput(_ngLinkedAssetId(transform.primaryId));
+  }
 
   @override
   Future apply(Transform transform) {
@@ -45,13 +50,9 @@ class DirectiveMetadataLinker extends Transformer {
           new AssetReader.fromTransform(transform), primaryId).then((ngMeta) {
         if (ngMeta != null) {
           final outputId = _ngLinkedAssetId(primaryId);
-          if (!ngMeta.isEmpty) {
-            transform.addOutput(new Asset.fromString(
-                outputId, _encoder.convert(ngMeta.toJson())));
-          } else {
-            // Not outputting an asset could confuse barback.
-            transform.addOutput(new Asset.fromString(outputId, ''));
-          }
+          // Not outputting an asset could confuse barback.
+          var output = ngMeta.isEmpty ? '' : _encoder.convert(ngMeta.toJson());
+          transform.addOutput(new Asset.fromString(outputId, output));
         }
       });
     }, log: transform.logger);

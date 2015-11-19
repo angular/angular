@@ -1,6 +1,6 @@
 library angular2.src.router.path_location_strategy;
 
-import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 import "package:angular2/angular2.dart" show Injectable, Inject;
 import "package:angular2/src/facade/browser.dart"
     show EventListener, History, Location;

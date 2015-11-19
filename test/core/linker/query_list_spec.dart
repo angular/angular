@@ -17,7 +17,7 @@ import "package:angular2/src/facade/collection.dart"
 import "package:angular2/src/facade/lang.dart" show IS_DART, StringWrapper;
 import "package:angular2/src/facade/async.dart" show ObservableWrapper;
 import "package:angular2/src/core/linker/query_list.dart" show QueryList;
-import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 
 abstract class _JsQueryList {
   dynamic filter(dynamic c);
