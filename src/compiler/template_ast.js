@@ -1,19 +1,19 @@
 'use strict';var lang_1 = require('angular2/src/facade/lang');
 var TextAst = (function () {
-    function TextAst(value, ngContentIndex, sourceInfo) {
+    function TextAst(value, ngContentIndex, sourceSpan) {
         this.value = value;
         this.ngContentIndex = ngContentIndex;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     TextAst.prototype.visit = function (visitor, context) { return visitor.visitText(this, context); };
     return TextAst;
 })();
 exports.TextAst = TextAst;
 var BoundTextAst = (function () {
-    function BoundTextAst(value, ngContentIndex, sourceInfo) {
+    function BoundTextAst(value, ngContentIndex, sourceSpan) {
         this.value = value;
         this.ngContentIndex = ngContentIndex;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     BoundTextAst.prototype.visit = function (visitor, context) {
         return visitor.visitBoundText(this, context);
@@ -22,22 +22,22 @@ var BoundTextAst = (function () {
 })();
 exports.BoundTextAst = BoundTextAst;
 var AttrAst = (function () {
-    function AttrAst(name, value, sourceInfo) {
+    function AttrAst(name, value, sourceSpan) {
         this.name = name;
         this.value = value;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     AttrAst.prototype.visit = function (visitor, context) { return visitor.visitAttr(this, context); };
     return AttrAst;
 })();
 exports.AttrAst = AttrAst;
 var BoundElementPropertyAst = (function () {
-    function BoundElementPropertyAst(name, type, value, unit, sourceInfo) {
+    function BoundElementPropertyAst(name, type, value, unit, sourceSpan) {
         this.name = name;
         this.type = type;
         this.value = value;
         this.unit = unit;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     BoundElementPropertyAst.prototype.visit = function (visitor, context) {
         return visitor.visitElementProperty(this, context);
@@ -46,11 +46,11 @@ var BoundElementPropertyAst = (function () {
 })();
 exports.BoundElementPropertyAst = BoundElementPropertyAst;
 var BoundEventAst = (function () {
-    function BoundEventAst(name, target, handler, sourceInfo) {
+    function BoundEventAst(name, target, handler, sourceSpan) {
         this.name = name;
         this.target = target;
         this.handler = handler;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     BoundEventAst.prototype.visit = function (visitor, context) {
         return visitor.visitEvent(this, context);
@@ -71,10 +71,10 @@ var BoundEventAst = (function () {
 })();
 exports.BoundEventAst = BoundEventAst;
 var VariableAst = (function () {
-    function VariableAst(name, value, sourceInfo) {
+    function VariableAst(name, value, sourceSpan) {
         this.name = name;
         this.value = value;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     VariableAst.prototype.visit = function (visitor, context) {
         return visitor.visitVariable(this, context);
@@ -83,7 +83,7 @@ var VariableAst = (function () {
 })();
 exports.VariableAst = VariableAst;
 var ElementAst = (function () {
-    function ElementAst(name, attrs, inputs, outputs, exportAsVars, directives, children, ngContentIndex, sourceInfo) {
+    function ElementAst(name, attrs, inputs, outputs, exportAsVars, directives, children, ngContentIndex, sourceSpan) {
         this.name = name;
         this.attrs = attrs;
         this.inputs = inputs;
@@ -92,7 +92,7 @@ var ElementAst = (function () {
         this.directives = directives;
         this.children = children;
         this.ngContentIndex = ngContentIndex;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     ElementAst.prototype.visit = function (visitor, context) {
         return visitor.visitElement(this, context);
@@ -110,14 +110,14 @@ var ElementAst = (function () {
 })();
 exports.ElementAst = ElementAst;
 var EmbeddedTemplateAst = (function () {
-    function EmbeddedTemplateAst(attrs, outputs, vars, directives, children, ngContentIndex, sourceInfo) {
+    function EmbeddedTemplateAst(attrs, outputs, vars, directives, children, ngContentIndex, sourceSpan) {
         this.attrs = attrs;
         this.outputs = outputs;
         this.vars = vars;
         this.directives = directives;
         this.children = children;
         this.ngContentIndex = ngContentIndex;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     EmbeddedTemplateAst.prototype.visit = function (visitor, context) {
         return visitor.visitEmbeddedTemplate(this, context);
@@ -126,11 +126,11 @@ var EmbeddedTemplateAst = (function () {
 })();
 exports.EmbeddedTemplateAst = EmbeddedTemplateAst;
 var BoundDirectivePropertyAst = (function () {
-    function BoundDirectivePropertyAst(directiveName, templateName, value, sourceInfo) {
+    function BoundDirectivePropertyAst(directiveName, templateName, value, sourceSpan) {
         this.directiveName = directiveName;
         this.templateName = templateName;
         this.value = value;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     BoundDirectivePropertyAst.prototype.visit = function (visitor, context) {
         return visitor.visitDirectiveProperty(this, context);
@@ -139,13 +139,13 @@ var BoundDirectivePropertyAst = (function () {
 })();
 exports.BoundDirectivePropertyAst = BoundDirectivePropertyAst;
 var DirectiveAst = (function () {
-    function DirectiveAst(directive, inputs, hostProperties, hostEvents, exportAsVars, sourceInfo) {
+    function DirectiveAst(directive, inputs, hostProperties, hostEvents, exportAsVars, sourceSpan) {
         this.directive = directive;
         this.inputs = inputs;
         this.hostProperties = hostProperties;
         this.hostEvents = hostEvents;
         this.exportAsVars = exportAsVars;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     DirectiveAst.prototype.visit = function (visitor, context) {
         return visitor.visitDirective(this, context);
@@ -154,10 +154,10 @@ var DirectiveAst = (function () {
 })();
 exports.DirectiveAst = DirectiveAst;
 var NgContentAst = (function () {
-    function NgContentAst(index, ngContentIndex, sourceInfo) {
+    function NgContentAst(index, ngContentIndex, sourceSpan) {
         this.index = index;
         this.ngContentIndex = ngContentIndex;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     NgContentAst.prototype.visit = function (visitor, context) {
         return visitor.visitNgContent(this, context);

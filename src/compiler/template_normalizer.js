@@ -22,10 +22,10 @@ var html_ast_1 = require('./html_ast');
 var html_parser_1 = require('./html_parser');
 var template_preparser_1 = require('./template_preparser');
 var TemplateNormalizer = (function () {
-    function TemplateNormalizer(_xhr, _urlResolver, _domParser) {
+    function TemplateNormalizer(_xhr, _urlResolver, _htmlParser) {
         this._xhr = _xhr;
         this._urlResolver = _urlResolver;
-        this._domParser = _domParser;
+        this._htmlParser = _htmlParser;
     }
     TemplateNormalizer.prototype.normalizeTemplate = function (directiveType, template) {
         var _this = this;
@@ -43,9 +43,13 @@ var TemplateNormalizer = (function () {
     };
     TemplateNormalizer.prototype.normalizeLoadedTemplate = function (directiveType, templateMeta, template, templateAbsUrl) {
         var _this = this;
-        var domNodes = this._domParser.parse(template, directiveType.name);
+        var rootNodesAndErrors = this._htmlParser.parse(template, directiveType.name);
+        if (rootNodesAndErrors.errors.length > 0) {
+            var errorString = rootNodesAndErrors.errors.join('\n');
+            throw new exceptions_1.BaseException("Template parse errors:\n" + errorString);
+        }
         var visitor = new TemplatePreparseVisitor();
-        html_ast_1.htmlVisitAll(visitor, domNodes);
+        html_ast_1.htmlVisitAll(visitor, rootNodesAndErrors.rootNodes);
         var allStyles = templateMeta.styles.concat(visitor.styles);
         var allStyleAbsUrls = visitor.styleUrls.filter(style_url_resolver_1.isStyleUrlResolvable)
             .map(function (url) { return _this._urlResolver.resolve(templateAbsUrl, url); })

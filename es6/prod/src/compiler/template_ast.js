@@ -1,48 +1,48 @@
 import { isPresent } from 'angular2/src/facade/lang';
 export class TextAst {
-    constructor(value, ngContentIndex, sourceInfo) {
+    constructor(value, ngContentIndex, sourceSpan) {
         this.value = value;
         this.ngContentIndex = ngContentIndex;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     visit(visitor, context) { return visitor.visitText(this, context); }
 }
 export class BoundTextAst {
-    constructor(value, ngContentIndex, sourceInfo) {
+    constructor(value, ngContentIndex, sourceSpan) {
         this.value = value;
         this.ngContentIndex = ngContentIndex;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     visit(visitor, context) {
         return visitor.visitBoundText(this, context);
     }
 }
 export class AttrAst {
-    constructor(name, value, sourceInfo) {
+    constructor(name, value, sourceSpan) {
         this.name = name;
         this.value = value;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     visit(visitor, context) { return visitor.visitAttr(this, context); }
 }
 export class BoundElementPropertyAst {
-    constructor(name, type, value, unit, sourceInfo) {
+    constructor(name, type, value, unit, sourceSpan) {
         this.name = name;
         this.type = type;
         this.value = value;
         this.unit = unit;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     visit(visitor, context) {
         return visitor.visitElementProperty(this, context);
     }
 }
 export class BoundEventAst {
-    constructor(name, target, handler, sourceInfo) {
+    constructor(name, target, handler, sourceSpan) {
         this.name = name;
         this.target = target;
         this.handler = handler;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     visit(visitor, context) {
         return visitor.visitEvent(this, context);
@@ -57,17 +57,17 @@ export class BoundEventAst {
     }
 }
 export class VariableAst {
-    constructor(name, value, sourceInfo) {
+    constructor(name, value, sourceSpan) {
         this.name = name;
         this.value = value;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     visit(visitor, context) {
         return visitor.visitVariable(this, context);
     }
 }
 export class ElementAst {
-    constructor(name, attrs, inputs, outputs, exportAsVars, directives, children, ngContentIndex, sourceInfo) {
+    constructor(name, attrs, inputs, outputs, exportAsVars, directives, children, ngContentIndex, sourceSpan) {
         this.name = name;
         this.attrs = attrs;
         this.inputs = inputs;
@@ -76,7 +76,7 @@ export class ElementAst {
         this.directives = directives;
         this.children = children;
         this.ngContentIndex = ngContentIndex;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     visit(visitor, context) {
         return visitor.visitElement(this, context);
@@ -92,48 +92,48 @@ export class ElementAst {
     }
 }
 export class EmbeddedTemplateAst {
-    constructor(attrs, outputs, vars, directives, children, ngContentIndex, sourceInfo) {
+    constructor(attrs, outputs, vars, directives, children, ngContentIndex, sourceSpan) {
         this.attrs = attrs;
         this.outputs = outputs;
         this.vars = vars;
         this.directives = directives;
         this.children = children;
         this.ngContentIndex = ngContentIndex;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     visit(visitor, context) {
         return visitor.visitEmbeddedTemplate(this, context);
     }
 }
 export class BoundDirectivePropertyAst {
-    constructor(directiveName, templateName, value, sourceInfo) {
+    constructor(directiveName, templateName, value, sourceSpan) {
         this.directiveName = directiveName;
         this.templateName = templateName;
         this.value = value;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     visit(visitor, context) {
         return visitor.visitDirectiveProperty(this, context);
     }
 }
 export class DirectiveAst {
-    constructor(directive, inputs, hostProperties, hostEvents, exportAsVars, sourceInfo) {
+    constructor(directive, inputs, hostProperties, hostEvents, exportAsVars, sourceSpan) {
         this.directive = directive;
         this.inputs = inputs;
         this.hostProperties = hostProperties;
         this.hostEvents = hostEvents;
         this.exportAsVars = exportAsVars;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     visit(visitor, context) {
         return visitor.visitDirective(this, context);
     }
 }
 export class NgContentAst {
-    constructor(index, ngContentIndex, sourceInfo) {
+    constructor(index, ngContentIndex, sourceSpan) {
         this.index = index;
         this.ngContentIndex = ngContentIndex;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     visit(visitor, context) {
         return visitor.visitNgContent(this, context);

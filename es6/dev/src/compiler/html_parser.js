@@ -9,100 +9,205 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { isPresent, StringWrapper } from 'angular2/src/facade/lang';
-import { DOM } from 'angular2/src/core/dom/dom_adapter';
-import { HtmlAttrAst, HtmlTextAst, HtmlElementAst, htmlVisitAll } from './html_ast';
-import { escapeDoubleQuoteString } from './util';
+import { isPresent, isBlank, RegExpWrapper } from 'angular2/src/facade/lang';
+import { ListWrapper } from 'angular2/src/facade/collection';
+import { HtmlAttrAst, HtmlTextAst, HtmlElementAst } from './html_ast';
 import { Injectable } from 'angular2/src/core/di';
-export let HtmlParser = class {
-    parse(template, sourceInfo) {
-        var root = DOM.createTemplate(template);
-        return parseChildNodes(root, sourceInfo);
+import { HtmlTokenType, tokenizeHtml } from './html_lexer';
+import { ParseError, ParseSourceSpan } from './parse_util';
+import { getHtmlTagDefinition } from './html_tags';
+export class HtmlTreeError extends ParseError {
+    constructor(elementName, location, msg) {
+        super(location, msg);
+        this.elementName = elementName;
     }
-    unparse(nodes) {
-        var visitor = new UnparseVisitor();
-        var parts = [];
-        htmlVisitAll(visitor, nodes, parts);
-        return parts.join('');
+    static create(elementName, location, msg) {
+        return new HtmlTreeError(elementName, location, msg);
+    }
+}
+export class HtmlParseTreeResult {
+    constructor(rootNodes, errors) {
+        this.rootNodes = rootNodes;
+        this.errors = errors;
+    }
+}
+export let HtmlParser = class {
+    parse(sourceContent, sourceUrl) {
+        var tokensAndErrors = tokenizeHtml(sourceContent, sourceUrl);
+        var treeAndErrors = new TreeBuilder(tokensAndErrors.tokens).build();
+        return new HtmlParseTreeResult(treeAndErrors.rootNodes, tokensAndErrors.errors
+            .concat(treeAndErrors.errors));
     }
 };
 HtmlParser = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], HtmlParser);
-function parseText(text, indexInParent, parentSourceInfo) {
-    // TODO(tbosch): add source row/column source info from parse5 / package:html
-    var value = DOM.getText(text);
-    return new HtmlTextAst(value, `${parentSourceInfo} > #text(${value}):nth-child(${indexInParent})`);
-}
-function parseAttr(element, parentSourceInfo, attrName, attrValue) {
-    // TODO(tbosch): add source row/column source info from parse5 / package:html
-    return new HtmlAttrAst(attrName, attrValue, `${parentSourceInfo}[${attrName}=${attrValue}]`);
-}
-function parseElement(element, indexInParent, parentSourceInfo) {
-    // normalize nodename always as lower case so that following build steps
-    // can rely on this
-    var nodeName = DOM.nodeName(element).toLowerCase();
-    // TODO(tbosch): add source row/column source info from parse5 / package:html
-    var sourceInfo = `${parentSourceInfo} > ${nodeName}:nth-child(${indexInParent})`;
-    var attrs = parseAttrs(element, sourceInfo);
-    var childNodes = parseChildNodes(element, sourceInfo);
-    return new HtmlElementAst(nodeName, attrs, childNodes, sourceInfo);
-}
-function parseAttrs(element, elementSourceInfo) {
-    // Note: sort the attributes early in the pipeline to get
-    // consistent results throughout the pipeline, as attribute order is not defined
-    // in DOM parsers!
-    var attrMap = DOM.attributeMap(element);
-    var attrList = [];
-    attrMap.forEach((value, name) => attrList.push([name, value]));
-    attrList.sort((entry1, entry2) => StringWrapper.compare(entry1[0], entry2[0]));
-    return attrList.map(entry => parseAttr(element, elementSourceInfo, entry[0], entry[1]));
-}
-function parseChildNodes(element, parentSourceInfo) {
-    var root = DOM.templateAwareRoot(element);
-    var childNodes = DOM.childNodesAsList(root);
-    var result = [];
-    var index = 0;
-    childNodes.forEach(childNode => {
-        var childResult = null;
-        if (DOM.isTextNode(childNode)) {
-            var text = childNode;
-            childResult = parseText(text, index, parentSourceInfo);
+class TreeBuilder {
+    constructor(tokens) {
+        this.tokens = tokens;
+        this.index = -1;
+        this.rootNodes = [];
+        this.errors = [];
+        this.elementStack = [];
+        this._advance();
+    }
+    build() {
+        while (this.peek.type !== HtmlTokenType.EOF) {
+            if (this.peek.type === HtmlTokenType.TAG_OPEN_START) {
+                this._consumeStartTag(this._advance());
+            }
+            else if (this.peek.type === HtmlTokenType.TAG_CLOSE) {
+                this._consumeEndTag(this._advance());
+            }
+            else if (this.peek.type === HtmlTokenType.CDATA_START) {
+                this._consumeCdata(this._advance());
+            }
+            else if (this.peek.type === HtmlTokenType.COMMENT_START) {
+                this._consumeComment(this._advance());
+            }
+            else if (this.peek.type === HtmlTokenType.TEXT ||
+                this.peek.type === HtmlTokenType.RAW_TEXT ||
+                this.peek.type === HtmlTokenType.ESCAPABLE_RAW_TEXT) {
+                this._consumeText(this._advance());
+            }
+            else {
+                // Skip all other tokens...
+                this._advance();
+            }
         }
-        else if (DOM.isElementNode(childNode)) {
-            var el = childNode;
-            childResult = parseElement(el, index, parentSourceInfo);
+        return new HtmlParseTreeResult(this.rootNodes, this.errors);
+    }
+    _advance() {
+        var prev = this.peek;
+        if (this.index < this.tokens.length - 1) {
+            // Note: there is always an EOF token at the end
+            this.index++;
         }
-        if (isPresent(childResult)) {
-            // Won't have a childResult for e.g. comment nodes
-            result.push(childResult);
+        this.peek = this.tokens[this.index];
+        return prev;
+    }
+    _advanceIf(type) {
+        if (this.peek.type === type) {
+            return this._advance();
         }
-        index++;
-    });
-    return result;
-}
-class UnparseVisitor {
-    visitElement(ast, parts) {
-        parts.push(`<${ast.name}`);
+        return null;
+    }
+    _consumeCdata(startToken) {
+        this._consumeText(this._advance());
+        this._advanceIf(HtmlTokenType.CDATA_END);
+    }
+    _consumeComment(startToken) {
+        this._advanceIf(HtmlTokenType.RAW_TEXT);
+        this._advanceIf(HtmlTokenType.COMMENT_END);
+    }
+    _consumeText(token) {
+        this._addToParent(new HtmlTextAst(token.parts[0], token.sourceSpan));
+    }
+    _consumeStartTag(startTagToken) {
+        var prefix = startTagToken.parts[0];
+        var name = startTagToken.parts[1];
         var attrs = [];
-        htmlVisitAll(this, ast.attrs, attrs);
-        if (ast.attrs.length > 0) {
-            parts.push(' ');
-            parts.push(attrs.join(' '));
+        while (this.peek.type === HtmlTokenType.ATTR_NAME) {
+            attrs.push(this._consumeAttr(this._advance()));
         }
-        parts.push(`>`);
-        htmlVisitAll(this, ast.children, parts);
-        parts.push(`</${ast.name}>`);
-        return null;
+        var fullName = getElementFullName(prefix, name, this._getParentElement());
+        var voidElement = false;
+        // Note: There could have been a tokenizer error
+        // so that we don't get a token for the end tag...
+        if (this.peek.type === HtmlTokenType.TAG_OPEN_END_VOID) {
+            this._advance();
+            voidElement = true;
+        }
+        else if (this.peek.type === HtmlTokenType.TAG_OPEN_END) {
+            this._advance();
+            voidElement = false;
+        }
+        var end = this.peek.sourceSpan.start;
+        var el = new HtmlElementAst(fullName, attrs, [], new ParseSourceSpan(startTagToken.sourceSpan.start, end));
+        this._pushElement(el);
+        if (voidElement) {
+            this._popElement(fullName);
+        }
     }
-    visitAttr(ast, parts) {
-        parts.push(`${ast.name}=${escapeDoubleQuoteString(ast.value)}`);
-        return null;
+    _pushElement(el) {
+        if (this.elementStack.length > 0) {
+            var parentEl = ListWrapper.last(this.elementStack);
+            if (getHtmlTagDefinition(parentEl.name).isClosedByChild(el.name)) {
+                this.elementStack.pop();
+            }
+        }
+        var tagDef = getHtmlTagDefinition(el.name);
+        var parentEl = this._getParentElement();
+        if (tagDef.requireExtraParent(isPresent(parentEl) ? parentEl.name : null)) {
+            var newParent = new HtmlElementAst(tagDef.requiredParent, [], [el], el.sourceSpan);
+            this._addToParent(newParent);
+            this.elementStack.push(newParent);
+            this.elementStack.push(el);
+        }
+        else {
+            this._addToParent(el);
+            this.elementStack.push(el);
+        }
     }
-    visitText(ast, parts) {
-        parts.push(ast.value);
-        return null;
+    _consumeEndTag(endTagToken) {
+        var fullName = getElementFullName(endTagToken.parts[0], endTagToken.parts[1], this._getParentElement());
+        if (!this._popElement(fullName)) {
+            this.errors.push(HtmlTreeError.create(fullName, endTagToken.sourceSpan.start, `Unexpected closing tag "${endTagToken.parts[1]}"`));
+        }
     }
+    _popElement(fullName) {
+        for (let stackIndex = this.elementStack.length - 1; stackIndex >= 0; stackIndex--) {
+            var el = this.elementStack[stackIndex];
+            if (el.name.toLowerCase() == fullName.toLowerCase()) {
+                ListWrapper.splice(this.elementStack, stackIndex, this.elementStack.length - stackIndex);
+                return true;
+            }
+            if (!getHtmlTagDefinition(el.name).closedByParent) {
+                return false;
+            }
+        }
+        return false;
+    }
+    _consumeAttr(attrName) {
+        var fullName = mergeNsAndName(attrName.parts[0], attrName.parts[1]);
+        var end = attrName.sourceSpan.end;
+        var value = '';
+        if (this.peek.type === HtmlTokenType.ATTR_VALUE) {
+            var valueToken = this._advance();
+            value = valueToken.parts[0];
+            end = valueToken.sourceSpan.end;
+        }
+        return new HtmlAttrAst(fullName, value, new ParseSourceSpan(attrName.sourceSpan.start, end));
+    }
+    _getParentElement() {
+        return this.elementStack.length > 0 ? ListWrapper.last(this.elementStack) : null;
+    }
+    _addToParent(node) {
+        var parent = this._getParentElement();
+        if (isPresent(parent)) {
+            parent.children.push(node);
+        }
+        else {
+            this.rootNodes.push(node);
+        }
+    }
+}
+function mergeNsAndName(prefix, localName) {
+    return isPresent(prefix) ? `@${prefix}:${localName}` : localName;
+}
+function getElementFullName(prefix, localName, parentElement) {
+    if (isBlank(prefix)) {
+        prefix = getHtmlTagDefinition(localName).implicitNamespacePrefix;
+        if (isBlank(prefix) && isPresent(parentElement)) {
+            prefix = namespacePrefix(parentElement.name);
+        }
+    }
+    return mergeNsAndName(prefix, localName);
+}
+var NS_PREFIX_RE = /^@([^:]+)/g;
+function namespacePrefix(elementName) {
+    var match = RegExpWrapper.firstMatch(NS_PREFIX_RE, elementName);
+    return isBlank(match) ? null : match[1];
 }
 //# sourceMappingURL=html_parser.js.map

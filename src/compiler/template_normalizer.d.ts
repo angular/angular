@@ -6,8 +6,8 @@ import { HtmlParser } from './html_parser';
 export declare class TemplateNormalizer {
     private _xhr;
     private _urlResolver;
-    private _domParser;
-    constructor(_xhr: XHR, _urlResolver: UrlResolver, _domParser: HtmlParser);
+    private _htmlParser;
+    constructor(_xhr: XHR, _urlResolver: UrlResolver, _htmlParser: HtmlParser);
     normalizeTemplate(directiveType: CompileTypeMetadata, template: CompileTemplateMetadata): Promise<CompileTemplateMetadata>;
     normalizeLoadedTemplate(directiveType: CompileTypeMetadata, templateMeta: CompileTemplateMetadata, template: string, templateAbsUrl: string): CompileTemplateMetadata;
 }

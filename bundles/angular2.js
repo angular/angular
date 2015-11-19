@@ -23233,10 +23233,10 @@ System.register("angular2/src/compiler/template_ast", ["angular2/src/facade/lang
   global.define = undefined;
   var lang_1 = require("angular2/src/facade/lang");
   var TextAst = (function() {
-    function TextAst(value, ngContentIndex, sourceInfo) {
+    function TextAst(value, ngContentIndex, sourceSpan) {
       this.value = value;
       this.ngContentIndex = ngContentIndex;
-      this.sourceInfo = sourceInfo;
+      this.sourceSpan = sourceSpan;
     }
     TextAst.prototype.visit = function(visitor, context) {
       return visitor.visitText(this, context);
@@ -23245,10 +23245,10 @@ System.register("angular2/src/compiler/template_ast", ["angular2/src/facade/lang
   })();
   exports.TextAst = TextAst;
   var BoundTextAst = (function() {
-    function BoundTextAst(value, ngContentIndex, sourceInfo) {
+    function BoundTextAst(value, ngContentIndex, sourceSpan) {
       this.value = value;
       this.ngContentIndex = ngContentIndex;
-      this.sourceInfo = sourceInfo;
+      this.sourceSpan = sourceSpan;
     }
     BoundTextAst.prototype.visit = function(visitor, context) {
       return visitor.visitBoundText(this, context);
@@ -23257,10 +23257,10 @@ System.register("angular2/src/compiler/template_ast", ["angular2/src/facade/lang
   })();
   exports.BoundTextAst = BoundTextAst;
   var AttrAst = (function() {
-    function AttrAst(name, value, sourceInfo) {
+    function AttrAst(name, value, sourceSpan) {
       this.name = name;
       this.value = value;
-      this.sourceInfo = sourceInfo;
+      this.sourceSpan = sourceSpan;
     }
     AttrAst.prototype.visit = function(visitor, context) {
       return visitor.visitAttr(this, context);
@@ -23269,12 +23269,12 @@ System.register("angular2/src/compiler/template_ast", ["angular2/src/facade/lang
   })();
   exports.AttrAst = AttrAst;
   var BoundElementPropertyAst = (function() {
-    function BoundElementPropertyAst(name, type, value, unit, sourceInfo) {
+    function BoundElementPropertyAst(name, type, value, unit, sourceSpan) {
       this.name = name;
       this.type = type;
       this.value = value;
       this.unit = unit;
-      this.sourceInfo = sourceInfo;
+      this.sourceSpan = sourceSpan;
     }
     BoundElementPropertyAst.prototype.visit = function(visitor, context) {
       return visitor.visitElementProperty(this, context);
@@ -23283,11 +23283,11 @@ System.register("angular2/src/compiler/template_ast", ["angular2/src/facade/lang
   })();
   exports.BoundElementPropertyAst = BoundElementPropertyAst;
   var BoundEventAst = (function() {
-    function BoundEventAst(name, target, handler, sourceInfo) {
+    function BoundEventAst(name, target, handler, sourceSpan) {
       this.name = name;
       this.target = target;
       this.handler = handler;
-      this.sourceInfo = sourceInfo;
+      this.sourceSpan = sourceSpan;
     }
     BoundEventAst.prototype.visit = function(visitor, context) {
       return visitor.visitEvent(this, context);
@@ -23307,10 +23307,10 @@ System.register("angular2/src/compiler/template_ast", ["angular2/src/facade/lang
   })();
   exports.BoundEventAst = BoundEventAst;
   var VariableAst = (function() {
-    function VariableAst(name, value, sourceInfo) {
+    function VariableAst(name, value, sourceSpan) {
       this.name = name;
       this.value = value;
-      this.sourceInfo = sourceInfo;
+      this.sourceSpan = sourceSpan;
     }
     VariableAst.prototype.visit = function(visitor, context) {
       return visitor.visitVariable(this, context);
@@ -23319,7 +23319,7 @@ System.register("angular2/src/compiler/template_ast", ["angular2/src/facade/lang
   })();
   exports.VariableAst = VariableAst;
   var ElementAst = (function() {
-    function ElementAst(name, attrs, inputs, outputs, exportAsVars, directives, children, ngContentIndex, sourceInfo) {
+    function ElementAst(name, attrs, inputs, outputs, exportAsVars, directives, children, ngContentIndex, sourceSpan) {
       this.name = name;
       this.attrs = attrs;
       this.inputs = inputs;
@@ -23328,7 +23328,7 @@ System.register("angular2/src/compiler/template_ast", ["angular2/src/facade/lang
       this.directives = directives;
       this.children = children;
       this.ngContentIndex = ngContentIndex;
-      this.sourceInfo = sourceInfo;
+      this.sourceSpan = sourceSpan;
     }
     ElementAst.prototype.visit = function(visitor, context) {
       return visitor.visitElement(this, context);
@@ -23343,14 +23343,14 @@ System.register("angular2/src/compiler/template_ast", ["angular2/src/facade/lang
   })();
   exports.ElementAst = ElementAst;
   var EmbeddedTemplateAst = (function() {
-    function EmbeddedTemplateAst(attrs, outputs, vars, directives, children, ngContentIndex, sourceInfo) {
+    function EmbeddedTemplateAst(attrs, outputs, vars, directives, children, ngContentIndex, sourceSpan) {
       this.attrs = attrs;
       this.outputs = outputs;
       this.vars = vars;
       this.directives = directives;
       this.children = children;
       this.ngContentIndex = ngContentIndex;
-      this.sourceInfo = sourceInfo;
+      this.sourceSpan = sourceSpan;
     }
     EmbeddedTemplateAst.prototype.visit = function(visitor, context) {
       return visitor.visitEmbeddedTemplate(this, context);
@@ -23359,11 +23359,11 @@ System.register("angular2/src/compiler/template_ast", ["angular2/src/facade/lang
   })();
   exports.EmbeddedTemplateAst = EmbeddedTemplateAst;
   var BoundDirectivePropertyAst = (function() {
-    function BoundDirectivePropertyAst(directiveName, templateName, value, sourceInfo) {
+    function BoundDirectivePropertyAst(directiveName, templateName, value, sourceSpan) {
       this.directiveName = directiveName;
       this.templateName = templateName;
       this.value = value;
-      this.sourceInfo = sourceInfo;
+      this.sourceSpan = sourceSpan;
     }
     BoundDirectivePropertyAst.prototype.visit = function(visitor, context) {
       return visitor.visitDirectiveProperty(this, context);
@@ -23372,13 +23372,13 @@ System.register("angular2/src/compiler/template_ast", ["angular2/src/facade/lang
   })();
   exports.BoundDirectivePropertyAst = BoundDirectivePropertyAst;
   var DirectiveAst = (function() {
-    function DirectiveAst(directive, inputs, hostProperties, hostEvents, exportAsVars, sourceInfo) {
+    function DirectiveAst(directive, inputs, hostProperties, hostEvents, exportAsVars, sourceSpan) {
       this.directive = directive;
       this.inputs = inputs;
       this.hostProperties = hostProperties;
       this.hostEvents = hostEvents;
       this.exportAsVars = exportAsVars;
-      this.sourceInfo = sourceInfo;
+      this.sourceSpan = sourceSpan;
     }
     DirectiveAst.prototype.visit = function(visitor, context) {
       return visitor.visitDirective(this, context);
@@ -23387,10 +23387,10 @@ System.register("angular2/src/compiler/template_ast", ["angular2/src/facade/lang
   })();
   exports.DirectiveAst = DirectiveAst;
   var NgContentAst = (function() {
-    function NgContentAst(index, ngContentIndex, sourceInfo) {
+    function NgContentAst(index, ngContentIndex, sourceSpan) {
       this.index = index;
       this.ngContentIndex = ngContentIndex;
-      this.sourceInfo = sourceInfo;
+      this.sourceSpan = sourceSpan;
     }
     NgContentAst.prototype.visit = function(visitor, context) {
       return visitor.visitNgContent(this, context);
@@ -24084,9 +24084,9 @@ System.register("angular2/src/compiler/html_ast", ["angular2/src/facade/lang"], 
   global.define = undefined;
   var lang_1 = require("angular2/src/facade/lang");
   var HtmlTextAst = (function() {
-    function HtmlTextAst(value, sourceInfo) {
+    function HtmlTextAst(value, sourceSpan) {
       this.value = value;
-      this.sourceInfo = sourceInfo;
+      this.sourceSpan = sourceSpan;
     }
     HtmlTextAst.prototype.visit = function(visitor, context) {
       return visitor.visitText(this, context);
@@ -24095,10 +24095,10 @@ System.register("angular2/src/compiler/html_ast", ["angular2/src/facade/lang"], 
   })();
   exports.HtmlTextAst = HtmlTextAst;
   var HtmlAttrAst = (function() {
-    function HtmlAttrAst(name, value, sourceInfo) {
+    function HtmlAttrAst(name, value, sourceSpan) {
       this.name = name;
       this.value = value;
-      this.sourceInfo = sourceInfo;
+      this.sourceSpan = sourceSpan;
     }
     HtmlAttrAst.prototype.visit = function(visitor, context) {
       return visitor.visitAttr(this, context);
@@ -24107,11 +24107,11 @@ System.register("angular2/src/compiler/html_ast", ["angular2/src/facade/lang"], 
   })();
   exports.HtmlAttrAst = HtmlAttrAst;
   var HtmlElementAst = (function() {
-    function HtmlElementAst(name, attrs, children, sourceInfo) {
+    function HtmlElementAst(name, attrs, children, sourceSpan) {
       this.name = name;
       this.attrs = attrs;
       this.children = children;
-      this.sourceInfo = sourceInfo;
+      this.sourceSpan = sourceSpan;
     }
     HtmlElementAst.prototype.visit = function(visitor, context) {
       return visitor.visitElement(this, context);
@@ -24133,6 +24133,288 @@ System.register("angular2/src/compiler/html_ast", ["angular2/src/facade/lang"], 
     return result;
   }
   exports.htmlVisitAll = htmlVisitAll;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/compiler/parse_util", [], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var ParseLocation = (function() {
+    function ParseLocation(file, offset, line, col) {
+      this.file = file;
+      this.offset = offset;
+      this.line = line;
+      this.col = col;
+    }
+    ParseLocation.prototype.toString = function() {
+      return this.file.url + "@" + this.line + ":" + this.col;
+    };
+    return ParseLocation;
+  })();
+  exports.ParseLocation = ParseLocation;
+  var ParseSourceFile = (function() {
+    function ParseSourceFile(content, url) {
+      this.content = content;
+      this.url = url;
+    }
+    return ParseSourceFile;
+  })();
+  exports.ParseSourceFile = ParseSourceFile;
+  var ParseError = (function() {
+    function ParseError(location, msg) {
+      this.location = location;
+      this.msg = msg;
+    }
+    ParseError.prototype.toString = function() {
+      var source = this.location.file.content;
+      var ctxStart = this.location.offset;
+      if (ctxStart > source.length - 1) {
+        ctxStart = source.length - 1;
+      }
+      var ctxEnd = ctxStart;
+      var ctxLen = 0;
+      var ctxLines = 0;
+      while (ctxLen < 100 && ctxStart > 0) {
+        ctxStart--;
+        ctxLen++;
+        if (source[ctxStart] == "\n") {
+          if (++ctxLines == 3) {
+            break;
+          }
+        }
+      }
+      ctxLen = 0;
+      ctxLines = 0;
+      while (ctxLen < 100 && ctxEnd < source.length - 1) {
+        ctxEnd++;
+        ctxLen++;
+        if (source[ctxEnd] == "\n") {
+          if (++ctxLines == 3) {
+            break;
+          }
+        }
+      }
+      var context = source.substring(ctxStart, this.location.offset) + '[ERROR ->]' + source.substring(this.location.offset, ctxEnd + 1);
+      return this.msg + " (\"" + context + "\"): " + this.location;
+    };
+    return ParseError;
+  })();
+  exports.ParseError = ParseError;
+  var ParseSourceSpan = (function() {
+    function ParseSourceSpan(start, end) {
+      this.start = start;
+      this.end = end;
+    }
+    ParseSourceSpan.prototype.toString = function() {
+      return this.start.file.content.substring(this.start.offset, this.end.offset);
+    };
+    return ParseSourceSpan;
+  })();
+  exports.ParseSourceSpan = ParseSourceSpan;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/compiler/html_tags", ["angular2/src/facade/lang"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var lang_1 = require("angular2/src/facade/lang");
+  exports.NAMED_ENTITIES = lang_1.CONST_EXPR({
+    'lt': '<',
+    'gt': '>',
+    'nbsp': '\u00A0',
+    'amp': '&',
+    'Aacute': '\u00C1',
+    'Acirc': '\u00C2',
+    'Agrave': '\u00C0',
+    'Atilde': '\u00C3',
+    'Auml': '\u00C4',
+    'Ccedil': '\u00C7',
+    'Eacute': '\u00C9',
+    'Ecirc': '\u00CA',
+    'Egrave': '\u00C8',
+    'Euml': '\u00CB',
+    'Iacute': '\u00CD',
+    'Icirc': '\u00CE',
+    'Igrave': '\u00CC',
+    'Iuml': '\u00CF',
+    'Oacute': '\u00D3',
+    'Ocirc': '\u00D4',
+    'Ograve': '\u00D2',
+    'Otilde': '\u00D5',
+    'Ouml': '\u00D6',
+    'Uacute': '\u00DA',
+    'Ucirc': '\u00DB',
+    'Ugrave': '\u00D9',
+    'Uuml': '\u00DC',
+    'aacute': '\u00E1',
+    'acirc': '\u00E2',
+    'agrave': '\u00E0',
+    'atilde': '\u00E3',
+    'auml': '\u00E4',
+    'ccedil': '\u00E7',
+    'eacute': '\u00E9',
+    'ecirc': '\u00EA',
+    'egrave': '\u00E8',
+    'euml': '\u00EB',
+    'iacute': '\u00ED',
+    'icirc': '\u00EE',
+    'igrave': '\u00EC',
+    'iuml': '\u00EF',
+    'oacute': '\u00F3',
+    'ocirc': '\u00F4',
+    'ograve': '\u00F2',
+    'otilde': '\u00F5',
+    'ouml': '\u00F6',
+    'uacute': '\u00FA',
+    'ucirc': '\u00FB',
+    'ugrave': '\u00F9',
+    'uuml': '\u00FC'
+  });
+  (function(HtmlTagContentType) {
+    HtmlTagContentType[HtmlTagContentType["RAW_TEXT"] = 0] = "RAW_TEXT";
+    HtmlTagContentType[HtmlTagContentType["ESCAPABLE_RAW_TEXT"] = 1] = "ESCAPABLE_RAW_TEXT";
+    HtmlTagContentType[HtmlTagContentType["PARSABLE_DATA"] = 2] = "PARSABLE_DATA";
+  })(exports.HtmlTagContentType || (exports.HtmlTagContentType = {}));
+  var HtmlTagContentType = exports.HtmlTagContentType;
+  var HtmlTagDefinition = (function() {
+    function HtmlTagDefinition(_a) {
+      var _this = this;
+      var _b = _a === void 0 ? {} : _a,
+          closedByChildren = _b.closedByChildren,
+          requiredParent = _b.requiredParent,
+          implicitNamespacePrefix = _b.implicitNamespacePrefix,
+          contentType = _b.contentType,
+          closedByParent = _b.closedByParent;
+      this.closedByChildren = {};
+      this.closedByParent = false;
+      if (lang_1.isPresent(closedByChildren) && closedByChildren.length > 0) {
+        closedByChildren.split(',').forEach(function(tagName) {
+          return _this.closedByChildren[tagName.trim()] = true;
+        });
+      }
+      this.closedByParent = lang_1.normalizeBool(closedByParent);
+      this.requiredParent = requiredParent;
+      this.implicitNamespacePrefix = implicitNamespacePrefix;
+      this.contentType = lang_1.isPresent(contentType) ? contentType : HtmlTagContentType.PARSABLE_DATA;
+    }
+    HtmlTagDefinition.prototype.requireExtraParent = function(currentParent) {
+      return lang_1.isPresent(this.requiredParent) && (lang_1.isBlank(currentParent) || this.requiredParent != currentParent.toLowerCase());
+    };
+    HtmlTagDefinition.prototype.isClosedByChild = function(name) {
+      return lang_1.normalizeBool(this.closedByChildren['*']) || lang_1.normalizeBool(this.closedByChildren[name.toLowerCase()]);
+    };
+    return HtmlTagDefinition;
+  })();
+  exports.HtmlTagDefinition = HtmlTagDefinition;
+  var TAG_DEFINITIONS = {
+    'link': new HtmlTagDefinition({
+      closedByChildren: '*',
+      closedByParent: true
+    }),
+    'ng-content': new HtmlTagDefinition({
+      closedByChildren: '*',
+      closedByParent: true
+    }),
+    'img': new HtmlTagDefinition({
+      closedByChildren: '*',
+      closedByParent: true
+    }),
+    'input': new HtmlTagDefinition({
+      closedByChildren: '*',
+      closedByParent: true
+    }),
+    'hr': new HtmlTagDefinition({
+      closedByChildren: '*',
+      closedByParent: true
+    }),
+    'br': new HtmlTagDefinition({
+      closedByChildren: '*',
+      closedByParent: true
+    }),
+    'wbr': new HtmlTagDefinition({
+      closedByChildren: '*',
+      closedByParent: true
+    }),
+    'p': new HtmlTagDefinition({
+      closedByChildren: 'address,article,aside,blockquote,div,dl,fieldset,footer,form,h1,h2,h3,h4,h5,h6,header,hgroup,hr,main,nav,ol,p,pre,section,table,ul',
+      closedByParent: true
+    }),
+    'thead': new HtmlTagDefinition({closedByChildren: 'tbody,tfoot'}),
+    'tbody': new HtmlTagDefinition({
+      closedByChildren: 'tbody,tfoot',
+      closedByParent: true
+    }),
+    'tfoot': new HtmlTagDefinition({
+      closedByChildren: 'tbody',
+      closedByParent: true
+    }),
+    'tr': new HtmlTagDefinition({
+      closedByChildren: 'tr',
+      requiredParent: 'tbody',
+      closedByParent: true
+    }),
+    'td': new HtmlTagDefinition({
+      closedByChildren: 'td,th',
+      closedByParent: true
+    }),
+    'th': new HtmlTagDefinition({
+      closedByChildren: 'td,th',
+      closedByParent: true
+    }),
+    'col': new HtmlTagDefinition({
+      closedByChildren: 'col',
+      requiredParent: 'colgroup'
+    }),
+    'svg': new HtmlTagDefinition({implicitNamespacePrefix: 'svg'}),
+    'math': new HtmlTagDefinition({implicitNamespacePrefix: 'math'}),
+    'li': new HtmlTagDefinition({
+      closedByChildren: 'li',
+      closedByParent: true
+    }),
+    'dt': new HtmlTagDefinition({closedByChildren: 'dt,dd'}),
+    'dd': new HtmlTagDefinition({
+      closedByChildren: 'dt,dd',
+      closedByParent: true
+    }),
+    'rb': new HtmlTagDefinition({
+      closedByChildren: 'rb,rt,rtc,rp',
+      closedByParent: true
+    }),
+    'rt': new HtmlTagDefinition({
+      closedByChildren: 'rb,rt,rtc,rp',
+      closedByParent: true
+    }),
+    'rtc': new HtmlTagDefinition({
+      closedByChildren: 'rb,rtc,rp',
+      closedByParent: true
+    }),
+    'rp': new HtmlTagDefinition({
+      closedByChildren: 'rb,rt,rtc,rp',
+      closedByParent: true
+    }),
+    'optgroup': new HtmlTagDefinition({
+      closedByChildren: 'optgroup',
+      closedByParent: true
+    }),
+    'option': new HtmlTagDefinition({
+      closedByChildren: 'option,optgroup',
+      closedByParent: true
+    }),
+    'style': new HtmlTagDefinition({contentType: HtmlTagContentType.RAW_TEXT}),
+    'script': new HtmlTagDefinition({contentType: HtmlTagContentType.RAW_TEXT}),
+    'title': new HtmlTagDefinition({contentType: HtmlTagContentType.ESCAPABLE_RAW_TEXT}),
+    'textarea': new HtmlTagDefinition({contentType: HtmlTagContentType.ESCAPABLE_RAW_TEXT})
+  };
+  var DEFAULT_TAG_DEFINITION = new HtmlTagDefinition();
+  function getHtmlTagDefinition(tagName) {
+    var result = TAG_DEFINITIONS[tagName.toLowerCase()];
+    return lang_1.isPresent(result) ? result : DEFAULT_TAG_DEFINITION;
+  }
+  exports.getHtmlTagDefinition = getHtmlTagDefinition;
   global.define = __define;
   return module.exports;
 });
@@ -24176,18 +24458,19 @@ System.register("angular2/src/compiler/template_preparser", ["angular2/src/facad
     var relAttr = null;
     var nonBindable = false;
     ast.attrs.forEach(function(attr) {
-      if (attr.name == NG_CONTENT_SELECT_ATTR) {
+      var attrName = attr.name.toLowerCase();
+      if (attrName == NG_CONTENT_SELECT_ATTR) {
         selectAttr = attr.value;
-      } else if (attr.name == LINK_STYLE_HREF_ATTR) {
+      } else if (attrName == LINK_STYLE_HREF_ATTR) {
         hrefAttr = attr.value;
-      } else if (attr.name == LINK_STYLE_REL_ATTR) {
+      } else if (attrName == LINK_STYLE_REL_ATTR) {
         relAttr = attr.value;
-      } else if (attr.name == NG_NON_BINDABLE_ATTR) {
+      } else if (attrName == NG_NON_BINDABLE_ATTR) {
         nonBindable = true;
       }
     });
     selectAttr = normalizeNgContentSelect(selectAttr);
-    var nodeName = ast.name;
+    var nodeName = ast.name.toLowerCase();
     var type = PreparsedElementType.OTHER;
     if (nodeName == NG_CONTENT_ELEMENT) {
       type = PreparsedElementType.NG_CONTENT;
@@ -24268,10 +24551,10 @@ System.register("angular2/src/compiler/template_normalizer", ["angular2/src/comp
   var html_parser_1 = require("angular2/src/compiler/html_parser");
   var template_preparser_1 = require("angular2/src/compiler/template_preparser");
   var TemplateNormalizer = (function() {
-    function TemplateNormalizer(_xhr, _urlResolver, _domParser) {
+    function TemplateNormalizer(_xhr, _urlResolver, _htmlParser) {
       this._xhr = _xhr;
       this._urlResolver = _urlResolver;
-      this._domParser = _domParser;
+      this._htmlParser = _htmlParser;
     }
     TemplateNormalizer.prototype.normalizeTemplate = function(directiveType, template) {
       var _this = this;
@@ -24288,9 +24571,13 @@ System.register("angular2/src/compiler/template_normalizer", ["angular2/src/comp
     };
     TemplateNormalizer.prototype.normalizeLoadedTemplate = function(directiveType, templateMeta, template, templateAbsUrl) {
       var _this = this;
-      var domNodes = this._domParser.parse(template, directiveType.name);
+      var rootNodesAndErrors = this._htmlParser.parse(template, directiveType.name);
+      if (rootNodesAndErrors.errors.length > 0) {
+        var errorString = rootNodesAndErrors.errors.join('\n');
+        throw new exceptions_1.BaseException("Template parse errors:\n" + errorString);
+      }
       var visitor = new TemplatePreparseVisitor();
-      html_ast_1.htmlVisitAll(visitor, domNodes);
+      html_ast_1.htmlVisitAll(visitor, rootNodesAndErrors.rootNodes);
       var allStyles = templateMeta.styles.concat(visitor.styles);
       var allStyleAbsUrls = visitor.styleUrls.filter(style_url_resolver_1.isStyleUrlResolvable).map(function(url) {
         return _this._urlResolver.resolve(templateAbsUrl, url);
@@ -29397,126 +29684,489 @@ System.register("angular2/src/compiler/style_compiler", ["angular2/src/compiler/
   return module.exports;
 });
 
-System.register("angular2/src/compiler/html_parser", ["angular2/src/facade/lang", "angular2/src/core/dom/dom_adapter", "angular2/src/compiler/html_ast", "angular2/src/compiler/util", "angular2/src/core/di"], true, function(require, exports, module) {
+System.register("angular2/src/compiler/html_lexer", ["angular2/src/facade/lang", "angular2/src/compiler/parse_util", "angular2/src/compiler/html_tags"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
     }
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var lang_1 = require("angular2/src/facade/lang");
-  var dom_adapter_1 = require("angular2/src/core/dom/dom_adapter");
-  var html_ast_1 = require("angular2/src/compiler/html_ast");
-  var util_1 = require("angular2/src/compiler/util");
-  var di_1 = require("angular2/src/core/di");
-  var HtmlParser = (function() {
-    function HtmlParser() {}
-    HtmlParser.prototype.parse = function(template, sourceInfo) {
-      var root = dom_adapter_1.DOM.createTemplate(template);
-      return parseChildNodes(root, sourceInfo);
+  var parse_util_1 = require("angular2/src/compiler/parse_util");
+  var html_tags_1 = require("angular2/src/compiler/html_tags");
+  (function(HtmlTokenType) {
+    HtmlTokenType[HtmlTokenType["TAG_OPEN_START"] = 0] = "TAG_OPEN_START";
+    HtmlTokenType[HtmlTokenType["TAG_OPEN_END"] = 1] = "TAG_OPEN_END";
+    HtmlTokenType[HtmlTokenType["TAG_OPEN_END_VOID"] = 2] = "TAG_OPEN_END_VOID";
+    HtmlTokenType[HtmlTokenType["TAG_CLOSE"] = 3] = "TAG_CLOSE";
+    HtmlTokenType[HtmlTokenType["TEXT"] = 4] = "TEXT";
+    HtmlTokenType[HtmlTokenType["ESCAPABLE_RAW_TEXT"] = 5] = "ESCAPABLE_RAW_TEXT";
+    HtmlTokenType[HtmlTokenType["RAW_TEXT"] = 6] = "RAW_TEXT";
+    HtmlTokenType[HtmlTokenType["COMMENT_START"] = 7] = "COMMENT_START";
+    HtmlTokenType[HtmlTokenType["COMMENT_END"] = 8] = "COMMENT_END";
+    HtmlTokenType[HtmlTokenType["CDATA_START"] = 9] = "CDATA_START";
+    HtmlTokenType[HtmlTokenType["CDATA_END"] = 10] = "CDATA_END";
+    HtmlTokenType[HtmlTokenType["ATTR_NAME"] = 11] = "ATTR_NAME";
+    HtmlTokenType[HtmlTokenType["ATTR_VALUE"] = 12] = "ATTR_VALUE";
+    HtmlTokenType[HtmlTokenType["DOC_TYPE"] = 13] = "DOC_TYPE";
+    HtmlTokenType[HtmlTokenType["EOF"] = 14] = "EOF";
+  })(exports.HtmlTokenType || (exports.HtmlTokenType = {}));
+  var HtmlTokenType = exports.HtmlTokenType;
+  var HtmlToken = (function() {
+    function HtmlToken(type, parts, sourceSpan) {
+      this.type = type;
+      this.parts = parts;
+      this.sourceSpan = sourceSpan;
+    }
+    return HtmlToken;
+  })();
+  exports.HtmlToken = HtmlToken;
+  var HtmlTokenError = (function(_super) {
+    __extends(HtmlTokenError, _super);
+    function HtmlTokenError(errorMsg, tokenType, location) {
+      _super.call(this, location, errorMsg);
+      this.tokenType = tokenType;
+    }
+    return HtmlTokenError;
+  })(parse_util_1.ParseError);
+  exports.HtmlTokenError = HtmlTokenError;
+  var HtmlTokenizeResult = (function() {
+    function HtmlTokenizeResult(tokens, errors) {
+      this.tokens = tokens;
+      this.errors = errors;
+    }
+    return HtmlTokenizeResult;
+  })();
+  exports.HtmlTokenizeResult = HtmlTokenizeResult;
+  function tokenizeHtml(sourceContent, sourceUrl) {
+    return new _HtmlTokenizer(new parse_util_1.ParseSourceFile(sourceContent, sourceUrl)).tokenize();
+  }
+  exports.tokenizeHtml = tokenizeHtml;
+  var $EOF = 0;
+  var $TAB = 9;
+  var $LF = 10;
+  var $FF = 12;
+  var $CR = 13;
+  var $SPACE = 32;
+  var $BANG = 33;
+  var $DQ = 34;
+  var $HASH = 35;
+  var $$ = 36;
+  var $AMPERSAND = 38;
+  var $SQ = 39;
+  var $MINUS = 45;
+  var $SLASH = 47;
+  var $0 = 48;
+  var $SEMICOLON = 59;
+  var $9 = 57;
+  var $COLON = 58;
+  var $LT = 60;
+  var $EQ = 61;
+  var $GT = 62;
+  var $QUESTION = 63;
+  var $A = 65;
+  var $Z = 90;
+  var $LBRACKET = 91;
+  var $RBRACKET = 93;
+  var $a = 97;
+  var $f = 102;
+  var $z = 122;
+  var $x = 120;
+  var $NBSP = 160;
+  function unexpectedCharacterErrorMsg(charCode) {
+    var char = charCode === $EOF ? 'EOF' : lang_1.StringWrapper.fromCharCode(charCode);
+    return "Unexpected character \"" + char + "\"";
+  }
+  function unknownEntityErrorMsg(entitySrc) {
+    return "Unknown entity \"" + entitySrc + "\" - use the \"&#<decimal>;\" or  \"&#x<hex>;\" syntax";
+  }
+  var ControlFlowError = (function() {
+    function ControlFlowError(error) {
+      this.error = error;
+    }
+    return ControlFlowError;
+  })();
+  var _HtmlTokenizer = (function() {
+    function _HtmlTokenizer(file) {
+      this.file = file;
+      this.peek = -1;
+      this.index = -1;
+      this.line = 0;
+      this.column = -1;
+      this.tokens = [];
+      this.errors = [];
+      this.input = file.content;
+      this.inputLowercase = file.content.toLowerCase();
+      this.length = file.content.length;
+      this._advance();
+    }
+    _HtmlTokenizer.prototype.tokenize = function() {
+      while (this.peek !== $EOF) {
+        var start = this._getLocation();
+        try {
+          if (this._attemptChar($LT)) {
+            if (this._attemptChar($BANG)) {
+              if (this._attemptChar($LBRACKET)) {
+                this._consumeCdata(start);
+              } else if (this._attemptChar($MINUS)) {
+                this._consumeComment(start);
+              } else {
+                this._consumeDocType(start);
+              }
+            } else if (this._attemptChar($SLASH)) {
+              this._consumeTagClose(start);
+            } else {
+              this._consumeTagOpen(start);
+            }
+          } else {
+            this._consumeText();
+          }
+        } catch (e) {
+          if (e instanceof ControlFlowError) {
+            this.errors.push(e.error);
+          } else {
+            throw e;
+          }
+        }
+      }
+      this._beginToken(HtmlTokenType.EOF);
+      this._endToken([]);
+      return new HtmlTokenizeResult(this.tokens, this.errors);
     };
-    HtmlParser.prototype.unparse = function(nodes) {
-      var visitor = new UnparseVisitor();
+    _HtmlTokenizer.prototype._getLocation = function() {
+      return new parse_util_1.ParseLocation(this.file, this.index, this.line, this.column);
+    };
+    _HtmlTokenizer.prototype._beginToken = function(type, start) {
+      if (start === void 0) {
+        start = null;
+      }
+      if (lang_1.isBlank(start)) {
+        start = this._getLocation();
+      }
+      this.currentTokenStart = start;
+      this.currentTokenType = type;
+    };
+    _HtmlTokenizer.prototype._endToken = function(parts, end) {
+      if (end === void 0) {
+        end = null;
+      }
+      if (lang_1.isBlank(end)) {
+        end = this._getLocation();
+      }
+      var token = new HtmlToken(this.currentTokenType, parts, new parse_util_1.ParseSourceSpan(this.currentTokenStart, end));
+      this.tokens.push(token);
+      this.currentTokenStart = null;
+      this.currentTokenType = null;
+      return token;
+    };
+    _HtmlTokenizer.prototype._createError = function(msg, position) {
+      var error = new HtmlTokenError(msg, this.currentTokenType, position);
+      this.currentTokenStart = null;
+      this.currentTokenType = null;
+      return new ControlFlowError(error);
+    };
+    _HtmlTokenizer.prototype._advance = function() {
+      if (this.index >= this.length) {
+        throw this._createError(unexpectedCharacterErrorMsg($EOF), this._getLocation());
+      }
+      if (this.peek === $LF) {
+        this.line++;
+        this.column = 0;
+      } else if (this.peek !== $LF && this.peek !== $CR) {
+        this.column++;
+      }
+      this.index++;
+      this.peek = this.index >= this.length ? $EOF : lang_1.StringWrapper.charCodeAt(this.inputLowercase, this.index);
+    };
+    _HtmlTokenizer.prototype._attemptChar = function(charCode) {
+      if (this.peek === charCode) {
+        this._advance();
+        return true;
+      }
+      return false;
+    };
+    _HtmlTokenizer.prototype._requireChar = function(charCode) {
+      var location = this._getLocation();
+      if (!this._attemptChar(charCode)) {
+        throw this._createError(unexpectedCharacterErrorMsg(this.peek), location);
+      }
+    };
+    _HtmlTokenizer.prototype._attemptChars = function(chars) {
+      for (var i = 0; i < chars.length; i++) {
+        if (!this._attemptChar(lang_1.StringWrapper.charCodeAt(chars, i))) {
+          return false;
+        }
+      }
+      return true;
+    };
+    _HtmlTokenizer.prototype._requireChars = function(chars) {
+      var location = this._getLocation();
+      if (!this._attemptChars(chars)) {
+        throw this._createError(unexpectedCharacterErrorMsg(this.peek), location);
+      }
+    };
+    _HtmlTokenizer.prototype._attemptUntilFn = function(predicate) {
+      while (!predicate(this.peek)) {
+        this._advance();
+      }
+    };
+    _HtmlTokenizer.prototype._requireUntilFn = function(predicate, len) {
+      var start = this._getLocation();
+      this._attemptUntilFn(predicate);
+      if (this.index - start.offset < len) {
+        throw this._createError(unexpectedCharacterErrorMsg(this.peek), start);
+      }
+    };
+    _HtmlTokenizer.prototype._attemptUntilChar = function(char) {
+      while (this.peek !== char) {
+        this._advance();
+      }
+    };
+    _HtmlTokenizer.prototype._readChar = function(decodeEntities) {
+      if (decodeEntities && this.peek === $AMPERSAND) {
+        return this._decodeEntity();
+      } else {
+        var index = this.index;
+        this._advance();
+        return this.input[index];
+      }
+    };
+    _HtmlTokenizer.prototype._decodeEntity = function() {
+      var start = this._getLocation();
+      this._advance();
+      if (this._attemptChar($HASH)) {
+        var isHex = this._attemptChar($x);
+        var numberStart = this._getLocation().offset;
+        this._attemptUntilFn(isDigitEntityEnd);
+        if (this.peek != $SEMICOLON) {
+          throw this._createError(unexpectedCharacterErrorMsg(this.peek), this._getLocation());
+        }
+        this._advance();
+        var strNum = this.input.substring(numberStart, this.index - 1);
+        try {
+          var charCode = lang_1.NumberWrapper.parseInt(strNum, isHex ? 16 : 10);
+          return lang_1.StringWrapper.fromCharCode(charCode);
+        } catch (e) {
+          var entity = this.input.substring(start.offset + 1, this.index - 1);
+          throw this._createError(unknownEntityErrorMsg(entity), start);
+        }
+      } else {
+        var startPosition = this._savePosition();
+        this._attemptUntilFn(isNamedEntityEnd);
+        if (this.peek != $SEMICOLON) {
+          this._restorePosition(startPosition);
+          return '&';
+        }
+        this._advance();
+        var name_1 = this.input.substring(start.offset + 1, this.index - 1);
+        var char = html_tags_1.NAMED_ENTITIES[name_1];
+        if (lang_1.isBlank(char)) {
+          throw this._createError(unknownEntityErrorMsg(name_1), start);
+        }
+        return char;
+      }
+    };
+    _HtmlTokenizer.prototype._consumeRawText = function(decodeEntities, firstCharOfEnd, attemptEndRest) {
+      var tagCloseStart;
+      var textStart = this._getLocation();
+      this._beginToken(decodeEntities ? HtmlTokenType.ESCAPABLE_RAW_TEXT : HtmlTokenType.RAW_TEXT, textStart);
       var parts = [];
-      html_ast_1.htmlVisitAll(visitor, nodes, parts);
-      return parts.join('');
+      while (true) {
+        tagCloseStart = this._getLocation();
+        if (this._attemptChar(firstCharOfEnd) && attemptEndRest()) {
+          break;
+        }
+        if (this.index > tagCloseStart.offset) {
+          parts.push(this.input.substring(tagCloseStart.offset, this.index));
+        }
+        while (this.peek !== firstCharOfEnd) {
+          parts.push(this._readChar(decodeEntities));
+        }
+      }
+      return this._endToken([parts.join('')], tagCloseStart);
     };
-    HtmlParser = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], HtmlParser);
-    return HtmlParser;
+    _HtmlTokenizer.prototype._consumeComment = function(start) {
+      var _this = this;
+      this._beginToken(HtmlTokenType.COMMENT_START, start);
+      this._requireChar($MINUS);
+      this._endToken([]);
+      var textToken = this._consumeRawText(false, $MINUS, function() {
+        return _this._attemptChars('->');
+      });
+      this._beginToken(HtmlTokenType.COMMENT_END, textToken.sourceSpan.end);
+      this._endToken([]);
+    };
+    _HtmlTokenizer.prototype._consumeCdata = function(start) {
+      var _this = this;
+      this._beginToken(HtmlTokenType.CDATA_START, start);
+      this._requireChars('cdata[');
+      this._endToken([]);
+      var textToken = this._consumeRawText(false, $RBRACKET, function() {
+        return _this._attemptChars(']>');
+      });
+      this._beginToken(HtmlTokenType.CDATA_END, textToken.sourceSpan.end);
+      this._endToken([]);
+    };
+    _HtmlTokenizer.prototype._consumeDocType = function(start) {
+      this._beginToken(HtmlTokenType.DOC_TYPE, start);
+      this._attemptUntilChar($GT);
+      this._advance();
+      this._endToken([this.input.substring(start.offset + 2, this.index - 1)]);
+    };
+    _HtmlTokenizer.prototype._consumePrefixAndName = function() {
+      var nameOrPrefixStart = this.index;
+      var prefix = null;
+      while (this.peek !== $COLON && !isPrefixEnd(this.peek)) {
+        this._advance();
+      }
+      var nameStart;
+      if (this.peek === $COLON) {
+        this._advance();
+        prefix = this.input.substring(nameOrPrefixStart, this.index - 1);
+        nameStart = this.index;
+      } else {
+        nameStart = nameOrPrefixStart;
+      }
+      this._requireUntilFn(isNameEnd, this.index === nameStart ? 1 : 0);
+      var name = this.input.substring(nameStart, this.index);
+      return [prefix, name];
+    };
+    _HtmlTokenizer.prototype._consumeTagOpen = function(start) {
+      this._attemptUntilFn(isNotWhitespace);
+      var nameStart = this.index;
+      this._consumeTagOpenStart(start);
+      var lowercaseTagName = this.inputLowercase.substring(nameStart, this.index);
+      this._attemptUntilFn(isNotWhitespace);
+      while (this.peek !== $SLASH && this.peek !== $GT) {
+        this._consumeAttributeName();
+        this._attemptUntilFn(isNotWhitespace);
+        if (this._attemptChar($EQ)) {
+          this._attemptUntilFn(isNotWhitespace);
+          this._consumeAttributeValue();
+        }
+        this._attemptUntilFn(isNotWhitespace);
+      }
+      this._consumeTagOpenEnd();
+      var contentTokenType = html_tags_1.getHtmlTagDefinition(lowercaseTagName).contentType;
+      if (contentTokenType === html_tags_1.HtmlTagContentType.RAW_TEXT) {
+        this._consumeRawTextWithTagClose(lowercaseTagName, false);
+      } else if (contentTokenType === html_tags_1.HtmlTagContentType.ESCAPABLE_RAW_TEXT) {
+        this._consumeRawTextWithTagClose(lowercaseTagName, true);
+      }
+    };
+    _HtmlTokenizer.prototype._consumeRawTextWithTagClose = function(lowercaseTagName, decodeEntities) {
+      var _this = this;
+      var textToken = this._consumeRawText(decodeEntities, $LT, function() {
+        if (!_this._attemptChar($SLASH))
+          return false;
+        _this._attemptUntilFn(isNotWhitespace);
+        if (!_this._attemptChars(lowercaseTagName))
+          return false;
+        _this._attemptUntilFn(isNotWhitespace);
+        if (!_this._attemptChar($GT))
+          return false;
+        return true;
+      });
+      this._beginToken(HtmlTokenType.TAG_CLOSE, textToken.sourceSpan.end);
+      this._endToken([null, lowercaseTagName]);
+    };
+    _HtmlTokenizer.prototype._consumeTagOpenStart = function(start) {
+      this._beginToken(HtmlTokenType.TAG_OPEN_START, start);
+      var parts = this._consumePrefixAndName();
+      this._endToken(parts);
+    };
+    _HtmlTokenizer.prototype._consumeAttributeName = function() {
+      this._beginToken(HtmlTokenType.ATTR_NAME);
+      var prefixAndName = this._consumePrefixAndName();
+      this._endToken(prefixAndName);
+    };
+    _HtmlTokenizer.prototype._consumeAttributeValue = function() {
+      this._beginToken(HtmlTokenType.ATTR_VALUE);
+      var value;
+      if (this.peek === $SQ || this.peek === $DQ) {
+        var quoteChar = this.peek;
+        this._advance();
+        var parts = [];
+        while (this.peek !== quoteChar) {
+          parts.push(this._readChar(true));
+        }
+        value = parts.join('');
+        this._advance();
+      } else {
+        var valueStart = this.index;
+        this._requireUntilFn(isNameEnd, 1);
+        value = this.input.substring(valueStart, this.index);
+      }
+      this._endToken([value]);
+    };
+    _HtmlTokenizer.prototype._consumeTagOpenEnd = function() {
+      var tokenType = this._attemptChar($SLASH) ? HtmlTokenType.TAG_OPEN_END_VOID : HtmlTokenType.TAG_OPEN_END;
+      this._beginToken(tokenType);
+      this._requireChar($GT);
+      this._endToken([]);
+    };
+    _HtmlTokenizer.prototype._consumeTagClose = function(start) {
+      this._beginToken(HtmlTokenType.TAG_CLOSE, start);
+      this._attemptUntilFn(isNotWhitespace);
+      var prefixAndName;
+      prefixAndName = this._consumePrefixAndName();
+      this._attemptUntilFn(isNotWhitespace);
+      this._requireChar($GT);
+      this._endToken(prefixAndName);
+    };
+    _HtmlTokenizer.prototype._consumeText = function() {
+      var start = this._getLocation();
+      this._beginToken(HtmlTokenType.TEXT, start);
+      var parts = [this._readChar(true)];
+      while (!isTextEnd(this.peek)) {
+        parts.push(this._readChar(true));
+      }
+      this._endToken([parts.join('')]);
+    };
+    _HtmlTokenizer.prototype._savePosition = function() {
+      return [this.peek, this.index, this.column, this.line];
+    };
+    _HtmlTokenizer.prototype._restorePosition = function(position) {
+      this.peek = position[0];
+      this.index = position[1];
+      this.column = position[2];
+      this.line = position[3];
+    };
+    return _HtmlTokenizer;
   })();
-  exports.HtmlParser = HtmlParser;
-  function parseText(text, indexInParent, parentSourceInfo) {
-    var value = dom_adapter_1.DOM.getText(text);
-    return new html_ast_1.HtmlTextAst(value, parentSourceInfo + " > #text(" + value + "):nth-child(" + indexInParent + ")");
+  function isNotWhitespace(code) {
+    return !isWhitespace(code) || code === $EOF;
   }
-  function parseAttr(element, parentSourceInfo, attrName, attrValue) {
-    return new html_ast_1.HtmlAttrAst(attrName, attrValue, parentSourceInfo + "[" + attrName + "=" + attrValue + "]");
+  function isWhitespace(code) {
+    return (code >= $TAB && code <= $SPACE) || (code === $NBSP);
   }
-  function parseElement(element, indexInParent, parentSourceInfo) {
-    var nodeName = dom_adapter_1.DOM.nodeName(element).toLowerCase();
-    var sourceInfo = parentSourceInfo + " > " + nodeName + ":nth-child(" + indexInParent + ")";
-    var attrs = parseAttrs(element, sourceInfo);
-    var childNodes = parseChildNodes(element, sourceInfo);
-    return new html_ast_1.HtmlElementAst(nodeName, attrs, childNodes, sourceInfo);
+  function isNameEnd(code) {
+    return isWhitespace(code) || code === $GT || code === $SLASH || code === $SQ || code === $DQ || code === $EQ;
   }
-  function parseAttrs(element, elementSourceInfo) {
-    var attrMap = dom_adapter_1.DOM.attributeMap(element);
-    var attrList = [];
-    attrMap.forEach(function(value, name) {
-      return attrList.push([name, value]);
-    });
-    attrList.sort(function(entry1, entry2) {
-      return lang_1.StringWrapper.compare(entry1[0], entry2[0]);
-    });
-    return attrList.map(function(entry) {
-      return parseAttr(element, elementSourceInfo, entry[0], entry[1]);
-    });
+  function isPrefixEnd(code) {
+    return (code < $a || $z < code) && (code < $A || $Z < code) && (code < $0 || code > $9);
   }
-  function parseChildNodes(element, parentSourceInfo) {
-    var root = dom_adapter_1.DOM.templateAwareRoot(element);
-    var childNodes = dom_adapter_1.DOM.childNodesAsList(root);
-    var result = [];
-    var index = 0;
-    childNodes.forEach(function(childNode) {
-      var childResult = null;
-      if (dom_adapter_1.DOM.isTextNode(childNode)) {
-        var text = childNode;
-        childResult = parseText(text, index, parentSourceInfo);
-      } else if (dom_adapter_1.DOM.isElementNode(childNode)) {
-        var el = childNode;
-        childResult = parseElement(el, index, parentSourceInfo);
-      }
-      if (lang_1.isPresent(childResult)) {
-        result.push(childResult);
-      }
-      index++;
-    });
-    return result;
+  function isDigitEntityEnd(code) {
+    return code == $SEMICOLON || code == $EOF || !isAsciiHexDigit(code);
   }
-  var UnparseVisitor = (function() {
-    function UnparseVisitor() {}
-    UnparseVisitor.prototype.visitElement = function(ast, parts) {
-      parts.push("<" + ast.name);
-      var attrs = [];
-      html_ast_1.htmlVisitAll(this, ast.attrs, attrs);
-      if (ast.attrs.length > 0) {
-        parts.push(' ');
-        parts.push(attrs.join(' '));
-      }
-      parts.push(">");
-      html_ast_1.htmlVisitAll(this, ast.children, parts);
-      parts.push("</" + ast.name + ">");
-      return null;
-    };
-    UnparseVisitor.prototype.visitAttr = function(ast, parts) {
-      parts.push(ast.name + "=" + util_1.escapeDoubleQuoteString(ast.value));
-      return null;
-    };
-    UnparseVisitor.prototype.visitText = function(ast, parts) {
-      parts.push(ast.value);
-      return null;
-    };
-    return UnparseVisitor;
-  })();
+  function isNamedEntityEnd(code) {
+    return code == $SEMICOLON || code == $EOF || !isAsciiLetter(code);
+  }
+  function isTextEnd(code) {
+    return code === $LT || code === $EOF;
+  }
+  function isAsciiLetter(code) {
+    return code >= $a && code <= $z;
+  }
+  function isAsciiHexDigit(code) {
+    return code >= $a && code <= $f || code >= $0 && code <= $9;
+  }
   global.define = __define;
   return module.exports;
 });
@@ -32097,10 +32747,19 @@ System.register("angular2/src/compiler/change_detector_compiler", ["angular2/src
   return module.exports;
 });
 
-System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/core/di", "angular2/src/facade/exceptions", "angular2/src/core/change_detection/change_detection", "angular2/src/compiler/html_parser", "angular2/src/compiler/template_ast", "angular2/src/compiler/selector", "angular2/src/compiler/schema/element_schema_registry", "angular2/src/compiler/template_preparser", "angular2/src/compiler/style_url_resolver", "angular2/src/compiler/html_ast", "angular2/src/compiler/util"], true, function(require, exports, module) {
+System.register("angular2/src/compiler/html_parser", ["angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/src/compiler/html_ast", "angular2/src/core/di", "angular2/src/compiler/html_lexer", "angular2/src/compiler/parse_util", "angular2/src/compiler/html_tags"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
       return Reflect.decorate(decorators, target, key, desc);
@@ -32123,518 +32782,198 @@ System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/c
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
       return Reflect.metadata(k, v);
   };
-  var collection_1 = require("angular2/src/facade/collection");
   var lang_1 = require("angular2/src/facade/lang");
-  var di_1 = require("angular2/src/core/di");
-  var exceptions_1 = require("angular2/src/facade/exceptions");
-  var change_detection_1 = require("angular2/src/core/change_detection/change_detection");
-  var html_parser_1 = require("angular2/src/compiler/html_parser");
-  var template_ast_1 = require("angular2/src/compiler/template_ast");
-  var selector_1 = require("angular2/src/compiler/selector");
-  var element_schema_registry_1 = require("angular2/src/compiler/schema/element_schema_registry");
-  var template_preparser_1 = require("angular2/src/compiler/template_preparser");
-  var style_url_resolver_1 = require("angular2/src/compiler/style_url_resolver");
+  var collection_1 = require("angular2/src/facade/collection");
   var html_ast_1 = require("angular2/src/compiler/html_ast");
-  var util_1 = require("angular2/src/compiler/util");
-  var BIND_NAME_REGEXP = /^(?:(?:(?:(bind-)|(var-|#)|(on-)|(bindon-))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/g;
-  var TEMPLATE_ELEMENT = 'template';
-  var TEMPLATE_ATTR = 'template';
-  var TEMPLATE_ATTR_PREFIX = '*';
-  var CLASS_ATTR = 'class';
-  var PROPERTY_PARTS_SEPARATOR = new RegExp('\\.');
-  var ATTRIBUTE_PREFIX = 'attr';
-  var CLASS_PREFIX = 'class';
-  var STYLE_PREFIX = 'style';
-  var TEXT_CSS_SELECTOR = selector_1.CssSelector.parse('*')[0];
-  var TemplateParser = (function() {
-    function TemplateParser(_exprParser, _schemaRegistry, _htmlParser) {
-      this._exprParser = _exprParser;
-      this._schemaRegistry = _schemaRegistry;
-      this._htmlParser = _htmlParser;
+  var di_1 = require("angular2/src/core/di");
+  var html_lexer_1 = require("angular2/src/compiler/html_lexer");
+  var parse_util_1 = require("angular2/src/compiler/parse_util");
+  var html_tags_1 = require("angular2/src/compiler/html_tags");
+  var HtmlTreeError = (function(_super) {
+    __extends(HtmlTreeError, _super);
+    function HtmlTreeError(elementName, location, msg) {
+      _super.call(this, location, msg);
+      this.elementName = elementName;
     }
-    TemplateParser.prototype.parse = function(template, directives, sourceInfo) {
-      var parseVisitor = new TemplateParseVisitor(directives, this._exprParser, this._schemaRegistry);
-      var result = html_ast_1.htmlVisitAll(parseVisitor, this._htmlParser.parse(template, sourceInfo), EMPTY_COMPONENT);
-      if (parseVisitor.errors.length > 0) {
-        var errorString = parseVisitor.errors.join('\n');
-        throw new exceptions_1.BaseException("Template parse errors:\n" + errorString);
-      }
-      return result;
+    HtmlTreeError.create = function(elementName, location, msg) {
+      return new HtmlTreeError(elementName, location, msg);
     };
-    TemplateParser = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [change_detection_1.Parser, element_schema_registry_1.ElementSchemaRegistry, html_parser_1.HtmlParser])], TemplateParser);
-    return TemplateParser;
+    return HtmlTreeError;
+  })(parse_util_1.ParseError);
+  exports.HtmlTreeError = HtmlTreeError;
+  var HtmlParseTreeResult = (function() {
+    function HtmlParseTreeResult(rootNodes, errors) {
+      this.rootNodes = rootNodes;
+      this.errors = errors;
+    }
+    return HtmlParseTreeResult;
   })();
-  exports.TemplateParser = TemplateParser;
-  var TemplateParseVisitor = (function() {
-    function TemplateParseVisitor(directives, _exprParser, _schemaRegistry) {
-      var _this = this;
-      this._exprParser = _exprParser;
-      this._schemaRegistry = _schemaRegistry;
+  exports.HtmlParseTreeResult = HtmlParseTreeResult;
+  var HtmlParser = (function() {
+    function HtmlParser() {}
+    HtmlParser.prototype.parse = function(sourceContent, sourceUrl) {
+      var tokensAndErrors = html_lexer_1.tokenizeHtml(sourceContent, sourceUrl);
+      var treeAndErrors = new TreeBuilder(tokensAndErrors.tokens).build();
+      return new HtmlParseTreeResult(treeAndErrors.rootNodes, tokensAndErrors.errors.concat(treeAndErrors.errors));
+    };
+    HtmlParser = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], HtmlParser);
+    return HtmlParser;
+  })();
+  exports.HtmlParser = HtmlParser;
+  var TreeBuilder = (function() {
+    function TreeBuilder(tokens) {
+      this.tokens = tokens;
+      this.index = -1;
+      this.rootNodes = [];
       this.errors = [];
-      this.directivesIndex = new Map();
-      this.ngContentCount = 0;
-      this.selectorMatcher = new selector_1.SelectorMatcher();
-      collection_1.ListWrapper.forEachWithIndex(directives, function(directive, index) {
-        var selector = selector_1.CssSelector.parse(directive.selector);
-        _this.selectorMatcher.addSelectables(selector, directive);
-        _this.directivesIndex.set(directive, index);
-      });
+      this.elementStack = [];
+      this._advance();
     }
-    TemplateParseVisitor.prototype._reportError = function(message) {
-      this.errors.push(message);
-    };
-    TemplateParseVisitor.prototype._parseInterpolation = function(value, sourceInfo) {
-      try {
-        return this._exprParser.parseInterpolation(value, sourceInfo);
-      } catch (e) {
-        this._reportError("" + e);
-        return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo);
+    TreeBuilder.prototype.build = function() {
+      while (this.peek.type !== html_lexer_1.HtmlTokenType.EOF) {
+        if (this.peek.type === html_lexer_1.HtmlTokenType.TAG_OPEN_START) {
+          this._consumeStartTag(this._advance());
+        } else if (this.peek.type === html_lexer_1.HtmlTokenType.TAG_CLOSE) {
+          this._consumeEndTag(this._advance());
+        } else if (this.peek.type === html_lexer_1.HtmlTokenType.CDATA_START) {
+          this._consumeCdata(this._advance());
+        } else if (this.peek.type === html_lexer_1.HtmlTokenType.COMMENT_START) {
+          this._consumeComment(this._advance());
+        } else if (this.peek.type === html_lexer_1.HtmlTokenType.TEXT || this.peek.type === html_lexer_1.HtmlTokenType.RAW_TEXT || this.peek.type === html_lexer_1.HtmlTokenType.ESCAPABLE_RAW_TEXT) {
+          this._consumeText(this._advance());
+        } else {
+          this._advance();
+        }
       }
+      return new HtmlParseTreeResult(this.rootNodes, this.errors);
     };
-    TemplateParseVisitor.prototype._parseAction = function(value, sourceInfo) {
-      try {
-        return this._exprParser.parseAction(value, sourceInfo);
-      } catch (e) {
-        this._reportError("" + e);
-        return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo);
+    TreeBuilder.prototype._advance = function() {
+      var prev = this.peek;
+      if (this.index < this.tokens.length - 1) {
+        this.index++;
       }
+      this.peek = this.tokens[this.index];
+      return prev;
     };
-    TemplateParseVisitor.prototype._parseBinding = function(value, sourceInfo) {
-      try {
-        return this._exprParser.parseBinding(value, sourceInfo);
-      } catch (e) {
-        this._reportError("" + e);
-        return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo);
+    TreeBuilder.prototype._advanceIf = function(type) {
+      if (this.peek.type === type) {
+        return this._advance();
       }
+      return null;
     };
-    TemplateParseVisitor.prototype._parseTemplateBindings = function(value, sourceInfo) {
-      try {
-        return this._exprParser.parseTemplateBindings(value, sourceInfo);
-      } catch (e) {
-        this._reportError("" + e);
-        return [];
-      }
+    TreeBuilder.prototype._consumeCdata = function(startToken) {
+      this._consumeText(this._advance());
+      this._advanceIf(html_lexer_1.HtmlTokenType.CDATA_END);
     };
-    TemplateParseVisitor.prototype.visitText = function(ast, component) {
-      var ngContentIndex = component.findNgContentIndex(TEXT_CSS_SELECTOR);
-      var expr = this._parseInterpolation(ast.value, ast.sourceInfo);
-      if (lang_1.isPresent(expr)) {
-        return new template_ast_1.BoundTextAst(expr, ngContentIndex, ast.sourceInfo);
-      } else {
-        return new template_ast_1.TextAst(ast.value, ngContentIndex, ast.sourceInfo);
-      }
+    TreeBuilder.prototype._consumeComment = function(startToken) {
+      this._advanceIf(html_lexer_1.HtmlTokenType.RAW_TEXT);
+      this._advanceIf(html_lexer_1.HtmlTokenType.COMMENT_END);
     };
-    TemplateParseVisitor.prototype.visitAttr = function(ast, contex) {
-      return new template_ast_1.AttrAst(ast.name, ast.value, ast.sourceInfo);
+    TreeBuilder.prototype._consumeText = function(token) {
+      this._addToParent(new html_ast_1.HtmlTextAst(token.parts[0], token.sourceSpan));
     };
-    TemplateParseVisitor.prototype.visitElement = function(element, component) {
-      var _this = this;
-      var nodeName = element.name;
-      var preparsedElement = template_preparser_1.preparseElement(element);
-      if (preparsedElement.type === template_preparser_1.PreparsedElementType.SCRIPT || preparsedElement.type === template_preparser_1.PreparsedElementType.STYLE) {
-        return null;
-      }
-      if (preparsedElement.type === template_preparser_1.PreparsedElementType.STYLESHEET && style_url_resolver_1.isStyleUrlResolvable(preparsedElement.hrefAttr)) {
-        return null;
-      }
-      var matchableAttrs = [];
-      var elementOrDirectiveProps = [];
-      var vars = [];
-      var events = [];
-      var templateElementOrDirectiveProps = [];
-      var templateVars = [];
-      var templateMatchableAttrs = [];
-      var hasInlineTemplates = false;
+    TreeBuilder.prototype._consumeStartTag = function(startTagToken) {
+      var prefix = startTagToken.parts[0];
+      var name = startTagToken.parts[1];
       var attrs = [];
-      element.attrs.forEach(function(attr) {
-        matchableAttrs.push([attr.name, attr.value]);
-        var hasBinding = _this._parseAttr(attr, matchableAttrs, elementOrDirectiveProps, events, vars);
-        var hasTemplateBinding = _this._parseInlineTemplateBinding(attr, templateMatchableAttrs, templateElementOrDirectiveProps, templateVars);
-        if (!hasBinding && !hasTemplateBinding) {
-          attrs.push(_this.visitAttr(attr, null));
-        }
-        if (hasTemplateBinding) {
-          hasInlineTemplates = true;
-        }
-      });
-      var isTemplateElement = nodeName == TEMPLATE_ELEMENT;
-      var elementCssSelector = createElementCssSelector(nodeName, matchableAttrs);
-      var directives = this._createDirectiveAsts(element.name, this._parseDirectives(this.selectorMatcher, elementCssSelector), elementOrDirectiveProps, isTemplateElement ? [] : vars, element.sourceInfo);
-      var elementProps = this._createElementPropertyAsts(element.name, elementOrDirectiveProps, directives);
-      var children = html_ast_1.htmlVisitAll(preparsedElement.nonBindable ? NON_BINDABLE_VISITOR : this, element.children, Component.create(directives));
-      var elementNgContentIndex = hasInlineTemplates ? null : component.findNgContentIndex(elementCssSelector);
-      var parsedElement;
-      if (preparsedElement.type === template_preparser_1.PreparsedElementType.NG_CONTENT) {
-        parsedElement = new template_ast_1.NgContentAst(this.ngContentCount++, elementNgContentIndex, element.sourceInfo);
-      } else if (isTemplateElement) {
-        this._assertAllEventsPublishedByDirectives(directives, events, element.sourceInfo);
-        this._assertNoComponentsNorElementBindingsOnTemplate(directives, elementProps, element.sourceInfo);
-        parsedElement = new template_ast_1.EmbeddedTemplateAst(attrs, events, vars, directives, children, elementNgContentIndex, element.sourceInfo);
-      } else {
-        this._assertOnlyOneComponent(directives, element.sourceInfo);
-        var elementExportAsVars = vars.filter(function(varAst) {
-          return varAst.value.length === 0;
-        });
-        parsedElement = new template_ast_1.ElementAst(nodeName, attrs, elementProps, events, elementExportAsVars, directives, children, elementNgContentIndex, element.sourceInfo);
+      while (this.peek.type === html_lexer_1.HtmlTokenType.ATTR_NAME) {
+        attrs.push(this._consumeAttr(this._advance()));
       }
-      if (hasInlineTemplates) {
-        var templateCssSelector = createElementCssSelector(TEMPLATE_ELEMENT, templateMatchableAttrs);
-        var templateDirectives = this._createDirectiveAsts(element.name, this._parseDirectives(this.selectorMatcher, templateCssSelector), templateElementOrDirectiveProps, [], element.sourceInfo);
-        var templateElementProps = this._createElementPropertyAsts(element.name, templateElementOrDirectiveProps, templateDirectives);
-        this._assertNoComponentsNorElementBindingsOnTemplate(templateDirectives, templateElementProps, element.sourceInfo);
-        parsedElement = new template_ast_1.EmbeddedTemplateAst([], [], templateVars, templateDirectives, [parsedElement], component.findNgContentIndex(templateCssSelector), element.sourceInfo);
+      var fullName = getElementFullName(prefix, name, this._getParentElement());
+      var voidElement = false;
+      if (this.peek.type === html_lexer_1.HtmlTokenType.TAG_OPEN_END_VOID) {
+        this._advance();
+        voidElement = true;
+      } else if (this.peek.type === html_lexer_1.HtmlTokenType.TAG_OPEN_END) {
+        this._advance();
+        voidElement = false;
       }
-      return parsedElement;
+      var end = this.peek.sourceSpan.start;
+      var el = new html_ast_1.HtmlElementAst(fullName, attrs, [], new parse_util_1.ParseSourceSpan(startTagToken.sourceSpan.start, end));
+      this._pushElement(el);
+      if (voidElement) {
+        this._popElement(fullName);
+      }
     };
-    TemplateParseVisitor.prototype._parseInlineTemplateBinding = function(attr, targetMatchableAttrs, targetProps, targetVars) {
-      var templateBindingsSource = null;
-      if (attr.name == TEMPLATE_ATTR) {
-        templateBindingsSource = attr.value;
-      } else if (attr.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
-        var key = attr.name.substring(TEMPLATE_ATTR_PREFIX.length);
-        templateBindingsSource = (attr.value.length == 0) ? key : key + ' ' + attr.value;
-      }
-      if (lang_1.isPresent(templateBindingsSource)) {
-        var bindings = this._parseTemplateBindings(templateBindingsSource, attr.sourceInfo);
-        for (var i = 0; i < bindings.length; i++) {
-          var binding = bindings[i];
-          var dashCaseKey = util_1.camelCaseToDashCase(binding.key);
-          if (binding.keyIsVar) {
-            targetVars.push(new template_ast_1.VariableAst(util_1.dashCaseToCamelCase(binding.key), binding.name, attr.sourceInfo));
-            targetMatchableAttrs.push([dashCaseKey, binding.name]);
-          } else if (lang_1.isPresent(binding.expression)) {
-            this._parsePropertyAst(dashCaseKey, binding.expression, attr.sourceInfo, targetMatchableAttrs, targetProps);
-          } else {
-            targetMatchableAttrs.push([dashCaseKey, '']);
-            this._parseLiteralAttr(dashCaseKey, null, attr.sourceInfo, targetProps);
-          }
+    TreeBuilder.prototype._pushElement = function(el) {
+      if (this.elementStack.length > 0) {
+        var parentEl = collection_1.ListWrapper.last(this.elementStack);
+        if (html_tags_1.getHtmlTagDefinition(parentEl.name).isClosedByChild(el.name)) {
+          this.elementStack.pop();
         }
-        return true;
+      }
+      var tagDef = html_tags_1.getHtmlTagDefinition(el.name);
+      var parentEl = this._getParentElement();
+      if (tagDef.requireExtraParent(lang_1.isPresent(parentEl) ? parentEl.name : null)) {
+        var newParent = new html_ast_1.HtmlElementAst(tagDef.requiredParent, [], [el], el.sourceSpan);
+        this._addToParent(newParent);
+        this.elementStack.push(newParent);
+        this.elementStack.push(el);
+      } else {
+        this._addToParent(el);
+        this.elementStack.push(el);
+      }
+    };
+    TreeBuilder.prototype._consumeEndTag = function(endTagToken) {
+      var fullName = getElementFullName(endTagToken.parts[0], endTagToken.parts[1], this._getParentElement());
+      if (!this._popElement(fullName)) {
+        this.errors.push(HtmlTreeError.create(fullName, endTagToken.sourceSpan.start, "Unexpected closing tag \"" + endTagToken.parts[1] + "\""));
+      }
+    };
+    TreeBuilder.prototype._popElement = function(fullName) {
+      for (var stackIndex = this.elementStack.length - 1; stackIndex >= 0; stackIndex--) {
+        var el = this.elementStack[stackIndex];
+        if (el.name.toLowerCase() == fullName.toLowerCase()) {
+          collection_1.ListWrapper.splice(this.elementStack, stackIndex, this.elementStack.length - stackIndex);
+          return true;
+        }
+        if (!html_tags_1.getHtmlTagDefinition(el.name).closedByParent) {
+          return false;
+        }
       }
       return false;
     };
-    TemplateParseVisitor.prototype._parseAttr = function(attr, targetMatchableAttrs, targetProps, targetEvents, targetVars) {
-      var attrName = this._normalizeAttributeName(attr.name);
-      var attrValue = attr.value;
-      var bindParts = lang_1.RegExpWrapper.firstMatch(BIND_NAME_REGEXP, attrName);
-      var hasBinding = false;
-      if (lang_1.isPresent(bindParts)) {
-        hasBinding = true;
-        if (lang_1.isPresent(bindParts[1])) {
-          this._parseProperty(bindParts[5], attrValue, attr.sourceInfo, targetMatchableAttrs, targetProps);
-        } else if (lang_1.isPresent(bindParts[2])) {
-          var identifier = bindParts[5];
-          this._parseVariable(identifier, attrValue, attr.sourceInfo, targetVars);
-        } else if (lang_1.isPresent(bindParts[3])) {
-          this._parseEvent(bindParts[5], attrValue, attr.sourceInfo, targetMatchableAttrs, targetEvents);
-        } else if (lang_1.isPresent(bindParts[4])) {
-          this._parseProperty(bindParts[5], attrValue, attr.sourceInfo, targetMatchableAttrs, targetProps);
-          this._parseAssignmentEvent(bindParts[5], attrValue, attr.sourceInfo, targetMatchableAttrs, targetEvents);
-        } else if (lang_1.isPresent(bindParts[6])) {
-          this._parseProperty(bindParts[6], attrValue, attr.sourceInfo, targetMatchableAttrs, targetProps);
-          this._parseAssignmentEvent(bindParts[6], attrValue, attr.sourceInfo, targetMatchableAttrs, targetEvents);
-        } else if (lang_1.isPresent(bindParts[7])) {
-          this._parseProperty(bindParts[7], attrValue, attr.sourceInfo, targetMatchableAttrs, targetProps);
-        } else if (lang_1.isPresent(bindParts[8])) {
-          this._parseEvent(bindParts[8], attrValue, attr.sourceInfo, targetMatchableAttrs, targetEvents);
-        }
+    TreeBuilder.prototype._consumeAttr = function(attrName) {
+      var fullName = mergeNsAndName(attrName.parts[0], attrName.parts[1]);
+      var end = attrName.sourceSpan.end;
+      var value = '';
+      if (this.peek.type === html_lexer_1.HtmlTokenType.ATTR_VALUE) {
+        var valueToken = this._advance();
+        value = valueToken.parts[0];
+        end = valueToken.sourceSpan.end;
+      }
+      return new html_ast_1.HtmlAttrAst(fullName, value, new parse_util_1.ParseSourceSpan(attrName.sourceSpan.start, end));
+    };
+    TreeBuilder.prototype._getParentElement = function() {
+      return this.elementStack.length > 0 ? collection_1.ListWrapper.last(this.elementStack) : null;
+    };
+    TreeBuilder.prototype._addToParent = function(node) {
+      var parent = this._getParentElement();
+      if (lang_1.isPresent(parent)) {
+        parent.children.push(node);
       } else {
-        hasBinding = this._parsePropertyInterpolation(attrName, attrValue, attr.sourceInfo, targetMatchableAttrs, targetProps);
-      }
-      if (!hasBinding) {
-        this._parseLiteralAttr(attrName, attrValue, attr.sourceInfo, targetProps);
-      }
-      return hasBinding;
-    };
-    TemplateParseVisitor.prototype._normalizeAttributeName = function(attrName) {
-      return attrName.startsWith('data-') ? attrName.substring(5) : attrName;
-    };
-    TemplateParseVisitor.prototype._parseVariable = function(identifier, value, sourceInfo, targetVars) {
-      targetVars.push(new template_ast_1.VariableAst(util_1.dashCaseToCamelCase(identifier), value, sourceInfo));
-    };
-    TemplateParseVisitor.prototype._parseProperty = function(name, expression, sourceInfo, targetMatchableAttrs, targetProps) {
-      this._parsePropertyAst(name, this._parseBinding(expression, sourceInfo), sourceInfo, targetMatchableAttrs, targetProps);
-    };
-    TemplateParseVisitor.prototype._parsePropertyInterpolation = function(name, value, sourceInfo, targetMatchableAttrs, targetProps) {
-      var expr = this._parseInterpolation(value, sourceInfo);
-      if (lang_1.isPresent(expr)) {
-        this._parsePropertyAst(name, expr, sourceInfo, targetMatchableAttrs, targetProps);
-        return true;
-      }
-      return false;
-    };
-    TemplateParseVisitor.prototype._parsePropertyAst = function(name, ast, sourceInfo, targetMatchableAttrs, targetProps) {
-      targetMatchableAttrs.push([name, ast.source]);
-      targetProps.push(new BoundElementOrDirectiveProperty(name, ast, false, sourceInfo));
-    };
-    TemplateParseVisitor.prototype._parseAssignmentEvent = function(name, expression, sourceInfo, targetMatchableAttrs, targetEvents) {
-      this._parseEvent(name + "-change", expression + "=$event", sourceInfo, targetMatchableAttrs, targetEvents);
-    };
-    TemplateParseVisitor.prototype._parseEvent = function(name, expression, sourceInfo, targetMatchableAttrs, targetEvents) {
-      var parts = util_1.splitAtColon(name, [null, name]);
-      var target = parts[0];
-      var eventName = parts[1];
-      targetEvents.push(new template_ast_1.BoundEventAst(util_1.dashCaseToCamelCase(eventName), target, this._parseAction(expression, sourceInfo), sourceInfo));
-    };
-    TemplateParseVisitor.prototype._parseLiteralAttr = function(name, value, sourceInfo, targetProps) {
-      targetProps.push(new BoundElementOrDirectiveProperty(util_1.dashCaseToCamelCase(name), this._exprParser.wrapLiteralPrimitive(value, sourceInfo), true, sourceInfo));
-    };
-    TemplateParseVisitor.prototype._parseDirectives = function(selectorMatcher, elementCssSelector) {
-      var _this = this;
-      var directives = [];
-      selectorMatcher.match(elementCssSelector, function(selector, directive) {
-        directives.push(directive);
-      });
-      collection_1.ListWrapper.sort(directives, function(dir1, dir2) {
-        var dir1Comp = dir1.isComponent;
-        var dir2Comp = dir2.isComponent;
-        if (dir1Comp && !dir2Comp) {
-          return -1;
-        } else if (!dir1Comp && dir2Comp) {
-          return 1;
-        } else {
-          return _this.directivesIndex.get(dir1) - _this.directivesIndex.get(dir2);
-        }
-      });
-      return directives;
-    };
-    TemplateParseVisitor.prototype._createDirectiveAsts = function(elementName, directives, props, possibleExportAsVars, sourceInfo) {
-      var _this = this;
-      var matchedVariables = new Set();
-      var directiveAsts = directives.map(function(directive) {
-        var hostProperties = [];
-        var hostEvents = [];
-        var directiveProperties = [];
-        _this._createDirectiveHostPropertyAsts(elementName, directive.hostProperties, sourceInfo, hostProperties);
-        _this._createDirectiveHostEventAsts(directive.hostListeners, sourceInfo, hostEvents);
-        _this._createDirectivePropertyAsts(directive.inputs, props, directiveProperties);
-        var exportAsVars = [];
-        possibleExportAsVars.forEach(function(varAst) {
-          if ((varAst.value.length === 0 && directive.isComponent) || (directive.exportAs == varAst.value)) {
-            exportAsVars.push(varAst);
-            matchedVariables.add(varAst.name);
-          }
-        });
-        return new template_ast_1.DirectiveAst(directive, directiveProperties, hostProperties, hostEvents, exportAsVars, sourceInfo);
-      });
-      possibleExportAsVars.forEach(function(varAst) {
-        if (varAst.value.length > 0 && !collection_1.SetWrapper.has(matchedVariables, varAst.name)) {
-          _this._reportError("There is no directive with \"exportAs\" set to \"" + varAst.value + "\" at " + varAst.sourceInfo);
-        }
-      });
-      return directiveAsts;
-    };
-    TemplateParseVisitor.prototype._createDirectiveHostPropertyAsts = function(elementName, hostProps, sourceInfo, targetPropertyAsts) {
-      var _this = this;
-      if (lang_1.isPresent(hostProps)) {
-        collection_1.StringMapWrapper.forEach(hostProps, function(expression, propName) {
-          var exprAst = _this._parseBinding(expression, sourceInfo);
-          targetPropertyAsts.push(_this._createElementPropertyAst(elementName, propName, exprAst, sourceInfo));
-        });
+        this.rootNodes.push(node);
       }
     };
-    TemplateParseVisitor.prototype._createDirectiveHostEventAsts = function(hostListeners, sourceInfo, targetEventAsts) {
-      var _this = this;
-      if (lang_1.isPresent(hostListeners)) {
-        collection_1.StringMapWrapper.forEach(hostListeners, function(expression, propName) {
-          _this._parseEvent(propName, expression, sourceInfo, [], targetEventAsts);
-        });
-      }
-    };
-    TemplateParseVisitor.prototype._createDirectivePropertyAsts = function(directiveProperties, boundProps, targetBoundDirectiveProps) {
-      if (lang_1.isPresent(directiveProperties)) {
-        var boundPropsByName = new Map();
-        boundProps.forEach(function(boundProp) {
-          var key = util_1.dashCaseToCamelCase(boundProp.name);
-          var prevValue = boundPropsByName.get(boundProp.name);
-          if (lang_1.isBlank(prevValue) || prevValue.isLiteral) {
-            boundPropsByName.set(key, boundProp);
-          }
-        });
-        collection_1.StringMapWrapper.forEach(directiveProperties, function(elProp, dirProp) {
-          elProp = util_1.dashCaseToCamelCase(elProp);
-          var boundProp = boundPropsByName.get(elProp);
-          if (lang_1.isPresent(boundProp)) {
-            targetBoundDirectiveProps.push(new template_ast_1.BoundDirectivePropertyAst(dirProp, boundProp.name, boundProp.expression, boundProp.sourceInfo));
-          }
-        });
-      }
-    };
-    TemplateParseVisitor.prototype._createElementPropertyAsts = function(elementName, props, directives) {
-      var _this = this;
-      var boundElementProps = [];
-      var boundDirectivePropsIndex = new Map();
-      directives.forEach(function(directive) {
-        directive.inputs.forEach(function(prop) {
-          boundDirectivePropsIndex.set(prop.templateName, prop);
-        });
-      });
-      props.forEach(function(prop) {
-        if (!prop.isLiteral && lang_1.isBlank(boundDirectivePropsIndex.get(prop.name))) {
-          boundElementProps.push(_this._createElementPropertyAst(elementName, prop.name, prop.expression, prop.sourceInfo));
-        }
-      });
-      return boundElementProps;
-    };
-    TemplateParseVisitor.prototype._createElementPropertyAst = function(elementName, name, ast, sourceInfo) {
-      var unit = null;
-      var bindingType;
-      var boundPropertyName;
-      var parts = lang_1.StringWrapper.split(name, PROPERTY_PARTS_SEPARATOR);
-      if (parts.length === 1) {
-        boundPropertyName = this._schemaRegistry.getMappedPropName(util_1.dashCaseToCamelCase(parts[0]));
-        bindingType = template_ast_1.PropertyBindingType.Property;
-        if (!this._schemaRegistry.hasProperty(elementName, boundPropertyName)) {
-          this._reportError("Can't bind to '" + boundPropertyName + "' since it isn't a known native property in " + sourceInfo);
-        }
-      } else if (parts[0] == ATTRIBUTE_PREFIX) {
-        boundPropertyName = util_1.dashCaseToCamelCase(parts[1]);
-        bindingType = template_ast_1.PropertyBindingType.Attribute;
-      } else if (parts[0] == CLASS_PREFIX) {
-        boundPropertyName = parts[1];
-        bindingType = template_ast_1.PropertyBindingType.Class;
-      } else if (parts[0] == STYLE_PREFIX) {
-        unit = parts.length > 2 ? parts[2] : null;
-        boundPropertyName = util_1.dashCaseToCamelCase(parts[1]);
-        bindingType = template_ast_1.PropertyBindingType.Style;
-      } else {
-        this._reportError("Invalid property name " + name + " in " + sourceInfo);
-        bindingType = null;
-      }
-      return new template_ast_1.BoundElementPropertyAst(boundPropertyName, bindingType, ast, unit, sourceInfo);
-    };
-    TemplateParseVisitor.prototype._findComponentDirectiveNames = function(directives) {
-      var componentTypeNames = [];
-      directives.forEach(function(directive) {
-        var typeName = directive.directive.type.name;
-        if (directive.directive.isComponent) {
-          componentTypeNames.push(typeName);
-        }
-      });
-      return componentTypeNames;
-    };
-    TemplateParseVisitor.prototype._assertOnlyOneComponent = function(directives, sourceInfo) {
-      var componentTypeNames = this._findComponentDirectiveNames(directives);
-      if (componentTypeNames.length > 1) {
-        this._reportError("More than one component: " + componentTypeNames.join(',') + " in " + sourceInfo);
-      }
-    };
-    TemplateParseVisitor.prototype._assertNoComponentsNorElementBindingsOnTemplate = function(directives, elementProps, sourceInfo) {
-      var _this = this;
-      var componentTypeNames = this._findComponentDirectiveNames(directives);
-      if (componentTypeNames.length > 0) {
-        this._reportError("Components on an embedded template: " + componentTypeNames.join(',') + " in " + sourceInfo);
-      }
-      elementProps.forEach(function(prop) {
-        _this._reportError("Property binding " + prop.name + " not used by any directive on an embedded template in " + prop.sourceInfo);
-      });
-    };
-    TemplateParseVisitor.prototype._assertAllEventsPublishedByDirectives = function(directives, events, sourceInfo) {
-      var _this = this;
-      var allDirectiveEvents = new Set();
-      directives.forEach(function(directive) {
-        collection_1.StringMapWrapper.forEach(directive.directive.outputs, function(eventName, _) {
-          allDirectiveEvents.add(eventName);
-        });
-      });
-      events.forEach(function(event) {
-        if (lang_1.isPresent(event.target) || !collection_1.SetWrapper.has(allDirectiveEvents, event.name)) {
-          _this._reportError("Event binding " + event.fullName + " not emitted by any directive on an embedded template in " + sourceInfo);
-        }
-      });
-    };
-    return TemplateParseVisitor;
+    return TreeBuilder;
   })();
-  var NonBindableVisitor = (function() {
-    function NonBindableVisitor() {}
-    NonBindableVisitor.prototype.visitElement = function(ast, component) {
-      var preparsedElement = template_preparser_1.preparseElement(ast);
-      if (preparsedElement.type === template_preparser_1.PreparsedElementType.SCRIPT || preparsedElement.type === template_preparser_1.PreparsedElementType.STYLE || preparsedElement.type === template_preparser_1.PreparsedElementType.STYLESHEET) {
-        return null;
-      }
-      var attrNameAndValues = ast.attrs.map(function(attrAst) {
-        return [attrAst.name, attrAst.value];
-      });
-      var selector = createElementCssSelector(ast.name, attrNameAndValues);
-      var ngContentIndex = component.findNgContentIndex(selector);
-      var children = html_ast_1.htmlVisitAll(this, ast.children, EMPTY_COMPONENT);
-      return new template_ast_1.ElementAst(ast.name, html_ast_1.htmlVisitAll(this, ast.attrs), [], [], [], [], children, ngContentIndex, ast.sourceInfo);
-    };
-    NonBindableVisitor.prototype.visitAttr = function(ast, context) {
-      return new template_ast_1.AttrAst(ast.name, ast.value, ast.sourceInfo);
-    };
-    NonBindableVisitor.prototype.visitText = function(ast, component) {
-      var ngContentIndex = component.findNgContentIndex(TEXT_CSS_SELECTOR);
-      return new template_ast_1.TextAst(ast.value, ngContentIndex, ast.sourceInfo);
-    };
-    return NonBindableVisitor;
-  })();
-  var BoundElementOrDirectiveProperty = (function() {
-    function BoundElementOrDirectiveProperty(name, expression, isLiteral, sourceInfo) {
-      this.name = name;
-      this.expression = expression;
-      this.isLiteral = isLiteral;
-      this.sourceInfo = sourceInfo;
-    }
-    return BoundElementOrDirectiveProperty;
-  })();
-  function splitClasses(classAttrValue) {
-    return lang_1.StringWrapper.split(classAttrValue.trim(), /\s+/g);
+  function mergeNsAndName(prefix, localName) {
+    return lang_1.isPresent(prefix) ? "@" + prefix + ":" + localName : localName;
   }
-  exports.splitClasses = splitClasses;
-  var Component = (function() {
-    function Component(ngContentIndexMatcher, wildcardNgContentIndex) {
-      this.ngContentIndexMatcher = ngContentIndexMatcher;
-      this.wildcardNgContentIndex = wildcardNgContentIndex;
-    }
-    Component.create = function(directives) {
-      if (directives.length === 0 || !directives[0].directive.isComponent) {
-        return EMPTY_COMPONENT;
-      }
-      var matcher = new selector_1.SelectorMatcher();
-      var ngContentSelectors = directives[0].directive.template.ngContentSelectors;
-      var wildcardNgContentIndex = null;
-      for (var i = 0; i < ngContentSelectors.length; i++) {
-        var selector = ngContentSelectors[i];
-        if (lang_1.StringWrapper.equals(selector, '*')) {
-          wildcardNgContentIndex = i;
-        } else {
-          matcher.addSelectables(selector_1.CssSelector.parse(ngContentSelectors[i]), i);
-        }
-      }
-      return new Component(matcher, wildcardNgContentIndex);
-    };
-    Component.prototype.findNgContentIndex = function(selector) {
-      var ngContentIndices = [];
-      this.ngContentIndexMatcher.match(selector, function(selector, ngContentIndex) {
-        ngContentIndices.push(ngContentIndex);
-      });
-      collection_1.ListWrapper.sort(ngContentIndices);
-      if (lang_1.isPresent(this.wildcardNgContentIndex)) {
-        ngContentIndices.push(this.wildcardNgContentIndex);
-      }
-      return ngContentIndices.length > 0 ? ngContentIndices[0] : null;
-    };
-    return Component;
-  })();
-  function createElementCssSelector(elementName, matchableAttrs) {
-    var cssSelector = new selector_1.CssSelector();
-    cssSelector.setElement(elementName);
-    for (var i = 0; i < matchableAttrs.length; i++) {
-      var attrName = matchableAttrs[i][0].toLowerCase();
-      var attrValue = matchableAttrs[i][1];
-      cssSelector.addAttribute(attrName, attrValue);
-      if (attrName == CLASS_ATTR) {
-        var classes = splitClasses(attrValue);
-        classes.forEach(function(className) {
-          return cssSelector.addClassName(className);
-        });
+  function getElementFullName(prefix, localName, parentElement) {
+    if (lang_1.isBlank(prefix)) {
+      prefix = html_tags_1.getHtmlTagDefinition(localName).implicitNamespacePrefix;
+      if (lang_1.isBlank(prefix) && lang_1.isPresent(parentElement)) {
+        prefix = namespacePrefix(parentElement.name);
       }
     }
-    return cssSelector;
+    return mergeNsAndName(prefix, localName);
   }
-  var EMPTY_COMPONENT = new Component(new selector_1.SelectorMatcher(), null);
-  var NON_BINDABLE_VISITOR = new NonBindableVisitor();
+  var NS_PREFIX_RE = /^@([^:]+)/g;
+  function namespacePrefix(elementName) {
+    var match = lang_1.RegExpWrapper.firstMatch(NS_PREFIX_RE, elementName);
+    return lang_1.isBlank(match) ? null : match[1];
+  }
   global.define = __define;
   return module.exports;
 });
@@ -35671,10 +36010,19 @@ System.register("angular2/src/platform/browser/browser_adapter", ["angular2/src/
   return module.exports;
 });
 
-System.register("angular2/src/compiler/template_compiler", ["angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/facade/collection", "angular2/src/facade/async", "angular2/src/core/linker/template_commands", "angular2/src/compiler/directive_metadata", "angular2/src/core/di", "angular2/src/compiler/source_module", "angular2/src/compiler/change_detector_compiler", "angular2/src/compiler/style_compiler", "angular2/src/compiler/command_compiler", "angular2/src/compiler/template_parser", "angular2/src/compiler/template_normalizer", "angular2/src/compiler/runtime_metadata", "angular2/src/compiler/command_compiler", "angular2/src/compiler/util"], true, function(require, exports, module) {
+System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/core/di", "angular2/src/facade/exceptions", "angular2/src/core/change_detection/change_detection", "angular2/src/compiler/html_parser", "angular2/src/compiler/parse_util", "angular2/src/compiler/template_ast", "angular2/src/compiler/selector", "angular2/src/compiler/schema/element_schema_registry", "angular2/src/compiler/template_preparser", "angular2/src/compiler/style_url_resolver", "angular2/src/compiler/html_ast", "angular2/src/compiler/util"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
       return Reflect.decorate(decorators, target, key, desc);
@@ -35697,221 +36045,536 @@ System.register("angular2/src/compiler/template_compiler", ["angular2/src/facade
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
       return Reflect.metadata(k, v);
   };
-  var lang_1 = require("angular2/src/facade/lang");
-  var exceptions_1 = require("angular2/src/facade/exceptions");
   var collection_1 = require("angular2/src/facade/collection");
-  var async_1 = require("angular2/src/facade/async");
-  var template_commands_1 = require("angular2/src/core/linker/template_commands");
-  var directive_metadata_1 = require("angular2/src/compiler/directive_metadata");
+  var lang_1 = require("angular2/src/facade/lang");
   var di_1 = require("angular2/src/core/di");
-  var source_module_1 = require("angular2/src/compiler/source_module");
-  var change_detector_compiler_1 = require("angular2/src/compiler/change_detector_compiler");
-  var style_compiler_1 = require("angular2/src/compiler/style_compiler");
-  var command_compiler_1 = require("angular2/src/compiler/command_compiler");
-  var template_parser_1 = require("angular2/src/compiler/template_parser");
-  var template_normalizer_1 = require("angular2/src/compiler/template_normalizer");
-  var runtime_metadata_1 = require("angular2/src/compiler/runtime_metadata");
-  var command_compiler_2 = require("angular2/src/compiler/command_compiler");
+  var exceptions_1 = require("angular2/src/facade/exceptions");
+  var change_detection_1 = require("angular2/src/core/change_detection/change_detection");
+  var html_parser_1 = require("angular2/src/compiler/html_parser");
+  var parse_util_1 = require("angular2/src/compiler/parse_util");
+  var template_ast_1 = require("angular2/src/compiler/template_ast");
+  var selector_1 = require("angular2/src/compiler/selector");
+  var element_schema_registry_1 = require("angular2/src/compiler/schema/element_schema_registry");
+  var template_preparser_1 = require("angular2/src/compiler/template_preparser");
+  var style_url_resolver_1 = require("angular2/src/compiler/style_url_resolver");
+  var html_ast_1 = require("angular2/src/compiler/html_ast");
   var util_1 = require("angular2/src/compiler/util");
-  var TemplateCompiler = (function() {
-    function TemplateCompiler(_runtimeMetadataResolver, _templateNormalizer, _templateParser, _styleCompiler, _commandCompiler, _cdCompiler) {
-      this._runtimeMetadataResolver = _runtimeMetadataResolver;
-      this._templateNormalizer = _templateNormalizer;
-      this._templateParser = _templateParser;
-      this._styleCompiler = _styleCompiler;
-      this._commandCompiler = _commandCompiler;
-      this._cdCompiler = _cdCompiler;
-      this._hostCacheKeys = new Map();
-      this._compiledTemplateCache = new Map();
-      this._compiledTemplateDone = new Map();
-      this._nextTemplateId = 0;
+  var BIND_NAME_REGEXP = /^(?:(?:(?:(bind-)|(var-|#)|(on-)|(bindon-))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/ig;
+  var TEMPLATE_ELEMENT = 'template';
+  var TEMPLATE_ATTR = 'template';
+  var TEMPLATE_ATTR_PREFIX = '*';
+  var CLASS_ATTR = 'class';
+  var PROPERTY_PARTS_SEPARATOR = '.';
+  var ATTRIBUTE_PREFIX = 'attr';
+  var CLASS_PREFIX = 'class';
+  var STYLE_PREFIX = 'style';
+  var TEXT_CSS_SELECTOR = selector_1.CssSelector.parse('*')[0];
+  var TemplateParseError = (function(_super) {
+    __extends(TemplateParseError, _super);
+    function TemplateParseError(message, location) {
+      _super.call(this, location, message);
     }
-    TemplateCompiler.prototype.normalizeDirectiveMetadata = function(directive) {
-      if (!directive.isComponent) {
-        return async_1.PromiseWrapper.resolve(directive);
+    return TemplateParseError;
+  })(parse_util_1.ParseError);
+  exports.TemplateParseError = TemplateParseError;
+  var TemplateParser = (function() {
+    function TemplateParser(_exprParser, _schemaRegistry, _htmlParser) {
+      this._exprParser = _exprParser;
+      this._schemaRegistry = _schemaRegistry;
+      this._htmlParser = _htmlParser;
+    }
+    TemplateParser.prototype.parse = function(template, directives, templateUrl) {
+      var parseVisitor = new TemplateParseVisitor(directives, this._exprParser, this._schemaRegistry);
+      var htmlAstWithErrors = this._htmlParser.parse(template, templateUrl);
+      var result = html_ast_1.htmlVisitAll(parseVisitor, htmlAstWithErrors.rootNodes, EMPTY_COMPONENT);
+      var errors = htmlAstWithErrors.errors.concat(parseVisitor.errors);
+      if (errors.length > 0) {
+        var errorString = errors.join('\n');
+        throw new exceptions_1.BaseException("Template parse errors:\n" + errorString);
       }
-      return this._templateNormalizer.normalizeTemplate(directive.type, directive.template).then(function(normalizedTemplate) {
-        return new directive_metadata_1.CompileDirectiveMetadata({
-          type: directive.type,
-          isComponent: directive.isComponent,
-          dynamicLoadable: directive.dynamicLoadable,
-          selector: directive.selector,
-          exportAs: directive.exportAs,
-          changeDetection: directive.changeDetection,
-          inputs: directive.inputs,
-          outputs: directive.outputs,
-          hostListeners: directive.hostListeners,
-          hostProperties: directive.hostProperties,
-          hostAttributes: directive.hostAttributes,
-          lifecycleHooks: directive.lifecycleHooks,
-          template: normalizedTemplate
+      return result;
+    };
+    TemplateParser = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [change_detection_1.Parser, element_schema_registry_1.ElementSchemaRegistry, html_parser_1.HtmlParser])], TemplateParser);
+    return TemplateParser;
+  })();
+  exports.TemplateParser = TemplateParser;
+  var TemplateParseVisitor = (function() {
+    function TemplateParseVisitor(directives, _exprParser, _schemaRegistry) {
+      var _this = this;
+      this._exprParser = _exprParser;
+      this._schemaRegistry = _schemaRegistry;
+      this.errors = [];
+      this.directivesIndex = new Map();
+      this.ngContentCount = 0;
+      this.selectorMatcher = new selector_1.SelectorMatcher();
+      collection_1.ListWrapper.forEachWithIndex(directives, function(directive, index) {
+        var selector = selector_1.CssSelector.parse(directive.selector);
+        _this.selectorMatcher.addSelectables(selector, directive);
+        _this.directivesIndex.set(directive, index);
+      });
+    }
+    TemplateParseVisitor.prototype._reportError = function(message, sourceSpan) {
+      this.errors.push(new TemplateParseError(message, sourceSpan.start));
+    };
+    TemplateParseVisitor.prototype._parseInterpolation = function(value, sourceSpan) {
+      var sourceInfo = sourceSpan.start.toString();
+      try {
+        return this._exprParser.parseInterpolation(value, sourceInfo);
+      } catch (e) {
+        this._reportError("" + e, sourceSpan);
+        return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo);
+      }
+    };
+    TemplateParseVisitor.prototype._parseAction = function(value, sourceSpan) {
+      var sourceInfo = sourceSpan.start.toString();
+      try {
+        return this._exprParser.parseAction(value, sourceInfo);
+      } catch (e) {
+        this._reportError("" + e, sourceSpan);
+        return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo);
+      }
+    };
+    TemplateParseVisitor.prototype._parseBinding = function(value, sourceSpan) {
+      var sourceInfo = sourceSpan.start.toString();
+      try {
+        return this._exprParser.parseBinding(value, sourceInfo);
+      } catch (e) {
+        this._reportError("" + e, sourceSpan);
+        return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo);
+      }
+    };
+    TemplateParseVisitor.prototype._parseTemplateBindings = function(value, sourceSpan) {
+      var sourceInfo = sourceSpan.start.toString();
+      try {
+        return this._exprParser.parseTemplateBindings(value, sourceInfo);
+      } catch (e) {
+        this._reportError("" + e, sourceSpan);
+        return [];
+      }
+    };
+    TemplateParseVisitor.prototype.visitText = function(ast, component) {
+      var ngContentIndex = component.findNgContentIndex(TEXT_CSS_SELECTOR);
+      var expr = this._parseInterpolation(ast.value, ast.sourceSpan);
+      if (lang_1.isPresent(expr)) {
+        return new template_ast_1.BoundTextAst(expr, ngContentIndex, ast.sourceSpan);
+      } else {
+        return new template_ast_1.TextAst(ast.value, ngContentIndex, ast.sourceSpan);
+      }
+    };
+    TemplateParseVisitor.prototype.visitAttr = function(ast, contex) {
+      return new template_ast_1.AttrAst(ast.name, ast.value, ast.sourceSpan);
+    };
+    TemplateParseVisitor.prototype.visitElement = function(element, component) {
+      var _this = this;
+      var nodeName = element.name;
+      var preparsedElement = template_preparser_1.preparseElement(element);
+      if (preparsedElement.type === template_preparser_1.PreparsedElementType.SCRIPT || preparsedElement.type === template_preparser_1.PreparsedElementType.STYLE) {
+        return null;
+      }
+      if (preparsedElement.type === template_preparser_1.PreparsedElementType.STYLESHEET && style_url_resolver_1.isStyleUrlResolvable(preparsedElement.hrefAttr)) {
+        return null;
+      }
+      var matchableAttrs = [];
+      var elementOrDirectiveProps = [];
+      var vars = [];
+      var events = [];
+      var templateElementOrDirectiveProps = [];
+      var templateVars = [];
+      var templateMatchableAttrs = [];
+      var hasInlineTemplates = false;
+      var attrs = [];
+      element.attrs.forEach(function(attr) {
+        matchableAttrs.push([attr.name, attr.value]);
+        var hasBinding = _this._parseAttr(attr, matchableAttrs, elementOrDirectiveProps, events, vars);
+        var hasTemplateBinding = _this._parseInlineTemplateBinding(attr, templateMatchableAttrs, templateElementOrDirectiveProps, templateVars);
+        if (!hasBinding && !hasTemplateBinding) {
+          attrs.push(_this.visitAttr(attr, null));
+        }
+        if (hasTemplateBinding) {
+          hasInlineTemplates = true;
+        }
+      });
+      var isTemplateElement = nodeName.toLowerCase() == TEMPLATE_ELEMENT;
+      var elementCssSelector = createElementCssSelector(nodeName, matchableAttrs);
+      var directives = this._createDirectiveAsts(element.name, this._parseDirectives(this.selectorMatcher, elementCssSelector), elementOrDirectiveProps, isTemplateElement ? [] : vars, element.sourceSpan);
+      var elementProps = this._createElementPropertyAsts(element.name, elementOrDirectiveProps, directives);
+      var children = html_ast_1.htmlVisitAll(preparsedElement.nonBindable ? NON_BINDABLE_VISITOR : this, element.children, Component.create(directives));
+      var elementNgContentIndex = hasInlineTemplates ? null : component.findNgContentIndex(elementCssSelector);
+      var parsedElement;
+      if (preparsedElement.type === template_preparser_1.PreparsedElementType.NG_CONTENT) {
+        parsedElement = new template_ast_1.NgContentAst(this.ngContentCount++, elementNgContentIndex, element.sourceSpan);
+      } else if (isTemplateElement) {
+        this._assertAllEventsPublishedByDirectives(directives, events);
+        this._assertNoComponentsNorElementBindingsOnTemplate(directives, elementProps, element.sourceSpan);
+        parsedElement = new template_ast_1.EmbeddedTemplateAst(attrs, events, vars, directives, children, elementNgContentIndex, element.sourceSpan);
+      } else {
+        this._assertOnlyOneComponent(directives, element.sourceSpan);
+        var elementExportAsVars = vars.filter(function(varAst) {
+          return varAst.value.length === 0;
         });
-      });
-    };
-    TemplateCompiler.prototype.compileHostComponentRuntime = function(type) {
-      var hostCacheKey = this._hostCacheKeys.get(type);
-      if (lang_1.isBlank(hostCacheKey)) {
-        hostCacheKey = new Object();
-        this._hostCacheKeys.set(type, hostCacheKey);
-        var compMeta = this._runtimeMetadataResolver.getMetadata(type);
-        assertComponent(compMeta);
-        var hostMeta = directive_metadata_1.createHostComponentMeta(compMeta.type, compMeta.selector);
-        this._compileComponentRuntime(hostCacheKey, hostMeta, [compMeta], new Set());
+        parsedElement = new template_ast_1.ElementAst(nodeName, attrs, elementProps, events, elementExportAsVars, directives, children, elementNgContentIndex, element.sourceSpan);
       }
-      return this._compiledTemplateDone.get(hostCacheKey).then(function(compiledTemplate) {
-        return new template_commands_1.CompiledHostTemplate(compiledTemplate);
-      });
-    };
-    TemplateCompiler.prototype.clearCache = function() {
-      this._hostCacheKeys.clear();
-      this._styleCompiler.clearCache();
-      this._compiledTemplateCache.clear();
-      this._compiledTemplateDone.clear();
-    };
-    TemplateCompiler.prototype._compileComponentRuntime = function(cacheKey, compMeta, viewDirectives, compilingComponentCacheKeys) {
-      var _this = this;
-      var compiledTemplate = this._compiledTemplateCache.get(cacheKey);
-      var done = this._compiledTemplateDone.get(cacheKey);
-      if (lang_1.isBlank(compiledTemplate)) {
-        var styles = [];
-        var changeDetectorFactory;
-        var commands = [];
-        var templateId = lang_1.stringify(compMeta.type.runtime) + "Template" + this._nextTemplateId++;
-        compiledTemplate = new template_commands_1.CompiledComponentTemplate(templateId, function(dispatcher) {
-          return changeDetectorFactory(dispatcher);
-        }, commands, styles);
-        this._compiledTemplateCache.set(cacheKey, compiledTemplate);
-        compilingComponentCacheKeys.add(cacheKey);
-        done = async_1.PromiseWrapper.all([this._styleCompiler.compileComponentRuntime(compMeta.template)].concat(viewDirectives.map(function(dirMeta) {
-          return _this.normalizeDirectiveMetadata(dirMeta);
-        }))).then(function(stylesAndNormalizedViewDirMetas) {
-          var childPromises = [];
-          var normalizedViewDirMetas = stylesAndNormalizedViewDirMetas.slice(1);
-          var parsedTemplate = _this._templateParser.parse(compMeta.template.template, normalizedViewDirMetas, compMeta.type.name);
-          var changeDetectorFactories = _this._cdCompiler.compileComponentRuntime(compMeta.type, compMeta.changeDetection, parsedTemplate);
-          changeDetectorFactory = changeDetectorFactories[0];
-          var tmpStyles = stylesAndNormalizedViewDirMetas[0];
-          tmpStyles.forEach(function(style) {
-            return styles.push(style);
-          });
-          var tmpCommands = _this._compileCommandsRuntime(compMeta, parsedTemplate, changeDetectorFactories, compilingComponentCacheKeys, childPromises);
-          tmpCommands.forEach(function(cmd) {
-            return commands.push(cmd);
-          });
-          return async_1.PromiseWrapper.all(childPromises);
-        }).then(function(_) {
-          collection_1.SetWrapper.delete(compilingComponentCacheKeys, cacheKey);
-          return compiledTemplate;
-        });
-        this._compiledTemplateDone.set(cacheKey, done);
+      if (hasInlineTemplates) {
+        var templateCssSelector = createElementCssSelector(TEMPLATE_ELEMENT, templateMatchableAttrs);
+        var templateDirectives = this._createDirectiveAsts(element.name, this._parseDirectives(this.selectorMatcher, templateCssSelector), templateElementOrDirectiveProps, [], element.sourceSpan);
+        var templateElementProps = this._createElementPropertyAsts(element.name, templateElementOrDirectiveProps, templateDirectives);
+        this._assertNoComponentsNorElementBindingsOnTemplate(templateDirectives, templateElementProps, element.sourceSpan);
+        parsedElement = new template_ast_1.EmbeddedTemplateAst([], [], templateVars, templateDirectives, [parsedElement], component.findNgContentIndex(templateCssSelector), element.sourceSpan);
       }
-      return compiledTemplate;
+      return parsedElement;
     };
-    TemplateCompiler.prototype._compileCommandsRuntime = function(compMeta, parsedTemplate, changeDetectorFactories, compilingComponentCacheKeys, childPromises) {
-      var _this = this;
-      var cmds = this._commandCompiler.compileComponentRuntime(compMeta, parsedTemplate, changeDetectorFactories, function(childComponentDir) {
-        var childCacheKey = childComponentDir.type.runtime;
-        var childViewDirectives = _this._runtimeMetadataResolver.getViewDirectivesMetadata(childComponentDir.type.runtime);
-        var childIsRecursive = collection_1.SetWrapper.has(compilingComponentCacheKeys, childCacheKey);
-        var childTemplate = _this._compileComponentRuntime(childCacheKey, childComponentDir, childViewDirectives, compilingComponentCacheKeys);
-        if (!childIsRecursive) {
-          childPromises.push(_this._compiledTemplateDone.get(childCacheKey));
-        }
-        return function() {
-          return childTemplate;
-        };
-      });
-      cmds.forEach(function(cmd) {
-        if (cmd instanceof template_commands_1.BeginComponentCmd) {
-          cmd.templateGetter();
-        }
-      });
-      return cmds;
-    };
-    TemplateCompiler.prototype.compileTemplatesCodeGen = function(components) {
-      var _this = this;
-      if (components.length === 0) {
-        throw new exceptions_1.BaseException('No components given');
+    TemplateParseVisitor.prototype._parseInlineTemplateBinding = function(attr, targetMatchableAttrs, targetProps, targetVars) {
+      var templateBindingsSource = null;
+      if (attr.name.toLowerCase() == TEMPLATE_ATTR) {
+        templateBindingsSource = attr.value;
+      } else if (attr.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
+        var key = attr.name.substring(TEMPLATE_ATTR_PREFIX.length);
+        templateBindingsSource = (attr.value.length == 0) ? key : key + ' ' + attr.value;
       }
-      var declarations = [];
-      var templateArguments = [];
-      var componentMetas = [];
-      components.forEach(function(componentWithDirs) {
-        var compMeta = componentWithDirs.component;
-        assertComponent(compMeta);
-        componentMetas.push(compMeta);
-        _this._processTemplateCodeGen(compMeta, componentWithDirs.directives, declarations, templateArguments);
-        if (compMeta.dynamicLoadable) {
-          var hostMeta = directive_metadata_1.createHostComponentMeta(compMeta.type, compMeta.selector);
-          componentMetas.push(hostMeta);
-          _this._processTemplateCodeGen(hostMeta, [compMeta], declarations, templateArguments);
+      if (lang_1.isPresent(templateBindingsSource)) {
+        var bindings = this._parseTemplateBindings(templateBindingsSource, attr.sourceSpan);
+        for (var i = 0; i < bindings.length; i++) {
+          var binding = bindings[i];
+          var dashCaseKey = util_1.camelCaseToDashCase(binding.key);
+          if (binding.keyIsVar) {
+            targetVars.push(new template_ast_1.VariableAst(util_1.dashCaseToCamelCase(binding.key), binding.name, attr.sourceSpan));
+            targetMatchableAttrs.push([dashCaseKey, binding.name]);
+          } else if (lang_1.isPresent(binding.expression)) {
+            this._parsePropertyAst(dashCaseKey, binding.expression, attr.sourceSpan, targetMatchableAttrs, targetProps);
+          } else {
+            targetMatchableAttrs.push([dashCaseKey, '']);
+            this._parseLiteralAttr(dashCaseKey, null, attr.sourceSpan, targetProps);
+          }
         }
+        return true;
+      }
+      return false;
+    };
+    TemplateParseVisitor.prototype._parseAttr = function(attr, targetMatchableAttrs, targetProps, targetEvents, targetVars) {
+      var attrName = this._normalizeAttributeName(attr.name);
+      var attrValue = attr.value;
+      var bindParts = lang_1.RegExpWrapper.firstMatch(BIND_NAME_REGEXP, attrName);
+      var hasBinding = false;
+      if (lang_1.isPresent(bindParts)) {
+        hasBinding = true;
+        if (lang_1.isPresent(bindParts[1])) {
+          this._parseProperty(bindParts[5], attrValue, attr.sourceSpan, targetMatchableAttrs, targetProps);
+        } else if (lang_1.isPresent(bindParts[2])) {
+          var identifier = bindParts[5];
+          this._parseVariable(identifier, attrValue, attr.sourceSpan, targetVars);
+        } else if (lang_1.isPresent(bindParts[3])) {
+          this._parseEvent(bindParts[5], attrValue, attr.sourceSpan, targetMatchableAttrs, targetEvents);
+        } else if (lang_1.isPresent(bindParts[4])) {
+          this._parseProperty(bindParts[5], attrValue, attr.sourceSpan, targetMatchableAttrs, targetProps);
+          this._parseAssignmentEvent(bindParts[5], attrValue, attr.sourceSpan, targetMatchableAttrs, targetEvents);
+        } else if (lang_1.isPresent(bindParts[6])) {
+          this._parseProperty(bindParts[6], attrValue, attr.sourceSpan, targetMatchableAttrs, targetProps);
+          this._parseAssignmentEvent(bindParts[6], attrValue, attr.sourceSpan, targetMatchableAttrs, targetEvents);
+        } else if (lang_1.isPresent(bindParts[7])) {
+          this._parseProperty(bindParts[7], attrValue, attr.sourceSpan, targetMatchableAttrs, targetProps);
+        } else if (lang_1.isPresent(bindParts[8])) {
+          this._parseEvent(bindParts[8], attrValue, attr.sourceSpan, targetMatchableAttrs, targetEvents);
+        }
+      } else {
+        hasBinding = this._parsePropertyInterpolation(attrName, attrValue, attr.sourceSpan, targetMatchableAttrs, targetProps);
+      }
+      if (!hasBinding) {
+        this._parseLiteralAttr(attrName, attrValue, attr.sourceSpan, targetProps);
+      }
+      return hasBinding;
+    };
+    TemplateParseVisitor.prototype._normalizeAttributeName = function(attrName) {
+      return attrName.toLowerCase().startsWith('data-') ? attrName.substring(5) : attrName;
+    };
+    TemplateParseVisitor.prototype._parseVariable = function(identifier, value, sourceSpan, targetVars) {
+      targetVars.push(new template_ast_1.VariableAst(util_1.dashCaseToCamelCase(identifier), value, sourceSpan));
+    };
+    TemplateParseVisitor.prototype._parseProperty = function(name, expression, sourceSpan, targetMatchableAttrs, targetProps) {
+      this._parsePropertyAst(name, this._parseBinding(expression, sourceSpan), sourceSpan, targetMatchableAttrs, targetProps);
+    };
+    TemplateParseVisitor.prototype._parsePropertyInterpolation = function(name, value, sourceSpan, targetMatchableAttrs, targetProps) {
+      var expr = this._parseInterpolation(value, sourceSpan);
+      if (lang_1.isPresent(expr)) {
+        this._parsePropertyAst(name, expr, sourceSpan, targetMatchableAttrs, targetProps);
+        return true;
+      }
+      return false;
+    };
+    TemplateParseVisitor.prototype._parsePropertyAst = function(name, ast, sourceSpan, targetMatchableAttrs, targetProps) {
+      targetMatchableAttrs.push([name, ast.source]);
+      targetProps.push(new BoundElementOrDirectiveProperty(name, ast, false, sourceSpan));
+    };
+    TemplateParseVisitor.prototype._parseAssignmentEvent = function(name, expression, sourceSpan, targetMatchableAttrs, targetEvents) {
+      this._parseEvent(name + "-change", expression + "=$event", sourceSpan, targetMatchableAttrs, targetEvents);
+    };
+    TemplateParseVisitor.prototype._parseEvent = function(name, expression, sourceSpan, targetMatchableAttrs, targetEvents) {
+      var parts = util_1.splitAtColon(name, [null, name]);
+      var target = parts[0];
+      var eventName = parts[1];
+      targetEvents.push(new template_ast_1.BoundEventAst(util_1.dashCaseToCamelCase(eventName), target, this._parseAction(expression, sourceSpan), sourceSpan));
+    };
+    TemplateParseVisitor.prototype._parseLiteralAttr = function(name, value, sourceSpan, targetProps) {
+      targetProps.push(new BoundElementOrDirectiveProperty(util_1.dashCaseToCamelCase(name), this._exprParser.wrapLiteralPrimitive(value, ''), true, sourceSpan));
+    };
+    TemplateParseVisitor.prototype._parseDirectives = function(selectorMatcher, elementCssSelector) {
+      var _this = this;
+      var directives = [];
+      selectorMatcher.match(elementCssSelector, function(selector, directive) {
+        directives.push(directive);
       });
-      collection_1.ListWrapper.forEachWithIndex(componentMetas, function(compMeta, index) {
-        var templateId = compMeta.type.moduleUrl + "|" + compMeta.type.name;
-        var constructionKeyword = lang_1.IS_DART ? 'const' : 'new';
-        var compiledTemplateExpr = constructionKeyword + " " + command_compiler_2.TEMPLATE_COMMANDS_MODULE_REF + "CompiledComponentTemplate('" + templateId + "'," + templateArguments[index].join(',') + ")";
-        var variableValueExpr;
-        if (compMeta.type.isHost) {
-          variableValueExpr = constructionKeyword + " " + command_compiler_2.TEMPLATE_COMMANDS_MODULE_REF + "CompiledHostTemplate(" + compiledTemplateExpr + ")";
+      collection_1.ListWrapper.sort(directives, function(dir1, dir2) {
+        var dir1Comp = dir1.isComponent;
+        var dir2Comp = dir2.isComponent;
+        if (dir1Comp && !dir2Comp) {
+          return -1;
+        } else if (!dir1Comp && dir2Comp) {
+          return 1;
         } else {
-          variableValueExpr = compiledTemplateExpr;
+          return _this.directivesIndex.get(dir1) - _this.directivesIndex.get(dir2);
         }
-        var varName = templateVariableName(compMeta.type);
-        declarations.push("" + util_1.codeGenExportVariable(varName) + variableValueExpr + ";");
-        declarations.push(util_1.codeGenValueFn([], varName, templateGetterName(compMeta.type)) + ";");
       });
-      var moduleUrl = components[0].component.type.moduleUrl;
-      return new source_module_1.SourceModule("" + templateModuleUrl(moduleUrl), declarations.join('\n'));
+      return directives;
     };
-    TemplateCompiler.prototype.compileStylesheetCodeGen = function(stylesheetUrl, cssText) {
-      return this._styleCompiler.compileStylesheetCodeGen(stylesheetUrl, cssText);
+    TemplateParseVisitor.prototype._createDirectiveAsts = function(elementName, directives, props, possibleExportAsVars, sourceSpan) {
+      var _this = this;
+      var matchedVariables = new Set();
+      var directiveAsts = directives.map(function(directive) {
+        var hostProperties = [];
+        var hostEvents = [];
+        var directiveProperties = [];
+        _this._createDirectiveHostPropertyAsts(elementName, directive.hostProperties, sourceSpan, hostProperties);
+        _this._createDirectiveHostEventAsts(directive.hostListeners, sourceSpan, hostEvents);
+        _this._createDirectivePropertyAsts(directive.inputs, props, directiveProperties);
+        var exportAsVars = [];
+        possibleExportAsVars.forEach(function(varAst) {
+          if ((varAst.value.length === 0 && directive.isComponent) || (directive.exportAs == varAst.value)) {
+            exportAsVars.push(varAst);
+            matchedVariables.add(varAst.name);
+          }
+        });
+        return new template_ast_1.DirectiveAst(directive, directiveProperties, hostProperties, hostEvents, exportAsVars, sourceSpan);
+      });
+      possibleExportAsVars.forEach(function(varAst) {
+        if (varAst.value.length > 0 && !collection_1.SetWrapper.has(matchedVariables, varAst.name)) {
+          _this._reportError("There is no directive with \"exportAs\" set to \"" + varAst.value + "\"", varAst.sourceSpan);
+        }
+      });
+      return directiveAsts;
     };
-    TemplateCompiler.prototype._processTemplateCodeGen = function(compMeta, directives, targetDeclarations, targetTemplateArguments) {
-      var styleExpr = this._styleCompiler.compileComponentCodeGen(compMeta.template);
-      var parsedTemplate = this._templateParser.parse(compMeta.template.template, directives, compMeta.type.name);
-      var changeDetectorsExprs = this._cdCompiler.compileComponentCodeGen(compMeta.type, compMeta.changeDetection, parsedTemplate);
-      var commandsExpr = this._commandCompiler.compileComponentCodeGen(compMeta, parsedTemplate, changeDetectorsExprs.expressions, codeGenComponentTemplateFactory);
-      addAll(styleExpr.declarations, targetDeclarations);
-      addAll(changeDetectorsExprs.declarations, targetDeclarations);
-      addAll(commandsExpr.declarations, targetDeclarations);
-      targetTemplateArguments.push([changeDetectorsExprs.expressions[0], commandsExpr.expression, styleExpr.expression]);
+    TemplateParseVisitor.prototype._createDirectiveHostPropertyAsts = function(elementName, hostProps, sourceSpan, targetPropertyAsts) {
+      var _this = this;
+      if (lang_1.isPresent(hostProps)) {
+        collection_1.StringMapWrapper.forEach(hostProps, function(expression, propName) {
+          var exprAst = _this._parseBinding(expression, sourceSpan);
+          targetPropertyAsts.push(_this._createElementPropertyAst(elementName, propName, exprAst, sourceSpan));
+        });
+      }
     };
-    TemplateCompiler = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [runtime_metadata_1.RuntimeMetadataResolver, template_normalizer_1.TemplateNormalizer, template_parser_1.TemplateParser, style_compiler_1.StyleCompiler, command_compiler_1.CommandCompiler, change_detector_compiler_1.ChangeDetectionCompiler])], TemplateCompiler);
-    return TemplateCompiler;
+    TemplateParseVisitor.prototype._createDirectiveHostEventAsts = function(hostListeners, sourceSpan, targetEventAsts) {
+      var _this = this;
+      if (lang_1.isPresent(hostListeners)) {
+        collection_1.StringMapWrapper.forEach(hostListeners, function(expression, propName) {
+          _this._parseEvent(propName, expression, sourceSpan, [], targetEventAsts);
+        });
+      }
+    };
+    TemplateParseVisitor.prototype._createDirectivePropertyAsts = function(directiveProperties, boundProps, targetBoundDirectiveProps) {
+      if (lang_1.isPresent(directiveProperties)) {
+        var boundPropsByName = new Map();
+        boundProps.forEach(function(boundProp) {
+          var key = util_1.dashCaseToCamelCase(boundProp.name);
+          var prevValue = boundPropsByName.get(boundProp.name);
+          if (lang_1.isBlank(prevValue) || prevValue.isLiteral) {
+            boundPropsByName.set(key, boundProp);
+          }
+        });
+        collection_1.StringMapWrapper.forEach(directiveProperties, function(elProp, dirProp) {
+          elProp = util_1.dashCaseToCamelCase(elProp);
+          var boundProp = boundPropsByName.get(elProp);
+          if (lang_1.isPresent(boundProp)) {
+            targetBoundDirectiveProps.push(new template_ast_1.BoundDirectivePropertyAst(dirProp, boundProp.name, boundProp.expression, boundProp.sourceSpan));
+          }
+        });
+      }
+    };
+    TemplateParseVisitor.prototype._createElementPropertyAsts = function(elementName, props, directives) {
+      var _this = this;
+      var boundElementProps = [];
+      var boundDirectivePropsIndex = new Map();
+      directives.forEach(function(directive) {
+        directive.inputs.forEach(function(prop) {
+          boundDirectivePropsIndex.set(prop.templateName, prop);
+        });
+      });
+      props.forEach(function(prop) {
+        if (!prop.isLiteral && lang_1.isBlank(boundDirectivePropsIndex.get(prop.name))) {
+          boundElementProps.push(_this._createElementPropertyAst(elementName, prop.name, prop.expression, prop.sourceSpan));
+        }
+      });
+      return boundElementProps;
+    };
+    TemplateParseVisitor.prototype._createElementPropertyAst = function(elementName, name, ast, sourceSpan) {
+      var unit = null;
+      var bindingType;
+      var boundPropertyName;
+      var parts = name.split(PROPERTY_PARTS_SEPARATOR);
+      if (parts.length === 1) {
+        boundPropertyName = this._schemaRegistry.getMappedPropName(util_1.dashCaseToCamelCase(parts[0]));
+        bindingType = template_ast_1.PropertyBindingType.Property;
+        if (!this._schemaRegistry.hasProperty(elementName, boundPropertyName)) {
+          this._reportError("Can't bind to '" + boundPropertyName + "' since it isn't a known native property", sourceSpan);
+        }
+      } else {
+        var lcPrefix = parts[0].toLowerCase();
+        if (lcPrefix == ATTRIBUTE_PREFIX) {
+          boundPropertyName = util_1.dashCaseToCamelCase(parts[1]);
+          bindingType = template_ast_1.PropertyBindingType.Attribute;
+        } else if (lcPrefix == CLASS_PREFIX) {
+          boundPropertyName = parts[1];
+          bindingType = template_ast_1.PropertyBindingType.Class;
+        } else if (lcPrefix == STYLE_PREFIX) {
+          unit = parts.length > 2 ? parts[2] : null;
+          boundPropertyName = util_1.dashCaseToCamelCase(parts[1]);
+          bindingType = template_ast_1.PropertyBindingType.Style;
+        } else {
+          this._reportError("Invalid property name " + name, sourceSpan);
+          bindingType = null;
+        }
+      }
+      return new template_ast_1.BoundElementPropertyAst(boundPropertyName, bindingType, ast, unit, sourceSpan);
+    };
+    TemplateParseVisitor.prototype._findComponentDirectiveNames = function(directives) {
+      var componentTypeNames = [];
+      directives.forEach(function(directive) {
+        var typeName = directive.directive.type.name;
+        if (directive.directive.isComponent) {
+          componentTypeNames.push(typeName);
+        }
+      });
+      return componentTypeNames;
+    };
+    TemplateParseVisitor.prototype._assertOnlyOneComponent = function(directives, sourceSpan) {
+      var componentTypeNames = this._findComponentDirectiveNames(directives);
+      if (componentTypeNames.length > 1) {
+        this._reportError("More than one component: " + componentTypeNames.join(','), sourceSpan);
+      }
+    };
+    TemplateParseVisitor.prototype._assertNoComponentsNorElementBindingsOnTemplate = function(directives, elementProps, sourceSpan) {
+      var _this = this;
+      var componentTypeNames = this._findComponentDirectiveNames(directives);
+      if (componentTypeNames.length > 0) {
+        this._reportError("Components on an embedded template: " + componentTypeNames.join(','), sourceSpan);
+      }
+      elementProps.forEach(function(prop) {
+        _this._reportError("Property binding " + prop.name + " not used by any directive on an embedded template", sourceSpan);
+      });
+    };
+    TemplateParseVisitor.prototype._assertAllEventsPublishedByDirectives = function(directives, events) {
+      var _this = this;
+      var allDirectiveEvents = new Set();
+      directives.forEach(function(directive) {
+        collection_1.StringMapWrapper.forEach(directive.directive.outputs, function(eventName, _) {
+          allDirectiveEvents.add(eventName);
+        });
+      });
+      events.forEach(function(event) {
+        if (lang_1.isPresent(event.target) || !collection_1.SetWrapper.has(allDirectiveEvents, event.name)) {
+          _this._reportError("Event binding " + event.fullName + " not emitted by any directive on an embedded template", event.sourceSpan);
+        }
+      });
+    };
+    return TemplateParseVisitor;
   })();
-  exports.TemplateCompiler = TemplateCompiler;
-  var NormalizedComponentWithViewDirectives = (function() {
-    function NormalizedComponentWithViewDirectives(component, directives) {
-      this.component = component;
-      this.directives = directives;
-    }
-    return NormalizedComponentWithViewDirectives;
+  var NonBindableVisitor = (function() {
+    function NonBindableVisitor() {}
+    NonBindableVisitor.prototype.visitElement = function(ast, component) {
+      var preparsedElement = template_preparser_1.preparseElement(ast);
+      if (preparsedElement.type === template_preparser_1.PreparsedElementType.SCRIPT || preparsedElement.type === template_preparser_1.PreparsedElementType.STYLE || preparsedElement.type === template_preparser_1.PreparsedElementType.STYLESHEET) {
+        return null;
+      }
+      var attrNameAndValues = ast.attrs.map(function(attrAst) {
+        return [attrAst.name, attrAst.value];
+      });
+      var selector = createElementCssSelector(ast.name, attrNameAndValues);
+      var ngContentIndex = component.findNgContentIndex(selector);
+      var children = html_ast_1.htmlVisitAll(this, ast.children, EMPTY_COMPONENT);
+      return new template_ast_1.ElementAst(ast.name, html_ast_1.htmlVisitAll(this, ast.attrs), [], [], [], [], children, ngContentIndex, ast.sourceSpan);
+    };
+    NonBindableVisitor.prototype.visitAttr = function(ast, context) {
+      return new template_ast_1.AttrAst(ast.name, ast.value, ast.sourceSpan);
+    };
+    NonBindableVisitor.prototype.visitText = function(ast, component) {
+      var ngContentIndex = component.findNgContentIndex(TEXT_CSS_SELECTOR);
+      return new template_ast_1.TextAst(ast.value, ngContentIndex, ast.sourceSpan);
+    };
+    return NonBindableVisitor;
   })();
-  exports.NormalizedComponentWithViewDirectives = NormalizedComponentWithViewDirectives;
-  function assertComponent(meta) {
-    if (!meta.isComponent) {
-      throw new exceptions_1.BaseException("Could not compile '" + meta.type.name + "' because it is not a component.");
+  var BoundElementOrDirectiveProperty = (function() {
+    function BoundElementOrDirectiveProperty(name, expression, isLiteral, sourceSpan) {
+      this.name = name;
+      this.expression = expression;
+      this.isLiteral = isLiteral;
+      this.sourceSpan = sourceSpan;
     }
+    return BoundElementOrDirectiveProperty;
+  })();
+  function splitClasses(classAttrValue) {
+    return lang_1.StringWrapper.split(classAttrValue.trim(), /\s+/g);
   }
-  function templateVariableName(type) {
-    return type.name + "Template";
-  }
-  function templateGetterName(type) {
-    return templateVariableName(type) + "Getter";
-  }
-  function templateModuleUrl(moduleUrl) {
-    var urlWithoutSuffix = moduleUrl.substring(0, moduleUrl.length - util_1.MODULE_SUFFIX.length);
-    return urlWithoutSuffix + ".template" + util_1.MODULE_SUFFIX;
-  }
-  function addAll(source, target) {
-    for (var i = 0; i < source.length; i++) {
-      target.push(source[i]);
+  exports.splitClasses = splitClasses;
+  var Component = (function() {
+    function Component(ngContentIndexMatcher, wildcardNgContentIndex) {
+      this.ngContentIndexMatcher = ngContentIndexMatcher;
+      this.wildcardNgContentIndex = wildcardNgContentIndex;
     }
+    Component.create = function(directives) {
+      if (directives.length === 0 || !directives[0].directive.isComponent) {
+        return EMPTY_COMPONENT;
+      }
+      var matcher = new selector_1.SelectorMatcher();
+      var ngContentSelectors = directives[0].directive.template.ngContentSelectors;
+      var wildcardNgContentIndex = null;
+      for (var i = 0; i < ngContentSelectors.length; i++) {
+        var selector = ngContentSelectors[i];
+        if (lang_1.StringWrapper.equals(selector, '*')) {
+          wildcardNgContentIndex = i;
+        } else {
+          matcher.addSelectables(selector_1.CssSelector.parse(ngContentSelectors[i]), i);
+        }
+      }
+      return new Component(matcher, wildcardNgContentIndex);
+    };
+    Component.prototype.findNgContentIndex = function(selector) {
+      var ngContentIndices = [];
+      this.ngContentIndexMatcher.match(selector, function(selector, ngContentIndex) {
+        ngContentIndices.push(ngContentIndex);
+      });
+      collection_1.ListWrapper.sort(ngContentIndices);
+      if (lang_1.isPresent(this.wildcardNgContentIndex)) {
+        ngContentIndices.push(this.wildcardNgContentIndex);
+      }
+      return ngContentIndices.length > 0 ? ngContentIndices[0] : null;
+    };
+    return Component;
+  })();
+  function createElementCssSelector(elementName, matchableAttrs) {
+    var cssSelector = new selector_1.CssSelector();
+    cssSelector.setElement(elementName);
+    for (var i = 0; i < matchableAttrs.length; i++) {
+      var attrName = matchableAttrs[i][0].toLowerCase();
+      var attrValue = matchableAttrs[i][1];
+      cssSelector.addAttribute(attrName, attrValue);
+      if (attrName == CLASS_ATTR) {
+        var classes = splitClasses(attrValue);
+        classes.forEach(function(className) {
+          return cssSelector.addClassName(className);
+        });
+      }
+    }
+    return cssSelector;
   }
-  function codeGenComponentTemplateFactory(nestedCompType) {
-    return "" + source_module_1.moduleRef(templateModuleUrl(nestedCompType.type.moduleUrl)) + templateGetterName(nestedCompType.type);
-  }
+  var EMPTY_COMPONENT = new Component(new selector_1.SelectorMatcher(), null);
+  var NON_BINDABLE_VISITOR = new NonBindableVisitor();
   global.define = __define;
   return module.exports;
 });
@@ -36858,90 +37521,9 @@ System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di
   var util_1 = require("angular2/src/platform/dom/util");
   var metadata_1 = require("angular2/src/core/metadata");
   var dom_adapter_1 = require("angular2/src/core/dom/dom_adapter");
-  var XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink';
-  var SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
-  var SVG_ELEMENT_NAMES = lang_1.CONST_EXPR({
-    'altGlyph': true,
-    'altGlyphDef': true,
-    'altGlyphItem': true,
-    'animate': true,
-    'animateColor': true,
-    'animateMotion': true,
-    'animateTransform': true,
-    'circle': true,
-    'clipPath': true,
-    'color-profile': true,
-    'cursor': true,
-    'defs': true,
-    'desc': true,
-    'ellipse': true,
-    'feBlend': true,
-    'feColorMatrix': true,
-    'feComponentTransfer': true,
-    'feComposite': true,
-    'feConvolveMatrix': true,
-    'feDiffuseLighting': true,
-    'feDisplacementMap': true,
-    'feDistantLight': true,
-    'feFlood': true,
-    'feFuncA': true,
-    'feFuncB': true,
-    'feFuncG': true,
-    'feFuncR': true,
-    'feGaussianBlur': true,
-    'feImage': true,
-    'feMerge': true,
-    'feMergeNode': true,
-    'feMorphology': true,
-    'feOffset': true,
-    'fePointLight': true,
-    'feSpecularLighting': true,
-    'feSpotLight': true,
-    'feTile': true,
-    'feTurbulence': true,
-    'filter': true,
-    'font': true,
-    'font-face': true,
-    'font-face-format': true,
-    'font-face-name': true,
-    'font-face-src': true,
-    'font-face-uri': true,
-    'foreignObject': true,
-    'g': true,
-    'glyphRef': true,
-    'hkern': true,
-    'image': true,
-    'line': true,
-    'linearGradient': true,
-    'marker': true,
-    'mask': true,
-    'metadata': true,
-    'missing-glyph': true,
-    'mpath': true,
-    'path': true,
-    'pattern': true,
-    'polygon': true,
-    'polyline': true,
-    'radialGradient': true,
-    'rect': true,
-    'set': true,
-    'stop': true,
-    'style': true,
-    'svg': true,
-    'switch': true,
-    'symbol': true,
-    'text': true,
-    'textPath': true,
-    'title': true,
-    'tref': true,
-    'tspan': true,
-    'use': true,
-    'view': true,
-    'vkern': true
-  });
-  var SVG_ATTR_NAMESPACES = lang_1.CONST_EXPR({
-    'href': XLINK_NAMESPACE,
-    'xlink:href': XLINK_NAMESPACE
+  var NAMESPACE_URIS = lang_1.CONST_EXPR({
+    'xlink': 'http://www.w3.org/1999/xlink',
+    'svg': 'http://www.w3.org/2000/svg'
   });
   var DomRenderer = (function(_super) {
     __extends(DomRenderer, _super);
@@ -37120,24 +37702,29 @@ System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di
       profile_1.wtfLeave(s);
     };
     DomRenderer_.prototype.createElement = function(name, attrNameAndValues) {
-      var isSvg = SVG_ELEMENT_NAMES[name] == true;
-      var el = isSvg ? dom_adapter_1.DOM.createElementNS(SVG_NAMESPACE, name) : dom_adapter_1.DOM.createElement(name);
-      this._setAttributes(el, attrNameAndValues, isSvg);
+      var nsAndName = splitNamespace(name);
+      var el = lang_1.isPresent(nsAndName[0]) ? dom_adapter_1.DOM.createElementNS(NAMESPACE_URIS[nsAndName[0]], nsAndName[1]) : dom_adapter_1.DOM.createElement(nsAndName[1]);
+      this._setAttributes(el, attrNameAndValues);
       return el;
     };
     DomRenderer_.prototype.mergeElement = function(existing, attrNameAndValues) {
       dom_adapter_1.DOM.clearNodes(existing);
-      this._setAttributes(existing, attrNameAndValues, false);
+      this._setAttributes(existing, attrNameAndValues);
     };
-    DomRenderer_.prototype._setAttributes = function(node, attrNameAndValues, isSvg) {
+    DomRenderer_.prototype._setAttributes = function(node, attrNameAndValues) {
       for (var attrIdx = 0; attrIdx < attrNameAndValues.length; attrIdx += 2) {
+        var attrNs;
         var attrName = attrNameAndValues[attrIdx];
+        var nsAndName = splitNamespace(attrName);
+        if (lang_1.isPresent(nsAndName[0])) {
+          attrName = nsAndName[0] + ':' + nsAndName[1];
+          attrNs = NAMESPACE_URIS[nsAndName[0]];
+        }
         var attrValue = attrNameAndValues[attrIdx + 1];
-        var attrNs = isSvg ? SVG_ATTR_NAMESPACES[attrName] : null;
         if (lang_1.isPresent(attrNs)) {
-          dom_adapter_1.DOM.setAttributeNS(node, XLINK_NAMESPACE, attrName, attrValue);
+          dom_adapter_1.DOM.setAttributeNS(node, attrNs, attrName, attrValue);
         } else {
-          dom_adapter_1.DOM.setAttribute(node, attrName, attrValue);
+          dom_adapter_1.DOM.setAttribute(node, nsAndName[1], attrValue);
         }
       }
     };
@@ -37184,23 +37771,22 @@ System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di
       }
     };
   }
+  var NS_PREFIX_RE = /^@([^:]+):(.+)/g;
+  function splitNamespace(name) {
+    if (name[0] != '@') {
+      return [null, name];
+    }
+    var match = lang_1.RegExpWrapper.firstMatch(NS_PREFIX_RE, name);
+    return [match[1], match[2]];
+  }
   global.define = __define;
   return module.exports;
 });
 
-System.register("angular2/src/compiler/runtime_compiler", ["angular2/src/core/linker/compiler", "angular2/src/core/linker/proto_view_factory", "angular2/src/compiler/template_compiler", "angular2/src/core/di"], true, function(require, exports, module) {
+System.register("angular2/src/compiler/template_compiler", ["angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/facade/collection", "angular2/src/facade/async", "angular2/src/core/linker/template_commands", "angular2/src/compiler/directive_metadata", "angular2/src/core/di", "angular2/src/compiler/source_module", "angular2/src/compiler/change_detector_compiler", "angular2/src/compiler/style_compiler", "angular2/src/compiler/command_compiler", "angular2/src/compiler/template_parser", "angular2/src/compiler/template_normalizer", "angular2/src/compiler/runtime_metadata", "angular2/src/compiler/command_compiler", "angular2/src/compiler/util"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
       return Reflect.decorate(decorators, target, key, desc);
@@ -37223,38 +37809,221 @@ System.register("angular2/src/compiler/runtime_compiler", ["angular2/src/core/li
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
       return Reflect.metadata(k, v);
   };
-  var compiler_1 = require("angular2/src/core/linker/compiler");
-  var proto_view_factory_1 = require("angular2/src/core/linker/proto_view_factory");
-  var template_compiler_1 = require("angular2/src/compiler/template_compiler");
+  var lang_1 = require("angular2/src/facade/lang");
+  var exceptions_1 = require("angular2/src/facade/exceptions");
+  var collection_1 = require("angular2/src/facade/collection");
+  var async_1 = require("angular2/src/facade/async");
+  var template_commands_1 = require("angular2/src/core/linker/template_commands");
+  var directive_metadata_1 = require("angular2/src/compiler/directive_metadata");
   var di_1 = require("angular2/src/core/di");
-  var RuntimeCompiler = (function(_super) {
-    __extends(RuntimeCompiler, _super);
-    function RuntimeCompiler() {
-      _super.apply(this, arguments);
+  var source_module_1 = require("angular2/src/compiler/source_module");
+  var change_detector_compiler_1 = require("angular2/src/compiler/change_detector_compiler");
+  var style_compiler_1 = require("angular2/src/compiler/style_compiler");
+  var command_compiler_1 = require("angular2/src/compiler/command_compiler");
+  var template_parser_1 = require("angular2/src/compiler/template_parser");
+  var template_normalizer_1 = require("angular2/src/compiler/template_normalizer");
+  var runtime_metadata_1 = require("angular2/src/compiler/runtime_metadata");
+  var command_compiler_2 = require("angular2/src/compiler/command_compiler");
+  var util_1 = require("angular2/src/compiler/util");
+  var TemplateCompiler = (function() {
+    function TemplateCompiler(_runtimeMetadataResolver, _templateNormalizer, _templateParser, _styleCompiler, _commandCompiler, _cdCompiler) {
+      this._runtimeMetadataResolver = _runtimeMetadataResolver;
+      this._templateNormalizer = _templateNormalizer;
+      this._templateParser = _templateParser;
+      this._styleCompiler = _styleCompiler;
+      this._commandCompiler = _commandCompiler;
+      this._cdCompiler = _cdCompiler;
+      this._hostCacheKeys = new Map();
+      this._compiledTemplateCache = new Map();
+      this._compiledTemplateDone = new Map();
+      this._nextTemplateId = 0;
     }
-    return RuntimeCompiler;
-  })(compiler_1.Compiler);
-  exports.RuntimeCompiler = RuntimeCompiler;
-  var RuntimeCompiler_ = (function(_super) {
-    __extends(RuntimeCompiler_, _super);
-    function RuntimeCompiler_(_protoViewFactory, _templateCompiler) {
-      _super.call(this, _protoViewFactory);
-      this._templateCompiler = _templateCompiler;
-    }
-    RuntimeCompiler_.prototype.compileInHost = function(componentType) {
-      var _this = this;
-      return this._templateCompiler.compileHostComponentRuntime(componentType).then(function(compiledHostTemplate) {
-        return compiler_1.internalCreateProtoView(_this, compiledHostTemplate);
+    TemplateCompiler.prototype.normalizeDirectiveMetadata = function(directive) {
+      if (!directive.isComponent) {
+        return async_1.PromiseWrapper.resolve(directive);
+      }
+      return this._templateNormalizer.normalizeTemplate(directive.type, directive.template).then(function(normalizedTemplate) {
+        return new directive_metadata_1.CompileDirectiveMetadata({
+          type: directive.type,
+          isComponent: directive.isComponent,
+          dynamicLoadable: directive.dynamicLoadable,
+          selector: directive.selector,
+          exportAs: directive.exportAs,
+          changeDetection: directive.changeDetection,
+          inputs: directive.inputs,
+          outputs: directive.outputs,
+          hostListeners: directive.hostListeners,
+          hostProperties: directive.hostProperties,
+          hostAttributes: directive.hostAttributes,
+          lifecycleHooks: directive.lifecycleHooks,
+          template: normalizedTemplate
+        });
       });
     };
-    RuntimeCompiler_.prototype.clearCache = function() {
-      _super.prototype.clearCache.call(this);
-      this._templateCompiler.clearCache();
+    TemplateCompiler.prototype.compileHostComponentRuntime = function(type) {
+      var hostCacheKey = this._hostCacheKeys.get(type);
+      if (lang_1.isBlank(hostCacheKey)) {
+        hostCacheKey = new Object();
+        this._hostCacheKeys.set(type, hostCacheKey);
+        var compMeta = this._runtimeMetadataResolver.getMetadata(type);
+        assertComponent(compMeta);
+        var hostMeta = directive_metadata_1.createHostComponentMeta(compMeta.type, compMeta.selector);
+        this._compileComponentRuntime(hostCacheKey, hostMeta, [compMeta], new Set());
+      }
+      return this._compiledTemplateDone.get(hostCacheKey).then(function(compiledTemplate) {
+        return new template_commands_1.CompiledHostTemplate(compiledTemplate);
+      });
     };
-    RuntimeCompiler_ = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [proto_view_factory_1.ProtoViewFactory, template_compiler_1.TemplateCompiler])], RuntimeCompiler_);
-    return RuntimeCompiler_;
-  })(compiler_1.Compiler_);
-  exports.RuntimeCompiler_ = RuntimeCompiler_;
+    TemplateCompiler.prototype.clearCache = function() {
+      this._hostCacheKeys.clear();
+      this._styleCompiler.clearCache();
+      this._compiledTemplateCache.clear();
+      this._compiledTemplateDone.clear();
+    };
+    TemplateCompiler.prototype._compileComponentRuntime = function(cacheKey, compMeta, viewDirectives, compilingComponentCacheKeys) {
+      var _this = this;
+      var compiledTemplate = this._compiledTemplateCache.get(cacheKey);
+      var done = this._compiledTemplateDone.get(cacheKey);
+      if (lang_1.isBlank(compiledTemplate)) {
+        var styles = [];
+        var changeDetectorFactory;
+        var commands = [];
+        var templateId = lang_1.stringify(compMeta.type.runtime) + "Template" + this._nextTemplateId++;
+        compiledTemplate = new template_commands_1.CompiledComponentTemplate(templateId, function(dispatcher) {
+          return changeDetectorFactory(dispatcher);
+        }, commands, styles);
+        this._compiledTemplateCache.set(cacheKey, compiledTemplate);
+        compilingComponentCacheKeys.add(cacheKey);
+        done = async_1.PromiseWrapper.all([this._styleCompiler.compileComponentRuntime(compMeta.template)].concat(viewDirectives.map(function(dirMeta) {
+          return _this.normalizeDirectiveMetadata(dirMeta);
+        }))).then(function(stylesAndNormalizedViewDirMetas) {
+          var childPromises = [];
+          var normalizedViewDirMetas = stylesAndNormalizedViewDirMetas.slice(1);
+          var parsedTemplate = _this._templateParser.parse(compMeta.template.template, normalizedViewDirMetas, compMeta.type.name);
+          var changeDetectorFactories = _this._cdCompiler.compileComponentRuntime(compMeta.type, compMeta.changeDetection, parsedTemplate);
+          changeDetectorFactory = changeDetectorFactories[0];
+          var tmpStyles = stylesAndNormalizedViewDirMetas[0];
+          tmpStyles.forEach(function(style) {
+            return styles.push(style);
+          });
+          var tmpCommands = _this._compileCommandsRuntime(compMeta, parsedTemplate, changeDetectorFactories, compilingComponentCacheKeys, childPromises);
+          tmpCommands.forEach(function(cmd) {
+            return commands.push(cmd);
+          });
+          return async_1.PromiseWrapper.all(childPromises);
+        }).then(function(_) {
+          collection_1.SetWrapper.delete(compilingComponentCacheKeys, cacheKey);
+          return compiledTemplate;
+        });
+        this._compiledTemplateDone.set(cacheKey, done);
+      }
+      return compiledTemplate;
+    };
+    TemplateCompiler.prototype._compileCommandsRuntime = function(compMeta, parsedTemplate, changeDetectorFactories, compilingComponentCacheKeys, childPromises) {
+      var _this = this;
+      var cmds = this._commandCompiler.compileComponentRuntime(compMeta, parsedTemplate, changeDetectorFactories, function(childComponentDir) {
+        var childCacheKey = childComponentDir.type.runtime;
+        var childViewDirectives = _this._runtimeMetadataResolver.getViewDirectivesMetadata(childComponentDir.type.runtime);
+        var childIsRecursive = collection_1.SetWrapper.has(compilingComponentCacheKeys, childCacheKey);
+        var childTemplate = _this._compileComponentRuntime(childCacheKey, childComponentDir, childViewDirectives, compilingComponentCacheKeys);
+        if (!childIsRecursive) {
+          childPromises.push(_this._compiledTemplateDone.get(childCacheKey));
+        }
+        return function() {
+          return childTemplate;
+        };
+      });
+      cmds.forEach(function(cmd) {
+        if (cmd instanceof template_commands_1.BeginComponentCmd) {
+          cmd.templateGetter();
+        }
+      });
+      return cmds;
+    };
+    TemplateCompiler.prototype.compileTemplatesCodeGen = function(components) {
+      var _this = this;
+      if (components.length === 0) {
+        throw new exceptions_1.BaseException('No components given');
+      }
+      var declarations = [];
+      var templateArguments = [];
+      var componentMetas = [];
+      components.forEach(function(componentWithDirs) {
+        var compMeta = componentWithDirs.component;
+        assertComponent(compMeta);
+        componentMetas.push(compMeta);
+        _this._processTemplateCodeGen(compMeta, componentWithDirs.directives, declarations, templateArguments);
+        if (compMeta.dynamicLoadable) {
+          var hostMeta = directive_metadata_1.createHostComponentMeta(compMeta.type, compMeta.selector);
+          componentMetas.push(hostMeta);
+          _this._processTemplateCodeGen(hostMeta, [compMeta], declarations, templateArguments);
+        }
+      });
+      collection_1.ListWrapper.forEachWithIndex(componentMetas, function(compMeta, index) {
+        var templateId = compMeta.type.moduleUrl + "|" + compMeta.type.name;
+        var constructionKeyword = lang_1.IS_DART ? 'const' : 'new';
+        var compiledTemplateExpr = constructionKeyword + " " + command_compiler_2.TEMPLATE_COMMANDS_MODULE_REF + "CompiledComponentTemplate('" + templateId + "'," + templateArguments[index].join(',') + ")";
+        var variableValueExpr;
+        if (compMeta.type.isHost) {
+          variableValueExpr = constructionKeyword + " " + command_compiler_2.TEMPLATE_COMMANDS_MODULE_REF + "CompiledHostTemplate(" + compiledTemplateExpr + ")";
+        } else {
+          variableValueExpr = compiledTemplateExpr;
+        }
+        var varName = templateVariableName(compMeta.type);
+        declarations.push("" + util_1.codeGenExportVariable(varName) + variableValueExpr + ";");
+        declarations.push(util_1.codeGenValueFn([], varName, templateGetterName(compMeta.type)) + ";");
+      });
+      var moduleUrl = components[0].component.type.moduleUrl;
+      return new source_module_1.SourceModule("" + templateModuleUrl(moduleUrl), declarations.join('\n'));
+    };
+    TemplateCompiler.prototype.compileStylesheetCodeGen = function(stylesheetUrl, cssText) {
+      return this._styleCompiler.compileStylesheetCodeGen(stylesheetUrl, cssText);
+    };
+    TemplateCompiler.prototype._processTemplateCodeGen = function(compMeta, directives, targetDeclarations, targetTemplateArguments) {
+      var styleExpr = this._styleCompiler.compileComponentCodeGen(compMeta.template);
+      var parsedTemplate = this._templateParser.parse(compMeta.template.template, directives, compMeta.type.name);
+      var changeDetectorsExprs = this._cdCompiler.compileComponentCodeGen(compMeta.type, compMeta.changeDetection, parsedTemplate);
+      var commandsExpr = this._commandCompiler.compileComponentCodeGen(compMeta, parsedTemplate, changeDetectorsExprs.expressions, codeGenComponentTemplateFactory);
+      addAll(styleExpr.declarations, targetDeclarations);
+      addAll(changeDetectorsExprs.declarations, targetDeclarations);
+      addAll(commandsExpr.declarations, targetDeclarations);
+      targetTemplateArguments.push([changeDetectorsExprs.expressions[0], commandsExpr.expression, styleExpr.expression]);
+    };
+    TemplateCompiler = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [runtime_metadata_1.RuntimeMetadataResolver, template_normalizer_1.TemplateNormalizer, template_parser_1.TemplateParser, style_compiler_1.StyleCompiler, command_compiler_1.CommandCompiler, change_detector_compiler_1.ChangeDetectionCompiler])], TemplateCompiler);
+    return TemplateCompiler;
+  })();
+  exports.TemplateCompiler = TemplateCompiler;
+  var NormalizedComponentWithViewDirectives = (function() {
+    function NormalizedComponentWithViewDirectives(component, directives) {
+      this.component = component;
+      this.directives = directives;
+    }
+    return NormalizedComponentWithViewDirectives;
+  })();
+  exports.NormalizedComponentWithViewDirectives = NormalizedComponentWithViewDirectives;
+  function assertComponent(meta) {
+    if (!meta.isComponent) {
+      throw new exceptions_1.BaseException("Could not compile '" + meta.type.name + "' because it is not a component.");
+    }
+  }
+  function templateVariableName(type) {
+    return type.name + "Template";
+  }
+  function templateGetterName(type) {
+    return templateVariableName(type) + "Getter";
+  }
+  function templateModuleUrl(moduleUrl) {
+    var urlWithoutSuffix = moduleUrl.substring(0, moduleUrl.length - util_1.MODULE_SUFFIX.length);
+    return urlWithoutSuffix + ".template" + util_1.MODULE_SUFFIX;
+  }
+  function addAll(source, target) {
+    for (var i = 0; i < source.length; i++) {
+      target.push(source[i]);
+    }
+  }
+  function codeGenComponentTemplateFactory(nestedCompType) {
+    return "" + source_module_1.moduleRef(templateModuleUrl(nestedCompType.type.moduleUrl)) + templateGetterName(nestedCompType.type);
+  }
   global.define = __define;
   return module.exports;
 });
@@ -37989,49 +38758,73 @@ System.register("angular2/src/platform/browser_common", ["angular2/src/facade/la
   return module.exports;
 });
 
-System.register("angular2/src/compiler/compiler", ["angular2/src/compiler/runtime_compiler", "angular2/src/compiler/template_compiler", "angular2/src/compiler/directive_metadata", "angular2/src/compiler/source_module", "angular2/src/core/platform_directives_and_pipes", "angular2/src/facade/lang", "angular2/src/core/di", "angular2/src/compiler/template_parser", "angular2/src/compiler/html_parser", "angular2/src/compiler/template_normalizer", "angular2/src/compiler/runtime_metadata", "angular2/src/compiler/change_detector_compiler", "angular2/src/compiler/style_compiler", "angular2/src/compiler/command_compiler", "angular2/src/compiler/template_compiler", "angular2/src/core/change_detection/change_detection", "angular2/src/core/linker/compiler", "angular2/src/compiler/runtime_compiler", "angular2/src/compiler/schema/element_schema_registry", "angular2/src/compiler/schema/dom_element_schema_registry", "angular2/src/compiler/url_resolver", "angular2/src/compiler/app_root_url", "angular2/src/compiler/anchor_based_app_root_url", "angular2/src/core/change_detection/change_detection"], true, function(require, exports, module) {
+System.register("angular2/src/compiler/runtime_compiler", ["angular2/src/core/linker/compiler", "angular2/src/core/linker/proto_view_factory", "angular2/src/compiler/template_compiler", "angular2/src/core/di"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  var runtime_compiler_1 = require("angular2/src/compiler/runtime_compiler");
-  var template_compiler_1 = require("angular2/src/compiler/template_compiler");
-  exports.TemplateCompiler = template_compiler_1.TemplateCompiler;
-  var directive_metadata_1 = require("angular2/src/compiler/directive_metadata");
-  exports.CompileDirectiveMetadata = directive_metadata_1.CompileDirectiveMetadata;
-  exports.CompileTypeMetadata = directive_metadata_1.CompileTypeMetadata;
-  exports.CompileTemplateMetadata = directive_metadata_1.CompileTemplateMetadata;
-  var source_module_1 = require("angular2/src/compiler/source_module");
-  exports.SourceModule = source_module_1.SourceModule;
-  exports.SourceWithImports = source_module_1.SourceWithImports;
-  var platform_directives_and_pipes_1 = require("angular2/src/core/platform_directives_and_pipes");
-  exports.PLATFORM_DIRECTIVES = platform_directives_and_pipes_1.PLATFORM_DIRECTIVES;
-  exports.PLATFORM_PIPES = platform_directives_and_pipes_1.PLATFORM_PIPES;
-  var lang_1 = require("angular2/src/facade/lang");
-  var di_1 = require("angular2/src/core/di");
-  var template_parser_1 = require("angular2/src/compiler/template_parser");
-  var html_parser_1 = require("angular2/src/compiler/html_parser");
-  var template_normalizer_1 = require("angular2/src/compiler/template_normalizer");
-  var runtime_metadata_1 = require("angular2/src/compiler/runtime_metadata");
-  var change_detector_compiler_1 = require("angular2/src/compiler/change_detector_compiler");
-  var style_compiler_1 = require("angular2/src/compiler/style_compiler");
-  var command_compiler_1 = require("angular2/src/compiler/command_compiler");
-  var template_compiler_2 = require("angular2/src/compiler/template_compiler");
-  var change_detection_1 = require("angular2/src/core/change_detection/change_detection");
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      return Reflect.decorate(decorators, target, key, desc);
+    switch (arguments.length) {
+      case 2:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(o)) || o;
+        }, target);
+      case 3:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key)), void 0;
+        }, void 0);
+      case 4:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key, o)) || o;
+        }, desc);
+    }
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
   var compiler_1 = require("angular2/src/core/linker/compiler");
-  var runtime_compiler_2 = require("angular2/src/compiler/runtime_compiler");
-  var element_schema_registry_1 = require("angular2/src/compiler/schema/element_schema_registry");
-  var dom_element_schema_registry_1 = require("angular2/src/compiler/schema/dom_element_schema_registry");
-  var url_resolver_1 = require("angular2/src/compiler/url_resolver");
-  var app_root_url_1 = require("angular2/src/compiler/app_root_url");
-  var anchor_based_app_root_url_1 = require("angular2/src/compiler/anchor_based_app_root_url");
-  var change_detection_2 = require("angular2/src/core/change_detection/change_detection");
-  function _createChangeDetectorGenConfig() {
-    return new change_detection_1.ChangeDetectorGenConfig(lang_1.assertionsEnabled(), false, true);
-  }
-  exports.COMPILER_PROVIDERS = lang_1.CONST_EXPR([change_detection_2.Lexer, change_detection_2.Parser, html_parser_1.HtmlParser, template_parser_1.TemplateParser, template_normalizer_1.TemplateNormalizer, runtime_metadata_1.RuntimeMetadataResolver, style_compiler_1.StyleCompiler, command_compiler_1.CommandCompiler, change_detector_compiler_1.ChangeDetectionCompiler, new di_1.Provider(change_detection_1.ChangeDetectorGenConfig, {
-    useFactory: _createChangeDetectorGenConfig,
-    deps: []
-  }), template_compiler_2.TemplateCompiler, new di_1.Provider(runtime_compiler_2.RuntimeCompiler, {useClass: runtime_compiler_1.RuntimeCompiler_}), new di_1.Provider(compiler_1.Compiler, {useExisting: runtime_compiler_2.RuntimeCompiler}), dom_element_schema_registry_1.DomElementSchemaRegistry, new di_1.Provider(element_schema_registry_1.ElementSchemaRegistry, {useExisting: dom_element_schema_registry_1.DomElementSchemaRegistry}), anchor_based_app_root_url_1.AnchorBasedAppRootUrl, new di_1.Provider(app_root_url_1.AppRootUrl, {useExisting: anchor_based_app_root_url_1.AnchorBasedAppRootUrl}), url_resolver_1.UrlResolver]);
+  var proto_view_factory_1 = require("angular2/src/core/linker/proto_view_factory");
+  var template_compiler_1 = require("angular2/src/compiler/template_compiler");
+  var di_1 = require("angular2/src/core/di");
+  var RuntimeCompiler = (function(_super) {
+    __extends(RuntimeCompiler, _super);
+    function RuntimeCompiler() {
+      _super.apply(this, arguments);
+    }
+    return RuntimeCompiler;
+  })(compiler_1.Compiler);
+  exports.RuntimeCompiler = RuntimeCompiler;
+  var RuntimeCompiler_ = (function(_super) {
+    __extends(RuntimeCompiler_, _super);
+    function RuntimeCompiler_(_protoViewFactory, _templateCompiler) {
+      _super.call(this, _protoViewFactory);
+      this._templateCompiler = _templateCompiler;
+    }
+    RuntimeCompiler_.prototype.compileInHost = function(componentType) {
+      var _this = this;
+      return this._templateCompiler.compileHostComponentRuntime(componentType).then(function(compiledHostTemplate) {
+        return compiler_1.internalCreateProtoView(_this, compiledHostTemplate);
+      });
+    };
+    RuntimeCompiler_.prototype.clearCache = function() {
+      _super.prototype.clearCache.call(this);
+      this._templateCompiler.clearCache();
+    };
+    RuntimeCompiler_ = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [proto_view_factory_1.ProtoViewFactory, template_compiler_1.TemplateCompiler])], RuntimeCompiler_);
+    return RuntimeCompiler_;
+  })(compiler_1.Compiler_);
+  exports.RuntimeCompiler_ = RuntimeCompiler_;
   global.define = __define;
   return module.exports;
 });
@@ -38228,19 +39021,49 @@ System.register("angular2/src/core/linker", ["angular2/src/core/linker/directive
   return module.exports;
 });
 
-System.register("angular2/compiler", ["angular2/src/compiler/url_resolver", "angular2/src/compiler/xhr", "angular2/src/compiler/compiler", "angular2/src/compiler/app_root_url"], true, function(require, exports, module) {
+System.register("angular2/src/compiler/compiler", ["angular2/src/compiler/runtime_compiler", "angular2/src/compiler/template_compiler", "angular2/src/compiler/directive_metadata", "angular2/src/compiler/source_module", "angular2/src/core/platform_directives_and_pipes", "angular2/src/facade/lang", "angular2/src/core/di", "angular2/src/compiler/template_parser", "angular2/src/compiler/html_parser", "angular2/src/compiler/template_normalizer", "angular2/src/compiler/runtime_metadata", "angular2/src/compiler/change_detector_compiler", "angular2/src/compiler/style_compiler", "angular2/src/compiler/command_compiler", "angular2/src/compiler/template_compiler", "angular2/src/core/change_detection/change_detection", "angular2/src/core/linker/compiler", "angular2/src/compiler/runtime_compiler", "angular2/src/compiler/schema/element_schema_registry", "angular2/src/compiler/schema/dom_element_schema_registry", "angular2/src/compiler/url_resolver", "angular2/src/compiler/app_root_url", "angular2/src/compiler/anchor_based_app_root_url", "angular2/src/core/change_detection/change_detection"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  function __export(m) {
-    for (var p in m)
-      if (!exports.hasOwnProperty(p))
-        exports[p] = m[p];
+  var runtime_compiler_1 = require("angular2/src/compiler/runtime_compiler");
+  var template_compiler_1 = require("angular2/src/compiler/template_compiler");
+  exports.TemplateCompiler = template_compiler_1.TemplateCompiler;
+  var directive_metadata_1 = require("angular2/src/compiler/directive_metadata");
+  exports.CompileDirectiveMetadata = directive_metadata_1.CompileDirectiveMetadata;
+  exports.CompileTypeMetadata = directive_metadata_1.CompileTypeMetadata;
+  exports.CompileTemplateMetadata = directive_metadata_1.CompileTemplateMetadata;
+  var source_module_1 = require("angular2/src/compiler/source_module");
+  exports.SourceModule = source_module_1.SourceModule;
+  exports.SourceWithImports = source_module_1.SourceWithImports;
+  var platform_directives_and_pipes_1 = require("angular2/src/core/platform_directives_and_pipes");
+  exports.PLATFORM_DIRECTIVES = platform_directives_and_pipes_1.PLATFORM_DIRECTIVES;
+  exports.PLATFORM_PIPES = platform_directives_and_pipes_1.PLATFORM_PIPES;
+  var lang_1 = require("angular2/src/facade/lang");
+  var di_1 = require("angular2/src/core/di");
+  var template_parser_1 = require("angular2/src/compiler/template_parser");
+  var html_parser_1 = require("angular2/src/compiler/html_parser");
+  var template_normalizer_1 = require("angular2/src/compiler/template_normalizer");
+  var runtime_metadata_1 = require("angular2/src/compiler/runtime_metadata");
+  var change_detector_compiler_1 = require("angular2/src/compiler/change_detector_compiler");
+  var style_compiler_1 = require("angular2/src/compiler/style_compiler");
+  var command_compiler_1 = require("angular2/src/compiler/command_compiler");
+  var template_compiler_2 = require("angular2/src/compiler/template_compiler");
+  var change_detection_1 = require("angular2/src/core/change_detection/change_detection");
+  var compiler_1 = require("angular2/src/core/linker/compiler");
+  var runtime_compiler_2 = require("angular2/src/compiler/runtime_compiler");
+  var element_schema_registry_1 = require("angular2/src/compiler/schema/element_schema_registry");
+  var dom_element_schema_registry_1 = require("angular2/src/compiler/schema/dom_element_schema_registry");
+  var url_resolver_1 = require("angular2/src/compiler/url_resolver");
+  var app_root_url_1 = require("angular2/src/compiler/app_root_url");
+  var anchor_based_app_root_url_1 = require("angular2/src/compiler/anchor_based_app_root_url");
+  var change_detection_2 = require("angular2/src/core/change_detection/change_detection");
+  function _createChangeDetectorGenConfig() {
+    return new change_detection_1.ChangeDetectorGenConfig(lang_1.assertionsEnabled(), false, true);
   }
-  __export(require("angular2/src/compiler/url_resolver"));
-  __export(require("angular2/src/compiler/xhr"));
-  __export(require("angular2/src/compiler/compiler"));
-  __export(require("angular2/src/compiler/app_root_url"));
+  exports.COMPILER_PROVIDERS = lang_1.CONST_EXPR([change_detection_2.Lexer, change_detection_2.Parser, html_parser_1.HtmlParser, template_parser_1.TemplateParser, template_normalizer_1.TemplateNormalizer, runtime_metadata_1.RuntimeMetadataResolver, style_compiler_1.StyleCompiler, command_compiler_1.CommandCompiler, change_detector_compiler_1.ChangeDetectionCompiler, new di_1.Provider(change_detection_1.ChangeDetectorGenConfig, {
+    useFactory: _createChangeDetectorGenConfig,
+    deps: []
+  }), template_compiler_2.TemplateCompiler, new di_1.Provider(runtime_compiler_2.RuntimeCompiler, {useClass: runtime_compiler_1.RuntimeCompiler_}), new di_1.Provider(compiler_1.Compiler, {useExisting: runtime_compiler_2.RuntimeCompiler}), dom_element_schema_registry_1.DomElementSchemaRegistry, new di_1.Provider(element_schema_registry_1.ElementSchemaRegistry, {useExisting: dom_element_schema_registry_1.DomElementSchemaRegistry}), anchor_based_app_root_url_1.AnchorBasedAppRootUrl, new di_1.Provider(app_root_url_1.AppRootUrl, {useExisting: anchor_based_app_root_url_1.AnchorBasedAppRootUrl}), url_resolver_1.UrlResolver]);
   global.define = __define;
   return module.exports;
 });
@@ -38646,34 +39469,19 @@ System.register("angular2/src/common/directives/ng_class", ["angular2/src/facade
   return module.exports;
 });
 
-System.register("angular2/platform/browser", ["angular2/src/platform/browser_common", "angular2/src/facade/lang", "angular2/src/platform/browser_common", "angular2/compiler", "angular2/core", "angular2/src/core/reflection/reflection_capabilities", "angular2/src/platform/browser/xhr_impl", "angular2/compiler", "angular2/src/core/di"], true, function(require, exports, module) {
+System.register("angular2/compiler", ["angular2/src/compiler/url_resolver", "angular2/src/compiler/xhr", "angular2/src/compiler/compiler", "angular2/src/compiler/app_root_url"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  var browser_common_1 = require("angular2/src/platform/browser_common");
-  exports.BROWSER_PROVIDERS = browser_common_1.BROWSER_PROVIDERS;
-  exports.ELEMENT_PROBE_BINDINGS = browser_common_1.ELEMENT_PROBE_BINDINGS;
-  exports.ELEMENT_PROBE_PROVIDERS = browser_common_1.ELEMENT_PROBE_PROVIDERS;
-  exports.inspectNativeElement = browser_common_1.inspectNativeElement;
-  exports.BrowserDomAdapter = browser_common_1.BrowserDomAdapter;
-  exports.By = browser_common_1.By;
-  exports.Title = browser_common_1.Title;
-  exports.DOCUMENT = browser_common_1.DOCUMENT;
-  var lang_1 = require("angular2/src/facade/lang");
-  var browser_common_2 = require("angular2/src/platform/browser_common");
-  var compiler_1 = require("angular2/compiler");
-  var core_1 = require("angular2/core");
-  var reflection_capabilities_1 = require("angular2/src/core/reflection/reflection_capabilities");
-  var xhr_impl_1 = require("angular2/src/platform/browser/xhr_impl");
-  var compiler_2 = require("angular2/compiler");
-  var di_1 = require("angular2/src/core/di");
-  exports.BROWSER_APP_PROVIDERS = lang_1.CONST_EXPR([browser_common_2.BROWSER_APP_COMMON_PROVIDERS, compiler_1.COMPILER_PROVIDERS, new di_1.Provider(compiler_2.XHR, {useClass: xhr_impl_1.XHRImpl})]);
-  function bootstrap(appComponentType, customProviders) {
-    core_1.reflector.reflectionCapabilities = new reflection_capabilities_1.ReflectionCapabilities();
-    var appProviders = lang_1.isPresent(customProviders) ? [exports.BROWSER_APP_PROVIDERS, customProviders] : exports.BROWSER_APP_PROVIDERS;
-    return core_1.platform(browser_common_2.BROWSER_PROVIDERS).application(appProviders).bootstrap(appComponentType);
+  function __export(m) {
+    for (var p in m)
+      if (!exports.hasOwnProperty(p))
+        exports[p] = m[p];
   }
-  exports.bootstrap = bootstrap;
+  __export(require("angular2/src/compiler/url_resolver"));
+  __export(require("angular2/src/compiler/xhr"));
+  __export(require("angular2/src/compiler/compiler"));
+  __export(require("angular2/src/compiler/app_root_url"));
   global.define = __define;
   return module.exports;
 });
@@ -38752,6 +39560,38 @@ System.register("angular2/src/common/directives", ["angular2/src/common/directiv
   __export(require("angular2/src/common/directives/observable_list_diff"));
   var core_directives_1 = require("angular2/src/common/directives/core_directives");
   exports.CORE_DIRECTIVES = core_directives_1.CORE_DIRECTIVES;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/platform/browser", ["angular2/src/platform/browser_common", "angular2/src/facade/lang", "angular2/src/platform/browser_common", "angular2/compiler", "angular2/core", "angular2/src/core/reflection/reflection_capabilities", "angular2/src/platform/browser/xhr_impl", "angular2/compiler", "angular2/src/core/di"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var browser_common_1 = require("angular2/src/platform/browser_common");
+  exports.BROWSER_PROVIDERS = browser_common_1.BROWSER_PROVIDERS;
+  exports.ELEMENT_PROBE_BINDINGS = browser_common_1.ELEMENT_PROBE_BINDINGS;
+  exports.ELEMENT_PROBE_PROVIDERS = browser_common_1.ELEMENT_PROBE_PROVIDERS;
+  exports.inspectNativeElement = browser_common_1.inspectNativeElement;
+  exports.BrowserDomAdapter = browser_common_1.BrowserDomAdapter;
+  exports.By = browser_common_1.By;
+  exports.Title = browser_common_1.Title;
+  exports.DOCUMENT = browser_common_1.DOCUMENT;
+  var lang_1 = require("angular2/src/facade/lang");
+  var browser_common_2 = require("angular2/src/platform/browser_common");
+  var compiler_1 = require("angular2/compiler");
+  var core_1 = require("angular2/core");
+  var reflection_capabilities_1 = require("angular2/src/core/reflection/reflection_capabilities");
+  var xhr_impl_1 = require("angular2/src/platform/browser/xhr_impl");
+  var compiler_2 = require("angular2/compiler");
+  var di_1 = require("angular2/src/core/di");
+  exports.BROWSER_APP_PROVIDERS = lang_1.CONST_EXPR([browser_common_2.BROWSER_APP_COMMON_PROVIDERS, compiler_1.COMPILER_PROVIDERS, new di_1.Provider(compiler_2.XHR, {useClass: xhr_impl_1.XHRImpl})]);
+  function bootstrap(appComponentType, customProviders) {
+    core_1.reflector.reflectionCapabilities = new reflection_capabilities_1.ReflectionCapabilities();
+    var appProviders = lang_1.isPresent(customProviders) ? [exports.BROWSER_APP_PROVIDERS, customProviders] : exports.BROWSER_APP_PROVIDERS;
+    return core_1.platform(browser_common_2.BROWSER_PROVIDERS).application(appProviders).bootstrap(appComponentType);
+  }
+  exports.bootstrap = bootstrap;
   global.define = __define;
   return module.exports;
 });

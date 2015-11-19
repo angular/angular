@@ -31296,90 +31296,9 @@ System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di
   var util_1 = require("angular2/src/platform/dom/util");
   var metadata_1 = require("angular2/src/core/metadata");
   var dom_adapter_1 = require("angular2/src/core/dom/dom_adapter");
-  var XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink';
-  var SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
-  var SVG_ELEMENT_NAMES = lang_1.CONST_EXPR({
-    'altGlyph': true,
-    'altGlyphDef': true,
-    'altGlyphItem': true,
-    'animate': true,
-    'animateColor': true,
-    'animateMotion': true,
-    'animateTransform': true,
-    'circle': true,
-    'clipPath': true,
-    'color-profile': true,
-    'cursor': true,
-    'defs': true,
-    'desc': true,
-    'ellipse': true,
-    'feBlend': true,
-    'feColorMatrix': true,
-    'feComponentTransfer': true,
-    'feComposite': true,
-    'feConvolveMatrix': true,
-    'feDiffuseLighting': true,
-    'feDisplacementMap': true,
-    'feDistantLight': true,
-    'feFlood': true,
-    'feFuncA': true,
-    'feFuncB': true,
-    'feFuncG': true,
-    'feFuncR': true,
-    'feGaussianBlur': true,
-    'feImage': true,
-    'feMerge': true,
-    'feMergeNode': true,
-    'feMorphology': true,
-    'feOffset': true,
-    'fePointLight': true,
-    'feSpecularLighting': true,
-    'feSpotLight': true,
-    'feTile': true,
-    'feTurbulence': true,
-    'filter': true,
-    'font': true,
-    'font-face': true,
-    'font-face-format': true,
-    'font-face-name': true,
-    'font-face-src': true,
-    'font-face-uri': true,
-    'foreignObject': true,
-    'g': true,
-    'glyphRef': true,
-    'hkern': true,
-    'image': true,
-    'line': true,
-    'linearGradient': true,
-    'marker': true,
-    'mask': true,
-    'metadata': true,
-    'missing-glyph': true,
-    'mpath': true,
-    'path': true,
-    'pattern': true,
-    'polygon': true,
-    'polyline': true,
-    'radialGradient': true,
-    'rect': true,
-    'set': true,
-    'stop': true,
-    'style': true,
-    'svg': true,
-    'switch': true,
-    'symbol': true,
-    'text': true,
-    'textPath': true,
-    'title': true,
-    'tref': true,
-    'tspan': true,
-    'use': true,
-    'view': true,
-    'vkern': true
-  });
-  var SVG_ATTR_NAMESPACES = lang_1.CONST_EXPR({
-    'href': XLINK_NAMESPACE,
-    'xlink:href': XLINK_NAMESPACE
+  var NAMESPACE_URIS = lang_1.CONST_EXPR({
+    'xlink': 'http://www.w3.org/1999/xlink',
+    'svg': 'http://www.w3.org/2000/svg'
   });
   var DomRenderer = (function(_super) {
     __extends(DomRenderer, _super);
@@ -31558,24 +31477,29 @@ System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di
       profile_1.wtfLeave(s);
     };
     DomRenderer_.prototype.createElement = function(name, attrNameAndValues) {
-      var isSvg = SVG_ELEMENT_NAMES[name] == true;
-      var el = isSvg ? dom_adapter_1.DOM.createElementNS(SVG_NAMESPACE, name) : dom_adapter_1.DOM.createElement(name);
-      this._setAttributes(el, attrNameAndValues, isSvg);
+      var nsAndName = splitNamespace(name);
+      var el = lang_1.isPresent(nsAndName[0]) ? dom_adapter_1.DOM.createElementNS(NAMESPACE_URIS[nsAndName[0]], nsAndName[1]) : dom_adapter_1.DOM.createElement(nsAndName[1]);
+      this._setAttributes(el, attrNameAndValues);
       return el;
     };
     DomRenderer_.prototype.mergeElement = function(existing, attrNameAndValues) {
       dom_adapter_1.DOM.clearNodes(existing);
-      this._setAttributes(existing, attrNameAndValues, false);
+      this._setAttributes(existing, attrNameAndValues);
     };
-    DomRenderer_.prototype._setAttributes = function(node, attrNameAndValues, isSvg) {
+    DomRenderer_.prototype._setAttributes = function(node, attrNameAndValues) {
       for (var attrIdx = 0; attrIdx < attrNameAndValues.length; attrIdx += 2) {
+        var attrNs;
         var attrName = attrNameAndValues[attrIdx];
+        var nsAndName = splitNamespace(attrName);
+        if (lang_1.isPresent(nsAndName[0])) {
+          attrName = nsAndName[0] + ':' + nsAndName[1];
+          attrNs = NAMESPACE_URIS[nsAndName[0]];
+        }
         var attrValue = attrNameAndValues[attrIdx + 1];
-        var attrNs = isSvg ? SVG_ATTR_NAMESPACES[attrName] : null;
         if (lang_1.isPresent(attrNs)) {
-          dom_adapter_1.DOM.setAttributeNS(node, XLINK_NAMESPACE, attrName, attrValue);
+          dom_adapter_1.DOM.setAttributeNS(node, attrNs, attrName, attrValue);
         } else {
-          dom_adapter_1.DOM.setAttribute(node, attrName, attrValue);
+          dom_adapter_1.DOM.setAttribute(node, nsAndName[1], attrValue);
         }
       }
     };
@@ -31621,6 +31545,14 @@ System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di
         dom_adapter_1.DOM.preventDefault(event);
       }
     };
+  }
+  var NS_PREFIX_RE = /^@([^:]+):(.+)/g;
+  function splitNamespace(name) {
+    if (name[0] != '@') {
+      return [null, name];
+    }
+    var match = lang_1.RegExpWrapper.firstMatch(NS_PREFIX_RE, name);
+    return [match[1], match[2]];
   }
   global.define = __define;
   return module.exports;

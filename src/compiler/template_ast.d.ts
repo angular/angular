@@ -1,28 +1,29 @@
 import { AST } from 'angular2/src/core/change_detection/change_detection';
 import { CompileDirectiveMetadata } from './directive_metadata';
+import { ParseSourceSpan } from './parse_util';
 export interface TemplateAst {
-    sourceInfo: string;
+    sourceSpan: ParseSourceSpan;
     visit(visitor: TemplateAstVisitor, context: any): any;
 }
 export declare class TextAst implements TemplateAst {
     value: string;
     ngContentIndex: number;
-    sourceInfo: string;
-    constructor(value: string, ngContentIndex: number, sourceInfo: string);
+    sourceSpan: ParseSourceSpan;
+    constructor(value: string, ngContentIndex: number, sourceSpan: ParseSourceSpan);
     visit(visitor: TemplateAstVisitor, context: any): any;
 }
 export declare class BoundTextAst implements TemplateAst {
     value: AST;
     ngContentIndex: number;
-    sourceInfo: string;
-    constructor(value: AST, ngContentIndex: number, sourceInfo: string);
+    sourceSpan: ParseSourceSpan;
+    constructor(value: AST, ngContentIndex: number, sourceSpan: ParseSourceSpan);
     visit(visitor: TemplateAstVisitor, context: any): any;
 }
 export declare class AttrAst implements TemplateAst {
     name: string;
     value: string;
-    sourceInfo: string;
-    constructor(name: string, value: string, sourceInfo: string);
+    sourceSpan: ParseSourceSpan;
+    constructor(name: string, value: string, sourceSpan: ParseSourceSpan);
     visit(visitor: TemplateAstVisitor, context: any): any;
 }
 export declare class BoundElementPropertyAst implements TemplateAst {
@@ -30,24 +31,24 @@ export declare class BoundElementPropertyAst implements TemplateAst {
     type: PropertyBindingType;
     value: AST;
     unit: string;
-    sourceInfo: string;
-    constructor(name: string, type: PropertyBindingType, value: AST, unit: string, sourceInfo: string);
+    sourceSpan: ParseSourceSpan;
+    constructor(name: string, type: PropertyBindingType, value: AST, unit: string, sourceSpan: ParseSourceSpan);
     visit(visitor: TemplateAstVisitor, context: any): any;
 }
 export declare class BoundEventAst implements TemplateAst {
     name: string;
     target: string;
     handler: AST;
-    sourceInfo: string;
-    constructor(name: string, target: string, handler: AST, sourceInfo: string);
+    sourceSpan: ParseSourceSpan;
+    constructor(name: string, target: string, handler: AST, sourceSpan: ParseSourceSpan);
     visit(visitor: TemplateAstVisitor, context: any): any;
     fullName: string;
 }
 export declare class VariableAst implements TemplateAst {
     name: string;
     value: string;
-    sourceInfo: string;
-    constructor(name: string, value: string, sourceInfo: string);
+    sourceSpan: ParseSourceSpan;
+    constructor(name: string, value: string, sourceSpan: ParseSourceSpan);
     visit(visitor: TemplateAstVisitor, context: any): any;
 }
 export declare class ElementAst implements TemplateAst {
@@ -59,8 +60,8 @@ export declare class ElementAst implements TemplateAst {
     directives: DirectiveAst[];
     children: TemplateAst[];
     ngContentIndex: number;
-    sourceInfo: string;
-    constructor(name: string, attrs: AttrAst[], inputs: BoundElementPropertyAst[], outputs: BoundEventAst[], exportAsVars: VariableAst[], directives: DirectiveAst[], children: TemplateAst[], ngContentIndex: number, sourceInfo: string);
+    sourceSpan: ParseSourceSpan;
+    constructor(name: string, attrs: AttrAst[], inputs: BoundElementPropertyAst[], outputs: BoundEventAst[], exportAsVars: VariableAst[], directives: DirectiveAst[], children: TemplateAst[], ngContentIndex: number, sourceSpan: ParseSourceSpan);
     visit(visitor: TemplateAstVisitor, context: any): any;
     isBound(): boolean;
     getComponent(): CompileDirectiveMetadata;
@@ -72,16 +73,16 @@ export declare class EmbeddedTemplateAst implements TemplateAst {
     directives: DirectiveAst[];
     children: TemplateAst[];
     ngContentIndex: number;
-    sourceInfo: string;
-    constructor(attrs: AttrAst[], outputs: BoundEventAst[], vars: VariableAst[], directives: DirectiveAst[], children: TemplateAst[], ngContentIndex: number, sourceInfo: string);
+    sourceSpan: ParseSourceSpan;
+    constructor(attrs: AttrAst[], outputs: BoundEventAst[], vars: VariableAst[], directives: DirectiveAst[], children: TemplateAst[], ngContentIndex: number, sourceSpan: ParseSourceSpan);
     visit(visitor: TemplateAstVisitor, context: any): any;
 }
 export declare class BoundDirectivePropertyAst implements TemplateAst {
     directiveName: string;
     templateName: string;
     value: AST;
-    sourceInfo: string;
-    constructor(directiveName: string, templateName: string, value: AST, sourceInfo: string);
+    sourceSpan: ParseSourceSpan;
+    constructor(directiveName: string, templateName: string, value: AST, sourceSpan: ParseSourceSpan);
     visit(visitor: TemplateAstVisitor, context: any): any;
 }
 export declare class DirectiveAst implements TemplateAst {
@@ -90,15 +91,15 @@ export declare class DirectiveAst implements TemplateAst {
     hostProperties: BoundElementPropertyAst[];
     hostEvents: BoundEventAst[];
     exportAsVars: VariableAst[];
-    sourceInfo: string;
-    constructor(directive: CompileDirectiveMetadata, inputs: BoundDirectivePropertyAst[], hostProperties: BoundElementPropertyAst[], hostEvents: BoundEventAst[], exportAsVars: VariableAst[], sourceInfo: string);
+    sourceSpan: ParseSourceSpan;
+    constructor(directive: CompileDirectiveMetadata, inputs: BoundDirectivePropertyAst[], hostProperties: BoundElementPropertyAst[], hostEvents: BoundEventAst[], exportAsVars: VariableAst[], sourceSpan: ParseSourceSpan);
     visit(visitor: TemplateAstVisitor, context: any): any;
 }
 export declare class NgContentAst implements TemplateAst {
     index: number;
     ngContentIndex: number;
-    sourceInfo: string;
-    constructor(index: number, ngContentIndex: number, sourceInfo: string);
+    sourceSpan: ParseSourceSpan;
+    constructor(index: number, ngContentIndex: number, sourceSpan: ParseSourceSpan);
     visit(visitor: TemplateAstVisitor, context: any): any;
 }
 export declare enum PropertyBindingType {

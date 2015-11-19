@@ -22,10 +22,10 @@ import { HtmlTextAst, htmlVisitAll } from './html_ast';
 import { HtmlParser } from './html_parser';
 import { preparseElement, PreparsedElementType } from './template_preparser';
 export let TemplateNormalizer = class {
-    constructor(_xhr, _urlResolver, _domParser) {
+    constructor(_xhr, _urlResolver, _htmlParser) {
         this._xhr = _xhr;
         this._urlResolver = _urlResolver;
-        this._domParser = _domParser;
+        this._htmlParser = _htmlParser;
     }
     normalizeTemplate(directiveType, template) {
         if (isPresent(template.template)) {
@@ -41,9 +41,13 @@ export let TemplateNormalizer = class {
         }
     }
     normalizeLoadedTemplate(directiveType, templateMeta, template, templateAbsUrl) {
-        var domNodes = this._domParser.parse(template, directiveType.name);
+        var rootNodesAndErrors = this._htmlParser.parse(template, directiveType.name);
+        if (rootNodesAndErrors.errors.length > 0) {
+            var errorString = rootNodesAndErrors.errors.join('\n');
+            throw new BaseException(`Template parse errors:\n${errorString}`);
+        }
         var visitor = new TemplatePreparseVisitor();
-        htmlVisitAll(visitor, domNodes);
+        htmlVisitAll(visitor, rootNodesAndErrors.rootNodes);
         var allStyles = templateMeta.styles.concat(visitor.styles);
         var allStyleAbsUrls = visitor.styleUrls.filter(isStyleUrlResolvable)
             .map(url => this._urlResolver.resolve(templateAbsUrl, url))

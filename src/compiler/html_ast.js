@@ -1,29 +1,29 @@
 'use strict';var lang_1 = require('angular2/src/facade/lang');
 var HtmlTextAst = (function () {
-    function HtmlTextAst(value, sourceInfo) {
+    function HtmlTextAst(value, sourceSpan) {
         this.value = value;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     HtmlTextAst.prototype.visit = function (visitor, context) { return visitor.visitText(this, context); };
     return HtmlTextAst;
 })();
 exports.HtmlTextAst = HtmlTextAst;
 var HtmlAttrAst = (function () {
-    function HtmlAttrAst(name, value, sourceInfo) {
+    function HtmlAttrAst(name, value, sourceSpan) {
         this.name = name;
         this.value = value;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     HtmlAttrAst.prototype.visit = function (visitor, context) { return visitor.visitAttr(this, context); };
     return HtmlAttrAst;
 })();
 exports.HtmlAttrAst = HtmlAttrAst;
 var HtmlElementAst = (function () {
-    function HtmlElementAst(name, attrs, children, sourceInfo) {
+    function HtmlElementAst(name, attrs, children, sourceSpan) {
         this.name = name;
         this.attrs = attrs;
         this.children = children;
-        this.sourceInfo = sourceInfo;
+        this.sourceSpan = sourceSpan;
     }
     HtmlElementAst.prototype.visit = function (visitor, context) { return visitor.visitElement(this, context); };
     return HtmlElementAst;

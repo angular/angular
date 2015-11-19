@@ -68,7 +68,7 @@ export declare class DomRenderer_ extends DomRenderer {
     detachFragment(fragmentRef: RenderFragmentRef): void;
     createElement(name: string, attrNameAndValues: string[]): Node;
     mergeElement(existing: Node, attrNameAndValues: string[]): void;
-    private _setAttributes(node, attrNameAndValues, isSvg);
+    private _setAttributes(node, attrNameAndValues);
     createRootContentInsertionPoint(): Node;
     createShadowRoot(host: Node, templateId: string): Node;
     on(element: Node, eventName: string, callback: Function): void;
