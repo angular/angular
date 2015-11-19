@@ -22,7 +22,7 @@ import {
 } from 'angular2/testing_internal';
 
 
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {
   Type,
   isPresent,

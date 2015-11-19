@@ -14,7 +14,7 @@ import {ComponentRef_} from 'angular2/src/core/linker/dynamic_component_loader';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {ReflectionCapabilities} from 'angular2/src/core/reflection/reflection_capabilities';
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {window, document, gc} from 'angular2/src/facade/browser';
 import {
   getIntParameter,

@@ -17,7 +17,7 @@ import {bootstrap} from 'angular2/platform/browser';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {Component, Directive, View, OnDestroy, platform} from 'angular2/core';
 import {BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS} from 'angular2/platform/browser';
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {provide, Inject, Injector, PLATFORM_INITIALIZER, APP_INITIALIZER} from 'angular2/core';

@@ -1,7 +1,7 @@
 import {print} from 'angular2/src/facade/lang';
 import {UrlResolver} from 'angular2/src/compiler/url_resolver';
 import {isPresent, isBlank, RegExpWrapper, StringWrapper} from 'angular2/src/facade/lang';
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {Injectable} from 'angular2/core';
 import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
 

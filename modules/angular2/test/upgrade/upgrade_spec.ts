@@ -10,7 +10,7 @@ import {
   xdescribe,
   xit,
 } from 'angular2/testing_internal';
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
 import {Component, Class, Inject, EventEmitter, ApplicationRef, provide} from 'angular2/angular2';
 import {UpgradeAdapter} from 'angular2/upgrade';

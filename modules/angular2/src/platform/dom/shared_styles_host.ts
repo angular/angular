@@ -1,4 +1,4 @@
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {Inject, Injectable} from 'angular2/src/core/di';
 import {SetWrapper} from 'angular2/src/facade/collection';
 import {DOCUMENT} from './dom_tokens';

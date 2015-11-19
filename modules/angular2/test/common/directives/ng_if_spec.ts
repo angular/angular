@@ -12,7 +12,7 @@ import {
   xit,
 } from 'angular2/testing_internal';
 
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
 import {Component, View} from 'angular2/core';
 import {NgIf} from 'angular2/common';

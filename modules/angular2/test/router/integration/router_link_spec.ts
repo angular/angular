@@ -38,7 +38,7 @@ import {
 } from 'angular2/router';
 import {RootRouter} from 'angular2/src/router/router';
 
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
 export function main() {
   describe('router-link directive', function() {

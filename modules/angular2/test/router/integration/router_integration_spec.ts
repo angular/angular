@@ -16,7 +16,7 @@ import {
 
 import {bootstrap} from 'angular2/bootstrap';
 import {Component, Directive, View} from 'angular2/src/core/metadata';
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {provide, ViewChild, AfterViewInit} from 'angular2/core';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 import {RouteConfig, Route, Redirect, AuxRoute} from 'angular2/src/router/route_config_decorator';
