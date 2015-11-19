@@ -52,9 +52,8 @@ import "package:angular2/core.dart"
         Inject,
         Host,
         SkipSelf,
-        SkipSelfMetadata,
-        NgIf,
-        NgFor;
+        SkipSelfMetadata;
+import "package:angular2/common.dart" show NgIf, NgFor;
 import "package:angular2/common.dart" show AsyncPipe;
 import "package:angular2/src/core/change_detection/change_detection.dart"
     show

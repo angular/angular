@@ -1,7 +1,6 @@
 library angular2.src.common.forms.directives.ng_control_status;
 
-import "package:angular2/src/core/metadata.dart" show Directive;
-import "package:angular2/src/core/di.dart" show Self;
+import "package:angular2/core.dart" show Directive, Self;
 import "ng_control.dart" show NgControl;
 import "package:angular2/src/facade/lang.dart" show isBlank, isPresent;
 

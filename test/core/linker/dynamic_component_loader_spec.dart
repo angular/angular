@@ -18,7 +18,8 @@ import "package:angular2/testing_internal.dart"
         TestComponentBuilder,
         ComponentFixture;
 import "package:angular2/lifecycle_hooks.dart" show OnDestroy;
-import "package:angular2/core.dart" show Injector, NgIf, inspectElement;
+import "package:angular2/core.dart" show Injector, inspectElement;
+import "package:angular2/common.dart" show NgIf;
 import "package:angular2/platform/browser.dart" show By;
 import "package:angular2/src/core/metadata.dart"
     show Component, View, ViewMetadata;

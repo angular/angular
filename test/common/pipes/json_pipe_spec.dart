@@ -16,7 +16,8 @@ import "package:angular2/testing_internal.dart"
         TestComponentBuilder;
 import "package:angular2/src/facade/lang.dart"
     show Json, RegExp, NumberWrapper, StringWrapper;
-import "package:angular2/core.dart" show JsonPipe, Component;
+import "package:angular2/core.dart" show Component;
+import "package:angular2/common.dart" show JsonPipe;
 
 main() {
   describe("JsonPipe", () {

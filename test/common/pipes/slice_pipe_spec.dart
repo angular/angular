@@ -14,7 +14,8 @@ import "package:angular2/testing_internal.dart"
         inject,
         TestComponentBuilder,
         AsyncTestCompleter;
-import "package:angular2/core.dart" show SlicePipe, Component;
+import "package:angular2/core.dart" show Component;
+import "package:angular2/common.dart" show SlicePipe;
 
 main() {
   describe("SlicePipe", () {

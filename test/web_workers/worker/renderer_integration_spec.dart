@@ -24,8 +24,8 @@ import "package:angular2/core.dart"
         Component,
         View,
         Injectable,
-        ElementRef,
-        NgIf;
+        ElementRef;
+import "package:angular2/common.dart" show NgIf;
 import "package:angular2/src/web_workers/worker/renderer.dart"
     show WebWorkerRenderer;
 import "package:angular2/src/web_workers/shared/client_message_broker.dart"

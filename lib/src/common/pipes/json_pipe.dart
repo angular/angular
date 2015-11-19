@@ -1,10 +1,8 @@
 library angular2.src.common.pipes.json_pipe;
 
 import "package:angular2/src/facade/lang.dart" show isBlank, isPresent, Json;
-import "package:angular2/src/core/di.dart" show Injectable;
-import "package:angular2/src/core/change_detection.dart"
-    show PipeTransform, WrappedValue;
-import "package:angular2/src/core/metadata.dart" show Pipe;
+import "package:angular2/core.dart"
+    show Injectable, PipeTransform, WrappedValue, Pipe;
 
 /**
  * Transforms any input value using `JSON.stringify`. Useful for debugging.

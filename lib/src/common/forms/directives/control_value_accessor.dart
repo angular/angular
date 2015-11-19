@@ -1,6 +1,6 @@
 library angular2.src.common.forms.directives.control_value_accessor;
 
-import "package:angular2/src/core/di.dart" show OpaqueToken;
+import "package:angular2/core.dart" show OpaqueToken;
 
 /**
  * A bridge between a control and a native element.

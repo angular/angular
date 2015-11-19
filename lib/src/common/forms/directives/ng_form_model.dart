@@ -4,10 +4,8 @@ import "package:angular2/src/facade/collection.dart"
     show ListWrapper, StringMapWrapper;
 import "package:angular2/src/facade/async.dart"
     show ObservableWrapper, EventEmitter;
-import "package:angular2/src/core/change_detection.dart" show SimpleChange;
-import "package:angular2/lifecycle_hooks.dart" show OnChanges;
-import "package:angular2/src/core/metadata.dart" show Directive;
-import "package:angular2/src/core/di.dart" show Provider, Inject, Optional;
+import "package:angular2/core.dart"
+    show SimpleChange, OnChanges, Directive, Provider, Inject, Optional;
 import "ng_control.dart" show NgControl;
 import "ng_control_group.dart" show NgControlGroup;
 import "control_container.dart" show ControlContainer;

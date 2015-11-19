@@ -13,10 +13,8 @@ import "package:angular2/src/facade/exceptions.dart"
     show BaseException, WrappedException;
 import "package:angular2/src/facade/intl.dart"
     show NumberFormatter, NumberFormatStyle;
-import "package:angular2/src/core/di.dart" show Injectable;
-import "package:angular2/src/core/change_detection.dart"
-    show PipeTransform, WrappedValue;
-import "package:angular2/src/core/metadata.dart" show Pipe;
+import "package:angular2/core.dart"
+    show Injectable, PipeTransform, WrappedValue, Pipe;
 import "package:angular2/src/facade/collection.dart" show ListWrapper;
 import "invalid_pipe_argument_exception.dart" show InvalidPipeArgumentException;
 

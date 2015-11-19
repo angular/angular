@@ -1,8 +1,7 @@
 library angular2.src.common.directives.ng_if;
 
-import "package:angular2/src/core/metadata.dart" show Directive;
-import "package:angular2/src/core/linker.dart"
-    show ViewContainerRef, TemplateRef;
+import "package:angular2/core.dart"
+    show Directive, ViewContainerRef, TemplateRef;
 import "package:angular2/src/facade/lang.dart" show isBlank;
 
 /**

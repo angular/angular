@@ -4,11 +4,9 @@ import "package:angular2/src/facade/lang.dart"
     show isBlank, isString, isArray, StringWrapper;
 import "package:angular2/src/facade/exceptions.dart" show BaseException;
 import "package:angular2/src/facade/collection.dart" show ListWrapper;
-import "package:angular2/src/core/di.dart" show Injectable;
-import "package:angular2/src/core/change_detection.dart"
-    show PipeTransform, WrappedValue;
+import "package:angular2/core.dart"
+    show Injectable, PipeTransform, WrappedValue, Pipe;
 import "invalid_pipe_argument_exception.dart" show InvalidPipeArgumentException;
-import "package:angular2/src/core/metadata.dart" show Pipe;
 
 /**
  * Creates a new List or String containing only a subset (slice) of the
