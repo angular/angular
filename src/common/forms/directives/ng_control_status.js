@@ -12,7 +12,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var core_1 = require('angular2/core');
+var metadata_1 = require('angular2/src/core/metadata');
+var di_1 = require('angular2/src/core/di');
 var ng_control_1 = require('./ng_control');
 var lang_1 = require('angular2/src/facade/lang');
 var NgControlStatus = (function () {
@@ -62,7 +63,7 @@ var NgControlStatus = (function () {
         configurable: true
     });
     NgControlStatus = __decorate([
-        core_1.Directive({
+        metadata_1.Directive({
             selector: '[ng-control],[ng-model],[ng-form-control]',
             host: {
                 '[class.ng-untouched]': 'ngClassUntouched',
@@ -73,7 +74,7 @@ var NgControlStatus = (function () {
                 '[class.ng-invalid]': 'ngClassInvalid'
             }
         }),
-        __param(0, core_1.Self()), 
+        __param(0, di_1.Self()), 
         __metadata('design:paramtypes', [ng_control_1.NgControl])
     ], NgControlStatus);
     return NgControlStatus;

@@ -1,4 +1,4 @@
-import { PipeTransform } from 'angular2/core';
+import { PipeTransform } from 'angular2/src/core/change_detection';
 /**
  * Implements uppercase transforms to text.
  *

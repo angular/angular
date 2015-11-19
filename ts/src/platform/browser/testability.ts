@@ -3,7 +3,7 @@ import {CONST, CONST_EXPR, global, isPresent} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {PromiseWrapper, ObservableWrapper} from 'angular2/src/facade/async';
 
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
 import {
   Injectable,

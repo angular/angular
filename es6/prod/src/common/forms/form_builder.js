@@ -9,7 +9,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Injectable } from 'angular2/core';
+import { Injectable } from 'angular2/src/core/di';
 import { StringMapWrapper } from 'angular2/src/facade/collection';
 import { isPresent, isArray, CONST_EXPR } from 'angular2/src/facade/lang';
 import * as modelModule from './model';

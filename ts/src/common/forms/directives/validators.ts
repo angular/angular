@@ -1,5 +1,6 @@
-import {forwardRef, Provider, OpaqueToken, Attribute, Directive} from 'angular2/core';
+import {forwardRef, Provider, OpaqueToken} from 'angular2/src/core/di';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {Attribute, Directive} from 'angular2/src/core/metadata';
 import {Validators, NG_VALIDATORS} from '../validators';
 import {Control} from '../model';
 import * as modelModule from '../model';

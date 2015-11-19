@@ -1,5 +1,7 @@
 import {isString, CONST, isBlank} from 'angular2/src/facade/lang';
-import {PipeTransform, WrappedValue, Injectable, Pipe} from 'angular2/core';
+import {Pipe} from 'angular2/src/core/metadata';
+import {Injectable} from 'angular2/src/core/di';
+import {PipeTransform, WrappedValue} from 'angular2/src/core/change_detection';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 
 /**

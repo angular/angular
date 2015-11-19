@@ -1,11 +1,11 @@
+import {DoCheck} from 'angular2/lifecycle_hooks';
 import {
-  DoCheck,
   KeyValueDiffer,
   KeyValueDiffers,
-  ElementRef,
-  Directive,
-  Renderer
-} from 'angular2/core';
+} from 'angular2/src/core/change_detection';
+import {ElementRef} from 'angular2/src/core/linker';
+import {Directive} from 'angular2/src/core/metadata';
+import {Renderer} from 'angular2/src/core/render';
 import {isPresent, isBlank, print} from 'angular2/src/facade/lang';
 
 /**

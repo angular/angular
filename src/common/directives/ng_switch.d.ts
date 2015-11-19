@@ -1,4 +1,4 @@
-import { ViewContainerRef, TemplateRef } from 'angular2/core';
+import { ViewContainerRef, TemplateRef } from 'angular2/src/core/linker';
 /**
  * Adds or removes DOM sub-trees when their match expressions match the switch expression.
  *

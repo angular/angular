@@ -1,8 +1,12 @@
 import {isBlank, isString, isArray, StringWrapper, CONST} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {Injectable, PipeTransform, WrappedValue, Pipe} from 'angular2/core';
+import {Injectable} from 'angular2/src/core/di';
+
+import {PipeTransform, WrappedValue} from 'angular2/src/core/change_detection';
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
+
+import {Pipe} from 'angular2/src/core/metadata';
 
 /**
  * Creates a new List or String containing only a subset (slice) of the

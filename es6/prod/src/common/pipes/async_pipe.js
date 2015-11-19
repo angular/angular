@@ -11,7 +11,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { isBlank, isPresent, isPromise } from 'angular2/src/facade/lang';
 import { ObservableWrapper } from 'angular2/src/facade/async';
-import { Pipe, Injectable, ChangeDetectorRef, WrappedValue } from 'angular2/core';
+import { Pipe } from 'angular2/src/core/metadata';
+import { Injectable } from 'angular2/src/core/di';
+import { ChangeDetectorRef, WrappedValue } from 'angular2/src/core/change_detection';
 import { InvalidPipeArgumentException } from './invalid_pipe_argument_exception';
 class ObservableStrategy {
     createSubscription(async, updateLatestValue) {

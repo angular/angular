@@ -20,12 +20,13 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var async_1 = require('angular2/src/facade/async');
 var collection_1 = require('angular2/src/facade/collection');
 var lang_1 = require('angular2/src/facade/lang');
-var core_1 = require('angular2/core');
+var metadata_1 = require('angular2/src/core/metadata');
+var di_1 = require('angular2/src/core/di');
 var control_container_1 = require('./control_container');
 var model_1 = require('../model');
 var shared_1 = require('./shared');
 var validators_1 = require('../validators');
-var formDirectiveProvider = lang_1.CONST_EXPR(new core_1.Provider(control_container_1.ControlContainer, { useExisting: core_1.forwardRef(function () { return NgForm; }) }));
+var formDirectiveProvider = lang_1.CONST_EXPR(new di_1.Provider(control_container_1.ControlContainer, { useExisting: di_1.forwardRef(function () { return NgForm; }) }));
 /**
  * If `NgForm` is bound in a component, `<form>` elements in that component will be
  * upgraded to use the Angular form system.
@@ -173,7 +174,7 @@ var NgForm = (function (_super) {
         return collection_1.ListWrapper.isEmpty(path) ? this.form : this.form.find(path);
     };
     NgForm = __decorate([
-        core_1.Directive({
+        metadata_1.Directive({
             selector: 'form:not([ng-no-form]):not([ng-form-model]),ng-form,[ng-form]',
             bindings: [formDirectiveProvider],
             host: {
@@ -182,10 +183,10 @@ var NgForm = (function (_super) {
             outputs: ['ngSubmit'],
             exportAs: 'form'
         }),
-        __param(0, core_1.Optional()),
-        __param(0, core_1.Inject(validators_1.NG_VALIDATORS)),
-        __param(1, core_1.Optional()),
-        __param(1, core_1.Inject(validators_1.NG_ASYNC_VALIDATORS)), 
+        __param(0, di_1.Optional()),
+        __param(0, di_1.Inject(validators_1.NG_VALIDATORS)),
+        __param(1, di_1.Optional()),
+        __param(1, di_1.Inject(validators_1.NG_ASYNC_VALIDATORS)), 
         __metadata('design:paramtypes', [Array, Array])
     ], NgForm);
     return NgForm;

@@ -12,7 +12,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var core_1 = require('angular2/core');
+var metadata_1 = require('angular2/src/core/metadata');
+var di_1 = require('angular2/src/core/di');
+var linker_1 = require('angular2/src/core/linker');
 var lang_1 = require('angular2/src/facade/lang');
 var collection_1 = require('angular2/src/facade/collection');
 var _WHEN_DEFAULT = lang_1.CONST_EXPR(new Object());
@@ -167,7 +169,7 @@ var NgSwitch = (function () {
         }
     };
     NgSwitch = __decorate([
-        core_1.Directive({ selector: '[ng-switch]', inputs: ['ngSwitch'] }), 
+        metadata_1.Directive({ selector: '[ng-switch]', inputs: ['ngSwitch'] }), 
         __metadata('design:paramtypes', [])
     ], NgSwitch);
     return NgSwitch;
@@ -198,9 +200,9 @@ var NgSwitchWhen = (function () {
         configurable: true
     });
     NgSwitchWhen = __decorate([
-        core_1.Directive({ selector: '[ng-switch-when]', inputs: ['ngSwitchWhen'] }),
-        __param(2, core_1.Host()), 
-        __metadata('design:paramtypes', [core_1.ViewContainerRef, core_1.TemplateRef, NgSwitch])
+        metadata_1.Directive({ selector: '[ng-switch-when]', inputs: ['ngSwitchWhen'] }),
+        __param(2, di_1.Host()), 
+        __metadata('design:paramtypes', [linker_1.ViewContainerRef, linker_1.TemplateRef, NgSwitch])
     ], NgSwitchWhen);
     return NgSwitchWhen;
 })();
@@ -216,9 +218,9 @@ var NgSwitchDefault = (function () {
         sswitch._registerView(_WHEN_DEFAULT, new SwitchView(viewContainer, templateRef));
     }
     NgSwitchDefault = __decorate([
-        core_1.Directive({ selector: '[ng-switch-default]' }),
-        __param(2, core_1.Host()), 
-        __metadata('design:paramtypes', [core_1.ViewContainerRef, core_1.TemplateRef, NgSwitch])
+        metadata_1.Directive({ selector: '[ng-switch-default]' }),
+        __param(2, di_1.Host()), 
+        __metadata('design:paramtypes', [linker_1.ViewContainerRef, linker_1.TemplateRef, NgSwitch])
     ], NgSwitchDefault);
     return NgSwitchDefault;
 })();

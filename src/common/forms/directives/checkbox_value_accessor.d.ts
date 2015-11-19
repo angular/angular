@@ -1,4 +1,5 @@
-import { Renderer, ElementRef } from 'angular2/core';
+import { Renderer } from 'angular2/src/core/render';
+import { ElementRef } from 'angular2/src/core/linker';
 import { ControlValueAccessor } from './control_value_accessor';
 /**
  * The accessor for writing a value and listening to changes on a checkbox input element.

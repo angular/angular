@@ -12,11 +12,14 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var core_1 = require('angular2/core');
+var di_1 = require('angular2/src/core/di');
+var render_1 = require('angular2/src/core/render');
+var linker_1 = require('angular2/src/core/linker');
+var metadata_1 = require('angular2/src/core/metadata');
 var async_1 = require('angular2/src/facade/async');
 var control_value_accessor_1 = require('./control_value_accessor');
 var lang_1 = require('angular2/src/facade/lang');
-var SELECT_VALUE_ACCESSOR = lang_1.CONST_EXPR(new core_1.Provider(control_value_accessor_1.NG_VALUE_ACCESSOR, { useExisting: core_1.forwardRef(function () { return SelectControlValueAccessor; }), multi: true }));
+var SELECT_VALUE_ACCESSOR = lang_1.CONST_EXPR(new di_1.Provider(control_value_accessor_1.NG_VALUE_ACCESSOR, { useExisting: di_1.forwardRef(function () { return SelectControlValueAccessor; }), multi: true }));
 /**
  * Marks `<option>` as dynamic, so Angular can be notified when options change.
  *
@@ -32,7 +35,7 @@ var NgSelectOption = (function () {
     function NgSelectOption() {
     }
     NgSelectOption = __decorate([
-        core_1.Directive({ selector: 'option' }), 
+        metadata_1.Directive({ selector: 'option' }), 
         __metadata('design:paramtypes', [])
     ], NgSelectOption);
     return NgSelectOption;
@@ -60,7 +63,7 @@ var SelectControlValueAccessor = (function () {
         async_1.ObservableWrapper.subscribe(query.changes, function (_) { return _this.writeValue(_this.value); });
     };
     SelectControlValueAccessor = __decorate([
-        core_1.Directive({
+        metadata_1.Directive({
             selector: 'select[ng-control],select[ng-form-control],select[ng-model]',
             host: {
                 '(change)': 'onChange($event.target.value)',
@@ -69,8 +72,8 @@ var SelectControlValueAccessor = (function () {
             },
             bindings: [SELECT_VALUE_ACCESSOR]
         }),
-        __param(2, core_1.Query(NgSelectOption, { descendants: true })), 
-        __metadata('design:paramtypes', [core_1.Renderer, core_1.ElementRef, core_1.QueryList])
+        __param(2, metadata_1.Query(NgSelectOption, { descendants: true })), 
+        __metadata('design:paramtypes', [render_1.Renderer, linker_1.ElementRef, linker_1.QueryList])
     ], SelectControlValueAccessor);
     return SelectControlValueAccessor;
 })();

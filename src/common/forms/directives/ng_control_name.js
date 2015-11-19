@@ -19,13 +19,14 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 var lang_1 = require('angular2/src/facade/lang');
 var async_1 = require('angular2/src/facade/async');
-var core_1 = require('angular2/core');
+var metadata_1 = require('angular2/src/core/metadata');
+var di_1 = require('angular2/src/core/di');
 var control_container_1 = require('./control_container');
 var ng_control_1 = require('./ng_control');
 var control_value_accessor_1 = require('./control_value_accessor');
 var shared_1 = require('./shared');
 var validators_1 = require('../validators');
-var controlNameBinding = lang_1.CONST_EXPR(new core_1.Provider(ng_control_1.NgControl, { useExisting: core_1.forwardRef(function () { return NgControlName; }) }));
+var controlNameBinding = lang_1.CONST_EXPR(new di_1.Provider(ng_control_1.NgControl, { useExisting: di_1.forwardRef(function () { return NgControlName; }) }));
 /**
  * Creates and binds a control with a specified name to a DOM element.
  *
@@ -134,21 +135,21 @@ var NgControlName = (function (_super) {
         configurable: true
     });
     NgControlName = __decorate([
-        core_1.Directive({
+        metadata_1.Directive({
             selector: '[ng-control]',
             bindings: [controlNameBinding],
             inputs: ['name: ngControl', 'model: ngModel'],
             outputs: ['update: ngModelChange'],
             exportAs: 'form'
         }),
-        __param(0, core_1.Host()),
-        __param(0, core_1.SkipSelf()),
-        __param(1, core_1.Optional()),
-        __param(1, core_1.Inject(validators_1.NG_VALIDATORS)),
-        __param(2, core_1.Optional()),
-        __param(2, core_1.Inject(validators_1.NG_ASYNC_VALIDATORS)),
-        __param(3, core_1.Optional()),
-        __param(3, core_1.Inject(control_value_accessor_1.NG_VALUE_ACCESSOR)), 
+        __param(0, di_1.Host()),
+        __param(0, di_1.SkipSelf()),
+        __param(1, di_1.Optional()),
+        __param(1, di_1.Inject(validators_1.NG_VALIDATORS)),
+        __param(2, di_1.Optional()),
+        __param(2, di_1.Inject(validators_1.NG_ASYNC_VALIDATORS)),
+        __param(3, di_1.Optional()),
+        __param(3, di_1.Inject(control_value_accessor_1.NG_VALUE_ACCESSOR)), 
         __metadata('design:paramtypes', [control_container_1.ControlContainer, Array, Array, Array])
     ], NgControlName);
     return NgControlName;

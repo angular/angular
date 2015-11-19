@@ -12,8 +12,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 import { isBlank, isString, isArray, StringWrapper } from 'angular2/src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
 import { ListWrapper } from 'angular2/src/facade/collection';
-import { Injectable, Pipe } from 'angular2/core';
+import { Injectable } from 'angular2/src/core/di';
 import { InvalidPipeArgumentException } from './invalid_pipe_argument_exception';
+import { Pipe } from 'angular2/src/core/metadata';
 /**
  * Creates a new List or String containing only a subset (slice) of the
  * elements.

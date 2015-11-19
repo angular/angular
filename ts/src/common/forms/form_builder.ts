@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/core';
+import {Injectable} from 'angular2/src/core/di';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {isPresent, isArray, CONST_EXPR, Type} from 'angular2/src/facade/lang';
 import * as modelModule from './model';

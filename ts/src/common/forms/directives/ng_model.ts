@@ -1,15 +1,9 @@
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-import {
-  OnChanges,
-  SimpleChange,
-  Query,
-  Directive,
-  forwardRef,
-  Provider,
-  Inject,
-  Optional
-} from 'angular2/core';
+import {OnChanges} from 'angular2/lifecycle_hooks';
+import {SimpleChange} from 'angular2/src/core/change_detection';
+import {Query, Directive} from 'angular2/src/core/metadata';
+import {forwardRef, Provider, Inject, Optional} from 'angular2/src/core/di';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
 import {Control} from '../model';

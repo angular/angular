@@ -1,14 +1,7 @@
-import {
-  OnInit,
-  OnDestroy,
-  Directive,
-  Optional,
-  Inject,
-  Host,
-  SkipSelf,
-  forwardRef,
-  Provider
-} from 'angular2/core';
+import {OnInit, OnDestroy} from 'angular2/lifecycle_hooks';
+import {Directive} from 'angular2/src/core/metadata';
+import {Optional, Inject, Host, SkipSelf, forwardRef, Provider} from 'angular2/src/core/di';
+import {ListWrapper} from 'angular2/src/facade/collection';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 
 import {ControlContainer} from './control_container';

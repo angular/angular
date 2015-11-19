@@ -1,4 +1,6 @@
-import { DoCheck, ChangeDetectorRef, IterableDiffers, ViewContainerRef, TemplateRef } from 'angular2/core';
+import { DoCheck } from 'angular2/lifecycle_hooks';
+import { ChangeDetectorRef, IterableDiffers } from 'angular2/src/core/change_detection';
+import { ViewContainerRef, TemplateRef } from 'angular2/src/core/linker';
 /**
  * The `NgFor` directive instantiates a template once per item from an iterable. The context for
  * each instantiated template inherits from the outer context with the given loop variable set

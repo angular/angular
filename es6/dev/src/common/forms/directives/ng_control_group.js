@@ -12,7 +12,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { Directive, Optional, Inject, Host, SkipSelf, forwardRef, Provider } from 'angular2/core';
+import { Directive } from 'angular2/src/core/metadata';
+import { Optional, Inject, Host, SkipSelf, forwardRef, Provider } from 'angular2/src/core/di';
 import { CONST_EXPR } from 'angular2/src/facade/lang';
 import { ControlContainer } from './control_container';
 import { controlPath, composeValidators, composeAsyncValidators } from './shared';

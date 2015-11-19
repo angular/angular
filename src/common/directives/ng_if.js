@@ -9,7 +9,8 @@
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var core_1 = require('angular2/core');
+var metadata_1 = require('angular2/src/core/metadata');
+var linker_1 = require('angular2/src/core/linker');
 var lang_1 = require('angular2/src/facade/lang');
 /**
  * Removes or recreates a portion of the DOM tree based on an {expression}.
@@ -54,8 +55,8 @@ var NgIf = (function () {
         configurable: true
     });
     NgIf = __decorate([
-        core_1.Directive({ selector: '[ng-if]', inputs: ['ngIf'] }), 
-        __metadata('design:paramtypes', [core_1.ViewContainerRef, core_1.TemplateRef])
+        metadata_1.Directive({ selector: '[ng-if]', inputs: ['ngIf'] }), 
+        __metadata('design:paramtypes', [linker_1.ViewContainerRef, linker_1.TemplateRef])
     ], NgIf);
     return NgIf;
 })();

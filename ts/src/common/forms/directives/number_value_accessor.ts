@@ -1,4 +1,7 @@
-import {Directive, ElementRef, Renderer, Self, forwardRef, Provider} from 'angular2/core';
+import {Directive} from 'angular2/src/core/metadata';
+import {ElementRef} from 'angular2/src/core/linker';
+import {Renderer} from 'angular2/src/core/render';
+import {Self, forwardRef, Provider} from 'angular2/src/core/di';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from './control_value_accessor';
 import {isBlank, CONST_EXPR, NumberWrapper} from 'angular2/src/facade/lang';
 

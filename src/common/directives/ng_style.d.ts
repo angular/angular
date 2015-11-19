@@ -1,4 +1,7 @@
-import { DoCheck, KeyValueDiffers, ElementRef, Renderer } from 'angular2/core';
+import { DoCheck } from 'angular2/lifecycle_hooks';
+import { KeyValueDiffers } from 'angular2/src/core/change_detection';
+import { ElementRef } from 'angular2/src/core/linker';
+import { Renderer } from 'angular2/src/core/render';
 /**
  * The `NgStyle` directive changes styles based on a result of expression evaluation.
  *

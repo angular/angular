@@ -12,8 +12,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var lang_1 = require('angular2/src/facade/lang');
 var exceptions_1 = require('angular2/src/facade/exceptions');
 var collection_1 = require('angular2/src/facade/collection');
-var core_1 = require('angular2/core');
+var di_1 = require('angular2/src/core/di');
 var invalid_pipe_argument_exception_1 = require('./invalid_pipe_argument_exception');
+var metadata_1 = require('angular2/src/core/metadata');
 /**
  * Creates a new List or String containing only a subset (slice) of the
  * elements.
@@ -87,8 +88,8 @@ var SlicePipe = (function () {
     };
     SlicePipe.prototype.supports = function (obj) { return lang_1.isString(obj) || lang_1.isArray(obj); };
     SlicePipe = __decorate([
-        core_1.Pipe({ name: 'slice', pure: false }),
-        core_1.Injectable(), 
+        metadata_1.Pipe({ name: 'slice', pure: false }),
+        di_1.Injectable(), 
         __metadata('design:paramtypes', [])
     ], SlicePipe);
     return SlicePipe;

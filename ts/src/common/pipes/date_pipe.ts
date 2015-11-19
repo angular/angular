@@ -9,7 +9,9 @@ import {
   FunctionWrapper
 } from 'angular2/src/facade/lang';
 import {DateFormatter} from 'angular2/src/facade/intl';
-import {PipeTransform, WrappedValue, Pipe, Injectable} from 'angular2/core';
+import {Injectable} from 'angular2/src/core/di';
+import {Pipe} from 'angular2/src/core/metadata';
+import {PipeTransform, WrappedValue} from 'angular2/src/core/change_detection';
 import {StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';

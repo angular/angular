@@ -1,6 +1,6 @@
 import {Injectable} from 'angular2/src/core/di';
 import {Math} from 'angular2/src/facade/math';
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
 @Injectable()
 export class BrowserDetails {

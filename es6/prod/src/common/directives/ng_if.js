@@ -9,7 +9,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Directive, ViewContainerRef, TemplateRef } from 'angular2/core';
+import { Directive } from 'angular2/src/core/metadata';
+import { ViewContainerRef, TemplateRef } from 'angular2/src/core/linker';
 import { isBlank } from 'angular2/src/facade/lang';
 /**
  * Removes or recreates a portion of the DOM tree based on an {expression}.

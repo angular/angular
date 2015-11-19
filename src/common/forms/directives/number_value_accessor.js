@@ -9,10 +9,13 @@
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var core_1 = require('angular2/core');
+var metadata_1 = require('angular2/src/core/metadata');
+var linker_1 = require('angular2/src/core/linker');
+var render_1 = require('angular2/src/core/render');
+var di_1 = require('angular2/src/core/di');
 var control_value_accessor_1 = require('./control_value_accessor');
 var lang_1 = require('angular2/src/facade/lang');
-var NUMBER_VALUE_ACCESSOR = lang_1.CONST_EXPR(new core_1.Provider(control_value_accessor_1.NG_VALUE_ACCESSOR, { useExisting: core_1.forwardRef(function () { return NumberValueAccessor; }), multi: true }));
+var NUMBER_VALUE_ACCESSOR = lang_1.CONST_EXPR(new di_1.Provider(control_value_accessor_1.NG_VALUE_ACCESSOR, { useExisting: di_1.forwardRef(function () { return NumberValueAccessor; }), multi: true }));
 /**
  * The accessor for writing a number value and listening to changes that is used by the
  * {@link NgModel}, {@link NgFormControl}, and {@link NgControlName} directives.
@@ -37,7 +40,7 @@ var NumberValueAccessor = (function () {
     };
     NumberValueAccessor.prototype.registerOnTouched = function (fn) { this.onTouched = fn; };
     NumberValueAccessor = __decorate([
-        core_1.Directive({
+        metadata_1.Directive({
             selector: 'input[type=number][ng-control],input[type=number][ng-form-control],input[type=number][ng-model]',
             host: {
                 '(change)': 'onChange($event.target.value)',
@@ -46,7 +49,7 @@ var NumberValueAccessor = (function () {
             },
             bindings: [NUMBER_VALUE_ACCESSOR]
         }), 
-        __metadata('design:paramtypes', [core_1.Renderer, core_1.ElementRef])
+        __metadata('design:paramtypes', [render_1.Renderer, linker_1.ElementRef])
     ], NumberValueAccessor);
     return NumberValueAccessor;
 })();

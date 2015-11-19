@@ -1,4 +1,4 @@
-import { OpaqueToken } from 'angular2/core';
+import { OpaqueToken } from 'angular2/src/core/di';
 /**
  * A bridge between a control and a native element.
  *

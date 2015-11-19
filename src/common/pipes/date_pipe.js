@@ -11,7 +11,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var lang_1 = require('angular2/src/facade/lang');
 var intl_1 = require('angular2/src/facade/intl');
-var core_1 = require('angular2/core');
+var di_1 = require('angular2/src/core/di');
+var metadata_1 = require('angular2/src/core/metadata');
 var collection_1 = require('angular2/src/facade/collection');
 var invalid_pipe_argument_exception_1 = require('./invalid_pipe_argument_exception');
 // TODO: move to a global configurable location along with other i18n components.
@@ -114,8 +115,8 @@ var DatePipe = (function () {
     };
     DatePipe = __decorate([
         lang_1.CONST(),
-        core_1.Pipe({ name: 'date', pure: true }),
-        core_1.Injectable(), 
+        metadata_1.Pipe({ name: 'date', pure: true }),
+        di_1.Injectable(), 
         __metadata('design:paramtypes', [])
     ], DatePipe);
     return DatePipe;

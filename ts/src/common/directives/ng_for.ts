@@ -1,13 +1,11 @@
+import {DoCheck} from 'angular2/lifecycle_hooks';
+import {Directive} from 'angular2/src/core/metadata';
 import {
-  DoCheck,
-  Directive,
   ChangeDetectorRef,
   IterableDiffer,
-  IterableDiffers,
-  ViewContainerRef,
-  TemplateRef,
-  ViewRef
-} from 'angular2/core';
+  IterableDiffers
+} from 'angular2/src/core/change_detection';
+import {ViewContainerRef, TemplateRef, ViewRef} from 'angular2/src/core/linker';
 import {isPresent, isBlank} from 'angular2/src/facade/lang';
 
 /**

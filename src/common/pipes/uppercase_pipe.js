@@ -10,7 +10,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var lang_1 = require('angular2/src/facade/lang');
-var core_1 = require('angular2/core');
+var metadata_1 = require('angular2/src/core/metadata');
+var di_1 = require('angular2/src/core/di');
 var invalid_pipe_argument_exception_1 = require('./invalid_pipe_argument_exception');
 /**
  * Implements uppercase transforms to text.
@@ -33,8 +34,8 @@ var UpperCasePipe = (function () {
     };
     UpperCasePipe = __decorate([
         lang_1.CONST(),
-        core_1.Pipe({ name: 'uppercase' }),
-        core_1.Injectable(), 
+        metadata_1.Pipe({ name: 'uppercase' }),
+        di_1.Injectable(), 
         __metadata('design:paramtypes', [])
     ], UpperCasePipe);
     return UpperCasePipe;

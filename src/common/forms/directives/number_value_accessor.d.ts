@@ -1,4 +1,5 @@
-import { ElementRef, Renderer } from 'angular2/core';
+import { ElementRef } from 'angular2/src/core/linker';
+import { Renderer } from 'angular2/src/core/render';
 import { ControlValueAccessor } from './control_value_accessor';
 /**
  * The accessor for writing a number value and listening to changes that is used by the

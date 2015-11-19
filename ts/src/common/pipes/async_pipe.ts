@@ -1,13 +1,13 @@
 import {isBlank, isPresent, isPromise, CONST} from 'angular2/src/facade/lang';
 import {Promise, ObservableWrapper, Observable, EventEmitter} from 'angular2/src/facade/async';
+import {Pipe} from 'angular2/src/core/metadata';
+import {Injectable} from 'angular2/src/core/di';
 import {
-  Pipe,
-  Injectable,
   ChangeDetectorRef,
   PipeOnDestroy,
   PipeTransform,
   WrappedValue
-} from 'angular2/core';
+} from 'angular2/src/core/change_detection';
 
 import {InvalidPipeArgumentException} from './invalid_pipe_argument_exception';
 

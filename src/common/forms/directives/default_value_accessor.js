@@ -9,10 +9,13 @@
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var core_1 = require('angular2/core');
+var metadata_1 = require('angular2/src/core/metadata');
+var linker_1 = require('angular2/src/core/linker');
+var render_1 = require('angular2/src/core/render');
+var di_1 = require('angular2/src/core/di');
 var control_value_accessor_1 = require('./control_value_accessor');
 var lang_1 = require('angular2/src/facade/lang');
-var DEFAULT_VALUE_ACCESSOR = lang_1.CONST_EXPR(new core_1.Provider(control_value_accessor_1.NG_VALUE_ACCESSOR, { useExisting: core_1.forwardRef(function () { return DefaultValueAccessor; }), multi: true }));
+var DEFAULT_VALUE_ACCESSOR = lang_1.CONST_EXPR(new di_1.Provider(control_value_accessor_1.NG_VALUE_ACCESSOR, { useExisting: di_1.forwardRef(function () { return DefaultValueAccessor; }), multi: true }));
 /**
  * The default accessor for writing a value and listening to changes that is used by the
  * {@link NgModel}, {@link NgFormControl}, and {@link NgControlName} directives.
@@ -36,7 +39,7 @@ var DefaultValueAccessor = (function () {
     DefaultValueAccessor.prototype.registerOnChange = function (fn) { this.onChange = fn; };
     DefaultValueAccessor.prototype.registerOnTouched = function (fn) { this.onTouched = fn; };
     DefaultValueAccessor = __decorate([
-        core_1.Directive({
+        metadata_1.Directive({
             selector: 'input:not([type=checkbox])[ng-control],textarea[ng-control],input:not([type=checkbox])[ng-form-control],textarea[ng-form-control],input:not([type=checkbox])[ng-model],textarea[ng-model],[ng-default-control]',
             // TODO: vsavkin replace the above selector with the one below it once
             // https://github.com/angular/angular/issues/3011 is implemented
@@ -48,7 +51,7 @@ var DefaultValueAccessor = (function () {
             },
             bindings: [DEFAULT_VALUE_ACCESSOR]
         }), 
-        __metadata('design:paramtypes', [core_1.Renderer, core_1.ElementRef])
+        __metadata('design:paramtypes', [render_1.Renderer, linker_1.ElementRef])
     ], DefaultValueAccessor);
     return DefaultValueAccessor;
 })();

@@ -10,7 +10,8 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var lang_1 = require('angular2/src/facade/lang');
-var core_1 = require('angular2/core');
+var di_1 = require('angular2/src/core/di');
+var metadata_1 = require('angular2/src/core/metadata');
 /**
  * Transforms any input value using `JSON.stringify`. Useful for debugging.
  *
@@ -26,8 +27,8 @@ var JsonPipe = (function () {
     };
     JsonPipe = __decorate([
         lang_1.CONST(),
-        core_1.Pipe({ name: 'json', pure: false }),
-        core_1.Injectable(), 
+        metadata_1.Pipe({ name: 'json', pure: false }),
+        di_1.Injectable(), 
         __metadata('design:paramtypes', [])
     ], JsonPipe);
     return JsonPipe;
