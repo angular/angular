@@ -1,16 +1,17 @@
 library angular2.src.compiler.html_ast;
 
 import "package:angular2/src/facade/lang.dart" show isPresent;
+import "parse_util.dart" show ParseSourceSpan;
 
 abstract class HtmlAst {
-  String sourceInfo;
+  ParseSourceSpan sourceSpan;
   dynamic visit(HtmlAstVisitor visitor, dynamic context);
 }
 
 class HtmlTextAst implements HtmlAst {
   String value;
-  String sourceInfo;
-  HtmlTextAst(this.value, this.sourceInfo) {}
+  ParseSourceSpan sourceSpan;
+  HtmlTextAst(this.value, this.sourceSpan) {}
   dynamic visit(HtmlAstVisitor visitor, dynamic context) {
     return visitor.visitText(this, context);
   }
@@ -19,8 +20,8 @@ class HtmlTextAst implements HtmlAst {
 class HtmlAttrAst implements HtmlAst {
   String name;
   String value;
-  String sourceInfo;
-  HtmlAttrAst(this.name, this.value, this.sourceInfo) {}
+  ParseSourceSpan sourceSpan;
+  HtmlAttrAst(this.name, this.value, this.sourceSpan) {}
   dynamic visit(HtmlAstVisitor visitor, dynamic context) {
     return visitor.visitAttr(this, context);
   }
@@ -30,8 +31,8 @@ class HtmlElementAst implements HtmlAst {
   String name;
   List<HtmlAttrAst> attrs;
   List<HtmlAst> children;
-  String sourceInfo;
-  HtmlElementAst(this.name, this.attrs, this.children, this.sourceInfo) {}
+  ParseSourceSpan sourceSpan;
+  HtmlElementAst(this.name, this.attrs, this.children, this.sourceSpan) {}
   dynamic visit(HtmlAstVisitor visitor, dynamic context) {
     return visitor.visitElement(this, context);
   }

@@ -405,7 +405,7 @@ main() {
               var dir = createDirective(SomeDirTypeMeta, "[a]");
               run(rootComp, [dir], 1).then((data) {
                 expect(data[0][2]).toEqual(
-                    ["someEmptyVar", "\$implicit", "someVar", "someValue"]);
+                    ["someVar", "someValue", "someEmptyVar", "\$implicit"]);
                 async.done();
               });
             }));

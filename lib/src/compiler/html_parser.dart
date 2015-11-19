@@ -1,124 +1,239 @@
 library angular2.src.compiler.html_parser;
 
 import "package:angular2/src/facade/lang.dart"
-    show isPresent, StringWrapper, stringify, assertionsEnabled, StringJoiner;
-import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
-import "html_ast.dart"
     show
-        HtmlAst,
-        HtmlAttrAst,
-        HtmlTextAst,
-        HtmlElementAst,
-        HtmlAstVisitor,
-        htmlVisitAll;
-import "util.dart" show escapeDoubleQuoteString;
+        isPresent,
+        isBlank,
+        StringWrapper,
+        stringify,
+        assertionsEnabled,
+        StringJoiner,
+        RegExpWrapper,
+        serializeEnum;
+import "package:angular2/src/facade/collection.dart" show ListWrapper;
+import "html_ast.dart" show HtmlAst, HtmlAttrAst, HtmlTextAst, HtmlElementAst;
 import "package:angular2/src/core/di.dart" show Injectable;
+import "html_lexer.dart" show HtmlToken, HtmlTokenType, tokenizeHtml;
+import "parse_util.dart" show ParseError, ParseLocation, ParseSourceSpan;
+import "html_tags.dart" show HtmlTagDefinition, getHtmlTagDefinition;
+
+class HtmlTreeError extends ParseError {
+  String elementName;
+  static HtmlTreeError create(
+      String elementName, ParseLocation location, String msg) {
+    return new HtmlTreeError(elementName, location, msg);
+  }
+
+  HtmlTreeError(this.elementName, ParseLocation location, String msg)
+      : super(location, msg) {
+    /* super call moved to initializer */;
+  }
+}
+
+class HtmlParseTreeResult {
+  List<HtmlAst> rootNodes;
+  List<ParseError> errors;
+  HtmlParseTreeResult(this.rootNodes, this.errors) {}
+}
 
 @Injectable()
 class HtmlParser {
-  List<HtmlAst> parse(String template, String sourceInfo) {
-    var root = DOM.createTemplate(template);
-    return parseChildNodes(root, sourceInfo);
-  }
-
-  String unparse(List<HtmlAst> nodes) {
-    var visitor = new UnparseVisitor();
-    var parts = [];
-    htmlVisitAll(visitor, nodes, parts);
-    return parts.join("");
+  HtmlParseTreeResult parse(String sourceContent, String sourceUrl) {
+    var tokensAndErrors = tokenizeHtml(sourceContent, sourceUrl);
+    var treeAndErrors = new TreeBuilder(tokensAndErrors.tokens).build();
+    return new HtmlParseTreeResult(
+        treeAndErrors.rootNodes,
+        (new List.from(((tokensAndErrors.errors as List<ParseError>)))
+          ..addAll(treeAndErrors.errors)));
   }
 }
 
-HtmlTextAst parseText(
-    dynamic text, num indexInParent, String parentSourceInfo) {
-  // TODO(tbosch): add source row/column source info from parse5 / package:html
-  var value = DOM.getText(text);
-  return new HtmlTextAst(value,
-      '''${ parentSourceInfo} > #text(${ value}):nth-child(${ indexInParent})''');
-}
-
-HtmlAttrAst parseAttr(dynamic element, String parentSourceInfo, String attrName,
-    String attrValue) {
-  // TODO(tbosch): add source row/column source info from parse5 / package:html
-  return new HtmlAttrAst(attrName, attrValue,
-      '''${ parentSourceInfo}[${ attrName}=${ attrValue}]''');
-}
-
-HtmlElementAst parseElement(
-    dynamic element, num indexInParent, String parentSourceInfo) {
-  // normalize nodename always as lower case so that following build steps
-
-  // can rely on this
-  var nodeName = DOM.nodeName(element).toLowerCase();
-  // TODO(tbosch): add source row/column source info from parse5 / package:html
-  var sourceInfo =
-      '''${ parentSourceInfo} > ${ nodeName}:nth-child(${ indexInParent})''';
-  var attrs = parseAttrs(element, sourceInfo);
-  var childNodes = parseChildNodes(element, sourceInfo);
-  return new HtmlElementAst(nodeName, attrs, childNodes, sourceInfo);
-}
-
-List<HtmlAttrAst> parseAttrs(dynamic element, String elementSourceInfo) {
-  // Note: sort the attributes early in the pipeline to get
-
-  // consistent results throughout the pipeline, as attribute order is not defined
-
-  // in DOM parsers!
-  var attrMap = DOM.attributeMap(element);
-  List<List<String>> attrList = [];
-  attrMap.forEach((name, value) => attrList.add([name, value]));
-  attrList
-      .sort((entry1, entry2) => StringWrapper.compare(entry1[0], entry2[0]));
-  return attrList
-      .map((entry) => parseAttr(element, elementSourceInfo, entry[0], entry[1]))
-      .toList();
-}
-
-List<HtmlAst> parseChildNodes(dynamic element, String parentSourceInfo) {
-  var root = DOM.templateAwareRoot(element);
-  var childNodes = DOM.childNodesAsList(root);
-  var result = [];
-  var index = 0;
-  childNodes.forEach((childNode) {
-    var childResult = null;
-    if (DOM.isTextNode(childNode)) {
-      var text = (childNode as dynamic);
-      childResult = parseText(text, index, parentSourceInfo);
-    } else if (DOM.isElementNode(childNode)) {
-      var el = (childNode as dynamic);
-      childResult = parseElement(el, index, parentSourceInfo);
+class TreeBuilder {
+  List<HtmlToken> tokens;
+  num index = -1;
+  HtmlToken peek;
+  List<HtmlAst> rootNodes = [];
+  List<HtmlTreeError> errors = [];
+  List<HtmlElementAst> elementStack = [];
+  TreeBuilder(this.tokens) {
+    this._advance();
+  }
+  HtmlParseTreeResult build() {
+    while (!identical(this.peek.type, HtmlTokenType.EOF)) {
+      if (identical(this.peek.type, HtmlTokenType.TAG_OPEN_START)) {
+        this._consumeStartTag(this._advance());
+      } else if (identical(this.peek.type, HtmlTokenType.TAG_CLOSE)) {
+        this._consumeEndTag(this._advance());
+      } else if (identical(this.peek.type, HtmlTokenType.CDATA_START)) {
+        this._consumeCdata(this._advance());
+      } else if (identical(this.peek.type, HtmlTokenType.COMMENT_START)) {
+        this._consumeComment(this._advance());
+      } else if (identical(this.peek.type, HtmlTokenType.TEXT) ||
+          identical(this.peek.type, HtmlTokenType.RAW_TEXT) ||
+          identical(this.peek.type, HtmlTokenType.ESCAPABLE_RAW_TEXT)) {
+        this._consumeText(this._advance());
+      } else {
+        // Skip all other tokens...
+        this._advance();
+      }
     }
-    if (isPresent(childResult)) {
-      // Won't have a childResult for e.g. comment nodes
-      result.add(childResult);
-    }
-    index++;
-  });
-  return result;
-}
+    return new HtmlParseTreeResult(this.rootNodes, this.errors);
+  }
 
-class UnparseVisitor implements HtmlAstVisitor {
-  dynamic visitElement(HtmlElementAst ast, List<String> parts) {
-    parts.add('''<${ ast . name}''');
+  HtmlToken _advance() {
+    var prev = this.peek;
+    if (this.index < this.tokens.length - 1) {
+      // Note: there is always an EOF token at the end
+      this.index++;
+    }
+    this.peek = this.tokens[this.index];
+    return prev;
+  }
+
+  HtmlToken _advanceIf(HtmlTokenType type) {
+    if (identical(this.peek.type, type)) {
+      return this._advance();
+    }
+    return null;
+  }
+
+  _consumeCdata(HtmlToken startToken) {
+    this._consumeText(this._advance());
+    this._advanceIf(HtmlTokenType.CDATA_END);
+  }
+
+  _consumeComment(HtmlToken startToken) {
+    this._advanceIf(HtmlTokenType.RAW_TEXT);
+    this._advanceIf(HtmlTokenType.COMMENT_END);
+  }
+
+  _consumeText(HtmlToken token) {
+    this._addToParent(new HtmlTextAst(token.parts[0], token.sourceSpan));
+  }
+
+  _consumeStartTag(HtmlToken startTagToken) {
+    var prefix = startTagToken.parts[0];
+    var name = startTagToken.parts[1];
     var attrs = [];
-    htmlVisitAll(this, ast.attrs, attrs);
-    if (ast.attrs.length > 0) {
-      parts.add(" ");
-      parts.add(attrs.join(" "));
+    while (identical(this.peek.type, HtmlTokenType.ATTR_NAME)) {
+      attrs.add(this._consumeAttr(this._advance()));
     }
-    parts.add('''>''');
-    htmlVisitAll(this, ast.children, parts);
-    parts.add('''</${ ast . name}>''');
-    return null;
+    var fullName = getElementFullName(prefix, name, this._getParentElement());
+    var voidElement = false;
+    // Note: There could have been a tokenizer error
+
+    // so that we don't get a token for the end tag...
+    if (identical(this.peek.type, HtmlTokenType.TAG_OPEN_END_VOID)) {
+      this._advance();
+      voidElement = true;
+    } else if (identical(this.peek.type, HtmlTokenType.TAG_OPEN_END)) {
+      this._advance();
+      voidElement = false;
+    }
+    var end = this.peek.sourceSpan.start;
+    var el = new HtmlElementAst(fullName, attrs, [],
+        new ParseSourceSpan(startTagToken.sourceSpan.start, end));
+    this._pushElement(el);
+    if (voidElement) {
+      this._popElement(fullName);
+    }
   }
 
-  dynamic visitAttr(HtmlAttrAst ast, List<String> parts) {
-    parts.add('''${ ast . name}=${ escapeDoubleQuoteString ( ast . value )}''');
-    return null;
+  _pushElement(HtmlElementAst el) {
+    if (this.elementStack.length > 0) {
+      var parentEl = ListWrapper.last(this.elementStack);
+      if (getHtmlTagDefinition(parentEl.name).isClosedByChild(el.name)) {
+        this.elementStack.removeLast();
+      }
+    }
+    var tagDef = getHtmlTagDefinition(el.name);
+    var parentEl = this._getParentElement();
+    if (tagDef.requireExtraParent(isPresent(parentEl) ? parentEl.name : null)) {
+      var newParent =
+          new HtmlElementAst(tagDef.requiredParent, [], [el], el.sourceSpan);
+      this._addToParent(newParent);
+      this.elementStack.add(newParent);
+      this.elementStack.add(el);
+    } else {
+      this._addToParent(el);
+      this.elementStack.add(el);
+    }
   }
 
-  dynamic visitText(HtmlTextAst ast, List<String> parts) {
-    parts.add(ast.value);
-    return null;
+  _consumeEndTag(HtmlToken endTagToken) {
+    var fullName = getElementFullName(
+        endTagToken.parts[0], endTagToken.parts[1], this._getParentElement());
+    if (!this._popElement(fullName)) {
+      this.errors.add(HtmlTreeError.create(
+          fullName,
+          endTagToken.sourceSpan.start,
+          '''Unexpected closing tag "${ endTagToken . parts [ 1 ]}"'''));
+    }
   }
+
+  bool _popElement(String fullName) {
+    for (var stackIndex = this.elementStack.length - 1;
+        stackIndex >= 0;
+        stackIndex--) {
+      var el = this.elementStack[stackIndex];
+      if (el.name.toLowerCase() == fullName.toLowerCase()) {
+        ListWrapper.splice(this.elementStack, stackIndex,
+            this.elementStack.length - stackIndex);
+        return true;
+      }
+      if (!getHtmlTagDefinition(el.name).closedByParent) {
+        return false;
+      }
+    }
+    return false;
+  }
+
+  HtmlAttrAst _consumeAttr(HtmlToken attrName) {
+    var fullName = mergeNsAndName(attrName.parts[0], attrName.parts[1]);
+    var end = attrName.sourceSpan.end;
+    var value = "";
+    if (identical(this.peek.type, HtmlTokenType.ATTR_VALUE)) {
+      var valueToken = this._advance();
+      value = valueToken.parts[0];
+      end = valueToken.sourceSpan.end;
+    }
+    return new HtmlAttrAst(
+        fullName, value, new ParseSourceSpan(attrName.sourceSpan.start, end));
+  }
+
+  HtmlElementAst _getParentElement() {
+    return this.elementStack.length > 0
+        ? ListWrapper.last(this.elementStack)
+        : null;
+  }
+
+  _addToParent(HtmlAst node) {
+    var parent = this._getParentElement();
+    if (isPresent(parent)) {
+      parent.children.add(node);
+    } else {
+      this.rootNodes.add(node);
+    }
+  }
+}
+
+String mergeNsAndName(String prefix, String localName) {
+  return isPresent(prefix) ? '''@${ prefix}:${ localName}''' : localName;
+}
+
+String getElementFullName(
+    String prefix, String localName, HtmlElementAst parentElement) {
+  if (isBlank(prefix)) {
+    prefix = getHtmlTagDefinition(localName).implicitNamespacePrefix;
+    if (isBlank(prefix) && isPresent(parentElement)) {
+      prefix = namespacePrefix(parentElement.name);
+    }
+  }
+  return mergeNsAndName(prefix, localName);
+}
+
+var NS_PREFIX_RE = new RegExp(r'^@([^:]+)');
+String namespacePrefix(String elementName) {
+  var match = RegExpWrapper.firstMatch(NS_PREFIX_RE, elementName);
+  return isBlank(match) ? null : match[1];
 }

@@ -32,30 +32,9 @@ import "package:angular2/src/core/metadata.dart" show ViewEncapsulation;
 // TODO move it once DomAdapter is moved
 import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 
-// TODO(tbosch): solve SVG properly once https://github.com/angular/angular/issues/4417 is done
-const XLINK_NAMESPACE = "http://www.w3.org/1999/xlink";
-const SVG_NAMESPACE = "http://www.w3.org/2000/svg";
-const SVG_ELEMENT_NAMES = const {
-  "altGlyph": true, "altGlyphDef": true, "altGlyphItem": true, "animate": true, "animateColor": true, "animateMotion": true, "animateTransform": true, "circle": true, "clipPath": true, "color-profile": true, "cursor": true, "defs": true, "desc": true, "ellipse": true, "feBlend": true, "feColorMatrix": true, "feComponentTransfer": true, "feComposite": true, "feConvolveMatrix": true, "feDiffuseLighting": true, "feDisplacementMap": true, "feDistantLight": true, "feFlood": true, "feFuncA": true, "feFuncB": true, "feFuncG": true, "feFuncR": true, "feGaussianBlur": true, "feImage": true, "feMerge": true, "feMergeNode": true, "feMorphology": true, "feOffset": true, "fePointLight": true,
-  "feSpecularLighting": true, "feSpotLight": true, "feTile": true, "feTurbulence": true, "filter": true,
-  "font": true, "font-face": true, "font-face-format": true, "font-face-name": true,
-  "font-face-src": true, "font-face-uri": true, "foreignObject": true, "g": true,
-  // TODO(tbosch): this needs to be disabled
-
-  // because of an internal project.
-
-  // We will fix SVG soon, so this will go away...
-
-  // 'glyph': true,
-  "glyphRef": true, "hkern": true, "image": true, "line": true, "linearGradient": true, "marker": true, "mask": true, "metadata": true,
-  "missing-glyph": true, "mpath": true, "path": true, "pattern": true, "polygon": true,
-  "polyline": true, "radialGradient": true, "rect": true, "set": true, "stop": true,
-  "style": true, "svg": true, "switch": true, "symbol": true, "text": true, "textPath": true,
-  "title": true, "tref": true, "tspan": true, "use": true, "view": true, "vkern": true
-};
-const SVG_ATTR_NAMESPACES = const {
-  "href": XLINK_NAMESPACE,
-  "xlink:href": XLINK_NAMESPACE
+const NAMESPACE_URIS = const {
+  "xlink": "http://www.w3.org/1999/xlink",
+  "svg": "http://www.w3.org/2000/svg"
 };
 
 abstract class DomRenderer extends Renderer implements NodeFactory<dynamic> {
@@ -325,28 +304,33 @@ class DomRenderer_ extends DomRenderer {
   }
 
   dynamic createElement(String name, List<String> attrNameAndValues) {
-    var isSvg = SVG_ELEMENT_NAMES[name] == true;
-    var el = isSvg
-        ? DOM.createElementNS(SVG_NAMESPACE, name)
-        : DOM.createElement(name);
-    this._setAttributes(el, attrNameAndValues, isSvg);
+    var nsAndName = splitNamespace(name);
+    var el = isPresent(nsAndName[0])
+        ? DOM.createElementNS(NAMESPACE_URIS[nsAndName[0]], nsAndName[1])
+        : DOM.createElement(nsAndName[1]);
+    this._setAttributes(el, attrNameAndValues);
     return el;
   }
 
   mergeElement(dynamic existing, List<String> attrNameAndValues) {
     DOM.clearNodes(existing);
-    this._setAttributes(existing, attrNameAndValues, false);
+    this._setAttributes(existing, attrNameAndValues);
   }
 
-  _setAttributes(dynamic node, List<String> attrNameAndValues, bool isSvg) {
+  _setAttributes(dynamic node, List<String> attrNameAndValues) {
     for (var attrIdx = 0; attrIdx < attrNameAndValues.length; attrIdx += 2) {
+      var attrNs;
       var attrName = attrNameAndValues[attrIdx];
+      var nsAndName = splitNamespace(attrName);
+      if (isPresent(nsAndName[0])) {
+        attrName = nsAndName[0] + ":" + nsAndName[1];
+        attrNs = NAMESPACE_URIS[nsAndName[0]];
+      }
       var attrValue = attrNameAndValues[attrIdx + 1];
-      var attrNs = isSvg ? SVG_ATTR_NAMESPACES[attrName] : null;
       if (isPresent(attrNs)) {
-        DOM.setAttributeNS(node, XLINK_NAMESPACE, attrName, attrValue);
+        DOM.setAttributeNS(node, attrNs, attrName, attrValue);
       } else {
-        DOM.setAttribute(node, attrName, attrValue);
+        DOM.setAttribute(node, nsAndName[1], attrValue);
       }
     }
   }
@@ -400,4 +384,13 @@ Function decoratePreventDefault(Function eventHandler) {
       DOM.preventDefault(event);
     }
   };
+}
+
+var NS_PREFIX_RE = new RegExp(r'^@([^:]+):(.+)');
+List<String> splitNamespace(String name) {
+  if (name[0] != "@") {
+    return [null, name];
+  }
+  var match = RegExpWrapper.firstMatch(NS_PREFIX_RE, name);
+  return [match[1], match[2]];
 }

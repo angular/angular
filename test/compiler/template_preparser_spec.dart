@@ -25,7 +25,7 @@ main() {
       htmlParser = _htmlParser;
     }));
     PreparsedElement preparse(String html) {
-      return preparseElement(htmlParser.parse(html, "")[0]);
+      return preparseElement(htmlParser.parse(html, "").rootNodes[0]);
     }
     it(
         "should detect script elements",

@@ -4,17 +4,18 @@ import "package:angular2/src/core/change_detection/change_detection.dart"
     show AST;
 import "package:angular2/src/facade/lang.dart" show isPresent;
 import "directive_metadata.dart" show CompileDirectiveMetadata;
+import "parse_util.dart" show ParseSourceSpan;
 
 abstract class TemplateAst {
-  String sourceInfo;
+  ParseSourceSpan sourceSpan;
   dynamic visit(TemplateAstVisitor visitor, dynamic context);
 }
 
 class TextAst implements TemplateAst {
   String value;
   num ngContentIndex;
-  String sourceInfo;
-  TextAst(this.value, this.ngContentIndex, this.sourceInfo) {}
+  ParseSourceSpan sourceSpan;
+  TextAst(this.value, this.ngContentIndex, this.sourceSpan) {}
   dynamic visit(TemplateAstVisitor visitor, dynamic context) {
     return visitor.visitText(this, context);
   }
@@ -23,8 +24,8 @@ class TextAst implements TemplateAst {
 class BoundTextAst implements TemplateAst {
   AST value;
   num ngContentIndex;
-  String sourceInfo;
-  BoundTextAst(this.value, this.ngContentIndex, this.sourceInfo) {}
+  ParseSourceSpan sourceSpan;
+  BoundTextAst(this.value, this.ngContentIndex, this.sourceSpan) {}
   dynamic visit(TemplateAstVisitor visitor, dynamic context) {
     return visitor.visitBoundText(this, context);
   }
@@ -33,8 +34,8 @@ class BoundTextAst implements TemplateAst {
 class AttrAst implements TemplateAst {
   String name;
   String value;
-  String sourceInfo;
-  AttrAst(this.name, this.value, this.sourceInfo) {}
+  ParseSourceSpan sourceSpan;
+  AttrAst(this.name, this.value, this.sourceSpan) {}
   dynamic visit(TemplateAstVisitor visitor, dynamic context) {
     return visitor.visitAttr(this, context);
   }
@@ -45,9 +46,9 @@ class BoundElementPropertyAst implements TemplateAst {
   PropertyBindingType type;
   AST value;
   String unit;
-  String sourceInfo;
+  ParseSourceSpan sourceSpan;
   BoundElementPropertyAst(
-      this.name, this.type, this.value, this.unit, this.sourceInfo) {}
+      this.name, this.type, this.value, this.unit, this.sourceSpan) {}
   dynamic visit(TemplateAstVisitor visitor, dynamic context) {
     return visitor.visitElementProperty(this, context);
   }
@@ -57,8 +58,8 @@ class BoundEventAst implements TemplateAst {
   String name;
   String target;
   AST handler;
-  String sourceInfo;
-  BoundEventAst(this.name, this.target, this.handler, this.sourceInfo) {}
+  ParseSourceSpan sourceSpan;
+  BoundEventAst(this.name, this.target, this.handler, this.sourceSpan) {}
   dynamic visit(TemplateAstVisitor visitor, dynamic context) {
     return visitor.visitEvent(this, context);
   }
@@ -75,8 +76,8 @@ class BoundEventAst implements TemplateAst {
 class VariableAst implements TemplateAst {
   String name;
   String value;
-  String sourceInfo;
-  VariableAst(this.name, this.value, this.sourceInfo) {}
+  ParseSourceSpan sourceSpan;
+  VariableAst(this.name, this.value, this.sourceSpan) {}
   dynamic visit(TemplateAstVisitor visitor, dynamic context) {
     return visitor.visitVariable(this, context);
   }
@@ -91,7 +92,7 @@ class ElementAst implements TemplateAst {
   List<DirectiveAst> directives;
   List<TemplateAst> children;
   num ngContentIndex;
-  String sourceInfo;
+  ParseSourceSpan sourceSpan;
   ElementAst(
       this.name,
       this.attrs,
@@ -101,7 +102,7 @@ class ElementAst implements TemplateAst {
       this.directives,
       this.children,
       this.ngContentIndex,
-      this.sourceInfo) {}
+      this.sourceSpan) {}
   dynamic visit(TemplateAstVisitor visitor, dynamic context) {
     return visitor.visitElement(this, context);
   }
@@ -128,9 +129,9 @@ class EmbeddedTemplateAst implements TemplateAst {
   List<DirectiveAst> directives;
   List<TemplateAst> children;
   num ngContentIndex;
-  String sourceInfo;
+  ParseSourceSpan sourceSpan;
   EmbeddedTemplateAst(this.attrs, this.outputs, this.vars, this.directives,
-      this.children, this.ngContentIndex, this.sourceInfo) {}
+      this.children, this.ngContentIndex, this.sourceSpan) {}
   dynamic visit(TemplateAstVisitor visitor, dynamic context) {
     return visitor.visitEmbeddedTemplate(this, context);
   }
@@ -140,9 +141,9 @@ class BoundDirectivePropertyAst implements TemplateAst {
   String directiveName;
   String templateName;
   AST value;
-  String sourceInfo;
+  ParseSourceSpan sourceSpan;
   BoundDirectivePropertyAst(
-      this.directiveName, this.templateName, this.value, this.sourceInfo) {}
+      this.directiveName, this.templateName, this.value, this.sourceSpan) {}
   dynamic visit(TemplateAstVisitor visitor, dynamic context) {
     return visitor.visitDirectiveProperty(this, context);
   }
@@ -154,9 +155,9 @@ class DirectiveAst implements TemplateAst {
   List<BoundElementPropertyAst> hostProperties;
   List<BoundEventAst> hostEvents;
   List<VariableAst> exportAsVars;
-  String sourceInfo;
+  ParseSourceSpan sourceSpan;
   DirectiveAst(this.directive, this.inputs, this.hostProperties,
-      this.hostEvents, this.exportAsVars, this.sourceInfo) {}
+      this.hostEvents, this.exportAsVars, this.sourceSpan) {}
   dynamic visit(TemplateAstVisitor visitor, dynamic context) {
     return visitor.visitDirective(this, context);
   }
@@ -165,8 +166,8 @@ class DirectiveAst implements TemplateAst {
 class NgContentAst implements TemplateAst {
   num index;
   num ngContentIndex;
-  String sourceInfo;
-  NgContentAst(this.index, this.ngContentIndex, this.sourceInfo) {}
+  ParseSourceSpan sourceSpan;
+  NgContentAst(this.index, this.ngContentIndex, this.sourceSpan) {}
   dynamic visit(TemplateAstVisitor visitor, dynamic context) {
     return visitor.visitNgContent(this, context);
   }

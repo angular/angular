@@ -12,7 +12,7 @@ import "package:angular2/testing_internal.dart"
         expect,
         iit,
         inject,
-        beforeEachBindings,
+        beforeEachProviders,
         it,
         xit,
         containsRegexp,
@@ -88,7 +88,7 @@ import "package:angular2/src/facade/lang.dart" show IS_DART;
 const ANCHOR_ELEMENT = const OpaqueToken("AnchorElement");
 main() {
   describe("integration tests", () {
-    beforeEachBindings(
+    beforeEachProviders(
         () => [provide(ANCHOR_ELEMENT, useValue: el("<div></div>"))]);
     describe("react to record changes", () {
       it(
@@ -579,7 +579,7 @@ main() {
                       MyComp,
                       new ViewMetadata(
                           template:
-                              "<p><div export-dir #localdir=\"dir\"></div></p>",
+                              "<div><div export-dir #localdir=\"dir\"></div></div>",
                           directives: [ExportDir]))
                   .createAsync(MyComp)
                   .then((fixture) {
@@ -619,7 +619,7 @@ main() {
                       MyComp,
                       new ViewMetadata(
                           template:
-                              "<p><child-cmp var-alice></child-cmp><child-cmp var-bob></p>",
+                              "<p><child-cmp var-alice/><child-cmp var-bob/></p>",
                           directives: [ChildComp]))
                   .createAsync(MyComp)
                   .then((fixture) {
@@ -658,7 +658,8 @@ main() {
                   .overrideView(
                       MyComp,
                       new ViewMetadata(
-                          template: "<p><div var-alice><i>Hello</i></div></p>"))
+                          template:
+                              "<div><div var-alice><i>Hello</i></div></div>"))
                   .createAsync(MyComp)
                   .then((fixture) {
                 var value = fixture.debugElement.componentViewChildren[0]
@@ -1389,7 +1390,7 @@ main() {
                 new ViewMetadata(
                     directives: [DirectiveThrowingAnError],
                     template:
-                        '''<directive-throwing-error></<directive-throwing-error>'''));
+                        '''<directive-throwing-error></directive-throwing-error>'''));
             PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) {
               var c = e.context;
               expect(DOM.nodeName(c.element).toUpperCase())
@@ -1594,7 +1595,7 @@ main() {
                       template: "<div unknown=\"{{ctxProp}}\"></div>"));
               PromiseWrapper.catchError(tcb.createAsync(MyComp), (e) {
                 expect(e.message).toEqual('''Template parse errors:
-Can\'t bind to \'unknown\' since it isn\'t a known native property in MyComp > div:nth-child(0)[unknown={{ctxProp}}]''');
+Can\'t bind to \'unknown\' since it isn\'t a known native property ("<div [ERROR ->]unknown="{{ctxProp}}"></div>"): MyComp@0:5''');
                 async.done();
                 return null;
               });
@@ -1657,7 +1658,7 @@ Can\'t bind to \'unknown\' since it isn\'t a known native property in MyComp > d
           }));
     });
     describe("logging property updates", () {
-      beforeEachBindings(() => [
+      beforeEachProviders(() => [
             provide(ChangeDetectorGenConfig,
                 useValue: new ChangeDetectorGenConfig(true, true, false))
           ]);

@@ -26,8 +26,8 @@ import "template_preparser.dart"
 class TemplateNormalizer {
   XHR _xhr;
   UrlResolver _urlResolver;
-  HtmlParser _domParser;
-  TemplateNormalizer(this._xhr, this._urlResolver, this._domParser) {}
+  HtmlParser _htmlParser;
+  TemplateNormalizer(this._xhr, this._urlResolver, this._htmlParser) {}
   Future<CompileTemplateMetadata> normalizeTemplate(
       CompileTypeMetadata directiveType, CompileTemplateMetadata template) {
     if (isPresent(template.template)) {
@@ -51,9 +51,15 @@ class TemplateNormalizer {
       CompileTemplateMetadata templateMeta,
       String template,
       String templateAbsUrl) {
-    var domNodes = this._domParser.parse(template, directiveType.name);
+    var rootNodesAndErrors =
+        this._htmlParser.parse(template, directiveType.name);
+    if (rootNodesAndErrors.errors.length > 0) {
+      var errorString = rootNodesAndErrors.errors.join("\n");
+      throw new BaseException('''Template parse errors:
+${ errorString}''');
+    }
     var visitor = new TemplatePreparseVisitor();
-    htmlVisitAll(visitor, domNodes);
+    htmlVisitAll(visitor, rootNodesAndErrors.rootNodes);
     var allStyles = (new List.from(templateMeta.styles)
       ..addAll(visitor.styles));
     var allStyleAbsUrls = (new List.from(visitor.styleUrls
