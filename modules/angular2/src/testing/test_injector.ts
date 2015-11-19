@@ -123,7 +123,9 @@ export function createTestInjector(providers: Array<Type | Provider | any[]>): I
 }
 
 /**
- * Allows injecting dependencies in `beforeEach()` and `it()`.
+ * Allows injecting dependencies in `beforeEach()` and `it()`. When using with the
+ * `angular2/testing` library, the test function will be run within a zone and will
+ * automatically complete when all asynchronous tests have finished.
  *
  * Example:
  *
@@ -133,17 +135,14 @@ export function createTestInjector(providers: Array<Type | Provider | any[]>): I
  *   // ...
  * }));
  *
- * it('...', inject([AClass, AsyncTestCompleter], (object, async) => {
+ * it('...', inject([AClass], (object) => {
  *   object.doSomething().then(() => {
  *     expect(...);
- *     async.done();
  *   });
  * })
  * ```
  *
  * Notes:
- * - injecting an `AsyncTestCompleter` allow completing async tests - this is the equivalent of
- *   adding a `done` parameter in Jasmine,
  * - inject is currently a function because of some Traceur limitation the syntax should eventually
  *   becomes `it('...', @Inject (object: AClass, async: AsyncTestCompleter) => { ... });`
  *
@@ -155,6 +154,9 @@ export function inject(tokens: any[], fn: Function): FunctionWithParamTokens {
   return new FunctionWithParamTokens(tokens, fn, false);
 }
 
+/**
+ * @deprecated Use inject instead, which now supports both synchronous and asynchronous tests.
+ */
 export function injectAsync(tokens: any[], fn: Function): FunctionWithParamTokens {
   return new FunctionWithParamTokens(tokens, fn, true);
 }
