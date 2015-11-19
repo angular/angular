@@ -79,6 +79,17 @@ var BROWSER_CAPS = {
       browser: 'ALL'
     }
   },
+  ChromeOnTravis: {
+    browserName: 'chrome',
+    chromeOptions: mergeInto({
+      'args': ['--no-sandbox', '--js-flags=--expose-gc'],
+      'binary': process.env.CHROME_BIN
+    }, CHROME_OPTIONS),
+    loggingPrefs: {
+      performance: 'ALL',
+      browser: 'ALL'
+    }
+  },
   ChromeAndroid: {
     browserName: 'chrome',
     chromeOptions: mergeInto(CHROME_OPTIONS, {
