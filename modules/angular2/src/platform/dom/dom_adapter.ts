@@ -83,9 +83,9 @@ export abstract class DomAdapter {
   abstract getElementsByClassName(element, name: string): HTMLElement[];
   abstract getElementsByTagName(element, name: string): HTMLElement[];
   abstract classList(element): any[];
-  abstract addClass(element, classname: string);
-  abstract removeClass(element, classname: string);
-  abstract hasClass(element, classname: string): boolean;
+  abstract addClass(element, className: string);
+  abstract removeClass(element, className: string);
+  abstract hasClass(element, className: string): boolean;
   abstract setStyle(element, styleName: string, styleValue: string);
   abstract removeStyle(element, styleName: string);
   abstract getStyle(element, styleName: string): string;
