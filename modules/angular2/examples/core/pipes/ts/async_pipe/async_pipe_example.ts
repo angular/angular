@@ -5,28 +5,29 @@ import {bootstrap} from 'angular2/bootstrap';
 @Component({
   selector: 'async-example',
   template: `<div>
-    <p>Wait for it... {{promise | async}}</p>
-    <button (click)="clicked()">{{resolved ? 'Reset' : 'Resolve'}}</button> 
+    <p>Wait for it... {{ greeting | async }}</p>
+    <button (click)="clicked()">{{ arrived ? 'Reset' : 'Resolve' }}</button> 
   </div>`
 })
 export class AsyncPipeExample {
-  resolved: boolean = false;
-  promise: Promise<string> = null;
-  resolve: Function = null;
+  greeting: Promise<string> = null;
+  arrived: boolean = false;
+
+  private resolve: Function = null;
 
   constructor() { this.reset(); }
 
   reset() {
-    this.resolved = false;
-    this.promise = new Promise<string>((resolve, reject) => { this.resolve = resolve; });
+    this.arrived = false;
+    this.greeting = new Promise<string>((resolve, reject) => { this.resolve = resolve; });
   }
 
   clicked() {
-    if (this.resolved) {
+    if (this.arrived) {
       this.reset();
     } else {
-      this.resolve("resolved!");
-      this.resolved = true;
+      this.resolve("hi there!");
+      this.arrived = true;
     }
   }
 }
