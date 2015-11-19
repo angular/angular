@@ -21,7 +21,7 @@ import "package:angular2/testing_internal.dart"
         ComponentFixture,
         fakeAsync,
         tick;
-import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/core/linker/view_listener.dart"
     show AppViewListener;
 import "package:angular2/core.dart"

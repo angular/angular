@@ -37,7 +37,7 @@ import "package:angular2/router.dart"
         RouteConfig,
         ROUTER_DIRECTIVES;
 import "package:angular2/src/router/router.dart" show RootRouter;
-import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
 
 main() {
   describe("router-link directive", () {
