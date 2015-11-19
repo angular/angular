@@ -321,16 +321,16 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   List<Node> getElementsByTagName(Element element, String name) =>
       element.querySelectorAll(name);
   List<String> classList(Element element) => element.classes.toList();
-  void addClass(Element element, String classname) {
-    element.classes.add(classname);
+  void addClass(Element element, String className) {
+    element.classes.add(className);
   }
 
-  void removeClass(Element element, String classname) {
-    element.classes.remove(classname);
+  void removeClass(Element element, String className) {
+    element.classes.remove(className);
   }
 
-  bool hasClass(Element element, String classname) =>
-      element.classes.contains(classname);
+  bool hasClass(Element element, String className) =>
+      element.classes.contains(className);
 
   void setStyle(Element element, String styleName, String styleValue) {
     element.style.setProperty(styleName, styleValue);
