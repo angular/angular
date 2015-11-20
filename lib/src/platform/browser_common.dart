@@ -20,7 +20,7 @@ import "package:angular2/common.dart"
 import "package:angular2/render.dart" show Renderer;
 import "package:angular2/src/core/testability/testability.dart"
     show Testability;
-import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/platform/dom/events/dom_events.dart"
     show DomEventsPlugin;
 import "package:angular2/src/platform/dom/events/key_events.dart"

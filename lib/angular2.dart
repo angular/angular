@@ -13,5 +13,4 @@ export 'package:angular2/lifecycle_hooks.dart';
 export 'package:angular2/src/core/application_tokens.dart'
     hide APP_COMPONENT_REF_PROMISE, APP_ID_RANDOM_PROVIDER;
 export 'package:angular2/src/platform/dom/dom_tokens.dart';
-export 'package:angular2/src/platform/dom/dom_adapter.dart';
 export 'package:angular2/compiler.dart' show UrlResolver, AppRootUrl;

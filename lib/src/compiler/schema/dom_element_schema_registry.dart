@@ -3,7 +3,7 @@ library angular2.src.compiler.schema.dom_element_schema_registry;
 import "package:angular2/src/core/di.dart" show Injectable;
 import "package:angular2/src/facade/lang.dart" show isPresent, isBlank;
 import "package:angular2/src/facade/collection.dart" show StringMapWrapper;
-import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 import "element_schema_registry.dart" show ElementSchemaRegistry;
 
 @Injectable()

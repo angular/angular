@@ -8,7 +8,7 @@ import "package:angular2/src/platform/dom/events/dom_events.dart"
 import "package:angular2/src/core/zone/ng_zone.dart" show NgZone;
 import "package:angular2/src/facade/collection.dart"
     show ListWrapper, Map, MapWrapper;
-import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 
 main() {
   var domEventPlugin;

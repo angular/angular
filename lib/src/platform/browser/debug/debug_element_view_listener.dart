@@ -8,7 +8,7 @@ import "package:angular2/src/core/di.dart" show Injectable, provide, Provider;
 import "package:angular2/src/core/linker/view_listener.dart"
     show AppViewListener;
 import "package:angular2/src/core/linker/view.dart" show AppView;
-import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/core/render/api.dart" show Renderer;
 import "package:angular2/src/core/debug/debug_element.dart"
     show DebugElement, DebugElement_;

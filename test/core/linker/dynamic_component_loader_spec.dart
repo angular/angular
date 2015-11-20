@@ -27,7 +27,7 @@ import "package:angular2/src/core/linker/dynamic_component_loader.dart"
     show DynamicComponentLoader;
 import "package:angular2/src/core/linker/element_ref.dart" show ElementRef;
 import "package:angular2/src/platform/dom/dom_tokens.dart" show DOCUMENT;
-import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/testing/test_component_builder.dart"
     show ComponentFixture_;
 

@@ -29,7 +29,7 @@ import "package:angular2/router.dart"
         RouteParams,
         Instruction,
         ComponentInstruction;
-import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/router/instruction.dart"
     show ComponentInstruction_;
 import "package:angular2/src/router/path_recognizer.dart" show PathRecognizer;

@@ -5,7 +5,7 @@ import "package:angular2/src/facade/lang.dart"
 import "package:angular2/src/facade/math.dart" show Math;
 import "package:angular2/src/platform/dom/util.dart" show camelCaseToDashCase;
 import "package:angular2/src/facade/collection.dart" show StringMapWrapper;
-import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
 import "browser_details.dart" show BrowserDetails;
 import "css_animation_options.dart" show CssAnimationOptions;
 
