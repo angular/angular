@@ -1,5 +1,4 @@
-import {ElementRef, Component, Directive, View, Injectable} from 'angular2/core';
-import {Renderer} from 'angular2/render';
+import {Renderer, ElementRef, Component, Directive, View, Injectable} from 'angular2/core';
 import {StringWrapper} from 'angular2/src/facade/lang';
 
 // A service available to the Injector, used by the HelloCmp component.

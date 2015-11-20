@@ -1,6 +1,5 @@
 import {bootstrap} from 'angular2/bootstrap';
-import {ElementRef, Component, Directive, Injectable} from 'angular2/core';
-import {Renderer} from 'angular2/render';
+import {Renderer, ElementRef, Component, Directive, Injectable} from 'angular2/core';
 
 export function main() {
   // Bootstrapping only requires specifying a root component.

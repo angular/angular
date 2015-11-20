@@ -42,7 +42,7 @@ import {
 import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 import {Component} from 'angular2/src/core/metadata';
 import {AppViewManagerUtils} from 'angular2/src/core/linker/view_manager_utils';
-import {RenderViewWithFragments} from 'angular2/render';
+import {RenderViewWithFragments} from 'angular2/core';
 
 export function main() {
   // TODO(tbosch): add more tests here!
