@@ -1,8 +1,7 @@
 import { PromiseWrapper, EventEmitter, ObservableWrapper } from 'angular2/src/facade/async';
-import { Map, StringMapWrapper, ListWrapper } from 'angular2/src/facade/collection';
-import { isBlank, isString, isPresent } from 'angular2/src/facade/lang';
+import { Map, StringMapWrapper } from 'angular2/src/facade/collection';
+import { isBlank, isPresent } from 'angular2/src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
-import { stringifyInstruction, stringifyInstructionPath, stringifyInstructionQuery } from './instruction';
 import { getCanActivateHook } from './route_lifecycle_reflector';
 let _resolveToTrue = PromiseWrapper.resolve(true);
 let _resolveToFalse = PromiseWrapper.resolve(false);
@@ -175,31 +174,25 @@ export class Router {
                 if (result) {
                     return this.commit(instruction, _skipLocationChange)
                         .then((_) => {
-                        this._emitNavigationFinish(stringifyInstruction(instruction));
+                        this._emitNavigationFinish(instruction.toRootUrl());
                         return true;
                     });
                 }
             });
         });
     }
-    // TODO(btford): it'd be nice to remove this method as part of cleaning up the traversal logic
-    // Since refactoring `Router.generate` to return an instruction rather than a string, it's not
-    // guaranteed that the `componentType`s for the terminal async routes have been loaded by the time
-    // we begin navigation. The method below simply traverses instructions and resolves any components
-    // for which `componentType` is not present
     /** @internal */
     _settleInstruction(instruction) {
-        var unsettledInstructions = [];
-        if (isBlank(instruction.component.componentType)) {
-            unsettledInstructions.push(instruction.component.resolveComponentType().then((type) => { this.registry.configFromComponent(type); }));
-        }
-        if (isPresent(instruction.child)) {
-            unsettledInstructions.push(this._settleInstruction(instruction.child));
-        }
-        StringMapWrapper.forEach(instruction.auxInstruction, (instruction, _) => {
-            unsettledInstructions.push(this._settleInstruction(instruction));
+        return instruction.resolveComponent().then((_) => {
+            var unsettledInstructions = [];
+            if (isPresent(instruction.child)) {
+                unsettledInstructions.push(this._settleInstruction(instruction.child));
+            }
+            StringMapWrapper.forEach(instruction.auxInstruction, (instruction, _) => {
+                unsettledInstructions.push(this._settleInstruction(instruction));
+            });
+            return PromiseWrapper.all(unsettledInstructions);
         });
-        return PromiseWrapper.all(unsettledInstructions);
     }
     _emitNavigationFinish(url) { ObservableWrapper.callEmit(this._subject, url); }
     _afterPromiseFinishNavigating(promise) {
@@ -322,7 +315,20 @@ export class Router {
      * Given a URL, returns an instruction representing the component graph
      */
     recognize(url) {
-        return this.registry.recognize(url, this.hostComponent);
+        var ancestorComponents = this._getAncestorComponents();
+        return this.registry.recognize(url, ancestorComponents);
+    }
+    /**
+     * get all the host components for this and
+     */
+    _getAncestorComponents() {
+        var ancestorComponents = [];
+        var ancestorRouter = this;
+        do {
+            ancestorComponents.unshift(ancestorRouter.hostComponent);
+            ancestorRouter = ancestorRouter.parent;
+        } while (isPresent(ancestorRouter));
+        return ancestorComponents;
     }
     /**
      * Navigates to either the last URL successfully navigated to, or the last URL requested if the
@@ -339,57 +345,23 @@ export class Router {
      * app's base href.
      */
     generate(linkParams) {
-        let normalizedLinkParams = splitAndFlattenLinkParams(linkParams);
-        var first = ListWrapper.first(normalizedLinkParams);
-        var rest = ListWrapper.slice(normalizedLinkParams, 1);
-        var router = this;
-        // The first segment should be either '.' (generate from parent) or '' (generate from root).
-        // When we normalize above, we strip all the slashes, './' becomes '.' and '/' becomes ''.
-        if (first == '') {
-            while (isPresent(router.parent)) {
-                router = router.parent;
-            }
+        var ancestorComponents = this._getAncestorComponents();
+        var startingNumberOfAncestors = ancestorComponents.length;
+        var nextInstruction = this.registry.generate(linkParams, ancestorComponents);
+        if (isBlank(nextInstruction)) {
+            return null;
         }
-        else if (first == '..') {
+        var parentInstructionsToClone = startingNumberOfAncestors - ancestorComponents.length;
+        var router = this.parent;
+        for (var i = 0; i < parentInstructionsToClone; i++) {
+            if (isBlank(router)) {
+                break;
+            }
             router = router.parent;
-            while (ListWrapper.first(rest) == '..') {
-                rest = ListWrapper.slice(rest, 1);
-                router = router.parent;
-                if (isBlank(router)) {
-                    throw new BaseException(`Link "${ListWrapper.toJSON(linkParams)}" has too many "../" segments.`);
-                }
-            }
         }
-        else if (first != '.') {
-            // For a link with no leading `./`, `/`, or `../`, we look for a sibling and child.
-            // If both exist, we throw. Otherwise, we prefer whichever exists.
-            var childRouteExists = this.registry.hasRoute(first, this.hostComponent);
-            var parentRouteExists = isPresent(this.parent) && this.registry.hasRoute(first, this.parent.hostComponent);
-            if (parentRouteExists && childRouteExists) {
-                let msg = `Link "${ListWrapper.toJSON(linkParams)}" is ambiguous, use "./" or "../" to disambiguate.`;
-                throw new BaseException(msg);
-            }
-            if (parentRouteExists) {
-                router = this.parent;
-            }
-            rest = linkParams;
-        }
-        if (rest[rest.length - 1] == '') {
-            rest.pop();
-        }
-        if (rest.length < 1) {
-            let msg = `Link "${ListWrapper.toJSON(linkParams)}" must include a route name.`;
-            throw new BaseException(msg);
-        }
-        var nextInstruction = this.registry.generate(rest, router.hostComponent);
-        var url = [];
-        var parent = router.parent;
-        while (isPresent(parent)) {
-            url.unshift(parent._currentInstruction);
-            parent = parent.parent;
-        }
-        while (url.length > 0) {
-            nextInstruction = url.pop().replaceChild(nextInstruction);
+        while (isPresent(router) && isPresent(router._currentInstruction)) {
+            nextInstruction = router._currentInstruction.replaceChild(nextInstruction);
+            router = router.parent;
         }
         return nextInstruction;
     }
@@ -403,8 +375,8 @@ export class RootRouter extends Router {
         this.navigateByUrl(location.path());
     }
     commit(instruction, _skipLocationChange = false) {
-        var emitPath = stringifyInstructionPath(instruction);
-        var emitQuery = stringifyInstructionQuery(instruction);
+        var emitPath = instruction.toUrlPath();
+        var emitQuery = instruction.toUrlQuery();
         if (emitPath.length > 0) {
             emitPath = '/' + emitPath;
         }
@@ -434,20 +406,6 @@ class ChildRouter extends Router {
         // Delegate navigation to the root router
         return this.parent.navigateByInstruction(instruction, _skipLocationChange);
     }
-}
-/*
- * Given: ['/a/b', {c: 2}]
- * Returns: ['', 'a', 'b', {c: 2}]
- */
-function splitAndFlattenLinkParams(linkParams) {
-    return linkParams.reduce((accumulation, item) => {
-        if (isString(item)) {
-            let strItem = item;
-            return accumulation.concat(strItem.split('/'));
-        }
-        accumulation.push(item);
-        return accumulation;
-    }, []);
 }
 function canActivateOne(nextInstruction, prevInstruction) {
     var next = _resolveToTrue;

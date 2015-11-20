@@ -122,6 +122,10 @@ export declare class Router {
      */
     recognize(url: string): Promise<Instruction>;
     /**
+     * get all the host components for this and
+     */
+    private _getAncestorComponents();
+    /**
      * Navigates to either the last URL successfully navigated to, or the last URL requested if the
      * router has yet to successfully navigate.
      */
