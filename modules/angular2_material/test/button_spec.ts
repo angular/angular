@@ -45,7 +45,7 @@ export function main() {
 
              async.done();
            });
-         }), 1000);
+         }), 10000);
 
       it('should disable the button', inject([AsyncTestCompleter], (async) => {
            builder.createAsync(TestApp).then(fixture => {
@@ -68,7 +68,7 @@ export function main() {
              expect(testAppComponent.clickCount).toBe(0);
              async.done();
            });
-         }), 1000);
+         }), 10000);
     });
 
     describe('a[md-button]', () => {
@@ -103,7 +103,7 @@ export function main() {
                 // No clear way to test this; see https://github.com/angular/angular/issues/3782
                 async.done();
               }));
-         }), 1000);
+         }), 10000);
     });
   });
 }
