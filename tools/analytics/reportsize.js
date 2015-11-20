@@ -22,11 +22,15 @@ const _gzipConfigs = {
 
 const _defaultOptions = {
   // @type {Object<string, number>}
-  // - Key(s) must match keys of `_gzipConfigs`.
+  // - Key(s) must match one of `_gzipConfigs` keys.
   // - Values are the max size (in bytes) allowed for that configuration.
   failConditions: {},
   prefix: '',
-  printToConsole: false,
+  // @type {Array<string>|boolean}
+  // Entries must match one of `_gzipConfigs` keys. These values will be
+  // printed to the screen.
+  // If this is the boolean value `true`, will print all to screen.
+  printToConsole: ['gzip level=6'],
   reportAnalytics: true
 };
 
@@ -41,7 +45,7 @@ function reportSize(glob, options) {
       options[key] = _defaultOptions[key];
     }
   }
-  var errStream = _checkFailConditionConfig(options.failConditions);
+  var errStream = _checkConfig(options);
   if (errStream) {
     return errStream;
   }
@@ -83,32 +87,47 @@ function reportSize(glob, options) {
       if (options.reportAnalytics) {
         analytics.bundleSize(filePath, fileLen, compressionLevel);
       }
-      if (options.printToConsole) {
+      if (_shouldPrint(options, compressionLevel)) {
         console.log(`  ${filePath} => ${fileLen} bytes (${compressionLevel})`)
       }
       if (options.failConditions.hasOwnProperty(compressionLevel)) {
         if (options.failConditions[compressionLevel] < fileLen) {
           errs.push(`Max size for "${compressionLevel}" is ` +
                     `${options.failConditions[compressionLevel]}, but the size is now ${fileLen}.`);
-          if (options.printToConsole) {
-            console.log(`    !!! ${errs[errs.length - 1]}`);
-          }
         }
       }
     }
   }
 }
 
+function _shouldPrint(options, compressionLevel) {
+  const printAll = typeof options.printToConsole == 'boolean' && options.printToConsole;
+  return printAll || options.printToConsole.indexOf(compressionLevel) >= 0;
+}
+
 // Returns an error stream if the fail conditions are not provided property.
 // Returns `null` if everything is fine.
-function _checkFailConditionConfig(failConditions) {
-  for (const key in failConditions) {
-    if (failConditions.hasOwnProperty(key)) {
+function _checkConfig(config) {
+  for (const key in config.failConditions) {
+    if (config.failConditions.hasOwnProperty(key)) {
       if (!_gzipConfigs.hasOwnProperty(key)) {
         var stream = new Stream();
         stream.emit(
             'error',
             new Error(`failCondition for "${key}" will not be tested. Check _gzipConfigs.`));
+        stream.emit('end');
+        return stream;
+      }
+    }
+  }
+  if (typeof config.printToConsole != 'boolean') {
+    for (var i = 0; i < config.printToConsole.length; ++i) {
+      const key = config.printToConsole[i];
+      if (!_gzipConfigs.hasOwnProperty(key)) {
+        var stream = new Stream();
+        stream.emit(
+            'error',
+            new Error(`Incorrect value "${key}" in printToConsole. Check _gzipConfigs.`));
         stream.emit('end');
         return stream;
       }
