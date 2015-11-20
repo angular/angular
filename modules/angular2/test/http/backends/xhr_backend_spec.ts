@@ -40,6 +40,7 @@ class MockBrowserXHR extends BrowserXhr {
   setRequestHeader: any;
   callbacks = new Map<string, Function>();
   status: number;
+  responseHeaders: string;
   constructor() {
     super();
     var spy = new SpyObject();
@@ -54,6 +55,10 @@ class MockBrowserXHR extends BrowserXhr {
   setResponse(value) { this.response = value; }
 
   setResponseText(value) { this.responseText = value; }
+
+  setResponseHeaders(value) { this.responseHeaders = value; }
+
+  getAllResponseHeaders() { return this.responseHeaders || ''; }
 
   addEventListener(type: string, cb: Function) { this.callbacks.set(type, cb); }
 
@@ -99,6 +104,7 @@ export function main() {
              expect(res.type).toBe(ResponseTypes.Error);
              async.done();
            });
+           existingXHRs[0].setStatusCode(200);
            existingXHRs[0].dispatchEvent('load');
          }));
 
@@ -107,7 +113,7 @@ export function main() {
                                               new ResponseOptions({type: ResponseTypes.Error}));
            connection.response.subscribe(res => { expect(res.type).toBe(ResponseTypes.Error); },
                                          null, () => { async.done(); });
-
+           existingXHRs[0].setStatusCode(200);
            existingXHRs[0].dispatchEvent('load');
          }));
 
@@ -164,15 +170,57 @@ export function main() {
            var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
                                               new ResponseOptions({status: statusCode}));
 
-           connection.response.subscribe(res => {
-             expect(res.status).toBe(statusCode);
-             async.done();
-           });
+           connection.response.subscribe(
+               res => {
+
+               },
+               errRes => {
+                 expect(errRes.status).toBe(statusCode);
+                 async.done();
+               });
 
            existingXHRs[0].setStatusCode(statusCode);
            existingXHRs[0].dispatchEvent('load');
          }));
 
+      it('should call next and complete on 200 codes', inject([AsyncTestCompleter], async => {
+           var nextCalled = false;
+           var errorCalled = false;
+           var statusCode = 200;
+           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
+                                              new ResponseOptions({status: statusCode}));
+
+           connection.response.subscribe(
+               res => {
+                 nextCalled = true;
+                 expect(res.status).toBe(statusCode);
+               },
+               errRes => { errorCalled = true; }, () => {
+                 expect(nextCalled).toBe(true);
+                 expect(errorCalled).toBe(false);
+                 async.done();
+               });
+
+           existingXHRs[0].setStatusCode(statusCode);
+           existingXHRs[0].dispatchEvent('load');
+         }));
+
+      it('should call error and not complete on 300+ codes', inject([AsyncTestCompleter], async => {
+           var nextCalled = false;
+           var errorCalled = false;
+           var statusCode = 301;
+           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
+                                              new ResponseOptions({status: statusCode}));
+
+           connection.response.subscribe(res => { nextCalled = true; }, errRes => {
+             expect(errRes.status).toBe(statusCode);
+             expect(nextCalled).toBe(false);
+             async.done();
+           }, () => { throw 'should not be called'; });
+
+           existingXHRs[0].setStatusCode(statusCode);
+           existingXHRs[0].dispatchEvent('load');
+         }));
       it('should normalize IE\'s 1223 status code into 204', inject([AsyncTestCompleter], async => {
            var statusCode = 1223;
            var normalizedCode = 204;
@@ -204,14 +252,39 @@ export function main() {
                expect(ress.text()).toBe(responseBody);
                async.done();
              });
+             existingXHRs[1].setStatusCode(200);
              existingXHRs[1].setResponse(responseBody);
              existingXHRs[1].dispatchEvent('load');
            });
-
+           existingXHRs[0].setStatusCode(200);
            existingXHRs[0].setResponseText(responseBody);
            existingXHRs[0].dispatchEvent('load');
          }));
 
+      it('should parse response headers and add them to the response',
+         inject([AsyncTestCompleter], async => {
+           var statusCode = 200;
+           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
+                                              new ResponseOptions({status: statusCode}));
+
+           let responseHeaderString =
+               `Date: Fri, 20 Nov 2015 01:45:26 GMT
+               Content-Type: application/json; charset=utf-8
+               Transfer-Encoding: chunked
+               Connection: keep-alive`
+
+               connection.response.subscribe(res => {
+                 expect(res.headers.get('Date')).toEqual('Fri, 20 Nov 2015 01:45:26 GMT');
+                 expect(res.headers.get('Content-Type')).toEqual('application/json; charset=utf-8');
+                 expect(res.headers.get('Transfer-Encoding')).toEqual('chunked');
+                 expect(res.headers.get('Connection')).toEqual('keep-alive');
+                 async.done();
+               });
+
+           existingXHRs[0].setResponseHeaders(responseHeaderString);
+           existingXHRs[0].setStatusCode(statusCode);
+           existingXHRs[0].dispatchEvent('load');
+         }));
     });
   });
 }

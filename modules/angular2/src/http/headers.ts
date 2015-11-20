@@ -54,6 +54,18 @@ export class Headers {
         headers, (v, k) => { this._headersMap.set(k, isListLikeIterable(v) ? v : [v]); });
   }
 
+  static fromResponseHeaderString(headersString: string): Headers {
+    let responseHeaders = new Headers();
+    let headerPairs = headersString.trim().split('\n');
+    headerPairs.forEach((header) => {
+      let parts = header.trim().split(':');
+      let key = parts.shift().trim();
+      var value = parts.join(':').trim();
+      responseHeaders.append(key, value);
+    });
+    return responseHeaders;
+  }
+
   /**
    * Appends a header to existing list of header values for a given header name.
    */
