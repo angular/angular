@@ -476,6 +476,19 @@ export function main() {
                });
          }));
 
+      it('should use a comment while stamping out `<template>` elements.',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(MyComp, new ViewMetadata({template: '<template></template>'}))
+
+               .createAsync(MyComp)
+               .then((fixture) => {
+                 var childNodesOfWrapper = DOM.childNodes(fixture.debugElement.nativeElement);
+                 expect(childNodesOfWrapper.length).toBe(1);
+                 expect(DOM.isCommentNode(childNodesOfWrapper[0])).toBe(true);
+                 async.done();
+               });
+         }));
+
       it('should support template directives via `template` attribute.',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(
