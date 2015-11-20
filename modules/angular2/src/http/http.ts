@@ -16,9 +16,9 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
   var newOptions = defaultOpts;
   if (isPresent(providedOpts)) {
     // Hack so Dart can used named parameters
-    newOptions = newOptions.merge(new RequestOptions({
-      method: providedOpts.method,
-      url: providedOpts.url,
+    return newOptions.merge(new RequestOptions({
+      method: providedOpts.method || method,
+      url: providedOpts.url || url,
       search: providedOpts.search,
       headers: providedOpts.headers,
       body: providedOpts.body
