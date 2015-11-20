@@ -1,5 +1,5 @@
 import { global, isPresent } from 'angular2/src/facade/lang';
-import { DOM } from 'angular2/src/core/dom/dom_adapter';
+import { DOM } from 'angular2/src/platform/dom/dom_adapter';
 import { setTestabilityGetter } from 'angular2/core';
 class PublicTestability {
     constructor(testability) {

@@ -1,6 +1,7 @@
 library testability.browser_testability;
 
 import 'package:angular2/core.dart';
+import 'package:angular2/platform/common_dom.dart';
 
 import 'dart:html';
 import 'dart:js' as js;

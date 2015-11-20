@@ -1,6 +1,6 @@
 import {Type, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {Predicate} from 'angular2/src/facade/collection';
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {DebugElement} from 'angular2/core';
 
 export class By {

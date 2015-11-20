@@ -13114,7 +13114,7 @@ System.register("angular2/src/platform/dom/util", ["angular2/src/facade/lang"], 
   return module.exports;
 });
 
-System.register("angular2/src/core/dom/dom_adapter", ["angular2/src/facade/lang"], true, function(require, exports, module) {
+System.register("angular2/src/platform/dom/dom_adapter", ["angular2/src/facade/lang"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -13135,7 +13135,7 @@ System.register("angular2/src/core/dom/dom_adapter", ["angular2/src/facade/lang"
   return module.exports;
 });
 
-System.register("angular2/src/animate/browser_details", ["angular2/src/core/di", "angular2/src/facade/math", "angular2/src/core/dom/dom_adapter"], true, function(require, exports, module) {
+System.register("angular2/src/animate/browser_details", ["angular2/src/core/di", "angular2/src/facade/math", "angular2/src/platform/dom/dom_adapter"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -13163,7 +13163,7 @@ System.register("angular2/src/animate/browser_details", ["angular2/src/core/di",
   };
   var di_1 = require("angular2/src/core/di");
   var math_1 = require("angular2/src/facade/math");
-  var dom_adapter_1 = require("angular2/src/core/dom/dom_adapter");
+  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
   var BrowserDetails = (function() {
     function BrowserDetails() {
       this.elapsedTimeIncludesDelay = false;
@@ -18689,7 +18689,7 @@ System.register("angular2/src/compiler/xhr", [], true, function(require, exports
   return module.exports;
 });
 
-System.register("angular2/src/platform/dom/events/key_events", ["angular2/src/core/dom/dom_adapter", "angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/core", "angular2/src/core/di"], true, function(require, exports, module) {
+System.register("angular2/src/platform/dom/events/key_events", ["angular2/src/platform/dom/dom_adapter", "angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/core", "angular2/src/core/di"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -18724,7 +18724,7 @@ System.register("angular2/src/platform/dom/events/key_events", ["angular2/src/co
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
       return Reflect.metadata(k, v);
   };
-  var dom_adapter_1 = require("angular2/src/core/dom/dom_adapter");
+  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
   var lang_1 = require("angular2/src/facade/lang");
   var collection_1 = require("angular2/src/facade/collection");
   var core_1 = require("angular2/core");
@@ -18939,7 +18939,7 @@ System.register("angular2/src/platform/dom/dom_tokens", ["angular2/src/core/di",
   return module.exports;
 });
 
-System.register("angular2/src/platform/dom/shared_styles_host", ["angular2/src/core/dom/dom_adapter", "angular2/src/core/di", "angular2/src/facade/collection", "angular2/src/platform/dom/dom_tokens"], true, function(require, exports, module) {
+System.register("angular2/src/platform/dom/shared_styles_host", ["angular2/src/platform/dom/dom_adapter", "angular2/src/core/di", "angular2/src/facade/collection", "angular2/src/platform/dom/dom_tokens"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -18979,7 +18979,7 @@ System.register("angular2/src/platform/dom/shared_styles_host", ["angular2/src/c
       decorator(target, key, paramIndex);
     };
   };
-  var dom_adapter_1 = require("angular2/src/core/dom/dom_adapter");
+  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
   var di_1 = require("angular2/src/core/di");
   var collection_1 = require("angular2/src/facade/collection");
   var dom_tokens_1 = require("angular2/src/platform/dom/dom_tokens");
@@ -19129,7 +19129,7 @@ System.register("angular2/src/core/render/view", ["angular2/src/facade/exception
   return module.exports;
 });
 
-System.register("angular2/src/platform/dom/events/dom_events", ["angular2/src/core/dom/dom_adapter", "angular2/core"], true, function(require, exports, module) {
+System.register("angular2/src/platform/dom/events/dom_events", ["angular2/src/platform/dom/dom_adapter", "angular2/core"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -19164,7 +19164,7 @@ System.register("angular2/src/platform/dom/events/dom_events", ["angular2/src/co
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
       return Reflect.metadata(k, v);
   };
-  var dom_adapter_1 = require("angular2/src/core/dom/dom_adapter");
+  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
   var core_1 = require("angular2/core");
   var DomEventsPlugin = (function(_super) {
     __extends(DomEventsPlugin, _super);
@@ -19224,7 +19224,7 @@ System.register("angular2/src/compiler/schema/element_schema_registry", [], true
   return module.exports;
 });
 
-System.register("angular2/src/compiler/schema/dom_element_schema_registry", ["angular2/src/core/di", "angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/src/core/dom/dom_adapter", "angular2/src/compiler/schema/element_schema_registry"], true, function(require, exports, module) {
+System.register("angular2/src/compiler/schema/dom_element_schema_registry", ["angular2/src/core/di", "angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/src/platform/dom/dom_adapter", "angular2/src/compiler/schema/element_schema_registry"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -19262,7 +19262,7 @@ System.register("angular2/src/compiler/schema/dom_element_schema_registry", ["an
   var di_1 = require("angular2/src/core/di");
   var lang_1 = require("angular2/src/facade/lang");
   var collection_1 = require("angular2/src/facade/collection");
-  var dom_adapter_1 = require("angular2/src/core/dom/dom_adapter");
+  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
   var element_schema_registry_1 = require("angular2/src/compiler/schema/element_schema_registry");
   var DomElementSchemaRegistry = (function(_super) {
     __extends(DomElementSchemaRegistry, _super);
@@ -19847,7 +19847,7 @@ System.register("angular2/src/web_workers/shared/render_view_with_fragments_stor
   return module.exports;
 });
 
-System.register("angular2/src/compiler/anchor_based_app_root_url", ["angular2/src/compiler/app_root_url", "angular2/src/core/dom/dom_adapter", "angular2/src/core/di"], true, function(require, exports, module) {
+System.register("angular2/src/compiler/anchor_based_app_root_url", ["angular2/src/compiler/app_root_url", "angular2/src/platform/dom/dom_adapter", "angular2/src/core/di"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -19883,7 +19883,7 @@ System.register("angular2/src/compiler/anchor_based_app_root_url", ["angular2/sr
       return Reflect.metadata(k, v);
   };
   var app_root_url_1 = require("angular2/src/compiler/app_root_url");
-  var dom_adapter_1 = require("angular2/src/core/dom/dom_adapter");
+  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
   var di_1 = require("angular2/src/core/di");
   var AnchorBasedAppRootUrl = (function(_super) {
     __extends(AnchorBasedAppRootUrl, _super);
@@ -25196,7 +25196,7 @@ System.register("angular2/src/core/di/key", ["angular2/src/facade/lang", "angula
   return module.exports;
 });
 
-System.register("angular2/src/animate/animation", ["angular2/src/facade/lang", "angular2/src/facade/math", "angular2/src/platform/dom/util", "angular2/src/facade/collection", "angular2/src/core/dom/dom_adapter"], true, function(require, exports, module) {
+System.register("angular2/src/animate/animation", ["angular2/src/facade/lang", "angular2/src/facade/math", "angular2/src/platform/dom/util", "angular2/src/facade/collection", "angular2/src/platform/dom/dom_adapter"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -25204,7 +25204,7 @@ System.register("angular2/src/animate/animation", ["angular2/src/facade/lang", "
   var math_1 = require("angular2/src/facade/math");
   var util_1 = require("angular2/src/platform/dom/util");
   var collection_1 = require("angular2/src/facade/collection");
-  var dom_adapter_1 = require("angular2/src/core/dom/dom_adapter");
+  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
   var Animation = (function() {
     function Animation(element, data, browserDetails) {
       var _this = this;
@@ -30470,7 +30470,7 @@ System.register("angular2/src/core/linker/view_manager", ["angular2/src/core/di"
   return module.exports;
 });
 
-System.register("angular2/src/platform/browser/generic_browser_adapter", ["angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/core/dom/dom_adapter", "angular2/src/platform/browser/xhr_impl"], true, function(require, exports, module) {
+System.register("angular2/src/platform/browser/generic_browser_adapter", ["angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/platform/dom/dom_adapter", "angular2/src/platform/browser/xhr_impl"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -30485,7 +30485,7 @@ System.register("angular2/src/platform/browser/generic_browser_adapter", ["angul
   };
   var collection_1 = require("angular2/src/facade/collection");
   var lang_1 = require("angular2/src/facade/lang");
-  var dom_adapter_1 = require("angular2/src/core/dom/dom_adapter");
+  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
   var xhr_impl_1 = require("angular2/src/platform/browser/xhr_impl");
   var GenericBrowserDomAdapter = (function(_super) {
     __extends(GenericBrowserDomAdapter, _super);
@@ -30554,7 +30554,7 @@ System.register("angular2/src/platform/browser/generic_browser_adapter", ["angul
   return module.exports;
 });
 
-System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di", "angular2/src/animate/animation_builder", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/platform/dom/shared_styles_host", "angular2/src/core/profile/profile", "angular2/core", "angular2/src/platform/dom/dom_tokens", "angular2/src/core/render/view_factory", "angular2/src/core/render/view", "angular2/src/platform/dom/util", "angular2/src/core/metadata", "angular2/src/core/dom/dom_adapter"], true, function(require, exports, module) {
+System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di", "angular2/src/animate/animation_builder", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/platform/dom/shared_styles_host", "angular2/src/core/profile/profile", "angular2/core", "angular2/src/platform/dom/dom_tokens", "angular2/src/core/render/view_factory", "angular2/src/core/render/view", "angular2/src/platform/dom/util", "angular2/src/core/metadata", "angular2/src/platform/dom/dom_adapter"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -30606,7 +30606,7 @@ System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di
   var view_1 = require("angular2/src/core/render/view");
   var util_1 = require("angular2/src/platform/dom/util");
   var metadata_1 = require("angular2/src/core/metadata");
-  var dom_adapter_1 = require("angular2/src/core/dom/dom_adapter");
+  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
   var NAMESPACE_URIS = lang_1.CONST_EXPR({
     'xlink': 'http://www.w3.org/1999/xlink',
     'svg': 'http://www.w3.org/2000/svg'
@@ -33415,7 +33415,7 @@ System.register("angular2/src/core/linker/element_injector", ["angular2/src/faca
   return module.exports;
 });
 
-System.register("angular2/src/platform/browser/browser_adapter", ["angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/core/dom/dom_adapter", "angular2/src/platform/browser/generic_browser_adapter"], true, function(require, exports, module) {
+System.register("angular2/src/platform/browser/browser_adapter", ["angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/platform/dom/dom_adapter", "angular2/src/platform/browser/generic_browser_adapter"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -33430,7 +33430,7 @@ System.register("angular2/src/platform/browser/browser_adapter", ["angular2/src/
   };
   var collection_1 = require("angular2/src/facade/collection");
   var lang_1 = require("angular2/src/facade/lang");
-  var dom_adapter_1 = require("angular2/src/core/dom/dom_adapter");
+  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
   var generic_browser_adapter_1 = require("angular2/src/platform/browser/generic_browser_adapter");
   var _attrToPropMap = {
     'class': 'className',
@@ -35437,7 +35437,7 @@ System.register("angular2/src/facade/facade", ["angular2/src/facade/lang", "angu
   return module.exports;
 });
 
-System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng_zone", "angular2/src/facade/lang", "angular2/src/core/di", "angular2/src/core/application_tokens", "angular2/src/facade/async", "angular2/src/facade/collection", "angular2/src/core/testability/testability", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/facade/exceptions", "angular2/src/core/dom/dom_adapter", "angular2/src/core/linker/view_ref", "angular2/src/core/profile/profile", "angular2/src/facade/lang"], true, function(require, exports, module) {
+System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng_zone", "angular2/src/facade/lang", "angular2/src/core/di", "angular2/src/core/application_tokens", "angular2/src/facade/async", "angular2/src/facade/collection", "angular2/src/core/testability/testability", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/facade/exceptions", "angular2/src/core/linker/view_ref", "angular2/src/core/profile/profile", "angular2/src/facade/lang"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -35459,7 +35459,6 @@ System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng
   var testability_1 = require("angular2/src/core/testability/testability");
   var dynamic_component_loader_1 = require("angular2/src/core/linker/dynamic_component_loader");
   var exceptions_1 = require("angular2/src/facade/exceptions");
-  var dom_adapter_1 = require("angular2/src/core/dom/dom_adapter");
   var view_ref_1 = require("angular2/src/core/linker/view_ref");
   var profile_1 = require("angular2/src/core/profile/profile");
   var lang_2 = require("angular2/src/facade/lang");
@@ -35599,7 +35598,7 @@ System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng
           if (lang_1.isPresent(exceptionHandler)) {
             exceptionHandler.call(e, e.stack);
           } else {
-            dom_adapter_1.DOM.logError(e);
+            lang_1.print(e.toString());
           }
         }
       });
@@ -35798,7 +35797,7 @@ System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng
   return module.exports;
 });
 
-System.register("angular2/core", ["angular2/src/core/metadata", "angular2/src/core/util", "angular2/src/core/dev_mode", "angular2/src/core/di", "angular2/src/facade/facade", "angular2/src/core/application_ref", "angular2/src/core/application_tokens", "angular2/src/core/zone", "angular2/src/core/render", "angular2/src/core/linker", "angular2/src/core/debug/debug_element", "angular2/src/core/testability/testability", "angular2/src/core/change_detection", "angular2/src/core/platform_directives_and_pipes", "angular2/src/core/platform_common_providers", "angular2/src/core/application_common_providers", "angular2/src/core/reflection/reflection", "angular2/src/core/dom/dom_adapter"], true, function(require, exports, module) {
+System.register("angular2/core", ["angular2/src/core/metadata", "angular2/src/core/util", "angular2/src/core/dev_mode", "angular2/src/core/di", "angular2/src/facade/facade", "angular2/src/core/application_ref", "angular2/src/core/application_tokens", "angular2/src/core/zone", "angular2/src/core/render", "angular2/src/core/linker", "angular2/src/core/debug/debug_element", "angular2/src/core/testability/testability", "angular2/src/core/change_detection", "angular2/src/core/platform_directives_and_pipes", "angular2/src/core/platform_common_providers", "angular2/src/core/application_common_providers", "angular2/src/core/reflection/reflection"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -35836,12 +35835,11 @@ System.register("angular2/core", ["angular2/src/core/metadata", "angular2/src/co
   __export(require("angular2/src/core/platform_common_providers"));
   __export(require("angular2/src/core/application_common_providers"));
   __export(require("angular2/src/core/reflection/reflection"));
-  __export(require("angular2/src/core/dom/dom_adapter"));
   global.define = __define;
   return module.exports;
 });
 
-System.register("angular2/src/web_workers/ui/di_bindings", ["angular2/src/core/di", "angular2/src/animate/animation_builder", "angular2/src/animate/browser_details", "angular2/src/core/reflection/reflection", "angular2/src/core/change_detection/change_detection", "angular2/core", "angular2/src/core/linker/proto_view_factory", "angular2/src/platform/browser/browser_adapter", "angular2/src/platform/dom/events/key_events", "angular2/src/platform/dom/events/hammer_gestures", "angular2/src/core/linker/view_pool", "angular2/src/core/render/api", "angular2/src/compiler/app_root_url", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/events/dom_events", "angular2/src/core/application_tokens", "angular2/src/compiler/schema/element_schema_registry", "angular2/src/compiler/schema/dom_element_schema_registry", "angular2/src/platform/dom/shared_styles_host", "angular2/src/core/dom/dom_adapter", "angular2/src/core/zone/ng_zone", "angular2/src/core/linker/view_manager", "angular2/src/core/linker/view_manager_utils", "angular2/src/core/linker/view_listener", "angular2/src/core/linker/view_resolver", "angular2/src/core/linker/directive_resolver", "angular2/src/facade/exceptions", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/compiler/url_resolver", "angular2/src/core/testability/testability", "angular2/src/compiler/xhr", "angular2/src/platform/browser/xhr_impl", "angular2/src/web_workers/shared/serializer", "angular2/src/web_workers/shared/api", "angular2/src/web_workers/shared/render_proto_view_ref_store", "angular2/src/web_workers/shared/render_view_with_fragments_store", "angular2/src/compiler/anchor_based_app_root_url", "angular2/src/web_workers/ui/impl", "angular2/src/web_workers/shared/message_bus", "angular2/src/web_workers/ui/renderer", "angular2/src/web_workers/ui/xhr_impl", "angular2/src/web_workers/ui/setup", "angular2/src/web_workers/shared/service_message_broker", "angular2/src/web_workers/shared/client_message_broker", "angular2/src/core/platform_directives_and_pipes", "angular2/common"], true, function(require, exports, module) {
+System.register("angular2/src/web_workers/ui/di_bindings", ["angular2/src/core/di", "angular2/src/animate/animation_builder", "angular2/src/animate/browser_details", "angular2/src/core/reflection/reflection", "angular2/src/core/change_detection/change_detection", "angular2/core", "angular2/src/core/linker/proto_view_factory", "angular2/src/platform/browser/browser_adapter", "angular2/src/platform/dom/events/key_events", "angular2/src/platform/dom/events/hammer_gestures", "angular2/src/core/linker/view_pool", "angular2/src/core/render/api", "angular2/src/compiler/app_root_url", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/events/dom_events", "angular2/src/core/application_tokens", "angular2/src/compiler/schema/element_schema_registry", "angular2/src/compiler/schema/dom_element_schema_registry", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/dom_adapter", "angular2/src/core/zone/ng_zone", "angular2/src/core/linker/view_manager", "angular2/src/core/linker/view_manager_utils", "angular2/src/core/linker/view_listener", "angular2/src/core/linker/view_resolver", "angular2/src/core/linker/directive_resolver", "angular2/src/facade/exceptions", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/compiler/url_resolver", "angular2/src/core/testability/testability", "angular2/src/compiler/xhr", "angular2/src/platform/browser/xhr_impl", "angular2/src/web_workers/shared/serializer", "angular2/src/web_workers/shared/api", "angular2/src/web_workers/shared/render_proto_view_ref_store", "angular2/src/web_workers/shared/render_view_with_fragments_store", "angular2/src/compiler/anchor_based_app_root_url", "angular2/src/web_workers/ui/impl", "angular2/src/web_workers/shared/message_bus", "angular2/src/web_workers/ui/renderer", "angular2/src/web_workers/ui/xhr_impl", "angular2/src/web_workers/ui/setup", "angular2/src/web_workers/shared/service_message_broker", "angular2/src/web_workers/shared/client_message_broker", "angular2/src/core/platform_directives_and_pipes", "angular2/common"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -35865,7 +35863,7 @@ System.register("angular2/src/web_workers/ui/di_bindings", ["angular2/src/core/d
   var element_schema_registry_1 = require("angular2/src/compiler/schema/element_schema_registry");
   var dom_element_schema_registry_1 = require("angular2/src/compiler/schema/dom_element_schema_registry");
   var shared_styles_host_1 = require("angular2/src/platform/dom/shared_styles_host");
-  var dom_adapter_1 = require("angular2/src/core/dom/dom_adapter");
+  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
   var ng_zone_1 = require("angular2/src/core/zone/ng_zone");
   var view_manager_1 = require("angular2/src/core/linker/view_manager");
   var view_manager_utils_1 = require("angular2/src/core/linker/view_manager_utils");

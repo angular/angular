@@ -35,5 +35,4 @@ __export(require('./src/core/platform_directives_and_pipes'));
 __export(require('./src/core/platform_common_providers'));
 __export(require('./src/core/application_common_providers'));
 __export(require('./src/core/reflection/reflection'));
-__export(require('./src/core/dom/dom_adapter'));
 //# sourceMappingURL=core.js.map

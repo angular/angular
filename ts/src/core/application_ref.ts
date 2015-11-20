@@ -1,5 +1,5 @@
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {Type, isBlank, isPresent, assertionsEnabled} from 'angular2/src/facade/lang';
+import {Type, isBlank, isPresent, assertionsEnabled, print} from 'angular2/src/facade/lang';
 import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
 import {
   APP_COMPONENT_REF_PROMISE,
@@ -26,7 +26,6 @@ import {
   ExceptionHandler,
   unimplemented
 } from 'angular2/src/facade/exceptions';
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {internalView} from 'angular2/src/core/linker/view_ref';
 import {wtfLeave, wtfCreateScope, WtfScopeFn} from './profile/profile';
 import {ChangeDetectorRef} from 'angular2/src/core/change_detection/change_detector_ref';
@@ -248,7 +247,7 @@ export class PlatformRef_ extends PlatformRef {
         if (isPresent(exceptionHandler)) {
           exceptionHandler.call(e, e.stack);
         } else {
-          DOM.logError(e);
+          print(e.toString());
         }
       }
     });

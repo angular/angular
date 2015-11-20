@@ -30,7 +30,7 @@ var view_1 = require('angular2/src/core/render/view');
 var util_1 = require('./util');
 var metadata_1 = require('angular2/src/core/metadata');
 // TODO move it once DomAdapter is moved
-var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
+var dom_adapter_1 = require('angular2/src/platform/dom/dom_adapter');
 var NAMESPACE_URIS = lang_1.CONST_EXPR({ 'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg' });
 var DomRenderer = (function (_super) {
     __extends(DomRenderer, _super);

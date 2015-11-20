@@ -1,4 +1,4 @@
-import {DOM} from 'angular2/src/core/dom/dom_adapter';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {Injectable, Inject} from 'angular2/angular2';
 import {EventListener, History, Location} from 'angular2/src/facade/browser';
 import {isBlank} from 'angular2/src/facade/lang';
