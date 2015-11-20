@@ -2,6 +2,7 @@ import {ConnectionBackend, Connection} from '../interfaces';
 import {ReadyStates, RequestMethods, ResponseTypes} from '../enums';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
+import {Headers} from '../headers';
 import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
 import {Injectable} from 'angular2/angular2';
 import {BrowserXhr} from './browser_xhr';
@@ -34,8 +35,9 @@ export class XHRConnection implements Connection {
         // responseText is the old-school way of retrieving response (supported by IE8 & 9)
         // response/responseType properties were introduced in XHR Level2 spec (supported by
         // IE10)
-        let xhrResponse = isPresent(_xhr.response) ? _xhr.response : _xhr.responseText;
+        let body = isPresent(_xhr.response) ? _xhr.response : _xhr.responseText;
 
+        let headers = Headers.fromResponseHeaderString(_xhr.getAllResponseHeaders());
 
         // normalize IE9 bug (http://bugs.jquery.com/ticket/1450)
         let status: number = _xhr.status === 1223 ? 204 : _xhr.status;
@@ -44,9 +46,9 @@ export class XHRConnection implements Connection {
         // Occurs when accessing file resources or on Android 4.1 stock browser
         // while retrieving files from application cache.
         if (status === 0) {
-          status = xhrResponse ? 200 : 0;
+          status = body ? 200 : 0;
         }
-        var responseOptions = new ResponseOptions({body: xhrResponse, status: status});
+        var responseOptions = new ResponseOptions({body, status, headers});
         if (isPresent(baseResponseOptions)) {
           responseOptions = baseResponseOptions.merge(responseOptions);
         }
