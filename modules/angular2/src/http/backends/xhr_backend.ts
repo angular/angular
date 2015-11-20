@@ -8,7 +8,7 @@ import {Injectable} from 'angular2/angular2';
 import {BrowserXhr} from './browser_xhr';
 import {isPresent} from 'angular2/src/facade/lang';
 import {Observable} from 'angular2/angular2';
-import {isSuccess} from '../http_utils';
+import {isSuccess, getResponseURL} from '../http_utils';
 /**
 * Creates connections using `XMLHttpRequest`. Given a fully-qualified
 * request, an `XHRConnection` will immediately create an `XMLHttpRequest` object and send the
@@ -39,6 +39,8 @@ export class XHRConnection implements Connection {
 
         let headers = Headers.fromResponseHeaderString(_xhr.getAllResponseHeaders());
 
+        let url = getResponseURL(_xhr);
+
         // normalize IE9 bug (http://bugs.jquery.com/ticket/1450)
         let status: number = _xhr.status === 1223 ? 204 : _xhr.status;
 
@@ -48,7 +50,7 @@ export class XHRConnection implements Connection {
         if (status === 0) {
           status = body ? 200 : 0;
         }
-        var responseOptions = new ResponseOptions({body, status, headers});
+        var responseOptions = new ResponseOptions({body, status, headers, url});
         if (isPresent(baseResponseOptions)) {
           responseOptions = baseResponseOptions.merge(responseOptions);
         }

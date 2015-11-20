@@ -17,4 +17,14 @@ export function normalizeMethodName(method): RequestMethods {
 
 export const isSuccess = (status: number): boolean => (status >= 200 && status < 300);
 
+export function getResponseURL(xhr: any): string {
+  if ('responseURL' in xhr) {
+    return xhr.responseURL;
+  }
+  if (/^X-Request-URL:/m.test(xhr.getAllResponseHeaders())) {
+    return xhr.getResponseHeader('X-Request-URL');
+  }
+  return;
+}
+
 export {isJsObject} from 'angular2/src/facade/lang';
