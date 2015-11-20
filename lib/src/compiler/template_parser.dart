@@ -11,7 +11,8 @@ import "package:angular2/src/facade/lang.dart"
         stringify,
         assertionsEnabled,
         isBlank;
-import "package:angular2/src/core/di.dart" show Injectable;
+import "package:angular2/core.dart"
+    show Injectable, Inject, Injector, OpaqueToken, Optional;
 import "package:angular2/src/facade/exceptions.dart" show BaseException;
 import "package:angular2/src/core/change_detection/change_detection.dart"
     show Parser, AST, ASTWithSource;
@@ -27,6 +28,8 @@ import "template_ast.dart"
         BoundEventAst,
         VariableAst,
         TemplateAst,
+        TemplateAstVisitor,
+        templateVisitAll,
         TextAst,
         BoundTextAst,
         EmbeddedTemplateAst,
@@ -78,6 +81,7 @@ const ATTRIBUTE_PREFIX = "attr";
 const CLASS_PREFIX = "class";
 const STYLE_PREFIX = "style";
 var TEXT_CSS_SELECTOR = CssSelector.parse("*")[0];
+const TEMPLATE_TRANSFORMS = const OpaqueToken("TemplateTransforms");
 
 class TemplateParseError extends ParseError {
   TemplateParseError(String message, ParseLocation location)
@@ -91,7 +95,9 @@ class TemplateParser {
   Parser _exprParser;
   ElementSchemaRegistry _schemaRegistry;
   HtmlParser _htmlParser;
-  TemplateParser(this._exprParser, this._schemaRegistry, this._htmlParser) {}
+  List<TemplateAstVisitor> transforms;
+  TemplateParser(this._exprParser, this._schemaRegistry, this._htmlParser,
+      @Optional() @Inject(TEMPLATE_TRANSFORMS) this.transforms) {}
   List<TemplateAst> parse(String template,
       List<CompileDirectiveMetadata> directives, String templateUrl) {
     var parseVisitor = new TemplateParseVisitor(
@@ -105,6 +111,11 @@ class TemplateParser {
       var errorString = errors.join("\n");
       throw new BaseException('''Template parse errors:
 ${ errorString}''');
+    }
+    if (isPresent(this.transforms)) {
+      this.transforms.forEach((TemplateAstVisitor transform) {
+        result = templateVisitAll(transform, result);
+      });
     }
     return result;
   }
