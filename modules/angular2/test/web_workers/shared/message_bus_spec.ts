@@ -147,6 +147,6 @@ export function main() {
            expect(wasCalled).toBeTruthy();
            async.done();
          });
-       }), 500);
+       }), 10000);
   });
 }
