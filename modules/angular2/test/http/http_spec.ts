@@ -151,11 +151,52 @@ export function main() {
                  .subscribe((res) => {});
            }));
 
+        it('should accept a fully-qualified request as its only parameter',
+           inject([AsyncTestCompleter], (async) => {
+             backend.connections.subscribe(c => {
+               expect(c.request.url).toBe('https://google.com');
+               expect(c.request.method).toBe(RequestMethods.Post);
+               c.mockRespond(new Response(new ResponseOptions({body: 'Thank you'})));
+               async.done();
+             });
+             http.request(new Request(new RequestOptions(
+                              {url: 'https://google.com', method: RequestMethods.Post})))
+                 .subscribe((res) => {});
+           }));
+
 
         it('should perform a get request for given url if only passed a string',
            inject([AsyncTestCompleter], (async) => {
              backend.connections.subscribe(c => c.mockRespond(baseResponse));
              http.request('http://basic.connection')
+                 .subscribe(res => {
+                   expect(res.text()).toBe('base response');
+                   async.done();
+                 });
+           }));
+
+        it('should perform a post request for given url if options include a method',
+           inject([AsyncTestCompleter], (async) => {
+             backend.connections.subscribe(c => {
+               expect(c.request.method).toEqual(RequestMethods.Post);
+               c.mockRespond(baseResponse);
+             });
+             let requestOptions = new RequestOptions({method: RequestMethods.Post});
+             http.request('http://basic.connection', requestOptions)
+                 .subscribe(res => {
+                   expect(res.text()).toBe('base response');
+                   async.done();
+                 });
+           }));
+
+        it('should perform a post request for given url if options include a method',
+           inject([AsyncTestCompleter], (async) => {
+             backend.connections.subscribe(c => {
+               expect(c.request.method).toEqual(RequestMethods.Post);
+               c.mockRespond(baseResponse);
+             });
+             let requestOptions = {method: RequestMethods.Post};
+             http.request('http://basic.connection', requestOptions)
                  .subscribe(res => {
                    expect(res.text()).toBe('base response');
                    async.done();
@@ -180,18 +221,6 @@ export function main() {
                  .subscribe(res => { expect(res.text()).toBe('base response'); }, null,
                             () => { async.done(); });
            }));
-        // TODO: make dart not complain about "argument type 'Map' cannot be assigned to the
-        // parameter type 'IRequestOptions'"
-        // xit('should perform a get request for given url if passed a dictionary',
-        //     inject([AsyncTestCompleter], async => {
-        //       ObservableWrapper.subscribe(backend.connections, c => c.mockRespond(baseResponse));
-        //       ObservableWrapper.subscribe(http.request(url, {method: RequestMethods.GET}), res =>
-        //       {
-        //         expect(res.text()).toBe('base response');
-        //         async.done();
-        //       });
-        //     }));
-
 
         it('should throw if url is not a string or Request', () => {
           var req = <Request>{};
