@@ -18,6 +18,9 @@ elif [ "$MODE" = "build_only" ]; then
   ${SCRIPT_DIR}/build_js.sh
   ${SCRIPT_DIR}/build_dart.sh
   mkdir deploy; tar -czpf deploy/dist.tgz -C dist .
+elif [ "$MODE" = "payload" ]; then
+  source ${SCRIPT_DIR}/env_dart.sh
+  ./node_modules/.bin/gulp test.payload.dart/ci
 else
   ${SCRIPT_DIR}/build_$MODE.sh
   ${SCRIPT_DIR}/test_$MODE.sh
