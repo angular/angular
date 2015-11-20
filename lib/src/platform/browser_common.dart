@@ -4,20 +4,20 @@ import "package:angular2/src/core/di.dart"
     show provide, Provider, Injector, OpaqueToken;
 import "package:angular2/core.dart"
     show
+        PLATFORM_INITIALIZER,
         PLATFORM_DIRECTIVES,
         PLATFORM_PIPES,
         ComponentRef,
         platform,
         ExceptionHandler,
         Reflector,
+        Renderer,
         reflector,
         APPLICATION_COMMON_PROVIDERS,
         PLATFORM_COMMON_PROVIDERS,
-        EVENT_MANAGER_PLUGINS,
-        PLATFORM_INITIALIZER;
+        EVENT_MANAGER_PLUGINS;
 import "package:angular2/common.dart"
     show COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS;
-import "package:angular2/render.dart" show Renderer;
 import "package:angular2/src/core/testability/testability.dart"
     show Testability;
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;

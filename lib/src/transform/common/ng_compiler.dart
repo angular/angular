@@ -22,9 +22,8 @@ TemplateCompiler createTemplateCompiler(AssetReader reader,
   var _htmlParser = new HtmlParser();
   var _urlResolver = const TransformerUrlResolver();
 
-  // TODO(yjbanov): add router AST transformer when ready
   var templateParser = new TemplateParser(new ng.Parser(new ng.Lexer()),
-      new DomElementSchemaRegistry(), _htmlParser, null);
+      new DomElementSchemaRegistry(), _htmlParser);
 
   var cdCompiler = changeDetectionConfig != null
       ? new ChangeDetectionCompiler(changeDetectionConfig)

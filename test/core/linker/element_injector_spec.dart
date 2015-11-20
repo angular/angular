@@ -33,7 +33,7 @@ import "package:angular2/src/core/linker/element_injector.dart"
         TreeNode;
 import "package:angular2/src/core/metadata.dart"
     show Attribute, Query, ViewQuery, ComponentMetadata, DirectiveMetadata;
-import "package:angular2/lifecycle_hooks.dart" show OnDestroy;
+import "package:angular2/core.dart" show OnDestroy;
 import "package:angular2/core.dart"
     show
         provide,

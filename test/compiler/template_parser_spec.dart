@@ -16,7 +16,7 @@ import "package:angular2/src/core/di.dart" show provide;
 import "test_bindings.dart" show TEST_PROVIDERS;
 import "package:angular2/src/facade/lang.dart" show isPresent;
 import "package:angular2/src/compiler/template_parser.dart"
-    show TemplateParser, splitClasses, TEMPLATE_TRANSFORMS;
+    show TemplateParser, splitClasses;
 import "package:angular2/src/compiler/directive_metadata.dart"
     show CompileDirectiveMetadata, CompileTypeMetadata, CompileTemplateMetadata;
 import "package:angular2/src/compiler/template_ast.dart"
@@ -63,28 +63,6 @@ main() {
         String template, List<CompileDirectiveMetadata> directives) {
       return parser.parse(template, directives, "TestComp");
     }
-    describe("template transform", () {
-      beforeEachProviders(() => [
-            provide(TEMPLATE_TRANSFORMS,
-                useValue: new FooAstTransformer(), multi: true)
-          ]);
-      it("should transform TemplateAST", () {
-        expect(humanizeTplAst(parse("<div>", []))).toEqual([
-          [ElementAst, "foo"]
-        ]);
-      });
-      describe("multiple", () {
-        beforeEachProviders(() => [
-              provide(TEMPLATE_TRANSFORMS,
-                  useValue: new BarAstTransformer(), multi: true)
-            ]);
-        it("should compose transformers", () {
-          expect(humanizeTplAst(parse("<div>", []))).toEqual([
-            [ElementAst, "bar"]
-          ]);
-        });
-      });
-    });
     describe("parse", () {
       describe("nodes without bindings", () {
         it("should parse text nodes", () {
@@ -1330,62 +1308,5 @@ class TemplateContentProjectionHumanizer implements TemplateAstVisitor {
   dynamic visitDirectiveProperty(
       BoundDirectivePropertyAst ast, dynamic context) {
     return null;
-  }
-}
-
-class FooAstTransformer implements TemplateAstVisitor {
-  dynamic visitNgContent(NgContentAst ast, dynamic context) {
-    throw "not implemented";
-  }
-
-  dynamic visitEmbeddedTemplate(EmbeddedTemplateAst ast, dynamic context) {
-    throw "not implemented";
-  }
-
-  dynamic visitElement(ElementAst ast, dynamic context) {
-    if (ast.name != "div") return ast;
-    return new ElementAst(
-        "foo", [], [], [], [], [], [], ast.ngContentIndex, ast.sourceSpan);
-  }
-
-  dynamic visitVariable(VariableAst ast, dynamic context) {
-    throw "not implemented";
-  }
-
-  dynamic visitEvent(BoundEventAst ast, dynamic context) {
-    throw "not implemented";
-  }
-
-  dynamic visitElementProperty(BoundElementPropertyAst ast, dynamic context) {
-    throw "not implemented";
-  }
-
-  dynamic visitAttr(AttrAst ast, dynamic context) {
-    throw "not implemented";
-  }
-
-  dynamic visitBoundText(BoundTextAst ast, dynamic context) {
-    throw "not implemented";
-  }
-
-  dynamic visitText(TextAst ast, dynamic context) {
-    throw "not implemented";
-  }
-
-  dynamic visitDirective(DirectiveAst ast, dynamic context) {
-    throw "not implemented";
-  }
-
-  dynamic visitDirectiveProperty(
-      BoundDirectivePropertyAst ast, dynamic context) {
-    throw "not implemented";
-  }
-}
-
-class BarAstTransformer extends FooAstTransformer {
-  dynamic visitElement(ElementAst ast, dynamic context) {
-    if (ast.name != "foo") return ast;
-    return new ElementAst(
-        "bar", [], [], [], [], [], [], ast.ngContentIndex, ast.sourceSpan);
   }
 }

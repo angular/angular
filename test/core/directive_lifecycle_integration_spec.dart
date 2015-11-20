@@ -14,7 +14,7 @@ import "package:angular2/testing_internal.dart"
         xit,
         Log,
         TestComponentBuilder;
-import "package:angular2/lifecycle_hooks.dart"
+import "package:angular2/core.dart"
     show
         OnChanges,
         OnInit,

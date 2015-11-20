@@ -1,6 +1,6 @@
 library angular2.web_worker.worker;
 
-export "../lifecycle_hooks.dart";
+export "../src/core/linker/interfaces.dart";
 export "../src/core/metadata.dart";
 export "../src/core/util.dart";
 export "../src/core/di.dart";
