@@ -1,5 +1,5 @@
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {isPresent, isString, RegExpWrapper, StringWrapper, RegExp} from 'angular2/src/facade/lang';
 
 export class Log {

@@ -12,6 +12,7 @@ var collection_1 = require('angular2/src/facade/collection');
 var testability_1 = require('angular2/src/core/testability/testability');
 var dynamic_component_loader_1 = require('angular2/src/core/linker/dynamic_component_loader');
 var exceptions_1 = require('angular2/src/facade/exceptions');
+var dom_adapter_1 = require('angular2/src/core/dom/dom_adapter');
 var view_ref_1 = require('angular2/src/core/linker/view_ref');
 var profile_1 = require('./profile/profile');
 var lang_2 = require('angular2/src/facade/lang');
@@ -183,7 +184,7 @@ var PlatformRef_ = (function (_super) {
                     exceptionHandler.call(e, e.stack);
                 }
                 else {
-                    lang_1.print(e.toString());
+                    dom_adapter_1.DOM.logError(e);
                 }
             }
         });

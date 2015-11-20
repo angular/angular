@@ -1,4 +1,4 @@
-import { DomAdapter } from 'angular2/platform/common_dom';
+import { DomAdapter } from 'angular2/core';
 import { Type } from 'angular2/src/facade/lang';
 export declare class Parse5DomAdapter extends DomAdapter {
     static makeCurrent(): void;

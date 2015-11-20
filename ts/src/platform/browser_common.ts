@@ -17,7 +17,8 @@ import {
 import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS} from "angular2/common";
 import {Renderer} from 'angular2/render';
 import {Testability} from 'angular2/src/core/testability/testability';
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+
+import {DOM} from 'angular2/src/core/dom/dom_adapter';
 import {DomEventsPlugin} from 'angular2/src/platform/dom/events/dom_events';
 import {KeyEventsPlugin} from 'angular2/src/platform/dom/events/key_events';
 import {HammerGesturesPlugin} from 'angular2/src/platform/dom/events/hammer_gestures';

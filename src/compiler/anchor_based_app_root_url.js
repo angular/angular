@@ -15,7 +15,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var app_root_url_1 = require("angular2/src/compiler/app_root_url");
-var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
+var dom_adapter_1 = require("angular2/src/core/dom/dom_adapter");
 var di_1 = require("angular2/src/core/di");
 /**
  * Extension of {@link AppRootUrl} that uses a DOM anchor tag to set the root url to

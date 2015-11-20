@@ -1,4 +1,4 @@
-import { DOM } from 'angular2/src/platform/dom/dom_adapter';
+import { DOM } from 'angular2/src/core/dom/dom_adapter';
 import { global } from 'angular2/src/facade/lang';
 var _global = (typeof window === 'undefined' ? global : window);
 export var expect = _global.expect;

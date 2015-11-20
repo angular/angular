@@ -13,7 +13,7 @@ import { CONST_EXPR, isPresent, NumberWrapper } from 'angular2/src/facade/lang';
 import { Map } from 'angular2/src/facade/collection';
 import { Injectable, Provider } from 'angular2/src/core/di';
 import { AppViewListener } from 'angular2/src/core/linker/view_listener';
-import { DOM } from 'angular2/src/platform/dom/dom_adapter';
+import { DOM } from 'angular2/src/core/dom/dom_adapter';
 import { Renderer } from 'angular2/src/core/render/api';
 import { DebugElement_ } from 'angular2/src/core/debug/debug_element';
 const NG_ID_PROPERTY = 'ngid';
