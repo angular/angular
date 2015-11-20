@@ -14255,7 +14255,7 @@ System.register("angular2/src/core/change_detection/parser/ast", ["angular2/src/
       this.expressions = expressions;
     }
     Interpolation.prototype.visit = function(visitor) {
-      visitor.visitInterpolation(this);
+      return visitor.visitInterpolation(this);
     };
     return Interpolation;
   })(AST);
@@ -35626,7 +35626,7 @@ System.register("angular2/src/platform/browser/browser_adapter", ["angular2/src/
   return module.exports;
 });
 
-System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/core/di", "angular2/src/facade/exceptions", "angular2/src/core/change_detection/change_detection", "angular2/src/compiler/html_parser", "angular2/src/compiler/parse_util", "angular2/src/compiler/template_ast", "angular2/src/compiler/selector", "angular2/src/compiler/schema/element_schema_registry", "angular2/src/compiler/template_preparser", "angular2/src/compiler/style_url_resolver", "angular2/src/compiler/html_ast", "angular2/src/compiler/util"], true, function(require, exports, module) {
+System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/core", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/core/change_detection/change_detection", "angular2/src/compiler/html_parser", "angular2/src/compiler/parse_util", "angular2/src/compiler/template_ast", "angular2/src/compiler/selector", "angular2/src/compiler/schema/element_schema_registry", "angular2/src/compiler/template_preparser", "angular2/src/compiler/style_url_resolver", "angular2/src/compiler/html_ast", "angular2/src/compiler/util"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -35661,9 +35661,15 @@ System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/c
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
       return Reflect.metadata(k, v);
   };
+  var __param = (this && this.__param) || function(paramIndex, decorator) {
+    return function(target, key) {
+      decorator(target, key, paramIndex);
+    };
+  };
   var collection_1 = require("angular2/src/facade/collection");
   var lang_1 = require("angular2/src/facade/lang");
-  var di_1 = require("angular2/src/core/di");
+  var core_1 = require("angular2/core");
+  var lang_2 = require("angular2/src/facade/lang");
   var exceptions_1 = require("angular2/src/facade/exceptions");
   var change_detection_1 = require("angular2/src/core/change_detection/change_detection");
   var html_parser_1 = require("angular2/src/compiler/html_parser");
@@ -35685,6 +35691,7 @@ System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/c
   var CLASS_PREFIX = 'class';
   var STYLE_PREFIX = 'style';
   var TEXT_CSS_SELECTOR = selector_1.CssSelector.parse('*')[0];
+  exports.TEMPLATE_TRANSFORMS = lang_2.CONST_EXPR(new core_1.OpaqueToken('TemplateTransforms'));
   var TemplateParseError = (function(_super) {
     __extends(TemplateParseError, _super);
     function TemplateParseError(message, location) {
@@ -35694,10 +35701,11 @@ System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/c
   })(parse_util_1.ParseError);
   exports.TemplateParseError = TemplateParseError;
   var TemplateParser = (function() {
-    function TemplateParser(_exprParser, _schemaRegistry, _htmlParser) {
+    function TemplateParser(_exprParser, _schemaRegistry, _htmlParser, transforms) {
       this._exprParser = _exprParser;
       this._schemaRegistry = _schemaRegistry;
       this._htmlParser = _htmlParser;
+      this.transforms = transforms;
     }
     TemplateParser.prototype.parse = function(template, directives, templateUrl) {
       var parseVisitor = new TemplateParseVisitor(directives, this._exprParser, this._schemaRegistry);
@@ -35708,9 +35716,14 @@ System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/c
         var errorString = errors.join('\n');
         throw new exceptions_1.BaseException("Template parse errors:\n" + errorString);
       }
+      if (lang_1.isPresent(this.transforms)) {
+        this.transforms.forEach(function(transform) {
+          result = template_ast_1.templateVisitAll(transform, result);
+        });
+      }
       return result;
     };
-    TemplateParser = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [change_detection_1.Parser, element_schema_registry_1.ElementSchemaRegistry, html_parser_1.HtmlParser])], TemplateParser);
+    TemplateParser = __decorate([core_1.Injectable(), __param(3, core_1.Optional()), __param(3, core_1.Inject(exports.TEMPLATE_TRANSFORMS)), __metadata('design:paramtypes', [change_detection_1.Parser, element_schema_registry_1.ElementSchemaRegistry, html_parser_1.HtmlParser, Array])], TemplateParser);
     return TemplateParser;
   })();
   exports.TemplateParser = TemplateParser;

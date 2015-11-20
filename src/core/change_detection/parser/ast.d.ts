@@ -85,7 +85,7 @@ export declare class Interpolation extends AST {
     strings: any[];
     expressions: any[];
     constructor(strings: any[], expressions: any[]);
-    visit(visitor: AstVisitor): void;
+    visit(visitor: AstVisitor): any;
 }
 export declare class Binary extends AST {
     operation: string;
@@ -178,23 +178,23 @@ export declare class RecursiveAstVisitor implements AstVisitor {
     visitAll(asts: AST[]): any;
 }
 export declare class AstTransformer implements AstVisitor {
-    visitImplicitReceiver(ast: ImplicitReceiver): ImplicitReceiver;
-    visitInterpolation(ast: Interpolation): Interpolation;
-    visitLiteralPrimitive(ast: LiteralPrimitive): LiteralPrimitive;
-    visitPropertyRead(ast: PropertyRead): PropertyRead;
-    visitPropertyWrite(ast: PropertyWrite): PropertyWrite;
-    visitSafePropertyRead(ast: SafePropertyRead): SafePropertyRead;
-    visitMethodCall(ast: MethodCall): MethodCall;
-    visitSafeMethodCall(ast: SafeMethodCall): SafeMethodCall;
-    visitFunctionCall(ast: FunctionCall): FunctionCall;
-    visitLiteralArray(ast: LiteralArray): LiteralArray;
-    visitLiteralMap(ast: LiteralMap): LiteralMap;
-    visitBinary(ast: Binary): Binary;
-    visitPrefixNot(ast: PrefixNot): PrefixNot;
-    visitConditional(ast: Conditional): Conditional;
-    visitPipe(ast: BindingPipe): BindingPipe;
-    visitKeyedRead(ast: KeyedRead): KeyedRead;
-    visitKeyedWrite(ast: KeyedWrite): KeyedWrite;
+    visitImplicitReceiver(ast: ImplicitReceiver): AST;
+    visitInterpolation(ast: Interpolation): AST;
+    visitLiteralPrimitive(ast: LiteralPrimitive): AST;
+    visitPropertyRead(ast: PropertyRead): AST;
+    visitPropertyWrite(ast: PropertyWrite): AST;
+    visitSafePropertyRead(ast: SafePropertyRead): AST;
+    visitMethodCall(ast: MethodCall): AST;
+    visitSafeMethodCall(ast: SafeMethodCall): AST;
+    visitFunctionCall(ast: FunctionCall): AST;
+    visitLiteralArray(ast: LiteralArray): AST;
+    visitLiteralMap(ast: LiteralMap): AST;
+    visitBinary(ast: Binary): AST;
+    visitPrefixNot(ast: PrefixNot): AST;
+    visitConditional(ast: Conditional): AST;
+    visitPipe(ast: BindingPipe): AST;
+    visitKeyedRead(ast: KeyedRead): AST;
+    visitKeyedWrite(ast: KeyedWrite): AST;
     visitAll(asts: any[]): any[];
-    visitChain(ast: Chain): Chain;
+    visitChain(ast: Chain): AST;
 }
