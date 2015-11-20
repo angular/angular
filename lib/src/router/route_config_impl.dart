@@ -23,6 +23,8 @@ class RouteConfig {
  * - `name` is an optional `CamelCase` string representing the name of the route.
  * - `data` is an optional property of any type representing arbitrary route metadata for the given
  * route. It is injectable via [RouteData].
+ * - `useAsDefault` is a boolean value. If `true`, the child route will be navigated to if no child
+ * route is specified during the navigation.
  *
  * ### Example
  * ```
@@ -39,15 +41,17 @@ class Route implements RouteDefinition {
   final String path;
   final Type component;
   final String name;
+  final bool useAsDefault;
   // added next three properties to work around https://github.com/Microsoft/TypeScript/issues/4107
   final String aux = null;
   final Function loader = null;
-  final String redirectTo = null;
-  const Route({path, component, name, data})
+  final List<dynamic> redirectTo = null;
+  const Route({path, component, name, data, useAsDefault})
       : path = path,
         component = component,
         name = name,
-        data = data;
+        data = data,
+        useAsDefault = useAsDefault;
 }
 
 /**
@@ -78,7 +82,8 @@ class AuxRoute implements RouteDefinition {
   // added next three properties to work around https://github.com/Microsoft/TypeScript/issues/4107
   final String aux = null;
   final Function loader = null;
-  final String redirectTo = null;
+  final List<dynamic> redirectTo = null;
+  final bool useAsDefault = false;
   const AuxRoute({path, component, name})
       : path = path,
         component = component,
@@ -95,6 +100,8 @@ class AuxRoute implements RouteDefinition {
  * - `name` is an optional `CamelCase` string representing the name of the route.
  * - `data` is an optional property of any type representing arbitrary route metadata for the given
  * route. It is injectable via [RouteData].
+ * - `useAsDefault` is a boolean value. If `true`, the child route will be navigated to if no child
+ * route is specified during the navigation.
  *
  * ### Example
  * ```
@@ -111,41 +118,46 @@ class AsyncRoute implements RouteDefinition {
   final String path;
   final Function loader;
   final String name;
+  final bool useAsDefault;
   final String aux = null;
-  const AsyncRoute({path, loader, name, data})
+  const AsyncRoute({path, loader, name, data, useAsDefault})
       : path = path,
         loader = loader,
         name = name,
-        data = data;
+        data = data,
+        useAsDefault = useAsDefault;
 }
 
 /**
- * `Redirect` is a type of [RouteDefinition] used to route a path to an asynchronously loaded
- * component.
+ * `Redirect` is a type of [RouteDefinition] used to route a path to a canonical route.
  *
  * It has the following properties:
  * - `path` is a string that uses the route matcher DSL.
- * - `redirectTo` is a string representing the new URL to be matched against.
+ * - `redirectTo` is an array representing the link DSL.
+ *
+ * Note that redirects **do not** affect how links are generated. For that, see the `useAsDefault`
+ * option.
  *
  * ### Example
  * ```
  * import {RouteConfig} from 'angular2/router';
  *
  * @RouteConfig([
- *   {path: '/', redirectTo: '/home'},
- *   {path: '/home', component: HomeCmp}
+ *   {path: '/', redirectTo: ['/Home'] },
+ *   {path: '/home', component: HomeCmp, name: 'Home'}
  * ])
  * class MyApp {}
  * ```
  */
 class Redirect implements RouteDefinition {
   final String path;
-  final String redirectTo;
+  final List<dynamic> redirectTo;
   final String name = null;
   // added next three properties to work around https://github.com/Microsoft/TypeScript/issues/4107
   final Function loader = null;
   final dynamic data = null;
   final String aux = null;
+  final bool useAsDefault = false;
   const Redirect({path, redirectTo})
       : path = path,
         redirectTo = redirectTo;

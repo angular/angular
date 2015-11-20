@@ -9,13 +9,7 @@ import "package:angular2/src/facade/lang.dart"
 import "package:angular2/src/facade/exceptions.dart"
     show BaseException, WrappedException;
 import "route_registry.dart" show RouteRegistry;
-import "instruction.dart"
-    show
-        ComponentInstruction,
-        Instruction,
-        stringifyInstruction,
-        stringifyInstructionPath,
-        stringifyInstructionQuery;
+import "instruction.dart" show ComponentInstruction, Instruction;
 import "router_outlet.dart" show RouterOutlet;
 import "location.dart" show Location;
 import "route_lifecycle_reflector.dart" show getCanActivateHook;
@@ -214,39 +208,26 @@ class Router {
       return this._canDeactivate(instruction).then((result) {
         if (result) {
           return this.commit(instruction, _skipLocationChange).then((_) {
-            this._emitNavigationFinish(stringifyInstruction(instruction));
+            this._emitNavigationFinish(instruction.toRootUrl());
             return true;
           });
         }
       });
     });
   }
-  // TODO(btford): it'd be nice to remove this method as part of cleaning up the traversal logic
-
-  // Since refactoring `Router.generate` to return an instruction rather than a string, it's not
-
-  // guaranteed that the `componentType`s for the terminal async routes have been loaded by the time
-
-  // we begin navigation. The method below simply traverses instructions and resolves any components
-
-  // for which `componentType` is not present
 
   /** @internal */
   Future<dynamic> _settleInstruction(Instruction instruction) {
-    List<Future<dynamic>> unsettledInstructions = [];
-    if (isBlank(instruction.component.componentType)) {
-      unsettledInstructions
-          .add(instruction.component.resolveComponentType().then((Type type) {
-        this.registry.configFromComponent(type);
-      }));
-    }
-    if (isPresent(instruction.child)) {
-      unsettledInstructions.add(this._settleInstruction(instruction.child));
-    }
-    StringMapWrapper.forEach(instruction.auxInstruction, (instruction, _) {
-      unsettledInstructions.add(this._settleInstruction(instruction));
+    return instruction.resolveComponent().then((_) {
+      List<Future<dynamic>> unsettledInstructions = [];
+      if (isPresent(instruction.child)) {
+        unsettledInstructions.add(this._settleInstruction(instruction.child));
+      }
+      StringMapWrapper.forEach(instruction.auxInstruction, (instruction, _) {
+        unsettledInstructions.add(this._settleInstruction(instruction));
+      });
+      return PromiseWrapper.all(unsettledInstructions);
     });
-    return PromiseWrapper.all(unsettledInstructions);
   }
 
   void _emitNavigationFinish(url) {
@@ -388,7 +369,21 @@ class Router {
    * Given a URL, returns an instruction representing the component graph
    */
   Future<Instruction> recognize(String url) {
-    return this.registry.recognize(url, this.hostComponent);
+    var ancestorComponents = this._getAncestorComponents();
+    return this.registry.recognize(url, ancestorComponents);
+  }
+
+  /**
+   * get all the host components for this and
+   */
+  List<dynamic> _getAncestorComponents() {
+    var ancestorComponents = [];
+    var ancestorRouter = this;
+    do {
+      (ancestorComponents..insert(0, ancestorRouter.hostComponent)).length;
+      ancestorRouter = ancestorRouter.parent;
+    } while (isPresent(ancestorRouter));
+    return ancestorComponents;
   }
 
   /**
@@ -407,61 +402,26 @@ class Router {
    * app's base href.
    */
   Instruction generate(List<dynamic> linkParams) {
-    var normalizedLinkParams = splitAndFlattenLinkParams(linkParams);
-    var first = ListWrapper.first(normalizedLinkParams);
-    var rest = ListWrapper.slice(normalizedLinkParams, 1);
-    var router = this;
-    // The first segment should be either '.' (generate from parent) or '' (generate from root).
-
-    // When we normalize above, we strip all the slashes, './' becomes '.' and '/' becomes ''.
-    if (first == "") {
-      while (isPresent(router.parent)) {
-        router = router.parent;
+    var ancestorComponents = this._getAncestorComponents();
+    var startingNumberOfAncestors = ancestorComponents.length;
+    var nextInstruction =
+        this.registry.generate(linkParams, ancestorComponents);
+    if (isBlank(nextInstruction)) {
+      return null;
+    }
+    var parentInstructionsToClone =
+        startingNumberOfAncestors - ancestorComponents.length;
+    var router = this.parent;
+    for (var i = 0; i < parentInstructionsToClone; i++) {
+      if (isBlank(router)) {
+        break;
       }
-    } else if (first == "..") {
       router = router.parent;
-      while (ListWrapper.first(rest) == "..") {
-        rest = ListWrapper.slice(rest, 1);
-        router = router.parent;
-        if (isBlank(router)) {
-          throw new BaseException(
-              '''Link "${ ListWrapper . toJSON ( linkParams )}" has too many "../" segments.''');
-        }
-      }
-    } else if (first != ".") {
-      // For a link with no leading `./`, `/`, or `../`, we look for a sibling and child.
-
-      // If both exist, we throw. Otherwise, we prefer whichever exists.
-      var childRouteExists = this.registry.hasRoute(first, this.hostComponent);
-      var parentRouteExists = isPresent(this.parent) &&
-          this.registry.hasRoute(first, this.parent.hostComponent);
-      if (parentRouteExists && childRouteExists) {
-        var msg =
-            '''Link "${ ListWrapper . toJSON ( linkParams )}" is ambiguous, use "./" or "../" to disambiguate.''';
-        throw new BaseException(msg);
-      }
-      if (parentRouteExists) {
-        router = this.parent;
-      }
-      rest = linkParams;
     }
-    if (rest[rest.length - 1] == "") {
-      rest.removeLast();
-    }
-    if (rest.length < 1) {
-      var msg =
-          '''Link "${ ListWrapper . toJSON ( linkParams )}" must include a route name.''';
-      throw new BaseException(msg);
-    }
-    var nextInstruction = this.registry.generate(rest, router.hostComponent);
-    var url = [];
-    var parent = router.parent;
-    while (isPresent(parent)) {
-      (url..insert(0, parent._currentInstruction)).length;
-      parent = parent.parent;
-    }
-    while (url.length > 0) {
-      nextInstruction = url.removeLast().replaceChild(nextInstruction);
+    while (isPresent(router) && isPresent(router._currentInstruction)) {
+      nextInstruction =
+          router._currentInstruction.replaceChild(nextInstruction);
+      router = router.parent;
     }
     return nextInstruction;
   }
@@ -483,8 +443,8 @@ class RootRouter extends Router {
   }
   Future<dynamic> commit(Instruction instruction,
       [bool _skipLocationChange = false]) {
-    var emitPath = stringifyInstructionPath(instruction);
-    var emitQuery = stringifyInstructionQuery(instruction);
+    var emitPath = instruction.toUrlPath();
+    var emitQuery = instruction.toUrlQuery();
     if (emitPath.length > 0) {
       emitPath = "/" + emitPath;
     }
@@ -522,21 +482,6 @@ class ChildRouter extends Router {
     // Delegate navigation to the root router
     return this.parent.navigateByInstruction(instruction, _skipLocationChange);
   }
-}
-
-/*
- * Given: ['/a/b', {c: 2}]
- * Returns: ['', 'a', 'b', {c: 2}]
- */
-List<dynamic> splitAndFlattenLinkParams(List<dynamic> linkParams) {
-  return linkParams.fold([], (List<dynamic> accumulation, item) {
-    if (isString(item)) {
-      String strItem = item;
-      return (new List.from(accumulation)..addAll(strItem.split("/")));
-    }
-    accumulation.add(item);
-    return accumulation;
-  });
 }
 
 Future<bool> canActivateOne(

@@ -20,7 +20,6 @@ import "package:angular2/src/facade/collection.dart" show ListWrapper;
 import "package:angular2/src/router/router.dart" show Router, RootRouter;
 import "package:angular2/src/mock/location_mock.dart" show SpyLocation;
 import "package:angular2/src/router/location.dart" show Location;
-import "package:angular2/src/router/instruction.dart" show stringifyInstruction;
 import "package:angular2/src/router/route_registry.dart" show RouteRegistry;
 import "package:angular2/src/router/route_config_decorator.dart"
     show RouteConfig, AsyncRoute, Route;
@@ -237,6 +236,10 @@ main() {
       });
     });
   });
+}
+
+String stringifyInstruction(instruction) {
+  return instruction.toRootUrl();
 }
 
 Future<Type> loader() {
