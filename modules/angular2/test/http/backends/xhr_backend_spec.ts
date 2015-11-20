@@ -40,6 +40,7 @@ class MockBrowserXHR extends BrowserXhr {
   setRequestHeader: any;
   callbacks = new Map<string, Function>();
   status: number;
+  responseHeaders: string;
   constructor() {
     super();
     var spy = new SpyObject();
@@ -54,6 +55,10 @@ class MockBrowserXHR extends BrowserXhr {
   setResponse(value) { this.response = value; }
 
   setResponseText(value) { this.responseText = value; }
+
+  setResponseHeaders(value) { this.responseHeaders = value; }
+
+  getAllResponseHeaders() { return this.responseHeaders || ''; }
 
   addEventListener(type: string, cb: Function) { this.callbacks.set(type, cb); }
 
@@ -256,6 +261,30 @@ export function main() {
            existingXHRs[0].dispatchEvent('load');
          }));
 
+      it('should parse response headers and add them to the response',
+         inject([AsyncTestCompleter], async => {
+           var statusCode = 200;
+           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
+                                              new ResponseOptions({status: statusCode}));
+
+           let responseHeaderString =
+               `Date: Fri, 20 Nov 2015 01:45:26 GMT
+               Content-Type: application/json; charset=utf-8
+               Transfer-Encoding: chunked
+               Connection: keep-alive`
+
+               connection.response.subscribe(res => {
+                 expect(res.headers.get('Date')).toEqual('Fri, 20 Nov 2015 01:45:26 GMT');
+                 expect(res.headers.get('Content-Type')).toEqual('application/json; charset=utf-8');
+                 expect(res.headers.get('Transfer-Encoding')).toEqual('chunked');
+                 expect(res.headers.get('Connection')).toEqual('keep-alive');
+                 async.done();
+               });
+
+           existingXHRs[0].setResponseHeaders(responseHeaderString);
+           existingXHRs[0].setStatusCode(statusCode);
+           existingXHRs[0].dispatchEvent('load');
+         }));
     });
   });
 }

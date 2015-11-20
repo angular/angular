@@ -63,4 +63,23 @@ export function main() {
       });
     });
   });
+
+  describe('.fromResponseHeaderString()', () => {
+
+    it('should parse a response header string', () => {
+
+      let responseHeaderString = `Date: Fri, 20 Nov 2015 01:45:26 GMT
+        Content-Type: application/json; charset=utf-8
+        Transfer-Encoding: chunked
+        Connection: keep-alive`;
+
+      let responseHeaders = Headers.fromResponseHeaderString(responseHeaderString);
+
+      expect(responseHeaders.get('Date')).toEqual('Fri, 20 Nov 2015 01:45:26 GMT');
+      expect(responseHeaders.get('Content-Type')).toEqual('application/json; charset=utf-8');
+      expect(responseHeaders.get('Transfer-Encoding')).toEqual('chunked');
+      expect(responseHeaders.get('Connection')).toEqual('keep-alive');
+
+    });
+  });
 }
