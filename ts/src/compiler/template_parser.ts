@@ -13,8 +13,7 @@ import {
   assertionsEnabled,
   isBlank
 } from 'angular2/src/facade/lang';
-import {Injectable, Inject, Injector, OpaqueToken, Optional} from 'angular2/core';
-import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {Injectable} from 'angular2/src/core/di';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {Parser, AST, ASTWithSource} from 'angular2/src/core/change_detection/change_detection';
 import {TemplateBinding} from 'angular2/src/core/change_detection/parser/ast';
@@ -29,8 +28,6 @@ import {
   BoundEventAst,
   VariableAst,
   TemplateAst,
-  TemplateAstVisitor,
-  templateVisitAll,
   TextAst,
   BoundTextAst,
   EmbeddedTemplateAst,
@@ -81,8 +78,6 @@ const STYLE_PREFIX = 'style';
 
 var TEXT_CSS_SELECTOR = CssSelector.parse('*')[0];
 
-export const TEMPLATE_TRANSFORMS = CONST_EXPR(new OpaqueToken('TemplateTransforms'));
-
 export class TemplateParseError extends ParseError {
   constructor(message: string, location: ParseLocation) { super(location, message); }
 }
@@ -90,8 +85,7 @@ export class TemplateParseError extends ParseError {
 @Injectable()
 export class TemplateParser {
   constructor(private _exprParser: Parser, private _schemaRegistry: ElementSchemaRegistry,
-              private _htmlParser: HtmlParser,
-              @Optional() @Inject(TEMPLATE_TRANSFORMS) public transforms: TemplateAstVisitor[]) {}
+              private _htmlParser: HtmlParser) {}
 
   parse(template: string, directives: CompileDirectiveMetadata[],
         templateUrl: string): TemplateAst[] {
@@ -102,10 +96,6 @@ export class TemplateParser {
     if (errors.length > 0) {
       var errorString = errors.join('\n');
       throw new BaseException(`Template parse errors:\n${errorString}`);
-    }
-    if (isPresent(this.transforms)) {
-      this.transforms.forEach(
-          (transform: TemplateAstVisitor) => { result = templateVisitAll(transform, result); });
     }
     return result;
   }

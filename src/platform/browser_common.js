@@ -2,7 +2,6 @@
 var di_1 = require('angular2/src/core/di');
 var core_1 = require("angular2/core");
 var common_1 = require("angular2/common");
-var render_1 = require('angular2/render');
 var testability_1 = require('angular2/src/core/testability/testability');
 var dom_adapter_1 = require('angular2/src/platform/dom/dom_adapter');
 var dom_events_1 = require('angular2/src/platform/dom/events/dom_events');
@@ -50,7 +49,7 @@ exports.BROWSER_APP_COMMON_PROVIDERS = lang_1.CONST_EXPR([
     new di_1.Provider(core_1.EVENT_MANAGER_PLUGINS, { useClass: key_events_1.KeyEventsPlugin, multi: true }),
     new di_1.Provider(core_1.EVENT_MANAGER_PLUGINS, { useClass: hammer_gestures_1.HammerGesturesPlugin, multi: true }),
     new di_1.Provider(dom_renderer_1.DomRenderer, { useClass: dom_renderer_1.DomRenderer_ }),
-    new di_1.Provider(render_1.Renderer, { useExisting: dom_renderer_1.DomRenderer }),
+    new di_1.Provider(core_1.Renderer, { useExisting: dom_renderer_1.DomRenderer }),
     new di_1.Provider(shared_styles_host_2.SharedStylesHost, { useExisting: shared_styles_host_1.DomSharedStylesHost }),
     shared_styles_host_1.DomSharedStylesHost,
     testability_1.Testability,

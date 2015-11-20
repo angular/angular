@@ -14339,7 +14339,7 @@ System.register("angular2/src/core/change_detection/parser/ast", ["angular2/src/
       this.expressions = expressions;
     }
     Interpolation.prototype.visit = function(visitor) {
-      return visitor.visitInterpolation(this);
+      visitor.visitInterpolation(this);
     };
     return Interpolation;
   })(AST);

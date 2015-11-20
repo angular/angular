@@ -1,7 +1,7 @@
 'use strict';function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
-__export(require('../lifecycle_hooks'));
+__export(require('../src/core/linker/interfaces'));
 __export(require('../src/core/metadata'));
 __export(require('../src/core/util'));
 __export(require('../src/core/di'));

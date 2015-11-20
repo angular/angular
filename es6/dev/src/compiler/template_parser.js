@@ -9,18 +9,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
 import { ListWrapper, StringMapWrapper, SetWrapper } from 'angular2/src/facade/collection';
 import { RegExpWrapper, isPresent, StringWrapper, isBlank } from 'angular2/src/facade/lang';
-import { Injectable, Inject, OpaqueToken, Optional } from 'angular2/core';
-import { CONST_EXPR } from 'angular2/src/facade/lang';
+import { Injectable } from 'angular2/src/core/di';
 import { BaseException } from 'angular2/src/facade/exceptions';
 import { Parser } from 'angular2/src/core/change_detection/change_detection';
 import { HtmlParser } from './html_parser';
 import { ParseError } from './parse_util';
-import { ElementAst, BoundElementPropertyAst, BoundEventAst, VariableAst, templateVisitAll, TextAst, BoundTextAst, EmbeddedTemplateAst, AttrAst, NgContentAst, PropertyBindingType, DirectiveAst, BoundDirectivePropertyAst } from './template_ast';
+import { ElementAst, BoundElementPropertyAst, BoundEventAst, VariableAst, TextAst, BoundTextAst, EmbeddedTemplateAst, AttrAst, NgContentAst, PropertyBindingType, DirectiveAst, BoundDirectivePropertyAst } from './template_ast';
 import { CssSelector, SelectorMatcher } from 'angular2/src/compiler/selector';
 import { ElementSchemaRegistry } from 'angular2/src/compiler/schema/element_schema_registry';
 import { preparseElement, PreparsedElementType } from './template_preparser';
@@ -45,18 +41,16 @@ const ATTRIBUTE_PREFIX = 'attr';
 const CLASS_PREFIX = 'class';
 const STYLE_PREFIX = 'style';
 var TEXT_CSS_SELECTOR = CssSelector.parse('*')[0];
-export const TEMPLATE_TRANSFORMS = CONST_EXPR(new OpaqueToken('TemplateTransforms'));
 export class TemplateParseError extends ParseError {
     constructor(message, location) {
         super(location, message);
     }
 }
 export let TemplateParser = class {
-    constructor(_exprParser, _schemaRegistry, _htmlParser, transforms) {
+    constructor(_exprParser, _schemaRegistry, _htmlParser) {
         this._exprParser = _exprParser;
         this._schemaRegistry = _schemaRegistry;
         this._htmlParser = _htmlParser;
-        this.transforms = transforms;
     }
     parse(template, directives, templateUrl) {
         var parseVisitor = new TemplateParseVisitor(directives, this._exprParser, this._schemaRegistry);
@@ -67,17 +61,12 @@ export let TemplateParser = class {
             var errorString = errors.join('\n');
             throw new BaseException(`Template parse errors:\n${errorString}`);
         }
-        if (isPresent(this.transforms)) {
-            this.transforms.forEach((transform) => { result = templateVisitAll(transform, result); });
-        }
         return result;
     }
 };
 TemplateParser = __decorate([
-    Injectable(),
-    __param(3, Optional()),
-    __param(3, Inject(TEMPLATE_TRANSFORMS)), 
-    __metadata('design:paramtypes', [Parser, ElementSchemaRegistry, HtmlParser, Array])
+    Injectable(), 
+    __metadata('design:paramtypes', [Parser, ElementSchemaRegistry, HtmlParser])
 ], TemplateParser);
 class TemplateParseVisitor {
     constructor(directives, _exprParser, _schemaRegistry) {

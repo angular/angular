@@ -58,6 +58,7 @@ export class KeyedWrite extends AST {
 
 export class BindingPipe extends AST {
   constructor(public exp: AST, public name: string, public args: any[]) { super(); }
+
   visit(visitor: AstVisitor): any { return visitor.visitPipe(this); }
 }
 
@@ -78,7 +79,7 @@ export class LiteralMap extends AST {
 
 export class Interpolation extends AST {
   constructor(public strings: any[], public expressions: any[]) { super(); }
-  visit(visitor: AstVisitor): any { return visitor.visitInterpolation(this); }
+  visit(visitor: AstVisitor) { visitor.visitInterpolation(this); }
 }
 
 export class Binary extends AST {
@@ -213,66 +214,68 @@ export class RecursiveAstVisitor implements AstVisitor {
 }
 
 export class AstTransformer implements AstVisitor {
-  visitImplicitReceiver(ast: ImplicitReceiver): AST { return ast; }
+  visitImplicitReceiver(ast: ImplicitReceiver): ImplicitReceiver { return ast; }
 
-  visitInterpolation(ast: Interpolation): AST {
+  visitInterpolation(ast: Interpolation): Interpolation {
     return new Interpolation(ast.strings, this.visitAll(ast.expressions));
   }
 
-  visitLiteralPrimitive(ast: LiteralPrimitive): AST { return new LiteralPrimitive(ast.value); }
+  visitLiteralPrimitive(ast: LiteralPrimitive): LiteralPrimitive {
+    return new LiteralPrimitive(ast.value);
+  }
 
-  visitPropertyRead(ast: PropertyRead): AST {
+  visitPropertyRead(ast: PropertyRead): PropertyRead {
     return new PropertyRead(ast.receiver.visit(this), ast.name, ast.getter);
   }
 
-  visitPropertyWrite(ast: PropertyWrite): AST {
+  visitPropertyWrite(ast: PropertyWrite): PropertyWrite {
     return new PropertyWrite(ast.receiver.visit(this), ast.name, ast.setter, ast.value);
   }
 
-  visitSafePropertyRead(ast: SafePropertyRead): AST {
+  visitSafePropertyRead(ast: SafePropertyRead): SafePropertyRead {
     return new SafePropertyRead(ast.receiver.visit(this), ast.name, ast.getter);
   }
 
-  visitMethodCall(ast: MethodCall): AST {
+  visitMethodCall(ast: MethodCall): MethodCall {
     return new MethodCall(ast.receiver.visit(this), ast.name, ast.fn, this.visitAll(ast.args));
   }
 
-  visitSafeMethodCall(ast: SafeMethodCall): AST {
+  visitSafeMethodCall(ast: SafeMethodCall): SafeMethodCall {
     return new SafeMethodCall(ast.receiver.visit(this), ast.name, ast.fn, this.visitAll(ast.args));
   }
 
-  visitFunctionCall(ast: FunctionCall): AST {
+  visitFunctionCall(ast: FunctionCall): FunctionCall {
     return new FunctionCall(ast.target.visit(this), this.visitAll(ast.args));
   }
 
-  visitLiteralArray(ast: LiteralArray): AST {
+  visitLiteralArray(ast: LiteralArray): LiteralArray {
     return new LiteralArray(this.visitAll(ast.expressions));
   }
 
-  visitLiteralMap(ast: LiteralMap): AST {
+  visitLiteralMap(ast: LiteralMap): LiteralMap {
     return new LiteralMap(ast.keys, this.visitAll(ast.values));
   }
 
-  visitBinary(ast: Binary): AST {
+  visitBinary(ast: Binary): Binary {
     return new Binary(ast.operation, ast.left.visit(this), ast.right.visit(this));
   }
 
-  visitPrefixNot(ast: PrefixNot): AST { return new PrefixNot(ast.expression.visit(this)); }
+  visitPrefixNot(ast: PrefixNot): PrefixNot { return new PrefixNot(ast.expression.visit(this)); }
 
-  visitConditional(ast: Conditional): AST {
+  visitConditional(ast: Conditional): Conditional {
     return new Conditional(ast.condition.visit(this), ast.trueExp.visit(this),
                            ast.falseExp.visit(this));
   }
 
-  visitPipe(ast: BindingPipe): AST {
+  visitPipe(ast: BindingPipe): BindingPipe {
     return new BindingPipe(ast.exp.visit(this), ast.name, this.visitAll(ast.args));
   }
 
-  visitKeyedRead(ast: KeyedRead): AST {
+  visitKeyedRead(ast: KeyedRead): KeyedRead {
     return new KeyedRead(ast.obj.visit(this), ast.key.visit(this));
   }
 
-  visitKeyedWrite(ast: KeyedWrite): AST {
+  visitKeyedWrite(ast: KeyedWrite): KeyedWrite {
     return new KeyedWrite(ast.obj.visit(this), ast.key.visit(this), ast.value.visit(this));
   }
 
@@ -284,5 +287,5 @@ export class AstTransformer implements AstVisitor {
     return res;
   }
 
-  visitChain(ast: Chain): AST { return new Chain(this.visitAll(ast.expressions)); }
+  visitChain(ast: Chain): Chain { return new Chain(this.visitAll(ast.expressions)); }
 }

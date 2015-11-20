@@ -167,7 +167,7 @@ var Interpolation = (function (_super) {
         this.strings = strings;
         this.expressions = expressions;
     }
-    Interpolation.prototype.visit = function (visitor) { return visitor.visitInterpolation(this); };
+    Interpolation.prototype.visit = function (visitor) { visitor.visitInterpolation(this); };
     return Interpolation;
 })(AST);
 exports.Interpolation = Interpolation;
@@ -334,7 +334,9 @@ var AstTransformer = (function () {
     AstTransformer.prototype.visitInterpolation = function (ast) {
         return new Interpolation(ast.strings, this.visitAll(ast.expressions));
     };
-    AstTransformer.prototype.visitLiteralPrimitive = function (ast) { return new LiteralPrimitive(ast.value); };
+    AstTransformer.prototype.visitLiteralPrimitive = function (ast) {
+        return new LiteralPrimitive(ast.value);
+    };
     AstTransformer.prototype.visitPropertyRead = function (ast) {
         return new PropertyRead(ast.receiver.visit(this), ast.name, ast.getter);
     };

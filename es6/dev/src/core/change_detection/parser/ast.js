@@ -112,7 +112,7 @@ export class Interpolation extends AST {
         this.strings = strings;
         this.expressions = expressions;
     }
-    visit(visitor) { return visitor.visitInterpolation(this); }
+    visit(visitor) { visitor.visitInterpolation(this); }
 }
 export class Binary extends AST {
     constructor(operation, left, right) {
@@ -250,7 +250,9 @@ export class AstTransformer {
     visitInterpolation(ast) {
         return new Interpolation(ast.strings, this.visitAll(ast.expressions));
     }
-    visitLiteralPrimitive(ast) { return new LiteralPrimitive(ast.value); }
+    visitLiteralPrimitive(ast) {
+        return new LiteralPrimitive(ast.value);
+    }
     visitPropertyRead(ast) {
         return new PropertyRead(ast.receiver.visit(this), ast.name, ast.getter);
     }

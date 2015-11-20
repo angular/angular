@@ -2,20 +2,20 @@ import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
 
 import {
+  PLATFORM_INITIALIZER,
   PLATFORM_DIRECTIVES,
   PLATFORM_PIPES,
   ComponentRef,
   platform,
   ExceptionHandler,
   Reflector,
+  Renderer,
   reflector,
   APPLICATION_COMMON_PROVIDERS,
   PLATFORM_COMMON_PROVIDERS,
-  EVENT_MANAGER_PLUGINS,
-  PLATFORM_INITIALIZER
+  EVENT_MANAGER_PLUGINS
 } from "angular2/core";
 import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS} from "angular2/common";
-import {Renderer} from 'angular2/render';
 import {Testability} from 'angular2/src/core/testability/testability';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {DomEventsPlugin} from 'angular2/src/platform/dom/events/dom_events';
