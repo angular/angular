@@ -21,7 +21,7 @@ import {
   AfterContentChecked,
   AfterViewInit,
   AfterViewChecked
-} from 'angular2/lifecycle_hooks';
+} from 'angular2/core';
 import {Directive, Component, View, ViewMetadata} from 'angular2/src/core/metadata';
 
 export function main() {

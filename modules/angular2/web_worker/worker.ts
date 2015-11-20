@@ -1,4 +1,4 @@
-export * from '../lifecycle_hooks';
+export * from '../src/core/linker/interfaces';
 export * from '../src/core/metadata';
 export * from '../src/core/util';
 export * from '../src/core/di';
