@@ -156,8 +156,8 @@ class Interpolation extends AST {
   Interpolation(this.strings, this.expressions) : super() {
     /* super call moved to initializer */;
   }
-  visit(AstVisitor visitor) {
-    visitor.visitInterpolation(this);
+  dynamic visit(AstVisitor visitor) {
+    return visitor.visitInterpolation(this);
   }
 }
 
@@ -366,77 +366,77 @@ class RecursiveAstVisitor implements AstVisitor {
 }
 
 class AstTransformer implements AstVisitor {
-  ImplicitReceiver visitImplicitReceiver(ImplicitReceiver ast) {
+  AST visitImplicitReceiver(ImplicitReceiver ast) {
     return ast;
   }
 
-  Interpolation visitInterpolation(Interpolation ast) {
+  AST visitInterpolation(Interpolation ast) {
     return new Interpolation(ast.strings, this.visitAll(ast.expressions));
   }
 
-  LiteralPrimitive visitLiteralPrimitive(LiteralPrimitive ast) {
+  AST visitLiteralPrimitive(LiteralPrimitive ast) {
     return new LiteralPrimitive(ast.value);
   }
 
-  PropertyRead visitPropertyRead(PropertyRead ast) {
+  AST visitPropertyRead(PropertyRead ast) {
     return new PropertyRead(ast.receiver.visit(this), ast.name, ast.getter);
   }
 
-  PropertyWrite visitPropertyWrite(PropertyWrite ast) {
+  AST visitPropertyWrite(PropertyWrite ast) {
     return new PropertyWrite(
         ast.receiver.visit(this), ast.name, ast.setter, ast.value);
   }
 
-  SafePropertyRead visitSafePropertyRead(SafePropertyRead ast) {
+  AST visitSafePropertyRead(SafePropertyRead ast) {
     return new SafePropertyRead(ast.receiver.visit(this), ast.name, ast.getter);
   }
 
-  MethodCall visitMethodCall(MethodCall ast) {
+  AST visitMethodCall(MethodCall ast) {
     return new MethodCall(
         ast.receiver.visit(this), ast.name, ast.fn, this.visitAll(ast.args));
   }
 
-  SafeMethodCall visitSafeMethodCall(SafeMethodCall ast) {
+  AST visitSafeMethodCall(SafeMethodCall ast) {
     return new SafeMethodCall(
         ast.receiver.visit(this), ast.name, ast.fn, this.visitAll(ast.args));
   }
 
-  FunctionCall visitFunctionCall(FunctionCall ast) {
+  AST visitFunctionCall(FunctionCall ast) {
     return new FunctionCall(ast.target.visit(this), this.visitAll(ast.args));
   }
 
-  LiteralArray visitLiteralArray(LiteralArray ast) {
+  AST visitLiteralArray(LiteralArray ast) {
     return new LiteralArray(this.visitAll(ast.expressions));
   }
 
-  LiteralMap visitLiteralMap(LiteralMap ast) {
+  AST visitLiteralMap(LiteralMap ast) {
     return new LiteralMap(ast.keys, this.visitAll(ast.values));
   }
 
-  Binary visitBinary(Binary ast) {
+  AST visitBinary(Binary ast) {
     return new Binary(
         ast.operation, ast.left.visit(this), ast.right.visit(this));
   }
 
-  PrefixNot visitPrefixNot(PrefixNot ast) {
+  AST visitPrefixNot(PrefixNot ast) {
     return new PrefixNot(ast.expression.visit(this));
   }
 
-  Conditional visitConditional(Conditional ast) {
+  AST visitConditional(Conditional ast) {
     return new Conditional(ast.condition.visit(this), ast.trueExp.visit(this),
         ast.falseExp.visit(this));
   }
 
-  BindingPipe visitPipe(BindingPipe ast) {
+  AST visitPipe(BindingPipe ast) {
     return new BindingPipe(
         ast.exp.visit(this), ast.name, this.visitAll(ast.args));
   }
 
-  KeyedRead visitKeyedRead(KeyedRead ast) {
+  AST visitKeyedRead(KeyedRead ast) {
     return new KeyedRead(ast.obj.visit(this), ast.key.visit(this));
   }
 
-  KeyedWrite visitKeyedWrite(KeyedWrite ast) {
+  AST visitKeyedWrite(KeyedWrite ast) {
     return new KeyedWrite(
         ast.obj.visit(this), ast.key.visit(this), ast.value.visit(this));
   }
@@ -449,7 +449,7 @@ class AstTransformer implements AstVisitor {
     return res;
   }
 
-  Chain visitChain(Chain ast) {
+  AST visitChain(Chain ast) {
     return new Chain(this.visitAll(ast.expressions));
   }
 }
