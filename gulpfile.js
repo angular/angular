@@ -252,9 +252,10 @@ gulp.task('build/check.apidocs.dart',
 // pubbuild
 // WARNING: this task is very slow (~15m as of July 2015)
 
-gulp.task('build/pubbuild.dart',
-          pubbuild(gulp, gulpPlugins,
-                   {src: CONFIG.dest.dart, dest: CONFIG.dest.js.dart2js, command: DART_SDK.PUB}));
+gulp.task(
+    'build/pubbuild.dart',
+    pubbuild.subdirs(gulp, gulpPlugins,
+                     {src: CONFIG.dest.dart, dest: CONFIG.dest.js.dart2js, command: DART_SDK.PUB}));
 
 // ------------
 // formatting
@@ -582,6 +583,30 @@ gulp.task('test.unit.dart', function(done) {
                 watch(['modules/angular2/**'], {ignoreInitial: true},
                       ['!build/tree.dart', '!test.unit.dart/karma-run']);
               });
+});
+
+// Dart Payload Size Test
+// This test will fail if the size of our hello_world app goes beyond one of
+// these values when compressed at the specified level.
+// Measure in bytes.
+var _DART_PAYLOAD_SIZE_LIMITS = {'uncompressed': 375 * 1024, 'gzip level=6': 105 * 1024};
+gulp.task('test.payload.dart/ci', function(done) {
+  runSequence('build/packages.dart', '!pubget.payload.dart', '!pubbuild.payload.dart',
+              '!checkAndReport.payload.dart', done);
+});
+
+gulp.task('!pubget.payload.dart',
+          pubget.dir(gulp, gulpPlugins,
+                     {dir: 'modules_dart/payload/hello_world', command: DART_SDK.PUB}));
+
+gulp.task('!pubbuild.payload.dart',
+          pubbuild.single(gulp, gulpPlugins,
+                          {command: DART_SDK.PUB, src: 'modules_dart/payload/hello_world'}));
+
+gulp.task('!checkAndReport.payload.dart', function() {
+  var reportSize = require('./tools/analytics/reportsize');
+  return reportSize('modules_dart/payload/hello_world/build/web/*.dart.js',
+                    {failConditions: _DART_PAYLOAD_SIZE_LIMITS, prefix: 'hello_world'});
 });
 
 gulp.task('watch.dart.dev', function(done) {
@@ -1053,10 +1078,9 @@ gulp.task('!bundle.copy', function() {
                 gulp.src('dist/js/bundle/**').pipe(gulp.dest('dist/js/dev/es5/bundle')));
 });
 
-gulp.task('!bundles.js.checksize', function() {
+gulp.task('!bundles.js.checksize', function(done) {
   var reportSize = require('./tools/analytics/reportsize');
-  return reportSize('dist/js/bundle/**', {printToConsole: false,
-                    reportAnalytics: true});
+  return reportSize('dist/js/bundle/**', {printToConsole: ['gzip level=2']});
 });
 
 gulp.task('bundles.js',

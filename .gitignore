@@ -45,3 +45,6 @@ npm-debug.log
 
 # build-analytics
 .build-analytics
+
+# built dart payload tests
+/modules_dart/payload/**/build

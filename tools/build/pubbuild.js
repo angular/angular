@@ -6,7 +6,7 @@ var path = require('path');
 var glob = require('glob');
 var fs = require('fs');
 
-module.exports = function(gulp, plugins, config) {
+function buildAllWebSubdirs(gulp, plugins, config) {
   return function() {
     var webFolders = [].slice.call(glob.sync(path.join(config.src, '*/web')));
     return nextFolder();
@@ -17,20 +17,34 @@ module.exports = function(gulp, plugins, config) {
       }
       var folder = path.resolve(path.join(webFolders.shift(), '..'));
       var destFolder = path.resolve(path.join(config.dest, path.basename(folder)));
-      var pubMode = config.mode || 'release';
-      var pubArgs = ['build', '--mode', pubMode, '-o', destFolder];
 
-      return util.processToPromise(spawn(config.command, pubArgs, {
-        stdio: 'inherit',
-        cwd: folder
-      })).then(function() {
+      const nextConfig = {
+        command: config.command,
+        dest: destFolder,
+        mode: config.mode,
+        src: folder
+      };
+      return single(nextConfig).then(function() {
         return replaceDartWithJsScripts(gulp, destFolder);
       }).then(function() {
         return removeWebFolder(gulp, destFolder);
       }).then(nextFolder);
     }
   };
-};
+}
+
+function single(config) {
+  var pubMode = config.mode || 'release';
+  var pubArgs = ['build', '--mode', pubMode];
+  if (config.dest) {
+    pubArgs = pubArgs.concat(['-o', config.dest]);
+  }
+
+  return util.processToPromise(spawn(config.command, pubArgs, {
+    stdio: 'inherit',
+    cwd: config.src
+  }));
+}
 
 function replaceDartWithJsScripts(gulp, folder) {
   return util.streamToPromise(gulp.src(path.join(folder, '**/*.html'))
@@ -45,6 +59,10 @@ function replaceDartWithJsScripts(gulp, folder) {
     .pipe(gulp.dest(folder)));
 }
 
+function singleWrapper(gulp, plugins, config) {
+  return function() { return single(config); };
+}
+
 function removeWebFolder(gulp, folder) {
   var folders = [].slice.call(glob.sync(path.join(folder, 'web', '*')));
   folders.forEach(function(subFolder) {
@@ -53,3 +71,8 @@ function removeWebFolder(gulp, folder) {
   fs.rmdirSync(path.join(folder, 'web'));
   return Q.resolve();
 }
+
+module.exports = {
+  single: singleWrapper,
+  subdirs: buildAllWebSubdirs
+};
