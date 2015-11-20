@@ -239,6 +239,9 @@ var customLaunchers = {
   }
 };
 
+// iOS9 deactivated as not reliable in both providers
+// TODO(mlaval): reactivate after https://github.com/angular/angular/issues/5408
+
 var sauceAliases = {
   'ALL': Object.keys(customLaunchers).filter(function(item) {return customLaunchers[item].base == 'SauceLabs';}),
   'DESKTOP': ['SL_CHROME', 'SL_FIREFOX', 'SL_IE9', 'SL_IE10', 'SL_IE11', 'SL_EDGE', 'SL_SAFARI7', 'SL_SAFARI8', 'SL_SAFARI9.0'],
@@ -249,7 +252,7 @@ var sauceAliases = {
   'SAFARI': ['SL_SAFARI7', 'SL_SAFARI8', 'SL_SAFARI9.0'],
   'BETA': ['SL_CHROMEBETA', 'SL_FIREFOXBETA'],
   'DEV': ['SL_CHROMEDEV', 'SL_FIREFOXDEV'],
-  'CI': ['SL_CHROME', 'SL_ANDROID5.1', 'SL_SAFARI7', 'SL_SAFARI8', 'SL_SAFARI9.0', 'SL_IOS7', 'SL_IOS8', 'SL_IOS9',
+  'CI': ['SL_CHROME', 'SL_ANDROID5.1', 'SL_SAFARI7', 'SL_SAFARI8', 'SL_SAFARI9.0', 'SL_IOS7', 'SL_IOS8',
          'SL_FIREFOX', 'SL_IE9', 'SL_IE10', 'SL_IE11', 'SL_EDGE', 'SL_ANDROID4.1', 'SL_ANDROID4.2', 'SL_ANDROID4.3', 'SL_ANDROID4.4',
          'SL_CHROMEDEV', 'SL_FIREFOXBETA']
 };
@@ -262,7 +265,7 @@ var browserstackAliases = {
   'IE': ['BS_IE9', 'BS_IE10', 'BS_IE11'],
   'IOS': ['BS_IOS7', 'BS_IOS8', 'BS_IOS9'],
   'SAFARI': ['BS_SAFARI7', 'BS_SAFARI8', 'BS_SAFARI9'],
-  'CI': ['BS_CHROME', 'BS_SAFARI7', 'BS_SAFARI8', 'BS_SAFARI9', 'BS_IOS7', 'BS_IOS8', 'BS_IOS9',
+  'CI': ['BS_CHROME', 'BS_SAFARI7', 'BS_SAFARI8', 'BS_SAFARI9', 'BS_IOS7', 'BS_IOS8',
     'BS_FIREFOX', 'BS_IE9', 'BS_IE10', 'BS_IE11', 'BS_EDGE', 'BS_WINDOWSPHONE', 'BS_ANDROID4.3', 'BS_ANDROID4.4']
 };
 
