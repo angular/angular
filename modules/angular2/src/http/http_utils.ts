@@ -1,6 +1,7 @@
 import {isString} from 'angular2/src/facade/lang';
 import {RequestMethods} from './enums';
 import {makeTypeError} from 'angular2/src/facade/exceptions';
+import {Response} from './static_response';
 
 export function normalizeMethodName(method): RequestMethods {
   if (isString(method)) {
@@ -13,5 +14,7 @@ export function normalizeMethodName(method): RequestMethods {
   }
   return method;
 }
+
+export const isSuccess = (status: number): boolean => (status >= 200 && status < 300);
 
 export {isJsObject} from 'angular2/src/facade/lang';
