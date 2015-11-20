@@ -37,6 +37,7 @@ export {
   RequiredValidator,
   MinLengthValidator,
   MaxLengthValidator,
+  PatternValidator,
   Validator
 } from './forms/directives/validators';
 export {FormBuilder} from './forms/form_builder';
