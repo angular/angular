@@ -37,7 +37,7 @@ import "package:angular2/src/compiler/schema/dom_element_schema_registry.dart"
     show DomElementSchemaRegistry;
 import "package:angular2/src/platform/dom/shared_styles_host.dart"
     show SharedStylesHost, DomSharedStylesHost;
-import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/core/zone/ng_zone.dart" show NgZone;
 import "package:angular2/src/core/linker/view_manager.dart"
     show AppViewManager, AppViewManager_;

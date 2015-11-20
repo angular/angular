@@ -21,7 +21,7 @@ import "package:angular2/src/core/render/view_factory.dart"
 import "package:angular2/src/core/render/api.dart"
     show RenderTemplateCmd, RenderBeginElementCmd, RenderComponentTemplate;
 import "../spies.dart" show SpyRenderEventDispatcher;
-import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/core/metadata.dart" show ViewEncapsulation;
 
 RenderBeginElementCmd beginElement(String name, List<String> attrNameAndValues,

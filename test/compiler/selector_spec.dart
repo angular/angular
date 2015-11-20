@@ -2,7 +2,7 @@ library angular2.test.compiler.selector_spec;
 
 import "package:angular2/testing_internal.dart"
     show describe, it, expect, beforeEach, ddescribe, iit, xit, el;
-import "package:angular2/src/core/dom/dom_adapter.dart" show DOM;
+import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/compiler/selector.dart" show SelectorMatcher;
 import "package:angular2/src/compiler/selector.dart" show CssSelector;
 import "package:angular2/src/facade/collection.dart"
