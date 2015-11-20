@@ -97,11 +97,24 @@ export function main() {
         });
 
         it('should add the requiredParent', () => {
-          expect(humanizeDom(parser.parse('<table><tr></tr></table>', 'TestComp')))
+          expect(
+              humanizeDom(parser.parse(
+                  '<table><thead><tr head></tr></thead><tr noparent></tr><tbody><tr body></tr></tbody><tfoot><tr foot></tr></tfoot></table>',
+                  'TestComp')))
               .toEqual([
                 [HtmlElementAst, 'table', 0],
+                [HtmlElementAst, 'thead', 1],
+                [HtmlElementAst, 'tr', 2],
+                [HtmlAttrAst, 'head', ''],
                 [HtmlElementAst, 'tbody', 1],
                 [HtmlElementAst, 'tr', 2],
+                [HtmlAttrAst, 'noparent', ''],
+                [HtmlElementAst, 'tbody', 1],
+                [HtmlElementAst, 'tr', 2],
+                [HtmlAttrAst, 'body', ''],
+                [HtmlElementAst, 'tfoot', 1],
+                [HtmlElementAst, 'tr', 2],
+                [HtmlAttrAst, 'foot', '']
               ]);
         });
 

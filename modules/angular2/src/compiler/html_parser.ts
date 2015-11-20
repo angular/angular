@@ -145,7 +145,7 @@ class TreeBuilder {
     var tagDef = getHtmlTagDefinition(el.name);
     var parentEl = this._getParentElement();
     if (tagDef.requireExtraParent(isPresent(parentEl) ? parentEl.name : null)) {
-      var newParent = new HtmlElementAst(tagDef.requiredParent, [], [el], el.sourceSpan);
+      var newParent = new HtmlElementAst(tagDef.parentToAdd, [], [el], el.sourceSpan);
       this._addToParent(newParent);
       this.elementStack.push(newParent);
       this.elementStack.push(el);
