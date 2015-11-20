@@ -57,7 +57,7 @@ export class JSONPConnection_ extends JSONPConnection {
         _dom.cleanup(script);
         if (!this._finished) {
           let responseOptions =
-              new ResponseOptions({body: JSONP_ERR_NO_CALLBACK, type: ResponseTypes.Error});
+              new ResponseOptions({body: JSONP_ERR_NO_CALLBACK, type: ResponseTypes.Error, url});
           if (isPresent(baseResponseOptions)) {
             responseOptions = baseResponseOptions.merge(responseOptions);
           }
@@ -65,7 +65,7 @@ export class JSONPConnection_ extends JSONPConnection {
           return;
         }
 
-        let responseOptions = new ResponseOptions({body: this._responseData});
+        let responseOptions = new ResponseOptions({body: this._responseData, url});
         if (isPresent(this.baseResponseOptions)) {
           responseOptions = this.baseResponseOptions.merge(responseOptions);
         }

@@ -41,6 +41,7 @@ class MockBrowserXHR extends BrowserXhr {
   callbacks = new Map<string, Function>();
   status: number;
   responseHeaders: string;
+  responseURL: string;
   constructor() {
     super();
     var spy = new SpyObject();
@@ -56,9 +57,13 @@ class MockBrowserXHR extends BrowserXhr {
 
   setResponseText(value) { this.responseText = value; }
 
+  setResponseURL(value) { this.responseURL = value; }
+
   setResponseHeaders(value) { this.responseHeaders = value; }
 
   getAllResponseHeaders() { return this.responseHeaders || ''; }
+
+  getResponseHeader(key) { return Headers.fromResponseHeaderString(this.responseHeaders).get(key); }
 
   addEventListener(type: string, cb: Function) { this.callbacks.set(type, cb); }
 
@@ -282,6 +287,39 @@ export function main() {
                });
 
            existingXHRs[0].setResponseHeaders(responseHeaderString);
+           existingXHRs[0].setStatusCode(statusCode);
+           existingXHRs[0].dispatchEvent('load');
+         }));
+
+      it('should add the responseURL to the response', inject([AsyncTestCompleter], async => {
+           var statusCode = 200;
+           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
+                                              new ResponseOptions({status: statusCode}));
+
+           connection.response.subscribe(res => {
+             expect(res.url).toEqual('http://google.com');
+             async.done();
+           });
+
+           existingXHRs[0].setResponseURL('http://google.com');
+           existingXHRs[0].setStatusCode(statusCode);
+           existingXHRs[0].dispatchEvent('load');
+         }));
+
+      it('should add use the X-Request-URL in CORS situations',
+         inject([AsyncTestCompleter], async => {
+           var statusCode = 200;
+           var connection = new XHRConnection(sampleRequest, new MockBrowserXHR(),
+                                              new ResponseOptions({status: statusCode}));
+           var responseHeaders = `X-Request-URL: http://somedomain.com
+           Foo: Bar`
+
+                                 connection.response.subscribe(res => {
+                                   expect(res.url).toEqual('http://somedomain.com');
+                                   async.done();
+                                 });
+
+           existingXHRs[0].setResponseHeaders(responseHeaders);
            existingXHRs[0].setStatusCode(statusCode);
            existingXHRs[0].dispatchEvent('load');
          }));
