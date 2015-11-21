@@ -9,6 +9,7 @@ export 'package:angular2/core.dart'
     hide forwardRef, resolveForwardRef, ForwardRefFn;
 export 'package:angular2/common.dart';
 export 'package:angular2/instrumentation.dart';
+export 'package:angular2/src/core/angular_entrypoint.dart' show AngularEntrypoint;
 export 'package:angular2/src/core/application_tokens.dart'
     hide APP_COMPONENT_REF_PROMISE, APP_ID_RANDOM_PROVIDER;
 export 'package:angular2/src/platform/dom/dom_tokens.dart';
