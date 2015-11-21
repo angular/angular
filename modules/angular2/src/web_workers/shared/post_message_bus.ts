@@ -4,7 +4,7 @@ import {
   MessageBusSink
 } from "angular2/src/web_workers/shared/message_bus";
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
-import {EventEmitter} from 'angular2/src/facade/async';
+import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {Injectable} from "angular2/src/core/di";
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
@@ -41,7 +41,9 @@ export class PostMessageBusSink implements MessageBusSink {
 
   attachToZone(zone: NgZone): void {
     this._zone = zone;
-    this._zone.overrideOnEventDone(() => this._handleOnEventDone(), false);
+    this._zone.runOutsideAngular(() => {
+      ObservableWrapper.subscribe(this._zone.onEventDone, (_) => { this._handleOnEventDone(); });
+    });
   }
 
   initChannel(channel: string, runInZone: boolean = true): void {
