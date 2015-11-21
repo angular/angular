@@ -1,18 +1,20 @@
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
+import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
 export class MockNgZone extends NgZone {
   /** @internal */
-  _onEventDone: () => void;
+  _mockOnEventDone: EventEmitter<any>;
 
-  constructor() { super({enableLongStackTrace: false}); }
+  constructor() {
+    super({enableLongStackTrace: false});
+    this._mockOnEventDone = new EventEmitter<any>(false);
+  }
+
+  get onEventDone() { return this._mockOnEventDone; }
 
   run(fn: Function): any { return fn(); }
 
   runOutsideAngular(fn: Function): any { return fn(); }
 
-  overrideOnEventDone(fn: () => void, opt_waitForAsync: boolean = false): void {
-    this._onEventDone = fn;
-  }
-
-  simulateZoneExit(): void { this._onEventDone(); }
+  simulateZoneExit(): void { ObservableWrapper.callNext(this.onEventDone, null); }
 }
