@@ -1,5 +1,5 @@
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {Injectable, Inject} from 'angular2/angular2';
+import {Injectable, Inject} from 'angular2/core';
 import {EventListener, History, Location} from 'angular2/src/facade/browser';
 import {isBlank} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
