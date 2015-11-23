@@ -8,7 +8,8 @@ import {
   forwardRef,
   Provider,
   Inject,
-  Optional
+  Optional,
+  Self
 } from 'angular2/core';
 import {NgControl} from './ng_control';
 import {NgControlGroup} from './ng_control_group';
@@ -107,8 +108,8 @@ export class NgFormModel extends ControlContainer implements Form,
   directives: NgControl[] = [];
   ngSubmit = new EventEmitter();
 
-  constructor(@Optional() @Inject(NG_VALIDATORS) private _validators: any[],
-              @Optional() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[]) {
+  constructor(@Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
+              @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[]) {
     super();
   }
 

@@ -125,8 +125,10 @@ var NgControlGroup = (function (_super) {
         __param(0, core_1.Host()),
         __param(0, core_1.SkipSelf()),
         __param(1, core_1.Optional()),
+        __param(1, core_1.Self()),
         __param(1, core_1.Inject(validators_1.NG_VALIDATORS)),
         __param(2, core_1.Optional()),
+        __param(2, core_1.Self()),
         __param(2, core_1.Inject(validators_1.NG_ASYNC_VALIDATORS)), 
         __metadata('design:paramtypes', [control_container_1.ControlContainer, Array, Array])
     ], NgControlGroup);

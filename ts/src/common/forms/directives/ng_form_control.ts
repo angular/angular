@@ -9,7 +9,8 @@ import {
   forwardRef,
   Provider,
   Inject,
-  Optional
+  Optional,
+  Self
 } from 'angular2/core';
 import {NgControl} from './ng_control';
 import {Control} from '../model';
@@ -86,11 +87,12 @@ export class NgFormControl extends NgControl implements OnChanges {
   model: any;
   viewModel: any;
 
-  constructor(@Optional() @Inject(NG_VALIDATORS) private _validators:
+  constructor(@Optional() @Self() @Inject(NG_VALIDATORS) private _validators:
                   /* Array<Validator|Function> */ any[],
-              @Optional() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators:
+              @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators:
                   /* Array<Validator|Function> */ any[],
-              @Optional() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[]) {
+              @Optional() @Self() @Inject(NG_VALUE_ACCESSOR)
+              valueAccessors: ControlValueAccessor[]) {
     super();
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }

@@ -14,7 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 import { CONST_EXPR } from 'angular2/src/facade/lang';
 import { EventEmitter, ObservableWrapper } from 'angular2/src/facade/async';
-import { Directive, forwardRef, Provider, Inject, Optional } from 'angular2/core';
+import { Directive, forwardRef, Provider, Inject, Optional, Self } from 'angular2/core';
 import { NG_VALUE_ACCESSOR } from './control_value_accessor';
 import { NgControl } from './ng_control';
 import { Control } from '../model';
@@ -83,10 +83,13 @@ NgModel = __decorate([
         exportAs: 'form'
     }),
     __param(0, Optional()),
+    __param(0, Self()),
     __param(0, Inject(NG_VALIDATORS)),
     __param(1, Optional()),
+    __param(1, Self()),
     __param(1, Inject(NG_ASYNC_VALIDATORS)),
     __param(2, Optional()),
+    __param(2, Self()),
     __param(2, Inject(NG_VALUE_ACCESSOR)), 
     __metadata('design:paramtypes', [Array, Array, Array])
 ], NgModel);

@@ -183,8 +183,10 @@ var NgForm = (function (_super) {
             exportAs: 'form'
         }),
         __param(0, core_1.Optional()),
+        __param(0, core_1.Self()),
         __param(0, core_1.Inject(validators_1.NG_VALIDATORS)),
         __param(1, core_1.Optional()),
+        __param(1, core_1.Self()),
         __param(1, core_1.Inject(validators_1.NG_ASYNC_VALIDATORS)), 
         __metadata('design:paramtypes', [Array, Array])
     ], NgForm);

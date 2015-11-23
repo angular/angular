@@ -15,7 +15,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 import { PromiseWrapper, ObservableWrapper, EventEmitter } from 'angular2/src/facade/async';
 import { ListWrapper } from 'angular2/src/facade/collection';
 import { isPresent, CONST_EXPR } from 'angular2/src/facade/lang';
-import { Directive, forwardRef, Provider, Optional, Inject } from 'angular2/core';
+import { Directive, forwardRef, Provider, Optional, Inject, Self } from 'angular2/core';
 import { ControlContainer } from './control_container';
 import { ControlGroup, Control } from '../model';
 import { setUpControl, setUpControlGroup, composeValidators, composeAsyncValidators } from './shared';
@@ -157,8 +157,10 @@ NgForm = __decorate([
         exportAs: 'form'
     }),
     __param(0, Optional()),
+    __param(0, Self()),
     __param(0, Inject(NG_VALIDATORS)),
     __param(1, Optional()),
+    __param(1, Self()),
     __param(1, Inject(NG_ASYNC_VALIDATORS)), 
     __metadata('design:paramtypes', [Array, Array])
 ], NgForm);

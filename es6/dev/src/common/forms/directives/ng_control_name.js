@@ -14,7 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 import { CONST_EXPR } from 'angular2/src/facade/lang';
 import { EventEmitter, ObservableWrapper } from 'angular2/src/facade/async';
-import { Directive, forwardRef, Host, SkipSelf, Provider, Inject, Optional } from 'angular2/core';
+import { Directive, forwardRef, Host, SkipSelf, Provider, Inject, Optional, Self } from 'angular2/core';
 import { ControlContainer } from './control_container';
 import { NgControl } from './ng_control';
 import { NG_VALUE_ACCESSOR } from './control_value_accessor';
@@ -119,10 +119,13 @@ NgControlName = __decorate([
     __param(0, Host()),
     __param(0, SkipSelf()),
     __param(1, Optional()),
+    __param(1, Self()),
     __param(1, Inject(NG_VALIDATORS)),
     __param(2, Optional()),
+    __param(2, Self()),
     __param(2, Inject(NG_ASYNC_VALIDATORS)),
     __param(3, Optional()),
+    __param(3, Self()),
     __param(3, Inject(NG_VALUE_ACCESSOR)), 
     __metadata('design:paramtypes', [ControlContainer, Array, Array, Array])
 ], NgControlName);

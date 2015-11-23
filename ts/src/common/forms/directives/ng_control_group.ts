@@ -7,7 +7,8 @@ import {
   Host,
   SkipSelf,
   forwardRef,
-  Provider
+  Provider,
+  Self
 } from 'angular2/core';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 
@@ -80,8 +81,8 @@ export class NgControlGroup extends ControlContainer implements OnInit,
   _parent: ControlContainer;
 
   constructor(@Host() @SkipSelf() parent: ControlContainer,
-              @Optional() @Inject(NG_VALIDATORS) private _validators: any[],
-              @Optional() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[]) {
+              @Optional() @Self() @Inject(NG_VALIDATORS) private _validators: any[],
+              @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[]) {
     super();
     this._parent = parent;
   }

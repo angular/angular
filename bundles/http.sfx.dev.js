@@ -18029,7 +18029,7 @@ System.register("angular2/src/common/forms/directives/ng_form_control", ["angula
       inputs: ['form: ngFormControl', 'model: ngModel'],
       outputs: ['update: ngModelChange'],
       exportAs: 'form'
-    }), __param(0, core_1.Optional()), __param(0, core_1.Inject(validators_1.NG_VALIDATORS)), __param(1, core_1.Optional()), __param(1, core_1.Inject(validators_1.NG_ASYNC_VALIDATORS)), __param(2, core_1.Optional()), __param(2, core_1.Inject(control_value_accessor_1.NG_VALUE_ACCESSOR)), __metadata('design:paramtypes', [Array, Array, Array])], NgFormControl);
+    }), __param(0, core_1.Optional()), __param(0, core_1.Self()), __param(0, core_1.Inject(validators_1.NG_VALIDATORS)), __param(1, core_1.Optional()), __param(1, core_1.Self()), __param(1, core_1.Inject(validators_1.NG_ASYNC_VALIDATORS)), __param(2, core_1.Optional()), __param(2, core_1.Self()), __param(2, core_1.Inject(control_value_accessor_1.NG_VALUE_ACCESSOR)), __metadata('design:paramtypes', [Array, Array, Array])], NgFormControl);
     return NgFormControl;
   })(ng_control_1.NgControl);
   exports.NgFormControl = NgFormControl;
@@ -18148,7 +18148,7 @@ System.register("angular2/src/common/forms/directives/ng_model", ["angular2/src/
       inputs: ['model: ngModel'],
       outputs: ['update: ngModelChange'],
       exportAs: 'form'
-    }), __param(0, core_1.Optional()), __param(0, core_1.Inject(validators_1.NG_VALIDATORS)), __param(1, core_1.Optional()), __param(1, core_1.Inject(validators_1.NG_ASYNC_VALIDATORS)), __param(2, core_1.Optional()), __param(2, core_1.Inject(control_value_accessor_1.NG_VALUE_ACCESSOR)), __metadata('design:paramtypes', [Array, Array, Array])], NgModel);
+    }), __param(0, core_1.Optional()), __param(0, core_1.Self()), __param(0, core_1.Inject(validators_1.NG_VALIDATORS)), __param(1, core_1.Optional()), __param(1, core_1.Self()), __param(1, core_1.Inject(validators_1.NG_ASYNC_VALIDATORS)), __param(2, core_1.Optional()), __param(2, core_1.Self()), __param(2, core_1.Inject(control_value_accessor_1.NG_VALUE_ACCESSOR)), __metadata('design:paramtypes', [Array, Array, Array])], NgModel);
     return NgModel;
   })(ng_control_1.NgControl);
   exports.NgModel = NgModel;
@@ -18258,7 +18258,7 @@ System.register("angular2/src/common/forms/directives/ng_control_group", ["angul
       providers: [controlGroupProvider],
       inputs: ['name: ng-control-group'],
       exportAs: 'form'
-    }), __param(0, core_1.Host()), __param(0, core_1.SkipSelf()), __param(1, core_1.Optional()), __param(1, core_1.Inject(validators_1.NG_VALIDATORS)), __param(2, core_1.Optional()), __param(2, core_1.Inject(validators_1.NG_ASYNC_VALIDATORS)), __metadata('design:paramtypes', [control_container_1.ControlContainer, Array, Array])], NgControlGroup);
+    }), __param(0, core_1.Host()), __param(0, core_1.SkipSelf()), __param(1, core_1.Optional()), __param(1, core_1.Self()), __param(1, core_1.Inject(validators_1.NG_VALIDATORS)), __param(2, core_1.Optional()), __param(2, core_1.Self()), __param(2, core_1.Inject(validators_1.NG_ASYNC_VALIDATORS)), __metadata('design:paramtypes', [control_container_1.ControlContainer, Array, Array])], NgControlGroup);
     return NgControlGroup;
   })(control_container_1.ControlContainer);
   exports.NgControlGroup = NgControlGroup;
@@ -18403,7 +18403,7 @@ System.register("angular2/src/common/forms/directives/ng_form_model", ["angular2
       host: {'(submit)': 'onSubmit()'},
       outputs: ['ngSubmit'],
       exportAs: 'form'
-    }), __param(0, core_1.Optional()), __param(0, core_1.Inject(validators_1.NG_VALIDATORS)), __param(1, core_1.Optional()), __param(1, core_1.Inject(validators_1.NG_ASYNC_VALIDATORS)), __metadata('design:paramtypes', [Array, Array])], NgFormModel);
+    }), __param(0, core_1.Optional()), __param(0, core_1.Self()), __param(0, core_1.Inject(validators_1.NG_VALIDATORS)), __param(1, core_1.Optional()), __param(1, core_1.Self()), __param(1, core_1.Inject(validators_1.NG_ASYNC_VALIDATORS)), __metadata('design:paramtypes', [Array, Array])], NgFormModel);
     return NgFormModel;
   })(control_container_1.ControlContainer);
   exports.NgFormModel = NgFormModel;
@@ -18564,7 +18564,7 @@ System.register("angular2/src/common/forms/directives/ng_form", ["angular2/src/f
       host: {'(submit)': 'onSubmit()'},
       outputs: ['ngSubmit'],
       exportAs: 'form'
-    }), __param(0, core_1.Optional()), __param(0, core_1.Inject(validators_1.NG_VALIDATORS)), __param(1, core_1.Optional()), __param(1, core_1.Inject(validators_1.NG_ASYNC_VALIDATORS)), __metadata('design:paramtypes', [Array, Array])], NgForm);
+    }), __param(0, core_1.Optional()), __param(0, core_1.Self()), __param(0, core_1.Inject(validators_1.NG_VALIDATORS)), __param(1, core_1.Optional()), __param(1, core_1.Self()), __param(1, core_1.Inject(validators_1.NG_ASYNC_VALIDATORS)), __metadata('design:paramtypes', [Array, Array])], NgForm);
     return NgForm;
   })(control_container_1.ControlContainer);
   exports.NgForm = NgForm;
@@ -29987,7 +29987,7 @@ System.register("angular2/src/common/forms/directives/ng_control_name", ["angula
       inputs: ['name: ngControl', 'model: ngModel'],
       outputs: ['update: ngModelChange'],
       exportAs: 'form'
-    }), __param(0, core_1.Host()), __param(0, core_1.SkipSelf()), __param(1, core_1.Optional()), __param(1, core_1.Inject(validators_1.NG_VALIDATORS)), __param(2, core_1.Optional()), __param(2, core_1.Inject(validators_1.NG_ASYNC_VALIDATORS)), __param(3, core_1.Optional()), __param(3, core_1.Inject(control_value_accessor_1.NG_VALUE_ACCESSOR)), __metadata('design:paramtypes', [control_container_1.ControlContainer, Array, Array, Array])], NgControlName);
+    }), __param(0, core_1.Host()), __param(0, core_1.SkipSelf()), __param(1, core_1.Optional()), __param(1, core_1.Self()), __param(1, core_1.Inject(validators_1.NG_VALIDATORS)), __param(2, core_1.Optional()), __param(2, core_1.Self()), __param(2, core_1.Inject(validators_1.NG_ASYNC_VALIDATORS)), __param(3, core_1.Optional()), __param(3, core_1.Self()), __param(3, core_1.Inject(control_value_accessor_1.NG_VALUE_ACCESSOR)), __metadata('design:paramtypes', [control_container_1.ControlContainer, Array, Array, Array])], NgControlName);
     return NgControlName;
   })(ng_control_1.NgControl);
   exports.NgControlName = NgControlName;

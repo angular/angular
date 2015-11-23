@@ -12,7 +12,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { Directive, Optional, Inject, Host, SkipSelf, forwardRef, Provider } from 'angular2/core';
+import { Directive, Optional, Inject, Host, SkipSelf, forwardRef, Provider, Self } from 'angular2/core';
 import { CONST_EXPR } from 'angular2/src/facade/lang';
 import { ControlContainer } from './control_container';
 import { controlPath, composeValidators, composeAsyncValidators } from './shared';
@@ -100,8 +100,10 @@ NgControlGroup = __decorate([
     __param(0, Host()),
     __param(0, SkipSelf()),
     __param(1, Optional()),
+    __param(1, Self()),
     __param(1, Inject(NG_VALIDATORS)),
     __param(2, Optional()),
+    __param(2, Self()),
     __param(2, Inject(NG_ASYNC_VALIDATORS)), 
     __metadata('design:paramtypes', [ControlContainer, Array, Array])
 ], NgControlGroup);

@@ -104,10 +104,13 @@ var NgModel = (function (_super) {
             exportAs: 'form'
         }),
         __param(0, core_1.Optional()),
+        __param(0, core_1.Self()),
         __param(0, core_1.Inject(validators_1.NG_VALIDATORS)),
         __param(1, core_1.Optional()),
+        __param(1, core_1.Self()),
         __param(1, core_1.Inject(validators_1.NG_ASYNC_VALIDATORS)),
         __param(2, core_1.Optional()),
+        __param(2, core_1.Self()),
         __param(2, core_1.Inject(control_value_accessor_1.NG_VALUE_ACCESSOR)), 
         __metadata('design:paramtypes', [Array, Array, Array])
     ], NgModel);
