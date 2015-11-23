@@ -75,7 +75,8 @@ main() {
                   .componentInstance).toBeAnInstanceOf(MyComp);
               async.done();
             });
-          }));
+          }),
+          10000);
     }
   });
 }
