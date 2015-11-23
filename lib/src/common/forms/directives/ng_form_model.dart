@@ -5,7 +5,7 @@ import "package:angular2/src/facade/collection.dart"
 import "package:angular2/src/facade/async.dart"
     show ObservableWrapper, EventEmitter;
 import "package:angular2/core.dart"
-    show SimpleChange, OnChanges, Directive, Provider, Inject, Optional;
+    show SimpleChange, OnChanges, Directive, Provider, Inject, Optional, Self;
 import "ng_control.dart" show NgControl;
 import "ng_control_group.dart" show NgControlGroup;
 import "control_container.dart" show ControlContainer;
@@ -107,8 +107,8 @@ class NgFormModel extends ControlContainer implements Form, OnChanges {
   ControlGroup form = null;
   List<NgControl> directives = [];
   var ngSubmit = new EventEmitter();
-  NgFormModel(@Optional() @Inject(NG_VALIDATORS) this._validators,
-      @Optional() @Inject(NG_ASYNC_VALIDATORS) this._asyncValidators)
+  NgFormModel(@Optional() @Self() @Inject(NG_VALIDATORS) this._validators,
+      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) this._asyncValidators)
       : super() {
     /* super call moved to initializer */;
   }

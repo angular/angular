@@ -4,7 +4,15 @@ import "package:angular2/src/facade/collection.dart" show StringMapWrapper;
 import "package:angular2/src/facade/async.dart"
     show EventEmitter, ObservableWrapper;
 import "package:angular2/core.dart"
-    show OnChanges, SimpleChange, Query, Directive, Provider, Inject, Optional;
+    show
+        OnChanges,
+        SimpleChange,
+        Query,
+        Directive,
+        Provider,
+        Inject,
+        Optional,
+        Self;
 import "ng_control.dart" show NgControl;
 import "../model.dart" show Control;
 import "../validators.dart" show Validators, NG_VALIDATORS, NG_ASYNC_VALIDATORS;
@@ -82,9 +90,10 @@ class NgFormControl extends NgControl implements OnChanges {
   dynamic model;
   dynamic viewModel;
   NgFormControl(
-      @Optional() @Inject(NG_VALIDATORS) this._validators,
-      @Optional() @Inject(NG_ASYNC_VALIDATORS) this._asyncValidators,
+      @Optional() @Self() @Inject(NG_VALIDATORS) this._validators,
+      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) this._asyncValidators,
       @Optional()
+      @Self()
       @Inject(NG_VALUE_ACCESSOR)
       List<ControlValueAccessor> valueAccessors)
       : super() {

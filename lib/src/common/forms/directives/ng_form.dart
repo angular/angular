@@ -5,7 +5,8 @@ import "package:angular2/src/facade/async.dart"
 import "package:angular2/src/facade/collection.dart"
     show StringMapWrapper, ListWrapper;
 import "package:angular2/src/facade/lang.dart" show isPresent, isBlank;
-import "package:angular2/core.dart" show Directive, Provider, Optional, Inject;
+import "package:angular2/core.dart"
+    show Directive, Provider, Optional, Inject, Self;
 import "ng_control.dart" show NgControl;
 import "form_interface.dart" show Form;
 import "ng_control_group.dart" show NgControlGroup;
@@ -90,8 +91,12 @@ const formDirectiveProvider =
 class NgForm extends ControlContainer implements Form {
   ControlGroup form;
   var ngSubmit = new EventEmitter();
-  NgForm(@Optional() @Inject(NG_VALIDATORS) List<dynamic> validators,
-      @Optional() @Inject(NG_ASYNC_VALIDATORS) List<dynamic> asyncValidators)
+  NgForm(
+      @Optional() @Self() @Inject(NG_VALIDATORS) List<dynamic> validators,
+      @Optional()
+      @Self()
+      @Inject(NG_ASYNC_VALIDATORS)
+      List<dynamic> asyncValidators)
       : super() {
     /* super call moved to initializer */;
     this.form = new ControlGroup({}, null, composeValidators(validators),

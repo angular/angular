@@ -13,7 +13,8 @@ import "package:angular2/core.dart"
         SkipSelf,
         Provider,
         Inject,
-        Optional;
+        Optional,
+        Self;
 import "control_container.dart" show ControlContainer;
 import "ng_control.dart" show NgControl;
 import "control_value_accessor.dart"
@@ -102,9 +103,10 @@ class NgControlName extends NgControl implements OnChanges, OnDestroy {
   var _added = false;
   NgControlName(
       @Host() @SkipSelf() this._parent,
-      @Optional() @Inject(NG_VALIDATORS) this._validators,
-      @Optional() @Inject(NG_ASYNC_VALIDATORS) this._asyncValidators,
+      @Optional() @Self() @Inject(NG_VALIDATORS) this._validators,
+      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) this._asyncValidators,
       @Optional()
+      @Self()
       @Inject(NG_VALUE_ACCESSOR)
       List<ControlValueAccessor> valueAccessors)
       : super() {

@@ -9,7 +9,8 @@ import "package:angular2/core.dart"
         Inject,
         Host,
         SkipSelf,
-        Provider;
+        Provider,
+        Self;
 import "control_container.dart" show ControlContainer;
 import "shared.dart"
     show controlPath, composeValidators, composeAsyncValidators;
@@ -80,8 +81,8 @@ class NgControlGroup extends ControlContainer implements OnInit, OnDestroy {
   ControlContainer _parent;
   NgControlGroup(
       @Host() @SkipSelf() ControlContainer parent,
-      @Optional() @Inject(NG_VALIDATORS) this._validators,
-      @Optional() @Inject(NG_ASYNC_VALIDATORS) this._asyncValidators)
+      @Optional() @Self() @Inject(NG_VALIDATORS) this._validators,
+      @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) this._asyncValidators)
       : super() {
     /* super call moved to initializer */;
     this._parent = parent;
