@@ -50,6 +50,8 @@ matrix:
   - env: "MODE=saucelabs DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
   - env: "MODE=browserstack DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
   - env: "MODE=dart_experimental DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
+  # TODO(alxhub): remove when dartdoc #1039 is in dev channel
+  - env: "MODE=dart DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
 
 addons:
   firefox: "38.0"
