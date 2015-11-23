@@ -791,7 +791,7 @@ class DirectiveMetadata extends InjectableMetadata {
 /**
  * Declare reusable UI building blocks for an application.
  *
- * Each Angular component requires a single `@Component` annotation. The
+ * Each Angular component requires a single `@Component` and at least one `@View` annotation. The
  * `@Component`
  * annotation specifies when a component is instantiated, and which properties and hostListeners it
  * binds to.
