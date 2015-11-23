@@ -12,7 +12,8 @@ import {
   SkipSelf,
   Provider,
   Inject,
-  Optional
+  Optional,
+  Self
 } from 'angular2/core';
 
 import {ControlContainer} from './control_container';
@@ -103,11 +104,12 @@ export class NgControlName extends NgControl implements OnChanges,
   private _added = false;
 
   constructor(@Host() @SkipSelf() private _parent: ControlContainer,
-              @Optional() @Inject(NG_VALIDATORS) private _validators:
+              @Optional() @Self() @Inject(NG_VALIDATORS) private _validators:
                   /* Array<Validator|Function> */ any[],
-              @Optional() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators:
+              @Optional() @Self() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators:
                   /* Array<Validator|Function> */ any[],
-              @Optional() @Inject(NG_VALUE_ACCESSOR) valueAccessors: ControlValueAccessor[]) {
+              @Optional() @Self() @Inject(NG_VALUE_ACCESSOR)
+              valueAccessors: ControlValueAccessor[]) {
     super();
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
