@@ -1,5 +1,6 @@
 'use strict';var dom_adapter_1 = require('angular2/src/platform/dom/dom_adapter');
 var lang_1 = require('angular2/src/facade/lang');
+var collection_1 = require('angular2/src/facade/collection');
 var _global = (typeof window === 'undefined' ? lang_1.global : window);
 exports.expect = _global.expect;
 // Some Map polyfills don't polyfill Map.toString correctly, which
@@ -81,6 +82,29 @@ _global.beforeEach(function () {
                     };
                 };
             }
+        },
+        toHaveCssStyle: function () {
+            return {
+                compare: function (actual, styles) {
+                    var allPassed;
+                    if (lang_1.isString(styles)) {
+                        allPassed = dom_adapter_1.DOM.hasStyle(actual, styles);
+                    }
+                    else {
+                        allPassed = !collection_1.StringMapWrapper.isEmpty(styles);
+                        collection_1.StringMapWrapper.forEach(styles, function (style, prop) {
+                            allPassed = allPassed && dom_adapter_1.DOM.hasStyle(actual, prop, style);
+                        });
+                    }
+                    return {
+                        pass: allPassed,
+                        get message() {
+                            var expectedValueStr = lang_1.isString(styles) ? styles : JSON.stringify(styles);
+                            return "Expected " + actual.outerHTML + " " + (!allPassed ? ' ' : 'not ') + "to contain the\n                      CSS " + (lang_1.isString(styles) ? 'property' : 'styles') + " \"" + expectedValueStr + "\"";
+                        }
+                    };
+                }
+            };
         },
         toContainError: function () {
             return {

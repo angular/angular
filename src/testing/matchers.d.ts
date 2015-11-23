@@ -3,6 +3,7 @@ export interface NgMatchers extends jasmine.Matchers {
     toBeAnInstanceOf(expected: any): boolean;
     toHaveText(expected: any): boolean;
     toHaveCssClass(expected: any): boolean;
+    toHaveCssStyle(expected: any): boolean;
     toImplement(expected: any): boolean;
     toContainError(expected: any): boolean;
     toThrowErrorWith(expectedMessage: any): boolean;
