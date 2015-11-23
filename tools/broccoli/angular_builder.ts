@@ -70,6 +70,7 @@ export class AngularBuilder {
         {
           name: 'dev',
           typeAssertions: true,
+          sourceMaps: true,
           projects: opts.projects,
           noTypeChecks: opts.noTypeChecks,
           generateEs6: opts.generateEs6
@@ -84,6 +85,7 @@ export class AngularBuilder {
         {
           name: 'prod',
           typeAssertions: false,
+          sourceMaps: false,
           projects: opts.projects,
           noTypeChecks: opts.noTypeChecks,
           generateEs6: opts.generateEs6
