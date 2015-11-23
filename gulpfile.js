@@ -524,7 +524,7 @@ function launchKarmaWithExternalBrowsers(reporters, browsers, done) {
 
 gulp.task('!test.unit.js/karma-server', function(done) {
   var watchStarted = false;
-  var server = new karma.Server({configFile: __dirname + '/karma-js.conf.js', reporters: 'dots'});
+  var server = new karma.Server({configFile: __dirname + '/karma-js.conf.js'});
   server.on('run_complete', function() {
     if (!watchStarted) {
       watchStarted = true;
@@ -548,10 +548,7 @@ gulp.task('test.unit.router', function(done) {
 });
 
 gulp.task('!test.unit.router/karma-server', function() {
-  new karma.Server({
-             configFile: __dirname + '/modules/angular1_router/karma-router.conf.js',
-             reporters: 'dots'
-           })
+  new karma.Server({configFile: __dirname + '/modules/angular1_router/karma-router.conf.js'})
       .start();
 });
 

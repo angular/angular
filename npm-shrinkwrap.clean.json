@@ -12153,6 +12153,9 @@
         }
       }
     },
+    "karma-sourcemap-loader": {
+      "version": "0.3.6"
+    },
     "lodash": {
       "version": "2.4.2"
     },

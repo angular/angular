@@ -1,4 +1,5 @@
 var browserProvidersConf = require('./browser-providers.conf.js');
+var internalAngularReporter = require('./tools/karma/reporter.js');
 
 // Karma configuration
 // Generated on Thu Sep 25 2014 11:52:02 GMT-0700 (PDT)
@@ -35,6 +36,21 @@ module.exports = function(config) {
 
     customLaunchers: browserProvidersConf.customLaunchers,
 
+    plugins: [
+      'karma-jasmine',
+      'karma-browserstack-launcher',
+      'karma-sauce-launcher',
+      'karma-chrome-launcher',
+      'karma-sourcemap-loader',
+      'karma-dart',
+      internalAngularReporter
+    ],
+
+    preprocessors: {
+      '**/*.js': ['sourcemap']
+    },
+
+    reporters: ['internal-angular'],
     sauceLabs: {
       testName: 'Angular2',
       startConnect: false,

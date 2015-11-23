@@ -74,6 +74,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   const modules = options.projects;
   const noTypeChecks = options.noTypeChecks;
   const generateEs6 = options.generateEs6;
+  const sourceMaps = options.sourceMaps;
 
   if (modules.angular2) {
     var angular2Tree = new Funnel('modules/angular2', {
@@ -147,14 +148,13 @@ module.exports = function makeBrowserTree(options, destinationPath) {
     declaration: false,
     emitDecoratorMetadata: true,
     experimentalDecorators: true,
-    mapRoot: '',  // force sourcemaps to use relative path
     module: 'commonjs',
     moduleResolution: 'classic',
     noEmitOnError: !noTypeChecks,
     rootDir: './',
     rootFilePaths: ['angular2/manual_typings/globals.d.ts'],
-    sourceMap: true,
-    sourceRoot: '.',
+    inlineSourceMap: sourceMaps,
+    inlineSources: sourceMaps,
     target: 'es5'
   });
 
@@ -276,12 +276,11 @@ module.exports = function makeBrowserTree(options, destinationPath) {
       declaration: false,
       emitDecoratorMetadata: true,
       experimentalDecorators: true,
-      mapRoot: '',  // force sourcemaps to use relative path
       noEmitOnError: false,
       rootDir: './',
       rootFilePaths: ['angular2/manual_typings/globals-es6.d.ts'],
-      sourceMap: true,
-      sourceRoot: '.',
+      inlineSourceMap: sourceMaps,
+      inlineSources: sourceMaps,
       target: 'es6'
     });
 

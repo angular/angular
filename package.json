@@ -81,6 +81,7 @@
     "karma-dart": "^0.3.0",
     "karma-jasmine": "^0.3.6",
     "karma-sauce-launcher": "^0.2.14",
+    "karma-sourcemap-loader": "^0.3.6",
     "lodash": "^2.4.1",
     "madge": "0.5.0",
     "merge": "^1.2.0",
