@@ -39,7 +39,7 @@ export * from '../src/common/forms';
 export {DebugElement} from '../src/core/debug/debug_element';
 export * from '../src/core/change_detection';
 
-export * from '../profile';
+export * from '../instrumentation';
 export * from '../src/web_workers/worker/application';
 export {
   ClientMessageBroker,

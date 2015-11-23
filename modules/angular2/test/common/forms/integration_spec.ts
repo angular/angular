@@ -1,4 +1,4 @@
-import {Component, Directive, View, Output, EventEmitter} from 'angular2/angular2';
+import {Component, Directive, View, Output, EventEmitter} from 'angular2/core';
 import {
   ComponentFixture,
   afterEach,
@@ -33,7 +33,6 @@ import {
   Validators,
   Validator
 } from 'angular2/common';
-import {Input, Provider, forwardRef} from 'angular2/core';
 import {By} from 'angular2/platform/browser';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {ObservableWrapper} from 'angular2/src/facade/async';

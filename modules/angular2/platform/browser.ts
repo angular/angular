@@ -6,7 +6,9 @@ export {
   BrowserDomAdapter,
   By,
   Title,
-  DOCUMENT
+  DOCUMENT,
+  enableDebugTools,
+  disableDebugTools
 } from 'angular2/src/platform/browser_common';
 
 import {Type, isPresent, CONST_EXPR} from 'angular2/src/facade/lang';

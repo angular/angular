@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/angular2';
+import {Injectable} from 'angular2/core';
 import {isPresent, isJsObject} from 'angular2/src/facade/lang';
 import {Headers} from './headers';
 import {ResponseTypes} from './enums';

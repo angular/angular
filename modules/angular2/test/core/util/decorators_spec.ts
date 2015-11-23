@@ -12,7 +12,7 @@ import {
 
 import {makeDecorator, makeParamDecorator, Class} from 'angular2/src/core/util/decorators';
 import {global} from 'angular2/src/facade/lang';
-import {Inject} from 'angular2/angular2';
+import {Inject} from 'angular2/core';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 
 class TestAnnotation {

@@ -16,7 +16,7 @@ import {
 
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 
-import {Component, View} from 'angular2/angular2';
+import {Component, View} from 'angular2/core';
 
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {NgStyle} from 'angular2/src/common/directives/ng_style';

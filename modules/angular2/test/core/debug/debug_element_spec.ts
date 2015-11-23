@@ -21,7 +21,7 @@ import {PromiseWrapper, EventEmitter, ObservableWrapper} from 'angular2/src/faca
 import {Injectable} from 'angular2/core';
 import {NgFor, NgIf} from 'angular2/common';
 import {Scope} from 'angular2/core';
-import {By} from 'angular2/platform/browser';
+import {By} from 'angular2/platform/common_dom';
 
 import {
   Directive,

@@ -14,7 +14,7 @@ Ctrl + Shift + j.
 By default the debug tools are disabled. You can enable debug tools as follows:
 
 ```typescript
-import 'angular2/tools';
+import {enableDebugTools} 'angular2/platform/browser';
 
 bootstrap(Application).then((appRef) => {
   enableDebugTools(appRef);
