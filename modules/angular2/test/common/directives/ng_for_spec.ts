@@ -14,9 +14,7 @@ import {
 } from 'angular2/testing_internal';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
-
-import {Component, View, TemplateRef, ContentChild} from 'angular2/angular2';
-
+import {Component, View, TemplateRef, ContentChild} from 'angular2/core';
 import {NgFor} from 'angular2/src/common/directives/ng_for';
 
 

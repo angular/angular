@@ -36,7 +36,7 @@ import {
   ViewEncapsulation,
   ViewMetadata
 } from 'angular2/core';
-import {By} from 'angular2/platform/browser';
+import {By} from 'angular2/platform/common_dom';
 
 export function main() {
   describe('projection', () => {

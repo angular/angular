@@ -36,10 +36,8 @@ import {
 } from 'angular2/core';
 import {NgIf, NgFor} from 'angular2/common';
 import {asNativeElements} from 'angular2/core';
-import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
 
 export function main() {
-  BrowserDomAdapter.makeCurrent();
   describe('Query API', () => {
     describe("querying by directive type", () => {
       it('should contain all direct child directives in the light dom (constructor)',

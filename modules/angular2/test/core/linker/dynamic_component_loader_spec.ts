@@ -19,7 +19,7 @@ import {
 import {OnDestroy} from 'angular2/core';
 import {Injector, inspectElement} from 'angular2/core';
 import {NgIf} from 'angular2/common';
-import {By} from 'angular2/platform/browser';
+import {By} from 'angular2/platform/common_dom';
 import {Component, View, ViewMetadata} from 'angular2/src/core/metadata';
 import {DynamicComponentLoader} from 'angular2/src/core/linker/dynamic_component_loader';
 import {ElementRef} from 'angular2/src/core/linker/element_ref';

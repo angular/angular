@@ -15,7 +15,8 @@ import {
   xit,
 } from 'angular2/testing_internal';
 import {ListWrapper, StringMapWrapper, SetWrapper} from 'angular2/src/facade/collection';
-import {Component, View, NgFor, provide} from 'angular2/angular2';
+import {Component, View, provide} from 'angular2/core';
+import {NgFor} from 'angular2/common';
 import {NgClass} from 'angular2/src/common/directives/ng_class';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 

@@ -25,8 +25,19 @@ module.exports = function makeNodeTree(projects, destinationPath) {
       'angular2/test/testing/fake_async_spec.ts',
       'angular2/test/testing/testing_public_spec.ts',
       'angular2/test/platform/xhr_impl_spec.ts',
+      'angular2/test/platform/browser/**/*.ts',
       'angular2/test/common/forms/**',
-      'angular2/test/tools/tools_spec.ts',
+
+      // we call browser's bootstrap
+      'angular2/test/router/route_config_spec.ts',
+      'angular2/test/router/integration/router_integration_spec.ts',
+
+      // we check the public api by importing angular2/angular2
+      'angular2/test/symbol_inspector/**/*.ts',
+      'angular2/test/public_api_spec.ts',
+
+      'angular2/test/upgrade/**/*.ts',
+
       'angular1_router/**',
       'angular2/examples/**/!(*_spec.ts)',
     ]

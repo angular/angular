@@ -10,7 +10,7 @@ import {
   xit
 } from 'angular2/testing_internal';
 
-import {enableDebugTools, disableDebugTools} from 'angular2/tools';
+import {enableDebugTools, disableDebugTools} from 'angular2/platform/browser';
 import {SpyComponentRef, callNgProfilerTimeChangeDetection} from './spies';
 
 export function main() {
