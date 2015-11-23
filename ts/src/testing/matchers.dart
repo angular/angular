@@ -6,6 +6,8 @@ import 'package:guinness/guinness.dart' as gns;
 
 import 'package:angular2/src/platform/dom/dom_adapter.dart' show DOM;
 
+import 'package:angular2/src/facade/lang.dart' show isString;
+
 Expect expect(actual, [matcher]) {
   final expect = new Expect(actual);
   if (matcher != null) expect.to(matcher);
@@ -13,6 +15,18 @@ Expect expect(actual, [matcher]) {
 }
 
 const _u = const Object();
+
+bool elementContainsStyle(element, styles) {
+  var allPassed = true;
+  if (isString(styles)) {
+    allPassed = DOM.hasStyle(element, styles);
+  } else {
+    styles.forEach((prop, style) {
+      allPassed = allPassed && DOM.hasStyle(element, prop, style);
+    });
+  }
+  return allPassed;
+}
 
 expectErrorMessage(actual, expectedMessage) {
   expect(actual.toString()).toContain(expectedMessage);
@@ -38,6 +52,9 @@ class Expect extends gns.Expect {
   void toBePromise() => gns.guinness.matchers.toBeTrue(actual is Future);
   void toHaveCssClass(className) =>
       gns.guinness.matchers.toBeTrue(DOM.hasClass(actual, className));
+  void toHaveCssStyle(styles) {
+    gns.guinness.matchers.toBeTrue(elementContainsStyle(actual, styles));
+  }
   void toImplement(expected) => toBeA(expected);
   void toBeNaN() =>
       gns.guinness.matchers.toBeTrue(double.NAN.compareTo(actual) == 0);
@@ -78,6 +95,9 @@ class NotExpect extends gns.NotExpect {
   void toBePromise() => gns.guinness.matchers.toBeFalse(actual is Future);
   void toHaveCssClass(className) =>
       gns.guinness.matchers.toBeFalse(DOM.hasClass(actual, className));
+  void toHaveCssStyle(styles) {
+    gns.guinness.matchers.toBeFalse(elementContainsStyle(actual, styles));
+  }
   void toBeNull() => gns.guinness.matchers.toBeFalse(actual == null);
   Function get _expect => gns.guinness.matchers.expect;
 }

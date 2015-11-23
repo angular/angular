@@ -38755,23 +38755,30 @@ System.register("angular2/src/platform/browser/browser_adapter", ["angular2/src/
     BrowserDomAdapter.prototype.classList = function(element) {
       return Array.prototype.slice.call(element.classList, 0);
     };
-    BrowserDomAdapter.prototype.addClass = function(element, classname) {
-      element.classList.add(classname);
+    BrowserDomAdapter.prototype.addClass = function(element, className) {
+      element.classList.add(className);
     };
-    BrowserDomAdapter.prototype.removeClass = function(element, classname) {
-      element.classList.remove(classname);
+    BrowserDomAdapter.prototype.removeClass = function(element, className) {
+      element.classList.remove(className);
     };
-    BrowserDomAdapter.prototype.hasClass = function(element, classname) {
-      return element.classList.contains(classname);
+    BrowserDomAdapter.prototype.hasClass = function(element, className) {
+      return element.classList.contains(className);
     };
-    BrowserDomAdapter.prototype.setStyle = function(element, stylename, stylevalue) {
-      element.style[stylename] = stylevalue;
+    BrowserDomAdapter.prototype.setStyle = function(element, styleName, styleValue) {
+      element.style[styleName] = styleValue;
     };
     BrowserDomAdapter.prototype.removeStyle = function(element, stylename) {
       element.style[stylename] = null;
     };
     BrowserDomAdapter.prototype.getStyle = function(element, stylename) {
       return element.style[stylename];
+    };
+    BrowserDomAdapter.prototype.hasStyle = function(element, styleName, styleValue) {
+      if (styleValue === void 0) {
+        styleValue = null;
+      }
+      var value = this.getStyle(element, styleName) || '';
+      return styleValue ? value == styleValue : value.length > 0;
     };
     BrowserDomAdapter.prototype.tagName = function(element) {
       return element.tagName;
