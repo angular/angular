@@ -352,28 +352,24 @@ export class Parse5DomAdapter extends DomAdapter {
     }
     return classAttrValue ? classAttrValue.trim().split(/\s+/g) : [];
   }
-  addClass(element, className: string) {
+  addClass(element, classname: string) {
     var classList = this.classList(element);
-    var index = classList.indexOf(className);
+    var index = classList.indexOf(classname);
     if (index == -1) {
-      classList.push(className);
+      classList.push(classname);
       element.attribs["class"] = element.className = classList.join(" ");
     }
   }
-  removeClass(element, className: string) {
+  removeClass(element, classname: string) {
     var classList = this.classList(element);
-    var index = classList.indexOf(className);
+    var index = classList.indexOf(classname);
     if (index > -1) {
       classList.splice(index, 1);
       element.attribs["class"] = element.className = classList.join(" ");
     }
   }
-  hasClass(element, className: string): boolean {
-    return ListWrapper.contains(this.classList(element), className);
-  }
-  hasStyle(element, styleName: string, styleValue: string = null): boolean {
-    var value = this.getStyle(element, styleName) || '';
-    return styleValue ? value == styleValue : value.length > 0;
+  hasClass(element, classname: string): boolean {
+    return ListWrapper.contains(this.classList(element), classname);
   }
   /** @internal */
   _readStyleAttribute(element) {
@@ -402,15 +398,15 @@ export class Parse5DomAdapter extends DomAdapter {
     }
     element.attribs["style"] = styleAttrValue;
   }
-  setStyle(element, styleName: string, styleValue: string) {
+  setStyle(element, stylename: string, stylevalue: string) {
     var styleMap = this._readStyleAttribute(element);
-    styleMap[styleName] = styleValue;
+    styleMap[stylename] = stylevalue;
     this._writeStyleAttribute(element, styleMap);
   }
-  removeStyle(element, styleName: string) { this.setStyle(element, styleName, null); }
-  getStyle(element, styleName: string): string {
+  removeStyle(element, stylename: string) { this.setStyle(element, stylename, null); }
+  getStyle(element, stylename: string): string {
     var styleMap = this._readStyleAttribute(element);
-    return styleMap.hasOwnProperty(styleName) ? styleMap[styleName] : "";
+    return styleMap.hasOwnProperty(stylename) ? styleMap[stylename] : "";
   }
   tagName(element): string { return element.tagName == "style" ? "STYLE" : element.tagName; }
   attributeMap(element): Map<string, string> {

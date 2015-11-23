@@ -61,13 +61,12 @@ export declare class BrowserDomAdapter extends GenericBrowserDomAdapter {
     getElementsByClassName(element: any, name: string): HTMLElement[];
     getElementsByTagName(element: any, name: string): HTMLElement[];
     classList(element: any): any[];
-    addClass(element: any, className: string): void;
-    removeClass(element: any, className: string): void;
-    hasClass(element: any, className: string): boolean;
-    setStyle(element: any, styleName: string, styleValue: string): void;
+    addClass(element: any, classname: string): void;
+    removeClass(element: any, classname: string): void;
+    hasClass(element: any, classname: string): boolean;
+    setStyle(element: any, stylename: string, stylevalue: string): void;
     removeStyle(element: any, stylename: string): void;
     getStyle(element: any, stylename: string): string;
-    hasStyle(element: any, styleName: string, styleValue?: string): boolean;
     tagName(element: any): string;
     attributeMap(element: any): Map<string, string>;
     hasAttribute(element: any, attribute: string): boolean;

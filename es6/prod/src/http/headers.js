@@ -41,6 +41,16 @@ export class Headers {
         StringMapWrapper.forEach(headers, (v, k) => { this._headersMap.set(k, isListLikeIterable(v) ? v : [v]); });
     }
     /**
+     * Returns a new Headers instance from the given DOMString of Response Headers
+     */
+    static fromResponseHeaderString(headersString) {
+        return headersString.trim()
+            .split('\n')
+            .map(val => val.split(':'))
+            .map(([key, ...parts]) => ([key.trim(), parts.join(':').trim()]))
+            .reduce((headers, [key, value]) => !headers.set(key, value) && headers, new Headers());
+    }
+    /**
      * Appends a header to existing list of header values for a given header name.
      */
     append(name, value) {

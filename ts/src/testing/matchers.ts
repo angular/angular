@@ -1,6 +1,5 @@
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {global, isString} from 'angular2/src/facade/lang';
-import {StringMapWrapper} from 'angular2/src/facade/collection';
+import {global} from 'angular2/src/facade/lang';
 
 
 export interface NgMatchers extends jasmine.Matchers {
@@ -8,7 +7,6 @@ export interface NgMatchers extends jasmine.Matchers {
   toBeAnInstanceOf(expected: any): boolean;
   toHaveText(expected: any): boolean;
   toHaveCssClass(expected: any): boolean;
-  toHaveCssStyle(expected: any): boolean;
   toImplement(expected: any): boolean;
   toContainError(expected: any): boolean;
   toThrowErrorWith(expectedMessage: any): boolean;
@@ -105,31 +103,6 @@ _global.beforeEach(function() {
           };
         };
       }
-    },
-
-    toHaveCssStyle: function() {
-      return {
-        compare: function(actual, styles) {
-          var allPassed;
-          if (isString(styles)) {
-            allPassed = DOM.hasStyle(actual, styles);
-          } else {
-            allPassed = !StringMapWrapper.isEmpty(styles);
-            StringMapWrapper.forEach(styles, (style, prop) => {
-              allPassed = allPassed && DOM.hasStyle(actual, prop, style);
-            });
-          }
-
-          return {
-            pass: allPassed,
-            get message() {
-              var expectedValueStr = isString(styles) ? styles : JSON.stringify(styles);
-              return `Expected ${actual.outerHTML} ${!allPassed ? ' ' : 'not '}to contain the
-                      CSS ${isString(styles) ? 'property' : 'styles'} "${expectedValueStr}"`;
-            }
-          };
-        }
-      };
     },
 
     toContainError: function() {

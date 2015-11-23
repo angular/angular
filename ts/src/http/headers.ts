@@ -55,6 +55,17 @@ export class Headers {
   }
 
   /**
+   * Returns a new Headers instance from the given DOMString of Response Headers
+   */
+  static fromResponseHeaderString(headersString: string): Headers {
+    return headersString.trim()
+        .split('\n')
+        .map(val => val.split(':'))
+        .map(([key, ...parts]) => ([key.trim(), parts.join(':').trim()]))
+        .reduce((headers, [key, value]) => !headers.set(key, value) && headers, new Headers());
+  }
+
+  /**
    * Appends a header to existing list of header values for a given header name.
    */
   append(name: string, value: string): void {

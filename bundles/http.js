@@ -39,6 +39,19 @@ System.register("angular2/src/http/headers", ["angular2/src/facade/lang", "angul
         _this._headersMap.set(k, collection_1.isListLikeIterable(v) ? v : [v]);
       });
     }
+    Headers.fromResponseHeaderString = function(headersString) {
+      return headersString.trim().split('\n').map(function(val) {
+        return val.split(':');
+      }).map(function(_a) {
+        var key = _a[0],
+            parts = _a.slice(1);
+        return ([key.trim(), parts.join(':').trim()]);
+      }).reduce(function(headers, _a) {
+        var key = _a[0],
+            value = _a[1];
+        return !headers.set(key, value) && headers;
+      }, new Headers());
+    };
     Headers.prototype.append = function(name, value) {
       var mapName = this._headersMap.get(name);
       var list = collection_1.isListLikeIterable(mapName) ? mapName : [];
@@ -593,6 +606,19 @@ System.register("angular2/src/http/http_utils", ["angular2/src/facade/lang", "an
     return method;
   }
   exports.normalizeMethodName = normalizeMethodName;
+  exports.isSuccess = function(status) {
+    return (status >= 200 && status < 300);
+  };
+  function getResponseURL(xhr) {
+    if ('responseURL' in xhr) {
+      return xhr.responseURL;
+    }
+    if (/^X-Request-URL:/m.test(xhr.getAllResponseHeaders())) {
+      return xhr.getResponseHeader('X-Request-URL');
+    }
+    return ;
+  }
+  exports.getResponseURL = getResponseURL;
   var lang_2 = require("angular2/src/facade/lang");
   exports.isJsObject = lang_2.isJsObject;
   global.define = __define;
@@ -682,7 +708,7 @@ System.register("angular2/src/http/base_request_options", ["angular2/src/facade/
   return module.exports;
 });
 
-System.register("angular2/src/http/backends/xhr_backend", ["angular2/src/http/enums", "angular2/src/http/static_response", "angular2/src/http/base_response_options", "angular2/angular2", "angular2/src/http/backends/browser_xhr", "angular2/src/facade/lang", "angular2/angular2"], true, function(require, exports, module) {
+System.register("angular2/src/http/backends/xhr_backend", ["angular2/src/http/enums", "angular2/src/http/static_response", "angular2/src/http/headers", "angular2/src/http/base_response_options", "angular2/angular2", "angular2/src/http/backends/browser_xhr", "angular2/src/facade/lang", "angular2/angular2", "angular2/src/http/http_utils"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -710,11 +736,13 @@ System.register("angular2/src/http/backends/xhr_backend", ["angular2/src/http/en
   };
   var enums_1 = require("angular2/src/http/enums");
   var static_response_1 = require("angular2/src/http/static_response");
+  var headers_1 = require("angular2/src/http/headers");
   var base_response_options_1 = require("angular2/src/http/base_response_options");
   var angular2_1 = require("angular2/angular2");
   var browser_xhr_1 = require("angular2/src/http/backends/browser_xhr");
   var lang_1 = require("angular2/src/facade/lang");
   var angular2_2 = require("angular2/angular2");
+  var http_utils_1 = require("angular2/src/http/http_utils");
   var XHRConnection = (function() {
     function XHRConnection(req, browserXHR, baseResponseOptions) {
       var _this = this;
@@ -723,20 +751,29 @@ System.register("angular2/src/http/backends/xhr_backend", ["angular2/src/http/en
         var _xhr = browserXHR.build();
         _xhr.open(enums_1.RequestMethods[req.method].toUpperCase(), req.url);
         var onLoad = function() {
-          var response = lang_1.isPresent(_xhr.response) ? _xhr.response : _xhr.responseText;
+          var body = lang_1.isPresent(_xhr.response) ? _xhr.response : _xhr.responseText;
+          var headers = headers_1.Headers.fromResponseHeaderString(_xhr.getAllResponseHeaders());
+          var url = http_utils_1.getResponseURL(_xhr);
           var status = _xhr.status === 1223 ? 204 : _xhr.status;
           if (status === 0) {
-            status = response ? 200 : 0;
+            status = body ? 200 : 0;
           }
           var responseOptions = new base_response_options_1.ResponseOptions({
-            body: response,
-            status: status
+            body: body,
+            status: status,
+            headers: headers,
+            url: url
           });
           if (lang_1.isPresent(baseResponseOptions)) {
             responseOptions = baseResponseOptions.merge(responseOptions);
           }
-          responseObserver.next(new static_response_1.Response(responseOptions));
-          responseObserver.complete();
+          var response = new static_response_1.Response(responseOptions);
+          if (http_utils_1.isSuccess(status)) {
+            responseObserver.next(response);
+            responseObserver.complete();
+            return ;
+          }
+          responseObserver.error(response);
         };
         var onError = function(err) {
           var responseOptions = new base_response_options_1.ResponseOptions({
@@ -865,7 +902,8 @@ System.register("angular2/src/http/backends/jsonp_backend", ["angular2/src/http/
           if (!_this._finished) {
             var responseOptions_1 = new base_response_options_1.ResponseOptions({
               body: JSONP_ERR_NO_CALLBACK,
-              type: enums_1.ResponseTypes.Error
+              type: enums_1.ResponseTypes.Error,
+              url: url
             });
             if (lang_1.isPresent(baseResponseOptions)) {
               responseOptions_1 = baseResponseOptions.merge(responseOptions_1);
@@ -873,7 +911,10 @@ System.register("angular2/src/http/backends/jsonp_backend", ["angular2/src/http/
             responseObserver.error(new static_response_1.Response(responseOptions_1));
             return ;
           }
-          var responseOptions = new base_response_options_1.ResponseOptions({body: _this._responseData});
+          var responseOptions = new base_response_options_1.ResponseOptions({
+            body: _this._responseData,
+            url: url
+          });
           if (lang_1.isPresent(_this.baseResponseOptions)) {
             responseOptions = _this.baseResponseOptions.merge(responseOptions);
           }
@@ -1026,9 +1067,9 @@ System.register("angular2/src/http/http", ["angular2/src/facade/lang", "angular2
   function mergeOptions(defaultOpts, providedOpts, method, url) {
     var newOptions = defaultOpts;
     if (lang_1.isPresent(providedOpts)) {
-      newOptions = newOptions.merge(new base_request_options_1.RequestOptions({
-        method: providedOpts.method,
-        url: providedOpts.url,
+      return newOptions.merge(new base_request_options_1.RequestOptions({
+        method: providedOpts.method || method,
+        url: providedOpts.url || url,
         search: providedOpts.search,
         headers: providedOpts.headers,
         body: providedOpts.body

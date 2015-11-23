@@ -1,6 +1,5 @@
 import { DOM } from 'angular2/src/platform/dom/dom_adapter';
-import { global, isString } from 'angular2/src/facade/lang';
-import { StringMapWrapper } from 'angular2/src/facade/collection';
+import { global } from 'angular2/src/facade/lang';
 var _global = (typeof window === 'undefined' ? global : window);
 export var expect = _global.expect;
 // Some Map polyfills don't polyfill Map.toString correctly, which
@@ -82,30 +81,6 @@ _global.beforeEach(function () {
                     };
                 };
             }
-        },
-        toHaveCssStyle: function () {
-            return {
-                compare: function (actual, styles) {
-                    var allPassed;
-                    if (isString(styles)) {
-                        allPassed = DOM.hasStyle(actual, styles);
-                    }
-                    else {
-                        allPassed = !StringMapWrapper.isEmpty(styles);
-                        StringMapWrapper.forEach(styles, (style, prop) => {
-                            allPassed = allPassed && DOM.hasStyle(actual, prop, style);
-                        });
-                    }
-                    return {
-                        pass: allPassed,
-                        get message() {
-                            var expectedValueStr = isString(styles) ? styles : JSON.stringify(styles);
-                            return `Expected ${actual.outerHTML} ${!allPassed ? ' ' : 'not '}to contain the
-                      CSS ${isString(styles) ? 'property' : 'styles'} "${expectedValueStr}"`;
-                        }
-                    };
-                }
-            };
         },
         toContainError: function () {
             return {

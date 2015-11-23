@@ -11,5 +11,15 @@ export function normalizeMethodName(method) {
     }
     return method;
 }
+export const isSuccess = (status) => (status >= 200 && status < 300);
+export function getResponseURL(xhr) {
+    if ('responseURL' in xhr) {
+        return xhr.responseURL;
+    }
+    if (/^X-Request-URL:/m.test(xhr.getAllResponseHeaders())) {
+        return xhr.getResponseHeader('X-Request-URL');
+    }
+    return;
+}
 export { isJsObject } from 'angular2/src/facade/lang';
 //# sourceMappingURL=http_utils.js.map

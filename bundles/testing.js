@@ -1103,13 +1103,12 @@ System.register("angular2/src/web_workers/shared/render_view_with_fragments_stor
   return module.exports;
 });
 
-System.register("angular2/src/testing/matchers", ["angular2/src/platform/dom/dom_adapter", "angular2/src/facade/lang", "angular2/src/facade/collection"], true, function(require, exports, module) {
+System.register("angular2/src/testing/matchers", ["angular2/src/platform/dom/dom_adapter", "angular2/src/facade/lang"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
   var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
   var lang_1 = require("angular2/src/facade/lang");
-  var collection_1 = require("angular2/src/facade/collection");
   var _global = (typeof window === 'undefined' ? lang_1.global : window);
   exports.expect = _global.expect;
   Map.prototype['jasmineToString'] = function() {
@@ -1191,26 +1190,6 @@ System.register("angular2/src/testing/matchers", ["angular2/src/platform/dom/dom
             };
           };
         }
-      },
-      toHaveCssStyle: function() {
-        return {compare: function(actual, styles) {
-            var allPassed;
-            if (lang_1.isString(styles)) {
-              allPassed = dom_adapter_1.DOM.hasStyle(actual, styles);
-            } else {
-              allPassed = !collection_1.StringMapWrapper.isEmpty(styles);
-              collection_1.StringMapWrapper.forEach(styles, function(style, prop) {
-                allPassed = allPassed && dom_adapter_1.DOM.hasStyle(actual, prop, style);
-              });
-            }
-            return {
-              pass: allPassed,
-              get message() {
-                var expectedValueStr = lang_1.isString(styles) ? styles : JSON.stringify(styles);
-                return "Expected " + actual.outerHTML + " " + (!allPassed ? ' ' : 'not ') + "to contain the\n                      CSS " + (lang_1.isString(styles) ? 'property' : 'styles') + " \"" + expectedValueStr + "\"";
-              }
-            };
-          }};
       },
       toContainError: function() {
         return {compare: function(actual, expectedText) {

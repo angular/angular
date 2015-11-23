@@ -64,14 +64,14 @@ var JSONPConnection_ = (function (_super) {
                 _this.readyState = enums_1.ReadyStates.Done;
                 _dom.cleanup(script);
                 if (!_this._finished) {
-                    var responseOptions_1 = new base_response_options_1.ResponseOptions({ body: JSONP_ERR_NO_CALLBACK, type: enums_1.ResponseTypes.Error });
+                    var responseOptions_1 = new base_response_options_1.ResponseOptions({ body: JSONP_ERR_NO_CALLBACK, type: enums_1.ResponseTypes.Error, url: url });
                     if (lang_1.isPresent(baseResponseOptions)) {
                         responseOptions_1 = baseResponseOptions.merge(responseOptions_1);
                     }
                     responseObserver.error(new static_response_1.Response(responseOptions_1));
                     return;
                 }
-                var responseOptions = new base_response_options_1.ResponseOptions({ body: _this._responseData });
+                var responseOptions = new base_response_options_1.ResponseOptions({ body: _this._responseData, url: url });
                 if (lang_1.isPresent(_this.baseResponseOptions)) {
                     responseOptions = _this.baseResponseOptions.merge(responseOptions);
                 }

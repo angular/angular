@@ -11,11 +11,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var enums_1 = require('../enums');
 var static_response_1 = require('../static_response');
+var headers_1 = require('../headers');
 var base_response_options_1 = require('../base_response_options');
 var angular2_1 = require('angular2/angular2');
 var browser_xhr_1 = require('./browser_xhr');
 var lang_1 = require('angular2/src/facade/lang');
 var angular2_2 = require('angular2/angular2');
+var http_utils_1 = require('../http_utils');
 /**
 * Creates connections using `XMLHttpRequest`. Given a fully-qualified
 * request, an `XHRConnection` will immediately create an `XMLHttpRequest` object and send the
@@ -36,22 +38,29 @@ var XHRConnection = (function () {
                 // responseText is the old-school way of retrieving response (supported by IE8 & 9)
                 // response/responseType properties were introduced in XHR Level2 spec (supported by
                 // IE10)
-                var response = lang_1.isPresent(_xhr.response) ? _xhr.response : _xhr.responseText;
+                var body = lang_1.isPresent(_xhr.response) ? _xhr.response : _xhr.responseText;
+                var headers = headers_1.Headers.fromResponseHeaderString(_xhr.getAllResponseHeaders());
+                var url = http_utils_1.getResponseURL(_xhr);
                 // normalize IE9 bug (http://bugs.jquery.com/ticket/1450)
                 var status = _xhr.status === 1223 ? 204 : _xhr.status;
                 // fix status code when it is 0 (0 status is undocumented).
                 // Occurs when accessing file resources or on Android 4.1 stock browser
                 // while retrieving files from application cache.
                 if (status === 0) {
-                    status = response ? 200 : 0;
+                    status = body ? 200 : 0;
                 }
-                var responseOptions = new base_response_options_1.ResponseOptions({ body: response, status: status });
+                var responseOptions = new base_response_options_1.ResponseOptions({ body: body, status: status, headers: headers, url: url });
                 if (lang_1.isPresent(baseResponseOptions)) {
                     responseOptions = baseResponseOptions.merge(responseOptions);
                 }
-                responseObserver.next(new static_response_1.Response(responseOptions));
-                // TODO(gdi2290): defer complete if array buffer until done
-                responseObserver.complete();
+                var response = new static_response_1.Response(responseOptions);
+                if (http_utils_1.isSuccess(status)) {
+                    responseObserver.next(response);
+                    // TODO(gdi2290): defer complete if array buffer until done
+                    responseObserver.complete();
+                    return;
+                }
+                responseObserver.error(response);
             };
             // error event handler
             var onError = function (err) {

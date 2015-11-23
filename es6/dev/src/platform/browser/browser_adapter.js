@@ -191,18 +191,14 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
         return element.getElementsByTagName(name);
     }
     classList(element) { return Array.prototype.slice.call(element.classList, 0); }
-    addClass(element, className) { element.classList.add(className); }
-    removeClass(element, className) { element.classList.remove(className); }
-    hasClass(element, className) { return element.classList.contains(className); }
-    setStyle(element, styleName, styleValue) {
-        element.style[styleName] = styleValue;
+    addClass(element, classname) { element.classList.add(classname); }
+    removeClass(element, classname) { element.classList.remove(classname); }
+    hasClass(element, classname) { return element.classList.contains(classname); }
+    setStyle(element, stylename, stylevalue) {
+        element.style[stylename] = stylevalue;
     }
     removeStyle(element, stylename) { element.style[stylename] = null; }
     getStyle(element, stylename) { return element.style[stylename]; }
-    hasStyle(element, styleName, styleValue = null) {
-        var value = this.getStyle(element, styleName) || '';
-        return styleValue ? value == styleValue : value.length > 0;
-    }
     tagName(element) { return element.tagName; }
     attributeMap(element) {
         var res = new Map();

@@ -354,29 +354,24 @@ var Parse5DomAdapter = (function (_super) {
         }
         return classAttrValue ? classAttrValue.trim().split(/\s+/g) : [];
     };
-    Parse5DomAdapter.prototype.addClass = function (element, className) {
+    Parse5DomAdapter.prototype.addClass = function (element, classname) {
         var classList = this.classList(element);
-        var index = classList.indexOf(className);
+        var index = classList.indexOf(classname);
         if (index == -1) {
-            classList.push(className);
+            classList.push(classname);
             element.attribs["class"] = element.className = classList.join(" ");
         }
     };
-    Parse5DomAdapter.prototype.removeClass = function (element, className) {
+    Parse5DomAdapter.prototype.removeClass = function (element, classname) {
         var classList = this.classList(element);
-        var index = classList.indexOf(className);
+        var index = classList.indexOf(classname);
         if (index > -1) {
             classList.splice(index, 1);
             element.attribs["class"] = element.className = classList.join(" ");
         }
     };
-    Parse5DomAdapter.prototype.hasClass = function (element, className) {
-        return collection_1.ListWrapper.contains(this.classList(element), className);
-    };
-    Parse5DomAdapter.prototype.hasStyle = function (element, styleName, styleValue) {
-        if (styleValue === void 0) { styleValue = null; }
-        var value = this.getStyle(element, styleName) || '';
-        return styleValue ? value == styleValue : value.length > 0;
+    Parse5DomAdapter.prototype.hasClass = function (element, classname) {
+        return collection_1.ListWrapper.contains(this.classList(element), classname);
     };
     /** @internal */
     Parse5DomAdapter.prototype._readStyleAttribute = function (element) {
@@ -405,15 +400,15 @@ var Parse5DomAdapter = (function (_super) {
         }
         element.attribs["style"] = styleAttrValue;
     };
-    Parse5DomAdapter.prototype.setStyle = function (element, styleName, styleValue) {
+    Parse5DomAdapter.prototype.setStyle = function (element, stylename, stylevalue) {
         var styleMap = this._readStyleAttribute(element);
-        styleMap[styleName] = styleValue;
+        styleMap[stylename] = stylevalue;
         this._writeStyleAttribute(element, styleMap);
     };
-    Parse5DomAdapter.prototype.removeStyle = function (element, styleName) { this.setStyle(element, styleName, null); };
-    Parse5DomAdapter.prototype.getStyle = function (element, styleName) {
+    Parse5DomAdapter.prototype.removeStyle = function (element, stylename) { this.setStyle(element, stylename, null); };
+    Parse5DomAdapter.prototype.getStyle = function (element, stylename) {
         var styleMap = this._readStyleAttribute(element);
-        return styleMap.hasOwnProperty(styleName) ? styleMap[styleName] : "";
+        return styleMap.hasOwnProperty(stylename) ? styleMap[stylename] : "";
     };
     Parse5DomAdapter.prototype.tagName = function (element) { return element.tagName == "style" ? "STYLE" : element.tagName; };
     Parse5DomAdapter.prototype.attributeMap = function (element) {

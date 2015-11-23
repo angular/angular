@@ -12,6 +12,17 @@ function normalizeMethodName(method) {
     return method;
 }
 exports.normalizeMethodName = normalizeMethodName;
+exports.isSuccess = function (status) { return (status >= 200 && status < 300); };
+function getResponseURL(xhr) {
+    if ('responseURL' in xhr) {
+        return xhr.responseURL;
+    }
+    if (/^X-Request-URL:/m.test(xhr.getAllResponseHeaders())) {
+        return xhr.getResponseHeader('X-Request-URL');
+    }
+    return;
+}
+exports.getResponseURL = getResponseURL;
 var lang_2 = require('angular2/src/facade/lang');
 exports.isJsObject = lang_2.isJsObject;
 //# sourceMappingURL=http_utils.js.map

@@ -42,6 +42,22 @@ var Headers = (function () {
         collection_1.StringMapWrapper.forEach(headers, function (v, k) { _this._headersMap.set(k, collection_1.isListLikeIterable(v) ? v : [v]); });
     }
     /**
+     * Returns a new Headers instance from the given DOMString of Response Headers
+     */
+    Headers.fromResponseHeaderString = function (headersString) {
+        return headersString.trim()
+            .split('\n')
+            .map(function (val) { return val.split(':'); })
+            .map(function (_a) {
+            var key = _a[0], parts = _a.slice(1);
+            return ([key.trim(), parts.join(':').trim()]);
+        })
+            .reduce(function (headers, _a) {
+            var key = _a[0], value = _a[1];
+            return !headers.set(key, value) && headers;
+        }, new Headers());
+    };
+    /**
      * Appends a header to existing list of header values for a given header name.
      */
     Headers.prototype.append = function (name, value) {
