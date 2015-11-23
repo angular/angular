@@ -32,7 +32,7 @@ import {
   DefaultInstruction
 } from './instruction';
 
-import {Injectable} from 'angular2/angular2';
+import {Injectable} from 'angular2/core';
 import {normalizeRouteConfig, assertComponentExists} from './route_config_nomalizer';
 import {parser, Url, pathSegmentsToUrl} from './url_parser';
 

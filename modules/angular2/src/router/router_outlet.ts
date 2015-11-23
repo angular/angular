@@ -12,7 +12,7 @@ import {
   Injector,
   provide,
   Dependency
-} from 'angular2/angular2';
+} from 'angular2/core';
 
 import * as routerMod from './router';
 import {ComponentInstruction, RouteParams, RouteData} from './instruction';
