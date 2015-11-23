@@ -241,7 +241,6 @@ var NG_ALL = [
   "BrowserDomAdapter.setGlobalVar():js",
   "BrowserDomAdapter.setInnerHTML():js",
   "BrowserDomAdapter.setProperty():js",
-  "BrowserDomAdapter.hasStyle():js",
   "BrowserDomAdapter.setStyle():js",
   "BrowserDomAdapter.setText():js",
   "BrowserDomAdapter.setTitle():js",

@@ -4,7 +4,6 @@ import 'dart:html';
 import 'package:angular2/platform/common_dom.dart' show setRootDomAdapter;
 import 'generic_browser_adapter.dart' show GenericBrowserDomAdapter;
 import 'package:angular2/src/facade/browser.dart';
-import 'package:angular2/src/facade/lang.dart' show isBlank, isPresent;
 import 'dart:js' as js;
 
 // WARNING: Do not expose outside this class. Parsing HTML using this
@@ -322,32 +321,27 @@ class BrowserDomAdapter extends GenericBrowserDomAdapter {
   List<Node> getElementsByTagName(Element element, String name) =>
       element.querySelectorAll(name);
   List<String> classList(Element element) => element.classes.toList();
-  void addClass(Element element, String className) {
-    element.classes.add(className);
+  void addClass(Element element, String classname) {
+    element.classes.add(classname);
   }
 
-  void removeClass(Element element, String className) {
-    element.classes.remove(className);
+  void removeClass(Element element, String classname) {
+    element.classes.remove(classname);
   }
 
-  bool hasClass(Element element, String className) =>
-      element.classes.contains(className);
+  bool hasClass(Element element, String classname) =>
+      element.classes.contains(classname);
 
-  void setStyle(Element element, String styleName, String styleValue) {
-    element.style.setProperty(styleName, styleValue);
+  void setStyle(Element element, String stylename, String stylevalue) {
+    element.style.setProperty(stylename, stylevalue);
   }
 
-  bool hasStyle(Element element, String styleName, [String styleValue]) {
-    var value = this.getStyle(element, styleName);
-    return isPresent(styleValue) ? value == styleValue : value.length > 0;
+  void removeStyle(Element element, String stylename) {
+    element.style.removeProperty(stylename);
   }
 
-  void removeStyle(Element element, String styleName) {
-    element.style.removeProperty(styleName);
-  }
-
-  String getStyle(Element element, String styleName) {
-    return element.style.getPropertyValue(styleName);
+  String getStyle(Element element, String stylename) {
+    return element.style.getPropertyValue(stylename);
   }
 
   String tagName(Element element) => element.tagName;
