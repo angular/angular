@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/angular2';
+import {Injectable} from 'angular2/core';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {ReadyStates} from '../enums';

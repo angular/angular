@@ -1,12 +1,12 @@
 import {isString, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {makeTypeError} from 'angular2/src/facade/exceptions';
-import {Injectable} from 'angular2/angular2';
+import {Injectable} from 'angular2/core';
 import {RequestOptionsArgs, Connection, ConnectionBackend} from './interfaces';
 import {Request} from './static_request';
 import {Response} from './static_response';
 import {BaseRequestOptions, RequestOptions} from './base_request_options';
 import {RequestMethods} from './enums';
-import {Observable} from 'angular2/angular2';
+import {Observable} from 'angular2/core';
 
 function httpRequest(backend: ConnectionBackend, request: Request): Observable<Response> {
   return backend.createConnection(request).response;
