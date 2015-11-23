@@ -18,7 +18,6 @@ export * from './src/router/route_definition';
 export {OnActivate, OnDeactivate, OnReuse, CanDeactivate, CanReuse} from './src/router/interfaces';
 export {CanActivate} from './src/router/lifecycle_annotations';
 export {Instruction, ComponentInstruction} from './src/router/instruction';
-export {OpaqueToken} from 'angular2/angular2';
 
 import {LocationStrategy} from './src/router/location_strategy';
 import {PathLocationStrategy} from './src/router/path_location_strategy';
