@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/angular2';
+import {Injectable} from 'angular2/core';
 
 // Make sure not to evaluate this in a non-browser environment!
 @Injectable()
