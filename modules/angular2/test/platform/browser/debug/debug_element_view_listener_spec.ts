@@ -13,11 +13,11 @@ import {
   xit,
   TestComponentBuilder,
 } from 'angular2/testing_internal';
-import {global} from 'angular2/src/facade/lang';
+import {global, IS_DART} from 'angular2/src/facade/lang';
 import {APP_VIEW_POOL_CAPACITY} from 'angular2/src/core/linker/view_pool';
 import {provide, Component, Directive, Injectable, View} from 'angular2/core';
 import {inspectNativeElement} from 'angular2/platform/browser';
-import {IS_DART} from 'angular2/src/facade/lang';
+import {TimerWrapper} from 'angular2/src/facade/async';
 
 @Component({selector: 'my-comp'})
 @View({directives: []})
@@ -43,7 +43,7 @@ export function main() {
              });
        }));
 
-    it('should clean up whent the view is destroyed',
+    it('should clean up when the view is destroyed',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideTemplate(MyComp, '')
              .createAsync(MyComp)
@@ -62,13 +62,15 @@ export function main() {
            tcb.overrideTemplate(MyComp, '')
                .createAsync(MyComp)
                .then((componentFixture) => {
-                 expect(global['ng']['probe'](componentFixture.debugElement.nativeElement)
-                            .componentInstance)
-                     .toBeAnInstanceOf(MyComp);
+                 TimerWrapper.setTimeout(() => {
+                   expect(global['ng']['probe'](componentFixture.debugElement.nativeElement)
+                              .componentInstance)
+                       .toBeAnInstanceOf(MyComp);
 
-                 async.done();
+                   async.done();
+                 }, 1000);
                });
-         }), 10000);
+         }), 2000);
     }
   });
 }
