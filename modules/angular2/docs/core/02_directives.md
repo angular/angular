@@ -161,7 +161,7 @@ Example of usage:
 
 ## Directives that use a ViewContainer
 
-Directives that use a ViewContainer can control instantiation of child views which are then inserted into the DOM. (Examples are `ng-if` and `ng-for`.)
+Directives that use a ViewContainer can control instantiation of child views which are then inserted into the DOM. (Examples are `ngIf` and `ngFor`.)
 
 * Every `template` element creates a `ProtoView` which can be used to create Views via the ViewContainer.
 * The child views show up as siblings of the directive in the DOM.

@@ -48,10 +48,10 @@ export function main() {
 class App {
 }
 
-@Component({selector: 'Lock'})
+@Component({selector: 'lock'})
 @View({
   directives: [NgFor],
-  template: `{{frame.name}}(<span *ng-for="var lock of locks">{{lock.name}}</span>)`,
+  template: `{{frame.name}}(<span *ngFor="var lock of locks">{{lock.name}}</span>)`,
 })
 class Door {
   locks: QueryList<Lock>;

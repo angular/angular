@@ -94,7 +94,7 @@ Let's start with a View such as:
 
 ```
 <ul>
-  <li template="ng-for: #person of people">{{person}}</li>
+  <li template="ngFor: #person of people">{{person}}</li>
 </ul>
 ```
 

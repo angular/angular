@@ -7,7 +7,7 @@
 </nav>
 <section id="main" class="container">
   <div class="row">
-    <div *ng-for="#image of images" class="col s12 m2">
+    <div *ngFor="#image of images" class="col s12 m2">
       <div class="card">
         <div class="card-image">
           <img [src]="image.src" [class.grey]="image.filtering"/>
