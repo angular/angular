@@ -52,7 +52,6 @@ class DirectiveMetadataReader {
       return new Future.value(null);
     } else {
       final metadata = _visitor.createMetadata();
-      if (!metadata.isComponent) return new Future.value(metadata);
       return _templateCompiler.normalizeDirectiveMetadata(metadata);
     }
   }

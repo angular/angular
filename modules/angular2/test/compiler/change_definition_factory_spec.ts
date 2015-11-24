@@ -73,7 +73,7 @@ export function main() {
     }
 
     it('should watch element properties', () => {
-      var changeDetector = createChangeDetector('<div [el-prop]="someProp">', [], 0);
+      var changeDetector = createChangeDetector('<div [elProp]="someProp">', [], 0);
 
       context.someProp = 'someValue';
       changeDetector.detectChanges();
@@ -119,7 +119,7 @@ export function main() {
     });
 
     it('should watch variables', () => {
-      var changeDetector = createChangeDetector('<div #some-var [el-prop]="someVar">', [], 0);
+      var changeDetector = createChangeDetector('<div #someVar [elProp]="someVar">', [], 0);
 
       locals.set('someVar', 'someValue');
       changeDetector.detectChanges();
@@ -129,11 +129,11 @@ export function main() {
     it('should write directive properties', () => {
       var dirMeta = CompileDirectiveMetadata.create({
         type: new CompileTypeMetadata({name: 'SomeDir'}),
-        selector: '[dir-prop]',
+        selector: '[dirProp]',
         inputs: ['dirProp']
       });
 
-      var changeDetector = createChangeDetector('<div [dir-prop]="someProp">', [dirMeta], 0);
+      var changeDetector = createChangeDetector('<div [dirProp]="someProp">', [dirMeta], 0);
 
       context.someProp = 'someValue';
       changeDetector.detectChanges();
@@ -143,11 +143,11 @@ export function main() {
     it('should write template directive properties', () => {
       var dirMeta = CompileDirectiveMetadata.create({
         type: new CompileTypeMetadata({name: 'SomeDir'}),
-        selector: '[dir-prop]',
+        selector: '[dirProp]',
         inputs: ['dirProp']
       });
 
-      var changeDetector = createChangeDetector('<template [dir-prop]="someProp">', [dirMeta], 0);
+      var changeDetector = createChangeDetector('<template [dirProp]="someProp">', [dirMeta], 0);
 
       context.someProp = 'someValue';
       changeDetector.detectChanges();

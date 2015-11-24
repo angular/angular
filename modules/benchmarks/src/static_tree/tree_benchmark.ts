@@ -308,7 +308,7 @@ class StaticTreeComponent9 extends StaticTreeComponentBase {
 @Component({selector: 'app'})
 @View({
   directives: [StaticTreeComponent9, NgIf],
-  template: `<tree *ng-if="initData != null" [data]='initData'></tree>`
+  template: `<tree *ngIf="initData != null" [data]='initData'></tree>`
 })
 class AppComponentWithStaticTree {
   initData: TreeNode;

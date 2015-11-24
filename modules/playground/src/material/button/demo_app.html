@@ -35,7 +35,7 @@
 
 <section>
   <form (submit)="submit('form submit')">
-    <button md-button>SUBMIT</button>
+    <button mdButton>SUBMIT</button>
     <button>Native button</button>
   </form>
 
@@ -45,44 +45,44 @@
 <section>
   <span class="label">Regular button</span>
 
-  <button md-button (click)="click('button')">BUTTON</button>
+  <button mdButton (click)="click('button')">BUTTON</button>
 
-  <button md-button class="md-primary" (click)="click('primary')">PRIMARY</button>
-  <button md-button disabled="disabled" (click)="click('disabled')">DISABLED</button>
-  <button md-button class="md-accent" (click)="click('accent')">ACCENT</button>
-  <button md-button class="md-warn" (click)="click('warn')">WARN</button>
-  <button md-button class="custom" (click)="click('custom')">CUSTOM</button>
+  <button mdButton class="md-primary" (click)="click('primary')">PRIMARY</button>
+  <button mdButton disabled="disabled" (click)="click('disabled')">DISABLED</button>
+  <button mdButton class="md-accent" (click)="click('accent')">ACCENT</button>
+  <button mdButton class="md-warn" (click)="click('warn')">WARN</button>
+  <button mdButton class="custom" (click)="click('custom')">CUSTOM</button>
 </section>
 
 <section>
   <span class="label">Raised button</span>
-  <button md-raised-button (click)="click('raised')">BUTTON</button>
-  <button md-raised-button class="md-primary" (click)="click('raised primary')">PRIMARY</button>
-  <button md-raised-button disabled="disabled" (click)="click('raised disabled')">DISABLED</button>
-  <button md-raised-button class="md-accent" (click)="click('raised accent')">ACCENT</button>
-  <button md-raised-button class="md-warn" (click)="click('raised warn')">WARN</button>
-  <button md-raised-button class="custom" (click)="click('custom raised')">CUSTOM</button>
+  <button mdRaisedButton (click)="click('raised')">BUTTON</button>
+  <button mdRaisedButton class="md-primary" (click)="click('raised primary')">PRIMARY</button>
+  <button mdRaisedButton disabled="disabled" (click)="click('raised disabled')">DISABLED</button>
+  <button mdRaisedButton class="md-accent" (click)="click('raised accent')">ACCENT</button>
+  <button mdRaisedButton class="md-warn" (click)="click('raised warn')">WARN</button>
+  <button mdRaisedButton class="custom" (click)="click('custom raised')">CUSTOM</button>
 </section>
 <section>
   <span class="label">Fab button</span>
-  <button md-fab (click)="click('fab')">BTN</button>
-  <button md-fab class="md-primary" (click)="click('fab primary')">PRMY</button>
-  <button md-fab disabled="disabled" (click)="click('fab disabled')">DIS</button>
-  <button md-fab class="md-accent" (click)="click('fab accent')">ACC</button>
-  <button md-fab class="md-warn" (click)="click('fab warn')">WRN</button>
-  <button md-fab class="custom" (click)="click('custom fab')">CSTM</button>
+  <button mdFab (click)="click('fab')">BTN</button>
+  <button mdFab class="md-primary" (click)="click('fab primary')">PRMY</button>
+  <button mdFab disabled="disabled" (click)="click('fab disabled')">DIS</button>
+  <button mdFab class="md-accent" (click)="click('fab accent')">ACC</button>
+  <button mdFab class="md-warn" (click)="click('fab warn')">WRN</button>
+  <button mdFab class="custom" (click)="click('custom fab')">CSTM</button>
 </section>
 <section>
   <span class="label">Anchor / hyperlink</span>
-  <a md-button href="http://google.com" target="_blank">HREF</a>
-  <a md-button href="http://google.com" disabled>DISABLED HREF</a>
-  <a md-raised-button target="_blank" href="http://google.com">RAISED HREF</a>
+  <a mdButton href="http://google.com" target="_blank">HREF</a>
+  <a mdButton href="http://google.com" disabled>DISABLED HREF</a>
+  <a mdRaisedButton target="_blank" href="http://google.com">RAISED HREF</a>
 </section>
 
 <section dir="rtl">
   <span class="label" dir="ltr">Right-to-left</span>
-  <button md-button (click)="click('Hebrew button')">לחצן</button>
-  <button md-raised-button (click)="click('Hebrew raised button')">העלה</button>
-  <a md-button href="http://translate.google.com">עוגן</a>
+  <button mdButton (click)="click('Hebrew button')">לחצן</button>
+  <button mdRaisedButton (click)="click('Hebrew raised button')">העלה</button>
+  <a mdButton href="http://translate.google.com">עוגן</a>
 </section>
 

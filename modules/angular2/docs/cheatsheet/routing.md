@@ -30,8 +30,7 @@ Marks the location to load the component of the active route.
 
 
 @cheatsheetItem
-syntax:
-`<a [router-link]="[ '/MyCmp', {myParam: 'value' } ]">`|`[router-link]`
+`<a [routerLink]="[ '/MyCmp', {myParam: 'value' } ]">`|`[routerLink]`
 description:
 Creates a link to a different view based on a route instruction consisting of a route name and optional parameters. The route name matches the as property of a configured route. Add the '/' prefix to navigate to a root route; add the './' prefix for a child route.
 

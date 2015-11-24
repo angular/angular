@@ -200,7 +200,7 @@ class TreeBuilder {
   private _popElement(fullName: string): boolean {
     for (let stackIndex = this.elementStack.length - 1; stackIndex >= 0; stackIndex--) {
       let el = this.elementStack[stackIndex];
-      if (el.name.toLowerCase() == fullName.toLowerCase()) {
+      if (el.name == fullName) {
         ListWrapper.splice(this.elementStack, stackIndex, this.elementStack.length - stackIndex);
         return true;
       }

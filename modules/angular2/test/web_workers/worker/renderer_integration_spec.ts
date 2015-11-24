@@ -170,8 +170,8 @@ export function main() {
                  renderer.setElementStyle(elr, 'width', null);
                  expect(DOM.getStyle(el, 'width')).toEqual('');
 
-                 renderer.setElementAttribute(elr, 'someAttr', 'someValue');
-                 expect(DOM.getAttribute(el, 'some-attr')).toEqual('someValue');
+                 renderer.setElementAttribute(elr, 'someattr', 'someValue');
+                 expect(DOM.getAttribute(el, 'someattr')).toEqual('someValue');
                };
 
                // root element
@@ -186,7 +186,7 @@ export function main() {
     it('should add and remove fragments',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideView(MyComp, new ViewMetadata({
-                            template: '<template [ng-if]="ctxBoolProp">hello</template>',
+                            template: '<template [ngIf]="ctxBoolProp">hello</template>',
                             directives: [NgIf]
                           }))
              .createAsync(MyComp)

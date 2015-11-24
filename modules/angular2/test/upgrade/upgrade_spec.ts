@@ -251,9 +251,9 @@ export function main() {
                Component({
                  selector: 'ng2',
                  template:
-                     '<ng1 full-name="{{last}}, {{first}}" [model-a]="first" [(model-b)]="last" ' +
+                     '<ng1 fullName="{{last}}, {{first}}" [modelA]="first" [(modelB)]="last" ' +
                          '(event)="event=$event"></ng1>' +
-                         '<ng1 full-name="{{\'TEST\'}}" model-a="First" model-b="Last"></ng1>' +
+                         '<ng1 fullName="{{\'TEST\'}}" modelA="First" modelB="Last"></ng1>' +
                          '{{event}}-{{last}}, {{first}}',
                  directives: [adapter.upgradeNg1Component('ng1')]
                })

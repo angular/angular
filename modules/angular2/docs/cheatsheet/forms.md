@@ -7,6 +7,6 @@ Forms
 
 @cheatsheetItem
 syntax:
-`<input [(ng-model)]="userName">`|`[(ng-model)]`
+`<input [(ngModel)]="userName">`|`[(ngModel)]`
 description:
 Provides two-way data-binding, parsing and validation for form controls.

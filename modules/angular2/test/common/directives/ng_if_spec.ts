@@ -20,10 +20,10 @@ import {NgIf} from 'angular2/common';
 import {IS_DART} from 'angular2/src/facade/lang';
 
 export function main() {
-  describe('ng-if directive', () => {
+  describe('ngIf directive', () => {
     it('should work in a template attribute',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var html = '<div><copy-me template="ng-if booleanCondition">hello</copy-me></div>';
+         var html = '<div><copy-me template="ngIf booleanCondition">hello</copy-me></div>';
 
          tcb.overrideTemplate(TestComponent, html)
              .createAsync(TestComponent)
@@ -39,7 +39,7 @@ export function main() {
     it('should work in a template element',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var html =
-             '<div><template [ng-if]="booleanCondition"><copy-me>hello2</copy-me></template></div>';
+             '<div><template [ngIf]="booleanCondition"><copy-me>hello2</copy-me></template></div>';
 
          tcb.overrideTemplate(TestComponent, html)
              .createAsync(TestComponent)
@@ -54,7 +54,7 @@ export function main() {
 
     it('should toggle node when condition changes',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var html = '<div><copy-me template="ng-if booleanCondition">hello</copy-me></div>';
+         var html = '<div><copy-me template="ngIf booleanCondition">hello</copy-me></div>';
 
          tcb.overrideTemplate(TestComponent, html)
              .createAsync(TestComponent)
@@ -84,7 +84,7 @@ export function main() {
     it('should handle nested if correctly',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var html =
-             '<div><template [ng-if]="booleanCondition"><copy-me *ng-if="nestedBooleanCondition">hello</copy-me></template></div>';
+             '<div><template [ngIf]="booleanCondition"><copy-me *ngIf="nestedBooleanCondition">hello</copy-me></template></div>';
 
          tcb.overrideTemplate(TestComponent, html)
              .createAsync(TestComponent)
@@ -127,9 +127,9 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var html =
              '<div>' +
-             '<copy-me template="ng-if numberCondition + 1 >= 2">helloNumber</copy-me>' +
-             '<copy-me template="ng-if stringCondition == \'foo\'">helloString</copy-me>' +
-             '<copy-me template="ng-if functionCondition(stringCondition, numberCondition)">helloFunction</copy-me>' +
+             '<copy-me template="ngIf numberCondition + 1 >= 2">helloNumber</copy-me>' +
+             '<copy-me template="ngIf stringCondition == \'foo\'">helloString</copy-me>' +
+             '<copy-me template="ngIf functionCondition(stringCondition, numberCondition)">helloFunction</copy-me>' +
              '</div>';
 
          tcb.overrideTemplate(TestComponent, html)
@@ -161,7 +161,7 @@ export function main() {
     if (!IS_DART) {
       it('should not add the element twice if the condition goes from true to true (JS)',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var html = '<div><copy-me template="ng-if numberCondition">hello</copy-me></div>';
+           var html = '<div><copy-me template="ngIf numberCondition">hello</copy-me></div>';
 
            tcb.overrideTemplate(TestComponent, html)
                .createAsync(TestComponent)
@@ -183,7 +183,7 @@ export function main() {
 
       it('should not recreate the element if the condition goes from true to true (JS)',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var html = '<div><copy-me template="ng-if numberCondition">hello</copy-me></div>';
+           var html = '<div><copy-me template="ngIf numberCondition">hello</copy-me></div>';
 
            tcb.overrideTemplate(TestComponent, html)
                .createAsync(TestComponent)
@@ -207,7 +207,7 @@ export function main() {
     if (IS_DART) {
       it('should not create the element if the condition is not a boolean (DART)',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var html = '<div><copy-me template="ng-if numberCondition">hello</copy-me></div>';
+           var html = '<div><copy-me template="ngIf numberCondition">hello</copy-me></div>';
 
            tcb.overrideTemplate(TestComponent, html)
                .createAsync(TestComponent)
