@@ -15,7 +15,7 @@ cache:
 env:
   global:
   - KARMA_BROWSERS=DartiumWithWebPlatform
-  - E2E_BROWSERS=Dartium
+  - E2E_BROWSERS=DartiumWithWebPlatform
   - LOGS_DIR=/tmp/angular-build/logs
   - SAUCE_USERNAME=angular-ci
   - SAUCE_ACCESS_KEY=9b988f434ff8-fbca-8aa4-4ae3-35442987
