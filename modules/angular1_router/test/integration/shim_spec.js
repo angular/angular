@@ -139,12 +139,11 @@ describe('ngRoute shim', function () {
 
   it('should adapt routes with redirects', inject(function ($location) {
     $routeProvider
-        .when('/home', {
-          template: 'welcome home!',
-          name: 'Home'
-        })
         .when('/', {
           redirectTo: '/home'
+        })
+        .when('/home', {
+          template: 'welcome home!'
         });
     $rootScope.$digest();
 

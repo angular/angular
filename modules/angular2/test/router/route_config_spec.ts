@@ -214,10 +214,7 @@ class HelloCmp {
 
 @Component({selector: 'app-cmp'})
 @View({template: `root { <router-outlet></router-outlet> }`, directives: ROUTER_DIRECTIVES})
-@RouteConfig([
-  {path: '/before', redirectTo: ['Hello']},
-  {path: '/after', component: HelloCmp, name: 'Hello'}
-])
+@RouteConfig([{path: '/before', redirectTo: '/after'}, {path: '/after', component: HelloCmp}])
 class RedirectAppCmp {
   constructor(public router: Router, public location: LocationStrategy) {}
 }

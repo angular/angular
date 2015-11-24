@@ -1,7 +1,10 @@
 import {Map, MapWrapper, StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
+import {unimplemented} from 'angular2/src/facade/exceptions';
 import {isPresent, isBlank, normalizeBlank, Type, CONST_EXPR} from 'angular2/src/facade/lang';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
+import {Promise} from 'angular2/src/facade/async';
 
+import {PathRecognizer} from './path_recognizer';
+import {Url} from './url_parser';
 
 /**
  * `RouteParams` is an immutable map of parameters for the given route
@@ -74,7 +77,7 @@ export class RouteData {
   get(key: string): any { return normalizeBlank(StringMapWrapper.get(this.data, key)); }
 }
 
-export var BLANK_ROUTE_DATA = new RouteData();
+var BLANK_ROUTE_DATA = new RouteData();
 
 /**
  * `Instruction` is a tree of {@link ComponentInstruction}s with all the information needed
@@ -103,184 +106,74 @@ export var BLANK_ROUTE_DATA = new RouteData();
  * bootstrap(AppCmp, ROUTER_PROVIDERS);
  * ```
  */
-export abstract class Instruction {
-  public component: ComponentInstruction;
-  public child: Instruction;
-  public auxInstruction: {[key: string]: Instruction} = {};
-
-  get urlPath(): string { return this.component.urlPath; }
-
-  get urlParams(): string[] { return this.component.urlParams; }
-
-  get specificity(): number {
-    var total = 0;
-    if (isPresent(this.component)) {
-      total += this.component.specificity;
-    }
-    if (isPresent(this.child)) {
-      total += this.child.specificity;
-    }
-    return total;
-  }
-
-  abstract resolveComponent(): Promise<ComponentInstruction>;
-
-  /**
-   * converts the instruction into a URL string
-   */
-  toRootUrl(): string { return this.toUrlPath() + this.toUrlQuery(); }
-
-  /** @internal */
-  _toNonRootUrl(): string {
-    return this._stringifyPathMatrixAuxPrefixed() +
-           (isPresent(this.child) ? this.child._toNonRootUrl() : '');
-  }
-
-  toUrlQuery(): string { return this.urlParams.length > 0 ? ('?' + this.urlParams.join('&')) : ''; }
+export class Instruction {
+  constructor(public component: ComponentInstruction, public child: Instruction,
+              public auxInstruction: {[key: string]: Instruction}) {}
 
   /**
    * Returns a new instruction that shares the state of the existing instruction, but with
    * the given child {@link Instruction} replacing the existing child.
    */
   replaceChild(child: Instruction): Instruction {
-    return new ResolvedInstruction(this.component, child, this.auxInstruction);
+    return new Instruction(this.component, child, this.auxInstruction);
   }
+}
 
-  /**
-   * If the final URL for the instruction is ``
-   */
-  toUrlPath(): string {
-    return this.urlPath + this._stringifyAux() +
-           (isPresent(this.child) ? this.child._toNonRootUrl() : '');
+/**
+ * Represents a partially completed instruction during recognition that only has the
+ * primary (non-aux) route instructions matched.
+ *
+ * `PrimaryInstruction` is an internal class used by `RouteRecognizer` while it's
+ * figuring out where to navigate.
+ */
+export class PrimaryInstruction {
+  constructor(public component: ComponentInstruction, public child: PrimaryInstruction,
+              public auxUrls: Url[]) {}
+}
+
+export function stringifyInstruction(instruction: Instruction): string {
+  return stringifyInstructionPath(instruction) + stringifyInstructionQuery(instruction);
+}
+
+export function stringifyInstructionPath(instruction: Instruction): string {
+  return instruction.component.urlPath + stringifyAux(instruction) +
+         stringifyPrimaryPrefixed(instruction.child);
+}
+
+export function stringifyInstructionQuery(instruction: Instruction): string {
+  return instruction.component.urlParams.length > 0 ?
+             ('?' + instruction.component.urlParams.join('&')) :
+             '';
+}
+
+function stringifyPrimaryPrefixed(instruction: Instruction): string {
+  var primary = stringifyPrimary(instruction);
+  if (primary.length > 0) {
+    primary = '/' + primary;
   }
+  return primary;
+}
 
-  // default instructions override these
-  toLinkUrl(): string {
-    return this.urlPath + this._stringifyAux() +
-           (isPresent(this.child) ? this.child._toLinkUrl() : '');
-  }
-
-  // this is the non-root version (called recursively)
-  /** @internal */
-  _toLinkUrl(): string {
-    return this._stringifyPathMatrixAuxPrefixed() +
-           (isPresent(this.child) ? this.child._toLinkUrl() : '');
-  }
-
-  /** @internal */
-  _stringifyPathMatrixAuxPrefixed(): string {
-    var primary = this._stringifyPathMatrixAux();
-    if (primary.length > 0) {
-      primary = '/' + primary;
-    }
-    return primary;
-  }
-
-  /** @internal */
-  _stringifyMatrixParams(): string {
-    return this.urlParams.length > 0 ? (';' + this.component.urlParams.join(';')) : '';
-  }
-
-  /** @internal */
-  _stringifyPathMatrixAux(): string {
-    if (isBlank(this.component)) {
-      return '';
-    }
-    return this.urlPath + this._stringifyMatrixParams() + this._stringifyAux();
-  }
-
-  /** @internal */
-  _stringifyAux(): string {
-    var routes = [];
-    StringMapWrapper.forEach(this.auxInstruction, (auxInstruction, _) => {
-      routes.push(auxInstruction._stringifyPathMatrixAux());
-    });
-    if (routes.length > 0) {
-      return '(' + routes.join('//') + ')';
-    }
+function stringifyPrimary(instruction: Instruction): string {
+  if (isBlank(instruction)) {
     return '';
   }
+  var params = instruction.component.urlParams.length > 0 ?
+                   (';' + instruction.component.urlParams.join(';')) :
+                   '';
+  return instruction.component.urlPath + params + stringifyAux(instruction) +
+         stringifyPrimaryPrefixed(instruction.child);
 }
 
-
-/**
- * a resolved instruction has an outlet instruction for itself, but maybe not for...
- */
-export class ResolvedInstruction extends Instruction {
-  constructor(public component: ComponentInstruction, public child: Instruction,
-              public auxInstruction: {[key: string]: Instruction}) {
-    super();
+function stringifyAux(instruction: Instruction): string {
+  var routes = [];
+  StringMapWrapper.forEach(instruction.auxInstruction, (auxInstruction, _) => {
+    routes.push(stringifyPrimary(auxInstruction));
+  });
+  if (routes.length > 0) {
+    return '(' + routes.join('//') + ')';
   }
-
-  resolveComponent(): Promise<ComponentInstruction> {
-    return PromiseWrapper.resolve(this.component);
-  }
-}
-
-
-/**
- * Represents a resolved default route
- */
-export class DefaultInstruction extends Instruction {
-  constructor(public component: ComponentInstruction, public child: DefaultInstruction) { super(); }
-
-  resolveComponent(): Promise<ComponentInstruction> {
-    return PromiseWrapper.resolve(this.component);
-  }
-
-  toLinkUrl(): string { return ''; }
-
-  /** @internal */
-  _toLinkUrl(): string { return ''; }
-}
-
-
-/**
- * Represents a component that may need to do some redirection or lazy loading at a later time.
- */
-export class UnresolvedInstruction extends Instruction {
-  constructor(private _resolver: () => Promise<Instruction>, private _urlPath: string = '',
-              private _urlParams: string[] = CONST_EXPR([])) {
-    super();
-  }
-
-  get urlPath(): string {
-    if (isPresent(this.component)) {
-      return this.component.urlPath;
-    }
-    if (isPresent(this._urlPath)) {
-      return this._urlPath;
-    }
-    return '';
-  }
-
-  get urlParams(): string[] {
-    if (isPresent(this.component)) {
-      return this.component.urlParams;
-    }
-    if (isPresent(this._urlParams)) {
-      return this._urlParams;
-    }
-    return [];
-  }
-
-  resolveComponent(): Promise<ComponentInstruction> {
-    if (isPresent(this.component)) {
-      return PromiseWrapper.resolve(this.component);
-    }
-    return this._resolver().then((resolution: Instruction) => {
-      this.child = resolution.child;
-      return this.component = resolution.component;
-    });
-  }
-}
-
-
-export class RedirectInstruction extends ResolvedInstruction {
-  constructor(component: ComponentInstruction, child: Instruction,
-              auxInstruction: {[key: string]: Instruction}) {
-    super(component, child, auxInstruction);
-  }
+  return '';
 }
 
 
@@ -292,18 +185,67 @@ export class RedirectInstruction extends ResolvedInstruction {
  * to route lifecycle hooks, like {@link CanActivate}.
  *
  * `ComponentInstruction`s are [https://en.wikipedia.org/wiki/Hash_consing](hash consed). You should
- * never construct one yourself with "new." Instead, rely on {@link Router/RouteRecognizer} to
+ * never construct one yourself with "new." Instead, rely on {@link Router/PathRecognizer} to
  * construct `ComponentInstruction`s.
  *
  * You should not modify this object. It should be treated as immutable.
  */
-export class ComponentInstruction {
+export abstract class ComponentInstruction {
   reuse: boolean = false;
-  public routeData: RouteData;
+  public urlPath: string;
+  public urlParams: string[];
+  public params: {[key: string]: any};
 
-  constructor(public urlPath: string, public urlParams: string[], data: RouteData,
-              public componentType, public terminal: boolean, public specificity: number,
-              public params: {[key: string]: any} = null) {
-    this.routeData = isPresent(data) ? data : BLANK_ROUTE_DATA;
+  /**
+   * Returns the component type of the represented route, or `null` if this instruction
+   * hasn't been resolved.
+   */
+  get componentType() { return unimplemented(); };
+
+  /**
+   * Returns a promise that will resolve to component type of the represented route.
+   * If this instruction references an {@link AsyncRoute}, the `loader` function of that route
+   * will run.
+   */
+  abstract resolveComponentType(): Promise<Type>;
+
+  /**
+   * Returns the specificity of the route associated with this `Instruction`.
+   */
+  get specificity() { return unimplemented(); };
+
+  /**
+   * Returns `true` if the component type of this instruction has no child {@link RouteConfig},
+   * or `false` if it does.
+   */
+  get terminal() { return unimplemented(); };
+
+  /**
+   * Returns the route data of the given route that was specified in the {@link RouteDefinition},
+   * or an empty object if no route data was specified.
+   */
+  get routeData(): RouteData { return unimplemented(); };
+}
+
+export class ComponentInstruction_ extends ComponentInstruction {
+  private _routeData: RouteData;
+
+  constructor(urlPath: string, urlParams: string[], private _recognizer: PathRecognizer,
+              params: {[key: string]: any} = null) {
+    super();
+    this.urlPath = urlPath;
+    this.urlParams = urlParams;
+    this.params = params;
+    if (isPresent(this._recognizer.handler.data)) {
+      this._routeData = new RouteData(this._recognizer.handler.data);
+    } else {
+      this._routeData = BLANK_ROUTE_DATA;
+    }
   }
+
+  get componentType() { return this._recognizer.handler.componentType; }
+  resolveComponentType(): Promise<Type> { return this._recognizer.handler.resolveComponentType(); }
+  get specificity() { return this._recognizer.specificity; }
+  get terminal() { return this._recognizer.terminal; }
+  get routeData(): RouteData { return this._routeData; }
 }

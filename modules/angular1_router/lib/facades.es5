@@ -173,10 +173,6 @@ var StringMapWrapper = {
 
 var List = Array;
 var ListWrapper = {
-  clear: function (l) {
-    l.length = 0;
-  },
-
   create: function () {
     return [];
   },

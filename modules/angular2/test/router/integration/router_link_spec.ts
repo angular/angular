@@ -9,7 +9,7 @@ import {
   expect,
   iit,
   inject,
-  beforeEachProviders,
+  beforeEachBindings,
   it,
   xit,
   TestComponentBuilder,
@@ -21,7 +21,7 @@ import {NumberWrapper} from 'angular2/src/facade/lang';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
-import {provide, Component, View, DirectiveResolver} from 'angular2/core';
+import {provide, Component, DirectiveResolver} from 'angular2/core';
 
 import {SpyLocation} from 'angular2/src/mock/location_mock';
 import {
@@ -47,7 +47,7 @@ export function main() {
     var fixture: ComponentFixture;
     var router, location;
 
-    beforeEachProviders(() => [
+    beforeEachBindings(() => [
       RouteRegistry,
       DirectiveResolver,
       provide(Location, {useClass: SpyLocation}),
@@ -240,8 +240,8 @@ export function main() {
              .then((_) => router.config([new Route({path: '/...', component: AuxLinkCmp})]))
              .then((_) => router.navigateByUrl('/'))
              .then((_) => {
-               fixture.detectChanges();
-               expect(DOM.getAttribute(fixture.debugElement.componentViewChildren[1]
+               rootTC.detectChanges();
+               expect(DOM.getAttribute(rootTC.debugElement.componentViewChildren[1]
                                            .componentViewChildren[0]
                                            .nativeElement,
                                        'href'))
@@ -386,7 +386,10 @@ class MyComp {
   name;
 }
 
-@Component({selector: 'user-cmp', template: "hello {{user}}"})
+@Component({
+  selector: 'user-cmp',
+  template: "hello {{user}}"
+})
 class UserCmp {
   user: string;
   constructor(params: RouteParams) { this.user = params.get('name'); }
@@ -422,11 +425,17 @@ class NoPrefixSiblingPageCmp {
   }
 }
 
-@Component({selector: 'hello-cmp', template: 'hello'})
+@Component({
+  selector: 'hello-cmp',
+  template: 'hello'
+})
 class HelloCmp {
 }
 
-@Component({selector: 'hello2-cmp', template: 'hello2'})
+@Component({
+  selector: 'hello2-cmp',
+  template: 'hello2'
+})
 class Hello2Cmp {
 }
 
@@ -446,6 +455,7 @@ function parentCmpLoader() {
   new Route({path: '/better-grandchild', component: Hello2Cmp, name: 'BetterGrandchild'})
 ])
 class ParentCmp {
+  constructor(public router: Router) {}
 }
 
 @Component({
