@@ -41,6 +41,10 @@ class TransformerOptions {
   /// as attributes on DOM elements, which may aid in application debugging.
   final bool reflectPropertiesAsAttributes;
 
+  /// Whether to generate debug information in change detectors.
+  /// This improves error messages when exception are triggered in templates.
+  final bool genChangeDetectionDebugInfo;
+
   /// A set of directives that will be automatically passed-in to the template compiler
   /// Format of an item in the list: angular2/lib/src/common/directives.dart#CORE_DIRECTIVES
   final List<String> platformDirectives;
@@ -71,7 +75,8 @@ class TransformerOptions {
       this.mirrorMode,
       this.initReflector,
       this.annotationMatcher,
-      {this.reflectPropertiesAsAttributes,
+      {this.genChangeDetectionDebugInfo,
+      this.reflectPropertiesAsAttributes,
       this.platformDirectives,
       this.inlineViews,
       this.lazyTransformers,
@@ -83,7 +88,8 @@ class TransformerOptions {
       bool initReflector: true,
       List<ClassDescriptor> customAnnotationDescriptors: const [],
       bool inlineViews: false,
-      bool reflectPropertiesAsAttributes: true,
+      bool genChangeDetectionDebugInfo: false,
+      bool reflectPropertiesAsAttributes: false,
       List<String> platformDirectives,
       bool lazyTransformers: false,
       bool formatCode: false}) {
@@ -94,6 +100,7 @@ class TransformerOptions {
         : null;
     return new TransformerOptions._internal(entryPoints, entryPointGlobs,
         modeName, mirrorMode, initReflector, annotationMatcher,
+        genChangeDetectionDebugInfo: genChangeDetectionDebugInfo,
         reflectPropertiesAsAttributes: reflectPropertiesAsAttributes,
         platformDirectives: platformDirectives,
         inlineViews: inlineViews,

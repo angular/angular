@@ -28,7 +28,8 @@ import 'compile_data_creator.dart';
 ///
 /// This method assumes a {@link DomAdapter} has been registered.
 Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
-    {bool reflectPropertiesAsAttributes: false,
+    {bool genChangeDetectionDebugInfo: false,
+    bool reflectPropertiesAsAttributes: false,
     List<String> platformDirectives}) async {
   var viewDefResults =
       await createCompileData(reader, assetId, platformDirectives);
@@ -48,7 +49,7 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
   if (templateCompiler == null) {
     templateCompiler = createTemplateCompiler(reader,
         changeDetectionConfig: new ChangeDetectorGenConfig(
-            assertionsEnabled(), reflectPropertiesAsAttributes, false));
+            genChangeDetectionDebugInfo, reflectPropertiesAsAttributes, false));
   }
 
   final compileData =
