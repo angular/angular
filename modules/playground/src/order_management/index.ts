@@ -82,14 +82,14 @@ class DataService {
   selector: 'order-list-cmp',
   template: `
     <h1>Orders</h1>
-  	<div *ng-for="#order of orders" [class.warning]="order.total > order.limit">
+  	<div *ngFor="#order of orders" [class.warning]="order.total > order.limit">
       <div>
         <label>Customer name:</label>
         {{order.customerName}}
       </div>
 
       <div>
-        <label>Limit: <input [(ng-model)]="order.limit" type="number" placeholder="Limit"></label>
+        <label>Limit: <input [(ngModel)]="order.limit" type="number" placeholder="Limit"></label>
       </div>
 
       <div>
@@ -120,15 +120,15 @@ class OrderListComponent {
   template: `
     <div>
       <div>
-        <label>Product name: <input [(ng-model)]="item.productName" type="text" placeholder="Product name"></label>
+        <label>Product name: <input [(ngModel)]="item.productName" type="text" placeholder="Product name"></label>
       </div>
 
       <div>
-        <label>Quantity: <input [(ng-model)]="item.qty" type="number" placeholder="Quantity"></label>
+        <label>Quantity: <input [(ngModel)]="item.qty" type="number" placeholder="Quantity"></label>
       </div>
 
       <div>
-        <label>Unit Price: <input [(ng-model)]="item.unitPrice" type="number" placeholder="Unit price"></label>
+        <label>Unit Price: <input [(ngModel)]="item.unitPrice" type="number" placeholder="Unit price"></label>
       </div>
 
       <div>
@@ -151,14 +151,14 @@ class OrderItemComponent {
 @Component({
   selector: 'order-details-cmp',
   template: `
-    <div *ng-if="order !== null">
+    <div *ngIf="order !== null">
       <h1>Selected Order</h1>
       <div>
-        <label>Customer name: <input [(ng-model)]="order.customerName" type="text" placeholder="Customer name"></label>
+        <label>Customer name: <input [(ngModel)]="order.customerName" type="text" placeholder="Customer name"></label>
       </div>
 
       <div>
-        <label>Limit: <input [(ng-model)]="order.limit" type="number" placeholder="Limit"></label>
+        <label>Limit: <input [(ngModel)]="order.limit" type="number" placeholder="Limit"></label>
       </div>
 
       <div>
@@ -173,7 +173,7 @@ class OrderItemComponent {
 
       <h2>Items</h2>
       <button (click)="addItem()">Add Item</button>
-      <order-item-cmp *ng-for="#item of order.items" [item]="item" (delete)="deleteItem(item)"></order-item-cmp>
+      <order-item-cmp *ngFor="#item of order.items" [item]="item" (delete)="deleteItem(item)"></order-item-cmp>
     </div>
   `,
   directives: [FORM_DIRECTIVES, OrderItemComponent, NgFor, NgIf]

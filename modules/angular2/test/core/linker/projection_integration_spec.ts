@@ -100,7 +100,7 @@ export function main() {
          tcb.overrideView(
                 Simple, new ViewMetadata({
                   template:
-                      'SIMPLE(<div><ng-content></ng-content></div><div [tab-index]="0">EL</div>)',
+                      'SIMPLE(<div><ng-content></ng-content></div><div [tabIndex]="0">EL</div>)',
                   directives: []
                 }))
              .overrideView(
@@ -290,7 +290,7 @@ export function main() {
          tcb.overrideView(
                 MainComp,
                 new ViewMetadata(
-                    {template: '<simple string-prop="text"></simple>', directives: [Simple]}))
+                    {template: '<simple stringProp="text"></simple>', directives: [Simple]}))
              .overrideTemplate(Simple, '<ng-content></ng-content><p>P,</p>{{stringProp}}')
              .createAsync(MainComp)
              .then((main: ComponentFixture) => {
@@ -311,7 +311,7 @@ export function main() {
          tcb.overrideView(
                 MainComp,
                 new ViewMetadata(
-                    {template: '<simple string-prop="text"></simple>', directives: [Simple]}))
+                    {template: '<simple stringProp="text"></simple>', directives: [Simple]}))
              .overrideTemplate(Simple, '<style></style><p>P,</p>{{stringProp}}')
              .createAsync(MainComp)
              .then((main: ComponentFixture) => {

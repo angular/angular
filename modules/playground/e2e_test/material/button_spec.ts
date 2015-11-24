@@ -1,6 +1,6 @@
 import {verifyNoBrowserErrors} from 'angular2/src/testing/e2e_util';
 
-describe('md-button', function() {
+describe('mdButton', function() {
   var url = 'playground/src/material/button/index.html';
 
   beforeEach(() => { browser.get(url); });

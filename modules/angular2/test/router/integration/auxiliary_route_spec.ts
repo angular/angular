@@ -78,7 +78,7 @@ export function main() {
     it('should generate a link URL', inject([AsyncTestCompleter], (async) => {
          compile(
              tcb,
-             `<a [router-link]="['/Hello', ['Modal']]">open modal</a> | main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`)
+             `<a [routerLink]="['/Hello', ['Modal']]">open modal</a> | main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`)
              .then((rtc) => {fixture = rtc})
              .then((_) => rtr.config([
                new Route({path: '/hello', component: HelloCmp, name: 'Hello'}),
@@ -95,7 +95,7 @@ export function main() {
        inject([AsyncTestCompleter, Location], (async, location) => {
          compile(
              tcb,
-             `<a [router-link]="['/Hello', ['Modal']]">open modal</a> | main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`)
+             `<a [routerLink]="['/Hello', ['Modal']]">open modal</a> | main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}`)
              .then((rtc) => {fixture = rtc})
              .then((_) => rtr.config([
                new Route({path: '/hello', component: HelloCmp, name: 'Hello'}),

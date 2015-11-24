@@ -150,18 +150,18 @@ $md-fab-mini-line-height: rem(4.00) !default;
 }
 
 
-[md-button] {
+[mdButton] {
   @include md-button-base();
 }
 
-[md-raised-button] {
+[mdRaisedButton] {
   @include md-raised-button();
 
   color: md-color($md-background, default-contrast);
   background-color: md-color($md-background, 50);
 }
 
-[md-fab] {
+[mdFab] {
   @include md-raised-button();
 
   z-index: $z-index-fab;
@@ -183,7 +183,7 @@ $md-fab-mini-line-height: rem(4.00) !default;
 // Styles for high contrast mode.
 @media screen and (-ms-high-contrast: active) {
   [md-raised],
-  [md-fab] {
+  [mdFab] {
     border: 1px solid #fff;
   }
 }

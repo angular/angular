@@ -30,7 +30,7 @@ import {NgFor} from 'angular2/common';
             <div id="padding"></div>
             <div id="inner">
                 <scroll-item
-                    template="ng-for #item of visibleItems"
+                    template="ngFor #item of visibleItems"
                     [offering]="item">
                 </scroll-item>
             </div>

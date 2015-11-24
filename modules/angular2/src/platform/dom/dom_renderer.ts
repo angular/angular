@@ -39,7 +39,6 @@ import {
   DefaultRenderFragmentRef,
   DefaultProtoViewRef
 } from 'angular2/src/core/render/view';
-import {camelCaseToDashCase} from './util';
 import {ViewEncapsulation} from 'angular2/src/core/metadata';
 
 // TODO move it once DomAdapter is moved
@@ -139,11 +138,10 @@ export abstract class DomRenderer extends Renderer implements NodeFactory<Node> 
                       attributeValue: string): void {
     var view = resolveInternalDomView(location.renderView);
     var element = view.boundElements[location.boundElementIndex];
-    var dashCasedAttributeName = camelCaseToDashCase(attributeName);
     if (isPresent(attributeValue)) {
-      DOM.setAttribute(element, dashCasedAttributeName, stringify(attributeValue));
+      DOM.setAttribute(element, attributeName, stringify(attributeValue));
     } else {
-      DOM.removeAttribute(element, dashCasedAttributeName);
+      DOM.removeAttribute(element, attributeName);
     }
   }
 
@@ -160,11 +158,10 @@ export abstract class DomRenderer extends Renderer implements NodeFactory<Node> 
   setElementStyle(location: RenderElementRef, styleName: string, styleValue: string): void {
     var view = resolveInternalDomView(location.renderView);
     var element = view.boundElements[location.boundElementIndex];
-    var dashCasedStyleName = camelCaseToDashCase(styleName);
     if (isPresent(styleValue)) {
-      DOM.setStyle(element, dashCasedStyleName, stringify(styleValue));
+      DOM.setStyle(element, styleName, stringify(styleValue));
     } else {
-      DOM.removeStyle(element, dashCasedStyleName);
+      DOM.removeStyle(element, styleName);
     }
   }
 

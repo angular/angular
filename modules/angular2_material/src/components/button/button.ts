@@ -8,7 +8,7 @@ import {isPresent} from 'angular2/src/facade/lang';
 // TODO(jelbourn): Make the `isMouseDown` stuff done with one global listener.
 
 @Component({
-  selector: '[md-button]:not(a), [md-fab]:not(a), [md-raised-button]:not(a)',
+  selector: '[mdButton]:not(a), [mdFab]:not(a), [mdRaisedButton]:not(a)',
   host: {
     '(mousedown)': 'onMousedown()',
     '(focus)': 'onFocus()',
@@ -48,7 +48,7 @@ export class MdButton {
 
 
 @Component({
-  selector: 'a[md-button], a[md-raised-button], a[md-fab]',
+  selector: 'a[mdButton], a[mdRaisedButton], a[mdFab]',
   inputs: ['disabled'],
   host: {
     '(click)': 'onClick($event)',

@@ -34,7 +34,7 @@ export function main() {
 
     beforeEach(inject([TestComponentBuilder], (tcb) => { builder = tcb; }));
 
-    describe('button[md-button]', () => {
+    describe('button[mdButton]', () => {
       it('should handle a click on the button', inject([AsyncTestCompleter], (async) => {
            builder.createAsync(TestApp).then(fixture => {
              let testComponent = fixture.debugElement.componentInstance;
@@ -71,8 +71,8 @@ export function main() {
          }), 10000);
     });
 
-    describe('a[md-button]', () => {
-      const anchorTemplate = `<a md-button href="http://google.com" [disabled]="isDisabled">Go</a>`;
+    describe('a[mdButton]', () => {
+      const anchorTemplate = `<a mdButton href="http://google.com" [disabled]="isDisabled">Go</a>`;
 
       beforeEach(() => {
         builder = builder.overrideView(
@@ -118,7 +118,7 @@ function getChildDebugElement(parent: DebugElement, tagName: string): DebugEleme
 @View({
   directives: [MdButton],
   template:
-      `<button md-button type="button" (click)="increment()" [disabled]="isDisabled">Go</button>`
+      `<button mdButton type="button" (click)="increment()" [disabled]="isDisabled">Go</button>`
 })
 class TestApp {
   clickCount: number = 0;

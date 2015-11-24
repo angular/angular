@@ -343,7 +343,7 @@ export function main() {
 
       it('should allow multiple pairs', () => {
         var bindings = parseTemplateBindings("a 1 b 2");
-        expect(keys(bindings)).toEqual(['a', 'a-b']);
+        expect(keys(bindings)).toEqual(['a', 'aB']);
         expect(exprSources(bindings)).toEqual(['1 ', '2']);
       });
 
@@ -382,7 +382,7 @@ export function main() {
 
         bindings = parseTemplateBindings("directive: var item in expr; var a = b", 'location');
         expect(keyValues(bindings))
-            .toEqual(['directive', '#item=\$implicit', 'directive-in=expr in location', '#a=b']);
+            .toEqual(['directive', '#item=\$implicit', 'directiveIn=expr in location', '#a=b']);
       });
 
       it('should parse pipes', () => {

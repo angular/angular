@@ -5,7 +5,7 @@
     <input
       id="new-todo"
       placeholder="What needs to be done?"
-      [(ng-model)]="inputValue"
+      [(ngModel)]="inputValue"
       autofocus
       #newtodo
       (keyup.enter)="enterTodo()">
@@ -17,7 +17,7 @@
 
     <ul id="todo-list">
 
-      <li *ng-for="#todo of todoStore.list" [class.hidden]="hideActive && !todo.completed || hideCompleted && todo.completed">
+      <li *ngFor="#todo of todoStore.list" [class.hidden]="hideActive && !todo.completed || hideCompleted && todo.completed">
         <div class="view"
             [class.hidden]="todoEdit == todo">
 
@@ -34,7 +34,7 @@
 
           <input class="edit"
             [class.visible]="todoEdit == todo"
-            [(ng-model)]="todo.editTitle"
+            [(ngModel)]="todo.editTitle"
             (keyup)="doneEditing($event, todo)">
 
         </div>
