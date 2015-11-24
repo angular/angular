@@ -1,4 +1,4 @@
-library angular2.profile;
+library angular2.instrumentation;
 
 export "src/core/profile/profile.dart"
     show

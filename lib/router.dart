@@ -20,7 +20,7 @@ export "src/router/interfaces.dart"
     show OnActivate, OnDeactivate, OnReuse, CanDeactivate, CanReuse;
 export "src/router/lifecycle_annotations.dart" show CanActivate;
 export "src/router/instruction.dart" show Instruction, ComponentInstruction;
-export "package:angular2/angular2.dart" show OpaqueToken;
+export "package:angular2/core.dart" show OpaqueToken;
 import "src/router/location_strategy.dart" show LocationStrategy;
 import "src/router/path_location_strategy.dart" show PathLocationStrategy;
 import "src/router/router.dart" show Router, RootRouter;
@@ -28,7 +28,7 @@ import "src/router/router_outlet.dart" show RouterOutlet;
 import "src/router/router_link.dart" show RouterLink;
 import "src/router/route_registry.dart" show RouteRegistry;
 import "src/router/location.dart" show Location;
-import "package:angular2/angular2.dart"
+import "package:angular2/core.dart"
     show ApplicationRef, provide, OpaqueToken, Provider;
 import "package:angular2/src/facade/exceptions.dart" show BaseException;
 

@@ -96,7 +96,7 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
             compileDirectiveMetadata;
       }
     }).catchError((err) {
-      log.error('ERROR: $err', asset: assetId);
+      log.error('ERROR: $err');
     }));
     return null;
   }

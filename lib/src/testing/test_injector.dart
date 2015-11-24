@@ -38,8 +38,7 @@ import "package:angular2/src/router/location_strategy.dart"
 import "package:angular2/src/mock/ng_zone_mock.dart" show MockNgZone;
 import "test_component_builder.dart" show TestComponentBuilder;
 import "package:angular2/src/core/di.dart" show Injector;
-import "package:angular2/src/platform/browser/debug/debug_element_view_listener.dart"
-    show ELEMENT_PROBE_PROVIDERS;
+import "package:angular2/platform/common_dom.dart" show ELEMENT_PROBE_PROVIDERS;
 import "package:angular2/src/facade/collection.dart" show ListWrapper;
 import "package:angular2/src/facade/lang.dart" show FunctionWrapper, Type;
 import "package:angular2/src/core/linker/view_pool.dart"

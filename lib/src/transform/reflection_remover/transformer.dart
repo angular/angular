@@ -44,11 +44,9 @@ class ReflectionRemover extends Transformer implements LazyTransformer {
       if (options.modeName == TRANSFORM_DYNAMIC_MODE) {
         mirrorMode = MirrorMode.debug;
         writeStaticInit = false;
-        zone.log.info(
-            'Running in "${options.modeName}", '
+        zone.log.info('Running in "${options.modeName}", '
             'mirrorMode: ${mirrorMode}, '
-            'writeStaticInit: ${writeStaticInit}.',
-            asset: primaryId);
+            'writeStaticInit: ${writeStaticInit}.');
       }
 
       var transformedCode = await removeReflectionCapabilities(

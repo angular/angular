@@ -1,6 +1,6 @@
 library angular2.src.router.router_link;
 
-import "package:angular2/angular2.dart" show Directive;
+import "package:angular2/core.dart" show Directive;
 import "package:angular2/src/facade/lang.dart" show isString;
 import "router.dart" show Router;
 import "location.dart" show Location;

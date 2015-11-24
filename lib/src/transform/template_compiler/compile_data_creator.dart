@@ -19,8 +19,8 @@ import 'package:barback/barback.dart';
 ///
 /// The returned value wraps the [NgDepsModel] at `assetId` as well as these
 /// created objects.
-Future<CompileDataResults> createCompileData(AssetReader reader,
-    AssetId assetId, List<String> platformDirectives) async {
+Future<CompileDataResults> createCompileData(
+    AssetReader reader, AssetId assetId, List<String> platformDirectives) async {
   return logElapsedAsync(() async {
     final creator =
         await _CompileDataCreator.create(reader, assetId, platformDirectives);
@@ -92,12 +92,10 @@ class _CompileDataCreator {
             } else if (depNgMeta.aliases.containsKey(dep.name)) {
               compileDatum.directives.addAll(depNgMeta.flatten(dep.name));
             } else {
-              log.warning(
-                  'Could not find Directive entry for $dep. '
+              log.warning('Could not find Directive entry for $dep. '
                   'Please be aware that Dart transformers have limited support for '
                   'reusable, pre-defined lists of Directives (aka '
-                  '"directive aliases"). See https://goo.gl/d8XPt0 for details.',
-                  asset: entryPoint);
+                  '"directive aliases"). See https://goo.gl/d8XPt0 for details.');
             }
           }
           compileData[reflectable] = compileDatum;
@@ -114,10 +112,8 @@ class _CompileDataCreator {
     for (var ad in platformDirectives) {
       final parts = ad.split("#");
       if (parts.length != 2) {
-        log.warning(
-            'The platform directives configuration option '
-            'must be in the following format: "URI#TOKEN"',
-            asset: entryPoint);
+        log.warning('The platform directives configuration option '
+            'must be in the following format: "URI#TOKEN"');
         return const [];
       }
       res.addAll(await _readPlatformDirectivesFromUri(parts[0], parts[1]));

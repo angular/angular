@@ -21,7 +21,7 @@ import "package:angular2/src/facade/async.dart"
 import "package:angular2/core.dart" show Injectable;
 import "package:angular2/common.dart" show NgFor, NgIf;
 import "package:angular2/core.dart" show Scope;
-import "package:angular2/platform/browser.dart" show By;
+import "package:angular2/platform/common_dom.dart" show By;
 import "package:angular2/src/core/metadata.dart"
     show Directive, Component, View;
 

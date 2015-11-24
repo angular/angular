@@ -56,10 +56,8 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
     if (numCtorsFound > 1) {
       var ctorName = ctor.name;
       if (ctorName != null) {
-        log.warning(
-            'Found ${numCtorsFound} constructors for class '
-            '${node.name}; using constructor ${ctorName}.',
-            asset: assetId);
+        log.warning('Found ${numCtorsFound} constructors for class '
+            '${node.name}; using constructor ${ctorName}.');
       }
     }
     return ctor;
@@ -168,10 +166,8 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
     if (directivesNode == null) return const [];
 
     if (directivesNode.expression is! ListLiteral) {
-      log.warning(
-          'Angular 2 expects a list literal for `directives` '
-          'but found a ${directivesNode.expression.runtimeType}',
-          asset: assetId);
+      log.warning('Angular 2 expects a list literal for `directives` '
+          'but found a ${directivesNode.expression.runtimeType}');
       return const [];
     }
     final directives = <PrefixedDirective>[];
@@ -183,8 +179,7 @@ class ReflectionInfoVisitor extends RecursiveAstVisitor<ReflectionInfoModel> {
       } else if (dep is Identifier) {
         directives.add(new PrefixedDirective()..name = '${dep}');
       } else {
-        log.warning('Found unexpected value $dep in `directives`.',
-            asset: assetId);
+        log.warning('Found unexpected value $dep in `directives`.');
       }
     }
     return directives;
