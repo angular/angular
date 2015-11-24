@@ -33,8 +33,6 @@ RouteConfig = __decorate([
  * - `name` is an optional `CamelCase` string representing the name of the route.
  * - `data` is an optional property of any type representing arbitrary route metadata for the given
  * route. It is injectable via {@link RouteData}.
- * - `useAsDefault` is a boolean value. If `true`, the child route will be navigated to if no child
- * route is specified during the navigation.
  *
  * ### Example
  * ```
@@ -47,7 +45,7 @@ RouteConfig = __decorate([
  * ```
  */
 export let Route = class {
-    constructor({ path, component, name, data, useAsDefault }) {
+    constructor({ path, component, name, data }) {
         // added next three properties to work around https://github.com/Microsoft/TypeScript/issues/4107
         this.aux = null;
         this.loader = null;
@@ -56,7 +54,6 @@ export let Route = class {
         this.component = component;
         this.name = name;
         this.data = data;
-        this.useAsDefault = useAsDefault;
     }
 };
 Route = __decorate([
@@ -90,7 +87,6 @@ export let AuxRoute = class {
         this.aux = null;
         this.loader = null;
         this.redirectTo = null;
-        this.useAsDefault = false;
         this.path = path;
         this.component = component;
         this.name = name;
@@ -110,8 +106,6 @@ AuxRoute = __decorate([
  * - `name` is an optional `CamelCase` string representing the name of the route.
  * - `data` is an optional property of any type representing arbitrary route metadata for the given
  * route. It is injectable via {@link RouteData}.
- * - `useAsDefault` is a boolean value. If `true`, the child route will be navigated to if no child
- * route is specified during the navigation.
  *
  * ### Example
  * ```
@@ -124,13 +118,12 @@ AuxRoute = __decorate([
  * ```
  */
 export let AsyncRoute = class {
-    constructor({ path, loader, name, data, useAsDefault }) {
+    constructor({ path, loader, name, data }) {
         this.aux = null;
         this.path = path;
         this.loader = loader;
         this.name = name;
         this.data = data;
-        this.useAsDefault = useAsDefault;
     }
 };
 AsyncRoute = __decorate([
@@ -138,22 +131,20 @@ AsyncRoute = __decorate([
     __metadata('design:paramtypes', [Object])
 ], AsyncRoute);
 /**
- * `Redirect` is a type of {@link RouteDefinition} used to route a path to a canonical route.
+ * `Redirect` is a type of {@link RouteDefinition} used to route a path to an asynchronously loaded
+ * component.
  *
  * It has the following properties:
  * - `path` is a string that uses the route matcher DSL.
- * - `redirectTo` is an array representing the link DSL.
- *
- * Note that redirects **do not** affect how links are generated. For that, see the `useAsDefault`
- * option.
+ * - `redirectTo` is a string representing the new URL to be matched against.
  *
  * ### Example
  * ```
  * import {RouteConfig} from 'angular2/router';
  *
  * @RouteConfig([
- *   {path: '/', redirectTo: ['/Home'] },
- *   {path: '/home', component: HomeCmp, name: 'Home'}
+ *   {path: '/', redirectTo: '/home'},
+ *   {path: '/home', component: HomeCmp}
  * ])
  * class MyApp {}
  * ```
@@ -165,7 +156,6 @@ export let Redirect = class {
         this.loader = null;
         this.data = null;
         this.aux = null;
-        this.useAsDefault = false;
         this.path = path;
         this.redirectTo = redirectTo;
     }

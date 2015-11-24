@@ -3,7 +3,7 @@ import {isString} from 'angular2/src/facade/lang';
 
 import {Router} from './router';
 import {Location} from './location';
-import {Instruction} from './instruction';
+import {Instruction, stringifyInstruction} from './instruction';
 
 /**
  * The RouterLink directive lets you link to specific parts of your app.
@@ -61,7 +61,7 @@ export class RouterLink {
     this._routeParams = changes;
     this._navigationInstruction = this._router.generate(this._routeParams);
 
-    var navigationHref = this._navigationInstruction.toLinkUrl();
+    var navigationHref = stringifyInstruction(this._navigationInstruction);
     this.visibleHref = this._location.prepareExternalUrl(navigationHref);
   }
 

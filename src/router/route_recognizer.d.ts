@@ -1,59 +1,33 @@
-import { Promise } from 'angular2/src/facade/promise';
-import { RouteHandler } from './route_handler';
+import { PathRecognizer, PathMatch } from './path_recognizer';
+import { RouteDefinition } from './route_config_impl';
 import { Url } from './url_parser';
 import { ComponentInstruction } from './instruction';
-export declare abstract class RouteMatch {
+/**
+ * `RouteRecognizer` is responsible for recognizing routes for a single component.
+ * It is consumed by `RouteRegistry`, which knows how to recognize an entire hierarchy of
+ * components.
+ */
+export declare class RouteRecognizer {
+    names: Map<string, PathRecognizer>;
+    auxRoutes: Map<string, PathRecognizer>;
+    matchers: PathRecognizer[];
+    redirects: Redirector[];
+    config(config: RouteDefinition): boolean;
+    /**
+     * Given a URL, returns a list of `RouteMatch`es, which are partial recognitions for some route.
+     *
+     */
+    recognize(urlParse: Url): PathMatch[];
+    recognizeAuxiliary(urlParse: Url): PathMatch;
+    hasRoute(name: string): boolean;
+    generate(name: string, params: any): ComponentInstruction;
 }
-export interface AbstractRecognizer {
-    hash: string;
-    path: string;
-    recognize(beginningSegment: Url): Promise<RouteMatch>;
-    generate(params: {
-        [key: string]: any;
-    }): ComponentInstruction;
-}
-export declare class PathMatch extends RouteMatch {
-    instruction: ComponentInstruction;
-    remaining: Url;
-    remainingAux: Url[];
-    constructor(instruction: ComponentInstruction, remaining: Url, remainingAux: Url[]);
-}
-export declare class RedirectMatch extends RouteMatch {
-    redirectTo: any[];
-    specificity: any;
-    constructor(redirectTo: any[], specificity: any);
-}
-export declare class RedirectRecognizer implements AbstractRecognizer {
-    path: string;
-    redirectTo: any[];
-    private _pathRecognizer;
-    hash: string;
-    constructor(path: string, redirectTo: any[]);
+export declare class Redirector {
+    segments: string[];
+    toSegments: string[];
+    constructor(path: string, redirectTo: string);
     /**
      * Returns `null` or a `ParsedUrl` representing the new path to match
      */
-    recognize(beginningSegment: Url): Promise<RouteMatch>;
-    generate(params: {
-        [key: string]: any;
-    }): ComponentInstruction;
-}
-export declare class RouteRecognizer implements AbstractRecognizer {
-    path: string;
-    handler: RouteHandler;
-    specificity: number;
-    terminal: boolean;
-    hash: string;
-    private _cache;
-    private _pathRecognizer;
-    constructor(path: string, handler: RouteHandler);
-    recognize(beginningSegment: Url): Promise<RouteMatch>;
-    generate(params: {
-        [key: string]: any;
-    }): ComponentInstruction;
-    generateComponentPathValues(params: {
-        [key: string]: any;
-    }): {
-        [key: string]: any;
-    };
-    private _getInstruction(urlPath, urlParams, params);
+    redirect(urlParse: Url): Url;
 }

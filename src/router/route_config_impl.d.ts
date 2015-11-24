@@ -19,8 +19,6 @@ export declare class RouteConfig {
  * - `name` is an optional `CamelCase` string representing the name of the route.
  * - `data` is an optional property of any type representing arbitrary route metadata for the given
  * route. It is injectable via {@link RouteData}.
- * - `useAsDefault` is a boolean value. If `true`, the child route will be navigated to if no child
- * route is specified during the navigation.
  *
  * ### Example
  * ```
@@ -39,18 +37,16 @@ export declare class Route implements RouteDefinition {
     path: string;
     component: Type;
     name: string;
-    useAsDefault: boolean;
     aux: string;
     loader: Function;
-    redirectTo: any[];
-    constructor({path, component, name, data, useAsDefault}: {
+    redirectTo: string;
+    constructor({path, component, name, data}: {
         path: string;
         component: Type;
         name?: string;
         data?: {
             [key: string]: any;
         };
-        useAsDefault?: boolean;
     });
 }
 /**
@@ -82,8 +78,7 @@ export declare class AuxRoute implements RouteDefinition {
     name: string;
     aux: string;
     loader: Function;
-    redirectTo: any[];
-    useAsDefault: boolean;
+    redirectTo: string;
     constructor({path, component, name}: {
         path: string;
         component: Type;
@@ -100,8 +95,6 @@ export declare class AuxRoute implements RouteDefinition {
  * - `name` is an optional `CamelCase` string representing the name of the route.
  * - `data` is an optional property of any type representing arbitrary route metadata for the given
  * route. It is injectable via {@link RouteData}.
- * - `useAsDefault` is a boolean value. If `true`, the child route will be navigated to if no child
- * route is specified during the navigation.
  *
  * ### Example
  * ```
@@ -120,49 +113,44 @@ export declare class AsyncRoute implements RouteDefinition {
     path: string;
     loader: Function;
     name: string;
-    useAsDefault: boolean;
     aux: string;
-    constructor({path, loader, name, data, useAsDefault}: {
+    constructor({path, loader, name, data}: {
         path: string;
         loader: Function;
         name?: string;
         data?: {
             [key: string]: any;
         };
-        useAsDefault?: boolean;
     });
 }
 /**
- * `Redirect` is a type of {@link RouteDefinition} used to route a path to a canonical route.
+ * `Redirect` is a type of {@link RouteDefinition} used to route a path to an asynchronously loaded
+ * component.
  *
  * It has the following properties:
  * - `path` is a string that uses the route matcher DSL.
- * - `redirectTo` is an array representing the link DSL.
- *
- * Note that redirects **do not** affect how links are generated. For that, see the `useAsDefault`
- * option.
+ * - `redirectTo` is a string representing the new URL to be matched against.
  *
  * ### Example
  * ```
  * import {RouteConfig} from 'angular2/router';
  *
  * @RouteConfig([
- *   {path: '/', redirectTo: ['/Home'] },
- *   {path: '/home', component: HomeCmp, name: 'Home'}
+ *   {path: '/', redirectTo: '/home'},
+ *   {path: '/home', component: HomeCmp}
  * ])
  * class MyApp {}
  * ```
  */
 export declare class Redirect implements RouteDefinition {
     path: string;
-    redirectTo: any[];
+    redirectTo: string;
     name: string;
     loader: Function;
     data: any;
     aux: string;
-    useAsDefault: boolean;
     constructor({path, redirectTo}: {
         path: string;
-        redirectTo: any[];
+        redirectTo: string;
     });
 }

@@ -13,6 +13,7 @@ var angular2_1 = require('angular2/angular2');
 var lang_1 = require('angular2/src/facade/lang');
 var router_1 = require('./router');
 var location_1 = require('./location');
+var instruction_1 = require('./instruction');
 /**
  * The RouterLink directive lets you link to specific parts of your app.
  *
@@ -56,7 +57,7 @@ var RouterLink = (function () {
         set: function (changes) {
             this._routeParams = changes;
             this._navigationInstruction = this._router.generate(this._routeParams);
-            var navigationHref = this._navigationInstruction.toLinkUrl();
+            var navigationHref = instruction_1.stringifyInstruction(this._navigationInstruction);
             this.visibleHref = this._location.prepareExternalUrl(navigationHref);
         },
         enumerable: true,

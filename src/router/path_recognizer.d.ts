@@ -1,20 +1,24 @@
+import { RouteHandler } from './route_handler';
 import { Url } from './url_parser';
-/**
- * Parses a URL string using a given matcher DSL, and generates URLs from param maps
- */
+import { ComponentInstruction } from './instruction';
+export declare class PathMatch {
+    instruction: ComponentInstruction;
+    remaining: Url;
+    remainingAux: Url[];
+    constructor(instruction: ComponentInstruction, remaining: Url, remainingAux: Url[]);
+}
 export declare class PathRecognizer {
     path: string;
+    handler: RouteHandler;
     private _segments;
     specificity: number;
     terminal: boolean;
     hash: string;
-    constructor(path: string);
-    recognize(beginningSegment: Url): {
-        [key: string]: any;
-    };
+    private _cache;
+    constructor(path: string, handler: RouteHandler);
+    recognize(beginningSegment: Url): PathMatch;
     generate(params: {
         [key: string]: any;
-    }): {
-        [key: string]: any;
-    };
+    }): ComponentInstruction;
+    private _getInstruction(urlPath, urlParams, _recognizer, params);
 }
