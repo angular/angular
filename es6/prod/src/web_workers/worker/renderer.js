@@ -222,3 +222,4 @@ WebWorkerRenderer = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [ClientMessageBrokerFactory, RenderProtoViewRefStore, RenderViewWithFragmentsStore, WebWorkerEventDispatcher])
 ], WebWorkerRenderer);
+//# sourceMappingURL=renderer.js.map

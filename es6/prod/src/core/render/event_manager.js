@@ -60,3 +60,4 @@ export class EventManagerPlugin {
         throw "not implemented";
     }
 }
+//# sourceMappingURL=event_manager.js.map

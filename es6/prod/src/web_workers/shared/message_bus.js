@@ -7,3 +7,4 @@ export { EventEmitter, Observable } from 'angular2/src/facade/async';
  */
 export class MessageBus {
 }
+//# sourceMappingURL=message_bus.js.map

@@ -12,3 +12,4 @@ export class PipeProvider extends ResolvedProvider_ {
         return new PipeProvider(metadata.name, metadata.pure, rb.key, rb.resolvedFactories, rb.multiProvider);
     }
 }
+//# sourceMappingURL=pipe_provider.js.map

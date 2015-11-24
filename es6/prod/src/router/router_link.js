@@ -76,3 +76,4 @@ RouterLink = __decorate([
     }), 
     __metadata('design:paramtypes', [Router, Location])
 ], RouterLink);
+//# sourceMappingURL=router_link.js.map

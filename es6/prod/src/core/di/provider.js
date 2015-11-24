@@ -475,3 +475,4 @@ function _extractToken(typeOrFunc, metadata /*any[] | any*/, params) {
 function _createDependency(token, optional, lowerBoundVisibility, upperBoundVisibility, depProps) {
     return new Dependency(Key.get(token), optional, lowerBoundVisibility, upperBoundVisibility, depProps);
 }
+//# sourceMappingURL=provider.js.map

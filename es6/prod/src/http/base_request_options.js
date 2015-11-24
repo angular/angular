@@ -139,3 +139,4 @@ BaseRequestOptions = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], BaseRequestOptions);
+//# sourceMappingURL=base_request_options.js.map

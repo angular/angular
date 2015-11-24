@@ -58,3 +58,4 @@ export class GenericBrowserDomAdapter extends DomAdapter {
         return isPresent(this._animationPrefix) && isPresent(this._transitionEnd);
     }
 }
+//# sourceMappingURL=generic_browser_adapter.js.map

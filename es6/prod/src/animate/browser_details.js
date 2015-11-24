@@ -67,3 +67,4 @@ class RafQueue {
         this.currentFrameId = null;
     }
 }
+//# sourceMappingURL=browser_details.js.map

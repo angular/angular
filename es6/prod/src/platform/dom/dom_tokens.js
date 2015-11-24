@@ -7,3 +7,4 @@ import { CONST_EXPR } from 'angular2/src/facade/lang';
  * Contexts are not the same (e.g. when running the application into a Web Worker).
  */
 export const DOCUMENT = CONST_EXPR(new OpaqueToken('DocumentToken'));
+//# sourceMappingURL=dom_tokens.js.map

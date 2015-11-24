@@ -272,3 +272,4 @@ class UpgradeNg1ComponentAdapter {
         throw new Error(`Directive '${this.directive.name}' require syntax unrecognized: ${this.directive.require}`);
     }
 }
+//# sourceMappingURL=upgrade_ng1_adapter.js.map

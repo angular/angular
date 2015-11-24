@@ -12,3 +12,4 @@ export { Binding, ProviderBuilder, ResolvedFactory, Dependency, bind, Provider, 
 export { Key, TypeLiteral } from './di/key';
 export { NoProviderError, AbstractProviderError, CyclicDependencyError, InstantiationError, InvalidProviderError, NoAnnotationError, OutOfBoundsError } from './di/exceptions';
 export { OpaqueToken } from './di/opaque_token';
+//# sourceMappingURL=di.js.map

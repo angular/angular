@@ -49,3 +49,4 @@ AppCmp = __decorate([
 export function main() {
     return bootstrap(AppCmp, [provide(APP_BASE_HREF, { useValue: '/angular2/examples/router/ts/on_activate' })]);
 }
+//# sourceMappingURL=on_activate_example.js.map

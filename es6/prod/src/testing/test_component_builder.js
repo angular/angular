@@ -197,3 +197,4 @@ TestComponentBuilder = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [Injector])
 ], TestComponentBuilder);
+//# sourceMappingURL=test_component_builder.js.map

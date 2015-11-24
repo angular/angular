@@ -88,3 +88,4 @@ AppCmp = __decorate([
 export function main() {
     bootstrap(AppCmp);
 }
+//# sourceMappingURL=number_pipe_example.js.map

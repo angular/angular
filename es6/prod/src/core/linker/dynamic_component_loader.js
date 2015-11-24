@@ -104,3 +104,4 @@ DynamicComponentLoader_ = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [Compiler, AppViewManager])
 ], DynamicComponentLoader_);
+//# sourceMappingURL=dynamic_component_loader.js.map

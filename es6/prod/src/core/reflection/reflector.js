@@ -133,3 +133,4 @@ export class Reflector {
 function _mergeMaps(target, config) {
     StringMapWrapper.forEach(config, (v, k) => target.set(k, v));
 }
+//# sourceMappingURL=reflector.js.map

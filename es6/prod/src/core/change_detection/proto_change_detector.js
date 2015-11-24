@@ -369,3 +369,4 @@ function _interpolationFn(strings) {
             throw new BaseException(`Does not support more than 9 expressions`);
     }
 }
+//# sourceMappingURL=proto_change_detector.js.map

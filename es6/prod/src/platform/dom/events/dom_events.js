@@ -31,3 +31,4 @@ DomEventsPlugin = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], DomEventsPlugin);
+//# sourceMappingURL=dom_events.js.map

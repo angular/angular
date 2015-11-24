@@ -355,3 +355,4 @@ function relativePath(url) {
     return (urlParsingNode.pathname.charAt(0) === '/') ? urlParsingNode.pathname :
         '/' + urlParsingNode.pathname;
 }
+//# sourceMappingURL=browser_adapter.js.map

@@ -596,3 +596,4 @@ class SimpleExpressionChecker {
     }
     visitChain(ast) { this.simple = false; }
 }
+//# sourceMappingURL=parser.js.map

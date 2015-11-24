@@ -3,3 +3,4 @@
  * @deprecated
  */
 export { bootstrap } from 'angular2/platform/browser';
+//# sourceMappingURL=bootstrap.js.map

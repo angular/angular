@@ -122,3 +122,4 @@ XHRBackend = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [BrowserXhr, ResponseOptions])
 ], XHRBackend);
+//# sourceMappingURL=xhr_backend.js.map

@@ -46,3 +46,4 @@ export class HammerGesturesPluginCommon extends EventManagerPlugin {
         return StringMapWrapper.contains(_eventNames, eventName);
     }
 }
+//# sourceMappingURL=hammer_common.js.map

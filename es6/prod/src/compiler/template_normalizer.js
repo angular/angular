@@ -117,3 +117,4 @@ class TemplatePreparseVisitor {
     visitAttr(ast, context) { return null; }
     visitText(ast, context) { return null; }
 }
+//# sourceMappingURL=template_normalizer.js.map

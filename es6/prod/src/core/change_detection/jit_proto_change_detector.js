@@ -12,3 +12,4 @@ export class JitProtoChangeDetector {
             .generate();
     }
 }
+//# sourceMappingURL=jit_proto_change_detector.js.map

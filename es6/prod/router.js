@@ -125,3 +125,4 @@ function routerPrimaryComponentFactory(app) {
     }
     return app.componentTypes[0];
 }
+//# sourceMappingURL=router.js.map

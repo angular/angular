@@ -208,3 +208,4 @@ NgSwitchDefault = __decorate([
     __param(2, Host()), 
     __metadata('design:paramtypes', [ViewContainerRef, TemplateRef, NgSwitch])
 ], NgSwitchDefault);
+//# sourceMappingURL=ng_switch.js.map

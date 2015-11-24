@@ -45,3 +45,4 @@ AppCmp = __decorate([
 export function main() {
     bootstrap(AppCmp);
 }
+//# sourceMappingURL=date_pipe_example.js.map

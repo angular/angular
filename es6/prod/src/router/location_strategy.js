@@ -51,3 +51,4 @@ export const APP_BASE_HREF = CONST_EXPR(new OpaqueToken('appBaseHref'));
 export function normalizeQueryParams(params) {
     return (params.length > 0 && params.substring(0, 1) != '?') ? ('?' + params) : params;
 }
+//# sourceMappingURL=location_strategy.js.map

@@ -117,3 +117,4 @@ DatePipe = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], DatePipe);
+//# sourceMappingURL=date_pipe.js.map

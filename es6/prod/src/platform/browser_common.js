@@ -54,3 +54,4 @@ export function initDomAdapter() {
     wtfInit();
     BrowserGetTestability.init();
 }
+//# sourceMappingURL=browser_common.js.map

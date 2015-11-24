@@ -16,3 +16,4 @@ MyComponent = __decorate([
     Component({ selector: 'my-component', template: '<h1>My Component</h1>' }), 
     __metadata('design:paramtypes', [])
 ], MyComponent);
+//# sourceMappingURL=my_component.js.map

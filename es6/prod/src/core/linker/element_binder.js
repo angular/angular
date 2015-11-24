@@ -13,3 +13,4 @@ export class ElementBinder {
         }
     }
 }
+//# sourceMappingURL=element_binder.js.map

@@ -42,3 +42,4 @@ export class MockLocationStrategy extends LocationStrategy {
     }
     forward() { throw 'not implemented'; }
 }
+//# sourceMappingURL=mock_location_strategy.js.map

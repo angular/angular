@@ -158,3 +158,4 @@ CurrencyPipe = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], CurrencyPipe);
+//# sourceMappingURL=number_pipe.js.map

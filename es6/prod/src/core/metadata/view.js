@@ -83,3 +83,4 @@ ViewMetadata = __decorate([
     CONST(), 
     __metadata('design:paramtypes', [Object])
 ], ViewMetadata);
+//# sourceMappingURL=view.js.map

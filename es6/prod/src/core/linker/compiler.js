@@ -53,3 +53,4 @@ Compiler_ = __decorate([
 export function internalCreateProtoView(compiler, compiledHostTemplate) {
     return compiler._createProtoView(compiledHostTemplate);
 }
+//# sourceMappingURL=compiler.js.map

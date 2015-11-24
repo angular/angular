@@ -49,3 +49,4 @@ export const PLATFORM_INITIALIZER = CONST_EXPR(new OpaqueToken("Platform Initial
  * A function that will be executed when an application is initialized.
  */
 export const APP_INITIALIZER = CONST_EXPR(new OpaqueToken("Application Initializer"));
+//# sourceMappingURL=application_tokens.js.map

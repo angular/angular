@@ -166,3 +166,4 @@ export function visitAllCommands(visitor, cmds, context = null) {
         cmds[i].visit(visitor, context);
     }
 }
+//# sourceMappingURL=template_commands.js.map

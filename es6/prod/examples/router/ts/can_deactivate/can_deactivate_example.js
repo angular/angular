@@ -68,3 +68,4 @@ AppCmp = __decorate([
 export function main() {
     return bootstrap(AppCmp, [provide(APP_BASE_HREF, { useValue: '/angular2/examples/router/ts/can_deactivate' })]);
 }
+//# sourceMappingURL=can_deactivate_example.js.map

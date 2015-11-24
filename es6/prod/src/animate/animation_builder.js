@@ -30,3 +30,4 @@ AnimationBuilder = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [BrowserDetails])
 ], AnimationBuilder);
+//# sourceMappingURL=animation_builder.js.map

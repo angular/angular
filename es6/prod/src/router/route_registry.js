@@ -266,3 +266,4 @@ function assertTerminalComponent(component, path) {
         }
     }
 }
+//# sourceMappingURL=route_registry.js.map
