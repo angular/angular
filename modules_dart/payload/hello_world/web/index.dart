@@ -1,9 +1,10 @@
 library hello_world.index;
 
-import "package:angular2/bootstrap.dart" show bootstrap;
+import "package:angular2/bootstrap.dart" show AngularEntrypoint, bootstrap;
 import "package:angular2/angular2.dart"
     show Component, Directive, ElementRef, Injectable, Renderer;
 
+@AngularEntrypoint("Hello World Entrypoint")
 main() {
   bootstrap(HelloCmp);
 }
