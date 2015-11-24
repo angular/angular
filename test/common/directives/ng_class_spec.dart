@@ -18,8 +18,7 @@ import "package:angular2/testing_internal.dart"
         xit;
 import "package:angular2/src/facade/collection.dart"
     show ListWrapper, StringMapWrapper, SetWrapper;
-import "package:angular2/core.dart" show Component, View, provide;
-import "package:angular2/common.dart" show NgFor;
+import "package:angular2/angular2.dart" show Component, View, NgFor, provide;
 import "package:angular2/src/common/directives/ng_class.dart" show NgClass;
 import "package:angular2/src/core/linker/view_pool.dart"
     show APP_VIEW_POOL_CAPACITY;

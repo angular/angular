@@ -23,7 +23,7 @@ import "package:angular2/src/facade/exceptions.dart"
 import "route_config_impl.dart"
     show RouteConfig, AsyncRoute, Route, AuxRoute, Redirect, RouteDefinition;
 import "package:angular2/src/core/reflection/reflection.dart" show reflector;
-import "package:angular2/core.dart" show Injectable;
+import "package:angular2/angular2.dart" show Injectable;
 import "route_config_nomalizer.dart"
     show normalizeRouteConfig, assertComponentExists;
 import "url_parser.dart" show parser, Url, pathSegmentsToUrl;

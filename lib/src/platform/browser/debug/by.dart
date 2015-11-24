@@ -1,4 +1,4 @@
-library angular2.src.platform.dom.debug.by;
+library angular2.src.platform.browser.debug.by;
 
 import "package:angular2/src/facade/lang.dart" show Type, isPresent, isBlank;
 import "package:angular2/src/facade/collection.dart" show Predicate;

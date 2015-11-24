@@ -5,7 +5,7 @@ import "package:angular2/src/facade/collection.dart" show StringMapWrapper;
 import "package:angular2/src/facade/lang.dart" show isBlank, isPresent;
 import "package:angular2/src/facade/exceptions.dart"
     show BaseException, WrappedException;
-import "package:angular2/core.dart"
+import "package:angular2/angular2.dart"
     show
         Directive,
         Attribute,

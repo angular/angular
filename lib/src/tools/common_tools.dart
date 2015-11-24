@@ -1,4 +1,4 @@
-library angular2.src.platform.browser.tools.common_tools;
+library angular2.src.tools.common_tools;
 
 import "package:angular2/src/core/application_ref.dart" show ApplicationRef;
 import "package:angular2/src/core/linker/dynamic_component_loader.dart"

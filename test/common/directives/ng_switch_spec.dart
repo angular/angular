@@ -13,7 +13,7 @@ import "package:angular2/testing_internal.dart"
         inject,
         it,
         xit;
-import "package:angular2/core.dart" show Component, View;
+import "package:angular2/angular2.dart" show Component, View;
 import "package:angular2/src/common/directives/ng_switch.dart"
     show NgSwitch, NgSwitchWhen, NgSwitchDefault;
 

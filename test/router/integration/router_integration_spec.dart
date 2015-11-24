@@ -15,7 +15,7 @@ import "package:angular2/testing_internal.dart"
         xdescribe,
         TestComponentBuilder,
         xit;
-import "package:angular2/platform/browser.dart" show bootstrap;
+import "package:angular2/bootstrap.dart" show bootstrap;
 import "package:angular2/src/core/metadata.dart"
     show Component, Directive, View;
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;

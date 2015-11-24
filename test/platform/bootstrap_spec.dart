@@ -1,4 +1,4 @@
-library angular2.test.platform.browser.bootstrap_spec;
+library angular2.test.platform.bootstrap_spec;
 
 import "package:angular2/testing_internal.dart"
     show

@@ -43,16 +43,14 @@ import "package:angular2/src/platform/browser/testability.dart"
 import "package:angular2/src/core/profile/wtf_init.dart" show wtfInit;
 export "package:angular2/src/platform/dom/dom_tokens.dart" show DOCUMENT;
 export "package:angular2/src/platform/browser/title.dart" show Title;
-export "package:angular2/platform/common_dom.dart"
+export "package:angular2/src/platform/browser/debug/debug_element_view_listener.dart"
     show
-        DebugElementViewListener,
+        // DebugElementViewListener,
         ELEMENT_PROBE_PROVIDERS,
         ELEMENT_PROBE_BINDINGS,
-        inspectNativeElement,
-        By;
+        inspectNativeElement;
+export "package:angular2/src/platform/browser/debug/by.dart" show By;
 export "browser/browser_adapter.dart" show BrowserDomAdapter;
-export "package:angular2/src/platform/browser/tools/tools.dart"
-    show enableDebugTools, disableDebugTools;
 
 const List<dynamic> BROWSER_PROVIDERS = const [
   PLATFORM_COMMON_PROVIDERS,

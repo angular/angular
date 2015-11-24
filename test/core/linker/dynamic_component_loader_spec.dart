@@ -20,7 +20,7 @@ import "package:angular2/testing_internal.dart"
 import "package:angular2/core.dart" show OnDestroy;
 import "package:angular2/core.dart" show Injector, inspectElement;
 import "package:angular2/common.dart" show NgIf;
-import "package:angular2/platform/common_dom.dart" show By;
+import "package:angular2/platform/browser.dart" show By;
 import "package:angular2/src/core/metadata.dart"
     show Component, View, ViewMetadata;
 import "package:angular2/src/core/linker/dynamic_component_loader.dart"

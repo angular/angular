@@ -36,8 +36,11 @@ import "package:angular2/core.dart"
         AfterViewChecked;
 import "package:angular2/common.dart" show NgIf, NgFor;
 import "package:angular2/core.dart" show asNativeElements;
+import "package:angular2/src/platform/browser/browser_adapter.dart"
+    show BrowserDomAdapter;
 
 main() {
+  BrowserDomAdapter.makeCurrent();
   describe("Query API", () {
     describe("querying by directive type", () {
       it(

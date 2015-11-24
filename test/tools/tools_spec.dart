@@ -1,4 +1,4 @@
-library angular2.test.platform.browser.tools.tools_spec;
+library angular2.test.tools.tools_spec;
 
 import "package:angular2/testing_internal.dart"
     show
@@ -11,8 +11,7 @@ import "package:angular2/testing_internal.dart"
         inject,
         it,
         xit;
-import "package:angular2/platform/browser.dart"
-    show enableDebugTools, disableDebugTools;
+import "package:angular2/tools.dart" show enableDebugTools, disableDebugTools;
 import "spies.dart" show SpyComponentRef, callNgProfilerTimeChangeDetection;
 
 main() {

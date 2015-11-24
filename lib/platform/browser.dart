@@ -9,9 +9,7 @@ export "package:angular2/src/platform/browser_common.dart"
         BrowserDomAdapter,
         By,
         Title,
-        DOCUMENT,
-        enableDebugTools,
-        disableDebugTools;
+        DOCUMENT;
 import "package:angular2/src/facade/lang.dart" show Type, isPresent;
 import "package:angular2/src/facade/promise.dart" show Future;
 import "package:angular2/src/platform/browser_common.dart"

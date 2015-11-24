@@ -36,7 +36,7 @@ import "package:angular2/core.dart"
         ViewContainerRef,
         ViewEncapsulation,
         ViewMetadata;
-import "package:angular2/platform/common_dom.dart" show By;
+import "package:angular2/platform/browser.dart" show By;
 
 main() {
   describe("projection", () {

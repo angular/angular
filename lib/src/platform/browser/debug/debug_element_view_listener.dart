@@ -1,4 +1,4 @@
-library angular2.src.platform.dom.debug.debug_element_view_listener;
+library angular2.src.platform.browser.debug.debug_element_view_listener;
 
 import "package:angular2/src/facade/lang.dart"
     show isPresent, NumberWrapper, StringWrapper;

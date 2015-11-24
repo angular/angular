@@ -45,7 +45,7 @@ export "../src/common/directives.dart";
 export "../src/common/forms.dart";
 export "../src/core/debug/debug_element.dart" show DebugElement;
 export "../src/core/change_detection.dart";
-export "../instrumentation.dart";
+export "../profile.dart";
 export "../src/web_workers/worker/application.dart";
 export "../src/web_workers/shared/client_message_broker.dart"
     show ClientMessageBroker, ClientMessageBrokerFactory, FnArg, UiArguments;

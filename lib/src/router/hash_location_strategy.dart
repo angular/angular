@@ -1,7 +1,7 @@
 library angular2.src.router.hash_location_strategy;
 
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
-import "package:angular2/core.dart" show Injectable;
+import "package:angular2/angular2.dart" show Injectable;
 import "location_strategy.dart" show LocationStrategy, normalizeQueryParams;
 import "package:angular2/src/facade/browser.dart"
     show EventListener, History, Location;
