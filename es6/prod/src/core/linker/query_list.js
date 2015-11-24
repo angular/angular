@@ -59,4 +59,3 @@ export class QueryList {
     /** @internal */
     notifyOnChanges() { this._emitter.emit(this); }
 }
-//# sourceMappingURL=query_list.js.map

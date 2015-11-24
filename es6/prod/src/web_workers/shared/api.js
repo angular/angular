@@ -78,4 +78,3 @@ export class WebWorkerEmbeddedTemplateCmd {
         return visitor.visitEmbeddedTemplate(this, context);
     }
 }
-//# sourceMappingURL=api.js.map

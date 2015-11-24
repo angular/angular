@@ -237,4 +237,3 @@ AppViewManagerUtils = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], AppViewManagerUtils);
-//# sourceMappingURL=view_manager_utils.js.map

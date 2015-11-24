@@ -265,4 +265,3 @@ export class AbstractChangeDetector {
         return this.bindingTargets[this.propertyBindingIndex];
     }
 }
-//# sourceMappingURL=abstract_change_detector.js.map

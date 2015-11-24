@@ -67,4 +67,3 @@ function normalizeNgContentSelect(selectAttr) {
     }
     return selectAttr;
 }
-//# sourceMappingURL=template_preparser.js.map

@@ -33,4 +33,3 @@ export class TemplateRef_ extends TemplateRef {
         return this._getProtoView().templateVariableBindings.has(name);
     }
 }
-//# sourceMappingURL=template_ref.js.map

@@ -22,4 +22,3 @@ describe('on activate example app', function () {
             .toContain('onActivate: Finished navigating from "1" to ""');
     });
 });
-//# sourceMappingURL=on_activate_spec.js.map

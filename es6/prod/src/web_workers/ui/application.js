@@ -33,4 +33,3 @@ export class WebWorkerInstance {
         this.bus = bus;
     }
 }
-//# sourceMappingURL=application.js.map

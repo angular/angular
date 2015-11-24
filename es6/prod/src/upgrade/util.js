@@ -11,4 +11,3 @@ export function onError(e) {
 export function controllerKey(name) {
     return '$' + name + 'Controller';
 }
-//# sourceMappingURL=util.js.map

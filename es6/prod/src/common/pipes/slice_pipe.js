@@ -89,4 +89,3 @@ SlicePipe = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], SlicePipe);
-//# sourceMappingURL=slice_pipe.js.map

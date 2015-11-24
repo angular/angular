@@ -137,4 +137,3 @@ class _Channel {
         this.runInZone = runInZone;
     }
 }
-//# sourceMappingURL=post_message_bus.js.map

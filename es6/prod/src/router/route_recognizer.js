@@ -131,4 +131,3 @@ export class Redirector {
         return urlParse;
     }
 }
-//# sourceMappingURL=route_recognizer.js.map

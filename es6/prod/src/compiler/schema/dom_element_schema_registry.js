@@ -47,4 +47,3 @@ DomElementSchemaRegistry = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], DomElementSchemaRegistry);
-//# sourceMappingURL=dom_element_schema_registry.js.map

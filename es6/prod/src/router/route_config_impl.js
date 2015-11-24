@@ -164,4 +164,3 @@ Redirect = __decorate([
     CONST(), 
     __metadata('design:paramtypes', [Object])
 ], Redirect);
-//# sourceMappingURL=route_config_impl.js.map

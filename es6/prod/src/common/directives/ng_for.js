@@ -148,4 +148,3 @@ class RecordViewTuple {
         this.view = view;
     }
 }
-//# sourceMappingURL=ng_for.js.map

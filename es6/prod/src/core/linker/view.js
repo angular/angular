@@ -285,4 +285,3 @@ export class AppProtoView {
     }
     isInitialized() { return isPresent(this.elementBinders); }
 }
-//# sourceMappingURL=view.js.map

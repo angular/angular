@@ -45,4 +45,3 @@ import { NgSwitch, NgSwitchWhen, NgSwitchDefault } from './ng_switch';
  * ```
  */
 export const CORE_DIRECTIVES = CONST_EXPR([NgClass, NgFor, NgIf, NgStyle, NgSwitch, NgSwitchWhen, NgSwitchDefault]);
-//# sourceMappingURL=core_directives.js.map

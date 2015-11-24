@@ -6,4 +6,3 @@ export function instantiateType(type, params = []) {
     instance.constructor.apply(instance, params);
     return instance;
 }
-//# sourceMappingURL=lang_utils.js.map

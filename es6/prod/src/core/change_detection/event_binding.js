@@ -6,4 +6,3 @@ export class EventBinding {
         this.records = records;
     }
 }
-//# sourceMappingURL=event_binding.js.map

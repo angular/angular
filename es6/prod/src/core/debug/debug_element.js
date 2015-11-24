@@ -158,4 +158,3 @@ export class Scope {
         return scope;
     }
 }
-//# sourceMappingURL=debug_element.js.map

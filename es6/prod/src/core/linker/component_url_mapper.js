@@ -49,4 +49,3 @@ export class RuntimeComponentUrlMapper extends ComponentUrlMapper {
         return super.getUrl(component);
     }
 }
-//# sourceMappingURL=component_url_mapper.js.map

@@ -35,4 +35,3 @@ UpperCasePipe = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], UpperCasePipe);
-//# sourceMappingURL=uppercase_pipe.js.map

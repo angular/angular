@@ -725,4 +725,3 @@ var _HTMLElementPropertyList = [
     "closure_lm_714617",
     "__jsaction"
 ];
-//# sourceMappingURL=parse5_adapter.js.map

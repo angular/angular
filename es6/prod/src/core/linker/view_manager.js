@@ -275,4 +275,3 @@ AppViewManager_ = __decorate([
     __param(4, Inject(forwardRef(() => ProtoViewFactory))), 
     __metadata('design:paramtypes', [AppViewPool, AppViewListener, AppViewManagerUtils, Renderer, Object])
 ], AppViewManager_);
-//# sourceMappingURL=view_manager.js.map

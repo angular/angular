@@ -16,4 +16,3 @@ export function getCanActivateHook(type) {
     }
     return null;
 }
-//# sourceMappingURL=route_lifecycle_reflector.js.map

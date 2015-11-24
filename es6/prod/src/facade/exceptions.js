@@ -31,4 +31,3 @@ export function makeTypeError(message) {
 export function unimplemented() {
     throw new BaseException('unimplemented');
 }
-//# sourceMappingURL=exceptions.js.map

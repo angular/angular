@@ -25,4 +25,3 @@ export function hasLifecycleHook(lcInterface, token) {
             return false;
     }
 }
-//# sourceMappingURL=directive_lifecycle_reflector.js.map

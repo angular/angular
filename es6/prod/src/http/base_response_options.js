@@ -137,4 +137,3 @@ BaseResponseOptions = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], BaseResponseOptions);
-//# sourceMappingURL=base_response_options.js.map

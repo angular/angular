@@ -78,4 +78,3 @@ class _Expectation {
         this.response = response;
     }
 }
-//# sourceMappingURL=xhr_mock.js.map

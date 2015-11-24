@@ -150,4 +150,3 @@ export class RenderComponentTemplate {
  */
 export class Renderer {
 }
-//# sourceMappingURL=api.js.map

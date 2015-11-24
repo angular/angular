@@ -228,4 +228,3 @@ export class ComponentInstruction_ extends ComponentInstruction {
     get terminal() { return this._recognizer.terminal; }
     get routeData() { return this._routeData; }
 }
-//# sourceMappingURL=instruction.js.map

@@ -10,4 +10,3 @@ export { NgStyle } from './directives/ng_style';
 export { NgSwitch, NgSwitchWhen, NgSwitchDefault } from './directives/ng_switch';
 export * from './directives/observable_list_diff';
 export { CORE_DIRECTIVES } from './directives/core_directives';
-//# sourceMappingURL=directives.js.map

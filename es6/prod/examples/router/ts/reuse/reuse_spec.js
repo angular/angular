@@ -23,4 +23,3 @@ describe('reuse example app', function () {
         expect(element(by.css('#message')).getAttribute('value')).toEqual('long time no see!');
     });
 });
-//# sourceMappingURL=reuse_spec.js.map

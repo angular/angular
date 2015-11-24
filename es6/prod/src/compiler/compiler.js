@@ -45,4 +45,3 @@ export const COMPILER_PROVIDERS = CONST_EXPR([
     new Provider(AppRootUrl, { useExisting: AnchorBasedAppRootUrl }),
     UrlResolver
 ]);
-//# sourceMappingURL=compiler.js.map

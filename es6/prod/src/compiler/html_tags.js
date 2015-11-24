@@ -124,4 +124,3 @@ export function getHtmlTagDefinition(tagName) {
     var result = TAG_DEFINITIONS[tagName.toLowerCase()];
     return isPresent(result) ? result : DEFAULT_TAG_DEFINITION;
 }
-//# sourceMappingURL=html_tags.js.map

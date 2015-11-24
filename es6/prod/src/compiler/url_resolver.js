@@ -281,4 +281,3 @@ function _resolveUrl(base, url) {
     parts[_ComponentIndex.Path] = path;
     return _joinAndCanonicalizePath(parts);
 }
-//# sourceMappingURL=url_resolver.js.map

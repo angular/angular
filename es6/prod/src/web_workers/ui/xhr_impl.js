@@ -29,4 +29,3 @@ MessageBasedXHRImpl = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [ServiceMessageBrokerFactory, XHR])
 ], MessageBasedXHRImpl);
-//# sourceMappingURL=xhr_impl.js.map

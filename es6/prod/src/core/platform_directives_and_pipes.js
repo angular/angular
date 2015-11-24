@@ -49,4 +49,3 @@ export const PLATFORM_DIRECTIVES = CONST_EXPR(new OpaqueToken("Platform Directiv
  * ```
  */
 export const PLATFORM_PIPES = CONST_EXPR(new OpaqueToken("Platform Pipes"));
-//# sourceMappingURL=platform_directives_and_pipes.js.map

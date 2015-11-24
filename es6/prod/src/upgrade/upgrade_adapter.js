@@ -512,4 +512,3 @@ export class UpgradeAdapterRef {
         this.ng2ApplicationRef.dispose();
     }
 }
-//# sourceMappingURL=upgrade_adapter.js.map

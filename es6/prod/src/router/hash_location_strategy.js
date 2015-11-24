@@ -90,4 +90,3 @@ HashLocationStrategy = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], HashLocationStrategy);
-//# sourceMappingURL=hash_location_strategy.js.map

@@ -53,4 +53,3 @@ export function assertComponentExists(component, path) {
         throw new BaseException(`Component for route "${path}" is not defined, or is not a class.`);
     }
 }
-//# sourceMappingURL=route_config_nomalizer.js.map

@@ -103,4 +103,3 @@ export class EventDispatcher {
         return false;
     }
 }
-//# sourceMappingURL=event_dispatcher.js.map

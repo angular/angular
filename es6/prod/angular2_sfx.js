@@ -13,4 +13,3 @@ ng.noConflict = function () {
     window.ng = _prevNg;
     return ng;
 };
-//# sourceMappingURL=angular2_sfx.js.map

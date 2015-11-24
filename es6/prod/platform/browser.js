@@ -104,4 +104,3 @@ export function bootstrap(appComponentType, customProviders) {
     let appProviders = isPresent(customProviders) ? [BROWSER_APP_PROVIDERS, customProviders] : BROWSER_APP_PROVIDERS;
     return platform(BROWSER_PROVIDERS).application(appProviders).bootstrap(appComponentType);
 }
-//# sourceMappingURL=browser.js.map
