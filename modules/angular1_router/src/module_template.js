@@ -9,7 +9,11 @@ function routerFactory($q, $location, $$directiveIntrospector, $browser, $rootSc
   // the contents of `../lib/facades.es5`.
   //{{FACADES}}
 
-  var exports = {Injectable: function () {}};
+  var exports = {
+    Injectable: function () {},
+    OpaqueToken: function () {},
+    Inject: function () {}
+  };
   var require = function () {return exports;};
 
   // When this file is processed, the line below is replaced with
@@ -31,12 +35,19 @@ function routerFactory($q, $location, $$directiveIntrospector, $browser, $rootSc
   // property in a route config
   exports.assertComponentExists = function () {};
 
-  angular.stringifyInstruction = exports.stringifyInstruction;
+  angular.stringifyInstruction = function (instruction) {
+    return instruction.toRootUrl();
+  };
 
   var RouteRegistry = exports.RouteRegistry;
   var RootRouter = exports.RootRouter;
 
-  var registry = new RouteRegistry();
+
+  // Because Angular 1 has no notion of a root component, we use an object with unique identity
+  // to represent this.
+  var ROOT_COMPONENT_OBJECT = new Object();
+
+  var registry = new RouteRegistry(ROOT_COMPONENT_OBJECT);
   var location = new Location();
 
   $$directiveIntrospector(function (name, factory) {
@@ -46,10 +57,6 @@ function routerFactory($q, $location, $$directiveIntrospector, $browser, $rootSc
       });
     }
   });
-
-  // Because Angular 1 has no notion of a root component, we use an object with unique identity
-  // to represent this.
-  var ROOT_COMPONENT_OBJECT = new Object();
 
   var router = new RootRouter(registry, location, ROOT_COMPONENT_OBJECT);
   $rootScope.$watch(function () { return $location.path(); }, function (path) {

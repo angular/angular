@@ -6,12 +6,13 @@ var ts = require('typescript');
 var files = [
   'lifecycle_annotations_impl.ts',
   'url_parser.ts',
-  'path_recognizer.ts',
+  'route_recognizer.ts',
   'route_config_impl.ts',
   'async_route_handler.ts',
   'sync_route_handler.ts',
-  'route_recognizer.ts',
+  'component_recognizer.ts',
   'instruction.ts',
+  'path_recognizer.ts',
   'route_config_nomalizer.ts',
   'route_lifecycle_reflector.ts',
   'route_registry.ts',
@@ -39,7 +40,10 @@ function main() {
  * sourcemap, and exported variable identifier name for the content.
  */
 var IMPORT_RE = new RegExp("import \\{?([\\w\\n_, ]+)\\}? from '(.+)';?", 'g');
+var INJECT_RE = new RegExp("@Inject\\(ROUTER_PRIMARY_COMPONENT\\)", 'g');
+var IMJECTABLE_RE = new RegExp("@Injectable\\(\\)", 'g');
 function transform(contents) {
+  contents = contents.replace(INJECT_RE, '').replace(IMJECTABLE_RE, '');
   contents = contents.replace(IMPORT_RE, function (match, imports, includePath) {
     //TODO: remove special-case
     if (isFacadeModule(includePath) || includePath === './router_outlet') {

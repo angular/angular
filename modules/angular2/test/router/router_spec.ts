@@ -8,7 +8,7 @@ import {
   expect,
   inject,
   beforeEach,
-  beforeEachBindings
+  beforeEachProviders
 } from 'angular2/testing_internal';
 import {SpyRouterOutlet} from './spies';
 import {Type} from 'angular2/src/facade/lang';
@@ -18,9 +18,8 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 import {Router, RootRouter} from 'angular2/src/router/router';
 import {SpyLocation} from 'angular2/src/mock/location_mock';
 import {Location} from 'angular2/src/router/location';
-import {stringifyInstruction} from 'angular2/src/router/instruction';
 
-import {RouteRegistry} from 'angular2/src/router/route_registry';
+import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from 'angular2/src/router/route_registry';
 import {RouteConfig, AsyncRoute, Route} from 'angular2/src/router/route_config_decorator';
 import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 
@@ -30,16 +29,12 @@ export function main() {
   describe('Router', () => {
     var router, location;
 
-    beforeEachBindings(() => [
+    beforeEachProviders(() => [
       RouteRegistry,
       DirectiveResolver,
       provide(Location, {useClass: SpyLocation}),
-      provide(Router,
-              {
-                useFactory:
-                    (registry, location) => { return new RootRouter(registry, location, AppCmp); },
-                deps: [RouteRegistry, Location]
-              })
+      provide(ROUTER_PRIMARY_COMPONENT, {useValue: AppCmp}),
+      provide(Router, {useClass: RootRouter})
     ]);
 
 
@@ -223,6 +218,11 @@ export function main() {
       });
     });
   });
+}
+
+
+function stringifyInstruction(instruction): string {
+  return instruction.toRootUrl();
 }
 
 function loader(): Promise<Type> {

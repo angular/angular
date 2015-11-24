@@ -30,7 +30,7 @@ module.exports = function makeNodeTree(projects, destinationPath) {
 
       // we call browser's bootstrap
       'angular2/test/router/route_config_spec.ts',
-      'angular2/test/router/integration/router_integration_spec.ts',
+      'angular2/test/router/integration/bootstrap_spec.ts',
 
       // we check the public api by importing angular2/angular2
       'angular2/test/symbol_inspector/**/*.ts',
