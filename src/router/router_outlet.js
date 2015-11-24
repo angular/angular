@@ -16,7 +16,7 @@ var async_1 = require('angular2/src/facade/async');
 var collection_1 = require('angular2/src/facade/collection');
 var lang_1 = require('angular2/src/facade/lang');
 var exceptions_1 = require('angular2/src/facade/exceptions');
-var angular2_1 = require('angular2/angular2');
+var core_1 = require('angular2/core');
 var routerMod = require('./router');
 var instruction_1 = require('./instruction');
 var hookMod = require('./lifecycle_annotations');
@@ -57,10 +57,10 @@ var RouterOutlet = (function () {
         this._currentInstruction = nextInstruction;
         var componentType = nextInstruction.componentType;
         var childRouter = this._parentRouter.childRouter(componentType);
-        var providers = angular2_1.Injector.resolve([
-            angular2_1.provide(instruction_1.RouteData, { useValue: nextInstruction.routeData }),
-            angular2_1.provide(instruction_1.RouteParams, { useValue: new instruction_1.RouteParams(nextInstruction.params) }),
-            angular2_1.provide(routerMod.Router, { useValue: childRouter })
+        var providers = core_1.Injector.resolve([
+            core_1.provide(instruction_1.RouteData, { useValue: nextInstruction.routeData }),
+            core_1.provide(instruction_1.RouteParams, { useValue: new instruction_1.RouteParams(nextInstruction.params) }),
+            core_1.provide(routerMod.Router, { useValue: childRouter })
         ]);
         return this._loader.loadNextToLocation(componentType, this._elementRef, providers)
             .then(function (componentRef) {
@@ -147,9 +147,9 @@ var RouterOutlet = (function () {
         return async_1.PromiseWrapper.resolve(result);
     };
     RouterOutlet = __decorate([
-        angular2_1.Directive({ selector: 'router-outlet' }),
-        __param(3, angular2_1.Attribute('name')), 
-        __metadata('design:paramtypes', [angular2_1.ElementRef, angular2_1.DynamicComponentLoader, routerMod.Router, String])
+        core_1.Directive({ selector: 'router-outlet' }),
+        __param(3, core_1.Attribute('name')), 
+        __metadata('design:paramtypes', [core_1.ElementRef, core_1.DynamicComponentLoader, routerMod.Router, String])
     ], RouterOutlet);
     return RouterOutlet;
 })();

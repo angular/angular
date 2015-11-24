@@ -4,7 +4,7 @@
  * The http module provides services to perform http requests. To get started, see the {@link Http}
  * class.
  */
-import {provide, Provider} from 'angular2/angular2';
+import {provide, Provider} from 'angular2/core';
 import {Http, Jsonp} from './src/http/http';
 import {XHRBackend, XHRConnection} from './src/http/backends/xhr_backend';
 import {JSONPBackend, JSONPBackend_, JSONPConnection} from './src/http/backends/jsonp_backend';

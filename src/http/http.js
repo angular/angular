@@ -16,7 +16,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var lang_1 = require('angular2/src/facade/lang');
 var exceptions_1 = require('angular2/src/facade/exceptions');
-var angular2_1 = require('angular2/angular2');
+var core_1 = require('angular2/core');
 var interfaces_1 = require('./interfaces');
 var static_request_1 = require('./static_request');
 var base_request_options_1 = require('./base_request_options');
@@ -161,7 +161,7 @@ var Http = (function () {
         return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethods.Head, url)));
     };
     Http = __decorate([
-        angular2_1.Injectable(), 
+        core_1.Injectable(), 
         __metadata('design:paramtypes', [interfaces_1.ConnectionBackend, base_request_options_1.RequestOptions])
     ], Http);
     return Http;
@@ -195,7 +195,7 @@ var Jsonp = (function (_super) {
         return responseObservable;
     };
     Jsonp = __decorate([
-        angular2_1.Injectable(), 
+        core_1.Injectable(), 
         __metadata('design:paramtypes', [interfaces_1.ConnectionBackend, base_request_options_1.RequestOptions])
     ], Jsonp);
     return Jsonp;

@@ -4,10 +4,10 @@ import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {Headers} from '../headers';
 import {ResponseOptions, BaseResponseOptions} from '../base_response_options';
-import {Injectable} from 'angular2/angular2';
+import {Injectable} from 'angular2/core';
 import {BrowserXhr} from './browser_xhr';
 import {isPresent} from 'angular2/src/facade/lang';
-import {Observable} from 'angular2/angular2';
+import {Observable} from 'angular2/core';
 import {isSuccess, getResponseURL} from '../http_utils';
 /**
 * Creates connections using `XMLHttpRequest`. Given a fully-qualified

@@ -20,14 +20,17 @@ var dom_tokens_2 = require('angular2/src/platform/dom/dom_tokens');
 exports.DOCUMENT = dom_tokens_2.DOCUMENT;
 var title_1 = require('angular2/src/platform/browser/title');
 exports.Title = title_1.Title;
-var debug_element_view_listener_1 = require('angular2/src/platform/browser/debug/debug_element_view_listener');
-exports.ELEMENT_PROBE_PROVIDERS = debug_element_view_listener_1.ELEMENT_PROBE_PROVIDERS;
-exports.ELEMENT_PROBE_BINDINGS = debug_element_view_listener_1.ELEMENT_PROBE_BINDINGS;
-exports.inspectNativeElement = debug_element_view_listener_1.inspectNativeElement;
-var by_1 = require('angular2/src/platform/browser/debug/by');
-exports.By = by_1.By;
+var common_dom_1 = require('angular2/platform/common_dom');
+exports.DebugElementViewListener = common_dom_1.DebugElementViewListener;
+exports.ELEMENT_PROBE_PROVIDERS = common_dom_1.ELEMENT_PROBE_PROVIDERS;
+exports.ELEMENT_PROBE_BINDINGS = common_dom_1.ELEMENT_PROBE_BINDINGS;
+exports.inspectNativeElement = common_dom_1.inspectNativeElement;
+exports.By = common_dom_1.By;
 var browser_adapter_2 = require('./browser/browser_adapter');
 exports.BrowserDomAdapter = browser_adapter_2.BrowserDomAdapter;
+var tools_1 = require('angular2/src/platform/browser/tools/tools');
+exports.enableDebugTools = tools_1.enableDebugTools;
+exports.disableDebugTools = tools_1.disableDebugTools;
 exports.BROWSER_PROVIDERS = lang_1.CONST_EXPR([
     core_1.PLATFORM_COMMON_PROVIDERS,
     new di_1.Provider(core_1.PLATFORM_INITIALIZER, { useValue: initDomAdapter, multi: true }),

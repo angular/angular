@@ -22013,7 +22013,7 @@ System.register("angular2/src/common/forms/form_builder", ["angular2/core", "ang
   return module.exports;
 });
 
-System.register("angular2/profile", ["angular2/src/core/profile/profile"], true, function(require, exports, module) {
+System.register("angular2/instrumentation", ["angular2/src/core/profile/profile"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -30868,6 +30868,130 @@ System.register("angular2/src/platform/dom/events/dom_events", ["angular2/src/pl
     return DomEventsPlugin;
   })(core_1.EventManagerPlugin);
   exports.DomEventsPlugin = DomEventsPlugin;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/platform/dom/debug/by", ["angular2/src/facade/lang", "angular2/src/platform/dom/dom_adapter"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var lang_1 = require("angular2/src/facade/lang");
+  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
+  var By = (function() {
+    function By() {}
+    By.all = function() {
+      return function(debugElement) {
+        return true;
+      };
+    };
+    By.css = function(selector) {
+      return function(debugElement) {
+        return lang_1.isPresent(debugElement.nativeElement) ? dom_adapter_1.DOM.elementMatches(debugElement.nativeElement, selector) : false;
+      };
+    };
+    By.directive = function(type) {
+      return function(debugElement) {
+        return debugElement.hasDirective(type);
+      };
+    };
+    return By;
+  })();
+  exports.By = By;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/platform/dom/debug/debug_element_view_listener", ["angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/src/core/di", "angular2/src/core/linker/view_listener", "angular2/src/platform/dom/dom_adapter", "angular2/src/core/render/api", "angular2/src/core/debug/debug_element"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      return Reflect.decorate(decorators, target, key, desc);
+    switch (arguments.length) {
+      case 2:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(o)) || o;
+        }, target);
+      case 3:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key)), void 0;
+        }, void 0);
+      case 4:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key, o)) || o;
+        }, desc);
+    }
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var lang_1 = require("angular2/src/facade/lang");
+  var collection_1 = require("angular2/src/facade/collection");
+  var di_1 = require("angular2/src/core/di");
+  var view_listener_1 = require("angular2/src/core/linker/view_listener");
+  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
+  var api_1 = require("angular2/src/core/render/api");
+  var debug_element_1 = require("angular2/src/core/debug/debug_element");
+  var NG_ID_PROPERTY = 'ngid';
+  var INSPECT_GLOBAL_NAME = 'ng.probe';
+  var NG_ID_SEPARATOR = '#';
+  var _allIdsByView = new collection_1.Map();
+  var _allViewsById = new collection_1.Map();
+  var _nextId = 0;
+  function _setElementId(element, indices) {
+    if (lang_1.isPresent(element)) {
+      dom_adapter_1.DOM.setData(element, NG_ID_PROPERTY, indices.join(NG_ID_SEPARATOR));
+    }
+  }
+  function _getElementId(element) {
+    var elId = dom_adapter_1.DOM.getData(element, NG_ID_PROPERTY);
+    if (lang_1.isPresent(elId)) {
+      return elId.split(NG_ID_SEPARATOR).map(function(partStr) {
+        return lang_1.NumberWrapper.parseInt(partStr, 10);
+      });
+    } else {
+      return null;
+    }
+  }
+  function inspectNativeElement(element) {
+    var elId = _getElementId(element);
+    if (lang_1.isPresent(elId)) {
+      var view = _allViewsById.get(elId[0]);
+      if (lang_1.isPresent(view)) {
+        return new debug_element_1.DebugElement_(view, elId[1]);
+      }
+    }
+    return null;
+  }
+  exports.inspectNativeElement = inspectNativeElement;
+  var DebugElementViewListener = (function() {
+    function DebugElementViewListener(_renderer) {
+      this._renderer = _renderer;
+      dom_adapter_1.DOM.setGlobalVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
+    }
+    DebugElementViewListener.prototype.onViewCreated = function(view) {
+      var viewId = _nextId++;
+      _allViewsById.set(viewId, view);
+      _allIdsByView.set(view, viewId);
+      for (var i = 0; i < view.elementRefs.length; i++) {
+        var el = view.elementRefs[i];
+        _setElementId(this._renderer.getNativeElementSync(el), [viewId, i]);
+      }
+    };
+    DebugElementViewListener.prototype.onViewDestroyed = function(view) {
+      var viewId = _allIdsByView.get(view);
+      _allIdsByView.delete(view);
+      _allViewsById.delete(viewId);
+    };
+    DebugElementViewListener = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [api_1.Renderer])], DebugElementViewListener);
+    return DebugElementViewListener;
+  })();
+  exports.DebugElementViewListener = DebugElementViewListener;
+  exports.ELEMENT_PROBE_PROVIDERS = lang_1.CONST_EXPR([DebugElementViewListener, lang_1.CONST_EXPR(new di_1.Provider(view_listener_1.AppViewListener, {useExisting: DebugElementViewListener}))]);
+  exports.ELEMENT_PROBE_BINDINGS = exports.ELEMENT_PROBE_PROVIDERS;
   global.define = __define;
   return module.exports;
 });
@@ -47523,10 +47647,15 @@ System.register("angular2/src/compiler/runtime_compiler", ["angular2/src/core/li
   return module.exports;
 });
 
-System.register("angular2/platform/common_dom", ["angular2/src/platform/dom/dom_adapter", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/events/dom_events"], true, function(require, exports, module) {
+System.register("angular2/platform/common_dom", ["angular2/src/platform/dom/dom_adapter", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/events/dom_events", "angular2/src/platform/dom/debug/by", "angular2/src/platform/dom/debug/debug_element_view_listener"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
+  function __export(m) {
+    for (var p in m)
+      if (!exports.hasOwnProperty(p))
+        exports[p] = m[p];
+  }
   var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
   exports.DOM = dom_adapter_1.DOM;
   exports.setRootDomAdapter = dom_adapter_1.setRootDomAdapter;
@@ -47540,6 +47669,8 @@ System.register("angular2/platform/common_dom", ["angular2/src/platform/dom/dom_
   exports.DomSharedStylesHost = shared_styles_host_1.DomSharedStylesHost;
   var dom_events_1 = require("angular2/src/platform/dom/events/dom_events");
   exports.DomEventsPlugin = dom_events_1.DomEventsPlugin;
+  __export(require("angular2/src/platform/dom/debug/by"));
+  __export(require("angular2/src/platform/dom/debug/debug_element_view_listener"));
   global.define = __define;
   return module.exports;
 });
@@ -49556,7 +49687,7 @@ System.register("angular2/src/common/pipes", ["angular2/src/common/pipes/async_p
   return module.exports;
 });
 
-System.register("angular2/web_worker/worker", ["angular2/src/core/linker/interfaces", "angular2/src/core/metadata", "angular2/src/core/util", "angular2/src/core/di", "angular2/src/common/pipes", "angular2/src/facade/facade", "angular2/src/core/application_ref", "angular2/src/platform/browser/ruler", "angular2/src/platform/browser/title", "angular2/src/compiler/url_resolver", "angular2/src/core/linker", "angular2/src/core/zone", "angular2/src/core/render/api", "angular2/src/common/directives", "angular2/src/common/forms", "angular2/src/core/debug/debug_element", "angular2/src/core/change_detection", "angular2/profile", "angular2/src/web_workers/worker/application", "angular2/src/web_workers/shared/client_message_broker", "angular2/src/web_workers/shared/service_message_broker", "angular2/src/web_workers/shared/serializer"], true, function(require, exports, module) {
+System.register("angular2/web_worker/worker", ["angular2/src/core/linker/interfaces", "angular2/src/core/metadata", "angular2/src/core/util", "angular2/src/core/di", "angular2/src/common/pipes", "angular2/src/facade/facade", "angular2/src/core/application_ref", "angular2/src/platform/browser/ruler", "angular2/src/platform/browser/title", "angular2/src/compiler/url_resolver", "angular2/src/core/linker", "angular2/src/core/zone", "angular2/src/core/render/api", "angular2/src/common/directives", "angular2/src/common/forms", "angular2/src/core/debug/debug_element", "angular2/src/core/change_detection", "angular2/instrumentation", "angular2/src/web_workers/worker/application", "angular2/src/web_workers/shared/client_message_broker", "angular2/src/web_workers/shared/service_message_broker", "angular2/src/web_workers/shared/serializer"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -49595,7 +49726,7 @@ System.register("angular2/web_worker/worker", ["angular2/src/core/linker/interfa
   var debug_element_1 = require("angular2/src/core/debug/debug_element");
   exports.DebugElement = debug_element_1.DebugElement;
   __export(require("angular2/src/core/change_detection"));
-  __export(require("angular2/profile"));
+  __export(require("angular2/instrumentation"));
   __export(require("angular2/src/web_workers/worker/application"));
   var client_message_broker_1 = require("angular2/src/web_workers/shared/client_message_broker");
   exports.ClientMessageBroker = client_message_broker_1.ClientMessageBroker;

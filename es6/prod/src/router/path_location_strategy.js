@@ -13,7 +13,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 import { DOM } from 'angular2/src/platform/dom/dom_adapter';
-import { Injectable, Inject } from 'angular2/angular2';
+import { Injectable, Inject } from 'angular2/core';
 import { isBlank } from 'angular2/src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
 import { LocationStrategy, APP_BASE_HREF, normalizeQueryParams } from './location_strategy';

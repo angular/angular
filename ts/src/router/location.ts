@@ -1,6 +1,6 @@
 import {LocationStrategy} from './location_strategy';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
-import {Injectable, Inject} from 'angular2/angular2';
+import {Injectable, Inject} from 'angular2/core';
 
 /**
  * `Location` is a service that applications can use to interact with a browser's URL.

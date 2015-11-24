@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { LocationStrategy } from './location_strategy';
 import { EventEmitter, ObservableWrapper } from 'angular2/src/facade/async';
-import { Injectable } from 'angular2/angular2';
+import { Injectable } from 'angular2/core';
 /**
  * `Location` is a service that applications can use to interact with a browser's URL.
  * Depending on which {@link LocationStrategy} is used, `Location` will either persist
