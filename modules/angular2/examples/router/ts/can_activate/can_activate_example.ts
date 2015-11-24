@@ -24,8 +24,8 @@ class ControlPanelCmp {
   template: `
     <h1>Welcome Home!</h1>
     <div>
-      Edit <a [router-link]="['/ControlPanelCmp', {id: 1}]" id="user-1-link">User 1</a> |
-      Edit <a [router-link]="['/ControlPanelCmp', {id: 2}]" id="user-2-link">User 2</a>
+      Edit <a [routerLink]="['/ControlPanelCmp', {id: 1}]" id="user-1-link">User 1</a> |
+      Edit <a [routerLink]="['/ControlPanelCmp', {id: 2}]" id="user-2-link">User 2</a>
     </div>
   `,
   directives: [ROUTER_DIRECTIVES]

@@ -239,10 +239,10 @@ export function main() {
                });
          }));
 
-      it('should consume binding to camel-cased properties using dash-cased syntax in templates',
+      it('should consume binding to camel-cased properties',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MyComp,
-                            new ViewMetadata({template: '<input [read-only]="ctxBoolProp">'}))
+                            new ViewMetadata({template: '<input [readOnly]="ctxBoolProp">'}))
 
                .createAsync(MyComp)
                .then((fixture) => {
@@ -260,10 +260,10 @@ export function main() {
                });
          }));
 
-      it('should consume binding to inner-html',
+      it('should consume binding to innerHtml',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(MyComp,
-                            new ViewMetadata({template: '<div inner-html="{{ctxProp}}"></div>'}))
+                            new ViewMetadata({template: '<div innerHtml="{{ctxProp}}"></div>'}))
 
                .createAsync(MyComp)
                .then((fixture) => {
@@ -503,7 +503,7 @@ export function main() {
            tcb.overrideView(
                   MyComp, new ViewMetadata({
                     template:
-                        '<some-directive><toolbar><template toolbarpart var-toolbar-prop="toolbarProp">{{ctxProp}},{{toolbarProp}},<cmp-with-host></cmp-with-host></template></toolbar></some-directive>',
+                        '<some-directive><toolbar><template toolbarpart var-toolbarProp="toolbarProp">{{ctxProp}},{{toolbarProp}},<cmp-with-host></cmp-with-host></template></toolbar></some-directive>',
                     directives: [SomeDirective, CompWithHost, ToolbarComponent, ToolbarPart]
                   }))
                .createAsync(MyComp)
@@ -634,11 +634,11 @@ export function main() {
                             async.done();
                           })}));
 
-        it('should change dash-case to camel-case',
+        it('should preserve case',
            inject(
                [TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
                  tcb.overrideView(MyComp, new ViewMetadata({
-                                    template: '<p><child-cmp var-super-alice></child-cmp></p>',
+                                    template: '<p><child-cmp var-superAlice></child-cmp></p>',
                                     directives: [ChildComp]
                                   }))
 
@@ -657,7 +657,7 @@ export function main() {
              tcb.overrideView(
                     MyComp, new ViewMetadata({
                       template:
-                          '<template ng-for [ng-for-of]="[1]" var-i><child-cmp-no-template #cmp></child-cmp-no-template>{{i}}-{{cmp.ctxProp}}</template>',
+                          '<template ngFor [ngForOf]="[1]" var-i><child-cmp-no-template #cmp></child-cmp-no-template>{{i}}-{{cmp.ctxProp}}</template>',
                       directives: [ChildCompNoTemplate, NgFor]
                     }))
 
@@ -810,7 +810,7 @@ export function main() {
            tcb.overrideView(MyComp, new ViewMetadata({
                               template: `
             <some-directive>
-              <p *ng-if="true">
+              <p *ngIf="true">
                 <cmp-with-host #child></cmp-with-host>
               </p>
             </some-directive>`,
@@ -1041,7 +1041,7 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(
                   MyComp, new ViewMetadata({
-                    template: '<div *ng-if="ctxBoolProp" listener listenerother></div>',
+                    template: '<div *ngIf="ctxBoolProp" listener listenerother></div>',
                     directives:
                         [NgIf, DirectiveListeningDomEvent, DirectiveListeningDomEventOther]
                   }))
@@ -1231,7 +1231,7 @@ export function main() {
                   MyComp, new ViewMetadata({
                     template: `
               <component-providing-logging-injectable #providing>
-                <directive-consuming-injectable *ng-if="ctxBoolProp">
+                <directive-consuming-injectable *ngIf="ctxBoolProp">
                 </directive-consuming-injectable>
               </component-providing-logging-injectable>
           `,
@@ -1482,29 +1482,29 @@ export function main() {
        }));
 
     it('should support moving embedded views around',
-       inject([TestComponentBuilder, AsyncTestCompleter, ANCHOR_ELEMENT], (tcb, async,
-                                                                           anchorElement) => {
-         tcb.overrideView(MyComp, new ViewMetadata({
-                            template: '<div><div *some-impvp="ctxBoolProp">hello</div></div>',
-                            directives: [SomeImperativeViewport]
-                          }))
-             .createAsync(MyComp)
-             .then((fixture: ComponentFixture) => {
-               fixture.detectChanges();
-               expect(anchorElement).toHaveText('');
+       inject([TestComponentBuilder, AsyncTestCompleter, ANCHOR_ELEMENT],
+              (tcb, async, anchorElement) => {
+                tcb.overrideView(MyComp, new ViewMetadata({
+                                   template: '<div><div *someImpvp="ctxBoolProp">hello</div></div>',
+                                   directives: [SomeImperativeViewport]
+                                 }))
+                    .createAsync(MyComp)
+                    .then((fixture: ComponentFixture) => {
+                      fixture.detectChanges();
+                      expect(anchorElement).toHaveText('');
 
-               fixture.debugElement.componentInstance.ctxBoolProp = true;
-               fixture.detectChanges();
+                      fixture.debugElement.componentInstance.ctxBoolProp = true;
+                      fixture.detectChanges();
 
-               expect(anchorElement).toHaveText('hello');
+                      expect(anchorElement).toHaveText('hello');
 
-               fixture.debugElement.componentInstance.ctxBoolProp = false;
-               fixture.detectChanges();
-               expect(fixture.debugElement.nativeElement).toHaveText('');
+                      fixture.debugElement.componentInstance.ctxBoolProp = false;
+                      fixture.detectChanges();
+                      expect(fixture.debugElement.nativeElement).toHaveText('');
 
-               async.done();
-             });
-       }));
+                      async.done();
+                    });
+              }));
 
     describe('Property bindings', () => {
       if (!IS_DART) {
@@ -1658,8 +1658,8 @@ export function main() {
         it('should raise an error for missing template directive (2)',
            inject([TestComponentBuilder, AsyncTestCompleter],
                   (tcb: TestComponentBuilder, async) => {
-                    expectCompileError(tcb, '<div><template *ng-if="condition"></template></div>',
-                                       'Missing directive to handle: <template *ng-if="condition">',
+                    expectCompileError(tcb, '<div><template *ngIf="condition"></template></div>',
+                                       'Missing directive to handle: <template *ngIf="condition">',
                                        () => async.done());
                   }));
 
@@ -1667,8 +1667,8 @@ export function main() {
            inject([TestComponentBuilder, AsyncTestCompleter],
                   (tcb: TestComponentBuilder, async) => {
                     expectCompileError(
-                        tcb, '<div *ng-if="condition"></div>',
-                        'Missing directive to handle \'if\' in MyComp: <div *ng-if="condition">',
+                        tcb, '<div *ngIf="condition"></div>',
+                        'Missing directive to handle \'if\' in MyComp: <div *ngIf="condition">',
                         () => async.done());
                   }));
       }
@@ -1679,7 +1679,7 @@ export function main() {
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
            tcb.overrideView(
                   MyComp, new ViewMetadata({
-                    template: '<with-prop-decorators el-prop="aaa"></with-prop-decorators>',
+                    template: '<with-prop-decorators elProp="aaa"></with-prop-decorators>',
                     directives: [DirectiveWithPropDecorators]
                   }))
                .createAsync(MyComp)
@@ -1714,11 +1714,11 @@ export function main() {
          }));
 
       if (DOM.supportsDOMEvents()) {
-        it('should support events decorators',
+        it('should support event decorators',
            inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
                     tcb = tcb.overrideView(
                         MyComp, new ViewMetadata({
-                          template: `<with-prop-decorators (el-event)="ctxProp='called'">`,
+                          template: `<with-prop-decorators (elEvent)="ctxProp='called'">`,
                           directives: [DirectiveWithPropDecorators]
                         }));
 
@@ -2132,7 +2132,7 @@ class ToolbarPart {
   constructor(templateRef: TemplateRef) { this.templateRef = templateRef; }
 }
 
-@Directive({selector: '[toolbar-vc]', inputs: ['toolbarVc']})
+@Directive({selector: '[toolbarVc]', inputs: ['toolbarVc']})
 @Injectable()
 class ToolbarViewContainer {
   vc: ViewContainerRef;
@@ -2146,7 +2146,7 @@ class ToolbarViewContainer {
 
 @Component({selector: 'toolbar'})
 @View({
-  template: 'TOOLBAR(<div *ng-for="var part of query" [toolbar-vc]="part"></div>)',
+  template: 'TOOLBAR(<div *ngFor="var part of query" [toolbarVc]="part"></div>)',
   directives: [ToolbarViewContainer, NgFor]
 })
 @Injectable()
@@ -2299,7 +2299,7 @@ class ChildConsumingEventBus {
   constructor(@SkipSelf() bus: EventBus) { this.bus = bus; }
 }
 
-@Directive({selector: '[some-impvp]', inputs: ['someImpvp']})
+@Directive({selector: '[someImpvp]', inputs: ['someImpvp']})
 @Injectable()
 class SomeImperativeViewport {
   view: ViewRef;
@@ -2355,7 +2355,7 @@ class DirectiveThrowingAnError {
 @Component({
   selector: 'component-with-template',
   directives: [NgFor],
-  template: `No View Decorator: <div *ng-for="#item of items">{{item}}</div>`
+  template: `No View Decorator: <div *ngFor="#item of items">{{item}}</div>`
 })
 class ComponentWithTemplate {
   items = [1, 2, 3];
@@ -2365,7 +2365,7 @@ class ComponentWithTemplate {
 class DirectiveWithPropDecorators {
   target;
 
-  @Input("elProp") dirProp: string;
+  @Input('elProp') dirProp: string;
   @Output('elEvent') event = new EventEmitter();
 
   @HostBinding("attr.my-attr") myAttr: string;

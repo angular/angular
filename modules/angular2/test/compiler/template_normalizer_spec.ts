@@ -305,22 +305,22 @@ export function main() {
            expect(template.encapsulation).toEqual(ViewEncapsulation.None);
          }));
 
-      it('should ignore ng-content in elements with ng-non-bindable',
+      it('should ignore ng-content in elements with ngNonBindable',
          inject([TemplateNormalizer], (normalizer: TemplateNormalizer) => {
            var template = normalizer.normalizeLoadedTemplate(
                dirType,
                new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}),
-               '<div ng-non-bindable><ng-content select="a"></ng-content></div>',
+               '<div ngNonBindable><ng-content select="a"></ng-content></div>',
                'package:some/module/');
            expect(template.ngContentSelectors).toEqual([]);
          }));
 
-      it('should still collect <style> in elements with ng-non-bindable',
+      it('should still collect <style> in elements with ngNonBindable',
          inject([TemplateNormalizer], (normalizer: TemplateNormalizer) => {
            var template = normalizer.normalizeLoadedTemplate(
                dirType,
                new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}),
-               '<div ng-non-bindable><style>div {color:red}</style></div>', 'package:some/module/');
+               '<div ngNonBindable><style>div {color:red}</style></div>', 'package:some/module/');
            expect(template.styles).toEqual(['div {color:red}']);
          }));
     });

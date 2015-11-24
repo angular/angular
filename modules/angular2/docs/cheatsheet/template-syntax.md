@@ -34,7 +34,7 @@ Binds text content to an interpolated string, e.g. "Hello Seabiscuit".
 
 @cheatsheetItem
 `<my-cmp [(title)]="name">`|`[(title)]`
-Sets up two-way data binding. Equivalent to: `<my-cmp [title]="name" (title-change)="name=$event">`
+Sets up two-way data binding. Equivalent to: `<my-cmp [title]="name" (titleChange)="name=$event">`
 
 @cheatsheetItem
 `<video #movieplayer ...>

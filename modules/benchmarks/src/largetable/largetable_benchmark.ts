@@ -214,29 +214,29 @@ class CellData {
 @View({
   directives: [NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault],
   template: `
-      <table [ng-switch]="benchmarkType">
-        <tbody template="ng-switch-when 'interpolation'">
-          <tr template="ng-for #row of data">
-            <td template="ng-for #column of row">
+      <table [ngSwitch]="benchmarkType">
+        <tbody template="ngSwitchWhen 'interpolation'">
+          <tr template="ngFor #row of data">
+            <td template="ngFor #column of row">
               {{column.i}}:{{column.j}}|
             </td>
           </tr>
         </tbody>
-        <tbody template="ng-switch-when 'interpolationAttr'">
-          <tr template="ng-for #row of data">
-            <td template="ng-for #column of row" attr.i="{{column.i}}" attr.j="{{column.j}}">
+        <tbody template="ngSwitchWhen 'interpolationAttr'">
+          <tr template="ngFor #row of data">
+            <td template="ngFor #column of row" attr.i="{{column.i}}" attr.j="{{column.j}}">
               i,j attrs
             </td>
           </tr>
         </tbody>
-        <tbody template="ng-switch-when 'interpolationFn'">
-          <tr template="ng-for #row of data">
-            <td template="ng-for #column of row">
+        <tbody template="ngSwitchWhen 'interpolationFn'">
+          <tr template="ngFor #row of data">
+            <td template="ngFor #column of row">
               {{column.iFn()}}:{{column.jFn()}}|
             </td>
           </tr>
         </tbody>
-        <tbody template="ng-switch-default">
+        <tbody template="ngSwitchDefault">
           <tr>
             <td>
               <em>{{benchmarkType}} not yet implemented</em>
@@ -261,7 +261,7 @@ class LargetableComponent {
 @Component({selector: 'app'})
 @View({
   directives: [LargetableComponent],
-  template: `<largetable [data]='data' [benchmark-type]='benchmarkType'></largetable>`
+  template: `<largetable [data]='data' [benchmarkType]='benchmarkType'></largetable>`
 })
 class AppComponent {
   data;

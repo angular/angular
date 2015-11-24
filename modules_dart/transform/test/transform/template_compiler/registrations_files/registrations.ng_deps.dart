@@ -79,7 +79,7 @@ void initReflector(reflector) {
           const Component(selector: 'recursive-cmp'),
           const View(
               template:
-                  '<li *ng-for="#thing of things" [recursive-prop]="thing"><div>test</div></li>',
+                  '<li *ngFor="#thing of things" [recursive-prop]="thing"><div>test</div></li>',
               directives: const [NgFor])
         ], const [
           const []
