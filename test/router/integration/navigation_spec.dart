@@ -13,38 +13,62 @@ import "package:angular2/testing_internal.dart"
         expect,
         iit,
         inject,
-        beforeEachProviders,
+        beforeEachBindings,
         it,
         xit;
 import "package:angular2/core.dart"
     show provide, Component, View, Injector, Inject;
 import "package:angular2/src/facade/async.dart" show Future, PromiseWrapper;
+import "package:angular2/src/router/router.dart" show RootRouter;
 import "package:angular2/router.dart"
-    show Router, RouterOutlet, RouterLink, RouteParams, RouteData, Location;
+    show Router, RouterOutlet, RouterLink, RouteParams, RouteData;
 import "package:angular2/src/router/route_config_decorator.dart"
     show RouteConfig, Route, AuxRoute, AsyncRoute, Redirect;
-import "util.dart" show TEST_ROUTER_PROVIDERS, RootCmp, compile;
+import "package:angular2/src/mock/location_mock.dart" show SpyLocation;
+import "package:angular2/src/router/location.dart" show Location;
+import "package:angular2/src/router/route_registry.dart" show RouteRegistry;
+import "package:angular2/src/core/linker/directive_resolver.dart"
+    show DirectiveResolver;
 
 var cmpInstanceCount;
 var childCmpInstanceCount;
+List<String> log;
 main() {
   describe("navigation", () {
     TestComponentBuilder tcb;
     ComponentFixture fixture;
     var rtr;
-    beforeEachProviders(() => TEST_ROUTER_PROVIDERS);
+    beforeEachBindings(() => [
+          RouteRegistry,
+          DirectiveResolver,
+          provide(Location, useClass: SpyLocation),
+          provide(Router, useFactory: (registry, location) {
+            return new RootRouter(registry, location, MyComp);
+          }, deps: [RouteRegistry, Location])
+        ]);
     beforeEach(inject([TestComponentBuilder, Router], (tcBuilder, router) {
       tcb = tcBuilder;
       rtr = router;
       childCmpInstanceCount = 0;
       cmpInstanceCount = 0;
+      log = [];
     }));
+    compile([String template = "<router-outlet></router-outlet>"]) {
+      return tcb
+          .overrideView(
+              MyComp,
+              new View(
+                  template: ("<div>" + template + "</div>"),
+                  directives: [RouterOutlet, RouterLink]))
+          .createAsync(MyComp)
+          .then((tc) {
+        fixture = tc;
+      });
+    }
     it(
         "should work in a simple case",
         inject([AsyncTestCompleter], (async) {
-          compile(tcb).then((rtc) {
-            fixture = rtc;
-          })
+          compile()
               .then((_) =>
                   rtr.config([new Route(path: "/test", component: HelloCmp)]))
               .then((_) => rtr.navigateByUrl("/test"))
@@ -57,9 +81,7 @@ main() {
     it(
         "should navigate between components with different parameters",
         inject([AsyncTestCompleter], (async) {
-          compile(tcb).then((rtc) {
-            fixture = rtc;
-          })
+          compile()
               .then((_) => rtr
                   .config([new Route(path: "/user/:name", component: UserCmp)]))
               .then((_) => rtr.navigateByUrl("/user/brian"))
@@ -76,9 +98,7 @@ main() {
     it(
         "should navigate to child routes",
         inject([AsyncTestCompleter], (async) {
-          compile(tcb, "outer { <router-outlet></router-outlet> }").then((rtc) {
-            fixture = rtc;
-          })
+          compile("outer { <router-outlet></router-outlet> }")
               .then((_) =>
                   rtr.config([new Route(path: "/a/...", component: ParentCmp)]))
               .then((_) => rtr.navigateByUrl("/a/b"))
@@ -92,9 +112,7 @@ main() {
     it(
         "should navigate to child routes that capture an empty path",
         inject([AsyncTestCompleter], (async) {
-          compile(tcb, "outer { <router-outlet></router-outlet> }").then((rtc) {
-            fixture = rtc;
-          })
+          compile("outer { <router-outlet></router-outlet> }")
               .then((_) =>
                   rtr.config([new Route(path: "/a/...", component: ParentCmp)]))
               .then((_) => rtr.navigateByUrl("/a"))
@@ -108,9 +126,7 @@ main() {
     it(
         "should navigate to child routes of async routes",
         inject([AsyncTestCompleter], (async) {
-          compile(tcb, "outer { <router-outlet></router-outlet> }").then((rtc) {
-            fixture = rtc;
-          })
+          compile("outer { <router-outlet></router-outlet> }")
               .then((_) => rtr.config(
                   [new AsyncRoute(path: "/a/...", loader: parentLoader)]))
               .then((_) => rtr.navigateByUrl("/a/b"))
@@ -122,11 +138,25 @@ main() {
           });
         }));
     it(
+        "should recognize and apply redirects",
+        inject([AsyncTestCompleter, Location], (async, location) {
+          compile()
+              .then((_) => rtr.config([
+                    new Redirect(path: "/original", redirectTo: "/redirected"),
+                    new Route(path: "/redirected", component: HelloCmp)
+                  ]))
+              .then((_) => rtr.navigateByUrl("/original"))
+              .then((_) {
+            fixture.detectChanges();
+            expect(fixture.debugElement.nativeElement).toHaveText("hello");
+            expect(location.urlChanges).toEqual(["/redirected"]);
+            async.done();
+          });
+        }));
+    it(
         "should reuse common parent components",
         inject([AsyncTestCompleter], (async) {
-          compile(tcb).then((rtc) {
-            fixture = rtc;
-          })
+          compile()
               .then((_) => rtr.config(
                   [new Route(path: "/team/:id/...", component: TeamCmp)]))
               .then((_) => rtr.navigateByUrl("/team/angular/user/rado"))
@@ -148,9 +178,7 @@ main() {
     it(
         "should not reuse children when parent components change",
         inject([AsyncTestCompleter], (async) {
-          compile(tcb).then((rtc) {
-            fixture = rtc;
-          })
+          compile()
               .then((_) => rtr.config(
                   [new Route(path: "/team/:id/...", component: TeamCmp)]))
               .then((_) => rtr.navigateByUrl("/team/angular/user/rado"))
@@ -172,9 +200,7 @@ main() {
     it(
         "should inject route data into component",
         inject([AsyncTestCompleter], (async) {
-          compile(tcb).then((rtc) {
-            fixture = rtc;
-          })
+          compile()
               .then((_) => rtr.config([
                     new Route(
                         path: "/route-data",
@@ -191,13 +217,11 @@ main() {
     it(
         "should inject route data into component with AsyncRoute",
         inject([AsyncTestCompleter], (async) {
-          compile(tcb).then((rtc) {
-            fixture = rtc;
-          })
+          compile()
               .then((_) => rtr.config([
                     new AsyncRoute(
                         path: "/route-data",
-                        loader: asyncRouteDataCmp,
+                        loader: AsyncRouteDataCmp,
                         data: {"isAdmin": true})
                   ]))
               .then((_) => rtr.navigateByUrl("/route-data"))
@@ -210,9 +234,7 @@ main() {
     it(
         "should inject empty object if the route has no data property",
         inject([AsyncTestCompleter], (async) {
-          compile(tcb).then((rtc) {
-            fixture = rtc;
-          })
+          compile()
               .then((_) => rtr.config([
                     new Route(
                         path: "/route-data-default", component: RouteDataCmp)
@@ -224,10 +246,27 @@ main() {
             async.done();
           });
         }));
+    describe("auxiliary routes", () {
+      it(
+          "should recognize a simple case",
+          inject([AsyncTestCompleter], (async) {
+            compile()
+                .then((_) =>
+                    rtr.config([new Route(path: "/...", component: AuxCmp)]))
+                .then((_) => rtr.navigateByUrl("/hello(modal)"))
+                .then((_) {
+              fixture.detectChanges();
+              expect(fixture.debugElement.nativeElement)
+                  .toHaveText("main {hello} | aux {modal}");
+              async.done();
+            });
+          }));
+    });
   });
 }
 
-@Component(selector: "hello-cmp", template: '''{{greeting}}''')
+@Component(selector: "hello-cmp")
+@View(template: "{{greeting}}")
 class HelloCmp {
   String greeting;
   HelloCmp() {
@@ -235,11 +274,12 @@ class HelloCmp {
   }
 }
 
-asyncRouteDataCmp() {
+AsyncRouteDataCmp() {
   return PromiseWrapper.resolve(RouteDataCmp);
 }
 
-@Component(selector: "data-cmp", template: '''{{myData}}''')
+@Component(selector: "data-cmp")
+@View(template: "{{myData}}")
 class RouteDataCmp {
   bool myData;
   RouteDataCmp(RouteData data) {
@@ -247,7 +287,8 @@ class RouteDataCmp {
   }
 }
 
-@Component(selector: "user-cmp", template: '''hello {{user}}''')
+@Component(selector: "user-cmp")
+@View(template: "hello {{user}}")
 class UserCmp {
   String user;
   UserCmp(RouteParams params) {
@@ -260,19 +301,21 @@ parentLoader() {
   return PromiseWrapper.resolve(ParentCmp);
 }
 
-@Component(
-    selector: "parent-cmp",
-    template: '''inner { <router-outlet></router-outlet> }''',
+@Component(selector: "parent-cmp")
+@View(
+    template: "inner { <router-outlet></router-outlet> }",
     directives: const [RouterOutlet])
 @RouteConfig(const [
   const Route(path: "/b", component: HelloCmp),
   const Route(path: "/", component: HelloCmp)
 ])
-class ParentCmp {}
+class ParentCmp {
+  ParentCmp() {}
+}
 
-@Component(
-    selector: "team-cmp",
-    template: '''team {{id}} { <router-outlet></router-outlet> }''',
+@Component(selector: "team-cmp")
+@View(
+    template: "team {{id}} { <router-outlet></router-outlet> }",
     directives: const [RouterOutlet])
 @RouteConfig(const [const Route(path: "/user/:name", component: UserCmp)])
 class TeamCmp {
@@ -282,3 +325,23 @@ class TeamCmp {
     cmpInstanceCount += 1;
   }
 }
+
+@Component(selector: "my-comp")
+class MyComp {
+  var name;
+}
+
+@Component(selector: "modal-cmp")
+@View(template: "modal")
+class ModalCmp {}
+
+@Component(selector: "aux-cmp")
+@View(
+    template: "main {<router-outlet></router-outlet>} | " +
+        "aux {<router-outlet name=\"modal\"></router-outlet>}",
+    directives: const [RouterOutlet])
+@RouteConfig(const [
+  const Route(path: "/hello", component: HelloCmp),
+  const AuxRoute(path: "/modal", component: ModalCmp)
+])
+class AuxCmp {}
