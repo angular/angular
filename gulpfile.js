@@ -244,9 +244,16 @@ gulp.task('build/analyze.ddc.dart',
           dartanalyzer(gulp, gulpPlugins,
                        {dest: CONFIG.dest.dart, command: DART_SDK.ANALYZER, use_ddc: true}));
 
-gulp.task('build/check.apidocs.dart',
-          dartapidocs(gulp, gulpPlugins,
-                      {dest: CONFIG.dest.dart, output: os.tmpdir(), command: DART_SDK.DARTDOCGEN}));
+if (process.env.DART_CHANNEL == 'dev') {
+  gulp.task('build/check.apidocs.dart', function() {
+    // TODO(yjbanov): reenable after the bug is fixed
+    console.log('WARNING: Skipping dartdoc API check due to https://github.com/dart-lang/sdk/issues/25016');
+  });
+} else {
+  gulp.task('build/check.apidocs.dart',
+            dartapidocs(gulp, gulpPlugins,
+                        {dest: CONFIG.dest.dart, output: os.tmpdir(), command: DART_SDK.DARTDOCGEN}));
+}
 
 // ------------
 // pubbuild
