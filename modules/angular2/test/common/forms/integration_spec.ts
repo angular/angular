@@ -33,6 +33,7 @@ import {
   Validators,
   Validator
 } from 'angular2/common';
+import {Provider, forwardRef, Input} from 'angular2/core';
 import {By} from 'angular2/platform/browser';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {ObservableWrapper} from 'angular2/src/facade/async';
