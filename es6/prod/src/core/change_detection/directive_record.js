@@ -23,3 +23,4 @@ export class DirectiveRecord {
         return isDefaultChangeDetectionStrategy(this.changeDetection);
     }
 }
+//# sourceMappingURL=directive_record.js.map

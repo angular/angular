@@ -81,3 +81,4 @@ export class CssAnimationBuilder {
         return new Animation(element, this.data, this.browserDetails);
     }
 }
+//# sourceMappingURL=css_animation_builder.js.map

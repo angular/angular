@@ -298,3 +298,4 @@ function _flattenStyleArr(arr, out) {
     }
     return out;
 }
+//# sourceMappingURL=proto_view_factory.js.map

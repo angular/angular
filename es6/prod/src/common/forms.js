@@ -30,3 +30,4 @@ export { FORM_DIRECTIVES } from './forms/directives';
 export { NG_VALIDATORS, NG_ASYNC_VALIDATORS, Validators } from './forms/validators';
 export { RequiredValidator, MinLengthValidator, MaxLengthValidator } from './forms/directives/validators';
 export { FormBuilder, FORM_PROVIDERS, FORM_BINDINGS } from './forms/form_builder';
+//# sourceMappingURL=forms.js.map

@@ -33,3 +33,4 @@ describe('can deactivate example app', function () {
         expect(element(by.css('note-index-cmp')).getText()).toContain('Your Notes');
     });
 });
+//# sourceMappingURL=can_deactivate_spec.js.map

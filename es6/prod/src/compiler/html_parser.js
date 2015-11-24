@@ -210,3 +210,4 @@ function namespacePrefix(elementName) {
     var match = RegExpWrapper.firstMatch(NS_PREFIX_RE, elementName);
     return isBlank(match) ? null : match[1];
 }
+//# sourceMappingURL=html_parser.js.map

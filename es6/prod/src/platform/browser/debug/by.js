@@ -13,3 +13,4 @@ export class By {
         return (debugElement) => { return debugElement.hasDirective(type); };
     }
 }
+//# sourceMappingURL=by.js.map

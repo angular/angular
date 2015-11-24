@@ -85,3 +85,4 @@ export class ViewContainerRef_ extends ViewContainerRef {
         return this.viewManager.detachViewInContainer(this.element, index);
     }
 }
+//# sourceMappingURL=view_container_ref.js.map

@@ -20,3 +20,4 @@ export class Ruler {
         return PromiseWrapper.resolve(new Rectangle(clntRect.left, clntRect.top, clntRect.width, clntRect.height));
     }
 }
+//# sourceMappingURL=ruler.js.map

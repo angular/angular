@@ -9,3 +9,4 @@ function _reflector() {
  * A default set of providers which should be included in any Angular platform.
  */
 export const PLATFORM_COMMON_PROVIDERS = CONST_EXPR([new Provider(Reflector, { useFactory: _reflector, deps: [] }), TestabilityRegistry]);
+//# sourceMappingURL=platform_common_providers.js.map

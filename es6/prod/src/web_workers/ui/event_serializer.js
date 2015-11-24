@@ -66,3 +66,4 @@ function serializeEvent(e, properties) {
     }
     return serialized;
 }
+//# sourceMappingURL=event_serializer.js.map

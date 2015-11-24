@@ -58,3 +58,4 @@ export class Response {
         throw new BaseException('"arrayBuffer()" method not implemented on Response superclass');
     }
 }
+//# sourceMappingURL=static_response.js.map

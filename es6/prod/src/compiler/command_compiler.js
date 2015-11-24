@@ -288,3 +288,4 @@ function codeGenViewEncapsulation(value) {
         return `${value}`;
     }
 }
+//# sourceMappingURL=command_compiler.js.map

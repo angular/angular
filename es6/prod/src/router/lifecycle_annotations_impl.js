@@ -33,3 +33,4 @@ export const canDeactivate = CONST_EXPR(new RouteLifecycleHook("canDeactivate"))
 export const onActivate = CONST_EXPR(new RouteLifecycleHook("onActivate"));
 export const onReuse = CONST_EXPR(new RouteLifecycleHook("onReuse"));
 export const onDeactivate = CONST_EXPR(new RouteLifecycleHook("onDeactivate"));
+//# sourceMappingURL=lifecycle_annotations_impl.js.map

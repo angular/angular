@@ -10,3 +10,4 @@ export { TemplateRef } from './linker/template_ref';
 export { ViewRef, ProtoViewRef } from './linker/view_ref';
 export { ViewContainerRef } from './linker/view_container_ref';
 export { ComponentRef } from './linker/dynamic_component_loader';
+//# sourceMappingURL=linker.js.map

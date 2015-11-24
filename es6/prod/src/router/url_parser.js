@@ -186,3 +186,4 @@ export function serializeParams(paramMap) {
     }
     return params;
 }
+//# sourceMappingURL=url_parser.js.map

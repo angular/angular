@@ -11,3 +11,4 @@ export function setRootDomAdapter(adapter) {
  */
 export class DomAdapter {
 }
+//# sourceMappingURL=dom_adapter.js.map

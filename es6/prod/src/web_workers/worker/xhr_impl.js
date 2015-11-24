@@ -32,3 +32,4 @@ WebWorkerXHRImpl = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [ClientMessageBrokerFactory])
 ], WebWorkerXHRImpl);
+//# sourceMappingURL=xhr_impl.js.map

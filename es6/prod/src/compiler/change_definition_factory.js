@@ -154,3 +154,4 @@ function _collectNestedProtoViewsVariableNames(pvVisitors) {
     });
     return nestedPvVariableNames;
 }
+//# sourceMappingURL=change_definition_factory.js.map

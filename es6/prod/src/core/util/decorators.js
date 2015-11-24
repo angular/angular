@@ -230,3 +230,4 @@ export function makePropDecorator(decoratorCls) {
     PropDecoratorFactory.prototype = Object.create(decoratorCls.prototype);
     return PropDecoratorFactory;
 }
+//# sourceMappingURL=decorators.js.map

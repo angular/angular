@@ -54,3 +54,4 @@ NgIf = __decorate([
     Directive({ selector: '[ng-if]', inputs: ['ngIf'] }), 
     __metadata('design:paramtypes', [ViewContainerRef, TemplateRef])
 ], NgIf);
+//# sourceMappingURL=ng_if.js.map

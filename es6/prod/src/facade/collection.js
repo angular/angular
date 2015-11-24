@@ -296,3 +296,4 @@ export class SetWrapper {
     static has(s, key) { return s.has(key); }
     static delete(m, k) { m.delete(k); }
 }
+//# sourceMappingURL=collection.js.map

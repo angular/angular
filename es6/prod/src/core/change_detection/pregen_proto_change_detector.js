@@ -6,3 +6,4 @@ export class PregenProtoChangeDetector {
         throw new BaseException('Pregen change detection not supported in Js');
     }
 }
+//# sourceMappingURL=pregen_proto_change_detector.js.map

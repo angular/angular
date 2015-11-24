@@ -218,3 +218,4 @@ var RENDER_TEMPLATE_CMD_DESERIALIZERS = [
         (data) => new WebWorkerEndComponentCmd(),
         (data) => new WebWorkerEmbeddedTemplateCmd(data['isBound'], data['ngContentIndex'], data['name'], data['attrNameAndValues'], data['eventTargetAndNames'], data['isMerged'], data['children'].map(childData => deserializeTemplateCmd(childData))),
 ];
+//# sourceMappingURL=serializer.js.map

@@ -29,3 +29,4 @@ AnchorBasedAppRootUrl = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], AnchorBasedAppRootUrl);
+//# sourceMappingURL=anchor_based_app_root_url.js.map

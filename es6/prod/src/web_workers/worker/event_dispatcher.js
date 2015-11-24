@@ -46,3 +46,4 @@ class RenderEventData {
         this.locals = MapWrapper.createFromStringMap(message['locals']);
     }
 }
+//# sourceMappingURL=event_dispatcher.js.map

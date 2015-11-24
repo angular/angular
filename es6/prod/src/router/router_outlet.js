@@ -150,3 +150,4 @@ RouterOutlet = __decorate([
     __param(3, Attribute('name')), 
     __metadata('design:paramtypes', [ElementRef, DynamicComponentLoader, routerMod.Router, String])
 ], RouterOutlet);
+//# sourceMappingURL=router_outlet.js.map

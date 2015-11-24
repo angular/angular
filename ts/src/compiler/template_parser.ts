@@ -1,19 +1,6 @@
-import {
-  MapWrapper,
-  ListWrapper,
-  StringMapWrapper,
-  SetWrapper
-} from 'angular2/src/facade/collection';
-import {
-  RegExpWrapper,
-  isPresent,
-  StringWrapper,
-  StringJoiner,
-  stringify,
-  assertionsEnabled,
-  isBlank
-} from 'angular2/src/facade/lang';
-import {Injectable, Inject, Injector, OpaqueToken, Optional} from 'angular2/core';
+import {ListWrapper, StringMapWrapper, SetWrapper} from 'angular2/src/facade/collection';
+import {RegExpWrapper, isPresent, StringWrapper, isBlank} from 'angular2/src/facade/lang';
+import {Injectable, Inject, OpaqueToken, Optional} from 'angular2/core';
 import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {Parser, AST, ASTWithSource} from 'angular2/src/core/change_detection/change_detection';

@@ -265,3 +265,4 @@ export const JSONP_PROVIDERS = [
  * @deprecated
  */
 export const JSON_BINDINGS = JSONP_PROVIDERS;
+//# sourceMappingURL=http.js.map

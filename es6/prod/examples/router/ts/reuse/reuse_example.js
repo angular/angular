@@ -54,3 +54,4 @@ AppCmp = __decorate([
 export function main() {
     return bootstrap(AppCmp, [provide(APP_BASE_HREF, { useValue: '/angular2/examples/router/ts/reuse' })]);
 }
+//# sourceMappingURL=reuse_example.js.map

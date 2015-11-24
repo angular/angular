@@ -20,3 +20,4 @@ describe('on activate example app', function () {
             .toEqual('Log:\nNavigating from "" to "1"\nNavigating from "1" to ""');
     });
 });
+//# sourceMappingURL=on_deactivate_spec.js.map

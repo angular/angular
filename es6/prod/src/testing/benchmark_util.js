@@ -39,3 +39,4 @@ export function windowProfile(name) {
 export function windowProfileEnd(name) {
     window.console.profileEnd(name);
 }
+//# sourceMappingURL=benchmark_util.js.map

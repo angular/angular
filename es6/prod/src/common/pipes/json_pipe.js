@@ -26,3 +26,4 @@ JsonPipe = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], JsonPipe);
+//# sourceMappingURL=json_pipe.js.map

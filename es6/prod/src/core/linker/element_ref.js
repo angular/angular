@@ -50,3 +50,4 @@ export class ElementRef_ extends ElementRef {
     set renderView(value) { unimplemented(); }
     get nativeElement() { return this._renderer.getNativeElementSync(this); }
 }
+//# sourceMappingURL=element_ref.js.map

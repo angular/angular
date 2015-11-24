@@ -46,3 +46,4 @@ export class BrowserGetTestability {
         return this.findTestabilityInTree(registry, DOM.parentElement(elem), true);
     }
 }
+//# sourceMappingURL=testability.js.map

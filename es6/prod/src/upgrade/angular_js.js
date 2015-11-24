@@ -13,3 +13,4 @@ export var bootstrap = angular.bootstrap;
 export var module = angular.module;
 export var element = angular.element;
 export var version = angular.version;
+//# sourceMappingURL=angular_js.js.map
