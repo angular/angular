@@ -6,5 +6,7 @@ export class CssAnimationOptions {
         this.classesToRemove = [];
         /** classes to be added for the duration of the animation */
         this.animationClasses = [];
+        /** styles to be applied for the duration of the animation */
+        this.animationStyles = {};
     }
 }

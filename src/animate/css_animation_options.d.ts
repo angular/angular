@@ -13,6 +13,10 @@ export declare class CssAnimationOptions {
     classesToRemove: string[];
     /** classes to be added for the duration of the animation */
     animationClasses: string[];
+    /** styles to be applied for the duration of the animation */
+    animationStyles: {
+        [key: string]: string;
+    };
     /** override the duration of the animation (in milliseconds) */
     duration: number;
     /** override the transition delay (in milliseconds) */
