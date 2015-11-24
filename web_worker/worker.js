@@ -38,7 +38,7 @@ __export(require('../src/common/forms'));
 var debug_element_1 = require('../src/core/debug/debug_element');
 exports.DebugElement = debug_element_1.DebugElement;
 __export(require('../src/core/change_detection'));
-__export(require('../profile'));
+__export(require('../instrumentation'));
 __export(require('../src/web_workers/worker/application'));
 var client_message_broker_1 = require('../src/web_workers/shared/client_message_broker');
 exports.ClientMessageBroker = client_message_broker_1.ClientMessageBroker;

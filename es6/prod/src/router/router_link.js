@@ -9,7 +9,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Directive } from 'angular2/angular2';
+import { Directive } from 'angular2/core';
 import { isString } from 'angular2/src/facade/lang';
 import { Router } from './router';
 import { Location } from './location';

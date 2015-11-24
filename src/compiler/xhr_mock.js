@@ -33,9 +33,9 @@ var MockXHR = (function (_super) {
         do {
             this._processRequest(this._requests.shift());
         } while (this._requests.length > 0);
-        this.verifyNoOustandingExpectations();
+        this.verifyNoOutstandingExpectations();
     };
-    MockXHR.prototype.verifyNoOustandingExpectations = function () {
+    MockXHR.prototype.verifyNoOutstandingExpectations = function () {
         if (this._expectations.length === 0)
             return;
         var urls = [];

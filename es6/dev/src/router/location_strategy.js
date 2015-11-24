@@ -1,5 +1,5 @@
 import { CONST_EXPR } from 'angular2/src/facade/lang';
-import { OpaqueToken } from 'angular2/angular2';
+import { OpaqueToken } from 'angular2/core';
 /**
  * `LocationStrategy` is responsible for representing and reading route state
  * from the the browser's URL. Angular provides two strategies:

@@ -17,7 +17,7 @@ import { isPresent, isBlank, isType, isString, isStringMap, getTypeNameForDebugg
 import { BaseException } from 'angular2/src/facade/exceptions';
 import { RouteConfig, Route, AuxRoute } from './route_config_impl';
 import { reflector } from 'angular2/src/core/reflection/reflection';
-import { Injectable } from 'angular2/angular2';
+import { Injectable } from 'angular2/core';
 import { normalizeRouteConfig, assertComponentExists } from './route_config_nomalizer';
 import { parser, pathSegmentsToUrl } from './url_parser';
 var _resolveToNull = PromiseWrapper.resolve(null);

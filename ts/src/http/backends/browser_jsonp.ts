@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/angular2';
+import {Injectable} from 'angular2/core';
 import {global} from 'angular2/src/facade/lang';
 
 let _nextRequestId = 0;

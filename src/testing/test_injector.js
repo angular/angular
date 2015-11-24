@@ -20,7 +20,7 @@ var location_strategy_1 = require('angular2/src/router/location_strategy');
 var ng_zone_mock_1 = require('angular2/src/mock/ng_zone_mock');
 var test_component_builder_1 = require('./test_component_builder');
 var di_2 = require('angular2/src/core/di');
-var debug_element_view_listener_1 = require('angular2/src/platform/browser/debug/debug_element_view_listener');
+var common_dom_1 = require('angular2/platform/common_dom');
 var collection_1 = require('angular2/src/facade/collection');
 var lang_1 = require('angular2/src/facade/lang');
 var view_pool_1 = require('angular2/src/core/linker/view_pool');
@@ -78,7 +78,7 @@ function _getAppBindings() {
         di_1.provide(view_manager_1.AppViewManager, { useClass: view_manager_2.AppViewManager_ }),
         view_manager_utils_1.AppViewManagerUtils,
         serializer_1.Serializer,
-        debug_element_view_listener_1.ELEMENT_PROBE_PROVIDERS,
+        common_dom_1.ELEMENT_PROBE_PROVIDERS,
         di_1.provide(view_pool_1.APP_VIEW_POOL_CAPACITY, { useValue: 500 }),
         proto_view_factory_1.ProtoViewFactory,
         di_1.provide(directive_resolver_1.DirectiveResolver, { useClass: directive_resolver_mock_1.MockDirectiveResolver }),

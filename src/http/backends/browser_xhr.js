@@ -9,14 +9,14 @@
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var angular2_1 = require('angular2/angular2');
+var core_1 = require('angular2/core');
 // Make sure not to evaluate this in a non-browser environment!
 var BrowserXhr = (function () {
     function BrowserXhr() {
     }
     BrowserXhr.prototype.build = function () { return (new XMLHttpRequest()); };
     BrowserXhr = __decorate([
-        angular2_1.Injectable(), 
+        core_1.Injectable(), 
         __metadata('design:paramtypes', [])
     ], BrowserXhr);
     return BrowserXhr;

@@ -31,9 +31,7 @@ import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
 import {TestComponentBuilder} from './test_component_builder';
 
 import {Injector} from 'angular2/src/core/di';
-import {
-  ELEMENT_PROBE_PROVIDERS
-} from 'angular2/src/platform/browser/debug/debug_element_view_listener';
+import {ELEMENT_PROBE_PROVIDERS} from 'angular2/platform/common_dom';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {FunctionWrapper, Type} from 'angular2/src/facade/lang';

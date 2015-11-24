@@ -9,7 +9,7 @@
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var angular2_1 = require('angular2/angular2');
+var core_1 = require('angular2/core');
 var lang_1 = require('angular2/src/facade/lang');
 var router_1 = require('./router');
 var location_1 = require('./location');
@@ -72,7 +72,7 @@ var RouterLink = (function () {
         return true;
     };
     RouterLink = __decorate([
-        angular2_1.Directive({
+        core_1.Directive({
             selector: '[router-link]',
             inputs: ['routeParams: routerLink', 'target: target'],
             host: {

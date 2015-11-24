@@ -27,9 +27,9 @@ export class MockXHR extends XHR {
         do {
             this._processRequest(this._requests.shift());
         } while (this._requests.length > 0);
-        this.verifyNoOustandingExpectations();
+        this.verifyNoOutstandingExpectations();
     }
-    verifyNoOustandingExpectations() {
+    verifyNoOutstandingExpectations() {
         if (this._expectations.length === 0)
             return;
         var urls = [];

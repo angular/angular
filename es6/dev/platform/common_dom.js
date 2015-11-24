@@ -6,4 +6,6 @@ export { DomRenderer } from 'angular2/src/platform/dom/dom_renderer';
 export { DOCUMENT } from 'angular2/src/platform/dom/dom_tokens';
 export { SharedStylesHost, DomSharedStylesHost } from 'angular2/src/platform/dom/shared_styles_host';
 export { DomEventsPlugin } from 'angular2/src/platform/dom/events/dom_events';
+export * from 'angular2/src/platform/dom/debug/by';
+export * from 'angular2/src/platform/dom/debug/debug_element_view_listener';
 //# sourceMappingURL=common_dom.js.map

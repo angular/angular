@@ -12,7 +12,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 import { isPresent, isString } from 'angular2/src/facade/lang';
 import { Headers } from './headers';
 import { RequestMethods } from './enums';
-import { Injectable } from 'angular2/angular2';
+import { Injectable } from 'angular2/core';
 import { URLSearchParams } from './url_search_params';
 import { normalizeMethodName } from './http_utils';
 /**

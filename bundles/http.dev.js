@@ -293,7 +293,7 @@ System.register("angular2/src/http/static_response", ["angular2/src/facade/lang"
   return module.exports;
 });
 
-System.register("angular2/src/http/base_response_options", ["angular2/angular2", "angular2/src/facade/lang", "angular2/src/http/headers", "angular2/src/http/enums"], true, function(require, exports, module) {
+System.register("angular2/src/http/base_response_options", ["angular2/core", "angular2/src/facade/lang", "angular2/src/http/headers", "angular2/src/http/enums"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -328,7 +328,7 @@ System.register("angular2/src/http/base_response_options", ["angular2/angular2",
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
       return Reflect.metadata(k, v);
   };
-  var angular2_1 = require("angular2/angular2");
+  var core_1 = require("angular2/core");
   var lang_1 = require("angular2/src/facade/lang");
   var headers_1 = require("angular2/src/http/headers");
   var enums_1 = require("angular2/src/http/enums");
@@ -371,7 +371,7 @@ System.register("angular2/src/http/base_response_options", ["angular2/angular2",
         headers: new headers_1.Headers()
       });
     }
-    BaseResponseOptions = __decorate([angular2_1.Injectable(), __metadata('design:paramtypes', [])], BaseResponseOptions);
+    BaseResponseOptions = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], BaseResponseOptions);
     return BaseResponseOptions;
   })(ResponseOptions);
   exports.BaseResponseOptions = BaseResponseOptions;
@@ -379,7 +379,7 @@ System.register("angular2/src/http/base_response_options", ["angular2/angular2",
   return module.exports;
 });
 
-System.register("angular2/src/http/backends/browser_xhr", ["angular2/angular2"], true, function(require, exports, module) {
+System.register("angular2/src/http/backends/browser_xhr", ["angular2/core"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -405,13 +405,13 @@ System.register("angular2/src/http/backends/browser_xhr", ["angular2/angular2"],
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
       return Reflect.metadata(k, v);
   };
-  var angular2_1 = require("angular2/angular2");
+  var core_1 = require("angular2/core");
   var BrowserXhr = (function() {
     function BrowserXhr() {}
     BrowserXhr.prototype.build = function() {
       return (new XMLHttpRequest());
     };
-    BrowserXhr = __decorate([angular2_1.Injectable(), __metadata('design:paramtypes', [])], BrowserXhr);
+    BrowserXhr = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], BrowserXhr);
     return BrowserXhr;
   })();
   exports.BrowserXhr = BrowserXhr;
@@ -419,7 +419,7 @@ System.register("angular2/src/http/backends/browser_xhr", ["angular2/angular2"],
   return module.exports;
 });
 
-System.register("angular2/src/http/backends/browser_jsonp", ["angular2/angular2", "angular2/src/facade/lang"], true, function(require, exports, module) {
+System.register("angular2/src/http/backends/browser_jsonp", ["angular2/core", "angular2/src/facade/lang"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -445,7 +445,7 @@ System.register("angular2/src/http/backends/browser_jsonp", ["angular2/angular2"
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
       return Reflect.metadata(k, v);
   };
-  var angular2_1 = require("angular2/angular2");
+  var core_1 = require("angular2/core");
   var lang_1 = require("angular2/src/facade/lang");
   var _nextRequestId = 0;
   exports.JSONP_HOME = '__ng_jsonp__';
@@ -485,7 +485,7 @@ System.register("angular2/src/http/backends/browser_jsonp", ["angular2/angular2"
         node.parentNode.removeChild((node));
       }
     };
-    BrowserJsonp = __decorate([angular2_1.Injectable(), __metadata('design:paramtypes', [])], BrowserJsonp);
+    BrowserJsonp = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], BrowserJsonp);
     return BrowserJsonp;
   })();
   exports.BrowserJsonp = BrowserJsonp;
@@ -493,7 +493,7 @@ System.register("angular2/src/http/backends/browser_jsonp", ["angular2/angular2"
   return module.exports;
 });
 
-System.register("angular2/src/http/backends/mock_backend", ["angular2/angular2", "angular2/src/http/static_request", "angular2/src/http/enums", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "@reactivex/rxjs/dist/cjs/Rx"], true, function(require, exports, module) {
+System.register("angular2/src/http/backends/mock_backend", ["angular2/core", "angular2/src/http/static_request", "angular2/src/http/enums", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "@reactivex/rxjs/dist/cjs/Rx"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -519,7 +519,7 @@ System.register("angular2/src/http/backends/mock_backend", ["angular2/angular2",
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
       return Reflect.metadata(k, v);
   };
-  var angular2_1 = require("angular2/angular2");
+  var core_1 = require("angular2/core");
   var static_request_1 = require("angular2/src/http/static_request");
   var enums_1 = require("angular2/src/http/enums");
   var lang_1 = require("angular2/src/facade/lang");
@@ -578,7 +578,7 @@ System.register("angular2/src/http/backends/mock_backend", ["angular2/angular2",
       this.connections.next(connection);
       return connection;
     };
-    MockBackend = __decorate([angular2_1.Injectable(), __metadata('design:paramtypes', [])], MockBackend);
+    MockBackend = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], MockBackend);
     return MockBackend;
   })();
   exports.MockBackend = MockBackend;
@@ -625,7 +625,7 @@ System.register("angular2/src/http/http_utils", ["angular2/src/facade/lang", "an
   return module.exports;
 });
 
-System.register("angular2/src/http/base_request_options", ["angular2/src/facade/lang", "angular2/src/http/headers", "angular2/src/http/enums", "angular2/angular2", "angular2/src/http/url_search_params", "angular2/src/http/http_utils"], true, function(require, exports, module) {
+System.register("angular2/src/http/base_request_options", ["angular2/src/facade/lang", "angular2/src/http/headers", "angular2/src/http/enums", "angular2/core", "angular2/src/http/url_search_params", "angular2/src/http/http_utils"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -663,7 +663,7 @@ System.register("angular2/src/http/base_request_options", ["angular2/src/facade/
   var lang_1 = require("angular2/src/facade/lang");
   var headers_1 = require("angular2/src/http/headers");
   var enums_1 = require("angular2/src/http/enums");
-  var angular2_1 = require("angular2/angular2");
+  var core_1 = require("angular2/core");
   var url_search_params_1 = require("angular2/src/http/url_search_params");
   var http_utils_1 = require("angular2/src/http/http_utils");
   var RequestOptions = (function() {
@@ -700,7 +700,7 @@ System.register("angular2/src/http/base_request_options", ["angular2/src/facade/
         headers: new headers_1.Headers()
       });
     }
-    BaseRequestOptions = __decorate([angular2_1.Injectable(), __metadata('design:paramtypes', [])], BaseRequestOptions);
+    BaseRequestOptions = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], BaseRequestOptions);
     return BaseRequestOptions;
   })(RequestOptions);
   exports.BaseRequestOptions = BaseRequestOptions;
@@ -708,7 +708,7 @@ System.register("angular2/src/http/base_request_options", ["angular2/src/facade/
   return module.exports;
 });
 
-System.register("angular2/src/http/backends/xhr_backend", ["angular2/src/http/enums", "angular2/src/http/static_response", "angular2/src/http/headers", "angular2/src/http/base_response_options", "angular2/angular2", "angular2/src/http/backends/browser_xhr", "angular2/src/facade/lang", "angular2/angular2", "angular2/src/http/http_utils"], true, function(require, exports, module) {
+System.register("angular2/src/http/backends/xhr_backend", ["angular2/src/http/enums", "angular2/src/http/static_response", "angular2/src/http/headers", "angular2/src/http/base_response_options", "angular2/core", "angular2/src/http/backends/browser_xhr", "angular2/src/facade/lang", "angular2/core", "angular2/src/http/http_utils"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -738,16 +738,16 @@ System.register("angular2/src/http/backends/xhr_backend", ["angular2/src/http/en
   var static_response_1 = require("angular2/src/http/static_response");
   var headers_1 = require("angular2/src/http/headers");
   var base_response_options_1 = require("angular2/src/http/base_response_options");
-  var angular2_1 = require("angular2/angular2");
+  var core_1 = require("angular2/core");
   var browser_xhr_1 = require("angular2/src/http/backends/browser_xhr");
   var lang_1 = require("angular2/src/facade/lang");
-  var angular2_2 = require("angular2/angular2");
+  var core_2 = require("angular2/core");
   var http_utils_1 = require("angular2/src/http/http_utils");
   var XHRConnection = (function() {
     function XHRConnection(req, browserXHR, baseResponseOptions) {
       var _this = this;
       this.request = req;
-      this.response = new angular2_2.Observable(function(responseObserver) {
+      this.response = new core_2.Observable(function(responseObserver) {
         var _xhr = browserXHR.build();
         _xhr.open(enums_1.RequestMethods[req.method].toUpperCase(), req.url);
         var onLoad = function() {
@@ -811,7 +811,7 @@ System.register("angular2/src/http/backends/xhr_backend", ["angular2/src/http/en
     XHRBackend.prototype.createConnection = function(request) {
       return new XHRConnection(request, this._browserXHR, this._baseResponseOptions);
     };
-    XHRBackend = __decorate([angular2_1.Injectable(), __metadata('design:paramtypes', [browser_xhr_1.BrowserXhr, base_response_options_1.ResponseOptions])], XHRBackend);
+    XHRBackend = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [browser_xhr_1.BrowserXhr, base_response_options_1.ResponseOptions])], XHRBackend);
     return XHRBackend;
   })();
   exports.XHRBackend = XHRBackend;
@@ -819,7 +819,7 @@ System.register("angular2/src/http/backends/xhr_backend", ["angular2/src/http/en
   return module.exports;
 });
 
-System.register("angular2/src/http/backends/jsonp_backend", ["angular2/src/http/interfaces", "angular2/src/http/enums", "angular2/src/http/static_response", "angular2/src/http/base_response_options", "angular2/angular2", "angular2/src/http/backends/browser_jsonp", "angular2/src/facade/exceptions", "angular2/src/facade/lang", "angular2/angular2"], true, function(require, exports, module) {
+System.register("angular2/src/http/backends/jsonp_backend", ["angular2/src/http/interfaces", "angular2/src/http/enums", "angular2/src/http/static_response", "angular2/src/http/base_response_options", "angular2/core", "angular2/src/http/backends/browser_jsonp", "angular2/src/facade/exceptions", "angular2/src/facade/lang", "angular2/core"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -858,11 +858,11 @@ System.register("angular2/src/http/backends/jsonp_backend", ["angular2/src/http/
   var enums_1 = require("angular2/src/http/enums");
   var static_response_1 = require("angular2/src/http/static_response");
   var base_response_options_1 = require("angular2/src/http/base_response_options");
-  var angular2_1 = require("angular2/angular2");
+  var core_1 = require("angular2/core");
   var browser_jsonp_1 = require("angular2/src/http/backends/browser_jsonp");
   var exceptions_1 = require("angular2/src/facade/exceptions");
   var lang_1 = require("angular2/src/facade/lang");
-  var angular2_2 = require("angular2/angular2");
+  var core_2 = require("angular2/core");
   var JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callback.';
   var JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
   var JSONPConnection = (function() {
@@ -882,7 +882,7 @@ System.register("angular2/src/http/backends/jsonp_backend", ["angular2/src/http/
         throw exceptions_1.makeTypeError(JSONP_ERR_WRONG_METHOD);
       }
       this.request = req;
-      this.response = new angular2_2.Observable(function(responseObserver) {
+      this.response = new core_2.Observable(function(responseObserver) {
         _this.readyState = enums_1.ReadyStates.Loading;
         var id = _this._id = _dom.nextRequestID();
         _dom.exposeConnection(id, _this);
@@ -976,7 +976,7 @@ System.register("angular2/src/http/backends/jsonp_backend", ["angular2/src/http/
     JSONPBackend_.prototype.createConnection = function(request) {
       return new JSONPConnection_(request, this._browserJSONP, this._baseResponseOptions);
     };
-    JSONPBackend_ = __decorate([angular2_1.Injectable(), __metadata('design:paramtypes', [browser_jsonp_1.BrowserJsonp, base_response_options_1.ResponseOptions])], JSONPBackend_);
+    JSONPBackend_ = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [browser_jsonp_1.BrowserJsonp, base_response_options_1.ResponseOptions])], JSONPBackend_);
     return JSONPBackend_;
   })(JSONPBackend);
   exports.JSONPBackend_ = JSONPBackend_;
@@ -1019,7 +1019,7 @@ System.register("angular2/src/http/static_request", ["angular2/src/http/headers"
   return module.exports;
 });
 
-System.register("angular2/src/http/http", ["angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/angular2", "angular2/src/http/interfaces", "angular2/src/http/static_request", "angular2/src/http/base_request_options", "angular2/src/http/enums"], true, function(require, exports, module) {
+System.register("angular2/src/http/http", ["angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/core", "angular2/src/http/interfaces", "angular2/src/http/static_request", "angular2/src/http/base_request_options", "angular2/src/http/enums"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -1056,7 +1056,7 @@ System.register("angular2/src/http/http", ["angular2/src/facade/lang", "angular2
   };
   var lang_1 = require("angular2/src/facade/lang");
   var exceptions_1 = require("angular2/src/facade/exceptions");
-  var angular2_1 = require("angular2/angular2");
+  var core_1 = require("angular2/core");
   var interfaces_1 = require("angular2/src/http/interfaces");
   var static_request_1 = require("angular2/src/http/static_request");
   var base_request_options_1 = require("angular2/src/http/base_request_options");
@@ -1118,7 +1118,7 @@ System.register("angular2/src/http/http", ["angular2/src/facade/lang", "angular2
     Http.prototype.head = function(url, options) {
       return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethods.Head, url)));
     };
-    Http = __decorate([angular2_1.Injectable(), __metadata('design:paramtypes', [interfaces_1.ConnectionBackend, base_request_options_1.RequestOptions])], Http);
+    Http = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [interfaces_1.ConnectionBackend, base_request_options_1.RequestOptions])], Http);
     return Http;
   })();
   exports.Http = Http;
@@ -1142,7 +1142,7 @@ System.register("angular2/src/http/http", ["angular2/src/facade/lang", "angular2
       }
       return responseObservable;
     };
-    Jsonp = __decorate([angular2_1.Injectable(), __metadata('design:paramtypes', [interfaces_1.ConnectionBackend, base_request_options_1.RequestOptions])], Jsonp);
+    Jsonp = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [interfaces_1.ConnectionBackend, base_request_options_1.RequestOptions])], Jsonp);
     return Jsonp;
   })(Http);
   exports.Jsonp = Jsonp;
@@ -1150,11 +1150,11 @@ System.register("angular2/src/http/http", ["angular2/src/facade/lang", "angular2
   return module.exports;
 });
 
-System.register("angular2/http", ["angular2/angular2", "angular2/src/http/http", "angular2/src/http/backends/xhr_backend", "angular2/src/http/backends/jsonp_backend", "angular2/src/http/backends/browser_xhr", "angular2/src/http/backends/browser_jsonp", "angular2/src/http/base_request_options", "angular2/src/http/base_response_options", "angular2/src/http/backends/mock_backend", "angular2/src/http/static_request", "angular2/src/http/static_response", "angular2/src/http/interfaces", "angular2/src/http/backends/browser_xhr", "angular2/src/http/base_request_options", "angular2/src/http/base_response_options", "angular2/src/http/backends/xhr_backend", "angular2/src/http/backends/jsonp_backend", "angular2/src/http/http", "angular2/src/http/headers", "angular2/src/http/enums", "angular2/src/http/url_search_params"], true, function(require, exports, module) {
+System.register("angular2/http", ["angular2/core", "angular2/src/http/http", "angular2/src/http/backends/xhr_backend", "angular2/src/http/backends/jsonp_backend", "angular2/src/http/backends/browser_xhr", "angular2/src/http/backends/browser_jsonp", "angular2/src/http/base_request_options", "angular2/src/http/base_response_options", "angular2/src/http/backends/mock_backend", "angular2/src/http/static_request", "angular2/src/http/static_response", "angular2/src/http/interfaces", "angular2/src/http/backends/browser_xhr", "angular2/src/http/base_request_options", "angular2/src/http/base_response_options", "angular2/src/http/backends/xhr_backend", "angular2/src/http/backends/jsonp_backend", "angular2/src/http/http", "angular2/src/http/headers", "angular2/src/http/enums", "angular2/src/http/url_search_params"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  var angular2_1 = require("angular2/angular2");
+  var core_1 = require("angular2/core");
   var http_1 = require("angular2/src/http/http");
   var xhr_backend_1 = require("angular2/src/http/backends/xhr_backend");
   var jsonp_backend_1 = require("angular2/src/http/backends/jsonp_backend");
@@ -1197,19 +1197,19 @@ System.register("angular2/http", ["angular2/angular2", "angular2/src/http/http",
   exports.RequestMethods = enums_1.RequestMethods;
   var url_search_params_1 = require("angular2/src/http/url_search_params");
   exports.URLSearchParams = url_search_params_1.URLSearchParams;
-  exports.HTTP_PROVIDERS = [angular2_1.provide(http_1.Http, {
+  exports.HTTP_PROVIDERS = [core_1.provide(http_1.Http, {
     useFactory: function(xhrBackend, requestOptions) {
       return new http_1.Http(xhrBackend, requestOptions);
     },
     deps: [xhr_backend_1.XHRBackend, base_request_options_1.RequestOptions]
-  }), browser_xhr_1.BrowserXhr, angular2_1.provide(base_request_options_1.RequestOptions, {useClass: base_request_options_1.BaseRequestOptions}), angular2_1.provide(base_response_options_1.ResponseOptions, {useClass: base_response_options_1.BaseResponseOptions}), xhr_backend_1.XHRBackend];
+  }), browser_xhr_1.BrowserXhr, core_1.provide(base_request_options_1.RequestOptions, {useClass: base_request_options_1.BaseRequestOptions}), core_1.provide(base_response_options_1.ResponseOptions, {useClass: base_response_options_1.BaseResponseOptions}), xhr_backend_1.XHRBackend];
   exports.HTTP_BINDINGS = exports.HTTP_PROVIDERS;
-  exports.JSONP_PROVIDERS = [angular2_1.provide(http_1.Jsonp, {
+  exports.JSONP_PROVIDERS = [core_1.provide(http_1.Jsonp, {
     useFactory: function(jsonpBackend, requestOptions) {
       return new http_1.Jsonp(jsonpBackend, requestOptions);
     },
     deps: [jsonp_backend_1.JSONPBackend, base_request_options_1.RequestOptions]
-  }), browser_jsonp_1.BrowserJsonp, angular2_1.provide(base_request_options_1.RequestOptions, {useClass: base_request_options_1.BaseRequestOptions}), angular2_1.provide(base_response_options_1.ResponseOptions, {useClass: base_response_options_1.BaseResponseOptions}), angular2_1.provide(jsonp_backend_1.JSONPBackend, {useClass: jsonp_backend_1.JSONPBackend_})];
+  }), browser_jsonp_1.BrowserJsonp, core_1.provide(base_request_options_1.RequestOptions, {useClass: base_request_options_1.BaseRequestOptions}), core_1.provide(base_response_options_1.ResponseOptions, {useClass: base_response_options_1.BaseResponseOptions}), core_1.provide(jsonp_backend_1.JSONPBackend, {useClass: jsonp_backend_1.JSONPBackend_})];
   exports.JSON_BINDINGS = exports.JSONP_PROVIDERS;
   global.define = __define;
   return module.exports;

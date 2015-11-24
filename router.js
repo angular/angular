@@ -33,8 +33,8 @@ exports.CanActivate = lifecycle_annotations_1.CanActivate;
 var instruction_2 = require('./src/router/instruction');
 exports.Instruction = instruction_2.Instruction;
 exports.ComponentInstruction = instruction_2.ComponentInstruction;
-var angular2_1 = require('angular2/angular2');
-exports.OpaqueToken = angular2_1.OpaqueToken;
+var core_1 = require('angular2/core');
+exports.OpaqueToken = core_1.OpaqueToken;
 var location_strategy_2 = require('./src/router/location_strategy');
 var path_location_strategy_2 = require('./src/router/path_location_strategy');
 var router_2 = require('./src/router/router');
@@ -42,7 +42,7 @@ var router_outlet_2 = require('./src/router/router_outlet');
 var router_link_2 = require('./src/router/router_link');
 var route_registry_2 = require('./src/router/route_registry');
 var location_2 = require('./src/router/location');
-var angular2_2 = require('angular2/angular2');
+var core_2 = require('angular2/core');
 var lang_1 = require('./src/facade/lang');
 var exceptions_1 = require('angular2/src/facade/exceptions');
 /**
@@ -70,7 +70,7 @@ var exceptions_1 = require('angular2/src/facade/exceptions');
  * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
  * ```
  */
-exports.ROUTER_PRIMARY_COMPONENT = lang_1.CONST_EXPR(new angular2_2.OpaqueToken('RouterPrimaryComponent'));
+exports.ROUTER_PRIMARY_COMPONENT = lang_1.CONST_EXPR(new core_2.OpaqueToken('RouterPrimaryComponent'));
 /**
  * A list of directives. To use the router directives like {@link RouterOutlet} and
  * {@link RouterLink}, add this to your `directives` array in the {@link View} decorator of your
@@ -120,13 +120,13 @@ exports.ROUTER_DIRECTIVES = lang_1.CONST_EXPR([router_outlet_2.RouterOutlet, rou
  */
 exports.ROUTER_PROVIDERS = lang_1.CONST_EXPR([
     route_registry_2.RouteRegistry,
-    lang_1.CONST_EXPR(new angular2_2.Provider(location_strategy_2.LocationStrategy, { useClass: path_location_strategy_2.PathLocationStrategy })),
+    lang_1.CONST_EXPR(new core_2.Provider(location_strategy_2.LocationStrategy, { useClass: path_location_strategy_2.PathLocationStrategy })),
     location_2.Location,
-    lang_1.CONST_EXPR(new angular2_2.Provider(router_2.Router, {
+    lang_1.CONST_EXPR(new core_2.Provider(router_2.Router, {
         useFactory: routerFactory,
-        deps: lang_1.CONST_EXPR([route_registry_2.RouteRegistry, location_2.Location, exports.ROUTER_PRIMARY_COMPONENT, angular2_2.ApplicationRef])
+        deps: lang_1.CONST_EXPR([route_registry_2.RouteRegistry, location_2.Location, exports.ROUTER_PRIMARY_COMPONENT, core_2.ApplicationRef])
     })),
-    lang_1.CONST_EXPR(new angular2_2.Provider(exports.ROUTER_PRIMARY_COMPONENT, { useFactory: routerPrimaryComponentFactory, deps: lang_1.CONST_EXPR([angular2_2.ApplicationRef]) }))
+    lang_1.CONST_EXPR(new core_2.Provider(exports.ROUTER_PRIMARY_COMPONENT, { useFactory: routerPrimaryComponentFactory, deps: lang_1.CONST_EXPR([core_2.ApplicationRef]) }))
 ]);
 /**
  * @deprecated

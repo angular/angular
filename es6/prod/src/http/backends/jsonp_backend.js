@@ -13,11 +13,11 @@ import { ConnectionBackend } from '../interfaces';
 import { ReadyStates, RequestMethods, ResponseTypes } from '../enums';
 import { Response } from '../static_response';
 import { ResponseOptions } from '../base_response_options';
-import { Injectable } from 'angular2/angular2';
+import { Injectable } from 'angular2/core';
 import { BrowserJsonp } from './browser_jsonp';
 import { makeTypeError } from 'angular2/src/facade/exceptions';
 import { StringWrapper, isPresent } from 'angular2/src/facade/lang';
-import { Observable } from 'angular2/angular2';
+import { Observable } from 'angular2/core';
 const JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callback.';
 const JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
 export class JSONPConnection {
