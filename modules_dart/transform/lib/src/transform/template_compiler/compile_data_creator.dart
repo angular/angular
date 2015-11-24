@@ -59,6 +59,7 @@ class _CompileDataCreator {
 
   NgDepsModel get ngDeps => ngMeta.ngDeps;
 
+
   Future<CompileDataResults> createCompileData() async {
     if (ngDeps == null || ngDeps.reflectables == null) {
       return new CompileDataResults._(ngMeta, const {});
@@ -75,22 +76,23 @@ class _CompileDataCreator {
         if (compileDirectiveMetadata.template != null) {
           final compileDatum = new NormalizedComponentWithViewDirectives(
               compileDirectiveMetadata, <CompileDirectiveMetadata>[]);
-          compileDatum.directives.addAll(platformDirectives);
+          final directives = [];
+          directives.addAll(platformDirectives);
 
           for (var dep in reflectable.directives) {
             if (!ngMetaMap.containsKey(dep.prefix)) {
               log.warning(
                   'Missing prefix "${dep.prefix}" '
-                  'needed by "${dep}" from metadata map',
+                      'needed by "${dep}" from metadata map',
                   asset: entryPoint);
               continue;
             }
             final depNgMeta = ngMetaMap[dep.prefix];
 
             if (depNgMeta.types.containsKey(dep.name)) {
-              compileDatum.directives.add(depNgMeta.types[dep.name]);
+              directives.add(depNgMeta.types[dep.name]);
             } else if (depNgMeta.aliases.containsKey(dep.name)) {
-              compileDatum.directives.addAll(depNgMeta.flatten(dep.name));
+              directives.addAll(depNgMeta.flatten(dep.name));
             } else {
               log.warning('Could not find Directive entry for $dep. '
                   'Please be aware that Dart transformers have limited support for '
@@ -98,11 +100,24 @@ class _CompileDataCreator {
                   '"directive aliases"). See https://goo.gl/d8XPt0 for details.');
             }
           }
+          compileDatum.directives.addAll(removeDuplicates(directives));
           compileData[reflectable] = compileDatum;
         }
       }
     }
     return new CompileDataResults._(ngMeta, compileData);
+  }
+
+  List<CompileDirectiveMetadata> removeDuplicates(List<CompileDirectiveMetadata> directives) {
+    final res = [];
+    directives.forEach((dir) {
+      if (! res.any((v) => v.type.name == dir.type.name &&
+          v.type.moduleUrl == dir.type.moduleUrl &&
+          v.type.isHost == dir.type.isHost)) {
+        res.add(dir);
+      }
+    });
+    return res;
   }
 
   Future<List<CompileDirectiveMetadata>> _readPlatformDirectives() async {

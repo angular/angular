@@ -415,6 +415,31 @@ void allTests() {
     final ngDeps = outputs.ngDeps;
     expect(ngDeps).toBeNotNull();
   });
+
+  it('should dedup directvies.',
+      () async {
+    fooComponentMeta.template = new CompileTemplateMetadata(template: '<bar/>');
+
+    final viewAnnotation = new AnnotationModel()
+      ..name = 'View'
+      ..isView = true;
+    viewAnnotation.namedParameters.add(new NamedParameter()
+      ..name = 'directives'
+      ..value = 'const [${barComponentMeta.type.name}]');
+    fooNgMeta.ngDeps.reflectables.first.directives
+        .add(new PrefixedDirective()..name = barComponentMeta.type.name);
+    fooNgMeta.ngDeps.imports.add(new ImportModel()..uri = 'bar.dart');
+    fooNgMeta.ngDeps.reflectables.first.annotations.add(viewAnnotation);
+
+    barNgMeta.aliases['PLATFORM'] = [barComponentMeta.type.name];
+    updateReader();
+
+    final outputs = await process(fooAssetId,
+        platformDirectives: ['package:a/bar.dart#PLATFORM']);
+    final oneBar = outputs.templatesCode.indexOf("BeginComponentCmd('bar'") ==
+        outputs.templatesCode.lastIndexOf("BeginComponentCmd('bar'");
+    expect(oneBar).toBe(true);
+  });
 }
 
 void _formatThenExpectEquals(String actual, String expected) {
