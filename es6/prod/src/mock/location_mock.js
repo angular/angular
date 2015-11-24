@@ -44,4 +44,3 @@ export class SpyLocation {
     }
     normalize(url) { return null; }
 }
-//# sourceMappingURL=location_mock.js.map

@@ -108,4 +108,3 @@ export class Headers {
      */
     entries() { throw new BaseException('"entries" method is not implemented on Headers class'); }
 }
-//# sourceMappingURL=headers.js.map

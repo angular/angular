@@ -43,4 +43,3 @@ class MockAnimation extends Animation {
         this._callback = null;
     }
 }
-//# sourceMappingURL=animation_builder_mock.js.map

@@ -31,4 +31,3 @@ export class XHRImpl extends XHR {
         return completer.promise;
     }
 }
-//# sourceMappingURL=xhr_impl.js.map

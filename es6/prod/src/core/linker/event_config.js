@@ -21,4 +21,3 @@ export class EventConfig {
             this.eventName;
     }
 }
-//# sourceMappingURL=event_config.js.map

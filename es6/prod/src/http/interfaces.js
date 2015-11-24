@@ -11,4 +11,3 @@ export class ConnectionBackend {
  */
 export class Connection {
 }
-//# sourceMappingURL=interfaces.js.map

@@ -76,4 +76,3 @@ export const ELEMENT_PROBE_PROVIDERS = CONST_EXPR([
     CONST_EXPR(new Provider(AppViewListener, { useExisting: DebugElementViewListener })),
 ]);
 export const ELEMENT_PROBE_BINDINGS = ELEMENT_PROBE_PROVIDERS;
-//# sourceMappingURL=debug_element_view_listener.js.map

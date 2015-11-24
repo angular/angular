@@ -58,4 +58,3 @@ WebWorkerApplication = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [ClientMessageBrokerFactory, ServiceMessageBrokerFactory])
 ], WebWorkerApplication);
-//# sourceMappingURL=impl.js.map

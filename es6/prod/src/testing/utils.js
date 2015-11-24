@@ -105,4 +105,3 @@ export function stringifyElement(el) {
     }
     return result;
 }
-//# sourceMappingURL=utils.js.map

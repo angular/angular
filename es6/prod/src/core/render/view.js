@@ -58,4 +58,3 @@ export class DefaultRenderView extends RenderViewRef {
         return allowDefaultBehavior;
     }
 }
-//# sourceMappingURL=view.js.map

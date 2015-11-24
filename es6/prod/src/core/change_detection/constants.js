@@ -71,4 +71,3 @@ export function isDefaultChangeDetectionStrategy(changeDetectionStrategy) {
     return isBlank(changeDetectionStrategy) ||
         changeDetectionStrategy === ChangeDetectionStrategy.Default;
 }
-//# sourceMappingURL=constants.js.map

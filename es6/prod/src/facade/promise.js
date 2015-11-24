@@ -41,4 +41,3 @@ export class PromiseWrapper {
         return { promise: p, resolve: resolve, reject: reject };
     }
 }
-//# sourceMappingURL=promise.js.map

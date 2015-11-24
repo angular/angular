@@ -300,4 +300,3 @@ export class AstTransformer {
     }
     visitChain(ast) { return new Chain(this.visitAll(ast.expressions)); }
 }
-//# sourceMappingURL=ast.js.map

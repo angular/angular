@@ -45,4 +45,3 @@ import { CORE_DIRECTIVES } from './directives';
  * ```
  */
 export const COMMON_DIRECTIVES = CONST_EXPR([CORE_DIRECTIVES, FORM_DIRECTIVES]);
-//# sourceMappingURL=common_directives.js.map

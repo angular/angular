@@ -101,4 +101,3 @@ export class BindingRecord {
         return new BindingRecord(HOST_EVENT, t, directiveIndex, ast, null, null, directiveRecord);
     }
 }
-//# sourceMappingURL=binding_record.js.map

@@ -37,4 +37,3 @@ export var ResponseTypes;
     ResponseTypes[ResponseTypes["Error"] = 3] = "Error";
     ResponseTypes[ResponseTypes["Opaque"] = 4] = "Opaque";
 })(ResponseTypes || (ResponseTypes = {}));
-//# sourceMappingURL=enums.js.map

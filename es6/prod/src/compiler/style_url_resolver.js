@@ -34,4 +34,3 @@ var _cssImportRe = /@import\s+(?:url\()?\s*(?:(?:['"]([^'"]*))|([^;\)\s]*))[^;]*
 // TODO: can't use /^[^:/?#.]+:/g due to clang-format bug:
 //       https://github.com/angular/angular/issues/4596
 var _urlWithSchemaRe = /^([a-zA-Z\-\+\.]+):/g;
-//# sourceMappingURL=style_url_resolver.js.map

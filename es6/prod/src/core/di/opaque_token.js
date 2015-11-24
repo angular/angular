@@ -41,4 +41,3 @@ OpaqueToken = __decorate([
     CONST(), 
     __metadata('design:paramtypes', [String])
 ], OpaqueToken);
-//# sourceMappingURL=opaque_token.js.map

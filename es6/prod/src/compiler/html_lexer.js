@@ -460,4 +460,3 @@ function isAsciiLetter(code) {
 function isAsciiHexDigit(code) {
     return code >= $a && code <= $f || code >= $0 && code <= $9;
 }
-//# sourceMappingURL=html_lexer.js.map

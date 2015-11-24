@@ -43,4 +43,3 @@ PipeResolver = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], PipeResolver);
-//# sourceMappingURL=pipe_resolver.js.map

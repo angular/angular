@@ -186,4 +186,3 @@ export function createHostComponentMeta(componentType, componentSelector) {
         selector: '*'
     });
 }
-//# sourceMappingURL=directive_metadata.js.map

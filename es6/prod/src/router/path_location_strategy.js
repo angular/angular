@@ -99,4 +99,3 @@ PathLocationStrategy = __decorate([
     __param(0, Inject(APP_BASE_HREF)), 
     __metadata('design:paramtypes', [String])
 ], PathLocationStrategy);
-//# sourceMappingURL=path_location_strategy.js.map

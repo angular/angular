@@ -154,4 +154,3 @@ class Ng1Change {
     }
     isFirstChange() { return this.previousValue === this.currentValue; }
 }
-//# sourceMappingURL=downgrade_ng2_adapter.js.map

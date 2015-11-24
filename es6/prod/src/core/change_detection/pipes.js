@@ -4,4 +4,3 @@ export class SelectedPipe {
         this.pure = pure;
     }
 }
-//# sourceMappingURL=pipes.js.map

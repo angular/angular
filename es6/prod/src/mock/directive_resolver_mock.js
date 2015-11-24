@@ -64,4 +64,3 @@ export class MockDirectiveResolver extends DirectiveResolver {
         this.viewProviderOverrides.set(type, viewBindings);
     }
 }
-//# sourceMappingURL=directive_resolver_mock.js.map

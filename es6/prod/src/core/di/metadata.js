@@ -265,4 +265,3 @@ HostMetadata = __decorate([
     CONST(), 
     __metadata('design:paramtypes', [])
 ], HostMetadata);
-//# sourceMappingURL=metadata.js.map

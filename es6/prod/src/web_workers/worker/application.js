@@ -21,4 +21,3 @@ export function bootstrapWebWorker(appComponentType, componentInjectableProvider
     var bus = new PostMessageBus(sink, source);
     return bootstrapWebWorkerCommon(appComponentType, bus, componentInjectableProviders);
 }
-//# sourceMappingURL=application.js.map

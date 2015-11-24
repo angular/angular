@@ -578,4 +578,3 @@ function createElementCssSelector(elementName, matchableAttrs) {
 }
 var EMPTY_COMPONENT = new Component(new SelectorMatcher(), null);
 var NON_BINDABLE_VISITOR = new NonBindableVisitor();
-//# sourceMappingURL=template_parser.js.map

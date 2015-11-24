@@ -191,4 +191,3 @@ Jsonp = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [ConnectionBackend, RequestOptions])
 ], Jsonp);
-//# sourceMappingURL=http.js.map

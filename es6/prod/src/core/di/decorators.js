@@ -24,4 +24,3 @@ export var Host = makeParamDecorator(HostMetadata);
  * Factory for creating {@link SkipSelfMetadata}.
  */
 export var SkipSelf = makeParamDecorator(SkipSelfMetadata);
-//# sourceMappingURL=decorators.js.map

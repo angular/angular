@@ -100,4 +100,3 @@ ViewResolver = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], ViewResolver);
-//# sourceMappingURL=view_resolver.js.map

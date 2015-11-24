@@ -61,4 +61,3 @@ export class WebWorkerRenderProtoViewRef extends RenderProtoViewRef {
         this.refNumber = refNumber;
     }
 }
-//# sourceMappingURL=render_proto_view_ref_store.js.map

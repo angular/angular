@@ -170,4 +170,3 @@ export class Animation {
         return StringWrapper.replaceAll(str, RegExpWrapper.create('[^0-9]+$', ''), '');
     }
 }
-//# sourceMappingURL=animation.js.map

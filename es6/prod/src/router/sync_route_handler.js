@@ -9,4 +9,3 @@ export class SyncRouteHandler {
     }
     resolveComponentType() { return this._resolvedComponent; }
 }
-//# sourceMappingURL=sync_route_handler.js.map

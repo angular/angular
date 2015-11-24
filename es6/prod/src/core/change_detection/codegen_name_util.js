@@ -156,4 +156,3 @@ export class CodegenNameUtil {
     }
     getDetectorName(d) { return this._addFieldPrefix(`detector_${d.name}`); }
 }
-//# sourceMappingURL=codegen_name_util.js.map

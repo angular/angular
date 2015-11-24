@@ -62,4 +62,3 @@ export class AngularProfiler {
         window.console.log(`${NumberWrapper.toFixed(msPerTick, 2)} ms per check`);
     }
 }
-//# sourceMappingURL=common_tools.js.map

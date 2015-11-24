@@ -65,4 +65,3 @@ export var wtfStartTimeRange = wtfEnabled ? impl.startTimeRange : (rangeType, ac
  * enabled.
  */
 export var wtfEndTimeRange = wtfEnabled ? impl.endTimeRange : (r) => null;
-//# sourceMappingURL=profile.js.map

@@ -65,4 +65,3 @@ AppCmp = __decorate([
 export function main() {
     bootstrap(AppCmp);
 }
-//# sourceMappingURL=slice_pipe_example.js.map

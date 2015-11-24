@@ -32,4 +32,3 @@ export { canReuse, canDeactivate, onActivate, onReuse, onDeactivate } from './li
  * {@example router/ts/can_activate/can_activate_example.ts region='canActivate' }
  */
 export var CanActivate = makeDecorator(CanActivateAnnotation);
-//# sourceMappingURL=lifecycle_annotations.js.map

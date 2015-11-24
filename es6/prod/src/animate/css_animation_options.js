@@ -8,4 +8,3 @@ export class CssAnimationOptions {
         this.animationClasses = [];
     }
 }
-//# sourceMappingURL=css_animation_options.js.map

@@ -21,4 +21,3 @@ AppViewListener = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], AppViewListener);
-//# sourceMappingURL=view_listener.js.map

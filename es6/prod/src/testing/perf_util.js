@@ -59,4 +59,3 @@ function applyScaleFactor(value, scaleFactor, method) {
         return value;
     }
 }
-//# sourceMappingURL=perf_util.js.map

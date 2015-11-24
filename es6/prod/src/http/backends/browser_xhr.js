@@ -20,4 +20,3 @@ BrowserXhr = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], BrowserXhr);
-//# sourceMappingURL=browser_xhr.js.map

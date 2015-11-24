@@ -84,4 +84,3 @@ export class ReceivedMessage {
         this.type = data['type'];
     }
 }
-//# sourceMappingURL=service_message_broker.js.map

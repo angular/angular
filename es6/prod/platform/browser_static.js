@@ -18,4 +18,3 @@ export function bootstrapStatic(appComponentType, customProviders, initReflector
     let appProviders = isPresent(customProviders) ? [BROWSER_APP_PROVIDERS, customProviders] : BROWSER_APP_PROVIDERS;
     return platform(BROWSER_PROVIDERS).application(appProviders).bootstrap(appComponentType);
 }
-//# sourceMappingURL=browser_static.js.map

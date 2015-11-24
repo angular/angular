@@ -129,4 +129,3 @@ function stripTrailingSlash(url) {
     }
     return url;
 }
-//# sourceMappingURL=location.js.map
