@@ -10,7 +10,7 @@ import {
   afterEach,
   AsyncTestCompleter,
   inject,
-  beforeEachBindings
+  beforeEachProviders
 } from 'angular2/testing_internal';
 
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
@@ -57,7 +57,7 @@ export function main() {
     var compiler: TemplateCompiler;
     var runtimeMetadataResolver: RuntimeMetadataResolver;
 
-    beforeEachBindings(() => TEST_PROVIDERS);
+    beforeEachProviders(() => TEST_PROVIDERS);
     beforeEach(inject([TemplateCompiler, RuntimeMetadataResolver],
                       (_compiler, _runtimeMetadataResolver) => {
                         compiler = _compiler;
@@ -122,9 +122,18 @@ export function main() {
                    async.done();
                  });
            }));
+
+        it('should dedup directives', inject([AsyncTestCompleter], (async) => {
+             compile([CompWithDupDirectives, TreeComp])
+                 .then((humanizedTemplate) => {
+                   expect(humanizedTemplate['commands'][1]['commands'][0]).toEqual("<tree>");
+                   async.done();
+
+                 });
+           }));
       }
 
-      xdescribe('compileHostComponentRuntime', () => {
+      describe('compileHostComponentRuntime', () => {
         function compile(components: Type[]): Promise<any[]> {
           return compiler.compileHostComponentRuntime(components[0])
               .then((compiledHostTemplate) => humanizeTemplate(compiledHostTemplate.template));
@@ -179,7 +188,6 @@ export function main() {
                  });
              xhr.flush();
            }));
-
       });
 
       describe('compileTemplatesCodeGen', () => {
@@ -290,6 +298,15 @@ class CompWithBindingsAndStyles {
 class TreeComp {
 }
 
+@Component({selector: 'comp-wit-dup-tpl', moduleId: THIS_MODULE_ID})
+@View({
+  template: '<tree></tree>',
+  directives: [TreeComp, TreeComp],
+  encapsulation: ViewEncapsulation.None
+})
+class CompWithDupDirectives {
+}
+
 @Component({selector: 'comp-url', moduleId: THIS_MODULE_ID})
 @View({templateUrl: 'compUrl.html', encapsulation: ViewEncapsulation.None})
 class CompWithTemplateUrl {
@@ -349,7 +366,7 @@ export function humanizeTemplate(
 }
 
 class TestContext implements CompWithBindingsAndStyles, TreeComp, CompWithTemplateUrl,
-    CompWithEmbeddedTemplate {
+    CompWithEmbeddedTemplate, CompWithDupDirectives {
   someProp: string;
 }
 
