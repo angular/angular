@@ -1,4 +1,4 @@
-library angular2.test.platform.xhr_impl_spec;
+library angular2.test.platform.browser.xhr_impl_spec;
 
 import "package:angular2/testing_internal.dart"
     show

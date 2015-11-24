@@ -1,6 +1,6 @@
 library angular2.src.router.location_strategy;
 
-import "package:angular2/angular2.dart" show OpaqueToken;
+import "package:angular2/core.dart" show OpaqueToken;
 
 /**
  * `LocationStrategy` is responsible for representing and reading route state

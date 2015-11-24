@@ -15,7 +15,7 @@ import "package:angular2/testing_internal.dart"
         it,
         xit;
 import "package:angular2/src/facade/collection.dart" show ListWrapper;
-import "package:angular2/angular2.dart"
+import "package:angular2/core.dart"
     show Component, View, TemplateRef, ContentChild;
 import "package:angular2/src/common/directives/ng_for.dart" show NgFor;
 

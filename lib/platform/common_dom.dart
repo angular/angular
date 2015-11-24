@@ -11,3 +11,5 @@ export "package:angular2/src/platform/dom/shared_styles_host.dart"
     show SharedStylesHost, DomSharedStylesHost;
 export "package:angular2/src/platform/dom/events/dom_events.dart"
     show DomEventsPlugin;
+export "package:angular2/src/platform/dom/debug/by.dart";
+export "package:angular2/src/platform/dom/debug/debug_element_view_listener.dart";

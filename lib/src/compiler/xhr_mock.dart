@@ -35,10 +35,10 @@ class MockXHR extends XHR {
     do {
       this._processRequest(this._requests.removeAt(0));
     } while (this._requests.length > 0);
-    this.verifyNoOustandingExpectations();
+    this.verifyNoOutstandingExpectations();
   }
 
-  verifyNoOustandingExpectations() {
+  verifyNoOutstandingExpectations() {
     if (identical(this._expectations.length, 0)) return;
     var urls = [];
     for (var i = 0; i < this._expectations.length; i++) {

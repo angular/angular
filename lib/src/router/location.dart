@@ -3,7 +3,7 @@ library angular2.src.router.location;
 import "location_strategy.dart" show LocationStrategy;
 import "package:angular2/src/facade/async.dart"
     show EventEmitter, ObservableWrapper;
-import "package:angular2/angular2.dart" show Injectable, Inject;
+import "package:angular2/core.dart" show Injectable, Inject;
 
 /**
  * `Location` is a service that applications can use to interact with a browser's URL.

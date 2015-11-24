@@ -1,6 +1,6 @@
 library angular2.test.common.forms.integration_spec;
 
-import "package:angular2/angular2.dart"
+import "package:angular2/core.dart"
     show Component, Directive, View, Output, EventEmitter;
 import "package:angular2/testing_internal.dart"
     show
@@ -35,7 +35,7 @@ import "package:angular2/common.dart"
         NgForm,
         Validators,
         Validator;
-import "package:angular2/core.dart" show Input, Provider;
+import "package:angular2/core.dart" show Provider, Input;
 import "package:angular2/platform/browser.dart" show By;
 import "package:angular2/src/facade/collection.dart" show ListWrapper;
 import "package:angular2/src/facade/async.dart" show ObservableWrapper;

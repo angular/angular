@@ -8,7 +8,9 @@ export "package:angular2/src/platform/browser_common.dart"
         inspectNativeElement,
         BrowserDomAdapter,
         By,
-        Title;
+        Title,
+        enableDebugTools,
+        disableDebugTools;
 import "package:angular2/src/facade/lang.dart" show Type, isPresent;
 import "package:angular2/src/facade/promise.dart" show Future;
 import "package:angular2/src/platform/browser_common.dart"
