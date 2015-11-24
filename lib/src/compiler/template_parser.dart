@@ -1,18 +1,11 @@
 library angular2.src.compiler.template_parser;
 
 import "package:angular2/src/facade/collection.dart"
-    show MapWrapper, ListWrapper, StringMapWrapper, SetWrapper;
+    show ListWrapper, StringMapWrapper, SetWrapper;
 import "package:angular2/src/facade/lang.dart"
-    show
-        RegExpWrapper,
-        isPresent,
-        StringWrapper,
-        StringJoiner,
-        stringify,
-        assertionsEnabled,
-        isBlank;
+    show RegExpWrapper, isPresent, StringWrapper, isBlank;
 import "package:angular2/core.dart"
-    show Injectable, Inject, Injector, OpaqueToken, Optional;
+    show Injectable, Inject, OpaqueToken, Optional;
 import "package:angular2/src/facade/exceptions.dart" show BaseException;
 import "package:angular2/src/core/change_detection/change_detection.dart"
     show Parser, AST, ASTWithSource;
