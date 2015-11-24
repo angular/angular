@@ -21,7 +21,7 @@ import {NumberWrapper} from 'angular2/src/facade/lang';
 import {PromiseWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 
-import {provide, Component, DirectiveResolver} from 'angular2/core';
+import {provide, Component, DirectiveResolver, View} from 'angular2/core';
 
 import {SpyLocation} from 'angular2/src/mock/location_mock';
 import {
@@ -386,17 +386,15 @@ class MyComp {
   name;
 }
 
-@Component({
-  selector: 'user-cmp',
-  template: "hello {{user}}"
-})
+@Component({selector: 'user-cmp'})
+@View({template: "hello {{user}}"})
 class UserCmp {
   user: string;
   constructor(params: RouteParams) { this.user = params.get('name'); }
 }
 
-@Component({
-  selector: 'page-cmp',
+@Component({selector: 'page-cmp'})
+@View({
   template:
       `page #{{pageNumber}} | <a href="hello" [router-link]="[\'../Page\', {number: nextPage}]">next</a>`,
   directives: [RouterLink]
@@ -410,8 +408,8 @@ class SiblingPageCmp {
   }
 }
 
-@Component({
-  selector: 'page-cmp',
+@Component({selector: 'page-cmp'})
+@View({
   template:
       `page #{{pageNumber}} | <a href="hello" [router-link]="[\'Page\', {number: nextPage}]">next</a>`,
   directives: [RouterLink]
@@ -425,17 +423,13 @@ class NoPrefixSiblingPageCmp {
   }
 }
 
-@Component({
-  selector: 'hello-cmp',
-  template: 'hello'
-})
+@Component({selector: 'hello-cmp'})
+@View({template: 'hello'})
 class HelloCmp {
 }
 
-@Component({
-  selector: 'hello2-cmp',
-  template: 'hello2'
-})
+@Component({selector: 'hello2-cmp'})
+@View({template: 'hello2'})
 class Hello2Cmp {
 }
 
@@ -443,8 +437,8 @@ function parentCmpLoader() {
   return PromiseWrapper.resolve(ParentCmp);
 }
 
-@Component({
-  selector: 'parent-cmp',
+@Component({selector: 'parent-cmp'})
+@View({
   template: `{ <a [router-link]="['./Grandchild']" class="grandchild-link">Grandchild</a>
                <a [router-link]="['./BetterGrandchild']" class="better-grandchild-link">Better Grandchild</a>
                <router-outlet></router-outlet> }`,
@@ -458,8 +452,8 @@ class ParentCmp {
   constructor(public router: Router) {}
 }
 
-@Component({
-  selector: 'book-cmp',
+@Component({selector: 'book-cmp'})
+@View({
   template: `<a href="hello" [router-link]="[\'./Page\', {number: 100}]">{{title}}</a> |
     <router-outlet></router-outlet>`,
   directives: ROUTER_DIRECTIVES
@@ -470,8 +464,8 @@ class BookCmp {
   constructor(params: RouteParams) { this.title = params.get('title'); }
 }
 
-@Component({
-  selector: 'book-cmp',
+@Component({selector: 'book-cmp'})
+@View({
   template: `<a href="hello" [router-link]="[\'Page\', {number: 100}]">{{title}}</a> |
     <router-outlet></router-outlet>`,
   directives: ROUTER_DIRECTIVES
@@ -482,8 +476,8 @@ class NoPrefixBookCmp {
   constructor(params: RouteParams) { this.title = params.get('title'); }
 }
 
-@Component({
-  selector: 'book-cmp',
+@Component({selector: 'book-cmp'})
+@View({
   template: `<a href="hello" [router-link]="[\'Book\', {number: 100}]">{{title}}</a> |
     <router-outlet></router-outlet>`,
   directives: ROUTER_DIRECTIVES
@@ -494,8 +488,8 @@ class AmbiguousBookCmp {
   constructor(params: RouteParams) { this.title = params.get('title'); }
 }
 
-@Component({
-  selector: 'aux-cmp',
+@Component({selector: 'aux-cmp'})
+@View({
   template:
       `<a [router-link]="[\'./Hello\', [ \'Aside\' ] ]">aside</a> |
     <router-outlet></router-outlet> | aside <router-outlet name="aside"></router-outlet>`,
