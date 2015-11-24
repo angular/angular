@@ -5,6 +5,7 @@ import {ListWrapper, Map, MapWrapper, StringMapWrapper} from 'angular2/src/facad
 import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 import {
   isPresent,
+  isArray,
   isBlank,
   isType,
   isString,
@@ -188,70 +189,61 @@ export class RouteRegistry {
    * Given a normalized list with component names and params like: `['user', {id: 3 }]`
    * generates a url with a leading slash relative to the provided `parentComponent`.
    */
-  generate(linkParams: any[], parentComponent: any): Instruction {
-    let segments = [];
-    let componentCursor = parentComponent;
-    var lastInstructionIsTerminal = false;
+  generate(linkParams: any[], parentComponent: any, _aux = false): Instruction {
+    let linkIndex = 0;
+    let routeName = linkParams[linkIndex];
 
-    for (let i = 0; i < linkParams.length; i += 1) {
-      let segment = linkParams[i];
-      if (isBlank(componentCursor)) {
-        throw new BaseException(`Could not find route named "${segment}".`);
-      }
-      if (!isString(segment)) {
-        throw new BaseException(`Unexpected segment "${segment}" in link DSL. Expected a string.`);
-      } else if (segment == '' || segment == '.' || segment == '..') {
-        throw new BaseException(`"${segment}/" is only allowed at the beginning of a link DSL.`);
-      }
-      let params = {};
-      if (i + 1 < linkParams.length) {
-        let nextSegment = linkParams[i + 1];
-        if (isStringMap(nextSegment)) {
-          params = nextSegment;
-          i += 1;
-        }
-      }
-
-      var componentRecognizer = this._rules.get(componentCursor);
-      if (isBlank(componentRecognizer)) {
-        throw new BaseException(
-            `Component "${getTypeNameForDebugging(componentCursor)}" has no route config.`);
-      }
-      var response = componentRecognizer.generate(segment, params);
-
-      if (isBlank(response)) {
-        throw new BaseException(
-            `Component "${getTypeNameForDebugging(componentCursor)}" has no route named "${segment}".`);
-      }
-      segments.push(response);
-      componentCursor = response.componentType;
-      lastInstructionIsTerminal = response.terminal;
+    // TODO: this is kind of odd but it makes existing assertions pass
+    if (isBlank(parentComponent)) {
+      throw new BaseException(`Could not find route named "${routeName}".`);
     }
 
-    var instruction: Instruction = null;
+    if (!isString(routeName)) {
+      throw new BaseException(`Unexpected segment "${routeName}" in link DSL. Expected a string.`);
+    } else if (routeName == '' || routeName == '.' || routeName == '..') {
+      throw new BaseException(`"${routeName}/" is only allowed at the beginning of a link DSL.`);
+    }
 
-    if (!lastInstructionIsTerminal) {
-      instruction = this._generateRedirects(componentCursor);
-
-      if (isPresent(instruction)) {
-        let lastInstruction = instruction;
-        while (isPresent(lastInstruction.child)) {
-          lastInstruction = lastInstruction.child;
-        }
-        lastInstructionIsTerminal = lastInstruction.component.terminal;
-      }
-      if (isPresent(componentCursor) && !lastInstructionIsTerminal) {
-        throw new BaseException(
-            `Link "${ListWrapper.toJSON(linkParams)}" does not resolve to a terminal or async instruction.`);
+    let params = {};
+    if (linkIndex + 1 < linkParams.length) {
+      let nextSegment = linkParams[linkIndex + 1];
+      if (isStringMap(nextSegment) && !isArray(nextSegment)) {
+        params = nextSegment;
+        linkIndex += 1;
       }
     }
 
-
-    while (segments.length > 0) {
-      instruction = new Instruction(segments.pop(), instruction, {});
+    let auxInstructions: {[key: string]: Instruction} = {};
+    var nextSegment;
+    while (linkIndex + 1 < linkParams.length && isArray(nextSegment = linkParams[linkIndex + 1])) {
+      auxInstructions[nextSegment[0]] = this.generate(nextSegment, parentComponent, true);
+      linkIndex += 1;
     }
 
-    return instruction;
+    var componentRecognizer = this._rules.get(parentComponent);
+    if (isBlank(componentRecognizer)) {
+      throw new BaseException(
+          `Component "${getTypeNameForDebugging(parentComponent)}" has no route config.`);
+    }
+
+    var componentInstruction = _aux ? componentRecognizer.generateAuxiliary(routeName, params) :
+                                      componentRecognizer.generate(routeName, params);
+
+    if (isBlank(componentInstruction)) {
+      throw new BaseException(
+          `Component "${getTypeNameForDebugging(parentComponent)}" has no route named "${routeName}".`);
+    }
+
+    var childInstruction = null;
+    if (linkIndex + 1 < linkParams.length) {
+      var remaining = linkParams.slice(linkIndex + 1);
+      childInstruction = this.generate(remaining, componentInstruction.componentType);
+    } else if (!componentInstruction.terminal) {
+      throw new BaseException(
+          `Link "${ListWrapper.toJSON(linkParams)}" does not resolve to a terminal or async instruction.`);
+    }
+
+    return new Instruction(componentInstruction, childInstruction, auxInstructions);
   }
 
   public hasRoute(name: string, parentComponent: any): boolean {
