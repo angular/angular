@@ -4,4 +4,3 @@ export class InvalidPipeArgumentException extends BaseException {
         super(`Invalid argument '${value}' for pipe '${type}'`);
     }
 }
-//# sourceMappingURL=invalid_pipe_argument_exception.js.map

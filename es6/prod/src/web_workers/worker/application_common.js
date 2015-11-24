@@ -112,4 +112,3 @@ export function bootstrapWebWorkerCommon(appComponentType, bus, appProviders = n
     });
     return PromiseWrapper.then(appPromise, (app) => app.bootstrap(appComponentType));
 }
-//# sourceMappingURL=application_common.js.map

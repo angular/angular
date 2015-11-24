@@ -9,7 +9,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Injectable } from 'angular2/core';
+import { Injectable } from 'angular2/angular2';
 import { isPresent } from 'angular2/src/facade/lang';
 import { Headers } from './headers';
 import { ResponseTypes } from './enums';
@@ -137,4 +137,3 @@ BaseResponseOptions = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], BaseResponseOptions);
-//# sourceMappingURL=base_response_options.js.map

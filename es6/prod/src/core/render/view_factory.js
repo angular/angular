@@ -266,4 +266,3 @@ function _shimContentAttribute(componentShortId) {
 function _shimHostAttribute(componentShortId) {
     return StringWrapper.replaceAll(HOST_ATTR, COMPONENT_REGEX, componentShortId);
 }
-//# sourceMappingURL=view_factory.js.map

@@ -1,4 +1,4 @@
-import {Directive} from 'angular2/core';
+import {Directive} from 'angular2/angular2';
 import {isString} from 'angular2/src/facade/lang';
 
 import {Router} from './router';

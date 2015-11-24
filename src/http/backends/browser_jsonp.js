@@ -9,7 +9,7 @@
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var core_1 = require('angular2/core');
+var angular2_1 = require('angular2/angular2');
 var lang_1 = require('angular2/src/facade/lang');
 var _nextRequestId = 0;
 exports.JSONP_HOME = '__ng_jsonp__';
@@ -49,7 +49,7 @@ var BrowserJsonp = (function () {
         }
     };
     BrowserJsonp = __decorate([
-        core_1.Injectable(), 
+        angular2_1.Injectable(), 
         __metadata('design:paramtypes', [])
     ], BrowserJsonp);
     return BrowserJsonp;

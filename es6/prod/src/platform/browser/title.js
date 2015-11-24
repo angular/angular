@@ -19,4 +19,3 @@ export class Title {
      */
     setTitle(newTitle) { DOM.setTitle(newTitle); }
 }
-//# sourceMappingURL=title.js.map

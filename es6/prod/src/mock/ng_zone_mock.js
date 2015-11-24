@@ -10,4 +10,3 @@ export class MockNgZone extends NgZone {
     }
     simulateZoneExit() { this._onEventDone(); }
 }
-//# sourceMappingURL=ng_zone_mock.js.map

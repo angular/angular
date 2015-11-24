@@ -35,4 +35,3 @@ WebWorkerSetup = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [MessageBus, AnchorBasedAppRootUrl])
 ], WebWorkerSetup);
-//# sourceMappingURL=setup.js.map

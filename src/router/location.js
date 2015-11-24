@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var location_strategy_1 = require('./location_strategy');
 var async_1 = require('angular2/src/facade/async');
-var core_1 = require('angular2/core');
+var angular2_1 = require('angular2/angular2');
 /**
  * `Location` is a service that applications can use to interact with a browser's URL.
  * Depending on which {@link LocationStrategy} is used, `Location` will either persist
@@ -110,7 +110,7 @@ var Location = (function () {
         return async_1.ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);
     };
     Location = __decorate([
-        core_1.Injectable(), 
+        angular2_1.Injectable(), 
         __metadata('design:paramtypes', [location_strategy_1.LocationStrategy])
     ], Location);
     return Location;

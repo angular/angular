@@ -69,4 +69,3 @@ export class Request {
      */
     text() { return isPresent(this._body) ? this._body.toString() : ''; }
 }
-//# sourceMappingURL=static_request.js.map

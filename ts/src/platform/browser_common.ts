@@ -33,14 +33,13 @@ import {wtfInit} from 'angular2/src/core/profile/wtf_init';
 export {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 export {Title} from 'angular2/src/platform/browser/title';
 export {
-  DebugElementViewListener,
+  // DebugElementViewListener,
   ELEMENT_PROBE_PROVIDERS,
   ELEMENT_PROBE_BINDINGS,
-  inspectNativeElement,
-  By
-} from 'angular2/platform/common_dom';
+  inspectNativeElement
+} from 'angular2/src/platform/browser/debug/debug_element_view_listener';
+export {By} from 'angular2/src/platform/browser/debug/by';
 export {BrowserDomAdapter} from './browser/browser_adapter';
-export {enableDebugTools, disableDebugTools} from 'angular2/src/platform/browser/tools/tools';
 
 export const BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
   PLATFORM_COMMON_PROVIDERS,

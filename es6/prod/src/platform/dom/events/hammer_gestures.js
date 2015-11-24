@@ -38,4 +38,3 @@ HammerGesturesPlugin = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], HammerGesturesPlugin);
-//# sourceMappingURL=hammer_gestures.js.map

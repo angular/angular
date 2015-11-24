@@ -37,4 +37,3 @@ export const APPLICATION_COMMON_PROVIDERS = CONST_EXPR([
     new Provider(DynamicComponentLoader, { useClass: DynamicComponentLoader_ }),
     EventManager
 ]);
-//# sourceMappingURL=application_common_providers.js.map

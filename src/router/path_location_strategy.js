@@ -18,7 +18,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 var dom_adapter_1 = require('angular2/src/platform/dom/dom_adapter');
-var core_1 = require('angular2/core');
+var angular2_1 = require('angular2/angular2');
 var lang_1 = require('angular2/src/facade/lang');
 var exceptions_1 = require('angular2/src/facade/exceptions');
 var location_strategy_1 = require('./location_strategy');
@@ -100,8 +100,8 @@ var PathLocationStrategy = (function (_super) {
     PathLocationStrategy.prototype.forward = function () { this._history.forward(); };
     PathLocationStrategy.prototype.back = function () { this._history.back(); };
     PathLocationStrategy = __decorate([
-        core_1.Injectable(),
-        __param(0, core_1.Inject(location_strategy_1.APP_BASE_HREF)), 
+        angular2_1.Injectable(),
+        __param(0, angular2_1.Inject(location_strategy_1.APP_BASE_HREF)), 
         __metadata('design:paramtypes', [String])
     ], PathLocationStrategy);
     return PathLocationStrategy;

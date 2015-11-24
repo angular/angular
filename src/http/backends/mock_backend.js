@@ -9,7 +9,7 @@
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var core_1 = require('angular2/core');
+var angular2_1 = require('angular2/angular2');
 var static_request_1 = require('../static_request');
 var enums_1 = require('../enums');
 var lang_1 = require('angular2/src/facade/lang');
@@ -146,7 +146,7 @@ var MockBackend = (function () {
         return connection;
     };
     MockBackend = __decorate([
-        core_1.Injectable(), 
+        angular2_1.Injectable(), 
         __metadata('design:paramtypes', [])
     ], MockBackend);
     return MockBackend;

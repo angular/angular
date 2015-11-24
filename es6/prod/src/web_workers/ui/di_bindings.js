@@ -103,4 +103,3 @@ export function createInjector(zone, bus) {
     var injector = Injector.resolveAndCreate(_rootProviders);
     return injector.resolveAndCreateChild(_injectorProviders());
 }
-//# sourceMappingURL=di_bindings.js.map

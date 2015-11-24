@@ -1,4 +1,4 @@
-import { provide } from 'angular2/core';
+import { provide } from 'angular2/angular2';
 import { Http, Jsonp } from './src/http/http';
 import { XHRBackend } from './src/http/backends/xhr_backend';
 import { JSONPBackend, JSONPBackend_ } from './src/http/backends/jsonp_backend';
@@ -265,4 +265,3 @@ export const JSONP_PROVIDERS = [
  * @deprecated
  */
 export const JSON_BINDINGS = JSONP_PROVIDERS;
-//# sourceMappingURL=http.js.map

@@ -173,4 +173,3 @@ NgClass = __decorate([
     Directive({ selector: '[ng-class]', inputs: ['rawClass: ng-class', 'initialClasses: class'] }), 
     __metadata('design:paramtypes', [IterableDiffers, KeyValueDiffers, ElementRef, Renderer])
 ], NgClass);
-//# sourceMappingURL=ng_class.js.map

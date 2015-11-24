@@ -75,4 +75,3 @@ MessageBasedRenderer = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [ServiceMessageBrokerFactory, MessageBus, Serializer, RenderProtoViewRefStore, RenderViewWithFragmentsStore, Renderer])
 ], MessageBasedRenderer);
-//# sourceMappingURL=renderer.js.map

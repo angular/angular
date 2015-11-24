@@ -284,4 +284,3 @@ function splitNamespace(name) {
     let match = RegExpWrapper.firstMatch(NS_PREFIX_RE, name);
     return [match[1], match[2]];
 }
-//# sourceMappingURL=dom_renderer.js.map

@@ -13,7 +13,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 import { DOM } from 'angular2/src/platform/dom/dom_adapter';
-import { Injectable, Inject } from 'angular2/core';
+import { Injectable, Inject } from 'angular2/angular2';
 import { isBlank } from 'angular2/src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
 import { LocationStrategy, APP_BASE_HREF, normalizeQueryParams } from './location_strategy';
@@ -99,4 +99,3 @@ PathLocationStrategy = __decorate([
     __param(0, Inject(APP_BASE_HREF)), 
     __metadata('design:paramtypes', [String])
 ], PathLocationStrategy);
-//# sourceMappingURL=path_location_strategy.js.map

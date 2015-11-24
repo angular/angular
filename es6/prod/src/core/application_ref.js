@@ -311,4 +311,3 @@ export class ApplicationRef_ extends ApplicationRef {
 }
 /** @internal */
 ApplicationRef_._tickScope = wtfCreateScope('ApplicationRef#tick()');
-//# sourceMappingURL=application_ref.js.map

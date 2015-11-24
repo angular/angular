@@ -66,4 +66,3 @@ export class KeyRegistry {
     get numberOfKeys() { return this._allKeys.size; }
 }
 var _globalKeyRegistry = new KeyRegistry();
-//# sourceMappingURL=key.js.map

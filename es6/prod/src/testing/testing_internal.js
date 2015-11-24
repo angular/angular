@@ -207,4 +207,3 @@ export class SpyObject {
 export function isInInnerZone() {
     return global.zone._innerZone === true;
 }
-//# sourceMappingURL=testing_internal.js.map

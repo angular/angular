@@ -15,7 +15,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var dom_adapter_1 = require('angular2/src/platform/dom/dom_adapter');
-var core_1 = require('angular2/core');
+var angular2_1 = require('angular2/angular2');
 var location_strategy_1 = require('./location_strategy');
 /**
  * `HashLocationStrategy` is a {@link LocationStrategy} used to configure the
@@ -92,7 +92,7 @@ var HashLocationStrategy = (function (_super) {
     HashLocationStrategy.prototype.forward = function () { this._history.forward(); };
     HashLocationStrategy.prototype.back = function () { this._history.back(); };
     HashLocationStrategy = __decorate([
-        core_1.Injectable(), 
+        angular2_1.Injectable(), 
         __metadata('design:paramtypes', [])
     ], HashLocationStrategy);
     return HashLocationStrategy;

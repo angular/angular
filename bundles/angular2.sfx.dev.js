@@ -22148,7 +22148,7 @@ System.register("angular2/src/common/common_directives", ["angular2/src/facade/l
   return module.exports;
 });
 
-System.register("angular2/instrumentation", ["angular2/src/core/profile/profile"], true, function(require, exports, module) {
+System.register("angular2/profile", ["angular2/src/core/profile/profile"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -22916,37 +22916,7 @@ System.register("angular2/src/platform/browser/title", ["angular2/src/platform/d
   return module.exports;
 });
 
-System.register("angular2/src/platform/dom/debug/by", ["angular2/src/facade/lang", "angular2/src/platform/dom/dom_adapter"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var lang_1 = require("angular2/src/facade/lang");
-  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
-  var By = (function() {
-    function By() {}
-    By.all = function() {
-      return function(debugElement) {
-        return true;
-      };
-    };
-    By.css = function(selector) {
-      return function(debugElement) {
-        return lang_1.isPresent(debugElement.nativeElement) ? dom_adapter_1.DOM.elementMatches(debugElement.nativeElement, selector) : false;
-      };
-    };
-    By.directive = function(type) {
-      return function(debugElement) {
-        return debugElement.hasDirective(type);
-      };
-    };
-    return By;
-  })();
-  exports.By = By;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("angular2/src/platform/dom/debug/debug_element_view_listener", ["angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/src/core/di", "angular2/src/core/linker/view_listener", "angular2/src/platform/dom/dom_adapter", "angular2/src/core/render/api", "angular2/src/core/debug/debug_element"], true, function(require, exports, module) {
+System.register("angular2/src/platform/browser/debug/debug_element_view_listener", ["angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/src/core/di", "angular2/src/core/linker/view_listener", "angular2/src/platform/dom/dom_adapter", "angular2/src/core/render/api", "angular2/src/core/debug/debug_element"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -23040,27 +23010,32 @@ System.register("angular2/src/platform/dom/debug/debug_element_view_listener", [
   return module.exports;
 });
 
-System.register("angular2/src/facade/browser", [], true, function(require, exports, module) {
+System.register("angular2/src/platform/browser/debug/by", ["angular2/src/facade/lang", "angular2/src/platform/dom/dom_adapter"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  var win = window;
-  exports.window = win;
-  exports.document = window.document;
-  exports.location = window.location;
-  exports.gc = window['gc'] ? function() {
-    return window['gc']();
-  } : function() {
-    return null;
-  };
-  exports.performance = window['performance'] ? window['performance'] : null;
-  exports.Event = exports.Event;
-  exports.MouseEvent = exports.MouseEvent;
-  exports.KeyboardEvent = exports.KeyboardEvent;
-  exports.EventTarget = exports.EventTarget;
-  exports.History = exports.History;
-  exports.Location = exports.Location;
-  exports.EventListener = exports.EventListener;
+  var lang_1 = require("angular2/src/facade/lang");
+  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
+  var By = (function() {
+    function By() {}
+    By.all = function() {
+      return function(debugElement) {
+        return true;
+      };
+    };
+    By.css = function(selector) {
+      return function(debugElement) {
+        return lang_1.isPresent(debugElement.nativeElement) ? dom_adapter_1.DOM.elementMatches(debugElement.nativeElement, selector) : false;
+      };
+    };
+    By.directive = function(type) {
+      return function(debugElement) {
+        return debugElement.hasDirective(type);
+      };
+    };
+    return By;
+  })();
+  exports.By = By;
   global.define = __define;
   return module.exports;
 });
@@ -26002,18 +25977,18 @@ System.register("angular2/src/router/lifecycle_annotations", ["angular2/src/core
   return module.exports;
 });
 
-System.register("angular2/src/router/location_strategy", ["angular2/src/facade/lang", "angular2/core"], true, function(require, exports, module) {
+System.register("angular2/src/router/location_strategy", ["angular2/src/facade/lang", "angular2/angular2"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
   var lang_1 = require("angular2/src/facade/lang");
-  var core_1 = require("angular2/core");
+  var angular2_1 = require("angular2/angular2");
   var LocationStrategy = (function() {
     function LocationStrategy() {}
     return LocationStrategy;
   })();
   exports.LocationStrategy = LocationStrategy;
-  exports.APP_BASE_HREF = lang_1.CONST_EXPR(new core_1.OpaqueToken('appBaseHref'));
+  exports.APP_BASE_HREF = lang_1.CONST_EXPR(new angular2_1.OpaqueToken('appBaseHref'));
   function normalizeQueryParams(params) {
     return (params.length > 0 && params.substring(0, 1) != '?') ? ('?' + params) : params;
   }
@@ -26425,7 +26400,7 @@ System.register("angular2/src/router/route_config_decorator", ["angular2/src/rou
   return module.exports;
 });
 
-System.register("angular2/src/router/hash_location_strategy", ["angular2/src/platform/dom/dom_adapter", "angular2/core", "angular2/src/router/location_strategy"], true, function(require, exports, module) {
+System.register("angular2/src/router/hash_location_strategy", ["angular2/src/platform/dom/dom_adapter", "angular2/angular2", "angular2/src/router/location_strategy"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -26461,7 +26436,7 @@ System.register("angular2/src/router/hash_location_strategy", ["angular2/src/pla
       return Reflect.metadata(k, v);
   };
   var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
-  var core_1 = require("angular2/core");
+  var angular2_1 = require("angular2/angular2");
   var location_strategy_1 = require("angular2/src/router/location_strategy");
   var HashLocationStrategy = (function(_super) {
     __extends(HashLocationStrategy, _super);
@@ -26498,7 +26473,7 @@ System.register("angular2/src/router/hash_location_strategy", ["angular2/src/pla
     HashLocationStrategy.prototype.back = function() {
       this._history.back();
     };
-    HashLocationStrategy = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], HashLocationStrategy);
+    HashLocationStrategy = __decorate([angular2_1.Injectable(), __metadata('design:paramtypes', [])], HashLocationStrategy);
     return HashLocationStrategy;
   })(location_strategy_1.LocationStrategy);
   exports.HashLocationStrategy = HashLocationStrategy;
@@ -26506,7 +26481,7 @@ System.register("angular2/src/router/hash_location_strategy", ["angular2/src/pla
   return module.exports;
 });
 
-System.register("angular2/src/router/path_location_strategy", ["angular2/src/platform/dom/dom_adapter", "angular2/core", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/router/location_strategy"], true, function(require, exports, module) {
+System.register("angular2/src/router/path_location_strategy", ["angular2/src/platform/dom/dom_adapter", "angular2/angular2", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/router/location_strategy"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -26547,7 +26522,7 @@ System.register("angular2/src/router/path_location_strategy", ["angular2/src/pla
     };
   };
   var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
-  var core_1 = require("angular2/core");
+  var angular2_1 = require("angular2/angular2");
   var lang_1 = require("angular2/src/facade/lang");
   var exceptions_1 = require("angular2/src/facade/exceptions");
   var location_strategy_1 = require("angular2/src/router/location_strategy");
@@ -26591,7 +26566,7 @@ System.register("angular2/src/router/path_location_strategy", ["angular2/src/pla
     PathLocationStrategy.prototype.back = function() {
       this._history.back();
     };
-    PathLocationStrategy = __decorate([core_1.Injectable(), __param(0, core_1.Inject(location_strategy_1.APP_BASE_HREF)), __metadata('design:paramtypes', [String])], PathLocationStrategy);
+    PathLocationStrategy = __decorate([angular2_1.Injectable(), __param(0, angular2_1.Inject(location_strategy_1.APP_BASE_HREF)), __metadata('design:paramtypes', [String])], PathLocationStrategy);
     return PathLocationStrategy;
   })(location_strategy_1.LocationStrategy);
   exports.PathLocationStrategy = PathLocationStrategy;
@@ -26901,7 +26876,7 @@ System.register("angular2/src/http/static_response", ["angular2/src/facade/lang"
   return module.exports;
 });
 
-System.register("angular2/src/http/base_response_options", ["angular2/core", "angular2/src/facade/lang", "angular2/src/http/headers", "angular2/src/http/enums"], true, function(require, exports, module) {
+System.register("angular2/src/http/base_response_options", ["angular2/angular2", "angular2/src/facade/lang", "angular2/src/http/headers", "angular2/src/http/enums"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -26936,7 +26911,7 @@ System.register("angular2/src/http/base_response_options", ["angular2/core", "an
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
       return Reflect.metadata(k, v);
   };
-  var core_1 = require("angular2/core");
+  var angular2_1 = require("angular2/angular2");
   var lang_1 = require("angular2/src/facade/lang");
   var headers_1 = require("angular2/src/http/headers");
   var enums_1 = require("angular2/src/http/enums");
@@ -26979,7 +26954,7 @@ System.register("angular2/src/http/base_response_options", ["angular2/core", "an
         headers: new headers_1.Headers()
       });
     }
-    BaseResponseOptions = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], BaseResponseOptions);
+    BaseResponseOptions = __decorate([angular2_1.Injectable(), __metadata('design:paramtypes', [])], BaseResponseOptions);
     return BaseResponseOptions;
   })(ResponseOptions);
   exports.BaseResponseOptions = BaseResponseOptions;
@@ -26987,7 +26962,7 @@ System.register("angular2/src/http/base_response_options", ["angular2/core", "an
   return module.exports;
 });
 
-System.register("angular2/src/http/backends/browser_xhr", ["angular2/core"], true, function(require, exports, module) {
+System.register("angular2/src/http/backends/browser_xhr", ["angular2/angular2"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -27013,13 +26988,13 @@ System.register("angular2/src/http/backends/browser_xhr", ["angular2/core"], tru
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
       return Reflect.metadata(k, v);
   };
-  var core_1 = require("angular2/core");
+  var angular2_1 = require("angular2/angular2");
   var BrowserXhr = (function() {
     function BrowserXhr() {}
     BrowserXhr.prototype.build = function() {
       return (new XMLHttpRequest());
     };
-    BrowserXhr = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], BrowserXhr);
+    BrowserXhr = __decorate([angular2_1.Injectable(), __metadata('design:paramtypes', [])], BrowserXhr);
     return BrowserXhr;
   })();
   exports.BrowserXhr = BrowserXhr;
@@ -27027,7 +27002,7 @@ System.register("angular2/src/http/backends/browser_xhr", ["angular2/core"], tru
   return module.exports;
 });
 
-System.register("angular2/src/http/backends/browser_jsonp", ["angular2/core", "angular2/src/facade/lang"], true, function(require, exports, module) {
+System.register("angular2/src/http/backends/browser_jsonp", ["angular2/angular2", "angular2/src/facade/lang"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -27053,7 +27028,7 @@ System.register("angular2/src/http/backends/browser_jsonp", ["angular2/core", "a
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
       return Reflect.metadata(k, v);
   };
-  var core_1 = require("angular2/core");
+  var angular2_1 = require("angular2/angular2");
   var lang_1 = require("angular2/src/facade/lang");
   var _nextRequestId = 0;
   exports.JSONP_HOME = '__ng_jsonp__';
@@ -27093,7 +27068,7 @@ System.register("angular2/src/http/backends/browser_jsonp", ["angular2/core", "a
         node.parentNode.removeChild((node));
       }
     };
-    BrowserJsonp = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], BrowserJsonp);
+    BrowserJsonp = __decorate([angular2_1.Injectable(), __metadata('design:paramtypes', [])], BrowserJsonp);
     return BrowserJsonp;
   })();
   exports.BrowserJsonp = BrowserJsonp;
@@ -27101,7 +27076,7 @@ System.register("angular2/src/http/backends/browser_jsonp", ["angular2/core", "a
   return module.exports;
 });
 
-System.register("angular2/src/http/backends/mock_backend", ["angular2/core", "angular2/src/http/static_request", "angular2/src/http/enums", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "@reactivex/rxjs/dist/cjs/Rx"], true, function(require, exports, module) {
+System.register("angular2/src/http/backends/mock_backend", ["angular2/angular2", "angular2/src/http/static_request", "angular2/src/http/enums", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "@reactivex/rxjs/dist/cjs/Rx"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -27127,7 +27102,7 @@ System.register("angular2/src/http/backends/mock_backend", ["angular2/core", "an
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
       return Reflect.metadata(k, v);
   };
-  var core_1 = require("angular2/core");
+  var angular2_1 = require("angular2/angular2");
   var static_request_1 = require("angular2/src/http/static_request");
   var enums_1 = require("angular2/src/http/enums");
   var lang_1 = require("angular2/src/facade/lang");
@@ -27186,7 +27161,7 @@ System.register("angular2/src/http/backends/mock_backend", ["angular2/core", "an
       this.connections.next(connection);
       return connection;
     };
-    MockBackend = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], MockBackend);
+    MockBackend = __decorate([angular2_1.Injectable(), __metadata('design:paramtypes', [])], MockBackend);
     return MockBackend;
   })();
   exports.MockBackend = MockBackend;
@@ -30501,81 +30476,6 @@ System.register("angular2/src/platform/browser/xhr_impl", ["angular2/src/facade/
   return module.exports;
 });
 
-System.register("angular2/platform/common_dom", ["angular2/src/platform/dom/dom_adapter", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/events/dom_events", "angular2/src/platform/dom/debug/by", "angular2/src/platform/dom/debug/debug_element_view_listener"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  function __export(m) {
-    for (var p in m)
-      if (!exports.hasOwnProperty(p))
-        exports[p] = m[p];
-  }
-  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
-  exports.DOM = dom_adapter_1.DOM;
-  exports.setRootDomAdapter = dom_adapter_1.setRootDomAdapter;
-  exports.DomAdapter = dom_adapter_1.DomAdapter;
-  var dom_renderer_1 = require("angular2/src/platform/dom/dom_renderer");
-  exports.DomRenderer = dom_renderer_1.DomRenderer;
-  var dom_tokens_1 = require("angular2/src/platform/dom/dom_tokens");
-  exports.DOCUMENT = dom_tokens_1.DOCUMENT;
-  var shared_styles_host_1 = require("angular2/src/platform/dom/shared_styles_host");
-  exports.SharedStylesHost = shared_styles_host_1.SharedStylesHost;
-  exports.DomSharedStylesHost = shared_styles_host_1.DomSharedStylesHost;
-  var dom_events_1 = require("angular2/src/platform/dom/events/dom_events");
-  exports.DomEventsPlugin = dom_events_1.DomEventsPlugin;
-  __export(require("angular2/src/platform/dom/debug/by"));
-  __export(require("angular2/src/platform/dom/debug/debug_element_view_listener"));
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("angular2/src/platform/browser/tools/common_tools", ["angular2/src/core/application_ref", "angular2/src/facade/lang", "angular2/src/facade/browser", "angular2/src/platform/dom/dom_adapter"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var application_ref_1 = require("angular2/src/core/application_ref");
-  var lang_1 = require("angular2/src/facade/lang");
-  var browser_1 = require("angular2/src/facade/browser");
-  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
-  var AngularTools = (function() {
-    function AngularTools(ref) {
-      this.profiler = new AngularProfiler(ref);
-    }
-    return AngularTools;
-  })();
-  exports.AngularTools = AngularTools;
-  var AngularProfiler = (function() {
-    function AngularProfiler(ref) {
-      this.appRef = ref.injector.get(application_ref_1.ApplicationRef);
-    }
-    AngularProfiler.prototype.timeChangeDetection = function(config) {
-      var record = lang_1.isPresent(config) && config['record'];
-      var profileName = 'Change Detection';
-      var isProfilerAvailable = lang_1.isPresent(browser_1.window.console.profile);
-      if (record && isProfilerAvailable) {
-        browser_1.window.console.profile(profileName);
-      }
-      var start = dom_adapter_1.DOM.performanceNow();
-      var numTicks = 0;
-      while (numTicks < 5 || (dom_adapter_1.DOM.performanceNow() - start) < 500) {
-        this.appRef.tick();
-        numTicks++;
-      }
-      var end = dom_adapter_1.DOM.performanceNow();
-      if (record && isProfilerAvailable) {
-        browser_1.window.console.profileEnd(profileName);
-      }
-      var msPerTick = (end - start) / numTicks;
-      browser_1.window.console.log("ran " + numTicks + " change detection cycles");
-      browser_1.window.console.log(lang_1.NumberWrapper.toFixed(msPerTick, 2) + " ms per check");
-    };
-    return AngularProfiler;
-  })();
-  exports.AngularProfiler = AngularProfiler;
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/src/compiler/directive_metadata", ["angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/src/core/change_detection/change_detection", "angular2/src/core/metadata/view", "angular2/src/compiler/selector", "angular2/src/compiler/util", "angular2/src/core/linker/interfaces"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -31882,7 +31782,7 @@ System.register("angular2/src/router/route_lifecycle_reflector", ["angular2/src/
   return module.exports;
 });
 
-System.register("angular2/src/router/router_outlet", ["angular2/src/facade/async", "angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/core", "angular2/src/router/router", "angular2/src/router/instruction", "angular2/src/router/lifecycle_annotations", "angular2/src/router/route_lifecycle_reflector"], true, function(require, exports, module) {
+System.register("angular2/src/router/router_outlet", ["angular2/src/facade/async", "angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/angular2", "angular2/src/router/router", "angular2/src/router/instruction", "angular2/src/router/lifecycle_annotations", "angular2/src/router/route_lifecycle_reflector"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -31917,7 +31817,7 @@ System.register("angular2/src/router/router_outlet", ["angular2/src/facade/async
   var collection_1 = require("angular2/src/facade/collection");
   var lang_1 = require("angular2/src/facade/lang");
   var exceptions_1 = require("angular2/src/facade/exceptions");
-  var core_1 = require("angular2/core");
+  var angular2_1 = require("angular2/angular2");
   var routerMod = require("angular2/src/router/router");
   var instruction_1 = require("angular2/src/router/instruction");
   var hookMod = require("angular2/src/router/lifecycle_annotations");
@@ -31944,7 +31844,7 @@ System.register("angular2/src/router/router_outlet", ["angular2/src/facade/async
       this._currentInstruction = nextInstruction;
       var componentType = nextInstruction.componentType;
       var childRouter = this._parentRouter.childRouter(componentType);
-      var providers = core_1.Injector.resolve([core_1.provide(instruction_1.RouteData, {useValue: nextInstruction.routeData}), core_1.provide(instruction_1.RouteParams, {useValue: new instruction_1.RouteParams(nextInstruction.params)}), core_1.provide(routerMod.Router, {useValue: childRouter})]);
+      var providers = angular2_1.Injector.resolve([angular2_1.provide(instruction_1.RouteData, {useValue: nextInstruction.routeData}), angular2_1.provide(instruction_1.RouteParams, {useValue: new instruction_1.RouteParams(nextInstruction.params)}), angular2_1.provide(routerMod.Router, {useValue: childRouter})]);
       return this._loader.loadNextToLocation(componentType, this._elementRef, providers).then(function(componentRef) {
         _this._componentRef = componentRef;
         if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.onActivate, componentType)) {
@@ -31993,7 +31893,7 @@ System.register("angular2/src/router/router_outlet", ["angular2/src/facade/async
       }
       return async_1.PromiseWrapper.resolve(result);
     };
-    RouterOutlet = __decorate([core_1.Directive({selector: 'router-outlet'}), __param(3, core_1.Attribute('name')), __metadata('design:paramtypes', [core_1.ElementRef, core_1.DynamicComponentLoader, routerMod.Router, String])], RouterOutlet);
+    RouterOutlet = __decorate([angular2_1.Directive({selector: 'router-outlet'}), __param(3, angular2_1.Attribute('name')), __metadata('design:paramtypes', [angular2_1.ElementRef, angular2_1.DynamicComponentLoader, routerMod.Router, String])], RouterOutlet);
     return RouterOutlet;
   })();
   exports.RouterOutlet = RouterOutlet;
@@ -32001,7 +31901,7 @@ System.register("angular2/src/router/router_outlet", ["angular2/src/facade/async
   return module.exports;
 });
 
-System.register("angular2/src/router/location", ["angular2/src/router/location_strategy", "angular2/src/facade/async", "angular2/core"], true, function(require, exports, module) {
+System.register("angular2/src/router/location", ["angular2/src/router/location_strategy", "angular2/src/facade/async", "angular2/angular2"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -32029,7 +31929,7 @@ System.register("angular2/src/router/location", ["angular2/src/router/location_s
   };
   var location_strategy_1 = require("angular2/src/router/location_strategy");
   var async_1 = require("angular2/src/facade/async");
-  var core_1 = require("angular2/core");
+  var angular2_1 = require("angular2/angular2");
   var Location = (function() {
     function Location(platformStrategy) {
       var _this = this;
@@ -32077,7 +31977,7 @@ System.register("angular2/src/router/location", ["angular2/src/router/location_s
       }
       return async_1.ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);
     };
-    Location = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [location_strategy_1.LocationStrategy])], Location);
+    Location = __decorate([angular2_1.Injectable(), __metadata('design:paramtypes', [location_strategy_1.LocationStrategy])], Location);
     return Location;
   })();
   exports.Location = Location;
@@ -32475,7 +32375,7 @@ System.register("angular2/src/http/http_utils", ["angular2/src/facade/lang", "an
   return module.exports;
 });
 
-System.register("angular2/src/http/base_request_options", ["angular2/src/facade/lang", "angular2/src/http/headers", "angular2/src/http/enums", "angular2/core", "angular2/src/http/url_search_params", "angular2/src/http/http_utils"], true, function(require, exports, module) {
+System.register("angular2/src/http/base_request_options", ["angular2/src/facade/lang", "angular2/src/http/headers", "angular2/src/http/enums", "angular2/angular2", "angular2/src/http/url_search_params", "angular2/src/http/http_utils"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -32513,7 +32413,7 @@ System.register("angular2/src/http/base_request_options", ["angular2/src/facade/
   var lang_1 = require("angular2/src/facade/lang");
   var headers_1 = require("angular2/src/http/headers");
   var enums_1 = require("angular2/src/http/enums");
-  var core_1 = require("angular2/core");
+  var angular2_1 = require("angular2/angular2");
   var url_search_params_1 = require("angular2/src/http/url_search_params");
   var http_utils_1 = require("angular2/src/http/http_utils");
   var RequestOptions = (function() {
@@ -32550,7 +32450,7 @@ System.register("angular2/src/http/base_request_options", ["angular2/src/facade/
         headers: new headers_1.Headers()
       });
     }
-    BaseRequestOptions = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], BaseRequestOptions);
+    BaseRequestOptions = __decorate([angular2_1.Injectable(), __metadata('design:paramtypes', [])], BaseRequestOptions);
     return BaseRequestOptions;
   })(RequestOptions);
   exports.BaseRequestOptions = BaseRequestOptions;
@@ -32558,7 +32458,7 @@ System.register("angular2/src/http/base_request_options", ["angular2/src/facade/
   return module.exports;
 });
 
-System.register("angular2/src/http/backends/xhr_backend", ["angular2/src/http/enums", "angular2/src/http/static_response", "angular2/src/http/headers", "angular2/src/http/base_response_options", "angular2/core", "angular2/src/http/backends/browser_xhr", "angular2/src/facade/lang", "angular2/core", "angular2/src/http/http_utils"], true, function(require, exports, module) {
+System.register("angular2/src/http/backends/xhr_backend", ["angular2/src/http/enums", "angular2/src/http/static_response", "angular2/src/http/headers", "angular2/src/http/base_response_options", "angular2/angular2", "angular2/src/http/backends/browser_xhr", "angular2/src/facade/lang", "angular2/angular2", "angular2/src/http/http_utils"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -32588,16 +32488,16 @@ System.register("angular2/src/http/backends/xhr_backend", ["angular2/src/http/en
   var static_response_1 = require("angular2/src/http/static_response");
   var headers_1 = require("angular2/src/http/headers");
   var base_response_options_1 = require("angular2/src/http/base_response_options");
-  var core_1 = require("angular2/core");
+  var angular2_1 = require("angular2/angular2");
   var browser_xhr_1 = require("angular2/src/http/backends/browser_xhr");
   var lang_1 = require("angular2/src/facade/lang");
-  var core_2 = require("angular2/core");
+  var angular2_2 = require("angular2/angular2");
   var http_utils_1 = require("angular2/src/http/http_utils");
   var XHRConnection = (function() {
     function XHRConnection(req, browserXHR, baseResponseOptions) {
       var _this = this;
       this.request = req;
-      this.response = new core_2.Observable(function(responseObserver) {
+      this.response = new angular2_2.Observable(function(responseObserver) {
         var _xhr = browserXHR.build();
         _xhr.open(enums_1.RequestMethods[req.method].toUpperCase(), req.url);
         var onLoad = function() {
@@ -32661,7 +32561,7 @@ System.register("angular2/src/http/backends/xhr_backend", ["angular2/src/http/en
     XHRBackend.prototype.createConnection = function(request) {
       return new XHRConnection(request, this._browserXHR, this._baseResponseOptions);
     };
-    XHRBackend = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [browser_xhr_1.BrowserXhr, base_response_options_1.ResponseOptions])], XHRBackend);
+    XHRBackend = __decorate([angular2_1.Injectable(), __metadata('design:paramtypes', [browser_xhr_1.BrowserXhr, base_response_options_1.ResponseOptions])], XHRBackend);
     return XHRBackend;
   })();
   exports.XHRBackend = XHRBackend;
@@ -32669,7 +32569,7 @@ System.register("angular2/src/http/backends/xhr_backend", ["angular2/src/http/en
   return module.exports;
 });
 
-System.register("angular2/src/http/backends/jsonp_backend", ["angular2/src/http/interfaces", "angular2/src/http/enums", "angular2/src/http/static_response", "angular2/src/http/base_response_options", "angular2/core", "angular2/src/http/backends/browser_jsonp", "angular2/src/facade/exceptions", "angular2/src/facade/lang", "angular2/core"], true, function(require, exports, module) {
+System.register("angular2/src/http/backends/jsonp_backend", ["angular2/src/http/interfaces", "angular2/src/http/enums", "angular2/src/http/static_response", "angular2/src/http/base_response_options", "angular2/angular2", "angular2/src/http/backends/browser_jsonp", "angular2/src/facade/exceptions", "angular2/src/facade/lang", "angular2/angular2"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -32708,11 +32608,11 @@ System.register("angular2/src/http/backends/jsonp_backend", ["angular2/src/http/
   var enums_1 = require("angular2/src/http/enums");
   var static_response_1 = require("angular2/src/http/static_response");
   var base_response_options_1 = require("angular2/src/http/base_response_options");
-  var core_1 = require("angular2/core");
+  var angular2_1 = require("angular2/angular2");
   var browser_jsonp_1 = require("angular2/src/http/backends/browser_jsonp");
   var exceptions_1 = require("angular2/src/facade/exceptions");
   var lang_1 = require("angular2/src/facade/lang");
-  var core_2 = require("angular2/core");
+  var angular2_2 = require("angular2/angular2");
   var JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callback.';
   var JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
   var JSONPConnection = (function() {
@@ -32732,7 +32632,7 @@ System.register("angular2/src/http/backends/jsonp_backend", ["angular2/src/http/
         throw exceptions_1.makeTypeError(JSONP_ERR_WRONG_METHOD);
       }
       this.request = req;
-      this.response = new core_2.Observable(function(responseObserver) {
+      this.response = new angular2_2.Observable(function(responseObserver) {
         _this.readyState = enums_1.ReadyStates.Loading;
         var id = _this._id = _dom.nextRequestID();
         _dom.exposeConnection(id, _this);
@@ -32826,7 +32726,7 @@ System.register("angular2/src/http/backends/jsonp_backend", ["angular2/src/http/
     JSONPBackend_.prototype.createConnection = function(request) {
       return new JSONPConnection_(request, this._browserJSONP, this._baseResponseOptions);
     };
-    JSONPBackend_ = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [browser_jsonp_1.BrowserJsonp, base_response_options_1.ResponseOptions])], JSONPBackend_);
+    JSONPBackend_ = __decorate([angular2_1.Injectable(), __metadata('design:paramtypes', [browser_jsonp_1.BrowserJsonp, base_response_options_1.ResponseOptions])], JSONPBackend_);
     return JSONPBackend_;
   })(JSONPBackend);
   exports.JSONPBackend_ = JSONPBackend_;
@@ -34958,25 +34858,6 @@ System.register("angular2/src/platform/browser/generic_browser_adapter", ["angul
   return module.exports;
 });
 
-System.register("angular2/src/platform/browser/tools/tools", ["angular2/src/facade/lang", "angular2/src/platform/browser/tools/common_tools"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var lang_1 = require("angular2/src/facade/lang");
-  var common_tools_1 = require("angular2/src/platform/browser/tools/common_tools");
-  var context = lang_1.global;
-  function enableDebugTools(ref) {
-    context.ng = new common_tools_1.AngularTools(ref);
-  }
-  exports.enableDebugTools = enableDebugTools;
-  function disableDebugTools() {
-    context.ng = undefined;
-  }
-  exports.disableDebugTools = disableDebugTools;
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/src/compiler/change_detector_compiler", ["angular2/src/compiler/source_module", "angular2/src/core/change_detection/change_detection_jit_generator", "angular2/src/compiler/change_definition_factory", "angular2/src/facade/lang", "angular2/src/core/change_detection/change_detection", "angular2/src/transform/template_compiler/change_detector_codegen", "angular2/src/compiler/util", "angular2/src/core/di"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -35902,7 +35783,7 @@ System.register("angular2/src/router/router", ["angular2/src/facade/async", "ang
   return module.exports;
 });
 
-System.register("angular2/src/router/router_link", ["angular2/core", "angular2/src/facade/lang", "angular2/src/router/router", "angular2/src/router/location", "angular2/src/router/instruction"], true, function(require, exports, module) {
+System.register("angular2/src/router/router_link", ["angular2/angular2", "angular2/src/facade/lang", "angular2/src/router/router", "angular2/src/router/location", "angular2/src/router/instruction"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -35928,7 +35809,7 @@ System.register("angular2/src/router/router_link", ["angular2/core", "angular2/s
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
       return Reflect.metadata(k, v);
   };
-  var core_1 = require("angular2/core");
+  var angular2_1 = require("angular2/angular2");
   var lang_1 = require("angular2/src/facade/lang");
   var router_1 = require("angular2/src/router/router");
   var location_1 = require("angular2/src/router/location");
@@ -35962,7 +35843,7 @@ System.register("angular2/src/router/router_link", ["angular2/core", "angular2/s
       }
       return true;
     };
-    RouterLink = __decorate([core_1.Directive({
+    RouterLink = __decorate([angular2_1.Directive({
       selector: '[router-link]',
       inputs: ['routeParams: routerLink', 'target: target'],
       host: {
@@ -39594,7 +39475,7 @@ System.register("angular2/upgrade", ["angular2/src/upgrade/upgrade_adapter"], tr
   return module.exports;
 });
 
-System.register("angular2/src/router/route_registry", ["angular2/src/router/route_recognizer", "angular2/src/router/instruction", "angular2/src/facade/collection", "angular2/src/facade/async", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/router/route_config_impl", "angular2/src/core/reflection/reflection", "angular2/core", "angular2/src/router/route_config_nomalizer", "angular2/src/router/url_parser"], true, function(require, exports, module) {
+System.register("angular2/src/router/route_registry", ["angular2/src/router/route_recognizer", "angular2/src/router/instruction", "angular2/src/facade/collection", "angular2/src/facade/async", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/router/route_config_impl", "angular2/src/core/reflection/reflection", "angular2/angular2", "angular2/src/router/route_config_nomalizer", "angular2/src/router/url_parser"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -39628,7 +39509,7 @@ System.register("angular2/src/router/route_registry", ["angular2/src/router/rout
   var exceptions_1 = require("angular2/src/facade/exceptions");
   var route_config_impl_1 = require("angular2/src/router/route_config_impl");
   var reflection_1 = require("angular2/src/core/reflection/reflection");
-  var core_1 = require("angular2/core");
+  var angular2_1 = require("angular2/angular2");
   var route_config_nomalizer_1 = require("angular2/src/router/route_config_nomalizer");
   var url_parser_1 = require("angular2/src/router/url_parser");
   var _resolveToNull = async_1.PromiseWrapper.resolve(null);
@@ -39831,7 +39712,7 @@ System.register("angular2/src/router/route_registry", ["angular2/src/router/rout
       }
       return null;
     };
-    RouteRegistry = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], RouteRegistry);
+    RouteRegistry = __decorate([angular2_1.Injectable(), __metadata('design:paramtypes', [])], RouteRegistry);
     return RouteRegistry;
   })();
   exports.RouteRegistry = RouteRegistry;
@@ -39858,7 +39739,7 @@ System.register("angular2/src/router/route_registry", ["angular2/src/router/rout
   return module.exports;
 });
 
-System.register("angular2/src/http/http", ["angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/core", "angular2/src/http/interfaces", "angular2/src/http/static_request", "angular2/src/http/base_request_options", "angular2/src/http/enums"], true, function(require, exports, module) {
+System.register("angular2/src/http/http", ["angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/angular2", "angular2/src/http/interfaces", "angular2/src/http/static_request", "angular2/src/http/base_request_options", "angular2/src/http/enums"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -39895,7 +39776,7 @@ System.register("angular2/src/http/http", ["angular2/src/facade/lang", "angular2
   };
   var lang_1 = require("angular2/src/facade/lang");
   var exceptions_1 = require("angular2/src/facade/exceptions");
-  var core_1 = require("angular2/core");
+  var angular2_1 = require("angular2/angular2");
   var interfaces_1 = require("angular2/src/http/interfaces");
   var static_request_1 = require("angular2/src/http/static_request");
   var base_request_options_1 = require("angular2/src/http/base_request_options");
@@ -39957,7 +39838,7 @@ System.register("angular2/src/http/http", ["angular2/src/facade/lang", "angular2
     Http.prototype.head = function(url, options) {
       return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethods.Head, url)));
     };
-    Http = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [interfaces_1.ConnectionBackend, base_request_options_1.RequestOptions])], Http);
+    Http = __decorate([angular2_1.Injectable(), __metadata('design:paramtypes', [interfaces_1.ConnectionBackend, base_request_options_1.RequestOptions])], Http);
     return Http;
   })();
   exports.Http = Http;
@@ -39981,7 +39862,7 @@ System.register("angular2/src/http/http", ["angular2/src/facade/lang", "angular2
       }
       return responseObservable;
     };
-    Jsonp = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [interfaces_1.ConnectionBackend, base_request_options_1.RequestOptions])], Jsonp);
+    Jsonp = __decorate([angular2_1.Injectable(), __metadata('design:paramtypes', [interfaces_1.ConnectionBackend, base_request_options_1.RequestOptions])], Jsonp);
     return Jsonp;
   })(Http);
   exports.Jsonp = Jsonp;
@@ -41427,7 +41308,7 @@ System.register("angular2/src/compiler/template_compiler", ["angular2/src/facade
   return module.exports;
 });
 
-System.register("angular2/router", ["angular2/src/router/router", "angular2/src/router/router_outlet", "angular2/src/router/router_link", "angular2/src/router/instruction", "angular2/src/router/route_registry", "angular2/src/router/location_strategy", "angular2/src/router/hash_location_strategy", "angular2/src/router/path_location_strategy", "angular2/src/router/location", "angular2/src/router/route_config_decorator", "angular2/src/router/route_definition", "angular2/src/router/lifecycle_annotations", "angular2/src/router/instruction", "angular2/core", "angular2/src/router/location_strategy", "angular2/src/router/path_location_strategy", "angular2/src/router/router", "angular2/src/router/router_outlet", "angular2/src/router/router_link", "angular2/src/router/route_registry", "angular2/src/router/location", "angular2/core", "angular2/src/facade/lang", "angular2/src/facade/exceptions"], true, function(require, exports, module) {
+System.register("angular2/router", ["angular2/src/router/router", "angular2/src/router/router_outlet", "angular2/src/router/router_link", "angular2/src/router/instruction", "angular2/src/router/route_registry", "angular2/src/router/location_strategy", "angular2/src/router/hash_location_strategy", "angular2/src/router/path_location_strategy", "angular2/src/router/location", "angular2/src/router/route_config_decorator", "angular2/src/router/route_definition", "angular2/src/router/lifecycle_annotations", "angular2/src/router/instruction", "angular2/angular2", "angular2/src/router/location_strategy", "angular2/src/router/path_location_strategy", "angular2/src/router/router", "angular2/src/router/router_outlet", "angular2/src/router/router_link", "angular2/src/router/route_registry", "angular2/src/router/location", "angular2/angular2", "angular2/src/facade/lang", "angular2/src/facade/exceptions"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -41463,8 +41344,8 @@ System.register("angular2/router", ["angular2/src/router/router", "angular2/src/
   var instruction_2 = require("angular2/src/router/instruction");
   exports.Instruction = instruction_2.Instruction;
   exports.ComponentInstruction = instruction_2.ComponentInstruction;
-  var core_1 = require("angular2/core");
-  exports.OpaqueToken = core_1.OpaqueToken;
+  var angular2_1 = require("angular2/angular2");
+  exports.OpaqueToken = angular2_1.OpaqueToken;
   var location_strategy_2 = require("angular2/src/router/location_strategy");
   var path_location_strategy_2 = require("angular2/src/router/path_location_strategy");
   var router_2 = require("angular2/src/router/router");
@@ -41472,17 +41353,17 @@ System.register("angular2/router", ["angular2/src/router/router", "angular2/src/
   var router_link_2 = require("angular2/src/router/router_link");
   var route_registry_2 = require("angular2/src/router/route_registry");
   var location_2 = require("angular2/src/router/location");
-  var core_2 = require("angular2/core");
+  var angular2_2 = require("angular2/angular2");
   var lang_1 = require("angular2/src/facade/lang");
   var exceptions_1 = require("angular2/src/facade/exceptions");
-  exports.ROUTER_PRIMARY_COMPONENT = lang_1.CONST_EXPR(new core_2.OpaqueToken('RouterPrimaryComponent'));
+  exports.ROUTER_PRIMARY_COMPONENT = lang_1.CONST_EXPR(new angular2_2.OpaqueToken('RouterPrimaryComponent'));
   exports.ROUTER_DIRECTIVES = lang_1.CONST_EXPR([router_outlet_2.RouterOutlet, router_link_2.RouterLink]);
-  exports.ROUTER_PROVIDERS = lang_1.CONST_EXPR([route_registry_2.RouteRegistry, lang_1.CONST_EXPR(new core_2.Provider(location_strategy_2.LocationStrategy, {useClass: path_location_strategy_2.PathLocationStrategy})), location_2.Location, lang_1.CONST_EXPR(new core_2.Provider(router_2.Router, {
+  exports.ROUTER_PROVIDERS = lang_1.CONST_EXPR([route_registry_2.RouteRegistry, lang_1.CONST_EXPR(new angular2_2.Provider(location_strategy_2.LocationStrategy, {useClass: path_location_strategy_2.PathLocationStrategy})), location_2.Location, lang_1.CONST_EXPR(new angular2_2.Provider(router_2.Router, {
     useFactory: routerFactory,
-    deps: lang_1.CONST_EXPR([route_registry_2.RouteRegistry, location_2.Location, exports.ROUTER_PRIMARY_COMPONENT, core_2.ApplicationRef])
-  })), lang_1.CONST_EXPR(new core_2.Provider(exports.ROUTER_PRIMARY_COMPONENT, {
+    deps: lang_1.CONST_EXPR([route_registry_2.RouteRegistry, location_2.Location, exports.ROUTER_PRIMARY_COMPONENT, angular2_2.ApplicationRef])
+  })), lang_1.CONST_EXPR(new angular2_2.Provider(exports.ROUTER_PRIMARY_COMPONENT, {
     useFactory: routerPrimaryComponentFactory,
-    deps: lang_1.CONST_EXPR([core_2.ApplicationRef])
+    deps: lang_1.CONST_EXPR([angular2_2.ApplicationRef])
   }))]);
   exports.ROUTER_BINDINGS = exports.ROUTER_PROVIDERS;
   function routerFactory(registry, location, primaryComponent, appRef) {
@@ -41502,11 +41383,11 @@ System.register("angular2/router", ["angular2/src/router/router", "angular2/src/
   return module.exports;
 });
 
-System.register("angular2/http", ["angular2/core", "angular2/src/http/http", "angular2/src/http/backends/xhr_backend", "angular2/src/http/backends/jsonp_backend", "angular2/src/http/backends/browser_xhr", "angular2/src/http/backends/browser_jsonp", "angular2/src/http/base_request_options", "angular2/src/http/base_response_options", "angular2/src/http/backends/mock_backend", "angular2/src/http/static_request", "angular2/src/http/static_response", "angular2/src/http/interfaces", "angular2/src/http/backends/browser_xhr", "angular2/src/http/base_request_options", "angular2/src/http/base_response_options", "angular2/src/http/backends/xhr_backend", "angular2/src/http/backends/jsonp_backend", "angular2/src/http/http", "angular2/src/http/headers", "angular2/src/http/enums", "angular2/src/http/url_search_params"], true, function(require, exports, module) {
+System.register("angular2/http", ["angular2/angular2", "angular2/src/http/http", "angular2/src/http/backends/xhr_backend", "angular2/src/http/backends/jsonp_backend", "angular2/src/http/backends/browser_xhr", "angular2/src/http/backends/browser_jsonp", "angular2/src/http/base_request_options", "angular2/src/http/base_response_options", "angular2/src/http/backends/mock_backend", "angular2/src/http/static_request", "angular2/src/http/static_response", "angular2/src/http/interfaces", "angular2/src/http/backends/browser_xhr", "angular2/src/http/base_request_options", "angular2/src/http/base_response_options", "angular2/src/http/backends/xhr_backend", "angular2/src/http/backends/jsonp_backend", "angular2/src/http/http", "angular2/src/http/headers", "angular2/src/http/enums", "angular2/src/http/url_search_params"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  var core_1 = require("angular2/core");
+  var angular2_1 = require("angular2/angular2");
   var http_1 = require("angular2/src/http/http");
   var xhr_backend_1 = require("angular2/src/http/backends/xhr_backend");
   var jsonp_backend_1 = require("angular2/src/http/backends/jsonp_backend");
@@ -41549,19 +41430,19 @@ System.register("angular2/http", ["angular2/core", "angular2/src/http/http", "an
   exports.RequestMethods = enums_1.RequestMethods;
   var url_search_params_1 = require("angular2/src/http/url_search_params");
   exports.URLSearchParams = url_search_params_1.URLSearchParams;
-  exports.HTTP_PROVIDERS = [core_1.provide(http_1.Http, {
+  exports.HTTP_PROVIDERS = [angular2_1.provide(http_1.Http, {
     useFactory: function(xhrBackend, requestOptions) {
       return new http_1.Http(xhrBackend, requestOptions);
     },
     deps: [xhr_backend_1.XHRBackend, base_request_options_1.RequestOptions]
-  }), browser_xhr_1.BrowserXhr, core_1.provide(base_request_options_1.RequestOptions, {useClass: base_request_options_1.BaseRequestOptions}), core_1.provide(base_response_options_1.ResponseOptions, {useClass: base_response_options_1.BaseResponseOptions}), xhr_backend_1.XHRBackend];
+  }), browser_xhr_1.BrowserXhr, angular2_1.provide(base_request_options_1.RequestOptions, {useClass: base_request_options_1.BaseRequestOptions}), angular2_1.provide(base_response_options_1.ResponseOptions, {useClass: base_response_options_1.BaseResponseOptions}), xhr_backend_1.XHRBackend];
   exports.HTTP_BINDINGS = exports.HTTP_PROVIDERS;
-  exports.JSONP_PROVIDERS = [core_1.provide(http_1.Jsonp, {
+  exports.JSONP_PROVIDERS = [angular2_1.provide(http_1.Jsonp, {
     useFactory: function(jsonpBackend, requestOptions) {
       return new http_1.Jsonp(jsonpBackend, requestOptions);
     },
     deps: [jsonp_backend_1.JSONPBackend, base_request_options_1.RequestOptions]
-  }), browser_jsonp_1.BrowserJsonp, core_1.provide(base_request_options_1.RequestOptions, {useClass: base_request_options_1.BaseRequestOptions}), core_1.provide(base_response_options_1.ResponseOptions, {useClass: base_response_options_1.BaseResponseOptions}), core_1.provide(jsonp_backend_1.JSONPBackend, {useClass: jsonp_backend_1.JSONPBackend_})];
+  }), browser_jsonp_1.BrowserJsonp, angular2_1.provide(base_request_options_1.RequestOptions, {useClass: base_request_options_1.BaseRequestOptions}), angular2_1.provide(base_response_options_1.ResponseOptions, {useClass: base_response_options_1.BaseResponseOptions}), angular2_1.provide(jsonp_backend_1.JSONPBackend, {useClass: jsonp_backend_1.JSONPBackend_})];
   exports.JSON_BINDINGS = exports.JSONP_PROVIDERS;
   global.define = __define;
   return module.exports;
@@ -42220,7 +42101,7 @@ System.register("angular2/src/core/linker/compiler", ["angular2/src/core/linker/
   return module.exports;
 });
 
-System.register("angular2/src/platform/browser_common", ["angular2/src/facade/lang", "angular2/src/core/di", "angular2/core", "angular2/common", "angular2/src/core/testability/testability", "angular2/src/platform/dom/dom_adapter", "angular2/src/platform/dom/events/dom_events", "angular2/src/platform/dom/events/key_events", "angular2/src/platform/dom/events/hammer_gestures", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/shared_styles_host", "angular2/src/animate/browser_details", "angular2/src/animate/animation_builder", "angular2/src/platform/browser/browser_adapter", "angular2/src/platform/browser/testability", "angular2/src/core/profile/wtf_init", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/browser/title", "angular2/platform/common_dom", "angular2/src/platform/browser/browser_adapter", "angular2/src/platform/browser/tools/tools"], true, function(require, exports, module) {
+System.register("angular2/src/platform/browser_common", ["angular2/src/facade/lang", "angular2/src/core/di", "angular2/core", "angular2/common", "angular2/src/core/testability/testability", "angular2/src/platform/dom/dom_adapter", "angular2/src/platform/dom/events/dom_events", "angular2/src/platform/dom/events/key_events", "angular2/src/platform/dom/events/hammer_gestures", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/shared_styles_host", "angular2/src/animate/browser_details", "angular2/src/animate/animation_builder", "angular2/src/platform/browser/browser_adapter", "angular2/src/platform/browser/testability", "angular2/src/core/profile/wtf_init", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/browser/title", "angular2/src/platform/browser/debug/debug_element_view_listener", "angular2/src/platform/browser/debug/by", "angular2/src/platform/browser/browser_adapter"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -42246,17 +42127,14 @@ System.register("angular2/src/platform/browser_common", ["angular2/src/facade/la
   exports.DOCUMENT = dom_tokens_2.DOCUMENT;
   var title_1 = require("angular2/src/platform/browser/title");
   exports.Title = title_1.Title;
-  var common_dom_1 = require("angular2/platform/common_dom");
-  exports.DebugElementViewListener = common_dom_1.DebugElementViewListener;
-  exports.ELEMENT_PROBE_PROVIDERS = common_dom_1.ELEMENT_PROBE_PROVIDERS;
-  exports.ELEMENT_PROBE_BINDINGS = common_dom_1.ELEMENT_PROBE_BINDINGS;
-  exports.inspectNativeElement = common_dom_1.inspectNativeElement;
-  exports.By = common_dom_1.By;
+  var debug_element_view_listener_1 = require("angular2/src/platform/browser/debug/debug_element_view_listener");
+  exports.ELEMENT_PROBE_PROVIDERS = debug_element_view_listener_1.ELEMENT_PROBE_PROVIDERS;
+  exports.ELEMENT_PROBE_BINDINGS = debug_element_view_listener_1.ELEMENT_PROBE_BINDINGS;
+  exports.inspectNativeElement = debug_element_view_listener_1.inspectNativeElement;
+  var by_1 = require("angular2/src/platform/browser/debug/by");
+  exports.By = by_1.By;
   var browser_adapter_2 = require("angular2/src/platform/browser/browser_adapter");
   exports.BrowserDomAdapter = browser_adapter_2.BrowserDomAdapter;
-  var tools_1 = require("angular2/src/platform/browser/tools/tools");
-  exports.enableDebugTools = tools_1.enableDebugTools;
-  exports.disableDebugTools = tools_1.disableDebugTools;
   exports.BROWSER_PROVIDERS = lang_1.CONST_EXPR([core_1.PLATFORM_COMMON_PROVIDERS, new di_1.Provider(core_1.PLATFORM_INITIALIZER, {
     useValue: initDomAdapter,
     multi: true
@@ -43396,8 +43274,6 @@ System.register("angular2/platform/browser", ["angular2/src/platform/browser_com
   exports.By = browser_common_1.By;
   exports.Title = browser_common_1.Title;
   exports.DOCUMENT = browser_common_1.DOCUMENT;
-  exports.enableDebugTools = browser_common_1.enableDebugTools;
-  exports.disableDebugTools = browser_common_1.disableDebugTools;
   var lang_1 = require("angular2/src/facade/lang");
   var browser_common_2 = require("angular2/src/platform/browser_common");
   var compiler_1 = require("angular2/compiler");
@@ -43639,7 +43515,7 @@ System.register("angular2/common", ["angular2/src/common/pipes", "angular2/src/c
   return module.exports;
 });
 
-System.register("angular2/angular2", ["angular2/common", "angular2/core", "angular2/instrumentation", "angular2/platform/browser", "angular2/src/platform/dom/dom_adapter", "angular2/upgrade", "angular2/compiler"], true, function(require, exports, module) {
+System.register("angular2/angular2", ["angular2/common", "angular2/core", "angular2/profile", "angular2/platform/browser", "angular2/src/platform/dom/dom_adapter", "angular2/upgrade", "angular2/compiler"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -43650,7 +43526,7 @@ System.register("angular2/angular2", ["angular2/common", "angular2/core", "angul
   }
   __export(require("angular2/common"));
   __export(require("angular2/core"));
-  __export(require("angular2/instrumentation"));
+  __export(require("angular2/profile"));
   __export(require("angular2/platform/browser"));
   __export(require("angular2/src/platform/dom/dom_adapter"));
   __export(require("angular2/upgrade"));

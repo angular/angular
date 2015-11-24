@@ -1,5 +1,5 @@
 import { CONST_EXPR } from 'angular2/src/facade/lang';
-import { OpaqueToken } from 'angular2/core';
+import { OpaqueToken } from 'angular2/angular2';
 /**
  * `LocationStrategy` is responsible for representing and reading route state
  * from the the browser's URL. Angular provides two strategies:
@@ -51,4 +51,3 @@ export const APP_BASE_HREF = CONST_EXPR(new OpaqueToken('appBaseHref'));
 export function normalizeQueryParams(params) {
     return (params.length > 0 && params.substring(0, 1) != '?') ? ('?' + params) : params;
 }
-//# sourceMappingURL=location_strategy.js.map

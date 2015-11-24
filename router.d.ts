@@ -17,8 +17,8 @@ export * from './src/router/route_definition';
 export { OnActivate, OnDeactivate, OnReuse, CanDeactivate, CanReuse } from './src/router/interfaces';
 export { CanActivate } from './src/router/lifecycle_annotations';
 export { Instruction, ComponentInstruction } from './src/router/instruction';
-export { OpaqueToken } from 'angular2/core';
-import { OpaqueToken } from 'angular2/core';
+export { OpaqueToken } from 'angular2/angular2';
+import { OpaqueToken } from 'angular2/angular2';
 /**
  * Token used to bind the component with the top-level {@link RouteConfig}s for the
  * application.

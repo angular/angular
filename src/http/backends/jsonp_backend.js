@@ -18,11 +18,11 @@ var interfaces_1 = require('../interfaces');
 var enums_1 = require('../enums');
 var static_response_1 = require('../static_response');
 var base_response_options_1 = require('../base_response_options');
-var core_1 = require('angular2/core');
+var angular2_1 = require('angular2/angular2');
 var browser_jsonp_1 = require('./browser_jsonp');
 var exceptions_1 = require('angular2/src/facade/exceptions');
 var lang_1 = require('angular2/src/facade/lang');
-var core_2 = require('angular2/core');
+var angular2_2 = require('angular2/angular2');
 var JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callback.';
 var JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
 var JSONPConnection = (function () {
@@ -43,7 +43,7 @@ var JSONPConnection_ = (function (_super) {
             throw exceptions_1.makeTypeError(JSONP_ERR_WRONG_METHOD);
         }
         this.request = req;
-        this.response = new core_2.Observable(function (responseObserver) {
+        this.response = new angular2_2.Observable(function (responseObserver) {
             _this.readyState = enums_1.ReadyStates.Loading;
             var id = _this._id = _dom.nextRequestID();
             _dom.exposeConnection(id, _this);
@@ -132,7 +132,7 @@ var JSONPBackend_ = (function (_super) {
         return new JSONPConnection_(request, this._browserJSONP, this._baseResponseOptions);
     };
     JSONPBackend_ = __decorate([
-        core_1.Injectable(), 
+        angular2_1.Injectable(), 
         __metadata('design:paramtypes', [browser_jsonp_1.BrowserJsonp, base_response_options_1.ResponseOptions])
     ], JSONPBackend_);
     return JSONPBackend_;

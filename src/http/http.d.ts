@@ -2,7 +2,7 @@ import { RequestOptionsArgs, ConnectionBackend } from './interfaces';
 import { Request } from './static_request';
 import { Response } from './static_response';
 import { RequestOptions } from './base_request_options';
-import { Observable } from 'angular2/core';
+import { Observable } from 'angular2/angular2';
 /**
  * Performs http requests using `XMLHttpRequest` as the default backend.
  *

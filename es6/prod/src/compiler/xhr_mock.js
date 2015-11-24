@@ -27,9 +27,9 @@ export class MockXHR extends XHR {
         do {
             this._processRequest(this._requests.shift());
         } while (this._requests.length > 0);
-        this.verifyNoOutstandingExpectations();
+        this.verifyNoOustandingExpectations();
     }
-    verifyNoOutstandingExpectations() {
+    verifyNoOustandingExpectations() {
         if (this._expectations.length === 0)
             return;
         var urls = [];
@@ -78,4 +78,3 @@ class _Expectation {
         this.response = response;
     }
 }
-//# sourceMappingURL=xhr_mock.js.map

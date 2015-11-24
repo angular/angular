@@ -425,4 +425,3 @@ var OPERATORS = SetWrapper.createFromList([
     '?.'
 ]);
 var KEYWORDS = SetWrapper.createFromList(['var', 'null', 'undefined', 'true', 'false', 'if', 'else']);
-//# sourceMappingURL=lexer.js.map

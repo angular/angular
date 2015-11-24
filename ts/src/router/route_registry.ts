@@ -24,7 +24,7 @@ import {
   RouteDefinition
 } from './route_config_impl';
 import {reflector} from 'angular2/src/core/reflection/reflection';
-import {Injectable} from 'angular2/core';
+import {Injectable} from 'angular2/angular2';
 import {normalizeRouteConfig, assertComponentExists} from './route_config_nomalizer';
 import {parser, Url, pathSegmentsToUrl} from './url_parser';
 

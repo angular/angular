@@ -215,4 +215,3 @@ function addAll(source, target) {
 function codeGenComponentTemplateFactory(nestedCompType) {
     return `${moduleRef(templateModuleUrl(nestedCompType.type.moduleUrl))}${templateGetterName(nestedCompType.type)}`;
 }
-//# sourceMappingURL=template_compiler.js.map

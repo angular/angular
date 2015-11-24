@@ -26,4 +26,3 @@ export class ChangeDetectorDefinition {
         this.genConfig = genConfig;
     }
 }
-//# sourceMappingURL=interfaces.js.map

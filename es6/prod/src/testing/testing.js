@@ -140,4 +140,3 @@ export function iit(name, fn, timeOut = null) {
 export function fit(name, fn, timeOut = null) {
     return _it(jsmIIt, name, fn, timeOut);
 }
-//# sourceMappingURL=testing.js.map

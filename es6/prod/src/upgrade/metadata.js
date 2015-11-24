@@ -38,4 +38,3 @@ export function parseFields(names) {
     }
     return attrProps;
 }
-//# sourceMappingURL=metadata.js.map

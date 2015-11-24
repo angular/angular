@@ -48,4 +48,3 @@ AppViewPool = __decorate([
     __param(0, Inject(APP_VIEW_POOL_CAPACITY)), 
     __metadata('design:paramtypes', [Object])
 ], AppViewPool);
-//# sourceMappingURL=view_pool.js.map

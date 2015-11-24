@@ -17,7 +17,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var lang_1 = require('angular2/src/facade/lang');
 var headers_1 = require('./headers');
 var enums_1 = require('./enums');
-var core_1 = require('angular2/core');
+var angular2_1 = require('angular2/angular2');
 var url_search_params_1 = require('./url_search_params');
 var http_utils_1 = require('./http_utils');
 /**
@@ -144,7 +144,7 @@ var BaseRequestOptions = (function (_super) {
         _super.call(this, { method: enums_1.RequestMethods.Get, headers: new headers_1.Headers() });
     }
     BaseRequestOptions = __decorate([
-        core_1.Injectable(), 
+        angular2_1.Injectable(), 
         __metadata('design:paramtypes', [])
     ], BaseRequestOptions);
     return BaseRequestOptions;

@@ -43,4 +43,3 @@ AppCmp = __decorate([
 export function main() {
     bootstrap(AppCmp);
 }
-//# sourceMappingURL=lowerupper_pipe_example.js.map

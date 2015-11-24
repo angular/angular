@@ -13,10 +13,10 @@ var enums_1 = require('../enums');
 var static_response_1 = require('../static_response');
 var headers_1 = require('../headers');
 var base_response_options_1 = require('../base_response_options');
-var core_1 = require('angular2/core');
+var angular2_1 = require('angular2/angular2');
 var browser_xhr_1 = require('./browser_xhr');
 var lang_1 = require('angular2/src/facade/lang');
-var core_2 = require('angular2/core');
+var angular2_2 = require('angular2/angular2');
 var http_utils_1 = require('../http_utils');
 /**
 * Creates connections using `XMLHttpRequest`. Given a fully-qualified
@@ -30,7 +30,7 @@ var XHRConnection = (function () {
     function XHRConnection(req, browserXHR, baseResponseOptions) {
         var _this = this;
         this.request = req;
-        this.response = new core_2.Observable(function (responseObserver) {
+        this.response = new angular2_2.Observable(function (responseObserver) {
             var _xhr = browserXHR.build();
             _xhr.open(enums_1.RequestMethods[req.method].toUpperCase(), req.url);
             // load event handler
@@ -121,7 +121,7 @@ var XHRBackend = (function () {
         return new XHRConnection(request, this._browserXHR, this._baseResponseOptions);
     };
     XHRBackend = __decorate([
-        core_1.Injectable(), 
+        angular2_1.Injectable(), 
         __metadata('design:paramtypes', [browser_xhr_1.BrowserXhr, base_response_options_1.ResponseOptions])
     ], XHRBackend);
     return XHRBackend;

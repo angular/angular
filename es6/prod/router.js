@@ -16,7 +16,7 @@ export * from './src/router/route_config_decorator';
 export * from './src/router/route_definition';
 export { CanActivate } from './src/router/lifecycle_annotations';
 export { Instruction, ComponentInstruction } from './src/router/instruction';
-export { OpaqueToken } from 'angular2/core';
+export { OpaqueToken } from 'angular2/angular2';
 import { LocationStrategy } from './src/router/location_strategy';
 import { PathLocationStrategy } from './src/router/path_location_strategy';
 import { Router, RootRouter } from './src/router/router';
@@ -24,7 +24,7 @@ import { RouterOutlet } from './src/router/router_outlet';
 import { RouterLink } from './src/router/router_link';
 import { RouteRegistry } from './src/router/route_registry';
 import { Location } from './src/router/location';
-import { ApplicationRef, OpaqueToken, Provider } from 'angular2/core';
+import { ApplicationRef, OpaqueToken, Provider } from 'angular2/angular2';
 import { CONST_EXPR } from './src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
 /**
@@ -125,4 +125,3 @@ function routerPrimaryComponentFactory(app) {
     }
     return app.componentTypes[0];
 }
-//# sourceMappingURL=router.js.map

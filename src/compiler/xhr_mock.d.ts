@@ -8,6 +8,6 @@ export declare class MockXHR extends XHR {
     expect(url: string, response: string): void;
     when(url: string, response: string): void;
     flush(): void;
-    verifyNoOutstandingExpectations(): void;
+    verifyNoOustandingExpectations(): void;
     private _processRequest(request);
 }

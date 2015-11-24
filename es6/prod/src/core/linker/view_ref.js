@@ -139,4 +139,3 @@ export class ProtoViewRef_ extends ProtoViewRef {
         this._protoView = _protoView;
     }
 }
-//# sourceMappingURL=view_ref.js.map

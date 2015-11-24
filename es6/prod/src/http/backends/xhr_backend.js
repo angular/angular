@@ -13,10 +13,10 @@ import { RequestMethods, ResponseTypes } from '../enums';
 import { Response } from '../static_response';
 import { Headers } from '../headers';
 import { ResponseOptions } from '../base_response_options';
-import { Injectable } from 'angular2/core';
+import { Injectable } from 'angular2/angular2';
 import { BrowserXhr } from './browser_xhr';
 import { isPresent } from 'angular2/src/facade/lang';
-import { Observable } from 'angular2/core';
+import { Observable } from 'angular2/angular2';
 import { isSuccess, getResponseURL } from '../http_utils';
 /**
 * Creates connections using `XMLHttpRequest`. Given a fully-qualified
@@ -122,4 +122,3 @@ XHRBackend = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [BrowserXhr, ResponseOptions])
 ], XHRBackend);
-//# sourceMappingURL=xhr_backend.js.map

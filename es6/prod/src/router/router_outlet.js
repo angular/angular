@@ -16,7 +16,7 @@ import { PromiseWrapper } from 'angular2/src/facade/async';
 import { StringMapWrapper } from 'angular2/src/facade/collection';
 import { isBlank, isPresent } from 'angular2/src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
-import { Directive, Attribute, DynamicComponentLoader, ElementRef, Injector, provide } from 'angular2/core';
+import { Directive, Attribute, DynamicComponentLoader, ElementRef, Injector, provide } from 'angular2/angular2';
 import * as routerMod from './router';
 import { RouteParams, RouteData } from './instruction';
 import * as hookMod from './lifecycle_annotations';
@@ -150,4 +150,3 @@ RouterOutlet = __decorate([
     __param(3, Attribute('name')), 
     __metadata('design:paramtypes', [ElementRef, DynamicComponentLoader, routerMod.Router, String])
 ], RouterOutlet);
-//# sourceMappingURL=router_outlet.js.map

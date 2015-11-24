@@ -1,4 +1,4 @@
-export { BROWSER_PROVIDERS, ELEMENT_PROBE_BINDINGS, ELEMENT_PROBE_PROVIDERS, inspectNativeElement, BrowserDomAdapter, By, Title, enableDebugTools, disableDebugTools } from 'angular2/src/platform/browser_common';
+export { BROWSER_PROVIDERS, ELEMENT_PROBE_BINDINGS, ELEMENT_PROBE_PROVIDERS, inspectNativeElement, BrowserDomAdapter, By, Title } from 'angular2/src/platform/browser_common';
 import { Type } from 'angular2/src/facade/lang';
 import { Promise } from 'angular2/src/facade/promise';
 import { ComponentRef } from 'angular2/core';

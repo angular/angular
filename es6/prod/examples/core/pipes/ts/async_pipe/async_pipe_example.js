@@ -71,4 +71,3 @@ AppCmp = __decorate([
 export function main() {
     bootstrap(AppCmp);
 }
-//# sourceMappingURL=async_pipe_example.js.map

@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import { DOM } from 'angular2/src/platform/dom/dom_adapter';
-import { Injectable } from 'angular2/core';
+import { Injectable } from 'angular2/angular2';
 import { LocationStrategy, normalizeQueryParams } from './location_strategy';
 /**
  * `HashLocationStrategy` is a {@link LocationStrategy} used to configure the
@@ -90,4 +90,3 @@ HashLocationStrategy = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], HashLocationStrategy);
-//# sourceMappingURL=hash_location_strategy.js.map

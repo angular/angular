@@ -20,7 +20,7 @@ import { LocationStrategy } from 'angular2/src/router/location_strategy';
 import { MockNgZone } from 'angular2/src/mock/ng_zone_mock';
 import { TestComponentBuilder } from './test_component_builder';
 import { Injector } from 'angular2/src/core/di';
-import { ELEMENT_PROBE_PROVIDERS } from 'angular2/platform/common_dom';
+import { ELEMENT_PROBE_PROVIDERS } from 'angular2/src/platform/browser/debug/debug_element_view_listener';
 import { ListWrapper } from 'angular2/src/facade/collection';
 import { FunctionWrapper } from 'angular2/src/facade/lang';
 import { AppViewPool, APP_VIEW_POOL_CAPACITY } from 'angular2/src/core/linker/view_pool';
@@ -152,4 +152,3 @@ export class FunctionWithParamTokens {
     }
     hasToken(token) { return this._tokens.indexOf(token) > -1; }
 }
-//# sourceMappingURL=test_injector.js.map

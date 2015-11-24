@@ -4,7 +4,7 @@
  * The http module provides services to perform http requests. To get started, see the {@link Http}
  * class.
  */
-var core_1 = require('angular2/core');
+var angular2_1 = require('angular2/angular2');
 var http_1 = require('./src/http/http');
 var xhr_backend_1 = require('./src/http/backends/xhr_backend');
 var jsonp_backend_1 = require('./src/http/backends/jsonp_backend');
@@ -161,13 +161,13 @@ exports.URLSearchParams = url_search_params_1.URLSearchParams;
 exports.HTTP_PROVIDERS = [
     // TODO(pascal): use factory type annotations once supported in DI
     // issue: https://github.com/angular/angular/issues/3183
-    core_1.provide(http_1.Http, {
+    angular2_1.provide(http_1.Http, {
         useFactory: function (xhrBackend, requestOptions) { return new http_1.Http(xhrBackend, requestOptions); },
         deps: [xhr_backend_1.XHRBackend, base_request_options_1.RequestOptions]
     }),
     browser_xhr_1.BrowserXhr,
-    core_1.provide(base_request_options_1.RequestOptions, { useClass: base_request_options_1.BaseRequestOptions }),
-    core_1.provide(base_response_options_1.ResponseOptions, { useClass: base_response_options_1.BaseResponseOptions }),
+    angular2_1.provide(base_request_options_1.RequestOptions, { useClass: base_request_options_1.BaseRequestOptions }),
+    angular2_1.provide(base_response_options_1.ResponseOptions, { useClass: base_response_options_1.BaseResponseOptions }),
     xhr_backend_1.XHRBackend
 ];
 /**
@@ -280,14 +280,14 @@ exports.HTTP_BINDINGS = exports.HTTP_PROVIDERS;
 exports.JSONP_PROVIDERS = [
     // TODO(pascal): use factory type annotations once supported in DI
     // issue: https://github.com/angular/angular/issues/3183
-    core_1.provide(http_1.Jsonp, {
+    angular2_1.provide(http_1.Jsonp, {
         useFactory: function (jsonpBackend, requestOptions) { return new http_1.Jsonp(jsonpBackend, requestOptions); },
         deps: [jsonp_backend_1.JSONPBackend, base_request_options_1.RequestOptions]
     }),
     browser_jsonp_1.BrowserJsonp,
-    core_1.provide(base_request_options_1.RequestOptions, { useClass: base_request_options_1.BaseRequestOptions }),
-    core_1.provide(base_response_options_1.ResponseOptions, { useClass: base_response_options_1.BaseResponseOptions }),
-    core_1.provide(jsonp_backend_1.JSONPBackend, { useClass: jsonp_backend_1.JSONPBackend_ })
+    angular2_1.provide(base_request_options_1.RequestOptions, { useClass: base_request_options_1.BaseRequestOptions }),
+    angular2_1.provide(base_response_options_1.ResponseOptions, { useClass: base_response_options_1.BaseResponseOptions }),
+    angular2_1.provide(jsonp_backend_1.JSONPBackend, { useClass: jsonp_backend_1.JSONPBackend_ })
 ];
 /**
  * @deprecated

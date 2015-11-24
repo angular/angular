@@ -92,4 +92,3 @@ export class DateFormatter {
         return formatter.format(date);
     }
 }
-//# sourceMappingURL=intl.js.map

@@ -10,4 +10,3 @@
 //  */
 // export var http = Injector.resolveAndCreate([HTTP_PROVIDERS]).get(Http);
 // export var jsonp = Injector.resolveAndCreate([JSONP_PROVIDERS]).get(Jsonp);
-//# sourceMappingURL=index.js.map

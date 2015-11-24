@@ -28,4 +28,3 @@ AppRootUrl = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [String])
 ], AppRootUrl);
-//# sourceMappingURL=app_root_url.js.map

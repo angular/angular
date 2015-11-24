@@ -14,7 +14,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var core_1 = require('angular2/core');
+var angular2_1 = require('angular2/angular2');
 var lang_1 = require('angular2/src/facade/lang');
 var headers_1 = require('./headers');
 var enums_1 = require('./enums');
@@ -142,7 +142,7 @@ var BaseResponseOptions = (function (_super) {
         _super.call(this, { status: 200, statusText: 'Ok', type: enums_1.ResponseTypes.Default, headers: new headers_1.Headers() });
     }
     BaseResponseOptions = __decorate([
-        core_1.Injectable(), 
+        angular2_1.Injectable(), 
         __metadata('design:paramtypes', [])
     ], BaseResponseOptions);
     return BaseResponseOptions;

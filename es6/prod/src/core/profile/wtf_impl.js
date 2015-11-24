@@ -25,4 +25,3 @@ export function startTimeRange(rangeType, action) {
 export function endTimeRange(range) {
     trace.endTimeRange(range);
 }
-//# sourceMappingURL=wtf_impl.js.map

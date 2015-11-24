@@ -905,4 +905,3 @@ export var HostBinding = makePropDecorator(HostBindingMetadata);
  * ```
  */
 export var HostListener = makePropDecorator(HostListenerMetadata);
-//# sourceMappingURL=metadata.js.map

@@ -145,4 +145,3 @@ export class ReflectionCapabilities {
     // There is not a concept of import uri in Js, but this is useful in developing Dart applications.
     importUri(type) { return './'; }
 }
-//# sourceMappingURL=reflection_capabilities.js.map

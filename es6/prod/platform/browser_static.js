@@ -1,4 +1,4 @@
-export { BROWSER_PROVIDERS, ELEMENT_PROBE_BINDINGS, ELEMENT_PROBE_PROVIDERS, inspectNativeElement, BrowserDomAdapter, By, Title, enableDebugTools, disableDebugTools } from 'angular2/src/platform/browser_common';
+export { BROWSER_PROVIDERS, ELEMENT_PROBE_BINDINGS, ELEMENT_PROBE_PROVIDERS, inspectNativeElement, BrowserDomAdapter, By, Title } from 'angular2/src/platform/browser_common';
 import { isPresent } from 'angular2/src/facade/lang';
 import { BROWSER_PROVIDERS, BROWSER_APP_COMMON_PROVIDERS } from 'angular2/src/platform/browser_common';
 import { platform } from 'angular2/core';
@@ -18,4 +18,3 @@ export function bootstrapStatic(appComponentType, customProviders, initReflector
     let appProviders = isPresent(customProviders) ? [BROWSER_APP_PROVIDERS, customProviders] : BROWSER_APP_PROVIDERS;
     return platform(BROWSER_PROVIDERS).application(appProviders).bootstrap(appComponentType);
 }
-//# sourceMappingURL=browser_static.js.map

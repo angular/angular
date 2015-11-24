@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { isString, isPresent } from 'angular2/src/facade/lang';
 import { makeTypeError } from 'angular2/src/facade/exceptions';
-import { Injectable } from 'angular2/core';
+import { Injectable } from 'angular2/angular2';
 import { ConnectionBackend } from './interfaces';
 import { Request } from './static_request';
 import { RequestOptions } from './base_request_options';
@@ -191,4 +191,3 @@ Jsonp = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [ConnectionBackend, RequestOptions])
 ], Jsonp);
-//# sourceMappingURL=http.js.map

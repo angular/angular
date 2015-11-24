@@ -1,5 +1,5 @@
 'use strict';var lang_1 = require('angular2/src/facade/lang');
-var core_1 = require('angular2/core');
+var angular2_1 = require('angular2/angular2');
 /**
  * `LocationStrategy` is responsible for representing and reading route state
  * from the the browser's URL. Angular provides two strategies:
@@ -51,7 +51,7 @@ exports.LocationStrategy = LocationStrategy;
  * ]);
  * ```
  */
-exports.APP_BASE_HREF = lang_1.CONST_EXPR(new core_1.OpaqueToken('appBaseHref'));
+exports.APP_BASE_HREF = lang_1.CONST_EXPR(new angular2_1.OpaqueToken('appBaseHref'));
 function normalizeQueryParams(params) {
     return (params.length > 0 && params.substring(0, 1) != '?') ? ('?' + params) : params;
 }

@@ -23,4 +23,3 @@ describe('reuse example app', function () {
         expect(element(by.css('home-cmp')).getText()).toContain('Welcome Home!');
     });
 });
-//# sourceMappingURL=can_activate_spec.js.map

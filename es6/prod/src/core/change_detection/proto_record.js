@@ -56,4 +56,3 @@ export class ProtoRecord {
     }
     isLifeCycleRecord() { return this.mode === RecordType.DirectiveLifecycle; }
 }
-//# sourceMappingURL=proto_record.js.map

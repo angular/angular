@@ -7,4 +7,3 @@ export function camelCaseToDashCase(input) {
 export function dashCaseToCamelCase(input) {
     return StringWrapper.replaceAllMapped(input, DASH_CASE_REGEXP, (m) => { return m[1].toUpperCase(); });
 }
-//# sourceMappingURL=util.js.map
