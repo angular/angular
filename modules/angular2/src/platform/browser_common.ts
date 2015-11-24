@@ -12,8 +12,7 @@ import {
   Renderer,
   reflector,
   APPLICATION_COMMON_PROVIDERS,
-  PLATFORM_COMMON_PROVIDERS,
-  EVENT_MANAGER_PLUGINS
+  PLATFORM_COMMON_PROVIDERS
 } from "angular2/core";
 import {COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS} from "angular2/common";
 import {Testability} from 'angular2/src/core/testability/testability';
@@ -30,6 +29,7 @@ import {AnimationBuilder} from "angular2/src/animate/animation_builder";
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserGetTestability} from 'angular2/src/platform/browser/testability';
 import {wtfInit} from 'angular2/src/core/profile/wtf_init';
+import {EventManager, EVENT_MANAGER_PLUGINS} from "angular2/src/platform/dom/events/event_manager";
 export {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 export {Title} from 'angular2/src/platform/browser/title';
 export {
@@ -71,7 +71,8 @@ export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/
   DomSharedStylesHost,
   Testability,
   BrowserDetails,
-  AnimationBuilder
+  AnimationBuilder,
+  EventManager
 ]);
 
 export function initDomAdapter() {
