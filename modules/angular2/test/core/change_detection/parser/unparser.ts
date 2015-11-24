@@ -18,6 +18,7 @@ import {
   LiteralPrimitive,
   MethodCall,
   PrefixNot,
+  Quote,
   SafePropertyRead,
   SafeMethodCall
 } from 'angular2/src/core/change_detection/parser/ast';
@@ -186,6 +187,8 @@ export class Unparser implements AstVisitor {
     });
     this._expression += ')';
   }
+
+  visitQuote(ast: Quote) { this._expression += `${ast.prefix}:${ast.uninterpretedExpression}`; }
 
   private _visit(ast: AST) { ast.visit(this); }
 }

@@ -230,6 +230,15 @@ export function main() {
           expectBindingError('"Foo"|1234').toThrowError(new RegExp('identifier or keyword'));
           expectBindingError('"Foo"|"uppercase"').toThrowError(new RegExp('identifier or keyword'));
         });
+
+        it('should parse quoted expressions', () => { checkBinding('a:b', 'a:b'); });
+
+        it('should ignore whitespace around quote prefix', () => { checkBinding(' a :b', 'a:b'); });
+
+        it('should refuse prefixes that are not single identifiers', () => {
+          expectBindingError('a + b:c').toThrowError();
+          expectBindingError('1:c').toThrowError();
+        });
       });
 
       it('should store the source in the result',
@@ -414,7 +423,7 @@ export function main() {
       it("should throw when the given expression is not just a field name", () => {
         expect(() => parseSimpleBinding("name + 1"))
             .toThrowErrorWith(
-                'Simple binding expression can only contain field access and constants');
+                'Host binding expression can only contain field access and constants');
       });
 
       it('should throw when encountering interpolation', () => {
