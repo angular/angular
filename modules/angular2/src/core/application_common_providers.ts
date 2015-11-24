@@ -24,7 +24,6 @@ import {Compiler} from './linker/compiler';
 import {Compiler_} from "./linker/compiler";
 import {DynamicComponentLoader} from './linker/dynamic_component_loader';
 import {DynamicComponentLoader_} from "./linker/dynamic_component_loader";
-import {EventManager} from './render';
 
 /**
  * A default set of providers which should be included in any Angular
@@ -44,6 +43,5 @@ export const APPLICATION_COMMON_PROVIDERS: Array<Type | Provider | any[]> = CONS
   new Provider(KeyValueDiffers, {useValue: defaultKeyValueDiffers}),
   DirectiveResolver,
   PipeResolver,
-  new Provider(DynamicComponentLoader, {useClass: DynamicComponentLoader_}),
-  EventManager
+  new Provider(DynamicComponentLoader, {useClass: DynamicComponentLoader_})
 ]);
