@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import { BaseException } from 'angular2/src/facade/exceptions';
-import { EventEmitter } from 'angular2/src/facade/async';
+import { EventEmitter, ObservableWrapper } from 'angular2/src/facade/async';
 import { StringMapWrapper } from 'angular2/src/facade/collection';
 import { Injectable } from "angular2/src/core/di";
 /**
@@ -45,7 +45,9 @@ export class PostMessageBusSink {
     }
     attachToZone(zone) {
         this._zone = zone;
-        this._zone.overrideOnEventDone(() => this._handleOnEventDone(), false);
+        this._zone.runOutsideAngular(() => {
+            ObservableWrapper.subscribe(this._zone.onEventDone, (_) => { this._handleOnEventDone(); });
+        });
     }
     initChannel(channel, runInZone = true) {
         if (StringMapWrapper.contains(this._channels, channel)) {

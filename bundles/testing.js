@@ -282,7 +282,7 @@ System.register("angular2/src/router/location_strategy", ["angular2/src/facade/l
   return module.exports;
 });
 
-System.register("angular2/src/mock/ng_zone_mock", ["angular2/src/core/zone/ng_zone"], true, function(require, exports, module) {
+System.register("angular2/src/mock/ng_zone_mock", ["angular2/src/core/zone/ng_zone", "angular2/src/facade/async"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -296,25 +296,28 @@ System.register("angular2/src/mock/ng_zone_mock", ["angular2/src/core/zone/ng_zo
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var ng_zone_1 = require("angular2/src/core/zone/ng_zone");
+  var async_1 = require("angular2/src/facade/async");
   var MockNgZone = (function(_super) {
     __extends(MockNgZone, _super);
     function MockNgZone() {
       _super.call(this, {enableLongStackTrace: false});
+      this._mockOnEventDone = new async_1.EventEmitter(false);
     }
+    Object.defineProperty(MockNgZone.prototype, "onEventDone", {
+      get: function() {
+        return this._mockOnEventDone;
+      },
+      enumerable: true,
+      configurable: true
+    });
     MockNgZone.prototype.run = function(fn) {
       return fn();
     };
     MockNgZone.prototype.runOutsideAngular = function(fn) {
       return fn();
     };
-    MockNgZone.prototype.overrideOnEventDone = function(fn, opt_waitForAsync) {
-      if (opt_waitForAsync === void 0) {
-        opt_waitForAsync = false;
-      }
-      this._onEventDone = fn;
-    };
     MockNgZone.prototype.simulateZoneExit = function() {
-      this._onEventDone();
+      async_1.ObservableWrapper.callNext(this.onEventDone, null);
     };
     return MockNgZone;
   })(ng_zone_1.NgZone);
