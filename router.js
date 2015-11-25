@@ -17,8 +17,6 @@ exports.RouteParams = instruction_1.RouteParams;
 exports.RouteData = instruction_1.RouteData;
 var route_registry_1 = require('./src/router/route_registry');
 exports.RouteRegistry = route_registry_1.RouteRegistry;
-var platform_location_1 = require('./src/router/platform_location');
-exports.PlatformLocation = platform_location_1.PlatformLocation;
 var location_strategy_1 = require('./src/router/location_strategy');
 exports.LocationStrategy = location_strategy_1.LocationStrategy;
 exports.APP_BASE_HREF = location_strategy_1.APP_BASE_HREF;
@@ -37,7 +35,6 @@ exports.Instruction = instruction_2.Instruction;
 exports.ComponentInstruction = instruction_2.ComponentInstruction;
 var core_1 = require('angular2/core');
 exports.OpaqueToken = core_1.OpaqueToken;
-var platform_location_2 = require('./src/router/platform_location');
 var location_strategy_2 = require('./src/router/location_strategy');
 var path_location_strategy_2 = require('./src/router/path_location_strategy');
 var router_2 = require('./src/router/router');
@@ -124,7 +121,6 @@ exports.ROUTER_DIRECTIVES = lang_1.CONST_EXPR([router_outlet_2.RouterOutlet, rou
 exports.ROUTER_PROVIDERS = lang_1.CONST_EXPR([
     route_registry_2.RouteRegistry,
     lang_1.CONST_EXPR(new core_2.Provider(location_strategy_2.LocationStrategy, { useClass: path_location_strategy_2.PathLocationStrategy })),
-    platform_location_2.PlatformLocation,
     location_2.Location,
     lang_1.CONST_EXPR(new core_2.Provider(router_2.Router, {
         useFactory: routerFactory,

@@ -14,13 +14,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
+var dom_adapter_1 = require('angular2/src/platform/dom/dom_adapter');
 var core_1 = require('angular2/core');
 var location_strategy_1 = require('./location_strategy');
-var lang_1 = require('angular2/src/facade/lang');
-var platform_location_1 = require('./platform_location');
 /**
  * `HashLocationStrategy` is a {@link LocationStrategy} used to configure the
  * {@link Location} service to represent its state in the
@@ -61,44 +57,43 @@ var platform_location_1 = require('./platform_location');
  */
 var HashLocationStrategy = (function (_super) {
     __extends(HashLocationStrategy, _super);
-    function HashLocationStrategy(_platformLocation, _baseHref) {
+    function HashLocationStrategy() {
         _super.call(this);
-        this._platformLocation = _platformLocation;
-        this._baseHref = '';
-        if (lang_1.isPresent(_baseHref)) {
-            this._baseHref = _baseHref;
-        }
+        this._location = dom_adapter_1.DOM.getLocation();
+        this._history = dom_adapter_1.DOM.getHistory();
     }
-    HashLocationStrategy.prototype.onPopState = function (fn) { this._platformLocation.onPopState(fn); };
-    HashLocationStrategy.prototype.getBaseHref = function () { return this._baseHref; };
+    HashLocationStrategy.prototype.onPopState = function (fn) {
+        dom_adapter_1.DOM.getGlobalEventTarget('window').addEventListener('popstate', fn, false);
+    };
+    HashLocationStrategy.prototype.getBaseHref = function () { return ''; };
     HashLocationStrategy.prototype.path = function () {
         // the hash value is always prefixed with a `#`
         // and if it is empty then it will stay empty
-        var path = this._platformLocation.hash;
+        var path = this._location.hash;
         // Dart will complain if a call to substring is
         // executed with a position value that extends the
         // length of string.
         return (path.length > 0 ? path.substring(1) : path) +
-            location_strategy_1.normalizeQueryParams(this._platformLocation.search);
+            location_strategy_1.normalizeQueryParams(this._location.search);
     };
     HashLocationStrategy.prototype.prepareExternalUrl = function (internal) {
-        var url = location_strategy_1.joinWithSlash(this._baseHref, internal);
-        return url.length > 0 ? ('#' + url) : url;
+        return internal.length > 0 ? ('#' + internal) : internal;
     };
     HashLocationStrategy.prototype.pushState = function (state, title, path, queryParams) {
-        var url = this.prepareExternalUrl(path + location_strategy_1.normalizeQueryParams(queryParams));
+        var url = path + location_strategy_1.normalizeQueryParams(queryParams);
         if (url.length == 0) {
-            url = this._platformLocation.pathname;
+            url = this._location.pathname;
         }
-        this._platformLocation.pushState(state, title, url);
+        else {
+            url = this.prepareExternalUrl(url);
+        }
+        this._history.pushState(state, title, url);
     };
-    HashLocationStrategy.prototype.forward = function () { this._platformLocation.forward(); };
-    HashLocationStrategy.prototype.back = function () { this._platformLocation.back(); };
+    HashLocationStrategy.prototype.forward = function () { this._history.forward(); };
+    HashLocationStrategy.prototype.back = function () { this._history.back(); };
     HashLocationStrategy = __decorate([
-        core_1.Injectable(),
-        __param(1, core_1.Optional()),
-        __param(1, core_1.Inject(location_strategy_1.APP_BASE_HREF)), 
-        __metadata('design:paramtypes', [platform_location_1.PlatformLocation, String])
+        core_1.Injectable(), 
+        __metadata('design:paramtypes', [])
     ], HashLocationStrategy);
     return HashLocationStrategy;
 })(location_strategy_1.LocationStrategy);

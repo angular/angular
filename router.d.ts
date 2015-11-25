@@ -8,7 +8,6 @@ export { RouterOutlet } from './src/router/router_outlet';
 export { RouterLink } from './src/router/router_link';
 export { RouteParams, RouteData } from './src/router/instruction';
 export { RouteRegistry } from './src/router/route_registry';
-export { PlatformLocation } from './src/router/platform_location';
 export { LocationStrategy, APP_BASE_HREF } from './src/router/location_strategy';
 export { HashLocationStrategy } from './src/router/hash_location_strategy';
 export { PathLocationStrategy } from './src/router/path_location_strategy';

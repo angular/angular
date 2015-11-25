@@ -1,5 +1,4 @@
 import { LocationStrategy } from './location_strategy';
-import { PlatformLocation } from './platform_location';
 /**
  * `HashLocationStrategy` is a {@link LocationStrategy} used to configure the
  * {@link Location} service to represent its state in the
@@ -39,9 +38,9 @@ import { PlatformLocation } from './platform_location';
  * ```
  */
 export declare class HashLocationStrategy extends LocationStrategy {
-    private _platformLocation;
-    private _baseHref;
-    constructor(_platformLocation: PlatformLocation, _baseHref?: string);
+    private _location;
+    private _history;
+    constructor();
     onPopState(fn: EventListener): void;
     getBaseHref(): string;
     path(): string;

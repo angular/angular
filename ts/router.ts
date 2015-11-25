@@ -9,7 +9,6 @@ export {RouterOutlet} from './src/router/router_outlet';
 export {RouterLink} from './src/router/router_link';
 export {RouteParams, RouteData} from './src/router/instruction';
 export {RouteRegistry} from './src/router/route_registry';
-export {PlatformLocation} from './src/router/platform_location';
 export {LocationStrategy, APP_BASE_HREF} from './src/router/location_strategy';
 export {HashLocationStrategy} from './src/router/hash_location_strategy';
 export {PathLocationStrategy} from './src/router/path_location_strategy';
@@ -21,7 +20,6 @@ export {CanActivate} from './src/router/lifecycle_annotations';
 export {Instruction, ComponentInstruction} from './src/router/instruction';
 export {OpaqueToken} from 'angular2/core';
 
-import {PlatformLocation} from './src/router/platform_location';
 import {LocationStrategy} from './src/router/location_strategy';
 import {PathLocationStrategy} from './src/router/path_location_strategy';
 import {Router, RootRouter} from './src/router/router';
@@ -113,7 +111,6 @@ export const ROUTER_DIRECTIVES: any[] = CONST_EXPR([RouterOutlet, RouterLink]);
 export const ROUTER_PROVIDERS: any[] = CONST_EXPR([
   RouteRegistry,
   CONST_EXPR(new Provider(LocationStrategy, {useClass: PathLocationStrategy})),
-  PlatformLocation,
   Location,
   CONST_EXPR(new Provider(
       Router,
