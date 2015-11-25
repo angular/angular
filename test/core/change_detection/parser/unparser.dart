@@ -21,7 +21,6 @@ import "package:angular2/src/core/change_detection/parser/ast.dart"
         LiteralPrimitive,
         MethodCall,
         PrefixNot,
-        Quote,
         SafePropertyRead,
         SafeMethodCall;
 import "package:angular2/src/facade/lang.dart"
@@ -189,11 +188,6 @@ class Unparser implements AstVisitor {
       this._visit(arg);
     });
     this._expression += ")";
-  }
-
-  visitQuote(Quote ast) {
-    this._expression +=
-        '''${ ast . prefix}:${ ast . uninterpretedExpression}''';
   }
 
   _visit(AST ast) {

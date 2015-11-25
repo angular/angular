@@ -12,35 +12,6 @@ class AST {
   }
 }
 
-/**
- * Represents a quoted expression of the form:
- *
- * quote = prefix `:` uninterpretedExpression
- * prefix = identifier
- * uninterpretedExpression = arbitrary string
- *
- * A quoted expression is meant to be pre-processed by an AST transformer that
- * converts it into another AST that no longer contains quoted expressions.
- * It is meant to allow third-party developers to extend Angular template
- * expression language. The `uninterpretedExpression` part of the quote is
- * therefore not interpreted by the Angular's own expression parser.
- */
-class Quote extends AST {
-  String prefix;
-  String uninterpretedExpression;
-  dynamic location;
-  Quote(this.prefix, this.uninterpretedExpression, this.location) : super() {
-    /* super call moved to initializer */;
-  }
-  dynamic visit(AstVisitor visitor) {
-    return visitor.visitQuote(this);
-  }
-
-  String toString() {
-    return "Quote";
-  }
-}
-
 class EmptyExpr extends AST {
   visit(AstVisitor visitor) {}
 }
@@ -290,7 +261,6 @@ abstract class AstVisitor {
   dynamic visitPrefixNot(PrefixNot ast);
   dynamic visitPropertyRead(PropertyRead ast);
   dynamic visitPropertyWrite(PropertyWrite ast);
-  dynamic visitQuote(Quote ast);
   dynamic visitSafeMethodCall(SafeMethodCall ast);
   dynamic visitSafePropertyRead(SafePropertyRead ast);
 }
@@ -393,10 +363,6 @@ class RecursiveAstVisitor implements AstVisitor {
     asts.forEach((ast) => ast.visit(this));
     return null;
   }
-
-  dynamic visitQuote(Quote ast) {
-    return null;
-  }
 }
 
 class AstTransformer implements AstVisitor {
@@ -485,9 +451,5 @@ class AstTransformer implements AstVisitor {
 
   AST visitChain(Chain ast) {
     return new Chain(this.visitAll(ast.expressions));
-  }
-
-  AST visitQuote(Quote ast) {
-    return new Quote(ast.prefix, ast.uninterpretedExpression, ast.location);
   }
 }
