@@ -44,16 +44,41 @@ var Parser = (function () {
         return new ast_1.ASTWithSource(ast, input, location);
     };
     Parser.prototype.parseBinding = function (input, location) {
-        this._checkNoInterpolation(input, location);
-        var tokens = this._lexer.tokenize(input);
-        var ast = new _ParseAST(input, location, tokens, this._reflector, false).parseChain();
+        var ast = this._parseBindingAst(input, location);
         return new ast_1.ASTWithSource(ast, input, location);
     };
     Parser.prototype.parseSimpleBinding = function (input, location) {
+        var ast = this._parseBindingAst(input, location);
+        if (!SimpleExpressionChecker.check(ast)) {
+            throw new ParseException('Host binding expression can only contain field access and constants', input, location);
+        }
+        return new ast_1.ASTWithSource(ast, input, location);
+    };
+    Parser.prototype._parseBindingAst = function (input, location) {
+        // Quotes expressions use 3rd-party expression language. We don't want to use
+        // our lexer or parser for that, so we check for that ahead of time.
+        var quote = this._parseQuote(input, location);
+        if (lang_1.isPresent(quote)) {
+            return quote;
+        }
         this._checkNoInterpolation(input, location);
         var tokens = this._lexer.tokenize(input);
-        var ast = new _ParseAST(input, location, tokens, this._reflector, false).parseSimpleBinding();
-        return new ast_1.ASTWithSource(ast, input, location);
+        return new _ParseAST(input, location, tokens, this._reflector, false).parseChain();
+    };
+    Parser.prototype._parseQuote = function (input, location) {
+        if (lang_1.isBlank(input))
+            return null;
+        var prefixSeparatorIndex = input.indexOf(':');
+        if (prefixSeparatorIndex == -1)
+            return null;
+        var prefix = input.substring(0, prefixSeparatorIndex);
+        var uninterpretedExpression = input.substring(prefixSeparatorIndex + 1);
+        // while we do not interpret the expression, we do interpret the prefix
+        var prefixTokens = this._lexer.tokenize(prefix);
+        // quote prefix must be a single legal identifier
+        if (prefixTokens.length != 1 || !prefixTokens[0].isIdentifier())
+            return null;
+        return new ast_1.Quote(prefixTokens[0].strValue, uninterpretedExpression, location);
     };
     Parser.prototype.parseTemplateBindings = function (input, location) {
         var tokens = this._lexer.tokenize(input);
@@ -185,13 +210,6 @@ var _ParseAST = (function () {
         }
         this.advance();
         return n.toString();
-    };
-    _ParseAST.prototype.parseSimpleBinding = function () {
-        var ast = this.parseChain();
-        if (!SimpleExpressionChecker.check(ast)) {
-            this.error("Simple binding expression can only contain field access and constants'");
-        }
-        return ast;
     };
     _ParseAST.prototype.parseChain = function () {
         var exprs = [];
@@ -617,6 +635,7 @@ var SimpleExpressionChecker = (function () {
         return res;
     };
     SimpleExpressionChecker.prototype.visitChain = function (ast) { this.simple = false; };
+    SimpleExpressionChecker.prototype.visitQuote = function (ast) { this.simple = false; };
     return SimpleExpressionChecker;
 })();
 //# sourceMappingURL=parser.js.map

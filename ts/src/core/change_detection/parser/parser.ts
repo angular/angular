@@ -41,7 +41,8 @@ import {
   FunctionCall,
   TemplateBinding,
   ASTWithSource,
-  AstVisitor
+  AstVisitor,
+  Quote
 } from './ast';
 
 
@@ -73,17 +74,46 @@ export class Parser {
   }
 
   parseBinding(input: string, location: any): ASTWithSource {
-    this._checkNoInterpolation(input, location);
-    var tokens = this._lexer.tokenize(input);
-    var ast = new _ParseAST(input, location, tokens, this._reflector, false).parseChain();
+    var ast = this._parseBindingAst(input, location);
     return new ASTWithSource(ast, input, location);
   }
 
   parseSimpleBinding(input: string, location: string): ASTWithSource {
+    var ast = this._parseBindingAst(input, location);
+    if (!SimpleExpressionChecker.check(ast)) {
+      throw new ParseException(
+          'Host binding expression can only contain field access and constants', input, location);
+    }
+    return new ASTWithSource(ast, input, location);
+  }
+
+  private _parseBindingAst(input: string, location: string): AST {
+    // Quotes expressions use 3rd-party expression language. We don't want to use
+    // our lexer or parser for that, so we check for that ahead of time.
+    var quote = this._parseQuote(input, location);
+
+    if (isPresent(quote)) {
+      return quote;
+    }
+
     this._checkNoInterpolation(input, location);
     var tokens = this._lexer.tokenize(input);
-    var ast = new _ParseAST(input, location, tokens, this._reflector, false).parseSimpleBinding();
-    return new ASTWithSource(ast, input, location);
+    return new _ParseAST(input, location, tokens, this._reflector, false).parseChain();
+  }
+
+  private _parseQuote(input: string, location: any): AST {
+    if (isBlank(input)) return null;
+    var prefixSeparatorIndex = input.indexOf(':');
+    if (prefixSeparatorIndex == -1) return null;
+    var prefix = input.substring(0, prefixSeparatorIndex);
+    var uninterpretedExpression = input.substring(prefixSeparatorIndex + 1);
+
+    // while we do not interpret the expression, we do interpret the prefix
+    var prefixTokens = this._lexer.tokenize(prefix);
+
+    // quote prefix must be a single legal identifier
+    if (prefixTokens.length != 1 || !prefixTokens[0].isIdentifier()) return null;
+    return new Quote(prefixTokens[0].strValue, uninterpretedExpression, location);
   }
 
   parseTemplateBindings(input: string, location: any): TemplateBinding[] {
@@ -214,14 +244,6 @@ export class _ParseAST {
     }
     this.advance();
     return n.toString();
-  }
-
-  parseSimpleBinding(): AST {
-    var ast = this.parseChain();
-    if (!SimpleExpressionChecker.check(ast)) {
-      this.error(`Simple binding expression can only contain field access and constants'`);
-    }
-    return ast;
   }
 
   parseChain(): AST {
@@ -664,4 +686,6 @@ class SimpleExpressionChecker implements AstVisitor {
   }
 
   visitChain(ast: Chain) { this.simple = false; }
+
+  visitQuote(ast: Quote) { this.simple = false; }
 }
