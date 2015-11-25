@@ -7,6 +7,8 @@ export declare class Parser {
     parseAction(input: string, location: any): ASTWithSource;
     parseBinding(input: string, location: any): ASTWithSource;
     parseSimpleBinding(input: string, location: string): ASTWithSource;
+    private _parseBindingAst(input, location);
+    private _parseQuote(input, location);
     parseTemplateBindings(input: string, location: any): TemplateBinding[];
     parseInterpolation(input: string, location: any): ASTWithSource;
     wrapLiteralPrimitive(input: string, location: any): ASTWithSource;
@@ -33,7 +35,6 @@ export declare class _ParseAST {
     expectOperator(operator: string): void;
     expectIdentifierOrKeyword(): string;
     expectIdentifierOrKeywordOrString(): string;
-    parseSimpleBinding(): AST;
     parseChain(): AST;
     parsePipe(): AST;
     parseExpression(): AST;

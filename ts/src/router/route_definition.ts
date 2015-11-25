@@ -16,11 +16,10 @@ export interface RouteDefinition {
   aux?: string;
   component?: Type | ComponentDefinition;
   loader?: Function;
-  redirectTo?: any[];
+  redirectTo?: string;
   as?: string;
   name?: string;
   data?: any;
-  useAsDefault?: boolean;
 }
 
 export interface ComponentDefinition {

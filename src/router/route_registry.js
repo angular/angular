@@ -9,63 +9,32 @@
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
+var route_recognizer_1 = require('./route_recognizer');
+var instruction_1 = require('./instruction');
 var collection_1 = require('angular2/src/facade/collection');
 var async_1 = require('angular2/src/facade/async');
 var lang_1 = require('angular2/src/facade/lang');
 var exceptions_1 = require('angular2/src/facade/exceptions');
+var route_config_impl_1 = require('./route_config_impl');
 var reflection_1 = require('angular2/src/core/reflection/reflection');
 var core_1 = require('angular2/core');
-var route_config_impl_1 = require('./route_config_impl');
-var route_recognizer_1 = require('./route_recognizer');
-var component_recognizer_1 = require('./component_recognizer');
-var instruction_1 = require('./instruction');
 var route_config_nomalizer_1 = require('./route_config_nomalizer');
 var url_parser_1 = require('./url_parser');
 var _resolveToNull = async_1.PromiseWrapper.resolve(null);
-/**
- * Token used to bind the component with the top-level {@link RouteConfig}s for the
- * application.
- *
- * ### Example ([live demo](http://plnkr.co/edit/iRUP8B5OUbxCWQ3AcIDm))
- *
- * ```
- * import {Component} from 'angular2/angular2';
- * import {
- *   ROUTER_DIRECTIVES,
- *   ROUTER_PROVIDERS,
- *   RouteConfig
- * } from 'angular2/router';
- *
- * @Component({directives: [ROUTER_DIRECTIVES]})
- * @RouteConfig([
- *  {...},
- * ])
- * class AppCmp {
- *   // ...
- * }
- *
- * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
- * ```
- */
-exports.ROUTER_PRIMARY_COMPONENT = lang_1.CONST_EXPR(new core_1.OpaqueToken('RouterPrimaryComponent'));
 /**
  * The RouteRegistry holds route configurations for each component in an Angular app.
  * It is responsible for creating Instructions from URLs, and generating URLs based on route and
  * parameters.
  */
 var RouteRegistry = (function () {
-    function RouteRegistry(_rootComponent) {
-        this._rootComponent = _rootComponent;
+    function RouteRegistry() {
         this._rules = new collection_1.Map();
     }
     /**
      * Given a component and a configuration object, add the route to this registry
      */
     RouteRegistry.prototype.config = function (parentComponent, config) {
-        config = route_config_nomalizer_1.normalizeRouteConfig(config, this);
+        config = route_config_nomalizer_1.normalizeRouteConfig(config);
         // this is here because Dart type guard reasons
         if (config instanceof route_config_impl_1.Route) {
             route_config_nomalizer_1.assertComponentExists(config.component, config.path);
@@ -75,7 +44,7 @@ var RouteRegistry = (function () {
         }
         var recognizer = this._rules.get(parentComponent);
         if (lang_1.isBlank(recognizer)) {
-            recognizer = new component_recognizer_1.ComponentRecognizer();
+            recognizer = new route_recognizer_1.RouteRecognizer();
             this._rules.set(parentComponent, recognizer);
         }
         var terminal = recognizer.config(config);
@@ -116,208 +85,133 @@ var RouteRegistry = (function () {
      * Given a URL and a parent component, return the most specific instruction for navigating
      * the application into the state specified by the url
      */
-    RouteRegistry.prototype.recognize = function (url, ancestorInstructions) {
+    RouteRegistry.prototype.recognize = function (url, parentComponent) {
         var parsedUrl = url_parser_1.parser.parse(url);
-        return this._recognize(parsedUrl, ancestorInstructions);
+        return this._recognize(parsedUrl, parentComponent);
     };
-    /**
-     * Recognizes all parent-child routes, but creates unresolved auxiliary routes
-     */
-    RouteRegistry.prototype._recognize = function (parsedUrl, ancestorInstructions, _aux) {
+    RouteRegistry.prototype._recognize = function (parsedUrl, parentComponent) {
         var _this = this;
-        if (_aux === void 0) { _aux = false; }
-        var parentComponent = ancestorInstructions.length > 0 ?
-            ancestorInstructions[ancestorInstructions.length - 1].component.componentType :
-            this._rootComponent;
+        return this._recognizePrimaryRoute(parsedUrl, parentComponent)
+            .then(function (instruction) {
+            return _this._completeAuxiliaryRouteMatches(instruction, parentComponent);
+        });
+    };
+    RouteRegistry.prototype._recognizePrimaryRoute = function (parsedUrl, parentComponent) {
+        var _this = this;
         var componentRecognizer = this._rules.get(parentComponent);
         if (lang_1.isBlank(componentRecognizer)) {
             return _resolveToNull;
         }
         // Matches some beginning part of the given URL
-        var possibleMatches = _aux ? componentRecognizer.recognizeAuxiliary(parsedUrl) :
-            componentRecognizer.recognize(parsedUrl);
-        var matchPromises = possibleMatches.map(function (candidate) { return candidate.then(function (candidate) {
-            if (candidate instanceof route_recognizer_1.PathMatch) {
-                var auxParentInstructions = ancestorInstructions.length > 0 ?
-                    [ancestorInstructions[ancestorInstructions.length - 1]] :
-                    [];
-                var auxInstructions = _this._auxRoutesToUnresolved(candidate.remainingAux, auxParentInstructions);
-                var instruction = new instruction_1.ResolvedInstruction(candidate.instruction, null, auxInstructions);
-                if (candidate.instruction.terminal) {
-                    return instruction;
-                }
-                var newAncestorComponents = ancestorInstructions.concat([instruction]);
-                return _this._recognize(candidate.remaining, newAncestorComponents)
-                    .then(function (childInstruction) {
-                    if (lang_1.isBlank(childInstruction)) {
-                        return null;
-                    }
-                    // redirect instructions are already absolute
-                    if (childInstruction instanceof instruction_1.RedirectInstruction) {
-                        return childInstruction;
-                    }
-                    instruction.child = childInstruction;
-                    return instruction;
-                });
-            }
-            if (candidate instanceof route_recognizer_1.RedirectMatch) {
-                var instruction = _this.generate(candidate.redirectTo, ancestorInstructions);
-                return new instruction_1.RedirectInstruction(instruction.component, instruction.child, instruction.auxInstruction);
-            }
-        }); });
-        if ((lang_1.isBlank(parsedUrl) || parsedUrl.path == '') && possibleMatches.length == 0) {
-            return async_1.PromiseWrapper.resolve(this.generateDefault(parentComponent));
-        }
+        var possibleMatches = componentRecognizer.recognize(parsedUrl);
+        var matchPromises = possibleMatches.map(function (candidate) { return _this._completePrimaryRouteMatch(candidate); });
         return async_1.PromiseWrapper.all(matchPromises).then(mostSpecific);
     };
-    RouteRegistry.prototype._auxRoutesToUnresolved = function (auxRoutes, parentInstructions) {
+    RouteRegistry.prototype._completePrimaryRouteMatch = function (partialMatch) {
         var _this = this;
-        var unresolvedAuxInstructions = {};
-        auxRoutes.forEach(function (auxUrl) {
-            unresolvedAuxInstructions[auxUrl.path] = new instruction_1.UnresolvedInstruction(function () { return _this._recognize(auxUrl, parentInstructions, true); });
+        var instruction = partialMatch.instruction;
+        return instruction.resolveComponentType().then(function (componentType) {
+            _this.configFromComponent(componentType);
+            if (instruction.terminal) {
+                return new instruction_1.PrimaryInstruction(instruction, null, partialMatch.remainingAux);
+            }
+            return _this._recognizePrimaryRoute(partialMatch.remaining, componentType)
+                .then(function (childInstruction) {
+                if (lang_1.isBlank(childInstruction)) {
+                    return null;
+                }
+                else {
+                    return new instruction_1.PrimaryInstruction(instruction, childInstruction, partialMatch.remainingAux);
+                }
+            });
         });
-        return unresolvedAuxInstructions;
+    };
+    RouteRegistry.prototype._completeAuxiliaryRouteMatches = function (instruction, parentComponent) {
+        var _this = this;
+        if (lang_1.isBlank(instruction)) {
+            return _resolveToNull;
+        }
+        var componentRecognizer = this._rules.get(parentComponent);
+        var auxInstructions = {};
+        var promises = instruction.auxUrls.map(function (auxSegment) {
+            var match = componentRecognizer.recognizeAuxiliary(auxSegment);
+            if (lang_1.isBlank(match)) {
+                return _resolveToNull;
+            }
+            return _this._completePrimaryRouteMatch(match).then(function (auxInstruction) {
+                if (lang_1.isPresent(auxInstruction)) {
+                    return _this._completeAuxiliaryRouteMatches(auxInstruction, parentComponent)
+                        .then(function (finishedAuxRoute) {
+                        auxInstructions[auxSegment.path] = finishedAuxRoute;
+                    });
+                }
+            });
+        });
+        return async_1.PromiseWrapper.all(promises).then(function (_) {
+            if (lang_1.isBlank(instruction.child)) {
+                return new instruction_1.Instruction(instruction.component, null, auxInstructions);
+            }
+            return _this._completeAuxiliaryRouteMatches(instruction.child, instruction.component.componentType)
+                .then(function (completeChild) {
+                return new instruction_1.Instruction(instruction.component, completeChild, auxInstructions);
+            });
+        });
     };
     /**
      * Given a normalized list with component names and params like: `['user', {id: 3 }]`
      * generates a url with a leading slash relative to the provided `parentComponent`.
-     *
-     * If the optional param `_aux` is `true`, then we generate starting at an auxiliary
-     * route boundary.
      */
-    RouteRegistry.prototype.generate = function (linkParams, ancestorInstructions, _aux) {
-        if (_aux === void 0) { _aux = false; }
-        var normalizedLinkParams = splitAndFlattenLinkParams(linkParams);
-        var first = collection_1.ListWrapper.first(normalizedLinkParams);
-        var rest = collection_1.ListWrapper.slice(normalizedLinkParams, 1);
-        // The first segment should be either '.' (generate from parent) or '' (generate from root).
-        // When we normalize above, we strip all the slashes, './' becomes '.' and '/' becomes ''.
-        if (first == '') {
-            ancestorInstructions = [];
-        }
-        else if (first == '..') {
-            // we already captured the first instance of "..", so we need to pop off an ancestor
-            ancestorInstructions.pop();
-            while (collection_1.ListWrapper.first(rest) == '..') {
-                rest = collection_1.ListWrapper.slice(rest, 1);
-                ancestorInstructions.pop();
-                if (ancestorInstructions.length <= 0) {
-                    throw new exceptions_1.BaseException("Link \"" + collection_1.ListWrapper.toJSON(linkParams) + "\" has too many \"../\" segments.");
+    RouteRegistry.prototype.generate = function (linkParams, parentComponent) {
+        var segments = [];
+        var componentCursor = parentComponent;
+        var lastInstructionIsTerminal = false;
+        for (var i = 0; i < linkParams.length; i += 1) {
+            var segment = linkParams[i];
+            if (lang_1.isBlank(componentCursor)) {
+                throw new exceptions_1.BaseException("Could not find route named \"" + segment + "\".");
+            }
+            if (!lang_1.isString(segment)) {
+                throw new exceptions_1.BaseException("Unexpected segment \"" + segment + "\" in link DSL. Expected a string.");
+            }
+            else if (segment == '' || segment == '.' || segment == '..') {
+                throw new exceptions_1.BaseException("\"" + segment + "/\" is only allowed at the beginning of a link DSL.");
+            }
+            var params = {};
+            if (i + 1 < linkParams.length) {
+                var nextSegment = linkParams[i + 1];
+                if (lang_1.isStringMap(nextSegment)) {
+                    params = nextSegment;
+                    i += 1;
                 }
             }
-        }
-        else if (first != '.') {
-            var parentComponent = this._rootComponent;
-            var grandparentComponent = null;
-            if (ancestorInstructions.length > 1) {
-                parentComponent =
-                    ancestorInstructions[ancestorInstructions.length - 1].component.componentType;
-                grandparentComponent =
-                    ancestorInstructions[ancestorInstructions.length - 2].component.componentType;
+            var componentRecognizer = this._rules.get(componentCursor);
+            if (lang_1.isBlank(componentRecognizer)) {
+                throw new exceptions_1.BaseException("Component \"" + lang_1.getTypeNameForDebugging(componentCursor) + "\" has no route config.");
             }
-            else if (ancestorInstructions.length == 1) {
-                parentComponent = ancestorInstructions[0].component.componentType;
-                grandparentComponent = this._rootComponent;
+            var response = componentRecognizer.generate(segment, params);
+            if (lang_1.isBlank(response)) {
+                throw new exceptions_1.BaseException("Component \"" + lang_1.getTypeNameForDebugging(componentCursor) + "\" has no route named \"" + segment + "\".");
             }
-            // For a link with no leading `./`, `/`, or `../`, we look for a sibling and child.
-            // If both exist, we throw. Otherwise, we prefer whichever exists.
-            var childRouteExists = this.hasRoute(first, parentComponent);
-            var parentRouteExists = lang_1.isPresent(grandparentComponent) && this.hasRoute(first, grandparentComponent);
-            if (parentRouteExists && childRouteExists) {
-                var msg = "Link \"" + collection_1.ListWrapper.toJSON(linkParams) + "\" is ambiguous, use \"./\" or \"../\" to disambiguate.";
-                throw new exceptions_1.BaseException(msg);
-            }
-            if (parentRouteExists) {
-                ancestorInstructions.pop();
-            }
-            rest = linkParams;
+            segments.push(response);
+            componentCursor = response.componentType;
+            lastInstructionIsTerminal = response.terminal;
         }
-        if (rest[rest.length - 1] == '') {
-            rest.pop();
-        }
-        if (rest.length < 1) {
-            var msg = "Link \"" + collection_1.ListWrapper.toJSON(linkParams) + "\" must include a route name.";
-            throw new exceptions_1.BaseException(msg);
-        }
-        var generatedInstruction = this._generate(rest, ancestorInstructions, _aux);
-        for (var i = ancestorInstructions.length - 1; i >= 0; i--) {
-            var ancestorInstruction = ancestorInstructions[i];
-            generatedInstruction = ancestorInstruction.replaceChild(generatedInstruction);
-        }
-        return generatedInstruction;
-    };
-    /*
-     * Internal helper that does not make any assertions about the beginning of the link DSL
-     */
-    RouteRegistry.prototype._generate = function (linkParams, ancestorInstructions, _aux) {
-        var _this = this;
-        if (_aux === void 0) { _aux = false; }
-        var parentComponent = ancestorInstructions.length > 0 ?
-            ancestorInstructions[ancestorInstructions.length - 1].component.componentType :
-            this._rootComponent;
-        if (linkParams.length == 0) {
-            return this.generateDefault(parentComponent);
-        }
-        var linkIndex = 0;
-        var routeName = linkParams[linkIndex];
-        if (!lang_1.isString(routeName)) {
-            throw new exceptions_1.BaseException("Unexpected segment \"" + routeName + "\" in link DSL. Expected a string.");
-        }
-        else if (routeName == '' || routeName == '.' || routeName == '..') {
-            throw new exceptions_1.BaseException("\"" + routeName + "/\" is only allowed at the beginning of a link DSL.");
-        }
-        var params = {};
-        if (linkIndex + 1 < linkParams.length) {
-            var nextSegment_1 = linkParams[linkIndex + 1];
-            if (lang_1.isStringMap(nextSegment_1) && !lang_1.isArray(nextSegment_1)) {
-                params = nextSegment_1;
-                linkIndex += 1;
-            }
-        }
-        var auxInstructions = {};
-        var nextSegment;
-        while (linkIndex + 1 < linkParams.length && lang_1.isArray(nextSegment = linkParams[linkIndex + 1])) {
-            var auxParentInstruction = ancestorInstructions.length > 0 ?
-                [ancestorInstructions[ancestorInstructions.length - 1]] :
-                [];
-            var auxInstruction = this._generate(nextSegment, auxParentInstruction, true);
-            // TODO: this will not work for aux routes with parameters or multiple segments
-            auxInstructions[auxInstruction.component.urlPath] = auxInstruction;
-            linkIndex += 1;
-        }
-        var componentRecognizer = this._rules.get(parentComponent);
-        if (lang_1.isBlank(componentRecognizer)) {
-            throw new exceptions_1.BaseException("Component \"" + lang_1.getTypeNameForDebugging(parentComponent) + "\" has no route config.");
-        }
-        var routeRecognizer = (_aux ? componentRecognizer.auxNames : componentRecognizer.names).get(routeName);
-        if (!lang_1.isPresent(routeRecognizer)) {
-            throw new exceptions_1.BaseException("Component \"" + lang_1.getTypeNameForDebugging(parentComponent) + "\" has no route named \"" + routeName + "\".");
-        }
-        if (!lang_1.isPresent(routeRecognizer.handler.componentType)) {
-            var compInstruction = routeRecognizer.generateComponentPathValues(params);
-            return new instruction_1.UnresolvedInstruction(function () {
-                return routeRecognizer.handler.resolveComponentType().then(function (_) { return _this._generate(linkParams, ancestorInstructions, _aux); });
-            }, compInstruction['urlPath'], compInstruction['urlParams']);
-        }
-        var componentInstruction = _aux ? componentRecognizer.generateAuxiliary(routeName, params) :
-            componentRecognizer.generate(routeName, params);
-        var remaining = linkParams.slice(linkIndex + 1);
-        var instruction = new instruction_1.ResolvedInstruction(componentInstruction, null, auxInstructions);
-        // the component is sync
-        if (lang_1.isPresent(componentInstruction.componentType)) {
-            var childInstruction = null;
-            if (linkIndex + 1 < linkParams.length) {
-                var childAncestorComponents = ancestorInstructions.concat([instruction]);
-                childInstruction = this._generate(remaining, childAncestorComponents);
-            }
-            else if (!componentInstruction.terminal) {
-                // ... look for defaults
-                childInstruction = this.generateDefault(componentInstruction.componentType);
-                if (lang_1.isBlank(childInstruction)) {
-                    throw new exceptions_1.BaseException("Link \"" + collection_1.ListWrapper.toJSON(linkParams) + "\" does not resolve to a terminal instruction.");
+        var instruction = null;
+        if (!lastInstructionIsTerminal) {
+            instruction = this._generateRedirects(componentCursor);
+            if (lang_1.isPresent(instruction)) {
+                var lastInstruction = instruction;
+                while (lang_1.isPresent(lastInstruction.child)) {
+                    lastInstruction = lastInstruction.child;
                 }
+                lastInstructionIsTerminal = lastInstruction.component.terminal;
             }
-            instruction.child = childInstruction;
+            if (lang_1.isPresent(componentCursor) && !lastInstructionIsTerminal) {
+                throw new exceptions_1.BaseException("Link \"" + collection_1.ListWrapper.toJSON(linkParams) + "\" does not resolve to a terminal or async instruction.");
+            }
+        }
+        while (segments.length > 0) {
+            instruction = new instruction_1.Instruction(segments.pop(), instruction, {});
         }
         return instruction;
     };
@@ -328,54 +222,44 @@ var RouteRegistry = (function () {
         }
         return componentRecognizer.hasRoute(name);
     };
-    RouteRegistry.prototype.generateDefault = function (componentCursor) {
-        var _this = this;
+    // if the child includes a redirect like : "/" -> "/something",
+    // we want to honor that redirection when creating the link
+    RouteRegistry.prototype._generateRedirects = function (componentCursor) {
         if (lang_1.isBlank(componentCursor)) {
             return null;
         }
         var componentRecognizer = this._rules.get(componentCursor);
-        if (lang_1.isBlank(componentRecognizer) || lang_1.isBlank(componentRecognizer.defaultRoute)) {
+        if (lang_1.isBlank(componentRecognizer)) {
             return null;
         }
-        var defaultChild = null;
-        if (lang_1.isPresent(componentRecognizer.defaultRoute.handler.componentType)) {
-            var componentInstruction = componentRecognizer.defaultRoute.generate({});
-            if (!componentRecognizer.defaultRoute.terminal) {
-                defaultChild = this.generateDefault(componentRecognizer.defaultRoute.handler.componentType);
+        for (var i = 0; i < componentRecognizer.redirects.length; i += 1) {
+            var redirect = componentRecognizer.redirects[i];
+            // we only handle redirecting from an empty segment
+            if (redirect.segments.length == 1 && redirect.segments[0] == '') {
+                var toSegments = url_parser_1.pathSegmentsToUrl(redirect.toSegments);
+                var matches = componentRecognizer.recognize(toSegments);
+                var primaryInstruction = collection_1.ListWrapper.maximum(matches, function (match) { return match.instruction.specificity; });
+                if (lang_1.isPresent(primaryInstruction)) {
+                    var child = this._generateRedirects(primaryInstruction.instruction.componentType);
+                    return new instruction_1.Instruction(primaryInstruction.instruction, child, {});
+                }
+                return null;
             }
-            return new instruction_1.DefaultInstruction(componentInstruction, defaultChild);
         }
-        return new instruction_1.UnresolvedInstruction(function () {
-            return componentRecognizer.defaultRoute.handler.resolveComponentType().then(function () { return _this.generateDefault(componentCursor); });
-        });
+        return null;
     };
     RouteRegistry = __decorate([
-        core_1.Injectable(),
-        __param(0, core_1.Inject(exports.ROUTER_PRIMARY_COMPONENT)), 
-        __metadata('design:paramtypes', [lang_1.Type])
+        core_1.Injectable(), 
+        __metadata('design:paramtypes', [])
     ], RouteRegistry);
     return RouteRegistry;
 })();
 exports.RouteRegistry = RouteRegistry;
 /*
- * Given: ['/a/b', {c: 2}]
- * Returns: ['', 'a', 'b', {c: 2}]
- */
-function splitAndFlattenLinkParams(linkParams) {
-    return linkParams.reduce(function (accumulation, item) {
-        if (lang_1.isString(item)) {
-            var strItem = item;
-            return accumulation.concat(strItem.split('/'));
-        }
-        accumulation.push(item);
-        return accumulation;
-    }, []);
-}
-/*
  * Given a list of instructions, returns the most specific instruction
  */
 function mostSpecific(instructions) {
-    return collection_1.ListWrapper.maximum(instructions, function (instruction) { return instruction.specificity; });
+    return collection_1.ListWrapper.maximum(instructions, function (instruction) { return instruction.component.specificity; });
 }
 function assertTerminalComponent(component, path) {
     if (!lang_1.isType(component)) {

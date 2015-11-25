@@ -21,8 +21,6 @@ export class RouteConfig {
  * - `name` is an optional `CamelCase` string representing the name of the route.
  * - `data` is an optional property of any type representing arbitrary route metadata for the given
  * route. It is injectable via {@link RouteData}.
- * - `useAsDefault` is a boolean value. If `true`, the child route will be navigated to if no child
- * route is specified during the navigation.
  *
  * ### Example
  * ```
@@ -40,20 +38,16 @@ export class Route implements RouteDefinition {
   path: string;
   component: Type;
   name: string;
-  useAsDefault: boolean;
   // added next three properties to work around https://github.com/Microsoft/TypeScript/issues/4107
   aux: string = null;
   loader: Function = null;
-  redirectTo: any[] = null;
-  constructor({path, component, name, data, useAsDefault}: {
-    path: string,
-    component: Type, name?: string, data?: {[key: string]: any}, useAsDefault?: boolean
-  }) {
+  redirectTo: string = null;
+  constructor({path, component, name,
+               data}: {path: string, component: Type, name?: string, data?: {[key: string]: any}}) {
     this.path = path;
     this.component = component;
     this.name = name;
     this.data = data;
-    this.useAsDefault = useAsDefault;
   }
 }
 
@@ -86,8 +80,7 @@ export class AuxRoute implements RouteDefinition {
   // added next three properties to work around https://github.com/Microsoft/TypeScript/issues/4107
   aux: string = null;
   loader: Function = null;
-  redirectTo: any[] = null;
-  useAsDefault: boolean = false;
+  redirectTo: string = null;
   constructor({path, component, name}: {path: string, component: Type, name?: string}) {
     this.path = path;
     this.component = component;
@@ -105,8 +98,6 @@ export class AuxRoute implements RouteDefinition {
  * - `name` is an optional `CamelCase` string representing the name of the route.
  * - `data` is an optional property of any type representing arbitrary route metadata for the given
  * route. It is injectable via {@link RouteData}.
- * - `useAsDefault` is a boolean value. If `true`, the child route will be navigated to if no child
- * route is specified during the navigation.
  *
  * ### Example
  * ```
@@ -124,37 +115,31 @@ export class AsyncRoute implements RouteDefinition {
   path: string;
   loader: Function;
   name: string;
-  useAsDefault: boolean;
   aux: string = null;
-  constructor({path, loader, name, data, useAsDefault}: {
-    path: string,
-    loader: Function, name?: string, data?: {[key: string]: any}, useAsDefault?: boolean
-  }) {
+  constructor({path, loader, name, data}:
+                  {path: string, loader: Function, name?: string, data?: {[key: string]: any}}) {
     this.path = path;
     this.loader = loader;
     this.name = name;
     this.data = data;
-    this.useAsDefault = useAsDefault;
   }
 }
 
 /**
- * `Redirect` is a type of {@link RouteDefinition} used to route a path to a canonical route.
+ * `Redirect` is a type of {@link RouteDefinition} used to route a path to an asynchronously loaded
+ * component.
  *
  * It has the following properties:
  * - `path` is a string that uses the route matcher DSL.
- * - `redirectTo` is an array representing the link DSL.
- *
- * Note that redirects **do not** affect how links are generated. For that, see the `useAsDefault`
- * option.
+ * - `redirectTo` is a string representing the new URL to be matched against.
  *
  * ### Example
  * ```
  * import {RouteConfig} from 'angular2/router';
  *
  * @RouteConfig([
- *   {path: '/', redirectTo: ['/Home'] },
- *   {path: '/home', component: HomeCmp, name: 'Home'}
+ *   {path: '/', redirectTo: '/home'},
+ *   {path: '/home', component: HomeCmp}
  * ])
  * class MyApp {}
  * ```
@@ -162,14 +147,13 @@ export class AsyncRoute implements RouteDefinition {
 @CONST()
 export class Redirect implements RouteDefinition {
   path: string;
-  redirectTo: any[];
+  redirectTo: string;
   name: string = null;
   // added next three properties to work around https://github.com/Microsoft/TypeScript/issues/4107
   loader: Function = null;
   data: any = null;
   aux: string = null;
-  useAsDefault: boolean = false;
-  constructor({path, redirectTo}: {path: string, redirectTo: any[]}) {
+  constructor({path, redirectTo}: {path: string, redirectTo: string}) {
     this.path = path;
     this.redirectTo = redirectTo;
   }

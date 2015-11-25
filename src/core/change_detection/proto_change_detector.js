@@ -219,6 +219,10 @@ var _ConvertAstIntoProtoRecords = (function () {
         var args = ast.expressions.map(function (e) { return e.visit(_this); });
         return this._addRecord(proto_record_1.RecordType.Chain, "chain", null, args, null, 0);
     };
+    _ConvertAstIntoProtoRecords.prototype.visitQuote = function (ast) {
+        throw new exceptions_1.BaseException(("Caught uninterpreted expression at " + ast.location + ": " + ast.uninterpretedExpression + ". ") +
+            ("Expression prefix " + ast.prefix + " did not match a template transformer to interpret the expression."));
+    };
     _ConvertAstIntoProtoRecords.prototype._visitAll = function (asts) {
         var res = collection_1.ListWrapper.createFixedSize(asts.length);
         for (var i = 0; i < asts.length; ++i) {

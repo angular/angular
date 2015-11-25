@@ -1,7 +1,8 @@
 import { RegExpWrapper, StringWrapper, isPresent, isBlank } from 'angular2/src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
-import { StringMapWrapper } from 'angular2/src/facade/collection';
+import { Map, StringMapWrapper } from 'angular2/src/facade/collection';
 import { RootUrl, serializeParams } from './url_parser';
+import { ComponentInstruction_ } from './instruction';
 class TouchMap {
     constructor(map) {
         this.map = {};
@@ -18,7 +19,7 @@ class TouchMap {
         return this.map[key];
     }
     getUnused() {
-        var unused = {};
+        var unused = StringMapWrapper.create();
         var keys = StringMapWrapper.keys(this.keys);
         keys.forEach(key => unused[key] = StringMapWrapper.get(this.map, key));
         return unused;
@@ -102,6 +103,7 @@ function parsePathString(route) {
         }
         else if (segment == '...') {
             if (i < limit) {
+                // TODO (matsko): setup a proper error here `
                 throw new BaseException(`Unexpected "..." before the end of the path for "${route}".`);
             }
             results.push(new ContinuationSegment());
@@ -148,13 +150,21 @@ function assertPath(path) {
         throw new BaseException(`Path "${path}" contains "${illegalCharacter[0]}" which is not allowed in a route config.`);
     }
 }
-/**
- * Parses a URL string using a given matcher DSL, and generates URLs from param maps
- */
+export class PathMatch {
+    constructor(instruction, remaining, remainingAux) {
+        this.instruction = instruction;
+        this.remaining = remaining;
+        this.remainingAux = remainingAux;
+    }
+}
+// represents something like '/foo/:bar'
 export class PathRecognizer {
-    constructor(path) {
+    // TODO: cache component instruction instances by params and by ParsedUrl instance
+    constructor(path, handler) {
         this.path = path;
+        this.handler = handler;
         this.terminal = true;
+        this._cache = new Map();
         assertPath(path);
         var parsed = parsePathString(path);
         this._segments = parsed['segments'];
@@ -199,6 +209,7 @@ export class PathRecognizer {
         }
         var urlPath = captured.join('/');
         var auxiliary;
+        var instruction;
         var urlParams;
         var allParams;
         if (isPresent(currentSegment)) {
@@ -215,7 +226,8 @@ export class PathRecognizer {
             auxiliary = [];
             urlParams = [];
         }
-        return { urlPath, urlParams, allParams, auxiliary, nextSegment };
+        instruction = this._getInstruction(urlPath, urlParams, this, allParams);
+        return new PathMatch(instruction, nextSegment, auxiliary);
     }
     generate(params) {
         var paramTokens = new TouchMap(params);
@@ -229,6 +241,15 @@ export class PathRecognizer {
         var urlPath = path.join('/');
         var nonPositionalParams = paramTokens.getUnused();
         var urlParams = serializeParams(nonPositionalParams);
-        return { urlPath, urlParams };
+        return this._getInstruction(urlPath, urlParams, this, params);
+    }
+    _getInstruction(urlPath, urlParams, _recognizer, params) {
+        var hashKey = urlPath + '?' + urlParams.join('?');
+        if (this._cache.has(hashKey)) {
+            return this._cache.get(hashKey);
+        }
+        var instruction = new ComponentInstruction_(urlPath, urlParams, _recognizer, params);
+        this._cache.set(hashKey, instruction);
+        return instruction;
     }
 }

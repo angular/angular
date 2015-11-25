@@ -12,6 +12,32 @@ var AST = (function () {
     return AST;
 })();
 exports.AST = AST;
+/**
+ * Represents a quoted expression of the form:
+ *
+ * quote = prefix `:` uninterpretedExpression
+ * prefix = identifier
+ * uninterpretedExpression = arbitrary string
+ *
+ * A quoted expression is meant to be pre-processed by an AST transformer that
+ * converts it into another AST that no longer contains quoted expressions.
+ * It is meant to allow third-party developers to extend Angular template
+ * expression language. The `uninterpretedExpression` part of the quote is
+ * therefore not interpreted by the Angular's own expression parser.
+ */
+var Quote = (function (_super) {
+    __extends(Quote, _super);
+    function Quote(prefix, uninterpretedExpression, location) {
+        _super.call(this);
+        this.prefix = prefix;
+        this.uninterpretedExpression = uninterpretedExpression;
+        this.location = location;
+    }
+    Quote.prototype.visit = function (visitor) { return visitor.visitQuote(this); };
+    Quote.prototype.toString = function () { return "Quote"; };
+    return Quote;
+})(AST);
+exports.Quote = Quote;
 var EmptyExpr = (function (_super) {
     __extends(EmptyExpr, _super);
     function EmptyExpr() {
@@ -324,6 +350,7 @@ var RecursiveAstVisitor = (function () {
         asts.forEach(function (ast) { return ast.visit(_this); });
         return null;
     };
+    RecursiveAstVisitor.prototype.visitQuote = function (ast) { return null; };
     return RecursiveAstVisitor;
 })();
 exports.RecursiveAstVisitor = RecursiveAstVisitor;
@@ -383,6 +410,9 @@ var AstTransformer = (function () {
         return res;
     };
     AstTransformer.prototype.visitChain = function (ast) { return new Chain(this.visitAll(ast.expressions)); };
+    AstTransformer.prototype.visitQuote = function (ast) {
+        return new Quote(ast.prefix, ast.uninterpretedExpression, ast.location);
+    };
     return AstTransformer;
 })();
 exports.AstTransformer = AstTransformer;

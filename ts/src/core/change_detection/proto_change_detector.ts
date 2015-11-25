@@ -22,6 +22,7 @@ import {
   LiteralPrimitive,
   MethodCall,
   PrefixNot,
+  Quote,
   SafePropertyRead,
   SafeMethodCall
 } from './parser/ast';
@@ -289,6 +290,12 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
   visitChain(ast: Chain): number {
     var args = ast.expressions.map(e => e.visit(this));
     return this._addRecord(RecordType.Chain, "chain", null, args, null, 0);
+  }
+
+  visitQuote(ast: Quote): void {
+    throw new BaseException(
+        `Caught uninterpreted expression at ${ast.location}: ${ast.uninterpretedExpression}. ` +
+        `Expression prefix ${ast.prefix} did not match a template transformer to interpret the expression.`);
   }
 
   private _visitAll(asts: any[]) {
