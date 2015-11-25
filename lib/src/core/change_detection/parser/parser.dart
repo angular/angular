@@ -47,7 +47,8 @@ import "ast.dart"
         FunctionCall,
         TemplateBinding,
         ASTWithSource,
-        AstVisitor;
+        AstVisitor,
+        Quote;
 
 var _implicitReceiver = new ImplicitReceiver();
 // TODO(tbosch): Cannot make this const/final right now because of the transpiler...
@@ -80,19 +81,48 @@ class Parser {
   }
 
   ASTWithSource parseBinding(String input, dynamic location) {
-    this._checkNoInterpolation(input, location);
-    var tokens = this._lexer.tokenize(input);
-    var ast = new _ParseAST(input, location, tokens, this._reflector, false)
-        .parseChain();
+    var ast = this._parseBindingAst(input, location);
     return new ASTWithSource(ast, input, location);
   }
 
   ASTWithSource parseSimpleBinding(String input, String location) {
+    var ast = this._parseBindingAst(input, location);
+    if (!SimpleExpressionChecker.check(ast)) {
+      throw new ParseException(
+          "Host binding expression can only contain field access and constants",
+          input,
+          location);
+    }
+    return new ASTWithSource(ast, input, location);
+  }
+
+  AST _parseBindingAst(String input, String location) {
+    // Quotes expressions use 3rd-party expression language. We don't want to use
+
+    // our lexer or parser for that, so we check for that ahead of time.
+    var quote = this._parseQuote(input, location);
+    if (isPresent(quote)) {
+      return quote;
+    }
     this._checkNoInterpolation(input, location);
     var tokens = this._lexer.tokenize(input);
-    var ast = new _ParseAST(input, location, tokens, this._reflector, false)
-        .parseSimpleBinding();
-    return new ASTWithSource(ast, input, location);
+    return new _ParseAST(input, location, tokens, this._reflector, false)
+        .parseChain();
+  }
+
+  AST _parseQuote(String input, dynamic location) {
+    if (isBlank(input)) return null;
+    var prefixSeparatorIndex = input.indexOf(":");
+    if (prefixSeparatorIndex == -1) return null;
+    var prefix = input.substring(0, prefixSeparatorIndex);
+    var uninterpretedExpression = input.substring(prefixSeparatorIndex + 1);
+    // while we do not interpret the expression, we do interpret the prefix
+    var prefixTokens = this._lexer.tokenize(prefix);
+    // quote prefix must be a single legal identifier
+    if (prefixTokens.length != 1 ||
+        !prefixTokens[0].isIdentifier()) return null;
+    return new Quote(
+        prefixTokens[0].strValue, uninterpretedExpression, location);
   }
 
   List<TemplateBinding> parseTemplateBindings(String input, dynamic location) {
@@ -241,15 +271,6 @@ class _ParseAST {
     }
     this.advance();
     return n.toString();
-  }
-
-  AST parseSimpleBinding() {
-    var ast = this.parseChain();
-    if (!SimpleExpressionChecker.check(ast)) {
-      this.error(
-          '''Simple binding expression can only contain field access and constants\'''');
-    }
-    return ast;
   }
 
   AST parseChain() {
@@ -693,6 +714,10 @@ class SimpleExpressionChecker implements AstVisitor {
   }
 
   visitChain(Chain ast) {
+    this.simple = false;
+  }
+
+  visitQuote(Quote ast) {
     this.simple = false;
   }
 }

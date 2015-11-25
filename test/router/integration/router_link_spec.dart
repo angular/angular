@@ -12,7 +12,7 @@ import "package:angular2/testing_internal.dart"
         expect,
         iit,
         inject,
-        beforeEachProviders,
+        beforeEachBindings,
         it,
         xit,
         TestComponentBuilder,
@@ -22,7 +22,7 @@ import "package:angular2/src/facade/lang.dart" show NumberWrapper;
 import "package:angular2/src/facade/async.dart" show PromiseWrapper;
 import "package:angular2/src/facade/collection.dart" show ListWrapper;
 import "package:angular2/core.dart"
-    show provide, Component, View, DirectiveResolver;
+    show provide, Component, DirectiveResolver, View;
 import "package:angular2/src/mock/location_mock.dart" show SpyLocation;
 import "package:angular2/router.dart"
     show
@@ -32,12 +32,10 @@ import "package:angular2/router.dart"
         RouterLink,
         RouterOutlet,
         AsyncRoute,
-        AuxRoute,
         Route,
         RouteParams,
         RouteConfig,
-        ROUTER_DIRECTIVES,
-        ROUTER_PRIMARY_COMPONENT;
+        ROUTER_DIRECTIVES;
 import "package:angular2/src/router/router.dart" show RootRouter;
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
 
@@ -46,12 +44,13 @@ main() {
     TestComponentBuilder tcb;
     ComponentFixture fixture;
     var router, location;
-    beforeEachProviders(() => [
+    beforeEachBindings(() => [
           RouteRegistry,
           DirectiveResolver,
           provide(Location, useClass: SpyLocation),
-          provide(ROUTER_PRIMARY_COMPONENT, useValue: MyComp),
-          provide(Router, useClass: RootRouter)
+          provide(Router, useFactory: (registry, location) {
+            return new RootRouter(registry, location, MyComp);
+          }, deps: [RouteRegistry, Location])
         ]);
     beforeEach(
         inject([TestComponentBuilder, Router, Location], (tcBuilder, rtr, loc) {
@@ -208,8 +207,7 @@ main() {
                         loader: parentCmpLoader,
                         name: "ChildWithGrandchild")
                   ]))
-              .then((_) =>
-                  router.navigateByUrl("/child-with-grandchild/grandchild"))
+              .then((_) => router.navigate(["/ChildWithGrandchild"]))
               .then((_) {
             fixture.detectChanges();
             expect(DOM.getAttribute(
@@ -241,22 +239,6 @@ main() {
                         .componentViewChildren[2].componentViewChildren[0]
                     .nativeElement,
                 "href")).toEqual("/book/1984/page/2");
-            async.done();
-          });
-        }));
-    it(
-        "should generate links to auxiliary routes",
-        inject([AsyncTestCompleter], (async) {
-          compile()
-              .then((_) => router
-                  .config([new Route(path: "/...", component: AuxLinkCmp)]))
-              .then((_) => router.navigateByUrl("/"))
-              .then((_) {
-            fixture.detectChanges();
-            expect(DOM.getAttribute(
-                fixture.debugElement.componentViewChildren[1]
-                    .componentViewChildren[0].nativeElement,
-                "href")).toEqual("/(aside)");
             async.done();
           });
         }));
@@ -389,7 +371,8 @@ class MyComp {
   var name;
 }
 
-@Component(selector: "user-cmp", template: "hello {{user}}")
+@Component(selector: "user-cmp")
+@View(template: "hello {{user}}")
 class UserCmp {
   String user;
   UserCmp(RouteParams params) {
@@ -397,8 +380,8 @@ class UserCmp {
   }
 }
 
-@Component(
-    selector: "page-cmp",
+@Component(selector: "page-cmp")
+@View(
     template:
         '''page #{{pageNumber}} | <a href="hello" [router-link]="[\'../Page\', {number: nextPage}]">next</a>''',
     directives: const [RouterLink])
@@ -411,8 +394,8 @@ class SiblingPageCmp {
   }
 }
 
-@Component(
-    selector: "page-cmp",
+@Component(selector: "page-cmp")
+@View(
     template:
         '''page #{{pageNumber}} | <a href="hello" [router-link]="[\'Page\', {number: nextPage}]">next</a>''',
     directives: const [RouterLink])
@@ -425,18 +408,20 @@ class NoPrefixSiblingPageCmp {
   }
 }
 
-@Component(selector: "hello-cmp", template: "hello")
+@Component(selector: "hello-cmp")
+@View(template: "hello")
 class HelloCmp {}
 
-@Component(selector: "hello2-cmp", template: "hello2")
+@Component(selector: "hello2-cmp")
+@View(template: "hello2")
 class Hello2Cmp {}
 
 parentCmpLoader() {
   return PromiseWrapper.resolve(ParentCmp);
 }
 
-@Component(
-    selector: "parent-cmp",
+@Component(selector: "parent-cmp")
+@View(
     template:
         '''{ <a [router-link]="[\'./Grandchild\']" class="grandchild-link">Grandchild</a>
                <a [router-link]="[\'./BetterGrandchild\']" class="better-grandchild-link">Better Grandchild</a>
@@ -449,10 +434,13 @@ parentCmpLoader() {
       component: Hello2Cmp,
       name: "BetterGrandchild")
 ])
-class ParentCmp {}
+class ParentCmp {
+  Router router;
+  ParentCmp(this.router) {}
+}
 
-@Component(
-    selector: "book-cmp",
+@Component(selector: "book-cmp")
+@View(
     template:
         '''<a href="hello" [router-link]="[\'./Page\', {number: 100}]">{{title}}</a> |
     <router-outlet></router-outlet>''',
@@ -467,8 +455,8 @@ class BookCmp {
   }
 }
 
-@Component(
-    selector: "book-cmp",
+@Component(selector: "book-cmp")
+@View(
     template:
         '''<a href="hello" [router-link]="[\'Page\', {number: 100}]">{{title}}</a> |
     <router-outlet></router-outlet>''',
@@ -483,8 +471,8 @@ class NoPrefixBookCmp {
   }
 }
 
-@Component(
-    selector: "book-cmp",
+@Component(selector: "book-cmp")
+@View(
     template:
         '''<a href="hello" [router-link]="[\'Book\', {number: 100}]">{{title}}</a> |
     <router-outlet></router-outlet>''',
@@ -498,14 +486,3 @@ class AmbiguousBookCmp {
     this.title = params.get("title");
   }
 }
-
-@Component(
-    selector: "aux-cmp",
-    template: '''<a [router-link]="[\'./Hello\', [ \'Aside\' ] ]">aside</a> |
-    <router-outlet></router-outlet> | aside <router-outlet name="aside"></router-outlet>''',
-    directives: ROUTER_DIRECTIVES)
-@RouteConfig(const [
-  const Route(path: "/", component: HelloCmp, name: "Hello"),
-  const AuxRoute(path: "/aside", component: Hello2Cmp, name: "Aside")
-])
-class AuxLinkCmp {}
