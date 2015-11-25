@@ -9,7 +9,8 @@ export "src/router/router.dart" show Router;
 export "src/router/router_outlet.dart" show RouterOutlet;
 export "src/router/router_link.dart" show RouterLink;
 export "src/router/instruction.dart" show RouteParams, RouteData;
-export "src/router/route_registry.dart" show RouteRegistry;
+export "src/router/route_registry.dart"
+    show RouteRegistry, ROUTER_PRIMARY_COMPONENT;
 export "src/router/location_strategy.dart" show LocationStrategy, APP_BASE_HREF;
 export "src/router/hash_location_strategy.dart" show HashLocationStrategy;
 export "src/router/path_location_strategy.dart" show PathLocationStrategy;
@@ -26,39 +27,13 @@ import "src/router/path_location_strategy.dart" show PathLocationStrategy;
 import "src/router/router.dart" show Router, RootRouter;
 import "src/router/router_outlet.dart" show RouterOutlet;
 import "src/router/router_link.dart" show RouterLink;
-import "src/router/route_registry.dart" show RouteRegistry;
+import "src/router/route_registry.dart"
+    show RouteRegistry, ROUTER_PRIMARY_COMPONENT;
 import "src/router/location.dart" show Location;
 import "package:angular2/core.dart"
     show ApplicationRef, provide, OpaqueToken, Provider;
 import "package:angular2/src/facade/exceptions.dart" show BaseException;
 
-/**
- * Token used to bind the component with the top-level [RouteConfig]s for the
- * application.
- *
- * ### Example ([live demo](http://plnkr.co/edit/iRUP8B5OUbxCWQ3AcIDm))
- *
- * ```
- * import {Component} from 'angular2/angular2';
- * import {
- *   ROUTER_DIRECTIVES,
- *   ROUTER_PROVIDERS,
- *   RouteConfig
- * } from 'angular2/router';
- *
- * @Component({directives: [ROUTER_DIRECTIVES]})
- * @RouteConfig([
- *  {...},
- * ])
- * class AppCmp {
- *   // ...
- * }
- *
- * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
- * ```
- */
-const OpaqueToken ROUTER_PRIMARY_COMPONENT =
-    const OpaqueToken("RouterPrimaryComponent");
 /**
  * A list of directives. To use the router directives like [RouterOutlet] and
  * [RouterLink], add this to your `directives` array in the [View] decorator of your

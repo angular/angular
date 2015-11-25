@@ -11,7 +11,7 @@ import "package:angular2/testing_internal.dart"
         expect,
         iit,
         inject,
-        beforeEachBindings,
+        beforeEachProviders,
         it,
         xit,
         TestComponentBuilder;
@@ -27,22 +27,16 @@ import "package:angular2/router.dart"
         RouterOutlet,
         Route,
         RouteParams,
-        Instruction,
         ComponentInstruction;
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
-import "package:angular2/src/router/instruction.dart"
-    show ComponentInstruction_;
-import "package:angular2/src/router/path_recognizer.dart" show PathRecognizer;
-import "package:angular2/src/router/sync_route_handler.dart"
-    show SyncRouteHandler;
+import "package:angular2/src/router/instruction.dart" show ResolvedInstruction;
 
-var dummyPathRecognizer = new PathRecognizer("", new SyncRouteHandler(null));
-var dummyInstruction = new Instruction(
-    new ComponentInstruction_("detail", [], dummyPathRecognizer), null, {});
+var dummyInstruction = new ResolvedInstruction(
+    new ComponentInstruction("detail", [], null, null, true, 0), null, {});
 main() {
   describe("router-link directive", () {
     TestComponentBuilder tcb;
-    beforeEachBindings(() => [
+    beforeEachProviders(() => [
           provide(Location, useValue: makeDummyLocation()),
           provide(Router, useValue: makeDummyRouter())
         ]);
@@ -101,11 +95,6 @@ main() {
           });
         }));
   });
-}
-
-@Component(selector: "my-comp")
-class MyComp {
-  var name;
 }
 
 @Component(selector: "user-cmp")
