@@ -26,6 +26,7 @@ import "parser/ast.dart"
         LiteralPrimitive,
         MethodCall,
         PrefixNot,
+        Quote,
         SafePropertyRead,
         SafeMethodCall;
 import "interfaces.dart"
@@ -347,6 +348,12 @@ class _ConvertAstIntoProtoRecords implements AstVisitor {
   num visitChain(Chain ast) {
     var args = ast.expressions.map((e) => e.visit(this)).toList();
     return this._addRecord(RecordType.Chain, "chain", null, args, null, 0);
+  }
+
+  void visitQuote(Quote ast) {
+    throw new BaseException(
+        '''Caught uninterpreted expression at ${ ast . location}: ${ ast . uninterpretedExpression}. ''' +
+            '''Expression prefix ${ ast . prefix} did not match a template transformer to interpret the expression.''');
   }
 
   _visitAll(List<dynamic> asts) {
