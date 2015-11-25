@@ -385,6 +385,21 @@ function isWhitespace(code) {
 function isIdentifierStart(code) {
     return ($a <= code && code <= $z) || ($A <= code && code <= $Z) || (code == $_) || (code == exports.$$);
 }
+function isIdentifier(input) {
+    if (input.length == 0)
+        return false;
+    var scanner = new _Scanner(input);
+    if (!isIdentifierStart(scanner.peek))
+        return false;
+    scanner.advance();
+    while (scanner.peek !== exports.$EOF) {
+        if (!isIdentifierPart(scanner.peek))
+            return false;
+        scanner.advance();
+    }
+    return true;
+}
+exports.isIdentifier = isIdentifier;
 function isIdentifierPart(code) {
     return ($a <= code && code <= $z) || ($A <= code && code <= $Z) || ($0 <= code && code <= $9) ||
         (code == $_) || (code == exports.$$);

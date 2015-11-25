@@ -71,14 +71,11 @@ var Parser = (function () {
         var prefixSeparatorIndex = input.indexOf(':');
         if (prefixSeparatorIndex == -1)
             return null;
-        var prefix = input.substring(0, prefixSeparatorIndex);
-        var uninterpretedExpression = input.substring(prefixSeparatorIndex + 1);
-        // while we do not interpret the expression, we do interpret the prefix
-        var prefixTokens = this._lexer.tokenize(prefix);
-        // quote prefix must be a single legal identifier
-        if (prefixTokens.length != 1 || !prefixTokens[0].isIdentifier())
+        var prefix = input.substring(0, prefixSeparatorIndex).trim();
+        if (!lexer_1.isIdentifier(prefix))
             return null;
-        return new ast_1.Quote(prefixTokens[0].strValue, uninterpretedExpression, location);
+        var uninterpretedExpression = input.substring(prefixSeparatorIndex + 1);
+        return new ast_1.Quote(prefix, uninterpretedExpression, location);
     };
     Parser.prototype.parseTemplateBindings = function (input, location) {
         var tokens = this._lexer.tokenize(input);

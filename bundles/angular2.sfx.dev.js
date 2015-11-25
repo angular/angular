@@ -15304,6 +15304,21 @@ System.register("angular2/src/core/change_detection/parser/lexer", ["angular2/sr
   function isIdentifierStart(code) {
     return ($a <= code && code <= $z) || ($A <= code && code <= $Z) || (code == $_) || (code == exports.$$);
   }
+  function isIdentifier(input) {
+    if (input.length == 0)
+      return false;
+    var scanner = new _Scanner(input);
+    if (!isIdentifierStart(scanner.peek))
+      return false;
+    scanner.advance();
+    while (scanner.peek !== exports.$EOF) {
+      if (!isIdentifierPart(scanner.peek))
+        return false;
+      scanner.advance();
+    }
+    return true;
+  }
+  exports.isIdentifier = isIdentifier;
   function isIdentifierPart(code) {
     return ($a <= code && code <= $z) || ($A <= code && code <= $Z) || ($0 <= code && code <= $9) || (code == $_) || (code == exports.$$);
   }
@@ -15429,12 +15444,11 @@ System.register("angular2/src/core/change_detection/parser/parser", ["angular2/s
       var prefixSeparatorIndex = input.indexOf(':');
       if (prefixSeparatorIndex == -1)
         return null;
-      var prefix = input.substring(0, prefixSeparatorIndex);
-      var uninterpretedExpression = input.substring(prefixSeparatorIndex + 1);
-      var prefixTokens = this._lexer.tokenize(prefix);
-      if (prefixTokens.length != 1 || !prefixTokens[0].isIdentifier())
+      var prefix = input.substring(0, prefixSeparatorIndex).trim();
+      if (!lexer_1.isIdentifier(prefix))
         return null;
-      return new ast_1.Quote(prefixTokens[0].strValue, uninterpretedExpression, location);
+      var uninterpretedExpression = input.substring(prefixSeparatorIndex + 1);
+      return new ast_1.Quote(prefix, uninterpretedExpression, location);
     };
     Parser.prototype.parseTemplateBindings = function(input, location) {
       var tokens = this._lexer.tokenize(input);

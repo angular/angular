@@ -70,3 +70,4 @@ export declare class ScannerError extends BaseException {
     constructor(message: any);
     toString(): string;
 }
+export declare function isIdentifier(input: string): boolean;
