@@ -17,6 +17,7 @@ exports.RouteParams = instruction_1.RouteParams;
 exports.RouteData = instruction_1.RouteData;
 var route_registry_1 = require('./src/router/route_registry');
 exports.RouteRegistry = route_registry_1.RouteRegistry;
+exports.ROUTER_PRIMARY_COMPONENT = route_registry_1.ROUTER_PRIMARY_COMPONENT;
 var location_strategy_1 = require('./src/router/location_strategy');
 exports.LocationStrategy = location_strategy_1.LocationStrategy;
 exports.APP_BASE_HREF = location_strategy_1.APP_BASE_HREF;
@@ -45,32 +46,6 @@ var location_2 = require('./src/router/location');
 var core_2 = require('angular2/core');
 var lang_1 = require('./src/facade/lang');
 var exceptions_1 = require('angular2/src/facade/exceptions');
-/**
- * Token used to bind the component with the top-level {@link RouteConfig}s for the
- * application.
- *
- * ### Example ([live demo](http://plnkr.co/edit/iRUP8B5OUbxCWQ3AcIDm))
- *
- * ```
- * import {Component} from 'angular2/angular2';
- * import {
- *   ROUTER_DIRECTIVES,
- *   ROUTER_PROVIDERS,
- *   RouteConfig
- * } from 'angular2/router';
- *
- * @Component({directives: [ROUTER_DIRECTIVES]})
- * @RouteConfig([
- *  {...},
- * ])
- * class AppCmp {
- *   // ...
- * }
- *
- * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
- * ```
- */
-exports.ROUTER_PRIMARY_COMPONENT = lang_1.CONST_EXPR(new core_2.OpaqueToken('RouterPrimaryComponent'));
 /**
  * A list of directives. To use the router directives like {@link RouterOutlet} and
  * {@link RouterLink}, add this to your `directives` array in the {@link View} decorator of your
@@ -124,9 +99,9 @@ exports.ROUTER_PROVIDERS = lang_1.CONST_EXPR([
     location_2.Location,
     lang_1.CONST_EXPR(new core_2.Provider(router_2.Router, {
         useFactory: routerFactory,
-        deps: lang_1.CONST_EXPR([route_registry_2.RouteRegistry, location_2.Location, exports.ROUTER_PRIMARY_COMPONENT, core_2.ApplicationRef])
+        deps: lang_1.CONST_EXPR([route_registry_2.RouteRegistry, location_2.Location, route_registry_2.ROUTER_PRIMARY_COMPONENT, core_2.ApplicationRef])
     })),
-    lang_1.CONST_EXPR(new core_2.Provider(exports.ROUTER_PRIMARY_COMPONENT, { useFactory: routerPrimaryComponentFactory, deps: lang_1.CONST_EXPR([core_2.ApplicationRef]) }))
+    lang_1.CONST_EXPR(new core_2.Provider(route_registry_2.ROUTER_PRIMARY_COMPONENT, { useFactory: routerPrimaryComponentFactory, deps: lang_1.CONST_EXPR([core_2.ApplicationRef]) }))
 ]);
 /**
  * @deprecated

@@ -7,7 +7,7 @@ export { Router } from './src/router/router';
 export { RouterOutlet } from './src/router/router_outlet';
 export { RouterLink } from './src/router/router_link';
 export { RouteParams, RouteData } from './src/router/instruction';
-export { RouteRegistry } from './src/router/route_registry';
+export { RouteRegistry, ROUTER_PRIMARY_COMPONENT } from './src/router/route_registry';
 export { LocationStrategy, APP_BASE_HREF } from './src/router/location_strategy';
 export { HashLocationStrategy } from './src/router/hash_location_strategy';
 export { PathLocationStrategy } from './src/router/path_location_strategy';
@@ -22,37 +22,11 @@ import { PathLocationStrategy } from './src/router/path_location_strategy';
 import { Router, RootRouter } from './src/router/router';
 import { RouterOutlet } from './src/router/router_outlet';
 import { RouterLink } from './src/router/router_link';
-import { RouteRegistry } from './src/router/route_registry';
+import { RouteRegistry, ROUTER_PRIMARY_COMPONENT } from './src/router/route_registry';
 import { Location } from './src/router/location';
-import { ApplicationRef, OpaqueToken, Provider } from 'angular2/core';
+import { ApplicationRef, Provider } from 'angular2/core';
 import { CONST_EXPR } from './src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
-/**
- * Token used to bind the component with the top-level {@link RouteConfig}s for the
- * application.
- *
- * ### Example ([live demo](http://plnkr.co/edit/iRUP8B5OUbxCWQ3AcIDm))
- *
- * ```
- * import {Component} from 'angular2/angular2';
- * import {
- *   ROUTER_DIRECTIVES,
- *   ROUTER_PROVIDERS,
- *   RouteConfig
- * } from 'angular2/router';
- *
- * @Component({directives: [ROUTER_DIRECTIVES]})
- * @RouteConfig([
- *  {...},
- * ])
- * class AppCmp {
- *   // ...
- * }
- *
- * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
- * ```
- */
-export const ROUTER_PRIMARY_COMPONENT = CONST_EXPR(new OpaqueToken('RouterPrimaryComponent'));
 /**
  * A list of directives. To use the router directives like {@link RouterOutlet} and
  * {@link RouterLink}, add this to your `directives` array in the {@link View} decorator of your

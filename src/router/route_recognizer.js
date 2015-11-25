@@ -1,138 +1,110 @@
-'use strict';var lang_1 = require('angular2/src/facade/lang');
+'use strict';var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var lang_1 = require('angular2/src/facade/lang');
 var exceptions_1 = require('angular2/src/facade/exceptions');
+var promise_1 = require('angular2/src/facade/promise');
 var collection_1 = require('angular2/src/facade/collection');
+var instruction_1 = require('./instruction');
 var path_recognizer_1 = require('./path_recognizer');
-var route_config_impl_1 = require('./route_config_impl');
-var async_route_handler_1 = require('./async_route_handler');
-var sync_route_handler_1 = require('./sync_route_handler');
-var url_parser_1 = require('./url_parser');
-/**
- * `RouteRecognizer` is responsible for recognizing routes for a single component.
- * It is consumed by `RouteRegistry`, which knows how to recognize an entire hierarchy of
- * components.
- */
-var RouteRecognizer = (function () {
-    function RouteRecognizer() {
-        this.names = new collection_1.Map();
-        this.auxRoutes = new collection_1.Map();
-        // TODO: optimize this into a trie
-        this.matchers = [];
-        // TODO: optimize this into a trie
-        this.redirects = [];
+var RouteMatch = (function () {
+    function RouteMatch() {
     }
-    RouteRecognizer.prototype.config = function (config) {
-        var handler;
-        if (lang_1.isPresent(config.name) && config.name[0].toUpperCase() != config.name[0]) {
-            var suggestedName = config.name[0].toUpperCase() + config.name.substring(1);
-            throw new exceptions_1.BaseException("Route \"" + config.path + "\" with name \"" + config.name + "\" does not begin with an uppercase letter. Route names should be CamelCase like \"" + suggestedName + "\".");
-        }
-        if (config instanceof route_config_impl_1.AuxRoute) {
-            handler = new sync_route_handler_1.SyncRouteHandler(config.component, config.data);
-            var path = config.path.startsWith('/') ? config.path.substring(1) : config.path;
-            var recognizer = new path_recognizer_1.PathRecognizer(config.path, handler);
-            this.auxRoutes.set(path, recognizer);
-            return recognizer.terminal;
-        }
-        if (config instanceof route_config_impl_1.Redirect) {
-            this.redirects.push(new Redirector(config.path, config.redirectTo));
-            return true;
-        }
-        if (config instanceof route_config_impl_1.Route) {
-            handler = new sync_route_handler_1.SyncRouteHandler(config.component, config.data);
-        }
-        else if (config instanceof route_config_impl_1.AsyncRoute) {
-            handler = new async_route_handler_1.AsyncRouteHandler(config.loader, config.data);
-        }
-        var recognizer = new path_recognizer_1.PathRecognizer(config.path, handler);
-        this.matchers.forEach(function (matcher) {
-            if (recognizer.hash == matcher.hash) {
-                throw new exceptions_1.BaseException("Configuration '" + config.path + "' conflicts with existing route '" + matcher.path + "'");
-            }
-        });
-        this.matchers.push(recognizer);
-        if (lang_1.isPresent(config.name)) {
-            this.names.set(config.name, recognizer);
-        }
-        return recognizer.terminal;
-    };
-    /**
-     * Given a URL, returns a list of `RouteMatch`es, which are partial recognitions for some route.
-     *
-     */
-    RouteRecognizer.prototype.recognize = function (urlParse) {
-        var solutions = [];
-        urlParse = this._redirect(urlParse);
-        this.matchers.forEach(function (pathRecognizer) {
-            var pathMatch = pathRecognizer.recognize(urlParse);
-            if (lang_1.isPresent(pathMatch)) {
-                solutions.push(pathMatch);
-            }
-        });
-        return solutions;
-    };
-    /** @internal */
-    RouteRecognizer.prototype._redirect = function (urlParse) {
-        for (var i = 0; i < this.redirects.length; i += 1) {
-            var redirector = this.redirects[i];
-            var redirectedUrl = redirector.redirect(urlParse);
-            if (lang_1.isPresent(redirectedUrl)) {
-                return redirectedUrl;
-            }
-        }
-        return urlParse;
-    };
-    RouteRecognizer.prototype.recognizeAuxiliary = function (urlParse) {
-        var pathRecognizer = this.auxRoutes.get(urlParse.path);
-        if (lang_1.isBlank(pathRecognizer)) {
-            return null;
-        }
-        return pathRecognizer.recognize(urlParse);
-    };
-    RouteRecognizer.prototype.hasRoute = function (name) { return this.names.has(name); };
-    RouteRecognizer.prototype.generate = function (name, params) {
-        var pathRecognizer = this.names.get(name);
-        if (lang_1.isBlank(pathRecognizer)) {
-            return null;
-        }
-        return pathRecognizer.generate(params);
-    };
-    return RouteRecognizer;
+    return RouteMatch;
 })();
-exports.RouteRecognizer = RouteRecognizer;
-var Redirector = (function () {
-    function Redirector(path, redirectTo) {
-        this.segments = [];
-        this.toSegments = [];
-        if (path.startsWith('/')) {
-            path = path.substring(1);
-        }
-        this.segments = path.split('/');
-        if (redirectTo.startsWith('/')) {
-            redirectTo = redirectTo.substring(1);
-        }
-        this.toSegments = redirectTo.split('/');
+exports.RouteMatch = RouteMatch;
+var PathMatch = (function (_super) {
+    __extends(PathMatch, _super);
+    function PathMatch(instruction, remaining, remainingAux) {
+        _super.call(this);
+        this.instruction = instruction;
+        this.remaining = remaining;
+        this.remainingAux = remainingAux;
+    }
+    return PathMatch;
+})(RouteMatch);
+exports.PathMatch = PathMatch;
+var RedirectMatch = (function (_super) {
+    __extends(RedirectMatch, _super);
+    function RedirectMatch(redirectTo, specificity) {
+        _super.call(this);
+        this.redirectTo = redirectTo;
+        this.specificity = specificity;
+    }
+    return RedirectMatch;
+})(RouteMatch);
+exports.RedirectMatch = RedirectMatch;
+var RedirectRecognizer = (function () {
+    function RedirectRecognizer(path, redirectTo) {
+        this.path = path;
+        this.redirectTo = redirectTo;
+        this._pathRecognizer = new path_recognizer_1.PathRecognizer(path);
+        this.hash = this._pathRecognizer.hash;
     }
     /**
      * Returns `null` or a `ParsedUrl` representing the new path to match
      */
-    Redirector.prototype.redirect = function (urlParse) {
-        for (var i = 0; i < this.segments.length; i += 1) {
-            if (lang_1.isBlank(urlParse)) {
-                return null;
-            }
-            var segment = this.segments[i];
-            if (segment != urlParse.path) {
-                return null;
-            }
-            urlParse = urlParse.child;
+    RedirectRecognizer.prototype.recognize = function (beginningSegment) {
+        var match = null;
+        if (lang_1.isPresent(this._pathRecognizer.recognize(beginningSegment))) {
+            match = new RedirectMatch(this.redirectTo, this._pathRecognizer.specificity);
         }
-        for (var i = this.toSegments.length - 1; i >= 0; i -= 1) {
-            var segment = this.toSegments[i];
-            urlParse = new url_parser_1.Url(segment, urlParse);
-        }
-        return urlParse;
+        return promise_1.PromiseWrapper.resolve(match);
     };
-    return Redirector;
+    RedirectRecognizer.prototype.generate = function (params) {
+        throw new exceptions_1.BaseException("Tried to generate a redirect.");
+    };
+    return RedirectRecognizer;
 })();
-exports.Redirector = Redirector;
+exports.RedirectRecognizer = RedirectRecognizer;
+// represents something like '/foo/:bar'
+var RouteRecognizer = (function () {
+    // TODO: cache component instruction instances by params and by ParsedUrl instance
+    function RouteRecognizer(path, handler) {
+        this.path = path;
+        this.handler = handler;
+        this.terminal = true;
+        this._cache = new collection_1.Map();
+        this._pathRecognizer = new path_recognizer_1.PathRecognizer(path);
+        this.specificity = this._pathRecognizer.specificity;
+        this.hash = this._pathRecognizer.hash;
+        this.terminal = this._pathRecognizer.terminal;
+    }
+    RouteRecognizer.prototype.recognize = function (beginningSegment) {
+        var _this = this;
+        var res = this._pathRecognizer.recognize(beginningSegment);
+        if (lang_1.isBlank(res)) {
+            return null;
+        }
+        return this.handler.resolveComponentType().then(function (_) {
+            var componentInstruction = _this._getInstruction(res['urlPath'], res['urlParams'], res['allParams']);
+            return new PathMatch(componentInstruction, res['nextSegment'], res['auxiliary']);
+        });
+    };
+    RouteRecognizer.prototype.generate = function (params) {
+        var generated = this._pathRecognizer.generate(params);
+        var urlPath = generated['urlPath'];
+        var urlParams = generated['urlParams'];
+        return this._getInstruction(urlPath, urlParams, params);
+    };
+    RouteRecognizer.prototype.generateComponentPathValues = function (params) {
+        return this._pathRecognizer.generate(params);
+    };
+    RouteRecognizer.prototype._getInstruction = function (urlPath, urlParams, params) {
+        if (lang_1.isBlank(this.handler.componentType)) {
+            throw new exceptions_1.BaseException("Tried to get instruction before the type was loaded.");
+        }
+        var hashKey = urlPath + '?' + urlParams.join('?');
+        if (this._cache.has(hashKey)) {
+            return this._cache.get(hashKey);
+        }
+        var instruction = new instruction_1.ComponentInstruction(urlPath, urlParams, this.handler.data, this.handler.componentType, this.terminal, this.specificity, params);
+        this._cache.set(hashKey, instruction);
+        return instruction;
+    };
+    return RouteRecognizer;
+})();
+exports.RouteRecognizer = RouteRecognizer;
 //# sourceMappingURL=route_recognizer.js.map

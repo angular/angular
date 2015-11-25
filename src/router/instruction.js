@@ -4,8 +4,8 @@
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
 var collection_1 = require('angular2/src/facade/collection');
-var exceptions_1 = require('angular2/src/facade/exceptions');
 var lang_1 = require('angular2/src/facade/lang');
+var async_1 = require('angular2/src/facade/async');
 /**
  * `RouteParams` is an immutable map of parameters for the given route
  * based on the url matcher and optional parameters for that route.
@@ -82,7 +82,7 @@ var RouteData = (function () {
     return RouteData;
 })();
 exports.RouteData = RouteData;
-var BLANK_ROUTE_DATA = new RouteData();
+exports.BLANK_ROUTE_DATA = new RouteData();
 /**
  * `Instruction` is a tree of {@link ComponentInstruction}s with all the information needed
  * to transition each component in the app to a given route, including all auxiliary routes.
@@ -111,79 +111,197 @@ var BLANK_ROUTE_DATA = new RouteData();
  * ```
  */
 var Instruction = (function () {
-    function Instruction(component, child, auxInstruction) {
-        this.component = component;
-        this.child = child;
-        this.auxInstruction = auxInstruction;
+    function Instruction() {
+        this.auxInstruction = {};
     }
+    Object.defineProperty(Instruction.prototype, "urlPath", {
+        get: function () { return this.component.urlPath; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Instruction.prototype, "urlParams", {
+        get: function () { return this.component.urlParams; },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Instruction.prototype, "specificity", {
+        get: function () {
+            var total = 0;
+            if (lang_1.isPresent(this.component)) {
+                total += this.component.specificity;
+            }
+            if (lang_1.isPresent(this.child)) {
+                total += this.child.specificity;
+            }
+            return total;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * converts the instruction into a URL string
+     */
+    Instruction.prototype.toRootUrl = function () { return this.toUrlPath() + this.toUrlQuery(); };
+    /** @internal */
+    Instruction.prototype._toNonRootUrl = function () {
+        return this._stringifyPathMatrixAuxPrefixed() +
+            (lang_1.isPresent(this.child) ? this.child._toNonRootUrl() : '');
+    };
+    Instruction.prototype.toUrlQuery = function () { return this.urlParams.length > 0 ? ('?' + this.urlParams.join('&')) : ''; };
     /**
      * Returns a new instruction that shares the state of the existing instruction, but with
      * the given child {@link Instruction} replacing the existing child.
      */
     Instruction.prototype.replaceChild = function (child) {
-        return new Instruction(this.component, child, this.auxInstruction);
+        return new ResolvedInstruction(this.component, child, this.auxInstruction);
+    };
+    /**
+     * If the final URL for the instruction is ``
+     */
+    Instruction.prototype.toUrlPath = function () {
+        return this.urlPath + this._stringifyAux() +
+            (lang_1.isPresent(this.child) ? this.child._toNonRootUrl() : '');
+    };
+    // default instructions override these
+    Instruction.prototype.toLinkUrl = function () {
+        return this.urlPath + this._stringifyAux() +
+            (lang_1.isPresent(this.child) ? this.child._toLinkUrl() : '');
+    };
+    // this is the non-root version (called recursively)
+    /** @internal */
+    Instruction.prototype._toLinkUrl = function () {
+        return this._stringifyPathMatrixAuxPrefixed() +
+            (lang_1.isPresent(this.child) ? this.child._toLinkUrl() : '');
+    };
+    /** @internal */
+    Instruction.prototype._stringifyPathMatrixAuxPrefixed = function () {
+        var primary = this._stringifyPathMatrixAux();
+        if (primary.length > 0) {
+            primary = '/' + primary;
+        }
+        return primary;
+    };
+    /** @internal */
+    Instruction.prototype._stringifyMatrixParams = function () {
+        return this.urlParams.length > 0 ? (';' + this.component.urlParams.join(';')) : '';
+    };
+    /** @internal */
+    Instruction.prototype._stringifyPathMatrixAux = function () {
+        if (lang_1.isBlank(this.component)) {
+            return '';
+        }
+        return this.urlPath + this._stringifyMatrixParams() + this._stringifyAux();
+    };
+    /** @internal */
+    Instruction.prototype._stringifyAux = function () {
+        var routes = [];
+        collection_1.StringMapWrapper.forEach(this.auxInstruction, function (auxInstruction, _) {
+            routes.push(auxInstruction._stringifyPathMatrixAux());
+        });
+        if (routes.length > 0) {
+            return '(' + routes.join('//') + ')';
+        }
+        return '';
     };
     return Instruction;
 })();
 exports.Instruction = Instruction;
 /**
- * Represents a partially completed instruction during recognition that only has the
- * primary (non-aux) route instructions matched.
- *
- * `PrimaryInstruction` is an internal class used by `RouteRecognizer` while it's
- * figuring out where to navigate.
+ * a resolved instruction has an outlet instruction for itself, but maybe not for...
  */
-var PrimaryInstruction = (function () {
-    function PrimaryInstruction(component, child, auxUrls) {
+var ResolvedInstruction = (function (_super) {
+    __extends(ResolvedInstruction, _super);
+    function ResolvedInstruction(component, child, auxInstruction) {
+        _super.call(this);
         this.component = component;
         this.child = child;
-        this.auxUrls = auxUrls;
+        this.auxInstruction = auxInstruction;
     }
-    return PrimaryInstruction;
-})();
-exports.PrimaryInstruction = PrimaryInstruction;
-function stringifyInstruction(instruction) {
-    return stringifyInstructionPath(instruction) + stringifyInstructionQuery(instruction);
-}
-exports.stringifyInstruction = stringifyInstruction;
-function stringifyInstructionPath(instruction) {
-    return instruction.component.urlPath + stringifyAux(instruction) +
-        stringifyPrimaryPrefixed(instruction.child);
-}
-exports.stringifyInstructionPath = stringifyInstructionPath;
-function stringifyInstructionQuery(instruction) {
-    return instruction.component.urlParams.length > 0 ?
-        ('?' + instruction.component.urlParams.join('&')) :
-        '';
-}
-exports.stringifyInstructionQuery = stringifyInstructionQuery;
-function stringifyPrimaryPrefixed(instruction) {
-    var primary = stringifyPrimary(instruction);
-    if (primary.length > 0) {
-        primary = '/' + primary;
+    ResolvedInstruction.prototype.resolveComponent = function () {
+        return async_1.PromiseWrapper.resolve(this.component);
+    };
+    return ResolvedInstruction;
+})(Instruction);
+exports.ResolvedInstruction = ResolvedInstruction;
+/**
+ * Represents a resolved default route
+ */
+var DefaultInstruction = (function (_super) {
+    __extends(DefaultInstruction, _super);
+    function DefaultInstruction(component, child) {
+        _super.call(this);
+        this.component = component;
+        this.child = child;
     }
-    return primary;
-}
-function stringifyPrimary(instruction) {
-    if (lang_1.isBlank(instruction)) {
-        return '';
+    DefaultInstruction.prototype.resolveComponent = function () {
+        return async_1.PromiseWrapper.resolve(this.component);
+    };
+    DefaultInstruction.prototype.toLinkUrl = function () { return ''; };
+    /** @internal */
+    DefaultInstruction.prototype._toLinkUrl = function () { return ''; };
+    return DefaultInstruction;
+})(Instruction);
+exports.DefaultInstruction = DefaultInstruction;
+/**
+ * Represents a component that may need to do some redirection or lazy loading at a later time.
+ */
+var UnresolvedInstruction = (function (_super) {
+    __extends(UnresolvedInstruction, _super);
+    function UnresolvedInstruction(_resolver, _urlPath, _urlParams) {
+        if (_urlPath === void 0) { _urlPath = ''; }
+        if (_urlParams === void 0) { _urlParams = lang_1.CONST_EXPR([]); }
+        _super.call(this);
+        this._resolver = _resolver;
+        this._urlPath = _urlPath;
+        this._urlParams = _urlParams;
     }
-    var params = instruction.component.urlParams.length > 0 ?
-        (';' + instruction.component.urlParams.join(';')) :
-        '';
-    return instruction.component.urlPath + params + stringifyAux(instruction) +
-        stringifyPrimaryPrefixed(instruction.child);
-}
-function stringifyAux(instruction) {
-    var routes = [];
-    collection_1.StringMapWrapper.forEach(instruction.auxInstruction, function (auxInstruction, _) {
-        routes.push(stringifyPrimary(auxInstruction));
+    Object.defineProperty(UnresolvedInstruction.prototype, "urlPath", {
+        get: function () {
+            if (lang_1.isPresent(this.component)) {
+                return this.component.urlPath;
+            }
+            if (lang_1.isPresent(this._urlPath)) {
+                return this._urlPath;
+            }
+            return '';
+        },
+        enumerable: true,
+        configurable: true
     });
-    if (routes.length > 0) {
-        return '(' + routes.join('//') + ')';
+    Object.defineProperty(UnresolvedInstruction.prototype, "urlParams", {
+        get: function () {
+            if (lang_1.isPresent(this.component)) {
+                return this.component.urlParams;
+            }
+            if (lang_1.isPresent(this._urlParams)) {
+                return this._urlParams;
+            }
+            return [];
+        },
+        enumerable: true,
+        configurable: true
+    });
+    UnresolvedInstruction.prototype.resolveComponent = function () {
+        var _this = this;
+        if (lang_1.isPresent(this.component)) {
+            return async_1.PromiseWrapper.resolve(this.component);
+        }
+        return this._resolver().then(function (resolution) {
+            _this.child = resolution.child;
+            return _this.component = resolution.component;
+        });
+    };
+    return UnresolvedInstruction;
+})(Instruction);
+exports.UnresolvedInstruction = UnresolvedInstruction;
+var RedirectInstruction = (function (_super) {
+    __extends(RedirectInstruction, _super);
+    function RedirectInstruction(component, child, auxInstruction) {
+        _super.call(this, component, child, auxInstruction);
     }
-    return '';
-}
+    return RedirectInstruction;
+})(ResolvedInstruction);
+exports.RedirectInstruction = RedirectInstruction;
 /**
  * A `ComponentInstruction` represents the route state for a single component. An `Instruction` is
  * composed of a tree of these `ComponentInstruction`s.
@@ -192,95 +310,24 @@ function stringifyAux(instruction) {
  * to route lifecycle hooks, like {@link CanActivate}.
  *
  * `ComponentInstruction`s are [https://en.wikipedia.org/wiki/Hash_consing](hash consed). You should
- * never construct one yourself with "new." Instead, rely on {@link Router/PathRecognizer} to
+ * never construct one yourself with "new." Instead, rely on {@link Router/RouteRecognizer} to
  * construct `ComponentInstruction`s.
  *
  * You should not modify this object. It should be treated as immutable.
  */
 var ComponentInstruction = (function () {
-    function ComponentInstruction() {
+    function ComponentInstruction(urlPath, urlParams, data, componentType, terminal, specificity, params) {
+        if (params === void 0) { params = null; }
+        this.urlPath = urlPath;
+        this.urlParams = urlParams;
+        this.componentType = componentType;
+        this.terminal = terminal;
+        this.specificity = specificity;
+        this.params = params;
         this.reuse = false;
+        this.routeData = lang_1.isPresent(data) ? data : exports.BLANK_ROUTE_DATA;
     }
-    Object.defineProperty(ComponentInstruction.prototype, "componentType", {
-        /**
-         * Returns the component type of the represented route, or `null` if this instruction
-         * hasn't been resolved.
-         */
-        get: function () { return exceptions_1.unimplemented(); },
-        enumerable: true,
-        configurable: true
-    });
-    ;
-    Object.defineProperty(ComponentInstruction.prototype, "specificity", {
-        /**
-         * Returns the specificity of the route associated with this `Instruction`.
-         */
-        get: function () { return exceptions_1.unimplemented(); },
-        enumerable: true,
-        configurable: true
-    });
-    ;
-    Object.defineProperty(ComponentInstruction.prototype, "terminal", {
-        /**
-         * Returns `true` if the component type of this instruction has no child {@link RouteConfig},
-         * or `false` if it does.
-         */
-        get: function () { return exceptions_1.unimplemented(); },
-        enumerable: true,
-        configurable: true
-    });
-    ;
-    Object.defineProperty(ComponentInstruction.prototype, "routeData", {
-        /**
-         * Returns the route data of the given route that was specified in the {@link RouteDefinition},
-         * or an empty object if no route data was specified.
-         */
-        get: function () { return exceptions_1.unimplemented(); },
-        enumerable: true,
-        configurable: true
-    });
-    ;
     return ComponentInstruction;
 })();
 exports.ComponentInstruction = ComponentInstruction;
-var ComponentInstruction_ = (function (_super) {
-    __extends(ComponentInstruction_, _super);
-    function ComponentInstruction_(urlPath, urlParams, _recognizer, params) {
-        if (params === void 0) { params = null; }
-        _super.call(this);
-        this._recognizer = _recognizer;
-        this.urlPath = urlPath;
-        this.urlParams = urlParams;
-        this.params = params;
-        if (lang_1.isPresent(this._recognizer.handler.data)) {
-            this._routeData = new RouteData(this._recognizer.handler.data);
-        }
-        else {
-            this._routeData = BLANK_ROUTE_DATA;
-        }
-    }
-    Object.defineProperty(ComponentInstruction_.prototype, "componentType", {
-        get: function () { return this._recognizer.handler.componentType; },
-        enumerable: true,
-        configurable: true
-    });
-    ComponentInstruction_.prototype.resolveComponentType = function () { return this._recognizer.handler.resolveComponentType(); };
-    Object.defineProperty(ComponentInstruction_.prototype, "specificity", {
-        get: function () { return this._recognizer.specificity; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ComponentInstruction_.prototype, "terminal", {
-        get: function () { return this._recognizer.terminal; },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(ComponentInstruction_.prototype, "routeData", {
-        get: function () { return this._routeData; },
-        enumerable: true,
-        configurable: true
-    });
-    return ComponentInstruction_;
-})(ComponentInstruction);
-exports.ComponentInstruction_ = ComponentInstruction_;
 //# sourceMappingURL=instruction.js.map
