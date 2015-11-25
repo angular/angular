@@ -63,3 +63,26 @@ String normalizeQueryParams(String params) {
       ? ("?" + params)
       : params;
 }
+
+String joinWithSlash(String start, String end) {
+  if (start.length == 0) {
+    return end;
+  }
+  if (end.length == 0) {
+    return start;
+  }
+  var slashes = 0;
+  if (start.endsWith("/")) {
+    slashes++;
+  }
+  if (end.startsWith("/")) {
+    slashes++;
+  }
+  if (slashes == 2) {
+    return start + end.substring(1);
+  }
+  if (slashes == 1) {
+    return start + end;
+  }
+  return start + "/" + end;
+}

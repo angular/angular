@@ -526,7 +526,7 @@ var NG_ALL = [
   "COMMON_PIPES",
   "PLATFORM_PIPES:js",
   "DOCUMENT",
-  "DomAdapter",
+  "DomAdapter:dart",
   "DomAdapter.attrToPropMap",
   "DomAdapter.attrToPropMap=",
   "DatePipe",
@@ -604,6 +604,7 @@ var NG_ALL = [
   "DirectiveResolver",
   "DirectiveResolver.resolve()",
   "DynamicComponentLoader",
+  "DomAdapter:js",
   "setRootDomAdapter():js",
   "DOM:js",
   /*
