@@ -10,6 +10,7 @@ import "lexer.dart"
     show
         Lexer,
         EOF,
+        isIdentifier,
         Token,
         $PERIOD,
         $COLON,
@@ -114,15 +115,10 @@ class Parser {
     if (isBlank(input)) return null;
     var prefixSeparatorIndex = input.indexOf(":");
     if (prefixSeparatorIndex == -1) return null;
-    var prefix = input.substring(0, prefixSeparatorIndex);
+    var prefix = input.substring(0, prefixSeparatorIndex).trim();
+    if (!isIdentifier(prefix)) return null;
     var uninterpretedExpression = input.substring(prefixSeparatorIndex + 1);
-    // while we do not interpret the expression, we do interpret the prefix
-    var prefixTokens = this._lexer.tokenize(prefix);
-    // quote prefix must be a single legal identifier
-    if (prefixTokens.length != 1 ||
-        !prefixTokens[0].isIdentifier()) return null;
-    return new Quote(
-        prefixTokens[0].strValue, uninterpretedExpression, location);
+    return new Quote(prefix, uninterpretedExpression, location);
   }
 
   List<TemplateBinding> parseTemplateBindings(String input, dynamic location) {

@@ -414,6 +414,18 @@ bool isIdentifierStart(num code) {
       (code == $$);
 }
 
+bool isIdentifier(String input) {
+  if (input.length == 0) return false;
+  var scanner = new _Scanner(input);
+  if (!isIdentifierStart(scanner.peek)) return false;
+  scanner.advance();
+  while (!identical(scanner.peek, $EOF)) {
+    if (!isIdentifierPart(scanner.peek)) return false;
+    scanner.advance();
+  }
+  return true;
+}
+
 bool isIdentifierPart(num code) {
   return ($a <= code && code <= $z) ||
       ($A <= code && code <= $Z) ||

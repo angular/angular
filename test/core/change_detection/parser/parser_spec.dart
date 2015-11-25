@@ -229,6 +229,9 @@ main() {
         it("should parse quoted expressions", () {
           checkBinding("a:b", "a:b");
         });
+        it("should not crash when prefix part is not tokenizable", () {
+          checkBinding("\"a:b\"", "\"a:b\"");
+        });
         it("should ignore whitespace around quote prefix", () {
           checkBinding(" a :b", "a:b");
         });
