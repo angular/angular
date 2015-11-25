@@ -1,4 +1,4 @@
-import { global } from 'angular2/src/facade/lang';
+import { global, noop } from 'angular2/src/facade/lang';
 export { PromiseWrapper, Promise } from 'angular2/src/facade/promise';
 import { Subject, Observable as RxObservable } from '@reactivex/rxjs/dist/cjs/Rx';
 export { Subject } from '@reactivex/rxjs/dist/cjs/Rx';
@@ -15,6 +15,8 @@ export class TimerWrapper {
 export class ObservableWrapper {
     // TODO(vsavkin): when we use rxnext, try inferring the generic type from the first arg
     static subscribe(emitter, onNext, onError, onComplete = () => { }) {
+        onError = (typeof onError === "function") && onError || noop;
+        onComplete = (typeof onComplete === "function") && onComplete || noop;
         return emitter.subscribe({ next: onNext, error: onError, complete: onComplete });
     }
     static isObservable(obs) { return obs instanceof RxObservable; }
@@ -89,17 +91,34 @@ export class EventEmitter extends Subject {
      */
     next(value) { super.next(value); }
     subscribe(generatorOrNext, error, complete) {
+        let schedulerFn;
+        let errorFn = (err) => null;
+        let completeFn = () => null;
         if (generatorOrNext && typeof generatorOrNext === 'object') {
-            let schedulerFn = this._isAsync ?
-                    (value) => { setTimeout(() => generatorOrNext.next(value)); } :
+            schedulerFn = this._isAsync ? (value) => { setTimeout(() => generatorOrNext.next(value)); } :
                     (value) => { generatorOrNext.next(value); };
-            return super.subscribe(schedulerFn, (err) => generatorOrNext.error ? generatorOrNext.error(err) : null, () => generatorOrNext.complete ? generatorOrNext.complete() : null);
+            if (generatorOrNext.error) {
+                errorFn = this._isAsync ? (err) => { setTimeout(() => generatorOrNext.error(err)); } :
+                        (err) => { generatorOrNext.error(err); };
+            }
+            if (generatorOrNext.complete) {
+                completeFn = this._isAsync ? () => { setTimeout(() => generatorOrNext.complete()); } :
+                        () => { generatorOrNext.complete(); };
+            }
         }
         else {
-            let schedulerFn = this._isAsync ? (value) => { setTimeout(() => generatorOrNext(value)); } :
+            schedulerFn = this._isAsync ? (value) => { setTimeout(() => generatorOrNext(value)); } :
                     (value) => { generatorOrNext(value); };
-            return super.subscribe(schedulerFn, (err) => error ? error(err) : null, () => complete ? complete() : null);
+            if (error) {
+                errorFn =
+                    this._isAsync ? (err) => { setTimeout(() => error(err)); } : (err) => { error(err); };
+            }
+            if (complete) {
+                completeFn =
+                    this._isAsync ? () => { setTimeout(() => complete()); } : () => { complete(); };
+            }
         }
+        return super.subscribe(schedulerFn, errorFn, completeFn);
     }
 }
 // todo(robwormald): ts2dart should handle this properly

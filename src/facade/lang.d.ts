@@ -41,6 +41,7 @@ export declare function isPromise(obj: any): boolean;
 export declare function isArray(obj: any): boolean;
 export declare function isNumber(obj: any): boolean;
 export declare function isDate(obj: any): boolean;
+export declare function noop(): void;
 export declare function stringify(token: any): string;
 export declare function serializeEnum(val: any): number;
 export declare function deserializeEnum(val: any, values: Map<number, any>): any;

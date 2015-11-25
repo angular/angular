@@ -114,6 +114,8 @@ function isDate(obj) {
     return obj instanceof exports.Date && !isNaN(obj.valueOf());
 }
 exports.isDate = isDate;
+function noop() { }
+exports.noop = noop;
 function stringify(token) {
     if (typeof token === 'string') {
         return token;

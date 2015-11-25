@@ -93,6 +93,7 @@ export function isNumber(obj) {
 export function isDate(obj) {
     return obj instanceof Date && !isNaN(obj.valueOf());
 }
+export function noop() { }
 export function stringify(token) {
     if (typeof token === 'string') {
         return token;

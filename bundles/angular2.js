@@ -3381,6 +3381,8 @@ System.register("angular2/src/facade/lang", [], true, function(require, exports,
     return obj instanceof exports.Date && !isNaN(obj.valueOf());
   }
   exports.isDate = isDate;
+  function noop() {}
+  exports.noop = noop;
   function stringify(token) {
     if (typeof token === 'string') {
       return token;
@@ -38629,6 +38631,8 @@ System.register("angular2/src/facade/async", ["angular2/src/facade/lang", "angul
       if (onComplete === void 0) {
         onComplete = function() {};
       }
+      onError = (typeof onError === "function") && onError || lang_1.noop;
+      onComplete = (typeof onComplete === "function") && onComplete || lang_1.noop;
       return emitter.subscribe({
         next: onNext,
         error: onError,
@@ -38681,33 +38685,67 @@ System.register("angular2/src/facade/async", ["angular2/src/facade/lang", "angul
       _super.prototype.next.call(this, value);
     };
     EventEmitter.prototype.subscribe = function(generatorOrNext, error, complete) {
+      var schedulerFn;
+      var errorFn = function(err) {
+        return null;
+      };
+      var completeFn = function() {
+        return null;
+      };
       if (generatorOrNext && typeof generatorOrNext === 'object') {
-        var schedulerFn = this._isAsync ? function(value) {
+        schedulerFn = this._isAsync ? function(value) {
           setTimeout(function() {
             return generatorOrNext.next(value);
           });
         } : function(value) {
           generatorOrNext.next(value);
         };
-        return _super.prototype.subscribe.call(this, schedulerFn, function(err) {
-          return generatorOrNext.error ? generatorOrNext.error(err) : null;
-        }, function() {
-          return generatorOrNext.complete ? generatorOrNext.complete() : null;
-        });
+        if (generatorOrNext.error) {
+          errorFn = this._isAsync ? function(err) {
+            setTimeout(function() {
+              return generatorOrNext.error(err);
+            });
+          } : function(err) {
+            generatorOrNext.error(err);
+          };
+        }
+        if (generatorOrNext.complete) {
+          completeFn = this._isAsync ? function() {
+            setTimeout(function() {
+              return generatorOrNext.complete();
+            });
+          } : function() {
+            generatorOrNext.complete();
+          };
+        }
       } else {
-        var schedulerFn = this._isAsync ? function(value) {
+        schedulerFn = this._isAsync ? function(value) {
           setTimeout(function() {
             return generatorOrNext(value);
           });
         } : function(value) {
           generatorOrNext(value);
         };
-        return _super.prototype.subscribe.call(this, schedulerFn, function(err) {
-          return error ? error(err) : null;
-        }, function() {
-          return complete ? complete() : null;
-        });
+        if (error) {
+          errorFn = this._isAsync ? function(err) {
+            setTimeout(function() {
+              return error(err);
+            });
+          } : function(err) {
+            error(err);
+          };
+        }
+        if (complete) {
+          completeFn = this._isAsync ? function() {
+            setTimeout(function() {
+              return complete();
+            });
+          } : function() {
+            complete();
+          };
+        }
       }
+      return _super.prototype.subscribe.call(this, schedulerFn, errorFn, completeFn);
     };
     return EventEmitter;
   })(Rx_1.Subject);
