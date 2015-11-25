@@ -45,12 +45,14 @@ abstract class GenericMessageBusSink implements MessageBusSink {
 
   void attachToZone(NgZone zone) {
     _zone = zone;
-    _zone.overrideOnEventDone(() {
-      if (_messageBuffer.length > 0) {
-        sendMessages(_messageBuffer);
-        _messageBuffer.clear();
-      }
-    }, false);
+    _zone.runOutsideAngular(() {
+      _zone.onEventDone.listen((_) {
+        if (_messageBuffer.length > 0) {
+          sendMessages(_messageBuffer);
+          _messageBuffer.clear();
+        }
+      });
+    });
   }
 
   void initChannel(String channelName, [bool runInZone = true]) {

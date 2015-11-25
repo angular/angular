@@ -1,13 +1,20 @@
 library angular2.src.mock.ng_zone_mock;
 
 import "package:angular2/src/core/zone/ng_zone.dart" show NgZone;
+import "package:angular2/src/facade/async.dart"
+    show EventEmitter, ObservableWrapper;
 
 class MockNgZone extends NgZone {
   /** @internal */
-  dynamic /* () => void */ _onEventDone;
+  EventEmitter<dynamic> _mockOnEventDone;
   MockNgZone() : super(enableLongStackTrace: false) {
     /* super call moved to initializer */;
+    this._mockOnEventDone = new EventEmitter<dynamic>(false);
   }
+  get onEventDone {
+    return this._mockOnEventDone;
+  }
+
   dynamic run(Function fn) {
     return fn();
   }
@@ -16,12 +23,7 @@ class MockNgZone extends NgZone {
     return fn();
   }
 
-  void overrideOnEventDone(dynamic /* () => void */ fn,
-      [bool opt_waitForAsync = false]) {
-    this._onEventDone = fn;
-  }
-
   void simulateZoneExit() {
-    this._onEventDone();
+    ObservableWrapper.callNext(this.onEventDone, null);
   }
 }
