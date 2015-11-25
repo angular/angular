@@ -395,6 +395,18 @@ function isIdentifierStart(code: number): boolean {
   return ($a <= code && code <= $z) || ($A <= code && code <= $Z) || (code == $_) || (code == $$);
 }
 
+export function isIdentifier(input: string): boolean {
+  if (input.length == 0) return false;
+  var scanner = new _Scanner(input);
+  if (!isIdentifierStart(scanner.peek)) return false;
+  scanner.advance();
+  while (scanner.peek !== $EOF) {
+    if (!isIdentifierPart(scanner.peek)) return false;
+    scanner.advance();
+  }
+  return true;
+}
+
 function isIdentifierPart(code: number): boolean {
   return ($a <= code && code <= $z) || ($A <= code && code <= $Z) || ($0 <= code && code <= $9) ||
          (code == $_) || (code == $$);
