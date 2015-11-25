@@ -14166,23 +14166,6 @@ System.register("angular2/src/core/change_detection/parser/ast", ["angular2/src/
     return AST;
   })();
   exports.AST = AST;
-  var Quote = (function(_super) {
-    __extends(Quote, _super);
-    function Quote(prefix, uninterpretedExpression, location) {
-      _super.call(this);
-      this.prefix = prefix;
-      this.uninterpretedExpression = uninterpretedExpression;
-      this.location = location;
-    }
-    Quote.prototype.visit = function(visitor) {
-      return visitor.visitQuote(this);
-    };
-    Quote.prototype.toString = function() {
-      return "Quote";
-    };
-    return Quote;
-  })(AST);
-  exports.Quote = Quote;
   var EmptyExpr = (function(_super) {
     __extends(EmptyExpr, _super);
     function EmptyExpr() {
@@ -14543,9 +14526,6 @@ System.register("angular2/src/core/change_detection/parser/ast", ["angular2/src/
       });
       return null;
     };
-    RecursiveAstVisitor.prototype.visitQuote = function(ast) {
-      return null;
-    };
     return RecursiveAstVisitor;
   })();
   exports.RecursiveAstVisitor = RecursiveAstVisitor;
@@ -14611,9 +14591,6 @@ System.register("angular2/src/core/change_detection/parser/ast", ["angular2/src/
     };
     AstTransformer.prototype.visitChain = function(ast) {
       return new Chain(this.visitAll(ast.expressions));
-    };
-    AstTransformer.prototype.visitQuote = function(ast) {
-      return new Quote(ast.prefix, ast.uninterpretedExpression, ast.location);
     };
     return AstTransformer;
   })();
@@ -15127,37 +15104,16 @@ System.register("angular2/src/core/change_detection/parser/parser", ["angular2/s
       return new ast_1.ASTWithSource(ast, input, location);
     };
     Parser.prototype.parseBinding = function(input, location) {
-      var ast = this._parseBindingAst(input, location);
+      this._checkNoInterpolation(input, location);
+      var tokens = this._lexer.tokenize(input);
+      var ast = new _ParseAST(input, location, tokens, this._reflector, false).parseChain();
       return new ast_1.ASTWithSource(ast, input, location);
     };
     Parser.prototype.parseSimpleBinding = function(input, location) {
-      var ast = this._parseBindingAst(input, location);
-      if (!SimpleExpressionChecker.check(ast)) {
-        throw new ParseException('Host binding expression can only contain field access and constants', input, location);
-      }
-      return new ast_1.ASTWithSource(ast, input, location);
-    };
-    Parser.prototype._parseBindingAst = function(input, location) {
-      var quote = this._parseQuote(input, location);
-      if (lang_1.isPresent(quote)) {
-        return quote;
-      }
       this._checkNoInterpolation(input, location);
       var tokens = this._lexer.tokenize(input);
-      return new _ParseAST(input, location, tokens, this._reflector, false).parseChain();
-    };
-    Parser.prototype._parseQuote = function(input, location) {
-      if (lang_1.isBlank(input))
-        return null;
-      var prefixSeparatorIndex = input.indexOf(':');
-      if (prefixSeparatorIndex == -1)
-        return null;
-      var prefix = input.substring(0, prefixSeparatorIndex);
-      var uninterpretedExpression = input.substring(prefixSeparatorIndex + 1);
-      var prefixTokens = this._lexer.tokenize(prefix);
-      if (prefixTokens.length != 1 || !prefixTokens[0].isIdentifier())
-        return null;
-      return new ast_1.Quote(prefixTokens[0].strValue, uninterpretedExpression, location);
+      var ast = new _ParseAST(input, location, tokens, this._reflector, false).parseSimpleBinding();
+      return new ast_1.ASTWithSource(ast, input, location);
     };
     Parser.prototype.parseTemplateBindings = function(input, location) {
       var tokens = this._lexer.tokenize(input);
@@ -15286,6 +15242,13 @@ System.register("angular2/src/core/change_detection/parser/parser", ["angular2/s
       }
       this.advance();
       return n.toString();
+    };
+    _ParseAST.prototype.parseSimpleBinding = function() {
+      var ast = this.parseChain();
+      if (!SimpleExpressionChecker.check(ast)) {
+        this.error("Simple binding expression can only contain field access and constants'");
+      }
+      return ast;
     };
     _ParseAST.prototype.parseChain = function() {
       var exprs = [];
@@ -15691,9 +15654,6 @@ System.register("angular2/src/core/change_detection/parser/parser", ["angular2/s
       return res;
     };
     SimpleExpressionChecker.prototype.visitChain = function(ast) {
-      this.simple = false;
-    };
-    SimpleExpressionChecker.prototype.visitQuote = function(ast) {
       this.simple = false;
     };
     return SimpleExpressionChecker;
@@ -32274,9 +32234,6 @@ System.register("angular2/src/core/change_detection/proto_change_detector", ["an
         return e.visit(_this);
       });
       return this._addRecord(proto_record_1.RecordType.Chain, "chain", null, args, null, 0);
-    };
-    _ConvertAstIntoProtoRecords.prototype.visitQuote = function(ast) {
-      throw new exceptions_1.BaseException(("Caught uninterpreted expression at " + ast.location + ": " + ast.uninterpretedExpression + ". ") + ("Expression prefix " + ast.prefix + " did not match a template transformer to interpret the expression."));
     };
     _ConvertAstIntoProtoRecords.prototype._visitAll = function(asts) {
       var res = collection_1.ListWrapper.createFixedSize(asts.length);

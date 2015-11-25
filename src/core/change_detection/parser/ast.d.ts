@@ -2,27 +2,6 @@ export declare class AST {
     visit(visitor: AstVisitor): any;
     toString(): string;
 }
-/**
- * Represents a quoted expression of the form:
- *
- * quote = prefix `:` uninterpretedExpression
- * prefix = identifier
- * uninterpretedExpression = arbitrary string
- *
- * A quoted expression is meant to be pre-processed by an AST transformer that
- * converts it into another AST that no longer contains quoted expressions.
- * It is meant to allow third-party developers to extend Angular template
- * expression language. The `uninterpretedExpression` part of the quote is
- * therefore not interpreted by the Angular's own expression parser.
- */
-export declare class Quote extends AST {
-    prefix: string;
-    uninterpretedExpression: string;
-    location: any;
-    constructor(prefix: string, uninterpretedExpression: string, location: any);
-    visit(visitor: AstVisitor): any;
-    toString(): string;
-}
 export declare class EmptyExpr extends AST {
     visit(visitor: AstVisitor): void;
 }
@@ -174,7 +153,6 @@ export interface AstVisitor {
     visitPrefixNot(ast: PrefixNot): any;
     visitPropertyRead(ast: PropertyRead): any;
     visitPropertyWrite(ast: PropertyWrite): any;
-    visitQuote(ast: Quote): any;
     visitSafeMethodCall(ast: SafeMethodCall): any;
     visitSafePropertyRead(ast: SafePropertyRead): any;
 }
@@ -198,7 +176,6 @@ export declare class RecursiveAstVisitor implements AstVisitor {
     visitSafePropertyRead(ast: SafePropertyRead): any;
     visitSafeMethodCall(ast: SafeMethodCall): any;
     visitAll(asts: AST[]): any;
-    visitQuote(ast: Quote): any;
 }
 export declare class AstTransformer implements AstVisitor {
     visitImplicitReceiver(ast: ImplicitReceiver): AST;
@@ -220,5 +197,4 @@ export declare class AstTransformer implements AstVisitor {
     visitKeyedWrite(ast: KeyedWrite): AST;
     visitAll(asts: any[]): any[];
     visitChain(ast: Chain): AST;
-    visitQuote(ast: Quote): AST;
 }

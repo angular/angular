@@ -3,29 +3,6 @@ export class AST {
     visit(visitor) { return null; }
     toString() { return "AST"; }
 }
-/**
- * Represents a quoted expression of the form:
- *
- * quote = prefix `:` uninterpretedExpression
- * prefix = identifier
- * uninterpretedExpression = arbitrary string
- *
- * A quoted expression is meant to be pre-processed by an AST transformer that
- * converts it into another AST that no longer contains quoted expressions.
- * It is meant to allow third-party developers to extend Angular template
- * expression language. The `uninterpretedExpression` part of the quote is
- * therefore not interpreted by the Angular's own expression parser.
- */
-export class Quote extends AST {
-    constructor(prefix, uninterpretedExpression, location) {
-        super();
-        this.prefix = prefix;
-        this.uninterpretedExpression = uninterpretedExpression;
-        this.location = location;
-    }
-    visit(visitor) { return visitor.visitQuote(this); }
-    toString() { return "Quote"; }
-}
 export class EmptyExpr extends AST {
     visit(visitor) {
         // do nothing
@@ -267,7 +244,6 @@ export class RecursiveAstVisitor {
         asts.forEach(ast => ast.visit(this));
         return null;
     }
-    visitQuote(ast) { return null; }
 }
 export class AstTransformer {
     visitImplicitReceiver(ast) { return ast; }
@@ -323,7 +299,4 @@ export class AstTransformer {
         return res;
     }
     visitChain(ast) { return new Chain(this.visitAll(ast.expressions)); }
-    visitQuote(ast) {
-        return new Quote(ast.prefix, ast.uninterpretedExpression, ast.location);
-    }
 }
