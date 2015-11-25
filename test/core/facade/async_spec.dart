@@ -65,18 +65,44 @@ main() {
       expect(called).toBe(false);
     });
     it(
-        "delivers events asynchronously",
+        "delivers next and error events asynchronously",
         inject([AsyncTestCompleter], (async) {
-          var e = new EventEmitter();
           var log = [];
-          ObservableWrapper.subscribe(e, (x) {
+          ObservableWrapper.subscribe(emitter, (x) {
             log.add(x);
-            expect(log).toEqual([1, 3, 2]);
+            expect(log).toEqual([1, 3, 5, 2]);
+          }, (err) {
+            log.add(err);
+            expect(log).toEqual([1, 3, 5, 2, 4]);
             async.done();
           });
           log.add(1);
-          ObservableWrapper.callEmit(e, 2);
+          ObservableWrapper.callEmit(emitter, 2);
           log.add(3);
+          ObservableWrapper.callError(emitter, 4);
+          log.add(5);
+        }));
+    it(
+        "delivers next and complete events asynchronously",
+        inject([AsyncTestCompleter], (async) {
+          var log = [];
+          ObservableWrapper.subscribe(
+              emitter,
+              (x) {
+                log.add(x);
+                expect(log).toEqual([1, 3, 5, 2]);
+              },
+              null,
+              () {
+                log.add(4);
+                expect(log).toEqual([1, 3, 5, 2, 4]);
+                async.done();
+              });
+          log.add(1);
+          ObservableWrapper.callEmit(emitter, 2);
+          log.add(3);
+          ObservableWrapper.callComplete(emitter);
+          log.add(5);
         }));
     it("delivers events synchronously", () {
       var e = new EventEmitter(false);
@@ -104,6 +130,12 @@ main() {
     it("should correctly check isObservable for Subject", () {
       var e = new Subject();
       expect(ObservableWrapper.isObservable(e)).toBe(true);
+    });
+    it("should subscribe to EventEmitters", () {
+      var e = new EventEmitter(false);
+      ObservableWrapper.subscribe(e, (val) {});
+      ObservableWrapper.callEmit(e, 1);
+      ObservableWrapper.callComplete(e);
     });
   });
   // See ECMAScript 6 Spec 25.4.4.1
