@@ -44628,17 +44628,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.RouteData = instruction_1.RouteData;
 	var route_registry_1 = __webpack_require__(384);
 	exports.RouteRegistry = route_registry_1.RouteRegistry;
+	var platform_location_1 = __webpack_require__(393);
+	exports.PlatformLocation = platform_location_1.PlatformLocation;
 	var location_strategy_1 = __webpack_require__(383);
 	exports.LocationStrategy = location_strategy_1.LocationStrategy;
 	exports.APP_BASE_HREF = location_strategy_1.APP_BASE_HREF;
-	var hash_location_strategy_1 = __webpack_require__(393);
+	var hash_location_strategy_1 = __webpack_require__(394);
 	exports.HashLocationStrategy = hash_location_strategy_1.HashLocationStrategy;
-	var path_location_strategy_1 = __webpack_require__(394);
+	var path_location_strategy_1 = __webpack_require__(395);
 	exports.PathLocationStrategy = path_location_strategy_1.PathLocationStrategy;
 	var location_1 = __webpack_require__(382);
 	exports.Location = location_1.Location;
 	__export(__webpack_require__(392));
-	__export(__webpack_require__(395));
+	__export(__webpack_require__(396));
 	var lifecycle_annotations_1 = __webpack_require__(380);
 	exports.CanActivate = lifecycle_annotations_1.CanActivate;
 	var instruction_2 = __webpack_require__(376);
@@ -44646,8 +44648,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.ComponentInstruction = instruction_2.ComponentInstruction;
 	var core_1 = __webpack_require__(151);
 	exports.OpaqueToken = core_1.OpaqueToken;
+	var platform_location_2 = __webpack_require__(393);
 	var location_strategy_2 = __webpack_require__(383);
-	var path_location_strategy_2 = __webpack_require__(394);
+	var path_location_strategy_2 = __webpack_require__(395);
 	var router_2 = __webpack_require__(375);
 	var router_outlet_2 = __webpack_require__(379);
 	var router_link_2 = __webpack_require__(381);
@@ -44732,6 +44735,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.ROUTER_PROVIDERS = lang_1.CONST_EXPR([
 	    route_registry_2.RouteRegistry,
 	    lang_1.CONST_EXPR(new core_2.Provider(location_strategy_2.LocationStrategy, { useClass: path_location_strategy_2.PathLocationStrategy })),
+	    platform_location_2.PlatformLocation,
 	    location_2.Location,
 	    lang_1.CONST_EXPR(new core_2.Provider(router_2.Router, {
 	        useFactory: routerFactory,
@@ -46130,6 +46134,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return (params.length > 0 && params.substring(0, 1) != '?') ? ('?' + params) : params;
 	}
 	exports.normalizeQueryParams = normalizeQueryParams;
+	function joinWithSlash(start, end) {
+	    if (start.length == 0) {
+	        return end;
+	    }
+	    if (end.length == 0) {
+	        return start;
+	    }
+	    var slashes = 0;
+	    if (start.endsWith('/')) {
+	        slashes++;
+	    }
+	    if (end.startsWith('/')) {
+	        slashes++;
+	    }
+	    if (slashes == 2) {
+	        return start + end.substring(1);
+	    }
+	    if (slashes == 1) {
+	        return start + end;
+	    }
+	    return start + '/' + end;
+	}
+	exports.joinWithSlash = joinWithSlash;
 
 
 /***/ },
@@ -47359,6 +47386,75 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 393 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+	    switch (arguments.length) {
+	        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+	        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+	        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+	    }
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var dom_adapter_1 = __webpack_require__(290);
+	var core_1 = __webpack_require__(151);
+	/**
+	 * `PlatformLocation` encapsulates all of the direct calls to platform APIs.
+	 * This class should not be used directly by an application developer. Instead, use
+	 * {@link Location}.
+	 */
+	var PlatformLocation = (function () {
+	    function PlatformLocation() {
+	        this._init();
+	    }
+	    // This is moved to its own method so that `MockPlatformLocationStrategy` can overwrite it
+	    /** @internal */
+	    PlatformLocation.prototype._init = function () {
+	        this._location = dom_adapter_1.DOM.getLocation();
+	        this._history = dom_adapter_1.DOM.getHistory();
+	    };
+	    PlatformLocation.prototype.getBaseHrefFromDOM = function () { return dom_adapter_1.DOM.getBaseHref(); };
+	    PlatformLocation.prototype.onPopState = function (fn) {
+	        dom_adapter_1.DOM.getGlobalEventTarget('window').addEventListener('popstate', fn, false);
+	    };
+	    PlatformLocation.prototype.onHashChange = function (fn) {
+	        dom_adapter_1.DOM.getGlobalEventTarget('window').addEventListener('hashchange', fn, false);
+	    };
+	    Object.defineProperty(PlatformLocation.prototype, "pathname", {
+	        get: function () { return this._location.pathname; },
+	        set: function (newPath) { this._location.pathname = newPath; },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(PlatformLocation.prototype, "search", {
+	        get: function () { return this._location.search; },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(PlatformLocation.prototype, "hash", {
+	        get: function () { return this._location.hash; },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    PlatformLocation.prototype.pushState = function (state, title, url) {
+	        this._history.pushState(state, title, url);
+	    };
+	    PlatformLocation.prototype.forward = function () { this._history.forward(); };
+	    PlatformLocation.prototype.back = function () { this._history.back(); };
+	    PlatformLocation = __decorate([
+	        core_1.Injectable(), 
+	        __metadata('design:paramtypes', [])
+	    ], PlatformLocation);
+	    return PlatformLocation;
+	})();
+	exports.PlatformLocation = PlatformLocation;
+
+
+/***/ },
+/* 394 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var __extends = (this && this.__extends) || function (d, b) {
 	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
 	    function __() { this.constructor = d; }
@@ -47375,9 +47471,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var dom_adapter_1 = __webpack_require__(290);
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
 	var core_1 = __webpack_require__(151);
 	var location_strategy_1 = __webpack_require__(383);
+	var lang_1 = __webpack_require__(5);
+	var platform_location_1 = __webpack_require__(393);
 	/**
 	 * `HashLocationStrategy` is a {@link LocationStrategy} used to configure the
 	 * {@link Location} service to represent its state in the
@@ -47418,43 +47518,44 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	var HashLocationStrategy = (function (_super) {
 	    __extends(HashLocationStrategy, _super);
-	    function HashLocationStrategy() {
+	    function HashLocationStrategy(_platformLocation, _baseHref) {
 	        _super.call(this);
-	        this._location = dom_adapter_1.DOM.getLocation();
-	        this._history = dom_adapter_1.DOM.getHistory();
+	        this._platformLocation = _platformLocation;
+	        this._baseHref = '';
+	        if (lang_1.isPresent(_baseHref)) {
+	            this._baseHref = _baseHref;
+	        }
 	    }
-	    HashLocationStrategy.prototype.onPopState = function (fn) {
-	        dom_adapter_1.DOM.getGlobalEventTarget('window').addEventListener('popstate', fn, false);
-	    };
-	    HashLocationStrategy.prototype.getBaseHref = function () { return ''; };
+	    HashLocationStrategy.prototype.onPopState = function (fn) { this._platformLocation.onPopState(fn); };
+	    HashLocationStrategy.prototype.getBaseHref = function () { return this._baseHref; };
 	    HashLocationStrategy.prototype.path = function () {
 	        // the hash value is always prefixed with a `#`
 	        // and if it is empty then it will stay empty
-	        var path = this._location.hash;
+	        var path = this._platformLocation.hash;
 	        // Dart will complain if a call to substring is
 	        // executed with a position value that extends the
 	        // length of string.
 	        return (path.length > 0 ? path.substring(1) : path) +
-	            location_strategy_1.normalizeQueryParams(this._location.search);
+	            location_strategy_1.normalizeQueryParams(this._platformLocation.search);
 	    };
 	    HashLocationStrategy.prototype.prepareExternalUrl = function (internal) {
-	        return internal.length > 0 ? ('#' + internal) : internal;
+	        var url = location_strategy_1.joinWithSlash(this._baseHref, internal);
+	        return url.length > 0 ? ('#' + url) : url;
 	    };
 	    HashLocationStrategy.prototype.pushState = function (state, title, path, queryParams) {
-	        var url = path + location_strategy_1.normalizeQueryParams(queryParams);
+	        var url = this.prepareExternalUrl(path + location_strategy_1.normalizeQueryParams(queryParams));
 	        if (url.length == 0) {
-	            url = this._location.pathname;
+	            url = this._platformLocation.pathname;
 	        }
-	        else {
-	            url = this.prepareExternalUrl(url);
-	        }
-	        this._history.pushState(state, title, url);
+	        this._platformLocation.pushState(state, title, url);
 	    };
-	    HashLocationStrategy.prototype.forward = function () { this._history.forward(); };
-	    HashLocationStrategy.prototype.back = function () { this._history.back(); };
+	    HashLocationStrategy.prototype.forward = function () { this._platformLocation.forward(); };
+	    HashLocationStrategy.prototype.back = function () { this._platformLocation.back(); };
 	    HashLocationStrategy = __decorate([
-	        core_1.Injectable(), 
-	        __metadata('design:paramtypes', [])
+	        core_1.Injectable(),
+	        __param(1, core_1.Optional()),
+	        __param(1, core_1.Inject(location_strategy_1.APP_BASE_HREF)), 
+	        __metadata('design:paramtypes', [platform_location_1.PlatformLocation, String])
 	    ], HashLocationStrategy);
 	    return HashLocationStrategy;
 	})(location_strategy_1.LocationStrategy);
@@ -47462,7 +47563,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 394 */
+/* 395 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -47484,11 +47585,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __param = (this && this.__param) || function (paramIndex, decorator) {
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
-	var dom_adapter_1 = __webpack_require__(290);
 	var core_1 = __webpack_require__(151);
 	var lang_1 = __webpack_require__(5);
 	var exceptions_1 = __webpack_require__(162);
 	var location_strategy_1 = __webpack_require__(383);
+	var platform_location_1 = __webpack_require__(393);
 	/**
 	 * `PathLocationStrategy` is a {@link LocationStrategy} used to configure the
 	 * {@link Location} service to represent its state in the
@@ -47536,40 +47637,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	var PathLocationStrategy = (function (_super) {
 	    __extends(PathLocationStrategy, _super);
-	    function PathLocationStrategy(href) {
+	    function PathLocationStrategy(_platformLocation, href) {
 	        _super.call(this);
+	        this._platformLocation = _platformLocation;
 	        if (lang_1.isBlank(href)) {
-	            href = dom_adapter_1.DOM.getBaseHref();
+	            href = this._platformLocation.getBaseHrefFromDOM();
 	        }
 	        if (lang_1.isBlank(href)) {
 	            throw new exceptions_1.BaseException("No base href set. Please provide a value for the APP_BASE_HREF token or add a base element to the document.");
 	        }
-	        this._location = dom_adapter_1.DOM.getLocation();
-	        this._history = dom_adapter_1.DOM.getHistory();
 	        this._baseHref = href;
 	    }
 	    PathLocationStrategy.prototype.onPopState = function (fn) {
-	        dom_adapter_1.DOM.getGlobalEventTarget('window').addEventListener('popstate', fn, false);
-	        dom_adapter_1.DOM.getGlobalEventTarget('window').addEventListener('hashchange', fn, false);
+	        this._platformLocation.onPopState(fn);
+	        this._platformLocation.onHashChange(fn);
 	    };
 	    PathLocationStrategy.prototype.getBaseHref = function () { return this._baseHref; };
-	    PathLocationStrategy.prototype.prepareExternalUrl = function (internal) {
-	        if (internal.startsWith('/') && this._baseHref.endsWith('/')) {
-	            return this._baseHref + internal.substring(1);
-	        }
-	        return this._baseHref + internal;
+	    PathLocationStrategy.prototype.prepareExternalUrl = function (internal) { return location_strategy_1.joinWithSlash(this._baseHref, internal); };
+	    PathLocationStrategy.prototype.path = function () {
+	        return this._platformLocation.pathname + location_strategy_1.normalizeQueryParams(this._platformLocation.search);
 	    };
-	    PathLocationStrategy.prototype.path = function () { return this._location.pathname + location_strategy_1.normalizeQueryParams(this._location.search); };
 	    PathLocationStrategy.prototype.pushState = function (state, title, url, queryParams) {
 	        var externalUrl = this.prepareExternalUrl(url + location_strategy_1.normalizeQueryParams(queryParams));
-	        this._history.pushState(state, title, externalUrl);
+	        this._platformLocation.pushState(state, title, externalUrl);
 	    };
-	    PathLocationStrategy.prototype.forward = function () { this._history.forward(); };
-	    PathLocationStrategy.prototype.back = function () { this._history.back(); };
+	    PathLocationStrategy.prototype.forward = function () { this._platformLocation.forward(); };
+	    PathLocationStrategy.prototype.back = function () { this._platformLocation.back(); };
 	    PathLocationStrategy = __decorate([
 	        core_1.Injectable(),
-	        __param(0, core_1.Inject(location_strategy_1.APP_BASE_HREF)), 
-	        __metadata('design:paramtypes', [String])
+	        __param(1, core_1.Optional()),
+	        __param(1, core_1.Inject(location_strategy_1.APP_BASE_HREF)), 
+	        __metadata('design:paramtypes', [platform_location_1.PlatformLocation, String])
 	    ], PathLocationStrategy);
 	    return PathLocationStrategy;
 	})(location_strategy_1.LocationStrategy);
@@ -47577,7 +47675,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 395 */
+/* 396 */
 /***/ function(module, exports) {
 
 	

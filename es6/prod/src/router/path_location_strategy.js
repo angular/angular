@@ -12,11 +12,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { DOM } from 'angular2/src/platform/dom/dom_adapter';
-import { Injectable, Inject } from 'angular2/core';
+import { Injectable, Inject, Optional } from 'angular2/core';
 import { isBlank } from 'angular2/src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
-import { LocationStrategy, APP_BASE_HREF, normalizeQueryParams } from './location_strategy';
+import { LocationStrategy, APP_BASE_HREF, normalizeQueryParams, joinWithSlash } from './location_strategy';
+import { PlatformLocation } from './platform_location';
 /**
  * `PathLocationStrategy` is a {@link LocationStrategy} used to configure the
  * {@link Location} service to represent its state in the
@@ -63,39 +63,36 @@ import { LocationStrategy, APP_BASE_HREF, normalizeQueryParams } from './locatio
  * ```
  */
 export let PathLocationStrategy = class extends LocationStrategy {
-    constructor(href) {
+    constructor(_platformLocation, href) {
         super();
+        this._platformLocation = _platformLocation;
         if (isBlank(href)) {
-            href = DOM.getBaseHref();
+            href = this._platformLocation.getBaseHrefFromDOM();
         }
         if (isBlank(href)) {
             throw new BaseException(`No base href set. Please provide a value for the APP_BASE_HREF token or add a base element to the document.`);
         }
-        this._location = DOM.getLocation();
-        this._history = DOM.getHistory();
         this._baseHref = href;
     }
     onPopState(fn) {
-        DOM.getGlobalEventTarget('window').addEventListener('popstate', fn, false);
-        DOM.getGlobalEventTarget('window').addEventListener('hashchange', fn, false);
+        this._platformLocation.onPopState(fn);
+        this._platformLocation.onHashChange(fn);
     }
     getBaseHref() { return this._baseHref; }
-    prepareExternalUrl(internal) {
-        if (internal.startsWith('/') && this._baseHref.endsWith('/')) {
-            return this._baseHref + internal.substring(1);
-        }
-        return this._baseHref + internal;
+    prepareExternalUrl(internal) { return joinWithSlash(this._baseHref, internal); }
+    path() {
+        return this._platformLocation.pathname + normalizeQueryParams(this._platformLocation.search);
     }
-    path() { return this._location.pathname + normalizeQueryParams(this._location.search); }
     pushState(state, title, url, queryParams) {
         var externalUrl = this.prepareExternalUrl(url + normalizeQueryParams(queryParams));
-        this._history.pushState(state, title, externalUrl);
+        this._platformLocation.pushState(state, title, externalUrl);
     }
-    forward() { this._history.forward(); }
-    back() { this._history.back(); }
+    forward() { this._platformLocation.forward(); }
+    back() { this._platformLocation.back(); }
 };
 PathLocationStrategy = __decorate([
     Injectable(),
-    __param(0, Inject(APP_BASE_HREF)), 
-    __metadata('design:paramtypes', [String])
+    __param(1, Optional()),
+    __param(1, Inject(APP_BASE_HREF)), 
+    __metadata('design:paramtypes', [PlatformLocation, String])
 ], PathLocationStrategy);

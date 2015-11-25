@@ -9,9 +9,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { DOM } from 'angular2/src/platform/dom/dom_adapter';
-import { Injectable } from 'angular2/core';
-import { LocationStrategy, normalizeQueryParams } from './location_strategy';
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+import { Injectable, Inject, Optional } from 'angular2/core';
+import { LocationStrategy, joinWithSlash, APP_BASE_HREF, normalizeQueryParams } from './location_strategy';
+import { isPresent } from 'angular2/src/facade/lang';
+import { PlatformLocation } from './platform_location';
 /**
  * `HashLocationStrategy` is a {@link LocationStrategy} used to configure the
  * {@link Location} service to represent its state in the
@@ -51,42 +55,43 @@ import { LocationStrategy, normalizeQueryParams } from './location_strategy';
  * ```
  */
 export let HashLocationStrategy = class extends LocationStrategy {
-    constructor() {
+    constructor(_platformLocation, _baseHref) {
         super();
-        this._location = DOM.getLocation();
-        this._history = DOM.getHistory();
+        this._platformLocation = _platformLocation;
+        this._baseHref = '';
+        if (isPresent(_baseHref)) {
+            this._baseHref = _baseHref;
+        }
     }
-    onPopState(fn) {
-        DOM.getGlobalEventTarget('window').addEventListener('popstate', fn, false);
-    }
-    getBaseHref() { return ''; }
+    onPopState(fn) { this._platformLocation.onPopState(fn); }
+    getBaseHref() { return this._baseHref; }
     path() {
         // the hash value is always prefixed with a `#`
         // and if it is empty then it will stay empty
-        var path = this._location.hash;
+        var path = this._platformLocation.hash;
         // Dart will complain if a call to substring is
         // executed with a position value that extends the
         // length of string.
         return (path.length > 0 ? path.substring(1) : path) +
-            normalizeQueryParams(this._location.search);
+            normalizeQueryParams(this._platformLocation.search);
     }
     prepareExternalUrl(internal) {
-        return internal.length > 0 ? ('#' + internal) : internal;
+        var url = joinWithSlash(this._baseHref, internal);
+        return url.length > 0 ? ('#' + url) : url;
     }
     pushState(state, title, path, queryParams) {
-        var url = path + normalizeQueryParams(queryParams);
+        var url = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
         if (url.length == 0) {
-            url = this._location.pathname;
+            url = this._platformLocation.pathname;
         }
-        else {
-            url = this.prepareExternalUrl(url);
-        }
-        this._history.pushState(state, title, url);
+        this._platformLocation.pushState(state, title, url);
     }
-    forward() { this._history.forward(); }
-    back() { this._history.back(); }
+    forward() { this._platformLocation.forward(); }
+    back() { this._platformLocation.back(); }
 };
 HashLocationStrategy = __decorate([
-    Injectable(), 
-    __metadata('design:paramtypes', [])
+    Injectable(),
+    __param(1, Optional()),
+    __param(1, Inject(APP_BASE_HREF)), 
+    __metadata('design:paramtypes', [PlatformLocation, String])
 ], HashLocationStrategy);

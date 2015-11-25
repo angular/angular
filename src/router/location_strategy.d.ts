@@ -55,3 +55,4 @@ export declare abstract class LocationStrategy {
  */
 export declare const APP_BASE_HREF: OpaqueToken;
 export declare function normalizeQueryParams(params: string): string;
+export declare function joinWithSlash(start: string, end: string): string;
