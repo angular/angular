@@ -17,11 +17,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var dom_adapter_1 = require('angular2/src/platform/dom/dom_adapter');
 var core_1 = require('angular2/core');
 var lang_1 = require('angular2/src/facade/lang');
 var exceptions_1 = require('angular2/src/facade/exceptions');
 var location_strategy_1 = require('./location_strategy');
+var platform_location_1 = require('./platform_location');
 /**
  * `PathLocationStrategy` is a {@link LocationStrategy} used to configure the
  * {@link Location} service to represent its state in the
@@ -69,40 +69,37 @@ var location_strategy_1 = require('./location_strategy');
  */
 var PathLocationStrategy = (function (_super) {
     __extends(PathLocationStrategy, _super);
-    function PathLocationStrategy(href) {
+    function PathLocationStrategy(_platformLocation, href) {
         _super.call(this);
+        this._platformLocation = _platformLocation;
         if (lang_1.isBlank(href)) {
-            href = dom_adapter_1.DOM.getBaseHref();
+            href = this._platformLocation.getBaseHrefFromDOM();
         }
         if (lang_1.isBlank(href)) {
             throw new exceptions_1.BaseException("No base href set. Please provide a value for the APP_BASE_HREF token or add a base element to the document.");
         }
-        this._location = dom_adapter_1.DOM.getLocation();
-        this._history = dom_adapter_1.DOM.getHistory();
         this._baseHref = href;
     }
     PathLocationStrategy.prototype.onPopState = function (fn) {
-        dom_adapter_1.DOM.getGlobalEventTarget('window').addEventListener('popstate', fn, false);
-        dom_adapter_1.DOM.getGlobalEventTarget('window').addEventListener('hashchange', fn, false);
+        this._platformLocation.onPopState(fn);
+        this._platformLocation.onHashChange(fn);
     };
     PathLocationStrategy.prototype.getBaseHref = function () { return this._baseHref; };
-    PathLocationStrategy.prototype.prepareExternalUrl = function (internal) {
-        if (internal.startsWith('/') && this._baseHref.endsWith('/')) {
-            return this._baseHref + internal.substring(1);
-        }
-        return this._baseHref + internal;
+    PathLocationStrategy.prototype.prepareExternalUrl = function (internal) { return location_strategy_1.joinWithSlash(this._baseHref, internal); };
+    PathLocationStrategy.prototype.path = function () {
+        return this._platformLocation.pathname + location_strategy_1.normalizeQueryParams(this._platformLocation.search);
     };
-    PathLocationStrategy.prototype.path = function () { return this._location.pathname + location_strategy_1.normalizeQueryParams(this._location.search); };
     PathLocationStrategy.prototype.pushState = function (state, title, url, queryParams) {
         var externalUrl = this.prepareExternalUrl(url + location_strategy_1.normalizeQueryParams(queryParams));
-        this._history.pushState(state, title, externalUrl);
+        this._platformLocation.pushState(state, title, externalUrl);
     };
-    PathLocationStrategy.prototype.forward = function () { this._history.forward(); };
-    PathLocationStrategy.prototype.back = function () { this._history.back(); };
+    PathLocationStrategy.prototype.forward = function () { this._platformLocation.forward(); };
+    PathLocationStrategy.prototype.back = function () { this._platformLocation.back(); };
     PathLocationStrategy = __decorate([
         core_1.Injectable(),
-        __param(0, core_1.Inject(location_strategy_1.APP_BASE_HREF)), 
-        __metadata('design:paramtypes', [String])
+        __param(1, core_1.Optional()),
+        __param(1, core_1.Inject(location_strategy_1.APP_BASE_HREF)), 
+        __metadata('design:paramtypes', [platform_location_1.PlatformLocation, String])
     ], PathLocationStrategy);
     return PathLocationStrategy;
 })(location_strategy_1.LocationStrategy);
