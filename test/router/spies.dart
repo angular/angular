@@ -17,8 +17,3 @@ class SpyRouter extends SpyObject implements Router {
 class SpyRouterOutlet extends SpyObject implements RouterOutlet {
   noSuchMethod(m) => super.noSuchMethod(m);
 }
-
-class SpyPlatformLocation extends SpyObject implements PlatformLocation {
-  String pathname;
-  noSuchMethod(m) => super.noSuchMethod(m);
-}

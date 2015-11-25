@@ -1,13 +1,13 @@
 library angular2.src.router.path_location_strategy;
 
-import "package:angular2/core.dart" show Injectable, Inject, Optional;
+import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "package:angular2/core.dart" show Injectable, Inject;
 import "package:angular2/src/facade/browser.dart"
     show EventListener, History, Location;
 import "package:angular2/src/facade/lang.dart" show isBlank;
 import "package:angular2/src/facade/exceptions.dart" show BaseException;
 import "location_strategy.dart"
-    show LocationStrategy, APP_BASE_HREF, normalizeQueryParams, joinWithSlash;
-import "platform_location.dart" show PlatformLocation;
+    show LocationStrategy, APP_BASE_HREF, normalizeQueryParams;
 
 /**
  * `PathLocationStrategy` is a [LocationStrategy] used to configure the
@@ -56,24 +56,27 @@ import "platform_location.dart" show PlatformLocation;
  */
 @Injectable()
 class PathLocationStrategy extends LocationStrategy {
-  PlatformLocation _platformLocation;
+  Location _location;
+  History _history;
   String _baseHref;
-  PathLocationStrategy(this._platformLocation,
-      [@Optional() @Inject(APP_BASE_HREF) String href])
-      : super() {
+  PathLocationStrategy([@Inject(APP_BASE_HREF) String href]) : super() {
     /* super call moved to initializer */;
     if (isBlank(href)) {
-      href = this._platformLocation.getBaseHrefFromDOM();
+      href = DOM.getBaseHref();
     }
     if (isBlank(href)) {
       throw new BaseException(
           '''No base href set. Please provide a value for the APP_BASE_HREF token or add a base element to the document.''');
     }
+    this._location = DOM.getLocation();
+    this._history = DOM.getHistory();
     this._baseHref = href;
   }
   void onPopState(EventListener fn) {
-    this._platformLocation.onPopState(fn);
-    this._platformLocation.onHashChange(fn);
+    DOM.getGlobalEventTarget("window").addEventListener("popstate", fn, false);
+    DOM
+        .getGlobalEventTarget("window")
+        .addEventListener("hashchange", fn, false);
   }
 
   String getBaseHref() {
@@ -81,25 +84,28 @@ class PathLocationStrategy extends LocationStrategy {
   }
 
   String prepareExternalUrl(String internal) {
-    return joinWithSlash(this._baseHref, internal);
+    if (internal.startsWith("/") && this._baseHref.endsWith("/")) {
+      return this._baseHref + internal.substring(1);
+    }
+    return this._baseHref + internal;
   }
 
   String path() {
-    return this._platformLocation.pathname +
-        normalizeQueryParams(this._platformLocation.search);
+    return this._location.pathname +
+        normalizeQueryParams(this._location.search);
   }
 
   pushState(dynamic state, String title, String url, String queryParams) {
     var externalUrl =
         this.prepareExternalUrl(url + normalizeQueryParams(queryParams));
-    this._platformLocation.pushState(state, title, externalUrl);
+    this._history.pushState(state, title, externalUrl);
   }
 
   void forward() {
-    this._platformLocation.forward();
+    this._history.forward();
   }
 
   void back() {
-    this._platformLocation.back();
+    this._history.back();
   }
 }

@@ -10,7 +10,6 @@ export "src/router/router_outlet.dart" show RouterOutlet;
 export "src/router/router_link.dart" show RouterLink;
 export "src/router/instruction.dart" show RouteParams, RouteData;
 export "src/router/route_registry.dart" show RouteRegistry;
-export "src/router/platform_location.dart" show PlatformLocation;
 export "src/router/location_strategy.dart" show LocationStrategy, APP_BASE_HREF;
 export "src/router/hash_location_strategy.dart" show HashLocationStrategy;
 export "src/router/path_location_strategy.dart" show PathLocationStrategy;
@@ -22,7 +21,6 @@ export "src/router/interfaces.dart"
 export "src/router/lifecycle_annotations.dart" show CanActivate;
 export "src/router/instruction.dart" show Instruction, ComponentInstruction;
 export "package:angular2/core.dart" show OpaqueToken;
-import "src/router/platform_location.dart" show PlatformLocation;
 import "src/router/location_strategy.dart" show LocationStrategy;
 import "src/router/path_location_strategy.dart" show PathLocationStrategy;
 import "src/router/router.dart" show Router, RootRouter;
@@ -111,7 +109,6 @@ const List<dynamic> ROUTER_DIRECTIVES = const [RouterOutlet, RouterLink];
 const List<dynamic> ROUTER_PROVIDERS = const [
   RouteRegistry,
   const Provider(LocationStrategy, useClass: PathLocationStrategy),
-  PlatformLocation,
   Location,
   const Provider(Router,
       useFactory: routerFactory,
