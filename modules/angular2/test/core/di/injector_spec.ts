@@ -431,6 +431,7 @@ export function main() {
     });
 
     describe('instantiate', () => {
+
       it('should instantiate an object in the context of the injector', () => {
         var inj = Injector.resolveAndCreate([Engine]);
         var car = inj.instantiateResolved(Injector.resolve([Car])[0]);
