@@ -1,10 +1,11 @@
 library angular2.src.router.hash_location_strategy;
 
-import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
-import "package:angular2/core.dart" show Injectable;
-import "location_strategy.dart" show LocationStrategy, normalizeQueryParams;
-import "package:angular2/src/facade/browser.dart"
-    show EventListener, History, Location;
+import "package:angular2/core.dart" show Injectable, Inject, Optional;
+import "location_strategy.dart"
+    show LocationStrategy, joinWithSlash, APP_BASE_HREF, normalizeQueryParams;
+import "package:angular2/src/facade/browser.dart" show EventListener;
+import "package:angular2/src/facade/lang.dart" show isPresent;
+import "platform_location.dart" show PlatformLocation;
 
 /**
  * `HashLocationStrategy` is a [LocationStrategy] used to configure the
@@ -46,54 +47,56 @@ import "package:angular2/src/facade/browser.dart"
  */
 @Injectable()
 class HashLocationStrategy extends LocationStrategy {
-  Location _location;
-  History _history;
-  HashLocationStrategy() : super() {
+  PlatformLocation _platformLocation;
+  String _baseHref = "";
+  HashLocationStrategy(this._platformLocation,
+      [@Optional() @Inject(APP_BASE_HREF) String _baseHref])
+      : super() {
     /* super call moved to initializer */;
-    this._location = DOM.getLocation();
-    this._history = DOM.getHistory();
+    if (isPresent(_baseHref)) {
+      this._baseHref = _baseHref;
+    }
   }
   void onPopState(EventListener fn) {
-    DOM.getGlobalEventTarget("window").addEventListener("popstate", fn, false);
+    this._platformLocation.onPopState(fn);
   }
 
   String getBaseHref() {
-    return "";
+    return this._baseHref;
   }
 
   String path() {
     // the hash value is always prefixed with a `#`
 
     // and if it is empty then it will stay empty
-    var path = this._location.hash;
+    var path = this._platformLocation.hash;
     // Dart will complain if a call to substring is
 
     // executed with a position value that extends the
 
     // length of string.
     return (path.length > 0 ? path.substring(1) : path) +
-        normalizeQueryParams(this._location.search);
+        normalizeQueryParams(this._platformLocation.search);
   }
 
   String prepareExternalUrl(String internal) {
-    return internal.length > 0 ? ("#" + internal) : internal;
+    var url = joinWithSlash(this._baseHref, internal);
+    return url.length > 0 ? ("#" + url) : url;
   }
 
   pushState(dynamic state, String title, String path, String queryParams) {
-    var url = path + normalizeQueryParams(queryParams);
+    var url = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
     if (url.length == 0) {
-      url = this._location.pathname;
-    } else {
-      url = this.prepareExternalUrl(url);
+      url = this._platformLocation.pathname;
     }
-    this._history.pushState(state, title, url);
+    this._platformLocation.pushState(state, title, url);
   }
 
   void forward() {
-    this._history.forward();
+    this._platformLocation.forward();
   }
 
   void back() {
-    this._history.back();
+    this._platformLocation.back();
   }
 }
