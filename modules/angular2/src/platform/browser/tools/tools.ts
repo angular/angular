@@ -23,5 +23,5 @@ export function enableDebugTools(ref: ComponentRef): void {
  * Disables Angular 2 tools.
  */
 export function disableDebugTools(): void {
-  context.ng = undefined;
+  delete context.ng;
 }
