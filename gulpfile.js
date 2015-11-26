@@ -1003,12 +1003,7 @@ gulp.task('!bundle.js.sfx.dev', ['build.js.dev'], function() {
   devBundleConfig.paths = merge(true, devBundleConfig.paths, {'*': 'dist/js/dev/es5/*.js'});
   return bundler.bundle(devBundleConfig, 'angular2/angular2_sfx',
                         './dist/build/angular2.sfx.dev.js', {sourceMaps: true},
-                        /* self-executing */ true)
-      .then(function() {
-        return bundler.bundle(devBundleConfig, 'angular2/http', './dist/build/http.sfx.dev.js',
-                              {sourceMaps: true},
-                              /* self-executing */ true);
-      });
+                        /* self-executing */ true);
 });
 
 gulp.task('!bundles.js.umd', ['build.js.dev'], function() {
@@ -1111,11 +1106,9 @@ gulp.task('!bundle.js.dev.deps', ['!bundle.js.dev'], function() {
 });
 
 gulp.task('!bundle.js.sfx.dev.deps', ['!bundle.js.sfx.dev'], function() {
-  return merge2(
-      bundler.modify(JS_DEV_DEPS.concat(['dist/build/angular2.sfx.dev.js']), 'angular2.sfx.dev.js')
-          .pipe(gulp.dest('dist/js/bundle')),
-      bundler.modify(['dist/build/http.sfx.dev.js'], 'http.sfx.dev.js')
-          .pipe(gulp.dest('dist/js/bundle')));
+  return bundler.modify(JS_DEV_DEPS.concat(['dist/build/angular2.sfx.dev.js']),
+                        'angular2.sfx.dev.js')
+      .pipe(gulp.dest('dist/js/bundle'));
 });
 
 gulp.task('!bundle.web_worker.js.dev.deps', ['!bundle.web_worker.js.dev'], function() {
