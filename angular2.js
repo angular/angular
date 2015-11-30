@@ -6,6 +6,7 @@ __export(require('./core'));
 __export(require('./instrumentation'));
 __export(require('./platform/browser'));
 __export(require('./src/platform/dom/dom_adapter'));
+__export(require('./src/platform/dom/events/event_manager'));
 __export(require('./upgrade'));
 var compiler_1 = require('./compiler');
 exports.UrlResolver = compiler_1.UrlResolver;

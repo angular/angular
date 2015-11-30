@@ -17,5 +17,3 @@ export {
   RenderBeginCmd,
   RenderComponentTemplate
 } from './render/api';
-
-export {EventManager, EventManagerPlugin, EVENT_MANAGER_PLUGINS} from './render/event_manager';

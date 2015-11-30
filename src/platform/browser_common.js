@@ -16,6 +16,7 @@ var animation_builder_1 = require("angular2/src/animate/animation_builder");
 var browser_adapter_1 = require('./browser/browser_adapter');
 var testability_2 = require('angular2/src/platform/browser/testability');
 var wtf_init_1 = require('angular2/src/core/profile/wtf_init');
+var event_manager_1 = require("angular2/src/platform/dom/events/event_manager");
 var dom_tokens_2 = require('angular2/src/platform/dom/dom_tokens');
 exports.DOCUMENT = dom_tokens_2.DOCUMENT;
 var title_1 = require('angular2/src/platform/browser/title');
@@ -48,16 +49,17 @@ exports.BROWSER_APP_COMMON_PROVIDERS = lang_1.CONST_EXPR([
     new di_1.Provider(core_1.PLATFORM_DIRECTIVES, { useValue: common_1.COMMON_DIRECTIVES, multi: true }),
     new di_1.Provider(core_1.ExceptionHandler, { useFactory: _exceptionHandler, deps: [] }),
     new di_1.Provider(dom_tokens_1.DOCUMENT, { useFactory: _document, deps: [] }),
-    new di_1.Provider(core_1.EVENT_MANAGER_PLUGINS, { useClass: dom_events_1.DomEventsPlugin, multi: true }),
-    new di_1.Provider(core_1.EVENT_MANAGER_PLUGINS, { useClass: key_events_1.KeyEventsPlugin, multi: true }),
-    new di_1.Provider(core_1.EVENT_MANAGER_PLUGINS, { useClass: hammer_gestures_1.HammerGesturesPlugin, multi: true }),
+    new di_1.Provider(event_manager_1.EVENT_MANAGER_PLUGINS, { useClass: dom_events_1.DomEventsPlugin, multi: true }),
+    new di_1.Provider(event_manager_1.EVENT_MANAGER_PLUGINS, { useClass: key_events_1.KeyEventsPlugin, multi: true }),
+    new di_1.Provider(event_manager_1.EVENT_MANAGER_PLUGINS, { useClass: hammer_gestures_1.HammerGesturesPlugin, multi: true }),
     new di_1.Provider(dom_renderer_1.DomRenderer, { useClass: dom_renderer_1.DomRenderer_ }),
     new di_1.Provider(core_1.Renderer, { useExisting: dom_renderer_1.DomRenderer }),
     new di_1.Provider(shared_styles_host_2.SharedStylesHost, { useExisting: shared_styles_host_1.DomSharedStylesHost }),
     shared_styles_host_1.DomSharedStylesHost,
     testability_1.Testability,
     browser_details_1.BrowserDetails,
-    animation_builder_1.AnimationBuilder
+    animation_builder_1.AnimationBuilder,
+    event_manager_1.EventManager
 ]);
 function initDomAdapter() {
     browser_adapter_1.BrowserDomAdapter.makeCurrent();

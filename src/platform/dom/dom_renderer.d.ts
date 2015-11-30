@@ -1,6 +1,7 @@
 import { AnimationBuilder } from 'angular2/src/animate/animation_builder';
 import { DomSharedStylesHost } from './shared_styles_host';
-import { Renderer, RenderProtoViewRef, RenderViewRef, RenderElementRef, RenderFragmentRef, RenderViewWithFragments, RenderTemplateCmd, RenderEventDispatcher, RenderComponentTemplate, EventManager } from 'angular2/core';
+import { Renderer, RenderProtoViewRef, RenderViewRef, RenderElementRef, RenderFragmentRef, RenderViewWithFragments, RenderTemplateCmd, RenderEventDispatcher, RenderComponentTemplate } from 'angular2/core';
+import { EventManager } from './events/event_manager';
 import { NodeFactory } from 'angular2/src/core/render/view_factory';
 export declare abstract class DomRenderer extends Renderer implements NodeFactory<Node> {
     abstract registerComponentTemplate(template: RenderComponentTemplate): any;

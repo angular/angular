@@ -17,7 +17,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var dom_adapter_1 = require('angular2/src/platform/dom/dom_adapter');
 var lang_1 = require('angular2/src/facade/lang');
 var collection_1 = require('angular2/src/facade/collection');
-var core_1 = require('angular2/core');
+var event_manager_1 = require('./event_manager');
 var di_1 = require('angular2/src/core/di');
 var modifierKeys = ['alt', 'control', 'meta', 'shift'];
 var modifierKeyGetters = {
@@ -110,6 +110,6 @@ var KeyEventsPlugin = (function (_super) {
         __metadata('design:paramtypes', [])
     ], KeyEventsPlugin);
     return KeyEventsPlugin;
-})(core_1.EventManagerPlugin);
+})(event_manager_1.EventManagerPlugin);
 exports.KeyEventsPlugin = KeyEventsPlugin;
 //# sourceMappingURL=key_events.js.map

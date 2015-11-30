@@ -16,6 +16,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 var dom_adapter_1 = require('angular2/src/platform/dom/dom_adapter');
 var core_1 = require('angular2/core');
+var event_manager_1 = require('./event_manager');
 var DomEventsPlugin = (function (_super) {
     __extends(DomEventsPlugin, _super);
     function DomEventsPlugin() {
@@ -40,6 +41,6 @@ var DomEventsPlugin = (function (_super) {
         __metadata('design:paramtypes', [])
     ], DomEventsPlugin);
     return DomEventsPlugin;
-})(core_1.EventManagerPlugin);
+})(event_manager_1.EventManagerPlugin);
 exports.DomEventsPlugin = DomEventsPlugin;
 //# sourceMappingURL=dom_events.js.map

@@ -24,6 +24,7 @@ var exceptions_1 = require('angular2/src/facade/exceptions');
 var shared_styles_host_1 = require('./shared_styles_host');
 var profile_1 = require('angular2/src/core/profile/profile');
 var core_1 = require('angular2/core');
+var event_manager_1 = require('./events/event_manager');
 var dom_tokens_1 = require('./dom_tokens');
 var view_factory_1 = require('angular2/src/core/render/view_factory');
 var view_1 = require('angular2/src/core/render/view');
@@ -263,7 +264,7 @@ var DomRenderer_ = (function (_super) {
     DomRenderer_ = __decorate([
         di_1.Injectable(),
         __param(3, di_1.Inject(dom_tokens_1.DOCUMENT)), 
-        __metadata('design:paramtypes', [core_1.EventManager, shared_styles_host_1.DomSharedStylesHost, animation_builder_1.AnimationBuilder, Object])
+        __metadata('design:paramtypes', [event_manager_1.EventManager, shared_styles_host_1.DomSharedStylesHost, animation_builder_1.AnimationBuilder, Object])
     ], DomRenderer_);
     return DomRenderer_;
 })(DomRenderer);
