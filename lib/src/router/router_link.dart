@@ -4,7 +4,7 @@ import "package:angular2/core.dart" show Directive;
 import "package:angular2/src/facade/lang.dart" show isString;
 import "router.dart" show Router;
 import "location.dart" show Location;
-import "instruction.dart" show Instruction;
+import "instruction.dart" show Instruction, stringifyInstruction;
 
 /**
  * The RouterLink directive lets you link to specific parts of your app.
@@ -60,7 +60,7 @@ class RouterLink {
   set routeParams(List<dynamic> changes) {
     this._routeParams = changes;
     this._navigationInstruction = this._router.generate(this._routeParams);
-    var navigationHref = this._navigationInstruction.toLinkUrl();
+    var navigationHref = stringifyInstruction(this._navigationInstruction);
     this.visibleHref = this._location.prepareExternalUrl(navigationHref);
   }
 

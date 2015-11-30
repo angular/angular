@@ -13,7 +13,7 @@ import "package:angular2/testing_internal.dart"
         expect,
         iit,
         inject,
-        beforeEachProviders,
+        beforeEachBindings,
         it,
         xit;
 import "package:angular2/core.dart"
@@ -26,16 +26,21 @@ import "package:angular2/src/facade/async.dart"
         PromiseCompleter,
         EventEmitter,
         ObservableWrapper;
+import "package:angular2/src/router/router.dart" show RootRouter;
 import "package:angular2/router.dart"
     show Router, RouterOutlet, RouterLink, RouteParams;
 import "package:angular2/src/router/route_config_decorator.dart"
     show RouteConfig, Route, AuxRoute, AsyncRoute, Redirect;
+import "package:angular2/src/mock/location_mock.dart" show SpyLocation;
+import "package:angular2/src/router/location.dart" show Location;
+import "package:angular2/src/router/route_registry.dart" show RouteRegistry;
 import "package:angular2/src/router/interfaces.dart"
     show OnActivate, OnDeactivate, OnReuse, CanDeactivate, CanReuse;
 import "package:angular2/src/router/lifecycle_annotations.dart"
     show CanActivate;
 import "package:angular2/src/router/instruction.dart" show ComponentInstruction;
-import "util.dart" show TEST_ROUTER_PROVIDERS, RootCmp, compile;
+import "package:angular2/src/core/linker/directive_resolver.dart"
+    show DirectiveResolver;
 
 var cmpInstanceCount;
 List<String> log;
@@ -46,7 +51,14 @@ main() {
     TestComponentBuilder tcb;
     ComponentFixture fixture;
     var rtr;
-    beforeEachProviders(() => TEST_ROUTER_PROVIDERS);
+    beforeEachBindings(() => [
+          RouteRegistry,
+          DirectiveResolver,
+          provide(Location, useClass: SpyLocation),
+          provide(Router, useFactory: (registry, location) {
+            return new RootRouter(registry, location, MyComp);
+          }, deps: [RouteRegistry, Location])
+        ]);
     beforeEach(inject([TestComponentBuilder, Router], (tcBuilder, router) {
       tcb = tcBuilder;
       rtr = router;
@@ -54,12 +66,22 @@ main() {
       log = [];
       eventBus = new EventEmitter();
     }));
+    compile([String template = "<router-outlet></router-outlet>"]) {
+      return tcb
+          .overrideView(
+              MyComp,
+              new View(
+                  template: ("<div>" + template + "</div>"),
+                  directives: [RouterOutlet, RouterLink]))
+          .createAsync(MyComp)
+          .then((tc) {
+        fixture = tc;
+      });
+    }
     it(
         "should call the onActivate hook",
         inject([AsyncTestCompleter], (async) {
-          compile(tcb).then((rtc) {
-            fixture = rtc;
-          })
+          compile()
               .then((_) => rtr
                   .config([new Route(path: "/...", component: LifecycleCmp)]))
               .then((_) => rtr.navigateByUrl("/on-activate"))
@@ -74,9 +96,7 @@ main() {
     it(
         "should wait for a parent component's onActivate hook to resolve before calling its child's",
         inject([AsyncTestCompleter], (async) {
-          compile(tcb).then((rtc) {
-            fixture = rtc;
-          })
+          compile()
               .then((_) => rtr
                   .config([new Route(path: "/...", component: LifecycleCmp)]))
               .then((_) {
@@ -100,9 +120,7 @@ main() {
     it(
         "should call the onDeactivate hook",
         inject([AsyncTestCompleter], (async) {
-          compile(tcb).then((rtc) {
-            fixture = rtc;
-          })
+          compile()
               .then((_) => rtr
                   .config([new Route(path: "/...", component: LifecycleCmp)]))
               .then((_) => rtr.navigateByUrl("/on-deactivate"))
@@ -117,9 +135,7 @@ main() {
     it(
         "should wait for a child component's onDeactivate hook to resolve before calling its parent's",
         inject([AsyncTestCompleter], (async) {
-          compile(tcb).then((rtc) {
-            fixture = rtc;
-          })
+          compile()
               .then((_) => rtr
                   .config([new Route(path: "/...", component: LifecycleCmp)]))
               .then((_) =>
@@ -147,9 +163,7 @@ main() {
     it(
         "should reuse a component when the canReuse hook returns true",
         inject([AsyncTestCompleter], (async) {
-          compile(tcb).then((rtc) {
-            fixture = rtc;
-          })
+          compile()
               .then((_) => rtr
                   .config([new Route(path: "/...", component: LifecycleCmp)]))
               .then((_) => rtr.navigateByUrl("/on-reuse/1/a"))
@@ -169,9 +183,7 @@ main() {
     it(
         "should not reuse a component when the canReuse hook returns false",
         inject([AsyncTestCompleter], (async) {
-          compile(tcb).then((rtc) {
-            fixture = rtc;
-          })
+          compile()
               .then((_) => rtr
                   .config([new Route(path: "/...", component: LifecycleCmp)]))
               .then((_) => rtr.navigateByUrl("/never-reuse/1/a"))
@@ -191,9 +203,7 @@ main() {
     it(
         "should navigate when canActivate returns true",
         inject([AsyncTestCompleter], (async) {
-          compile(tcb).then((rtc) {
-            fixture = rtc;
-          })
+          compile()
               .then((_) => rtr
                   .config([new Route(path: "/...", component: LifecycleCmp)]))
               .then((_) {
@@ -214,9 +224,7 @@ main() {
     it(
         "should not navigate when canActivate returns false",
         inject([AsyncTestCompleter], (async) {
-          compile(tcb).then((rtc) {
-            fixture = rtc;
-          })
+          compile()
               .then((_) => rtr
                   .config([new Route(path: "/...", component: LifecycleCmp)]))
               .then((_) {
@@ -236,9 +244,7 @@ main() {
     it(
         "should navigate away when canDeactivate returns true",
         inject([AsyncTestCompleter], (async) {
-          compile(tcb).then((rtc) {
-            fixture = rtc;
-          })
+          compile()
               .then((_) => rtr
                   .config([new Route(path: "/...", component: LifecycleCmp)]))
               .then((_) => rtr.navigateByUrl("/can-deactivate/a"))
@@ -263,9 +269,7 @@ main() {
     it(
         "should not navigate away when canDeactivate returns false",
         inject([AsyncTestCompleter], (async) {
-          compile(tcb).then((rtc) {
-            fixture = rtc;
-          })
+          compile()
               .then((_) => rtr
                   .config([new Route(path: "/...", component: LifecycleCmp)]))
               .then((_) => rtr.navigateByUrl("/can-deactivate/a"))
@@ -291,9 +295,7 @@ main() {
     it(
         "should run activation and deactivation hooks in the correct order",
         inject([AsyncTestCompleter], (async) {
-          compile(tcb).then((rtc) {
-            fixture = rtc;
-          })
+          compile()
               .then((_) => rtr
                   .config([new Route(path: "/...", component: LifecycleCmp)]))
               .then((_) => rtr.navigateByUrl("/activation-hooks/child"))
@@ -319,9 +321,7 @@ main() {
     it(
         "should only run reuse hooks when reusing",
         inject([AsyncTestCompleter], (async) {
-          compile(tcb).then((rtc) {
-            fixture = rtc;
-          })
+          compile()
               .then((_) => rtr
                   .config([new Route(path: "/...", component: LifecycleCmp)]))
               .then((_) => rtr.navigateByUrl("/reuse-hooks/1"))
@@ -348,7 +348,7 @@ main() {
     it(
         "should not run reuse hooks when not reusing",
         inject([AsyncTestCompleter], (async) {
-          compile(tcb)
+          compile()
               .then((_) => rtr
                   .config([new Route(path: "/...", component: LifecycleCmp)]))
               .then((_) => rtr.navigateByUrl("/reuse-hooks/1"))
@@ -378,11 +378,18 @@ main() {
   });
 }
 
-@Component(selector: "a-cmp", template: "A")
+@Component(selector: "a-cmp")
+@View(template: "A")
 class A {}
 
-@Component(selector: "b-cmp", template: "B")
+@Component(selector: "b-cmp")
+@View(template: "B")
 class B {}
+
+@Component(selector: "my-comp")
+class MyComp {
+  var name;
+}
 
 logHook(String name, ComponentInstruction next, ComponentInstruction prev) {
   var message = name +
@@ -394,15 +401,16 @@ logHook(String name, ComponentInstruction next, ComponentInstruction prev) {
   ObservableWrapper.callEmit(eventBus, message);
 }
 
-@Component(selector: "activate-cmp", template: "activate cmp")
+@Component(selector: "activate-cmp")
+@View(template: "activate cmp")
 class ActivateCmp implements OnActivate {
   onActivate(ComponentInstruction next, ComponentInstruction prev) {
     logHook("activate", next, prev);
   }
 }
 
-@Component(
-    selector: "parent-activate-cmp",
+@Component(selector: "parent-activate-cmp")
+@View(
     template: '''parent {<router-outlet></router-outlet>}''',
     directives: const [RouterOutlet])
 @RouteConfig(
@@ -416,14 +424,16 @@ class ParentActivateCmp implements OnActivate {
   }
 }
 
-@Component(selector: "deactivate-cmp", template: "deactivate cmp")
+@Component(selector: "deactivate-cmp")
+@View(template: "deactivate cmp")
 class DeactivateCmp implements OnDeactivate {
   onDeactivate(ComponentInstruction next, ComponentInstruction prev) {
     logHook("deactivate", next, prev);
   }
 }
 
-@Component(selector: "deactivate-cmp", template: "deactivate cmp")
+@Component(selector: "deactivate-cmp")
+@View(template: "deactivate cmp")
 class WaitDeactivateCmp implements OnDeactivate {
   Future<dynamic> onDeactivate(
       ComponentInstruction next, ComponentInstruction prev) {
@@ -433,8 +443,8 @@ class WaitDeactivateCmp implements OnDeactivate {
   }
 }
 
-@Component(
-    selector: "parent-deactivate-cmp",
+@Component(selector: "parent-deactivate-cmp")
+@View(
     template: '''parent {<router-outlet></router-outlet>}''',
     directives: const [RouterOutlet])
 @RouteConfig(const [
@@ -446,8 +456,8 @@ class ParentDeactivateCmp implements OnDeactivate {
   }
 }
 
-@Component(
-    selector: "reuse-cmp",
+@Component(selector: "reuse-cmp")
+@View(
     template: '''reuse {<router-outlet></router-outlet>}''',
     directives: const [RouterOutlet])
 @RouteConfig(const [
@@ -467,8 +477,8 @@ class ReuseCmp implements OnReuse, CanReuse {
   }
 }
 
-@Component(
-    selector: "never-reuse-cmp",
+@Component(selector: "never-reuse-cmp")
+@View(
     template: '''reuse {<router-outlet></router-outlet>}''',
     directives: const [RouterOutlet])
 @RouteConfig(const [
@@ -488,8 +498,8 @@ class NeverReuseCmp implements OnReuse, CanReuse {
   }
 }
 
-@Component(
-    selector: "can-activate-cmp",
+@Component(selector: "can-activate-cmp")
+@View(
     template: '''canActivate {<router-outlet></router-outlet>}''',
     directives: const [RouterOutlet])
 @RouteConfig(const [
@@ -506,8 +516,8 @@ class CanActivateCmp {
   }
 }
 
-@Component(
-    selector: "can-deactivate-cmp",
+@Component(selector: "can-deactivate-cmp")
+@View(
     template: '''canDeactivate {<router-outlet></router-outlet>}''',
     directives: const [RouterOutlet])
 @RouteConfig(const [
@@ -523,7 +533,8 @@ class CanDeactivateCmp implements CanDeactivate {
   }
 }
 
-@Component(selector: "all-hooks-child-cmp", template: '''child''')
+@Component(selector: "all-hooks-child-cmp")
+@View(template: '''child''')
 @CanActivate(AllHooksChildCmp.canActivate)
 class AllHooksChildCmp implements CanDeactivate, OnDeactivate, OnActivate {
   canDeactivate(ComponentInstruction next, ComponentInstruction prev) {
@@ -545,8 +556,8 @@ class AllHooksChildCmp implements CanDeactivate, OnDeactivate, OnActivate {
   }
 }
 
-@Component(
-    selector: "all-hooks-parent-cmp",
+@Component(selector: "all-hooks-parent-cmp")
+@View(
     template: '''<router-outlet></router-outlet>''',
     directives: const [RouterOutlet])
 @RouteConfig(const [const Route(path: "/child", component: AllHooksChildCmp)])
@@ -571,7 +582,8 @@ class AllHooksParentCmp implements CanDeactivate, OnDeactivate, OnActivate {
   }
 }
 
-@Component(selector: "reuse-hooks-cmp", template: "reuse hooks cmp")
+@Component(selector: "reuse-hooks-cmp")
+@View(template: "reuse hooks cmp")
 @CanActivate(ReuseHooksCmp.canActivate)
 class ReuseHooksCmp
     implements OnActivate, OnReuse, OnDeactivate, CanReuse, CanDeactivate {
@@ -605,8 +617,8 @@ class ReuseHooksCmp
   }
 }
 
-@Component(
-    selector: "lifecycle-cmp",
+@Component(selector: "lifecycle-cmp")
+@View(
     template: '''<router-outlet></router-outlet>''',
     directives: const [RouterOutlet])
 @RouteConfig(const [
