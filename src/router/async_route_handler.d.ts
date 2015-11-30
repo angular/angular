@@ -1,11 +1,12 @@
+import { RouteHandler } from './route_handler';
 import { Promise } from 'angular2/src/facade/async';
 import { Type } from 'angular2/src/facade/lang';
-import { RouteHandler } from './route_handler';
-import { RouteData } from './instruction';
 export declare class AsyncRouteHandler implements RouteHandler {
     private _loader;
+    data: {
+        [key: string]: any;
+    };
     componentType: Type;
-    data: RouteData;
     constructor(_loader: Function, data?: {
         [key: string]: any;
     });
