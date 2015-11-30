@@ -1,0 +1,57 @@
+import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
+import {Injectable, Inject, OpaqueToken} from 'angular2/src/core/di';
+import {NgZone} from 'angular2/src/core/zone/ng_zone';
+import {ListWrapper} from 'angular2/src/facade/collection';
+
+export const EVENT_MANAGER_PLUGINS: OpaqueToken =
+    CONST_EXPR(new OpaqueToken("EventManagerPlugins"));
+
+@Injectable()
+export class EventManager {
+  private _plugins: EventManagerPlugin[];
+
+  constructor(@Inject(EVENT_MANAGER_PLUGINS) plugins: EventManagerPlugin[], private _zone: NgZone) {
+    plugins.forEach(p => p.manager = this);
+    this._plugins = ListWrapper.reversed(plugins);
+  }
+
+  addEventListener(element: HTMLElement, eventName: string, handler: Function) {
+    var plugin = this._findPluginFor(eventName);
+    plugin.addEventListener(element, eventName, handler);
+  }
+
+  addGlobalEventListener(target: string, eventName: string, handler: Function): Function {
+    var plugin = this._findPluginFor(eventName);
+    return plugin.addGlobalEventListener(target, eventName, handler);
+  }
+
+  getZone(): NgZone { return this._zone; }
+
+  /** @internal */
+  _findPluginFor(eventName: string): EventManagerPlugin {
+    var plugins = this._plugins;
+    for (var i = 0; i < plugins.length; i++) {
+      var plugin = plugins[i];
+      if (plugin.supports(eventName)) {
+        return plugin;
+      }
+    }
+    throw new BaseException(`No event manager plugin found for event ${eventName}`);
+  }
+}
+
+export class EventManagerPlugin {
+  manager: EventManager;
+
+  // That is equivalent to having supporting $event.target
+  supports(eventName: string): boolean { return false; }
+
+  addEventListener(element: HTMLElement, eventName: string, handler: Function) {
+    throw "not implemented";
+  }
+
+  addGlobalEventListener(element: string, eventName: string, handler: Function): Function {
+    throw "not implemented";
+  }
+}

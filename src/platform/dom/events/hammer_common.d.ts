@@ -1,4 +1,4 @@
-import { EventManagerPlugin } from 'angular2/core';
+import { EventManagerPlugin } from './event_manager';
 export declare class HammerGesturesPluginCommon extends EventManagerPlugin {
     constructor();
     supports(eventName: string): boolean;

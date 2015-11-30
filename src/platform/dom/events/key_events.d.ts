@@ -1,4 +1,4 @@
-import { EventManagerPlugin } from 'angular2/core';
+import { EventManagerPlugin } from './event_manager';
 import { NgZone } from 'angular2/src/core/zone/ng_zone';
 export declare class KeyEventsPlugin extends EventManagerPlugin {
     constructor();

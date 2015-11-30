@@ -18,7 +18,8 @@ import { isPresent, isBlank, RegExpWrapper, CONST_EXPR, stringify } from 'angula
 import { BaseException } from 'angular2/src/facade/exceptions';
 import { DomSharedStylesHost } from './shared_styles_host';
 import { wtfLeave, wtfCreateScope } from 'angular2/src/core/profile/profile';
-import { Renderer, RenderViewWithFragments, EventManager } from 'angular2/core';
+import { Renderer, RenderViewWithFragments } from 'angular2/core';
+import { EventManager } from './events/event_manager';
 import { DOCUMENT } from './dom_tokens';
 import { createRenderView, encapsulateStyles } from 'angular2/src/core/render/view_factory';
 import { DefaultProtoViewRef } from 'angular2/src/core/render/view';

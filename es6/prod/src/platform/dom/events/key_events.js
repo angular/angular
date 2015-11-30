@@ -12,7 +12,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 import { DOM } from 'angular2/src/platform/dom/dom_adapter';
 import { isPresent, StringWrapper } from 'angular2/src/facade/lang';
 import { StringMapWrapper, ListWrapper } from 'angular2/src/facade/collection';
-import { EventManagerPlugin } from 'angular2/core';
+import { EventManagerPlugin } from './event_manager';
 import { Injectable } from 'angular2/src/core/di';
 var modifierKeys = ['alt', 'control', 'meta', 'shift'];
 var modifierKeyGetters = {

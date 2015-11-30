@@ -262,49 +262,6 @@ System.register("angular2/src/mock/view_resolver_mock", ["angular2/src/facade/co
   return module.exports;
 });
 
-System.register("angular2/src/router/location_strategy", ["angular2/src/facade/lang", "angular2/core"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var lang_1 = require("angular2/src/facade/lang");
-  var core_1 = require("angular2/core");
-  var LocationStrategy = (function() {
-    function LocationStrategy() {}
-    return LocationStrategy;
-  })();
-  exports.LocationStrategy = LocationStrategy;
-  exports.APP_BASE_HREF = lang_1.CONST_EXPR(new core_1.OpaqueToken('appBaseHref'));
-  function normalizeQueryParams(params) {
-    return (params.length > 0 && params.substring(0, 1) != '?') ? ('?' + params) : params;
-  }
-  exports.normalizeQueryParams = normalizeQueryParams;
-  function joinWithSlash(start, end) {
-    if (start.length == 0) {
-      return end;
-    }
-    if (end.length == 0) {
-      return start;
-    }
-    var slashes = 0;
-    if (start.endsWith('/')) {
-      slashes++;
-    }
-    if (end.startsWith('/')) {
-      slashes++;
-    }
-    if (slashes == 2) {
-      return start + end.substring(1);
-    }
-    if (slashes == 1) {
-      return start + end;
-    }
-    return start + '/' + end;
-  }
-  exports.joinWithSlash = joinWithSlash;
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/src/mock/ng_zone_mock", ["angular2/src/core/zone/ng_zone", "angular2/src/facade/async"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -1407,77 +1364,6 @@ System.register("angular2/src/mock/mock_application_ref", ["angular2/src/core/ap
   return module.exports;
 });
 
-System.register("angular2/src/mock/mock_location_strategy", ["angular2/src/facade/async", "angular2/src/router/location_strategy"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var async_1 = require("angular2/src/facade/async");
-  var location_strategy_1 = require("angular2/src/router/location_strategy");
-  var MockLocationStrategy = (function(_super) {
-    __extends(MockLocationStrategy, _super);
-    function MockLocationStrategy() {
-      _super.call(this);
-      this.internalBaseHref = '/';
-      this.internalPath = '/';
-      this.internalTitle = '';
-      this.urlChanges = [];
-      this._subject = new async_1.EventEmitter();
-    }
-    MockLocationStrategy.prototype.simulatePopState = function(url) {
-      this.internalPath = url;
-      async_1.ObservableWrapper.callEmit(this._subject, null);
-    };
-    MockLocationStrategy.prototype.path = function() {
-      return this.internalPath;
-    };
-    MockLocationStrategy.prototype.prepareExternalUrl = function(internal) {
-      if (internal.startsWith('/') && this.internalBaseHref.endsWith('/')) {
-        return this.internalBaseHref + internal.substring(1);
-      }
-      return this.internalBaseHref + internal;
-    };
-    MockLocationStrategy.prototype.simulateUrlPop = function(pathname) {
-      async_1.ObservableWrapper.callEmit(this._subject, {'url': pathname});
-    };
-    MockLocationStrategy.prototype.pushState = function(ctx, title, path, query) {
-      this.internalTitle = title;
-      var url = path + (query.length > 0 ? ('?' + query) : '');
-      this.internalPath = url;
-      var external = this.prepareExternalUrl(url);
-      this.urlChanges.push(external);
-    };
-    MockLocationStrategy.prototype.onPopState = function(fn) {
-      async_1.ObservableWrapper.subscribe(this._subject, fn);
-    };
-    MockLocationStrategy.prototype.getBaseHref = function() {
-      return this.internalBaseHref;
-    };
-    MockLocationStrategy.prototype.back = function() {
-      if (this.urlChanges.length > 0) {
-        this.urlChanges.pop();
-        var nextUrl = this.urlChanges.length > 0 ? this.urlChanges[this.urlChanges.length - 1] : '';
-        this.simulatePopState(nextUrl);
-      }
-    };
-    MockLocationStrategy.prototype.forward = function() {
-      throw 'not implemented';
-    };
-    return MockLocationStrategy;
-  })(location_strategy_1.LocationStrategy);
-  exports.MockLocationStrategy = MockLocationStrategy;
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/src/testing/test_component_builder", ["angular2/src/core/di", "angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/src/core/linker/directive_resolver", "angular2/src/core/linker/view_resolver", "angular2/src/core/linker/view_ref", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/testing/utils", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_adapter", "angular2/src/core/debug/debug_element"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -1896,7 +1782,121 @@ System.register("angular2/src/web_workers/shared/serializer", ["angular2/src/fac
   return module.exports;
 });
 
-System.register("angular2/src/testing/test_injector", ["angular2/src/core/di", "angular2/src/animate/animation_builder", "angular2/src/mock/animation_builder_mock", "angular2/src/core/linker/proto_view_factory", "angular2/src/core/reflection/reflection", "angular2/src/core/change_detection/change_detection", "angular2/src/facade/exceptions", "angular2/src/core/linker/view_resolver", "angular2/src/core/linker/directive_resolver", "angular2/src/core/linker/pipe_resolver", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/compiler/xhr", "angular2/src/core/zone/ng_zone", "angular2/src/platform/dom/dom_adapter", "angular2/core", "angular2/src/mock/directive_resolver_mock", "angular2/src/mock/view_resolver_mock", "angular2/src/mock/mock_location_strategy", "angular2/src/router/location_strategy", "angular2/src/mock/ng_zone_mock", "angular2/src/testing/test_component_builder", "angular2/src/core/di", "angular2/platform/common_dom", "angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/core/linker/view_pool", "angular2/src/core/linker/view_manager", "angular2/src/core/linker/view_manager_utils", "angular2/src/core/render/api", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/events/dom_events", "angular2/src/core/application_tokens", "angular2/src/web_workers/shared/serializer", "angular2/src/testing/utils", "angular2/src/compiler/compiler", "angular2/src/platform/dom/dom_renderer", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/core/linker/view_manager"], true, function(require, exports, module) {
+System.register("angular2/src/router/location_strategy", ["angular2/src/facade/lang", "angular2/core"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var lang_1 = require("angular2/src/facade/lang");
+  var core_1 = require("angular2/core");
+  var LocationStrategy = (function() {
+    function LocationStrategy() {}
+    return LocationStrategy;
+  })();
+  exports.LocationStrategy = LocationStrategy;
+  exports.APP_BASE_HREF = lang_1.CONST_EXPR(new core_1.OpaqueToken('appBaseHref'));
+  function normalizeQueryParams(params) {
+    return (params.length > 0 && params.substring(0, 1) != '?') ? ('?' + params) : params;
+  }
+  exports.normalizeQueryParams = normalizeQueryParams;
+  function joinWithSlash(start, end) {
+    if (start.length == 0) {
+      return end;
+    }
+    if (end.length == 0) {
+      return start;
+    }
+    var slashes = 0;
+    if (start.endsWith('/')) {
+      slashes++;
+    }
+    if (end.startsWith('/')) {
+      slashes++;
+    }
+    if (slashes == 2) {
+      return start + end.substring(1);
+    }
+    if (slashes == 1) {
+      return start + end;
+    }
+    return start + '/' + end;
+  }
+  exports.joinWithSlash = joinWithSlash;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/mock/mock_location_strategy", ["angular2/src/facade/async", "angular2/src/router/location_strategy"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var async_1 = require("angular2/src/facade/async");
+  var location_strategy_1 = require("angular2/src/router/location_strategy");
+  var MockLocationStrategy = (function(_super) {
+    __extends(MockLocationStrategy, _super);
+    function MockLocationStrategy() {
+      _super.call(this);
+      this.internalBaseHref = '/';
+      this.internalPath = '/';
+      this.internalTitle = '';
+      this.urlChanges = [];
+      this._subject = new async_1.EventEmitter();
+    }
+    MockLocationStrategy.prototype.simulatePopState = function(url) {
+      this.internalPath = url;
+      async_1.ObservableWrapper.callEmit(this._subject, null);
+    };
+    MockLocationStrategy.prototype.path = function() {
+      return this.internalPath;
+    };
+    MockLocationStrategy.prototype.prepareExternalUrl = function(internal) {
+      if (internal.startsWith('/') && this.internalBaseHref.endsWith('/')) {
+        return this.internalBaseHref + internal.substring(1);
+      }
+      return this.internalBaseHref + internal;
+    };
+    MockLocationStrategy.prototype.simulateUrlPop = function(pathname) {
+      async_1.ObservableWrapper.callEmit(this._subject, {'url': pathname});
+    };
+    MockLocationStrategy.prototype.pushState = function(ctx, title, path, query) {
+      this.internalTitle = title;
+      var url = path + (query.length > 0 ? ('?' + query) : '');
+      this.internalPath = url;
+      var external = this.prepareExternalUrl(url);
+      this.urlChanges.push(external);
+    };
+    MockLocationStrategy.prototype.onPopState = function(fn) {
+      async_1.ObservableWrapper.subscribe(this._subject, fn);
+    };
+    MockLocationStrategy.prototype.getBaseHref = function() {
+      return this.internalBaseHref;
+    };
+    MockLocationStrategy.prototype.back = function() {
+      if (this.urlChanges.length > 0) {
+        this.urlChanges.pop();
+        var nextUrl = this.urlChanges.length > 0 ? this.urlChanges[this.urlChanges.length - 1] : '';
+        this.simulatePopState(nextUrl);
+      }
+    };
+    MockLocationStrategy.prototype.forward = function() {
+      throw 'not implemented';
+    };
+    return MockLocationStrategy;
+  })(location_strategy_1.LocationStrategy);
+  exports.MockLocationStrategy = MockLocationStrategy;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/testing/test_injector", ["angular2/src/core/di", "angular2/src/animate/animation_builder", "angular2/src/mock/animation_builder_mock", "angular2/src/core/linker/proto_view_factory", "angular2/src/core/reflection/reflection", "angular2/src/core/change_detection/change_detection", "angular2/src/facade/exceptions", "angular2/src/core/linker/view_resolver", "angular2/src/core/linker/directive_resolver", "angular2/src/core/linker/pipe_resolver", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/compiler/xhr", "angular2/src/core/zone/ng_zone", "angular2/src/platform/dom/dom_adapter", "angular2/src/mock/directive_resolver_mock", "angular2/src/mock/view_resolver_mock", "angular2/src/mock/mock_location_strategy", "angular2/src/router/location_strategy", "angular2/src/mock/ng_zone_mock", "angular2/src/testing/test_component_builder", "angular2/src/core/di", "angular2/platform/common_dom", "angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/core/linker/view_pool", "angular2/src/core/linker/view_manager", "angular2/src/core/linker/view_manager_utils", "angular2/src/core/render/api", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/events/dom_events", "angular2/src/core/application_tokens", "angular2/src/web_workers/shared/serializer", "angular2/src/testing/utils", "angular2/src/compiler/compiler", "angular2/src/platform/dom/dom_renderer", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/core/linker/view_manager"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -1914,7 +1914,6 @@ System.register("angular2/src/testing/test_injector", ["angular2/src/core/di", "
   var xhr_1 = require("angular2/src/compiler/xhr");
   var ng_zone_1 = require("angular2/src/core/zone/ng_zone");
   var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
-  var core_1 = require("angular2/core");
   var directive_resolver_mock_1 = require("angular2/src/mock/directive_resolver_mock");
   var view_resolver_mock_1 = require("angular2/src/mock/view_resolver_mock");
   var mock_location_strategy_1 = require("angular2/src/mock/mock_location_strategy");
@@ -1951,7 +1950,7 @@ System.register("angular2/src/testing/test_injector", ["angular2/src/core/di", "
     } catch (e) {
       appDoc = null;
     }
-    return [compiler_1.COMPILER_PROVIDERS, di_1.provide(change_detection_1.ChangeDetectorGenConfig, {useValue: new change_detection_1.ChangeDetectorGenConfig(true, false, true)}), di_1.provide(dom_tokens_1.DOCUMENT, {useValue: appDoc}), di_1.provide(dom_renderer_1.DomRenderer, {useClass: dom_renderer_2.DomRenderer_}), di_1.provide(api_1.Renderer, {useExisting: dom_renderer_1.DomRenderer}), di_1.provide(application_tokens_1.APP_ID, {useValue: 'a'}), shared_styles_host_1.DomSharedStylesHost, di_1.provide(shared_styles_host_2.SharedStylesHost, {useExisting: shared_styles_host_1.DomSharedStylesHost}), view_pool_1.AppViewPool, di_1.provide(view_manager_1.AppViewManager, {useClass: view_manager_2.AppViewManager_}), view_manager_utils_1.AppViewManagerUtils, serializer_1.Serializer, common_dom_1.ELEMENT_PROBE_PROVIDERS, di_1.provide(view_pool_1.APP_VIEW_POOL_CAPACITY, {useValue: 500}), proto_view_factory_1.ProtoViewFactory, di_1.provide(directive_resolver_1.DirectiveResolver, {useClass: directive_resolver_mock_1.MockDirectiveResolver}), di_1.provide(view_resolver_1.ViewResolver, {useClass: view_resolver_mock_1.MockViewResolver}), di_1.provide(change_detection_1.IterableDiffers, {useValue: change_detection_1.defaultIterableDiffers}), di_1.provide(change_detection_1.KeyValueDiffers, {useValue: change_detection_1.defaultKeyValueDiffers}), utils_1.Log, di_1.provide(dynamic_component_loader_1.DynamicComponentLoader, {useClass: dynamic_component_loader_2.DynamicComponentLoader_}), pipe_resolver_1.PipeResolver, di_1.provide(exceptions_1.ExceptionHandler, {useValue: new exceptions_1.ExceptionHandler(dom_adapter_1.DOM)}), di_1.provide(location_strategy_1.LocationStrategy, {useClass: mock_location_strategy_1.MockLocationStrategy}), di_1.provide(xhr_1.XHR, {useClass: dom_adapter_1.DOM.getXHR()}), test_component_builder_1.TestComponentBuilder, di_1.provide(ng_zone_1.NgZone, {useClass: ng_zone_mock_1.MockNgZone}), di_1.provide(animation_builder_1.AnimationBuilder, {useClass: animation_builder_mock_1.MockAnimationBuilder}), core_1.EventManager, new di_1.Provider(core_1.EVENT_MANAGER_PLUGINS, {
+    return [compiler_1.COMPILER_PROVIDERS, di_1.provide(change_detection_1.ChangeDetectorGenConfig, {useValue: new change_detection_1.ChangeDetectorGenConfig(true, false, true)}), di_1.provide(dom_tokens_1.DOCUMENT, {useValue: appDoc}), di_1.provide(dom_renderer_1.DomRenderer, {useClass: dom_renderer_2.DomRenderer_}), di_1.provide(api_1.Renderer, {useExisting: dom_renderer_1.DomRenderer}), di_1.provide(application_tokens_1.APP_ID, {useValue: 'a'}), shared_styles_host_1.DomSharedStylesHost, di_1.provide(shared_styles_host_2.SharedStylesHost, {useExisting: shared_styles_host_1.DomSharedStylesHost}), view_pool_1.AppViewPool, di_1.provide(view_manager_1.AppViewManager, {useClass: view_manager_2.AppViewManager_}), view_manager_utils_1.AppViewManagerUtils, serializer_1.Serializer, common_dom_1.ELEMENT_PROBE_PROVIDERS, di_1.provide(view_pool_1.APP_VIEW_POOL_CAPACITY, {useValue: 500}), proto_view_factory_1.ProtoViewFactory, di_1.provide(directive_resolver_1.DirectiveResolver, {useClass: directive_resolver_mock_1.MockDirectiveResolver}), di_1.provide(view_resolver_1.ViewResolver, {useClass: view_resolver_mock_1.MockViewResolver}), di_1.provide(change_detection_1.IterableDiffers, {useValue: change_detection_1.defaultIterableDiffers}), di_1.provide(change_detection_1.KeyValueDiffers, {useValue: change_detection_1.defaultKeyValueDiffers}), utils_1.Log, di_1.provide(dynamic_component_loader_1.DynamicComponentLoader, {useClass: dynamic_component_loader_2.DynamicComponentLoader_}), pipe_resolver_1.PipeResolver, di_1.provide(exceptions_1.ExceptionHandler, {useValue: new exceptions_1.ExceptionHandler(dom_adapter_1.DOM)}), di_1.provide(location_strategy_1.LocationStrategy, {useClass: mock_location_strategy_1.MockLocationStrategy}), di_1.provide(xhr_1.XHR, {useClass: dom_adapter_1.DOM.getXHR()}), test_component_builder_1.TestComponentBuilder, di_1.provide(ng_zone_1.NgZone, {useClass: ng_zone_mock_1.MockNgZone}), di_1.provide(animation_builder_1.AnimationBuilder, {useClass: animation_builder_mock_1.MockAnimationBuilder}), common_dom_1.EventManager, new di_1.Provider(common_dom_1.EVENT_MANAGER_PLUGINS, {
       useClass: dom_events_1.DomEventsPlugin,
       multi: true
     })];

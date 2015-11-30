@@ -23,9 +23,10 @@ import {
   RenderViewWithFragments,
   RenderTemplateCmd,
   RenderEventDispatcher,
-  RenderComponentTemplate,
-  EventManager
+  RenderComponentTemplate
 } from 'angular2/core';
+
+import {EventManager} from './events/event_manager';
 
 import {DOCUMENT} from './dom_tokens';
 import {

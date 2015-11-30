@@ -18402,91 +18402,24 @@ System.register("angular2/src/core/zone", ["angular2/src/core/zone/ng_zone"], tr
   return module.exports;
 });
 
-System.register("angular2/src/core/render/event_manager", ["angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/core/di", "angular2/src/core/zone/ng_zone", "angular2/src/facade/collection"], true, function(require, exports, module) {
+System.register("angular2/src/core/render", ["angular2/src/core/render/api"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var __param = (this && this.__param) || function(paramIndex, decorator) {
-    return function(target, key) {
-      decorator(target, key, paramIndex);
-    };
-  };
-  var lang_1 = require("angular2/src/facade/lang");
-  var exceptions_1 = require("angular2/src/facade/exceptions");
-  var di_1 = require("angular2/src/core/di");
-  var ng_zone_1 = require("angular2/src/core/zone/ng_zone");
-  var collection_1 = require("angular2/src/facade/collection");
-  exports.EVENT_MANAGER_PLUGINS = lang_1.CONST_EXPR(new di_1.OpaqueToken("EventManagerPlugins"));
-  var EventManager = (function() {
-    function EventManager(plugins, _zone) {
-      var _this = this;
-      this._zone = _zone;
-      plugins.forEach(function(p) {
-        return p.manager = _this;
-      });
-      this._plugins = collection_1.ListWrapper.reversed(plugins);
-    }
-    EventManager.prototype.addEventListener = function(element, eventName, handler) {
-      var plugin = this._findPluginFor(eventName);
-      plugin.addEventListener(element, eventName, handler);
-    };
-    EventManager.prototype.addGlobalEventListener = function(target, eventName, handler) {
-      var plugin = this._findPluginFor(eventName);
-      return plugin.addGlobalEventListener(target, eventName, handler);
-    };
-    EventManager.prototype.getZone = function() {
-      return this._zone;
-    };
-    EventManager.prototype._findPluginFor = function(eventName) {
-      var plugins = this._plugins;
-      for (var i = 0; i < plugins.length; i++) {
-        var plugin = plugins[i];
-        if (plugin.supports(eventName)) {
-          return plugin;
-        }
-      }
-      throw new exceptions_1.BaseException("No event manager plugin found for event " + eventName);
-    };
-    EventManager = __decorate([di_1.Injectable(), __param(0, di_1.Inject(exports.EVENT_MANAGER_PLUGINS)), __metadata('design:paramtypes', [Array, ng_zone_1.NgZone])], EventManager);
-    return EventManager;
-  })();
-  exports.EventManager = EventManager;
-  var EventManagerPlugin = (function() {
-    function EventManagerPlugin() {}
-    EventManagerPlugin.prototype.supports = function(eventName) {
-      return false;
-    };
-    EventManagerPlugin.prototype.addEventListener = function(element, eventName, handler) {
-      throw "not implemented";
-    };
-    EventManagerPlugin.prototype.addGlobalEventListener = function(element, eventName, handler) {
-      throw "not implemented";
-    };
-    return EventManagerPlugin;
-  })();
-  exports.EventManagerPlugin = EventManagerPlugin;
+  var api_1 = require("angular2/src/core/render/api");
+  exports.Renderer = api_1.Renderer;
+  exports.RenderViewRef = api_1.RenderViewRef;
+  exports.RenderProtoViewRef = api_1.RenderProtoViewRef;
+  exports.RenderFragmentRef = api_1.RenderFragmentRef;
+  exports.RenderViewWithFragments = api_1.RenderViewWithFragments;
+  exports.RenderTemplateCmd = api_1.RenderTemplateCmd;
+  exports.RenderTextCmd = api_1.RenderTextCmd;
+  exports.RenderNgContentCmd = api_1.RenderNgContentCmd;
+  exports.RenderBeginElementCmd = api_1.RenderBeginElementCmd;
+  exports.RenderBeginComponentCmd = api_1.RenderBeginComponentCmd;
+  exports.RenderEmbeddedTemplateCmd = api_1.RenderEmbeddedTemplateCmd;
+  exports.RenderBeginCmd = api_1.RenderBeginCmd;
+  exports.RenderComponentTemplate = api_1.RenderComponentTemplate;
   global.define = __define;
   return module.exports;
 });
@@ -18758,7 +18691,7 @@ System.register("angular2/src/core/platform_common_providers", ["angular2/src/fa
   return module.exports;
 });
 
-System.register("angular2/src/core/application_common_providers", ["angular2/src/facade/lang", "angular2/src/core/di", "angular2/src/core/application_tokens", "angular2/src/core/change_detection/change_detection", "angular2/src/core/linker/view_pool", "angular2/src/core/linker/view_manager", "angular2/src/core/linker/view_manager", "angular2/src/core/linker/view_manager_utils", "angular2/src/core/linker/view_resolver", "angular2/src/core/linker/view_listener", "angular2/src/core/linker/proto_view_factory", "angular2/src/core/linker/directive_resolver", "angular2/src/core/linker/pipe_resolver", "angular2/src/core/linker/compiler", "angular2/src/core/linker/compiler", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/core/render"], true, function(require, exports, module) {
+System.register("angular2/src/core/application_common_providers", ["angular2/src/facade/lang", "angular2/src/core/di", "angular2/src/core/application_tokens", "angular2/src/core/change_detection/change_detection", "angular2/src/core/linker/view_pool", "angular2/src/core/linker/view_manager", "angular2/src/core/linker/view_manager", "angular2/src/core/linker/view_manager_utils", "angular2/src/core/linker/view_resolver", "angular2/src/core/linker/view_listener", "angular2/src/core/linker/proto_view_factory", "angular2/src/core/linker/directive_resolver", "angular2/src/core/linker/pipe_resolver", "angular2/src/core/linker/compiler", "angular2/src/core/linker/compiler", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/core/linker/dynamic_component_loader"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -18779,8 +18712,7 @@ System.register("angular2/src/core/application_common_providers", ["angular2/src
   var compiler_2 = require("angular2/src/core/linker/compiler");
   var dynamic_component_loader_1 = require("angular2/src/core/linker/dynamic_component_loader");
   var dynamic_component_loader_2 = require("angular2/src/core/linker/dynamic_component_loader");
-  var render_1 = require("angular2/src/core/render");
-  exports.APPLICATION_COMMON_PROVIDERS = lang_1.CONST_EXPR([new di_1.Provider(compiler_1.Compiler, {useClass: compiler_2.Compiler_}), application_tokens_1.APP_ID_RANDOM_PROVIDER, view_pool_1.AppViewPool, new di_1.Provider(view_pool_1.APP_VIEW_POOL_CAPACITY, {useValue: 10000}), new di_1.Provider(view_manager_1.AppViewManager, {useClass: view_manager_2.AppViewManager_}), view_manager_utils_1.AppViewManagerUtils, view_listener_1.AppViewListener, proto_view_factory_1.ProtoViewFactory, view_resolver_1.ViewResolver, new di_1.Provider(change_detection_1.IterableDiffers, {useValue: change_detection_1.defaultIterableDiffers}), new di_1.Provider(change_detection_1.KeyValueDiffers, {useValue: change_detection_1.defaultKeyValueDiffers}), directive_resolver_1.DirectiveResolver, pipe_resolver_1.PipeResolver, new di_1.Provider(dynamic_component_loader_1.DynamicComponentLoader, {useClass: dynamic_component_loader_2.DynamicComponentLoader_}), render_1.EventManager]);
+  exports.APPLICATION_COMMON_PROVIDERS = lang_1.CONST_EXPR([new di_1.Provider(compiler_1.Compiler, {useClass: compiler_2.Compiler_}), application_tokens_1.APP_ID_RANDOM_PROVIDER, view_pool_1.AppViewPool, new di_1.Provider(view_pool_1.APP_VIEW_POOL_CAPACITY, {useValue: 10000}), new di_1.Provider(view_manager_1.AppViewManager, {useClass: view_manager_2.AppViewManager_}), view_manager_utils_1.AppViewManagerUtils, view_listener_1.AppViewListener, proto_view_factory_1.ProtoViewFactory, view_resolver_1.ViewResolver, new di_1.Provider(change_detection_1.IterableDiffers, {useValue: change_detection_1.defaultIterableDiffers}), new di_1.Provider(change_detection_1.KeyValueDiffers, {useValue: change_detection_1.defaultKeyValueDiffers}), directive_resolver_1.DirectiveResolver, pipe_resolver_1.PipeResolver, new di_1.Provider(dynamic_component_loader_1.DynamicComponentLoader, {useClass: dynamic_component_loader_2.DynamicComponentLoader_})]);
   global.define = __define;
   return module.exports;
 });
@@ -21877,19 +21809,10 @@ System.register("angular2/src/platform/dom/dom_adapter", ["angular2/src/facade/l
   return module.exports;
 });
 
-System.register("angular2/src/platform/dom/events/dom_events", ["angular2/src/platform/dom/dom_adapter", "angular2/core"], true, function(require, exports, module) {
+System.register("angular2/src/platform/dom/events/event_manager", ["angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/core/di", "angular2/src/core/zone/ng_zone", "angular2/src/facade/collection"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
       return Reflect.decorate(decorators, target, key, desc);
@@ -21912,48 +21835,70 @@ System.register("angular2/src/platform/dom/events/dom_events", ["angular2/src/pl
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
       return Reflect.metadata(k, v);
   };
-  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
-  var core_1 = require("angular2/core");
-  var DomEventsPlugin = (function(_super) {
-    __extends(DomEventsPlugin, _super);
-    function DomEventsPlugin() {
-      _super.apply(this, arguments);
+  var __param = (this && this.__param) || function(paramIndex, decorator) {
+    return function(target, key) {
+      decorator(target, key, paramIndex);
+    };
+  };
+  var lang_1 = require("angular2/src/facade/lang");
+  var exceptions_1 = require("angular2/src/facade/exceptions");
+  var di_1 = require("angular2/src/core/di");
+  var ng_zone_1 = require("angular2/src/core/zone/ng_zone");
+  var collection_1 = require("angular2/src/facade/collection");
+  exports.EVENT_MANAGER_PLUGINS = lang_1.CONST_EXPR(new di_1.OpaqueToken("EventManagerPlugins"));
+  var EventManager = (function() {
+    function EventManager(plugins, _zone) {
+      var _this = this;
+      this._zone = _zone;
+      plugins.forEach(function(p) {
+        return p.manager = _this;
+      });
+      this._plugins = collection_1.ListWrapper.reversed(plugins);
     }
-    DomEventsPlugin.prototype.supports = function(eventName) {
-      return true;
+    EventManager.prototype.addEventListener = function(element, eventName, handler) {
+      var plugin = this._findPluginFor(eventName);
+      plugin.addEventListener(element, eventName, handler);
     };
-    DomEventsPlugin.prototype.addEventListener = function(element, eventName, handler) {
-      var zone = this.manager.getZone();
-      var outsideHandler = function(event) {
-        return zone.run(function() {
-          return handler(event);
-        });
-      };
-      this.manager.getZone().runOutsideAngular(function() {
-        dom_adapter_1.DOM.on(element, eventName, outsideHandler);
-      });
+    EventManager.prototype.addGlobalEventListener = function(target, eventName, handler) {
+      var plugin = this._findPluginFor(eventName);
+      return plugin.addGlobalEventListener(target, eventName, handler);
     };
-    DomEventsPlugin.prototype.addGlobalEventListener = function(target, eventName, handler) {
-      var element = dom_adapter_1.DOM.getGlobalEventTarget(target);
-      var zone = this.manager.getZone();
-      var outsideHandler = function(event) {
-        return zone.run(function() {
-          return handler(event);
-        });
-      };
-      return this.manager.getZone().runOutsideAngular(function() {
-        return dom_adapter_1.DOM.onAndCancel(element, eventName, outsideHandler);
-      });
+    EventManager.prototype.getZone = function() {
+      return this._zone;
     };
-    DomEventsPlugin = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], DomEventsPlugin);
-    return DomEventsPlugin;
-  })(core_1.EventManagerPlugin);
-  exports.DomEventsPlugin = DomEventsPlugin;
+    EventManager.prototype._findPluginFor = function(eventName) {
+      var plugins = this._plugins;
+      for (var i = 0; i < plugins.length; i++) {
+        var plugin = plugins[i];
+        if (plugin.supports(eventName)) {
+          return plugin;
+        }
+      }
+      throw new exceptions_1.BaseException("No event manager plugin found for event " + eventName);
+    };
+    EventManager = __decorate([di_1.Injectable(), __param(0, di_1.Inject(exports.EVENT_MANAGER_PLUGINS)), __metadata('design:paramtypes', [Array, ng_zone_1.NgZone])], EventManager);
+    return EventManager;
+  })();
+  exports.EventManager = EventManager;
+  var EventManagerPlugin = (function() {
+    function EventManagerPlugin() {}
+    EventManagerPlugin.prototype.supports = function(eventName) {
+      return false;
+    };
+    EventManagerPlugin.prototype.addEventListener = function(element, eventName, handler) {
+      throw "not implemented";
+    };
+    EventManagerPlugin.prototype.addGlobalEventListener = function(element, eventName, handler) {
+      throw "not implemented";
+    };
+    return EventManagerPlugin;
+  })();
+  exports.EventManagerPlugin = EventManagerPlugin;
   global.define = __define;
   return module.exports;
 });
 
-System.register("angular2/src/platform/dom/events/key_events", ["angular2/src/platform/dom/dom_adapter", "angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/core", "angular2/src/core/di"], true, function(require, exports, module) {
+System.register("angular2/src/platform/dom/events/key_events", ["angular2/src/platform/dom/dom_adapter", "angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/src/platform/dom/events/event_manager", "angular2/src/core/di"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -21991,7 +21936,7 @@ System.register("angular2/src/platform/dom/events/key_events", ["angular2/src/pl
   var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
   var lang_1 = require("angular2/src/facade/lang");
   var collection_1 = require("angular2/src/facade/collection");
-  var core_1 = require("angular2/core");
+  var event_manager_1 = require("angular2/src/platform/dom/events/event_manager");
   var di_1 = require("angular2/src/core/di");
   var modifierKeys = ['alt', 'control', 'meta', 'shift'];
   var modifierKeyGetters = {
@@ -22085,13 +22030,13 @@ System.register("angular2/src/platform/dom/events/key_events", ["angular2/src/pl
     };
     KeyEventsPlugin = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], KeyEventsPlugin);
     return KeyEventsPlugin;
-  })(core_1.EventManagerPlugin);
+  })(event_manager_1.EventManagerPlugin);
   exports.KeyEventsPlugin = KeyEventsPlugin;
   global.define = __define;
   return module.exports;
 });
 
-System.register("angular2/src/platform/dom/events/hammer_common", ["angular2/core", "angular2/src/facade/collection"], true, function(require, exports, module) {
+System.register("angular2/src/platform/dom/events/hammer_common", ["angular2/src/platform/dom/events/event_manager", "angular2/src/facade/collection"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -22104,7 +22049,7 @@ System.register("angular2/src/platform/dom/events/hammer_common", ["angular2/cor
     }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
-  var core_1 = require("angular2/core");
+  var event_manager_1 = require("angular2/src/platform/dom/events/event_manager");
   var collection_1 = require("angular2/src/facade/collection");
   var _eventNames = {
     'pan': true,
@@ -22147,7 +22092,7 @@ System.register("angular2/src/platform/dom/events/hammer_common", ["angular2/cor
       return collection_1.StringMapWrapper.contains(_eventNames, eventName);
     };
     return HammerGesturesPluginCommon;
-  })(core_1.EventManagerPlugin);
+  })(event_manager_1.EventManagerPlugin);
   exports.HammerGesturesPluginCommon = HammerGesturesPluginCommon;
   global.define = __define;
   return module.exports;
@@ -28111,32 +28056,6 @@ System.register("angular2/src/core/linker/directive_lifecycle_reflector", ["angu
   return module.exports;
 });
 
-System.register("angular2/src/core/render", ["angular2/src/core/render/api", "angular2/src/core/render/event_manager"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var api_1 = require("angular2/src/core/render/api");
-  exports.Renderer = api_1.Renderer;
-  exports.RenderViewRef = api_1.RenderViewRef;
-  exports.RenderProtoViewRef = api_1.RenderProtoViewRef;
-  exports.RenderFragmentRef = api_1.RenderFragmentRef;
-  exports.RenderViewWithFragments = api_1.RenderViewWithFragments;
-  exports.RenderTemplateCmd = api_1.RenderTemplateCmd;
-  exports.RenderTextCmd = api_1.RenderTextCmd;
-  exports.RenderNgContentCmd = api_1.RenderNgContentCmd;
-  exports.RenderBeginElementCmd = api_1.RenderBeginElementCmd;
-  exports.RenderBeginComponentCmd = api_1.RenderBeginComponentCmd;
-  exports.RenderEmbeddedTemplateCmd = api_1.RenderEmbeddedTemplateCmd;
-  exports.RenderBeginCmd = api_1.RenderBeginCmd;
-  exports.RenderComponentTemplate = api_1.RenderComponentTemplate;
-  var event_manager_1 = require("angular2/src/core/render/event_manager");
-  exports.EventManager = event_manager_1.EventManager;
-  exports.EventManagerPlugin = event_manager_1.EventManagerPlugin;
-  exports.EVENT_MANAGER_PLUGINS = event_manager_1.EVENT_MANAGER_PLUGINS;
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/src/common/pipes/date_pipe", ["angular2/src/facade/lang", "angular2/src/facade/intl", "angular2/core", "angular2/src/facade/collection", "angular2/src/common/pipes/invalid_pipe_argument_exception"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -28386,6 +28305,83 @@ System.register("angular2/src/common/forms/directives", ["angular2/src/facade/la
   var ng_control_1 = require("angular2/src/common/forms/directives/ng_control");
   exports.NgControl = ng_control_1.NgControl;
   exports.FORM_DIRECTIVES = lang_1.CONST_EXPR([ng_control_name_1.NgControlName, ng_control_group_1.NgControlGroup, ng_form_control_1.NgFormControl, ng_model_1.NgModel, ng_form_model_1.NgFormModel, ng_form_1.NgForm, select_control_value_accessor_1.NgSelectOption, default_value_accessor_1.DefaultValueAccessor, number_value_accessor_1.NumberValueAccessor, checkbox_value_accessor_1.CheckboxControlValueAccessor, select_control_value_accessor_1.SelectControlValueAccessor, ng_control_status_1.NgControlStatus, validators_1.RequiredValidator, validators_1.MinLengthValidator, validators_1.MaxLengthValidator]);
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/platform/dom/events/dom_events", ["angular2/src/platform/dom/dom_adapter", "angular2/core", "angular2/src/platform/dom/events/event_manager"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      return Reflect.decorate(decorators, target, key, desc);
+    switch (arguments.length) {
+      case 2:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(o)) || o;
+        }, target);
+      case 3:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key)), void 0;
+        }, void 0);
+      case 4:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key, o)) || o;
+        }, desc);
+    }
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
+  var core_1 = require("angular2/core");
+  var event_manager_1 = require("angular2/src/platform/dom/events/event_manager");
+  var DomEventsPlugin = (function(_super) {
+    __extends(DomEventsPlugin, _super);
+    function DomEventsPlugin() {
+      _super.apply(this, arguments);
+    }
+    DomEventsPlugin.prototype.supports = function(eventName) {
+      return true;
+    };
+    DomEventsPlugin.prototype.addEventListener = function(element, eventName, handler) {
+      var zone = this.manager.getZone();
+      var outsideHandler = function(event) {
+        return zone.run(function() {
+          return handler(event);
+        });
+      };
+      this.manager.getZone().runOutsideAngular(function() {
+        dom_adapter_1.DOM.on(element, eventName, outsideHandler);
+      });
+    };
+    DomEventsPlugin.prototype.addGlobalEventListener = function(target, eventName, handler) {
+      var element = dom_adapter_1.DOM.getGlobalEventTarget(target);
+      var zone = this.manager.getZone();
+      var outsideHandler = function(event) {
+        return zone.run(function() {
+          return handler(event);
+        });
+      };
+      return this.manager.getZone().runOutsideAngular(function() {
+        return dom_adapter_1.DOM.onAndCancel(element, eventName, outsideHandler);
+      });
+    };
+    DomEventsPlugin = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], DomEventsPlugin);
+    return DomEventsPlugin;
+  })(event_manager_1.EventManagerPlugin);
+  exports.DomEventsPlugin = DomEventsPlugin;
   global.define = __define;
   return module.exports;
 });
@@ -28940,7 +28936,7 @@ System.register("angular2/src/platform/browser/xhr_impl", ["angular2/src/facade/
   return module.exports;
 });
 
-System.register("angular2/platform/common_dom", ["angular2/src/platform/dom/dom_adapter", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/events/dom_events", "angular2/src/platform/dom/debug/by", "angular2/src/platform/dom/debug/debug_element_view_listener"], true, function(require, exports, module) {
+System.register("angular2/platform/common_dom", ["angular2/src/platform/dom/dom_adapter", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/events/dom_events", "angular2/src/platform/dom/events/event_manager", "angular2/src/platform/dom/debug/by", "angular2/src/platform/dom/debug/debug_element_view_listener"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -28962,6 +28958,10 @@ System.register("angular2/platform/common_dom", ["angular2/src/platform/dom/dom_
   exports.DomSharedStylesHost = shared_styles_host_1.DomSharedStylesHost;
   var dom_events_1 = require("angular2/src/platform/dom/events/dom_events");
   exports.DomEventsPlugin = dom_events_1.DomEventsPlugin;
+  var event_manager_1 = require("angular2/src/platform/dom/events/event_manager");
+  exports.EVENT_MANAGER_PLUGINS = event_manager_1.EVENT_MANAGER_PLUGINS;
+  exports.EventManager = event_manager_1.EventManager;
+  exports.EventManagerPlugin = event_manager_1.EventManagerPlugin;
   __export(require("angular2/src/platform/dom/debug/by"));
   __export(require("angular2/src/platform/dom/debug/debug_element_view_listener"));
   global.define = __define;
@@ -37274,7 +37274,7 @@ System.register("angular2/src/core/linker/proto_view_factory", ["angular2/src/fa
   return module.exports;
 });
 
-System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di", "angular2/src/animate/animation_builder", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/platform/dom/shared_styles_host", "angular2/src/core/profile/profile", "angular2/core", "angular2/src/platform/dom/dom_tokens", "angular2/src/core/render/view_factory", "angular2/src/core/render/view", "angular2/src/platform/dom/util", "angular2/src/core/metadata", "angular2/src/platform/dom/dom_adapter"], true, function(require, exports, module) {
+System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di", "angular2/src/animate/animation_builder", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/platform/dom/shared_styles_host", "angular2/src/core/profile/profile", "angular2/core", "angular2/src/platform/dom/events/event_manager", "angular2/src/platform/dom/dom_tokens", "angular2/src/core/render/view_factory", "angular2/src/core/render/view", "angular2/src/platform/dom/util", "angular2/src/core/metadata", "angular2/src/platform/dom/dom_adapter"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -37321,6 +37321,7 @@ System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di
   var shared_styles_host_1 = require("angular2/src/platform/dom/shared_styles_host");
   var profile_1 = require("angular2/src/core/profile/profile");
   var core_1 = require("angular2/core");
+  var event_manager_1 = require("angular2/src/platform/dom/events/event_manager");
   var dom_tokens_1 = require("angular2/src/platform/dom/dom_tokens");
   var view_factory_1 = require("angular2/src/core/render/view_factory");
   var view_1 = require("angular2/src/core/render/view");
@@ -37551,7 +37552,7 @@ System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di
     DomRenderer_.prototype.globalOn = function(target, eventName, callback) {
       return this._eventManager.addGlobalEventListener(target, eventName, decoratePreventDefault(callback));
     };
-    DomRenderer_ = __decorate([di_1.Injectable(), __param(3, di_1.Inject(dom_tokens_1.DOCUMENT)), __metadata('design:paramtypes', [core_1.EventManager, shared_styles_host_1.DomSharedStylesHost, animation_builder_1.AnimationBuilder, Object])], DomRenderer_);
+    DomRenderer_ = __decorate([di_1.Injectable(), __param(3, di_1.Inject(dom_tokens_1.DOCUMENT)), __metadata('design:paramtypes', [event_manager_1.EventManager, shared_styles_host_1.DomSharedStylesHost, animation_builder_1.AnimationBuilder, Object])], DomRenderer_);
     return DomRenderer_;
   })(DomRenderer);
   exports.DomRenderer_ = DomRenderer_;
@@ -38501,7 +38502,7 @@ System.register("angular2/src/core/linker/compiler", ["angular2/src/core/linker/
   return module.exports;
 });
 
-System.register("angular2/src/platform/browser_common", ["angular2/src/facade/lang", "angular2/src/core/di", "angular2/core", "angular2/common", "angular2/src/core/testability/testability", "angular2/src/platform/dom/dom_adapter", "angular2/src/platform/dom/events/dom_events", "angular2/src/platform/dom/events/key_events", "angular2/src/platform/dom/events/hammer_gestures", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/shared_styles_host", "angular2/src/animate/browser_details", "angular2/src/animate/animation_builder", "angular2/src/platform/browser/browser_adapter", "angular2/src/platform/browser/testability", "angular2/src/core/profile/wtf_init", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/browser/title", "angular2/platform/common_dom", "angular2/src/platform/browser/browser_adapter", "angular2/src/platform/browser/tools/tools"], true, function(require, exports, module) {
+System.register("angular2/src/platform/browser_common", ["angular2/src/facade/lang", "angular2/src/core/di", "angular2/core", "angular2/common", "angular2/src/core/testability/testability", "angular2/src/platform/dom/dom_adapter", "angular2/src/platform/dom/events/dom_events", "angular2/src/platform/dom/events/key_events", "angular2/src/platform/dom/events/hammer_gestures", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/shared_styles_host", "angular2/src/animate/browser_details", "angular2/src/animate/animation_builder", "angular2/src/platform/browser/browser_adapter", "angular2/src/platform/browser/testability", "angular2/src/core/profile/wtf_init", "angular2/src/platform/dom/events/event_manager", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/browser/title", "angular2/platform/common_dom", "angular2/src/platform/browser/browser_adapter", "angular2/src/platform/browser/tools/tools"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -38523,6 +38524,7 @@ System.register("angular2/src/platform/browser_common", ["angular2/src/facade/la
   var browser_adapter_1 = require("angular2/src/platform/browser/browser_adapter");
   var testability_2 = require("angular2/src/platform/browser/testability");
   var wtf_init_1 = require("angular2/src/core/profile/wtf_init");
+  var event_manager_1 = require("angular2/src/platform/dom/events/event_manager");
   var dom_tokens_2 = require("angular2/src/platform/dom/dom_tokens");
   exports.DOCUMENT = dom_tokens_2.DOCUMENT;
   var title_1 = require("angular2/src/platform/browser/title");
@@ -38560,16 +38562,16 @@ System.register("angular2/src/platform/browser_common", ["angular2/src/facade/la
   }), new di_1.Provider(dom_tokens_1.DOCUMENT, {
     useFactory: _document,
     deps: []
-  }), new di_1.Provider(core_1.EVENT_MANAGER_PLUGINS, {
+  }), new di_1.Provider(event_manager_1.EVENT_MANAGER_PLUGINS, {
     useClass: dom_events_1.DomEventsPlugin,
     multi: true
-  }), new di_1.Provider(core_1.EVENT_MANAGER_PLUGINS, {
+  }), new di_1.Provider(event_manager_1.EVENT_MANAGER_PLUGINS, {
     useClass: key_events_1.KeyEventsPlugin,
     multi: true
-  }), new di_1.Provider(core_1.EVENT_MANAGER_PLUGINS, {
+  }), new di_1.Provider(event_manager_1.EVENT_MANAGER_PLUGINS, {
     useClass: hammer_gestures_1.HammerGesturesPlugin,
     multi: true
-  }), new di_1.Provider(dom_renderer_1.DomRenderer, {useClass: dom_renderer_1.DomRenderer_}), new di_1.Provider(core_1.Renderer, {useExisting: dom_renderer_1.DomRenderer}), new di_1.Provider(shared_styles_host_2.SharedStylesHost, {useExisting: shared_styles_host_1.DomSharedStylesHost}), shared_styles_host_1.DomSharedStylesHost, testability_1.Testability, browser_details_1.BrowserDetails, animation_builder_1.AnimationBuilder]);
+  }), new di_1.Provider(dom_renderer_1.DomRenderer, {useClass: dom_renderer_1.DomRenderer_}), new di_1.Provider(core_1.Renderer, {useExisting: dom_renderer_1.DomRenderer}), new di_1.Provider(shared_styles_host_2.SharedStylesHost, {useExisting: shared_styles_host_1.DomSharedStylesHost}), shared_styles_host_1.DomSharedStylesHost, testability_1.Testability, browser_details_1.BrowserDetails, animation_builder_1.AnimationBuilder, event_manager_1.EventManager]);
   function initDomAdapter() {
     browser_adapter_1.BrowserDomAdapter.makeCurrent();
     wtf_init_1.wtfInit();
@@ -39956,7 +39958,7 @@ System.register("angular2/common", ["angular2/src/common/pipes", "angular2/src/c
   return module.exports;
 });
 
-System.register("angular2/angular2", ["angular2/common", "angular2/core", "angular2/instrumentation", "angular2/platform/browser", "angular2/src/platform/dom/dom_adapter", "angular2/upgrade", "angular2/compiler"], true, function(require, exports, module) {
+System.register("angular2/angular2", ["angular2/common", "angular2/core", "angular2/instrumentation", "angular2/platform/browser", "angular2/src/platform/dom/dom_adapter", "angular2/src/platform/dom/events/event_manager", "angular2/upgrade", "angular2/compiler"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -39970,6 +39972,7 @@ System.register("angular2/angular2", ["angular2/common", "angular2/core", "angul
   __export(require("angular2/instrumentation"));
   __export(require("angular2/platform/browser"));
   __export(require("angular2/src/platform/dom/dom_adapter"));
+  __export(require("angular2/src/platform/dom/events/event_manager"));
   __export(require("angular2/upgrade"));
   var compiler_1 = require("angular2/compiler");
   exports.UrlResolver = compiler_1.UrlResolver;
