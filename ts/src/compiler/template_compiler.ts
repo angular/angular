@@ -1,6 +1,6 @@
 import {IS_DART, Type, Json, isBlank, stringify} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
-import {ListWrapper, SetWrapper, MapWrapper} from 'angular2/src/facade/collection';
+import {ListWrapper, SetWrapper} from 'angular2/src/facade/collection';
 import {PromiseWrapper, Promise} from 'angular2/src/facade/async';
 import {
   CompiledComponentTemplate,
@@ -96,7 +96,6 @@ export class TemplateCompiler {
   private _compileComponentRuntime(
       cacheKey: any, compMeta: CompileDirectiveMetadata, viewDirectives: CompileDirectiveMetadata[],
       compilingComponentCacheKeys: Set<any>): CompiledComponentTemplate {
-    let uniqViewDirectives = removeDuplicates(viewDirectives);
     var compiledTemplate = this._compiledTemplateCache.get(cacheKey);
     var done = this._compiledTemplateDone.get(cacheKey);
     if (isBlank(compiledTemplate)) {
@@ -110,7 +109,7 @@ export class TemplateCompiler {
       compilingComponentCacheKeys.add(cacheKey);
       done = PromiseWrapper
                  .all([<any>this._styleCompiler.compileComponentRuntime(compMeta.template)].concat(
-                     uniqViewDirectives.map(dirMeta => this.normalizeDirectiveMetadata(dirMeta))))
+                     viewDirectives.map(dirMeta => this.normalizeDirectiveMetadata(dirMeta))))
                  .then((stylesAndNormalizedViewDirMetas: any[]) => {
                    var childPromises = [];
                    var normalizedViewDirMetas = stylesAndNormalizedViewDirMetas.slice(1);
@@ -176,9 +175,9 @@ export class TemplateCompiler {
       var compMeta = <CompileDirectiveMetadata>componentWithDirs.component;
       assertComponent(compMeta);
       componentMetas.push(compMeta);
-
-      this._processTemplateCodeGen(compMeta, componentWithDirs.directives, declarations,
-                                   templateArguments);
+      this._processTemplateCodeGen(compMeta,
+                                   <CompileDirectiveMetadata[]>componentWithDirs.directives,
+                                   declarations, templateArguments);
       if (compMeta.dynamicLoadable) {
         var hostMeta = createHostComponentMeta(compMeta.type, compMeta.selector);
         componentMetas.push(hostMeta);
@@ -213,10 +212,9 @@ export class TemplateCompiler {
   private _processTemplateCodeGen(compMeta: CompileDirectiveMetadata,
                                   directives: CompileDirectiveMetadata[],
                                   targetDeclarations: string[], targetTemplateArguments: any[][]) {
-    let uniqueDirectives = removeDuplicates(directives);
     var styleExpr = this._styleCompiler.compileComponentCodeGen(compMeta.template);
-    var parsedTemplate = this._templateParser.parse(compMeta.template.template, uniqueDirectives,
-                                                    compMeta.type.name);
+    var parsedTemplate =
+        this._templateParser.parse(compMeta.template.template, directives, compMeta.type.name);
     var changeDetectorsExprs = this._cdCompiler.compileComponentCodeGen(
         compMeta.type, compMeta.changeDetection, parsedTemplate);
     var commandsExpr = this._commandCompiler.compileComponentCodeGen(
@@ -264,18 +262,4 @@ function addAll(source: any[], target: any[]) {
 
 function codeGenComponentTemplateFactory(nestedCompType: CompileDirectiveMetadata): string {
   return `${moduleRef(templateModuleUrl(nestedCompType.type.moduleUrl))}${templateGetterName(nestedCompType.type)}`;
-}
-
-function removeDuplicates(items: CompileDirectiveMetadata[]): CompileDirectiveMetadata[] {
-  let res = [];
-  items.forEach(item => {
-    let hasMatch =
-        res.filter(r => r.type.name == item.type.name && r.type.moduleUrl == item.type.moduleUrl &&
-                        r.type.runtime == item.type.runtime)
-            .length > 0;
-    if (!hasMatch) {
-      res.push(item);
-    }
-  });
-  return res;
 }

@@ -1519,7 +1519,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.ArgumentOutOfRangeError = _utilArgumentOutOfRangeError2['default'];
 
 	//# sourceMappingURL=Rx.js.map
-	//# sourceMappingURL=Rx.js.map
 
 /***/ },
 /* 9 */
@@ -1668,7 +1667,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	Observable.create = function (subscribe) {
 	    return new Observable(subscribe);
 	};
-	//# sourceMappingURL=Observable.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=Observable.js.map
 
@@ -1724,8 +1722,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 
-	    //# sourceMappingURL=Subscriber.js.map
-
+	    
 	    Subscriber.create = function create(next, error, complete) {
 	        var subscriber = new Subscriber();
 	        subscriber._next = typeof next === "function" && _utilTryOrOnError2['default'](next) || _utilNoop2['default'];
@@ -1835,7 +1832,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function noop() {}
 
-	//# sourceMappingURL=noop.js.map
 	module.exports = exports["default"];
 	//# sourceMappingURL=noop.js.map
 
@@ -1852,7 +1848,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  throw e;
 	}
 
-	//# sourceMappingURL=throwError.js.map
 	module.exports = exports["default"];
 	//# sourceMappingURL=throwError.js.map
 
@@ -1877,7 +1872,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return tryCatcher;
 	}
 
-	//# sourceMappingURL=tryOrOnError.js.map
 	module.exports = exports["default"];
 	//# sourceMappingURL=tryOrOnError.js.map
 
@@ -1976,7 +1970,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    empty.isUnsubscribed = true;
 	    return empty;
 	})(new Subscription());
-	//# sourceMappingURL=Subscription.js.map
 	module.exports = exports["default"];
 	//# sourceMappingURL=Subscription.js.map
 
@@ -2003,7 +1996,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	if (freeGlobal && (freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal)) {
 	    exports.root = root = freeGlobal;
 	}
-	//# sourceMappingURL=root.js.map
 	//# sourceMappingURL=root.js.map
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(16)(module), (function() { return this; }())))
 
@@ -2045,7 +2037,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	exports['default'] = _root.root.Symbol.observable;
 
-	//# sourceMappingURL=Symbol_observable.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=Symbol_observable.js.map
 
@@ -2094,7 +2085,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return new _observablesArrayObservable2['default'](observables, scheduler).lift(new _combineLatestSupport.CombineLatestOperator(project));
 	}
 
-	//# sourceMappingURL=combineLatest-static.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=combineLatest-static.js.map
 
@@ -2139,8 +2129,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 
-	    //# sourceMappingURL=ArrayObservable.js.map
-
+	    
 	    ArrayObservable.create = function create(array, scheduler) {
 	        return new ArrayObservable(array, scheduler);
 	    };
@@ -2351,7 +2340,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    return new _EmptyObservable2['default']();
 	};
-	//# sourceMappingURL=ScalarObservable.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=ScalarObservable.js.map
 
@@ -2382,7 +2370,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	;
-	//# sourceMappingURL=tryCatch.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=tryCatch.js.map
 
@@ -2395,7 +2382,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.__esModule = true;
 	var errorObject = { e: {} };
 	exports.errorObject = errorObject;
-	//# sourceMappingURL=errorObject.js.map
 	//# sourceMappingURL=errorObject.js.map
 
 /***/ },
@@ -2427,8 +2413,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.scheduler = scheduler;
 	    }
 
-	    //# sourceMappingURL=ErrorObservable.js.map
-
+	    
 	    ErrorObservable.create = function create(error, scheduler) {
 	        return new ErrorObservable(error, scheduler);
 	    };
@@ -2487,8 +2472,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.scheduler = scheduler;
 	    }
 
-	    //# sourceMappingURL=EmptyObservable.js.map
-
+	    
 	    EmptyObservable.create = function create(scheduler) {
 	        return new EmptyObservable(scheduler);
 	    };
@@ -2573,8 +2557,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.toRespond = [];
 	    }
 
-	    //# sourceMappingURL=combineLatest-support.js.map
-
+	    
 	    CombineLatestSubscriber.prototype._next = function _next(observable) {
 	        var toRespond = this.toRespond;
 	        toRespond.push(toRespond.length);
@@ -2660,8 +2643,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _Subscriber.apply(this, arguments);
 	    }
 
-	    //# sourceMappingURL=OuterSubscriber.js.map
-
+	    
 	    OuterSubscriber.prototype.notifyComplete = function notifyComplete(inner) {
 	        this.destination.complete();
 	    };
@@ -2781,7 +2763,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	}
 
-	//# sourceMappingURL=subscribeToResult.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=subscribeToResult.js.map
 
@@ -2816,7 +2797,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	// if (root.Set && typeof new root.Set()['@@iterator'] === 'function') {
 	//     $iterator$ = '@@iterator';
 	// }
-	//# sourceMappingURL=Symbol_iterator.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=Symbol_iterator.js.map
 
@@ -2851,8 +2831,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.index = 0;
 	    }
 
-	    //# sourceMappingURL=InnerSubscriber.js.map
-
+	    
 	    InnerSubscriber.prototype._next = function _next(value) {
 	        var index = this.index++;
 	        this.parent.notifyNext(this.outerValue, value, this.outerIndex, index);
@@ -2915,7 +2894,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return _Observable2['default'].fromArray(observables).mergeAll(1);
 	}
 
-	//# sourceMappingURL=concat-static.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=concat-static.js.map
 
@@ -2935,7 +2913,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports['default'] = new _ImmediateScheduler2['default']();
 
-	//# sourceMappingURL=immediate.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=immediate.js.map
 
@@ -2968,8 +2945,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.scheduled = false;
 	    }
 
-	    //# sourceMappingURL=ImmediateScheduler.js.map
-
+	    
 	    ImmediateScheduler.prototype.now = function now() {
 	        return Date.now();
 	    };
@@ -3036,8 +3012,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.work = work;
 	    }
 
-	    //# sourceMappingURL=ImmediateAction.js.map
-
+	    
 	    ImmediateAction.prototype.schedule = function schedule(state) {
 	        if (this.isUnsubscribed) {
 	            return this;
@@ -3105,8 +3080,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.work = work;
 	    }
 
-	    //# sourceMappingURL=FutureAction.js.map
-
+	    
 	    FutureAction.prototype.schedule = function schedule(state) {
 	        var _this = this;
 
@@ -3181,8 +3155,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.observableFactory = observableFactory;
 	    }
 
-	    //# sourceMappingURL=DeferObservable.js.map
-
+	    
 	    DeferObservable.create = function create(observableFactory) {
 	        return new DeferObservable(observableFactory);
 	    };
@@ -3295,7 +3268,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    return arr;
 	}
-	//# sourceMappingURL=ForkJoinObservable.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=ForkJoinObservable.js.map
 
@@ -3356,8 +3328,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.scheduler = scheduler;
 	    }
 
-	    //# sourceMappingURL=FromObservable.js.map
-
+	    
 	    FromObservable.create = function create(ish) {
 	        var scheduler = arguments.length <= 1 || arguments[1] === undefined ? _schedulersImmediate2['default'] : arguments[1];
 
@@ -3510,7 +3481,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    subscriber.error(err);
 	}
-	//# sourceMappingURL=PromiseObservable.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=PromiseObservable.js.map
 
@@ -3746,7 +3716,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    return valueAsNumber < 0 ? -1 : 1;
 	}
-	//# sourceMappingURL=IteratorObservable.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=IteratorObservable.js.map
 
@@ -3834,7 +3803,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.notification = notification;
 	    this.destination = destination;
 	}
-	//# sourceMappingURL=observeOn-support.js.map
 	;
 	//# sourceMappingURL=observeOn-support.js.map
 
@@ -3930,7 +3898,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	Notification.completeNotification = new Notification('C');
 	Notification.undefinedValueNotification = new Notification('N', undefined);
-	//# sourceMappingURL=Notification.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=Notification.js.map
 
@@ -3974,8 +3941,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.selector = selector;
 	    }
 
-	    //# sourceMappingURL=FromEventObservable.js.map
-
+	    
 	    FromEventObservable.create = function create(sourceObj, eventName, selector) {
 	        return new FromEventObservable(sourceObj, eventName, selector);
 	    };
@@ -4070,8 +4036,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.selector = selector;
 	    }
 
-	    //# sourceMappingURL=FromEventPatternObservable.js.map
-
+	    
 	    FromEventPatternObservable.create = function create(addHandler, removeHandler, selector) {
 	        return new FromEventPatternObservable(addHandler, removeHandler, selector);
 	    };
@@ -4153,8 +4118,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 
-	    //# sourceMappingURL=IntervalObservable.js.map
-
+	    
 	    IntervalObservable.create = function create() {
 	        var period = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
 	        var scheduler = arguments.length <= 1 || arguments[1] === undefined ? _schedulersNextTick2['default'] : arguments[1];
@@ -4210,7 +4174,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	;
-	//# sourceMappingURL=isNumeric.js.map
 	module.exports = exports["default"];
 	//# sourceMappingURL=isNumeric.js.map
 
@@ -4230,7 +4193,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports['default'] = new _NextTickScheduler2['default']();
 
-	//# sourceMappingURL=nextTick.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=nextTick.js.map
 
@@ -4269,8 +4231,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _ImmediateScheduler.apply(this, arguments);
 	    }
 
-	    //# sourceMappingURL=NextTickScheduler.js.map
-
+	    
 	    NextTickScheduler.prototype.scheduleNow = function scheduleNow(work, state) {
 	        return (this.scheduled ? new _ImmediateAction2['default'](this, work) : new _NextTickAction2['default'](this, work)).schedule(state);
 	    };
@@ -4311,8 +4272,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _ImmediateAction.apply(this, arguments);
 	    }
 
-	    //# sourceMappingURL=NextTickAction.js.map
-
+	    
 	    NextTickAction.prototype.schedule = function schedule(state) {
 	        var _this = this;
 
@@ -4527,7 +4487,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    })(_root.root, Immediate);
 	}
-	//# sourceMappingURL=Immediate.js.map
 	//# sourceMappingURL=Immediate.js.map
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(50).clearImmediate))
 
@@ -4754,7 +4713,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return new _observablesArrayObservable2['default'](observables, scheduler).lift(new _mergeAllSupport.MergeAllOperator(concurrent));
 	}
 
-	//# sourceMappingURL=merge-static.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=merge-static.js.map
 
@@ -4809,8 +4767,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.active = 0;
 	    }
 
-	    //# sourceMappingURL=mergeAll-support.js.map
-
+	    
 	    MergeAllSubscriber.prototype._next = function _next(observable) {
 	        if (this.active < this.concurrent) {
 	            if (observable._isScalar) {
@@ -4875,8 +4832,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _Observable.call(this);
 	    }
 
-	    //# sourceMappingURL=InfiniteObservable.js.map
-
+	    
 	    InfiniteObservable.create = function create() {
 	        return new InfiniteObservable();
 	    };
@@ -4920,8 +4876,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.scheduler = scheduler;
 	    }
 
-	    //# sourceMappingURL=RangeObservable.js.map
-
+	    
 	    RangeObservable.create = function create(start, end, scheduler) {
 	        if (start === undefined) start = 0;
 	        if (end === undefined) end = 0;
@@ -5027,8 +4982,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.scheduler = scheduler;
 	    }
 
-	    //# sourceMappingURL=TimerObservable.js.map
-
+	    
 	    TimerObservable.create = function create(dueTime, period, scheduler) {
 	        if (dueTime === undefined) dueTime = 0;
 
@@ -5102,7 +5056,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return new _observablesArrayObservable2['default'](observables).lift(new _zipSupport.ZipOperator(project));
 	}
 
-	//# sourceMappingURL=zip-static.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=zip-static.js.map
 
@@ -5329,8 +5282,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.isComplete = false;
 	    }
 
-	    //# sourceMappingURL=zip-support.js.map
-
+	    
 	    ZipBufferIterator.prototype[_utilSymbol_iterator2['default']] = function () {
 	        return this;
 	    };
@@ -5470,8 +5422,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.parent = parent;
 	    }
 
-	    //# sourceMappingURL=buffer.js.map
-
+	    
 	    BufferClosingNotifierSubscriber.prototype._next = function _next(value) {
 	        this.parent.flushBuffer();
 	    };
@@ -5553,8 +5504,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.count = 0;
 	    }
 
-	    //# sourceMappingURL=bufferCount.js.map
-
+	    
 	    BufferCountSubscriber.prototype._next = function _next(value) {
 	        var count = this.count += 1;
 	        var destination = this.destination;
@@ -5745,7 +5695,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    subscriber.closeBuffer(buffer);
 	}
-	//# sourceMappingURL=bufferTime.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=bufferTime.js.map
 
@@ -5916,8 +5865,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.parent = parent;
 	    }
 
-	    //# sourceMappingURL=bufferToggle.js.map
-
+	    
 	    BufferToggleOpeningsSubscriber.prototype._next = function _next(value) {
 	        this.parent.openBuffer(value);
 	    };
@@ -6047,8 +5995,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.parent = parent;
 	    }
 
-	    //# sourceMappingURL=bufferWhen.js.map
-
+	    
 	    BufferClosingNotifierSubscriber.prototype._next = function _next() {
 	        this.parent.openBuffer();
 	    };
@@ -6133,8 +6080,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.caught = caught;
 	    }
 
-	    //# sourceMappingURL=catch.js.map
-
+	    
 	    CatchSubscriber.prototype._error = function _error(err) {
 	        var result = _utilTryCatch2['default'](this.selector)(err, this.caught);
 	        if (result === _utilErrorObject.errorObject) {
@@ -6178,7 +6124,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return this.lift(new _combineLatestSupport.CombineLatestOperator(project));
 	}
 
-	//# sourceMappingURL=combineAll.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=combineAll.js.map
 
@@ -6223,7 +6168,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return new _observablesArrayObservable2['default'](observables).lift(new _combineLatestSupport.CombineLatestOperator(project));
 	}
 
-	//# sourceMappingURL=combineLatest.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=combineLatest.js.map
 
@@ -6264,7 +6208,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return _Observable2['default'].fromArray(args).mergeAll(1);
 	}
 
-	//# sourceMappingURL=concat.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=concat.js.map
 
@@ -6295,7 +6238,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return this.lift(new _mergeAllSupport.MergeAllOperator(1));
 	}
 
-	//# sourceMappingURL=concatAll.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=concatAll.js.map
 
@@ -6334,7 +6276,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return this.lift(new _mergeMapSupport.MergeMapOperator(project, projectResult, 1));
 	}
 
-	//# sourceMappingURL=concatMap.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=concatMap.js.map
 
@@ -6404,8 +6345,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.index = 0;
 	    }
 
-	    //# sourceMappingURL=mergeMap-support.js.map
-
+	    
 	    MergeMapSubscriber.prototype._next = function _next(value) {
 	        if (this.active < this.concurrent) {
 	            var index = this.index++;
@@ -6495,7 +6435,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return this.lift(new _mergeMapToSupport.MergeMapToOperator(observable, projectResult, 1));
 	}
 
-	//# sourceMappingURL=concatMapTo.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=concatMapTo.js.map
 
@@ -6565,8 +6504,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.index = 0;
 	    }
 
-	    //# sourceMappingURL=mergeMapTo-support.js.map
-
+	    
 	    MergeMapToSubscriber.prototype._next = function _next(value) {
 	        if (this.active < this.concurrent) {
 	            var resultSelector = this.resultSelector;
@@ -6712,8 +6650,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 
-	    //# sourceMappingURL=count.js.map
-
+	    
 	    CountSubscriber.prototype._next = function _next(value) {
 	        var predicate = this.predicate;
 	        var passed = true;
@@ -6777,7 +6714,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	;
-	//# sourceMappingURL=bindCallback.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=bindCallback.js.map
 
@@ -6825,8 +6761,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _Subscriber.call(this, destination);
 	    }
 
-	    //# sourceMappingURL=dematerialize.js.map
-
+	    
 	    DeMaterializeSubscriber.prototype._next = function _next(value) {
 	        value.observe(this.destination);
 	    };
@@ -6957,8 +6892,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.currentIndex = currentIndex;
 	    }
 
-	    //# sourceMappingURL=debounce.js.map
-
+	    
 	    DurationSelectorSubscriber.prototype.debounceNext = function debounceNext() {
 	        var parent = this.parent;
 	        if (this.currentIndex === parent.index) {
@@ -7078,7 +7012,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	function dispatchNext(subscriber) {
 	    subscriber.debouncedNext();
 	}
-	//# sourceMappingURL=debounceTime.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=debounceTime.js.map
 
@@ -7132,8 +7065,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.isEmpty = true;
 	    }
 
-	    //# sourceMappingURL=defaultIfEmpty.js.map
-
+	    
 	    DefaultIfEmptySubscriber.prototype._next = function _next(x) {
 	        this.isEmpty = false;
 	        this.destination.next(x);
@@ -7278,7 +7210,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.time = time;
 	    this.notification = notification;
 	}
-	//# sourceMappingURL=delay.js.map
 	;
 
 	module.exports = exports['default'];
@@ -7297,7 +7228,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return value instanceof Date && !isNaN(+value);
 	}
 
-	//# sourceMappingURL=isDate.js.map
 	module.exports = exports["default"];
 	//# sourceMappingURL=isDate.js.map
 
@@ -7361,8 +7291,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 
-	    //# sourceMappingURL=distinctUntilChanged.js.map
-
+	    
 	    DistinctUntilChangedSubscriber.prototype.compare = function compare(x, y) {
 	        return x === y;
 	    };
@@ -7459,8 +7388,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.__complete = complete;
 	    }
 
-	    //# sourceMappingURL=do.js.map
-
+	    
 	    DoSubscriber.prototype._next = function _next(x) {
 	        var result = _utilTryCatch2['default'](this.__next)(x);
 	        if (result === _utilErrorObject.errorObject) {
@@ -7511,7 +7439,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this.lift(new _expandSupport.ExpandOperator(project, concurrent));
 	}
 
-	//# sourceMappingURL=expand.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=expand.js.map
 
@@ -7581,8 +7508,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 
-	    //# sourceMappingURL=expand-support.js.map
-
+	    
 	    ExpandSubscriber.prototype._next = function _next(value) {
 	        var index = this.index++;
 	        this.destination.next(value);
@@ -7700,8 +7626,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.select = select;
 	    }
 
-	    //# sourceMappingURL=filter.js.map
-
+	    
 	    FilterSubscriber.prototype._next = function _next(x) {
 	        var result = _utilTryCatch2['default'](this.select)(x, this.count++);
 	        if (result === _utilErrorObject.errorObject) {
@@ -7772,8 +7697,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.add(new _Subscription2['default'](finallySelector));
 	    }
 
-	    //# sourceMappingURL=finally.js.map
-	    return FinallySubscriber;
+	        return FinallySubscriber;
 	})(_Subscriber3['default']);
 
 	module.exports = exports['default'];
@@ -7844,8 +7768,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.hasCompleted = false;
 	    }
 
-	    //# sourceMappingURL=first.js.map
-
+	    
 	    FirstSubscriber.prototype._next = function _next(value) {
 	        var destination = this.destination;
 	        var predicate = this.predicate;
@@ -7908,7 +7831,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.name = 'EmptyError';
 	    this.message = 'no elements in sequence';
 	}
-	//# sourceMappingURL=EmptyError.js.map
 	;
 
 	exports['default'] = EmptyError;
@@ -8086,8 +8008,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.parent = parent;
 	    }
 
-	    //# sourceMappingURL=groupBy.js.map
-
+	    
 	    GroupDurationSubscriber.prototype._next = function _next(value) {
 	        this.group.complete();
 	        this.parent.removeGroup(this.key);
@@ -8294,8 +8215,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.destination = destination;
 	    }
 
-	    //# sourceMappingURL=Subject.js.map
-
+	    
 	    BidirectionalSubject.prototype._subscribe = function _subscribe(subscriber) {
 	        var operator = this.operator;
 	        return this.source._subscribe.call(this.source, operator ? operator.call(subscriber) : subscriber);
@@ -8365,8 +8285,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.isUnsubscribed = false;
 	    }
 
-	    //# sourceMappingURL=SubjectSubscription.js.map
-
+	    
 	    SubjectSubscription.prototype.unsubscribe = function unsubscribe() {
 	        if (this.isUnsubscribed) {
 	            return;
@@ -8443,7 +8362,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return Map;
 	})();
 
-	//# sourceMappingURL=Map.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=Map.js.map
 
@@ -8465,8 +8383,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._values = {};
 	    }
 
-	    //# sourceMappingURL=FastMap.js.map
-
+	    
 	    FastMap.prototype["delete"] = function _delete(key) {
 	        this._values[key] = null;
 	        return true;
@@ -8590,8 +8507,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        parent.count++;
 	    }
 
-	    //# sourceMappingURL=groupBy-support.js.map
-
+	    
 	    InnerRefCountSubscription.prototype.unsubscribe = function unsubscribe() {
 	        if (!this.parent.isUnsubscribed && !this.isUnsubscribed) {
 	            _Subscription2.prototype.unsubscribe.call(this);
@@ -8655,8 +8571,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _Subscriber.apply(this, arguments);
 	    }
 
-	    //# sourceMappingURL=ignoreElements.js.map
-
+	    
 	    IgnoreElementsSubscriber.prototype._next = function _next() {};
 
 	    return IgnoreElementsSubscriber;
@@ -8763,8 +8678,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 
-	    //# sourceMappingURL=every.js.map
-
+	    
 	    EverySubscriber.prototype.notifyComplete = function notifyComplete(everyValueMatch) {
 	        this.destination.next(everyValueMatch);
 	        this.destination.complete();
@@ -8862,8 +8776,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 
-	    //# sourceMappingURL=last.js.map
-
+	    
 	    LastSubscriber.prototype._next = function _next(value) {
 	        var predicate = this.predicate;
 	        var resultSelector = this.resultSelector;
@@ -8978,8 +8891,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.project = project;
 	    }
 
-	    //# sourceMappingURL=map.js.map
-
+	    
 	    MapSubscriber.prototype._next = function _next(x) {
 	        var result = _utilTryCatch2['default'](this.project)(x, this.count++);
 	        if (result === _utilErrorObject.errorObject) {
@@ -9048,8 +8960,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.value = value;
 	    }
 
-	    //# sourceMappingURL=mapTo.js.map
-
+	    
 	    MapToSubscriber.prototype._next = function _next(x) {
 	        this.destination.next(this.value);
 	    };
@@ -9108,8 +9019,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _Subscriber.call(this, destination);
 	    }
 
-	    //# sourceMappingURL=materialize.js.map
-
+	    
 	    MaterializeSubscriber.prototype._next = function _next(value) {
 	        this.destination.next(_Notification2['default'].createNext(value));
 	    };
@@ -9156,7 +9066,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return _mergeStatic2['default'].apply(this, observables);
 	}
 
-	//# sourceMappingURL=merge.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=merge.js.map
 
@@ -9177,7 +9086,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this.lift(new _mergeAllSupport.MergeAllOperator(concurrent));
 	}
 
-	//# sourceMappingURL=mergeAll.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=mergeAll.js.map
 
@@ -9198,7 +9106,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this.lift(new _mergeMapSupport.MergeMapOperator(project, resultSelector, concurrent));
 	}
 
-	//# sourceMappingURL=mergeMap.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=mergeMap.js.map
 
@@ -9219,7 +9126,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this.lift(new _mergeMapToSupport.MergeMapToOperator(observable, resultSelector, concurrent));
 	}
 
-	//# sourceMappingURL=mergeMapTo.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=mergeMapTo.js.map
 
@@ -9242,7 +9148,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return new _observablesConnectableObservable2['default'](this, subjectFactory);
 	}
 
-	//# sourceMappingURL=multicast.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=multicast.js.map
 
@@ -9367,8 +9272,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.refCountObservable = refCountObservable;
 	    }
 
-	    //# sourceMappingURL=ConnectableObservable.js.map
-
+	    
 	    RefCountSubscription.prototype._unsubscribe = function _unsubscribe() {
 	        var observable = this.refCountObservable;
 	        if (--observable.refCount === 0) {
@@ -9400,7 +9304,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this.lift(new _observeOnSupport.ObserveOnOperator(scheduler, delay));
 	}
 
-	//# sourceMappingURL=observeOn.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=observeOn.js.map
 
@@ -9427,7 +9330,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return [_filter2['default'].call(this, predicate), _filter2['default'].call(this, _utilNot2['default'](predicate, thisArg))];
 	}
 
-	//# sourceMappingURL=partition.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=partition.js.map
 
@@ -9449,7 +9351,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return notPred;
 	}
 
-	//# sourceMappingURL=not.js.map
 	module.exports = exports["default"];
 	//# sourceMappingURL=not.js.map
 
@@ -9480,7 +9381,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return _multicast2['default'].call(this, subjectFactory);
 	}
 
-	//# sourceMappingURL=publish.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=publish.js.map
 
@@ -9509,7 +9409,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	}
 
-	//# sourceMappingURL=publishBehavior.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=publishBehavior.js.map
 
@@ -9541,8 +9440,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.value = value;
 	    }
 
-	    //# sourceMappingURL=BehaviorSubject.js.map
-
+	    
 	    BehaviorSubject.prototype._subscribe = function _subscribe(subscriber) {
 	        var subscription = _Subject.prototype._subscribe.call(this, subscriber);
 	        if (!subscription) {
@@ -9592,7 +9490,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	}
 
-	//# sourceMappingURL=publishReplay.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=publishReplay.js.map
 
@@ -9689,7 +9586,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.time = time;
 	    this.value = value;
 	}
-	//# sourceMappingURL=ReplaySubject.js.map
 	;
 
 	module.exports = exports['default'];
@@ -9710,7 +9606,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this.lift(new _reduceSupport.ReduceOperator(project, acc));
 	}
 
-	//# sourceMappingURL=reduce.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=reduce.js.map
 
@@ -9768,8 +9663,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.hasSeed = typeof acc !== 'undefined';
 	    }
 
-	    //# sourceMappingURL=reduce-support.js.map
-
+	    
 	    ReduceSubscriber.prototype._next = function _next(x) {
 	        if (this.hasValue || (this.hasValue = this.hasSeed)) {
 	            var result = _utilTryCatch2['default'](this.project).call(this, this.acc, x);
@@ -9909,8 +9803,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.count = count;
 	    }
 
-	    //# sourceMappingURL=repeat.js.map
-
+	    
 	    MoreRepeatSubscriber.prototype._next = function _next(value) {
 	        this.parent.destination.next(value);
 	    };
@@ -10033,8 +9926,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.retried = retried;
 	    }
 
-	    //# sourceMappingURL=retry.js.map
-
+	    
 	    RetryMoreSubscriber.prototype._next = function _next(value) {
 	        this.parent.destination.next(value);
 	    };
@@ -10219,8 +10111,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.parent = parent;
 	    }
 
-	    //# sourceMappingURL=retryWhen.js.map
-
+	    
 	    RetryNotificationSubscriber.prototype._next = function _next(value) {
 	        this.parent.resubscribe();
 	    };
@@ -10312,8 +10203,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.parent = parent;
 	    }
 
-	    //# sourceMappingURL=sample.js.map
-
+	    
 	    SampleNoficationSubscriber.prototype._next = function _next() {
 	        this.parent.notifyNext();
 	    };
@@ -10410,7 +10300,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    subscriber.notifyNext();
 	    this.schedule(state, delay);
 	}
-	//# sourceMappingURL=sampleTime.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=sampleTime.js.map
 
@@ -10474,8 +10363,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.accumulatorSet = typeof acc !== 'undefined';
 	    }
 
-	    //# sourceMappingURL=scan.js.map
-
+	    
 	    ScanSubscriber.prototype._next = function _next(x) {
 	        if (!this.accumulatorSet) {
 	            this.acc = x;
@@ -10528,7 +10416,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	;
-	//# sourceMappingURL=share.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=share.js.map
 
@@ -10551,7 +10438,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return _publishBehavior2['default'].call(this, value).refCount();
 	}
 
-	//# sourceMappingURL=shareBehavior.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=shareBehavior.js.map
 
@@ -10577,7 +10463,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return _publishReplay2['default'].call(this, bufferSize, windowTime, scheduler).refCount();
 	}
 
-	//# sourceMappingURL=shareReplay.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=shareReplay.js.map
 
@@ -10650,8 +10535,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 
-	    //# sourceMappingURL=single.js.map
-
+	    
 	    SingleSubscriber.prototype.applySingleValue = function applySingleValue(value) {
 	        if (this.seenValue) {
 	            this.destination.error('Sequence contains more than one element');
@@ -10740,8 +10624,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.count = 0;
 	    }
 
-	    //# sourceMappingURL=skip.js.map
-
+	    
 	    SkipSubscriber.prototype._next = function _next(x) {
 	        if (++this.count > this.total) {
 	            this.destination.next(x);
@@ -10832,8 +10715,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.hasCompleted = false;
 	    }
 
-	    //# sourceMappingURL=skipUntil.js.map
-
+	    
 	    NotificationSubscriber.prototype._next = function _next(unused) {
 	        this.hasValue = true;
 	    };
@@ -10901,7 +10783,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	}
 
-	//# sourceMappingURL=startWith.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=startWith.js.map
 
@@ -10926,7 +10807,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return new _observablesSubscribeOnObservable2['default'](this, delay, scheduler);
 	}
 
-	//# sourceMappingURL=subscribeOn.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=subscribeOn.js.map
 
@@ -10967,8 +10847,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.scheduler = scheduler;
 	    }
 
-	    //# sourceMappingURL=SubscribeOnObservable.js.map
-
+	    
 	    SubscribeOnObservable.create = function create(source) {
 	        var delay = arguments.length <= 1 || arguments[1] === undefined ? 0 : arguments[1];
 	        var scheduler = arguments.length <= 2 || arguments[2] === undefined ? _schedulersNextTick2['default'] : arguments[2];
@@ -11049,8 +10928,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.hasCompleted = false;
 	    }
 
-	    //# sourceMappingURL=switch.js.map
-
+	    
 	    SwitchSubscriber.prototype._next = function _next(value) {
 	        this.unsubscribeInner();
 	        this.active++;
@@ -11155,8 +11033,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.index = 0;
 	    }
 
-	    //# sourceMappingURL=switchMap.js.map
-
+	    
 	    SwitchMapSubscriber.prototype._next = function _next(value) {
 	        var index = this.index++;
 	        var destination = this.destination;
@@ -11279,8 +11156,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.index = 0;
 	    }
 
-	    //# sourceMappingURL=switchMapTo.js.map
-
+	    
 	    SwitchMapToSubscriber.prototype._next = function _next(value) {
 	        var index = this.index++;
 	        var innerSubscription = this.innerSubscription;
@@ -11384,8 +11260,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.count = 0;
 	    }
 
-	    //# sourceMappingURL=take.js.map
-
+	    
 	    TakeSubscriber.prototype._next = function _next(value) {
 	        var total = this.total;
 	        if (++this.count <= total) {
@@ -11470,8 +11345,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.destination = destination;
 	    }
 
-	    //# sourceMappingURL=takeUntil.js.map
-
+	    
 	    TakeUntilInnerSubscriber.prototype._next = function _next() {
 	        this.destination.complete();
 	    };
@@ -11571,7 +11445,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    subscriber.throttledNext(value);
 	}
-	//# sourceMappingURL=throttle.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=throttle.js.map
 
@@ -11648,8 +11521,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.scheduleTimeout();
 	    }
 
-	    //# sourceMappingURL=timeout.js.map
-
+	    
 	    TimeoutSubscriber.dispatchTimeout = function dispatchTimeout(state) {
 	        var source = state.subscriber;
 	        var currentIndex = state.index;
@@ -11782,8 +11654,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.scheduleTimeout();
 	    }
 
-	    //# sourceMappingURL=timeoutWith.js.map
-
+	    
 	    TimeoutWithSubscriber.dispatchTimeout = function dispatchTimeout(state) {
 	        var source = state.subscriber;
 	        var currentIndex = state.index;
@@ -11892,8 +11763,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.array = [];
 	    }
 
-	    //# sourceMappingURL=toArray.js.map
-
+	    
 	    ToArraySubscriber.prototype._next = function _next(x) {
 	        this.array.push(x);
 	    };
@@ -11945,7 +11815,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	}
 
-	//# sourceMappingURL=toPromise.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=toPromise.js.map
 
@@ -12038,8 +11907,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.parent = parent;
 	    }
 
-	    //# sourceMappingURL=window.js.map
-
+	    
 	    WindowClosingNotifierSubscriber.prototype._next = function _next() {
 	        this.parent.openWindow();
 	    };
@@ -12116,8 +11984,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        destination.next(this.windows[0]);
 	    }
 
-	    //# sourceMappingURL=windowCount.js.map
-
+	    
 	    WindowCountSubscriber.prototype._next = function _next(value) {
 	        var startWindowEvery = this.startWindowEvery > 0 ? this.startWindowEvery : this.windowSize;
 	        var windowSize = this.windowSize;
@@ -12308,7 +12175,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    subscriber.closeWindow(window);
 	}
-	//# sourceMappingURL=windowTime.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=windowTime.js.map
 
@@ -12471,8 +12337,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.parent = parent;
 	    }
 
-	    //# sourceMappingURL=windowToggle.js.map
-
+	    
 	    WindowToggleOpeningsSubscriber.prototype._next = function _next(value) {
 	        this.parent.openWindow(value);
 	    };
@@ -12603,8 +12468,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.parent = parent;
 	    }
 
-	    //# sourceMappingURL=windowWhen.js.map
-
+	    
 	    WindowClosingNotifierSubscriber.prototype._next = function _next() {
 	        this.parent.openWindow();
 	    };
@@ -12721,8 +12585,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    }
 
-	    //# sourceMappingURL=withLatestFrom.js.map
-
+	    
 	    WithLatestFromSubscriber.prototype.notifyNext = function notifyNext(observable, value, observableIndex, index) {
 	        this.values[observableIndex] = value;
 	        var toRespond = this.toRespond;
@@ -12787,7 +12650,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return _zipStatic2['default'].apply(this, observables);
 	}
 
-	//# sourceMappingURL=zip.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=zip.js.map
 
@@ -12806,7 +12668,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return this.lift(new _zipSupport.ZipOperator(project));
 	}
 
-	//# sourceMappingURL=zipAll.js.map
 	module.exports = exports['default'];
 	//# sourceMappingURL=zipAll.js.map
 
@@ -12826,7 +12687,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.name = 'ArgumentOutOfRangeError';
 	    this.message = 'argument out of range';
 	}
-	//# sourceMappingURL=ArgumentOutOfRangeError.js.map
 	;
 
 	exports['default'] = ArgumentOutOfRangeError;
@@ -37308,7 +37168,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    TemplateCompiler.prototype._compileComponentRuntime = function (cacheKey, compMeta, viewDirectives, compilingComponentCacheKeys) {
 	        var _this = this;
-	        var uniqViewDirectives = removeDuplicates(viewDirectives);
 	        var compiledTemplate = this._compiledTemplateCache.get(cacheKey);
 	        var done = this._compiledTemplateDone.get(cacheKey);
 	        if (lang_1.isBlank(compiledTemplate)) {
@@ -37320,7 +37179,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._compiledTemplateCache.set(cacheKey, compiledTemplate);
 	            compilingComponentCacheKeys.add(cacheKey);
 	            done = async_1.PromiseWrapper
-	                .all([this._styleCompiler.compileComponentRuntime(compMeta.template)].concat(uniqViewDirectives.map(function (dirMeta) { return _this.normalizeDirectiveMetadata(dirMeta); })))
+	                .all([this._styleCompiler.compileComponentRuntime(compMeta.template)].concat(viewDirectives.map(function (dirMeta) { return _this.normalizeDirectiveMetadata(dirMeta); })))
 	                .then(function (stylesAndNormalizedViewDirMetas) {
 	                var childPromises = [];
 	                var normalizedViewDirMetas = stylesAndNormalizedViewDirMetas.slice(1);
@@ -37403,9 +37262,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return this._styleCompiler.compileStylesheetCodeGen(stylesheetUrl, cssText);
 	    };
 	    TemplateCompiler.prototype._processTemplateCodeGen = function (compMeta, directives, targetDeclarations, targetTemplateArguments) {
-	        var uniqueDirectives = removeDuplicates(directives);
 	        var styleExpr = this._styleCompiler.compileComponentCodeGen(compMeta.template);
-	        var parsedTemplate = this._templateParser.parse(compMeta.template.template, uniqueDirectives, compMeta.type.name);
+	        var parsedTemplate = this._templateParser.parse(compMeta.template.template, directives, compMeta.type.name);
 	        var changeDetectorsExprs = this._cdCompiler.compileComponentCodeGen(compMeta.type, compMeta.changeDetection, parsedTemplate);
 	        var commandsExpr = this._commandCompiler.compileComponentCodeGen(compMeta, parsedTemplate, changeDetectorsExprs.expressions, codeGenComponentTemplateFactory);
 	        addAll(styleExpr.declarations, targetDeclarations);
@@ -37450,18 +37308,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	function codeGenComponentTemplateFactory(nestedCompType) {
 	    return "" + source_module_1.moduleRef(templateModuleUrl(nestedCompType.type.moduleUrl)) + templateGetterName(nestedCompType.type);
-	}
-	function removeDuplicates(items) {
-	    var res = [];
-	    items.forEach(function (item) {
-	        var hasMatch = res.filter(function (r) { return r.type.name == item.type.name && r.type.moduleUrl == item.type.moduleUrl &&
-	            r.type.runtime == item.type.runtime; })
-	            .length > 0;
-	        if (!hasMatch) {
-	            res.push(item);
-	        }
-	    });
-	    return res;
 	}
 
 
@@ -41455,6 +41301,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var di_1 = __webpack_require__(154);
 	var lang_1 = __webpack_require__(5);
 	var exceptions_1 = __webpack_require__(162);
+	var collection_1 = __webpack_require__(160);
 	var cpl = __webpack_require__(325);
 	var md = __webpack_require__(171);
 	var directive_resolver_1 = __webpack_require__(235);
@@ -41517,7 +41364,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                throw new exceptions_1.BaseException("Unexpected directive value '" + lang_1.stringify(directives[i]) + "' on the View of component '" + lang_1.stringify(component) + "'");
 	            }
 	        }
-	        return directives.map(function (type) { return _this.getMetadata(type); });
+	        return removeDuplicates(directives).map(function (type) { return _this.getMetadata(type); });
 	    };
 	    RuntimeMetadataResolver = __decorate([
 	        di_2.Injectable(),
@@ -41528,6 +41375,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return RuntimeMetadataResolver;
 	})();
 	exports.RuntimeMetadataResolver = RuntimeMetadataResolver;
+	function removeDuplicates(items) {
+	    var m = new Map();
+	    items.forEach(function (i) { return m.set(i, null); });
+	    return collection_1.MapWrapper.keys(m);
+	}
 	function flattenDirectives(view, platformDirectives) {
 	    var directives = [];
 	    if (lang_1.isPresent(platformDirectives)) {

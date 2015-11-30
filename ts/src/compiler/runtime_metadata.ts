@@ -8,6 +8,7 @@ import {
   RegExpWrapper
 } from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
+import {MapWrapper, StringMapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import * as cpl from './directive_metadata';
 import * as md from 'angular2/src/core/metadata/directives';
 import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
@@ -76,8 +77,14 @@ export class RuntimeMetadataResolver {
       }
     }
 
-    return directives.map(type => this.getMetadata(type));
+    return removeDuplicates(directives).map(type => this.getMetadata(type));
   }
+}
+
+function removeDuplicates(items: any[]): any[] {
+  let m = new Map<any, any>();
+  items.forEach(i => m.set(i, null));
+  return MapWrapper.keys(m);
 }
 
 function flattenDirectives(view: ViewMetadata, platformDirectives: any[]): Type[] {

@@ -80,7 +80,6 @@ export let TemplateCompiler = class {
         this._compiledTemplateDone.clear();
     }
     _compileComponentRuntime(cacheKey, compMeta, viewDirectives, compilingComponentCacheKeys) {
-        let uniqViewDirectives = removeDuplicates(viewDirectives);
         var compiledTemplate = this._compiledTemplateCache.get(cacheKey);
         var done = this._compiledTemplateDone.get(cacheKey);
         if (isBlank(compiledTemplate)) {
@@ -92,7 +91,7 @@ export let TemplateCompiler = class {
             this._compiledTemplateCache.set(cacheKey, compiledTemplate);
             compilingComponentCacheKeys.add(cacheKey);
             done = PromiseWrapper
-                .all([this._styleCompiler.compileComponentRuntime(compMeta.template)].concat(uniqViewDirectives.map(dirMeta => this.normalizeDirectiveMetadata(dirMeta))))
+                .all([this._styleCompiler.compileComponentRuntime(compMeta.template)].concat(viewDirectives.map(dirMeta => this.normalizeDirectiveMetadata(dirMeta))))
                 .then((stylesAndNormalizedViewDirMetas) => {
                 var childPromises = [];
                 var normalizedViewDirMetas = stylesAndNormalizedViewDirMetas.slice(1);
@@ -173,9 +172,8 @@ export let TemplateCompiler = class {
         return this._styleCompiler.compileStylesheetCodeGen(stylesheetUrl, cssText);
     }
     _processTemplateCodeGen(compMeta, directives, targetDeclarations, targetTemplateArguments) {
-        let uniqueDirectives = removeDuplicates(directives);
         var styleExpr = this._styleCompiler.compileComponentCodeGen(compMeta.template);
-        var parsedTemplate = this._templateParser.parse(compMeta.template.template, uniqueDirectives, compMeta.type.name);
+        var parsedTemplate = this._templateParser.parse(compMeta.template.template, directives, compMeta.type.name);
         var changeDetectorsExprs = this._cdCompiler.compileComponentCodeGen(compMeta.type, compMeta.changeDetection, parsedTemplate);
         var commandsExpr = this._commandCompiler.compileComponentCodeGen(compMeta, parsedTemplate, changeDetectorsExprs.expressions, codeGenComponentTemplateFactory);
         addAll(styleExpr.declarations, targetDeclarations);
@@ -216,16 +214,4 @@ function addAll(source, target) {
 }
 function codeGenComponentTemplateFactory(nestedCompType) {
     return `${moduleRef(templateModuleUrl(nestedCompType.type.moduleUrl))}${templateGetterName(nestedCompType.type)}`;
-}
-function removeDuplicates(items) {
-    let res = [];
-    items.forEach(item => {
-        let hasMatch = res.filter(r => r.type.name == item.type.name && r.type.moduleUrl == item.type.moduleUrl &&
-            r.type.runtime == item.type.runtime)
-            .length > 0;
-        if (!hasMatch) {
-            res.push(item);
-        }
-    });
-    return res;
 }

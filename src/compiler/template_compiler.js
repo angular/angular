@@ -81,7 +81,6 @@ var TemplateCompiler = (function () {
     };
     TemplateCompiler.prototype._compileComponentRuntime = function (cacheKey, compMeta, viewDirectives, compilingComponentCacheKeys) {
         var _this = this;
-        var uniqViewDirectives = removeDuplicates(viewDirectives);
         var compiledTemplate = this._compiledTemplateCache.get(cacheKey);
         var done = this._compiledTemplateDone.get(cacheKey);
         if (lang_1.isBlank(compiledTemplate)) {
@@ -93,7 +92,7 @@ var TemplateCompiler = (function () {
             this._compiledTemplateCache.set(cacheKey, compiledTemplate);
             compilingComponentCacheKeys.add(cacheKey);
             done = async_1.PromiseWrapper
-                .all([this._styleCompiler.compileComponentRuntime(compMeta.template)].concat(uniqViewDirectives.map(function (dirMeta) { return _this.normalizeDirectiveMetadata(dirMeta); })))
+                .all([this._styleCompiler.compileComponentRuntime(compMeta.template)].concat(viewDirectives.map(function (dirMeta) { return _this.normalizeDirectiveMetadata(dirMeta); })))
                 .then(function (stylesAndNormalizedViewDirMetas) {
                 var childPromises = [];
                 var normalizedViewDirMetas = stylesAndNormalizedViewDirMetas.slice(1);
@@ -176,9 +175,8 @@ var TemplateCompiler = (function () {
         return this._styleCompiler.compileStylesheetCodeGen(stylesheetUrl, cssText);
     };
     TemplateCompiler.prototype._processTemplateCodeGen = function (compMeta, directives, targetDeclarations, targetTemplateArguments) {
-        var uniqueDirectives = removeDuplicates(directives);
         var styleExpr = this._styleCompiler.compileComponentCodeGen(compMeta.template);
-        var parsedTemplate = this._templateParser.parse(compMeta.template.template, uniqueDirectives, compMeta.type.name);
+        var parsedTemplate = this._templateParser.parse(compMeta.template.template, directives, compMeta.type.name);
         var changeDetectorsExprs = this._cdCompiler.compileComponentCodeGen(compMeta.type, compMeta.changeDetection, parsedTemplate);
         var commandsExpr = this._commandCompiler.compileComponentCodeGen(compMeta, parsedTemplate, changeDetectorsExprs.expressions, codeGenComponentTemplateFactory);
         addAll(styleExpr.declarations, targetDeclarations);
@@ -223,17 +221,5 @@ function addAll(source, target) {
 }
 function codeGenComponentTemplateFactory(nestedCompType) {
     return "" + source_module_1.moduleRef(templateModuleUrl(nestedCompType.type.moduleUrl)) + templateGetterName(nestedCompType.type);
-}
-function removeDuplicates(items) {
-    var res = [];
-    items.forEach(function (item) {
-        var hasMatch = res.filter(function (r) { return r.type.name == item.type.name && r.type.moduleUrl == item.type.moduleUrl &&
-            r.type.runtime == item.type.runtime; })
-            .length > 0;
-        if (!hasMatch) {
-            res.push(item);
-        }
-    });
-    return res;
 }
 //# sourceMappingURL=template_compiler.js.map
