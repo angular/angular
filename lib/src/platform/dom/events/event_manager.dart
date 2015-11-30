@@ -1,4 +1,4 @@
-library angular2.src.core.render.event_manager;
+library angular2.src.platform.dom.events.event_manager;
 
 import "package:angular2/src/facade/exceptions.dart"
     show BaseException, WrappedException;

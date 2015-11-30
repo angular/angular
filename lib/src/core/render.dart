@@ -19,5 +19,3 @@ export "render/api.dart"
         RenderEmbeddedTemplateCmd,
         RenderBeginCmd,
         RenderComponentTemplate;
-export "render/event_manager.dart"
-    show EventManager, EventManagerPlugin, EVENT_MANAGER_PLUGINS;

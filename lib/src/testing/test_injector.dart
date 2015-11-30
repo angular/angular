@@ -26,7 +26,6 @@ import "package:angular2/src/core/linker/dynamic_component_loader.dart"
 import "package:angular2/src/compiler/xhr.dart" show XHR;
 import "package:angular2/src/core/zone/ng_zone.dart" show NgZone;
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
-import "package:angular2/core.dart" show EventManager, EVENT_MANAGER_PLUGINS;
 import "package:angular2/src/mock/directive_resolver_mock.dart"
     show MockDirectiveResolver;
 import "package:angular2/src/mock/view_resolver_mock.dart"
@@ -38,7 +37,8 @@ import "package:angular2/src/router/location_strategy.dart"
 import "package:angular2/src/mock/ng_zone_mock.dart" show MockNgZone;
 import "test_component_builder.dart" show TestComponentBuilder;
 import "package:angular2/src/core/di.dart" show Injector;
-import "package:angular2/platform/common_dom.dart" show ELEMENT_PROBE_PROVIDERS;
+import "package:angular2/platform/common_dom.dart"
+    show EventManager, EVENT_MANAGER_PLUGINS, ELEMENT_PROBE_PROVIDERS;
 import "package:angular2/src/facade/collection.dart" show ListWrapper;
 import "package:angular2/src/facade/lang.dart" show FunctionWrapper, Type;
 import "package:angular2/src/core/linker/view_pool.dart"

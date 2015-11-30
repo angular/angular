@@ -1,8 +1,9 @@
-library angular2.test.core.render.dom.events.event_manager_spec;
+library angular2.test.platform.dom.events.event_manager_spec;
 
 import "package:angular2/testing_internal.dart"
     show describe, ddescribe, it, iit, xit, xdescribe, expect, beforeEach, el;
-import "package:angular2/core.dart" show EventManager, EventManagerPlugin;
+import "package:angular2/platform/common_dom.dart"
+    show EventManager, EventManagerPlugin;
 import "package:angular2/src/platform/dom/events/dom_events.dart"
     show DomEventsPlugin;
 import "package:angular2/src/core/zone/ng_zone.dart" show NgZone;
