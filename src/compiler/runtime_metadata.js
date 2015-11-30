@@ -15,7 +15,6 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 var di_1 = require('angular2/src/core/di');
 var lang_1 = require('angular2/src/facade/lang');
 var exceptions_1 = require('angular2/src/facade/exceptions');
-var collection_1 = require('angular2/src/facade/collection');
 var cpl = require('./directive_metadata');
 var md = require('angular2/src/core/metadata/directives');
 var directive_resolver_1 = require('angular2/src/core/linker/directive_resolver');
@@ -78,7 +77,7 @@ var RuntimeMetadataResolver = (function () {
                 throw new exceptions_1.BaseException("Unexpected directive value '" + lang_1.stringify(directives[i]) + "' on the View of component '" + lang_1.stringify(component) + "'");
             }
         }
-        return removeDuplicates(directives).map(function (type) { return _this.getMetadata(type); });
+        return directives.map(function (type) { return _this.getMetadata(type); });
     };
     RuntimeMetadataResolver = __decorate([
         di_2.Injectable(),
@@ -89,11 +88,6 @@ var RuntimeMetadataResolver = (function () {
     return RuntimeMetadataResolver;
 })();
 exports.RuntimeMetadataResolver = RuntimeMetadataResolver;
-function removeDuplicates(items) {
-    var m = new Map();
-    items.forEach(function (i) { return m.set(i, null); });
-    return collection_1.MapWrapper.keys(m);
-}
 function flattenDirectives(view, platformDirectives) {
     var directives = [];
     if (lang_1.isPresent(platformDirectives)) {

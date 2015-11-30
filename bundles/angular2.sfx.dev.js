@@ -25185,7 +25185,7 @@ System.register("angular2/src/compiler/template_normalizer", ["angular2/src/comp
   return module.exports;
 });
 
-System.register("angular2/src/compiler/runtime_metadata", ["angular2/src/core/di", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/facade/collection", "angular2/src/compiler/directive_metadata", "angular2/src/core/metadata/directives", "angular2/src/core/linker/directive_resolver", "angular2/src/core/linker/view_resolver", "angular2/src/core/linker/directive_lifecycle_reflector", "angular2/src/core/linker/interfaces", "angular2/src/core/reflection/reflection", "angular2/src/core/di", "angular2/src/core/platform_directives_and_pipes", "angular2/src/compiler/util"], true, function(require, exports, module) {
+System.register("angular2/src/compiler/runtime_metadata", ["angular2/src/core/di", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/compiler/directive_metadata", "angular2/src/core/metadata/directives", "angular2/src/core/linker/directive_resolver", "angular2/src/core/linker/view_resolver", "angular2/src/core/linker/directive_lifecycle_reflector", "angular2/src/core/linker/interfaces", "angular2/src/core/reflection/reflection", "angular2/src/core/di", "angular2/src/core/platform_directives_and_pipes", "angular2/src/compiler/util"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -25219,7 +25219,6 @@ System.register("angular2/src/compiler/runtime_metadata", ["angular2/src/core/di
   var di_1 = require("angular2/src/core/di");
   var lang_1 = require("angular2/src/facade/lang");
   var exceptions_1 = require("angular2/src/facade/exceptions");
-  var collection_1 = require("angular2/src/facade/collection");
   var cpl = require("angular2/src/compiler/directive_metadata");
   var md = require("angular2/src/core/metadata/directives");
   var directive_resolver_1 = require("angular2/src/core/linker/directive_resolver");
@@ -25288,7 +25287,7 @@ System.register("angular2/src/compiler/runtime_metadata", ["angular2/src/core/di
           throw new exceptions_1.BaseException("Unexpected directive value '" + lang_1.stringify(directives[i]) + "' on the View of component '" + lang_1.stringify(component) + "'");
         }
       }
-      return removeDuplicates(directives).map(function(type) {
+      return directives.map(function(type) {
         return _this.getMetadata(type);
       });
     };
@@ -25296,13 +25295,6 @@ System.register("angular2/src/compiler/runtime_metadata", ["angular2/src/core/di
     return RuntimeMetadataResolver;
   })();
   exports.RuntimeMetadataResolver = RuntimeMetadataResolver;
-  function removeDuplicates(items) {
-    var m = new Map();
-    items.forEach(function(i) {
-      return m.set(i, null);
-    });
-    return collection_1.MapWrapper.keys(m);
-  }
   function flattenDirectives(view, platformDirectives) {
     var directives = [];
     if (lang_1.isPresent(platformDirectives)) {
@@ -41274,6 +41266,7 @@ System.register("angular2/src/compiler/template_compiler", ["angular2/src/facade
     };
     TemplateCompiler.prototype._compileComponentRuntime = function(cacheKey, compMeta, viewDirectives, compilingComponentCacheKeys) {
       var _this = this;
+      var uniqViewDirectives = removeDuplicates(viewDirectives);
       var compiledTemplate = this._compiledTemplateCache.get(cacheKey);
       var done = this._compiledTemplateDone.get(cacheKey);
       if (lang_1.isBlank(compiledTemplate)) {
@@ -41286,7 +41279,7 @@ System.register("angular2/src/compiler/template_compiler", ["angular2/src/facade
         }, commands, styles);
         this._compiledTemplateCache.set(cacheKey, compiledTemplate);
         compilingComponentCacheKeys.add(cacheKey);
-        done = async_1.PromiseWrapper.all([this._styleCompiler.compileComponentRuntime(compMeta.template)].concat(viewDirectives.map(function(dirMeta) {
+        done = async_1.PromiseWrapper.all([this._styleCompiler.compileComponentRuntime(compMeta.template)].concat(uniqViewDirectives.map(function(dirMeta) {
           return _this.normalizeDirectiveMetadata(dirMeta);
         }))).then(function(stylesAndNormalizedViewDirMetas) {
           var childPromises = [];
@@ -41372,8 +41365,9 @@ System.register("angular2/src/compiler/template_compiler", ["angular2/src/facade
       return this._styleCompiler.compileStylesheetCodeGen(stylesheetUrl, cssText);
     };
     TemplateCompiler.prototype._processTemplateCodeGen = function(compMeta, directives, targetDeclarations, targetTemplateArguments) {
+      var uniqueDirectives = removeDuplicates(directives);
       var styleExpr = this._styleCompiler.compileComponentCodeGen(compMeta.template);
-      var parsedTemplate = this._templateParser.parse(compMeta.template.template, directives, compMeta.type.name);
+      var parsedTemplate = this._templateParser.parse(compMeta.template.template, uniqueDirectives, compMeta.type.name);
       var changeDetectorsExprs = this._cdCompiler.compileComponentCodeGen(compMeta.type, compMeta.changeDetection, parsedTemplate);
       var commandsExpr = this._commandCompiler.compileComponentCodeGen(compMeta, parsedTemplate, changeDetectorsExprs.expressions, codeGenComponentTemplateFactory);
       addAll(styleExpr.declarations, targetDeclarations);
@@ -41415,6 +41409,18 @@ System.register("angular2/src/compiler/template_compiler", ["angular2/src/facade
   }
   function codeGenComponentTemplateFactory(nestedCompType) {
     return "" + source_module_1.moduleRef(templateModuleUrl(nestedCompType.type.moduleUrl)) + templateGetterName(nestedCompType.type);
+  }
+  function removeDuplicates(items) {
+    var res = [];
+    items.forEach(function(item) {
+      var hasMatch = res.filter(function(r) {
+        return r.type.name == item.type.name && r.type.moduleUrl == item.type.moduleUrl && r.type.runtime == item.type.runtime;
+      }).length > 0;
+      if (!hasMatch) {
+        res.push(item);
+      }
+    });
+    return res;
   }
   global.define = __define;
   return module.exports;
