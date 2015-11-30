@@ -7,17 +7,11 @@ import 'options.dart';
 
 TransformerOptions parseBarbackSettings(BarbackSettings settings) {
   var config = settings.configuration;
-  _warnDeprecated(config);
   var entryPoints = _readStringList(config, ENTRY_POINT_PARAM);
   var initReflector =
       _readBool(config, INIT_REFLECTOR_PARAM, defaultValue: true);
   var reflectPropertiesAsAttributes =
       _readBool(config, REFLECT_PROPERTIES_AS_ATTRIBUTES, defaultValue: false);
-  if (!config.containsKey(REFLECT_PROPERTIES_AS_ATTRIBUTES)) {
-    reflectPropertiesAsAttributes = _readBool(
-        config, REFLECT_PROPERTIES_AS_ATTRIBUTES_OLD,
-        defaultValue: false);
-  }
   var platformDirectives = _readStringList(config, PLATFORM_DIRECTIVES);
   var formatCode = _readBool(config, FORMAT_CODE_PARAM, defaultValue: false);
   String mirrorModeVal =
@@ -120,11 +114,3 @@ const CUSTOM_ANNOTATIONS_ERROR = '''
         - name: ...
           import: ...
           superClass: ...''';
-
-void _warnDeprecated(Map config) {
-  if (config.containsKey(REFLECT_PROPERTIES_AS_ATTRIBUTES_OLD)) {
-    print('${REFLECT_PROPERTIES_AS_ATTRIBUTES_OLD} has been renamed to '
-        '${REFLECT_PROPERTIES_AS_ATTRIBUTES}. Please update it in your '
-        'pubspec.');
-  }
-}
