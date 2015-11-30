@@ -15,7 +15,6 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 import { resolveForwardRef } from 'angular2/src/core/di';
 import { Type, isBlank, isPresent, isArray, stringify } from 'angular2/src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
-import { MapWrapper } from 'angular2/src/facade/collection';
 import * as cpl from './directive_metadata';
 import * as md from 'angular2/src/core/metadata/directives';
 import { DirectiveResolver } from 'angular2/src/core/linker/directive_resolver';
@@ -77,7 +76,7 @@ export let RuntimeMetadataResolver = class {
                 throw new BaseException(`Unexpected directive value '${stringify(directives[i])}' on the View of component '${stringify(component)}'`);
             }
         }
-        return removeDuplicates(directives).map(type => this.getMetadata(type));
+        return directives.map(type => this.getMetadata(type));
     }
 };
 RuntimeMetadataResolver = __decorate([
@@ -86,11 +85,6 @@ RuntimeMetadataResolver = __decorate([
     __param(2, Inject(PLATFORM_DIRECTIVES)), 
     __metadata('design:paramtypes', [DirectiveResolver, ViewResolver, Array])
 ], RuntimeMetadataResolver);
-function removeDuplicates(items) {
-    let m = new Map();
-    items.forEach(i => m.set(i, null));
-    return MapWrapper.keys(m);
-}
 function flattenDirectives(view, platformDirectives) {
     let directives = [];
     if (isPresent(platformDirectives)) {

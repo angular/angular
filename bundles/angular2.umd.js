@@ -37306,6 +37306,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    TemplateCompiler.prototype._compileComponentRuntime = function (cacheKey, compMeta, viewDirectives, compilingComponentCacheKeys) {
 	        var _this = this;
+	        var uniqViewDirectives = removeDuplicates(viewDirectives);
 	        var compiledTemplate = this._compiledTemplateCache.get(cacheKey);
 	        var done = this._compiledTemplateDone.get(cacheKey);
 	        if (lang_1.isBlank(compiledTemplate)) {
@@ -37317,7 +37318,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._compiledTemplateCache.set(cacheKey, compiledTemplate);
 	            compilingComponentCacheKeys.add(cacheKey);
 	            done = async_1.PromiseWrapper
-	                .all([this._styleCompiler.compileComponentRuntime(compMeta.template)].concat(viewDirectives.map(function (dirMeta) { return _this.normalizeDirectiveMetadata(dirMeta); })))
+	                .all([this._styleCompiler.compileComponentRuntime(compMeta.template)].concat(uniqViewDirectives.map(function (dirMeta) { return _this.normalizeDirectiveMetadata(dirMeta); })))
 	                .then(function (stylesAndNormalizedViewDirMetas) {
 	                var childPromises = [];
 	                var normalizedViewDirMetas = stylesAndNormalizedViewDirMetas.slice(1);
@@ -37400,8 +37401,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return this._styleCompiler.compileStylesheetCodeGen(stylesheetUrl, cssText);
 	    };
 	    TemplateCompiler.prototype._processTemplateCodeGen = function (compMeta, directives, targetDeclarations, targetTemplateArguments) {
+	        var uniqueDirectives = removeDuplicates(directives);
 	        var styleExpr = this._styleCompiler.compileComponentCodeGen(compMeta.template);
-	        var parsedTemplate = this._templateParser.parse(compMeta.template.template, directives, compMeta.type.name);
+	        var parsedTemplate = this._templateParser.parse(compMeta.template.template, uniqueDirectives, compMeta.type.name);
 	        var changeDetectorsExprs = this._cdCompiler.compileComponentCodeGen(compMeta.type, compMeta.changeDetection, parsedTemplate);
 	        var commandsExpr = this._commandCompiler.compileComponentCodeGen(compMeta, parsedTemplate, changeDetectorsExprs.expressions, codeGenComponentTemplateFactory);
 	        addAll(styleExpr.declarations, targetDeclarations);
@@ -37446,6 +37448,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	function codeGenComponentTemplateFactory(nestedCompType) {
 	    return "" + source_module_1.moduleRef(templateModuleUrl(nestedCompType.type.moduleUrl)) + templateGetterName(nestedCompType.type);
+	}
+	function removeDuplicates(items) {
+	    var res = [];
+	    items.forEach(function (item) {
+	        var hasMatch = res.filter(function (r) { return r.type.name == item.type.name && r.type.moduleUrl == item.type.moduleUrl &&
+	            r.type.runtime == item.type.runtime; })
+	            .length > 0;
+	        if (!hasMatch) {
+	            res.push(item);
+	        }
+	    });
+	    return res;
 	}
 
 
@@ -41439,7 +41453,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var di_1 = __webpack_require__(154);
 	var lang_1 = __webpack_require__(5);
 	var exceptions_1 = __webpack_require__(162);
-	var collection_1 = __webpack_require__(160);
 	var cpl = __webpack_require__(325);
 	var md = __webpack_require__(171);
 	var directive_resolver_1 = __webpack_require__(235);
@@ -41502,7 +41515,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                throw new exceptions_1.BaseException("Unexpected directive value '" + lang_1.stringify(directives[i]) + "' on the View of component '" + lang_1.stringify(component) + "'");
 	            }
 	        }
-	        return removeDuplicates(directives).map(function (type) { return _this.getMetadata(type); });
+	        return directives.map(function (type) { return _this.getMetadata(type); });
 	    };
 	    RuntimeMetadataResolver = __decorate([
 	        di_2.Injectable(),
@@ -41513,11 +41526,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return RuntimeMetadataResolver;
 	})();
 	exports.RuntimeMetadataResolver = RuntimeMetadataResolver;
-	function removeDuplicates(items) {
-	    var m = new Map();
-	    items.forEach(function (i) { return m.set(i, null); });
-	    return collection_1.MapWrapper.keys(m);
-	}
 	function flattenDirectives(view, platformDirectives) {
 	    var directives = [];
 	    if (lang_1.isPresent(platformDirectives)) {
