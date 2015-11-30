@@ -1,8 +1,24 @@
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+    switch (arguments.length) {
+        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+    }
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 import { PromiseWrapper, EventEmitter, ObservableWrapper } from 'angular2/src/facade/async';
-import { Map, StringMapWrapper, ListWrapper } from 'angular2/src/facade/collection';
-import { isBlank, isString, isPresent } from 'angular2/src/facade/lang';
+import { Map, StringMapWrapper } from 'angular2/src/facade/collection';
+import { isBlank, isPresent, Type } from 'angular2/src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
-import { stringifyInstruction, stringifyInstructionPath, stringifyInstructionQuery } from './instruction';
+import { Inject, Injectable } from 'angular2/core';
+import { RouteRegistry, ROUTER_PRIMARY_COMPONENT } from './route_registry';
+import { Location } from './location';
 import { getCanActivateHook } from './route_lifecycle_reflector';
 let _resolveToTrue = PromiseWrapper.resolve(true);
 let _resolveToFalse = PromiseWrapper.resolve(false);
@@ -175,31 +191,26 @@ export class Router {
                 if (result) {
                     return this.commit(instruction, _skipLocationChange)
                         .then((_) => {
-                        this._emitNavigationFinish(stringifyInstruction(instruction));
+                        this._emitNavigationFinish(instruction.toRootUrl());
                         return true;
                     });
                 }
             });
         });
     }
-    // TODO(btford): it'd be nice to remove this method as part of cleaning up the traversal logic
-    // Since refactoring `Router.generate` to return an instruction rather than a string, it's not
-    // guaranteed that the `componentType`s for the terminal async routes have been loaded by the time
-    // we begin navigation. The method below simply traverses instructions and resolves any components
-    // for which `componentType` is not present
     /** @internal */
     _settleInstruction(instruction) {
-        var unsettledInstructions = [];
-        if (isBlank(instruction.component.componentType)) {
-            unsettledInstructions.push(instruction.component.resolveComponentType().then((type) => { this.registry.configFromComponent(type); }));
-        }
-        if (isPresent(instruction.child)) {
-            unsettledInstructions.push(this._settleInstruction(instruction.child));
-        }
-        StringMapWrapper.forEach(instruction.auxInstruction, (instruction, _) => {
-            unsettledInstructions.push(this._settleInstruction(instruction));
+        return instruction.resolveComponent().then((_) => {
+            instruction.component.reuse = false;
+            var unsettledInstructions = [];
+            if (isPresent(instruction.child)) {
+                unsettledInstructions.push(this._settleInstruction(instruction.child));
+            }
+            StringMapWrapper.forEach(instruction.auxInstruction, (instruction, _) => {
+                unsettledInstructions.push(this._settleInstruction(instruction));
+            });
+            return PromiseWrapper.all(unsettledInstructions);
         });
-        return PromiseWrapper.all(unsettledInstructions);
     }
     _emitNavigationFinish(url) { ObservableWrapper.callEmit(this._subject, url); }
     _afterPromiseFinishNavigating(promise) {
@@ -322,7 +333,18 @@ export class Router {
      * Given a URL, returns an instruction representing the component graph
      */
     recognize(url) {
-        return this.registry.recognize(url, this.hostComponent);
+        var ancestorComponents = this._getAncestorInstructions();
+        return this.registry.recognize(url, ancestorComponents);
+    }
+    _getAncestorInstructions() {
+        var ancestorComponents = [];
+        var ancestorRouter = this;
+        while (isPresent(ancestorRouter.parent) &&
+            isPresent(ancestorRouter.parent._currentInstruction)) {
+            ancestorRouter = ancestorRouter.parent;
+            ancestorComponents.unshift(ancestorRouter._currentInstruction);
+        }
+        return ancestorComponents;
     }
     /**
      * Navigates to either the last URL successfully navigated to, or the last URL requested if the
@@ -339,62 +361,11 @@ export class Router {
      * app's base href.
      */
     generate(linkParams) {
-        let normalizedLinkParams = splitAndFlattenLinkParams(linkParams);
-        var first = ListWrapper.first(normalizedLinkParams);
-        var rest = ListWrapper.slice(normalizedLinkParams, 1);
-        var router = this;
-        // The first segment should be either '.' (generate from parent) or '' (generate from root).
-        // When we normalize above, we strip all the slashes, './' becomes '.' and '/' becomes ''.
-        if (first == '') {
-            while (isPresent(router.parent)) {
-                router = router.parent;
-            }
-        }
-        else if (first == '..') {
-            router = router.parent;
-            while (ListWrapper.first(rest) == '..') {
-                rest = ListWrapper.slice(rest, 1);
-                router = router.parent;
-                if (isBlank(router)) {
-                    throw new BaseException(`Link "${ListWrapper.toJSON(linkParams)}" has too many "../" segments.`);
-                }
-            }
-        }
-        else if (first != '.') {
-            // For a link with no leading `./`, `/`, or `../`, we look for a sibling and child.
-            // If both exist, we throw. Otherwise, we prefer whichever exists.
-            var childRouteExists = this.registry.hasRoute(first, this.hostComponent);
-            var parentRouteExists = isPresent(this.parent) && this.registry.hasRoute(first, this.parent.hostComponent);
-            if (parentRouteExists && childRouteExists) {
-                let msg = `Link "${ListWrapper.toJSON(linkParams)}" is ambiguous, use "./" or "../" to disambiguate.`;
-                throw new BaseException(msg);
-            }
-            if (parentRouteExists) {
-                router = this.parent;
-            }
-            rest = linkParams;
-        }
-        if (rest[rest.length - 1] == '') {
-            rest.pop();
-        }
-        if (rest.length < 1) {
-            let msg = `Link "${ListWrapper.toJSON(linkParams)}" must include a route name.`;
-            throw new BaseException(msg);
-        }
-        var nextInstruction = this.registry.generate(rest, router.hostComponent);
-        var url = [];
-        var parent = router.parent;
-        while (isPresent(parent)) {
-            url.unshift(parent._currentInstruction);
-            parent = parent.parent;
-        }
-        while (url.length > 0) {
-            nextInstruction = url.pop().replaceChild(nextInstruction);
-        }
-        return nextInstruction;
+        var ancestorInstructions = this._getAncestorInstructions();
+        return this.registry.generate(linkParams, ancestorInstructions);
     }
 }
-export class RootRouter extends Router {
+export let RootRouter = class extends Router {
     constructor(registry, location, primaryComponent) {
         super(registry, null, primaryComponent);
         this._location = location;
@@ -403,8 +374,8 @@ export class RootRouter extends Router {
         this.navigateByUrl(location.path());
     }
     commit(instruction, _skipLocationChange = false) {
-        var emitPath = stringifyInstructionPath(instruction);
-        var emitQuery = stringifyInstructionQuery(instruction);
+        var emitPath = instruction.toUrlPath();
+        var emitQuery = instruction.toUrlQuery();
         if (emitPath.length > 0) {
             emitPath = '/' + emitPath;
         }
@@ -420,7 +391,12 @@ export class RootRouter extends Router {
             this._locationSub = null;
         }
     }
-}
+};
+RootRouter = __decorate([
+    Injectable(),
+    __param(2, Inject(ROUTER_PRIMARY_COMPONENT)), 
+    __metadata('design:paramtypes', [RouteRegistry, Location, Type])
+], RootRouter);
 class ChildRouter extends Router {
     constructor(parent, hostComponent) {
         super(parent.registry, parent, hostComponent);
@@ -434,20 +410,6 @@ class ChildRouter extends Router {
         // Delegate navigation to the root router
         return this.parent.navigateByInstruction(instruction, _skipLocationChange);
     }
-}
-/*
- * Given: ['/a/b', {c: 2}]
- * Returns: ['', 'a', 'b', {c: 2}]
- */
-function splitAndFlattenLinkParams(linkParams) {
-    return linkParams.reduce((accumulation, item) => {
-        if (isString(item)) {
-            let strItem = item;
-            return accumulation.concat(strItem.split('/'));
-        }
-        accumulation.push(item);
-        return accumulation;
-    }, []);
 }
 function canActivateOne(nextInstruction, prevInstruction) {
     var next = _resolveToTrue;

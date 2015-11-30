@@ -121,6 +121,7 @@ export declare class Router {
      * Given a URL, returns an instruction representing the component graph
      */
     recognize(url: string): Promise<Instruction>;
+    private _getAncestorInstructions();
     /**
      * Navigates to either the last URL successfully navigated to, or the last URL requested if the
      * router has yet to successfully navigate.

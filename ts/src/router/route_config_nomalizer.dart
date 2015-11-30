@@ -1,9 +1,22 @@
 library angular2.src.router.route_config_normalizer;
 
 import "route_config_decorator.dart";
+import "route_registry.dart";
 import "package:angular2/src/facade/exceptions.dart" show BaseException;
 
-RouteDefinition normalizeRouteConfig(RouteDefinition config) {
+RouteDefinition normalizeRouteConfig(RouteDefinition config, RouteRegistry registry) {
+  if (config is AsyncRoute) {
+
+    configRegistryAndReturnType(componentType) {
+      registry.configFromComponent(componentType);
+      return componentType;
+    }
+
+    loader() {
+      return config.loader().then(configRegistryAndReturnType);
+    }
+    return new AsyncRoute(path: config.path, loader: loader, name: config.name, data: config.data, useAsDefault: config.useAsDefault);
+  }
   return config;
 }
 
