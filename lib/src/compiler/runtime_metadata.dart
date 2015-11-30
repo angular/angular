@@ -4,6 +4,8 @@ import "package:angular2/src/core/di.dart" show resolveForwardRef;
 import "package:angular2/src/facade/lang.dart"
     show Type, isBlank, isPresent, isArray, stringify, RegExpWrapper;
 import "package:angular2/src/facade/exceptions.dart" show BaseException;
+import "package:angular2/src/facade/collection.dart"
+    show MapWrapper, StringMapWrapper, ListWrapper;
 import "directive_metadata.dart" as cpl;
 import "package:angular2/src/core/metadata/directives.dart" as md;
 import "package:angular2/src/core/linker/directive_resolver.dart"
@@ -77,8 +79,16 @@ class RuntimeMetadataResolver {
             '''Unexpected directive value \'${ stringify ( directives [ i ] )}\' on the View of component \'${ stringify ( component )}\'''');
       }
     }
-    return directives.map((type) => this.getMetadata(type)).toList();
+    return removeDuplicates(directives)
+        .map((type) => this.getMetadata(type))
+        .toList();
   }
+}
+
+List<dynamic> removeDuplicates(List<dynamic> items) {
+  var m = new Map<dynamic, dynamic>();
+  items.forEach((i) => m[i] = null);
+  return MapWrapper.keys(m);
 }
 
 List<Type> flattenDirectives(
