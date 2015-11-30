@@ -304,6 +304,53 @@ export function main() {
              async.done();
            });
          }));
+         
+      it("should support <type=radio>",
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var t = `<div [ng-form-model]="form">
+                  <input type="radio" ng-control="food" name="food" value="chicken">
+                  <input type="radio" ng-control="food" name="food" value="fish">
+                </div>`;
+
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+             fixture.debugElement.componentInstance.form =
+                 new ControlGroup({"food": new Control("fish")});
+             fixture.detectChanges();
+
+             var input = fixture.debugElement.query(By.css("input"));
+             expect(input.nativeElement.checked).toEqual(false);
+
+             dispatchEvent(input.nativeElement, "click");
+             fixture.detectChanges();
+
+             expect(fixture.debugElement.componentInstance.form.value).toEqual({"food": "chicken"});
+             expect(input.nativeElement.checked).toEqual(true);
+             async.done();
+           });
+         }));
+      it("should support <type=radio> with dynamic values",
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           var t = `<div [ng-form-model]="form">
+                  <input *ng-for="#c of data" type="radio" ng-control="food" name="food" [value]="c">
+                </div>`;
+
+           tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) => {
+             fixture.debugElement.componentInstance.data = ["chicken", "fish"];
+             fixture.debugElement.componentInstance.form =
+                 new ControlGroup({"food": new Control("fish")});
+             fixture.detectChanges();
+
+             var input = fixture.debugElement.query(By.css("input"));
+             expect(input.nativeElement.checked).toEqual(false);
+
+             dispatchEvent(input.nativeElement, "click");
+             fixture.detectChanges();
+
+             expect(fixture.debugElement.componentInstance.form.value).toEqual({"food": "chicken"});
+             expect(input.nativeElement.checked).toEqual(true);
+             async.done();
+           });
+         }));
 
       it("should support <select>",
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {

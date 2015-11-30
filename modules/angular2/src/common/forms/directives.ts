@@ -8,6 +8,7 @@ import {NgForm} from './directives/ng_form';
 import {DefaultValueAccessor} from './directives/default_value_accessor';
 import {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor';
 import {NumberValueAccessor} from './directives/number_value_accessor';
+import {RadioControlValueAccessor} from './directives/radio_control_value_accessor';
 import {NgControlStatus} from './directives/ng_control_status';
 import {
   SelectControlValueAccessor,
@@ -23,6 +24,7 @@ export {NgFormModel} from './directives/ng_form_model';
 export {NgForm} from './directives/ng_form';
 export {DefaultValueAccessor} from './directives/default_value_accessor';
 export {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor';
+export {RadioControlValueAccessor} from './directives/radio_control_value_accessor';
 export {NumberValueAccessor} from './directives/number_value_accessor';
 export {NgControlStatus} from './directives/ng_control_status';
 export {
@@ -63,6 +65,7 @@ export const FORM_DIRECTIVES: Type[] = CONST_EXPR([
   NumberValueAccessor,
   CheckboxControlValueAccessor,
   SelectControlValueAccessor,
+  RadioControlValueAccessor,
   NgControlStatus,
 
   RequiredValidator,
