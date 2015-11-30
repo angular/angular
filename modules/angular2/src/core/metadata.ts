@@ -25,6 +25,8 @@ export {
 
 export {ViewMetadata, ViewEncapsulation} from './metadata/view';
 
+export {PublicApiMetadata} from "./metadata/api";
+
 import {
   QueryMetadata,
   ContentChildrenMetadata,
@@ -47,6 +49,10 @@ import {
 
 import {ViewMetadata, ViewEncapsulation} from './metadata/view';
 import {ChangeDetectionStrategy} from 'angular2/src/core/change_detection/change_detection';
+
+import {PublicApiMetadata, ApiStability} from "./metadata/api";
+
+export {ApiStability} from "./metadata/api";
 
 import {
   makeDecorator,
@@ -103,6 +109,13 @@ export interface ViewDecorator extends TypeDecorator {
     styleUrls?: string[],
   }): ViewDecorator;
 }
+
+/**
+ * Interface for the {@link PublicApi} decorator function.
+ *
+ * See {@link PublicApiFactory}.
+ */
+export interface PublicApiDecorator extends TypeDecorator {}
 
 /**
  * {@link DirectiveMetadata} factory for creating annotations, decorators or DSL.
@@ -327,6 +340,15 @@ export interface ViewFactory {
     styles?: string[],
     styleUrls?: string[],
   }): ViewMetadata;
+}
+
+/**
+ * {@link PublicApiMetadata} factory for creating annotations, decorators or DSL.
+ *
+ */
+export interface PublicApiFactory {
+  (obj: {stability: ApiStability, note?: string}): PublicApiDecorator;
+  new (obj: {stability: ApiStability, note?: string}): PublicApiMetadata;
 }
 
 /**
@@ -961,6 +983,11 @@ export var Directive: DirectiveFactory = <DirectiveFactory>makeDecorator(Directi
  */
 export var View: ViewFactory =
     <ViewFactory>makeDecorator(ViewMetadata, (fn: any) => fn.View = View);
+
+
+export var PublicApi: PublicApiFactory =
+  <PublicApiFactory>makeDecorator(PublicApiMetadata, (fn: any) => fn.PublicApi = PublicApi);
+
 
 // TODO(alexeagle): remove the duplication of this doc. It is copied from AttributeMetadata.
 /**
