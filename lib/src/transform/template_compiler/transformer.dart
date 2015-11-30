@@ -44,7 +44,6 @@ class TemplateCompiler extends Transformer implements LazyTransformer {
       var primaryId = transform.primaryInput.id;
       var reader = new AssetReader.fromTransform(transform);
       var outputs = await processTemplates(reader, primaryId,
-          genChangeDetectionDebugInfo: options.genChangeDetectionDebugInfo,
           reflectPropertiesAsAttributes: options.reflectPropertiesAsAttributes,
           platformDirectives: options.platformDirectives);
       var ngDepsCode = _emptyNgDepsContents;

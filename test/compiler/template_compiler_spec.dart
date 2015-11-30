@@ -13,7 +13,7 @@ import "package:angular2/testing_internal.dart"
         afterEach,
         AsyncTestCompleter,
         inject,
-        beforeEachBindings;
+        beforeEachProviders;
 import "package:angular2/src/facade/async.dart" show Future, PromiseWrapper;
 import "package:angular2/src/facade/lang.dart"
     show Type, isPresent, isBlank, stringify, isString;
@@ -58,7 +58,7 @@ main() {
   describe("TemplateCompiler", () {
     TemplateCompiler compiler;
     RuntimeMetadataResolver runtimeMetadataResolver;
-    beforeEachBindings(() => TEST_PROVIDERS);
+    beforeEachProviders(() => TEST_PROVIDERS);
     beforeEach(inject([TemplateCompiler, RuntimeMetadataResolver],
         (_compiler, _runtimeMetadataResolver) {
       compiler = _compiler;
@@ -122,8 +122,18 @@ main() {
                 async.done();
               });
             }));
+        it(
+            "should dedup directives",
+            inject([AsyncTestCompleter], (async) {
+              compile([CompWithDupDirectives, TreeComp])
+                  .then((humanizedTemplate) {
+                expect(humanizedTemplate["commands"][1]["commands"][0])
+                    .toEqual("<tree>");
+                async.done();
+              });
+            }));
       }
-      xdescribe("compileHostComponentRuntime", () {
+      describe("compileHostComponentRuntime", () {
         Future<List<dynamic>> compile(List<Type> components) {
           return compiler.compileHostComponentRuntime(components[0]).then(
               (compiledHostTemplate) =>
@@ -300,6 +310,13 @@ class CompWithBindingsAndStyles {}
     encapsulation: ViewEncapsulation.None)
 class TreeComp {}
 
+@Component(selector: "comp-wit-dup-tpl", moduleId: THIS_MODULE_ID)
+@View(
+    template: "<tree></tree>",
+    directives: const [TreeComp, TreeComp],
+    encapsulation: ViewEncapsulation.None)
+class CompWithDupDirectives {}
+
 @Component(selector: "comp-url", moduleId: THIS_MODULE_ID)
 @View(templateUrl: "compUrl.html", encapsulation: ViewEncapsulation.None)
 class CompWithTemplateUrl {}
@@ -358,7 +375,8 @@ class TestContext
         CompWithBindingsAndStyles,
         TreeComp,
         CompWithTemplateUrl,
-        CompWithEmbeddedTemplate {
+        CompWithEmbeddedTemplate,
+        CompWithDupDirectives {
   String someProp;
 }
 
