@@ -1029,6 +1029,8 @@ gulp.task('!bundles.js.umd', ['build.js.dev'], function() {
     return {
       entry: entryPoints,
       resolve: resolveOptions(devOrProd),
+      module: {preLoaders: [{test: /\.js$/, loader: 'source-map-loader'}]},
+      devtool: devOrProd === 'dev' ? 'inline-source-map' : undefined,
       output: outputOptions(outFileName, devOrProd)
     };
   }

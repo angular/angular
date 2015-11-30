@@ -102,6 +102,7 @@
     "semver": "^4.3.4",
     "sorted-object": "^1.0.0",
     "source-map": "^0.3.0",
+    "source-map-loader": "^0.1.5",
     "strip-ansi": "^2.0.1",
     "symlink-or-copy": "^1.0.1",
     "systemjs": "0.18.10",
