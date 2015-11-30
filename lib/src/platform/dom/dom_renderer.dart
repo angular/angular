@@ -20,8 +20,8 @@ import "package:angular2/core.dart"
         RenderViewWithFragments,
         RenderTemplateCmd,
         RenderEventDispatcher,
-        RenderComponentTemplate,
-        EventManager;
+        RenderComponentTemplate;
+import "events/event_manager.dart" show EventManager;
 import "dom_tokens.dart" show DOCUMENT;
 import "package:angular2/src/core/render/view_factory.dart"
     show createRenderView, NodeFactory, encapsulateStyles;

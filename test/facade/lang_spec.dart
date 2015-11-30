@@ -1,4 +1,4 @@
-library angular2.test.core.facade.lang_spec;
+library angular2.test.facade.lang_spec;
 
 import "package:angular2/testing_internal.dart"
     show describe, it, expect, beforeEach, ddescribe, iit, xit, el;

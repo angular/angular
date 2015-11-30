@@ -24,7 +24,6 @@ import "linker/compiler.dart" show Compiler;
 import "linker/compiler.dart" show Compiler_;
 import "linker/dynamic_component_loader.dart" show DynamicComponentLoader;
 import "linker/dynamic_component_loader.dart" show DynamicComponentLoader_;
-import "render.dart" show EventManager;
 
 /**
  * A default set of providers which should be included in any Angular
@@ -46,6 +45,5 @@ const List<
   const Provider(KeyValueDiffers, useValue: defaultKeyValueDiffers),
   DirectiveResolver,
   PipeResolver,
-  const Provider(DynamicComponentLoader, useClass: DynamicComponentLoader_),
-  EventManager
+  const Provider(DynamicComponentLoader, useClass: DynamicComponentLoader_)
 ];

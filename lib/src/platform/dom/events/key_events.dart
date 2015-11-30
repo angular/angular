@@ -6,7 +6,7 @@ import "package:angular2/src/facade/lang.dart"
     show isPresent, isBlank, StringWrapper, RegExpWrapper, NumberWrapper;
 import "package:angular2/src/facade/collection.dart"
     show StringMapWrapper, ListWrapper;
-import "package:angular2/core.dart" show EventManagerPlugin;
+import "event_manager.dart" show EventManagerPlugin;
 import "package:angular2/src/core/zone/ng_zone.dart" show NgZone;
 import "package:angular2/src/core/di.dart" show Injectable;
 
