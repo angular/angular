@@ -1,4 +1,4 @@
-library angular2.test.facade.async_spec;
+library angular2.test.core.facade.async_spec;
 
 import "package:angular2/testing_internal.dart"
     show

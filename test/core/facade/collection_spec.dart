@@ -1,4 +1,4 @@
-library angular2.test.facade.collection_spec;
+library angular2.test.core.facade.collection_spec;
 
 import "package:angular2/testing_internal.dart"
     show describe, it, expect, beforeEach, ddescribe, iit, xit;

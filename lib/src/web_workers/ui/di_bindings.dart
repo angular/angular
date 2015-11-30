@@ -11,8 +11,7 @@ import "package:angular2/src/core/reflection/reflection.dart"
     show Reflector, reflector;
 import "package:angular2/src/core/change_detection/change_detection.dart"
     show Parser, Lexer;
-import "package:angular2/platform/common_dom.dart"
-    show EventManager, EVENT_MANAGER_PLUGINS;
+import "package:angular2/core.dart" show EventManager, EVENT_MANAGER_PLUGINS;
 import "package:angular2/src/core/linker/proto_view_factory.dart"
     show ProtoViewFactory;
 import "package:angular2/src/platform/browser/browser_adapter.dart"

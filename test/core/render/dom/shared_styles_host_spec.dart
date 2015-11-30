@@ -1,4 +1,4 @@
-library angular2.test.platform.dom.shared_styles_host_spec;
+library angular2.test.core.render.dom.shared_styles_host_spec;
 
 import "package:angular2/testing_internal.dart"
     show

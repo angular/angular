@@ -1,4 +1,4 @@
-library angular2.test.facade.exception_handler_spec;
+library angular2.test.core.facade.exception_handler_spec;
 
 import "package:angular2/testing_internal.dart"
     show

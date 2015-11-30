@@ -1,4 +1,4 @@
-library angular2.test.platform.dom.dom_renderer_integration_spec;
+library angular2.test.core.render.dom.dom_renderer_integration_spec;
 
 import "package:angular2/testing_internal.dart"
     show
