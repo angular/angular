@@ -11,7 +11,7 @@ import "package:angular2/testing_internal.dart"
         expect,
         inject,
         beforeEach,
-        beforeEachBindings;
+        beforeEachProviders;
 import "spies.dart" show SpyRouterOutlet;
 import "package:angular2/src/facade/lang.dart" show Type;
 import "package:angular2/src/facade/async.dart"
@@ -20,8 +20,8 @@ import "package:angular2/src/facade/collection.dart" show ListWrapper;
 import "package:angular2/src/router/router.dart" show Router, RootRouter;
 import "package:angular2/src/mock/location_mock.dart" show SpyLocation;
 import "package:angular2/src/router/location.dart" show Location;
-import "package:angular2/src/router/instruction.dart" show stringifyInstruction;
-import "package:angular2/src/router/route_registry.dart" show RouteRegistry;
+import "package:angular2/src/router/route_registry.dart"
+    show RouteRegistry, ROUTER_PRIMARY_COMPONENT;
 import "package:angular2/src/router/route_config_decorator.dart"
     show RouteConfig, AsyncRoute, Route;
 import "package:angular2/src/core/linker/directive_resolver.dart"
@@ -31,13 +31,12 @@ import "package:angular2/core.dart" show provide;
 main() {
   describe("Router", () {
     var router, location;
-    beforeEachBindings(() => [
+    beforeEachProviders(() => [
           RouteRegistry,
           DirectiveResolver,
           provide(Location, useClass: SpyLocation),
-          provide(Router, useFactory: (registry, location) {
-            return new RootRouter(registry, location, AppCmp);
-          }, deps: [RouteRegistry, Location])
+          provide(ROUTER_PRIMARY_COMPONENT, useValue: AppCmp),
+          provide(Router, useClass: RootRouter)
         ]);
     beforeEach(inject([Router, Location], (rtr, loc) {
       router = rtr;
@@ -237,6 +236,10 @@ main() {
       });
     });
   });
+}
+
+String stringifyInstruction(instruction) {
+  return instruction.toRootUrl();
 }
 
 Future<Type> loader() {
