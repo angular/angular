@@ -1,7 +1,4 @@
-import { Type } from 'angular2/src/facade/lang';
 import { Promise } from 'angular2/src/facade/async';
-import { PathRecognizer } from './path_recognizer';
-import { Url } from './url_parser';
 /**
  * `RouteParams` is an immutable map of parameters for the given route
  * based on the url matcher and optional parameters for that route.
@@ -79,6 +76,7 @@ export declare class RouteData {
     });
     get(key: string): any;
 }
+export declare var BLANK_ROUTE_DATA: RouteData;
 /**
  * `Instruction` is a tree of {@link ComponentInstruction}s with all the information needed
  * to transition each component in the app to a given route, including all auxiliary routes.
@@ -106,7 +104,36 @@ export declare class RouteData {
  * bootstrap(AppCmp, ROUTER_PROVIDERS);
  * ```
  */
-export declare class Instruction {
+export declare abstract class Instruction {
+    component: ComponentInstruction;
+    child: Instruction;
+    auxInstruction: {
+        [key: string]: Instruction;
+    };
+    urlPath: string;
+    urlParams: string[];
+    specificity: number;
+    abstract resolveComponent(): Promise<ComponentInstruction>;
+    /**
+     * converts the instruction into a URL string
+     */
+    toRootUrl(): string;
+    toUrlQuery(): string;
+    /**
+     * Returns a new instruction that shares the state of the existing instruction, but with
+     * the given child {@link Instruction} replacing the existing child.
+     */
+    replaceChild(child: Instruction): Instruction;
+    /**
+     * If the final URL for the instruction is ``
+     */
+    toUrlPath(): string;
+    toLinkUrl(): string;
+}
+/**
+ * a resolved instruction has an outlet instruction for itself, but maybe not for...
+ */
+export declare class ResolvedInstruction extends Instruction {
     component: ComponentInstruction;
     child: Instruction;
     auxInstruction: {
@@ -115,28 +142,35 @@ export declare class Instruction {
     constructor(component: ComponentInstruction, child: Instruction, auxInstruction: {
         [key: string]: Instruction;
     });
-    /**
-     * Returns a new instruction that shares the state of the existing instruction, but with
-     * the given child {@link Instruction} replacing the existing child.
-     */
-    replaceChild(child: Instruction): Instruction;
+    resolveComponent(): Promise<ComponentInstruction>;
 }
 /**
- * Represents a partially completed instruction during recognition that only has the
- * primary (non-aux) route instructions matched.
- *
- * `PrimaryInstruction` is an internal class used by `RouteRecognizer` while it's
- * figuring out where to navigate.
+ * Represents a resolved default route
  */
-export declare class PrimaryInstruction {
+export declare class DefaultInstruction extends Instruction {
     component: ComponentInstruction;
-    child: PrimaryInstruction;
-    auxUrls: Url[];
-    constructor(component: ComponentInstruction, child: PrimaryInstruction, auxUrls: Url[]);
+    child: DefaultInstruction;
+    constructor(component: ComponentInstruction, child: DefaultInstruction);
+    resolveComponent(): Promise<ComponentInstruction>;
+    toLinkUrl(): string;
 }
-export declare function stringifyInstruction(instruction: Instruction): string;
-export declare function stringifyInstructionPath(instruction: Instruction): string;
-export declare function stringifyInstructionQuery(instruction: Instruction): string;
+/**
+ * Represents a component that may need to do some redirection or lazy loading at a later time.
+ */
+export declare class UnresolvedInstruction extends Instruction {
+    private _resolver;
+    private _urlPath;
+    private _urlParams;
+    constructor(_resolver: () => Promise<Instruction>, _urlPath?: string, _urlParams?: string[]);
+    urlPath: string;
+    urlParams: string[];
+    resolveComponent(): Promise<ComponentInstruction>;
+}
+export declare class RedirectInstruction extends ResolvedInstruction {
+    constructor(component: ComponentInstruction, child: Instruction, auxInstruction: {
+        [key: string]: Instruction;
+    });
+}
 /**
  * A `ComponentInstruction` represents the route state for a single component. An `Instruction` is
  * composed of a tree of these `ComponentInstruction`s.
@@ -145,53 +179,23 @@ export declare function stringifyInstructionQuery(instruction: Instruction): str
  * to route lifecycle hooks, like {@link CanActivate}.
  *
  * `ComponentInstruction`s are [https://en.wikipedia.org/wiki/Hash_consing](hash consed). You should
- * never construct one yourself with "new." Instead, rely on {@link Router/PathRecognizer} to
+ * never construct one yourself with "new." Instead, rely on {@link Router/RouteRecognizer} to
  * construct `ComponentInstruction`s.
  *
  * You should not modify this object. It should be treated as immutable.
  */
-export declare abstract class ComponentInstruction {
-    reuse: boolean;
+export declare class ComponentInstruction {
     urlPath: string;
     urlParams: string[];
+    componentType: any;
+    terminal: boolean;
+    specificity: number;
     params: {
         [key: string]: any;
     };
-    /**
-     * Returns the component type of the represented route, or `null` if this instruction
-     * hasn't been resolved.
-     */
-    componentType: any;
-    /**
-     * Returns a promise that will resolve to component type of the represented route.
-     * If this instruction references an {@link AsyncRoute}, the `loader` function of that route
-     * will run.
-     */
-    abstract resolveComponentType(): Promise<Type>;
-    /**
-     * Returns the specificity of the route associated with this `Instruction`.
-     */
-    specificity: any;
-    /**
-     * Returns `true` if the component type of this instruction has no child {@link RouteConfig},
-     * or `false` if it does.
-     */
-    terminal: any;
-    /**
-     * Returns the route data of the given route that was specified in the {@link RouteDefinition},
-     * or an empty object if no route data was specified.
-     */
+    reuse: boolean;
     routeData: RouteData;
-}
-export declare class ComponentInstruction_ extends ComponentInstruction {
-    private _recognizer;
-    private _routeData;
-    constructor(urlPath: string, urlParams: string[], _recognizer: PathRecognizer, params?: {
+    constructor(urlPath: string, urlParams: string[], data: RouteData, componentType: any, terminal: boolean, specificity: number, params?: {
         [key: string]: any;
     });
-    componentType: Type;
-    resolveComponentType(): Promise<Type>;
-    specificity: number;
-    terminal: boolean;
-    routeData: RouteData;
 }
