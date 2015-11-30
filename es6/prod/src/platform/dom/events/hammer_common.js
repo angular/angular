@@ -1,4 +1,4 @@
-import { EventManagerPlugin } from './event_manager';
+import { EventManagerPlugin } from 'angular2/core';
 import { StringMapWrapper } from 'angular2/src/facade/collection';
 var _eventNames = {
     // pan

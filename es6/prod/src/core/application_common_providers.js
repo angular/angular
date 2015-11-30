@@ -15,6 +15,7 @@ import { Compiler } from './linker/compiler';
 import { Compiler_ } from "./linker/compiler";
 import { DynamicComponentLoader } from './linker/dynamic_component_loader';
 import { DynamicComponentLoader_ } from "./linker/dynamic_component_loader";
+import { EventManager } from './render';
 /**
  * A default set of providers which should be included in any Angular
  * application, regardless of the platform it runs onto.
@@ -33,5 +34,6 @@ export const APPLICATION_COMMON_PROVIDERS = CONST_EXPR([
     new Provider(KeyValueDiffers, { useValue: defaultKeyValueDiffers }),
     DirectiveResolver,
     PipeResolver,
-    new Provider(DynamicComponentLoader, { useClass: DynamicComponentLoader_ })
+    new Provider(DynamicComponentLoader, { useClass: DynamicComponentLoader_ }),
+    EventManager
 ]);

@@ -12,6 +12,7 @@ var dynamic_component_loader_1 = require('angular2/src/core/linker/dynamic_compo
 var xhr_1 = require('angular2/src/compiler/xhr');
 var ng_zone_1 = require('angular2/src/core/zone/ng_zone');
 var dom_adapter_1 = require('angular2/src/platform/dom/dom_adapter');
+var core_1 = require('angular2/core');
 var directive_resolver_mock_1 = require('angular2/src/mock/directive_resolver_mock');
 var view_resolver_mock_1 = require('angular2/src/mock/view_resolver_mock');
 var mock_location_strategy_1 = require('angular2/src/mock/mock_location_strategy');
@@ -93,8 +94,8 @@ function _getAppBindings() {
         test_component_builder_1.TestComponentBuilder,
         di_1.provide(ng_zone_1.NgZone, { useClass: ng_zone_mock_1.MockNgZone }),
         di_1.provide(animation_builder_1.AnimationBuilder, { useClass: animation_builder_mock_1.MockAnimationBuilder }),
-        common_dom_1.EventManager,
-        new di_1.Provider(common_dom_1.EVENT_MANAGER_PLUGINS, { useClass: dom_events_1.DomEventsPlugin, multi: true })
+        core_1.EventManager,
+        new di_1.Provider(core_1.EVENT_MANAGER_PLUGINS, { useClass: dom_events_1.DomEventsPlugin, multi: true })
     ];
 }
 function createTestInjector(providers) {

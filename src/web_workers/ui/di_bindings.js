@@ -5,7 +5,7 @@ var animation_builder_1 = require('angular2/src/animate/animation_builder');
 var browser_details_1 = require('angular2/src/animate/browser_details');
 var reflection_1 = require('angular2/src/core/reflection/reflection');
 var change_detection_1 = require('angular2/src/core/change_detection/change_detection');
-var common_dom_1 = require('angular2/platform/common_dom');
+var core_1 = require('angular2/core');
 var proto_view_factory_1 = require('angular2/src/core/linker/proto_view_factory');
 var browser_adapter_1 = require('angular2/src/platform/browser/browser_adapter');
 var key_events_1 = require('angular2/src/platform/dom/events/key_events');
@@ -55,10 +55,10 @@ var _rootProviders = [di_1.provide(reflection_1.Reflector, { useValue: reflectio
 function _injectorProviders() {
     return [
         di_1.provide(dom_tokens_1.DOCUMENT, { useValue: dom_adapter_1.DOM.defaultDoc() }),
-        common_dom_1.EventManager,
-        new di_1.Provider(common_dom_1.EVENT_MANAGER_PLUGINS, { useClass: dom_events_1.DomEventsPlugin, multi: true }),
-        new di_1.Provider(common_dom_1.EVENT_MANAGER_PLUGINS, { useClass: key_events_1.KeyEventsPlugin, multi: true }),
-        new di_1.Provider(common_dom_1.EVENT_MANAGER_PLUGINS, { useClass: hammer_gestures_1.HammerGesturesPlugin, multi: true }),
+        core_1.EventManager,
+        new di_1.Provider(core_1.EVENT_MANAGER_PLUGINS, { useClass: dom_events_1.DomEventsPlugin, multi: true }),
+        new di_1.Provider(core_1.EVENT_MANAGER_PLUGINS, { useClass: key_events_1.KeyEventsPlugin, multi: true }),
+        new di_1.Provider(core_1.EVENT_MANAGER_PLUGINS, { useClass: hammer_gestures_1.HammerGesturesPlugin, multi: true }),
         di_1.provide(dom_renderer_1.DomRenderer, { useClass: dom_renderer_1.DomRenderer_ }),
         di_1.provide(api_1.Renderer, { useExisting: dom_renderer_1.DomRenderer }),
         application_tokens_1.APP_ID_RANDOM_PROVIDER,

@@ -1,4 +1,4 @@
-import { EventManagerPlugin, EventManager } from './event_manager';
+import { EventManagerPlugin, EventManager } from 'angular2/core';
 export declare class DomEventsPlugin extends EventManagerPlugin {
     manager: EventManager;
     supports(eventName: string): boolean;

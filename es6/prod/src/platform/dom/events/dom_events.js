@@ -10,8 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import { DOM } from 'angular2/src/platform/dom/dom_adapter';
-import { Injectable } from 'angular2/core';
-import { EventManagerPlugin } from './event_manager';
+import { Injectable, EventManagerPlugin } from 'angular2/core';
 export let DomEventsPlugin = class extends EventManagerPlugin {
     // This plugin should come last in the list of plugins, because it accepts all
     // events.

@@ -5,7 +5,7 @@ import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
 import {BrowserDetails} from 'angular2/src/animate/browser_details';
 import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
 import {Parser, Lexer} from 'angular2/src/core/change_detection/change_detection';
-import {EventManager, EVENT_MANAGER_PLUGINS} from 'angular2/platform/common_dom';
+import {EventManager, EVENT_MANAGER_PLUGINS} from 'angular2/core';
 import {ProtoViewFactory} from 'angular2/src/core/linker/proto_view_factory';
 import {BrowserDomAdapter} from 'angular2/src/platform/browser/browser_adapter';
 import {KeyEventsPlugin} from 'angular2/src/platform/dom/events/key_events';

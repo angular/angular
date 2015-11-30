@@ -1,6 +1,5 @@
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {Injectable} from 'angular2/core';
-import {EventManagerPlugin, EventManager} from './event_manager';
+import {Injectable, EventManagerPlugin, EventManager} from 'angular2/core';
 
 @Injectable()
 export class DomEventsPlugin extends EventManagerPlugin {

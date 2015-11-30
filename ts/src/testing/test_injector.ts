@@ -21,6 +21,7 @@ import {NgZone} from 'angular2/src/core/zone/ng_zone';
 
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
+import {EventManager, EVENT_MANAGER_PLUGINS} from 'angular2/core';
 import {MockDirectiveResolver} from 'angular2/src/mock/directive_resolver_mock';
 import {MockViewResolver} from 'angular2/src/mock/view_resolver_mock';
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
@@ -30,11 +31,7 @@ import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
 import {TestComponentBuilder} from './test_component_builder';
 
 import {Injector} from 'angular2/src/core/di';
-import {
-  EventManager,
-  EVENT_MANAGER_PLUGINS,
-  ELEMENT_PROBE_PROVIDERS
-} from 'angular2/platform/common_dom';
+import {ELEMENT_PROBE_PROVIDERS} from 'angular2/platform/common_dom';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {FunctionWrapper, Type} from 'angular2/src/facade/lang';
