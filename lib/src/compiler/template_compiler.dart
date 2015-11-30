@@ -4,7 +4,7 @@ import "package:angular2/src/facade/lang.dart"
     show IS_DART, Type, Json, isBlank, stringify;
 import "package:angular2/src/facade/exceptions.dart" show BaseException;
 import "package:angular2/src/facade/collection.dart"
-    show ListWrapper, SetWrapper;
+    show ListWrapper, SetWrapper, MapWrapper;
 import "package:angular2/src/facade/async.dart" show PromiseWrapper, Future;
 import "package:angular2/src/core/linker/template_commands.dart"
     show
@@ -110,6 +110,7 @@ class TemplateCompiler {
       CompileDirectiveMetadata compMeta,
       List<CompileDirectiveMetadata> viewDirectives,
       Set<dynamic> compilingComponentCacheKeys) {
+    var uniqViewDirectives = removeDuplicates(viewDirectives);
     var compiledTemplate = this._compiledTemplateCache[cacheKey];
     var done = this._compiledTemplateDone[cacheKey];
     if (isBlank(compiledTemplate)) {
@@ -127,7 +128,7 @@ class TemplateCompiler {
         (this._styleCompiler.compileComponentRuntime(compMeta.template)
             as dynamic)
       ])
-            ..addAll(viewDirectives
+            ..addAll(uniqViewDirectives
                 .map((dirMeta) => this.normalizeDirectiveMetadata(dirMeta))
                 .toList())))
           .then((List<dynamic> stylesAndNormalizedViewDirMetas) {
@@ -203,11 +204,8 @@ class TemplateCompiler {
       var compMeta = (componentWithDirs.component as CompileDirectiveMetadata);
       assertComponent(compMeta);
       componentMetas.add(compMeta);
-      this._processTemplateCodeGen(
-          compMeta,
-          (componentWithDirs.directives as List<CompileDirectiveMetadata>),
-          declarations,
-          templateArguments);
+      this._processTemplateCodeGen(compMeta, componentWithDirs.directives,
+          declarations, templateArguments);
       if (compMeta.dynamicLoadable) {
         var hostMeta =
             createHostComponentMeta(compMeta.type, compMeta.selector);
@@ -251,11 +249,11 @@ class TemplateCompiler {
       List<CompileDirectiveMetadata> directives,
       List<String> targetDeclarations,
       List<List<dynamic>> targetTemplateArguments) {
+    var uniqueDirectives = removeDuplicates(directives);
     var styleExpr =
         this._styleCompiler.compileComponentCodeGen(compMeta.template);
-    var parsedTemplate = this
-        ._templateParser
-        .parse(compMeta.template.template, directives, compMeta.type.name);
+    var parsedTemplate = this._templateParser.parse(
+        compMeta.template.template, uniqueDirectives, compMeta.type.name);
     var changeDetectorsExprs = this._cdCompiler.compileComponentCodeGen(
         compMeta.type, compMeta.changeDetection, parsedTemplate);
     var commandsExpr = this._commandCompiler.compileComponentCodeGen(
@@ -310,4 +308,22 @@ addAll(List<dynamic> source, List<dynamic> target) {
 String codeGenComponentTemplateFactory(
     CompileDirectiveMetadata nestedCompType) {
   return '''${ moduleRef ( templateModuleUrl ( nestedCompType . type . moduleUrl ) )}${ templateGetterName ( nestedCompType . type )}''';
+}
+
+List<CompileDirectiveMetadata> removeDuplicates(
+    List<CompileDirectiveMetadata> items) {
+  var res = [];
+  items.forEach((item) {
+    var hasMatch = res
+            .where((r) => r.type.name == item.type.name &&
+                r.type.moduleUrl == item.type.moduleUrl &&
+                r.type.runtime == item.type.runtime)
+            .toList()
+            .length >
+        0;
+    if (!hasMatch) {
+      res.add(item);
+    }
+  });
+  return res;
 }
