@@ -38,6 +38,7 @@ TransformerOptions parseBarbackSettings(BarbackSettings settings) {
       modeName: settings.mode.name,
       mirrorMode: mirrorMode,
       initReflector: initReflector,
+      genChangeDetectionDebugInfo: settings.mode == BarbackMode.DEBUG,
       customAnnotationDescriptors: _readCustomAnnotations(config),
       reflectPropertiesAsAttributes: reflectPropertiesAsAttributes,
       platformDirectives: platformDirectives,
