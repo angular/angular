@@ -148,12 +148,12 @@ class ComponentWithEverything
         AfterContentChecked,
         AfterViewInit,
         AfterViewChecked {
-  void onChanges(Map<String, SimpleChange> changes) {}
-  void onInit() {}
-  void doCheck() {}
-  void onDestroy() {}
-  void afterContentInit() {}
-  void afterContentChecked() {}
-  void afterViewInit() {}
-  void afterViewChecked() {}
+  void ngOnChanges(Map<String, SimpleChange> changes) {}
+  void ngOnInit() {}
+  void ngDoCheck() {}
+  void ngOnDestroy() {}
+  void ngAfterContentInit() {}
+  void ngAfterContentChecked() {}
+  void ngAfterViewInit() {}
+  void ngAfterViewChecked() {}
 }

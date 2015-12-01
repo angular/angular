@@ -272,12 +272,12 @@ class B_Needs_A {
 }
 
 class DirectiveWithDestroy implements OnDestroy {
-  num onDestroyCounter;
+  num ngOnDestroyCounter;
   DirectiveWithDestroy() {
-    this.onDestroyCounter = 0;
+    this.ngOnDestroyCounter = 0;
   }
-  onDestroy() {
-    this.onDestroyCounter++;
+  ngOnDestroy() {
+    this.ngOnDestroyCounter++;
   }
 }
 
@@ -885,7 +885,7 @@ main() {
           });
         });
         describe("lifecycle", () {
-          it("should call onDestroy on directives subscribed to this event",
+          it("should call ngOnDestroy on directives subscribed to this event",
               () {
             var inj = injector(ListWrapper.concat([
               DirectiveProvider.createFromType(
@@ -893,7 +893,7 @@ main() {
             ], extraProviders));
             var destroy = inj.get(DirectiveWithDestroy);
             inj.dehydrate();
-            expect(destroy.onDestroyCounter).toBe(1);
+            expect(destroy.ngOnDestroyCounter).toBe(1);
           });
           it("should work with services", () {
             var inj = injector(ListWrapper.concat([
@@ -1033,7 +1033,7 @@ main() {
                 false,
                 preBuildObjects);
             addInj(dummyView, inj);
-            inj.afterContentChecked();
+            inj.ngAfterContentChecked();
             expectDirectives(inj.get(NeedsQuery).query, CountingDirective, [0]);
           });
           it("should contain PreBuiltObjects on the same injector", () {
@@ -1045,7 +1045,7 @@ main() {
                 false,
                 preBuiltObjects);
             addInj(dummyView, inj);
-            inj.afterContentChecked();
+            inj.ngAfterContentChecked();
             expect(inj.get(NeedsTemplateRefQuery).query.first)
                 .toBe(preBuiltObjects.templateRef);
           });
@@ -1057,7 +1057,7 @@ main() {
             var inj = injector((new List.from(dirs)..addAll(extraProviders)),
                 null, false, preBuildObjects, null, dirVariableBindings);
             addInj(dummyView, inj);
-            inj.afterContentChecked();
+            inj.ngAfterContentChecked();
             expect(inj.get(NeedsQueryByVarBindings).query.first)
                 .toBe(preBuildObjects.elementRef);
           });
@@ -1074,7 +1074,7 @@ main() {
             var inj = injector((new List.from(dirs)..addAll(extraProviders)),
                 null, false, preBuildObjects, null, dirVariableBindings);
             addInj(dummyView, inj);
-            inj.afterContentChecked();
+            inj.ngAfterContentChecked();
             // NeedsQueryByVarBindings queries "one,two", so SimpleDirective should be before NeedsDirective
             expect(inj.get(NeedsQueryByVarBindings).query.first)
                 .toBeAnInstanceOf(SimpleDirective);
@@ -1093,7 +1093,7 @@ main() {
             child.hydrate(null, null, preBuildObjects);
             addInj(dummyView, parent);
             addInj(dummyView, child);
-            parent.afterContentChecked();
+            parent.ngAfterContentChecked();
             expectDirectives(
                 parent.get(NeedsQuery).query, CountingDirective, [0, 1]);
           });

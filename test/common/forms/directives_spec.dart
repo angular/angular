@@ -240,11 +240,11 @@ main() {
           expect(form.directives).toEqual([]);
         });
       });
-      describe("onChanges", () {
+      describe("ngOnChanges", () {
         it("should update dom values of all the directives", () {
           form.addControl(loginControlDir);
           ((formModel.find(["login"]) as Control)).updateValue("new value");
-          form.onChanges({});
+          form.ngOnChanges({});
           expect(((loginControlDir.valueAccessor as dynamic)).writtenValue)
               .toEqual("new value");
         });
@@ -252,13 +252,13 @@ main() {
           var formValidator = (c) => ({"custom": true});
           var f = new NgFormModel([formValidator], []);
           f.form = formModel;
-          f.onChanges({"form": new SimpleChange(null, null)});
+          f.ngOnChanges({"form": new SimpleChange(null, null)});
           expect(formModel.errors).toEqual({"custom": true});
         });
         it("should set up an async validator", fakeAsync(() {
           var f = new NgFormModel([], [asyncValidator("expected")]);
           f.form = formModel;
-          f.onChanges({"form": new SimpleChange(null, null)});
+          f.ngOnChanges({"form": new SimpleChange(null, null)});
           tick();
           expect(formModel.errors).toEqual({"async": true});
         }));
@@ -367,13 +367,13 @@ main() {
       it("should reexport new control properties", () {
         var newControl = new Control(null);
         controlDir.form = newControl;
-        controlDir.onChanges({"form": new SimpleChange(control, newControl)});
+        controlDir.ngOnChanges({"form": new SimpleChange(control, newControl)});
         checkProperties(newControl);
       });
       it("should set up validator", () {
         expect(control.valid).toBe(true);
         // this will add the required validator and recalculate the validity
-        controlDir.onChanges({"form": new SimpleChange(null, control)});
+        controlDir.ngOnChanges({"form": new SimpleChange(null, control)});
         expect(control.valid).toBe(false);
       });
     });
@@ -397,7 +397,7 @@ main() {
       });
       it("should set up validator", fakeAsync(() {
         // this will add the required validator and recalculate the validity
-        ngModel.onChanges({});
+        ngModel.ngOnChanges({});
         tick();
         expect(ngModel.control.errors).toEqual({"required": true});
         ngModel.control.updateValue("someValue");

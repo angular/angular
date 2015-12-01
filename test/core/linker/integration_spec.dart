@@ -52,7 +52,8 @@ import "package:angular2/core.dart"
         Inject,
         Host,
         SkipSelf,
-        SkipSelfMetadata;
+        SkipSelfMetadata,
+        OnDestroy;
 import "package:angular2/common.dart" show NgIf, NgFor;
 import "package:angular2/common.dart" show AsyncPipe;
 import "package:angular2/src/core/change_detection/change_detection.dart"
@@ -2123,8 +2124,8 @@ class SomeViewport {
 }
 
 @Pipe(name: "double")
-class DoublePipe implements PipeTransform {
-  onDestroy() {}
+class DoublePipe implements PipeTransform, OnDestroy {
+  ngOnDestroy() {}
   transform(value, [args = null]) {
     return '''${ value}${ value}''';
   }
