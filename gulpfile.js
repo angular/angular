@@ -142,7 +142,7 @@ var BENCHPRESS_BUNDLE_CONFIG = {
   packageJson: './dist/js/cjs/benchpress/package.json',
   includes: ['angular2'],
   excludes: ['reflect-metadata', 'selenium-webdriver', 'zone.js'],
-  ignore: ['@reactivex/rxjs'],
+  ignore: ['rxjs'],
   dest: CONFIG.dest.benchpress_bundle
 };
 
@@ -811,7 +811,7 @@ gulp.task('static-checks', ['!build.tools'], function(done) {
 // Make sure the two typings tests are isolated, by running this one in a tempdir
 var tmpdir = path.join(os.tmpdir(), 'test.typings', new Date().getTime().toString());
 gulp.task('!pre.test.typings.layoutNodeModule', ['build.js.cjs'], function() {
-  return gulp.src(['dist/js/cjs/angular2/**/*', 'node_modules/@reactivex/rxjs/dist/cjs/**'],
+  return gulp.src(['dist/js/cjs/angular2/**/*', 'node_modules/rxjs/**'],
                   {base: 'dist/js/cjs'})
       .pipe(gulp.dest(path.join(tmpdir, 'node_modules')));
 });
@@ -1148,13 +1148,16 @@ var JS_DEV_DEPS = [
 
 // Splice in RX license if rx is in the bundle.
 function insertRXLicense(source) {
-  var n = source.indexOf('System.register("@reactivex/rxjs/dist/cjs/Subject"');
-  if (n >= 0) {
-    var rxLicense = licenseWrap('node_modules/@reactivex/rxjs/LICENSE.txt');
-    return source.slice(0, n) + rxLicense + source.slice(n);
-  } else {
-    return source;
-  }
+  var n = source.indexOf('System.register("rxjs/Subject"');
+  //TODO: fix this once Rx fixes
+  // if (n >= 0) {
+    
+  //   var rxLicense = licenseWrap('node_modules/rxjs/LICENSE.txt');
+  //   return source.slice(0, n) + rxLicense + source.slice(n);
+  // } else {
+  //   return source;
+  // }
+  return source;
 }
 
 function addDevDependencies(outputFile) {
