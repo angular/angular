@@ -7,6 +7,7 @@ import {isPresent} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {Subject} from 'rxjs/Subject';
 import {ReplaySubject} from 'rxjs/subjects/ReplaySubject';
+import 'rxjs/operators/take';
 
 /**
  *
