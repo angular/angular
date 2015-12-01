@@ -3,9 +3,18 @@ import {global, isPresent, noop} from 'angular2/src/facade/lang';
 // without depending on rxjs.
 import {PromiseWrapper, Promise, PromiseCompleter} from 'angular2/src/facade/promise';
 export {PromiseWrapper, Promise, PromiseCompleter} from 'angular2/src/facade/promise';
-import {Subject, Subscription, Observable as RxObservable} from '@reactivex/rxjs/dist/cjs/Rx';
-export {Subject} from '@reactivex/rxjs/dist/cjs/Rx';
-import Operator from '@reactivex/rxjs/dist/cjs/Operator';
+
+import {Subject} from 'rxjs/Subject';
+import {Observable as RxObservable} from 'rxjs/Observable';
+import {Subscription} from 'rxjs/Subscription';
+import {Operator} from 'rxjs/Operator';
+
+import 'rxjs/observable/fromPromise';
+import 'rxjs/operators/toPromise';
+
+export {Subject} from 'rxjs/Subject';
+
+
 
 export namespace NodeJS {
   export interface Timer {}
