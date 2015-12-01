@@ -84,6 +84,8 @@ var NG_ALL = [
   "AbstractControlDirective.valid",
   "AbstractControlDirective.value",
   "AbstractControlDirective.path",
+  "AngularEntrypoint",
+  "AngularEntrypoint.name",
   "AppRootUrl",
   "AppRootUrl.value",
   "AppRootUrl.value=",
