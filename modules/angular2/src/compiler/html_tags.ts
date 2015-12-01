@@ -70,19 +70,22 @@ export class HtmlTagDefinition {
   public parentToAdd: string;
   public implicitNamespacePrefix: string;
   public contentType: HtmlTagContentType;
+  public isVoid: boolean;
 
   constructor({closedByChildren, requiredParents, implicitNamespacePrefix, contentType,
-               closedByParent}: {
+               closedByParent, isVoid}: {
     closedByChildren?: string[],
     closedByParent?: boolean,
     requiredParents?: string[],
     implicitNamespacePrefix?: string,
-    contentType?: HtmlTagContentType
+    contentType?: HtmlTagContentType,
+    isVoid?: boolean
   } = {}) {
     if (isPresent(closedByChildren) && closedByChildren.length > 0) {
       closedByChildren.forEach(tagName => this.closedByChildren[tagName] = true);
     }
-    this.closedByParent = normalizeBool(closedByParent);
+    this.isVoid = normalizeBool(isVoid);
+    this.closedByParent = normalizeBool(closedByParent) || this.isVoid;
     if (isPresent(requiredParents) && requiredParents.length > 0) {
       this.requiredParents = {};
       this.parentToAdd = requiredParents[0];
@@ -98,21 +101,20 @@ export class HtmlTagDefinition {
   }
 
   isClosedByChild(name: string): boolean {
-    return normalizeBool(this.closedByChildren['*']) ||
-           normalizeBool(this.closedByChildren[name.toLowerCase()]);
+    return this.isVoid || normalizeBool(this.closedByChildren[name.toLowerCase()]);
   }
 }
 
 // see http://www.w3.org/TR/html51/syntax.html#optional-tags
 // This implementation does not fully conform to the HTML5 spec.
 var TAG_DEFINITIONS: {[key: string]: HtmlTagDefinition} = {
-  'link': new HtmlTagDefinition({closedByChildren: ['*'], closedByParent: true}),
-  'ng-content': new HtmlTagDefinition({closedByChildren: ['*'], closedByParent: true}),
-  'img': new HtmlTagDefinition({closedByChildren: ['*'], closedByParent: true}),
-  'input': new HtmlTagDefinition({closedByChildren: ['*'], closedByParent: true}),
-  'hr': new HtmlTagDefinition({closedByChildren: ['*'], closedByParent: true}),
-  'br': new HtmlTagDefinition({closedByChildren: ['*'], closedByParent: true}),
-  'wbr': new HtmlTagDefinition({closedByChildren: ['*'], closedByParent: true}),
+  'link': new HtmlTagDefinition({isVoid: true}),
+  'ng-content': new HtmlTagDefinition({isVoid: true}),
+  'img': new HtmlTagDefinition({isVoid: true}),
+  'input': new HtmlTagDefinition({isVoid: true}),
+  'hr': new HtmlTagDefinition({isVoid: true}),
+  'br': new HtmlTagDefinition({isVoid: true}),
+  'wbr': new HtmlTagDefinition({isVoid: true}),
   'p': new HtmlTagDefinition({
     closedByChildren: [
       'address',

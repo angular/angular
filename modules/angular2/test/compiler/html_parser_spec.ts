@@ -31,22 +31,22 @@ export function main() {
     describe('parse', () => {
       describe('text nodes', () => {
         it('should parse root level text nodes', () => {
-          expect(humanizeDom(parser.parse('a', 'TestComp'))).toEqual([[HtmlTextAst, 'a']]);
+          expect(humanizeDom(parser.parse('a', 'TestComp'))).toEqual([[HtmlTextAst, 'a', 0]]);
         });
 
         it('should parse text nodes inside regular elements', () => {
           expect(humanizeDom(parser.parse('<div>a</div>', 'TestComp')))
-              .toEqual([[HtmlElementAst, 'div', 0], [HtmlTextAst, 'a']]);
+              .toEqual([[HtmlElementAst, 'div', 0], [HtmlTextAst, 'a', 1]]);
         });
 
         it('should parse text nodes inside template elements', () => {
           expect(humanizeDom(parser.parse('<template>a</template>', 'TestComp')))
-              .toEqual([[HtmlElementAst, 'template', 0], [HtmlTextAst, 'a']]);
+              .toEqual([[HtmlElementAst, 'template', 0], [HtmlTextAst, 'a', 1]]);
         });
 
         it('should parse CDATA', () => {
           expect(humanizeDom(parser.parse('<![CDATA[text]]>', 'TestComp')))
-              .toEqual([[HtmlTextAst, 'text']]);
+              .toEqual([[HtmlTextAst, 'text', 0]]);
         });
       });
 
@@ -75,14 +75,24 @@ export function main() {
               ]);
         });
 
+        it('should close void elements on text nodes', () => {
+          expect(humanizeDom(parser.parse('<p>before<br>after</p>', 'TestComp')))
+              .toEqual([
+                [HtmlElementAst, 'p', 0],
+                [HtmlTextAst, 'before', 1],
+                [HtmlElementAst, 'br', 1],
+                [HtmlTextAst, 'after', 1],
+              ]);
+        });
+
         it('should support optional end tags', () => {
           expect(humanizeDom(parser.parse('<div><p>1<p>2</div>', 'TestComp')))
               .toEqual([
                 [HtmlElementAst, 'div', 0],
                 [HtmlElementAst, 'p', 1],
-                [HtmlTextAst, '1'],
+                [HtmlTextAst, '1', 2],
                 [HtmlElementAst, 'p', 1],
-                [HtmlTextAst, '2'],
+                [HtmlTextAst, '2', 2],
               ]);
         });
 
@@ -187,7 +197,7 @@ export function main() {
                 [HtmlAttrAst, '(e)', 'do()', '(e)="do()"'],
                 [HtmlAttrAst, 'attr', 'v2', 'attr="v2"'],
                 [HtmlAttrAst, 'noValue', '', 'noValue'],
-                [HtmlTextAst, '\na\n', '\na\n'],
+                [HtmlTextAst, '\na\n', 1, '\na\n'],
               ]);
         });
       });
@@ -272,7 +282,7 @@ class Humanizer implements HtmlAstVisitor {
   }
 
   visitText(ast: HtmlTextAst, context: any): any {
-    var res = this._appendContext(ast, [HtmlTextAst, ast.value]);
+    var res = this._appendContext(ast, [HtmlTextAst, ast.value, this.elDepth]);
     this.result.push(res);
     return null;
   }

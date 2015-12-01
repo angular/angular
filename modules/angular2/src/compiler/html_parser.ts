@@ -61,12 +61,15 @@ class TreeBuilder {
       } else if (this.peek.type === HtmlTokenType.TAG_CLOSE) {
         this._consumeEndTag(this._advance());
       } else if (this.peek.type === HtmlTokenType.CDATA_START) {
+        this._closeVoidElement();
         this._consumeCdata(this._advance());
       } else if (this.peek.type === HtmlTokenType.COMMENT_START) {
+        this._closeVoidElement();
         this._consumeComment(this._advance());
       } else if (this.peek.type === HtmlTokenType.TEXT ||
                  this.peek.type === HtmlTokenType.RAW_TEXT ||
                  this.peek.type === HtmlTokenType.ESCAPABLE_RAW_TEXT) {
+        this._closeVoidElement();
         this._consumeText(this._advance());
       } else {
         // Skip all other tokens...
@@ -105,6 +108,16 @@ class TreeBuilder {
 
   private _consumeText(token: HtmlToken) {
     this._addToParent(new HtmlTextAst(token.parts[0], token.sourceSpan));
+  }
+
+  private _closeVoidElement(): void {
+    if (this.elementStack.length > 0) {
+      let el = ListWrapper.last(this.elementStack);
+
+      if (getHtmlTagDefinition(el.name).isVoid) {
+        this.elementStack.pop();
+      }
+    }
   }
 
   private _consumeStartTag(startTagToken: HtmlToken) {
