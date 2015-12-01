@@ -57,11 +57,9 @@
 
 ### BREAKING CHANGES
 
-* previously http would only error on network errors to match the fetch
+* Previously http would only error on network errors to match the fetch
 specification. Now status codes less than 200 and greater than 299 will
 cause Http's Observable to error.
-
-* A few private helpers (e.g., platformCommon or applicationCommon) were removed or replaced with other helpers. Look at PLATFORM_COMMON_PROVIDERS, APPLICATION_COMMON_PROVIDERS, BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS to see if they export the providers you need.
 
 * A few private helpers (e.g., platformCommon or applicationCommon) were removed or replaced with other helpers. Look at PLATFORM_COMMON_PROVIDERS, APPLICATION_COMMON_PROVIDERS, BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS to see if they export the providers you need.
 
@@ -1617,15 +1615,3 @@ After
     })
 
 * no longer cache ref
-
-
-
-
-
-
-
-
-
-
-
-
