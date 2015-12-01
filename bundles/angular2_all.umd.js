@@ -45491,7 +45491,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return new instruction_1.DefaultInstruction(componentInstruction, defaultChild);
 	        }
 	        return new instruction_1.UnresolvedInstruction(function () {
-	            return componentRecognizer.defaultRoute.handler.resolveComponentType().then(function () { return _this.generateDefault(componentCursor); });
+	            return componentRecognizer.defaultRoute.handler.resolveComponentType().then(function (_) { return _this.generateDefault(componentCursor); });
 	        });
 	    };
 	    RouteRegistry = __decorate([

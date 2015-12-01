@@ -434,7 +434,7 @@ export class RouteRegistry {
 
     return new UnresolvedInstruction(() => {
       return componentRecognizer.defaultRoute.handler.resolveComponentType().then(
-          () => this.generateDefault(componentCursor));
+          (_) => this.generateDefault(componentCursor));
     });
   }
 }

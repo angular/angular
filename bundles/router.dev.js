@@ -2227,7 +2227,7 @@ System.register("angular2/src/router/route_registry", ["angular2/src/facade/coll
         return new instruction_1.DefaultInstruction(componentInstruction, defaultChild);
       }
       return new instruction_1.UnresolvedInstruction(function() {
-        return componentRecognizer.defaultRoute.handler.resolveComponentType().then(function() {
+        return componentRecognizer.defaultRoute.handler.resolveComponentType().then(function(_) {
           return _this.generateDefault(componentCursor);
         });
       });
