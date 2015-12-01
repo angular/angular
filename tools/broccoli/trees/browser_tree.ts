@@ -117,8 +117,14 @@ module.exports = function makeBrowserTree(options, destinationPath) {
                    {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/benchpress/'});
   }
 
-  var modulesTree = mergeTrees(
-      [angular2Tree, angular2MaterialTree, benchmarksTree, benchmarksExternalTree, playgroundTree, benchpressTree]);
+  var modulesTree = mergeTrees([
+    angular2Tree,
+    angular2MaterialTree,
+    benchmarksTree,
+    benchmarksExternalTree,
+    playgroundTree,
+    benchpressTree
+  ]);
 
   var es6PolyfillTypings =
       new Funnel('modules', {include: ['angular2/typings/es6-*/**'], destDir: '/'});
