@@ -1,7 +1,7 @@
 import {global, isPresent, noop} from 'angular2/src/facade/lang';
 // We make sure promises are in a separate file so that we can use promises
 // without depending on rxjs.
-import {PromiseWrapper, Promise, PromiseCompleter} from 'angular2/src/facade/promise';
+import {Promise} from 'angular2/src/facade/promise';
 export {PromiseWrapper, Promise, PromiseCompleter} from 'angular2/src/facade/promise';
 
 import {Subject} from 'rxjs/Subject';
