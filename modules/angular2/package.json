@@ -9,7 +9,7 @@
   "repository": <%= JSON.stringify(packageJson.repository) %>,
   "dependencies": {
     "reflect-metadata": "<%= packageJson.dependencies['reflect-metadata'] %>",
-    "@reactivex/rxjs": "<%= packageJson.dependencies['@reactivex/rxjs'] %>",
+    "rxjs": "<%= packageJson.dependencies['rxjs'] %>",
     "zone.js": "<%= packageJson.dependencies['zone.js'] %>"
   },
   "devDependencies": <%= JSON.stringify(packageJson.defaultDevDependencies) %>,

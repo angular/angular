@@ -4,11 +4,16 @@ import {global, isPresent, noop} from 'angular2/src/facade/lang';
 import {PromiseWrapper, Promise, PromiseCompleter} from 'angular2/src/facade/promise';
 export {PromiseWrapper, Promise, PromiseCompleter} from 'angular2/src/facade/promise';
 
-import {Subject} from '@reactivex/rxjs/dist/cjs/Subject';
-import {Observable as RxObservable} from '@reactivex/rxjs/dist/cjs/Observable';
-import {Subscription} from '@reactivex/rxjs/dist/cjs/Subscription';
-import {Operator} from '@reactivex/rxjs/dist/cjs/Operator';
-export {Subject} from '@reactivex/rxjs/dist/cjs/Subject';
+import {Subject} from 'rxjs/Subject';
+import {Observable as RxObservable} from 'rxjs/Observable';
+import {Subscription} from 'rxjs/Subscription';
+import {Operator} from 'rxjs/Operator';
+
+import 'rxjs/observable/fromPromise';
+import 'rxjs/operators/toPromise';
+
+export {Subject} from 'rxjs/Subject';
+
 
 
 export namespace NodeJS {

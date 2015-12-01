@@ -1,8 +1,5 @@
 {
   "dependencies": {
-    "@reactivex/rxjs": {
-      "version": "5.0.0-alpha.10"
-    },
     "angular": {
       "version": "1.4.7"
     },
@@ -13183,6 +13180,9 @@
           }
         }
       }
+    },
+    "rxjs": {
+      "version": "5.0.0-alpha.11"
     },
     "selenium-webdriver": {
       "version": "2.48.2",
