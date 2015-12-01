@@ -9,8 +9,6 @@ const CUSTOM_ANNOTATIONS_PARAM = 'custom_annotations';
 const ENTRY_POINT_PARAM = 'entry_points';
 const FORMAT_CODE_PARAM = 'format_code';
 const REFLECT_PROPERTIES_AS_ATTRIBUTES = 'reflect_properties_as_attributes';
-// TODO(kegluenq): Remove this after 30 Nov (i/5108).
-const REFLECT_PROPERTIES_AS_ATTRIBUTES_OLD = 'reflectPropertiesAsAttributes';
 const PLATFORM_DIRECTIVES = 'platform_directives';
 const INIT_REFLECTOR_PARAM = 'init_reflector';
 const INLINE_VIEWS_PARAM = 'inline_views';
