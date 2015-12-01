@@ -83,15 +83,15 @@ main() {
               }, 0);
             }));
       });
-      describe("ngOnDestroy", () {
+      describe("onDestroy", () {
         it("should do nothing when no subscription", () {
-          expect(() => pipe.ngOnDestroy()).not.toThrow();
+          expect(() => pipe.onDestroy()).not.toThrow();
         });
         it(
             "should dispose of the existing subscription",
             inject([AsyncTestCompleter], (async) {
               pipe.transform(emitter);
-              pipe.ngOnDestroy();
+              pipe.onDestroy();
               ObservableWrapper.callEmit(emitter, message);
               TimerWrapper.setTimeout(() {
                 expect(pipe.transform(emitter)).toBe(null);
@@ -161,9 +161,9 @@ main() {
                 async.done();
               }, timer);
             }));
-        describe("ngOnDestroy", () {
+        describe("onDestroy", () {
           it("should do nothing when no source", () {
-            expect(() => pipe.ngOnDestroy()).not.toThrow();
+            expect(() => pipe.onDestroy()).not.toThrow();
           });
           it(
               "should dispose of the existing source",
@@ -174,7 +174,7 @@ main() {
                 TimerWrapper.setTimeout(() {
                   expect(pipe.transform(completer.promise))
                       .toEqual(new WrappedValue(message));
-                  pipe.ngOnDestroy();
+                  pipe.onDestroy();
                   expect(pipe.transform(completer.promise)).toBe(null);
                   async.done();
                 }, timer);

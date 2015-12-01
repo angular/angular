@@ -29,7 +29,7 @@ import "package:angular2/src/core/metadata.dart"
 main() {
   describe("directive lifecycle integration spec", () {
     it(
-        "should invoke lifecycle methods ngOnChanges > ngOnInit > ngDoCheck > ngAfterContentChecked",
+        "should invoke lifecycle methods onChanges > onInit > doCheck > afterContentChecked",
         inject([TestComponentBuilder, Log, AsyncTestCompleter],
             (TestComponentBuilder tcb, Log log, async) {
           tcb
@@ -42,12 +42,12 @@ main() {
               .then((tc) {
             tc.detectChanges();
             expect(log.result()).toEqual(
-                "ngOnChanges; ngOnInit; ngDoCheck; ngAfterContentInit; ngAfterContentChecked; child_ngDoCheck; " +
-                    "ngAfterViewInit; ngAfterViewChecked");
+                "onChanges; onInit; doCheck; afterContentInit; afterContentChecked; child_doCheck; " +
+                    "afterViewInit; afterViewChecked");
             log.clear();
             tc.detectChanges();
             expect(log.result()).toEqual(
-                "ngDoCheck; ngAfterContentChecked; child_ngDoCheck; ngAfterViewChecked");
+                "doCheck; afterContentChecked; child_doCheck; afterViewChecked");
             async.done();
           });
         }));
@@ -58,8 +58,8 @@ main() {
 class LifecycleDir implements DoCheck {
   Log _log;
   LifecycleDir(this._log) {}
-  ngDoCheck() {
-    this._log.add("child_ngDoCheck");
+  doCheck() {
+    this._log.add("child_doCheck");
   }
 }
 
@@ -78,32 +78,32 @@ class LifecycleCmp
   Log _log;
   var field;
   LifecycleCmp(this._log) {}
-  ngOnChanges(_) {
-    this._log.add("ngOnChanges");
+  onChanges(_) {
+    this._log.add("onChanges");
   }
 
-  ngOnInit() {
-    this._log.add("ngOnInit");
+  onInit() {
+    this._log.add("onInit");
   }
 
-  ngDoCheck() {
-    this._log.add("ngDoCheck");
+  doCheck() {
+    this._log.add("doCheck");
   }
 
-  ngAfterContentInit() {
-    this._log.add("ngAfterContentInit");
+  afterContentInit() {
+    this._log.add("afterContentInit");
   }
 
-  ngAfterContentChecked() {
-    this._log.add("ngAfterContentChecked");
+  afterContentChecked() {
+    this._log.add("afterContentChecked");
   }
 
-  ngAfterViewInit() {
-    this._log.add("ngAfterViewInit");
+  afterViewInit() {
+    this._log.add("afterViewInit");
   }
 
-  ngAfterViewChecked() {
-    this._log.add("ngAfterViewChecked");
+  afterViewChecked() {
+    this._log.add("afterViewChecked");
   }
 }
 

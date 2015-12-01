@@ -31,25 +31,25 @@ A component decorator defining a function that the router should call first to d
 
 
 @cheatsheetItem
-`routerOnActivate(nextInstruction, prevInstruction) { ... }`|`routerOnActivate`
-After navigating to a component, the router calls component's routerOnActivate method (if defined).
+`onActivate(nextInstruction, prevInstruction) { ... }`|`onActivate`
+After navigating to a component, the router calls component's onActivate method (if defined).
 
 
 @cheatsheetItem
-`routerCanReuse(nextInstruction, prevInstruction) { ... }`|`routerCanReuse`
-The router calls a component's routerCanReuse method (if defined) to determine whether to reuse the instance or destroy it and create a new instance. Should return a boolean or a promise.
+`canReuse(nextInstruction, prevInstruction) { ... }`|`canReuse`
+The router calls a component's canReuse method (if defined) to determine whether to reuse the instance or destroy it and create a new instance. Should return a boolean or a promise.
 
 
 @cheatsheetItem
-`routerOnReuse(nextInstruction, prevInstruction) { ... }`|`routerOnReuse`
-The router calls the component's routerOnReuse method (if defined) when it re-uses a component instance.
+`onReuse(nextInstruction, prevInstruction) { ... }`|`onReuse`
+The router calls the component's onReuse method (if defined) when it re-uses a component instance.
 
 
 @cheatsheetItem
-`routerCanDeactivate(nextInstruction, prevInstruction) { ... }`|`routerCanDeactivate`
-The router calls the routerCanDeactivate methods (if defined) of every component that would be removed after a navigation. The navigation proceeds if and only if all such methods return true or a promise that is resolved.
+`canDeactivate(nextInstruction, prevInstruction) { ... }`|`canDeactivate`
+The router calls the canDeactivate methods (if defined) of every component that would be removed after a navigation. The navigation proceeds if and only if all such methods return true or a promise that is resolved.
 
 
 @cheatsheetItem
-`routerOnDeactivate(nextInstruction, prevInstruction) { ... }`|`routerOnDeactivate`
+`onDeactivate(nextInstruction, prevInstruction) { ... }`|`onDeactivate`
 Called before the directive is removed as the result of a route change. May return a promise that pauses removing the directive until the promise resolves.

@@ -545,20 +545,20 @@ class _CodegenState {
   String _genDoCheck(ProtoRecord r) {
     var br = r.bindingRecord;
     return 'if (!throwOnChange) '
-        '${_names.getDirectiveName(br.directiveRecord.directiveIndex)}.ngDoCheck();';
+        '${_names.getDirectiveName(br.directiveRecord.directiveIndex)}.doCheck();';
   }
 
   String _genOnInit(ProtoRecord r) {
     var br = r.bindingRecord;
     return 'if (!throwOnChange && ${_names.getStateName()} == ${_genPrefix}$_STATE.NeverChecked) '
-        '${_names.getDirectiveName(br.directiveRecord.directiveIndex)}.ngOnInit();';
+        '${_names.getDirectiveName(br.directiveRecord.directiveIndex)}.onInit();';
   }
 
   String _genOnChanges(ProtoRecord r) {
     var br = r.bindingRecord;
     return 'if (!throwOnChange && $_CHANGES_LOCAL != null) '
         '${_names.getDirectiveName(br.directiveRecord.directiveIndex)}'
-        '.ngOnChanges($_CHANGES_LOCAL);';
+        '.onChanges($_CHANGES_LOCAL);';
   }
 
   String _genNotifyOnPushDetectors(ProtoRecord r) {

@@ -14,6 +14,7 @@ export "change_detection/change_detection.dart"
         WrappedValue,
         SimpleChange,
         PipeTransform,
+        PipeOnDestroy,
         IterableDiffers,
         IterableDiffer,
         IterableDifferFactory,

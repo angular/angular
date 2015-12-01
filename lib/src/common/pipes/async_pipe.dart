@@ -9,7 +9,7 @@ import "package:angular2/core.dart"
         Pipe,
         Injectable,
         ChangeDetectorRef,
-        OnDestroy,
+        PipeOnDestroy,
         PipeTransform,
         WrappedValue;
 import "invalid_pipe_argument_exception.dart" show InvalidPipeArgumentException;
@@ -62,7 +62,7 @@ var _observableStrategy = new ObservableStrategy();
  */
 @Pipe(name: "async", pure: false)
 @Injectable()
-class AsyncPipe implements PipeTransform, OnDestroy {
+class AsyncPipe implements PipeTransform, PipeOnDestroy {
   /** @internal */
   Object _latestValue = null;
   /** @internal */
@@ -78,7 +78,7 @@ class AsyncPipe implements PipeTransform, OnDestroy {
   AsyncPipe(ChangeDetectorRef _ref) {
     this._ref = _ref;
   }
-  void ngOnDestroy() {
+  void onDestroy() {
     if (isPresent(this._subscription)) {
       this._dispose();
     }

@@ -10,15 +10,15 @@ bool hasLifecycleHook(RouteLifecycleHook e, type) {
   final List interfaces = reflector.interfaces(type);
   var interface;
 
-  if (e == routerOnActivate) {
+  if (e == onActivate) {
     interface = OnActivate;
-  } else if (e == routerOnDeactivate) {
+  } else if (e == onDeactivate) {
     interface = OnDeactivate;
-  } else if (e == routerOnReuse) {
+  } else if (e == onReuse) {
     interface = OnReuse;
-  } else if (e == routerCanDeactivate) {
+  } else if (e == canDeactivate) {
     interface = CanDeactivate;
-  } else if (e == routerCanReuse) {
+  } else if (e == canReuse) {
     interface = CanReuse;
   }
 

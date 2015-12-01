@@ -275,7 +275,7 @@ class OnChangeComponent implements OnChanges {
   String prop;
 
   @override
-  void ngOnChanges(Map changes) {
+  void onChanges(Map changes) {
     this.changes = changes;
   }
 }
@@ -305,5 +305,5 @@ class DirectiveLoggingChecks implements DoCheck {
 
   DirectiveLoggingChecks(this.log);
 
-  ngDoCheck() => log.add("check");
+  doCheck() => log.add("check");
 }

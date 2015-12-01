@@ -160,17 +160,17 @@ class DynamicChangeDetector extends AbstractChangeDetector<dynamic> {
       }
       if (proto.isLifeCycleRecord()) {
         if (identical(proto.name, "DoCheck") && !throwOnChange) {
-          this._getDirectiveFor(directiveRecord.directiveIndex).ngDoCheck();
+          this._getDirectiveFor(directiveRecord.directiveIndex).doCheck();
         } else if (identical(proto.name, "OnInit") &&
             !throwOnChange &&
             this.state == ChangeDetectorState.NeverChecked) {
-          this._getDirectiveFor(directiveRecord.directiveIndex).ngOnInit();
+          this._getDirectiveFor(directiveRecord.directiveIndex).onInit();
         } else if (identical(proto.name, "OnChanges") &&
             isPresent(changes) &&
             !throwOnChange) {
           this
               ._getDirectiveFor(directiveRecord.directiveIndex)
-              .ngOnChanges(changes);
+              .onChanges(changes);
         }
       } else if (proto.isSkipRecord()) {
         protoIdx += this._computeSkipLength(protoIdx, proto, this.values);
@@ -207,10 +207,10 @@ class DynamicChangeDetector extends AbstractChangeDetector<dynamic> {
       var dir = dirs[i];
       if (dir.callAfterContentInit &&
           this.state == ChangeDetectorState.NeverChecked) {
-        this._getDirectiveFor(dir.directiveIndex).ngAfterContentInit();
+        this._getDirectiveFor(dir.directiveIndex).afterContentInit();
       }
       if (dir.callAfterContentChecked) {
-        this._getDirectiveFor(dir.directiveIndex).ngAfterContentChecked();
+        this._getDirectiveFor(dir.directiveIndex).afterContentChecked();
       }
     }
   }
@@ -221,10 +221,10 @@ class DynamicChangeDetector extends AbstractChangeDetector<dynamic> {
       var dir = dirs[i];
       if (dir.callAfterViewInit &&
           this.state == ChangeDetectorState.NeverChecked) {
-        this._getDirectiveFor(dir.directiveIndex).ngAfterViewInit();
+        this._getDirectiveFor(dir.directiveIndex).afterViewInit();
       }
       if (dir.callAfterViewChecked) {
-        this._getDirectiveFor(dir.directiveIndex).ngAfterViewChecked();
+        this._getDirectiveFor(dir.directiveIndex).afterViewChecked();
       }
     }
   }

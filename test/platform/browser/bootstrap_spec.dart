@@ -89,7 +89,7 @@ class HelloOnDestroyTickCmp implements OnDestroy {
   HelloOnDestroyTickCmp(@Inject(ApplicationRef) appRef) {
     this.appRef = appRef;
   }
-  void ngOnDestroy() {
+  void onDestroy() {
     this.appRef.tick();
   }
 }

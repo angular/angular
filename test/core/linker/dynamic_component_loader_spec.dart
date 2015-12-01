@@ -319,7 +319,7 @@ class DynamicallyCreatedCmp implements OnDestroy {
     this.greeting = "hello";
     this.dynamicallyCreatedComponentService = a;
   }
-  ngOnDestroy() {
+  onDestroy() {
     this.destroyed = true;
   }
 }

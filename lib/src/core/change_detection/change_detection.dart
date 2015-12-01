@@ -43,7 +43,7 @@ export "differs/iterable_differs.dart"
     show IterableDiffers, IterableDiffer, IterableDifferFactory;
 export "differs/keyvalue_differs.dart"
     show KeyValueDiffers, KeyValueDiffer, KeyValueDifferFactory;
-export "pipe_transform.dart" show PipeTransform;
+export "pipe_transform.dart" show PipeTransform, PipeOnDestroy;
 export "change_detection_util.dart" show WrappedValue, SimpleChange;
 
 /**

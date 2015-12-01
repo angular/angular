@@ -44,7 +44,6 @@ import "query_list.dart" show QueryList;
 import "package:angular2/src/core/reflection/reflection.dart" show reflector;
 import "package:angular2/src/core/reflection/types.dart" show SetterFn;
 import "package:angular2/src/core/linker/event_config.dart" show EventConfig;
-import "package:angular2/src/core/linker/interfaces.dart" show AfterViewChecked;
 import "package:angular2/src/core/pipes/pipe_provider.dart" show PipeProvider;
 import "interfaces.dart" show LifecycleHooks;
 import "view_container_ref.dart" show ViewContainerRef_;
@@ -374,7 +373,7 @@ class _Context {
 }
 
 class ElementInjector extends TreeNode<ElementInjector>
-    implements DependencyProvider, AfterViewChecked {
+    implements DependencyProvider {
   ElementInjector _host;
   PreBuiltObjects _preBuiltObjects = null;
   _QueryStrategy _queryStrategy;
@@ -647,11 +646,11 @@ class ElementInjector extends TreeNode<ElementInjector>
     return isPresent(nestedView) ? nestedView.rootElementInjectors : [];
   }
 
-  void ngAfterViewChecked() {
+  void afterViewChecked() {
     this._queryStrategy.updateViewQueries();
   }
 
-  void ngAfterContentChecked() {
+  void afterContentChecked() {
     this._queryStrategy.updateContentQueries();
   }
 
@@ -923,43 +922,43 @@ class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
     var p = i.protoStrategy;
     if (p.provider0 is DirectiveProvider &&
         ((p.provider0 as DirectiveProvider)).callOnDestroy) {
-      i.obj0.ngOnDestroy();
+      i.obj0.onDestroy();
     }
     if (p.provider1 is DirectiveProvider &&
         ((p.provider1 as DirectiveProvider)).callOnDestroy) {
-      i.obj1.ngOnDestroy();
+      i.obj1.onDestroy();
     }
     if (p.provider2 is DirectiveProvider &&
         ((p.provider2 as DirectiveProvider)).callOnDestroy) {
-      i.obj2.ngOnDestroy();
+      i.obj2.onDestroy();
     }
     if (p.provider3 is DirectiveProvider &&
         ((p.provider3 as DirectiveProvider)).callOnDestroy) {
-      i.obj3.ngOnDestroy();
+      i.obj3.onDestroy();
     }
     if (p.provider4 is DirectiveProvider &&
         ((p.provider4 as DirectiveProvider)).callOnDestroy) {
-      i.obj4.ngOnDestroy();
+      i.obj4.onDestroy();
     }
     if (p.provider5 is DirectiveProvider &&
         ((p.provider5 as DirectiveProvider)).callOnDestroy) {
-      i.obj5.ngOnDestroy();
+      i.obj5.onDestroy();
     }
     if (p.provider6 is DirectiveProvider &&
         ((p.provider6 as DirectiveProvider)).callOnDestroy) {
-      i.obj6.ngOnDestroy();
+      i.obj6.onDestroy();
     }
     if (p.provider7 is DirectiveProvider &&
         ((p.provider7 as DirectiveProvider)).callOnDestroy) {
-      i.obj7.ngOnDestroy();
+      i.obj7.onDestroy();
     }
     if (p.provider8 is DirectiveProvider &&
         ((p.provider8 as DirectiveProvider)).callOnDestroy) {
-      i.obj8.ngOnDestroy();
+      i.obj8.onDestroy();
     }
     if (p.provider9 is DirectiveProvider &&
         ((p.provider9 as DirectiveProvider)).callOnDestroy) {
-      i.obj9.ngOnDestroy();
+      i.obj9.onDestroy();
     }
   }
 
@@ -1072,7 +1071,7 @@ class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
     for (var i = 0; i < p.providers.length; i++) {
       if (p.providers[i] is DirectiveProvider &&
           ((p.providers[i] as DirectiveProvider)).callOnDestroy) {
-        ist.objs[i].ngOnDestroy();
+        ist.objs[i].onDestroy();
       }
     }
   }

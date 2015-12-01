@@ -192,11 +192,11 @@ class CodegenLogicUtil {
       var dir = directiveRecords[i];
       if (dir.callAfterContentInit) {
         res.add(
-            '''if(${ this . _names . getStateName ( )} ${ eq} ${ this . _changeDetectorStateName}.NeverChecked) ${ this . _names . getDirectiveName ( dir . directiveIndex )}.ngAfterContentInit();''');
+            '''if(${ this . _names . getStateName ( )} ${ eq} ${ this . _changeDetectorStateName}.NeverChecked) ${ this . _names . getDirectiveName ( dir . directiveIndex )}.afterContentInit();''');
       }
       if (dir.callAfterContentChecked) {
         res.add(
-            '''${ this . _names . getDirectiveName ( dir . directiveIndex )}.ngAfterContentChecked();''');
+            '''${ this . _names . getDirectiveName ( dir . directiveIndex )}.afterContentChecked();''');
       }
     }
     return res;
@@ -211,11 +211,11 @@ class CodegenLogicUtil {
       var dir = directiveRecords[i];
       if (dir.callAfterViewInit) {
         res.add(
-            '''if(${ this . _names . getStateName ( )} ${ eq} ${ this . _changeDetectorStateName}.NeverChecked) ${ this . _names . getDirectiveName ( dir . directiveIndex )}.ngAfterViewInit();''');
+            '''if(${ this . _names . getStateName ( )} ${ eq} ${ this . _changeDetectorStateName}.NeverChecked) ${ this . _names . getDirectiveName ( dir . directiveIndex )}.afterViewInit();''');
       }
       if (dir.callAfterViewChecked) {
         res.add(
-            '''${ this . _names . getDirectiveName ( dir . directiveIndex )}.ngAfterViewChecked();''');
+            '''${ this . _names . getDirectiveName ( dir . directiveIndex )}.afterViewChecked();''');
       }
     }
     return res;

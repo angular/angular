@@ -113,7 +113,7 @@ class NgControlName extends NgControl implements OnChanges, OnDestroy {
     /* super call moved to initializer */;
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
-  ngOnChanges(Map<String, SimpleChange> changes) {
+  onChanges(Map<String, SimpleChange> changes) {
     if (!this._added) {
       this.formDirective.addControl(this);
       this._added = true;
@@ -124,7 +124,7 @@ class NgControlName extends NgControl implements OnChanges, OnDestroy {
     }
   }
 
-  void ngOnDestroy() {
+  void onDestroy() {
     this.formDirective.removeControl(this);
   }
 

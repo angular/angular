@@ -7,8 +7,8 @@ import 'package:angular2/src/core/linker/interfaces.dart';
 main() {
   describe('Create DirectiveMetadata', () {
     describe('lifecycle', () {
-      describe("ngOnChanges", () {
-        it("should be true when the directive has the ngOnChanges method", () {
+      describe("onChanges", () {
+        it("should be true when the directive has the onChanges method", () {
           expect(hasLifecycleHook(
                   LifecycleHooks.OnChanges, DirectiveImplementingOnChanges))
               .toBe(true);
@@ -20,8 +20,8 @@ main() {
         });
       });
 
-      describe("ngOnDestroy", () {
-        it("should be true when the directive has the ngOnDestroy method", () {
+      describe("onDestroy", () {
+        it("should be true when the directive has the onDestroy method", () {
           expect(hasLifecycleHook(
                   LifecycleHooks.OnDestroy, DirectiveImplementingOnDestroy))
               .toBe(true);
@@ -33,8 +33,8 @@ main() {
         });
       });
 
-      describe("ngOnInit", () {
-        it("should be true when the directive has the ngOnInit method", () {
+      describe("onInit", () {
+        it("should be true when the directive has the onInit method", () {
           expect(hasLifecycleHook(
               LifecycleHooks.OnInit, DirectiveImplementingOnInit)).toBe(true);
         });
@@ -45,8 +45,8 @@ main() {
         });
       });
 
-      describe("ngDoCheck", () {
-        it("should be true when the directive has the ngDoCheck method", () {
+      describe("doCheck", () {
+        it("should be true when the directive has the doCheck method", () {
           expect(hasLifecycleHook(
               LifecycleHooks.DoCheck, DirectiveImplementingOnCheck)).toBe(true);
         });
@@ -57,8 +57,8 @@ main() {
         });
       });
 
-      describe("ngAfterContentInit", () {
-        it("should be true when the directive has the ngAfterContentInit method",
+      describe("afterContentInit", () {
+        it("should be true when the directive has the afterContentInit method",
             () {
           expect(hasLifecycleHook(LifecycleHooks.AfterContentInit,
               DirectiveImplementingAfterContentInit)).toBe(true);
@@ -70,8 +70,8 @@ main() {
         });
       });
 
-      describe("ngAfterContentChecked", () {
-        it("should be true when the directive has the ngAfterContentChecked method",
+      describe("afterContentChecked", () {
+        it("should be true when the directive has the afterContentChecked method",
             () {
           expect(hasLifecycleHook(LifecycleHooks.AfterContentChecked,
               DirectiveImplementingAfterContentChecked)).toBe(true);
@@ -84,8 +84,8 @@ main() {
         });
       });
 
-      describe("ngAfterViewInit", () {
-        it("should be true when the directive has the ngAfterViewInit method",
+      describe("afterViewInit", () {
+        it("should be true when the directive has the afterViewInit method",
             () {
           expect(hasLifecycleHook(LifecycleHooks.AfterViewInit,
               DirectiveImplementingAfterViewInit)).toBe(true);
@@ -97,8 +97,8 @@ main() {
         });
       });
 
-      describe("ngAfterViewChecked", () {
-        it("should be true when the directive has the ngAfterViewChecked method",
+      describe("afterViewChecked", () {
+        it("should be true when the directive has the afterViewChecked method",
             () {
           expect(hasLifecycleHook(LifecycleHooks.AfterViewChecked,
               DirectiveImplementingAfterViewChecked)).toBe(true);
@@ -116,33 +116,33 @@ main() {
 class DirectiveNoHooks {}
 
 class DirectiveImplementingOnChanges implements OnChanges {
-  ngOnChanges(_) {}
+  onChanges(_) {}
 }
 
 class DirectiveImplementingOnCheck implements DoCheck {
-  ngDoCheck() {}
+  doCheck() {}
 }
 
 class DirectiveImplementingOnInit implements OnInit {
-  ngOnInit() {}
+  onInit() {}
 }
 
 class DirectiveImplementingOnDestroy implements OnDestroy {
-  ngOnDestroy() {}
+  onDestroy() {}
 }
 
 class DirectiveImplementingAfterContentInit implements AfterContentInit {
-  ngAfterContentInit() {}
+  afterContentInit() {}
 }
 
 class DirectiveImplementingAfterContentChecked implements AfterContentChecked {
-  ngAfterContentChecked() {}
+  afterContentChecked() {}
 }
 
 class DirectiveImplementingAfterViewInit implements AfterViewInit {
-  ngAfterViewInit() {}
+  afterViewInit() {}
 }
 
 class DirectiveImplementingAfterViewChecked implements AfterViewChecked {
-  ngAfterViewChecked() {}
+  afterViewChecked() {}
 }

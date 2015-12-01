@@ -100,7 +100,7 @@ class NgFormControl extends NgControl implements OnChanges {
     /* super call moved to initializer */;
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
-  void ngOnChanges(Map<String, SimpleChange> changes) {
+  void onChanges(Map<String, SimpleChange> changes) {
     if (this._isControlChanged(changes)) {
       setUpControl(this.form, this);
       this.form.updateValueAndValidity(emitEvent: false);

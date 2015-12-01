@@ -114,7 +114,7 @@ class NgClass implements DoCheck, OnDestroy {
     }
   }
 
-  void ngDoCheck() {
+  void doCheck() {
     if (isPresent(this._differ)) {
       var changes = this._differ.diff(this._rawClass);
       if (isPresent(changes)) {
@@ -127,7 +127,7 @@ class NgClass implements DoCheck, OnDestroy {
     }
   }
 
-  void ngOnDestroy() {
+  void onDestroy() {
     this._cleanupClasses(this._rawClass);
   }
 

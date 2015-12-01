@@ -131,11 +131,11 @@ main() {
           c.updateValue("newValue");
           expect(c.value).toEqual("newValue");
         });
-        it("should invoke ngOnChanges if it is present", () {
-          var ngOnChanges;
-          c.registerOnChange((v) => ngOnChanges = ["invoked", v]);
+        it("should invoke onChanges if it is present", () {
+          var onChanges;
+          c.registerOnChange((v) => onChanges = ["invoked", v]);
           c.updateValue("newValue");
-          expect(ngOnChanges).toEqual(["invoked", "newValue"]);
+          expect(onChanges).toEqual(["invoked", "newValue"]);
         });
         it("should not invoke on change when explicitly specified", () {
           var onChange = null;
