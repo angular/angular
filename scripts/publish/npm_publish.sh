@@ -10,6 +10,7 @@ gulp clean
 gulp benchpress.bundle bundles.js
 
 NPM_DIR=$ROOT_DIR/dist/npm
+rm -fr $NPM_DIR
 
 scripts/publish/npm_prepare.sh angular2
 scripts/publish/npm_prepare.sh benchpress
