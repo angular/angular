@@ -1,4 +1,6 @@
-'use strict';var browser_common_1 = require('angular2/src/platform/browser_common');
+'use strict';var angular_entrypoint_1 = require('angular2/src/core/angular_entrypoint');
+exports.AngularEntrypoint = angular_entrypoint_1.AngularEntrypoint;
+var browser_common_1 = require('angular2/src/platform/browser_common');
 exports.BROWSER_PROVIDERS = browser_common_1.BROWSER_PROVIDERS;
 exports.ELEMENT_PROBE_BINDINGS = browser_common_1.ELEMENT_PROBE_BINDINGS;
 exports.ELEMENT_PROBE_PROVIDERS = browser_common_1.ELEMENT_PROBE_PROVIDERS;
