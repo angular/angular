@@ -34,5 +34,4 @@ trap killAllServers EXIT
 # wait for server to come up!
 sleep 3
 
-./node_modules/.bin/gulp test.transpiler.unittest
 ./node_modules/.bin/gulp test.server.dart --browsers=$KARMA_BROWSERS
