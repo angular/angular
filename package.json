@@ -22,6 +22,9 @@
     "type": "git",
     "url": "https://github.com/angular/angular.git"
   },
+  "config": {
+    "runAnalytics": "n"
+  },
   "scripts": {
     "preinstall": "node tools/analytics/build-analytics start install npm-install && node tools/analytics/build-analytics start install npm-preinstall && node tools/npm/check-node-modules --purge && node tools/analytics/build-analytics success install npm-preinstall && node tools/analytics/build-analytics start install npm-install-net",
     "postinstall": "node tools/analytics/build-analytics success install npm-install-net && node tools/analytics/build-analytics start install npm-postinstall && node tools/npm/copy-npm-shrinkwrap && node tools/chromedriverpatch.js && webdriver-manager update && bower install && gulp pubget.dart && tsd reinstall --overwrite --clean --config modules/angular2/tsd.json && tsd reinstall --overwrite --clean --config tools/tsd.json && tsd reinstall --overwrite --config modules/angular1_router/tsd.json && node tools/analytics/build-analytics success install npm-postinstall && node tools/analytics/build-analytics success install npm-install",

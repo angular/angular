@@ -11,6 +11,8 @@ var eventType = process.argv[2];
 var actionCategory = process.argv[3];
 var actionName = process.argv[4];
 
+var runAnalytics = process.env.npm_package_config_runAnalytics;
+if(!runAnalytics || runAnalytics === 'n') return;
 
 if (!analytics[actionCategory + 'Start']) {
   throw new Error('Unknown build-analytics actionCategory "' + actionCategory + '"');
