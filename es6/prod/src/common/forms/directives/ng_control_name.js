@@ -87,7 +87,7 @@ export let NgControlName = class extends NgControl {
         this._added = false;
         this.valueAccessor = selectValueAccessor(this, valueAccessors);
     }
-    onChanges(changes) {
+    ngOnChanges(changes) {
         if (!this._added) {
             this.formDirective.addControl(this);
             this._added = true;
@@ -97,7 +97,7 @@ export let NgControlName = class extends NgControl {
             this.formDirective.updateModel(this, this.model);
         }
     }
-    onDestroy() { this.formDirective.removeControl(this); }
+    ngOnDestroy() { this.formDirective.removeControl(this); }
     viewToModelUpdate(newValue) {
         this.viewModel = newValue;
         ObservableWrapper.callEmit(this.update, newValue);

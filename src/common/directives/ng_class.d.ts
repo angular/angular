@@ -69,8 +69,8 @@ export declare class NgClass implements DoCheck, OnDestroy {
     constructor(_iterableDiffers: IterableDiffers, _keyValueDiffers: KeyValueDiffers, _ngEl: ElementRef, _renderer: Renderer);
     initialClasses: any;
     rawClass: any;
-    doCheck(): void;
-    onDestroy(): void;
+    ngDoCheck(): void;
+    ngOnDestroy(): void;
     private _cleanupClasses(rawClassVal);
     private _applyKeyValueChanges(changes);
     private _applyIterableChanges(changes);

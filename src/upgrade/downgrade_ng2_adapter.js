@@ -80,13 +80,13 @@ var DowngradeNg2ComponentAdapter = (function () {
             }
         }
         var prototype = this.info.type.prototype;
-        if (prototype && prototype.onChanges) {
+        if (prototype && prototype.ngOnChanges) {
             // Detect: OnChanges interface
             this.inputChanges = {};
             this.componentScope.$watch(function () { return _this.inputChangeCount; }, function () {
                 var inputChanges = _this.inputChanges;
                 _this.inputChanges = {};
-                _this.component.onChanges(inputChanges);
+                _this.component.ngOnChanges(inputChanges);
             });
         }
         this.componentScope.$watch(function () { return _this.changeDetector && _this.changeDetector.detectChanges(); });

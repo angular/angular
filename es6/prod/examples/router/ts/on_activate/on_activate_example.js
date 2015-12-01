@@ -11,17 +11,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { Component, provide, bootstrap } from 'angular2/angular2';
 import { RouteConfig, ROUTER_DIRECTIVES, APP_BASE_HREF } from 'angular2/router';
-// #docregion onActivate
+// #docregion routerOnActivate
 let MyCmp = class {
     constructor() {
         this.log = '';
     }
-    onActivate(next, prev) {
+    routerOnActivate(next, prev) {
         this.log = `Finished navigating from "${prev ? prev.urlPath : 'null'}" to "${next.urlPath}"`;
     }
 };
 MyCmp = __decorate([
-    Component({ selector: 'my-cmp', template: `<div>onActivate: {{log}}</div>` }), 
+    Component({ selector: 'my-cmp', template: `<div>routerOnActivate: {{log}}</div>` }), 
     __metadata('design:paramtypes', [])
 ], MyCmp);
 // #enddocregion

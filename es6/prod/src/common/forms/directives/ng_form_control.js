@@ -76,7 +76,7 @@ export let NgFormControl = class extends NgControl {
         this.update = new EventEmitter();
         this.valueAccessor = selectValueAccessor(this, valueAccessors);
     }
-    onChanges(changes) {
+    ngOnChanges(changes) {
         if (this._isControlChanged(changes)) {
             setUpControl(this.form, this);
             this.form.updateValueAndValidity({ emitEvent: false });

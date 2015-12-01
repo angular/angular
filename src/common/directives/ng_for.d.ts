@@ -57,7 +57,7 @@ export declare class NgFor implements DoCheck {
     constructor(_viewContainer: ViewContainerRef, _templateRef: TemplateRef, _iterableDiffers: IterableDiffers, _cdr: ChangeDetectorRef);
     ngForOf: any;
     ngForTemplate: TemplateRef;
-    doCheck(): void;
+    ngDoCheck(): void;
     private _applyChanges(changes);
     private _perViewChange(view, record);
     private _bulkRemove(tuples);

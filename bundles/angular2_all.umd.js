@@ -210,7 +210,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._strategy = null;
 	        this._ref = _ref;
 	    }
-	    AsyncPipe.prototype.onDestroy = function () {
+	    AsyncPipe.prototype.ngOnDestroy = function () {
 	        if (lang_1.isPresent(this._subscription)) {
 	            this._dispose();
 	        }
@@ -13364,7 +13364,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Configures a content query.
 	 *
-	 * Content queries are set before the `afterContentInit` callback is called.
+	 * Content queries are set before the `ngAfterContentInit` callback is called.
 	 *
 	 * ### Example
 	 *
@@ -13375,7 +13375,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * class SomeDir {
 	 *   @ContentChildren(ChildDirective) contentChildren: QueryList<ChildDirective>;
 	 *
-	 *   afterContentInit() {
+	 *   ngAfterContentInit() {
 	 *     // contentChildren is set
 	 *   }
 	 * }
@@ -13386,7 +13386,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Configures a content query.
 	 *
-	 * Content queries are set before the `afterContentInit` callback is called.
+	 * Content queries are set before the `ngAfterContentInit` callback is called.
 	 *
 	 * ### Example
 	 *
@@ -13397,7 +13397,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * class SomeDir {
 	 *   @ContentChild(ChildDirective) contentChild;
 	 *
-	 *   afterContentInit() {
+	 *   ngAfterContentInit() {
 	 *     // contentChild is set
 	 *   }
 	 * }
@@ -13408,7 +13408,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Configures a view query.
 	 *
-	 * View queries are set before the `afterViewInit` callback is called.
+	 * View queries are set before the `ngAfterViewInit` callback is called.
 	 *
 	 * ### Example
 	 *
@@ -13421,7 +13421,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * class SomeDir {
 	 *   @ViewChildren(ItemDirective) viewChildren: QueryList<ItemDirective>;
 	 *
-	 *   afterViewInit() {
+	 *   ngAfterViewInit() {
 	 *     // viewChildren is set
 	 *   }
 	 * }
@@ -13432,7 +13432,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Configures a view query.
 	 *
-	 * View queries are set before the `afterViewInit` callback is called.
+	 * View queries are set before the `ngAfterViewInit` callback is called.
 	 *
 	 * ### Example
 	 *
@@ -13445,7 +13445,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * class SomeDir {
 	 *   @ViewChild(ItemDirective) viewChild:ItemDirective;
 	 *
-	 *   afterViewInit() {
+	 *   ngAfterViewInit() {
 	 *     // viewChild is set
 	 *   }
 	 * }
@@ -13902,7 +13902,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Configures a content query.
 	 *
-	 * Content queries are set before the `afterContentInit` callback is called.
+	 * Content queries are set before the `ngAfterContentInit` callback is called.
 	 *
 	 * ### Example
 	 *
@@ -13913,7 +13913,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * class SomeDir {
 	 *   @ContentChildren(ChildDirective) contentChildren: QueryList<ChildDirective>;
 	 *
-	 *   afterContentInit() {
+	 *   ngAfterContentInit() {
 	 *     // contentChildren is set
 	 *   }
 	 * }
@@ -13936,7 +13936,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Configures a content query.
 	 *
-	 * Content queries are set before the `afterContentInit` callback is called.
+	 * Content queries are set before the `ngAfterContentInit` callback is called.
 	 *
 	 * ### Example
 	 *
@@ -13947,7 +13947,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * class SomeDir {
 	 *   @ContentChild(ChildDirective) contentChild;
 	 *
-	 *   afterContentInit() {
+	 *   ngAfterContentInit() {
 	 *     // contentChild is set
 	 *   }
 	 * }
@@ -14025,7 +14025,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Configures a view query.
 	 *
-	 * View queries are set before the `afterViewInit` callback is called.
+	 * View queries are set before the `ngAfterViewInit` callback is called.
 	 *
 	 * ### Example
 	 *
@@ -14038,7 +14038,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * class SomeDir {
 	 *   @ViewChildren(ItemDirective) viewChildren: QueryList<ItemDirective>;
 	 *
-	 *   afterViewInit() {
+	 *   ngAfterViewInit() {
 	 *     // viewChildren is set
 	 *   }
 	 * }
@@ -14059,7 +14059,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Configures a view query.
 	 *
-	 * View queries are set before the `afterViewInit` callback is called.
+	 * View queries are set before the `ngAfterViewInit` callback is called.
 	 *
 	 * ### Example
 	 *
@@ -14072,7 +14072,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * class SomeDir {
 	 *   @ViewChild(ItemDirective) viewChild:ItemDirective;
 	 *
-	 *   afterViewInit() {
+	 *   ngAfterViewInit() {
 	 *     // viewChild is set
 	 *   }
 	 * }
@@ -22168,7 +22168,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    ChangeDetectionUtil.callPipeOnDestroy = function (selectedPipe) {
 	        if (pipe_lifecycle_reflector_1.implementsOnDestroy(selectedPipe.pipe)) {
-	            selectedPipe.pipe.onDestroy();
+	            selectedPipe.pipe.ngOnDestroy();
 	        }
 	    };
 	    ChangeDetectionUtil.bindingTarget = function (mode, elementIndex, name, unit, debug) {
@@ -22189,7 +22189,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	function implementsOnDestroy(pipe) {
-	    return pipe.constructor.prototype.onDestroy;
+	    return pipe.constructor.prototype.ngOnDestroy;
 	}
 	exports.implementsOnDestroy = implementsOnDestroy;
 
@@ -22481,14 +22481,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	            if (proto.isLifeCycleRecord()) {
 	                if (proto.name === "DoCheck" && !throwOnChange) {
-	                    this._getDirectiveFor(directiveRecord.directiveIndex).doCheck();
+	                    this._getDirectiveFor(directiveRecord.directiveIndex).ngDoCheck();
 	                }
 	                else if (proto.name === "OnInit" && !throwOnChange &&
 	                    this.state == constants_1.ChangeDetectorState.NeverChecked) {
-	                    this._getDirectiveFor(directiveRecord.directiveIndex).onInit();
+	                    this._getDirectiveFor(directiveRecord.directiveIndex).ngOnInit();
 	                }
 	                else if (proto.name === "OnChanges" && lang_1.isPresent(changes) && !throwOnChange) {
-	                    this._getDirectiveFor(directiveRecord.directiveIndex).onChanges(changes);
+	                    this._getDirectiveFor(directiveRecord.directiveIndex).ngOnChanges(changes);
 	                }
 	            }
 	            else if (proto.isSkipRecord()) {
@@ -22521,10 +22521,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        for (var i = dirs.length - 1; i >= 0; --i) {
 	            var dir = dirs[i];
 	            if (dir.callAfterContentInit && this.state == constants_1.ChangeDetectorState.NeverChecked) {
-	                this._getDirectiveFor(dir.directiveIndex).afterContentInit();
+	                this._getDirectiveFor(dir.directiveIndex).ngAfterContentInit();
 	            }
 	            if (dir.callAfterContentChecked) {
-	                this._getDirectiveFor(dir.directiveIndex).afterContentChecked();
+	                this._getDirectiveFor(dir.directiveIndex).ngAfterContentChecked();
 	            }
 	        }
 	    };
@@ -22533,10 +22533,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        for (var i = dirs.length - 1; i >= 0; --i) {
 	            var dir = dirs[i];
 	            if (dir.callAfterViewInit && this.state == constants_1.ChangeDetectorState.NeverChecked) {
-	                this._getDirectiveFor(dir.directiveIndex).afterViewInit();
+	                this._getDirectiveFor(dir.directiveIndex).ngAfterViewInit();
 	            }
 	            if (dir.callAfterViewChecked) {
-	                this._getDirectiveFor(dir.directiveIndex).afterViewChecked();
+	                this._getDirectiveFor(dir.directiveIndex).ngAfterViewChecked();
 	            }
 	        }
 	    };
@@ -23771,17 +23771,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    /** @internal */
 	    ChangeDetectorJITGenerator.prototype._genOnCheck = function (r) {
 	        var br = r.bindingRecord;
-	        return "if (!throwOnChange) " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".doCheck();";
+	        return "if (!throwOnChange) " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".ngDoCheck();";
 	    };
 	    /** @internal */
 	    ChangeDetectorJITGenerator.prototype._genOnInit = function (r) {
 	        var br = r.bindingRecord;
-	        return "if (!throwOnChange && " + this._names.getStateName() + " === " + this.changeDetectorStateVarName + ".NeverChecked) " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".onInit();";
+	        return "if (!throwOnChange && " + this._names.getStateName() + " === " + this.changeDetectorStateVarName + ".NeverChecked) " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".ngOnInit();";
 	    };
 	    /** @internal */
 	    ChangeDetectorJITGenerator.prototype._genOnChange = function (r) {
 	        var br = r.bindingRecord;
-	        return "if (!throwOnChange && " + CHANGES_LOCAL + ") " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".onChanges(" + CHANGES_LOCAL + ");";
+	        return "if (!throwOnChange && " + CHANGES_LOCAL + ") " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".ngOnChanges(" + CHANGES_LOCAL + ");";
 	    };
 	    /** @internal */
 	    ChangeDetectorJITGenerator.prototype._genNotifyOnPushDetectors = function (r) {
@@ -24132,10 +24132,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        for (var i = directiveRecords.length - 1; i >= 0; --i) {
 	            var dir = directiveRecords[i];
 	            if (dir.callAfterContentInit) {
-	                res.push("if(" + this._names.getStateName() + " " + eq + " " + this._changeDetectorStateName + ".NeverChecked) " + this._names.getDirectiveName(dir.directiveIndex) + ".afterContentInit();");
+	                res.push("if(" + this._names.getStateName() + " " + eq + " " + this._changeDetectorStateName + ".NeverChecked) " + this._names.getDirectiveName(dir.directiveIndex) + ".ngAfterContentInit();");
 	            }
 	            if (dir.callAfterContentChecked) {
-	                res.push(this._names.getDirectiveName(dir.directiveIndex) + ".afterContentChecked();");
+	                res.push(this._names.getDirectiveName(dir.directiveIndex) + ".ngAfterContentChecked();");
 	            }
 	        }
 	        return res;
@@ -24147,10 +24147,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        for (var i = directiveRecords.length - 1; i >= 0; --i) {
 	            var dir = directiveRecords[i];
 	            if (dir.callAfterViewInit) {
-	                res.push("if(" + this._names.getStateName() + " " + eq + " " + this._changeDetectorStateName + ".NeverChecked) " + this._names.getDirectiveName(dir.directiveIndex) + ".afterViewInit();");
+	                res.push("if(" + this._names.getStateName() + " " + eq + " " + this._changeDetectorStateName + ".NeverChecked) " + this._names.getDirectiveName(dir.directiveIndex) + ".ngAfterViewInit();");
 	            }
 	            if (dir.callAfterViewChecked) {
-	                res.push(this._names.getDirectiveName(dir.directiveIndex) + ".afterViewChecked();");
+	                res.push(this._names.getDirectiveName(dir.directiveIndex) + ".ngAfterViewChecked();");
 	            }
 	        }
 	        return res;
@@ -26377,7 +26377,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var ei = this.elementInjectors;
 	        for (var i = eiCount - 1; i >= 0; i--) {
 	            if (lang_1.isPresent(ei[i + this.elementOffset]))
-	                ei[i + this.elementOffset].afterContentChecked();
+	                ei[i + this.elementOffset].ngAfterContentChecked();
 	        }
 	    };
 	    AppView.prototype.notifyAfterViewChecked = function () {
@@ -26385,7 +26385,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var ei = this.elementInjectors;
 	        for (var i = eiCount - 1; i >= 0; i--) {
 	            if (lang_1.isPresent(ei[i + this.elementOffset]))
-	                ei[i + this.elementOffset].afterViewChecked();
+	                ei[i + this.elementOffset].ngAfterViewChecked();
 	        }
 	    };
 	    AppView.prototype.getDirectiveFor = function (directive) {
@@ -27239,8 +27239,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var nestedView = view.getNestedView(view.elementOffset + this.getBoundElementIndex());
 	        return lang_1.isPresent(nestedView) ? nestedView.rootElementInjectors : [];
 	    };
-	    ElementInjector.prototype.afterViewChecked = function () { this._queryStrategy.updateViewQueries(); };
-	    ElementInjector.prototype.afterContentChecked = function () { this._queryStrategy.updateContentQueries(); };
+	    ElementInjector.prototype.ngAfterViewChecked = function () { this._queryStrategy.updateViewQueries(); };
+	    ElementInjector.prototype.ngAfterContentChecked = function () { this._queryStrategy.updateContentQueries(); };
 	    ElementInjector.prototype.traverseAndSetQueriesAsDirty = function () {
 	        var inj = this;
 	        while (lang_1.isPresent(inj)) {
@@ -27459,43 +27459,43 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var p = i.protoStrategy;
 	        if (p.provider0 instanceof DirectiveProvider &&
 	            p.provider0.callOnDestroy) {
-	            i.obj0.onDestroy();
+	            i.obj0.ngOnDestroy();
 	        }
 	        if (p.provider1 instanceof DirectiveProvider &&
 	            p.provider1.callOnDestroy) {
-	            i.obj1.onDestroy();
+	            i.obj1.ngOnDestroy();
 	        }
 	        if (p.provider2 instanceof DirectiveProvider &&
 	            p.provider2.callOnDestroy) {
-	            i.obj2.onDestroy();
+	            i.obj2.ngOnDestroy();
 	        }
 	        if (p.provider3 instanceof DirectiveProvider &&
 	            p.provider3.callOnDestroy) {
-	            i.obj3.onDestroy();
+	            i.obj3.ngOnDestroy();
 	        }
 	        if (p.provider4 instanceof DirectiveProvider &&
 	            p.provider4.callOnDestroy) {
-	            i.obj4.onDestroy();
+	            i.obj4.ngOnDestroy();
 	        }
 	        if (p.provider5 instanceof DirectiveProvider &&
 	            p.provider5.callOnDestroy) {
-	            i.obj5.onDestroy();
+	            i.obj5.ngOnDestroy();
 	        }
 	        if (p.provider6 instanceof DirectiveProvider &&
 	            p.provider6.callOnDestroy) {
-	            i.obj6.onDestroy();
+	            i.obj6.ngOnDestroy();
 	        }
 	        if (p.provider7 instanceof DirectiveProvider &&
 	            p.provider7.callOnDestroy) {
-	            i.obj7.onDestroy();
+	            i.obj7.ngOnDestroy();
 	        }
 	        if (p.provider8 instanceof DirectiveProvider &&
 	            p.provider8.callOnDestroy) {
-	            i.obj8.onDestroy();
+	            i.obj8.ngOnDestroy();
 	        }
 	        if (p.provider9 instanceof DirectiveProvider &&
 	            p.provider9.callOnDestroy) {
-	            i.obj9.onDestroy();
+	            i.obj9.ngOnDestroy();
 	        }
 	    };
 	    ElementInjectorInlineStrategy.prototype.getComponent = function () { return this.injectorStrategy.obj0; };
@@ -27589,7 +27589,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        for (var i = 0; i < p.providers.length; i++) {
 	            if (p.providers[i] instanceof DirectiveProvider &&
 	                p.providers[i].callOnDestroy) {
-	                ist.objs[i].onDestroy();
+	                ist.objs[i].ngOnDestroy();
 	            }
 	        }
 	    };
@@ -28647,21 +28647,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var proto = token.prototype;
 	    switch (lcInterface) {
 	        case interfaces_1.LifecycleHooks.AfterContentInit:
-	            return !!proto.afterContentInit;
+	            return !!proto.ngAfterContentInit;
 	        case interfaces_1.LifecycleHooks.AfterContentChecked:
-	            return !!proto.afterContentChecked;
+	            return !!proto.ngAfterContentChecked;
 	        case interfaces_1.LifecycleHooks.AfterViewInit:
-	            return !!proto.afterViewInit;
+	            return !!proto.ngAfterViewInit;
 	        case interfaces_1.LifecycleHooks.AfterViewChecked:
-	            return !!proto.afterViewChecked;
+	            return !!proto.ngAfterViewChecked;
 	        case interfaces_1.LifecycleHooks.OnChanges:
-	            return !!proto.onChanges;
+	            return !!proto.ngOnChanges;
 	        case interfaces_1.LifecycleHooks.DoCheck:
-	            return !!proto.doCheck;
+	            return !!proto.ngDoCheck;
 	        case interfaces_1.LifecycleHooks.OnDestroy:
-	            return !!proto.onDestroy;
+	            return !!proto.ngOnDestroy;
 	        case interfaces_1.LifecycleHooks.OnInit:
-	            return !!proto.onInit;
+	            return !!proto.ngOnInit;
 	        default:
 	            return false;
 	    }
@@ -30590,7 +30590,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        enumerable: true,
 	        configurable: true
 	    });
-	    NgClass.prototype.doCheck = function () {
+	    NgClass.prototype.ngDoCheck = function () {
 	        if (lang_1.isPresent(this._differ)) {
 	            var changes = this._differ.diff(this._rawClass);
 	            if (lang_1.isPresent(changes)) {
@@ -30603,7 +30603,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }
 	    };
-	    NgClass.prototype.onDestroy = function () { this._cleanupClasses(this._rawClass); };
+	    NgClass.prototype.ngOnDestroy = function () { this._cleanupClasses(this._rawClass); };
 	    NgClass.prototype._cleanupClasses = function (rawClassVal) {
 	        this._applyClasses(rawClassVal, true);
 	        this._applyInitialClasses(false);
@@ -30759,7 +30759,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        enumerable: true,
 	        configurable: true
 	    });
-	    NgFor.prototype.doCheck = function () {
+	    NgFor.prototype.ngDoCheck = function () {
 	        if (lang_1.isPresent(this._differ)) {
 	            var changes = this._differ.diff(this._ngForOf);
 	            if (lang_1.isPresent(changes))
@@ -30991,7 +30991,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        enumerable: true,
 	        configurable: true
 	    });
-	    NgStyle.prototype.doCheck = function () {
+	    NgStyle.prototype.ngDoCheck = function () {
 	        if (lang_1.isPresent(this._differ)) {
 	            var changes = this._differ.diff(this._rawStyle);
 	            if (lang_1.isPresent(changes)) {
@@ -32075,7 +32075,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._added = false;
 	        this.valueAccessor = shared_1.selectValueAccessor(this, valueAccessors);
 	    }
-	    NgControlName.prototype.onChanges = function (changes) {
+	    NgControlName.prototype.ngOnChanges = function (changes) {
 	        if (!this._added) {
 	            this.formDirective.addControl(this);
 	            this._added = true;
@@ -32085,7 +32085,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.formDirective.updateModel(this, this.model);
 	        }
 	    };
-	    NgControlName.prototype.onDestroy = function () { this.formDirective.removeControl(this); };
+	    NgControlName.prototype.ngOnDestroy = function () { this.formDirective.removeControl(this); };
 	    NgControlName.prototype.viewToModelUpdate = function (newValue) {
 	        this.viewModel = newValue;
 	        async_1.ObservableWrapper.callEmit(this.update, newValue);
@@ -32767,7 +32767,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.update = new async_1.EventEmitter();
 	        this.valueAccessor = shared_1.selectValueAccessor(this, valueAccessors);
 	    }
-	    NgFormControl.prototype.onChanges = function (changes) {
+	    NgFormControl.prototype.ngOnChanges = function (changes) {
 	        if (this._isControlChanged(changes)) {
 	            shared_1.setUpControl(this.form, this);
 	            this.form.updateValueAndValidity({ emitEvent: false });
@@ -32894,7 +32894,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.update = new async_1.EventEmitter();
 	        this.valueAccessor = shared_1.selectValueAccessor(this, valueAccessors);
 	    }
-	    NgModel.prototype.onChanges = function (changes) {
+	    NgModel.prototype.ngOnChanges = function (changes) {
 	        if (!this._added) {
 	            shared_1.setUpControl(this._control, this);
 	            this._control.updateValueAndValidity({ emitEvent: false });
@@ -33038,8 +33038,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._asyncValidators = _asyncValidators;
 	        this._parent = parent;
 	    }
-	    NgControlGroup.prototype.onInit = function () { this.formDirective.addControlGroup(this); };
-	    NgControlGroup.prototype.onDestroy = function () { this.formDirective.removeControlGroup(this); };
+	    NgControlGroup.prototype.ngOnInit = function () { this.formDirective.addControlGroup(this); };
+	    NgControlGroup.prototype.ngOnDestroy = function () { this.formDirective.removeControlGroup(this); };
 	    Object.defineProperty(NgControlGroup.prototype, "control", {
 	        /**
 	         * Get the {@link ControlGroup} backing this binding.
@@ -33209,7 +33209,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.directives = [];
 	        this.ngSubmit = new async_1.EventEmitter();
 	    }
-	    NgFormModel.prototype.onChanges = function (changes) {
+	    NgFormModel.prototype.ngOnChanges = function (changes) {
 	        if (collection_1.StringMapWrapper.contains(changes, "form")) {
 	            var sync = shared_1.composeValidators(this._validators);
 	            this.form.validator = validators_1.Validators.compose([this.form.validator, sync]);
@@ -42287,13 +42287,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }
 	        var prototype = this.info.type.prototype;
-	        if (prototype && prototype.onChanges) {
+	        if (prototype && prototype.ngOnChanges) {
 	            // Detect: OnChanges interface
 	            this.inputChanges = {};
 	            this.componentScope.$watch(function () { return _this.inputChangeCount; }, function () {
 	                var inputChanges = _this.inputChanges;
 	                _this.inputChanges = {};
-	                _this.component.onChanges(inputChanges);
+	                _this.component.ngOnChanges(inputChanges);
 	            });
 	        }
 	        this.componentScope.$watch(function () { return _this.changeDetector && _this.changeDetector.detectChanges(); });
@@ -42407,8 +42407,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                        return new UpgradeNg1ComponentAdapter(self.linkFn, scope, self.directive, elementRef, self.$controller, self.inputs, self.outputs, self.propertyOutputs, self.checkProperties, self.propertyMap);
 	                    }
 	                ],
-	                onChanges: function () { },
-	                doCheck: function () { }
+	                ngOnChanges: function () { },
+	                ngDoCheck: function () { }
 	            });
 	    }
 	    UpgradeNg1ComponentAdapterBuilder.prototype.extractDirective = function (injector) {
@@ -42579,7 +42579,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this.checkLastValues.push(INITIAL_VALUE);
 	        }
 	    }
-	    UpgradeNg1ComponentAdapter.prototype.onChanges = function (changes) {
+	    UpgradeNg1ComponentAdapter.prototype.ngOnChanges = function (changes) {
 	        for (var name in changes) {
 	            if (changes.hasOwnProperty(name)) {
 	                var change = changes[name];
@@ -42587,7 +42587,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	        }
 	    };
-	    UpgradeNg1ComponentAdapter.prototype.doCheck = function () {
+	    UpgradeNg1ComponentAdapter.prototype.ngDoCheck = function () {
 	        var count = 0;
 	        var destinationObj = this.destinationObj;
 	        var lastValues = this.checkLastValues;
@@ -44868,13 +44868,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Router.prototype._navigate = function (instruction, _skipLocationChange) {
 	        var _this = this;
 	        return this._settleInstruction(instruction)
-	            .then(function (_) { return _this._canReuse(instruction); })
+	            .then(function (_) { return _this._routerCanReuse(instruction); })
 	            .then(function (_) { return _this._canActivate(instruction); })
 	            .then(function (result) {
 	            if (!result) {
 	                return false;
 	            }
-	            return _this._canDeactivate(instruction)
+	            return _this._routerCanDeactivate(instruction)
 	                .then(function (result) {
 	                if (result) {
 	                    return _this.commit(instruction, _skipLocationChange)
@@ -44913,23 +44913,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Recursively set reuse flags
 	     */
 	    /** @internal */
-	    Router.prototype._canReuse = function (instruction) {
+	    Router.prototype._routerCanReuse = function (instruction) {
 	        var _this = this;
 	        if (lang_1.isBlank(this._outlet)) {
 	            return _resolveToFalse;
 	        }
-	        return this._outlet.canReuse(instruction.component)
+	        return this._outlet.routerCanReuse(instruction.component)
 	            .then(function (result) {
 	            instruction.component.reuse = result;
 	            if (result && lang_1.isPresent(_this._childRouter) && lang_1.isPresent(instruction.child)) {
-	                return _this._childRouter._canReuse(instruction.child);
+	                return _this._childRouter._routerCanReuse(instruction.child);
 	            }
 	        });
 	    };
 	    Router.prototype._canActivate = function (nextInstruction) {
 	        return canActivateOne(nextInstruction, this._currentInstruction);
 	    };
-	    Router.prototype._canDeactivate = function (instruction) {
+	    Router.prototype._routerCanDeactivate = function (instruction) {
 	        var _this = this;
 	        if (lang_1.isBlank(this._outlet)) {
 	            return _resolveToTrue;
@@ -44947,7 +44947,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            next = _resolveToTrue;
 	        }
 	        else {
-	            next = this._outlet.canDeactivate(componentInstruction);
+	            next = this._outlet.routerCanDeactivate(componentInstruction);
 	        }
 	        // TODO: aux route lifecycle hooks
 	        return next.then(function (result) {
@@ -44955,7 +44955,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                return false;
 	            }
 	            if (lang_1.isPresent(_this._childRouter)) {
-	                return _this._childRouter._canDeactivate(childInstruction);
+	                return _this._childRouter._routerCanDeactivate(childInstruction);
 	            }
 	            return true;
 	        });
@@ -47236,11 +47236,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return CanActivate;
 	})();
 	exports.CanActivate = CanActivate;
-	exports.canReuse = lang_1.CONST_EXPR(new RouteLifecycleHook("canReuse"));
-	exports.canDeactivate = lang_1.CONST_EXPR(new RouteLifecycleHook("canDeactivate"));
-	exports.onActivate = lang_1.CONST_EXPR(new RouteLifecycleHook("onActivate"));
-	exports.onReuse = lang_1.CONST_EXPR(new RouteLifecycleHook("onReuse"));
-	exports.onDeactivate = lang_1.CONST_EXPR(new RouteLifecycleHook("onDeactivate"));
+	exports.routerCanReuse = lang_1.CONST_EXPR(new RouteLifecycleHook("routerCanReuse"));
+	exports.routerCanDeactivate = lang_1.CONST_EXPR(new RouteLifecycleHook("routerCanDeactivate"));
+	exports.routerOnActivate = lang_1.CONST_EXPR(new RouteLifecycleHook("routerOnActivate"));
+	exports.routerOnReuse = lang_1.CONST_EXPR(new RouteLifecycleHook("routerOnReuse"));
+	exports.routerOnDeactivate = lang_1.CONST_EXPR(new RouteLifecycleHook("routerOnDeactivate"));
 
 
 /***/ },
@@ -47298,7 +47298,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    /**
 	     * Called by the Router to instantiate a new component during the commit phase of a navigation.
-	     * This method in turn is responsible for calling the `onActivate` hook of its child.
+	     * This method in turn is responsible for calling the `routerOnActivate` hook of its child.
 	     */
 	    RouterOutlet.prototype.activate = function (nextInstruction) {
 	        var _this = this;
@@ -47314,15 +47314,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return this._loader.loadNextToLocation(componentType, this._elementRef, providers)
 	            .then(function (componentRef) {
 	            _this._componentRef = componentRef;
-	            if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.onActivate, componentType)) {
-	                return _this._componentRef.instance.onActivate(nextInstruction, previousInstruction);
+	            if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerOnActivate, componentType)) {
+	                return _this._componentRef.instance
+	                    .routerOnActivate(nextInstruction, previousInstruction);
 	            }
 	        });
 	    };
 	    /**
 	     * Called by the {@link Router} during the commit phase of a navigation when an outlet
 	     * reuses a component between different routes.
-	     * This method in turn is responsible for calling the `onReuse` hook of its child.
+	     * This method in turn is responsible for calling the `routerOnReuse` hook of its child.
 	     */
 	    RouterOutlet.prototype.reuse = function (nextInstruction) {
 	        var previousInstruction = this._currentInstruction;
@@ -47330,20 +47331,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (lang_1.isBlank(this._componentRef)) {
 	            throw new exceptions_1.BaseException("Cannot reuse an outlet that does not contain a component.");
 	        }
-	        return async_1.PromiseWrapper.resolve(route_lifecycle_reflector_1.hasLifecycleHook(hookMod.onReuse, this._currentInstruction.componentType) ?
-	            this._componentRef.instance.onReuse(nextInstruction, previousInstruction) :
+	        return async_1.PromiseWrapper.resolve(route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerOnReuse, this._currentInstruction.componentType) ?
+	            this._componentRef.instance
+	                .routerOnReuse(nextInstruction, previousInstruction) :
 	            true);
 	    };
 	    /**
 	     * Called by the {@link Router} when an outlet disposes of a component's contents.
-	     * This method in turn is responsible for calling the `onDeactivate` hook of its child.
+	     * This method in turn is responsible for calling the `routerOnDeactivate` hook of its child.
 	     */
 	    RouterOutlet.prototype.deactivate = function (nextInstruction) {
 	        var _this = this;
 	        var next = _resolveToTrue;
 	        if (lang_1.isPresent(this._componentRef) && lang_1.isPresent(this._currentInstruction) &&
-	            route_lifecycle_reflector_1.hasLifecycleHook(hookMod.onDeactivate, this._currentInstruction.componentType)) {
-	            next = async_1.PromiseWrapper.resolve(this._componentRef.instance.onDeactivate(nextInstruction, this._currentInstruction));
+	            route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerOnDeactivate, this._currentInstruction.componentType)) {
+	            next = async_1.PromiseWrapper.resolve(this._componentRef.instance
+	                .routerOnDeactivate(nextInstruction, this._currentInstruction));
 	        }
 	        return next.then(function (_) {
 	            if (lang_1.isPresent(_this._componentRef)) {
@@ -47357,15 +47360,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	     *
 	     * If this resolves to `false`, the given navigation is cancelled.
 	     *
-	     * This method delegates to the child component's `canDeactivate` hook if it exists,
+	     * This method delegates to the child component's `routerCanDeactivate` hook if it exists,
 	     * and otherwise resolves to true.
 	     */
-	    RouterOutlet.prototype.canDeactivate = function (nextInstruction) {
+	    RouterOutlet.prototype.routerCanDeactivate = function (nextInstruction) {
 	        if (lang_1.isBlank(this._currentInstruction)) {
 	            return _resolveToTrue;
 	        }
-	        if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.canDeactivate, this._currentInstruction.componentType)) {
-	            return async_1.PromiseWrapper.resolve(this._componentRef.instance.canDeactivate(nextInstruction, this._currentInstruction));
+	        if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerCanDeactivate, this._currentInstruction.componentType)) {
+	            return async_1.PromiseWrapper.resolve(this._componentRef.instance
+	                .routerCanDeactivate(nextInstruction, this._currentInstruction));
 	        }
 	        return _resolveToTrue;
 	    };
@@ -47376,17 +47380,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * this will resolve to `false`. You can't reuse an old component when the new component
 	     * is of a different Type.
 	     *
-	     * Otherwise, this method delegates to the child component's `canReuse` hook if it exists,
+	     * Otherwise, this method delegates to the child component's `routerCanReuse` hook if it exists,
 	     * or resolves to true if the hook is not present.
 	     */
-	    RouterOutlet.prototype.canReuse = function (nextInstruction) {
+	    RouterOutlet.prototype.routerCanReuse = function (nextInstruction) {
 	        var result;
 	        if (lang_1.isBlank(this._currentInstruction) ||
 	            this._currentInstruction.componentType != nextInstruction.componentType) {
 	            result = false;
 	        }
-	        else if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.canReuse, this._currentInstruction.componentType)) {
-	            result = this._componentRef.instance.canReuse(nextInstruction, this._currentInstruction);
+	        else if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerCanReuse, this._currentInstruction.componentType)) {
+	            result = this._componentRef.instance
+	                .routerCanReuse(nextInstruction, this._currentInstruction);
 	        }
 	        else {
 	            result = nextInstruction == this._currentInstruction ||
@@ -47416,11 +47421,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	var decorators_1 = __webpack_require__(157);
 	var lifecycle_annotations_impl_1 = __webpack_require__(390);
 	var lifecycle_annotations_impl_2 = __webpack_require__(390);
-	exports.canReuse = lifecycle_annotations_impl_2.canReuse;
-	exports.canDeactivate = lifecycle_annotations_impl_2.canDeactivate;
-	exports.onActivate = lifecycle_annotations_impl_2.onActivate;
-	exports.onReuse = lifecycle_annotations_impl_2.onReuse;
-	exports.onDeactivate = lifecycle_annotations_impl_2.onDeactivate;
+	exports.routerCanReuse = lifecycle_annotations_impl_2.routerCanReuse;
+	exports.routerCanDeactivate = lifecycle_annotations_impl_2.routerCanDeactivate;
+	exports.routerOnActivate = lifecycle_annotations_impl_2.routerOnActivate;
+	exports.routerOnReuse = lifecycle_annotations_impl_2.routerOnReuse;
+	exports.routerOnDeactivate = lifecycle_annotations_impl_2.routerOnDeactivate;
 	/**
 	 * Defines route lifecycle hook `CanActivate`, which is called by the router to determine
 	 * if a component can be instantiated as part of a navigation.

@@ -16161,7 +16161,7 @@ System.register("angular2/src/core/change_detection/pipe_lifecycle_reflector", [
       __define = global.define;
   global.define = undefined;
   function implementsOnDestroy(pipe) {
-    return pipe.constructor.prototype.onDestroy;
+    return pipe.constructor.prototype.ngOnDestroy;
   }
   exports.implementsOnDestroy = implementsOnDestroy;
   global.define = __define;
@@ -19637,7 +19637,7 @@ System.register("angular2/src/common/directives/ng_class", ["angular2/src/facade
       enumerable: true,
       configurable: true
     });
-    NgClass.prototype.doCheck = function() {
+    NgClass.prototype.ngDoCheck = function() {
       if (lang_1.isPresent(this._differ)) {
         var changes = this._differ.diff(this._rawClass);
         if (lang_1.isPresent(changes)) {
@@ -19649,7 +19649,7 @@ System.register("angular2/src/common/directives/ng_class", ["angular2/src/facade
         }
       }
     };
-    NgClass.prototype.onDestroy = function() {
+    NgClass.prototype.ngOnDestroy = function() {
       this._cleanupClasses(this._rawClass);
     };
     NgClass.prototype._cleanupClasses = function(rawClassVal) {
@@ -19783,7 +19783,7 @@ System.register("angular2/src/common/directives/ng_for", ["angular2/core", "angu
       enumerable: true,
       configurable: true
     });
-    NgFor.prototype.doCheck = function() {
+    NgFor.prototype.ngDoCheck = function() {
       if (lang_1.isPresent(this._differ)) {
         var changes = this._differ.diff(this._ngForOf);
         if (lang_1.isPresent(changes))
@@ -19967,7 +19967,7 @@ System.register("angular2/src/common/directives/ng_style", ["angular2/core", "an
       enumerable: true,
       configurable: true
     });
-    NgStyle.prototype.doCheck = function() {
+    NgStyle.prototype.ngDoCheck = function() {
       if (lang_1.isPresent(this._differ)) {
         var changes = this._differ.diff(this._rawStyle);
         if (lang_1.isPresent(changes)) {
@@ -21246,7 +21246,7 @@ System.register("angular2/src/common/forms/directives/ng_form_control", ["angula
       this.update = new async_1.EventEmitter();
       this.valueAccessor = shared_1.selectValueAccessor(this, valueAccessors);
     }
-    NgFormControl.prototype.onChanges = function(changes) {
+    NgFormControl.prototype.ngOnChanges = function(changes) {
       if (this._isControlChanged(changes)) {
         shared_1.setUpControl(this.form, this);
         this.form.updateValueAndValidity({emitEvent: false});
@@ -21367,7 +21367,7 @@ System.register("angular2/src/common/forms/directives/ng_model", ["angular2/src/
       this.update = new async_1.EventEmitter();
       this.valueAccessor = shared_1.selectValueAccessor(this, valueAccessors);
     }
-    NgModel.prototype.onChanges = function(changes) {
+    NgModel.prototype.ngOnChanges = function(changes) {
       if (!this._added) {
         shared_1.setUpControl(this._control, this);
         this._control.updateValueAndValidity({emitEvent: false});
@@ -21480,10 +21480,10 @@ System.register("angular2/src/common/forms/directives/ng_control_group", ["angul
       this._asyncValidators = _asyncValidators;
       this._parent = parent;
     }
-    NgControlGroup.prototype.onInit = function() {
+    NgControlGroup.prototype.ngOnInit = function() {
       this.formDirective.addControlGroup(this);
     };
-    NgControlGroup.prototype.onDestroy = function() {
+    NgControlGroup.prototype.ngOnDestroy = function() {
       this.formDirective.removeControlGroup(this);
     };
     Object.defineProperty(NgControlGroup.prototype, "control", {
@@ -21594,7 +21594,7 @@ System.register("angular2/src/common/forms/directives/ng_form_model", ["angular2
       this.directives = [];
       this.ngSubmit = new async_1.EventEmitter();
     }
-    NgFormModel.prototype.onChanges = function(changes) {
+    NgFormModel.prototype.ngOnChanges = function(changes) {
       if (collection_1.StringMapWrapper.contains(changes, "form")) {
         var sync = shared_1.composeValidators(this._validators);
         this.form.validator = validators_1.Validators.compose([this.form.validator, sync]);
@@ -25618,14 +25618,14 @@ System.register("angular2/src/upgrade/downgrade_ng2_adapter", ["angular2/angular
         }
       }
       var prototype = this.info.type.prototype;
-      if (prototype && prototype.onChanges) {
+      if (prototype && prototype.ngOnChanges) {
         this.inputChanges = {};
         this.componentScope.$watch(function() {
           return _this.inputChangeCount;
         }, function() {
           var inputChanges = _this.inputChanges;
           _this.inputChanges = {};
-          _this.component.onChanges(inputChanges);
+          _this.component.ngOnChanges(inputChanges);
         });
       }
       this.componentScope.$watch(function() {
@@ -26473,11 +26473,11 @@ System.register("angular2/src/router/lifecycle_annotations_impl", ["angular2/src
     return CanActivate;
   })();
   exports.CanActivate = CanActivate;
-  exports.canReuse = lang_1.CONST_EXPR(new RouteLifecycleHook("canReuse"));
-  exports.canDeactivate = lang_1.CONST_EXPR(new RouteLifecycleHook("canDeactivate"));
-  exports.onActivate = lang_1.CONST_EXPR(new RouteLifecycleHook("onActivate"));
-  exports.onReuse = lang_1.CONST_EXPR(new RouteLifecycleHook("onReuse"));
-  exports.onDeactivate = lang_1.CONST_EXPR(new RouteLifecycleHook("onDeactivate"));
+  exports.routerCanReuse = lang_1.CONST_EXPR(new RouteLifecycleHook("routerCanReuse"));
+  exports.routerCanDeactivate = lang_1.CONST_EXPR(new RouteLifecycleHook("routerCanDeactivate"));
+  exports.routerOnActivate = lang_1.CONST_EXPR(new RouteLifecycleHook("routerOnActivate"));
+  exports.routerOnReuse = lang_1.CONST_EXPR(new RouteLifecycleHook("routerOnReuse"));
+  exports.routerOnDeactivate = lang_1.CONST_EXPR(new RouteLifecycleHook("routerOnDeactivate"));
   global.define = __define;
   return module.exports;
 });
@@ -26489,11 +26489,11 @@ System.register("angular2/src/router/lifecycle_annotations", ["angular2/src/core
   var decorators_1 = require("angular2/src/core/util/decorators");
   var lifecycle_annotations_impl_1 = require("angular2/src/router/lifecycle_annotations_impl");
   var lifecycle_annotations_impl_2 = require("angular2/src/router/lifecycle_annotations_impl");
-  exports.canReuse = lifecycle_annotations_impl_2.canReuse;
-  exports.canDeactivate = lifecycle_annotations_impl_2.canDeactivate;
-  exports.onActivate = lifecycle_annotations_impl_2.onActivate;
-  exports.onReuse = lifecycle_annotations_impl_2.onReuse;
-  exports.onDeactivate = lifecycle_annotations_impl_2.onDeactivate;
+  exports.routerCanReuse = lifecycle_annotations_impl_2.routerCanReuse;
+  exports.routerCanDeactivate = lifecycle_annotations_impl_2.routerCanDeactivate;
+  exports.routerOnActivate = lifecycle_annotations_impl_2.routerOnActivate;
+  exports.routerOnReuse = lifecycle_annotations_impl_2.routerOnReuse;
+  exports.routerOnDeactivate = lifecycle_annotations_impl_2.routerOnDeactivate;
   exports.CanActivate = decorators_1.makeDecorator(lifecycle_annotations_impl_1.CanActivate);
   global.define = __define;
   return module.exports;
@@ -29098,7 +29098,7 @@ System.register("angular2/src/core/change_detection/change_detection_util", ["an
     };
     ChangeDetectionUtil.callPipeOnDestroy = function(selectedPipe) {
       if (pipe_lifecycle_reflector_1.implementsOnDestroy(selectedPipe.pipe)) {
-        selectedPipe.pipe.onDestroy();
+        selectedPipe.pipe.ngOnDestroy();
       }
     };
     ChangeDetectionUtil.bindingTarget = function(mode, elementIndex, name, unit, debug) {
@@ -29294,10 +29294,10 @@ System.register("angular2/src/core/change_detection/codegen_logic_util", ["angul
       for (var i = directiveRecords.length - 1; i >= 0; --i) {
         var dir = directiveRecords[i];
         if (dir.callAfterContentInit) {
-          res.push("if(" + this._names.getStateName() + " " + eq + " " + this._changeDetectorStateName + ".NeverChecked) " + this._names.getDirectiveName(dir.directiveIndex) + ".afterContentInit();");
+          res.push("if(" + this._names.getStateName() + " " + eq + " " + this._changeDetectorStateName + ".NeverChecked) " + this._names.getDirectiveName(dir.directiveIndex) + ".ngAfterContentInit();");
         }
         if (dir.callAfterContentChecked) {
-          res.push(this._names.getDirectiveName(dir.directiveIndex) + ".afterContentChecked();");
+          res.push(this._names.getDirectiveName(dir.directiveIndex) + ".ngAfterContentChecked();");
         }
       }
       return res;
@@ -29308,10 +29308,10 @@ System.register("angular2/src/core/change_detection/codegen_logic_util", ["angul
       for (var i = directiveRecords.length - 1; i >= 0; --i) {
         var dir = directiveRecords[i];
         if (dir.callAfterViewInit) {
-          res.push("if(" + this._names.getStateName() + " " + eq + " " + this._changeDetectorStateName + ".NeverChecked) " + this._names.getDirectiveName(dir.directiveIndex) + ".afterViewInit();");
+          res.push("if(" + this._names.getStateName() + " " + eq + " " + this._changeDetectorStateName + ".NeverChecked) " + this._names.getDirectiveName(dir.directiveIndex) + ".ngAfterViewInit();");
         }
         if (dir.callAfterViewChecked) {
-          res.push(this._names.getDirectiveName(dir.directiveIndex) + ".afterViewChecked();");
+          res.push(this._names.getDirectiveName(dir.directiveIndex) + ".ngAfterViewChecked();");
         }
       }
       return res;
@@ -29489,7 +29489,7 @@ System.register("angular2/src/core/linker/view", ["angular2/src/facade/collectio
       var ei = this.elementInjectors;
       for (var i = eiCount - 1; i >= 0; i--) {
         if (lang_1.isPresent(ei[i + this.elementOffset]))
-          ei[i + this.elementOffset].afterContentChecked();
+          ei[i + this.elementOffset].ngAfterContentChecked();
       }
     };
     AppView.prototype.notifyAfterViewChecked = function() {
@@ -29497,7 +29497,7 @@ System.register("angular2/src/core/linker/view", ["angular2/src/facade/collectio
       var ei = this.elementInjectors;
       for (var i = eiCount - 1; i >= 0; i--) {
         if (lang_1.isPresent(ei[i + this.elementOffset]))
-          ei[i + this.elementOffset].afterViewChecked();
+          ei[i + this.elementOffset].ngAfterViewChecked();
       }
     };
     AppView.prototype.getDirectiveFor = function(directive) {
@@ -29887,21 +29887,21 @@ System.register("angular2/src/core/linker/directive_lifecycle_reflector", ["angu
     var proto = token.prototype;
     switch (lcInterface) {
       case interfaces_1.LifecycleHooks.AfterContentInit:
-        return !!proto.afterContentInit;
+        return !!proto.ngAfterContentInit;
       case interfaces_1.LifecycleHooks.AfterContentChecked:
-        return !!proto.afterContentChecked;
+        return !!proto.ngAfterContentChecked;
       case interfaces_1.LifecycleHooks.AfterViewInit:
-        return !!proto.afterViewInit;
+        return !!proto.ngAfterViewInit;
       case interfaces_1.LifecycleHooks.AfterViewChecked:
-        return !!proto.afterViewChecked;
+        return !!proto.ngAfterViewChecked;
       case interfaces_1.LifecycleHooks.OnChanges:
-        return !!proto.onChanges;
+        return !!proto.ngOnChanges;
       case interfaces_1.LifecycleHooks.DoCheck:
-        return !!proto.doCheck;
+        return !!proto.ngDoCheck;
       case interfaces_1.LifecycleHooks.OnDestroy:
-        return !!proto.onDestroy;
+        return !!proto.ngOnDestroy;
       case interfaces_1.LifecycleHooks.OnInit:
-        return !!proto.onInit;
+        return !!proto.ngOnInit;
       default:
         return false;
     }
@@ -31899,8 +31899,8 @@ System.register("angular2/src/upgrade/upgrade_ng1_adapter", ["angular2/angular2"
         constructor: [new angular2_1.Inject(constants_1.NG1_SCOPE), angular2_1.ElementRef, function(scope, elementRef) {
           return new UpgradeNg1ComponentAdapter(self.linkFn, scope, self.directive, elementRef, self.$controller, self.inputs, self.outputs, self.propertyOutputs, self.checkProperties, self.propertyMap);
         }],
-        onChanges: function() {},
-        doCheck: function() {}
+        ngOnChanges: function() {},
+        ngDoCheck: function() {}
       });
     }
     UpgradeNg1ComponentAdapterBuilder.prototype.extractDirective = function(injector) {
@@ -32076,7 +32076,7 @@ System.register("angular2/src/upgrade/upgrade_ng1_adapter", ["angular2/angular2"
         this.checkLastValues.push(INITIAL_VALUE);
       }
     }
-    UpgradeNg1ComponentAdapter.prototype.onChanges = function(changes) {
+    UpgradeNg1ComponentAdapter.prototype.ngOnChanges = function(changes) {
       for (var name in changes) {
         if (changes.hasOwnProperty(name)) {
           var change = changes[name];
@@ -32084,7 +32084,7 @@ System.register("angular2/src/upgrade/upgrade_ng1_adapter", ["angular2/angular2"
         }
       }
     };
-    UpgradeNg1ComponentAdapter.prototype.doCheck = function() {
+    UpgradeNg1ComponentAdapter.prototype.ngDoCheck = function() {
       var count = 0;
       var destinationObj = this.destinationObj;
       var lastValues = this.checkLastValues;
@@ -32803,8 +32803,8 @@ System.register("angular2/src/router/router_outlet", ["angular2/src/facade/async
       var providers = core_1.Injector.resolve([core_1.provide(instruction_1.RouteData, {useValue: nextInstruction.routeData}), core_1.provide(instruction_1.RouteParams, {useValue: new instruction_1.RouteParams(nextInstruction.params)}), core_1.provide(routerMod.Router, {useValue: childRouter})]);
       return this._loader.loadNextToLocation(componentType, this._elementRef, providers).then(function(componentRef) {
         _this._componentRef = componentRef;
-        if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.onActivate, componentType)) {
-          return _this._componentRef.instance.onActivate(nextInstruction, previousInstruction);
+        if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerOnActivate, componentType)) {
+          return _this._componentRef.instance.routerOnActivate(nextInstruction, previousInstruction);
         }
       });
     };
@@ -32814,13 +32814,13 @@ System.register("angular2/src/router/router_outlet", ["angular2/src/facade/async
       if (lang_1.isBlank(this._componentRef)) {
         throw new exceptions_1.BaseException("Cannot reuse an outlet that does not contain a component.");
       }
-      return async_1.PromiseWrapper.resolve(route_lifecycle_reflector_1.hasLifecycleHook(hookMod.onReuse, this._currentInstruction.componentType) ? this._componentRef.instance.onReuse(nextInstruction, previousInstruction) : true);
+      return async_1.PromiseWrapper.resolve(route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerOnReuse, this._currentInstruction.componentType) ? this._componentRef.instance.routerOnReuse(nextInstruction, previousInstruction) : true);
     };
     RouterOutlet.prototype.deactivate = function(nextInstruction) {
       var _this = this;
       var next = _resolveToTrue;
-      if (lang_1.isPresent(this._componentRef) && lang_1.isPresent(this._currentInstruction) && route_lifecycle_reflector_1.hasLifecycleHook(hookMod.onDeactivate, this._currentInstruction.componentType)) {
-        next = async_1.PromiseWrapper.resolve(this._componentRef.instance.onDeactivate(nextInstruction, this._currentInstruction));
+      if (lang_1.isPresent(this._componentRef) && lang_1.isPresent(this._currentInstruction) && route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerOnDeactivate, this._currentInstruction.componentType)) {
+        next = async_1.PromiseWrapper.resolve(this._componentRef.instance.routerOnDeactivate(nextInstruction, this._currentInstruction));
       }
       return next.then(function(_) {
         if (lang_1.isPresent(_this._componentRef)) {
@@ -32829,21 +32829,21 @@ System.register("angular2/src/router/router_outlet", ["angular2/src/facade/async
         }
       });
     };
-    RouterOutlet.prototype.canDeactivate = function(nextInstruction) {
+    RouterOutlet.prototype.routerCanDeactivate = function(nextInstruction) {
       if (lang_1.isBlank(this._currentInstruction)) {
         return _resolveToTrue;
       }
-      if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.canDeactivate, this._currentInstruction.componentType)) {
-        return async_1.PromiseWrapper.resolve(this._componentRef.instance.canDeactivate(nextInstruction, this._currentInstruction));
+      if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerCanDeactivate, this._currentInstruction.componentType)) {
+        return async_1.PromiseWrapper.resolve(this._componentRef.instance.routerCanDeactivate(nextInstruction, this._currentInstruction));
       }
       return _resolveToTrue;
     };
-    RouterOutlet.prototype.canReuse = function(nextInstruction) {
+    RouterOutlet.prototype.routerCanReuse = function(nextInstruction) {
       var result;
       if (lang_1.isBlank(this._currentInstruction) || this._currentInstruction.componentType != nextInstruction.componentType) {
         result = false;
-      } else if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.canReuse, this._currentInstruction.componentType)) {
-        result = this._componentRef.instance.canReuse(nextInstruction, this._currentInstruction);
+      } else if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerCanReuse, this._currentInstruction.componentType)) {
+        result = this._componentRef.instance.routerCanReuse(nextInstruction, this._currentInstruction);
       } else {
         result = nextInstruction == this._currentInstruction || (lang_1.isPresent(nextInstruction.params) && lang_1.isPresent(this._currentInstruction.params) && collection_1.StringMapWrapper.equals(nextInstruction.params, this._currentInstruction.params));
       }
@@ -34830,15 +34830,15 @@ System.register("angular2/src/core/change_detection/change_detection_jit_generat
     };
     ChangeDetectorJITGenerator.prototype._genOnCheck = function(r) {
       var br = r.bindingRecord;
-      return "if (!throwOnChange) " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".doCheck();";
+      return "if (!throwOnChange) " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".ngDoCheck();";
     };
     ChangeDetectorJITGenerator.prototype._genOnInit = function(r) {
       var br = r.bindingRecord;
-      return "if (!throwOnChange && " + this._names.getStateName() + " === " + this.changeDetectorStateVarName + ".NeverChecked) " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".onInit();";
+      return "if (!throwOnChange && " + this._names.getStateName() + " === " + this.changeDetectorStateVarName + ".NeverChecked) " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".ngOnInit();";
     };
     ChangeDetectorJITGenerator.prototype._genOnChange = function(r) {
       var br = r.bindingRecord;
-      return "if (!throwOnChange && " + CHANGES_LOCAL + ") " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".onChanges(" + CHANGES_LOCAL + ");";
+      return "if (!throwOnChange && " + CHANGES_LOCAL + ") " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".ngOnChanges(" + CHANGES_LOCAL + ");";
     };
     ChangeDetectorJITGenerator.prototype._genNotifyOnPushDetectors = function(r) {
       var br = r.bindingRecord;
@@ -35177,7 +35177,7 @@ System.register("angular2/src/common/forms/directives/ng_control_name", ["angula
       this._added = false;
       this.valueAccessor = shared_1.selectValueAccessor(this, valueAccessors);
     }
-    NgControlName.prototype.onChanges = function(changes) {
+    NgControlName.prototype.ngOnChanges = function(changes) {
       if (!this._added) {
         this.formDirective.addControl(this);
         this._added = true;
@@ -35187,7 +35187,7 @@ System.register("angular2/src/common/forms/directives/ng_control_name", ["angula
         this.formDirective.updateModel(this, this.model);
       }
     };
-    NgControlName.prototype.onDestroy = function() {
+    NgControlName.prototype.ngOnDestroy = function() {
       this.formDirective.removeControl(this);
     };
     NgControlName.prototype.viewToModelUpdate = function(newValue) {
@@ -37014,11 +37014,11 @@ System.register("angular2/src/core/change_detection/dynamic_change_detector", ["
         }
         if (proto.isLifeCycleRecord()) {
           if (proto.name === "DoCheck" && !throwOnChange) {
-            this._getDirectiveFor(directiveRecord.directiveIndex).doCheck();
+            this._getDirectiveFor(directiveRecord.directiveIndex).ngDoCheck();
           } else if (proto.name === "OnInit" && !throwOnChange && this.state == constants_1.ChangeDetectorState.NeverChecked) {
-            this._getDirectiveFor(directiveRecord.directiveIndex).onInit();
+            this._getDirectiveFor(directiveRecord.directiveIndex).ngOnInit();
           } else if (proto.name === "OnChanges" && lang_1.isPresent(changes) && !throwOnChange) {
-            this._getDirectiveFor(directiveRecord.directiveIndex).onChanges(changes);
+            this._getDirectiveFor(directiveRecord.directiveIndex).ngOnChanges(changes);
           }
         } else if (proto.isSkipRecord()) {
           protoIdx += this._computeSkipLength(protoIdx, proto, this.values);
@@ -37048,10 +37048,10 @@ System.register("angular2/src/core/change_detection/dynamic_change_detector", ["
       for (var i = dirs.length - 1; i >= 0; --i) {
         var dir = dirs[i];
         if (dir.callAfterContentInit && this.state == constants_1.ChangeDetectorState.NeverChecked) {
-          this._getDirectiveFor(dir.directiveIndex).afterContentInit();
+          this._getDirectiveFor(dir.directiveIndex).ngAfterContentInit();
         }
         if (dir.callAfterContentChecked) {
-          this._getDirectiveFor(dir.directiveIndex).afterContentChecked();
+          this._getDirectiveFor(dir.directiveIndex).ngAfterContentChecked();
         }
       }
     };
@@ -37060,10 +37060,10 @@ System.register("angular2/src/core/change_detection/dynamic_change_detector", ["
       for (var i = dirs.length - 1; i >= 0; --i) {
         var dir = dirs[i];
         if (dir.callAfterViewInit && this.state == constants_1.ChangeDetectorState.NeverChecked) {
-          this._getDirectiveFor(dir.directiveIndex).afterViewInit();
+          this._getDirectiveFor(dir.directiveIndex).ngAfterViewInit();
         }
         if (dir.callAfterViewChecked) {
-          this._getDirectiveFor(dir.directiveIndex).afterViewChecked();
+          this._getDirectiveFor(dir.directiveIndex).ngAfterViewChecked();
         }
       }
     };
@@ -37802,10 +37802,10 @@ System.register("angular2/src/core/linker/element_injector", ["angular2/src/faca
       var nestedView = view.getNestedView(view.elementOffset + this.getBoundElementIndex());
       return lang_1.isPresent(nestedView) ? nestedView.rootElementInjectors : [];
     };
-    ElementInjector.prototype.afterViewChecked = function() {
+    ElementInjector.prototype.ngAfterViewChecked = function() {
       this._queryStrategy.updateViewQueries();
     };
-    ElementInjector.prototype.afterContentChecked = function() {
+    ElementInjector.prototype.ngAfterContentChecked = function() {
       this._queryStrategy.updateContentQueries();
     };
     ElementInjector.prototype.traverseAndSetQueriesAsDirty = function() {
@@ -38022,34 +38022,34 @@ System.register("angular2/src/core/linker/element_injector", ["angular2/src/faca
       var i = this.injectorStrategy;
       var p = i.protoStrategy;
       if (p.provider0 instanceof DirectiveProvider && p.provider0.callOnDestroy) {
-        i.obj0.onDestroy();
+        i.obj0.ngOnDestroy();
       }
       if (p.provider1 instanceof DirectiveProvider && p.provider1.callOnDestroy) {
-        i.obj1.onDestroy();
+        i.obj1.ngOnDestroy();
       }
       if (p.provider2 instanceof DirectiveProvider && p.provider2.callOnDestroy) {
-        i.obj2.onDestroy();
+        i.obj2.ngOnDestroy();
       }
       if (p.provider3 instanceof DirectiveProvider && p.provider3.callOnDestroy) {
-        i.obj3.onDestroy();
+        i.obj3.ngOnDestroy();
       }
       if (p.provider4 instanceof DirectiveProvider && p.provider4.callOnDestroy) {
-        i.obj4.onDestroy();
+        i.obj4.ngOnDestroy();
       }
       if (p.provider5 instanceof DirectiveProvider && p.provider5.callOnDestroy) {
-        i.obj5.onDestroy();
+        i.obj5.ngOnDestroy();
       }
       if (p.provider6 instanceof DirectiveProvider && p.provider6.callOnDestroy) {
-        i.obj6.onDestroy();
+        i.obj6.ngOnDestroy();
       }
       if (p.provider7 instanceof DirectiveProvider && p.provider7.callOnDestroy) {
-        i.obj7.onDestroy();
+        i.obj7.ngOnDestroy();
       }
       if (p.provider8 instanceof DirectiveProvider && p.provider8.callOnDestroy) {
-        i.obj8.onDestroy();
+        i.obj8.ngOnDestroy();
       }
       if (p.provider9 instanceof DirectiveProvider && p.provider9.callOnDestroy) {
-        i.obj9.onDestroy();
+        i.obj9.ngOnDestroy();
       }
     };
     ElementInjectorInlineStrategy.prototype.getComponent = function() {
@@ -38138,7 +38138,7 @@ System.register("angular2/src/core/linker/element_injector", ["angular2/src/faca
       var p = ist.protoStrategy;
       for (var i = 0; i < p.providers.length; i++) {
         if (p.providers[i] instanceof DirectiveProvider && p.providers[i].callOnDestroy) {
-          ist.objs[i].onDestroy();
+          ist.objs[i].ngOnDestroy();
         }
       }
     };
@@ -41570,14 +41570,14 @@ System.register("angular2/src/router/router", ["angular2/src/facade/async", "ang
     Router.prototype._navigate = function(instruction, _skipLocationChange) {
       var _this = this;
       return this._settleInstruction(instruction).then(function(_) {
-        return _this._canReuse(instruction);
+        return _this._routerCanReuse(instruction);
       }).then(function(_) {
         return _this._canActivate(instruction);
       }).then(function(result) {
         if (!result) {
           return false;
         }
-        return _this._canDeactivate(instruction).then(function(result) {
+        return _this._routerCanDeactivate(instruction).then(function(result) {
           if (result) {
             return _this.commit(instruction, _skipLocationChange).then(function(_) {
               _this._emitNavigationFinish(instruction.toRootUrl());
@@ -41613,22 +41613,22 @@ System.register("angular2/src/router/router", ["angular2/src/facade/async", "ang
         throw err;
       });
     };
-    Router.prototype._canReuse = function(instruction) {
+    Router.prototype._routerCanReuse = function(instruction) {
       var _this = this;
       if (lang_1.isBlank(this._outlet)) {
         return _resolveToFalse;
       }
-      return this._outlet.canReuse(instruction.component).then(function(result) {
+      return this._outlet.routerCanReuse(instruction.component).then(function(result) {
         instruction.component.reuse = result;
         if (result && lang_1.isPresent(_this._childRouter) && lang_1.isPresent(instruction.child)) {
-          return _this._childRouter._canReuse(instruction.child);
+          return _this._childRouter._routerCanReuse(instruction.child);
         }
       });
     };
     Router.prototype._canActivate = function(nextInstruction) {
       return canActivateOne(nextInstruction, this._currentInstruction);
     };
-    Router.prototype._canDeactivate = function(instruction) {
+    Router.prototype._routerCanDeactivate = function(instruction) {
       var _this = this;
       if (lang_1.isBlank(this._outlet)) {
         return _resolveToTrue;
@@ -41645,14 +41645,14 @@ System.register("angular2/src/router/router", ["angular2/src/facade/async", "ang
       if (reuse) {
         next = _resolveToTrue;
       } else {
-        next = this._outlet.canDeactivate(componentInstruction);
+        next = this._outlet.routerCanDeactivate(componentInstruction);
       }
       return next.then(function(result) {
         if (result == false) {
           return false;
         }
         if (lang_1.isPresent(_this._childRouter)) {
-          return _this._childRouter._canDeactivate(childInstruction);
+          return _this._childRouter._routerCanDeactivate(childInstruction);
         }
         return true;
       });
@@ -43965,7 +43965,7 @@ System.register("angular2/src/common/pipes/async_pipe", ["angular2/src/facade/la
       this._strategy = null;
       this._ref = _ref;
     }
-    AsyncPipe.prototype.onDestroy = function() {
+    AsyncPipe.prototype.ngOnDestroy = function() {
       if (lang_1.isPresent(this._subscription)) {
         this._dispose();
       }

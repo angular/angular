@@ -54,7 +54,7 @@ export let NgModel = class extends NgControl {
         this.update = new EventEmitter();
         this.valueAccessor = selectValueAccessor(this, valueAccessors);
     }
-    onChanges(changes) {
+    ngOnChanges(changes) {
         if (!this._added) {
             setUpControl(this._control, this);
             this._control.updateValueAndValidity({ emitEvent: false });

@@ -16,8 +16,8 @@ let MyCmp = class {
     constructor(params) {
         this.name = params.get('name') || 'NOBODY';
     }
-    canReuse(next, prev) { return true; }
-    onReuse(next, prev) {
+    routerCanReuse(next, prev) { return true; }
+    routerOnReuse(next, prev) {
         this.name = next.params['name'];
     }
 };

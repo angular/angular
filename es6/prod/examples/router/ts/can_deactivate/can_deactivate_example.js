@@ -11,12 +11,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { provide, bootstrap, Component } from 'angular2/angular2';
 import { RouteConfig, RouteParams, ROUTER_DIRECTIVES, APP_BASE_HREF } from 'angular2/router';
-// #docregion canDeactivate
+// #docregion routerCanDeactivate
 let NoteCmp = class {
     constructor(params) {
         this.id = params.get('id');
     }
-    canDeactivate(next, prev) {
+    routerCanDeactivate(next, prev) {
         return confirm('Are you sure you want to leave?');
     }
 };

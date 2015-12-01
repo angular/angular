@@ -737,11 +737,11 @@ System.register("angular2/src/router/lifecycle_annotations_impl", ["angular2/src
     return CanActivate;
   })();
   exports.CanActivate = CanActivate;
-  exports.canReuse = lang_1.CONST_EXPR(new RouteLifecycleHook("canReuse"));
-  exports.canDeactivate = lang_1.CONST_EXPR(new RouteLifecycleHook("canDeactivate"));
-  exports.onActivate = lang_1.CONST_EXPR(new RouteLifecycleHook("onActivate"));
-  exports.onReuse = lang_1.CONST_EXPR(new RouteLifecycleHook("onReuse"));
-  exports.onDeactivate = lang_1.CONST_EXPR(new RouteLifecycleHook("onDeactivate"));
+  exports.routerCanReuse = lang_1.CONST_EXPR(new RouteLifecycleHook("routerCanReuse"));
+  exports.routerCanDeactivate = lang_1.CONST_EXPR(new RouteLifecycleHook("routerCanDeactivate"));
+  exports.routerOnActivate = lang_1.CONST_EXPR(new RouteLifecycleHook("routerOnActivate"));
+  exports.routerOnReuse = lang_1.CONST_EXPR(new RouteLifecycleHook("routerOnReuse"));
+  exports.routerOnDeactivate = lang_1.CONST_EXPR(new RouteLifecycleHook("routerOnDeactivate"));
   global.define = __define;
   return module.exports;
 });
@@ -753,11 +753,11 @@ System.register("angular2/src/router/lifecycle_annotations", ["angular2/src/core
   var decorators_1 = require("angular2/src/core/util/decorators");
   var lifecycle_annotations_impl_1 = require("angular2/src/router/lifecycle_annotations_impl");
   var lifecycle_annotations_impl_2 = require("angular2/src/router/lifecycle_annotations_impl");
-  exports.canReuse = lifecycle_annotations_impl_2.canReuse;
-  exports.canDeactivate = lifecycle_annotations_impl_2.canDeactivate;
-  exports.onActivate = lifecycle_annotations_impl_2.onActivate;
-  exports.onReuse = lifecycle_annotations_impl_2.onReuse;
-  exports.onDeactivate = lifecycle_annotations_impl_2.onDeactivate;
+  exports.routerCanReuse = lifecycle_annotations_impl_2.routerCanReuse;
+  exports.routerCanDeactivate = lifecycle_annotations_impl_2.routerCanDeactivate;
+  exports.routerOnActivate = lifecycle_annotations_impl_2.routerOnActivate;
+  exports.routerOnReuse = lifecycle_annotations_impl_2.routerOnReuse;
+  exports.routerOnDeactivate = lifecycle_annotations_impl_2.routerOnDeactivate;
   exports.CanActivate = decorators_1.makeDecorator(lifecycle_annotations_impl_1.CanActivate);
   global.define = __define;
   return module.exports;
@@ -1679,8 +1679,8 @@ System.register("angular2/src/router/router_outlet", ["angular2/src/facade/async
       var providers = core_1.Injector.resolve([core_1.provide(instruction_1.RouteData, {useValue: nextInstruction.routeData}), core_1.provide(instruction_1.RouteParams, {useValue: new instruction_1.RouteParams(nextInstruction.params)}), core_1.provide(routerMod.Router, {useValue: childRouter})]);
       return this._loader.loadNextToLocation(componentType, this._elementRef, providers).then(function(componentRef) {
         _this._componentRef = componentRef;
-        if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.onActivate, componentType)) {
-          return _this._componentRef.instance.onActivate(nextInstruction, previousInstruction);
+        if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerOnActivate, componentType)) {
+          return _this._componentRef.instance.routerOnActivate(nextInstruction, previousInstruction);
         }
       });
     };
@@ -1690,13 +1690,13 @@ System.register("angular2/src/router/router_outlet", ["angular2/src/facade/async
       if (lang_1.isBlank(this._componentRef)) {
         throw new exceptions_1.BaseException("Cannot reuse an outlet that does not contain a component.");
       }
-      return async_1.PromiseWrapper.resolve(route_lifecycle_reflector_1.hasLifecycleHook(hookMod.onReuse, this._currentInstruction.componentType) ? this._componentRef.instance.onReuse(nextInstruction, previousInstruction) : true);
+      return async_1.PromiseWrapper.resolve(route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerOnReuse, this._currentInstruction.componentType) ? this._componentRef.instance.routerOnReuse(nextInstruction, previousInstruction) : true);
     };
     RouterOutlet.prototype.deactivate = function(nextInstruction) {
       var _this = this;
       var next = _resolveToTrue;
-      if (lang_1.isPresent(this._componentRef) && lang_1.isPresent(this._currentInstruction) && route_lifecycle_reflector_1.hasLifecycleHook(hookMod.onDeactivate, this._currentInstruction.componentType)) {
-        next = async_1.PromiseWrapper.resolve(this._componentRef.instance.onDeactivate(nextInstruction, this._currentInstruction));
+      if (lang_1.isPresent(this._componentRef) && lang_1.isPresent(this._currentInstruction) && route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerOnDeactivate, this._currentInstruction.componentType)) {
+        next = async_1.PromiseWrapper.resolve(this._componentRef.instance.routerOnDeactivate(nextInstruction, this._currentInstruction));
       }
       return next.then(function(_) {
         if (lang_1.isPresent(_this._componentRef)) {
@@ -1705,21 +1705,21 @@ System.register("angular2/src/router/router_outlet", ["angular2/src/facade/async
         }
       });
     };
-    RouterOutlet.prototype.canDeactivate = function(nextInstruction) {
+    RouterOutlet.prototype.routerCanDeactivate = function(nextInstruction) {
       if (lang_1.isBlank(this._currentInstruction)) {
         return _resolveToTrue;
       }
-      if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.canDeactivate, this._currentInstruction.componentType)) {
-        return async_1.PromiseWrapper.resolve(this._componentRef.instance.canDeactivate(nextInstruction, this._currentInstruction));
+      if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerCanDeactivate, this._currentInstruction.componentType)) {
+        return async_1.PromiseWrapper.resolve(this._componentRef.instance.routerCanDeactivate(nextInstruction, this._currentInstruction));
       }
       return _resolveToTrue;
     };
-    RouterOutlet.prototype.canReuse = function(nextInstruction) {
+    RouterOutlet.prototype.routerCanReuse = function(nextInstruction) {
       var result;
       if (lang_1.isBlank(this._currentInstruction) || this._currentInstruction.componentType != nextInstruction.componentType) {
         result = false;
-      } else if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.canReuse, this._currentInstruction.componentType)) {
-        result = this._componentRef.instance.canReuse(nextInstruction, this._currentInstruction);
+      } else if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerCanReuse, this._currentInstruction.componentType)) {
+        result = this._componentRef.instance.routerCanReuse(nextInstruction, this._currentInstruction);
       } else {
         result = nextInstruction == this._currentInstruction || (lang_1.isPresent(nextInstruction.params) && lang_1.isPresent(this._currentInstruction.params) && collection_1.StringMapWrapper.equals(nextInstruction.params, this._currentInstruction.params));
       }
@@ -2412,14 +2412,14 @@ System.register("angular2/src/router/router", ["angular2/src/facade/async", "ang
     Router.prototype._navigate = function(instruction, _skipLocationChange) {
       var _this = this;
       return this._settleInstruction(instruction).then(function(_) {
-        return _this._canReuse(instruction);
+        return _this._routerCanReuse(instruction);
       }).then(function(_) {
         return _this._canActivate(instruction);
       }).then(function(result) {
         if (!result) {
           return false;
         }
-        return _this._canDeactivate(instruction).then(function(result) {
+        return _this._routerCanDeactivate(instruction).then(function(result) {
           if (result) {
             return _this.commit(instruction, _skipLocationChange).then(function(_) {
               _this._emitNavigationFinish(instruction.toRootUrl());
@@ -2455,22 +2455,22 @@ System.register("angular2/src/router/router", ["angular2/src/facade/async", "ang
         throw err;
       });
     };
-    Router.prototype._canReuse = function(instruction) {
+    Router.prototype._routerCanReuse = function(instruction) {
       var _this = this;
       if (lang_1.isBlank(this._outlet)) {
         return _resolveToFalse;
       }
-      return this._outlet.canReuse(instruction.component).then(function(result) {
+      return this._outlet.routerCanReuse(instruction.component).then(function(result) {
         instruction.component.reuse = result;
         if (result && lang_1.isPresent(_this._childRouter) && lang_1.isPresent(instruction.child)) {
-          return _this._childRouter._canReuse(instruction.child);
+          return _this._childRouter._routerCanReuse(instruction.child);
         }
       });
     };
     Router.prototype._canActivate = function(nextInstruction) {
       return canActivateOne(nextInstruction, this._currentInstruction);
     };
-    Router.prototype._canDeactivate = function(instruction) {
+    Router.prototype._routerCanDeactivate = function(instruction) {
       var _this = this;
       if (lang_1.isBlank(this._outlet)) {
         return _resolveToTrue;
@@ -2487,14 +2487,14 @@ System.register("angular2/src/router/router", ["angular2/src/facade/async", "ang
       if (reuse) {
         next = _resolveToTrue;
       } else {
-        next = this._outlet.canDeactivate(componentInstruction);
+        next = this._outlet.routerCanDeactivate(componentInstruction);
       }
       return next.then(function(result) {
         if (result == false) {
           return false;
         }
         if (lang_1.isPresent(_this._childRouter)) {
-          return _this._childRouter._canDeactivate(childInstruction);
+          return _this._childRouter._routerCanDeactivate(childInstruction);
         }
         return true;
       });

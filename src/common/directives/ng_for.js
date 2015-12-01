@@ -86,7 +86,7 @@ var NgFor = (function () {
         enumerable: true,
         configurable: true
     });
-    NgFor.prototype.doCheck = function () {
+    NgFor.prototype.ngDoCheck = function () {
         if (lang_1.isPresent(this._differ)) {
             var changes = this._differ.diff(this._ngForOf);
             if (lang_1.isPresent(changes))

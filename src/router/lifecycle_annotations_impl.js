@@ -32,9 +32,9 @@ var CanActivate = (function () {
     return CanActivate;
 })();
 exports.CanActivate = CanActivate;
-exports.canReuse = lang_1.CONST_EXPR(new RouteLifecycleHook("canReuse"));
-exports.canDeactivate = lang_1.CONST_EXPR(new RouteLifecycleHook("canDeactivate"));
-exports.onActivate = lang_1.CONST_EXPR(new RouteLifecycleHook("onActivate"));
-exports.onReuse = lang_1.CONST_EXPR(new RouteLifecycleHook("onReuse"));
-exports.onDeactivate = lang_1.CONST_EXPR(new RouteLifecycleHook("onDeactivate"));
+exports.routerCanReuse = lang_1.CONST_EXPR(new RouteLifecycleHook("routerCanReuse"));
+exports.routerCanDeactivate = lang_1.CONST_EXPR(new RouteLifecycleHook("routerCanDeactivate"));
+exports.routerOnActivate = lang_1.CONST_EXPR(new RouteLifecycleHook("routerOnActivate"));
+exports.routerOnReuse = lang_1.CONST_EXPR(new RouteLifecycleHook("routerOnReuse"));
+exports.routerOnDeactivate = lang_1.CONST_EXPR(new RouteLifecycleHook("routerOnDeactivate"));
 //# sourceMappingURL=lifecycle_annotations_impl.js.map

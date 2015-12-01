@@ -134,7 +134,7 @@ export class AppView {
         var ei = this.elementInjectors;
         for (var i = eiCount - 1; i >= 0; i--) {
             if (isPresent(ei[i + this.elementOffset]))
-                ei[i + this.elementOffset].afterContentChecked();
+                ei[i + this.elementOffset].ngAfterContentChecked();
         }
     }
     notifyAfterViewChecked() {
@@ -142,7 +142,7 @@ export class AppView {
         var ei = this.elementInjectors;
         for (var i = eiCount - 1; i >= 0; i--) {
             if (isPresent(ei[i + this.elementOffset]))
-                ei[i + this.elementOffset].afterViewChecked();
+                ei[i + this.elementOffset].ngAfterViewChecked();
         }
     }
     getDirectiveFor(directive) {
