@@ -1,5 +1,7 @@
 library angular2.platform.browser_static;
 
+export "package:angular2/src/core/angular_entrypoint.dart"
+    show AngularEntrypoint;
 export "package:angular2/src/platform/browser_common.dart"
     show
         BROWSER_PROVIDERS,
@@ -15,7 +17,7 @@ import "package:angular2/src/facade/lang.dart" show Type, isPresent;
 import "package:angular2/src/facade/promise.dart" show Future;
 import "package:angular2/src/platform/browser_common.dart"
     show BROWSER_PROVIDERS, BROWSER_APP_COMMON_PROVIDERS;
-import "package:angular2/core.dart" show ComponentRef, platform, reflector;
+import "package:angular2/core.dart" show ComponentRef, platform;
 
 /**
  * An array of providers that should be passed into `application()` when bootstrapping a component
