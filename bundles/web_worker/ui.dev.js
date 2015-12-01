@@ -15884,7 +15884,7 @@ System.register("angular2/src/core/change_detection/pipe_lifecycle_reflector", [
       __define = global.define;
   global.define = undefined;
   function implementsOnDestroy(pipe) {
-    return pipe.constructor.prototype.ngOnDestroy;
+    return pipe.constructor.prototype.onDestroy;
   }
   exports.implementsOnDestroy = implementsOnDestroy;
   global.define = __define;
@@ -21075,7 +21075,7 @@ System.register("angular2/src/common/directives/ng_class", ["angular2/src/facade
       enumerable: true,
       configurable: true
     });
-    NgClass.prototype.ngDoCheck = function() {
+    NgClass.prototype.doCheck = function() {
       if (lang_1.isPresent(this._differ)) {
         var changes = this._differ.diff(this._rawClass);
         if (lang_1.isPresent(changes)) {
@@ -21087,7 +21087,7 @@ System.register("angular2/src/common/directives/ng_class", ["angular2/src/facade
         }
       }
     };
-    NgClass.prototype.ngOnDestroy = function() {
+    NgClass.prototype.onDestroy = function() {
       this._cleanupClasses(this._rawClass);
     };
     NgClass.prototype._cleanupClasses = function(rawClassVal) {
@@ -21221,7 +21221,7 @@ System.register("angular2/src/common/directives/ng_for", ["angular2/core", "angu
       enumerable: true,
       configurable: true
     });
-    NgFor.prototype.ngDoCheck = function() {
+    NgFor.prototype.doCheck = function() {
       if (lang_1.isPresent(this._differ)) {
         var changes = this._differ.diff(this._ngForOf);
         if (lang_1.isPresent(changes))
@@ -21405,7 +21405,7 @@ System.register("angular2/src/common/directives/ng_style", ["angular2/core", "an
       enumerable: true,
       configurable: true
     });
-    NgStyle.prototype.ngDoCheck = function() {
+    NgStyle.prototype.doCheck = function() {
       if (lang_1.isPresent(this._differ)) {
         var changes = this._differ.diff(this._rawStyle);
         if (lang_1.isPresent(changes)) {
@@ -22684,7 +22684,7 @@ System.register("angular2/src/common/forms/directives/ng_form_control", ["angula
       this.update = new async_1.EventEmitter();
       this.valueAccessor = shared_1.selectValueAccessor(this, valueAccessors);
     }
-    NgFormControl.prototype.ngOnChanges = function(changes) {
+    NgFormControl.prototype.onChanges = function(changes) {
       if (this._isControlChanged(changes)) {
         shared_1.setUpControl(this.form, this);
         this.form.updateValueAndValidity({emitEvent: false});
@@ -22805,7 +22805,7 @@ System.register("angular2/src/common/forms/directives/ng_model", ["angular2/src/
       this.update = new async_1.EventEmitter();
       this.valueAccessor = shared_1.selectValueAccessor(this, valueAccessors);
     }
-    NgModel.prototype.ngOnChanges = function(changes) {
+    NgModel.prototype.onChanges = function(changes) {
       if (!this._added) {
         shared_1.setUpControl(this._control, this);
         this._control.updateValueAndValidity({emitEvent: false});
@@ -22918,10 +22918,10 @@ System.register("angular2/src/common/forms/directives/ng_control_group", ["angul
       this._asyncValidators = _asyncValidators;
       this._parent = parent;
     }
-    NgControlGroup.prototype.ngOnInit = function() {
+    NgControlGroup.prototype.onInit = function() {
       this.formDirective.addControlGroup(this);
     };
-    NgControlGroup.prototype.ngOnDestroy = function() {
+    NgControlGroup.prototype.onDestroy = function() {
       this.formDirective.removeControlGroup(this);
     };
     Object.defineProperty(NgControlGroup.prototype, "control", {
@@ -23032,7 +23032,7 @@ System.register("angular2/src/common/forms/directives/ng_form_model", ["angular2
       this.directives = [];
       this.ngSubmit = new async_1.EventEmitter();
     }
-    NgFormModel.prototype.ngOnChanges = function(changes) {
+    NgFormModel.prototype.onChanges = function(changes) {
       if (collection_1.StringMapWrapper.contains(changes, "form")) {
         var sync = shared_1.composeValidators(this._validators);
         this.form.validator = validators_1.Validators.compose([this.form.validator, sync]);
@@ -25639,7 +25639,7 @@ System.register("angular2/src/core/change_detection/change_detection_util", ["an
     };
     ChangeDetectionUtil.callPipeOnDestroy = function(selectedPipe) {
       if (pipe_lifecycle_reflector_1.implementsOnDestroy(selectedPipe.pipe)) {
-        selectedPipe.pipe.ngOnDestroy();
+        selectedPipe.pipe.onDestroy();
       }
     };
     ChangeDetectionUtil.bindingTarget = function(mode, elementIndex, name, unit, debug) {
@@ -26077,10 +26077,10 @@ System.register("angular2/src/core/change_detection/codegen_logic_util", ["angul
       for (var i = directiveRecords.length - 1; i >= 0; --i) {
         var dir = directiveRecords[i];
         if (dir.callAfterContentInit) {
-          res.push("if(" + this._names.getStateName() + " " + eq + " " + this._changeDetectorStateName + ".NeverChecked) " + this._names.getDirectiveName(dir.directiveIndex) + ".ngAfterContentInit();");
+          res.push("if(" + this._names.getStateName() + " " + eq + " " + this._changeDetectorStateName + ".NeverChecked) " + this._names.getDirectiveName(dir.directiveIndex) + ".afterContentInit();");
         }
         if (dir.callAfterContentChecked) {
-          res.push(this._names.getDirectiveName(dir.directiveIndex) + ".ngAfterContentChecked();");
+          res.push(this._names.getDirectiveName(dir.directiveIndex) + ".afterContentChecked();");
         }
       }
       return res;
@@ -26091,10 +26091,10 @@ System.register("angular2/src/core/change_detection/codegen_logic_util", ["angul
       for (var i = directiveRecords.length - 1; i >= 0; --i) {
         var dir = directiveRecords[i];
         if (dir.callAfterViewInit) {
-          res.push("if(" + this._names.getStateName() + " " + eq + " " + this._changeDetectorStateName + ".NeverChecked) " + this._names.getDirectiveName(dir.directiveIndex) + ".ngAfterViewInit();");
+          res.push("if(" + this._names.getStateName() + " " + eq + " " + this._changeDetectorStateName + ".NeverChecked) " + this._names.getDirectiveName(dir.directiveIndex) + ".afterViewInit();");
         }
         if (dir.callAfterViewChecked) {
-          res.push(this._names.getDirectiveName(dir.directiveIndex) + ".ngAfterViewChecked();");
+          res.push(this._names.getDirectiveName(dir.directiveIndex) + ".afterViewChecked();");
         }
       }
       return res;
@@ -26612,7 +26612,7 @@ System.register("angular2/src/core/linker/view", ["angular2/src/facade/collectio
       var ei = this.elementInjectors;
       for (var i = eiCount - 1; i >= 0; i--) {
         if (lang_1.isPresent(ei[i + this.elementOffset]))
-          ei[i + this.elementOffset].ngAfterContentChecked();
+          ei[i + this.elementOffset].afterContentChecked();
       }
     };
     AppView.prototype.notifyAfterViewChecked = function() {
@@ -26620,7 +26620,7 @@ System.register("angular2/src/core/linker/view", ["angular2/src/facade/collectio
       var ei = this.elementInjectors;
       for (var i = eiCount - 1; i >= 0; i--) {
         if (lang_1.isPresent(ei[i + this.elementOffset]))
-          ei[i + this.elementOffset].ngAfterViewChecked();
+          ei[i + this.elementOffset].afterViewChecked();
       }
     };
     AppView.prototype.getDirectiveFor = function(directive) {
@@ -27010,21 +27010,21 @@ System.register("angular2/src/core/linker/directive_lifecycle_reflector", ["angu
     var proto = token.prototype;
     switch (lcInterface) {
       case interfaces_1.LifecycleHooks.AfterContentInit:
-        return !!proto.ngAfterContentInit;
+        return !!proto.afterContentInit;
       case interfaces_1.LifecycleHooks.AfterContentChecked:
-        return !!proto.ngAfterContentChecked;
+        return !!proto.afterContentChecked;
       case interfaces_1.LifecycleHooks.AfterViewInit:
-        return !!proto.ngAfterViewInit;
+        return !!proto.afterViewInit;
       case interfaces_1.LifecycleHooks.AfterViewChecked:
-        return !!proto.ngAfterViewChecked;
+        return !!proto.afterViewChecked;
       case interfaces_1.LifecycleHooks.OnChanges:
-        return !!proto.ngOnChanges;
+        return !!proto.onChanges;
       case interfaces_1.LifecycleHooks.DoCheck:
-        return !!proto.ngDoCheck;
+        return !!proto.doCheck;
       case interfaces_1.LifecycleHooks.OnDestroy:
-        return !!proto.ngOnDestroy;
+        return !!proto.onDestroy;
       case interfaces_1.LifecycleHooks.OnInit:
-        return !!proto.ngOnInit;
+        return !!proto.onInit;
       default:
         return false;
     }
@@ -27867,7 +27867,7 @@ System.register("angular2/src/common/pipes/async_pipe", ["angular2/src/facade/la
       this._strategy = null;
       this._ref = _ref;
     }
-    AsyncPipe.prototype.ngOnDestroy = function() {
+    AsyncPipe.prototype.onDestroy = function() {
       if (lang_1.isPresent(this._subscription)) {
         this._dispose();
       }
@@ -29768,11 +29768,11 @@ System.register("angular2/src/core/change_detection/dynamic_change_detector", ["
         }
         if (proto.isLifeCycleRecord()) {
           if (proto.name === "DoCheck" && !throwOnChange) {
-            this._getDirectiveFor(directiveRecord.directiveIndex).ngDoCheck();
+            this._getDirectiveFor(directiveRecord.directiveIndex).doCheck();
           } else if (proto.name === "OnInit" && !throwOnChange && this.state == constants_1.ChangeDetectorState.NeverChecked) {
-            this._getDirectiveFor(directiveRecord.directiveIndex).ngOnInit();
+            this._getDirectiveFor(directiveRecord.directiveIndex).onInit();
           } else if (proto.name === "OnChanges" && lang_1.isPresent(changes) && !throwOnChange) {
-            this._getDirectiveFor(directiveRecord.directiveIndex).ngOnChanges(changes);
+            this._getDirectiveFor(directiveRecord.directiveIndex).onChanges(changes);
           }
         } else if (proto.isSkipRecord()) {
           protoIdx += this._computeSkipLength(protoIdx, proto, this.values);
@@ -29802,10 +29802,10 @@ System.register("angular2/src/core/change_detection/dynamic_change_detector", ["
       for (var i = dirs.length - 1; i >= 0; --i) {
         var dir = dirs[i];
         if (dir.callAfterContentInit && this.state == constants_1.ChangeDetectorState.NeverChecked) {
-          this._getDirectiveFor(dir.directiveIndex).ngAfterContentInit();
+          this._getDirectiveFor(dir.directiveIndex).afterContentInit();
         }
         if (dir.callAfterContentChecked) {
-          this._getDirectiveFor(dir.directiveIndex).ngAfterContentChecked();
+          this._getDirectiveFor(dir.directiveIndex).afterContentChecked();
         }
       }
     };
@@ -29814,10 +29814,10 @@ System.register("angular2/src/core/change_detection/dynamic_change_detector", ["
       for (var i = dirs.length - 1; i >= 0; --i) {
         var dir = dirs[i];
         if (dir.callAfterViewInit && this.state == constants_1.ChangeDetectorState.NeverChecked) {
-          this._getDirectiveFor(dir.directiveIndex).ngAfterViewInit();
+          this._getDirectiveFor(dir.directiveIndex).afterViewInit();
         }
         if (dir.callAfterViewChecked) {
-          this._getDirectiveFor(dir.directiveIndex).ngAfterViewChecked();
+          this._getDirectiveFor(dir.directiveIndex).afterViewChecked();
         }
       }
     };
@@ -30311,15 +30311,15 @@ System.register("angular2/src/core/change_detection/change_detection_jit_generat
     };
     ChangeDetectorJITGenerator.prototype._genOnCheck = function(r) {
       var br = r.bindingRecord;
-      return "if (!throwOnChange) " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".ngDoCheck();";
+      return "if (!throwOnChange) " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".doCheck();";
     };
     ChangeDetectorJITGenerator.prototype._genOnInit = function(r) {
       var br = r.bindingRecord;
-      return "if (!throwOnChange && " + this._names.getStateName() + " === " + this.changeDetectorStateVarName + ".NeverChecked) " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".ngOnInit();";
+      return "if (!throwOnChange && " + this._names.getStateName() + " === " + this.changeDetectorStateVarName + ".NeverChecked) " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".onInit();";
     };
     ChangeDetectorJITGenerator.prototype._genOnChange = function(r) {
       var br = r.bindingRecord;
-      return "if (!throwOnChange && " + CHANGES_LOCAL + ") " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".ngOnChanges(" + CHANGES_LOCAL + ");";
+      return "if (!throwOnChange && " + CHANGES_LOCAL + ") " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".onChanges(" + CHANGES_LOCAL + ");";
     };
     ChangeDetectorJITGenerator.prototype._genNotifyOnPushDetectors = function(r) {
       var br = r.bindingRecord;
@@ -30921,7 +30921,7 @@ System.register("angular2/src/common/forms/directives/ng_control_name", ["angula
       this._added = false;
       this.valueAccessor = shared_1.selectValueAccessor(this, valueAccessors);
     }
-    NgControlName.prototype.ngOnChanges = function(changes) {
+    NgControlName.prototype.onChanges = function(changes) {
       if (!this._added) {
         this.formDirective.addControl(this);
         this._added = true;
@@ -30931,7 +30931,7 @@ System.register("angular2/src/common/forms/directives/ng_control_name", ["angula
         this.formDirective.updateModel(this, this.model);
       }
     };
-    NgControlName.prototype.ngOnDestroy = function() {
+    NgControlName.prototype.onDestroy = function() {
       this.formDirective.removeControl(this);
     };
     NgControlName.prototype.viewToModelUpdate = function(newValue) {
@@ -32796,10 +32796,10 @@ System.register("angular2/src/core/linker/element_injector", ["angular2/src/faca
       var nestedView = view.getNestedView(view.elementOffset + this.getBoundElementIndex());
       return lang_1.isPresent(nestedView) ? nestedView.rootElementInjectors : [];
     };
-    ElementInjector.prototype.ngAfterViewChecked = function() {
+    ElementInjector.prototype.afterViewChecked = function() {
       this._queryStrategy.updateViewQueries();
     };
-    ElementInjector.prototype.ngAfterContentChecked = function() {
+    ElementInjector.prototype.afterContentChecked = function() {
       this._queryStrategy.updateContentQueries();
     };
     ElementInjector.prototype.traverseAndSetQueriesAsDirty = function() {
@@ -33016,34 +33016,34 @@ System.register("angular2/src/core/linker/element_injector", ["angular2/src/faca
       var i = this.injectorStrategy;
       var p = i.protoStrategy;
       if (p.provider0 instanceof DirectiveProvider && p.provider0.callOnDestroy) {
-        i.obj0.ngOnDestroy();
+        i.obj0.onDestroy();
       }
       if (p.provider1 instanceof DirectiveProvider && p.provider1.callOnDestroy) {
-        i.obj1.ngOnDestroy();
+        i.obj1.onDestroy();
       }
       if (p.provider2 instanceof DirectiveProvider && p.provider2.callOnDestroy) {
-        i.obj2.ngOnDestroy();
+        i.obj2.onDestroy();
       }
       if (p.provider3 instanceof DirectiveProvider && p.provider3.callOnDestroy) {
-        i.obj3.ngOnDestroy();
+        i.obj3.onDestroy();
       }
       if (p.provider4 instanceof DirectiveProvider && p.provider4.callOnDestroy) {
-        i.obj4.ngOnDestroy();
+        i.obj4.onDestroy();
       }
       if (p.provider5 instanceof DirectiveProvider && p.provider5.callOnDestroy) {
-        i.obj5.ngOnDestroy();
+        i.obj5.onDestroy();
       }
       if (p.provider6 instanceof DirectiveProvider && p.provider6.callOnDestroy) {
-        i.obj6.ngOnDestroy();
+        i.obj6.onDestroy();
       }
       if (p.provider7 instanceof DirectiveProvider && p.provider7.callOnDestroy) {
-        i.obj7.ngOnDestroy();
+        i.obj7.onDestroy();
       }
       if (p.provider8 instanceof DirectiveProvider && p.provider8.callOnDestroy) {
-        i.obj8.ngOnDestroy();
+        i.obj8.onDestroy();
       }
       if (p.provider9 instanceof DirectiveProvider && p.provider9.callOnDestroy) {
-        i.obj9.ngOnDestroy();
+        i.obj9.onDestroy();
       }
     };
     ElementInjectorInlineStrategy.prototype.getComponent = function() {
@@ -33132,7 +33132,7 @@ System.register("angular2/src/core/linker/element_injector", ["angular2/src/faca
       var p = ist.protoStrategy;
       for (var i = 0; i < p.providers.length; i++) {
         if (p.providers[i] instanceof DirectiveProvider && p.providers[i].callOnDestroy) {
-          ist.objs[i].ngOnDestroy();
+          ist.objs[i].onDestroy();
         }
       }
     };

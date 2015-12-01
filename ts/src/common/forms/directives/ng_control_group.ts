@@ -87,9 +87,9 @@ export class NgControlGroup extends ControlContainer implements OnInit,
     this._parent = parent;
   }
 
-  ngOnInit(): void { this.formDirective.addControlGroup(this); }
+  onInit(): void { this.formDirective.addControlGroup(this); }
 
-  ngOnDestroy(): void { this.formDirective.removeControlGroup(this); }
+  onDestroy(): void { this.formDirective.removeControlGroup(this); }
 
   /**
    * Get the {@link ControlGroup} backing this binding.

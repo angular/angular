@@ -338,7 +338,7 @@ export let RouteRegistry = class {
             return new DefaultInstruction(componentInstruction, defaultChild);
         }
         return new UnresolvedInstruction(() => {
-            return componentRecognizer.defaultRoute.handler.resolveComponentType().then(() => this.generateDefault(componentCursor));
+            return componentRecognizer.defaultRoute.handler.resolveComponentType().then((_) => this.generateDefault(componentCursor));
         });
     }
 };

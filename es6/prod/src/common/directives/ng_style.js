@@ -73,7 +73,7 @@ export let NgStyle = class {
             this._differ = this._differs.find(this._rawStyle).create(null);
         }
     }
-    ngDoCheck() {
+    doCheck() {
         if (isPresent(this._differ)) {
             var changes = this._differ.diff(this._rawStyle);
             if (isPresent(changes)) {

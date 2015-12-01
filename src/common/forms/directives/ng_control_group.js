@@ -79,8 +79,8 @@ var NgControlGroup = (function (_super) {
         this._asyncValidators = _asyncValidators;
         this._parent = parent;
     }
-    NgControlGroup.prototype.ngOnInit = function () { this.formDirective.addControlGroup(this); };
-    NgControlGroup.prototype.ngOnDestroy = function () { this.formDirective.removeControlGroup(this); };
+    NgControlGroup.prototype.onInit = function () { this.formDirective.addControlGroup(this); };
+    NgControlGroup.prototype.onDestroy = function () { this.formDirective.removeControlGroup(this); };
     Object.defineProperty(NgControlGroup.prototype, "control", {
         /**
          * Get the {@link ControlGroup} backing this binding.

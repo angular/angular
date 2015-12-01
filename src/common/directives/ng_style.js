@@ -77,7 +77,7 @@ var NgStyle = (function () {
         enumerable: true,
         configurable: true
     });
-    NgStyle.prototype.ngDoCheck = function () {
+    NgStyle.prototype.doCheck = function () {
         if (lang_1.isPresent(this._differ)) {
             var changes = this._differ.diff(this._rawStyle);
             if (lang_1.isPresent(changes)) {

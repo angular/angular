@@ -180,13 +180,13 @@ export class Router {
     /** @internal */
     _navigate(instruction, _skipLocationChange) {
         return this._settleInstruction(instruction)
-            .then((_) => this._routerCanReuse(instruction))
+            .then((_) => this._canReuse(instruction))
             .then((_) => this._canActivate(instruction))
             .then((result) => {
             if (!result) {
                 return false;
             }
-            return this._routerCanDeactivate(instruction)
+            return this._canDeactivate(instruction)
                 .then((result) => {
                 if (result) {
                     return this.commit(instruction, _skipLocationChange)
@@ -223,22 +223,22 @@ export class Router {
      * Recursively set reuse flags
      */
     /** @internal */
-    _routerCanReuse(instruction) {
+    _canReuse(instruction) {
         if (isBlank(this._outlet)) {
             return _resolveToFalse;
         }
-        return this._outlet.routerCanReuse(instruction.component)
+        return this._outlet.canReuse(instruction.component)
             .then((result) => {
             instruction.component.reuse = result;
             if (result && isPresent(this._childRouter) && isPresent(instruction.child)) {
-                return this._childRouter._routerCanReuse(instruction.child);
+                return this._childRouter._canReuse(instruction.child);
             }
         });
     }
     _canActivate(nextInstruction) {
         return canActivateOne(nextInstruction, this._currentInstruction);
     }
-    _routerCanDeactivate(instruction) {
+    _canDeactivate(instruction) {
         if (isBlank(this._outlet)) {
             return _resolveToTrue;
         }
@@ -255,7 +255,7 @@ export class Router {
             next = _resolveToTrue;
         }
         else {
-            next = this._outlet.routerCanDeactivate(componentInstruction);
+            next = this._outlet.canDeactivate(componentInstruction);
         }
         // TODO: aux route lifecycle hooks
         return next.then((result) => {
@@ -263,7 +263,7 @@ export class Router {
                 return false;
             }
             if (isPresent(this._childRouter)) {
-                return this._childRouter._routerCanDeactivate(childInstruction);
+                return this._childRouter._canDeactivate(childInstruction);
             }
             return true;
         });

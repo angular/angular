@@ -60,7 +60,7 @@ var NgModel = (function (_super) {
         this.update = new async_1.EventEmitter();
         this.valueAccessor = shared_1.selectValueAccessor(this, valueAccessors);
     }
-    NgModel.prototype.ngOnChanges = function (changes) {
+    NgModel.prototype.onChanges = function (changes) {
         if (!this._added) {
             shared_1.setUpControl(this._control, this);
             this._control.updateValueAndValidity({ emitEvent: false });

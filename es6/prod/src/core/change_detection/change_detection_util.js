@@ -167,7 +167,7 @@ export class ChangeDetectionUtil {
     }
     static callPipeOnDestroy(selectedPipe) {
         if (implementsOnDestroy(selectedPipe.pipe)) {
-            selectedPipe.pipe.ngOnDestroy();
+            selectedPipe.pipe.onDestroy();
         }
     }
     static bindingTarget(mode, elementIndex, name, unit, debug) {

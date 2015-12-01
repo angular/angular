@@ -21,12 +21,12 @@ LogService = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], LogService);
-// #docregion routerOnDeactivate
+// #docregion onDeactivate
 let MyCmp = class {
     constructor(logService) {
         this.logService = logService;
     }
-    routerOnDeactivate(next, prev) {
+    onDeactivate(next, prev) {
         this.logService.addLog(`Navigating from "${prev ? prev.urlPath : 'null'}" to "${next.urlPath}"`);
     }
 };

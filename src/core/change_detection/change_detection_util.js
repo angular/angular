@@ -175,7 +175,7 @@ var ChangeDetectionUtil = (function () {
     };
     ChangeDetectionUtil.callPipeOnDestroy = function (selectedPipe) {
         if (pipe_lifecycle_reflector_1.implementsOnDestroy(selectedPipe.pipe)) {
-            selectedPipe.pipe.ngOnDestroy();
+            selectedPipe.pipe.onDestroy();
         }
     };
     ChangeDetectionUtil.bindingTarget = function (mode, elementIndex, name, unit, debug) {

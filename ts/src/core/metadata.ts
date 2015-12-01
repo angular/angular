@@ -1108,7 +1108,7 @@ export var Query: QueryFactory = makeParamDecorator(QueryMetadata);
 /**
  * Configures a content query.
  *
- * Content queries are set before the `ngAfterContentInit` callback is called.
+ * Content queries are set before the `afterContentInit` callback is called.
  *
  * ### Example
  *
@@ -1119,7 +1119,7 @@ export var Query: QueryFactory = makeParamDecorator(QueryMetadata);
  * class SomeDir {
  *   @ContentChildren(ChildDirective) contentChildren: QueryList<ChildDirective>;
  *
- *   ngAfterContentInit() {
+ *   afterContentInit() {
  *     // contentChildren is set
  *   }
  * }
@@ -1131,7 +1131,7 @@ export var ContentChildren: ContentChildrenFactory = makePropDecorator(ContentCh
 /**
  * Configures a content query.
  *
- * Content queries are set before the `ngAfterContentInit` callback is called.
+ * Content queries are set before the `afterContentInit` callback is called.
  *
  * ### Example
  *
@@ -1142,7 +1142,7 @@ export var ContentChildren: ContentChildrenFactory = makePropDecorator(ContentCh
  * class SomeDir {
  *   @ContentChild(ChildDirective) contentChild;
  *
- *   ngAfterContentInit() {
+ *   afterContentInit() {
  *     // contentChild is set
  *   }
  * }
@@ -1154,7 +1154,7 @@ export var ContentChild: ContentChildFactory = makePropDecorator(ContentChildMet
 /**
  * Configures a view query.
  *
- * View queries are set before the `ngAfterViewInit` callback is called.
+ * View queries are set before the `afterViewInit` callback is called.
  *
  * ### Example
  *
@@ -1167,7 +1167,7 @@ export var ContentChild: ContentChildFactory = makePropDecorator(ContentChildMet
  * class SomeDir {
  *   @ViewChildren(ItemDirective) viewChildren: QueryList<ItemDirective>;
  *
- *   ngAfterViewInit() {
+ *   afterViewInit() {
  *     // viewChildren is set
  *   }
  * }
@@ -1179,7 +1179,7 @@ export var ViewChildren: ViewChildrenFactory = makePropDecorator(ViewChildrenMet
 /**
  * Configures a view query.
  *
- * View queries are set before the `ngAfterViewInit` callback is called.
+ * View queries are set before the `afterViewInit` callback is called.
  *
  * ### Example
  *
@@ -1192,7 +1192,7 @@ export var ViewChildren: ViewChildrenFactory = makePropDecorator(ViewChildrenMet
  * class SomeDir {
  *   @ViewChild(ItemDirective) viewChild:ItemDirective;
  *
- *   ngAfterViewInit() {
+ *   afterViewInit() {
  *     // viewChild is set
  *   }
  * }

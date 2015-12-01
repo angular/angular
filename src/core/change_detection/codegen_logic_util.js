@@ -161,10 +161,10 @@ var CodegenLogicUtil = (function () {
         for (var i = directiveRecords.length - 1; i >= 0; --i) {
             var dir = directiveRecords[i];
             if (dir.callAfterContentInit) {
-                res.push("if(" + this._names.getStateName() + " " + eq + " " + this._changeDetectorStateName + ".NeverChecked) " + this._names.getDirectiveName(dir.directiveIndex) + ".ngAfterContentInit();");
+                res.push("if(" + this._names.getStateName() + " " + eq + " " + this._changeDetectorStateName + ".NeverChecked) " + this._names.getDirectiveName(dir.directiveIndex) + ".afterContentInit();");
             }
             if (dir.callAfterContentChecked) {
-                res.push(this._names.getDirectiveName(dir.directiveIndex) + ".ngAfterContentChecked();");
+                res.push(this._names.getDirectiveName(dir.directiveIndex) + ".afterContentChecked();");
             }
         }
         return res;
@@ -176,10 +176,10 @@ var CodegenLogicUtil = (function () {
         for (var i = directiveRecords.length - 1; i >= 0; --i) {
             var dir = directiveRecords[i];
             if (dir.callAfterViewInit) {
-                res.push("if(" + this._names.getStateName() + " " + eq + " " + this._changeDetectorStateName + ".NeverChecked) " + this._names.getDirectiveName(dir.directiveIndex) + ".ngAfterViewInit();");
+                res.push("if(" + this._names.getStateName() + " " + eq + " " + this._changeDetectorStateName + ".NeverChecked) " + this._names.getDirectiveName(dir.directiveIndex) + ".afterViewInit();");
             }
             if (dir.callAfterViewChecked) {
-                res.push(this._names.getDirectiveName(dir.directiveIndex) + ".ngAfterViewChecked();");
+                res.push(this._names.getDirectiveName(dir.directiveIndex) + ".afterViewChecked();");
             }
         }
         return res;

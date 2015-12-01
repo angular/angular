@@ -8,12 +8,12 @@ import {
 } from 'angular2/router';
 
 
-// #docregion routerOnActivate
-@Component({selector: 'my-cmp', template: `<div>routerOnActivate: {{log}}</div>`})
+// #docregion onActivate
+@Component({selector: 'my-cmp', template: `<div>onActivate: {{log}}</div>`})
 class MyCmp implements OnActivate {
   log: string = '';
 
-  routerOnActivate(next: ComponentInstruction, prev: ComponentInstruction) {
+  onActivate(next: ComponentInstruction, prev: ComponentInstruction) {
     this.log = `Finished navigating from "${prev ? prev.urlPath : 'null'}" to "${next.urlPath}"`;
   }
 }

@@ -107,7 +107,7 @@ var NgFormModel = (function (_super) {
         this.directives = [];
         this.ngSubmit = new async_1.EventEmitter();
     }
-    NgFormModel.prototype.ngOnChanges = function (changes) {
+    NgFormModel.prototype.onChanges = function (changes) {
         if (collection_1.StringMapWrapper.contains(changes, "form")) {
             var sync = shared_1.composeValidators(this._validators);
             this.form.validator = validators_1.Validators.compose([this.form.validator, sync]);

@@ -420,17 +420,17 @@ export class ChangeDetectorJITGenerator {
     /** @internal */
     _genOnCheck(r) {
         var br = r.bindingRecord;
-        return `if (!throwOnChange) ${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.ngDoCheck();`;
+        return `if (!throwOnChange) ${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.doCheck();`;
     }
     /** @internal */
     _genOnInit(r) {
         var br = r.bindingRecord;
-        return `if (!throwOnChange && ${this._names.getStateName()} === ${this.changeDetectorStateVarName}.NeverChecked) ${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.ngOnInit();`;
+        return `if (!throwOnChange && ${this._names.getStateName()} === ${this.changeDetectorStateVarName}.NeverChecked) ${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.onInit();`;
     }
     /** @internal */
     _genOnChange(r) {
         var br = r.bindingRecord;
-        return `if (!throwOnChange && ${CHANGES_LOCAL}) ${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.ngOnChanges(${CHANGES_LOCAL});`;
+        return `if (!throwOnChange && ${CHANGES_LOCAL}) ${this._names.getDirectiveName(br.directiveRecord.directiveIndex)}.onChanges(${CHANGES_LOCAL});`;
     }
     /** @internal */
     _genNotifyOnPushDetectors(r) {

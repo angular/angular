@@ -142,7 +142,7 @@ var AppView = (function () {
         var ei = this.elementInjectors;
         for (var i = eiCount - 1; i >= 0; i--) {
             if (lang_1.isPresent(ei[i + this.elementOffset]))
-                ei[i + this.elementOffset].ngAfterContentChecked();
+                ei[i + this.elementOffset].afterContentChecked();
         }
     };
     AppView.prototype.notifyAfterViewChecked = function () {
@@ -150,7 +150,7 @@ var AppView = (function () {
         var ei = this.elementInjectors;
         for (var i = eiCount - 1; i >= 0; i--) {
             if (lang_1.isPresent(ei[i + this.elementOffset]))
-                ei[i + this.elementOffset].ngAfterViewChecked();
+                ei[i + this.elementOffset].afterViewChecked();
         }
     };
     AppView.prototype.getDirectiveFor = function (directive) {

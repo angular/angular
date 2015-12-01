@@ -32,8 +32,8 @@ export class UpgradeNg1ComponentAdapterBuilder {
                         return new UpgradeNg1ComponentAdapter(self.linkFn, scope, self.directive, elementRef, self.$controller, self.inputs, self.outputs, self.propertyOutputs, self.checkProperties, self.propertyMap);
                     }
                 ],
-                ngOnChanges: function () { },
-                ngDoCheck: function () { }
+                onChanges: function () { },
+                doCheck: function () { }
             });
     }
     extractDirective(injector) {
@@ -201,7 +201,7 @@ class UpgradeNg1ComponentAdapter {
             this.checkLastValues.push(INITIAL_VALUE);
         }
     }
-    ngOnChanges(changes) {
+    onChanges(changes) {
         for (var name in changes) {
             if (changes.hasOwnProperty(name)) {
                 var change = changes[name];
@@ -209,7 +209,7 @@ class UpgradeNg1ComponentAdapter {
             }
         }
     }
-    ngDoCheck() {
+    doCheck() {
         var count = 0;
         var destinationObj = this.destinationObj;
         var lastValues = this.checkLastValues;

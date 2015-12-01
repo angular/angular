@@ -114,7 +114,7 @@ export class NgControlName extends NgControl implements OnChanges,
     this.valueAccessor = selectValueAccessor(this, valueAccessors);
   }
 
-  ngOnChanges(changes: {[key: string]: SimpleChange}) {
+  onChanges(changes: {[key: string]: SimpleChange}) {
     if (!this._added) {
       this.formDirective.addControl(this);
       this._added = true;
@@ -125,7 +125,7 @@ export class NgControlName extends NgControl implements OnChanges,
     }
   }
 
-  ngOnDestroy(): void { this.formDirective.removeControl(this); }
+  onDestroy(): void { this.formDirective.removeControl(this); }
 
   viewToModelUpdate(newValue: any): void {
     this.viewModel = newValue;

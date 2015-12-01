@@ -49,7 +49,6 @@ import {QueryList} from './query_list';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 import {SetterFn} from 'angular2/src/core/reflection/types';
 import {EventConfig} from 'angular2/src/core/linker/event_config';
-import {AfterViewChecked} from 'angular2/src/core/linker/interfaces';
 import {PipeProvider} from 'angular2/src/core/pipes/pipe_provider';
 
 import {LifecycleHooks} from './interfaces';
@@ -327,8 +326,7 @@ class _Context {
   constructor(public element: any, public componentElement: any, public injector: any) {}
 }
 
-export class ElementInjector extends TreeNode<ElementInjector> implements DependencyProvider,
-    AfterViewChecked {
+export class ElementInjector extends TreeNode<ElementInjector> implements DependencyProvider {
   private _host: ElementInjector;
   private _preBuiltObjects: PreBuiltObjects = null;
   private _queryStrategy: _QueryStrategy;
@@ -566,9 +564,9 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
     return isPresent(nestedView) ? nestedView.rootElementInjectors : [];
   }
 
-  ngAfterViewChecked(): void { this._queryStrategy.updateViewQueries(); }
+  afterViewChecked(): void { this._queryStrategy.updateViewQueries(); }
 
-  ngAfterContentChecked(): void { this._queryStrategy.updateContentQueries(); }
+  afterContentChecked(): void { this._queryStrategy.updateContentQueries(); }
 
   traverseAndSetQueriesAsDirty(): void {
     var inj = this;
@@ -812,43 +810,43 @@ class ElementInjectorInlineStrategy implements _ElementInjectorStrategy {
 
     if (p.provider0 instanceof DirectiveProvider &&
         (<DirectiveProvider>p.provider0).callOnDestroy) {
-      i.obj0.ngOnDestroy();
+      i.obj0.onDestroy();
     }
     if (p.provider1 instanceof DirectiveProvider &&
         (<DirectiveProvider>p.provider1).callOnDestroy) {
-      i.obj1.ngOnDestroy();
+      i.obj1.onDestroy();
     }
     if (p.provider2 instanceof DirectiveProvider &&
         (<DirectiveProvider>p.provider2).callOnDestroy) {
-      i.obj2.ngOnDestroy();
+      i.obj2.onDestroy();
     }
     if (p.provider3 instanceof DirectiveProvider &&
         (<DirectiveProvider>p.provider3).callOnDestroy) {
-      i.obj3.ngOnDestroy();
+      i.obj3.onDestroy();
     }
     if (p.provider4 instanceof DirectiveProvider &&
         (<DirectiveProvider>p.provider4).callOnDestroy) {
-      i.obj4.ngOnDestroy();
+      i.obj4.onDestroy();
     }
     if (p.provider5 instanceof DirectiveProvider &&
         (<DirectiveProvider>p.provider5).callOnDestroy) {
-      i.obj5.ngOnDestroy();
+      i.obj5.onDestroy();
     }
     if (p.provider6 instanceof DirectiveProvider &&
         (<DirectiveProvider>p.provider6).callOnDestroy) {
-      i.obj6.ngOnDestroy();
+      i.obj6.onDestroy();
     }
     if (p.provider7 instanceof DirectiveProvider &&
         (<DirectiveProvider>p.provider7).callOnDestroy) {
-      i.obj7.ngOnDestroy();
+      i.obj7.onDestroy();
     }
     if (p.provider8 instanceof DirectiveProvider &&
         (<DirectiveProvider>p.provider8).callOnDestroy) {
-      i.obj8.ngOnDestroy();
+      i.obj8.onDestroy();
     }
     if (p.provider9 instanceof DirectiveProvider &&
         (<DirectiveProvider>p.provider9).callOnDestroy) {
-      i.obj9.ngOnDestroy();
+      i.obj9.onDestroy();
     }
   }
 
@@ -938,7 +936,7 @@ class ElementInjectorDynamicStrategy implements _ElementInjectorStrategy {
     for (var i = 0; i < p.providers.length; i++) {
       if (p.providers[i] instanceof DirectiveProvider &&
           (<DirectiveProvider>p.providers[i]).callOnDestroy) {
-        ist.objs[i].ngOnDestroy();
+        ist.objs[i].onDestroy();
       }
     }
   }

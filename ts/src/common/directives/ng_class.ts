@@ -108,7 +108,7 @@ export class NgClass implements DoCheck, OnDestroy {
     }
   }
 
-  ngDoCheck(): void {
+  doCheck(): void {
     if (isPresent(this._differ)) {
       var changes = this._differ.diff(this._rawClass);
       if (isPresent(changes)) {
@@ -121,7 +121,7 @@ export class NgClass implements DoCheck, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void { this._cleanupClasses(this._rawClass); }
+  onDestroy(): void { this._cleanupClasses(this._rawClass); }
 
   private _cleanupClasses(rawClassVal): void {
     this._applyClasses(rawClassVal, true);

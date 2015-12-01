@@ -194,7 +194,7 @@ export class QueryMetadata extends DependencyMetadata {
 /**
  * Configures a content query.
  *
- * Content queries are set before the `ngAfterContentInit` callback is called.
+ * Content queries are set before the `afterContentInit` callback is called.
  *
  * ### Example
  *
@@ -205,7 +205,7 @@ export class QueryMetadata extends DependencyMetadata {
  * class SomeDir {
  *   @ContentChildren(ChildDirective) contentChildren: QueryList<ChildDirective>;
  *
- *   ngAfterContentInit() {
+ *   afterContentInit() {
  *     // contentChildren is set
  *   }
  * }
@@ -222,7 +222,7 @@ export class ContentChildrenMetadata extends QueryMetadata {
 /**
  * Configures a content query.
  *
- * Content queries are set before the `ngAfterContentInit` callback is called.
+ * Content queries are set before the `afterContentInit` callback is called.
  *
  * ### Example
  *
@@ -233,7 +233,7 @@ export class ContentChildrenMetadata extends QueryMetadata {
  * class SomeDir {
  *   @ContentChild(ChildDirective) contentChild;
  *
- *   ngAfterContentInit() {
+ *   afterContentInit() {
  *     // contentChild is set
  *   }
  * }
@@ -296,7 +296,7 @@ export class ViewQueryMetadata extends QueryMetadata {
 /**
  * Configures a view query.
  *
- * View queries are set before the `ngAfterViewInit` callback is called.
+ * View queries are set before the `afterViewInit` callback is called.
  *
  * ### Example
  *
@@ -309,7 +309,7 @@ export class ViewQueryMetadata extends QueryMetadata {
  * class SomeDir {
  *   @ViewChildren(ItemDirective) viewChildren: QueryList<ItemDirective>;
  *
- *   ngAfterViewInit() {
+ *   afterViewInit() {
  *     // viewChildren is set
  *   }
  * }
@@ -323,7 +323,7 @@ export class ViewChildrenMetadata extends ViewQueryMetadata {
 /**
  * Configures a view query.
  *
- * View queries are set before the `ngAfterViewInit` callback is called.
+ * View queries are set before the `afterViewInit` callback is called.
  *
  * ### Example
  *
@@ -336,7 +336,7 @@ export class ViewChildrenMetadata extends ViewQueryMetadata {
  * class SomeDir {
  *   @ViewChild(ItemDirective) viewChild:ItemDirective;
  *
- *   ngAfterViewInit() {
+ *   afterViewInit() {
  *     // viewChild is set
  *   }
  * }

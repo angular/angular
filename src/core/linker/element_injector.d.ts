@@ -11,7 +11,6 @@ import { TemplateRef } from './template_ref';
 import { DirectiveMetadata } from '../metadata/directives';
 import { QueryList } from './query_list';
 import { SetterFn } from 'angular2/src/core/reflection/types';
-import { AfterViewChecked } from 'angular2/src/core/linker/interfaces';
 export declare class StaticKeys {
     viewManagerId: number;
     templateRefId: number;
@@ -85,7 +84,7 @@ export declare class ProtoElementInjector {
     hasBindings: boolean;
     getProviderAtIndex(index: number): any;
 }
-export declare class ElementInjector extends TreeNode<ElementInjector> implements DependencyProvider, AfterViewChecked {
+export declare class ElementInjector extends TreeNode<ElementInjector> implements DependencyProvider {
     private _host;
     private _preBuiltObjects;
     private _queryStrategy;
@@ -123,8 +122,8 @@ export declare class ElementInjector extends TreeNode<ElementInjector> implement
     getHost(): ElementInjector;
     getBoundElementIndex(): number;
     getRootViewInjectors(): ElementInjector[];
-    ngAfterViewChecked(): void;
-    ngAfterContentChecked(): void;
+    afterViewChecked(): void;
+    afterContentChecked(): void;
     traverseAndSetQueriesAsDirty(): void;
     private _setQueriesAsDirty();
 }

@@ -17,18 +17,18 @@ describe('on activate example app', function() {
     waitForElement('my-cmp');
 
     expect(element(by.css('my-cmp')).getText())
-        .toContain('routerOnActivate: Finished navigating from "null" to ""');
+        .toContain('onActivate: Finished navigating from "null" to ""');
 
     element(by.css('#param-link')).click();
     waitForElement('my-cmp');
 
     expect(element(by.css('my-cmp')).getText())
-        .toContain('routerOnActivate: Finished navigating from "" to "1"');
+        .toContain('onActivate: Finished navigating from "" to "1"');
 
     browser.navigate().back();
     waitForElement('my-cmp');
 
     expect(element(by.css('my-cmp')).getText())
-        .toContain('routerOnActivate: Finished navigating from "1" to ""');
+        .toContain('onActivate: Finished navigating from "1" to ""');
   });
 });

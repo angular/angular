@@ -49,7 +49,7 @@ var RouterOutlet = (function () {
     }
     /**
      * Called by the Router to instantiate a new component during the commit phase of a navigation.
-     * This method in turn is responsible for calling the `routerOnActivate` hook of its child.
+     * This method in turn is responsible for calling the `onActivate` hook of its child.
      */
     RouterOutlet.prototype.activate = function (nextInstruction) {
         var _this = this;
@@ -65,16 +65,15 @@ var RouterOutlet = (function () {
         return this._loader.loadNextToLocation(componentType, this._elementRef, providers)
             .then(function (componentRef) {
             _this._componentRef = componentRef;
-            if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerOnActivate, componentType)) {
-                return _this._componentRef.instance
-                    .routerOnActivate(nextInstruction, previousInstruction);
+            if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.onActivate, componentType)) {
+                return _this._componentRef.instance.onActivate(nextInstruction, previousInstruction);
             }
         });
     };
     /**
      * Called by the {@link Router} during the commit phase of a navigation when an outlet
      * reuses a component between different routes.
-     * This method in turn is responsible for calling the `routerOnReuse` hook of its child.
+     * This method in turn is responsible for calling the `onReuse` hook of its child.
      */
     RouterOutlet.prototype.reuse = function (nextInstruction) {
         var previousInstruction = this._currentInstruction;
@@ -82,22 +81,20 @@ var RouterOutlet = (function () {
         if (lang_1.isBlank(this._componentRef)) {
             throw new exceptions_1.BaseException("Cannot reuse an outlet that does not contain a component.");
         }
-        return async_1.PromiseWrapper.resolve(route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerOnReuse, this._currentInstruction.componentType) ?
-            this._componentRef.instance
-                .routerOnReuse(nextInstruction, previousInstruction) :
+        return async_1.PromiseWrapper.resolve(route_lifecycle_reflector_1.hasLifecycleHook(hookMod.onReuse, this._currentInstruction.componentType) ?
+            this._componentRef.instance.onReuse(nextInstruction, previousInstruction) :
             true);
     };
     /**
      * Called by the {@link Router} when an outlet disposes of a component's contents.
-     * This method in turn is responsible for calling the `routerOnDeactivate` hook of its child.
+     * This method in turn is responsible for calling the `onDeactivate` hook of its child.
      */
     RouterOutlet.prototype.deactivate = function (nextInstruction) {
         var _this = this;
         var next = _resolveToTrue;
         if (lang_1.isPresent(this._componentRef) && lang_1.isPresent(this._currentInstruction) &&
-            route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerOnDeactivate, this._currentInstruction.componentType)) {
-            next = async_1.PromiseWrapper.resolve(this._componentRef.instance
-                .routerOnDeactivate(nextInstruction, this._currentInstruction));
+            route_lifecycle_reflector_1.hasLifecycleHook(hookMod.onDeactivate, this._currentInstruction.componentType)) {
+            next = async_1.PromiseWrapper.resolve(this._componentRef.instance.onDeactivate(nextInstruction, this._currentInstruction));
         }
         return next.then(function (_) {
             if (lang_1.isPresent(_this._componentRef)) {
@@ -111,16 +108,15 @@ var RouterOutlet = (function () {
      *
      * If this resolves to `false`, the given navigation is cancelled.
      *
-     * This method delegates to the child component's `routerCanDeactivate` hook if it exists,
+     * This method delegates to the child component's `canDeactivate` hook if it exists,
      * and otherwise resolves to true.
      */
-    RouterOutlet.prototype.routerCanDeactivate = function (nextInstruction) {
+    RouterOutlet.prototype.canDeactivate = function (nextInstruction) {
         if (lang_1.isBlank(this._currentInstruction)) {
             return _resolveToTrue;
         }
-        if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerCanDeactivate, this._currentInstruction.componentType)) {
-            return async_1.PromiseWrapper.resolve(this._componentRef.instance
-                .routerCanDeactivate(nextInstruction, this._currentInstruction));
+        if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.canDeactivate, this._currentInstruction.componentType)) {
+            return async_1.PromiseWrapper.resolve(this._componentRef.instance.canDeactivate(nextInstruction, this._currentInstruction));
         }
         return _resolveToTrue;
     };
@@ -131,18 +127,17 @@ var RouterOutlet = (function () {
      * this will resolve to `false`. You can't reuse an old component when the new component
      * is of a different Type.
      *
-     * Otherwise, this method delegates to the child component's `routerCanReuse` hook if it exists,
+     * Otherwise, this method delegates to the child component's `canReuse` hook if it exists,
      * or resolves to true if the hook is not present.
      */
-    RouterOutlet.prototype.routerCanReuse = function (nextInstruction) {
+    RouterOutlet.prototype.canReuse = function (nextInstruction) {
         var result;
         if (lang_1.isBlank(this._currentInstruction) ||
             this._currentInstruction.componentType != nextInstruction.componentType) {
             result = false;
         }
-        else if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerCanReuse, this._currentInstruction.componentType)) {
-            result = this._componentRef.instance
-                .routerCanReuse(nextInstruction, this._currentInstruction);
+        else if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.canReuse, this._currentInstruction.componentType)) {
+            result = this._componentRef.instance.canReuse(nextInstruction, this._currentInstruction);
         }
         else {
             result = nextInstruction == this._currentInstruction ||

@@ -104,7 +104,7 @@ export declare class Router {
     private _emitNavigationFinish(url);
     private _afterPromiseFinishNavigating(promise);
     private _canActivate(nextInstruction);
-    private _routerCanDeactivate(instruction);
+    private _canDeactivate(instruction);
     /**
      * Updates this router and all descendant routers according to the given instruction
      */

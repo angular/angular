@@ -113,7 +113,7 @@ export class NgFormModel extends ControlContainer implements Form,
     super();
   }
 
-  ngOnChanges(changes: {[key: string]: SimpleChange}): void {
+  onChanges(changes: {[key: string]: SimpleChange}): void {
     if (StringMapWrapper.contains(changes, "form")) {
       var sync = composeValidators(this._validators);
       this.form.validator = Validators.compose([this.form.validator, sync]);

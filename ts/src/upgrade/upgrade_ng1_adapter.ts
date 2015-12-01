@@ -53,8 +53,8 @@ export class UpgradeNg1ComponentAdapterBuilder {
                       self.outputs, self.propertyOutputs, self.checkProperties, self.propertyMap);
                 }
               ],
-              ngOnChanges: function() { /* needs to be here for ng2 to properly detect it */ },
-              ngDoCheck: function() { /* needs to be here for ng2 to properly detect it */ }
+              onChanges: function() { /* needs to be here for ng2 to properly detect it */ },
+              doCheck: function() { /* needs to be here for ng2 to properly detect it */ }
             });
   }
 
@@ -224,7 +224,7 @@ class UpgradeNg1ComponentAdapter implements OnChanges, DoCheck {
     }
   }
 
-  ngOnChanges(changes: {[name: string]: SimpleChange}) {
+  onChanges(changes: {[name: string]: SimpleChange}) {
     for (var name in changes) {
       if ((<Object>changes).hasOwnProperty(name)) {
         var change: SimpleChange = changes[name];
@@ -233,7 +233,7 @@ class UpgradeNg1ComponentAdapter implements OnChanges, DoCheck {
     }
   }
 
-  ngDoCheck(): number {
+  doCheck(): number {
     var count = 0;
     var destinationObj = this.destinationObj;
     var lastValues = this.checkLastValues;

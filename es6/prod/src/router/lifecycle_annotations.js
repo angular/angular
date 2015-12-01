@@ -4,7 +4,7 @@
  */
 import { makeDecorator } from 'angular2/src/core/util/decorators';
 import { CanActivate as CanActivateAnnotation } from './lifecycle_annotations_impl';
-export { routerCanReuse, routerCanDeactivate, routerOnActivate, routerOnReuse, routerOnDeactivate } from './lifecycle_annotations_impl';
+export { canReuse, canDeactivate, onActivate, onReuse, onDeactivate } from './lifecycle_annotations_impl';
 /**
  * Defines route lifecycle hook `CanActivate`, which is called by the router to determine
  * if a component can be instantiated as part of a navigation.

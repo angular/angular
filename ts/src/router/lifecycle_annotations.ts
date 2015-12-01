@@ -9,11 +9,11 @@ import {Promise} from 'angular2/src/facade/async';
 import {ComponentInstruction} from './instruction';
 
 export {
-  routerCanReuse,
-  routerCanDeactivate,
-  routerOnActivate,
-  routerOnReuse,
-  routerOnDeactivate
+  canReuse,
+  canDeactivate,
+  onActivate,
+  onReuse,
+  onDeactivate
 } from './lifecycle_annotations_impl';
 
 /**

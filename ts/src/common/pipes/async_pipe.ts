@@ -4,7 +4,7 @@ import {
   Pipe,
   Injectable,
   ChangeDetectorRef,
-  OnDestroy,
+  PipeOnDestroy,
   PipeTransform,
   WrappedValue
 } from 'angular2/core';
@@ -55,7 +55,7 @@ var _observableStrategy = new ObservableStrategy();
  */
 @Pipe({name: 'async', pure: false})
 @Injectable()
-export class AsyncPipe implements PipeTransform, OnDestroy {
+export class AsyncPipe implements PipeTransform, PipeOnDestroy {
   /** @internal */
   _latestValue: Object = null;
   /** @internal */
@@ -70,7 +70,7 @@ export class AsyncPipe implements PipeTransform, OnDestroy {
   public _ref: ChangeDetectorRef;
   constructor(_ref: ChangeDetectorRef) { this._ref = _ref; }
 
-  ngOnDestroy(): void {
+  onDestroy(): void {
     if (isPresent(this._subscription)) {
       this._dispose();
     }

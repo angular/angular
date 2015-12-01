@@ -5,11 +5,11 @@
 var decorators_1 = require('angular2/src/core/util/decorators');
 var lifecycle_annotations_impl_1 = require('./lifecycle_annotations_impl');
 var lifecycle_annotations_impl_2 = require('./lifecycle_annotations_impl');
-exports.routerCanReuse = lifecycle_annotations_impl_2.routerCanReuse;
-exports.routerCanDeactivate = lifecycle_annotations_impl_2.routerCanDeactivate;
-exports.routerOnActivate = lifecycle_annotations_impl_2.routerOnActivate;
-exports.routerOnReuse = lifecycle_annotations_impl_2.routerOnReuse;
-exports.routerOnDeactivate = lifecycle_annotations_impl_2.routerOnDeactivate;
+exports.canReuse = lifecycle_annotations_impl_2.canReuse;
+exports.canDeactivate = lifecycle_annotations_impl_2.canDeactivate;
+exports.onActivate = lifecycle_annotations_impl_2.onActivate;
+exports.onReuse = lifecycle_annotations_impl_2.onReuse;
+exports.onDeactivate = lifecycle_annotations_impl_2.onDeactivate;
 /**
  * Defines route lifecycle hook `CanActivate`, which is called by the router to determine
  * if a component can be instantiated as part of a navigation.

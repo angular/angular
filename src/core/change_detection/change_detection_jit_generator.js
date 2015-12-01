@@ -320,17 +320,17 @@ var ChangeDetectorJITGenerator = (function () {
     /** @internal */
     ChangeDetectorJITGenerator.prototype._genOnCheck = function (r) {
         var br = r.bindingRecord;
-        return "if (!throwOnChange) " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".ngDoCheck();";
+        return "if (!throwOnChange) " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".doCheck();";
     };
     /** @internal */
     ChangeDetectorJITGenerator.prototype._genOnInit = function (r) {
         var br = r.bindingRecord;
-        return "if (!throwOnChange && " + this._names.getStateName() + " === " + this.changeDetectorStateVarName + ".NeverChecked) " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".ngOnInit();";
+        return "if (!throwOnChange && " + this._names.getStateName() + " === " + this.changeDetectorStateVarName + ".NeverChecked) " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".onInit();";
     };
     /** @internal */
     ChangeDetectorJITGenerator.prototype._genOnChange = function (r) {
         var br = r.bindingRecord;
-        return "if (!throwOnChange && " + CHANGES_LOCAL + ") " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".ngOnChanges(" + CHANGES_LOCAL + ");";
+        return "if (!throwOnChange && " + CHANGES_LOCAL + ") " + this._names.getDirectiveName(br.directiveRecord.directiveIndex) + ".onChanges(" + CHANGES_LOCAL + ");";
     };
     /** @internal */
     ChangeDetectorJITGenerator.prototype._genNotifyOnPushDetectors = function (r) {

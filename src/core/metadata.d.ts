@@ -1059,7 +1059,7 @@ export declare var Query: QueryFactory;
 /**
  * Configures a content query.
  *
- * Content queries are set before the `ngAfterContentInit` callback is called.
+ * Content queries are set before the `afterContentInit` callback is called.
  *
  * ### Example
  *
@@ -1070,7 +1070,7 @@ export declare var Query: QueryFactory;
  * class SomeDir {
  *   @ContentChildren(ChildDirective) contentChildren: QueryList<ChildDirective>;
  *
- *   ngAfterContentInit() {
+ *   afterContentInit() {
  *     // contentChildren is set
  *   }
  * }
@@ -1080,7 +1080,7 @@ export declare var ContentChildren: ContentChildrenFactory;
 /**
  * Configures a content query.
  *
- * Content queries are set before the `ngAfterContentInit` callback is called.
+ * Content queries are set before the `afterContentInit` callback is called.
  *
  * ### Example
  *
@@ -1091,7 +1091,7 @@ export declare var ContentChildren: ContentChildrenFactory;
  * class SomeDir {
  *   @ContentChild(ChildDirective) contentChild;
  *
- *   ngAfterContentInit() {
+ *   afterContentInit() {
  *     // contentChild is set
  *   }
  * }
@@ -1101,7 +1101,7 @@ export declare var ContentChild: ContentChildFactory;
 /**
  * Configures a view query.
  *
- * View queries are set before the `ngAfterViewInit` callback is called.
+ * View queries are set before the `afterViewInit` callback is called.
  *
  * ### Example
  *
@@ -1114,7 +1114,7 @@ export declare var ContentChild: ContentChildFactory;
  * class SomeDir {
  *   @ViewChildren(ItemDirective) viewChildren: QueryList<ItemDirective>;
  *
- *   ngAfterViewInit() {
+ *   afterViewInit() {
  *     // viewChildren is set
  *   }
  * }
@@ -1124,7 +1124,7 @@ export declare var ViewChildren: ViewChildrenFactory;
 /**
  * Configures a view query.
  *
- * View queries are set before the `ngAfterViewInit` callback is called.
+ * View queries are set before the `afterViewInit` callback is called.
  *
  * ### Example
  *
@@ -1137,7 +1137,7 @@ export declare var ViewChildren: ViewChildrenFactory;
  * class SomeDir {
  *   @ViewChild(ItemDirective) viewChild:ItemDirective;
  *
- *   ngAfterViewInit() {
+ *   afterViewInit() {
  *     // viewChild is set
  *   }
  * }

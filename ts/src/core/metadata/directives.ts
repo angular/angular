@@ -720,8 +720,8 @@ export class DirectiveMetadata extends InjectableMetadata {
   /**
    * Configures the queries that will be injected into the directive.
    *
-   * Content queries are set before the `ngAfterContentInit` callback is called.
-   * View queries are set before the `ngAfterViewInit` callback is called.
+   * Content queries are set before the `afterContentInit` callback is called.
+   * View queries are set before the `afterViewInit` callback is called.
    *
    * ### Example
    *
@@ -739,11 +739,11 @@ export class DirectiveMetadata extends InjectableMetadata {
    *   contentChildren: QueryList<ChildDirective>,
    *   viewChildren: QueryList<ChildDirective>
    *
-   *   ngAfterContentInit() {
+   *   afterContentInit() {
    *     // contentChildren is set
    *   }
    *
-   *   ngAfterViewInit() {
+   *   afterViewInit() {
    *     // viewChildren is set
    *   }
    * }

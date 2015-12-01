@@ -66,10 +66,10 @@ export declare class NgControlName extends NgControl implements OnChanges, OnDes
     viewModel: any;
     private _added;
     constructor(_parent: ControlContainer, _validators: any[], _asyncValidators: any[], valueAccessors: ControlValueAccessor[]);
-    ngOnChanges(changes: {
+    onChanges(changes: {
         [key: string]: SimpleChange;
     }): void;
-    ngOnDestroy(): void;
+    onDestroy(): void;
     viewToModelUpdate(newValue: any): void;
     path: string[];
     formDirective: any;

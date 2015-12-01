@@ -5,7 +5,6 @@ import {
   ChangeDetectorRef,
   HostViewRef,
   Injector,
-  OnChanges,
   ProtoViewRef,
   SimpleChange
 } from 'angular2/angular2';
@@ -92,13 +91,13 @@ export class DowngradeNg2ComponentAdapter {
     }
 
     var prototype = this.info.type.prototype;
-    if (prototype && (<OnChanges>prototype).ngOnChanges) {
+    if (prototype && prototype.onChanges) {
       // Detect: OnChanges interface
       this.inputChanges = {};
       this.componentScope.$watch(() => this.inputChangeCount, () => {
         var inputChanges = this.inputChanges;
         this.inputChanges = {};
-        (<OnChanges>this.component).ngOnChanges(inputChanges);
+        this.component.onChanges(inputChanges);
       });
     }
     this.componentScope.$watch(() => this.changeDetector && this.changeDetector.detectChanges());

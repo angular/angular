@@ -465,8 +465,8 @@ var ElementInjector = (function (_super) {
         var nestedView = view.getNestedView(view.elementOffset + this.getBoundElementIndex());
         return lang_1.isPresent(nestedView) ? nestedView.rootElementInjectors : [];
     };
-    ElementInjector.prototype.ngAfterViewChecked = function () { this._queryStrategy.updateViewQueries(); };
-    ElementInjector.prototype.ngAfterContentChecked = function () { this._queryStrategy.updateContentQueries(); };
+    ElementInjector.prototype.afterViewChecked = function () { this._queryStrategy.updateViewQueries(); };
+    ElementInjector.prototype.afterContentChecked = function () { this._queryStrategy.updateContentQueries(); };
     ElementInjector.prototype.traverseAndSetQueriesAsDirty = function () {
         var inj = this;
         while (lang_1.isPresent(inj)) {
@@ -685,43 +685,43 @@ var ElementInjectorInlineStrategy = (function () {
         var p = i.protoStrategy;
         if (p.provider0 instanceof DirectiveProvider &&
             p.provider0.callOnDestroy) {
-            i.obj0.ngOnDestroy();
+            i.obj0.onDestroy();
         }
         if (p.provider1 instanceof DirectiveProvider &&
             p.provider1.callOnDestroy) {
-            i.obj1.ngOnDestroy();
+            i.obj1.onDestroy();
         }
         if (p.provider2 instanceof DirectiveProvider &&
             p.provider2.callOnDestroy) {
-            i.obj2.ngOnDestroy();
+            i.obj2.onDestroy();
         }
         if (p.provider3 instanceof DirectiveProvider &&
             p.provider3.callOnDestroy) {
-            i.obj3.ngOnDestroy();
+            i.obj3.onDestroy();
         }
         if (p.provider4 instanceof DirectiveProvider &&
             p.provider4.callOnDestroy) {
-            i.obj4.ngOnDestroy();
+            i.obj4.onDestroy();
         }
         if (p.provider5 instanceof DirectiveProvider &&
             p.provider5.callOnDestroy) {
-            i.obj5.ngOnDestroy();
+            i.obj5.onDestroy();
         }
         if (p.provider6 instanceof DirectiveProvider &&
             p.provider6.callOnDestroy) {
-            i.obj6.ngOnDestroy();
+            i.obj6.onDestroy();
         }
         if (p.provider7 instanceof DirectiveProvider &&
             p.provider7.callOnDestroy) {
-            i.obj7.ngOnDestroy();
+            i.obj7.onDestroy();
         }
         if (p.provider8 instanceof DirectiveProvider &&
             p.provider8.callOnDestroy) {
-            i.obj8.ngOnDestroy();
+            i.obj8.onDestroy();
         }
         if (p.provider9 instanceof DirectiveProvider &&
             p.provider9.callOnDestroy) {
-            i.obj9.ngOnDestroy();
+            i.obj9.onDestroy();
         }
     };
     ElementInjectorInlineStrategy.prototype.getComponent = function () { return this.injectorStrategy.obj0; };
@@ -815,7 +815,7 @@ var ElementInjectorDynamicStrategy = (function () {
         for (var i = 0; i < p.providers.length; i++) {
             if (p.providers[i] instanceof DirectiveProvider &&
                 p.providers[i].callOnDestroy) {
-                ist.objs[i].ngOnDestroy();
+                ist.objs[i].onDestroy();
             }
         }
     };

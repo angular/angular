@@ -191,13 +191,13 @@ var Router = (function () {
     Router.prototype._navigate = function (instruction, _skipLocationChange) {
         var _this = this;
         return this._settleInstruction(instruction)
-            .then(function (_) { return _this._routerCanReuse(instruction); })
+            .then(function (_) { return _this._canReuse(instruction); })
             .then(function (_) { return _this._canActivate(instruction); })
             .then(function (result) {
             if (!result) {
                 return false;
             }
-            return _this._routerCanDeactivate(instruction)
+            return _this._canDeactivate(instruction)
                 .then(function (result) {
                 if (result) {
                     return _this.commit(instruction, _skipLocationChange)
@@ -236,23 +236,23 @@ var Router = (function () {
      * Recursively set reuse flags
      */
     /** @internal */
-    Router.prototype._routerCanReuse = function (instruction) {
+    Router.prototype._canReuse = function (instruction) {
         var _this = this;
         if (lang_1.isBlank(this._outlet)) {
             return _resolveToFalse;
         }
-        return this._outlet.routerCanReuse(instruction.component)
+        return this._outlet.canReuse(instruction.component)
             .then(function (result) {
             instruction.component.reuse = result;
             if (result && lang_1.isPresent(_this._childRouter) && lang_1.isPresent(instruction.child)) {
-                return _this._childRouter._routerCanReuse(instruction.child);
+                return _this._childRouter._canReuse(instruction.child);
             }
         });
     };
     Router.prototype._canActivate = function (nextInstruction) {
         return canActivateOne(nextInstruction, this._currentInstruction);
     };
-    Router.prototype._routerCanDeactivate = function (instruction) {
+    Router.prototype._canDeactivate = function (instruction) {
         var _this = this;
         if (lang_1.isBlank(this._outlet)) {
             return _resolveToTrue;
@@ -270,7 +270,7 @@ var Router = (function () {
             next = _resolveToTrue;
         }
         else {
-            next = this._outlet.routerCanDeactivate(componentInstruction);
+            next = this._outlet.canDeactivate(componentInstruction);
         }
         // TODO: aux route lifecycle hooks
         return next.then(function (result) {
@@ -278,7 +278,7 @@ var Router = (function () {
                 return false;
             }
             if (lang_1.isPresent(_this._childRouter)) {
-                return _this._childRouter._routerCanDeactivate(childInstruction);
+                return _this._childRouter._canDeactivate(childInstruction);
             }
             return true;
         });

@@ -24,9 +24,9 @@ class MyCmp implements CanReuse,
   name: string;
   constructor(params: RouteParams) { this.name = params.get('name') || 'NOBODY'; }
 
-  routerCanReuse(next: ComponentInstruction, prev: ComponentInstruction) { return true; }
+  canReuse(next: ComponentInstruction, prev: ComponentInstruction) { return true; }
 
-  routerOnReuse(next: ComponentInstruction, prev: ComponentInstruction) {
+  onReuse(next: ComponentInstruction, prev: ComponentInstruction) {
     this.name = next.params['name'];
   }
 }

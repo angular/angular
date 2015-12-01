@@ -15,6 +15,7 @@ export {
   WrappedValue,
   SimpleChange,
   PipeTransform,
+  PipeOnDestroy,
   IterableDiffers,
   IterableDiffer,
   IterableDifferFactory,

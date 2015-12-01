@@ -8,7 +8,7 @@ import {
   APP_BASE_HREF
 } from 'angular2/router';
 
-// #docregion routerCanDeactivate
+// #docregion canDeactivate
 @Component({
   selector: 'note-cmp',
   template: `
@@ -22,7 +22,7 @@ class NoteCmp implements CanDeactivate {
 
   constructor(params: RouteParams) { this.id = params.get('id'); }
 
-  routerCanDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
+  canDeactivate(next: ComponentInstruction, prev: ComponentInstruction) {
     return confirm('Are you sure you want to leave?');
   }
 }

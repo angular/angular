@@ -112,7 +112,7 @@ var NgClass = (function () {
         enumerable: true,
         configurable: true
     });
-    NgClass.prototype.ngDoCheck = function () {
+    NgClass.prototype.doCheck = function () {
         if (lang_1.isPresent(this._differ)) {
             var changes = this._differ.diff(this._rawClass);
             if (lang_1.isPresent(changes)) {
@@ -125,7 +125,7 @@ var NgClass = (function () {
             }
         }
     };
-    NgClass.prototype.ngOnDestroy = function () { this._cleanupClasses(this._rawClass); };
+    NgClass.prototype.onDestroy = function () { this._cleanupClasses(this._rawClass); };
     NgClass.prototype._cleanupClasses = function (rawClassVal) {
         this._applyClasses(rawClassVal, true);
         this._applyInitialClasses(false);

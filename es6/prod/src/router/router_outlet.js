@@ -49,7 +49,7 @@ export let RouterOutlet = class {
     }
     /**
      * Called by the Router to instantiate a new component during the commit phase of a navigation.
-     * This method in turn is responsible for calling the `routerOnActivate` hook of its child.
+     * This method in turn is responsible for calling the `onActivate` hook of its child.
      */
     activate(nextInstruction) {
         var previousInstruction = this._currentInstruction;
@@ -64,16 +64,15 @@ export let RouterOutlet = class {
         return this._loader.loadNextToLocation(componentType, this._elementRef, providers)
             .then((componentRef) => {
             this._componentRef = componentRef;
-            if (hasLifecycleHook(hookMod.routerOnActivate, componentType)) {
-                return this._componentRef.instance
-                    .routerOnActivate(nextInstruction, previousInstruction);
+            if (hasLifecycleHook(hookMod.onActivate, componentType)) {
+                return this._componentRef.instance.onActivate(nextInstruction, previousInstruction);
             }
         });
     }
     /**
      * Called by the {@link Router} during the commit phase of a navigation when an outlet
      * reuses a component between different routes.
-     * This method in turn is responsible for calling the `routerOnReuse` hook of its child.
+     * This method in turn is responsible for calling the `onReuse` hook of its child.
      */
     reuse(nextInstruction) {
         var previousInstruction = this._currentInstruction;
@@ -81,21 +80,19 @@ export let RouterOutlet = class {
         if (isBlank(this._componentRef)) {
             throw new BaseException(`Cannot reuse an outlet that does not contain a component.`);
         }
-        return PromiseWrapper.resolve(hasLifecycleHook(hookMod.routerOnReuse, this._currentInstruction.componentType) ?
-            this._componentRef.instance
-                .routerOnReuse(nextInstruction, previousInstruction) :
+        return PromiseWrapper.resolve(hasLifecycleHook(hookMod.onReuse, this._currentInstruction.componentType) ?
+            this._componentRef.instance.onReuse(nextInstruction, previousInstruction) :
             true);
     }
     /**
      * Called by the {@link Router} when an outlet disposes of a component's contents.
-     * This method in turn is responsible for calling the `routerOnDeactivate` hook of its child.
+     * This method in turn is responsible for calling the `onDeactivate` hook of its child.
      */
     deactivate(nextInstruction) {
         var next = _resolveToTrue;
         if (isPresent(this._componentRef) && isPresent(this._currentInstruction) &&
-            hasLifecycleHook(hookMod.routerOnDeactivate, this._currentInstruction.componentType)) {
-            next = PromiseWrapper.resolve(this._componentRef.instance
-                .routerOnDeactivate(nextInstruction, this._currentInstruction));
+            hasLifecycleHook(hookMod.onDeactivate, this._currentInstruction.componentType)) {
+            next = PromiseWrapper.resolve(this._componentRef.instance.onDeactivate(nextInstruction, this._currentInstruction));
         }
         return next.then((_) => {
             if (isPresent(this._componentRef)) {
@@ -109,16 +106,15 @@ export let RouterOutlet = class {
      *
      * If this resolves to `false`, the given navigation is cancelled.
      *
-     * This method delegates to the child component's `routerCanDeactivate` hook if it exists,
+     * This method delegates to the child component's `canDeactivate` hook if it exists,
      * and otherwise resolves to true.
      */
-    routerCanDeactivate(nextInstruction) {
+    canDeactivate(nextInstruction) {
         if (isBlank(this._currentInstruction)) {
             return _resolveToTrue;
         }
-        if (hasLifecycleHook(hookMod.routerCanDeactivate, this._currentInstruction.componentType)) {
-            return PromiseWrapper.resolve(this._componentRef.instance
-                .routerCanDeactivate(nextInstruction, this._currentInstruction));
+        if (hasLifecycleHook(hookMod.canDeactivate, this._currentInstruction.componentType)) {
+            return PromiseWrapper.resolve(this._componentRef.instance.canDeactivate(nextInstruction, this._currentInstruction));
         }
         return _resolveToTrue;
     }
@@ -129,18 +125,17 @@ export let RouterOutlet = class {
      * this will resolve to `false`. You can't reuse an old component when the new component
      * is of a different Type.
      *
-     * Otherwise, this method delegates to the child component's `routerCanReuse` hook if it exists,
+     * Otherwise, this method delegates to the child component's `canReuse` hook if it exists,
      * or resolves to true if the hook is not present.
      */
-    routerCanReuse(nextInstruction) {
+    canReuse(nextInstruction) {
         var result;
         if (isBlank(this._currentInstruction) ||
             this._currentInstruction.componentType != nextInstruction.componentType) {
             result = false;
         }
-        else if (hasLifecycleHook(hookMod.routerCanReuse, this._currentInstruction.componentType)) {
-            result = this._componentRef.instance
-                .routerCanReuse(nextInstruction, this._currentInstruction);
+        else if (hasLifecycleHook(hookMod.canReuse, this._currentInstruction.componentType)) {
+            result = this._componentRef.instance.canReuse(nextInstruction, this._currentInstruction);
         }
         else {
             result = nextInstruction == this._currentInstruction ||

@@ -121,14 +121,14 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
             }
             if (proto.isLifeCycleRecord()) {
                 if (proto.name === "DoCheck" && !throwOnChange) {
-                    this._getDirectiveFor(directiveRecord.directiveIndex).ngDoCheck();
+                    this._getDirectiveFor(directiveRecord.directiveIndex).doCheck();
                 }
                 else if (proto.name === "OnInit" && !throwOnChange &&
                     this.state == ChangeDetectorState.NeverChecked) {
-                    this._getDirectiveFor(directiveRecord.directiveIndex).ngOnInit();
+                    this._getDirectiveFor(directiveRecord.directiveIndex).onInit();
                 }
                 else if (proto.name === "OnChanges" && isPresent(changes) && !throwOnChange) {
-                    this._getDirectiveFor(directiveRecord.directiveIndex).ngOnChanges(changes);
+                    this._getDirectiveFor(directiveRecord.directiveIndex).onChanges(changes);
                 }
             }
             else if (proto.isSkipRecord()) {
@@ -161,10 +161,10 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
         for (var i = dirs.length - 1; i >= 0; --i) {
             var dir = dirs[i];
             if (dir.callAfterContentInit && this.state == ChangeDetectorState.NeverChecked) {
-                this._getDirectiveFor(dir.directiveIndex).ngAfterContentInit();
+                this._getDirectiveFor(dir.directiveIndex).afterContentInit();
             }
             if (dir.callAfterContentChecked) {
-                this._getDirectiveFor(dir.directiveIndex).ngAfterContentChecked();
+                this._getDirectiveFor(dir.directiveIndex).afterContentChecked();
             }
         }
     }
@@ -173,10 +173,10 @@ export class DynamicChangeDetector extends AbstractChangeDetector {
         for (var i = dirs.length - 1; i >= 0; --i) {
             var dir = dirs[i];
             if (dir.callAfterViewInit && this.state == ChangeDetectorState.NeverChecked) {
-                this._getDirectiveFor(dir.directiveIndex).ngAfterViewInit();
+                this._getDirectiveFor(dir.directiveIndex).afterViewInit();
             }
             if (dir.callAfterViewChecked) {
-                this._getDirectiveFor(dir.directiveIndex).ngAfterViewChecked();
+                this._getDirectiveFor(dir.directiveIndex).afterViewChecked();
             }
         }
     }

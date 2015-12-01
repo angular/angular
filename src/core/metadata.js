@@ -621,7 +621,7 @@ exports.Query = decorators_1.makeParamDecorator(di_2.QueryMetadata);
 /**
  * Configures a content query.
  *
- * Content queries are set before the `ngAfterContentInit` callback is called.
+ * Content queries are set before the `afterContentInit` callback is called.
  *
  * ### Example
  *
@@ -632,7 +632,7 @@ exports.Query = decorators_1.makeParamDecorator(di_2.QueryMetadata);
  * class SomeDir {
  *   @ContentChildren(ChildDirective) contentChildren: QueryList<ChildDirective>;
  *
- *   ngAfterContentInit() {
+ *   afterContentInit() {
  *     // contentChildren is set
  *   }
  * }
@@ -643,7 +643,7 @@ exports.ContentChildren = decorators_1.makePropDecorator(di_2.ContentChildrenMet
 /**
  * Configures a content query.
  *
- * Content queries are set before the `ngAfterContentInit` callback is called.
+ * Content queries are set before the `afterContentInit` callback is called.
  *
  * ### Example
  *
@@ -654,7 +654,7 @@ exports.ContentChildren = decorators_1.makePropDecorator(di_2.ContentChildrenMet
  * class SomeDir {
  *   @ContentChild(ChildDirective) contentChild;
  *
- *   ngAfterContentInit() {
+ *   afterContentInit() {
  *     // contentChild is set
  *   }
  * }
@@ -665,7 +665,7 @@ exports.ContentChild = decorators_1.makePropDecorator(di_2.ContentChildMetadata)
 /**
  * Configures a view query.
  *
- * View queries are set before the `ngAfterViewInit` callback is called.
+ * View queries are set before the `afterViewInit` callback is called.
  *
  * ### Example
  *
@@ -678,7 +678,7 @@ exports.ContentChild = decorators_1.makePropDecorator(di_2.ContentChildMetadata)
  * class SomeDir {
  *   @ViewChildren(ItemDirective) viewChildren: QueryList<ItemDirective>;
  *
- *   ngAfterViewInit() {
+ *   afterViewInit() {
  *     // viewChildren is set
  *   }
  * }
@@ -689,7 +689,7 @@ exports.ViewChildren = decorators_1.makePropDecorator(di_2.ViewChildrenMetadata)
 /**
  * Configures a view query.
  *
- * View queries are set before the `ngAfterViewInit` callback is called.
+ * View queries are set before the `afterViewInit` callback is called.
  *
  * ### Example
  *
@@ -702,7 +702,7 @@ exports.ViewChildren = decorators_1.makePropDecorator(di_2.ViewChildrenMetadata)
  * class SomeDir {
  *   @ViewChild(ItemDirective) viewChild:ItemDirective;
  *
- *   ngAfterViewInit() {
+ *   afterViewInit() {
  *     // viewChild is set
  *   }
  * }

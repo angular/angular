@@ -198,7 +198,7 @@ QueryMetadata = __decorate([
 /**
  * Configures a content query.
  *
- * Content queries are set before the `ngAfterContentInit` callback is called.
+ * Content queries are set before the `afterContentInit` callback is called.
  *
  * ### Example
  *
@@ -209,7 +209,7 @@ QueryMetadata = __decorate([
  * class SomeDir {
  *   @ContentChildren(ChildDirective) contentChildren: QueryList<ChildDirective>;
  *
- *   ngAfterContentInit() {
+ *   afterContentInit() {
  *     // contentChildren is set
  *   }
  * }
@@ -228,7 +228,7 @@ ContentChildrenMetadata = __decorate([
 /**
  * Configures a content query.
  *
- * Content queries are set before the `ngAfterContentInit` callback is called.
+ * Content queries are set before the `afterContentInit` callback is called.
  *
  * ### Example
  *
@@ -239,7 +239,7 @@ ContentChildrenMetadata = __decorate([
  * class SomeDir {
  *   @ContentChild(ChildDirective) contentChild;
  *
- *   ngAfterContentInit() {
+ *   afterContentInit() {
  *     // contentChild is set
  *   }
  * }
@@ -306,7 +306,7 @@ ViewQueryMetadata = __decorate([
 /**
  * Configures a view query.
  *
- * View queries are set before the `ngAfterViewInit` callback is called.
+ * View queries are set before the `afterViewInit` callback is called.
  *
  * ### Example
  *
@@ -319,7 +319,7 @@ ViewQueryMetadata = __decorate([
  * class SomeDir {
  *   @ViewChildren(ItemDirective) viewChildren: QueryList<ItemDirective>;
  *
- *   ngAfterViewInit() {
+ *   afterViewInit() {
  *     // viewChildren is set
  *   }
  * }
@@ -337,7 +337,7 @@ ViewChildrenMetadata = __decorate([
 /**
  * Configures a view query.
  *
- * View queries are set before the `ngAfterViewInit` callback is called.
+ * View queries are set before the `afterViewInit` callback is called.
  *
  * ### Example
  *
@@ -350,7 +350,7 @@ ViewChildrenMetadata = __decorate([
  * class SomeDir {
  *   @ViewChild(ItemDirective) viewChild:ItemDirective;
  *
- *   ngAfterViewInit() {
+ *   afterViewInit() {
  *     // viewChild is set
  *   }
  * }

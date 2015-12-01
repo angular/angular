@@ -73,8 +73,8 @@ export let NgControlGroup = class extends ControlContainer {
         this._asyncValidators = _asyncValidators;
         this._parent = parent;
     }
-    ngOnInit() { this.formDirective.addControlGroup(this); }
-    ngOnDestroy() { this.formDirective.removeControlGroup(this); }
+    onInit() { this.formDirective.addControlGroup(this); }
+    onDestroy() { this.formDirective.removeControlGroup(this); }
     /**
      * Get the {@link ControlGroup} backing this binding.
      */

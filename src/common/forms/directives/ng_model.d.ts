@@ -31,7 +31,7 @@ export declare class NgModel extends NgControl implements OnChanges {
     model: any;
     viewModel: any;
     constructor(_validators: any[], _asyncValidators: any[], valueAccessors: ControlValueAccessor[]);
-    ngOnChanges(changes: {
+    onChanges(changes: {
         [key: string]: SimpleChange;
     }): void;
     control: Control;
