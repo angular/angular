@@ -974,10 +974,10 @@ gulp.task('!bundle.js.prod', ['build.js.prod'], function() {
                         bundlerConfig)
       .then(function() {
         return Promise.all([
-          bundler.bundle(bundleConfig, 'angular2/http - angular2/angular2', './dist/build/http.js',
+          bundler.bundle(bundleConfig, 'angular2/http - angular2/core', './dist/build/http.js',
                          bundlerConfig),
-          bundler.bundle(bundleConfig, 'angular2/router - angular2/angular2',
-                         './dist/build/router.js', bundlerConfig)
+          bundler.bundle(bundleConfig, 'angular2/router - angular2/core', './dist/build/router.js',
+                         bundlerConfig)
         ]);
       });
 });
@@ -991,9 +991,9 @@ gulp.task('!bundle.js.min', ['build.js.prod'], function() {
                         bundlerConfig)
       .then(function() {
         return Promise.all([
-          bundler.bundle(bundleConfig, 'angular2/http - angular2/angular2',
-                         './dist/build/http.min.js', bundlerConfig),
-          bundler.bundle(bundleConfig, 'angular2/router - angular2/angular2',
+          bundler.bundle(bundleConfig, 'angular2/http - angular2/core', './dist/build/http.min.js',
+                         bundlerConfig),
+          bundler.bundle(bundleConfig, 'angular2/router - angular2/core',
                          './dist/build/router.min.js', bundlerConfig)
         ]);
       });
@@ -1011,9 +1011,9 @@ gulp.task('!bundle.js.dev', ['build.js.dev'], function() {
                         bundlerConfig)
       .then(function() {
         return Promise.all([
-          bundler.bundle(devBundleConfig, 'angular2/http - angular2/angular2',
+          bundler.bundle(devBundleConfig, 'angular2/http - angular2/core',
                          './dist/build/http.dev.js', bundlerConfig),
-          bundler.bundle(bundleConfig, 'angular2/router - angular2/angular2',
+          bundler.bundle(bundleConfig, 'angular2/router - angular2/core',
                          './dist/build/router.dev.js', bundlerConfig)
         ]);
       });
