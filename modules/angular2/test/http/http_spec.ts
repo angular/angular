@@ -29,7 +29,8 @@ import {
   Http,
   Jsonp
 } from 'angular2/http';
-import {Observable, Subject} from '@reactivex/rxjs/dist/cjs/Rx';
+import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
 
 class SpyObserver extends SpyObject {
   onNext: Function;

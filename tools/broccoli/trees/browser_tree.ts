@@ -279,7 +279,7 @@ module.exports = function makeBrowserTree(options, destinationPath) {
   // typescript resolves dependencies automatically
   if (modules.bundle_deps) {
     var nodeModules = new Funnel(
-        'node_modules', {include: ['@reactivex/**/**', 'parse5/**/**', 'css/**/**'], destDir: '/'});
+        'node_modules', {include: ['rxjs/**/**', 'parse5/**/**', 'css/**/**'], destDir: '/'});
   }
 
   if (generateEs6) {

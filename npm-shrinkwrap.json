@@ -2,11 +2,6 @@
   "name": "angular-srcs",
   "version": "2.0.0-alpha.46",
   "dependencies": {
-    "@reactivex/rxjs": {
-      "version": "5.0.0-alpha.10",
-      "from": "@reactivex/rxjs@5.0.0-alpha.10",
-      "resolved": "http://registry.npmjs.org/@reactivex/rxjs/-/rxjs-5.0.0-alpha.10.tgz"
-    },
     "angular": {
       "version": "1.4.7",
       "from": "https://registry.npmjs.org/angular/-/angular-1.4.7.tgz",
@@ -20211,6 +20206,11 @@
         }
       }
     },
+    "rxjs": {
+      "version": "5.0.0-alpha.11",
+      "from": "http://registry.npmjs.org/rxjs/-/rxjs-5.0.0-alpha.11.tgz",
+      "resolved": "http://registry.npmjs.org/rxjs/-/rxjs-5.0.0-alpha.11.tgz"
+    },
     "selenium-webdriver": {
       "version": "2.48.2",
       "from": "https://registry.npmjs.org/selenium-webdriver/-/selenium-webdriver-2.48.2.tgz",
@@ -20341,7 +20341,7 @@
     },
     "source-map-loader": {
       "version": "0.1.5",
-      "from": "source-map-loader@*",
+      "from": "source-map-loader@>=0.1.5 <0.2.0",
       "resolved": "https://registry.npmjs.org/source-map-loader/-/source-map-loader-0.1.5.tgz",
       "dependencies": {
         "loader-utils": {
