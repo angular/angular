@@ -18,6 +18,9 @@
     "Jeremy Elbourn <jelbourn@google.com>"
   ],
   "license": "Apache-2.0",
+  "engines": {
+    "node": ">= 4.2.1 < 5"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git"
