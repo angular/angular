@@ -104,7 +104,7 @@ export let NgClass = class {
             this._differ = null;
         }
     }
-    doCheck() {
+    ngDoCheck() {
         if (isPresent(this._differ)) {
             var changes = this._differ.diff(this._rawClass);
             if (isPresent(changes)) {
@@ -117,7 +117,7 @@ export let NgClass = class {
             }
         }
     }
-    onDestroy() { this._cleanupClasses(this._rawClass); }
+    ngOnDestroy() { this._cleanupClasses(this._rawClass); }
     _cleanupClasses(rawClassVal) {
         this._applyClasses(rawClassVal, true);
         this._applyInitialClasses(false);

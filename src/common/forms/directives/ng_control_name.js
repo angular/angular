@@ -93,7 +93,7 @@ var NgControlName = (function (_super) {
         this._added = false;
         this.valueAccessor = shared_1.selectValueAccessor(this, valueAccessors);
     }
-    NgControlName.prototype.onChanges = function (changes) {
+    NgControlName.prototype.ngOnChanges = function (changes) {
         if (!this._added) {
             this.formDirective.addControl(this);
             this._added = true;
@@ -103,7 +103,7 @@ var NgControlName = (function (_super) {
             this.formDirective.updateModel(this, this.model);
         }
     };
-    NgControlName.prototype.onDestroy = function () { this.formDirective.removeControl(this); };
+    NgControlName.prototype.ngOnDestroy = function () { this.formDirective.removeControl(this); };
     NgControlName.prototype.viewToModelUpdate = function (newValue) {
         this.viewModel = newValue;
         async_1.ObservableWrapper.callEmit(this.update, newValue);

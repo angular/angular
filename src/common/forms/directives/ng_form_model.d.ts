@@ -84,7 +84,7 @@ export declare class NgFormModel extends ControlContainer implements Form, OnCha
     directives: NgControl[];
     ngSubmit: EventEmitter<{}>;
     constructor(_validators: any[], _asyncValidators: any[]);
-    onChanges(changes: {
+    ngOnChanges(changes: {
         [key: string]: SimpleChange;
     }): void;
     formDirective: Form;

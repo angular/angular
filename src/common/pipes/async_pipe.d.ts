@@ -1,5 +1,5 @@
 import { Promise, Observable, EventEmitter } from 'angular2/src/facade/async';
-import { ChangeDetectorRef, PipeOnDestroy, PipeTransform } from 'angular2/core';
+import { ChangeDetectorRef, OnDestroy, PipeTransform } from 'angular2/core';
 /**
  * The `async` pipe subscribes to an Observable or Promise and returns the latest value it has
  * emitted.
@@ -18,9 +18,9 @@ import { ChangeDetectorRef, PipeOnDestroy, PipeTransform } from 'angular2/core';
  * ```typescript
  * ```
  */
-export declare class AsyncPipe implements PipeTransform, PipeOnDestroy {
+export declare class AsyncPipe implements PipeTransform, OnDestroy {
     private _strategy;
     constructor(_ref: ChangeDetectorRef);
-    onDestroy(): void;
+    ngOnDestroy(): void;
     transform(obj: Observable<any> | Promise<any> | EventEmitter<any>, args?: any[]): any;
 }

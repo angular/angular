@@ -11,14 +11,14 @@ describe('on activate example app', function () {
         browser.get(URL);
         waitForElement('my-cmp');
         expect(element(by.css('my-cmp')).getText())
-            .toContain('onActivate: Finished navigating from "null" to ""');
+            .toContain('routerOnActivate: Finished navigating from "null" to ""');
         element(by.css('#param-link')).click();
         waitForElement('my-cmp');
         expect(element(by.css('my-cmp')).getText())
-            .toContain('onActivate: Finished navigating from "" to "1"');
+            .toContain('routerOnActivate: Finished navigating from "" to "1"');
         browser.navigate().back();
         waitForElement('my-cmp');
         expect(element(by.css('my-cmp')).getText())
-            .toContain('onActivate: Finished navigating from "1" to ""');
+            .toContain('routerOnActivate: Finished navigating from "1" to ""');
     });
 });

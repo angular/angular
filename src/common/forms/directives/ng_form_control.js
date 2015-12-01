@@ -82,7 +82,7 @@ var NgFormControl = (function (_super) {
         this.update = new async_1.EventEmitter();
         this.valueAccessor = shared_1.selectValueAccessor(this, valueAccessors);
     }
-    NgFormControl.prototype.onChanges = function (changes) {
+    NgFormControl.prototype.ngOnChanges = function (changes) {
         if (this._isControlChanged(changes)) {
             shared_1.setUpControl(this.form, this);
             this.form.updateValueAndValidity({ emitEvent: false });

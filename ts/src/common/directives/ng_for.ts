@@ -81,7 +81,7 @@ export class NgFor implements DoCheck {
     }
   }
 
-  doCheck() {
+  ngDoCheck() {
     if (isPresent(this._differ)) {
       var changes = this._differ.diff(this._ngForOf);
       if (isPresent(changes)) this._applyChanges(changes);

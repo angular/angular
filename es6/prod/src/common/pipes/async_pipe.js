@@ -60,7 +60,7 @@ export let AsyncPipe = class {
         this._strategy = null;
         this._ref = _ref;
     }
-    onDestroy() {
+    ngOnDestroy() {
         if (isPresent(this._subscription)) {
             this._dispose();
         }

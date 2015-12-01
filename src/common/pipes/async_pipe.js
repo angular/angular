@@ -66,7 +66,7 @@ var AsyncPipe = (function () {
         this._strategy = null;
         this._ref = _ref;
     }
-    AsyncPipe.prototype.onDestroy = function () {
+    AsyncPipe.prototype.ngOnDestroy = function () {
         if (lang_1.isPresent(this._subscription)) {
             this._dispose();
         }

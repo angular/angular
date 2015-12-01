@@ -97,7 +97,7 @@ export abstract class AppViewManager {
    *     Parent (<some-component></some-component>)
    *   `
    * })
-   * class MyApp {
+   * class MyApp implements OnDestroy {
    *   viewRef: ng.ViewRef;
    *
    *   constructor(public appViewManager: ng.AppViewManager, compiler: ng.Compiler) {
@@ -106,7 +106,7 @@ export abstract class AppViewManager {
    *     })
    *   }
    *
-   *   onDestroy() {
+   *   ngOnDestroy() {
    *     this.appViewManager.destroyRootHostView(this.viewRef);
    *     this.viewRef = null;
    *   }

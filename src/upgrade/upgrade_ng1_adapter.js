@@ -32,8 +32,8 @@ var UpgradeNg1ComponentAdapterBuilder = (function () {
                         return new UpgradeNg1ComponentAdapter(self.linkFn, scope, self.directive, elementRef, self.$controller, self.inputs, self.outputs, self.propertyOutputs, self.checkProperties, self.propertyMap);
                     }
                 ],
-                onChanges: function () { },
-                doCheck: function () { }
+                ngOnChanges: function () { },
+                ngDoCheck: function () { }
             });
     }
     UpgradeNg1ComponentAdapterBuilder.prototype.extractDirective = function (injector) {
@@ -204,7 +204,7 @@ var UpgradeNg1ComponentAdapter = (function () {
             this.checkLastValues.push(INITIAL_VALUE);
         }
     }
-    UpgradeNg1ComponentAdapter.prototype.onChanges = function (changes) {
+    UpgradeNg1ComponentAdapter.prototype.ngOnChanges = function (changes) {
         for (var name in changes) {
             if (changes.hasOwnProperty(name)) {
                 var change = changes[name];
@@ -212,7 +212,7 @@ var UpgradeNg1ComponentAdapter = (function () {
             }
         }
     };
-    UpgradeNg1ComponentAdapter.prototype.doCheck = function () {
+    UpgradeNg1ComponentAdapter.prototype.ngDoCheck = function () {
         var count = 0;
         var destinationObj = this.destinationObj;
         var lastValues = this.checkLastValues;

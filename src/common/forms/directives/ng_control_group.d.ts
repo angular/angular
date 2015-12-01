@@ -54,8 +54,8 @@ export declare class NgControlGroup extends ControlContainer implements OnInit, 
     private _validators;
     private _asyncValidators;
     constructor(parent: ControlContainer, _validators: any[], _asyncValidators: any[]);
-    onInit(): void;
-    onDestroy(): void;
+    ngOnInit(): void;
+    ngOnDestroy(): void;
     /**
      * Get the {@link ControlGroup} backing this binding.
      */

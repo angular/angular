@@ -78,7 +78,7 @@ export let NgFor = class {
             this._templateRef = value;
         }
     }
-    doCheck() {
+    ngDoCheck() {
         if (isPresent(this._differ)) {
             var changes = this._differ.diff(this._ngForOf);
             if (isPresent(changes))
