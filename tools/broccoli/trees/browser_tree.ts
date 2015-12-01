@@ -111,8 +111,14 @@ module.exports = function makeBrowserTree(options, destinationPath) {
                    {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/playground/'});
   }
 
+  if (modules.benchpress) {
+    var benchpressTree =
+        new Funnel('modules/benchpress',
+                   {include: ['**/**'], exclude: ['e2e_test/**'], destDir: '/benchpress/'});
+  }
+
   var modulesTree = mergeTrees(
-      [angular2Tree, angular2MaterialTree, benchmarksTree, benchmarksExternalTree, playgroundTree]);
+      [angular2Tree, angular2MaterialTree, benchmarksTree, benchmarksExternalTree, playgroundTree, benchpressTree]);
 
   var es6PolyfillTypings =
       new Funnel('modules', {include: ['angular2/typings/es6-*/**'], destDir: '/'});
