@@ -52,11 +52,8 @@ class ReflectionRemover extends Transformer implements LazyTransformer {
       }
 
       var transformedCode = await removeReflectionCapabilities(
-          new AssetReader.fromTransform(transform),
-          primaryId,
-          options.annotationMatcher,
-          mirrorMode: mirrorMode,
-          writeStaticInit: writeStaticInit);
+          new AssetReader.fromTransform(transform), primaryId,
+          mirrorMode: mirrorMode, writeStaticInit: writeStaticInit);
       transform.addOutput(new Asset.fromString(primaryId, transformedCode));
     }, log: transform.logger);
   }

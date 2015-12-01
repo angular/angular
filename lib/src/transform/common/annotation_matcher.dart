@@ -22,7 +22,7 @@ const _INJECTABLES = const [
 
 const _DIRECTIVES = const [
   const ClassDescriptor(
-      'Directive', 'package:angular2/src/core/metadata/directive.dart',
+      'Directive', 'package:angular2/src/core/metadatada/directive.dart',
       superClass: 'Injectable'),
   const ClassDescriptor('Directive', 'package:angular2/src/core/metadata.dart',
       superClass: 'Injectable'),
@@ -57,19 +57,6 @@ const _VIEWS = const [
   const ClassDescriptor('View', 'package:angular2/src/core/metadata.dart'),
 ];
 
-const _ENTRYPOINTS = const [
-  const ClassDescriptor('AngularEntrypoint', 'package:angular2/angular2.dart'),
-  const ClassDescriptor('AngularEntrypoint', 'package:angular2/bootstrap.dart'),
-  const ClassDescriptor(
-      'AngularEntrypoint', 'package:angular2/bootstrap_static.dart'),
-  const ClassDescriptor(
-      'AngularEntrypoint', 'package:angular2/platform/browser.dart'),
-  const ClassDescriptor(
-      'AngularEntrypoint', 'package:angular2/platform/browser_static.dart'),
-  const ClassDescriptor(
-      'AngularEntrypoint', 'package:angular2/src/core/angular_entrypoint.dart'),
-];
-
 /// Checks if a given [Annotation] matches any of the given
 /// [ClassDescriptors].
 class AnnotationMatcher extends ClassMatcherBase {
@@ -80,8 +67,7 @@ class AnnotationMatcher extends ClassMatcherBase {
       ..addAll(_COMPONENTS)
       ..addAll(_DIRECTIVES)
       ..addAll(_INJECTABLES)
-      ..addAll(_VIEWS)
-      ..addAll(_ENTRYPOINTS));
+      ..addAll(_VIEWS));
   }
 
   bool _implementsWithWarning(Annotation annotation, AssetId assetId,
@@ -108,8 +94,4 @@ class AnnotationMatcher extends ClassMatcherBase {
   /// Checks if an [Annotation] node implements [View].
   bool isView(Annotation annotation, AssetId assetId) =>
       _implementsWithWarning(annotation, assetId, _VIEWS);
-
-  /// Checks if an [Annotation] node implements [AngularEntrypoint]
-  bool isEntrypoint(Annotation annotation, AssetId assetId) =>
-      _implementsWithWarning(annotation, assetId, _ENTRYPOINTS);
 }
