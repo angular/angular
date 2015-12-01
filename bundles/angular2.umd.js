@@ -68,10 +68,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	__export(__webpack_require__(151));
 	__export(__webpack_require__(286));
 	__export(__webpack_require__(287));
-	__export(__webpack_require__(290));
-	__export(__webpack_require__(292));
-	__export(__webpack_require__(351));
-	var compiler_1 = __webpack_require__(321);
+	__export(__webpack_require__(289));
+	__export(__webpack_require__(291));
+	__export(__webpack_require__(350));
+	var compiler_1 = __webpack_require__(320);
 	exports.UrlResolver = compiler_1.UrlResolver;
 	exports.AppRootUrl = compiler_1.AppRootUrl;
 
@@ -33951,9 +33951,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var angular_entrypoint_1 = __webpack_require__(288);
-	exports.AngularEntrypoint = angular_entrypoint_1.AngularEntrypoint;
-	var browser_common_1 = __webpack_require__(289);
+	var browser_common_1 = __webpack_require__(288);
 	exports.BROWSER_PROVIDERS = browser_common_1.BROWSER_PROVIDERS;
 	exports.ELEMENT_PROBE_BINDINGS = browser_common_1.ELEMENT_PROBE_BINDINGS;
 	exports.ELEMENT_PROBE_PROVIDERS = browser_common_1.ELEMENT_PROBE_PROVIDERS;
@@ -33965,12 +33963,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.enableDebugTools = browser_common_1.enableDebugTools;
 	exports.disableDebugTools = browser_common_1.disableDebugTools;
 	var lang_1 = __webpack_require__(5);
-	var browser_common_2 = __webpack_require__(289);
-	var compiler_1 = __webpack_require__(321);
+	var browser_common_2 = __webpack_require__(288);
+	var compiler_1 = __webpack_require__(320);
 	var core_1 = __webpack_require__(151);
 	var reflection_capabilities_1 = __webpack_require__(166);
-	var xhr_impl_1 = __webpack_require__(310);
-	var compiler_2 = __webpack_require__(321);
+	var xhr_impl_1 = __webpack_require__(309);
+	var compiler_2 = __webpack_require__(320);
 	var di_1 = __webpack_require__(154);
 	/**
 	 * An array of providers that should be passed into `application()` when bootstrapping a component.
@@ -34076,83 +34074,38 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 288 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
-	    switch (arguments.length) {
-	        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
-	        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
-	        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
-	    }
-	};
-	var __metadata = (this && this.__metadata) || function (k, v) {
-	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-	};
-	var lang_1 = __webpack_require__(5);
-	/**
-	 * Marks a function or method as an Angular 2 entrypoint. Only necessary in Dart code.
-	 *
-	 * The optional `name` parameter will be reflected in logs when the entry point is processed.
-	 *
-	 * See [the wiki][] for detailed documentation.
-	 * [the wiki]: https://github.com/angular/angular/wiki/Angular-2-Dart-Transformer#entry_points
-	 *
-	 * ## Example
-	 *
-	 * ```
-	 * @AngularEntrypoint("name-for-debug")
-	 * void main() {
-	 *   bootstrap(MyComponent);
-	 * }
-	 */
-	var AngularEntrypoint = (function () {
-	    function AngularEntrypoint(name) {
-	        this.name = name;
-	    }
-	    AngularEntrypoint = __decorate([
-	        lang_1.CONST(), 
-	        __metadata('design:paramtypes', [String])
-	    ], AngularEntrypoint);
-	    return AngularEntrypoint;
-	})();
-	exports.AngularEntrypoint = AngularEntrypoint;
-
-
-/***/ },
-/* 289 */
-/***/ function(module, exports, __webpack_require__) {
-
 	var lang_1 = __webpack_require__(5);
 	var di_1 = __webpack_require__(154);
 	var core_1 = __webpack_require__(151);
 	var common_1 = __webpack_require__(2);
 	var testability_1 = __webpack_require__(211);
-	var dom_adapter_1 = __webpack_require__(290);
-	var dom_events_1 = __webpack_require__(291);
-	var key_events_1 = __webpack_require__(293);
-	var hammer_gestures_1 = __webpack_require__(294);
-	var dom_tokens_1 = __webpack_require__(296);
-	var dom_renderer_1 = __webpack_require__(297);
-	var shared_styles_host_1 = __webpack_require__(305);
-	var shared_styles_host_2 = __webpack_require__(305);
-	var browser_details_1 = __webpack_require__(304);
-	var animation_builder_1 = __webpack_require__(298);
-	var browser_adapter_1 = __webpack_require__(308);
-	var testability_2 = __webpack_require__(312);
-	var wtf_init_1 = __webpack_require__(313);
-	var event_manager_1 = __webpack_require__(292);
-	var dom_tokens_2 = __webpack_require__(296);
+	var dom_adapter_1 = __webpack_require__(289);
+	var dom_events_1 = __webpack_require__(290);
+	var key_events_1 = __webpack_require__(292);
+	var hammer_gestures_1 = __webpack_require__(293);
+	var dom_tokens_1 = __webpack_require__(295);
+	var dom_renderer_1 = __webpack_require__(296);
+	var shared_styles_host_1 = __webpack_require__(304);
+	var shared_styles_host_2 = __webpack_require__(304);
+	var browser_details_1 = __webpack_require__(303);
+	var animation_builder_1 = __webpack_require__(297);
+	var browser_adapter_1 = __webpack_require__(307);
+	var testability_2 = __webpack_require__(311);
+	var wtf_init_1 = __webpack_require__(312);
+	var event_manager_1 = __webpack_require__(291);
+	var dom_tokens_2 = __webpack_require__(295);
 	exports.DOCUMENT = dom_tokens_2.DOCUMENT;
-	var title_1 = __webpack_require__(314);
+	var title_1 = __webpack_require__(313);
 	exports.Title = title_1.Title;
-	var common_dom_1 = __webpack_require__(315);
+	var common_dom_1 = __webpack_require__(314);
 	exports.DebugElementViewListener = common_dom_1.DebugElementViewListener;
 	exports.ELEMENT_PROBE_PROVIDERS = common_dom_1.ELEMENT_PROBE_PROVIDERS;
 	exports.ELEMENT_PROBE_BINDINGS = common_dom_1.ELEMENT_PROBE_BINDINGS;
 	exports.inspectNativeElement = common_dom_1.inspectNativeElement;
 	exports.By = common_dom_1.By;
-	var browser_adapter_2 = __webpack_require__(308);
+	var browser_adapter_2 = __webpack_require__(307);
 	exports.BrowserDomAdapter = browser_adapter_2.BrowserDomAdapter;
-	var tools_1 = __webpack_require__(318);
+	var tools_1 = __webpack_require__(317);
 	exports.enableDebugTools = tools_1.enableDebugTools;
 	exports.disableDebugTools = tools_1.disableDebugTools;
 	exports.BROWSER_PROVIDERS = lang_1.CONST_EXPR([
@@ -34193,7 +34146,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 290 */
+/* 289 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -34217,7 +34170,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 291 */
+/* 290 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -34236,9 +34189,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var dom_adapter_1 = __webpack_require__(290);
+	var dom_adapter_1 = __webpack_require__(289);
 	var core_1 = __webpack_require__(151);
-	var event_manager_1 = __webpack_require__(292);
+	var event_manager_1 = __webpack_require__(291);
 	var DomEventsPlugin = (function (_super) {
 	    __extends(DomEventsPlugin, _super);
 	    function DomEventsPlugin() {
@@ -34268,7 +34221,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 292 */
+/* 291 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -34343,7 +34296,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 293 */
+/* 292 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -34362,10 +34315,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var dom_adapter_1 = __webpack_require__(290);
+	var dom_adapter_1 = __webpack_require__(289);
 	var lang_1 = __webpack_require__(5);
 	var collection_1 = __webpack_require__(160);
-	var event_manager_1 = __webpack_require__(292);
+	var event_manager_1 = __webpack_require__(291);
 	var di_1 = __webpack_require__(154);
 	var modifierKeys = ['alt', 'control', 'meta', 'shift'];
 	var modifierKeyGetters = {
@@ -34463,7 +34416,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 294 */
+/* 293 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -34482,7 +34435,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var hammer_common_1 = __webpack_require__(295);
+	var hammer_common_1 = __webpack_require__(294);
 	var lang_1 = __webpack_require__(5);
 	var exceptions_1 = __webpack_require__(162);
 	var di_1 = __webpack_require__(154);
@@ -34520,7 +34473,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 295 */
+/* 294 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -34528,7 +34481,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var event_manager_1 = __webpack_require__(292);
+	var event_manager_1 = __webpack_require__(291);
 	var collection_1 = __webpack_require__(160);
 	var _eventNames = {
 	    // pan
@@ -34582,7 +34535,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 296 */
+/* 295 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var di_1 = __webpack_require__(154);
@@ -34597,7 +34550,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 297 */
+/* 296 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -34620,20 +34573,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
 	var di_1 = __webpack_require__(154);
-	var animation_builder_1 = __webpack_require__(298);
+	var animation_builder_1 = __webpack_require__(297);
 	var lang_1 = __webpack_require__(5);
 	var exceptions_1 = __webpack_require__(162);
-	var shared_styles_host_1 = __webpack_require__(305);
+	var shared_styles_host_1 = __webpack_require__(304);
 	var profile_1 = __webpack_require__(193);
 	var core_1 = __webpack_require__(151);
-	var event_manager_1 = __webpack_require__(292);
-	var dom_tokens_1 = __webpack_require__(296);
-	var view_factory_1 = __webpack_require__(306);
-	var view_1 = __webpack_require__(307);
-	var util_1 = __webpack_require__(303);
+	var event_manager_1 = __webpack_require__(291);
+	var dom_tokens_1 = __webpack_require__(295);
+	var view_factory_1 = __webpack_require__(305);
+	var view_1 = __webpack_require__(306);
+	var util_1 = __webpack_require__(302);
 	var metadata_1 = __webpack_require__(152);
 	// TODO move it once DomAdapter is moved
-	var dom_adapter_1 = __webpack_require__(290);
+	var dom_adapter_1 = __webpack_require__(289);
 	var NAMESPACE_URIS = lang_1.CONST_EXPR({ 'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg' });
 	var DomRenderer = (function (_super) {
 	    __extends(DomRenderer, _super);
@@ -34905,7 +34858,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 298 */
+/* 297 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -34920,8 +34873,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var di_1 = __webpack_require__(154);
-	var css_animation_builder_1 = __webpack_require__(299);
-	var browser_details_1 = __webpack_require__(304);
+	var css_animation_builder_1 = __webpack_require__(298);
+	var browser_details_1 = __webpack_require__(303);
 	var AnimationBuilder = (function () {
 	    /**
 	     * Used for DI
@@ -34945,11 +34898,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 299 */
+/* 298 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var css_animation_options_1 = __webpack_require__(300);
-	var animation_1 = __webpack_require__(301);
+	var css_animation_options_1 = __webpack_require__(299);
+	var animation_1 = __webpack_require__(300);
 	var CssAnimationBuilder = (function () {
 	    /**
 	     * Accepts public properties for CssAnimationBuilder
@@ -35036,7 +34989,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 300 */
+/* 299 */
 /***/ function(module, exports) {
 
 	var CssAnimationOptions = (function () {
@@ -35054,14 +35007,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 301 */
+/* 300 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var math_1 = __webpack_require__(302);
-	var util_1 = __webpack_require__(303);
+	var math_1 = __webpack_require__(301);
+	var util_1 = __webpack_require__(302);
 	var collection_1 = __webpack_require__(160);
-	var dom_adapter_1 = __webpack_require__(290);
+	var dom_adapter_1 = __webpack_require__(289);
 	var Animation = (function () {
 	    /**
 	     * Stores the start time and starts the animation
@@ -35241,7 +35194,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 302 */
+/* 301 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -35250,7 +35203,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 303 */
+/* 302 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -35267,7 +35220,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 304 */
+/* 303 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -35282,8 +35235,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var di_1 = __webpack_require__(154);
-	var math_1 = __webpack_require__(302);
-	var dom_adapter_1 = __webpack_require__(290);
+	var math_1 = __webpack_require__(301);
+	var dom_adapter_1 = __webpack_require__(289);
 	var BrowserDetails = (function () {
 	    function BrowserDetails() {
 	        this.elapsedTimeIncludesDelay = false;
@@ -35347,7 +35300,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 305 */
+/* 304 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -35369,10 +35322,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __param = (this && this.__param) || function (paramIndex, decorator) {
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
-	var dom_adapter_1 = __webpack_require__(290);
+	var dom_adapter_1 = __webpack_require__(289);
 	var di_1 = __webpack_require__(154);
 	var collection_1 = __webpack_require__(160);
-	var dom_tokens_1 = __webpack_require__(296);
+	var dom_tokens_1 = __webpack_require__(295);
 	var SharedStylesHost = (function () {
 	    function SharedStylesHost() {
 	        /** @internal */
@@ -35435,11 +35388,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 306 */
+/* 305 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var view_1 = __webpack_require__(307);
+	var view_1 = __webpack_require__(306);
 	var metadata_1 = __webpack_require__(152);
 	var collection_1 = __webpack_require__(160);
 	function encapsulateStyles(componentTemplate) {
@@ -35720,7 +35673,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 307 */
+/* 306 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -35800,7 +35753,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 308 */
+/* 307 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -35810,8 +35763,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	var collection_1 = __webpack_require__(160);
 	var lang_1 = __webpack_require__(5);
-	var dom_adapter_1 = __webpack_require__(290);
-	var generic_browser_adapter_1 = __webpack_require__(309);
+	var dom_adapter_1 = __webpack_require__(289);
+	var generic_browser_adapter_1 = __webpack_require__(308);
 	var _attrToPropMap = {
 	    'class': 'className',
 	    'innerHtml': 'innerHTML',
@@ -36190,7 +36143,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 309 */
+/* 308 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -36200,8 +36153,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	var collection_1 = __webpack_require__(160);
 	var lang_1 = __webpack_require__(5);
-	var dom_adapter_1 = __webpack_require__(290);
-	var xhr_impl_1 = __webpack_require__(310);
+	var dom_adapter_1 = __webpack_require__(289);
+	var xhr_impl_1 = __webpack_require__(309);
 	/**
 	 * Provides DOM operations in any browser environment.
 	 */
@@ -36265,7 +36218,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 310 */
+/* 309 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -36275,7 +36228,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	var promise_1 = __webpack_require__(7);
 	var lang_1 = __webpack_require__(5);
-	var xhr_1 = __webpack_require__(311);
+	var xhr_1 = __webpack_require__(310);
 	var XHRImpl = (function (_super) {
 	    __extends(XHRImpl, _super);
 	    function XHRImpl() {
@@ -36315,7 +36268,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 311 */
+/* 310 */
 /***/ function(module, exports) {
 
 	// TODO: vsavkin rename it into TemplateLoader
@@ -36329,11 +36282,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 312 */
+/* 311 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var dom_adapter_1 = __webpack_require__(290);
+	var dom_adapter_1 = __webpack_require__(289);
 	var core_1 = __webpack_require__(151);
 	var PublicTestability = (function () {
 	    function PublicTestability(testability) {
@@ -36389,7 +36342,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 313 */
+/* 312 */
 /***/ function(module, exports) {
 
 	/**
@@ -36400,10 +36353,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 314 */
+/* 313 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var dom_adapter_1 = __webpack_require__(290);
+	var dom_adapter_1 = __webpack_require__(289);
 	/**
 	 * A service that can be used to get and set the title of a current HTML document.
 	 *
@@ -36431,7 +36384,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 315 */
+/* 314 */
 /***/ function(module, exports, __webpack_require__) {
 
 	function __export(m) {
@@ -36440,33 +36393,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * This is a set of classes and objects that can be used both in the browser and on the server.
 	 */
-	var dom_adapter_1 = __webpack_require__(290);
+	var dom_adapter_1 = __webpack_require__(289);
 	exports.DOM = dom_adapter_1.DOM;
 	exports.setRootDomAdapter = dom_adapter_1.setRootDomAdapter;
 	exports.DomAdapter = dom_adapter_1.DomAdapter;
-	var dom_renderer_1 = __webpack_require__(297);
+	var dom_renderer_1 = __webpack_require__(296);
 	exports.DomRenderer = dom_renderer_1.DomRenderer;
-	var dom_tokens_1 = __webpack_require__(296);
+	var dom_tokens_1 = __webpack_require__(295);
 	exports.DOCUMENT = dom_tokens_1.DOCUMENT;
-	var shared_styles_host_1 = __webpack_require__(305);
+	var shared_styles_host_1 = __webpack_require__(304);
 	exports.SharedStylesHost = shared_styles_host_1.SharedStylesHost;
 	exports.DomSharedStylesHost = shared_styles_host_1.DomSharedStylesHost;
-	var dom_events_1 = __webpack_require__(291);
+	var dom_events_1 = __webpack_require__(290);
 	exports.DomEventsPlugin = dom_events_1.DomEventsPlugin;
-	var event_manager_1 = __webpack_require__(292);
+	var event_manager_1 = __webpack_require__(291);
 	exports.EVENT_MANAGER_PLUGINS = event_manager_1.EVENT_MANAGER_PLUGINS;
 	exports.EventManager = event_manager_1.EventManager;
 	exports.EventManagerPlugin = event_manager_1.EventManagerPlugin;
+	__export(__webpack_require__(315));
 	__export(__webpack_require__(316));
-	__export(__webpack_require__(317));
 
 
 /***/ },
-/* 316 */
+/* 315 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var dom_adapter_1 = __webpack_require__(290);
+	var dom_adapter_1 = __webpack_require__(289);
 	var By = (function () {
 	    function By() {
 	    }
@@ -36487,7 +36440,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 317 */
+/* 316 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -36505,7 +36458,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var collection_1 = __webpack_require__(160);
 	var di_1 = __webpack_require__(154);
 	var view_listener_1 = __webpack_require__(229);
-	var dom_adapter_1 = __webpack_require__(290);
+	var dom_adapter_1 = __webpack_require__(289);
 	var api_1 = __webpack_require__(215);
 	var debug_element_1 = __webpack_require__(243);
 	var NG_ID_PROPERTY = 'ngid';
@@ -36574,11 +36527,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 318 */
+/* 317 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var common_tools_1 = __webpack_require__(319);
+	var common_tools_1 = __webpack_require__(318);
 	var context = lang_1.global;
 	/**
 	 * Enabled Angular 2 debug tools that are accessible via your browser's
@@ -36605,13 +36558,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 319 */
+/* 318 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var application_ref_1 = __webpack_require__(208);
 	var lang_1 = __webpack_require__(5);
-	var browser_1 = __webpack_require__(320);
-	var dom_adapter_1 = __webpack_require__(290);
+	var browser_1 = __webpack_require__(319);
+	var dom_adapter_1 = __webpack_require__(289);
 	/**
 	 * Entry point for all Angular debug tools. This object corresponds to the `ng`
 	 * global variable accessible in the dev console.
@@ -36679,7 +36632,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 320 */
+/* 319 */
 /***/ function(module, exports) {
 
 	/**
@@ -36701,7 +36654,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 321 */
+/* 320 */
 /***/ function(module, exports, __webpack_require__) {
 
 	function __export(m) {
@@ -36712,14 +36665,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @description
 	 * Starting point to import all compiler APIs.
 	 */
+	__export(__webpack_require__(321));
+	__export(__webpack_require__(310));
 	__export(__webpack_require__(322));
-	__export(__webpack_require__(311));
-	__export(__webpack_require__(323));
-	__export(__webpack_require__(349));
+	__export(__webpack_require__(348));
 
 
 /***/ },
-/* 322 */
+/* 321 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -37013,17 +36966,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 323 */
+/* 322 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var runtime_compiler_1 = __webpack_require__(324);
-	var template_compiler_1 = __webpack_require__(325);
+	var runtime_compiler_1 = __webpack_require__(323);
+	var template_compiler_1 = __webpack_require__(324);
 	exports.TemplateCompiler = template_compiler_1.TemplateCompiler;
-	var directive_metadata_1 = __webpack_require__(326);
+	var directive_metadata_1 = __webpack_require__(325);
 	exports.CompileDirectiveMetadata = directive_metadata_1.CompileDirectiveMetadata;
 	exports.CompileTypeMetadata = directive_metadata_1.CompileTypeMetadata;
 	exports.CompileTemplateMetadata = directive_metadata_1.CompileTemplateMetadata;
-	var source_module_1 = __webpack_require__(329);
+	var source_module_1 = __webpack_require__(328);
 	exports.SourceModule = source_module_1.SourceModule;
 	exports.SourceWithImports = source_module_1.SourceWithImports;
 	var platform_directives_and_pipes_1 = __webpack_require__(238);
@@ -37031,22 +36984,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.PLATFORM_PIPES = platform_directives_and_pipes_1.PLATFORM_PIPES;
 	var lang_1 = __webpack_require__(5);
 	var di_1 = __webpack_require__(154);
-	var template_parser_1 = __webpack_require__(338);
-	var html_parser_1 = __webpack_require__(339);
-	var template_normalizer_1 = __webpack_require__(346);
-	var runtime_metadata_1 = __webpack_require__(347);
-	var change_detector_compiler_1 = __webpack_require__(330);
-	var style_compiler_1 = __webpack_require__(334);
-	var command_compiler_1 = __webpack_require__(337);
-	var template_compiler_2 = __webpack_require__(325);
+	var template_parser_1 = __webpack_require__(337);
+	var html_parser_1 = __webpack_require__(338);
+	var template_normalizer_1 = __webpack_require__(345);
+	var runtime_metadata_1 = __webpack_require__(346);
+	var change_detector_compiler_1 = __webpack_require__(329);
+	var style_compiler_1 = __webpack_require__(333);
+	var command_compiler_1 = __webpack_require__(336);
+	var template_compiler_2 = __webpack_require__(324);
 	var change_detection_1 = __webpack_require__(173);
 	var compiler_1 = __webpack_require__(213);
-	var runtime_compiler_2 = __webpack_require__(324);
-	var element_schema_registry_1 = __webpack_require__(344);
-	var dom_element_schema_registry_1 = __webpack_require__(348);
-	var url_resolver_1 = __webpack_require__(322);
-	var app_root_url_1 = __webpack_require__(349);
-	var anchor_based_app_root_url_1 = __webpack_require__(350);
+	var runtime_compiler_2 = __webpack_require__(323);
+	var element_schema_registry_1 = __webpack_require__(343);
+	var dom_element_schema_registry_1 = __webpack_require__(347);
+	var url_resolver_1 = __webpack_require__(321);
+	var app_root_url_1 = __webpack_require__(348);
+	var anchor_based_app_root_url_1 = __webpack_require__(349);
 	var change_detection_2 = __webpack_require__(173);
 	function _createChangeDetectorGenConfig() {
 	    return new change_detection_1.ChangeDetectorGenConfig(lang_1.assertionsEnabled(), false, true);
@@ -37074,7 +37027,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 324 */
+/* 323 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -37095,7 +37048,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	var compiler_1 = __webpack_require__(213);
 	var proto_view_factory_1 = __webpack_require__(214);
-	var template_compiler_1 = __webpack_require__(325);
+	var template_compiler_1 = __webpack_require__(324);
 	var di_1 = __webpack_require__(154);
 	var RuntimeCompiler = (function (_super) {
 	    __extends(RuntimeCompiler, _super);
@@ -37130,7 +37083,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 325 */
+/* 324 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -37149,17 +37102,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	var collection_1 = __webpack_require__(160);
 	var async_1 = __webpack_require__(6);
 	var template_commands_1 = __webpack_require__(239);
-	var directive_metadata_1 = __webpack_require__(326);
+	var directive_metadata_1 = __webpack_require__(325);
 	var di_1 = __webpack_require__(154);
-	var source_module_1 = __webpack_require__(329);
-	var change_detector_compiler_1 = __webpack_require__(330);
-	var style_compiler_1 = __webpack_require__(334);
-	var command_compiler_1 = __webpack_require__(337);
-	var template_parser_1 = __webpack_require__(338);
-	var template_normalizer_1 = __webpack_require__(346);
-	var runtime_metadata_1 = __webpack_require__(347);
-	var command_compiler_2 = __webpack_require__(337);
-	var util_1 = __webpack_require__(328);
+	var source_module_1 = __webpack_require__(328);
+	var change_detector_compiler_1 = __webpack_require__(329);
+	var style_compiler_1 = __webpack_require__(333);
+	var command_compiler_1 = __webpack_require__(336);
+	var template_parser_1 = __webpack_require__(337);
+	var template_normalizer_1 = __webpack_require__(345);
+	var runtime_metadata_1 = __webpack_require__(346);
+	var command_compiler_2 = __webpack_require__(336);
+	var util_1 = __webpack_require__(327);
 	var TemplateCompiler = (function () {
 	    function TemplateCompiler(_runtimeMetadataResolver, _templateNormalizer, _templateParser, _styleCompiler, _commandCompiler, _cdCompiler) {
 	        this._runtimeMetadataResolver = _runtimeMetadataResolver;
@@ -37374,15 +37327,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 326 */
+/* 325 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
 	var collection_1 = __webpack_require__(160);
 	var change_detection_1 = __webpack_require__(173);
 	var view_1 = __webpack_require__(204);
-	var selector_1 = __webpack_require__(327);
-	var util_1 = __webpack_require__(328);
+	var selector_1 = __webpack_require__(326);
+	var util_1 = __webpack_require__(327);
 	var interfaces_1 = __webpack_require__(232);
 	// group 1: "property" from "[property]"
 	// group 2: "event" from "(event)"
@@ -37579,7 +37532,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 327 */
+/* 326 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var collection_1 = __webpack_require__(160);
@@ -37944,7 +37897,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 328 */
+/* 327 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -38039,7 +37992,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 329 */
+/* 328 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -38104,7 +38057,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 330 */
+/* 329 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -38118,13 +38071,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var source_module_1 = __webpack_require__(329);
+	var source_module_1 = __webpack_require__(328);
 	var change_detection_jit_generator_1 = __webpack_require__(200);
-	var change_definition_factory_1 = __webpack_require__(331);
+	var change_definition_factory_1 = __webpack_require__(330);
 	var lang_1 = __webpack_require__(5);
 	var change_detection_1 = __webpack_require__(173);
-	var change_detector_codegen_1 = __webpack_require__(333);
-	var util_1 = __webpack_require__(328);
+	var change_detector_codegen_1 = __webpack_require__(332);
+	var util_1 = __webpack_require__(327);
 	var di_1 = __webpack_require__(154);
 	var ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
 	var UTIL = "ChangeDetectionUtil";
@@ -38194,14 +38147,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 331 */
+/* 330 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var collection_1 = __webpack_require__(160);
 	var lang_1 = __webpack_require__(5);
 	var reflection_1 = __webpack_require__(164);
 	var change_detection_1 = __webpack_require__(173);
-	var template_ast_1 = __webpack_require__(332);
+	var template_ast_1 = __webpack_require__(331);
 	var interfaces_1 = __webpack_require__(232);
 	function createChangeDetectorDefinitions(componentType, componentStrategy, genConfig, parsedTemplate) {
 	    var pvVisitors = [];
@@ -38358,7 +38311,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 332 */
+/* 331 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -38550,7 +38503,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 333 */
+/* 332 */
 /***/ function(module, exports) {
 
 	// Note: This class is only here so that we can reference it from TypeScript code.
@@ -38570,7 +38523,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 334 */
+/* 333 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -38584,17 +38537,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var source_module_1 = __webpack_require__(329);
+	var source_module_1 = __webpack_require__(328);
 	var view_1 = __webpack_require__(204);
-	var xhr_1 = __webpack_require__(311);
+	var xhr_1 = __webpack_require__(310);
 	var lang_1 = __webpack_require__(5);
 	var async_1 = __webpack_require__(6);
-	var shadow_css_1 = __webpack_require__(335);
-	var url_resolver_1 = __webpack_require__(322);
-	var style_url_resolver_1 = __webpack_require__(336);
-	var util_1 = __webpack_require__(328);
+	var shadow_css_1 = __webpack_require__(334);
+	var url_resolver_1 = __webpack_require__(321);
+	var style_url_resolver_1 = __webpack_require__(335);
+	var util_1 = __webpack_require__(327);
 	var di_1 = __webpack_require__(154);
-	var view_factory_1 = __webpack_require__(306);
+	var view_factory_1 = __webpack_require__(305);
 	var StyleCompiler = (function () {
 	    function StyleCompiler(_xhr, _urlResolver) {
 	        this._xhr = _xhr;
@@ -38670,7 +38623,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 335 */
+/* 334 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var collection_1 = __webpack_require__(160);
@@ -39172,7 +39125,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 336 */
+/* 335 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Some of the code comes from WebComponents.JS
@@ -39218,7 +39171,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 337 */
+/* 336 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -39235,9 +39188,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var lang_1 = __webpack_require__(5);
 	var collection_1 = __webpack_require__(160);
 	var template_commands_1 = __webpack_require__(239);
-	var template_ast_1 = __webpack_require__(332);
-	var source_module_1 = __webpack_require__(329);
-	var util_1 = __webpack_require__(328);
+	var template_ast_1 = __webpack_require__(331);
+	var source_module_1 = __webpack_require__(328);
+	var util_1 = __webpack_require__(327);
 	var di_1 = __webpack_require__(154);
 	exports.TEMPLATE_COMMANDS_MODULE_REF = source_module_1.moduleRef("package:angular2/src/core/linker/template_commands" + util_1.MODULE_SUFFIX);
 	var IMPLICIT_TEMPLATE_VAR = '\$implicit';
@@ -39525,7 +39478,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 338 */
+/* 337 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -39553,15 +39506,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	var lang_2 = __webpack_require__(5);
 	var exceptions_1 = __webpack_require__(162);
 	var change_detection_1 = __webpack_require__(173);
-	var html_parser_1 = __webpack_require__(339);
-	var parse_util_1 = __webpack_require__(342);
-	var template_ast_1 = __webpack_require__(332);
-	var selector_1 = __webpack_require__(327);
-	var element_schema_registry_1 = __webpack_require__(344);
-	var template_preparser_1 = __webpack_require__(345);
-	var style_url_resolver_1 = __webpack_require__(336);
-	var html_ast_1 = __webpack_require__(340);
-	var util_1 = __webpack_require__(328);
+	var html_parser_1 = __webpack_require__(338);
+	var parse_util_1 = __webpack_require__(341);
+	var template_ast_1 = __webpack_require__(331);
+	var selector_1 = __webpack_require__(326);
+	var element_schema_registry_1 = __webpack_require__(343);
+	var template_preparser_1 = __webpack_require__(344);
+	var style_url_resolver_1 = __webpack_require__(335);
+	var html_ast_1 = __webpack_require__(339);
+	var util_1 = __webpack_require__(327);
 	// Group 1 = "bind-"
 	// Group 2 = "var-" or "#"
 	// Group 3 = "on-"
@@ -40137,7 +40090,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 339 */
+/* 338 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -40158,11 +40111,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	var lang_1 = __webpack_require__(5);
 	var collection_1 = __webpack_require__(160);
-	var html_ast_1 = __webpack_require__(340);
+	var html_ast_1 = __webpack_require__(339);
 	var di_1 = __webpack_require__(154);
-	var html_lexer_1 = __webpack_require__(341);
-	var parse_util_1 = __webpack_require__(342);
-	var html_tags_1 = __webpack_require__(343);
+	var html_lexer_1 = __webpack_require__(340);
+	var parse_util_1 = __webpack_require__(341);
+	var html_tags_1 = __webpack_require__(342);
 	var HtmlTreeError = (function (_super) {
 	    __extends(HtmlTreeError, _super);
 	    function HtmlTreeError(elementName, location, msg) {
@@ -40370,7 +40323,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 340 */
+/* 339 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -40419,7 +40372,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 341 */
+/* 340 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -40428,8 +40381,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var lang_1 = __webpack_require__(5);
-	var parse_util_1 = __webpack_require__(342);
-	var html_tags_1 = __webpack_require__(343);
+	var parse_util_1 = __webpack_require__(341);
+	var html_tags_1 = __webpack_require__(342);
 	(function (HtmlTokenType) {
 	    HtmlTokenType[HtmlTokenType["TAG_OPEN_START"] = 0] = "TAG_OPEN_START";
 	    HtmlTokenType[HtmlTokenType["TAG_OPEN_END"] = 1] = "TAG_OPEN_END";
@@ -40907,7 +40860,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 342 */
+/* 341 */
 /***/ function(module, exports) {
 
 	var ParseLocation = (function () {
@@ -40984,7 +40937,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 343 */
+/* 342 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -41121,7 +41074,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 344 */
+/* 343 */
 /***/ function(module, exports) {
 
 	var ElementSchemaRegistry = (function () {
@@ -41135,7 +41088,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 345 */
+/* 344 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -41213,7 +41166,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 346 */
+/* 345 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -41227,18 +41180,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var directive_metadata_1 = __webpack_require__(326);
+	var directive_metadata_1 = __webpack_require__(325);
 	var lang_1 = __webpack_require__(5);
 	var exceptions_1 = __webpack_require__(162);
 	var async_1 = __webpack_require__(6);
-	var xhr_1 = __webpack_require__(311);
-	var url_resolver_1 = __webpack_require__(322);
-	var style_url_resolver_1 = __webpack_require__(336);
+	var xhr_1 = __webpack_require__(310);
+	var url_resolver_1 = __webpack_require__(321);
+	var style_url_resolver_1 = __webpack_require__(335);
 	var di_1 = __webpack_require__(154);
 	var view_1 = __webpack_require__(204);
-	var html_ast_1 = __webpack_require__(340);
-	var html_parser_1 = __webpack_require__(339);
-	var template_preparser_1 = __webpack_require__(345);
+	var html_ast_1 = __webpack_require__(339);
+	var html_parser_1 = __webpack_require__(338);
+	var template_preparser_1 = __webpack_require__(344);
 	var TemplateNormalizer = (function () {
 	    function TemplateNormalizer(_xhr, _urlResolver, _htmlParser) {
 	        this._xhr = _xhr;
@@ -41343,7 +41296,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 347 */
+/* 346 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -41363,7 +41316,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var di_1 = __webpack_require__(154);
 	var lang_1 = __webpack_require__(5);
 	var exceptions_1 = __webpack_require__(162);
-	var cpl = __webpack_require__(326);
+	var cpl = __webpack_require__(325);
 	var md = __webpack_require__(171);
 	var directive_resolver_1 = __webpack_require__(235);
 	var view_resolver_1 = __webpack_require__(236);
@@ -41372,7 +41325,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var reflection_1 = __webpack_require__(164);
 	var di_2 = __webpack_require__(154);
 	var platform_directives_and_pipes_1 = __webpack_require__(238);
-	var util_1 = __webpack_require__(328);
+	var util_1 = __webpack_require__(327);
 	var RuntimeMetadataResolver = (function () {
 	    function RuntimeMetadataResolver(_directiveResolver, _viewResolver, _platformDirectives) {
 	        this._directiveResolver = _directiveResolver;
@@ -41471,7 +41424,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 348 */
+/* 347 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -41493,8 +41446,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var di_1 = __webpack_require__(154);
 	var lang_1 = __webpack_require__(5);
 	var collection_1 = __webpack_require__(160);
-	var dom_adapter_1 = __webpack_require__(290);
-	var element_schema_registry_1 = __webpack_require__(344);
+	var dom_adapter_1 = __webpack_require__(289);
+	var element_schema_registry_1 = __webpack_require__(343);
 	var DomElementSchemaRegistry = (function (_super) {
 	    __extends(DomElementSchemaRegistry, _super);
 	    function DomElementSchemaRegistry() {
@@ -41534,7 +41487,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 349 */
+/* 348 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -41572,7 +41525,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 350 */
+/* 349 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -41591,8 +41544,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var app_root_url_1 = __webpack_require__(349);
-	var dom_adapter_1 = __webpack_require__(290);
+	var app_root_url_1 = __webpack_require__(348);
+	var dom_adapter_1 = __webpack_require__(289);
 	var di_1 = __webpack_require__(154);
 	/**
 	 * Extension of {@link AppRootUrl} that uses a DOM anchor tag to set the root url to
@@ -41617,7 +41570,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 351 */
+/* 350 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -41625,24 +41578,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @description
 	 * Adapter allowing AngularJS v1 and Angular v2 to run side by side in the same application.
 	 */
-	var upgrade_adapter_1 = __webpack_require__(352);
+	var upgrade_adapter_1 = __webpack_require__(351);
 	exports.UpgradeAdapter = upgrade_adapter_1.UpgradeAdapter;
 	exports.UpgradeAdapterRef = upgrade_adapter_1.UpgradeAdapterRef;
 
 
 /***/ },
-/* 352 */
+/* 351 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var angular2_1 = __webpack_require__(1);
 	var async_1 = __webpack_require__(6);
 	var browser_1 = __webpack_require__(287);
-	var metadata_1 = __webpack_require__(353);
-	var util_1 = __webpack_require__(354);
-	var constants_1 = __webpack_require__(355);
-	var downgrade_ng2_adapter_1 = __webpack_require__(356);
-	var upgrade_ng1_adapter_1 = __webpack_require__(357);
-	var angular = __webpack_require__(358);
+	var metadata_1 = __webpack_require__(352);
+	var util_1 = __webpack_require__(353);
+	var constants_1 = __webpack_require__(354);
+	var downgrade_ng2_adapter_1 = __webpack_require__(355);
+	var upgrade_ng1_adapter_1 = __webpack_require__(356);
+	var angular = __webpack_require__(357);
 	var upgradeCount = 0;
 	/**
 	 * Use `UpgradeAdapter` to allow AngularJS v1 and Angular v2 to coexist in a single application.
@@ -42157,7 +42110,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 353 */
+/* 352 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var angular2_1 = __webpack_require__(1);
@@ -42205,7 +42158,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 354 */
+/* 353 */
 /***/ function(module, exports) {
 
 	function stringify(obj) {
@@ -42227,7 +42180,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 355 */
+/* 354 */
 /***/ function(module, exports) {
 
 	exports.NG2_APP_VIEW_MANAGER = 'ng2.AppViewManager';
@@ -42247,11 +42200,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 356 */
+/* 355 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var angular2_1 = __webpack_require__(1);
-	var constants_1 = __webpack_require__(355);
+	var constants_1 = __webpack_require__(354);
 	var INITIAL_VALUE = {
 	    __UNINITIALIZED__: true
 	};
@@ -42415,13 +42368,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 357 */
+/* 356 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var angular2_1 = __webpack_require__(1);
-	var constants_1 = __webpack_require__(355);
-	var util_1 = __webpack_require__(354);
-	var angular = __webpack_require__(358);
+	var constants_1 = __webpack_require__(354);
+	var util_1 = __webpack_require__(353);
+	var angular = __webpack_require__(357);
 	var CAMEL_CASE = /([A-Z])/g;
 	var INITIAL_VALUE = {
 	    __UNINITIALIZED__: true
@@ -42699,7 +42652,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 358 */
+/* 357 */
 /***/ function(module, exports) {
 
 	function noNg() {

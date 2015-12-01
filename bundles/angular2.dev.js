@@ -21788,45 +21788,6 @@ System.register("angular2/instrumentation", ["angular2/src/core/profile/profile"
   return module.exports;
 });
 
-System.register("angular2/src/core/angular_entrypoint", ["angular2/src/facade/lang"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var lang_1 = require("angular2/src/facade/lang");
-  var AngularEntrypoint = (function() {
-    function AngularEntrypoint(name) {
-      this.name = name;
-    }
-    AngularEntrypoint = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [String])], AngularEntrypoint);
-    return AngularEntrypoint;
-  })();
-  exports.AngularEntrypoint = AngularEntrypoint;
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/src/platform/dom/dom_adapter", ["angular2/src/facade/lang"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -39741,12 +39702,10 @@ System.register("angular2/src/core/metadata", ["angular2/src/core/metadata/di", 
   return module.exports;
 });
 
-System.register("angular2/platform/browser", ["angular2/src/core/angular_entrypoint", "angular2/src/platform/browser_common", "angular2/src/facade/lang", "angular2/src/platform/browser_common", "angular2/compiler", "angular2/core", "angular2/src/core/reflection/reflection_capabilities", "angular2/src/platform/browser/xhr_impl", "angular2/compiler", "angular2/src/core/di"], true, function(require, exports, module) {
+System.register("angular2/platform/browser", ["angular2/src/platform/browser_common", "angular2/src/facade/lang", "angular2/src/platform/browser_common", "angular2/compiler", "angular2/core", "angular2/src/core/reflection/reflection_capabilities", "angular2/src/platform/browser/xhr_impl", "angular2/compiler", "angular2/src/core/di"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  var angular_entrypoint_1 = require("angular2/src/core/angular_entrypoint");
-  exports.AngularEntrypoint = angular_entrypoint_1.AngularEntrypoint;
   var browser_common_1 = require("angular2/src/platform/browser_common");
   exports.BROWSER_PROVIDERS = browser_common_1.BROWSER_PROVIDERS;
   exports.ELEMENT_PROBE_BINDINGS = browser_common_1.ELEMENT_PROBE_BINDINGS;
