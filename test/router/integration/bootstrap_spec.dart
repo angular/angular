@@ -272,7 +272,7 @@ class AppWithViewChildren implements AfterViewInit {
   @ViewChild(HelloCmp) HelloCmp helloCmp;
   @ViewChild(Hello2Cmp) Hello2Cmp hello2Cmp;
   AppWithViewChildren(this.router, this.location) {}
-  afterViewInit() {
+  ngAfterViewInit() {
     this.helloCmp.message = "Ahoy";
   }
 }

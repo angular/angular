@@ -200,13 +200,13 @@ class Router {
   Future<dynamic> _navigate(Instruction instruction, bool _skipLocationChange) {
     return this
         ._settleInstruction(instruction)
-        .then((_) => this._canReuse(instruction))
+        .then((_) => this._routerCanReuse(instruction))
         .then((_) => this._canActivate(instruction))
         .then((result) {
       if (!result) {
         return false;
       }
-      return this._canDeactivate(instruction).then((result) {
+      return this._routerCanDeactivate(instruction).then((result) {
         if (result) {
           return this.commit(instruction, _skipLocationChange).then((_) {
             this._emitNavigationFinish(instruction.toRootUrl());
@@ -248,16 +248,16 @@ class Router {
    */
 
   /** @internal */
-  Future<dynamic> _canReuse(Instruction instruction) {
+  Future<dynamic> _routerCanReuse(Instruction instruction) {
     if (isBlank(this._outlet)) {
       return _resolveToFalse;
     }
-    return this._outlet.canReuse(instruction.component).then((result) {
+    return this._outlet.routerCanReuse(instruction.component).then((result) {
       instruction.component.reuse = result;
       if (result &&
           isPresent(this._childRouter) &&
           isPresent(instruction.child)) {
-        return this._childRouter._canReuse(instruction.child);
+        return this._childRouter._routerCanReuse(instruction.child);
       }
     });
   }
@@ -266,7 +266,7 @@ class Router {
     return canActivateOne(nextInstruction, this._currentInstruction);
   }
 
-  Future<bool> _canDeactivate(Instruction instruction) {
+  Future<bool> _routerCanDeactivate(Instruction instruction) {
     if (isBlank(this._outlet)) {
       return _resolveToTrue;
     }
@@ -282,7 +282,7 @@ class Router {
     if (reuse) {
       next = _resolveToTrue;
     } else {
-      next = this._outlet.canDeactivate(componentInstruction);
+      next = this._outlet.routerCanDeactivate(componentInstruction);
     }
     // TODO: aux route lifecycle hooks
     return next.then((result) {
@@ -290,7 +290,7 @@ class Router {
         return false;
       }
       if (isPresent(this._childRouter)) {
-        return this._childRouter._canDeactivate(childInstruction);
+        return this._childRouter._routerCanDeactivate(childInstruction);
       }
       return true;
     });

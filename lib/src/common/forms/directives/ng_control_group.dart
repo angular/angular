@@ -87,11 +87,11 @@ class NgControlGroup extends ControlContainer implements OnInit, OnDestroy {
     /* super call moved to initializer */;
     this._parent = parent;
   }
-  void onInit() {
+  void ngOnInit() {
     this.formDirective.addControlGroup(this);
   }
 
-  void onDestroy() {
+  void ngOnDestroy() {
     this.formDirective.removeControlGroup(this);
   }
 

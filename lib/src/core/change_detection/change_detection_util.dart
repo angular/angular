@@ -269,7 +269,7 @@ class ChangeDetectionUtil {
 
   static void callPipeOnDestroy(SelectedPipe selectedPipe) {
     if (implementsOnDestroy(selectedPipe.pipe)) {
-      ((selectedPipe.pipe as dynamic)).onDestroy();
+      ((selectedPipe.pipe as dynamic)).ngOnDestroy();
     }
   }
 

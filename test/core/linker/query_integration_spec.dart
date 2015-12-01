@@ -642,7 +642,7 @@ class TextDirective {
 class NeedsContentChildren implements AfterContentInit {
   @ContentChildren(TextDirective) QueryList<TextDirective> textDirChildren;
   num numberOfChildrenAfterContentInit;
-  afterContentInit() {
+  ngAfterContentInit() {
     this.numberOfChildrenAfterContentInit = this.textDirChildren.length;
   }
 }
@@ -652,7 +652,7 @@ class NeedsContentChildren implements AfterContentInit {
 class NeedsViewChildren implements AfterViewInit {
   @ViewChildren(TextDirective) QueryList<TextDirective> textDirChildren;
   num numberOfChildrenAfterViewInit;
-  afterViewInit() {
+  ngAfterViewInit() {
     this.numberOfChildrenAfterViewInit = this.textDirChildren.length;
   }
 }
@@ -671,11 +671,11 @@ class NeedsContentChild implements AfterContentInit, AfterContentChecked {
   }
 
   var log = [];
-  afterContentInit() {
+  ngAfterContentInit() {
     this.log.add(["init", isPresent(this.child) ? this.child.text : null]);
   }
 
-  afterContentChecked() {
+  ngAfterContentChecked() {
     this.log.add(["check", isPresent(this.child) ? this.child.text : null]);
   }
 }
@@ -699,11 +699,11 @@ class NeedsViewChild implements AfterViewInit, AfterViewChecked {
   }
 
   var log = [];
-  afterViewInit() {
+  ngAfterViewInit() {
     this.log.add(["init", isPresent(this.child) ? this.child.text : null]);
   }
 
-  afterViewChecked() {
+  ngAfterViewChecked() {
     this.log.add(["check", isPresent(this.child) ? this.child.text : null]);
   }
 }

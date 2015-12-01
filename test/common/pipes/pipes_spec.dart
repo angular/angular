@@ -12,22 +12,22 @@ import "package:angular2/testing_internal.dart"
         beforeEach,
         afterEach;
 import "package:angular2/core.dart"
-    show Injector, Inject, provide, Pipe, PipeTransform;
+    show Injector, Inject, provide, Pipe, PipeTransform, OnDestroy;
 import "package:angular2/src/core/pipes/pipes.dart" show ProtoPipes, Pipes;
 import "package:angular2/src/core/pipes/pipe_provider.dart" show PipeProvider;
 
-class PipeA implements PipeTransform {
+class PipeA implements PipeTransform, OnDestroy {
   transform(a, b) {}
-  onDestroy() {}
+  ngOnDestroy() {}
 }
 
-class PipeB implements PipeTransform {
+class PipeB implements PipeTransform, OnDestroy {
   var dep;
   PipeB(@Inject("dep") dynamic dep) {
     this.dep = dep;
   }
   transform(a, b) {}
-  onDestroy() {}
+  ngOnDestroy() {}
 }
 
 main() {

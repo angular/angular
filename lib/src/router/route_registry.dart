@@ -402,7 +402,7 @@ class RouteRegistry {
     return new UnresolvedInstruction(() {
       return componentRecognizer.defaultRoute.handler
           .resolveComponentType()
-          .then((_) => this.generateDefault(componentCursor));
+          .then(() => this.generateDefault(componentCursor));
     });
   }
 }
