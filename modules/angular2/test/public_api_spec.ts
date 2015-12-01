@@ -693,7 +693,7 @@ var NG_ALL = [
   'Observable.subscribe():js',
   'Observable.take():js',
   'Observable.toPromise():js',
-  
+
   'OutputMetadata',
   'OutputMetadata.bindingPropertyName',
   'enableDevMode():js',
