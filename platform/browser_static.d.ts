@@ -1,3 +1,4 @@
+export { AngularEntrypoint } from 'angular2/src/core/angular_entrypoint';
 export { BROWSER_PROVIDERS, ELEMENT_PROBE_BINDINGS, ELEMENT_PROBE_PROVIDERS, inspectNativeElement, BrowserDomAdapter, By, Title, enableDebugTools, disableDebugTools } from 'angular2/src/platform/browser_common';
 import { Type } from 'angular2/src/facade/lang';
 import { Promise } from 'angular2/src/facade/promise';
