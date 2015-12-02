@@ -4,7 +4,7 @@ import "package:angular2/core.dart" show OpaqueToken;
 
 /**
  * `LocationStrategy` is responsible for representing and reading route state
- * from the browser's URL. Angular provides two strategies:
+ * from the the browser's URL. Angular provides two strategies:
  * [HashLocationStrategy] (default) and [PathLocationStrategy].
  *
  * This is used under the hood of the [Location] service.
