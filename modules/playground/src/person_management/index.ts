@@ -1,4 +1,4 @@
-import {bootstrap} from 'angular2/bootstrap';
+import {bootstrap} from 'angular2/angular2';
 import {Component, Directive, View, Injectable} from 'angular2/core';
 import {NgIf, NgFor, FORM_DIRECTIVES} from 'angular2/common';
 
