@@ -58,13 +58,16 @@ export declare enum HtmlTagContentType {
 export declare class HtmlTagDefinition {
     private closedByChildren;
     closedByParent: boolean;
-    requiredParent: string;
+    requiredParents: {
+        [key: string]: boolean;
+    };
+    parentToAdd: string;
     implicitNamespacePrefix: string;
     contentType: HtmlTagContentType;
-    constructor({closedByChildren, requiredParent, implicitNamespacePrefix, contentType, closedByParent}?: {
-        closedByChildren?: string;
+    constructor({closedByChildren, requiredParents, implicitNamespacePrefix, contentType, closedByParent}?: {
+        closedByChildren?: string[];
         closedByParent?: boolean;
-        requiredParent?: string;
+        requiredParents?: string[];
         implicitNamespacePrefix?: string;
         contentType?: HtmlTagContentType;
     });

@@ -40296,7 +40296,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var tagDef = html_tags_1.getHtmlTagDefinition(el.name);
 	        var parentEl = this._getParentElement();
 	        if (tagDef.requireExtraParent(lang_1.isPresent(parentEl) ? parentEl.name : null)) {
-	            var newParent = new html_ast_1.HtmlElementAst(tagDef.requiredParent, [], [el], el.sourceSpan);
+	            var newParent = new html_ast_1.HtmlElementAst(tagDef.parentToAdd, [], [el], el.sourceSpan);
 	            this._addToParent(newParent);
 	            this.elementStack.push(newParent);
 	            this.elementStack.push(el);
@@ -41053,20 +41053,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	var HtmlTagDefinition = (function () {
 	    function HtmlTagDefinition(_a) {
 	        var _this = this;
-	        var _b = _a === void 0 ? {} : _a, closedByChildren = _b.closedByChildren, requiredParent = _b.requiredParent, implicitNamespacePrefix = _b.implicitNamespacePrefix, contentType = _b.contentType, closedByParent = _b.closedByParent;
+	        var _b = _a === void 0 ? {} : _a, closedByChildren = _b.closedByChildren, requiredParents = _b.requiredParents, implicitNamespacePrefix = _b.implicitNamespacePrefix, contentType = _b.contentType, closedByParent = _b.closedByParent;
 	        this.closedByChildren = {};
 	        this.closedByParent = false;
 	        if (lang_1.isPresent(closedByChildren) && closedByChildren.length > 0) {
-	            closedByChildren.split(',').forEach(function (tagName) { return _this.closedByChildren[tagName.trim()] = true; });
+	            closedByChildren.forEach(function (tagName) { return _this.closedByChildren[tagName] = true; });
 	        }
 	        this.closedByParent = lang_1.normalizeBool(closedByParent);
-	        this.requiredParent = requiredParent;
+	        if (lang_1.isPresent(requiredParents) && requiredParents.length > 0) {
+	            this.requiredParents = {};
+	            this.parentToAdd = requiredParents[0];
+	            requiredParents.forEach(function (tagName) { return _this.requiredParents[tagName] = true; });
+	        }
 	        this.implicitNamespacePrefix = implicitNamespacePrefix;
 	        this.contentType = lang_1.isPresent(contentType) ? contentType : HtmlTagContentType.PARSABLE_DATA;
 	    }
 	    HtmlTagDefinition.prototype.requireExtraParent = function (currentParent) {
-	        return lang_1.isPresent(this.requiredParent) &&
-	            (lang_1.isBlank(currentParent) || this.requiredParent != currentParent.toLowerCase());
+	        return lang_1.isPresent(this.requiredParents) &&
+	            (lang_1.isBlank(currentParent) || this.requiredParents[currentParent.toLowerCase()] != true);
 	    };
 	    HtmlTagDefinition.prototype.isClosedByChild = function (name) {
 	        return lang_1.normalizeBool(this.closedByChildren['*']) ||
@@ -41078,35 +41082,66 @@ return /******/ (function(modules) { // webpackBootstrap
 	// see http://www.w3.org/TR/html51/syntax.html#optional-tags
 	// This implementation does not fully conform to the HTML5 spec.
 	var TAG_DEFINITIONS = {
-	    'link': new HtmlTagDefinition({ closedByChildren: '*', closedByParent: true }),
-	    'ng-content': new HtmlTagDefinition({ closedByChildren: '*', closedByParent: true }),
-	    'img': new HtmlTagDefinition({ closedByChildren: '*', closedByParent: true }),
-	    'input': new HtmlTagDefinition({ closedByChildren: '*', closedByParent: true }),
-	    'hr': new HtmlTagDefinition({ closedByChildren: '*', closedByParent: true }),
-	    'br': new HtmlTagDefinition({ closedByChildren: '*', closedByParent: true }),
-	    'wbr': new HtmlTagDefinition({ closedByChildren: '*', closedByParent: true }),
+	    'link': new HtmlTagDefinition({ closedByChildren: ['*'], closedByParent: true }),
+	    'ng-content': new HtmlTagDefinition({ closedByChildren: ['*'], closedByParent: true }),
+	    'img': new HtmlTagDefinition({ closedByChildren: ['*'], closedByParent: true }),
+	    'input': new HtmlTagDefinition({ closedByChildren: ['*'], closedByParent: true }),
+	    'hr': new HtmlTagDefinition({ closedByChildren: ['*'], closedByParent: true }),
+	    'br': new HtmlTagDefinition({ closedByChildren: ['*'], closedByParent: true }),
+	    'wbr': new HtmlTagDefinition({ closedByChildren: ['*'], closedByParent: true }),
 	    'p': new HtmlTagDefinition({
-	        closedByChildren: 'address,article,aside,blockquote,div,dl,fieldset,footer,form,h1,h2,h3,h4,h5,h6,header,hgroup,hr,main,nav,ol,p,pre,section,table,ul',
+	        closedByChildren: [
+	            'address',
+	            'article',
+	            'aside',
+	            'blockquote',
+	            'div',
+	            'dl',
+	            'fieldset',
+	            'footer',
+	            'form',
+	            'h1',
+	            'h2',
+	            'h3',
+	            'h4',
+	            'h5',
+	            'h6',
+	            'header',
+	            'hgroup',
+	            'hr',
+	            'main',
+	            'nav',
+	            'ol',
+	            'p',
+	            'pre',
+	            'section',
+	            'table',
+	            'ul'
+	        ],
 	        closedByParent: true
 	    }),
-	    'thead': new HtmlTagDefinition({ closedByChildren: 'tbody,tfoot' }),
-	    'tbody': new HtmlTagDefinition({ closedByChildren: 'tbody,tfoot', closedByParent: true }),
-	    'tfoot': new HtmlTagDefinition({ closedByChildren: 'tbody', closedByParent: true }),
-	    'tr': new HtmlTagDefinition({ closedByChildren: 'tr', requiredParent: 'tbody', closedByParent: true }),
-	    'td': new HtmlTagDefinition({ closedByChildren: 'td,th', closedByParent: true }),
-	    'th': new HtmlTagDefinition({ closedByChildren: 'td,th', closedByParent: true }),
-	    'col': new HtmlTagDefinition({ closedByChildren: 'col', requiredParent: 'colgroup' }),
+	    'thead': new HtmlTagDefinition({ closedByChildren: ['tbody', 'tfoot'] }),
+	    'tbody': new HtmlTagDefinition({ closedByChildren: ['tbody', 'tfoot'], closedByParent: true }),
+	    'tfoot': new HtmlTagDefinition({ closedByChildren: ['tbody'], closedByParent: true }),
+	    'tr': new HtmlTagDefinition({
+	        closedByChildren: ['tr'],
+	        requiredParents: ['tbody', 'tfoot', 'thead'],
+	        closedByParent: true
+	    }),
+	    'td': new HtmlTagDefinition({ closedByChildren: ['td', 'th'], closedByParent: true }),
+	    'th': new HtmlTagDefinition({ closedByChildren: ['td', 'th'], closedByParent: true }),
+	    'col': new HtmlTagDefinition({ closedByChildren: ['col'], requiredParents: ['colgroup'] }),
 	    'svg': new HtmlTagDefinition({ implicitNamespacePrefix: 'svg' }),
 	    'math': new HtmlTagDefinition({ implicitNamespacePrefix: 'math' }),
-	    'li': new HtmlTagDefinition({ closedByChildren: 'li', closedByParent: true }),
-	    'dt': new HtmlTagDefinition({ closedByChildren: 'dt,dd' }),
-	    'dd': new HtmlTagDefinition({ closedByChildren: 'dt,dd', closedByParent: true }),
-	    'rb': new HtmlTagDefinition({ closedByChildren: 'rb,rt,rtc,rp', closedByParent: true }),
-	    'rt': new HtmlTagDefinition({ closedByChildren: 'rb,rt,rtc,rp', closedByParent: true }),
-	    'rtc': new HtmlTagDefinition({ closedByChildren: 'rb,rtc,rp', closedByParent: true }),
-	    'rp': new HtmlTagDefinition({ closedByChildren: 'rb,rt,rtc,rp', closedByParent: true }),
-	    'optgroup': new HtmlTagDefinition({ closedByChildren: 'optgroup', closedByParent: true }),
-	    'option': new HtmlTagDefinition({ closedByChildren: 'option,optgroup', closedByParent: true }),
+	    'li': new HtmlTagDefinition({ closedByChildren: ['li'], closedByParent: true }),
+	    'dt': new HtmlTagDefinition({ closedByChildren: ['dt', 'dd'] }),
+	    'dd': new HtmlTagDefinition({ closedByChildren: ['dt', 'dd'], closedByParent: true }),
+	    'rb': new HtmlTagDefinition({ closedByChildren: ['rb', 'rt', 'rtc', 'rp'], closedByParent: true }),
+	    'rt': new HtmlTagDefinition({ closedByChildren: ['rb', 'rt', 'rtc', 'rp'], closedByParent: true }),
+	    'rtc': new HtmlTagDefinition({ closedByChildren: ['rb', 'rtc', 'rp'], closedByParent: true }),
+	    'rp': new HtmlTagDefinition({ closedByChildren: ['rb', 'rt', 'rtc', 'rp'], closedByParent: true }),
+	    'optgroup': new HtmlTagDefinition({ closedByChildren: ['optgroup'], closedByParent: true }),
+	    'option': new HtmlTagDefinition({ closedByChildren: ['option', 'optgroup'], closedByParent: true }),
 	    'style': new HtmlTagDefinition({ contentType: HtmlTagContentType.RAW_TEXT }),
 	    'script': new HtmlTagDefinition({ contentType: HtmlTagContentType.RAW_TEXT }),
 	    'title': new HtmlTagDefinition({ contentType: HtmlTagContentType.ESCAPABLE_RAW_TEXT }),

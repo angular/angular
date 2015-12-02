@@ -154,7 +154,7 @@ var TreeBuilder = (function () {
         var tagDef = html_tags_1.getHtmlTagDefinition(el.name);
         var parentEl = this._getParentElement();
         if (tagDef.requireExtraParent(lang_1.isPresent(parentEl) ? parentEl.name : null)) {
-            var newParent = new html_ast_1.HtmlElementAst(tagDef.requiredParent, [], [el], el.sourceSpan);
+            var newParent = new html_ast_1.HtmlElementAst(tagDef.parentToAdd, [], [el], el.sourceSpan);
             this._addToParent(newParent);
             this.elementStack.push(newParent);
             this.elementStack.push(el);
