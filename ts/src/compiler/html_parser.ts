@@ -61,12 +61,15 @@ class TreeBuilder {
       } else if (this.peek.type === HtmlTokenType.TAG_CLOSE) {
         this._consumeEndTag(this._advance());
       } else if (this.peek.type === HtmlTokenType.CDATA_START) {
+        this._closeVoidElement();
         this._consumeCdata(this._advance());
       } else if (this.peek.type === HtmlTokenType.COMMENT_START) {
+        this._closeVoidElement();
         this._consumeComment(this._advance());
       } else if (this.peek.type === HtmlTokenType.TEXT ||
                  this.peek.type === HtmlTokenType.RAW_TEXT ||
                  this.peek.type === HtmlTokenType.ESCAPABLE_RAW_TEXT) {
+        this._closeVoidElement();
         this._consumeText(this._advance());
       } else {
         // Skip all other tokens...
@@ -107,6 +110,16 @@ class TreeBuilder {
     this._addToParent(new HtmlTextAst(token.parts[0], token.sourceSpan));
   }
 
+  private _closeVoidElement(): void {
+    if (this.elementStack.length > 0) {
+      let el = ListWrapper.last(this.elementStack);
+
+      if (getHtmlTagDefinition(el.name).isVoid) {
+        this.elementStack.pop();
+      }
+    }
+  }
+
   private _consumeStartTag(startTagToken: HtmlToken) {
     var prefix = startTagToken.parts[0];
     var name = startTagToken.parts[1];
@@ -115,21 +128,21 @@ class TreeBuilder {
       attrs.push(this._consumeAttr(this._advance()));
     }
     var fullName = getElementFullName(prefix, name, this._getParentElement());
-    var voidElement = false;
+    var selfClosing = false;
     // Note: There could have been a tokenizer error
     // so that we don't get a token for the end tag...
     if (this.peek.type === HtmlTokenType.TAG_OPEN_END_VOID) {
       this._advance();
-      voidElement = true;
+      selfClosing = true;
     } else if (this.peek.type === HtmlTokenType.TAG_OPEN_END) {
       this._advance();
-      voidElement = false;
+      selfClosing = false;
     }
     var end = this.peek.sourceSpan.start;
     var el = new HtmlElementAst(fullName, attrs, [],
                                 new ParseSourceSpan(startTagToken.sourceSpan.start, end));
     this._pushElement(el);
-    if (voidElement) {
+    if (selfClosing) {
       this._popElement(fullName);
     }
   }
@@ -159,18 +172,27 @@ class TreeBuilder {
     var fullName =
         getElementFullName(endTagToken.parts[0], endTagToken.parts[1], this._getParentElement());
     if (!this._popElement(fullName)) {
-      this.errors.push(HtmlTreeError.create(fullName, endTagToken.sourceSpan.start,
-                                            `Unexpected closing tag "${endTagToken.parts[1]}"`));
+      let msg;
+
+      if (getHtmlTagDefinition(fullName).isVoid) {
+        msg =
+            `Void elements do not have end tags (they can not have content) "${endTagToken.parts[1]}"`;
+      } else {
+        msg = `Unexpected closing tag "${endTagToken.parts[1]}"`;
+      }
+
+      this.errors.push(HtmlTreeError.create(fullName, endTagToken.sourceSpan.start, msg));
     }
   }
 
   private _popElement(fullName: string): boolean {
     for (let stackIndex = this.elementStack.length - 1; stackIndex >= 0; stackIndex--) {
-      var el = this.elementStack[stackIndex];
+      let el = this.elementStack[stackIndex];
       if (el.name.toLowerCase() == fullName.toLowerCase()) {
         ListWrapper.splice(this.elementStack, stackIndex, this.elementStack.length - stackIndex);
         return true;
       }
+
       if (!getHtmlTagDefinition(el.name).closedByParent) {
         return false;
       }

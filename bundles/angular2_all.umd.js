@@ -40219,14 +40219,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	                this._consumeEndTag(this._advance());
 	            }
 	            else if (this.peek.type === html_lexer_1.HtmlTokenType.CDATA_START) {
+	                this._closeVoidElement();
 	                this._consumeCdata(this._advance());
 	            }
 	            else if (this.peek.type === html_lexer_1.HtmlTokenType.COMMENT_START) {
+	                this._closeVoidElement();
 	                this._consumeComment(this._advance());
 	            }
 	            else if (this.peek.type === html_lexer_1.HtmlTokenType.TEXT ||
 	                this.peek.type === html_lexer_1.HtmlTokenType.RAW_TEXT ||
 	                this.peek.type === html_lexer_1.HtmlTokenType.ESCAPABLE_RAW_TEXT) {
+	                this._closeVoidElement();
 	                this._consumeText(this._advance());
 	            }
 	            else {
@@ -40262,6 +40265,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    TreeBuilder.prototype._consumeText = function (token) {
 	        this._addToParent(new html_ast_1.HtmlTextAst(token.parts[0], token.sourceSpan));
 	    };
+	    TreeBuilder.prototype._closeVoidElement = function () {
+	        if (this.elementStack.length > 0) {
+	            var el = collection_1.ListWrapper.last(this.elementStack);
+	            if (html_tags_1.getHtmlTagDefinition(el.name).isVoid) {
+	                this.elementStack.pop();
+	            }
+	        }
+	    };
 	    TreeBuilder.prototype._consumeStartTag = function (startTagToken) {
 	        var prefix = startTagToken.parts[0];
 	        var name = startTagToken.parts[1];
@@ -40270,21 +40281,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	            attrs.push(this._consumeAttr(this._advance()));
 	        }
 	        var fullName = getElementFullName(prefix, name, this._getParentElement());
-	        var voidElement = false;
+	        var selfClosing = false;
 	        // Note: There could have been a tokenizer error
 	        // so that we don't get a token for the end tag...
 	        if (this.peek.type === html_lexer_1.HtmlTokenType.TAG_OPEN_END_VOID) {
 	            this._advance();
-	            voidElement = true;
+	            selfClosing = true;
 	        }
 	        else if (this.peek.type === html_lexer_1.HtmlTokenType.TAG_OPEN_END) {
 	            this._advance();
-	            voidElement = false;
+	            selfClosing = false;
 	        }
 	        var end = this.peek.sourceSpan.start;
 	        var el = new html_ast_1.HtmlElementAst(fullName, attrs, [], new parse_util_1.ParseSourceSpan(startTagToken.sourceSpan.start, end));
 	        this._pushElement(el);
-	        if (voidElement) {
+	        if (selfClosing) {
 	            this._popElement(fullName);
 	        }
 	    };
@@ -40311,7 +40322,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    TreeBuilder.prototype._consumeEndTag = function (endTagToken) {
 	        var fullName = getElementFullName(endTagToken.parts[0], endTagToken.parts[1], this._getParentElement());
 	        if (!this._popElement(fullName)) {
-	            this.errors.push(HtmlTreeError.create(fullName, endTagToken.sourceSpan.start, "Unexpected closing tag \"" + endTagToken.parts[1] + "\""));
+	            var msg;
+	            if (html_tags_1.getHtmlTagDefinition(fullName).isVoid) {
+	                msg =
+	                    "Void elements do not have end tags (they can not have content) \"" + endTagToken.parts[1] + "\"";
+	            }
+	            else {
+	                msg = "Unexpected closing tag \"" + endTagToken.parts[1] + "\"";
+	            }
+	            this.errors.push(HtmlTreeError.create(fullName, endTagToken.sourceSpan.start, msg));
 	        }
 	    };
 	    TreeBuilder.prototype._popElement = function (fullName) {
@@ -41055,13 +41074,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	var HtmlTagDefinition = (function () {
 	    function HtmlTagDefinition(_a) {
 	        var _this = this;
-	        var _b = _a === void 0 ? {} : _a, closedByChildren = _b.closedByChildren, requiredParents = _b.requiredParents, implicitNamespacePrefix = _b.implicitNamespacePrefix, contentType = _b.contentType, closedByParent = _b.closedByParent;
+	        var _b = _a === void 0 ? {} : _a, closedByChildren = _b.closedByChildren, requiredParents = _b.requiredParents, implicitNamespacePrefix = _b.implicitNamespacePrefix, contentType = _b.contentType, closedByParent = _b.closedByParent, isVoid = _b.isVoid;
 	        this.closedByChildren = {};
 	        this.closedByParent = false;
 	        if (lang_1.isPresent(closedByChildren) && closedByChildren.length > 0) {
 	            closedByChildren.forEach(function (tagName) { return _this.closedByChildren[tagName] = true; });
 	        }
-	        this.closedByParent = lang_1.normalizeBool(closedByParent);
+	        this.isVoid = lang_1.normalizeBool(isVoid);
+	        this.closedByParent = lang_1.normalizeBool(closedByParent) || this.isVoid;
 	        if (lang_1.isPresent(requiredParents) && requiredParents.length > 0) {
 	            this.requiredParents = {};
 	            this.parentToAdd = requiredParents[0];
@@ -41075,8 +41095,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            (lang_1.isBlank(currentParent) || this.requiredParents[currentParent.toLowerCase()] != true);
 	    };
 	    HtmlTagDefinition.prototype.isClosedByChild = function (name) {
-	        return lang_1.normalizeBool(this.closedByChildren['*']) ||
-	            lang_1.normalizeBool(this.closedByChildren[name.toLowerCase()]);
+	        return this.isVoid || lang_1.normalizeBool(this.closedByChildren[name.toLowerCase()]);
 	    };
 	    return HtmlTagDefinition;
 	})();
@@ -41084,13 +41103,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	// see http://www.w3.org/TR/html51/syntax.html#optional-tags
 	// This implementation does not fully conform to the HTML5 spec.
 	var TAG_DEFINITIONS = {
-	    'link': new HtmlTagDefinition({ closedByChildren: ['*'], closedByParent: true }),
-	    'ng-content': new HtmlTagDefinition({ closedByChildren: ['*'], closedByParent: true }),
-	    'img': new HtmlTagDefinition({ closedByChildren: ['*'], closedByParent: true }),
-	    'input': new HtmlTagDefinition({ closedByChildren: ['*'], closedByParent: true }),
-	    'hr': new HtmlTagDefinition({ closedByChildren: ['*'], closedByParent: true }),
-	    'br': new HtmlTagDefinition({ closedByChildren: ['*'], closedByParent: true }),
-	    'wbr': new HtmlTagDefinition({ closedByChildren: ['*'], closedByParent: true }),
+	    'link': new HtmlTagDefinition({ isVoid: true }),
+	    'ng-content': new HtmlTagDefinition({ isVoid: true }),
+	    'img': new HtmlTagDefinition({ isVoid: true }),
+	    'input': new HtmlTagDefinition({ isVoid: true }),
+	    'hr': new HtmlTagDefinition({ isVoid: true }),
+	    'br': new HtmlTagDefinition({ isVoid: true }),
+	    'wbr': new HtmlTagDefinition({ isVoid: true }),
 	    'p': new HtmlTagDefinition({
 	        closedByChildren: [
 	            'address',

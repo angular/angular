@@ -64,12 +64,14 @@ export declare class HtmlTagDefinition {
     parentToAdd: string;
     implicitNamespacePrefix: string;
     contentType: HtmlTagContentType;
-    constructor({closedByChildren, requiredParents, implicitNamespacePrefix, contentType, closedByParent}?: {
+    isVoid: boolean;
+    constructor({closedByChildren, requiredParents, implicitNamespacePrefix, contentType, closedByParent, isVoid}?: {
         closedByChildren?: string[];
         closedByParent?: boolean;
         requiredParents?: string[];
         implicitNamespacePrefix?: string;
         contentType?: HtmlTagContentType;
+        isVoid?: boolean;
     });
     requireExtraParent(currentParent: string): boolean;
     isClosedByChild(name: string): boolean;

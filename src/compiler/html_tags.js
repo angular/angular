@@ -64,13 +64,14 @@ var HtmlTagContentType = exports.HtmlTagContentType;
 var HtmlTagDefinition = (function () {
     function HtmlTagDefinition(_a) {
         var _this = this;
-        var _b = _a === void 0 ? {} : _a, closedByChildren = _b.closedByChildren, requiredParents = _b.requiredParents, implicitNamespacePrefix = _b.implicitNamespacePrefix, contentType = _b.contentType, closedByParent = _b.closedByParent;
+        var _b = _a === void 0 ? {} : _a, closedByChildren = _b.closedByChildren, requiredParents = _b.requiredParents, implicitNamespacePrefix = _b.implicitNamespacePrefix, contentType = _b.contentType, closedByParent = _b.closedByParent, isVoid = _b.isVoid;
         this.closedByChildren = {};
         this.closedByParent = false;
         if (lang_1.isPresent(closedByChildren) && closedByChildren.length > 0) {
             closedByChildren.forEach(function (tagName) { return _this.closedByChildren[tagName] = true; });
         }
-        this.closedByParent = lang_1.normalizeBool(closedByParent);
+        this.isVoid = lang_1.normalizeBool(isVoid);
+        this.closedByParent = lang_1.normalizeBool(closedByParent) || this.isVoid;
         if (lang_1.isPresent(requiredParents) && requiredParents.length > 0) {
             this.requiredParents = {};
             this.parentToAdd = requiredParents[0];
@@ -84,8 +85,7 @@ var HtmlTagDefinition = (function () {
             (lang_1.isBlank(currentParent) || this.requiredParents[currentParent.toLowerCase()] != true);
     };
     HtmlTagDefinition.prototype.isClosedByChild = function (name) {
-        return lang_1.normalizeBool(this.closedByChildren['*']) ||
-            lang_1.normalizeBool(this.closedByChildren[name.toLowerCase()]);
+        return this.isVoid || lang_1.normalizeBool(this.closedByChildren[name.toLowerCase()]);
     };
     return HtmlTagDefinition;
 })();
@@ -93,13 +93,13 @@ exports.HtmlTagDefinition = HtmlTagDefinition;
 // see http://www.w3.org/TR/html51/syntax.html#optional-tags
 // This implementation does not fully conform to the HTML5 spec.
 var TAG_DEFINITIONS = {
-    'link': new HtmlTagDefinition({ closedByChildren: ['*'], closedByParent: true }),
-    'ng-content': new HtmlTagDefinition({ closedByChildren: ['*'], closedByParent: true }),
-    'img': new HtmlTagDefinition({ closedByChildren: ['*'], closedByParent: true }),
-    'input': new HtmlTagDefinition({ closedByChildren: ['*'], closedByParent: true }),
-    'hr': new HtmlTagDefinition({ closedByChildren: ['*'], closedByParent: true }),
-    'br': new HtmlTagDefinition({ closedByChildren: ['*'], closedByParent: true }),
-    'wbr': new HtmlTagDefinition({ closedByChildren: ['*'], closedByParent: true }),
+    'link': new HtmlTagDefinition({ isVoid: true }),
+    'ng-content': new HtmlTagDefinition({ isVoid: true }),
+    'img': new HtmlTagDefinition({ isVoid: true }),
+    'input': new HtmlTagDefinition({ isVoid: true }),
+    'hr': new HtmlTagDefinition({ isVoid: true }),
+    'br': new HtmlTagDefinition({ isVoid: true }),
+    'wbr': new HtmlTagDefinition({ isVoid: true }),
     'p': new HtmlTagDefinition({
         closedByChildren: [
             'address',
