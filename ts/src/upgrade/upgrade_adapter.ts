@@ -68,7 +68,7 @@ var upgradeCount: number = 0;
  *    Angular v2 directive, which bootstraps the AngularJS v1 component directive in that location.
  * 6. An Angular v2 component can be downgraded to an AngularJS v1 component directive. This creates
  *    an AngularJS v1 directive, which bootstraps the Angular v2 component in that location.
- * 7. Whenever an adapter component is instantiated the host element is owned by the framework
+ * 7. Whenever an adapter component is instantiated the host element is owned by the the framework
  *    doing the instantiation. The other framework then instantiates and owns the view for that
  *    component. This implies that component bindings will always follow the semantics of the
  *    instantiation framework. The syntax is always that of Angular v2 syntax.
