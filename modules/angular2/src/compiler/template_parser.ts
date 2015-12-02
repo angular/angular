@@ -5,10 +5,11 @@ import {CONST_EXPR} from 'angular2/src/facade/lang';
 import {BaseException} from 'angular2/src/facade/exceptions';
 import {Parser, AST, ASTWithSource} from 'angular2/src/core/change_detection/change_detection';
 import {TemplateBinding} from 'angular2/src/core/change_detection/parser/ast';
-import {CompileDirectiveMetadata} from './directive_metadata';
+import {CompileDirectiveMetadata, CompilePipeMetadata} from './directive_metadata';
 import {HtmlParser} from './html_parser';
 import {splitNsName} from './html_tags';
 import {ParseSourceSpan, ParseError, ParseLocation} from './parse_util';
+import {RecursiveAstVisitor, BindingPipe} from 'angular2/src/core/change_detection/parser/ast';
 
 
 import {
@@ -88,9 +89,10 @@ export class TemplateParser {
               private _htmlParser: HtmlParser,
               @Optional() @Inject(TEMPLATE_TRANSFORMS) public transforms: TemplateAstVisitor[]) {}
 
-  parse(template: string, directives: CompileDirectiveMetadata[],
+  parse(template: string, directives: CompileDirectiveMetadata[], pipes: CompilePipeMetadata[],
         templateUrl: string): TemplateAst[] {
-    var parseVisitor = new TemplateParseVisitor(directives, this._exprParser, this._schemaRegistry);
+    var parseVisitor =
+        new TemplateParseVisitor(directives, pipes, this._exprParser, this._schemaRegistry);
     var htmlAstWithErrors = this._htmlParser.parse(template, templateUrl);
     var result = htmlVisitAll(parseVisitor, htmlAstWithErrors.rootNodes, EMPTY_COMPONENT);
     var errors: ParseError[] = htmlAstWithErrors.errors.concat(parseVisitor.errors);
@@ -111,9 +113,10 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   errors: TemplateParseError[] = [];
   directivesIndex = new Map<CompileDirectiveMetadata, number>();
   ngContentCount: number = 0;
+  pipesByName: Map<string, CompilePipeMetadata>;
 
-  constructor(directives: CompileDirectiveMetadata[], private _exprParser: Parser,
-              private _schemaRegistry: ElementSchemaRegistry) {
+  constructor(directives: CompileDirectiveMetadata[], pipes: CompilePipeMetadata[],
+              private _exprParser: Parser, private _schemaRegistry: ElementSchemaRegistry) {
     this.selectorMatcher = new SelectorMatcher();
     ListWrapper.forEachWithIndex(directives,
                                  (directive: CompileDirectiveMetadata, index: number) => {
@@ -121,6 +124,8 @@ class TemplateParseVisitor implements HtmlAstVisitor {
                                    this.selectorMatcher.addSelectables(selector, directive);
                                    this.directivesIndex.set(directive, index);
                                  });
+    this.pipesByName = new Map<string, CompilePipeMetadata>();
+    pipes.forEach(pipe => this.pipesByName.set(pipe.name, pipe));
   }
 
   private _reportError(message: string, sourceSpan: ParseSourceSpan) {
@@ -130,7 +135,9 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   private _parseInterpolation(value: string, sourceSpan: ParseSourceSpan): ASTWithSource {
     var sourceInfo = sourceSpan.start.toString();
     try {
-      return this._exprParser.parseInterpolation(value, sourceInfo);
+      var ast = this._exprParser.parseInterpolation(value, sourceInfo);
+      this._checkPipes(ast, sourceSpan);
+      return ast;
     } catch (e) {
       this._reportError(`${e}`, sourceSpan);
       return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo);
@@ -140,7 +147,9 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   private _parseAction(value: string, sourceSpan: ParseSourceSpan): ASTWithSource {
     var sourceInfo = sourceSpan.start.toString();
     try {
-      return this._exprParser.parseAction(value, sourceInfo);
+      var ast = this._exprParser.parseAction(value, sourceInfo);
+      this._checkPipes(ast, sourceSpan);
+      return ast;
     } catch (e) {
       this._reportError(`${e}`, sourceSpan);
       return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo);
@@ -150,7 +159,9 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   private _parseBinding(value: string, sourceSpan: ParseSourceSpan): ASTWithSource {
     var sourceInfo = sourceSpan.start.toString();
     try {
-      return this._exprParser.parseBinding(value, sourceInfo);
+      var ast = this._exprParser.parseBinding(value, sourceInfo);
+      this._checkPipes(ast, sourceSpan);
+      return ast;
     } catch (e) {
       this._reportError(`${e}`, sourceSpan);
       return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo);
@@ -160,10 +171,28 @@ class TemplateParseVisitor implements HtmlAstVisitor {
   private _parseTemplateBindings(value: string, sourceSpan: ParseSourceSpan): TemplateBinding[] {
     var sourceInfo = sourceSpan.start.toString();
     try {
-      return this._exprParser.parseTemplateBindings(value, sourceInfo);
+      var bindings = this._exprParser.parseTemplateBindings(value, sourceInfo);
+      bindings.forEach((binding) => {
+        if (isPresent(binding.expression)) {
+          this._checkPipes(binding.expression, sourceSpan);
+        }
+      });
+      return bindings;
     } catch (e) {
       this._reportError(`${e}`, sourceSpan);
       return [];
+    }
+  }
+
+  private _checkPipes(ast: ASTWithSource, sourceSpan: ParseSourceSpan) {
+    if (isPresent(ast)) {
+      var collector = new PipeCollector();
+      ast.visit(collector);
+      collector.pipes.forEach((pipeName) => {
+        if (!this.pipesByName.has(pipeName)) {
+          this._reportError(`The pipe '${pipeName}' could not be found`, sourceSpan);
+        }
+      });
     }
   }
 
@@ -714,3 +743,14 @@ function createElementCssSelector(elementName: string, matchableAttrs: string[][
 
 var EMPTY_COMPONENT = new Component(new SelectorMatcher(), null);
 var NON_BINDABLE_VISITOR = new NonBindableVisitor();
+
+
+export class PipeCollector extends RecursiveAstVisitor {
+  pipes: Set<string> = new Set<string>();
+  visitPipe(ast: BindingPipe): any {
+    this.pipes.add(ast.name);
+    ast.exp.visit(this);
+    this.visitAll(ast.args);
+    return null;
+  }
+}

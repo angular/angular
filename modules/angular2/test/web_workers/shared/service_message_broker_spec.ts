@@ -18,10 +18,7 @@ import {
 import {ObservableWrapper, PromiseWrapper} from 'angular2/src/facade/async';
 import {provide} from 'angular2/core';
 import {ON_WEB_WORKER} from 'angular2/src/web_workers/shared/api';
-import {RenderProtoViewRefStore} from 'angular2/src/web_workers/shared/render_proto_view_ref_store';
-import {
-  RenderViewWithFragmentsStore
-} from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
+import {RenderStore} from 'angular2/src/web_workers/shared/render_store';
 
 export function main() {
   const CHANNEL = "UIMessageBroker Test Channel";
@@ -31,11 +28,7 @@ export function main() {
   const RESULT = 20;
   const ID = "methodId";
 
-  beforeEachProviders(() => [
-    provide(ON_WEB_WORKER, {useValue: true}),
-    RenderProtoViewRefStore,
-    RenderViewWithFragmentsStore
-  ]);
+  beforeEachProviders(() => [provide(ON_WEB_WORKER, {useValue: true}), RenderStore]);
 
   describe("UIMessageBroker", () => {
     var messageBuses;

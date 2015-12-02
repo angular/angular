@@ -55,7 +55,7 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
 
   writeValue(value: any): void {
     this.value = value;
-    this._renderer.setElementProperty(this._elementRef, 'value', value);
+    this._renderer.setElementProperty(this._elementRef.nativeElement, 'value', value);
   }
 
   registerOnChange(fn: () => any): void { this.onChange = fn; }

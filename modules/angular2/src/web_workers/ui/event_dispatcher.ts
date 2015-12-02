@@ -1,8 +1,4 @@
-import {
-  RenderViewRef,
-  RenderEventDispatcher,
-} from 'angular2/src/core/render/api';
-import {Serializer} from 'angular2/src/web_workers/shared/serializer';
+import {Serializer, RenderStoreObject} from 'angular2/src/web_workers/shared/serializer';
 import {
   serializeMouseEvent,
   serializeKeyboardEvent,
@@ -13,15 +9,13 @@ import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
-export class EventDispatcher implements RenderEventDispatcher {
-  constructor(private _viewRef: RenderViewRef, private _sink: EventEmitter<any>,
-              private _serializer: Serializer) {}
+export class EventDispatcher {
+  constructor(private _sink: EventEmitter<any>, private _serializer: Serializer) {}
 
-  dispatchRenderEvent(elementIndex: number, eventName: string, locals: Map<string, any>): boolean {
-    var e = locals.get('$event');
+  dispatchRenderEvent(element: any, eventTarget: string, eventName: string, event: any): boolean {
     var serializedEvent;
     // TODO (jteplitz602): support custom events #3350
-    switch (e.type) {
+    switch (event.type) {
       case "click":
       case "mouseup":
       case "mousedown":
@@ -33,17 +27,17 @@ export class EventDispatcher implements RenderEventDispatcher {
       case "mouseout":
       case "mouseover":
       case "show":
-        serializedEvent = serializeMouseEvent(e);
+        serializedEvent = serializeMouseEvent(event);
         break;
       case "keydown":
       case "keypress":
       case "keyup":
-        serializedEvent = serializeKeyboardEvent(e);
+        serializedEvent = serializeKeyboardEvent(event);
         break;
       case "input":
       case "change":
       case "blur":
-        serializedEvent = serializeEventWithTarget(e);
+        serializedEvent = serializeEventWithTarget(event);
         break;
       case "abort":
       case "afterprint":
@@ -93,19 +87,16 @@ export class EventDispatcher implements RenderEventDispatcher {
       case "visibilitychange":
       case "volumechange":
       case "waiting":
-        serializedEvent = serializeGenericEvent(e);
+        serializedEvent = serializeGenericEvent(event);
         break;
       default:
         throw new BaseException(eventName + " not supported on WebWorkers");
     }
-    var serializedLocals = StringMapWrapper.create();
-    StringMapWrapper.set(serializedLocals, '$event', serializedEvent);
-
     ObservableWrapper.callEmit(this._sink, {
-      "viewRef": this._serializer.serialize(this._viewRef, RenderViewRef),
-      "elementIndex": elementIndex,
+      "element": this._serializer.serialize(element, RenderStoreObject),
       "eventName": eventName,
-      "locals": serializedLocals
+      "eventTarget": eventTarget,
+      "event": serializedEvent
     });
 
     // TODO(kegluneq): Eventually, we want the user to indicate from the UI side whether the event
