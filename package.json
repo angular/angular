@@ -12,6 +12,5 @@
     "@reactivex/rxjs": "5.0.0-alpha.7",
     "zone.js": "0.5.8"
   },
-  "devDependencies": {},
-  "typings": "./angular2.d.ts"
+  "devDependencies": {}
 }
