@@ -5,7 +5,7 @@ import "package:angular2/src/facade/lang.dart" show Type, isBlank;
 import "package:angular2/src/facade/exceptions.dart" show BaseException;
 import "package:angular2/testing_internal.dart"
     show
-        RootTestComponent,
+        ComponentFixture,
         AsyncTestCompleter,
         TestComponentBuilder,
         beforeEach,

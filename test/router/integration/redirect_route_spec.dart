@@ -2,7 +2,7 @@ library angular2.test.router.integration.redirect_route_spec;
 
 import "package:angular2/testing_internal.dart"
     show
-        RootTestComponent,
+        ComponentFixture,
         AsyncTestCompleter,
         TestComponentBuilder,
         beforeEach,
@@ -28,7 +28,7 @@ var childCmpInstanceCount;
 main() {
   describe("redirects", () {
     TestComponentBuilder tcb;
-    RootTestComponent rootTC;
+    ComponentFixture rootTC;
     var rtr;
     beforeEachProviders(() => TEST_ROUTER_PROVIDERS);
     beforeEach(inject([TestComponentBuilder, Router], (tcBuilder, router) {

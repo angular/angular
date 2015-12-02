@@ -21,15 +21,13 @@ import "package:angular2/src/core/debug/debug_element.dart"
     show DebugElement, DebugElement_;
 
 /**
- * @deprecated Use ComponentFixture
+ * Fixture for debugging and testing a component.
  */
-abstract class RootTestComponent {
+abstract class ComponentFixture {
   DebugElement debugElement;
   void detectChanges();
   void destroy();
 }
-
-abstract class ComponentFixture extends RootTestComponent {}
 
 class ComponentFixture_ extends ComponentFixture {
   /** @internal */

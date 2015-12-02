@@ -2,7 +2,7 @@ library angular2.test.router.integration.auxiliary_route_spec;
 
 import "package:angular2/testing_internal.dart"
     show
-        RootTestComponent,
+        ComponentFixture,
         AsyncTestCompleter,
         TestComponentBuilder,
         beforeEach,
@@ -24,7 +24,7 @@ import "package:angular2/src/router/route_config_decorator.dart"
 import "util.dart"
     show TEST_ROUTER_PROVIDERS, RootCmp, compile, clickOnElement, getHref;
 
-getLinkElement(RootTestComponent rtc) {
+getLinkElement(ComponentFixture rtc) {
   return rtc.debugElement.componentViewChildren[0].nativeElement;
 }
 
@@ -33,7 +33,7 @@ var childCmpInstanceCount;
 main() {
   describe("auxiliary routes", () {
     TestComponentBuilder tcb;
-    RootTestComponent fixture;
+    ComponentFixture fixture;
     var rtr;
     beforeEachProviders(() => TEST_ROUTER_PROVIDERS);
     beforeEach(inject([TestComponentBuilder, Router], (tcBuilder, router) {

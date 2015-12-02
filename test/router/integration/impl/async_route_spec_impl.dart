@@ -11,7 +11,7 @@ import "package:angular2/testing_internal.dart"
         inject,
         it,
         TestComponentBuilder,
-        RootTestComponent,
+        ComponentFixture,
         xit;
 import "../util.dart"
     show specs, compile, TEST_ROUTER_PROVIDERS, clickOnElement, getHref;
@@ -32,7 +32,7 @@ import "fixture_components.dart"
         parentWithDefaultCmpLoader,
         asyncRouteDataCmp;
 
-getLinkElement(RootTestComponent rtc) {
+getLinkElement(ComponentFixture rtc) {
   return rtc.debugElement.componentViewChildren[0].nativeElement;
 }
 
