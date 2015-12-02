@@ -24,17 +24,14 @@ import {DebugElement, DebugElement_} from 'angular2/src/core/debug/debug_element
 
 
 /**
- * @deprecated Use ComponentFixture
+ * Fixture for debugging and testing a component.
  */
-export abstract class RootTestComponent {
+export abstract class ComponentFixture {
   debugElement: DebugElement;
 
   abstract detectChanges(): void;
   abstract destroy(): void;
 }
-
-
-export abstract class ComponentFixture extends RootTestComponent {}
 
 
 export class ComponentFixture_ extends ComponentFixture {

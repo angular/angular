@@ -8,7 +8,7 @@ import {
   inject,
   it,
   TestComponentBuilder,
-  RootTestComponent,
+  ComponentFixture,
   xit,
 } from 'angular2/testing_internal';
 
@@ -32,7 +32,7 @@ import {
   asyncRouteDataCmp
 } from './fixture_components';
 
-function getLinkElement(rtc: RootTestComponent) {
+function getLinkElement(rtc: ComponentFixture) {
   return rtc.debugElement.componentViewChildren[0].nativeElement;
 }
 
