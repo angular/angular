@@ -150,7 +150,7 @@ class TreeBuilder {
     var parentEl = this._getParentElement();
     if (tagDef.requireExtraParent(isPresent(parentEl) ? parentEl.name : null)) {
       var newParent =
-          new HtmlElementAst(tagDef.requiredParent, [], [el], el.sourceSpan);
+          new HtmlElementAst(tagDef.parentToAdd, [], [el], el.sourceSpan);
       this._addToParent(newParent);
       this.elementStack.add(newParent);
       this.elementStack.add(el);

@@ -66,30 +66,35 @@ enum HtmlTagContentType { RAW_TEXT, ESCAPABLE_RAW_TEXT, PARSABLE_DATA }
 class HtmlTagDefinition {
   Map<String, bool> closedByChildren = {};
   bool closedByParent = false;
-  String requiredParent;
+  Map<String, bool> requiredParents;
+  String parentToAdd;
   String implicitNamespacePrefix;
   HtmlTagContentType contentType;
   HtmlTagDefinition(
       {closedByChildren,
-      requiredParent,
+      requiredParents,
       implicitNamespacePrefix,
       contentType,
       closedByParent}) {
     if (isPresent(closedByChildren) && closedByChildren.length > 0) {
       closedByChildren
-          .split(",")
-          .forEach((tagName) => this.closedByChildren[tagName.trim()] = true);
+          .forEach((tagName) => this.closedByChildren[tagName] = true);
     }
     this.closedByParent = normalizeBool(closedByParent);
-    this.requiredParent = requiredParent;
+    if (isPresent(requiredParents) && requiredParents.length > 0) {
+      this.requiredParents = {};
+      this.parentToAdd = requiredParents[0];
+      requiredParents
+          .forEach((tagName) => this.requiredParents[tagName] = true);
+    }
     this.implicitNamespacePrefix = implicitNamespacePrefix;
     this.contentType =
         isPresent(contentType) ? contentType : HtmlTagContentType.PARSABLE_DATA;
   }
   bool requireExtraParent(String currentParent) {
-    return isPresent(this.requiredParent) &&
+    return isPresent(this.requiredParents) &&
         (isBlank(currentParent) ||
-            this.requiredParent != currentParent.toLowerCase());
+            this.requiredParents[currentParent.toLowerCase()] != true);
   }
 
   bool isClosedByChild(String name) {
@@ -101,46 +106,75 @@ class HtmlTagDefinition {
 
 // This implementation does not fully conform to the HTML5 spec.
 Map<String, HtmlTagDefinition> TAG_DEFINITIONS = {
-  "link": new HtmlTagDefinition(closedByChildren: "*", closedByParent: true),
+  "link": new HtmlTagDefinition(closedByChildren: ["*"], closedByParent: true),
   "ng-content":
-      new HtmlTagDefinition(closedByChildren: "*", closedByParent: true),
-  "img": new HtmlTagDefinition(closedByChildren: "*", closedByParent: true),
-  "input": new HtmlTagDefinition(closedByChildren: "*", closedByParent: true),
-  "hr": new HtmlTagDefinition(closedByChildren: "*", closedByParent: true),
-  "br": new HtmlTagDefinition(closedByChildren: "*", closedByParent: true),
-  "wbr": new HtmlTagDefinition(closedByChildren: "*", closedByParent: true),
-  "p": new HtmlTagDefinition(
-      closedByChildren:
-          "address,article,aside,blockquote,div,dl,fieldset,footer,form,h1,h2,h3,h4,h5,h6,header,hgroup,hr,main,nav,ol,p,pre,section,table,ul",
-      closedByParent: true),
-  "thead": new HtmlTagDefinition(closedByChildren: "tbody,tfoot"),
+      new HtmlTagDefinition(closedByChildren: ["*"], closedByParent: true),
+  "img": new HtmlTagDefinition(closedByChildren: ["*"], closedByParent: true),
+  "input": new HtmlTagDefinition(closedByChildren: ["*"], closedByParent: true),
+  "hr": new HtmlTagDefinition(closedByChildren: ["*"], closedByParent: true),
+  "br": new HtmlTagDefinition(closedByChildren: ["*"], closedByParent: true),
+  "wbr": new HtmlTagDefinition(closedByChildren: ["*"], closedByParent: true),
+  "p": new HtmlTagDefinition(closedByChildren: [
+    "address",
+    "article",
+    "aside",
+    "blockquote",
+    "div",
+    "dl",
+    "fieldset",
+    "footer",
+    "form",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "header",
+    "hgroup",
+    "hr",
+    "main",
+    "nav",
+    "ol",
+    "p",
+    "pre",
+    "section",
+    "table",
+    "ul"
+  ], closedByParent: true),
+  "thead": new HtmlTagDefinition(closedByChildren: ["tbody", "tfoot"]),
   "tbody": new HtmlTagDefinition(
-      closedByChildren: "tbody,tfoot", closedByParent: true),
+      closedByChildren: ["tbody", "tfoot"], closedByParent: true),
   "tfoot":
-      new HtmlTagDefinition(closedByChildren: "tbody", closedByParent: true),
+      new HtmlTagDefinition(closedByChildren: ["tbody"], closedByParent: true),
   "tr": new HtmlTagDefinition(
-      closedByChildren: "tr", requiredParent: "tbody", closedByParent: true),
-  "td": new HtmlTagDefinition(closedByChildren: "td,th", closedByParent: true),
-  "th": new HtmlTagDefinition(closedByChildren: "td,th", closedByParent: true),
+      closedByChildren: ["tr"],
+      requiredParents: ["tbody", "tfoot", "thead"],
+      closedByParent: true),
+  "td": new HtmlTagDefinition(
+      closedByChildren: ["td", "th"], closedByParent: true),
+  "th": new HtmlTagDefinition(
+      closedByChildren: ["td", "th"], closedByParent: true),
   "col": new HtmlTagDefinition(
-      closedByChildren: "col", requiredParent: "colgroup"),
+      closedByChildren: ["col"], requiredParents: ["colgroup"]),
   "svg": new HtmlTagDefinition(implicitNamespacePrefix: "svg"),
   "math": new HtmlTagDefinition(implicitNamespacePrefix: "math"),
-  "li": new HtmlTagDefinition(closedByChildren: "li", closedByParent: true),
-  "dt": new HtmlTagDefinition(closedByChildren: "dt,dd"),
-  "dd": new HtmlTagDefinition(closedByChildren: "dt,dd", closedByParent: true),
+  "li": new HtmlTagDefinition(closedByChildren: ["li"], closedByParent: true),
+  "dt": new HtmlTagDefinition(closedByChildren: ["dt", "dd"]),
+  "dd": new HtmlTagDefinition(
+      closedByChildren: ["dt", "dd"], closedByParent: true),
   "rb": new HtmlTagDefinition(
-      closedByChildren: "rb,rt,rtc,rp", closedByParent: true),
+      closedByChildren: ["rb", "rt", "rtc", "rp"], closedByParent: true),
   "rt": new HtmlTagDefinition(
-      closedByChildren: "rb,rt,rtc,rp", closedByParent: true),
+      closedByChildren: ["rb", "rt", "rtc", "rp"], closedByParent: true),
   "rtc": new HtmlTagDefinition(
-      closedByChildren: "rb,rtc,rp", closedByParent: true),
+      closedByChildren: ["rb", "rtc", "rp"], closedByParent: true),
   "rp": new HtmlTagDefinition(
-      closedByChildren: "rb,rt,rtc,rp", closedByParent: true),
-  "optgroup":
-      new HtmlTagDefinition(closedByChildren: "optgroup", closedByParent: true),
+      closedByChildren: ["rb", "rt", "rtc", "rp"], closedByParent: true),
+  "optgroup": new HtmlTagDefinition(
+      closedByChildren: ["optgroup"], closedByParent: true),
   "option": new HtmlTagDefinition(
-      closedByChildren: "option,optgroup", closedByParent: true),
+      closedByChildren: ["option", "optgroup"], closedByParent: true),
   "style": new HtmlTagDefinition(contentType: HtmlTagContentType.RAW_TEXT),
   "script": new HtmlTagDefinition(contentType: HtmlTagContentType.RAW_TEXT),
   "title":
