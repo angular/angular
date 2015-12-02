@@ -20,7 +20,7 @@ export declare function beforeEach(fn: FunctionWithParamTokens | SyncTestFn): vo
  *
  * Example:
  *
- *   beforeEachBindings(() => [
+ *   beforeEachProviders(() => [
  *     provide(Compiler, {useClass: MockCompiler}),
  *     provide(SomeToken, {useValue: myValue}),
  *   ]);

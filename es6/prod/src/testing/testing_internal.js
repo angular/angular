@@ -81,17 +81,17 @@ export function beforeEach(fn) {
  *
  * Example:
  *
- *   beforeEachBindings(() => [
+ *   beforeEachProviders(() => [
  *     provide(Compiler, {useClass: MockCompiler}),
  *     provide(SomeToken, {useValue: myValue}),
  *   ]);
  */
 export function beforeEachProviders(fn) {
     jsmBeforeEach(() => {
-        var bindings = fn();
-        if (!bindings)
+        var providers = fn();
+        if (!providers)
             return;
-        testProviders = [...testProviders, ...bindings];
+        testProviders = [...testProviders, ...providers];
     });
 }
 /**

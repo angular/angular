@@ -106,17 +106,17 @@ exports.beforeEach = beforeEach;
  *
  * Example:
  *
- *   beforeEachBindings(() => [
+ *   beforeEachProviders(() => [
  *     provide(Compiler, {useClass: MockCompiler}),
  *     provide(SomeToken, {useValue: myValue}),
  *   ]);
  */
 function beforeEachProviders(fn) {
     jsmBeforeEach(function () {
-        var bindings = fn();
-        if (!bindings)
+        var providers = fn();
+        if (!providers)
             return;
-        testProviders = testProviders.concat(bindings);
+        testProviders = testProviders.concat(providers);
     });
 }
 exports.beforeEachProviders = beforeEachProviders;
