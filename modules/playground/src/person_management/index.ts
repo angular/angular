@@ -1,5 +1,5 @@
 import {bootstrap} from 'angular2/bootstrap';
-import {Component, Directive, View, Host, forwardRef, Provider, Injectable} from 'angular2/core';
+import {Component, Directive, View, Injectable} from 'angular2/core';
 import {NgIf, NgFor, FORM_DIRECTIVES} from 'angular2/common';
 
 import {CONST_EXPR} from 'angular2/src/facade/lang';
