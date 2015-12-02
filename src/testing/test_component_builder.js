@@ -26,21 +26,13 @@ var dom_tokens_1 = require('angular2/src/platform/dom/dom_tokens');
 var dom_adapter_1 = require('angular2/src/platform/dom/dom_adapter');
 var debug_element_1 = require('angular2/src/core/debug/debug_element');
 /**
- * @deprecated Use ComponentFixture
+ * Fixture for debugging and testing a component.
  */
-var RootTestComponent = (function () {
-    function RootTestComponent() {
-    }
-    return RootTestComponent;
-})();
-exports.RootTestComponent = RootTestComponent;
-var ComponentFixture = (function (_super) {
-    __extends(ComponentFixture, _super);
+var ComponentFixture = (function () {
     function ComponentFixture() {
-        _super.apply(this, arguments);
     }
     return ComponentFixture;
-})(RootTestComponent);
+})();
 exports.ComponentFixture = ComponentFixture;
 var ComponentFixture_ = (function (_super) {
     __extends(ComponentFixture_, _super);

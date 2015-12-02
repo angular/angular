@@ -1410,18 +1410,10 @@ System.register("angular2/src/testing/test_component_builder", ["angular2/src/co
   var dom_tokens_1 = require("angular2/src/platform/dom/dom_tokens");
   var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
   var debug_element_1 = require("angular2/src/core/debug/debug_element");
-  var RootTestComponent = (function() {
-    function RootTestComponent() {}
-    return RootTestComponent;
-  })();
-  exports.RootTestComponent = RootTestComponent;
-  var ComponentFixture = (function(_super) {
-    __extends(ComponentFixture, _super);
-    function ComponentFixture() {
-      _super.apply(this, arguments);
-    }
+  var ComponentFixture = (function() {
+    function ComponentFixture() {}
     return ComponentFixture;
-  })(RootTestComponent);
+  })();
   exports.ComponentFixture = ComponentFixture;
   var ComponentFixture_ = (function(_super) {
     __extends(ComponentFixture_, _super);
@@ -2176,7 +2168,6 @@ System.register("angular2/testing", ["angular2/src/testing/testing", "angular2/s
   __export(require("angular2/src/testing/testing"));
   var test_component_builder_1 = require("angular2/src/testing/test_component_builder");
   exports.ComponentFixture = test_component_builder_1.ComponentFixture;
-  exports.RootTestComponent = test_component_builder_1.RootTestComponent;
   exports.TestComponentBuilder = test_component_builder_1.TestComponentBuilder;
   __export(require("angular2/src/testing/test_injector"));
   __export(require("angular2/src/testing/fake_async"));

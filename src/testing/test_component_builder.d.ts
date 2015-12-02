@@ -5,14 +5,12 @@ import { ViewMetadata } from '../core/metadata';
 import { ComponentRef } from 'angular2/src/core/linker/dynamic_component_loader';
 import { DebugElement } from 'angular2/src/core/debug/debug_element';
 /**
- * @deprecated Use ComponentFixture
+ * Fixture for debugging and testing a component.
  */
-export declare abstract class RootTestComponent {
+export declare abstract class ComponentFixture {
     debugElement: DebugElement;
     abstract detectChanges(): void;
     abstract destroy(): void;
-}
-export declare abstract class ComponentFixture extends RootTestComponent {
 }
 export declare class ComponentFixture_ extends ComponentFixture {
     constructor(componentRef: ComponentRef);

@@ -21,11 +21,9 @@ import { DOCUMENT } from 'angular2/src/platform/dom/dom_tokens';
 import { DOM } from 'angular2/src/platform/dom/dom_adapter';
 import { DebugElement_ } from 'angular2/src/core/debug/debug_element';
 /**
- * @deprecated Use ComponentFixture
+ * Fixture for debugging and testing a component.
  */
-export class RootTestComponent {
-}
-export class ComponentFixture extends RootTestComponent {
+export class ComponentFixture {
 }
 export class ComponentFixture_ extends ComponentFixture {
     constructor(componentRef) {

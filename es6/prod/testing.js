@@ -7,7 +7,7 @@
  *
  */
 export * from './src/testing/testing';
-export { ComponentFixture, RootTestComponent, TestComponentBuilder } from './src/testing/test_component_builder';
+export { ComponentFixture, TestComponentBuilder } from './src/testing/test_component_builder';
 export * from './src/testing/test_injector';
 export * from './src/testing/fake_async';
 export { MockViewResolver } from 'angular2/src/mock/view_resolver_mock';
