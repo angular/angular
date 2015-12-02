@@ -51,12 +51,11 @@ void setUpProviders(Iterable<Provider> providerFactory()) {
   setUp(() {
     try {
       _testInjector.addProviders(providerFactory());
-    } catch(e) {
+    } catch (e) {
       throw 'setUpProviders was called after the injector had '
           'been used in a setUp or test block. This invalidates the '
           'test injector';
     }
-
   });
 
   _addTestInjectorTearDown();

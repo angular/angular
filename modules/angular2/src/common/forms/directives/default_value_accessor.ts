@@ -31,7 +31,7 @@ export class DefaultValueAccessor implements ControlValueAccessor {
 
   writeValue(value: any): void {
     var normalizedValue = isBlank(value) ? '' : value;
-    this._renderer.setElementProperty(this._elementRef, 'value', normalizedValue);
+    this._renderer.setElementProperty(this._elementRef.nativeElement, 'value', normalizedValue);
   }
 
   registerOnChange(fn: (_: any) => void): void { this.onChange = fn; }

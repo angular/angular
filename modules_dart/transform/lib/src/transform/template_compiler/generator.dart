@@ -30,14 +30,15 @@ import 'compile_data_creator.dart';
 Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
     {bool genChangeDetectionDebugInfo: false,
     bool reflectPropertiesAsAttributes: false,
-    List<String> platformDirectives}) async {
-  var viewDefResults =
-      await createCompileData(reader, assetId, platformDirectives);
+    List<String> platformDirectives,
+    List<String> platformPipes}) async {
+  var viewDefResults = await createCompileData(
+      reader, assetId, platformDirectives, platformPipes);
   if (viewDefResults == null) return null;
-  final directiveMetadatas = viewDefResults.ngMeta.types.values;
-  if (directiveMetadatas.isNotEmpty) {
+  final compileTypeMetadatas = viewDefResults.ngMeta.types.values;
+  if (compileTypeMetadatas.isNotEmpty) {
     var processor = new reg.Processor();
-    directiveMetadatas.forEach(processor.process);
+    compileTypeMetadatas.forEach(processor.process);
     viewDefResults.ngMeta.ngDeps.getters
         .addAll(processor.getterNames.map((e) => e.sanitizedName));
     viewDefResults.ngMeta.ngDeps.setters
@@ -71,7 +72,7 @@ Future<Outputs> processTemplates(AssetReader reader, AssetId assetId,
       ..prefix = '_templates');
     for (var reflectable in viewDefResults.viewDefinitions.keys) {
       reflectable.annotations.add(new AnnotationModel()
-        ..name = '_templates.Host${reflectable.name}Template'
+        ..name = '_templates.hostViewFactory_${reflectable.name}'
         ..isConstObject = true);
     }
   }

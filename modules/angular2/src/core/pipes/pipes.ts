@@ -45,7 +45,6 @@ export class Pipes implements cd.Pipes {
   get(name: string): cd.SelectedPipe {
     var cached = StringMapWrapper.get(this._config, name);
     if (isPresent(cached)) return cached;
-
     var p = this.proto.get(name);
     var transform = this.injector.instantiateResolved(p);
     var res = new cd.SelectedPipe(transform, p.pure);

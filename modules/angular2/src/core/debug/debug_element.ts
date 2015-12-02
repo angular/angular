@@ -1,9 +1,9 @@
 import {Type, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {ListWrapper, MapWrapper, Predicate} from 'angular2/src/facade/collection';
 import {unimplemented} from 'angular2/src/facade/exceptions';
-import {ElementInjector} from 'angular2/src/core/linker/element_injector';
-import {AppView, ViewType} from 'angular2/src/core/linker/view';
-import {internalView} from 'angular2/src/core/linker/view_ref';
+
+import {AppElement} from 'angular2/src/core/linker/element';
+import {AppView} from 'angular2/src/core/linker/view';
 import {ElementRef, ElementRef_} from 'angular2/src/core/linker/element_ref';
 
 /**
@@ -103,79 +103,68 @@ export abstract class DebugElement {
 }
 
 export class DebugElement_ extends DebugElement {
-  /** @internal */
-  _elementInjector: ElementInjector;
-
-  constructor(private _parentView: AppView, private _boundElementIndex: number) {
-    super();
-    this._elementInjector = this._parentView.elementInjectors[this._boundElementIndex];
-  }
+  constructor(private _appElement: AppElement) { super(); }
 
   get componentInstance(): any {
-    if (!isPresent(this._elementInjector)) {
+    if (!isPresent(this._appElement)) {
       return null;
     }
-    return this._elementInjector.getComponent();
+    return this._appElement.getComponent();
   }
 
   get nativeElement(): any { return this.elementRef.nativeElement; }
 
-  get elementRef(): ElementRef { return this._parentView.elementRefs[this._boundElementIndex]; }
+  get elementRef(): ElementRef { return this._appElement.ref; }
 
   getDirectiveInstance(directiveIndex: number): any {
-    return this._elementInjector.getDirectiveAtIndex(directiveIndex);
+    return this._appElement.getDirectiveAtIndex(directiveIndex);
   }
 
   get children(): DebugElement[] {
-    return this._getChildElements(this._parentView, this._boundElementIndex);
+    return this._getChildElements(this._appElement.parentView, this._appElement);
   }
 
   get componentViewChildren(): DebugElement[] {
-    var shadowView = this._parentView.getNestedView(this._boundElementIndex);
-
-    if (!isPresent(shadowView) || shadowView.proto.type !== ViewType.COMPONENT) {
+    if (!isPresent(this._appElement.componentView)) {
       // The current element is not a component.
       return [];
     }
 
-    return this._getChildElements(shadowView, null);
+    return this._getChildElements(this._appElement.componentView, null);
   }
 
   triggerEventHandler(eventName: string, eventObj: Event): void {
-    this._parentView.triggerEventHandlers(eventName, eventObj, this._boundElementIndex);
+    this._appElement.parentView.triggerEventHandlers(eventName, eventObj,
+                                                     this._appElement.proto.index);
   }
 
   hasDirective(type: Type): boolean {
-    if (!isPresent(this._elementInjector)) {
+    if (!isPresent(this._appElement)) {
       return false;
     }
-    return this._elementInjector.hasDirective(type);
+    return this._appElement.hasDirective(type);
   }
 
   inject(type: Type): any {
-    if (!isPresent(this._elementInjector)) {
+    if (!isPresent(this._appElement)) {
       return null;
     }
-    return this._elementInjector.get(type);
+    return this._appElement.get(type);
   }
 
-  getLocal(name: string): any { return this._parentView.locals.get(name); }
+  getLocal(name: string): any { return this._appElement.parentView.locals.get(name); }
 
   /** @internal */
-  _getChildElements(view: AppView, parentBoundElementIndex: number): DebugElement[] {
+  _getChildElements(view: AppView, parentAppElement: AppElement): DebugElement[] {
     var els = [];
-    var parentElementBinder = null;
-    if (isPresent(parentBoundElementIndex)) {
-      parentElementBinder = view.proto.elementBinders[parentBoundElementIndex - view.elementOffset];
-    }
-    for (var i = 0; i < view.proto.elementBinders.length; ++i) {
-      var binder = view.proto.elementBinders[i];
-      if (binder.parent == parentElementBinder) {
-        els.push(new DebugElement_(view, view.elementOffset + i));
+    for (var i = 0; i < view.appElements.length; ++i) {
+      var appEl = view.appElements[i];
+      if (appEl.parent == parentAppElement) {
+        els.push(new DebugElement_(appEl));
 
-        var views = view.viewContainers[view.elementOffset + i];
+        var views = appEl.nestedViews;
         if (isPresent(views)) {
-          views.views.forEach(
+          views.forEach(
               (nextView) => { els = els.concat(this._getChildElements(nextView, null)); });
         }
       }
@@ -191,8 +180,7 @@ export class DebugElement_ extends DebugElement {
  * @return {DebugElement}
  */
 export function inspectElement(elementRef: ElementRef): DebugElement {
-  return new DebugElement_(internalView((<ElementRef_>elementRef).parentView),
-                           (<ElementRef_>elementRef).boundElementIndex);
+  return new DebugElement_((<ElementRef_>elementRef).internalElement);
 }
 
 /**
