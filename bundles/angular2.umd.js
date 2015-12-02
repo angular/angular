@@ -641,7 +641,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var obj = global;
 	    while (parts.length > 1) {
 	        var name = parts.shift();
-	        if (obj.hasOwnProperty(name)) {
+	        if (obj.hasOwnProperty(name) && isPresent(obj[name])) {
 	            obj = obj[name];
 	        }
 	        else {
@@ -36599,7 +36599,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Disables Angular 2 tools.
 	 */
 	function disableDebugTools() {
-	    context.ng = undefined;
+	    delete context.ng;
 	}
 	exports.disableDebugTools = disableDebugTools;
 

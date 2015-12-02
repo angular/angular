@@ -20,7 +20,7 @@ exports.enableDebugTools = enableDebugTools;
  * Disables Angular 2 tools.
  */
 function disableDebugTools() {
-    context.ng = undefined;
+    delete context.ng;
 }
 exports.disableDebugTools = disableDebugTools;
 //# sourceMappingURL=tools.js.map

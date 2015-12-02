@@ -4025,7 +4025,7 @@ System.register("angular2/src/facade/lang", [], true, function(require, exports,
     var obj = global;
     while (parts.length > 1) {
       var name = parts.shift();
-      if (obj.hasOwnProperty(name)) {
+      if (obj.hasOwnProperty(name) && isPresent(obj[name])) {
         obj = obj[name];
       } else {
         obj = obj[name] = {};
@@ -35417,7 +35417,7 @@ System.register("angular2/src/platform/browser/tools/tools", ["angular2/src/faca
   }
   exports.enableDebugTools = enableDebugTools;
   function disableDebugTools() {
-    context.ng = undefined;
+    delete context.ng;
   }
   exports.disableDebugTools = disableDebugTools;
   global.define = __define;
