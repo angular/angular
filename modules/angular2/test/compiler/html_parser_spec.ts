@@ -85,6 +85,11 @@ export function main() {
               ]);
         });
 
+        it('should tolerate end tags for void elements when they have no content', () => {
+          expect(humanizeDom(parser.parse('<ng-content></ng-content>', 'TestComp')))
+              .toEqual([[HtmlElementAst, 'ng-content', 0]]);
+        });
+
         it('should support optional end tags', () => {
           expect(humanizeDom(parser.parse('<div><p>1<p>2</div>', 'TestComp')))
               .toEqual([
@@ -207,6 +212,32 @@ export function main() {
           let errors = parser.parse('<div></p></div>', 'TestComp').errors;
           expect(errors.length).toEqual(1);
           expect(humanizeErrors(errors)).toEqual([['p', 'Unexpected closing tag "p"', '0:5']]);
+        });
+
+        it('should report text content in void elements', () => {
+          let errors = parser.parse('<ng-content>content</ng-content>', 'TestComp').errors;
+          expect(errors.length).toEqual(1);
+          expect(humanizeErrors(errors))
+              .toEqual([
+                [
+                  'ng-content',
+                  'Void elements do not have end tags (they can not have content) "ng-content"',
+                  '0:19'
+                ]
+              ]);
+        });
+
+        it('should report html content in void elements', () => {
+          let errors = parser.parse('<ng-content><p></p></ng-content>', 'TestComp').errors;
+          expect(errors.length).toEqual(1);
+          expect(humanizeErrors(errors))
+              .toEqual([
+                [
+                  'ng-content',
+                  'Void elements do not have end tags (they can not have content) "ng-content"',
+                  '0:19'
+                ]
+              ]);
         });
 
         it('should also report lexer errors', () => {
