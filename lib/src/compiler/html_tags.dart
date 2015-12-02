@@ -70,17 +70,20 @@ class HtmlTagDefinition {
   String parentToAdd;
   String implicitNamespacePrefix;
   HtmlTagContentType contentType;
+  bool isVoid;
   HtmlTagDefinition(
       {closedByChildren,
       requiredParents,
       implicitNamespacePrefix,
       contentType,
-      closedByParent}) {
+      closedByParent,
+      isVoid}) {
     if (isPresent(closedByChildren) && closedByChildren.length > 0) {
       closedByChildren
           .forEach((tagName) => this.closedByChildren[tagName] = true);
     }
-    this.closedByParent = normalizeBool(closedByParent);
+    this.isVoid = normalizeBool(isVoid);
+    this.closedByParent = normalizeBool(closedByParent) || this.isVoid;
     if (isPresent(requiredParents) && requiredParents.length > 0) {
       this.requiredParents = {};
       this.parentToAdd = requiredParents[0];
@@ -98,7 +101,7 @@ class HtmlTagDefinition {
   }
 
   bool isClosedByChild(String name) {
-    return normalizeBool(this.closedByChildren["*"]) ||
+    return this.isVoid ||
         normalizeBool(this.closedByChildren[name.toLowerCase()]);
   }
 }
@@ -106,14 +109,13 @@ class HtmlTagDefinition {
 
 // This implementation does not fully conform to the HTML5 spec.
 Map<String, HtmlTagDefinition> TAG_DEFINITIONS = {
-  "link": new HtmlTagDefinition(closedByChildren: ["*"], closedByParent: true),
-  "ng-content":
-      new HtmlTagDefinition(closedByChildren: ["*"], closedByParent: true),
-  "img": new HtmlTagDefinition(closedByChildren: ["*"], closedByParent: true),
-  "input": new HtmlTagDefinition(closedByChildren: ["*"], closedByParent: true),
-  "hr": new HtmlTagDefinition(closedByChildren: ["*"], closedByParent: true),
-  "br": new HtmlTagDefinition(closedByChildren: ["*"], closedByParent: true),
-  "wbr": new HtmlTagDefinition(closedByChildren: ["*"], closedByParent: true),
+  "link": new HtmlTagDefinition(isVoid: true),
+  "ng-content": new HtmlTagDefinition(isVoid: true),
+  "img": new HtmlTagDefinition(isVoid: true),
+  "input": new HtmlTagDefinition(isVoid: true),
+  "hr": new HtmlTagDefinition(isVoid: true),
+  "br": new HtmlTagDefinition(isVoid: true),
+  "wbr": new HtmlTagDefinition(isVoid: true),
   "p": new HtmlTagDefinition(closedByChildren: [
     "address",
     "article",
