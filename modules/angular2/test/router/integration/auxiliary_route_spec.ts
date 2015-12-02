@@ -1,5 +1,5 @@
 import {
-  RootTestComponent,
+  ComponentFixture,
   AsyncTestCompleter,
   TestComponentBuilder,
   beforeEach,
@@ -22,7 +22,7 @@ import {RouteConfig, Route, AuxRoute, Redirect} from 'angular2/src/router/route_
 
 import {TEST_ROUTER_PROVIDERS, RootCmp, compile, clickOnElement, getHref} from './util';
 
-function getLinkElement(rtc: RootTestComponent) {
+function getLinkElement(rtc: ComponentFixture) {
   return rtc.debugElement.componentViewChildren[0].nativeElement;
 }
 
@@ -33,7 +33,7 @@ export function main() {
   describe('auxiliary routes', () => {
 
     var tcb: TestComponentBuilder;
-    var fixture: RootTestComponent;
+    var fixture: ComponentFixture;
     var rtr;
 
     beforeEachProviders(() => TEST_ROUTER_PROVIDERS);
