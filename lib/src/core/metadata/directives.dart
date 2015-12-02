@@ -542,7 +542,7 @@ class DirectiveMetadata extends InjectableMetadata {
    * Specifies which DOM events a directive listens to via a set of `(event)` to `method`
    * key-value pairs:
    *
-   * - `event1`: the DOM event that the directive listens to.
+   * - `event`: the DOM event that the directive listens to.
    * - `statement`: the statement to execute when the event occurs.
    * If the evaluation of the statement returns `false`, then `preventDefault`is applied on the DOM
    * event.
