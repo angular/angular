@@ -14,22 +14,22 @@ import { bootstrap } from 'angular2/bootstrap';
 // #docregion AsyncPipe
 export let AsyncPipeExample = class {
     constructor() {
-        this.resolved = false;
-        this.promise = null;
+        this.greeting = null;
+        this.arrived = false;
         this.resolve = null;
         this.reset();
     }
     reset() {
-        this.resolved = false;
-        this.promise = new Promise((resolve, reject) => { this.resolve = resolve; });
+        this.arrived = false;
+        this.greeting = new Promise((resolve, reject) => { this.resolve = resolve; });
     }
     clicked() {
-        if (this.resolved) {
+        if (this.arrived) {
             this.reset();
         }
         else {
-            this.resolve("resolved!");
-            this.resolved = true;
+            this.resolve("hi there!");
+            this.arrived = true;
         }
     }
 };
@@ -37,8 +37,8 @@ AsyncPipeExample = __decorate([
     Component({
         selector: 'async-example',
         template: `<div>
-    <p>Wait for it... {{promise | async}}</p>
-    <button (click)="clicked()">{{resolved ? 'Reset' : 'Resolve'}}</button> 
+    <p>Wait for it... {{ greeting | async }}</p>
+    <button (click)="clicked()">{{ arrived ? 'Reset' : 'Resolve' }}</button> 
   </div>`
     }), 
     __metadata('design:paramtypes', [])
