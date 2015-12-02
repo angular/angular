@@ -3,7 +3,7 @@
 // the old API is cleaned up.
 library angular2.test.core.zone.ng_zone_DEPRECATED_spec;
 
-import "package:angular2/test_lib.dart"
+import "package:angular2/testing_internal.dart"
     show
         AsyncTestCompleter,
         beforeEach,
