@@ -13,7 +13,7 @@ import "package:angular2/testing_internal.dart"
         afterEach,
         AsyncTestCompleter,
         inject,
-        beforeEachBindings;
+        beforeEachProviders;
 import "package:angular2/core.dart" show Component, View, provide;
 import "../spies.dart" show SpyProtoViewFactory;
 import "package:angular2/src/core/linker/template_commands.dart"
@@ -32,7 +32,7 @@ main() {
     var protoViewFactorySpy;
     var someProtoView;
     CompiledHostTemplate cht;
-    beforeEachBindings(() {
+    beforeEachProviders(() {
       protoViewFactorySpy = new SpyProtoViewFactory();
       someProtoView =
           new AppProtoView(null, null, null, null, null, null, null);

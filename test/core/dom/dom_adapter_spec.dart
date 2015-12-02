@@ -12,7 +12,7 @@ import "package:angular2/testing_internal.dart"
         inject,
         it,
         xit,
-        beforeEachBindings,
+        beforeEachProviders,
         SpyObject,
         stringifyElement;
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;

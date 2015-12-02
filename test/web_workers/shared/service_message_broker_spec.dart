@@ -9,7 +9,7 @@ import "package:angular2/testing_internal.dart"
         expect,
         beforeEach,
         createTestInjector,
-        beforeEachBindings,
+        beforeEachProviders,
         SpyObject,
         proxy;
 import "../shared/web_worker_test_util.dart" show createPairedMessageBuses;
@@ -33,7 +33,7 @@ main() {
   const PASSED_ARG_2 = "TEST";
   const RESULT = 20;
   const ID = "methodId";
-  beforeEachBindings(() => [
+  beforeEachProviders(() => [
         provide(ON_WEB_WORKER, useValue: true),
         RenderProtoViewRefStore,
         RenderViewWithFragmentsStore

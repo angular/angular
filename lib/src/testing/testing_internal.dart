@@ -46,7 +46,7 @@ void testSetup() {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
   // beforeEach configuration:
   // - Priority 3: clear the bindings before each test,
-  // - Priority 2: collect the bindings before each test, see beforeEachBindings(),
+  // - Priority 2: collect the bindings before each test, see beforeEachProviders(),
   // - Priority 1: create the test injector to be used in beforeEach() and it()
 
   gns.beforeEach(() {
@@ -74,7 +74,7 @@ void testSetup() {
  *
  * Example:
  *
- *   beforeEachBindings(() => [
+ *   beforeEachProviders(() => [
  *     bind(Compiler).toClass(MockCompiler),
  *     bind(SomeToken).toValue(myValue),
  *   ]);

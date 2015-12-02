@@ -13,7 +13,7 @@ import "package:angular2/testing_internal.dart"
         it,
         xit,
         TestComponentBuilder,
-        beforeEachBindings;
+        beforeEachProviders;
 import "package:angular2/src/compiler/directive_metadata.dart"
     show CompileTypeMetadata, CompileTemplateMetadata;
 import "package:angular2/src/core/metadata/view.dart" show ViewEncapsulation;
@@ -27,7 +27,7 @@ main() {
   describe("TemplateNormalizer", () {
     CompileTypeMetadata dirType;
     CompileTypeMetadata dirTypeWithHttpUrl;
-    beforeEachBindings(() => TEST_PROVIDERS);
+    beforeEachProviders(() => TEST_PROVIDERS);
     beforeEach(() {
       dirType = new CompileTypeMetadata(
           moduleUrl: "package:some/module/a.js", name: "SomeComp");

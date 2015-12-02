@@ -5,7 +5,7 @@ import "package:angular2/testing_internal.dart"
         AsyncTestCompleter,
         TestComponentBuilder,
         beforeEach,
-        beforeEachBindings,
+        beforeEachProviders,
         ddescribe,
         describe,
         el,

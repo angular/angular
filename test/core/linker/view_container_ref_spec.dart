@@ -12,7 +12,7 @@ import "package:angular2/testing_internal.dart"
         expect,
         iit,
         inject,
-        beforeEachBindings,
+        beforeEachProviders,
         it,
         xit;
 import "../spies.dart" show SpyView, SpyAppViewManager;

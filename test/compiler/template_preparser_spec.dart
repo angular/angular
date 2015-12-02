@@ -13,7 +13,7 @@ import "package:angular2/testing_internal.dart"
         afterEach,
         AsyncTestCompleter,
         inject,
-        beforeEachBindings;
+        beforeEachProviders;
 import "package:angular2/src/compiler/html_parser.dart" show HtmlParser;
 import "package:angular2/src/compiler/template_preparser.dart"
     show preparseElement, PreparsedElementType, PreparsedElement;

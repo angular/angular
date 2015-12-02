@@ -13,7 +13,7 @@ import "package:angular2/testing_internal.dart"
         afterEach,
         AsyncTestCompleter,
         inject,
-        beforeEachBindings;
+        beforeEachProviders;
 import "package:angular2/src/core/di.dart" show provide;
 import "package:angular2/src/facade/lang.dart" show stringify;
 import "package:angular2/src/facade/collection.dart" show MapWrapper;
@@ -46,7 +46,7 @@ var THIS_MODULE_URL = '''package:${ THIS_MODULE_ID}${ MODULE_SUFFIX}''';
 var THIS_MODULE_REF = moduleRef(THIS_MODULE_URL);
 main() {
   describe("ChangeDetectorCompiler", () {
-    beforeEachBindings(() => TEST_PROVIDERS);
+    beforeEachProviders(() => TEST_PROVIDERS);
     TemplateParser parser;
     ChangeDetectionCompiler compiler;
     beforeEach(
@@ -66,7 +66,7 @@ main() {
         return testChangeDetector(factories[0]);
       }
       describe("no jit", () {
-        beforeEachBindings(() => [
+        beforeEachProviders(() => [
               provide(ChangeDetectorGenConfig,
                   useValue: new ChangeDetectorGenConfig(true, false, false))
             ]);
@@ -76,7 +76,7 @@ main() {
         });
       });
       describe("jit", () {
-        beforeEachBindings(() => [
+        beforeEachProviders(() => [
               provide(ChangeDetectorGenConfig,
                   useValue: new ChangeDetectorGenConfig(true, false, true))
             ]);

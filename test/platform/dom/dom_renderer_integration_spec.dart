@@ -12,7 +12,7 @@ import "package:angular2/testing_internal.dart"
         inject,
         it,
         xit,
-        beforeEachBindings,
+        beforeEachProviders,
         SpyObject;
 // import {MapWrapper} from 'angular2/src/facade/collection';
 

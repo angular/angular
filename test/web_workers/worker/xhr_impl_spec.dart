@@ -9,7 +9,7 @@ import "package:angular2/testing_internal.dart"
         expect,
         beforeEach,
         createTestInjector,
-        beforeEachBindings;
+        beforeEachProviders;
 import "spies.dart" show SpyMessageBroker;
 import "package:angular2/src/facade/lang.dart" show Type;
 import "package:angular2/src/web_workers/shared/client_message_broker.dart"

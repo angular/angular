@@ -11,7 +11,7 @@ import "package:angular2/testing_internal.dart"
         expect,
         inject,
         beforeEach,
-        beforeEachBindings,
+        beforeEachProviders,
         SpyObject;
 import "package:angular2/core.dart" show Injector, provide;
 import "package:angular2/src/router/location.dart" show Location;

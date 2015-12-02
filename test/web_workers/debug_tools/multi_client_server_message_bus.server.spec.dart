@@ -12,7 +12,7 @@ import "package:angular2/testing_internal.dart"
         expect,
         beforeEach,
         createTestInjector,
-        beforeEachBindings,
+        beforeEachProviders,
         SpyObject,
         proxy;
 import "package:angular2/src/web_workers/debug_tools/multi_client_server_message_bus.dart";

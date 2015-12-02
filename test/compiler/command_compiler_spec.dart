@@ -13,7 +13,7 @@ import "package:angular2/testing_internal.dart"
         afterEach,
         AsyncTestCompleter,
         inject,
-        beforeEachBindings;
+        beforeEachProviders;
 import "package:angular2/src/facade/lang.dart"
     show stringify, isType, Type, isBlank, serializeEnum, IS_DART;
 import "package:angular2/src/facade/collection.dart" show MapWrapper;
@@ -82,7 +82,7 @@ Map<CompileTypeMetadata, String> compTypeTemplateId =
 ]);
 main() {
   describe("CommandCompiler", () {
-    beforeEachBindings(() => TEST_PROVIDERS);
+    beforeEachProviders(() => TEST_PROVIDERS);
     TemplateParser parser;
     CommandCompiler commandCompiler;
     Function componentTemplateFactory;

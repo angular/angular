@@ -9,7 +9,7 @@ import "package:angular2/testing_internal.dart"
         expect,
         beforeEach,
         createTestInjector,
-        beforeEachBindings,
+        beforeEachProviders,
         SpyObject,
         proxy;
 import "package:angular2/src/web_workers/shared/serializer.dart"
@@ -31,7 +31,7 @@ import "package:angular2/src/web_workers/shared/messaging_api.dart"
 
 main() {
   describe("EventDispatcher", () {
-    beforeEachBindings(() => [
+    beforeEachProviders(() => [
           provide(ON_WEB_WORKER, useValue: true),
           RenderProtoViewRefStore,
           RenderViewWithFragmentsStore

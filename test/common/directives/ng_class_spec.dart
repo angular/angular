@@ -6,7 +6,7 @@ import "package:angular2/testing_internal.dart"
         AsyncTestCompleter,
         TestComponentBuilder,
         beforeEach,
-        beforeEachBindings,
+        beforeEachProviders,
         ddescribe,
         xdescribe,
         describe,
@@ -35,7 +35,7 @@ detectChangesAndCheck(ComponentFixture fixture, String classes,
 main() {
   describe("binding to CSS class list", () {
     describe("viewpool support", () {
-      beforeEachBindings(() {
+      beforeEachProviders(() {
         return [provide(APP_VIEW_POOL_CAPACITY, useValue: 100)];
       });
       it(

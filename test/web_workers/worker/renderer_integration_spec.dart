@@ -11,7 +11,7 @@ import "package:angular2/testing_internal.dart"
         expect,
         beforeEach,
         createTestInjector,
-        beforeEachBindings,
+        beforeEachProviders,
         TestComponentBuilder;
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
 import "package:angular2/core.dart"
@@ -112,7 +112,7 @@ main() {
   describe("Web Worker Renderer", () {
     Injector uiInjector;
     RenderViewWithFragmentsStore uiRenderViewStore;
-    beforeEachBindings(() {
+    beforeEachProviders(() {
       var uiRenderProtoViewStore = new RenderProtoViewRefStore(false);
       uiRenderViewStore = new RenderViewWithFragmentsStore(false);
       uiInjector = createTestInjector([

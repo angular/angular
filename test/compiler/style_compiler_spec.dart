@@ -13,7 +13,7 @@ import "package:angular2/testing_internal.dart"
         afterEach,
         AsyncTestCompleter,
         inject,
-        beforeEachBindings;
+        beforeEachProviders;
 import "package:angular2/src/core/di.dart" show provide;
 import "spies.dart" show SpyXHR;
 import "package:angular2/src/compiler/xhr.dart" show XHR;
@@ -45,7 +45,7 @@ var IMPORT_ABS_STYLESHEET_URL_WITH_IMPORT =
 main() {
   describe("StyleCompiler", () {
     SpyXHR xhr;
-    beforeEachBindings(() {
+    beforeEachProviders(() {
       xhr = (new SpyXHR() as dynamic);
       return [TEST_PROVIDERS, provide(XHR, useValue: xhr)];
     });

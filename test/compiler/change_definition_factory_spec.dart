@@ -13,7 +13,7 @@ import "package:angular2/testing_internal.dart"
         it,
         xit,
         TestComponentBuilder,
-        beforeEachBindings;
+        beforeEachProviders;
 import "package:angular2/src/facade/collection.dart" show MapWrapper;
 import "package:angular2/src/compiler/directive_metadata.dart"
     show CompileDirectiveMetadata, CompileTypeMetadata;
@@ -40,7 +40,7 @@ import "test_bindings.dart" show TEST_PROVIDERS;
 
 main() {
   describe("ChangeDefinitionFactory", () {
-    beforeEachBindings(() => TEST_PROVIDERS);
+    beforeEachProviders(() => TEST_PROVIDERS);
     TemplateParser parser;
     TestDispatcher dispatcher;
     TestContext context;
