@@ -12,6 +12,5 @@
     "@reactivex/rxjs": "<%= packageJson.dependencies['@reactivex/rxjs'] %>",
     "zone.js": "<%= packageJson.dependencies['zone.js'] %>"
   },
-  "devDependencies": <%= JSON.stringify(packageJson.defaultDevDependencies) %>,
-  "typings": "./angular2.d.ts"
+  "devDependencies": <%= JSON.stringify(packageJson.defaultDevDependencies) %>
 }
