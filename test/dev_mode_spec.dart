@@ -12,7 +12,7 @@ import "package:angular2/testing_internal.dart"
         it,
         xdescribe,
         xit;
-import "package:angular2/src/facade/lang.dart" show assertionsEnabled;
+import "package:angular2/src/facade/lang.dart" show assertionsEnabled, IS_DART;
 
 main() {
   describe("dev mode", () {
@@ -20,4 +20,15 @@ main() {
       expect(assertionsEnabled()).toBe(true);
     });
   });
+  if (IS_DART) {
+    describe("checked mode", () {
+      it("is enabled in our tests", () {
+        try {
+          String s = (42 as dynamic);
+          expect(s).toEqual(42);
+          throw "should not be reached";
+        } catch (e, e_stack) {}
+      });
+    });
+  }
 }
