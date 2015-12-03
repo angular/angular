@@ -3,7 +3,7 @@ import {StringMapWrapper} from 'angular2/src/facade/collection';
 /**
  * Supported http methods.
  */
-export enum RequestMethods {
+export enum RequestMethod {
   Get,
   Post,
   Put,
@@ -18,7 +18,7 @@ export enum RequestMethods {
  * [States](http://www.w3.org/TR/XMLHttpRequest/#states) from the `XMLHttpRequest` spec, but with an
  * additional "CANCELLED" state.
  */
-export enum ReadyStates {
+export enum ReadyState {
   Unsent,
   Open,
   HeadersReceived,
@@ -31,7 +31,7 @@ export enum ReadyStates {
  * Acceptable response types to be associated with a {@link Response}, based on
  * [ResponseType](https://fetch.spec.whatwg.org/#responsetype) from the Fetch spec.
  */
-export enum ResponseTypes {
+export enum ResponseType {
   Basic,
   Cors,
   Default,
