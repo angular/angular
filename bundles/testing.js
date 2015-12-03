@@ -89,7 +89,7 @@ System.register("angular2/src/mock/animation_builder_mock", ["angular2/src/core/
   return module.exports;
 });
 
-System.register("angular2/src/mock/directive_resolver_mock", ["angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/core/metadata", "angular2/src/core/linker/directive_resolver"], true, function(require, exports, module) {
+System.register("angular2/src/mock/directive_resolver_mock", ["angular2/src/core/di", "angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/core/metadata", "angular2/src/core/linker/directive_resolver"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -102,6 +102,29 @@ System.register("angular2/src/mock/directive_resolver_mock", ["angular2/src/faca
     }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      return Reflect.decorate(decorators, target, key, desc);
+    switch (arguments.length) {
+      case 2:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(o)) || o;
+        }, target);
+      case 3:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key)), void 0;
+        }, void 0);
+      case 4:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key, o)) || o;
+        }, desc);
+    }
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var di_1 = require("angular2/src/core/di");
   var collection_1 = require("angular2/src/facade/collection");
   var lang_1 = require("angular2/src/facade/lang");
   var metadata_1 = require("angular2/src/core/metadata");
@@ -162,6 +185,7 @@ System.register("angular2/src/mock/directive_resolver_mock", ["angular2/src/faca
     MockDirectiveResolver.prototype.setViewProvidersOverride = function(type, viewBindings) {
       this.viewProviderOverrides.set(type, viewBindings);
     };
+    MockDirectiveResolver = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], MockDirectiveResolver);
     return MockDirectiveResolver;
   })(directive_resolver_1.DirectiveResolver);
   exports.MockDirectiveResolver = MockDirectiveResolver;
@@ -169,7 +193,7 @@ System.register("angular2/src/mock/directive_resolver_mock", ["angular2/src/faca
   return module.exports;
 });
 
-System.register("angular2/src/mock/view_resolver_mock", ["angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/core/metadata", "angular2/src/core/linker/view_resolver"], true, function(require, exports, module) {
+System.register("angular2/src/mock/view_resolver_mock", ["angular2/src/core/di", "angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/core/metadata", "angular2/src/core/linker/view_resolver"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -182,6 +206,29 @@ System.register("angular2/src/mock/view_resolver_mock", ["angular2/src/facade/co
     }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      return Reflect.decorate(decorators, target, key, desc);
+    switch (arguments.length) {
+      case 2:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(o)) || o;
+        }, target);
+      case 3:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key)), void 0;
+        }, void 0);
+      case 4:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key, o)) || o;
+        }, desc);
+    }
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var di_1 = require("angular2/src/core/di");
   var collection_1 = require("angular2/src/facade/collection");
   var lang_1 = require("angular2/src/facade/lang");
   var exceptions_1 = require("angular2/src/facade/exceptions");
@@ -255,6 +302,7 @@ System.register("angular2/src/mock/view_resolver_mock", ["angular2/src/facade/co
         throw new exceptions_1.BaseException("The component " + lang_1.stringify(component) + " has already been compiled, its configuration can not be changed");
       }
     };
+    MockViewResolver = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], MockViewResolver);
     return MockViewResolver;
   })(view_resolver_1.ViewResolver);
   exports.MockViewResolver = MockViewResolver;
@@ -262,7 +310,7 @@ System.register("angular2/src/mock/view_resolver_mock", ["angular2/src/facade/co
   return module.exports;
 });
 
-System.register("angular2/src/mock/ng_zone_mock", ["angular2/src/core/zone/ng_zone", "angular2/src/facade/async"], true, function(require, exports, module) {
+System.register("angular2/src/mock/ng_zone_mock", ["angular2/src/core/di", "angular2/src/core/zone/ng_zone", "angular2/src/facade/async"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -275,6 +323,29 @@ System.register("angular2/src/mock/ng_zone_mock", ["angular2/src/core/zone/ng_zo
     }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      return Reflect.decorate(decorators, target, key, desc);
+    switch (arguments.length) {
+      case 2:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(o)) || o;
+        }, target);
+      case 3:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key)), void 0;
+        }, void 0);
+      case 4:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key, o)) || o;
+        }, desc);
+    }
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var di_1 = require("angular2/src/core/di");
   var ng_zone_1 = require("angular2/src/core/zone/ng_zone");
   var async_1 = require("angular2/src/facade/async");
   var MockNgZone = (function(_super) {
@@ -299,6 +370,7 @@ System.register("angular2/src/mock/ng_zone_mock", ["angular2/src/core/zone/ng_zo
     MockNgZone.prototype.simulateZoneExit = function() {
       async_1.ObservableWrapper.callNext(this.onEventDone, null);
     };
+    MockNgZone = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], MockNgZone);
     return MockNgZone;
   })(ng_zone_1.NgZone);
   exports.MockNgZone = MockNgZone;
@@ -306,10 +378,33 @@ System.register("angular2/src/mock/ng_zone_mock", ["angular2/src/core/zone/ng_zo
   return module.exports;
 });
 
-System.register("angular2/src/testing/utils", ["angular2/src/facade/collection", "angular2/src/platform/dom/dom_adapter", "angular2/src/facade/lang"], true, function(require, exports, module) {
+System.register("angular2/src/testing/utils", ["angular2/src/core/di", "angular2/src/facade/collection", "angular2/src/platform/dom/dom_adapter", "angular2/src/facade/lang"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      return Reflect.decorate(decorators, target, key, desc);
+    switch (arguments.length) {
+      case 2:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(o)) || o;
+        }, target);
+      case 3:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key)), void 0;
+        }, void 0);
+      case 4:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key, o)) || o;
+        }, desc);
+    }
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var di_1 = require("angular2/src/core/di");
   var collection_1 = require("angular2/src/facade/collection");
   var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
   var lang_1 = require("angular2/src/facade/lang");
@@ -347,6 +442,7 @@ System.register("angular2/src/testing/utils", ["angular2/src/facade/collection",
     Log.prototype.result = function() {
       return this._result.join("; ");
     };
+    Log = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], Log);
     return Log;
   })();
   exports.Log = Log;
@@ -1307,7 +1403,7 @@ System.register("angular2/src/compiler/xhr_mock", ["angular2/src/compiler/xhr", 
   return module.exports;
 });
 
-System.register("angular2/src/mock/mock_application_ref", ["angular2/src/core/application_ref"], true, function(require, exports, module) {
+System.register("angular2/src/mock/mock_application_ref", ["angular2/src/core/application_ref", "angular2/src/core/di"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -1320,7 +1416,30 @@ System.register("angular2/src/mock/mock_application_ref", ["angular2/src/core/ap
     }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      return Reflect.decorate(decorators, target, key, desc);
+    switch (arguments.length) {
+      case 2:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(o)) || o;
+        }, target);
+      case 3:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key)), void 0;
+        }, void 0);
+      case 4:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key, o)) || o;
+        }, desc);
+    }
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
   var application_ref_1 = require("angular2/src/core/application_ref");
+  var di_1 = require("angular2/src/core/di");
   var MockApplicationRef = (function(_super) {
     __extends(MockApplicationRef, _super);
     function MockApplicationRef() {
@@ -1357,6 +1476,7 @@ System.register("angular2/src/mock/mock_application_ref", ["angular2/src/core/ap
       configurable: true
     });
     ;
+    MockApplicationRef = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], MockApplicationRef);
     return MockApplicationRef;
   })(application_ref_1.ApplicationRef);
   exports.MockApplicationRef = MockApplicationRef;
@@ -1819,7 +1939,7 @@ System.register("angular2/src/router/location_strategy", ["angular2/src/facade/l
   return module.exports;
 });
 
-System.register("angular2/src/mock/mock_location_strategy", ["angular2/src/facade/async", "angular2/src/router/location_strategy"], true, function(require, exports, module) {
+System.register("angular2/src/mock/mock_location_strategy", ["angular2/src/core/di", "angular2/src/facade/async", "angular2/src/router/location_strategy"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -1832,6 +1952,29 @@ System.register("angular2/src/mock/mock_location_strategy", ["angular2/src/facad
     }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      return Reflect.decorate(decorators, target, key, desc);
+    switch (arguments.length) {
+      case 2:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(o)) || o;
+        }, target);
+      case 3:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key)), void 0;
+        }, void 0);
+      case 4:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key, o)) || o;
+        }, desc);
+    }
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var di_1 = require("angular2/src/core/di");
   var async_1 = require("angular2/src/facade/async");
   var location_strategy_1 = require("angular2/src/router/location_strategy");
   var MockLocationStrategy = (function(_super) {
@@ -1883,6 +2026,7 @@ System.register("angular2/src/mock/mock_location_strategy", ["angular2/src/facad
     MockLocationStrategy.prototype.forward = function() {
       throw 'not implemented';
     };
+    MockLocationStrategy = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], MockLocationStrategy);
     return MockLocationStrategy;
   })(location_strategy_1.LocationStrategy);
   exports.MockLocationStrategy = MockLocationStrategy;

@@ -1,7 +1,9 @@
+import {Injectable} from 'angular2/src/core/di';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {Location} from 'angular2/src/router/location';
 
+@Injectable()
 export class SpyLocation implements Location {
   urlChanges: string[] = [];
   /** @internal */
