@@ -228,6 +228,11 @@ class TemplateParseVisitor implements HtmlAstVisitor {
         hasInlineTemplates ? null : component.findNgContentIndex(elementCssSelector);
     var parsedElement;
     if (preparsedElement.type === PreparsedElementType.NG_CONTENT) {
+      if (isPresent(element.children) && element.children.length > 0) {
+        this._reportError(
+            `<ng-content> element cannot have content. <ng-content> must be immediately followed by </ng-content>`,
+            element.sourceSpan);
+      }
       parsedElement =
           new NgContentAst(this.ngContentCount++, elementNgContentIndex, element.sourceSpan);
     } else if (isTemplateElement) {

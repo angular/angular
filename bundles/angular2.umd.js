@@ -28851,6 +28851,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var elementNgContentIndex = hasInlineTemplates ? null : component.findNgContentIndex(elementCssSelector);
 	        var parsedElement;
 	        if (preparsedElement.type === template_preparser_1.PreparsedElementType.NG_CONTENT) {
+	            if (lang_1.isPresent(element.children) && element.children.length > 0) {
+	                this._reportError("<ng-content> element cannot have content. <ng-content> must be immediately followed by </ng-content>", element.sourceSpan);
+	            }
 	            parsedElement =
 	                new template_ast_1.NgContentAst(this.ngContentCount++, elementNgContentIndex, element.sourceSpan);
 	        }
@@ -30419,7 +30422,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	// This implementation does not fully conform to the HTML5 spec.
 	var TAG_DEFINITIONS = {
 	    'link': new HtmlTagDefinition({ isVoid: true }),
-	    'ng-content': new HtmlTagDefinition({ isVoid: true }),
 	    'img': new HtmlTagDefinition({ isVoid: true }),
 	    'input': new HtmlTagDefinition({ isVoid: true }),
 	    'hr': new HtmlTagDefinition({ isVoid: true }),
