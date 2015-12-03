@@ -1,4 +1,3 @@
-export { MockConnection, MockBackend } from './src/http/backends/mock_backend';
 export { Request } from './src/http/static_request';
 export { Response } from './src/http/static_response';
 export { RequestOptionsArgs, ResponseOptionsArgs, Connection, ConnectionBackend } from './src/http/interfaces';

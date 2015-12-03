@@ -14,7 +14,9 @@ import { Request } from '../static_request';
 import { ReadyStates } from '../enums';
 import { isPresent } from 'angular2/src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
-import { Subject, ReplaySubject } from '@reactivex/rxjs/dist/cjs/Rx';
+import { Subject } from 'rxjs/Subject';
+import { ReplaySubject } from 'rxjs/subjects/ReplaySubject';
+import 'rxjs/operators/take';
 /**
  *
  * Mock Connection to represent a {@link Connection} for tests.

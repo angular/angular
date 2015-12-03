@@ -6,7 +6,6 @@ import { BrowserXhr } from './src/http/backends/browser_xhr';
 import { BrowserJsonp } from './src/http/backends/browser_jsonp';
 import { BaseRequestOptions, RequestOptions } from './src/http/base_request_options';
 import { BaseResponseOptions, ResponseOptions } from './src/http/base_response_options';
-export { MockConnection, MockBackend } from './src/http/backends/mock_backend';
 export { Request } from './src/http/static_request';
 export { Response } from './src/http/static_response';
 export { Connection, ConnectionBackend } from './src/http/interfaces';

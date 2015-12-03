@@ -9,7 +9,7 @@
   "repository": {"type":"git","url":"https://github.com/angular/angular.git"},
   "dependencies": {
     "angular2": "2.0.0-alpha.47",
-    "@reactivex/rxjs": "5.0.0-alpha.7",
+    "rxjs": "^5.0.0-alpha.11",
     "reflect-metadata": "0.1.2"
   },
   "devDependencies": {}

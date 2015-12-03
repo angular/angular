@@ -1,8 +1,9 @@
 import { Promise } from 'angular2/src/facade/promise';
 export { PromiseWrapper, Promise, PromiseCompleter } from 'angular2/src/facade/promise';
-import { Subject, Observable as RxObservable } from '@reactivex/rxjs/dist/cjs/Rx';
-export { Subject } from '@reactivex/rxjs/dist/cjs/Rx';
-import Operator from '@reactivex/rxjs/dist/cjs/Operator';
+import { Subject } from 'rxjs/Subject';
+import { Observable as RxObservable } from 'rxjs/Observable';
+import { Operator } from 'rxjs/Operator';
+export { Subject } from 'rxjs/Subject';
 export declare namespace NodeJS {
     interface Timer {
     }

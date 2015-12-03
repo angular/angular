@@ -493,99 +493,6 @@ System.register("angular2/src/http/backends/browser_jsonp", ["angular2/core", "a
   return module.exports;
 });
 
-System.register("angular2/src/http/backends/mock_backend", ["angular2/core", "angular2/src/http/static_request", "angular2/src/http/enums", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "@reactivex/rxjs/dist/cjs/Rx"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var core_1 = require("angular2/core");
-  var static_request_1 = require("angular2/src/http/static_request");
-  var enums_1 = require("angular2/src/http/enums");
-  var lang_1 = require("angular2/src/facade/lang");
-  var exceptions_1 = require("angular2/src/facade/exceptions");
-  var Rx_1 = require("@reactivex/rxjs/dist/cjs/Rx");
-  var MockConnection = (function() {
-    function MockConnection(req) {
-      this.response = new Rx_1.ReplaySubject(1).take(1);
-      this.readyState = enums_1.ReadyStates.Open;
-      this.request = req;
-    }
-    MockConnection.prototype.mockRespond = function(res) {
-      if (this.readyState === enums_1.ReadyStates.Done || this.readyState === enums_1.ReadyStates.Cancelled) {
-        throw new exceptions_1.BaseException('Connection has already been resolved');
-      }
-      this.readyState = enums_1.ReadyStates.Done;
-      this.response.next(res);
-      this.response.complete();
-    };
-    MockConnection.prototype.mockDownload = function(res) {};
-    MockConnection.prototype.mockError = function(err) {
-      this.readyState = enums_1.ReadyStates.Done;
-      this.response.error(err);
-    };
-    return MockConnection;
-  })();
-  exports.MockConnection = MockConnection;
-  var MockBackend = (function() {
-    function MockBackend() {
-      var _this = this;
-      this.connectionsArray = [];
-      this.connections = new Rx_1.Subject();
-      this.connections.subscribe(function(connection) {
-        return _this.connectionsArray.push(connection);
-      });
-      this.pendingConnections = new Rx_1.Subject();
-    }
-    MockBackend.prototype.verifyNoPendingRequests = function() {
-      var pending = 0;
-      this.pendingConnections.subscribe(function(c) {
-        return pending++;
-      });
-      if (pending > 0)
-        throw new exceptions_1.BaseException(pending + " pending connections to be resolved");
-    };
-    MockBackend.prototype.resolveAllConnections = function() {
-      this.connections.subscribe(function(c) {
-        return c.readyState = 4;
-      });
-    };
-    MockBackend.prototype.createConnection = function(req) {
-      if (!lang_1.isPresent(req) || !(req instanceof static_request_1.Request)) {
-        throw new exceptions_1.BaseException("createConnection requires an instance of Request, got " + req);
-      }
-      var connection = new MockConnection(req);
-      this.connections.next(connection);
-      return connection;
-    };
-    MockBackend = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], MockBackend);
-    return MockBackend;
-  })();
-  exports.MockBackend = MockBackend;
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/src/http/http_utils", ["angular2/src/facade/lang", "angular2/src/http/enums", "angular2/src/facade/exceptions", "angular2/src/facade/lang"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -1150,7 +1057,7 @@ System.register("angular2/src/http/http", ["angular2/src/facade/lang", "angular2
   return module.exports;
 });
 
-System.register("angular2/http", ["angular2/core", "angular2/src/http/http", "angular2/src/http/backends/xhr_backend", "angular2/src/http/backends/jsonp_backend", "angular2/src/http/backends/browser_xhr", "angular2/src/http/backends/browser_jsonp", "angular2/src/http/base_request_options", "angular2/src/http/base_response_options", "angular2/src/http/backends/mock_backend", "angular2/src/http/static_request", "angular2/src/http/static_response", "angular2/src/http/interfaces", "angular2/src/http/backends/browser_xhr", "angular2/src/http/base_request_options", "angular2/src/http/base_response_options", "angular2/src/http/backends/xhr_backend", "angular2/src/http/backends/jsonp_backend", "angular2/src/http/http", "angular2/src/http/headers", "angular2/src/http/enums", "angular2/src/http/url_search_params"], true, function(require, exports, module) {
+System.register("angular2/http", ["angular2/core", "angular2/src/http/http", "angular2/src/http/backends/xhr_backend", "angular2/src/http/backends/jsonp_backend", "angular2/src/http/backends/browser_xhr", "angular2/src/http/backends/browser_jsonp", "angular2/src/http/base_request_options", "angular2/src/http/base_response_options", "angular2/src/http/static_request", "angular2/src/http/static_response", "angular2/src/http/interfaces", "angular2/src/http/backends/browser_xhr", "angular2/src/http/base_request_options", "angular2/src/http/base_response_options", "angular2/src/http/backends/xhr_backend", "angular2/src/http/backends/jsonp_backend", "angular2/src/http/http", "angular2/src/http/headers", "angular2/src/http/enums", "angular2/src/http/url_search_params"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -1162,9 +1069,6 @@ System.register("angular2/http", ["angular2/core", "angular2/src/http/http", "an
   var browser_jsonp_1 = require("angular2/src/http/backends/browser_jsonp");
   var base_request_options_1 = require("angular2/src/http/base_request_options");
   var base_response_options_1 = require("angular2/src/http/base_response_options");
-  var mock_backend_1 = require("angular2/src/http/backends/mock_backend");
-  exports.MockConnection = mock_backend_1.MockConnection;
-  exports.MockBackend = mock_backend_1.MockBackend;
   var static_request_1 = require("angular2/src/http/static_request");
   exports.Request = static_request_1.Request;
   var static_response_1 = require("angular2/src/http/static_response");

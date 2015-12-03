@@ -1,7 +1,10 @@
 import { global, noop } from 'angular2/src/facade/lang';
 export { PromiseWrapper, Promise } from 'angular2/src/facade/promise';
-import { Subject, Observable as RxObservable } from '@reactivex/rxjs/dist/cjs/Rx';
-export { Subject } from '@reactivex/rxjs/dist/cjs/Rx';
+import { Subject } from 'rxjs/Subject';
+import { Observable as RxObservable } from 'rxjs/Observable';
+import 'rxjs/observable/fromPromise';
+import 'rxjs/operators/toPromise';
+export { Subject } from 'rxjs/Subject';
 export class TimerWrapper {
     static setTimeout(fn, millis) {
         return global.setTimeout(fn, millis);

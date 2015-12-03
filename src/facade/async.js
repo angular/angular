@@ -7,9 +7,12 @@ var lang_1 = require('angular2/src/facade/lang');
 var promise_1 = require('angular2/src/facade/promise');
 exports.PromiseWrapper = promise_1.PromiseWrapper;
 exports.Promise = promise_1.Promise;
-var Rx_1 = require('@reactivex/rxjs/dist/cjs/Rx');
-var Rx_2 = require('@reactivex/rxjs/dist/cjs/Rx');
-exports.Subject = Rx_2.Subject;
+var Subject_1 = require('rxjs/Subject');
+var Observable_1 = require('rxjs/Observable');
+require('rxjs/observable/fromPromise');
+require('rxjs/operators/toPromise');
+var Subject_2 = require('rxjs/Subject');
+exports.Subject = Subject_2.Subject;
 var TimerWrapper = (function () {
     function TimerWrapper() {
     }
@@ -34,7 +37,7 @@ var ObservableWrapper = (function () {
         onComplete = (typeof onComplete === "function") && onComplete || lang_1.noop;
         return emitter.subscribe({ next: onNext, error: onError, complete: onComplete });
     };
-    ObservableWrapper.isObservable = function (obs) { return obs instanceof Rx_1.Observable; };
+    ObservableWrapper.isObservable = function (obs) { return obs instanceof Observable_1.Observable; };
     /**
      * Returns whether `obs` has any subscribers listening to events.
      */
@@ -48,7 +51,7 @@ var ObservableWrapper = (function () {
     ObservableWrapper.callError = function (emitter, error) { emitter.error(error); };
     ObservableWrapper.callComplete = function (emitter) { emitter.complete(); };
     ObservableWrapper.fromPromise = function (promise) {
-        return Rx_1.Observable.fromPromise(promise);
+        return Observable_1.Observable.fromPromise(promise);
     };
     ObservableWrapper.toPromise = function (obj) { return obj.toPromise(); };
     return ObservableWrapper;
@@ -140,7 +143,7 @@ var EventEmitter = (function (_super) {
         return _super.prototype.subscribe.call(this, schedulerFn, errorFn, completeFn);
     };
     return EventEmitter;
-})(Rx_1.Subject);
+})(Subject_1.Subject);
 exports.EventEmitter = EventEmitter;
 // todo(robwormald): ts2dart should handle this properly
 var Observable = (function (_super) {
@@ -155,6 +158,6 @@ var Observable = (function (_super) {
         return observable;
     };
     return Observable;
-})(Rx_1.Observable);
+})(Observable_1.Observable);
 exports.Observable = Observable;
 //# sourceMappingURL=async.js.map
