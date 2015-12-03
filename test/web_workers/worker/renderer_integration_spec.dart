@@ -50,6 +50,8 @@ import "package:angular2/src/web_workers/shared/render_proto_view_ref_store.dart
     show RenderProtoViewRefStore, WebWorkerRenderProtoViewRef;
 import "package:angular2/src/web_workers/shared/render_view_with_fragments_store.dart"
     show RenderViewWithFragmentsStore, WebWorkerRenderViewRef;
+import "package:angular2/src/web_workers/ui/impl.dart"
+    show WebWorkerApplication;
 import "package:angular2/src/web_workers/ui/renderer.dart"
     show MessageBasedRenderer;
 import "../shared/web_worker_test_util.dart"
@@ -83,6 +85,7 @@ main() {
         uiRenderViewStore,
         domRenderer);
     renderer.start();
+    new WebWorkerApplication(null, null);
     return webWorkerBrokerFactory;
   }
   WebWorkerRenderer createWorkerRenderer(

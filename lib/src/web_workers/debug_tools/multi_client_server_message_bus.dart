@@ -57,17 +57,16 @@ class MultiClientServerMessageBus extends GenericMessageBus {
 }
 
 class WebSocketWrapper {
-  WebSocket _socket;
+  WebSocket socket;
   Stream stream;
   int _numResultsReceived = 0;
   bool _isPrimary = false;
   bool caughtUp = false;
   List<String> _messageHistory;
   List<int> _resultMarkers;
-  StreamController<String> _sendStream;
 
-  WebSocketWrapper(this._messageHistory, this._resultMarkers, this._socket) {
-    stream = _socket.asBroadcastStream();
+  WebSocketWrapper(this._messageHistory, this._resultMarkers, this.socket) {
+    stream = socket.asBroadcastStream();
     stream.listen((encodedMessage) {
       var messages = JSON.decode(encodedMessage);
       messages.forEach((data) {
@@ -79,13 +78,6 @@ class WebSocketWrapper {
         }
       });
     });
-
-    _sendStream = new StreamController<String>();
-    _socket.addStream(_sendStream.stream);
-  }
-
-  void send(String data) {
-    _sendStream.add(data);
   }
 
   bool get isPrimary => _isPrimary;
@@ -121,7 +113,7 @@ class WebSocketWrapper {
       numMessages = end - curr;
     }
     while (numMessages > 0) {
-      send(_messageHistory[curr]);
+      socket.add(_messageHistory[curr]);
       curr++;
       numMessages--;
     }
@@ -152,7 +144,7 @@ class MultiClientServerMessageBusSink extends GenericMessageBusSink {
     String encodedMessages = JSON.encode(messages);
     openConnections.forEach((WebSocketWrapper webSocket) {
       if (webSocket.caughtUp) {
-        webSocket.send(encodedMessages);
+        webSocket.socket.add(encodedMessages);
       }
     });
     messageHistory.add(encodedMessages);
