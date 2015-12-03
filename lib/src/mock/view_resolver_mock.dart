@@ -1,5 +1,6 @@
 library angular2.src.mock.view_resolver_mock;
 
+import "package:angular2/src/core/di.dart" show Injectable;
 import "package:angular2/src/facade/collection.dart"
     show Map, MapWrapper, ListWrapper;
 import "package:angular2/src/facade/lang.dart"
@@ -9,6 +10,7 @@ import "package:angular2/src/facade/exceptions.dart"
 import "../core/metadata.dart" show ViewMetadata;
 import "package:angular2/src/core/linker/view_resolver.dart" show ViewResolver;
 
+@Injectable()
 class MockViewResolver extends ViewResolver {
   /** @internal */
   var _views = new Map<Type, ViewMetadata>();

@@ -1,10 +1,12 @@
 library angular2.src.mock.mock_location_strategy;
 
+import "package:angular2/src/core/di.dart" show Injectable;
 import "package:angular2/src/facade/async.dart"
     show EventEmitter, ObservableWrapper;
 import "package:angular2/src/router/location_strategy.dart"
     show LocationStrategy;
 
+@Injectable()
 class MockLocationStrategy extends LocationStrategy {
   String internalBaseHref = "/";
   String internalPath = "/";

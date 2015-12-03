@@ -1,5 +1,6 @@
 library angular2.test.core.testability.testability_spec;
 
+import "package:angular2/src/core/di.dart" show Injectable;
 import "package:angular2/testing_internal.dart"
     show
         AsyncTestCompleter,
@@ -26,6 +27,7 @@ void microTask(Function fn) {
   });
 }
 
+@Injectable()
 class MockNgZone extends NgZone {
   EventEmitter<dynamic> _onTurnStartStream;
   get onTurnStart {

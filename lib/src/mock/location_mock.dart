@@ -1,10 +1,12 @@
 library angular2.src.mock.location_mock;
 
+import "package:angular2/src/core/di.dart" show Injectable;
 import "package:angular2/src/facade/async.dart"
     show EventEmitter, ObservableWrapper;
 import "package:angular2/src/facade/collection.dart" show ListWrapper;
 import "package:angular2/src/router/location.dart" show Location;
 
+@Injectable()
 class SpyLocation implements Location {
   List<String> urlChanges = [];
   /** @internal */

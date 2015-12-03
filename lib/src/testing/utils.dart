@@ -1,11 +1,13 @@
 library angular2.src.testing.utils;
 
+import "package:angular2/src/core/di.dart" show Injectable;
 import "package:angular2/src/facade/collection.dart"
     show ListWrapper, MapWrapper;
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/facade/lang.dart"
     show isPresent, isString, RegExpWrapper, StringWrapper, RegExp;
 
+@Injectable()
 class Log {
   /** @internal */
   List<dynamic> _result;

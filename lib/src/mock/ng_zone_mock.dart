@@ -1,9 +1,11 @@
 library angular2.src.mock.ng_zone_mock;
 
+import "package:angular2/src/core/di.dart" show Injectable;
 import "package:angular2/src/core/zone/ng_zone.dart" show NgZone;
 import "package:angular2/src/facade/async.dart"
     show EventEmitter, ObservableWrapper;
 
+@Injectable()
 class MockNgZone extends NgZone {
   /** @internal */
   EventEmitter<dynamic> _mockOnEventDone;

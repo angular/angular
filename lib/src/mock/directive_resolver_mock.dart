@@ -1,5 +1,6 @@
 library angular2.src.mock.directive_resolver_mock;
 
+import "package:angular2/src/core/di.dart" show Injectable;
 import "package:angular2/src/facade/collection.dart"
     show Map, MapWrapper, ListWrapper;
 import "package:angular2/src/facade/lang.dart"
@@ -8,6 +9,7 @@ import "../core/metadata.dart" show DirectiveMetadata, ComponentMetadata;
 import "package:angular2/src/core/linker/directive_resolver.dart"
     show DirectiveResolver;
 
+@Injectable()
 class MockDirectiveResolver extends DirectiveResolver {
   var _providerOverrides = new Map<Type, List<dynamic>>();
   var viewProviderOverrides = new Map<Type, List<dynamic>>();
