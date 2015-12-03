@@ -859,6 +859,11 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
       });
     });
     describe("error cases", () {
+      it("should report when ng-content has content", () {
+        expect(() => parse("<ng-content>content</ng-content>", []))
+            .toThrowError('''Template parse errors:
+<ng-content> element cannot have content. <ng-content> must be immediately followed by </ng-content> ("[ERROR ->]<ng-content>content</ng-content>"): TestComp@0:0''');
+      });
       it("should report invalid property names", () {
         expect(() => parse("<div [invalid-prop]></div>", []))
             .toThrowError('''Template parse errors:

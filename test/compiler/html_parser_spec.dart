@@ -91,9 +91,9 @@ main() {
         });
         it("should tolerate end tags for void elements when they have no content",
             () {
-          expect(humanizeDom(
-              parser.parse("<ng-content></ng-content>", "TestComp"))).toEqual([
-            [HtmlElementAst, "ng-content", 0]
+          expect(humanizeDom(parser.parse("<input></input>", "TestComp")))
+              .toEqual([
+            [HtmlElementAst, "input", 0]
           ]);
         });
         it("should support optional end tags", () {
@@ -239,28 +239,26 @@ main() {
           ]);
         });
         it("should report text content in void elements", () {
-          var errors = parser
-              .parse("<ng-content>content</ng-content>", "TestComp")
-              .errors;
+          var errors =
+              parser.parse("<input>content</input>", "TestComp").errors;
           expect(errors.length).toEqual(1);
           expect(humanizeErrors(errors)).toEqual([
             [
-              "ng-content",
-              "Void elements do not have end tags (they can not have content) \"ng-content\"",
-              "0:19"
+              "input",
+              "Void elements do not have end tags (they can not have content) \"input\"",
+              "0:14"
             ]
           ]);
         });
         it("should report html content in void elements", () {
-          var errors = parser
-              .parse("<ng-content><p></p></ng-content>", "TestComp")
-              .errors;
+          var errors =
+              parser.parse("<input><p></p></input>", "TestComp").errors;
           expect(errors.length).toEqual(1);
           expect(humanizeErrors(errors)).toEqual([
             [
-              "ng-content",
-              "Void elements do not have end tags (they can not have content) \"ng-content\"",
-              "0:19"
+              "input",
+              "Void elements do not have end tags (they can not have content) \"input\"",
+              "0:14"
             ]
           ]);
         });

@@ -312,7 +312,6 @@ class HtmlTagDefinition {
 // This implementation does not fully conform to the HTML5 spec.
 Map<String, HtmlTagDefinition> TAG_DEFINITIONS = {
   "link": new HtmlTagDefinition(isVoid: true),
-  "ng-content": new HtmlTagDefinition(isVoid: true),
   "img": new HtmlTagDefinition(isVoid: true),
   "input": new HtmlTagDefinition(isVoid: true),
   "hr": new HtmlTagDefinition(isVoid: true),
