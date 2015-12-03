@@ -19,8 +19,10 @@ better framerate and UX for applications.
 
 ## Bootstrapping a WebWorker Application
 Bootstrapping a WebWorker application is not much different than bootstrapping a normal application.
-The primary difference is that you don't pass your root component directly to ```bootstrap```.
-Instead you pass the name of a background script that calls ```bootstrapWebWorker``` with your root component.
+The main difference is that you need to do the bootstrap process on both the worker and render thread.
+Unlike in a standard Angular2 application you don't bootstrap your main component on the render thread.
+Instead you initialize a new application injector with the WORKER_APP_PLATFORM providers and provide the name
+of your WebWorker script. See the example below for details:
 
 ### Example
 To bootstrap Hello World in a WebWorker we do the following in TypeScript
@@ -39,8 +41,11 @@ To bootstrap Hello World in a WebWorker we do the following in TypeScript
 ```
 ```TypeScript
 // index.js
-import {bootstrap} from "angular2/web_worker/ui";
-bootstrap("loader.js");
+import {WORKER_RENDER_PLATFORM, WORKER_RENDER_APPLICATION, WORKER_SCRIPT} from "angular2/platform/worker_render";
+import {platform} from "angular2/core";
+
+platform([WORKER_RENDER_PLATFORM])
+.application([WORKER_RENDER_APPLICATION, new Provider(WORKER_SCRIPT, {useValue: "loader.js"});
 ```
 ```JavaScript
 // loader.js
@@ -49,7 +54,9 @@ System.import("app");
 ```
 ```TypeScript
 // app.ts
-import {Component, View, bootstrapWebWorker} from "angular2/web_worker/worker";
+import {Component, View, platform} from "angular2/core";
+import {WORKER_APP_PLATFORM, setupWebWorker} from "angular2/platform/worker_app";
+
 @Component({
   selector: "hello-world"
 })
@@ -60,21 +67,19 @@ export class HelloWorld {
   name: string = "Jane";
 }
 
-bootstrapWebWorker(HelloWorld);
+platform([WORKER_APP_PLATFORM])
+.asyncApplication(setupWebWorker, optionalProviders?)
+.then((ref) => ref.bootstrap(RootComponent));
 ```
 There's a few important things to note here:
-* On the UI side we import all angular types from `angular2/web_worker/ui` and on the worker side we import from
-`angular2/web_worker/worker`. These modules include all the typings in the WebWorker bundle. By importing from
-these URLs instead of `angular2/angular2` we can statically ensure that our app does not reference a type that
-doesn't exist in the context it's mean to execute in. For example, if we tried to import DomRenderer in the Worker
-or NgFor on the UI we would get a compiler error.
 * The UI loads angular from the file `angular2/web_worker/ui.js` and the Worker loads angular from
 `angular2/web_worker/worker.js`. These bundles are created specifically for using WebWorkers and should be used
 instead of the normal angular2.js file. Both files contain subsets of the angular2 codebase that is designed to
 run specifically on the UI or Worker. Additionally, they contain the core messaging infrastructure used to
 communicate between the Worker and the UI. This messaging code is not in the standard angular2.js file.
-* We pass `loader.js` to bootstrap and not `app.ts`. You can think of `loader.js` as the `index.html` of the
-Worker. Since WebWorkers share no memory with the UI we need to reload the angular2 dependencies before
+* We pass `loader.js` to our application injector using the WORKER_SCRIPT symbol. This tells angular that our WebWorkers's init script is located at `loader.js`.
+You can think of `loader.js` as the index.html file for the WebWorker.
+Since WebWorkers share no memory with the UI we need to reload the angular2 dependencies before
 bootstrapping our application. We do this with `importScripts`. Additionally, we need to do this in a different
 file than `app.ts` because our module loader (System.js in this example) has not been loaded yet, and `app.ts`
 will be compiled with a `System.define` call at the top.
@@ -93,17 +98,18 @@ For reference, here's the same HelloWorld example in Dart.
 ```
 ```Dart
 // index.dart
-import "package:angular2/web_worker/ui.dart";
-import "package:angular2/src/core/reflection/reflection.dart";
-import "package:angular2/src/core/reflection/reflection_capabilities.dart";
+import "angular2/core.dart";
+import "angular2/platform/worker_render.dart";
 
 main() {
-  reflector.reflectionCapabilities = new ReflectionCabilities();
-  bootstrap("app.dart");
+  platform([WORKER_RENDER_PLATFORM])
+  .asyncApplication(initIsolate("my_worker.dart"));
 }
 ```
 ```Dart
-import "package:angular2/web_worker/worker.dart";
+// background_index.dart
+import "angular2/core.dart";
+import "angular2/platform/worker_app.dart";
 import "package:angular2/src/core/reflection/reflection.dart";
 import "package:angular2/src/core/reflection/reflection_capabilities.dart";
 
@@ -119,14 +125,16 @@ class HelloWorld {
 
 main(List<String> args, SendPort replyTo) {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
-  bootstrapWebWorker(replyTo, HelloWorld);
+  platform([WORKER_APP_PLATFORM])
+    .asyncApplication(setupIsolate(replyTo))
+      .then((ref) => ref.bootstrap(RootComponent));
 }
 
 ```
 This code is nearly the same as the TypeScript version with just a couple key differences:
 * We don't have a `loader.js` file. Dart applications don't need this file because you don't need a module loader.
 * We pass a `SendPort` to `bootstrapWebWorker`. Dart applications use the Isolate API, which communicates via
-Dart's Port abstraction. When you call `bootstrap` from the UI thread, angular starts a new Isolate to run
+Dart's Port abstraction. When you call `setupIsolate` from the UI thread, angular starts a new Isolate to run
 your application logic. When Dart starts a new Isolate it passes a `SendPort` to that Isolate so that it
 can communicate with the Isolate that spawned it. You need to pass this `SendPort` to `bootstrapWebWorker`
 so that Angular can communicate with the UI.
@@ -136,6 +144,8 @@ but should use the angular 2 transformer to remove it in your final JS code. Not
 with running the transformer on your UI code (#3971). You can (and should) pass the file where you call
 `bootstrapWebWorker` as an entry point to the transformer, but you should not pass your UI index file
 to the transformer until that bug is fixed.
+* In dart we call `asyncApplication` instead of `application` because starting an isolate in Dart is asyncronous
+ whereas starting a new WebWorker in JavaScript is a synchronous operation.
 
 ## Writing WebWorker Compatible Components
 You can do almost everything in a WebWorker component that you can do in a typical Angular 2 Component.
@@ -202,17 +212,22 @@ can make it easy to catch tricky browser compatibility issues.
 [MessageBroker](#using-the-messagebroker-in-your-application). However, if you want to control the messaging
 protocol yourself you can use the MessageBus directly.
 
+You can obtain the MessageBus on both the render and worker thread through DI.
 To use the MessageBus you need to initialize a new channel on both the UI and WebWorker.
 In TypeScript that would look like this:
 ```TypeScript
 // index.ts, which is running on the UI.
-var instance = bootstrap("loader.js");
-var bus = instance.bus;
+import {WORKER_RENDER_PLATFORM, WORKER_RENDER_APPLICATION, WORKER_SCRIPT, MessageBus} from "angular2/platform/worker_render";
+import {platform} from "angular2/core";
+
+let appRef = platform([WORKER_RENDER_PLATFORM])
+.application([WORKER_RENDER_APPLICATION, new Provider(WORKER_SCRIPT, {useValue: "loader.js"});
+let bus = appRef.injector.get(MessageBus);
 bus.initChannel("My Custom Channel");
 ```
 ```TypeScript
 // background_index.ts, which is running on the WebWorker
-import {MessageBus} from 'angular2/web_worker/worker';
+import {MessageBus} from 'angular2/platform/worker_app';
 @Component({...})
 @View({...})
 export class MyComponent {
@@ -226,15 +241,19 @@ Once the channel has been initialized either side can use the `from` and `to` me
 and receive messages. Both methods return EventEmitter. Expanding on the example from earlier:
 ```TypeScript
 // index.ts, which is running on the UI.
-import {bootstrap} from 'angular2/web_worker/ui';
-var instance = bootstrap("loader.js");
-var bus = instance.bus;
+import {WORKER_RENDER_PLATFORM, WORKER_RENDER_APPLICATION, WORKER_SCRIPT, MessageBus} from "angular2/platform/worker_render";
+import {platform} from "angular2/core";
+
+let appRef = platform([WORKER_RENDER_PLATFORM])
+.application([WORKER_RENDER_APPLICATION, new Provider(WORKER_SCRIPT, {useValue: "loader.js"});
+let bus = appRef.injector.get(MessageBus);
 bus.initChannel("My Custom Channel");
-bus.to("My Custom Channel").emit("hello from the UI");
+bus.to("My Custom Channel").emit("Hello from the UI");
 ```
 ```TypeScript
 // background_index.ts, which is running on the WebWorker
-import {MessageBus, Component, View} from 'angular2/web_worker/worker';
+import {Component, View} from 'angular2/core';
+import {MessageBus} from 'angular2/platform/worker_app';
 @Component({...})
 @View({...})
 export class MyComponent {
@@ -253,16 +272,21 @@ This example is nearly identical in Dart, and is included below for reference:
 import 'package:angular2/web_workers/ui.dart';
 
 main() {
-  var instance = bootstrap("background_index.dart");
-  var bus = instance.bus;
-  bus.initChannel("My Custom Channel");
-  bus.to("My Custom Channel").add("hello from the UI");
+  import "angular2/core.dart";
+  import "angular2/platform/worker_render.dart";
+
+  platform([WORKER_RENDER_PLATFORM])
+  .asyncApplication(initIsolate("my_worker.dart")).then((ref) {
+    var bus = ref.injector.get(MessageBus);
+    bus.initChannel("My Custom Channel");
+    bus.to("My Custom Channel").add("hello from the UI");
+  });
 }
 
 ```
 ```Dart
 // background_index.dart, which is running on the WebWorker
-import 'package:angular2/web_worker/worker.dart';
+import 'package:angular2/platform/worker_app.dart';
 @Component(...)
 @View(...)
 class MyComponent {
@@ -298,7 +322,7 @@ change detection. Generally, you want your channels to run inside the zone unles
 they need to run outside the zone.
 
 ### Implementing and Using a Custom MessageBus
-**Note:** Implementing and using a Custom MessageBus is experimental and requires importing from private APIs.
+**Note:** Implementing and using a Custom MessageBus is experimental and the APIs may change.
 
 If you want to drive your application from something other than a WebWorker you can implement a custom message
 bus. Implementing a custom message bus just means creating a class that fulfills the API specified by the
@@ -338,54 +362,97 @@ class JsonMessageBusSource extends GenericMessageBuSource {
 }
 ```
 
-Once you've implemented your custom MessageBus in either TypeScript or Dart, you can tell angular to use it like
-so:
+Once you've implemented your custom MessageBus in either TypeScript or Dart, you must provide it through DI 
+during bootstrap like so:
+
 In TypeScript:
 ```TypeScript
 // index.ts, running on the UI side
-import {bootstrapUICommon} from 'angular2/src/web_workers/ui/impl';
+import {platform, Provider, APP_INITIALIZER, Injector} from 'angular2/core';
+import {
+    WORKER_RENDER_PLATFORM,
+    WORKER_RENDER_APP_COMMON,
+    initializeGenericWorkerRenderer,
+    MessageBus
+} from 'angular2/platform/worker_render';
+
 var bus = new MyAwesomeMessageBus();
-bootstrapUICommon(bus);
+platform([WORKER_RENDER_PLATFORM])
+.application([WORKER_RENDER_APP_COMMON, new Provider(MessageBus, {useValue: bus}),
+  new Provider(APP_INITIALIZER, {
+    useFactory: (injector) => () => initializeGenericWorkerRenderer(injector),
+    deps: [Injector],
+    multi: true
+  })
+]);
 ```
 ```TypeScript
 // background_index.ts, running on the application side
-import {bootstrapWebWorkerCommon} from 'angular2/src/web_workers/worker/application_common';
+import {WORKER_APP_PLATFORM, genericWorkerAppProviders} from "angular2/platform/worker_app";
+import {NgZone, platform, Provider} from "angular/core";
 import {MyApp} from './app';
-var bus = new MyAwesomeMessageBus();
-bootstrapWebWorkerCommon(MyApp, bus);
+
+platform([WORKER_APP_PLATFORM_PROVIDERS])
+.asyncApplication(initAppThread, optionalProviders?)
+.then((ref) => ref.bootstrap(MyApp));
+
+function initAppThread(zone: NgZone): Promise<Array<Type | Provider | any[]>> {
+  /**
+   * Do initializtion work here to set up the app thread and MessageBus
+   * Once you have a working MessageBus that communicates with the render thread you should call genericWorkerAppProviders
+   * to get a list of Providers.
+   */
+  var bus = new MyAwesomeMessageBus();
+  return genericWorkerAppProviders(myBus, zone);
+}
 ```
 In Dart:
 ```Dart
 // index.dart, running on the UI side
-import 'package:angular2/src/web_workers/ui/impl.dart' show bootstrapUICommon;
-import "package:angular2/src/core/reflection/reflection.dart";
-import "package:angular2/src/core/reflection/reflection_capabilities.dart";
+import 'package:angular2/core.dart';
+import 'package:angular2/platform/worker_render.dart';
 
 main() {
-  reflector.reflectionCapabilities = new ReflectionCapabilities();
   var bus = new MyAwesomeMessageBus();
-  bootstrapUiCommon(bus);
+  platform([WORKER_RENDER_PLATFORM])
+  .application([WORKER_RENDER_APP_COMMON, new Provider(MessageBus, useValue: bus),
+    new Provider(APP_INITIALIZER, 
+      useFactory: (injector) => () => initializeGenericWorkerRenderer(injector),
+      deps: [Injector],
+      multi: true
+    )
+  ]);
 }
+
 ```
 ```Dart
 // background_index.dart, running on the application side
-import "package:angular2/src/web_workers/worker/application_common.dart" show bootstrapWebWorkerCommon;
-import "package:angular2/src/core/reflection/reflection.dart";
-import "package:angular2/src/core/reflection/reflection_capabilities.dart";
+import "package:angular2/platform/worker_app.dart";
+import "package:angular2/core.dart";
 import "./app.dart" show MyApp;
 
 main() {
-    reflector.reflectionCapabilities = new ReflectionCapabilities();
-    var bus = new MyAwesomeMessageBus();
-    bootstrapWebWorkerCommon(MyApp, bus);
+  reflector.reflectionCapabilities = new ReflectionCapabilities();
+  platform([WORKER_APP_PLATFORM_PROVIDERS])
+  .asyncApplication(initAppThread, optionalProviders?)
+  .then((ref) => ref.bootstrap(MyApp));
+} 
+
+
+Future<dynamic> initAppThread(NgZone zone) {
+  var bus = new MyAwesomeMessageBus();
+  return genericWorkerAppProviders(myBus, zone);
 }
 ```
-Notice how we call `bootstrapUICommon` instead of `bootstrap` from the UI side. `bootstrap` spans a new WebWorker
-/ Isolate and attaches the default angular MessageBus to it. If you're using a custom MessageBus you are
-responsible for setting up the application side and initiating communication with it. `bootstrapUICommon` assumes
-that the given MessageBus is already set up and can communicate with the application.
-Similarly, we call `bootstrapWebWorkerCommon` instead of `boostrapWebWorker` from the application side. This is
-because `bootstrapWebWorker` assumes you're using the default angular MessageBus and initializes a new one for you.
+Notice how we use the `WORKER_RENDER_APP_COMMON` providers instead of the `WORKER_RENDER_APP` providers on the render thread.
+This is because the `WORKER_RENDER_APP` providers include an application initializer that starts a new WebWorker/Isolate.
+The `WORKER_RENDER_APP_COMMON` providers make no assumption about where your application code lives.
+However, we now need to provide our own app initializer. At the very least this initializer needs to call `initializeGenericWorkerRenderer`.
+This function performs necessary setup work to bootstrap the application.
+
+Similarly we don&amp;t call `setupWebWorker` or `setupIsolate` from the application thread.
+Instead we have our own initilization method that sets up our MessageBus and calls `genericWorkerAppProviders`
+to finish setting up the application injector.
 
 ## MessageBroker
 The MessageBroker is a higher level messaging abstraction that sits on top of the MessageBus. It is used when you
@@ -407,18 +474,21 @@ MessageBrokers in an application. For a more complete example, check out the `We
 #### Using the MessageBroker in TypeScript
 ```TypeScript
 // index.ts, which is running on the UI with a method that we want to expose to a WebWorker
-import {bootstrap} from 'angular2/web_worker/ui';
+import {WORKER_RENDER_PLATFORM, WORKER_RENDER_APPLICATION, WORKER_SCRIPT, ServiceMessageBrokerFactory} from "angular2/platform/worker_render";
+import {platform} from "angular2/core";
 
-var instance = bootstrap("loader.js");
-var broker = instance.app.createServiceMessageBroker("My Broker Channel");
+let appRef = platform([WORKER_RENDER_PLATFORM])
+.application([WORKER_RENDER_APPLICATION, new Provider(WORKER_SCRIPT, {useValue: "loader.js"});
+let injector = instance.injector;
+var broker = injector.get(ServiceMessageBrokerFactory).createMessageBroker("My Broker Channel");
 
 // assume we have some function doCoolThings that takes a string argument and returns a Promise<string>
 broker.registerMethod("awesomeMethod", [PRIMITIVE], (arg1: string) => doCoolThing(arg1), PRIMITIVE);
 ```
 ```TypeScript
 // background.ts, which is running on a WebWorker and wants to execute a method on the UI
-import {Component, View, ClientMessageBrokerFactory, PRIMITIVE, UiArguments, FnArgs}
-from 'angular2/web_worker/worker';
+import {Component, View} from 'angular2/core';
+import {ClientMessageBrokerFactory, PRIMITIVE, UiArguments, FnArgs} from 'angular2/platform/worker_app';
 
 @Component(...)
 @View(...)
@@ -437,20 +507,24 @@ export class MyComponent {
 #### Using the MessageBroker in Dart
 ```Dart
 // index.dart, which is running on the UI with a method that we want to expose to a WebWorker
-import 'package:angular2/web_worker/ui.dart';
+import "angular2/core.dart";
+import "angular2/platform/worker_render.dart";
 
 main() {
-  var instance = bootstrap("background.dart");
-  var broker = instance.app.createServiceMessageBroker("My Broker Channel");
+  platform([WORKER_RENDER_PLATFORM])
+  .asyncApplication(initIsolate("my_worker.dart")).then((ref) {
+    var broker = ref.injector.get(ServiceMessageBrokerFactory).createMessageBroker("My Broker Channel");
 
-  // assume we have some function doCoolThings that takes a String argument and returns a Future<String>
-  broker.registerMethod("awesomeMethod", [PRIMITIVE], (String arg1) => doCoolThing(arg1), PRIMITIVE);
+    // assume we have some function doCoolThings that takes a String argument and returns a Future<String>
+    broker.registerMethod("awesomeMethod", [PRIMITIVE], (String arg1) => doCoolThing(arg1), PRIMITIVE);
+  });
 }
 
 ```
 ```Dart
 // background.dart, which is running on a WebWorker and wants to execute a method on the UI
-import 'package:angular2/web_worker/worker.dart';
+import 'package:angular2/core.dart';
+import 'package:angular2/platform/worker_app.dart';
 
 @Component(...)
 @View(...)

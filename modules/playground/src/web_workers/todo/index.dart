@@ -1,10 +1,12 @@
 library angular2.examples.web_workers.todo.index;
 
-import "package:angular2/src/web_workers/ui/application.dart" show bootstrap;
+import "package:angular2/platform/worker_render.dart";
+import "package:angular2/core.dart";
 import "package:angular2/src/core/reflection/reflection_capabilities.dart";
 import "package:angular2/src/core/reflection/reflection.dart";
 
 main() {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
-  bootstrap("background_index.dart");
+  platform([WORKER_RENDER_PLATFORM])
+      .asyncApplication(initIsolate("background_index.dart"));
 }
