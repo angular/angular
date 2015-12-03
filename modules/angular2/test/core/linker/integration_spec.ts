@@ -1007,7 +1007,7 @@ export function main() {
              tcb.overrideView(
                     MyComp, new ViewMetadata({
                       template:
-                          '<input type="checkbox" listenerprevent></input><input type="checkbox" listenernoprevent></input>',
+                          '<input type="checkbox" listenerprevent><input type="checkbox" listenernoprevent>',
                       directives: [
                         DirectiveListeningDomEventPrevent,
                         DirectiveListeningDomEventNoPrevent

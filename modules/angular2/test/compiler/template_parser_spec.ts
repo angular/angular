@@ -774,8 +774,7 @@ Property binding a not used by any directive on an embedded template ("[ERROR ->
 
         it('should keep <link rel="stylesheet"> elements if they have an absolute non package: url',
            () => {
-             expect(
-                 humanizeTplAst(parse('<link rel="stylesheet" href="http://someurl"></link>a', [])))
+             expect(humanizeTplAst(parse('<link rel="stylesheet" href="http://someurl">a', [])))
                  .toEqual([
                    [ElementAst, 'link'],
                    [AttrAst, 'rel', 'stylesheet'],
@@ -785,22 +784,21 @@ Property binding a not used by any directive on an embedded template ("[ERROR ->
            });
 
         it('should keep <link rel="stylesheet"> elements if they have no uri', () => {
-          expect(humanizeTplAst(parse('<link rel="stylesheet"></link>a', [])))
+          expect(humanizeTplAst(parse('<link rel="stylesheet">a', [])))
               .toEqual([[ElementAst, 'link'], [AttrAst, 'rel', 'stylesheet'], [TextAst, 'a']]);
-          expect(humanizeTplAst(parse('<link REL="stylesheet"></link>a', [])))
+          expect(humanizeTplAst(parse('<link REL="stylesheet">a', [])))
               .toEqual([[ElementAst, 'link'], [AttrAst, 'REL', 'stylesheet'], [TextAst, 'a']]);
         });
 
         it('should ignore <link rel="stylesheet"> elements if they have a relative uri', () => {
-          expect(humanizeTplAst(parse('<link rel="stylesheet" href="./other.css"></link>a', [])))
+          expect(humanizeTplAst(parse('<link rel="stylesheet" href="./other.css">a', [])))
               .toEqual([[TextAst, 'a']]);
-          expect(humanizeTplAst(parse('<link rel="stylesheet" HREF="./other.css"></link>a', [])))
+          expect(humanizeTplAst(parse('<link rel="stylesheet" HREF="./other.css">a', [])))
               .toEqual([[TextAst, 'a']]);
         });
 
         it('should ignore <link rel="stylesheet"> elements if they have a package: uri', () => {
-          expect(humanizeTplAst(
-                     parse('<link rel="stylesheet" href="package:somePackage"></link>a', [])))
+          expect(humanizeTplAst(parse('<link rel="stylesheet" href="package:somePackage">a', [])))
               .toEqual([[TextAst, 'a']]);
         });
 
@@ -835,8 +833,7 @@ Property binding a not used by any directive on an embedded template ("[ERROR ->
 
       it('should ignore <link rel="stylesheet"> elements inside of elements with ng-non-bindable',
          () => {
-           expect(humanizeTplAst(
-                      parse('<div ng-non-bindable><link rel="stylesheet"></link>a</div>', [])))
+           expect(humanizeTplAst(parse('<div ng-non-bindable><link rel="stylesheet">a</div>', [])))
                .toEqual([[ElementAst, 'div'], [AttrAst, 'ng-non-bindable', ''], [TextAst, 'a']]);
          });
 
