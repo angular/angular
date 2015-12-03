@@ -1,6 +1,6 @@
 import { global } from 'angular2/src/facade/lang';
 import { ListWrapper } from 'angular2/src/facade/collection';
-import { createTestInjector, FunctionWithParamTokens } from './test_injector';
+import { createTestInjectorWithRuntimeCompiler, FunctionWithParamTokens } from './test_injector';
 export { inject, injectAsync } from './test_injector';
 export { expect } from './matchers';
 var _global = (typeof window === 'undefined' ? global : window);
@@ -124,7 +124,7 @@ function _it(jsmFn, name, testFn, testTimeOut) {
     if (testFn instanceof FunctionWithParamTokens) {
         jsmFn(name, (done) => {
             if (!injector) {
-                injector = createTestInjector(testProviders);
+                injector = createTestInjectorWithRuntimeCompiler(testProviders);
             }
             var returnedTestValue = runInTestZone(() => testFn.execute(injector), done, done.fail);
             if (_isPromiseLike(returnedTestValue)) {
@@ -151,7 +151,7 @@ export function beforeEach(fn) {
         // }));`
         jsmBeforeEach((done) => {
             if (!injector) {
-                injector = createTestInjector(testProviders);
+                injector = createTestInjectorWithRuntimeCompiler(testProviders);
             }
             runInTestZone(() => fn.execute(injector), done, done.fail);
         });

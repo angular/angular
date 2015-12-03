@@ -38,6 +38,7 @@ var compiler_1 = require('angular2/src/compiler/compiler');
 var dom_renderer_2 = require("angular2/src/platform/dom/dom_renderer");
 var dynamic_component_loader_2 = require("angular2/src/core/linker/dynamic_component_loader");
 var view_manager_2 = require("angular2/src/core/linker/view_manager");
+var application_common_providers_1 = require('angular2/src/core/application_common_providers');
 /**
  * Returns the root injector providers.
  *
@@ -65,7 +66,7 @@ function _getAppBindings() {
         appDoc = null;
     }
     return [
-        compiler_1.COMPILER_PROVIDERS,
+        application_common_providers_1.APPLICATION_COMMON_PROVIDERS,
         di_1.provide(change_detection_1.ChangeDetectorGenConfig, { useValue: new change_detection_1.ChangeDetectorGenConfig(true, false, true) }),
         di_1.provide(dom_tokens_1.DOCUMENT, { useValue: appDoc }),
         di_1.provide(dom_renderer_1.DomRenderer, { useClass: dom_renderer_2.DomRenderer_ }),
@@ -97,11 +98,21 @@ function _getAppBindings() {
         new di_1.Provider(common_dom_1.EVENT_MANAGER_PLUGINS, { useClass: dom_events_1.DomEventsPlugin, multi: true })
     ];
 }
+function _runtimeCompilerBindings() {
+    return [
+        di_1.provide(xhr_1.XHR, { useClass: dom_adapter_1.DOM.getXHR() }),
+        compiler_1.COMPILER_PROVIDERS,
+    ];
+}
 function createTestInjector(providers) {
     var rootInjector = di_2.Injector.resolveAndCreate(_getRootProviders());
     return rootInjector.resolveAndCreateChild(collection_1.ListWrapper.concat(_getAppBindings(), providers));
 }
 exports.createTestInjector = createTestInjector;
+function createTestInjectorWithRuntimeCompiler(providers) {
+    return createTestInjector(collection_1.ListWrapper.concat(_runtimeCompilerBindings(), providers));
+}
+exports.createTestInjectorWithRuntimeCompiler = createTestInjectorWithRuntimeCompiler;
 /**
  * Allows injecting dependencies in `beforeEach()` and `it()`. When using with the
  * `angular2/testing` library, the test function will be run within a zone and will

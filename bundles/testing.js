@@ -2034,7 +2034,7 @@ System.register("angular2/src/mock/mock_location_strategy", ["angular2/src/core/
   return module.exports;
 });
 
-System.register("angular2/src/testing/test_injector", ["angular2/src/core/di", "angular2/src/animate/animation_builder", "angular2/src/mock/animation_builder_mock", "angular2/src/core/linker/proto_view_factory", "angular2/src/core/reflection/reflection", "angular2/src/core/change_detection/change_detection", "angular2/src/facade/exceptions", "angular2/src/core/linker/view_resolver", "angular2/src/core/linker/directive_resolver", "angular2/src/core/linker/pipe_resolver", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/compiler/xhr", "angular2/src/core/zone/ng_zone", "angular2/src/platform/dom/dom_adapter", "angular2/src/mock/directive_resolver_mock", "angular2/src/mock/view_resolver_mock", "angular2/src/mock/mock_location_strategy", "angular2/src/router/location_strategy", "angular2/src/mock/ng_zone_mock", "angular2/src/testing/test_component_builder", "angular2/src/core/di", "angular2/platform/common_dom", "angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/core/linker/view_pool", "angular2/src/core/linker/view_manager", "angular2/src/core/linker/view_manager_utils", "angular2/src/core/render/api", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/events/dom_events", "angular2/src/core/application_tokens", "angular2/src/web_workers/shared/serializer", "angular2/src/testing/utils", "angular2/src/compiler/compiler", "angular2/src/platform/dom/dom_renderer", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/core/linker/view_manager"], true, function(require, exports, module) {
+System.register("angular2/src/testing/test_injector", ["angular2/src/core/di", "angular2/src/animate/animation_builder", "angular2/src/mock/animation_builder_mock", "angular2/src/core/linker/proto_view_factory", "angular2/src/core/reflection/reflection", "angular2/src/core/change_detection/change_detection", "angular2/src/facade/exceptions", "angular2/src/core/linker/view_resolver", "angular2/src/core/linker/directive_resolver", "angular2/src/core/linker/pipe_resolver", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/compiler/xhr", "angular2/src/core/zone/ng_zone", "angular2/src/platform/dom/dom_adapter", "angular2/src/mock/directive_resolver_mock", "angular2/src/mock/view_resolver_mock", "angular2/src/mock/mock_location_strategy", "angular2/src/router/location_strategy", "angular2/src/mock/ng_zone_mock", "angular2/src/testing/test_component_builder", "angular2/src/core/di", "angular2/platform/common_dom", "angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/src/core/linker/view_pool", "angular2/src/core/linker/view_manager", "angular2/src/core/linker/view_manager_utils", "angular2/src/core/render/api", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/events/dom_events", "angular2/src/core/application_tokens", "angular2/src/web_workers/shared/serializer", "angular2/src/testing/utils", "angular2/src/compiler/compiler", "angular2/src/platform/dom/dom_renderer", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/core/linker/view_manager", "angular2/src/core/application_common_providers"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -2078,6 +2078,7 @@ System.register("angular2/src/testing/test_injector", ["angular2/src/core/di", "
   var dom_renderer_2 = require("angular2/src/platform/dom/dom_renderer");
   var dynamic_component_loader_2 = require("angular2/src/core/linker/dynamic_component_loader");
   var view_manager_2 = require("angular2/src/core/linker/view_manager");
+  var application_common_providers_1 = require("angular2/src/core/application_common_providers");
   function _getRootProviders() {
     return [di_1.provide(reflection_1.Reflector, {useValue: reflection_1.reflector})];
   }
@@ -2088,16 +2089,23 @@ System.register("angular2/src/testing/test_injector", ["angular2/src/core/di", "
     } catch (e) {
       appDoc = null;
     }
-    return [compiler_1.COMPILER_PROVIDERS, di_1.provide(change_detection_1.ChangeDetectorGenConfig, {useValue: new change_detection_1.ChangeDetectorGenConfig(true, false, true)}), di_1.provide(dom_tokens_1.DOCUMENT, {useValue: appDoc}), di_1.provide(dom_renderer_1.DomRenderer, {useClass: dom_renderer_2.DomRenderer_}), di_1.provide(api_1.Renderer, {useExisting: dom_renderer_1.DomRenderer}), di_1.provide(application_tokens_1.APP_ID, {useValue: 'a'}), shared_styles_host_1.DomSharedStylesHost, di_1.provide(shared_styles_host_2.SharedStylesHost, {useExisting: shared_styles_host_1.DomSharedStylesHost}), view_pool_1.AppViewPool, di_1.provide(view_manager_1.AppViewManager, {useClass: view_manager_2.AppViewManager_}), view_manager_utils_1.AppViewManagerUtils, serializer_1.Serializer, common_dom_1.ELEMENT_PROBE_PROVIDERS, di_1.provide(view_pool_1.APP_VIEW_POOL_CAPACITY, {useValue: 500}), proto_view_factory_1.ProtoViewFactory, di_1.provide(directive_resolver_1.DirectiveResolver, {useClass: directive_resolver_mock_1.MockDirectiveResolver}), di_1.provide(view_resolver_1.ViewResolver, {useClass: view_resolver_mock_1.MockViewResolver}), di_1.provide(change_detection_1.IterableDiffers, {useValue: change_detection_1.defaultIterableDiffers}), di_1.provide(change_detection_1.KeyValueDiffers, {useValue: change_detection_1.defaultKeyValueDiffers}), utils_1.Log, di_1.provide(dynamic_component_loader_1.DynamicComponentLoader, {useClass: dynamic_component_loader_2.DynamicComponentLoader_}), pipe_resolver_1.PipeResolver, di_1.provide(exceptions_1.ExceptionHandler, {useValue: new exceptions_1.ExceptionHandler(dom_adapter_1.DOM)}), di_1.provide(location_strategy_1.LocationStrategy, {useClass: mock_location_strategy_1.MockLocationStrategy}), di_1.provide(xhr_1.XHR, {useClass: dom_adapter_1.DOM.getXHR()}), test_component_builder_1.TestComponentBuilder, di_1.provide(ng_zone_1.NgZone, {useClass: ng_zone_mock_1.MockNgZone}), di_1.provide(animation_builder_1.AnimationBuilder, {useClass: animation_builder_mock_1.MockAnimationBuilder}), common_dom_1.EventManager, new di_1.Provider(common_dom_1.EVENT_MANAGER_PLUGINS, {
+    return [application_common_providers_1.APPLICATION_COMMON_PROVIDERS, di_1.provide(change_detection_1.ChangeDetectorGenConfig, {useValue: new change_detection_1.ChangeDetectorGenConfig(true, false, true)}), di_1.provide(dom_tokens_1.DOCUMENT, {useValue: appDoc}), di_1.provide(dom_renderer_1.DomRenderer, {useClass: dom_renderer_2.DomRenderer_}), di_1.provide(api_1.Renderer, {useExisting: dom_renderer_1.DomRenderer}), di_1.provide(application_tokens_1.APP_ID, {useValue: 'a'}), shared_styles_host_1.DomSharedStylesHost, di_1.provide(shared_styles_host_2.SharedStylesHost, {useExisting: shared_styles_host_1.DomSharedStylesHost}), view_pool_1.AppViewPool, di_1.provide(view_manager_1.AppViewManager, {useClass: view_manager_2.AppViewManager_}), view_manager_utils_1.AppViewManagerUtils, serializer_1.Serializer, common_dom_1.ELEMENT_PROBE_PROVIDERS, di_1.provide(view_pool_1.APP_VIEW_POOL_CAPACITY, {useValue: 500}), proto_view_factory_1.ProtoViewFactory, di_1.provide(directive_resolver_1.DirectiveResolver, {useClass: directive_resolver_mock_1.MockDirectiveResolver}), di_1.provide(view_resolver_1.ViewResolver, {useClass: view_resolver_mock_1.MockViewResolver}), di_1.provide(change_detection_1.IterableDiffers, {useValue: change_detection_1.defaultIterableDiffers}), di_1.provide(change_detection_1.KeyValueDiffers, {useValue: change_detection_1.defaultKeyValueDiffers}), utils_1.Log, di_1.provide(dynamic_component_loader_1.DynamicComponentLoader, {useClass: dynamic_component_loader_2.DynamicComponentLoader_}), pipe_resolver_1.PipeResolver, di_1.provide(exceptions_1.ExceptionHandler, {useValue: new exceptions_1.ExceptionHandler(dom_adapter_1.DOM)}), di_1.provide(location_strategy_1.LocationStrategy, {useClass: mock_location_strategy_1.MockLocationStrategy}), di_1.provide(xhr_1.XHR, {useClass: dom_adapter_1.DOM.getXHR()}), test_component_builder_1.TestComponentBuilder, di_1.provide(ng_zone_1.NgZone, {useClass: ng_zone_mock_1.MockNgZone}), di_1.provide(animation_builder_1.AnimationBuilder, {useClass: animation_builder_mock_1.MockAnimationBuilder}), common_dom_1.EventManager, new di_1.Provider(common_dom_1.EVENT_MANAGER_PLUGINS, {
       useClass: dom_events_1.DomEventsPlugin,
       multi: true
     })];
+  }
+  function _runtimeCompilerBindings() {
+    return [di_1.provide(xhr_1.XHR, {useClass: dom_adapter_1.DOM.getXHR()}), compiler_1.COMPILER_PROVIDERS];
   }
   function createTestInjector(providers) {
     var rootInjector = di_2.Injector.resolveAndCreate(_getRootProviders());
     return rootInjector.resolveAndCreateChild(collection_1.ListWrapper.concat(_getAppBindings(), providers));
   }
   exports.createTestInjector = createTestInjector;
+  function createTestInjectorWithRuntimeCompiler(providers) {
+    return createTestInjector(collection_1.ListWrapper.concat(_runtimeCompilerBindings(), providers));
+  }
+  exports.createTestInjectorWithRuntimeCompiler = createTestInjectorWithRuntimeCompiler;
   function inject(tokens, fn) {
     return new FunctionWithParamTokens(tokens, fn, false);
   }
@@ -2232,7 +2240,7 @@ System.register("angular2/src/testing/testing", ["angular2/src/facade/lang", "an
     if (testFn instanceof test_injector_1.FunctionWithParamTokens) {
       jsmFn(name, function(done) {
         if (!injector) {
-          injector = test_injector_1.createTestInjector(testProviders);
+          injector = test_injector_1.createTestInjectorWithRuntimeCompiler(testProviders);
         }
         var returnedTestValue = runInTestZone(function() {
           return testFn.execute(injector);
@@ -2251,7 +2259,7 @@ System.register("angular2/src/testing/testing", ["angular2/src/facade/lang", "an
     if (fn instanceof test_injector_1.FunctionWithParamTokens) {
       jsmBeforeEach(function(done) {
         if (!injector) {
-          injector = test_injector_1.createTestInjector(testProviders);
+          injector = test_injector_1.createTestInjectorWithRuntimeCompiler(testProviders);
         }
         runInTestZone(function() {
           return fn.execute(injector);

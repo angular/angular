@@ -38,6 +38,7 @@ import { COMPILER_PROVIDERS } from 'angular2/src/compiler/compiler';
 import { DomRenderer_ } from "angular2/src/platform/dom/dom_renderer";
 import { DynamicComponentLoader_ } from "angular2/src/core/linker/dynamic_component_loader";
 import { AppViewManager_ } from "angular2/src/core/linker/view_manager";
+import { APPLICATION_COMMON_PROVIDERS } from 'angular2/src/core/application_common_providers';
 /**
  * Returns the root injector providers.
  *
@@ -65,7 +66,7 @@ function _getAppBindings() {
         appDoc = null;
     }
     return [
-        COMPILER_PROVIDERS,
+        APPLICATION_COMMON_PROVIDERS,
         provide(ChangeDetectorGenConfig, { useValue: new ChangeDetectorGenConfig(true, false, true) }),
         provide(DOCUMENT, { useValue: appDoc }),
         provide(DomRenderer, { useClass: DomRenderer_ }),
@@ -97,9 +98,18 @@ function _getAppBindings() {
         new Provider(EVENT_MANAGER_PLUGINS, { useClass: DomEventsPlugin, multi: true })
     ];
 }
+function _runtimeCompilerBindings() {
+    return [
+        provide(XHR, { useClass: DOM.getXHR() }),
+        COMPILER_PROVIDERS,
+    ];
+}
 export function createTestInjector(providers) {
     var rootInjector = Injector.resolveAndCreate(_getRootProviders());
     return rootInjector.resolveAndCreateChild(ListWrapper.concat(_getAppBindings(), providers));
+}
+export function createTestInjectorWithRuntimeCompiler(providers) {
+    return createTestInjector(ListWrapper.concat(_runtimeCompilerBindings(), providers));
 }
 /**
  * Allows injecting dependencies in `beforeEach()` and `it()`. When using with the

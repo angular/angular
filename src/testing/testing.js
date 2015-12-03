@@ -136,7 +136,7 @@ function _it(jsmFn, name, testFn, testTimeOut) {
     if (testFn instanceof test_injector_1.FunctionWithParamTokens) {
         jsmFn(name, function (done) {
             if (!injector) {
-                injector = test_injector_1.createTestInjector(testProviders);
+                injector = test_injector_1.createTestInjectorWithRuntimeCompiler(testProviders);
             }
             var returnedTestValue = runInTestZone(function () { return testFn.execute(injector); }, done, done.fail);
             if (_isPromiseLike(returnedTestValue)) {
@@ -163,7 +163,7 @@ function beforeEach(fn) {
         // }));`
         jsmBeforeEach(function (done) {
             if (!injector) {
-                injector = test_injector_1.createTestInjector(testProviders);
+                injector = test_injector_1.createTestInjectorWithRuntimeCompiler(testProviders);
             }
             runInTestZone(function () { return fn.execute(injector); }, done, done.fail);
         });

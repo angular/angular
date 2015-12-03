@@ -1,7 +1,7 @@
 import { StringMapWrapper } from 'angular2/src/facade/collection';
 import { global, isFunction, Math } from 'angular2/src/facade/lang';
 import { provide } from 'angular2/src/core/di';
-import { createTestInjector, FunctionWithParamTokens } from './test_injector';
+import { createTestInjectorWithRuntimeCompiler, FunctionWithParamTokens } from './test_injector';
 import { browserDetection } from './utils';
 export { inject } from './test_injector';
 export { expect } from './matchers';
@@ -116,7 +116,7 @@ function _it(jsmFn, name, testFn, testTimeOut) {
                         return new AsyncTestCompleter(done);
                     }
                 });
-                var injector = createTestInjector([...testProviders, completerProvider]);
+                var injector = createTestInjectorWithRuntimeCompiler([...testProviders, completerProvider]);
                 runner.run(injector);
                 inIt = true;
                 testFn.execute(injector);
@@ -125,7 +125,7 @@ function _it(jsmFn, name, testFn, testTimeOut) {
         }
         else {
             jsmFn(name, () => {
-                var injector = createTestInjector(testProviders);
+                var injector = createTestInjectorWithRuntimeCompiler(testProviders);
                 runner.run(injector);
                 testFn.execute(injector);
             }, timeOut);
@@ -135,14 +135,14 @@ function _it(jsmFn, name, testFn, testTimeOut) {
         // The test case doesn't use inject(). ie `it('test', (done) => { ... }));`
         if (testFn.length === 0) {
             jsmFn(name, () => {
-                var injector = createTestInjector(testProviders);
+                var injector = createTestInjectorWithRuntimeCompiler(testProviders);
                 runner.run(injector);
                 testFn();
             }, timeOut);
         }
         else {
             jsmFn(name, (done) => {
-                var injector = createTestInjector(testProviders);
+                var injector = createTestInjectorWithRuntimeCompiler(testProviders);
                 runner.run(injector);
                 testFn(done);
             }, timeOut);

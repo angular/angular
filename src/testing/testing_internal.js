@@ -143,7 +143,7 @@ function _it(jsmFn, name, testFn, testTimeOut) {
                         return new AsyncTestCompleter(done);
                     }
                 });
-                var injector = test_injector_1.createTestInjector(testProviders.concat([completerProvider]));
+                var injector = test_injector_1.createTestInjectorWithRuntimeCompiler(testProviders.concat([completerProvider]));
                 runner.run(injector);
                 inIt = true;
                 testFn.execute(injector);
@@ -152,7 +152,7 @@ function _it(jsmFn, name, testFn, testTimeOut) {
         }
         else {
             jsmFn(name, function () {
-                var injector = test_injector_1.createTestInjector(testProviders);
+                var injector = test_injector_1.createTestInjectorWithRuntimeCompiler(testProviders);
                 runner.run(injector);
                 testFn.execute(injector);
             }, timeOut);
@@ -162,14 +162,14 @@ function _it(jsmFn, name, testFn, testTimeOut) {
         // The test case doesn't use inject(). ie `it('test', (done) => { ... }));`
         if (testFn.length === 0) {
             jsmFn(name, function () {
-                var injector = test_injector_1.createTestInjector(testProviders);
+                var injector = test_injector_1.createTestInjectorWithRuntimeCompiler(testProviders);
                 runner.run(injector);
                 testFn();
             }, timeOut);
         }
         else {
             jsmFn(name, function (done) {
-                var injector = test_injector_1.createTestInjector(testProviders);
+                var injector = test_injector_1.createTestInjectorWithRuntimeCompiler(testProviders);
                 runner.run(injector);
                 testFn(done);
             }, timeOut);
