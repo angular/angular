@@ -86,7 +86,7 @@ export declare abstract class PlatformRef {
      * new application. Once this promise resolves, the application will be
      * constructed in the same manner as a normal `application()`.
      */
-    abstract asyncApplication(bindingFn: (zone: NgZone) => Promise<Array<Type | Provider | any[]>>): Promise<ApplicationRef>;
+    abstract asyncApplication(bindingFn: (zone: NgZone) => Promise<Array<Type | Provider | any[]>>, providers?: Array<Type | Provider | any[]>): Promise<ApplicationRef>;
     /**
      * Destroy the Angular platform and all Angular applications on the page.
      */
@@ -99,7 +99,7 @@ export declare class PlatformRef_ extends PlatformRef {
     registerDisposeListener(dispose: () => void): void;
     injector: Injector;
     application(providers: Array<Type | Provider | any[]>): ApplicationRef;
-    asyncApplication(bindingFn: (zone: NgZone) => Promise<Array<Type | Provider | any[]>>): Promise<ApplicationRef>;
+    asyncApplication(bindingFn: (zone: NgZone) => Promise<Array<Type | Provider | any[]>>, additionalProviders?: Array<Type | Provider | any[]>): Promise<ApplicationRef>;
     private _initApp(zone, providers);
     dispose(): void;
 }
