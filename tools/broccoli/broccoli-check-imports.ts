@@ -13,13 +13,10 @@ class CheckImports implements DiffingBroccoliPlugin {
   static IMPORT_PATH_REGEXP = new RegExp(`['"]([^'"]+)+['"]`, "m");
 
   static ALLOWED_IMPORTS = {
-    "angular2/src/core": [
-      "angular2/src/core",
-      "angular2/src/facade",
-    ],
-    "angular2/src/facade": ["angular2/src/facade", "rxjs"],
-    "angular2/src/common": ["angular2/core", "angular2/src/facade", "angular2/src/common"],
-    "angular2/src/http": ["angular2/core", "angular2/src/facade", "angular2/src/http", "rxjs"]
+    "angular2/src/core": ["angular2/src/facade"],
+    "angular2/src/facade": ["rxjs"],
+    "angular2/src/common": ["angular2/core", "angular2/src/facade"],
+    "angular2/src/http": ["angular2/core", "angular2/src/facade", "rxjs"]
     //"angular2/src/render": [
     //  "angular2/animate",
     //  "angular2/core",
@@ -80,7 +77,8 @@ class CheckImports implements DiffingBroccoliPlugin {
     for (var prop in c) {
       if (c.hasOwnProperty(prop) && startsWith(sourceFile, prop)) {
         const allowedPaths = c[prop];
-        return allowedPaths.filter(p => startsWith(importPath, p)).length > 0;
+        return startsWith(importPath, prop) ||
+               allowedPaths.filter(p => startsWith(importPath, p)).length > 0;
       }
     }
 
