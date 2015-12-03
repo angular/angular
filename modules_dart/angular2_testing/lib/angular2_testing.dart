@@ -74,7 +74,7 @@ dynamic _runInjectableFunction(Function fn) {
   }
 
   if (_currentInjector == null) {
-    _currentInjector = createTestInjector(_currentTestProviders);
+    _currentInjector = createTestInjectorWithRuntimeCompiler(_currentTestProviders);
   }
   var injectFn = new FunctionWithParamTokens(tokens, fn, false);
   return injectFn.execute(_currentInjector);

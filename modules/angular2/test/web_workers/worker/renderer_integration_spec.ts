@@ -7,7 +7,7 @@ import {
   iit,
   expect,
   beforeEach,
-  createTestInjector,
+  createTestInjectorWithRuntimeCompiler,
   beforeEachProviders,
   TestComponentBuilder
 } from "angular2/testing_internal";
@@ -101,7 +101,7 @@ export function main() {
     beforeEachProviders(() => {
       var uiRenderProtoViewStore = new RenderProtoViewRefStore(false);
       uiRenderViewStore = new RenderViewWithFragmentsStore(false);
-      uiInjector = createTestInjector([
+      uiInjector = createTestInjectorWithRuntimeCompiler([
         provide(RenderProtoViewRefStore, {useValue: uiRenderProtoViewStore}),
         provide(RenderViewWithFragmentsStore, {useValue: uiRenderViewStore}),
         provide(DomRenderer, {useClass: DomRenderer_}),
