@@ -106,8 +106,7 @@ main() {
             (TestComponentBuilder tcb, async) {
           tcb.createAsync(ChildComp).then((componentFixture) {
             componentFixture.detectChanges();
-            expect(componentFixture.debugElement.nativeElement)
-                .toHaveText("Original Child");
+            expect(componentFixture.nativeElement).toHaveText("Original Child");
             async.done();
           });
         }));
@@ -117,12 +116,10 @@ main() {
             (TestComponentBuilder tcb, async) {
           tcb.createAsync(MyIfComp).then((componentFixture) {
             componentFixture.detectChanges();
-            expect(componentFixture.debugElement.nativeElement)
-                .toHaveText("MyIf()");
-            componentFixture.debugElement.componentInstance.showMore = true;
+            expect(componentFixture.nativeElement).toHaveText("MyIf()");
+            componentFixture.componentInstance.showMore = true;
             componentFixture.detectChanges();
-            expect(componentFixture.debugElement.nativeElement)
-                .toHaveText("MyIf(More)");
+            expect(componentFixture.nativeElement).toHaveText("MyIf(More)");
             async.done();
           });
         }));
@@ -135,8 +132,7 @@ main() {
               .createAsync(MockChildComp)
               .then((componentFixture) {
             componentFixture.detectChanges();
-            expect(componentFixture.debugElement.nativeElement)
-                .toHaveText("Mock");
+            expect(componentFixture.nativeElement).toHaveText("Mock");
             async.done();
           });
         }));
@@ -152,8 +148,7 @@ main() {
               .createAsync(ChildComp)
               .then((componentFixture) {
             componentFixture.detectChanges();
-            expect(componentFixture.debugElement.nativeElement)
-                .toHaveText("Modified Child");
+            expect(componentFixture.nativeElement).toHaveText("Modified Child");
             async.done();
           });
         }));
@@ -166,8 +161,7 @@ main() {
               .createAsync(ParentComp)
               .then((componentFixture) {
             componentFixture.detectChanges();
-            expect(componentFixture.debugElement.nativeElement)
-                .toHaveText("Parent(Mock)");
+            expect(componentFixture.nativeElement).toHaveText("Parent(Mock)");
             async.done();
           });
         }));
@@ -182,7 +176,7 @@ main() {
               .createAsync(ParentComp)
               .then((componentFixture) {
             componentFixture.detectChanges();
-            expect(componentFixture.debugElement.nativeElement)
+            expect(componentFixture.nativeElement)
                 .toHaveText("Parent(Original Child(ChildChild Mock))");
             async.done();
           });
@@ -195,7 +189,7 @@ main() {
             provide(FancyService, useClass: MockFancyService)
           ]).createAsync(TestBindingsComp).then((componentFixture) {
             componentFixture.detectChanges();
-            expect(componentFixture.debugElement.nativeElement)
+            expect(componentFixture.nativeElement)
                 .toHaveText("injected value: mocked out value");
             async.done();
           });
@@ -208,7 +202,7 @@ main() {
             provide(FancyService, useClass: MockFancyService)
           ]).createAsync(TestViewBindingsComp).then((componentFixture) {
             componentFixture.detectChanges();
-            expect(componentFixture.debugElement.nativeElement)
+            expect(componentFixture.nativeElement)
                 .toHaveText("injected value: mocked out value");
             async.done();
           });

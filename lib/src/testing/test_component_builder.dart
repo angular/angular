@@ -24,8 +24,25 @@ import "package:angular2/src/core/debug/debug_element.dart"
  * Fixture for debugging and testing a component.
  */
 abstract class ComponentFixture {
+  /**
+   * The DebugElement associated with the root element of this component.
+   */
   DebugElement debugElement;
+  /**
+   * The instance of the root component class.
+   */
+  dynamic componentInstance;
+  /**
+   * The native element at the root of the component.
+   */
+  dynamic nativeElement;
+  /**
+   * Trigger a change detection cycle for the component.
+   */
   void detectChanges();
+  /**
+   * Trigger component destruction.
+   */
   void destroy();
 }
 
@@ -38,6 +55,8 @@ class ComponentFixture_ extends ComponentFixture {
     /* super call moved to initializer */;
     this.debugElement =
         new DebugElement_(internalView((componentRef.hostView as ViewRef)), 0);
+    this.componentInstance = this.debugElement.componentInstance;
+    this.nativeElement = this.debugElement.nativeElement;
     this._componentParentView =
         internalView((componentRef.hostView as ViewRef));
     this._componentRef = componentRef;
