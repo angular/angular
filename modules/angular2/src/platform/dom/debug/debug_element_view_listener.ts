@@ -72,9 +72,21 @@ export class DebugElementViewListener implements AppViewListener {
   }
 }
 
+/**
+ * Providers which support debugging Angular applications (e.g. via `ng.probe`).
+ *
+ * ## Example
+ *
+ * {@example platform/dom/debug/ts/debug_element_view_listener/providers.ts region='providers'}
+ */
 export const ELEMENT_PROBE_PROVIDERS: any[] = CONST_EXPR([
   DebugElementViewListener,
   CONST_EXPR(new Provider(AppViewListener, {useExisting: DebugElementViewListener})),
 ]);
 
+/**
+ * Use {@link ELEMENT_PROBE_PROVIDERS}.
+ *
+ * @deprecated
+ */
 export const ELEMENT_PROBE_BINDINGS = ELEMENT_PROBE_PROVIDERS;

@@ -4,6 +4,9 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 import {ChangeDetectorRef} from '../change_detector_ref';
 import {Provider, SkipSelfMetadata, OptionalMetadata, Injectable} from 'angular2/src/core/di';
 
+/**
+ * A differ that tracks changes made to an object over time.
+ */
 export interface KeyValueDiffer {
   diff(object: Object);
   onDestroy();

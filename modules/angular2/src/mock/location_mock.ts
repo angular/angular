@@ -3,6 +3,9 @@ import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {Location} from 'angular2/src/router/location';
 
+/**
+ * A spy for {@link Location} that allows tests to fire simulated location events.
+ */
 @Injectable()
 export class SpyLocation implements Location {
   urlChanges: string[] = [];

@@ -29,6 +29,10 @@ export var Type = Function;
  * the `MyCustomComponent` constructor function.
  */
 export interface Type extends Function {}
+
+/**
+ * Runtime representation of a type that is constructable (non-abstract).
+ */
 export interface ConcreteType extends Type { new (...args): any; }
 
 export function getTypeNameForDebugging(type: Type): string {

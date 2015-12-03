@@ -8,7 +8,7 @@ import {reflector} from 'angular2/src/core/reflection/reflection';
  *
  * This interface can be overridden by the application developer to create custom behavior.
  *
- * See {@link Compiler}
+ * See {@link Compiler}.
  */
 @Injectable()
 export class ComponentUrlMapper {
@@ -23,12 +23,18 @@ export class ComponentUrlMapper {
   }
 }
 
+/**
+ * A {@link ComponentUrlMapper} that maintains an internal map of types to URLs.
+ */
 export class RuntimeComponentUrlMapper extends ComponentUrlMapper {
   /** @internal */
   _componentUrls = new Map<Type, string>();
 
   constructor() { super(); }
 
+  /**
+   * Add a mapping from component type to url to the resolver.
+   */
   setComponentUrl(component: Type, url: string) { this._componentUrls.set(component, url); }
 
   getUrl(component: Type): string {

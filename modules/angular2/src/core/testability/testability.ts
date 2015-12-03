@@ -88,6 +88,9 @@ export class Testability {
   }
 }
 
+/**
+ * A global registry of {@link Testability} instances for specific elements.
+ */
 @Injectable()
 export class TestabilityRegistry {
   /** @internal */
@@ -108,6 +111,10 @@ export class TestabilityRegistry {
   }
 }
 
+/**
+ * Adapter interface for retrieving the `Testability` service associated for a
+ * particular context.
+ */
 export interface GetTestability {
   addToWindow(registry: TestabilityRegistry): void;
   findTestabilityInTree(registry: TestabilityRegistry, elem: any,
@@ -123,6 +130,9 @@ class _NoopGetTestability implements GetTestability {
   }
 }
 
+/**
+ * Set the {@link GetTestability} implementation used by the Angular testing framework.
+ */
 export function setTestabilityGetter(getter: GetTestability): void {
   _testabilityGetter = getter;
 }

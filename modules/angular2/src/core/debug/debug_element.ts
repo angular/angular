@@ -11,16 +11,28 @@ import {ElementRef, ElementRef_} from 'angular2/src/core/linker/element_ref';
  * element and provides access to the corresponding ElementInjector and
  * underlying DOM Element, as well as a way to query for children.
  *
- * A DebugElement can be obtained from a {@link ComponentFixture} or
- * {@link RootTestComponent}.
+ * A DebugElement can be obtained from a {@link ComponentFixture} or from an
+ * {@link ElementRef} via {@link inspectElement}.
  */
 export abstract class DebugElement {
+  /**
+   * Return the instance of the component associated with this element, if any.
+   */
   get componentInstance(): any { return unimplemented(); };
 
+  /**
+   * Return the native HTML element for this DebugElement.
+   */
   get nativeElement(): any { return unimplemented(); };
 
+  /**
+   * Return an Angular {@link ElementRef} for this element.
+   */
   get elementRef(): ElementRef { return unimplemented(); };
 
+  /**
+   * Get the directive active for this element with the given index, if any.
+   */
   abstract getDirectiveInstance(directiveIndex: number): any;
 
   /**
@@ -38,12 +50,26 @@ export abstract class DebugElement {
    */
   get componentViewChildren(): DebugElement[] { return unimplemented(); };
 
+  /**
+   * Simulate an event from this element as if the user had caused
+   * this event to fire from the page.
+   */
   abstract triggerEventHandler(eventName: string, eventObj: Event): void;
 
+  /**
+   * Check whether the element has a directive with the given type.
+   */
   abstract hasDirective(type: Type): boolean;
 
+  /**
+   * Inject the given type from the element injector.
+   */
   abstract inject(type: Type): any;
 
+
+  /**
+   * Read a local variable from the element (e.g. one defined with `#variable`).
+   */
   abstract getLocal(name: string): any;
 
   /**
@@ -169,11 +195,25 @@ export function inspectElement(elementRef: ElementRef): DebugElement {
                            (<ElementRef_>elementRef).boundElementIndex);
 }
 
+/**
+ * Maps an array of {@link DebugElement}s to an array of native DOM elements.
+ */
 export function asNativeElements(arr: DebugElement[]): any[] {
   return arr.map((debugEl) => debugEl.nativeElement);
 }
 
+/**
+ * Set of scope functions used with {@link DebugElement}'s query functionality.
+ */
 export class Scope {
+  /**
+   * Scope queries to both the light dom and view of an element and its
+   * children.
+   *
+   * ## Example
+   *
+   * {@example core/debug/ts/debug_element/debug_element.ts region='scope_all'}
+   */
   static all(debugElement: DebugElement): DebugElement[] {
     var scope = [];
     scope.push(debugElement);
@@ -184,6 +224,14 @@ export class Scope {
 
     return scope;
   }
+
+  /**
+   * Scope queries to the light dom of an element and its children.
+   *
+   * ## Example
+   *
+   * {@example core/debug/ts/debug_element/debug_element.ts region='scope_light'}
+   */
   static light(debugElement: DebugElement): DebugElement[] {
     var scope = [];
     debugElement.children.forEach(child => {
@@ -193,6 +241,13 @@ export class Scope {
     return scope;
   }
 
+  /**
+   * Scope queries to the view of an element of its children.
+   *
+   * ## Example
+   *
+   * {@example core/debug/ts/debug_element/debug_element.ts region='scope_view'}
+   */
   static view(debugElement: DebugElement): DebugElement[] {
     var scope = [];
 

@@ -6,6 +6,9 @@ export function moduleRef(moduleUrl): string {
   return `#MODULE[${moduleUrl}]`;
 }
 
+/**
+ * Represents generated source code with module references. Internal to the Angular compiler.
+ */
 export class SourceModule {
   constructor(public moduleUrl: string, public sourceWithModuleRefs: string) {}
 
@@ -39,6 +42,9 @@ export class SourceExpressions {
   constructor(public declarations: string[], public expressions: string[]) {}
 }
 
+/**
+ * Represents generated source code with imports. Internal to the Angular compiler.
+ */
 export class SourceWithImports {
   constructor(public source: string, public imports: string[][]) {}
 }
