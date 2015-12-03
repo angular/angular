@@ -20,7 +20,11 @@ const DEFAULT_VALUE_ACCESSOR = CONST_EXPR(new Provider(
   // TODO: vsavkin replace the above selector with the one below it once
   // https://github.com/angular/angular/issues/3011 is implemented
   // selector: '[ng-control],[ng-model],[ng-form-control]',
-  host: {'(input)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
+  host: {
+    '(change)': 'onChange($event.target.value)',
+    '(input)': 'onChange($event.target.value)',
+    '(blur)': 'onTouched()'
+  },
   bindings: [DEFAULT_VALUE_ACCESSOR]
 })
 export class DefaultValueAccessor implements ControlValueAccessor {
