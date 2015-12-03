@@ -1,10 +1,10 @@
 library angular2.web_worker.ui;
 
 export "package:angular2/src/facade/facade.dart";
+export "../src/core/di.dart";
+export "../src/core/application_ref.dart"
+    show platform, PlatformRef, ApplicationRef;
+export "../src/core/application_tokens.dart"
+    show APP_ID, APP_COMPONENT, APP_INITIALIZER, PLATFORM_INITIALIZER;
 export "../src/core/zone.dart";
-export "../src/web_workers/ui/application.dart";
-export "../src/web_workers/shared/client_message_broker.dart"
-    show ClientMessageBroker, ClientMessageBrokerFactory, FnArg, UiArguments;
-export "../src/web_workers/shared/service_message_broker.dart"
-    show ReceivedMessage, ServiceMessageBroker, ServiceMessageBrokerFactory;
-export "../src/web_workers/shared/serializer.dart" show PRIMITIVE;
+export "package:angular2/platform/worker_render.dart";
