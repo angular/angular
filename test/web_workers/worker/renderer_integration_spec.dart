@@ -10,7 +10,7 @@ import "package:angular2/testing_internal.dart"
         iit,
         expect,
         beforeEach,
-        createTestInjector,
+        createTestInjectorWithRuntimeCompiler,
         beforeEachProviders,
         TestComponentBuilder;
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
@@ -112,7 +112,7 @@ main() {
     beforeEachProviders(() {
       var uiRenderProtoViewStore = new RenderProtoViewRefStore(false);
       uiRenderViewStore = new RenderViewWithFragmentsStore(false);
-      uiInjector = createTestInjector([
+      uiInjector = createTestInjectorWithRuntimeCompiler([
         provide(RenderProtoViewRefStore, useValue: uiRenderProtoViewStore),
         provide(RenderViewWithFragmentsStore, useValue: uiRenderViewStore),
         provide(DomRenderer, useClass: DomRenderer_),

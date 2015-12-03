@@ -63,7 +63,7 @@ void testSetup() {
   gns.beforeEach(() {
     _isCurrentTestAsync = false;
     _testBindings.add(completerBinding);
-    _injector = createTestInjector(_testBindings);
+    _injector = createTestInjectorWithRuntimeCompiler(_testBindings);
   }, priority: 1);
 }
 

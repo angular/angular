@@ -65,6 +65,8 @@ import "package:angular2/src/core/linker/dynamic_component_loader.dart"
     show DynamicComponentLoader_;
 import "package:angular2/src/core/linker/view_manager.dart"
     show AppViewManager_;
+import "package:angular2/src/core/application_common_providers.dart"
+    show APPLICATION_COMMON_PROVIDERS;
 
 /**
  * Returns the root injector providers.
@@ -93,7 +95,7 @@ _getAppBindings() {
     appDoc = null;
   }
   return [
-    COMPILER_PROVIDERS,
+    APPLICATION_COMMON_PROVIDERS,
     provide(ChangeDetectorGenConfig,
         useValue: new ChangeDetectorGenConfig(true, false, true)),
     provide(DOCUMENT, useValue: appDoc),
@@ -127,11 +129,21 @@ _getAppBindings() {
   ];
 }
 
+_runtimeCompilerBindings() {
+  return [provide(XHR, useClass: DOM.getXHR()), COMPILER_PROVIDERS];
+}
+
 Injector createTestInjector(
     List<dynamic /* Type | Provider | List < dynamic > */ > providers) {
   var rootInjector = Injector.resolveAndCreate(_getRootProviders());
   return rootInjector
       .resolveAndCreateChild(ListWrapper.concat(_getAppBindings(), providers));
+}
+
+Injector createTestInjectorWithRuntimeCompiler(
+    List<dynamic /* Type | Provider | List < dynamic > */ > providers) {
+  return createTestInjector(
+      ListWrapper.concat(_runtimeCompilerBindings(), providers));
 }
 
 /**
