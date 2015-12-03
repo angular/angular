@@ -1,6 +1,8 @@
+import {Injectable} from 'angular2/src/core/di';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
+@Injectable()
 export class MockNgZone extends NgZone {
   /** @internal */
   _mockOnEventDone: EventEmitter<any>;

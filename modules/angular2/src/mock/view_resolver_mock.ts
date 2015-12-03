@@ -1,3 +1,4 @@
+import {Injectable} from 'angular2/src/core/di';
 import {Map, MapWrapper, ListWrapper} from 'angular2/src/facade/collection';
 import {Type, isPresent, stringify, isBlank} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
@@ -5,6 +6,7 @@ import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {ViewMetadata} from '../core/metadata';
 import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
 
+@Injectable()
 export class MockViewResolver extends ViewResolver {
   /** @internal */
   _views = new Map<Type, ViewMetadata>();
