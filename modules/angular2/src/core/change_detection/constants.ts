@@ -1,5 +1,8 @@
 import {StringWrapper, normalizeBool, isBlank} from 'angular2/src/facade/lang';
 
+/**
+ * Describes the current state of the change detector.
+ */
 export enum ChangeDetectorState {
   /**
    * `NeverChecked` means that the change detector has not been checked yet, and
@@ -21,6 +24,10 @@ export enum ChangeDetectorState {
   Errored
 }
 
+/**
+ * Describes within the change detector which strategy will be used the next time change
+ * detection is triggered.
+ */
 export enum ChangeDetectionStrategy {
   /**
    * `CheckedOnce` means that after calling detectChanges the mode of the change detector
@@ -62,6 +69,9 @@ export enum ChangeDetectionStrategy {
   OnPushObserve
 }
 
+/**
+ * List of possible {@link ChangeDetectionStrategy} values.
+ */
 export var CHANGE_DETECTION_STRATEGY_VALUES = [
   ChangeDetectionStrategy.CheckOnce,
   ChangeDetectionStrategy.Checked,
@@ -72,6 +82,9 @@ export var CHANGE_DETECTION_STRATEGY_VALUES = [
   ChangeDetectionStrategy.OnPushObserve
 ];
 
+/**
+ * List of possible {@link ChangeDetectorState} values.
+ */
 export var CHANGE_DETECTOR_STATE_VALUES = [
   ChangeDetectorState.NeverChecked,
   ChangeDetectorState.CheckedBefore,

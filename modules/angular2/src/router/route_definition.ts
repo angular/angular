@@ -23,6 +23,12 @@ export interface RouteDefinition {
   useAsDefault?: boolean;
 }
 
+/**
+ * Represents either a component type (`type` is `component`) or a loader function
+ * (`type` is `loader`).
+ *
+ * See also {@link RouteDefinition}.
+ */
 export interface ComponentDefinition {
   type: string;
   loader?: Function;

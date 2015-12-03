@@ -2,6 +2,9 @@ import {Injectable} from 'angular2/src/core/di';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 
+/**
+ * A mock implementation of {@link NgZone}.
+ */
 @Injectable()
 export class MockNgZone extends NgZone {
   /** @internal */

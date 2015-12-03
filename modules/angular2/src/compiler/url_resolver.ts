@@ -11,18 +11,28 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 import {PACKAGE_ROOT_URL} from 'angular2/src/core/application_tokens';
 import {Provider} from 'angular2/src/core/di';
 
+/**
+ * Create a {@link UrlResolver} with no package prefix.
+ */
 export function createWithoutPackagePrefix(): UrlResolver {
   return new UrlResolver();
 }
 
+/**
+ * A default provider for {@link PACKAGE_ROOT_URL} that maps to '/'.
+ */
 export var DEFAULT_PACKAGE_URL_PROVIDER = new Provider(PACKAGE_ROOT_URL, {useValue: "/"});
 
 /**
  * Used by the {@link Compiler} when resolving HTML and CSS template URLs.
  *
- * This interface can be overridden by the application developer to create custom behavior.
+ * This class can be overridden by the application developer to create custom behavior.
  *
  * See {@link Compiler}
+ *
+ * ## Example
+ *
+ * {@example compiler/ts/url_resolver/url_resolver.ts region='url_resolver'}
  */
 @Injectable()
 export class UrlResolver {
@@ -58,6 +68,9 @@ export class UrlResolver {
   }
 }
 
+/**
+ * Extract the scheme of a URL.
+ */
 export function getUrlScheme(url: string): string {
   var match = _split(url);
   return (match && match[_ComponentIndex.Scheme]) || "";
