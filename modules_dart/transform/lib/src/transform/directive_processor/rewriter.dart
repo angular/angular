@@ -64,12 +64,24 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
   /// The [AssetId] we are currently processing.
   final AssetId assetId;
 
+  /// Tracks the [AssetId] of the current [CompilationUnit].
+  ///
+  /// Reads specially formatted [TopLevelVariableDeclaration] nodes to determine
+  /// this information.
+  final UriTracker _tracker;
+
   final DirectiveMetadataReader _reader;
   final _normalizations = <Future>[];
 
-  _NgMetaVisitor(this.ngMeta, this.assetId, AnnotationMatcher annotationMatcher,
-      InterfaceMatcher interfaceMatcher, TemplateCompiler templateCompiler)
-      : _reader = new DirectiveMetadataReader(
+  _NgMetaVisitor(
+      this.ngMeta,
+      AssetId assetId,
+      AnnotationMatcher annotationMatcher,
+      InterfaceMatcher interfaceMatcher,
+      TemplateCompiler templateCompiler)
+      : assetId = assetId,
+        _tracker = new UriTracker(assetId),
+        _reader = new DirectiveMetadataReader(
             annotationMatcher, interfaceMatcher, templateCompiler);
 
   Future whenDone() {
@@ -89,7 +101,8 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
   @override
   Object visitClassDeclaration(ClassDeclaration node) {
     _normalizations.add(_reader
-        .readDirectiveMetadata(node, assetId)
+        .readDirectiveMetadata(node, assetId,
+            compilationUnitId: _tracker.current)
         .then((compileDirectiveMetadata) {
       if (compileDirectiveMetadata != null) {
         ngMeta.types[compileDirectiveMetadata.type.name] =
@@ -103,6 +116,8 @@ class _NgMetaVisitor extends Object with SimpleAstVisitor<Object> {
 
   @override
   Object visitTopLevelVariableDeclaration(TopLevelVariableDeclaration node) {
+    _tracker.update(node);
+
     // We process any top-level declaration that fits the directive-alias
     // declaration pattern. Ideally we would use an annotation on the field to
     // help us filter out only what's needed, but unfortunately TypeScript

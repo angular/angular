@@ -91,6 +91,16 @@ void allTests() {
     it('should not generate anything for `part` files.', () async {
       expect(await _testCreateModel('part_files/part.dart')).toBeNull();
     });
+
+    it('should resolve urls in `part`s relative to the `part` file.', () async {
+      var logger = new RecordingLogger();
+      var ngMeta = await _testCreateModel('part_relative_files/main.dart',
+          logger: logger);
+      expect(logger.hasErrors).toBeFalse();
+      expect(ngMeta.types['PartComponent']).toBeNotNull();
+      expect(ngMeta.types['PartComponent'].template.template)
+          .toContain('{{greeting}}');
+    });
   });
 
   describe('custom annotations', () {
