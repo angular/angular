@@ -5,7 +5,11 @@ import {NgZoneZone} from 'angular2/src/core/zone/ng_zone';
 
 import {provide} from 'angular2/src/core/di';
 
-import {createTestInjector, FunctionWithParamTokens, inject} from './test_injector';
+import {
+  createTestInjectorWithRuntimeCompiler,
+  FunctionWithParamTokens,
+  inject
+} from './test_injector';
 import {browserDetection} from './utils';
 
 export {inject} from './test_injector';
@@ -143,7 +147,7 @@ function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | An
           }
         });
 
-        var injector = createTestInjector([...testProviders, completerProvider]);
+        var injector = createTestInjectorWithRuntimeCompiler([...testProviders, completerProvider]);
         runner.run(injector);
 
         inIt = true;
@@ -152,7 +156,7 @@ function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | An
       }, timeOut);
     } else {
       jsmFn(name, () => {
-        var injector = createTestInjector(testProviders);
+        var injector = createTestInjectorWithRuntimeCompiler(testProviders);
         runner.run(injector);
         testFn.execute(injector);
       }, timeOut);
@@ -163,13 +167,13 @@ function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | An
 
     if ((<any>testFn).length === 0) {
       jsmFn(name, () => {
-        var injector = createTestInjector(testProviders);
+        var injector = createTestInjectorWithRuntimeCompiler(testProviders);
         runner.run(injector);
         (<SyncTestFn>testFn)();
       }, timeOut);
     } else {
       jsmFn(name, (done) => {
-        var injector = createTestInjector(testProviders);
+        var injector = createTestInjectorWithRuntimeCompiler(testProviders);
         runner.run(injector);
         (<AsyncTestFn>testFn)(done);
       }, timeOut);
