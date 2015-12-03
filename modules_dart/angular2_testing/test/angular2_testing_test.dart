@@ -41,7 +41,8 @@ void main() {
     expect(string.split(','), equals(['foo', 'bar', 'baz']));
   });
 
-  ngTest('can grab injected values', (@Inject(MyToken) token, TestService testService) {
+  ngTest('can grab injected values',
+      (@Inject(MyToken) token, TestService testService) {
     expect(token, equals('my string'));
     expect(testService.status, equals('not ready'));
   });
@@ -56,7 +57,8 @@ void main() {
     });
   });
 
-  ngTest('create a component using the TestComponentBuilder', (TestComponentBuilder tcb) async {
+  ngTest('create a component using the TestComponentBuilder',
+      (TestComponentBuilder tcb) async {
     var rootTC = await tcb
         .overrideTemplate(TestComponent, TEMPLATE)
         .createAsync(TestComponent);

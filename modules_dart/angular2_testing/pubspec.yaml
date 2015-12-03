@@ -6,3 +6,8 @@ dependencies:
     path: ../../dist/dart/angular2
 dev_dependencies:
   test: '^0.12.6'
+transformers:
+# Allows testing with `pub serve`
+# See https://github.com/dart-lang/test#testing-with-barback
+- test/pub_serve:
+    $include: test/**_test.dart

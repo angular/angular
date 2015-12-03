@@ -54,7 +54,6 @@ void setUpProviders(Iterable<Provider> providerFactory()) {
   });
 }
 
-
 dynamic _runInjectableFunction(Function fn) {
   var params = reflector.parameters(fn);
   List<dynamic> tokens = <dynamic>[];
@@ -111,8 +110,10 @@ void ngTest(String description, Function fn,
   }, testOn: testOn, timeout: timeout, skip: skip, onPlatform: onPlatform);
 }
 
-final _providersExpando = new Expando<List<Provider>>('Providers for the current test');
-final _injectorExpando = new Expando<Injector>('Angular Injector for the current test');
+final _providersExpando =
+    new Expando<List<Provider>>('Providers for the current test');
+final _injectorExpando =
+    new Expando<Injector>('Angular Injector for the current test');
 
 List get _currentTestProviders {
   if (_providersExpando[_currentTest] == null) {
@@ -120,6 +121,7 @@ List get _currentTestProviders {
   }
   return _providersExpando[_currentTest];
 }
+
 Injector get _currentInjector => _injectorExpando[_currentTest];
 void set _currentInjector(Injector newInjector) {
   _injectorExpando[_currentTest] = newInjector;
