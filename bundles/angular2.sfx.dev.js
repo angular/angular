@@ -13248,7 +13248,6 @@ System.register("angular2/src/common/forms/directives/default_value_accessor", [
     DefaultValueAccessor = __decorate([core_1.Directive({
       selector: 'input:not([type=checkbox])[ng-control],textarea[ng-control],input:not([type=checkbox])[ng-form-control],textarea[ng-form-control],input:not([type=checkbox])[ng-model],textarea[ng-model],[ng-default-control]',
       host: {
-        '(change)': 'onChange($event.target.value)',
         '(input)': 'onChange($event.target.value)',
         '(blur)': 'onTouched()'
       },

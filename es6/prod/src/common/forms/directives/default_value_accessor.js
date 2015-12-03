@@ -42,11 +42,7 @@ DefaultValueAccessor = __decorate([
         // TODO: vsavkin replace the above selector with the one below it once
         // https://github.com/angular/angular/issues/3011 is implemented
         // selector: '[ng-control],[ng-model],[ng-form-control]',
-        host: {
-            '(change)': 'onChange($event.target.value)',
-            '(input)': 'onChange($event.target.value)',
-            '(blur)': 'onTouched()'
-        },
+        host: { '(input)': 'onChange($event.target.value)', '(blur)': 'onTouched()' },
         bindings: [DEFAULT_VALUE_ACCESSOR]
     }), 
     __metadata('design:paramtypes', [Renderer, ElementRef])
