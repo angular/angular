@@ -22,7 +22,6 @@ const DEFAULT_VALUE_ACCESSOR = const Provider(NG_VALUE_ACCESSOR,
     selector:
         "input:not([type=checkbox])[ng-control],textarea[ng-control],input:not([type=checkbox])[ng-form-control],textarea[ng-form-control],input:not([type=checkbox])[ng-model],textarea[ng-model],[ng-default-control]",
     host: const {
-      "(change)": "onChange(\$event.target.value)",
       "(input)": "onChange(\$event.target.value)",
       "(blur)": "onTouched()"
     },

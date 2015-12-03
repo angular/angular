@@ -72,8 +72,28 @@ main() {
             fixture.detectChanges();
             var input = fixture.debugElement.query(By.css("input"));
             input.nativeElement.value = "updatedValue";
-            dispatchEvent(input.nativeElement, "change");
+            dispatchEvent(input.nativeElement, "input");
             expect(form.value).toEqual({"login": "updatedValue"});
+            async.done();
+          });
+        }));
+    it(
+        "should ignore the change event for <input type=text>",
+        inject([TestComponentBuilder, AsyncTestCompleter],
+            (TestComponentBuilder tcb, async) {
+          var form = new ControlGroup({"login": new Control("oldValue")});
+          var t = '''<div [ng-form-model]="form">
+                <input type="text" ng-control="login">
+              </div>''';
+          tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((fixture) {
+            fixture.debugElement.componentInstance.form = form;
+            fixture.detectChanges();
+            var input = fixture.debugElement.query(By.css("input"));
+            input.nativeElement.value = "updatedValue";
+            ObservableWrapper.subscribe(form.valueChanges, (value) {
+              throw "Should not happen";
+            });
+            dispatchEvent(input.nativeElement, "change");
             async.done();
           });
         }));
@@ -110,7 +130,7 @@ main() {
             var input = fixture.debugElement.query(By.css("input"));
             expect(input.nativeElement.value).toEqual("loginValue");
             input.nativeElement.value = "updatedValue";
-            dispatchEvent(input.nativeElement, "change");
+            dispatchEvent(input.nativeElement, "input");
             expect(control.value).toEqual("updatedValue");
             async.done();
           });
@@ -267,7 +287,7 @@ main() {
               var input = fixture.debugElement.query(By.css("input"));
               expect(input.nativeElement.value).toEqual("10");
               input.nativeElement.value = "20";
-              dispatchEvent(input.nativeElement, "change");
+              dispatchEvent(input.nativeElement, "input");
               expect(fixture.debugElement.componentInstance.form.value)
                   .toEqual({"num": 20});
               async.done();
@@ -335,7 +355,7 @@ main() {
               var input = fixture.debugElement.query(By.css("input"));
               expect(input.nativeElement.value).toEqual("!aa!");
               input.nativeElement.value = "!bb!";
-              dispatchEvent(input.nativeElement, "change");
+              dispatchEvent(input.nativeElement, "input");
               expect(fixture.debugElement.componentInstance.form.value)
                   .toEqual({"name": "bb"});
               async.done();
@@ -355,7 +375,7 @@ main() {
               var input = fixture.debugElement.query(By.css("my-input"));
               expect(input.componentInstance.value).toEqual("!aa!");
               input.componentInstance.value = "!bb!";
-              ObservableWrapper.subscribe(input.componentInstance.onChange,
+              ObservableWrapper.subscribe(input.componentInstance.onInput,
                   (value) {
                 expect(fixture.debugElement.componentInstance.form.value)
                     .toEqual({"name": "bb"});
@@ -389,9 +409,9 @@ main() {
               required.nativeElement.value = "";
               minLength.nativeElement.value = "1";
               maxLength.nativeElement.value = "1234";
-              dispatchEvent(required.nativeElement, "change");
-              dispatchEvent(minLength.nativeElement, "change");
-              dispatchEvent(maxLength.nativeElement, "change");
+              dispatchEvent(required.nativeElement, "input");
+              dispatchEvent(minLength.nativeElement, "input");
+              dispatchEvent(maxLength.nativeElement, "input");
               expect(form.hasError("required", ["login"])).toEqual(true);
               expect(form.hasError("minlength", ["min"])).toEqual(true);
               expect(form.hasError("maxlength", ["max"])).toEqual(true);
@@ -399,9 +419,9 @@ main() {
               required.nativeElement.value = "1";
               minLength.nativeElement.value = "123";
               maxLength.nativeElement.value = "123";
-              dispatchEvent(required.nativeElement, "change");
-              dispatchEvent(minLength.nativeElement, "change");
-              dispatchEvent(maxLength.nativeElement, "change");
+              dispatchEvent(required.nativeElement, "input");
+              dispatchEvent(minLength.nativeElement, "input");
+              dispatchEvent(maxLength.nativeElement, "input");
               expect(form.valid).toEqual(true);
               async.done();
             });
@@ -426,7 +446,7 @@ main() {
             expect(form.hasError("uniqLogin", ["login"])).toEqual(true);
             var input = rootTC.debugElement.query(By.css("input"));
             input.nativeElement.value = "expected";
-            dispatchEvent(input.nativeElement, "change");
+            dispatchEvent(input.nativeElement, "input");
             tick(100);
             expect(form.valid).toEqual(true);
           })));
@@ -445,7 +465,7 @@ main() {
               expect(form.valid).toEqual(true);
               var input = fixture.debugElement.query(By.css("input"));
               input.nativeElement.value = "";
-              dispatchEvent(input.nativeElement, "change");
+              dispatchEvent(input.nativeElement, "input");
               expect(form.valid).toEqual(false);
               async.done();
             });
@@ -470,12 +490,12 @@ main() {
             expect(form.hasError("required", ["login"])).toEqual(true);
             var input = fixture.debugElement.query(By.css("input"));
             input.nativeElement.value = "wrong value";
-            dispatchEvent(input.nativeElement, "change");
+            dispatchEvent(input.nativeElement, "input");
             expect(form.pending).toEqual(true);
             tick();
             expect(form.hasError("uniqLogin", ["login"])).toEqual(true);
             input.nativeElement.value = "expected";
-            dispatchEvent(input.nativeElement, "change");
+            dispatchEvent(input.nativeElement, "input");
             tick();
             expect(form.valid).toEqual(true);
           })));
@@ -518,7 +538,7 @@ main() {
               fixture.detectChanges();
               var input = fixture.debugElement.query(By.css("input"));
               input.nativeElement.value = "updatedValue";
-              dispatchEvent(input.nativeElement, "change");
+              dispatchEvent(input.nativeElement, "input");
               expect(form.value).toEqual({
                 "nested": {"login": "updatedValue"}
               });
@@ -543,7 +563,7 @@ main() {
           var input = fixture.debugElement.query(By.css("input")).nativeElement;
           expect(input.value).toEqual("oldValue");
           input.value = "updatedValue";
-          dispatchEvent(input, "change");
+          dispatchEvent(input, "input");
           tick();
           expect(fixture.debugElement.componentInstance.name)
               .toEqual("updatedValue");
@@ -565,7 +585,7 @@ main() {
           var input = fixture.debugElement.query(By.css("input")).nativeElement;
           expect(input.value).toEqual("oldValue");
           input.value = "updatedValue";
-          dispatchEvent(input, "change");
+          dispatchEvent(input, "input");
           tick();
           expect(fixture.debugElement.componentInstance.name)
               .toEqual("updatedValue");
@@ -690,7 +710,7 @@ main() {
                 fixture.debugElement.query(By.css("input")).nativeElement;
             expect(input.value).toEqual("oldValue");
             input.value = "updatedValue";
-            dispatchEvent(input, "change");
+            dispatchEvent(input, "input");
             tick();
             expect(fixture.debugElement.componentInstance.name)
                 .toEqual("updatedValue");
@@ -710,7 +730,7 @@ main() {
                 fixture.debugElement.query(By.css("input")).nativeElement;
             expect(input.value).toEqual("oldValue");
             input.value = "updatedValue";
-            dispatchEvent(input, "change");
+            dispatchEvent(input, "input");
             tick();
             expect(fixture.debugElement.componentInstance.name)
                 .toEqual("updatedValue");
@@ -736,7 +756,7 @@ main() {
               expect(sortedClassList(input))
                   .toEqual(["ng-invalid", "ng-pristine", "ng-touched"]);
               input.value = "updatedValue";
-              dispatchEvent(input, "change");
+              dispatchEvent(input, "input");
               fixture.detectChanges();
               expect(sortedClassList(input))
                   .toEqual(["ng-dirty", "ng-touched", "ng-valid"]);
@@ -763,7 +783,7 @@ main() {
               expect(sortedClassList(input))
                   .toEqual(["ng-invalid", "ng-pristine", "ng-touched"]);
               input.value = "updatedValue";
-              dispatchEvent(input, "change");
+              dispatchEvent(input, "input");
               fixture.detectChanges();
               expect(sortedClassList(input))
                   .toEqual(["ng-dirty", "ng-touched", "ng-valid"]);
@@ -787,7 +807,7 @@ main() {
               expect(sortedClassList(input))
                   .toEqual(["ng-invalid", "ng-pristine", "ng-touched"]);
               input.value = "updatedValue";
-              dispatchEvent(input, "change");
+              dispatchEvent(input, "input");
               fixture.detectChanges();
               expect(sortedClassList(input))
                   .toEqual(["ng-dirty", "ng-touched", "ng-valid"]);
@@ -820,7 +840,7 @@ main() {
                 fixture.debugElement.query(By.css("input")).nativeElement;
             input.value = "aa";
             input.selectionStart = 1;
-            dispatchEvent(input, "change");
+            dispatchEvent(input, "input");
             tick();
             fixture.detectChanges();
             // selection start has not changed because we did not reset the value
@@ -842,7 +862,7 @@ main() {
                 fixture.debugElement.query(By.css("input")).nativeElement;
             input.value = "aa";
             input.selectionStart = 1;
-            dispatchEvent(input, "change");
+            dispatchEvent(input, "input");
             tick();
             fixture.detectChanges();
             expect(fixture.debugElement.componentInstance.name).toEqual("aa");
@@ -881,7 +901,7 @@ main() {
 @Directive(
     selector: "[wrapped-value]",
     host: const {
-      "(change)": "handleOnChange(\$event.target.value)",
+      "(input)": "handleOnInput(\$event.target.value)",
       "[value]": "value"
     })
 class WrappedValue implements ControlValueAccessor {
@@ -899,14 +919,14 @@ class WrappedValue implements ControlValueAccessor {
   }
 
   registerOnTouched(fn) {}
-  handleOnChange(value) {
+  handleOnInput(value) {
     this.onChange(value.substring(1, value.length - 1));
   }
 }
 
 @Component(selector: "my-input", template: "")
 class MyInput implements ControlValueAccessor {
-  @Output("change") EventEmitter<dynamic> onChange = new EventEmitter();
+  @Output("input") EventEmitter<dynamic> onInput = new EventEmitter();
   String value;
   MyInput(NgControl cd) {
     cd.valueAccessor = this;
@@ -916,13 +936,13 @@ class MyInput implements ControlValueAccessor {
   }
 
   registerOnChange(fn) {
-    ObservableWrapper.subscribe(this.onChange, fn);
+    ObservableWrapper.subscribe(this.onInput, fn);
   }
 
   registerOnTouched(fn) {}
   dispatchChangeEvent() {
     ObservableWrapper.callEmit(
-        this.onChange, this.value.substring(1, this.value.length - 1));
+        this.onInput, this.value.substring(1, this.value.length - 1));
   }
 }
 
