@@ -1447,6 +1447,7 @@ var NG_ALL = [
   "NoReflectionCapabilities.interfaces():dart",
   "NoReflectionCapabilities.isReflectionEnabled():dart",
   "NoReflectionCapabilities.method():dart",
+  "NoReflectionCapabilities.moduleId():dart",
   "NoReflectionCapabilities.parameters():dart",
   "NoReflectionCapabilities.propMetadata():dart",
   "NoReflectionCapabilities.setter():dart",
