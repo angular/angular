@@ -3279,6 +3279,26 @@ var Reflect;
 })(Reflect || (Reflect = {}));
 //# sourceMappingURLDisabled=Reflect.js.map
 "format register";
+System.register("angular2/src/core/linker/interfaces", [], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  (function(LifecycleHooks) {
+    LifecycleHooks[LifecycleHooks["OnInit"] = 0] = "OnInit";
+    LifecycleHooks[LifecycleHooks["OnDestroy"] = 1] = "OnDestroy";
+    LifecycleHooks[LifecycleHooks["DoCheck"] = 2] = "DoCheck";
+    LifecycleHooks[LifecycleHooks["OnChanges"] = 3] = "OnChanges";
+    LifecycleHooks[LifecycleHooks["AfterContentInit"] = 4] = "AfterContentInit";
+    LifecycleHooks[LifecycleHooks["AfterContentChecked"] = 5] = "AfterContentChecked";
+    LifecycleHooks[LifecycleHooks["AfterViewInit"] = 6] = "AfterViewInit";
+    LifecycleHooks[LifecycleHooks["AfterViewChecked"] = 7] = "AfterViewChecked";
+  })(exports.LifecycleHooks || (exports.LifecycleHooks = {}));
+  var LifecycleHooks = exports.LifecycleHooks;
+  exports.LIFECYCLE_HOOKS_VALUES = [LifecycleHooks.OnInit, LifecycleHooks.OnDestroy, LifecycleHooks.DoCheck, LifecycleHooks.OnChanges, LifecycleHooks.AfterContentInit, LifecycleHooks.AfterContentChecked, LifecycleHooks.AfterViewInit, LifecycleHooks.AfterViewChecked];
+  global.define = __define;
+  return module.exports;
+});
+
 System.register("angular2/src/facade/lang", [], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -3694,427 +3714,6 @@ System.register("angular2/src/facade/lang", [], true, function(require, exports,
     return _symbolIterator;
   }
   exports.getSymbolIterator = getSymbolIterator;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("angular2/src/facade/promise", [], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var PromiseWrapper = (function() {
-    function PromiseWrapper() {}
-    PromiseWrapper.resolve = function(obj) {
-      return Promise.resolve(obj);
-    };
-    PromiseWrapper.reject = function(obj, _) {
-      return Promise.reject(obj);
-    };
-    PromiseWrapper.catchError = function(promise, onError) {
-      return promise.catch(onError);
-    };
-    PromiseWrapper.all = function(promises) {
-      if (promises.length == 0)
-        return Promise.resolve([]);
-      return Promise.all(promises);
-    };
-    PromiseWrapper.then = function(promise, success, rejection) {
-      return promise.then(success, rejection);
-    };
-    PromiseWrapper.wrap = function(computation) {
-      return new Promise(function(res, rej) {
-        try {
-          res(computation());
-        } catch (e) {
-          rej(e);
-        }
-      });
-    };
-    PromiseWrapper.scheduleMicrotask = function(computation) {
-      PromiseWrapper.then(PromiseWrapper.resolve(null), computation, function(_) {});
-    };
-    PromiseWrapper.isPromise = function(obj) {
-      return obj instanceof Promise;
-    };
-    PromiseWrapper.completer = function() {
-      var resolve;
-      var reject;
-      var p = new Promise(function(res, rej) {
-        resolve = res;
-        reject = rej;
-      });
-      return {
-        promise: p,
-        resolve: resolve,
-        reject: reject
-      };
-    };
-    return PromiseWrapper;
-  })();
-  exports.PromiseWrapper = PromiseWrapper;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/util/noop", [], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  function noop() {}
-  exports.noop = noop;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/util/throwError", [], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  function throwError(e) {
-    throw e;
-  }
-  exports.throwError = throwError;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/util/tryOrOnError", [], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  function tryOrOnError(target) {
-    function tryCatcher() {
-      try {
-        tryCatcher.target.apply(this, arguments);
-      } catch (e) {
-        this.error(e);
-      }
-    }
-    tryCatcher.target = target;
-    return tryCatcher;
-  }
-  exports.tryOrOnError = tryOrOnError;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/Subscription", ["rxjs/util/noop"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var noop_1 = require("rxjs/util/noop");
-  var Subscription = (function() {
-    function Subscription(_unsubscribe) {
-      this.isUnsubscribed = false;
-      if (_unsubscribe) {
-        this._unsubscribe = _unsubscribe;
-      }
-    }
-    Subscription.prototype._unsubscribe = function() {
-      noop_1.noop();
-    };
-    Subscription.prototype.unsubscribe = function() {
-      if (this.isUnsubscribed) {
-        return ;
-      }
-      this.isUnsubscribed = true;
-      var unsubscribe = this._unsubscribe;
-      var subscriptions = this._subscriptions;
-      this._subscriptions = void 0;
-      if (unsubscribe) {
-        unsubscribe.call(this);
-      }
-      if (subscriptions != null) {
-        var index = -1;
-        var len = subscriptions.length;
-        while (++index < len) {
-          subscriptions[index].unsubscribe();
-        }
-      }
-    };
-    Subscription.prototype.add = function(subscription) {
-      if (!subscription || (subscription === this) || (subscription === Subscription.EMPTY)) {
-        return ;
-      }
-      var sub = subscription;
-      switch (typeof subscription) {
-        case 'function':
-          sub = new Subscription(subscription);
-        case 'object':
-          if (sub.isUnsubscribed || typeof sub.unsubscribe !== 'function') {
-            break;
-          } else if (this.isUnsubscribed) {
-            sub.unsubscribe();
-          } else {
-            var subscriptions = this._subscriptions || (this._subscriptions = []);
-            subscriptions.push(sub);
-          }
-          break;
-        default:
-          throw new Error('Unrecognized subscription ' + subscription + ' added to Subscription.');
-      }
-    };
-    Subscription.prototype.remove = function(subscription) {
-      if (subscription == null || (subscription === this) || (subscription === Subscription.EMPTY)) {
-        return ;
-      }
-      var subscriptions = this._subscriptions;
-      if (subscriptions) {
-        var subscriptionIndex = subscriptions.indexOf(subscription);
-        if (subscriptionIndex !== -1) {
-          subscriptions.splice(subscriptionIndex, 1);
-        }
-      }
-    };
-    Subscription.EMPTY = (function(empty) {
-      empty.isUnsubscribed = true;
-      return empty;
-    }(new Subscription()));
-    return Subscription;
-  })();
-  exports.Subscription = Subscription;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/util/root", [], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var objectTypes = {
-    'boolean': false,
-    'function': true,
-    'object': true,
-    'number': false,
-    'string': false,
-    'undefined': false
-  };
-  exports.root = (objectTypes[typeof self] && self) || (objectTypes[typeof window] && window);
-  var freeExports = objectTypes[typeof exports] && exports && !exports.nodeType && exports;
-  var freeModule = objectTypes[typeof module] && module && !module.nodeType && module;
-  var freeGlobal = objectTypes[typeof global] && global;
-  if (freeGlobal && (freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal)) {
-    exports.root = freeGlobal;
-  }
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/util/Symbol_observable", ["rxjs/util/root"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var root_1 = require("rxjs/util/root");
-  if (!root_1.root.Symbol) {
-    root_1.root.Symbol = {};
-  }
-  if (!root_1.root.Symbol.observable) {
-    if (typeof root_1.root.Symbol.for === 'function') {
-      root_1.root.Symbol.observable = root_1.root.Symbol.for('observable');
-    } else {
-      root_1.root.Symbol.observable = '@@observable';
-    }
-  }
-  exports.$$observable = root_1.root.Symbol.observable;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/subjects/SubjectSubscription", ["rxjs/Subscription", "rxjs/Subscriber"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var Subscription_1 = require("rxjs/Subscription");
-  var Subscriber_1 = require("rxjs/Subscriber");
-  var SubjectSubscription = (function(_super) {
-    __extends(SubjectSubscription, _super);
-    function SubjectSubscription(subject, observer) {
-      _super.call(this);
-      this.subject = subject;
-      this.observer = observer;
-      this.isUnsubscribed = false;
-    }
-    SubjectSubscription.prototype.unsubscribe = function() {
-      if (this.isUnsubscribed) {
-        return ;
-      }
-      this.isUnsubscribed = true;
-      var subject = this.subject;
-      var observers = subject.observers;
-      this.subject = void 0;
-      if (!observers || observers.length === 0 || subject.isUnsubscribed) {
-        return ;
-      }
-      if (this.observer instanceof Subscriber_1.Subscriber) {
-        this.observer.unsubscribe();
-      }
-      var subscriberIndex = observers.indexOf(this.observer);
-      if (subscriberIndex !== -1) {
-        observers.splice(subscriberIndex, 1);
-      }
-    };
-    return SubjectSubscription;
-  })(Subscription_1.Subscription);
-  exports.SubjectSubscription = SubjectSubscription;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/schedulers/ImmediateAction", ["rxjs/Subscription"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var Subscription_1 = require("rxjs/Subscription");
-  var ImmediateAction = (function(_super) {
-    __extends(ImmediateAction, _super);
-    function ImmediateAction(scheduler, work) {
-      _super.call(this);
-      this.scheduler = scheduler;
-      this.work = work;
-    }
-    ImmediateAction.prototype.schedule = function(state) {
-      if (this.isUnsubscribed) {
-        return this;
-      }
-      this.state = state;
-      var scheduler = this.scheduler;
-      scheduler.actions.push(this);
-      scheduler.flush();
-      return this;
-    };
-    ImmediateAction.prototype.execute = function() {
-      if (this.isUnsubscribed) {
-        throw new Error('How did did we execute a canceled Action?');
-      }
-      this.work(this.state);
-    };
-    ImmediateAction.prototype.unsubscribe = function() {
-      var scheduler = this.scheduler;
-      var actions = scheduler.actions;
-      var index = actions.indexOf(this);
-      this.work = void 0;
-      this.state = void 0;
-      this.scheduler = void 0;
-      if (index !== -1) {
-        actions.splice(index, 1);
-      }
-      _super.prototype.unsubscribe.call(this);
-    };
-    return ImmediateAction;
-  })(Subscription_1.Subscription);
-  exports.ImmediateAction = ImmediateAction;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/schedulers/FutureAction", ["rxjs/schedulers/ImmediateAction"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var ImmediateAction_1 = require("rxjs/schedulers/ImmediateAction");
-  var FutureAction = (function(_super) {
-    __extends(FutureAction, _super);
-    function FutureAction(scheduler, work) {
-      _super.call(this, scheduler, work);
-      this.scheduler = scheduler;
-      this.work = work;
-    }
-    FutureAction.prototype.schedule = function(state, delay) {
-      var _this = this;
-      if (delay === void 0) {
-        delay = 0;
-      }
-      if (this.isUnsubscribed) {
-        return this;
-      }
-      this.delay = delay;
-      this.state = state;
-      var id = this.id;
-      if (id != null) {
-        this.id = undefined;
-        clearTimeout(id);
-      }
-      var scheduler = this.scheduler;
-      this.id = setTimeout(function() {
-        _this.id = void 0;
-        scheduler.actions.push(_this);
-        scheduler.flush();
-      }, this.delay);
-      return this;
-    };
-    FutureAction.prototype.unsubscribe = function() {
-      var id = this.id;
-      if (id != null) {
-        this.id = void 0;
-        clearTimeout(id);
-      }
-      _super.prototype.unsubscribe.call(this);
-    };
-    return FutureAction;
-  })(ImmediateAction_1.ImmediateAction);
-  exports.FutureAction = FutureAction;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/operators/toPromise", ["rxjs/util/root", "rxjs/Observable"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var root_1 = require("rxjs/util/root");
-  var Observable_1 = require("rxjs/Observable");
-  function toPromise(PromiseCtor) {
-    var _this = this;
-    if (!PromiseCtor) {
-      if (root_1.root.Rx && root_1.root.Rx.config && root_1.root.Rx.config.Promise) {
-        PromiseCtor = root_1.root.Rx.config.Promise;
-      } else if (root_1.root.Promise) {
-        PromiseCtor = root_1.root.Promise;
-      }
-    }
-    if (!PromiseCtor) {
-      throw new Error('no Promise impl found');
-    }
-    return new PromiseCtor(function(resolve, reject) {
-      var value;
-      _this.subscribe(function(x) {
-        return value = x;
-      }, function(err) {
-        return reject(err);
-      }, function() {
-        return resolve(value);
-      });
-    });
-  }
-  exports.toPromise = toPromise;
-  Observable_1.Observable.prototype.toPromise = toPromise;
   global.define = __define;
   return module.exports;
 });
@@ -8883,6 +8482,427 @@ System.register("angular2/src/core/util", ["angular2/src/core/util/decorators"],
   return module.exports;
 });
 
+System.register("angular2/src/facade/promise", [], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var PromiseWrapper = (function() {
+    function PromiseWrapper() {}
+    PromiseWrapper.resolve = function(obj) {
+      return Promise.resolve(obj);
+    };
+    PromiseWrapper.reject = function(obj, _) {
+      return Promise.reject(obj);
+    };
+    PromiseWrapper.catchError = function(promise, onError) {
+      return promise.catch(onError);
+    };
+    PromiseWrapper.all = function(promises) {
+      if (promises.length == 0)
+        return Promise.resolve([]);
+      return Promise.all(promises);
+    };
+    PromiseWrapper.then = function(promise, success, rejection) {
+      return promise.then(success, rejection);
+    };
+    PromiseWrapper.wrap = function(computation) {
+      return new Promise(function(res, rej) {
+        try {
+          res(computation());
+        } catch (e) {
+          rej(e);
+        }
+      });
+    };
+    PromiseWrapper.scheduleMicrotask = function(computation) {
+      PromiseWrapper.then(PromiseWrapper.resolve(null), computation, function(_) {});
+    };
+    PromiseWrapper.isPromise = function(obj) {
+      return obj instanceof Promise;
+    };
+    PromiseWrapper.completer = function() {
+      var resolve;
+      var reject;
+      var p = new Promise(function(res, rej) {
+        resolve = res;
+        reject = rej;
+      });
+      return {
+        promise: p,
+        resolve: resolve,
+        reject: reject
+      };
+    };
+    return PromiseWrapper;
+  })();
+  exports.PromiseWrapper = PromiseWrapper;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/util/noop", [], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  function noop() {}
+  exports.noop = noop;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/util/throwError", [], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  function throwError(e) {
+    throw e;
+  }
+  exports.throwError = throwError;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/util/tryOrOnError", [], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  function tryOrOnError(target) {
+    function tryCatcher() {
+      try {
+        tryCatcher.target.apply(this, arguments);
+      } catch (e) {
+        this.error(e);
+      }
+    }
+    tryCatcher.target = target;
+    return tryCatcher;
+  }
+  exports.tryOrOnError = tryOrOnError;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/Subscription", ["rxjs/util/noop"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var noop_1 = require("rxjs/util/noop");
+  var Subscription = (function() {
+    function Subscription(_unsubscribe) {
+      this.isUnsubscribed = false;
+      if (_unsubscribe) {
+        this._unsubscribe = _unsubscribe;
+      }
+    }
+    Subscription.prototype._unsubscribe = function() {
+      noop_1.noop();
+    };
+    Subscription.prototype.unsubscribe = function() {
+      if (this.isUnsubscribed) {
+        return ;
+      }
+      this.isUnsubscribed = true;
+      var unsubscribe = this._unsubscribe;
+      var subscriptions = this._subscriptions;
+      this._subscriptions = void 0;
+      if (unsubscribe) {
+        unsubscribe.call(this);
+      }
+      if (subscriptions != null) {
+        var index = -1;
+        var len = subscriptions.length;
+        while (++index < len) {
+          subscriptions[index].unsubscribe();
+        }
+      }
+    };
+    Subscription.prototype.add = function(subscription) {
+      if (!subscription || (subscription === this) || (subscription === Subscription.EMPTY)) {
+        return ;
+      }
+      var sub = subscription;
+      switch (typeof subscription) {
+        case 'function':
+          sub = new Subscription(subscription);
+        case 'object':
+          if (sub.isUnsubscribed || typeof sub.unsubscribe !== 'function') {
+            break;
+          } else if (this.isUnsubscribed) {
+            sub.unsubscribe();
+          } else {
+            var subscriptions = this._subscriptions || (this._subscriptions = []);
+            subscriptions.push(sub);
+          }
+          break;
+        default:
+          throw new Error('Unrecognized subscription ' + subscription + ' added to Subscription.');
+      }
+    };
+    Subscription.prototype.remove = function(subscription) {
+      if (subscription == null || (subscription === this) || (subscription === Subscription.EMPTY)) {
+        return ;
+      }
+      var subscriptions = this._subscriptions;
+      if (subscriptions) {
+        var subscriptionIndex = subscriptions.indexOf(subscription);
+        if (subscriptionIndex !== -1) {
+          subscriptions.splice(subscriptionIndex, 1);
+        }
+      }
+    };
+    Subscription.EMPTY = (function(empty) {
+      empty.isUnsubscribed = true;
+      return empty;
+    }(new Subscription()));
+    return Subscription;
+  })();
+  exports.Subscription = Subscription;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/util/root", [], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var objectTypes = {
+    'boolean': false,
+    'function': true,
+    'object': true,
+    'number': false,
+    'string': false,
+    'undefined': false
+  };
+  exports.root = (objectTypes[typeof self] && self) || (objectTypes[typeof window] && window);
+  var freeExports = objectTypes[typeof exports] && exports && !exports.nodeType && exports;
+  var freeModule = objectTypes[typeof module] && module && !module.nodeType && module;
+  var freeGlobal = objectTypes[typeof global] && global;
+  if (freeGlobal && (freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal)) {
+    exports.root = freeGlobal;
+  }
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/util/Symbol_observable", ["rxjs/util/root"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var root_1 = require("rxjs/util/root");
+  if (!root_1.root.Symbol) {
+    root_1.root.Symbol = {};
+  }
+  if (!root_1.root.Symbol.observable) {
+    if (typeof root_1.root.Symbol.for === 'function') {
+      root_1.root.Symbol.observable = root_1.root.Symbol.for('observable');
+    } else {
+      root_1.root.Symbol.observable = '@@observable';
+    }
+  }
+  exports.$$observable = root_1.root.Symbol.observable;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/subjects/SubjectSubscription", ["rxjs/Subscription", "rxjs/Subscriber"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var Subscription_1 = require("rxjs/Subscription");
+  var Subscriber_1 = require("rxjs/Subscriber");
+  var SubjectSubscription = (function(_super) {
+    __extends(SubjectSubscription, _super);
+    function SubjectSubscription(subject, observer) {
+      _super.call(this);
+      this.subject = subject;
+      this.observer = observer;
+      this.isUnsubscribed = false;
+    }
+    SubjectSubscription.prototype.unsubscribe = function() {
+      if (this.isUnsubscribed) {
+        return ;
+      }
+      this.isUnsubscribed = true;
+      var subject = this.subject;
+      var observers = subject.observers;
+      this.subject = void 0;
+      if (!observers || observers.length === 0 || subject.isUnsubscribed) {
+        return ;
+      }
+      if (this.observer instanceof Subscriber_1.Subscriber) {
+        this.observer.unsubscribe();
+      }
+      var subscriberIndex = observers.indexOf(this.observer);
+      if (subscriberIndex !== -1) {
+        observers.splice(subscriberIndex, 1);
+      }
+    };
+    return SubjectSubscription;
+  })(Subscription_1.Subscription);
+  exports.SubjectSubscription = SubjectSubscription;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/schedulers/ImmediateAction", ["rxjs/Subscription"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var Subscription_1 = require("rxjs/Subscription");
+  var ImmediateAction = (function(_super) {
+    __extends(ImmediateAction, _super);
+    function ImmediateAction(scheduler, work) {
+      _super.call(this);
+      this.scheduler = scheduler;
+      this.work = work;
+    }
+    ImmediateAction.prototype.schedule = function(state) {
+      if (this.isUnsubscribed) {
+        return this;
+      }
+      this.state = state;
+      var scheduler = this.scheduler;
+      scheduler.actions.push(this);
+      scheduler.flush();
+      return this;
+    };
+    ImmediateAction.prototype.execute = function() {
+      if (this.isUnsubscribed) {
+        throw new Error('How did did we execute a canceled Action?');
+      }
+      this.work(this.state);
+    };
+    ImmediateAction.prototype.unsubscribe = function() {
+      var scheduler = this.scheduler;
+      var actions = scheduler.actions;
+      var index = actions.indexOf(this);
+      this.work = void 0;
+      this.state = void 0;
+      this.scheduler = void 0;
+      if (index !== -1) {
+        actions.splice(index, 1);
+      }
+      _super.prototype.unsubscribe.call(this);
+    };
+    return ImmediateAction;
+  })(Subscription_1.Subscription);
+  exports.ImmediateAction = ImmediateAction;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/schedulers/FutureAction", ["rxjs/schedulers/ImmediateAction"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var ImmediateAction_1 = require("rxjs/schedulers/ImmediateAction");
+  var FutureAction = (function(_super) {
+    __extends(FutureAction, _super);
+    function FutureAction(scheduler, work) {
+      _super.call(this, scheduler, work);
+      this.scheduler = scheduler;
+      this.work = work;
+    }
+    FutureAction.prototype.schedule = function(state, delay) {
+      var _this = this;
+      if (delay === void 0) {
+        delay = 0;
+      }
+      if (this.isUnsubscribed) {
+        return this;
+      }
+      this.delay = delay;
+      this.state = state;
+      var id = this.id;
+      if (id != null) {
+        this.id = undefined;
+        clearTimeout(id);
+      }
+      var scheduler = this.scheduler;
+      this.id = setTimeout(function() {
+        _this.id = void 0;
+        scheduler.actions.push(_this);
+        scheduler.flush();
+      }, this.delay);
+      return this;
+    };
+    FutureAction.prototype.unsubscribe = function() {
+      var id = this.id;
+      if (id != null) {
+        this.id = void 0;
+        clearTimeout(id);
+      }
+      _super.prototype.unsubscribe.call(this);
+    };
+    return FutureAction;
+  })(ImmediateAction_1.ImmediateAction);
+  exports.FutureAction = FutureAction;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/operators/toPromise", ["rxjs/util/root", "rxjs/Observable"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var root_1 = require("rxjs/util/root");
+  var Observable_1 = require("rxjs/Observable");
+  function toPromise(PromiseCtor) {
+    var _this = this;
+    if (!PromiseCtor) {
+      if (root_1.root.Rx && root_1.root.Rx.config && root_1.root.Rx.config.Promise) {
+        PromiseCtor = root_1.root.Rx.config.Promise;
+      } else if (root_1.root.Promise) {
+        PromiseCtor = root_1.root.Promise;
+      }
+    }
+    if (!PromiseCtor) {
+      throw new Error('no Promise impl found');
+    }
+    return new PromiseCtor(function(resolve, reject) {
+      var value;
+      _this.subscribe(function(x) {
+        return value = x;
+      }, function(err) {
+        return reject(err);
+      }, function() {
+        return resolve(value);
+      });
+    });
+  }
+  exports.toPromise = toPromise;
+  Observable_1.Observable.prototype.toPromise = toPromise;
+  global.define = __define;
+  return module.exports;
+});
+
 System.register("angular2/src/core/dev_mode", ["angular2/src/facade/lang"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -10065,22 +10085,38 @@ System.register("angular2/src/core/linker/view_container_ref", ["angular2/src/fa
   return module.exports;
 });
 
-System.register("angular2/src/core/linker/interfaces", [], true, function(require, exports, module) {
+System.register("angular2/src/core/linker/directive_lifecycle_reflector", ["angular2/src/facade/lang", "angular2/src/core/linker/interfaces"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  (function(LifecycleHooks) {
-    LifecycleHooks[LifecycleHooks["OnInit"] = 0] = "OnInit";
-    LifecycleHooks[LifecycleHooks["OnDestroy"] = 1] = "OnDestroy";
-    LifecycleHooks[LifecycleHooks["DoCheck"] = 2] = "DoCheck";
-    LifecycleHooks[LifecycleHooks["OnChanges"] = 3] = "OnChanges";
-    LifecycleHooks[LifecycleHooks["AfterContentInit"] = 4] = "AfterContentInit";
-    LifecycleHooks[LifecycleHooks["AfterContentChecked"] = 5] = "AfterContentChecked";
-    LifecycleHooks[LifecycleHooks["AfterViewInit"] = 6] = "AfterViewInit";
-    LifecycleHooks[LifecycleHooks["AfterViewChecked"] = 7] = "AfterViewChecked";
-  })(exports.LifecycleHooks || (exports.LifecycleHooks = {}));
-  var LifecycleHooks = exports.LifecycleHooks;
-  exports.LIFECYCLE_HOOKS_VALUES = [LifecycleHooks.OnInit, LifecycleHooks.OnDestroy, LifecycleHooks.DoCheck, LifecycleHooks.OnChanges, LifecycleHooks.AfterContentInit, LifecycleHooks.AfterContentChecked, LifecycleHooks.AfterViewInit, LifecycleHooks.AfterViewChecked];
+  var lang_1 = require("angular2/src/facade/lang");
+  var interfaces_1 = require("angular2/src/core/linker/interfaces");
+  function hasLifecycleHook(lcInterface, token) {
+    if (!(token instanceof lang_1.Type))
+      return false;
+    var proto = token.prototype;
+    switch (lcInterface) {
+      case interfaces_1.LifecycleHooks.AfterContentInit:
+        return !!proto.ngAfterContentInit;
+      case interfaces_1.LifecycleHooks.AfterContentChecked:
+        return !!proto.ngAfterContentChecked;
+      case interfaces_1.LifecycleHooks.AfterViewInit:
+        return !!proto.ngAfterViewInit;
+      case interfaces_1.LifecycleHooks.AfterViewChecked:
+        return !!proto.ngAfterViewChecked;
+      case interfaces_1.LifecycleHooks.OnChanges:
+        return !!proto.ngOnChanges;
+      case interfaces_1.LifecycleHooks.DoCheck:
+        return !!proto.ngDoCheck;
+      case interfaces_1.LifecycleHooks.OnDestroy:
+        return !!proto.ngOnDestroy;
+      case interfaces_1.LifecycleHooks.OnInit:
+        return !!proto.ngOnInit;
+      default:
+        return false;
+    }
+  }
+  exports.hasLifecycleHook = hasLifecycleHook;
   global.define = __define;
   return module.exports;
 });
@@ -11518,6 +11554,208 @@ System.register("angular2/src/common/pipes/number_pipe", ["angular2/src/facade/l
     return CurrencyPipe;
   })(NumberPipe);
   exports.CurrencyPipe = CurrencyPipe;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/platform/browser/ruler", ["angular2/src/facade/async"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var async_1 = require("angular2/src/facade/async");
+  var Rectangle = (function() {
+    function Rectangle(left, top, width, height) {
+      this.left = left;
+      this.right = left + width;
+      this.top = top;
+      this.bottom = top + height;
+      this.height = height;
+      this.width = width;
+    }
+    return Rectangle;
+  })();
+  exports.Rectangle = Rectangle;
+  var Ruler = (function() {
+    function Ruler(domAdapter) {
+      this.domAdapter = domAdapter;
+    }
+    Ruler.prototype.measure = function(el) {
+      var clntRect = this.domAdapter.getBoundingClientRect(el.nativeElement);
+      return async_1.PromiseWrapper.resolve(new Rectangle(clntRect.left, clntRect.top, clntRect.width, clntRect.height));
+    };
+    return Ruler;
+  })();
+  exports.Ruler = Ruler;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/platform/dom/dom_adapter", ["angular2/src/facade/lang"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var lang_1 = require("angular2/src/facade/lang");
+  exports.DOM = null;
+  function setRootDomAdapter(adapter) {
+    if (lang_1.isBlank(exports.DOM)) {
+      exports.DOM = adapter;
+    }
+  }
+  exports.setRootDomAdapter = setRootDomAdapter;
+  var DomAdapter = (function() {
+    function DomAdapter() {}
+    return DomAdapter;
+  })();
+  exports.DomAdapter = DomAdapter;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/compiler/url_resolver", ["angular2/src/core/di", "angular2/src/facade/lang"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      return Reflect.decorate(decorators, target, key, desc);
+    switch (arguments.length) {
+      case 2:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(o)) || o;
+        }, target);
+      case 3:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key)), void 0;
+        }, void 0);
+      case 4:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key, o)) || o;
+        }, desc);
+    }
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var di_1 = require("angular2/src/core/di");
+  var lang_1 = require("angular2/src/facade/lang");
+  function createWithoutPackagePrefix() {
+    return new UrlResolver();
+  }
+  exports.createWithoutPackagePrefix = createWithoutPackagePrefix;
+  var UrlResolver = (function() {
+    function UrlResolver() {}
+    UrlResolver.prototype.resolve = function(baseUrl, url) {
+      return _resolveUrl(baseUrl, url);
+    };
+    UrlResolver = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], UrlResolver);
+    return UrlResolver;
+  })();
+  exports.UrlResolver = UrlResolver;
+  function _buildFromEncodedParts(opt_scheme, opt_userInfo, opt_domain, opt_port, opt_path, opt_queryData, opt_fragment) {
+    var out = [];
+    if (lang_1.isPresent(opt_scheme)) {
+      out.push(opt_scheme + ':');
+    }
+    if (lang_1.isPresent(opt_domain)) {
+      out.push('//');
+      if (lang_1.isPresent(opt_userInfo)) {
+        out.push(opt_userInfo + '@');
+      }
+      out.push(opt_domain);
+      if (lang_1.isPresent(opt_port)) {
+        out.push(':' + opt_port);
+      }
+    }
+    if (lang_1.isPresent(opt_path)) {
+      out.push(opt_path);
+    }
+    if (lang_1.isPresent(opt_queryData)) {
+      out.push('?' + opt_queryData);
+    }
+    if (lang_1.isPresent(opt_fragment)) {
+      out.push('#' + opt_fragment);
+    }
+    return out.join('');
+  }
+  var _splitRe = lang_1.RegExpWrapper.create('^' + '(?:' + '([^:/?#.]+)' + ':)?' + '(?://' + '(?:([^/?#]*)@)?' + '([\\w\\d\\-\\u0100-\\uffff.%]*)' + '(?::([0-9]+))?' + ')?' + '([^?#]+)?' + '(?:\\?([^#]*))?' + '(?:#(.*))?' + '$');
+  var _ComponentIndex;
+  (function(_ComponentIndex) {
+    _ComponentIndex[_ComponentIndex["Scheme"] = 1] = "Scheme";
+    _ComponentIndex[_ComponentIndex["UserInfo"] = 2] = "UserInfo";
+    _ComponentIndex[_ComponentIndex["Domain"] = 3] = "Domain";
+    _ComponentIndex[_ComponentIndex["Port"] = 4] = "Port";
+    _ComponentIndex[_ComponentIndex["Path"] = 5] = "Path";
+    _ComponentIndex[_ComponentIndex["QueryData"] = 6] = "QueryData";
+    _ComponentIndex[_ComponentIndex["Fragment"] = 7] = "Fragment";
+  })(_ComponentIndex || (_ComponentIndex = {}));
+  function _split(uri) {
+    return lang_1.RegExpWrapper.firstMatch(_splitRe, uri);
+  }
+  function _removeDotSegments(path) {
+    if (path == '/')
+      return '/';
+    var leadingSlash = path[0] == '/' ? '/' : '';
+    var trailingSlash = path[path.length - 1] === '/' ? '/' : '';
+    var segments = path.split('/');
+    var out = [];
+    var up = 0;
+    for (var pos = 0; pos < segments.length; pos++) {
+      var segment = segments[pos];
+      switch (segment) {
+        case '':
+        case '.':
+          break;
+        case '..':
+          if (out.length > 0) {
+            out.pop();
+          } else {
+            up++;
+          }
+          break;
+        default:
+          out.push(segment);
+      }
+    }
+    if (leadingSlash == '') {
+      while (up-- > 0) {
+        out.unshift('..');
+      }
+      if (out.length === 0)
+        out.push('.');
+    }
+    return leadingSlash + out.join('/') + trailingSlash;
+  }
+  function _joinAndCanonicalizePath(parts) {
+    var path = parts[_ComponentIndex.Path];
+    path = lang_1.isBlank(path) ? '' : _removeDotSegments(path);
+    parts[_ComponentIndex.Path] = path;
+    return _buildFromEncodedParts(parts[_ComponentIndex.Scheme], parts[_ComponentIndex.UserInfo], parts[_ComponentIndex.Domain], parts[_ComponentIndex.Port], path, parts[_ComponentIndex.QueryData], parts[_ComponentIndex.Fragment]);
+  }
+  function _resolveUrl(base, url) {
+    var parts = _split(encodeURI(url));
+    var baseParts = _split(base);
+    if (lang_1.isPresent(parts[_ComponentIndex.Scheme])) {
+      return _joinAndCanonicalizePath(parts);
+    } else {
+      parts[_ComponentIndex.Scheme] = baseParts[_ComponentIndex.Scheme];
+    }
+    for (var i = _ComponentIndex.Scheme; i <= _ComponentIndex.Port; i++) {
+      if (lang_1.isBlank(parts[i])) {
+        parts[i] = baseParts[i];
+      }
+    }
+    if (parts[_ComponentIndex.Path][0] == '/') {
+      return _joinAndCanonicalizePath(parts);
+    }
+    var path = baseParts[_ComponentIndex.Path];
+    if (lang_1.isBlank(path))
+      path = '/';
+    var index = path.lastIndexOf('/');
+    path = path.substring(0, index + 1) + parts[_ComponentIndex.Path];
+    parts[_ComponentIndex.Path] = path;
+    return _joinAndCanonicalizePath(parts);
+  }
   global.define = __define;
   return module.exports;
 });
@@ -14078,14 +14316,196 @@ System.register("angular2/src/common/forms/form_builder", ["angular2/core", "ang
   return module.exports;
 });
 
-System.register("angular2/src/common/common_directives", ["angular2/src/facade/lang", "angular2/src/common/forms", "angular2/src/common/directives"], true, function(require, exports, module) {
+System.register("angular2/instrumentation", ["angular2/src/core/profile/profile"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  var lang_1 = require("angular2/src/facade/lang");
-  var forms_1 = require("angular2/src/common/forms");
-  var directives_1 = require("angular2/src/common/directives");
-  exports.COMMON_DIRECTIVES = lang_1.CONST_EXPR([directives_1.CORE_DIRECTIVES, forms_1.FORM_DIRECTIVES]);
+  var profile_1 = require("angular2/src/core/profile/profile");
+  exports.wtfCreateScope = profile_1.wtfCreateScope;
+  exports.wtfLeave = profile_1.wtfLeave;
+  exports.wtfStartTimeRange = profile_1.wtfStartTimeRange;
+  exports.wtfEndTimeRange = profile_1.wtfEndTimeRange;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/web_workers/shared/post_message_bus", ["angular2/src/facade/exceptions", "angular2/src/facade/async", "angular2/src/facade/collection", "angular2/src/core/di"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      return Reflect.decorate(decorators, target, key, desc);
+    switch (arguments.length) {
+      case 2:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(o)) || o;
+        }, target);
+      case 3:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key)), void 0;
+        }, void 0);
+      case 4:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key, o)) || o;
+        }, desc);
+    }
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var exceptions_1 = require("angular2/src/facade/exceptions");
+  var async_1 = require("angular2/src/facade/async");
+  var collection_1 = require("angular2/src/facade/collection");
+  var di_1 = require("angular2/src/core/di");
+  var PostMessageBus = (function() {
+    function PostMessageBus(sink, source) {
+      this.sink = sink;
+      this.source = source;
+    }
+    PostMessageBus.prototype.attachToZone = function(zone) {
+      this.source.attachToZone(zone);
+      this.sink.attachToZone(zone);
+    };
+    PostMessageBus.prototype.initChannel = function(channel, runInZone) {
+      if (runInZone === void 0) {
+        runInZone = true;
+      }
+      this.source.initChannel(channel, runInZone);
+      this.sink.initChannel(channel, runInZone);
+    };
+    PostMessageBus.prototype.from = function(channel) {
+      return this.source.from(channel);
+    };
+    PostMessageBus.prototype.to = function(channel) {
+      return this.sink.to(channel);
+    };
+    PostMessageBus = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [PostMessageBusSink, PostMessageBusSource])], PostMessageBus);
+    return PostMessageBus;
+  })();
+  exports.PostMessageBus = PostMessageBus;
+  var PostMessageBusSink = (function() {
+    function PostMessageBusSink(_postMessageTarget) {
+      this._postMessageTarget = _postMessageTarget;
+      this._channels = collection_1.StringMapWrapper.create();
+      this._messageBuffer = [];
+    }
+    PostMessageBusSink.prototype.attachToZone = function(zone) {
+      var _this = this;
+      this._zone = zone;
+      this._zone.runOutsideAngular(function() {
+        async_1.ObservableWrapper.subscribe(_this._zone.onEventDone, function(_) {
+          _this._handleOnEventDone();
+        });
+      });
+    };
+    PostMessageBusSink.prototype.initChannel = function(channel, runInZone) {
+      var _this = this;
+      if (runInZone === void 0) {
+        runInZone = true;
+      }
+      if (collection_1.StringMapWrapper.contains(this._channels, channel)) {
+        throw new exceptions_1.BaseException(channel + " has already been initialized");
+      }
+      var emitter = new async_1.EventEmitter();
+      var channelInfo = new _Channel(emitter, runInZone);
+      this._channels[channel] = channelInfo;
+      emitter.subscribe(function(data) {
+        var message = {
+          channel: channel,
+          message: data
+        };
+        if (runInZone) {
+          _this._messageBuffer.push(message);
+        } else {
+          _this._sendMessages([message]);
+        }
+      });
+    };
+    PostMessageBusSink.prototype.to = function(channel) {
+      if (collection_1.StringMapWrapper.contains(this._channels, channel)) {
+        return this._channels[channel].emitter;
+      } else {
+        throw new exceptions_1.BaseException(channel + " is not set up. Did you forget to call initChannel?");
+      }
+    };
+    PostMessageBusSink.prototype._handleOnEventDone = function() {
+      if (this._messageBuffer.length > 0) {
+        this._sendMessages(this._messageBuffer);
+        this._messageBuffer = [];
+      }
+    };
+    PostMessageBusSink.prototype._sendMessages = function(messages) {
+      this._postMessageTarget.postMessage(messages);
+    };
+    return PostMessageBusSink;
+  })();
+  exports.PostMessageBusSink = PostMessageBusSink;
+  var PostMessageBusSource = (function() {
+    function PostMessageBusSource(eventTarget) {
+      var _this = this;
+      this._channels = collection_1.StringMapWrapper.create();
+      if (eventTarget) {
+        eventTarget.addEventListener("message", function(ev) {
+          return _this._handleMessages(ev);
+        });
+      } else {
+        addEventListener("message", function(ev) {
+          return _this._handleMessages(ev);
+        });
+      }
+    }
+    PostMessageBusSource.prototype.attachToZone = function(zone) {
+      this._zone = zone;
+    };
+    PostMessageBusSource.prototype.initChannel = function(channel, runInZone) {
+      if (runInZone === void 0) {
+        runInZone = true;
+      }
+      if (collection_1.StringMapWrapper.contains(this._channels, channel)) {
+        throw new exceptions_1.BaseException(channel + " has already been initialized");
+      }
+      var emitter = new async_1.EventEmitter();
+      var channelInfo = new _Channel(emitter, runInZone);
+      this._channels[channel] = channelInfo;
+    };
+    PostMessageBusSource.prototype.from = function(channel) {
+      if (collection_1.StringMapWrapper.contains(this._channels, channel)) {
+        return this._channels[channel].emitter;
+      } else {
+        throw new exceptions_1.BaseException(channel + " is not set up. Did you forget to call initChannel?");
+      }
+    };
+    PostMessageBusSource.prototype._handleMessages = function(ev) {
+      var messages = ev.data;
+      for (var i = 0; i < messages.length; i++) {
+        this._handleMessage(messages[i]);
+      }
+    };
+    PostMessageBusSource.prototype._handleMessage = function(data) {
+      var channel = data.channel;
+      if (collection_1.StringMapWrapper.contains(this._channels, channel)) {
+        var channelInfo = this._channels[channel];
+        if (channelInfo.runInZone) {
+          this._zone.run(function() {
+            channelInfo.emitter.emit(data.message);
+          });
+        } else {
+          channelInfo.emitter.emit(data.message);
+        }
+      }
+    };
+    return PostMessageBusSource;
+  })();
+  exports.PostMessageBusSource = PostMessageBusSource;
+  var _Channel = (function() {
+    function _Channel(emitter, runInZone) {
+      this.emitter = emitter;
+      this.runInZone = runInZone;
+    }
+    return _Channel;
+  })();
   global.define = __define;
   return module.exports;
 });
@@ -15690,155 +16110,6 @@ System.register("angular2/src/compiler/shadow_css", ["angular2/src/facade/collec
   return module.exports;
 });
 
-System.register("angular2/src/compiler/url_resolver", ["angular2/src/core/di", "angular2/src/facade/lang"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var di_1 = require("angular2/src/core/di");
-  var lang_1 = require("angular2/src/facade/lang");
-  function createWithoutPackagePrefix() {
-    return new UrlResolver();
-  }
-  exports.createWithoutPackagePrefix = createWithoutPackagePrefix;
-  var UrlResolver = (function() {
-    function UrlResolver() {}
-    UrlResolver.prototype.resolve = function(baseUrl, url) {
-      return _resolveUrl(baseUrl, url);
-    };
-    UrlResolver = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], UrlResolver);
-    return UrlResolver;
-  })();
-  exports.UrlResolver = UrlResolver;
-  function _buildFromEncodedParts(opt_scheme, opt_userInfo, opt_domain, opt_port, opt_path, opt_queryData, opt_fragment) {
-    var out = [];
-    if (lang_1.isPresent(opt_scheme)) {
-      out.push(opt_scheme + ':');
-    }
-    if (lang_1.isPresent(opt_domain)) {
-      out.push('//');
-      if (lang_1.isPresent(opt_userInfo)) {
-        out.push(opt_userInfo + '@');
-      }
-      out.push(opt_domain);
-      if (lang_1.isPresent(opt_port)) {
-        out.push(':' + opt_port);
-      }
-    }
-    if (lang_1.isPresent(opt_path)) {
-      out.push(opt_path);
-    }
-    if (lang_1.isPresent(opt_queryData)) {
-      out.push('?' + opt_queryData);
-    }
-    if (lang_1.isPresent(opt_fragment)) {
-      out.push('#' + opt_fragment);
-    }
-    return out.join('');
-  }
-  var _splitRe = lang_1.RegExpWrapper.create('^' + '(?:' + '([^:/?#.]+)' + ':)?' + '(?://' + '(?:([^/?#]*)@)?' + '([\\w\\d\\-\\u0100-\\uffff.%]*)' + '(?::([0-9]+))?' + ')?' + '([^?#]+)?' + '(?:\\?([^#]*))?' + '(?:#(.*))?' + '$');
-  var _ComponentIndex;
-  (function(_ComponentIndex) {
-    _ComponentIndex[_ComponentIndex["Scheme"] = 1] = "Scheme";
-    _ComponentIndex[_ComponentIndex["UserInfo"] = 2] = "UserInfo";
-    _ComponentIndex[_ComponentIndex["Domain"] = 3] = "Domain";
-    _ComponentIndex[_ComponentIndex["Port"] = 4] = "Port";
-    _ComponentIndex[_ComponentIndex["Path"] = 5] = "Path";
-    _ComponentIndex[_ComponentIndex["QueryData"] = 6] = "QueryData";
-    _ComponentIndex[_ComponentIndex["Fragment"] = 7] = "Fragment";
-  })(_ComponentIndex || (_ComponentIndex = {}));
-  function _split(uri) {
-    return lang_1.RegExpWrapper.firstMatch(_splitRe, uri);
-  }
-  function _removeDotSegments(path) {
-    if (path == '/')
-      return '/';
-    var leadingSlash = path[0] == '/' ? '/' : '';
-    var trailingSlash = path[path.length - 1] === '/' ? '/' : '';
-    var segments = path.split('/');
-    var out = [];
-    var up = 0;
-    for (var pos = 0; pos < segments.length; pos++) {
-      var segment = segments[pos];
-      switch (segment) {
-        case '':
-        case '.':
-          break;
-        case '..':
-          if (out.length > 0) {
-            out.pop();
-          } else {
-            up++;
-          }
-          break;
-        default:
-          out.push(segment);
-      }
-    }
-    if (leadingSlash == '') {
-      while (up-- > 0) {
-        out.unshift('..');
-      }
-      if (out.length === 0)
-        out.push('.');
-    }
-    return leadingSlash + out.join('/') + trailingSlash;
-  }
-  function _joinAndCanonicalizePath(parts) {
-    var path = parts[_ComponentIndex.Path];
-    path = lang_1.isBlank(path) ? '' : _removeDotSegments(path);
-    parts[_ComponentIndex.Path] = path;
-    return _buildFromEncodedParts(parts[_ComponentIndex.Scheme], parts[_ComponentIndex.UserInfo], parts[_ComponentIndex.Domain], parts[_ComponentIndex.Port], path, parts[_ComponentIndex.QueryData], parts[_ComponentIndex.Fragment]);
-  }
-  function _resolveUrl(base, url) {
-    var parts = _split(encodeURI(url));
-    var baseParts = _split(base);
-    if (lang_1.isPresent(parts[_ComponentIndex.Scheme])) {
-      return _joinAndCanonicalizePath(parts);
-    } else {
-      parts[_ComponentIndex.Scheme] = baseParts[_ComponentIndex.Scheme];
-    }
-    for (var i = _ComponentIndex.Scheme; i <= _ComponentIndex.Port; i++) {
-      if (lang_1.isBlank(parts[i])) {
-        parts[i] = baseParts[i];
-      }
-    }
-    if (parts[_ComponentIndex.Path][0] == '/') {
-      return _joinAndCanonicalizePath(parts);
-    }
-    var path = baseParts[_ComponentIndex.Path];
-    if (lang_1.isBlank(path))
-      path = '/';
-    var index = path.lastIndexOf('/');
-    path = path.substring(0, index + 1) + parts[_ComponentIndex.Path];
-    parts[_ComponentIndex.Path] = path;
-    return _joinAndCanonicalizePath(parts);
-  }
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/src/compiler/style_url_resolver", ["angular2/src/facade/lang"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -16998,23 +17269,76 @@ System.register("angular2/src/compiler/runtime_metadata", ["angular2/src/core/di
   return module.exports;
 });
 
-System.register("angular2/src/platform/dom/dom_adapter", ["angular2/src/facade/lang"], true, function(require, exports, module) {
+System.register("angular2/src/compiler/schema/dom_element_schema_registry", ["angular2/src/core/di", "angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/src/platform/dom/dom_adapter", "angular2/src/compiler/schema/element_schema_registry"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  var lang_1 = require("angular2/src/facade/lang");
-  exports.DOM = null;
-  function setRootDomAdapter(adapter) {
-    if (lang_1.isBlank(exports.DOM)) {
-      exports.DOM = adapter;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
     }
-  }
-  exports.setRootDomAdapter = setRootDomAdapter;
-  var DomAdapter = (function() {
-    function DomAdapter() {}
-    return DomAdapter;
-  })();
-  exports.DomAdapter = DomAdapter;
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      return Reflect.decorate(decorators, target, key, desc);
+    switch (arguments.length) {
+      case 2:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(o)) || o;
+        }, target);
+      case 3:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key)), void 0;
+        }, void 0);
+      case 4:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key, o)) || o;
+        }, desc);
+    }
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var di_1 = require("angular2/src/core/di");
+  var lang_1 = require("angular2/src/facade/lang");
+  var collection_1 = require("angular2/src/facade/collection");
+  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
+  var element_schema_registry_1 = require("angular2/src/compiler/schema/element_schema_registry");
+  var DomElementSchemaRegistry = (function(_super) {
+    __extends(DomElementSchemaRegistry, _super);
+    function DomElementSchemaRegistry() {
+      _super.apply(this, arguments);
+      this._protoElements = new Map();
+    }
+    DomElementSchemaRegistry.prototype._getProtoElement = function(tagName) {
+      var element = this._protoElements.get(tagName);
+      if (lang_1.isBlank(element)) {
+        element = dom_adapter_1.DOM.createElement(tagName);
+        this._protoElements.set(tagName, element);
+      }
+      return element;
+    };
+    DomElementSchemaRegistry.prototype.hasProperty = function(tagName, propName) {
+      if (tagName.indexOf('-') !== -1) {
+        return true;
+      } else {
+        var elm = this._getProtoElement(tagName);
+        return dom_adapter_1.DOM.hasProperty(elm, propName);
+      }
+    };
+    DomElementSchemaRegistry.prototype.getMappedPropName = function(propName) {
+      var mappedPropName = collection_1.StringMapWrapper.get(dom_adapter_1.DOM.attrToPropMap, propName);
+      return lang_1.isPresent(mappedPropName) ? mappedPropName : propName;
+    };
+    DomElementSchemaRegistry = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], DomElementSchemaRegistry);
+    return DomElementSchemaRegistry;
+  })(element_schema_registry_1.ElementSchemaRegistry);
+  exports.DomElementSchemaRegistry = DomElementSchemaRegistry;
   global.define = __define;
   return module.exports;
 });
@@ -23046,388 +23370,6 @@ System.register("angular2/src/platform/dom/debug/debug_element_view_listener", [
   return module.exports;
 });
 
-System.register("angular2/src/web_workers/shared/post_message_bus", ["angular2/src/facade/exceptions", "angular2/src/facade/async", "angular2/src/facade/collection", "angular2/src/core/di"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var exceptions_1 = require("angular2/src/facade/exceptions");
-  var async_1 = require("angular2/src/facade/async");
-  var collection_1 = require("angular2/src/facade/collection");
-  var di_1 = require("angular2/src/core/di");
-  var PostMessageBus = (function() {
-    function PostMessageBus(sink, source) {
-      this.sink = sink;
-      this.source = source;
-    }
-    PostMessageBus.prototype.attachToZone = function(zone) {
-      this.source.attachToZone(zone);
-      this.sink.attachToZone(zone);
-    };
-    PostMessageBus.prototype.initChannel = function(channel, runInZone) {
-      if (runInZone === void 0) {
-        runInZone = true;
-      }
-      this.source.initChannel(channel, runInZone);
-      this.sink.initChannel(channel, runInZone);
-    };
-    PostMessageBus.prototype.from = function(channel) {
-      return this.source.from(channel);
-    };
-    PostMessageBus.prototype.to = function(channel) {
-      return this.sink.to(channel);
-    };
-    PostMessageBus = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [PostMessageBusSink, PostMessageBusSource])], PostMessageBus);
-    return PostMessageBus;
-  })();
-  exports.PostMessageBus = PostMessageBus;
-  var PostMessageBusSink = (function() {
-    function PostMessageBusSink(_postMessageTarget) {
-      this._postMessageTarget = _postMessageTarget;
-      this._channels = collection_1.StringMapWrapper.create();
-      this._messageBuffer = [];
-    }
-    PostMessageBusSink.prototype.attachToZone = function(zone) {
-      var _this = this;
-      this._zone = zone;
-      this._zone.runOutsideAngular(function() {
-        async_1.ObservableWrapper.subscribe(_this._zone.onEventDone, function(_) {
-          _this._handleOnEventDone();
-        });
-      });
-    };
-    PostMessageBusSink.prototype.initChannel = function(channel, runInZone) {
-      var _this = this;
-      if (runInZone === void 0) {
-        runInZone = true;
-      }
-      if (collection_1.StringMapWrapper.contains(this._channels, channel)) {
-        throw new exceptions_1.BaseException(channel + " has already been initialized");
-      }
-      var emitter = new async_1.EventEmitter();
-      var channelInfo = new _Channel(emitter, runInZone);
-      this._channels[channel] = channelInfo;
-      emitter.subscribe(function(data) {
-        var message = {
-          channel: channel,
-          message: data
-        };
-        if (runInZone) {
-          _this._messageBuffer.push(message);
-        } else {
-          _this._sendMessages([message]);
-        }
-      });
-    };
-    PostMessageBusSink.prototype.to = function(channel) {
-      if (collection_1.StringMapWrapper.contains(this._channels, channel)) {
-        return this._channels[channel].emitter;
-      } else {
-        throw new exceptions_1.BaseException(channel + " is not set up. Did you forget to call initChannel?");
-      }
-    };
-    PostMessageBusSink.prototype._handleOnEventDone = function() {
-      if (this._messageBuffer.length > 0) {
-        this._sendMessages(this._messageBuffer);
-        this._messageBuffer = [];
-      }
-    };
-    PostMessageBusSink.prototype._sendMessages = function(messages) {
-      this._postMessageTarget.postMessage(messages);
-    };
-    return PostMessageBusSink;
-  })();
-  exports.PostMessageBusSink = PostMessageBusSink;
-  var PostMessageBusSource = (function() {
-    function PostMessageBusSource(eventTarget) {
-      var _this = this;
-      this._channels = collection_1.StringMapWrapper.create();
-      if (eventTarget) {
-        eventTarget.addEventListener("message", function(ev) {
-          return _this._handleMessages(ev);
-        });
-      } else {
-        addEventListener("message", function(ev) {
-          return _this._handleMessages(ev);
-        });
-      }
-    }
-    PostMessageBusSource.prototype.attachToZone = function(zone) {
-      this._zone = zone;
-    };
-    PostMessageBusSource.prototype.initChannel = function(channel, runInZone) {
-      if (runInZone === void 0) {
-        runInZone = true;
-      }
-      if (collection_1.StringMapWrapper.contains(this._channels, channel)) {
-        throw new exceptions_1.BaseException(channel + " has already been initialized");
-      }
-      var emitter = new async_1.EventEmitter();
-      var channelInfo = new _Channel(emitter, runInZone);
-      this._channels[channel] = channelInfo;
-    };
-    PostMessageBusSource.prototype.from = function(channel) {
-      if (collection_1.StringMapWrapper.contains(this._channels, channel)) {
-        return this._channels[channel].emitter;
-      } else {
-        throw new exceptions_1.BaseException(channel + " is not set up. Did you forget to call initChannel?");
-      }
-    };
-    PostMessageBusSource.prototype._handleMessages = function(ev) {
-      var messages = ev.data;
-      for (var i = 0; i < messages.length; i++) {
-        this._handleMessage(messages[i]);
-      }
-    };
-    PostMessageBusSource.prototype._handleMessage = function(data) {
-      var channel = data.channel;
-      if (collection_1.StringMapWrapper.contains(this._channels, channel)) {
-        var channelInfo = this._channels[channel];
-        if (channelInfo.runInZone) {
-          this._zone.run(function() {
-            channelInfo.emitter.emit(data.message);
-          });
-        } else {
-          channelInfo.emitter.emit(data.message);
-        }
-      }
-    };
-    return PostMessageBusSource;
-  })();
-  exports.PostMessageBusSource = PostMessageBusSource;
-  var _Channel = (function() {
-    function _Channel(emitter, runInZone) {
-      this.emitter = emitter;
-      this.runInZone = runInZone;
-    }
-    return _Channel;
-  })();
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("angular2/compiler", ["angular2/src/compiler/url_resolver", "angular2/src/compiler/xhr", "angular2/src/compiler/compiler", "angular2/src/compiler/app_root_url"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  function __export(m) {
-    for (var p in m)
-      if (!exports.hasOwnProperty(p))
-        exports[p] = m[p];
-  }
-  __export(require("angular2/src/compiler/url_resolver"));
-  __export(require("angular2/src/compiler/xhr"));
-  __export(require("angular2/src/compiler/compiler"));
-  __export(require("angular2/src/compiler/app_root_url"));
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("angular2/instrumentation", ["angular2/src/core/profile/profile"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var profile_1 = require("angular2/src/core/profile/profile");
-  exports.wtfCreateScope = profile_1.wtfCreateScope;
-  exports.wtfLeave = profile_1.wtfLeave;
-  exports.wtfStartTimeRange = profile_1.wtfStartTimeRange;
-  exports.wtfEndTimeRange = profile_1.wtfEndTimeRange;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/Subscriber", ["rxjs/util/noop", "rxjs/util/throwError", "rxjs/util/tryOrOnError", "rxjs/Subscription"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var noop_1 = require("rxjs/util/noop");
-  var throwError_1 = require("rxjs/util/throwError");
-  var tryOrOnError_1 = require("rxjs/util/tryOrOnError");
-  var Subscription_1 = require("rxjs/Subscription");
-  var Subscriber = (function(_super) {
-    __extends(Subscriber, _super);
-    function Subscriber(destination) {
-      _super.call(this);
-      this.destination = destination;
-      this._isUnsubscribed = false;
-      if (!this.destination) {
-        return ;
-      }
-      var subscription = destination._subscription;
-      if (subscription) {
-        this._subscription = subscription;
-      } else if (destination instanceof Subscriber) {
-        this._subscription = destination;
-      }
-    }
-    Object.defineProperty(Subscriber.prototype, "isUnsubscribed", {
-      get: function() {
-        var subscription = this._subscription;
-        if (subscription) {
-          return this._isUnsubscribed || subscription.isUnsubscribed;
-        } else {
-          return this._isUnsubscribed;
-        }
-      },
-      set: function(value) {
-        var subscription = this._subscription;
-        if (subscription) {
-          subscription.isUnsubscribed = Boolean(value);
-        } else {
-          this._isUnsubscribed = Boolean(value);
-        }
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Subscriber.create = function(next, error, complete) {
-      var subscriber = new Subscriber();
-      subscriber._next = (typeof next === 'function') && tryOrOnError_1.tryOrOnError(next) || noop_1.noop;
-      subscriber._error = (typeof error === 'function') && error || throwError_1.throwError;
-      subscriber._complete = (typeof complete === 'function') && complete || noop_1.noop;
-      return subscriber;
-    };
-    Subscriber.prototype.add = function(sub) {
-      var _subscription = this._subscription;
-      if (_subscription) {
-        _subscription.add(sub);
-      } else {
-        _super.prototype.add.call(this, sub);
-      }
-    };
-    Subscriber.prototype.remove = function(sub) {
-      if (this._subscription) {
-        this._subscription.remove(sub);
-      } else {
-        _super.prototype.remove.call(this, sub);
-      }
-    };
-    Subscriber.prototype.unsubscribe = function() {
-      if (this._isUnsubscribed) {
-        return ;
-      } else if (this._subscription) {
-        this._isUnsubscribed = true;
-      } else {
-        _super.prototype.unsubscribe.call(this);
-      }
-    };
-    Subscriber.prototype._next = function(value) {
-      var destination = this.destination;
-      if (destination.next) {
-        destination.next(value);
-      }
-    };
-    Subscriber.prototype._error = function(err) {
-      var destination = this.destination;
-      if (destination.error) {
-        destination.error(err);
-      }
-    };
-    Subscriber.prototype._complete = function() {
-      var destination = this.destination;
-      if (destination.complete) {
-        destination.complete();
-      }
-    };
-    Subscriber.prototype.next = function(value) {
-      if (!this.isUnsubscribed) {
-        this._next(value);
-      }
-    };
-    Subscriber.prototype.error = function(err) {
-      if (!this.isUnsubscribed) {
-        this._error(err);
-        this.unsubscribe();
-      }
-    };
-    Subscriber.prototype.complete = function() {
-      if (!this.isUnsubscribed) {
-        this._complete();
-        this.unsubscribe();
-      }
-    };
-    return Subscriber;
-  })(Subscription_1.Subscription);
-  exports.Subscriber = Subscriber;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/schedulers/ImmediateScheduler", ["rxjs/schedulers/ImmediateAction", "rxjs/schedulers/FutureAction"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var ImmediateAction_1 = require("rxjs/schedulers/ImmediateAction");
-  var FutureAction_1 = require("rxjs/schedulers/FutureAction");
-  var ImmediateScheduler = (function() {
-    function ImmediateScheduler() {
-      this.actions = [];
-      this.active = false;
-      this.scheduled = false;
-    }
-    ImmediateScheduler.prototype.now = function() {
-      return Date.now();
-    };
-    ImmediateScheduler.prototype.flush = function() {
-      if (this.active || this.scheduled) {
-        return ;
-      }
-      this.active = true;
-      var actions = this.actions;
-      for (var action = void 0; action = actions.shift(); ) {
-        action.execute();
-      }
-      this.active = false;
-    };
-    ImmediateScheduler.prototype.schedule = function(work, delay, state) {
-      if (delay === void 0) {
-        delay = 0;
-      }
-      return (delay <= 0) ? this.scheduleNow(work, state) : this.scheduleLater(work, delay, state);
-    };
-    ImmediateScheduler.prototype.scheduleNow = function(work, state) {
-      return new ImmediateAction_1.ImmediateAction(this, work).schedule(state);
-    };
-    ImmediateScheduler.prototype.scheduleLater = function(work, delay, state) {
-      return new FutureAction_1.FutureAction(this, work).schedule(state, delay);
-    };
-    return ImmediateScheduler;
-  })();
-  exports.ImmediateScheduler = ImmediateScheduler;
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/src/core/di/decorators", ["angular2/src/core/di/metadata", "angular2/src/core/util/decorators"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -24059,6 +24001,177 @@ System.register("angular2/src/core/change_detection/codegen_logic_util", ["angul
   return module.exports;
 });
 
+System.register("rxjs/Subscriber", ["rxjs/util/noop", "rxjs/util/throwError", "rxjs/util/tryOrOnError", "rxjs/Subscription"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var noop_1 = require("rxjs/util/noop");
+  var throwError_1 = require("rxjs/util/throwError");
+  var tryOrOnError_1 = require("rxjs/util/tryOrOnError");
+  var Subscription_1 = require("rxjs/Subscription");
+  var Subscriber = (function(_super) {
+    __extends(Subscriber, _super);
+    function Subscriber(destination) {
+      _super.call(this);
+      this.destination = destination;
+      this._isUnsubscribed = false;
+      if (!this.destination) {
+        return ;
+      }
+      var subscription = destination._subscription;
+      if (subscription) {
+        this._subscription = subscription;
+      } else if (destination instanceof Subscriber) {
+        this._subscription = destination;
+      }
+    }
+    Object.defineProperty(Subscriber.prototype, "isUnsubscribed", {
+      get: function() {
+        var subscription = this._subscription;
+        if (subscription) {
+          return this._isUnsubscribed || subscription.isUnsubscribed;
+        } else {
+          return this._isUnsubscribed;
+        }
+      },
+      set: function(value) {
+        var subscription = this._subscription;
+        if (subscription) {
+          subscription.isUnsubscribed = Boolean(value);
+        } else {
+          this._isUnsubscribed = Boolean(value);
+        }
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Subscriber.create = function(next, error, complete) {
+      var subscriber = new Subscriber();
+      subscriber._next = (typeof next === 'function') && tryOrOnError_1.tryOrOnError(next) || noop_1.noop;
+      subscriber._error = (typeof error === 'function') && error || throwError_1.throwError;
+      subscriber._complete = (typeof complete === 'function') && complete || noop_1.noop;
+      return subscriber;
+    };
+    Subscriber.prototype.add = function(sub) {
+      var _subscription = this._subscription;
+      if (_subscription) {
+        _subscription.add(sub);
+      } else {
+        _super.prototype.add.call(this, sub);
+      }
+    };
+    Subscriber.prototype.remove = function(sub) {
+      if (this._subscription) {
+        this._subscription.remove(sub);
+      } else {
+        _super.prototype.remove.call(this, sub);
+      }
+    };
+    Subscriber.prototype.unsubscribe = function() {
+      if (this._isUnsubscribed) {
+        return ;
+      } else if (this._subscription) {
+        this._isUnsubscribed = true;
+      } else {
+        _super.prototype.unsubscribe.call(this);
+      }
+    };
+    Subscriber.prototype._next = function(value) {
+      var destination = this.destination;
+      if (destination.next) {
+        destination.next(value);
+      }
+    };
+    Subscriber.prototype._error = function(err) {
+      var destination = this.destination;
+      if (destination.error) {
+        destination.error(err);
+      }
+    };
+    Subscriber.prototype._complete = function() {
+      var destination = this.destination;
+      if (destination.complete) {
+        destination.complete();
+      }
+    };
+    Subscriber.prototype.next = function(value) {
+      if (!this.isUnsubscribed) {
+        this._next(value);
+      }
+    };
+    Subscriber.prototype.error = function(err) {
+      if (!this.isUnsubscribed) {
+        this._error(err);
+        this.unsubscribe();
+      }
+    };
+    Subscriber.prototype.complete = function() {
+      if (!this.isUnsubscribed) {
+        this._complete();
+        this.unsubscribe();
+      }
+    };
+    return Subscriber;
+  })(Subscription_1.Subscription);
+  exports.Subscriber = Subscriber;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/schedulers/ImmediateScheduler", ["rxjs/schedulers/ImmediateAction", "rxjs/schedulers/FutureAction"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var ImmediateAction_1 = require("rxjs/schedulers/ImmediateAction");
+  var FutureAction_1 = require("rxjs/schedulers/FutureAction");
+  var ImmediateScheduler = (function() {
+    function ImmediateScheduler() {
+      this.actions = [];
+      this.active = false;
+      this.scheduled = false;
+    }
+    ImmediateScheduler.prototype.now = function() {
+      return Date.now();
+    };
+    ImmediateScheduler.prototype.flush = function() {
+      if (this.active || this.scheduled) {
+        return ;
+      }
+      this.active = true;
+      var actions = this.actions;
+      for (var action = void 0; action = actions.shift(); ) {
+        action.execute();
+      }
+      this.active = false;
+    };
+    ImmediateScheduler.prototype.schedule = function(work, delay, state) {
+      if (delay === void 0) {
+        delay = 0;
+      }
+      return (delay <= 0) ? this.scheduleNow(work, state) : this.scheduleLater(work, delay, state);
+    };
+    ImmediateScheduler.prototype.scheduleNow = function(work, state) {
+      return new ImmediateAction_1.ImmediateAction(this, work).schedule(state);
+    };
+    ImmediateScheduler.prototype.scheduleLater = function(work, delay, state) {
+      return new FutureAction_1.FutureAction(this, work).schedule(state, delay);
+    };
+    return ImmediateScheduler;
+  })();
+  exports.ImmediateScheduler = ImmediateScheduler;
+  global.define = __define;
+  return module.exports;
+});
+
 System.register("angular2/src/core/pipes/pipes", ["angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/facade/collection", "angular2/src/core/change_detection/pipes"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -24611,42 +24724,6 @@ System.register("angular2/src/core/linker/view_manager_utils", ["angular2/src/co
   return module.exports;
 });
 
-System.register("angular2/src/core/linker/directive_lifecycle_reflector", ["angular2/src/facade/lang", "angular2/src/core/linker/interfaces"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var lang_1 = require("angular2/src/facade/lang");
-  var interfaces_1 = require("angular2/src/core/linker/interfaces");
-  function hasLifecycleHook(lcInterface, token) {
-    if (!(token instanceof lang_1.Type))
-      return false;
-    var proto = token.prototype;
-    switch (lcInterface) {
-      case interfaces_1.LifecycleHooks.AfterContentInit:
-        return !!proto.ngAfterContentInit;
-      case interfaces_1.LifecycleHooks.AfterContentChecked:
-        return !!proto.ngAfterContentChecked;
-      case interfaces_1.LifecycleHooks.AfterViewInit:
-        return !!proto.ngAfterViewInit;
-      case interfaces_1.LifecycleHooks.AfterViewChecked:
-        return !!proto.ngAfterViewChecked;
-      case interfaces_1.LifecycleHooks.OnChanges:
-        return !!proto.ngOnChanges;
-      case interfaces_1.LifecycleHooks.DoCheck:
-        return !!proto.ngDoCheck;
-      case interfaces_1.LifecycleHooks.OnDestroy:
-        return !!proto.ngOnDestroy;
-      case interfaces_1.LifecycleHooks.OnInit:
-        return !!proto.ngOnInit;
-      default:
-        return false;
-    }
-  }
-  exports.hasLifecycleHook = hasLifecycleHook;
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/src/common/pipes/date_pipe", ["angular2/src/facade/lang", "angular2/src/facade/intl", "angular2/core", "angular2/src/facade/collection", "angular2/src/common/pipes/invalid_pipe_argument_exception"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -24716,6 +24793,26 @@ System.register("angular2/src/common/pipes/date_pipe", ["angular2/src/facade/lan
     return DatePipe;
   })();
   exports.DatePipe = DatePipe;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/platform/browser/title", ["angular2/src/platform/dom/dom_adapter"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
+  var Title = (function() {
+    function Title() {}
+    Title.prototype.getTitle = function() {
+      return dom_adapter_1.DOM.getTitle();
+    };
+    Title.prototype.setTitle = function(newTitle) {
+      dom_adapter_1.DOM.setTitle(newTitle);
+    };
+    return Title;
+  })();
+  exports.Title = Title;
   global.define = __define;
   return module.exports;
 });
@@ -26379,80 +26476,6 @@ System.register("angular2/src/compiler/html_lexer", ["angular2/src/facade/lang",
   return module.exports;
 });
 
-System.register("angular2/src/compiler/schema/dom_element_schema_registry", ["angular2/src/core/di", "angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/src/platform/dom/dom_adapter", "angular2/src/compiler/schema/element_schema_registry"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var di_1 = require("angular2/src/core/di");
-  var lang_1 = require("angular2/src/facade/lang");
-  var collection_1 = require("angular2/src/facade/collection");
-  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
-  var element_schema_registry_1 = require("angular2/src/compiler/schema/element_schema_registry");
-  var DomElementSchemaRegistry = (function(_super) {
-    __extends(DomElementSchemaRegistry, _super);
-    function DomElementSchemaRegistry() {
-      _super.apply(this, arguments);
-      this._protoElements = new Map();
-    }
-    DomElementSchemaRegistry.prototype._getProtoElement = function(tagName) {
-      var element = this._protoElements.get(tagName);
-      if (lang_1.isBlank(element)) {
-        element = dom_adapter_1.DOM.createElement(tagName);
-        this._protoElements.set(tagName, element);
-      }
-      return element;
-    };
-    DomElementSchemaRegistry.prototype.hasProperty = function(tagName, propName) {
-      if (tagName.indexOf('-') !== -1) {
-        return true;
-      } else {
-        var elm = this._getProtoElement(tagName);
-        return dom_adapter_1.DOM.hasProperty(elm, propName);
-      }
-    };
-    DomElementSchemaRegistry.prototype.getMappedPropName = function(propName) {
-      var mappedPropName = collection_1.StringMapWrapper.get(dom_adapter_1.DOM.attrToPropMap, propName);
-      return lang_1.isPresent(mappedPropName) ? mappedPropName : propName;
-    };
-    DomElementSchemaRegistry = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], DomElementSchemaRegistry);
-    return DomElementSchemaRegistry;
-  })(element_schema_registry_1.ElementSchemaRegistry);
-  exports.DomElementSchemaRegistry = DomElementSchemaRegistry;
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("parse5/lib/tokenization/preprocessor", ["parse5/lib/common/unicode"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -27254,83 +27277,6 @@ System.register("angular2/src/platform/dom/shared_styles_host", ["angular2/src/p
     return DomSharedStylesHost;
   })(SharedStylesHost);
   exports.DomSharedStylesHost = DomSharedStylesHost;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/Observable", ["rxjs/Subscriber", "rxjs/util/root", "rxjs/util/Symbol_observable"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var Subscriber_1 = require("rxjs/Subscriber");
-  var root_1 = require("rxjs/util/root");
-  var Symbol_observable_1 = require("rxjs/util/Symbol_observable");
-  var Observable = (function() {
-    function Observable(subscribe) {
-      this._isScalar = false;
-      if (subscribe) {
-        this._subscribe = subscribe;
-      }
-    }
-    Observable.prototype.lift = function(operator) {
-      var observable = new Observable();
-      observable.source = this;
-      observable.operator = operator;
-      return observable;
-    };
-    Observable.prototype[Symbol_observable_1.$$observable] = function() {
-      return this;
-    };
-    Observable.prototype.subscribe = function(observerOrNext, error, complete) {
-      var subscriber;
-      if (observerOrNext && typeof observerOrNext === 'object') {
-        if (observerOrNext instanceof Subscriber_1.Subscriber) {
-          subscriber = observerOrNext;
-        } else {
-          subscriber = new Subscriber_1.Subscriber(observerOrNext);
-        }
-      } else {
-        var next = observerOrNext;
-        subscriber = Subscriber_1.Subscriber.create(next, error, complete);
-      }
-      subscriber.add(this._subscribe(subscriber));
-      return subscriber;
-    };
-    Observable.prototype.forEach = function(next, PromiseCtor) {
-      var _this = this;
-      if (!PromiseCtor) {
-        if (root_1.root.Rx && root_1.root.Rx.config && root_1.root.Rx.config.Promise) {
-          PromiseCtor = root_1.root.Rx.config.Promise;
-        } else if (root_1.root.Promise) {
-          PromiseCtor = root_1.root.Promise;
-        }
-      }
-      if (!PromiseCtor) {
-        throw new Error('no Promise impl found');
-      }
-      return new PromiseCtor(function(resolve, reject) {
-        _this.subscribe(next, reject, resolve);
-      });
-    };
-    Observable.prototype._subscribe = function(subscriber) {
-      return this.source._subscribe(this.operator.call(subscriber));
-    };
-    Observable.create = function(subscribe) {
-      return new Observable(subscribe);
-    };
-    return Observable;
-  })();
-  exports.Observable = Observable;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/schedulers/immediate", ["rxjs/schedulers/ImmediateScheduler"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var ImmediateScheduler_1 = require("rxjs/schedulers/ImmediateScheduler");
-  exports.immediate = new ImmediateScheduler_1.ImmediateScheduler();
   global.define = __define;
   return module.exports;
 });
@@ -28273,6 +28219,83 @@ System.register("angular2/src/core/change_detection/change_detection_jit_generat
     return ChangeDetectorJITGenerator;
   })();
   exports.ChangeDetectorJITGenerator = ChangeDetectorJITGenerator;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/Observable", ["rxjs/Subscriber", "rxjs/util/root", "rxjs/util/Symbol_observable"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var Subscriber_1 = require("rxjs/Subscriber");
+  var root_1 = require("rxjs/util/root");
+  var Symbol_observable_1 = require("rxjs/util/Symbol_observable");
+  var Observable = (function() {
+    function Observable(subscribe) {
+      this._isScalar = false;
+      if (subscribe) {
+        this._subscribe = subscribe;
+      }
+    }
+    Observable.prototype.lift = function(operator) {
+      var observable = new Observable();
+      observable.source = this;
+      observable.operator = operator;
+      return observable;
+    };
+    Observable.prototype[Symbol_observable_1.$$observable] = function() {
+      return this;
+    };
+    Observable.prototype.subscribe = function(observerOrNext, error, complete) {
+      var subscriber;
+      if (observerOrNext && typeof observerOrNext === 'object') {
+        if (observerOrNext instanceof Subscriber_1.Subscriber) {
+          subscriber = observerOrNext;
+        } else {
+          subscriber = new Subscriber_1.Subscriber(observerOrNext);
+        }
+      } else {
+        var next = observerOrNext;
+        subscriber = Subscriber_1.Subscriber.create(next, error, complete);
+      }
+      subscriber.add(this._subscribe(subscriber));
+      return subscriber;
+    };
+    Observable.prototype.forEach = function(next, PromiseCtor) {
+      var _this = this;
+      if (!PromiseCtor) {
+        if (root_1.root.Rx && root_1.root.Rx.config && root_1.root.Rx.config.Promise) {
+          PromiseCtor = root_1.root.Rx.config.Promise;
+        } else if (root_1.root.Promise) {
+          PromiseCtor = root_1.root.Promise;
+        }
+      }
+      if (!PromiseCtor) {
+        throw new Error('no Promise impl found');
+      }
+      return new PromiseCtor(function(resolve, reject) {
+        _this.subscribe(next, reject, resolve);
+      });
+    };
+    Observable.prototype._subscribe = function(subscriber) {
+      return this.source._subscribe(this.operator.call(subscriber));
+    };
+    Observable.create = function(subscribe) {
+      return new Observable(subscribe);
+    };
+    return Observable;
+  })();
+  exports.Observable = Observable;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/schedulers/immediate", ["rxjs/schedulers/ImmediateScheduler"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var ImmediateScheduler_1 = require("rxjs/schedulers/ImmediateScheduler");
+  exports.immediate = new ImmediateScheduler_1.ImmediateScheduler();
   global.define = __define;
   return module.exports;
 });
@@ -31032,489 +31055,6 @@ System.register("angular2/src/animate/css_animation_builder", ["angular2/src/ani
   return module.exports;
 });
 
-/**
- @license
-Apache License
-                           Version 2.0, January 2004
-                        http://www.apache.org/licenses/
-
-   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
-
-   1. Definitions.
-
-      "License" shall mean the terms and conditions for use, reproduction,
-      and distribution as defined by Sections 1 through 9 of this document.
-
-      "Licensor" shall mean the copyright owner or entity authorized by
-      the copyright owner that is granting the License.
-
-      "Legal Entity" shall mean the union of the acting entity and all
-      other entities that control, are controlled by, or are under common
-      control with that entity. For the purposes of this definition,
-      "control" means (i) the power, direct or indirect, to cause the
-      direction or management of such entity, whether by contract or
-      otherwise, or (ii) ownership of fifty percent (50%) or more of the
-      outstanding shares, or (iii) beneficial ownership of such entity.
-
-      "You" (or "Your") shall mean an individual or Legal Entity
-      exercising permissions granted by this License.
-
-      "Source" form shall mean the preferred form for making modifications,
-      including but not limited to software source code, documentation
-      source, and configuration files.
-
-      "Object" form shall mean any form resulting from mechanical
-      transformation or translation of a Source form, including but
-      not limited to compiled object code, generated documentation,
-      and conversions to other media types.
-
-      "Work" shall mean the work of authorship, whether in Source or
-      Object form, made available under the License, as indicated by a
-      copyright notice that is included in or attached to the work
-      (an example is provided in the Appendix below).
-
-      "Derivative Works" shall mean any work, whether in Source or Object
-      form, that is based on (or derived from) the Work and for which the
-      editorial revisions, annotations, elaborations, or other modifications
-      represent, as a whole, an original work of authorship. For the purposes
-      of this License, Derivative Works shall not include works that remain
-      separable from, or merely link (or bind by name) to the interfaces of,
-      the Work and Derivative Works thereof.
-
-      "Contribution" shall mean any work of authorship, including
-      the original version of the Work and any modifications or additions
-      to that Work or Derivative Works thereof, that is intentionally
-      submitted to Licensor for inclusion in the Work by the copyright owner
-      or by an individual or Legal Entity authorized to submit on behalf of
-      the copyright owner. For the purposes of this definition, "submitted"
-      means any form of electronic, verbal, or written communication sent
-      to the Licensor or its representatives, including but not limited to
-      communication on electronic mailing lists, source code control systems,
-      and issue tracking systems that are managed by, or on behalf of, the
-      Licensor for the purpose of discussing and improving the Work, but
-      excluding communication that is conspicuously marked or otherwise
-      designated in writing by the copyright owner as "Not a Contribution."
-
-      "Contributor" shall mean Licensor and any individual or Legal Entity
-      on behalf of whom a Contribution has been received by Licensor and
-      subsequently incorporated within the Work.
-
-   2. Grant of Copyright License. Subject to the terms and conditions of
-      this License, each Contributor hereby grants to You a perpetual,
-      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
-      copyright license to reproduce, prepare Derivative Works of,
-      publicly display, publicly perform, sublicense, and distribute the
-      Work and such Derivative Works in Source or Object form.
-
-   3. Grant of Patent License. Subject to the terms and conditions of
-      this License, each Contributor hereby grants to You a perpetual,
-      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
-      (except as stated in this section) patent license to make, have made,
-      use, offer to sell, sell, import, and otherwise transfer the Work,
-      where such license applies only to those patent claims licensable
-      by such Contributor that are necessarily infringed by their
-      Contribution(s) alone or by combination of their Contribution(s)
-      with the Work to which such Contribution(s) was submitted. If You
-      institute patent litigation against any entity (including a
-      cross-claim or counterclaim in a lawsuit) alleging that the Work
-      or a Contribution incorporated within the Work constitutes direct
-      or contributory patent infringement, then any patent licenses
-      granted to You under this License for that Work shall terminate
-      as of the date such litigation is filed.
-
-   4. Redistribution. You may reproduce and distribute copies of the
-      Work or Derivative Works thereof in any medium, with or without
-      modifications, and in Source or Object form, provided that You
-      meet the following conditions:
-
-      (a) You must give any other recipients of the Work or
-          Derivative Works a copy of this License; and
-
-      (b) You must cause any modified files to carry prominent notices
-          stating that You changed the files; and
-
-      (c) You must retain, in the Source form of any Derivative Works
-          that You distribute, all copyright, patent, trademark, and
-          attribution notices from the Source form of the Work,
-          excluding those notices that do not pertain to any part of
-          the Derivative Works; and
-
-      (d) If the Work includes a "NOTICE" text file as part of its
-          distribution, then any Derivative Works that You distribute must
-          include a readable copy of the attribution notices contained
-          within such NOTICE file, excluding those notices that do not
-          pertain to any part of the Derivative Works, in at least one
-          of the following places: within a NOTICE text file distributed
-          as part of the Derivative Works; within the Source form or
-          documentation, if provided along with the Derivative Works; or,
-          within a display generated by the Derivative Works, if and
-          wherever such third-party notices normally appear. The contents
-          of the NOTICE file are for informational purposes only and
-          do not modify the License. You may add Your own attribution
-          notices within Derivative Works that You distribute, alongside
-          or as an addendum to the NOTICE text from the Work, provided
-          that such additional attribution notices cannot be construed
-          as modifying the License.
-
-      You may add Your own copyright statement to Your modifications and
-      may provide additional or different license terms and conditions
-      for use, reproduction, or distribution of Your modifications, or
-      for any such Derivative Works as a whole, provided Your use,
-      reproduction, and distribution of the Work otherwise complies with
-      the conditions stated in this License.
-
-   5. Submission of Contributions. Unless You explicitly state otherwise,
-      any Contribution intentionally submitted for inclusion in the Work
-      by You to the Licensor shall be under the terms and conditions of
-      this License, without any additional terms or conditions.
-      Notwithstanding the above, nothing herein shall supersede or modify
-      the terms of any separate license agreement you may have executed
-      with Licensor regarding such Contributions.
-
-   6. Trademarks. This License does not grant permission to use the trade
-      names, trademarks, service marks, or product names of the Licensor,
-      except as required for reasonable and customary use in describing the
-      origin of the Work and reproducing the content of the NOTICE file.
-
-   7. Disclaimer of Warranty. Unless required by applicable law or
-      agreed to in writing, Licensor provides the Work (and each
-      Contributor provides its Contributions) on an "AS IS" BASIS,
-      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-      implied, including, without limitation, any warranties or conditions
-      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
-      PARTICULAR PURPOSE. You are solely responsible for determining the
-      appropriateness of using or redistributing the Work and assume any
-      risks associated with Your exercise of permissions under this License.
-
-   8. Limitation of Liability. In no event and under no legal theory,
-      whether in tort (including negligence), contract, or otherwise,
-      unless required by applicable law (such as deliberate and grossly
-      negligent acts) or agreed to in writing, shall any Contributor be
-      liable to You for damages, including any direct, indirect, special,
-      incidental, or consequential damages of any character arising as a
-      result of this License or out of the use or inability to use the
-      Work (including but not limited to damages for loss of goodwill,
-      work stoppage, computer failure or malfunction, or any and all
-      other commercial damages or losses), even if such Contributor
-      has been advised of the possibility of such damages.
-
-   9. Accepting Warranty or Additional Liability. While redistributing
-      the Work or Derivative Works thereof, You may choose to offer,
-      and charge a fee for, acceptance of support, warranty, indemnity,
-      or other liability obligations and/or rights consistent with this
-      License. However, in accepting such obligations, You may act only
-      on Your own behalf and on Your sole responsibility, not on behalf
-      of any other Contributor, and only if You agree to indemnify,
-      defend, and hold each Contributor harmless for any liability
-      incurred by, or claims asserted against, such Contributor by reason
-      of your accepting any such warranty or additional liability.
-
-   END OF TERMS AND CONDITIONS
-
-   APPENDIX: How to apply the Apache License to your work.
-
-      To apply the Apache License to your work, attach the following
-      boilerplate notice, with the fields enclosed by brackets "{}"
-      replaced with your own identifying information. (Don't include
-      the brackets!)  The text should be enclosed in the appropriate
-      comment syntax for the file format. We also recommend that a
-      file or class name and description of purpose be included on the
-      same "printed page" as the copyright notice for easier
-      identification within third-party archives.
-
-   Copyright {yyyy} {name of copyright owner}
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-
-
- */
-System.register("rxjs/Subject", ["rxjs/Observable", "rxjs/Subscriber", "rxjs/Subscription", "rxjs/subjects/SubjectSubscription"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var Observable_1 = require("rxjs/Observable");
-  var Subscriber_1 = require("rxjs/Subscriber");
-  var Subscription_1 = require("rxjs/Subscription");
-  var SubjectSubscription_1 = require("rxjs/subjects/SubjectSubscription");
-  var subscriptionAdd = Subscription_1.Subscription.prototype.add;
-  var subscriptionRemove = Subscription_1.Subscription.prototype.remove;
-  var subscriptionUnsubscribe = Subscription_1.Subscription.prototype.unsubscribe;
-  var subscriberNext = Subscriber_1.Subscriber.prototype.next;
-  var subscriberError = Subscriber_1.Subscriber.prototype.error;
-  var subscriberComplete = Subscriber_1.Subscriber.prototype.complete;
-  var _subscriberNext = Subscriber_1.Subscriber.prototype._next;
-  var _subscriberError = Subscriber_1.Subscriber.prototype._error;
-  var _subscriberComplete = Subscriber_1.Subscriber.prototype._complete;
-  var Subject = (function(_super) {
-    __extends(Subject, _super);
-    function Subject() {
-      _super.apply(this, arguments);
-      this.observers = [];
-      this.isUnsubscribed = false;
-      this.dispatching = false;
-      this.errorSignal = false;
-      this.completeSignal = false;
-    }
-    Subject.create = function(source, destination) {
-      return new BidirectionalSubject(source, destination);
-    };
-    Subject.prototype.lift = function(operator) {
-      var subject = new BidirectionalSubject(this, this.destination || this);
-      subject.operator = operator;
-      return subject;
-    };
-    Subject.prototype._subscribe = function(subscriber) {
-      if (subscriber.isUnsubscribed) {
-        return ;
-      } else if (this.errorSignal) {
-        subscriber.error(this.errorInstance);
-        return ;
-      } else if (this.completeSignal) {
-        subscriber.complete();
-        return ;
-      } else if (this.isUnsubscribed) {
-        throw new Error('Cannot subscribe to a disposed Subject.');
-      }
-      this.observers.push(subscriber);
-      return new SubjectSubscription_1.SubjectSubscription(this, subscriber);
-    };
-    Subject.prototype.add = function(subscription) {
-      subscriptionAdd.call(this, subscription);
-    };
-    Subject.prototype.remove = function(subscription) {
-      subscriptionRemove.call(this, subscription);
-    };
-    Subject.prototype.unsubscribe = function() {
-      this.observers = void 0;
-      subscriptionUnsubscribe.call(this);
-    };
-    Subject.prototype.next = function(value) {
-      if (this.isUnsubscribed) {
-        return ;
-      }
-      this.dispatching = true;
-      this._next(value);
-      this.dispatching = false;
-      if (this.errorSignal) {
-        this.error(this.errorInstance);
-      } else if (this.completeSignal) {
-        this.complete();
-      }
-    };
-    Subject.prototype.error = function(err) {
-      if (this.isUnsubscribed || this.completeSignal) {
-        return ;
-      }
-      this.errorSignal = true;
-      this.errorInstance = err;
-      if (this.dispatching) {
-        return ;
-      }
-      this._error(err);
-      this.unsubscribe();
-    };
-    Subject.prototype.complete = function() {
-      if (this.isUnsubscribed || this.errorSignal) {
-        return ;
-      }
-      this.completeSignal = true;
-      if (this.dispatching) {
-        return ;
-      }
-      this._complete();
-      this.unsubscribe();
-    };
-    Subject.prototype._next = function(value) {
-      var index = -1;
-      var observers = this.observers.slice(0);
-      var len = observers.length;
-      while (++index < len) {
-        observers[index].next(value);
-      }
-    };
-    Subject.prototype._error = function(err) {
-      var index = -1;
-      var observers = this.observers;
-      var len = observers.length;
-      this.observers = void 0;
-      this.isUnsubscribed = true;
-      while (++index < len) {
-        observers[index].error(err);
-      }
-      this.isUnsubscribed = false;
-    };
-    Subject.prototype._complete = function() {
-      var index = -1;
-      var observers = this.observers;
-      var len = observers.length;
-      this.observers = void 0;
-      this.isUnsubscribed = true;
-      while (++index < len) {
-        observers[index].complete();
-      }
-      this.isUnsubscribed = false;
-    };
-    return Subject;
-  })(Observable_1.Observable);
-  exports.Subject = Subject;
-  var BidirectionalSubject = (function(_super) {
-    __extends(BidirectionalSubject, _super);
-    function BidirectionalSubject(source, destination) {
-      _super.call(this);
-      this.source = source;
-      this.destination = destination;
-    }
-    BidirectionalSubject.prototype._subscribe = function(subscriber) {
-      var operator = this.operator;
-      return this.source._subscribe.call(this.source, operator ? operator.call(subscriber) : subscriber);
-    };
-    BidirectionalSubject.prototype.next = function(value) {
-      subscriberNext.call(this, value);
-    };
-    BidirectionalSubject.prototype.error = function(err) {
-      subscriberError.call(this, err);
-    };
-    BidirectionalSubject.prototype.complete = function() {
-      subscriberComplete.call(this);
-    };
-    BidirectionalSubject.prototype._next = function(value) {
-      _subscriberNext.call(this, value);
-    };
-    BidirectionalSubject.prototype._error = function(err) {
-      _subscriberError.call(this, err);
-    };
-    BidirectionalSubject.prototype._complete = function() {
-      _subscriberComplete.call(this);
-    };
-    return BidirectionalSubject;
-  })(Subject);
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/observable/fromPromise", ["rxjs/Observable", "rxjs/Subscription", "rxjs/schedulers/immediate"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var Observable_1 = require("rxjs/Observable");
-  var Subscription_1 = require("rxjs/Subscription");
-  var immediate_1 = require("rxjs/schedulers/immediate");
-  var PromiseObservable = (function(_super) {
-    __extends(PromiseObservable, _super);
-    function PromiseObservable(promise, scheduler) {
-      if (scheduler === void 0) {
-        scheduler = immediate_1.immediate;
-      }
-      _super.call(this);
-      this.promise = promise;
-      this.scheduler = scheduler;
-      this._isScalar = false;
-    }
-    PromiseObservable.create = function(promise, scheduler) {
-      if (scheduler === void 0) {
-        scheduler = immediate_1.immediate;
-      }
-      return new PromiseObservable(promise, scheduler);
-    };
-    PromiseObservable.prototype._subscribe = function(subscriber) {
-      var _this = this;
-      var scheduler = this.scheduler;
-      var promise = this.promise;
-      if (scheduler === immediate_1.immediate) {
-        if (this._isScalar) {
-          subscriber.next(this.value);
-          subscriber.complete();
-        } else {
-          promise.then(function(value) {
-            _this._isScalar = true;
-            _this.value = value;
-            subscriber.next(value);
-            subscriber.complete();
-          }, function(err) {
-            return subscriber.error(err);
-          }).then(null, function(err) {
-            setTimeout(function() {
-              throw err;
-            });
-          });
-        }
-      } else {
-        var subscription = new Subscription_1.Subscription();
-        if (this._isScalar) {
-          var value = this.value;
-          subscription.add(scheduler.schedule(dispatchNext, 0, {
-            value: value,
-            subscriber: subscriber
-          }));
-        } else {
-          promise.then(function(value) {
-            _this._isScalar = true;
-            _this.value = value;
-            subscription.add(scheduler.schedule(dispatchNext, 0, {
-              value: value,
-              subscriber: subscriber
-            }));
-          }, function(err) {
-            return subscription.add(scheduler.schedule(dispatchError, 0, {
-              err: err,
-              subscriber: subscriber
-            }));
-          }).then(null, function(err) {
-            scheduler.schedule(function() {
-              throw err;
-            });
-          });
-        }
-        return subscription;
-      }
-    };
-    return PromiseObservable;
-  })(Observable_1.Observable);
-  exports.PromiseObservable = PromiseObservable;
-  function dispatchNext(_a) {
-    var value = _a.value,
-        subscriber = _a.subscriber;
-    subscriber.next(value);
-    subscriber.complete();
-  }
-  function dispatchError(_a) {
-    var err = _a.err,
-        subscriber = _a.subscriber;
-    subscriber.error(err);
-  }
-  Observable_1.Observable.fromPromise = PromiseObservable.create;
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/src/core/di/injector", ["angular2/src/facade/collection", "angular2/src/core/di/provider", "angular2/src/core/di/exceptions", "angular2/src/facade/lang", "angular2/src/core/di/key", "angular2/src/core/di/metadata"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -32597,6 +32137,489 @@ System.register("angular2/src/core/change_detection/jit_proto_change_detector", 
     return JitProtoChangeDetector;
   })();
   exports.JitProtoChangeDetector = JitProtoChangeDetector;
+  global.define = __define;
+  return module.exports;
+});
+
+/**
+ @license
+Apache License
+                           Version 2.0, January 2004
+                        http://www.apache.org/licenses/
+
+   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+   1. Definitions.
+
+      "License" shall mean the terms and conditions for use, reproduction,
+      and distribution as defined by Sections 1 through 9 of this document.
+
+      "Licensor" shall mean the copyright owner or entity authorized by
+      the copyright owner that is granting the License.
+
+      "Legal Entity" shall mean the union of the acting entity and all
+      other entities that control, are controlled by, or are under common
+      control with that entity. For the purposes of this definition,
+      "control" means (i) the power, direct or indirect, to cause the
+      direction or management of such entity, whether by contract or
+      otherwise, or (ii) ownership of fifty percent (50%) or more of the
+      outstanding shares, or (iii) beneficial ownership of such entity.
+
+      "You" (or "Your") shall mean an individual or Legal Entity
+      exercising permissions granted by this License.
+
+      "Source" form shall mean the preferred form for making modifications,
+      including but not limited to software source code, documentation
+      source, and configuration files.
+
+      "Object" form shall mean any form resulting from mechanical
+      transformation or translation of a Source form, including but
+      not limited to compiled object code, generated documentation,
+      and conversions to other media types.
+
+      "Work" shall mean the work of authorship, whether in Source or
+      Object form, made available under the License, as indicated by a
+      copyright notice that is included in or attached to the work
+      (an example is provided in the Appendix below).
+
+      "Derivative Works" shall mean any work, whether in Source or Object
+      form, that is based on (or derived from) the Work and for which the
+      editorial revisions, annotations, elaborations, or other modifications
+      represent, as a whole, an original work of authorship. For the purposes
+      of this License, Derivative Works shall not include works that remain
+      separable from, or merely link (or bind by name) to the interfaces of,
+      the Work and Derivative Works thereof.
+
+      "Contribution" shall mean any work of authorship, including
+      the original version of the Work and any modifications or additions
+      to that Work or Derivative Works thereof, that is intentionally
+      submitted to Licensor for inclusion in the Work by the copyright owner
+      or by an individual or Legal Entity authorized to submit on behalf of
+      the copyright owner. For the purposes of this definition, "submitted"
+      means any form of electronic, verbal, or written communication sent
+      to the Licensor or its representatives, including but not limited to
+      communication on electronic mailing lists, source code control systems,
+      and issue tracking systems that are managed by, or on behalf of, the
+      Licensor for the purpose of discussing and improving the Work, but
+      excluding communication that is conspicuously marked or otherwise
+      designated in writing by the copyright owner as "Not a Contribution."
+
+      "Contributor" shall mean Licensor and any individual or Legal Entity
+      on behalf of whom a Contribution has been received by Licensor and
+      subsequently incorporated within the Work.
+
+   2. Grant of Copyright License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      copyright license to reproduce, prepare Derivative Works of,
+      publicly display, publicly perform, sublicense, and distribute the
+      Work and such Derivative Works in Source or Object form.
+
+   3. Grant of Patent License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      (except as stated in this section) patent license to make, have made,
+      use, offer to sell, sell, import, and otherwise transfer the Work,
+      where such license applies only to those patent claims licensable
+      by such Contributor that are necessarily infringed by their
+      Contribution(s) alone or by combination of their Contribution(s)
+      with the Work to which such Contribution(s) was submitted. If You
+      institute patent litigation against any entity (including a
+      cross-claim or counterclaim in a lawsuit) alleging that the Work
+      or a Contribution incorporated within the Work constitutes direct
+      or contributory patent infringement, then any patent licenses
+      granted to You under this License for that Work shall terminate
+      as of the date such litigation is filed.
+
+   4. Redistribution. You may reproduce and distribute copies of the
+      Work or Derivative Works thereof in any medium, with or without
+      modifications, and in Source or Object form, provided that You
+      meet the following conditions:
+
+      (a) You must give any other recipients of the Work or
+          Derivative Works a copy of this License; and
+
+      (b) You must cause any modified files to carry prominent notices
+          stating that You changed the files; and
+
+      (c) You must retain, in the Source form of any Derivative Works
+          that You distribute, all copyright, patent, trademark, and
+          attribution notices from the Source form of the Work,
+          excluding those notices that do not pertain to any part of
+          the Derivative Works; and
+
+      (d) If the Work includes a "NOTICE" text file as part of its
+          distribution, then any Derivative Works that You distribute must
+          include a readable copy of the attribution notices contained
+          within such NOTICE file, excluding those notices that do not
+          pertain to any part of the Derivative Works, in at least one
+          of the following places: within a NOTICE text file distributed
+          as part of the Derivative Works; within the Source form or
+          documentation, if provided along with the Derivative Works; or,
+          within a display generated by the Derivative Works, if and
+          wherever such third-party notices normally appear. The contents
+          of the NOTICE file are for informational purposes only and
+          do not modify the License. You may add Your own attribution
+          notices within Derivative Works that You distribute, alongside
+          or as an addendum to the NOTICE text from the Work, provided
+          that such additional attribution notices cannot be construed
+          as modifying the License.
+
+      You may add Your own copyright statement to Your modifications and
+      may provide additional or different license terms and conditions
+      for use, reproduction, or distribution of Your modifications, or
+      for any such Derivative Works as a whole, provided Your use,
+      reproduction, and distribution of the Work otherwise complies with
+      the conditions stated in this License.
+
+   5. Submission of Contributions. Unless You explicitly state otherwise,
+      any Contribution intentionally submitted for inclusion in the Work
+      by You to the Licensor shall be under the terms and conditions of
+      this License, without any additional terms or conditions.
+      Notwithstanding the above, nothing herein shall supersede or modify
+      the terms of any separate license agreement you may have executed
+      with Licensor regarding such Contributions.
+
+   6. Trademarks. This License does not grant permission to use the trade
+      names, trademarks, service marks, or product names of the Licensor,
+      except as required for reasonable and customary use in describing the
+      origin of the Work and reproducing the content of the NOTICE file.
+
+   7. Disclaimer of Warranty. Unless required by applicable law or
+      agreed to in writing, Licensor provides the Work (and each
+      Contributor provides its Contributions) on an "AS IS" BASIS,
+      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+      implied, including, without limitation, any warranties or conditions
+      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+      PARTICULAR PURPOSE. You are solely responsible for determining the
+      appropriateness of using or redistributing the Work and assume any
+      risks associated with Your exercise of permissions under this License.
+
+   8. Limitation of Liability. In no event and under no legal theory,
+      whether in tort (including negligence), contract, or otherwise,
+      unless required by applicable law (such as deliberate and grossly
+      negligent acts) or agreed to in writing, shall any Contributor be
+      liable to You for damages, including any direct, indirect, special,
+      incidental, or consequential damages of any character arising as a
+      result of this License or out of the use or inability to use the
+      Work (including but not limited to damages for loss of goodwill,
+      work stoppage, computer failure or malfunction, or any and all
+      other commercial damages or losses), even if such Contributor
+      has been advised of the possibility of such damages.
+
+   9. Accepting Warranty or Additional Liability. While redistributing
+      the Work or Derivative Works thereof, You may choose to offer,
+      and charge a fee for, acceptance of support, warranty, indemnity,
+      or other liability obligations and/or rights consistent with this
+      License. However, in accepting such obligations, You may act only
+      on Your own behalf and on Your sole responsibility, not on behalf
+      of any other Contributor, and only if You agree to indemnify,
+      defend, and hold each Contributor harmless for any liability
+      incurred by, or claims asserted against, such Contributor by reason
+      of your accepting any such warranty or additional liability.
+
+   END OF TERMS AND CONDITIONS
+
+   APPENDIX: How to apply the Apache License to your work.
+
+      To apply the Apache License to your work, attach the following
+      boilerplate notice, with the fields enclosed by brackets "{}"
+      replaced with your own identifying information. (Don't include
+      the brackets!)  The text should be enclosed in the appropriate
+      comment syntax for the file format. We also recommend that a
+      file or class name and description of purpose be included on the
+      same "printed page" as the copyright notice for easier
+      identification within third-party archives.
+
+   Copyright {yyyy} {name of copyright owner}
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+
+ */
+System.register("rxjs/Subject", ["rxjs/Observable", "rxjs/Subscriber", "rxjs/Subscription", "rxjs/subjects/SubjectSubscription"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var Observable_1 = require("rxjs/Observable");
+  var Subscriber_1 = require("rxjs/Subscriber");
+  var Subscription_1 = require("rxjs/Subscription");
+  var SubjectSubscription_1 = require("rxjs/subjects/SubjectSubscription");
+  var subscriptionAdd = Subscription_1.Subscription.prototype.add;
+  var subscriptionRemove = Subscription_1.Subscription.prototype.remove;
+  var subscriptionUnsubscribe = Subscription_1.Subscription.prototype.unsubscribe;
+  var subscriberNext = Subscriber_1.Subscriber.prototype.next;
+  var subscriberError = Subscriber_1.Subscriber.prototype.error;
+  var subscriberComplete = Subscriber_1.Subscriber.prototype.complete;
+  var _subscriberNext = Subscriber_1.Subscriber.prototype._next;
+  var _subscriberError = Subscriber_1.Subscriber.prototype._error;
+  var _subscriberComplete = Subscriber_1.Subscriber.prototype._complete;
+  var Subject = (function(_super) {
+    __extends(Subject, _super);
+    function Subject() {
+      _super.apply(this, arguments);
+      this.observers = [];
+      this.isUnsubscribed = false;
+      this.dispatching = false;
+      this.errorSignal = false;
+      this.completeSignal = false;
+    }
+    Subject.create = function(source, destination) {
+      return new BidirectionalSubject(source, destination);
+    };
+    Subject.prototype.lift = function(operator) {
+      var subject = new BidirectionalSubject(this, this.destination || this);
+      subject.operator = operator;
+      return subject;
+    };
+    Subject.prototype._subscribe = function(subscriber) {
+      if (subscriber.isUnsubscribed) {
+        return ;
+      } else if (this.errorSignal) {
+        subscriber.error(this.errorInstance);
+        return ;
+      } else if (this.completeSignal) {
+        subscriber.complete();
+        return ;
+      } else if (this.isUnsubscribed) {
+        throw new Error('Cannot subscribe to a disposed Subject.');
+      }
+      this.observers.push(subscriber);
+      return new SubjectSubscription_1.SubjectSubscription(this, subscriber);
+    };
+    Subject.prototype.add = function(subscription) {
+      subscriptionAdd.call(this, subscription);
+    };
+    Subject.prototype.remove = function(subscription) {
+      subscriptionRemove.call(this, subscription);
+    };
+    Subject.prototype.unsubscribe = function() {
+      this.observers = void 0;
+      subscriptionUnsubscribe.call(this);
+    };
+    Subject.prototype.next = function(value) {
+      if (this.isUnsubscribed) {
+        return ;
+      }
+      this.dispatching = true;
+      this._next(value);
+      this.dispatching = false;
+      if (this.errorSignal) {
+        this.error(this.errorInstance);
+      } else if (this.completeSignal) {
+        this.complete();
+      }
+    };
+    Subject.prototype.error = function(err) {
+      if (this.isUnsubscribed || this.completeSignal) {
+        return ;
+      }
+      this.errorSignal = true;
+      this.errorInstance = err;
+      if (this.dispatching) {
+        return ;
+      }
+      this._error(err);
+      this.unsubscribe();
+    };
+    Subject.prototype.complete = function() {
+      if (this.isUnsubscribed || this.errorSignal) {
+        return ;
+      }
+      this.completeSignal = true;
+      if (this.dispatching) {
+        return ;
+      }
+      this._complete();
+      this.unsubscribe();
+    };
+    Subject.prototype._next = function(value) {
+      var index = -1;
+      var observers = this.observers.slice(0);
+      var len = observers.length;
+      while (++index < len) {
+        observers[index].next(value);
+      }
+    };
+    Subject.prototype._error = function(err) {
+      var index = -1;
+      var observers = this.observers;
+      var len = observers.length;
+      this.observers = void 0;
+      this.isUnsubscribed = true;
+      while (++index < len) {
+        observers[index].error(err);
+      }
+      this.isUnsubscribed = false;
+    };
+    Subject.prototype._complete = function() {
+      var index = -1;
+      var observers = this.observers;
+      var len = observers.length;
+      this.observers = void 0;
+      this.isUnsubscribed = true;
+      while (++index < len) {
+        observers[index].complete();
+      }
+      this.isUnsubscribed = false;
+    };
+    return Subject;
+  })(Observable_1.Observable);
+  exports.Subject = Subject;
+  var BidirectionalSubject = (function(_super) {
+    __extends(BidirectionalSubject, _super);
+    function BidirectionalSubject(source, destination) {
+      _super.call(this);
+      this.source = source;
+      this.destination = destination;
+    }
+    BidirectionalSubject.prototype._subscribe = function(subscriber) {
+      var operator = this.operator;
+      return this.source._subscribe.call(this.source, operator ? operator.call(subscriber) : subscriber);
+    };
+    BidirectionalSubject.prototype.next = function(value) {
+      subscriberNext.call(this, value);
+    };
+    BidirectionalSubject.prototype.error = function(err) {
+      subscriberError.call(this, err);
+    };
+    BidirectionalSubject.prototype.complete = function() {
+      subscriberComplete.call(this);
+    };
+    BidirectionalSubject.prototype._next = function(value) {
+      _subscriberNext.call(this, value);
+    };
+    BidirectionalSubject.prototype._error = function(err) {
+      _subscriberError.call(this, err);
+    };
+    BidirectionalSubject.prototype._complete = function() {
+      _subscriberComplete.call(this);
+    };
+    return BidirectionalSubject;
+  })(Subject);
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/observable/fromPromise", ["rxjs/Observable", "rxjs/Subscription", "rxjs/schedulers/immediate"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var Observable_1 = require("rxjs/Observable");
+  var Subscription_1 = require("rxjs/Subscription");
+  var immediate_1 = require("rxjs/schedulers/immediate");
+  var PromiseObservable = (function(_super) {
+    __extends(PromiseObservable, _super);
+    function PromiseObservable(promise, scheduler) {
+      if (scheduler === void 0) {
+        scheduler = immediate_1.immediate;
+      }
+      _super.call(this);
+      this.promise = promise;
+      this.scheduler = scheduler;
+      this._isScalar = false;
+    }
+    PromiseObservable.create = function(promise, scheduler) {
+      if (scheduler === void 0) {
+        scheduler = immediate_1.immediate;
+      }
+      return new PromiseObservable(promise, scheduler);
+    };
+    PromiseObservable.prototype._subscribe = function(subscriber) {
+      var _this = this;
+      var scheduler = this.scheduler;
+      var promise = this.promise;
+      if (scheduler === immediate_1.immediate) {
+        if (this._isScalar) {
+          subscriber.next(this.value);
+          subscriber.complete();
+        } else {
+          promise.then(function(value) {
+            _this._isScalar = true;
+            _this.value = value;
+            subscriber.next(value);
+            subscriber.complete();
+          }, function(err) {
+            return subscriber.error(err);
+          }).then(null, function(err) {
+            setTimeout(function() {
+              throw err;
+            });
+          });
+        }
+      } else {
+        var subscription = new Subscription_1.Subscription();
+        if (this._isScalar) {
+          var value = this.value;
+          subscription.add(scheduler.schedule(dispatchNext, 0, {
+            value: value,
+            subscriber: subscriber
+          }));
+        } else {
+          promise.then(function(value) {
+            _this._isScalar = true;
+            _this.value = value;
+            subscription.add(scheduler.schedule(dispatchNext, 0, {
+              value: value,
+              subscriber: subscriber
+            }));
+          }, function(err) {
+            return subscription.add(scheduler.schedule(dispatchError, 0, {
+              err: err,
+              subscriber: subscriber
+            }));
+          }).then(null, function(err) {
+            scheduler.schedule(function() {
+              throw err;
+            });
+          });
+        }
+        return subscription;
+      }
+    };
+    return PromiseObservable;
+  })(Observable_1.Observable);
+  exports.PromiseObservable = PromiseObservable;
+  function dispatchNext(_a) {
+    var value = _a.value,
+        subscriber = _a.subscriber;
+    subscriber.next(value);
+    subscriber.complete();
+  }
+  function dispatchError(_a) {
+    var err = _a.err,
+        subscriber = _a.subscriber;
+    subscriber.error(err);
+  }
+  Observable_1.Observable.fromPromise = PromiseObservable.create;
   global.define = __define;
   return module.exports;
 });
@@ -36259,189 +36282,6 @@ System.register("angular2/src/animate/animation_builder", ["angular2/src/core/di
   return module.exports;
 });
 
-System.register("angular2/src/facade/async", ["angular2/src/facade/lang", "angular2/src/facade/promise", "rxjs/Subject", "rxjs/Observable", "rxjs/observable/fromPromise", "rxjs/operators/toPromise", "rxjs/Subject"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var lang_1 = require("angular2/src/facade/lang");
-  var promise_1 = require("angular2/src/facade/promise");
-  exports.PromiseWrapper = promise_1.PromiseWrapper;
-  exports.Promise = promise_1.Promise;
-  var Subject_1 = require("rxjs/Subject");
-  var Observable_1 = require("rxjs/Observable");
-  require("rxjs/observable/fromPromise");
-  require("rxjs/operators/toPromise");
-  var Subject_2 = require("rxjs/Subject");
-  exports.Subject = Subject_2.Subject;
-  var TimerWrapper = (function() {
-    function TimerWrapper() {}
-    TimerWrapper.setTimeout = function(fn, millis) {
-      return lang_1.global.setTimeout(fn, millis);
-    };
-    TimerWrapper.clearTimeout = function(id) {
-      lang_1.global.clearTimeout(id);
-    };
-    TimerWrapper.setInterval = function(fn, millis) {
-      return lang_1.global.setInterval(fn, millis);
-    };
-    TimerWrapper.clearInterval = function(id) {
-      lang_1.global.clearInterval(id);
-    };
-    return TimerWrapper;
-  })();
-  exports.TimerWrapper = TimerWrapper;
-  var ObservableWrapper = (function() {
-    function ObservableWrapper() {}
-    ObservableWrapper.subscribe = function(emitter, onNext, onError, onComplete) {
-      if (onComplete === void 0) {
-        onComplete = function() {};
-      }
-      onError = (typeof onError === "function") && onError || lang_1.noop;
-      onComplete = (typeof onComplete === "function") && onComplete || lang_1.noop;
-      return emitter.subscribe({
-        next: onNext,
-        error: onError,
-        complete: onComplete
-      });
-    };
-    ObservableWrapper.isObservable = function(obs) {
-      return obs instanceof Observable_1.Observable;
-    };
-    ObservableWrapper.hasSubscribers = function(obs) {
-      return obs.observers.length > 0;
-    };
-    ObservableWrapper.dispose = function(subscription) {
-      subscription.unsubscribe();
-    };
-    ObservableWrapper.callNext = function(emitter, value) {
-      emitter.next(value);
-    };
-    ObservableWrapper.callEmit = function(emitter, value) {
-      emitter.emit(value);
-    };
-    ObservableWrapper.callError = function(emitter, error) {
-      emitter.error(error);
-    };
-    ObservableWrapper.callComplete = function(emitter) {
-      emitter.complete();
-    };
-    ObservableWrapper.fromPromise = function(promise) {
-      return Observable_1.Observable.fromPromise(promise);
-    };
-    ObservableWrapper.toPromise = function(obj) {
-      return obj.toPromise();
-    };
-    return ObservableWrapper;
-  })();
-  exports.ObservableWrapper = ObservableWrapper;
-  var EventEmitter = (function(_super) {
-    __extends(EventEmitter, _super);
-    function EventEmitter(isAsync) {
-      if (isAsync === void 0) {
-        isAsync = true;
-      }
-      _super.call(this);
-      this._isAsync = isAsync;
-    }
-    EventEmitter.prototype.emit = function(value) {
-      _super.prototype.next.call(this, value);
-    };
-    EventEmitter.prototype.next = function(value) {
-      _super.prototype.next.call(this, value);
-    };
-    EventEmitter.prototype.subscribe = function(generatorOrNext, error, complete) {
-      var schedulerFn;
-      var errorFn = function(err) {
-        return null;
-      };
-      var completeFn = function() {
-        return null;
-      };
-      if (generatorOrNext && typeof generatorOrNext === 'object') {
-        schedulerFn = this._isAsync ? function(value) {
-          setTimeout(function() {
-            return generatorOrNext.next(value);
-          });
-        } : function(value) {
-          generatorOrNext.next(value);
-        };
-        if (generatorOrNext.error) {
-          errorFn = this._isAsync ? function(err) {
-            setTimeout(function() {
-              return generatorOrNext.error(err);
-            });
-          } : function(err) {
-            generatorOrNext.error(err);
-          };
-        }
-        if (generatorOrNext.complete) {
-          completeFn = this._isAsync ? function() {
-            setTimeout(function() {
-              return generatorOrNext.complete();
-            });
-          } : function() {
-            generatorOrNext.complete();
-          };
-        }
-      } else {
-        schedulerFn = this._isAsync ? function(value) {
-          setTimeout(function() {
-            return generatorOrNext(value);
-          });
-        } : function(value) {
-          generatorOrNext(value);
-        };
-        if (error) {
-          errorFn = this._isAsync ? function(err) {
-            setTimeout(function() {
-              return error(err);
-            });
-          } : function(err) {
-            error(err);
-          };
-        }
-        if (complete) {
-          completeFn = this._isAsync ? function() {
-            setTimeout(function() {
-              return complete();
-            });
-          } : function() {
-            complete();
-          };
-        }
-      }
-      return _super.prototype.subscribe.call(this, schedulerFn, errorFn, completeFn);
-    };
-    return EventEmitter;
-  })(Subject_1.Subject);
-  exports.EventEmitter = EventEmitter;
-  var Observable = (function(_super) {
-    __extends(Observable, _super);
-    function Observable() {
-      _super.apply(this, arguments);
-    }
-    Observable.prototype.lift = function(operator) {
-      var observable = new Observable();
-      observable.source = this;
-      observable.operator = operator;
-      return observable;
-    };
-    return Observable;
-  })(Observable_1.Observable);
-  exports.Observable = Observable;
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/src/core/di", ["angular2/src/core/di/metadata", "angular2/src/core/di/decorators", "angular2/src/core/di/forward_ref", "angular2/src/core/di/injector", "angular2/src/core/di/provider", "angular2/src/core/di/key", "angular2/src/core/di/exceptions", "angular2/src/core/di/opaque_token"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -36891,6 +36731,189 @@ System.register("angular2/src/core/change_detection/proto_change_detector", ["an
         throw new exceptions_1.BaseException("Does not support more than 9 expressions");
     }
   }
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/facade/async", ["angular2/src/facade/lang", "angular2/src/facade/promise", "rxjs/Subject", "rxjs/Observable", "rxjs/observable/fromPromise", "rxjs/operators/toPromise", "rxjs/Subject"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var lang_1 = require("angular2/src/facade/lang");
+  var promise_1 = require("angular2/src/facade/promise");
+  exports.PromiseWrapper = promise_1.PromiseWrapper;
+  exports.Promise = promise_1.Promise;
+  var Subject_1 = require("rxjs/Subject");
+  var Observable_1 = require("rxjs/Observable");
+  require("rxjs/observable/fromPromise");
+  require("rxjs/operators/toPromise");
+  var Subject_2 = require("rxjs/Subject");
+  exports.Subject = Subject_2.Subject;
+  var TimerWrapper = (function() {
+    function TimerWrapper() {}
+    TimerWrapper.setTimeout = function(fn, millis) {
+      return lang_1.global.setTimeout(fn, millis);
+    };
+    TimerWrapper.clearTimeout = function(id) {
+      lang_1.global.clearTimeout(id);
+    };
+    TimerWrapper.setInterval = function(fn, millis) {
+      return lang_1.global.setInterval(fn, millis);
+    };
+    TimerWrapper.clearInterval = function(id) {
+      lang_1.global.clearInterval(id);
+    };
+    return TimerWrapper;
+  })();
+  exports.TimerWrapper = TimerWrapper;
+  var ObservableWrapper = (function() {
+    function ObservableWrapper() {}
+    ObservableWrapper.subscribe = function(emitter, onNext, onError, onComplete) {
+      if (onComplete === void 0) {
+        onComplete = function() {};
+      }
+      onError = (typeof onError === "function") && onError || lang_1.noop;
+      onComplete = (typeof onComplete === "function") && onComplete || lang_1.noop;
+      return emitter.subscribe({
+        next: onNext,
+        error: onError,
+        complete: onComplete
+      });
+    };
+    ObservableWrapper.isObservable = function(obs) {
+      return obs instanceof Observable_1.Observable;
+    };
+    ObservableWrapper.hasSubscribers = function(obs) {
+      return obs.observers.length > 0;
+    };
+    ObservableWrapper.dispose = function(subscription) {
+      subscription.unsubscribe();
+    };
+    ObservableWrapper.callNext = function(emitter, value) {
+      emitter.next(value);
+    };
+    ObservableWrapper.callEmit = function(emitter, value) {
+      emitter.emit(value);
+    };
+    ObservableWrapper.callError = function(emitter, error) {
+      emitter.error(error);
+    };
+    ObservableWrapper.callComplete = function(emitter) {
+      emitter.complete();
+    };
+    ObservableWrapper.fromPromise = function(promise) {
+      return Observable_1.Observable.fromPromise(promise);
+    };
+    ObservableWrapper.toPromise = function(obj) {
+      return obj.toPromise();
+    };
+    return ObservableWrapper;
+  })();
+  exports.ObservableWrapper = ObservableWrapper;
+  var EventEmitter = (function(_super) {
+    __extends(EventEmitter, _super);
+    function EventEmitter(isAsync) {
+      if (isAsync === void 0) {
+        isAsync = true;
+      }
+      _super.call(this);
+      this._isAsync = isAsync;
+    }
+    EventEmitter.prototype.emit = function(value) {
+      _super.prototype.next.call(this, value);
+    };
+    EventEmitter.prototype.next = function(value) {
+      _super.prototype.next.call(this, value);
+    };
+    EventEmitter.prototype.subscribe = function(generatorOrNext, error, complete) {
+      var schedulerFn;
+      var errorFn = function(err) {
+        return null;
+      };
+      var completeFn = function() {
+        return null;
+      };
+      if (generatorOrNext && typeof generatorOrNext === 'object') {
+        schedulerFn = this._isAsync ? function(value) {
+          setTimeout(function() {
+            return generatorOrNext.next(value);
+          });
+        } : function(value) {
+          generatorOrNext.next(value);
+        };
+        if (generatorOrNext.error) {
+          errorFn = this._isAsync ? function(err) {
+            setTimeout(function() {
+              return generatorOrNext.error(err);
+            });
+          } : function(err) {
+            generatorOrNext.error(err);
+          };
+        }
+        if (generatorOrNext.complete) {
+          completeFn = this._isAsync ? function() {
+            setTimeout(function() {
+              return generatorOrNext.complete();
+            });
+          } : function() {
+            generatorOrNext.complete();
+          };
+        }
+      } else {
+        schedulerFn = this._isAsync ? function(value) {
+          setTimeout(function() {
+            return generatorOrNext(value);
+          });
+        } : function(value) {
+          generatorOrNext(value);
+        };
+        if (error) {
+          errorFn = this._isAsync ? function(err) {
+            setTimeout(function() {
+              return error(err);
+            });
+          } : function(err) {
+            error(err);
+          };
+        }
+        if (complete) {
+          completeFn = this._isAsync ? function() {
+            setTimeout(function() {
+              return complete();
+            });
+          } : function() {
+            complete();
+          };
+        }
+      }
+      return _super.prototype.subscribe.call(this, schedulerFn, errorFn, completeFn);
+    };
+    return EventEmitter;
+  })(Subject_1.Subject);
+  exports.EventEmitter = EventEmitter;
+  var Observable = (function(_super) {
+    __extends(Observable, _super);
+    function Observable() {
+      _super.apply(this, arguments);
+    }
+    Observable.prototype.lift = function(operator) {
+      var observable = new Observable();
+      observable.source = this;
+      observable.operator = operator;
+      return observable;
+    };
+    return Observable;
+  })(Observable_1.Observable);
+  exports.Observable = Observable;
   global.define = __define;
   return module.exports;
 });
@@ -39497,15 +39520,12 @@ System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng
       var app = this._initApp(createNgZone(), providers);
       return app;
     };
-    PlatformRef_.prototype.asyncApplication = function(bindingFn, additionalProviders) {
+    PlatformRef_.prototype.asyncApplication = function(bindingFn) {
       var _this = this;
       var zone = createNgZone();
       var completer = async_1.PromiseWrapper.completer();
       zone.run(function() {
         async_1.PromiseWrapper.then(bindingFn(zone), function(providers) {
-          if (lang_1.isPresent(additionalProviders)) {
-            providers = collection_1.ListWrapper.concat(providers, additionalProviders);
-          }
           completer.resolve(_this._initApp(zone, providers));
         });
       });
@@ -39732,32 +39752,38 @@ System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng
   return module.exports;
 });
 
-System.register("angular2/src/platform/worker_app_common", ["angular2/src/compiler/xhr", "angular2/src/web_workers/worker/xhr_impl", "angular2/src/facade/collection", "angular2/src/compiler/app_root_url", "angular2/src/web_workers/worker/renderer", "angular2/src/facade/lang", "angular2/src/web_workers/shared/message_bus", "angular2/src/core/render/api", "angular2/core", "angular2/common", "angular2/src/web_workers/shared/client_message_broker", "angular2/src/web_workers/shared/service_message_broker", "angular2/src/compiler/compiler", "angular2/src/web_workers/shared/serializer", "angular2/src/web_workers/shared/api", "angular2/src/core/di", "angular2/src/web_workers/shared/render_proto_view_ref_store", "angular2/src/web_workers/shared/render_view_with_fragments_store", "angular2/src/web_workers/worker/event_dispatcher", "angular2/src/facade/async", "angular2/src/web_workers/shared/messaging_api", "angular2/src/facade/async"], true, function(require, exports, module) {
+System.register("angular2/src/web_workers/worker/application_common", ["angular2/src/core/di", "angular2/src/common/forms", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/facade/async", "angular2/src/compiler/xhr", "angular2/src/web_workers/worker/xhr_impl", "angular2/src/compiler/app_root_url", "angular2/src/web_workers/worker/renderer", "angular2/src/core/render/api", "angular2/src/web_workers/shared/client_message_broker", "angular2/src/web_workers/shared/service_message_broker", "angular2/src/web_workers/shared/message_bus", "angular2/core", "angular2/core", "angular2/src/web_workers/shared/serializer", "angular2/src/web_workers/shared/api", "angular2/src/web_workers/shared/render_proto_view_ref_store", "angular2/src/web_workers/shared/render_view_with_fragments_store", "angular2/src/facade/async", "angular2/src/web_workers/shared/messaging_api", "angular2/src/web_workers/worker/event_dispatcher", "angular2/src/compiler/compiler"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
+  var di_1 = require("angular2/src/core/di");
+  var forms_1 = require("angular2/src/common/forms");
+  var lang_1 = require("angular2/src/facade/lang");
+  var exceptions_1 = require("angular2/src/facade/exceptions");
+  var async_1 = require("angular2/src/facade/async");
   var xhr_1 = require("angular2/src/compiler/xhr");
   var xhr_impl_1 = require("angular2/src/web_workers/worker/xhr_impl");
-  var collection_1 = require("angular2/src/facade/collection");
   var app_root_url_1 = require("angular2/src/compiler/app_root_url");
   var renderer_1 = require("angular2/src/web_workers/worker/renderer");
-  var lang_1 = require("angular2/src/facade/lang");
-  var message_bus_1 = require("angular2/src/web_workers/shared/message_bus");
   var api_1 = require("angular2/src/core/render/api");
-  var core_1 = require("angular2/core");
-  var common_1 = require("angular2/common");
   var client_message_broker_1 = require("angular2/src/web_workers/shared/client_message_broker");
   var service_message_broker_1 = require("angular2/src/web_workers/shared/service_message_broker");
-  var compiler_1 = require("angular2/src/compiler/compiler");
+  var message_bus_1 = require("angular2/src/web_workers/shared/message_bus");
+  var core_1 = require("angular2/core");
+  var core = require("angular2/core");
   var serializer_1 = require("angular2/src/web_workers/shared/serializer");
   var api_2 = require("angular2/src/web_workers/shared/api");
-  var di_1 = require("angular2/src/core/di");
   var render_proto_view_ref_store_1 = require("angular2/src/web_workers/shared/render_proto_view_ref_store");
   var render_view_with_fragments_store_1 = require("angular2/src/web_workers/shared/render_view_with_fragments_store");
-  var event_dispatcher_1 = require("angular2/src/web_workers/worker/event_dispatcher");
-  var async_1 = require("angular2/src/facade/async");
-  var messaging_api_1 = require("angular2/src/web_workers/shared/messaging_api");
   var async_2 = require("angular2/src/facade/async");
+  var messaging_api_1 = require("angular2/src/web_workers/shared/messaging_api");
+  var event_dispatcher_1 = require("angular2/src/web_workers/worker/event_dispatcher");
+  var compiler_1 = require("angular2/src/compiler/compiler");
+  function platform(providers) {
+    var platformProviders = lang_1.isPresent(providers) ? [core_1.PLATFORM_COMMON_PROVIDERS, providers] : core_1.PLATFORM_COMMON_PROVIDERS;
+    return core.platform(platformProviders);
+  }
+  exports.platform = platform;
   var PrintLogger = (function() {
     function PrintLogger() {
       this.log = lang_1.print;
@@ -39767,57 +39793,40 @@ System.register("angular2/src/platform/worker_app_common", ["angular2/src/compil
     PrintLogger.prototype.logGroupEnd = function() {};
     return PrintLogger;
   })();
-  exports.WORKER_APP_PLATFORM = lang_1.CONST_EXPR([core_1.PLATFORM_COMMON_PROVIDERS]);
-  exports.WORKER_APP_COMMON_PROVIDERS = lang_1.CONST_EXPR([core_1.APPLICATION_COMMON_PROVIDERS, compiler_1.COMPILER_PROVIDERS, common_1.FORM_PROVIDERS, serializer_1.Serializer, new di_1.Provider(core_1.PLATFORM_PIPES, {
-    useValue: common_1.COMMON_PIPES,
-    multi: true
-  }), new di_1.Provider(core_1.PLATFORM_DIRECTIVES, {
-    useValue: common_1.COMMON_DIRECTIVES,
-    multi: true
-  }), new di_1.Provider(client_message_broker_1.ClientMessageBrokerFactory, {useClass: client_message_broker_1.ClientMessageBrokerFactory_}), new di_1.Provider(service_message_broker_1.ServiceMessageBrokerFactory, {useClass: service_message_broker_1.ServiceMessageBrokerFactory_}), renderer_1.WebWorkerRenderer, new di_1.Provider(api_1.Renderer, {useExisting: renderer_1.WebWorkerRenderer}), new di_1.Provider(api_2.ON_WEB_WORKER, {useValue: true}), render_view_with_fragments_store_1.RenderViewWithFragmentsStore, render_proto_view_ref_store_1.RenderProtoViewRefStore, new di_1.Provider(core_1.ExceptionHandler, {
-    useFactory: _exceptionHandler,
-    deps: []
-  }), xhr_impl_1.WebWorkerXHRImpl, new di_1.Provider(xhr_1.XHR, {useExisting: xhr_impl_1.WebWorkerXHRImpl}), event_dispatcher_1.WebWorkerEventDispatcher]);
-  function _exceptionHandler() {
-    return new core_1.ExceptionHandler(new PrintLogger());
+  function webWorkerProviders(appComponentType, bus, initData) {
+    return [compiler_1.COMPILER_PROVIDERS, serializer_1.Serializer, di_1.provide(message_bus_1.MessageBus, {useValue: bus}), di_1.provide(client_message_broker_1.ClientMessageBrokerFactory, {useClass: client_message_broker_1.ClientMessageBrokerFactory_}), di_1.provide(service_message_broker_1.ServiceMessageBrokerFactory, {useClass: service_message_broker_1.ServiceMessageBrokerFactory_}), renderer_1.WebWorkerRenderer, di_1.provide(api_1.Renderer, {useExisting: renderer_1.WebWorkerRenderer}), di_1.provide(api_2.ON_WEB_WORKER, {useValue: true}), render_view_with_fragments_store_1.RenderViewWithFragmentsStore, render_proto_view_ref_store_1.RenderProtoViewRefStore, di_1.provide(exceptions_1.ExceptionHandler, {
+      useFactory: function() {
+        return new exceptions_1.ExceptionHandler(new PrintLogger());
+      },
+      deps: []
+    }), xhr_impl_1.WebWorkerXHRImpl, di_1.provide(xhr_1.XHR, {useExisting: xhr_impl_1.WebWorkerXHRImpl}), di_1.provide(app_root_url_1.AppRootUrl, {useValue: new app_root_url_1.AppRootUrl(initData['rootUrl'])}), event_dispatcher_1.WebWorkerEventDispatcher, forms_1.FORM_PROVIDERS];
   }
-  function genericWorkerAppProviders(bus, zone) {
+  function bootstrapWebWorkerCommon(appComponentType, bus, appProviders) {
+    if (appProviders === void 0) {
+      appProviders = null;
+    }
     var bootstrapProcess = async_1.PromiseWrapper.completer();
-    bus.attachToZone(zone);
-    bus.initChannel(messaging_api_1.SETUP_CHANNEL, false);
-    var subscription;
-    var emitter = bus.from(messaging_api_1.SETUP_CHANNEL);
-    subscription = async_2.ObservableWrapper.subscribe(emitter, function(initData) {
-      var bindings = collection_1.ListWrapper.concat(exports.WORKER_APP_COMMON_PROVIDERS, [new di_1.Provider(message_bus_1.MessageBus, {useValue: bus}), new di_1.Provider(app_root_url_1.AppRootUrl, {useValue: new app_root_url_1.AppRootUrl(initData['rootUrl'])})]);
-      bootstrapProcess.resolve(bindings);
-      async_2.ObservableWrapper.dispose(subscription);
+    var appPromise = platform().asyncApplication(function(zone) {
+      bus.attachToZone(zone);
+      bus.initChannel(messaging_api_1.SETUP_CHANNEL, false);
+      var subscription;
+      var emitter = bus.from(messaging_api_1.SETUP_CHANNEL);
+      subscription = async_2.ObservableWrapper.subscribe(emitter, function(message) {
+        var bindings = [core_1.APPLICATION_COMMON_PROVIDERS, webWorkerProviders(appComponentType, bus, message)];
+        if (lang_1.isPresent(appProviders)) {
+          bindings.push(appProviders);
+        }
+        bootstrapProcess.resolve(bindings);
+        async_2.ObservableWrapper.dispose(subscription);
+      });
+      async_2.ObservableWrapper.callEmit(bus.to(messaging_api_1.SETUP_CHANNEL), "ready");
+      return bootstrapProcess.promise;
     });
-    async_2.ObservableWrapper.callNext(bus.to(messaging_api_1.SETUP_CHANNEL), "ready");
-    return bootstrapProcess.promise;
+    return async_1.PromiseWrapper.then(appPromise, function(app) {
+      return app.bootstrap(appComponentType);
+    });
   }
-  exports.genericWorkerAppProviders = genericWorkerAppProviders;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("angular2/src/platform/worker_app", ["angular2/src/platform/server/parse5_adapter", "angular2/src/web_workers/shared/post_message_bus", "angular2/src/platform/worker_app_common"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var parse5_adapter_1 = require("angular2/src/platform/server/parse5_adapter");
-  var post_message_bus_1 = require("angular2/src/web_workers/shared/post_message_bus");
-  var worker_app_common_1 = require("angular2/src/platform/worker_app_common");
-  var _postMessage = postMessage;
-  function setupWebWorker(zone) {
-    parse5_adapter_1.Parse5DomAdapter.makeCurrent();
-    var sink = new post_message_bus_1.PostMessageBusSink({postMessage: function(message, transferrables) {
-        _postMessage(message, transferrables);
-      }});
-    var source = new post_message_bus_1.PostMessageBusSource();
-    var bus = new post_message_bus_1.PostMessageBus(sink, source);
-    return worker_app_common_1.genericWorkerAppProviders(bus, zone);
-  }
-  exports.setupWebWorker = setupWebWorker;
+  exports.bootstrapWebWorkerCommon = bootstrapWebWorkerCommon;
   global.define = __define;
   return module.exports;
 });
@@ -39872,35 +39881,6 @@ System.register("angular2/src/core/metadata", ["angular2/src/core/metadata/di", 
   return module.exports;
 });
 
-System.register("angular2/platform/worker_app", ["angular2/src/platform/worker_app_common", "angular2/src/platform/worker_app", "angular2/src/web_workers/shared/client_message_broker", "angular2/src/web_workers/shared/service_message_broker", "angular2/src/web_workers/shared/serializer", "angular2/src/web_workers/shared/message_bus"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  function __export(m) {
-    for (var p in m)
-      if (!exports.hasOwnProperty(p))
-        exports[p] = m[p];
-  }
-  var worker_app_common_1 = require("angular2/src/platform/worker_app_common");
-  exports.WORKER_APP_PLATFORM = worker_app_common_1.WORKER_APP_PLATFORM;
-  exports.genericWorkerAppProviders = worker_app_common_1.genericWorkerAppProviders;
-  __export(require("angular2/src/platform/worker_app"));
-  var client_message_broker_1 = require("angular2/src/web_workers/shared/client_message_broker");
-  exports.ClientMessageBroker = client_message_broker_1.ClientMessageBroker;
-  exports.ClientMessageBrokerFactory = client_message_broker_1.ClientMessageBrokerFactory;
-  exports.FnArg = client_message_broker_1.FnArg;
-  exports.UiArguments = client_message_broker_1.UiArguments;
-  var service_message_broker_1 = require("angular2/src/web_workers/shared/service_message_broker");
-  exports.ReceivedMessage = service_message_broker_1.ReceivedMessage;
-  exports.ServiceMessageBroker = service_message_broker_1.ServiceMessageBroker;
-  exports.ServiceMessageBrokerFactory = service_message_broker_1.ServiceMessageBrokerFactory;
-  var serializer_1 = require("angular2/src/web_workers/shared/serializer");
-  exports.PRIMITIVE = serializer_1.PRIMITIVE;
-  __export(require("angular2/src/web_workers/shared/message_bus"));
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/core", ["angular2/src/core/metadata", "angular2/src/core/util", "angular2/src/core/dev_mode", "angular2/src/core/di", "angular2/src/facade/facade", "angular2/src/core/application_ref", "angular2/src/core/application_tokens", "angular2/src/core/zone", "angular2/src/core/render", "angular2/src/core/linker", "angular2/src/core/debug/debug_element", "angular2/src/core/testability/testability", "angular2/src/core/change_detection", "angular2/src/core/platform_directives_and_pipes", "angular2/src/core/platform_common_providers", "angular2/src/core/application_common_providers", "angular2/src/core/reflection/reflection"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -39939,6 +39919,37 @@ System.register("angular2/core", ["angular2/src/core/metadata", "angular2/src/co
   __export(require("angular2/src/core/platform_common_providers"));
   __export(require("angular2/src/core/application_common_providers"));
   __export(require("angular2/src/core/reflection/reflection"));
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/web_workers/worker/application", ["angular2/src/web_workers/shared/post_message_bus", "angular2/src/web_workers/worker/application_common", "angular2/src/web_workers/shared/message_bus", "angular2/src/platform/server/parse5_adapter"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  function __export(m) {
+    for (var p in m)
+      if (!exports.hasOwnProperty(p))
+        exports[p] = m[p];
+  }
+  var post_message_bus_1 = require("angular2/src/web_workers/shared/post_message_bus");
+  var application_common_1 = require("angular2/src/web_workers/worker/application_common");
+  __export(require("angular2/src/web_workers/shared/message_bus"));
+  var parse5_adapter_1 = require("angular2/src/platform/server/parse5_adapter");
+  var _postMessage = postMessage;
+  function bootstrapWebWorker(appComponentType, componentInjectableProviders) {
+    if (componentInjectableProviders === void 0) {
+      componentInjectableProviders = null;
+    }
+    parse5_adapter_1.Parse5DomAdapter.makeCurrent();
+    var sink = new post_message_bus_1.PostMessageBusSink({postMessage: function(message, transferrables) {
+        _postMessage(message, transferrables);
+      }});
+    var source = new post_message_bus_1.PostMessageBusSource();
+    var bus = new post_message_bus_1.PostMessageBus(sink, source);
+    return application_common_1.bootstrapWebWorkerCommon(appComponentType, bus, componentInjectableProviders);
+  }
+  exports.bootstrapWebWorker = bootstrapWebWorker;
   global.define = __define;
   return module.exports;
 });
@@ -40106,7 +40117,7 @@ System.register("angular2/src/common/pipes", ["angular2/src/common/pipes/async_p
   return module.exports;
 });
 
-System.register("angular2/common", ["angular2/src/common/pipes", "angular2/src/common/directives", "angular2/src/common/forms", "angular2/src/common/common_directives"], true, function(require, exports, module) {
+System.register("angular2/web_worker/worker", ["angular2/src/core/linker/interfaces", "angular2/src/core/metadata", "angular2/src/core/util", "angular2/src/core/di", "angular2/src/common/pipes", "angular2/src/facade/facade", "angular2/src/core/application_ref", "angular2/src/platform/browser/ruler", "angular2/src/platform/browser/title", "angular2/src/compiler/url_resolver", "angular2/src/core/linker", "angular2/src/core/zone", "angular2/src/core/render/api", "angular2/src/common/directives", "angular2/src/common/forms", "angular2/src/core/debug/debug_element", "angular2/src/core/change_detection", "angular2/instrumentation", "angular2/src/web_workers/worker/application", "angular2/src/web_workers/shared/client_message_broker", "angular2/src/web_workers/shared/service_message_broker", "angular2/src/web_workers/shared/serializer"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -40115,31 +40126,49 @@ System.register("angular2/common", ["angular2/src/common/pipes", "angular2/src/c
       if (!exports.hasOwnProperty(p))
         exports[p] = m[p];
   }
+  __export(require("angular2/src/core/linker/interfaces"));
+  __export(require("angular2/src/core/metadata"));
+  __export(require("angular2/src/core/util"));
+  __export(require("angular2/src/core/di"));
   __export(require("angular2/src/common/pipes"));
+  __export(require("angular2/src/facade/facade"));
+  __export(require("angular2/src/core/application_ref"));
+  __export(require("angular2/src/platform/browser/ruler"));
+  __export(require("angular2/src/platform/browser/title"));
+  __export(require("angular2/src/compiler/url_resolver"));
+  __export(require("angular2/src/core/linker"));
+  __export(require("angular2/src/core/zone"));
+  var api_1 = require("angular2/src/core/render/api");
+  exports.Renderer = api_1.Renderer;
+  exports.RenderViewRef = api_1.RenderViewRef;
+  exports.RenderProtoViewRef = api_1.RenderProtoViewRef;
+  exports.RenderFragmentRef = api_1.RenderFragmentRef;
+  exports.RenderViewWithFragments = api_1.RenderViewWithFragments;
+  exports.RenderTemplateCmd = api_1.RenderTemplateCmd;
+  exports.RenderTextCmd = api_1.RenderTextCmd;
+  exports.RenderNgContentCmd = api_1.RenderNgContentCmd;
+  exports.RenderBeginElementCmd = api_1.RenderBeginElementCmd;
+  exports.RenderBeginComponentCmd = api_1.RenderBeginComponentCmd;
+  exports.RenderEmbeddedTemplateCmd = api_1.RenderEmbeddedTemplateCmd;
+  exports.RenderBeginCmd = api_1.RenderBeginCmd;
   __export(require("angular2/src/common/directives"));
   __export(require("angular2/src/common/forms"));
-  __export(require("angular2/src/common/common_directives"));
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("angular2/web_worker/worker", ["angular2/common", "angular2/core", "angular2/platform/worker_app", "angular2/compiler", "angular2/instrumentation", "angular2/src/platform/worker_app"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  function __export(m) {
-    for (var p in m)
-      if (!exports.hasOwnProperty(p))
-        exports[p] = m[p];
-  }
-  __export(require("angular2/common"));
-  __export(require("angular2/core"));
-  __export(require("angular2/platform/worker_app"));
-  var compiler_1 = require("angular2/compiler");
-  exports.UrlResolver = compiler_1.UrlResolver;
-  exports.AppRootUrl = compiler_1.AppRootUrl;
+  var debug_element_1 = require("angular2/src/core/debug/debug_element");
+  exports.DebugElement = debug_element_1.DebugElement;
+  __export(require("angular2/src/core/change_detection"));
   __export(require("angular2/instrumentation"));
-  __export(require("angular2/src/platform/worker_app"));
+  __export(require("angular2/src/web_workers/worker/application"));
+  var client_message_broker_1 = require("angular2/src/web_workers/shared/client_message_broker");
+  exports.ClientMessageBroker = client_message_broker_1.ClientMessageBroker;
+  exports.ClientMessageBrokerFactory = client_message_broker_1.ClientMessageBrokerFactory;
+  exports.FnArg = client_message_broker_1.FnArg;
+  exports.UiArguments = client_message_broker_1.UiArguments;
+  var service_message_broker_1 = require("angular2/src/web_workers/shared/service_message_broker");
+  exports.ReceivedMessage = service_message_broker_1.ReceivedMessage;
+  exports.ServiceMessageBroker = service_message_broker_1.ServiceMessageBroker;
+  exports.ServiceMessageBrokerFactory = service_message_broker_1.ServiceMessageBrokerFactory;
+  var serializer_1 = require("angular2/src/web_workers/shared/serializer");
+  exports.PRIMITIVE = serializer_1.PRIMITIVE;
   global.define = __define;
   return module.exports;
 });

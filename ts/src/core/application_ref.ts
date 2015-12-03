@@ -191,8 +191,8 @@ export abstract class PlatformRef {
    * new application. Once this promise resolves, the application will be
    * constructed in the same manner as a normal `application()`.
    */
-  abstract asyncApplication(bindingFn: (zone: NgZone) => Promise<Array<Type | Provider | any[]>>,
-                            providers?: Array<Type | Provider | any[]>): Promise<ApplicationRef>;
+  abstract asyncApplication(bindingFn: (zone: NgZone) =>
+                                Promise<Array<Type | Provider | any[]>>): Promise<ApplicationRef>;
 
   /**
    * Destroy the Angular platform and all Angular applications on the page.
@@ -217,15 +217,12 @@ export class PlatformRef_ extends PlatformRef {
     return app;
   }
 
-  asyncApplication(bindingFn: (zone: NgZone) => Promise<Array<Type | Provider | any[]>>,
-                   additionalProviders?: Array<Type | Provider | any[]>): Promise<ApplicationRef> {
+  asyncApplication(bindingFn: (zone: NgZone) => Promise<Array<Type | Provider | any[]>>):
+      Promise<ApplicationRef> {
     var zone = createNgZone();
     var completer = PromiseWrapper.completer();
     zone.run(() => {
       PromiseWrapper.then(bindingFn(zone), (providers: Array<Type | Provider | any[]>) => {
-        if (isPresent(additionalProviders)) {
-          providers = ListWrapper.concat(providers, additionalProviders);
-        }
         completer.resolve(this._initApp(zone, providers));
       });
     });

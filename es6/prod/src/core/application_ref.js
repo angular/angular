@@ -131,14 +131,11 @@ export class PlatformRef_ extends PlatformRef {
         var app = this._initApp(createNgZone(), providers);
         return app;
     }
-    asyncApplication(bindingFn, additionalProviders) {
+    asyncApplication(bindingFn) {
         var zone = createNgZone();
         var completer = PromiseWrapper.completer();
         zone.run(() => {
             PromiseWrapper.then(bindingFn(zone), (providers) => {
-                if (isPresent(additionalProviders)) {
-                    providers = ListWrapper.concat(providers, additionalProviders);
-                }
                 completer.resolve(this._initApp(zone, providers));
             });
         });

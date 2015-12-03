@@ -33792,15 +33792,12 @@ System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng
       var app = this._initApp(createNgZone(), providers);
       return app;
     };
-    PlatformRef_.prototype.asyncApplication = function(bindingFn, additionalProviders) {
+    PlatformRef_.prototype.asyncApplication = function(bindingFn) {
       var _this = this;
       var zone = createNgZone();
       var completer = async_1.PromiseWrapper.completer();
       zone.run(function() {
         async_1.PromiseWrapper.then(bindingFn(zone), function(providers) {
-          if (lang_1.isPresent(additionalProviders)) {
-            providers = collection_1.ListWrapper.concat(providers, additionalProviders);
-          }
           completer.resolve(_this._initApp(zone, providers));
         });
       });
