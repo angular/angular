@@ -1,3 +1,4 @@
+import {Injectable} from 'angular2/src/core/di';
 import {
   AsyncTestCompleter,
   inject,
@@ -21,6 +22,7 @@ function microTask(fn: Function): void {
   PromiseWrapper.resolve(null).then((_) => { fn(); });
 }
 
+@Injectable()
 class MockNgZone extends NgZone {
   _onTurnStartStream: EventEmitter<any>;
   get onTurnStart() { return this._onTurnStartStream; }

@@ -1,7 +1,9 @@
+import {Injectable} from 'angular2/src/core/di';
 import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
 
 
+@Injectable()
 export class MockLocationStrategy extends LocationStrategy {
   internalBaseHref: string = '/';
   internalPath: string = '/';
