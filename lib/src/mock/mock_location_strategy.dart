@@ -41,8 +41,8 @@ class MockLocationStrategy extends LocationStrategy {
     this.internalTitle = title;
     var url = path + (query.length > 0 ? ("?" + query) : "");
     this.internalPath = url;
-    var external = this.prepareExternalUrl(url);
-    this.urlChanges.add(external);
+    var externalUrl = this.prepareExternalUrl(url);
+    this.urlChanges.add(externalUrl);
   }
 
   void onPopState(dynamic /* (value: any) => void */ fn) {
