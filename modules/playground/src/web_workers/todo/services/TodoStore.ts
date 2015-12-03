@@ -1,4 +1,4 @@
-import {Injectable} from 'angular2/web_worker/worker';
+import {Injectable} from 'angular2/core';
 import {ListWrapper, Predicate} from 'angular2/src/facade/collection';
 
 // base model for RecordStore

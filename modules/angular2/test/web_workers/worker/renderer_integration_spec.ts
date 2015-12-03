@@ -49,7 +49,6 @@ import {
   RenderViewWithFragmentsStore,
   WebWorkerRenderViewRef
 } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
-import {WebWorkerApplication} from 'angular2/src/web_workers/ui/impl';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {createPairedMessageBuses, PairedMessageBuses} from '../shared/web_worker_test_util';
 import {
@@ -76,7 +75,6 @@ export function main() {
     var renderer = new MessageBasedRenderer(uiMessageBrokerFactory, uiMessageBus, uiSerializer,
                                             uiRenderProtoViewStore, uiRenderViewStore, domRenderer);
     renderer.start();
-    new WebWorkerApplication(null, null);
 
     return webWorkerBrokerFactory;
   }

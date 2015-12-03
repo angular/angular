@@ -1,9 +1,21 @@
-import {bootstrap, UiArguments, FnArg, PRIMITIVE} from "angular2/web_worker/ui";
+import {platform, Provider} from 'angular2/core';
+import {
+  WORKER_RENDER_APP,
+  WORKER_RENDER_PLATFORM,
+  WORKER_SCRIPT,
+  UiArguments,
+  FnArg,
+  PRIMITIVE,
+  ClientMessageBrokerFactory
+} from 'angular2/platform/worker_render';
 
 const ECHO_CHANNEL = "ECHO";
 
-var instance = bootstrap("loader.js");
-var broker = instance.app.createClientMessageBroker(ECHO_CHANNEL, false);
+let ref =
+    platform([WORKER_RENDER_PLATFORM])
+        .application([WORKER_RENDER_APP, new Provider(WORKER_SCRIPT, {useValue: "loader.js"})]);
+let brokerFactory: ClientMessageBrokerFactory = ref.injector.get(ClientMessageBrokerFactory);
+var broker = brokerFactory.createMessageBroker(ECHO_CHANNEL, false);
 
 document.getElementById("send_echo")
     .addEventListener("click", (e) => {
