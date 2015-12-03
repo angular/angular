@@ -39,6 +39,8 @@ var ComponentFixture_ = (function (_super) {
     function ComponentFixture_(componentRef) {
         _super.call(this);
         this.debugElement = new debug_element_1.DebugElement_(view_ref_1.internalView(componentRef.hostView), 0);
+        this.componentInstance = this.debugElement.componentInstance;
+        this.nativeElement = this.debugElement.nativeElement;
         this._componentParentView = view_ref_1.internalView(componentRef.hostView);
         this._componentRef = componentRef;
     }

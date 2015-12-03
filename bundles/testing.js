@@ -1420,6 +1420,8 @@ System.register("angular2/src/testing/test_component_builder", ["angular2/src/co
     function ComponentFixture_(componentRef) {
       _super.call(this);
       this.debugElement = new debug_element_1.DebugElement_(view_ref_1.internalView(componentRef.hostView), 0);
+      this.componentInstance = this.debugElement.componentInstance;
+      this.nativeElement = this.debugElement.nativeElement;
       this._componentParentView = view_ref_1.internalView(componentRef.hostView);
       this._componentRef = componentRef;
     }

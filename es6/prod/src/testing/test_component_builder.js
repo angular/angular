@@ -29,6 +29,8 @@ export class ComponentFixture_ extends ComponentFixture {
     constructor(componentRef) {
         super();
         this.debugElement = new DebugElement_(internalView(componentRef.hostView), 0);
+        this.componentInstance = this.debugElement.componentInstance;
+        this.nativeElement = this.debugElement.nativeElement;
         this._componentParentView = internalView(componentRef.hostView);
         this._componentRef = componentRef;
     }

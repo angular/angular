@@ -27,9 +27,29 @@ import {DebugElement, DebugElement_} from 'angular2/src/core/debug/debug_element
  * Fixture for debugging and testing a component.
  */
 export abstract class ComponentFixture {
+  /**
+   * The DebugElement associated with the root element of this component.
+   */
   debugElement: DebugElement;
 
+  /**
+   * The instance of the root component class.
+   */
+  componentInstance: any;
+
+  /**
+   * The native element at the root of the component.
+   */
+  nativeElement: any;
+
+  /**
+   * Trigger a change detection cycle for the component.
+   */
   abstract detectChanges(): void;
+
+  /**
+   * Trigger component destruction.
+   */
   abstract destroy(): void;
 }
 
@@ -43,6 +63,8 @@ export class ComponentFixture_ extends ComponentFixture {
   constructor(componentRef: ComponentRef) {
     super();
     this.debugElement = new DebugElement_(internalView(<ViewRef>componentRef.hostView), 0);
+    this.componentInstance = this.debugElement.componentInstance;
+    this.nativeElement = this.debugElement.nativeElement;
     this._componentParentView = internalView(<ViewRef>componentRef.hostView);
     this._componentRef = componentRef;
   }
