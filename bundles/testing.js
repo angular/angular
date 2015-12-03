@@ -2007,8 +2007,8 @@ System.register("angular2/src/mock/mock_location_strategy", ["angular2/src/core/
       this.internalTitle = title;
       var url = path + (query.length > 0 ? ('?' + query) : '');
       this.internalPath = url;
-      var external = this.prepareExternalUrl(url);
-      this.urlChanges.push(external);
+      var externalUrl = this.prepareExternalUrl(url);
+      this.urlChanges.push(externalUrl);
     };
     MockLocationStrategy.prototype.onPopState = function(fn) {
       async_1.ObservableWrapper.subscribe(this._subject, fn);

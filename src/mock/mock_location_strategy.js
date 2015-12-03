@@ -46,8 +46,8 @@ var MockLocationStrategy = (function (_super) {
         this.internalTitle = title;
         var url = path + (query.length > 0 ? ('?' + query) : '');
         this.internalPath = url;
-        var external = this.prepareExternalUrl(url);
-        this.urlChanges.push(external);
+        var externalUrl = this.prepareExternalUrl(url);
+        this.urlChanges.push(externalUrl);
     };
     MockLocationStrategy.prototype.onPopState = function (fn) { async_1.ObservableWrapper.subscribe(this._subject, fn); };
     MockLocationStrategy.prototype.getBaseHref = function () { return this.internalBaseHref; };
