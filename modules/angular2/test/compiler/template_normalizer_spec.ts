@@ -241,7 +241,7 @@ export function main() {
            var template = normalizer.normalizeLoadedTemplate(
                dirType,
                new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}),
-               '<link href="b" rel="a"></link>', 'package:some/module/');
+               '<link href="b" rel="a">', 'package:some/module/');
            expect(template.styleUrls).toEqual([]);
          }));
 
@@ -250,8 +250,7 @@ export function main() {
            var template = normalizer.normalizeLoadedTemplate(
                dirType,
                new CompileTemplateMetadata({encapsulation: null, styles: [], styleUrls: []}),
-               '<link href="http://some/external.css" rel="stylesheet"></link>',
-               'package:some/module/');
+               '<link href="http://some/external.css" rel="stylesheet">', 'package:some/module/');
            expect(template.styleUrls).toEqual([]);
          }));
 

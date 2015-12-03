@@ -171,17 +171,14 @@ class TreeBuilder {
   private _consumeEndTag(endTagToken: HtmlToken) {
     var fullName =
         getElementFullName(endTagToken.parts[0], endTagToken.parts[1], this._getParentElement());
-    if (!this._popElement(fullName)) {
-      let msg;
 
-      if (getHtmlTagDefinition(fullName).isVoid) {
-        msg =
-            `Void elements do not have end tags (they can not have content) "${endTagToken.parts[1]}"`;
-      } else {
-        msg = `Unexpected closing tag "${endTagToken.parts[1]}"`;
-      }
-
-      this.errors.push(HtmlTreeError.create(fullName, endTagToken.sourceSpan.start, msg));
+    if (getHtmlTagDefinition(fullName).isVoid) {
+      this.errors.push(
+          HtmlTreeError.create(fullName, endTagToken.sourceSpan.start,
+                               `Void elements do not have end tags "${endTagToken.parts[1]}"`));
+    } else if (!this._popElement(fullName)) {
+      this.errors.push(HtmlTreeError.create(fullName, endTagToken.sourceSpan.start,
+                                            `Unexpected closing tag "${endTagToken.parts[1]}"`));
     }
   }
 

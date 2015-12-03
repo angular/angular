@@ -85,11 +85,6 @@ export function main() {
               ]);
         });
 
-        it('should tolerate end tags for void elements when they have no content', () => {
-          expect(humanizeDom(parser.parse('<input></input>', 'TestComp')))
-              .toEqual([[HtmlElementAst, 'input', 0]]);
-        });
-
         it('should support optional end tags', () => {
           expect(humanizeDom(parser.parse('<div><p>1<p>2</div>', 'TestComp')))
               .toEqual([
@@ -214,30 +209,11 @@ export function main() {
           expect(humanizeErrors(errors)).toEqual([['p', 'Unexpected closing tag "p"', '0:5']]);
         });
 
-        it('should report text content in void elements', () => {
-          let errors = parser.parse('<input>content</input>', 'TestComp').errors;
+        it('should report closing tag for void elements', () => {
+          let errors = parser.parse('<input></input>', 'TestComp').errors;
           expect(errors.length).toEqual(1);
           expect(humanizeErrors(errors))
-              .toEqual([
-                [
-                  'input',
-                  'Void elements do not have end tags (they can not have content) "input"',
-                  '0:14'
-                ]
-              ]);
-        });
-
-        it('should report html content in void elements', () => {
-          let errors = parser.parse('<input><p></p></input>', 'TestComp').errors;
-          expect(errors.length).toEqual(1);
-          expect(humanizeErrors(errors))
-              .toEqual([
-                [
-                  'input',
-                  'Void elements do not have end tags (they can not have content) "input"',
-                  '0:14'
-                ]
-              ]);
+              .toEqual([['input', 'Void elements do not have end tags "input"', '0:7']]);
         });
 
         it('should also report lexer errors', () => {
