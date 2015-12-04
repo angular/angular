@@ -14327,8 +14327,8 @@ System.register("angular2/src/common/forms/directives/validators", ["angular2/co
     multi: true
   }));
   var MaxLengthValidator = (function() {
-    function MaxLengthValidator(maxLength) {
-      this._validator = validators_1.Validators.maxLength(lang_2.NumberWrapper.parseInt(maxLength, 10));
+    function MaxLengthValidator(minLength) {
+      this._validator = validators_1.Validators.maxLength(lang_2.NumberWrapper.parseInt(minLength, 10));
     }
     MaxLengthValidator.prototype.validate = function(c) {
       return this._validator(c);
