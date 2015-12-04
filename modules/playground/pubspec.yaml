@@ -28,6 +28,7 @@ transformers:
         - web/src/model_driven_forms/index.dart
         - web/src/observable_models/index.dart
         - web/src/person_management/index.dart
+        - web/src/routing/index.dart
         - web/src/template_driven_forms/index.dart
         - web/src/zippy_component/index.dart
         - web/src/material/button/index.dart

@@ -41,6 +41,8 @@ import {
 import {RootRouter} from 'angular2/src/router/router';
 
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+import {TEMPLATE_TRANSFORMS} from 'angular2/compiler';
+import {RouterLinkTransform} from 'angular2/src/router/router_link_transform';
 
 export function main() {
   describe('router-link directive', function() {
@@ -53,7 +55,8 @@ export function main() {
       DirectiveResolver,
       provide(Location, {useClass: SpyLocation}),
       provide(ROUTER_PRIMARY_COMPONENT, {useValue: MyComp}),
-      provide(Router, {useClass: RootRouter})
+      provide(Router, {useClass: RootRouter}),
+      provide(TEMPLATE_TRANSFORMS, {useClass: RouterLinkTransform, multi: true})
     ]);
 
     beforeEach(inject([TestComponentBuilder, Router, Location], (tcBuilder, rtr, loc) => {
@@ -320,6 +323,25 @@ export function main() {
                  router.navigateByUrl('/child-with-grandchild/grandchild');
                });
          }));
+
+
+      describe("router link dsl", () => {
+        it('should generate link hrefs with params', inject([AsyncTestCompleter], (async) => {
+             compile('<a href="hello" [router-link]="route:./User(name: name)">{{name}}</a>')
+                 .then((_) => router.config(
+                           [new Route({path: '/user/:name', component: UserCmp, name: 'User'})]))
+                 .then((_) => router.navigateByUrl('/a/b'))
+                 .then((_) => {
+                   fixture.debugElement.componentInstance.name = 'brian';
+                   fixture.detectChanges();
+                   expect(fixture.debugElement.nativeElement).toHaveText('brian');
+                   expect(DOM.getAttribute(
+                              fixture.debugElement.componentViewChildren[0].nativeElement, 'href'))
+                       .toEqual('/user/brian');
+                   async.done();
+                 });
+           }));
+      });
     });
 
     describe('when clicked', () => {
@@ -359,6 +381,7 @@ export function main() {
                .then((_) => router.navigateByUrl('/a/b'))
                .then((_) => {
                  fixture.detectChanges();
+
 
                  var dispatchedEvent = clickOnElement(fixture);
                  expect(DOM.isPrevented(dispatchedEvent)).toBe(true);

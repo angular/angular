@@ -7,7 +7,8 @@ export {
 } from './directive_metadata';
 export {SourceModule, SourceWithImports} from './source_module';
 export {PLATFORM_DIRECTIVES, PLATFORM_PIPES} from 'angular2/src/core/platform_directives_and_pipes';
-
+export * from 'angular2/src/compiler/template_ast';
+export {TEMPLATE_TRANSFORMS} from 'angular2/src/compiler/template_parser';
 import {assertionsEnabled, Type, CONST_EXPR} from 'angular2/src/facade/lang';
 import {provide, Provider} from 'angular2/src/core/di';
 import {TemplateParser} from 'angular2/src/compiler/template_parser';
