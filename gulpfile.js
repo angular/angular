@@ -791,7 +791,7 @@ gulp.task('test.transpiler.unittest',
 // Make a temporary directory and symlink dartium from there (just for this command)
 // so that it can run.
 var dartiumTmpdir = path.join(os.tmpdir(), 'dartium' + new Date().getTime().toString());
-gulp.task('test.dart.angular2_testing/ci', ['!pubget.angular2_testing.dart'], function(done) {
+gulp.task('test.dart.angular2_testing/ci', ['build/pubspec.dart'], function(done) {
   runSequence('test.dart.angular2_testing_symlink', 'test.dart.angular2_testing',
               sequenceComplete(done));
 });
@@ -802,11 +802,8 @@ gulp.task(
 
 gulp.task('test.dart.angular2_testing',
           shell.task(['PATH=$PATH:' + dartiumTmpdir + ' pub run test -p dartium'],
-                     {'cwd': 'modules_dart/angular2_testing'}));
+                     {'cwd': 'dist/dart/angular2_testing'}));
 
-gulp.task(
-    '!pubget.angular2_testing.dart',
-    pubget.dir(gulp, gulpPlugins, {dir: 'modules_dart/angular2_testing', command: DART_SDK.PUB}));
 
 // -----------------
 // Pre-test checks
@@ -865,17 +862,41 @@ gulp.task('test.typings',
 // unmodified and directory structure is preserved.
 //
 // This task is expected to be run after build/tree.dart
-gulp.task('build/pure-packages.dart', function() {
-  var yaml = require('js-yaml');
-
-  return gulp.src([
-               'modules_dart/transform/**/*',
-               '!modules_dart/transform/**/*.proto',
-               '!modules_dart/transform/pubspec.yaml',
-               '!modules_dart/transform/**/packages{,/**}',
-             ])
-      .pipe(gulp.dest(path.join(CONFIG.dest.dart, 'angular2')));
+gulp.task('build/pure-packages.dart', function(done) {
+  runSequence('build/pure-packages.dart/standalone', 'build/pure-packages.dart/license',
+              'build/pure-packages.dart/angular2', sequenceComplete(done));
 });
+
+
+gulp.task('build/pure-packages.dart/standalone', function() {
+  return gulp.src([
+               'modules_dart/**/*',
+               '!modules_dart/**/*.proto',
+               '!modules_dart/**/packages{,/**}',
+               '!modules_dart/payload{,/**}',
+               '!modules_dart/transform{,/**}',
+             ])
+      .pipe(gulp.dest(CONFIG.dest.dart));
+});
+
+gulp.task('build/pure-packages.dart/license',
+          function() {
+            return gulp.src(['LICENSE'])
+                .pipe(gulp.dest(path.join(CONFIG.dest.dart, 'angular2_testing')));
+          })
+
+
+    gulp.task('build/pure-packages.dart/angular2', function() {
+      var yaml = require('js-yaml');
+
+      return gulp.src([
+                   'modules_dart/transform/**/*',
+                   '!modules_dart/transform/**/*.proto',
+                   '!modules_dart/transform/pubspec.yaml',
+                   '!modules_dart/transform/**/packages{,/**}',
+                 ])
+          .pipe(gulp.dest(path.join(CONFIG.dest.dart, 'angular2')));
+    });
 
 // Builds all Dart packages, but does not compile them
 gulp.task('build/packages.dart', function(done) {
