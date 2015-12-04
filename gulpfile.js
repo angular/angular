@@ -1117,22 +1117,8 @@ gulp.task('!bundles.js.umd', ['build.js.dev'], function() {
   return q.all([
     webpack(webPackConf(['angular2/angular2.js'], 'angular2', 'dev')),
     webpack(webPackConf(['angular2/angular2.js'], 'angular2', 'prod')),
-    webpack(webPackConf(
-        [
-          'angular2/angular2.js',
-          'angular2/http.js',
-          'angular2/router/router_link_dsl.js',
-          'angular2/router.js'
-        ],
-        'angular2_all', 'dev')),
-    webpack(webPackConf(
-        [
-          'angular2/angular2.js',
-          'angular2/http.js',
-          'angular2/router/router_link_dsl.js',
-          'angular2/router.js'
-        ],
-        'angular2_all', 'prod'))
+    webpack(webPackConf(['angular2/angular2_all.js'], 'angular2_all', 'dev')),
+    webpack(webPackConf(['angular2/angular2_all.js'], 'angular2_all', 'prod'))
   ]);
 });
 
