@@ -53,8 +53,8 @@ MinLengthValidator = __decorate([
 ], MinLengthValidator);
 const MAX_LENGTH_VALIDATOR = CONST_EXPR(new Provider(NG_VALIDATORS, { useExisting: forwardRef(() => MaxLengthValidator), multi: true }));
 export let MaxLengthValidator = class {
-    constructor(minLength) {
-        this._validator = Validators.maxLength(NumberWrapper.parseInt(minLength, 10));
+    constructor(maxLength) {
+        this._validator = Validators.maxLength(NumberWrapper.parseInt(maxLength, 10));
     }
     validate(c) { return this._validator(c); }
 };

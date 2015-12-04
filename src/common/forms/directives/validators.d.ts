@@ -43,7 +43,7 @@ export declare class MinLengthValidator implements Validator {
 }
 export declare class MaxLengthValidator implements Validator {
     private _validator;
-    constructor(minLength: string);
+    constructor(maxLength: string);
     validate(c: Control): {
         [key: string]: any;
     };
