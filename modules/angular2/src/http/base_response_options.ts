@@ -1,7 +1,7 @@
 import {Injectable} from 'angular2/core';
 import {isPresent, isJsObject} from 'angular2/src/facade/lang';
 import {Headers} from './headers';
-import {ResponseTypes} from './enums';
+import {ResponseType} from './enums';
 import {ResponseOptionsArgs} from './interfaces';
 
 /**
@@ -52,7 +52,7 @@ export class ResponseOptions {
   /**
    * @internal
    */
-  type: ResponseTypes;
+  type: ResponseType;
   url: string;
   constructor({body, status, headers, statusText, type, url}: ResponseOptionsArgs = {}) {
     this.body = isPresent(body) ? body : null;
@@ -147,6 +147,6 @@ export class ResponseOptions {
 @Injectable()
 export class BaseResponseOptions extends ResponseOptions {
   constructor() {
-    super({status: 200, statusText: 'Ok', type: ResponseTypes.Default, headers: new Headers()});
+    super({status: 200, statusText: 'Ok', type: ResponseType.Default, headers: new Headers()});
   }
 }

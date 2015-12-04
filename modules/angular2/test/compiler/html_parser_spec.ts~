@@ -221,6 +221,7 @@ export function main() {
 
         it('should report closing tag for void elements', () => {
           let errors = parser.parse('<input></input>', 'TestComp').errors;
+<<<<<<< HEAD
           expect(errors.length).toEqual(1);
           expect(humanizeErrors(errors))
               .toEqual([['input', 'Void elements do not have end tags "input"', '0:7']]);
@@ -240,6 +241,11 @@ export function main() {
               .toEqual([
                 ['my-cmp', 'Only void and foreign elements can be self closed "my-cmp"', '0:0']
               ]);
+=======
+          expect(errors.length).toEqual(1);
+          expect(humanizeErrors(errors))
+              .toEqual([['input', 'Void elements do not have end tags "input"', '0:7']]);
+>>>>>>> 5660446... feat(HtmlParser): enforce no end tag for void elements
         });
 
         it('should also report lexer errors', () => {

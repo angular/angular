@@ -48,15 +48,14 @@ module.exports = function makeNodeTree(projects, destinationPath) {
     experimentalDecorators: true,
     declaration: true,
     stripInternal: true,
-    mapRoot: '', /* force sourcemaps to use relative path */
     module: 'commonjs',
     moduleResolution: 'classic',
     noEmitOnError: true,
     rootDir: '.',
     rootFilePaths:
         ['angular2/manual_typings/globals.d.ts', 'angular2/typings/es6-shim/es6-shim.d.ts'],
-    sourceMap: true,
-    sourceRoot: '.',
+    inlineSourceMap: true,
+    inlineSources: true,
     target: 'es5'
   });
 
@@ -125,7 +124,7 @@ module.exports = function makeNodeTree(projects, destinationPath) {
   // because of the duplicate definitions.
   // TODO(alexeagle): remove this when typescript releases a fix
   nodeTree = replace(nodeTree, {
-    files: ['angular2/angular2.d.ts'],
+    files: ['angular2/core.d.ts', 'angular2/angular2.d.ts'],
     patterns: [{match: /$/, replacement: 'import "./manual_typings/globals-es6.d.ts";\r\n'}]
   });
 

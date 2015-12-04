@@ -70,8 +70,8 @@ const MAX_LENGTH_VALIDATOR = CONST_EXPR(
 export class MaxLengthValidator implements Validator {
   private _validator: Function;
 
-  constructor(@Attribute("maxlength") minLength: string) {
-    this._validator = Validators.maxLength(NumberWrapper.parseInt(minLength, 10));
+  constructor(@Attribute("maxlength") maxLength: string) {
+    this._validator = Validators.maxLength(NumberWrapper.parseInt(maxLength, 10));
   }
 
   validate(c: Control): {[key: string]: any} { return this._validator(c); }

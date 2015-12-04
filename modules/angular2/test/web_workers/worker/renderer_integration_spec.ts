@@ -211,8 +211,7 @@ export function main() {
       it('should call actions on the element independent of the compilation',
          inject([TestComponentBuilder, Renderer, AsyncTestCompleter],
                 (tcb: TestComponentBuilder, renderer: Renderer, async) => {
-                  tcb.overrideView(MyComp,
-                                   new ViewMetadata({template: '<input [title]="y"></input>'}))
+                  tcb.overrideView(MyComp, new ViewMetadata({template: '<input [title]="y">'}))
                       .createAsync(MyComp)
                       .then((fixture) => {
                         var elRef = fixture.debugElement.componentViewChildren[0].elementRef;
