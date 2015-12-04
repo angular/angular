@@ -74,9 +74,9 @@ const MAX_LENGTH_VALIDATOR =
     providers: const [MAX_LENGTH_VALIDATOR])
 class MaxLengthValidator implements Validator {
   Function _validator;
-  MaxLengthValidator(@Attribute("maxlength") String minLength) {
+  MaxLengthValidator(@Attribute("maxlength") String maxLength) {
     this._validator =
-        Validators.maxLength(NumberWrapper.parseInt(minLength, 10));
+        Validators.maxLength(NumberWrapper.parseInt(maxLength, 10));
   }
   Map<String, dynamic> validate(Control c) {
     return this._validator(c);
