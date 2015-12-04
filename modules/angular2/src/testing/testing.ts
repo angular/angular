@@ -4,7 +4,7 @@
  */
 import {global} from 'angular2/src/facade/lang';
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {bind} from 'angular2/src/core/di';
+import {bind} from 'angular2/core';
 
 import {
   createTestInjectorWithRuntimeCompiler,
