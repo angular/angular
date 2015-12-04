@@ -23427,6 +23427,45 @@ System.register("angular2/src/web_workers/shared/post_message_bus", ["angular2/s
   return module.exports;
 });
 
+System.register("angular2/src/core/angular_entrypoint", ["angular2/src/facade/lang"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      return Reflect.decorate(decorators, target, key, desc);
+    switch (arguments.length) {
+      case 2:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(o)) || o;
+        }, target);
+      case 3:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key)), void 0;
+        }, void 0);
+      case 4:
+        return decorators.reduceRight(function(o, d) {
+          return (d && d(target, key, o)) || o;
+        }, desc);
+    }
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var lang_1 = require("angular2/src/facade/lang");
+  var AngularEntrypoint = (function() {
+    function AngularEntrypoint(name) {
+      this.name = name;
+    }
+    AngularEntrypoint = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [String])], AngularEntrypoint);
+    return AngularEntrypoint;
+  })();
+  exports.AngularEntrypoint = AngularEntrypoint;
+  global.define = __define;
+  return module.exports;
+});
+
 System.register("angular2/compiler", ["angular2/src/compiler/url_resolver", "angular2/src/compiler/xhr", "angular2/src/compiler/compiler", "angular2/src/compiler/app_root_url"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -40083,7 +40122,7 @@ System.register("angular2/src/core/metadata", ["angular2/src/core/metadata/di", 
   return module.exports;
 });
 
-System.register("angular2/platform/worker_app", ["angular2/src/platform/worker_app_common", "angular2/src/platform/worker_app", "angular2/src/web_workers/shared/client_message_broker", "angular2/src/web_workers/shared/service_message_broker", "angular2/src/web_workers/shared/serializer", "angular2/src/web_workers/shared/message_bus"], true, function(require, exports, module) {
+System.register("angular2/platform/worker_app", ["angular2/src/platform/worker_app_common", "angular2/src/platform/worker_app", "angular2/src/web_workers/shared/client_message_broker", "angular2/src/web_workers/shared/service_message_broker", "angular2/src/web_workers/shared/serializer", "angular2/src/web_workers/shared/message_bus", "angular2/src/core/angular_entrypoint"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -40108,6 +40147,8 @@ System.register("angular2/platform/worker_app", ["angular2/src/platform/worker_a
   var serializer_1 = require("angular2/src/web_workers/shared/serializer");
   exports.PRIMITIVE = serializer_1.PRIMITIVE;
   __export(require("angular2/src/web_workers/shared/message_bus"));
+  var angular_entrypoint_1 = require("angular2/src/core/angular_entrypoint");
+  exports.AngularEntrypoint = angular_entrypoint_1.AngularEntrypoint;
   global.define = __define;
   return module.exports;
 });
