@@ -9,12 +9,10 @@ import {Observable as RxObservable} from 'rxjs/Observable';
 import {Subscription} from 'rxjs/Subscription';
 import {Operator} from 'rxjs/Operator';
 
-import 'rxjs/observable/fromPromise';
-import 'rxjs/operators/toPromise';
+import {PromiseObservable} from 'rxjs/observable/fromPromise';
+import {toPromise} from 'rxjs/operator/toPromise';
 
 export {Subject} from 'rxjs/Subject';
-
-
 
 export namespace NodeJS {
   export interface Timer {}
@@ -62,10 +60,10 @@ export class ObservableWrapper {
   static callComplete(emitter: EventEmitter<any>) { emitter.complete(); }
 
   static fromPromise(promise: Promise<any>): Observable<any> {
-    return RxObservable.fromPromise(promise);
+    return PromiseObservable.create(promise);
   }
 
-  static toPromise(obj: Observable<any>): Promise<any> { return (<any>obj).toPromise(); }
+  static toPromise(obj: Observable<any>): Promise<any> { return toPromise.call(obj); }
 }
 
 /**
