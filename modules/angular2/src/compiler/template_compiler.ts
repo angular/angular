@@ -270,9 +270,8 @@ function removeDuplicates(items: CompileDirectiveMetadata[]): CompileDirectiveMe
   let res = [];
   items.forEach(item => {
     let hasMatch =
-        res.filter(r => r.type.name == item.type.name && r.type.moduleUrl == item.type.moduleUrl &&
-                        r.type.runtime == item.type.runtime)
-            .length > 0;
+        res.some(r => r.type.name == item.type.name && r.type.moduleUrl == item.type.moduleUrl &&
+                      r.type.runtime == item.type.runtime);
     if (!hasMatch) {
       res.push(item);
     }
