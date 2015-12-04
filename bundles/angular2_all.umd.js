@@ -56,7 +56,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	__webpack_require__(1);
 	__webpack_require__(233);
-	module.exports = __webpack_require__(248);
+	__webpack_require__(248);
+	module.exports = __webpack_require__(250);
 
 
 /***/ },
@@ -26133,6 +26134,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
+	function __export(m) {
+	    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+	}
 	var runtime_compiler_1 = __webpack_require__(198);
 	var template_compiler_1 = __webpack_require__(199);
 	exports.TemplateCompiler = template_compiler_1.TemplateCompiler;
@@ -26146,9 +26150,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	var platform_directives_and_pipes_1 = __webpack_require__(112);
 	exports.PLATFORM_DIRECTIVES = platform_directives_and_pipes_1.PLATFORM_DIRECTIVES;
 	exports.PLATFORM_PIPES = platform_directives_and_pipes_1.PLATFORM_PIPES;
+	__export(__webpack_require__(206));
+	var template_parser_1 = __webpack_require__(212);
+	exports.TEMPLATE_TRANSFORMS = template_parser_1.TEMPLATE_TRANSFORMS;
 	var lang_1 = __webpack_require__(5);
 	var di_1 = __webpack_require__(28);
-	var template_parser_1 = __webpack_require__(212);
+	var template_parser_2 = __webpack_require__(212);
 	var html_parser_1 = __webpack_require__(213);
 	var template_normalizer_1 = __webpack_require__(220);
 	var runtime_metadata_1 = __webpack_require__(221);
@@ -26172,7 +26179,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    change_detection_2.Lexer,
 	    change_detection_2.Parser,
 	    html_parser_1.HtmlParser,
-	    template_parser_1.TemplateParser,
+	    template_parser_2.TemplateParser,
 	    template_normalizer_1.TemplateNormalizer,
 	    runtime_metadata_1.RuntimeMetadataResolver,
 	    style_compiler_1.StyleCompiler,
@@ -33802,6 +33809,259 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var compiler_1 = __webpack_require__(195);
+	var core_1 = __webpack_require__(25);
+	var router_link_transform_1 = __webpack_require__(249);
+	var lang_1 = __webpack_require__(5);
+	var router_link_transform_2 = __webpack_require__(249);
+	exports.RouterLinkTransform = router_link_transform_2.RouterLinkTransform;
+	/**
+	 * Enables the router link DSL.
+	 *
+	 * Warning. This feature is experimental and can change.
+	 *
+	 * To enable the transformer pass the router link DSL provider to `bootstrap`.
+	 *
+	 * ## Example:
+	 * ```
+	 * import {bootstrap} from 'angular2/platform/browser';
+	 * import {ROUTER_LINK_DSL_PROVIDER} from 'angular2/router/router_link_dsl';
+	 *
+	 * bootstrap(CustomApp, [ROUTER_LINK_DSL_PROVIDER]);
+	 * ```
+	 *
+	 * The DSL allows you to express router links as follows:
+	 * ```
+	 * <a [routerLink]="route:User"> <!-- Same as <a [routerLink]="['User']"> -->
+	 * <a [routerLink]="route:/User"> <!-- Same as <a [routerLink]="['User']"> -->
+	 * <a [routerLink]="route:./User"> <!-- Same as <a [routerLink]="['./User']"> -->
+	 * <a [routerLink]="./User(id: value, name: 'Bob')"> <!-- Same as <a [routerLink]="['./User', {id:
+	 * value, name: 'Bob'}]"> -->
+	 * <a [routerLink]="/User/Modal"> <!-- Same as <a [routerLink]="['/User', 'Modal']"> -->
+	 * <a [routerLink]="User[Modal]"> <!-- Same as <a [routerLink]="['User', ['Modal']]"> -->
+	 * ```
+	 */
+	var ROUTER_LINK_DSL_PROVIDER = lang_1.CONST_EXPR(new core_1.Provider(compiler_1.TEMPLATE_TRANSFORMS, { useClass: router_link_transform_1.RouterLinkTransform, multi: true }));
+
+
+/***/ },
+/* 249 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+	    switch (arguments.length) {
+	        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+	        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+	        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+	    }
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var compiler_1 = __webpack_require__(195);
+	var ast_1 = __webpack_require__(52);
+	var exceptions_1 = __webpack_require__(36);
+	var core_1 = __webpack_require__(25);
+	var parser_1 = __webpack_require__(54);
+	/**
+	 * e.g., './User', 'Modal' in ./User[Modal(param: value)]
+	 */
+	var FixedPart = (function () {
+	    function FixedPart(value) {
+	        this.value = value;
+	    }
+	    return FixedPart;
+	})();
+	/**
+	 * The square bracket
+	 */
+	var AuxiliaryStart = (function () {
+	    function AuxiliaryStart() {
+	    }
+	    return AuxiliaryStart;
+	})();
+	/**
+	 * The square bracket
+	 */
+	var AuxiliaryEnd = (function () {
+	    function AuxiliaryEnd() {
+	    }
+	    return AuxiliaryEnd;
+	})();
+	/**
+	 * e.g., param:value in ./User[Modal(param: value)]
+	 */
+	var Params = (function () {
+	    function Params(ast) {
+	        this.ast = ast;
+	    }
+	    return Params;
+	})();
+	var RouterLinkLexer = (function () {
+	    function RouterLinkLexer(parser, exp) {
+	        this.parser = parser;
+	        this.exp = exp;
+	        this.index = 0;
+	    }
+	    RouterLinkLexer.prototype.tokenize = function () {
+	        var tokens = [];
+	        while (this.index < this.exp.length) {
+	            tokens.push(this._parseToken());
+	        }
+	        return tokens;
+	    };
+	    RouterLinkLexer.prototype._parseToken = function () {
+	        var c = this.exp[this.index];
+	        if (c == '[') {
+	            this.index++;
+	            return new AuxiliaryStart();
+	        }
+	        else if (c == ']') {
+	            this.index++;
+	            return new AuxiliaryEnd();
+	        }
+	        else if (c == '(') {
+	            return this._parseParams();
+	        }
+	        else if (c == '/' && this.index !== 0) {
+	            this.index++;
+	            return this._parseFixedPart();
+	        }
+	        else {
+	            return this._parseFixedPart();
+	        }
+	    };
+	    RouterLinkLexer.prototype._parseParams = function () {
+	        var start = this.index;
+	        for (; this.index < this.exp.length; ++this.index) {
+	            var c = this.exp[this.index];
+	            if (c == ')') {
+	                var paramsContent = this.exp.substring(start + 1, this.index);
+	                this.index++;
+	                return new Params(this.parser.parseBinding("{" + paramsContent + "}", null).ast);
+	            }
+	        }
+	        throw new exceptions_1.BaseException("Cannot find ')'");
+	    };
+	    RouterLinkLexer.prototype._parseFixedPart = function () {
+	        var start = this.index;
+	        var sawNonSlash = false;
+	        for (; this.index < this.exp.length; ++this.index) {
+	            var c = this.exp[this.index];
+	            if (c == '(' || c == '[' || c == ']' || (c == '/' && sawNonSlash)) {
+	                break;
+	            }
+	            if (c != '.' && c != '/') {
+	                sawNonSlash = true;
+	            }
+	        }
+	        var fixed = this.exp.substring(start, this.index);
+	        if (start === this.index || !sawNonSlash || fixed.startsWith('//')) {
+	            throw new exceptions_1.BaseException("Invalid router link");
+	        }
+	        return new FixedPart(fixed);
+	    };
+	    return RouterLinkLexer;
+	})();
+	var RouterLinkAstGenerator = (function () {
+	    function RouterLinkAstGenerator(tokens) {
+	        this.tokens = tokens;
+	        this.index = 0;
+	    }
+	    RouterLinkAstGenerator.prototype.generate = function () { return this._genAuxiliary(); };
+	    RouterLinkAstGenerator.prototype._genAuxiliary = function () {
+	        var arr = [];
+	        for (; this.index < this.tokens.length; this.index++) {
+	            var r = this.tokens[this.index];
+	            if (r instanceof FixedPart) {
+	                arr.push(new ast_1.LiteralPrimitive(r.value));
+	            }
+	            else if (r instanceof Params) {
+	                arr.push(r.ast);
+	            }
+	            else if (r instanceof AuxiliaryEnd) {
+	                break;
+	            }
+	            else if (r instanceof AuxiliaryStart) {
+	                this.index++;
+	                arr.push(this._genAuxiliary());
+	            }
+	        }
+	        return new ast_1.LiteralArray(arr);
+	    };
+	    return RouterLinkAstGenerator;
+	})();
+	var RouterLinkAstTransformer = (function (_super) {
+	    __extends(RouterLinkAstTransformer, _super);
+	    function RouterLinkAstTransformer(parser) {
+	        _super.call(this);
+	        this.parser = parser;
+	    }
+	    RouterLinkAstTransformer.prototype.visitQuote = function (ast) {
+	        if (ast.prefix == "route") {
+	            return parseRouterLinkExpression(this.parser, ast.uninterpretedExpression);
+	        }
+	        else {
+	            return _super.prototype.visitQuote.call(this, ast);
+	        }
+	    };
+	    return RouterLinkAstTransformer;
+	})(ast_1.AstTransformer);
+	function parseRouterLinkExpression(parser, exp) {
+	    var tokens = new RouterLinkLexer(parser, exp.trim()).tokenize();
+	    return new RouterLinkAstGenerator(tokens).generate();
+	}
+	exports.parseRouterLinkExpression = parseRouterLinkExpression;
+	/**
+	 * A compiler plugin that implements the router link DSL.
+	 */
+	var RouterLinkTransform = (function () {
+	    function RouterLinkTransform(parser) {
+	        this.astTransformer = new RouterLinkAstTransformer(parser);
+	    }
+	    RouterLinkTransform.prototype.visitNgContent = function (ast, context) { return ast; };
+	    RouterLinkTransform.prototype.visitEmbeddedTemplate = function (ast, context) { return ast; };
+	    RouterLinkTransform.prototype.visitElement = function (ast, context) {
+	        var _this = this;
+	        var updatedChildren = ast.children.map(function (c) { return c.visit(_this, context); });
+	        var updatedInputs = ast.inputs.map(function (c) { return c.visit(_this, context); });
+	        var updatedDirectives = ast.directives.map(function (c) { return c.visit(_this, context); });
+	        return new compiler_1.ElementAst(ast.name, ast.attrs, updatedInputs, ast.outputs, ast.exportAsVars, updatedDirectives, updatedChildren, ast.ngContentIndex, ast.sourceSpan);
+	    };
+	    RouterLinkTransform.prototype.visitVariable = function (ast, context) { return ast; };
+	    RouterLinkTransform.prototype.visitEvent = function (ast, context) { return ast; };
+	    RouterLinkTransform.prototype.visitElementProperty = function (ast, context) { return ast; };
+	    RouterLinkTransform.prototype.visitAttr = function (ast, context) { return ast; };
+	    RouterLinkTransform.prototype.visitBoundText = function (ast, context) { return ast; };
+	    RouterLinkTransform.prototype.visitText = function (ast, context) { return ast; };
+	    RouterLinkTransform.prototype.visitDirective = function (ast, context) {
+	        var _this = this;
+	        var updatedInputs = ast.inputs.map(function (c) { return c.visit(_this, context); });
+	        return new compiler_1.DirectiveAst(ast.directive, updatedInputs, ast.hostProperties, ast.hostEvents, ast.exportAsVars, ast.sourceSpan);
+	    };
+	    RouterLinkTransform.prototype.visitDirectiveProperty = function (ast, context) {
+	        var transformedValue = ast.value.visit(this.astTransformer);
+	        return new compiler_1.BoundDirectivePropertyAst(ast.directiveName, ast.templateName, transformedValue, ast.sourceSpan);
+	    };
+	    RouterLinkTransform = __decorate([
+	        core_1.Injectable(), 
+	        __metadata('design:paramtypes', [parser_1.Parser])
+	    ], RouterLinkTransform);
+	    return RouterLinkTransform;
+	})();
+	exports.RouterLinkTransform = RouterLinkTransform;
+
+
+/***/ },
+/* 250 */
+/***/ function(module, exports, __webpack_require__) {
+
 	/**
 	 * @module
 	 * @description
@@ -33810,46 +34070,46 @@ return /******/ (function(modules) { // webpackBootstrap
 	function __export(m) {
 	    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 	}
-	var router_1 = __webpack_require__(249);
+	var router_1 = __webpack_require__(251);
 	exports.Router = router_1.Router;
-	var router_outlet_1 = __webpack_require__(265);
+	var router_outlet_1 = __webpack_require__(267);
 	exports.RouterOutlet = router_outlet_1.RouterOutlet;
-	var router_link_1 = __webpack_require__(267);
+	var router_link_1 = __webpack_require__(269);
 	exports.RouterLink = router_link_1.RouterLink;
-	var instruction_1 = __webpack_require__(253);
+	var instruction_1 = __webpack_require__(255);
 	exports.RouteParams = instruction_1.RouteParams;
 	exports.RouteData = instruction_1.RouteData;
-	var platform_location_1 = __webpack_require__(268);
+	var platform_location_1 = __webpack_require__(270);
 	exports.PlatformLocation = platform_location_1.PlatformLocation;
-	var route_registry_1 = __webpack_require__(250);
+	var route_registry_1 = __webpack_require__(252);
 	exports.RouteRegistry = route_registry_1.RouteRegistry;
 	exports.ROUTER_PRIMARY_COMPONENT = route_registry_1.ROUTER_PRIMARY_COMPONENT;
-	var location_strategy_1 = __webpack_require__(262);
+	var location_strategy_1 = __webpack_require__(264);
 	exports.LocationStrategy = location_strategy_1.LocationStrategy;
 	exports.APP_BASE_HREF = location_strategy_1.APP_BASE_HREF;
-	var hash_location_strategy_1 = __webpack_require__(269);
+	var hash_location_strategy_1 = __webpack_require__(271);
 	exports.HashLocationStrategy = hash_location_strategy_1.HashLocationStrategy;
-	var path_location_strategy_1 = __webpack_require__(270);
+	var path_location_strategy_1 = __webpack_require__(272);
 	exports.PathLocationStrategy = path_location_strategy_1.PathLocationStrategy;
-	var location_1 = __webpack_require__(261);
+	var location_1 = __webpack_require__(263);
 	exports.Location = location_1.Location;
-	__export(__webpack_require__(260));
-	__export(__webpack_require__(271));
-	var lifecycle_annotations_1 = __webpack_require__(266);
+	__export(__webpack_require__(262));
+	__export(__webpack_require__(273));
+	var lifecycle_annotations_1 = __webpack_require__(268);
 	exports.CanActivate = lifecycle_annotations_1.CanActivate;
-	var instruction_2 = __webpack_require__(253);
+	var instruction_2 = __webpack_require__(255);
 	exports.Instruction = instruction_2.Instruction;
 	exports.ComponentInstruction = instruction_2.ComponentInstruction;
 	var core_1 = __webpack_require__(25);
 	exports.OpaqueToken = core_1.OpaqueToken;
-	var platform_location_2 = __webpack_require__(268);
-	var location_strategy_2 = __webpack_require__(262);
-	var path_location_strategy_2 = __webpack_require__(270);
-	var router_2 = __webpack_require__(249);
-	var router_outlet_2 = __webpack_require__(265);
-	var router_link_2 = __webpack_require__(267);
-	var route_registry_2 = __webpack_require__(250);
-	var location_2 = __webpack_require__(261);
+	var platform_location_2 = __webpack_require__(270);
+	var location_strategy_2 = __webpack_require__(264);
+	var path_location_strategy_2 = __webpack_require__(272);
+	var router_2 = __webpack_require__(251);
+	var router_outlet_2 = __webpack_require__(267);
+	var router_link_2 = __webpack_require__(269);
+	var route_registry_2 = __webpack_require__(252);
+	var location_2 = __webpack_require__(263);
 	var core_2 = __webpack_require__(25);
 	var lang_1 = __webpack_require__(5);
 	var exceptions_1 = __webpack_require__(36);
@@ -33929,7 +34189,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 249 */
+/* 251 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -33956,9 +34216,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var lang_1 = __webpack_require__(5);
 	var exceptions_1 = __webpack_require__(36);
 	var core_1 = __webpack_require__(25);
-	var route_registry_1 = __webpack_require__(250);
-	var location_1 = __webpack_require__(261);
-	var route_lifecycle_reflector_1 = __webpack_require__(263);
+	var route_registry_1 = __webpack_require__(252);
+	var location_1 = __webpack_require__(263);
+	var route_lifecycle_reflector_1 = __webpack_require__(265);
 	var _resolveToTrue = async_1.PromiseWrapper.resolve(true);
 	var _resolveToFalse = async_1.PromiseWrapper.resolve(false);
 	/**
@@ -34397,7 +34657,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 250 */
+/* 252 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -34420,12 +34680,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	var exceptions_1 = __webpack_require__(36);
 	var reflection_1 = __webpack_require__(38);
 	var core_1 = __webpack_require__(25);
-	var route_config_impl_1 = __webpack_require__(251);
-	var route_recognizer_1 = __webpack_require__(252);
-	var component_recognizer_1 = __webpack_require__(256);
-	var instruction_1 = __webpack_require__(253);
-	var route_config_nomalizer_1 = __webpack_require__(259);
-	var url_parser_1 = __webpack_require__(255);
+	var route_config_impl_1 = __webpack_require__(253);
+	var route_recognizer_1 = __webpack_require__(254);
+	var component_recognizer_1 = __webpack_require__(258);
+	var instruction_1 = __webpack_require__(255);
+	var route_config_nomalizer_1 = __webpack_require__(261);
+	var url_parser_1 = __webpack_require__(257);
 	var _resolveToNull = async_1.PromiseWrapper.resolve(null);
 	/**
 	 * Token used to bind the component with the top-level {@link RouteConfig}s for the
@@ -34796,7 +35056,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 251 */
+/* 253 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -34992,7 +35252,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 252 */
+/* 254 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -35004,8 +35264,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var exceptions_1 = __webpack_require__(36);
 	var promise_1 = __webpack_require__(7);
 	var collection_1 = __webpack_require__(34);
-	var instruction_1 = __webpack_require__(253);
-	var path_recognizer_1 = __webpack_require__(254);
+	var instruction_1 = __webpack_require__(255);
+	var path_recognizer_1 = __webpack_require__(256);
 	var RouteMatch = (function () {
 	    function RouteMatch() {
 	    }
@@ -35107,7 +35367,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 253 */
+/* 255 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -35445,13 +35705,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 254 */
+/* 256 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
 	var exceptions_1 = __webpack_require__(36);
 	var collection_1 = __webpack_require__(34);
-	var url_parser_1 = __webpack_require__(255);
+	var url_parser_1 = __webpack_require__(257);
 	var TouchMap = (function () {
 	    function TouchMap(map) {
 	        var _this = this;
@@ -35694,7 +35954,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 255 */
+/* 257 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -35910,17 +36170,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 256 */
+/* 258 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
 	var exceptions_1 = __webpack_require__(36);
 	var collection_1 = __webpack_require__(34);
 	var async_1 = __webpack_require__(6);
-	var route_recognizer_1 = __webpack_require__(252);
-	var route_config_impl_1 = __webpack_require__(251);
-	var async_route_handler_1 = __webpack_require__(257);
-	var sync_route_handler_1 = __webpack_require__(258);
+	var route_recognizer_1 = __webpack_require__(254);
+	var route_config_impl_1 = __webpack_require__(253);
+	var async_route_handler_1 = __webpack_require__(259);
+	var sync_route_handler_1 = __webpack_require__(260);
 	/**
 	 * `ComponentRecognizer` is responsible for recognizing routes for a single component.
 	 * It is consumed by `RouteRegistry`, which knows how to recognize an entire hierarchy of
@@ -36039,11 +36299,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 257 */
+/* 259 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var instruction_1 = __webpack_require__(253);
+	var instruction_1 = __webpack_require__(255);
 	var AsyncRouteHandler = (function () {
 	    function AsyncRouteHandler(_loader, data) {
 	        if (data === void 0) { data = null; }
@@ -36068,12 +36328,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 258 */
+/* 260 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var async_1 = __webpack_require__(6);
 	var lang_1 = __webpack_require__(5);
-	var instruction_1 = __webpack_require__(253);
+	var instruction_1 = __webpack_require__(255);
 	var SyncRouteHandler = (function () {
 	    function SyncRouteHandler(componentType, data) {
 	        this.componentType = componentType;
@@ -36089,10 +36349,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 259 */
+/* 261 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var route_config_decorator_1 = __webpack_require__(260);
+	var route_config_decorator_1 = __webpack_require__(262);
 	var lang_1 = __webpack_require__(5);
 	var exceptions_1 = __webpack_require__(36);
 	/**
@@ -36186,12 +36446,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 260 */
+/* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var route_config_impl_1 = __webpack_require__(251);
+	var route_config_impl_1 = __webpack_require__(253);
 	var decorators_1 = __webpack_require__(31);
-	var route_config_impl_2 = __webpack_require__(251);
+	var route_config_impl_2 = __webpack_require__(253);
 	exports.Route = route_config_impl_2.Route;
 	exports.Redirect = route_config_impl_2.Redirect;
 	exports.AuxRoute = route_config_impl_2.AuxRoute;
@@ -36200,7 +36460,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 261 */
+/* 263 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -36214,7 +36474,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var location_strategy_1 = __webpack_require__(262);
+	var location_strategy_1 = __webpack_require__(264);
 	var async_1 = __webpack_require__(6);
 	var core_1 = __webpack_require__(25);
 	/**
@@ -36343,7 +36603,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 262 */
+/* 264 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -36430,11 +36690,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 263 */
+/* 265 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var lifecycle_annotations_impl_1 = __webpack_require__(264);
+	var lifecycle_annotations_impl_1 = __webpack_require__(266);
 	var reflection_1 = __webpack_require__(38);
 	function hasLifecycleHook(e, type) {
 	    if (!(type instanceof lang_1.Type))
@@ -36456,7 +36716,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 264 */
+/* 266 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -36501,7 +36761,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 265 */
+/* 267 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -36523,10 +36783,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var lang_1 = __webpack_require__(5);
 	var exceptions_1 = __webpack_require__(36);
 	var core_1 = __webpack_require__(25);
-	var routerMod = __webpack_require__(249);
-	var instruction_1 = __webpack_require__(253);
-	var hookMod = __webpack_require__(266);
-	var route_lifecycle_reflector_1 = __webpack_require__(263);
+	var routerMod = __webpack_require__(251);
+	var instruction_1 = __webpack_require__(255);
+	var hookMod = __webpack_require__(268);
+	var route_lifecycle_reflector_1 = __webpack_require__(265);
 	var _resolveToTrue = async_1.PromiseWrapper.resolve(true);
 	/**
 	 * A router outlet is a placeholder that Angular dynamically fills based on the application's route.
@@ -36668,7 +36928,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 266 */
+/* 268 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -36676,8 +36936,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * to be used by the decorator versions of these annotations.
 	 */
 	var decorators_1 = __webpack_require__(31);
-	var lifecycle_annotations_impl_1 = __webpack_require__(264);
-	var lifecycle_annotations_impl_2 = __webpack_require__(264);
+	var lifecycle_annotations_impl_1 = __webpack_require__(266);
+	var lifecycle_annotations_impl_2 = __webpack_require__(266);
 	exports.routerCanReuse = lifecycle_annotations_impl_2.routerCanReuse;
 	exports.routerCanDeactivate = lifecycle_annotations_impl_2.routerCanDeactivate;
 	exports.routerOnActivate = lifecycle_annotations_impl_2.routerOnActivate;
@@ -36713,7 +36973,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 267 */
+/* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -36729,8 +36989,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	var core_1 = __webpack_require__(25);
 	var lang_1 = __webpack_require__(5);
-	var router_1 = __webpack_require__(249);
-	var location_1 = __webpack_require__(261);
+	var router_1 = __webpack_require__(251);
+	var location_1 = __webpack_require__(263);
 	/**
 	 * The RouterLink directive lets you link to specific parts of your app.
 	 *
@@ -36806,7 +37066,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 268 */
+/* 270 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -36875,7 +37135,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 269 */
+/* 271 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -36898,9 +37158,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
 	var core_1 = __webpack_require__(25);
-	var location_strategy_1 = __webpack_require__(262);
+	var location_strategy_1 = __webpack_require__(264);
 	var lang_1 = __webpack_require__(5);
-	var platform_location_1 = __webpack_require__(268);
+	var platform_location_1 = __webpack_require__(270);
 	/**
 	 * `HashLocationStrategy` is a {@link LocationStrategy} used to configure the
 	 * {@link Location} service to represent its state in the
@@ -36986,7 +37246,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 270 */
+/* 272 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -37011,8 +37271,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var core_1 = __webpack_require__(25);
 	var lang_1 = __webpack_require__(5);
 	var exceptions_1 = __webpack_require__(36);
-	var location_strategy_1 = __webpack_require__(262);
-	var platform_location_1 = __webpack_require__(268);
+	var location_strategy_1 = __webpack_require__(264);
+	var platform_location_1 = __webpack_require__(270);
 	/**
 	 * `PathLocationStrategy` is a {@link LocationStrategy} used to configure the
 	 * {@link Location} service to represent its state in the
@@ -37098,7 +37358,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 271 */
+/* 273 */
 /***/ function(module, exports) {
 
 	
