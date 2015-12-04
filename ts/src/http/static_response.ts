@@ -1,4 +1,4 @@
-import {ResponseTypes} from './enums';
+import {ResponseType} from './enums';
 import {CONST_EXPR, isString, isPresent, Json} from 'angular2/src/facade/lang';
 import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {Headers} from './headers';
@@ -29,7 +29,7 @@ export class Response {
    *
    * Defaults to "default".
    */
-  type: ResponseTypes;
+  type: ResponseType;
   /**
    * True if the response's status is within 200-299
    */

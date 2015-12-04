@@ -5,7 +5,7 @@ function normalizeMethodName(method) {
     if (lang_1.isString(method)) {
         var originalMethod = method;
         method = method.replace(/(\w)(\w*)/g, function (g0, g1, g2) { return g1.toUpperCase() + g2.toLowerCase(); });
-        method = enums_1.RequestMethods[method];
+        method = enums_1.RequestMethod[method];
         if (typeof method !== 'number')
             throw exceptions_1.makeTypeError("Invalid request method. The method \"" + originalMethod + "\" is not supported.");
     }

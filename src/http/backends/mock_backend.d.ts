@@ -1,6 +1,6 @@
 import { Request } from '../static_request';
 import { Response } from '../static_response';
-import { ReadyStates } from '../enums';
+import { ReadyState } from '../enums';
 import { Connection, ConnectionBackend } from '../interfaces';
 /**
  *
@@ -12,7 +12,7 @@ export declare class MockConnection implements Connection {
      * Describes the state of the connection, based on `XMLHttpRequest.readyState`, but with
      * additional states. For example, state 5 indicates an aborted connection.
      */
-    readyState: ReadyStates;
+    readyState: ReadyState;
     /**
      * {@link Request} instance used to create the connection.
      */

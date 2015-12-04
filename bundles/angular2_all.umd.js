@@ -32146,9 +32146,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var headers_1 = __webpack_require__(237);
 	exports.Headers = headers_1.Headers;
 	var enums_1 = __webpack_require__(239);
-	exports.ResponseTypes = enums_1.ResponseTypes;
-	exports.ReadyStates = enums_1.ReadyStates;
-	exports.RequestMethods = enums_1.RequestMethods;
+	exports.ResponseType = enums_1.ResponseType;
+	exports.ReadyState = enums_1.ReadyState;
+	exports.RequestMethod = enums_1.RequestMethod;
 	var url_search_params_1 = __webpack_require__(241);
 	exports.URLSearchParams = url_search_params_1.URLSearchParams;
 	/**
@@ -32519,7 +32519,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Http.prototype.request = function (url, options) {
 	        var responseObservable;
 	        if (lang_1.isString(url)) {
-	            responseObservable = httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethods.Get, url)));
+	            responseObservable = httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethod.Get, url)));
 	        }
 	        else if (url instanceof static_request_1.Request) {
 	            responseObservable = httpRequest(this._backend, url);
@@ -32533,37 +32533,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Performs a request with `get` http method.
 	     */
 	    Http.prototype.get = function (url, options) {
-	        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethods.Get, url)));
+	        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethod.Get, url)));
 	    };
 	    /**
 	     * Performs a request with `post` http method.
 	     */
 	    Http.prototype.post = function (url, body, options) {
-	        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions.merge(new base_request_options_1.RequestOptions({ body: body })), options, enums_1.RequestMethods.Post, url)));
+	        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions.merge(new base_request_options_1.RequestOptions({ body: body })), options, enums_1.RequestMethod.Post, url)));
 	    };
 	    /**
 	     * Performs a request with `put` http method.
 	     */
 	    Http.prototype.put = function (url, body, options) {
-	        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions.merge(new base_request_options_1.RequestOptions({ body: body })), options, enums_1.RequestMethods.Put, url)));
+	        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions.merge(new base_request_options_1.RequestOptions({ body: body })), options, enums_1.RequestMethod.Put, url)));
 	    };
 	    /**
 	     * Performs a request with `delete` http method.
 	     */
 	    Http.prototype.delete = function (url, options) {
-	        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethods.Delete, url)));
+	        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethod.Delete, url)));
 	    };
 	    /**
 	     * Performs a request with `patch` http method.
 	     */
 	    Http.prototype.patch = function (url, body, options) {
-	        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions.merge(new base_request_options_1.RequestOptions({ body: body })), options, enums_1.RequestMethods.Patch, url)));
+	        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions.merge(new base_request_options_1.RequestOptions({ body: body })), options, enums_1.RequestMethod.Patch, url)));
 	    };
 	    /**
 	     * Performs a request with `head` http method.
 	     */
 	    Http.prototype.head = function (url, options) {
-	        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethods.Head, url)));
+	        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethod.Head, url)));
 	    };
 	    Http = __decorate([
 	        core_1.Injectable(), 
@@ -32586,10 +32586,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Jsonp.prototype.request = function (url, options) {
 	        var responseObservable;
 	        if (lang_1.isString(url)) {
-	            url = new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethods.Get, url));
+	            url = new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethod.Get, url));
 	        }
 	        if (url instanceof static_request_1.Request) {
-	            if (url.method !== enums_1.RequestMethods.Get) {
+	            if (url.method !== enums_1.RequestMethod.Get) {
 	                exceptions_1.makeTypeError('JSONP requests must use GET request method.');
 	            }
 	            responseObservable = httpRequest(this._backend, url);
@@ -32658,14 +32658,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * ```typescript
 	 * import {Injectable, Injector} from 'angular2/angular2';
-	 * import {HTTP_PROVIDERS, Http, Request, RequestMethods} from 'angular2/http';
+	 * import {HTTP_PROVIDERS, Http, Request, RequestMethod} from 'angular2/http';
 	 *
 	 * @Injectable()
 	 * class AutoAuthenticator {
 	 *   constructor(public http:Http) {}
 	 *   request(url:string) {
 	 *     return this.http.request(new Request({
-	 *       method: RequestMethods.Get,
+	 *       method: RequestMethod.Get,
 	 *       url: url,
 	 *       search: 'password=123'
 	 *     }));
@@ -32850,7 +32850,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (lang_1.isString(method)) {
 	        var originalMethod = method;
 	        method = method.replace(/(\w)(\w*)/g, function (g0, g1, g2) { return g1.toUpperCase() + g2.toLowerCase(); });
-	        method = enums_1.RequestMethods[method];
+	        method = enums_1.RequestMethod[method];
 	        if (typeof method !== 'number')
 	            throw exceptions_1.makeTypeError("Invalid request method. The method \"" + originalMethod + "\" is not supported.");
 	    }
@@ -32879,42 +32879,42 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Supported http methods.
 	 */
-	(function (RequestMethods) {
-	    RequestMethods[RequestMethods["Get"] = 0] = "Get";
-	    RequestMethods[RequestMethods["Post"] = 1] = "Post";
-	    RequestMethods[RequestMethods["Put"] = 2] = "Put";
-	    RequestMethods[RequestMethods["Delete"] = 3] = "Delete";
-	    RequestMethods[RequestMethods["Options"] = 4] = "Options";
-	    RequestMethods[RequestMethods["Head"] = 5] = "Head";
-	    RequestMethods[RequestMethods["Patch"] = 6] = "Patch";
-	})(exports.RequestMethods || (exports.RequestMethods = {}));
-	var RequestMethods = exports.RequestMethods;
+	(function (RequestMethod) {
+	    RequestMethod[RequestMethod["Get"] = 0] = "Get";
+	    RequestMethod[RequestMethod["Post"] = 1] = "Post";
+	    RequestMethod[RequestMethod["Put"] = 2] = "Put";
+	    RequestMethod[RequestMethod["Delete"] = 3] = "Delete";
+	    RequestMethod[RequestMethod["Options"] = 4] = "Options";
+	    RequestMethod[RequestMethod["Head"] = 5] = "Head";
+	    RequestMethod[RequestMethod["Patch"] = 6] = "Patch";
+	})(exports.RequestMethod || (exports.RequestMethod = {}));
+	var RequestMethod = exports.RequestMethod;
 	/**
 	 * All possible states in which a connection can be, based on
 	 * [States](http://www.w3.org/TR/XMLHttpRequest/#states) from the `XMLHttpRequest` spec, but with an
 	 * additional "CANCELLED" state.
 	 */
-	(function (ReadyStates) {
-	    ReadyStates[ReadyStates["Unsent"] = 0] = "Unsent";
-	    ReadyStates[ReadyStates["Open"] = 1] = "Open";
-	    ReadyStates[ReadyStates["HeadersReceived"] = 2] = "HeadersReceived";
-	    ReadyStates[ReadyStates["Loading"] = 3] = "Loading";
-	    ReadyStates[ReadyStates["Done"] = 4] = "Done";
-	    ReadyStates[ReadyStates["Cancelled"] = 5] = "Cancelled";
-	})(exports.ReadyStates || (exports.ReadyStates = {}));
-	var ReadyStates = exports.ReadyStates;
+	(function (ReadyState) {
+	    ReadyState[ReadyState["Unsent"] = 0] = "Unsent";
+	    ReadyState[ReadyState["Open"] = 1] = "Open";
+	    ReadyState[ReadyState["HeadersReceived"] = 2] = "HeadersReceived";
+	    ReadyState[ReadyState["Loading"] = 3] = "Loading";
+	    ReadyState[ReadyState["Done"] = 4] = "Done";
+	    ReadyState[ReadyState["Cancelled"] = 5] = "Cancelled";
+	})(exports.ReadyState || (exports.ReadyState = {}));
+	var ReadyState = exports.ReadyState;
 	/**
 	 * Acceptable response types to be associated with a {@link Response}, based on
 	 * [ResponseType](https://fetch.spec.whatwg.org/#responsetype) from the Fetch spec.
 	 */
-	(function (ResponseTypes) {
-	    ResponseTypes[ResponseTypes["Basic"] = 0] = "Basic";
-	    ResponseTypes[ResponseTypes["Cors"] = 1] = "Cors";
-	    ResponseTypes[ResponseTypes["Default"] = 2] = "Default";
-	    ResponseTypes[ResponseTypes["Error"] = 3] = "Error";
-	    ResponseTypes[ResponseTypes["Opaque"] = 4] = "Opaque";
-	})(exports.ResponseTypes || (exports.ResponseTypes = {}));
-	var ResponseTypes = exports.ResponseTypes;
+	(function (ResponseType) {
+	    ResponseType[ResponseType["Basic"] = 0] = "Basic";
+	    ResponseType[ResponseType["Cors"] = 1] = "Cors";
+	    ResponseType[ResponseType["Default"] = 2] = "Default";
+	    ResponseType[ResponseType["Error"] = 3] = "Error";
+	    ResponseType[ResponseType["Opaque"] = 4] = "Opaque";
+	})(exports.ResponseType || (exports.ResponseType = {}));
+	var ResponseType = exports.ResponseType;
 
 
 /***/ },
@@ -32956,14 +32956,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example ([live demo](http://plnkr.co/edit/7Wvi3lfLq41aQPKlxB4O?p=preview))
 	 *
 	 * ```typescript
-	 * import {RequestOptions, Request, RequestMethods} from 'angular2/http';
+	 * import {RequestOptions, Request, RequestMethod} from 'angular2/http';
 	 *
 	 * var options = new RequestOptions({
-	 *   method: RequestMethods.Post,
+	 *   method: RequestMethod.Post,
 	 *   url: 'https://google.com'
 	 * });
 	 * var req = new Request(options);
-	 * console.log('req.method:', RequestMethods[req.method]); // Post
+	 * console.log('req.method:', RequestMethod[req.method]); // Post
 	 * console.log('options.url:', options.url); // https://google.com
 	 * ```
 	 */
@@ -32990,15 +32990,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * ### Example ([live demo](http://plnkr.co/edit/6w8XA8YTkDRcPYpdB9dk?p=preview))
 	     *
 	     * ```typescript
-	     * import {RequestOptions, Request, RequestMethods} from 'angular2/http';
+	     * import {RequestOptions, Request, RequestMethod} from 'angular2/http';
 	     *
 	     * var options = new RequestOptions({
-	     *   method: RequestMethods.Post
+	     *   method: RequestMethod.Post
 	     * });
 	     * var req = new Request(options.merge({
 	     *   url: 'https://google.com'
 	     * }));
-	     * console.log('req.method:', RequestMethods[req.method]); // Post
+	     * console.log('req.method:', RequestMethod[req.method]); // Post
 	     * console.log('options.url:', options.url); // null
 	     * console.log('req.url:', req.url); // https://google.com
 	     * ```
@@ -33022,7 +33022,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Subclass of {@link RequestOptions}, with default values.
 	 *
 	 * Default values:
-	 *  * method: {@link RequestMethods RequestMethods.Get}
+	 *  * method: {@link RequestMethod RequestMethod.Get}
 	 *  * headers: empty {@link Headers} object
 	 *
 	 * This class could be extended and bound to the {@link RequestOptions} class
@@ -33049,14 +33049,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example ([live demo](http://plnkr.co/edit/oyBoEvNtDhOSfi9YxaVb?p=preview))
 	 *
 	 * ```
-	 * import {BaseRequestOptions, Request, RequestMethods} from 'angular2/http';
+	 * import {BaseRequestOptions, Request, RequestMethod} from 'angular2/http';
 	 *
 	 * var options = new BaseRequestOptions();
 	 * var req = new Request(options.merge({
-	 *   method: RequestMethods.Post,
+	 *   method: RequestMethod.Post,
 	 *   url: 'https://google.com'
 	 * }));
-	 * console.log('req.method:', RequestMethods[req.method]); // Post
+	 * console.log('req.method:', RequestMethod[req.method]); // Post
 	 * console.log('options.url:', options.url); // null
 	 * console.log('req.url:', req.url); // https://google.com
 	 * ```
@@ -33064,7 +33064,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var BaseRequestOptions = (function (_super) {
 	    __extends(BaseRequestOptions, _super);
 	    function BaseRequestOptions() {
-	        _super.call(this, { method: enums_1.RequestMethods.Get, headers: new headers_1.Headers() });
+	        _super.call(this, { method: enums_1.RequestMethod.Get, headers: new headers_1.Headers() });
 	    }
 	    BaseRequestOptions = __decorate([
 	        core_1.Injectable(), 
@@ -33245,7 +33245,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.request = req;
 	        this.response = new core_2.Observable(function (responseObserver) {
 	            var _xhr = browserXHR.build();
-	            _xhr.open(enums_1.RequestMethods[req.method].toUpperCase(), req.url);
+	            _xhr.open(enums_1.RequestMethod[req.method].toUpperCase(), req.url);
 	            // load event handler
 	            var onLoad = function () {
 	                // responseText is the old-school way of retrieving response (supported by IE8 & 9)
@@ -33277,7 +33277,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            };
 	            // error event handler
 	            var onError = function (err) {
-	                var responseOptions = new base_response_options_1.ResponseOptions({ body: err, type: enums_1.ResponseTypes.Error });
+	                var responseOptions = new base_response_options_1.ResponseOptions({ body: err, type: enums_1.ResponseType.Error });
 	                if (lang_1.isPresent(baseResponseOptions)) {
 	                    responseOptions = baseResponseOptions.merge(responseOptions);
 	                }
@@ -33555,7 +33555,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var BaseResponseOptions = (function (_super) {
 	    __extends(BaseResponseOptions, _super);
 	    function BaseResponseOptions() {
-	        _super.call(this, { status: 200, statusText: 'Ok', type: enums_1.ResponseTypes.Default, headers: new headers_1.Headers() });
+	        _super.call(this, { status: 200, statusText: 'Ok', type: enums_1.ResponseType.Default, headers: new headers_1.Headers() });
 	    }
 	    BaseResponseOptions = __decorate([
 	        core_1.Injectable(), 
@@ -33641,12 +33641,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._dom = _dom;
 	        this.baseResponseOptions = baseResponseOptions;
 	        this._finished = false;
-	        if (req.method !== enums_1.RequestMethods.Get) {
+	        if (req.method !== enums_1.RequestMethod.Get) {
 	            throw exceptions_1.makeTypeError(JSONP_ERR_WRONG_METHOD);
 	        }
 	        this.request = req;
 	        this.response = new core_2.Observable(function (responseObserver) {
-	            _this.readyState = enums_1.ReadyStates.Loading;
+	            _this.readyState = enums_1.ReadyState.Loading;
 	            var id = _this._id = _dom.nextRequestID();
 	            _dom.exposeConnection(id, _this);
 	            // Workaround Dart
@@ -33661,12 +33661,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	            var script = _this._script = _dom.build(url);
 	            var onLoad = function (event) {
-	                if (_this.readyState === enums_1.ReadyStates.Cancelled)
+	                if (_this.readyState === enums_1.ReadyState.Cancelled)
 	                    return;
-	                _this.readyState = enums_1.ReadyStates.Done;
+	                _this.readyState = enums_1.ReadyState.Done;
 	                _dom.cleanup(script);
 	                if (!_this._finished) {
-	                    var responseOptions_1 = new base_response_options_1.ResponseOptions({ body: JSONP_ERR_NO_CALLBACK, type: enums_1.ResponseTypes.Error, url: url });
+	                    var responseOptions_1 = new base_response_options_1.ResponseOptions({ body: JSONP_ERR_NO_CALLBACK, type: enums_1.ResponseType.Error, url: url });
 	                    if (lang_1.isPresent(baseResponseOptions)) {
 	                        responseOptions_1 = baseResponseOptions.merge(responseOptions_1);
 	                    }
@@ -33681,11 +33681,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	                responseObserver.complete();
 	            };
 	            var onError = function (error) {
-	                if (_this.readyState === enums_1.ReadyStates.Cancelled)
+	                if (_this.readyState === enums_1.ReadyState.Cancelled)
 	                    return;
-	                _this.readyState = enums_1.ReadyStates.Done;
+	                _this.readyState = enums_1.ReadyState.Done;
 	                _dom.cleanup(script);
-	                var responseOptions = new base_response_options_1.ResponseOptions({ body: error.message, type: enums_1.ResponseTypes.Error });
+	                var responseOptions = new base_response_options_1.ResponseOptions({ body: error.message, type: enums_1.ResponseType.Error });
 	                if (lang_1.isPresent(baseResponseOptions)) {
 	                    responseOptions = baseResponseOptions.merge(responseOptions);
 	                }
@@ -33695,7 +33695,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            script.addEventListener('error', onError);
 	            _dom.send(script);
 	            return function () {
-	                _this.readyState = enums_1.ReadyStates.Cancelled;
+	                _this.readyState = enums_1.ReadyState.Cancelled;
 	                script.removeEventListener('load', onLoad);
 	                script.removeEventListener('error', onError);
 	                if (lang_1.isPresent(script)) {
@@ -33708,7 +33708,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // Don't leak connections
 	        this._finished = true;
 	        this._dom.removeConnection(this._id);
-	        if (this.readyState === enums_1.ReadyStates.Cancelled)
+	        if (this.readyState === enums_1.ReadyState.Cancelled)
 	            return;
 	        this._responseData = data;
 	    };

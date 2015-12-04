@@ -12,7 +12,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 import { Injectable } from 'angular2/core';
 import { isPresent } from 'angular2/src/facade/lang';
 import { Headers } from './headers';
-import { ResponseTypes } from './enums';
+import { ResponseType } from './enums';
 /**
  * Creates a response options object to be optionally provided when instantiating a
  * {@link Response}.
@@ -130,7 +130,7 @@ export class ResponseOptions {
  */
 export let BaseResponseOptions = class extends ResponseOptions {
     constructor() {
-        super({ status: 200, statusText: 'Ok', type: ResponseTypes.Default, headers: new Headers() });
+        super({ status: 200, statusText: 'Ok', type: ResponseType.Default, headers: new Headers() });
     }
 };
 BaseResponseOptions = __decorate([

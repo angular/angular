@@ -25,7 +25,7 @@ require('rxjs/operators/take');
 var MockConnection = (function () {
     function MockConnection(req) {
         this.response = new ReplaySubject_1.ReplaySubject(1).take(1);
-        this.readyState = enums_1.ReadyStates.Open;
+        this.readyState = enums_1.ReadyState.Open;
         this.request = req;
     }
     /**
@@ -43,10 +43,10 @@ var MockConnection = (function () {
      *
      */
     MockConnection.prototype.mockRespond = function (res) {
-        if (this.readyState === enums_1.ReadyStates.Done || this.readyState === enums_1.ReadyStates.Cancelled) {
+        if (this.readyState === enums_1.ReadyState.Done || this.readyState === enums_1.ReadyState.Cancelled) {
             throw new exceptions_1.BaseException('Connection has already been resolved');
         }
-        this.readyState = enums_1.ReadyStates.Done;
+        this.readyState = enums_1.ReadyState.Done;
         this.response.next(res);
         this.response.complete();
     };
@@ -70,7 +70,7 @@ var MockConnection = (function () {
      */
     MockConnection.prototype.mockError = function (err) {
         // Matches XHR semantics
-        this.readyState = enums_1.ReadyStates.Done;
+        this.readyState = enums_1.ReadyState.Done;
         this.response.error(err);
     };
     return MockConnection;

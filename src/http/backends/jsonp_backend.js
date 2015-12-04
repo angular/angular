@@ -39,12 +39,12 @@ var JSONPConnection_ = (function (_super) {
         this._dom = _dom;
         this.baseResponseOptions = baseResponseOptions;
         this._finished = false;
-        if (req.method !== enums_1.RequestMethods.Get) {
+        if (req.method !== enums_1.RequestMethod.Get) {
             throw exceptions_1.makeTypeError(JSONP_ERR_WRONG_METHOD);
         }
         this.request = req;
         this.response = new core_2.Observable(function (responseObserver) {
-            _this.readyState = enums_1.ReadyStates.Loading;
+            _this.readyState = enums_1.ReadyState.Loading;
             var id = _this._id = _dom.nextRequestID();
             _dom.exposeConnection(id, _this);
             // Workaround Dart
@@ -59,12 +59,12 @@ var JSONPConnection_ = (function (_super) {
             }
             var script = _this._script = _dom.build(url);
             var onLoad = function (event) {
-                if (_this.readyState === enums_1.ReadyStates.Cancelled)
+                if (_this.readyState === enums_1.ReadyState.Cancelled)
                     return;
-                _this.readyState = enums_1.ReadyStates.Done;
+                _this.readyState = enums_1.ReadyState.Done;
                 _dom.cleanup(script);
                 if (!_this._finished) {
-                    var responseOptions_1 = new base_response_options_1.ResponseOptions({ body: JSONP_ERR_NO_CALLBACK, type: enums_1.ResponseTypes.Error, url: url });
+                    var responseOptions_1 = new base_response_options_1.ResponseOptions({ body: JSONP_ERR_NO_CALLBACK, type: enums_1.ResponseType.Error, url: url });
                     if (lang_1.isPresent(baseResponseOptions)) {
                         responseOptions_1 = baseResponseOptions.merge(responseOptions_1);
                     }
@@ -79,11 +79,11 @@ var JSONPConnection_ = (function (_super) {
                 responseObserver.complete();
             };
             var onError = function (error) {
-                if (_this.readyState === enums_1.ReadyStates.Cancelled)
+                if (_this.readyState === enums_1.ReadyState.Cancelled)
                     return;
-                _this.readyState = enums_1.ReadyStates.Done;
+                _this.readyState = enums_1.ReadyState.Done;
                 _dom.cleanup(script);
-                var responseOptions = new base_response_options_1.ResponseOptions({ body: error.message, type: enums_1.ResponseTypes.Error });
+                var responseOptions = new base_response_options_1.ResponseOptions({ body: error.message, type: enums_1.ResponseType.Error });
                 if (lang_1.isPresent(baseResponseOptions)) {
                     responseOptions = baseResponseOptions.merge(responseOptions);
                 }
@@ -93,7 +93,7 @@ var JSONPConnection_ = (function (_super) {
             script.addEventListener('error', onError);
             _dom.send(script);
             return function () {
-                _this.readyState = enums_1.ReadyStates.Cancelled;
+                _this.readyState = enums_1.ReadyState.Cancelled;
                 script.removeEventListener('load', onLoad);
                 script.removeEventListener('error', onError);
                 if (lang_1.isPresent(script)) {
@@ -106,7 +106,7 @@ var JSONPConnection_ = (function (_super) {
         // Don't leak connections
         this._finished = true;
         this._dom.removeConnection(this._id);
-        if (this.readyState === enums_1.ReadyStates.Cancelled)
+        if (this.readyState === enums_1.ReadyState.Cancelled)
             return;
         this._responseData = data;
     };
