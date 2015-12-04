@@ -48,15 +48,14 @@ module.exports = function makeNodeTree(projects, destinationPath) {
     experimentalDecorators: true,
     declaration: true,
     stripInternal: true,
-    mapRoot: '', /* force sourcemaps to use relative path */
     module: 'commonjs',
     moduleResolution: 'classic',
     noEmitOnError: true,
     rootDir: '.',
     rootFilePaths:
         ['angular2/manual_typings/globals.d.ts', 'angular2/typings/es6-shim/es6-shim.d.ts'],
-    sourceMap: true,
-    sourceRoot: '.',
+    inlineSourceMap: true,
+    inlineSources: true,
     target: 'es5'
   });
 
