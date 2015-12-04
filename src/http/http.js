@@ -114,7 +114,7 @@ var Http = (function () {
     Http.prototype.request = function (url, options) {
         var responseObservable;
         if (lang_1.isString(url)) {
-            responseObservable = httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethod.Get, url)));
+            responseObservable = httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethods.Get, url)));
         }
         else if (url instanceof static_request_1.Request) {
             responseObservable = httpRequest(this._backend, url);
@@ -128,37 +128,37 @@ var Http = (function () {
      * Performs a request with `get` http method.
      */
     Http.prototype.get = function (url, options) {
-        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethod.Get, url)));
+        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethods.Get, url)));
     };
     /**
      * Performs a request with `post` http method.
      */
     Http.prototype.post = function (url, body, options) {
-        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions.merge(new base_request_options_1.RequestOptions({ body: body })), options, enums_1.RequestMethod.Post, url)));
+        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions.merge(new base_request_options_1.RequestOptions({ body: body })), options, enums_1.RequestMethods.Post, url)));
     };
     /**
      * Performs a request with `put` http method.
      */
     Http.prototype.put = function (url, body, options) {
-        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions.merge(new base_request_options_1.RequestOptions({ body: body })), options, enums_1.RequestMethod.Put, url)));
+        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions.merge(new base_request_options_1.RequestOptions({ body: body })), options, enums_1.RequestMethods.Put, url)));
     };
     /**
      * Performs a request with `delete` http method.
      */
     Http.prototype.delete = function (url, options) {
-        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethod.Delete, url)));
+        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethods.Delete, url)));
     };
     /**
      * Performs a request with `patch` http method.
      */
     Http.prototype.patch = function (url, body, options) {
-        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions.merge(new base_request_options_1.RequestOptions({ body: body })), options, enums_1.RequestMethod.Patch, url)));
+        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions.merge(new base_request_options_1.RequestOptions({ body: body })), options, enums_1.RequestMethods.Patch, url)));
     };
     /**
      * Performs a request with `head` http method.
      */
     Http.prototype.head = function (url, options) {
-        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethod.Head, url)));
+        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethods.Head, url)));
     };
     Http = __decorate([
         core_1.Injectable(), 
@@ -181,10 +181,10 @@ var Jsonp = (function (_super) {
     Jsonp.prototype.request = function (url, options) {
         var responseObservable;
         if (lang_1.isString(url)) {
-            url = new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethod.Get, url));
+            url = new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethods.Get, url));
         }
         if (url instanceof static_request_1.Request) {
-            if (url.method !== enums_1.RequestMethod.Get) {
+            if (url.method !== enums_1.RequestMethods.Get) {
                 exceptions_1.makeTypeError('JSONP requests must use GET request method.');
             }
             responseObservable = httpRequest(this._backend, url);

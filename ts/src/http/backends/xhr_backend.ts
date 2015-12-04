@@ -1,5 +1,5 @@
 import {ConnectionBackend, Connection} from '../interfaces';
-import {ReadyState, RequestMethod, ResponseType} from '../enums';
+import {ReadyStates, RequestMethods, ResponseTypes} from '../enums';
 import {Request} from '../static_request';
 import {Response} from '../static_response';
 import {Headers} from '../headers';
@@ -24,12 +24,12 @@ export class XHRConnection implements Connection {
    * `XMLHttpRequest`.
    */
   response: Observable<Response>;
-  readyState: ReadyState;
+  readyState: ReadyStates;
   constructor(req: Request, browserXHR: BrowserXhr, baseResponseOptions?: ResponseOptions) {
     this.request = req;
     this.response = new Observable(responseObserver => {
       let _xhr: XMLHttpRequest = browserXHR.build();
-      _xhr.open(RequestMethod[req.method].toUpperCase(), req.url);
+      _xhr.open(RequestMethods[req.method].toUpperCase(), req.url);
       // load event handler
       let onLoad = () => {
         // responseText is the old-school way of retrieving response (supported by IE8 & 9)
@@ -65,7 +65,7 @@ export class XHRConnection implements Connection {
       };
       // error event handler
       let onError = (err) => {
-        var responseOptions = new ResponseOptions({body: err, type: ResponseType.Error});
+        var responseOptions = new ResponseOptions({body: err, type: ResponseTypes.Error});
         if (isPresent(baseResponseOptions)) {
           responseOptions = baseResponseOptions.merge(responseOptions);
         }

@@ -9,7 +9,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { RequestMethod, ResponseType } from '../enums';
+import { RequestMethods, ResponseTypes } from '../enums';
 import { Response } from '../static_response';
 import { Headers } from '../headers';
 import { ResponseOptions } from '../base_response_options';
@@ -31,7 +31,7 @@ export class XHRConnection {
         this.request = req;
         this.response = new Observable(responseObserver => {
             let _xhr = browserXHR.build();
-            _xhr.open(RequestMethod[req.method].toUpperCase(), req.url);
+            _xhr.open(RequestMethods[req.method].toUpperCase(), req.url);
             // load event handler
             let onLoad = () => {
                 // responseText is the old-school way of retrieving response (supported by IE8 & 9)
@@ -63,7 +63,7 @@ export class XHRConnection {
             };
             // error event handler
             let onError = (err) => {
-                var responseOptions = new ResponseOptions({ body: err, type: ResponseType.Error });
+                var responseOptions = new ResponseOptions({ body: err, type: ResponseTypes.Error });
                 if (isPresent(baseResponseOptions)) {
                     responseOptions = baseResponseOptions.merge(responseOptions);
                 }

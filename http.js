@@ -39,9 +39,9 @@ exports.Jsonp = http_2.Jsonp;
 var headers_1 = require('./src/http/headers');
 exports.Headers = headers_1.Headers;
 var enums_1 = require('./src/http/enums');
-exports.ResponseType = enums_1.ResponseType;
-exports.ReadyState = enums_1.ReadyState;
-exports.RequestMethod = enums_1.RequestMethod;
+exports.ResponseTypes = enums_1.ResponseTypes;
+exports.ReadyStates = enums_1.ReadyStates;
+exports.RequestMethods = enums_1.RequestMethods;
 var url_search_params_1 = require('./src/http/url_search_params');
 exports.URLSearchParams = url_search_params_1.URLSearchParams;
 /**

@@ -15,7 +15,7 @@ import { Injectable } from 'angular2/core';
 import { ConnectionBackend } from './interfaces';
 import { Request } from './static_request';
 import { RequestOptions } from './base_request_options';
-import { RequestMethod } from './enums';
+import { RequestMethods } from './enums';
 function httpRequest(backend, request) {
     return backend.createConnection(request).response;
 }
@@ -109,7 +109,7 @@ export let Http = class {
     request(url, options) {
         var responseObservable;
         if (isString(url)) {
-            responseObservable = httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, url)));
+            responseObservable = httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options, RequestMethods.Get, url)));
         }
         else if (url instanceof Request) {
             responseObservable = httpRequest(this._backend, url);
@@ -123,37 +123,37 @@ export let Http = class {
      * Performs a request with `get` http method.
      */
     get(url, options) {
-        return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, url)));
+        return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options, RequestMethods.Get, url)));
     }
     /**
      * Performs a request with `post` http method.
      */
     post(url, body, options) {
-        return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions.merge(new RequestOptions({ body: body })), options, RequestMethod.Post, url)));
+        return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions.merge(new RequestOptions({ body: body })), options, RequestMethods.Post, url)));
     }
     /**
      * Performs a request with `put` http method.
      */
     put(url, body, options) {
-        return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions.merge(new RequestOptions({ body: body })), options, RequestMethod.Put, url)));
+        return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions.merge(new RequestOptions({ body: body })), options, RequestMethods.Put, url)));
     }
     /**
      * Performs a request with `delete` http method.
      */
     delete(url, options) {
-        return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Delete, url)));
+        return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options, RequestMethods.Delete, url)));
     }
     /**
      * Performs a request with `patch` http method.
      */
     patch(url, body, options) {
-        return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions.merge(new RequestOptions({ body: body })), options, RequestMethod.Patch, url)));
+        return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions.merge(new RequestOptions({ body: body })), options, RequestMethods.Patch, url)));
     }
     /**
      * Performs a request with `head` http method.
      */
     head(url, options) {
-        return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Head, url)));
+        return httpRequest(this._backend, new Request(mergeOptions(this._defaultOptions, options, RequestMethods.Head, url)));
     }
 };
 Http = __decorate([
@@ -173,10 +173,10 @@ export let Jsonp = class extends Http {
     request(url, options) {
         var responseObservable;
         if (isString(url)) {
-            url = new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, url));
+            url = new Request(mergeOptions(this._defaultOptions, options, RequestMethods.Get, url));
         }
         if (url instanceof Request) {
-            if (url.method !== RequestMethod.Get) {
+            if (url.method !== RequestMethods.Get) {
                 makeTypeError('JSONP requests must use GET request method.');
             }
             responseObservable = httpRequest(this._backend, url);

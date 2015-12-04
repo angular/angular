@@ -1,40 +1,40 @@
 /**
  * Supported http methods.
  */
-export var RequestMethod;
-(function (RequestMethod) {
-    RequestMethod[RequestMethod["Get"] = 0] = "Get";
-    RequestMethod[RequestMethod["Post"] = 1] = "Post";
-    RequestMethod[RequestMethod["Put"] = 2] = "Put";
-    RequestMethod[RequestMethod["Delete"] = 3] = "Delete";
-    RequestMethod[RequestMethod["Options"] = 4] = "Options";
-    RequestMethod[RequestMethod["Head"] = 5] = "Head";
-    RequestMethod[RequestMethod["Patch"] = 6] = "Patch";
-})(RequestMethod || (RequestMethod = {}));
+export var RequestMethods;
+(function (RequestMethods) {
+    RequestMethods[RequestMethods["Get"] = 0] = "Get";
+    RequestMethods[RequestMethods["Post"] = 1] = "Post";
+    RequestMethods[RequestMethods["Put"] = 2] = "Put";
+    RequestMethods[RequestMethods["Delete"] = 3] = "Delete";
+    RequestMethods[RequestMethods["Options"] = 4] = "Options";
+    RequestMethods[RequestMethods["Head"] = 5] = "Head";
+    RequestMethods[RequestMethods["Patch"] = 6] = "Patch";
+})(RequestMethods || (RequestMethods = {}));
 /**
  * All possible states in which a connection can be, based on
  * [States](http://www.w3.org/TR/XMLHttpRequest/#states) from the `XMLHttpRequest` spec, but with an
  * additional "CANCELLED" state.
  */
-export var ReadyState;
-(function (ReadyState) {
-    ReadyState[ReadyState["Unsent"] = 0] = "Unsent";
-    ReadyState[ReadyState["Open"] = 1] = "Open";
-    ReadyState[ReadyState["HeadersReceived"] = 2] = "HeadersReceived";
-    ReadyState[ReadyState["Loading"] = 3] = "Loading";
-    ReadyState[ReadyState["Done"] = 4] = "Done";
-    ReadyState[ReadyState["Cancelled"] = 5] = "Cancelled";
-})(ReadyState || (ReadyState = {}));
+export var ReadyStates;
+(function (ReadyStates) {
+    ReadyStates[ReadyStates["Unsent"] = 0] = "Unsent";
+    ReadyStates[ReadyStates["Open"] = 1] = "Open";
+    ReadyStates[ReadyStates["HeadersReceived"] = 2] = "HeadersReceived";
+    ReadyStates[ReadyStates["Loading"] = 3] = "Loading";
+    ReadyStates[ReadyStates["Done"] = 4] = "Done";
+    ReadyStates[ReadyStates["Cancelled"] = 5] = "Cancelled";
+})(ReadyStates || (ReadyStates = {}));
 /**
  * Acceptable response types to be associated with a {@link Response}, based on
  * [ResponseType](https://fetch.spec.whatwg.org/#responsetype) from the Fetch spec.
  */
-export var ResponseType;
-(function (ResponseType) {
-    ResponseType[ResponseType["Basic"] = 0] = "Basic";
-    ResponseType[ResponseType["Cors"] = 1] = "Cors";
-    ResponseType[ResponseType["Default"] = 2] = "Default";
-    ResponseType[ResponseType["Error"] = 3] = "Error";
-    ResponseType[ResponseType["Opaque"] = 4] = "Opaque";
-})(ResponseType || (ResponseType = {}));
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZW51bXMuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJhbmd1bGFyMi9zcmMvaHR0cC9lbnVtcy50cyJdLCJuYW1lcyI6WyJSZXF1ZXN0TWV0aG9kIiwiUmVhZHlTdGF0ZSIsIlJlc3BvbnNlVHlwZSJdLCJtYXBwaW5ncyI6IkFBRUE7O0dBRUc7QUFDSCxXQUFZLGFBUVg7QUFSRCxXQUFZLGFBQWE7SUFDdkJBLCtDQUFHQSxDQUFBQTtJQUNIQSxpREFBSUEsQ0FBQUE7SUFDSkEsK0NBQUdBLENBQUFBO0lBQ0hBLHFEQUFNQSxDQUFBQTtJQUNOQSx1REFBT0EsQ0FBQUE7SUFDUEEsaURBQUlBLENBQUFBO0lBQ0pBLG1EQUFLQSxDQUFBQTtBQUNQQSxDQUFDQSxFQVJXLGFBQWEsS0FBYixhQUFhLFFBUXhCO0FBRUQ7Ozs7R0FJRztBQUNILFdBQVksVUFPWDtBQVBELFdBQVksVUFBVTtJQUNwQkMsK0NBQU1BLENBQUFBO0lBQ05BLDJDQUFJQSxDQUFBQTtJQUNKQSxpRUFBZUEsQ0FBQUE7SUFDZkEsaURBQU9BLENBQUFBO0lBQ1BBLDJDQUFJQSxDQUFBQTtJQUNKQSxxREFBU0EsQ0FBQUE7QUFDWEEsQ0FBQ0EsRUFQVyxVQUFVLEtBQVYsVUFBVSxRQU9yQjtBQUVEOzs7R0FHRztBQUNILFdBQVksWUFNWDtBQU5ELFdBQVksWUFBWTtJQUN0QkMsaURBQUtBLENBQUFBO0lBQ0xBLCtDQUFJQSxDQUFBQTtJQUNKQSxxREFBT0EsQ0FBQUE7SUFDUEEsaURBQUtBLENBQUFBO0lBQ0xBLG1EQUFNQSxDQUFBQTtBQUNSQSxDQUFDQSxFQU5XLFlBQVksS0FBWixZQUFZLFFBTXZCIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHtTdHJpbmdNYXBXcmFwcGVyfSBmcm9tICdhbmd1bGFyMi9zcmMvZmFjYWRlL2NvbGxlY3Rpb24nO1xuXG4vKipcbiAqIFN1cHBvcnRlZCBodHRwIG1ldGhvZHMuXG4gKi9cbmV4cG9ydCBlbnVtIFJlcXVlc3RNZXRob2Qge1xuICBHZXQsXG4gIFBvc3QsXG4gIFB1dCxcbiAgRGVsZXRlLFxuICBPcHRpb25zLFxuICBIZWFkLFxuICBQYXRjaFxufVxuXG4vKipcbiAqIEFsbCBwb3NzaWJsZSBzdGF0ZXMgaW4gd2hpY2ggYSBjb25uZWN0aW9uIGNhbiBiZSwgYmFzZWQgb25cbiAqIFtTdGF0ZXNdKGh0dHA6Ly93d3cudzMub3JnL1RSL1hNTEh0dHBSZXF1ZXN0LyNzdGF0ZXMpIGZyb20gdGhlIGBYTUxIdHRwUmVxdWVzdGAgc3BlYywgYnV0IHdpdGggYW5cbiAqIGFkZGl0aW9uYWwgXCJDQU5DRUxMRURcIiBzdGF0ZS5cbiAqL1xuZXhwb3J0IGVudW0gUmVhZHlTdGF0ZSB7XG4gIFVuc2VudCxcbiAgT3BlbixcbiAgSGVhZGVyc1JlY2VpdmVkLFxuICBMb2FkaW5nLFxuICBEb25lLFxuICBDYW5jZWxsZWRcbn1cblxuLyoqXG4gKiBBY2NlcHRhYmxlIHJlc3BvbnNlIHR5cGVzIHRvIGJlIGFzc29jaWF0ZWQgd2l0aCBhIHtAbGluayBSZXNwb25zZX0sIGJhc2VkIG9uXG4gKiBbUmVzcG9uc2VUeXBlXShodHRwczovL2ZldGNoLnNwZWMud2hhdHdnLm9yZy8jcmVzcG9uc2V0eXBlKSBmcm9tIHRoZSBGZXRjaCBzcGVjLlxuICovXG5leHBvcnQgZW51bSBSZXNwb25zZVR5cGUge1xuICBCYXNpYyxcbiAgQ29ycyxcbiAgRGVmYXVsdCxcbiAgRXJyb3IsXG4gIE9wYXF1ZVxufVxuIl19
+export var ResponseTypes;
+(function (ResponseTypes) {
+    ResponseTypes[ResponseTypes["Basic"] = 0] = "Basic";
+    ResponseTypes[ResponseTypes["Cors"] = 1] = "Cors";
+    ResponseTypes[ResponseTypes["Default"] = 2] = "Default";
+    ResponseTypes[ResponseTypes["Error"] = 3] = "Error";
+    ResponseTypes[ResponseTypes["Opaque"] = 4] = "Opaque";
+})(ResponseTypes || (ResponseTypes = {}));
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZW51bXMuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJhbmd1bGFyMi9zcmMvaHR0cC9lbnVtcy50cyJdLCJuYW1lcyI6WyJSZXF1ZXN0TWV0aG9kcyIsIlJlYWR5U3RhdGVzIiwiUmVzcG9uc2VUeXBlcyJdLCJtYXBwaW5ncyI6IkFBRUE7O0dBRUc7QUFDSCxXQUFZLGNBUVg7QUFSRCxXQUFZLGNBQWM7SUFDeEJBLGlEQUFHQSxDQUFBQTtJQUNIQSxtREFBSUEsQ0FBQUE7SUFDSkEsaURBQUdBLENBQUFBO0lBQ0hBLHVEQUFNQSxDQUFBQTtJQUNOQSx5REFBT0EsQ0FBQUE7SUFDUEEsbURBQUlBLENBQUFBO0lBQ0pBLHFEQUFLQSxDQUFBQTtBQUNQQSxDQUFDQSxFQVJXLGNBQWMsS0FBZCxjQUFjLFFBUXpCO0FBRUQ7Ozs7R0FJRztBQUNILFdBQVksV0FPWDtBQVBELFdBQVksV0FBVztJQUNyQkMsaURBQU1BLENBQUFBO0lBQ05BLDZDQUFJQSxDQUFBQTtJQUNKQSxtRUFBZUEsQ0FBQUE7SUFDZkEsbURBQU9BLENBQUFBO0lBQ1BBLDZDQUFJQSxDQUFBQTtJQUNKQSx1REFBU0EsQ0FBQUE7QUFDWEEsQ0FBQ0EsRUFQVyxXQUFXLEtBQVgsV0FBVyxRQU90QjtBQUVEOzs7R0FHRztBQUNILFdBQVksYUFNWDtBQU5ELFdBQVksYUFBYTtJQUN2QkMsbURBQUtBLENBQUFBO0lBQ0xBLGlEQUFJQSxDQUFBQTtJQUNKQSx1REFBT0EsQ0FBQUE7SUFDUEEsbURBQUtBLENBQUFBO0lBQ0xBLHFEQUFNQSxDQUFBQTtBQUNSQSxDQUFDQSxFQU5XLGFBQWEsS0FBYixhQUFhLFFBTXhCIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHtTdHJpbmdNYXBXcmFwcGVyfSBmcm9tICdhbmd1bGFyMi9zcmMvZmFjYWRlL2NvbGxlY3Rpb24nO1xuXG4vKipcbiAqIFN1cHBvcnRlZCBodHRwIG1ldGhvZHMuXG4gKi9cbmV4cG9ydCBlbnVtIFJlcXVlc3RNZXRob2RzIHtcbiAgR2V0LFxuICBQb3N0LFxuICBQdXQsXG4gIERlbGV0ZSxcbiAgT3B0aW9ucyxcbiAgSGVhZCxcbiAgUGF0Y2hcbn1cblxuLyoqXG4gKiBBbGwgcG9zc2libGUgc3RhdGVzIGluIHdoaWNoIGEgY29ubmVjdGlvbiBjYW4gYmUsIGJhc2VkIG9uXG4gKiBbU3RhdGVzXShodHRwOi8vd3d3LnczLm9yZy9UUi9YTUxIdHRwUmVxdWVzdC8jc3RhdGVzKSBmcm9tIHRoZSBgWE1MSHR0cFJlcXVlc3RgIHNwZWMsIGJ1dCB3aXRoIGFuXG4gKiBhZGRpdGlvbmFsIFwiQ0FOQ0VMTEVEXCIgc3RhdGUuXG4gKi9cbmV4cG9ydCBlbnVtIFJlYWR5U3RhdGVzIHtcbiAgVW5zZW50LFxuICBPcGVuLFxuICBIZWFkZXJzUmVjZWl2ZWQsXG4gIExvYWRpbmcsXG4gIERvbmUsXG4gIENhbmNlbGxlZFxufVxuXG4vKipcbiAqIEFjY2VwdGFibGUgcmVzcG9uc2UgdHlwZXMgdG8gYmUgYXNzb2NpYXRlZCB3aXRoIGEge0BsaW5rIFJlc3BvbnNlfSwgYmFzZWQgb25cbiAqIFtSZXNwb25zZVR5cGVdKGh0dHBzOi8vZmV0Y2guc3BlYy53aGF0d2cub3JnLyNyZXNwb25zZXR5cGUpIGZyb20gdGhlIEZldGNoIHNwZWMuXG4gKi9cbmV4cG9ydCBlbnVtIFJlc3BvbnNlVHlwZXMge1xuICBCYXNpYyxcbiAgQ29ycyxcbiAgRGVmYXVsdCxcbiAgRXJyb3IsXG4gIE9wYXF1ZVxufVxuIl19

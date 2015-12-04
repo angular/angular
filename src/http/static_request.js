@@ -17,14 +17,14 @@ var lang_1 = require('angular2/src/facade/lang');
  *
  * ```typescript
  * import {Injectable, Injector} from 'angular2/angular2';
- * import {HTTP_PROVIDERS, Http, Request, RequestMethod} from 'angular2/http';
+ * import {HTTP_PROVIDERS, Http, Request, RequestMethods} from 'angular2/http';
  *
  * @Injectable()
  * class AutoAuthenticator {
  *   constructor(public http:Http) {}
  *   request(url:string) {
  *     return this.http.request(new Request({
- *       method: RequestMethod.Get,
+ *       method: RequestMethods.Get,
  *       url: url,
  *       search: 'password=123'
  *     }));

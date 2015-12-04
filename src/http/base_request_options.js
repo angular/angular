@@ -33,14 +33,14 @@ var http_utils_1 = require('./http_utils');
  * ### Example ([live demo](http://plnkr.co/edit/7Wvi3lfLq41aQPKlxB4O?p=preview))
  *
  * ```typescript
- * import {RequestOptions, Request, RequestMethod} from 'angular2/http';
+ * import {RequestOptions, Request, RequestMethods} from 'angular2/http';
  *
  * var options = new RequestOptions({
- *   method: RequestMethod.Post,
+ *   method: RequestMethods.Post,
  *   url: 'https://google.com'
  * });
  * var req = new Request(options);
- * console.log('req.method:', RequestMethod[req.method]); // Post
+ * console.log('req.method:', RequestMethods[req.method]); // Post
  * console.log('options.url:', options.url); // https://google.com
  * ```
  */
@@ -67,15 +67,15 @@ var RequestOptions = (function () {
      * ### Example ([live demo](http://plnkr.co/edit/6w8XA8YTkDRcPYpdB9dk?p=preview))
      *
      * ```typescript
-     * import {RequestOptions, Request, RequestMethod} from 'angular2/http';
+     * import {RequestOptions, Request, RequestMethods} from 'angular2/http';
      *
      * var options = new RequestOptions({
-     *   method: RequestMethod.Post
+     *   method: RequestMethods.Post
      * });
      * var req = new Request(options.merge({
      *   url: 'https://google.com'
      * }));
-     * console.log('req.method:', RequestMethod[req.method]); // Post
+     * console.log('req.method:', RequestMethods[req.method]); // Post
      * console.log('options.url:', options.url); // null
      * console.log('req.url:', req.url); // https://google.com
      * ```
@@ -99,7 +99,7 @@ exports.RequestOptions = RequestOptions;
  * Subclass of {@link RequestOptions}, with default values.
  *
  * Default values:
- *  * method: {@link RequestMethod RequestMethod.Get}
+ *  * method: {@link RequestMethods RequestMethods.Get}
  *  * headers: empty {@link Headers} object
  *
  * This class could be extended and bound to the {@link RequestOptions} class
@@ -126,14 +126,14 @@ exports.RequestOptions = RequestOptions;
  * ### Example ([live demo](http://plnkr.co/edit/oyBoEvNtDhOSfi9YxaVb?p=preview))
  *
  * ```
- * import {BaseRequestOptions, Request, RequestMethod} from 'angular2/http';
+ * import {BaseRequestOptions, Request, RequestMethods} from 'angular2/http';
  *
  * var options = new BaseRequestOptions();
  * var req = new Request(options.merge({
- *   method: RequestMethod.Post,
+ *   method: RequestMethods.Post,
  *   url: 'https://google.com'
  * }));
- * console.log('req.method:', RequestMethod[req.method]); // Post
+ * console.log('req.method:', RequestMethods[req.method]); // Post
  * console.log('options.url:', options.url); // null
  * console.log('req.url:', req.url); // https://google.com
  * ```
@@ -141,7 +141,7 @@ exports.RequestOptions = RequestOptions;
 var BaseRequestOptions = (function (_super) {
     __extends(BaseRequestOptions, _super);
     function BaseRequestOptions() {
-        _super.call(this, { method: enums_1.RequestMethod.Get, headers: new headers_1.Headers() });
+        _super.call(this, { method: enums_1.RequestMethods.Get, headers: new headers_1.Headers() });
     }
     BaseRequestOptions = __decorate([
         core_1.Injectable(), 

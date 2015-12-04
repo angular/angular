@@ -8,7 +8,7 @@ export { XHRBackend, XHRConnection } from './src/http/backends/xhr_backend';
 export { JSONPBackend, JSONPConnection } from './src/http/backends/jsonp_backend';
 export { Http, Jsonp } from './src/http/http';
 export { Headers } from './src/http/headers';
-export { ResponseType, ReadyState, RequestMethod } from './src/http/enums';
+export { ResponseTypes, ReadyStates, RequestMethods } from './src/http/enums';
 export { URLSearchParams } from './src/http/url_search_params';
 /**
  * Provides a basic set of injectables to use the {@link Http} service in any application.

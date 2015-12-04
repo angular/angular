@@ -32,7 +32,7 @@ var XHRConnection = (function () {
         this.request = req;
         this.response = new core_2.Observable(function (responseObserver) {
             var _xhr = browserXHR.build();
-            _xhr.open(enums_1.RequestMethod[req.method].toUpperCase(), req.url);
+            _xhr.open(enums_1.RequestMethods[req.method].toUpperCase(), req.url);
             // load event handler
             var onLoad = function () {
                 // responseText is the old-school way of retrieving response (supported by IE8 & 9)
@@ -64,7 +64,7 @@ var XHRConnection = (function () {
             };
             // error event handler
             var onError = function (err) {
-                var responseOptions = new base_response_options_1.ResponseOptions({ body: err, type: enums_1.ResponseType.Error });
+                var responseOptions = new base_response_options_1.ResponseOptions({ body: err, type: enums_1.ResponseTypes.Error });
                 if (lang_1.isPresent(baseResponseOptions)) {
                     responseOptions = baseResponseOptions.merge(responseOptions);
                 }

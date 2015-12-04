@@ -139,7 +139,7 @@ exports.ResponseOptions = ResponseOptions;
 var BaseResponseOptions = (function (_super) {
     __extends(BaseResponseOptions, _super);
     function BaseResponseOptions() {
-        _super.call(this, { status: 200, statusText: 'Ok', type: enums_1.ResponseType.Default, headers: new headers_1.Headers() });
+        _super.call(this, { status: 200, statusText: 'Ok', type: enums_1.ResponseTypes.Default, headers: new headers_1.Headers() });
     }
     BaseResponseOptions = __decorate([
         core_1.Injectable(), 

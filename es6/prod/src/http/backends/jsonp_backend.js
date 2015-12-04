@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 import { ConnectionBackend } from '../interfaces';
-import { ReadyState, RequestMethod, ResponseType } from '../enums';
+import { ReadyStates, RequestMethods, ResponseTypes } from '../enums';
 import { Response } from '../static_response';
 import { ResponseOptions } from '../base_response_options';
 import { Injectable } from 'angular2/core';
@@ -28,12 +28,12 @@ export class JSONPConnection_ extends JSONPConnection {
         this._dom = _dom;
         this.baseResponseOptions = baseResponseOptions;
         this._finished = false;
-        if (req.method !== RequestMethod.Get) {
+        if (req.method !== RequestMethods.Get) {
             throw makeTypeError(JSONP_ERR_WRONG_METHOD);
         }
         this.request = req;
         this.response = new Observable(responseObserver => {
-            this.readyState = ReadyState.Loading;
+            this.readyState = ReadyStates.Loading;
             let id = this._id = _dom.nextRequestID();
             _dom.exposeConnection(id, this);
             // Workaround Dart
@@ -48,12 +48,12 @@ export class JSONPConnection_ extends JSONPConnection {
             }
             let script = this._script = _dom.build(url);
             let onLoad = event => {
-                if (this.readyState === ReadyState.Cancelled)
+                if (this.readyState === ReadyStates.Cancelled)
                     return;
-                this.readyState = ReadyState.Done;
+                this.readyState = ReadyStates.Done;
                 _dom.cleanup(script);
                 if (!this._finished) {
-                    let responseOptions = new ResponseOptions({ body: JSONP_ERR_NO_CALLBACK, type: ResponseType.Error, url });
+                    let responseOptions = new ResponseOptions({ body: JSONP_ERR_NO_CALLBACK, type: ResponseTypes.Error, url });
                     if (isPresent(baseResponseOptions)) {
                         responseOptions = baseResponseOptions.merge(responseOptions);
                     }
@@ -68,11 +68,11 @@ export class JSONPConnection_ extends JSONPConnection {
                 responseObserver.complete();
             };
             let onError = error => {
-                if (this.readyState === ReadyState.Cancelled)
+                if (this.readyState === ReadyStates.Cancelled)
                     return;
-                this.readyState = ReadyState.Done;
+                this.readyState = ReadyStates.Done;
                 _dom.cleanup(script);
-                let responseOptions = new ResponseOptions({ body: error.message, type: ResponseType.Error });
+                let responseOptions = new ResponseOptions({ body: error.message, type: ResponseTypes.Error });
                 if (isPresent(baseResponseOptions)) {
                     responseOptions = baseResponseOptions.merge(responseOptions);
                 }
@@ -82,7 +82,7 @@ export class JSONPConnection_ extends JSONPConnection {
             script.addEventListener('error', onError);
             _dom.send(script);
             return () => {
-                this.readyState = ReadyState.Cancelled;
+                this.readyState = ReadyStates.Cancelled;
                 script.removeEventListener('load', onLoad);
                 script.removeEventListener('error', onError);
                 if (isPresent(script)) {
@@ -95,7 +95,7 @@ export class JSONPConnection_ extends JSONPConnection {
         // Don't leak connections
         this._finished = true;
         this._dom.removeConnection(this._id);
-        if (this.readyState === ReadyState.Cancelled)
+        if (this.readyState === ReadyStates.Cancelled)
             return;
         this._responseData = data;
     }

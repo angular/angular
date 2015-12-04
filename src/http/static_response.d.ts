@@ -1,4 +1,4 @@
-import { ResponseType } from './enums';
+import { ResponseTypes } from './enums';
 import { Headers } from './headers';
 import { ResponseOptions } from './base_response_options';
 /**
@@ -25,7 +25,7 @@ export declare class Response {
      *
      * Defaults to "default".
      */
-    type: ResponseType;
+    type: ResponseTypes;
     /**
      * True if the response's status is within 200-299
      */
