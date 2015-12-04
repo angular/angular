@@ -271,7 +271,7 @@ main() {
                 dirType,
                 new CompileTemplateMetadata(
                     encapsulation: null, styles: [], styleUrls: []),
-                "<link href=\"b\" rel=\"a\"></link>",
+                "<link href=\"b\" rel=\"a\">",
                 "package:some/module/");
             expect(template.styleUrls).toEqual([]);
           }));
@@ -282,7 +282,7 @@ main() {
                 dirType,
                 new CompileTemplateMetadata(
                     encapsulation: null, styles: [], styleUrls: []),
-                "<link href=\"http://some/external.css\" rel=\"stylesheet\"></link>",
+                "<link href=\"http://some/external.css\" rel=\"stylesheet\">",
                 "package:some/module/");
             expect(template.styleUrls).toEqual([]);
           }));

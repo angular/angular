@@ -138,6 +138,13 @@ class TreeBuilder {
     if (identical(this.peek.type, HtmlTokenType.TAG_OPEN_END_VOID)) {
       this._advance();
       selfClosing = true;
+      if (namespacePrefix(fullName) == null &&
+          !getHtmlTagDefinition(fullName).isVoid) {
+        this.errors.add(HtmlTreeError.create(
+            fullName,
+            startTagToken.sourceSpan.start,
+            '''Only void and foreign elements can be self closed "${ startTagToken . parts [ 1 ]}"'''));
+      }
     } else if (identical(this.peek.type, HtmlTokenType.TAG_OPEN_END)) {
       this._advance();
       selfClosing = false;
@@ -175,16 +182,16 @@ class TreeBuilder {
   _consumeEndTag(HtmlToken endTagToken) {
     var fullName = getElementFullName(
         endTagToken.parts[0], endTagToken.parts[1], this._getParentElement());
-    if (!this._popElement(fullName)) {
-      var msg;
-      if (getHtmlTagDefinition(fullName).isVoid) {
-        msg =
-            '''Void elements do not have end tags (they can not have content) "${ endTagToken . parts [ 1 ]}"''';
-      } else {
-        msg = '''Unexpected closing tag "${ endTagToken . parts [ 1 ]}"''';
-      }
-      this.errors.add(
-          HtmlTreeError.create(fullName, endTagToken.sourceSpan.start, msg));
+    if (getHtmlTagDefinition(fullName).isVoid) {
+      this.errors.add(HtmlTreeError.create(
+          fullName,
+          endTagToken.sourceSpan.start,
+          '''Void elements do not have end tags "${ endTagToken . parts [ 1 ]}"'''));
+    } else if (!this._popElement(fullName)) {
+      this.errors.add(HtmlTreeError.create(
+          fullName,
+          endTagToken.sourceSpan.start,
+          '''Unexpected closing tag "${ endTagToken . parts [ 1 ]}"'''));
     }
   }
 

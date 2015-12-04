@@ -225,8 +225,8 @@ main() {
           inject([TestComponentBuilder, Renderer, AsyncTestCompleter],
               (TestComponentBuilder tcb, Renderer renderer, async) {
             tcb
-                .overrideView(MyComp,
-                    new ViewMetadata(template: "<input [title]=\"y\"></input>"))
+                .overrideView(
+                    MyComp, new ViewMetadata(template: "<input [title]=\"y\">"))
                 .createAsync(MyComp)
                 .then((fixture) {
               var elRef =

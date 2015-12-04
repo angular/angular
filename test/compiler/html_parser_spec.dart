@@ -89,13 +89,6 @@ main() {
             [HtmlTextAst, "after", 1]
           ]);
         });
-        it("should tolerate end tags for void elements when they have no content",
-            () {
-          expect(humanizeDom(parser.parse("<input></input>", "TestComp")))
-              .toEqual([
-            [HtmlElementAst, "input", 0]
-          ]);
-        });
         it("should support optional end tags", () {
           expect(humanizeDom(parser.parse("<div><p>1<p>2</div>", "TestComp")))
               .toEqual([
@@ -160,6 +153,16 @@ main() {
             [HtmlElementAst, "P", 1]
           ]);
         });
+        it("should support self closing void elements", () {
+          expect(humanizeDom(parser.parse("<input />", "TestComp"))).toEqual([
+            [HtmlElementAst, "input", 0]
+          ]);
+        });
+        it("should support self closing foreign elements", () {
+          expect(humanizeDom(parser.parse("<math />", "TestComp"))).toEqual([
+            [HtmlElementAst, "@math:math", 0]
+          ]);
+        });
       });
       describe("attributes", () {
         it("should parse attributes on regular elements case sensitive", () {
@@ -195,9 +198,9 @@ main() {
         });
         it("should support mamespace", () {
           expect(humanizeDom(
-                  parser.parse("<use xlink:href=\"Port\" />", "TestComp")))
+                  parser.parse("<svg:use xlink:href=\"Port\" />", "TestComp")))
               .toEqual([
-            [HtmlElementAst, "use", 0],
+            [HtmlElementAst, "@svg:use", 0],
             [HtmlAttrAst, "@xlink:href", "Port"]
           ]);
         });
@@ -238,27 +241,32 @@ main() {
             ["p", "Unexpected closing tag \"p\"", "0:5"]
           ]);
         });
-        it("should report text content in void elements", () {
-          var errors =
-              parser.parse("<input>content</input>", "TestComp").errors;
+        it("should report closing tag for void elements", () {
+          var errors = parser.parse("<input></input>", "TestComp").errors;
+          expect(errors.length).toEqual(1);
+          expect(humanizeErrors(errors)).toEqual([
+            ["input", "Void elements do not have end tags \"input\"", "0:7"]
+          ]);
+        });
+        it("should report self closing html element", () {
+          var errors = parser.parse("<p />", "TestComp").errors;
           expect(errors.length).toEqual(1);
           expect(humanizeErrors(errors)).toEqual([
             [
-              "input",
-              "Void elements do not have end tags (they can not have content) \"input\"",
-              "0:14"
+              "p",
+              "Only void and foreign elements can be self closed \"p\"",
+              "0:0"
             ]
           ]);
         });
-        it("should report html content in void elements", () {
-          var errors =
-              parser.parse("<input><p></p></input>", "TestComp").errors;
+        it("should report self closing custom element", () {
+          var errors = parser.parse("<my-cmp />", "TestComp").errors;
           expect(errors.length).toEqual(1);
           expect(humanizeErrors(errors)).toEqual([
             [
-              "input",
-              "Void elements do not have end tags (they can not have content) \"input\"",
-              "0:14"
+              "my-cmp",
+              "Only void and foreign elements can be self closed \"my-cmp\"",
+              "0:0"
             ]
           ]);
         });
