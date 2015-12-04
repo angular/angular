@@ -1132,7 +1132,8 @@ gulp.task('!bundles.js.umd', ['build.js.dev'], function() {
           'angular2/router/router_link_dsl.js',
           'angular2/router.js'
         ],
-        'angular2_all', 'prod'))
+        'angular2_all', 'prod')),
+    webpack(webPackConf(['angular2/testing_all.js'], 'testing_all', 'dev'))
   ]);
 });
 
