@@ -578,10 +578,12 @@ export function main() {
            inject(
                [TestComponentBuilder, AsyncTestCompleter],
                (tcb: TestComponentBuilder, async) => {
-                   tcb.overrideView(MyComp, new ViewMetadata({
-                                      template: '<p><child-cmp var-alice/><child-cmp var-bob/></p>',
-                                      directives: [ChildComp]
-                                    }))
+                   tcb.overrideView(
+                          MyComp, new ViewMetadata({
+                            template:
+                                '<p><child-cmp var-alice></child-cmp><child-cmp var-bob></child-cmp></p>',
+                            directives: [ChildComp]
+                          }))
 
                        .createAsync(MyComp)
                        .then((fixture) => {
