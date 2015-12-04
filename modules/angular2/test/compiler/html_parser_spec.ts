@@ -147,6 +147,16 @@ export function main() {
           expect(humanizeDom(parser.parse('<DiV><P></p></dIv>', 'TestComp')))
               .toEqual([[HtmlElementAst, 'DiV', 0], [HtmlElementAst, 'P', 1]]);
         });
+
+        it('should support self closing void elements', () => {
+          expect(humanizeDom(parser.parse('<input />', 'TestComp')))
+              .toEqual([[HtmlElementAst, 'input', 0]]);
+        });
+
+        it('should support self closing foreign elements', () => {
+          expect(humanizeDom(parser.parse('<math />', 'TestComp')))
+              .toEqual([[HtmlElementAst, '@math:math', 0]]);
+        });
       });
 
       describe('attributes', () => {
@@ -175,8 +185,8 @@ export function main() {
         });
 
         it('should support mamespace', () => {
-          expect(humanizeDom(parser.parse('<use xlink:href="Port" />', 'TestComp')))
-              .toEqual([[HtmlElementAst, 'use', 0], [HtmlAttrAst, '@xlink:href', 'Port']]);
+          expect(humanizeDom(parser.parse('<svg:use xlink:href="Port" />', 'TestComp')))
+              .toEqual([[HtmlElementAst, '@svg:use', 0], [HtmlAttrAst, '@xlink:href', 'Port']]);
         });
       });
 
@@ -214,6 +224,22 @@ export function main() {
           expect(errors.length).toEqual(1);
           expect(humanizeErrors(errors))
               .toEqual([['input', 'Void elements do not have end tags "input"', '0:7']]);
+        });
+
+        it('should report self closing html element', () => {
+          let errors = parser.parse('<p />', 'TestComp').errors;
+          expect(errors.length).toEqual(1);
+          expect(humanizeErrors(errors))
+              .toEqual([['p', 'Only void and foreign elements can be self closed "p"', '0:0']]);
+        });
+
+        it('should report self closing custom element', () => {
+          let errors = parser.parse('<my-cmp />', 'TestComp').errors;
+          expect(errors.length).toEqual(1);
+          expect(humanizeErrors(errors))
+              .toEqual([
+                ['my-cmp', 'Only void and foreign elements can be self closed "my-cmp"', '0:0']
+              ]);
         });
 
         it('should also report lexer errors', () => {
