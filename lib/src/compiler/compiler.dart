@@ -7,9 +7,6 @@ export "directive_metadata.dart"
 export "source_module.dart" show SourceModule, SourceWithImports;
 export "package:angular2/src/core/platform_directives_and_pipes.dart"
     show PLATFORM_DIRECTIVES, PLATFORM_PIPES;
-export "package:angular2/src/compiler/template_ast.dart";
-export "package:angular2/src/compiler/template_parser.dart"
-    show TEMPLATE_TRANSFORMS;
 import "package:angular2/src/facade/lang.dart" show assertionsEnabled, Type;
 import "package:angular2/src/core/di.dart" show provide, Provider;
 import "package:angular2/src/compiler/template_parser.dart" show TemplateParser;

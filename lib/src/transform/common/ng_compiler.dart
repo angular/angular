@@ -12,7 +12,6 @@ import 'package:angular2/src/compiler/schema/dom_element_schema_registry.dart';
 import 'package:angular2/src/transform/common/asset_reader.dart';
 import 'package:angular2/src/core/change_detection/interfaces.dart';
 import 'package:angular2/src/compiler/change_detector_compiler.dart';
-import 'package:angular2/router/router_link_dsl.dart';
 
 import 'xhr_impl.dart';
 import 'url_resolver.dart';
@@ -24,9 +23,8 @@ TemplateCompiler createTemplateCompiler(AssetReader reader,
   var _urlResolver = const TransformerUrlResolver();
 
   // TODO(yjbanov): add router AST transformer when ready
-  var parser = new ng.Parser(new ng.Lexer());
-  var templateParser = new TemplateParser(parser,
-      new DomElementSchemaRegistry(), _htmlParser, [new RouterLinkTransform(parser)]);
+  var templateParser = new TemplateParser(new ng.Parser(new ng.Lexer()),
+      new DomElementSchemaRegistry(), _htmlParser, null);
 
   var cdCompiler = changeDetectionConfig != null
       ? new ChangeDetectionCompiler(changeDetectionConfig)

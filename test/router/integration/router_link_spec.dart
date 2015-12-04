@@ -40,9 +40,6 @@ import "package:angular2/router.dart"
         ROUTER_PRIMARY_COMPONENT;
 import "package:angular2/src/router/router.dart" show RootRouter;
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
-import "package:angular2/compiler.dart" show TEMPLATE_TRANSFORMS;
-import "package:angular2/src/router/router_link_transform.dart"
-    show RouterLinkTransform;
 
 main() {
   describe("router-link directive", () {
@@ -54,9 +51,7 @@ main() {
           DirectiveResolver,
           provide(Location, useClass: SpyLocation),
           provide(ROUTER_PRIMARY_COMPONENT, useValue: MyComp),
-          provide(Router, useClass: RootRouter),
-          provide(TEMPLATE_TRANSFORMS,
-              useClass: RouterLinkTransform, multi: true)
+          provide(Router, useClass: RootRouter)
         ]);
     beforeEach(
         inject([TestComponentBuilder, Router, Location], (tcBuilder, rtr, loc) {
@@ -332,29 +327,6 @@ main() {
               router.navigateByUrl("/child-with-grandchild/grandchild");
             });
           }));
-      describe("router link dsl", () {
-        it(
-            "should generate link hrefs with params",
-            inject([AsyncTestCompleter], (async) {
-              compile("<a href=\"hello\" [router-link]=\"route:./User(name: name)\">{{name}}</a>")
-                  .then((_) => router.config([
-                        new Route(
-                            path: "/user/:name",
-                            component: UserCmp,
-                            name: "User")
-                      ]))
-                  .then((_) => router.navigateByUrl("/a/b"))
-                  .then((_) {
-                fixture.debugElement.componentInstance.name = "brian";
-                fixture.detectChanges();
-                expect(fixture.debugElement.nativeElement).toHaveText("brian");
-                expect(DOM.getAttribute(
-                    fixture.debugElement.componentViewChildren[0].nativeElement,
-                    "href")).toEqual("/user/brian");
-                async.done();
-              });
-            }));
-      });
     });
     describe("when clicked", () {
       var clickOnElement = (view) {

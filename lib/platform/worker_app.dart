@@ -9,3 +9,5 @@ export "../src/web_workers/shared/service_message_broker.dart"
     show ReceivedMessage, ServiceMessageBroker, ServiceMessageBrokerFactory;
 export "../src/web_workers/shared/serializer.dart" show PRIMITIVE;
 export "../src/web_workers/shared/message_bus.dart";
+export "package:angular2/src/core/angular_entrypoint.dart"
+    show AngularEntrypoint;
