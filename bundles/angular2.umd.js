@@ -26131,9 +26131,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
-	function __export(m) {
-	    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-	}
 	var runtime_compiler_1 = __webpack_require__(198);
 	var template_compiler_1 = __webpack_require__(199);
 	exports.TemplateCompiler = template_compiler_1.TemplateCompiler;
@@ -26147,12 +26144,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var platform_directives_and_pipes_1 = __webpack_require__(112);
 	exports.PLATFORM_DIRECTIVES = platform_directives_and_pipes_1.PLATFORM_DIRECTIVES;
 	exports.PLATFORM_PIPES = platform_directives_and_pipes_1.PLATFORM_PIPES;
-	__export(__webpack_require__(206));
-	var template_parser_1 = __webpack_require__(212);
-	exports.TEMPLATE_TRANSFORMS = template_parser_1.TEMPLATE_TRANSFORMS;
 	var lang_1 = __webpack_require__(5);
 	var di_1 = __webpack_require__(28);
-	var template_parser_2 = __webpack_require__(212);
+	var template_parser_1 = __webpack_require__(212);
 	var html_parser_1 = __webpack_require__(213);
 	var template_normalizer_1 = __webpack_require__(220);
 	var runtime_metadata_1 = __webpack_require__(221);
@@ -26176,7 +26170,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    change_detection_2.Lexer,
 	    change_detection_2.Parser,
 	    html_parser_1.HtmlParser,
-	    template_parser_2.TemplateParser,
+	    template_parser_1.TemplateParser,
 	    template_normalizer_1.TemplateNormalizer,
 	    runtime_metadata_1.RuntimeMetadataResolver,
 	    style_compiler_1.StyleCompiler,

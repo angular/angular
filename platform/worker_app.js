@@ -17,4 +17,6 @@ exports.ServiceMessageBrokerFactory = service_message_broker_1.ServiceMessageBro
 var serializer_1 = require('../src/web_workers/shared/serializer');
 exports.PRIMITIVE = serializer_1.PRIMITIVE;
 __export(require('../src/web_workers/shared/message_bus'));
+var angular_entrypoint_1 = require('angular2/src/core/angular_entrypoint');
+exports.AngularEntrypoint = angular_entrypoint_1.AngularEntrypoint;
 //# sourceMappingURL=worker_app.js.map

@@ -1,7 +1,4 @@
-'use strict';function __export(m) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
-var runtime_compiler_1 = require("./runtime_compiler");
+'use strict';var runtime_compiler_1 = require("./runtime_compiler");
 var template_compiler_1 = require('./template_compiler');
 exports.TemplateCompiler = template_compiler_1.TemplateCompiler;
 var directive_metadata_1 = require('./directive_metadata');
@@ -14,12 +11,9 @@ exports.SourceWithImports = source_module_1.SourceWithImports;
 var platform_directives_and_pipes_1 = require('angular2/src/core/platform_directives_and_pipes');
 exports.PLATFORM_DIRECTIVES = platform_directives_and_pipes_1.PLATFORM_DIRECTIVES;
 exports.PLATFORM_PIPES = platform_directives_and_pipes_1.PLATFORM_PIPES;
-__export(require('angular2/src/compiler/template_ast'));
-var template_parser_1 = require('angular2/src/compiler/template_parser');
-exports.TEMPLATE_TRANSFORMS = template_parser_1.TEMPLATE_TRANSFORMS;
 var lang_1 = require('angular2/src/facade/lang');
 var di_1 = require('angular2/src/core/di');
-var template_parser_2 = require('angular2/src/compiler/template_parser');
+var template_parser_1 = require('angular2/src/compiler/template_parser');
 var html_parser_1 = require('angular2/src/compiler/html_parser');
 var template_normalizer_1 = require('angular2/src/compiler/template_normalizer');
 var runtime_metadata_1 = require('angular2/src/compiler/runtime_metadata');
@@ -43,7 +37,7 @@ exports.COMPILER_PROVIDERS = lang_1.CONST_EXPR([
     change_detection_2.Lexer,
     change_detection_2.Parser,
     html_parser_1.HtmlParser,
-    template_parser_2.TemplateParser,
+    template_parser_1.TemplateParser,
     template_normalizer_1.TemplateNormalizer,
     runtime_metadata_1.RuntimeMetadataResolver,
     style_compiler_1.StyleCompiler,
