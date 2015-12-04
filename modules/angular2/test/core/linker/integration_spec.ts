@@ -2034,16 +2034,6 @@ class DirectiveUpdatingHostProperties {
   constructor() { this.id = "one"; }
 }
 
-@Directive({selector: '[update-host-actions]', host: {'@setAttr': 'setAttribute'}})
-@Injectable()
-class DirectiveUpdatingHostActions {
-  setAttr: EventEmitter<any>;
-
-  constructor() { this.setAttr = new EventEmitter(); }
-
-  triggerSetAttr(attrValue) { ObservableWrapper.callEmit(this.setAttr, ["key", attrValue]); }
-}
-
 @Directive({selector: '[listener]', host: {'(event)': 'onEvent($event)'}})
 @Injectable()
 class DirectiveListeningEvent {
