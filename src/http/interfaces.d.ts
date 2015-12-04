@@ -1,4 +1,4 @@
-import { ReadyStates, RequestMethods, ResponseTypes } from './enums';
+import { ReadyState, RequestMethod, ResponseType } from './enums';
 import { Headers } from './headers';
 import { Request } from './static_request';
 import { URLSearchParams } from './url_search_params';
@@ -15,7 +15,7 @@ export declare abstract class ConnectionBackend {
  * Abstract class from which real connections are derived.
  */
 export declare abstract class Connection {
-    readyState: ReadyStates;
+    readyState: ReadyState;
     request: Request;
     response: any;
 }
@@ -25,7 +25,7 @@ export declare abstract class Connection {
  */
 export interface RequestOptionsArgs {
     url?: string;
-    method?: string | RequestMethods;
+    method?: string | RequestMethod;
     search?: string | URLSearchParams;
     headers?: Headers;
     body?: string;
@@ -45,6 +45,6 @@ export declare type ResponseOptionsArgs = {
     status?: number;
     statusText?: string;
     headers?: Headers;
-    type?: ResponseTypes;
+    type?: ResponseType;
     url?: string;
 };

@@ -1,5 +1,5 @@
 import { ConnectionBackend, Connection } from '../interfaces';
-import { ReadyStates } from '../enums';
+import { ReadyState } from '../enums';
 import { Request } from '../static_request';
 import { Response } from '../static_response';
 import { ResponseOptions } from '../base_response_options';
@@ -20,7 +20,7 @@ export declare class XHRConnection implements Connection {
      * `XMLHttpRequest`.
      */
     response: Observable<Response>;
-    readyState: ReadyStates;
+    readyState: ReadyState;
     constructor(req: Request, browserXHR: BrowserXhr, baseResponseOptions?: ResponseOptions);
 }
 /**

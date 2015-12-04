@@ -1,6 +1,6 @@
 import {isPresent, isString} from 'angular2/src/facade/lang';
 import {Headers} from './headers';
-import {RequestMethods} from './enums';
+import {RequestMethod} from './enums';
 import {RequestOptionsArgs} from './interfaces';
 import {Injectable} from 'angular2/core';
 import {URLSearchParams} from './url_search_params';
@@ -19,23 +19,23 @@ import {normalizeMethodName} from './http_utils';
  * ### Example ([live demo](http://plnkr.co/edit/7Wvi3lfLq41aQPKlxB4O?p=preview))
  *
  * ```typescript
- * import {RequestOptions, Request, RequestMethods} from 'angular2/http';
+ * import {RequestOptions, Request, RequestMethod} from 'angular2/http';
  *
  * var options = new RequestOptions({
- *   method: RequestMethods.Post,
+ *   method: RequestMethod.Post,
  *   url: 'https://google.com'
  * });
  * var req = new Request(options);
- * console.log('req.method:', RequestMethods[req.method]); // Post
+ * console.log('req.method:', RequestMethod[req.method]); // Post
  * console.log('options.url:', options.url); // https://google.com
  * ```
  */
 export class RequestOptions {
   /**
    * Http method with which to execute a {@link Request}.
-   * Acceptable methods are defined in the {@link RequestMethods} enum.
+   * Acceptable methods are defined in the {@link RequestMethod} enum.
    */
-  method: RequestMethods | string;
+  method: RequestMethod | string;
   /**
    * {@link Headers} to be attached to a {@link Request}.
    */
@@ -75,15 +75,15 @@ export class RequestOptions {
    * ### Example ([live demo](http://plnkr.co/edit/6w8XA8YTkDRcPYpdB9dk?p=preview))
    *
    * ```typescript
-   * import {RequestOptions, Request, RequestMethods} from 'angular2/http';
+   * import {RequestOptions, Request, RequestMethod} from 'angular2/http';
    *
    * var options = new RequestOptions({
-   *   method: RequestMethods.Post
+   *   method: RequestMethod.Post
    * });
    * var req = new Request(options.merge({
    *   url: 'https://google.com'
    * }));
-   * console.log('req.method:', RequestMethods[req.method]); // Post
+   * console.log('req.method:', RequestMethod[req.method]); // Post
    * console.log('options.url:', options.url); // null
    * console.log('req.url:', req.url); // https://google.com
    * ```
@@ -107,7 +107,7 @@ export class RequestOptions {
  * Subclass of {@link RequestOptions}, with default values.
  *
  * Default values:
- *  * method: {@link RequestMethods RequestMethods.Get}
+ *  * method: {@link RequestMethod RequestMethod.Get}
  *  * headers: empty {@link Headers} object
  *
  * This class could be extended and bound to the {@link RequestOptions} class
@@ -134,19 +134,19 @@ export class RequestOptions {
  * ### Example ([live demo](http://plnkr.co/edit/oyBoEvNtDhOSfi9YxaVb?p=preview))
  *
  * ```
- * import {BaseRequestOptions, Request, RequestMethods} from 'angular2/http';
+ * import {BaseRequestOptions, Request, RequestMethod} from 'angular2/http';
  *
  * var options = new BaseRequestOptions();
  * var req = new Request(options.merge({
- *   method: RequestMethods.Post,
+ *   method: RequestMethod.Post,
  *   url: 'https://google.com'
  * }));
- * console.log('req.method:', RequestMethods[req.method]); // Post
+ * console.log('req.method:', RequestMethod[req.method]); // Post
  * console.log('options.url:', options.url); // null
  * console.log('req.url:', req.url); // https://google.com
  * ```
  */
 @Injectable()
 export class BaseRequestOptions extends RequestOptions {
-  constructor() { super({method: RequestMethods.Get, headers: new Headers()}); }
+  constructor() { super({method: RequestMethod.Get, headers: new Headers()}); }
 }

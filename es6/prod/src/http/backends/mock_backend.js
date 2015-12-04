@@ -11,7 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { Injectable } from 'angular2/core';
 import { Request } from '../static_request';
-import { ReadyStates } from '../enums';
+import { ReadyState } from '../enums';
 import { isPresent } from 'angular2/src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
 import { Subject } from 'rxjs/Subject';
@@ -25,7 +25,7 @@ import 'rxjs/operators/take';
 export class MockConnection {
     constructor(req) {
         this.response = new ReplaySubject(1).take(1);
-        this.readyState = ReadyStates.Open;
+        this.readyState = ReadyState.Open;
         this.request = req;
     }
     /**
@@ -43,10 +43,10 @@ export class MockConnection {
      *
      */
     mockRespond(res) {
-        if (this.readyState === ReadyStates.Done || this.readyState === ReadyStates.Cancelled) {
+        if (this.readyState === ReadyState.Done || this.readyState === ReadyState.Cancelled) {
             throw new BaseException('Connection has already been resolved');
         }
-        this.readyState = ReadyStates.Done;
+        this.readyState = ReadyState.Done;
         this.response.next(res);
         this.response.complete();
     }
@@ -70,7 +70,7 @@ export class MockConnection {
      */
     mockError(err) {
         // Matches XHR semantics
-        this.readyState = ReadyStates.Done;
+        this.readyState = ReadyState.Done;
         this.response.error(err);
     }
 }

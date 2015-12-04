@@ -1,4 +1,4 @@
-import { RequestMethods } from './enums';
+import { RequestMethod } from './enums';
 import { RequestArgs } from './interfaces';
 import { Headers } from './headers';
 /**
@@ -16,14 +16,14 @@ import { Headers } from './headers';
  *
  * ```typescript
  * import {Injectable, Injector} from 'angular2/angular2';
- * import {HTTP_PROVIDERS, Http, Request, RequestMethods} from 'angular2/http';
+ * import {HTTP_PROVIDERS, Http, Request, RequestMethod} from 'angular2/http';
  *
  * @Injectable()
  * class AutoAuthenticator {
  *   constructor(public http:Http) {}
  *   request(url:string) {
  *     return this.http.request(new Request({
- *       method: RequestMethods.Get,
+ *       method: RequestMethod.Get,
  *       url: url,
  *       search: 'password=123'
  *     }));
@@ -42,7 +42,7 @@ export declare class Request {
     /**
      * Http method with which to perform the request.
      */
-    method: RequestMethods;
+    method: RequestMethod;
     /**
      * {@link Headers} instance
      */

@@ -1,7 +1,7 @@
 /**
  * Supported http methods.
  */
-export declare enum RequestMethods {
+export declare enum RequestMethod {
     Get = 0,
     Post = 1,
     Put = 2,
@@ -15,7 +15,7 @@ export declare enum RequestMethods {
  * [States](http://www.w3.org/TR/XMLHttpRequest/#states) from the `XMLHttpRequest` spec, but with an
  * additional "CANCELLED" state.
  */
-export declare enum ReadyStates {
+export declare enum ReadyState {
     Unsent = 0,
     Open = 1,
     HeadersReceived = 2,
@@ -27,7 +27,7 @@ export declare enum ReadyStates {
  * Acceptable response types to be associated with a {@link Response}, based on
  * [ResponseType](https://fetch.spec.whatwg.org/#responsetype) from the Fetch spec.
  */
-export declare enum ResponseTypes {
+export declare enum ResponseType {
     Basic = 0,
     Cors = 1,
     Default = 2,

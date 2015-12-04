@@ -1,12 +1,12 @@
 import { ConnectionBackend, Connection } from '../interfaces';
-import { ReadyStates } from '../enums';
+import { ReadyState } from '../enums';
 import { Request } from '../static_request';
 import { Response } from '../static_response';
 import { ResponseOptions } from '../base_response_options';
 import { BrowserJsonp } from './browser_jsonp';
 import { Observable } from 'angular2/core';
 export declare abstract class JSONPConnection implements Connection {
-    readyState: ReadyStates;
+    readyState: ReadyState;
     request: Request;
     response: Observable<Response>;
     abstract finished(data?: any): void;
