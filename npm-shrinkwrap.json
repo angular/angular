@@ -20207,9 +20207,9 @@
       }
     },
     "rxjs": {
-      "version": "5.0.0-alpha.11",
-      "from": "rxjs@5.0.0-alpha.11",
-      "resolved": "http://registry.npmjs.org/rxjs/-/rxjs-5.0.0-alpha.11.tgz"
+      "version": "5.0.0-alpha.13",
+      "from": "rxjs@5.0.0-alpha.13",
+      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-alpha.13.tgz"
     },
     "selenium-webdriver": {
       "version": "2.48.2",
