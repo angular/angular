@@ -178,6 +178,22 @@ export function main() {
           expect(humanizeDom(parser.parse('<math />', 'TestComp')))
               .toEqual([[HtmlElementAst, '@math:math', 0]]);
         });
+
+        it('should ignore LF immediately after textarea, pre and listing', () => {
+          expect(humanizeDom(parser.parse(
+                     '<p>\n</p><textarea>\n</textarea><pre>\n\n</pre><listing>\n\n</listing>',
+                     'TestComp')))
+              .toEqual([
+                [HtmlElementAst, 'p', 0],
+                [HtmlTextAst, '\n', 1],
+                [HtmlElementAst, 'textarea', 0],
+                [HtmlElementAst, 'pre', 0],
+                [HtmlTextAst, '\n', 1],
+                [HtmlElementAst, 'listing', 0],
+                [HtmlTextAst, '\n', 1],
+              ]);
+        });
+
       });
 
       describe('attributes', () => {
