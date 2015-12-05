@@ -273,15 +273,17 @@ export class HtmlTagDefinition {
   public implicitNamespacePrefix: string;
   public contentType: HtmlTagContentType;
   public isVoid: boolean;
+  public ignoreFirstLf: boolean;
 
   constructor({closedByChildren, requiredParents, implicitNamespacePrefix, contentType,
-               closedByParent, isVoid}: {
+               closedByParent, isVoid, ignoreFirstLf}: {
     closedByChildren?: string[],
     closedByParent?: boolean,
     requiredParents?: string[],
     implicitNamespacePrefix?: string,
     contentType?: HtmlTagContentType,
-    isVoid?: boolean
+    isVoid?: boolean,
+    ignoreFirstLf?: boolean
   } = {}) {
     if (isPresent(closedByChildren) && closedByChildren.length > 0) {
       closedByChildren.forEach(tagName => this.closedByChildren[tagName] = true);
@@ -295,6 +297,7 @@ export class HtmlTagDefinition {
     }
     this.implicitNamespacePrefix = implicitNamespacePrefix;
     this.contentType = isPresent(contentType) ? contentType : HtmlTagContentType.PARSABLE_DATA;
+    this.ignoreFirstLf = normalizeBool(ignoreFirstLf);
   }
 
   requireExtraParent(currentParent: string): boolean {
@@ -369,10 +372,13 @@ var TAG_DEFINITIONS: {[key: string]: HtmlTagDefinition} = {
   'rp': new HtmlTagDefinition({closedByChildren: ['rb', 'rt', 'rtc', 'rp'], closedByParent: true}),
   'optgroup': new HtmlTagDefinition({closedByChildren: ['optgroup'], closedByParent: true}),
   'option': new HtmlTagDefinition({closedByChildren: ['option', 'optgroup'], closedByParent: true}),
+  'pre': new HtmlTagDefinition({ignoreFirstLf: true}),
+  'listing': new HtmlTagDefinition({ignoreFirstLf: true}),
   'style': new HtmlTagDefinition({contentType: HtmlTagContentType.RAW_TEXT}),
   'script': new HtmlTagDefinition({contentType: HtmlTagContentType.RAW_TEXT}),
   'title': new HtmlTagDefinition({contentType: HtmlTagContentType.ESCAPABLE_RAW_TEXT}),
-  'textarea': new HtmlTagDefinition({contentType: HtmlTagContentType.ESCAPABLE_RAW_TEXT}),
+  'textarea': new HtmlTagDefinition(
+      {contentType: HtmlTagContentType.ESCAPABLE_RAW_TEXT, ignoreFirstLf: true}),
 };
 
 var DEFAULT_TAG_DEFINITION = new HtmlTagDefinition();
