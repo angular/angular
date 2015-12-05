@@ -10,7 +10,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {Operator} from 'rxjs/Operator';
 
 import 'rxjs/observable/fromPromise';
-import 'rxjs/operators/toPromise';
+import 'rxjs/operator/toPromise';
 
 export {Subject} from 'rxjs/Subject';
 
