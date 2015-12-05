@@ -44,6 +44,29 @@ import * as ng from 'angular2';
 After
 import * as core from 'angular2/core';
 
+* toPromise is no longer an instance method of the `Observable` returned
+by Angular, and fromPromise is no longer available as a static method.
+
+The easiest way to account for this change in applications is to import
+the auto-patching modules from rxjs, which will automatically add these
+operators back to the Observable prototype.
+
+Before:
+```
+var obs = Observable.fromPromise(aPromise);
+var p = obs.toPromise().then(...);
+```
+
+After:
+
+```
+import 'rxjs/add/operator/toPromise';
+import 'rxjs/add/observable/fromPromise';
+
+var obs = Observable.fromPromise(aPromise);
+var p = obs.toPromise().then(...);
+```
+
 
 
 <a name="2.0.0-alpha.47"></a>
