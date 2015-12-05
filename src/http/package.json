@@ -1,6 +1,6 @@
 {
   "name": "ngHttp",
-  "version": "2.0.0-alpha.47",
+  "version": "2.0.0-alpha.48",
   "description": "Http module for Angular 2",
   "homepage": "https://github.com/angular/angular",
   "bugs": "https://github.com/angular/angular/issues",
@@ -8,7 +8,7 @@
   "license": "Apache-2.0",
   "repository": {"type":"git","url":"https://github.com/angular/angular.git"},
   "dependencies": {
-    "angular2": "2.0.0-alpha.47",
+    "angular2": "2.0.0-alpha.48",
     "rxjs": "^5.0.0-alpha.11",
     "reflect-metadata": "0.1.2"
   },
