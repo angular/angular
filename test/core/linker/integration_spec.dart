@@ -886,13 +886,13 @@ main() {
                     new ViewMetadata(
                         template: "<div emitter listener></div>",
                         directives: [
-                          DirectiveEmitingEvent,
+                          DirectiveEmittingEvent,
                           DirectiveListeningEvent
                         ]))
                 .createAsync(MyComp)
                 .then((fixture) {
               var tc = fixture.debugElement.componentViewChildren[0];
-              var emitter = tc.inject(DirectiveEmitingEvent);
+              var emitter = tc.inject(DirectiveEmittingEvent);
               var listener = tc.inject(DirectiveListeningEvent);
               expect(listener.msg).toEqual("");
               ObservableWrapper.subscribe(emitter.event, (_) {
@@ -913,13 +913,13 @@ main() {
                         template:
                             "<template emitter listener (event)=\"ctxProp=\$event\"></template>",
                         directives: [
-                          DirectiveEmitingEvent,
+                          DirectiveEmittingEvent,
                           DirectiveListeningEvent
                         ]))
                 .createAsync(MyComp)
                 .then((fixture) {
               var tc = fixture.debugElement.componentViewChildren[0];
-              var emitter = tc.inject(DirectiveEmitingEvent);
+              var emitter = tc.inject(DirectiveEmittingEvent);
               var myComp = tc.inject(MyComp);
               var listener = tc.inject(DirectiveListeningEvent);
               myComp.ctxProp = "";
@@ -1456,7 +1456,7 @@ main() {
                       template:
                           '''<span emitter listener (event)="throwError()" #local></span>''',
                       directives: [
-                        DirectiveEmitingEvent,
+                        DirectiveEmittingEvent,
                         DirectiveListeningEvent
                       ]));
               ComponentFixture fixture;
@@ -1465,7 +1465,7 @@ main() {
               });
               tick();
               var tc = fixture.debugElement.componentViewChildren[0];
-              tc.inject(DirectiveEmitingEvent).fireEvent("boom");
+              tc.inject(DirectiveEmittingEvent).fireEvent("boom");
               try {
                 tick();
                 throw "Should throw";
@@ -2133,10 +2133,10 @@ class DoublePipe implements PipeTransform, OnDestroy {
 
 @Directive(selector: "[emitter]", outputs: const ["event"])
 @Injectable()
-class DirectiveEmitingEvent {
+class DirectiveEmittingEvent {
   String msg;
   EventEmitter<dynamic> event;
-  DirectiveEmitingEvent() {
+  DirectiveEmittingEvent() {
     this.msg = "";
     this.event = new EventEmitter();
   }
@@ -2155,19 +2155,6 @@ class DirectiveUpdatingHostProperties {
   String id;
   DirectiveUpdatingHostProperties() {
     this.id = "one";
-  }
-}
-
-@Directive(
-    selector: "[update-host-actions]", host: const {"@setAttr": "setAttribute"})
-@Injectable()
-class DirectiveUpdatingHostActions {
-  EventEmitter<dynamic> setAttr;
-  DirectiveUpdatingHostActions() {
-    this.setAttr = new EventEmitter();
-  }
-  triggerSetAttr(attrValue) {
-    ObservableWrapper.callEmit(this.setAttr, ["key", attrValue]);
   }
 }
 
