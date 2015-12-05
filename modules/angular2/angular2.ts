@@ -5,4 +5,4 @@ export * from './platform/browser';
 export * from './src/platform/dom/dom_adapter';
 export * from './src/platform/dom/events/event_manager';
 export * from './upgrade';
-export {UrlResolver, AppRootUrl} from './compiler';
+export {UrlResolver, AppRootUrl, getUrlScheme, DEFAULT_PACKAGE_URL_PROVIDER} from './compiler';

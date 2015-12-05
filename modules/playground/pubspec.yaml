@@ -31,6 +31,7 @@ transformers:
         - web/src/routing/index.dart
         - web/src/template_driven_forms/index.dart
         - web/src/zippy_component/index.dart
+        - web/src/relative_assets/index.dart
         - web/src/svg/index.dart
         - web/src/material/button/index.dart
         - web/src/material/checkbox/index.dart
