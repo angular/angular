@@ -31,6 +31,7 @@
     "test": "gulp test.all.js && gulp test.all.dart"
   },
   "dependencies": {
+    "es6-shim": "^0.33.3",
     "reflect-metadata": "0.1.2",
     "rxjs": "5.0.0-alpha.13",
     "zone.js": "0.5.8"
@@ -53,7 +54,6 @@
     "clang-format": "^1.0.32",
     "conventional-changelog": "^0.2.1",
     "del": "~1",
-    "es6-shim": "^0.33.3",
     "firefox-profile": "^0.3.4",
     "fs-extra": "^0.18.0",
     "glob": "^4.0.6",
