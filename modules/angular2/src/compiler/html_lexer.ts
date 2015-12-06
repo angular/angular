@@ -367,7 +367,9 @@ class _HtmlTokenizer {
     let savedPos = this._savePosition();
     let lowercaseTagName;
     try {
-      this._attemptUntilFn(isNotWhitespace);
+      if (!isAsciiLetter(this.peek)) {
+        throw this._createError(unexpectedCharacterErrorMsg(this.peek), this._getLocation());
+      }
       var nameStart = this.index;
       this._consumeTagOpenStart(start);
       lowercaseTagName = this.inputLowercase.substring(nameStart, this.index);

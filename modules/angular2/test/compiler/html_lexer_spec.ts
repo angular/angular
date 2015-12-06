@@ -162,8 +162,8 @@ export function main() {
             ]);
       });
 
-      it('should allow whitespace', () => {
-        expect(tokenizeAndHumanizeParts('< test >'))
+      it('should allow whitespace after the tag name', () => {
+        expect(tokenizeAndHumanizeParts('<test >'))
             .toEqual([
               [HtmlTokenType.TAG_OPEN_START, null, 'test'],
               [HtmlTokenType.TAG_OPEN_END],
@@ -410,6 +410,9 @@ export function main() {
               [HtmlTokenType.TAG_CLOSE, '</p>'],
               [HtmlTokenType.EOF, ''],
             ]);
+
+        expect(tokenizeAndHumanizeParts('< a>'))
+            .toEqual([[HtmlTokenType.TEXT, '< a>'], [HtmlTokenType.EOF]]);
       });
 
       // TODO(vicb): make the lexer aware of Angular expressions
