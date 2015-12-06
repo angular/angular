@@ -44,6 +44,8 @@ import * as ng from 'angular2';
 After
 import * as core from 'angular2/core';
 
+* Http's MockBackend is no longer exported from the `angular2/http` module. It's now available at `angular2/http/testing`
+
 
 
 <a name="2.0.0-alpha.47"></a>
