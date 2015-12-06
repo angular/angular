@@ -1,4 +1,10 @@
-import {isPresent, isBlank, normalizeBool, CONST_EXPR} from 'angular2/src/facade/lang';
+import {
+  isPresent,
+  isBlank,
+  normalizeBool,
+  RegExpWrapper,
+  CONST_EXPR
+} from 'angular2/src/facade/lang';
 
 // see http://www.w3.org/TR/html51/syntax.html#named-character-references
 // see https://html.spec.whatwg.org/multipage/entities.json
@@ -380,4 +386,18 @@ var DEFAULT_TAG_DEFINITION = new HtmlTagDefinition();
 export function getHtmlTagDefinition(tagName: string): HtmlTagDefinition {
   var result = TAG_DEFINITIONS[tagName.toLowerCase()];
   return isPresent(result) ? result : DEFAULT_TAG_DEFINITION;
+}
+
+var NS_PREFIX_RE = /^@([^:]+):(.+)/g;
+
+export function splitHtmlTagNamespace(elementName: string): string[] {
+  if (elementName[0] != '@') {
+    return [null, elementName];
+  }
+  let match = RegExpWrapper.firstMatch(NS_PREFIX_RE, elementName);
+  return [match[1], match[2]];
+}
+
+export function getHtmlTagNamespacePrefix(elementName: string): string {
+  return splitHtmlTagNamespace(elementName)[0];
 }
