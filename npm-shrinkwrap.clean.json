@@ -14734,12 +14734,7 @@
       }
     },
     "zone.js": {
-      "version": "0.5.8",
-      "dependencies": {
-        "es6-promise": {
-          "version": "3.0.2"
-        }
-      }
+      "version": "0.5.8"
     }
   },
   "name": "angular-srcs",
