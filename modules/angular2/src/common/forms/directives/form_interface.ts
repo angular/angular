@@ -42,9 +42,4 @@ export interface Form {
    * Update the model for a particular control with a new value.
    */
   updateModel(dir: NgControl, value: any): void;
-
-  /**
-   * True if user has submitted the form even if it's invalid.
-   */
-  submitted: boolean;
 }
