@@ -3619,6 +3619,9 @@
         }
       }
     },
+    "es6-promise": {
+      "version": "3.0.2"
+    },
     "es6-shim": {
       "version": "0.33.10"
     },

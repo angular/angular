@@ -5548,6 +5548,11 @@
         }
       }
     },
+    "es6-promise": {
+      "version": "3.0.2",
+      "from": "es6-promise@*",
+      "resolved": "https://registry.npmjs.org/es6-promise/-/es6-promise-3.0.2.tgz"
+    },
     "es6-shim": {
       "version": "0.33.10",
       "from": "https://registry.npmjs.org/es6-shim/-/es6-shim-0.33.10.tgz",
