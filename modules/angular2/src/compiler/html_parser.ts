@@ -5,7 +5,6 @@ import {
   stringify,
   assertionsEnabled,
   StringJoiner,
-  RegExpWrapper,
   serializeEnum,
   CONST_EXPR
 } from 'angular2/src/facade/lang';
@@ -17,7 +16,7 @@ import {HtmlAst, HtmlAttrAst, HtmlTextAst, HtmlElementAst} from './html_ast';
 import {Injectable} from 'angular2/src/core/di';
 import {HtmlToken, HtmlTokenType, tokenizeHtml} from './html_lexer';
 import {ParseError, ParseLocation, ParseSourceSpan} from './parse_util';
-import {HtmlTagDefinition, getHtmlTagDefinition} from './html_tags';
+import {HtmlTagDefinition, getHtmlTagDefinition, getHtmlTagNamespacePrefix} from './html_tags';
 
 export class HtmlTreeError extends ParseError {
   static create(elementName: string, location: ParseLocation, msg: string): HtmlTreeError {
@@ -134,7 +133,7 @@ class TreeBuilder {
     if (this.peek.type === HtmlTokenType.TAG_OPEN_END_VOID) {
       this._advance();
       selfClosing = true;
-      if (namespacePrefix(fullName) == null && !getHtmlTagDefinition(fullName).isVoid) {
+      if (getHtmlTagNamespacePrefix(fullName) == null && !getHtmlTagDefinition(fullName).isVoid) {
         this.errors.push(HtmlTreeError.create(
             fullName, startTagToken.sourceSpan.start,
             `Only void and foreign elements can be self closed "${startTagToken.parts[1]}"`));
@@ -237,16 +236,9 @@ function getElementFullName(prefix: string, localName: string,
   if (isBlank(prefix)) {
     prefix = getHtmlTagDefinition(localName).implicitNamespacePrefix;
     if (isBlank(prefix) && isPresent(parentElement)) {
-      prefix = namespacePrefix(parentElement.name);
+      prefix = getHtmlTagNamespacePrefix(parentElement.name);
     }
   }
 
   return mergeNsAndName(prefix, localName);
-}
-
-var NS_PREFIX_RE = /^@([^:]+)/g;
-
-function namespacePrefix(elementName: string): string {
-  var match = RegExpWrapper.firstMatch(NS_PREFIX_RE, elementName);
-  return isBlank(match) ? null : match[1];
 }
