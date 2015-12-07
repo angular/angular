@@ -47,9 +47,9 @@ export function main() {
       var instr = registry.generate(['FirstCmp', 'SecondCmp'], []);
       expect(stringifyInstruction(instr)).toEqual('first/second');
 
-      expect(stringifyInstruction(registry.generate(['SecondCmp'], [instr])))
+      expect(stringifyInstruction(registry.generate(['SecondCmp'], [instr, instr.child])))
           .toEqual('first/second');
-      expect(stringifyInstruction(registry.generate(['./SecondCmp'], [instr])))
+      expect(stringifyInstruction(registry.generate(['./SecondCmp'], [instr, instr.child])))
           .toEqual('first/second');
     });
 

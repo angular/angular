@@ -325,7 +325,7 @@ export function main() {
          }));
 
 
-      describe("router link dsl", () => {
+      describe('router link dsl', () => {
         it('should generate link hrefs with params', inject([AsyncTestCompleter], (async) => {
              compile('<a href="hello" [routerLink]="route:./User(name: name)">{{name}}</a>')
                  .then((_) => router.config(
