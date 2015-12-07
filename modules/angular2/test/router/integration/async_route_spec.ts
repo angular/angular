@@ -12,7 +12,7 @@ import {registerSpecs} from './impl/async_route_spec_impl';
 export function main() {
   registerSpecs();
 
-  ddescribeRouter('async routes', () => {
+  describeRouter('async routes', () => {
     describeWithout('children', () => {
       describeWith('route data', itShouldRoute);
       describeWithAndWithout('params', itShouldRoute);
