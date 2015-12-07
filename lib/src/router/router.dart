@@ -399,8 +399,7 @@ class Router {
   }
 
   /**
-   * Generate a URL from a component name and optional map of parameters. The URL is relative to the
-   * app's base href.
+   * Generate an `Instruction` based on the provided Route Link DSL.
    */
   Instruction generate(List<dynamic> linkParams) {
     var ancestorInstructions = this._getAncestorInstructions();
