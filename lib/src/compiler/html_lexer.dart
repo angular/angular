@@ -82,8 +82,6 @@ const $f = 102;
 const $z = 122;
 const $x = 120;
 const $NBSP = 160;
-var CRLF_REGEXP = new RegExp(r'\r\n');
-var CR_REGEXP = new RegExp(r'\r');
 String unexpectedCharacterErrorMsg(num charCode) {
   var char =
       identical(charCode, $EOF) ? "EOF" : StringWrapper.fromCharCode(charCode);
@@ -120,16 +118,6 @@ class _HtmlTokenizer {
     this.length = file.content.length;
     this._advance();
   }
-  String _processCarriageReturns(String content) {
-    // http://www.w3.org/TR/html5/syntax.html#preprocessing-the-input-stream
-
-    // In order to keep the original position in the source, we can not pre-process it.
-
-    // Instead CRs are processed right before instantiating the tokens.
-    content = StringWrapper.replaceAll(content, CRLF_REGEXP, "\r");
-    return StringWrapper.replaceAll(content, CR_REGEXP, "\n");
-  }
-
   HtmlTokenizeResult tokenize() {
     while (!identical(this.peek, $EOF)) {
       var start = this._getLocation();
@@ -332,8 +320,7 @@ class _HtmlTokenizer {
         parts.add(this._readChar(decodeEntities));
       }
     }
-    return this._endToken(
-        [this._processCarriageReturns(parts.join(""))], tagCloseStart);
+    return this._endToken([parts.join("")], tagCloseStart);
   }
 
   _consumeComment(ParseLocation start) {
@@ -449,7 +436,7 @@ class _HtmlTokenizer {
       this._requireUntilFn(isNameEnd, 1);
       value = this.input.substring(valueStart, this.index);
     }
-    this._endToken([this._processCarriageReturns(value)]);
+    this._endToken([value]);
   }
 
   _consumeTagOpenEnd() {
@@ -478,7 +465,7 @@ class _HtmlTokenizer {
     while (!isTextEnd(this.peek)) {
       parts.add(this._readChar(true));
     }
-    this._endToken([this._processCarriageReturns(parts.join(""))]);
+    this._endToken([parts.join("")]);
   }
 
   List<num> _savePosition() {
