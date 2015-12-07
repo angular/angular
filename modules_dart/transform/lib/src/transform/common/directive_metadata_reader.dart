@@ -3,17 +3,17 @@ library angular2.transform.common.directive_metadata_reader;
 import 'dart:async';
 
 import 'package:analyzer/analyzer.dart';
+import 'package:barback/barback.dart' show AssetId;
 
 import 'package:angular2/src/compiler/directive_metadata.dart';
 import 'package:angular2/src/compiler/template_compiler.dart';
-
 import 'package:angular2/src/core/change_detection/change_detection.dart';
 import 'package:angular2/src/core/linker/interfaces.dart' show LifecycleHooks;
 import 'package:angular2/src/core/metadata/view.dart' show ViewEncapsulation;
 import 'package:angular2/src/transform/common/annotation_matcher.dart';
 import 'package:angular2/src/transform/common/interface_matcher.dart';
 import 'package:angular2/src/transform/common/logging.dart';
-import 'package:barback/barback.dart' show AssetId;
+import 'package:angular2/src/transform/common/url_resolver.dart';
 
 import 'naive_eval.dart';
 
@@ -41,12 +41,18 @@ class DirectiveMetadataReader {
   /// annotation. If `node` does not have one of these annotations, this function
   /// returns `null`.
   ///
-  /// `assetId` is the [AssetId] from which `node` was read, unless `node` was
-  /// read from a part file, in which case `assetId` should be the [AssetId] of
-  /// the parent file.
+  /// `assetId` is the [AssetId] of the *library* from which `node` was read.
+  /// This mean that if `node` was read from a part file, `assetId` should be
+  /// the [AssetId] of the part's "parent" file. If this is the case, you should
+  /// also provide `compilationUnitId`, the [AssetId] of the part from which
+  /// `node` was read.
   Future<CompileDirectiveMetadata> readDirectiveMetadata(
-      ClassDeclaration node, AssetId assetId) {
-    _visitor.reset(assetId);
+      ClassDeclaration node, AssetId assetId,
+      {AssetId compilationUnitId}) {
+    if (compilationUnitId == null) {
+      assetId = compilationUnitId;
+    }
+    _visitor.reset(assetId, compilationUnitId);
     node.accept(_visitor);
     if (!_visitor.hasMetadata) {
       return new Future.value(null);
@@ -114,11 +120,16 @@ class _DirectiveMetadataVisitor extends Object
 
   final _LifecycleHookVisitor _lifecycleVisitor;
 
-  /// The [AssetId] we are currently processing.
+  /// The [AssetId] of the library we are currently processing.
   AssetId _assetId;
 
+  /// The [AssetId] of the compilation unit we are currently processing.
+  ///
+  /// This can be different from `_assetId` when we are processing a part file.
+  AssetId _compilationUnitId;
+
   _DirectiveMetadataVisitor(this._annotationMatcher, this._lifecycleVisitor) {
-    reset(null);
+    reset(null, null);
   }
 
   /// Whether the visitor has found a [Component] or [Directive] annotation
@@ -138,9 +149,10 @@ class _DirectiveMetadataVisitor extends Object
   CompileTemplateMetadata _cmpTemplate;
   CompileTemplateMetadata _viewTemplate;
 
-  void reset(AssetId assetId) {
+  void reset(AssetId assetId, AssetId compilationUnitId) {
     _lifecycleVisitor.reset(assetId);
     _assetId = assetId;
+    _compilationUnitId = compilationUnitId;
 
     _type = null;
     _isComponent = false;
@@ -329,7 +341,7 @@ class _DirectiveMetadataVisitor extends Object
     node.metadata.accept(this);
     if (this._hasMetadata) {
       _type = new CompileTypeMetadata(
-          moduleUrl: 'asset:${_assetId.package}/${_assetId.path}',
+          moduleUrl: toAssetUri(_compilationUnitId),
           name: node.name.toString(),
           runtime: null // Intentionally `null`, cannot be provided here.
           );
