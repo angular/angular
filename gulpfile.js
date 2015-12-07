@@ -1050,7 +1050,7 @@ gulp.task("!bundle.web_worker.js.dev", ["build.js.dev"], function() {
 
   devBundleConfig.paths = merge(true, devBundleConfig.paths, {"*": "dist/js/dev/es5/*.js"});
 
-  return bundler.bundle(devBundleConfig, 'angular2/web_worker/ui',
+  return bundler.bundle(devBundleConfig, 'angular2/web_worker/ui - angular2/angular2',
                         './dist/build/web_worker/ui.dev.js', {sourceMaps: true})
       .then(function() {
         return bundler.bundle(devBundleConfig, 'angular2/web_worker/worker',
