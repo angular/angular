@@ -34570,7 +34570,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return this.navigateByUrl(this.lastNavigationAttempt);
 	    };
 	    /**
-	     * Generate an `Instruction` based on the provided Route Link DSL.
+	     * Generate a URL from a component name and optional map of parameters. The URL is relative to the
+	     * app's base href.
 	     */
 	    Router.prototype.generate = function (linkParams) {
 	        var ancestorInstructions = this._getAncestorInstructions();
