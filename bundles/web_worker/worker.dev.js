@@ -16700,8 +16700,7 @@ System.register("angular2/src/compiler/html_tags", ["angular2/src/facade/lang"],
           implicitNamespacePrefix = _b.implicitNamespacePrefix,
           contentType = _b.contentType,
           closedByParent = _b.closedByParent,
-          isVoid = _b.isVoid,
-          ignoreFirstLf = _b.ignoreFirstLf;
+          isVoid = _b.isVoid;
       this.closedByChildren = {};
       this.closedByParent = false;
       if (lang_1.isPresent(closedByChildren) && closedByChildren.length > 0) {
@@ -16720,10 +16719,16 @@ System.register("angular2/src/compiler/html_tags", ["angular2/src/facade/lang"],
       }
       this.implicitNamespacePrefix = implicitNamespacePrefix;
       this.contentType = lang_1.isPresent(contentType) ? contentType : HtmlTagContentType.PARSABLE_DATA;
-      this.ignoreFirstLf = lang_1.normalizeBool(ignoreFirstLf);
     }
     HtmlTagDefinition.prototype.requireExtraParent = function(currentParent) {
-      return lang_1.isPresent(this.requiredParents) && (lang_1.isBlank(currentParent) || this.requiredParents[currentParent.toLowerCase()] != true);
+      if (lang_1.isBlank(this.requiredParents)) {
+        return false;
+      }
+      if (lang_1.isBlank(currentParent)) {
+        return true;
+      }
+      var lcParent = currentParent.toLowerCase();
+      return this.requiredParents[lcParent] != true && lcParent != 'template';
     };
     HtmlTagDefinition.prototype.isClosedByChild = function(name) {
       return this.isVoid || lang_1.normalizeBool(this.closedByChildren[name.toLowerCase()]);
@@ -16803,15 +16808,10 @@ System.register("angular2/src/compiler/html_tags", ["angular2/src/facade/lang"],
       closedByChildren: ['option', 'optgroup'],
       closedByParent: true
     }),
-    'pre': new HtmlTagDefinition({ignoreFirstLf: true}),
-    'listing': new HtmlTagDefinition({ignoreFirstLf: true}),
     'style': new HtmlTagDefinition({contentType: HtmlTagContentType.RAW_TEXT}),
     'script': new HtmlTagDefinition({contentType: HtmlTagContentType.RAW_TEXT}),
     'title': new HtmlTagDefinition({contentType: HtmlTagContentType.ESCAPABLE_RAW_TEXT}),
-    'textarea': new HtmlTagDefinition({
-      contentType: HtmlTagContentType.ESCAPABLE_RAW_TEXT,
-      ignoreFirstLf: true
-    })
+    'textarea': new HtmlTagDefinition({contentType: HtmlTagContentType.ESCAPABLE_RAW_TEXT})
   };
   var DEFAULT_TAG_DEFINITION = new HtmlTagDefinition();
   function getHtmlTagDefinition(tagName) {
@@ -29589,16 +29589,7 @@ System.register("angular2/src/compiler/html_parser", ["angular2/src/facade/lang"
       this._advanceIf(html_lexer_1.HtmlTokenType.COMMENT_END);
     };
     TreeBuilder.prototype._consumeText = function(token) {
-      var text = token.parts[0];
-      if (text.length > 0 && text[0] == '\n') {
-        var parent_1 = this._getParentElement();
-        if (lang_1.isPresent(parent_1) && parent_1.children.length == 0 && html_tags_1.getHtmlTagDefinition(parent_1.name).ignoreFirstLf) {
-          text = text.substring(1);
-        }
-      }
-      if (text.length > 0) {
-        this._addToParent(new html_ast_1.HtmlTextAst(text, token.sourceSpan));
-      }
+      this._addToParent(new html_ast_1.HtmlTextAst(token.parts[0], token.sourceSpan));
     };
     TreeBuilder.prototype._closeVoidElement = function() {
       if (this.elementStack.length > 0) {

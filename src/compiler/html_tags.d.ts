@@ -267,15 +267,13 @@ export declare class HtmlTagDefinition {
     implicitNamespacePrefix: string;
     contentType: HtmlTagContentType;
     isVoid: boolean;
-    ignoreFirstLf: boolean;
-    constructor({closedByChildren, requiredParents, implicitNamespacePrefix, contentType, closedByParent, isVoid, ignoreFirstLf}?: {
+    constructor({closedByChildren, requiredParents, implicitNamespacePrefix, contentType, closedByParent, isVoid}?: {
         closedByChildren?: string[];
         closedByParent?: boolean;
         requiredParents?: string[];
         implicitNamespacePrefix?: string;
         contentType?: HtmlTagContentType;
         isVoid?: boolean;
-        ignoreFirstLf?: boolean;
     });
     requireExtraParent(currentParent: string): boolean;
     isClosedByChild(name: string): boolean;
