@@ -1,6 +1,6 @@
 import {Component, View, NgFor} from 'angular2/angular2';
 import {Http, Response} from 'angular2/http';
-import 'rxjs/operators/map';
+import 'rxjs/add/operator/map';
 
 @Component({selector: 'http-app'})
 @View({
