@@ -32230,7 +32230,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * ```
 	 * import {provide, Injector} from 'angular2/angular2';
-	 * import {HTTP_PROVIDERS, Http, Response, XHRBackend, MockBackend} from 'angular2/http';
+	 * import {HTTP_PROVIDERS, Http, Response, XHRBackend} from 'angular2/http';
+	 * import {MockBackend} from 'angular2/http/testing';
 	 *
 	 * var people = [{name: 'Jeff'}, {name: 'Tobias'}];
 	 *
@@ -32350,7 +32351,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * ```
 	 * import {provide, Injector} from 'angular2/angular2';
-	 * import {JSONP_PROVIDERS, Jsonp, Response, JSONPBackend, MockBackend} from 'angular2/http';
+	 * import {JSONP_PROVIDERS, Jsonp, Response, JSONPBackend} from 'angular2/http';
+	 * import {MockBackend} from 'angular2/http/testing';
 	 *
 	 * var people = [{name: 'Jeff'}, {name: 'Tobias'}];
 	 * var injector = Injector.resolveAndCreate([
@@ -32488,7 +32490,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example
 	 *
 	 * ```typescript
-	 * import {MockBackend, BaseRequestOptions, Http} from 'angular2/http';
+	 * import {BaseRequestOptions, Http} from 'angular2/http';
+	 * import {MockBackend} from 'angular2/http/testing';
 	 * var injector = Injector.resolveAndCreate([
 	 *   BaseRequestOptions,
 	 *   MockBackend,
