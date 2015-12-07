@@ -4627,16 +4627,14 @@ class ChangeDetector73 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void afterContentLifecycleCallbacksInternal() {
-    if (this.state == _gen.ChangeDetectorState.NeverChecked) this
-        .directive_0_0
-        .ngAfterContentInit();
+    if (this.state == _gen.ChangeDetectorState.NeverChecked)
+      this.directive_0_0.ngAfterContentInit();
     this.directive_0_0.ngAfterContentChecked();
   }
 
   void afterViewLifecycleCallbacksInternal() {
-    if (this.state == _gen.ChangeDetectorState.NeverChecked) this
-        .directive_0_0
-        .ngAfterViewInit();
+    if (this.state == _gen.ChangeDetectorState.NeverChecked)
+      this.directive_0_0.ngAfterViewInit();
     this.directive_0_0.ngAfterViewChecked();
   }
 
@@ -4722,9 +4720,8 @@ class ChangeDetector74 extends _gen.AbstractChangeDetector<dynamic> {
       this.literal1 = l_literal1;
     }
 
-    if (!throwOnChange && changes != null) this
-        .directive_0_0
-        .ngOnChanges(changes);
+    if (!throwOnChange && changes != null)
+      this.directive_0_0.ngOnChanges(changes);
     changes = null;
 
     isChanged = false;
@@ -4744,33 +4741,28 @@ class ChangeDetector74 extends _gen.AbstractChangeDetector<dynamic> {
       this.literal3 = l_literal3;
     }
 
-    if (!throwOnChange && changes != null) this
-        .directive_0_1
-        .ngOnChanges(changes);
+    if (!throwOnChange && changes != null)
+      this.directive_0_1.ngOnChanges(changes);
     changes = null;
 
     isChanged = false;
   }
 
   void afterContentLifecycleCallbacksInternal() {
-    if (this.state == _gen.ChangeDetectorState.NeverChecked) this
-        .directive_0_1
-        .ngAfterContentInit();
+    if (this.state == _gen.ChangeDetectorState.NeverChecked)
+      this.directive_0_1.ngAfterContentInit();
     this.directive_0_1.ngAfterContentChecked();
-    if (this.state == _gen.ChangeDetectorState.NeverChecked) this
-        .directive_0_0
-        .ngAfterContentInit();
+    if (this.state == _gen.ChangeDetectorState.NeverChecked)
+      this.directive_0_0.ngAfterContentInit();
     this.directive_0_0.ngAfterContentChecked();
   }
 
   void afterViewLifecycleCallbacksInternal() {
-    if (this.state == _gen.ChangeDetectorState.NeverChecked) this
-        .directive_0_1
-        .ngAfterViewInit();
+    if (this.state == _gen.ChangeDetectorState.NeverChecked)
+      this.directive_0_1.ngAfterViewInit();
     this.directive_0_1.ngAfterViewChecked();
-    if (this.state == _gen.ChangeDetectorState.NeverChecked) this
-        .directive_0_0
-        .ngAfterViewInit();
+    if (this.state == _gen.ChangeDetectorState.NeverChecked)
+      this.directive_0_0.ngAfterViewInit();
     this.directive_0_0.ngAfterViewChecked();
   }
 
@@ -4780,9 +4772,9 @@ class ChangeDetector74 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void dehydrateDirectives(destroyPipes) {
-    this.literal0 = this.literal1 = this.OnChanges2 = this.literal3 = this
-        .OnChanges4 = this.directive_0_0 =
-        this.directive_0_1 = _gen.ChangeDetectionUtil.uninitialized;
+    this.literal0 = this.literal1 = this.OnChanges2 = this.literal3 =
+        this.OnChanges4 = this.directive_0_0 =
+            this.directive_0_1 = _gen.ChangeDetectionUtil.uninitialized;
   }
 
   static final _gen_propertyBindingTargets = [
@@ -4832,16 +4824,14 @@ class ChangeDetector75 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void afterContentLifecycleCallbacksInternal() {
-    if (this.state == _gen.ChangeDetectorState.NeverChecked) this
-        .directive_0_0
-        .ngAfterContentInit();
+    if (this.state == _gen.ChangeDetectorState.NeverChecked)
+      this.directive_0_0.ngAfterContentInit();
     this.directive_0_0.ngAfterContentChecked();
   }
 
   void afterViewLifecycleCallbacksInternal() {
-    if (this.state == _gen.ChangeDetectorState.NeverChecked) this
-        .directive_0_0
-        .ngAfterViewInit();
+    if (this.state == _gen.ChangeDetectorState.NeverChecked)
+      this.directive_0_0.ngAfterViewInit();
     this.directive_0_0.ngAfterViewChecked();
   }
 
@@ -4883,26 +4873,22 @@ class ChangeDetector76 extends _gen.AbstractChangeDetector<dynamic> {
     var isChanged = false;
     var changes = null;
 
-    if (!throwOnChange &&
-        this.state == _gen.ChangeDetectorState.NeverChecked) this
-        .directive_0_0
-        .ngOnInit();
+    if (!throwOnChange && this.state == _gen.ChangeDetectorState.NeverChecked)
+      this.directive_0_0.ngOnInit();
     changes = null;
 
     isChanged = false;
   }
 
   void afterContentLifecycleCallbacksInternal() {
-    if (this.state == _gen.ChangeDetectorState.NeverChecked) this
-        .directive_0_0
-        .ngAfterContentInit();
+    if (this.state == _gen.ChangeDetectorState.NeverChecked)
+      this.directive_0_0.ngAfterContentInit();
     this.directive_0_0.ngAfterContentChecked();
   }
 
   void afterViewLifecycleCallbacksInternal() {
-    if (this.state == _gen.ChangeDetectorState.NeverChecked) this
-        .directive_0_0
-        .ngAfterViewInit();
+    if (this.state == _gen.ChangeDetectorState.NeverChecked)
+      this.directive_0_0.ngAfterViewInit();
     this.directive_0_0.ngAfterViewChecked();
   }
 
@@ -4946,24 +4932,20 @@ class ChangeDetector77 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void afterContentLifecycleCallbacksInternal() {
-    if (this.state == _gen.ChangeDetectorState.NeverChecked) this
-        .directive_0_1
-        .ngAfterContentInit();
+    if (this.state == _gen.ChangeDetectorState.NeverChecked)
+      this.directive_0_1.ngAfterContentInit();
     this.directive_0_1.ngAfterContentChecked();
-    if (this.state == _gen.ChangeDetectorState.NeverChecked) this
-        .directive_0_0
-        .ngAfterContentInit();
+    if (this.state == _gen.ChangeDetectorState.NeverChecked)
+      this.directive_0_0.ngAfterContentInit();
     this.directive_0_0.ngAfterContentChecked();
   }
 
   void afterViewLifecycleCallbacksInternal() {
-    if (this.state == _gen.ChangeDetectorState.NeverChecked) this
-        .directive_0_1
-        .ngAfterViewInit();
+    if (this.state == _gen.ChangeDetectorState.NeverChecked)
+      this.directive_0_1.ngAfterViewInit();
     this.directive_0_1.ngAfterViewChecked();
-    if (this.state == _gen.ChangeDetectorState.NeverChecked) this
-        .directive_0_0
-        .ngAfterViewInit();
+    if (this.state == _gen.ChangeDetectorState.NeverChecked)
+      this.directive_0_0.ngAfterViewInit();
     this.directive_0_0.ngAfterViewChecked();
   }
 
@@ -5087,16 +5069,14 @@ class ChangeDetector79 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void afterContentLifecycleCallbacksInternal() {
-    if (this.state == _gen.ChangeDetectorState.NeverChecked) this
-        .directive_0_0
-        .ngAfterContentInit();
+    if (this.state == _gen.ChangeDetectorState.NeverChecked)
+      this.directive_0_0.ngAfterContentInit();
     this.directive_0_0.ngAfterContentChecked();
   }
 
   void afterViewLifecycleCallbacksInternal() {
-    if (this.state == _gen.ChangeDetectorState.NeverChecked) this
-        .directive_0_0
-        .ngAfterViewInit();
+    if (this.state == _gen.ChangeDetectorState.NeverChecked)
+      this.directive_0_0.ngAfterViewInit();
     this.directive_0_0.ngAfterViewChecked();
   }
 
@@ -5551,16 +5531,14 @@ class ChangeDetector88 extends _gen.AbstractChangeDetector<dynamic> {
   }
 
   void afterContentLifecycleCallbacksInternal() {
-    if (this.state == _gen.ChangeDetectorState.NeverChecked) this
-        .directive_0_0
-        .ngAfterContentInit();
+    if (this.state == _gen.ChangeDetectorState.NeverChecked)
+      this.directive_0_0.ngAfterContentInit();
     this.directive_0_0.ngAfterContentChecked();
   }
 
   void afterViewLifecycleCallbacksInternal() {
-    if (this.state == _gen.ChangeDetectorState.NeverChecked) this
-        .directive_0_0
-        .ngAfterViewInit();
+    if (this.state == _gen.ChangeDetectorState.NeverChecked)
+      this.directive_0_0.ngAfterViewInit();
     this.directive_0_0.ngAfterViewChecked();
   }
 
