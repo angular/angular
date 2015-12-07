@@ -73,7 +73,8 @@ function mergeOptions(defaultOpts, providedOpts, method, url): RequestOptions {
  * ### Example
  *
  * ```typescript
- * import {MockBackend, BaseRequestOptions, Http} from 'angular2/http';
+ * import {BaseRequestOptions, Http} from 'angular2/http';
+ * import {MockBackend} from 'angular2/http/testing';
  * var injector = Injector.resolveAndCreate([
  *   BaseRequestOptions,
  *   MockBackend,
