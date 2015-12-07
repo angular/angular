@@ -99,7 +99,8 @@ export { URLSearchParams } from './src/http/url_search_params';
  *
  * ```
  * import {provide, Injector} from 'angular2/angular2';
- * import {HTTP_PROVIDERS, Http, Response, XHRBackend, MockBackend} from 'angular2/http';
+ * import {HTTP_PROVIDERS, Http, Response, XHRBackend} from 'angular2/http';
+ * import {MockBackend} from 'angular2/http/testing';
  *
  * var people = [{name: 'Jeff'}, {name: 'Tobias'}];
  *
@@ -219,7 +220,8 @@ export const HTTP_BINDINGS = HTTP_PROVIDERS;
  *
  * ```
  * import {provide, Injector} from 'angular2/angular2';
- * import {JSONP_PROVIDERS, Jsonp, Response, JSONPBackend, MockBackend} from 'angular2/http';
+ * import {JSONP_PROVIDERS, Jsonp, Response, JSONPBackend} from 'angular2/http';
+ * import {MockBackend} from 'angular2/http/testing';
  *
  * var people = [{name: 'Jeff'}, {name: 'Tobias'}];
  * var injector = Injector.resolveAndCreate([

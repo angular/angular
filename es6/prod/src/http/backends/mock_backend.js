@@ -83,7 +83,8 @@ export class MockConnection {
  * ### Example
  *
  * ```
- * import {MockBackend, DefaultOptions, Http} from 'angular2/http';
+ * import {DefaultOptions, Http} from 'angular2/http';
+ * import {MockBackend} from 'angular2/http/testing';
  * it('should get some data', inject([AsyncTestCompleter], (async) => {
  *   var connection;
  *   var injector = Injector.resolveAndCreate([
