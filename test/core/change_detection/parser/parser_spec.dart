@@ -34,6 +34,11 @@ main() {
   String unparse(AST ast) {
     return new Unparser().unparse(ast);
   }
+  checkInterpolation(String exp, [String expected]) {
+    var ast = parseInterpolation(exp);
+    if (isBlank(expected)) expected = exp;
+    expect(unparse(ast)).toEqual(expected);
+  }
   checkBinding(String exp, [String expected]) {
     var ast = parseBinding(exp);
     if (isBlank(expected)) expected = exp;
@@ -258,6 +263,9 @@ main() {
         expectBindingError("{{a.b}}").toThrowErrorWith(
             "Got interpolation ({{}}) where expression was expected");
       });
+      it("should parse conditional expression", () {
+        checkBinding("a < b ? a : b");
+      });
     });
     describe("parseTemplateBindings", () {
       keys(List<dynamic> templateBindings) {
@@ -391,6 +399,9 @@ main() {
             "Parser Error: Blank expressions are not allowed in interpolated strings");
         expect(() => parseInterpolation("foo {{  }}")).toThrowErrorWith(
             "Parser Error: Blank expressions are not allowed in interpolated strings");
+      });
+      it("should parse conditional expression", () {
+        checkInterpolation("{{ a < b ? a : b }}");
       });
     });
     describe("parseSimpleBinding", () {
