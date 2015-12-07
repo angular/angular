@@ -29388,7 +29388,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._advanceIf(html_lexer_1.HtmlTokenType.COMMENT_END);
 	    };
 	    TreeBuilder.prototype._consumeText = function (token) {
-	        this._addToParent(new html_ast_1.HtmlTextAst(token.parts[0], token.sourceSpan));
+	        var text = token.parts[0];
+	        if (text.length > 0 && text[0] == '\n') {
+	            var parent_1 = this._getParentElement();
+	            if (lang_1.isPresent(parent_1) && parent_1.children.length == 0 &&
+	                html_tags_1.getHtmlTagDefinition(parent_1.name).ignoreFirstLf) {
+	                text = text.substring(1);
+	            }
+	        }
+	        if (text.length > 0) {
+	            this._addToParent(new html_ast_1.HtmlTextAst(text, token.sourceSpan));
+	        }
 	    };
 	    TreeBuilder.prototype._closeVoidElement = function () {
 	        if (this.elementStack.length > 0) {
@@ -29653,8 +29663,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var $z = 122;
 	var $x = 120;
 	var $NBSP = 160;
-	var CRLF_REGEXP = /\r\n/g;
-	var CR_REGEXP = /\r/g;
 	function unexpectedCharacterErrorMsg(charCode) {
 	    var char = charCode === $EOF ? 'EOF' : lang_1.StringWrapper.fromCharCode(charCode);
 	    return "Unexpected character \"" + char + "\"";
@@ -29684,13 +29692,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.length = file.content.length;
 	        this._advance();
 	    }
-	    _HtmlTokenizer.prototype._processCarriageReturns = function (content) {
-	        // http://www.w3.org/TR/html5/syntax.html#preprocessing-the-input-stream
-	        // In order to keep the original position in the source, we can not pre-process it.
-	        // Instead CRs are processed right before instantiating the tokens.
-	        content = lang_1.StringWrapper.replaceAll(content, CRLF_REGEXP, '\r');
-	        return lang_1.StringWrapper.replaceAll(content, CR_REGEXP, '\n');
-	    };
 	    _HtmlTokenizer.prototype.tokenize = function () {
 	        while (this.peek !== $EOF) {
 	            var start = this._getLocation();
@@ -29881,7 +29882,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                parts.push(this._readChar(decodeEntities));
 	            }
 	        }
-	        return this._endToken([this._processCarriageReturns(parts.join(''))], tagCloseStart);
+	        return this._endToken([parts.join('')], tagCloseStart);
 	    };
 	    _HtmlTokenizer.prototype._consumeComment = function (start) {
 	        var _this = this;
@@ -29994,7 +29995,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._requireUntilFn(isNameEnd, 1);
 	            value = this.input.substring(valueStart, this.index);
 	        }
-	        this._endToken([this._processCarriageReturns(value)]);
+	        this._endToken([value]);
 	    };
 	    _HtmlTokenizer.prototype._consumeTagOpenEnd = function () {
 	        var tokenType = this._attemptChar($SLASH) ? HtmlTokenType.TAG_OPEN_END_VOID : HtmlTokenType.TAG_OPEN_END;
@@ -30018,7 +30019,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        while (!isTextEnd(this.peek)) {
 	            parts.push(this._readChar(true));
 	        }
-	        this._endToken([this._processCarriageReturns(parts.join(''))]);
+	        this._endToken([parts.join('')]);
 	    };
 	    _HtmlTokenizer.prototype._savePosition = function () { return [this.peek, this.index, this.column, this.line]; };
 	    _HtmlTokenizer.prototype._restorePosition = function (position) {
@@ -30408,7 +30409,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var HtmlTagDefinition = (function () {
 	    function HtmlTagDefinition(_a) {
 	        var _this = this;
-	        var _b = _a === void 0 ? {} : _a, closedByChildren = _b.closedByChildren, requiredParents = _b.requiredParents, implicitNamespacePrefix = _b.implicitNamespacePrefix, contentType = _b.contentType, closedByParent = _b.closedByParent, isVoid = _b.isVoid;
+	        var _b = _a === void 0 ? {} : _a, closedByChildren = _b.closedByChildren, requiredParents = _b.requiredParents, implicitNamespacePrefix = _b.implicitNamespacePrefix, contentType = _b.contentType, closedByParent = _b.closedByParent, isVoid = _b.isVoid, ignoreFirstLf = _b.ignoreFirstLf;
 	        this.closedByChildren = {};
 	        this.closedByParent = false;
 	        if (lang_1.isPresent(closedByChildren) && closedByChildren.length > 0) {
@@ -30423,6 +30424,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        this.implicitNamespacePrefix = implicitNamespacePrefix;
 	        this.contentType = lang_1.isPresent(contentType) ? contentType : HtmlTagContentType.PARSABLE_DATA;
+	        this.ignoreFirstLf = lang_1.normalizeBool(ignoreFirstLf);
 	    }
 	    HtmlTagDefinition.prototype.requireExtraParent = function (currentParent) {
 	        return lang_1.isPresent(this.requiredParents) &&
@@ -30496,10 +30498,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    'rp': new HtmlTagDefinition({ closedByChildren: ['rb', 'rt', 'rtc', 'rp'], closedByParent: true }),
 	    'optgroup': new HtmlTagDefinition({ closedByChildren: ['optgroup'], closedByParent: true }),
 	    'option': new HtmlTagDefinition({ closedByChildren: ['option', 'optgroup'], closedByParent: true }),
+	    'pre': new HtmlTagDefinition({ ignoreFirstLf: true }),
+	    'listing': new HtmlTagDefinition({ ignoreFirstLf: true }),
 	    'style': new HtmlTagDefinition({ contentType: HtmlTagContentType.RAW_TEXT }),
 	    'script': new HtmlTagDefinition({ contentType: HtmlTagContentType.RAW_TEXT }),
 	    'title': new HtmlTagDefinition({ contentType: HtmlTagContentType.ESCAPABLE_RAW_TEXT }),
-	    'textarea': new HtmlTagDefinition({ contentType: HtmlTagContentType.ESCAPABLE_RAW_TEXT }),
+	    'textarea': new HtmlTagDefinition({ contentType: HtmlTagContentType.ESCAPABLE_RAW_TEXT, ignoreFirstLf: true }),
 	};
 	var DEFAULT_TAG_DEFINITION = new HtmlTagDefinition();
 	function getHtmlTagDefinition(tagName) {

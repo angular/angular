@@ -13409,7 +13409,8 @@ System.register("angular2/src/compiler/html_tags", ["angular2/src/facade/lang"],
           implicitNamespacePrefix = _b.implicitNamespacePrefix,
           contentType = _b.contentType,
           closedByParent = _b.closedByParent,
-          isVoid = _b.isVoid;
+          isVoid = _b.isVoid,
+          ignoreFirstLf = _b.ignoreFirstLf;
       this.closedByChildren = {};
       this.closedByParent = false;
       if (lang_1.isPresent(closedByChildren) && closedByChildren.length > 0) {
@@ -13428,6 +13429,7 @@ System.register("angular2/src/compiler/html_tags", ["angular2/src/facade/lang"],
       }
       this.implicitNamespacePrefix = implicitNamespacePrefix;
       this.contentType = lang_1.isPresent(contentType) ? contentType : HtmlTagContentType.PARSABLE_DATA;
+      this.ignoreFirstLf = lang_1.normalizeBool(ignoreFirstLf);
     }
     HtmlTagDefinition.prototype.requireExtraParent = function(currentParent) {
       return lang_1.isPresent(this.requiredParents) && (lang_1.isBlank(currentParent) || this.requiredParents[currentParent.toLowerCase()] != true);
@@ -13510,10 +13512,15 @@ System.register("angular2/src/compiler/html_tags", ["angular2/src/facade/lang"],
       closedByChildren: ['option', 'optgroup'],
       closedByParent: true
     }),
+    'pre': new HtmlTagDefinition({ignoreFirstLf: true}),
+    'listing': new HtmlTagDefinition({ignoreFirstLf: true}),
     'style': new HtmlTagDefinition({contentType: HtmlTagContentType.RAW_TEXT}),
     'script': new HtmlTagDefinition({contentType: HtmlTagContentType.RAW_TEXT}),
     'title': new HtmlTagDefinition({contentType: HtmlTagContentType.ESCAPABLE_RAW_TEXT}),
-    'textarea': new HtmlTagDefinition({contentType: HtmlTagContentType.ESCAPABLE_RAW_TEXT})
+    'textarea': new HtmlTagDefinition({
+      contentType: HtmlTagContentType.ESCAPABLE_RAW_TEXT,
+      ignoreFirstLf: true
+    })
   };
   var DEFAULT_TAG_DEFINITION = new HtmlTagDefinition();
   function getHtmlTagDefinition(tagName) {
@@ -18218,8 +18225,6 @@ System.register("angular2/src/compiler/html_lexer", ["angular2/src/facade/lang",
   var $z = 122;
   var $x = 120;
   var $NBSP = 160;
-  var CRLF_REGEXP = /\r\n/g;
-  var CR_REGEXP = /\r/g;
   function unexpectedCharacterErrorMsg(charCode) {
     var char = charCode === $EOF ? 'EOF' : lang_1.StringWrapper.fromCharCode(charCode);
     return "Unexpected character \"" + char + "\"";
@@ -18247,10 +18252,6 @@ System.register("angular2/src/compiler/html_lexer", ["angular2/src/facade/lang",
       this.length = file.content.length;
       this._advance();
     }
-    _HtmlTokenizer.prototype._processCarriageReturns = function(content) {
-      content = lang_1.StringWrapper.replaceAll(content, CRLF_REGEXP, '\r');
-      return lang_1.StringWrapper.replaceAll(content, CR_REGEXP, '\n');
-    };
     _HtmlTokenizer.prototype.tokenize = function() {
       while (this.peek !== $EOF) {
         var start = this._getLocation();
@@ -18434,7 +18435,7 @@ System.register("angular2/src/compiler/html_lexer", ["angular2/src/facade/lang",
           parts.push(this._readChar(decodeEntities));
         }
       }
-      return this._endToken([this._processCarriageReturns(parts.join(''))], tagCloseStart);
+      return this._endToken([parts.join('')], tagCloseStart);
     };
     _HtmlTokenizer.prototype._consumeComment = function(start) {
       var _this = this;
@@ -18548,7 +18549,7 @@ System.register("angular2/src/compiler/html_lexer", ["angular2/src/facade/lang",
         this._requireUntilFn(isNameEnd, 1);
         value = this.input.substring(valueStart, this.index);
       }
-      this._endToken([this._processCarriageReturns(value)]);
+      this._endToken([value]);
     };
     _HtmlTokenizer.prototype._consumeTagOpenEnd = function() {
       var tokenType = this._attemptChar($SLASH) ? HtmlTokenType.TAG_OPEN_END_VOID : HtmlTokenType.TAG_OPEN_END;
@@ -18572,7 +18573,7 @@ System.register("angular2/src/compiler/html_lexer", ["angular2/src/facade/lang",
       while (!isTextEnd(this.peek)) {
         parts.push(this._readChar(true));
       }
-      this._endToken([this._processCarriageReturns(parts.join(''))]);
+      this._endToken([parts.join('')]);
     };
     _HtmlTokenizer.prototype._savePosition = function() {
       return [this.peek, this.index, this.column, this.line];
@@ -21825,7 +21826,16 @@ System.register("angular2/src/compiler/html_parser", ["angular2/src/facade/lang"
       this._advanceIf(html_lexer_1.HtmlTokenType.COMMENT_END);
     };
     TreeBuilder.prototype._consumeText = function(token) {
-      this._addToParent(new html_ast_1.HtmlTextAst(token.parts[0], token.sourceSpan));
+      var text = token.parts[0];
+      if (text.length > 0 && text[0] == '\n') {
+        var parent_1 = this._getParentElement();
+        if (lang_1.isPresent(parent_1) && parent_1.children.length == 0 && html_tags_1.getHtmlTagDefinition(parent_1.name).ignoreFirstLf) {
+          text = text.substring(1);
+        }
+      }
+      if (text.length > 0) {
+        this._addToParent(new html_ast_1.HtmlTextAst(text, token.sourceSpan));
+      }
     };
     TreeBuilder.prototype._closeVoidElement = function() {
       if (this.elementStack.length > 0) {
