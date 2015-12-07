@@ -141,6 +141,14 @@ export function main() {
               ]);
         });
 
+        it('should not add the requiredParent when the parent is a template', () => {
+          expect(humanizeDom(parser.parse('<template><tr></tr></template>', 'TestComp')))
+              .toEqual([
+                [HtmlElementAst, 'template', 0],
+                [HtmlElementAst, 'tr', 1],
+              ]);
+        });
+
         it('should support explicit mamespace', () => {
           expect(humanizeDom(parser.parse('<myns:div></myns:div>', 'TestComp')))
               .toEqual([[HtmlElementAst, '@myns:div', 0]]);
