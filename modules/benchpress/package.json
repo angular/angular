@@ -10,8 +10,12 @@
   "repository": <%= JSON.stringify(packageJson.repository) %>,
   "dependencies": {
     "angular2": "<%= packageJson.version %>",
+    "es6-promise": "<%= packageJson.dependencies['es6-promise'] %>",
+    "es6-shim": "<%= packageJson.dependencies['es6-shim'] %>",
+    "reflect-metadata": "<%= packageJson.dependencies['reflect-metadata'] %>",
+    "rxjs": "<%= packageJson.dependencies['rxjs'] %>",
     "selenium-webdriver": "<%= packageJson.dependencies['selenium-webdriver'] %>",
-    "reflect-metadata": "<%= packageJson.dependencies['reflect-metadata'] %>"
+    "zone.js": "<%= packageJson.dependencies['zone.js'] %>"
   },
   "optionalDependencies": {
     "jpm": "<%= packageJson.devDependencies.jpm %>",
