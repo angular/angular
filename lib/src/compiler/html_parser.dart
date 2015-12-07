@@ -111,18 +111,7 @@ class TreeBuilder {
   }
 
   _consumeText(HtmlToken token) {
-    var text = token.parts[0];
-    if (text.length > 0 && text[0] == "\n") {
-      var parent = this._getParentElement();
-      if (isPresent(parent) &&
-          parent.children.length == 0 &&
-          getHtmlTagDefinition(parent.name).ignoreFirstLf) {
-        text = text.substring(1);
-      }
-    }
-    if (text.length > 0) {
-      this._addToParent(new HtmlTextAst(text, token.sourceSpan));
-    }
+    this._addToParent(new HtmlTextAst(token.parts[0], token.sourceSpan));
   }
 
   void _closeVoidElement() {
