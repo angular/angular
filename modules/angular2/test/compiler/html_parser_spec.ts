@@ -75,6 +75,19 @@ export function main() {
               ]);
         });
 
+        it('should not error on void elements from HTML5 spec',
+           () => {  // http://www.w3.org/TR/html-markup/syntax.html#syntax-elements without:
+             // <base> - it can be present in head only
+             // <meta> - it can be present in head only
+             // <command> - obsolete
+             // <keygen> - obsolete
+             ['<map><area></map>', '<div><br></div>', '<colgroup><col></colgroup>',
+              '<div><embed></div>', '<div><hr></div>', '<div><img></div>', '<div><input></div>',
+              '<object><param>/<object>', '<audio><source></audio>', '<audio><track></audio>',
+              '<p><wbr></p>',
+             ].forEach((html) => { expect(parser.parse(html, 'TestComp').errors).toEqual([]); });
+           });
+
         it('should close void elements on text nodes', () => {
           expect(humanizeDom(parser.parse('<p>before<br>after</p>', 'TestComp')))
               .toEqual([
