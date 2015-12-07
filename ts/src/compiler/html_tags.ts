@@ -298,16 +298,8 @@ export class HtmlTagDefinition {
   }
 
   requireExtraParent(currentParent: string): boolean {
-    if (isBlank(this.requiredParents)) {
-      return false;
-    }
-
-    if (isBlank(currentParent)) {
-      return true;
-    }
-
-    let lcParent = currentParent.toLowerCase();
-    return this.requiredParents[lcParent] != true && lcParent != 'template';
+    return isPresent(this.requiredParents) &&
+           (isBlank(currentParent) || this.requiredParents[currentParent.toLowerCase()] != true);
   }
 
   isClosedByChild(name: string): boolean {

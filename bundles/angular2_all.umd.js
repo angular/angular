@@ -30416,14 +30416,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.contentType = lang_1.isPresent(contentType) ? contentType : HtmlTagContentType.PARSABLE_DATA;
 	    }
 	    HtmlTagDefinition.prototype.requireExtraParent = function (currentParent) {
-	        if (lang_1.isBlank(this.requiredParents)) {
-	            return false;
-	        }
-	        if (lang_1.isBlank(currentParent)) {
-	            return true;
-	        }
-	        var lcParent = currentParent.toLowerCase();
-	        return this.requiredParents[lcParent] != true && lcParent != 'template';
+	        return lang_1.isPresent(this.requiredParents) &&
+	            (lang_1.isBlank(currentParent) || this.requiredParents[currentParent.toLowerCase()] != true);
 	    };
 	    HtmlTagDefinition.prototype.isClosedByChild = function (name) {
 	        return this.isVoid || lang_1.normalizeBool(this.closedByChildren[name.toLowerCase()]);
@@ -34576,8 +34570,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return this.navigateByUrl(this.lastNavigationAttempt);
 	    };
 	    /**
-	     * Generate a URL from a component name and optional map of parameters. The URL is relative to the
-	     * app's base href.
+	     * Generate an `Instruction` based on the provided Route Link DSL.
 	     */
 	    Router.prototype.generate = function (linkParams) {
 	        var ancestorInstructions = this._getAncestorInstructions();
