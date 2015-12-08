@@ -264,7 +264,7 @@ export var HtmlTagContentType;
     HtmlTagContentType[HtmlTagContentType["PARSABLE_DATA"] = 2] = "PARSABLE_DATA";
 })(HtmlTagContentType || (HtmlTagContentType = {}));
 export class HtmlTagDefinition {
-    constructor({ closedByChildren, requiredParents, implicitNamespacePrefix, contentType, closedByParent, isVoid } = {}) {
+    constructor({ closedByChildren, requiredParents, implicitNamespacePrefix, contentType, closedByParent, isVoid, ignoreFirstLf } = {}) {
         this.closedByChildren = {};
         this.closedByParent = false;
         if (isPresent(closedByChildren) && closedByChildren.length > 0) {
@@ -279,6 +279,7 @@ export class HtmlTagDefinition {
         }
         this.implicitNamespacePrefix = implicitNamespacePrefix;
         this.contentType = isPresent(contentType) ? contentType : HtmlTagContentType.PARSABLE_DATA;
+        this.ignoreFirstLf = normalizeBool(ignoreFirstLf);
     }
     requireExtraParent(currentParent) {
         return isPresent(this.requiredParents) &&
@@ -350,10 +351,12 @@ var TAG_DEFINITIONS = {
     'rp': new HtmlTagDefinition({ closedByChildren: ['rb', 'rt', 'rtc', 'rp'], closedByParent: true }),
     'optgroup': new HtmlTagDefinition({ closedByChildren: ['optgroup'], closedByParent: true }),
     'option': new HtmlTagDefinition({ closedByChildren: ['option', 'optgroup'], closedByParent: true }),
+    'pre': new HtmlTagDefinition({ ignoreFirstLf: true }),
+    'listing': new HtmlTagDefinition({ ignoreFirstLf: true }),
     'style': new HtmlTagDefinition({ contentType: HtmlTagContentType.RAW_TEXT }),
     'script': new HtmlTagDefinition({ contentType: HtmlTagContentType.RAW_TEXT }),
     'title': new HtmlTagDefinition({ contentType: HtmlTagContentType.ESCAPABLE_RAW_TEXT }),
-    'textarea': new HtmlTagDefinition({ contentType: HtmlTagContentType.ESCAPABLE_RAW_TEXT }),
+    'textarea': new HtmlTagDefinition({ contentType: HtmlTagContentType.ESCAPABLE_RAW_TEXT, ignoreFirstLf: true }),
 };
 var DEFAULT_TAG_DEFINITION = new HtmlTagDefinition();
 export function getHtmlTagDefinition(tagName) {
