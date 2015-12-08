@@ -72,6 +72,8 @@ const $f = 102;
 const $z = 122;
 const $x = 120;
 const $NBSP = 160;
+var CRLF_REGEXP = /\r\n/g;
+var CR_REGEXP = /\r/g;
 function unexpectedCharacterErrorMsg(charCode) {
     var char = charCode === $EOF ? 'EOF' : StringWrapper.fromCharCode(charCode);
     return `Unexpected character "${char}"`;
@@ -99,6 +101,13 @@ class _HtmlTokenizer {
         this.inputLowercase = file.content.toLowerCase();
         this.length = file.content.length;
         this._advance();
+    }
+    _processCarriageReturns(content) {
+        // http://www.w3.org/TR/html5/syntax.html#preprocessing-the-input-stream
+        // In order to keep the original position in the source, we can not pre-process it.
+        // Instead CRs are processed right before instantiating the tokens.
+        content = StringWrapper.replaceAll(content, CRLF_REGEXP, '\r');
+        return StringWrapper.replaceAll(content, CR_REGEXP, '\n');
     }
     tokenize() {
         while (this.peek !== $EOF) {
@@ -288,7 +297,7 @@ class _HtmlTokenizer {
                 parts.push(this._readChar(decodeEntities));
             }
         }
-        return this._endToken([parts.join('')], tagCloseStart);
+        return this._endToken([this._processCarriageReturns(parts.join(''))], tagCloseStart);
     }
     _consumeComment(start) {
         this._beginToken(HtmlTokenType.COMMENT_START, start);
@@ -398,7 +407,7 @@ class _HtmlTokenizer {
             this._requireUntilFn(isNameEnd, 1);
             value = this.input.substring(valueStart, this.index);
         }
-        this._endToken([value]);
+        this._endToken([this._processCarriageReturns(value)]);
     }
     _consumeTagOpenEnd() {
         var tokenType = this._attemptChar($SLASH) ? HtmlTokenType.TAG_OPEN_END_VOID : HtmlTokenType.TAG_OPEN_END;
@@ -422,7 +431,7 @@ class _HtmlTokenizer {
         while (!isTextEnd(this.peek)) {
             parts.push(this._readChar(true));
         }
-        this._endToken([parts.join('')]);
+        this._endToken([this._processCarriageReturns(parts.join(''))]);
     }
     _savePosition() { return [this.peek, this.index, this.column, this.line]; }
     _restorePosition(position) {
