@@ -30428,11 +30428,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	// see http://www.w3.org/TR/html51/syntax.html#optional-tags
 	// This implementation does not fully conform to the HTML5 spec.
 	var TAG_DEFINITIONS = {
+	    'area': new HtmlTagDefinition({ isVoid: true }),
+	    'embed': new HtmlTagDefinition({ isVoid: true }),
 	    'link': new HtmlTagDefinition({ isVoid: true }),
 	    'img': new HtmlTagDefinition({ isVoid: true }),
 	    'input': new HtmlTagDefinition({ isVoid: true }),
+	    'param': new HtmlTagDefinition({ isVoid: true }),
 	    'hr': new HtmlTagDefinition({ isVoid: true }),
 	    'br': new HtmlTagDefinition({ isVoid: true }),
+	    'source': new HtmlTagDefinition({ isVoid: true }),
+	    'track': new HtmlTagDefinition({ isVoid: true }),
 	    'wbr': new HtmlTagDefinition({ isVoid: true }),
 	    'p': new HtmlTagDefinition({
 	        closedByChildren: [
@@ -30475,7 +30480,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }),
 	    'td': new HtmlTagDefinition({ closedByChildren: ['td', 'th'], closedByParent: true }),
 	    'th': new HtmlTagDefinition({ closedByChildren: ['td', 'th'], closedByParent: true }),
-	    'col': new HtmlTagDefinition({ closedByChildren: ['col'], requiredParents: ['colgroup'] }),
+	    'col': new HtmlTagDefinition({ requiredParents: ['colgroup'], isVoid: true }),
 	    'svg': new HtmlTagDefinition({ implicitNamespacePrefix: 'svg' }),
 	    'math': new HtmlTagDefinition({ implicitNamespacePrefix: 'math' }),
 	    'li': new HtmlTagDefinition({ closedByChildren: ['li'], closedByParent: true }),

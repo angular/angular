@@ -13439,11 +13439,16 @@ System.register("angular2/src/compiler/html_tags", ["angular2/src/facade/lang"],
   })();
   exports.HtmlTagDefinition = HtmlTagDefinition;
   var TAG_DEFINITIONS = {
+    'area': new HtmlTagDefinition({isVoid: true}),
+    'embed': new HtmlTagDefinition({isVoid: true}),
     'link': new HtmlTagDefinition({isVoid: true}),
     'img': new HtmlTagDefinition({isVoid: true}),
     'input': new HtmlTagDefinition({isVoid: true}),
+    'param': new HtmlTagDefinition({isVoid: true}),
     'hr': new HtmlTagDefinition({isVoid: true}),
     'br': new HtmlTagDefinition({isVoid: true}),
+    'source': new HtmlTagDefinition({isVoid: true}),
+    'track': new HtmlTagDefinition({isVoid: true}),
     'wbr': new HtmlTagDefinition({isVoid: true}),
     'p': new HtmlTagDefinition({
       closedByChildren: ['address', 'article', 'aside', 'blockquote', 'div', 'dl', 'fieldset', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'hgroup', 'hr', 'main', 'nav', 'ol', 'p', 'pre', 'section', 'table', 'ul'],
@@ -13472,8 +13477,8 @@ System.register("angular2/src/compiler/html_tags", ["angular2/src/facade/lang"],
       closedByParent: true
     }),
     'col': new HtmlTagDefinition({
-      closedByChildren: ['col'],
-      requiredParents: ['colgroup']
+      requiredParents: ['colgroup'],
+      isVoid: true
     }),
     'svg': new HtmlTagDefinition({implicitNamespacePrefix: 'svg'}),
     'math': new HtmlTagDefinition({implicitNamespacePrefix: 'math'}),
