@@ -169,7 +169,7 @@ export class AbstractChangeDetector<T> implements ChangeDetector {
   // any work done in `hydrateDirectives`.
   dehydrateDirectives(destroyPipes: boolean): void {}
 
-  hydrated(): boolean { return this.context !== null; }
+  hydrated(): boolean { return isPresent(this.context); }
 
   afterContentLifecycleCallbacks(): void {
     this.dispatcher.notifyAfterContentChecked();
