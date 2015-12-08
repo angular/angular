@@ -38,29 +38,20 @@ main() {
           [HtmlTokenType.EOF, "2:5"]
         ]);
       });
-      it("should work with CR and LF", () {
-        expect(tokenizeAndHumanizeLineColumn("<t\n>\r\na\r</t>")).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, "0:0"],
-          [HtmlTokenType.TAG_OPEN_END, "1:0"],
-          [HtmlTokenType.TEXT, "1:1"],
-          [HtmlTokenType.TAG_CLOSE, "2:1"],
-          [HtmlTokenType.EOF, "2:5"]
-        ]);
-      });
     });
     describe("comments", () {
       it("should parse comments", () {
-        expect(tokenizeAndHumanizeParts("<!--t\ne\rs\r\nt-->")).toEqual([
+        expect(tokenizeAndHumanizeParts("<!--test-->")).toEqual([
           [HtmlTokenType.COMMENT_START],
-          [HtmlTokenType.RAW_TEXT, "t\ne\ns\nt"],
+          [HtmlTokenType.RAW_TEXT, "test"],
           [HtmlTokenType.COMMENT_END],
           [HtmlTokenType.EOF]
         ]);
       });
       it("should store the locations", () {
-        expect(tokenizeAndHumanizeSourceSpans("<!--t\ne\rs\r\nt-->")).toEqual([
+        expect(tokenizeAndHumanizeSourceSpans("<!--test-->")).toEqual([
           [HtmlTokenType.COMMENT_START, "<!--"],
-          [HtmlTokenType.RAW_TEXT, "t\ne\rs\r\nt"],
+          [HtmlTokenType.RAW_TEXT, "test"],
           [HtmlTokenType.COMMENT_END, "-->"],
           [HtmlTokenType.EOF, ""]
         ]);
@@ -97,18 +88,17 @@ main() {
     });
     describe("cdata", () {
       it("should parse cdata", () {
-        expect(tokenizeAndHumanizeParts("<![cdata[t\ne\rs\r\nt]]>")).toEqual([
+        expect(tokenizeAndHumanizeParts("<![cdata[test]]>")).toEqual([
           [HtmlTokenType.CDATA_START],
-          [HtmlTokenType.RAW_TEXT, "t\ne\ns\nt"],
+          [HtmlTokenType.RAW_TEXT, "test"],
           [HtmlTokenType.CDATA_END],
           [HtmlTokenType.EOF]
         ]);
       });
       it("should store the locations", () {
-        expect(tokenizeAndHumanizeSourceSpans("<![cdata[t\ne\rs\r\nt]]>"))
-            .toEqual([
+        expect(tokenizeAndHumanizeSourceSpans("<![cdata[test]]>")).toEqual([
           [HtmlTokenType.CDATA_START, "<![cdata["],
-          [HtmlTokenType.RAW_TEXT, "t\ne\rs\r\nt"],
+          [HtmlTokenType.RAW_TEXT, "test"],
           [HtmlTokenType.CDATA_END, "]]>"],
           [HtmlTokenType.EOF, ""]
         ]);
@@ -261,15 +251,6 @@ main() {
           [HtmlTokenType.EOF]
         ]);
       });
-      it("should parse values with CR and LF", () {
-        expect(tokenizeAndHumanizeParts("<t a='t\ne\rs\r\nt'>")).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, null, "t"],
-          [HtmlTokenType.ATTR_NAME, null, "a"],
-          [HtmlTokenType.ATTR_VALUE, "t\ne\ns\nt"],
-          [HtmlTokenType.TAG_OPEN_END],
-          [HtmlTokenType.EOF]
-        ]);
-      });
       it("should store the locations", () {
         expect(tokenizeAndHumanizeSourceSpans("<t a=b>")).toEqual([
           [HtmlTokenType.TAG_OPEN_START, "<t"],
@@ -382,12 +363,6 @@ main() {
           [HtmlTokenType.EOF]
         ]);
       });
-      it("should handle CR & LF", () {
-        expect(tokenizeAndHumanizeParts("t\ne\rs\r\nt")).toEqual([
-          [HtmlTokenType.TEXT, "t\ne\ns\nt"],
-          [HtmlTokenType.EOF]
-        ]);
-      });
       it("should parse entities", () {
         expect(tokenizeAndHumanizeParts("a&amp;b")).toEqual([
           [HtmlTokenType.TEXT, "a&b"],
@@ -409,12 +384,10 @@ main() {
     });
     describe("raw text", () {
       it("should parse text", () {
-        expect(tokenizeAndHumanizeParts('''<script>t
-es
-t</script>''')).toEqual([
+        expect(tokenizeAndHumanizeParts('''<script>a</script>''')).toEqual([
           [HtmlTokenType.TAG_OPEN_START, null, "script"],
           [HtmlTokenType.TAG_OPEN_END],
-          [HtmlTokenType.RAW_TEXT, "t\ne\ns\nt"],
+          [HtmlTokenType.RAW_TEXT, "a"],
           [HtmlTokenType.TAG_CLOSE, null, "script"],
           [HtmlTokenType.EOF]
         ]);
@@ -461,12 +434,10 @@ t</script>''')).toEqual([
     });
     describe("escapable raw text", () {
       it("should parse text", () {
-        expect(tokenizeAndHumanizeParts('''<title>t
-es
-t</title>''')).toEqual([
+        expect(tokenizeAndHumanizeParts('''<title>a</title>''')).toEqual([
           [HtmlTokenType.TAG_OPEN_START, null, "title"],
           [HtmlTokenType.TAG_OPEN_END],
-          [HtmlTokenType.ESCAPABLE_RAW_TEXT, "t\ne\ns\nt"],
+          [HtmlTokenType.ESCAPABLE_RAW_TEXT, "a"],
           [HtmlTokenType.TAG_CLOSE, null, "title"],
           [HtmlTokenType.EOF]
         ]);
