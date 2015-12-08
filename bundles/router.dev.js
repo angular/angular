@@ -915,6 +915,7 @@ System.register("angular2/src/router/hash_location_strategy", ["angular2/core", 
     }
     HashLocationStrategy.prototype.onPopState = function(fn) {
       this._platformLocation.onPopState(fn);
+      this._platformLocation.onHashChange(fn);
     };
     HashLocationStrategy.prototype.getBaseHref = function() {
       return this._baseHref;
@@ -933,6 +934,13 @@ System.register("angular2/src/router/hash_location_strategy", ["angular2/core", 
         url = this._platformLocation.pathname;
       }
       this._platformLocation.pushState(state, title, url);
+    };
+    HashLocationStrategy.prototype.replaceState = function(state, title, path, queryParams) {
+      var url = this.prepareExternalUrl(path + location_strategy_1.normalizeQueryParams(queryParams));
+      if (url.length == 0) {
+        url = this._platformLocation.pathname;
+      }
+      this._platformLocation.replaceState(state, title, url);
     };
     HashLocationStrategy.prototype.forward = function() {
       this._platformLocation.forward();
@@ -1022,6 +1030,10 @@ System.register("angular2/src/router/path_location_strategy", ["angular2/core", 
     PathLocationStrategy.prototype.pushState = function(state, title, url, queryParams) {
       var externalUrl = this.prepareExternalUrl(url + location_strategy_1.normalizeQueryParams(queryParams));
       this._platformLocation.pushState(state, title, externalUrl);
+    };
+    PathLocationStrategy.prototype.replaceState = function(state, title, url, queryParams) {
+      var externalUrl = this.prepareExternalUrl(url + location_strategy_1.normalizeQueryParams(queryParams));
+      this._platformLocation.replaceState(state, title, externalUrl);
     };
     PathLocationStrategy.prototype.forward = function() {
       this._platformLocation.forward();
@@ -1541,10 +1553,11 @@ System.register("angular2/src/router/location", ["angular2/src/router/location_s
       this._subject = new async_1.EventEmitter();
       var browserBaseHref = this.platformStrategy.getBaseHref();
       this._baseHref = stripTrailingSlash(stripIndexHtml(browserBaseHref));
-      this.platformStrategy.onPopState(function(_) {
+      this.platformStrategy.onPopState(function(ev) {
         async_1.ObservableWrapper.callEmit(_this._subject, {
           'url': _this.path(),
-          'pop': true
+          'pop': true,
+          'type': ev.type
         });
       });
     }
@@ -1565,6 +1578,12 @@ System.register("angular2/src/router/location", ["angular2/src/router/location_s
         query = '';
       }
       this.platformStrategy.pushState(null, '', path, query);
+    };
+    Location.prototype.replaceState = function(path, query) {
+      if (query === void 0) {
+        query = '';
+      }
+      this.platformStrategy.replaceState(null, '', path, query);
     };
     Location.prototype.forward = function() {
       this.platformStrategy.forward();
@@ -1825,6 +1844,9 @@ System.register("angular2/src/router/platform_location", ["angular2/src/platform
     });
     PlatformLocation.prototype.pushState = function(state, title, url) {
       this._history.pushState(state, title, url);
+    };
+    PlatformLocation.prototype.replaceState = function(state, title, url) {
+      this._history.replaceState(state, title, url);
     };
     PlatformLocation.prototype.forward = function() {
       this._history.forward();
@@ -2615,7 +2637,25 @@ System.register("angular2/src/router/router", ["angular2/src/facade/async", "ang
       _super.call(this, registry, null, primaryComponent);
       this._location = location;
       this._locationSub = this._location.subscribe(function(change) {
-        return _this.navigateByUrl(change['url'], lang_1.isPresent(change['pop']));
+        _this.recognize(change['url']).then(function(instruction) {
+          _this.navigateByInstruction(instruction, lang_1.isPresent(change['pop'])).then(function(_) {
+            if (lang_1.isPresent(change['pop']) && change['type'] != 'hashchange') {
+              return ;
+            }
+            var emitPath = instruction.toUrlPath();
+            var emitQuery = instruction.toUrlQuery();
+            if (emitPath.length > 0) {
+              emitPath = '/' + emitPath;
+            }
+            if (change['type'] == 'hashchange') {
+              if (instruction.toRootUrl() != _this._location.path()) {
+                _this._location.replaceState(emitPath, emitQuery);
+              }
+            } else {
+              _this._location.go(emitPath, emitQuery);
+            }
+          });
+        });
       });
       this.registry.configFromComponent(primaryComponent);
       this.navigateByUrl(location.path());

@@ -33372,7 +33372,37 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var _this = this;
 	        _super.call(this, registry, null, primaryComponent);
 	        this._location = location;
-	        this._locationSub = this._location.subscribe(function (change) { return _this.navigateByUrl(change['url'], lang_1.isPresent(change['pop'])); });
+	        this._locationSub = this._location.subscribe(function (change) {
+	            // we call recognize ourselves
+	            _this.recognize(change['url'])
+	                .then(function (instruction) {
+	                _this.navigateByInstruction(instruction, lang_1.isPresent(change['pop']))
+	                    .then(function (_) {
+	                    // this is a popstate event; no need to change the URL
+	                    if (lang_1.isPresent(change['pop']) && change['type'] != 'hashchange') {
+	                        return;
+	                    }
+	                    var emitPath = instruction.toUrlPath();
+	                    var emitQuery = instruction.toUrlQuery();
+	                    if (emitPath.length > 0) {
+	                        emitPath = '/' + emitPath;
+	                    }
+	                    // Because we've opted to use All hashchange events occur outside Angular.
+	                    // However, apps that are migrating might have hash links that operate outside
+	                    // angular to which routing must respond.
+	                    // To support these cases where we respond to hashchanges and redirect as a
+	                    // result, we need to replace the top item on the stack.
+	                    if (change['type'] == 'hashchange') {
+	                        if (instruction.toRootUrl() != _this._location.path()) {
+	                            _this._location.replaceState(emitPath, emitQuery);
+	                        }
+	                    }
+	                    else {
+	                        _this._location.go(emitPath, emitQuery);
+	                    }
+	                });
+	            });
+	        });
 	        this.registry.configFromComponent(primaryComponent);
 	        this.navigateByUrl(location.path());
 	    }
@@ -35312,7 +35342,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._subject = new async_1.EventEmitter();
 	        var browserBaseHref = this.platformStrategy.getBaseHref();
 	        this._baseHref = stripTrailingSlash(stripIndexHtml(browserBaseHref));
-	        this.platformStrategy.onPopState(function (_) { async_1.ObservableWrapper.callEmit(_this._subject, { 'url': _this.path(), 'pop': true }); });
+	        this.platformStrategy.onPopState(function (ev) {
+	            async_1.ObservableWrapper.callEmit(_this._subject, { 'url': _this.path(), 'pop': true, 'type': ev.type });
+	        });
 	    }
 	    /**
 	     * Returns the normalized URL path.
@@ -35337,6 +35369,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        return this.platformStrategy.prepareExternalUrl(url);
 	    };
+	    // TODO: rename this method to pushState
 	    /**
 	     * Changes the browsers URL to the normalized version of the given URL, and pushes a
 	     * new item onto the platform's history.
@@ -35344,6 +35377,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Location.prototype.go = function (path, query) {
 	        if (query === void 0) { query = ''; }
 	        this.platformStrategy.pushState(null, '', path, query);
+	    };
+	    /**
+	     * Changes the browsers URL to the normalized version of the given URL, and replaces
+	     * the top item on the platform's history stack.
+	     */
+	    Location.prototype.replaceState = function (path, query) {
+	        if (query === void 0) { query = ''; }
+	        this.platformStrategy.replaceState(null, '', path, query);
 	    };
 	    /**
 	     * Navigates forward in the platform's history.
@@ -35910,6 +35951,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    PlatformLocation.prototype.pushState = function (state, title, url) {
 	        this._history.pushState(state, title, url);
 	    };
+	    PlatformLocation.prototype.replaceState = function (state, title, url) {
+	        this._history.replaceState(state, title, url);
+	    };
 	    PlatformLocation.prototype.forward = function () { this._history.forward(); };
 	    PlatformLocation.prototype.back = function () { this._history.back(); };
 	    PlatformLocation = __decorate([
@@ -35996,7 +36040,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._baseHref = _baseHref;
 	        }
 	    }
-	    HashLocationStrategy.prototype.onPopState = function (fn) { this._platformLocation.onPopState(fn); };
+	    HashLocationStrategy.prototype.onPopState = function (fn) {
+	        this._platformLocation.onPopState(fn);
+	        this._platformLocation.onHashChange(fn);
+	    };
 	    HashLocationStrategy.prototype.getBaseHref = function () { return this._baseHref; };
 	    HashLocationStrategy.prototype.path = function () {
 	        // the hash value is always prefixed with a `#`
@@ -36018,6 +36065,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            url = this._platformLocation.pathname;
 	        }
 	        this._platformLocation.pushState(state, title, url);
+	    };
+	    HashLocationStrategy.prototype.replaceState = function (state, title, path, queryParams) {
+	        var url = this.prepareExternalUrl(path + location_strategy_1.normalizeQueryParams(queryParams));
+	        if (url.length == 0) {
+	            url = this._platformLocation.pathname;
+	        }
+	        this._platformLocation.replaceState(state, title, url);
 	    };
 	    HashLocationStrategy.prototype.forward = function () { this._platformLocation.forward(); };
 	    HashLocationStrategy.prototype.back = function () { this._platformLocation.back(); };
@@ -36130,6 +36184,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    PathLocationStrategy.prototype.pushState = function (state, title, url, queryParams) {
 	        var externalUrl = this.prepareExternalUrl(url + location_strategy_1.normalizeQueryParams(queryParams));
 	        this._platformLocation.pushState(state, title, externalUrl);
+	    };
+	    PathLocationStrategy.prototype.replaceState = function (state, title, url, queryParams) {
+	        var externalUrl = this.prepareExternalUrl(url + location_strategy_1.normalizeQueryParams(queryParams));
+	        this._platformLocation.replaceState(state, title, externalUrl);
 	    };
 	    PathLocationStrategy.prototype.forward = function () { this._platformLocation.forward(); };
 	    PathLocationStrategy.prototype.back = function () { this._platformLocation.back(); };

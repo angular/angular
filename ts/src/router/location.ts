@@ -52,8 +52,9 @@ export class Location {
   constructor(public platformStrategy: LocationStrategy) {
     var browserBaseHref = this.platformStrategy.getBaseHref();
     this._baseHref = stripTrailingSlash(stripIndexHtml(browserBaseHref));
-    this.platformStrategy.onPopState(
-        (_) => { ObservableWrapper.callEmit(this._subject, {'url': this.path(), 'pop': true}); });
+    this.platformStrategy.onPopState((ev) => {
+      ObservableWrapper.callEmit(this._subject, {'url': this.path(), 'pop': true, 'type': ev.type});
+    });
   }
 
   /**
@@ -82,12 +83,21 @@ export class Location {
     return this.platformStrategy.prepareExternalUrl(url);
   }
 
+  // TODO: rename this method to pushState
   /**
    * Changes the browsers URL to the normalized version of the given URL, and pushes a
    * new item onto the platform's history.
    */
   go(path: string, query: string = ''): void {
     this.platformStrategy.pushState(null, '', path, query);
+  }
+
+  /**
+   * Changes the browsers URL to the normalized version of the given URL, and replaces
+   * the top item on the platform's history stack.
+   */
+  replaceState(path: string, query: string = ''): void {
+    this.platformStrategy.replaceState(null, '', path, query);
   }
 
   /**

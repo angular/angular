@@ -8,8 +8,8 @@ export declare class MockLocationStrategy extends LocationStrategy {
     simulatePopState(url: string): void;
     path(): string;
     prepareExternalUrl(internal: string): string;
-    simulateUrlPop(pathname: string): void;
     pushState(ctx: any, title: string, path: string, query: string): void;
+    replaceState(ctx: any, title: string, path: string, query: string): void;
     onPopState(fn: (value: any) => void): void;
     getBaseHref(): string;
     back(): void;

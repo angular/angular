@@ -40,6 +40,9 @@ export let PlatformLocation = class {
     pushState(state, title, url) {
         this._history.pushState(state, title, url);
     }
+    replaceState(state, title, url) {
+        this._history.replaceState(state, title, url);
+    }
     forward() { this._history.forward(); }
     back() { this._history.back(); }
 };

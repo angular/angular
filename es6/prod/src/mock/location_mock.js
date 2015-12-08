@@ -28,7 +28,15 @@ export let SpyLocation = class {
     setInitialPath(url) { this._path = url; }
     setBaseHref(url) { this._baseHref = url; }
     path() { return this._path; }
-    simulateUrlPop(pathname) { ObservableWrapper.callEmit(this._subject, { 'url': pathname }); }
+    simulateUrlPop(pathname) {
+        ObservableWrapper.callEmit(this._subject, { 'url': pathname, 'pop': true });
+    }
+    simulateHashChange(pathname) {
+        // Because we don't prevent the native event, the browser will independently update the path
+        this.setInitialPath(pathname);
+        this.urlChanges.push('hash: ' + pathname);
+        ObservableWrapper.callEmit(this._subject, { 'url': pathname, 'pop': true, 'type': 'hashchange' });
+    }
     prepareExternalUrl(url) {
         if (url.length > 0 && !url.startsWith('/')) {
             url = '/' + url;
@@ -44,6 +52,13 @@ export let SpyLocation = class {
         this._query = query;
         var url = path + (query.length > 0 ? ('?' + query) : '');
         this.urlChanges.push(url);
+    }
+    replaceState(path, query = '') {
+        path = this.prepareExternalUrl(path);
+        this._path = path;
+        this._query = query;
+        var url = path + (query.length > 0 ? ('?' + query) : '');
+        this.urlChanges.push('replace: ' + url);
     }
     forward() {
         // TODO
