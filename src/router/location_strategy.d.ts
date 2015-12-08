@@ -19,7 +19,6 @@ export declare abstract class LocationStrategy {
     abstract path(): string;
     abstract prepareExternalUrl(internal: string): string;
     abstract pushState(state: any, title: string, url: string, queryParams: string): void;
-    abstract replaceState(state: any, title: string, url: string, queryParams: string): void;
     abstract forward(): void;
     abstract back(): void;
     abstract onPopState(fn: (_: any) => any): void;

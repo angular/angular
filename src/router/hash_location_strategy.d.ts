@@ -47,7 +47,6 @@ export declare class HashLocationStrategy extends LocationStrategy {
     path(): string;
     prepareExternalUrl(internal: string): string;
     pushState(state: any, title: string, path: string, queryParams: string): void;
-    replaceState(state: any, title: string, path: string, queryParams: string): void;
     forward(): void;
     back(): void;
 }

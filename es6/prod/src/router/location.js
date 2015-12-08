@@ -59,9 +59,7 @@ export let Location = class {
         this._subject = new EventEmitter();
         var browserBaseHref = this.platformStrategy.getBaseHref();
         this._baseHref = stripTrailingSlash(stripIndexHtml(browserBaseHref));
-        this.platformStrategy.onPopState((ev) => {
-            ObservableWrapper.callEmit(this._subject, { 'url': this.path(), 'pop': true, 'type': ev.type });
-        });
+        this.platformStrategy.onPopState((_) => { ObservableWrapper.callEmit(this._subject, { 'url': this.path(), 'pop': true }); });
     }
     /**
      * Returns the normalized URL path.
@@ -86,20 +84,12 @@ export let Location = class {
         }
         return this.platformStrategy.prepareExternalUrl(url);
     }
-    // TODO: rename this method to pushState
     /**
      * Changes the browsers URL to the normalized version of the given URL, and pushes a
      * new item onto the platform's history.
      */
     go(path, query = '') {
         this.platformStrategy.pushState(null, '', path, query);
-    }
-    /**
-     * Changes the browsers URL to the normalized version of the given URL, and replaces
-     * the top item on the platform's history stack.
-     */
-    replaceState(path, query = '') {
-        this.platformStrategy.replaceState(null, '', path, query);
     }
     /**
      * Navigates forward in the platform's history.

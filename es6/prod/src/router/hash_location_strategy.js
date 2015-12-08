@@ -63,10 +63,7 @@ export let HashLocationStrategy = class extends LocationStrategy {
             this._baseHref = _baseHref;
         }
     }
-    onPopState(fn) {
-        this._platformLocation.onPopState(fn);
-        this._platformLocation.onHashChange(fn);
-    }
+    onPopState(fn) { this._platformLocation.onPopState(fn); }
     getBaseHref() { return this._baseHref; }
     path() {
         // the hash value is always prefixed with a `#`
@@ -88,13 +85,6 @@ export let HashLocationStrategy = class extends LocationStrategy {
             url = this._platformLocation.pathname;
         }
         this._platformLocation.pushState(state, title, url);
-    }
-    replaceState(state, title, path, queryParams) {
-        var url = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
-        if (url.length == 0) {
-            url = this._platformLocation.pathname;
-        }
-        this._platformLocation.replaceState(state, title, url);
     }
     forward() { this._platformLocation.forward(); }
     back() { this._platformLocation.back(); }

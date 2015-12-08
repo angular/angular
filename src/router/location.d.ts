@@ -64,11 +64,6 @@ export declare class Location {
      */
     go(path: string, query?: string): void;
     /**
-     * Changes the browsers URL to the normalized version of the given URL, and replaces
-     * the top item on the platform's history stack.
-     */
-    replaceState(path: string, query?: string): void;
-    /**
      * Navigates forward in the platform's history.
      */
     forward(): void;

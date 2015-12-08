@@ -40,10 +40,6 @@ export class PlatformLocation {
     this._history.pushState(state, title, url);
   }
 
-  replaceState(state: any, title: string, url: string): void {
-    this._history.replaceState(state, title, url);
-  }
-
   forward(): void { this._history.forward(); }
 
   back(): void { this._history.back(); }

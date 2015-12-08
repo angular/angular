@@ -14,7 +14,6 @@ export declare class PlatformLocation {
     search: string;
     hash: string;
     pushState(state: any, title: string, url: string): void;
-    replaceState(state: any, title: string, url: string): void;
     forward(): void;
     back(): void;
 }

@@ -1989,7 +1989,7 @@ System.register("angular2/src/mock/mock_location_strategy", ["angular2/src/core/
     }
     MockLocationStrategy.prototype.simulatePopState = function(url) {
       this.internalPath = url;
-      async_1.ObservableWrapper.callEmit(this._subject, new MockPopStateEvent(this.path()));
+      async_1.ObservableWrapper.callEmit(this._subject, null);
     };
     MockLocationStrategy.prototype.path = function() {
       return this.internalPath;
@@ -2000,19 +2000,15 @@ System.register("angular2/src/mock/mock_location_strategy", ["angular2/src/core/
       }
       return this.internalBaseHref + internal;
     };
+    MockLocationStrategy.prototype.simulateUrlPop = function(pathname) {
+      async_1.ObservableWrapper.callEmit(this._subject, {'url': pathname});
+    };
     MockLocationStrategy.prototype.pushState = function(ctx, title, path, query) {
       this.internalTitle = title;
       var url = path + (query.length > 0 ? ('?' + query) : '');
       this.internalPath = url;
       var externalUrl = this.prepareExternalUrl(url);
       this.urlChanges.push(externalUrl);
-    };
-    MockLocationStrategy.prototype.replaceState = function(ctx, title, path, query) {
-      this.internalTitle = title;
-      var url = path + (query.length > 0 ? ('?' + query) : '');
-      this.internalPath = url;
-      var externalUrl = this.prepareExternalUrl(url);
-      this.urlChanges.push('replace: ' + externalUrl);
     };
     MockLocationStrategy.prototype.onPopState = function(fn) {
       async_1.ObservableWrapper.subscribe(this._subject, fn);
@@ -2034,14 +2030,6 @@ System.register("angular2/src/mock/mock_location_strategy", ["angular2/src/core/
     return MockLocationStrategy;
   })(location_strategy_1.LocationStrategy);
   exports.MockLocationStrategy = MockLocationStrategy;
-  var MockPopStateEvent = (function() {
-    function MockPopStateEvent(newUrl) {
-      this.newUrl = newUrl;
-      this.pop = true;
-      this.type = 'popstate';
-    }
-    return MockPopStateEvent;
-  })();
   global.define = __define;
   return module.exports;
 });
