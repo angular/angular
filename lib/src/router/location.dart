@@ -55,9 +55,9 @@ class Location {
   Location(this.platformStrategy) {
     var browserBaseHref = this.platformStrategy.getBaseHref();
     this._baseHref = stripTrailingSlash(stripIndexHtml(browserBaseHref));
-    this.platformStrategy.onPopState((_) {
+    this.platformStrategy.onPopState((ev) {
       ObservableWrapper.callEmit(
-          this._subject, {"url": this.path(), "pop": true});
+          this._subject, {"url": this.path(), "pop": true, "type": ev.type});
     });
   }
   /**
@@ -88,6 +88,7 @@ class Location {
     }
     return this.platformStrategy.prepareExternalUrl(url);
   }
+  // TODO: rename this method to pushState
 
   /**
    * Changes the browsers URL to the normalized version of the given URL, and pushes a
@@ -95,6 +96,14 @@ class Location {
    */
   void go(String path, [String query = ""]) {
     this.platformStrategy.pushState(null, "", path, query);
+  }
+
+  /**
+   * Changes the browsers URL to the normalized version of the given URL, and replaces
+   * the top item on the platform's history stack.
+   */
+  void replaceState(String path, [String query = ""]) {
+    this.platformStrategy.replaceState(null, "", path, query);
   }
 
   /**
