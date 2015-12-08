@@ -53,7 +53,7 @@ const formControlBinding = const Provider(NgControl, useExisting: NgModel);
     bindings: const [formControlBinding],
     inputs: const ["model: ngModel"],
     outputs: const ["update: ngModelChange"],
-    exportAs: "ngForm")
+    exportAs: "form")
 class NgModel extends NgControl implements OnChanges {
   List<dynamic> _validators;
   List<dynamic> _asyncValidators;

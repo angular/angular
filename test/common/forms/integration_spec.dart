@@ -885,7 +885,7 @@ main() {
             // from form.control before it was set. This test verifies this bug is
 
             // fixed.
-            var t = '''<form><div ng-control-group="x" #x="ngForm">
+            var t = '''<form><div ng-control-group="x" #x="form">
                   <input type="text" ng-control="test"></div>{{x.valid}}</form>''';
             ComponentFixture fixture;
             tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then((root) {

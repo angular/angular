@@ -100,7 +100,7 @@ const formDirectiveProvider =
     inputs: const ["form: ng-form-model"],
     host: const {"(submit)": "onSubmit()"},
     outputs: const ["ngSubmit"],
-    exportAs: "ngForm")
+    exportAs: "form")
 class NgFormModel extends ControlContainer implements Form, OnChanges {
   List<dynamic> _validators;
   List<dynamic> _asyncValidators;

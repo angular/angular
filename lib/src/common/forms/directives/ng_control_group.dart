@@ -37,8 +37,8 @@ const controlGroupProvider =
  *   template: `
  *     <div>
  *       <h2>Angular2 Control &amp; ControlGroup Example</h2>
- *       <form #f="ngForm">
- *         <div ng-control-group="name" #cg-name="ngForm">
+ *       <form #f="form">
+ *         <div ng-control-group="name" #cg-name="form">
  *           <h3>Enter your name:</h3>
  *           <p>First: <input ng-control="first" required></p>
  *           <p>Middle: <input ng-control="middle"></p>
@@ -73,7 +73,7 @@ const controlGroupProvider =
     selector: "[ng-control-group]",
     providers: const [controlGroupProvider],
     inputs: const ["name: ng-control-group"],
-    exportAs: "ngForm")
+    exportAs: "form")
 class NgControlGroup extends ControlContainer implements OnInit, OnDestroy {
   List<dynamic> _validators;
   List<dynamic> _asyncValidators;

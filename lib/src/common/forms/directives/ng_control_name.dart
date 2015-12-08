@@ -48,8 +48,8 @@ const controlNameBinding =
  *      selector: "login-comp",
  *      directives: [FORM_DIRECTIVES],
  *      template: `
- *        <form #f="ngForm" (submit)='onLogIn(f.value)'>
- *          Login <input type='text' ng-control='login' #l="ngForm">
+ *        <form #f="form" (submit)='onLogIn(f.value)'>
+ *          Login <input type='text' ng-control='login' #l="form">
  *          <div *ng-if="!l.valid">Login is invalid</div>
  *
  *          Password <input type='password' ng-control='password'>
@@ -92,7 +92,7 @@ const controlNameBinding =
     bindings: const [controlNameBinding],
     inputs: const ["name: ngControl", "model: ngModel"],
     outputs: const ["update: ngModelChange"],
-    exportAs: "ngForm")
+    exportAs: "form")
 class NgControlName extends NgControl implements OnChanges, OnDestroy {
   ControlContainer _parent;
   /* Array<Validator|Function> */ List<dynamic> _validators;
