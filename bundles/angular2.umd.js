@@ -29385,7 +29385,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._advanceIf(html_lexer_1.HtmlTokenType.COMMENT_END);
 	    };
 	    TreeBuilder.prototype._consumeText = function (token) {
-	        this._addToParent(new html_ast_1.HtmlTextAst(token.parts[0], token.sourceSpan));
+	        var text = token.parts[0];
+	        if (text.length > 0 && text[0] == '\n') {
+	            var parent_1 = this._getParentElement();
+	            if (lang_1.isPresent(parent_1) && parent_1.children.length == 0 &&
+	                html_tags_1.getHtmlTagDefinition(parent_1.name).ignoreFirstLf) {
+	                text = text.substring(1);
+	            }
+	        }
+	        if (text.length > 0) {
+	            this._addToParent(new html_ast_1.HtmlTextAst(text, token.sourceSpan));
+	        }
 	    };
 	    TreeBuilder.prototype._closeVoidElement = function () {
 	        if (this.elementStack.length > 0) {
@@ -29564,6 +29574,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var lang_1 = __webpack_require__(5);
+	var collection_1 = __webpack_require__(34);
 	var parse_util_1 = __webpack_require__(216);
 	var html_tags_1 = __webpack_require__(217);
 	(function (HtmlTokenType) {
@@ -29721,7 +29732,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        this._beginToken(HtmlTokenType.EOF);
 	        this._endToken([]);
-	        return new HtmlTokenizeResult(this.tokens, this.errors);
+	        return new HtmlTokenizeResult(mergeTextTokens(this.tokens), this.errors);
 	    };
 	    _HtmlTokenizer.prototype._getLocation = function () {
 	        return new parse_util_1.ParseLocation(this.file, this.index, this.line, this.column);
@@ -29919,21 +29930,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return [prefix, name];
 	    };
 	    _HtmlTokenizer.prototype._consumeTagOpen = function (start) {
-	        this._attemptUntilFn(isNotWhitespace);
-	        var nameStart = this.index;
-	        this._consumeTagOpenStart(start);
-	        var lowercaseTagName = this.inputLowercase.substring(nameStart, this.index);
-	        this._attemptUntilFn(isNotWhitespace);
-	        while (this.peek !== $SLASH && this.peek !== $GT) {
-	            this._consumeAttributeName();
-	            this._attemptUntilFn(isNotWhitespace);
-	            if (this._attemptChar($EQ)) {
-	                this._attemptUntilFn(isNotWhitespace);
-	                this._consumeAttributeValue();
+	        var savedPos = this._savePosition();
+	        var lowercaseTagName;
+	        try {
+	            if (!isAsciiLetter(this.peek)) {
+	                throw this._createError(unexpectedCharacterErrorMsg(this.peek), this._getLocation());
 	            }
+	            var nameStart = this.index;
+	            this._consumeTagOpenStart(start);
+	            lowercaseTagName = this.inputLowercase.substring(nameStart, this.index);
 	            this._attemptUntilFn(isNotWhitespace);
+	            while (this.peek !== $SLASH && this.peek !== $GT) {
+	                this._consumeAttributeName();
+	                this._attemptUntilFn(isNotWhitespace);
+	                if (this._attemptChar($EQ)) {
+	                    this._attemptUntilFn(isNotWhitespace);
+	                    this._consumeAttributeValue();
+	                }
+	                this._attemptUntilFn(isNotWhitespace);
+	            }
+	            this._consumeTagOpenEnd();
 	        }
-	        this._consumeTagOpenEnd();
+	        catch (e) {
+	            if (e instanceof ControlFlowError) {
+	                // When the start tag is invalid, assume we want a "<"
+	                this._restorePosition(savedPos);
+	                // Back to back text tokens are merged at the end
+	                this._beginToken(HtmlTokenType.TEXT, start);
+	                this._endToken(['<']);
+	                return;
+	            }
+	            throw e;
+	        }
 	        var contentTokenType = html_tags_1.getHtmlTagDefinition(lowercaseTagName).contentType;
 	        if (contentTokenType === html_tags_1.HtmlTagContentType.RAW_TEXT) {
 	            this._consumeRawTextWithTagClose(lowercaseTagName, false);
@@ -30012,12 +30040,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        this._endToken([this._processCarriageReturns(parts.join(''))]);
 	    };
-	    _HtmlTokenizer.prototype._savePosition = function () { return [this.peek, this.index, this.column, this.line]; };
+	    _HtmlTokenizer.prototype._savePosition = function () {
+	        return [this.peek, this.index, this.column, this.line, this.tokens.length];
+	    };
 	    _HtmlTokenizer.prototype._restorePosition = function (position) {
 	        this.peek = position[0];
 	        this.index = position[1];
 	        this.column = position[2];
 	        this.line = position[3];
+	        var nbTokens = position[4];
+	        if (nbTokens < this.tokens.length) {
+	            // remove any extra tokens
+	            this.tokens = collection_1.ListWrapper.slice(this.tokens, 0, nbTokens);
+	        }
 	    };
 	    return _HtmlTokenizer;
 	})();
@@ -30048,6 +30083,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	function isAsciiHexDigit(code) {
 	    return code >= $a && code <= $f || code >= $0 && code <= $9;
+	}
+	function mergeTextTokens(srcTokens) {
+	    var dstTokens = [];
+	    var lastDstToken;
+	    for (var i = 0; i < srcTokens.length; i++) {
+	        var token = srcTokens[i];
+	        if (lang_1.isPresent(lastDstToken) && lastDstToken.type == HtmlTokenType.TEXT &&
+	            token.type == HtmlTokenType.TEXT) {
+	            lastDstToken.parts[0] += token.parts[0];
+	            lastDstToken.sourceSpan.end = token.sourceSpan.end;
+	        }
+	        else {
+	            lastDstToken = token;
+	            dstTokens.push(lastDstToken);
+	        }
+	    }
+	    return dstTokens;
 	}
 
 
@@ -30400,7 +30452,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var HtmlTagDefinition = (function () {
 	    function HtmlTagDefinition(_a) {
 	        var _this = this;
-	        var _b = _a === void 0 ? {} : _a, closedByChildren = _b.closedByChildren, requiredParents = _b.requiredParents, implicitNamespacePrefix = _b.implicitNamespacePrefix, contentType = _b.contentType, closedByParent = _b.closedByParent, isVoid = _b.isVoid;
+	        var _b = _a === void 0 ? {} : _a, closedByChildren = _b.closedByChildren, requiredParents = _b.requiredParents, implicitNamespacePrefix = _b.implicitNamespacePrefix, contentType = _b.contentType, closedByParent = _b.closedByParent, isVoid = _b.isVoid, ignoreFirstLf = _b.ignoreFirstLf;
 	        this.closedByChildren = {};
 	        this.closedByParent = false;
 	        if (lang_1.isPresent(closedByChildren) && closedByChildren.length > 0) {
@@ -30415,10 +30467,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        this.implicitNamespacePrefix = implicitNamespacePrefix;
 	        this.contentType = lang_1.isPresent(contentType) ? contentType : HtmlTagContentType.PARSABLE_DATA;
+	        this.ignoreFirstLf = lang_1.normalizeBool(ignoreFirstLf);
 	    }
 	    HtmlTagDefinition.prototype.requireExtraParent = function (currentParent) {
-	        return lang_1.isPresent(this.requiredParents) &&
-	            (lang_1.isBlank(currentParent) || this.requiredParents[currentParent.toLowerCase()] != true);
+	        if (lang_1.isBlank(this.requiredParents)) {
+	            return false;
+	        }
+	        if (lang_1.isBlank(currentParent)) {
+	            return true;
+	        }
+	        var lcParent = currentParent.toLowerCase();
+	        return this.requiredParents[lcParent] != true && lcParent != 'template';
 	    };
 	    HtmlTagDefinition.prototype.isClosedByChild = function (name) {
 	        return this.isVoid || lang_1.normalizeBool(this.closedByChildren[name.toLowerCase()]);
@@ -30493,10 +30552,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    'rp': new HtmlTagDefinition({ closedByChildren: ['rb', 'rt', 'rtc', 'rp'], closedByParent: true }),
 	    'optgroup': new HtmlTagDefinition({ closedByChildren: ['optgroup'], closedByParent: true }),
 	    'option': new HtmlTagDefinition({ closedByChildren: ['option', 'optgroup'], closedByParent: true }),
+	    'pre': new HtmlTagDefinition({ ignoreFirstLf: true }),
+	    'listing': new HtmlTagDefinition({ ignoreFirstLf: true }),
 	    'style': new HtmlTagDefinition({ contentType: HtmlTagContentType.RAW_TEXT }),
 	    'script': new HtmlTagDefinition({ contentType: HtmlTagContentType.RAW_TEXT }),
 	    'title': new HtmlTagDefinition({ contentType: HtmlTagContentType.ESCAPABLE_RAW_TEXT }),
-	    'textarea': new HtmlTagDefinition({ contentType: HtmlTagContentType.ESCAPABLE_RAW_TEXT }),
+	    'textarea': new HtmlTagDefinition({ contentType: HtmlTagContentType.ESCAPABLE_RAW_TEXT, ignoreFirstLf: true }),
 	};
 	var DEFAULT_TAG_DEFINITION = new HtmlTagDefinition();
 	function getHtmlTagDefinition(tagName) {
