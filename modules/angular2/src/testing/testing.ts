@@ -9,11 +9,10 @@ import {bind} from 'angular2/src/core/di';
 import {
   createTestInjectorWithRuntimeCompiler,
   FunctionWithParamTokens,
-  inject,
-  injectAsync
+  inject
 } from './test_injector';
 
-export {inject, injectAsync} from './test_injector';
+export {inject} from './test_injector';
 
 export {expect, NgMatchers} from './matchers';
 
