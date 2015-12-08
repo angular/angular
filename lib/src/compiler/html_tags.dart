@@ -1,7 +1,7 @@
 library angular2.src.compiler.html_tags;
 
 import "package:angular2/src/facade/lang.dart"
-    show isPresent, isBlank, normalizeBool;
+    show isPresent, isBlank, normalizeBool, RegExpWrapper;
 // see http://www.w3.org/TR/html51/syntax.html#named-character-references
 
 // see https://html.spec.whatwg.org/multipage/entities.json
@@ -393,4 +393,17 @@ var DEFAULT_TAG_DEFINITION = new HtmlTagDefinition();
 HtmlTagDefinition getHtmlTagDefinition(String tagName) {
   var result = TAG_DEFINITIONS[tagName.toLowerCase()];
   return isPresent(result) ? result : DEFAULT_TAG_DEFINITION;
+}
+
+var NS_PREFIX_RE = new RegExp(r'^@([^:]+):(.+)');
+List<String> splitHtmlTagNamespace(String elementName) {
+  if (elementName[0] != "@") {
+    return [null, elementName];
+  }
+  var match = RegExpWrapper.firstMatch(NS_PREFIX_RE, elementName);
+  return [match[1], match[2]];
+}
+
+String getHtmlTagNamespacePrefix(String elementName) {
+  return splitHtmlTagNamespace(elementName)[0];
 }

@@ -42,5 +42,8 @@ main() {
       expect(registry.getMappedPropName("exotic-unknown"))
           .toEqual("exotic-unknown");
     });
+    it("should detect properties on namespaced elements", () {
+      expect(registry.hasProperty("@svg:g", "id")).toBeTruthy();
+    });
   });
 }
