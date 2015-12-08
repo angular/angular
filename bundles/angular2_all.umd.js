@@ -29653,8 +29653,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var $z = 122;
 	var $x = 120;
 	var $NBSP = 160;
-	var CRLF_REGEXP = /\r\n/g;
-	var CR_REGEXP = /\r/g;
 	function unexpectedCharacterErrorMsg(charCode) {
 	    var char = charCode === $EOF ? 'EOF' : lang_1.StringWrapper.fromCharCode(charCode);
 	    return "Unexpected character \"" + char + "\"";
@@ -29684,13 +29682,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.length = file.content.length;
 	        this._advance();
 	    }
-	    _HtmlTokenizer.prototype._processCarriageReturns = function (content) {
-	        // http://www.w3.org/TR/html5/syntax.html#preprocessing-the-input-stream
-	        // In order to keep the original position in the source, we can not pre-process it.
-	        // Instead CRs are processed right before instantiating the tokens.
-	        content = lang_1.StringWrapper.replaceAll(content, CRLF_REGEXP, '\r');
-	        return lang_1.StringWrapper.replaceAll(content, CR_REGEXP, '\n');
-	    };
 	    _HtmlTokenizer.prototype.tokenize = function () {
 	        while (this.peek !== $EOF) {
 	            var start = this._getLocation();
@@ -29881,7 +29872,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                parts.push(this._readChar(decodeEntities));
 	            }
 	        }
-	        return this._endToken([this._processCarriageReturns(parts.join(''))], tagCloseStart);
+	        return this._endToken([parts.join('')], tagCloseStart);
 	    };
 	    _HtmlTokenizer.prototype._consumeComment = function (start) {
 	        var _this = this;
@@ -29994,7 +29985,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._requireUntilFn(isNameEnd, 1);
 	            value = this.input.substring(valueStart, this.index);
 	        }
-	        this._endToken([this._processCarriageReturns(value)]);
+	        this._endToken([value]);
 	    };
 	    _HtmlTokenizer.prototype._consumeTagOpenEnd = function () {
 	        var tokenType = this._attemptChar($SLASH) ? HtmlTokenType.TAG_OPEN_END_VOID : HtmlTokenType.TAG_OPEN_END;
@@ -30018,7 +30009,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        while (!isTextEnd(this.peek)) {
 	            parts.push(this._readChar(true));
 	        }
-	        this._endToken([this._processCarriageReturns(parts.join(''))]);
+	        this._endToken([parts.join('')]);
 	    };
 	    _HtmlTokenizer.prototype._savePosition = function () { return [this.peek, this.index, this.column, this.line]; };
 	    _HtmlTokenizer.prototype._restorePosition = function (position) {
@@ -34579,8 +34570,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return this.navigateByUrl(this.lastNavigationAttempt);
 	    };
 	    /**
-	     * Generate a URL from a component name and optional map of parameters. The URL is relative to the
-	     * app's base href.
+	     * Generate an `Instruction` based on the provided Route Link DSL.
 	     */
 	    Router.prototype.generate = function (linkParams) {
 	        var ancestorInstructions = this._getAncestorInstructions();

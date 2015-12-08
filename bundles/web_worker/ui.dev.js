@@ -18218,8 +18218,6 @@ System.register("angular2/src/compiler/html_lexer", ["angular2/src/facade/lang",
   var $z = 122;
   var $x = 120;
   var $NBSP = 160;
-  var CRLF_REGEXP = /\r\n/g;
-  var CR_REGEXP = /\r/g;
   function unexpectedCharacterErrorMsg(charCode) {
     var char = charCode === $EOF ? 'EOF' : lang_1.StringWrapper.fromCharCode(charCode);
     return "Unexpected character \"" + char + "\"";
@@ -18247,10 +18245,6 @@ System.register("angular2/src/compiler/html_lexer", ["angular2/src/facade/lang",
       this.length = file.content.length;
       this._advance();
     }
-    _HtmlTokenizer.prototype._processCarriageReturns = function(content) {
-      content = lang_1.StringWrapper.replaceAll(content, CRLF_REGEXP, '\r');
-      return lang_1.StringWrapper.replaceAll(content, CR_REGEXP, '\n');
-    };
     _HtmlTokenizer.prototype.tokenize = function() {
       while (this.peek !== $EOF) {
         var start = this._getLocation();
@@ -18434,7 +18428,7 @@ System.register("angular2/src/compiler/html_lexer", ["angular2/src/facade/lang",
           parts.push(this._readChar(decodeEntities));
         }
       }
-      return this._endToken([this._processCarriageReturns(parts.join(''))], tagCloseStart);
+      return this._endToken([parts.join('')], tagCloseStart);
     };
     _HtmlTokenizer.prototype._consumeComment = function(start) {
       var _this = this;
@@ -18548,7 +18542,7 @@ System.register("angular2/src/compiler/html_lexer", ["angular2/src/facade/lang",
         this._requireUntilFn(isNameEnd, 1);
         value = this.input.substring(valueStart, this.index);
       }
-      this._endToken([this._processCarriageReturns(value)]);
+      this._endToken([value]);
     };
     _HtmlTokenizer.prototype._consumeTagOpenEnd = function() {
       var tokenType = this._attemptChar($SLASH) ? HtmlTokenType.TAG_OPEN_END_VOID : HtmlTokenType.TAG_OPEN_END;
@@ -18572,7 +18566,7 @@ System.register("angular2/src/compiler/html_lexer", ["angular2/src/facade/lang",
       while (!isTextEnd(this.peek)) {
         parts.push(this._readChar(true));
       }
-      this._endToken([this._processCarriageReturns(parts.join(''))]);
+      this._endToken([parts.join('')]);
     };
     _HtmlTokenizer.prototype._savePosition = function() {
       return [this.peek, this.index, this.column, this.line];
