@@ -1068,22 +1068,6 @@ gulp.task('!bundle.testing', ['build.js.dev'], function() {
                         './dist/js/bundle/testing.js', {sourceMaps: true});
 });
 
-// self-executing development build
-// This bundle executes its main module - angular2_sfx, when loaded, without
-// a corresponding System.import call. It is aimed at ES5 developers that do not
-// use System loader polyfills (like system.js and es6 loader).
-// see: https://github.com/systemjs/builder (SFX bundles).
-gulp.task('!bundle.js.sfx.dev', ['build.js.dev'], function() {
-  var bundler = require('./tools/build/bundle');
-
-  var devBundleConfig = merge(true, bundleConfig);
-  devBundleConfig.paths = merge(true, devBundleConfig.paths, {'*': 'dist/js/dev/es5/*.js'});
-
-  return bundler.bundle(devBundleConfig, 'angular2/angular2_sfx',
-                        './dist/build/angular2.sfx.dev.js', {sourceMaps: true},
-                        /* self-executing */ true);
-});
-
 gulp.task('!bundles.js.umd', ['build.js.dev'], function() {
   var q = require('q');
   var webpack = q.denodeify(require('webpack'));
@@ -1197,14 +1181,6 @@ gulp.task('!bundle.js.dev.deps', ['!bundle.js.dev'], function() {
       .pipe(gulp.dest('dist/js/bundle'));
 });
 
-gulp.task('!bundle.js.sfx.dev.deps', ['!bundle.js.sfx.dev'], function() {
-  var bundler = require('./tools/build/bundle');
-
-  return bundler.modify(JS_DEV_DEPS.concat(['dist/build/angular2.sfx.dev.js']),
-                        'angular2.sfx.dev.js')
-      .pipe(gulp.dest('dist/js/bundle'));
-});
-
 gulp.task('!bundle.web_worker.js.dev.deps', ['!bundle.web_worker.js.dev'], function() {
   return merge2(
       addDevDependencies("web_worker/ui.dev.js", addDevDependencies("web_worker/worker.dev.js")));
@@ -1226,7 +1202,6 @@ gulp.task('bundles.js',
             '!bundle.js.dev.deps',
             '!bundle.js.min.deps',
             '!bundle.web_worker.js.dev.deps',
-            '!bundle.js.sfx.dev.deps',
             'bundles.js.umd.min',
             '!bundle.testing',
             '!bundle.ng.polyfills'
