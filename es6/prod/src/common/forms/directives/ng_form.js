@@ -50,7 +50,7 @@ const formDirectiveProvider = CONST_EXPR(new Provider(ControlContainer, { useExi
  *     <div>
  *       <p>Submit the form to see the data object Angular builds</p>
  *       <h2>NgForm demo</h2>
- *       <form #f="form" (ng-submit)="onSubmit(f.value)">
+ *       <form #f="ngForm" (ng-submit)="onSubmit(f.value)">
  *         <h3>Control group: credentials</h3>
  *         <div ng-control-group="credentials">
  *           <p>Login: <input type="text" ng-control="login"></p>
@@ -154,7 +154,7 @@ NgForm = __decorate([
             '(submit)': 'onSubmit()',
         },
         outputs: ['ngSubmit'],
-        exportAs: 'form'
+        exportAs: 'ngForm'
     }),
     __param(0, Optional()),
     __param(0, Self()),

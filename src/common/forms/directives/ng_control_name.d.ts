@@ -19,8 +19,8 @@ import { Control } from '../model';
  *      selector: "login-comp",
  *      directives: [FORM_DIRECTIVES],
  *      template: `
- *        <form #f="form" (submit)='onLogIn(f.value)'>
- *          Login <input type='text' ng-control='login' #l="form">
+ *        <form #f="ngForm" (submit)='onLogIn(f.value)'>
+ *          Login <input type='text' ng-control='login' #l="ngForm">
  *          <div *ng-if="!l.valid">Login is invalid</div>
  *
  *          Password <input type='password' ng-control='password'>

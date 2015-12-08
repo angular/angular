@@ -18,8 +18,8 @@ import { Form } from './form_interface';
  *   template: `
  *     <div>
  *       <h2>Angular2 Control &amp; ControlGroup Example</h2>
- *       <form #f="form">
- *         <div ng-control-group="name" #cg-name="form">
+ *       <form #f="ngForm">
+ *         <div ng-control-group="name" #cg-name="ngForm">
  *           <h3>Enter your name:</h3>
  *           <p>First: <input ng-control="first" required></p>
  *           <p>Middle: <input ng-control="middle"></p>
