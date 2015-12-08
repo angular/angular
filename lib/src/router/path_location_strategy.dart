@@ -95,12 +95,6 @@ class PathLocationStrategy extends LocationStrategy {
     this._platformLocation.pushState(state, title, externalUrl);
   }
 
-  replaceState(dynamic state, String title, String url, String queryParams) {
-    var externalUrl =
-        this.prepareExternalUrl(url + normalizeQueryParams(queryParams));
-    this._platformLocation.replaceState(state, title, externalUrl);
-  }
-
   void forward() {
     this._platformLocation.forward();
   }

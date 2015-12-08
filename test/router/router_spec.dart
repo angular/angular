@@ -23,7 +23,7 @@ import "package:angular2/src/router/location.dart" show Location;
 import "package:angular2/src/router/route_registry.dart"
     show RouteRegistry, ROUTER_PRIMARY_COMPONENT;
 import "package:angular2/src/router/route_config_decorator.dart"
-    show RouteConfig, AsyncRoute, Route, Redirect;
+    show RouteConfig, AsyncRoute, Route;
 import "package:angular2/src/core/linker/directive_resolver.dart"
     show DirectiveResolver;
 import "package:angular2/core.dart" show provide;
@@ -98,41 +98,6 @@ main() {
             expect(outlet.spy("activate")).toHaveBeenCalled();
             expect(location.urlChanges).toEqual([]);
             async.done();
-          });
-        }));
-    // See https://github.com/angular/angular/issues/5590
-    it(
-        "should replace history when triggered by a hashchange with a redirect",
-        inject([AsyncTestCompleter], (async) {
-          var outlet = makeDummyOutlet();
-          router
-              .registerPrimaryOutlet(outlet)
-              .then((_) => router.config([
-                    new Redirect(path: "/a", redirectTo: ["B"]),
-                    new Route(path: "/b", component: DummyComponent, name: "B")
-                  ]))
-              .then((_) {
-            router.subscribe((_) {
-              expect(location.urlChanges).toEqual(["hash: a", "replace: /b"]);
-              async.done();
-            });
-            location.simulateHashChange("a");
-          });
-        }));
-    it(
-        "should push history when triggered by a hashchange without a redirect",
-        inject([AsyncTestCompleter], (async) {
-          var outlet = makeDummyOutlet();
-          router
-              .registerPrimaryOutlet(outlet)
-              .then((_) => router
-                  .config([new Route(path: "/a", component: DummyComponent)]))
-              .then((_) {
-            router.subscribe((_) {
-              expect(location.urlChanges).toEqual(["hash: a"]);
-              async.done();
-            });
-            location.simulateHashChange("a");
           });
         }));
     it(
