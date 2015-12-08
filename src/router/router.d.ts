@@ -128,7 +128,8 @@ export declare class Router {
      */
     renavigate(): Promise<any>;
     /**
-     * Generate an `Instruction` based on the provided Route Link DSL.
+     * Generate a URL from a component name and optional map of parameters. The URL is relative to the
+     * app's base href.
      */
     generate(linkParams: any[]): Instruction;
 }
