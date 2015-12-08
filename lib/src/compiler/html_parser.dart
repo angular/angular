@@ -8,14 +8,14 @@ import "package:angular2/src/facade/lang.dart"
         stringify,
         assertionsEnabled,
         StringJoiner,
+        RegExpWrapper,
         serializeEnum;
 import "package:angular2/src/facade/collection.dart" show ListWrapper;
 import "html_ast.dart" show HtmlAst, HtmlAttrAst, HtmlTextAst, HtmlElementAst;
 import "package:angular2/src/core/di.dart" show Injectable;
 import "html_lexer.dart" show HtmlToken, HtmlTokenType, tokenizeHtml;
 import "parse_util.dart" show ParseError, ParseLocation, ParseSourceSpan;
-import "html_tags.dart"
-    show HtmlTagDefinition, getHtmlTagDefinition, getHtmlTagNamespacePrefix;
+import "html_tags.dart" show HtmlTagDefinition, getHtmlTagDefinition;
 
 class HtmlTreeError extends ParseError {
   String elementName;
@@ -138,7 +138,7 @@ class TreeBuilder {
     if (identical(this.peek.type, HtmlTokenType.TAG_OPEN_END_VOID)) {
       this._advance();
       selfClosing = true;
-      if (getHtmlTagNamespacePrefix(fullName) == null &&
+      if (namespacePrefix(fullName) == null &&
           !getHtmlTagDefinition(fullName).isVoid) {
         this.errors.add(HtmlTreeError.create(
             fullName,
@@ -250,8 +250,14 @@ String getElementFullName(
   if (isBlank(prefix)) {
     prefix = getHtmlTagDefinition(localName).implicitNamespacePrefix;
     if (isBlank(prefix) && isPresent(parentElement)) {
-      prefix = getHtmlTagNamespacePrefix(parentElement.name);
+      prefix = namespacePrefix(parentElement.name);
     }
   }
   return mergeNsAndName(prefix, localName);
+}
+
+var NS_PREFIX_RE = new RegExp(r'^@([^:]+)');
+String namespacePrefix(String elementName) {
+  var match = RegExpWrapper.firstMatch(NS_PREFIX_RE, elementName);
+  return isBlank(match) ? null : match[1];
 }
