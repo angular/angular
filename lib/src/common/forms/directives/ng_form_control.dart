@@ -81,7 +81,7 @@ const formControlBinding =
     bindings: const [formControlBinding],
     inputs: const ["form: ngFormControl", "model: ngModel"],
     outputs: const ["update: ngModelChange"],
-    exportAs: "form")
+    exportAs: "ngForm")
 class NgFormControl extends NgControl implements OnChanges {
   /* Array<Validator|Function> */ List<dynamic> _validators;
   /* Array<Validator|Function> */ List<dynamic> _asyncValidators;
