@@ -297,14 +297,9 @@ class HtmlTagDefinition {
         isPresent(contentType) ? contentType : HtmlTagContentType.PARSABLE_DATA;
   }
   bool requireExtraParent(String currentParent) {
-    if (isBlank(this.requiredParents)) {
-      return false;
-    }
-    if (isBlank(currentParent)) {
-      return true;
-    }
-    var lcParent = currentParent.toLowerCase();
-    return this.requiredParents[lcParent] != true && lcParent != "template";
+    return isPresent(this.requiredParents) &&
+        (isBlank(currentParent) ||
+            this.requiredParents[currentParent.toLowerCase()] != true);
   }
 
   bool isClosedByChild(String name) {
