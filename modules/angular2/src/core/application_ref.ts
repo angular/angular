@@ -1,5 +1,12 @@
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {Type, isBlank, isPresent, assertionsEnabled, print, IS_DART} from 'angular2/src/facade/lang';
+import {
+  Type,
+  isBlank,
+  isPresent,
+  assertionsEnabled,
+  print,
+  IS_DART
+} from 'angular2/src/facade/lang';
 import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
 import {
   APP_COMPONENT_REF_PROMISE,

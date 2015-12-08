@@ -26,6 +26,8 @@ import {ElementRef} from 'angular2/src/core/linker/element_ref';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {ComponentFixture_} from "angular2/src/testing/test_component_builder";
+import {BaseException} from 'angular2/src/facade/exceptions';
+import {PromiseWrapper} from 'angular2/src/facade/promise';
 
 export function main() {
   describe('DynamicComponentLoader', function() {
@@ -121,6 +123,28 @@ export function main() {
                               expect((<HTMLElement>newlyInsertedElement).id).toEqual("new value");
                               async.done();
                             });
+                      });
+                }));
+
+      it('should leave the view tree in a consistent state if hydration fails',
+         inject([DynamicComponentLoader, TestComponentBuilder, AsyncTestCompleter],
+                (loader, tcb: TestComponentBuilder, async) => {
+                  tcb.overrideView(MyComp, new ViewMetadata({
+                                     template: '<div><location #loc></location></div>',
+                                     directives: [Location]
+                                   }))
+                      .createAsync(MyComp)
+                      .then((tc: ComponentFixture) => {
+                        tc.debugElement
+
+                            PromiseWrapper.catchError(
+                                loader.loadIntoLocation(DynamicallyLoadedThrows,
+                                                        tc.debugElement.elementRef, 'loc'),
+                                error => {
+                                  expect(error.message).toContain("ThrownInConstructor");
+                                  expect(() => tc.detectChanges()).not.toThrow();
+                                  async.done();
+                                });
                       });
                 }));
 
@@ -223,6 +247,7 @@ export function main() {
                             });
                       });
                 }));
+
     });
 
     describe('loadAsRoot', () => {
@@ -289,6 +314,12 @@ class DynamicallyCreatedCmp implements OnDestroy {
 @Component({selector: 'dummy'})
 @View({template: "DynamicallyLoaded;"})
 class DynamicallyLoaded {
+}
+
+@Component({selector: 'dummy'})
+@View({template: "DynamicallyLoaded;"})
+class DynamicallyLoadedThrows {
+  constructor() { throw new BaseException("ThrownInConstructor"); }
 }
 
 @Component({selector: 'dummy'})
