@@ -154,7 +154,7 @@ NgFormModel = __decorate([
         inputs: ['form: ng-form-model'],
         host: { '(submit)': 'onSubmit()' },
         outputs: ['ngSubmit'],
-        exportAs: 'ngForm'
+        exportAs: 'form'
     }),
     __param(0, Optional()),
     __param(0, Self()),

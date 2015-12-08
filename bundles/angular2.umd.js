@@ -61,1824 +61,21 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	function __export(m) {
-	    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-	}
-	__export(__webpack_require__(2));
-	__export(__webpack_require__(26));
-	__export(__webpack_require__(161));
-	__export(__webpack_require__(162));
-	__export(__webpack_require__(165));
-	__export(__webpack_require__(167));
-	__export(__webpack_require__(226));
-	var compiler_1 = __webpack_require__(196);
-	exports.UrlResolver = compiler_1.UrlResolver;
-	exports.AppRootUrl = compiler_1.AppRootUrl;
+	exports.core = __webpack_require__(2);
+	exports.common = __webpack_require__(118);
+	exports.platform = {
+	  browser: __webpack_require__(161),
+	  common_dom: __webpack_require__(189)
+	};
+	exports.http = __webpack_require__(225);
+	exports.router = __webpack_require__(240);
+	exports.router_link_dsl = __webpack_require__(264);
+	exports.instrumentation = __webpack_require__(266);
+	exports.upgrade = __webpack_require__(267);
 
 
 /***/ },
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
-
-	function __export(m) {
-	    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-	}
-	__export(__webpack_require__(3));
-	__export(__webpack_require__(129));
-	__export(__webpack_require__(137));
-	__export(__webpack_require__(160));
-
-
-/***/ },
-/* 3 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * @module
-	 * @description
-	 * This module provides a set of common Pipes.
-	 */
-	var async_pipe_1 = __webpack_require__(4);
-	var uppercase_pipe_1 = __webpack_require__(122);
-	var lowercase_pipe_1 = __webpack_require__(123);
-	var json_pipe_1 = __webpack_require__(124);
-	var slice_pipe_1 = __webpack_require__(125);
-	var date_pipe_1 = __webpack_require__(126);
-	var number_pipe_1 = __webpack_require__(128);
-	var lang_1 = __webpack_require__(5);
-	var async_pipe_2 = __webpack_require__(4);
-	exports.AsyncPipe = async_pipe_2.AsyncPipe;
-	var date_pipe_2 = __webpack_require__(126);
-	exports.DatePipe = date_pipe_2.DatePipe;
-	var json_pipe_2 = __webpack_require__(124);
-	exports.JsonPipe = json_pipe_2.JsonPipe;
-	var slice_pipe_2 = __webpack_require__(125);
-	exports.SlicePipe = slice_pipe_2.SlicePipe;
-	var lowercase_pipe_2 = __webpack_require__(123);
-	exports.LowerCasePipe = lowercase_pipe_2.LowerCasePipe;
-	var number_pipe_2 = __webpack_require__(128);
-	exports.NumberPipe = number_pipe_2.NumberPipe;
-	exports.DecimalPipe = number_pipe_2.DecimalPipe;
-	exports.PercentPipe = number_pipe_2.PercentPipe;
-	exports.CurrencyPipe = number_pipe_2.CurrencyPipe;
-	var uppercase_pipe_2 = __webpack_require__(122);
-	exports.UpperCasePipe = uppercase_pipe_2.UpperCasePipe;
-	exports.COMMON_PIPES = lang_1.CONST_EXPR([
-	    async_pipe_1.AsyncPipe,
-	    uppercase_pipe_1.UpperCasePipe,
-	    lowercase_pipe_1.LowerCasePipe,
-	    json_pipe_1.JsonPipe,
-	    slice_pipe_1.SlicePipe,
-	    number_pipe_1.DecimalPipe,
-	    number_pipe_1.PercentPipe,
-	    number_pipe_1.CurrencyPipe,
-	    date_pipe_1.DatePipe
-	]);
-
-
-/***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
-	    switch (arguments.length) {
-	        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
-	        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
-	        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
-	    }
-	};
-	var __metadata = (this && this.__metadata) || function (k, v) {
-	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-	};
-	var lang_1 = __webpack_require__(5);
-	var async_1 = __webpack_require__(6);
-	var core_1 = __webpack_require__(26);
-	var invalid_pipe_argument_exception_1 = __webpack_require__(121);
-	var ObservableStrategy = (function () {
-	    function ObservableStrategy() {
-	    }
-	    ObservableStrategy.prototype.createSubscription = function (async, updateLatestValue) {
-	        return async_1.ObservableWrapper.subscribe(async, updateLatestValue, function (e) { throw e; });
-	    };
-	    ObservableStrategy.prototype.dispose = function (subscription) { async_1.ObservableWrapper.dispose(subscription); };
-	    ObservableStrategy.prototype.onDestroy = function (subscription) { async_1.ObservableWrapper.dispose(subscription); };
-	    return ObservableStrategy;
-	})();
-	var PromiseStrategy = (function () {
-	    function PromiseStrategy() {
-	    }
-	    PromiseStrategy.prototype.createSubscription = function (async, updateLatestValue) {
-	        return async.then(updateLatestValue);
-	    };
-	    PromiseStrategy.prototype.dispose = function (subscription) { };
-	    PromiseStrategy.prototype.onDestroy = function (subscription) { };
-	    return PromiseStrategy;
-	})();
-	var _promiseStrategy = new PromiseStrategy();
-	var _observableStrategy = new ObservableStrategy();
-	/**
-	 * The `async` pipe subscribes to an Observable or Promise and returns the latest value it has
-	 * emitted.
-	 * When a new value is emitted, the `async` pipe marks the component to be checked for changes.
-	 *
-	 * ### Example
-	 *
-	 * This example binds a `Promise` to the view. Clicking the `Resolve` button resolves the
-	 * promise.
-	 *
-	 * {@example core/pipes/ts/async_pipe/async_pipe_example.ts region='AsyncPipe'}
-	 *
-	 * It's also possible to use `async` with Observables. The example below binds the `time` Observable
-	 * to the view. Every 500ms, the `time` Observable updates the view with the current time.
-	 *
-	 * ```typescript
-	 * ```
-	 */
-	var AsyncPipe = (function () {
-	    function AsyncPipe(_ref) {
-	        /** @internal */
-	        this._latestValue = null;
-	        /** @internal */
-	        this._latestReturnedValue = null;
-	        /** @internal */
-	        this._subscription = null;
-	        /** @internal */
-	        this._obj = null;
-	        this._strategy = null;
-	        this._ref = _ref;
-	    }
-	    AsyncPipe.prototype.ngOnDestroy = function () {
-	        if (lang_1.isPresent(this._subscription)) {
-	            this._dispose();
-	        }
-	    };
-	    AsyncPipe.prototype.transform = function (obj, args) {
-	        if (lang_1.isBlank(this._obj)) {
-	            if (lang_1.isPresent(obj)) {
-	                this._subscribe(obj);
-	            }
-	            return null;
-	        }
-	        if (obj !== this._obj) {
-	            this._dispose();
-	            return this.transform(obj);
-	        }
-	        if (this._latestValue === this._latestReturnedValue) {
-	            return this._latestReturnedValue;
-	        }
-	        else {
-	            this._latestReturnedValue = this._latestValue;
-	            return core_1.WrappedValue.wrap(this._latestValue);
-	        }
-	    };
-	    /** @internal */
-	    AsyncPipe.prototype._subscribe = function (obj) {
-	        var _this = this;
-	        this._obj = obj;
-	        this._strategy = this._selectStrategy(obj);
-	        this._subscription =
-	            this._strategy.createSubscription(obj, function (value) { return _this._updateLatestValue(obj, value); });
-	    };
-	    /** @internal */
-	    AsyncPipe.prototype._selectStrategy = function (obj) {
-	        if (lang_1.isPromise(obj)) {
-	            return _promiseStrategy;
-	        }
-	        else if (async_1.ObservableWrapper.isObservable(obj)) {
-	            return _observableStrategy;
-	        }
-	        else {
-	            throw new invalid_pipe_argument_exception_1.InvalidPipeArgumentException(AsyncPipe, obj);
-	        }
-	    };
-	    /** @internal */
-	    AsyncPipe.prototype._dispose = function () {
-	        this._strategy.dispose(this._subscription);
-	        this._latestValue = null;
-	        this._latestReturnedValue = null;
-	        this._subscription = null;
-	        this._obj = null;
-	    };
-	    /** @internal */
-	    AsyncPipe.prototype._updateLatestValue = function (async, value) {
-	        if (async === this._obj) {
-	            this._latestValue = value;
-	            this._ref.markForCheck();
-	        }
-	    };
-	    AsyncPipe = __decorate([
-	        core_1.Pipe({ name: 'async', pure: false }),
-	        core_1.Injectable(), 
-	        __metadata('design:paramtypes', [core_1.ChangeDetectorRef])
-	    ], AsyncPipe);
-	    return AsyncPipe;
-	})();
-	exports.AsyncPipe = AsyncPipe;
-
-
-/***/ },
-/* 5 */
-/***/ function(module, exports) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var globalScope;
-	if (typeof window === 'undefined') {
-	    if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope) {
-	        // TODO: Replace any with WorkerGlobalScope from lib.webworker.d.ts #3492
-	        globalScope = self;
-	    }
-	    else {
-	        globalScope = global;
-	    }
-	}
-	else {
-	    globalScope = window;
-	}
-	;
-	exports.IS_DART = false;
-	// Need to declare a new variable for global here since TypeScript
-	// exports the original value of the symbol.
-	var _global = globalScope;
-	exports.global = _global;
-	exports.Type = Function;
-	function getTypeNameForDebugging(type) {
-	    return type['name'];
-	}
-	exports.getTypeNameForDebugging = getTypeNameForDebugging;
-	exports.Math = _global.Math;
-	exports.Date = _global.Date;
-	var _devMode = !!_global.angularDevMode;
-	var _devModeLocked = false;
-	function lockDevMode() {
-	    _devModeLocked = true;
-	}
-	exports.lockDevMode = lockDevMode;
-	/**
-	 * Enable Angular's development mode, which turns on assertions and other
-	 * checks within the framework.
-	 *
-	 * One important assertion this enables verifies that a change detection pass
-	 * does not result in additional changes to any bindings (also known as
-	 * unidirectional data flow).
-	 *
-	 * {@example core/ts/dev_mode/dev_mode_example.ts region='enableDevMode'}
-	 */
-	function enableDevMode() {
-	    // TODO(alxhub): Refactor out of facade/lang as per issue #5157.
-	    if (_devModeLocked) {
-	        // Cannot use BaseException as that ends up importing from facade/lang.
-	        throw 'Cannot enable dev mode after platform setup.';
-	    }
-	    _devMode = true;
-	}
-	exports.enableDevMode = enableDevMode;
-	function assertionsEnabled() {
-	    return _devMode;
-	}
-	exports.assertionsEnabled = assertionsEnabled;
-	// TODO: remove calls to assert in production environment
-	// Note: Can't just export this and import in in other files
-	// as `assert` is a reserved keyword in Dart
-	_global.assert = function assert(condition) {
-	    // TODO: to be fixed properly via #2830, noop for now
-	};
-	// This function is needed only to properly support Dart's const expressions
-	// see https://github.com/angular/ts2dart/pull/151 for more info
-	function CONST_EXPR(expr) {
-	    return expr;
-	}
-	exports.CONST_EXPR = CONST_EXPR;
-	function CONST() {
-	    return function (target) { return target; };
-	}
-	exports.CONST = CONST;
-	function isPresent(obj) {
-	    return obj !== undefined && obj !== null;
-	}
-	exports.isPresent = isPresent;
-	function isBlank(obj) {
-	    return obj === undefined || obj === null;
-	}
-	exports.isBlank = isBlank;
-	function isString(obj) {
-	    return typeof obj === "string";
-	}
-	exports.isString = isString;
-	function isFunction(obj) {
-	    return typeof obj === "function";
-	}
-	exports.isFunction = isFunction;
-	function isType(obj) {
-	    return isFunction(obj);
-	}
-	exports.isType = isType;
-	function isStringMap(obj) {
-	    return typeof obj === 'object' && obj !== null;
-	}
-	exports.isStringMap = isStringMap;
-	function isPromise(obj) {
-	    return obj instanceof _global.Promise;
-	}
-	exports.isPromise = isPromise;
-	function isArray(obj) {
-	    return Array.isArray(obj);
-	}
-	exports.isArray = isArray;
-	function isNumber(obj) {
-	    return typeof obj === 'number';
-	}
-	exports.isNumber = isNumber;
-	function isDate(obj) {
-	    return obj instanceof exports.Date && !isNaN(obj.valueOf());
-	}
-	exports.isDate = isDate;
-	function noop() { }
-	exports.noop = noop;
-	function stringify(token) {
-	    if (typeof token === 'string') {
-	        return token;
-	    }
-	    if (token === undefined || token === null) {
-	        return '' + token;
-	    }
-	    if (token.name) {
-	        return token.name;
-	    }
-	    var res = token.toString();
-	    var newLineIndex = res.indexOf("\n");
-	    return (newLineIndex === -1) ? res : res.substring(0, newLineIndex);
-	}
-	exports.stringify = stringify;
-	// serialize / deserialize enum exist only for consistency with dart API
-	// enums in typescript don't need to be serialized
-	function serializeEnum(val) {
-	    return val;
-	}
-	exports.serializeEnum = serializeEnum;
-	function deserializeEnum(val, values) {
-	    return val;
-	}
-	exports.deserializeEnum = deserializeEnum;
-	var StringWrapper = (function () {
-	    function StringWrapper() {
-	    }
-	    StringWrapper.fromCharCode = function (code) { return String.fromCharCode(code); };
-	    StringWrapper.charCodeAt = function (s, index) { return s.charCodeAt(index); };
-	    StringWrapper.split = function (s, regExp) { return s.split(regExp); };
-	    StringWrapper.equals = function (s, s2) { return s === s2; };
-	    StringWrapper.replace = function (s, from, replace) {
-	        return s.replace(from, replace);
-	    };
-	    StringWrapper.replaceAll = function (s, from, replace) {
-	        return s.replace(from, replace);
-	    };
-	    StringWrapper.slice = function (s, from, to) {
-	        if (from === void 0) { from = 0; }
-	        if (to === void 0) { to = null; }
-	        return s.slice(from, to === null ? undefined : to);
-	    };
-	    StringWrapper.replaceAllMapped = function (s, from, cb) {
-	        return s.replace(from, function () {
-	            var matches = [];
-	            for (var _i = 0; _i < arguments.length; _i++) {
-	                matches[_i - 0] = arguments[_i];
-	            }
-	            // Remove offset & string from the result array
-	            matches.splice(-2, 2);
-	            // The callback receives match, p1, ..., pn
-	            return cb(matches);
-	        });
-	    };
-	    StringWrapper.contains = function (s, substr) { return s.indexOf(substr) != -1; };
-	    StringWrapper.compare = function (a, b) {
-	        if (a < b) {
-	            return -1;
-	        }
-	        else if (a > b) {
-	            return 1;
-	        }
-	        else {
-	            return 0;
-	        }
-	    };
-	    return StringWrapper;
-	})();
-	exports.StringWrapper = StringWrapper;
-	var StringJoiner = (function () {
-	    function StringJoiner(parts) {
-	        if (parts === void 0) { parts = []; }
-	        this.parts = parts;
-	    }
-	    StringJoiner.prototype.add = function (part) { this.parts.push(part); };
-	    StringJoiner.prototype.toString = function () { return this.parts.join(""); };
-	    return StringJoiner;
-	})();
-	exports.StringJoiner = StringJoiner;
-	var NumberParseError = (function (_super) {
-	    __extends(NumberParseError, _super);
-	    function NumberParseError(message) {
-	        _super.call(this);
-	        this.message = message;
-	    }
-	    NumberParseError.prototype.toString = function () { return this.message; };
-	    return NumberParseError;
-	})(Error);
-	exports.NumberParseError = NumberParseError;
-	var NumberWrapper = (function () {
-	    function NumberWrapper() {
-	    }
-	    NumberWrapper.toFixed = function (n, fractionDigits) { return n.toFixed(fractionDigits); };
-	    NumberWrapper.equal = function (a, b) { return a === b; };
-	    NumberWrapper.parseIntAutoRadix = function (text) {
-	        var result = parseInt(text);
-	        if (isNaN(result)) {
-	            throw new NumberParseError("Invalid integer literal when parsing " + text);
-	        }
-	        return result;
-	    };
-	    NumberWrapper.parseInt = function (text, radix) {
-	        if (radix == 10) {
-	            if (/^(\-|\+)?[0-9]+$/.test(text)) {
-	                return parseInt(text, radix);
-	            }
-	        }
-	        else if (radix == 16) {
-	            if (/^(\-|\+)?[0-9ABCDEFabcdef]+$/.test(text)) {
-	                return parseInt(text, radix);
-	            }
-	        }
-	        else {
-	            var result = parseInt(text, radix);
-	            if (!isNaN(result)) {
-	                return result;
-	            }
-	        }
-	        throw new NumberParseError("Invalid integer literal when parsing " + text + " in base " +
-	            radix);
-	    };
-	    // TODO: NaN is a valid literal but is returned by parseFloat to indicate an error.
-	    NumberWrapper.parseFloat = function (text) { return parseFloat(text); };
-	    Object.defineProperty(NumberWrapper, "NaN", {
-	        get: function () { return NaN; },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    NumberWrapper.isNaN = function (value) { return isNaN(value); };
-	    NumberWrapper.isInteger = function (value) { return Number.isInteger(value); };
-	    return NumberWrapper;
-	})();
-	exports.NumberWrapper = NumberWrapper;
-	exports.RegExp = _global.RegExp;
-	var RegExpWrapper = (function () {
-	    function RegExpWrapper() {
-	    }
-	    RegExpWrapper.create = function (regExpStr, flags) {
-	        if (flags === void 0) { flags = ''; }
-	        flags = flags.replace(/g/g, '');
-	        return new _global.RegExp(regExpStr, flags + 'g');
-	    };
-	    RegExpWrapper.firstMatch = function (regExp, input) {
-	        // Reset multimatch regex state
-	        regExp.lastIndex = 0;
-	        return regExp.exec(input);
-	    };
-	    RegExpWrapper.test = function (regExp, input) {
-	        regExp.lastIndex = 0;
-	        return regExp.test(input);
-	    };
-	    RegExpWrapper.matcher = function (regExp, input) {
-	        // Reset regex state for the case
-	        // someone did not loop over all matches
-	        // last time.
-	        regExp.lastIndex = 0;
-	        return { re: regExp, input: input };
-	    };
-	    return RegExpWrapper;
-	})();
-	exports.RegExpWrapper = RegExpWrapper;
-	var RegExpMatcherWrapper = (function () {
-	    function RegExpMatcherWrapper() {
-	    }
-	    RegExpMatcherWrapper.next = function (matcher) {
-	        return matcher.re.exec(matcher.input);
-	    };
-	    return RegExpMatcherWrapper;
-	})();
-	exports.RegExpMatcherWrapper = RegExpMatcherWrapper;
-	var FunctionWrapper = (function () {
-	    function FunctionWrapper() {
-	    }
-	    FunctionWrapper.apply = function (fn, posArgs) { return fn.apply(null, posArgs); };
-	    return FunctionWrapper;
-	})();
-	exports.FunctionWrapper = FunctionWrapper;
-	// JS has NaN !== NaN
-	function looseIdentical(a, b) {
-	    return a === b || typeof a === "number" && typeof b === "number" && isNaN(a) && isNaN(b);
-	}
-	exports.looseIdentical = looseIdentical;
-	// JS considers NaN is the same as NaN for map Key (while NaN !== NaN otherwise)
-	// see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
-	function getMapKey(value) {
-	    return value;
-	}
-	exports.getMapKey = getMapKey;
-	function normalizeBlank(obj) {
-	    return isBlank(obj) ? null : obj;
-	}
-	exports.normalizeBlank = normalizeBlank;
-	function normalizeBool(obj) {
-	    return isBlank(obj) ? false : obj;
-	}
-	exports.normalizeBool = normalizeBool;
-	function isJsObject(o) {
-	    return o !== null && (typeof o === "function" || typeof o === "object");
-	}
-	exports.isJsObject = isJsObject;
-	function print(obj) {
-	    console.log(obj);
-	}
-	exports.print = print;
-	// Can't be all uppercase as our transpiler would think it is a special directive...
-	var Json = (function () {
-	    function Json() {
-	    }
-	    Json.parse = function (s) { return _global.JSON.parse(s); };
-	    Json.stringify = function (data) {
-	        // Dart doesn't take 3 arguments
-	        return _global.JSON.stringify(data, null, 2);
-	    };
-	    return Json;
-	})();
-	exports.Json = Json;
-	var DateWrapper = (function () {
-	    function DateWrapper() {
-	    }
-	    DateWrapper.create = function (year, month, day, hour, minutes, seconds, milliseconds) {
-	        if (month === void 0) { month = 1; }
-	        if (day === void 0) { day = 1; }
-	        if (hour === void 0) { hour = 0; }
-	        if (minutes === void 0) { minutes = 0; }
-	        if (seconds === void 0) { seconds = 0; }
-	        if (milliseconds === void 0) { milliseconds = 0; }
-	        return new exports.Date(year, month - 1, day, hour, minutes, seconds, milliseconds);
-	    };
-	    DateWrapper.fromISOString = function (str) { return new exports.Date(str); };
-	    DateWrapper.fromMillis = function (ms) { return new exports.Date(ms); };
-	    DateWrapper.toMillis = function (date) { return date.getTime(); };
-	    DateWrapper.now = function () { return new exports.Date(); };
-	    DateWrapper.toJson = function (date) { return date.toJSON(); };
-	    return DateWrapper;
-	})();
-	exports.DateWrapper = DateWrapper;
-	function setValueOnPath(global, path, value) {
-	    var parts = path.split('.');
-	    var obj = global;
-	    while (parts.length > 1) {
-	        var name = parts.shift();
-	        if (obj.hasOwnProperty(name) && isPresent(obj[name])) {
-	            obj = obj[name];
-	        }
-	        else {
-	            obj = obj[name] = {};
-	        }
-	    }
-	    if (obj === undefined || obj === null) {
-	        obj = {};
-	    }
-	    obj[parts.shift()] = value;
-	}
-	exports.setValueOnPath = setValueOnPath;
-	var _symbolIterator = null;
-	function getSymbolIterator() {
-	    if (isBlank(_symbolIterator)) {
-	        if (isPresent(Symbol) && isPresent(Symbol.iterator)) {
-	            _symbolIterator = Symbol.iterator;
-	        }
-	        else {
-	            // es6-shim specific logic
-	            var keys = Object.getOwnPropertyNames(Map.prototype);
-	            for (var i = 0; i < keys.length; ++i) {
-	                var key = keys[i];
-	                if (key !== 'entries' && key !== 'size' &&
-	                    Map.prototype[key] === Map.prototype['entries']) {
-	                    _symbolIterator = key;
-	                }
-	            }
-	        }
-	    }
-	    return _symbolIterator;
-	}
-	exports.getSymbolIterator = getSymbolIterator;
-
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var lang_1 = __webpack_require__(5);
-	var promise_1 = __webpack_require__(7);
-	exports.PromiseWrapper = promise_1.PromiseWrapper;
-	exports.Promise = promise_1.Promise;
-	var Subject_1 = __webpack_require__(8);
-	var Observable_1 = __webpack_require__(9);
-	var fromPromise_1 = __webpack_require__(20);
-	var toPromise_1 = __webpack_require__(25);
-	var Subject_2 = __webpack_require__(8);
-	exports.Subject = Subject_2.Subject;
-	var TimerWrapper = (function () {
-	    function TimerWrapper() {
-	    }
-	    TimerWrapper.setTimeout = function (fn, millis) {
-	        return lang_1.global.setTimeout(fn, millis);
-	    };
-	    TimerWrapper.clearTimeout = function (id) { lang_1.global.clearTimeout(id); };
-	    TimerWrapper.setInterval = function (fn, millis) {
-	        return lang_1.global.setInterval(fn, millis);
-	    };
-	    TimerWrapper.clearInterval = function (id) { lang_1.global.clearInterval(id); };
-	    return TimerWrapper;
-	})();
-	exports.TimerWrapper = TimerWrapper;
-	var ObservableWrapper = (function () {
-	    function ObservableWrapper() {
-	    }
-	    // TODO(vsavkin): when we use rxnext, try inferring the generic type from the first arg
-	    ObservableWrapper.subscribe = function (emitter, onNext, onError, onComplete) {
-	        if (onComplete === void 0) { onComplete = function () { }; }
-	        onError = (typeof onError === "function") && onError || lang_1.noop;
-	        onComplete = (typeof onComplete === "function") && onComplete || lang_1.noop;
-	        return emitter.subscribe({ next: onNext, error: onError, complete: onComplete });
-	    };
-	    ObservableWrapper.isObservable = function (obs) { return obs instanceof Observable_1.Observable; };
-	    /**
-	     * Returns whether `obs` has any subscribers listening to events.
-	     */
-	    ObservableWrapper.hasSubscribers = function (obs) { return obs.observers.length > 0; };
-	    ObservableWrapper.dispose = function (subscription) { subscription.unsubscribe(); };
-	    /**
-	     * @deprecated - use callEmit() instead
-	     */
-	    ObservableWrapper.callNext = function (emitter, value) { emitter.next(value); };
-	    ObservableWrapper.callEmit = function (emitter, value) { emitter.emit(value); };
-	    ObservableWrapper.callError = function (emitter, error) { emitter.error(error); };
-	    ObservableWrapper.callComplete = function (emitter) { emitter.complete(); };
-	    ObservableWrapper.fromPromise = function (promise) {
-	        return fromPromise_1.PromiseObservable.create(promise);
-	    };
-	    ObservableWrapper.toPromise = function (obj) { return toPromise_1.toPromise.call(obj); };
-	    return ObservableWrapper;
-	})();
-	exports.ObservableWrapper = ObservableWrapper;
-	/**
-	 * Use by directives and components to emit custom Events.
-	 *
-	 * ### Examples
-	 *
-	 * In the following example, `Zippy` alternatively emits `open` and `close` events when its
-	 * title gets clicked:
-	 *
-	 * ```
-	 * @Component({
-	 *   selector: 'zippy',
-	 *   template: `
-	 *   <div class="zippy">
-	 *     <div (click)="toggle()">Toggle</div>
-	 *     <div [hidden]="!visible">
-	 *       <ng-content></ng-content>
-	 *     </div>
-	 *  </div>`})
-	 * export class Zippy {
-	 *   visible: boolean = true;
-	 *   @Output() open: EventEmitter<any> = new EventEmitter();
-	 *   @Output() close: EventEmitter<any> = new EventEmitter();
-	 *
-	 *   toggle() {
-	 *     this.visible = !this.visible;
-	 *     if (this.visible) {
-	 *       this.open.emit(null);
-	 *     } else {
-	 *       this.close.emit(null);
-	 *     }
-	 *   }
-	 * }
-	 * ```
-	 *
-	 * Use Rx.Observable but provides an adapter to make it work as specified here:
-	 * https://github.com/jhusain/observable-spec
-	 *
-	 * Once a reference implementation of the spec is available, switch to it.
-	 */
-	var EventEmitter = (function (_super) {
-	    __extends(EventEmitter, _super);
-	    /**
-	     * Creates an instance of [EventEmitter], which depending on [isAsync],
-	     * delivers events synchronously or asynchronously.
-	     */
-	    function EventEmitter(isAsync) {
-	        if (isAsync === void 0) { isAsync = true; }
-	        _super.call(this);
-	        this._isAsync = isAsync;
-	    }
-	    EventEmitter.prototype.emit = function (value) { _super.prototype.next.call(this, value); };
-	    /**
-	     * @deprecated - use .emit(value) instead
-	     */
-	    EventEmitter.prototype.next = function (value) { _super.prototype.next.call(this, value); };
-	    EventEmitter.prototype.subscribe = function (generatorOrNext, error, complete) {
-	        var schedulerFn;
-	        var errorFn = function (err) { return null; };
-	        var completeFn = function () { return null; };
-	        if (generatorOrNext && typeof generatorOrNext === 'object') {
-	            schedulerFn = this._isAsync ? function (value) { setTimeout(function () { return generatorOrNext.next(value); }); } :
-	                function (value) { generatorOrNext.next(value); };
-	            if (generatorOrNext.error) {
-	                errorFn = this._isAsync ? function (err) { setTimeout(function () { return generatorOrNext.error(err); }); } :
-	                    function (err) { generatorOrNext.error(err); };
-	            }
-	            if (generatorOrNext.complete) {
-	                completeFn = this._isAsync ? function () { setTimeout(function () { return generatorOrNext.complete(); }); } :
-	                    function () { generatorOrNext.complete(); };
-	            }
-	        }
-	        else {
-	            schedulerFn = this._isAsync ? function (value) { setTimeout(function () { return generatorOrNext(value); }); } :
-	                function (value) { generatorOrNext(value); };
-	            if (error) {
-	                errorFn =
-	                    this._isAsync ? function (err) { setTimeout(function () { return error(err); }); } : function (err) { error(err); };
-	            }
-	            if (complete) {
-	                completeFn =
-	                    this._isAsync ? function () { setTimeout(function () { return complete(); }); } : function () { complete(); };
-	            }
-	        }
-	        return _super.prototype.subscribe.call(this, schedulerFn, errorFn, completeFn);
-	    };
-	    return EventEmitter;
-	})(Subject_1.Subject);
-	exports.EventEmitter = EventEmitter;
-	// todo(robwormald): ts2dart should handle this properly
-	var Observable = (function (_super) {
-	    __extends(Observable, _super);
-	    function Observable() {
-	        _super.apply(this, arguments);
-	    }
-	    Observable.prototype.lift = function (operator) {
-	        var observable = new Observable();
-	        observable.source = this;
-	        observable.operator = operator;
-	        return observable;
-	    };
-	    return Observable;
-	})(Observable_1.Observable);
-	exports.Observable = Observable;
-
-
-/***/ },
-/* 7 */
-/***/ function(module, exports) {
-
-	// Promises are put into their own facade file so that they can be used without
-	// introducing a dependency on rxjs. They are re-exported through facade/async.
-	var PromiseWrapper = (function () {
-	    function PromiseWrapper() {
-	    }
-	    PromiseWrapper.resolve = function (obj) { return Promise.resolve(obj); };
-	    PromiseWrapper.reject = function (obj, _) { return Promise.reject(obj); };
-	    // Note: We can't rename this method into `catch`, as this is not a valid
-	    // method name in Dart.
-	    PromiseWrapper.catchError = function (promise, onError) {
-	        return promise.catch(onError);
-	    };
-	    PromiseWrapper.all = function (promises) {
-	        if (promises.length == 0)
-	            return Promise.resolve([]);
-	        return Promise.all(promises);
-	    };
-	    PromiseWrapper.then = function (promise, success, rejection) {
-	        return promise.then(success, rejection);
-	    };
-	    PromiseWrapper.wrap = function (computation) {
-	        return new Promise(function (res, rej) {
-	            try {
-	                res(computation());
-	            }
-	            catch (e) {
-	                rej(e);
-	            }
-	        });
-	    };
-	    PromiseWrapper.scheduleMicrotask = function (computation) {
-	        PromiseWrapper.then(PromiseWrapper.resolve(null), computation, function (_) { });
-	    };
-	    PromiseWrapper.isPromise = function (obj) { return obj instanceof Promise; };
-	    PromiseWrapper.completer = function () {
-	        var resolve;
-	        var reject;
-	        var p = new Promise(function (res, rej) {
-	            resolve = res;
-	            reject = rej;
-	        });
-	        return { promise: p, resolve: resolve, reject: reject };
-	    };
-	    return PromiseWrapper;
-	})();
-	exports.PromiseWrapper = PromiseWrapper;
-
-
-/***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var Observable_1 = __webpack_require__(9);
-	var Subscriber_1 = __webpack_require__(10);
-	var Subscription_1 = __webpack_require__(14);
-	var SubjectSubscription_1 = __webpack_require__(19);
-	var rxSubscriber_1 = __webpack_require__(15);
-	var subscriptionAdd = Subscription_1.Subscription.prototype.add;
-	var subscriptionRemove = Subscription_1.Subscription.prototype.remove;
-	var subscriptionUnsubscribe = Subscription_1.Subscription.prototype.unsubscribe;
-	var subscriberNext = Subscriber_1.Subscriber.prototype.next;
-	var subscriberError = Subscriber_1.Subscriber.prototype.error;
-	var subscriberComplete = Subscriber_1.Subscriber.prototype.complete;
-	var _subscriberNext = Subscriber_1.Subscriber.prototype._next;
-	var _subscriberError = Subscriber_1.Subscriber.prototype._error;
-	var _subscriberComplete = Subscriber_1.Subscriber.prototype._complete;
-	var Subject = (function (_super) {
-	    __extends(Subject, _super);
-	    function Subject() {
-	        _super.apply(this, arguments);
-	        this.observers = [];
-	        this.isUnsubscribed = false;
-	        this.dispatching = false;
-	        this.errorSignal = false;
-	        this.completeSignal = false;
-	    }
-	    Subject.prototype[rxSubscriber_1.rxSubscriber] = function () {
-	        return this;
-	    };
-	    Subject.create = function (source, destination) {
-	        return new BidirectionalSubject(source, destination);
-	    };
-	    Subject.prototype.lift = function (operator) {
-	        var subject = new BidirectionalSubject(this, this.destination || this);
-	        subject.operator = operator;
-	        return subject;
-	    };
-	    Subject.prototype._subscribe = function (subscriber) {
-	        if (subscriber.isUnsubscribed) {
-	            return;
-	        }
-	        else if (this.errorSignal) {
-	            subscriber.error(this.errorInstance);
-	            return;
-	        }
-	        else if (this.completeSignal) {
-	            subscriber.complete();
-	            return;
-	        }
-	        else if (this.isUnsubscribed) {
-	            throw new Error('Cannot subscribe to a disposed Subject.');
-	        }
-	        this.observers.push(subscriber);
-	        return new SubjectSubscription_1.SubjectSubscription(this, subscriber);
-	    };
-	    Subject.prototype.add = function (subscription) {
-	        subscriptionAdd.call(this, subscription);
-	    };
-	    Subject.prototype.remove = function (subscription) {
-	        subscriptionRemove.call(this, subscription);
-	    };
-	    Subject.prototype.unsubscribe = function () {
-	        this.observers = void 0;
-	        subscriptionUnsubscribe.call(this);
-	    };
-	    Subject.prototype.next = function (value) {
-	        if (this.isUnsubscribed) {
-	            return;
-	        }
-	        this.dispatching = true;
-	        this._next(value);
-	        this.dispatching = false;
-	        if (this.errorSignal) {
-	            this.error(this.errorInstance);
-	        }
-	        else if (this.completeSignal) {
-	            this.complete();
-	        }
-	    };
-	    Subject.prototype.error = function (err) {
-	        if (this.isUnsubscribed || this.completeSignal) {
-	            return;
-	        }
-	        this.errorSignal = true;
-	        this.errorInstance = err;
-	        if (this.dispatching) {
-	            return;
-	        }
-	        this._error(err);
-	        this.unsubscribe();
-	    };
-	    Subject.prototype.complete = function () {
-	        if (this.isUnsubscribed || this.errorSignal) {
-	            return;
-	        }
-	        this.completeSignal = true;
-	        if (this.dispatching) {
-	            return;
-	        }
-	        this._complete();
-	        this.unsubscribe();
-	    };
-	    Subject.prototype._next = function (value) {
-	        var index = -1;
-	        var observers = this.observers.slice(0);
-	        var len = observers.length;
-	        while (++index < len) {
-	            observers[index].next(value);
-	        }
-	    };
-	    Subject.prototype._error = function (err) {
-	        var index = -1;
-	        var observers = this.observers;
-	        var len = observers.length;
-	        // optimization -- block next, complete, and unsubscribe while dispatching
-	        this.observers = void 0;
-	        this.isUnsubscribed = true;
-	        while (++index < len) {
-	            observers[index].error(err);
-	        }
-	        this.isUnsubscribed = false;
-	    };
-	    Subject.prototype._complete = function () {
-	        var index = -1;
-	        var observers = this.observers;
-	        var len = observers.length;
-	        // optimization -- block next, complete, and unsubscribe while dispatching
-	        this.observers = void 0; // optimization
-	        this.isUnsubscribed = true;
-	        while (++index < len) {
-	            observers[index].complete();
-	        }
-	        this.isUnsubscribed = false;
-	    };
-	    return Subject;
-	})(Observable_1.Observable);
-	exports.Subject = Subject;
-	var BidirectionalSubject = (function (_super) {
-	    __extends(BidirectionalSubject, _super);
-	    function BidirectionalSubject(source, destination) {
-	        _super.call(this);
-	        this.source = source;
-	        this.destination = destination;
-	    }
-	    BidirectionalSubject.prototype._subscribe = function (subscriber) {
-	        var operator = this.operator;
-	        return this.source._subscribe.call(this.source, operator ? operator.call(subscriber) : subscriber);
-	    };
-	    BidirectionalSubject.prototype.next = function (value) {
-	        subscriberNext.call(this, value);
-	    };
-	    BidirectionalSubject.prototype.error = function (err) {
-	        subscriberError.call(this, err);
-	    };
-	    BidirectionalSubject.prototype.complete = function () {
-	        subscriberComplete.call(this);
-	    };
-	    BidirectionalSubject.prototype._next = function (value) {
-	        _subscriberNext.call(this, value);
-	    };
-	    BidirectionalSubject.prototype._error = function (err) {
-	        _subscriberError.call(this, err);
-	    };
-	    BidirectionalSubject.prototype._complete = function () {
-	        _subscriberComplete.call(this);
-	    };
-	    return BidirectionalSubject;
-	})(Subject);
-
-
-/***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Subscriber_1 = __webpack_require__(10);
-	var root_1 = __webpack_require__(17);
-	var SymbolShim_1 = __webpack_require__(16);
-	var rxSubscriber_1 = __webpack_require__(15);
-	/**
-	 * A representation of any set of values over any amount of time. This the most basic building block
-	 * of RxJS.
-	 *
-	 * @class Observable<T>
-	 */
-	var Observable = (function () {
-	    /**
-	     * @constructor
-	     * @param {Function} subscribe the function that is
-	     * called when the Observable is initially subscribed to. This function is given a Subscriber, to which new values
-	     * can be `next`ed, or an `error` method can be called to raise an error, or `complete` can be called to notify
-	     * of a successful completion.
-	     */
-	    function Observable(subscribe) {
-	        this._isScalar = false;
-	        if (subscribe) {
-	            this._subscribe = subscribe;
-	        }
-	    }
-	    /**
-	     * @method lift
-	     * @param {Operator} operator the operator defining the operation to take on the observable
-	     * @returns {Observable} a new observable with the Operator applied
-	     * @description creates a new Observable, with this Observable as the source, and the passed
-	     * operator defined as the new observable's operator.
-	     */
-	    Observable.prototype.lift = function (operator) {
-	        var observable = new Observable();
-	        observable.source = this;
-	        observable.operator = operator;
-	        return observable;
-	    };
-	    /**
-	     * @method Symbol.observable
-	     * @returns {Observable} this instance of the observable
-	     * @description an interop point defined by the es7-observable spec https://github.com/zenparsing/es-observable
-	     */
-	    Observable.prototype[SymbolShim_1.SymbolShim.observable] = function () {
-	        return this;
-	    };
-	    /**
-	     * @method subscribe
-	     * @param {Observer|Function} observerOrNext (optional) either an observer defining all functions to be called,
-	     *  or the first of three possible handlers, which is the handler for each value emitted from the observable.
-	     * @param {Function} error (optional) a handler for a terminal event resulting from an error. If no error handler is provided,
-	     *  the error will be thrown as unhandled
-	     * @param {Function} complete (optional) a handler for a terminal event resulting from successful completion.
-	     * @returns {Subscription} a subscription reference to the registered handlers
-	     * @description registers handlers for handling emitted values, error and completions from the observable, and
-	     *  executes the observable's subscriber function, which will take action to set up the underlying data stream
-	     */
-	    Observable.prototype.subscribe = function (observerOrNext, error, complete) {
-	        var subscriber;
-	        if (observerOrNext && typeof observerOrNext === 'object') {
-	            if (observerOrNext instanceof Subscriber_1.Subscriber) {
-	                subscriber = observerOrNext;
-	            }
-	            else if (observerOrNext[rxSubscriber_1.rxSubscriber]) {
-	                subscriber = observerOrNext[rxSubscriber_1.rxSubscriber]();
-	            }
-	            else {
-	                subscriber = new Subscriber_1.Subscriber(observerOrNext);
-	            }
-	        }
-	        else {
-	            var next = observerOrNext;
-	            subscriber = Subscriber_1.Subscriber.create(next, error, complete);
-	        }
-	        subscriber.add(this._subscribe(subscriber));
-	        return subscriber;
-	    };
-	    /**
-	     * @method forEach
-	     * @param {Function} next a handler for each value emitted by the observable
-	     * @param {PromiseConstructor} PromiseCtor? a constructor function used to instantiate the Promise
-	     * @returns {Promise} a promise that either resolves on observable completion or
-	     *  rejects with the handled error
-	     */
-	    Observable.prototype.forEach = function (next, PromiseCtor) {
-	        var _this = this;
-	        if (!PromiseCtor) {
-	            if (root_1.root.Rx && root_1.root.Rx.config && root_1.root.Rx.config.Promise) {
-	                PromiseCtor = root_1.root.Rx.config.Promise;
-	            }
-	            else if (root_1.root.Promise) {
-	                PromiseCtor = root_1.root.Promise;
-	            }
-	        }
-	        if (!PromiseCtor) {
-	            throw new Error('no Promise impl found');
-	        }
-	        return new PromiseCtor(function (resolve, reject) {
-	            _this.subscribe(next, reject, resolve);
-	        });
-	    };
-	    Observable.prototype._subscribe = function (subscriber) {
-	        return this.source._subscribe(this.operator.call(subscriber));
-	    };
-	    // HACK: Since TypeScript inherits static properties too, we have to
-	    // fight against TypeScript here so Subject can have a different static create signature
-	    /**
-	     * @static
-	     * @method create
-	     * @param {Function} subscribe? the subscriber function to be passed to the Observable constructor
-	     * @returns {Observable} a new cold observable
-	     * @description creates a new cold Observable by calling the Observable constructor
-	     */
-	    Observable.create = function (subscribe) {
-	        return new Observable(subscribe);
-	    };
-	    return Observable;
-	})();
-	exports.Observable = Observable;
-
-
-/***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var noop_1 = __webpack_require__(11);
-	var throwError_1 = __webpack_require__(12);
-	var tryOrOnError_1 = __webpack_require__(13);
-	var Subscription_1 = __webpack_require__(14);
-	var rxSubscriber_1 = __webpack_require__(15);
-	var Subscriber = (function (_super) {
-	    __extends(Subscriber, _super);
-	    function Subscriber(destination) {
-	        _super.call(this);
-	        this.destination = destination;
-	        this._isUnsubscribed = false;
-	        if (!this.destination) {
-	            return;
-	        }
-	        var subscription = destination._subscription;
-	        if (subscription) {
-	            this._subscription = subscription;
-	        }
-	        else if (destination instanceof Subscriber) {
-	            this._subscription = destination;
-	        }
-	    }
-	    Subscriber.prototype[rxSubscriber_1.rxSubscriber] = function () {
-	        return this;
-	    };
-	    Object.defineProperty(Subscriber.prototype, "isUnsubscribed", {
-	        get: function () {
-	            var subscription = this._subscription;
-	            if (subscription) {
-	                // route to the shared Subscription if it exists
-	                return this._isUnsubscribed || subscription.isUnsubscribed;
-	            }
-	            else {
-	                return this._isUnsubscribed;
-	            }
-	        },
-	        set: function (value) {
-	            var subscription = this._subscription;
-	            if (subscription) {
-	                // route to the shared Subscription if it exists
-	                subscription.isUnsubscribed = Boolean(value);
-	            }
-	            else {
-	                this._isUnsubscribed = Boolean(value);
-	            }
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Subscriber.create = function (next, error, complete) {
-	        var subscriber = new Subscriber();
-	        subscriber._next = (typeof next === 'function') && tryOrOnError_1.tryOrOnError(next) || noop_1.noop;
-	        subscriber._error = (typeof error === 'function') && error || throwError_1.throwError;
-	        subscriber._complete = (typeof complete === 'function') && complete || noop_1.noop;
-	        return subscriber;
-	    };
-	    Subscriber.prototype.add = function (sub) {
-	        // route add to the shared Subscription if it exists
-	        var _subscription = this._subscription;
-	        if (_subscription) {
-	            _subscription.add(sub);
-	        }
-	        else {
-	            _super.prototype.add.call(this, sub);
-	        }
-	    };
-	    Subscriber.prototype.remove = function (sub) {
-	        // route remove to the shared Subscription if it exists
-	        if (this._subscription) {
-	            this._subscription.remove(sub);
-	        }
-	        else {
-	            _super.prototype.remove.call(this, sub);
-	        }
-	    };
-	    Subscriber.prototype.unsubscribe = function () {
-	        if (this._isUnsubscribed) {
-	            return;
-	        }
-	        else if (this._subscription) {
-	            this._isUnsubscribed = true;
-	        }
-	        else {
-	            _super.prototype.unsubscribe.call(this);
-	        }
-	    };
-	    Subscriber.prototype._next = function (value) {
-	        var destination = this.destination;
-	        if (destination.next) {
-	            destination.next(value);
-	        }
-	    };
-	    Subscriber.prototype._error = function (err) {
-	        var destination = this.destination;
-	        if (destination.error) {
-	            destination.error(err);
-	        }
-	    };
-	    Subscriber.prototype._complete = function () {
-	        var destination = this.destination;
-	        if (destination.complete) {
-	            destination.complete();
-	        }
-	    };
-	    Subscriber.prototype.next = function (value) {
-	        if (!this.isUnsubscribed) {
-	            this._next(value);
-	        }
-	    };
-	    Subscriber.prototype.error = function (err) {
-	        if (!this.isUnsubscribed) {
-	            this._error(err);
-	            this.unsubscribe();
-	        }
-	    };
-	    Subscriber.prototype.complete = function () {
-	        if (!this.isUnsubscribed) {
-	            this._complete();
-	            this.unsubscribe();
-	        }
-	    };
-	    return Subscriber;
-	})(Subscription_1.Subscription);
-	exports.Subscriber = Subscriber;
-
-
-/***/ },
-/* 11 */
-/***/ function(module, exports) {
-
-	/* tslint:disable:no-empty */
-	function noop() { }
-	exports.noop = noop;
-
-
-/***/ },
-/* 12 */
-/***/ function(module, exports) {
-
-	function throwError(e) { throw e; }
-	exports.throwError = throwError;
-
-
-/***/ },
-/* 13 */
-/***/ function(module, exports) {
-
-	function tryOrOnError(target) {
-	    function tryCatcher() {
-	        try {
-	            tryCatcher.target.apply(this, arguments);
-	        }
-	        catch (e) {
-	            this.error(e);
-	        }
-	    }
-	    tryCatcher.target = target;
-	    return tryCatcher;
-	}
-	exports.tryOrOnError = tryOrOnError;
-
-
-/***/ },
-/* 14 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var noop_1 = __webpack_require__(11);
-	var Subscription = (function () {
-	    function Subscription(_unsubscribe) {
-	        this.isUnsubscribed = false;
-	        if (_unsubscribe) {
-	            this._unsubscribe = _unsubscribe;
-	        }
-	    }
-	    Subscription.prototype._unsubscribe = function () {
-	        noop_1.noop();
-	    };
-	    Subscription.prototype.unsubscribe = function () {
-	        if (this.isUnsubscribed) {
-	            return;
-	        }
-	        this.isUnsubscribed = true;
-	        var unsubscribe = this._unsubscribe;
-	        var subscriptions = this._subscriptions;
-	        this._subscriptions = void 0;
-	        if (unsubscribe) {
-	            unsubscribe.call(this);
-	        }
-	        if (subscriptions != null) {
-	            var index = -1;
-	            var len = subscriptions.length;
-	            while (++index < len) {
-	                subscriptions[index].unsubscribe();
-	            }
-	        }
-	    };
-	    Subscription.prototype.add = function (subscription) {
-	        // return early if:
-	        //  1. the subscription is null
-	        //  2. we're attempting to add our this
-	        //  3. we're attempting to add the static `empty` Subscription
-	        if (!subscription || (subscription === this) || (subscription === Subscription.EMPTY)) {
-	            return;
-	        }
-	        var sub = subscription;
-	        switch (typeof subscription) {
-	            case 'function':
-	                sub = new Subscription(subscription);
-	            case 'object':
-	                if (sub.isUnsubscribed || typeof sub.unsubscribe !== 'function') {
-	                    break;
-	                }
-	                else if (this.isUnsubscribed) {
-	                    sub.unsubscribe();
-	                }
-	                else {
-	                    var subscriptions = this._subscriptions || (this._subscriptions = []);
-	                    subscriptions.push(sub);
-	                }
-	                break;
-	            default:
-	                throw new Error('Unrecognized subscription ' + subscription + ' added to Subscription.');
-	        }
-	    };
-	    Subscription.prototype.remove = function (subscription) {
-	        // return early if:
-	        //  1. the subscription is null
-	        //  2. we're attempting to remove ourthis
-	        //  3. we're attempting to remove the static `empty` Subscription
-	        if (subscription == null || (subscription === this) || (subscription === Subscription.EMPTY)) {
-	            return;
-	        }
-	        var subscriptions = this._subscriptions;
-	        if (subscriptions) {
-	            var subscriptionIndex = subscriptions.indexOf(subscription);
-	            if (subscriptionIndex !== -1) {
-	                subscriptions.splice(subscriptionIndex, 1);
-	            }
-	        }
-	    };
-	    Subscription.EMPTY = (function (empty) {
-	        empty.isUnsubscribed = true;
-	        return empty;
-	    }(new Subscription()));
-	    return Subscription;
-	})();
-	exports.Subscription = Subscription;
-
-
-/***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var SymbolShim_1 = __webpack_require__(16);
-	/**
-	 * rxSubscriber symbol is a symbol for retreiving an "Rx safe" Observer from an object
-	 * "Rx safety" can be defined as an object that has all of the traits of an Rx Subscriber,
-	 * including the ability to add and remove subscriptions to the subscription chain and
-	 * guarantees involving event triggering (can't "next" after unsubscription, etc).
-	 */
-	exports.rxSubscriber = SymbolShim_1.SymbolShim.for('rxSubscriber');
-
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var root_1 = __webpack_require__(17);
-	function polyfillSymbol(root) {
-	    var Symbol = ensureSymbol(root);
-	    ensureIterator(Symbol, root);
-	    ensureObservable(Symbol);
-	    return Symbol;
-	}
-	exports.polyfillSymbol = polyfillSymbol;
-	function ensureSymbol(root) {
-	    if (!root.Symbol) {
-	        root.Symbol = {
-	            for: symbolForPolyfill
-	        };
-	    }
-	    return root.Symbol;
-	}
-	exports.ensureSymbol = ensureSymbol;
-	function symbolForPolyfill(key) {
-	    return '@@' + key;
-	}
-	exports.symbolForPolyfill = symbolForPolyfill;
-	function ensureIterator(Symbol, root) {
-	    if (!Symbol.iterator) {
-	        if (typeof Symbol.for === 'function') {
-	            Symbol.iterator = Symbol.for('iterator');
-	        }
-	        else if (root.Set && typeof new root.Set()['@@iterator'] === 'function') {
-	            // Bug for mozilla version
-	            Symbol.iterator = '@@iterator';
-	        }
-	        else if (root.Map) {
-	            // es6-shim specific logic
-	            var keys = Object.getOwnPropertyNames(root.Map.prototype);
-	            for (var i = 0; i < keys.length; ++i) {
-	                var key = keys[i];
-	                if (key !== 'entries' && key !== 'size' && root.Map.prototype[key] === root.Map.prototype['entries']) {
-	                    Symbol.iterator = key;
-	                    break;
-	                }
-	            }
-	        }
-	        else {
-	            Symbol.iterator = '@@iterator';
-	        }
-	    }
-	}
-	exports.ensureIterator = ensureIterator;
-	function ensureObservable(Symbol) {
-	    if (!Symbol.observable) {
-	        if (typeof Symbol.for === 'function') {
-	            Symbol.observable = Symbol.for('observable');
-	        }
-	        else {
-	            Symbol.observable = '@@observable';
-	        }
-	    }
-	}
-	exports.ensureObservable = ensureObservable;
-	exports.SymbolShim = polyfillSymbol(root_1.root);
-
-
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(module, global) {var objectTypes = {
-	    'boolean': false,
-	    'function': true,
-	    'object': true,
-	    'number': false,
-	    'string': false,
-	    'undefined': false
-	};
-	exports.root = (objectTypes[typeof self] && self) || (objectTypes[typeof window] && window);
-	/* tslint:disable:no-unused-variable */
-	var freeExports = objectTypes[typeof exports] && exports && !exports.nodeType && exports;
-	var freeModule = objectTypes[typeof module] && module && !module.nodeType && module;
-	var freeGlobal = objectTypes[typeof global] && global;
-	if (freeGlobal && (freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal)) {
-	    exports.root = freeGlobal;
-	}
-
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(18)(module), (function() { return this; }())))
-
-/***/ },
-/* 18 */
-/***/ function(module, exports) {
-
-	module.exports = function(module) {
-		if(!module.webpackPolyfill) {
-			module.deprecate = function() {};
-			module.paths = [];
-			// module.parent = undefined by default
-			module.children = [];
-			module.webpackPolyfill = 1;
-		}
-		return module;
-	}
-
-
-/***/ },
-/* 19 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var Subscription_1 = __webpack_require__(14);
-	var Subscriber_1 = __webpack_require__(10);
-	var SubjectSubscription = (function (_super) {
-	    __extends(SubjectSubscription, _super);
-	    function SubjectSubscription(subject, observer) {
-	        _super.call(this);
-	        this.subject = subject;
-	        this.observer = observer;
-	        this.isUnsubscribed = false;
-	    }
-	    SubjectSubscription.prototype.unsubscribe = function () {
-	        if (this.isUnsubscribed) {
-	            return;
-	        }
-	        this.isUnsubscribed = true;
-	        var subject = this.subject;
-	        var observers = subject.observers;
-	        this.subject = void 0;
-	        if (!observers || observers.length === 0 || subject.isUnsubscribed) {
-	            return;
-	        }
-	        if (this.observer instanceof Subscriber_1.Subscriber) {
-	            this.observer.unsubscribe();
-	        }
-	        var subscriberIndex = observers.indexOf(this.observer);
-	        if (subscriberIndex !== -1) {
-	            observers.splice(subscriberIndex, 1);
-	        }
-	    };
-	    return SubjectSubscription;
-	})(Subscription_1.Subscription);
-	exports.SubjectSubscription = SubjectSubscription;
-
-
-/***/ },
-/* 20 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var Observable_1 = __webpack_require__(9);
-	var Subscription_1 = __webpack_require__(14);
-	var queue_1 = __webpack_require__(21);
-	var PromiseObservable = (function (_super) {
-	    __extends(PromiseObservable, _super);
-	    function PromiseObservable(promise, scheduler) {
-	        if (scheduler === void 0) { scheduler = queue_1.queue; }
-	        _super.call(this);
-	        this.promise = promise;
-	        this.scheduler = scheduler;
-	        this._isScalar = false;
-	    }
-	    PromiseObservable.create = function (promise, scheduler) {
-	        if (scheduler === void 0) { scheduler = queue_1.queue; }
-	        return new PromiseObservable(promise, scheduler);
-	    };
-	    PromiseObservable.prototype._subscribe = function (subscriber) {
-	        var _this = this;
-	        var scheduler = this.scheduler;
-	        var promise = this.promise;
-	        if (scheduler === queue_1.queue) {
-	            if (this._isScalar) {
-	                subscriber.next(this.value);
-	                subscriber.complete();
-	            }
-	            else {
-	                promise.then(function (value) {
-	                    _this._isScalar = true;
-	                    _this.value = value;
-	                    subscriber.next(value);
-	                    subscriber.complete();
-	                }, function (err) { return subscriber.error(err); })
-	                    .then(null, function (err) {
-	                    // escape the promise trap, throw unhandled errors
-	                    setTimeout(function () { throw err; });
-	                });
-	            }
-	        }
-	        else {
-	            var subscription = new Subscription_1.Subscription();
-	            if (this._isScalar) {
-	                var value = this.value;
-	                subscription.add(scheduler.schedule(dispatchNext, 0, { value: value, subscriber: subscriber }));
-	            }
-	            else {
-	                promise.then(function (value) {
-	                    _this._isScalar = true;
-	                    _this.value = value;
-	                    subscription.add(scheduler.schedule(dispatchNext, 0, { value: value, subscriber: subscriber }));
-	                }, function (err) { return subscription.add(scheduler.schedule(dispatchError, 0, { err: err, subscriber: subscriber })); })
-	                    .then(null, function (err) {
-	                    // escape the promise trap, throw unhandled errors
-	                    scheduler.schedule(function () { throw err; });
-	                });
-	            }
-	            return subscription;
-	        }
-	    };
-	    return PromiseObservable;
-	})(Observable_1.Observable);
-	exports.PromiseObservable = PromiseObservable;
-	function dispatchNext(_a) {
-	    var value = _a.value, subscriber = _a.subscriber;
-	    subscriber.next(value);
-	    subscriber.complete();
-	}
-	function dispatchError(_a) {
-	    var err = _a.err, subscriber = _a.subscriber;
-	    subscriber.error(err);
-	}
-
-
-/***/ },
-/* 21 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var QueueScheduler_1 = __webpack_require__(22);
-	exports.queue = new QueueScheduler_1.QueueScheduler();
-
-
-/***/ },
-/* 22 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var QueueAction_1 = __webpack_require__(23);
-	var FutureAction_1 = __webpack_require__(24);
-	var QueueScheduler = (function () {
-	    function QueueScheduler() {
-	        this.actions = [];
-	        this.active = false;
-	        this.scheduled = false;
-	    }
-	    QueueScheduler.prototype.now = function () {
-	        return Date.now();
-	    };
-	    QueueScheduler.prototype.flush = function () {
-	        if (this.active || this.scheduled) {
-	            return;
-	        }
-	        this.active = true;
-	        var actions = this.actions;
-	        for (var action = void 0; action = actions.shift();) {
-	            action.execute();
-	        }
-	        this.active = false;
-	    };
-	    QueueScheduler.prototype.schedule = function (work, delay, state) {
-	        if (delay === void 0) { delay = 0; }
-	        return (delay <= 0) ?
-	            this.scheduleNow(work, state) :
-	            this.scheduleLater(work, delay, state);
-	    };
-	    QueueScheduler.prototype.scheduleNow = function (work, state) {
-	        return new QueueAction_1.QueueAction(this, work).schedule(state);
-	    };
-	    QueueScheduler.prototype.scheduleLater = function (work, delay, state) {
-	        return new FutureAction_1.FutureAction(this, work).schedule(state, delay);
-	    };
-	    return QueueScheduler;
-	})();
-	exports.QueueScheduler = QueueScheduler;
-
-
-/***/ },
-/* 23 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var Subscription_1 = __webpack_require__(14);
-	var QueueAction = (function (_super) {
-	    __extends(QueueAction, _super);
-	    function QueueAction(scheduler, work) {
-	        _super.call(this);
-	        this.scheduler = scheduler;
-	        this.work = work;
-	    }
-	    QueueAction.prototype.schedule = function (state) {
-	        if (this.isUnsubscribed) {
-	            return this;
-	        }
-	        this.state = state;
-	        var scheduler = this.scheduler;
-	        scheduler.actions.push(this);
-	        scheduler.flush();
-	        return this;
-	    };
-	    QueueAction.prototype.execute = function () {
-	        if (this.isUnsubscribed) {
-	            throw new Error('How did did we execute a canceled Action?');
-	        }
-	        this.work(this.state);
-	    };
-	    QueueAction.prototype.unsubscribe = function () {
-	        var scheduler = this.scheduler;
-	        var actions = scheduler.actions;
-	        var index = actions.indexOf(this);
-	        this.work = void 0;
-	        this.state = void 0;
-	        this.scheduler = void 0;
-	        if (index !== -1) {
-	            actions.splice(index, 1);
-	        }
-	        _super.prototype.unsubscribe.call(this);
-	    };
-	    return QueueAction;
-	})(Subscription_1.Subscription);
-	exports.QueueAction = QueueAction;
-
-
-/***/ },
-/* 24 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var QueueAction_1 = __webpack_require__(23);
-	var FutureAction = (function (_super) {
-	    __extends(FutureAction, _super);
-	    function FutureAction(scheduler, work) {
-	        _super.call(this, scheduler, work);
-	        this.scheduler = scheduler;
-	        this.work = work;
-	    }
-	    FutureAction.prototype.schedule = function (state, delay) {
-	        var _this = this;
-	        if (delay === void 0) { delay = 0; }
-	        if (this.isUnsubscribed) {
-	            return this;
-	        }
-	        this.delay = delay;
-	        this.state = state;
-	        var id = this.id;
-	        if (id != null) {
-	            this.id = undefined;
-	            clearTimeout(id);
-	        }
-	        var scheduler = this.scheduler;
-	        this.id = setTimeout(function () {
-	            _this.id = void 0;
-	            scheduler.actions.push(_this);
-	            scheduler.flush();
-	        }, this.delay);
-	        return this;
-	    };
-	    FutureAction.prototype.unsubscribe = function () {
-	        var id = this.id;
-	        if (id != null) {
-	            this.id = void 0;
-	            clearTimeout(id);
-	        }
-	        _super.prototype.unsubscribe.call(this);
-	    };
-	    return FutureAction;
-	})(QueueAction_1.QueueAction);
-	exports.FutureAction = FutureAction;
-
-
-/***/ },
-/* 25 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var root_1 = __webpack_require__(17);
-	function toPromise(PromiseCtor) {
-	    var _this = this;
-	    if (!PromiseCtor) {
-	        if (root_1.root.Rx && root_1.root.Rx.config && root_1.root.Rx.config.Promise) {
-	            PromiseCtor = root_1.root.Rx.config.Promise;
-	        }
-	        else if (root_1.root.Promise) {
-	            PromiseCtor = root_1.root.Promise;
-	        }
-	    }
-	    if (!PromiseCtor) {
-	        throw new Error('no Promise impl found');
-	    }
-	    return new PromiseCtor(function (resolve, reject) {
-	        var value;
-	        _this.subscribe(function (x) { return value = x; }, function (err) { return reject(err); }, function () { return resolve(value); });
-	    });
-	}
-	exports.toPromise = toPromise;
-
-
-/***/ },
-/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	function __export(m) {
@@ -1889,46 +86,46 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @description
 	 * Starting point to import all public core APIs.
 	 */
-	__export(__webpack_require__(27));
-	__export(__webpack_require__(80));
-	__export(__webpack_require__(81));
-	__export(__webpack_require__(29));
-	__export(__webpack_require__(82));
-	var application_ref_1 = __webpack_require__(83);
+	__export(__webpack_require__(3));
+	__export(__webpack_require__(57));
+	__export(__webpack_require__(58));
+	__export(__webpack_require__(6));
+	__export(__webpack_require__(59));
+	var application_ref_1 = __webpack_require__(80);
 	exports.platform = application_ref_1.platform;
 	exports.createNgZone = application_ref_1.createNgZone;
 	exports.PlatformRef = application_ref_1.PlatformRef;
 	exports.ApplicationRef = application_ref_1.ApplicationRef;
-	var application_tokens_1 = __webpack_require__(85);
+	var application_tokens_1 = __webpack_require__(82);
 	exports.APP_ID = application_tokens_1.APP_ID;
 	exports.APP_COMPONENT = application_tokens_1.APP_COMPONENT;
 	exports.APP_INITIALIZER = application_tokens_1.APP_INITIALIZER;
 	exports.PLATFORM_INITIALIZER = application_tokens_1.PLATFORM_INITIALIZER;
-	__export(__webpack_require__(115));
-	__export(__webpack_require__(116));
-	__export(__webpack_require__(117));
-	var debug_element_1 = __webpack_require__(118);
+	__export(__webpack_require__(112));
+	__export(__webpack_require__(113));
+	__export(__webpack_require__(114));
+	var debug_element_1 = __webpack_require__(115);
 	exports.DebugElement = debug_element_1.DebugElement;
 	exports.Scope = debug_element_1.Scope;
 	exports.inspectElement = debug_element_1.inspectElement;
 	exports.asNativeElements = debug_element_1.asNativeElements;
-	__export(__webpack_require__(86));
-	__export(__webpack_require__(47));
-	__export(__webpack_require__(113));
-	__export(__webpack_require__(119));
-	__export(__webpack_require__(120));
-	__export(__webpack_require__(39));
+	__export(__webpack_require__(83));
+	__export(__webpack_require__(24));
+	__export(__webpack_require__(110));
+	__export(__webpack_require__(116));
+	__export(__webpack_require__(117));
+	__export(__webpack_require__(16));
 
 
 /***/ },
-/* 27 */
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
 	 * This indirection is needed to free up Component, etc symbols in the public API
 	 * to be used by the decorator versions of these annotations.
 	 */
-	var di_1 = __webpack_require__(28);
+	var di_1 = __webpack_require__(4);
 	exports.QueryMetadata = di_1.QueryMetadata;
 	exports.ContentChildrenMetadata = di_1.ContentChildrenMetadata;
 	exports.ContentChildMetadata = di_1.ContentChildMetadata;
@@ -1936,7 +133,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.ViewQueryMetadata = di_1.ViewQueryMetadata;
 	exports.ViewChildMetadata = di_1.ViewChildMetadata;
 	exports.AttributeMetadata = di_1.AttributeMetadata;
-	var directives_1 = __webpack_require__(46);
+	var directives_1 = __webpack_require__(23);
 	exports.ComponentMetadata = directives_1.ComponentMetadata;
 	exports.DirectiveMetadata = directives_1.DirectiveMetadata;
 	exports.PipeMetadata = directives_1.PipeMetadata;
@@ -1944,13 +141,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.OutputMetadata = directives_1.OutputMetadata;
 	exports.HostBindingMetadata = directives_1.HostBindingMetadata;
 	exports.HostListenerMetadata = directives_1.HostListenerMetadata;
-	var view_1 = __webpack_require__(79);
+	var view_1 = __webpack_require__(56);
 	exports.ViewMetadata = view_1.ViewMetadata;
 	exports.ViewEncapsulation = view_1.ViewEncapsulation;
-	var di_2 = __webpack_require__(28);
-	var directives_2 = __webpack_require__(46);
-	var view_2 = __webpack_require__(79);
-	var decorators_1 = __webpack_require__(32);
+	var di_2 = __webpack_require__(4);
+	var directives_2 = __webpack_require__(23);
+	var view_2 = __webpack_require__(56);
+	var decorators_1 = __webpack_require__(9);
 	// TODO(alexeagle): remove the duplication of this doc. It is copied from ComponentMetadata.
 	/**
 	 * Declare reusable UI building blocks for an application.
@@ -2850,7 +1047,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 28 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -2870,8 +1067,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var lang_1 = __webpack_require__(5);
-	var di_1 = __webpack_require__(29);
-	var metadata_1 = __webpack_require__(30);
+	var di_1 = __webpack_require__(6);
+	var metadata_1 = __webpack_require__(7);
 	/**
 	 * Specifies that a constant attribute value should be injected.
 	 *
@@ -3276,7 +1473,408 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 29 */
+/* 5 */
+/***/ function(module, exports) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var globalScope;
+	if (typeof window === 'undefined') {
+	    if (typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope) {
+	        // TODO: Replace any with WorkerGlobalScope from lib.webworker.d.ts #3492
+	        globalScope = self;
+	    }
+	    else {
+	        globalScope = global;
+	    }
+	}
+	else {
+	    globalScope = window;
+	}
+	;
+	exports.IS_DART = false;
+	// Need to declare a new variable for global here since TypeScript
+	// exports the original value of the symbol.
+	var _global = globalScope;
+	exports.global = _global;
+	exports.Type = Function;
+	function getTypeNameForDebugging(type) {
+	    return type['name'];
+	}
+	exports.getTypeNameForDebugging = getTypeNameForDebugging;
+	exports.Math = _global.Math;
+	exports.Date = _global.Date;
+	var _devMode = !!_global.angularDevMode;
+	var _devModeLocked = false;
+	function lockDevMode() {
+	    _devModeLocked = true;
+	}
+	exports.lockDevMode = lockDevMode;
+	/**
+	 * Enable Angular's development mode, which turns on assertions and other
+	 * checks within the framework.
+	 *
+	 * One important assertion this enables verifies that a change detection pass
+	 * does not result in additional changes to any bindings (also known as
+	 * unidirectional data flow).
+	 *
+	 * {@example core/ts/dev_mode/dev_mode_example.ts region='enableDevMode'}
+	 */
+	function enableDevMode() {
+	    // TODO(alxhub): Refactor out of facade/lang as per issue #5157.
+	    if (_devModeLocked) {
+	        // Cannot use BaseException as that ends up importing from facade/lang.
+	        throw 'Cannot enable dev mode after platform setup.';
+	    }
+	    _devMode = true;
+	}
+	exports.enableDevMode = enableDevMode;
+	function assertionsEnabled() {
+	    return _devMode;
+	}
+	exports.assertionsEnabled = assertionsEnabled;
+	// TODO: remove calls to assert in production environment
+	// Note: Can't just export this and import in in other files
+	// as `assert` is a reserved keyword in Dart
+	_global.assert = function assert(condition) {
+	    // TODO: to be fixed properly via #2830, noop for now
+	};
+	// This function is needed only to properly support Dart's const expressions
+	// see https://github.com/angular/ts2dart/pull/151 for more info
+	function CONST_EXPR(expr) {
+	    return expr;
+	}
+	exports.CONST_EXPR = CONST_EXPR;
+	function CONST() {
+	    return function (target) { return target; };
+	}
+	exports.CONST = CONST;
+	function isPresent(obj) {
+	    return obj !== undefined && obj !== null;
+	}
+	exports.isPresent = isPresent;
+	function isBlank(obj) {
+	    return obj === undefined || obj === null;
+	}
+	exports.isBlank = isBlank;
+	function isString(obj) {
+	    return typeof obj === "string";
+	}
+	exports.isString = isString;
+	function isFunction(obj) {
+	    return typeof obj === "function";
+	}
+	exports.isFunction = isFunction;
+	function isType(obj) {
+	    return isFunction(obj);
+	}
+	exports.isType = isType;
+	function isStringMap(obj) {
+	    return typeof obj === 'object' && obj !== null;
+	}
+	exports.isStringMap = isStringMap;
+	function isPromise(obj) {
+	    return obj instanceof _global.Promise;
+	}
+	exports.isPromise = isPromise;
+	function isArray(obj) {
+	    return Array.isArray(obj);
+	}
+	exports.isArray = isArray;
+	function isNumber(obj) {
+	    return typeof obj === 'number';
+	}
+	exports.isNumber = isNumber;
+	function isDate(obj) {
+	    return obj instanceof exports.Date && !isNaN(obj.valueOf());
+	}
+	exports.isDate = isDate;
+	function noop() { }
+	exports.noop = noop;
+	function stringify(token) {
+	    if (typeof token === 'string') {
+	        return token;
+	    }
+	    if (token === undefined || token === null) {
+	        return '' + token;
+	    }
+	    if (token.name) {
+	        return token.name;
+	    }
+	    var res = token.toString();
+	    var newLineIndex = res.indexOf("\n");
+	    return (newLineIndex === -1) ? res : res.substring(0, newLineIndex);
+	}
+	exports.stringify = stringify;
+	// serialize / deserialize enum exist only for consistency with dart API
+	// enums in typescript don't need to be serialized
+	function serializeEnum(val) {
+	    return val;
+	}
+	exports.serializeEnum = serializeEnum;
+	function deserializeEnum(val, values) {
+	    return val;
+	}
+	exports.deserializeEnum = deserializeEnum;
+	var StringWrapper = (function () {
+	    function StringWrapper() {
+	    }
+	    StringWrapper.fromCharCode = function (code) { return String.fromCharCode(code); };
+	    StringWrapper.charCodeAt = function (s, index) { return s.charCodeAt(index); };
+	    StringWrapper.split = function (s, regExp) { return s.split(regExp); };
+	    StringWrapper.equals = function (s, s2) { return s === s2; };
+	    StringWrapper.replace = function (s, from, replace) {
+	        return s.replace(from, replace);
+	    };
+	    StringWrapper.replaceAll = function (s, from, replace) {
+	        return s.replace(from, replace);
+	    };
+	    StringWrapper.slice = function (s, from, to) {
+	        if (from === void 0) { from = 0; }
+	        if (to === void 0) { to = null; }
+	        return s.slice(from, to === null ? undefined : to);
+	    };
+	    StringWrapper.replaceAllMapped = function (s, from, cb) {
+	        return s.replace(from, function () {
+	            var matches = [];
+	            for (var _i = 0; _i < arguments.length; _i++) {
+	                matches[_i - 0] = arguments[_i];
+	            }
+	            // Remove offset & string from the result array
+	            matches.splice(-2, 2);
+	            // The callback receives match, p1, ..., pn
+	            return cb(matches);
+	        });
+	    };
+	    StringWrapper.contains = function (s, substr) { return s.indexOf(substr) != -1; };
+	    StringWrapper.compare = function (a, b) {
+	        if (a < b) {
+	            return -1;
+	        }
+	        else if (a > b) {
+	            return 1;
+	        }
+	        else {
+	            return 0;
+	        }
+	    };
+	    return StringWrapper;
+	})();
+	exports.StringWrapper = StringWrapper;
+	var StringJoiner = (function () {
+	    function StringJoiner(parts) {
+	        if (parts === void 0) { parts = []; }
+	        this.parts = parts;
+	    }
+	    StringJoiner.prototype.add = function (part) { this.parts.push(part); };
+	    StringJoiner.prototype.toString = function () { return this.parts.join(""); };
+	    return StringJoiner;
+	})();
+	exports.StringJoiner = StringJoiner;
+	var NumberParseError = (function (_super) {
+	    __extends(NumberParseError, _super);
+	    function NumberParseError(message) {
+	        _super.call(this);
+	        this.message = message;
+	    }
+	    NumberParseError.prototype.toString = function () { return this.message; };
+	    return NumberParseError;
+	})(Error);
+	exports.NumberParseError = NumberParseError;
+	var NumberWrapper = (function () {
+	    function NumberWrapper() {
+	    }
+	    NumberWrapper.toFixed = function (n, fractionDigits) { return n.toFixed(fractionDigits); };
+	    NumberWrapper.equal = function (a, b) { return a === b; };
+	    NumberWrapper.parseIntAutoRadix = function (text) {
+	        var result = parseInt(text);
+	        if (isNaN(result)) {
+	            throw new NumberParseError("Invalid integer literal when parsing " + text);
+	        }
+	        return result;
+	    };
+	    NumberWrapper.parseInt = function (text, radix) {
+	        if (radix == 10) {
+	            if (/^(\-|\+)?[0-9]+$/.test(text)) {
+	                return parseInt(text, radix);
+	            }
+	        }
+	        else if (radix == 16) {
+	            if (/^(\-|\+)?[0-9ABCDEFabcdef]+$/.test(text)) {
+	                return parseInt(text, radix);
+	            }
+	        }
+	        else {
+	            var result = parseInt(text, radix);
+	            if (!isNaN(result)) {
+	                return result;
+	            }
+	        }
+	        throw new NumberParseError("Invalid integer literal when parsing " + text + " in base " +
+	            radix);
+	    };
+	    // TODO: NaN is a valid literal but is returned by parseFloat to indicate an error.
+	    NumberWrapper.parseFloat = function (text) { return parseFloat(text); };
+	    Object.defineProperty(NumberWrapper, "NaN", {
+	        get: function () { return NaN; },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    NumberWrapper.isNaN = function (value) { return isNaN(value); };
+	    NumberWrapper.isInteger = function (value) { return Number.isInteger(value); };
+	    return NumberWrapper;
+	})();
+	exports.NumberWrapper = NumberWrapper;
+	exports.RegExp = _global.RegExp;
+	var RegExpWrapper = (function () {
+	    function RegExpWrapper() {
+	    }
+	    RegExpWrapper.create = function (regExpStr, flags) {
+	        if (flags === void 0) { flags = ''; }
+	        flags = flags.replace(/g/g, '');
+	        return new _global.RegExp(regExpStr, flags + 'g');
+	    };
+	    RegExpWrapper.firstMatch = function (regExp, input) {
+	        // Reset multimatch regex state
+	        regExp.lastIndex = 0;
+	        return regExp.exec(input);
+	    };
+	    RegExpWrapper.test = function (regExp, input) {
+	        regExp.lastIndex = 0;
+	        return regExp.test(input);
+	    };
+	    RegExpWrapper.matcher = function (regExp, input) {
+	        // Reset regex state for the case
+	        // someone did not loop over all matches
+	        // last time.
+	        regExp.lastIndex = 0;
+	        return { re: regExp, input: input };
+	    };
+	    return RegExpWrapper;
+	})();
+	exports.RegExpWrapper = RegExpWrapper;
+	var RegExpMatcherWrapper = (function () {
+	    function RegExpMatcherWrapper() {
+	    }
+	    RegExpMatcherWrapper.next = function (matcher) {
+	        return matcher.re.exec(matcher.input);
+	    };
+	    return RegExpMatcherWrapper;
+	})();
+	exports.RegExpMatcherWrapper = RegExpMatcherWrapper;
+	var FunctionWrapper = (function () {
+	    function FunctionWrapper() {
+	    }
+	    FunctionWrapper.apply = function (fn, posArgs) { return fn.apply(null, posArgs); };
+	    return FunctionWrapper;
+	})();
+	exports.FunctionWrapper = FunctionWrapper;
+	// JS has NaN !== NaN
+	function looseIdentical(a, b) {
+	    return a === b || typeof a === "number" && typeof b === "number" && isNaN(a) && isNaN(b);
+	}
+	exports.looseIdentical = looseIdentical;
+	// JS considers NaN is the same as NaN for map Key (while NaN !== NaN otherwise)
+	// see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map
+	function getMapKey(value) {
+	    return value;
+	}
+	exports.getMapKey = getMapKey;
+	function normalizeBlank(obj) {
+	    return isBlank(obj) ? null : obj;
+	}
+	exports.normalizeBlank = normalizeBlank;
+	function normalizeBool(obj) {
+	    return isBlank(obj) ? false : obj;
+	}
+	exports.normalizeBool = normalizeBool;
+	function isJsObject(o) {
+	    return o !== null && (typeof o === "function" || typeof o === "object");
+	}
+	exports.isJsObject = isJsObject;
+	function print(obj) {
+	    console.log(obj);
+	}
+	exports.print = print;
+	// Can't be all uppercase as our transpiler would think it is a special directive...
+	var Json = (function () {
+	    function Json() {
+	    }
+	    Json.parse = function (s) { return _global.JSON.parse(s); };
+	    Json.stringify = function (data) {
+	        // Dart doesn't take 3 arguments
+	        return _global.JSON.stringify(data, null, 2);
+	    };
+	    return Json;
+	})();
+	exports.Json = Json;
+	var DateWrapper = (function () {
+	    function DateWrapper() {
+	    }
+	    DateWrapper.create = function (year, month, day, hour, minutes, seconds, milliseconds) {
+	        if (month === void 0) { month = 1; }
+	        if (day === void 0) { day = 1; }
+	        if (hour === void 0) { hour = 0; }
+	        if (minutes === void 0) { minutes = 0; }
+	        if (seconds === void 0) { seconds = 0; }
+	        if (milliseconds === void 0) { milliseconds = 0; }
+	        return new exports.Date(year, month - 1, day, hour, minutes, seconds, milliseconds);
+	    };
+	    DateWrapper.fromISOString = function (str) { return new exports.Date(str); };
+	    DateWrapper.fromMillis = function (ms) { return new exports.Date(ms); };
+	    DateWrapper.toMillis = function (date) { return date.getTime(); };
+	    DateWrapper.now = function () { return new exports.Date(); };
+	    DateWrapper.toJson = function (date) { return date.toJSON(); };
+	    return DateWrapper;
+	})();
+	exports.DateWrapper = DateWrapper;
+	function setValueOnPath(global, path, value) {
+	    var parts = path.split('.');
+	    var obj = global;
+	    while (parts.length > 1) {
+	        var name = parts.shift();
+	        if (obj.hasOwnProperty(name) && isPresent(obj[name])) {
+	            obj = obj[name];
+	        }
+	        else {
+	            obj = obj[name] = {};
+	        }
+	    }
+	    if (obj === undefined || obj === null) {
+	        obj = {};
+	    }
+	    obj[parts.shift()] = value;
+	}
+	exports.setValueOnPath = setValueOnPath;
+	var _symbolIterator = null;
+	function getSymbolIterator() {
+	    if (isBlank(_symbolIterator)) {
+	        if (isPresent(Symbol) && isPresent(Symbol.iterator)) {
+	            _symbolIterator = Symbol.iterator;
+	        }
+	        else {
+	            // es6-shim specific logic
+	            var keys = Object.getOwnPropertyNames(Map.prototype);
+	            for (var i = 0; i < keys.length; ++i) {
+	                var key = keys[i];
+	                if (key !== 'entries' && key !== 'size' &&
+	                    Map.prototype[key] === Map.prototype['entries']) {
+	                    _symbolIterator = key;
+	                }
+	            }
+	        }
+	    }
+	    return _symbolIterator;
+	}
+	exports.getSymbolIterator = getSymbolIterator;
+
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -3287,7 +1885,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function __export(m) {
 	    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 	}
-	var metadata_1 = __webpack_require__(30);
+	var metadata_1 = __webpack_require__(7);
 	exports.InjectMetadata = metadata_1.InjectMetadata;
 	exports.OptionalMetadata = metadata_1.OptionalMetadata;
 	exports.InjectableMetadata = metadata_1.InjectableMetadata;
@@ -3296,13 +1894,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.SkipSelfMetadata = metadata_1.SkipSelfMetadata;
 	exports.DependencyMetadata = metadata_1.DependencyMetadata;
 	// we have to reexport * because Dart and TS export two different sets of types
-	__export(__webpack_require__(31));
-	var forward_ref_1 = __webpack_require__(33);
+	__export(__webpack_require__(8));
+	var forward_ref_1 = __webpack_require__(10);
 	exports.forwardRef = forward_ref_1.forwardRef;
 	exports.resolveForwardRef = forward_ref_1.resolveForwardRef;
-	var injector_1 = __webpack_require__(34);
+	var injector_1 = __webpack_require__(11);
 	exports.Injector = injector_1.Injector;
-	var provider_1 = __webpack_require__(36);
+	var provider_1 = __webpack_require__(13);
 	exports.Binding = provider_1.Binding;
 	exports.ProviderBuilder = provider_1.ProviderBuilder;
 	exports.ResolvedFactory = provider_1.ResolvedFactory;
@@ -3310,10 +1908,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.bind = provider_1.bind;
 	exports.Provider = provider_1.Provider;
 	exports.provide = provider_1.provide;
-	var key_1 = __webpack_require__(42);
+	var key_1 = __webpack_require__(19);
 	exports.Key = key_1.Key;
 	exports.TypeLiteral = key_1.TypeLiteral;
-	var exceptions_1 = __webpack_require__(44);
+	var exceptions_1 = __webpack_require__(21);
 	exports.NoProviderError = exceptions_1.NoProviderError;
 	exports.AbstractProviderError = exceptions_1.AbstractProviderError;
 	exports.CyclicDependencyError = exceptions_1.CyclicDependencyError;
@@ -3321,12 +1919,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.InvalidProviderError = exceptions_1.InvalidProviderError;
 	exports.NoAnnotationError = exceptions_1.NoAnnotationError;
 	exports.OutOfBoundsError = exceptions_1.OutOfBoundsError;
-	var opaque_token_1 = __webpack_require__(45);
+	var opaque_token_1 = __webpack_require__(22);
 	exports.OpaqueToken = opaque_token_1.OpaqueToken;
 
 
 /***/ },
-/* 30 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -3627,11 +2225,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 31 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var metadata_1 = __webpack_require__(30);
-	var decorators_1 = __webpack_require__(32);
+	var metadata_1 = __webpack_require__(7);
+	var decorators_1 = __webpack_require__(9);
 	/**
 	 * Factory for creating {@link InjectMetadata}.
 	 */
@@ -3659,7 +2257,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 32 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -3910,7 +2508,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 33 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -3976,15 +2574,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 34 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var collection_1 = __webpack_require__(35);
-	var provider_1 = __webpack_require__(36);
-	var exceptions_1 = __webpack_require__(44);
+	var collection_1 = __webpack_require__(12);
+	var provider_1 = __webpack_require__(13);
+	var exceptions_1 = __webpack_require__(21);
 	var lang_1 = __webpack_require__(5);
-	var key_1 = __webpack_require__(42);
-	var metadata_1 = __webpack_require__(30);
+	var key_1 = __webpack_require__(19);
+	var metadata_1 = __webpack_require__(7);
 	// Threshold for the dynamic version
 	var _MAX_CONSTRUCTION_COUNTER = 10;
 	exports.UNDEFINED = lang_1.CONST_EXPR(new Object());
@@ -4904,7 +3502,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 35 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -5231,7 +3829,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 36 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -5251,13 +3849,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var collection_1 = __webpack_require__(35);
-	var reflection_1 = __webpack_require__(39);
-	var key_1 = __webpack_require__(42);
-	var metadata_1 = __webpack_require__(30);
-	var exceptions_2 = __webpack_require__(44);
-	var forward_ref_1 = __webpack_require__(33);
+	var exceptions_1 = __webpack_require__(14);
+	var collection_1 = __webpack_require__(12);
+	var reflection_1 = __webpack_require__(16);
+	var key_1 = __webpack_require__(19);
+	var metadata_1 = __webpack_require__(7);
+	var exceptions_2 = __webpack_require__(21);
+	var forward_ref_1 = __webpack_require__(10);
 	var Dependency = (function () {
 	    function Dependency(key, optional, lowerBoundVisibility, upperBoundVisibility, properties) {
 	        this.key = key;
@@ -5765,7 +4363,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 37 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -5773,8 +4371,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var exception_handler_1 = __webpack_require__(38);
-	var exception_handler_2 = __webpack_require__(38);
+	var exception_handler_1 = __webpack_require__(15);
+	var exception_handler_2 = __webpack_require__(15);
 	exports.ExceptionHandler = exception_handler_2.ExceptionHandler;
 	var BaseException = (function (_super) {
 	    __extends(BaseException, _super);
@@ -5843,12 +4441,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 38 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var collection_1 = __webpack_require__(35);
+	var exceptions_1 = __webpack_require__(14);
+	var collection_1 = __webpack_require__(12);
 	var _ArrayLogger = (function () {
 	    function _ArrayLogger() {
 	        this.res = [];
@@ -5978,24 +4576,24 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 39 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var reflector_1 = __webpack_require__(40);
-	var reflector_2 = __webpack_require__(40);
+	var reflector_1 = __webpack_require__(17);
+	var reflector_2 = __webpack_require__(17);
 	exports.Reflector = reflector_2.Reflector;
 	exports.ReflectionInfo = reflector_2.ReflectionInfo;
-	var reflection_capabilities_1 = __webpack_require__(41);
+	var reflection_capabilities_1 = __webpack_require__(18);
 	exports.reflector = new reflector_1.Reflector(new reflection_capabilities_1.ReflectionCapabilities());
 
 
 /***/ },
-/* 40 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var collection_1 = __webpack_require__(35);
+	var exceptions_1 = __webpack_require__(14);
+	var collection_1 = __webpack_require__(12);
 	var ReflectionInfo = (function () {
 	    function ReflectionInfo(annotations, parameters, factory, interfaces, propMetadata) {
 	        this.annotations = annotations;
@@ -6136,11 +4734,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 41 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
+	var exceptions_1 = __webpack_require__(14);
 	var ReflectionCapabilities = (function () {
 	    function ReflectionCapabilities(reflect) {
 	        this._reflect = lang_1.isPresent(reflect) ? reflect : lang_1.global.Reflect;
@@ -6312,14 +4910,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 42 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var type_literal_1 = __webpack_require__(43);
-	var forward_ref_1 = __webpack_require__(33);
-	var type_literal_2 = __webpack_require__(43);
+	var exceptions_1 = __webpack_require__(14);
+	var type_literal_1 = __webpack_require__(20);
+	var forward_ref_1 = __webpack_require__(10);
+	var type_literal_2 = __webpack_require__(20);
 	exports.TypeLiteral = type_literal_2.TypeLiteral;
 	/**
 	 * A unique object used for retrieving items from the {@link Injector}.
@@ -6403,7 +5001,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 43 */
+/* 20 */
 /***/ function(module, exports) {
 
 	/**
@@ -6424,7 +5022,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 44 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -6432,9 +5030,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var collection_1 = __webpack_require__(35);
+	var collection_1 = __webpack_require__(12);
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
+	var exceptions_1 = __webpack_require__(14);
 	function findFirstClosedCycle(keys) {
 	    var res = [];
 	    for (var i = 0; i < keys.length; ++i) {
@@ -6707,7 +5305,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 45 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -6758,7 +5356,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 46 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -6778,8 +5376,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var lang_1 = __webpack_require__(5);
-	var metadata_1 = __webpack_require__(30);
-	var change_detection_1 = __webpack_require__(47);
+	var metadata_1 = __webpack_require__(7);
+	var change_detection_1 = __webpack_require__(24);
 	/**
 	 * Directives allow you to attach behavior to elements in the DOM.
 	 *
@@ -7707,7 +6305,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 47 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -7715,7 +6313,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @description
 	 * Change detection enables data binding in Angular.
 	 */
-	var change_detection_1 = __webpack_require__(48);
+	var change_detection_1 = __webpack_require__(25);
 	exports.ChangeDetectionStrategy = change_detection_1.ChangeDetectionStrategy;
 	exports.ExpressionChangedAfterItHasBeenCheckedException = change_detection_1.ExpressionChangedAfterItHasBeenCheckedException;
 	exports.ChangeDetectionError = change_detection_1.ChangeDetectionError;
@@ -7727,57 +6325,57 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 48 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var iterable_differs_1 = __webpack_require__(49);
-	var default_iterable_differ_1 = __webpack_require__(50);
-	var keyvalue_differs_1 = __webpack_require__(51);
-	var default_keyvalue_differ_1 = __webpack_require__(52);
+	var iterable_differs_1 = __webpack_require__(26);
+	var default_iterable_differ_1 = __webpack_require__(27);
+	var keyvalue_differs_1 = __webpack_require__(28);
+	var default_keyvalue_differ_1 = __webpack_require__(29);
 	var lang_1 = __webpack_require__(5);
-	var ast_1 = __webpack_require__(53);
+	var ast_1 = __webpack_require__(30);
 	exports.ASTWithSource = ast_1.ASTWithSource;
 	exports.AST = ast_1.AST;
 	exports.AstTransformer = ast_1.AstTransformer;
 	exports.PropertyRead = ast_1.PropertyRead;
 	exports.LiteralArray = ast_1.LiteralArray;
 	exports.ImplicitReceiver = ast_1.ImplicitReceiver;
-	var lexer_1 = __webpack_require__(54);
+	var lexer_1 = __webpack_require__(31);
 	exports.Lexer = lexer_1.Lexer;
-	var parser_1 = __webpack_require__(55);
+	var parser_1 = __webpack_require__(32);
 	exports.Parser = parser_1.Parser;
-	var locals_1 = __webpack_require__(56);
+	var locals_1 = __webpack_require__(33);
 	exports.Locals = locals_1.Locals;
-	var exceptions_1 = __webpack_require__(57);
+	var exceptions_1 = __webpack_require__(34);
 	exports.DehydratedException = exceptions_1.DehydratedException;
 	exports.ExpressionChangedAfterItHasBeenCheckedException = exceptions_1.ExpressionChangedAfterItHasBeenCheckedException;
 	exports.ChangeDetectionError = exceptions_1.ChangeDetectionError;
-	var interfaces_1 = __webpack_require__(58);
+	var interfaces_1 = __webpack_require__(35);
 	exports.ChangeDetectorDefinition = interfaces_1.ChangeDetectorDefinition;
 	exports.DebugContext = interfaces_1.DebugContext;
 	exports.ChangeDetectorGenConfig = interfaces_1.ChangeDetectorGenConfig;
-	var constants_1 = __webpack_require__(59);
+	var constants_1 = __webpack_require__(36);
 	exports.ChangeDetectionStrategy = constants_1.ChangeDetectionStrategy;
 	exports.CHANGE_DETECTION_STRATEGY_VALUES = constants_1.CHANGE_DETECTION_STRATEGY_VALUES;
-	var proto_change_detector_1 = __webpack_require__(60);
+	var proto_change_detector_1 = __webpack_require__(37);
 	exports.DynamicProtoChangeDetector = proto_change_detector_1.DynamicProtoChangeDetector;
-	var jit_proto_change_detector_1 = __webpack_require__(74);
+	var jit_proto_change_detector_1 = __webpack_require__(51);
 	exports.JitProtoChangeDetector = jit_proto_change_detector_1.JitProtoChangeDetector;
-	var binding_record_1 = __webpack_require__(63);
+	var binding_record_1 = __webpack_require__(40);
 	exports.BindingRecord = binding_record_1.BindingRecord;
 	exports.BindingTarget = binding_record_1.BindingTarget;
-	var directive_record_1 = __webpack_require__(64);
+	var directive_record_1 = __webpack_require__(41);
 	exports.DirectiveIndex = directive_record_1.DirectiveIndex;
 	exports.DirectiveRecord = directive_record_1.DirectiveRecord;
-	var dynamic_change_detector_1 = __webpack_require__(65);
+	var dynamic_change_detector_1 = __webpack_require__(42);
 	exports.DynamicChangeDetector = dynamic_change_detector_1.DynamicChangeDetector;
-	var change_detector_ref_1 = __webpack_require__(67);
+	var change_detector_ref_1 = __webpack_require__(44);
 	exports.ChangeDetectorRef = change_detector_ref_1.ChangeDetectorRef;
-	var iterable_differs_2 = __webpack_require__(49);
+	var iterable_differs_2 = __webpack_require__(26);
 	exports.IterableDiffers = iterable_differs_2.IterableDiffers;
-	var keyvalue_differs_2 = __webpack_require__(51);
+	var keyvalue_differs_2 = __webpack_require__(28);
 	exports.KeyValueDiffers = keyvalue_differs_2.KeyValueDiffers;
-	var change_detection_util_1 = __webpack_require__(61);
+	var change_detection_util_1 = __webpack_require__(38);
 	exports.WrappedValue = change_detection_util_1.WrappedValue;
 	exports.SimpleChange = change_detection_util_1.SimpleChange;
 	/**
@@ -7793,7 +6391,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 49 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -7808,9 +6406,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var collection_1 = __webpack_require__(35);
-	var di_1 = __webpack_require__(29);
+	var exceptions_1 = __webpack_require__(14);
+	var collection_1 = __webpack_require__(12);
+	var di_1 = __webpack_require__(6);
 	/**
 	 * A repository of different iterable diffing strategies used by NgFor, NgClass, and others.
 	 */
@@ -7882,7 +6480,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 50 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -7897,8 +6495,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var collection_1 = __webpack_require__(35);
+	var exceptions_1 = __webpack_require__(14);
+	var collection_1 = __webpack_require__(12);
 	var lang_2 = __webpack_require__(5);
 	var DefaultIterableDifferFactory = (function () {
 	    function DefaultIterableDifferFactory() {
@@ -8509,7 +7107,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 51 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -8524,9 +7122,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var collection_1 = __webpack_require__(35);
-	var di_1 = __webpack_require__(29);
+	var exceptions_1 = __webpack_require__(14);
+	var collection_1 = __webpack_require__(12);
+	var di_1 = __webpack_require__(6);
 	/**
 	 * A repository of different Map diffing strategies used by NgClass, NgStyle, and others.
 	 */
@@ -8598,7 +7196,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 52 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -8612,9 +7210,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var collection_1 = __webpack_require__(35);
+	var collection_1 = __webpack_require__(12);
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
+	var exceptions_1 = __webpack_require__(14);
 	var DefaultKeyValueDifferFactory = (function () {
 	    function DefaultKeyValueDifferFactory() {
 	    }
@@ -8971,7 +7569,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 53 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -8979,7 +7577,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var collection_1 = __webpack_require__(35);
+	var collection_1 = __webpack_require__(12);
 	var AST = (function () {
 	    function AST() {
 	    }
@@ -9395,7 +7993,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 54 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -9414,10 +8012,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var decorators_1 = __webpack_require__(31);
-	var collection_1 = __webpack_require__(35);
+	var decorators_1 = __webpack_require__(8);
+	var collection_1 = __webpack_require__(12);
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
+	var exceptions_1 = __webpack_require__(14);
 	(function (TokenType) {
 	    TokenType[TokenType["Character"] = 0] = "Character";
 	    TokenType[TokenType["Identifier"] = 1] = "Identifier";
@@ -9858,7 +8456,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 55 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -9877,13 +8475,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var decorators_1 = __webpack_require__(31);
+	var decorators_1 = __webpack_require__(8);
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var collection_1 = __webpack_require__(35);
-	var lexer_1 = __webpack_require__(54);
-	var reflection_1 = __webpack_require__(39);
-	var ast_1 = __webpack_require__(53);
+	var exceptions_1 = __webpack_require__(14);
+	var collection_1 = __webpack_require__(12);
+	var lexer_1 = __webpack_require__(31);
+	var reflection_1 = __webpack_require__(16);
+	var ast_1 = __webpack_require__(30);
 	var _implicitReceiver = new ast_1.ImplicitReceiver();
 	// TODO(tbosch): Cannot make this const/final right now because of the transpiler...
 	var INTERPOLATION_REGEXP = /\{\{(.*?)\}\}/g;
@@ -10501,12 +9099,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 56 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var collection_1 = __webpack_require__(35);
+	var exceptions_1 = __webpack_require__(14);
+	var collection_1 = __webpack_require__(12);
 	var Locals = (function () {
 	    function Locals(parent, current) {
 	        this.parent = parent;
@@ -10548,7 +9146,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 57 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -10556,7 +9154,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var exceptions_1 = __webpack_require__(37);
+	var exceptions_1 = __webpack_require__(14);
 	/**
 	 * An error thrown if application changes model breaking the top-down data flow.
 	 *
@@ -10657,7 +9255,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 58 */
+/* 35 */
 /***/ function(module, exports) {
 
 	var DebugContext = (function () {
@@ -10697,7 +9295,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 59 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -10777,19 +9375,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 60 */
+/* 37 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var collection_1 = __webpack_require__(35);
-	var ast_1 = __webpack_require__(53);
-	var change_detection_util_1 = __webpack_require__(61);
-	var dynamic_change_detector_1 = __webpack_require__(65);
-	var directive_record_1 = __webpack_require__(64);
-	var event_binding_1 = __webpack_require__(72);
-	var coalesce_1 = __webpack_require__(73);
-	var proto_record_1 = __webpack_require__(71);
+	var exceptions_1 = __webpack_require__(14);
+	var collection_1 = __webpack_require__(12);
+	var ast_1 = __webpack_require__(30);
+	var change_detection_util_1 = __webpack_require__(38);
+	var dynamic_change_detector_1 = __webpack_require__(42);
+	var directive_record_1 = __webpack_require__(41);
+	var event_binding_1 = __webpack_require__(49);
+	var coalesce_1 = __webpack_require__(50);
+	var proto_record_1 = __webpack_require__(48);
 	var DynamicProtoChangeDetector = (function () {
 	    function DynamicProtoChangeDetector(_definition) {
 	        this._definition = _definition;
@@ -11171,16 +9769,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 61 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var collection_1 = __webpack_require__(35);
-	var constants_1 = __webpack_require__(59);
-	var pipe_lifecycle_reflector_1 = __webpack_require__(62);
-	var binding_record_1 = __webpack_require__(63);
-	var directive_record_1 = __webpack_require__(64);
+	var exceptions_1 = __webpack_require__(14);
+	var collection_1 = __webpack_require__(12);
+	var constants_1 = __webpack_require__(36);
+	var pipe_lifecycle_reflector_1 = __webpack_require__(39);
+	var binding_record_1 = __webpack_require__(40);
+	var directive_record_1 = __webpack_require__(41);
 	/**
 	 * Indicates that the result of a {@link PipeMetadata} transformation has changed even though the
 	 * reference
@@ -11368,7 +9966,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 62 */
+/* 39 */
 /***/ function(module, exports) {
 
 	function implementsOnDestroy(pipe) {
@@ -11378,7 +9976,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 63 */
+/* 40 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -11491,11 +10089,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 64 */
+/* 41 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var constants_1 = __webpack_require__(59);
+	var constants_1 = __webpack_require__(36);
 	var DirectiveIndex = (function () {
 	    function DirectiveIndex(elementIndex, directiveIndex) {
 	        this.elementIndex = elementIndex;
@@ -11531,7 +10129,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 65 */
+/* 42 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -11540,12 +10138,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var collection_1 = __webpack_require__(35);
-	var abstract_change_detector_1 = __webpack_require__(66);
-	var change_detection_util_1 = __webpack_require__(61);
-	var constants_1 = __webpack_require__(59);
-	var proto_record_1 = __webpack_require__(71);
+	var exceptions_1 = __webpack_require__(14);
+	var collection_1 = __webpack_require__(12);
+	var abstract_change_detector_1 = __webpack_require__(43);
+	var change_detection_util_1 = __webpack_require__(38);
+	var constants_1 = __webpack_require__(36);
+	var proto_record_1 = __webpack_require__(48);
 	var DynamicChangeDetector = (function (_super) {
 	    __extends(DynamicChangeDetector, _super);
 	    function DynamicChangeDetector(id, dispatcher, numberOfPropertyProtoRecords, propertyBindingTargets, directiveIndices, strategy, _records, _eventBindings, _directiveRecords, _genConfig) {
@@ -11937,17 +10535,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 66 */
+/* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var collection_1 = __webpack_require__(35);
-	var change_detection_util_1 = __webpack_require__(61);
-	var change_detector_ref_1 = __webpack_require__(67);
-	var exceptions_1 = __webpack_require__(57);
-	var constants_1 = __webpack_require__(59);
-	var profile_1 = __webpack_require__(68);
-	var observable_facade_1 = __webpack_require__(70);
+	var collection_1 = __webpack_require__(12);
+	var change_detection_util_1 = __webpack_require__(38);
+	var change_detector_ref_1 = __webpack_require__(44);
+	var exceptions_1 = __webpack_require__(34);
+	var constants_1 = __webpack_require__(36);
+	var profile_1 = __webpack_require__(45);
+	var observable_facade_1 = __webpack_require__(47);
 	var _scope_check = profile_1.wtfCreateScope("ChangeDetector#check(ascii id, bool throwOnChange)");
 	var _Context = (function () {
 	    function _Context(element, componentElement, context, locals, injector, expression) {
@@ -12216,7 +10814,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 67 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -12224,7 +10822,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var constants_1 = __webpack_require__(59);
+	var constants_1 = __webpack_require__(36);
 	var ChangeDetectorRef = (function () {
 	    function ChangeDetectorRef() {
 	    }
@@ -12251,10 +10849,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 68 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var impl = __webpack_require__(69);
+	var impl = __webpack_require__(46);
 	// Change exports to const once https://github.com/angular/ts2dart/issues/150
 	/**
 	 * True if WTF is enabled.
@@ -12326,7 +10924,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 69 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -12365,7 +10963,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 70 */
+/* 47 */
 /***/ function(module, exports) {
 
 	function isObservable(value) {
@@ -12375,7 +10973,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 71 */
+/* 48 */
 /***/ function(module, exports) {
 
 	(function (RecordType) {
@@ -12441,7 +11039,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 72 */
+/* 49 */
 /***/ function(module, exports) {
 
 	var EventBinding = (function () {
@@ -12457,12 +11055,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 73 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var collection_1 = __webpack_require__(35);
-	var proto_record_1 = __webpack_require__(71);
+	var collection_1 = __webpack_require__(12);
+	var proto_record_1 = __webpack_require__(48);
 	/**
 	 * Removes "duplicate" records. It assumes that record evaluation does not have side-effects.
 	 *
@@ -12607,10 +11205,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 74 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var change_detection_jit_generator_1 = __webpack_require__(75);
+	var change_detection_jit_generator_1 = __webpack_require__(52);
 	var JitProtoChangeDetector = (function () {
 	    function JitProtoChangeDetector(definition) {
 	        this.definition = definition;
@@ -12629,20 +11227,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 75 */
+/* 52 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var collection_1 = __webpack_require__(35);
-	var abstract_change_detector_1 = __webpack_require__(66);
-	var change_detection_util_1 = __webpack_require__(61);
-	var proto_record_1 = __webpack_require__(71);
-	var codegen_name_util_1 = __webpack_require__(76);
-	var codegen_logic_util_1 = __webpack_require__(77);
-	var codegen_facade_1 = __webpack_require__(78);
-	var constants_1 = __webpack_require__(59);
-	var proto_change_detector_1 = __webpack_require__(60);
+	var exceptions_1 = __webpack_require__(14);
+	var collection_1 = __webpack_require__(12);
+	var abstract_change_detector_1 = __webpack_require__(43);
+	var change_detection_util_1 = __webpack_require__(38);
+	var proto_record_1 = __webpack_require__(48);
+	var codegen_name_util_1 = __webpack_require__(53);
+	var codegen_logic_util_1 = __webpack_require__(54);
+	var codegen_facade_1 = __webpack_require__(55);
+	var constants_1 = __webpack_require__(36);
+	var proto_change_detector_1 = __webpack_require__(37);
 	/**
 	 * The code generator takes a list of proto records and creates a function/class
 	 * that "emulates" what the developer would write by hand to implement the same
@@ -12980,11 +11578,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 76 */
+/* 53 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var collection_1 = __webpack_require__(35);
+	var collection_1 = __webpack_require__(12);
 	// The names of these fields must be kept in sync with abstract_change_detector.ts or change
 	// detection will fail.
 	var _STATE_ACCESSOR = "state";
@@ -13149,14 +11747,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 77 */
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var codegen_facade_1 = __webpack_require__(78);
-	var proto_record_1 = __webpack_require__(71);
-	var constants_1 = __webpack_require__(59);
-	var exceptions_1 = __webpack_require__(37);
+	var codegen_facade_1 = __webpack_require__(55);
+	var proto_record_1 = __webpack_require__(48);
+	var constants_1 = __webpack_require__(36);
+	var exceptions_1 = __webpack_require__(14);
 	/**
 	 * Class responsible for providing change detection logic for change detector classes.
 	 */
@@ -13344,7 +11942,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 78 */
+/* 55 */
 /***/ function(module, exports) {
 
 	/**
@@ -13370,7 +11968,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 79 */
+/* 56 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -13464,16 +12062,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 80 */
+/* 57 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Public API for util
-	var decorators_1 = __webpack_require__(32);
+	var decorators_1 = __webpack_require__(9);
 	exports.Class = decorators_1.Class;
 
 
 /***/ },
-/* 81 */
+/* 58 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -13481,23 +12079,23 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 82 */
+/* 59 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Public API for Facade
 	var lang_1 = __webpack_require__(5);
 	exports.Type = lang_1.Type;
-	var async_1 = __webpack_require__(6);
+	var async_1 = __webpack_require__(60);
 	exports.Observable = async_1.Observable;
 	exports.EventEmitter = async_1.EventEmitter;
-	var exceptions_1 = __webpack_require__(37);
+	var exceptions_1 = __webpack_require__(14);
 	exports.WrappedException = exceptions_1.WrappedException;
-	var exception_handler_1 = __webpack_require__(38);
+	var exception_handler_1 = __webpack_require__(15);
 	exports.ExceptionHandler = exception_handler_1.ExceptionHandler;
 
 
 /***/ },
-/* 83 */
+/* 60 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -13505,17 +12103,1216 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var ng_zone_1 = __webpack_require__(84);
 	var lang_1 = __webpack_require__(5);
-	var di_1 = __webpack_require__(29);
-	var application_tokens_1 = __webpack_require__(85);
-	var async_1 = __webpack_require__(6);
-	var collection_1 = __webpack_require__(35);
-	var testability_1 = __webpack_require__(86);
-	var dynamic_component_loader_1 = __webpack_require__(87);
-	var exceptions_1 = __webpack_require__(37);
-	var view_ref_1 = __webpack_require__(95);
-	var profile_1 = __webpack_require__(68);
+	var promise_1 = __webpack_require__(61);
+	exports.PromiseWrapper = promise_1.PromiseWrapper;
+	exports.Promise = promise_1.Promise;
+	var Subject_1 = __webpack_require__(62);
+	var Observable_1 = __webpack_require__(63);
+	var fromPromise_1 = __webpack_require__(74);
+	var toPromise_1 = __webpack_require__(79);
+	var Subject_2 = __webpack_require__(62);
+	exports.Subject = Subject_2.Subject;
+	var TimerWrapper = (function () {
+	    function TimerWrapper() {
+	    }
+	    TimerWrapper.setTimeout = function (fn, millis) {
+	        return lang_1.global.setTimeout(fn, millis);
+	    };
+	    TimerWrapper.clearTimeout = function (id) { lang_1.global.clearTimeout(id); };
+	    TimerWrapper.setInterval = function (fn, millis) {
+	        return lang_1.global.setInterval(fn, millis);
+	    };
+	    TimerWrapper.clearInterval = function (id) { lang_1.global.clearInterval(id); };
+	    return TimerWrapper;
+	})();
+	exports.TimerWrapper = TimerWrapper;
+	var ObservableWrapper = (function () {
+	    function ObservableWrapper() {
+	    }
+	    // TODO(vsavkin): when we use rxnext, try inferring the generic type from the first arg
+	    ObservableWrapper.subscribe = function (emitter, onNext, onError, onComplete) {
+	        if (onComplete === void 0) { onComplete = function () { }; }
+	        onError = (typeof onError === "function") && onError || lang_1.noop;
+	        onComplete = (typeof onComplete === "function") && onComplete || lang_1.noop;
+	        return emitter.subscribe({ next: onNext, error: onError, complete: onComplete });
+	    };
+	    ObservableWrapper.isObservable = function (obs) { return obs instanceof Observable_1.Observable; };
+	    /**
+	     * Returns whether `obs` has any subscribers listening to events.
+	     */
+	    ObservableWrapper.hasSubscribers = function (obs) { return obs.observers.length > 0; };
+	    ObservableWrapper.dispose = function (subscription) { subscription.unsubscribe(); };
+	    /**
+	     * @deprecated - use callEmit() instead
+	     */
+	    ObservableWrapper.callNext = function (emitter, value) { emitter.next(value); };
+	    ObservableWrapper.callEmit = function (emitter, value) { emitter.emit(value); };
+	    ObservableWrapper.callError = function (emitter, error) { emitter.error(error); };
+	    ObservableWrapper.callComplete = function (emitter) { emitter.complete(); };
+	    ObservableWrapper.fromPromise = function (promise) {
+	        return fromPromise_1.PromiseObservable.create(promise);
+	    };
+	    ObservableWrapper.toPromise = function (obj) { return toPromise_1.toPromise.call(obj); };
+	    return ObservableWrapper;
+	})();
+	exports.ObservableWrapper = ObservableWrapper;
+	/**
+	 * Use by directives and components to emit custom Events.
+	 *
+	 * ### Examples
+	 *
+	 * In the following example, `Zippy` alternatively emits `open` and `close` events when its
+	 * title gets clicked:
+	 *
+	 * ```
+	 * @Component({
+	 *   selector: 'zippy',
+	 *   template: `
+	 *   <div class="zippy">
+	 *     <div (click)="toggle()">Toggle</div>
+	 *     <div [hidden]="!visible">
+	 *       <ng-content></ng-content>
+	 *     </div>
+	 *  </div>`})
+	 * export class Zippy {
+	 *   visible: boolean = true;
+	 *   @Output() open: EventEmitter<any> = new EventEmitter();
+	 *   @Output() close: EventEmitter<any> = new EventEmitter();
+	 *
+	 *   toggle() {
+	 *     this.visible = !this.visible;
+	 *     if (this.visible) {
+	 *       this.open.emit(null);
+	 *     } else {
+	 *       this.close.emit(null);
+	 *     }
+	 *   }
+	 * }
+	 * ```
+	 *
+	 * Use Rx.Observable but provides an adapter to make it work as specified here:
+	 * https://github.com/jhusain/observable-spec
+	 *
+	 * Once a reference implementation of the spec is available, switch to it.
+	 */
+	var EventEmitter = (function (_super) {
+	    __extends(EventEmitter, _super);
+	    /**
+	     * Creates an instance of [EventEmitter], which depending on [isAsync],
+	     * delivers events synchronously or asynchronously.
+	     */
+	    function EventEmitter(isAsync) {
+	        if (isAsync === void 0) { isAsync = true; }
+	        _super.call(this);
+	        this._isAsync = isAsync;
+	    }
+	    EventEmitter.prototype.emit = function (value) { _super.prototype.next.call(this, value); };
+	    /**
+	     * @deprecated - use .emit(value) instead
+	     */
+	    EventEmitter.prototype.next = function (value) { _super.prototype.next.call(this, value); };
+	    EventEmitter.prototype.subscribe = function (generatorOrNext, error, complete) {
+	        var schedulerFn;
+	        var errorFn = function (err) { return null; };
+	        var completeFn = function () { return null; };
+	        if (generatorOrNext && typeof generatorOrNext === 'object') {
+	            schedulerFn = this._isAsync ? function (value) { setTimeout(function () { return generatorOrNext.next(value); }); } :
+	                function (value) { generatorOrNext.next(value); };
+	            if (generatorOrNext.error) {
+	                errorFn = this._isAsync ? function (err) { setTimeout(function () { return generatorOrNext.error(err); }); } :
+	                    function (err) { generatorOrNext.error(err); };
+	            }
+	            if (generatorOrNext.complete) {
+	                completeFn = this._isAsync ? function () { setTimeout(function () { return generatorOrNext.complete(); }); } :
+	                    function () { generatorOrNext.complete(); };
+	            }
+	        }
+	        else {
+	            schedulerFn = this._isAsync ? function (value) { setTimeout(function () { return generatorOrNext(value); }); } :
+	                function (value) { generatorOrNext(value); };
+	            if (error) {
+	                errorFn =
+	                    this._isAsync ? function (err) { setTimeout(function () { return error(err); }); } : function (err) { error(err); };
+	            }
+	            if (complete) {
+	                completeFn =
+	                    this._isAsync ? function () { setTimeout(function () { return complete(); }); } : function () { complete(); };
+	            }
+	        }
+	        return _super.prototype.subscribe.call(this, schedulerFn, errorFn, completeFn);
+	    };
+	    return EventEmitter;
+	})(Subject_1.Subject);
+	exports.EventEmitter = EventEmitter;
+	// todo(robwormald): ts2dart should handle this properly
+	var Observable = (function (_super) {
+	    __extends(Observable, _super);
+	    function Observable() {
+	        _super.apply(this, arguments);
+	    }
+	    Observable.prototype.lift = function (operator) {
+	        var observable = new Observable();
+	        observable.source = this;
+	        observable.operator = operator;
+	        return observable;
+	    };
+	    return Observable;
+	})(Observable_1.Observable);
+	exports.Observable = Observable;
+
+
+/***/ },
+/* 61 */
+/***/ function(module, exports) {
+
+	// Promises are put into their own facade file so that they can be used without
+	// introducing a dependency on rxjs. They are re-exported through facade/async.
+	var PromiseWrapper = (function () {
+	    function PromiseWrapper() {
+	    }
+	    PromiseWrapper.resolve = function (obj) { return Promise.resolve(obj); };
+	    PromiseWrapper.reject = function (obj, _) { return Promise.reject(obj); };
+	    // Note: We can't rename this method into `catch`, as this is not a valid
+	    // method name in Dart.
+	    PromiseWrapper.catchError = function (promise, onError) {
+	        return promise.catch(onError);
+	    };
+	    PromiseWrapper.all = function (promises) {
+	        if (promises.length == 0)
+	            return Promise.resolve([]);
+	        return Promise.all(promises);
+	    };
+	    PromiseWrapper.then = function (promise, success, rejection) {
+	        return promise.then(success, rejection);
+	    };
+	    PromiseWrapper.wrap = function (computation) {
+	        return new Promise(function (res, rej) {
+	            try {
+	                res(computation());
+	            }
+	            catch (e) {
+	                rej(e);
+	            }
+	        });
+	    };
+	    PromiseWrapper.scheduleMicrotask = function (computation) {
+	        PromiseWrapper.then(PromiseWrapper.resolve(null), computation, function (_) { });
+	    };
+	    PromiseWrapper.isPromise = function (obj) { return obj instanceof Promise; };
+	    PromiseWrapper.completer = function () {
+	        var resolve;
+	        var reject;
+	        var p = new Promise(function (res, rej) {
+	            resolve = res;
+	            reject = rej;
+	        });
+	        return { promise: p, resolve: resolve, reject: reject };
+	    };
+	    return PromiseWrapper;
+	})();
+	exports.PromiseWrapper = PromiseWrapper;
+
+
+/***/ },
+/* 62 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var Observable_1 = __webpack_require__(63);
+	var Subscriber_1 = __webpack_require__(64);
+	var Subscription_1 = __webpack_require__(68);
+	var SubjectSubscription_1 = __webpack_require__(73);
+	var rxSubscriber_1 = __webpack_require__(69);
+	var subscriptionAdd = Subscription_1.Subscription.prototype.add;
+	var subscriptionRemove = Subscription_1.Subscription.prototype.remove;
+	var subscriptionUnsubscribe = Subscription_1.Subscription.prototype.unsubscribe;
+	var subscriberNext = Subscriber_1.Subscriber.prototype.next;
+	var subscriberError = Subscriber_1.Subscriber.prototype.error;
+	var subscriberComplete = Subscriber_1.Subscriber.prototype.complete;
+	var _subscriberNext = Subscriber_1.Subscriber.prototype._next;
+	var _subscriberError = Subscriber_1.Subscriber.prototype._error;
+	var _subscriberComplete = Subscriber_1.Subscriber.prototype._complete;
+	var Subject = (function (_super) {
+	    __extends(Subject, _super);
+	    function Subject() {
+	        _super.apply(this, arguments);
+	        this.observers = [];
+	        this.isUnsubscribed = false;
+	        this.dispatching = false;
+	        this.errorSignal = false;
+	        this.completeSignal = false;
+	    }
+	    Subject.prototype[rxSubscriber_1.rxSubscriber] = function () {
+	        return this;
+	    };
+	    Subject.create = function (source, destination) {
+	        return new BidirectionalSubject(source, destination);
+	    };
+	    Subject.prototype.lift = function (operator) {
+	        var subject = new BidirectionalSubject(this, this.destination || this);
+	        subject.operator = operator;
+	        return subject;
+	    };
+	    Subject.prototype._subscribe = function (subscriber) {
+	        if (subscriber.isUnsubscribed) {
+	            return;
+	        }
+	        else if (this.errorSignal) {
+	            subscriber.error(this.errorInstance);
+	            return;
+	        }
+	        else if (this.completeSignal) {
+	            subscriber.complete();
+	            return;
+	        }
+	        else if (this.isUnsubscribed) {
+	            throw new Error('Cannot subscribe to a disposed Subject.');
+	        }
+	        this.observers.push(subscriber);
+	        return new SubjectSubscription_1.SubjectSubscription(this, subscriber);
+	    };
+	    Subject.prototype.add = function (subscription) {
+	        subscriptionAdd.call(this, subscription);
+	    };
+	    Subject.prototype.remove = function (subscription) {
+	        subscriptionRemove.call(this, subscription);
+	    };
+	    Subject.prototype.unsubscribe = function () {
+	        this.observers = void 0;
+	        subscriptionUnsubscribe.call(this);
+	    };
+	    Subject.prototype.next = function (value) {
+	        if (this.isUnsubscribed) {
+	            return;
+	        }
+	        this.dispatching = true;
+	        this._next(value);
+	        this.dispatching = false;
+	        if (this.errorSignal) {
+	            this.error(this.errorInstance);
+	        }
+	        else if (this.completeSignal) {
+	            this.complete();
+	        }
+	    };
+	    Subject.prototype.error = function (err) {
+	        if (this.isUnsubscribed || this.completeSignal) {
+	            return;
+	        }
+	        this.errorSignal = true;
+	        this.errorInstance = err;
+	        if (this.dispatching) {
+	            return;
+	        }
+	        this._error(err);
+	        this.unsubscribe();
+	    };
+	    Subject.prototype.complete = function () {
+	        if (this.isUnsubscribed || this.errorSignal) {
+	            return;
+	        }
+	        this.completeSignal = true;
+	        if (this.dispatching) {
+	            return;
+	        }
+	        this._complete();
+	        this.unsubscribe();
+	    };
+	    Subject.prototype._next = function (value) {
+	        var index = -1;
+	        var observers = this.observers.slice(0);
+	        var len = observers.length;
+	        while (++index < len) {
+	            observers[index].next(value);
+	        }
+	    };
+	    Subject.prototype._error = function (err) {
+	        var index = -1;
+	        var observers = this.observers;
+	        var len = observers.length;
+	        // optimization -- block next, complete, and unsubscribe while dispatching
+	        this.observers = void 0;
+	        this.isUnsubscribed = true;
+	        while (++index < len) {
+	            observers[index].error(err);
+	        }
+	        this.isUnsubscribed = false;
+	    };
+	    Subject.prototype._complete = function () {
+	        var index = -1;
+	        var observers = this.observers;
+	        var len = observers.length;
+	        // optimization -- block next, complete, and unsubscribe while dispatching
+	        this.observers = void 0; // optimization
+	        this.isUnsubscribed = true;
+	        while (++index < len) {
+	            observers[index].complete();
+	        }
+	        this.isUnsubscribed = false;
+	    };
+	    return Subject;
+	})(Observable_1.Observable);
+	exports.Subject = Subject;
+	var BidirectionalSubject = (function (_super) {
+	    __extends(BidirectionalSubject, _super);
+	    function BidirectionalSubject(source, destination) {
+	        _super.call(this);
+	        this.source = source;
+	        this.destination = destination;
+	    }
+	    BidirectionalSubject.prototype._subscribe = function (subscriber) {
+	        var operator = this.operator;
+	        return this.source._subscribe.call(this.source, operator ? operator.call(subscriber) : subscriber);
+	    };
+	    BidirectionalSubject.prototype.next = function (value) {
+	        subscriberNext.call(this, value);
+	    };
+	    BidirectionalSubject.prototype.error = function (err) {
+	        subscriberError.call(this, err);
+	    };
+	    BidirectionalSubject.prototype.complete = function () {
+	        subscriberComplete.call(this);
+	    };
+	    BidirectionalSubject.prototype._next = function (value) {
+	        _subscriberNext.call(this, value);
+	    };
+	    BidirectionalSubject.prototype._error = function (err) {
+	        _subscriberError.call(this, err);
+	    };
+	    BidirectionalSubject.prototype._complete = function () {
+	        _subscriberComplete.call(this);
+	    };
+	    return BidirectionalSubject;
+	})(Subject);
+
+
+/***/ },
+/* 63 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Subscriber_1 = __webpack_require__(64);
+	var root_1 = __webpack_require__(71);
+	var SymbolShim_1 = __webpack_require__(70);
+	var rxSubscriber_1 = __webpack_require__(69);
+	/**
+	 * A representation of any set of values over any amount of time. This the most basic building block
+	 * of RxJS.
+	 *
+	 * @class Observable<T>
+	 */
+	var Observable = (function () {
+	    /**
+	     * @constructor
+	     * @param {Function} subscribe the function that is
+	     * called when the Observable is initially subscribed to. This function is given a Subscriber, to which new values
+	     * can be `next`ed, or an `error` method can be called to raise an error, or `complete` can be called to notify
+	     * of a successful completion.
+	     */
+	    function Observable(subscribe) {
+	        this._isScalar = false;
+	        if (subscribe) {
+	            this._subscribe = subscribe;
+	        }
+	    }
+	    /**
+	     * @method lift
+	     * @param {Operator} operator the operator defining the operation to take on the observable
+	     * @returns {Observable} a new observable with the Operator applied
+	     * @description creates a new Observable, with this Observable as the source, and the passed
+	     * operator defined as the new observable's operator.
+	     */
+	    Observable.prototype.lift = function (operator) {
+	        var observable = new Observable();
+	        observable.source = this;
+	        observable.operator = operator;
+	        return observable;
+	    };
+	    /**
+	     * @method Symbol.observable
+	     * @returns {Observable} this instance of the observable
+	     * @description an interop point defined by the es7-observable spec https://github.com/zenparsing/es-observable
+	     */
+	    Observable.prototype[SymbolShim_1.SymbolShim.observable] = function () {
+	        return this;
+	    };
+	    /**
+	     * @method subscribe
+	     * @param {Observer|Function} observerOrNext (optional) either an observer defining all functions to be called,
+	     *  or the first of three possible handlers, which is the handler for each value emitted from the observable.
+	     * @param {Function} error (optional) a handler for a terminal event resulting from an error. If no error handler is provided,
+	     *  the error will be thrown as unhandled
+	     * @param {Function} complete (optional) a handler for a terminal event resulting from successful completion.
+	     * @returns {Subscription} a subscription reference to the registered handlers
+	     * @description registers handlers for handling emitted values, error and completions from the observable, and
+	     *  executes the observable's subscriber function, which will take action to set up the underlying data stream
+	     */
+	    Observable.prototype.subscribe = function (observerOrNext, error, complete) {
+	        var subscriber;
+	        if (observerOrNext && typeof observerOrNext === 'object') {
+	            if (observerOrNext instanceof Subscriber_1.Subscriber) {
+	                subscriber = observerOrNext;
+	            }
+	            else if (observerOrNext[rxSubscriber_1.rxSubscriber]) {
+	                subscriber = observerOrNext[rxSubscriber_1.rxSubscriber]();
+	            }
+	            else {
+	                subscriber = new Subscriber_1.Subscriber(observerOrNext);
+	            }
+	        }
+	        else {
+	            var next = observerOrNext;
+	            subscriber = Subscriber_1.Subscriber.create(next, error, complete);
+	        }
+	        subscriber.add(this._subscribe(subscriber));
+	        return subscriber;
+	    };
+	    /**
+	     * @method forEach
+	     * @param {Function} next a handler for each value emitted by the observable
+	     * @param {PromiseConstructor} PromiseCtor? a constructor function used to instantiate the Promise
+	     * @returns {Promise} a promise that either resolves on observable completion or
+	     *  rejects with the handled error
+	     */
+	    Observable.prototype.forEach = function (next, PromiseCtor) {
+	        var _this = this;
+	        if (!PromiseCtor) {
+	            if (root_1.root.Rx && root_1.root.Rx.config && root_1.root.Rx.config.Promise) {
+	                PromiseCtor = root_1.root.Rx.config.Promise;
+	            }
+	            else if (root_1.root.Promise) {
+	                PromiseCtor = root_1.root.Promise;
+	            }
+	        }
+	        if (!PromiseCtor) {
+	            throw new Error('no Promise impl found');
+	        }
+	        return new PromiseCtor(function (resolve, reject) {
+	            _this.subscribe(next, reject, resolve);
+	        });
+	    };
+	    Observable.prototype._subscribe = function (subscriber) {
+	        return this.source._subscribe(this.operator.call(subscriber));
+	    };
+	    // HACK: Since TypeScript inherits static properties too, we have to
+	    // fight against TypeScript here so Subject can have a different static create signature
+	    /**
+	     * @static
+	     * @method create
+	     * @param {Function} subscribe? the subscriber function to be passed to the Observable constructor
+	     * @returns {Observable} a new cold observable
+	     * @description creates a new cold Observable by calling the Observable constructor
+	     */
+	    Observable.create = function (subscribe) {
+	        return new Observable(subscribe);
+	    };
+	    return Observable;
+	})();
+	exports.Observable = Observable;
+
+
+/***/ },
+/* 64 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var noop_1 = __webpack_require__(65);
+	var throwError_1 = __webpack_require__(66);
+	var tryOrOnError_1 = __webpack_require__(67);
+	var Subscription_1 = __webpack_require__(68);
+	var rxSubscriber_1 = __webpack_require__(69);
+	var Subscriber = (function (_super) {
+	    __extends(Subscriber, _super);
+	    function Subscriber(destination) {
+	        _super.call(this);
+	        this.destination = destination;
+	        this._isUnsubscribed = false;
+	        if (!this.destination) {
+	            return;
+	        }
+	        var subscription = destination._subscription;
+	        if (subscription) {
+	            this._subscription = subscription;
+	        }
+	        else if (destination instanceof Subscriber) {
+	            this._subscription = destination;
+	        }
+	    }
+	    Subscriber.prototype[rxSubscriber_1.rxSubscriber] = function () {
+	        return this;
+	    };
+	    Object.defineProperty(Subscriber.prototype, "isUnsubscribed", {
+	        get: function () {
+	            var subscription = this._subscription;
+	            if (subscription) {
+	                // route to the shared Subscription if it exists
+	                return this._isUnsubscribed || subscription.isUnsubscribed;
+	            }
+	            else {
+	                return this._isUnsubscribed;
+	            }
+	        },
+	        set: function (value) {
+	            var subscription = this._subscription;
+	            if (subscription) {
+	                // route to the shared Subscription if it exists
+	                subscription.isUnsubscribed = Boolean(value);
+	            }
+	            else {
+	                this._isUnsubscribed = Boolean(value);
+	            }
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Subscriber.create = function (next, error, complete) {
+	        var subscriber = new Subscriber();
+	        subscriber._next = (typeof next === 'function') && tryOrOnError_1.tryOrOnError(next) || noop_1.noop;
+	        subscriber._error = (typeof error === 'function') && error || throwError_1.throwError;
+	        subscriber._complete = (typeof complete === 'function') && complete || noop_1.noop;
+	        return subscriber;
+	    };
+	    Subscriber.prototype.add = function (sub) {
+	        // route add to the shared Subscription if it exists
+	        var _subscription = this._subscription;
+	        if (_subscription) {
+	            _subscription.add(sub);
+	        }
+	        else {
+	            _super.prototype.add.call(this, sub);
+	        }
+	    };
+	    Subscriber.prototype.remove = function (sub) {
+	        // route remove to the shared Subscription if it exists
+	        if (this._subscription) {
+	            this._subscription.remove(sub);
+	        }
+	        else {
+	            _super.prototype.remove.call(this, sub);
+	        }
+	    };
+	    Subscriber.prototype.unsubscribe = function () {
+	        if (this._isUnsubscribed) {
+	            return;
+	        }
+	        else if (this._subscription) {
+	            this._isUnsubscribed = true;
+	        }
+	        else {
+	            _super.prototype.unsubscribe.call(this);
+	        }
+	    };
+	    Subscriber.prototype._next = function (value) {
+	        var destination = this.destination;
+	        if (destination.next) {
+	            destination.next(value);
+	        }
+	    };
+	    Subscriber.prototype._error = function (err) {
+	        var destination = this.destination;
+	        if (destination.error) {
+	            destination.error(err);
+	        }
+	    };
+	    Subscriber.prototype._complete = function () {
+	        var destination = this.destination;
+	        if (destination.complete) {
+	            destination.complete();
+	        }
+	    };
+	    Subscriber.prototype.next = function (value) {
+	        if (!this.isUnsubscribed) {
+	            this._next(value);
+	        }
+	    };
+	    Subscriber.prototype.error = function (err) {
+	        if (!this.isUnsubscribed) {
+	            this._error(err);
+	            this.unsubscribe();
+	        }
+	    };
+	    Subscriber.prototype.complete = function () {
+	        if (!this.isUnsubscribed) {
+	            this._complete();
+	            this.unsubscribe();
+	        }
+	    };
+	    return Subscriber;
+	})(Subscription_1.Subscription);
+	exports.Subscriber = Subscriber;
+
+
+/***/ },
+/* 65 */
+/***/ function(module, exports) {
+
+	/* tslint:disable:no-empty */
+	function noop() { }
+	exports.noop = noop;
+
+
+/***/ },
+/* 66 */
+/***/ function(module, exports) {
+
+	function throwError(e) { throw e; }
+	exports.throwError = throwError;
+
+
+/***/ },
+/* 67 */
+/***/ function(module, exports) {
+
+	function tryOrOnError(target) {
+	    function tryCatcher() {
+	        try {
+	            tryCatcher.target.apply(this, arguments);
+	        }
+	        catch (e) {
+	            this.error(e);
+	        }
+	    }
+	    tryCatcher.target = target;
+	    return tryCatcher;
+	}
+	exports.tryOrOnError = tryOrOnError;
+
+
+/***/ },
+/* 68 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var noop_1 = __webpack_require__(65);
+	var Subscription = (function () {
+	    function Subscription(_unsubscribe) {
+	        this.isUnsubscribed = false;
+	        if (_unsubscribe) {
+	            this._unsubscribe = _unsubscribe;
+	        }
+	    }
+	    Subscription.prototype._unsubscribe = function () {
+	        noop_1.noop();
+	    };
+	    Subscription.prototype.unsubscribe = function () {
+	        if (this.isUnsubscribed) {
+	            return;
+	        }
+	        this.isUnsubscribed = true;
+	        var unsubscribe = this._unsubscribe;
+	        var subscriptions = this._subscriptions;
+	        this._subscriptions = void 0;
+	        if (unsubscribe) {
+	            unsubscribe.call(this);
+	        }
+	        if (subscriptions != null) {
+	            var index = -1;
+	            var len = subscriptions.length;
+	            while (++index < len) {
+	                subscriptions[index].unsubscribe();
+	            }
+	        }
+	    };
+	    Subscription.prototype.add = function (subscription) {
+	        // return early if:
+	        //  1. the subscription is null
+	        //  2. we're attempting to add our this
+	        //  3. we're attempting to add the static `empty` Subscription
+	        if (!subscription || (subscription === this) || (subscription === Subscription.EMPTY)) {
+	            return;
+	        }
+	        var sub = subscription;
+	        switch (typeof subscription) {
+	            case 'function':
+	                sub = new Subscription(subscription);
+	            case 'object':
+	                if (sub.isUnsubscribed || typeof sub.unsubscribe !== 'function') {
+	                    break;
+	                }
+	                else if (this.isUnsubscribed) {
+	                    sub.unsubscribe();
+	                }
+	                else {
+	                    var subscriptions = this._subscriptions || (this._subscriptions = []);
+	                    subscriptions.push(sub);
+	                }
+	                break;
+	            default:
+	                throw new Error('Unrecognized subscription ' + subscription + ' added to Subscription.');
+	        }
+	    };
+	    Subscription.prototype.remove = function (subscription) {
+	        // return early if:
+	        //  1. the subscription is null
+	        //  2. we're attempting to remove ourthis
+	        //  3. we're attempting to remove the static `empty` Subscription
+	        if (subscription == null || (subscription === this) || (subscription === Subscription.EMPTY)) {
+	            return;
+	        }
+	        var subscriptions = this._subscriptions;
+	        if (subscriptions) {
+	            var subscriptionIndex = subscriptions.indexOf(subscription);
+	            if (subscriptionIndex !== -1) {
+	                subscriptions.splice(subscriptionIndex, 1);
+	            }
+	        }
+	    };
+	    Subscription.EMPTY = (function (empty) {
+	        empty.isUnsubscribed = true;
+	        return empty;
+	    }(new Subscription()));
+	    return Subscription;
+	})();
+	exports.Subscription = Subscription;
+
+
+/***/ },
+/* 69 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var SymbolShim_1 = __webpack_require__(70);
+	/**
+	 * rxSubscriber symbol is a symbol for retreiving an "Rx safe" Observer from an object
+	 * "Rx safety" can be defined as an object that has all of the traits of an Rx Subscriber,
+	 * including the ability to add and remove subscriptions to the subscription chain and
+	 * guarantees involving event triggering (can't "next" after unsubscription, etc).
+	 */
+	exports.rxSubscriber = SymbolShim_1.SymbolShim.for('rxSubscriber');
+
+
+/***/ },
+/* 70 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var root_1 = __webpack_require__(71);
+	function polyfillSymbol(root) {
+	    var Symbol = ensureSymbol(root);
+	    ensureIterator(Symbol, root);
+	    ensureObservable(Symbol);
+	    return Symbol;
+	}
+	exports.polyfillSymbol = polyfillSymbol;
+	function ensureSymbol(root) {
+	    if (!root.Symbol) {
+	        root.Symbol = {
+	            for: symbolForPolyfill
+	        };
+	    }
+	    return root.Symbol;
+	}
+	exports.ensureSymbol = ensureSymbol;
+	function symbolForPolyfill(key) {
+	    return '@@' + key;
+	}
+	exports.symbolForPolyfill = symbolForPolyfill;
+	function ensureIterator(Symbol, root) {
+	    if (!Symbol.iterator) {
+	        if (typeof Symbol.for === 'function') {
+	            Symbol.iterator = Symbol.for('iterator');
+	        }
+	        else if (root.Set && typeof new root.Set()['@@iterator'] === 'function') {
+	            // Bug for mozilla version
+	            Symbol.iterator = '@@iterator';
+	        }
+	        else if (root.Map) {
+	            // es6-shim specific logic
+	            var keys = Object.getOwnPropertyNames(root.Map.prototype);
+	            for (var i = 0; i < keys.length; ++i) {
+	                var key = keys[i];
+	                if (key !== 'entries' && key !== 'size' && root.Map.prototype[key] === root.Map.prototype['entries']) {
+	                    Symbol.iterator = key;
+	                    break;
+	                }
+	            }
+	        }
+	        else {
+	            Symbol.iterator = '@@iterator';
+	        }
+	    }
+	}
+	exports.ensureIterator = ensureIterator;
+	function ensureObservable(Symbol) {
+	    if (!Symbol.observable) {
+	        if (typeof Symbol.for === 'function') {
+	            Symbol.observable = Symbol.for('observable');
+	        }
+	        else {
+	            Symbol.observable = '@@observable';
+	        }
+	    }
+	}
+	exports.ensureObservable = ensureObservable;
+	exports.SymbolShim = polyfillSymbol(root_1.root);
+
+
+/***/ },
+/* 71 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(module, global) {var objectTypes = {
+	    'boolean': false,
+	    'function': true,
+	    'object': true,
+	    'number': false,
+	    'string': false,
+	    'undefined': false
+	};
+	exports.root = (objectTypes[typeof self] && self) || (objectTypes[typeof window] && window);
+	/* tslint:disable:no-unused-variable */
+	var freeExports = objectTypes[typeof exports] && exports && !exports.nodeType && exports;
+	var freeModule = objectTypes[typeof module] && module && !module.nodeType && module;
+	var freeGlobal = objectTypes[typeof global] && global;
+	if (freeGlobal && (freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal)) {
+	    exports.root = freeGlobal;
+	}
+
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(72)(module), (function() { return this; }())))
+
+/***/ },
+/* 72 */
+/***/ function(module, exports) {
+
+	module.exports = function(module) {
+		if(!module.webpackPolyfill) {
+			module.deprecate = function() {};
+			module.paths = [];
+			// module.parent = undefined by default
+			module.children = [];
+			module.webpackPolyfill = 1;
+		}
+		return module;
+	}
+
+
+/***/ },
+/* 73 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var Subscription_1 = __webpack_require__(68);
+	var Subscriber_1 = __webpack_require__(64);
+	var SubjectSubscription = (function (_super) {
+	    __extends(SubjectSubscription, _super);
+	    function SubjectSubscription(subject, observer) {
+	        _super.call(this);
+	        this.subject = subject;
+	        this.observer = observer;
+	        this.isUnsubscribed = false;
+	    }
+	    SubjectSubscription.prototype.unsubscribe = function () {
+	        if (this.isUnsubscribed) {
+	            return;
+	        }
+	        this.isUnsubscribed = true;
+	        var subject = this.subject;
+	        var observers = subject.observers;
+	        this.subject = void 0;
+	        if (!observers || observers.length === 0 || subject.isUnsubscribed) {
+	            return;
+	        }
+	        if (this.observer instanceof Subscriber_1.Subscriber) {
+	            this.observer.unsubscribe();
+	        }
+	        var subscriberIndex = observers.indexOf(this.observer);
+	        if (subscriberIndex !== -1) {
+	            observers.splice(subscriberIndex, 1);
+	        }
+	    };
+	    return SubjectSubscription;
+	})(Subscription_1.Subscription);
+	exports.SubjectSubscription = SubjectSubscription;
+
+
+/***/ },
+/* 74 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var Observable_1 = __webpack_require__(63);
+	var Subscription_1 = __webpack_require__(68);
+	var queue_1 = __webpack_require__(75);
+	var PromiseObservable = (function (_super) {
+	    __extends(PromiseObservable, _super);
+	    function PromiseObservable(promise, scheduler) {
+	        if (scheduler === void 0) { scheduler = queue_1.queue; }
+	        _super.call(this);
+	        this.promise = promise;
+	        this.scheduler = scheduler;
+	        this._isScalar = false;
+	    }
+	    PromiseObservable.create = function (promise, scheduler) {
+	        if (scheduler === void 0) { scheduler = queue_1.queue; }
+	        return new PromiseObservable(promise, scheduler);
+	    };
+	    PromiseObservable.prototype._subscribe = function (subscriber) {
+	        var _this = this;
+	        var scheduler = this.scheduler;
+	        var promise = this.promise;
+	        if (scheduler === queue_1.queue) {
+	            if (this._isScalar) {
+	                subscriber.next(this.value);
+	                subscriber.complete();
+	            }
+	            else {
+	                promise.then(function (value) {
+	                    _this._isScalar = true;
+	                    _this.value = value;
+	                    subscriber.next(value);
+	                    subscriber.complete();
+	                }, function (err) { return subscriber.error(err); })
+	                    .then(null, function (err) {
+	                    // escape the promise trap, throw unhandled errors
+	                    setTimeout(function () { throw err; });
+	                });
+	            }
+	        }
+	        else {
+	            var subscription = new Subscription_1.Subscription();
+	            if (this._isScalar) {
+	                var value = this.value;
+	                subscription.add(scheduler.schedule(dispatchNext, 0, { value: value, subscriber: subscriber }));
+	            }
+	            else {
+	                promise.then(function (value) {
+	                    _this._isScalar = true;
+	                    _this.value = value;
+	                    subscription.add(scheduler.schedule(dispatchNext, 0, { value: value, subscriber: subscriber }));
+	                }, function (err) { return subscription.add(scheduler.schedule(dispatchError, 0, { err: err, subscriber: subscriber })); })
+	                    .then(null, function (err) {
+	                    // escape the promise trap, throw unhandled errors
+	                    scheduler.schedule(function () { throw err; });
+	                });
+	            }
+	            return subscription;
+	        }
+	    };
+	    return PromiseObservable;
+	})(Observable_1.Observable);
+	exports.PromiseObservable = PromiseObservable;
+	function dispatchNext(_a) {
+	    var value = _a.value, subscriber = _a.subscriber;
+	    subscriber.next(value);
+	    subscriber.complete();
+	}
+	function dispatchError(_a) {
+	    var err = _a.err, subscriber = _a.subscriber;
+	    subscriber.error(err);
+	}
+
+
+/***/ },
+/* 75 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var QueueScheduler_1 = __webpack_require__(76);
+	exports.queue = new QueueScheduler_1.QueueScheduler();
+
+
+/***/ },
+/* 76 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var QueueAction_1 = __webpack_require__(77);
+	var FutureAction_1 = __webpack_require__(78);
+	var QueueScheduler = (function () {
+	    function QueueScheduler() {
+	        this.actions = [];
+	        this.active = false;
+	        this.scheduled = false;
+	    }
+	    QueueScheduler.prototype.now = function () {
+	        return Date.now();
+	    };
+	    QueueScheduler.prototype.flush = function () {
+	        if (this.active || this.scheduled) {
+	            return;
+	        }
+	        this.active = true;
+	        var actions = this.actions;
+	        for (var action = void 0; action = actions.shift();) {
+	            action.execute();
+	        }
+	        this.active = false;
+	    };
+	    QueueScheduler.prototype.schedule = function (work, delay, state) {
+	        if (delay === void 0) { delay = 0; }
+	        return (delay <= 0) ?
+	            this.scheduleNow(work, state) :
+	            this.scheduleLater(work, delay, state);
+	    };
+	    QueueScheduler.prototype.scheduleNow = function (work, state) {
+	        return new QueueAction_1.QueueAction(this, work).schedule(state);
+	    };
+	    QueueScheduler.prototype.scheduleLater = function (work, delay, state) {
+	        return new FutureAction_1.FutureAction(this, work).schedule(state, delay);
+	    };
+	    return QueueScheduler;
+	})();
+	exports.QueueScheduler = QueueScheduler;
+
+
+/***/ },
+/* 77 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var Subscription_1 = __webpack_require__(68);
+	var QueueAction = (function (_super) {
+	    __extends(QueueAction, _super);
+	    function QueueAction(scheduler, work) {
+	        _super.call(this);
+	        this.scheduler = scheduler;
+	        this.work = work;
+	    }
+	    QueueAction.prototype.schedule = function (state) {
+	        if (this.isUnsubscribed) {
+	            return this;
+	        }
+	        this.state = state;
+	        var scheduler = this.scheduler;
+	        scheduler.actions.push(this);
+	        scheduler.flush();
+	        return this;
+	    };
+	    QueueAction.prototype.execute = function () {
+	        if (this.isUnsubscribed) {
+	            throw new Error('How did did we execute a canceled Action?');
+	        }
+	        this.work(this.state);
+	    };
+	    QueueAction.prototype.unsubscribe = function () {
+	        var scheduler = this.scheduler;
+	        var actions = scheduler.actions;
+	        var index = actions.indexOf(this);
+	        this.work = void 0;
+	        this.state = void 0;
+	        this.scheduler = void 0;
+	        if (index !== -1) {
+	            actions.splice(index, 1);
+	        }
+	        _super.prototype.unsubscribe.call(this);
+	    };
+	    return QueueAction;
+	})(Subscription_1.Subscription);
+	exports.QueueAction = QueueAction;
+
+
+/***/ },
+/* 78 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var QueueAction_1 = __webpack_require__(77);
+	var FutureAction = (function (_super) {
+	    __extends(FutureAction, _super);
+	    function FutureAction(scheduler, work) {
+	        _super.call(this, scheduler, work);
+	        this.scheduler = scheduler;
+	        this.work = work;
+	    }
+	    FutureAction.prototype.schedule = function (state, delay) {
+	        var _this = this;
+	        if (delay === void 0) { delay = 0; }
+	        if (this.isUnsubscribed) {
+	            return this;
+	        }
+	        this.delay = delay;
+	        this.state = state;
+	        var id = this.id;
+	        if (id != null) {
+	            this.id = undefined;
+	            clearTimeout(id);
+	        }
+	        var scheduler = this.scheduler;
+	        this.id = setTimeout(function () {
+	            _this.id = void 0;
+	            scheduler.actions.push(_this);
+	            scheduler.flush();
+	        }, this.delay);
+	        return this;
+	    };
+	    FutureAction.prototype.unsubscribe = function () {
+	        var id = this.id;
+	        if (id != null) {
+	            this.id = void 0;
+	            clearTimeout(id);
+	        }
+	        _super.prototype.unsubscribe.call(this);
+	    };
+	    return FutureAction;
+	})(QueueAction_1.QueueAction);
+	exports.FutureAction = FutureAction;
+
+
+/***/ },
+/* 79 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var root_1 = __webpack_require__(71);
+	function toPromise(PromiseCtor) {
+	    var _this = this;
+	    if (!PromiseCtor) {
+	        if (root_1.root.Rx && root_1.root.Rx.config && root_1.root.Rx.config.Promise) {
+	            PromiseCtor = root_1.root.Rx.config.Promise;
+	        }
+	        else if (root_1.root.Promise) {
+	            PromiseCtor = root_1.root.Promise;
+	        }
+	    }
+	    if (!PromiseCtor) {
+	        throw new Error('no Promise impl found');
+	    }
+	    return new PromiseCtor(function (resolve, reject) {
+	        var value;
+	        _this.subscribe(function (x) { return value = x; }, function (err) { return reject(err); }, function () { return resolve(value); });
+	    });
+	}
+	exports.toPromise = toPromise;
+
+
+/***/ },
+/* 80 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var ng_zone_1 = __webpack_require__(81);
+	var lang_1 = __webpack_require__(5);
+	var di_1 = __webpack_require__(6);
+	var application_tokens_1 = __webpack_require__(82);
+	var async_1 = __webpack_require__(60);
+	var collection_1 = __webpack_require__(12);
+	var testability_1 = __webpack_require__(83);
+	var dynamic_component_loader_1 = __webpack_require__(84);
+	var exceptions_1 = __webpack_require__(14);
+	var view_ref_1 = __webpack_require__(92);
+	var profile_1 = __webpack_require__(45);
 	var lang_2 = __webpack_require__(5);
 	/**
 	 * Construct providers specific to an individual root component.
@@ -13877,13 +13674,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 84 */
+/* 81 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var collection_1 = __webpack_require__(35);
+	var collection_1 = __webpack_require__(12);
 	var lang_1 = __webpack_require__(5);
-	var async_1 = __webpack_require__(6);
-	var profile_1 = __webpack_require__(68);
+	var async_1 = __webpack_require__(60);
+	var profile_1 = __webpack_require__(45);
 	/**
 	 * Stores error information; delivered via [NgZone.onError] stream.
 	 */
@@ -14323,10 +14120,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 85 */
+/* 82 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var di_1 = __webpack_require__(29);
+	var di_1 = __webpack_require__(6);
 	var lang_1 = __webpack_require__(5);
 	/**
 	 *  @internal
@@ -14380,7 +14177,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 86 */
+/* 83 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -14394,12 +14191,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var di_1 = __webpack_require__(29);
-	var collection_1 = __webpack_require__(35);
+	var di_1 = __webpack_require__(6);
+	var collection_1 = __webpack_require__(12);
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var ng_zone_1 = __webpack_require__(84);
-	var async_1 = __webpack_require__(6);
+	var exceptions_1 = __webpack_require__(14);
+	var ng_zone_1 = __webpack_require__(81);
+	var async_1 = __webpack_require__(60);
 	/**
 	 * The Testability service provides testing hooks that can be accessed from
 	 * the browser and by services such as Protractor. Each bootstrapped Angular
@@ -14520,7 +14317,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 87 */
+/* 84 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -14539,10 +14336,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var di_1 = __webpack_require__(29);
-	var compiler_1 = __webpack_require__(88);
+	var di_1 = __webpack_require__(6);
+	var compiler_1 = __webpack_require__(85);
 	var lang_1 = __webpack_require__(5);
-	var view_manager_1 = __webpack_require__(99);
+	var view_manager_1 = __webpack_require__(96);
 	/**
 	 * Represents an instance of a Component created via {@link DynamicComponentLoader}.
 	 *
@@ -14667,7 +14464,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 88 */
+/* 85 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -14686,13 +14483,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var proto_view_factory_1 = __webpack_require__(89);
-	var di_1 = __webpack_require__(29);
+	var proto_view_factory_1 = __webpack_require__(86);
+	var di_1 = __webpack_require__(6);
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var async_1 = __webpack_require__(6);
-	var reflection_1 = __webpack_require__(39);
-	var template_commands_1 = __webpack_require__(114);
+	var exceptions_1 = __webpack_require__(14);
+	var async_1 = __webpack_require__(60);
+	var reflection_1 = __webpack_require__(16);
+	var template_commands_1 = __webpack_require__(111);
 	/**
 	 * Low-level service for compiling {@link Component}s into {@link ProtoViewRef ProtoViews}s, which
 	 * can later be used to create and render a Component instance.
@@ -14741,7 +14538,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 89 */
+/* 86 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -14759,21 +14556,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
 	var lang_1 = __webpack_require__(5);
-	var api_1 = __webpack_require__(90);
-	var di_1 = __webpack_require__(29);
-	var pipe_provider_1 = __webpack_require__(91);
-	var pipes_1 = __webpack_require__(92);
-	var view_1 = __webpack_require__(94);
-	var element_binder_1 = __webpack_require__(97);
-	var element_injector_1 = __webpack_require__(98);
-	var directive_resolver_1 = __webpack_require__(110);
-	var view_resolver_1 = __webpack_require__(111);
-	var pipe_resolver_1 = __webpack_require__(112);
-	var view_2 = __webpack_require__(79);
-	var platform_directives_and_pipes_1 = __webpack_require__(113);
-	var template_commands_1 = __webpack_require__(114);
-	var api_2 = __webpack_require__(90);
-	var application_tokens_1 = __webpack_require__(85);
+	var api_1 = __webpack_require__(87);
+	var di_1 = __webpack_require__(6);
+	var pipe_provider_1 = __webpack_require__(88);
+	var pipes_1 = __webpack_require__(89);
+	var view_1 = __webpack_require__(91);
+	var element_binder_1 = __webpack_require__(94);
+	var element_injector_1 = __webpack_require__(95);
+	var directive_resolver_1 = __webpack_require__(107);
+	var view_resolver_1 = __webpack_require__(108);
+	var pipe_resolver_1 = __webpack_require__(109);
+	var view_2 = __webpack_require__(56);
+	var platform_directives_and_pipes_1 = __webpack_require__(110);
+	var template_commands_1 = __webpack_require__(111);
+	var api_2 = __webpack_require__(87);
+	var application_tokens_1 = __webpack_require__(82);
 	var ProtoViewFactory = (function () {
 	    function ProtoViewFactory(_renderer, _platformPipes, _directiveResolver, _viewResolver, _pipeResolver, _appId) {
 	        this._renderer = _renderer;
@@ -15052,7 +14849,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 90 */
+/* 87 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -15060,7 +14857,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var exceptions_1 = __webpack_require__(37);
+	var exceptions_1 = __webpack_require__(14);
 	/**
 	 * Represents an Angular ProtoView in the Rendering Context.
 	 *
@@ -15319,7 +15116,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 91 */
+/* 88 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -15327,8 +15124,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var provider_1 = __webpack_require__(36);
-	var di_1 = __webpack_require__(29);
+	var provider_1 = __webpack_require__(13);
+	var di_1 = __webpack_require__(6);
 	var PipeProvider = (function (_super) {
 	    __extends(PipeProvider, _super);
 	    function PipeProvider(name, pure, key, resolvedFactories, multiBinding) {
@@ -15347,13 +15144,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 92 */
+/* 89 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var collection_1 = __webpack_require__(35);
-	var cd = __webpack_require__(93);
+	var exceptions_1 = __webpack_require__(14);
+	var collection_1 = __webpack_require__(12);
+	var cd = __webpack_require__(90);
 	var ProtoPipes = (function () {
 	    function ProtoPipes(
 	        /**
@@ -15402,7 +15199,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 93 */
+/* 90 */
 /***/ function(module, exports) {
 
 	var SelectedPipe = (function () {
@@ -15416,7 +15213,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 94 */
+/* 91 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -15424,15 +15221,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var collection_1 = __webpack_require__(35);
-	var change_detection_1 = __webpack_require__(48);
-	var interfaces_1 = __webpack_require__(58);
+	var collection_1 = __webpack_require__(12);
+	var change_detection_1 = __webpack_require__(25);
+	var interfaces_1 = __webpack_require__(35);
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var view_ref_1 = __webpack_require__(95);
-	var util_1 = __webpack_require__(96);
-	var view_ref_2 = __webpack_require__(95);
-	var interfaces_2 = __webpack_require__(58);
+	var exceptions_1 = __webpack_require__(14);
+	var view_ref_1 = __webpack_require__(92);
+	var util_1 = __webpack_require__(93);
+	var view_ref_2 = __webpack_require__(92);
+	var interfaces_2 = __webpack_require__(35);
 	exports.DebugContext = interfaces_2.DebugContext;
 	var REFLECT_PREFIX = 'ng-reflect-';
 	(function (ViewType) {
@@ -15731,7 +15528,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 95 */
+/* 92 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -15740,7 +15537,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
+	var exceptions_1 = __webpack_require__(14);
 	// This is a workaround for privacy in Dart as we don't have library parts
 	function internalView(viewRef) {
 	    return viewRef._view;
@@ -15915,7 +15712,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 96 */
+/* 93 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -15932,11 +15729,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 97 */
+/* 94 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
+	var exceptions_1 = __webpack_require__(14);
 	var ElementBinder = (function () {
 	    function ElementBinder(index, parent, distanceToParent, protoElementInjector, componentDirective, nestedProtoView) {
 	        this.index = index;
@@ -15955,7 +15752,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 98 */
+/* 95 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -15964,26 +15761,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var async_1 = __webpack_require__(6);
-	var collection_1 = __webpack_require__(35);
-	var di_1 = __webpack_require__(29);
-	var injector_1 = __webpack_require__(34);
-	var provider_1 = __webpack_require__(36);
-	var di_2 = __webpack_require__(28);
-	/* circular */ var avmModule = __webpack_require__(99);
-	var view_container_ref_1 = __webpack_require__(105);
-	var element_ref_1 = __webpack_require__(101);
-	var template_ref_1 = __webpack_require__(102);
-	var directives_1 = __webpack_require__(46);
-	var directive_lifecycle_reflector_1 = __webpack_require__(106);
-	var change_detection_1 = __webpack_require__(48);
-	var query_list_1 = __webpack_require__(108);
-	var reflection_1 = __webpack_require__(39);
-	var event_config_1 = __webpack_require__(109);
-	var pipe_provider_1 = __webpack_require__(91);
-	var interfaces_1 = __webpack_require__(107);
-	var view_container_ref_2 = __webpack_require__(105);
+	var exceptions_1 = __webpack_require__(14);
+	var async_1 = __webpack_require__(60);
+	var collection_1 = __webpack_require__(12);
+	var di_1 = __webpack_require__(6);
+	var injector_1 = __webpack_require__(11);
+	var provider_1 = __webpack_require__(13);
+	var di_2 = __webpack_require__(4);
+	/* circular */ var avmModule = __webpack_require__(96);
+	var view_container_ref_1 = __webpack_require__(102);
+	var element_ref_1 = __webpack_require__(98);
+	var template_ref_1 = __webpack_require__(99);
+	var directives_1 = __webpack_require__(23);
+	var directive_lifecycle_reflector_1 = __webpack_require__(103);
+	var change_detection_1 = __webpack_require__(25);
+	var query_list_1 = __webpack_require__(105);
+	var reflection_1 = __webpack_require__(16);
+	var event_config_1 = __webpack_require__(106);
+	var pipe_provider_1 = __webpack_require__(88);
+	var interfaces_1 = __webpack_require__(104);
+	var view_container_ref_2 = __webpack_require__(102);
 	var _staticKeys;
 	var StaticKeys = (function () {
 	    function StaticKeys() {
@@ -16926,7 +16723,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 99 */
+/* 96 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -16948,17 +16745,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __param = (this && this.__param) || function (paramIndex, decorator) {
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
-	var di_1 = __webpack_require__(29);
+	var di_1 = __webpack_require__(6);
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var viewModule = __webpack_require__(94);
-	var view_ref_1 = __webpack_require__(95);
-	var api_1 = __webpack_require__(90);
-	var view_manager_utils_1 = __webpack_require__(100);
-	var view_pool_1 = __webpack_require__(103);
-	var view_listener_1 = __webpack_require__(104);
-	var profile_1 = __webpack_require__(68);
-	var proto_view_factory_1 = __webpack_require__(89);
+	var exceptions_1 = __webpack_require__(14);
+	var viewModule = __webpack_require__(91);
+	var view_ref_1 = __webpack_require__(92);
+	var api_1 = __webpack_require__(87);
+	var view_manager_utils_1 = __webpack_require__(97);
+	var view_pool_1 = __webpack_require__(100);
+	var view_listener_1 = __webpack_require__(101);
+	var profile_1 = __webpack_require__(45);
+	var proto_view_factory_1 = __webpack_require__(86);
 	/**
 	 * Service exposing low level API for creating, moving and destroying Views.
 	 *
@@ -17221,7 +17018,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 100 */
+/* 97 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -17235,14 +17032,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var di_1 = __webpack_require__(29);
-	var collection_1 = __webpack_require__(35);
-	var eli = __webpack_require__(98);
+	var di_1 = __webpack_require__(6);
+	var collection_1 = __webpack_require__(12);
+	var eli = __webpack_require__(95);
 	var lang_1 = __webpack_require__(5);
-	var viewModule = __webpack_require__(94);
-	var element_ref_1 = __webpack_require__(101);
-	var template_ref_1 = __webpack_require__(102);
-	var pipes_1 = __webpack_require__(92);
+	var viewModule = __webpack_require__(91);
+	var element_ref_1 = __webpack_require__(98);
+	var template_ref_1 = __webpack_require__(99);
+	var pipes_1 = __webpack_require__(89);
 	var AppViewManagerUtils = (function () {
 	    function AppViewManagerUtils() {
 	    }
@@ -17468,7 +17265,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 101 */
+/* 98 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -17476,7 +17273,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var exceptions_1 = __webpack_require__(37);
+	var exceptions_1 = __webpack_require__(14);
 	/**
 	 * Represents a location in a View that has an injection, change-detection and render context
 	 * associated with it.
@@ -17554,7 +17351,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 102 */
+/* 99 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -17562,7 +17359,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var view_ref_1 = __webpack_require__(95);
+	var view_ref_1 = __webpack_require__(92);
 	/**
 	 * Represents an Embedded Template that can be used to instantiate Embedded Views.
 	 *
@@ -17611,7 +17408,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 103 */
+/* 100 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -17628,9 +17425,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __param = (this && this.__param) || function (paramIndex, decorator) {
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
-	var di_1 = __webpack_require__(29);
+	var di_1 = __webpack_require__(6);
 	var lang_1 = __webpack_require__(5);
-	var collection_1 = __webpack_require__(35);
+	var collection_1 = __webpack_require__(12);
 	exports.APP_VIEW_POOL_CAPACITY = lang_1.CONST_EXPR(new di_1.OpaqueToken('AppViewPool.viewPoolCapacity'));
 	var AppViewPool = (function () {
 	    function AppViewPool(poolCapacityPerProtoView) {
@@ -17669,7 +17466,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 104 */
+/* 101 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -17683,7 +17480,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var di_1 = __webpack_require__(29);
+	var di_1 = __webpack_require__(6);
 	/**
 	 * Listener for view creation / destruction.
 	 */
@@ -17702,7 +17499,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 105 */
+/* 102 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -17710,10 +17507,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var collection_1 = __webpack_require__(35);
-	var exceptions_1 = __webpack_require__(37);
+	var collection_1 = __webpack_require__(12);
+	var exceptions_1 = __webpack_require__(14);
 	var lang_1 = __webpack_require__(5);
-	var view_ref_1 = __webpack_require__(95);
+	var view_ref_1 = __webpack_require__(92);
 	/**
 	 * Represents a container where one or more Views can be attached.
 	 *
@@ -17822,11 +17619,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 106 */
+/* 103 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var interfaces_1 = __webpack_require__(107);
+	var interfaces_1 = __webpack_require__(104);
 	function hasLifecycleHook(lcInterface, token) {
 	    if (!(token instanceof lang_1.Type))
 	        return false;
@@ -17856,7 +17653,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 107 */
+/* 104 */
 /***/ function(module, exports) {
 
 	(function (LifecycleHooks) {
@@ -17886,12 +17683,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 108 */
+/* 105 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var collection_1 = __webpack_require__(35);
+	var collection_1 = __webpack_require__(12);
 	var lang_1 = __webpack_require__(5);
-	var async_1 = __webpack_require__(6);
+	var async_1 = __webpack_require__(60);
 	/**
 	 * An unmodifiable list of items that Angular keeps up to date when the state
 	 * of the application changes.
@@ -17971,7 +17768,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 109 */
+/* 106 */
 /***/ function(module, exports) {
 
 	exports.EVENT_TARGET_SEPARATOR = ':';
@@ -18002,7 +17799,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 110 */
+/* 107 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -18016,12 +17813,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var di_1 = __webpack_require__(29);
+	var di_1 = __webpack_require__(6);
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var collection_1 = __webpack_require__(35);
-	var metadata_1 = __webpack_require__(27);
-	var reflection_1 = __webpack_require__(39);
+	var exceptions_1 = __webpack_require__(14);
+	var collection_1 = __webpack_require__(12);
+	var metadata_1 = __webpack_require__(3);
+	var reflection_1 = __webpack_require__(16);
 	function _isDirectiveMetadata(type) {
 	    return type instanceof metadata_1.DirectiveMetadata;
 	}
@@ -18142,7 +17939,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 111 */
+/* 108 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -18156,13 +17953,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var di_1 = __webpack_require__(29);
-	var view_1 = __webpack_require__(79);
-	var directives_1 = __webpack_require__(46);
+	var di_1 = __webpack_require__(6);
+	var view_1 = __webpack_require__(56);
+	var directives_1 = __webpack_require__(23);
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var collection_1 = __webpack_require__(35);
-	var reflection_1 = __webpack_require__(39);
+	var exceptions_1 = __webpack_require__(14);
+	var collection_1 = __webpack_require__(12);
+	var reflection_1 = __webpack_require__(16);
 	var ViewResolver = (function () {
 	    function ViewResolver() {
 	        /** @internal */
@@ -18252,7 +18049,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 112 */
+/* 109 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -18266,11 +18063,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var di_1 = __webpack_require__(29);
+	var di_1 = __webpack_require__(6);
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var metadata_1 = __webpack_require__(27);
-	var reflection_1 = __webpack_require__(39);
+	var exceptions_1 = __webpack_require__(14);
+	var metadata_1 = __webpack_require__(3);
+	var reflection_1 = __webpack_require__(16);
 	function _isPipeMetadata(type) {
 	    return type instanceof metadata_1.PipeMetadata;
 	}
@@ -18307,10 +18104,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 113 */
+/* 110 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var di_1 = __webpack_require__(29);
+	var di_1 = __webpack_require__(6);
 	var lang_1 = __webpack_require__(5);
 	/**
 	 * A token that can be provided when bootstraping an application to make an array of directives
@@ -18364,7 +18161,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 114 */
+/* 111 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -18384,12 +18181,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var api_1 = __webpack_require__(90);
-	var metadata_1 = __webpack_require__(27);
+	var exceptions_1 = __webpack_require__(14);
+	var api_1 = __webpack_require__(87);
+	var metadata_1 = __webpack_require__(3);
 	// Export ViewEncapsulation so that compiled templates only need to depend
 	// on template_commands.
-	var metadata_2 = __webpack_require__(27);
+	var metadata_2 = __webpack_require__(3);
 	exports.ViewEncapsulation = metadata_2.ViewEncapsulation;
 	/**
 	 * A compiled host template.
@@ -18590,21 +18387,21 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 115 */
+/* 112 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Public API for Zone
-	var ng_zone_1 = __webpack_require__(84);
+	var ng_zone_1 = __webpack_require__(81);
 	exports.NgZone = ng_zone_1.NgZone;
 	exports.NgZoneError = ng_zone_1.NgZoneError;
 
 
 /***/ },
-/* 116 */
+/* 113 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Public API for render
-	var api_1 = __webpack_require__(90);
+	var api_1 = __webpack_require__(87);
 	exports.Renderer = api_1.Renderer;
 	exports.RenderViewRef = api_1.RenderViewRef;
 	exports.RenderProtoViewRef = api_1.RenderProtoViewRef;
@@ -18621,37 +18418,37 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 117 */
+/* 114 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Public API for compiler
-	var directive_resolver_1 = __webpack_require__(110);
+	var directive_resolver_1 = __webpack_require__(107);
 	exports.DirectiveResolver = directive_resolver_1.DirectiveResolver;
-	var view_resolver_1 = __webpack_require__(111);
+	var view_resolver_1 = __webpack_require__(108);
 	exports.ViewResolver = view_resolver_1.ViewResolver;
-	var compiler_1 = __webpack_require__(88);
+	var compiler_1 = __webpack_require__(85);
 	exports.Compiler = compiler_1.Compiler;
-	var view_manager_1 = __webpack_require__(99);
+	var view_manager_1 = __webpack_require__(96);
 	exports.AppViewManager = view_manager_1.AppViewManager;
-	var query_list_1 = __webpack_require__(108);
+	var query_list_1 = __webpack_require__(105);
 	exports.QueryList = query_list_1.QueryList;
-	var dynamic_component_loader_1 = __webpack_require__(87);
+	var dynamic_component_loader_1 = __webpack_require__(84);
 	exports.DynamicComponentLoader = dynamic_component_loader_1.DynamicComponentLoader;
-	var element_ref_1 = __webpack_require__(101);
+	var element_ref_1 = __webpack_require__(98);
 	exports.ElementRef = element_ref_1.ElementRef;
-	var template_ref_1 = __webpack_require__(102);
+	var template_ref_1 = __webpack_require__(99);
 	exports.TemplateRef = template_ref_1.TemplateRef;
-	var view_ref_1 = __webpack_require__(95);
+	var view_ref_1 = __webpack_require__(92);
 	exports.ViewRef = view_ref_1.ViewRef;
 	exports.ProtoViewRef = view_ref_1.ProtoViewRef;
-	var view_container_ref_1 = __webpack_require__(105);
+	var view_container_ref_1 = __webpack_require__(102);
 	exports.ViewContainerRef = view_container_ref_1.ViewContainerRef;
-	var dynamic_component_loader_2 = __webpack_require__(87);
+	var dynamic_component_loader_2 = __webpack_require__(84);
 	exports.ComponentRef = dynamic_component_loader_2.ComponentRef;
 
 
 /***/ },
-/* 118 */
+/* 115 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -18660,9 +18457,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var view_1 = __webpack_require__(94);
-	var view_ref_1 = __webpack_require__(95);
+	var exceptions_1 = __webpack_require__(14);
+	var view_1 = __webpack_require__(91);
+	var view_ref_1 = __webpack_require__(92);
 	/**
 	 * A DebugElement contains information from the Angular compiler about an
 	 * element and provides access to the corresponding ElementInjector and
@@ -18878,13 +18675,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 119 */
+/* 116 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var di_1 = __webpack_require__(29);
-	var reflection_1 = __webpack_require__(39);
-	var testability_1 = __webpack_require__(86);
+	var di_1 = __webpack_require__(6);
+	var reflection_1 = __webpack_require__(16);
+	var testability_1 = __webpack_require__(83);
 	function _reflector() {
 	    return reflection_1.reflector;
 	}
@@ -18895,26 +18692,26 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 120 */
+/* 117 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var di_1 = __webpack_require__(29);
-	var application_tokens_1 = __webpack_require__(85);
-	var change_detection_1 = __webpack_require__(48);
-	var view_pool_1 = __webpack_require__(103);
-	var view_manager_1 = __webpack_require__(99);
-	var view_manager_2 = __webpack_require__(99);
-	var view_manager_utils_1 = __webpack_require__(100);
-	var view_resolver_1 = __webpack_require__(111);
-	var view_listener_1 = __webpack_require__(104);
-	var proto_view_factory_1 = __webpack_require__(89);
-	var directive_resolver_1 = __webpack_require__(110);
-	var pipe_resolver_1 = __webpack_require__(112);
-	var compiler_1 = __webpack_require__(88);
-	var compiler_2 = __webpack_require__(88);
-	var dynamic_component_loader_1 = __webpack_require__(87);
-	var dynamic_component_loader_2 = __webpack_require__(87);
+	var di_1 = __webpack_require__(6);
+	var application_tokens_1 = __webpack_require__(82);
+	var change_detection_1 = __webpack_require__(25);
+	var view_pool_1 = __webpack_require__(100);
+	var view_manager_1 = __webpack_require__(96);
+	var view_manager_2 = __webpack_require__(96);
+	var view_manager_utils_1 = __webpack_require__(97);
+	var view_resolver_1 = __webpack_require__(108);
+	var view_listener_1 = __webpack_require__(101);
+	var proto_view_factory_1 = __webpack_require__(86);
+	var directive_resolver_1 = __webpack_require__(107);
+	var pipe_resolver_1 = __webpack_require__(109);
+	var compiler_1 = __webpack_require__(85);
+	var compiler_2 = __webpack_require__(85);
+	var dynamic_component_loader_1 = __webpack_require__(84);
+	var dynamic_component_loader_2 = __webpack_require__(84);
 	/**
 	 * A default set of providers which should be included in any Angular
 	 * application, regardless of the platform it runs onto.
@@ -18938,6 +18735,207 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
+/* 118 */
+/***/ function(module, exports, __webpack_require__) {
+
+	function __export(m) {
+	    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+	}
+	__export(__webpack_require__(119));
+	__export(__webpack_require__(129));
+	__export(__webpack_require__(137));
+	__export(__webpack_require__(160));
+
+
+/***/ },
+/* 119 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @module
+	 * @description
+	 * This module provides a set of common Pipes.
+	 */
+	var async_pipe_1 = __webpack_require__(120);
+	var uppercase_pipe_1 = __webpack_require__(122);
+	var lowercase_pipe_1 = __webpack_require__(123);
+	var json_pipe_1 = __webpack_require__(124);
+	var slice_pipe_1 = __webpack_require__(125);
+	var date_pipe_1 = __webpack_require__(126);
+	var number_pipe_1 = __webpack_require__(128);
+	var lang_1 = __webpack_require__(5);
+	var async_pipe_2 = __webpack_require__(120);
+	exports.AsyncPipe = async_pipe_2.AsyncPipe;
+	var date_pipe_2 = __webpack_require__(126);
+	exports.DatePipe = date_pipe_2.DatePipe;
+	var json_pipe_2 = __webpack_require__(124);
+	exports.JsonPipe = json_pipe_2.JsonPipe;
+	var slice_pipe_2 = __webpack_require__(125);
+	exports.SlicePipe = slice_pipe_2.SlicePipe;
+	var lowercase_pipe_2 = __webpack_require__(123);
+	exports.LowerCasePipe = lowercase_pipe_2.LowerCasePipe;
+	var number_pipe_2 = __webpack_require__(128);
+	exports.NumberPipe = number_pipe_2.NumberPipe;
+	exports.DecimalPipe = number_pipe_2.DecimalPipe;
+	exports.PercentPipe = number_pipe_2.PercentPipe;
+	exports.CurrencyPipe = number_pipe_2.CurrencyPipe;
+	var uppercase_pipe_2 = __webpack_require__(122);
+	exports.UpperCasePipe = uppercase_pipe_2.UpperCasePipe;
+	exports.COMMON_PIPES = lang_1.CONST_EXPR([
+	    async_pipe_1.AsyncPipe,
+	    uppercase_pipe_1.UpperCasePipe,
+	    lowercase_pipe_1.LowerCasePipe,
+	    json_pipe_1.JsonPipe,
+	    slice_pipe_1.SlicePipe,
+	    number_pipe_1.DecimalPipe,
+	    number_pipe_1.PercentPipe,
+	    number_pipe_1.CurrencyPipe,
+	    date_pipe_1.DatePipe
+	]);
+
+
+/***/ },
+/* 120 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+	    switch (arguments.length) {
+	        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+	        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+	        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+	    }
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var lang_1 = __webpack_require__(5);
+	var async_1 = __webpack_require__(60);
+	var core_1 = __webpack_require__(2);
+	var invalid_pipe_argument_exception_1 = __webpack_require__(121);
+	var ObservableStrategy = (function () {
+	    function ObservableStrategy() {
+	    }
+	    ObservableStrategy.prototype.createSubscription = function (async, updateLatestValue) {
+	        return async_1.ObservableWrapper.subscribe(async, updateLatestValue, function (e) { throw e; });
+	    };
+	    ObservableStrategy.prototype.dispose = function (subscription) { async_1.ObservableWrapper.dispose(subscription); };
+	    ObservableStrategy.prototype.onDestroy = function (subscription) { async_1.ObservableWrapper.dispose(subscription); };
+	    return ObservableStrategy;
+	})();
+	var PromiseStrategy = (function () {
+	    function PromiseStrategy() {
+	    }
+	    PromiseStrategy.prototype.createSubscription = function (async, updateLatestValue) {
+	        return async.then(updateLatestValue);
+	    };
+	    PromiseStrategy.prototype.dispose = function (subscription) { };
+	    PromiseStrategy.prototype.onDestroy = function (subscription) { };
+	    return PromiseStrategy;
+	})();
+	var _promiseStrategy = new PromiseStrategy();
+	var _observableStrategy = new ObservableStrategy();
+	/**
+	 * The `async` pipe subscribes to an Observable or Promise and returns the latest value it has
+	 * emitted.
+	 * When a new value is emitted, the `async` pipe marks the component to be checked for changes.
+	 *
+	 * ### Example
+	 *
+	 * This example binds a `Promise` to the view. Clicking the `Resolve` button resolves the
+	 * promise.
+	 *
+	 * {@example core/pipes/ts/async_pipe/async_pipe_example.ts region='AsyncPipe'}
+	 *
+	 * It's also possible to use `async` with Observables. The example below binds the `time` Observable
+	 * to the view. Every 500ms, the `time` Observable updates the view with the current time.
+	 *
+	 * ```typescript
+	 * ```
+	 */
+	var AsyncPipe = (function () {
+	    function AsyncPipe(_ref) {
+	        /** @internal */
+	        this._latestValue = null;
+	        /** @internal */
+	        this._latestReturnedValue = null;
+	        /** @internal */
+	        this._subscription = null;
+	        /** @internal */
+	        this._obj = null;
+	        this._strategy = null;
+	        this._ref = _ref;
+	    }
+	    AsyncPipe.prototype.ngOnDestroy = function () {
+	        if (lang_1.isPresent(this._subscription)) {
+	            this._dispose();
+	        }
+	    };
+	    AsyncPipe.prototype.transform = function (obj, args) {
+	        if (lang_1.isBlank(this._obj)) {
+	            if (lang_1.isPresent(obj)) {
+	                this._subscribe(obj);
+	            }
+	            return null;
+	        }
+	        if (obj !== this._obj) {
+	            this._dispose();
+	            return this.transform(obj);
+	        }
+	        if (this._latestValue === this._latestReturnedValue) {
+	            return this._latestReturnedValue;
+	        }
+	        else {
+	            this._latestReturnedValue = this._latestValue;
+	            return core_1.WrappedValue.wrap(this._latestValue);
+	        }
+	    };
+	    /** @internal */
+	    AsyncPipe.prototype._subscribe = function (obj) {
+	        var _this = this;
+	        this._obj = obj;
+	        this._strategy = this._selectStrategy(obj);
+	        this._subscription =
+	            this._strategy.createSubscription(obj, function (value) { return _this._updateLatestValue(obj, value); });
+	    };
+	    /** @internal */
+	    AsyncPipe.prototype._selectStrategy = function (obj) {
+	        if (lang_1.isPromise(obj)) {
+	            return _promiseStrategy;
+	        }
+	        else if (async_1.ObservableWrapper.isObservable(obj)) {
+	            return _observableStrategy;
+	        }
+	        else {
+	            throw new invalid_pipe_argument_exception_1.InvalidPipeArgumentException(AsyncPipe, obj);
+	        }
+	    };
+	    /** @internal */
+	    AsyncPipe.prototype._dispose = function () {
+	        this._strategy.dispose(this._subscription);
+	        this._latestValue = null;
+	        this._latestReturnedValue = null;
+	        this._subscription = null;
+	        this._obj = null;
+	    };
+	    /** @internal */
+	    AsyncPipe.prototype._updateLatestValue = function (async, value) {
+	        if (async === this._obj) {
+	            this._latestValue = value;
+	            this._ref.markForCheck();
+	        }
+	    };
+	    AsyncPipe = __decorate([
+	        core_1.Pipe({ name: 'async', pure: false }),
+	        core_1.Injectable(), 
+	        __metadata('design:paramtypes', [core_1.ChangeDetectorRef])
+	    ], AsyncPipe);
+	    return AsyncPipe;
+	})();
+	exports.AsyncPipe = AsyncPipe;
+
+
+/***/ },
 /* 121 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -18946,7 +18944,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var exceptions_1 = __webpack_require__(37);
+	var exceptions_1 = __webpack_require__(14);
 	var InvalidPipeArgumentException = (function (_super) {
 	    __extends(InvalidPipeArgumentException, _super);
 	    function InvalidPipeArgumentException(type, value) {
@@ -18973,7 +18971,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var lang_1 = __webpack_require__(5);
-	var core_1 = __webpack_require__(26);
+	var core_1 = __webpack_require__(2);
 	var invalid_pipe_argument_exception_1 = __webpack_require__(121);
 	/**
 	 * Implements uppercase transforms to text.
@@ -19021,7 +19019,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var lang_1 = __webpack_require__(5);
-	var core_1 = __webpack_require__(26);
+	var core_1 = __webpack_require__(2);
 	var invalid_pipe_argument_exception_1 = __webpack_require__(121);
 	/**
 	 * Transforms text to lowercase.
@@ -19069,7 +19067,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var lang_1 = __webpack_require__(5);
-	var core_1 = __webpack_require__(26);
+	var core_1 = __webpack_require__(2);
 	/**
 	 * Transforms any input value using `JSON.stringify`. Useful for debugging.
 	 *
@@ -19110,9 +19108,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var collection_1 = __webpack_require__(35);
-	var core_1 = __webpack_require__(26);
+	var exceptions_1 = __webpack_require__(14);
+	var collection_1 = __webpack_require__(12);
+	var core_1 = __webpack_require__(2);
 	var invalid_pipe_argument_exception_1 = __webpack_require__(121);
 	/**
 	 * Creates a new List or String containing only a subset (slice) of the
@@ -19213,8 +19211,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	var lang_1 = __webpack_require__(5);
 	var intl_1 = __webpack_require__(127);
-	var core_1 = __webpack_require__(26);
-	var collection_1 = __webpack_require__(35);
+	var core_1 = __webpack_require__(2);
+	var collection_1 = __webpack_require__(12);
 	var invalid_pipe_argument_exception_1 = __webpack_require__(121);
 	// TODO: move to a global configurable location along with other i18n components.
 	var defaultLocale = 'en-US';
@@ -19455,10 +19453,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
+	var exceptions_1 = __webpack_require__(14);
 	var intl_1 = __webpack_require__(127);
-	var core_1 = __webpack_require__(26);
-	var collection_1 = __webpack_require__(35);
+	var core_1 = __webpack_require__(2);
+	var collection_1 = __webpack_require__(12);
 	var invalid_pipe_argument_exception_1 = __webpack_require__(121);
 	var defaultLocale = 'en-US';
 	var _re = lang_1.RegExpWrapper.create('^(\\d+)?\\.((\\d+)(\\-(\\d+))?)?$');
@@ -19674,8 +19672,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var lang_1 = __webpack_require__(5);
-	var core_1 = __webpack_require__(26);
-	var collection_1 = __webpack_require__(35);
+	var core_1 = __webpack_require__(2);
+	var collection_1 = __webpack_require__(12);
 	/**
 	 * The `NgClass` directive conditionally adds and removes CSS classes on an HTML element based on
 	 * an expression's evaluation result.
@@ -19868,7 +19866,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var core_1 = __webpack_require__(26);
+	var core_1 = __webpack_require__(2);
 	var lang_1 = __webpack_require__(5);
 	/**
 	 * The `NgFor` directive instantiates a template once per item from an iterable. The context for
@@ -20041,7 +20039,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var core_1 = __webpack_require__(26);
+	var core_1 = __webpack_require__(2);
 	var lang_1 = __webpack_require__(5);
 	/**
 	 * Removes or recreates a portion of the DOM tree based on an {expression}.
@@ -20109,7 +20107,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var core_1 = __webpack_require__(26);
+	var core_1 = __webpack_require__(2);
 	var lang_1 = __webpack_require__(5);
 	/**
 	 * The `NgStyle` directive changes styles based on a result of expression evaluation.
@@ -20221,9 +20219,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __param = (this && this.__param) || function (paramIndex, decorator) {
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
-	var core_1 = __webpack_require__(26);
+	var core_1 = __webpack_require__(2);
 	var lang_1 = __webpack_require__(5);
-	var collection_1 = __webpack_require__(35);
+	var collection_1 = __webpack_require__(12);
 	var _WHEN_DEFAULT = lang_1.CONST_EXPR(new Object());
 	var SwitchView = (function () {
 	    function SwitchView(_viewContainerRef, _templateRef) {
@@ -20571,9 +20569,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var lang_1 = __webpack_require__(5);
-	var async_1 = __webpack_require__(6);
-	var promise_1 = __webpack_require__(7);
-	var collection_1 = __webpack_require__(35);
+	var async_1 = __webpack_require__(60);
+	var promise_1 = __webpack_require__(61);
+	var collection_1 = __webpack_require__(12);
 	/**
 	 * Indicates that a Control is valid, i.e. that no errors exist in the input value.
 	 */
@@ -21060,7 +21058,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
+	var exceptions_1 = __webpack_require__(14);
 	/**
 	 * Base class for control directives.
 	 *
@@ -21186,8 +21184,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
 	var lang_1 = __webpack_require__(5);
-	var async_1 = __webpack_require__(6);
-	var core_1 = __webpack_require__(26);
+	var async_1 = __webpack_require__(60);
+	var core_1 = __webpack_require__(2);
 	var control_container_1 = __webpack_require__(140);
 	var ng_control_1 = __webpack_require__(142);
 	var control_value_accessor_1 = __webpack_require__(143);
@@ -21210,8 +21208,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *      selector: "login-comp",
 	 *      directives: [FORM_DIRECTIVES],
 	 *      template: `
-	 *        <form #f="ngForm" (submit)='onLogIn(f.value)'>
-	 *          Login <input type='text' ng-control='login' #l="ngForm">
+	 *        <form #f="form" (submit)='onLogIn(f.value)'>
+	 *          Login <input type='text' ng-control='login' #l="form">
 	 *          <div *ng-if="!l.valid">Login is invalid</div>
 	 *
 	 *          Password <input type='password' ng-control='password'>
@@ -21307,7 +21305,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            bindings: [controlNameBinding],
 	            inputs: ['name: ngControl', 'model: ngModel'],
 	            outputs: ['update: ngModelChange'],
-	            exportAs: 'ngForm'
+	            exportAs: 'form'
 	        }),
 	        __param(0, core_1.Host()),
 	        __param(0, core_1.SkipSelf()),
@@ -21337,7 +21335,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var abstract_control_directive_1 = __webpack_require__(139);
-	var exceptions_1 = __webpack_require__(37);
+	var exceptions_1 = __webpack_require__(14);
 	/**
 	 * A base class that all control directive extend.
 	 * It binds a {@link Control} object to a DOM element.
@@ -21370,7 +21368,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 143 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var core_1 = __webpack_require__(26);
+	var core_1 = __webpack_require__(2);
 	var lang_1 = __webpack_require__(5);
 	exports.NG_VALUE_ACCESSOR = lang_1.CONST_EXPR(new core_1.OpaqueToken("NgValueAccessor"));
 
@@ -21379,9 +21377,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 144 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var collection_1 = __webpack_require__(35);
+	var collection_1 = __webpack_require__(12);
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
+	var exceptions_1 = __webpack_require__(14);
 	var validators_1 = __webpack_require__(145);
 	var default_value_accessor_1 = __webpack_require__(146);
 	var number_value_accessor_1 = __webpack_require__(147);
@@ -21482,10 +21480,10 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var promise_1 = __webpack_require__(7);
-	var async_1 = __webpack_require__(6);
-	var collection_1 = __webpack_require__(35);
-	var core_1 = __webpack_require__(26);
+	var promise_1 = __webpack_require__(61);
+	var async_1 = __webpack_require__(60);
+	var collection_1 = __webpack_require__(12);
+	var core_1 = __webpack_require__(2);
 	/**
 	 * Providers for validators to be used for {@link Control}s in a form.
 	 *
@@ -21610,7 +21608,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var core_1 = __webpack_require__(26);
+	var core_1 = __webpack_require__(2);
 	var control_value_accessor_1 = __webpack_require__(143);
 	var lang_1 = __webpack_require__(5);
 	var DEFAULT_VALUE_ACCESSOR = lang_1.CONST_EXPR(new core_1.Provider(control_value_accessor_1.NG_VALUE_ACCESSOR, { useExisting: core_1.forwardRef(function () { return DefaultValueAccessor; }), multi: true }));
@@ -21667,7 +21665,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var core_1 = __webpack_require__(26);
+	var core_1 = __webpack_require__(2);
 	var control_value_accessor_1 = __webpack_require__(143);
 	var lang_1 = __webpack_require__(5);
 	var NUMBER_VALUE_ACCESSOR = lang_1.CONST_EXPR(new core_1.Provider(control_value_accessor_1.NG_VALUE_ACCESSOR, { useExisting: core_1.forwardRef(function () { return NumberValueAccessor; }), multi: true }));
@@ -21726,7 +21724,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var core_1 = __webpack_require__(26);
+	var core_1 = __webpack_require__(2);
 	var control_value_accessor_1 = __webpack_require__(143);
 	var lang_1 = __webpack_require__(5);
 	var CHECKBOX_VALUE_ACCESSOR = lang_1.CONST_EXPR(new core_1.Provider(control_value_accessor_1.NG_VALUE_ACCESSOR, { useExisting: core_1.forwardRef(function () { return CheckboxControlValueAccessor; }), multi: true }));
@@ -21781,8 +21779,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __param = (this && this.__param) || function (paramIndex, decorator) {
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
-	var core_1 = __webpack_require__(26);
-	var async_1 = __webpack_require__(6);
+	var core_1 = __webpack_require__(2);
+	var async_1 = __webpack_require__(60);
 	var control_value_accessor_1 = __webpack_require__(143);
 	var lang_1 = __webpack_require__(5);
 	var SELECT_VALUE_ACCESSOR = lang_1.CONST_EXPR(new core_1.Provider(control_value_accessor_1.NG_VALUE_ACCESSOR, { useExisting: core_1.forwardRef(function () { return SelectControlValueAccessor; }), multi: true }));
@@ -21885,9 +21883,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
 	var lang_1 = __webpack_require__(5);
-	var collection_1 = __webpack_require__(35);
-	var async_1 = __webpack_require__(6);
-	var core_1 = __webpack_require__(26);
+	var collection_1 = __webpack_require__(12);
+	var async_1 = __webpack_require__(60);
+	var core_1 = __webpack_require__(2);
 	var ng_control_1 = __webpack_require__(142);
 	var validators_1 = __webpack_require__(145);
 	var control_value_accessor_1 = __webpack_require__(143);
@@ -21992,7 +21990,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            bindings: [formControlBinding],
 	            inputs: ['form: ngFormControl', 'model: ngModel'],
 	            outputs: ['update: ngModelChange'],
-	            exportAs: 'ngForm'
+	            exportAs: 'form'
 	        }),
 	        __param(0, core_1.Optional()),
 	        __param(0, core_1.Self()),
@@ -22034,8 +22032,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
 	var lang_1 = __webpack_require__(5);
-	var async_1 = __webpack_require__(6);
-	var core_1 = __webpack_require__(26);
+	var async_1 = __webpack_require__(60);
+	var core_1 = __webpack_require__(2);
 	var control_value_accessor_1 = __webpack_require__(143);
 	var ng_control_1 = __webpack_require__(142);
 	var model_1 = __webpack_require__(138);
@@ -22117,7 +22115,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            bindings: [formControlBinding],
 	            inputs: ['model: ngModel'],
 	            outputs: ['update: ngModelChange'],
-	            exportAs: 'ngForm'
+	            exportAs: 'form'
 	        }),
 	        __param(0, core_1.Optional()),
 	        __param(0, core_1.Self()),
@@ -22158,7 +22156,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __param = (this && this.__param) || function (paramIndex, decorator) {
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
-	var core_1 = __webpack_require__(26);
+	var core_1 = __webpack_require__(2);
 	var lang_1 = __webpack_require__(5);
 	var control_container_1 = __webpack_require__(140);
 	var shared_1 = __webpack_require__(144);
@@ -22180,8 +22178,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *   template: `
 	 *     <div>
 	 *       <h2>Angular2 Control &amp; ControlGroup Example</h2>
-	 *       <form #f="ngForm">
-	 *         <div ng-control-group="name" #cg-name="ngForm">
+	 *       <form #f="form">
+	 *         <div ng-control-group="name" #cg-name="form">
 	 *           <h3>Enter your name:</h3>
 	 *           <p>First: <input ng-control="first" required></p>
 	 *           <p>Middle: <input ng-control="middle"></p>
@@ -22261,7 +22259,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            selector: '[ng-control-group]',
 	            providers: [controlGroupProvider],
 	            inputs: ['name: ng-control-group'],
-	            exportAs: 'ngForm'
+	            exportAs: 'form'
 	        }),
 	        __param(0, core_1.Host()),
 	        __param(0, core_1.SkipSelf()),
@@ -22302,9 +22300,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
 	var lang_1 = __webpack_require__(5);
-	var collection_1 = __webpack_require__(35);
-	var async_1 = __webpack_require__(6);
-	var core_1 = __webpack_require__(26);
+	var collection_1 = __webpack_require__(12);
+	var async_1 = __webpack_require__(60);
+	var core_1 = __webpack_require__(2);
 	var control_container_1 = __webpack_require__(140);
 	var shared_1 = __webpack_require__(144);
 	var validators_1 = __webpack_require__(145);
@@ -22456,7 +22454,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            inputs: ['form: ng-form-model'],
 	            host: { '(submit)': 'onSubmit()' },
 	            outputs: ['ngSubmit'],
-	            exportAs: 'ngForm'
+	            exportAs: 'form'
 	        }),
 	        __param(0, core_1.Optional()),
 	        __param(0, core_1.Self()),
@@ -22494,10 +22492,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __param = (this && this.__param) || function (paramIndex, decorator) {
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
-	var async_1 = __webpack_require__(6);
-	var collection_1 = __webpack_require__(35);
+	var async_1 = __webpack_require__(60);
+	var collection_1 = __webpack_require__(12);
 	var lang_1 = __webpack_require__(5);
-	var core_1 = __webpack_require__(26);
+	var core_1 = __webpack_require__(2);
 	var control_container_1 = __webpack_require__(140);
 	var model_1 = __webpack_require__(138);
 	var shared_1 = __webpack_require__(144);
@@ -22532,7 +22530,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *     <div>
 	 *       <p>Submit the form to see the data object Angular builds</p>
 	 *       <h2>NgForm demo</h2>
-	 *       <form #f="ngForm" (ng-submit)="onSubmit(f.value)">
+	 *       <form #f="form" (ng-submit)="onSubmit(f.value)">
 	 *         <h3>Control group: credentials</h3>
 	 *         <div ng-control-group="credentials">
 	 *           <p>Login: <input type="text" ng-control="login"></p>
@@ -22657,7 +22655,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                '(submit)': 'onSubmit()',
 	            },
 	            outputs: ['ngSubmit'],
-	            exportAs: 'ngForm'
+	            exportAs: 'form'
 	        }),
 	        __param(0, core_1.Optional()),
 	        __param(0, core_1.Self()),
@@ -22690,7 +22688,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __param = (this && this.__param) || function (paramIndex, decorator) {
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
-	var core_1 = __webpack_require__(26);
+	var core_1 = __webpack_require__(2);
 	var ng_control_1 = __webpack_require__(142);
 	var lang_1 = __webpack_require__(5);
 	var NgControlStatus = (function () {
@@ -22858,7 +22856,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __param = (this && this.__param) || function (paramIndex, decorator) {
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
-	var core_1 = __webpack_require__(26);
+	var core_1 = __webpack_require__(2);
 	var lang_1 = __webpack_require__(5);
 	var validators_1 = __webpack_require__(145);
 	var lang_2 = __webpack_require__(5);
@@ -22937,8 +22935,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var core_1 = __webpack_require__(26);
-	var collection_1 = __webpack_require__(35);
+	var core_1 = __webpack_require__(2);
+	var collection_1 = __webpack_require__(12);
 	var lang_1 = __webpack_require__(5);
 	var modelModule = __webpack_require__(138);
 	/**
@@ -23124,20 +23122,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var profile_1 = __webpack_require__(68);
-	exports.wtfCreateScope = profile_1.wtfCreateScope;
-	exports.wtfLeave = profile_1.wtfLeave;
-	exports.wtfStartTimeRange = profile_1.wtfStartTimeRange;
-	exports.wtfEndTimeRange = profile_1.wtfEndTimeRange;
-
-
-/***/ },
-/* 162 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var angular_entrypoint_1 = __webpack_require__(163);
+	var angular_entrypoint_1 = __webpack_require__(162);
 	exports.AngularEntrypoint = angular_entrypoint_1.AngularEntrypoint;
-	var browser_common_1 = __webpack_require__(164);
+	var browser_common_1 = __webpack_require__(163);
 	exports.BROWSER_PROVIDERS = browser_common_1.BROWSER_PROVIDERS;
 	exports.ELEMENT_PROBE_BINDINGS = browser_common_1.ELEMENT_PROBE_BINDINGS;
 	exports.ELEMENT_PROBE_PROVIDERS = browser_common_1.ELEMENT_PROBE_PROVIDERS;
@@ -23149,13 +23136,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.enableDebugTools = browser_common_1.enableDebugTools;
 	exports.disableDebugTools = browser_common_1.disableDebugTools;
 	var lang_1 = __webpack_require__(5);
-	var browser_common_2 = __webpack_require__(164);
-	var compiler_1 = __webpack_require__(196);
-	var core_1 = __webpack_require__(26);
-	var reflection_capabilities_1 = __webpack_require__(41);
-	var xhr_impl_1 = __webpack_require__(185);
-	var compiler_2 = __webpack_require__(196);
-	var di_1 = __webpack_require__(29);
+	var browser_common_2 = __webpack_require__(163);
+	var compiler_1 = __webpack_require__(195);
+	var core_1 = __webpack_require__(2);
+	var reflection_capabilities_1 = __webpack_require__(18);
+	var xhr_impl_1 = __webpack_require__(184);
+	var compiler_2 = __webpack_require__(195);
+	var di_1 = __webpack_require__(6);
 	/**
 	 * An array of providers that should be passed into `application()` when bootstrapping a component.
 	 */
@@ -23257,7 +23244,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 163 */
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -23302,41 +23289,41 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 164 */
+/* 163 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var di_1 = __webpack_require__(29);
-	var core_1 = __webpack_require__(26);
-	var common_1 = __webpack_require__(2);
-	var testability_1 = __webpack_require__(86);
-	var dom_adapter_1 = __webpack_require__(165);
-	var dom_events_1 = __webpack_require__(166);
-	var key_events_1 = __webpack_require__(168);
-	var hammer_gestures_1 = __webpack_require__(169);
-	var dom_tokens_1 = __webpack_require__(171);
-	var dom_renderer_1 = __webpack_require__(172);
-	var shared_styles_host_1 = __webpack_require__(180);
-	var shared_styles_host_2 = __webpack_require__(180);
-	var browser_details_1 = __webpack_require__(179);
-	var animation_builder_1 = __webpack_require__(173);
-	var browser_adapter_1 = __webpack_require__(183);
-	var testability_2 = __webpack_require__(187);
-	var wtf_init_1 = __webpack_require__(188);
-	var event_manager_1 = __webpack_require__(167);
-	var dom_tokens_2 = __webpack_require__(171);
+	var di_1 = __webpack_require__(6);
+	var core_1 = __webpack_require__(2);
+	var common_1 = __webpack_require__(118);
+	var testability_1 = __webpack_require__(83);
+	var dom_adapter_1 = __webpack_require__(164);
+	var dom_events_1 = __webpack_require__(165);
+	var key_events_1 = __webpack_require__(167);
+	var hammer_gestures_1 = __webpack_require__(168);
+	var dom_tokens_1 = __webpack_require__(170);
+	var dom_renderer_1 = __webpack_require__(171);
+	var shared_styles_host_1 = __webpack_require__(179);
+	var shared_styles_host_2 = __webpack_require__(179);
+	var browser_details_1 = __webpack_require__(178);
+	var animation_builder_1 = __webpack_require__(172);
+	var browser_adapter_1 = __webpack_require__(182);
+	var testability_2 = __webpack_require__(186);
+	var wtf_init_1 = __webpack_require__(187);
+	var event_manager_1 = __webpack_require__(166);
+	var dom_tokens_2 = __webpack_require__(170);
 	exports.DOCUMENT = dom_tokens_2.DOCUMENT;
-	var title_1 = __webpack_require__(189);
+	var title_1 = __webpack_require__(188);
 	exports.Title = title_1.Title;
-	var common_dom_1 = __webpack_require__(190);
+	var common_dom_1 = __webpack_require__(189);
 	exports.DebugElementViewListener = common_dom_1.DebugElementViewListener;
 	exports.ELEMENT_PROBE_PROVIDERS = common_dom_1.ELEMENT_PROBE_PROVIDERS;
 	exports.ELEMENT_PROBE_BINDINGS = common_dom_1.ELEMENT_PROBE_BINDINGS;
 	exports.inspectNativeElement = common_dom_1.inspectNativeElement;
 	exports.By = common_dom_1.By;
-	var browser_adapter_2 = __webpack_require__(183);
+	var browser_adapter_2 = __webpack_require__(182);
 	exports.BrowserDomAdapter = browser_adapter_2.BrowserDomAdapter;
-	var tools_1 = __webpack_require__(193);
+	var tools_1 = __webpack_require__(192);
 	exports.enableDebugTools = tools_1.enableDebugTools;
 	exports.disableDebugTools = tools_1.disableDebugTools;
 	exports.BROWSER_PROVIDERS = lang_1.CONST_EXPR([
@@ -23377,7 +23364,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 165 */
+/* 164 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -23401,7 +23388,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 166 */
+/* 165 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -23420,9 +23407,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var dom_adapter_1 = __webpack_require__(165);
-	var core_1 = __webpack_require__(26);
-	var event_manager_1 = __webpack_require__(167);
+	var dom_adapter_1 = __webpack_require__(164);
+	var core_1 = __webpack_require__(2);
+	var event_manager_1 = __webpack_require__(166);
 	var DomEventsPlugin = (function (_super) {
 	    __extends(DomEventsPlugin, _super);
 	    function DomEventsPlugin() {
@@ -23452,7 +23439,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 167 */
+/* 166 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -23470,10 +23457,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var di_1 = __webpack_require__(29);
-	var ng_zone_1 = __webpack_require__(84);
-	var collection_1 = __webpack_require__(35);
+	var exceptions_1 = __webpack_require__(14);
+	var di_1 = __webpack_require__(6);
+	var ng_zone_1 = __webpack_require__(81);
+	var collection_1 = __webpack_require__(12);
 	exports.EVENT_MANAGER_PLUGINS = lang_1.CONST_EXPR(new di_1.OpaqueToken("EventManagerPlugins"));
 	var EventManager = (function () {
 	    function EventManager(plugins, _zone) {
@@ -23527,7 +23514,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 168 */
+/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -23546,11 +23533,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var dom_adapter_1 = __webpack_require__(165);
+	var dom_adapter_1 = __webpack_require__(164);
 	var lang_1 = __webpack_require__(5);
-	var collection_1 = __webpack_require__(35);
-	var event_manager_1 = __webpack_require__(167);
-	var di_1 = __webpack_require__(29);
+	var collection_1 = __webpack_require__(12);
+	var event_manager_1 = __webpack_require__(166);
+	var di_1 = __webpack_require__(6);
 	var modifierKeys = ['alt', 'control', 'meta', 'shift'];
 	var modifierKeyGetters = {
 	    'alt': function (event) { return event.altKey; },
@@ -23647,7 +23634,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 169 */
+/* 168 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -23666,10 +23653,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var hammer_common_1 = __webpack_require__(170);
+	var hammer_common_1 = __webpack_require__(169);
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var di_1 = __webpack_require__(29);
+	var exceptions_1 = __webpack_require__(14);
+	var di_1 = __webpack_require__(6);
 	var HammerGesturesPlugin = (function (_super) {
 	    __extends(HammerGesturesPlugin, _super);
 	    function HammerGesturesPlugin() {
@@ -23704,7 +23691,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 170 */
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -23712,8 +23699,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var event_manager_1 = __webpack_require__(167);
-	var collection_1 = __webpack_require__(35);
+	var event_manager_1 = __webpack_require__(166);
+	var collection_1 = __webpack_require__(12);
 	var _eventNames = {
 	    // pan
 	    'pan': true,
@@ -23766,10 +23753,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 171 */
+/* 170 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var di_1 = __webpack_require__(29);
+	var di_1 = __webpack_require__(6);
 	var lang_1 = __webpack_require__(5);
 	/**
 	 * A DI Token representing the main rendering context. In a browser this is the DOM Document.
@@ -23781,7 +23768,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 172 */
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -23803,21 +23790,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __param = (this && this.__param) || function (paramIndex, decorator) {
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
-	var di_1 = __webpack_require__(29);
-	var animation_builder_1 = __webpack_require__(173);
+	var di_1 = __webpack_require__(6);
+	var animation_builder_1 = __webpack_require__(172);
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var shared_styles_host_1 = __webpack_require__(180);
-	var profile_1 = __webpack_require__(68);
-	var core_1 = __webpack_require__(26);
-	var event_manager_1 = __webpack_require__(167);
-	var dom_tokens_1 = __webpack_require__(171);
-	var view_factory_1 = __webpack_require__(181);
-	var view_1 = __webpack_require__(182);
-	var util_1 = __webpack_require__(178);
-	var metadata_1 = __webpack_require__(27);
+	var exceptions_1 = __webpack_require__(14);
+	var shared_styles_host_1 = __webpack_require__(179);
+	var profile_1 = __webpack_require__(45);
+	var core_1 = __webpack_require__(2);
+	var event_manager_1 = __webpack_require__(166);
+	var dom_tokens_1 = __webpack_require__(170);
+	var view_factory_1 = __webpack_require__(180);
+	var view_1 = __webpack_require__(181);
+	var util_1 = __webpack_require__(177);
+	var metadata_1 = __webpack_require__(3);
 	// TODO move it once DomAdapter is moved
-	var dom_adapter_1 = __webpack_require__(165);
+	var dom_adapter_1 = __webpack_require__(164);
 	var NAMESPACE_URIS = lang_1.CONST_EXPR({ 'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg' });
 	var DomRenderer = (function (_super) {
 	    __extends(DomRenderer, _super);
@@ -24089,7 +24076,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 173 */
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -24103,9 +24090,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var di_1 = __webpack_require__(29);
-	var css_animation_builder_1 = __webpack_require__(174);
-	var browser_details_1 = __webpack_require__(179);
+	var di_1 = __webpack_require__(6);
+	var css_animation_builder_1 = __webpack_require__(173);
+	var browser_details_1 = __webpack_require__(178);
 	var AnimationBuilder = (function () {
 	    /**
 	     * Used for DI
@@ -24129,11 +24116,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 174 */
+/* 173 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var css_animation_options_1 = __webpack_require__(175);
-	var animation_1 = __webpack_require__(176);
+	var css_animation_options_1 = __webpack_require__(174);
+	var animation_1 = __webpack_require__(175);
 	var CssAnimationBuilder = (function () {
 	    /**
 	     * Accepts public properties for CssAnimationBuilder
@@ -24220,7 +24207,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 175 */
+/* 174 */
 /***/ function(module, exports) {
 
 	var CssAnimationOptions = (function () {
@@ -24238,14 +24225,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 176 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var math_1 = __webpack_require__(177);
-	var util_1 = __webpack_require__(178);
-	var collection_1 = __webpack_require__(35);
-	var dom_adapter_1 = __webpack_require__(165);
+	var math_1 = __webpack_require__(176);
+	var util_1 = __webpack_require__(177);
+	var collection_1 = __webpack_require__(12);
+	var dom_adapter_1 = __webpack_require__(164);
 	var Animation = (function () {
 	    /**
 	     * Stores the start time and starts the animation
@@ -24425,7 +24412,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 177 */
+/* 176 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -24434,7 +24421,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 178 */
+/* 177 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -24451,7 +24438,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 179 */
+/* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -24465,9 +24452,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var di_1 = __webpack_require__(29);
-	var math_1 = __webpack_require__(177);
-	var dom_adapter_1 = __webpack_require__(165);
+	var di_1 = __webpack_require__(6);
+	var math_1 = __webpack_require__(176);
+	var dom_adapter_1 = __webpack_require__(164);
 	var BrowserDetails = (function () {
 	    function BrowserDetails() {
 	        this.elapsedTimeIncludesDelay = false;
@@ -24531,7 +24518,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 180 */
+/* 179 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -24553,10 +24540,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __param = (this && this.__param) || function (paramIndex, decorator) {
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
-	var dom_adapter_1 = __webpack_require__(165);
-	var di_1 = __webpack_require__(29);
-	var collection_1 = __webpack_require__(35);
-	var dom_tokens_1 = __webpack_require__(171);
+	var dom_adapter_1 = __webpack_require__(164);
+	var di_1 = __webpack_require__(6);
+	var collection_1 = __webpack_require__(12);
+	var dom_tokens_1 = __webpack_require__(170);
 	var SharedStylesHost = (function () {
 	    function SharedStylesHost() {
 	        /** @internal */
@@ -24619,13 +24606,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 181 */
+/* 180 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var view_1 = __webpack_require__(182);
-	var metadata_1 = __webpack_require__(27);
-	var collection_1 = __webpack_require__(35);
+	var view_1 = __webpack_require__(181);
+	var metadata_1 = __webpack_require__(3);
+	var collection_1 = __webpack_require__(12);
 	function encapsulateStyles(componentTemplate) {
 	    var processedStyles = componentTemplate.styles;
 	    if (componentTemplate.encapsulation === metadata_1.ViewEncapsulation.Emulated) {
@@ -24904,7 +24891,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 182 */
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -24912,10 +24899,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var exceptions_1 = __webpack_require__(37);
-	var collection_1 = __webpack_require__(35);
+	var exceptions_1 = __webpack_require__(14);
+	var collection_1 = __webpack_require__(12);
 	var lang_1 = __webpack_require__(5);
-	var api_1 = __webpack_require__(90);
+	var api_1 = __webpack_require__(87);
 	var DefaultProtoViewRef = (function (_super) {
 	    __extends(DefaultProtoViewRef, _super);
 	    function DefaultProtoViewRef(template, cmds) {
@@ -24984,7 +24971,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 183 */
+/* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -24992,10 +24979,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var collection_1 = __webpack_require__(35);
+	var collection_1 = __webpack_require__(12);
 	var lang_1 = __webpack_require__(5);
-	var dom_adapter_1 = __webpack_require__(165);
-	var generic_browser_adapter_1 = __webpack_require__(184);
+	var dom_adapter_1 = __webpack_require__(164);
+	var generic_browser_adapter_1 = __webpack_require__(183);
 	var _attrToPropMap = {
 	    'class': 'className',
 	    'innerHtml': 'innerHTML',
@@ -25374,7 +25361,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 184 */
+/* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -25382,10 +25369,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var collection_1 = __webpack_require__(35);
+	var collection_1 = __webpack_require__(12);
 	var lang_1 = __webpack_require__(5);
-	var dom_adapter_1 = __webpack_require__(165);
-	var xhr_impl_1 = __webpack_require__(185);
+	var dom_adapter_1 = __webpack_require__(164);
+	var xhr_impl_1 = __webpack_require__(184);
 	/**
 	 * Provides DOM operations in any browser environment.
 	 */
@@ -25449,7 +25436,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 185 */
+/* 184 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -25457,9 +25444,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var promise_1 = __webpack_require__(7);
+	var promise_1 = __webpack_require__(61);
 	var lang_1 = __webpack_require__(5);
-	var xhr_1 = __webpack_require__(186);
+	var xhr_1 = __webpack_require__(185);
 	var XHRImpl = (function (_super) {
 	    __extends(XHRImpl, _super);
 	    function XHRImpl() {
@@ -25499,7 +25486,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 186 */
+/* 185 */
 /***/ function(module, exports) {
 
 	// TODO: vsavkin rename it into TemplateLoader
@@ -25513,12 +25500,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 187 */
+/* 186 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var dom_adapter_1 = __webpack_require__(165);
-	var core_1 = __webpack_require__(26);
+	var dom_adapter_1 = __webpack_require__(164);
+	var core_1 = __webpack_require__(2);
 	var PublicTestability = (function () {
 	    function PublicTestability(testability) {
 	        this._testability = testability;
@@ -25573,7 +25560,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 188 */
+/* 187 */
 /***/ function(module, exports) {
 
 	/**
@@ -25584,10 +25571,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 189 */
+/* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var dom_adapter_1 = __webpack_require__(165);
+	var dom_adapter_1 = __webpack_require__(164);
 	/**
 	 * A service that can be used to get and set the title of a current HTML document.
 	 *
@@ -25615,7 +25602,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 190 */
+/* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
 	function __export(m) {
@@ -25624,33 +25611,33 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * This is a set of classes and objects that can be used both in the browser and on the server.
 	 */
-	var dom_adapter_1 = __webpack_require__(165);
+	var dom_adapter_1 = __webpack_require__(164);
 	exports.DOM = dom_adapter_1.DOM;
 	exports.setRootDomAdapter = dom_adapter_1.setRootDomAdapter;
 	exports.DomAdapter = dom_adapter_1.DomAdapter;
-	var dom_renderer_1 = __webpack_require__(172);
+	var dom_renderer_1 = __webpack_require__(171);
 	exports.DomRenderer = dom_renderer_1.DomRenderer;
-	var dom_tokens_1 = __webpack_require__(171);
+	var dom_tokens_1 = __webpack_require__(170);
 	exports.DOCUMENT = dom_tokens_1.DOCUMENT;
-	var shared_styles_host_1 = __webpack_require__(180);
+	var shared_styles_host_1 = __webpack_require__(179);
 	exports.SharedStylesHost = shared_styles_host_1.SharedStylesHost;
 	exports.DomSharedStylesHost = shared_styles_host_1.DomSharedStylesHost;
-	var dom_events_1 = __webpack_require__(166);
+	var dom_events_1 = __webpack_require__(165);
 	exports.DomEventsPlugin = dom_events_1.DomEventsPlugin;
-	var event_manager_1 = __webpack_require__(167);
+	var event_manager_1 = __webpack_require__(166);
 	exports.EVENT_MANAGER_PLUGINS = event_manager_1.EVENT_MANAGER_PLUGINS;
 	exports.EventManager = event_manager_1.EventManager;
 	exports.EventManagerPlugin = event_manager_1.EventManagerPlugin;
+	__export(__webpack_require__(190));
 	__export(__webpack_require__(191));
-	__export(__webpack_require__(192));
 
 
 /***/ },
-/* 191 */
+/* 190 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var dom_adapter_1 = __webpack_require__(165);
+	var dom_adapter_1 = __webpack_require__(164);
 	var By = (function () {
 	    function By() {
 	    }
@@ -25671,7 +25658,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 192 */
+/* 191 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -25686,12 +25673,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var lang_1 = __webpack_require__(5);
-	var collection_1 = __webpack_require__(35);
-	var di_1 = __webpack_require__(29);
-	var view_listener_1 = __webpack_require__(104);
-	var dom_adapter_1 = __webpack_require__(165);
-	var api_1 = __webpack_require__(90);
-	var debug_element_1 = __webpack_require__(118);
+	var collection_1 = __webpack_require__(12);
+	var di_1 = __webpack_require__(6);
+	var view_listener_1 = __webpack_require__(101);
+	var dom_adapter_1 = __webpack_require__(164);
+	var api_1 = __webpack_require__(87);
+	var debug_element_1 = __webpack_require__(115);
 	var NG_ID_PROPERTY = 'ngid';
 	var INSPECT_GLOBAL_NAME = 'ng.probe';
 	var NG_ID_SEPARATOR = '#';
@@ -25758,11 +25745,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 193 */
+/* 192 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var common_tools_1 = __webpack_require__(194);
+	var common_tools_1 = __webpack_require__(193);
 	var context = lang_1.global;
 	/**
 	 * Enabled Angular 2 debug tools that are accessible via your browser's
@@ -25789,13 +25776,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 194 */
+/* 193 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var application_ref_1 = __webpack_require__(83);
+	var application_ref_1 = __webpack_require__(80);
 	var lang_1 = __webpack_require__(5);
-	var browser_1 = __webpack_require__(195);
-	var dom_adapter_1 = __webpack_require__(165);
+	var browser_1 = __webpack_require__(194);
+	var dom_adapter_1 = __webpack_require__(164);
 	/**
 	 * Entry point for all Angular debug tools. This object corresponds to the `ng`
 	 * global variable accessible in the dev console.
@@ -25863,7 +25850,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 195 */
+/* 194 */
 /***/ function(module, exports) {
 
 	/**
@@ -25885,7 +25872,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 196 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
 	function __export(m) {
@@ -25896,14 +25883,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @description
 	 * Starting point to import all compiler APIs.
 	 */
+	__export(__webpack_require__(196));
+	__export(__webpack_require__(185));
 	__export(__webpack_require__(197));
-	__export(__webpack_require__(186));
-	__export(__webpack_require__(198));
-	__export(__webpack_require__(224));
+	__export(__webpack_require__(223));
 
 
 /***/ },
-/* 197 */
+/* 196 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -25917,7 +25904,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var di_1 = __webpack_require__(29);
+	var di_1 = __webpack_require__(6);
 	var lang_1 = __webpack_require__(5);
 	function createWithoutPackagePrefix() {
 	    return new UrlResolver();
@@ -26197,47 +26184,47 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 198 */
+/* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
 	function __export(m) {
 	    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 	}
-	var runtime_compiler_1 = __webpack_require__(199);
-	var template_compiler_1 = __webpack_require__(200);
+	var runtime_compiler_1 = __webpack_require__(198);
+	var template_compiler_1 = __webpack_require__(199);
 	exports.TemplateCompiler = template_compiler_1.TemplateCompiler;
-	var directive_metadata_1 = __webpack_require__(201);
+	var directive_metadata_1 = __webpack_require__(200);
 	exports.CompileDirectiveMetadata = directive_metadata_1.CompileDirectiveMetadata;
 	exports.CompileTypeMetadata = directive_metadata_1.CompileTypeMetadata;
 	exports.CompileTemplateMetadata = directive_metadata_1.CompileTemplateMetadata;
-	var source_module_1 = __webpack_require__(204);
+	var source_module_1 = __webpack_require__(203);
 	exports.SourceModule = source_module_1.SourceModule;
 	exports.SourceWithImports = source_module_1.SourceWithImports;
-	var platform_directives_and_pipes_1 = __webpack_require__(113);
+	var platform_directives_and_pipes_1 = __webpack_require__(110);
 	exports.PLATFORM_DIRECTIVES = platform_directives_and_pipes_1.PLATFORM_DIRECTIVES;
 	exports.PLATFORM_PIPES = platform_directives_and_pipes_1.PLATFORM_PIPES;
-	__export(__webpack_require__(207));
-	var template_parser_1 = __webpack_require__(213);
+	__export(__webpack_require__(206));
+	var template_parser_1 = __webpack_require__(212);
 	exports.TEMPLATE_TRANSFORMS = template_parser_1.TEMPLATE_TRANSFORMS;
 	var lang_1 = __webpack_require__(5);
-	var di_1 = __webpack_require__(29);
-	var template_parser_2 = __webpack_require__(213);
-	var html_parser_1 = __webpack_require__(214);
-	var template_normalizer_1 = __webpack_require__(221);
-	var runtime_metadata_1 = __webpack_require__(222);
-	var change_detector_compiler_1 = __webpack_require__(205);
-	var style_compiler_1 = __webpack_require__(209);
-	var command_compiler_1 = __webpack_require__(212);
-	var template_compiler_2 = __webpack_require__(200);
-	var change_detection_1 = __webpack_require__(48);
-	var compiler_1 = __webpack_require__(88);
-	var runtime_compiler_2 = __webpack_require__(199);
-	var element_schema_registry_1 = __webpack_require__(219);
-	var dom_element_schema_registry_1 = __webpack_require__(223);
-	var url_resolver_1 = __webpack_require__(197);
-	var app_root_url_1 = __webpack_require__(224);
-	var anchor_based_app_root_url_1 = __webpack_require__(225);
-	var change_detection_2 = __webpack_require__(48);
+	var di_1 = __webpack_require__(6);
+	var template_parser_2 = __webpack_require__(212);
+	var html_parser_1 = __webpack_require__(213);
+	var template_normalizer_1 = __webpack_require__(220);
+	var runtime_metadata_1 = __webpack_require__(221);
+	var change_detector_compiler_1 = __webpack_require__(204);
+	var style_compiler_1 = __webpack_require__(208);
+	var command_compiler_1 = __webpack_require__(211);
+	var template_compiler_2 = __webpack_require__(199);
+	var change_detection_1 = __webpack_require__(25);
+	var compiler_1 = __webpack_require__(85);
+	var runtime_compiler_2 = __webpack_require__(198);
+	var element_schema_registry_1 = __webpack_require__(218);
+	var dom_element_schema_registry_1 = __webpack_require__(222);
+	var url_resolver_1 = __webpack_require__(196);
+	var app_root_url_1 = __webpack_require__(223);
+	var anchor_based_app_root_url_1 = __webpack_require__(224);
+	var change_detection_2 = __webpack_require__(25);
 	function _createChangeDetectorGenConfig() {
 	    return new change_detection_1.ChangeDetectorGenConfig(lang_1.assertionsEnabled(), false, true);
 	}
@@ -26264,7 +26251,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 199 */
+/* 198 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -26283,10 +26270,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var compiler_1 = __webpack_require__(88);
-	var proto_view_factory_1 = __webpack_require__(89);
-	var template_compiler_1 = __webpack_require__(200);
-	var di_1 = __webpack_require__(29);
+	var compiler_1 = __webpack_require__(85);
+	var proto_view_factory_1 = __webpack_require__(86);
+	var template_compiler_1 = __webpack_require__(199);
+	var di_1 = __webpack_require__(6);
 	var RuntimeCompiler = (function (_super) {
 	    __extends(RuntimeCompiler, _super);
 	    function RuntimeCompiler() {
@@ -26320,7 +26307,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 200 */
+/* 199 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -26335,21 +26322,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var collection_1 = __webpack_require__(35);
-	var async_1 = __webpack_require__(6);
-	var template_commands_1 = __webpack_require__(114);
-	var directive_metadata_1 = __webpack_require__(201);
-	var di_1 = __webpack_require__(29);
-	var source_module_1 = __webpack_require__(204);
-	var change_detector_compiler_1 = __webpack_require__(205);
-	var style_compiler_1 = __webpack_require__(209);
-	var command_compiler_1 = __webpack_require__(212);
-	var template_parser_1 = __webpack_require__(213);
-	var template_normalizer_1 = __webpack_require__(221);
-	var runtime_metadata_1 = __webpack_require__(222);
-	var command_compiler_2 = __webpack_require__(212);
-	var util_1 = __webpack_require__(203);
+	var exceptions_1 = __webpack_require__(14);
+	var collection_1 = __webpack_require__(12);
+	var async_1 = __webpack_require__(60);
+	var template_commands_1 = __webpack_require__(111);
+	var directive_metadata_1 = __webpack_require__(200);
+	var di_1 = __webpack_require__(6);
+	var source_module_1 = __webpack_require__(203);
+	var change_detector_compiler_1 = __webpack_require__(204);
+	var style_compiler_1 = __webpack_require__(208);
+	var command_compiler_1 = __webpack_require__(211);
+	var template_parser_1 = __webpack_require__(212);
+	var template_normalizer_1 = __webpack_require__(220);
+	var runtime_metadata_1 = __webpack_require__(221);
+	var command_compiler_2 = __webpack_require__(211);
+	var util_1 = __webpack_require__(202);
 	var TemplateCompiler = (function () {
 	    function TemplateCompiler(_runtimeMetadataResolver, _templateNormalizer, _templateParser, _styleCompiler, _commandCompiler, _cdCompiler) {
 	        this._runtimeMetadataResolver = _runtimeMetadataResolver;
@@ -26564,16 +26551,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 201 */
+/* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var collection_1 = __webpack_require__(35);
-	var change_detection_1 = __webpack_require__(48);
-	var view_1 = __webpack_require__(79);
-	var selector_1 = __webpack_require__(202);
-	var util_1 = __webpack_require__(203);
-	var interfaces_1 = __webpack_require__(107);
+	var collection_1 = __webpack_require__(12);
+	var change_detection_1 = __webpack_require__(25);
+	var view_1 = __webpack_require__(56);
+	var selector_1 = __webpack_require__(201);
+	var util_1 = __webpack_require__(202);
+	var interfaces_1 = __webpack_require__(104);
 	// group 1: "property" from "[property]"
 	// group 2: "event" from "(event)"
 	var HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$/g;
@@ -26769,12 +26756,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 202 */
+/* 201 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var collection_1 = __webpack_require__(35);
+	var collection_1 = __webpack_require__(12);
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
+	var exceptions_1 = __webpack_require__(14);
 	var _EMPTY_ATTR_VALUE = '';
 	// TODO: Can't use `const` here as
 	// in Dart this is not transpiled into `final` yet...
@@ -27134,7 +27121,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 203 */
+/* 202 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -27229,7 +27216,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 204 */
+/* 203 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -27294,7 +27281,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 205 */
+/* 204 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -27308,14 +27295,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var source_module_1 = __webpack_require__(204);
-	var change_detection_jit_generator_1 = __webpack_require__(75);
-	var change_definition_factory_1 = __webpack_require__(206);
+	var source_module_1 = __webpack_require__(203);
+	var change_detection_jit_generator_1 = __webpack_require__(52);
+	var change_definition_factory_1 = __webpack_require__(205);
 	var lang_1 = __webpack_require__(5);
-	var change_detection_1 = __webpack_require__(48);
-	var change_detector_codegen_1 = __webpack_require__(208);
-	var util_1 = __webpack_require__(203);
-	var di_1 = __webpack_require__(29);
+	var change_detection_1 = __webpack_require__(25);
+	var change_detector_codegen_1 = __webpack_require__(207);
+	var util_1 = __webpack_require__(202);
+	var di_1 = __webpack_require__(6);
 	var ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
 	var UTIL = "ChangeDetectionUtil";
 	var CHANGE_DETECTOR_STATE = "ChangeDetectorState";
@@ -27384,15 +27371,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 206 */
+/* 205 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var collection_1 = __webpack_require__(35);
+	var collection_1 = __webpack_require__(12);
 	var lang_1 = __webpack_require__(5);
-	var reflection_1 = __webpack_require__(39);
-	var change_detection_1 = __webpack_require__(48);
-	var template_ast_1 = __webpack_require__(207);
-	var interfaces_1 = __webpack_require__(107);
+	var reflection_1 = __webpack_require__(16);
+	var change_detection_1 = __webpack_require__(25);
+	var template_ast_1 = __webpack_require__(206);
+	var interfaces_1 = __webpack_require__(104);
 	function createChangeDetectorDefinitions(componentType, componentStrategy, genConfig, parsedTemplate) {
 	    var pvVisitors = [];
 	    var visitor = new ProtoViewVisitor(null, pvVisitors, componentStrategy);
@@ -27548,7 +27535,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 207 */
+/* 206 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -27740,7 +27727,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 208 */
+/* 207 */
 /***/ function(module, exports) {
 
 	// Note: This class is only here so that we can reference it from TypeScript code.
@@ -27760,7 +27747,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 209 */
+/* 208 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -27774,17 +27761,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var source_module_1 = __webpack_require__(204);
-	var view_1 = __webpack_require__(79);
-	var xhr_1 = __webpack_require__(186);
+	var source_module_1 = __webpack_require__(203);
+	var view_1 = __webpack_require__(56);
+	var xhr_1 = __webpack_require__(185);
 	var lang_1 = __webpack_require__(5);
-	var async_1 = __webpack_require__(6);
-	var shadow_css_1 = __webpack_require__(210);
-	var url_resolver_1 = __webpack_require__(197);
-	var style_url_resolver_1 = __webpack_require__(211);
-	var util_1 = __webpack_require__(203);
-	var di_1 = __webpack_require__(29);
-	var view_factory_1 = __webpack_require__(181);
+	var async_1 = __webpack_require__(60);
+	var shadow_css_1 = __webpack_require__(209);
+	var url_resolver_1 = __webpack_require__(196);
+	var style_url_resolver_1 = __webpack_require__(210);
+	var util_1 = __webpack_require__(202);
+	var di_1 = __webpack_require__(6);
+	var view_factory_1 = __webpack_require__(180);
 	var StyleCompiler = (function () {
 	    function StyleCompiler(_xhr, _urlResolver) {
 	        this._xhr = _xhr;
@@ -27860,10 +27847,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 210 */
+/* 209 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var collection_1 = __webpack_require__(35);
+	var collection_1 = __webpack_require__(12);
 	var lang_1 = __webpack_require__(5);
 	/**
 	 * This file is a port of shadowCSS from webcomponents.js to TypeScript.
@@ -28362,7 +28349,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 211 */
+/* 210 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Some of the code comes from WebComponents.JS
@@ -28408,7 +28395,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 212 */
+/* 211 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -28423,12 +28410,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var lang_1 = __webpack_require__(5);
-	var collection_1 = __webpack_require__(35);
-	var template_commands_1 = __webpack_require__(114);
-	var template_ast_1 = __webpack_require__(207);
-	var source_module_1 = __webpack_require__(204);
-	var util_1 = __webpack_require__(203);
-	var di_1 = __webpack_require__(29);
+	var collection_1 = __webpack_require__(12);
+	var template_commands_1 = __webpack_require__(111);
+	var template_ast_1 = __webpack_require__(206);
+	var source_module_1 = __webpack_require__(203);
+	var util_1 = __webpack_require__(202);
+	var di_1 = __webpack_require__(6);
 	exports.TEMPLATE_COMMANDS_MODULE_REF = source_module_1.moduleRef("package:angular2/src/core/linker/template_commands" + util_1.MODULE_SUFFIX);
 	var IMPLICIT_TEMPLATE_VAR = '\$implicit';
 	var CLASS_ATTR = 'class';
@@ -28715,7 +28702,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 213 */
+/* 212 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -28737,22 +28724,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __param = (this && this.__param) || function (paramIndex, decorator) {
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
-	var collection_1 = __webpack_require__(35);
+	var collection_1 = __webpack_require__(12);
 	var lang_1 = __webpack_require__(5);
-	var core_1 = __webpack_require__(26);
+	var core_1 = __webpack_require__(2);
 	var lang_2 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var change_detection_1 = __webpack_require__(48);
-	var html_parser_1 = __webpack_require__(214);
-	var html_tags_1 = __webpack_require__(218);
-	var parse_util_1 = __webpack_require__(217);
-	var template_ast_1 = __webpack_require__(207);
-	var selector_1 = __webpack_require__(202);
-	var element_schema_registry_1 = __webpack_require__(219);
-	var template_preparser_1 = __webpack_require__(220);
-	var style_url_resolver_1 = __webpack_require__(211);
-	var html_ast_1 = __webpack_require__(215);
-	var util_1 = __webpack_require__(203);
+	var exceptions_1 = __webpack_require__(14);
+	var change_detection_1 = __webpack_require__(25);
+	var html_parser_1 = __webpack_require__(213);
+	var html_tags_1 = __webpack_require__(217);
+	var parse_util_1 = __webpack_require__(216);
+	var template_ast_1 = __webpack_require__(206);
+	var selector_1 = __webpack_require__(201);
+	var element_schema_registry_1 = __webpack_require__(218);
+	var template_preparser_1 = __webpack_require__(219);
+	var style_url_resolver_1 = __webpack_require__(210);
+	var html_ast_1 = __webpack_require__(214);
+	var util_1 = __webpack_require__(202);
 	// Group 1 = "bind-"
 	// Group 2 = "var-" or "#"
 	// Group 3 = "on-"
@@ -29332,7 +29319,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 214 */
+/* 213 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -29352,12 +29339,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var lang_1 = __webpack_require__(5);
-	var collection_1 = __webpack_require__(35);
-	var html_ast_1 = __webpack_require__(215);
-	var di_1 = __webpack_require__(29);
-	var html_lexer_1 = __webpack_require__(216);
-	var parse_util_1 = __webpack_require__(217);
-	var html_tags_1 = __webpack_require__(218);
+	var collection_1 = __webpack_require__(12);
+	var html_ast_1 = __webpack_require__(214);
+	var di_1 = __webpack_require__(6);
+	var html_lexer_1 = __webpack_require__(215);
+	var parse_util_1 = __webpack_require__(216);
+	var html_tags_1 = __webpack_require__(217);
 	var HtmlTreeError = (function (_super) {
 	    __extends(HtmlTreeError, _super);
 	    function HtmlTreeError(elementName, location, msg) {
@@ -29587,7 +29574,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 215 */
+/* 214 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -29636,7 +29623,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 216 */
+/* 215 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -29645,9 +29632,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var lang_1 = __webpack_require__(5);
-	var collection_1 = __webpack_require__(35);
-	var parse_util_1 = __webpack_require__(217);
-	var html_tags_1 = __webpack_require__(218);
+	var collection_1 = __webpack_require__(12);
+	var parse_util_1 = __webpack_require__(216);
+	var html_tags_1 = __webpack_require__(217);
 	(function (HtmlTokenType) {
 	    HtmlTokenType[HtmlTokenType["TAG_OPEN_START"] = 0] = "TAG_OPEN_START";
 	    HtmlTokenType[HtmlTokenType["TAG_OPEN_END"] = 1] = "TAG_OPEN_END";
@@ -30175,7 +30162,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 217 */
+/* 216 */
 /***/ function(module, exports) {
 
 	var ParseLocation = (function () {
@@ -30252,7 +30239,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 218 */
+/* 217 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -30652,7 +30639,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 219 */
+/* 218 */
 /***/ function(module, exports) {
 
 	var ElementSchemaRegistry = (function () {
@@ -30666,7 +30653,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 220 */
+/* 219 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -30744,7 +30731,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 221 */
+/* 220 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -30758,18 +30745,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var directive_metadata_1 = __webpack_require__(201);
+	var directive_metadata_1 = __webpack_require__(200);
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var async_1 = __webpack_require__(6);
-	var xhr_1 = __webpack_require__(186);
-	var url_resolver_1 = __webpack_require__(197);
-	var style_url_resolver_1 = __webpack_require__(211);
-	var di_1 = __webpack_require__(29);
-	var view_1 = __webpack_require__(79);
-	var html_ast_1 = __webpack_require__(215);
-	var html_parser_1 = __webpack_require__(214);
-	var template_preparser_1 = __webpack_require__(220);
+	var exceptions_1 = __webpack_require__(14);
+	var async_1 = __webpack_require__(60);
+	var xhr_1 = __webpack_require__(185);
+	var url_resolver_1 = __webpack_require__(196);
+	var style_url_resolver_1 = __webpack_require__(210);
+	var di_1 = __webpack_require__(6);
+	var view_1 = __webpack_require__(56);
+	var html_ast_1 = __webpack_require__(214);
+	var html_parser_1 = __webpack_require__(213);
+	var template_preparser_1 = __webpack_require__(219);
 	var TemplateNormalizer = (function () {
 	    function TemplateNormalizer(_xhr, _urlResolver, _htmlParser) {
 	        this._xhr = _xhr;
@@ -30874,7 +30861,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 222 */
+/* 221 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -30891,19 +30878,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __param = (this && this.__param) || function (paramIndex, decorator) {
 	    return function (target, key) { decorator(target, key, paramIndex); }
 	};
-	var di_1 = __webpack_require__(29);
+	var di_1 = __webpack_require__(6);
 	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(37);
-	var cpl = __webpack_require__(201);
-	var md = __webpack_require__(46);
-	var directive_resolver_1 = __webpack_require__(110);
-	var view_resolver_1 = __webpack_require__(111);
-	var directive_lifecycle_reflector_1 = __webpack_require__(106);
-	var interfaces_1 = __webpack_require__(107);
-	var reflection_1 = __webpack_require__(39);
-	var di_2 = __webpack_require__(29);
-	var platform_directives_and_pipes_1 = __webpack_require__(113);
-	var util_1 = __webpack_require__(203);
+	var exceptions_1 = __webpack_require__(14);
+	var cpl = __webpack_require__(200);
+	var md = __webpack_require__(23);
+	var directive_resolver_1 = __webpack_require__(107);
+	var view_resolver_1 = __webpack_require__(108);
+	var directive_lifecycle_reflector_1 = __webpack_require__(103);
+	var interfaces_1 = __webpack_require__(104);
+	var reflection_1 = __webpack_require__(16);
+	var di_2 = __webpack_require__(6);
+	var platform_directives_and_pipes_1 = __webpack_require__(110);
+	var util_1 = __webpack_require__(202);
 	var RuntimeMetadataResolver = (function () {
 	    function RuntimeMetadataResolver(_directiveResolver, _viewResolver, _platformDirectives) {
 	        this._directiveResolver = _directiveResolver;
@@ -31002,7 +30989,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 223 */
+/* 222 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -31021,12 +31008,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var di_1 = __webpack_require__(29);
+	var di_1 = __webpack_require__(6);
 	var lang_1 = __webpack_require__(5);
-	var collection_1 = __webpack_require__(35);
-	var dom_adapter_1 = __webpack_require__(165);
-	var html_tags_1 = __webpack_require__(218);
-	var element_schema_registry_1 = __webpack_require__(219);
+	var collection_1 = __webpack_require__(12);
+	var dom_adapter_1 = __webpack_require__(164);
+	var html_tags_1 = __webpack_require__(217);
+	var element_schema_registry_1 = __webpack_require__(218);
 	var NAMESPACE_URIS = lang_1.CONST_EXPR({ 'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg' });
 	var DomElementSchemaRegistry = (function (_super) {
 	    __extends(DomElementSchemaRegistry, _super);
@@ -31070,7 +31057,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 224 */
+/* 223 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -31084,7 +31071,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var di_1 = __webpack_require__(29);
+	var di_1 = __webpack_require__(6);
 	/**
 	 * Specifies app root url for the application.
 	 *
@@ -31108,7 +31095,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 225 */
+/* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -31127,9 +31114,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var app_root_url_1 = __webpack_require__(224);
-	var dom_adapter_1 = __webpack_require__(165);
-	var di_1 = __webpack_require__(29);
+	var app_root_url_1 = __webpack_require__(223);
+	var dom_adapter_1 = __webpack_require__(164);
+	var di_1 = __webpack_require__(6);
 	/**
 	 * Extension of {@link AppRootUrl} that uses a DOM anchor tag to set the root url to
 	 * the current page's url.
@@ -31153,7 +31140,5282 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
+/* 225 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @module
+	 * @description
+	 * The http module provides services to perform http requests. To get started, see the {@link Http}
+	 * class.
+	 */
+	var core_1 = __webpack_require__(2);
+	var http_1 = __webpack_require__(226);
+	var xhr_backend_1 = __webpack_require__(234);
+	var jsonp_backend_1 = __webpack_require__(238);
+	var browser_xhr_1 = __webpack_require__(237);
+	var browser_jsonp_1 = __webpack_require__(239);
+	var base_request_options_1 = __webpack_require__(232);
+	var base_response_options_1 = __webpack_require__(236);
+	var static_request_1 = __webpack_require__(228);
+	exports.Request = static_request_1.Request;
+	var static_response_1 = __webpack_require__(235);
+	exports.Response = static_response_1.Response;
+	var interfaces_1 = __webpack_require__(227);
+	exports.Connection = interfaces_1.Connection;
+	exports.ConnectionBackend = interfaces_1.ConnectionBackend;
+	var browser_xhr_2 = __webpack_require__(237);
+	exports.BrowserXhr = browser_xhr_2.BrowserXhr;
+	var base_request_options_2 = __webpack_require__(232);
+	exports.BaseRequestOptions = base_request_options_2.BaseRequestOptions;
+	exports.RequestOptions = base_request_options_2.RequestOptions;
+	var base_response_options_2 = __webpack_require__(236);
+	exports.BaseResponseOptions = base_response_options_2.BaseResponseOptions;
+	exports.ResponseOptions = base_response_options_2.ResponseOptions;
+	var xhr_backend_2 = __webpack_require__(234);
+	exports.XHRBackend = xhr_backend_2.XHRBackend;
+	exports.XHRConnection = xhr_backend_2.XHRConnection;
+	var jsonp_backend_2 = __webpack_require__(238);
+	exports.JSONPBackend = jsonp_backend_2.JSONPBackend;
+	exports.JSONPConnection = jsonp_backend_2.JSONPConnection;
+	var http_2 = __webpack_require__(226);
+	exports.Http = http_2.Http;
+	exports.Jsonp = http_2.Jsonp;
+	var headers_1 = __webpack_require__(229);
+	exports.Headers = headers_1.Headers;
+	var enums_1 = __webpack_require__(231);
+	exports.ResponseType = enums_1.ResponseType;
+	exports.ReadyState = enums_1.ReadyState;
+	exports.RequestMethod = enums_1.RequestMethod;
+	var url_search_params_1 = __webpack_require__(233);
+	exports.URLSearchParams = url_search_params_1.URLSearchParams;
+	/**
+	 * Provides a basic set of injectables to use the {@link Http} service in any application.
+	 *
+	 * The `HTTP_PROVIDERS` should be included either in a component's injector,
+	 * or in the root injector when bootstrapping an application.
+	 *
+	 * ### Example ([live demo](http://plnkr.co/edit/snj7Nv?p=preview))
+	 *
+	 * ```
+	 * import {bootstrap, Component, NgFor, View} from 'angular2/angular2';
+	 * import {HTTP_PROVIDERS, Http} from 'angular2/http';
+	 *
+	 * @Component({
+	 *   selector: 'app',
+	 *   providers: [HTTP_PROVIDERS],
+	 *   template: `
+	 *     <div>
+	 *       <h1>People</h1>
+	 *       <ul>
+	 *         <li *ng-for="#person of people">
+	 *           {{person.name}}
+	 *         </li>
+	 *       </ul>
+	 *     </div>
+	 *   `,
+	 *   directives: [NgFor]
+	 * })
+	 * export class App {
+	 *   people: Object[];
+	 *   constructor(http:Http) {
+	 *     http.get('people.json').subscribe(res => {
+	 *       this.people = res.json();
+	 *     });
+	 *   }
+	 *   active:boolean = false;
+	 *   toggleActiveState() {
+	 *     this.active = !this.active;
+	 *   }
+	 * }
+	 *
+	 * bootstrap(App)
+	 *   .catch(err => console.error(err));
+	 * ```
+	 *
+	 * The primary public API included in `HTTP_PROVIDERS` is the {@link Http} class.
+	 * However, other providers required by `Http` are included,
+	 * which may be beneficial to override in certain cases.
+	 *
+	 * The providers included in `HTTP_PROVIDERS` include:
+	 *  * {@link Http}
+	 *  * {@link XHRBackend}
+	 *  * `BrowserXHR` - Private factory to create `XMLHttpRequest` instances
+	 *  * {@link RequestOptions} - Bound to {@link BaseRequestOptions} class
+	 *  * {@link ResponseOptions} - Bound to {@link BaseResponseOptions} class
+	 *
+	 * There may be cases where it makes sense to extend the base request options,
+	 * such as to add a search string to be appended to all URLs.
+	 * To accomplish this, a new provider for {@link RequestOptions} should
+	 * be added in the same injector as `HTTP_PROVIDERS`.
+	 *
+	 * ### Example ([live demo](http://plnkr.co/edit/aCMEXi?p=preview))
+	 *
+	 * ```
+	 * import {provide, bootstrap} from 'angular2/angular2';
+	 * import {HTTP_PROVIDERS, BaseRequestOptions, RequestOptions} from 'angular2/http';
+	 *
+	 * class MyOptions extends BaseRequestOptions {
+	 *   search: string = 'coreTeam=true';
+	 * }
+	 *
+	 * bootstrap(App, [HTTP_PROVIDERS, provide(RequestOptions, {useClass: MyOptions})])
+	 *   .catch(err => console.error(err));
+	 * ```
+	 *
+	 * Likewise, to use a mock backend for unit tests, the {@link XHRBackend}
+	 * provider should be bound to {@link MockBackend}.
+	 *
+	 * ### Example ([live demo](http://plnkr.co/edit/7LWALD?p=preview))
+	 *
+	 * ```
+	 * import {provide, Injector} from 'angular2/angular2';
+	 * import {HTTP_PROVIDERS, Http, Response, XHRBackend} from 'angular2/http';
+	 * import {MockBackend} from 'angular2/http/testing';
+	 *
+	 * var people = [{name: 'Jeff'}, {name: 'Tobias'}];
+	 *
+	 * var injector = Injector.resolveAndCreate([
+	 *   HTTP_PROVIDERS,
+	 *   MockBackend,
+	 *   provide(XHRBackend, {useExisting: MockBackend})
+	 * ]);
+	 * var http = injector.get(Http);
+	 * var backend = injector.get(MockBackend);
+	 *
+	 * // Listen for any new requests
+	 * backend.connections.observer({
+	 *   next: connection => {
+	 *     var response = new Response({body: people});
+	 *     setTimeout(() => {
+	 *       // Send a response to the request
+	 *       connection.mockRespond(response);
+	 *     });
+	 *   });
+	 *
+	 * http.get('people.json').observer({
+	 *   next: res => {
+	 *     // Response came from mock backend
+	 *     console.log('first person', res.json()[0].name);
+	 *   }
+	 * });
+	 * ```
+	 */
+	exports.HTTP_PROVIDERS = [
+	    // TODO(pascal): use factory type annotations once supported in DI
+	    // issue: https://github.com/angular/angular/issues/3183
+	    core_1.provide(http_1.Http, {
+	        useFactory: function (xhrBackend, requestOptions) { return new http_1.Http(xhrBackend, requestOptions); },
+	        deps: [xhr_backend_1.XHRBackend, base_request_options_1.RequestOptions]
+	    }),
+	    browser_xhr_1.BrowserXhr,
+	    core_1.provide(base_request_options_1.RequestOptions, { useClass: base_request_options_1.BaseRequestOptions }),
+	    core_1.provide(base_response_options_1.ResponseOptions, { useClass: base_response_options_1.BaseResponseOptions }),
+	    xhr_backend_1.XHRBackend
+	];
+	/**
+	 * @deprecated
+	 */
+	exports.HTTP_BINDINGS = exports.HTTP_PROVIDERS;
+	/**
+	 * Provides a basic set of providers to use the {@link Jsonp} service in any application.
+	 *
+	 * The `JSONP_PROVIDERS` should be included either in a component's injector,
+	 * or in the root injector when bootstrapping an application.
+	 *
+	 * ### Example ([live demo](http://plnkr.co/edit/vmeN4F?p=preview))
+	 *
+	 * ```
+	 * import {Component, NgFor, View} from 'angular2/angular2';
+	 * import {JSONP_PROVIDERS, Jsonp} from 'angular2/http';
+	 *
+	 * @Component({
+	 *   selector: 'app',
+	 *   providers: [JSONP_PROVIDERS],
+	 *   template: `
+	 *     <div>
+	 *       <h1>People</h1>
+	 *       <ul>
+	 *         <li *ng-for="#person of people">
+	 *           {{person.name}}
+	 *         </li>
+	 *       </ul>
+	 *     </div>
+	 *   `,
+	 *   directives: [NgFor]
+	 * })
+	 * export class App {
+	 *   people: Array<Object>;
+	 *   constructor(jsonp:Jsonp) {
+	 *     jsonp.request('people.json').subscribe(res => {
+	 *       this.people = res.json();
+	 *     })
+	 *   }
+	 * }
+	 * ```
+	 *
+	 * The primary public API included in `JSONP_PROVIDERS` is the {@link Jsonp} class.
+	 * However, other providers required by `Jsonp` are included,
+	 * which may be beneficial to override in certain cases.
+	 *
+	 * The providers included in `JSONP_PROVIDERS` include:
+	 *  * {@link Jsonp}
+	 *  * {@link JSONPBackend}
+	 *  * `BrowserJsonp` - Private factory
+	 *  * {@link RequestOptions} - Bound to {@link BaseRequestOptions} class
+	 *  * {@link ResponseOptions} - Bound to {@link BaseResponseOptions} class
+	 *
+	 * There may be cases where it makes sense to extend the base request options,
+	 * such as to add a search string to be appended to all URLs.
+	 * To accomplish this, a new provider for {@link RequestOptions} should
+	 * be added in the same injector as `JSONP_PROVIDERS`.
+	 *
+	 * ### Example ([live demo](http://plnkr.co/edit/TFug7x?p=preview))
+	 *
+	 * ```
+	 * import {provide, bootstrap} from 'angular2/angular2';
+	 * import {JSONP_PROVIDERS, BaseRequestOptions, RequestOptions} from 'angular2/http';
+	 *
+	 * class MyOptions extends BaseRequestOptions {
+	 *   search: string = 'coreTeam=true';
+	 * }
+	 *
+	 * bootstrap(App, [JSONP_PROVIDERS, provide(RequestOptions, {useClass: MyOptions})])
+	 *   .catch(err => console.error(err));
+	 * ```
+	 *
+	 * Likewise, to use a mock backend for unit tests, the {@link JSONPBackend}
+	 * provider should be bound to {@link MockBackend}.
+	 *
+	 * ### Example ([live demo](http://plnkr.co/edit/HDqZWL?p=preview))
+	 *
+	 * ```
+	 * import {provide, Injector} from 'angular2/angular2';
+	 * import {JSONP_PROVIDERS, Jsonp, Response, JSONPBackend} from 'angular2/http';
+	 * import {MockBackend} from 'angular2/http/testing';
+	 *
+	 * var people = [{name: 'Jeff'}, {name: 'Tobias'}];
+	 * var injector = Injector.resolveAndCreate([
+	 *   JSONP_PROVIDERS,
+	 *   MockBackend,
+	 *   provide(JSONPBackend, {useExisting: MockBackend})
+	 * ]);
+	 * var jsonp = injector.get(Jsonp);
+	 * var backend = injector.get(MockBackend);
+	 *
+	 * // Listen for any new requests
+	 * backend.connections.observer({
+	 *   next: connection => {
+	 *     var response = new Response({body: people});
+	 *     setTimeout(() => {
+	 *       // Send a response to the request
+	 *       connection.mockRespond(response);
+	 *     });
+	 *   });
+
+	 * jsonp.get('people.json').observer({
+	 *   next: res => {
+	 *     // Response came from mock backend
+	 *     console.log('first person', res.json()[0].name);
+	 *   }
+	 * });
+	 * ```
+	 */
+	exports.JSONP_PROVIDERS = [
+	    // TODO(pascal): use factory type annotations once supported in DI
+	    // issue: https://github.com/angular/angular/issues/3183
+	    core_1.provide(http_1.Jsonp, {
+	        useFactory: function (jsonpBackend, requestOptions) { return new http_1.Jsonp(jsonpBackend, requestOptions); },
+	        deps: [jsonp_backend_1.JSONPBackend, base_request_options_1.RequestOptions]
+	    }),
+	    browser_jsonp_1.BrowserJsonp,
+	    core_1.provide(base_request_options_1.RequestOptions, { useClass: base_request_options_1.BaseRequestOptions }),
+	    core_1.provide(base_response_options_1.ResponseOptions, { useClass: base_response_options_1.BaseResponseOptions }),
+	    core_1.provide(jsonp_backend_1.JSONPBackend, { useClass: jsonp_backend_1.JSONPBackend_ })
+	];
+	/**
+	 * @deprecated
+	 */
+	exports.JSON_BINDINGS = exports.JSONP_PROVIDERS;
+
+
+/***/ },
 /* 226 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+	    switch (arguments.length) {
+	        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+	        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+	        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+	    }
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var lang_1 = __webpack_require__(5);
+	var exceptions_1 = __webpack_require__(14);
+	var core_1 = __webpack_require__(2);
+	var interfaces_1 = __webpack_require__(227);
+	var static_request_1 = __webpack_require__(228);
+	var base_request_options_1 = __webpack_require__(232);
+	var enums_1 = __webpack_require__(231);
+	function httpRequest(backend, request) {
+	    return backend.createConnection(request).response;
+	}
+	function mergeOptions(defaultOpts, providedOpts, method, url) {
+	    var newOptions = defaultOpts;
+	    if (lang_1.isPresent(providedOpts)) {
+	        // Hack so Dart can used named parameters
+	        return newOptions.merge(new base_request_options_1.RequestOptions({
+	            method: providedOpts.method || method,
+	            url: providedOpts.url || url,
+	            search: providedOpts.search,
+	            headers: providedOpts.headers,
+	            body: providedOpts.body
+	        }));
+	    }
+	    if (lang_1.isPresent(method)) {
+	        return newOptions.merge(new base_request_options_1.RequestOptions({ method: method, url: url }));
+	    }
+	    else {
+	        return newOptions.merge(new base_request_options_1.RequestOptions({ url: url }));
+	    }
+	}
+	/**
+	 * Performs http requests using `XMLHttpRequest` as the default backend.
+	 *
+	 * `Http` is available as an injectable class, with methods to perform http requests. Calling
+	 * `request` returns an {@link Observable} which will emit a single {@link Response} when a
+	 * response is received.
+	 *
+	 * ### Example
+	 *
+	 * ```typescript
+	 * import {Http, HTTP_PROVIDERS} from 'angular2/http';
+	 * @Component({
+	 *   selector: 'http-app',
+	 *   viewProviders: [HTTP_PROVIDERS],
+	 *   templateUrl: 'people.html'
+	 * })
+	 * class PeopleComponent {
+	 *   constructor(http: Http) {
+	 *     http.get('people.json')
+	 *       // Call map on the response observable to get the parsed people object
+	 *       .map(res => res.json())
+	 *       // Subscribe to the observable to get the parsed people object and attach it to the
+	 *       // component
+	 *       .subscribe(people => this.people = people);
+	 *   }
+	 * }
+	 * ```
+	 *
+	 *
+	 * ### Example
+	 *
+	 * ```
+	 * http.get('people.json').observer({next: (value) => this.people = value});
+	 * ```
+	 *
+	 * The default construct used to perform requests, `XMLHttpRequest`, is abstracted as a "Backend" (
+	 * {@link XHRBackend} in this case), which could be mocked with dependency injection by replacing
+	 * the {@link XHRBackend} provider, as in the following example:
+	 *
+	 * ### Example
+	 *
+	 * ```typescript
+	 * import {BaseRequestOptions, Http} from 'angular2/http';
+	 * import {MockBackend} from 'angular2/http/testing';
+	 * var injector = Injector.resolveAndCreate([
+	 *   BaseRequestOptions,
+	 *   MockBackend,
+	 *   provide(Http, {useFactory:
+	 *       function(backend, defaultOptions) {
+	 *         return new Http(backend, defaultOptions);
+	 *       },
+	 *       deps: [MockBackend, BaseRequestOptions]})
+	 * ]);
+	 * var http = injector.get(Http);
+	 * http.get('request-from-mock-backend.json').subscribe((res:Response) => doSomething(res));
+	 * ```
+	 *
+	 **/
+	var Http = (function () {
+	    function Http(_backend, _defaultOptions) {
+	        this._backend = _backend;
+	        this._defaultOptions = _defaultOptions;
+	    }
+	    /**
+	     * Performs any type of http request. First argument is required, and can either be a url or
+	     * a {@link Request} instance. If the first argument is a url, an optional {@link RequestOptions}
+	     * object can be provided as the 2nd argument. The options object will be merged with the values
+	     * of {@link BaseRequestOptions} before performing the request.
+	     */
+	    Http.prototype.request = function (url, options) {
+	        var responseObservable;
+	        if (lang_1.isString(url)) {
+	            responseObservable = httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethod.Get, url)));
+	        }
+	        else if (url instanceof static_request_1.Request) {
+	            responseObservable = httpRequest(this._backend, url);
+	        }
+	        else {
+	            throw exceptions_1.makeTypeError('First argument must be a url string or Request instance.');
+	        }
+	        return responseObservable;
+	    };
+	    /**
+	     * Performs a request with `get` http method.
+	     */
+	    Http.prototype.get = function (url, options) {
+	        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethod.Get, url)));
+	    };
+	    /**
+	     * Performs a request with `post` http method.
+	     */
+	    Http.prototype.post = function (url, body, options) {
+	        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions.merge(new base_request_options_1.RequestOptions({ body: body })), options, enums_1.RequestMethod.Post, url)));
+	    };
+	    /**
+	     * Performs a request with `put` http method.
+	     */
+	    Http.prototype.put = function (url, body, options) {
+	        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions.merge(new base_request_options_1.RequestOptions({ body: body })), options, enums_1.RequestMethod.Put, url)));
+	    };
+	    /**
+	     * Performs a request with `delete` http method.
+	     */
+	    Http.prototype.delete = function (url, options) {
+	        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethod.Delete, url)));
+	    };
+	    /**
+	     * Performs a request with `patch` http method.
+	     */
+	    Http.prototype.patch = function (url, body, options) {
+	        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions.merge(new base_request_options_1.RequestOptions({ body: body })), options, enums_1.RequestMethod.Patch, url)));
+	    };
+	    /**
+	     * Performs a request with `head` http method.
+	     */
+	    Http.prototype.head = function (url, options) {
+	        return httpRequest(this._backend, new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethod.Head, url)));
+	    };
+	    Http = __decorate([
+	        core_1.Injectable(), 
+	        __metadata('design:paramtypes', [interfaces_1.ConnectionBackend, base_request_options_1.RequestOptions])
+	    ], Http);
+	    return Http;
+	})();
+	exports.Http = Http;
+	var Jsonp = (function (_super) {
+	    __extends(Jsonp, _super);
+	    function Jsonp(backend, defaultOptions) {
+	        _super.call(this, backend, defaultOptions);
+	    }
+	    /**
+	     * Performs any type of http request. First argument is required, and can either be a url or
+	     * a {@link Request} instance. If the first argument is a url, an optional {@link RequestOptions}
+	     * object can be provided as the 2nd argument. The options object will be merged with the values
+	     * of {@link BaseRequestOptions} before performing the request.
+	     */
+	    Jsonp.prototype.request = function (url, options) {
+	        var responseObservable;
+	        if (lang_1.isString(url)) {
+	            url = new static_request_1.Request(mergeOptions(this._defaultOptions, options, enums_1.RequestMethod.Get, url));
+	        }
+	        if (url instanceof static_request_1.Request) {
+	            if (url.method !== enums_1.RequestMethod.Get) {
+	                exceptions_1.makeTypeError('JSONP requests must use GET request method.');
+	            }
+	            responseObservable = httpRequest(this._backend, url);
+	        }
+	        else {
+	            throw exceptions_1.makeTypeError('First argument must be a url string or Request instance.');
+	        }
+	        return responseObservable;
+	    };
+	    Jsonp = __decorate([
+	        core_1.Injectable(), 
+	        __metadata('design:paramtypes', [interfaces_1.ConnectionBackend, base_request_options_1.RequestOptions])
+	    ], Jsonp);
+	    return Jsonp;
+	})(Http);
+	exports.Jsonp = Jsonp;
+
+
+/***/ },
+/* 227 */
+/***/ function(module, exports) {
+
+	/**
+	 * Abstract class from which real backends are derived.
+	 *
+	 * The primary purpose of a `ConnectionBackend` is to create new connections to fulfill a given
+	 * {@link Request}.
+	 */
+	var ConnectionBackend = (function () {
+	    function ConnectionBackend() {
+	    }
+	    return ConnectionBackend;
+	})();
+	exports.ConnectionBackend = ConnectionBackend;
+	/**
+	 * Abstract class from which real connections are derived.
+	 */
+	var Connection = (function () {
+	    function Connection() {
+	    }
+	    return Connection;
+	})();
+	exports.Connection = Connection;
+
+
+/***/ },
+/* 228 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var headers_1 = __webpack_require__(229);
+	var http_utils_1 = __webpack_require__(230);
+	var lang_1 = __webpack_require__(5);
+	// TODO(jeffbcross): properly implement body accessors
+	/**
+	 * Creates `Request` instances from provided values.
+	 *
+	 * The Request's interface is inspired by the Request constructor defined in the [Fetch
+	 * Spec](https://fetch.spec.whatwg.org/#request-class),
+	 * but is considered a static value whose body can be accessed many times. There are other
+	 * differences in the implementation, but this is the most significant.
+	 *
+	 * `Request` instances are typically created by higher-level classes, like {@link Http} and
+	 * {@link Jsonp}, but it may occasionally be useful to explicitly create `Request` instances.
+	 * One such example is when creating services that wrap higher-level services, like {@link Http},
+	 * where it may be useful to generate a `Request` with arbitrary headers and search params.
+	 *
+	 * ```typescript
+	 * import {Injectable, Injector} from 'angular2/angular2';
+	 * import {HTTP_PROVIDERS, Http, Request, RequestMethod} from 'angular2/http';
+	 *
+	 * @Injectable()
+	 * class AutoAuthenticator {
+	 *   constructor(public http:Http) {}
+	 *   request(url:string) {
+	 *     return this.http.request(new Request({
+	 *       method: RequestMethod.Get,
+	 *       url: url,
+	 *       search: 'password=123'
+	 *     }));
+	 *   }
+	 * }
+	 *
+	 * var injector = Injector.resolveAndCreate([HTTP_PROVIDERS, AutoAuthenticator]);
+	 * var authenticator = injector.get(AutoAuthenticator);
+	 * authenticator.request('people.json').subscribe(res => {
+	 *   //URL should have included '?password=123'
+	 *   console.log('people', res.json());
+	 * });
+	 * ```
+	 */
+	var Request = (function () {
+	    function Request(requestOptions) {
+	        // TODO: assert that url is present
+	        var url = requestOptions.url;
+	        this.url = requestOptions.url;
+	        if (lang_1.isPresent(requestOptions.search)) {
+	            var search = requestOptions.search.toString();
+	            if (search.length > 0) {
+	                var prefix = '?';
+	                if (lang_1.StringWrapper.contains(this.url, '?')) {
+	                    prefix = (this.url[this.url.length - 1] == '&') ? '' : '&';
+	                }
+	                // TODO: just delete search-query-looking string in url?
+	                this.url = url + prefix + search;
+	            }
+	        }
+	        this._body = requestOptions.body;
+	        this.method = http_utils_1.normalizeMethodName(requestOptions.method);
+	        // TODO(jeffbcross): implement behavior
+	        // Defaults to 'omit', consistent with browser
+	        // TODO(jeffbcross): implement behavior
+	        this.headers = new headers_1.Headers(requestOptions.headers);
+	    }
+	    /**
+	     * Returns the request's body as string, assuming that body exists. If body is undefined, return
+	     * empty
+	     * string.
+	     */
+	    Request.prototype.text = function () { return lang_1.isPresent(this._body) ? this._body.toString() : ''; };
+	    return Request;
+	})();
+	exports.Request = Request;
+
+
+/***/ },
+/* 229 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var lang_1 = __webpack_require__(5);
+	var exceptions_1 = __webpack_require__(14);
+	var collection_1 = __webpack_require__(12);
+	/**
+	 * Polyfill for [Headers](https://developer.mozilla.org/en-US/docs/Web/API/Headers/Headers), as
+	 * specified in the [Fetch Spec](https://fetch.spec.whatwg.org/#headers-class).
+	 *
+	 * The only known difference between this `Headers` implementation and the spec is the
+	 * lack of an `entries` method.
+	 *
+	 * ### Example ([live demo](http://plnkr.co/edit/MTdwT6?p=preview))
+	 *
+	 * ```
+	 * import {Headers} from 'angular2/http';
+	 *
+	 * var firstHeaders = new Headers();
+	 * firstHeaders.append('Content-Type', 'image/jpeg');
+	 * console.log(firstHeaders.get('Content-Type')) //'image/jpeg'
+	 *
+	 * // Create headers from Plain Old JavaScript Object
+	 * var secondHeaders = new Headers({
+	 *   'X-My-Custom-Header': 'Angular'
+	 * });
+	 * console.log(secondHeaders.get('X-My-Custom-Header')); //'Angular'
+	 *
+	 * var thirdHeaders = new Headers(secondHeaders);
+	 * console.log(thirdHeaders.get('X-My-Custom-Header')); //'Angular'
+	 * ```
+	 */
+	var Headers = (function () {
+	    function Headers(headers) {
+	        var _this = this;
+	        if (headers instanceof Headers) {
+	            this._headersMap = headers._headersMap;
+	            return;
+	        }
+	        this._headersMap = new collection_1.Map();
+	        if (lang_1.isBlank(headers)) {
+	            return;
+	        }
+	        // headers instanceof StringMap
+	        collection_1.StringMapWrapper.forEach(headers, function (v, k) { _this._headersMap.set(k, collection_1.isListLikeIterable(v) ? v : [v]); });
+	    }
+	    /**
+	     * Returns a new Headers instance from the given DOMString of Response Headers
+	     */
+	    Headers.fromResponseHeaderString = function (headersString) {
+	        return headersString.trim()
+	            .split('\n')
+	            .map(function (val) { return val.split(':'); })
+	            .map(function (_a) {
+	            var key = _a[0], parts = _a.slice(1);
+	            return ([key.trim(), parts.join(':').trim()]);
+	        })
+	            .reduce(function (headers, _a) {
+	            var key = _a[0], value = _a[1];
+	            return !headers.set(key, value) && headers;
+	        }, new Headers());
+	    };
+	    /**
+	     * Appends a header to existing list of header values for a given header name.
+	     */
+	    Headers.prototype.append = function (name, value) {
+	        var mapName = this._headersMap.get(name);
+	        var list = collection_1.isListLikeIterable(mapName) ? mapName : [];
+	        list.push(value);
+	        this._headersMap.set(name, list);
+	    };
+	    /**
+	     * Deletes all header values for the given name.
+	     */
+	    Headers.prototype.delete = function (name) { this._headersMap.delete(name); };
+	    Headers.prototype.forEach = function (fn) {
+	        this._headersMap.forEach(fn);
+	    };
+	    /**
+	     * Returns first header that matches given name.
+	     */
+	    Headers.prototype.get = function (header) { return collection_1.ListWrapper.first(this._headersMap.get(header)); };
+	    /**
+	     * Check for existence of header by given name.
+	     */
+	    Headers.prototype.has = function (header) { return this._headersMap.has(header); };
+	    /**
+	     * Provides names of set headers
+	     */
+	    Headers.prototype.keys = function () { return collection_1.MapWrapper.keys(this._headersMap); };
+	    /**
+	     * Sets or overrides header value for given name.
+	     */
+	    Headers.prototype.set = function (header, value) {
+	        var list = [];
+	        if (collection_1.isListLikeIterable(value)) {
+	            var pushValue = value.join(',');
+	            list.push(pushValue);
+	        }
+	        else {
+	            list.push(value);
+	        }
+	        this._headersMap.set(header, list);
+	    };
+	    /**
+	     * Returns values of all headers.
+	     */
+	    Headers.prototype.values = function () { return collection_1.MapWrapper.values(this._headersMap); };
+	    /**
+	     * Returns list of header values for a given name.
+	     */
+	    Headers.prototype.getAll = function (header) {
+	        var headers = this._headersMap.get(header);
+	        return collection_1.isListLikeIterable(headers) ? headers : [];
+	    };
+	    /**
+	     * This method is not implemented.
+	     */
+	    Headers.prototype.entries = function () { throw new exceptions_1.BaseException('"entries" method is not implemented on Headers class'); };
+	    return Headers;
+	})();
+	exports.Headers = Headers;
+
+
+/***/ },
+/* 230 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var lang_1 = __webpack_require__(5);
+	var enums_1 = __webpack_require__(231);
+	var exceptions_1 = __webpack_require__(14);
+	function normalizeMethodName(method) {
+	    if (lang_1.isString(method)) {
+	        var originalMethod = method;
+	        method = method.replace(/(\w)(\w*)/g, function (g0, g1, g2) { return g1.toUpperCase() + g2.toLowerCase(); });
+	        method = enums_1.RequestMethod[method];
+	        if (typeof method !== 'number')
+	            throw exceptions_1.makeTypeError("Invalid request method. The method \"" + originalMethod + "\" is not supported.");
+	    }
+	    return method;
+	}
+	exports.normalizeMethodName = normalizeMethodName;
+	exports.isSuccess = function (status) { return (status >= 200 && status < 300); };
+	function getResponseURL(xhr) {
+	    if ('responseURL' in xhr) {
+	        return xhr.responseURL;
+	    }
+	    if (/^X-Request-URL:/m.test(xhr.getAllResponseHeaders())) {
+	        return xhr.getResponseHeader('X-Request-URL');
+	    }
+	    return;
+	}
+	exports.getResponseURL = getResponseURL;
+	var lang_2 = __webpack_require__(5);
+	exports.isJsObject = lang_2.isJsObject;
+
+
+/***/ },
+/* 231 */
+/***/ function(module, exports) {
+
+	/**
+	 * Supported http methods.
+	 */
+	(function (RequestMethod) {
+	    RequestMethod[RequestMethod["Get"] = 0] = "Get";
+	    RequestMethod[RequestMethod["Post"] = 1] = "Post";
+	    RequestMethod[RequestMethod["Put"] = 2] = "Put";
+	    RequestMethod[RequestMethod["Delete"] = 3] = "Delete";
+	    RequestMethod[RequestMethod["Options"] = 4] = "Options";
+	    RequestMethod[RequestMethod["Head"] = 5] = "Head";
+	    RequestMethod[RequestMethod["Patch"] = 6] = "Patch";
+	})(exports.RequestMethod || (exports.RequestMethod = {}));
+	var RequestMethod = exports.RequestMethod;
+	/**
+	 * All possible states in which a connection can be, based on
+	 * [States](http://www.w3.org/TR/XMLHttpRequest/#states) from the `XMLHttpRequest` spec, but with an
+	 * additional "CANCELLED" state.
+	 */
+	(function (ReadyState) {
+	    ReadyState[ReadyState["Unsent"] = 0] = "Unsent";
+	    ReadyState[ReadyState["Open"] = 1] = "Open";
+	    ReadyState[ReadyState["HeadersReceived"] = 2] = "HeadersReceived";
+	    ReadyState[ReadyState["Loading"] = 3] = "Loading";
+	    ReadyState[ReadyState["Done"] = 4] = "Done";
+	    ReadyState[ReadyState["Cancelled"] = 5] = "Cancelled";
+	})(exports.ReadyState || (exports.ReadyState = {}));
+	var ReadyState = exports.ReadyState;
+	/**
+	 * Acceptable response types to be associated with a {@link Response}, based on
+	 * [ResponseType](https://fetch.spec.whatwg.org/#responsetype) from the Fetch spec.
+	 */
+	(function (ResponseType) {
+	    ResponseType[ResponseType["Basic"] = 0] = "Basic";
+	    ResponseType[ResponseType["Cors"] = 1] = "Cors";
+	    ResponseType[ResponseType["Default"] = 2] = "Default";
+	    ResponseType[ResponseType["Error"] = 3] = "Error";
+	    ResponseType[ResponseType["Opaque"] = 4] = "Opaque";
+	})(exports.ResponseType || (exports.ResponseType = {}));
+	var ResponseType = exports.ResponseType;
+
+
+/***/ },
+/* 232 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+	    switch (arguments.length) {
+	        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+	        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+	        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+	    }
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var lang_1 = __webpack_require__(5);
+	var headers_1 = __webpack_require__(229);
+	var enums_1 = __webpack_require__(231);
+	var core_1 = __webpack_require__(2);
+	var url_search_params_1 = __webpack_require__(233);
+	var http_utils_1 = __webpack_require__(230);
+	/**
+	 * Creates a request options object to be optionally provided when instantiating a
+	 * {@link Request}.
+	 *
+	 * This class is based on the `RequestInit` description in the [Fetch
+	 * Spec](https://fetch.spec.whatwg.org/#requestinit).
+	 *
+	 * All values are null by default. Typical defaults can be found in the {@link BaseRequestOptions}
+	 * class, which sub-classes `RequestOptions`.
+	 *
+	 * ### Example ([live demo](http://plnkr.co/edit/7Wvi3lfLq41aQPKlxB4O?p=preview))
+	 *
+	 * ```typescript
+	 * import {RequestOptions, Request, RequestMethod} from 'angular2/http';
+	 *
+	 * var options = new RequestOptions({
+	 *   method: RequestMethod.Post,
+	 *   url: 'https://google.com'
+	 * });
+	 * var req = new Request(options);
+	 * console.log('req.method:', RequestMethod[req.method]); // Post
+	 * console.log('options.url:', options.url); // https://google.com
+	 * ```
+	 */
+	var RequestOptions = (function () {
+	    function RequestOptions(_a) {
+	        var _b = _a === void 0 ? {} : _a, method = _b.method, headers = _b.headers, body = _b.body, url = _b.url, search = _b.search;
+	        this.method = lang_1.isPresent(method) ? http_utils_1.normalizeMethodName(method) : null;
+	        this.headers = lang_1.isPresent(headers) ? headers : null;
+	        this.body = lang_1.isPresent(body) ? body : null;
+	        this.url = lang_1.isPresent(url) ? url : null;
+	        this.search = lang_1.isPresent(search) ? (lang_1.isString(search) ? new url_search_params_1.URLSearchParams((search)) :
+	            (search)) :
+	            null;
+	    }
+	    /**
+	     * Creates a copy of the `RequestOptions` instance, using the optional input as values to override
+	     * existing values. This method will not change the values of the instance on which it is being
+	     * called.
+	     *
+	     * Note that `headers` and `search` will override existing values completely if present in
+	     * the `options` object. If these values should be merged, it should be done prior to calling
+	     * `merge` on the `RequestOptions` instance.
+	     *
+	     * ### Example ([live demo](http://plnkr.co/edit/6w8XA8YTkDRcPYpdB9dk?p=preview))
+	     *
+	     * ```typescript
+	     * import {RequestOptions, Request, RequestMethod} from 'angular2/http';
+	     *
+	     * var options = new RequestOptions({
+	     *   method: RequestMethod.Post
+	     * });
+	     * var req = new Request(options.merge({
+	     *   url: 'https://google.com'
+	     * }));
+	     * console.log('req.method:', RequestMethod[req.method]); // Post
+	     * console.log('options.url:', options.url); // null
+	     * console.log('req.url:', req.url); // https://google.com
+	     * ```
+	     */
+	    RequestOptions.prototype.merge = function (options) {
+	        return new RequestOptions({
+	            method: lang_1.isPresent(options) && lang_1.isPresent(options.method) ? options.method : this.method,
+	            headers: lang_1.isPresent(options) && lang_1.isPresent(options.headers) ? options.headers : this.headers,
+	            body: lang_1.isPresent(options) && lang_1.isPresent(options.body) ? options.body : this.body,
+	            url: lang_1.isPresent(options) && lang_1.isPresent(options.url) ? options.url : this.url,
+	            search: lang_1.isPresent(options) && lang_1.isPresent(options.search) ?
+	                (lang_1.isString(options.search) ? new url_search_params_1.URLSearchParams((options.search)) :
+	                    (options.search).clone()) :
+	                this.search
+	        });
+	    };
+	    return RequestOptions;
+	})();
+	exports.RequestOptions = RequestOptions;
+	/**
+	 * Subclass of {@link RequestOptions}, with default values.
+	 *
+	 * Default values:
+	 *  * method: {@link RequestMethod RequestMethod.Get}
+	 *  * headers: empty {@link Headers} object
+	 *
+	 * This class could be extended and bound to the {@link RequestOptions} class
+	 * when configuring an {@link Injector}, in order to override the default options
+	 * used by {@link Http} to create and send {@link Request Requests}.
+	 *
+	 * ### Example ([live demo](http://plnkr.co/edit/LEKVSx?p=preview))
+	 *
+	 * ```typescript
+	 * import {provide, bootstrap} from 'angular2/angular2';
+	 * import {HTTP_PROVIDERS, Http, BaseRequestOptions, RequestOptions} from 'angular2/http';
+	 * import {App} from './myapp';
+	 *
+	 * class MyOptions extends BaseRequestOptions {
+	 *   search: string = 'coreTeam=true';
+	 * }
+	 *
+	 * bootstrap(App, [HTTP_PROVIDERS, provide(RequestOptions, {useClass: MyOptions})]);
+	 * ```
+	 *
+	 * The options could also be extended when manually creating a {@link Request}
+	 * object.
+	 *
+	 * ### Example ([live demo](http://plnkr.co/edit/oyBoEvNtDhOSfi9YxaVb?p=preview))
+	 *
+	 * ```
+	 * import {BaseRequestOptions, Request, RequestMethod} from 'angular2/http';
+	 *
+	 * var options = new BaseRequestOptions();
+	 * var req = new Request(options.merge({
+	 *   method: RequestMethod.Post,
+	 *   url: 'https://google.com'
+	 * }));
+	 * console.log('req.method:', RequestMethod[req.method]); // Post
+	 * console.log('options.url:', options.url); // null
+	 * console.log('req.url:', req.url); // https://google.com
+	 * ```
+	 */
+	var BaseRequestOptions = (function (_super) {
+	    __extends(BaseRequestOptions, _super);
+	    function BaseRequestOptions() {
+	        _super.call(this, { method: enums_1.RequestMethod.Get, headers: new headers_1.Headers() });
+	    }
+	    BaseRequestOptions = __decorate([
+	        core_1.Injectable(), 
+	        __metadata('design:paramtypes', [])
+	    ], BaseRequestOptions);
+	    return BaseRequestOptions;
+	})(RequestOptions);
+	exports.BaseRequestOptions = BaseRequestOptions;
+
+
+/***/ },
+/* 233 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var lang_1 = __webpack_require__(5);
+	var collection_1 = __webpack_require__(12);
+	function paramParser(rawParams) {
+	    if (rawParams === void 0) { rawParams = ''; }
+	    var map = new collection_1.Map();
+	    if (rawParams.length > 0) {
+	        var params = rawParams.split('&');
+	        params.forEach(function (param) {
+	            var split = param.split('=');
+	            var key = split[0];
+	            var val = split[1];
+	            var list = lang_1.isPresent(map.get(key)) ? map.get(key) : [];
+	            list.push(val);
+	            map.set(key, list);
+	        });
+	    }
+	    return map;
+	}
+	/**
+	 * Map-like representation of url search parameters, based on
+	 * [URLSearchParams](https://url.spec.whatwg.org/#urlsearchparams) in the url living standard,
+	 * with several extensions for merging URLSearchParams objects:
+	 *   - setAll()
+	 *   - appendAll()
+	 *   - replaceAll()
+	 */
+	var URLSearchParams = (function () {
+	    function URLSearchParams(rawParams) {
+	        if (rawParams === void 0) { rawParams = ''; }
+	        this.rawParams = rawParams;
+	        this.paramsMap = paramParser(rawParams);
+	    }
+	    URLSearchParams.prototype.clone = function () {
+	        var clone = new URLSearchParams();
+	        clone.appendAll(this);
+	        return clone;
+	    };
+	    URLSearchParams.prototype.has = function (param) { return this.paramsMap.has(param); };
+	    URLSearchParams.prototype.get = function (param) {
+	        var storedParam = this.paramsMap.get(param);
+	        if (collection_1.isListLikeIterable(storedParam)) {
+	            return collection_1.ListWrapper.first(storedParam);
+	        }
+	        else {
+	            return null;
+	        }
+	    };
+	    URLSearchParams.prototype.getAll = function (param) {
+	        var mapParam = this.paramsMap.get(param);
+	        return lang_1.isPresent(mapParam) ? mapParam : [];
+	    };
+	    URLSearchParams.prototype.set = function (param, val) {
+	        var mapParam = this.paramsMap.get(param);
+	        var list = lang_1.isPresent(mapParam) ? mapParam : [];
+	        collection_1.ListWrapper.clear(list);
+	        list.push(val);
+	        this.paramsMap.set(param, list);
+	    };
+	    // A merge operation
+	    // For each name-values pair in `searchParams`, perform `set(name, values[0])`
+	    //
+	    // E.g: "a=[1,2,3], c=[8]" + "a=[4,5,6], b=[7]" = "a=[4], c=[8], b=[7]"
+	    //
+	    // TODO(@caitp): document this better
+	    URLSearchParams.prototype.setAll = function (searchParams) {
+	        var _this = this;
+	        searchParams.paramsMap.forEach(function (value, param) {
+	            var mapParam = _this.paramsMap.get(param);
+	            var list = lang_1.isPresent(mapParam) ? mapParam : [];
+	            collection_1.ListWrapper.clear(list);
+	            list.push(value[0]);
+	            _this.paramsMap.set(param, list);
+	        });
+	    };
+	    URLSearchParams.prototype.append = function (param, val) {
+	        var mapParam = this.paramsMap.get(param);
+	        var list = lang_1.isPresent(mapParam) ? mapParam : [];
+	        list.push(val);
+	        this.paramsMap.set(param, list);
+	    };
+	    // A merge operation
+	    // For each name-values pair in `searchParams`, perform `append(name, value)`
+	    // for each value in `values`.
+	    //
+	    // E.g: "a=[1,2], c=[8]" + "a=[3,4], b=[7]" = "a=[1,2,3,4], c=[8], b=[7]"
+	    //
+	    // TODO(@caitp): document this better
+	    URLSearchParams.prototype.appendAll = function (searchParams) {
+	        var _this = this;
+	        searchParams.paramsMap.forEach(function (value, param) {
+	            var mapParam = _this.paramsMap.get(param);
+	            var list = lang_1.isPresent(mapParam) ? mapParam : [];
+	            for (var i = 0; i < value.length; ++i) {
+	                list.push(value[i]);
+	            }
+	            _this.paramsMap.set(param, list);
+	        });
+	    };
+	    // A merge operation
+	    // For each name-values pair in `searchParams`, perform `delete(name)`,
+	    // followed by `set(name, values)`
+	    //
+	    // E.g: "a=[1,2,3], c=[8]" + "a=[4,5,6], b=[7]" = "a=[4,5,6], c=[8], b=[7]"
+	    //
+	    // TODO(@caitp): document this better
+	    URLSearchParams.prototype.replaceAll = function (searchParams) {
+	        var _this = this;
+	        searchParams.paramsMap.forEach(function (value, param) {
+	            var mapParam = _this.paramsMap.get(param);
+	            var list = lang_1.isPresent(mapParam) ? mapParam : [];
+	            collection_1.ListWrapper.clear(list);
+	            for (var i = 0; i < value.length; ++i) {
+	                list.push(value[i]);
+	            }
+	            _this.paramsMap.set(param, list);
+	        });
+	    };
+	    URLSearchParams.prototype.toString = function () {
+	        var paramsList = [];
+	        this.paramsMap.forEach(function (values, k) { values.forEach(function (v) { return paramsList.push(k + '=' + v); }); });
+	        return paramsList.join('&');
+	    };
+	    URLSearchParams.prototype.delete = function (param) { this.paramsMap.delete(param); };
+	    return URLSearchParams;
+	})();
+	exports.URLSearchParams = URLSearchParams;
+
+
+/***/ },
+/* 234 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+	    switch (arguments.length) {
+	        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+	        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+	        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+	    }
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var enums_1 = __webpack_require__(231);
+	var static_response_1 = __webpack_require__(235);
+	var headers_1 = __webpack_require__(229);
+	var base_response_options_1 = __webpack_require__(236);
+	var core_1 = __webpack_require__(2);
+	var browser_xhr_1 = __webpack_require__(237);
+	var lang_1 = __webpack_require__(5);
+	var core_2 = __webpack_require__(2);
+	var http_utils_1 = __webpack_require__(230);
+	/**
+	* Creates connections using `XMLHttpRequest`. Given a fully-qualified
+	* request, an `XHRConnection` will immediately create an `XMLHttpRequest` object and send the
+	* request.
+	*
+	* This class would typically not be created or interacted with directly inside applications, though
+	* the {@link MockConnection} may be interacted with in tests.
+	*/
+	var XHRConnection = (function () {
+	    function XHRConnection(req, browserXHR, baseResponseOptions) {
+	        var _this = this;
+	        this.request = req;
+	        this.response = new core_2.Observable(function (responseObserver) {
+	            var _xhr = browserXHR.build();
+	            _xhr.open(enums_1.RequestMethod[req.method].toUpperCase(), req.url);
+	            // load event handler
+	            var onLoad = function () {
+	                // responseText is the old-school way of retrieving response (supported by IE8 & 9)
+	                // response/responseType properties were introduced in XHR Level2 spec (supported by
+	                // IE10)
+	                var body = lang_1.isPresent(_xhr.response) ? _xhr.response : _xhr.responseText;
+	                var headers = headers_1.Headers.fromResponseHeaderString(_xhr.getAllResponseHeaders());
+	                var url = http_utils_1.getResponseURL(_xhr);
+	                // normalize IE9 bug (http://bugs.jquery.com/ticket/1450)
+	                var status = _xhr.status === 1223 ? 204 : _xhr.status;
+	                // fix status code when it is 0 (0 status is undocumented).
+	                // Occurs when accessing file resources or on Android 4.1 stock browser
+	                // while retrieving files from application cache.
+	                if (status === 0) {
+	                    status = body ? 200 : 0;
+	                }
+	                var responseOptions = new base_response_options_1.ResponseOptions({ body: body, status: status, headers: headers, url: url });
+	                if (lang_1.isPresent(baseResponseOptions)) {
+	                    responseOptions = baseResponseOptions.merge(responseOptions);
+	                }
+	                var response = new static_response_1.Response(responseOptions);
+	                if (http_utils_1.isSuccess(status)) {
+	                    responseObserver.next(response);
+	                    // TODO(gdi2290): defer complete if array buffer until done
+	                    responseObserver.complete();
+	                    return;
+	                }
+	                responseObserver.error(response);
+	            };
+	            // error event handler
+	            var onError = function (err) {
+	                var responseOptions = new base_response_options_1.ResponseOptions({ body: err, type: enums_1.ResponseType.Error });
+	                if (lang_1.isPresent(baseResponseOptions)) {
+	                    responseOptions = baseResponseOptions.merge(responseOptions);
+	                }
+	                responseObserver.error(new static_response_1.Response(responseOptions));
+	            };
+	            if (lang_1.isPresent(req.headers)) {
+	                req.headers.forEach(function (values, name) { return _xhr.setRequestHeader(name, values.join(',')); });
+	            }
+	            _xhr.addEventListener('load', onLoad);
+	            _xhr.addEventListener('error', onError);
+	            _xhr.send(_this.request.text());
+	            return function () {
+	                _xhr.removeEventListener('load', onLoad);
+	                _xhr.removeEventListener('error', onError);
+	                _xhr.abort();
+	            };
+	        });
+	    }
+	    return XHRConnection;
+	})();
+	exports.XHRConnection = XHRConnection;
+	/**
+	 * Creates {@link XHRConnection} instances.
+	 *
+	 * This class would typically not be used by end users, but could be
+	 * overridden if a different backend implementation should be used,
+	 * such as in a node backend.
+	 *
+	 * ### Example
+	 *
+	 * ```
+	 * import {Http, MyNodeBackend, HTTP_PROVIDERS, BaseRequestOptions} from 'angular2/http';
+	 * @Component({
+	 *   viewProviders: [
+	 *     HTTP_PROVIDERS,
+	 *     provide(Http, {useFactory: (backend, options) => {
+	 *       return new Http(backend, options);
+	 *     }, deps: [MyNodeBackend, BaseRequestOptions]})]
+	 * })
+	 * class MyComponent {
+	 *   constructor(http:Http) {
+	 *     http.request('people.json').subscribe(res => this.people = res.json());
+	 *   }
+	 * }
+	 * ```
+	 *
+	 **/
+	var XHRBackend = (function () {
+	    function XHRBackend(_browserXHR, _baseResponseOptions) {
+	        this._browserXHR = _browserXHR;
+	        this._baseResponseOptions = _baseResponseOptions;
+	    }
+	    XHRBackend.prototype.createConnection = function (request) {
+	        return new XHRConnection(request, this._browserXHR, this._baseResponseOptions);
+	    };
+	    XHRBackend = __decorate([
+	        core_1.Injectable(), 
+	        __metadata('design:paramtypes', [browser_xhr_1.BrowserXhr, base_response_options_1.ResponseOptions])
+	    ], XHRBackend);
+	    return XHRBackend;
+	})();
+	exports.XHRBackend = XHRBackend;
+
+
+/***/ },
+/* 235 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var lang_1 = __webpack_require__(5);
+	var exceptions_1 = __webpack_require__(14);
+	var http_utils_1 = __webpack_require__(230);
+	/**
+	 * Creates `Response` instances from provided values.
+	 *
+	 * Though this object isn't
+	 * usually instantiated by end-users, it is the primary object interacted with when it comes time to
+	 * add data to a view.
+	 *
+	 * ### Example
+	 *
+	 * ```
+	 * http.request('my-friends.txt').subscribe(response => this.friends = response.text());
+	 * ```
+	 *
+	 * The Response's interface is inspired by the Response constructor defined in the [Fetch
+	 * Spec](https://fetch.spec.whatwg.org/#response-class), but is considered a static value whose body
+	 * can be accessed many times. There are other differences in the implementation, but this is the
+	 * most significant.
+	 */
+	var Response = (function () {
+	    function Response(responseOptions) {
+	        this._body = responseOptions.body;
+	        this.status = responseOptions.status;
+	        this.statusText = responseOptions.statusText;
+	        this.headers = responseOptions.headers;
+	        this.type = responseOptions.type;
+	        this.url = responseOptions.url;
+	    }
+	    /**
+	     * Not yet implemented
+	     */
+	    // TODO: Blob return type
+	    Response.prototype.blob = function () { throw new exceptions_1.BaseException('"blob()" method not implemented on Response superclass'); };
+	    /**
+	     * Attempts to return body as parsed `JSON` object, or raises an exception.
+	     */
+	    Response.prototype.json = function () {
+	        var jsonResponse;
+	        if (http_utils_1.isJsObject(this._body)) {
+	            jsonResponse = this._body;
+	        }
+	        else if (lang_1.isString(this._body)) {
+	            jsonResponse = lang_1.Json.parse(this._body);
+	        }
+	        return jsonResponse;
+	    };
+	    /**
+	     * Returns the body as a string, presuming `toString()` can be called on the response body.
+	     */
+	    Response.prototype.text = function () { return this._body.toString(); };
+	    /**
+	     * Not yet implemented
+	     */
+	    // TODO: ArrayBuffer return type
+	    Response.prototype.arrayBuffer = function () {
+	        throw new exceptions_1.BaseException('"arrayBuffer()" method not implemented on Response superclass');
+	    };
+	    return Response;
+	})();
+	exports.Response = Response;
+
+
+/***/ },
+/* 236 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+	    switch (arguments.length) {
+	        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+	        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+	        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+	    }
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var core_1 = __webpack_require__(2);
+	var lang_1 = __webpack_require__(5);
+	var headers_1 = __webpack_require__(229);
+	var enums_1 = __webpack_require__(231);
+	/**
+	 * Creates a response options object to be optionally provided when instantiating a
+	 * {@link Response}.
+	 *
+	 * This class is based on the `ResponseInit` description in the [Fetch
+	 * Spec](https://fetch.spec.whatwg.org/#responseinit).
+	 *
+	 * All values are null by default. Typical defaults can be found in the
+	 * {@link BaseResponseOptions} class, which sub-classes `ResponseOptions`.
+	 *
+	 * This class may be used in tests to build {@link Response Responses} for
+	 * mock responses (see {@link MockBackend}).
+	 *
+	 * ### Example ([live demo](http://plnkr.co/edit/P9Jkk8e8cz6NVzbcxEsD?p=preview))
+	 *
+	 * ```typescript
+	 * import {ResponseOptions, Response} from 'angular2/http';
+	 *
+	 * var options = new ResponseOptions({
+	 *   body: '{"name":"Jeff"}'
+	 * });
+	 * var res = new Response(options);
+	 *
+	 * console.log('res.json():', res.json()); // Object {name: "Jeff"}
+	 * ```
+	 */
+	var ResponseOptions = (function () {
+	    function ResponseOptions(_a) {
+	        var _b = _a === void 0 ? {} : _a, body = _b.body, status = _b.status, headers = _b.headers, statusText = _b.statusText, type = _b.type, url = _b.url;
+	        this.body = lang_1.isPresent(body) ? body : null;
+	        this.status = lang_1.isPresent(status) ? status : null;
+	        this.headers = lang_1.isPresent(headers) ? headers : null;
+	        this.statusText = lang_1.isPresent(statusText) ? statusText : null;
+	        this.type = lang_1.isPresent(type) ? type : null;
+	        this.url = lang_1.isPresent(url) ? url : null;
+	    }
+	    /**
+	     * Creates a copy of the `ResponseOptions` instance, using the optional input as values to
+	     * override
+	     * existing values. This method will not change the values of the instance on which it is being
+	     * called.
+	     *
+	     * This may be useful when sharing a base `ResponseOptions` object inside tests,
+	     * where certain properties may change from test to test.
+	     *
+	     * ### Example ([live demo](http://plnkr.co/edit/1lXquqFfgduTFBWjNoRE?p=preview))
+	     *
+	     * ```typescript
+	     * import {ResponseOptions, Response} from 'angular2/http';
+	     *
+	     * var options = new ResponseOptions({
+	     *   body: {name: 'Jeff'}
+	     * });
+	     * var res = new Response(options.merge({
+	     *   url: 'https://google.com'
+	     * }));
+	     * console.log('options.url:', options.url); // null
+	     * console.log('res.json():', res.json()); // Object {name: "Jeff"}
+	     * console.log('res.url:', res.url); // https://google.com
+	     * ```
+	     */
+	    ResponseOptions.prototype.merge = function (options) {
+	        return new ResponseOptions({
+	            body: lang_1.isPresent(options) && lang_1.isPresent(options.body) ? options.body : this.body,
+	            status: lang_1.isPresent(options) && lang_1.isPresent(options.status) ? options.status : this.status,
+	            headers: lang_1.isPresent(options) && lang_1.isPresent(options.headers) ? options.headers : this.headers,
+	            statusText: lang_1.isPresent(options) && lang_1.isPresent(options.statusText) ? options.statusText :
+	                this.statusText,
+	            type: lang_1.isPresent(options) && lang_1.isPresent(options.type) ? options.type : this.type,
+	            url: lang_1.isPresent(options) && lang_1.isPresent(options.url) ? options.url : this.url,
+	        });
+	    };
+	    return ResponseOptions;
+	})();
+	exports.ResponseOptions = ResponseOptions;
+	/**
+	 * Subclass of {@link ResponseOptions}, with default values.
+	 *
+	 * Default values:
+	 *  * status: 200
+	 *  * headers: empty {@link Headers} object
+	 *
+	 * This class could be extended and bound to the {@link ResponseOptions} class
+	 * when configuring an {@link Injector}, in order to override the default options
+	 * used by {@link Http} to create {@link Response Responses}.
+	 *
+	 * ### Example ([live demo](http://plnkr.co/edit/qv8DLT?p=preview))
+	 *
+	 * ```typescript
+	 * import {provide, bootstrap} from 'angular2/angular2';
+	 * import {HTTP_PROVIDERS, Headers, Http, BaseResponseOptions, ResponseOptions} from
+	 * 'angular2/http';
+	 * import {App} from './myapp';
+	 *
+	 * class MyOptions extends BaseResponseOptions {
+	 *   headers:Headers = new Headers({network: 'github'});
+	 * }
+	 *
+	 * bootstrap(App, [HTTP_PROVIDERS, provide(ResponseOptions, {useClass: MyOptions})]);
+	 * ```
+	 *
+	 * The options could also be extended when manually creating a {@link Response}
+	 * object.
+	 *
+	 * ### Example ([live demo](http://plnkr.co/edit/VngosOWiaExEtbstDoix?p=preview))
+	 *
+	 * ```
+	 * import {BaseResponseOptions, Response} from 'angular2/http';
+	 *
+	 * var options = new BaseResponseOptions();
+	 * var res = new Response(options.merge({
+	 *   body: 'Angular2',
+	 *   headers: new Headers({framework: 'angular'})
+	 * }));
+	 * console.log('res.headers.get("framework"):', res.headers.get('framework')); // angular
+	 * console.log('res.text():', res.text()); // Angular2;
+	 * ```
+	 */
+	var BaseResponseOptions = (function (_super) {
+	    __extends(BaseResponseOptions, _super);
+	    function BaseResponseOptions() {
+	        _super.call(this, { status: 200, statusText: 'Ok', type: enums_1.ResponseType.Default, headers: new headers_1.Headers() });
+	    }
+	    BaseResponseOptions = __decorate([
+	        core_1.Injectable(), 
+	        __metadata('design:paramtypes', [])
+	    ], BaseResponseOptions);
+	    return BaseResponseOptions;
+	})(ResponseOptions);
+	exports.BaseResponseOptions = BaseResponseOptions;
+
+
+/***/ },
+/* 237 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+	    switch (arguments.length) {
+	        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+	        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+	        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+	    }
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var core_1 = __webpack_require__(2);
+	// Make sure not to evaluate this in a non-browser environment!
+	var BrowserXhr = (function () {
+	    function BrowserXhr() {
+	    }
+	    BrowserXhr.prototype.build = function () { return (new XMLHttpRequest()); };
+	    BrowserXhr = __decorate([
+	        core_1.Injectable(), 
+	        __metadata('design:paramtypes', [])
+	    ], BrowserXhr);
+	    return BrowserXhr;
+	})();
+	exports.BrowserXhr = BrowserXhr;
+
+
+/***/ },
+/* 238 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+	    switch (arguments.length) {
+	        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+	        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+	        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+	    }
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var interfaces_1 = __webpack_require__(227);
+	var enums_1 = __webpack_require__(231);
+	var static_response_1 = __webpack_require__(235);
+	var base_response_options_1 = __webpack_require__(236);
+	var core_1 = __webpack_require__(2);
+	var browser_jsonp_1 = __webpack_require__(239);
+	var exceptions_1 = __webpack_require__(14);
+	var lang_1 = __webpack_require__(5);
+	var core_2 = __webpack_require__(2);
+	var JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callback.';
+	var JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
+	var JSONPConnection = (function () {
+	    function JSONPConnection() {
+	    }
+	    return JSONPConnection;
+	})();
+	exports.JSONPConnection = JSONPConnection;
+	var JSONPConnection_ = (function (_super) {
+	    __extends(JSONPConnection_, _super);
+	    function JSONPConnection_(req, _dom, baseResponseOptions) {
+	        var _this = this;
+	        _super.call(this);
+	        this._dom = _dom;
+	        this.baseResponseOptions = baseResponseOptions;
+	        this._finished = false;
+	        if (req.method !== enums_1.RequestMethod.Get) {
+	            throw exceptions_1.makeTypeError(JSONP_ERR_WRONG_METHOD);
+	        }
+	        this.request = req;
+	        this.response = new core_2.Observable(function (responseObserver) {
+	            _this.readyState = enums_1.ReadyState.Loading;
+	            var id = _this._id = _dom.nextRequestID();
+	            _dom.exposeConnection(id, _this);
+	            // Workaround Dart
+	            // url = url.replace(/=JSONP_CALLBACK(&|$)/, `generated method`);
+	            var callback = _dom.requestCallback(_this._id);
+	            var url = req.url;
+	            if (url.indexOf('=JSONP_CALLBACK&') > -1) {
+	                url = lang_1.StringWrapper.replace(url, '=JSONP_CALLBACK&', "=" + callback + "&");
+	            }
+	            else if (url.lastIndexOf('=JSONP_CALLBACK') === url.length - '=JSONP_CALLBACK'.length) {
+	                url = url.substring(0, url.length - '=JSONP_CALLBACK'.length) + ("=" + callback);
+	            }
+	            var script = _this._script = _dom.build(url);
+	            var onLoad = function (event) {
+	                if (_this.readyState === enums_1.ReadyState.Cancelled)
+	                    return;
+	                _this.readyState = enums_1.ReadyState.Done;
+	                _dom.cleanup(script);
+	                if (!_this._finished) {
+	                    var responseOptions_1 = new base_response_options_1.ResponseOptions({ body: JSONP_ERR_NO_CALLBACK, type: enums_1.ResponseType.Error, url: url });
+	                    if (lang_1.isPresent(baseResponseOptions)) {
+	                        responseOptions_1 = baseResponseOptions.merge(responseOptions_1);
+	                    }
+	                    responseObserver.error(new static_response_1.Response(responseOptions_1));
+	                    return;
+	                }
+	                var responseOptions = new base_response_options_1.ResponseOptions({ body: _this._responseData, url: url });
+	                if (lang_1.isPresent(_this.baseResponseOptions)) {
+	                    responseOptions = _this.baseResponseOptions.merge(responseOptions);
+	                }
+	                responseObserver.next(new static_response_1.Response(responseOptions));
+	                responseObserver.complete();
+	            };
+	            var onError = function (error) {
+	                if (_this.readyState === enums_1.ReadyState.Cancelled)
+	                    return;
+	                _this.readyState = enums_1.ReadyState.Done;
+	                _dom.cleanup(script);
+	                var responseOptions = new base_response_options_1.ResponseOptions({ body: error.message, type: enums_1.ResponseType.Error });
+	                if (lang_1.isPresent(baseResponseOptions)) {
+	                    responseOptions = baseResponseOptions.merge(responseOptions);
+	                }
+	                responseObserver.error(new static_response_1.Response(responseOptions));
+	            };
+	            script.addEventListener('load', onLoad);
+	            script.addEventListener('error', onError);
+	            _dom.send(script);
+	            return function () {
+	                _this.readyState = enums_1.ReadyState.Cancelled;
+	                script.removeEventListener('load', onLoad);
+	                script.removeEventListener('error', onError);
+	                if (lang_1.isPresent(script)) {
+	                    _this._dom.cleanup(script);
+	                }
+	            };
+	        });
+	    }
+	    JSONPConnection_.prototype.finished = function (data) {
+	        // Don't leak connections
+	        this._finished = true;
+	        this._dom.removeConnection(this._id);
+	        if (this.readyState === enums_1.ReadyState.Cancelled)
+	            return;
+	        this._responseData = data;
+	    };
+	    return JSONPConnection_;
+	})(JSONPConnection);
+	exports.JSONPConnection_ = JSONPConnection_;
+	var JSONPBackend = (function (_super) {
+	    __extends(JSONPBackend, _super);
+	    function JSONPBackend() {
+	        _super.apply(this, arguments);
+	    }
+	    return JSONPBackend;
+	})(interfaces_1.ConnectionBackend);
+	exports.JSONPBackend = JSONPBackend;
+	var JSONPBackend_ = (function (_super) {
+	    __extends(JSONPBackend_, _super);
+	    function JSONPBackend_(_browserJSONP, _baseResponseOptions) {
+	        _super.call(this);
+	        this._browserJSONP = _browserJSONP;
+	        this._baseResponseOptions = _baseResponseOptions;
+	    }
+	    JSONPBackend_.prototype.createConnection = function (request) {
+	        return new JSONPConnection_(request, this._browserJSONP, this._baseResponseOptions);
+	    };
+	    JSONPBackend_ = __decorate([
+	        core_1.Injectable(), 
+	        __metadata('design:paramtypes', [browser_jsonp_1.BrowserJsonp, base_response_options_1.ResponseOptions])
+	    ], JSONPBackend_);
+	    return JSONPBackend_;
+	})(JSONPBackend);
+	exports.JSONPBackend_ = JSONPBackend_;
+
+
+/***/ },
+/* 239 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+	    switch (arguments.length) {
+	        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+	        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+	        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+	    }
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var core_1 = __webpack_require__(2);
+	var lang_1 = __webpack_require__(5);
+	var _nextRequestId = 0;
+	exports.JSONP_HOME = '__ng_jsonp__';
+	var _jsonpConnections = null;
+	function _getJsonpConnections() {
+	    if (_jsonpConnections === null) {
+	        _jsonpConnections = lang_1.global[exports.JSONP_HOME] = {};
+	    }
+	    return _jsonpConnections;
+	}
+	// Make sure not to evaluate this in a non-browser environment!
+	var BrowserJsonp = (function () {
+	    function BrowserJsonp() {
+	    }
+	    // Construct a <script> element with the specified URL
+	    BrowserJsonp.prototype.build = function (url) {
+	        var node = document.createElement('script');
+	        node.src = url;
+	        return node;
+	    };
+	    BrowserJsonp.prototype.nextRequestID = function () { return "__req" + _nextRequestId++; };
+	    BrowserJsonp.prototype.requestCallback = function (id) { return exports.JSONP_HOME + "." + id + ".finished"; };
+	    BrowserJsonp.prototype.exposeConnection = function (id, connection) {
+	        var connections = _getJsonpConnections();
+	        connections[id] = connection;
+	    };
+	    BrowserJsonp.prototype.removeConnection = function (id) {
+	        var connections = _getJsonpConnections();
+	        connections[id] = null;
+	    };
+	    // Attach the <script> element to the DOM
+	    BrowserJsonp.prototype.send = function (node) { document.body.appendChild((node)); };
+	    // Remove <script> element from the DOM
+	    BrowserJsonp.prototype.cleanup = function (node) {
+	        if (node.parentNode) {
+	            node.parentNode.removeChild((node));
+	        }
+	    };
+	    BrowserJsonp = __decorate([
+	        core_1.Injectable(), 
+	        __metadata('design:paramtypes', [])
+	    ], BrowserJsonp);
+	    return BrowserJsonp;
+	})();
+	exports.BrowserJsonp = BrowserJsonp;
+
+
+/***/ },
+/* 240 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * @module
+	 * @description
+	 * Maps application URLs into application states, to support deep-linking and navigation.
+	 */
+	function __export(m) {
+	    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+	}
+	var router_1 = __webpack_require__(241);
+	exports.Router = router_1.Router;
+	var router_outlet_1 = __webpack_require__(257);
+	exports.RouterOutlet = router_outlet_1.RouterOutlet;
+	var router_link_1 = __webpack_require__(259);
+	exports.RouterLink = router_link_1.RouterLink;
+	var instruction_1 = __webpack_require__(245);
+	exports.RouteParams = instruction_1.RouteParams;
+	exports.RouteData = instruction_1.RouteData;
+	var platform_location_1 = __webpack_require__(260);
+	exports.PlatformLocation = platform_location_1.PlatformLocation;
+	var route_registry_1 = __webpack_require__(242);
+	exports.RouteRegistry = route_registry_1.RouteRegistry;
+	exports.ROUTER_PRIMARY_COMPONENT = route_registry_1.ROUTER_PRIMARY_COMPONENT;
+	var location_strategy_1 = __webpack_require__(254);
+	exports.LocationStrategy = location_strategy_1.LocationStrategy;
+	exports.APP_BASE_HREF = location_strategy_1.APP_BASE_HREF;
+	var hash_location_strategy_1 = __webpack_require__(261);
+	exports.HashLocationStrategy = hash_location_strategy_1.HashLocationStrategy;
+	var path_location_strategy_1 = __webpack_require__(262);
+	exports.PathLocationStrategy = path_location_strategy_1.PathLocationStrategy;
+	var location_1 = __webpack_require__(253);
+	exports.Location = location_1.Location;
+	__export(__webpack_require__(252));
+	__export(__webpack_require__(263));
+	var lifecycle_annotations_1 = __webpack_require__(258);
+	exports.CanActivate = lifecycle_annotations_1.CanActivate;
+	var instruction_2 = __webpack_require__(245);
+	exports.Instruction = instruction_2.Instruction;
+	exports.ComponentInstruction = instruction_2.ComponentInstruction;
+	var core_1 = __webpack_require__(2);
+	exports.OpaqueToken = core_1.OpaqueToken;
+	var platform_location_2 = __webpack_require__(260);
+	var location_strategy_2 = __webpack_require__(254);
+	var path_location_strategy_2 = __webpack_require__(262);
+	var router_2 = __webpack_require__(241);
+	var router_outlet_2 = __webpack_require__(257);
+	var router_link_2 = __webpack_require__(259);
+	var route_registry_2 = __webpack_require__(242);
+	var location_2 = __webpack_require__(253);
+	var core_2 = __webpack_require__(2);
+	var lang_1 = __webpack_require__(5);
+	var exceptions_1 = __webpack_require__(14);
+	/**
+	 * A list of directives. To use the router directives like {@link RouterOutlet} and
+	 * {@link RouterLink}, add this to your `directives` array in the {@link View} decorator of your
+	 * component.
+	 *
+	 * ### Example ([live demo](http://plnkr.co/edit/iRUP8B5OUbxCWQ3AcIDm))
+	 *
+	 * ```
+	 * import {Component} from 'angular2/angular2';
+	 * import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
+	 *
+	 * @Component({directives: [ROUTER_DIRECTIVES]})
+	 * @RouteConfig([
+	 *  {...},
+	 * ])
+	 * class AppCmp {
+	 *    // ...
+	 * }
+	 *
+	 * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
+	 * ```
+	 */
+	exports.ROUTER_DIRECTIVES = lang_1.CONST_EXPR([router_outlet_2.RouterOutlet, router_link_2.RouterLink]);
+	/**
+	 * A list of {@link Provider}s. To use the router, you must add this to your application.
+	 *
+	 * ### Example ([live demo](http://plnkr.co/edit/iRUP8B5OUbxCWQ3AcIDm))
+	 *
+	 * ```
+	 * import {Component} from 'angular2/angular2';
+	 * import {
+	 *   ROUTER_DIRECTIVES,
+	 *   ROUTER_PROVIDERS,
+	 *   RouteConfig
+	 * } from 'angular2/router';
+	 *
+	 * @Component({directives: [ROUTER_DIRECTIVES]})
+	 * @RouteConfig([
+	 *  {...},
+	 * ])
+	 * class AppCmp {
+	 *   // ...
+	 * }
+	 *
+	 * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
+	 * ```
+	 */
+	exports.ROUTER_PROVIDERS = lang_1.CONST_EXPR([
+	    route_registry_2.RouteRegistry,
+	    lang_1.CONST_EXPR(new core_2.Provider(location_strategy_2.LocationStrategy, { useClass: path_location_strategy_2.PathLocationStrategy })),
+	    platform_location_2.PlatformLocation,
+	    location_2.Location,
+	    lang_1.CONST_EXPR(new core_2.Provider(router_2.Router, {
+	        useFactory: routerFactory,
+	        deps: lang_1.CONST_EXPR([route_registry_2.RouteRegistry, location_2.Location, route_registry_2.ROUTER_PRIMARY_COMPONENT, core_2.ApplicationRef])
+	    })),
+	    lang_1.CONST_EXPR(new core_2.Provider(route_registry_2.ROUTER_PRIMARY_COMPONENT, { useFactory: routerPrimaryComponentFactory, deps: lang_1.CONST_EXPR([core_2.ApplicationRef]) }))
+	]);
+	/**
+	 * @deprecated
+	 */
+	exports.ROUTER_BINDINGS = exports.ROUTER_PROVIDERS;
+	function routerFactory(registry, location, primaryComponent, appRef) {
+	    var rootRouter = new router_2.RootRouter(registry, location, primaryComponent);
+	    appRef.registerDisposeListener(function () { return rootRouter.dispose(); });
+	    return rootRouter;
+	}
+	function routerPrimaryComponentFactory(app) {
+	    if (app.componentTypes.length == 0) {
+	        throw new exceptions_1.BaseException("Bootstrap at least one component before injecting Router.");
+	    }
+	    return app.componentTypes[0];
+	}
+
+
+/***/ },
+/* 241 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+	    switch (arguments.length) {
+	        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+	        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+	        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+	    }
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var async_1 = __webpack_require__(60);
+	var collection_1 = __webpack_require__(12);
+	var lang_1 = __webpack_require__(5);
+	var exceptions_1 = __webpack_require__(14);
+	var core_1 = __webpack_require__(2);
+	var route_registry_1 = __webpack_require__(242);
+	var location_1 = __webpack_require__(253);
+	var route_lifecycle_reflector_1 = __webpack_require__(255);
+	var _resolveToTrue = async_1.PromiseWrapper.resolve(true);
+	var _resolveToFalse = async_1.PromiseWrapper.resolve(false);
+	/**
+	 * The `Router` is responsible for mapping URLs to components.
+	 *
+	 * You can see the state of the router by inspecting the read-only field `router.navigating`.
+	 * This may be useful for showing a spinner, for instance.
+	 *
+	 * ## Concepts
+	 *
+	 * Routers and component instances have a 1:1 correspondence.
+	 *
+	 * The router holds reference to a number of {@link RouterOutlet}.
+	 * An outlet is a placeholder that the router dynamically fills in depending on the current URL.
+	 *
+	 * When the router navigates from a URL, it must first recognize it and serialize it into an
+	 * `Instruction`.
+	 * The router uses the `RouteRegistry` to get an `Instruction`.
+	 */
+	var Router = (function () {
+	    function Router(registry, parent, hostComponent) {
+	        this.registry = registry;
+	        this.parent = parent;
+	        this.hostComponent = hostComponent;
+	        this.navigating = false;
+	        this._currentInstruction = null;
+	        this._currentNavigation = _resolveToTrue;
+	        this._outlet = null;
+	        this._auxRouters = new collection_1.Map();
+	        this._subject = new async_1.EventEmitter();
+	    }
+	    /**
+	     * Constructs a child router. You probably don't need to use this unless you're writing a reusable
+	     * component.
+	     */
+	    Router.prototype.childRouter = function (hostComponent) {
+	        return this._childRouter = new ChildRouter(this, hostComponent);
+	    };
+	    /**
+	     * Constructs a child router. You probably don't need to use this unless you're writing a reusable
+	     * component.
+	     */
+	    Router.prototype.auxRouter = function (hostComponent) { return new ChildRouter(this, hostComponent); };
+	    /**
+	     * Register an outlet to notified of primary route changes.
+	     *
+	     * You probably don't need to use this unless you're writing a reusable component.
+	     */
+	    Router.prototype.registerPrimaryOutlet = function (outlet) {
+	        if (lang_1.isPresent(outlet.name)) {
+	            throw new exceptions_1.BaseException("registerPrimaryOutlet expects to be called with an unnamed outlet.");
+	        }
+	        this._outlet = outlet;
+	        if (lang_1.isPresent(this._currentInstruction)) {
+	            return this.commit(this._currentInstruction, false);
+	        }
+	        return _resolveToTrue;
+	    };
+	    /**
+	     * Register an outlet to notified of auxiliary route changes.
+	     *
+	     * You probably don't need to use this unless you're writing a reusable component.
+	     */
+	    Router.prototype.registerAuxOutlet = function (outlet) {
+	        var outletName = outlet.name;
+	        if (lang_1.isBlank(outletName)) {
+	            throw new exceptions_1.BaseException("registerAuxOutlet expects to be called with an outlet with a name.");
+	        }
+	        // TODO...
+	        // what is the host of an aux route???
+	        var router = this.auxRouter(this.hostComponent);
+	        this._auxRouters.set(outletName, router);
+	        router._outlet = outlet;
+	        var auxInstruction;
+	        if (lang_1.isPresent(this._currentInstruction) &&
+	            lang_1.isPresent(auxInstruction = this._currentInstruction.auxInstruction[outletName])) {
+	            return router.commit(auxInstruction);
+	        }
+	        return _resolveToTrue;
+	    };
+	    /**
+	     * Given an instruction, returns `true` if the instruction is currently active,
+	     * otherwise `false`.
+	     */
+	    Router.prototype.isRouteActive = function (instruction) {
+	        var router = this;
+	        while (lang_1.isPresent(router.parent) && lang_1.isPresent(instruction.child)) {
+	            router = router.parent;
+	            instruction = instruction.child;
+	        }
+	        return lang_1.isPresent(this._currentInstruction) &&
+	            this._currentInstruction.component == instruction.component;
+	    };
+	    /**
+	     * Dynamically update the routing configuration and trigger a navigation.
+	     *
+	     * ### Usage
+	     *
+	     * ```
+	     * router.config([
+	     *   { 'path': '/', 'component': IndexComp },
+	     *   { 'path': '/user/:id', 'component': UserComp },
+	     * ]);
+	     * ```
+	     */
+	    Router.prototype.config = function (definitions) {
+	        var _this = this;
+	        definitions.forEach(function (routeDefinition) { _this.registry.config(_this.hostComponent, routeDefinition); });
+	        return this.renavigate();
+	    };
+	    /**
+	     * Navigate based on the provided Route Link DSL. It's preferred to navigate with this method
+	     * over `navigateByUrl`.
+	     *
+	     * ### Usage
+	     *
+	     * This method takes an array representing the Route Link DSL:
+	     * ```
+	     * ['./MyCmp', {param: 3}]
+	     * ```
+	     * See the {@link RouterLink} directive for more.
+	     */
+	    Router.prototype.navigate = function (linkParams) {
+	        var instruction = this.generate(linkParams);
+	        return this.navigateByInstruction(instruction, false);
+	    };
+	    /**
+	     * Navigate to a URL. Returns a promise that resolves when navigation is complete.
+	     * It's preferred to navigate with `navigate` instead of this method, since URLs are more brittle.
+	     *
+	     * If the given URL begins with a `/`, router will navigate absolutely.
+	     * If the given URL does not begin with `/`, the router will navigate relative to this component.
+	     */
+	    Router.prototype.navigateByUrl = function (url, _skipLocationChange) {
+	        var _this = this;
+	        if (_skipLocationChange === void 0) { _skipLocationChange = false; }
+	        return this._currentNavigation = this._currentNavigation.then(function (_) {
+	            _this.lastNavigationAttempt = url;
+	            _this._startNavigating();
+	            return _this._afterPromiseFinishNavigating(_this.recognize(url).then(function (instruction) {
+	                if (lang_1.isBlank(instruction)) {
+	                    return false;
+	                }
+	                return _this._navigate(instruction, _skipLocationChange);
+	            }));
+	        });
+	    };
+	    /**
+	     * Navigate via the provided instruction. Returns a promise that resolves when navigation is
+	     * complete.
+	     */
+	    Router.prototype.navigateByInstruction = function (instruction, _skipLocationChange) {
+	        var _this = this;
+	        if (_skipLocationChange === void 0) { _skipLocationChange = false; }
+	        if (lang_1.isBlank(instruction)) {
+	            return _resolveToFalse;
+	        }
+	        return this._currentNavigation = this._currentNavigation.then(function (_) {
+	            _this._startNavigating();
+	            return _this._afterPromiseFinishNavigating(_this._navigate(instruction, _skipLocationChange));
+	        });
+	    };
+	    /** @internal */
+	    Router.prototype._navigate = function (instruction, _skipLocationChange) {
+	        var _this = this;
+	        return this._settleInstruction(instruction)
+	            .then(function (_) { return _this._routerCanReuse(instruction); })
+	            .then(function (_) { return _this._canActivate(instruction); })
+	            .then(function (result) {
+	            if (!result) {
+	                return false;
+	            }
+	            return _this._routerCanDeactivate(instruction)
+	                .then(function (result) {
+	                if (result) {
+	                    return _this.commit(instruction, _skipLocationChange)
+	                        .then(function (_) {
+	                        _this._emitNavigationFinish(instruction.toRootUrl());
+	                        return true;
+	                    });
+	                }
+	            });
+	        });
+	    };
+	    /** @internal */
+	    Router.prototype._settleInstruction = function (instruction) {
+	        var _this = this;
+	        return instruction.resolveComponent().then(function (_) {
+	            instruction.component.reuse = false;
+	            var unsettledInstructions = [];
+	            if (lang_1.isPresent(instruction.child)) {
+	                unsettledInstructions.push(_this._settleInstruction(instruction.child));
+	            }
+	            collection_1.StringMapWrapper.forEach(instruction.auxInstruction, function (instruction, _) {
+	                unsettledInstructions.push(_this._settleInstruction(instruction));
+	            });
+	            return async_1.PromiseWrapper.all(unsettledInstructions);
+	        });
+	    };
+	    Router.prototype._emitNavigationFinish = function (url) { async_1.ObservableWrapper.callEmit(this._subject, url); };
+	    Router.prototype._afterPromiseFinishNavigating = function (promise) {
+	        var _this = this;
+	        return async_1.PromiseWrapper.catchError(promise.then(function (_) { return _this._finishNavigating(); }), function (err) {
+	            _this._finishNavigating();
+	            throw err;
+	        });
+	    };
+	    /*
+	     * Recursively set reuse flags
+	     */
+	    /** @internal */
+	    Router.prototype._routerCanReuse = function (instruction) {
+	        var _this = this;
+	        if (lang_1.isBlank(this._outlet)) {
+	            return _resolveToFalse;
+	        }
+	        return this._outlet.routerCanReuse(instruction.component)
+	            .then(function (result) {
+	            instruction.component.reuse = result;
+	            if (result && lang_1.isPresent(_this._childRouter) && lang_1.isPresent(instruction.child)) {
+	                return _this._childRouter._routerCanReuse(instruction.child);
+	            }
+	        });
+	    };
+	    Router.prototype._canActivate = function (nextInstruction) {
+	        return canActivateOne(nextInstruction, this._currentInstruction);
+	    };
+	    Router.prototype._routerCanDeactivate = function (instruction) {
+	        var _this = this;
+	        if (lang_1.isBlank(this._outlet)) {
+	            return _resolveToTrue;
+	        }
+	        var next;
+	        var childInstruction = null;
+	        var reuse = false;
+	        var componentInstruction = null;
+	        if (lang_1.isPresent(instruction)) {
+	            childInstruction = instruction.child;
+	            componentInstruction = instruction.component;
+	            reuse = instruction.component.reuse;
+	        }
+	        if (reuse) {
+	            next = _resolveToTrue;
+	        }
+	        else {
+	            next = this._outlet.routerCanDeactivate(componentInstruction);
+	        }
+	        // TODO: aux route lifecycle hooks
+	        return next.then(function (result) {
+	            if (result == false) {
+	                return false;
+	            }
+	            if (lang_1.isPresent(_this._childRouter)) {
+	                return _this._childRouter._routerCanDeactivate(childInstruction);
+	            }
+	            return true;
+	        });
+	    };
+	    /**
+	     * Updates this router and all descendant routers according to the given instruction
+	     */
+	    Router.prototype.commit = function (instruction, _skipLocationChange) {
+	        var _this = this;
+	        if (_skipLocationChange === void 0) { _skipLocationChange = false; }
+	        this._currentInstruction = instruction;
+	        var next = _resolveToTrue;
+	        if (lang_1.isPresent(this._outlet)) {
+	            var componentInstruction = instruction.component;
+	            if (componentInstruction.reuse) {
+	                next = this._outlet.reuse(componentInstruction);
+	            }
+	            else {
+	                next =
+	                    this.deactivate(instruction).then(function (_) { return _this._outlet.activate(componentInstruction); });
+	            }
+	            if (lang_1.isPresent(instruction.child)) {
+	                next = next.then(function (_) {
+	                    if (lang_1.isPresent(_this._childRouter)) {
+	                        return _this._childRouter.commit(instruction.child);
+	                    }
+	                });
+	            }
+	        }
+	        var promises = [];
+	        this._auxRouters.forEach(function (router, name) {
+	            if (lang_1.isPresent(instruction.auxInstruction[name])) {
+	                promises.push(router.commit(instruction.auxInstruction[name]));
+	            }
+	        });
+	        return next.then(function (_) { return async_1.PromiseWrapper.all(promises); });
+	    };
+	    /** @internal */
+	    Router.prototype._startNavigating = function () { this.navigating = true; };
+	    /** @internal */
+	    Router.prototype._finishNavigating = function () { this.navigating = false; };
+	    /**
+	     * Subscribe to URL updates from the router
+	     */
+	    Router.prototype.subscribe = function (onNext) {
+	        return async_1.ObservableWrapper.subscribe(this._subject, onNext);
+	    };
+	    /**
+	     * Removes the contents of this router's outlet and all descendant outlets
+	     */
+	    Router.prototype.deactivate = function (instruction) {
+	        var _this = this;
+	        var childInstruction = null;
+	        var componentInstruction = null;
+	        if (lang_1.isPresent(instruction)) {
+	            childInstruction = instruction.child;
+	            componentInstruction = instruction.component;
+	        }
+	        var next = _resolveToTrue;
+	        if (lang_1.isPresent(this._childRouter)) {
+	            next = this._childRouter.deactivate(childInstruction);
+	        }
+	        if (lang_1.isPresent(this._outlet)) {
+	            next = next.then(function (_) { return _this._outlet.deactivate(componentInstruction); });
+	        }
+	        // TODO: handle aux routes
+	        return next;
+	    };
+	    /**
+	     * Given a URL, returns an instruction representing the component graph
+	     */
+	    Router.prototype.recognize = function (url) {
+	        var ancestorComponents = this._getAncestorInstructions();
+	        return this.registry.recognize(url, ancestorComponents);
+	    };
+	    Router.prototype._getAncestorInstructions = function () {
+	        var ancestorComponents = [];
+	        var ancestorRouter = this;
+	        while (lang_1.isPresent(ancestorRouter.parent) &&
+	            lang_1.isPresent(ancestorRouter.parent._currentInstruction)) {
+	            ancestorRouter = ancestorRouter.parent;
+	            ancestorComponents.unshift(ancestorRouter._currentInstruction);
+	        }
+	        return ancestorComponents;
+	    };
+	    /**
+	     * Navigates to either the last URL successfully navigated to, or the last URL requested if the
+	     * router has yet to successfully navigate.
+	     */
+	    Router.prototype.renavigate = function () {
+	        if (lang_1.isBlank(this.lastNavigationAttempt)) {
+	            return this._currentNavigation;
+	        }
+	        return this.navigateByUrl(this.lastNavigationAttempt);
+	    };
+	    /**
+	     * Generate an `Instruction` based on the provided Route Link DSL.
+	     */
+	    Router.prototype.generate = function (linkParams) {
+	        var ancestorInstructions = this._getAncestorInstructions();
+	        return this.registry.generate(linkParams, ancestorInstructions);
+	    };
+	    return Router;
+	})();
+	exports.Router = Router;
+	var RootRouter = (function (_super) {
+	    __extends(RootRouter, _super);
+	    function RootRouter(registry, location, primaryComponent) {
+	        var _this = this;
+	        _super.call(this, registry, null, primaryComponent);
+	        this._location = location;
+	        this._locationSub = this._location.subscribe(function (change) { return _this.navigateByUrl(change['url'], lang_1.isPresent(change['pop'])); });
+	        this.registry.configFromComponent(primaryComponent);
+	        this.navigateByUrl(location.path());
+	    }
+	    RootRouter.prototype.commit = function (instruction, _skipLocationChange) {
+	        var _this = this;
+	        if (_skipLocationChange === void 0) { _skipLocationChange = false; }
+	        var emitPath = instruction.toUrlPath();
+	        var emitQuery = instruction.toUrlQuery();
+	        if (emitPath.length > 0) {
+	            emitPath = '/' + emitPath;
+	        }
+	        var promise = _super.prototype.commit.call(this, instruction);
+	        if (!_skipLocationChange) {
+	            promise = promise.then(function (_) { _this._location.go(emitPath, emitQuery); });
+	        }
+	        return promise;
+	    };
+	    RootRouter.prototype.dispose = function () {
+	        if (lang_1.isPresent(this._locationSub)) {
+	            async_1.ObservableWrapper.dispose(this._locationSub);
+	            this._locationSub = null;
+	        }
+	    };
+	    RootRouter = __decorate([
+	        core_1.Injectable(),
+	        __param(2, core_1.Inject(route_registry_1.ROUTER_PRIMARY_COMPONENT)), 
+	        __metadata('design:paramtypes', [route_registry_1.RouteRegistry, location_1.Location, lang_1.Type])
+	    ], RootRouter);
+	    return RootRouter;
+	})(Router);
+	exports.RootRouter = RootRouter;
+	var ChildRouter = (function (_super) {
+	    __extends(ChildRouter, _super);
+	    function ChildRouter(parent, hostComponent) {
+	        _super.call(this, parent.registry, parent, hostComponent);
+	        this.parent = parent;
+	    }
+	    ChildRouter.prototype.navigateByUrl = function (url, _skipLocationChange) {
+	        if (_skipLocationChange === void 0) { _skipLocationChange = false; }
+	        // Delegate navigation to the root router
+	        return this.parent.navigateByUrl(url, _skipLocationChange);
+	    };
+	    ChildRouter.prototype.navigateByInstruction = function (instruction, _skipLocationChange) {
+	        if (_skipLocationChange === void 0) { _skipLocationChange = false; }
+	        // Delegate navigation to the root router
+	        return this.parent.navigateByInstruction(instruction, _skipLocationChange);
+	    };
+	    return ChildRouter;
+	})(Router);
+	function canActivateOne(nextInstruction, prevInstruction) {
+	    var next = _resolveToTrue;
+	    if (lang_1.isPresent(nextInstruction.child)) {
+	        next = canActivateOne(nextInstruction.child, lang_1.isPresent(prevInstruction) ? prevInstruction.child : null);
+	    }
+	    return next.then(function (result) {
+	        if (result == false) {
+	            return false;
+	        }
+	        if (nextInstruction.component.reuse) {
+	            return true;
+	        }
+	        var hook = route_lifecycle_reflector_1.getCanActivateHook(nextInstruction.component.componentType);
+	        if (lang_1.isPresent(hook)) {
+	            return hook(nextInstruction.component, lang_1.isPresent(prevInstruction) ? prevInstruction.component : null);
+	        }
+	        return true;
+	    });
+	}
+
+
+/***/ },
+/* 242 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+	    switch (arguments.length) {
+	        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+	        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+	        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+	    }
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var collection_1 = __webpack_require__(12);
+	var async_1 = __webpack_require__(60);
+	var lang_1 = __webpack_require__(5);
+	var exceptions_1 = __webpack_require__(14);
+	var reflection_1 = __webpack_require__(16);
+	var core_1 = __webpack_require__(2);
+	var route_config_impl_1 = __webpack_require__(243);
+	var route_recognizer_1 = __webpack_require__(244);
+	var component_recognizer_1 = __webpack_require__(248);
+	var instruction_1 = __webpack_require__(245);
+	var route_config_nomalizer_1 = __webpack_require__(251);
+	var url_parser_1 = __webpack_require__(247);
+	var _resolveToNull = async_1.PromiseWrapper.resolve(null);
+	/**
+	 * Token used to bind the component with the top-level {@link RouteConfig}s for the
+	 * application.
+	 *
+	 * ### Example ([live demo](http://plnkr.co/edit/iRUP8B5OUbxCWQ3AcIDm))
+	 *
+	 * ```
+	 * import {Component} from 'angular2/angular2';
+	 * import {
+	 *   ROUTER_DIRECTIVES,
+	 *   ROUTER_PROVIDERS,
+	 *   RouteConfig
+	 * } from 'angular2/router';
+	 *
+	 * @Component({directives: [ROUTER_DIRECTIVES]})
+	 * @RouteConfig([
+	 *  {...},
+	 * ])
+	 * class AppCmp {
+	 *   // ...
+	 * }
+	 *
+	 * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
+	 * ```
+	 */
+	exports.ROUTER_PRIMARY_COMPONENT = lang_1.CONST_EXPR(new core_1.OpaqueToken('RouterPrimaryComponent'));
+	/**
+	 * The RouteRegistry holds route configurations for each component in an Angular app.
+	 * It is responsible for creating Instructions from URLs, and generating URLs based on route and
+	 * parameters.
+	 */
+	var RouteRegistry = (function () {
+	    function RouteRegistry(_rootComponent) {
+	        this._rootComponent = _rootComponent;
+	        this._rules = new collection_1.Map();
+	    }
+	    /**
+	     * Given a component and a configuration object, add the route to this registry
+	     */
+	    RouteRegistry.prototype.config = function (parentComponent, config) {
+	        config = route_config_nomalizer_1.normalizeRouteConfig(config, this);
+	        // this is here because Dart type guard reasons
+	        if (config instanceof route_config_impl_1.Route) {
+	            route_config_nomalizer_1.assertComponentExists(config.component, config.path);
+	        }
+	        else if (config instanceof route_config_impl_1.AuxRoute) {
+	            route_config_nomalizer_1.assertComponentExists(config.component, config.path);
+	        }
+	        var recognizer = this._rules.get(parentComponent);
+	        if (lang_1.isBlank(recognizer)) {
+	            recognizer = new component_recognizer_1.ComponentRecognizer();
+	            this._rules.set(parentComponent, recognizer);
+	        }
+	        var terminal = recognizer.config(config);
+	        if (config instanceof route_config_impl_1.Route) {
+	            if (terminal) {
+	                assertTerminalComponent(config.component, config.path);
+	            }
+	            else {
+	                this.configFromComponent(config.component);
+	            }
+	        }
+	    };
+	    /**
+	     * Reads the annotations of a component and configures the registry based on them
+	     */
+	    RouteRegistry.prototype.configFromComponent = function (component) {
+	        var _this = this;
+	        if (!lang_1.isType(component)) {
+	            return;
+	        }
+	        // Don't read the annotations from a type more than once –
+	        // this prevents an infinite loop if a component routes recursively.
+	        if (this._rules.has(component)) {
+	            return;
+	        }
+	        var annotations = reflection_1.reflector.annotations(component);
+	        if (lang_1.isPresent(annotations)) {
+	            for (var i = 0; i < annotations.length; i++) {
+	                var annotation = annotations[i];
+	                if (annotation instanceof route_config_impl_1.RouteConfig) {
+	                    var routeCfgs = annotation.configs;
+	                    routeCfgs.forEach(function (config) { return _this.config(component, config); });
+	                }
+	            }
+	        }
+	    };
+	    /**
+	     * Given a URL and a parent component, return the most specific instruction for navigating
+	     * the application into the state specified by the url
+	     */
+	    RouteRegistry.prototype.recognize = function (url, ancestorInstructions) {
+	        var parsedUrl = url_parser_1.parser.parse(url);
+	        return this._recognize(parsedUrl, ancestorInstructions);
+	    };
+	    /**
+	     * Recognizes all parent-child routes, but creates unresolved auxiliary routes
+	     */
+	    RouteRegistry.prototype._recognize = function (parsedUrl, ancestorInstructions, _aux) {
+	        var _this = this;
+	        if (_aux === void 0) { _aux = false; }
+	        var parentComponent = ancestorInstructions.length > 0 ?
+	            ancestorInstructions[ancestorInstructions.length - 1].component.componentType :
+	            this._rootComponent;
+	        var componentRecognizer = this._rules.get(parentComponent);
+	        if (lang_1.isBlank(componentRecognizer)) {
+	            return _resolveToNull;
+	        }
+	        // Matches some beginning part of the given URL
+	        var possibleMatches = _aux ? componentRecognizer.recognizeAuxiliary(parsedUrl) :
+	            componentRecognizer.recognize(parsedUrl);
+	        var matchPromises = possibleMatches.map(function (candidate) { return candidate.then(function (candidate) {
+	            if (candidate instanceof route_recognizer_1.PathMatch) {
+	                var auxParentInstructions = ancestorInstructions.length > 0 ?
+	                    [ancestorInstructions[ancestorInstructions.length - 1]] :
+	                    [];
+	                var auxInstructions = _this._auxRoutesToUnresolved(candidate.remainingAux, auxParentInstructions);
+	                var instruction = new instruction_1.ResolvedInstruction(candidate.instruction, null, auxInstructions);
+	                if (candidate.instruction.terminal) {
+	                    return instruction;
+	                }
+	                var newAncestorComponents = ancestorInstructions.concat([instruction]);
+	                return _this._recognize(candidate.remaining, newAncestorComponents)
+	                    .then(function (childInstruction) {
+	                    if (lang_1.isBlank(childInstruction)) {
+	                        return null;
+	                    }
+	                    // redirect instructions are already absolute
+	                    if (childInstruction instanceof instruction_1.RedirectInstruction) {
+	                        return childInstruction;
+	                    }
+	                    instruction.child = childInstruction;
+	                    return instruction;
+	                });
+	            }
+	            if (candidate instanceof route_recognizer_1.RedirectMatch) {
+	                var instruction = _this.generate(candidate.redirectTo, ancestorInstructions);
+	                return new instruction_1.RedirectInstruction(instruction.component, instruction.child, instruction.auxInstruction);
+	            }
+	        }); });
+	        if ((lang_1.isBlank(parsedUrl) || parsedUrl.path == '') && possibleMatches.length == 0) {
+	            return async_1.PromiseWrapper.resolve(this.generateDefault(parentComponent));
+	        }
+	        return async_1.PromiseWrapper.all(matchPromises).then(mostSpecific);
+	    };
+	    RouteRegistry.prototype._auxRoutesToUnresolved = function (auxRoutes, parentInstructions) {
+	        var _this = this;
+	        var unresolvedAuxInstructions = {};
+	        auxRoutes.forEach(function (auxUrl) {
+	            unresolvedAuxInstructions[auxUrl.path] = new instruction_1.UnresolvedInstruction(function () { return _this._recognize(auxUrl, parentInstructions, true); });
+	        });
+	        return unresolvedAuxInstructions;
+	    };
+	    /**
+	     * Given a normalized list with component names and params like: `['user', {id: 3 }]`
+	     * generates a url with a leading slash relative to the provided `parentComponent`.
+	     *
+	     * If the optional param `_aux` is `true`, then we generate starting at an auxiliary
+	     * route boundary.
+	     */
+	    RouteRegistry.prototype.generate = function (linkParams, ancestorInstructions, _aux) {
+	        if (_aux === void 0) { _aux = false; }
+	        var normalizedLinkParams = splitAndFlattenLinkParams(linkParams);
+	        var first = collection_1.ListWrapper.first(normalizedLinkParams);
+	        var rest = collection_1.ListWrapper.slice(normalizedLinkParams, 1);
+	        // The first segment should be either '.' (generate from parent) or '' (generate from root).
+	        // When we normalize above, we strip all the slashes, './' becomes '.' and '/' becomes ''.
+	        if (first == '') {
+	            ancestorInstructions = [];
+	        }
+	        else if (first == '..') {
+	            // we already captured the first instance of "..", so we need to pop off an ancestor
+	            ancestorInstructions.pop();
+	            while (collection_1.ListWrapper.first(rest) == '..') {
+	                rest = collection_1.ListWrapper.slice(rest, 1);
+	                ancestorInstructions.pop();
+	                if (ancestorInstructions.length <= 0) {
+	                    throw new exceptions_1.BaseException("Link \"" + collection_1.ListWrapper.toJSON(linkParams) + "\" has too many \"../\" segments.");
+	                }
+	            }
+	        }
+	        else if (first != '.') {
+	            var parentComponent = this._rootComponent;
+	            var grandparentComponent = null;
+	            if (ancestorInstructions.length > 1) {
+	                parentComponent =
+	                    ancestorInstructions[ancestorInstructions.length - 1].component.componentType;
+	                grandparentComponent =
+	                    ancestorInstructions[ancestorInstructions.length - 2].component.componentType;
+	            }
+	            else if (ancestorInstructions.length == 1) {
+	                parentComponent = ancestorInstructions[0].component.componentType;
+	                grandparentComponent = this._rootComponent;
+	            }
+	            // For a link with no leading `./`, `/`, or `../`, we look for a sibling and child.
+	            // If both exist, we throw. Otherwise, we prefer whichever exists.
+	            var childRouteExists = this.hasRoute(first, parentComponent);
+	            var parentRouteExists = lang_1.isPresent(grandparentComponent) && this.hasRoute(first, grandparentComponent);
+	            if (parentRouteExists && childRouteExists) {
+	                var msg = "Link \"" + collection_1.ListWrapper.toJSON(linkParams) + "\" is ambiguous, use \"./\" or \"../\" to disambiguate.";
+	                throw new exceptions_1.BaseException(msg);
+	            }
+	            if (parentRouteExists) {
+	                ancestorInstructions.pop();
+	            }
+	            rest = linkParams;
+	        }
+	        if (rest[rest.length - 1] == '') {
+	            rest.pop();
+	        }
+	        if (rest.length < 1) {
+	            var msg = "Link \"" + collection_1.ListWrapper.toJSON(linkParams) + "\" must include a route name.";
+	            throw new exceptions_1.BaseException(msg);
+	        }
+	        var generatedInstruction = this._generate(rest, ancestorInstructions, _aux);
+	        for (var i = ancestorInstructions.length - 1; i >= 0; i--) {
+	            var ancestorInstruction = ancestorInstructions[i];
+	            generatedInstruction = ancestorInstruction.replaceChild(generatedInstruction);
+	        }
+	        return generatedInstruction;
+	    };
+	    /*
+	     * Internal helper that does not make any assertions about the beginning of the link DSL
+	     */
+	    RouteRegistry.prototype._generate = function (linkParams, ancestorInstructions, _aux) {
+	        var _this = this;
+	        if (_aux === void 0) { _aux = false; }
+	        var parentComponent = ancestorInstructions.length > 0 ?
+	            ancestorInstructions[ancestorInstructions.length - 1].component.componentType :
+	            this._rootComponent;
+	        if (linkParams.length == 0) {
+	            return this.generateDefault(parentComponent);
+	        }
+	        var linkIndex = 0;
+	        var routeName = linkParams[linkIndex];
+	        if (!lang_1.isString(routeName)) {
+	            throw new exceptions_1.BaseException("Unexpected segment \"" + routeName + "\" in link DSL. Expected a string.");
+	        }
+	        else if (routeName == '' || routeName == '.' || routeName == '..') {
+	            throw new exceptions_1.BaseException("\"" + routeName + "/\" is only allowed at the beginning of a link DSL.");
+	        }
+	        var params = {};
+	        if (linkIndex + 1 < linkParams.length) {
+	            var nextSegment_1 = linkParams[linkIndex + 1];
+	            if (lang_1.isStringMap(nextSegment_1) && !lang_1.isArray(nextSegment_1)) {
+	                params = nextSegment_1;
+	                linkIndex += 1;
+	            }
+	        }
+	        var auxInstructions = {};
+	        var nextSegment;
+	        while (linkIndex + 1 < linkParams.length && lang_1.isArray(nextSegment = linkParams[linkIndex + 1])) {
+	            var auxParentInstruction = ancestorInstructions.length > 0 ?
+	                [ancestorInstructions[ancestorInstructions.length - 1]] :
+	                [];
+	            var auxInstruction = this._generate(nextSegment, auxParentInstruction, true);
+	            // TODO: this will not work for aux routes with parameters or multiple segments
+	            auxInstructions[auxInstruction.component.urlPath] = auxInstruction;
+	            linkIndex += 1;
+	        }
+	        var componentRecognizer = this._rules.get(parentComponent);
+	        if (lang_1.isBlank(componentRecognizer)) {
+	            throw new exceptions_1.BaseException("Component \"" + lang_1.getTypeNameForDebugging(parentComponent) + "\" has no route config.");
+	        }
+	        var routeRecognizer = (_aux ? componentRecognizer.auxNames : componentRecognizer.names).get(routeName);
+	        if (!lang_1.isPresent(routeRecognizer)) {
+	            throw new exceptions_1.BaseException("Component \"" + lang_1.getTypeNameForDebugging(parentComponent) + "\" has no route named \"" + routeName + "\".");
+	        }
+	        if (!lang_1.isPresent(routeRecognizer.handler.componentType)) {
+	            var compInstruction = routeRecognizer.generateComponentPathValues(params);
+	            return new instruction_1.UnresolvedInstruction(function () {
+	                return routeRecognizer.handler.resolveComponentType().then(function (_) { return _this._generate(linkParams, ancestorInstructions, _aux); });
+	            }, compInstruction['urlPath'], compInstruction['urlParams']);
+	        }
+	        var componentInstruction = _aux ? componentRecognizer.generateAuxiliary(routeName, params) :
+	            componentRecognizer.generate(routeName, params);
+	        var remaining = linkParams.slice(linkIndex + 1);
+	        var instruction = new instruction_1.ResolvedInstruction(componentInstruction, null, auxInstructions);
+	        // the component is sync
+	        if (lang_1.isPresent(componentInstruction.componentType)) {
+	            var childInstruction = null;
+	            if (linkIndex + 1 < linkParams.length) {
+	                var childAncestorComponents = ancestorInstructions.concat([instruction]);
+	                childInstruction = this._generate(remaining, childAncestorComponents);
+	            }
+	            else if (!componentInstruction.terminal) {
+	                // ... look for defaults
+	                childInstruction = this.generateDefault(componentInstruction.componentType);
+	                if (lang_1.isBlank(childInstruction)) {
+	                    throw new exceptions_1.BaseException("Link \"" + collection_1.ListWrapper.toJSON(linkParams) + "\" does not resolve to a terminal instruction.");
+	                }
+	            }
+	            instruction.child = childInstruction;
+	        }
+	        return instruction;
+	    };
+	    RouteRegistry.prototype.hasRoute = function (name, parentComponent) {
+	        var componentRecognizer = this._rules.get(parentComponent);
+	        if (lang_1.isBlank(componentRecognizer)) {
+	            return false;
+	        }
+	        return componentRecognizer.hasRoute(name);
+	    };
+	    RouteRegistry.prototype.generateDefault = function (componentCursor) {
+	        var _this = this;
+	        if (lang_1.isBlank(componentCursor)) {
+	            return null;
+	        }
+	        var componentRecognizer = this._rules.get(componentCursor);
+	        if (lang_1.isBlank(componentRecognizer) || lang_1.isBlank(componentRecognizer.defaultRoute)) {
+	            return null;
+	        }
+	        var defaultChild = null;
+	        if (lang_1.isPresent(componentRecognizer.defaultRoute.handler.componentType)) {
+	            var componentInstruction = componentRecognizer.defaultRoute.generate({});
+	            if (!componentRecognizer.defaultRoute.terminal) {
+	                defaultChild = this.generateDefault(componentRecognizer.defaultRoute.handler.componentType);
+	            }
+	            return new instruction_1.DefaultInstruction(componentInstruction, defaultChild);
+	        }
+	        return new instruction_1.UnresolvedInstruction(function () {
+	            return componentRecognizer.defaultRoute.handler.resolveComponentType().then(function (_) { return _this.generateDefault(componentCursor); });
+	        });
+	    };
+	    RouteRegistry = __decorate([
+	        core_1.Injectable(),
+	        __param(0, core_1.Inject(exports.ROUTER_PRIMARY_COMPONENT)), 
+	        __metadata('design:paramtypes', [lang_1.Type])
+	    ], RouteRegistry);
+	    return RouteRegistry;
+	})();
+	exports.RouteRegistry = RouteRegistry;
+	/*
+	 * Given: ['/a/b', {c: 2}]
+	 * Returns: ['', 'a', 'b', {c: 2}]
+	 */
+	function splitAndFlattenLinkParams(linkParams) {
+	    return linkParams.reduce(function (accumulation, item) {
+	        if (lang_1.isString(item)) {
+	            var strItem = item;
+	            return accumulation.concat(strItem.split('/'));
+	        }
+	        accumulation.push(item);
+	        return accumulation;
+	    }, []);
+	}
+	/*
+	 * Given a list of instructions, returns the most specific instruction
+	 */
+	function mostSpecific(instructions) {
+	    return collection_1.ListWrapper.maximum(instructions, function (instruction) { return instruction.specificity; });
+	}
+	function assertTerminalComponent(component, path) {
+	    if (!lang_1.isType(component)) {
+	        return;
+	    }
+	    var annotations = reflection_1.reflector.annotations(component);
+	    if (lang_1.isPresent(annotations)) {
+	        for (var i = 0; i < annotations.length; i++) {
+	            var annotation = annotations[i];
+	            if (annotation instanceof route_config_impl_1.RouteConfig) {
+	                throw new exceptions_1.BaseException("Child routes are not allowed for \"" + path + "\". Use \"...\" on the parent's route path.");
+	            }
+	        }
+	    }
+	}
+
+
+/***/ },
+/* 243 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+	    switch (arguments.length) {
+	        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+	        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+	        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+	    }
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var lang_1 = __webpack_require__(5);
+	/**
+	 * The `RouteConfig` decorator defines routes for a given component.
+	 *
+	 * It takes an array of {@link RouteDefinition}s.
+	 */
+	var RouteConfig = (function () {
+	    function RouteConfig(configs) {
+	        this.configs = configs;
+	    }
+	    RouteConfig = __decorate([
+	        lang_1.CONST(), 
+	        __metadata('design:paramtypes', [Array])
+	    ], RouteConfig);
+	    return RouteConfig;
+	})();
+	exports.RouteConfig = RouteConfig;
+	/**
+	 * `Route` is a type of {@link RouteDefinition} used to route a path to a component.
+	 *
+	 * It has the following properties:
+	 * - `path` is a string that uses the route matcher DSL.
+	 * - `component` a component type.
+	 * - `name` is an optional `CamelCase` string representing the name of the route.
+	 * - `data` is an optional property of any type representing arbitrary route metadata for the given
+	 * route. It is injectable via {@link RouteData}.
+	 * - `useAsDefault` is a boolean value. If `true`, the child route will be navigated to if no child
+	 * route is specified during the navigation.
+	 *
+	 * ### Example
+	 * ```
+	 * import {RouteConfig} from 'angular2/router';
+	 *
+	 * @RouteConfig([
+	 *   {path: '/home', component: HomeCmp, name: 'HomeCmp' }
+	 * ])
+	 * class MyApp {}
+	 * ```
+	 */
+	var Route = (function () {
+	    function Route(_a) {
+	        var path = _a.path, component = _a.component, name = _a.name, data = _a.data, useAsDefault = _a.useAsDefault;
+	        // added next three properties to work around https://github.com/Microsoft/TypeScript/issues/4107
+	        this.aux = null;
+	        this.loader = null;
+	        this.redirectTo = null;
+	        this.path = path;
+	        this.component = component;
+	        this.name = name;
+	        this.data = data;
+	        this.useAsDefault = useAsDefault;
+	    }
+	    Route = __decorate([
+	        lang_1.CONST(), 
+	        __metadata('design:paramtypes', [Object])
+	    ], Route);
+	    return Route;
+	})();
+	exports.Route = Route;
+	/**
+	 * `AuxRoute` is a type of {@link RouteDefinition} used to define an auxiliary route.
+	 *
+	 * It takes an object with the following properties:
+	 * - `path` is a string that uses the route matcher DSL.
+	 * - `component` a component type.
+	 * - `name` is an optional `CamelCase` string representing the name of the route.
+	 * - `data` is an optional property of any type representing arbitrary route metadata for the given
+	 * route. It is injectable via {@link RouteData}.
+	 *
+	 * ### Example
+	 * ```
+	 * import {RouteConfig, AuxRoute} from 'angular2/router';
+	 *
+	 * @RouteConfig([
+	 *   new AuxRoute({path: '/home', component: HomeCmp})
+	 * ])
+	 * class MyApp {}
+	 * ```
+	 */
+	var AuxRoute = (function () {
+	    function AuxRoute(_a) {
+	        var path = _a.path, component = _a.component, name = _a.name;
+	        this.data = null;
+	        // added next three properties to work around https://github.com/Microsoft/TypeScript/issues/4107
+	        this.aux = null;
+	        this.loader = null;
+	        this.redirectTo = null;
+	        this.useAsDefault = false;
+	        this.path = path;
+	        this.component = component;
+	        this.name = name;
+	    }
+	    AuxRoute = __decorate([
+	        lang_1.CONST(), 
+	        __metadata('design:paramtypes', [Object])
+	    ], AuxRoute);
+	    return AuxRoute;
+	})();
+	exports.AuxRoute = AuxRoute;
+	/**
+	 * `AsyncRoute` is a type of {@link RouteDefinition} used to route a path to an asynchronously
+	 * loaded component.
+	 *
+	 * It has the following properties:
+	 * - `path` is a string that uses the route matcher DSL.
+	 * - `loader` is a function that returns a promise that resolves to a component.
+	 * - `name` is an optional `CamelCase` string representing the name of the route.
+	 * - `data` is an optional property of any type representing arbitrary route metadata for the given
+	 * route. It is injectable via {@link RouteData}.
+	 * - `useAsDefault` is a boolean value. If `true`, the child route will be navigated to if no child
+	 * route is specified during the navigation.
+	 *
+	 * ### Example
+	 * ```
+	 * import {RouteConfig} from 'angular2/router';
+	 *
+	 * @RouteConfig([
+	 *   {path: '/home', loader: () => Promise.resolve(MyLoadedCmp), name: 'MyLoadedCmp'}
+	 * ])
+	 * class MyApp {}
+	 * ```
+	 */
+	var AsyncRoute = (function () {
+	    function AsyncRoute(_a) {
+	        var path = _a.path, loader = _a.loader, name = _a.name, data = _a.data, useAsDefault = _a.useAsDefault;
+	        this.aux = null;
+	        this.path = path;
+	        this.loader = loader;
+	        this.name = name;
+	        this.data = data;
+	        this.useAsDefault = useAsDefault;
+	    }
+	    AsyncRoute = __decorate([
+	        lang_1.CONST(), 
+	        __metadata('design:paramtypes', [Object])
+	    ], AsyncRoute);
+	    return AsyncRoute;
+	})();
+	exports.AsyncRoute = AsyncRoute;
+	/**
+	 * `Redirect` is a type of {@link RouteDefinition} used to route a path to a canonical route.
+	 *
+	 * It has the following properties:
+	 * - `path` is a string that uses the route matcher DSL.
+	 * - `redirectTo` is an array representing the link DSL.
+	 *
+	 * Note that redirects **do not** affect how links are generated. For that, see the `useAsDefault`
+	 * option.
+	 *
+	 * ### Example
+	 * ```
+	 * import {RouteConfig} from 'angular2/router';
+	 *
+	 * @RouteConfig([
+	 *   {path: '/', redirectTo: ['/Home'] },
+	 *   {path: '/home', component: HomeCmp, name: 'Home'}
+	 * ])
+	 * class MyApp {}
+	 * ```
+	 */
+	var Redirect = (function () {
+	    function Redirect(_a) {
+	        var path = _a.path, redirectTo = _a.redirectTo;
+	        this.name = null;
+	        // added next three properties to work around https://github.com/Microsoft/TypeScript/issues/4107
+	        this.loader = null;
+	        this.data = null;
+	        this.aux = null;
+	        this.useAsDefault = false;
+	        this.path = path;
+	        this.redirectTo = redirectTo;
+	    }
+	    Redirect = __decorate([
+	        lang_1.CONST(), 
+	        __metadata('design:paramtypes', [Object])
+	    ], Redirect);
+	    return Redirect;
+	})();
+	exports.Redirect = Redirect;
+
+
+/***/ },
+/* 244 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var lang_1 = __webpack_require__(5);
+	var exceptions_1 = __webpack_require__(14);
+	var promise_1 = __webpack_require__(61);
+	var collection_1 = __webpack_require__(12);
+	var instruction_1 = __webpack_require__(245);
+	var path_recognizer_1 = __webpack_require__(246);
+	var RouteMatch = (function () {
+	    function RouteMatch() {
+	    }
+	    return RouteMatch;
+	})();
+	exports.RouteMatch = RouteMatch;
+	var PathMatch = (function (_super) {
+	    __extends(PathMatch, _super);
+	    function PathMatch(instruction, remaining, remainingAux) {
+	        _super.call(this);
+	        this.instruction = instruction;
+	        this.remaining = remaining;
+	        this.remainingAux = remainingAux;
+	    }
+	    return PathMatch;
+	})(RouteMatch);
+	exports.PathMatch = PathMatch;
+	var RedirectMatch = (function (_super) {
+	    __extends(RedirectMatch, _super);
+	    function RedirectMatch(redirectTo, specificity) {
+	        _super.call(this);
+	        this.redirectTo = redirectTo;
+	        this.specificity = specificity;
+	    }
+	    return RedirectMatch;
+	})(RouteMatch);
+	exports.RedirectMatch = RedirectMatch;
+	var RedirectRecognizer = (function () {
+	    function RedirectRecognizer(path, redirectTo) {
+	        this.path = path;
+	        this.redirectTo = redirectTo;
+	        this._pathRecognizer = new path_recognizer_1.PathRecognizer(path);
+	        this.hash = this._pathRecognizer.hash;
+	    }
+	    /**
+	     * Returns `null` or a `ParsedUrl` representing the new path to match
+	     */
+	    RedirectRecognizer.prototype.recognize = function (beginningSegment) {
+	        var match = null;
+	        if (lang_1.isPresent(this._pathRecognizer.recognize(beginningSegment))) {
+	            match = new RedirectMatch(this.redirectTo, this._pathRecognizer.specificity);
+	        }
+	        return promise_1.PromiseWrapper.resolve(match);
+	    };
+	    RedirectRecognizer.prototype.generate = function (params) {
+	        throw new exceptions_1.BaseException("Tried to generate a redirect.");
+	    };
+	    return RedirectRecognizer;
+	})();
+	exports.RedirectRecognizer = RedirectRecognizer;
+	// represents something like '/foo/:bar'
+	var RouteRecognizer = (function () {
+	    // TODO: cache component instruction instances by params and by ParsedUrl instance
+	    function RouteRecognizer(path, handler) {
+	        this.path = path;
+	        this.handler = handler;
+	        this.terminal = true;
+	        this._cache = new collection_1.Map();
+	        this._pathRecognizer = new path_recognizer_1.PathRecognizer(path);
+	        this.specificity = this._pathRecognizer.specificity;
+	        this.hash = this._pathRecognizer.hash;
+	        this.terminal = this._pathRecognizer.terminal;
+	    }
+	    RouteRecognizer.prototype.recognize = function (beginningSegment) {
+	        var _this = this;
+	        var res = this._pathRecognizer.recognize(beginningSegment);
+	        if (lang_1.isBlank(res)) {
+	            return null;
+	        }
+	        return this.handler.resolveComponentType().then(function (_) {
+	            var componentInstruction = _this._getInstruction(res['urlPath'], res['urlParams'], res['allParams']);
+	            return new PathMatch(componentInstruction, res['nextSegment'], res['auxiliary']);
+	        });
+	    };
+	    RouteRecognizer.prototype.generate = function (params) {
+	        var generated = this._pathRecognizer.generate(params);
+	        var urlPath = generated['urlPath'];
+	        var urlParams = generated['urlParams'];
+	        return this._getInstruction(urlPath, urlParams, params);
+	    };
+	    RouteRecognizer.prototype.generateComponentPathValues = function (params) {
+	        return this._pathRecognizer.generate(params);
+	    };
+	    RouteRecognizer.prototype._getInstruction = function (urlPath, urlParams, params) {
+	        if (lang_1.isBlank(this.handler.componentType)) {
+	            throw new exceptions_1.BaseException("Tried to get instruction before the type was loaded.");
+	        }
+	        var hashKey = urlPath + '?' + urlParams.join('?');
+	        if (this._cache.has(hashKey)) {
+	            return this._cache.get(hashKey);
+	        }
+	        var instruction = new instruction_1.ComponentInstruction(urlPath, urlParams, this.handler.data, this.handler.componentType, this.terminal, this.specificity, params);
+	        this._cache.set(hashKey, instruction);
+	        return instruction;
+	    };
+	    return RouteRecognizer;
+	})();
+	exports.RouteRecognizer = RouteRecognizer;
+
+
+/***/ },
+/* 245 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var collection_1 = __webpack_require__(12);
+	var lang_1 = __webpack_require__(5);
+	var async_1 = __webpack_require__(60);
+	/**
+	 * `RouteParams` is an immutable map of parameters for the given route
+	 * based on the url matcher and optional parameters for that route.
+	 *
+	 * You can inject `RouteParams` into the constructor of a component to use it.
+	 *
+	 * ### Example
+	 *
+	 * ```
+	 * import {bootstrap, Component} from 'angular2/angular2';
+	 * import {Router, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
+	 *
+	 * @Component({directives: [ROUTER_DIRECTIVES]})
+	 * @RouteConfig([
+	 *  {path: '/user/:id', component: UserCmp, as: 'UserCmp'},
+	 * ])
+	 * class AppCmp {}
+	 *
+	 * @Component({ template: 'user: {{id}}' })
+	 * class UserCmp {
+	 *   id: string;
+	 *   constructor(params: RouteParams) {
+	 *     this.id = params.get('id');
+	 *   }
+	 * }
+	 *
+	 * bootstrap(AppCmp, ROUTER_PROVIDERS);
+	 * ```
+	 */
+	var RouteParams = (function () {
+	    function RouteParams(params) {
+	        this.params = params;
+	    }
+	    RouteParams.prototype.get = function (param) { return lang_1.normalizeBlank(collection_1.StringMapWrapper.get(this.params, param)); };
+	    return RouteParams;
+	})();
+	exports.RouteParams = RouteParams;
+	/**
+	 * `RouteData` is an immutable map of additional data you can configure in your {@link Route}.
+	 *
+	 * You can inject `RouteData` into the constructor of a component to use it.
+	 *
+	 * ### Example
+	 *
+	 * ```
+	 * import {bootstrap, Component, View} from 'angular2/angular2';
+	 * import {Router, ROUTER_DIRECTIVES, routerBindings, RouteConfig} from 'angular2/router';
+	 *
+	 * @Component({...})
+	 * @View({directives: [ROUTER_DIRECTIVES]})
+	 * @RouteConfig([
+	 *  {path: '/user/:id', component: UserCmp, as: 'UserCmp', data: {isAdmin: true}},
+	 * ])
+	 * class AppCmp {}
+	 *
+	 * @Component({...})
+	 * @View({ template: 'user: {{isAdmin}}' })
+	 * class UserCmp {
+	 *   string: isAdmin;
+	 *   constructor(data: RouteData) {
+	 *     this.isAdmin = data.get('isAdmin');
+	 *   }
+	 * }
+	 *
+	 * bootstrap(AppCmp, routerBindings(AppCmp));
+	 * ```
+	 */
+	var RouteData = (function () {
+	    function RouteData(data) {
+	        if (data === void 0) { data = lang_1.CONST_EXPR({}); }
+	        this.data = data;
+	    }
+	    RouteData.prototype.get = function (key) { return lang_1.normalizeBlank(collection_1.StringMapWrapper.get(this.data, key)); };
+	    return RouteData;
+	})();
+	exports.RouteData = RouteData;
+	exports.BLANK_ROUTE_DATA = new RouteData();
+	/**
+	 * `Instruction` is a tree of {@link ComponentInstruction}s with all the information needed
+	 * to transition each component in the app to a given route, including all auxiliary routes.
+	 *
+	 * `Instruction`s can be created using {@link Router#generate}, and can be used to
+	 * perform route changes with {@link Router#navigateByInstruction}.
+	 *
+	 * ### Example
+	 *
+	 * ```
+	 * import {bootstrap, Component} from 'angular2/angular2';
+	 * import {Router, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
+	 *
+	 * @Component({directives: [ROUTER_DIRECTIVES]})
+	 * @RouteConfig([
+	 *  {...},
+	 * ])
+	 * class AppCmp {
+	 *   constructor(router: Router) {
+	 *     var instruction = router.generate(['/MyRoute']);
+	 *     router.navigateByInstruction(instruction);
+	 *   }
+	 * }
+	 *
+	 * bootstrap(AppCmp, ROUTER_PROVIDERS);
+	 * ```
+	 */
+	var Instruction = (function () {
+	    function Instruction() {
+	        this.auxInstruction = {};
+	    }
+	    Object.defineProperty(Instruction.prototype, "urlPath", {
+	        get: function () { return this.component.urlPath; },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(Instruction.prototype, "urlParams", {
+	        get: function () { return this.component.urlParams; },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(Instruction.prototype, "specificity", {
+	        get: function () {
+	            var total = 0;
+	            if (lang_1.isPresent(this.component)) {
+	                total += this.component.specificity;
+	            }
+	            if (lang_1.isPresent(this.child)) {
+	                total += this.child.specificity;
+	            }
+	            return total;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    /**
+	     * converts the instruction into a URL string
+	     */
+	    Instruction.prototype.toRootUrl = function () { return this.toUrlPath() + this.toUrlQuery(); };
+	    /** @internal */
+	    Instruction.prototype._toNonRootUrl = function () {
+	        return this._stringifyPathMatrixAuxPrefixed() +
+	            (lang_1.isPresent(this.child) ? this.child._toNonRootUrl() : '');
+	    };
+	    Instruction.prototype.toUrlQuery = function () { return this.urlParams.length > 0 ? ('?' + this.urlParams.join('&')) : ''; };
+	    /**
+	     * Returns a new instruction that shares the state of the existing instruction, but with
+	     * the given child {@link Instruction} replacing the existing child.
+	     */
+	    Instruction.prototype.replaceChild = function (child) {
+	        return new ResolvedInstruction(this.component, child, this.auxInstruction);
+	    };
+	    /**
+	     * If the final URL for the instruction is ``
+	     */
+	    Instruction.prototype.toUrlPath = function () {
+	        return this.urlPath + this._stringifyAux() +
+	            (lang_1.isPresent(this.child) ? this.child._toNonRootUrl() : '');
+	    };
+	    // default instructions override these
+	    Instruction.prototype.toLinkUrl = function () {
+	        return this.urlPath + this._stringifyAux() +
+	            (lang_1.isPresent(this.child) ? this.child._toLinkUrl() : '');
+	    };
+	    // this is the non-root version (called recursively)
+	    /** @internal */
+	    Instruction.prototype._toLinkUrl = function () {
+	        return this._stringifyPathMatrixAuxPrefixed() +
+	            (lang_1.isPresent(this.child) ? this.child._toLinkUrl() : '');
+	    };
+	    /** @internal */
+	    Instruction.prototype._stringifyPathMatrixAuxPrefixed = function () {
+	        var primary = this._stringifyPathMatrixAux();
+	        if (primary.length > 0) {
+	            primary = '/' + primary;
+	        }
+	        return primary;
+	    };
+	    /** @internal */
+	    Instruction.prototype._stringifyMatrixParams = function () {
+	        return this.urlParams.length > 0 ? (';' + this.component.urlParams.join(';')) : '';
+	    };
+	    /** @internal */
+	    Instruction.prototype._stringifyPathMatrixAux = function () {
+	        if (lang_1.isBlank(this.component)) {
+	            return '';
+	        }
+	        return this.urlPath + this._stringifyMatrixParams() + this._stringifyAux();
+	    };
+	    /** @internal */
+	    Instruction.prototype._stringifyAux = function () {
+	        var routes = [];
+	        collection_1.StringMapWrapper.forEach(this.auxInstruction, function (auxInstruction, _) {
+	            routes.push(auxInstruction._stringifyPathMatrixAux());
+	        });
+	        if (routes.length > 0) {
+	            return '(' + routes.join('//') + ')';
+	        }
+	        return '';
+	    };
+	    return Instruction;
+	})();
+	exports.Instruction = Instruction;
+	/**
+	 * a resolved instruction has an outlet instruction for itself, but maybe not for...
+	 */
+	var ResolvedInstruction = (function (_super) {
+	    __extends(ResolvedInstruction, _super);
+	    function ResolvedInstruction(component, child, auxInstruction) {
+	        _super.call(this);
+	        this.component = component;
+	        this.child = child;
+	        this.auxInstruction = auxInstruction;
+	    }
+	    ResolvedInstruction.prototype.resolveComponent = function () {
+	        return async_1.PromiseWrapper.resolve(this.component);
+	    };
+	    return ResolvedInstruction;
+	})(Instruction);
+	exports.ResolvedInstruction = ResolvedInstruction;
+	/**
+	 * Represents a resolved default route
+	 */
+	var DefaultInstruction = (function (_super) {
+	    __extends(DefaultInstruction, _super);
+	    function DefaultInstruction(component, child) {
+	        _super.call(this);
+	        this.component = component;
+	        this.child = child;
+	    }
+	    DefaultInstruction.prototype.resolveComponent = function () {
+	        return async_1.PromiseWrapper.resolve(this.component);
+	    };
+	    DefaultInstruction.prototype.toLinkUrl = function () { return ''; };
+	    /** @internal */
+	    DefaultInstruction.prototype._toLinkUrl = function () { return ''; };
+	    return DefaultInstruction;
+	})(Instruction);
+	exports.DefaultInstruction = DefaultInstruction;
+	/**
+	 * Represents a component that may need to do some redirection or lazy loading at a later time.
+	 */
+	var UnresolvedInstruction = (function (_super) {
+	    __extends(UnresolvedInstruction, _super);
+	    function UnresolvedInstruction(_resolver, _urlPath, _urlParams) {
+	        if (_urlPath === void 0) { _urlPath = ''; }
+	        if (_urlParams === void 0) { _urlParams = lang_1.CONST_EXPR([]); }
+	        _super.call(this);
+	        this._resolver = _resolver;
+	        this._urlPath = _urlPath;
+	        this._urlParams = _urlParams;
+	    }
+	    Object.defineProperty(UnresolvedInstruction.prototype, "urlPath", {
+	        get: function () {
+	            if (lang_1.isPresent(this.component)) {
+	                return this.component.urlPath;
+	            }
+	            if (lang_1.isPresent(this._urlPath)) {
+	                return this._urlPath;
+	            }
+	            return '';
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(UnresolvedInstruction.prototype, "urlParams", {
+	        get: function () {
+	            if (lang_1.isPresent(this.component)) {
+	                return this.component.urlParams;
+	            }
+	            if (lang_1.isPresent(this._urlParams)) {
+	                return this._urlParams;
+	            }
+	            return [];
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    UnresolvedInstruction.prototype.resolveComponent = function () {
+	        var _this = this;
+	        if (lang_1.isPresent(this.component)) {
+	            return async_1.PromiseWrapper.resolve(this.component);
+	        }
+	        return this._resolver().then(function (resolution) {
+	            _this.child = resolution.child;
+	            return _this.component = resolution.component;
+	        });
+	    };
+	    return UnresolvedInstruction;
+	})(Instruction);
+	exports.UnresolvedInstruction = UnresolvedInstruction;
+	var RedirectInstruction = (function (_super) {
+	    __extends(RedirectInstruction, _super);
+	    function RedirectInstruction(component, child, auxInstruction) {
+	        _super.call(this, component, child, auxInstruction);
+	    }
+	    return RedirectInstruction;
+	})(ResolvedInstruction);
+	exports.RedirectInstruction = RedirectInstruction;
+	/**
+	 * A `ComponentInstruction` represents the route state for a single component. An `Instruction` is
+	 * composed of a tree of these `ComponentInstruction`s.
+	 *
+	 * `ComponentInstructions` is a public API. Instances of `ComponentInstruction` are passed
+	 * to route lifecycle hooks, like {@link CanActivate}.
+	 *
+	 * `ComponentInstruction`s are [https://en.wikipedia.org/wiki/Hash_consing](hash consed). You should
+	 * never construct one yourself with "new." Instead, rely on {@link Router/RouteRecognizer} to
+	 * construct `ComponentInstruction`s.
+	 *
+	 * You should not modify this object. It should be treated as immutable.
+	 */
+	var ComponentInstruction = (function () {
+	    function ComponentInstruction(urlPath, urlParams, data, componentType, terminal, specificity, params) {
+	        if (params === void 0) { params = null; }
+	        this.urlPath = urlPath;
+	        this.urlParams = urlParams;
+	        this.componentType = componentType;
+	        this.terminal = terminal;
+	        this.specificity = specificity;
+	        this.params = params;
+	        this.reuse = false;
+	        this.routeData = lang_1.isPresent(data) ? data : exports.BLANK_ROUTE_DATA;
+	    }
+	    return ComponentInstruction;
+	})();
+	exports.ComponentInstruction = ComponentInstruction;
+
+
+/***/ },
+/* 246 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var lang_1 = __webpack_require__(5);
+	var exceptions_1 = __webpack_require__(14);
+	var collection_1 = __webpack_require__(12);
+	var url_parser_1 = __webpack_require__(247);
+	var TouchMap = (function () {
+	    function TouchMap(map) {
+	        var _this = this;
+	        this.map = {};
+	        this.keys = {};
+	        if (lang_1.isPresent(map)) {
+	            collection_1.StringMapWrapper.forEach(map, function (value, key) {
+	                _this.map[key] = lang_1.isPresent(value) ? value.toString() : null;
+	                _this.keys[key] = true;
+	            });
+	        }
+	    }
+	    TouchMap.prototype.get = function (key) {
+	        collection_1.StringMapWrapper.delete(this.keys, key);
+	        return this.map[key];
+	    };
+	    TouchMap.prototype.getUnused = function () {
+	        var _this = this;
+	        var unused = {};
+	        var keys = collection_1.StringMapWrapper.keys(this.keys);
+	        keys.forEach(function (key) { return unused[key] = collection_1.StringMapWrapper.get(_this.map, key); });
+	        return unused;
+	    };
+	    return TouchMap;
+	})();
+	function normalizeString(obj) {
+	    if (lang_1.isBlank(obj)) {
+	        return null;
+	    }
+	    else {
+	        return obj.toString();
+	    }
+	}
+	var ContinuationSegment = (function () {
+	    function ContinuationSegment() {
+	        this.name = '';
+	    }
+	    ContinuationSegment.prototype.generate = function (params) { return ''; };
+	    ContinuationSegment.prototype.match = function (path) { return true; };
+	    return ContinuationSegment;
+	})();
+	var StaticSegment = (function () {
+	    function StaticSegment(path) {
+	        this.path = path;
+	        this.name = '';
+	    }
+	    StaticSegment.prototype.match = function (path) { return path == this.path; };
+	    StaticSegment.prototype.generate = function (params) { return this.path; };
+	    return StaticSegment;
+	})();
+	var DynamicSegment = (function () {
+	    function DynamicSegment(name) {
+	        this.name = name;
+	    }
+	    DynamicSegment.prototype.match = function (path) { return path.length > 0; };
+	    DynamicSegment.prototype.generate = function (params) {
+	        if (!collection_1.StringMapWrapper.contains(params.map, this.name)) {
+	            throw new exceptions_1.BaseException("Route generator for '" + this.name + "' was not included in parameters passed.");
+	        }
+	        return normalizeString(params.get(this.name));
+	    };
+	    return DynamicSegment;
+	})();
+	var StarSegment = (function () {
+	    function StarSegment(name) {
+	        this.name = name;
+	    }
+	    StarSegment.prototype.match = function (path) { return true; };
+	    StarSegment.prototype.generate = function (params) { return normalizeString(params.get(this.name)); };
+	    return StarSegment;
+	})();
+	var paramMatcher = /^:([^\/]+)$/g;
+	var wildcardMatcher = /^\*([^\/]+)$/g;
+	function parsePathString(route) {
+	    // normalize route as not starting with a "/". Recognition will
+	    // also normalize.
+	    if (route.startsWith("/")) {
+	        route = route.substring(1);
+	    }
+	    var segments = splitBySlash(route);
+	    var results = [];
+	    var specificity = 0;
+	    // The "specificity" of a path is used to determine which route is used when multiple routes match
+	    // a URL.
+	    // Static segments (like "/foo") are the most specific, followed by dynamic segments (like
+	    // "/:id"). Star segments
+	    // add no specificity. Segments at the start of the path are more specific than proceeding ones.
+	    // The code below uses place values to combine the different types of segments into a single
+	    // integer that we can
+	    // sort later. Each static segment is worth hundreds of points of specificity (10000, 9900, ...,
+	    // 200), and each
+	    // dynamic segment is worth single points of specificity (100, 99, ... 2).
+	    if (segments.length > 98) {
+	        throw new exceptions_1.BaseException("'" + route + "' has more than the maximum supported number of segments.");
+	    }
+	    var limit = segments.length - 1;
+	    for (var i = 0; i <= limit; i++) {
+	        var segment = segments[i], match;
+	        if (lang_1.isPresent(match = lang_1.RegExpWrapper.firstMatch(paramMatcher, segment))) {
+	            results.push(new DynamicSegment(match[1]));
+	            specificity += (100 - i);
+	        }
+	        else if (lang_1.isPresent(match = lang_1.RegExpWrapper.firstMatch(wildcardMatcher, segment))) {
+	            results.push(new StarSegment(match[1]));
+	        }
+	        else if (segment == '...') {
+	            if (i < limit) {
+	                throw new exceptions_1.BaseException("Unexpected \"...\" before the end of the path for \"" + route + "\".");
+	            }
+	            results.push(new ContinuationSegment());
+	        }
+	        else {
+	            results.push(new StaticSegment(segment));
+	            specificity += 100 * (100 - i);
+	        }
+	    }
+	    var result = collection_1.StringMapWrapper.create();
+	    collection_1.StringMapWrapper.set(result, 'segments', results);
+	    collection_1.StringMapWrapper.set(result, 'specificity', specificity);
+	    return result;
+	}
+	// this function is used to determine whether a route config path like `/foo/:id` collides with
+	// `/foo/:name`
+	function pathDslHash(segments) {
+	    return segments.map(function (segment) {
+	        if (segment instanceof StarSegment) {
+	            return '*';
+	        }
+	        else if (segment instanceof ContinuationSegment) {
+	            return '...';
+	        }
+	        else if (segment instanceof DynamicSegment) {
+	            return ':';
+	        }
+	        else if (segment instanceof StaticSegment) {
+	            return segment.path;
+	        }
+	    })
+	        .join('/');
+	}
+	function splitBySlash(url) {
+	    return url.split('/');
+	}
+	var RESERVED_CHARS = lang_1.RegExpWrapper.create('//|\\(|\\)|;|\\?|=');
+	function assertPath(path) {
+	    if (lang_1.StringWrapper.contains(path, '#')) {
+	        throw new exceptions_1.BaseException("Path \"" + path + "\" should not include \"#\". Use \"HashLocationStrategy\" instead.");
+	    }
+	    var illegalCharacter = lang_1.RegExpWrapper.firstMatch(RESERVED_CHARS, path);
+	    if (lang_1.isPresent(illegalCharacter)) {
+	        throw new exceptions_1.BaseException("Path \"" + path + "\" contains \"" + illegalCharacter[0] + "\" which is not allowed in a route config.");
+	    }
+	}
+	/**
+	 * Parses a URL string using a given matcher DSL, and generates URLs from param maps
+	 */
+	var PathRecognizer = (function () {
+	    function PathRecognizer(path) {
+	        this.path = path;
+	        this.terminal = true;
+	        assertPath(path);
+	        var parsed = parsePathString(path);
+	        this._segments = parsed['segments'];
+	        this.specificity = parsed['specificity'];
+	        this.hash = pathDslHash(this._segments);
+	        var lastSegment = this._segments[this._segments.length - 1];
+	        this.terminal = !(lastSegment instanceof ContinuationSegment);
+	    }
+	    PathRecognizer.prototype.recognize = function (beginningSegment) {
+	        var nextSegment = beginningSegment;
+	        var currentSegment;
+	        var positionalParams = {};
+	        var captured = [];
+	        for (var i = 0; i < this._segments.length; i += 1) {
+	            var segment = this._segments[i];
+	            currentSegment = nextSegment;
+	            if (segment instanceof ContinuationSegment) {
+	                break;
+	            }
+	            if (lang_1.isPresent(currentSegment)) {
+	                captured.push(currentSegment.path);
+	                // the star segment consumes all of the remaining URL, including matrix params
+	                if (segment instanceof StarSegment) {
+	                    positionalParams[segment.name] = currentSegment.toString();
+	                    nextSegment = null;
+	                    break;
+	                }
+	                if (segment instanceof DynamicSegment) {
+	                    positionalParams[segment.name] = currentSegment.path;
+	                }
+	                else if (!segment.match(currentSegment.path)) {
+	                    return null;
+	                }
+	                nextSegment = currentSegment.child;
+	            }
+	            else if (!segment.match('')) {
+	                return null;
+	            }
+	        }
+	        if (this.terminal && lang_1.isPresent(nextSegment)) {
+	            return null;
+	        }
+	        var urlPath = captured.join('/');
+	        var auxiliary;
+	        var urlParams;
+	        var allParams;
+	        if (lang_1.isPresent(currentSegment)) {
+	            // If this is the root component, read query params. Otherwise, read matrix params.
+	            var paramsSegment = beginningSegment instanceof url_parser_1.RootUrl ? beginningSegment : currentSegment;
+	            allParams = lang_1.isPresent(paramsSegment.params) ?
+	                collection_1.StringMapWrapper.merge(paramsSegment.params, positionalParams) :
+	                positionalParams;
+	            urlParams = url_parser_1.serializeParams(paramsSegment.params);
+	            auxiliary = currentSegment.auxiliary;
+	        }
+	        else {
+	            allParams = positionalParams;
+	            auxiliary = [];
+	            urlParams = [];
+	        }
+	        return { urlPath: urlPath, urlParams: urlParams, allParams: allParams, auxiliary: auxiliary, nextSegment: nextSegment };
+	    };
+	    PathRecognizer.prototype.generate = function (params) {
+	        var paramTokens = new TouchMap(params);
+	        var path = [];
+	        for (var i = 0; i < this._segments.length; i++) {
+	            var segment = this._segments[i];
+	            if (!(segment instanceof ContinuationSegment)) {
+	                path.push(segment.generate(paramTokens));
+	            }
+	        }
+	        var urlPath = path.join('/');
+	        var nonPositionalParams = paramTokens.getUnused();
+	        var urlParams = url_parser_1.serializeParams(nonPositionalParams);
+	        return { urlPath: urlPath, urlParams: urlParams };
+	    };
+	    return PathRecognizer;
+	})();
+	exports.PathRecognizer = PathRecognizer;
+
+
+/***/ },
+/* 247 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var collection_1 = __webpack_require__(12);
+	var lang_1 = __webpack_require__(5);
+	var exceptions_1 = __webpack_require__(14);
+	/**
+	 * This class represents a parsed URL
+	 */
+	var Url = (function () {
+	    function Url(path, child, auxiliary, params) {
+	        if (child === void 0) { child = null; }
+	        if (auxiliary === void 0) { auxiliary = lang_1.CONST_EXPR([]); }
+	        if (params === void 0) { params = null; }
+	        this.path = path;
+	        this.child = child;
+	        this.auxiliary = auxiliary;
+	        this.params = params;
+	    }
+	    Url.prototype.toString = function () {
+	        return this.path + this._matrixParamsToString() + this._auxToString() + this._childString();
+	    };
+	    Url.prototype.segmentToString = function () { return this.path + this._matrixParamsToString(); };
+	    /** @internal */
+	    Url.prototype._auxToString = function () {
+	        return this.auxiliary.length > 0 ?
+	            ('(' + this.auxiliary.map(function (sibling) { return sibling.toString(); }).join('//') + ')') :
+	            '';
+	    };
+	    Url.prototype._matrixParamsToString = function () {
+	        if (lang_1.isBlank(this.params)) {
+	            return '';
+	        }
+	        return ';' + serializeParams(this.params).join(';');
+	    };
+	    /** @internal */
+	    Url.prototype._childString = function () { return lang_1.isPresent(this.child) ? ('/' + this.child.toString()) : ''; };
+	    return Url;
+	})();
+	exports.Url = Url;
+	var RootUrl = (function (_super) {
+	    __extends(RootUrl, _super);
+	    function RootUrl(path, child, auxiliary, params) {
+	        if (child === void 0) { child = null; }
+	        if (auxiliary === void 0) { auxiliary = lang_1.CONST_EXPR([]); }
+	        if (params === void 0) { params = null; }
+	        _super.call(this, path, child, auxiliary, params);
+	    }
+	    RootUrl.prototype.toString = function () {
+	        return this.path + this._auxToString() + this._childString() + this._queryParamsToString();
+	    };
+	    RootUrl.prototype.segmentToString = function () { return this.path + this._queryParamsToString(); };
+	    RootUrl.prototype._queryParamsToString = function () {
+	        if (lang_1.isBlank(this.params)) {
+	            return '';
+	        }
+	        return '?' + serializeParams(this.params).join('&');
+	    };
+	    return RootUrl;
+	})(Url);
+	exports.RootUrl = RootUrl;
+	function pathSegmentsToUrl(pathSegments) {
+	    var url = new Url(pathSegments[pathSegments.length - 1]);
+	    for (var i = pathSegments.length - 2; i >= 0; i -= 1) {
+	        url = new Url(pathSegments[i], url);
+	    }
+	    return url;
+	}
+	exports.pathSegmentsToUrl = pathSegmentsToUrl;
+	var SEGMENT_RE = lang_1.RegExpWrapper.create('^[^\\/\\(\\)\\?;=&#]+');
+	function matchUrlSegment(str) {
+	    var match = lang_1.RegExpWrapper.firstMatch(SEGMENT_RE, str);
+	    return lang_1.isPresent(match) ? match[0] : '';
+	}
+	var UrlParser = (function () {
+	    function UrlParser() {
+	    }
+	    UrlParser.prototype.peekStartsWith = function (str) { return this._remaining.startsWith(str); };
+	    UrlParser.prototype.capture = function (str) {
+	        if (!this._remaining.startsWith(str)) {
+	            throw new exceptions_1.BaseException("Expected \"" + str + "\".");
+	        }
+	        this._remaining = this._remaining.substring(str.length);
+	    };
+	    UrlParser.prototype.parse = function (url) {
+	        this._remaining = url;
+	        if (url == '' || url == '/') {
+	            return new Url('');
+	        }
+	        return this.parseRoot();
+	    };
+	    // segment + (aux segments) + (query params)
+	    UrlParser.prototype.parseRoot = function () {
+	        if (this.peekStartsWith('/')) {
+	            this.capture('/');
+	        }
+	        var path = matchUrlSegment(this._remaining);
+	        this.capture(path);
+	        var aux = [];
+	        if (this.peekStartsWith('(')) {
+	            aux = this.parseAuxiliaryRoutes();
+	        }
+	        if (this.peekStartsWith(';')) {
+	            // TODO: should these params just be dropped?
+	            this.parseMatrixParams();
+	        }
+	        var child = null;
+	        if (this.peekStartsWith('/') && !this.peekStartsWith('//')) {
+	            this.capture('/');
+	            child = this.parseSegment();
+	        }
+	        var queryParams = null;
+	        if (this.peekStartsWith('?')) {
+	            queryParams = this.parseQueryParams();
+	        }
+	        return new RootUrl(path, child, aux, queryParams);
+	    };
+	    // segment + (matrix params) + (aux segments)
+	    UrlParser.prototype.parseSegment = function () {
+	        if (this._remaining.length == 0) {
+	            return null;
+	        }
+	        if (this.peekStartsWith('/')) {
+	            this.capture('/');
+	        }
+	        var path = matchUrlSegment(this._remaining);
+	        this.capture(path);
+	        var matrixParams = null;
+	        if (this.peekStartsWith(';')) {
+	            matrixParams = this.parseMatrixParams();
+	        }
+	        var aux = [];
+	        if (this.peekStartsWith('(')) {
+	            aux = this.parseAuxiliaryRoutes();
+	        }
+	        var child = null;
+	        if (this.peekStartsWith('/') && !this.peekStartsWith('//')) {
+	            this.capture('/');
+	            child = this.parseSegment();
+	        }
+	        return new Url(path, child, aux, matrixParams);
+	    };
+	    UrlParser.prototype.parseQueryParams = function () {
+	        var params = {};
+	        this.capture('?');
+	        this.parseParam(params);
+	        while (this._remaining.length > 0 && this.peekStartsWith('&')) {
+	            this.capture('&');
+	            this.parseParam(params);
+	        }
+	        return params;
+	    };
+	    UrlParser.prototype.parseMatrixParams = function () {
+	        var params = {};
+	        while (this._remaining.length > 0 && this.peekStartsWith(';')) {
+	            this.capture(';');
+	            this.parseParam(params);
+	        }
+	        return params;
+	    };
+	    UrlParser.prototype.parseParam = function (params) {
+	        var key = matchUrlSegment(this._remaining);
+	        if (lang_1.isBlank(key)) {
+	            return;
+	        }
+	        this.capture(key);
+	        var value = true;
+	        if (this.peekStartsWith('=')) {
+	            this.capture('=');
+	            var valueMatch = matchUrlSegment(this._remaining);
+	            if (lang_1.isPresent(valueMatch)) {
+	                value = valueMatch;
+	                this.capture(value);
+	            }
+	        }
+	        params[key] = value;
+	    };
+	    UrlParser.prototype.parseAuxiliaryRoutes = function () {
+	        var routes = [];
+	        this.capture('(');
+	        while (!this.peekStartsWith(')') && this._remaining.length > 0) {
+	            routes.push(this.parseSegment());
+	            if (this.peekStartsWith('//')) {
+	                this.capture('//');
+	            }
+	        }
+	        this.capture(')');
+	        return routes;
+	    };
+	    return UrlParser;
+	})();
+	exports.UrlParser = UrlParser;
+	exports.parser = new UrlParser();
+	function serializeParams(paramMap) {
+	    var params = [];
+	    if (lang_1.isPresent(paramMap)) {
+	        collection_1.StringMapWrapper.forEach(paramMap, function (value, key) {
+	            if (value == true) {
+	                params.push(key);
+	            }
+	            else {
+	                params.push(key + '=' + value);
+	            }
+	        });
+	    }
+	    return params;
+	}
+	exports.serializeParams = serializeParams;
+
+
+/***/ },
+/* 248 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var lang_1 = __webpack_require__(5);
+	var exceptions_1 = __webpack_require__(14);
+	var collection_1 = __webpack_require__(12);
+	var async_1 = __webpack_require__(60);
+	var route_recognizer_1 = __webpack_require__(244);
+	var route_config_impl_1 = __webpack_require__(243);
+	var async_route_handler_1 = __webpack_require__(249);
+	var sync_route_handler_1 = __webpack_require__(250);
+	/**
+	 * `ComponentRecognizer` is responsible for recognizing routes for a single component.
+	 * It is consumed by `RouteRegistry`, which knows how to recognize an entire hierarchy of
+	 * components.
+	 */
+	var ComponentRecognizer = (function () {
+	    function ComponentRecognizer() {
+	        this.names = new collection_1.Map();
+	        // map from name to recognizer
+	        this.auxNames = new collection_1.Map();
+	        // map from starting path to recognizer
+	        this.auxRoutes = new collection_1.Map();
+	        // TODO: optimize this into a trie
+	        this.matchers = [];
+	        this.defaultRoute = null;
+	    }
+	    /**
+	     * returns whether or not the config is terminal
+	     */
+	    ComponentRecognizer.prototype.config = function (config) {
+	        var handler;
+	        if (lang_1.isPresent(config.name) && config.name[0].toUpperCase() != config.name[0]) {
+	            var suggestedName = config.name[0].toUpperCase() + config.name.substring(1);
+	            throw new exceptions_1.BaseException("Route \"" + config.path + "\" with name \"" + config.name + "\" does not begin with an uppercase letter. Route names should be CamelCase like \"" + suggestedName + "\".");
+	        }
+	        if (config instanceof route_config_impl_1.AuxRoute) {
+	            handler = new sync_route_handler_1.SyncRouteHandler(config.component, config.data);
+	            var path = config.path.startsWith('/') ? config.path.substring(1) : config.path;
+	            var recognizer = new route_recognizer_1.RouteRecognizer(config.path, handler);
+	            this.auxRoutes.set(path, recognizer);
+	            if (lang_1.isPresent(config.name)) {
+	                this.auxNames.set(config.name, recognizer);
+	            }
+	            return recognizer.terminal;
+	        }
+	        var useAsDefault = false;
+	        if (config instanceof route_config_impl_1.Redirect) {
+	            var redirector = new route_recognizer_1.RedirectRecognizer(config.path, config.redirectTo);
+	            this._assertNoHashCollision(redirector.hash, config.path);
+	            this.matchers.push(redirector);
+	            return true;
+	        }
+	        if (config instanceof route_config_impl_1.Route) {
+	            handler = new sync_route_handler_1.SyncRouteHandler(config.component, config.data);
+	            useAsDefault = lang_1.isPresent(config.useAsDefault) && config.useAsDefault;
+	        }
+	        else if (config instanceof route_config_impl_1.AsyncRoute) {
+	            handler = new async_route_handler_1.AsyncRouteHandler(config.loader, config.data);
+	            useAsDefault = lang_1.isPresent(config.useAsDefault) && config.useAsDefault;
+	        }
+	        var recognizer = new route_recognizer_1.RouteRecognizer(config.path, handler);
+	        this._assertNoHashCollision(recognizer.hash, config.path);
+	        if (useAsDefault) {
+	            if (lang_1.isPresent(this.defaultRoute)) {
+	                throw new exceptions_1.BaseException("Only one route can be default");
+	            }
+	            this.defaultRoute = recognizer;
+	        }
+	        this.matchers.push(recognizer);
+	        if (lang_1.isPresent(config.name)) {
+	            this.names.set(config.name, recognizer);
+	        }
+	        return recognizer.terminal;
+	    };
+	    ComponentRecognizer.prototype._assertNoHashCollision = function (hash, path) {
+	        this.matchers.forEach(function (matcher) {
+	            if (hash == matcher.hash) {
+	                throw new exceptions_1.BaseException("Configuration '" + path + "' conflicts with existing route '" + matcher.path + "'");
+	            }
+	        });
+	    };
+	    /**
+	     * Given a URL, returns a list of `RouteMatch`es, which are partial recognitions for some route.
+	     */
+	    ComponentRecognizer.prototype.recognize = function (urlParse) {
+	        var solutions = [];
+	        this.matchers.forEach(function (routeRecognizer) {
+	            var pathMatch = routeRecognizer.recognize(urlParse);
+	            if (lang_1.isPresent(pathMatch)) {
+	                solutions.push(pathMatch);
+	            }
+	        });
+	        return solutions;
+	    };
+	    ComponentRecognizer.prototype.recognizeAuxiliary = function (urlParse) {
+	        var routeRecognizer = this.auxRoutes.get(urlParse.path);
+	        if (lang_1.isPresent(routeRecognizer)) {
+	            return [routeRecognizer.recognize(urlParse)];
+	        }
+	        return [async_1.PromiseWrapper.resolve(null)];
+	    };
+	    ComponentRecognizer.prototype.hasRoute = function (name) { return this.names.has(name); };
+	    ComponentRecognizer.prototype.componentLoaded = function (name) {
+	        return this.hasRoute(name) && lang_1.isPresent(this.names.get(name).handler.componentType);
+	    };
+	    ComponentRecognizer.prototype.loadComponent = function (name) {
+	        return this.names.get(name).handler.resolveComponentType();
+	    };
+	    ComponentRecognizer.prototype.generate = function (name, params) {
+	        var pathRecognizer = this.names.get(name);
+	        if (lang_1.isBlank(pathRecognizer)) {
+	            return null;
+	        }
+	        return pathRecognizer.generate(params);
+	    };
+	    ComponentRecognizer.prototype.generateAuxiliary = function (name, params) {
+	        var pathRecognizer = this.auxNames.get(name);
+	        if (lang_1.isBlank(pathRecognizer)) {
+	            return null;
+	        }
+	        return pathRecognizer.generate(params);
+	    };
+	    return ComponentRecognizer;
+	})();
+	exports.ComponentRecognizer = ComponentRecognizer;
+
+
+/***/ },
+/* 249 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var lang_1 = __webpack_require__(5);
+	var instruction_1 = __webpack_require__(245);
+	var AsyncRouteHandler = (function () {
+	    function AsyncRouteHandler(_loader, data) {
+	        if (data === void 0) { data = null; }
+	        this._loader = _loader;
+	        /** @internal */
+	        this._resolvedComponent = null;
+	        this.data = lang_1.isPresent(data) ? new instruction_1.RouteData(data) : instruction_1.BLANK_ROUTE_DATA;
+	    }
+	    AsyncRouteHandler.prototype.resolveComponentType = function () {
+	        var _this = this;
+	        if (lang_1.isPresent(this._resolvedComponent)) {
+	            return this._resolvedComponent;
+	        }
+	        return this._resolvedComponent = this._loader().then(function (componentType) {
+	            _this.componentType = componentType;
+	            return componentType;
+	        });
+	    };
+	    return AsyncRouteHandler;
+	})();
+	exports.AsyncRouteHandler = AsyncRouteHandler;
+
+
+/***/ },
+/* 250 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var async_1 = __webpack_require__(60);
+	var lang_1 = __webpack_require__(5);
+	var instruction_1 = __webpack_require__(245);
+	var SyncRouteHandler = (function () {
+	    function SyncRouteHandler(componentType, data) {
+	        this.componentType = componentType;
+	        /** @internal */
+	        this._resolvedComponent = null;
+	        this._resolvedComponent = async_1.PromiseWrapper.resolve(componentType);
+	        this.data = lang_1.isPresent(data) ? new instruction_1.RouteData(data) : instruction_1.BLANK_ROUTE_DATA;
+	    }
+	    SyncRouteHandler.prototype.resolveComponentType = function () { return this._resolvedComponent; };
+	    return SyncRouteHandler;
+	})();
+	exports.SyncRouteHandler = SyncRouteHandler;
+
+
+/***/ },
+/* 251 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var route_config_decorator_1 = __webpack_require__(252);
+	var lang_1 = __webpack_require__(5);
+	var exceptions_1 = __webpack_require__(14);
+	/**
+	 * Given a JS Object that represents a route config, returns a corresponding Route, AsyncRoute,
+	 * AuxRoute or Redirect object.
+	 *
+	 * Also wraps an AsyncRoute's loader function to add the loaded component's route config to the
+	 * `RouteRegistry`.
+	 */
+	function normalizeRouteConfig(config, registry) {
+	    if (config instanceof route_config_decorator_1.AsyncRoute) {
+	        var wrappedLoader = wrapLoaderToReconfigureRegistry(config.loader, registry);
+	        return new route_config_decorator_1.AsyncRoute({
+	            path: config.path,
+	            loader: wrappedLoader,
+	            name: config.name,
+	            data: config.data,
+	            useAsDefault: config.useAsDefault
+	        });
+	    }
+	    if (config instanceof route_config_decorator_1.Route || config instanceof route_config_decorator_1.Redirect || config instanceof route_config_decorator_1.AuxRoute) {
+	        return config;
+	    }
+	    if ((+!!config.component) + (+!!config.redirectTo) + (+!!config.loader) != 1) {
+	        throw new exceptions_1.BaseException("Route config should contain exactly one \"component\", \"loader\", or \"redirectTo\" property.");
+	    }
+	    if (config.as && config.name) {
+	        throw new exceptions_1.BaseException("Route config should contain exactly one \"as\" or \"name\" property.");
+	    }
+	    if (config.as) {
+	        config.name = config.as;
+	    }
+	    if (config.loader) {
+	        var wrappedLoader = wrapLoaderToReconfigureRegistry(config.loader, registry);
+	        return new route_config_decorator_1.AsyncRoute({
+	            path: config.path,
+	            loader: wrappedLoader,
+	            name: config.name,
+	            useAsDefault: config.useAsDefault
+	        });
+	    }
+	    if (config.aux) {
+	        return new route_config_decorator_1.AuxRoute({ path: config.aux, component: config.component, name: config.name });
+	    }
+	    if (config.component) {
+	        if (typeof config.component == 'object') {
+	            var componentDefinitionObject = config.component;
+	            if (componentDefinitionObject.type == 'constructor') {
+	                return new route_config_decorator_1.Route({
+	                    path: config.path,
+	                    component: componentDefinitionObject.constructor,
+	                    name: config.name,
+	                    data: config.data,
+	                    useAsDefault: config.useAsDefault
+	                });
+	            }
+	            else if (componentDefinitionObject.type == 'loader') {
+	                return new route_config_decorator_1.AsyncRoute({
+	                    path: config.path,
+	                    loader: componentDefinitionObject.loader,
+	                    name: config.name,
+	                    useAsDefault: config.useAsDefault
+	                });
+	            }
+	            else {
+	                throw new exceptions_1.BaseException("Invalid component type \"" + componentDefinitionObject.type + "\". Valid types are \"constructor\" and \"loader\".");
+	            }
+	        }
+	        return new route_config_decorator_1.Route(config);
+	    }
+	    if (config.redirectTo) {
+	        return new route_config_decorator_1.Redirect({ path: config.path, redirectTo: config.redirectTo });
+	    }
+	    return config;
+	}
+	exports.normalizeRouteConfig = normalizeRouteConfig;
+	function wrapLoaderToReconfigureRegistry(loader, registry) {
+	    return function () {
+	        return loader().then(function (componentType) {
+	            registry.configFromComponent(componentType);
+	            return componentType;
+	        });
+	    };
+	}
+	function assertComponentExists(component, path) {
+	    if (!lang_1.isType(component)) {
+	        throw new exceptions_1.BaseException("Component for route \"" + path + "\" is not defined, or is not a class.");
+	    }
+	}
+	exports.assertComponentExists = assertComponentExists;
+
+
+/***/ },
+/* 252 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var route_config_impl_1 = __webpack_require__(243);
+	var decorators_1 = __webpack_require__(9);
+	var route_config_impl_2 = __webpack_require__(243);
+	exports.Route = route_config_impl_2.Route;
+	exports.Redirect = route_config_impl_2.Redirect;
+	exports.AuxRoute = route_config_impl_2.AuxRoute;
+	exports.AsyncRoute = route_config_impl_2.AsyncRoute;
+	exports.RouteConfig = decorators_1.makeDecorator(route_config_impl_1.RouteConfig);
+
+
+/***/ },
+/* 253 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+	    switch (arguments.length) {
+	        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+	        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+	        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+	    }
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var location_strategy_1 = __webpack_require__(254);
+	var async_1 = __webpack_require__(60);
+	var core_1 = __webpack_require__(2);
+	/**
+	 * `Location` is a service that applications can use to interact with a browser's URL.
+	 * Depending on which {@link LocationStrategy} is used, `Location` will either persist
+	 * to the URL's path or the URL's hash segment.
+	 *
+	 * Note: it's better to use {@link Router#navigate} service to trigger route changes. Use
+	 * `Location` only if you need to interact with or create normalized URLs outside of
+	 * routing.
+	 *
+	 * `Location` is responsible for normalizing the URL against the application's base href.
+	 * A normalized URL is absolute from the URL host, includes the application's base href, and has no
+	 * trailing slash:
+	 * - `/my/app/user/123` is normalized
+	 * - `my/app/user/123` **is not** normalized
+	 * - `/my/app/user/123/` **is not** normalized
+	 *
+	 * ### Example
+	 *
+	 * ```
+	 * import {Component} from 'angular2/angular2';
+	 * import {
+	 *   ROUTER_DIRECTIVES,
+	 *   ROUTER_PROVIDERS,
+	 *   RouteConfig,
+	 *   Location
+	 * } from 'angular2/router';
+	 *
+	 * @Component({directives: [ROUTER_DIRECTIVES]})
+	 * @RouteConfig([
+	 *  {...},
+	 * ])
+	 * class AppCmp {
+	 *   constructor(location: Location) {
+	 *     location.go('/foo');
+	 *   }
+	 * }
+	 *
+	 * bootstrap(AppCmp, [ROUTER_PROVIDERS]);
+	 * ```
+	 */
+	var Location = (function () {
+	    function Location(platformStrategy) {
+	        var _this = this;
+	        this.platformStrategy = platformStrategy;
+	        /** @internal */
+	        this._subject = new async_1.EventEmitter();
+	        var browserBaseHref = this.platformStrategy.getBaseHref();
+	        this._baseHref = stripTrailingSlash(stripIndexHtml(browserBaseHref));
+	        this.platformStrategy.onPopState(function (_) { async_1.ObservableWrapper.callEmit(_this._subject, { 'url': _this.path(), 'pop': true }); });
+	    }
+	    /**
+	     * Returns the normalized URL path.
+	     */
+	    Location.prototype.path = function () { return this.normalize(this.platformStrategy.path()); };
+	    /**
+	     * Given a string representing a URL, returns the normalized URL path without leading or
+	     * trailing slashes
+	     */
+	    Location.prototype.normalize = function (url) {
+	        return stripTrailingSlash(_stripBaseHref(this._baseHref, stripIndexHtml(url)));
+	    };
+	    /**
+	     * Given a string representing a URL, returns the platform-specific external URL path.
+	     * If the given URL doesn't begin with a leading slash (`'/'`), this method adds one
+	     * before normalizing. This method will also add a hash if `HashLocationStrategy` is
+	     * used, or the `APP_BASE_HREF` if the `PathLocationStrategy` is in use.
+	     */
+	    Location.prototype.prepareExternalUrl = function (url) {
+	        if (url.length > 0 && !url.startsWith('/')) {
+	            url = '/' + url;
+	        }
+	        return this.platformStrategy.prepareExternalUrl(url);
+	    };
+	    /**
+	     * Changes the browsers URL to the normalized version of the given URL, and pushes a
+	     * new item onto the platform's history.
+	     */
+	    Location.prototype.go = function (path, query) {
+	        if (query === void 0) { query = ''; }
+	        this.platformStrategy.pushState(null, '', path, query);
+	    };
+	    /**
+	     * Navigates forward in the platform's history.
+	     */
+	    Location.prototype.forward = function () { this.platformStrategy.forward(); };
+	    /**
+	     * Navigates back in the platform's history.
+	     */
+	    Location.prototype.back = function () { this.platformStrategy.back(); };
+	    /**
+	     * Subscribe to the platform's `popState` events.
+	     */
+	    Location.prototype.subscribe = function (onNext, onThrow, onReturn) {
+	        if (onThrow === void 0) { onThrow = null; }
+	        if (onReturn === void 0) { onReturn = null; }
+	        return async_1.ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);
+	    };
+	    Location = __decorate([
+	        core_1.Injectable(), 
+	        __metadata('design:paramtypes', [location_strategy_1.LocationStrategy])
+	    ], Location);
+	    return Location;
+	})();
+	exports.Location = Location;
+	function _stripBaseHref(baseHref, url) {
+	    if (baseHref.length > 0 && url.startsWith(baseHref)) {
+	        return url.substring(baseHref.length);
+	    }
+	    return url;
+	}
+	function stripIndexHtml(url) {
+	    if (/\/index.html$/g.test(url)) {
+	        // '/index.html'.length == 11
+	        return url.substring(0, url.length - 11);
+	    }
+	    return url;
+	}
+	function stripTrailingSlash(url) {
+	    if (/\/$/g.test(url)) {
+	        url = url.substring(0, url.length - 1);
+	    }
+	    return url;
+	}
+
+
+/***/ },
+/* 254 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var lang_1 = __webpack_require__(5);
+	var core_1 = __webpack_require__(2);
+	/**
+	 * `LocationStrategy` is responsible for representing and reading route state
+	 * from the browser's URL. Angular provides two strategies:
+	 * {@link HashLocationStrategy} (default) and {@link PathLocationStrategy}.
+	 *
+	 * This is used under the hood of the {@link Location} service.
+	 *
+	 * Applications should use the {@link Router} or {@link Location} services to
+	 * interact with application route state.
+	 *
+	 * For instance, {@link HashLocationStrategy} produces URLs like
+	 * `http://example.com#/foo`, and {@link PathLocationStrategy} produces
+	 * `http://example.com/foo` as an equivalent URL.
+	 *
+	 * See these two classes for more.
+	 */
+	var LocationStrategy = (function () {
+	    function LocationStrategy() {
+	    }
+	    return LocationStrategy;
+	})();
+	exports.LocationStrategy = LocationStrategy;
+	/**
+	 * The `APP_BASE_HREF` token represents the base href to be used with the
+	 * {@link PathLocationStrategy}.
+	 *
+	 * If you're using {@link PathLocationStrategy}, you must provide a provider to a string
+	 * representing the URL prefix that should be preserved when generating and recognizing
+	 * URLs.
+	 *
+	 * ### Example
+	 *
+	 * ```
+	 * import {Component} from 'angular2/angular2';
+	 * import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
+	 *
+	 * @Component({directives: [ROUTER_DIRECTIVES]})
+	 * @RouteConfig([
+	 *  {...},
+	 * ])
+	 * class AppCmp {
+	 *   // ...
+	 * }
+	 *
+	 * bootstrap(AppCmp, [
+	 *   ROUTER_PROVIDERS,
+	 *   PathLocationStrategy,
+	 *   provide(APP_BASE_HREF, {useValue: '/my/app'})
+	 * ]);
+	 * ```
+	 */
+	exports.APP_BASE_HREF = lang_1.CONST_EXPR(new core_1.OpaqueToken('appBaseHref'));
+	function normalizeQueryParams(params) {
+	    return (params.length > 0 && params.substring(0, 1) != '?') ? ('?' + params) : params;
+	}
+	exports.normalizeQueryParams = normalizeQueryParams;
+	function joinWithSlash(start, end) {
+	    if (start.length == 0) {
+	        return end;
+	    }
+	    if (end.length == 0) {
+	        return start;
+	    }
+	    var slashes = 0;
+	    if (start.endsWith('/')) {
+	        slashes++;
+	    }
+	    if (end.startsWith('/')) {
+	        slashes++;
+	    }
+	    if (slashes == 2) {
+	        return start + end.substring(1);
+	    }
+	    if (slashes == 1) {
+	        return start + end;
+	    }
+	    return start + '/' + end;
+	}
+	exports.joinWithSlash = joinWithSlash;
+
+
+/***/ },
+/* 255 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var lang_1 = __webpack_require__(5);
+	var lifecycle_annotations_impl_1 = __webpack_require__(256);
+	var reflection_1 = __webpack_require__(16);
+	function hasLifecycleHook(e, type) {
+	    if (!(type instanceof lang_1.Type))
+	        return false;
+	    return e.name in type.prototype;
+	}
+	exports.hasLifecycleHook = hasLifecycleHook;
+	function getCanActivateHook(type) {
+	    var annotations = reflection_1.reflector.annotations(type);
+	    for (var i = 0; i < annotations.length; i += 1) {
+	        var annotation = annotations[i];
+	        if (annotation instanceof lifecycle_annotations_impl_1.CanActivate) {
+	            return annotation.fn;
+	        }
+	    }
+	    return null;
+	}
+	exports.getCanActivateHook = getCanActivateHook;
+
+
+/***/ },
+/* 256 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+	    switch (arguments.length) {
+	        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+	        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+	        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+	    }
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var lang_1 = __webpack_require__(5);
+	var RouteLifecycleHook = (function () {
+	    function RouteLifecycleHook(name) {
+	        this.name = name;
+	    }
+	    RouteLifecycleHook = __decorate([
+	        lang_1.CONST(), 
+	        __metadata('design:paramtypes', [String])
+	    ], RouteLifecycleHook);
+	    return RouteLifecycleHook;
+	})();
+	exports.RouteLifecycleHook = RouteLifecycleHook;
+	var CanActivate = (function () {
+	    function CanActivate(fn) {
+	        this.fn = fn;
+	    }
+	    CanActivate = __decorate([
+	        lang_1.CONST(), 
+	        __metadata('design:paramtypes', [Function])
+	    ], CanActivate);
+	    return CanActivate;
+	})();
+	exports.CanActivate = CanActivate;
+	exports.routerCanReuse = lang_1.CONST_EXPR(new RouteLifecycleHook("routerCanReuse"));
+	exports.routerCanDeactivate = lang_1.CONST_EXPR(new RouteLifecycleHook("routerCanDeactivate"));
+	exports.routerOnActivate = lang_1.CONST_EXPR(new RouteLifecycleHook("routerOnActivate"));
+	exports.routerOnReuse = lang_1.CONST_EXPR(new RouteLifecycleHook("routerOnReuse"));
+	exports.routerOnDeactivate = lang_1.CONST_EXPR(new RouteLifecycleHook("routerOnDeactivate"));
+
+
+/***/ },
+/* 257 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+	    switch (arguments.length) {
+	        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+	        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+	        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+	    }
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var async_1 = __webpack_require__(60);
+	var collection_1 = __webpack_require__(12);
+	var lang_1 = __webpack_require__(5);
+	var exceptions_1 = __webpack_require__(14);
+	var core_1 = __webpack_require__(2);
+	var routerMod = __webpack_require__(241);
+	var instruction_1 = __webpack_require__(245);
+	var hookMod = __webpack_require__(258);
+	var route_lifecycle_reflector_1 = __webpack_require__(255);
+	var _resolveToTrue = async_1.PromiseWrapper.resolve(true);
+	/**
+	 * A router outlet is a placeholder that Angular dynamically fills based on the application's route.
+	 *
+	 * ## Use
+	 *
+	 * ```
+	 * <router-outlet></router-outlet>
+	 * ```
+	 */
+	var RouterOutlet = (function () {
+	    function RouterOutlet(_elementRef, _loader, _parentRouter, nameAttr) {
+	        this._elementRef = _elementRef;
+	        this._loader = _loader;
+	        this._parentRouter = _parentRouter;
+	        this.name = null;
+	        this._componentRef = null;
+	        this._currentInstruction = null;
+	        if (lang_1.isPresent(nameAttr)) {
+	            this.name = nameAttr;
+	            this._parentRouter.registerAuxOutlet(this);
+	        }
+	        else {
+	            this._parentRouter.registerPrimaryOutlet(this);
+	        }
+	    }
+	    /**
+	     * Called by the Router to instantiate a new component during the commit phase of a navigation.
+	     * This method in turn is responsible for calling the `routerOnActivate` hook of its child.
+	     */
+	    RouterOutlet.prototype.activate = function (nextInstruction) {
+	        var _this = this;
+	        var previousInstruction = this._currentInstruction;
+	        this._currentInstruction = nextInstruction;
+	        var componentType = nextInstruction.componentType;
+	        var childRouter = this._parentRouter.childRouter(componentType);
+	        var providers = core_1.Injector.resolve([
+	            core_1.provide(instruction_1.RouteData, { useValue: nextInstruction.routeData }),
+	            core_1.provide(instruction_1.RouteParams, { useValue: new instruction_1.RouteParams(nextInstruction.params) }),
+	            core_1.provide(routerMod.Router, { useValue: childRouter })
+	        ]);
+	        return this._loader.loadNextToLocation(componentType, this._elementRef, providers)
+	            .then(function (componentRef) {
+	            _this._componentRef = componentRef;
+	            if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerOnActivate, componentType)) {
+	                return _this._componentRef.instance
+	                    .routerOnActivate(nextInstruction, previousInstruction);
+	            }
+	        });
+	    };
+	    /**
+	     * Called by the {@link Router} during the commit phase of a navigation when an outlet
+	     * reuses a component between different routes.
+	     * This method in turn is responsible for calling the `routerOnReuse` hook of its child.
+	     */
+	    RouterOutlet.prototype.reuse = function (nextInstruction) {
+	        var previousInstruction = this._currentInstruction;
+	        this._currentInstruction = nextInstruction;
+	        if (lang_1.isBlank(this._componentRef)) {
+	            throw new exceptions_1.BaseException("Cannot reuse an outlet that does not contain a component.");
+	        }
+	        return async_1.PromiseWrapper.resolve(route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerOnReuse, this._currentInstruction.componentType) ?
+	            this._componentRef.instance
+	                .routerOnReuse(nextInstruction, previousInstruction) :
+	            true);
+	    };
+	    /**
+	     * Called by the {@link Router} when an outlet disposes of a component's contents.
+	     * This method in turn is responsible for calling the `routerOnDeactivate` hook of its child.
+	     */
+	    RouterOutlet.prototype.deactivate = function (nextInstruction) {
+	        var _this = this;
+	        var next = _resolveToTrue;
+	        if (lang_1.isPresent(this._componentRef) && lang_1.isPresent(this._currentInstruction) &&
+	            route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerOnDeactivate, this._currentInstruction.componentType)) {
+	            next = async_1.PromiseWrapper.resolve(this._componentRef.instance
+	                .routerOnDeactivate(nextInstruction, this._currentInstruction));
+	        }
+	        return next.then(function (_) {
+	            if (lang_1.isPresent(_this._componentRef)) {
+	                _this._componentRef.dispose();
+	                _this._componentRef = null;
+	            }
+	        });
+	    };
+	    /**
+	     * Called by the {@link Router} during recognition phase of a navigation.
+	     *
+	     * If this resolves to `false`, the given navigation is cancelled.
+	     *
+	     * This method delegates to the child component's `routerCanDeactivate` hook if it exists,
+	     * and otherwise resolves to true.
+	     */
+	    RouterOutlet.prototype.routerCanDeactivate = function (nextInstruction) {
+	        if (lang_1.isBlank(this._currentInstruction)) {
+	            return _resolveToTrue;
+	        }
+	        if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerCanDeactivate, this._currentInstruction.componentType)) {
+	            return async_1.PromiseWrapper.resolve(this._componentRef.instance
+	                .routerCanDeactivate(nextInstruction, this._currentInstruction));
+	        }
+	        return _resolveToTrue;
+	    };
+	    /**
+	     * Called by the {@link Router} during recognition phase of a navigation.
+	     *
+	     * If the new child component has a different Type than the existing child component,
+	     * this will resolve to `false`. You can't reuse an old component when the new component
+	     * is of a different Type.
+	     *
+	     * Otherwise, this method delegates to the child component's `routerCanReuse` hook if it exists,
+	     * or resolves to true if the hook is not present.
+	     */
+	    RouterOutlet.prototype.routerCanReuse = function (nextInstruction) {
+	        var result;
+	        if (lang_1.isBlank(this._currentInstruction) ||
+	            this._currentInstruction.componentType != nextInstruction.componentType) {
+	            result = false;
+	        }
+	        else if (route_lifecycle_reflector_1.hasLifecycleHook(hookMod.routerCanReuse, this._currentInstruction.componentType)) {
+	            result = this._componentRef.instance
+	                .routerCanReuse(nextInstruction, this._currentInstruction);
+	        }
+	        else {
+	            result = nextInstruction == this._currentInstruction ||
+	                (lang_1.isPresent(nextInstruction.params) && lang_1.isPresent(this._currentInstruction.params) &&
+	                    collection_1.StringMapWrapper.equals(nextInstruction.params, this._currentInstruction.params));
+	        }
+	        return async_1.PromiseWrapper.resolve(result);
+	    };
+	    RouterOutlet = __decorate([
+	        core_1.Directive({ selector: 'router-outlet' }),
+	        __param(3, core_1.Attribute('name')), 
+	        __metadata('design:paramtypes', [core_1.ElementRef, core_1.DynamicComponentLoader, routerMod.Router, String])
+	    ], RouterOutlet);
+	    return RouterOutlet;
+	})();
+	exports.RouterOutlet = RouterOutlet;
+
+
+/***/ },
+/* 258 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * This indirection is needed to free up Component, etc symbols in the public API
+	 * to be used by the decorator versions of these annotations.
+	 */
+	var decorators_1 = __webpack_require__(9);
+	var lifecycle_annotations_impl_1 = __webpack_require__(256);
+	var lifecycle_annotations_impl_2 = __webpack_require__(256);
+	exports.routerCanReuse = lifecycle_annotations_impl_2.routerCanReuse;
+	exports.routerCanDeactivate = lifecycle_annotations_impl_2.routerCanDeactivate;
+	exports.routerOnActivate = lifecycle_annotations_impl_2.routerOnActivate;
+	exports.routerOnReuse = lifecycle_annotations_impl_2.routerOnReuse;
+	exports.routerOnDeactivate = lifecycle_annotations_impl_2.routerOnDeactivate;
+	/**
+	 * Defines route lifecycle hook `CanActivate`, which is called by the router to determine
+	 * if a component can be instantiated as part of a navigation.
+	 *
+	 * <aside class="is-right">
+	 * Note that unlike other lifecycle hooks, this one uses an annotation rather than an interface.
+	 * This is because the `CanActivate` function is called before the component is instantiated.
+	 * </aside>
+	 *
+	 * The `CanActivate` hook is called with two {@link ComponentInstruction}s as parameters, the first
+	 * representing the current route being navigated to, and the second parameter representing the
+	 * previous route or `null`.
+	 *
+	 * ```typescript
+	 * @CanActivate((next, prev) => boolean | Promise<boolean>)
+	 * ```
+	 *
+	 * If `CanActivate` returns or resolves to `false`, the navigation is cancelled.
+	 * If `CanActivate` throws or rejects, the navigation is also cancelled.
+	 * If `CanActivate` returns or resolves to `true`, navigation continues, the component is
+	 * instantiated, and the {@link OnActivate} hook of that component is called if implemented.
+	 *
+	 * ### Example
+	 *
+	 * {@example router/ts/can_activate/can_activate_example.ts region='canActivate' }
+	 */
+	exports.CanActivate = decorators_1.makeDecorator(lifecycle_annotations_impl_1.CanActivate);
+
+
+/***/ },
+/* 259 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+	    switch (arguments.length) {
+	        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+	        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+	        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+	    }
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var core_1 = __webpack_require__(2);
+	var lang_1 = __webpack_require__(5);
+	var router_1 = __webpack_require__(241);
+	var location_1 = __webpack_require__(253);
+	/**
+	 * The RouterLink directive lets you link to specific parts of your app.
+	 *
+	 * Consider the following route configuration:
+
+	 * ```
+	 * @RouteConfig([
+	 *   { path: '/user', component: UserCmp, as: 'User' }
+	 * ]);
+	 * class MyComp {}
+	 * ```
+	 *
+	 * When linking to this `User` route, you can write:
+	 *
+	 * ```
+	 * <a [router-link]="['./User']">link to user component</a>
+	 * ```
+	 *
+	 * RouterLink expects the value to be an array of route names, followed by the params
+	 * for that level of routing. For instance `['/Team', {teamId: 1}, 'User', {userId: 2}]`
+	 * means that we want to generate a link for the `Team` route with params `{teamId: 1}`,
+	 * and with a child route `User` with params `{userId: 2}`.
+	 *
+	 * The first route name should be prepended with `/`, `./`, or `../`.
+	 * If the route begins with `/`, the router will look up the route from the root of the app.
+	 * If the route begins with `./`, the router will instead look in the current component's
+	 * children for the route. And if the route begins with `../`, the router will look at the
+	 * current component's parent.
+	 */
+	var RouterLink = (function () {
+	    function RouterLink(_router, _location) {
+	        this._router = _router;
+	        this._location = _location;
+	    }
+	    Object.defineProperty(RouterLink.prototype, "isRouteActive", {
+	        get: function () { return this._router.isRouteActive(this._navigationInstruction); },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(RouterLink.prototype, "routeParams", {
+	        set: function (changes) {
+	            this._routeParams = changes;
+	            this._navigationInstruction = this._router.generate(this._routeParams);
+	            var navigationHref = this._navigationInstruction.toLinkUrl();
+	            this.visibleHref = this._location.prepareExternalUrl(navigationHref);
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    RouterLink.prototype.onClick = function () {
+	        // If no target, or if target is _self, prevent default browser behavior
+	        if (!lang_1.isString(this.target) || this.target == '_self') {
+	            this._router.navigateByInstruction(this._navigationInstruction);
+	            return false;
+	        }
+	        return true;
+	    };
+	    RouterLink = __decorate([
+	        core_1.Directive({
+	            selector: '[router-link]',
+	            inputs: ['routeParams: routerLink', 'target: target'],
+	            host: {
+	                '(click)': 'onClick()',
+	                '[attr.href]': 'visibleHref',
+	                '[class.router-link-active]': 'isRouteActive'
+	            }
+	        }), 
+	        __metadata('design:paramtypes', [router_1.Router, location_1.Location])
+	    ], RouterLink);
+	    return RouterLink;
+	})();
+	exports.RouterLink = RouterLink;
+
+
+/***/ },
+/* 260 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+	    switch (arguments.length) {
+	        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+	        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+	        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+	    }
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var dom_adapter_1 = __webpack_require__(164);
+	var core_1 = __webpack_require__(2);
+	/**
+	 * `PlatformLocation` encapsulates all of the direct calls to platform APIs.
+	 * This class should not be used directly by an application developer. Instead, use
+	 * {@link Location}.
+	 */
+	var PlatformLocation = (function () {
+	    function PlatformLocation() {
+	        this._init();
+	    }
+	    // This is moved to its own method so that `MockPlatformLocationStrategy` can overwrite it
+	    /** @internal */
+	    PlatformLocation.prototype._init = function () {
+	        this._location = dom_adapter_1.DOM.getLocation();
+	        this._history = dom_adapter_1.DOM.getHistory();
+	    };
+	    PlatformLocation.prototype.getBaseHrefFromDOM = function () { return dom_adapter_1.DOM.getBaseHref(); };
+	    PlatformLocation.prototype.onPopState = function (fn) {
+	        dom_adapter_1.DOM.getGlobalEventTarget('window').addEventListener('popstate', fn, false);
+	    };
+	    PlatformLocation.prototype.onHashChange = function (fn) {
+	        dom_adapter_1.DOM.getGlobalEventTarget('window').addEventListener('hashchange', fn, false);
+	    };
+	    Object.defineProperty(PlatformLocation.prototype, "pathname", {
+	        get: function () { return this._location.pathname; },
+	        set: function (newPath) { this._location.pathname = newPath; },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(PlatformLocation.prototype, "search", {
+	        get: function () { return this._location.search; },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(PlatformLocation.prototype, "hash", {
+	        get: function () { return this._location.hash; },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    PlatformLocation.prototype.pushState = function (state, title, url) {
+	        this._history.pushState(state, title, url);
+	    };
+	    PlatformLocation.prototype.forward = function () { this._history.forward(); };
+	    PlatformLocation.prototype.back = function () { this._history.back(); };
+	    PlatformLocation = __decorate([
+	        core_1.Injectable(), 
+	        __metadata('design:paramtypes', [])
+	    ], PlatformLocation);
+	    return PlatformLocation;
+	})();
+	exports.PlatformLocation = PlatformLocation;
+
+
+/***/ },
+/* 261 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+	    switch (arguments.length) {
+	        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+	        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+	        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+	    }
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(2);
+	var location_strategy_1 = __webpack_require__(254);
+	var lang_1 = __webpack_require__(5);
+	var platform_location_1 = __webpack_require__(260);
+	/**
+	 * `HashLocationStrategy` is a {@link LocationStrategy} used to configure the
+	 * {@link Location} service to represent its state in the
+	 * [hash fragment](https://en.wikipedia.org/wiki/Uniform_Resource_Locator#Syntax)
+	 * of the browser's URL.
+	 *
+	 * For instance, if you call `location.go('/foo')`, the browser's URL will become
+	 * `example.com#/foo`.
+	 *
+	 * ### Example
+	 *
+	 * ```
+	 * import {Component, provide} from 'angular2/angular2';
+	 * import {
+	 *   ROUTER_DIRECTIVES,
+	 *   ROUTER_PROVIDERS,
+	 *   RouteConfig,
+	 *   Location,
+	 *   LocationStrategy,
+	 *   HashLocationStrategy
+	 * } from 'angular2/router';
+	 *
+	 * @Component({directives: [ROUTER_DIRECTIVES]})
+	 * @RouteConfig([
+	 *  {...},
+	 * ])
+	 * class AppCmp {
+	 *   constructor(location: Location) {
+	 *     location.go('/foo');
+	 *   }
+	 * }
+	 *
+	 * bootstrap(AppCmp, [
+	 *   ROUTER_PROVIDERS,
+	 *   provide(LocationStrategy, {useClass: HashLocationStrategy})
+	 * ]);
+	 * ```
+	 */
+	var HashLocationStrategy = (function (_super) {
+	    __extends(HashLocationStrategy, _super);
+	    function HashLocationStrategy(_platformLocation, _baseHref) {
+	        _super.call(this);
+	        this._platformLocation = _platformLocation;
+	        this._baseHref = '';
+	        if (lang_1.isPresent(_baseHref)) {
+	            this._baseHref = _baseHref;
+	        }
+	    }
+	    HashLocationStrategy.prototype.onPopState = function (fn) { this._platformLocation.onPopState(fn); };
+	    HashLocationStrategy.prototype.getBaseHref = function () { return this._baseHref; };
+	    HashLocationStrategy.prototype.path = function () {
+	        // the hash value is always prefixed with a `#`
+	        // and if it is empty then it will stay empty
+	        var path = this._platformLocation.hash;
+	        // Dart will complain if a call to substring is
+	        // executed with a position value that extends the
+	        // length of string.
+	        return (path.length > 0 ? path.substring(1) : path) +
+	            location_strategy_1.normalizeQueryParams(this._platformLocation.search);
+	    };
+	    HashLocationStrategy.prototype.prepareExternalUrl = function (internal) {
+	        var url = location_strategy_1.joinWithSlash(this._baseHref, internal);
+	        return url.length > 0 ? ('#' + url) : url;
+	    };
+	    HashLocationStrategy.prototype.pushState = function (state, title, path, queryParams) {
+	        var url = this.prepareExternalUrl(path + location_strategy_1.normalizeQueryParams(queryParams));
+	        if (url.length == 0) {
+	            url = this._platformLocation.pathname;
+	        }
+	        this._platformLocation.pushState(state, title, url);
+	    };
+	    HashLocationStrategy.prototype.forward = function () { this._platformLocation.forward(); };
+	    HashLocationStrategy.prototype.back = function () { this._platformLocation.back(); };
+	    HashLocationStrategy = __decorate([
+	        core_1.Injectable(),
+	        __param(1, core_1.Optional()),
+	        __param(1, core_1.Inject(location_strategy_1.APP_BASE_HREF)), 
+	        __metadata('design:paramtypes', [platform_location_1.PlatformLocation, String])
+	    ], HashLocationStrategy);
+	    return HashLocationStrategy;
+	})(location_strategy_1.LocationStrategy);
+	exports.HashLocationStrategy = HashLocationStrategy;
+
+
+/***/ },
+/* 262 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+	    switch (arguments.length) {
+	        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+	        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+	        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+	    }
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var core_1 = __webpack_require__(2);
+	var lang_1 = __webpack_require__(5);
+	var exceptions_1 = __webpack_require__(14);
+	var location_strategy_1 = __webpack_require__(254);
+	var platform_location_1 = __webpack_require__(260);
+	/**
+	 * `PathLocationStrategy` is a {@link LocationStrategy} used to configure the
+	 * {@link Location} service to represent its state in the
+	 * [path](https://en.wikipedia.org/wiki/Uniform_Resource_Locator#Syntax) of the
+	 * browser's URL.
+	 *
+	 * `PathLocationStrategy` is the default binding for {@link LocationStrategy}
+	 * provided in {@link ROUTER_PROVIDERS}.
+	 *
+	 * If you're using `PathLocationStrategy`, you must provide a provider for
+	 * {@link APP_BASE_HREF} to a string representing the URL prefix that should
+	 * be preserved when generating and recognizing URLs.
+	 *
+	 * For instance, if you provide an `APP_BASE_HREF` of `'/my/app'` and call
+	 * `location.go('/foo')`, the browser's URL will become
+	 * `example.com/my/app/foo`.
+	 *
+	 * ### Example
+	 *
+	 * ```
+	 * import {Component, provide} from 'angular2/angular2';
+	 * import {
+	 *   APP_BASE_HREF
+	 *   ROUTER_DIRECTIVES,
+	 *   ROUTER_PROVIDERS,
+	 *   RouteConfig,
+	 *   Location
+	 * } from 'angular2/router';
+	 *
+	 * @Component({directives: [ROUTER_DIRECTIVES]})
+	 * @RouteConfig([
+	 *  {...},
+	 * ])
+	 * class AppCmp {
+	 *   constructor(location: Location) {
+	 *     location.go('/foo');
+	 *   }
+	 * }
+	 *
+	 * bootstrap(AppCmp, [
+	 *   ROUTER_PROVIDERS, // includes binding to PathLocationStrategy
+	 *   provide(APP_BASE_HREF, {useValue: '/my/app'})
+	 * ]);
+	 * ```
+	 */
+	var PathLocationStrategy = (function (_super) {
+	    __extends(PathLocationStrategy, _super);
+	    function PathLocationStrategy(_platformLocation, href) {
+	        _super.call(this);
+	        this._platformLocation = _platformLocation;
+	        if (lang_1.isBlank(href)) {
+	            href = this._platformLocation.getBaseHrefFromDOM();
+	        }
+	        if (lang_1.isBlank(href)) {
+	            throw new exceptions_1.BaseException("No base href set. Please provide a value for the APP_BASE_HREF token or add a base element to the document.");
+	        }
+	        this._baseHref = href;
+	    }
+	    PathLocationStrategy.prototype.onPopState = function (fn) {
+	        this._platformLocation.onPopState(fn);
+	        this._platformLocation.onHashChange(fn);
+	    };
+	    PathLocationStrategy.prototype.getBaseHref = function () { return this._baseHref; };
+	    PathLocationStrategy.prototype.prepareExternalUrl = function (internal) { return location_strategy_1.joinWithSlash(this._baseHref, internal); };
+	    PathLocationStrategy.prototype.path = function () {
+	        return this._platformLocation.pathname + location_strategy_1.normalizeQueryParams(this._platformLocation.search);
+	    };
+	    PathLocationStrategy.prototype.pushState = function (state, title, url, queryParams) {
+	        var externalUrl = this.prepareExternalUrl(url + location_strategy_1.normalizeQueryParams(queryParams));
+	        this._platformLocation.pushState(state, title, externalUrl);
+	    };
+	    PathLocationStrategy.prototype.forward = function () { this._platformLocation.forward(); };
+	    PathLocationStrategy.prototype.back = function () { this._platformLocation.back(); };
+	    PathLocationStrategy = __decorate([
+	        core_1.Injectable(),
+	        __param(1, core_1.Optional()),
+	        __param(1, core_1.Inject(location_strategy_1.APP_BASE_HREF)), 
+	        __metadata('design:paramtypes', [platform_location_1.PlatformLocation, String])
+	    ], PathLocationStrategy);
+	    return PathLocationStrategy;
+	})(location_strategy_1.LocationStrategy);
+	exports.PathLocationStrategy = PathLocationStrategy;
+
+
+/***/ },
+/* 263 */
+/***/ function(module, exports) {
+
+	
+
+/***/ },
+/* 264 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var compiler_1 = __webpack_require__(195);
+	var core_1 = __webpack_require__(2);
+	var router_link_transform_1 = __webpack_require__(265);
+	var lang_1 = __webpack_require__(5);
+	var router_link_transform_2 = __webpack_require__(265);
+	exports.RouterLinkTransform = router_link_transform_2.RouterLinkTransform;
+	/**
+	 * Enables the router link DSL.
+	 *
+	 * Warning. This feature is experimental and can change.
+	 *
+	 * To enable the transformer pass the router link DSL provider to `bootstrap`.
+	 *
+	 * ## Example:
+	 * ```
+	 * import {bootstrap} from 'angular2/platform/browser';
+	 * import {ROUTER_LINK_DSL_PROVIDER} from 'angular2/router/router_link_dsl';
+	 *
+	 * bootstrap(CustomApp, [ROUTER_LINK_DSL_PROVIDER]);
+	 * ```
+	 *
+	 * The DSL allows you to express router links as follows:
+	 * ```
+	 * <a [routerLink]="route:User"> <!-- Same as <a [routerLink]="['User']"> -->
+	 * <a [routerLink]="route:/User"> <!-- Same as <a [routerLink]="['User']"> -->
+	 * <a [routerLink]="route:./User"> <!-- Same as <a [routerLink]="['./User']"> -->
+	 * <a [routerLink]="./User(id: value, name: 'Bob')"> <!-- Same as <a [routerLink]="['./User', {id:
+	 * value, name: 'Bob'}]"> -->
+	 * <a [routerLink]="/User/Modal"> <!-- Same as <a [routerLink]="['/User', 'Modal']"> -->
+	 * <a [routerLink]="User[Modal]"> <!-- Same as <a [routerLink]="['User', ['Modal']]"> -->
+	 * ```
+	 */
+	var ROUTER_LINK_DSL_PROVIDER = lang_1.CONST_EXPR(new core_1.Provider(compiler_1.TEMPLATE_TRANSFORMS, { useClass: router_link_transform_1.RouterLinkTransform, multi: true }));
+
+
+/***/ },
+/* 265 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
+	    switch (arguments.length) {
+	        case 2: return decorators.reduceRight(function(o, d) { return (d && d(o)) || o; }, target);
+	        case 3: return decorators.reduceRight(function(o, d) { return (d && d(target, key)), void 0; }, void 0);
+	        case 4: return decorators.reduceRight(function(o, d) { return (d && d(target, key, o)) || o; }, desc);
+	    }
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var compiler_1 = __webpack_require__(195);
+	var ast_1 = __webpack_require__(30);
+	var exceptions_1 = __webpack_require__(14);
+	var core_1 = __webpack_require__(2);
+	var parser_1 = __webpack_require__(32);
+	/**
+	 * e.g., './User', 'Modal' in ./User[Modal(param: value)]
+	 */
+	var FixedPart = (function () {
+	    function FixedPart(value) {
+	        this.value = value;
+	    }
+	    return FixedPart;
+	})();
+	/**
+	 * The square bracket
+	 */
+	var AuxiliaryStart = (function () {
+	    function AuxiliaryStart() {
+	    }
+	    return AuxiliaryStart;
+	})();
+	/**
+	 * The square bracket
+	 */
+	var AuxiliaryEnd = (function () {
+	    function AuxiliaryEnd() {
+	    }
+	    return AuxiliaryEnd;
+	})();
+	/**
+	 * e.g., param:value in ./User[Modal(param: value)]
+	 */
+	var Params = (function () {
+	    function Params(ast) {
+	        this.ast = ast;
+	    }
+	    return Params;
+	})();
+	var RouterLinkLexer = (function () {
+	    function RouterLinkLexer(parser, exp) {
+	        this.parser = parser;
+	        this.exp = exp;
+	        this.index = 0;
+	    }
+	    RouterLinkLexer.prototype.tokenize = function () {
+	        var tokens = [];
+	        while (this.index < this.exp.length) {
+	            tokens.push(this._parseToken());
+	        }
+	        return tokens;
+	    };
+	    RouterLinkLexer.prototype._parseToken = function () {
+	        var c = this.exp[this.index];
+	        if (c == '[') {
+	            this.index++;
+	            return new AuxiliaryStart();
+	        }
+	        else if (c == ']') {
+	            this.index++;
+	            return new AuxiliaryEnd();
+	        }
+	        else if (c == '(') {
+	            return this._parseParams();
+	        }
+	        else if (c == '/' && this.index !== 0) {
+	            this.index++;
+	            return this._parseFixedPart();
+	        }
+	        else {
+	            return this._parseFixedPart();
+	        }
+	    };
+	    RouterLinkLexer.prototype._parseParams = function () {
+	        var start = this.index;
+	        for (; this.index < this.exp.length; ++this.index) {
+	            var c = this.exp[this.index];
+	            if (c == ')') {
+	                var paramsContent = this.exp.substring(start + 1, this.index);
+	                this.index++;
+	                return new Params(this.parser.parseBinding("{" + paramsContent + "}", null).ast);
+	            }
+	        }
+	        throw new exceptions_1.BaseException("Cannot find ')'");
+	    };
+	    RouterLinkLexer.prototype._parseFixedPart = function () {
+	        var start = this.index;
+	        var sawNonSlash = false;
+	        for (; this.index < this.exp.length; ++this.index) {
+	            var c = this.exp[this.index];
+	            if (c == '(' || c == '[' || c == ']' || (c == '/' && sawNonSlash)) {
+	                break;
+	            }
+	            if (c != '.' && c != '/') {
+	                sawNonSlash = true;
+	            }
+	        }
+	        var fixed = this.exp.substring(start, this.index);
+	        if (start === this.index || !sawNonSlash || fixed.startsWith('//')) {
+	            throw new exceptions_1.BaseException("Invalid router link");
+	        }
+	        return new FixedPart(fixed);
+	    };
+	    return RouterLinkLexer;
+	})();
+	var RouterLinkAstGenerator = (function () {
+	    function RouterLinkAstGenerator(tokens) {
+	        this.tokens = tokens;
+	        this.index = 0;
+	    }
+	    RouterLinkAstGenerator.prototype.generate = function () { return this._genAuxiliary(); };
+	    RouterLinkAstGenerator.prototype._genAuxiliary = function () {
+	        var arr = [];
+	        for (; this.index < this.tokens.length; this.index++) {
+	            var r = this.tokens[this.index];
+	            if (r instanceof FixedPart) {
+	                arr.push(new ast_1.LiteralPrimitive(r.value));
+	            }
+	            else if (r instanceof Params) {
+	                arr.push(r.ast);
+	            }
+	            else if (r instanceof AuxiliaryEnd) {
+	                break;
+	            }
+	            else if (r instanceof AuxiliaryStart) {
+	                this.index++;
+	                arr.push(this._genAuxiliary());
+	            }
+	        }
+	        return new ast_1.LiteralArray(arr);
+	    };
+	    return RouterLinkAstGenerator;
+	})();
+	var RouterLinkAstTransformer = (function (_super) {
+	    __extends(RouterLinkAstTransformer, _super);
+	    function RouterLinkAstTransformer(parser) {
+	        _super.call(this);
+	        this.parser = parser;
+	    }
+	    RouterLinkAstTransformer.prototype.visitQuote = function (ast) {
+	        if (ast.prefix == "route") {
+	            return parseRouterLinkExpression(this.parser, ast.uninterpretedExpression);
+	        }
+	        else {
+	            return _super.prototype.visitQuote.call(this, ast);
+	        }
+	    };
+	    return RouterLinkAstTransformer;
+	})(ast_1.AstTransformer);
+	function parseRouterLinkExpression(parser, exp) {
+	    var tokens = new RouterLinkLexer(parser, exp.trim()).tokenize();
+	    return new RouterLinkAstGenerator(tokens).generate();
+	}
+	exports.parseRouterLinkExpression = parseRouterLinkExpression;
+	/**
+	 * A compiler plugin that implements the router link DSL.
+	 */
+	var RouterLinkTransform = (function () {
+	    function RouterLinkTransform(parser) {
+	        this.astTransformer = new RouterLinkAstTransformer(parser);
+	    }
+	    RouterLinkTransform.prototype.visitNgContent = function (ast, context) { return ast; };
+	    RouterLinkTransform.prototype.visitEmbeddedTemplate = function (ast, context) { return ast; };
+	    RouterLinkTransform.prototype.visitElement = function (ast, context) {
+	        var _this = this;
+	        var updatedChildren = ast.children.map(function (c) { return c.visit(_this, context); });
+	        var updatedInputs = ast.inputs.map(function (c) { return c.visit(_this, context); });
+	        var updatedDirectives = ast.directives.map(function (c) { return c.visit(_this, context); });
+	        return new compiler_1.ElementAst(ast.name, ast.attrs, updatedInputs, ast.outputs, ast.exportAsVars, updatedDirectives, updatedChildren, ast.ngContentIndex, ast.sourceSpan);
+	    };
+	    RouterLinkTransform.prototype.visitVariable = function (ast, context) { return ast; };
+	    RouterLinkTransform.prototype.visitEvent = function (ast, context) { return ast; };
+	    RouterLinkTransform.prototype.visitElementProperty = function (ast, context) { return ast; };
+	    RouterLinkTransform.prototype.visitAttr = function (ast, context) { return ast; };
+	    RouterLinkTransform.prototype.visitBoundText = function (ast, context) { return ast; };
+	    RouterLinkTransform.prototype.visitText = function (ast, context) { return ast; };
+	    RouterLinkTransform.prototype.visitDirective = function (ast, context) {
+	        var _this = this;
+	        var updatedInputs = ast.inputs.map(function (c) { return c.visit(_this, context); });
+	        return new compiler_1.DirectiveAst(ast.directive, updatedInputs, ast.hostProperties, ast.hostEvents, ast.exportAsVars, ast.sourceSpan);
+	    };
+	    RouterLinkTransform.prototype.visitDirectiveProperty = function (ast, context) {
+	        var transformedValue = ast.value.visit(this.astTransformer);
+	        return new compiler_1.BoundDirectivePropertyAst(ast.directiveName, ast.templateName, transformedValue, ast.sourceSpan);
+	    };
+	    RouterLinkTransform = __decorate([
+	        core_1.Injectable(), 
+	        __metadata('design:paramtypes', [parser_1.Parser])
+	    ], RouterLinkTransform);
+	    return RouterLinkTransform;
+	})();
+	exports.RouterLinkTransform = RouterLinkTransform;
+
+
+/***/ },
+/* 266 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var profile_1 = __webpack_require__(45);
+	exports.wtfCreateScope = profile_1.wtfCreateScope;
+	exports.wtfLeave = profile_1.wtfLeave;
+	exports.wtfStartTimeRange = profile_1.wtfStartTimeRange;
+	exports.wtfEndTimeRange = profile_1.wtfEndTimeRange;
+
+
+/***/ },
+/* 267 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -31161,24 +36423,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @description
 	 * Adapter allowing AngularJS v1 and Angular v2 to run side by side in the same application.
 	 */
-	var upgrade_adapter_1 = __webpack_require__(227);
+	var upgrade_adapter_1 = __webpack_require__(268);
 	exports.UpgradeAdapter = upgrade_adapter_1.UpgradeAdapter;
 	exports.UpgradeAdapterRef = upgrade_adapter_1.UpgradeAdapterRef;
 
 
 /***/ },
-/* 227 */
+/* 268 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var angular2_1 = __webpack_require__(1);
-	var async_1 = __webpack_require__(6);
-	var browser_1 = __webpack_require__(162);
-	var metadata_1 = __webpack_require__(228);
-	var util_1 = __webpack_require__(229);
-	var constants_1 = __webpack_require__(230);
-	var downgrade_ng2_adapter_1 = __webpack_require__(231);
-	var upgrade_ng1_adapter_1 = __webpack_require__(232);
-	var angular = __webpack_require__(233);
+	var angular2_1 = __webpack_require__(269);
+	var async_1 = __webpack_require__(60);
+	var browser_1 = __webpack_require__(161);
+	var metadata_1 = __webpack_require__(270);
+	var util_1 = __webpack_require__(271);
+	var constants_1 = __webpack_require__(272);
+	var downgrade_ng2_adapter_1 = __webpack_require__(273);
+	var upgrade_ng1_adapter_1 = __webpack_require__(274);
+	var angular = __webpack_require__(275);
 	var upgradeCount = 0;
 	/**
 	 * Use `UpgradeAdapter` to allow AngularJS v1 and Angular v2 to coexist in a single application.
@@ -31693,10 +36955,29 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 228 */
+/* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var angular2_1 = __webpack_require__(1);
+	function __export(m) {
+	    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+	}
+	__export(__webpack_require__(118));
+	__export(__webpack_require__(2));
+	__export(__webpack_require__(266));
+	__export(__webpack_require__(161));
+	__export(__webpack_require__(164));
+	__export(__webpack_require__(166));
+	__export(__webpack_require__(267));
+	var compiler_1 = __webpack_require__(195);
+	exports.UrlResolver = compiler_1.UrlResolver;
+	exports.AppRootUrl = compiler_1.AppRootUrl;
+
+
+/***/ },
+/* 270 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var angular2_1 = __webpack_require__(269);
 	var COMPONENT_SELECTOR = /^[\w|-]*$/;
 	var SKEWER_CASE = /-(\w)/g;
 	var directiveResolver = new angular2_1.DirectiveResolver();
@@ -31741,7 +37022,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 229 */
+/* 271 */
 /***/ function(module, exports) {
 
 	function stringify(obj) {
@@ -31763,7 +37044,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 230 */
+/* 272 */
 /***/ function(module, exports) {
 
 	exports.NG2_APP_VIEW_MANAGER = 'ng2.AppViewManager';
@@ -31783,11 +37064,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 231 */
+/* 273 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var angular2_1 = __webpack_require__(1);
-	var constants_1 = __webpack_require__(230);
+	var angular2_1 = __webpack_require__(269);
+	var constants_1 = __webpack_require__(272);
 	var INITIAL_VALUE = {
 	    __UNINITIALIZED__: true
 	};
@@ -31951,13 +37232,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 232 */
+/* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var angular2_1 = __webpack_require__(1);
-	var constants_1 = __webpack_require__(230);
-	var util_1 = __webpack_require__(229);
-	var angular = __webpack_require__(233);
+	var angular2_1 = __webpack_require__(269);
+	var constants_1 = __webpack_require__(272);
+	var util_1 = __webpack_require__(271);
+	var angular = __webpack_require__(275);
 	var CAMEL_CASE = /([A-Z])/g;
 	var INITIAL_VALUE = {
 	    __UNINITIALIZED__: true
@@ -32235,7 +37516,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 233 */
+/* 275 */
 /***/ function(module, exports) {
 
 	function noNg() {

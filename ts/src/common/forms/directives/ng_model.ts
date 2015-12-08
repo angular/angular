@@ -52,7 +52,7 @@ const formControlBinding =
   bindings: [formControlBinding],
   inputs: ['model: ngModel'],
   outputs: ['update: ngModelChange'],
-  exportAs: 'ngForm'
+  exportAs: 'form'
 })
 export class NgModel extends NgControl implements OnChanges {
   /** @internal */

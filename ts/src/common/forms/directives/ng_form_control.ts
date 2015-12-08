@@ -79,7 +79,7 @@ const formControlBinding =
   bindings: [formControlBinding],
   inputs: ['form: ngFormControl', 'model: ngModel'],
   outputs: ['update: ngModelChange'],
-  exportAs: 'ngForm'
+  exportAs: 'form'
 })
 export class NgFormControl extends NgControl implements OnChanges {
   form: Control;

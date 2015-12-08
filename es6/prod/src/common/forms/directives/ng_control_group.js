@@ -34,8 +34,8 @@ const controlGroupProvider = CONST_EXPR(new Provider(ControlContainer, { useExis
  *   template: `
  *     <div>
  *       <h2>Angular2 Control &amp; ControlGroup Example</h2>
- *       <form #f="ngForm">
- *         <div ng-control-group="name" #cg-name="ngForm">
+ *       <form #f="form">
+ *         <div ng-control-group="name" #cg-name="form">
  *           <h3>Enter your name:</h3>
  *           <p>First: <input ng-control="first" required></p>
  *           <p>Middle: <input ng-control="middle"></p>
@@ -95,7 +95,7 @@ NgControlGroup = __decorate([
         selector: '[ng-control-group]',
         providers: [controlGroupProvider],
         inputs: ['name: ng-control-group'],
-        exportAs: 'ngForm'
+        exportAs: 'form'
     }),
     __param(0, Host()),
     __param(0, SkipSelf()),
