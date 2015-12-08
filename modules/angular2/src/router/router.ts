@@ -425,8 +425,38 @@ export class RootRouter extends Router {
               @Inject(ROUTER_PRIMARY_COMPONENT) primaryComponent: Type) {
     super(registry, null, primaryComponent);
     this._location = location;
-    this._locationSub = this._location.subscribe(
-        (change) => this.navigateByUrl(change['url'], isPresent(change['pop'])));
+    this._locationSub = this._location.subscribe((change) => {
+      // we call recognize ourselves
+      this.recognize(change['url'])
+          .then((instruction) => {
+            this.navigateByInstruction(instruction, isPresent(change['pop']))
+                .then((_) => {
+                  // this is a popstate event; no need to change the URL
+                  if (isPresent(change['pop']) && change['type'] != 'hashchange') {
+                    return;
+                  }
+                  var emitPath = instruction.toUrlPath();
+                  var emitQuery = instruction.toUrlQuery();
+                  if (emitPath.length > 0) {
+                    emitPath = '/' + emitPath;
+                  }
+
+                  // Because we've opted to use All hashchange events occur outside Angular.
+                  // However, apps that are migrating might have hash links that operate outside
+                  // angular to which routing must respond.
+                  // To support these cases where we respond to hashchanges and redirect as a
+                  // result, we need to replace the top item on the stack.
+                  if (change['type'] == 'hashchange') {
+                    if (instruction.toRootUrl() != this._location.path()) {
+                      this._location.replaceState(emitPath, emitQuery);
+                    }
+                  } else {
+                    this._location.go(emitPath, emitQuery);
+                  }
+                });
+          });
+    });
+
     this.registry.configFromComponent(primaryComponent);
     this.navigateByUrl(location.path());
   }
