@@ -1,7 +1,7 @@
 library angular2.src.compiler.html_tags;
 
 import "package:angular2/src/facade/lang.dart"
-    show isPresent, isBlank, normalizeBool;
+    show isPresent, isBlank, normalizeBool, RegExpWrapper;
 // see http://www.w3.org/TR/html51/syntax.html#named-character-references
 
 // see https://html.spec.whatwg.org/multipage/entities.json
@@ -311,16 +311,11 @@ class HtmlTagDefinition {
 
 // This implementation does not fully conform to the HTML5 spec.
 Map<String, HtmlTagDefinition> TAG_DEFINITIONS = {
-  "area": new HtmlTagDefinition(isVoid: true),
-  "embed": new HtmlTagDefinition(isVoid: true),
   "link": new HtmlTagDefinition(isVoid: true),
   "img": new HtmlTagDefinition(isVoid: true),
   "input": new HtmlTagDefinition(isVoid: true),
-  "param": new HtmlTagDefinition(isVoid: true),
   "hr": new HtmlTagDefinition(isVoid: true),
   "br": new HtmlTagDefinition(isVoid: true),
-  "source": new HtmlTagDefinition(isVoid: true),
-  "track": new HtmlTagDefinition(isVoid: true),
   "wbr": new HtmlTagDefinition(isVoid: true),
   "p": new HtmlTagDefinition(closedByChildren: [
     "address",
@@ -363,7 +358,8 @@ Map<String, HtmlTagDefinition> TAG_DEFINITIONS = {
       closedByChildren: ["td", "th"], closedByParent: true),
   "th": new HtmlTagDefinition(
       closedByChildren: ["td", "th"], closedByParent: true),
-  "col": new HtmlTagDefinition(requiredParents: ["colgroup"], isVoid: true),
+  "col": new HtmlTagDefinition(
+      closedByChildren: ["col"], requiredParents: ["colgroup"]),
   "svg": new HtmlTagDefinition(implicitNamespacePrefix: "svg"),
   "math": new HtmlTagDefinition(implicitNamespacePrefix: "math"),
   "li": new HtmlTagDefinition(closedByChildren: ["li"], closedByParent: true),
@@ -393,4 +389,17 @@ var DEFAULT_TAG_DEFINITION = new HtmlTagDefinition();
 HtmlTagDefinition getHtmlTagDefinition(String tagName) {
   var result = TAG_DEFINITIONS[tagName.toLowerCase()];
   return isPresent(result) ? result : DEFAULT_TAG_DEFINITION;
+}
+
+var NS_PREFIX_RE = new RegExp(r'^@([^:]+):(.+)');
+List<String> splitHtmlTagNamespace(String elementName) {
+  if (elementName[0] != "@") {
+    return [null, elementName];
+  }
+  var match = RegExpWrapper.firstMatch(NS_PREFIX_RE, elementName);
+  return [match[1], match[2]];
+}
+
+String getHtmlTagNamespacePrefix(String elementName) {
+  return splitHtmlTagNamespace(elementName)[0];
 }
