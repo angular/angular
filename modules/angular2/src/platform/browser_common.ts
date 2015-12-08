@@ -1,4 +1,4 @@
-import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {CONST_EXPR, IS_DART} from 'angular2/src/facade/lang';
 import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
 
 import {
@@ -48,7 +48,9 @@ export const BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_E
 ]);
 
 function _exceptionHandler(): ExceptionHandler {
-  return new ExceptionHandler(DOM, false);
+  // !IS_DART is required because we must rethrow exceptions in JS,
+  // but must not rethrow exceptions in Dart
+  return new ExceptionHandler(DOM, !IS_DART);
 }
 
 function _document(): any {

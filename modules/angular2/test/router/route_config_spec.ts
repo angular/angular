@@ -16,7 +16,7 @@ import {Component, Directive, View} from 'angular2/src/core/metadata';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 import {provide} from 'angular2/core';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
-import {Type} from 'angular2/src/facade/lang';
+import {Type, IS_DART} from 'angular2/src/facade/lang';
 
 import {
   ROUTER_PROVIDERS,
@@ -46,7 +46,7 @@ export function main() {
       el = DOM.createElement('app-cmp', fakeDoc);
       DOM.appendChild(fakeDoc.body, el);
       var logger = new _ArrayLogger();
-      var exceptionHandler = new ExceptionHandler(logger, true);
+      var exceptionHandler = new ExceptionHandler(logger, !IS_DART);
       testBindings = [
         ROUTER_PROVIDERS,
         provide(LocationStrategy, {useClass: MockLocationStrategy}),

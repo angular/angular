@@ -1,5 +1,5 @@
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {Type, isBlank, isPresent, assertionsEnabled, print} from 'angular2/src/facade/lang';
+import {Type, isBlank, isPresent, assertionsEnabled, print, IS_DART} from 'angular2/src/facade/lang';
 import {provide, Provider, Injector, OpaqueToken} from 'angular2/src/core/di';
 import {
   APP_COMPONENT_REF_PROMISE,
@@ -412,7 +412,14 @@ export class ApplicationRef_ extends ApplicationRef {
 
         var tickResult = PromiseWrapper.then(compRefToken, tick);
 
-        PromiseWrapper.then(tickResult, (_) => {});
+        // THIS MUST ONLY RUN IN DART.
+        // This is required to report an error when no components with a matching selector found.
+        // Otherwise the promise will never be completed.
+        // Doing this in JS causes an extra error message to appear.
+        if (IS_DART) {
+          PromiseWrapper.then(tickResult, (_) => {});
+        }
+
         PromiseWrapper.then(tickResult, null,
                             (err, stackTrace) => completer.reject(err, stackTrace));
       } catch (e) {
