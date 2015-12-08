@@ -58,7 +58,10 @@ export class HashLocationStrategy extends LocationStrategy {
     }
   }
 
-  onPopState(fn: EventListener): void { this._platformLocation.onPopState(fn); }
+  onPopState(fn: EventListener): void {
+    this._platformLocation.onPopState(fn);
+    this._platformLocation.onHashChange(fn);
+  }
 
   getBaseHref(): string { return this._baseHref; }
 
@@ -85,6 +88,14 @@ export class HashLocationStrategy extends LocationStrategy {
       url = this._platformLocation.pathname;
     }
     this._platformLocation.pushState(state, title, url);
+  }
+
+  replaceState(state: any, title: string, path: string, queryParams: string) {
+    var url = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
+    if (url.length == 0) {
+      url = this._platformLocation.pathname;
+    }
+    this._platformLocation.replaceState(state, title, url);
   }
 
   forward(): void { this._platformLocation.forward(); }

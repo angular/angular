@@ -20,7 +20,7 @@ import {SpyLocation} from 'angular2/src/mock/location_mock';
 import {Location} from 'angular2/src/router/location';
 
 import {RouteRegistry, ROUTER_PRIMARY_COMPONENT} from 'angular2/src/router/route_registry';
-import {RouteConfig, AsyncRoute, Route} from 'angular2/src/router/route_config_decorator';
+import {RouteConfig, AsyncRoute, Route, Redirect} from 'angular2/src/router/route_config_decorator';
 import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
 
 import {provide} from 'angular2/core';
@@ -96,6 +96,42 @@ export function main() {
                expect(outlet.spy('activate')).toHaveBeenCalled();
                expect(location.urlChanges).toEqual([]);
                async.done();
+             });
+       }));
+
+    // See https://github.com/angular/angular/issues/5590
+    it('should replace history when triggered by a hashchange with a redirect',
+       inject([AsyncTestCompleter], (async) => {
+         var outlet = makeDummyOutlet();
+
+         router.registerPrimaryOutlet(outlet)
+             .then((_) => router.config([
+               new Redirect({path: '/a', redirectTo: ['B']}),
+               new Route({path: '/b', component: DummyComponent, name: 'B'})
+             ]))
+             .then((_) => {
+               router.subscribe((_) => {
+                 expect(location.urlChanges).toEqual(['hash: a', 'replace: /b']);
+                 async.done();
+               });
+
+               location.simulateHashChange('a');
+             });
+       }));
+
+    it('should push history when triggered by a hashchange without a redirect',
+       inject([AsyncTestCompleter], (async) => {
+         var outlet = makeDummyOutlet();
+
+         router.registerPrimaryOutlet(outlet)
+             .then((_) => router.config([new Route({path: '/a', component: DummyComponent})]))
+             .then((_) => {
+               router.subscribe((_) => {
+                 expect(location.urlChanges).toEqual(['hash: a']);
+                 async.done();
+               });
+
+               location.simulateHashChange('a');
              });
        }));
 
