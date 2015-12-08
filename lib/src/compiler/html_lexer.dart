@@ -2,6 +2,7 @@ library angular2.src.compiler.html_lexer;
 
 import "package:angular2/src/facade/lang.dart"
     show StringWrapper, NumberWrapper, isPresent, isBlank, serializeEnum;
+import "package:angular2/src/facade/collection.dart" show ListWrapper;
 import "parse_util.dart"
     show ParseLocation, ParseError, ParseSourceFile, ParseSourceSpan;
 import "html_tags.dart"
@@ -161,7 +162,7 @@ class _HtmlTokenizer {
     }
     this._beginToken(HtmlTokenType.EOF);
     this._endToken([]);
-    return new HtmlTokenizeResult(this.tokens, this.errors);
+    return new HtmlTokenizeResult(mergeTextTokens(this.tokens), this.errors);
   }
 
   ParseLocation _getLocation() {
@@ -383,21 +384,38 @@ class _HtmlTokenizer {
   }
 
   _consumeTagOpen(ParseLocation start) {
-    this._attemptUntilFn(isNotWhitespace);
-    var nameStart = this.index;
-    this._consumeTagOpenStart(start);
-    var lowercaseTagName = this.inputLowercase.substring(nameStart, this.index);
-    this._attemptUntilFn(isNotWhitespace);
-    while (!identical(this.peek, $SLASH) && !identical(this.peek, $GT)) {
-      this._consumeAttributeName();
-      this._attemptUntilFn(isNotWhitespace);
-      if (this._attemptChar($EQ)) {
-        this._attemptUntilFn(isNotWhitespace);
-        this._consumeAttributeValue();
+    var savedPos = this._savePosition();
+    var lowercaseTagName;
+    try {
+      if (!isAsciiLetter(this.peek)) {
+        throw this._createError(
+            unexpectedCharacterErrorMsg(this.peek), this._getLocation());
       }
+      var nameStart = this.index;
+      this._consumeTagOpenStart(start);
+      lowercaseTagName = this.inputLowercase.substring(nameStart, this.index);
       this._attemptUntilFn(isNotWhitespace);
+      while (!identical(this.peek, $SLASH) && !identical(this.peek, $GT)) {
+        this._consumeAttributeName();
+        this._attemptUntilFn(isNotWhitespace);
+        if (this._attemptChar($EQ)) {
+          this._attemptUntilFn(isNotWhitespace);
+          this._consumeAttributeValue();
+        }
+        this._attemptUntilFn(isNotWhitespace);
+      }
+      this._consumeTagOpenEnd();
+    } catch (e, e_stack) {
+      if (e is ControlFlowError) {
+        // When the start tag is invalid, assume we want a "<"
+        this._restorePosition(savedPos);
+        // Back to back text tokens are merged at the end
+        this._beginToken(HtmlTokenType.TEXT, start);
+        this._endToken(["<"]);
+        return;
+      }
+      rethrow;
     }
-    this._consumeTagOpenEnd();
     var contentTokenType = getHtmlTagDefinition(lowercaseTagName).contentType;
     if (identical(contentTokenType, HtmlTagContentType.RAW_TEXT)) {
       this._consumeRawTextWithTagClose(lowercaseTagName, false);
@@ -482,7 +500,7 @@ class _HtmlTokenizer {
   }
 
   List<num> _savePosition() {
-    return [this.peek, this.index, this.column, this.line];
+    return [this.peek, this.index, this.column, this.line, this.tokens.length];
   }
 
   void _restorePosition(List<num> position) {
@@ -490,6 +508,11 @@ class _HtmlTokenizer {
     this.index = position[1];
     this.column = position[2];
     this.line = position[3];
+    var nbTokens = position[4];
+    if (nbTokens < this.tokens.length) {
+      // remove any extra tokens
+      this.tokens = ListWrapper.slice(this.tokens, 0, nbTokens);
+    }
   }
 }
 
@@ -534,4 +557,22 @@ bool isAsciiLetter(num code) {
 
 bool isAsciiHexDigit(num code) {
   return code >= $a && code <= $f || code >= $0 && code <= $9;
+}
+
+List<HtmlToken> mergeTextTokens(List<HtmlToken> srcTokens) {
+  var dstTokens = [];
+  HtmlToken lastDstToken;
+  for (var i = 0; i < srcTokens.length; i++) {
+    var token = srcTokens[i];
+    if (isPresent(lastDstToken) &&
+        lastDstToken.type == HtmlTokenType.TEXT &&
+        token.type == HtmlTokenType.TEXT) {
+      lastDstToken.parts[0] += token.parts[0];
+      lastDstToken.sourceSpan.end = token.sourceSpan.end;
+    } else {
+      lastDstToken = token;
+      dstTokens.add(lastDstToken);
+    }
+  }
+  return dstTokens;
 }

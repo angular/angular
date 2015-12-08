@@ -151,6 +151,15 @@ main() {
             [HtmlAttrAst, "foot", ""]
           ]);
         });
+        it("should not add the requiredParent when the parent is a template",
+            () {
+          expect(humanizeDom(
+                  parser.parse("<template><tr></tr></template>", "TestComp")))
+              .toEqual([
+            [HtmlElementAst, "template", 0],
+            [HtmlElementAst, "tr", 1]
+          ]);
+        });
         it("should support explicit mamespace", () {
           expect(humanizeDom(parser.parse("<myns:div></myns:div>", "TestComp")))
               .toEqual([
@@ -185,6 +194,19 @@ main() {
         it("should support self closing foreign elements", () {
           expect(humanizeDom(parser.parse("<math />", "TestComp"))).toEqual([
             [HtmlElementAst, "@math:math", 0]
+          ]);
+        });
+        it("should ignore LF immediately after textarea, pre and listing", () {
+          expect(humanizeDom(parser.parse(
+              "<p>\n</p><textarea>\n</textarea><pre>\n\n</pre><listing>\n\n</listing>",
+              "TestComp"))).toEqual([
+            [HtmlElementAst, "p", 0],
+            [HtmlTextAst, "\n", 1],
+            [HtmlElementAst, "textarea", 0],
+            [HtmlElementAst, "pre", 0],
+            [HtmlTextAst, "\n", 1],
+            [HtmlElementAst, "listing", 0],
+            [HtmlTextAst, "\n", 1]
           ]);
         });
       });

@@ -146,8 +146,8 @@ main() {
           [HtmlTokenType.EOF]
         ]);
       });
-      it("should allow whitespace", () {
-        expect(tokenizeAndHumanizeParts("< test >")).toEqual([
+      it("should allow whitespace after the tag name", () {
+        expect(tokenizeAndHumanizeParts("<test >")).toEqual([
           [HtmlTokenType.TAG_OPEN_START, null, "test"],
           [HtmlTokenType.TAG_OPEN_END],
           [HtmlTokenType.EOF]
@@ -158,16 +158,6 @@ main() {
           [HtmlTokenType.TAG_OPEN_START, "<test"],
           [HtmlTokenType.TAG_OPEN_END, ">"],
           [HtmlTokenType.EOF, ""]
-        ]);
-      });
-      it("should report missing name after <", () {
-        expect(tokenizeAndHumanizeErrors("<")).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, "Unexpected character \"EOF\"", "0:1"]
-        ]);
-      });
-      it("should report missing >", () {
-        expect(tokenizeAndHumanizeErrors("<name")).toEqual([
-          [HtmlTokenType.TAG_OPEN_START, "Unexpected character \"EOF\"", "0:5"]
         ]);
       });
     });
@@ -277,21 +267,6 @@ main() {
           [HtmlTokenType.ATTR_VALUE, "b"],
           [HtmlTokenType.TAG_OPEN_END, ">"],
           [HtmlTokenType.EOF, ""]
-        ]);
-      });
-      it("should report missing value after =", () {
-        expect(tokenizeAndHumanizeErrors("<name a=")).toEqual([
-          [HtmlTokenType.ATTR_VALUE, "Unexpected character \"EOF\"", "0:8"]
-        ]);
-      });
-      it("should report missing end quote for '", () {
-        expect(tokenizeAndHumanizeErrors("<name a='")).toEqual([
-          [HtmlTokenType.ATTR_VALUE, "Unexpected character \"EOF\"", "0:9"]
-        ]);
-      });
-      it("should report missing end quote for \"", () {
-        expect(tokenizeAndHumanizeErrors("<name a=\"")).toEqual([
-          [HtmlTokenType.ATTR_VALUE, "Unexpected character \"EOF\"", "0:9"]
         ]);
       });
     });
@@ -404,6 +379,37 @@ main() {
         expect(tokenizeAndHumanizeSourceSpans("a")).toEqual([
           [HtmlTokenType.TEXT, "a"],
           [HtmlTokenType.EOF, ""]
+        ]);
+      });
+      it("should allow \"<\" in text nodes", () {
+        expect(tokenizeAndHumanizeParts("{{ a < b ? c : d }}")).toEqual([
+          [HtmlTokenType.TEXT, "{{ a < b ? c : d }}"],
+          [HtmlTokenType.EOF]
+        ]);
+        expect(tokenizeAndHumanizeSourceSpans("<p>a<b</p>")).toEqual([
+          [HtmlTokenType.TAG_OPEN_START, "<p"],
+          [HtmlTokenType.TAG_OPEN_END, ">"],
+          [HtmlTokenType.TEXT, "a<b"],
+          [HtmlTokenType.TAG_CLOSE, "</p>"],
+          [HtmlTokenType.EOF, ""]
+        ]);
+        expect(tokenizeAndHumanizeParts("< a>")).toEqual([
+          [HtmlTokenType.TEXT, "< a>"],
+          [HtmlTokenType.EOF]
+        ]);
+      });
+      // TODO(vicb): make the lexer aware of Angular expressions
+
+      // see https://github.com/angular/angular/issues/5679
+      it("should parse valid start tag in interpolation", () {
+        expect(tokenizeAndHumanizeParts("{{ a <b && c > d }}")).toEqual([
+          [HtmlTokenType.TEXT, "{{ a "],
+          [HtmlTokenType.TAG_OPEN_START, null, "b"],
+          [HtmlTokenType.ATTR_NAME, null, "&&"],
+          [HtmlTokenType.ATTR_NAME, null, "c"],
+          [HtmlTokenType.TAG_OPEN_END],
+          [HtmlTokenType.TEXT, " d }}"],
+          [HtmlTokenType.EOF]
         ]);
       });
     });
