@@ -104,7 +104,7 @@ NgFormControl = __decorate([
         bindings: [formControlBinding],
         inputs: ['form: ngFormControl', 'model: ngModel'],
         outputs: ['update: ngModelChange'],
-        exportAs: 'form'
+        exportAs: 'ngForm'
     }),
     __param(0, Optional()),
     __param(0, Self()),

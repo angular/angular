@@ -21210,8 +21210,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *      selector: "login-comp",
 	 *      directives: [FORM_DIRECTIVES],
 	 *      template: `
-	 *        <form #f="form" (submit)='onLogIn(f.value)'>
-	 *          Login <input type='text' ng-control='login' #l="form">
+	 *        <form #f="ngForm" (submit)='onLogIn(f.value)'>
+	 *          Login <input type='text' ng-control='login' #l="ngForm">
 	 *          <div *ng-if="!l.valid">Login is invalid</div>
 	 *
 	 *          Password <input type='password' ng-control='password'>
@@ -21307,7 +21307,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            bindings: [controlNameBinding],
 	            inputs: ['name: ngControl', 'model: ngModel'],
 	            outputs: ['update: ngModelChange'],
-	            exportAs: 'form'
+	            exportAs: 'ngForm'
 	        }),
 	        __param(0, core_1.Host()),
 	        __param(0, core_1.SkipSelf()),
@@ -21992,7 +21992,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            bindings: [formControlBinding],
 	            inputs: ['form: ngFormControl', 'model: ngModel'],
 	            outputs: ['update: ngModelChange'],
-	            exportAs: 'form'
+	            exportAs: 'ngForm'
 	        }),
 	        __param(0, core_1.Optional()),
 	        __param(0, core_1.Self()),
@@ -22117,7 +22117,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            bindings: [formControlBinding],
 	            inputs: ['model: ngModel'],
 	            outputs: ['update: ngModelChange'],
-	            exportAs: 'form'
+	            exportAs: 'ngForm'
 	        }),
 	        __param(0, core_1.Optional()),
 	        __param(0, core_1.Self()),
@@ -22180,8 +22180,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *   template: `
 	 *     <div>
 	 *       <h2>Angular2 Control &amp; ControlGroup Example</h2>
-	 *       <form #f="form">
-	 *         <div ng-control-group="name" #cg-name="form">
+	 *       <form #f="ngForm">
+	 *         <div ng-control-group="name" #cg-name="ngForm">
 	 *           <h3>Enter your name:</h3>
 	 *           <p>First: <input ng-control="first" required></p>
 	 *           <p>Middle: <input ng-control="middle"></p>
@@ -22261,7 +22261,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            selector: '[ng-control-group]',
 	            providers: [controlGroupProvider],
 	            inputs: ['name: ng-control-group'],
-	            exportAs: 'form'
+	            exportAs: 'ngForm'
 	        }),
 	        __param(0, core_1.Host()),
 	        __param(0, core_1.SkipSelf()),
@@ -22456,7 +22456,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            inputs: ['form: ng-form-model'],
 	            host: { '(submit)': 'onSubmit()' },
 	            outputs: ['ngSubmit'],
-	            exportAs: 'form'
+	            exportAs: 'ngForm'
 	        }),
 	        __param(0, core_1.Optional()),
 	        __param(0, core_1.Self()),
@@ -22532,7 +22532,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *     <div>
 	 *       <p>Submit the form to see the data object Angular builds</p>
 	 *       <h2>NgForm demo</h2>
-	 *       <form #f="form" (ng-submit)="onSubmit(f.value)">
+	 *       <form #f="ngForm" (ng-submit)="onSubmit(f.value)">
 	 *         <h3>Control group: credentials</h3>
 	 *         <div ng-control-group="credentials">
 	 *           <p>Login: <input type="text" ng-control="login"></p>
@@ -22657,7 +22657,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                '(submit)': 'onSubmit()',
 	            },
 	            outputs: ['ngSubmit'],
-	            exportAs: 'form'
+	            exportAs: 'ngForm'
 	        }),
 	        __param(0, core_1.Optional()),
 	        __param(0, core_1.Self()),
