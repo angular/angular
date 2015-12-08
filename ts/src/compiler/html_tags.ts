@@ -1,4 +1,10 @@
-import {isPresent, isBlank, normalizeBool, CONST_EXPR} from 'angular2/src/facade/lang';
+import {
+  isPresent,
+  isBlank,
+  normalizeBool,
+  RegExpWrapper,
+  CONST_EXPR
+} from 'angular2/src/facade/lang';
 
 // see http://www.w3.org/TR/html51/syntax.html#named-character-references
 // see https://html.spec.whatwg.org/multipage/entities.json
@@ -310,16 +316,11 @@ export class HtmlTagDefinition {
 // see http://www.w3.org/TR/html51/syntax.html#optional-tags
 // This implementation does not fully conform to the HTML5 spec.
 var TAG_DEFINITIONS: {[key: string]: HtmlTagDefinition} = {
-  'area': new HtmlTagDefinition({isVoid: true}),
-  'embed': new HtmlTagDefinition({isVoid: true}),
   'link': new HtmlTagDefinition({isVoid: true}),
   'img': new HtmlTagDefinition({isVoid: true}),
   'input': new HtmlTagDefinition({isVoid: true}),
-  'param': new HtmlTagDefinition({isVoid: true}),
   'hr': new HtmlTagDefinition({isVoid: true}),
   'br': new HtmlTagDefinition({isVoid: true}),
-  'source': new HtmlTagDefinition({isVoid: true}),
-  'track': new HtmlTagDefinition({isVoid: true}),
   'wbr': new HtmlTagDefinition({isVoid: true}),
   'p': new HtmlTagDefinition({
     closedByChildren: [
@@ -362,7 +363,7 @@ var TAG_DEFINITIONS: {[key: string]: HtmlTagDefinition} = {
   }),
   'td': new HtmlTagDefinition({closedByChildren: ['td', 'th'], closedByParent: true}),
   'th': new HtmlTagDefinition({closedByChildren: ['td', 'th'], closedByParent: true}),
-  'col': new HtmlTagDefinition({requiredParents: ['colgroup'], isVoid: true}),
+  'col': new HtmlTagDefinition({closedByChildren: ['col'], requiredParents: ['colgroup']}),
   'svg': new HtmlTagDefinition({implicitNamespacePrefix: 'svg'}),
   'math': new HtmlTagDefinition({implicitNamespacePrefix: 'math'}),
   'li': new HtmlTagDefinition({closedByChildren: ['li'], closedByParent: true}),
@@ -385,4 +386,18 @@ var DEFAULT_TAG_DEFINITION = new HtmlTagDefinition();
 export function getHtmlTagDefinition(tagName: string): HtmlTagDefinition {
   var result = TAG_DEFINITIONS[tagName.toLowerCase()];
   return isPresent(result) ? result : DEFAULT_TAG_DEFINITION;
+}
+
+var NS_PREFIX_RE = /^@([^:]+):(.+)/g;
+
+export function splitHtmlTagNamespace(elementName: string): string[] {
+  if (elementName[0] != '@') {
+    return [null, elementName];
+  }
+  let match = RegExpWrapper.firstMatch(NS_PREFIX_RE, elementName);
+  return [match[1], match[2]];
+}
+
+export function getHtmlTagNamespacePrefix(elementName: string): string {
+  return splitHtmlTagNamespace(elementName)[0];
 }

@@ -29409,7 +29409,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (this.peek.type === html_lexer_1.HtmlTokenType.TAG_OPEN_END_VOID) {
 	            this._advance();
 	            selfClosing = true;
-	            if (namespacePrefix(fullName) == null && !html_tags_1.getHtmlTagDefinition(fullName).isVoid) {
+	            if (html_tags_1.getHtmlTagNamespacePrefix(fullName) == null && !html_tags_1.getHtmlTagDefinition(fullName).isVoid) {
 	                this.errors.push(HtmlTreeError.create(fullName, startTagToken.sourceSpan.start, "Only void and foreign elements can be self closed \"" + startTagToken.parts[1] + "\""));
 	            }
 	        }
@@ -29498,15 +29498,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (lang_1.isBlank(prefix)) {
 	        prefix = html_tags_1.getHtmlTagDefinition(localName).implicitNamespacePrefix;
 	        if (lang_1.isBlank(prefix) && lang_1.isPresent(parentElement)) {
-	            prefix = namespacePrefix(parentElement.name);
+	            prefix = html_tags_1.getHtmlTagNamespacePrefix(parentElement.name);
 	        }
 	    }
 	    return mergeNsAndName(prefix, localName);
-	}
-	var NS_PREFIX_RE = /^@([^:]+)/g;
-	function namespacePrefix(elementName) {
-	    var match = lang_1.RegExpWrapper.firstMatch(NS_PREFIX_RE, elementName);
-	    return lang_1.isBlank(match) ? null : match[1];
 	}
 
 
@@ -30425,16 +30420,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	// see http://www.w3.org/TR/html51/syntax.html#optional-tags
 	// This implementation does not fully conform to the HTML5 spec.
 	var TAG_DEFINITIONS = {
-	    'area': new HtmlTagDefinition({ isVoid: true }),
-	    'embed': new HtmlTagDefinition({ isVoid: true }),
 	    'link': new HtmlTagDefinition({ isVoid: true }),
 	    'img': new HtmlTagDefinition({ isVoid: true }),
 	    'input': new HtmlTagDefinition({ isVoid: true }),
-	    'param': new HtmlTagDefinition({ isVoid: true }),
 	    'hr': new HtmlTagDefinition({ isVoid: true }),
 	    'br': new HtmlTagDefinition({ isVoid: true }),
-	    'source': new HtmlTagDefinition({ isVoid: true }),
-	    'track': new HtmlTagDefinition({ isVoid: true }),
 	    'wbr': new HtmlTagDefinition({ isVoid: true }),
 	    'p': new HtmlTagDefinition({
 	        closedByChildren: [
@@ -30477,7 +30467,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }),
 	    'td': new HtmlTagDefinition({ closedByChildren: ['td', 'th'], closedByParent: true }),
 	    'th': new HtmlTagDefinition({ closedByChildren: ['td', 'th'], closedByParent: true }),
-	    'col': new HtmlTagDefinition({ requiredParents: ['colgroup'], isVoid: true }),
+	    'col': new HtmlTagDefinition({ closedByChildren: ['col'], requiredParents: ['colgroup'] }),
 	    'svg': new HtmlTagDefinition({ implicitNamespacePrefix: 'svg' }),
 	    'math': new HtmlTagDefinition({ implicitNamespacePrefix: 'math' }),
 	    'li': new HtmlTagDefinition({ closedByChildren: ['li'], closedByParent: true }),
@@ -30500,6 +30490,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return lang_1.isPresent(result) ? result : DEFAULT_TAG_DEFINITION;
 	}
 	exports.getHtmlTagDefinition = getHtmlTagDefinition;
+	var NS_PREFIX_RE = /^@([^:]+):(.+)/g;
+	function splitHtmlTagNamespace(elementName) {
+	    if (elementName[0] != '@') {
+	        return [null, elementName];
+	    }
+	    var match = lang_1.RegExpWrapper.firstMatch(NS_PREFIX_RE, elementName);
+	    return [match[1], match[2]];
+	}
+	exports.splitHtmlTagNamespace = splitHtmlTagNamespace;
+	function getHtmlTagNamespacePrefix(elementName) {
+	    return splitHtmlTagNamespace(elementName)[0];
+	}
+	exports.getHtmlTagNamespacePrefix = getHtmlTagNamespacePrefix;
 
 
 /***/ },
@@ -30876,7 +30879,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var lang_1 = __webpack_require__(5);
 	var collection_1 = __webpack_require__(34);
 	var dom_adapter_1 = __webpack_require__(164);
+	var html_tags_1 = __webpack_require__(217);
 	var element_schema_registry_1 = __webpack_require__(218);
+	var NAMESPACE_URIS = lang_1.CONST_EXPR({ 'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg' });
 	var DomElementSchemaRegistry = (function (_super) {
 	    __extends(DomElementSchemaRegistry, _super);
 	    function DomElementSchemaRegistry() {
@@ -30886,7 +30891,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    DomElementSchemaRegistry.prototype._getProtoElement = function (tagName) {
 	        var element = this._protoElements.get(tagName);
 	        if (lang_1.isBlank(element)) {
-	            element = dom_adapter_1.DOM.createElement(tagName);
+	            var nsAndName = html_tags_1.splitHtmlTagNamespace(tagName);
+	            element = lang_1.isPresent(nsAndName[0]) ?
+	                dom_adapter_1.DOM.createElementNS(NAMESPACE_URIS[nsAndName[0]], nsAndName[1]) :
+	                dom_adapter_1.DOM.createElement(nsAndName[1]);
 	            this._protoElements.set(tagName, element);
 	        }
 	        return element;
