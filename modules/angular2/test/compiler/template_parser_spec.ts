@@ -500,6 +500,15 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
           expect(humanizeTplAst(parse('<TEMPLATE></TEMPLATE>', [])))
               .toEqual([[EmbeddedTemplateAst]]);
         });
+
+        it('should create embedded templates for <template> elements regardless the namespace',
+           () => {
+             expect(humanizeTplAst(parse('<svg><template></template></svg>', [])))
+                 .toEqual([
+                   [ElementAst, '@svg:svg'],
+                   [EmbeddedTemplateAst],
+                 ]);
+           });
       });
 
       describe('inline templates', () => {

@@ -7,6 +7,7 @@ import {Parser, AST, ASTWithSource} from 'angular2/src/core/change_detection/cha
 import {TemplateBinding} from 'angular2/src/core/change_detection/parser/ast';
 import {CompileDirectiveMetadata} from './directive_metadata';
 import {HtmlParser} from './html_parser';
+import {splitHtmlTagNamespace} from './html_tags';
 import {ParseSourceSpan, ParseError, ParseLocation} from './parse_util';
 
 
@@ -215,7 +216,8 @@ class TemplateParseVisitor implements HtmlAstVisitor {
       }
     });
 
-    var isTemplateElement = nodeName.toLowerCase() == TEMPLATE_ELEMENT;
+    var lcElName = splitHtmlTagNamespace(nodeName.toLowerCase())[1];
+    var isTemplateElement = lcElName == TEMPLATE_ELEMENT;
     var elementCssSelector = createElementCssSelector(nodeName, matchableAttrs);
     var directives = this._createDirectiveAsts(
         element.name, this._parseDirectives(this.selectorMatcher, elementCssSelector),
