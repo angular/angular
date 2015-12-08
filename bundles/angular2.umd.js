@@ -30413,14 +30413,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.contentType = lang_1.isPresent(contentType) ? contentType : HtmlTagContentType.PARSABLE_DATA;
 	    }
 	    HtmlTagDefinition.prototype.requireExtraParent = function (currentParent) {
-	        if (lang_1.isBlank(this.requiredParents)) {
-	            return false;
-	        }
-	        if (lang_1.isBlank(currentParent)) {
-	            return true;
-	        }
-	        var lcParent = currentParent.toLowerCase();
-	        return this.requiredParents[lcParent] != true && lcParent != 'template';
+	        return lang_1.isPresent(this.requiredParents) &&
+	            (lang_1.isBlank(currentParent) || this.requiredParents[currentParent.toLowerCase()] != true);
 	    };
 	    HtmlTagDefinition.prototype.isClosedByChild = function (name) {
 	        return this.isVoid || lang_1.normalizeBool(this.closedByChildren[name.toLowerCase()]);
