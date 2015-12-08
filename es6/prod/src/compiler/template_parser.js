@@ -19,6 +19,7 @@ import { CONST_EXPR } from 'angular2/src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
 import { Parser } from 'angular2/src/core/change_detection/change_detection';
 import { HtmlParser } from './html_parser';
+import { splitHtmlTagNamespace } from './html_tags';
 import { ParseError } from './parse_util';
 import { ElementAst, BoundElementPropertyAst, BoundEventAst, VariableAst, templateVisitAll, TextAst, BoundTextAst, EmbeddedTemplateAst, AttrAst, NgContentAst, PropertyBindingType, DirectiveAst, BoundDirectivePropertyAst } from './template_ast';
 import { CssSelector, SelectorMatcher } from 'angular2/src/compiler/selector';
@@ -186,7 +187,8 @@ class TemplateParseVisitor {
                 hasInlineTemplates = true;
             }
         });
-        var isTemplateElement = nodeName.toLowerCase() == TEMPLATE_ELEMENT;
+        var lcElName = splitHtmlTagNamespace(nodeName.toLowerCase())[1];
+        var isTemplateElement = lcElName == TEMPLATE_ELEMENT;
         var elementCssSelector = createElementCssSelector(nodeName, matchableAttrs);
         var directives = this._createDirectiveAsts(element.name, this._parseDirectives(this.selectorMatcher, elementCssSelector), elementOrDirectiveProps, isTemplateElement ? [] : vars, element.sourceSpan);
         var elementProps = this._createElementPropertyAsts(element.name, elementOrDirectiveProps, directives);

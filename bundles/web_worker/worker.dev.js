@@ -34017,7 +34017,7 @@ System.register("angular2/src/web_workers/worker/xhr_impl", ["angular2/src/core/
   return module.exports;
 });
 
-System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/core", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/core/change_detection/change_detection", "angular2/src/compiler/html_parser", "angular2/src/compiler/parse_util", "angular2/src/compiler/template_ast", "angular2/src/compiler/selector", "angular2/src/compiler/schema/element_schema_registry", "angular2/src/compiler/template_preparser", "angular2/src/compiler/style_url_resolver", "angular2/src/compiler/html_ast", "angular2/src/compiler/util"], true, function(require, exports, module) {
+System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/collection", "angular2/src/facade/lang", "angular2/core", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/core/change_detection/change_detection", "angular2/src/compiler/html_parser", "angular2/src/compiler/html_tags", "angular2/src/compiler/parse_util", "angular2/src/compiler/template_ast", "angular2/src/compiler/selector", "angular2/src/compiler/schema/element_schema_registry", "angular2/src/compiler/template_preparser", "angular2/src/compiler/style_url_resolver", "angular2/src/compiler/html_ast", "angular2/src/compiler/util"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -34064,6 +34064,7 @@ System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/c
   var exceptions_1 = require("angular2/src/facade/exceptions");
   var change_detection_1 = require("angular2/src/core/change_detection/change_detection");
   var html_parser_1 = require("angular2/src/compiler/html_parser");
+  var html_tags_1 = require("angular2/src/compiler/html_tags");
   var parse_util_1 = require("angular2/src/compiler/parse_util");
   var template_ast_1 = require("angular2/src/compiler/template_ast");
   var selector_1 = require("angular2/src/compiler/selector");
@@ -34214,7 +34215,8 @@ System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/c
           hasInlineTemplates = true;
         }
       });
-      var isTemplateElement = nodeName.toLowerCase() == TEMPLATE_ELEMENT;
+      var lcElName = html_tags_1.splitHtmlTagNamespace(nodeName.toLowerCase())[1];
+      var isTemplateElement = lcElName == TEMPLATE_ELEMENT;
       var elementCssSelector = createElementCssSelector(nodeName, matchableAttrs);
       var directives = this._createDirectiveAsts(element.name, this._parseDirectives(this.selectorMatcher, elementCssSelector), elementOrDirectiveProps, isTemplateElement ? [] : vars, element.sourceSpan);
       var elementProps = this._createElementPropertyAsts(element.name, elementOrDirectiveProps, directives);

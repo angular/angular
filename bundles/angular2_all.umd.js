@@ -28678,6 +28678,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var exceptions_1 = __webpack_require__(36);
 	var change_detection_1 = __webpack_require__(47);
 	var html_parser_1 = __webpack_require__(213);
+	var html_tags_1 = __webpack_require__(217);
 	var parse_util_1 = __webpack_require__(216);
 	var template_ast_1 = __webpack_require__(206);
 	var selector_1 = __webpack_require__(201);
@@ -28852,7 +28853,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	                hasInlineTemplates = true;
 	            }
 	        });
-	        var isTemplateElement = nodeName.toLowerCase() == TEMPLATE_ELEMENT;
+	        var lcElName = html_tags_1.splitHtmlTagNamespace(nodeName.toLowerCase())[1];
+	        var isTemplateElement = lcElName == TEMPLATE_ELEMENT;
 	        var elementCssSelector = createElementCssSelector(nodeName, matchableAttrs);
 	        var directives = this._createDirectiveAsts(element.name, this._parseDirectives(this.selectorMatcher, elementCssSelector), elementOrDirectiveProps, isTemplateElement ? [] : vars, element.sourceSpan);
 	        var elementProps = this._createElementPropertyAsts(element.name, elementOrDirectiveProps, directives);
