@@ -1126,7 +1126,7 @@ gulp.task('bundles.js.umd.min', ['!bundles.js.umd', '!bundle.ng.polyfills'], fun
 
   // minify production bundles
   return gulp.src([
-               'dist/js/bundle/angular-polyfills.js',
+               'dist/js/bundle/angular2-polyfills.js',
                'dist/js/bundle/angular2.umd.js',
                'dist/js/bundle/angular2_all.umd.js'
              ])
@@ -1156,7 +1156,7 @@ gulp.task('!bundle.js.min.deps', ['!bundle.js.min'], function() {
 });
 
 gulp.task('!bundle.ng.polyfills', ['clean'],
-          function() { return addDevDependencies('angular-polyfills.js'); });
+          function() { return addDevDependencies('angular2-polyfills.js'); });
 
 var JS_DEV_DEPS = [
   licenseWrap('node_modules/zone.js/LICENSE', true),
