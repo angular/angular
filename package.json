@@ -27,14 +27,14 @@
   },
   "scripts": {
     "preinstall": "node tools/analytics/build-analytics start install npm-install && node tools/analytics/build-analytics start install npm-preinstall && node tools/npm/check-node-modules --purge && node tools/analytics/build-analytics success install npm-preinstall && node tools/analytics/build-analytics start install npm-install-net",
-    "postinstall": "node tools/analytics/build-analytics success install npm-install-net && node tools/analytics/build-analytics start install npm-postinstall && node tools/npm/copy-npm-shrinkwrap && node tools/chromedriverpatch.js && webdriver-manager update && bower install && gulp pubget.dart && tsd reinstall --overwrite --clean --config modules/angular2/tsd.json && tsd reinstall --overwrite --clean --config tools/tsd.json && tsd reinstall --overwrite --config modules/angular1_router/tsd.json && node tools/analytics/build-analytics success install npm-postinstall && node tools/analytics/build-analytics success install npm-install",
+    "postinstall": "node tools/analytics/build-analytics success install npm-install-net && node tools/analytics/build-analytics start install npm-postinstall && node tools/npm/copy-npm-shrinkwrap && node tools/chromedriverpatch.js && webdriver-manager update && bower install && gulp pubget.dart && tsd reinstall --overwrite --clean --config modules/angular2/tsd.json && tsd reinstall --overwrite --clean --config tools/tsd.json && tsd reinstall --overwrite --config modules/angular1_router/tsd.json && rm -rf node_modules/rxjs && mkdir node_modules/rxjs && cp -r built-rxjs/ node_modules/rxjs && node tools/analytics/build-analytics success install npm-postinstall && node tools/analytics/build-analytics success install npm-install",
     "test": "gulp test.all.js && gulp test.all.dart"
   },
   "dependencies": {
     "es6-promise": "^3.0.2",
     "es6-shim": "^0.33.3",
     "reflect-metadata": "0.1.2",
-    "rxjs": "5.0.0-alpha.13",
+    "rxjs": "^5.0.0-alpha.13",
     "zone.js": "0.5.8"
   },
   "devDependencies": {
