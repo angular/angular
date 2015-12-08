@@ -621,6 +621,14 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
             [EmbeddedTemplateAst]
           ]);
         });
+        it("should create embedded templates for <template> elements regardless the namespace",
+            () {
+          expect(humanizeTplAst(parse("<svg><template></template></svg>", [])))
+              .toEqual([
+            [ElementAst, "@svg:svg"],
+            [EmbeddedTemplateAst]
+          ]);
+        });
       });
       describe("inline templates", () {
         it("should wrap the element into an EmbeddedTemplateAST", () {

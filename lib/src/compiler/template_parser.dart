@@ -13,6 +13,7 @@ import "package:angular2/src/core/change_detection/parser/ast.dart"
     show TemplateBinding;
 import "directive_metadata.dart" show CompileDirectiveMetadata;
 import "html_parser.dart" show HtmlParser;
+import "html_tags.dart" show splitHtmlTagNamespace;
 import "parse_util.dart" show ParseSourceSpan, ParseError, ParseLocation;
 import "template_ast.dart"
     show
@@ -235,7 +236,8 @@ class TemplateParseVisitor implements HtmlAstVisitor {
         hasInlineTemplates = true;
       }
     });
-    var isTemplateElement = nodeName.toLowerCase() == TEMPLATE_ELEMENT;
+    var lcElName = splitHtmlTagNamespace(nodeName.toLowerCase())[1];
+    var isTemplateElement = lcElName == TEMPLATE_ELEMENT;
     var elementCssSelector = createElementCssSelector(nodeName, matchableAttrs);
     var directives = this._createDirectiveAsts(
         element.name,
