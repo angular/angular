@@ -1136,13 +1136,13 @@ gulp.task('!bundles.js.umd', ['build.js.dev'], function() {
   ]);
 });
 
-gulp.task('bundles.js.umd.min', ['!bundles.js.umd', '!bundle.external.deps'], function() {
+gulp.task('bundles.js.umd.min', ['!bundles.js.umd', '!bundle.ng.polyfills'], function() {
   var rename = require('gulp-rename');
   var uglify = require('gulp-uglify');
 
   // minify production bundles
   return gulp.src([
-               'dist/js/bundle/external-dependencies.js',
+               'dist/js/bundle/angular-polyfills.js',
                'dist/js/bundle/angular2.umd.js',
                'dist/js/bundle/angular2_all.umd.js'
              ])
@@ -1171,8 +1171,8 @@ gulp.task('!bundle.js.min.deps', ['!bundle.js.min'], function() {
       .pipe(gulp.dest('dist/js/bundle'));
 });
 
-gulp.task('!bundle.external.deps', ['clean'],
-          function() { return addDevDependencies('external-dependencies.js'); });
+gulp.task('!bundle.ng.polyfills', ['clean'],
+          function() { return addDevDependencies('angular-polyfills.js'); });
 
 var JS_DEV_DEPS = [
   licenseWrap('node_modules/zone.js/LICENSE', true),
@@ -1245,7 +1245,7 @@ gulp.task('bundles.js',
             '!bundle.js.sfx.dev.deps',
             'bundles.js.umd.min',
             '!bundle.testing',
-            '!bundle.external.deps'
+            '!bundle.ng.polyfills'
           ],
           function(done) { runSequence('!bundle.copy', '!bundles.js.checksize', done); });
 
