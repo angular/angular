@@ -29412,7 +29412,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (this.peek.type === html_lexer_1.HtmlTokenType.TAG_OPEN_END_VOID) {
 	            this._advance();
 	            selfClosing = true;
-	            if (html_tags_1.getHtmlTagNamespacePrefix(fullName) == null && !html_tags_1.getHtmlTagDefinition(fullName).isVoid) {
+	            if (namespacePrefix(fullName) == null && !html_tags_1.getHtmlTagDefinition(fullName).isVoid) {
 	                this.errors.push(HtmlTreeError.create(fullName, startTagToken.sourceSpan.start, "Only void and foreign elements can be self closed \"" + startTagToken.parts[1] + "\""));
 	            }
 	        }
@@ -29501,10 +29501,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (lang_1.isBlank(prefix)) {
 	        prefix = html_tags_1.getHtmlTagDefinition(localName).implicitNamespacePrefix;
 	        if (lang_1.isBlank(prefix) && lang_1.isPresent(parentElement)) {
-	            prefix = html_tags_1.getHtmlTagNamespacePrefix(parentElement.name);
+	            prefix = namespacePrefix(parentElement.name);
 	        }
 	    }
 	    return mergeNsAndName(prefix, localName);
+	}
+	var NS_PREFIX_RE = /^@([^:]+)/g;
+	function namespacePrefix(elementName) {
+	    var match = lang_1.RegExpWrapper.firstMatch(NS_PREFIX_RE, elementName);
+	    return lang_1.isBlank(match) ? null : match[1];
 	}
 
 
@@ -30493,19 +30498,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return lang_1.isPresent(result) ? result : DEFAULT_TAG_DEFINITION;
 	}
 	exports.getHtmlTagDefinition = getHtmlTagDefinition;
-	var NS_PREFIX_RE = /^@([^:]+):(.+)/g;
-	function splitHtmlTagNamespace(elementName) {
-	    if (elementName[0] != '@') {
-	        return [null, elementName];
-	    }
-	    var match = lang_1.RegExpWrapper.firstMatch(NS_PREFIX_RE, elementName);
-	    return [match[1], match[2]];
-	}
-	exports.splitHtmlTagNamespace = splitHtmlTagNamespace;
-	function getHtmlTagNamespacePrefix(elementName) {
-	    return splitHtmlTagNamespace(elementName)[0];
-	}
-	exports.getHtmlTagNamespacePrefix = getHtmlTagNamespacePrefix;
 
 
 /***/ },
@@ -30882,9 +30874,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var lang_1 = __webpack_require__(5);
 	var collection_1 = __webpack_require__(34);
 	var dom_adapter_1 = __webpack_require__(164);
-	var html_tags_1 = __webpack_require__(217);
 	var element_schema_registry_1 = __webpack_require__(218);
-	var NAMESPACE_URIS = lang_1.CONST_EXPR({ 'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg' });
 	var DomElementSchemaRegistry = (function (_super) {
 	    __extends(DomElementSchemaRegistry, _super);
 	    function DomElementSchemaRegistry() {
@@ -30894,10 +30884,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    DomElementSchemaRegistry.prototype._getProtoElement = function (tagName) {
 	        var element = this._protoElements.get(tagName);
 	        if (lang_1.isBlank(element)) {
-	            var nsAndName = html_tags_1.splitHtmlTagNamespace(tagName);
-	            element = lang_1.isPresent(nsAndName[0]) ?
-	                dom_adapter_1.DOM.createElementNS(NAMESPACE_URIS[nsAndName[0]], nsAndName[1]) :
-	                dom_adapter_1.DOM.createElement(nsAndName[1]);
+	            element = dom_adapter_1.DOM.createElement(tagName);
 	            this._protoElements.set(tagName, element);
 	        }
 	        return element;
@@ -34583,8 +34570,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return this.navigateByUrl(this.lastNavigationAttempt);
 	    };
 	    /**
-	     * Generate a URL from a component name and optional map of parameters. The URL is relative to the
-	     * app's base href.
+	     * Generate an `Instruction` based on the provided Route Link DSL.
 	     */
 	    Router.prototype.generate = function (linkParams) {
 	        var ancestorInstructions = this._getAncestorInstructions();

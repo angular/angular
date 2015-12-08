@@ -406,8 +406,7 @@ export class Router {
 
 
   /**
-   * Generate a URL from a component name and optional map of parameters. The URL is relative to the
-   * app's base href.
+   * Generate an `Instruction` based on the provided Route Link DSL.
    */
   generate(linkParams: any[]): Instruction {
     var ancestorInstructions = this._getAncestorInstructions();

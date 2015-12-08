@@ -16812,19 +16812,6 @@ System.register("angular2/src/compiler/html_tags", ["angular2/src/facade/lang"],
     return lang_1.isPresent(result) ? result : DEFAULT_TAG_DEFINITION;
   }
   exports.getHtmlTagDefinition = getHtmlTagDefinition;
-  var NS_PREFIX_RE = /^@([^:]+):(.+)/g;
-  function splitHtmlTagNamespace(elementName) {
-    if (elementName[0] != '@') {
-      return [null, elementName];
-    }
-    var match = lang_1.RegExpWrapper.firstMatch(NS_PREFIX_RE, elementName);
-    return [match[1], match[2]];
-  }
-  exports.splitHtmlTagNamespace = splitHtmlTagNamespace;
-  function getHtmlTagNamespacePrefix(elementName) {
-    return splitHtmlTagNamespace(elementName)[0];
-  }
-  exports.getHtmlTagNamespacePrefix = getHtmlTagNamespacePrefix;
   global.define = __define;
   return module.exports;
 });
@@ -26631,7 +26618,7 @@ System.register("angular2/src/compiler/html_lexer", ["angular2/src/facade/lang",
   return module.exports;
 });
 
-System.register("angular2/src/compiler/schema/dom_element_schema_registry", ["angular2/src/core/di", "angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/src/platform/dom/dom_adapter", "angular2/src/compiler/html_tags", "angular2/src/compiler/schema/element_schema_registry"], true, function(require, exports, module) {
+System.register("angular2/src/compiler/schema/dom_element_schema_registry", ["angular2/src/core/di", "angular2/src/facade/lang", "angular2/src/facade/collection", "angular2/src/platform/dom/dom_adapter", "angular2/src/compiler/schema/element_schema_registry"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -26670,12 +26657,7 @@ System.register("angular2/src/compiler/schema/dom_element_schema_registry", ["an
   var lang_1 = require("angular2/src/facade/lang");
   var collection_1 = require("angular2/src/facade/collection");
   var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
-  var html_tags_1 = require("angular2/src/compiler/html_tags");
   var element_schema_registry_1 = require("angular2/src/compiler/schema/element_schema_registry");
-  var NAMESPACE_URIS = lang_1.CONST_EXPR({
-    'xlink': 'http://www.w3.org/1999/xlink',
-    'svg': 'http://www.w3.org/2000/svg'
-  });
   var DomElementSchemaRegistry = (function(_super) {
     __extends(DomElementSchemaRegistry, _super);
     function DomElementSchemaRegistry() {
@@ -26685,8 +26667,7 @@ System.register("angular2/src/compiler/schema/dom_element_schema_registry", ["an
     DomElementSchemaRegistry.prototype._getProtoElement = function(tagName) {
       var element = this._protoElements.get(tagName);
       if (lang_1.isBlank(element)) {
-        var nsAndName = html_tags_1.splitHtmlTagNamespace(tagName);
-        element = lang_1.isPresent(nsAndName[0]) ? dom_adapter_1.DOM.createElementNS(NAMESPACE_URIS[nsAndName[0]], nsAndName[1]) : dom_adapter_1.DOM.createElement(nsAndName[1]);
+        element = dom_adapter_1.DOM.createElement(tagName);
         this._protoElements.set(tagName, element);
       }
       return element;
@@ -29623,7 +29604,7 @@ System.register("angular2/src/compiler/html_parser", ["angular2/src/facade/lang"
       if (this.peek.type === html_lexer_1.HtmlTokenType.TAG_OPEN_END_VOID) {
         this._advance();
         selfClosing = true;
-        if (html_tags_1.getHtmlTagNamespacePrefix(fullName) == null && !html_tags_1.getHtmlTagDefinition(fullName).isVoid) {
+        if (namespacePrefix(fullName) == null && !html_tags_1.getHtmlTagDefinition(fullName).isVoid) {
           this.errors.push(HtmlTreeError.create(fullName, startTagToken.sourceSpan.start, "Only void and foreign elements can be self closed \"" + startTagToken.parts[1] + "\""));
         }
       } else if (this.peek.type === html_lexer_1.HtmlTokenType.TAG_OPEN_END) {
@@ -29708,10 +29689,15 @@ System.register("angular2/src/compiler/html_parser", ["angular2/src/facade/lang"
     if (lang_1.isBlank(prefix)) {
       prefix = html_tags_1.getHtmlTagDefinition(localName).implicitNamespacePrefix;
       if (lang_1.isBlank(prefix) && lang_1.isPresent(parentElement)) {
-        prefix = html_tags_1.getHtmlTagNamespacePrefix(parentElement.name);
+        prefix = namespacePrefix(parentElement.name);
       }
     }
     return mergeNsAndName(prefix, localName);
+  }
+  var NS_PREFIX_RE = /^@([^:]+)/g;
+  function namespacePrefix(elementName) {
+    var match = lang_1.RegExpWrapper.firstMatch(NS_PREFIX_RE, elementName);
+    return lang_1.isBlank(match) ? null : match[1];
   }
   global.define = __define;
   return module.exports;
@@ -39031,7 +39017,7 @@ System.register("angular2/src/platform/server/parse5_adapter", ["parse5/index", 
       return treeAdapter.createElement(tagName, 'http://www.w3.org/1999/xhtml', []);
     };
     Parse5DomAdapter.prototype.createElementNS = function(ns, tagName) {
-      return treeAdapter.createElement(tagName, ns, []);
+      throw 'not implemented';
     };
     Parse5DomAdapter.prototype.createTextNode = function(text) {
       var t = this.createComment(text);

@@ -274,7 +274,7 @@ export class Parse5DomAdapter extends DomAdapter {
   createElement(tagName): HTMLElement {
     return treeAdapter.createElement(tagName, 'http://www.w3.org/1999/xhtml', []);
   }
-  createElementNS(ns, tagName): HTMLElement { return treeAdapter.createElement(tagName, ns, []); }
+  createElementNS(ns, tagName): HTMLElement { throw 'not implemented'; }
   createTextNode(text: string): Text {
     var t = <any>this.createComment(text);
     t.type = 'text';

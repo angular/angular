@@ -1,13 +1,9 @@
 import {Injectable} from 'angular2/src/core/di';
-import {isPresent, isBlank, CONST_EXPR} from 'angular2/src/facade/lang';
+import {isPresent, isBlank} from 'angular2/src/facade/lang';
 import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {splitHtmlTagNamespace} from 'angular2/src/compiler/html_tags';
 
 import {ElementSchemaRegistry} from './element_schema_registry';
-
-const NAMESPACE_URIS =
-    CONST_EXPR({'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg'});
 
 @Injectable()
 export class DomElementSchemaRegistry extends ElementSchemaRegistry {
@@ -16,10 +12,7 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
   private _getProtoElement(tagName: string): Element {
     var element = this._protoElements.get(tagName);
     if (isBlank(element)) {
-      var nsAndName = splitHtmlTagNamespace(tagName);
-      element = isPresent(nsAndName[0]) ?
-                    DOM.createElementNS(NAMESPACE_URIS[nsAndName[0]], nsAndName[1]) :
-                    DOM.createElement(nsAndName[1]);
+      element = DOM.createElement(tagName);
       this._protoElements.set(tagName, element);
     }
     return element;
