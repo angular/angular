@@ -59,6 +59,10 @@ class PlatformLocation {
     this._history.pushState(state, title, url);
   }
 
+  void replaceState(dynamic state, String title, String url) {
+    this._history.replaceState(state, title, url);
+  }
+
   void forward() {
     this._history.forward();
   }

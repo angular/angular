@@ -22,6 +22,8 @@ abstract class LocationStrategy {
   String path();
   String prepareExternalUrl(String internal);
   void pushState(dynamic state, String title, String url, String queryParams);
+  void replaceState(
+      dynamic state, String title, String url, String queryParams);
   void forward();
   void back();
   void onPopState(dynamic /* (_: any) => any */ fn);

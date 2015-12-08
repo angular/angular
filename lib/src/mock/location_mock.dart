@@ -30,7 +30,15 @@ class SpyLocation implements Location {
   }
 
   simulateUrlPop(String pathname) {
-    ObservableWrapper.callEmit(this._subject, {"url": pathname});
+    ObservableWrapper.callEmit(this._subject, {"url": pathname, "pop": true});
+  }
+
+  simulateHashChange(String pathname) {
+    // Because we don't prevent the native event, the browser will independently update the path
+    this.setInitialPath(pathname);
+    this.urlChanges.add("hash: " + pathname);
+    ObservableWrapper.callEmit(
+        this._subject, {"url": pathname, "pop": true, "type": "hashchange"});
   }
 
   String prepareExternalUrl(String url) {
@@ -49,6 +57,14 @@ class SpyLocation implements Location {
     this._query = query;
     var url = path + (query.length > 0 ? ("?" + query) : "");
     this.urlChanges.add(url);
+  }
+
+  replaceState(String path, [String query = ""]) {
+    path = this.prepareExternalUrl(path);
+    this._path = path;
+    this._query = query;
+    var url = path + (query.length > 0 ? ("?" + query) : "");
+    this.urlChanges.add("replace: " + url);
   }
 
   forward() {}

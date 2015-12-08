@@ -59,6 +59,7 @@ class HashLocationStrategy extends LocationStrategy {
   }
   void onPopState(EventListener fn) {
     this._platformLocation.onPopState(fn);
+    this._platformLocation.onHashChange(fn);
   }
 
   String getBaseHref() {
@@ -90,6 +91,14 @@ class HashLocationStrategy extends LocationStrategy {
       url = this._platformLocation.pathname;
     }
     this._platformLocation.pushState(state, title, url);
+  }
+
+  replaceState(dynamic state, String title, String path, String queryParams) {
+    var url = this.prepareExternalUrl(path + normalizeQueryParams(queryParams));
+    if (url.length == 0) {
+      url = this._platformLocation.pathname;
+    }
+    this._platformLocation.replaceState(state, title, url);
   }
 
   void forward() {

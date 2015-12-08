@@ -19,7 +19,8 @@ class MockLocationStrategy extends LocationStrategy {
   }
   void simulatePopState(String url) {
     this.internalPath = url;
-    ObservableWrapper.callEmit(this._subject, null);
+    ObservableWrapper.callEmit(
+        this._subject, new MockPopStateEvent(this.path()));
   }
 
   String path() {
@@ -33,16 +34,20 @@ class MockLocationStrategy extends LocationStrategy {
     return this.internalBaseHref + internal;
   }
 
-  void simulateUrlPop(String pathname) {
-    ObservableWrapper.callEmit(this._subject, {"url": pathname});
-  }
-
   void pushState(dynamic ctx, String title, String path, String query) {
     this.internalTitle = title;
     var url = path + (query.length > 0 ? ("?" + query) : "");
     this.internalPath = url;
     var externalUrl = this.prepareExternalUrl(url);
     this.urlChanges.add(externalUrl);
+  }
+
+  void replaceState(dynamic ctx, String title, String path, String query) {
+    this.internalTitle = title;
+    var url = path + (query.length > 0 ? ("?" + query) : "");
+    this.internalPath = url;
+    var externalUrl = this.prepareExternalUrl(url);
+    this.urlChanges.add("replace: " + externalUrl);
   }
 
   void onPopState(dynamic /* (value: any) => void */ fn) {
@@ -66,4 +71,11 @@ class MockLocationStrategy extends LocationStrategy {
   void forward() {
     throw "not implemented";
   }
+}
+
+class MockPopStateEvent {
+  String newUrl;
+  bool pop = true;
+  String type = "popstate";
+  MockPopStateEvent(this.newUrl) {}
 }
