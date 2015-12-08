@@ -100,7 +100,7 @@ const formDirectiveProvider =
   inputs: ['form: ng-form-model'],
   host: {'(submit)': 'onSubmit()'},
   outputs: ['ngSubmit'],
-  exportAs: 'form'
+  exportAs: 'ngForm'
 })
 export class NgFormModel extends ControlContainer implements Form,
     OnChanges {

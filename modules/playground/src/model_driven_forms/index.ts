@@ -78,7 +78,7 @@ class ShowError {
   template: `
     <h1>Checkout Form (Model Driven)</h1>
 
-    <form (ng-submit)="onSubmit()" [ng-form-model]="form" #f="form">
+    <form (ng-submit)="onSubmit()" [ng-form-model]="form" #f="ngForm">
       <p>
         <label for="firstName">First Name</label>
         <input type="text" id="firstName" ng-control="firstName">
