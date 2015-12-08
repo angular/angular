@@ -968,7 +968,7 @@ export function main() {
                   // {{x.valid}} used to crash because valid() tried to read a property
                   // from form.control before it was set. This test verifies this bug is
                   // fixed.
-                  var t = `<form><div ng-control-group="x" #x="form">
+                  var t = `<form><div ng-control-group="x" #x="ngForm">
                   <input type="text" ng-control="test"></div>{{x.valid}}</form>`;
                   var fixture: ComponentFixture;
                   tcb.overrideTemplate(MyComp, t).createAsync(MyComp).then(
