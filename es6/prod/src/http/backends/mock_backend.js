@@ -15,8 +15,8 @@ import { ReadyState } from '../enums';
 import { isPresent } from 'angular2/src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
 import { Subject } from 'rxjs/Subject';
-import { ReplaySubject } from 'rxjs/subjects/ReplaySubject';
-import 'rxjs/operators/take';
+import { ReplaySubject } from 'rxjs/subject/ReplaySubject';
+import { take } from 'rxjs/operator/take';
 /**
  *
  * Mock Connection to represent a {@link Connection} for tests.
@@ -24,7 +24,7 @@ import 'rxjs/operators/take';
  **/
 export class MockConnection {
     constructor(req) {
-        this.response = new ReplaySubject(1).take(1);
+        this.response = take.call(new ReplaySubject(1), 1);
         this.readyState = ReadyState.Open;
         this.request = req;
     }

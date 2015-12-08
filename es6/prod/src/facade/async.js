@@ -2,8 +2,8 @@ import { global, noop } from 'angular2/src/facade/lang';
 export { PromiseWrapper, Promise } from 'angular2/src/facade/promise';
 import { Subject } from 'rxjs/Subject';
 import { Observable as RxObservable } from 'rxjs/Observable';
-import 'rxjs/observable/fromPromise';
-import 'rxjs/operators/toPromise';
+import { PromiseObservable } from 'rxjs/observable/fromPromise';
+import { toPromise } from 'rxjs/operator/toPromise';
 export { Subject } from 'rxjs/Subject';
 export class TimerWrapper {
     static setTimeout(fn, millis) {
@@ -36,9 +36,9 @@ export class ObservableWrapper {
     static callError(emitter, error) { emitter.error(error); }
     static callComplete(emitter) { emitter.complete(); }
     static fromPromise(promise) {
-        return RxObservable.fromPromise(promise);
+        return PromiseObservable.create(promise);
     }
-    static toPromise(obj) { return obj.toPromise(); }
+    static toPromise(obj) { return toPromise.call(obj); }
 }
 /**
  * Use by directives and components to emit custom Events.
