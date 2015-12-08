@@ -54,6 +54,7 @@ export declare class PathLocationStrategy extends LocationStrategy {
     prepareExternalUrl(internal: string): string;
     path(): string;
     pushState(state: any, title: string, url: string, queryParams: string): void;
+    replaceState(state: any, title: string, url: string, queryParams: string): void;
     forward(): void;
     back(): void;
 }

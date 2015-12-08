@@ -24,7 +24,7 @@ export let MockLocationStrategy = class extends LocationStrategy {
     }
     simulatePopState(url) {
         this.internalPath = url;
-        ObservableWrapper.callEmit(this._subject, null);
+        ObservableWrapper.callEmit(this._subject, new MockPopStateEvent(this.path()));
     }
     path() { return this.internalPath; }
     prepareExternalUrl(internal) {
@@ -33,15 +33,19 @@ export let MockLocationStrategy = class extends LocationStrategy {
         }
         return this.internalBaseHref + internal;
     }
-    simulateUrlPop(pathname) {
-        ObservableWrapper.callEmit(this._subject, { 'url': pathname });
-    }
     pushState(ctx, title, path, query) {
         this.internalTitle = title;
         var url = path + (query.length > 0 ? ('?' + query) : '');
         this.internalPath = url;
         var externalUrl = this.prepareExternalUrl(url);
         this.urlChanges.push(externalUrl);
+    }
+    replaceState(ctx, title, path, query) {
+        this.internalTitle = title;
+        var url = path + (query.length > 0 ? ('?' + query) : '');
+        this.internalPath = url;
+        var externalUrl = this.prepareExternalUrl(url);
+        this.urlChanges.push('replace: ' + externalUrl);
     }
     onPopState(fn) { ObservableWrapper.subscribe(this._subject, fn); }
     getBaseHref() { return this.internalBaseHref; }
@@ -58,3 +62,10 @@ MockLocationStrategy = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], MockLocationStrategy);
+class MockPopStateEvent {
+    constructor(newUrl) {
+        this.newUrl = newUrl;
+        this.pop = true;
+        this.type = 'popstate';
+    }
+}
