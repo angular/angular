@@ -29,6 +29,7 @@ import {
   InvalidProviderError
 } from './exceptions';
 import {resolveForwardRef} from './forward_ref';
+import {TypeLiteral} from './type_literal';
 
 /**
  * `Dependency` is used by the framework to extend DI.
@@ -649,6 +650,8 @@ function _extractToken(typeOrFunc, metadata /*any[] | any*/, params: any[][]): D
     if (paramMetadata instanceof Type) {
       token = paramMetadata;
 
+    } else if (paramMetadata instanceof TypeLiteral) {
+      token = paramMetadata.type;
     } else if (paramMetadata instanceof InjectMetadata) {
       token = paramMetadata.token;
 

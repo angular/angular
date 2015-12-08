@@ -19,6 +19,8 @@ const REGISTER_SETTERS_METHOD_NAME = 'registerSetters';
 const REGISTER_METHODS_METHOD_NAME = 'registerMethods';
 const SUMMARY_META_EXTENSION = '.ng_summary.json';
 const TEMPLATE_EXTENSION = '.template.dart';
+const TYPE_LITERAL_IMPORT = 'package:angular2/src/core/di/type_literal.dart';
+const TYPE_LITERAL_PREFIX = '_ngTypeLiteral';
 
 /// Note that due to the implementation of `_toExtension`, ordering is
 /// important. For example, putting '.dart' first in this list will cause

@@ -149,6 +149,11 @@ abstract class NgDepsWriterMixin
       ..uri = REFLECTOR_IMPORT
       ..prefix = REFLECTOR_PREFIX);
 
+    // Used to refer to parameterized types.
+    writeImportModel(new ImportModel()
+      ..uri = TYPE_LITERAL_IMPORT
+      ..prefix = TYPE_LITERAL_PREFIX);
+
     // We do not support `partUris`, so skip outputting them.
 
     // Ignore deferred imports here so as to not load the deferred libraries

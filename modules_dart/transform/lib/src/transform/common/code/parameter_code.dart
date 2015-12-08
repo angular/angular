@@ -3,6 +3,7 @@ library angular2.transform.common.code.parameter_code;
 import 'package:analyzer/analyzer.dart';
 import 'package:analyzer/src/generated/ast.dart';
 import 'package:angular2/src/transform/common/logging.dart';
+import 'package:angular2/src/transform/common/names.dart';
 import 'package:angular2/src/transform/common/model/parameter_model.pb.dart';
 
 import 'constify.dart';
@@ -107,7 +108,12 @@ abstract class ParameterWriterMixin {
         buffer.write(', ');
       }
       first = false;
-      buffer.write('${model.typeName}');
+      if (model.typeArgs != null && model.typeArgs.isNotEmpty) {
+        buffer.write('const ${TYPE_LITERAL_PREFIX}.'
+          'TypeLiteral<${model.typeName}${model.typeArgs}>()');
+      } else {
+        buffer.write('${model.typeName}');
+      }
     }
     for (var meta in model.metadata) {
       if (!first) {
