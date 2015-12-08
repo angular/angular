@@ -7,10 +7,12 @@
   "contributors": <%= JSON.stringify(packageJson.contributors) %>,
   "license": "<%= packageJson.license %>",
   "repository": <%= JSON.stringify(packageJson.repository) %>,
-  "dependencies": {
+  "devDependencies": <%= JSON.stringify(packageJson.defaultDevDependencies) %>,
+  "peerDependencies": {
+    "es6-promise": "<%= packageJson.dependencies['es6-promise'] %>",
+    "es6-shim": "<%= packageJson.dependencies['es6-shim'] %>",
     "reflect-metadata": "<%= packageJson.dependencies['reflect-metadata'] %>",
     "rxjs": "<%= packageJson.dependencies['rxjs'] %>",
     "zone.js": "<%= packageJson.dependencies['zone.js'] %>"
-  },
-  "devDependencies": <%= JSON.stringify(packageJson.defaultDevDependencies) %>
+  }
 }
