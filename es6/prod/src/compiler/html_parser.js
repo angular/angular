@@ -9,13 +9,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { isPresent, isBlank, RegExpWrapper } from 'angular2/src/facade/lang';
+import { isPresent, isBlank } from 'angular2/src/facade/lang';
 import { ListWrapper } from 'angular2/src/facade/collection';
 import { HtmlAttrAst, HtmlTextAst, HtmlElementAst } from './html_ast';
 import { Injectable } from 'angular2/src/core/di';
 import { HtmlTokenType, tokenizeHtml } from './html_lexer';
 import { ParseError, ParseSourceSpan } from './parse_util';
-import { getHtmlTagDefinition } from './html_tags';
+import { getHtmlTagDefinition, getHtmlTagNamespacePrefix } from './html_tags';
 export class HtmlTreeError extends ParseError {
     constructor(elementName, location, msg) {
         super(location, msg);
@@ -129,7 +129,7 @@ class TreeBuilder {
         if (this.peek.type === HtmlTokenType.TAG_OPEN_END_VOID) {
             this._advance();
             selfClosing = true;
-            if (namespacePrefix(fullName) == null && !getHtmlTagDefinition(fullName).isVoid) {
+            if (getHtmlTagNamespacePrefix(fullName) == null && !getHtmlTagDefinition(fullName).isVoid) {
                 this.errors.push(HtmlTreeError.create(fullName, startTagToken.sourceSpan.start, `Only void and foreign elements can be self closed "${startTagToken.parts[1]}"`));
             }
         }
@@ -217,13 +217,8 @@ function getElementFullName(prefix, localName, parentElement) {
     if (isBlank(prefix)) {
         prefix = getHtmlTagDefinition(localName).implicitNamespacePrefix;
         if (isBlank(prefix) && isPresent(parentElement)) {
-            prefix = namespacePrefix(parentElement.name);
+            prefix = getHtmlTagNamespacePrefix(parentElement.name);
         }
     }
     return mergeNsAndName(prefix, localName);
-}
-var NS_PREFIX_RE = /^@([^:]+)/g;
-function namespacePrefix(elementName) {
-    var match = RegExpWrapper.firstMatch(NS_PREFIX_RE, elementName);
-    return isBlank(match) ? null : match[1];
 }
