@@ -5,8 +5,10 @@ Directive and component change detection and lifecycle hooks
 (implemented as class methods)
 
 @cheatsheetItem
-syntax:
+syntax(js ts):
 `constructor(myService: MyService, ...) { ... }`|`constructor(myService: MyService, ...)`
+syntax(dart):
+`MyAppComponent(MyService myService, ...) { ... }`|`MyAppComponent(MyService myService, ...)`
 description:
 The class constructor is called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.
 
