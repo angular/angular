@@ -15,7 +15,6 @@ library angular2.src.core.angular_entrypoint;
  * void main() {
  *   bootstrap(MyComponent);
  * }
- * ```
  */
 class AngularEntrypoint {
   final String name;
