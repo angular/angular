@@ -5,16 +5,22 @@ Dependency injection configuration
 `import {provide} from 'angular2/angular2';`
 
 @cheatsheetItem
-`provide(MyService, {useClass: MyMockService})``provide`|`useClass`
+syntax:
+`provide(MyService, {useClass: MyMockService})`|`provide`|`useClass`
+description:
 Sets or overrides the provider for MyService to the MyMockService class.
 
 
 @cheatsheetItem
-`provide(MyService, {useFactory: myFactory})``provide`|`useFactory`
+syntax:
+`provide(MyService, {useFactory: myFactory})`|`provide`|`useFactory`
+description:
 Sets or overrides the provider for MyService to the myFactory factory function.
 
 
 @cheatsheetItem
-`provide(MyValue, {useValue: 41})``provide`|`useValue`
+syntax:
+`provide(MyValue, {useValue: 41})`|`provide`|`useValue`
+description:
 Sets or overrides the provider for MyValue to the value 41.
 
