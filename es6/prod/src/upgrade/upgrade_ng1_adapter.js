@@ -1,4 +1,4 @@
-import { Directive, ElementRef, EventEmitter, Inject } from 'angular2/core';
+import { Directive, ElementRef, EventEmitter, Inject } from 'angular2/angular2';
 import { NG1_COMPILE, NG1_SCOPE, NG1_HTTP_BACKEND, NG1_TEMPLATE_CACHE, NG1_CONTROLLER } from './constants';
 import { controllerKey } from './util';
 import * as angular from './angular_js';

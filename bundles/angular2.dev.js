@@ -17638,14 +17638,14 @@ System.register("angular2/src/compiler/anchor_based_app_root_url", ["angular2/sr
   return module.exports;
 });
 
-System.register("angular2/src/upgrade/metadata", ["angular2/core"], true, function(require, exports, module) {
+System.register("angular2/src/upgrade/metadata", ["angular2/angular2"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  var core_1 = require("angular2/core");
+  var angular2_1 = require("angular2/angular2");
   var COMPONENT_SELECTOR = /^[\w|-]*$/;
   var SKEWER_CASE = /-(\w)/g;
-  var directiveResolver = new core_1.DirectiveResolver();
+  var directiveResolver = new angular2_1.DirectiveResolver();
   function getComponentInfo(type) {
     var resolvedMetadata = directiveResolver.resolve(type);
     var selector = resolvedMetadata.selector;
@@ -17735,11 +17735,11 @@ System.register("angular2/src/upgrade/constants", [], true, function(require, ex
   return module.exports;
 });
 
-System.register("angular2/src/upgrade/downgrade_ng2_adapter", ["angular2/core", "angular2/src/upgrade/constants"], true, function(require, exports, module) {
+System.register("angular2/src/upgrade/downgrade_ng2_adapter", ["angular2/angular2", "angular2/src/upgrade/constants"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  var core_1 = require("angular2/core");
+  var angular2_1 = require("angular2/angular2");
   var constants_1 = require("angular2/src/upgrade/constants");
   var INITIAL_VALUE = {__UNINITIALIZED__: true};
   var DowngradeNg2ComponentAdapter = (function() {
@@ -17764,7 +17764,7 @@ System.register("angular2/src/upgrade/downgrade_ng2_adapter", ["angular2/core", 
       this.childNodes = element.contents();
     }
     DowngradeNg2ComponentAdapter.prototype.bootstrapNg2 = function() {
-      var childInjector = this.parentInjector.resolveAndCreateChild([core_1.provide(constants_1.NG1_SCOPE, {useValue: this.componentScope})]);
+      var childInjector = this.parentInjector.resolveAndCreateChild([angular2_1.provide(constants_1.NG1_SCOPE, {useValue: this.componentScope})]);
       this.hostViewRef = this.viewManager.createRootHostView(this.protoView, '#' + this.id, childInjector);
       var renderer = this.hostViewRef.render;
       var hostElement = this.viewManager.getHostElement(this.hostViewRef);
@@ -21257,11 +21257,11 @@ System.register("angular2/src/compiler/html_lexer", ["angular2/src/facade/lang",
   return module.exports;
 });
 
-System.register("angular2/src/upgrade/upgrade_ng1_adapter", ["angular2/core", "angular2/src/upgrade/constants", "angular2/src/upgrade/util", "angular2/src/upgrade/angular_js"], true, function(require, exports, module) {
+System.register("angular2/src/upgrade/upgrade_ng1_adapter", ["angular2/angular2", "angular2/src/upgrade/constants", "angular2/src/upgrade/util", "angular2/src/upgrade/angular_js"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  var core_1 = require("angular2/core");
+  var angular2_1 = require("angular2/angular2");
   var constants_1 = require("angular2/src/upgrade/constants");
   var util_1 = require("angular2/src/upgrade/util");
   var angular = require("angular2/src/upgrade/angular_js");
@@ -21285,12 +21285,12 @@ System.register("angular2/src/upgrade/upgrade_ng1_adapter", ["angular2/core", "a
         return '-' + next.toLowerCase();
       });
       var self = this;
-      this.type = core_1.Directive({
+      this.type = angular2_1.Directive({
         selector: selector,
         inputs: this.inputsRename,
         outputs: this.outputsRename
       }).Class({
-        constructor: [new core_1.Inject(constants_1.NG1_SCOPE), core_1.ElementRef, function(scope, elementRef) {
+        constructor: [new angular2_1.Inject(constants_1.NG1_SCOPE), angular2_1.ElementRef, function(scope, elementRef) {
           return new UpgradeNg1ComponentAdapter(self.linkFn, scope, self.directive, elementRef, self.$controller, self.inputs, self.outputs, self.propertyOutputs, self.checkProperties, self.propertyMap);
         }],
         ngOnChanges: function() {},
@@ -21458,7 +21458,7 @@ System.register("angular2/src/upgrade/upgrade_ng1_adapter", ["angular2/core", "a
         this[inputs[i]] = null;
       }
       for (var j = 0; j < outputs.length; j++) {
-        var emitter = this[outputs[j]] = new core_1.EventEmitter();
+        var emitter = this[outputs[j]] = new angular2_1.EventEmitter();
         this.setComponentProperty(outputs[j], (function(emitter) {
           return function(value) {
             return emitter.emit(value);
@@ -21466,7 +21466,7 @@ System.register("angular2/src/upgrade/upgrade_ng1_adapter", ["angular2/core", "a
         })(emitter));
       }
       for (var k = 0; k < propOuts.length; k++) {
-        this[propOuts[k]] = new core_1.EventEmitter();
+        this[propOuts[k]] = new angular2_1.EventEmitter();
         this.checkLastValues.push(INITIAL_VALUE);
       }
     }
@@ -23398,11 +23398,11 @@ System.register("angular2/src/compiler/html_parser", ["angular2/src/facade/lang"
   return module.exports;
 });
 
-System.register("angular2/src/upgrade/upgrade_adapter", ["angular2/core", "angular2/src/facade/async", "angular2/platform/browser", "angular2/src/upgrade/metadata", "angular2/src/upgrade/util", "angular2/src/upgrade/constants", "angular2/src/upgrade/downgrade_ng2_adapter", "angular2/src/upgrade/upgrade_ng1_adapter", "angular2/src/upgrade/angular_js"], true, function(require, exports, module) {
+System.register("angular2/src/upgrade/upgrade_adapter", ["angular2/angular2", "angular2/src/facade/async", "angular2/platform/browser", "angular2/src/upgrade/metadata", "angular2/src/upgrade/util", "angular2/src/upgrade/constants", "angular2/src/upgrade/downgrade_ng2_adapter", "angular2/src/upgrade/upgrade_ng1_adapter", "angular2/src/upgrade/angular_js"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  var core_1 = require("angular2/core");
+  var angular2_1 = require("angular2/angular2");
   var async_1 = require("angular2/src/facade/async");
   var browser_1 = require("angular2/platform/browser");
   var metadata_1 = require("angular2/src/upgrade/metadata");
@@ -23435,15 +23435,15 @@ System.register("angular2/src/upgrade/upgrade_adapter", ["angular2/core", "angul
       var _this = this;
       var upgrade = new UpgradeAdapterRef();
       var ng1Injector = null;
-      var platformRef = core_1.platform(browser_1.BROWSER_PROVIDERS);
-      var applicationRef = platformRef.application([browser_1.BROWSER_APP_PROVIDERS, core_1.provide(constants_1.NG1_INJECTOR, {useFactory: function() {
+      var platformRef = angular2_1.platform(browser_1.BROWSER_PROVIDERS);
+      var applicationRef = platformRef.application([browser_1.BROWSER_APP_PROVIDERS, angular2_1.provide(constants_1.NG1_INJECTOR, {useFactory: function() {
           return ng1Injector;
-        }}), core_1.provide(constants_1.NG1_COMPILE, {useFactory: function() {
+        }}), angular2_1.provide(constants_1.NG1_COMPILE, {useFactory: function() {
           return ng1Injector.get(constants_1.NG1_COMPILE);
         }}), this.providers]);
       var injector = applicationRef.injector;
-      var ngZone = injector.get(core_1.NgZone);
-      var compiler = injector.get(core_1.Compiler);
+      var ngZone = injector.get(angular2_1.NgZone);
+      var compiler = injector.get(angular2_1.Compiler);
       var delayApplyExps = [];
       var original$applyFn;
       var rootScopePrototype;
@@ -23451,7 +23451,7 @@ System.register("angular2/src/upgrade/upgrade_adapter", ["angular2/core", "angul
       var protoViewRefMap = {};
       var ng1Module = angular.module(this.idPrefix, modules);
       var ng1compilePromise = null;
-      ng1Module.value(constants_1.NG2_INJECTOR, injector).value(constants_1.NG2_ZONE, ngZone).value(constants_1.NG2_COMPILER, compiler).value(constants_1.NG2_PROTO_VIEW_REF_MAP, protoViewRefMap).value(constants_1.NG2_APP_VIEW_MANAGER, injector.get(core_1.AppViewManager)).config(['$provide', function(provide) {
+      ng1Module.value(constants_1.NG2_INJECTOR, injector).value(constants_1.NG2_ZONE, ngZone).value(constants_1.NG2_COMPILER, compiler).value(constants_1.NG2_PROTO_VIEW_REF_MAP, protoViewRefMap).value(constants_1.NG2_APP_VIEW_MANAGER, injector.get(angular2_1.AppViewManager)).config(['$provide', function(provide) {
         provide.decorator(constants_1.NG1_ROOT_SCOPE, ['$delegate', function(rootScopeDelegate) {
           rootScopePrototype = rootScopeDelegate.constructor.prototype;
           if (rootScopePrototype.hasOwnProperty('$apply')) {
@@ -23496,7 +23496,7 @@ System.register("angular2/src/upgrade/upgrade_adapter", ["angular2/core", "angul
     };
     UpgradeAdapter.prototype.upgradeNg1Provider = function(name, options) {
       var token = options && options.asToken || name;
-      this.providers.push(core_1.provide(token, {
+      this.providers.push(angular2_1.provide(token, {
         useFactory: function(ng1Injector) {
           return ng1Injector.get(name);
         },

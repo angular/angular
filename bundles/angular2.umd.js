@@ -36590,15 +36590,15 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 268 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var core_1 = __webpack_require__(2);
+	var angular2_1 = __webpack_require__(269);
 	var async_1 = __webpack_require__(60);
 	var browser_1 = __webpack_require__(161);
-	var metadata_1 = __webpack_require__(269);
-	var util_1 = __webpack_require__(270);
-	var constants_1 = __webpack_require__(271);
-	var downgrade_ng2_adapter_1 = __webpack_require__(272);
-	var upgrade_ng1_adapter_1 = __webpack_require__(273);
-	var angular = __webpack_require__(274);
+	var metadata_1 = __webpack_require__(270);
+	var util_1 = __webpack_require__(271);
+	var constants_1 = __webpack_require__(272);
+	var downgrade_ng2_adapter_1 = __webpack_require__(273);
+	var upgrade_ng1_adapter_1 = __webpack_require__(274);
+	var angular = __webpack_require__(275);
 	var upgradeCount = 0;
 	/**
 	 * Use `UpgradeAdapter` to allow AngularJS v1 and Angular v2 to coexist in a single application.
@@ -36857,16 +36857,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var _this = this;
 	        var upgrade = new UpgradeAdapterRef();
 	        var ng1Injector = null;
-	        var platformRef = core_1.platform(browser_1.BROWSER_PROVIDERS);
+	        var platformRef = angular2_1.platform(browser_1.BROWSER_PROVIDERS);
 	        var applicationRef = platformRef.application([
 	            browser_1.BROWSER_APP_PROVIDERS,
-	            core_1.provide(constants_1.NG1_INJECTOR, { useFactory: function () { return ng1Injector; } }),
-	            core_1.provide(constants_1.NG1_COMPILE, { useFactory: function () { return ng1Injector.get(constants_1.NG1_COMPILE); } }),
+	            angular2_1.provide(constants_1.NG1_INJECTOR, { useFactory: function () { return ng1Injector; } }),
+	            angular2_1.provide(constants_1.NG1_COMPILE, { useFactory: function () { return ng1Injector.get(constants_1.NG1_COMPILE); } }),
 	            this.providers
 	        ]);
 	        var injector = applicationRef.injector;
-	        var ngZone = injector.get(core_1.NgZone);
-	        var compiler = injector.get(core_1.Compiler);
+	        var ngZone = injector.get(angular2_1.NgZone);
+	        var compiler = injector.get(angular2_1.Compiler);
 	        var delayApplyExps = [];
 	        var original$applyFn;
 	        var rootScopePrototype;
@@ -36878,7 +36878,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            .value(constants_1.NG2_ZONE, ngZone)
 	            .value(constants_1.NG2_COMPILER, compiler)
 	            .value(constants_1.NG2_PROTO_VIEW_REF_MAP, protoViewRefMap)
-	            .value(constants_1.NG2_APP_VIEW_MANAGER, injector.get(core_1.AppViewManager))
+	            .value(constants_1.NG2_APP_VIEW_MANAGER, injector.get(angular2_1.AppViewManager))
 	            .config([
 	            '$provide',
 	            function (provide) {
@@ -36996,7 +36996,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    UpgradeAdapter.prototype.upgradeNg1Provider = function (name, options) {
 	        var token = options && options.asToken || name;
-	        this.providers.push(core_1.provide(token, {
+	        this.providers.push(angular2_1.provide(token, {
 	            useFactory: function (ng1Injector) { return ng1Injector.get(name); },
 	            deps: [constants_1.NG1_INJECTOR]
 	        }));
@@ -37116,10 +37116,29 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var core_1 = __webpack_require__(2);
+	function __export(m) {
+	    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+	}
+	__export(__webpack_require__(118));
+	__export(__webpack_require__(2));
+	__export(__webpack_require__(266));
+	__export(__webpack_require__(161));
+	__export(__webpack_require__(164));
+	__export(__webpack_require__(166));
+	__export(__webpack_require__(267));
+	var compiler_1 = __webpack_require__(195);
+	exports.UrlResolver = compiler_1.UrlResolver;
+	exports.AppRootUrl = compiler_1.AppRootUrl;
+
+
+/***/ },
+/* 270 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var angular2_1 = __webpack_require__(269);
 	var COMPONENT_SELECTOR = /^[\w|-]*$/;
 	var SKEWER_CASE = /-(\w)/g;
-	var directiveResolver = new core_1.DirectiveResolver();
+	var directiveResolver = new angular2_1.DirectiveResolver();
 	function getComponentInfo(type) {
 	    var resolvedMetadata = directiveResolver.resolve(type);
 	    var selector = resolvedMetadata.selector;
@@ -37161,7 +37180,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 270 */
+/* 271 */
 /***/ function(module, exports) {
 
 	function stringify(obj) {
@@ -37183,7 +37202,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 271 */
+/* 272 */
 /***/ function(module, exports) {
 
 	exports.NG2_APP_VIEW_MANAGER = 'ng2.AppViewManager';
@@ -37203,11 +37222,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 272 */
+/* 273 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var core_1 = __webpack_require__(2);
-	var constants_1 = __webpack_require__(271);
+	var angular2_1 = __webpack_require__(269);
+	var constants_1 = __webpack_require__(272);
 	var INITIAL_VALUE = {
 	    __UNINITIALIZED__: true
 	};
@@ -37233,7 +37252,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.childNodes = element.contents();
 	    }
 	    DowngradeNg2ComponentAdapter.prototype.bootstrapNg2 = function () {
-	        var childInjector = this.parentInjector.resolveAndCreateChild([core_1.provide(constants_1.NG1_SCOPE, { useValue: this.componentScope })]);
+	        var childInjector = this.parentInjector.resolveAndCreateChild([angular2_1.provide(constants_1.NG1_SCOPE, { useValue: this.componentScope })]);
 	        this.hostViewRef =
 	            this.viewManager.createRootHostView(this.protoView, '#' + this.id, childInjector);
 	        var renderer = this.hostViewRef.render;
@@ -37371,13 +37390,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 273 */
+/* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var core_1 = __webpack_require__(2);
-	var constants_1 = __webpack_require__(271);
-	var util_1 = __webpack_require__(270);
-	var angular = __webpack_require__(274);
+	var angular2_1 = __webpack_require__(269);
+	var constants_1 = __webpack_require__(272);
+	var util_1 = __webpack_require__(271);
+	var angular = __webpack_require__(275);
 	var CAMEL_CASE = /([A-Z])/g;
 	var INITIAL_VALUE = {
 	    __UNINITIALIZED__: true
@@ -37399,11 +37418,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var selector = name.replace(CAMEL_CASE, function (all, next) { return '-' + next.toLowerCase(); });
 	        var self = this;
 	        this.type =
-	            core_1.Directive({ selector: selector, inputs: this.inputsRename, outputs: this.outputsRename })
+	            angular2_1.Directive({ selector: selector, inputs: this.inputsRename, outputs: this.outputsRename })
 	                .Class({
 	                constructor: [
-	                    new core_1.Inject(constants_1.NG1_SCOPE),
-	                    core_1.ElementRef,
+	                    new angular2_1.Inject(constants_1.NG1_SCOPE),
+	                    angular2_1.ElementRef,
 	                    function (scope, elementRef) {
 	                        return new UpgradeNg1ComponentAdapter(self.linkFn, scope, self.directive, elementRef, self.$controller, self.inputs, self.outputs, self.propertyOutputs, self.checkProperties, self.propertyMap);
 	                    }
@@ -37572,11 +37591,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this[inputs[i]] = null;
 	        }
 	        for (var j = 0; j < outputs.length; j++) {
-	            var emitter = this[outputs[j]] = new core_1.EventEmitter();
+	            var emitter = this[outputs[j]] = new angular2_1.EventEmitter();
 	            this.setComponentProperty(outputs[j], (function (emitter) { return function (value) { return emitter.emit(value); }; })(emitter));
 	        }
 	        for (var k = 0; k < propOuts.length; k++) {
-	            this[propOuts[k]] = new core_1.EventEmitter();
+	            this[propOuts[k]] = new angular2_1.EventEmitter();
 	            this.checkLastValues.push(INITIAL_VALUE);
 	        }
 	    }
@@ -37655,7 +37674,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 274 */
+/* 275 */
 /***/ function(module, exports) {
 
 	function noNg() {

@@ -1,4 +1,4 @@
-import { provide } from 'angular2/core';
+import { provide } from 'angular2/angular2';
 import { NG1_SCOPE } from './constants';
 const INITIAL_VALUE = {
     __UNINITIALIZED__: true

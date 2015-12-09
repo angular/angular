@@ -1,4 +1,4 @@
-import { ApplicationRef, Injector, Provider, Type } from 'angular2/core';
+import { ApplicationRef, Injector, Provider, Type } from 'angular2/angular2';
 import * as angular from './angular_js';
 /**
  * Use `UpgradeAdapter` to allow AngularJS v1 and Angular v2 to coexist in a single application.

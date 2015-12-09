@@ -1,4 +1,4 @@
-import { DirectiveResolver } from 'angular2/core';
+import { DirectiveResolver } from 'angular2/angular2';
 var COMPONENT_SELECTOR = /^[\w|-]*$/;
 var SKEWER_CASE = /-(\w)/g;
 var directiveResolver = new DirectiveResolver();

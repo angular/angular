@@ -1,17 +1,20 @@
 import {
+  bind,
   provide,
   platform,
   ApplicationRef,
   AppViewManager,
   Compiler,
+  Inject,
   Injector,
   NgZone,
   PlatformRef,
   ProtoViewRef,
   Provider,
-  Type,
-  APPLICATION_COMMON_PROVIDERS
-} from 'angular2/core';
+  Type
+} from 'angular2/angular2';
+import {APPLICATION_COMMON_PROVIDERS} from 'angular2/core';
+import {COMPILER_PROVIDERS} from 'angular2/src/compiler/compiler';
 import {ObservableWrapper} from 'angular2/src/facade/async';
 import {BROWSER_PROVIDERS, BROWSER_APP_PROVIDERS} from 'angular2/platform/browser';
 
