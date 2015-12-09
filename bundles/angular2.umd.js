@@ -23311,6 +23311,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * void main() {
 	 *   bootstrap(MyComponent);
 	 * }
+	 * ```
 	 */
 	var AngularEntrypoint = (function () {
 	    function AngularEntrypoint(name) {

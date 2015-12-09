@@ -13,6 +13,7 @@
  * void main() {
  *   bootstrap(MyComponent);
  * }
+ * ```
  */
 export declare class AngularEntrypoint {
     name: String;

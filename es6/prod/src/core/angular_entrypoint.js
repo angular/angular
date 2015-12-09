@@ -25,6 +25,7 @@ import { CONST } from 'angular2/src/facade/lang';
  * void main() {
  *   bootstrap(MyComponent);
  * }
+ * ```
  */
 export let AngularEntrypoint = class {
     constructor(name) {
