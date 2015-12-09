@@ -175,9 +175,9 @@ Must be one of the following:
   semi-colons, etc)
 * **refactor**: A code change that neither fixes a bug nor adds a feature
 * **perf**: A code change that improves performance
-* **test**: Adding missing tests
-* **chore**: Changes to the build process or auxiliary tools and libraries such as documentation
-  generation
+* **test**: Adding missing tests or correcting existing tests
+* **build** Changes that affect the build system, CI configuration or external dependencies (example scopes: gulp, broccoli, npm)
+* **chore**: Other changes that don't modify `src` or `test` files
 
 ### Scope
 The scope could be anything specifying place of the commit change. For example
