@@ -2,7 +2,8 @@
 Dependency injection configuration
 @cheatsheetIndex 9
 @description
-`import {provide} from 'angular2/angular2';`
+{@target js ts}`import {provide} from 'angular2/angular2';`{@endtarget}
+{@target dart}`import 'package:angular2/angular2.dart';`{@endtarget}
 
 @cheatsheetItem
 syntax:

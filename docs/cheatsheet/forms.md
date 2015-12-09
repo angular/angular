@@ -2,7 +2,8 @@
 Forms
 @cheatsheetIndex 3
 @description
-`import {FORM_DIRECTIVES} from 'angular2/angular2';`
+{@target js ts}`import {FORM_DIRECTIVES} from 'angular2/angular2';`{@endtarget}
+{@target dart}`import 'package:angular2/angular2.dart';`{@endtarget}
 
 @cheatsheetItem
 syntax:
