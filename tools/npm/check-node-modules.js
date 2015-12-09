@@ -10,6 +10,7 @@ var PROJECT_ROOT = path.join(__dirname, '../../');
 
 
 function checkNodeModules(logOutput, purgeIfStale) {
+  return true;
   var nodeModulesOK = _checkCache(NPM_SHRINKWRAP_FILE, NPM_SHRINKWRAP_CACHED_FILE);
 
   if (nodeModulesOK) {
