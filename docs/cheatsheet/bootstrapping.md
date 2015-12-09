@@ -2,8 +2,11 @@
 Bootstrapping
 @cheatsheetIndex 0
 @description
-`import {bootstrap} from 'angular2/angular2';`
+{@target js ts}`import {bootstrap} from 'angular2/angular2';`{@endtarget}
+{@target dart}`import 'package:angular2/bootstrap.dart';`{@endtarget}
 
 @cheatsheetItem
-`bootstrap​(MyAppComponent, [MyService, provide(...)]);`
+syntax:
+`bootstrap​(MyAppComponent, [MyService, provide(...)]);`|`provide`
+description:
 Bootstraps an application with MyAppComponent as the root component and configures the DI providers.
