@@ -15,7 +15,6 @@ import {CONST} from 'angular2/src/facade/lang';
  * void main() {
  *   bootstrap(MyComponent);
  * }
- * ```
  */
 @CONST()
 export class AngularEntrypoint {
