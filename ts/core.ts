@@ -13,6 +13,7 @@ export {
   APP_ID,
   APP_COMPONENT,
   APP_INITIALIZER,
+  PACKAGE_ROOT_URL,
   PLATFORM_INITIALIZER
 } from './src/core/application_tokens';
 export * from './src/core/zone';
