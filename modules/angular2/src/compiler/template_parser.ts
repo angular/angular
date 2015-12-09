@@ -7,7 +7,7 @@ import {Parser, AST, ASTWithSource} from 'angular2/src/core/change_detection/cha
 import {TemplateBinding} from 'angular2/src/core/change_detection/parser/ast';
 import {CompileDirectiveMetadata} from './directive_metadata';
 import {HtmlParser} from './html_parser';
-import {splitHtmlTagNamespace} from './html_tags';
+import {splitNsName} from './html_tags';
 import {ParseSourceSpan, ParseError, ParseLocation} from './parse_util';
 
 
@@ -216,7 +216,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
       }
     });
 
-    var lcElName = splitHtmlTagNamespace(nodeName.toLowerCase())[1];
+    var lcElName = splitNsName(nodeName.toLowerCase())[1];
     var isTemplateElement = lcElName == TEMPLATE_ELEMENT;
     var elementCssSelector = createElementCssSelector(nodeName, matchableAttrs);
     var directives = this._createDirectiveAsts(
@@ -687,13 +687,17 @@ class Component {
 
 function createElementCssSelector(elementName: string, matchableAttrs: string[][]): CssSelector {
   var cssSelector = new CssSelector();
+  let elNameNoNs = splitNsName(elementName)[1];
 
-  cssSelector.setElement(elementName);
+  cssSelector.setElement(elNameNoNs);
+
   for (var i = 0; i < matchableAttrs.length; i++) {
-    var attrName = matchableAttrs[i][0];
-    var attrValue = matchableAttrs[i][1];
-    cssSelector.addAttribute(attrName, attrValue);
-    if (attrName == CLASS_ATTR) {
+    let attrName = matchableAttrs[i][0];
+    let attrNameNoNs = splitNsName(attrName)[1];
+    let attrValue = matchableAttrs[i][1];
+
+    cssSelector.addAttribute(attrNameNoNs, attrValue);
+    if (attrName.toLowerCase() == CLASS_ATTR) {
       var classes = splitClasses(attrValue);
       classes.forEach(className => cssSelector.addClassName(className));
     }
