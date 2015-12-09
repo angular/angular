@@ -1,5 +1,4 @@
 import {
-  bind,
   provide,
   AppViewManager,
   ChangeDetectorRef,
@@ -8,7 +7,7 @@ import {
   OnChanges,
   ProtoViewRef,
   SimpleChange
-} from 'angular2/angular2';
+} from 'angular2/core';
 import {NG1_SCOPE} from './constants';
 import {ComponentInfo} from './metadata';
 import Element = protractor.Element;
