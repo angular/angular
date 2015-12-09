@@ -106,6 +106,15 @@ export function main() {
         expect(humanizeTplAst(parsed)).toEqual([[NgContentAst]]);
       });
 
+      it('should parse ngContent regardless the namespace', () => {
+        var parsed = parse('<svg><ng-content></ng-content></svg>', []);
+        expect(humanizeTplAst(parsed))
+            .toEqual([
+              [ElementAst, '@svg:svg'],
+              [NgContentAst],
+            ]);
+      });
+
       it('should parse bound text nodes', () => {
         expect(humanizeTplAst(parse('{{a}}', []))).toEqual([[BoundTextAst, '{{ a }}']]);
       });

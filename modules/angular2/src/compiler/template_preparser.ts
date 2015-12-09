@@ -1,5 +1,6 @@
 import {HtmlElementAst} from './html_ast';
 import {isBlank, isPresent} from 'angular2/src/facade/lang';
+import {splitHtmlTagNamespace} from './html_tags';
 
 const NG_CONTENT_SELECT_ATTR = 'select';
 const NG_CONTENT_ELEMENT = 'ng-content';
@@ -31,7 +32,7 @@ export function preparseElement(ast: HtmlElementAst): PreparsedElement {
   selectAttr = normalizeNgContentSelect(selectAttr);
   var nodeName = ast.name.toLowerCase();
   var type = PreparsedElementType.OTHER;
-  if (nodeName == NG_CONTENT_ELEMENT) {
+  if (splitHtmlTagNamespace(nodeName)[1] == NG_CONTENT_ELEMENT) {
     type = PreparsedElementType.NG_CONTENT;
   } else if (nodeName == STYLE_ELEMENT) {
     type = PreparsedElementType.STYLE;
