@@ -1,4 +1,4 @@
-import { Type } from 'angular2/angular2';
+import { Type } from 'angular2/core';
 import * as angular from './angular_js';
 export declare class UpgradeNg1ComponentAdapterBuilder {
     name: string;
