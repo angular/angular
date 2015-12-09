@@ -37,3 +37,4 @@ publishModule angular2
 publishModule benchpress
 publishModule benchmarks
 publishModule angular2_material
+publishModule angular2_testing
