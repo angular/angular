@@ -73,7 +73,7 @@
     "gulp-shell": "^0.5.1",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-tslint": "^3.5.0",
-    "gulp-typescript": "^2.9.0",
+    "gulp-typescript": "^2.10.0",
     "gulp-uglify": "^1.2.0",
     "hash-files": "^1.0.0",
     "jasmine": "2.3.1",
