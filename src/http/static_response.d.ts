@@ -76,7 +76,7 @@ export declare class Response {
     /**
      * Attempts to return body as parsed `JSON` object, or raises an exception.
      */
-    json(): any;
+    json(): Object;
     /**
      * Returns the body as a string, presuming `toString()` can be called on the response body.
      */
