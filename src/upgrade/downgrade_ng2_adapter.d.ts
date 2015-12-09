@@ -1,4 +1,4 @@
-import { AppViewManager, ChangeDetectorRef, HostViewRef, Injector, ProtoViewRef, SimpleChange } from 'angular2/angular2';
+import { AppViewManager, ChangeDetectorRef, HostViewRef, Injector, ProtoViewRef, SimpleChange } from 'angular2/core';
 import { ComponentInfo } from './metadata';
 import * as angular from './angular_js';
 export declare class DowngradeNg2ComponentAdapter {

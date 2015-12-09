@@ -1,4 +1,4 @@
-import { Type } from 'angular2/angular2';
+import { Type } from 'angular2/core';
 export interface AttrProp {
     prop: string;
     attr: string;
