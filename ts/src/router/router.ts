@@ -68,7 +68,7 @@ export class Router {
   auxRouter(hostComponent: any): Router { return new ChildRouter(this, hostComponent); }
 
   /**
-   * Register an outlet to notified of primary route changes.
+   * Register an outlet to be notified of primary route changes.
    *
    * You probably don't need to use this unless you're writing a reusable component.
    */
