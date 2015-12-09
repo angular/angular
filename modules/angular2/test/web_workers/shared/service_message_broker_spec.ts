@@ -5,7 +5,6 @@ import {
   it,
   expect,
   beforeEach,
-  createTestInjectorWithRuntimeCompiler,
   beforeEachProviders,
   SpyObject,
   proxy

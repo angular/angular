@@ -1,11 +1,8 @@
 library angular2_testing.angular2_testing;
 
 import 'package:test/test.dart';
-import 'package:test/src/backend/invoker.dart';
-import 'package:test/src/backend/live_test.dart';
 
 import 'package:angular2/angular2.dart';
-import 'package:angular2/src/core/di/injector.dart' show Injector;
 import 'package:angular2/src/core/di/metadata.dart' show InjectMetadata;
 import 'package:angular2/src/core/di/exceptions.dart' show NoAnnotationError;
 import 'package:angular2/platform/browser_static.dart' show BrowserDomAdapter;
@@ -31,6 +28,13 @@ void initAngularTests() {
   reflector.reflectionCapabilities = new ReflectionCapabilities();
 }
 
+void _addTestInjectorTearDown() {
+  // Multiple resets are harmless.
+  tearDown(() {
+    _testInjector.reset();
+  });
+}
+
 /// Allows overriding default bindings defined in test_injector.dart.
 ///
 /// The given function must return a list of DI providers.
@@ -45,13 +49,17 @@ void initAngularTests() {
 /// ```
 void setUpProviders(Iterable<Provider> providerFactory()) {
   setUp(() {
-    if (_currentInjector != null) {
+    try {
+      _testInjector.addProviders(providerFactory());
+    } catch(e) {
       throw 'setUpProviders was called after the injector had '
           'been used in a setUp or test block. This invalidates the '
           'test injector';
     }
-    _currentTestProviders.addAll(providerFactory());
+
   });
+
+  _addTestInjectorTearDown();
 }
 
 dynamic _runInjectableFunction(Function fn) {
@@ -72,11 +80,8 @@ dynamic _runInjectableFunction(Function fn) {
     tokens.add(token);
   }
 
-  if (_currentInjector == null) {
-    _currentInjector = createTestInjectorWithRuntimeCompiler(_currentTestProviders);
-  }
   var injectFn = new FunctionWithParamTokens(tokens, fn, false);
-  return injectFn.execute(_currentInjector);
+  return _testInjector.execute(injectFn);
 }
 
 /// Use the test injector to get bindings and run a function.
@@ -92,6 +97,8 @@ void ngSetUp(Function fn) {
   setUp(() async {
     await _runInjectableFunction(fn);
   });
+
+  _addTestInjectorTearDown();
 }
 
 /// Add a test which can use the test injector.
@@ -108,25 +115,8 @@ void ngTest(String description, Function fn,
   test(description, () async {
     await _runInjectableFunction(fn);
   }, testOn: testOn, timeout: timeout, skip: skip, onPlatform: onPlatform);
+
+  _addTestInjectorTearDown();
 }
 
-final _providersExpando =
-    new Expando<List<Provider>>('Providers for the current test');
-final _injectorExpando =
-    new Expando<Injector>('Angular Injector for the current test');
-
-List get _currentTestProviders {
-  if (_providersExpando[_currentTest] == null) {
-    return _providersExpando[_currentTest] = [];
-  }
-  return _providersExpando[_currentTest];
-}
-
-Injector get _currentInjector => _injectorExpando[_currentTest];
-void set _currentInjector(Injector newInjector) {
-  _injectorExpando[_currentTest] = newInjector;
-}
-
-// TODO: warning, the Invoker.current.liveTest is not a settled API and is
-// subject to change in future versions of package:test.
-LiveTest get _currentTest => Invoker.current.liveTest;
+final TestInjector _testInjector = getTestInjector();
