@@ -133,7 +133,7 @@ export class AbstractChangeDetector {
     // Subclasses should override this method to dehydrate any directives. This method should reverse
     // any work done in `hydrateDirectives`.
     dehydrateDirectives(destroyPipes) { }
-    hydrated() { return this.context !== null; }
+    hydrated() { return isPresent(this.context); }
     afterContentLifecycleCallbacks() {
         this.dispatcher.notifyAfterContentChecked();
         this.afterContentLifecycleCallbacksInternal();

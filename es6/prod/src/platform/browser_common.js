@@ -1,4 +1,4 @@
-import { CONST_EXPR } from 'angular2/src/facade/lang';
+import { CONST_EXPR, IS_DART } from 'angular2/src/facade/lang';
 import { Provider } from 'angular2/src/core/di';
 import { PLATFORM_INITIALIZER, PLATFORM_DIRECTIVES, PLATFORM_PIPES, ExceptionHandler, Renderer, APPLICATION_COMMON_PROVIDERS, PLATFORM_COMMON_PROVIDERS } from "angular2/core";
 import { COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS } from "angular2/common";
@@ -27,7 +27,9 @@ export const BROWSER_PROVIDERS = CONST_EXPR([
     new Provider(PLATFORM_INITIALIZER, { useValue: initDomAdapter, multi: true }),
 ]);
 function _exceptionHandler() {
-    return new ExceptionHandler(DOM, false);
+    // !IS_DART is required because we must rethrow exceptions in JS,
+    // but must not rethrow exceptions in Dart
+    return new ExceptionHandler(DOM, !IS_DART);
 }
 function _document() {
     return DOM.defaultDoc();

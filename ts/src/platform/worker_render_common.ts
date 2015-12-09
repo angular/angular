@@ -1,4 +1,4 @@
-import {CONST_EXPR} from 'angular2/src/facade/lang';
+import {CONST_EXPR, IS_DART} from 'angular2/src/facade/lang';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
 import {AnchorBasedAppRootUrl} from 'angular2/src/compiler/anchor_based_app_root_url';
@@ -112,7 +112,7 @@ export function initWebWorkerRenderPlatform(): void {
 }
 
 function _exceptionHandler(): ExceptionHandler {
-  return new ExceptionHandler(DOM, false);
+  return new ExceptionHandler(DOM, !IS_DART);
 }
 
 function _document(): any {

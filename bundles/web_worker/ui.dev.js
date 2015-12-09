@@ -15991,7 +15991,7 @@ System.register("angular2/src/core/change_detection/abstract_change_detector", [
     };
     AbstractChangeDetector.prototype.dehydrateDirectives = function(destroyPipes) {};
     AbstractChangeDetector.prototype.hydrated = function() {
-      return this.context !== null;
+      return lang_1.isPresent(this.context);
     };
     AbstractChangeDetector.prototype.afterContentLifecycleCallbacks = function() {
       this.dispatcher.notifyAfterContentChecked();
@@ -21243,7 +21243,12 @@ System.register("angular2/src/core/linker/view_manager", ["angular2/src/core/di"
         this._renderer.hydrateView(view.render);
       }
       this._utils.attachViewInContainer(parentView, boundElementIndex, contextView, contextBoundElementIndex, index, view);
-      this._utils.hydrateViewInContainer(parentView, boundElementIndex, contextView, contextBoundElementIndex, index, imperativelyCreatedInjector);
+      try {
+        this._utils.hydrateViewInContainer(parentView, boundElementIndex, contextView, contextBoundElementIndex, index, imperativelyCreatedInjector);
+      } catch (e) {
+        this._utils.detachViewInContainer(parentView, boundElementIndex, index);
+        throw e;
+      }
       return view.ref;
     };
     AppViewManager_.prototype._attachRenderView = function(parentView, boundElementIndex, index, view) {
@@ -27299,7 +27304,7 @@ System.register("angular2/src/platform/worker_render_common", ["angular2/src/fac
   }
   exports.initWebWorkerRenderPlatform = initWebWorkerRenderPlatform;
   function _exceptionHandler() {
-    return new core_1.ExceptionHandler(dom_adapter_1.DOM, false);
+    return new core_1.ExceptionHandler(dom_adapter_1.DOM, !lang_1.IS_DART);
   }
   function _document() {
     return dom_adapter_1.DOM.defaultDoc();
@@ -27586,7 +27591,9 @@ System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng
             completer.resolve(componentRef);
           };
           var tickResult = async_1.PromiseWrapper.then(compRefToken, tick);
-          async_1.PromiseWrapper.then(tickResult, function(_) {});
+          if (lang_1.IS_DART) {
+            async_1.PromiseWrapper.then(tickResult, function(_) {});
+          }
           async_1.PromiseWrapper.then(tickResult, null, function(err, stackTrace) {
             return completer.reject(err, stackTrace);
           });

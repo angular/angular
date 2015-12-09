@@ -11010,7 +11010,7 @@ System.register("angular2/src/core/application_common_providers", ["angular2/src
   return module.exports;
 });
 
-System.register("angular2/src/common/pipes/invalid_pipe_argument_exception", ["angular2/src/facade/exceptions"], true, function(require, exports, module) {
+System.register("angular2/src/common/pipes/invalid_pipe_argument_exception", ["angular2/src/facade/lang", "angular2/src/facade/exceptions"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -11023,11 +11023,12 @@ System.register("angular2/src/common/pipes/invalid_pipe_argument_exception", ["a
     }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
+  var lang_1 = require("angular2/src/facade/lang");
   var exceptions_1 = require("angular2/src/facade/exceptions");
   var InvalidPipeArgumentException = (function(_super) {
     __extends(InvalidPipeArgumentException, _super);
     function InvalidPipeArgumentException(type, value) {
-      _super.call(this, "Invalid argument '" + value + "' for pipe '" + type + "'");
+      _super.call(this, "Invalid argument '" + value + "' for pipe '" + lang_1.stringify(type) + "'");
     }
     return InvalidPipeArgumentException;
   })(exceptions_1.BaseException);
@@ -22048,7 +22049,7 @@ System.register("angular2/src/core/change_detection/abstract_change_detector", [
     };
     AbstractChangeDetector.prototype.dehydrateDirectives = function(destroyPipes) {};
     AbstractChangeDetector.prototype.hydrated = function() {
-      return this.context !== null;
+      return lang_1.isPresent(this.context);
     };
     AbstractChangeDetector.prototype.afterContentLifecycleCallbacks = function() {
       this.dispatcher.notifyAfterContentChecked();
@@ -22653,7 +22654,12 @@ System.register("angular2/src/core/linker/view_manager", ["angular2/src/core/di"
         this._renderer.hydrateView(view.render);
       }
       this._utils.attachViewInContainer(parentView, boundElementIndex, contextView, contextBoundElementIndex, index, view);
-      this._utils.hydrateViewInContainer(parentView, boundElementIndex, contextView, contextBoundElementIndex, index, imperativelyCreatedInjector);
+      try {
+        this._utils.hydrateViewInContainer(parentView, boundElementIndex, contextView, contextBoundElementIndex, index, imperativelyCreatedInjector);
+      } catch (e) {
+        this._utils.detachViewInContainer(parentView, boundElementIndex, index);
+        throw e;
+      }
       return view.ref;
     };
     AppViewManager_.prototype._attachRenderView = function(parentView, boundElementIndex, index, view) {
@@ -29250,7 +29256,7 @@ System.register("angular2/src/platform/browser_common", ["angular2/src/facade/la
     multi: true
   })]);
   function _exceptionHandler() {
-    return new core_1.ExceptionHandler(dom_adapter_1.DOM, false);
+    return new core_1.ExceptionHandler(dom_adapter_1.DOM, !lang_1.IS_DART);
   }
   function _document() {
     return dom_adapter_1.DOM.defaultDoc();
@@ -30269,7 +30275,9 @@ System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng
             completer.resolve(componentRef);
           };
           var tickResult = async_1.PromiseWrapper.then(compRefToken, tick);
-          async_1.PromiseWrapper.then(tickResult, function(_) {});
+          if (lang_1.IS_DART) {
+            async_1.PromiseWrapper.then(tickResult, function(_) {});
+          }
           async_1.PromiseWrapper.then(tickResult, null, function(err, stackTrace) {
             return completer.reject(err, stackTrace);
           });

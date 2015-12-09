@@ -10674,7 +10674,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    // Subclasses should override this method to dehydrate any directives. This method should reverse
 	    // any work done in `hydrateDirectives`.
 	    AbstractChangeDetector.prototype.dehydrateDirectives = function (destroyPipes) { };
-	    AbstractChangeDetector.prototype.hydrated = function () { return this.context !== null; };
+	    AbstractChangeDetector.prototype.hydrated = function () { return lang_1.isPresent(this.context); };
 	    AbstractChangeDetector.prototype.afterContentLifecycleCallbacks = function () {
 	        this.dispatcher.notifyAfterContentChecked();
 	        this.afterContentLifecycleCallbacksInternal();
@@ -13602,7 +13602,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    completer.resolve(componentRef);
 	                };
 	                var tickResult = async_1.PromiseWrapper.then(compRefToken, tick);
-	                async_1.PromiseWrapper.then(tickResult, function (_) { });
+	                // THIS MUST ONLY RUN IN DART.
+	                // This is required to report an error when no components with a matching selector found.
+	                // Otherwise the promise will never be completed.
+	                // Doing this in JS causes an extra error message to appear.
+	                if (lang_1.IS_DART) {
+	                    async_1.PromiseWrapper.then(tickResult, function (_) { });
+	                }
 	                async_1.PromiseWrapper.then(tickResult, null, function (err, stackTrace) { return completer.reject(err, stackTrace); });
 	            }
 	            catch (e) {
@@ -16896,7 +16902,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            this._renderer.hydrateView(view.render);
 	        }
 	        this._utils.attachViewInContainer(parentView, boundElementIndex, contextView, contextBoundElementIndex, index, view);
-	        this._utils.hydrateViewInContainer(parentView, boundElementIndex, contextView, contextBoundElementIndex, index, imperativelyCreatedInjector);
+	        try {
+	            this._utils.hydrateViewInContainer(parentView, boundElementIndex, contextView, contextBoundElementIndex, index, imperativelyCreatedInjector);
+	        }
+	        catch (e) {
+	            this._utils.detachViewInContainer(parentView, boundElementIndex, index);
+	            throw e;
+	        }
 	        return view.ref;
 	    };
 	    /** @internal */
@@ -18944,11 +18956,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
+	var lang_1 = __webpack_require__(5);
 	var exceptions_1 = __webpack_require__(14);
 	var InvalidPipeArgumentException = (function (_super) {
 	    __extends(InvalidPipeArgumentException, _super);
 	    function InvalidPipeArgumentException(type, value) {
-	        _super.call(this, "Invalid argument '" + value + "' for pipe '" + type + "'");
+	        _super.call(this, "Invalid argument '" + value + "' for pipe '" + lang_1.stringify(type) + "'");
 	    }
 	    return InvalidPipeArgumentException;
 	})(exceptions_1.BaseException);
@@ -23331,7 +23344,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    new di_1.Provider(core_1.PLATFORM_INITIALIZER, { useValue: initDomAdapter, multi: true }),
 	]);
 	function _exceptionHandler() {
-	    return new core_1.ExceptionHandler(dom_adapter_1.DOM, false);
+	    // !IS_DART is required because we must rethrow exceptions in JS,
+	    // but must not rethrow exceptions in Dart
+	    return new core_1.ExceptionHandler(dom_adapter_1.DOM, !lang_1.IS_DART);
 	}
 	function _document() {
 	    return dom_adapter_1.DOM.defaultDoc();
