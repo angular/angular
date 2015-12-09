@@ -294,11 +294,9 @@ export abstract class Renderer {
 
   /**
    * Sets an attribute on the Element specified via `location`.
-   *
-   * If `attributeValue` is `null`, the attribute is removed.
    */
   abstract setElementAttribute(location: RenderElementRef, attributeName: string,
-                               attributeValue: string);
+                               attributeValue: any);
 
   /**
    * Sets a (CSS) class on the Element specified via `location`.

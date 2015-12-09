@@ -57,7 +57,7 @@ export class MdButton {
     '(blur)': 'onBlur()',
     '[tabIndex]': 'tabIndex',
     '[class.md-button-focus]': 'isKeyboardFocused',
-    '[attr.aria-disabled]': 'isAriaDisabled',
+    '[attr.aria-disabled]': 'disabled?.toString()',
   },
 })
 @View({
@@ -88,10 +88,5 @@ export class MdAnchor extends MdButton implements OnChanges {
   ngOnChanges(_) {
     // A disabled anchor should not be in the tab flow.
     this.tabIndex = this.disabled ? -1 : 0;
-  }
-
-  /** Gets the aria-disabled value for the component, which must be a string for Dart. */
-  get isAriaDisabled(): string {
-    return this.disabled ? 'true' : 'false';
   }
 }

@@ -9,8 +9,8 @@ import {MdCheckbox} from "../checkbox/checkbox";
   inputs: ['checked', 'disabled'],
   host: {
     'role': 'checkbox',
-    '[attr.aria-checked]': 'checked',
-    '[attr.aria-disabled]': 'disabled_',
+    '[attr.aria-checked]': 'checked?.toString()',
+    '[attr.aria-disabled]': 'disabled_?.toString()',
     '(keydown)': 'onKeydown($event)',
   }
 })

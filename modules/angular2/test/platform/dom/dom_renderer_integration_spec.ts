@@ -10,25 +10,49 @@ import {
   it,
   xit,
   beforeEachProviders,
-  SpyObject,
+  TestComponentBuilder,
 } from 'angular2/testing_internal';
 
-// import {MapWrapper} from 'angular2/src/facade/collection';
-// import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+import {Component, ViewMetadata} from 'angular2/src/core/metadata';
 
-// import {DomTestbed, TestRootView, elRef} from './dom_testbed';
-
-// import {
-//   ViewDefinition,
-//   RenderDirectiveMetadata,
-//   RenderViewRef,
-//   ViewEncapsulation
-// } from 'angular2/src/core/render/api';
+import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
 export function main() {
   describe('DomRenderer integration', () => {
-    it('should work', () => {
-                          // TODO
-                      });
+
+    describe('attribute', () => {
+
+      it('should handle boolean attributes',
+         inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
+           tcb.overrideView(MyCmp, new ViewMetadata({template: '<p [attr.myattr]="value"></p>'}))
+               .createAsync(MyCmp)
+               .then((fixture) => {
+                 let cmp = fixture.debugElement.componentInstance;
+                 let pEl = DOM.firstChild(fixture.debugElement.nativeElement);
+
+                 cmp.value = "some string";
+                 fixture.detectChanges();
+                 expect(DOM.getAttribute(pEl, 'myattr')).toEqual('some string');
+
+                 cmp.value = true;
+                 fixture.detectChanges();
+                 expect(DOM.hasAttribute(pEl, 'myattr')).toEqual(true);
+                 expect(DOM.getAttribute(pEl, 'myattr')).toEqual('');
+
+                 cmp.value = false;
+                 fixture.detectChanges();
+                 expect(DOM.hasAttribute(pEl, 'myattr')).toEqual(false);
+
+                 async.done();
+               });
+         }));
+
+    });
+
   });
+}
+
+@Component({selector: 'my-cmp', inputs: ['value']})
+class MyCmp {
+  value: any;
 }

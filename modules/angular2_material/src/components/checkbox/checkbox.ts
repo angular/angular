@@ -9,8 +9,8 @@ import {NumberWrapper} from 'angular2/src/facade/lang';
   inputs: ['checked', 'disabled'],
   host: {
     'role': 'checkbox',
-    '[attr.aria-checked]': 'checked',
-    '[attr.aria-disabled]': 'disabled',
+    '[attr.aria-checked]': 'checked?.toString()',
+    '[attr.aria-disabled]': 'disabled?.toString()',
     '[tabindex]': 'tabindex',
     '(keydown)': 'onKeydown($event)',
   }

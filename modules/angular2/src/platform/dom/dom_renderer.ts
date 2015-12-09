@@ -135,11 +135,12 @@ export abstract class DomRenderer extends Renderer implements NodeFactory<Node> 
   }
 
   setElementAttribute(location: RenderElementRef, attributeName: string,
-                      attributeValue: string): void {
+                      attributeValue: any): void {
     var view = resolveInternalDomView(location.renderView);
     var element = view.boundElements[location.boundElementIndex];
-    if (isPresent(attributeValue)) {
-      DOM.setAttribute(element, attributeName, stringify(attributeValue));
+    if (isPresent(attributeValue) && attributeValue !== false) {
+      DOM.setAttribute(element, attributeName,
+                       attributeValue === true ? '' : stringify(attributeValue));
     } else {
       DOM.removeAttribute(element, attributeName);
     }
