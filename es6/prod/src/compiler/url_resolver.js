@@ -9,17 +9,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __param = (this && this.__param) || function (paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-};
-import { Injectable, Inject } from 'angular2/src/core/di';
-import { StringWrapper, isPresent, isBlank, RegExpWrapper } from 'angular2/src/facade/lang';
-import { PACKAGE_ROOT_URL } from 'angular2/src/core/application_tokens';
-import { Provider } from 'angular2/src/core/di';
+import { Injectable } from 'angular2/src/core/di';
+import { isPresent, isBlank, RegExpWrapper } from 'angular2/src/facade/lang';
 export function createWithoutPackagePrefix() {
     return new UrlResolver();
 }
-export var DEFAULT_PACKAGE_URL_PROVIDER = new Provider(PACKAGE_ROOT_URL, { useValue: "/" });
 /**
  * Used by the {@link Compiler} when resolving HTML and CSS template URLs.
  *
@@ -28,11 +22,6 @@ export var DEFAULT_PACKAGE_URL_PROVIDER = new Provider(PACKAGE_ROOT_URL, { useVa
  * See {@link Compiler}
  */
 export let UrlResolver = class {
-    constructor(packagePrefix = null) {
-        if (isPresent(packagePrefix)) {
-            this._packagePrefix = StringWrapper.stripRight(packagePrefix, "/") + "/";
-        }
-    }
     /**
      * Resolves the `url` given the `baseUrl`:
      * - when the `url` is null, the `baseUrl` is returned,
@@ -45,26 +34,12 @@ export let UrlResolver = class {
      * @param {string} url
      * @returns {string} the resolved URL
      */
-    resolve(baseUrl, url) {
-        var resolvedUrl = url;
-        if (isPresent(baseUrl) && baseUrl.length > 0) {
-            resolvedUrl = _resolveUrl(baseUrl, resolvedUrl);
-        }
-        if (isPresent(this._packagePrefix) && getUrlScheme(resolvedUrl) == "package") {
-            resolvedUrl = resolvedUrl.replace("package:", this._packagePrefix);
-        }
-        return resolvedUrl;
-    }
+    resolve(baseUrl, url) { return _resolveUrl(baseUrl, url); }
 };
 UrlResolver = __decorate([
-    Injectable(),
-    __param(0, Inject(PACKAGE_ROOT_URL)), 
-    __metadata('design:paramtypes', [String])
+    Injectable(), 
+    __metadata('design:paramtypes', [])
 ], UrlResolver);
-export function getUrlScheme(url) {
-    var match = _split(url);
-    return (match && match[_ComponentIndex.Scheme]) || "";
-}
 // The code below is adapted from Traceur:
 // https://github.com/google/traceur-compiler/blob/9511c1dafa972bf0de1202a8a863bad02f0f95a8/src/runtime/url.js
 /**

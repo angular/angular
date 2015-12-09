@@ -100,7 +100,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.APP_ID = application_tokens_1.APP_ID;
 	exports.APP_COMPONENT = application_tokens_1.APP_COMPONENT;
 	exports.APP_INITIALIZER = application_tokens_1.APP_INITIALIZER;
-	exports.PACKAGE_ROOT_URL = application_tokens_1.PACKAGE_ROOT_URL;
 	exports.PLATFORM_INITIALIZER = application_tokens_1.PLATFORM_INITIALIZER;
 	__export(__webpack_require__(112));
 	__export(__webpack_require__(113));
@@ -1627,30 +1626,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    StringWrapper.charCodeAt = function (s, index) { return s.charCodeAt(index); };
 	    StringWrapper.split = function (s, regExp) { return s.split(regExp); };
 	    StringWrapper.equals = function (s, s2) { return s === s2; };
-	    StringWrapper.stripLeft = function (s, charVal) {
-	        if (s && s.length) {
-	            var pos = 0;
-	            for (var i = 0; i < s.length; i++) {
-	                if (s[i] != charVal)
-	                    break;
-	                pos++;
-	            }
-	            s = s.substring(pos);
-	        }
-	        return s;
-	    };
-	    StringWrapper.stripRight = function (s, charVal) {
-	        if (s && s.length) {
-	            var pos = s.length;
-	            for (var i = s.length - 1; i >= 0; i--) {
-	                if (s[i] != charVal)
-	                    break;
-	                pos--;
-	            }
-	            s = s.substring(0, pos);
-	        }
-	        return s;
-	    };
 	    StringWrapper.replace = function (s, from, replace) {
 	        return s.replace(from, replace);
 	    };
@@ -14289,10 +14264,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * A function that will be executed when an application is initialized.
 	 */
 	exports.APP_INITIALIZER = lang_1.CONST_EXPR(new di_1.OpaqueToken("Application Initializer"));
-	/**
-	 * A token which indicates the root directory of the application
-	 */
-	exports.PACKAGE_ROOT_URL = lang_1.CONST_EXPR(new di_1.OpaqueToken("Application Packages Root URL"));
 
 
 /***/ },
@@ -26033,18 +26004,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var __param = (this && this.__param) || function (paramIndex, decorator) {
-	    return function (target, key) { decorator(target, key, paramIndex); }
-	};
 	var di_1 = __webpack_require__(6);
 	var lang_1 = __webpack_require__(5);
-	var application_tokens_1 = __webpack_require__(82);
-	var di_2 = __webpack_require__(6);
 	function createWithoutPackagePrefix() {
 	    return new UrlResolver();
 	}
 	exports.createWithoutPackagePrefix = createWithoutPackagePrefix;
-	exports.DEFAULT_PACKAGE_URL_PROVIDER = new di_2.Provider(application_tokens_1.PACKAGE_ROOT_URL, { useValue: "/" });
 	/**
 	 * Used by the {@link Compiler} when resolving HTML and CSS template URLs.
 	 *
@@ -26053,11 +26018,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * See {@link Compiler}
 	 */
 	var UrlResolver = (function () {
-	    function UrlResolver(packagePrefix) {
-	        if (packagePrefix === void 0) { packagePrefix = null; }
-	        if (lang_1.isPresent(packagePrefix)) {
-	            this._packagePrefix = lang_1.StringWrapper.stripRight(packagePrefix, "/") + "/";
-	        }
+	    function UrlResolver() {
 	    }
 	    /**
 	     * Resolves the `url` given the `baseUrl`:
@@ -26071,29 +26032,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * @param {string} url
 	     * @returns {string} the resolved URL
 	     */
-	    UrlResolver.prototype.resolve = function (baseUrl, url) {
-	        var resolvedUrl = url;
-	        if (lang_1.isPresent(baseUrl) && baseUrl.length > 0) {
-	            resolvedUrl = _resolveUrl(baseUrl, resolvedUrl);
-	        }
-	        if (lang_1.isPresent(this._packagePrefix) && getUrlScheme(resolvedUrl) == "package") {
-	            resolvedUrl = resolvedUrl.replace("package:", this._packagePrefix);
-	        }
-	        return resolvedUrl;
-	    };
+	    UrlResolver.prototype.resolve = function (baseUrl, url) { return _resolveUrl(baseUrl, url); };
 	    UrlResolver = __decorate([
-	        di_1.Injectable(),
-	        __param(0, di_1.Inject(application_tokens_1.PACKAGE_ROOT_URL)), 
-	        __metadata('design:paramtypes', [String])
+	        di_1.Injectable(), 
+	        __metadata('design:paramtypes', [])
 	    ], UrlResolver);
 	    return UrlResolver;
 	})();
 	exports.UrlResolver = UrlResolver;
-	function getUrlScheme(url) {
-	    var match = _split(url);
-	    return (match && match[_ComponentIndex.Scheme]) || "";
-	}
-	exports.getUrlScheme = getUrlScheme;
 	// The code below is adapted from Traceur:
 	// https://github.com/google/traceur-compiler/blob/9511c1dafa972bf0de1202a8a863bad02f0f95a8/src/runtime/url.js
 	/**
@@ -26389,7 +26335,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    template_parser_2.TemplateParser,
 	    template_normalizer_1.TemplateNormalizer,
 	    runtime_metadata_1.RuntimeMetadataResolver,
-	    url_resolver_1.DEFAULT_PACKAGE_URL_PROVIDER,
 	    style_compiler_1.StyleCompiler,
 	    command_compiler_1.CommandCompiler,
 	    change_detector_compiler_1.ChangeDetectionCompiler,
@@ -31046,7 +30991,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var di_2 = __webpack_require__(6);
 	var platform_directives_and_pipes_1 = __webpack_require__(110);
 	var util_1 = __webpack_require__(202);
-	var url_resolver_1 = __webpack_require__(196);
 	var RuntimeMetadataResolver = (function () {
 	    function RuntimeMetadataResolver(_directiveResolver, _viewResolver, _platformDirectives) {
 	        this._directiveResolver = _directiveResolver;
@@ -31135,11 +31079,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return lang_1.isPresent(value) && (value instanceof lang_1.Type);
 	}
 	function calcModuleUrl(type, dirMeta) {
-	    var moduleId = dirMeta.moduleId;
-	    if (lang_1.isPresent(moduleId)) {
-	        var scheme = url_resolver_1.getUrlScheme(moduleId);
-	        return lang_1.isPresent(scheme) && scheme.length > 0 ? moduleId :
-	            "package:" + moduleId + util_1.MODULE_SUFFIX;
+	    if (lang_1.isPresent(dirMeta.moduleId)) {
+	        return "package:" + dirMeta.moduleId + util_1.MODULE_SUFFIX;
 	    }
 	    else {
 	        return reflection_1.reflector.importUri(type);
