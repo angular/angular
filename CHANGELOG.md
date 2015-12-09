@@ -1,3 +1,61 @@
+<a name="2.0.0-alpha.49"></a>
+# 2.0.0-alpha.49 (2015-12-09)
+
+
+### Bug Fixes
+
+* **bootstrap:** fix the configuration of ExceptionHandler ([0d9a1de](https://github.com/angular/angular/commit/0d9a1de))
+* **build:** lock down version of package:code_transformers ([85d89ba](https://github.com/angular/angular/commit/85d89ba))
+* **bundles:** clean-up and re-organize UMD bundles ([fb4f1e8](https://github.com/angular/angular/commit/fb4f1e8)), closes [#5593](https://github.com/angular/angular/issues/5593) [#5697](https://github.com/angular/angular/issues/5697)
+* **bundles:** remove SFX bundle ([a4ba46c](https://github.com/angular/angular/commit/a4ba46c)), closes [#5665](https://github.com/angular/angular/issues/5665) [#5712](https://github.com/angular/angular/issues/5712)
+* **bundles:** rename external-dependencies to angular-polyfills ([b3c91b1](https://github.com/angular/angular/commit/b3c91b1)), closes [#5714](https://github.com/angular/angular/issues/5714) [#5716](https://github.com/angular/angular/issues/5716)
+* **changelog:** add RxJS imports breaking change ([ad48169](https://github.com/angular/angular/commit/ad48169)), closes [#5678](https://github.com/angular/angular/issues/5678)
+* **changelog:** correct import path ([86c74cf](https://github.com/angular/angular/commit/86c74cf)), closes [#5681](https://github.com/angular/angular/issues/5681)
+* **compiler:** support properties on SVG elements ([daaa8ee](https://github.com/angular/angular/commit/daaa8ee)), closes [#5653](https://github.com/angular/angular/issues/5653)
+* **dynamic_component_loader:** leave the view tree in a consistent state when hydration fails ([0df8bc4](https://github.com/angular/angular/commit/0df8bc4)), closes [#5718](https://github.com/angular/angular/issues/5718)
+* **form:** Form directives are exportedAs 'ngForm' (was 'form') ([8657ca4](https://github.com/angular/angular/commit/8657ca4)), closes [#5658](https://github.com/angular/angular/issues/5658) [#5709](https://github.com/angular/angular/issues/5709)
+* **HtmlLexer:** handle CR in input stream per HTML spec ([9850e68](https://github.com/angular/angular/commit/9850e68)), closes [#5618](https://github.com/angular/angular/issues/5618) [#5629](https://github.com/angular/angular/issues/5629)
+* **HtmlLexer:** tag name must follow "<" without space ([47f1d12](https://github.com/angular/angular/commit/47f1d12))
+* **HtmlParser:** Do not add parent element for template children ([3a43861](https://github.com/angular/angular/commit/3a43861)), closes [#5638](https://github.com/angular/angular/issues/5638)
+* **HtmlParser:** ignore LF immediately following pre, textarea & listing ([eb0ea93](https://github.com/angular/angular/commit/eb0ea93)), closes [#5630](https://github.com/angular/angular/issues/5630) [#5688](https://github.com/angular/angular/issues/5688)
+* **HtmlParser:** mark <source> elements as void ([50490b5](https://github.com/angular/angular/commit/50490b5)), closes [#5663](https://github.com/angular/angular/issues/5663) [#5668](https://github.com/angular/angular/issues/5668)
+* **npm:** move es6-shim from devDependencies to dependencies ([21542ed](https://github.com/angular/angular/commit/21542ed))
+* **package:** relock RxJS to alpha.11 ([4b1618c](https://github.com/angular/angular/commit/4b1618c)), closes [#5643](https://github.com/angular/angular/issues/5643) [#5644](https://github.com/angular/angular/issues/5644)
+* **router:** set correct redirect/default URL from hashchange ([aa85856](https://github.com/angular/angular/commit/aa85856)), closes [#5590](https://github.com/angular/angular/issues/5590) [#5683](https://github.com/angular/angular/issues/5683)
+
+### Features
+
+* **HtmlLexer:** allow "<" in text tokens ([aecf681](https://github.com/angular/angular/commit/aecf681)), closes [#5550](https://github.com/angular/angular/issues/5550)
+* **TemplateParser:** allow template elements regardless the namespace  ([1f35048](https://github.com/angular/angular/commit/1f35048)), closes [#5703](https://github.com/angular/angular/issues/5703)
+
+
+### BREAKING CHANGES
+
+* The existing sfx bundle (angular2.sfx.dev.js) is replaced by UMD bundles:
+angular2.umd.js and angular2.umd.dev.js. The new UMD bundles dont have
+polyfills (zone.js, reflect-metadata) pre-appended. Those polyfills
+can be easily loaded by including the angular-polyfills.js bundle.
+
+* The `external-dependencies.js` bundle was removed.
+Use `angular-polyfills.js` instead.
+
+* Number and content of UMD bundles have changed:
+- we only publish one bundle that contains: core, common, platform/browser, http, router, instrumentation and upgrade
+- exported names have changed and now:
+  - core is exported as `ng.core`
+  - common is exported as `ng.common`
+  - platform/browser is exported as `ng.platform.browser`
+  - http is exported as `ng.http`
+  - router is exported as `ng.router`
+  - instrumentation is exported as `ng.instrumentation`
+  - upgrade is exported as `ng.upgrade`
+
+* Before:
+    <form #f="form">
+After:
+    <form #f="ngForm">
+    
+
 <a name="2.0.0-alpha.48"></a>
 # 2.0.0-alpha.48 (2015-12-05)
 
