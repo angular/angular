@@ -1032,6 +1032,7 @@ var NG_ALL = [
   'PipeMetadata.name',
   'PipeMetadata.pure',
   'PlatformRef',
+  'PublicApiMetadata',
   /*
    Abstract methods
   'PlatformRef.application()',

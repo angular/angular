@@ -1,6 +1,6 @@
 import {unimplemented} from 'angular2/src/facade/exceptions';
 import {Map} from 'angular2/src/facade/collection';
-import {ViewEncapsulation} from 'angular2/src/core/metadata';
+import {ViewEncapsulation, PublicApi, ApiStability} from 'angular2/src/core/metadata';
 
 /**
  * Represents an Angular ProtoView in the Rendering Context.
@@ -178,6 +178,10 @@ export class RenderComponentTemplate {
  *
  * The default Renderer implementation is {@link DomRenderer}. Also see {@link WebWorkerRenderer}.
  */
+@PublicApi({
+  stability: ApiStability.Experimental,
+  note: "The rendering layer is currently being refactored and some API changes are still expected."
+})
 export abstract class Renderer {
   /**
    * Registers a component template represented as arrays of {@link RenderTemplateCmd}s and styles
