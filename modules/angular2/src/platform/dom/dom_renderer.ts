@@ -346,11 +346,13 @@ function resolveInternalDomFragment(fragmentRef: RenderFragmentRef): Node[] {
 }
 
 function moveNodesAfterSibling(sibling, nodes) {
-  if (nodes.length > 0 && isPresent(DOM.parentElement(sibling))) {
+  let sib = sibling;
+  let parent = DOM.parentElement(sib);
+  if (nodes.length > 0 && isPresent(parent)) {
     for (var i = 0; i < nodes.length; i++) {
-      DOM.insertBefore(sibling, nodes[i]);
+      parent.insertBefore(nodes[i], sib.nextSibling);
+      sib = nodes[i];
     }
-    DOM.insertBefore(nodes[0], sibling);
   }
 }
 
