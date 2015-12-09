@@ -5550,7 +5550,7 @@
     },
     "es6-promise": {
       "version": "3.0.2",
-      "from": "es6-promise@*",
+      "from": "https://registry.npmjs.org/es6-promise/-/es6-promise-3.0.2.tgz",
       "resolved": "https://registry.npmjs.org/es6-promise/-/es6-promise-3.0.2.tgz"
     },
     "es6-shim": {
@@ -20212,9 +20212,9 @@
       }
     },
     "rxjs": {
-      "version": "5.0.0-alpha.13",
-      "from": "rxjs@5.0.0-alpha.13",
-      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-alpha.13.tgz"
+      "version": "5.0.0-alpha.14",
+      "from": "rxjs@5.0.0-alpha.14",
+      "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-alpha.14.tgz"
     },
     "selenium-webdriver": {
       "version": "2.48.2",
