@@ -409,7 +409,7 @@ export function getHtmlTagDefinition(tagName: string): HtmlTagDefinition {
 
 var NS_PREFIX_RE = /^@([^:]+):(.+)/g;
 
-export function splitHtmlTagNamespace(elementName: string): string[] {
+export function splitNsName(elementName: string): string[] {
   if (elementName[0] != '@') {
     return [null, elementName];
   }
@@ -417,6 +417,6 @@ export function splitHtmlTagNamespace(elementName: string): string[] {
   return [match[1], match[2]];
 }
 
-export function getHtmlTagNamespacePrefix(elementName: string): string {
-  return splitHtmlTagNamespace(elementName)[0];
+export function getNsPrefix(elementName: string): string {
+  return splitNsName(elementName)[0];
 }
