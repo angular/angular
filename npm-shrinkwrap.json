@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0-alpha.48",
+  "version": "2.0.0-alpha.50",
   "dependencies": {
     "angular": {
       "version": "1.4.7",
@@ -20213,7 +20213,7 @@
     },
     "rxjs": {
       "version": "5.0.0-alpha.14",
-      "from": "rxjs@5.0.0-alpha.14",
+      "from": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-alpha.14.tgz",
       "resolved": "https://registry.npmjs.org/rxjs/-/rxjs-5.0.0-alpha.14.tgz"
     },
     "selenium-webdriver": {
@@ -22603,9 +22603,9 @@
       }
     },
     "zone.js": {
-      "version": "0.5.8",
-      "from": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.8.tgz",
-      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.8.tgz"
+      "version": "0.5.9",
+      "from": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.9.tgz",
+      "resolved": "https://registry.npmjs.org/zone.js/-/zone.js-0.5.9.tgz"
     }
   }
 }
