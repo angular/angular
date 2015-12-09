@@ -21,19 +21,22 @@ import 'package:angular2/src/core/reflection/reflection.dart';
 import 'package:angular2/src/core/reflection/reflection_capabilities.dart';
 
 import 'package:angular2/src/core/di/provider.dart' show bind;
-import 'package:angular2/src/core/di/injector.dart' show Injector;
 import 'package:angular2/src/facade/collection.dart' show StringMapWrapper;
 
 import 'test_injector.dart';
 export 'test_injector.dart' show inject;
 
-List _testBindings = [];
-Injector _injector;
+TestInjector _testInjector = getTestInjector();
 bool _isCurrentTestAsync;
+Future _currentTestFuture;
 bool _inIt = false;
 
 class AsyncTestCompleter {
   final _completer = new Completer();
+
+  AsyncTestCompleter() {
+    _currentTestFuture = this.future;
+  }
 
   void done() {
     _completer.complete();
@@ -50,10 +53,11 @@ void testSetup() {
   // - Priority 1: create the test injector to be used in beforeEach() and it()
 
   gns.beforeEach(() {
-    _testBindings.clear();
+    _testInjector.reset();
+    _currentTestFuture = null;
   }, priority: 3);
 
-  var completerBinding = bind(AsyncTestCompleter).toFactory(() {
+  var completerProvider = bind(AsyncTestCompleter).toFactory(() {
     // Mark the test as async when an AsyncTestCompleter is injected in an it(),
     if (!_inIt) throw 'AsyncTestCompleter can only be injected in an "it()"';
     _isCurrentTestAsync = true;
@@ -62,15 +66,14 @@ void testSetup() {
 
   gns.beforeEach(() {
     _isCurrentTestAsync = false;
-    _testBindings.add(completerBinding);
-    _injector = createTestInjectorWithRuntimeCompiler(_testBindings);
+    _testInjector.addProviders([completerProvider]);
   }, priority: 1);
 }
 
 /**
- * Allows overriding default bindings defined in test_injector.js.
+ * Allows overriding default providers defined in test_injector.js.
  *
- * The given function must return a list of DI bindings.
+ * The given function must return a list of DI providers.
  *
  * Example:
  *
@@ -81,8 +84,8 @@ void testSetup() {
  */
 void beforeEachProviders(Function fn) {
   gns.beforeEach(() {
-    var bindings = fn();
-    if (bindings != null) _testBindings.addAll(bindings);
+    var providers = fn();
+    if (providers != null) _testInjector.addProviders(providers);
   }, priority: 2);
 }
 
@@ -95,7 +98,7 @@ void beforeEach(fn) {
   if (fn is! FunctionWithParamTokens) fn =
       new FunctionWithParamTokens([], fn, false);
   gns.beforeEach(() {
-    fn.execute(_injector);
+    _testInjector.execute(fn);
   });
 }
 
@@ -104,9 +107,9 @@ void _it(gnsFn, name, fn) {
       new FunctionWithParamTokens([], fn, false);
   gnsFn(name, () {
     _inIt = true;
-    fn.execute(_injector);
+    _testInjector.execute(fn);
     _inIt = false;
-    if (_isCurrentTestAsync) return _injector.get(AsyncTestCompleter).future;
+    if (_isCurrentTestAsync) return _currentTestFuture;
   });
 }
 
