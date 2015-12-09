@@ -7,7 +7,7 @@
   "contributors": <%= JSON.stringify(packageJson.contributors) %>,
   "license": "<%= packageJson.license %>",
   "repository": <%= JSON.stringify(packageJson.repository) %>,
-  "devDependencies": <%= JSON.stringify(packageJson.defaultDevDependencies) %>
+  "devDependencies": <%= JSON.stringify(packageJson.defaultDevDependencies) %>,
   "peerDependencies": {
     "angular2": "<%= packageJson.version %>",
     "rxjs": "<%= packageJson.dependencies['rxjs'] %>"
