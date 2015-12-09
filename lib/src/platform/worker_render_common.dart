@@ -1,5 +1,6 @@
 library angular2.src.platform.worker_render_common;
 
+import "package:angular2/src/facade/lang.dart" show IS_DART;
 import "package:angular2/src/web_workers/shared/message_bus.dart"
     show MessageBus;
 import "package:angular2/src/core/zone/ng_zone.dart" show NgZone;
@@ -113,7 +114,7 @@ void initWebWorkerRenderPlatform() {
 }
 
 ExceptionHandler _exceptionHandler() {
-  return new ExceptionHandler(DOM, false);
+  return new ExceptionHandler(DOM, !IS_DART);
 }
 
 dynamic _document() {

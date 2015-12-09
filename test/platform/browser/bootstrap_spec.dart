@@ -147,8 +147,7 @@ main() {
         "should throw if no element is found",
         inject([AsyncTestCompleter], (async) {
           var logger = new _ArrayLogger();
-          var exceptionHandler =
-              new ExceptionHandler(logger, IS_DART ? false : true);
+          var exceptionHandler = new ExceptionHandler(logger, !IS_DART);
           var refPromise = bootstrap(HelloRootCmp,
               [provide(ExceptionHandler, useValue: exceptionHandler)]);
           PromiseWrapper.then(refPromise, null, (reason) {
@@ -163,8 +162,7 @@ main() {
           "should invoke the default exception handler when bootstrap fails",
           inject([AsyncTestCompleter], (async) {
             var logger = new _ArrayLogger();
-            var exceptionHandler =
-                new ExceptionHandler(logger, IS_DART ? false : true);
+            var exceptionHandler = new ExceptionHandler(logger, !IS_DART);
             var refPromise = bootstrap(HelloRootCmp,
                 [provide(ExceptionHandler, useValue: exceptionHandler)]);
             PromiseWrapper.then(refPromise, null, (reason) {

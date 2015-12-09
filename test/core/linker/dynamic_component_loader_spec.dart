@@ -30,6 +30,8 @@ import "package:angular2/src/platform/dom/dom_tokens.dart" show DOCUMENT;
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/testing/test_component_builder.dart"
     show ComponentFixture_;
+import "package:angular2/src/facade/exceptions.dart" show BaseException;
+import "package:angular2/src/facade/promise.dart" show PromiseWrapper;
 
 main() {
   describe("DynamicComponentLoader", () {
@@ -148,6 +150,31 @@ main() {
                     DOM.childNodes(tc.debugElement.nativeElement)[1];
                 expect(((newlyInsertedElement as dynamic)).id)
                     .toEqual("new value");
+                async.done();
+              });
+            });
+          }));
+      it(
+          "should leave the view tree in a consistent state if hydration fails",
+          inject([
+            DynamicComponentLoader,
+            TestComponentBuilder,
+            AsyncTestCompleter
+          ], (loader, TestComponentBuilder tcb, async) {
+            tcb
+                .overrideView(
+                    MyComp,
+                    new ViewMetadata(
+                        template: "<div><location #loc></location></div>",
+                        directives: [Location]))
+                .createAsync(MyComp)
+                .then((ComponentFixture tc) {
+              tc.debugElement;
+              PromiseWrapper.catchError(
+                  loader.loadIntoLocation(DynamicallyLoadedThrows,
+                      tc.debugElement.elementRef, "loc"), (error) {
+                expect(error.message).toContain("ThrownInConstructor");
+                expect(() => tc.detectChanges()).not.toThrow();
                 async.done();
               });
             });
@@ -327,6 +354,14 @@ class DynamicallyCreatedCmp implements OnDestroy {
 @Component(selector: "dummy")
 @View(template: "DynamicallyLoaded;")
 class DynamicallyLoaded {}
+
+@Component(selector: "dummy")
+@View(template: "DynamicallyLoaded;")
+class DynamicallyLoadedThrows {
+  DynamicallyLoadedThrows() {
+    throw new BaseException("ThrownInConstructor");
+  }
+}
 
 @Component(selector: "dummy")
 @View(template: "DynamicallyLoaded2;")

@@ -194,7 +194,7 @@ class AbstractChangeDetector<T> implements ChangeDetector {
   // any work done in `hydrateDirectives`.
   void dehydrateDirectives(bool destroyPipes) {}
   bool hydrated() {
-    return !identical(this.context, null);
+    return isPresent(this.context);
   }
 
   void afterContentLifecycleCallbacks() {

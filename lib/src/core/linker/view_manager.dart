@@ -330,13 +330,18 @@ class AppViewManager_ extends AppViewManager {
     }
     this._utils.attachViewInContainer(parentView, boundElementIndex,
         contextView, contextBoundElementIndex, index, view);
-    this._utils.hydrateViewInContainer(
-        parentView,
-        boundElementIndex,
-        contextView,
-        contextBoundElementIndex,
-        index,
-        imperativelyCreatedInjector);
+    try {
+      this._utils.hydrateViewInContainer(
+          parentView,
+          boundElementIndex,
+          contextView,
+          contextBoundElementIndex,
+          index,
+          imperativelyCreatedInjector);
+    } catch (e, e_stack) {
+      this._utils.detachViewInContainer(parentView, boundElementIndex, index);
+      rethrow;
+    }
     return view.ref;
   }
 

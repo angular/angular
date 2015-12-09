@@ -1,5 +1,6 @@
 library angular2.src.platform.browser_common;
 
+import "package:angular2/src/facade/lang.dart" show IS_DART;
 import "package:angular2/src/core/di.dart"
     show provide, Provider, Injector, OpaqueToken;
 import "package:angular2/core.dart"
@@ -60,7 +61,10 @@ const List<dynamic> BROWSER_PROVIDERS = const [
   const Provider(PLATFORM_INITIALIZER, useValue: initDomAdapter, multi: true)
 ];
 ExceptionHandler _exceptionHandler() {
-  return new ExceptionHandler(DOM, false);
+  // !IS_DART is required because we must rethrow exceptions in JS,
+
+  // but must not rethrow exceptions in Dart
+  return new ExceptionHandler(DOM, !IS_DART);
 }
 
 dynamic _document() {
