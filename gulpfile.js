@@ -1130,11 +1130,7 @@ gulp.task('bundles.js.umd.min', ['!bundles.js.umd', '!bundle.ng.polyfills'], fun
   var uglify = require('gulp-uglify');
 
   // minify production bundles
-  return gulp.src([
-               'dist/js/bundle/angular2-polyfills.js',
-               'dist/js/bundle/angular2.umd.js',
-               'dist/js/bundle/angular2_all.umd.js'
-             ])
+  return gulp.src(['dist/js/bundle/angular2-polyfills.js', 'dist/js/bundle/angular2.umd.js'])
       .pipe(uglify())
       .pipe(rename({extname: '.min.js'}))
       .pipe(gulp.dest('dist/js/bundle'));
