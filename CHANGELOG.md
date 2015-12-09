@@ -65,11 +65,18 @@ Use `angular-polyfills.js` instead.
   - instrumentation is exported as `ng.instrumentation`
   - upgrade is exported as `ng.upgrade`
 
-* Before:
-    <form #f="form">
-After:
-    <form #f="ngForm">
-    
+* Form directives are exportedAs 'ngForm' (was 'form')
+
+    Before:
+      ```html
+        <form #f="form">
+      ```
+
+    After:
+      ```html
+        <form #f="ngForm">
+      ```
+
 
 <a name="2.0.0-alpha.48"></a>
 # 2.0.0-alpha.48 (2015-12-05)
@@ -129,7 +136,7 @@ import * as core from 'angular2/core';
 
   http.get('foos.json').map(res => res.json()).subscribe(...);
   ```
-  
+
 <a name="2.0.0-alpha.47"></a>
 # 2.0.0-alpha.47 (2015-12-01)
 
