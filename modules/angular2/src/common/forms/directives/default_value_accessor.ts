@@ -11,15 +11,15 @@ const DEFAULT_VALUE_ACCESSOR = CONST_EXPR(new Provider(
  *
  *  ### Example
  *  ```
- *  <input type="text" ng-control="searchQuery">
+ *  <input type="text" ngControl="searchQuery">
  *  ```
  */
 @Directive({
   selector:
-      'input:not([type=checkbox])[ng-control],textarea[ng-control],input:not([type=checkbox])[ng-form-control],textarea[ng-form-control],input:not([type=checkbox])[ng-model],textarea[ng-model],[ng-default-control]',
+      'input:not([type=checkbox])[ngControl],textarea[ngControl],input:not([type=checkbox])[ngFormControl],textarea[ngFormControl],input:not([type=checkbox])[ngModel],textarea[ngModel],[ngDefaultControl]',
   // TODO: vsavkin replace the above selector with the one below it once
   // https://github.com/angular/angular/issues/3011 is implemented
-  // selector: '[ng-control],[ng-model],[ng-form-control]',
+  // selector: '[ngControl],[ngModel],[ngFormControl]',
   host: {'(input)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
   bindings: [DEFAULT_VALUE_ACCESSOR]
 })

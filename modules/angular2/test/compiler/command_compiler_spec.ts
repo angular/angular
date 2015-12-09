@@ -173,7 +173,7 @@ export function main() {
         it('should create bound element commands', inject([AsyncTestCompleter], (async) => {
              var rootComp = createComp({
                type: RootCompTypeMeta,
-               template: '<div a="b" #some-var (click)="someHandler" (window:scroll)="scrollTo()">'
+               template: '<div a="b" #someVar (click)="someHandler" (window:scroll)="scrollTo()">'
              });
              run(rootComp, [])
                  .then((data) => {
@@ -197,7 +197,7 @@ export function main() {
         it('should create element commands with directives',
            inject([AsyncTestCompleter], (async) => {
              var rootComp =
-                 createComp({type: RootCompTypeMeta, template: '<div a #some-var="someExport">'});
+                 createComp({type: RootCompTypeMeta, template: '<div a #someVar="someExport">'});
              var dir = CompileDirectiveMetadata.create({
                selector: '[a]',
                exportAs: 'someExport',
@@ -284,7 +284,7 @@ export function main() {
 
         it('should create component commands', inject([AsyncTestCompleter], (async) => {
              var rootComp = createComp(
-                 {type: RootCompTypeMeta, template: '<a a="b" #some-var (click)="someHandler">'});
+                 {type: RootCompTypeMeta, template: '<a a="b" #someVar (click)="someHandler">'});
              var comp = createComp({type: ACompTypeMeta, selector: 'a'});
              run(rootComp, [comp])
                  .then((data) => {
@@ -374,7 +374,7 @@ export function main() {
            inject([AsyncTestCompleter], (async) => {
              var rootComp = createComp({
                type: RootCompTypeMeta,
-               template: '<template #some-var="someValue" #some-empty-var></template>'
+               template: '<template #someVar="someValue" #someEmptyVar></template>'
              });
              var dir = createDirective(SomeDirTypeMeta, '[a]');
              run(rootComp, [dir], 1)

@@ -21,14 +21,17 @@ export function main() {
       matcher = new SelectorMatcher();
     });
 
-    it('should select by element name case insensitive', () => {
+    it('should select by element name case sensitive', () => {
       matcher.addSelectables(s1 = CssSelector.parse('someTag'), 1);
 
       expect(matcher.match(CssSelector.parse('SOMEOTHERTAG')[0], selectableCollector))
           .toEqual(false);
       expect(matched).toEqual([]);
 
-      expect(matcher.match(CssSelector.parse('SOMETAG')[0], selectableCollector)).toEqual(true);
+      expect(matcher.match(CssSelector.parse('SOMETAG')[0], selectableCollector)).toEqual(false);
+      expect(matched).toEqual([]);
+
+      expect(matcher.match(CssSelector.parse('someTag')[0], selectableCollector)).toEqual(true);
       expect(matched).toEqual([s1[0], 1]);
     });
 
@@ -49,7 +52,7 @@ export function main() {
       expect(matched).toEqual([s1[0], 1, s2[0], 2]);
     });
 
-    it('should select by attr name case insensitive independent of the value', () => {
+    it('should select by attr name case sensitive independent of the value', () => {
       matcher.addSelectables(s1 = CssSelector.parse('[someAttr]'), 1);
       matcher.addSelectables(s2 = CssSelector.parse('[someAttr][someAttr2]'), 2);
 
@@ -57,15 +60,13 @@ export function main() {
           .toEqual(false);
       expect(matched).toEqual([]);
 
-      expect(matcher.match(CssSelector.parse('[SOMEATTR]')[0], selectableCollector)).toEqual(true);
-      expect(matched).toEqual([s1[0], 1]);
+      expect(matcher.match(CssSelector.parse('[SOMEATTR]')[0], selectableCollector)).toEqual(false);
+      expect(matched).toEqual([]);
 
-      reset();
       expect(matcher.match(CssSelector.parse('[SOMEATTR=someValue]')[0], selectableCollector))
-          .toEqual(true);
-      expect(matched).toEqual([s1[0], 1]);
+          .toEqual(false);
+      expect(matched).toEqual([]);
 
-      reset();
       expect(matcher.match(CssSelector.parse('[someAttr][someAttr2]')[0], selectableCollector))
           .toEqual(true);
       expect(matched).toEqual([s1[0], 1, s2[0], 2]);
@@ -100,7 +101,7 @@ export function main() {
       expect(matched).toEqual([s1[0], 1]);
     });
 
-    it('should select by attr name and value case insensitive', () => {
+    it('should select by attr name case sensitive and value case insensitive', () => {
       matcher.addSelectables(s1 = CssSelector.parse('[someAttr=someValue]'), 1);
 
       expect(matcher.match(CssSelector.parse('[SOMEATTR=SOMEOTHERATTR]')[0], selectableCollector))
@@ -108,6 +109,10 @@ export function main() {
       expect(matched).toEqual([]);
 
       expect(matcher.match(CssSelector.parse('[SOMEATTR=SOMEVALUE]')[0], selectableCollector))
+          .toEqual(false);
+      expect(matched).toEqual([]);
+
+      expect(matcher.match(CssSelector.parse('[someAttr=SOMEVALUE]')[0], selectableCollector))
           .toEqual(true);
       expect(matched).toEqual([s1[0], 1]);
     });
@@ -338,10 +343,10 @@ export function main() {
 
   describe('CssSelector.getMatchingElementTemplate', () => {
     it('should create an element with a tagName, classes, and attributes', () => {
-      let selector = CssSelector.parse('blink.neon.hotpink[sweet][dismissable=false]')[0];
+      let selector = CssSelector.parse('Blink.neon.hotpink[Sweet][Dismissable=false]')[0];
       let template = selector.getMatchingElementTemplate();
 
-      expect(template).toEqual('<blink class="neon hotpink" sweet dismissable="false"></blink>');
+      expect(template).toEqual('<Blink class="neon hotpink" Sweet Dismissable="false"></Blink>');
     });
 
     it('should create an element without a tag name', () => {

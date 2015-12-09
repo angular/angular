@@ -19,9 +19,9 @@ import {NgFor} from 'angular2/src/common/directives/ng_for';
 
 
 export function main() {
-  describe('ng-for', () => {
+  describe('ngFor', () => {
     var TEMPLATE =
-        '<div><copy-me template="ng-for #item of items">{{item.toString()}};</copy-me></div>';
+        '<div><copy-me template="ngFor #item of items">{{item.toString()}};</copy-me></div>';
 
     it('should reflect initial elements',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
@@ -98,7 +98,7 @@ export function main() {
 
     it('should iterate over an array of objects',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var template = '<ul><li template="ng-for #item of items">{{item["name"]}};</li></ul>';
+         var template = '<ul><li template="ngFor #item of items">{{item["name"]}};</li></ul>';
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
@@ -128,7 +128,7 @@ export function main() {
 
     it('should gracefully handle nulls',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var template = '<ul><li template="ng-for #item of null">{{item}};</li></ul>';
+         var template = '<ul><li template="ngFor #item of null">{{item}};</li></ul>';
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
              .then((fixture) => {
@@ -187,8 +187,8 @@ export function main() {
     it('should repeat over nested arrays',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var template = '<div>' +
-                        '<div template="ng-for #item of items">' +
-                        '<div template="ng-for #subitem of item">' +
+                        '<div template="ngFor #item of items">' +
+                        '<div template="ngFor #subitem of item">' +
                         '{{subitem}}-{{item.length}};' +
                         '</div>|' +
                         '</div>' +
@@ -213,8 +213,8 @@ export function main() {
 
     it('should repeat over nested arrays with no intermediate element',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         var template = '<div><template ng-for #item [ng-for-of]="items">' +
-                        '<div template="ng-for #subitem of item">' +
+         var template = '<div><template ngFor #item [ngForOf]="items">' +
+                        '<div template="ngFor #subitem of item">' +
                         '{{subitem}}-{{item.length}};' +
                         '</div></template></div>';
 
@@ -235,7 +235,7 @@ export function main() {
     it('should display indices correctly',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var template =
-             '<div><copy-me template="ng-for: var item of items; var i=index">{{i.toString()}}</copy-me></div>';
+             '<div><copy-me template="ngFor: var item of items; var i=index">{{i.toString()}}</copy-me></div>';
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
@@ -254,7 +254,7 @@ export function main() {
     it('should display last item correctly',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var template =
-             '<div><copy-me template="ng-for: var item of items; var isLast=last">{{isLast.toString()}}</copy-me></div>';
+             '<div><copy-me template="ngFor: var item of items; var isLast=last">{{isLast.toString()}}</copy-me></div>';
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
@@ -273,7 +273,7 @@ export function main() {
     it('should display even items correctly',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var template =
-             '<div><copy-me template="ng-for: var item of items; var isEven=even">{{isEven.toString()}}</copy-me></div>';
+             '<div><copy-me template="ngFor: var item of items; var isEven=even">{{isEven.toString()}}</copy-me></div>';
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
@@ -292,7 +292,7 @@ export function main() {
     it('should display odd items correctly',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          var template =
-             '<div><copy-me template="ng-for: var item of items; var isOdd=odd">{{isOdd.toString()}}</copy-me></div>';
+             '<div><copy-me template="ngFor: var item of items; var isOdd=odd">{{isOdd.toString()}}</copy-me></div>';
 
          tcb.overrideTemplate(TestComponent, template)
              .createAsync(TestComponent)
@@ -312,7 +312,7 @@ export function main() {
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
          tcb.overrideTemplate(
                 TestComponent,
-                '<ul><template ng-for [ng-for-of]="items" [ng-for-template]="contentTpl"></template></ul>')
+                '<ul><template ngFor [ngForOf]="items" [ngForTemplate]="contentTpl"></template></ul>')
              .overrideTemplate(
                  ComponentUsingTestComponent,
                  '<test-cmp><li template="#item #i=index">{{i}}: {{item}};</li></test-cmp>')
@@ -329,8 +329,8 @@ export function main() {
 
     it('should use a default template if a custom one is null',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideTemplate(TestComponent, `<ul><template ng-for #item [ng-for-of]="items"
-         [ng-for-template]="contentTpl" #i="index">{{i}}: {{item}};</template></ul>`)
+         tcb.overrideTemplate(TestComponent, `<ul><template ngFor #item [ngForOf]="items"
+         [ngForTemplate]="contentTpl" #i="index">{{i}}: {{item}};</template></ul>`)
              .overrideTemplate(ComponentUsingTestComponent, '<test-cmp></test-cmp>')
              .createAsync(ComponentUsingTestComponent)
              .then((fixture) => {
@@ -345,8 +345,8 @@ export function main() {
 
     it('should use a custom template when both default and a custom one are present',
        inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-         tcb.overrideTemplate(TestComponent, `<ul><template ng-for #item [ng-for-of]="items"
-         [ng-for-template]="contentTpl" #i="index">{{i}}=> {{item}};</template></ul>`)
+         tcb.overrideTemplate(TestComponent, `<ul><template ngFor #item [ngForOf]="items"
+         [ngForTemplate]="contentTpl" #i="index">{{i}}=> {{item}};</template></ul>`)
              .overrideTemplate(
                  ComponentUsingTestComponent,
                  '<test-cmp><li template="#item #i=index">{{i}}: {{item}};</li></test-cmp>')

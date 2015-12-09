@@ -25,8 +25,8 @@ class MyCmp implements OnActivate {
   template: `
     <h1>My App</h1>
     <nav>
-      <a [router-link]="['/HomeCmp']" id="home-link">Navigate Home</a> |
-      <a [router-link]="['/ParamCmp', {param: 1}]" id="param-link">Navigate with a Param</a>
+      <a [routerLink]="['/HomeCmp']" id="home-link">Navigate Home</a> |
+      <a [routerLink]="['/ParamCmp', {param: 1}]" id="param-link">Navigate with a Param</a>
     </nav>
     <router-outlet></router-outlet>
   `,

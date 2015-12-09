@@ -28,8 +28,8 @@ class GoodByeCmp {
     <h1>My App</h1>
     <nav>
       <a href="#/" id="hello-link">Navigate via href</a> |
-      <a [router-link]="['/GoodbyeCmp']" id="goodbye-link">Navigate with Link DSL</a>
-      <a [router-link]="['/GoodbyeCmp']" id="goodbye-link-blank" target="_blank">
+      <a [routerLink]="['/GoodbyeCmp']" id="goodbye-link">Navigate with Link DSL</a>
+      <a [routerLink]="['/GoodbyeCmp']" id="goodbye-link-blank" target="_blank">
         Navigate with Link DSL _blank target
       </a>
     </nav>

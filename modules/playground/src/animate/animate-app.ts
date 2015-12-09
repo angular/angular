@@ -5,7 +5,7 @@ import {Component, View, NgIf} from 'angular2/angular2';
   directives: [NgIf],
   template: `
     <h1>The box is {{visible ? 'visible' : 'hidden'}}</h1>
-    <div class="ng-animate box" *ng-if="visible"></div>
+    <div class="ng-animate box" *ngIf="visible"></div>
     <button (click)="visible = !visible">Animate</button>
   `
 })
