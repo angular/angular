@@ -64,6 +64,25 @@ Use `angular-polyfills.js` instead.
   - router is exported as `ng.router`
   - instrumentation is exported as `ng.instrumentation`
   - upgrade is exported as `ng.upgrade`
+  
+* rxjs, reflect-metadata, zone.js and es6-shims now must be specified as
+explicit dependencies of each angular app that uses npm for package management.
+
+To migrate, please add the following into the "dependencies" section of your package.json:
+
+```
+"dependencies": {
+    ...
+
+    "es6-promise": "^3.0.2",
+    "es6-shim": "^0.33.3",
+    "reflect-metadata": "0.1.2",
+    "rxjs": "5.0.0-alpha.14",
+    "zone.js": "0.5.8"
+
+    ...
+}
+```  
 
 * Before:
     <form #f="form">
