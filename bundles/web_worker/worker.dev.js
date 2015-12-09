@@ -23516,12 +23516,22 @@ System.register("rxjs/util/SymbolShim", ["rxjs/util/root"], true, function(requi
     var Symbol = ensureSymbol(root);
     ensureIterator(Symbol, root);
     ensureObservable(Symbol);
+    ensureFor(Symbol);
     return Symbol;
   }
   exports.polyfillSymbol = polyfillSymbol;
+  function ensureFor(Symbol) {
+    if (!Symbol.for) {
+      Symbol.for = symbolForPolyfill;
+    }
+  }
+  exports.ensureFor = ensureFor;
+  var id = 0;
   function ensureSymbol(root) {
     if (!root.Symbol) {
-      root.Symbol = {for: symbolForPolyfill};
+      root.Symbol = function symbolFuncPolyfill(description) {
+        return "@@Symbol(" + description + "):" + id++;
+      };
     }
     return root.Symbol;
   }
@@ -36235,8 +36245,7 @@ System.register("rxjs/Observable", ["rxjs/Subscriber", "rxjs/util/root", "rxjs/u
       subscriber.add(this._subscribe(subscriber));
       return subscriber;
     };
-    Observable.prototype.forEach = function(next, PromiseCtor) {
-      var _this = this;
+    Observable.prototype.forEach = function(next, thisArg, PromiseCtor) {
       if (!PromiseCtor) {
         if (root_1.root.Rx && root_1.root.Rx.config && root_1.root.Rx.config.Promise) {
           PromiseCtor = root_1.root.Rx.config.Promise;
@@ -36247,9 +36256,28 @@ System.register("rxjs/Observable", ["rxjs/Subscriber", "rxjs/util/root", "rxjs/u
       if (!PromiseCtor) {
         throw new Error('no Promise impl found');
       }
-      return new PromiseCtor(function(resolve, reject) {
-        _this.subscribe(next, reject, resolve);
-      });
+      var nextHandler;
+      if (thisArg) {
+        nextHandler = function nextHandlerFn(value) {
+          var _a = nextHandlerFn,
+              thisArg = _a.thisArg,
+              next = _a.next;
+          return next.call(thisArg, value);
+        };
+        nextHandler.thisArg = thisArg;
+        nextHandler.next = next;
+      } else {
+        nextHandler = next;
+      }
+      var promiseCallback = function promiseCallbackFn(resolve, reject) {
+        var _a = promiseCallbackFn,
+            source = _a.source,
+            nextHandler = _a.nextHandler;
+        source.subscribe(nextHandler, reject, resolve);
+      };
+      promiseCallback.source = this;
+      promiseCallback.nextHandler = nextHandler;
+      return new PromiseCtor(promiseCallback);
     };
     Observable.prototype._subscribe = function(subscriber) {
       return this.source._subscribe(this.operator.call(subscriber));
