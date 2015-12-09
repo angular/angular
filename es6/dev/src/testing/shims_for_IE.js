@@ -128,7 +128,3 @@ if (!window.console.assert) window.console.assert = function () { };
             clearTimeout(id);
         };
 }());
-
-// Workaround for https://github.com/angular/angular/issues/5067
-// TODO: remove as part of the issue resolution
-if (!window.Symbol) window.Symbol = {iterator: '_es6-shim iterator_'};
