@@ -19,7 +19,6 @@ import "package:angular2/src/core/di.dart" show Injectable, Inject, Optional;
 import "package:angular2/src/core/platform_directives_and_pipes.dart"
     show PLATFORM_DIRECTIVES;
 import "util.dart" show MODULE_SUFFIX;
-import "package:angular2/src/compiler/url_resolver.dart" show getUrlScheme;
 
 @Injectable()
 class RuntimeMetadataResolver {
@@ -111,12 +110,8 @@ bool isValidDirective(Type value) {
 }
 
 String calcModuleUrl(Type type, md.DirectiveMetadata dirMeta) {
-  var moduleId = dirMeta.moduleId;
-  if (isPresent(moduleId)) {
-    var scheme = getUrlScheme(moduleId);
-    return isPresent(scheme) && scheme.length > 0
-        ? moduleId
-        : '''package:${ moduleId}${ MODULE_SUFFIX}''';
+  if (isPresent(dirMeta.moduleId)) {
+    return '''package:${ dirMeta . moduleId}${ MODULE_SUFFIX}''';
   } else {
     return reflector.importUri(type);
   }

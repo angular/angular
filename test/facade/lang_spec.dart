@@ -58,53 +58,5 @@ main() {
         expect(StringWrapper.slice(s, -2, -4)).toEqual("");
       });
     });
-    describe("stripLeft", () {
-      it("should strip the first character of the string if it matches the provided input",
-          () {
-        var input = "~angular2 is amazing";
-        var expectedOutput = "angular2 is amazing";
-        expect(StringWrapper.stripLeft(input, "~")).toEqual(expectedOutput);
-      });
-      it("should keep stripping characters from the start until the first unmatched character",
-          () {
-        var input = "#####hello";
-        var expectedOutput = "hello";
-        expect(StringWrapper.stripLeft(input, "#")).toEqual(expectedOutput);
-      });
-      it("should not alter the provided input if the first charater does not match the provided input",
-          () {
-        var input = "+angular2 is amazing";
-        expect(StringWrapper.stripLeft(input, "*")).toEqual(input);
-      });
-      it("should not do any alterations when an empty string or null value is passed in",
-          () {
-        expect(StringWrapper.stripLeft("", "S")).toEqual("");
-        expect(StringWrapper.stripLeft(null, "S")).toEqual(null);
-      });
-    });
-    describe("stripRight", () {
-      it("should strip the first character of the string if it matches the provided input",
-          () {
-        var input = "angular2 is amazing!";
-        var expectedOutput = "angular2 is amazing";
-        expect(StringWrapper.stripRight(input, "!")).toEqual(expectedOutput);
-      });
-      it("should not alter the provided input if the first charater does not match the provided input",
-          () {
-        var input = "angular2 is amazing+";
-        expect(StringWrapper.stripRight(input, "*")).toEqual(input);
-      });
-      it("should keep stripping characters from the end until the first unmatched character",
-          () {
-        var input = "hi&!&&&&&";
-        var expectedOutput = "hi&!";
-        expect(StringWrapper.stripRight(input, "&")).toEqual(expectedOutput);
-      });
-      it("should not do any alterations when an empty string or null value is passed in",
-          () {
-        expect(StringWrapper.stripRight("", "S")).toEqual("");
-        expect(StringWrapper.stripRight(null, "S")).toEqual(null);
-      });
-    });
   });
 }
