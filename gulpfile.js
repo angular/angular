@@ -1121,7 +1121,9 @@ gulp.task('!bundles.js.umd', ['build.js.dev'], function() {
 
   return q.all([
     webpack(webPackConf([__dirname + '/tools/build/webpack/angular2.umd.js'], 'angular2', 'dev')),
-    webpack(webPackConf([__dirname + '/tools/build/webpack/angular2.umd.js'], 'angular2', 'prod'))
+    webpack(webPackConf([__dirname + '/tools/build/webpack/angular2.umd.js'], 'angular2', 'prod')),
+    webpack(webPackConf([__dirname + '/tools/build/webpack/angular2-testing.umd.js'],
+                        'angular2-testing', 'dev'))
   ]);
 });
 
