@@ -120,7 +120,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
 
   compileTemplate(compile: angular.ICompileService, templateCache: angular.ITemplateCacheService,
                   httpBackend: angular.IHttpBackendService): Promise<any> {
-    if (this.directive.template) {
+    if (this.directive.template !== undefined) {
       this.linkFn = compileHtml(this.directive.template);
     } else if (this.directive.templateUrl) {
       var url = this.directive.templateUrl;
