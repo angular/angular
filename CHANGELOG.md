@@ -146,7 +146,7 @@ Use `angular-polyfills.js` instead.
   }
   ```
 
-  or check angular2's package.json for the latest peer dependencies
+  or [check angular2's package.json](https://github.com/angular/angular/blob/master/package.json#L34) for the latest peer dependencies
 
 
 <a name="2.0.0-alpha.48"></a>
