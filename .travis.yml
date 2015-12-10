@@ -37,8 +37,10 @@ env:
     # Order: a slower build first, so that we don't occupy an idle travis worker waiting for others to complete.
     - MODE=dart DART_CHANNEL=stable DART_VERSION=$DART_STABLE_VERSION
     - MODE=dart DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
-    - MODE=saucelabs DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
-    - MODE=browserstack DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
+    - MODE=saucelabs_required DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
+    - MODE=browserstack_required DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
+    - MODE=saucelabs_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
+    - MODE=browserstack_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
     - MODE=dart_experimental DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
     - MODE=js DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
     - MODE=router DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION
@@ -48,8 +50,8 @@ env:
 
 matrix:
   allow_failures:
-  - env: "MODE=saucelabs DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
-  - env: "MODE=browserstack DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
+  - env: "MODE=saucelabs_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
+  - env: "MODE=browserstack_optional DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
   - env: "MODE=dart_experimental DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"
   # TODO(alxhub): remove when dartdoc #1039 is in dev channel
   - env: "MODE=dart DART_CHANNEL=dev DART_VERSION=$DART_DEV_VERSION"

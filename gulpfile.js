@@ -720,12 +720,19 @@ gulp.task('test.unit.js/ci', function(done) {
 });
 
 gulp.task('test.unit.js.sauce/ci', function(done) {
-  launchKarmaWithExternalBrowsers(['dots', 'saucelabs'], browserProvidersConf.sauceAliases.CI,
-                                  done);
+  var browsers = browserProvidersConf.sauceAliases.CI_REQUIRED;
+  if (cliArgs.mode && cliArgs.mode == 'saucelabs_optional') {
+    browsers = browserProvidersConf.sauceAliases.CI_OPTIONAL;
+  }
+  launchKarmaWithExternalBrowsers(['dots', 'saucelabs'], browsers, done);
 });
 
 gulp.task('test.unit.js.browserstack/ci', function(done) {
-  launchKarmaWithExternalBrowsers(['dots'], browserProvidersConf.browserstackAliases.CI, done);
+  var browsers = browserProvidersConf.browserstackAliases.CI_REQUIRED;
+  if (cliArgs.mode && cliArgs.mode == 'browserstack_optional') {
+    browsers = browserProvidersConf.browserstackAliases.CI_OPTIONAL;
+  }
+  launchKarmaWithExternalBrowsers(['dots'], browsers, done);
 });
 
 gulp.task('test.unit.dart/ci', function(done) {
