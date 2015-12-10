@@ -72,6 +72,30 @@ class StringWrapper {
     return s == s2;
   }
 
+  static String stripLeft(String s, String charVal) {
+    if (isPresent(s) && s.length > 0) {
+      var pos = 0;
+      for (var i = 0; i < s.length; i++) {
+        if (s[i] != charVal) break;
+        pos++;
+      }
+      s = s.substring(pos);
+    }
+    return s;
+  }
+
+  static String stripRight(String s, String charVal) {
+    if (isPresent(s) && s.length > 0) {
+      var pos = s.length;
+      for (var i = s.length - 1; i >= 0; i--) {
+        if (s[i] != charVal) break;
+        pos--;
+      }
+      s = s.substring(0, pos);
+    }
+    return s;
+  }
+
   static String replace(String s, Pattern from, String replace) {
     return s.replaceFirst(from, replace);
   }

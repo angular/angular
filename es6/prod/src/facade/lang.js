@@ -121,6 +121,30 @@ export class StringWrapper {
     static charCodeAt(s, index) { return s.charCodeAt(index); }
     static split(s, regExp) { return s.split(regExp); }
     static equals(s, s2) { return s === s2; }
+    static stripLeft(s, charVal) {
+        if (s && s.length) {
+            var pos = 0;
+            for (var i = 0; i < s.length; i++) {
+                if (s[i] != charVal)
+                    break;
+                pos++;
+            }
+            s = s.substring(pos);
+        }
+        return s;
+    }
+    static stripRight(s, charVal) {
+        if (s && s.length) {
+            var pos = s.length;
+            for (var i = s.length - 1; i >= 0; i--) {
+                if (s[i] != charVal)
+                    break;
+                pos--;
+            }
+            s = s.substring(0, pos);
+        }
+        return s;
+    }
     static replace(s, from, replace) {
         return s.replace(from, replace);
     }

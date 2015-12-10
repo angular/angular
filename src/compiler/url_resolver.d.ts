@@ -1,4 +1,6 @@
+import { Provider } from 'angular2/src/core/di';
 export declare function createWithoutPackagePrefix(): UrlResolver;
+export declare var DEFAULT_PACKAGE_URL_PROVIDER: Provider;
 /**
  * Used by the {@link Compiler} when resolving HTML and CSS template URLs.
  *
@@ -7,6 +9,8 @@ export declare function createWithoutPackagePrefix(): UrlResolver;
  * See {@link Compiler}
  */
 export declare class UrlResolver {
+    private _packagePrefix;
+    constructor(packagePrefix?: string);
     /**
      * Resolves the `url` given the `baseUrl`:
      * - when the `url` is null, the `baseUrl` is returned,
@@ -21,3 +25,4 @@ export declare class UrlResolver {
      */
     resolve(baseUrl: string, url: string): string;
 }
+export declare function getUrlScheme(url: string): string;

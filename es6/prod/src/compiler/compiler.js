@@ -20,7 +20,7 @@ import { Compiler } from 'angular2/src/core/linker/compiler';
 import { RuntimeCompiler } from 'angular2/src/compiler/runtime_compiler';
 import { ElementSchemaRegistry } from 'angular2/src/compiler/schema/element_schema_registry';
 import { DomElementSchemaRegistry } from 'angular2/src/compiler/schema/dom_element_schema_registry';
-import { UrlResolver } from 'angular2/src/compiler/url_resolver';
+import { UrlResolver, DEFAULT_PACKAGE_URL_PROVIDER } from 'angular2/src/compiler/url_resolver';
 import { AppRootUrl } from 'angular2/src/compiler/app_root_url';
 import { AnchorBasedAppRootUrl } from 'angular2/src/compiler/anchor_based_app_root_url';
 import { Parser, Lexer } from 'angular2/src/core/change_detection/change_detection';
@@ -34,6 +34,7 @@ export const COMPILER_PROVIDERS = CONST_EXPR([
     TemplateParser,
     TemplateNormalizer,
     RuntimeMetadataResolver,
+    DEFAULT_PACKAGE_URL_PROVIDER,
     StyleCompiler,
     CommandCompiler,
     ChangeDetectionCompiler,
