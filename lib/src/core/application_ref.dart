@@ -161,8 +161,13 @@ abstract class PlatformRef {
    * typical providers, as shown in the example below.
    *
    * ### Example
+   * ```
+   * var myAppProviders = [MyAppService];
    *
-   * {@example core/ts/platform/platform.ts region='longform'}
+   * platform()
+   *   .application([myAppProviders])
+   *   .bootstrap(MyTopLevelComponent);
+   * ```
    * ### See Also
    *
    * See the [bootstrap] documentation for more details.
@@ -309,7 +314,11 @@ abstract class ApplicationRef {
    * child components under it.
    *
    * ### Example
-   * {@example core/ts/platform/platform.ts region='longform'}
+   * ```
+   * var app = platform.application([appProviders];
+   * app.bootstrap(FirstRootComponent);
+   * app.bootstrap(SecondRootComponent, [provide(OverrideBinding, {useClass: OverriddenBinding})]);
+   * ```
    */
   Future<ComponentRef> bootstrap(Type componentType,
       [List<dynamic /* Type | Provider | List < dynamic > */ > providers]);

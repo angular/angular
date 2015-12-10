@@ -15,18 +15,13 @@ import "model.dart" as modelModule;
  *
  * ### Example
  *
- * {@example core/forms/ts/ng_validators/ng_validators.ts region='ng_validators'}
+ * ```typescript
+ * var providers = [
+ *   new Provider(NG_VALIDATORS, {useValue: myValidator, multi: true})
+ * ];
  * ```
  */
 const OpaqueToken NG_VALIDATORS = const OpaqueToken("NgValidators");
-/**
- * Providers for asynchronous validators to be used for [Control]s
- * in a form.
- *
- * Provide this using `multi: true` to add validators.
- *
- * See [NG_VALIDATORS] for more details.
- */
 const OpaqueToken NG_ASYNC_VALIDATORS = const OpaqueToken("NgAsyncValidators");
 
 /**

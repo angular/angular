@@ -15,9 +15,6 @@ import "package:angular2/src/core/linker/element_ref.dart"
  * A DebugElement contains information from the Angular compiler about an
  * element and provides access to the corresponding ElementInjector and
  * underlying DOM Element, as well as a way to query for children.
- *
- * A DebugElement can be obtained from a [ComponentFixture] or
- * [RootTestComponent].
  */
 abstract class DebugElement {
   dynamic get componentInstance {
@@ -181,7 +178,7 @@ class DebugElement_ extends DebugElement {
 }
 
 /**
- * Returns a [DebugElement] for an [ElementRef].
+ * Returns a DebugElement for a ElementRef.
  *
  * @param {ElementRef}: elementRef
  * @return {DebugElement}
