@@ -30,7 +30,7 @@
       <my-cmp (myEvent)="action()">
       <my-cmp [(myProp)]="prop">
       <input #myInput>`,
-      <template ngFor="#my-item" [ngForOf]=items #myIndex="index">
+      <template ngFor="#myItem" [ngForOf]=items #myIndex="index">
   ```
 
   The full migration instruction can be found at [angular2/docs/migration/kebab-case.md](https://github.com/angular/angular/blob/master/modules/angular2/docs/migration/kebab-case.md).
