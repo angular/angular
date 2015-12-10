@@ -1,4 +1,4 @@
-Angular2 templates are now case sensitive.
+Angular2 templates are now case-sensitive and use camelCase in many places where dash-case was previously used ([design doc] (https://docs.google.com/document/d/1UMxTIUBTIUZNfOqwMhkLg0ANFSBtLIK9JsIu77EZaBA/edit?ts=564f7dd4)).
 
 ## Overview
 
