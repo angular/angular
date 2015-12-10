@@ -698,8 +698,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * ```html
 	 * <seeker>
-	 *   <div #findMe>...</div>
-	 *   <div #findMeToo>...</div>
+	 *   <div #find-me>...</div>
+	 *   <div #find-me-too>...</div>
 	 * </seeker>
 	 *
 	 *  @Component({

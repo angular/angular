@@ -1060,8 +1060,8 @@ export var Attribute: AttributeFactory = makeParamDecorator(AttributeMetadata);
  *
  * ```html
  * <seeker>
- *   <div #findMe>...</div>
- *   <div #findMeToo>...</div>
+ *   <div #find-me>...</div>
+ *   <div #find-me-too>...</div>
  * </seeker>
  *
  *  @Component({
