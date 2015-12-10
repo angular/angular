@@ -134,8 +134,8 @@ export function main() {
     it("should mark NgForm as submitted on submit event",
        inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
                 var t = `<div>
-                      <form #f="form" (ng-submit)="hasSubmitted=f.submitted"></form>
-                      <span>{{hasSubmitted}}</span>
+                      <form #f="form" (ng-submit)="data=f.submitted"></form>
+                      <span>{{data}}</span>
                     </div>`;
 
                 var fixture: ComponentFixture;
@@ -144,7 +144,7 @@ export function main() {
                     (root) => { fixture = root; });
                 tick();
 
-                fixture.debugElement.componentInstance.hasSubmitted = false;
+                fixture.debugElement.componentInstance.data = false;
 
                 tick();
 
@@ -152,14 +152,14 @@ export function main() {
                 dispatchEvent(form.nativeElement, "submit");
 
                 tick();
-                expect(fixture.debugElement.componentInstance.hasSubmitted).toEqual(true);
+                expect(fixture.debugElement.componentInstance.data).toEqual(true);
               })));
 
     it("should mark NgFormModel as submitted on submit event",
        inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
                 var t = `<div>
-                      <form #f="form" [ng-form-model]="form" (ng-submit)="hasSubmitted=f.submitted"></form>
-                      <span>{{hasSubmitted}}</span>
+                      <form #f="form" [ng-form-model]="form" (ng-submit)="data=f.submitted"></form>
+                      <span>{{data}}</span>
                     </div>`;
 
                 var fixture: ComponentFixture;
@@ -169,7 +169,7 @@ export function main() {
                 tick();
 
                 fixture.debugElement.componentInstance.form = new ControlGroup({});
-                fixture.debugElement.componentInstance.hasSubmitted = false;
+                fixture.debugElement.componentInstance.data = false;
 
                 tick();
 
@@ -177,7 +177,7 @@ export function main() {
                 dispatchEvent(form.nativeElement, "submit");
 
                 tick();
-                expect(fixture.debugElement.componentInstance.hasSubmitted).toEqual(true);
+                expect(fixture.debugElement.componentInstance.data).toEqual(true);
               })));
 
     it("should work with single controls",
