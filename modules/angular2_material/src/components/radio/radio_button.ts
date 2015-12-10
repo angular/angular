@@ -1,6 +1,5 @@
 import {
   Component,
-  View,
   ViewEncapsulation,
   Host,
   SkipSelf,
@@ -8,7 +7,7 @@ import {
   Optional,
   OnChanges,
   OnInit
-} from 'angular2/angular2';
+} from 'angular2/core';
 
 import {isPresent, StringWrapper, NumberWrapper} from 'angular2/src/facade/lang';
 import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
@@ -42,9 +41,7 @@ var _uniqueIdCounter: number = 0;
     // TODO(jelbourn): Remove ^ when event retargeting is fixed.
     '(keydown)': 'onKeydown($event)',
     '[tabindex]': 'tabindex',
-  }
-})
-@View({
+  },
   templateUrl: 'package:angular2_material/src/components/radio/radio_group.html',
   encapsulation: ViewEncapsulation.None
 })
@@ -198,9 +195,7 @@ export class MdRadioGroup implements OnChanges {
     '[attr.aria-checked]': 'checked',
     '[attr.aria-disabled]': 'disabled',
     '(keydown)': 'onKeydown($event)',
-  }
-})
-@View({
+  },
   templateUrl: 'package:angular2_material/src/components/radio/radio_button.html',
   directives: [],
   encapsulation: ViewEncapsulation.None

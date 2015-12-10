@@ -7,7 +7,7 @@ import {
   OnChanges,
   OnDestroy,
   AfterContentChecked
-} from 'angular2/angular2';
+} from 'angular2/core';
 
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {StringWrapper, isPresent, isString, NumberWrapper} from 'angular2/src/facade/lang';

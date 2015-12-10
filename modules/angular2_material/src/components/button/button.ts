@@ -1,4 +1,4 @@
-import {Component, View, ViewEncapsulation, OnChanges} from 'angular2/angular2';
+import {Component, View, ViewEncapsulation, OnChanges} from 'angular2/core';
 
 import {TimerWrapper} from 'angular2/src/facade/async';
 import {isPresent} from 'angular2/src/facade/lang';

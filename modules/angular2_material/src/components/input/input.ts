@@ -1,4 +1,4 @@
-import {Directive, Attribute, Host, SkipSelf, AfterContentChecked} from 'angular2/angular2';
+import {Directive, Attribute, Host, SkipSelf, AfterContentChecked} from 'angular2/core';
 
 import {ObservableWrapper, EventEmitter} from 'angular2/src/facade/async';
 
