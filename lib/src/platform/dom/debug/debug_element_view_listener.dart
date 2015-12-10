@@ -38,6 +38,11 @@ List<num> _getElementId(element) {
   }
 }
 
+/**
+ * Returns a [DebugElement] for the given native DOM element, or
+ * null if the given native element does not have an Angular view associated
+ * with it.
+ */
 DebugElement inspectNativeElement(element) {
   var elId = _getElementId(element);
   if (isPresent(elId)) {
