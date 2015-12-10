@@ -1,10 +1,9 @@
-import {Component, View, NgFor} from 'angular2/angular2';
+import {Component} from 'angular2/core';
 import {Jsonp, Response} from 'angular2/http';
 import {ObservableWrapper} from 'angular2/src/facade/async';
 
-@Component({selector: 'jsonp-app'})
-@View({
-  directives: [NgFor],
+@Component({
+  selector: 'jsonp-app',
   template: `
     <h1>people</h1>
     <ul class="people">
