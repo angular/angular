@@ -36,6 +36,10 @@ export class TestInjector {
   }
 
   execute(fn: FunctionWithParamTokens): any {
+    var additionalProviders = fn.additionalProviders();
+    if (additionalProviders.length > 0) {
+      this.addProviders(additionalProviders);
+    }
     if (!this._instantiated) {
       this.createInjector();
     }
@@ -119,6 +123,22 @@ export function inject(tokens: any[], fn: Function): FunctionWithParamTokens {
   return new FunctionWithParamTokens(tokens, fn, false);
 }
 
+export class InjectSetupWrapper {
+  constructor(private _providers: () => any) {}
+
+  inject(tokens: any[], fn: Function): FunctionWithParamTokens {
+    return new FunctionWithParamTokens(tokens, fn, false, this._providers);
+  }
+
+  injectAsync(tokens: any[], fn: Function): FunctionWithParamTokens {
+    return new FunctionWithParamTokens(tokens, fn, true, this._providers);
+  }
+}
+
+export function withProviders(providers: () => any) {
+  return new InjectSetupWrapper(providers);
+}
+
 /**
  * Allows injecting dependencies in `beforeEach()` and `it()`. The test must return
  * a promise which will resolve when all asynchronous activity is complete.
@@ -141,8 +161,13 @@ export function injectAsync(tokens: any[], fn: Function): FunctionWithParamToken
   return new FunctionWithParamTokens(tokens, fn, true);
 }
 
+function emptyArray(): Array<any> {
+  return [];
+}
+
 export class FunctionWithParamTokens {
-  constructor(private _tokens: any[], private _fn: Function, public isAsync: boolean) {}
+  constructor(private _tokens: any[], private _fn: Function, public isAsync: boolean,
+              public additionalProviders: () => any = emptyArray) {}
 
   /**
    * Returns the value of the executed function.

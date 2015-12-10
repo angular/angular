@@ -10,6 +10,7 @@ import {
   beforeEach,
   inject,
   injectAsync,
+  withProviders,
   beforeEachProviders,
   TestComponentBuilder
 } from 'angular2/testing';
@@ -185,6 +186,13 @@ export function main() {
         it('should use asynchronously modified value',
            inject([FancyService], (service) => { expect(service.value).toEqual('async value'); }));
       });
+    });
+
+    describe('per test providers', () => {
+      it('should allow per test providers',
+         withProviders(() => [bind(FancyService).toValue(new FancyService())])
+             .inject([FancyService],
+                     (service) => { expect(service.value).toEqual('real value'); }));
     });
   });
 
