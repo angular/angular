@@ -69,6 +69,7 @@ export declare class WebWorkerRenderer implements Renderer {
      * Sets an attribute on an element.
      */
     setElementAttribute(location: RenderElementRef, attributeName: string, attributeValue: string): void;
+    setBindingDebugInfo(location: RenderElementRef, propertyName: string, propertyValue: string): void;
     /**
      * Sets a class on an element.
      */

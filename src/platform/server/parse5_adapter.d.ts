@@ -43,7 +43,7 @@ export declare class Parse5DomAdapter extends DomAdapter {
     insertAllBefore(el: any, nodes: any): void;
     insertAfter(el: any, node: any): void;
     setInnerHTML(el: any, value: any): void;
-    getText(el: any): string;
+    getText(el: any, isRecursive?: boolean): string;
     setText(el: any, value: string): void;
     getValue(el: any): string;
     setValue(el: any, value: string): void;

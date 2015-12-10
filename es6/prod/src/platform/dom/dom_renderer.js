@@ -12,7 +12,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 import { Inject, Injectable } from 'angular2/src/core/di';
 import { AnimationBuilder } from 'angular2/src/animate/animation_builder';
-import { isPresent, isBlank, RegExpWrapper, CONST_EXPR, stringify } from 'angular2/src/facade/lang';
+import { isPresent, isBlank, Json, RegExpWrapper, CONST_EXPR, stringify, StringWrapper } from 'angular2/src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
 import { DomSharedStylesHost } from './shared_styles_host';
 import { wtfLeave, wtfCreateScope } from 'angular2/src/core/profile/profile';
@@ -23,7 +23,10 @@ import { createRenderView, encapsulateStyles } from 'angular2/src/core/render/vi
 import { DefaultProtoViewRef } from 'angular2/src/core/render/view';
 import { ViewEncapsulation } from 'angular2/src/core/metadata';
 import { DOM } from 'angular2/src/platform/dom/dom_adapter';
+import { camelCaseToDashCase } from './util';
 const NAMESPACE_URIS = CONST_EXPR({ 'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg' });
+const TEMPLATE_COMMENT_TEXT = 'template bindings={}';
+var TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/g;
 export class DomRenderer extends Renderer {
     getNativeElementSync(location) {
         return resolveInternalDomView(location.renderView).boundElements[location.boundElementIndex];
@@ -56,7 +59,7 @@ export class DomRenderer extends Renderer {
     hydrateView(viewRef) { resolveInternalDomView(viewRef).hydrate(); }
     dehydrateView(viewRef) { resolveInternalDomView(viewRef).dehydrate(); }
     createTemplateAnchor(attrNameAndValues) {
-        return this.createElement('script', attrNameAndValues);
+        return DOM.createComment(TEMPLATE_COMMENT_TEXT);
     }
     createText(value) { return DOM.createTextNode(isPresent(value) ? value : ''); }
     appendChild(parent, child) { DOM.appendChild(parent, child); }
@@ -72,6 +75,24 @@ export class DomRenderer extends Renderer {
         }
         else {
             DOM.removeAttribute(element, attributeName);
+        }
+    }
+    /**
+     * Used only in debug mode to serialize property changes to comment nodes,
+     * such as <template> placeholders.
+     */
+    setBindingDebugInfo(location, propertyName, propertyValue) {
+        var view = resolveInternalDomView(location.renderView);
+        var element = view.boundElements[location.boundElementIndex];
+        var dashCasedPropertyName = camelCaseToDashCase(propertyName);
+        if (DOM.isCommentNode(element)) {
+            var existingBindings = RegExpWrapper.firstMatch(TEMPLATE_BINDINGS_EXP, StringWrapper.replaceAll(DOM.getText(element), /\n/g, ''));
+            var parsedBindings = Json.parse(existingBindings[1]);
+            parsedBindings[dashCasedPropertyName] = propertyValue;
+            DOM.setText(element, StringWrapper.replace(TEMPLATE_COMMENT_TEXT, '{}', Json.stringify(parsedBindings)));
+        }
+        else {
+            this.setElementAttribute(location, propertyName, propertyValue);
         }
     }
     setElementClass(location, className, isAdd) {

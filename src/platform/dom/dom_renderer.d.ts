@@ -44,6 +44,11 @@ export declare abstract class DomRenderer extends Renderer implements NodeFactor
     abstract globalOn(target: string, eventName: string, callback: Function): Function;
     setElementProperty(location: RenderElementRef, propertyName: string, propertyValue: any): void;
     setElementAttribute(location: RenderElementRef, attributeName: string, attributeValue: string): void;
+    /**
+     * Used only in debug mode to serialize property changes to comment nodes,
+     * such as <template> placeholders.
+     */
+    setBindingDebugInfo(location: RenderElementRef, propertyName: string, propertyValue: string): void;
     setElementClass(location: RenderElementRef, className: string, isAdd: boolean): void;
     setElementStyle(location: RenderElementRef, styleName: string, styleValue: string): void;
     invokeElementMethod(location: RenderElementRef, methodName: string, args: any[]): void;

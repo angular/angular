@@ -126,7 +126,7 @@ export class AppView {
     logBindingUpdate(b, value) {
         if (b.isDirective() || b.isElementProperty()) {
             var elementRef = this.elementRefs[this.elementOffset + b.elementIndex];
-            this.renderer.setElementAttribute(elementRef, `${REFLECT_PREFIX}${camelCaseToDashCase(b.name)}`, `${value}`);
+            this.renderer.setBindingDebugInfo(elementRef, `${REFLECT_PREFIX}${camelCaseToDashCase(b.name)}`, `${value}`);
         }
     }
     notifyAfterContentChecked() {

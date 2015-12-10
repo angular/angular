@@ -15439,7 +15439,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    AppView.prototype.logBindingUpdate = function (b, value) {
 	        if (b.isDirective() || b.isElementProperty()) {
 	            var elementRef = this.elementRefs[this.elementOffset + b.elementIndex];
-	            this.renderer.setElementAttribute(elementRef, "" + REFLECT_PREFIX + util_1.camelCaseToDashCase(b.name), "" + value);
+	            this.renderer.setBindingDebugInfo(elementRef, "" + REFLECT_PREFIX + util_1.camelCaseToDashCase(b.name), "" + value);
 	        }
 	    };
 	    AppView.prototype.notifyAfterContentChecked = function () {
@@ -23821,9 +23821,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	var view_factory_1 = __webpack_require__(180);
 	var view_1 = __webpack_require__(181);
 	var metadata_1 = __webpack_require__(3);
-	// TODO move it once DomAdapter is moved
 	var dom_adapter_1 = __webpack_require__(164);
+	var util_1 = __webpack_require__(177);
 	var NAMESPACE_URIS = lang_1.CONST_EXPR({ 'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg' });
+	var TEMPLATE_COMMENT_TEXT = 'template bindings={}';
+	var TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/g;
 	var DomRenderer = (function (_super) {
 	    __extends(DomRenderer, _super);
 	    function DomRenderer() {
@@ -23860,7 +23862,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    DomRenderer.prototype.hydrateView = function (viewRef) { resolveInternalDomView(viewRef).hydrate(); };
 	    DomRenderer.prototype.dehydrateView = function (viewRef) { resolveInternalDomView(viewRef).dehydrate(); };
 	    DomRenderer.prototype.createTemplateAnchor = function (attrNameAndValues) {
-	        return this.createElement('script', attrNameAndValues);
+	        return dom_adapter_1.DOM.createComment(TEMPLATE_COMMENT_TEXT);
 	    };
 	    DomRenderer.prototype.createText = function (value) { return dom_adapter_1.DOM.createTextNode(lang_1.isPresent(value) ? value : ''); };
 	    DomRenderer.prototype.appendChild = function (parent, child) { dom_adapter_1.DOM.appendChild(parent, child); };
@@ -23876,6 +23878,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        else {
 	            dom_adapter_1.DOM.removeAttribute(element, attributeName);
+	        }
+	    };
+	    /**
+	     * Used only in debug mode to serialize property changes to comment nodes,
+	     * such as <template> placeholders.
+	     */
+	    DomRenderer.prototype.setBindingDebugInfo = function (location, propertyName, propertyValue) {
+	        var view = resolveInternalDomView(location.renderView);
+	        var element = view.boundElements[location.boundElementIndex];
+	        var dashCasedPropertyName = util_1.camelCaseToDashCase(propertyName);
+	        if (dom_adapter_1.DOM.isCommentNode(element)) {
+	            var existingBindings = lang_1.RegExpWrapper.firstMatch(TEMPLATE_BINDINGS_EXP, lang_1.StringWrapper.replaceAll(dom_adapter_1.DOM.getText(element), /\n/g, ''));
+	            var parsedBindings = lang_1.Json.parse(existingBindings[1]);
+	            parsedBindings[dashCasedPropertyName] = propertyValue;
+	            dom_adapter_1.DOM.setText(element, lang_1.StringWrapper.replace(TEMPLATE_COMMENT_TEXT, '{}', lang_1.Json.stringify(parsedBindings)));
+	        }
+	        else {
+	            this.setElementAttribute(location, propertyName, propertyValue);
 	        }
 	    };
 	    DomRenderer.prototype.setElementClass = function (location, className, isAdd) {
@@ -25695,7 +25715,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _allViewsById = new collection_1.Map();
 	var _nextId = 0;
 	function _setElementId(element, indices) {
-	    if (lang_1.isPresent(element)) {
+	    if (lang_1.isPresent(element) && dom_adapter_1.DOM.isElementNode(element)) {
 	        dom_adapter_1.DOM.setData(element, NG_ID_PROPERTY, indices.join(NG_ID_SEPARATOR));
 	    }
 	}
