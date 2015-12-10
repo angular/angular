@@ -9,6 +9,7 @@ import {RegressionSlopeValidator} from './validator/regression_slope_validator';
 import {SizeValidator} from './validator/size_validator';
 import {Validator} from './validator';
 import {PerflogMetric} from './metric/perflog_metric';
+import {AngularLoadTimeMetric} from './metric/angular_loadtime_metric';
 import {MultiMetric} from './metric/multi_metric';
 import {ChromeDriverExtension} from './webdriver/chrome_driver_extension';
 import {FirefoxDriverExtension} from './webdriver/firefox_driver_extension';
@@ -87,6 +88,7 @@ var _DEFAULT_PROVIDERS = [
   FirefoxDriverExtension.BINDINGS,
   IOsDriverExtension.BINDINGS,
   PerflogMetric.BINDINGS,
+  AngularLoadTimeMetric.BINDINGS,
   SampleDescription.BINDINGS,
   MultiReporter.createBindings([ConsoleReporter]),
   MultiMetric.createBindings([PerflogMetric]),

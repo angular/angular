@@ -10,6 +10,7 @@ export {ConsoleReporter} from './src/reporter/console_reporter';
 export {JsonFileReporter} from './src/reporter/json_file_reporter';
 export {SampleDescription} from './src/sample_description';
 export {PerflogMetric} from './src/metric/perflog_metric';
+export {AngularLoadTimeMetric} from './src/metric/angular_loadtime_metric';
 export {ChromeDriverExtension} from './src/webdriver/chrome_driver_extension';
 export {FirefoxDriverExtension} from './src/webdriver/firefox_driver_extension';
 export {IOsDriverExtension} from './src/webdriver/ios_driver_extension';
