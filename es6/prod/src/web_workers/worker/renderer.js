@@ -161,15 +161,6 @@ export let WebWorkerRenderer = class {
         var args = new UiArguments("setElementAttribute", fnArgs);
         this._messageBroker.runOnService(args, null);
     }
-    setBindingDebugInfo(location, propertyName, propertyValue) {
-        var fnArgs = [
-            new FnArg(location, WebWorkerElementRef),
-            new FnArg(propertyName, null),
-            new FnArg(propertyValue, null)
-        ];
-        var args = new UiArguments("setBindingDebugInfo", fnArgs);
-        this._messageBroker.runOnService(args, null);
-    }
     /**
      * Sets a class on an element.
      */

@@ -22,7 +22,7 @@ var _allIdsByView = new Map();
 var _allViewsById = new Map();
 var _nextId = 0;
 function _setElementId(element, indices) {
-    if (isPresent(element) && DOM.isElementNode(element)) {
+    if (isPresent(element)) {
         DOM.setData(element, NG_ID_PROPERTY, indices.join(NG_ID_SEPARATOR));
     }
 }

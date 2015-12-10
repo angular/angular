@@ -237,7 +237,6 @@ export declare abstract class Renderer {
      * If `attributeValue` is `null`, the attribute is removed.
      */
     abstract setElementAttribute(location: RenderElementRef, attributeName: string, attributeValue: string): any;
-    abstract setBindingDebugInfo(location: RenderElementRef, propertyName: string, propertyValue: string): any;
     /**
      * Sets a (CSS) class on the Element specified via `location`.
      *

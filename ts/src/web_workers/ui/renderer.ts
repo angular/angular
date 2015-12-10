@@ -58,8 +58,6 @@ export class MessageBasedRenderer {
                           bind(this._renderer.setElementProperty, this._renderer));
     broker.registerMethod("setElementAttribute", [WebWorkerElementRef, PRIMITIVE, PRIMITIVE],
                           bind(this._renderer.setElementAttribute, this._renderer));
-    broker.registerMethod("setBindingDebugInfo", [WebWorkerElementRef, PRIMITIVE, PRIMITIVE],
-                          bind(this._renderer.setBindingDebugInfo, this._renderer));
     broker.registerMethod("setElementClass", [WebWorkerElementRef, PRIMITIVE, PRIMITIVE],
                           bind(this._renderer.setElementClass, this._renderer));
     broker.registerMethod("setElementStyle", [WebWorkerElementRef, PRIMITIVE, PRIMITIVE],

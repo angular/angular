@@ -1,9 +1,9 @@
 import {Inject, Injectable, OpaqueToken} from 'angular2/src/core/di';
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
+
 import {
   isPresent,
   isBlank,
-  Json,
   RegExpWrapper,
   CONST_EXPR,
   stringify,
@@ -40,13 +40,12 @@ import {
   DefaultProtoViewRef
 } from 'angular2/src/core/render/view';
 import {ViewEncapsulation} from 'angular2/src/core/metadata';
+
+// TODO move it once DomAdapter is moved
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-import {camelCaseToDashCase} from './util';
 
 const NAMESPACE_URIS =
     CONST_EXPR({'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg'});
-const TEMPLATE_COMMENT_TEXT = 'template bindings={}';
-var TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/g;
 
 export abstract class DomRenderer extends Renderer implements NodeFactory<Node> {
   abstract registerComponentTemplate(template: RenderComponentTemplate);
@@ -119,7 +118,7 @@ export abstract class DomRenderer extends Renderer implements NodeFactory<Node> 
   dehydrateView(viewRef: RenderViewRef) { resolveInternalDomView(viewRef).dehydrate(); }
 
   createTemplateAnchor(attrNameAndValues: string[]): Node {
-    return DOM.createComment(TEMPLATE_COMMENT_TEXT);
+    return this.createElement('script', attrNameAndValues);
   }
   abstract createElement(name: string, attrNameAndValues: string[]): Node;
   abstract mergeElement(existing: Node, attrNameAndValues: string[]);
@@ -143,27 +142,6 @@ export abstract class DomRenderer extends Renderer implements NodeFactory<Node> 
       DOM.setAttribute(element, attributeName, stringify(attributeValue));
     } else {
       DOM.removeAttribute(element, attributeName);
-    }
-  }
-
-  /**
-   * Used only in debug mode to serialize property changes to comment nodes,
-   * such as <template> placeholders.
-   */
-  setBindingDebugInfo(location: RenderElementRef, propertyName: string,
-                      propertyValue: string): void {
-    var view: DefaultRenderView<Node> = resolveInternalDomView(location.renderView);
-    var element = view.boundElements[location.boundElementIndex];
-    var dashCasedPropertyName = camelCaseToDashCase(propertyName);
-    if (DOM.isCommentNode(element)) {
-      var existingBindings = RegExpWrapper.firstMatch(
-          TEMPLATE_BINDINGS_EXP, StringWrapper.replaceAll(DOM.getText(element), /\n/g, ''));
-      var parsedBindings = Json.parse(existingBindings[1]);
-      parsedBindings[dashCasedPropertyName] = propertyValue;
-      DOM.setText(element, StringWrapper.replace(TEMPLATE_COMMENT_TEXT, '{}',
-                                                 Json.stringify(parsedBindings)));
-    } else {
-      this.setElementAttribute(location, propertyName, propertyValue);
     }
   }
 

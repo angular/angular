@@ -22949,7 +22949,7 @@ System.register("angular2/src/platform/dom/debug/debug_element_view_listener", [
   var _allViewsById = new collection_1.Map();
   var _nextId = 0;
   function _setElementId(element, indices) {
-    if (lang_1.isPresent(element) && dom_adapter_1.DOM.isElementNode(element)) {
+    if (lang_1.isPresent(element)) {
       dom_adapter_1.DOM.setData(element, NG_ID_PROPERTY, indices.join(NG_ID_SEPARATOR));
     }
   }
@@ -24144,7 +24144,7 @@ System.register("angular2/src/core/linker/view", ["angular2/src/facade/collectio
     AppView.prototype.logBindingUpdate = function(b, value) {
       if (b.isDirective() || b.isElementProperty()) {
         var elementRef = this.elementRefs[this.elementOffset + b.elementIndex];
-        this.renderer.setBindingDebugInfo(elementRef, "" + REFLECT_PREFIX + util_1.camelCaseToDashCase(b.name), "" + value);
+        this.renderer.setElementAttribute(elementRef, "" + REFLECT_PREFIX + util_1.camelCaseToDashCase(b.name), "" + value);
       }
     };
     AppView.prototype.notifyAfterContentChecked = function() {
@@ -28827,11 +28827,6 @@ System.register("angular2/src/web_workers/worker/renderer", ["angular2/src/core/
     WebWorkerRenderer.prototype.setElementAttribute = function(location, attributeName, attributeValue) {
       var fnArgs = [new client_message_broker_1.FnArg(location, api_2.WebWorkerElementRef), new client_message_broker_1.FnArg(attributeName, null), new client_message_broker_1.FnArg(attributeValue, null)];
       var args = new client_message_broker_1.UiArguments("setElementAttribute", fnArgs);
-      this._messageBroker.runOnService(args, null);
-    };
-    WebWorkerRenderer.prototype.setBindingDebugInfo = function(location, propertyName, propertyValue) {
-      var fnArgs = [new client_message_broker_1.FnArg(location, api_2.WebWorkerElementRef), new client_message_broker_1.FnArg(propertyName, null), new client_message_broker_1.FnArg(propertyValue, null)];
-      var args = new client_message_broker_1.UiArguments("setBindingDebugInfo", fnArgs);
       this._messageBroker.runOnService(args, null);
     };
     WebWorkerRenderer.prototype.setElementClass = function(location, className, isAdd) {
@@ -36956,7 +36951,7 @@ System.register("parse5/index", ["parse5/lib/tree_construction/parser", "parse5/
   return module.exports;
 });
 
-System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di", "angular2/src/animate/animation_builder", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/platform/dom/shared_styles_host", "angular2/src/core/profile/profile", "angular2/core", "angular2/src/platform/dom/events/event_manager", "angular2/src/platform/dom/dom_tokens", "angular2/src/core/render/view_factory", "angular2/src/core/render/view", "angular2/src/core/metadata", "angular2/src/platform/dom/dom_adapter", "angular2/src/platform/dom/util"], true, function(require, exports, module) {
+System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di", "angular2/src/animate/animation_builder", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/platform/dom/shared_styles_host", "angular2/src/core/profile/profile", "angular2/core", "angular2/src/platform/dom/events/event_manager", "angular2/src/platform/dom/dom_tokens", "angular2/src/core/render/view_factory", "angular2/src/core/render/view", "angular2/src/core/metadata", "angular2/src/platform/dom/dom_adapter"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -37003,13 +36998,10 @@ System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di
   var view_1 = require("angular2/src/core/render/view");
   var metadata_1 = require("angular2/src/core/metadata");
   var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
-  var util_1 = require("angular2/src/platform/dom/util");
   var NAMESPACE_URIS = lang_1.CONST_EXPR({
     'xlink': 'http://www.w3.org/1999/xlink',
     'svg': 'http://www.w3.org/2000/svg'
   });
-  var TEMPLATE_COMMENT_TEXT = 'template bindings={}';
-  var TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/g;
   var DomRenderer = (function(_super) {
     __extends(DomRenderer, _super);
     function DomRenderer() {
@@ -37048,7 +37040,7 @@ System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di
       resolveInternalDomView(viewRef).dehydrate();
     };
     DomRenderer.prototype.createTemplateAnchor = function(attrNameAndValues) {
-      return dom_adapter_1.DOM.createComment(TEMPLATE_COMMENT_TEXT);
+      return this.createElement('script', attrNameAndValues);
     };
     DomRenderer.prototype.createText = function(value) {
       return dom_adapter_1.DOM.createTextNode(lang_1.isPresent(value) ? value : '');
@@ -37067,19 +37059,6 @@ System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di
         dom_adapter_1.DOM.setAttribute(element, attributeName, lang_1.stringify(attributeValue));
       } else {
         dom_adapter_1.DOM.removeAttribute(element, attributeName);
-      }
-    };
-    DomRenderer.prototype.setBindingDebugInfo = function(location, propertyName, propertyValue) {
-      var view = resolveInternalDomView(location.renderView);
-      var element = view.boundElements[location.boundElementIndex];
-      var dashCasedPropertyName = util_1.camelCaseToDashCase(propertyName);
-      if (dom_adapter_1.DOM.isCommentNode(element)) {
-        var existingBindings = lang_1.RegExpWrapper.firstMatch(TEMPLATE_BINDINGS_EXP, lang_1.StringWrapper.replaceAll(dom_adapter_1.DOM.getText(element), /\n/g, ''));
-        var parsedBindings = lang_1.Json.parse(existingBindings[1]);
-        parsedBindings[dashCasedPropertyName] = propertyValue;
-        dom_adapter_1.DOM.setText(element, lang_1.StringWrapper.replace(TEMPLATE_COMMENT_TEXT, '{}', lang_1.Json.stringify(parsedBindings)));
-      } else {
-        this.setElementAttribute(location, propertyName, propertyValue);
       }
     };
     DomRenderer.prototype.setElementClass = function(location, className, isAdd) {
@@ -38752,23 +38731,21 @@ System.register("angular2/src/platform/server/parse5_adapter", ["parse5/index", 
         treeAdapter.appendChild(el, content.childNodes[i]);
       }
     };
-    Parse5DomAdapter.prototype.getText = function(el, isRecursive) {
+    Parse5DomAdapter.prototype.getText = function(el) {
       if (this.isTextNode(el)) {
         return el.data;
-      } else if (this.isCommentNode(el)) {
-        return isRecursive ? '' : el.data;
       } else if (lang_1.isBlank(el.childNodes) || el.childNodes.length == 0) {
         return "";
       } else {
         var textContent = "";
         for (var i = 0; i < el.childNodes.length; i++) {
-          textContent += this.getText(el.childNodes[i], true);
+          textContent += this.getText(el.childNodes[i]);
         }
         return textContent;
       }
     };
     Parse5DomAdapter.prototype.setText = function(el, value) {
-      if (this.isTextNode(el) || this.isCommentNode(el)) {
+      if (this.isTextNode(el)) {
         el.data = value;
       } else {
         this.clearNodes(el);

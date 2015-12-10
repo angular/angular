@@ -239,25 +239,21 @@ export class Parse5DomAdapter extends DomAdapter {
       treeAdapter.appendChild(el, content.childNodes[i]);
     }
   }
-  getText(el, isRecursive?: boolean): string {
+  getText(el): string {
     if (this.isTextNode(el)) {
       return el.data;
-    } else if (this.isCommentNode(el)) {
-      // In the DOM, comments within an element return an empty string for textContent
-      // However, comment node instances return the comment content for textContent getter
-      return isRecursive ? '' : el.data;
     } else if (isBlank(el.childNodes) || el.childNodes.length == 0) {
       return "";
     } else {
       var textContent = "";
       for (var i = 0; i < el.childNodes.length; i++) {
-        textContent += this.getText(el.childNodes[i], true);
+        textContent += this.getText(el.childNodes[i]);
       }
       return textContent;
     }
   }
   setText(el, value: string) {
-    if (this.isTextNode(el) || this.isCommentNode(el)) {
+    if (this.isTextNode(el)) {
       el.data = value;
     } else {
       this.clearNodes(el);
