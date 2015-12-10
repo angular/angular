@@ -58,8 +58,6 @@ import "package:angular2/src/web_workers/shared/service_message_broker.dart"
     show ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_;
 import "package:angular2/src/web_workers/worker/event_dispatcher.dart"
     show WebWorkerEventDispatcher;
-import "package:angular2/src/core/change_detection/change_detection.dart"
-    show ChangeDetectorGenConfig;
 
 main() {
   ClientMessageBrokerFactory createWebWorkerBrokerFactory(
@@ -125,8 +123,6 @@ main() {
       var workerRenderProtoViewStore = new RenderProtoViewRefStore(true);
       var workerRenderViewStore = new RenderViewWithFragmentsStore(true);
       return [
-        provide(ChangeDetectorGenConfig,
-            useValue: new ChangeDetectorGenConfig(true, true, false)),
         provide(RenderProtoViewRefStore, useValue: workerRenderProtoViewStore),
         provide(RenderViewWithFragmentsStore, useValue: workerRenderViewStore),
         provide(Renderer, useFactory: (workerSerializer) {
@@ -200,25 +196,6 @@ main() {
           });
         }));
     it(
-        "should update any template comment property/attributes",
-        inject([TestComponentBuilder, Renderer, AsyncTestCompleter],
-            (TestComponentBuilder tcb, Renderer renderer, async) {
-          var tpl = "<template [ngIf]=\"ctxBoolProp\"></template>";
-          tcb
-              .overrideView(
-                  MyComp, new ViewMetadata(template: tpl, directives: [NgIf]))
-              .createAsync(MyComp)
-              .then((fixture) {
-            ((fixture.debugElement.componentInstance as MyComp)).ctxBoolProp =
-                true;
-            fixture.detectChanges();
-            var el = getRenderElement(fixture.debugElement.elementRef);
-            expect(DOM.getInnerHTML(el))
-                .toContain("\"ng-reflect-ng-if\": \"true\"");
-            async.done();
-          });
-        }));
-    it(
         "should add and remove fragments",
         inject([TestComponentBuilder, AsyncTestCompleter],
             (TestComponentBuilder tcb, async) {
@@ -270,7 +247,7 @@ main() {
 class MyComp {
   String ctxProp;
   var ctxNumProp;
-  bool ctxBoolProp;
+  var ctxBoolProp;
   MyComp() {
     this.ctxProp = "initial value";
     this.ctxNumProp = 0;

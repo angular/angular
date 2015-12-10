@@ -202,7 +202,7 @@ class AppView implements ChangeDispatcher, RenderEventDispatcher {
   void logBindingUpdate(BindingTarget b, dynamic value) {
     if (b.isDirective() || b.isElementProperty()) {
       var elementRef = this.elementRefs[this.elementOffset + b.elementIndex];
-      this.renderer.setBindingDebugInfo(
+      this.renderer.setElementAttribute(
           elementRef,
           '''${ REFLECT_PREFIX}${ camelCaseToDashCase ( b . name )}''',
           '''${ value}''');

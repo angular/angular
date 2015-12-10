@@ -325,8 +325,6 @@ abstract class Renderer {
    */
   setElementAttribute(
       RenderElementRef location, String attributeName, String attributeValue);
-  setBindingDebugInfo(
-      RenderElementRef location, String propertyName, String propertyValue);
   /**
    * Sets a (CSS) class on the Element specified via `location`.
    *
