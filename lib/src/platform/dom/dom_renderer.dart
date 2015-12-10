@@ -4,7 +4,7 @@ import "package:angular2/src/core/di.dart" show Inject, Injectable, OpaqueToken;
 import "package:angular2/src/animate/animation_builder.dart"
     show AnimationBuilder;
 import "package:angular2/src/facade/lang.dart"
-    show isPresent, isBlank, RegExpWrapper, stringify, StringWrapper;
+    show isPresent, isBlank, Json, RegExpWrapper, stringify, StringWrapper;
 import "package:angular2/src/facade/exceptions.dart"
     show BaseException, WrappedException;
 import "shared_styles_host.dart" show DomSharedStylesHost;
@@ -28,13 +28,15 @@ import "package:angular2/src/core/render/view_factory.dart"
 import "package:angular2/src/core/render/view.dart"
     show DefaultRenderView, DefaultRenderFragmentRef, DefaultProtoViewRef;
 import "package:angular2/src/core/metadata.dart" show ViewEncapsulation;
-// TODO move it once DomAdapter is moved
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
+import "util.dart" show camelCaseToDashCase;
 
 const NAMESPACE_URIS = const {
   "xlink": "http://www.w3.org/1999/xlink",
   "svg": "http://www.w3.org/2000/svg"
 };
+const TEMPLATE_COMMENT_TEXT = "template bindings={}";
+var TEMPLATE_BINDINGS_EXP = new RegExp(r'^template bindings=(.*)$');
 
 abstract class DomRenderer extends Renderer implements NodeFactory<dynamic> {
   registerComponentTemplate(RenderComponentTemplate template);
@@ -107,7 +109,7 @@ abstract class DomRenderer extends Renderer implements NodeFactory<dynamic> {
   }
 
   dynamic createTemplateAnchor(List<String> attrNameAndValues) {
-    return this.createElement("script", attrNameAndValues);
+    return DOM.createComment(TEMPLATE_COMMENT_TEXT);
   }
 
   dynamic createElement(String name, List<String> attrNameAndValues);
@@ -138,6 +140,32 @@ abstract class DomRenderer extends Renderer implements NodeFactory<dynamic> {
       DOM.setAttribute(element, attributeName, stringify(attributeValue));
     } else {
       DOM.removeAttribute(element, attributeName);
+    }
+  }
+
+  /**
+   * Used only in debug mode to serialize property changes to comment nodes,
+   * such as <template> placeholders.
+   */
+  void setBindingDebugInfo(
+      RenderElementRef location, String propertyName, String propertyValue) {
+    DefaultRenderView<dynamic> view =
+        resolveInternalDomView(location.renderView);
+    var element = view.boundElements[location.boundElementIndex];
+    var dashCasedPropertyName = camelCaseToDashCase(propertyName);
+    if (DOM.isCommentNode(element)) {
+      var existingBindings = RegExpWrapper.firstMatch(
+          TEMPLATE_BINDINGS_EXP,
+          StringWrapper.replaceAll(
+              DOM.getText(element), new RegExp(r'\n'), ""));
+      var parsedBindings = Json.parse(existingBindings[1]);
+      parsedBindings[dashCasedPropertyName] = propertyValue;
+      DOM.setText(
+          element,
+          StringWrapper.replace(
+              TEMPLATE_COMMENT_TEXT, "{}", Json.stringify(parsedBindings)));
+    } else {
+      this.setElementAttribute(location, propertyName, propertyValue);
     }
   }
 

@@ -80,7 +80,8 @@ import "package:angular2/src/core/linker/view_container_ref.dart"
     show ViewContainerRef;
 import "package:angular2/src/core/linker/view_ref.dart" show ViewRef, ViewRef_;
 import "package:angular2/src/core/linker/compiler.dart" show Compiler;
-import "package:angular2/src/core/linker/element_ref.dart" show ElementRef;
+import "package:angular2/src/core/linker/element_ref.dart"
+    show ElementRef, ElementRef_;
 import "package:angular2/src/core/linker/template_ref.dart" show TemplateRef;
 import "package:angular2/src/platform/dom/dom_renderer.dart" show DomRenderer;
 import "package:angular2/src/facade/lang.dart" show IS_DART;
@@ -501,6 +502,22 @@ main() {
               expect(childNodesOfWrapper.length).toBe(3);
               expect(childNodesOfWrapper[1]).toHaveText("hello");
               expect(childNodesOfWrapper[2]).toHaveText("again");
+              async.done();
+            });
+          }));
+      it(
+          "should use a comment while stamping out `<template>` elements.",
+          inject([TestComponentBuilder, AsyncTestCompleter],
+              (TestComponentBuilder tcb, async) {
+            tcb
+                .overrideView(
+                    MyComp, new ViewMetadata(template: "<template></template>"))
+                .createAsync(MyComp)
+                .then((fixture) {
+              var childNodesOfWrapper =
+                  DOM.childNodes(fixture.debugElement.nativeElement);
+              expect(childNodesOfWrapper.length).toBe(1);
+              expect(DOM.isCommentNode(childNodesOfWrapper[0])).toBe(true);
               async.done();
             });
           }));
@@ -1680,6 +1697,23 @@ Can\'t bind to \'unknown\' since it isn\'t a known native property ("<div [ERROR
               async.done();
             });
           }));
+      it(
+          "should reflect property values on template comments",
+          inject([TestComponentBuilder, AsyncTestCompleter],
+              (TestComponentBuilder tcb, async) {
+            var tpl = "<template [ngIf]=\"ctxBoolProp\"></template>";
+            tcb
+                .overrideView(
+                    MyComp, new ViewMetadata(template: tpl, directives: [NgIf]))
+                .createAsync(MyComp)
+                .then((fixture) {
+              fixture.debugElement.componentInstance.ctxBoolProp = true;
+              fixture.detectChanges();
+              expect(DOM.getInnerHTML(fixture.debugElement.nativeElement))
+                  .toContain("\"ng-reflect-ng-if\": \"true\"");
+              async.done();
+            });
+          }));
     });
     describe("different proto view storages", () {
       runWithMode(String mode) {
@@ -2041,8 +2075,8 @@ class PushCmpWithAsyncPipe {
 @Injectable()
 class MyComp {
   String ctxProp;
-  var ctxNumProp;
-  var ctxBoolProp;
+  num ctxNumProp;
+  bool ctxBoolProp;
   MyComp() {
     this.ctxProp = "initial value";
     this.ctxNumProp = 0;
