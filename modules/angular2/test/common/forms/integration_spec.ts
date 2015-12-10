@@ -132,7 +132,7 @@ export function main() {
     it("should mark NgForm as submitted on submit event",
        inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
                 var t = `<div>
-                      <form #f="form" (ng-submit)="data=f.submitted"></form>
+                      <form #f="ngForm" (ngSubmit)="data=f.submitted"></form>
                       <span>{{data}}</span>
                     </div>`;
 
@@ -156,7 +156,7 @@ export function main() {
     it("should mark NgFormModel as submitted on submit event",
        inject([TestComponentBuilder], fakeAsync((tcb: TestComponentBuilder) => {
                 var t = `<div>
-                      <form #f="form" [ng-form-model]="form" (ng-submit)="data=f.submitted"></form>
+                      <form #f="ngForm" [ngFormModel]="form" (ngSubmit)="data=f.submitted"></form>
                       <span>{{data}}</span>
                     </div>`;
 
