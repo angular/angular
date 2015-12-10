@@ -16,12 +16,11 @@ class UrlResolver {
   /// '/packages'
   final String _packagePrefix;
 
-  UrlResolver([@Inject(PACKAGE_ROOT_URL) packagePrefix]) :
-    this._packagePrefix = isPresent(packagePrefix) ? StringWrapper.stripRight(packagePrefix, '/') : null;
+  UrlResolver([@Inject(PACKAGE_ROOT_URL) this._packagePrefix]);
 
   /// Creates a UrlResolver that will resolve 'package:' Urls to a different
   /// prefixed location.
-  UrlResolver.withUrlPrefix(this._packagePrefix);
+  const UrlResolver.withUrlPrefix(this._packagePrefix);
 
   /**
    * Resolves the `url` given the `baseUrl`:
@@ -43,9 +42,11 @@ class UrlResolver {
       uri = baseUri.resolveUri(uri);
     }
 
-    if (_packagePrefix != null && uri.scheme == 'package') {
+    var prefix = this._packagePrefix;
+    if (prefix != null && uri.scheme == 'package') {
+      prefix = StringWrapper.stripRight(prefix, '/');
       var path = StringWrapper.stripLeft(uri.path, '/');
-      return '$_packagePrefix/${path}';
+      return '$prefix/$path';
     } else {
       return uri.toString();
     }

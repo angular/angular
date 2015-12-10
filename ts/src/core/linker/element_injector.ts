@@ -571,7 +571,7 @@ export class ElementInjector extends TreeNode<ElementInjector> implements Depend
   ngAfterContentChecked(): void { this._queryStrategy.updateContentQueries(); }
 
   traverseAndSetQueriesAsDirty(): void {
-    var inj: ElementInjector = this;
+    var inj = this;
     while (isPresent(inj)) {
       inj._setQueriesAsDirty();
       inj = inj.parent;

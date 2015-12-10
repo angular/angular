@@ -29,7 +29,7 @@ import { DependencyMetadata } from 'angular2/src/core/di/metadata';
 export declare class AttributeMetadata extends DependencyMetadata {
     attributeName: string;
     constructor(attributeName: string);
-    token: this;
+    token: AttributeMetadata;
     toString(): string;
 }
 /**
