@@ -32,11 +32,18 @@ export function main() {
   var commandLog: any[];
   var eventFactory = new TraceEventFactory('timeline', 'pid0');
 
-  function createMetric(perfLogs, microMetrics = null, perfLogFeatures = null, forceGc = null,
-                        captureFrames = null) {
+  function createMetric(perfLogs, perfLogFeatures,
+                        {microMetrics, forceGc, captureFrames, receivedData, requestCount}: {
+                          microMetrics?: {[key: string]: string},
+                          forceGc?: boolean,
+                          captureFrames?: boolean,
+                          receivedData?: boolean,
+                          requestCount?: boolean
+                        } = {}) {
     commandLog = [];
     if (isBlank(perfLogFeatures)) {
-      perfLogFeatures = new PerfLogFeatures({render: true, gc: true, frameCapture: true});
+      perfLogFeatures =
+          new PerfLogFeatures({render: true, gc: true, frameCapture: true, userTiming: true});
     }
     if (isBlank(microMetrics)) {
       microMetrics = StringMapWrapper.create();
@@ -59,6 +66,12 @@ export function main() {
     if (isPresent(captureFrames)) {
       bindings.push(bind(Options.CAPTURE_FRAMES).toValue(captureFrames));
     }
+    if (isPresent(receivedData)) {
+      bindings.push(bind(Options.RECEIVED_DATA).toValue(receivedData));
+    }
+    if (isPresent(requestCount)) {
+      bindings.push(bind(Options.REQUEST_COUNT).toValue(requestCount));
+    }
     return Injector.resolveAndCreate(bindings).get(PerflogMetric);
   }
 
@@ -72,20 +85,20 @@ export function main() {
     }
 
     it('should describe itself based on the perfLogFeatrues', () => {
-      expect(sortedKeys(createMetric([[]], null, new PerfLogFeatures()).describe()))
+      expect(sortedKeys(createMetric([[]], new PerfLogFeatures()).describe()))
           .toEqual(['pureScriptTime', 'scriptTime']);
 
-      expect(sortedKeys(createMetric([[]], null, new PerfLogFeatures({render: true, gc: false}))
-                            .describe()))
+      expect(
+          sortedKeys(createMetric([[]], new PerfLogFeatures({render: true, gc: false})).describe()))
           .toEqual(['pureScriptTime', 'renderTime', 'scriptTime']);
 
-      expect(sortedKeys(createMetric([[]]).describe()))
+      expect(sortedKeys(createMetric([[]], null).describe()))
           .toEqual(
               ['gcAmount', 'gcTime', 'majorGcTime', 'pureScriptTime', 'renderTime', 'scriptTime']);
 
-      expect(
-          sortedKeys(createMetric([[]], null, new PerfLogFeatures({render: true, gc: true}), true)
-                         .describe()))
+      expect(sortedKeys(
+                 createMetric([[]], new PerfLogFeatures({render: true, gc: true}), {forceGc: true})
+                     .describe()))
           .toEqual([
             'forcedGcAmount',
             'forcedGcTime',
@@ -96,16 +109,23 @@ export function main() {
             'renderTime',
             'scriptTime'
           ]);
+
+
+      expect(sortedKeys(createMetric([[]], new PerfLogFeatures({userTiming: true}),
+                                     {receivedData: true, requestCount: true})
+                            .describe()))
+          .toEqual(['pureScriptTime', 'receivedData', 'requestCount', 'scriptTime']);
     });
 
     it('should describe itself based on micro metrics', () => {
-      var description = createMetric([[]], {'myMicroMetric': 'someDesc'}).describe();
+      var description =
+          createMetric([[]], null, {microMetrics: {'myMicroMetric': 'someDesc'}}).describe();
       expect(description['myMicroMetric']).toEqual('someDesc');
     });
 
     it('should describe itself if frame capture is requested and available', () => {
       var description =
-          createMetric([[]], null, new PerfLogFeatures({frameCapture: true}), null, true)
+          createMetric([[]], new PerfLogFeatures({frameCapture: true}), {captureFrames: true})
               .describe();
       expect(description['frameTime.mean']).not.toContain('WARNING');
       expect(description['frameTime.best']).not.toContain('WARNING');
@@ -115,7 +135,7 @@ export function main() {
 
     it('should describe itself if frame capture is requested and not available', () => {
       var description =
-          createMetric([[]], null, new PerfLogFeatures({frameCapture: false}), null, true)
+          createMetric([[]], new PerfLogFeatures({frameCapture: false}), {captureFrames: true})
               .describe();
       expect(description['frameTime.mean']).toContain('WARNING');
       expect(description['frameTime.best']).toContain('WARNING');
@@ -126,7 +146,7 @@ export function main() {
     describe('beginMeasure', () => {
 
       it('should not force gc and mark the timeline', inject([AsyncTestCompleter], (async) => {
-           var metric = createMetric([[]]);
+           var metric = createMetric([[]], null);
            metric.beginMeasure().then((_) => {
              expect(commandLog).toEqual([['timeBegin', 'benchpress0']]);
 
@@ -135,7 +155,7 @@ export function main() {
          }));
 
       it('should force gc and mark the timeline', inject([AsyncTestCompleter], (async) => {
-           var metric = createMetric([[]], null, null, true);
+           var metric = createMetric([[]], null, {forceGc: true});
            metric.beginMeasure().then((_) => {
              expect(commandLog).toEqual([['gc'], ['timeBegin', 'benchpress0']]);
 
@@ -157,7 +177,7 @@ export function main() {
                eventFactory.markEnd('benchpress0', 10)
              ]
            ];
-           var metric = createMetric(events);
+           var metric = createMetric(events, null);
            metric.beginMeasure()
                .then((_) => metric.endMeasure(false))
                .then((data) => {
@@ -182,7 +202,7 @@ export function main() {
              ],
              [eventFactory.markEnd('benchpress1', 3)]
            ];
-           var metric = createMetric(events);
+           var metric = createMetric(events, null);
            metric.beginMeasure()
                .then((_) => metric.endMeasure(true))
                .then((_) => metric.endMeasure(true))
@@ -211,7 +231,7 @@ export function main() {
                eventFactory.markEnd('benchpress0', 10)
              ]
            ];
-           var metric = createMetric(events);
+           var metric = createMetric(events, null);
            metric.beginMeasure()
                .then((_) => metric.endMeasure(false))
                .then((data) => {
@@ -247,7 +267,7 @@ export function main() {
                eventFactory.markEnd('benchpress1', 6)
              ]
            ];
-           var metric = createMetric(events);
+           var metric = createMetric(events, null);
            metric.beginMeasure()
                .then((_) => metric.endMeasure(true))
                .then((data) => {
@@ -287,7 +307,7 @@ export function main() {
         });
 
         it('should measure forced gc', inject([AsyncTestCompleter], (async) => {
-             var metric = createMetric(events, null, null, true);
+             var metric = createMetric(events, null, {forceGc: true});
              metric.beginMeasure()
                  .then((_) => metric.endMeasure(false))
                  .then((data) => {
@@ -309,7 +329,7 @@ export function main() {
            }));
 
         it('should restart after the forced gc if needed', inject([AsyncTestCompleter], (async) => {
-             var metric = createMetric(events, null, null, true);
+             var metric = createMetric(events, null, {forceGc: true});
              metric.beginMeasure()
                  .then((_) => metric.endMeasure(true))
                  .then((data) => {
@@ -325,10 +345,20 @@ export function main() {
 
     describe('aggregation', () => {
 
-      function aggregate(events: any[], microMetrics = null, captureFrames = null) {
+      function aggregate(events: any[], {microMetrics, captureFrames, receivedData, requestCount}: {
+        microMetrics?: {[key: string]: string},
+        captureFrames?: boolean,
+        receivedData?: boolean,
+        requestCount?: boolean
+      } = {}) {
         events.unshift(eventFactory.markStart('benchpress0', 0));
         events.push(eventFactory.markEnd('benchpress0', 10));
-        var metric = createMetric([events], microMetrics, null, null, captureFrames);
+        var metric = createMetric([events], null, {
+          microMetrics: microMetrics,
+          captureFrames: captureFrames,
+          receivedData: receivedData,
+          requestCount: requestCount
+        });
         return metric.beginMeasure().then((_) => metric.endMeasure(false));
       }
 
@@ -342,7 +372,7 @@ export function main() {
                    eventFactory.instant('frame', 4),
                    eventFactory.markEnd('frameCapture', 5)
                  ],
-                 null, true)
+                 {captureFrames: true})
                  .then((data) => {
                    expect(data['frameTime.mean']).toBe(((3 - 1) + (4 - 3)) / 2);
                    async.done();
@@ -353,7 +383,7 @@ export function main() {
              PromiseWrapper.catchError(
                  aggregate(
                      [eventFactory.instant('frame', 4), eventFactory.markEnd('frameCapture', 5)],
-                     null, true),
+                     {captureFrames: true}),
                  (err) => {
                    expect(() => { throw err; })
                        .toThrowError('missing start event for frame capture');
@@ -365,7 +395,7 @@ export function main() {
              PromiseWrapper.catchError(
                  aggregate(
                      [eventFactory.markStart('frameCapture', 3), eventFactory.instant('frame', 4)],
-                     null, true),
+                     {captureFrames: true}),
                  (err) => {
                    expect(() => { throw err; }).toThrowError('missing end event for frame capture');
                    async.done();
@@ -379,7 +409,7 @@ export function main() {
                        eventFactory.markStart('frameCapture', 3),
                        eventFactory.markStart('frameCapture', 4)
                      ],
-                     null, true),
+                     {captureFrames: true}),
                  (err) => {
                    expect(() => { throw err; })
                        .toThrowError('can capture frames only once per benchmark run');
@@ -399,7 +429,7 @@ export function main() {
 
         it('should throw if frame capture is enabled, but nothing is captured',
            inject([AsyncTestCompleter], (async) => {
-             PromiseWrapper.catchError(aggregate([], null, true), (err) => {
+             PromiseWrapper.catchError(aggregate([], {captureFrames: true}), (err) => {
                expect(() => { throw err; })
                    .toThrowError(
                        'frame capture requested in benchpress, but no start event was found');
@@ -419,7 +449,7 @@ export function main() {
                    eventFactory.instant('frame', 32),
                    eventFactory.markEnd('frameCapture', 10)
                  ],
-                 null, true)
+                 {captureFrames: true})
                  .then((data) => {
                    expect(data['frameTime.worst']).toBe(10);
                    expect(data['frameTime.best']).toBe(3);
@@ -437,7 +467,7 @@ export function main() {
                    eventFactory.instant('frame', 3),
                    eventFactory.markEnd('frameCapture', 4)
                  ],
-                 null, true)
+                 {captureFrames: true})
                  .then((data) => {
                    expect(data['frameTime.smooth']).toBe(1.0);
                    async.done();
@@ -456,7 +486,7 @@ export function main() {
                    eventFactory.instant('frame', 24),
                    eventFactory.markEnd('frameCapture', 4)
                  ],
-                 null, true)
+                 {captureFrames: true})
                  .then((data) => {
                    expect(data['frameTime.smooth']).toBe(0.75);
                    async.done();
@@ -518,16 +548,18 @@ export function main() {
       it('should ignore events from different processed as the start mark',
          inject([AsyncTestCompleter], (async) => {
            var otherProcessEventFactory = new TraceEventFactory('timeline', 'pid1');
-           var metric = createMetric([
-             [
-               eventFactory.markStart('benchpress0', 0),
-               eventFactory.start('script', 0, null),
-               eventFactory.end('script', 5, null),
-               otherProcessEventFactory.start('script', 10, null),
-               otherProcessEventFactory.end('script', 17, null),
-               eventFactory.markEnd('benchpress0', 20)
-             ]
-           ]);
+           var metric = createMetric(
+               [
+                 [
+                   eventFactory.markStart('benchpress0', 0),
+                   eventFactory.start('script', 0, null),
+                   eventFactory.end('script', 5, null),
+                   otherProcessEventFactory.start('script', 10, null),
+                   otherProcessEventFactory.end('script', 17, null),
+                   eventFactory.markEnd('benchpress0', 20)
+                 ]
+               ],
+               null);
            metric.beginMeasure()
                .then((_) => metric.endMeasure(false))
                .then((data) => {
@@ -594,6 +626,44 @@ export function main() {
                });
          }));
 
+      describe('receivedData',
+               () => {it('should report received data since last navigationStart',
+                         inject([AsyncTestCompleter], (async) => {
+                           aggregate(
+                               [
+                                 eventFactory.instant('receivedData', 0, {'encodedDataLength': 1}),
+                                 eventFactory.instant('navigationStart', 1),
+                                 eventFactory.instant('receivedData', 2, {'encodedDataLength': 2}),
+                                 eventFactory.instant('navigationStart', 3),
+                                 eventFactory.instant('receivedData', 4, {'encodedDataLength': 4}),
+                                 eventFactory.instant('receivedData', 5, {'encodedDataLength': 8})
+                               ],
+                               {receivedData: true})
+                               .then((data) => {
+                                 expect(data['receivedData']).toBe(12);
+                                 async.done();
+                               });
+                         }))});
+
+      describe('requestCount',
+               () => {it('should report count of requests sent since last navigationStart',
+                         inject([AsyncTestCompleter], (async) => {
+                           aggregate(
+                               [
+                                 eventFactory.instant('sendRequest', 0),
+                                 eventFactory.instant('navigationStart', 1),
+                                 eventFactory.instant('sendRequest', 2),
+                                 eventFactory.instant('navigationStart', 3),
+                                 eventFactory.instant('sendRequest', 4),
+                                 eventFactory.instant('sendRequest', 5)
+                               ],
+                               {requestCount: true})
+                               .then((data) => {
+                                 expect(data['requestCount']).toBe(2);
+                                 async.done();
+                               });
+                         }))});
+
       describe('microMetrics', () => {
 
         it('should report micro metrics', inject([AsyncTestCompleter], (async) => {
@@ -602,7 +672,7 @@ export function main() {
                    eventFactory.markStart('mm1', 0),
                    eventFactory.markEnd('mm1', 5),
                  ],
-                 {'mm1': 'micro metric 1'})
+                 {microMetrics: {'mm1': 'micro metric 1'}})
                  .then((data) => {
                    expect(data['mm1']).toBe(5.0);
                    async.done();
@@ -627,7 +697,7 @@ export function main() {
                    eventFactory.markStart('mm1*20', 0),
                    eventFactory.markEnd('mm1*20', 5),
                  ],
-                 {'mm1': 'micro metric 1'})
+                 {microMetrics: {'mm1': 'micro metric 1'}})
                  .then((data) => {
                    expect(data['mm1']).toBe(5 / 20);
                    async.done();
