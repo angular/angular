@@ -35,6 +35,11 @@ function _getElementId(element) {
         return null;
     }
 }
+/**
+ * Returns a {@link DebugElement} for the given native DOM element, or
+ * null if the given native element does not have an Angular view associated
+ * with it.
+ */
 export function inspectNativeElement(element) {
     var elId = _getElementId(element);
     if (isPresent(elId)) {

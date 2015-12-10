@@ -2,6 +2,11 @@ import { AppViewListener } from 'angular2/src/core/linker/view_listener';
 import { AppView } from 'angular2/src/core/linker/view';
 import { Renderer } from 'angular2/src/core/render/api';
 import { DebugElement } from 'angular2/src/core/debug/debug_element';
+/**
+ * Returns a {@link DebugElement} for the given native DOM element, or
+ * null if the given native element does not have an Angular view associated
+ * with it.
+ */
 export declare function inspectNativeElement(element: any): DebugElement;
 export declare class DebugElementViewListener implements AppViewListener {
     private _renderer;
