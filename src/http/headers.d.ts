@@ -62,6 +62,10 @@ export declare class Headers {
      */
     values(): string[][];
     /**
+     * Returns string of all headers.
+     */
+    toJSON(): string;
+    /**
      * Returns list of header values for a given name.
      */
     getAll(header: string): string[];
