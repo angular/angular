@@ -27,7 +27,7 @@ main() {
         inject([TestComponentBuilder, AsyncTestCompleter],
             (TestComponentBuilder tcb, async) {
           var template =
-              '''<div [ng-style]="{\'max-width\': \'40px\'}"></div>''';
+              '''<div [ngStyle]="{\'max-width\': \'40px\'}"></div>''';
           tcb
               .overrideTemplate(TestComponent, template)
               .createAsync(TestComponent)
@@ -43,7 +43,7 @@ main() {
         "should add and change styles specified in an object expression",
         inject([TestComponentBuilder, AsyncTestCompleter],
             (TestComponentBuilder tcb, async) {
-          var template = '''<div [ng-style]="expr"></div>''';
+          var template = '''<div [ngStyle]="expr"></div>''';
           tcb
               .overrideTemplate(TestComponent, template)
               .createAsync(TestComponent)
@@ -67,7 +67,7 @@ main() {
         "should remove styles when deleting a key in an object expression",
         inject([TestComponentBuilder, AsyncTestCompleter],
             (TestComponentBuilder tcb, async) {
-          var template = '''<div [ng-style]="expr"></div>''';
+          var template = '''<div [ngStyle]="expr"></div>''';
           tcb
               .overrideTemplate(TestComponent, template)
               .createAsync(TestComponent)
@@ -91,7 +91,7 @@ main() {
         inject([TestComponentBuilder, AsyncTestCompleter],
             (TestComponentBuilder tcb, async) {
           var template =
-              '''<div style="font-size: 12px" [ng-style]="expr"></div>''';
+              '''<div style="font-size: 12px" [ngStyle]="expr"></div>''';
           tcb
               .overrideTemplate(TestComponent, template)
               .createAsync(TestComponent)
@@ -121,7 +121,7 @@ main() {
         inject([TestComponentBuilder, AsyncTestCompleter],
             (TestComponentBuilder tcb, async) {
           var template =
-              '''<div [style.font-size.px]="12" [ng-style]="expr"></div>''';
+              '''<div [style.font-size.px]="12" [ngStyle]="expr"></div>''';
           tcb
               .overrideTemplate(TestComponent, template)
               .createAsync(TestComponent)

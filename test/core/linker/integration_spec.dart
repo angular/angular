@@ -239,14 +239,14 @@ main() {
             });
           }));
       it(
-          "should consume binding to camel-cased properties using dash-cased syntax in templates",
+          "should consume binding to camel-cased properties",
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             tcb
                 .overrideView(
                     MyComp,
                     new ViewMetadata(
-                        template: "<input [read-only]=\"ctxBoolProp\">"))
+                        template: "<input [readOnly]=\"ctxBoolProp\">"))
                 .createAsync(MyComp)
                 .then((fixture) {
               fixture.detectChanges();
@@ -262,14 +262,14 @@ main() {
             });
           }));
       it(
-          "should consume binding to inner-html",
+          "should consume binding to innerHtml",
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             tcb
                 .overrideView(
                     MyComp,
                     new ViewMetadata(
-                        template: "<div inner-html=\"{{ctxProp}}\"></div>"))
+                        template: "<div innerHtml=\"{{ctxProp}}\"></div>"))
                 .createAsync(MyComp)
                 .then((fixture) {
               fixture.debugElement.componentInstance.ctxProp =
@@ -536,7 +536,7 @@ main() {
                     MyComp,
                     new ViewMetadata(
                         template:
-                            "<some-directive><toolbar><template toolbarpart var-toolbar-prop=\"toolbarProp\">{{ctxProp}},{{toolbarProp}},<cmp-with-host></cmp-with-host></template></toolbar></some-directive>",
+                            "<some-directive><toolbar><template toolbarpart var-toolbarProp=\"toolbarProp\">{{ctxProp}},{{toolbarProp}},<cmp-with-host></cmp-with-host></template></toolbar></some-directive>",
                         directives: [
                           SomeDirective,
                           CompWithHost,
@@ -670,7 +670,7 @@ main() {
               });
             }));
         it(
-            "should change dash-case to camel-case",
+            "should preserve case",
             inject([TestComponentBuilder, AsyncTestCompleter],
                 (TestComponentBuilder tcb, async) {
               tcb
@@ -678,7 +678,7 @@ main() {
                       MyComp,
                       new ViewMetadata(
                           template:
-                              "<p><child-cmp var-super-alice></child-cmp></p>",
+                              "<p><child-cmp var-superAlice></child-cmp></p>",
                           directives: [ChildComp]))
                   .createAsync(MyComp)
                   .then((fixture) {
@@ -696,7 +696,7 @@ main() {
                       MyComp,
                       new ViewMetadata(
                           template:
-                              "<template ng-for [ng-for-of]=\"[1]\" var-i><child-cmp-no-template #cmp></child-cmp-no-template>{{i}}-{{cmp.ctxProp}}</template>",
+                              "<template ngFor [ngForOf]=\"[1]\" var-i><child-cmp-no-template #cmp></child-cmp-no-template>{{i}}-{{cmp.ctxProp}}</template>",
                           directives: [ChildCompNoTemplate, NgFor]))
                   .createAsync(MyComp)
                   .then((fixture) {
@@ -861,7 +861,7 @@ main() {
                     new ViewMetadata(
                         template: '''
             <some-directive>
-              <p *ng-if="true">
+              <p *ngIf="true">
                 <cmp-with-host #child></cmp-with-host>
               </p>
             </some-directive>''',
@@ -1091,7 +1091,7 @@ main() {
                     MyComp,
                     new ViewMetadata(
                         template:
-                            "<div *ng-if=\"ctxBoolProp\" listener listenerother></div>",
+                            "<div *ngIf=\"ctxBoolProp\" listener listenerother></div>",
                         directives: [
                           NgIf,
                           DirectiveListeningDomEvent,
@@ -1294,7 +1294,7 @@ main() {
                     new ViewMetadata(
                         template: '''
               <component-providing-logging-injectable #providing>
-                <directive-consuming-injectable *ng-if="ctxBoolProp">
+                <directive-consuming-injectable *ngIf="ctxBoolProp">
                 </directive-consuming-injectable>
               </component-providing-logging-injectable>
           ''',
@@ -1568,7 +1568,7 @@ main() {
                   MyComp,
                   new ViewMetadata(
                       template:
-                          "<div><div *some-impvp=\"ctxBoolProp\">hello</div></div>",
+                          "<div><div *someImpvp=\"ctxBoolProp\">hello</div></div>",
                       directives: [SomeImperativeViewport]))
               .createAsync(MyComp)
               .then((ComponentFixture fixture) {
@@ -1746,8 +1746,8 @@ Can\'t bind to \'unknown\' since it isn\'t a known native property ("<div [ERROR
                 (TestComponentBuilder tcb, async) {
               expectCompileError(
                   tcb,
-                  "<div><template *ng-if=\"condition\"></template></div>",
-                  "Missing directive to handle: <template *ng-if=\"condition\">",
+                  "<div><template *ngIf=\"condition\"></template></div>",
+                  "Missing directive to handle: <template *ngIf=\"condition\">",
                   () => async.done());
             }));
         it(
@@ -1756,8 +1756,8 @@ Can\'t bind to \'unknown\' since it isn\'t a known native property ("<div [ERROR
                 (TestComponentBuilder tcb, async) {
               expectCompileError(
                   tcb,
-                  "<div *ng-if=\"condition\"></div>",
-                  "Missing directive to handle 'if' in MyComp: <div *ng-if=\"condition\">",
+                  "<div *ngIf=\"condition\"></div>",
+                  "Missing directive to handle 'if' in MyComp: <div *ngIf=\"condition\">",
                   () => async.done());
             }));
       }
@@ -1772,7 +1772,7 @@ Can\'t bind to \'unknown\' since it isn\'t a known native property ("<div [ERROR
                     MyComp,
                     new ViewMetadata(
                         template:
-                            "<with-prop-decorators el-prop=\"aaa\"></with-prop-decorators>",
+                            "<with-prop-decorators elProp=\"aaa\"></with-prop-decorators>",
                         directives: [DirectiveWithPropDecorators]))
                 .createAsync(MyComp)
                 .then((fixture) {
@@ -1809,14 +1809,14 @@ Can\'t bind to \'unknown\' since it isn\'t a known native property ("<div [ERROR
           }));
       if (DOM.supportsDOMEvents()) {
         it(
-            "should support events decorators",
+            "should support event decorators",
             inject([TestComponentBuilder],
                 fakeAsync((TestComponentBuilder tcb) {
               tcb = tcb.overrideView(
                   MyComp,
                   new ViewMetadata(
                       template:
-                          '''<with-prop-decorators (el-event)="ctxProp=\'called\'">''',
+                          '''<with-prop-decorators (elEvent)="ctxProp=\'called\'">''',
                       directives: [DirectiveWithPropDecorators]));
               ComponentFixture fixture;
               tcb.createAsync(MyComp).then((root) {
@@ -2284,7 +2284,7 @@ class ToolbarPart {
   }
 }
 
-@Directive(selector: "[toolbar-vc]", inputs: const ["toolbarVc"])
+@Directive(selector: "[toolbarVc]", inputs: const ["toolbarVc"])
 @Injectable()
 class ToolbarViewContainer {
   ViewContainerRef vc;
@@ -2300,7 +2300,7 @@ class ToolbarViewContainer {
 @Component(selector: "toolbar")
 @View(
     template:
-        "TOOLBAR(<div *ng-for=\"var part of query\" [toolbar-vc]=\"part\"></div>)",
+        "TOOLBAR(<div *ngFor=\"var part of query\" [toolbarVc]=\"part\"></div>)",
     directives: const [ToolbarViewContainer, NgFor])
 @Injectable()
 class ToolbarComponent {
@@ -2453,7 +2453,7 @@ class ChildConsumingEventBus {
   }
 }
 
-@Directive(selector: "[some-impvp]", inputs: const ["someImpvp"])
+@Directive(selector: "[someImpvp]", inputs: const ["someImpvp"])
 @Injectable()
 class SomeImperativeViewport {
   ViewContainerRef vc;
@@ -2515,7 +2515,7 @@ class DirectiveThrowingAnError {
     selector: "component-with-template",
     directives: const [NgFor],
     template:
-        '''No View Decorator: <div *ng-for="#item of items">{{item}}</div>''')
+        '''No View Decorator: <div *ngFor="#item of items">{{item}}</div>''')
 class ComponentWithTemplate {
   var items = [1, 2, 3];
 }

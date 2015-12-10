@@ -53,7 +53,7 @@ class MessageDir {
     template: '''<div class="child" message="child">
                <span class="childnested" message="nestedchild">Child</span>
              </div>
-             <span class="child" [inner-html]="childBinding"></span>''',
+             <span class="child" [innerHtml]="childBinding"></span>''',
     directives: const [MessageDir])
 @Injectable()
 class ChildComp {
@@ -66,7 +66,7 @@ class ChildComp {
 @Component(selector: "cond-content-comp", viewProviders: const [Logger])
 @View(
     template:
-        '''<div class="child" message="child" *ng-if="false"><ng-content></ng-content></div>''',
+        '''<div class="child" message="child" *ngIf="false"><ng-content></ng-content></div>''',
     directives: const [NgIf, MessageDir])
 @Injectable()
 class ConditionalContentComp {}
@@ -76,7 +76,7 @@ class ConditionalContentComp {}
     template: '''<div class="parent" message="parent">
                <span class="parentnested" message="nestedparent">Parent</span>
              </div>
-             <span class="parent" [inner-html]="parentBinding"></span>
+             <span class="parent" [innerHtml]="parentBinding"></span>
              <child-comp class="child-comp-class"></child-comp>
              <cond-content-comp class="cond-content-comp-class"></cond-content-comp>''',
     directives: const [ChildComp, MessageDir, ConditionalContentComp])
@@ -121,9 +121,9 @@ class EventsComp {
 
 @Component(selector: "using-for", viewProviders: const [Logger])
 @View(
-    template: '''<span *ng-for="#thing of stuff" [inner-html]="thing"></span>
+    template: '''<span *ngFor="#thing of stuff" [innerHtml]="thing"></span>
             <ul message="list">
-              <li *ng-for="#item of stuff" [inner-html]="item"></li>
+              <li *ngFor="#item of stuff" [innerHtml]="item"></li>
             </ul>''',
     directives: const [NgFor, MessageDir])
 @Injectable()

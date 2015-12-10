@@ -21,7 +21,7 @@ import "instruction.dart" show Instruction;
  * When linking to this `User` route, you can write:
  *
  * ```
- * <a [router-link]="['./User']">link to user component</a>
+ * <a [routerLink]="['./User']">link to user component</a>
  * ```
  *
  * RouterLink expects the value to be an array of route names, followed by the params
@@ -36,7 +36,7 @@ import "instruction.dart" show Instruction;
  * current component's parent.
  */
 @Directive(
-    selector: "[router-link]",
+    selector: "[routerLink]",
     inputs: const ["routeParams: routerLink", "target: target"],
     host: const {
       "(click)": "onClick()",

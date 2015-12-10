@@ -87,9 +87,6 @@ class CssSelector {
   }
 
   setElement([String element = null]) {
-    if (isPresent(element)) {
-      element = element.toLowerCase();
-    }
     this.element = element;
   }
 
@@ -111,7 +108,7 @@ class CssSelector {
   }
 
   addAttribute(String name, [String value = _EMPTY_ATTR_VALUE]) {
-    this.attrs.add(name.toLowerCase());
+    this.attrs.add(name);
     if (isPresent(value)) {
       value = value.toLowerCase();
     } else {

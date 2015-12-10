@@ -71,7 +71,7 @@ main() {
                   useValue: new ChangeDetectorGenConfig(true, false, false))
             ]);
         it("should watch element properties", () {
-          expect(detectChanges(compiler, "<div [el-prop]=\"someProp\">"))
+          expect(detectChanges(compiler, "<div [elProp]=\"someProp\">"))
               .toEqual(["elementProperty(elProp)=someValue"]);
         });
       });
@@ -81,7 +81,7 @@ main() {
                   useValue: new ChangeDetectorGenConfig(true, false, true))
             ]);
         it("should watch element properties", () {
-          expect(detectChanges(compiler, "<div [el-prop]=\"someProp\">"))
+          expect(detectChanges(compiler, "<div [elProp]=\"someProp\">"))
               .toEqual(["elementProperty(elProp)=someValue"]);
         });
       });
@@ -102,7 +102,7 @@ main() {
       it(
           "should watch element properties",
           inject([AsyncTestCompleter], (async) {
-            detectChanges(compiler, "<div [el-prop]=\"someProp\">")
+            detectChanges(compiler, "<div [elProp]=\"someProp\">")
                 .then((value) {
               expect(value).toEqual(["elementProperty(elProp)=someValue"]);
               async.done();

@@ -38,17 +38,17 @@ const controlGroupProvider =
  *     <div>
  *       <h2>Angular2 Control &amp; ControlGroup Example</h2>
  *       <form #f="ngForm">
- *         <div ng-control-group="name" #cg-name="ngForm">
+ *         <div ngControlGroup="name" #cg-name="form">
  *           <h3>Enter your name:</h3>
- *           <p>First: <input ng-control="first" required></p>
- *           <p>Middle: <input ng-control="middle"></p>
- *           <p>Last: <input ng-control="last" required></p>
+ *           <p>First: <input ngControl="first" required></p>
+ *           <p>Middle: <input ngControl="middle"></p>
+ *           <p>Last: <input ngControl="last" required></p>
  *         </div>
  *         <h3>Name value:</h3>
  *         <pre>{{valueOf(cgName)}}</pre>
  *         <p>Name is {{cgName?.control?.valid ? "valid" : "invalid"}}</p>
  *         <h3>What's your favorite food?</h3>
- *         <p><input ng-control="food"></p>
+ *         <p><input ngControl="food"></p>
  *         <h3>Form value</h3>
  *         <pre>{{valueOf(f)}}</pre>
  *       </form>
@@ -70,9 +70,9 @@ const controlGroupProvider =
  * this group can be accessed separately from the overall form.
  */
 @Directive(
-    selector: "[ng-control-group]",
+    selector: "[ngControlGroup]",
     providers: const [controlGroupProvider],
-    inputs: const ["name: ng-control-group"],
+    inputs: const ["name: ngControlGroup"],
     exportAs: "ngForm")
 class NgControlGroup extends ControlContainer implements OnInit, OnDestroy {
   List<dynamic> _validators;

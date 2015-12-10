@@ -27,7 +27,6 @@ import "package:angular2/src/core/render/view_factory.dart"
     show createRenderView, NodeFactory, encapsulateStyles;
 import "package:angular2/src/core/render/view.dart"
     show DefaultRenderView, DefaultRenderFragmentRef, DefaultProtoViewRef;
-import "util.dart" show camelCaseToDashCase;
 import "package:angular2/src/core/metadata.dart" show ViewEncapsulation;
 // TODO move it once DomAdapter is moved
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
@@ -135,12 +134,10 @@ abstract class DomRenderer extends Renderer implements NodeFactory<dynamic> {
       RenderElementRef location, String attributeName, String attributeValue) {
     var view = resolveInternalDomView(location.renderView);
     var element = view.boundElements[location.boundElementIndex];
-    var dashCasedAttributeName = camelCaseToDashCase(attributeName);
     if (isPresent(attributeValue)) {
-      DOM.setAttribute(
-          element, dashCasedAttributeName, stringify(attributeValue));
+      DOM.setAttribute(element, attributeName, stringify(attributeValue));
     } else {
-      DOM.removeAttribute(element, dashCasedAttributeName);
+      DOM.removeAttribute(element, attributeName);
     }
   }
 
@@ -159,11 +156,10 @@ abstract class DomRenderer extends Renderer implements NodeFactory<dynamic> {
       RenderElementRef location, String styleName, String styleValue) {
     var view = resolveInternalDomView(location.renderView);
     var element = view.boundElements[location.boundElementIndex];
-    var dashCasedStyleName = camelCaseToDashCase(styleName);
     if (isPresent(styleValue)) {
-      DOM.setStyle(element, dashCasedStyleName, stringify(styleValue));
+      DOM.setStyle(element, styleName, stringify(styleValue));
     } else {
-      DOM.removeStyle(element, dashCasedStyleName);
+      DOM.removeStyle(element, styleName);
     }
   }
 

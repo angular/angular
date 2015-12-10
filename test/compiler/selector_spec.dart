@@ -24,14 +24,17 @@ main() {
       };
       matcher = new SelectorMatcher();
     });
-    it("should select by element name case insensitive", () {
+    it("should select by element name case sensitive", () {
       matcher.addSelectables(s1 = CssSelector.parse("someTag"), 1);
       expect(matcher.match(
               CssSelector.parse("SOMEOTHERTAG")[0], selectableCollector))
           .toEqual(false);
       expect(matched).toEqual([]);
       expect(matcher.match(
-          CssSelector.parse("SOMETAG")[0], selectableCollector)).toEqual(true);
+          CssSelector.parse("SOMETAG")[0], selectableCollector)).toEqual(false);
+      expect(matched).toEqual([]);
+      expect(matcher.match(
+          CssSelector.parse("someTag")[0], selectableCollector)).toEqual(true);
       expect(matched).toEqual([s1[0], 1]);
     });
     it("should select by class name case insensitive", () {
@@ -51,7 +54,7 @@ main() {
           .toEqual(true);
       expect(matched).toEqual([s1[0], 1, s2[0], 2]);
     });
-    it("should select by attr name case insensitive independent of the value",
+    it("should select by attr name case sensitive independent of the value",
         () {
       matcher.addSelectables(s1 = CssSelector.parse("[someAttr]"), 1);
       matcher.addSelectables(
@@ -62,13 +65,11 @@ main() {
       expect(matched).toEqual([]);
       expect(matcher.match(
               CssSelector.parse("[SOMEATTR]")[0], selectableCollector))
-          .toEqual(true);
-      expect(matched).toEqual([s1[0], 1]);
-      reset();
+          .toEqual(false);
+      expect(matched).toEqual([]);
       expect(matcher.match(CssSelector.parse("[SOMEATTR=someValue]")[0],
-          selectableCollector)).toEqual(true);
-      expect(matched).toEqual([s1[0], 1]);
-      reset();
+          selectableCollector)).toEqual(false);
+      expect(matched).toEqual([]);
       expect(matcher.match(CssSelector.parse("[someAttr][someAttr2]")[0],
           selectableCollector)).toEqual(true);
       expect(matched).toEqual([s1[0], 1, s2[0], 2]);
@@ -97,12 +98,16 @@ main() {
       matcher.match(elementSelector, selectableCollector);
       expect(matched).toEqual([s1[0], 1]);
     });
-    it("should select by attr name and value case insensitive", () {
+    it("should select by attr name case sensitive and value case insensitive",
+        () {
       matcher.addSelectables(s1 = CssSelector.parse("[someAttr=someValue]"), 1);
       expect(matcher.match(CssSelector.parse("[SOMEATTR=SOMEOTHERATTR]")[0],
           selectableCollector)).toEqual(false);
       expect(matched).toEqual([]);
       expect(matcher.match(CssSelector.parse("[SOMEATTR=SOMEVALUE]")[0],
+          selectableCollector)).toEqual(false);
+      expect(matched).toEqual([]);
+      expect(matcher.match(CssSelector.parse("[someAttr=SOMEVALUE]")[0],
           selectableCollector)).toEqual(true);
       expect(matched).toEqual([s1[0], 1]);
     });
@@ -307,12 +312,13 @@ main() {
     });
   });
   describe("CssSelector.getMatchingElementTemplate", () {
-    it("should create an element with a tagName, classes, and attributes", () {
+    it("should create an element with a tagName, classes, and attributes with the correct casing",
+        () {
       var selector =
-          CssSelector.parse("blink.neon.hotpink[sweet][dismissable=false]")[0];
+          CssSelector.parse("Blink.neon.hotpink[Sweet][Dismissable=false]")[0];
       var template = selector.getMatchingElementTemplate();
       expect(template).toEqual(
-          "<blink class=\"neon hotpink\" sweet dismissable=\"false\"></blink>");
+          "<Blink class=\"neon hotpink\" Sweet Dismissable=\"false\"></Blink>");
     });
     it("should create an element without a tag name", () {
       var selector = CssSelector.parse("[fancy]")[0];

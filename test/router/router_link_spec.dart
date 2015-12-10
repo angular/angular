@@ -34,7 +34,7 @@ import "package:angular2/src/router/instruction.dart" show ResolvedInstruction;
 var dummyInstruction = new ResolvedInstruction(
     new ComponentInstruction("detail", [], null, null, true, 0), null, {});
 main() {
-  describe("router-link directive", () {
+  describe("routerLink directive", () {
     TestComponentBuilder tcb;
     beforeEachProviders(() => [
           provide(Location, useValue: makeDummyLocation()),
@@ -110,16 +110,16 @@ class UserCmp {
 @View(
     template: '''
     <div>
-      <a [router-link]="[\'/Detail\']"
+      <a [routerLink]="[\'/Detail\']"
          class="detail-view">
            detail view
       </a>
-      <a [router-link]="[\'/Detail\']"
+      <a [routerLink]="[\'/Detail\']"
          class="detail-view-self"
          target="_self">
            detail view with _self target
       </a>
-      <a [router-link]="[\'/Detail\']"
+      <a [routerLink]="[\'/Detail\']"
          class="detail-view-blank"
          target="_blank">
            detail view with _blank target

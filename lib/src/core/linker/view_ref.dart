@@ -54,7 +54,7 @@ abstract class HostViewRef {
  * ```
  * Count: {{items.length}}
  * <ul>
- *   <li *ng-for="var item of items">{{item}}</li>
+ *   <li *ngFor="var item of items">{{item}}</li>
  * </ul>
  * ```
  *
@@ -64,7 +64,7 @@ abstract class HostViewRef {
  * ```
  * Count: {{items.length}}
  * <ul>
- *   <template ng-for var-item [ng-for-of]="items"></template>
+ *   <template ngFor var-item [ngForOf]="items"></template>
  * </ul>
  * ```
  *
@@ -157,7 +157,7 @@ class ViewRef_ extends ViewRef {
  * ```
  * Count: {{items.length}}
  * <ul>
- *   <li *ng-for="var item of items">{{item}}</li>
+ *   <li *ngFor="var item of items">{{item}}</li>
  * </ul>
  * ```
  *
@@ -167,7 +167,7 @@ class ViewRef_ extends ViewRef {
  * ```
  * Count: {{items.length}}
  * <ul>
- *   <template ng-for var-item [ng-for-of]="items"></template>
+ *   <template ngFor var-item [ngForOf]="items"></template>
  * </ul>
  * ```
  *

@@ -93,7 +93,7 @@ main() {
         "should generate a link URL",
         inject([AsyncTestCompleter], (async) {
           compile(tcb,
-                  '''<a [router-link]="[\'/Hello\', [\'Modal\']]">open modal</a> | main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}''')
+                  '''<a [routerLink]="[\'/Hello\', [\'Modal\']]">open modal</a> | main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}''')
               .then((rtc) {
             fixture = rtc;
           })
@@ -113,7 +113,7 @@ main() {
         "should navigate from a link click",
         inject([AsyncTestCompleter, Location], (async, location) {
           compile(tcb,
-                  '''<a [router-link]="[\'/Hello\', [\'Modal\']]">open modal</a> | main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}''')
+                  '''<a [routerLink]="[\'/Hello\', [\'Modal\']]">open modal</a> | main {<router-outlet></router-outlet>} | aux {<router-outlet name="modal"></router-outlet>}''')
               .then((rtc) {
             fixture = rtc;
           })

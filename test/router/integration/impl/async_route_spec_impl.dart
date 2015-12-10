@@ -130,7 +130,7 @@ asyncRoutesWithoutChildrenWithoutParams() {
       "should generate a link URL",
       inject([AsyncTestCompleter], (async) {
         compile(tcb,
-                '''<a [router-link]="[\'Hello\']">go to hello</a> | <router-outlet></router-outlet>''')
+                '''<a [routerLink]="[\'Hello\']">go to hello</a> | <router-outlet></router-outlet>''')
             .then((rtc) {
           fixture = rtc;
         })
@@ -148,7 +148,7 @@ asyncRoutesWithoutChildrenWithoutParams() {
       "should navigate from a link click",
       inject([AsyncTestCompleter, Location], (async, location) {
         compile(tcb,
-                '''<a [router-link]="[\'Hello\']">go to hello</a> | <router-outlet></router-outlet>''')
+                '''<a [routerLink]="[\'Hello\']">go to hello</a> | <router-outlet></router-outlet>''')
             .then((rtc) {
           fixture = rtc;
         })
@@ -222,7 +222,7 @@ asyncRoutesWithoutChildrenWithParams() {
       "should generate a link URL",
       inject([AsyncTestCompleter], (async) {
         compile(tcb,
-                '''<a [router-link]="[\'User\', {name: \'naomi\'}]">greet naomi</a> | <router-outlet></router-outlet>''')
+                '''<a [routerLink]="[\'User\', {name: \'naomi\'}]">greet naomi</a> | <router-outlet></router-outlet>''')
             .then((rtc) {
           fixture = rtc;
         })
@@ -240,7 +240,7 @@ asyncRoutesWithoutChildrenWithParams() {
       "should navigate from a link click",
       inject([AsyncTestCompleter, Location], (async, location) {
         compile(tcb,
-                '''<a [router-link]="[\'User\', {name: \'naomi\'}]">greet naomi</a> | <router-outlet></router-outlet>''')
+                '''<a [routerLink]="[\'User\', {name: \'naomi\'}]">greet naomi</a> | <router-outlet></router-outlet>''')
             .then((rtc) {
           fixture = rtc;
         })
@@ -335,7 +335,7 @@ asyncRoutesWithSyncChildrenWithoutDefaultRoutes() {
       "should generate a link URL",
       inject([AsyncTestCompleter], (async) {
         compile(tcb,
-                '''<a [router-link]="[\'Parent\']">nav to child</a> | outer { <router-outlet></router-outlet> }''')
+                '''<a [routerLink]="[\'Parent\']">nav to child</a> | outer { <router-outlet></router-outlet> }''')
             .then((rtc) {
           fixture = rtc;
         })
@@ -353,7 +353,7 @@ asyncRoutesWithSyncChildrenWithoutDefaultRoutes() {
       "should navigate from a link click",
       inject([AsyncTestCompleter, Location], (async, location) {
         compile(tcb,
-                '''<a [router-link]="[\'Parent\', \'Child\']">nav to child</a> | outer { <router-outlet></router-outlet> }''')
+                '''<a [routerLink]="[\'Parent\', \'Child\']">nav to child</a> | outer { <router-outlet></router-outlet> }''')
             .then((rtc) {
           fixture = rtc;
         })
@@ -432,7 +432,7 @@ asyncRoutesWithSyncChildrenWithDefaultRoutes() {
       "should generate a link URL",
       inject([AsyncTestCompleter], (async) {
         compile(tcb,
-                '''<a [router-link]="[\'/Parent\']">link to inner</a> | outer { <router-outlet></router-outlet> }''')
+                '''<a [routerLink]="[\'/Parent\']">link to inner</a> | outer { <router-outlet></router-outlet> }''')
             .then((rtc) {
           fixture = rtc;
         })
@@ -452,7 +452,7 @@ asyncRoutesWithSyncChildrenWithDefaultRoutes() {
       "should navigate from a link click",
       inject([AsyncTestCompleter, Location], (async, location) {
         compile(tcb,
-                '''<a [router-link]="[\'/Parent\']">link to inner</a> | outer { <router-outlet></router-outlet> }''')
+                '''<a [routerLink]="[\'/Parent\']">link to inner</a> | outer { <router-outlet></router-outlet> }''')
             .then((rtc) {
           fixture = rtc;
         })
@@ -533,7 +533,7 @@ asyncRoutesWithAsyncChildrenWithoutParamsWithoutDefaultRoutes() {
       "should generate a link URL",
       inject([AsyncTestCompleter], (async) {
         compile(tcb,
-                '''<a [router-link]="[\'Parent\', \'Child\']">nav to child</a> | outer { <router-outlet></router-outlet> }''')
+                '''<a [routerLink]="[\'Parent\', \'Child\']">nav to child</a> | outer { <router-outlet></router-outlet> }''')
             .then((rtc) {
           rootTC = rtc;
         })
@@ -553,7 +553,7 @@ asyncRoutesWithAsyncChildrenWithoutParamsWithoutDefaultRoutes() {
       "should navigate from a link click",
       inject([AsyncTestCompleter, Location], (async, location) {
         compile(tcb,
-                '''<a [router-link]="[\'Parent\', \'Child\']">nav to child</a> | outer { <router-outlet></router-outlet> }''')
+                '''<a [routerLink]="[\'Parent\', \'Child\']">nav to child</a> | outer { <router-outlet></router-outlet> }''')
             .then((rtc) {
           rootTC = rtc;
         })
@@ -634,7 +634,7 @@ asyncRoutesWithAsyncChildrenWithoutParamsWithDefaultRoutes() {
       "should generate a link URL",
       inject([AsyncTestCompleter], (async) {
         compile(tcb,
-                '''<a [router-link]="[\'Parent\']">nav to child</a> | outer { <router-outlet></router-outlet> }''')
+                '''<a [routerLink]="[\'Parent\']">nav to child</a> | outer { <router-outlet></router-outlet> }''')
             .then((rtc) {
           rootTC = rtc;
         })
@@ -654,7 +654,7 @@ asyncRoutesWithAsyncChildrenWithoutParamsWithDefaultRoutes() {
       "should navigate from a link click",
       inject([AsyncTestCompleter, Location], (async, location) {
         compile(tcb,
-                '''<a [router-link]="[\'Parent\']">nav to child</a> | outer { <router-outlet></router-outlet> }''')
+                '''<a [routerLink]="[\'Parent\']">nav to child</a> | outer { <router-outlet></router-outlet> }''')
             .then((rtc) {
           rootTC = rtc;
         })
@@ -738,7 +738,7 @@ asyncRoutesWithAsyncChildrenWithParamsWithoutDefaultRoutes() {
       "should generate a link URL",
       inject([AsyncTestCompleter], (async) {
         compile(tcb,
-                '''<a [router-link]="[\'/Team\', {id: \'angular\'}, \'User\', {name: \'matias\'}]">nav to matias</a> { <router-outlet></router-outlet> }''')
+                '''<a [routerLink]="[\'/Team\', {id: \'angular\'}, \'User\', {name: \'matias\'}]">nav to matias</a> { <router-outlet></router-outlet> }''')
             .then((rtc) {
           fixture = rtc;
         })
@@ -758,7 +758,7 @@ asyncRoutesWithAsyncChildrenWithParamsWithoutDefaultRoutes() {
       "should navigate from a link click",
       inject([AsyncTestCompleter, Location], (async, location) {
         compile(tcb,
-                '''<a [router-link]="[\'/Team\', {id: \'angular\'}, \'User\', {name: \'matias\'}]">nav to matias</a> { <router-outlet></router-outlet> }''')
+                '''<a [routerLink]="[\'/Team\', {id: \'angular\'}, \'User\', {name: \'matias\'}]">nav to matias</a> { <router-outlet></router-outlet> }''')
             .then((rtc) {
           fixture = rtc;
         })

@@ -43,7 +43,7 @@ main() {
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             var template =
-                "<div *ng-for=\"var item of items\" [ng-class]=\"item\"></div>";
+                "<div *ngFor=\"var item of items\" [ngClass]=\"item\"></div>";
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -65,7 +65,7 @@ main() {
           "should add classes specified in an object literal",
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
-            var template = "<div [ng-class]=\"{foo: true, bar: false}\"></div>";
+            var template = "<div [ngClass]=\"{foo: true, bar: false}\"></div>";
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -79,7 +79,7 @@ main() {
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             var template =
-                '''<div [ng-class]="{\'foo-bar\': true, \'fooBar\': true}"></div>''';
+                '''<div [ngClass]="{\'foo-bar\': true, \'fooBar\': true}"></div>''';
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -93,7 +93,7 @@ main() {
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             var template =
-                "<div [ng-class]=\"{foo: condition, bar: !condition}\"></div>";
+                "<div [ngClass]=\"{foo: condition, bar: !condition}\"></div>";
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -108,7 +108,7 @@ main() {
           "should add and remove classes based on changes to the expression object",
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
-            var template = "<div [ng-class]=\"objExpr\"></div>";
+            var template = "<div [ngClass]=\"objExpr\"></div>";
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -130,7 +130,7 @@ main() {
           "should add and remove classes based on reference changes to the expression object",
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
-            var template = "<div [ng-class]=\"objExpr\"></div>";
+            var template = "<div [ngClass]=\"objExpr\"></div>";
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -150,7 +150,7 @@ main() {
           "should remove active classes when expression evaluates to null",
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
-            var template = "<div [ng-class]=\"objExpr\"></div>";
+            var template = "<div [ngClass]=\"objExpr\"></div>";
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -170,7 +170,7 @@ main() {
           "should allow multiple classes per expression",
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
-            var template = "<div [ng-class]=\"objExpr\"></div>";
+            var template = "<div [ngClass]=\"objExpr\"></div>";
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -192,7 +192,7 @@ main() {
           "should split by one or more spaces between classes",
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
-            var template = "<div [ng-class]=\"objExpr\"></div>";
+            var template = "<div [ngClass]=\"objExpr\"></div>";
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -211,7 +211,7 @@ main() {
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             var template =
-                '''<div [ng-class]="[\'foo\', \'bar\', \'foo-bar\', \'fooBar\']"></div>''';
+                '''<div [ngClass]="[\'foo\', \'bar\', \'foo-bar\', \'fooBar\']"></div>''';
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -224,7 +224,7 @@ main() {
           "should add and remove classes based on changes to the expression",
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
-            var template = "<div [ng-class]=\"arrExpr\"></div>";
+            var template = "<div [ngClass]=\"arrExpr\"></div>";
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -246,7 +246,7 @@ main() {
           "should add and remove classes when a reference changes",
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
-            var template = "<div [ng-class]=\"arrExpr\"></div>";
+            var template = "<div [ngClass]=\"arrExpr\"></div>";
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -261,7 +261,7 @@ main() {
           "should take initial classes into account when a reference changes",
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
-            var template = "<div class=\"foo\" [ng-class]=\"arrExpr\"></div>";
+            var template = "<div class=\"foo\" [ngClass]=\"arrExpr\"></div>";
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -276,7 +276,7 @@ main() {
           "should ignore empty or blank class names",
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
-            var template = "<div class=\"foo\" [ng-class]=\"arrExpr\"></div>";
+            var template = "<div class=\"foo\" [ngClass]=\"arrExpr\"></div>";
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -290,7 +290,7 @@ main() {
           "should trim blanks from class names",
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
-            var template = "<div class=\"foo\" [ng-class]=\"arrExpr\"></div>";
+            var template = "<div class=\"foo\" [ngClass]=\"arrExpr\"></div>";
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -304,7 +304,7 @@ main() {
           "should allow multiple classes per item in arrays",
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
-            var template = "<div [ng-class]=\"arrExpr\"></div>";
+            var template = "<div [ngClass]=\"arrExpr\"></div>";
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -327,7 +327,7 @@ main() {
           "should add and remove classes if the set instance changed",
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
-            var template = "<div [ng-class]=\"setExpr\"></div>";
+            var template = "<div [ngClass]=\"setExpr\"></div>";
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -350,7 +350,7 @@ main() {
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             var template =
-                '''<div [ng-class]="\'foo bar foo-bar fooBar\'"></div>''';
+                '''<div [ngClass]="\'foo bar foo-bar fooBar\'"></div>''';
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -363,7 +363,7 @@ main() {
           "should add and remove classes based on changes to the expression",
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
-            var template = "<div [ng-class]=\"strExpr\"></div>";
+            var template = "<div [ngClass]=\"strExpr\"></div>";
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -380,7 +380,7 @@ main() {
           "should remove active classes when switching from string to null",
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
-            var template = '''<div [ng-class]="strExpr"></div>''';
+            var template = '''<div [ngClass]="strExpr"></div>''';
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -395,7 +395,7 @@ main() {
           "should take initial classes into account when switching from string to null",
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
-            var template = '''<div class="foo" [ng-class]="strExpr"></div>''';
+            var template = '''<div class="foo" [ngClass]="strExpr"></div>''';
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -410,7 +410,7 @@ main() {
           "should ignore empty and blank strings",
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
-            var template = '''<div class="foo" [ng-class]="strExpr"></div>''';
+            var template = '''<div class="foo" [ngClass]="strExpr"></div>''';
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -427,7 +427,7 @@ main() {
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             var template =
-                "<div [ng-class]=\"objExpr\" class=\"init foo\"></div>";
+                "<div [ngClass]=\"objExpr\" class=\"init foo\"></div>";
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -448,7 +448,7 @@ main() {
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             var template =
-                '''<div [ng-class]="objExpr" class="{{\'init foo\'}}"></div>''';
+                '''<div [ngClass]="objExpr" class="{{\'init foo\'}}"></div>''';
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -469,7 +469,7 @@ main() {
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             var template =
-                '''<div [ng-class]="objExpr" class="init" [class]="\'foo\'"></div>''';
+                '''<div [ngClass]="objExpr" class="init" [class]="\'foo\'"></div>''';
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -490,7 +490,7 @@ main() {
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             var template =
-                "<div class=\"init foo\" [ng-class]=\"objExpr\" [class.baz]=\"condition\"></div>";
+                "<div class=\"init foo\" [ngClass]=\"objExpr\" [class.baz]=\"condition\"></div>";
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)
@@ -512,7 +512,7 @@ main() {
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             var template =
-                "<div class=\"init\" [ng-class]=\"objExpr\" [class]=\"strExpr\"></div>";
+                "<div class=\"init\" [ngClass]=\"objExpr\" [class]=\"strExpr\"></div>";
             tcb
                 .overrideTemplate(TestComponent, template)
                 .createAsync(TestComponent)

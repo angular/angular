@@ -19,13 +19,13 @@ import "package:angular2/common.dart" show NgIf;
 import "package:angular2/src/facade/lang.dart" show IS_DART;
 
 main() {
-  describe("ng-if directive", () {
+  describe("ngIf directive", () {
     it(
         "should work in a template attribute",
         inject([TestComponentBuilder, AsyncTestCompleter],
             (TestComponentBuilder tcb, async) {
           var html =
-              "<div><copy-me template=\"ng-if booleanCondition\">hello</copy-me></div>";
+              "<div><copy-me template=\"ngIf booleanCondition\">hello</copy-me></div>";
           tcb
               .overrideTemplate(TestComponent, html)
               .createAsync(TestComponent)
@@ -43,7 +43,7 @@ main() {
         inject([TestComponentBuilder, AsyncTestCompleter],
             (TestComponentBuilder tcb, async) {
           var html =
-              "<div><template [ng-if]=\"booleanCondition\"><copy-me>hello2</copy-me></template></div>";
+              "<div><template [ngIf]=\"booleanCondition\"><copy-me>hello2</copy-me></template></div>";
           tcb
               .overrideTemplate(TestComponent, html)
               .createAsync(TestComponent)
@@ -61,7 +61,7 @@ main() {
         inject([TestComponentBuilder, AsyncTestCompleter],
             (TestComponentBuilder tcb, async) {
           var html =
-              "<div><copy-me template=\"ng-if booleanCondition\">hello</copy-me></div>";
+              "<div><copy-me template=\"ngIf booleanCondition\">hello</copy-me></div>";
           tcb
               .overrideTemplate(TestComponent, html)
               .createAsync(TestComponent)
@@ -92,7 +92,7 @@ main() {
         inject([TestComponentBuilder, AsyncTestCompleter],
             (TestComponentBuilder tcb, async) {
           var html =
-              "<div><template [ng-if]=\"booleanCondition\"><copy-me *ng-if=\"nestedBooleanCondition\">hello</copy-me></template></div>";
+              "<div><template [ngIf]=\"booleanCondition\"><copy-me *ngIf=\"nestedBooleanCondition\">hello</copy-me></template></div>";
           tcb
               .overrideTemplate(TestComponent, html)
               .createAsync(TestComponent)
@@ -137,9 +137,9 @@ main() {
         inject([TestComponentBuilder, AsyncTestCompleter],
             (TestComponentBuilder tcb, async) {
           var html = "<div>" +
-              "<copy-me template=\"ng-if numberCondition + 1 >= 2\">helloNumber</copy-me>" +
-              "<copy-me template=\"ng-if stringCondition == 'foo'\">helloString</copy-me>" +
-              "<copy-me template=\"ng-if functionCondition(stringCondition, numberCondition)\">helloFunction</copy-me>" +
+              "<copy-me template=\"ngIf numberCondition + 1 >= 2\">helloNumber</copy-me>" +
+              "<copy-me template=\"ngIf stringCondition == 'foo'\">helloString</copy-me>" +
+              "<copy-me template=\"ngIf functionCondition(stringCondition, numberCondition)\">helloFunction</copy-me>" +
               "</div>";
           tcb
               .overrideTemplate(TestComponent, html)
@@ -175,7 +175,7 @@ main() {
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             var html =
-                "<div><copy-me template=\"ng-if numberCondition\">hello</copy-me></div>";
+                "<div><copy-me template=\"ngIf numberCondition\">hello</copy-me></div>";
             tcb
                 .overrideTemplate(TestComponent, html)
                 .createAsync(TestComponent)
@@ -201,7 +201,7 @@ main() {
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             var html =
-                "<div><copy-me template=\"ng-if numberCondition\">hello</copy-me></div>";
+                "<div><copy-me template=\"ngIf numberCondition\">hello</copy-me></div>";
             tcb
                 .overrideTemplate(TestComponent, html)
                 .createAsync(TestComponent)
@@ -227,7 +227,7 @@ main() {
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             var html =
-                "<div><copy-me template=\"ng-if numberCondition\">hello</copy-me></div>";
+                "<div><copy-me template=\"ngIf numberCondition\">hello</copy-me></div>";
             tcb
                 .overrideTemplate(TestComponent, html)
                 .createAsync(TestComponent)

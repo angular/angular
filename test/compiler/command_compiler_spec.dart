@@ -178,7 +178,7 @@ main() {
               var rootComp = createComp(
                   type: RootCompTypeMeta,
                   template:
-                      "<div a=\"b\" #some-var (click)=\"someHandler\" (window:scroll)=\"scrollTo()\">");
+                      "<div a=\"b\" #someVar (click)=\"someHandler\" (window:scroll)=\"scrollTo()\">");
               run(rootComp, []).then((data) {
                 expect(data).toEqual([
                   [
@@ -201,7 +201,7 @@ main() {
             inject([AsyncTestCompleter], (async) {
               var rootComp = createComp(
                   type: RootCompTypeMeta,
-                  template: "<div a #some-var=\"someExport\">");
+                  template: "<div a #someVar=\"someExport\">");
               var dir = CompileDirectiveMetadata.create(
                   selector: "[a]",
                   exportAs: "someExport",
@@ -295,7 +295,7 @@ main() {
             inject([AsyncTestCompleter], (async) {
               var rootComp = createComp(
                   type: RootCompTypeMeta,
-                  template: "<a a=\"b\" #some-var (click)=\"someHandler\">");
+                  template: "<a a=\"b\" #someVar (click)=\"someHandler\">");
               var comp = createComp(type: ACompTypeMeta, selector: "a");
               run(rootComp, [comp]).then((data) {
                 expect(data).toEqual([
@@ -401,7 +401,7 @@ main() {
               var rootComp = createComp(
                   type: RootCompTypeMeta,
                   template:
-                      "<template #some-var=\"someValue\" #some-empty-var></template>");
+                      "<template #someVar=\"someValue\" #someEmptyVar></template>");
               var dir = createDirective(SomeDirTypeMeta, "[a]");
               run(rootComp, [dir], 1).then((data) {
                 expect(data[0][2]).toEqual(

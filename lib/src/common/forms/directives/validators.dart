@@ -38,12 +38,12 @@ const REQUIRED_VALIDATOR =
  * ### Example
  *
  * ```
- * <input ng-control="fullName" required>
+ * <input ngControl="fullName" required>
  * ```
  */
 @Directive(
     selector:
-        "[required][ng-control],[required][ng-form-control],[required][ng-model]",
+        "[required][ngControl],[required][ngFormControl],[required][ngModel]",
     providers: const [REQUIRED_VALIDATOR])
 class RequiredValidator {}
 
@@ -52,7 +52,7 @@ const MIN_LENGTH_VALIDATOR =
 
 @Directive(
     selector:
-        "[minlength][ng-control],[minlength][ng-form-control],[minlength][ng-model]",
+        "[minlength][ngControl],[minlength][ngFormControl],[minlength][ngModel]",
     providers: const [MIN_LENGTH_VALIDATOR])
 class MinLengthValidator implements Validator {
   Function _validator;
@@ -70,7 +70,7 @@ const MAX_LENGTH_VALIDATOR =
 
 @Directive(
     selector:
-        "[maxlength][ng-control],[maxlength][ng-form-control],[maxlength][ng-model]",
+        "[maxlength][ngControl],[maxlength][ngFormControl],[maxlength][ngModel]",
     providers: const [MAX_LENGTH_VALIDATOR])
 class MaxLengthValidator implements Validator {
   Function _validator;

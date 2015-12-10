@@ -15,8 +15,8 @@ const SELECT_VALUE_ACCESSOR = const Provider(NG_VALUE_ACCESSOR,
  * ### Example
  *
  * ```
- * <select ng-control="city">
- *   <option *ng-for="#c of cities" [value]="c"></option>
+ * <select ngControl="city">
+ *   <option *ngFor="#c of cities" [value]="c"></option>
  * </select>
  * ```
  */
@@ -27,7 +27,7 @@ class NgSelectOption {}
  * The accessor for writing a value and listening to changes on a select element.
  */
 @Directive(
-    selector: "select[ng-control],select[ng-form-control],select[ng-model]",
+    selector: "select[ngControl],select[ngFormControl],select[ngModel]",
     host: const {
       "(change)": "onChange(\$event.target.value)",
       "(input)": "onChange(\$event.target.value)",

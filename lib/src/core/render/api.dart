@@ -35,7 +35,7 @@ class RenderProtoViewRef {}
 
   <div>foo</div> -> view 1 / fragment 1
   <ul>
-    <template ng-for>
+    <template ngFor>
       <li>{{fg}}</li> -> view 2 / fragment 1
     </template>
   </ul>
@@ -44,10 +44,10 @@ class RenderProtoViewRef {}
 
   <div>foo</div> -> view 1 / fragment 1
   <ul>
-    <template ng-if>
+    <template ngIf>
       <li><ng-content></></li> -> view 1 / fragment 2
     </template>
-    <template ng-for>
+    <template ngFor>
       <li><ng-content></></li> ->
       <li></li>                -> view 1 / fragment 2 + view 2 / fragment 1..n-1
     </template>

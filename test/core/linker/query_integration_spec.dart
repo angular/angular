@@ -82,7 +82,7 @@ main() {
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             var template =
-                "<needs-content-child #q><div *ng-if=\"shouldShow\" text=\"foo\"></div></needs-content-child>";
+                "<needs-content-child #q><div *ngIf=\"shouldShow\" text=\"foo\"></div></needs-content-child>";
             tcb
                 .overrideTemplate(MyComp, template)
                 .createAsync(MyComp)
@@ -176,7 +176,7 @@ main() {
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             var template = "<div text=\"1\"></div>" +
-                "<needs-query text=\"2\"><div *ng-if=\"shouldShow\" [text]=\"'3'\"></div></needs-query>" +
+                "<needs-query text=\"2\"><div *ngIf=\"shouldShow\" [text]=\"'3'\"></div></needs-query>" +
                 "<div text=\"4\"></div>";
             tcb
                 .overrideTemplate(MyComp, template)
@@ -197,7 +197,7 @@ main() {
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             var template = "<div text=\"1\"></div>" +
-                "<needs-query text=\"2\"><div *ng-if=\"shouldShow\" [text]=\"'3'\"></div></needs-query>" +
+                "<needs-query text=\"2\"><div *ngIf=\"shouldShow\" [text]=\"'3'\"></div></needs-query>" +
                 "<div text=\"4\"></div>";
             tcb
                 .overrideTemplate(MyComp, template)
@@ -214,7 +214,7 @@ main() {
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             var template = "<div text=\"1\"></div>" +
-                "<needs-query text=\"2\"><div *ng-for=\"var i of list\" [text]=\"i\"></div></needs-query>" +
+                "<needs-query text=\"2\"><div *ngFor=\"var i of list\" [text]=\"i\"></div></needs-query>" +
                 "<div text=\"4\"></div>";
             tcb
                 .overrideTemplate(MyComp, template)
@@ -258,7 +258,7 @@ main() {
               (TestComponentBuilder tcb, async) {
             var template = "<needs-query #q>" +
                 "<div text=\"1\"></div>" +
-                "<div *ng-if=\"shouldShow\" text=\"2\"></div>" +
+                "<div *ngIf=\"shouldShow\" text=\"2\"></div>" +
                 "</needs-query>";
             tcb
                 .overrideTemplate(MyComp, template)
@@ -308,7 +308,7 @@ main() {
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             var template =
-                "<needs-query #q *ng-if=\"shouldShow\"><div text=\"foo\"></div></needs-query>";
+                "<needs-query #q *ngIf=\"shouldShow\"><div text=\"foo\"></div></needs-query>";
             tcb
                 .overrideTemplate(MyComp, template)
                 .createAsync(MyComp)
@@ -335,7 +335,7 @@ main() {
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             var template = "<needs-query-by-var-binding #q>" +
-                "<div *ng-for=\"#item of list\" [text]=\"item\" #text-label=\"textDir\"></div>" +
+                "<div *ngFor=\"#item of list\" [text]=\"item\" #textLabel=\"textDir\"></div>" +
                 "</needs-query-by-var-binding>";
             tcb
                 .overrideTemplate(MyComp, template)
@@ -354,8 +354,8 @@ main() {
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             var template = "<needs-query-by-var-bindings #q>" +
-                "<div text=\"one\" #text-label1=\"textDir\"></div>" +
-                "<div text=\"two\" #text-label2=\"textDir\"></div>" +
+                "<div text=\"one\" #textLabel1=\"textDir\"></div>" +
+                "<div text=\"two\" #textLabel2=\"textDir\"></div>" +
                 "</needs-query-by-var-bindings>";
             tcb
                 .overrideTemplate(MyComp, template)
@@ -373,7 +373,7 @@ main() {
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             var template = "<needs-query-by-var-binding #q>" +
-                "<div *ng-for=\"#item of list\" [text]=\"item\" #text-label=\"textDir\"></div>" +
+                "<div *ngFor=\"#item of list\" [text]=\"item\" #textLabel=\"textDir\"></div>" +
                 "</needs-query-by-var-binding>";
             tcb
                 .overrideTemplate(MyComp, template)
@@ -393,8 +393,8 @@ main() {
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             var template = "<needs-query-by-var-binding #q>" +
-                "<div template=\"ng-for: #item of list\">" +
-                "<div #text-label>{{item}}</div>" +
+                "<div template=\"ngFor: #item of list\">" +
+                "<div #textLabel>{{item}}</div>" +
                 "</div>" +
                 "</needs-query-by-var-binding>";
             tcb
@@ -585,7 +585,7 @@ main() {
             });
           }));
       it(
-          "should handle long ng-for cycles",
+          "should handle long ngFor cycles",
           inject([TestComponentBuilder, AsyncTestCompleter],
               (TestComponentBuilder tcb, async) {
             var template =
@@ -683,7 +683,7 @@ class NeedsContentChild implements AfterContentInit, AfterContentChecked {
 @Component(selector: "needs-view-child")
 @View(
     template: '''
-    <div *ng-if="shouldShow" text="foo"></div>
+    <div *ngIf="shouldShow" text="foo"></div>
   ''',
     directives: const [NgIf, TextDirective])
 class NeedsViewChild implements AfterViewInit, AfterViewChecked {
@@ -718,7 +718,7 @@ class InertDirective {
 @View(
     directives: const [NgFor, TextDirective],
     template:
-        "<div text=\"ignoreme\"></div><b *ng-for=\"var dir of query\">{{dir.text}}|</b>")
+        "<div text=\"ignoreme\"></div><b *ngFor=\"var dir of query\">{{dir.text}}|</b>")
 @Injectable()
 class NeedsQuery {
   QueryList<TextDirective> query;
@@ -739,7 +739,7 @@ class NeedsFourQueries {
 @Component(selector: "needs-query-desc")
 @View(
     directives: const [NgFor],
-    template: "<div *ng-for=\"var dir of query\">{{dir.text}}|</div>")
+    template: "<div *ngFor=\"var dir of query\">{{dir.text}}|</div>")
 @Injectable()
 class NeedsQueryDesc {
   QueryList<TextDirective> query;
@@ -761,7 +761,7 @@ class NeedsQueryByLabel {
 }
 
 @Component(selector: "needs-view-query-by-var-binding")
-@View(directives: const [], template: "<div #text-label>text</div>")
+@View(directives: const [], template: "<div #textLabel>text</div>")
 @Injectable()
 class NeedsViewQueryByLabel {
   QueryList<dynamic> query;
@@ -785,7 +785,7 @@ class NeedsQueryByTwoLabels {
 @View(
     directives: const [NgFor],
     template:
-        "<div *ng-for=\"var dir of query\">{{dir.text}}|</div><ng-content></ng-content>")
+        "<div *ngFor=\"var dir of query\">{{dir.text}}|</div><ng-content></ng-content>")
 @Injectable()
 class NeedsQueryAndProject {
   QueryList<TextDirective> query;
@@ -810,7 +810,7 @@ class NeedsViewQuery {
 @Component(selector: "needs-view-query-if")
 @View(
     directives: const [NgIf, TextDirective],
-    template: "<div *ng-if=\"show\" text=\"1\"></div>")
+    template: "<div *ngIf=\"show\" text=\"1\"></div>")
 @Injectable()
 class NeedsViewQueryIf {
   bool show;
@@ -822,11 +822,9 @@ class NeedsViewQueryIf {
 }
 
 @Component(selector: "needs-view-query-nested-if")
-@View(directives: const [
-  NgIf,
-  InertDirective,
-  TextDirective
-], template: "<div text=\"1\"><div *ng-if=\"show\"><div dir></div></div></div>")
+@View(
+    directives: const [NgIf, InertDirective, TextDirective],
+    template: "<div text=\"1\"><div *ngIf=\"show\"><div dir></div></div></div>")
 @Injectable()
 class NeedsViewQueryNestedIf {
   bool show;
@@ -842,7 +840,7 @@ class NeedsViewQueryNestedIf {
 @View(
     directives: const [NgFor, TextDirective, InertDirective],
     template: "<div text=\"1\"></div>" +
-        "<div *ng-for=\"var i of list\" [text]=\"i\"></div>" +
+        "<div *ngFor=\"var i of list\" [text]=\"i\"></div>" +
         "<div text=\"4\"></div>")
 @Injectable()
 class NeedsViewQueryOrder {
@@ -859,7 +857,7 @@ class NeedsViewQueryOrder {
 @View(
     directives: const [NgFor, TextDirective, InertDirective],
     template: "<div dir><div text=\"1\"></div>" +
-        "<div *ng-for=\"var i of list\" [text]=\"i\"></div>" +
+        "<div *ngFor=\"var i of list\" [text]=\"i\"></div>" +
         "<div text=\"4\"></div></div>")
 @Injectable()
 class NeedsViewQueryOrderWithParent {

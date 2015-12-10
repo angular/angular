@@ -184,8 +184,8 @@ main() {
               expect(DOM.getStyle(el, "width")).toEqual("10px");
               renderer.setElementStyle(elr, "width", null);
               expect(DOM.getStyle(el, "width")).toEqual("");
-              renderer.setElementAttribute(elr, "someAttr", "someValue");
-              expect(DOM.getAttribute(el, "some-attr")).toEqual("someValue");
+              renderer.setElementAttribute(elr, "someattr", "someValue");
+              expect(DOM.getAttribute(el, "someattr")).toEqual("someValue");
             };
             // root element
             checkSetters(fixture.debugElement.elementRef);
@@ -204,7 +204,7 @@ main() {
                   MyComp,
                   new ViewMetadata(
                       template:
-                          "<template [ng-if]=\"ctxBoolProp\">hello</template>",
+                          "<template [ngIf]=\"ctxBoolProp\">hello</template>",
                       directives: [NgIf]))
               .createAsync(MyComp)
               .then((fixture) {

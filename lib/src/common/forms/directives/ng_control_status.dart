@@ -5,7 +5,7 @@ import "ng_control.dart" show NgControl;
 import "package:angular2/src/facade/lang.dart" show isBlank, isPresent;
 
 @Directive(
-    selector: "[ng-control],[ng-model],[ng-form-control]",
+    selector: "[ngControl],[ngModel],[ngFormControl]",
     host: const {
       "[class.ng-untouched]": "ngClassUntouched",
       "[class.ng-touched]": "ngClassTouched",

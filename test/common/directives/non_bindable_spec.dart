@@ -24,7 +24,7 @@ main() {
         inject([TestComponentBuilder, AsyncTestCompleter],
             (TestComponentBuilder tcb, async) {
           var template =
-              "<div>{{text}}<span ng-non-bindable>{{text}}</span></div>";
+              "<div>{{text}}<span ngNonBindable>{{text}}</span></div>";
           tcb
               .overrideTemplate(TestComponent, template)
               .createAsync(TestComponent)
@@ -40,7 +40,7 @@ main() {
         inject([TestComponentBuilder, AsyncTestCompleter],
             (TestComponentBuilder tcb, async) {
           var template =
-              "<div ng-non-bindable><span id=child test-dec>{{text}}</span></div>";
+              "<div ngNonBindable><span id=child test-dec>{{text}}</span></div>";
           tcb
               .overrideTemplate(TestComponent, template)
               .createAsync(TestComponent)
@@ -60,7 +60,7 @@ main() {
         inject([TestComponentBuilder, AsyncTestCompleter],
             (TestComponentBuilder tcb, async) {
           var template =
-              "<div><span id=child ng-non-bindable test-dec>{{text}}</span></div>";
+              "<div><span id=child ngNonBindable test-dec>{{text}}</span></div>";
           tcb
               .overrideTemplate(TestComponent, template)
               .createAsync(TestComponent)

@@ -98,7 +98,7 @@ main() {
                     MyComp,
                     new ViewMetadata(
                         template:
-                            "<child-cmp *ng-if=\"ctxBoolProp\"></child-cmp>",
+                            "<child-cmp *ngIf=\"ctxBoolProp\"></child-cmp>",
                         directives: [NgIf, ChildComp]))
                 .overrideView(
                     ChildComp,

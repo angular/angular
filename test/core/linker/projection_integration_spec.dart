@@ -111,7 +111,7 @@ main() {
                   Simple,
                   new ViewMetadata(
                       template:
-                          "SIMPLE(<div><ng-content></ng-content></div><div [tab-index]=\"0\">EL</div>)",
+                          "SIMPLE(<div><ng-content></ng-content></div><div [tabIndex]=\"0\">EL</div>)",
                       directives: []))
               .overrideView(
                   MainComp,
@@ -320,7 +320,7 @@ main() {
               .overrideView(
                   MainComp,
                   new ViewMetadata(
-                      template: "<simple string-prop=\"text\"></simple>",
+                      template: "<simple stringProp=\"text\"></simple>",
                       directives: [Simple]))
               .overrideTemplate(
                   Simple, "<ng-content></ng-content><p>P,</p>{{stringProp}}")
@@ -341,7 +341,7 @@ main() {
               .overrideView(
                   MainComp,
                   new ViewMetadata(
-                      template: "<simple string-prop=\"text\"></simple>",
+                      template: "<simple stringProp=\"text\"></simple>",
                       directives: [Simple]))
               .overrideTemplate(
                   Simple, "<style></style><p>P,</p>{{stringProp}}")

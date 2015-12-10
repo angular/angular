@@ -45,7 +45,7 @@ import "package:angular2/src/router/router_link_transform.dart"
     show RouterLinkTransform;
 
 main() {
-  describe("router-link directive", () {
+  describe("routerLink directive", () {
     TestComponentBuilder tcb;
     ComponentFixture fixture;
     var router, location;
@@ -80,7 +80,7 @@ main() {
         "should generate absolute hrefs that include the base href",
         inject([AsyncTestCompleter], (async) {
           location.setBaseHref("/my/base");
-          compile("<a href=\"hello\" [router-link]=\"['./User']\"></a>")
+          compile("<a href=\"hello\" [routerLink]=\"['./User']\"></a>")
               .then((_) => router.config(
                   [new Route(path: "/user", component: UserCmp, name: "User")]))
               .then((_) => router.navigateByUrl("/a/b"))
@@ -93,7 +93,7 @@ main() {
     it(
         "should generate link hrefs without params",
         inject([AsyncTestCompleter], (async) {
-          compile("<a href=\"hello\" [router-link]=\"['./User']\"></a>")
+          compile("<a href=\"hello\" [routerLink]=\"['./User']\"></a>")
               .then((_) => router.config(
                   [new Route(path: "/user", component: UserCmp, name: "User")]))
               .then((_) => router.navigateByUrl("/a/b"))
@@ -106,7 +106,7 @@ main() {
     it(
         "should generate link hrefs with params",
         inject([AsyncTestCompleter], (async) {
-          compile("<a href=\"hello\" [router-link]=\"['./User', {name: name}]\">{{name}}</a>")
+          compile("<a href=\"hello\" [routerLink]=\"['./User', {name: name}]\">{{name}}</a>")
               .then((_) => router.config([
                     new Route(
                         path: "/user/:name", component: UserCmp, name: "User")
@@ -277,8 +277,8 @@ main() {
                   name: "BetterChild")
             ])
                 .then((_) => compile(
-                    '''<a [router-link]="[\'./Child\']" class="child-link">Child</a>
-                                <a [router-link]="[\'./BetterChild\']" class="better-child-link">Better Child</a>
+                    '''<a [routerLink]="[\'./Child\']" class="child-link">Child</a>
+                                <a [routerLink]="[\'./BetterChild\']" class="better-child-link">Better Child</a>
                                 <router-outlet></router-outlet>'''))
                 .then((_) {
               var element = fixture.debugElement.nativeElement;
@@ -307,8 +307,8 @@ main() {
                   name: "ChildWithGrandchild")
             ])
                 .then((_) => compile(
-                    '''<a [router-link]="[\'./Child\']" class="child-link">Child</a>
-                                <a [router-link]="[\'./ChildWithGrandchild/Grandchild\']" class="child-with-grandchild-link">Better Child</a>
+                    '''<a [routerLink]="[\'./Child\']" class="child-link">Child</a>
+                                <a [routerLink]="[\'./ChildWithGrandchild/Grandchild\']" class="child-with-grandchild-link">Better Child</a>
                                 <router-outlet></router-outlet>'''))
                 .then((_) {
               var element = fixture.debugElement.nativeElement;
@@ -336,7 +336,7 @@ main() {
         it(
             "should generate link hrefs with params",
             inject([AsyncTestCompleter], (async) {
-              compile("<a href=\"hello\" [router-link]=\"route:./User(name: name)\">{{name}}</a>")
+              compile("<a href=\"hello\" [routerLink]=\"route:./User(name: name)\">{{name}}</a>")
                   .then((_) => router.config([
                         new Route(
                             path: "/user/:name",
@@ -367,7 +367,7 @@ main() {
       it(
           "should navigate to link hrefs without params",
           inject([AsyncTestCompleter], (async) {
-            compile("<a href=\"hello\" [router-link]=\"['./User']\"></a>")
+            compile("<a href=\"hello\" [routerLink]=\"['./User']\"></a>")
                 .then((_) => router.config([
                       new Route(path: "/user", component: UserCmp, name: "User")
                     ]))
@@ -387,7 +387,7 @@ main() {
           "should navigate to link hrefs in presence of base href",
           inject([AsyncTestCompleter], (async) {
             location.setBaseHref("/base");
-            compile("<a href=\"hello\" [router-link]=\"['./User']\"></a>")
+            compile("<a href=\"hello\" [routerLink]=\"['./User']\"></a>")
                 .then((_) => router.config([
                       new Route(path: "/user", component: UserCmp, name: "User")
                     ]))
@@ -428,7 +428,7 @@ class UserCmp {
 @Component(
     selector: "page-cmp",
     template:
-        '''page #{{pageNumber}} | <a href="hello" [router-link]="[\'../Page\', {number: nextPage}]">next</a>''',
+        '''page #{{pageNumber}} | <a href="hello" [routerLink]="[\'../Page\', {number: nextPage}]">next</a>''',
     directives: const [RouterLink])
 class SiblingPageCmp {
   num pageNumber;
@@ -442,7 +442,7 @@ class SiblingPageCmp {
 @Component(
     selector: "page-cmp",
     template:
-        '''page #{{pageNumber}} | <a href="hello" [router-link]="[\'Page\', {number: nextPage}]">next</a>''',
+        '''page #{{pageNumber}} | <a href="hello" [routerLink]="[\'Page\', {number: nextPage}]">next</a>''',
     directives: const [RouterLink])
 class NoPrefixSiblingPageCmp {
   num pageNumber;
@@ -466,8 +466,8 @@ parentCmpLoader() {
 @Component(
     selector: "parent-cmp",
     template:
-        '''{ <a [router-link]="[\'./Grandchild\']" class="grandchild-link">Grandchild</a>
-               <a [router-link]="[\'./BetterGrandchild\']" class="better-grandchild-link">Better Grandchild</a>
+        '''{ <a [routerLink]="[\'./Grandchild\']" class="grandchild-link">Grandchild</a>
+               <a [routerLink]="[\'./BetterGrandchild\']" class="better-grandchild-link">Better Grandchild</a>
                <router-outlet></router-outlet> }''',
     directives: ROUTER_DIRECTIVES)
 @RouteConfig(const [
@@ -482,7 +482,7 @@ class ParentCmp {}
 @Component(
     selector: "book-cmp",
     template:
-        '''<a href="hello" [router-link]="[\'./Page\', {number: 100}]">{{title}}</a> |
+        '''<a href="hello" [routerLink]="[\'./Page\', {number: 100}]">{{title}}</a> |
     <router-outlet></router-outlet>''',
     directives: ROUTER_DIRECTIVES)
 @RouteConfig(const [
@@ -498,7 +498,7 @@ class BookCmp {
 @Component(
     selector: "book-cmp",
     template:
-        '''<a href="hello" [router-link]="[\'Page\', {number: 100}]">{{title}}</a> |
+        '''<a href="hello" [routerLink]="[\'Page\', {number: 100}]">{{title}}</a> |
     <router-outlet></router-outlet>''',
     directives: ROUTER_DIRECTIVES)
 @RouteConfig(const [
@@ -514,7 +514,7 @@ class NoPrefixBookCmp {
 @Component(
     selector: "book-cmp",
     template:
-        '''<a href="hello" [router-link]="[\'Book\', {number: 100}]">{{title}}</a> |
+        '''<a href="hello" [routerLink]="[\'Book\', {number: 100}]">{{title}}</a> |
     <router-outlet></router-outlet>''',
     directives: ROUTER_DIRECTIVES)
 @RouteConfig(const [
@@ -529,7 +529,7 @@ class AmbiguousBookCmp {
 
 @Component(
     selector: "aux-cmp",
-    template: '''<a [router-link]="[\'./Hello\', [ \'Aside\' ] ]">aside</a> |
+    template: '''<a [routerLink]="[\'./Hello\', [ \'Aside\' ] ]">aside</a> |
     <router-outlet></router-outlet> | aside <router-outlet name="aside"></router-outlet>''',
     directives: ROUTER_DIRECTIVES)
 @RouteConfig(const [

@@ -55,7 +55,7 @@ main() {
     beforeEach(inject([TemplateParser], (_parser) {
       parser = _parser;
       ngIf = CompileDirectiveMetadata.create(
-          selector: "[ng-if]",
+          selector: "[ngIf]",
           type: new CompileTypeMetadata(name: "NgIf"),
           inputs: ["ngIf"]);
     }));
@@ -123,20 +123,20 @@ main() {
             ]
           ]);
         });
-        it("should parse and camel case bound properties", () {
+        it("should parse dash case bound properties", () {
           expect(humanizeTplAst(parse("<div [some-prop]=\"v\">", []))).toEqual([
             [ElementAst, "div"],
             [
               BoundElementPropertyAst,
               PropertyBindingType.Property,
-              "someProp",
+              "some-prop",
               "v",
               null
             ]
           ]);
         });
         it("should normalize property names via the element schema", () {
-          expect(humanizeTplAst(parse("<div [mapped-attr]=\"v\">", [])))
+          expect(humanizeTplAst(parse("<div [mappedAttr]=\"v\">", [])))
               .toEqual([
             [ElementAst, "div"],
             [
@@ -161,43 +161,8 @@ main() {
             ]
           ]);
         });
-        it("should parse and camel case bound attributes", () {
-          expect(humanizeTplAst(parse("<div [attr.some-attr]=\"v\">", [])))
-              .toEqual([
-            [ElementAst, "div"],
-            [
-              BoundElementPropertyAst,
-              PropertyBindingType.Attribute,
-              "someAttr",
-              "v",
-              null
-            ]
-          ]);
-          expect(humanizeTplAst(parse("<div [ATTR.some-attr]=\"v\">", [])))
-              .toEqual([
-            [ElementAst, "div"],
-            [
-              BoundElementPropertyAst,
-              PropertyBindingType.Attribute,
-              "someAttr",
-              "v",
-              null
-            ]
-          ]);
-        });
         it("should parse and dash case bound classes", () {
           expect(humanizeTplAst(parse("<div [class.some-class]=\"v\">", [])))
-              .toEqual([
-            [ElementAst, "div"],
-            [
-              BoundElementPropertyAst,
-              PropertyBindingType.Class,
-              "some-class",
-              "v",
-              null
-            ]
-          ]);
-          expect(humanizeTplAst(parse("<div [CLASS.some-class]=\"v\">", [])))
               .toEqual([
             [ElementAst, "div"],
             [
@@ -222,31 +187,7 @@ main() {
             ]
           ]);
         });
-        it("should parse and camel case bound styles", () {
-          expect(humanizeTplAst(parse("<div [style.some-style]=\"v\">", [])))
-              .toEqual([
-            [ElementAst, "div"],
-            [
-              BoundElementPropertyAst,
-              PropertyBindingType.Style,
-              "someStyle",
-              "v",
-              null
-            ]
-          ]);
-          expect(humanizeTplAst(parse("<div [STYLE.some-style]=\"v\">", [])))
-              .toEqual([
-            [ElementAst, "div"],
-            [
-              BoundElementPropertyAst,
-              PropertyBindingType.Style,
-              "someStyle",
-              "v",
-              null
-            ]
-          ]);
-        });
-        it("should parse and mixed case bound styles", () {
+        it("should parse mixed case bound styles", () {
           expect(humanizeTplAst(parse("<div [style.someStyle]=\"v\">", [])))
               .toEqual([
             [ElementAst, "div"],
@@ -258,6 +199,20 @@ main() {
               null
             ]
           ]);
+        });
+        it("should report invalid prefixes", () {
+          expect(() => parse("<p [atTr.foo]>", []))
+              .toThrowError('''Template parse errors:
+Invalid property name \'atTr.foo\' ("<p [ERROR ->][atTr.foo]>"): TestComp@0:3''');
+          expect(() => parse("<p [sTyle.foo]>", []))
+              .toThrowError('''Template parse errors:
+Invalid property name \'sTyle.foo\' ("<p [ERROR ->][sTyle.foo]>"): TestComp@0:3''');
+          expect(() => parse("<p [Class.foo]>", []))
+              .toThrowError('''Template parse errors:
+Invalid property name \'Class.foo\' ("<p [ERROR ->][Class.foo]>"): TestComp@0:3''');
+          expect(() => parse("<p [bar.foo]>", []))
+              .toThrowError('''Template parse errors:
+Invalid property name \'bar.foo\' ("<p [ERROR ->][bar.foo]>"): TestComp@0:3''');
         });
         it("should parse bound properties via [...] and not report them as attributes",
             () {
@@ -275,16 +230,6 @@ main() {
         it("should parse bound properties via bind- and not report them as attributes",
             () {
           expect(humanizeTplAst(parse("<div bind-prop=\"v\">", []))).toEqual([
-            [ElementAst, "div"],
-            [
-              BoundElementPropertyAst,
-              PropertyBindingType.Property,
-              "prop",
-              "v",
-              null
-            ]
-          ]);
-          expect(humanizeTplAst(parse("<div BIND-prop=\"v\">", []))).toEqual([
             [ElementAst, "div"],
             [
               BoundElementPropertyAst,
@@ -324,14 +269,12 @@ main() {
             [BoundEventAst, "event", null, "v"]
           ]);
         });
-        it("should parse and camel case event names", () {
+        it("should parse event names case sensitive", () {
           expect(humanizeTplAst(parse("<div (some-event)=\"v\">", [])))
               .toEqual([
             [ElementAst, "div"],
-            [BoundEventAst, "someEvent", null, "v"]
+            [BoundEventAst, "some-event", null, "v"]
           ]);
-        });
-        it("should parse mixed case event names", () {
           expect(humanizeTplAst(parse("<div (someEvent)=\"v\">", []))).toEqual([
             [ElementAst, "div"],
             [BoundEventAst, "someEvent", null, "v"]
@@ -340,10 +283,6 @@ main() {
         it("should parse bound events via on- and not report them as attributes",
             () {
           expect(humanizeTplAst(parse("<div on-event=\"v\">", []))).toEqual([
-            [ElementAst, "div"],
-            [BoundEventAst, "event", null, "v"]
-          ]);
-          expect(humanizeTplAst(parse("<div ON-event=\"v\">", []))).toEqual([
             [ElementAst, "div"],
             [BoundEventAst, "event", null, "v"]
           ]);
@@ -380,17 +319,6 @@ main() {
         it("should parse bound events and properties via bindon- and not report them as attributes",
             () {
           expect(humanizeTplAst(parse("<div bindon-prop=\"v\">", []))).toEqual([
-            [ElementAst, "div"],
-            [
-              BoundElementPropertyAst,
-              PropertyBindingType.Property,
-              "prop",
-              "v",
-              null
-            ],
-            [BoundEventAst, "propChange", null, "v = \$event"]
-          ]);
-          expect(humanizeTplAst(parse("<div BINDON-prop=\"v\">", []))).toEqual([
             [ElementAst, "div"],
             [
               BoundElementPropertyAst,
@@ -480,7 +408,7 @@ main() {
               selector: "div",
               type: new CompileTypeMetadata(name: "DirA"),
               inputs: ["aProp"]);
-          expect(humanizeTplAst(parse("<div [a-prop]=\"expr\"></div>", [dirA])))
+          expect(humanizeTplAst(parse("<div [aProp]=\"expr\"></div>", [dirA])))
               .toEqual([
             [ElementAst, "div"],
             [DirectiveAst, dirA],
@@ -552,13 +480,9 @@ main() {
             [ElementAst, "div"],
             [VariableAst, "a", ""]
           ]);
-          expect(humanizeTplAst(parse("<div VAR-a>", []))).toEqual([
-            [ElementAst, "div"],
-            [VariableAst, "a", ""]
-          ]);
         });
-        it("should camel case variables", () {
-          expect(humanizeTplAst(parse("<div var-some-a>", []))).toEqual([
+        it("should parse camel case variables", () {
+          expect(humanizeTplAst(parse("<div var-someA>", []))).toEqual([
             [ElementAst, "div"],
             [VariableAst, "someA", ""]
           ]);
@@ -587,6 +511,11 @@ main() {
           expect(() => parse("<div #a=\"dirA\"></div>", []))
               .toThrowError('''Template parse errors:
 There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"></div>"): TestComp@0:5''');
+        });
+        it("should report invalid variable names", () {
+          expect(() => parse("<div #a-b></div>", []))
+              .toThrowError('''Template parse errors:
+"-" is not allowed in variable names ("<div [ERROR ->]#a-b></div>"): TestComp@0:5''');
         });
         it("should allow variables with values that dont match a directive on embedded template elements",
             () {
@@ -633,10 +562,6 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
       describe("inline templates", () {
         it("should wrap the element into an EmbeddedTemplateAST", () {
           expect(humanizeTplAst(parse("<div template>", []))).toEqual([
-            [EmbeddedTemplateAst],
-            [ElementAst, "div"]
-          ]);
-          expect(humanizeTplAst(parse("<div TEMPLATE>", []))).toEqual([
             [EmbeddedTemplateAst],
             [ElementAst, "div"]
           ]);
@@ -702,7 +627,7 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
         });
         it("should work with *... and use the attribute name as property binding name",
             () {
-          expect(humanizeTplAst(parse("<div *ng-if=\"test\">", [ngIf])))
+          expect(humanizeTplAst(parse("<div *ngIf=\"test\">", [ngIf])))
               .toEqual([
             [EmbeddedTemplateAst],
             [DirectiveAst, ngIf],
@@ -711,7 +636,7 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
           ]);
         });
         it("should work with *... and empty value", () {
-          expect(humanizeTplAst(parse("<div *ng-if>", [ngIf]))).toEqual([
+          expect(humanizeTplAst(parse("<div *ngIf>", [ngIf]))).toEqual([
             [EmbeddedTemplateAst],
             [DirectiveAst, ngIf],
             [BoundDirectivePropertyAst, "ngIf", "null"],
@@ -844,9 +769,9 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
           ["#text(hello)", 0]
         ]);
       });
-      it("should project children of components with ng-non-bindable", () {
+      it("should project children of components with ngNonBindable", () {
         expect(humanizeContentProjection(
-            parse("<div ng-non-bindable>{{hello}}<span></span></div>", [
+            parse("<div ngNonBindable>{{hello}}<span></span></div>", [
           createComp("div", ["*"])
         ]))).toEqual([
           ["div", null],
@@ -873,9 +798,9 @@ There is no directive with "exportAs" set to "dirA" ("<div [ERROR ->]#a="dirA"><
 <ng-content> element cannot have content. <ng-content> must be immediately followed by </ng-content> ("[ERROR ->]<ng-content>content</ng-content>"): TestComp@0:0''');
       });
       it("should report invalid property names", () {
-        expect(() => parse("<div [invalid-prop]></div>", []))
+        expect(() => parse("<div [invalidProp]></div>", []))
             .toThrowError('''Template parse errors:
-Can\'t bind to \'invalidProp\' since it isn\'t a known native property ("<div [ERROR ->][invalid-prop]></div>"): TestComp@0:5''');
+Can\'t bind to \'invalidProp\' since it isn\'t a known native property ("<div [ERROR ->][invalidProp]></div>"): TestComp@0:5''');
       });
       it("should report errors in expressions", () {
         expect(() => parse("<div [prop]=\"a b\"></div>", []))
@@ -991,67 +916,59 @@ Property binding a not used by any directive on an embedded template ("[ERROR ->
           ]);
         });
       });
-      it("should ignore bindings on children of elements with ng-non-bindable",
+      it("should ignore bindings on children of elements with ngNonBindable",
           () {
-        expect(humanizeTplAst(parse("<div ng-non-bindable>{{b}}</div>", [])))
+        expect(humanizeTplAst(parse("<div ngNonBindable>{{b}}</div>", [])))
             .toEqual([
           [ElementAst, "div"],
-          [AttrAst, "ng-non-bindable", ""],
-          [TextAst, "{{b}}"]
-        ]);
-        expect(humanizeTplAst(parse("<div NG-NON-BINDABLE>{{b}}</div>", [])))
-            .toEqual([
-          [ElementAst, "div"],
-          [AttrAst, "NG-NON-BINDABLE", ""],
+          [AttrAst, "ngNonBindable", ""],
           [TextAst, "{{b}}"]
         ]);
       });
-      it("should keep nested children of elements with ng-non-bindable", () {
+      it("should keep nested children of elements with ngNonBindable", () {
         expect(humanizeTplAst(
-                parse("<div ng-non-bindable><span>{{b}}</span></div>", [])))
-            .toEqual([
+            parse("<div ngNonBindable><span>{{b}}</span></div>", []))).toEqual([
           [ElementAst, "div"],
-          [AttrAst, "ng-non-bindable", ""],
+          [AttrAst, "ngNonBindable", ""],
           [ElementAst, "span"],
           [TextAst, "{{b}}"]
         ]);
       });
-      it("should ignore <script> elements inside of elements with ng-non-bindable",
+      it("should ignore <script> elements inside of elements with ngNonBindable",
           () {
         expect(humanizeTplAst(
-                parse("<div ng-non-bindable><script></script>a</div>", [])))
-            .toEqual([
+            parse("<div ngNonBindable><script></script>a</div>", []))).toEqual([
           [ElementAst, "div"],
-          [AttrAst, "ng-non-bindable", ""],
+          [AttrAst, "ngNonBindable", ""],
           [TextAst, "a"]
         ]);
       });
-      it("should ignore <style> elements inside of elements with ng-non-bindable",
+      it("should ignore <style> elements inside of elements with ngNonBindable",
           () {
         expect(humanizeTplAst(
-            parse("<div ng-non-bindable><style></style>a</div>", []))).toEqual([
+            parse("<div ngNonBindable><style></style>a</div>", []))).toEqual([
           [ElementAst, "div"],
-          [AttrAst, "ng-non-bindable", ""],
+          [AttrAst, "ngNonBindable", ""],
           [TextAst, "a"]
         ]);
       });
-      it("should ignore <link rel=\"stylesheet\"> elements inside of elements with ng-non-bindable",
+      it("should ignore <link rel=\"stylesheet\"> elements inside of elements with ngNonBindable",
           () {
         expect(humanizeTplAst(parse(
-                "<div ng-non-bindable><link rel=\"stylesheet\">a</div>", [])))
+                "<div ngNonBindable><link rel=\"stylesheet\">a</div>", [])))
             .toEqual([
           [ElementAst, "div"],
-          [AttrAst, "ng-non-bindable", ""],
+          [AttrAst, "ngNonBindable", ""],
           [TextAst, "a"]
         ]);
       });
-      it("should convert <ng-content> elements into regular elements inside of elements with ng-non-bindable",
+      it("should convert <ng-content> elements into regular elements inside of elements with ngNonBindable",
           () {
         expect(humanizeTplAst(parse(
-                "<div ng-non-bindable><ng-content></ng-content>a</div>", [])))
+                "<div ngNonBindable><ng-content></ng-content>a</div>", [])))
             .toEqual([
           [ElementAst, "div"],
-          [AttrAst, "ng-non-bindable", ""],
+          [AttrAst, "ngNonBindable", ""],
           [ElementAst, "ng-content"],
           [TextAst, "a"]
         ]);
@@ -1143,14 +1060,14 @@ Property binding a not used by any directive on an embedded template ("[ERROR ->
             type: new CompileTypeMetadata(name: "DirA"),
             inputs: ["aProp"]);
         expect(humanizeTplAstSourceSpans(
-            parse("<div [a-prop]=\"foo | bar\"></div>", [dirA]))).toEqual([
-          [ElementAst, "div", "<div [a-prop]=\"foo | bar\">"],
-          [DirectiveAst, dirA, "<div [a-prop]=\"foo | bar\">"],
+            parse("<div [aProp]=\"foo | bar\"></div>", [dirA]))).toEqual([
+          [ElementAst, "div", "<div [aProp]=\"foo | bar\">"],
+          [DirectiveAst, dirA, "<div [aProp]=\"foo | bar\">"],
           [
             BoundDirectivePropertyAst,
             "aProp",
             "(foo | bar)",
-            "[a-prop]=\"foo | bar\""
+            "[aProp]=\"foo | bar\""
           ]
         ]);
       });

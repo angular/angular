@@ -50,7 +50,7 @@ Binds text content to an interpolated string, e.g. "Hello Seabiscuit".
 syntax:
 `<my-cmp [(title)]="name">`|`[(title)]`
 description:
-Sets up two-way data binding. Equivalent to: `<my-cmp [title]="name" (title-change)="name=$event">`
+Sets up two-way data binding. Equivalent to: `<my-cmp [title]="name" (titleChange)="name=$event">`
 
 @cheatsheetItem
 syntax:

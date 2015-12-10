@@ -46,7 +46,7 @@ class ParentComp {}
 
 @Component(selector: "my-if-comp")
 @View(
-    template: '''MyIf(<span *ng-if="showMore">More</span>)''',
+    template: '''MyIf(<span *ngIf="showMore">More</span>)''',
     directives: const [NgIf])
 @Injectable()
 class MyIfComp {

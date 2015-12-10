@@ -46,7 +46,7 @@ const formControlBinding =
  *       <h2>NgFormControl Example</h2>
  *       <form>
  *         <p>Element with existing control: <input type="text"
- * [ng-form-control]="loginControl"></p>
+ * [ngFormControl]="loginControl"></p>
  *         <p>Value of existing control: {{loginControl.value}}</p>
  *       </form>
  *     </div>
@@ -58,9 +58,9 @@ const formControlBinding =
  * }
  *  ```
  *
- * ###ng-model
+ * ###ngModel
  *
- * We can also use `ng-model` to bind a domain model to the form.
+ * We can also use `ngModel` to bind a domain model to the form.
  *
  * ### Example ([live demo](http://plnkr.co/edit/yHMLuHO7DNgT8XvtjTDH?p=preview))
  *
@@ -68,7 +68,7 @@ const formControlBinding =
  * @Component({
  *      selector: "login-comp",
  *      directives: [FORM_DIRECTIVES],
- *      template: "<input type='text' [ng-form-control]='loginControl' [(ng-model)]='login'>"
+ *      template: "<input type='text' [ngFormControl]='loginControl' [(ngModel)]='login'>"
  *      })
  * class LoginComp {
  *  loginControl: Control = new Control('');
@@ -77,7 +77,7 @@ const formControlBinding =
  *  ```
  */
 @Directive(
-    selector: "[ng-form-control]",
+    selector: "[ngFormControl]",
     bindings: const [formControlBinding],
     inputs: const ["form: ngFormControl", "model: ngModel"],
     outputs: const ["update: ngModelChange"],

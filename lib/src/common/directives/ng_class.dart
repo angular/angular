@@ -41,7 +41,7 @@ import "package:angular2/src/facade/collection.dart"
  *   selector: 'toggle-button',
  *   inputs: ['isDisabled'],
  *   template: `
- *      <div class="button" [ng-class]="{active: isOn, disabled: isDisabled}"
+ *      <div class="button" [ngClass]="{active: isOn, disabled: isDisabled}"
  *          (click)="toggle(!isOn)">
  *          Click me!
  *      </div>`,
@@ -75,8 +75,8 @@ import "package:angular2/src/facade/collection.dart"
  * ```
  */
 @Directive(
-    selector: "[ng-class]",
-    inputs: const ["rawClass: ng-class", "initialClasses: class"])
+    selector: "[ngClass]",
+    inputs: const ["rawClass: ngClass", "initialClasses: class"])
 class NgClass implements DoCheck, OnDestroy {
   IterableDiffers _iterableDiffers;
   KeyValueDiffers _keyValueDiffers;

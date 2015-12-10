@@ -179,11 +179,12 @@ main() {
             [HtmlElementAst, "@myns:p", 1]
           ]);
         });
-        it("should match closing tags case insensitive", () {
-          expect(humanizeDom(parser.parse("<DiV><P></p></dIv>", "TestComp")))
-              .toEqual([
-            [HtmlElementAst, "DiV", 0],
-            [HtmlElementAst, "P", 1]
+        it("should match closing tags case sensitive", () {
+          var errors = parser.parse("<DiV><P></p></dIv>", "TestComp").errors;
+          expect(errors.length).toEqual(2);
+          expect(humanizeErrors(errors)).toEqual([
+            ["p", "Unexpected closing tag \"p\"", "0:8"],
+            ["dIv", "Unexpected closing tag \"dIv\"", "0:12"]
           ]);
         });
         it("should support self closing void elements", () {

@@ -52,9 +52,9 @@ import "package:angular2/src/facade/lang.dart" show isPresent, isBlank;
  *
  * # Syntax
  *
- * - `<li *ng-for="#item of items; #i = index">...</li>`
- * - `<li template="ng-for #item of items; #i = index">...</li>`
- * - `<template ng-for #item [ng-for-of]="items" #i="index"><li>...</li></template>`
+ * - `<li *ngFor="#item of items; #i = index">...</li>`
+ * - `<li template="ngFor #item of items; #i = index">...</li>`
+ * - `<template ngFor #item [ngForOf]="items" #i="index"><li>...</li></template>`
  *
  * ### Example
  *
@@ -62,7 +62,7 @@ import "package:angular2/src/facade/lang.dart" show isPresent, isBlank;
  * example.
  */
 @Directive(
-    selector: "[ng-for][ng-for-of]", inputs: const ["ngForOf", "ngForTemplate"])
+    selector: "[ngFor][ngForOf]", inputs: const ["ngForOf", "ngForTemplate"])
 class NgFor implements DoCheck {
   ViewContainerRef _viewContainer;
   TemplateRef _templateRef;

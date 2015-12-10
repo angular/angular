@@ -76,7 +76,7 @@ main() {
     }
     it("should watch element properties", () {
       var changeDetector =
-          createChangeDetector("<div [el-prop]=\"someProp\">", [], 0);
+          createChangeDetector("<div [elProp]=\"someProp\">", [], 0);
       context.someProp = "someValue";
       changeDetector.detectChanges();
       expect(dispatcher.log).toEqual(["elementProperty(elProp)=someValue"]);
@@ -114,7 +114,7 @@ main() {
     });
     it("should watch variables", () {
       var changeDetector =
-          createChangeDetector("<div #some-var [el-prop]=\"someVar\">", [], 0);
+          createChangeDetector("<div #someVar [elProp]=\"someVar\">", [], 0);
       locals.set("someVar", "someValue");
       changeDetector.detectChanges();
       expect(dispatcher.log).toEqual(["elementProperty(elProp)=someValue"]);
@@ -122,10 +122,10 @@ main() {
     it("should write directive properties", () {
       var dirMeta = CompileDirectiveMetadata.create(
           type: new CompileTypeMetadata(name: "SomeDir"),
-          selector: "[dir-prop]",
+          selector: "[dirProp]",
           inputs: ["dirProp"]);
       var changeDetector =
-          createChangeDetector("<div [dir-prop]=\"someProp\">", [dirMeta], 0);
+          createChangeDetector("<div [dirProp]=\"someProp\">", [dirMeta], 0);
       context.someProp = "someValue";
       changeDetector.detectChanges();
       expect(directive.dirProp).toEqual("someValue");
@@ -133,10 +133,10 @@ main() {
     it("should write template directive properties", () {
       var dirMeta = CompileDirectiveMetadata.create(
           type: new CompileTypeMetadata(name: "SomeDir"),
-          selector: "[dir-prop]",
+          selector: "[dirProp]",
           inputs: ["dirProp"]);
       var changeDetector = createChangeDetector(
-          "<template [dir-prop]=\"someProp\">", [dirMeta], 0);
+          "<template [dirProp]=\"someProp\">", [dirMeta], 0);
       context.someProp = "someValue";
       changeDetector.detectChanges();
       expect(directive.dirProp).toEqual("someValue");
