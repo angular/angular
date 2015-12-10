@@ -21,7 +21,7 @@ var _allIdsByView = new Map<AppView, num>();
 var _allViewsById = new Map<num, AppView>();
 var _nextId = 0;
 _setElementId(element, List<num> indices) {
-  if (isPresent(element)) {
+  if (isPresent(element) && DOM.isElementNode(element)) {
     DOM.setData(element, NG_ID_PROPERTY, indices.join(NG_ID_SEPARATOR));
   }
 }
