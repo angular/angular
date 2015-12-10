@@ -7,7 +7,9 @@ cd $ROOT_DIR
 
 gulp clean
 # benchpress.bundle and bundles.js will implicitly build everything we need
-gulp benchpress.bundle bundles.js
+# TODO: revert to normal gulp once we fix https://github.com/angular/angular/issues/5229
+#       gulp benchpress.bundle bundles.js
+node --max-old-space-size=1900 ./node_modules/.bin/gulp benchpress.bundle bundles.js
 
 NPM_DIR=$ROOT_DIR/dist/npm
 rm -fr $NPM_DIR
