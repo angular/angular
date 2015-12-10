@@ -932,7 +932,7 @@ export class Injector {
   /** @internal */
   _getByKeyHost(key: Key, optional: boolean, providerVisibility: Visibility,
                 lowerBoundVisibility: Object): any {
-    var inj = this;
+    var inj: Injector = this;
 
     if (lowerBoundVisibility instanceof SkipSelfMetadata) {
       if (inj._isHost) {
@@ -965,7 +965,7 @@ export class Injector {
   /** @internal */
   _getByKeyDefault(key: Key, optional: boolean, providerVisibility: Visibility,
                    lowerBoundVisibility: Object): any {
-    var inj = this;
+    var inj: Injector = this;
 
     if (lowerBoundVisibility instanceof SkipSelfMetadata) {
       providerVisibility = inj._isHost ? Visibility.PublicAndPrivate : Visibility.Public;

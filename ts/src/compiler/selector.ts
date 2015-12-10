@@ -181,7 +181,7 @@ export class SelectorMatcher {
    */
   private _addSelectable(cssSelector: CssSelector, callbackCtxt: any,
                          listContext: SelectorListContext) {
-    var matcher = this;
+    var matcher: SelectorMatcher = this;
     var element = cssSelector.element;
     var classNames = cssSelector.classNames;
     var attrs = cssSelector.attrs;
