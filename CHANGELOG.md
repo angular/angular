@@ -1,3 +1,42 @@
+<a name="2.0.0-alpha.52"></a>
+# 2.0.0-alpha.52 (2015-12-10)
+
+
+### Features
+
+* **core:** case-sensitive camelCase templates (kebab-case removal) ([da9b46a](https://github.com/angular/angular/commit/da9b46a))
+
+
+### BREAKING CHANGES
+
+* Angular templates are now case-sensitive and use camelCase instead of kebab-case (dash-case).
+
+  Before:
+
+  ```
+      <p *ng-if="cond">
+      <my-cmp [my-prop]="exp">
+      <my-cmp (my-event)="action()">
+      <my-cmp [(my-prop)]="prop">
+      <input #my-input>
+      <template ng-for #my-item [ng-for-of]=items #my-index="index">
+  ```
+
+  After:
+
+  ```
+      <p *ngIf="cond">
+      <my-cmp [myProp]="exp">
+      <my-cmp (myEvent)="action()">
+      <my-cmp [(myProp)]="prop">
+      <input #myInput>`,
+      <template ngFor="#my-item" [ngForOf]=items #myIndex="index">
+  ```
+
+  The full migration instruction can be found at [angular2/docs/migration/kebab-case.md](https://github.com/angular/angular/blob/master/modules/angular2/docs/migration/kebab-case.md).
+
+
+
 <a name="2.0.0-alpha.51"></a>
 # 2.0.0-alpha.51 (2015-12-10)
 
