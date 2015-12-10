@@ -91,7 +91,7 @@ class AsyncPipe implements PipeTransform, OnDestroy {
       if (isPresent(obj)) {
         this._subscribe(obj);
       }
-      return null;
+      return this._latestValue;
     }
     if (!identical(obj, this._obj)) {
       this._dispose();
