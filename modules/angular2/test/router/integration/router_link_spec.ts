@@ -324,6 +324,24 @@ export function main() {
                });
          }));
 
+      it('should be added to links inside a router-outlet',
+         inject([AsyncTestCompleter], (async) => {
+           router.config([new Route({path: '/sample', component: SampleCmp, name: 'Sample'})])
+               .then((_) => compile())
+               .then((_) => {
+                 var element = fixture.debugElement.nativeElement;
+
+                 fixture.detectChanges();
+                 router.subscribe((_) => {
+                   fixture.detectChanges();
+                   var link = DOM.querySelector(element, '.link-inside-router-outlet');
+                   expect(link).toHaveCssClass('router-link-active');
+                   async.done();
+                 });
+
+                 router.navigate(['./Sample']);
+               });
+         }));
 
       describe("router link dsl", () => {
         it('should generate link hrefs with params', inject([AsyncTestCompleter], (async) => {
@@ -516,4 +534,14 @@ class AmbiguousBookCmp {
   new AuxRoute({path: '/aside', component: Hello2Cmp, name: 'Aside'})
 ])
 class AuxLinkCmp {
+}
+
+@Component({selector: 'sample-cmp'})
+@View({
+  template: `<div class="sample-cmp">
+    <a [router-link]="['../Sample']" class="link-inside-router-outlet">Link to parent</a>
+  </div>`,
+  directives: ROUTER_DIRECTIVES
+})
+class SampleCmp {
 }

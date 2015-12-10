@@ -117,12 +117,13 @@ export class Router {
    */
   isRouteActive(instruction: Instruction): boolean {
     var router = this;
-    while (isPresent(router.parent) && isPresent(instruction.child)) {
+    while (isPresent(router.parent)) {
       router = router.parent;
-      instruction = instruction.child;
+      instruction = isPresent(instruction.child) ? instruction.child : instruction;
     }
-    return isPresent(this._currentInstruction) &&
-           this._currentInstruction.component == instruction.component;
+    var currentInstruction =
+        isPresent(this._currentInstruction) ? this._currentInstruction : router._currentInstruction;
+    return isPresent(currentInstruction) && currentInstruction.component == instruction.component;
   }
 
 
