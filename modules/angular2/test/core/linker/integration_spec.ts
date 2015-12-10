@@ -1613,7 +1613,7 @@ export function main() {
 
       it('should reflect property values on template comments',
          inject([TestComponentBuilder, AsyncTestCompleter], (tcb: TestComponentBuilder, async) => {
-           var tpl = '<template [ng-if]="ctxBoolProp"></template>';
+           var tpl = '<template [ngIf]="ctxBoolProp"></template>';
            tcb.overrideView(MyComp, new ViewMetadata({template: tpl, directives: [NgIf]}))
 
                .createAsync(MyComp)

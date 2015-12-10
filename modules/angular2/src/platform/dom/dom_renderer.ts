@@ -1,7 +1,5 @@
 import {Inject, Injectable, OpaqueToken} from 'angular2/src/core/di';
 import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
-
-import {StringMapWrapper} from 'angular2/src/facade/collection';
 import {
   isPresent,
   isBlank,
@@ -42,9 +40,8 @@ import {
   DefaultProtoViewRef
 } from 'angular2/src/core/render/view';
 import {ViewEncapsulation} from 'angular2/src/core/metadata';
-
-// TODO move it once DdomAdapter is moved
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+import {camelCaseToDashCase} from './util';
 
 const NAMESPACE_URIS =
     CONST_EXPR({'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg'});
@@ -162,11 +159,7 @@ export abstract class DomRenderer extends Renderer implements NodeFactory<Node> 
       var existingBindings = RegExpWrapper.firstMatch(
           TEMPLATE_BINDINGS_EXP, StringWrapper.replaceAll(DOM.getText(element), /\n/g, ''));
       var parsedBindings = Json.parse(existingBindings[1]);
-      if (isPresent(propertyValue)) {
-        parsedBindings[dashCasedPropertyName] = propertyValue;
-      } else {
-        StringMapWrapper.delete(parsedBindings, dashCasedPropertyName);
-      }
+      parsedBindings[dashCasedPropertyName] = propertyValue;
       DOM.setText(element, StringWrapper.replace(TEMPLATE_COMMENT_TEXT, '{}',
                                                  Json.stringify(parsedBindings)));
     } else {
