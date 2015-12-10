@@ -19,7 +19,7 @@ Binds attribute `role` to the result of expression `myAriaRole`.
 syntax:
 `<div [class.extra-sparkle]="isDelightful">`|`[class.extra-sparkle]`
 description:
-Binds the presence of the css class `extra-sparkle` on the element to the truthiness of the expression `isDelightful`.
+Binds the presence of the CSS class `extra-sparkle` on the element to the truthiness of the expression `isDelightful`.
 
 @cheatsheetItem
 syntax:
