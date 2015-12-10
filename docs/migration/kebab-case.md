@@ -23,7 +23,7 @@ Notes:
   - while tag name are case sensitive, the best practice is to use dash case for component elements so that the browser
     interpret them as custom elements,
   - `(some-event)` would now bind to the `some-event` event (i.e. there is no implicit dash to camel case conversion),
-  - `(some-property)` would now bind to the `some-property` property (i.e. there is no implicit dash to camel case conversion),
+  - `[some-property]` would now bind to the `some-property` property (i.e. there is no implicit dash to camel case conversion),
   - `#some-var` is not allowed any more ("-" can not be used in variable names).
 
 ## Migration
