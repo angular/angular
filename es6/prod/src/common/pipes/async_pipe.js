@@ -68,7 +68,7 @@ export let AsyncPipe = class {
             if (isPresent(obj)) {
                 this._subscribe(obj);
             }
-            return null;
+            return this._latestValue;
         }
         if (obj !== this._obj) {
             this._dispose();

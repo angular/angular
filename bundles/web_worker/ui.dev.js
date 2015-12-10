@@ -26259,7 +26259,7 @@ System.register("angular2/src/facade/async", ["angular2/src/facade/lang", "angul
       });
     };
     ObservableWrapper.isObservable = function(obs) {
-      return obs instanceof Observable_1.Observable;
+      return !!obs.subscribe;
     };
     ObservableWrapper.hasSubscribers = function(obs) {
       return obs.observers.length > 0;
