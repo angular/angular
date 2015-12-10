@@ -812,20 +812,7 @@ class DirectiveMetadata extends InjectableMetadata {
  *
  * ### Example
  *
- * ```
- * @Component({
- *   selector: 'greet',
- *   template: 'Hello {{name}}!'
- * })
- * class Greet {
- *   name: string;
- *
- *   constructor() {
- *     this.name = 'World';
- *   }
- * }
- * ```
- *
+ * {@example core/ts/metadata/metadata.ts region='component'}
  */
 class ComponentMetadata extends DirectiveMetadata {
   /**
@@ -950,12 +937,7 @@ class ComponentMetadata extends DirectiveMetadata {
  *
  * ### Example
  *
- * ```
- * @Pipe({name: 'lowercase'})
- * class Lowercase {
- *   transform(v, args) { return v.toLowerCase(); }
- * }
- * ```
+ * {@example core/ts/metadata/metadata.ts region='pipe'}
  */
 class PipeMetadata extends InjectableMetadata {
   final String name;
