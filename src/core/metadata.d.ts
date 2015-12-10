@@ -1013,8 +1013,8 @@ export declare var Attribute: AttributeFactory;
  *
  * ```html
  * <seeker>
- *   <div #find-me>...</div>
- *   <div #find-me-too>...</div>
+ *   <div #findMe>...</div>
+ *   <div #findMeToo>...</div>
  * </seeker>
  *
  *  @Component({
