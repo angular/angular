@@ -12138,7 +12138,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        onComplete = (typeof onComplete === "function") && onComplete || lang_1.noop;
 	        return emitter.subscribe({ next: onNext, error: onError, complete: onComplete });
 	    };
-	    ObservableWrapper.isObservable = function (obs) { return !!obs.subscribe; };
+	    ObservableWrapper.isObservable = function (obs) { return obs instanceof Observable_1.Observable; };
 	    /**
 	     * Returns whether `obs` has any subscribers listening to events.
 	     */
@@ -18951,7 +18951,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            if (lang_1.isPresent(obj)) {
 	                this._subscribe(obj);
 	            }
-	            return this._latestValue;
+	            return null;
 	        }
 	        if (obj !== this._obj) {
 	            this._dispose();

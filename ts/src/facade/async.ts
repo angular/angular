@@ -39,7 +39,7 @@ export class ObservableWrapper {
     return emitter.subscribe({next: onNext, error: onError, complete: onComplete});
   }
 
-  static isObservable(obs: any): boolean { return !!obs.subscribe; }
+  static isObservable(obs: any): boolean { return obs instanceof RxObservable; }
 
   /**
    * Returns whether `obs` has any subscribers listening to events.

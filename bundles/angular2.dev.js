@@ -29104,7 +29104,7 @@ System.register("angular2/src/facade/async", ["angular2/src/facade/lang", "angul
       });
     };
     ObservableWrapper.isObservable = function(obs) {
-      return !!obs.subscribe;
+      return obs instanceof Observable_1.Observable;
     };
     ObservableWrapper.hasSubscribers = function(obs) {
       return obs.observers.length > 0;
@@ -30250,7 +30250,7 @@ System.register("angular2/src/common/pipes/async_pipe", ["angular2/src/facade/la
         if (lang_1.isPresent(obj)) {
           this._subscribe(obj);
         }
-        return this._latestValue;
+        return null;
       }
       if (obj !== this._obj) {
         this._dispose();
