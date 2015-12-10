@@ -38,7 +38,7 @@ Notes:
   - `<my-cmp (my-event)="action()">` should be changed to `<my-cmp (myEvent)="action()">`,
   - `<my-cmp [(my-prop)]="prop">` should be changed to `<my-cmp [(myProp)]="prop">`,
   - `<input #my-input>` should be changed to `<input #myInput>`,
-  - `<template ng-for #my-item [ng-for-of]=items #my-index="index">` should be changed to `<template ngFor #myItem [ngForOf]=items #myIndex="index">`,
+  - `<template ng-for #my-item [ng-for-of]=items #my-index="index">` should be changed to `<template ngFor #my-item [ngForOf]=items #myIndex="index">`,
 
   Note: while the tag names are now case-sensitive the best practice is to keep them lower-dash-cased so that the browser
   treat them as custom elements. Using dashes in custom element names is required by the [Custom Element HTML Spec](http://www.w3.org/TR/custom-elements/#concepts).
