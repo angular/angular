@@ -62,8 +62,13 @@ export declare abstract class PlatformRef {
      * typical providers, as shown in the example below.
      *
      * ### Example
+     * ```
+     * var myAppProviders = [MyAppService];
      *
-     * {@example core/ts/platform/platform.ts region='longform'}
+     * platform()
+     *   .application([myAppProviders])
+     *   .bootstrap(MyTopLevelComponent);
+     * ```
      * ### See Also
      *
      * See the {@link bootstrap} documentation for more details.
@@ -129,7 +134,11 @@ export declare abstract class ApplicationRef {
      * child components under it.
      *
      * ### Example
-     * {@example core/ts/platform/platform.ts region='longform'}
+     * ```
+     * var app = platform.application([appProviders];
+     * app.bootstrap(FirstRootComponent);
+     * app.bootstrap(SecondRootComponent, [provide(OverrideBinding, {useClass: OverriddenBinding})]);
+     * ```
      */
     abstract bootstrap(componentType: Type, providers?: Array<Type | Provider | any[]>): Promise<ComponentRef>;
     /**

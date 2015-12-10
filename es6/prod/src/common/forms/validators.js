@@ -10,18 +10,13 @@ import { OpaqueToken } from 'angular2/core';
  *
  * ### Example
  *
- * {@example core/forms/ts/ng_validators/ng_validators.ts region='ng_validators'}
+ * ```typescript
+ * var providers = [
+ *   new Provider(NG_VALIDATORS, {useValue: myValidator, multi: true})
+ * ];
  * ```
  */
 export const NG_VALIDATORS = CONST_EXPR(new OpaqueToken("NgValidators"));
-/**
- * Providers for asynchronous validators to be used for {@link Control}s
- * in a form.
- *
- * Provide this using `multi: true` to add validators.
- *
- * See {@link NG_VALIDATORS} for more details.
- */
 export const NG_ASYNC_VALIDATORS = CONST_EXPR(new OpaqueToken("NgAsyncValidators"));
 /**
  * Provides a set of validators used by form controls.

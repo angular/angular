@@ -4,7 +4,9 @@ import { Type } from 'angular2/src/facade/lang';
  *
  * ### Example
  *
- * {@example core/di/ts/forward_ref/forward_ref.ts region='forward_ref_fn'}
+ * ```typescript
+ * var fn:ForwardRefFn = forwardRef(() => Lock);
+ * ```
  */
 export interface ForwardRefFn {
     (): any;
@@ -17,8 +19,25 @@ export interface ForwardRefFn {
  * but not yet defined. It is also used when the `token` which we use when creating a query is not
  * yet defined.
  *
- * ### Example
- * {@example core/di/ts/forward_ref/forward_ref.ts region='forward_ref'}
+ * ### Example ([live demo](http://plnkr.co/edit/bRs0SX2OTQiJzqvjgl8P?p=preview))
+ *
+ * ```typescript
+ * class Door {
+ *   lock: Lock;
+ *   constructor(@Inject(forwardRef(() => Lock)) lock:Lock) {
+ *     this.lock = lock;
+ *   }
+ * }
+ *
+ * // Only at this point Lock is defined.
+ * class Lock {
+ * }
+ *
+ * var injector = Injector.resolveAndCreate([Door, Lock]);
+ * var door = injector.get(Door);
+ * expect(door instanceof Door).toBe(true);
+ * expect(door.lock instanceof Lock).toBe(true);
+ * ```
  */
 export declare function forwardRef(forwardRefFn: ForwardRefFn): Type;
 /**

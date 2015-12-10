@@ -62,7 +62,23 @@ export const BROWSER_APP_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CON
  *
  * We can use this script code:
  *
- * {@example core/ts/bootstrap/bootstrap.ts region='bootstrap'}
+ * ```
+ * @Component({
+ *    selector: 'my-app',
+ *    template: 'Hello {{ name }}!'
+ * })
+ * class MyApp {
+ *   name:string;
+ *
+ *   constructor() {
+ *     this.name = 'World';
+ *   }
+ * }
+ *
+ * main() {
+ *   return bootstrap(MyApp);
+ * }
+ * ```
  *
  * When the app developer invokes `bootstrap()` with the root component `MyApp` as its
  * argument, Angular performs the following tasks:

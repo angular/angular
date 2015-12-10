@@ -569,7 +569,20 @@ DirectiveMetadata = __decorate([
  *
  * ### Example
  *
- * {@example core/ts/metadata/metadata.ts region='component'}
+ * ```
+ * @Component({
+ *   selector: 'greet',
+ *   template: 'Hello {{name}}!'
+ * })
+ * class Greet {
+ *   name: string;
+ *
+ *   constructor() {
+ *     this.name = 'World';
+ *   }
+ * }
+ * ```
+ *
  */
 export let ComponentMetadata = class extends DirectiveMetadata {
     constructor({ selector, inputs, outputs, properties, events, host, exportAs, moduleId, bindings, providers, viewBindings, viewProviders, changeDetection = ChangeDetectionStrategy.Default, queries, templateUrl, template, styleUrls, styles, directives, pipes, encapsulation } = {}) {
@@ -654,7 +667,12 @@ ComponentMetadata = __decorate([
  *
  * ### Example
  *
- * {@example core/ts/metadata/metadata.ts region='pipe'}
+ * ```
+ * @Pipe({name: 'lowercase'})
+ * class Lowercase {
+ *   transform(v, args) { return v.toLowerCase(); }
+ * }
+ * ```
  */
 export let PipeMetadata = class extends InjectableMetadata {
     constructor({ name, pure }) {

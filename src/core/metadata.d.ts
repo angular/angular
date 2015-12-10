@@ -61,7 +61,16 @@ export interface ViewDecorator extends TypeDecorator {
  *
  * ### Example as TypeScript Decorator
  *
- * {@example core/ts/metadata/metadata.ts region='directive'}
+ * ```
+ * import {Directive} from "angular2/angular2";
+ *
+ * @Directive({...})
+ * class MyDirective {
+ *   constructor() {
+ *     ...
+ *   }
+ * }
+ * ```
  *
  * ### Example as ES5 DSL
  *
@@ -128,7 +137,16 @@ export interface DirectiveFactory {
  *
  * ### Example as TypeScript Decorator
  *
- * {@example core/ts/metadata/metadata.ts region='component'}
+ * ```
+ * import {Component} from "angular2/angular2";
+ *
+ * @Component({...})
+ * class MyComponent {
+ *   constructor() {
+ *     ...
+ *   }
+ * }
+ * ```
  *
  * ### Example as ES5 DSL
  *
@@ -278,7 +296,16 @@ export interface ViewFactory {
  *
  * ### Example as TypeScript Decorator
  *
- * {@example core/ts/metadata/metadata.ts region='attributeFactory'}
+ * ```
+ * import {Attribute, Component} from "angular2/angular2";
+ *
+ * @Component({...})
+ * class MyComponent {
+ *   constructor(@Attribute('title') title: string) {
+ *     ...
+ *   }
+ * }
+ * ```
  *
  * ### Example as ES5 DSL
  *
@@ -385,9 +412,20 @@ export interface ViewChildFactory {
 /**
  * {@link PipeMetadata} factory for creating decorators.
  *
- * ### Example
+ * ### Example as TypeScript Decorator
  *
- * {@example core/ts/metadata/metadata.ts region='pipe'}
+ * ```
+ * import {Pipe} from "angular2/angular2";
+ *
+ * @Pipe({...})
+ * class MyPipe {
+ *   constructor() {
+ *     ...
+ *   }
+ *
+ *   transform(v, args) {}
+ * }
+ * ```
  */
 export interface PipeFactory {
     (obj: {
@@ -455,7 +493,20 @@ export interface HostListenerFactory {
  *
  * ### Example
  *
- * {@example core/ts/metadata/metadata.ts region='component'}
+ * ```
+ * @Component({
+ *   selector: 'greet',
+ *   template: 'Hello {{name}}!'
+ * })
+ * class Greet {
+ *   name: string;
+ *
+ *   constructor() {
+ *     this.name = 'World';
+ *   }
+ * }
+ * ```
+ *
  */
 export declare var Component: ComponentFactory;
 /**
@@ -868,21 +919,33 @@ export declare var Directive: DirectiveFactory;
  */
 export declare var View: ViewFactory;
 /**
- * Specifies that a constant attribute value should be injected.
+ * Metadata properties available for configuring Views.
  *
- * The directive can inject constant string literals of host element attributes.
+ * Each Angular component requires a single `@Component` and at least one `@View` annotation. The
+ * `@View` annotation specifies the HTML template to use, and lists the directives that are active
+ * within the template.
+ *
+ * When a component is instantiated, the template is loaded into the component's shadow root, and
+ * the expressions and statements in the template are evaluated against the component.
+ *
+ * For details on the `@Component` annotation, see {@link ComponentMetadata}.
  *
  * ### Example
  *
- * Suppose we have an `<input>` element and want to know its `type`.
- *
- * ```html
- * <input type="text">
  * ```
+ * @Component({
+ *   selector: 'greet',
+ *   template: 'Hello {{name}}!',
+ *   directives: [GreetUser, Bold]
+ * })
+ * class Greet {
+ *   name: string;
  *
- * A decorator can inject string literal `text` like so:
- *
- * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
+ *   constructor() {
+ *     this.name = 'World';
+ *   }
+ * }
+ * ```
  */
 export declare var Attribute: AttributeFactory;
 /**
@@ -1122,7 +1185,14 @@ export declare var ViewQuery: QueryFactory;
  *
  * ### Example
  *
- * {@example core/ts/metadata/metadata.ts region='pipe'}
+ * ```
+ * @Pipe({
+ *   name: 'lowercase'
+ * })
+ * class Lowercase {
+ *   transform(v, args) { return v.toLowerCase(); }
+ * }
+ * ```
  */
 export declare var Pipe: PipeFactory;
 /**

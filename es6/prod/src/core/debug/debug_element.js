@@ -6,9 +6,6 @@ import { internalView } from 'angular2/src/core/linker/view_ref';
  * A DebugElement contains information from the Angular compiler about an
  * element and provides access to the corresponding ElementInjector and
  * underlying DOM Element, as well as a way to query for children.
- *
- * A DebugElement can be obtained from a {@link ComponentFixture} or
- * {@link RootTestComponent}.
  */
 export class DebugElement {
     get componentInstance() { return unimplemented(); }
@@ -125,7 +122,7 @@ export class DebugElement_ extends DebugElement {
     }
 }
 /**
- * Returns a {@link DebugElement} for an {@link ElementRef}.
+ * Returns a DebugElement for a ElementRef.
  *
  * @param {ElementRef}: elementRef
  * @return {DebugElement}

@@ -34,7 +34,20 @@ import { makeDecorator, makeParamDecorator, makePropDecorator } from './util/dec
  *
  * ### Example
  *
- * {@example core/ts/metadata/metadata.ts region='component'}
+ * ```
+ * @Component({
+ *   selector: 'greet',
+ *   template: 'Hello {{name}}!'
+ * })
+ * class Greet {
+ *   name: string;
+ *
+ *   constructor() {
+ *     this.name = 'World';
+ *   }
+ * }
+ * ```
+ *
  */
 export var Component = makeDecorator(ComponentMetadata, (fn) => fn.View = View);
 // TODO(alexeagle): remove the duplication of this doc. It is copied from DirectiveMetadata.
@@ -448,22 +461,35 @@ export var Directive = makeDecorator(DirectiveMetadata);
  * ```
  */
 export var View = makeDecorator(ViewMetadata, (fn) => fn.View = View);
+// TODO(alexeagle): remove the duplication of this doc. It is copied from AttributeMetadata.
 /**
- * Specifies that a constant attribute value should be injected.
+ * Metadata properties available for configuring Views.
  *
- * The directive can inject constant string literals of host element attributes.
+ * Each Angular component requires a single `@Component` and at least one `@View` annotation. The
+ * `@View` annotation specifies the HTML template to use, and lists the directives that are active
+ * within the template.
+ *
+ * When a component is instantiated, the template is loaded into the component's shadow root, and
+ * the expressions and statements in the template are evaluated against the component.
+ *
+ * For details on the `@Component` annotation, see {@link ComponentMetadata}.
  *
  * ### Example
  *
- * Suppose we have an `<input>` element and want to know its `type`.
- *
- * ```html
- * <input type="text">
  * ```
+ * @Component({
+ *   selector: 'greet',
+ *   template: 'Hello {{name}}!',
+ *   directives: [GreetUser, Bold]
+ * })
+ * class Greet {
+ *   name: string;
  *
- * A decorator can inject string literal `text` like so:
- *
- * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
+ *   constructor() {
+ *     this.name = 'World';
+ *   }
+ * }
+ * ```
  */
 export var Attribute = makeParamDecorator(AttributeMetadata);
 // TODO(alexeagle): remove the duplication of this doc. It is copied from QueryMetadata.
@@ -710,7 +736,14 @@ export var ViewQuery = makeParamDecorator(ViewQueryMetadata);
  *
  * ### Example
  *
- * {@example core/ts/metadata/metadata.ts region='pipe'}
+ * ```
+ * @Pipe({
+ *   name: 'lowercase'
+ * })
+ * class Lowercase {
+ *   transform(v, args) { return v.toLowerCase(); }
+ * }
+ * ```
  */
 export var Pipe = makeDecorator(PipeMetadata);
 // TODO(alexeagle): remove the duplication of this doc. It is copied from InputMetadata.
