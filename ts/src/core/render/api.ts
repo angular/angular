@@ -300,6 +300,9 @@ export abstract class Renderer {
   abstract setElementAttribute(location: RenderElementRef, attributeName: string,
                                attributeValue: string);
 
+  abstract setBindingDebugInfo(location: RenderElementRef, propertyName: string,
+                               propertyValue: string);
+
   /**
    * Sets a (CSS) class on the Element specified via `location`.
    *
