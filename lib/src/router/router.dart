@@ -113,7 +113,7 @@ class Router {
    * otherwise `false`.
    */
   bool isRouteActive(Instruction instruction) {
-    Router router = this;
+    var router = this;
     while (isPresent(router.parent) && isPresent(instruction.child)) {
       router = router.parent;
       instruction = instruction.child;
@@ -377,7 +377,7 @@ class Router {
 
   List<Instruction> _getAncestorInstructions() {
     var ancestorComponents = [];
-    Router ancestorRouter = this;
+    var ancestorRouter = this;
     while (isPresent(ancestorRouter.parent) &&
         isPresent(ancestorRouter.parent._currentInstruction)) {
       ancestorRouter = ancestorRouter.parent;

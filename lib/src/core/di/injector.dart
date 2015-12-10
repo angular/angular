@@ -1019,7 +1019,7 @@ class Injector {
   /** @internal */
   dynamic _getByKeyHost(Key key, bool optional, Visibility providerVisibility,
       Object lowerBoundVisibility) {
-    Injector inj = this;
+    var inj = this;
     if (lowerBoundVisibility is SkipSelfMetadata) {
       if (inj._isHost) {
         return this._getPrivateDependency(key, optional, inj);
@@ -1050,7 +1050,7 @@ class Injector {
   /** @internal */
   dynamic _getByKeyDefault(Key key, bool optional,
       Visibility providerVisibility, Object lowerBoundVisibility) {
-    Injector inj = this;
+    var inj = this;
     if (lowerBoundVisibility is SkipSelfMetadata) {
       providerVisibility =
           inj._isHost ? Visibility.PublicAndPrivate : Visibility.Public;

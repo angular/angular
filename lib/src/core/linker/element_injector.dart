@@ -656,7 +656,7 @@ class ElementInjector extends TreeNode<ElementInjector>
   }
 
   void traverseAndSetQueriesAsDirty() {
-    ElementInjector inj = this;
+    var inj = this;
     while (isPresent(inj)) {
       inj._setQueriesAsDirty();
       inj = inj.parent;
