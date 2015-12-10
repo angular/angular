@@ -1,4 +1,5 @@
-import {Component, provide, bootstrap} from 'angular2/angular2';
+import {Component, provide} from 'angular2/core';
+import {bootstrap} from 'angular2/bootstrap';
 import {
   OnActivate,
   ComponentInstruction,

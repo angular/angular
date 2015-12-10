@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Component, Observable } from 'angular2/angular2';
+import { Component, Observable } from 'angular2/core';
 import { bootstrap } from 'angular2/bootstrap';
 // #docregion AsyncPipe
 export let AsyncPipeExample = class {
@@ -36,7 +36,7 @@ AsyncPipeExample = __decorate([
         selector: 'async-example',
         template: `<div>
     <p>Wait for it... {{ greeting | async }}</p>
-    <button (click)="clicked()">{{ arrived ? 'Reset' : 'Resolve' }}</button> 
+    <button (click)="clicked()">{{ arrived ? 'Reset' : 'Resolve' }}</button>
   </div>`
     }), 
     __metadata('design:paramtypes', [])
@@ -59,7 +59,7 @@ AppCmp = __decorate([
     Component({
         selector: 'example-app',
         directives: [AsyncPipeExample],
-        template: ` 
+        template: `
     <h1>AsyncPipe Example</h1>
     <async-example></async-example>
   `
