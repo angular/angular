@@ -10,6 +10,9 @@ import {ElementRef, ElementRef_} from 'angular2/src/core/linker/element_ref';
  * A DebugElement contains information from the Angular compiler about an
  * element and provides access to the corresponding ElementInjector and
  * underlying DOM Element, as well as a way to query for children.
+ *
+ * A DebugElement can be obtained from a {@link ComponentFixture} or
+ * {@link RootTestComponent}.
  */
 export abstract class DebugElement {
   get componentInstance(): any { return unimplemented(); };
@@ -156,7 +159,7 @@ export class DebugElement_ extends DebugElement {
 }
 
 /**
- * Returns a DebugElement for a ElementRef.
+ * Returns a {@link DebugElement} for an {@link ElementRef}.
  *
  * @param {ElementRef}: elementRef
  * @return {DebugElement}

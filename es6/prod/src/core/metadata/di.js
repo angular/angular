@@ -25,16 +25,7 @@ import { DependencyMetadata } from 'angular2/src/core/di/metadata';
  *
  * A decorator can inject string literal `text` like so:
  *
- * ```javascript
- * @Directive({
- *   selector: `input'
- * })
- * class InputDirective {
- *   constructor(@Attribute('type') type) {
- *     // type would be `text` in this example
- *   }
- * }
- * ```
+ * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
  */
 export let AttributeMetadata = class extends DependencyMetadata {
     constructor(attributeName) {

@@ -7,13 +7,18 @@ import * as modelModule from './model';
  *
  * ### Example
  *
- * ```typescript
- * var providers = [
- *   new Provider(NG_VALIDATORS, {useValue: myValidator, multi: true})
- * ];
+ * {@example core/forms/ts/ng_validators/ng_validators.ts region='ng_validators'}
  * ```
  */
 export declare const NG_VALIDATORS: OpaqueToken;
+/**
+ * Providers for asynchronous validators to be used for {@link Control}s
+ * in a form.
+ *
+ * Provide this using `multi: true` to add validators.
+ *
+ * See {@link NG_VALIDATORS} for more details.
+ */
 export declare const NG_ASYNC_VALIDATORS: OpaqueToken;
 /**
  * Provides a set of validators used by form controls.

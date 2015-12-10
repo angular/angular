@@ -5,23 +5,50 @@ export { inject, injectAsync } from './test_injector';
 export { expect } from './matchers';
 var _global = (typeof window === 'undefined' ? global : window);
 /**
- * See http://jasmine.github.io/
+ * Run a function (with an optional asynchronous callback) after each test case.
+ *
+ * See http://jasmine.github.io/ for more details.
+ *
+ * ## Example:
+ *
+ * {@example testing/ts/testing.ts region='afterEach'}
  */
 export var afterEach = _global.afterEach;
 /**
- * See http://jasmine.github.io/
+ * Group test cases together under a common description prefix.
+ *
+ * See http://jasmine.github.io/ for more details.
+ *
+ * ## Example:
+ *
+ * {@example testing/ts/testing.ts region='describeIt'}
  */
 export var describe = _global.describe;
 /**
- * See http://jasmine.github.io/
+ * See {@link fdescribe}.
  */
 export var ddescribe = _global.fdescribe;
 /**
- * See http://jasmine.github.io/
+ * Like {@link describe}, but instructs the test runner to only run
+ * the test cases in this group. This is useful for debugging.
+ *
+ * See http://jasmine.github.io/ for more details.
+ *
+ * ## Example:
+ *
+ * {@example testing/ts/testing.ts region='fdescribe'}
  */
 export var fdescribe = _global.fdescribe;
 /**
- * See http://jasmine.github.io/
+ * Like {@link describe}, but instructs the test runner to exclude
+ * this group of test cases from execution. This is useful for
+ * debugging, or for excluding broken tests until they can be fixed.
+ *
+ * See http://jasmine.github.io/ for more details.
+ *
+ * ## Example:
+ *
+ * {@example testing/ts/testing.ts region='xdescribe'}
  */
 export var xdescribe = _global.xdescribe;
 var jsmBeforeEach = _global.beforeEach;
@@ -41,14 +68,9 @@ jsmBeforeEach(() => {
  *
  * The given function must return a list of DI providers.
  *
- * Example:
+ * ## Example:
  *
- * ```
- *   beforeEachProviders(() => [
- *     bind(Compiler).toClass(MockCompiler),
- *     bind(SomeToken).toValue(myValue),
- *   ]);
- * ```
+ * {@example testing/ts/testing.ts region='beforeEachProviders'}
  */
 export function beforeEachProviders(fn) {
     jsmBeforeEach(() => {
@@ -139,11 +161,16 @@ function _it(jsmFn, name, testFn, testTimeOut) {
 }
 /**
  * Wrapper around Jasmine beforeEach function.
- * See http://jasmine.github.io/
  *
  * beforeEach may be used with the `inject` function to fetch dependencies.
  * The test will automatically wait for any asynchronous calls inside the
  * injected test function to complete.
+ *
+ * See http://jasmine.github.io/ for more details.
+ *
+ * ## Example:
+ *
+ * {@example testing/ts/testing.ts region='beforeEach'}
  */
 export function beforeEach(fn) {
     if (fn instanceof FunctionWithParamTokens) {
@@ -167,45 +194,51 @@ export function beforeEach(fn) {
     }
 }
 /**
- * Wrapper around Jasmine it function.
- * See http://jasmine.github.io/
+ * Define a single test case with the given test name and execution function.
  *
- * it may be used with the `inject` function to fetch dependencies.
- * The test will automatically wait for any asynchronous calls inside the
- * injected test function to complete.
+ * The test function can be either a synchronous function, an asynchronous function
+ * that takes a completion callback, or an injected function created via {@link inject}
+ * or {@link injectAsync}. The test will automatically wait for any asynchronous calls
+ * inside the injected test function to complete.
+ *
+ * Wrapper around Jasmine it function. See http://jasmine.github.io/ for more details.
+ *
+ * ## Example:
+ *
+ * {@example testing/ts/testing.ts region='it'}
  */
 export function it(name, fn, timeOut = null) {
     return _it(jsmIt, name, fn, timeOut);
 }
 /**
- * Wrapper around Jasmine xit (skipped it) function.
- * See http://jasmine.github.io/
+ * Like {@link it}, but instructs the test runner to exclude this test
+ * entirely. Useful for debugging or for excluding broken tests until
+ * they can be fixed.
  *
- * it may be used with the `inject` function to fetch dependencies.
- * The test will automatically wait for any asynchronous calls inside the
- * injected test function to complete.
+ * Wrapper around Jasmine xit function. See http://jasmine.github.io/ for more details.
+ *
+ * ## Example:
+ *
+ * {@example testing/ts/testing.ts region='xit'}
  */
 export function xit(name, fn, timeOut = null) {
     return _it(jsmXIt, name, fn, timeOut);
 }
 /**
- * Wrapper around Jasmine iit (focused it) function.
- * See http://jasmine.github.io/
- *
- * it may be used with the `inject` function to fetch dependencies.
- * The test will automatically wait for any asynchronous calls inside the
- * injected test function to complete.
+ * See {@link fit}.
  */
 export function iit(name, fn, timeOut = null) {
     return _it(jsmIIt, name, fn, timeOut);
 }
 /**
- * Wrapper around Jasmine fit (focused it) function.
- * See http://jasmine.github.io/
+ * Like {@link it}, but instructs the test runner to only run this test.
+ * Useful for debugging.
  *
- * it may be used with the `inject` function to fetch dependencies.
- * The test will automatically wait for any asynchronous calls inside the
- * injected test function to complete.
+ * Wrapper around Jasmine fit function. See http://jasmine.github.io/ for more details.
+ *
+ * ## Example:
+ *
+ * {@example testing/ts/testing.ts region='fit'}
  */
 export function fit(name, fn, timeOut = null) {
     return _it(jsmIIt, name, fn, timeOut);

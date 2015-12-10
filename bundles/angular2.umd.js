@@ -174,20 +174,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * ### Example
 	 *
-	 * ```
-	 * @Component({
-	 *   selector: 'greet',
-	 *   template: 'Hello {{name}}!'
-	 * })
-	 * class Greet {
-	 *   name: string;
-	 *
-	 *   constructor() {
-	 *     this.name = 'World';
-	 *   }
-	 * }
-	 * ```
-	 *
+	 * {@example core/ts/metadata/metadata.ts region='component'}
 	 */
 	exports.Component = decorators_1.makeDecorator(directives_2.ComponentMetadata, function (fn) { return fn.View = exports.View; });
 	// TODO(alexeagle): remove the duplication of this doc. It is copied from DirectiveMetadata.
@@ -601,35 +588,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ```
 	 */
 	exports.View = decorators_1.makeDecorator(view_2.ViewMetadata, function (fn) { return fn.View = exports.View; });
-	// TODO(alexeagle): remove the duplication of this doc. It is copied from AttributeMetadata.
 	/**
-	 * Metadata properties available for configuring Views.
+	 * Specifies that a constant attribute value should be injected.
 	 *
-	 * Each Angular component requires a single `@Component` and at least one `@View` annotation. The
-	 * `@View` annotation specifies the HTML template to use, and lists the directives that are active
-	 * within the template.
-	 *
-	 * When a component is instantiated, the template is loaded into the component's shadow root, and
-	 * the expressions and statements in the template are evaluated against the component.
-	 *
-	 * For details on the `@Component` annotation, see {@link ComponentMetadata}.
+	 * The directive can inject constant string literals of host element attributes.
 	 *
 	 * ### Example
 	 *
-	 * ```
-	 * @Component({
-	 *   selector: 'greet',
-	 *   template: 'Hello {{name}}!',
-	 *   directives: [GreetUser, Bold]
-	 * })
-	 * class Greet {
-	 *   name: string;
+	 * Suppose we have an `<input>` element and want to know its `type`.
 	 *
-	 *   constructor() {
-	 *     this.name = 'World';
-	 *   }
-	 * }
+	 * ```html
+	 * <input type="text">
 	 * ```
+	 *
+	 * A decorator can inject string literal `text` like so:
+	 *
+	 * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
 	 */
 	exports.Attribute = decorators_1.makeParamDecorator(di_2.AttributeMetadata);
 	// TODO(alexeagle): remove the duplication of this doc. It is copied from QueryMetadata.
@@ -876,14 +850,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * ### Example
 	 *
-	 * ```
-	 * @Pipe({
-	 *   name: 'lowercase'
-	 * })
-	 * class Lowercase {
-	 *   transform(v, args) { return v.toLowerCase(); }
-	 * }
-	 * ```
+	 * {@example core/ts/metadata/metadata.ts region='pipe'}
 	 */
 	exports.Pipe = decorators_1.makeDecorator(directives_2.PipeMetadata);
 	// TODO(alexeagle): remove the duplication of this doc. It is copied from InputMetadata.
@@ -1083,16 +1050,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * A decorator can inject string literal `text` like so:
 	 *
-	 * ```javascript
-	 * @Directive({
-	 *   selector: `input'
-	 * })
-	 * class InputDirective {
-	 *   constructor(@Attribute('type') type) {
-	 *     // type would be `text` in this example
-	 *   }
-	 * }
-	 * ```
+	 * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
 	 */
 	var AttributeMetadata = (function (_super) {
 	    __extends(AttributeMetadata, _super);
@@ -2541,25 +2499,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * but not yet defined. It is also used when the `token` which we use when creating a query is not
 	 * yet defined.
 	 *
-	 * ### Example ([live demo](http://plnkr.co/edit/bRs0SX2OTQiJzqvjgl8P?p=preview))
-	 *
-	 * ```typescript
-	 * class Door {
-	 *   lock: Lock;
-	 *   constructor(@Inject(forwardRef(() => Lock)) lock:Lock) {
-	 *     this.lock = lock;
-	 *   }
-	 * }
-	 *
-	 * // Only at this point Lock is defined.
-	 * class Lock {
-	 * }
-	 *
-	 * var injector = Injector.resolveAndCreate([Door, Lock]);
-	 * var door = injector.get(Door);
-	 * expect(door instanceof Door).toBe(true);
-	 * expect(door.lock instanceof Lock).toBe(true);
-	 * ```
+	 * ### Example
+	 * {@example core/di/ts/forward_ref/forward_ref.ts region='forward_ref'}
 	 */
 	function forwardRef(forwardRefFn) {
 	    forwardRefFn.__forward_ref__ = forwardRef;
@@ -5980,20 +5921,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * ### Example
 	 *
-	 * ```
-	 * @Component({
-	 *   selector: 'greet',
-	 *   template: 'Hello {{name}}!'
-	 * })
-	 * class Greet {
-	 *   name: string;
-	 *
-	 *   constructor() {
-	 *     this.name = 'World';
-	 *   }
-	 * }
-	 * ```
-	 *
+	 * {@example core/ts/metadata/metadata.ts region='component'}
 	 */
 	var ComponentMetadata = (function (_super) {
 	    __extends(ComponentMetadata, _super);
@@ -6090,12 +6018,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * ### Example
 	 *
-	 * ```
-	 * @Pipe({name: 'lowercase'})
-	 * class Lowercase {
-	 *   transform(v, args) { return v.toLowerCase(); }
-	 * }
-	 * ```
+	 * {@example core/ts/metadata/metadata.ts region='pipe'}
 	 */
 	var PipeMetadata = (function (_super) {
 	    __extends(PipeMetadata, _super);
@@ -18541,6 +18464,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * A DebugElement contains information from the Angular compiler about an
 	 * element and provides access to the corresponding ElementInjector and
 	 * underlying DOM Element, as well as a way to query for children.
+	 *
+	 * A DebugElement can be obtained from a {@link ComponentFixture} or
+	 * {@link RootTestComponent}.
 	 */
 	var DebugElement = (function () {
 	    function DebugElement() {
@@ -18707,7 +18633,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	})(DebugElement);
 	exports.DebugElement_ = DebugElement_;
 	/**
-	 * Returns a DebugElement for a ElementRef.
+	 * Returns a {@link DebugElement} for an {@link ElementRef}.
 	 *
 	 * @param {ElementRef}: elementRef
 	 * @return {DebugElement}
@@ -21543,13 +21469,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * ### Example
 	 *
-	 * ```typescript
-	 * var providers = [
-	 *   new Provider(NG_VALIDATORS, {useValue: myValidator, multi: true})
-	 * ];
+	 * {@example core/forms/ts/ng_validators/ng_validators.ts region='ng_validators'}
 	 * ```
 	 */
 	exports.NG_VALIDATORS = lang_1.CONST_EXPR(new core_1.OpaqueToken("NgValidators"));
+	/**
+	 * Providers for asynchronous validators to be used for {@link Control}s
+	 * in a form.
+	 *
+	 * Provide this using `multi: true` to add validators.
+	 *
+	 * See {@link NG_VALIDATORS} for more details.
+	 */
 	exports.NG_ASYNC_VALIDATORS = lang_1.CONST_EXPR(new core_1.OpaqueToken("NgAsyncValidators"));
 	/**
 	 * Provides a set of validators used by form controls.
@@ -23207,23 +23138,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * We can use this script code:
 	 *
-	 * ```
-	 * @Component({
-	 *    selector: 'my-app',
-	 *    template: 'Hello {{ name }}!'
-	 * })
-	 * class MyApp {
-	 *   name:string;
-	 *
-	 *   constructor() {
-	 *     this.name = 'World';
-	 *   }
-	 * }
-	 *
-	 * main() {
-	 *   return bootstrap(MyApp);
-	 * }
-	 * ```
+	 * {@example core/ts/bootstrap/bootstrap.ts region='bootstrap'}
 	 *
 	 * When the app developer invokes `bootstrap()` with the root component `MyApp` as its
 	 * argument, Angular performs the following tasks:
@@ -25736,6 +25651,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return null;
 	    }
 	}
+	/**
+	 * Returns a {@link DebugElement} for the given native DOM element, or
+	 * null if the given native element does not have an Angular view associated
+	 * with it.
+	 */
 	function inspectNativeElement(element) {
 	    var elId = _getElementId(element);
 	    if (lang_1.isPresent(elId)) {
