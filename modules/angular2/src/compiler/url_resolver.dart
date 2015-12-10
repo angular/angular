@@ -1,14 +1,10 @@
 library angular2.src.services.url_resolver;
 
-import 'package:angular2/src/core/di.dart' show Injectable, Inject, Provider;
-import 'package:angular2/src/facade/lang.dart' show isPresent, StringWrapper;
-import 'package:angular2/src/core/application_tokens.dart' show PACKAGE_ROOT_URL;
+import 'package:angular2/src/core/di.dart' show Injectable, Provider;
 
 UrlResolver createWithoutPackagePrefix() {
   return new UrlResolver.withUrlPrefix(null);
 }
-
-const DEFAULT_PACKAGE_URL_PROVIDER = const Provider(PACKAGE_ROOT_URL, useValue: "/packages");
 
 @Injectable()
 class UrlResolver {
@@ -16,12 +12,11 @@ class UrlResolver {
   /// '/packages'
   final String _packagePrefix;
 
-  UrlResolver([@Inject(PACKAGE_ROOT_URL) packagePrefix]) :
-    this._packagePrefix = isPresent(packagePrefix) ? StringWrapper.stripRight(packagePrefix, '/') : null;
+  const UrlResolver() : _packagePrefix = '/packages';
 
   /// Creates a UrlResolver that will resolve 'package:' Urls to a different
   /// prefixed location.
-  UrlResolver.withUrlPrefix(this._packagePrefix);
+  const UrlResolver.withUrlPrefix(this._packagePrefix);
 
   /**
    * Resolves the `url` given the `baseUrl`:
@@ -37,21 +32,15 @@ class UrlResolver {
    */
   String resolve(String baseUrl, String url) {
     Uri uri = Uri.parse(url);
-
-    if (isPresent(baseUrl) && baseUrl.length > 0) {
+    if (!uri.isAbsolute) {
       Uri baseUri = Uri.parse(baseUrl);
       uri = baseUri.resolveUri(uri);
     }
 
     if (_packagePrefix != null && uri.scheme == 'package') {
-      var path = StringWrapper.stripLeft(uri.path, '/');
-      return '$_packagePrefix/${path}';
+      return '$_packagePrefix/${uri.path}';
     } else {
       return uri.toString();
     }
   }
-}
-
-String getUrlScheme(String url) {
-  return Uri.parse(url).scheme;
 }

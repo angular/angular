@@ -19,7 +19,6 @@ import {reflector} from 'angular2/src/core/reflection/reflection';
 import {Injectable, Inject, Optional} from 'angular2/src/core/di';
 import {PLATFORM_DIRECTIVES} from 'angular2/src/core/platform_directives_and_pipes';
 import {MODULE_SUFFIX} from './util';
-import {getUrlScheme} from 'angular2/src/compiler/url_resolver';
 
 @Injectable()
 export class RuntimeMetadataResolver {
@@ -108,11 +107,8 @@ function isValidDirective(value: Type): boolean {
 }
 
 function calcModuleUrl(type: Type, dirMeta: md.DirectiveMetadata): string {
-  var moduleId = dirMeta.moduleId;
-  if (isPresent(moduleId)) {
-    var scheme = getUrlScheme(moduleId);
-    return isPresent(scheme) && scheme.length > 0 ? moduleId :
-                                                    `package:${moduleId}${MODULE_SUFFIX}`;
+  if (isPresent(dirMeta.moduleId)) {
+    return `package:${dirMeta.moduleId}${MODULE_SUFFIX}`;
   } else {
     return reflector.importUri(type);
   }
