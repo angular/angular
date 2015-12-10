@@ -3420,30 +3420,6 @@ System.register("angular2/src/facade/lang", [], true, function(require, exports,
     StringWrapper.equals = function(s, s2) {
       return s === s2;
     };
-    StringWrapper.stripLeft = function(s, charVal) {
-      if (s && s.length) {
-        var pos = 0;
-        for (var i = 0; i < s.length; i++) {
-          if (s[i] != charVal)
-            break;
-          pos++;
-        }
-        s = s.substring(pos);
-      }
-      return s;
-    };
-    StringWrapper.stripRight = function(s, charVal) {
-      if (s && s.length) {
-        var pos = s.length;
-        for (var i = s.length - 1; i >= 0; i--) {
-          if (s[i] != charVal)
-            break;
-          pos--;
-        }
-        s = s.substring(0, pos);
-      }
-      return s;
-    };
     StringWrapper.replace = function(s, from, replace) {
       return s.replace(from, replace);
     };
@@ -4494,22 +4470,16 @@ System.register("angular2/src/core/di/metadata", ["angular2/src/facade/lang"], t
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -5302,22 +5272,16 @@ System.register("angular2/src/core/di/opaque_token", ["angular2/src/facade/lang"
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -5403,7 +5367,6 @@ System.register("angular2/src/core/application_tokens", ["angular2/src/core/di",
   }
   exports.PLATFORM_INITIALIZER = lang_1.CONST_EXPR(new di_1.OpaqueToken("Platform Initializer"));
   exports.APP_INITIALIZER = lang_1.CONST_EXPR(new di_1.OpaqueToken("Application Initializer"));
-  exports.PACKAGE_ROOT_URL = lang_1.CONST_EXPR(new di_1.OpaqueToken("Application Packages Root URL"));
   global.define = __define;
   return module.exports;
 });
@@ -5413,22 +5376,16 @@ System.register("angular2/src/core/testability/testability", ["angular2/src/core
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -5802,22 +5759,16 @@ System.register("angular2/src/core/change_detection/differs/iterable_differs", [
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -5874,22 +5825,16 @@ System.register("angular2/src/core/change_detection/differs/default_iterable_dif
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -6349,22 +6294,16 @@ System.register("angular2/src/core/change_detection/differs/keyvalue_differs", [
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -6421,22 +6360,16 @@ System.register("angular2/src/core/change_detection/differs/default_keyvalue_dif
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -7206,22 +7139,16 @@ System.register("angular2/src/core/change_detection/parser/lexer", ["angular2/sr
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -7660,22 +7587,16 @@ System.register("angular2/src/core/change_detection/parser/parser", ["angular2/s
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -9264,22 +9185,16 @@ System.register("angular2/src/core/metadata/di", ["angular2/src/facade/lang", "a
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -9549,22 +9464,16 @@ System.register("angular2/src/core/linker/view_pool", ["angular2/src/core/di", "
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -9617,22 +9526,16 @@ System.register("angular2/src/core/linker/view_listener", ["angular2/src/core/di
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -9910,22 +9813,16 @@ System.register("angular2/src/core/metadata/view", ["angular2/src/facade/lang"],
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -9970,22 +9867,16 @@ System.register("angular2/src/core/linker/view_resolver", ["angular2/src/core/di
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -10076,22 +9967,16 @@ System.register("angular2/src/core/linker/pipe_resolver", ["angular2/src/core/di
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -10151,22 +10036,16 @@ System.register("angular2/src/core/linker/template_commands", ["angular2/src/fac
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -10379,22 +10258,16 @@ System.register("angular2/src/compiler/app_root_url", ["angular2/src/core/di"], 
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -10825,22 +10698,16 @@ System.register("angular2/src/animate/browser_details", ["angular2/src/core/di",
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -10926,22 +10793,16 @@ System.register("angular2/src/platform/dom/events/event_manager", ["angular2/src
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -11111,22 +10972,16 @@ System.register("angular2/src/platform/dom/events/dom_events", ["angular2/src/pl
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -11209,22 +11064,16 @@ System.register("angular2/src/platform/dom/debug/debug_element_view_listener", [
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -11312,22 +11161,16 @@ System.register("angular2/src/platform/dom/events/key_events", ["angular2/src/pl
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -11498,74 +11341,41 @@ System.register("angular2/src/platform/dom/events/hammer_common", ["angular2/src
   return module.exports;
 });
 
-System.register("angular2/src/compiler/url_resolver", ["angular2/src/core/di", "angular2/src/facade/lang", "angular2/src/core/application_tokens", "angular2/src/core/di"], true, function(require, exports, module) {
+System.register("angular2/src/compiler/url_resolver", ["angular2/src/core/di", "angular2/src/facade/lang"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
       return Reflect.metadata(k, v);
   };
-  var __param = (this && this.__param) || function(paramIndex, decorator) {
-    return function(target, key) {
-      decorator(target, key, paramIndex);
-    };
-  };
   var di_1 = require("angular2/src/core/di");
   var lang_1 = require("angular2/src/facade/lang");
-  var application_tokens_1 = require("angular2/src/core/application_tokens");
-  var di_2 = require("angular2/src/core/di");
   function createWithoutPackagePrefix() {
     return new UrlResolver();
   }
   exports.createWithoutPackagePrefix = createWithoutPackagePrefix;
-  exports.DEFAULT_PACKAGE_URL_PROVIDER = new di_2.Provider(application_tokens_1.PACKAGE_ROOT_URL, {useValue: "/"});
   var UrlResolver = (function() {
-    function UrlResolver(packagePrefix) {
-      if (packagePrefix === void 0) {
-        packagePrefix = null;
-      }
-      if (lang_1.isPresent(packagePrefix)) {
-        this._packagePrefix = lang_1.StringWrapper.stripRight(packagePrefix, "/") + "/";
-      }
-    }
+    function UrlResolver() {}
     UrlResolver.prototype.resolve = function(baseUrl, url) {
-      var resolvedUrl = url;
-      if (lang_1.isPresent(baseUrl) && baseUrl.length > 0) {
-        resolvedUrl = _resolveUrl(baseUrl, resolvedUrl);
-      }
-      if (lang_1.isPresent(this._packagePrefix) && getUrlScheme(resolvedUrl) == "package") {
-        resolvedUrl = resolvedUrl.replace("package:", this._packagePrefix);
-      }
-      return resolvedUrl;
+      return _resolveUrl(baseUrl, url);
     };
-    UrlResolver = __decorate([di_1.Injectable(), __param(0, di_1.Inject(application_tokens_1.PACKAGE_ROOT_URL)), __metadata('design:paramtypes', [String])], UrlResolver);
+    UrlResolver = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], UrlResolver);
     return UrlResolver;
   })();
   exports.UrlResolver = UrlResolver;
-  function getUrlScheme(url) {
-    var match = _split(url);
-    return (match && match[_ComponentIndex.Scheme]) || "";
-  }
-  exports.getUrlScheme = getUrlScheme;
   function _buildFromEncodedParts(opt_scheme, opt_userInfo, opt_domain, opt_port, opt_path, opt_queryData, opt_fragment) {
     var out = [];
     if (lang_1.isPresent(opt_scheme)) {
@@ -12708,22 +12518,16 @@ System.register("angular2/src/compiler/command_compiler", ["angular2/src/facade/
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -13685,22 +13489,16 @@ System.register("angular2/src/compiler/template_normalizer", ["angular2/src/comp
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -13825,27 +13623,21 @@ System.register("angular2/src/compiler/template_normalizer", ["angular2/src/comp
   return module.exports;
 });
 
-System.register("angular2/src/compiler/runtime_metadata", ["angular2/src/core/di", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/compiler/directive_metadata", "angular2/src/core/metadata/directives", "angular2/src/core/linker/directive_resolver", "angular2/src/core/linker/view_resolver", "angular2/src/core/linker/directive_lifecycle_reflector", "angular2/src/core/linker/interfaces", "angular2/src/core/reflection/reflection", "angular2/src/core/di", "angular2/src/core/platform_directives_and_pipes", "angular2/src/compiler/util", "angular2/src/compiler/url_resolver"], true, function(require, exports, module) {
+System.register("angular2/src/compiler/runtime_metadata", ["angular2/src/core/di", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/compiler/directive_metadata", "angular2/src/core/metadata/directives", "angular2/src/core/linker/directive_resolver", "angular2/src/core/linker/view_resolver", "angular2/src/core/linker/directive_lifecycle_reflector", "angular2/src/core/linker/interfaces", "angular2/src/core/reflection/reflection", "angular2/src/core/di", "angular2/src/core/platform_directives_and_pipes", "angular2/src/compiler/util"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -13869,7 +13661,6 @@ System.register("angular2/src/compiler/runtime_metadata", ["angular2/src/core/di
   var di_2 = require("angular2/src/core/di");
   var platform_directives_and_pipes_1 = require("angular2/src/core/platform_directives_and_pipes");
   var util_1 = require("angular2/src/compiler/util");
-  var url_resolver_1 = require("angular2/src/compiler/url_resolver");
   var RuntimeMetadataResolver = (function() {
     function RuntimeMetadataResolver(_directiveResolver, _viewResolver, _platformDirectives) {
       this._directiveResolver = _directiveResolver;
@@ -13960,10 +13751,8 @@ System.register("angular2/src/compiler/runtime_metadata", ["angular2/src/core/di
     return lang_1.isPresent(value) && (value instanceof lang_1.Type);
   }
   function calcModuleUrl(type, dirMeta) {
-    var moduleId = dirMeta.moduleId;
-    if (lang_1.isPresent(moduleId)) {
-      var scheme = url_resolver_1.getUrlScheme(moduleId);
-      return lang_1.isPresent(scheme) && scheme.length > 0 ? moduleId : "package:" + moduleId + util_1.MODULE_SUFFIX;
+    if (lang_1.isPresent(dirMeta.moduleId)) {
+      return "package:" + dirMeta.moduleId + util_1.MODULE_SUFFIX;
     } else {
       return reflection_1.reflector.importUri(type);
     }
@@ -13986,22 +13775,16 @@ System.register("angular2/src/compiler/schema/dom_element_schema_registry", ["an
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -14404,22 +14187,16 @@ System.register("angular2/src/web_workers/shared/render_proto_view_ref_store", [
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -14497,22 +14274,16 @@ System.register("angular2/src/web_workers/shared/render_view_with_fragments_stor
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -14755,22 +14526,16 @@ System.register("angular2/src/web_workers/shared/service_message_broker", ["angu
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -14877,22 +14642,16 @@ System.register("angular2/src/web_workers/ui/xhr_impl", ["angular2/src/core/di",
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -14935,22 +14694,16 @@ System.register("angular2/src/web_workers/shared/client_message_broker", ["angul
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -15116,22 +14869,16 @@ System.register("angular2/src/web_workers/shared/post_message_bus", ["angular2/s
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -16382,22 +16129,16 @@ System.register("angular2/src/core/linker/view_manager_utils", ["angular2/src/co
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -16624,22 +16365,16 @@ System.register("angular2/src/core/metadata/directives", ["angular2/src/facade/l
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -16947,22 +16682,16 @@ System.register("angular2/src/compiler/anchor_based_app_root_url", ["angular2/sr
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -17010,7 +16739,6 @@ System.register("angular2/core", ["angular2/src/core/metadata", "angular2/src/co
   exports.APP_ID = application_tokens_1.APP_ID;
   exports.APP_COMPONENT = application_tokens_1.APP_COMPONENT;
   exports.APP_INITIALIZER = application_tokens_1.APP_INITIALIZER;
-  exports.PACKAGE_ROOT_URL = application_tokens_1.PACKAGE_ROOT_URL;
   exports.PLATFORM_INITIALIZER = application_tokens_1.PLATFORM_INITIALIZER;
   __export(require("angular2/src/core/zone"));
   __export(require("angular2/src/core/render"));
@@ -17186,22 +16914,16 @@ System.register("angular2/src/platform/dom/shared_styles_host", ["angular2/src/p
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -17572,22 +17294,16 @@ System.register("angular2/src/platform/dom/events/hammer_gestures", ["angular2/s
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -18028,22 +17744,16 @@ System.register("angular2/src/compiler/style_compiler", ["angular2/src/compiler/
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -19197,22 +18907,16 @@ System.register("angular2/src/web_workers/ui/setup", ["angular2/src/web_workers/
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -19253,22 +18957,16 @@ System.register("angular2/src/web_workers/shared/serializer", ["angular2/src/fac
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -19613,22 +19311,16 @@ System.register("angular2/src/platform/worker_render", ["angular2/src/web_worker
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -19823,22 +19515,16 @@ System.register("angular2/src/core/di/provider", ["angular2/src/facade/lang", "a
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -21163,22 +20849,16 @@ System.register("angular2/src/core/linker/view_manager", ["angular2/src/core/di"
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -21420,22 +21100,16 @@ System.register("angular2/src/core/linker/directive_resolver", ["angular2/src/co
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -21607,22 +21281,16 @@ System.register("angular2/src/compiler/change_detector_compiler", ["angular2/src
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -21710,22 +21378,16 @@ System.register("angular2/src/compiler/html_parser", ["angular2/src/facade/lang"
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -21952,22 +21614,16 @@ System.register("angular2/src/web_workers/ui/renderer", ["angular2/src/core/di",
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -24355,22 +24011,16 @@ System.register("angular2/src/animate/animation_builder", ["angular2/src/core/di
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -24408,22 +24058,16 @@ System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/c
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -25193,22 +24837,16 @@ System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -25500,22 +25138,16 @@ System.register("angular2/src/compiler/template_compiler", ["angular2/src/facade
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -26448,22 +26080,16 @@ System.register("angular2/src/compiler/runtime_compiler", ["angular2/src/core/li
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -26693,22 +26319,16 @@ System.register("angular2/src/core/linker/proto_view_factory", ["angular2/src/fa
       __define = global.define;
   global.define = undefined;
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -27046,7 +26666,7 @@ System.register("angular2/src/compiler/compiler", ["angular2/src/compiler/runtim
   function _createChangeDetectorGenConfig() {
     return new change_detection_1.ChangeDetectorGenConfig(lang_1.assertionsEnabled(), false, true);
   }
-  exports.COMPILER_PROVIDERS = lang_1.CONST_EXPR([change_detection_2.Lexer, change_detection_2.Parser, html_parser_1.HtmlParser, template_parser_2.TemplateParser, template_normalizer_1.TemplateNormalizer, runtime_metadata_1.RuntimeMetadataResolver, url_resolver_1.DEFAULT_PACKAGE_URL_PROVIDER, style_compiler_1.StyleCompiler, command_compiler_1.CommandCompiler, change_detector_compiler_1.ChangeDetectionCompiler, new di_1.Provider(change_detection_1.ChangeDetectorGenConfig, {
+  exports.COMPILER_PROVIDERS = lang_1.CONST_EXPR([change_detection_2.Lexer, change_detection_2.Parser, html_parser_1.HtmlParser, template_parser_2.TemplateParser, template_normalizer_1.TemplateNormalizer, runtime_metadata_1.RuntimeMetadataResolver, style_compiler_1.StyleCompiler, command_compiler_1.CommandCompiler, change_detector_compiler_1.ChangeDetectionCompiler, new di_1.Provider(change_detection_1.ChangeDetectorGenConfig, {
     useFactory: _createChangeDetectorGenConfig,
     deps: []
   }), template_compiler_2.TemplateCompiler, new di_1.Provider(runtime_compiler_2.RuntimeCompiler, {useClass: runtime_compiler_1.RuntimeCompiler_}), new di_1.Provider(compiler_1.Compiler, {useExisting: runtime_compiler_2.RuntimeCompiler}), dom_element_schema_registry_1.DomElementSchemaRegistry, new di_1.Provider(element_schema_registry_1.ElementSchemaRegistry, {useExisting: dom_element_schema_registry_1.DomElementSchemaRegistry}), anchor_based_app_root_url_1.AnchorBasedAppRootUrl, new di_1.Provider(app_root_url_1.AppRootUrl, {useExisting: anchor_based_app_root_url_1.AnchorBasedAppRootUrl}), url_resolver_1.UrlResolver]);
@@ -27085,22 +26705,16 @@ System.register("angular2/src/core/linker/compiler", ["angular2/src/core/linker/
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
@@ -27184,22 +26798,16 @@ System.register("angular2/src/core/linker/dynamic_component_loader", ["angular2/
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
   var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      return Reflect.decorate(decorators, target, key, desc);
-    switch (arguments.length) {
-      case 2:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(o)) || o;
-        }, target);
-      case 3:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key)), void 0;
-        }, void 0);
-      case 4:
-        return decorators.reduceRight(function(o, d) {
-          return (d && d(target, key, o)) || o;
-        }, desc);
-    }
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
   };
   var __metadata = (this && this.__metadata) || function(k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function")

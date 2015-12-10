@@ -38,7 +38,3 @@ export declare const PLATFORM_INITIALIZER: OpaqueToken;
  * A function that will be executed when an application is initialized.
  */
 export declare const APP_INITIALIZER: OpaqueToken;
-/**
- * A token which indicates the root directory of the application
- */
-export declare const PACKAGE_ROOT_URL: OpaqueToken;

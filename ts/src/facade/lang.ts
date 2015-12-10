@@ -166,30 +166,6 @@ export class StringWrapper {
 
   static equals(s: string, s2: string): boolean { return s === s2; }
 
-  static stripLeft(s: string, charVal: string): string {
-    if (s && s.length) {
-      var pos = 0;
-      for (var i = 0; i < s.length; i++) {
-        if (s[i] != charVal) break;
-        pos++;
-      }
-      s = s.substring(pos);
-    }
-    return s;
-  }
-
-  static stripRight(s: string, charVal: string): string {
-    if (s && s.length) {
-      var pos = s.length;
-      for (var i = s.length - 1; i >= 0; i--) {
-        if (s[i] != charVal) break;
-        pos--;
-      }
-      s = s.substring(0, pos);
-    }
-    return s;
-  }
-
   static replace(s: string, from: string, replace: string): string {
     return s.replace(from, replace);
   }
