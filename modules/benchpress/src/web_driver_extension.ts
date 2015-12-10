@@ -66,12 +66,15 @@ export class PerfLogFeatures {
   render: boolean;
   gc: boolean;
   frameCapture: boolean;
+  userTiming: boolean;
 
-  constructor({render = false, gc = false, frameCapture = false}:
-                  {render?: boolean, gc?: boolean, frameCapture?: boolean} = {}) {
+  constructor(
+      {render = false, gc = false, frameCapture = false, userTiming = false}:
+          {render?: boolean, gc?: boolean, frameCapture?: boolean, userTiming?: boolean} = {}) {
     this.render = render;
     this.gc = gc;
     this.frameCapture = frameCapture;
+    this.userTiming = userTiming;
   }
 }
 

@@ -36,12 +36,18 @@ export class PerflogMetric extends Metric {
    **/
   constructor(private _driverExtension: WebDriverExtension, private _setTimeout: Function,
               private _microMetrics: {[key: string]: any}, private _forceGc: boolean,
-              private _captureFrames: boolean) {
+              private _captureFrames: boolean, private _receivedData: boolean,
+              private _requestCount: boolean) {
     super();
 
     this._remainingEvents = [];
     this._measureCount = 0;
     this._perfLogFeatures = _driverExtension.perfLogFeatures();
+    if (!this._perfLogFeatures.userTiming) {
+      // User timing is needed for navigationStart.
+      this._receivedData = false;
+      this._requestCount = false;
+    }
   }
 
   describe(): {[key: string]: any} {
@@ -60,6 +66,12 @@ export class PerflogMetric extends Metric {
         res['forcedGcTime'] = 'forced gc time in ms';
         res['forcedGcAmount'] = 'forced gc amount in kbytes';
       }
+    }
+    if (this._receivedData) {
+      res['receivedData'] = 'encoded bytes received since navigationStart';
+    }
+    if (this._requestCount) {
+      res['requestCount'] = 'count of requests sent since navigationStart';
     }
     if (this._captureFrames) {
       if (!this._perfLogFeatures.frameCapture) {
@@ -188,6 +200,12 @@ export class PerflogMetric extends Metric {
       result['frameTime.smooth'] = 0;
     }
     StringMapWrapper.forEach(this._microMetrics, (desc, name) => { result[name] = 0; });
+    if (this._receivedData) {
+      result['receivedData'] = 0;
+    }
+    if (this._requestCount) {
+      result['requestCount'] = 0;
+    }
 
     var markStartEvent = null;
     var markEndEvent = null;
@@ -217,6 +235,22 @@ export class PerflogMetric extends Metric {
         markEndEvent = event;
       }
 
+      let isInstant = StringWrapper.equals(ph, 'I') || StringWrapper.equals(ph, 'i');
+      if (this._requestCount && StringWrapper.equals(name, 'sendRequest')) {
+        result['requestCount'] += 1;
+      } else if (this._receivedData && StringWrapper.equals(name, 'receivedData') && isInstant) {
+        result['receivedData'] += event['args']['encodedDataLength'];
+      } else if (StringWrapper.equals(name, 'navigationStart')) {
+        // We count data + requests since the last navigationStart
+        // (there might be chrome extensions loaded by selenium before our page, so there
+        // will likely be more than one navigationStart).
+        if (this._receivedData) {
+          result['receivedData'] = 0;
+        }
+        if (this._requestCount) {
+          result['requestCount'] = 0;
+        }
+      }
       if (isPresent(markStartEvent) && isBlank(markEndEvent) &&
           event['pid'] === markStartEvent['pid']) {
         if (StringWrapper.equals(ph, 'b') && StringWrapper.equals(name, _MARK_NAME_FRAME_CAPUTRE)) {
@@ -236,7 +270,7 @@ export class PerflogMetric extends Metric {
           frameCaptureEndEvent = event;
         }
 
-        if (StringWrapper.equals(ph, 'I') || StringWrapper.equals(ph, 'i')) {
+        if (isInstant) {
           if (isPresent(frameCaptureStartEvent) && isBlank(frameCaptureEndEvent) &&
               StringWrapper.equals(name, 'frame')) {
             frameTimestamps.push(event['ts']);
@@ -332,14 +366,17 @@ var _FRAME_TIME_SMOOTH_THRESHOLD = 17;
 var _PROVIDERS = [
   bind(PerflogMetric)
       .toFactory(
-          (driverExtension, setTimeout, microMetrics, forceGc, captureFrames) =>
-              new PerflogMetric(driverExtension, setTimeout, microMetrics, forceGc, captureFrames),
+          (driverExtension, setTimeout, microMetrics, forceGc, captureFrames, receivedData,
+           requestCount) => new PerflogMetric(driverExtension, setTimeout, microMetrics, forceGc,
+                                              captureFrames, receivedData, requestCount),
           [
             WebDriverExtension,
             _SET_TIMEOUT,
             Options.MICRO_METRICS,
             Options.FORCE_GC,
-            Options.CAPTURE_FRAMES
+            Options.CAPTURE_FRAMES,
+            Options.RECEIVED_DATA,
+            Options.REQUEST_COUNT
           ]),
   provide(_SET_TIMEOUT, {useValue: (fn, millis) => TimerWrapper.setTimeout(fn, millis)})
 ];
