@@ -1,3 +1,15 @@
+<a name="2.0.0-alpha.51"></a>
+# 2.0.0-alpha.51 (2015-12-10)
+
+
+### Features
+
+* **bundles:** add angular2-testing UMD bundle ([d6d759d](https://github.com/angular/angular/commit/d6d759d)), closes [#5581](https://github.com/angular/angular/issues/5581) [#5734](https://github.com/angular/angular/issues/5734)
+* **core:** provide support for relative assets for components ([28860d3](https://github.com/angular/angular/commit/28860d3)), closes [#5634](https://github.com/angular/angular/issues/5634)
+* **core:** typescript 1.7.3 compatibility ([#5758](https://github.com/angular/angular/pull/5758))
+
+
+
 <a name="2.0.0-alpha.50"></a>
 # 2.0.0-alpha.50 (2015-12-09)
 
