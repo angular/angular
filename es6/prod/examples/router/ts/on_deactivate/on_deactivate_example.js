@@ -7,7 +7,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Component, Injectable, NgFor, provide, bootstrap } from 'angular2/angular2';
+import { Component, Injectable, provide } from 'angular2/core';
+import { bootstrap } from 'angular2/bootstrap';
 import { RouteConfig, ROUTER_DIRECTIVES, APP_BASE_HREF } from 'angular2/router';
 let LogService = class {
     constructor() {
@@ -53,7 +54,7 @@ AppCmp = __decorate([
       <p *ngFor="#logItem of logService.logs">{{ logItem }}</p>
     </div>
   `,
-        directives: [ROUTER_DIRECTIVES, NgFor]
+        directives: [ROUTER_DIRECTIVES]
     }),
     RouteConfig([
         { path: '/', component: MyCmp, name: 'HomeCmp' },
