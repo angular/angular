@@ -277,11 +277,19 @@ function resolveInternalDomFragment(fragmentRef) {
     return fragmentRef.nodes;
 }
 function moveNodesAfterSibling(sibling, nodes) {
-    if (nodes.length > 0 && isPresent(DOM.parentElement(sibling))) {
-        for (var i = 0; i < nodes.length; i++) {
-            DOM.insertBefore(sibling, nodes[i]);
+    var parent = DOM.parentElement(sibling);
+    if (nodes.length > 0 && isPresent(parent)) {
+        var nextSibling = DOM.nextSibling(sibling);
+        if (isPresent(nextSibling)) {
+            for (var i = 0; i < nodes.length; i++) {
+                DOM.insertBefore(nextSibling, nodes[i]);
+            }
         }
-        DOM.insertBefore(nodes[0], sibling);
+        else {
+            for (var i = 0; i < nodes.length; i++) {
+                DOM.appendChild(parent, nodes[i]);
+            }
+        }
     }
 }
 function decoratePreventDefault(eventHandler) {

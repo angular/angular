@@ -37252,11 +37252,18 @@ System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di
     return fragmentRef.nodes;
   }
   function moveNodesAfterSibling(sibling, nodes) {
-    if (nodes.length > 0 && lang_1.isPresent(dom_adapter_1.DOM.parentElement(sibling))) {
-      for (var i = 0; i < nodes.length; i++) {
-        dom_adapter_1.DOM.insertBefore(sibling, nodes[i]);
+    var parent = dom_adapter_1.DOM.parentElement(sibling);
+    if (nodes.length > 0 && lang_1.isPresent(parent)) {
+      var nextSibling = dom_adapter_1.DOM.nextSibling(sibling);
+      if (lang_1.isPresent(nextSibling)) {
+        for (var i = 0; i < nodes.length; i++) {
+          dom_adapter_1.DOM.insertBefore(nextSibling, nodes[i]);
+        }
+      } else {
+        for (var i = 0; i < nodes.length; i++) {
+          dom_adapter_1.DOM.appendChild(parent, nodes[i]);
+        }
       }
-      dom_adapter_1.DOM.insertBefore(nodes[0], sibling);
     }
   }
   function decoratePreventDefault(eventHandler) {
