@@ -34,8 +34,7 @@ import "package:angular2/src/compiler/schema/element_schema_registry.dart"
     show ElementSchemaRegistry;
 import "package:angular2/src/compiler/schema/dom_element_schema_registry.dart"
     show DomElementSchemaRegistry;
-import "package:angular2/src/compiler/url_resolver.dart"
-    show UrlResolver, DEFAULT_PACKAGE_URL_PROVIDER;
+import "package:angular2/src/compiler/url_resolver.dart" show UrlResolver;
 import "package:angular2/src/compiler/app_root_url.dart" show AppRootUrl;
 import "package:angular2/src/compiler/anchor_based_app_root_url.dart"
     show AnchorBasedAppRootUrl;
@@ -55,7 +54,6 @@ const List<
   TemplateParser,
   TemplateNormalizer,
   RuntimeMetadataResolver,
-  DEFAULT_PACKAGE_URL_PROVIDER,
   StyleCompiler,
   CommandCompiler,
   ChangeDetectionCompiler,

@@ -57,8 +57,3 @@ const OpaqueToken PLATFORM_INITIALIZER =
  */
 const OpaqueToken APP_INITIALIZER =
     const OpaqueToken("Application Initializer");
-/**
- * A token which indicates the root directory of the application
- */
-const OpaqueToken PACKAGE_ROOT_URL =
-    const OpaqueToken("Application Packages Root URL");

@@ -2,8 +2,7 @@
 Directive configuration
 @cheatsheetIndex 5
 @description
-{@target js ts}`@Directive({ property1: value1, ... })`{@endtarget}
-{@target dart}`@Directive(property1: value1, ...)`{@endtarget}
+`@Directive({ property1: value1, ... }) )`
 
 @cheatsheetItem
 syntax:

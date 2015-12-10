@@ -2,22 +2,17 @@
 Routing and navigation
 @cheatsheetIndex 10
 @description
-{@target js ts}`import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, ...} from 'angular2/router';`{@endtarget}
-{@target dart}`import 'package:angular2/angular2.dart';`{@endtarget}
+`import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, ...} from 'angular2/router';`
 
 
 @cheatsheetItem
-syntax(js ts):
+syntax:
 `@RouteConfig([
   { path: '/:myParam', component: MyComponent, as: 'MyCmp' },
   { path: '/staticPath', component: ..., as: ...},
   { path: '/*wildCardParam', component: ..., as: ...}
 ])
 class MyComponent() {}`|`@RouteConfig`
-syntax(dart):
-`@RouteConfig(const [
-  const Route(path: '/:myParam', component: MyComponent, name: 'MyCmp' ),
-])`
 description:
 Configures routes for the decorated component. Supports static, parameterized and wildcard routes.
 
@@ -37,10 +32,8 @@ Creates a link to a different view based on a route instruction consisting of a 
 
 
 @cheatsheetItem
-syntax(js ts):
+syntax:
 `@CanActivate(() => { ... })class MyComponent() {}`|`@CanActivate`
-syntax(dart):
-`@CanActivate(() => ...)class MyComponent() {}`|`@CanActivate`
 description:
 A component decorator defining a function that the router should call first to determine if it should activate this component. Should return a boolean or a promise.
 
