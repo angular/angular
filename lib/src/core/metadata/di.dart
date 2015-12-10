@@ -34,7 +34,7 @@ import "package:angular2/src/core/di/metadata.dart" show DependencyMetadata;
 class AttributeMetadata extends DependencyMetadata {
   final String attributeName;
   const AttributeMetadata(this.attributeName) : super();
-  get token {
+  AttributeMetadata get token {
     // Normally one would default a token to a type of an injected value but here
 
     // the type of a variable is "string" and we can't use primitive type as a return value
