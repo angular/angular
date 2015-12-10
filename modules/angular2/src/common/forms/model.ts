@@ -52,9 +52,6 @@ function toObservable(r: any): Observable<any> {
  *
  */
 export abstract class AbstractControl {
-  /** @internal */
-  _value: any;
-
   private _valueChanges: EventEmitter<any>;
   private _statusChanges: EventEmitter<any>;
   private _status: string;
@@ -63,6 +60,8 @@ export abstract class AbstractControl {
   private _touched: boolean = false;
   private _parent: ControlGroup | ControlArray;
   private _asyncValidationSubscription;
+
+  protected _value: any;
 
   constructor(public validator: Function, public asyncValidator: Function) {}
 
@@ -217,8 +216,7 @@ export abstract class AbstractControl {
     }
   }
 
-  /** @internal */
-  _initObservables() {
+  protected _initObservables() {
     this._valueChanges = new EventEmitter();
     this._statusChanges = new EventEmitter();
   }
