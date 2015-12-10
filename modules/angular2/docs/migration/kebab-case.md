@@ -95,7 +95,7 @@ Take the following steps to upgrade your directives and components:
   ```
 
   Notes:
-    - only the long syntax (with ":") needs not be updated,
+    - only the long syntax (with ":") needs to be updated,
     - `properties` is the legacy name for `inputs` and should be updated in the same way - it is a good idea to replace
       `properties` with `inputs` at the same time as support for the former will be removed soon.
 
@@ -149,6 +149,7 @@ Take the following steps to upgrade your directives and components:
       '[some-prop]': 'exp',
       '[style.background-color]': 'exp',
       '[class.some-class]': 'exp',
+      '[attr.some-attr]': 'exp',
       '(some-event)': 'action()',
       'some-attr': 'value'
     }
@@ -163,6 +164,7 @@ Take the following steps to upgrade your directives and components:
       '[someProp]': 'exp',
       '[style.background-color]': 'exp',
       '[class.some-class]': 'exp',
+      '[attr.some-attr]': 'exp',
       '(someEvent)': 'action()',
       'some-attr': 'value'
     }
@@ -170,7 +172,7 @@ Take the following steps to upgrade your directives and components:
   ```
 
   The property bindings (`[...]`) and event bindings (`(...)`) must be updated in the same way as they are updated in a
-  template (reminder: `[attr.]`, `[class.]` and `[style.]` should not be converted to camel case).
+  template - ie converted to camel case (reminder: `[attr.]`, `[class.]` and `[style.]` should not be converted to camel case).
 
 5. Update export name
 
@@ -187,3 +189,51 @@ Take the following steps to upgrade your directives and components:
     exportAs: 'someName'
   })
   ```
+
+
+# CSS
+
+As the attribute names from your templates have been updated from dash to camel case, you should also reflect the changes
+in your stylesheets.
+
+The attributes that need to be updated are the ones used in the selector and the inputs of your directives.
+
+Before:
+
+```
+// Directive
+@Directive({
+  selector: '[my-dir]',
+  inputs: ['someProp: some-input'],
+})
+
+<!-- template -->
+<div my-dir some-input="some value" not-an-input></div>
+
+/* css */
+[my-dir] { ... }
+[some-input] { ... }
+[not-an-input] { ... }
+```
+
+After:
+
+```
+// Directive
+@Directive({
+  selector: '[myDir]',
+  inputs: ['someProp: someInput'],
+})
+
+<!-- template -->
+<div myDir someInput="some value" not-an-input></div>
+
+/* css */
+[myDir] { ... }
+[someInput] { ... }
+[not-an-input] { ... }
+```
+
+Notes:
+  - `not-an-input` is not used in a selector nor it is an input of a directive, it need not be camel cased,
+  - CSS selectors are case insensitive you can use `[myDir]`, `[mydir]` or any other casing.
