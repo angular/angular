@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Component } from 'angular2/core';
+import { Component } from 'angular2/angular2';
 import { bootstrap } from 'angular2/bootstrap';
 // #docregion LowerUpperPipe
 export let LowerUpperPipeExample = class {
@@ -31,7 +31,7 @@ AppCmp = __decorate([
     Component({
         selector: 'example-app',
         directives: [LowerUpperPipeExample],
-        template: `
+        template: ` 
     <h1>LowercasePipe &amp; UppercasePipe Example</h1>
     <lowerupper-example></lowerupper-example>
   `

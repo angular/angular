@@ -1,4 +1,4 @@
-import {Component, provide} from 'angular2/core';
+import {Component, provide} from 'angular2/angular2';
 import {bootstrap} from 'angular2/bootstrap';
 
 // #docregion DatePipe

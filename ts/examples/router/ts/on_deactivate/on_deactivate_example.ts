@@ -1,5 +1,4 @@
-import {Component, Injectable, provide} from 'angular2/core';
-import {bootstrap} from 'angular2/bootstrap';
+import {Component, Injectable, NgFor, provide, bootstrap} from 'angular2/angular2';
 import {
   OnDeactivate,
   ComponentInstruction,
@@ -44,7 +43,7 @@ class MyCmp implements OnDeactivate {
       <p *ngFor="#logItem of logService.logs">{{ logItem }}</p>
     </div>
   `,
-  directives: [ROUTER_DIRECTIVES]
+  directives: [ROUTER_DIRECTIVES, NgFor]
 })
 @RouteConfig([
   {path: '/', component: MyCmp, name: 'HomeCmp'},

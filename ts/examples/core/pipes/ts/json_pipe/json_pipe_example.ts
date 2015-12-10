@@ -1,4 +1,4 @@
-import {Component, provide} from 'angular2/core';
+import {Component, provide} from 'angular2/angular2';
 import {bootstrap} from 'angular2/bootstrap';
 
 // #docregion JsonPipe
@@ -19,7 +19,7 @@ export class JsonPipeExample {
 @Component({
   selector: 'example-app',
   directives: [JsonPipeExample],
-  template: `
+  template: ` 
     <h1>JsonPipe Example</h1>
     <json-example></json-example>
   `

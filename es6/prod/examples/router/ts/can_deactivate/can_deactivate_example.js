@@ -7,8 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { provide, Component } from 'angular2/core';
-import { bootstrap } from 'angular2/bootstrap';
+import { provide, bootstrap, Component } from 'angular2/angular2';
 import { RouteConfig, RouteParams, ROUTER_DIRECTIVES, APP_BASE_HREF } from 'angular2/router';
 // #docregion routerCanDeactivate
 let NoteCmp = class {
