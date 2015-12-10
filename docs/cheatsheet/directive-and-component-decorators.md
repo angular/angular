@@ -2,7 +2,8 @@
 Class field decorators for directives and components
 @cheatsheetIndex 7
 @description
-`import {Input, ...} from 'angular2/angular2';`
+{@target js ts}`import {Input, ...} from 'angular2/angular2';`{@endtarget}
+{@target dart}`import 'package:angular2/angular2.dart';`{@endtarget}
 
 @cheatsheetItem
 syntax:

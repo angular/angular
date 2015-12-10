@@ -13,7 +13,12 @@ export "src/facade/facade.dart";
 export "src/core/application_ref.dart"
     show platform, createNgZone, PlatformRef, ApplicationRef;
 export "src/core/application_tokens.dart"
-    show APP_ID, APP_COMPONENT, APP_INITIALIZER, PLATFORM_INITIALIZER;
+    show
+        APP_ID,
+        APP_COMPONENT,
+        APP_INITIALIZER,
+        PACKAGE_ROOT_URL,
+        PLATFORM_INITIALIZER;
 export "src/core/zone.dart";
 export "src/core/render.dart";
 export "src/core/linker.dart";

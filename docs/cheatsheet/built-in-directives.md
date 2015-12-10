@@ -2,7 +2,8 @@
 Built-in directives
 @cheatsheetIndex 2
 @description
-`import {NgIf, ...} from 'angular2/angular2';`
+{@target js ts}`import {NgIf, ...} from 'angular2/angular2';`{@endtarget}
+{@target dart}`import 'package:angular2/angular2.dart';`{@endtarget}
 
 @cheatsheetItem
 syntax:
