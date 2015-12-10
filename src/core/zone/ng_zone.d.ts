@@ -38,7 +38,7 @@ export declare class NgZoneError {
  *     <h2>Demo: NgZone</h2>
  *
  *     <p>Progress: {{progress}}%</p>
- *     <p *ng-if="progress >= 100">Done processing {{label}} of Angular zone!</p>
+ *     <p *ngIf="progress >= 100">Done processing {{label}} of Angular zone!</p>
  *
  *     <button (click)="processWithinAngularZone()">Process within Angular zone</button>
  *     <button (click)="processOutsideOfAngularZone()">Process outside of Angular zone</button>

@@ -21,7 +21,6 @@ import { EventManager } from './events/event_manager';
 import { DOCUMENT } from './dom_tokens';
 import { createRenderView, encapsulateStyles } from 'angular2/src/core/render/view_factory';
 import { DefaultProtoViewRef } from 'angular2/src/core/render/view';
-import { camelCaseToDashCase } from './util';
 import { ViewEncapsulation } from 'angular2/src/core/metadata';
 import { DOM } from 'angular2/src/platform/dom/dom_adapter';
 const NAMESPACE_URIS = CONST_EXPR({ 'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg' });
@@ -68,12 +67,11 @@ export class DomRenderer extends Renderer {
     setElementAttribute(location, attributeName, attributeValue) {
         var view = resolveInternalDomView(location.renderView);
         var element = view.boundElements[location.boundElementIndex];
-        var dashCasedAttributeName = camelCaseToDashCase(attributeName);
         if (isPresent(attributeValue)) {
-            DOM.setAttribute(element, dashCasedAttributeName, stringify(attributeValue));
+            DOM.setAttribute(element, attributeName, stringify(attributeValue));
         }
         else {
-            DOM.removeAttribute(element, dashCasedAttributeName);
+            DOM.removeAttribute(element, attributeName);
         }
     }
     setElementClass(location, className, isAdd) {
@@ -89,12 +87,11 @@ export class DomRenderer extends Renderer {
     setElementStyle(location, styleName, styleValue) {
         var view = resolveInternalDomView(location.renderView);
         var element = view.boundElements[location.boundElementIndex];
-        var dashCasedStyleName = camelCaseToDashCase(styleName);
         if (isPresent(styleValue)) {
-            DOM.setStyle(element, dashCasedStyleName, stringify(styleValue));
+            DOM.setStyle(element, styleName, stringify(styleValue));
         }
         else {
-            DOM.removeStyle(element, dashCasedStyleName);
+            DOM.removeStyle(element, styleName);
         }
     }
     invokeElementMethod(location, methodName, args) {

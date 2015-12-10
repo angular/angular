@@ -20,10 +20,10 @@ import { Control } from '../model';
  *      directives: [FORM_DIRECTIVES],
  *      template: `
  *        <form #f="ngForm" (submit)='onLogIn(f.value)'>
- *          Login <input type='text' ng-control='login' #l="ngForm">
- *          <div *ng-if="!l.valid">Login is invalid</div>
+ *          Login <input type='text' ngControl='login' #l="form">
+ *          <div *ngIf="!l.valid">Login is invalid</div>
  *
- *          Password <input type='password' ng-control='password'>
+ *          Password <input type='password' ngControl='password'>
  *          <button type='submit'>Log in!</button>
  *        </form>
  *      `})
@@ -34,7 +34,7 @@ import { Control } from '../model';
  * }
  *  ```
  *
- * We can also use ng-model to bind a domain model to the form.
+ * We can also use ngModel to bind a domain model to the form.
  *
  *  ```
  * @Component({
@@ -42,9 +42,9 @@ import { Control } from '../model';
  *      directives: [FORM_DIRECTIVES],
  *      template: `
  *        <form (submit)='onLogIn()'>
- *          Login <input type='text' ng-control='login' [(ng-model)]="credentials.login">
- *          Password <input type='password' ng-control='password'
- *                          [(ng-model)]="credentials.password">
+ *          Login <input type='text' ngControl='login' [(ngModel)]="credentials.login">
+ *          Password <input type='password' ngControl='password'
+ *                          [(ngModel)]="credentials.password">
  *          <button type='submit'>Log in!</button>
  *        </form>
  *      `})

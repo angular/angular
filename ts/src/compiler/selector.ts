@@ -84,12 +84,7 @@ export class CssSelector {
            ListWrapper.isEmpty(this.attrs) && this.notSelectors.length === 0;
   }
 
-  setElement(element: string = null) {
-    if (isPresent(element)) {
-      element = element.toLowerCase();
-    }
-    this.element = element;
-  }
+  setElement(element: string = null) { this.element = element; }
 
   /** Gets a template string for an element that matches the selector. */
   getMatchingElementTemplate(): string {
@@ -107,7 +102,7 @@ export class CssSelector {
   }
 
   addAttribute(name: string, value: string = _EMPTY_ATTR_VALUE) {
-    this.attrs.push(name.toLowerCase());
+    this.attrs.push(name);
     if (isPresent(value)) {
       value = value.toLowerCase();
     } else {

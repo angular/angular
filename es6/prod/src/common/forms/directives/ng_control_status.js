@@ -38,7 +38,7 @@ export let NgControlStatus = class {
 };
 NgControlStatus = __decorate([
     Directive({
-        selector: '[ng-control],[ng-model],[ng-form-control]',
+        selector: '[ngControl],[ngModel],[ngFormControl]',
         host: {
             '[class.ng-untouched]': 'ngClassUntouched',
             '[class.ng-touched]': 'ngClassTouched',

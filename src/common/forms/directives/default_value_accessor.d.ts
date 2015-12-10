@@ -6,7 +6,7 @@ import { ControlValueAccessor } from './control_value_accessor';
  *
  *  ### Example
  *  ```
- *  <input type="text" ng-control="searchQuery">
+ *  <input type="text" ngControl="searchQuery">
  *  ```
  */
 export declare class DefaultValueAccessor implements ControlValueAccessor {

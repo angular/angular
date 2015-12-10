@@ -193,8 +193,8 @@ import { ChangeDetectionStrategy } from 'angular2/src/core/change_detection';
  * A directive can also query for other child directives. Since parent directives are instantiated
  * before child directives, a directive can't simply inject the list of child directives. Instead,
  * the directive injects a {@link QueryList}, which updates its contents as children are added,
- * removed, or moved by a directive that uses a {@link ViewContainerRef} such as a `ng-for`, an
- * `ng-if`, or an `ng-switch`.
+ * removed, or moved by a directive that uses a {@link ViewContainerRef} such as a `ngFor`, an
+ * `ngIf`, or an `ngSwitch`.
  *
  * ```
  * @Directive({ selector: '[my-directive]' })
@@ -803,10 +803,10 @@ OutputMetadata = __decorate([
  * ### Example
  *
  * The following example creates a directive that sets the `valid` and `invalid` classes
- * on the DOM element that has ng-model directive on it.
+ * on the DOM element that has ngModel directive on it.
  *
  * ```typescript
- * @Directive({selector: '[ng-model]'})
+ * @Directive({selector: '[ngModel]'})
  * class NgModelStatus {
  *   constructor(public control:NgModel) {}
  *   @HostBinding('[class.valid]') get valid { return this.control.valid; }
@@ -815,7 +815,7 @@ OutputMetadata = __decorate([
  *
  * @Component({
  *   selector: 'app',
- *   template: `<input [(ng-model)]="prop">`,
+ *   template: `<input [(ngModel)]="prop">`,
  *   directives: [FORM_DIRECTIVES, NgModelStatus]
  * })
  * class App {

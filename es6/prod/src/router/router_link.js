@@ -26,7 +26,7 @@ import { Location } from './location';
  * When linking to this `User` route, you can write:
  *
  * ```
- * <a [router-link]="['./User']">link to user component</a>
+ * <a [routerLink]="['./User']">link to user component</a>
  * ```
  *
  * RouterLink expects the value to be an array of route names, followed by the params
@@ -63,7 +63,7 @@ export let RouterLink = class {
 };
 RouterLink = __decorate([
     Directive({
-        selector: '[router-link]',
+        selector: '[routerLink]',
         inputs: ['routeParams: routerLink', 'target: target'],
         host: {
             '(click)': 'onClick()',

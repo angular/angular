@@ -35,7 +35,7 @@ import { StringMapWrapper, isListLikeIterable } from 'angular2/src/facade/collec
  *   selector: 'toggle-button',
  *   inputs: ['isDisabled'],
  *   template: `
- *      <div class="button" [ng-class]="{active: isOn, disabled: isDisabled}"
+ *      <div class="button" [ngClass]="{active: isOn, disabled: isDisabled}"
  *          (click)="toggle(!isOn)">
  *          Click me!
  *      </div>`,
@@ -168,6 +168,6 @@ export let NgClass = class {
     }
 };
 NgClass = __decorate([
-    Directive({ selector: '[ng-class]', inputs: ['rawClass: ng-class', 'initialClasses: class'] }), 
+    Directive({ selector: '[ngClass]', inputs: ['rawClass: ngClass', 'initialClasses: class'] }), 
     __metadata('design:paramtypes', [IterableDiffers, KeyValueDiffers, ElementRef, Renderer])
 ], NgClass);

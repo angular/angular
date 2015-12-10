@@ -17,7 +17,7 @@ const NUMBER_VALUE_ACCESSOR = CONST_EXPR(new Provider(NG_VALUE_ACCESSOR, { useEx
  *
  *  ### Example
  *  ```
- *  <input type="number" [(ng-model)]="age">
+ *  <input type="number" [(ngModel)]="age">
  *  ```
  */
 export let NumberValueAccessor = class {
@@ -37,7 +37,7 @@ export let NumberValueAccessor = class {
 };
 NumberValueAccessor = __decorate([
     Directive({
-        selector: 'input[type=number][ng-control],input[type=number][ng-form-control],input[type=number][ng-model]',
+        selector: 'input[type=number][ngControl],input[type=number][ngFormControl],input[type=number][ngModel]',
         host: {
             '(change)': 'onChange($event.target.value)',
             '(input)': 'onChange($event.target.value)',

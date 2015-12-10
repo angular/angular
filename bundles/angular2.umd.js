@@ -374,8 +374,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * A directive can also query for other child directives. Since parent directives are instantiated
 	 * before child directives, a directive can't simply inject the list of child directives. Instead,
 	 * the directive injects a {@link QueryList}, which updates its contents as children are added,
-	 * removed, or moved by a directive that uses a {@link ViewContainerRef} such as a `ng-for`, an
-	 * `ng-if`, or an `ng-switch`.
+	 * removed, or moved by a directive that uses a {@link ViewContainerRef} such as a `ngFor`, an
+	 * `ngIf`, or an `ngSwitch`.
 	 *
 	 * ```
 	 * @Directive({ selector: '[my-directive]' })
@@ -645,7 +645,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ```html
 	 * <tabs>
 	 *   <pane title="Overview">...</pane>
-	 *   <pane *ng-for="#o of objects" [title]="o.title">{{o.text}}</pane>
+	 *   <pane *ngFor="#o of objects" [title]="o.title">{{o.text}}</pane>
 	 * </tabs>
 	 * ```
 	 *
@@ -664,7 +664,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *  selector: 'tabs',
 	 *  template: `
 	 *    <ul>
-	 *      <li *ng-for="#pane of panes">{{pane.title}}</li>
+	 *      <li *ngFor="#pane of panes">{{pane.title}}</li>
 	 *    </ul>
 	 *    <content></content>
 	 *  `
@@ -986,10 +986,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example
 	 *
 	 * The following example creates a directive that sets the `valid` and `invalid` classes
-	 * on the DOM element that has ng-model directive on it.
+	 * on the DOM element that has ngModel directive on it.
 	 *
 	 * ```typescript
-	 * @Directive({selector: '[ng-model]'})
+	 * @Directive({selector: '[ngModel]'})
 	 * class NgModelStatus {
 	 *   constructor(public control:NgModel) {}
 	 *   @HostBinding('[class.valid]') get valid { return this.control.valid; }
@@ -998,7 +998,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * @Component({
 	 *   selector: 'app',
-	 *   template: `<input [(ng-model)]="prop">`,
+	 *   template: `<input [(ngModel)]="prop">`,
 	 *   directives: [FORM_DIRECTIVES, NgModelStatus]
 	 * })
 	 * class App {
@@ -1132,7 +1132,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ```html
 	 * <tabs>
 	 *   <pane title="Overview">...</pane>
-	 *   <pane *ng-for="#o of objects" [title]="o.title">{{o.text}}</pane>
+	 *   <pane *ngFor="#o of objects" [title]="o.title">{{o.text}}</pane>
 	 * </tabs>
 	 * ```
 	 *
@@ -1151,7 +1151,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *  selector: 'tabs',
 	 *  template: `
 	 *    <ul>
-	 *      <li *ng-for="#pane of panes">{{pane.title}}</li>
+	 *      <li *ngFor="#pane of panes">{{pane.title}}</li>
 	 *    </ul>
 	 *    <content></content>
 	 *  `
@@ -5576,8 +5576,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * A directive can also query for other child directives. Since parent directives are instantiated
 	 * before child directives, a directive can't simply inject the list of child directives. Instead,
 	 * the directive injects a {@link QueryList}, which updates its contents as children are added,
-	 * removed, or moved by a directive that uses a {@link ViewContainerRef} such as a `ng-for`, an
-	 * `ng-if`, or an `ng-switch`.
+	 * removed, or moved by a directive that uses a {@link ViewContainerRef} such as a `ngFor`, an
+	 * `ngIf`, or an `ngSwitch`.
 	 *
 	 * ```
 	 * @Directive({ selector: '[my-directive]' })
@@ -6238,10 +6238,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example
 	 *
 	 * The following example creates a directive that sets the `valid` and `invalid` classes
-	 * on the DOM element that has ng-model directive on it.
+	 * on the DOM element that has ngModel directive on it.
 	 *
 	 * ```typescript
-	 * @Directive({selector: '[ng-model]'})
+	 * @Directive({selector: '[ngModel]'})
 	 * class NgModelStatus {
 	 *   constructor(public control:NgModel) {}
 	 *   @HostBinding('[class.valid]') get valid { return this.control.valid; }
@@ -6250,7 +6250,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * @Component({
 	 *   selector: 'app',
-	 *   template: `<input [(ng-model)]="prop">`,
+	 *   template: `<input [(ngModel)]="prop">`,
 	 *   directives: [FORM_DIRECTIVES, NgModelStatus]
 	 * })
 	 * class App {
@@ -9024,7 +9024,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                    prefix = key;
 	                }
 	                else {
-	                    key = prefix + '-' + key;
+	                    key = prefix + key[0].toUpperCase() + key.substring(1);
 	                }
 	            }
 	            this.optionalCharacter(lexer_1.$COLON);
@@ -13806,7 +13806,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *     <h2>Demo: NgZone</h2>
 	 *
 	 *     <p>Progress: {{progress}}%</p>
-	 *     <p *ng-if="progress >= 100">Done processing {{label}} of Angular zone!</p>
+	 *     <p *ngIf="progress >= 100">Done processing {{label}} of Angular zone!</p>
 	 *
 	 *     <button (click)="processWithinAngularZone()">Process within Angular zone</button>
 	 *     <button (click)="processOutsideOfAngularZone()">Process outside of Angular zone</button>
@@ -14980,7 +14980,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  <div>foo</div> -> view 1 / fragment 1
 	  <ul>
-	    <template ng-for>
+	    <template ngFor>
 	      <li>{{fg}}</li> -> view 2 / fragment 1
 	    </template>
 	  </ul>
@@ -14989,10 +14989,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  <div>foo</div> -> view 1 / fragment 1
 	  <ul>
-	    <template ng-if>
+	    <template ngIf>
 	      <li><ng-content></></li> -> view 1 / fragment 2
 	    </template>
-	    <template ng-for>
+	    <template ngFor>
 	      <li><ng-content></></li> ->
 	      <li></li>                -> view 1 / fragment 2 + view 2 / fragment 1..n-1
 	    </template>
@@ -15654,7 +15654,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ```
 	 * Count: {{items.length}}
 	 * <ul>
-	 *   <li *ng-for="var item of items">{{item}}</li>
+	 *   <li *ngFor="var item of items">{{item}}</li>
 	 * </ul>
 	 * ```
 	 *
@@ -15664,7 +15664,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ```
 	 * Count: {{items.length}}
 	 * <ul>
-	 *   <template ng-for var-item [ng-for-of]="items"></template>
+	 *   <template ngFor var-item [ngForOf]="items"></template>
 	 * </ul>
 	 * ```
 	 *
@@ -15760,7 +15760,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ```
 	 * Count: {{items.length}}
 	 * <ul>
-	 *   <li *ng-for="var item of items">{{item}}</li>
+	 *   <li *ngFor="var item of items">{{item}}</li>
 	 * </ul>
 	 * ```
 	 *
@@ -15770,7 +15770,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ```
 	 * Count: {{items.length}}
 	 * <ul>
-	 *   <template ng-for var-item [ng-for-of]="items"></template>
+	 *   <template ngFor var-item [ngForOf]="items"></template>
 	 * </ul>
 	 * ```
 	 *
@@ -17782,7 +17782,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * Implements an iterable interface, therefore it can be used in both ES6
 	 * javascript `for (var i of items)` loops as well as in Angular templates with
-	 * `*ng-for="#i of myList"`.
+	 * `*ngFor="#i of myList"`.
 	 *
 	 * Changes can be observed by subscribing to the changes `Observable`.
 	 *
@@ -19218,7 +19218,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * ## List Example
 	 *
-	 * This `ng-for` example:
+	 * This `ngFor` example:
 	 *
 	 * {@example core/pipes/ts/slice_pipe/slice_pipe_example.ts region='SlicePipe_list'}
 	 *
@@ -19761,7 +19761,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *   selector: 'toggle-button',
 	 *   inputs: ['isDisabled'],
 	 *   template: `
-	 *      <div class="button" [ng-class]="{active: isOn, disabled: isDisabled}"
+	 *      <div class="button" [ngClass]="{active: isOn, disabled: isDisabled}"
 	 *          (click)="toggle(!isOn)">
 	 *          Click me!
 	 *      </div>`,
@@ -19905,7 +19905,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    };
 	    NgClass = __decorate([
-	        core_1.Directive({ selector: '[ng-class]', inputs: ['rawClass: ng-class', 'initialClasses: class'] }), 
+	        core_1.Directive({ selector: '[ngClass]', inputs: ['rawClass: ngClass', 'initialClasses: class'] }), 
 	        __metadata('design:paramtypes', [core_1.IterableDiffers, core_1.KeyValueDiffers, core_1.ElementRef, core_1.Renderer])
 	    ], NgClass);
 	    return NgClass;
@@ -19968,9 +19968,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * # Syntax
 	 *
-	 * - `<li *ng-for="#item of items; #i = index">...</li>`
-	 * - `<li template="ng-for #item of items; #i = index">...</li>`
-	 * - `<template ng-for #item [ng-for-of]="items" #i="index"><li>...</li></template>`
+	 * - `<li *ngFor="#item of items; #i = index">...</li>`
+	 * - `<li template="ngFor #item of items; #i = index">...</li>`
+	 * - `<template ngFor #item [ngForOf]="items" #i="index"><li>...</li></template>`
 	 *
 	 * ### Example
 	 *
@@ -20069,7 +20069,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return tuples;
 	    };
 	    NgFor = __decorate([
-	        core_1.Directive({ selector: '[ng-for][ng-for-of]', inputs: ['ngForOf', 'ngForTemplate'] }), 
+	        core_1.Directive({ selector: '[ngFor][ngForOf]', inputs: ['ngForOf', 'ngForTemplate'] }), 
 	        __metadata('design:paramtypes', [core_1.ViewContainerRef, core_1.TemplateRef, core_1.IterableDiffers, core_1.ChangeDetectorRef])
 	    ], NgFor);
 	    return NgFor;
@@ -20102,13 +20102,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * Removes or recreates a portion of the DOM tree based on an {expression}.
 	 *
-	 * If the expression assigned to `ng-if` evaluates to a false value then the element
+	 * If the expression assigned to `ngIf` evaluates to a false value then the element
 	 * is removed from the DOM, otherwise a clone of the element is reinserted into the DOM.
 	 *
 	 * ### Example ([live demo](http://plnkr.co/edit/fe0kgemFBtmQOY31b4tw?p=preview)):
 	 *
 	 * ```
-	 * <div *ng-if="errorCount > 0" class="error">
+	 * <div *ngIf="errorCount > 0" class="error">
 	 *   <!-- Error message displayed when the errorCount property on the current context is greater
 	 * than 0. -->
 	 *   {{errorCount}} errors detected
@@ -20117,9 +20117,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * ### Syntax
 	 *
-	 * - `<div *ng-if="condition">...</div>`
-	 * - `<div template="ng-if condition">...</div>`
-	 * - `<template [ng-if]="condition"><div>...</div></template>`
+	 * - `<div *ngIf="condition">...</div>`
+	 * - `<div template="ngIf condition">...</div>`
+	 * - `<template [ngIf]="condition"><div>...</div></template>`
 	 */
 	var NgIf = (function () {
 	    function NgIf(_viewContainer, _templateRef) {
@@ -20142,7 +20142,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        configurable: true
 	    });
 	    NgIf = __decorate([
-	        core_1.Directive({ selector: '[ng-if]', inputs: ['ngIf'] }), 
+	        core_1.Directive({ selector: '[ngIf]', inputs: ['ngIf'] }), 
 	        __metadata('design:paramtypes', [core_1.ViewContainerRef, core_1.TemplateRef])
 	    ], NgIf);
 	    return NgIf;
@@ -20168,14 +20168,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	/**
 	 * The `NgStyle` directive changes styles based on a result of expression evaluation.
 	 *
-	 * An expression assigned to the `ng-style` property must evaluate to an object and the
+	 * An expression assigned to the `ngStyle` property must evaluate to an object and the
 	 * corresponding element styles are updated based on changes to this object. Style names to update
 	 * are taken from the object's keys, and values - from the corresponding object's values.
 	 *
 	 * ### Syntax
 	 *
-	 * - `<div [ng-style]="{'font-style': style}"></div>`
-	 * - `<div [ng-style]="styleExp"></div>` - here the `styleExp` must evaluate to an object
+	 * - `<div [ngStyle]="{'font-style': style}"></div>`
+	 * - `<div [ngStyle]="styleExp"></div>` - here the `styleExp` must evaluate to an object
 	 *
 	 * ### Example ([live demo](http://plnkr.co/edit/YamGS6GkUh9GqWNQhCyM?p=preview)):
 	 *
@@ -20183,9 +20183,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * import {Component, NgStyle} from 'angular2/angular2';
 	 *
 	 * @Component({
-	 *  selector: 'ng-style-example',
+	 *  selector: 'ngStyle-example',
 	 *  template: `
-	 *    <h1 [ng-style]="{'font-style': style, 'font-size': size, 'font-weight': weight}">
+	 *    <h1 [ngStyle]="{'font-style': style, 'font-size': size, 'font-weight': weight}">
 	 *      Change style of this text!
 	 *    </h1>
 	 *
@@ -20249,7 +20249,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this._renderer.setElementStyle(this._ngEl, name, val);
 	    };
 	    NgStyle = __decorate([
-	        core_1.Directive({ selector: '[ng-style]', inputs: ['rawStyle: ng-style'] }), 
+	        core_1.Directive({ selector: '[ngStyle]', inputs: ['rawStyle: ngStyle'] }), 
 	        __metadata('design:paramtypes', [core_1.KeyValueDiffers, core_1.ElementRef, core_1.Renderer])
 	    ], NgStyle);
 	    return NgStyle;
@@ -20295,12 +20295,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * `NgSwitch` simply inserts nested elements based on which match expression matches the value
 	 * obtained from the evaluated switch expression. In other words, you define a container element
 	 * (where you place the directive with a switch expression on the
-	 * **`[ng-switch]="..."` attribute**), define any inner elements inside of the directive and
-	 * place a `[ng-switch-when]` attribute per element.
+	 * **`[ngSwitch]="..."` attribute**), define any inner elements inside of the directive and
+	 * place a `[ngSwitchWhen]` attribute per element.
 	 *
-	 * The `ng-switch-when` property is used to inform `NgSwitch` which element to display when the
-	 * expression is evaluated. If a matching expression is not found via a `ng-switch-when` property
-	 * then an element with the `ng-switch-default` attribute is displayed.
+	 * The `ngSwitchWhen` property is used to inform `NgSwitch` which element to display when the
+	 * expression is evaluated. If a matching expression is not found via a `ngSwitchWhen` property
+	 * then an element with the `ngSwitchDefault` attribute is displayed.
 	 *
 	 * ### Example ([live demo](http://plnkr.co/edit/DQMTII95CbuqWrl3lYAs?p=preview))
 	 *
@@ -20311,22 +20311,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *     <p>Value = {{value}}</p>
 	 *     <button (click)="inc()">Increment</button>
 	 *
-	 *     <div [ng-switch]="value">
-	 *       <p *ng-switch-when="'init'">increment to start</p>
-	 *       <p *ng-switch-when="0">0, increment again</p>
-	 *       <p *ng-switch-when="1">1, increment again</p>
-	 *       <p *ng-switch-when="2">2, stop incrementing</p>
-	 *       <p *ng-switch-default>&gt; 2, STOP!</p>
+	 *     <div [ngSwitch]="value">
+	 *       <p *ngSwitchWhen="'init'">increment to start</p>
+	 *       <p *ngSwitchWhen="0">0, increment again</p>
+	 *       <p *ngSwitchWhen="1">1, increment again</p>
+	 *       <p *ngSwitchWhen="2">2, stop incrementing</p>
+	 *       <p *ngSwitchDefault>&gt; 2, STOP!</p>
 	 *     </div>
 	 *
 	 *     <!-- alternate syntax -->
 	 *
-	 *     <p [ng-switch]="value">
-	 *       <template ng-switch-when="init">increment to start</template>
-	 *       <template [ng-switch-when]="0">0, increment again</template>
-	 *       <template [ng-switch-when]="1">1, increment again</template>
-	 *       <template [ng-switch-when]="2">2, stop incrementing</template>
-	 *       <template ng-switch-default>&gt; 2, STOP!</template>
+	 *     <p [ngSwitch]="value">
+	 *       <template ngSwitchWhen="init">increment to start</template>
+	 *       <template [ngSwitchWhen]="0">0, increment again</template>
+	 *       <template [ngSwitchWhen]="1">1, increment again</template>
+	 *       <template [ngSwitchWhen]="2">2, stop incrementing</template>
+	 *       <template ngSwitchDefault>&gt; 2, STOP!</template>
 	 *     </p>
 	 *   `,
 	 *   directives: [NgSwitch, NgSwitchWhen, NgSwitchDefault]
@@ -20428,14 +20428,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    };
 	    NgSwitch = __decorate([
-	        core_1.Directive({ selector: '[ng-switch]', inputs: ['ngSwitch'] }), 
+	        core_1.Directive({ selector: '[ngSwitch]', inputs: ['ngSwitch'] }), 
 	        __metadata('design:paramtypes', [])
 	    ], NgSwitch);
 	    return NgSwitch;
 	})();
 	exports.NgSwitch = NgSwitch;
 	/**
-	 * Insert the sub-tree when the `ng-switch-when` expression evaluates to the same value as the
+	 * Insert the sub-tree when the `ngSwitchWhen` expression evaluates to the same value as the
 	 * enclosing switch expression.
 	 *
 	 * If multiple match expression match the switch expression value, all of them are displayed.
@@ -20459,7 +20459,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        configurable: true
 	    });
 	    NgSwitchWhen = __decorate([
-	        core_1.Directive({ selector: '[ng-switch-when]', inputs: ['ngSwitchWhen'] }),
+	        core_1.Directive({ selector: '[ngSwitchWhen]', inputs: ['ngSwitchWhen'] }),
 	        __param(2, core_1.Host()), 
 	        __metadata('design:paramtypes', [core_1.ViewContainerRef, core_1.TemplateRef, NgSwitch])
 	    ], NgSwitchWhen);
@@ -20477,7 +20477,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        sswitch._registerView(_WHEN_DEFAULT, new SwitchView(viewContainer, templateRef));
 	    }
 	    NgSwitchDefault = __decorate([
-	        core_1.Directive({ selector: '[ng-switch-default]' }),
+	        core_1.Directive({ selector: '[ngSwitchDefault]' }),
 	        __param(2, core_1.Host()), 
 	        __metadata('design:paramtypes', [core_1.ViewContainerRef, core_1.TemplateRef, NgSwitch])
 	    ], NgSwitchDefault);
@@ -21261,10 +21261,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *      directives: [FORM_DIRECTIVES],
 	 *      template: `
 	 *        <form #f="ngForm" (submit)='onLogIn(f.value)'>
-	 *          Login <input type='text' ng-control='login' #l="ngForm">
-	 *          <div *ng-if="!l.valid">Login is invalid</div>
+	 *          Login <input type='text' ngControl='login' #l="form">
+	 *          <div *ngIf="!l.valid">Login is invalid</div>
 	 *
-	 *          Password <input type='password' ng-control='password'>
+	 *          Password <input type='password' ngControl='password'>
 	 *          <button type='submit'>Log in!</button>
 	 *        </form>
 	 *      `})
@@ -21275,7 +21275,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * }
 	 *  ```
 	 *
-	 * We can also use ng-model to bind a domain model to the form.
+	 * We can also use ngModel to bind a domain model to the form.
 	 *
 	 *  ```
 	 * @Component({
@@ -21283,9 +21283,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *      directives: [FORM_DIRECTIVES],
 	 *      template: `
 	 *        <form (submit)='onLogIn()'>
-	 *          Login <input type='text' ng-control='login' [(ng-model)]="credentials.login">
-	 *          Password <input type='password' ng-control='password'
-	 *                          [(ng-model)]="credentials.password">
+	 *          Login <input type='text' ngControl='login' [(ngModel)]="credentials.login">
+	 *          Password <input type='password' ngControl='password'
+	 *                          [(ngModel)]="credentials.password">
 	 *          <button type='submit'>Log in!</button>
 	 *        </form>
 	 *      `})
@@ -21353,7 +21353,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	    NgControlName = __decorate([
 	        core_1.Directive({
-	            selector: '[ng-control]',
+	            selector: '[ngControl]',
 	            bindings: [controlNameBinding],
 	            inputs: ['name: ngControl', 'model: ngModel'],
 	            outputs: ['update: ngModelChange'],
@@ -21668,7 +21668,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 *  ### Example
 	 *  ```
-	 *  <input type="text" ng-control="searchQuery">
+	 *  <input type="text" ngControl="searchQuery">
 	 *  ```
 	 */
 	var DefaultValueAccessor = (function () {
@@ -21686,10 +21686,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    DefaultValueAccessor.prototype.registerOnTouched = function (fn) { this.onTouched = fn; };
 	    DefaultValueAccessor = __decorate([
 	        core_1.Directive({
-	            selector: 'input:not([type=checkbox])[ng-control],textarea[ng-control],input:not([type=checkbox])[ng-form-control],textarea[ng-form-control],input:not([type=checkbox])[ng-model],textarea[ng-model],[ng-default-control]',
+	            selector: 'input:not([type=checkbox])[ngControl],textarea[ngControl],input:not([type=checkbox])[ngFormControl],textarea[ngFormControl],input:not([type=checkbox])[ngModel],textarea[ngModel],[ngDefaultControl]',
 	            // TODO: vsavkin replace the above selector with the one below it once
 	            // https://github.com/angular/angular/issues/3011 is implemented
-	            // selector: '[ng-control],[ng-model],[ng-form-control]',
+	            // selector: '[ngControl],[ngModel],[ngFormControl]',
 	            host: { '(input)': 'onChange($event.target.value)', '(blur)': 'onTouched()' },
 	            bindings: [DEFAULT_VALUE_ACCESSOR]
 	        }), 
@@ -21723,7 +21723,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 *  ### Example
 	 *  ```
-	 *  <input type="number" [(ng-model)]="age">
+	 *  <input type="number" [(ngModel)]="age">
 	 *  ```
 	 */
 	var NumberValueAccessor = (function () {
@@ -21742,7 +21742,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    NumberValueAccessor.prototype.registerOnTouched = function (fn) { this.onTouched = fn; };
 	    NumberValueAccessor = __decorate([
 	        core_1.Directive({
-	            selector: 'input[type=number][ng-control],input[type=number][ng-form-control],input[type=number][ng-model]',
+	            selector: 'input[type=number][ngControl],input[type=number][ngFormControl],input[type=number][ngModel]',
 	            host: {
 	                '(change)': 'onChange($event.target.value)',
 	                '(input)': 'onChange($event.target.value)',
@@ -21779,7 +21779,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 *  ### Example
 	 *  ```
-	 *  <input type="checkbox" ng-control="rememberLogin">
+	 *  <input type="checkbox" ngControl="rememberLogin">
 	 *  ```
 	 */
 	var CheckboxControlValueAccessor = (function () {
@@ -21796,7 +21796,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    CheckboxControlValueAccessor.prototype.registerOnTouched = function (fn) { this.onTouched = fn; };
 	    CheckboxControlValueAccessor = __decorate([
 	        core_1.Directive({
-	            selector: 'input[type=checkbox][ng-control],input[type=checkbox][ng-form-control],input[type=checkbox][ng-model]',
+	            selector: 'input[type=checkbox][ngControl],input[type=checkbox][ngFormControl],input[type=checkbox][ngModel]',
 	            host: { '(change)': 'onChange($event.target.checked)', '(blur)': 'onTouched()' },
 	            bindings: [CHECKBOX_VALUE_ACCESSOR]
 	        }), 
@@ -21834,8 +21834,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example
 	 *
 	 * ```
-	 * <select ng-control="city">
-	 *   <option *ng-for="#c of cities" [value]="c"></option>
+	 * <select ngControl="city">
+	 *   <option *ngFor="#c of cities" [value]="c"></option>
 	 * </select>
 	 * ```
 	 */
@@ -21872,7 +21872,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    SelectControlValueAccessor = __decorate([
 	        core_1.Directive({
-	            selector: 'select[ng-control],select[ng-form-control],select[ng-model]',
+	            selector: 'select[ngControl],select[ngFormControl],select[ngModel]',
 	            host: {
 	                '(change)': 'onChange($event.target.value)',
 	                '(input)': 'onChange($event.target.value)',
@@ -21950,7 +21950,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *       <h2>NgFormControl Example</h2>
 	 *       <form>
 	 *         <p>Element with existing control: <input type="text"
-	 * [ng-form-control]="loginControl"></p>
+	 * [ngFormControl]="loginControl"></p>
 	 *         <p>Value of existing control: {{loginControl.value}}</p>
 	 *       </form>
 	 *     </div>
@@ -21962,9 +21962,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * }
 	 *  ```
 	 *
-	 * ###ng-model
+	 * ###ngModel
 	 *
-	 * We can also use `ng-model` to bind a domain model to the form.
+	 * We can also use `ngModel` to bind a domain model to the form.
 	 *
 	 * ### Example ([live demo](http://plnkr.co/edit/yHMLuHO7DNgT8XvtjTDH?p=preview))
 	 *
@@ -21972,7 +21972,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @Component({
 	 *      selector: "login-comp",
 	 *      directives: [FORM_DIRECTIVES],
-	 *      template: "<input type='text' [ng-form-control]='loginControl' [(ng-model)]='login'>"
+	 *      template: "<input type='text' [ngFormControl]='loginControl' [(ngModel)]='login'>"
 	 *      })
 	 * class LoginComp {
 	 *  loginControl: Control = new Control('');
@@ -22028,7 +22028,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    NgFormControl = __decorate([
 	        core_1.Directive({
-	            selector: '[ng-form-control]',
+	            selector: '[ngFormControl]',
 	            bindings: [formControlBinding],
 	            inputs: ['form: ngFormControl', 'model: ngModel'],
 	            outputs: ['update: ngModelChange'],
@@ -22085,8 +22085,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * ### Usage
 	 *
-	 * `ng-model` binds an existing domain model to a form control. For a
-	 * two-way binding, use `[(ng-model)]` to ensure the model updates in
+	 * `ngModel` binds an existing domain model to a form control. For a
+	 * two-way binding, use `[(ngModel)]` to ensure the model updates in
 	 * both directions.
 	 *
 	 * ### Example ([live demo](http://plnkr.co/edit/R3UX5qDaUqFO2VYR0UzH?p=preview))
@@ -22094,7 +22094,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @Component({
 	 *      selector: "search-comp",
 	 *      directives: [FORM_DIRECTIVES],
-	 *      template: `<input type='text' [(ng-model)]="searchQuery">`
+	 *      template: `<input type='text' [(ngModel)]="searchQuery">`
 	 *      })
 	 * class SearchComp {
 	 *  searchQuery: string;
@@ -22151,7 +22151,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    NgModel = __decorate([
 	        core_1.Directive({
-	            selector: '[ng-model]:not([ng-control]):not([ng-form-control])',
+	            selector: '[ngModel]:not([ngControl]):not([ngFormControl])',
 	            bindings: [formControlBinding],
 	            inputs: ['model: ngModel'],
 	            outputs: ['update: ngModelChange'],
@@ -22217,17 +22217,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *     <div>
 	 *       <h2>Angular2 Control &amp; ControlGroup Example</h2>
 	 *       <form #f="ngForm">
-	 *         <div ng-control-group="name" #cg-name="ngForm">
+	 *         <div ngControlGroup="name" #cg-name="form">
 	 *           <h3>Enter your name:</h3>
-	 *           <p>First: <input ng-control="first" required></p>
-	 *           <p>Middle: <input ng-control="middle"></p>
-	 *           <p>Last: <input ng-control="last" required></p>
+	 *           <p>First: <input ngControl="first" required></p>
+	 *           <p>Middle: <input ngControl="middle"></p>
+	 *           <p>Last: <input ngControl="last" required></p>
 	 *         </div>
 	 *         <h3>Name value:</h3>
 	 *         <pre>{{valueOf(cgName)}}</pre>
 	 *         <p>Name is {{cgName?.control?.valid ? "valid" : "invalid"}}</p>
 	 *         <h3>What's your favorite food?</h3>
-	 *         <p><input ng-control="food"></p>
+	 *         <p><input ngControl="food"></p>
 	 *         <h3>Form value</h3>
 	 *         <pre>{{valueOf(f)}}</pre>
 	 *       </form>
@@ -22294,9 +22294,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	    NgControlGroup = __decorate([
 	        core_1.Directive({
-	            selector: '[ng-control-group]',
+	            selector: '[ngControlGroup]',
 	            providers: [controlGroupProvider],
-	            inputs: ['name: ng-control-group'],
+	            inputs: ['name: ngControlGroup'],
 	            exportAs: 'ngForm'
 	        }),
 	        __param(0, core_1.Host()),
@@ -22357,9 +22357,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *   template: `
 	 *     <div>
 	 *       <h2>NgFormModel Example</h2>
-	 *       <form [ng-form-model]="loginForm">
-	 *         <p>Login: <input type="text" ng-control="login"></p>
-	 *         <p>Password: <input type="password" ng-control="password"></p>
+	 *       <form [ngFormModel]="loginForm">
+	 *         <p>Login: <input type="text" ngControl="login"></p>
+	 *         <p>Password: <input type="password" ngControl="password"></p>
 	 *       </form>
 	 *       <p>Value:</p>
 	 *       <pre>{{value}}</pre>
@@ -22383,17 +22383,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * }
 	 *  ```
 	 *
-	 * We can also use ng-model to bind a domain model to the form.
+	 * We can also use ngModel to bind a domain model to the form.
 	 *
 	 *  ```typescript
 	 * @Component({
 	 *      selector: "login-comp",
 	 *      directives: [FORM_DIRECTIVES],
 	 *      template: `
-	 *        <form [ng-form-model]='loginForm'>
-	 *          Login <input type='text' ng-control='login' [(ng-model)]='credentials.login'>
-	 *          Password <input type='password' ng-control='password'
-	 *                          [(ng-model)]='credentials.password'>
+	 *        <form [ngFormModel]='loginForm'>
+	 *          Login <input type='text' ngControl='login' [(ngModel)]='credentials.login'>
+	 *          Password <input type='password' ngControl='password'
+	 *                          [(ngModel)]='credentials.password'>
 	 *          <button (click)="onLogin()">Login</button>
 	 *        </form>`
 	 *      })
@@ -22485,9 +22485,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    NgFormModel = __decorate([
 	        core_1.Directive({
-	            selector: '[ng-form-model]',
+	            selector: '[ngFormModel]',
 	            bindings: [formDirectiveProvider],
-	            inputs: ['form: ng-form-model'],
+	            inputs: ['form: ngFormModel'],
 	            host: { '(submit)': 'onSubmit()' },
 	            outputs: ['ngSubmit'],
 	            exportAs: 'ngForm'
@@ -22553,7 +22553,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * ### Submission
 	 *
-	 * The `ng-submit` event signals when the user triggers a form submission.
+	 * The `ngSubmit` event signals when the user triggers a form submission.
 	 *
 	 * ### Example ([live demo](http://plnkr.co/edit/ltdgYj4P0iY64AR71EpL?p=preview))
 	 *
@@ -22564,16 +22564,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *     <div>
 	 *       <p>Submit the form to see the data object Angular builds</p>
 	 *       <h2>NgForm demo</h2>
-	 *       <form #f="ngForm" (ng-submit)="onSubmit(f.value)">
+	 *       <form #f="ngForm" (ngSubmit)="onSubmit(f.value)">
 	 *         <h3>Control group: credentials</h3>
-	 *         <div ng-control-group="credentials">
-	 *           <p>Login: <input type="text" ng-control="login"></p>
-	 *           <p>Password: <input type="password" ng-control="password"></p>
+	 *         <div ngControlGroup="credentials">
+	 *           <p>Login: <input type="text" ngControl="login"></p>
+	 *           <p>Password: <input type="password" ngControl="password"></p>
 	 *         </div>
 	 *         <h3>Control group: person</h3>
-	 *         <div ng-control-group="person">
-	 *           <p>First name: <input type="text" ng-control="firstName"></p>
-	 *           <p>Last name: <input type="text" ng-control="lastName"></p>
+	 *         <div ngControlGroup="person">
+	 *           <p>First name: <input type="text" ngControl="firstName"></p>
+	 *           <p>Last name: <input type="text" ngControl="lastName"></p>
 	 *         </div>
 	 *         <button type="submit">Submit Form</button>
 	 *       <p>Form data submitted:</p>
@@ -22683,7 +22683,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    NgForm = __decorate([
 	        core_1.Directive({
-	            selector: 'form:not([ng-no-form]):not([ng-form-model]),ng-form,[ng-form]',
+	            selector: 'form:not([ngNoForm]):not([ngFormModel]),ngForm,[ngForm]',
 	            bindings: [formDirectiveProvider],
 	            host: {
 	                '(submit)': 'onSubmit()',
@@ -22771,7 +22771,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	    NgControlStatus = __decorate([
 	        core_1.Directive({
-	            selector: '[ng-control],[ng-model],[ng-form-control]',
+	            selector: '[ngControl],[ngModel],[ngFormControl]',
 	            host: {
 	                '[class.ng-untouched]': 'ngClassUntouched',
 	                '[class.ng-touched]': 'ngClassTouched',
@@ -22898,7 +22898,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example
 	 *
 	 * ```
-	 * <input ng-control="fullName" required>
+	 * <input ngControl="fullName" required>
 	 * ```
 	 */
 	var RequiredValidator = (function () {
@@ -22906,7 +22906,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	    RequiredValidator = __decorate([
 	        core_1.Directive({
-	            selector: '[required][ng-control],[required][ng-form-control],[required][ng-model]',
+	            selector: '[required][ngControl],[required][ngFormControl],[required][ngModel]',
 	            providers: [REQUIRED_VALIDATOR]
 	        }), 
 	        __metadata('design:paramtypes', [])
@@ -22922,7 +22922,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    MinLengthValidator.prototype.validate = function (c) { return this._validator(c); };
 	    MinLengthValidator = __decorate([
 	        core_1.Directive({
-	            selector: '[minlength][ng-control],[minlength][ng-form-control],[minlength][ng-model]',
+	            selector: '[minlength][ngControl],[minlength][ngFormControl],[minlength][ngModel]',
 	            providers: [MIN_LENGTH_VALIDATOR]
 	        }),
 	        __param(0, core_1.Attribute("minlength")), 
@@ -22939,7 +22939,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    MaxLengthValidator.prototype.validate = function (c) { return this._validator(c); };
 	    MaxLengthValidator = __decorate([
 	        core_1.Directive({
-	            selector: '[maxlength][ng-control],[maxlength][ng-form-control],[maxlength][ng-model]',
+	            selector: '[maxlength][ngControl],[maxlength][ngFormControl],[maxlength][ngModel]',
 	            providers: [MAX_LENGTH_VALIDATOR]
 	        }),
 	        __param(0, core_1.Attribute("maxlength")), 
@@ -22977,11 +22977,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *   selector: 'my-app',
 	 *   viewBindings: [FORM_BINDINGS]
 	 *   template: `
-	 *     <form [ng-form-model]="loginForm">
-	 *       <p>Login <input ng-control="login"></p>
-	 *       <div ng-control-group="passwordRetry">
-	 *         <p>Password <input type="password" ng-control="password"></p>
-	 *         <p>Confirm password <input type="password" ng-control="passwordConfirmation"></p>
+	 *     <form [ngFormModel]="loginForm">
+	 *       <p>Login <input ngControl="login"></p>
+	 *       <div ngControlGroup="passwordRetry">
+	 *         <p>Password <input type="password" ngControl="password"></p>
+	 *         <p>Confirm password <input type="password" ngControl="passwordConfirmation"></p>
 	 *       </div>
 	 *     </form>
 	 *     <h3>Form value:</h3>
@@ -23820,7 +23820,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var dom_tokens_1 = __webpack_require__(170);
 	var view_factory_1 = __webpack_require__(180);
 	var view_1 = __webpack_require__(181);
-	var util_1 = __webpack_require__(177);
 	var metadata_1 = __webpack_require__(3);
 	// TODO move it once DomAdapter is moved
 	var dom_adapter_1 = __webpack_require__(164);
@@ -23872,12 +23871,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    DomRenderer.prototype.setElementAttribute = function (location, attributeName, attributeValue) {
 	        var view = resolveInternalDomView(location.renderView);
 	        var element = view.boundElements[location.boundElementIndex];
-	        var dashCasedAttributeName = util_1.camelCaseToDashCase(attributeName);
 	        if (lang_1.isPresent(attributeValue)) {
-	            dom_adapter_1.DOM.setAttribute(element, dashCasedAttributeName, lang_1.stringify(attributeValue));
+	            dom_adapter_1.DOM.setAttribute(element, attributeName, lang_1.stringify(attributeValue));
 	        }
 	        else {
-	            dom_adapter_1.DOM.removeAttribute(element, dashCasedAttributeName);
+	            dom_adapter_1.DOM.removeAttribute(element, attributeName);
 	        }
 	    };
 	    DomRenderer.prototype.setElementClass = function (location, className, isAdd) {
@@ -23893,12 +23891,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    DomRenderer.prototype.setElementStyle = function (location, styleName, styleValue) {
 	        var view = resolveInternalDomView(location.renderView);
 	        var element = view.boundElements[location.boundElementIndex];
-	        var dashCasedStyleName = util_1.camelCaseToDashCase(styleName);
 	        if (lang_1.isPresent(styleValue)) {
-	            dom_adapter_1.DOM.setStyle(element, dashCasedStyleName, lang_1.stringify(styleValue));
+	            dom_adapter_1.DOM.setStyle(element, styleName, lang_1.stringify(styleValue));
 	        }
 	        else {
-	            dom_adapter_1.DOM.removeStyle(element, dashCasedStyleName);
+	            dom_adapter_1.DOM.removeStyle(element, styleName);
 	        }
 	    };
 	    DomRenderer.prototype.invokeElementMethod = function (location, methodName, args) {
@@ -26867,9 +26864,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    CssSelector.prototype.setElement = function (element) {
 	        if (element === void 0) { element = null; }
-	        if (lang_1.isPresent(element)) {
-	            element = element.toLowerCase();
-	        }
 	        this.element = element;
 	    };
 	    /** Gets a template string for an element that matches the selector. */
@@ -26886,7 +26880,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    CssSelector.prototype.addAttribute = function (name, value) {
 	        if (value === void 0) { value = _EMPTY_ATTR_VALUE; }
-	        this.attrs.push(name.toLowerCase());
+	        this.attrs.push(name);
 	        if (lang_1.isPresent(value)) {
 	            value = value.toLowerCase();
 	        }
@@ -28771,7 +28765,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	// Group 6 = idenitifer inside [()]
 	// Group 7 = idenitifer inside []
 	// Group 8 = identifier inside ()
-	var BIND_NAME_REGEXP = /^(?:(?:(?:(bind-)|(var-|#)|(on-)|(bindon-))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/ig;
+	var BIND_NAME_REGEXP = /^(?:(?:(?:(bind-)|(var-|#)|(on-)|(bindon-))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/g;
 	var TEMPLATE_ELEMENT = 'template';
 	var TEMPLATE_ATTR = 'template';
 	var TEMPLATE_ATTR_PREFIX = '*';
@@ -28966,7 +28960,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    TemplateParseVisitor.prototype._parseInlineTemplateBinding = function (attr, targetMatchableAttrs, targetProps, targetVars) {
 	        var templateBindingsSource = null;
-	        if (attr.name.toLowerCase() == TEMPLATE_ATTR) {
+	        if (attr.name == TEMPLATE_ATTR) {
 	            templateBindingsSource = attr.value;
 	        }
 	        else if (attr.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
@@ -28977,17 +28971,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	            var bindings = this._parseTemplateBindings(templateBindingsSource, attr.sourceSpan);
 	            for (var i = 0; i < bindings.length; i++) {
 	                var binding = bindings[i];
-	                var dashCaseKey = util_1.camelCaseToDashCase(binding.key);
 	                if (binding.keyIsVar) {
-	                    targetVars.push(new template_ast_1.VariableAst(util_1.dashCaseToCamelCase(binding.key), binding.name, attr.sourceSpan));
-	                    targetMatchableAttrs.push([dashCaseKey, binding.name]);
+	                    targetVars.push(new template_ast_1.VariableAst(binding.key, binding.name, attr.sourceSpan));
+	                    targetMatchableAttrs.push([binding.key, binding.name]);
 	                }
 	                else if (lang_1.isPresent(binding.expression)) {
-	                    this._parsePropertyAst(dashCaseKey, binding.expression, attr.sourceSpan, targetMatchableAttrs, targetProps);
+	                    this._parsePropertyAst(binding.key, binding.expression, attr.sourceSpan, targetMatchableAttrs, targetProps);
 	                }
 	                else {
-	                    targetMatchableAttrs.push([dashCaseKey, '']);
-	                    this._parseLiteralAttr(dashCaseKey, null, attr.sourceSpan, targetProps);
+	                    targetMatchableAttrs.push([binding.key, '']);
+	                    this._parseLiteralAttr(binding.key, null, attr.sourceSpan, targetProps);
 	                }
 	            }
 	            return true;
@@ -29038,7 +29031,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return attrName.toLowerCase().startsWith('data-') ? attrName.substring(5) : attrName;
 	    };
 	    TemplateParseVisitor.prototype._parseVariable = function (identifier, value, sourceSpan, targetVars) {
-	        targetVars.push(new template_ast_1.VariableAst(util_1.dashCaseToCamelCase(identifier), value, sourceSpan));
+	        if (identifier.indexOf('-') > -1) {
+	            this._reportError("\"-\" is not allowed in variable names", sourceSpan);
+	        }
+	        targetVars.push(new template_ast_1.VariableAst(identifier, value, sourceSpan));
 	    };
 	    TemplateParseVisitor.prototype._parseProperty = function (name, expression, sourceSpan, targetMatchableAttrs, targetProps) {
 	        this._parsePropertyAst(name, this._parseBinding(expression, sourceSpan), sourceSpan, targetMatchableAttrs, targetProps);
@@ -29056,19 +29052,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	        targetProps.push(new BoundElementOrDirectiveProperty(name, ast, false, sourceSpan));
 	    };
 	    TemplateParseVisitor.prototype._parseAssignmentEvent = function (name, expression, sourceSpan, targetMatchableAttrs, targetEvents) {
-	        this._parseEvent(name + "-change", expression + "=$event", sourceSpan, targetMatchableAttrs, targetEvents);
+	        this._parseEvent(name + "Change", expression + "=$event", sourceSpan, targetMatchableAttrs, targetEvents);
 	    };
 	    TemplateParseVisitor.prototype._parseEvent = function (name, expression, sourceSpan, targetMatchableAttrs, targetEvents) {
 	        // long format: 'target: eventName'
 	        var parts = util_1.splitAtColon(name, [null, name]);
 	        var target = parts[0];
 	        var eventName = parts[1];
-	        targetEvents.push(new template_ast_1.BoundEventAst(util_1.dashCaseToCamelCase(eventName), target, this._parseAction(expression, sourceSpan), sourceSpan));
+	        targetEvents.push(new template_ast_1.BoundEventAst(eventName, target, this._parseAction(expression, sourceSpan), sourceSpan));
 	        // Don't detect directives for event names for now,
 	        // so don't add the event name to the matchableAttrs
 	    };
 	    TemplateParseVisitor.prototype._parseLiteralAttr = function (name, value, sourceSpan, targetProps) {
-	        targetProps.push(new BoundElementOrDirectiveProperty(util_1.dashCaseToCamelCase(name), this._exprParser.wrapLiteralPrimitive(value, ''), true, sourceSpan));
+	        targetProps.push(new BoundElementOrDirectiveProperty(name, this._exprParser.wrapLiteralPrimitive(value, ''), true, sourceSpan));
 	    };
 	    TemplateParseVisitor.prototype._parseDirectives = function (selectorMatcher, elementCssSelector) {
 	        var _this = this;
@@ -29140,15 +29136,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (lang_1.isPresent(directiveProperties)) {
 	            var boundPropsByName = new Map();
 	            boundProps.forEach(function (boundProp) {
-	                var key = util_1.dashCaseToCamelCase(boundProp.name);
 	                var prevValue = boundPropsByName.get(boundProp.name);
 	                if (lang_1.isBlank(prevValue) || prevValue.isLiteral) {
-	                    // give [a]="b" a higher precedence thatn a="b" on the same element
-	                    boundPropsByName.set(key, boundProp);
+	                    // give [a]="b" a higher precedence than a="b" on the same element
+	                    boundPropsByName.set(boundProp.name, boundProp);
 	                }
 	            });
 	            collection_1.StringMapWrapper.forEach(directiveProperties, function (elProp, dirProp) {
-	                elProp = util_1.dashCaseToCamelCase(elProp);
 	                var boundProp = boundPropsByName.get(elProp);
 	                // Bindings are optional, so this binding only needs to be set up if an expression is given.
 	                if (lang_1.isPresent(boundProp)) {
@@ -29179,30 +29173,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var boundPropertyName;
 	        var parts = name.split(PROPERTY_PARTS_SEPARATOR);
 	        if (parts.length === 1) {
-	            boundPropertyName = this._schemaRegistry.getMappedPropName(util_1.dashCaseToCamelCase(parts[0]));
+	            boundPropertyName = this._schemaRegistry.getMappedPropName(parts[0]);
 	            bindingType = template_ast_1.PropertyBindingType.Property;
 	            if (!this._schemaRegistry.hasProperty(elementName, boundPropertyName)) {
 	                this._reportError("Can't bind to '" + boundPropertyName + "' since it isn't a known native property", sourceSpan);
 	            }
 	        }
 	        else {
-	            var lcPrefix = parts[0].toLowerCase();
-	            if (lcPrefix == ATTRIBUTE_PREFIX) {
-	                boundPropertyName = util_1.dashCaseToCamelCase(parts[1]);
+	            if (parts[0] == ATTRIBUTE_PREFIX) {
+	                boundPropertyName = parts[1];
 	                bindingType = template_ast_1.PropertyBindingType.Attribute;
 	            }
-	            else if (lcPrefix == CLASS_PREFIX) {
-	                // keep original case!
+	            else if (parts[0] == CLASS_PREFIX) {
 	                boundPropertyName = parts[1];
 	                bindingType = template_ast_1.PropertyBindingType.Class;
 	            }
-	            else if (lcPrefix == STYLE_PREFIX) {
+	            else if (parts[0] == STYLE_PREFIX) {
 	                unit = parts.length > 2 ? parts[2] : null;
-	                boundPropertyName = util_1.dashCaseToCamelCase(parts[1]);
+	                boundPropertyName = parts[1];
 	                bindingType = template_ast_1.PropertyBindingType.Style;
 	            }
 	            else {
-	                this._reportError("Invalid property name " + name, sourceSpan);
+	                this._reportError("Invalid property name '" + name + "'", sourceSpan);
 	                bindingType = null;
 	            }
 	        }
@@ -29327,7 +29319,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var cssSelector = new selector_1.CssSelector();
 	    cssSelector.setElement(elementName);
 	    for (var i = 0; i < matchableAttrs.length; i++) {
-	        var attrName = matchableAttrs[i][0].toLowerCase();
+	        var attrName = matchableAttrs[i][0];
 	        var attrValue = matchableAttrs[i][1];
 	        cssSelector.addAttribute(attrName, attrValue);
 	        if (attrName == CLASS_ATTR) {
@@ -29545,7 +29537,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    TreeBuilder.prototype._popElement = function (fullName) {
 	        for (var stackIndex = this.elementStack.length - 1; stackIndex >= 0; stackIndex--) {
 	            var el = this.elementStack[stackIndex];
-	            if (el.name.toLowerCase() == fullName.toLowerCase()) {
+	            if (el.name == fullName) {
 	                collection_1.ListWrapper.splice(this.elementStack, stackIndex, this.elementStack.length - stackIndex);
 	                return true;
 	            }
@@ -30686,24 +30678,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	var LINK_STYLE_REL_VALUE = 'stylesheet';
 	var STYLE_ELEMENT = 'style';
 	var SCRIPT_ELEMENT = 'script';
-	var NG_NON_BINDABLE_ATTR = 'ng-non-bindable';
+	var NG_NON_BINDABLE_ATTR = 'ngNonBindable';
 	function preparseElement(ast) {
 	    var selectAttr = null;
 	    var hrefAttr = null;
 	    var relAttr = null;
 	    var nonBindable = false;
 	    ast.attrs.forEach(function (attr) {
-	        var attrName = attr.name.toLowerCase();
-	        if (attrName == NG_CONTENT_SELECT_ATTR) {
+	        var lcAttrName = attr.name.toLowerCase();
+	        if (lcAttrName == NG_CONTENT_SELECT_ATTR) {
 	            selectAttr = attr.value;
 	        }
-	        else if (attrName == LINK_STYLE_HREF_ATTR) {
+	        else if (lcAttrName == LINK_STYLE_HREF_ATTR) {
 	            hrefAttr = attr.value;
 	        }
-	        else if (attrName == LINK_STYLE_REL_ATTR) {
+	        else if (lcAttrName == LINK_STYLE_REL_ATTR) {
 	            relAttr = attr.value;
 	        }
-	        else if (attrName == NG_NON_BINDABLE_ATTR) {
+	        else if (attr.name == NG_NON_BINDABLE_ATTR) {
 	            nonBindable = true;
 	        }
 	    });
@@ -31223,7 +31215,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *     <div>
 	 *       <h1>People</h1>
 	 *       <ul>
-	 *         <li *ng-for="#person of people">
+	 *         <li *ngFor="#person of people">
 	 *           {{person.name}}
 	 *         </li>
 	 *       </ul>
@@ -31351,7 +31343,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *     <div>
 	 *       <h1>People</h1>
 	 *       <ul>
-	 *         <li *ng-for="#person of people">
+	 *         <li *ngFor="#person of people">
 	 *           {{person.name}}
 	 *         </li>
 	 *       </ul>
@@ -35821,7 +35813,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * When linking to this `User` route, you can write:
 	 *
 	 * ```
-	 * <a [router-link]="['./User']">link to user component</a>
+	 * <a [routerLink]="['./User']">link to user component</a>
 	 * ```
 	 *
 	 * RouterLink expects the value to be an array of route names, followed by the params
@@ -35865,7 +35857,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    RouterLink = __decorate([
 	        core_1.Directive({
-	            selector: '[router-link]',
+	            selector: '[routerLink]',
 	            inputs: ['routeParams: routerLink', 'target: target'],
 	            host: {
 	                '(click)': 'onClick()',

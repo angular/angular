@@ -94,7 +94,7 @@ export declare class ViewMetadata {
      *   directives: [NgFor]
      *   template: '
      *   <ul>
-     *     <li *ng-for="#item of items">{{item}}</li>
+     *     <li *ngFor="#item of items">{{item}}</li>
      *   </ul>'
      * })
      * class MyComponent {

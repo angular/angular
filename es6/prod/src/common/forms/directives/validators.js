@@ -22,14 +22,14 @@ const REQUIRED_VALIDATOR = CONST_EXPR(new Provider(NG_VALIDATORS, { useValue: Va
  * ### Example
  *
  * ```
- * <input ng-control="fullName" required>
+ * <input ngControl="fullName" required>
  * ```
  */
 export let RequiredValidator = class {
 };
 RequiredValidator = __decorate([
     Directive({
-        selector: '[required][ng-control],[required][ng-form-control],[required][ng-model]',
+        selector: '[required][ngControl],[required][ngFormControl],[required][ngModel]',
         providers: [REQUIRED_VALIDATOR]
     }), 
     __metadata('design:paramtypes', [])
@@ -43,7 +43,7 @@ export let MinLengthValidator = class {
 };
 MinLengthValidator = __decorate([
     Directive({
-        selector: '[minlength][ng-control],[minlength][ng-form-control],[minlength][ng-model]',
+        selector: '[minlength][ngControl],[minlength][ngFormControl],[minlength][ngModel]',
         providers: [MIN_LENGTH_VALIDATOR]
     }),
     __param(0, Attribute("minlength")), 
@@ -58,7 +58,7 @@ export let MaxLengthValidator = class {
 };
 MaxLengthValidator = __decorate([
     Directive({
-        selector: '[maxlength][ng-control],[maxlength][ng-form-control],[maxlength][ng-model]',
+        selector: '[maxlength][ngControl],[maxlength][ngFormControl],[maxlength][ngModel]',
         providers: [MAX_LENGTH_VALIDATOR]
     }),
     __param(0, Attribute("maxlength")), 

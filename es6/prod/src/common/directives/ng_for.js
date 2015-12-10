@@ -49,9 +49,9 @@ import { isPresent, isBlank } from 'angular2/src/facade/lang';
  *
  * # Syntax
  *
- * - `<li *ng-for="#item of items; #i = index">...</li>`
- * - `<li template="ng-for #item of items; #i = index">...</li>`
- * - `<template ng-for #item [ng-for-of]="items" #i="index"><li>...</li></template>`
+ * - `<li *ngFor="#item of items; #i = index">...</li>`
+ * - `<li template="ngFor #item of items; #i = index">...</li>`
+ * - `<template ngFor #item [ngForOf]="items" #i="index"><li>...</li></template>`
  *
  * ### Example
  *
@@ -137,7 +137,7 @@ export let NgFor = class {
     }
 };
 NgFor = __decorate([
-    Directive({ selector: '[ng-for][ng-for-of]', inputs: ['ngForOf', 'ngForTemplate'] }), 
+    Directive({ selector: '[ngFor][ngForOf]', inputs: ['ngForOf', 'ngForTemplate'] }), 
     __metadata('design:paramtypes', [ViewContainerRef, TemplateRef, IterableDiffers, ChangeDetectorRef])
 ], NgFor);
 class RecordViewTuple {

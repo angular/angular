@@ -22,7 +22,7 @@ import { AbstractControl, ControlGroup, Control } from '../model';
  *
  * ### Submission
  *
- * The `ng-submit` event signals when the user triggers a form submission.
+ * The `ngSubmit` event signals when the user triggers a form submission.
  *
  * ### Example ([live demo](http://plnkr.co/edit/ltdgYj4P0iY64AR71EpL?p=preview))
  *
@@ -33,16 +33,16 @@ import { AbstractControl, ControlGroup, Control } from '../model';
  *     <div>
  *       <p>Submit the form to see the data object Angular builds</p>
  *       <h2>NgForm demo</h2>
- *       <form #f="ngForm" (ng-submit)="onSubmit(f.value)">
+ *       <form #f="ngForm" (ngSubmit)="onSubmit(f.value)">
  *         <h3>Control group: credentials</h3>
- *         <div ng-control-group="credentials">
- *           <p>Login: <input type="text" ng-control="login"></p>
- *           <p>Password: <input type="password" ng-control="password"></p>
+ *         <div ngControlGroup="credentials">
+ *           <p>Login: <input type="text" ngControl="login"></p>
+ *           <p>Password: <input type="password" ngControl="password"></p>
  *         </div>
  *         <h3>Control group: person</h3>
- *         <div ng-control-group="person">
- *           <p>First name: <input type="text" ng-control="firstName"></p>
- *           <p>Last name: <input type="text" ng-control="lastName"></p>
+ *         <div ngControlGroup="person">
+ *           <p>First name: <input type="text" ngControl="firstName"></p>
+ *           <p>Last name: <input type="text" ngControl="lastName"></p>
  *         </div>
  *         <button type="submit">Submit Form</button>
  *       <p>Form data submitted:</p>

@@ -6,8 +6,8 @@ import { ControlValueAccessor } from './control_value_accessor';
  * ### Example
  *
  * ```
- * <select ng-control="city">
- *   <option *ng-for="#c of cities" [value]="c"></option>
+ * <select ngControl="city">
+ *   <option *ngFor="#c of cities" [value]="c"></option>
  * </select>
  * ```
  */

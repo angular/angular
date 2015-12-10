@@ -73,12 +73,7 @@ export class CssSelector {
         return isPresent(this.element) && ListWrapper.isEmpty(this.classNames) &&
             ListWrapper.isEmpty(this.attrs) && this.notSelectors.length === 0;
     }
-    setElement(element = null) {
-        if (isPresent(element)) {
-            element = element.toLowerCase();
-        }
-        this.element = element;
-    }
+    setElement(element = null) { this.element = element; }
     /** Gets a template string for an element that matches the selector. */
     getMatchingElementTemplate() {
         let tagName = isPresent(this.element) ? this.element : 'div';
@@ -92,7 +87,7 @@ export class CssSelector {
         return `<${tagName}${classAttr}${attrs}></${tagName}>`;
     }
     addAttribute(name, value = _EMPTY_ATTR_VALUE) {
-        this.attrs.push(name.toLowerCase());
+        this.attrs.push(name);
         if (isPresent(value)) {
             value = value.toLowerCase();
         }

@@ -7791,7 +7791,7 @@ System.register("angular2/src/core/change_detection/parser/parser", ["angular2/s
           if (prefix == null) {
             prefix = key;
           } else {
-            key = prefix + '-' + key;
+            key = prefix + key[0].toUpperCase() + key.substring(1);
           }
         }
         this.optionalCharacter(lexer_1.$COLON);
@@ -11545,8 +11545,8 @@ System.register("angular2/src/common/directives/ng_class", ["angular2/src/facade
       }
     };
     NgClass = __decorate([core_1.Directive({
-      selector: '[ng-class]',
-      inputs: ['rawClass: ng-class', 'initialClasses: class']
+      selector: '[ngClass]',
+      inputs: ['rawClass: ngClass', 'initialClasses: class']
     }), __metadata('design:paramtypes', [core_1.IterableDiffers, core_1.KeyValueDiffers, core_1.ElementRef, core_1.Renderer])], NgClass);
     return NgClass;
   })();
@@ -11668,7 +11668,7 @@ System.register("angular2/src/common/directives/ng_for", ["angular2/core", "angu
       return tuples;
     };
     NgFor = __decorate([core_1.Directive({
-      selector: '[ng-for][ng-for-of]',
+      selector: '[ngFor][ngForOf]',
       inputs: ['ngForOf', 'ngForTemplate']
     }), __metadata('design:paramtypes', [core_1.ViewContainerRef, core_1.TemplateRef, core_1.IterableDiffers, core_1.ChangeDetectorRef])], NgFor);
     return NgFor;
@@ -11727,7 +11727,7 @@ System.register("angular2/src/common/directives/ng_if", ["angular2/core", "angul
       configurable: true
     });
     NgIf = __decorate([core_1.Directive({
-      selector: '[ng-if]',
+      selector: '[ngIf]',
       inputs: ['ngIf']
     }), __metadata('design:paramtypes', [core_1.ViewContainerRef, core_1.TemplateRef])], NgIf);
     return NgIf;
@@ -11799,8 +11799,8 @@ System.register("angular2/src/common/directives/ng_style", ["angular2/core", "an
       this._renderer.setElementStyle(this._ngEl, name, val);
     };
     NgStyle = __decorate([core_1.Directive({
-      selector: '[ng-style]',
-      inputs: ['rawStyle: ng-style']
+      selector: '[ngStyle]',
+      inputs: ['rawStyle: ngStyle']
     }), __metadata('design:paramtypes', [core_1.KeyValueDiffers, core_1.ElementRef, core_1.Renderer])], NgStyle);
     return NgStyle;
   })();
@@ -11925,7 +11925,7 @@ System.register("angular2/src/common/directives/ng_switch", ["angular2/core", "a
       }
     };
     NgSwitch = __decorate([core_1.Directive({
-      selector: '[ng-switch]',
+      selector: '[ngSwitch]',
       inputs: ['ngSwitch']
     }), __metadata('design:paramtypes', [])], NgSwitch);
     return NgSwitch;
@@ -11946,7 +11946,7 @@ System.register("angular2/src/common/directives/ng_switch", ["angular2/core", "a
       configurable: true
     });
     NgSwitchWhen = __decorate([core_1.Directive({
-      selector: '[ng-switch-when]',
+      selector: '[ngSwitchWhen]',
       inputs: ['ngSwitchWhen']
     }), __param(2, core_1.Host()), __metadata('design:paramtypes', [core_1.ViewContainerRef, core_1.TemplateRef, NgSwitch])], NgSwitchWhen);
     return NgSwitchWhen;
@@ -11956,7 +11956,7 @@ System.register("angular2/src/common/directives/ng_switch", ["angular2/core", "a
     function NgSwitchDefault(viewContainer, templateRef, sswitch) {
       sswitch._registerView(_WHEN_DEFAULT, new SwitchView(viewContainer, templateRef));
     }
-    NgSwitchDefault = __decorate([core_1.Directive({selector: '[ng-switch-default]'}), __param(2, core_1.Host()), __metadata('design:paramtypes', [core_1.ViewContainerRef, core_1.TemplateRef, NgSwitch])], NgSwitchDefault);
+    NgSwitchDefault = __decorate([core_1.Directive({selector: '[ngSwitchDefault]'}), __param(2, core_1.Host()), __metadata('design:paramtypes', [core_1.ViewContainerRef, core_1.TemplateRef, NgSwitch])], NgSwitchDefault);
     return NgSwitchDefault;
   })();
   exports.NgSwitchDefault = NgSwitchDefault;
@@ -12727,7 +12727,7 @@ System.register("angular2/src/common/forms/directives/default_value_accessor", [
       this.onTouched = fn;
     };
     DefaultValueAccessor = __decorate([core_1.Directive({
-      selector: 'input:not([type=checkbox])[ng-control],textarea[ng-control],input:not([type=checkbox])[ng-form-control],textarea[ng-form-control],input:not([type=checkbox])[ng-model],textarea[ng-model],[ng-default-control]',
+      selector: 'input:not([type=checkbox])[ngControl],textarea[ngControl],input:not([type=checkbox])[ngFormControl],textarea[ngFormControl],input:not([type=checkbox])[ngModel],textarea[ngModel],[ngDefaultControl]',
       host: {
         '(input)': 'onChange($event.target.value)',
         '(blur)': 'onTouched()'
@@ -12789,7 +12789,7 @@ System.register("angular2/src/common/forms/directives/number_value_accessor", ["
       this.onTouched = fn;
     };
     NumberValueAccessor = __decorate([core_1.Directive({
-      selector: 'input[type=number][ng-control],input[type=number][ng-form-control],input[type=number][ng-model]',
+      selector: 'input[type=number][ngControl],input[type=number][ngFormControl],input[type=number][ngModel]',
       host: {
         '(change)': 'onChange($event.target.value)',
         '(input)': 'onChange($event.target.value)',
@@ -12850,7 +12850,7 @@ System.register("angular2/src/common/forms/directives/checkbox_value_accessor", 
       this.onTouched = fn;
     };
     CheckboxControlValueAccessor = __decorate([core_1.Directive({
-      selector: 'input[type=checkbox][ng-control],input[type=checkbox][ng-form-control],input[type=checkbox][ng-model]',
+      selector: 'input[type=checkbox][ngControl],input[type=checkbox][ngFormControl],input[type=checkbox][ngModel]',
       host: {
         '(change)': 'onChange($event.target.checked)',
         '(blur)': 'onTouched()'
@@ -12930,7 +12930,7 @@ System.register("angular2/src/common/forms/directives/select_control_value_acces
       });
     };
     SelectControlValueAccessor = __decorate([core_1.Directive({
-      selector: 'select[ng-control],select[ng-form-control],select[ng-model]',
+      selector: 'select[ngControl],select[ngFormControl],select[ngModel]',
       host: {
         '(change)': 'onChange($event.target.value)',
         '(input)': 'onChange($event.target.value)',
@@ -13063,7 +13063,7 @@ System.register("angular2/src/common/forms/directives/ng_form_control", ["angula
       return collection_1.StringMapWrapper.contains(changes, "form");
     };
     NgFormControl = __decorate([core_1.Directive({
-      selector: '[ng-form-control]',
+      selector: '[ngFormControl]',
       bindings: [formControlBinding],
       inputs: ['form: ngFormControl', 'model: ngModel'],
       outputs: ['update: ngModelChange'],
@@ -13176,7 +13176,7 @@ System.register("angular2/src/common/forms/directives/ng_model", ["angular2/src/
       async_1.ObservableWrapper.callEmit(this.update, newValue);
     };
     NgModel = __decorate([core_1.Directive({
-      selector: '[ng-model]:not([ng-control]):not([ng-form-control])',
+      selector: '[ngModel]:not([ngControl]):not([ngFormControl])',
       bindings: [formControlBinding],
       inputs: ['model: ngModel'],
       outputs: ['update: ngModelChange'],
@@ -13281,9 +13281,9 @@ System.register("angular2/src/common/forms/directives/ng_control_group", ["angul
       configurable: true
     });
     NgControlGroup = __decorate([core_1.Directive({
-      selector: '[ng-control-group]',
+      selector: '[ngControlGroup]',
       providers: [controlGroupProvider],
-      inputs: ['name: ng-control-group'],
+      inputs: ['name: ngControlGroup'],
       exportAs: 'ngForm'
     }), __param(0, core_1.Host()), __param(0, core_1.SkipSelf()), __param(1, core_1.Optional()), __param(1, core_1.Self()), __param(1, core_1.Inject(validators_1.NG_VALIDATORS)), __param(2, core_1.Optional()), __param(2, core_1.Self()), __param(2, core_1.Inject(validators_1.NG_ASYNC_VALIDATORS)), __metadata('design:paramtypes', [control_container_1.ControlContainer, Array, Array])], NgControlGroup);
     return NgControlGroup;
@@ -13418,9 +13418,9 @@ System.register("angular2/src/common/forms/directives/ng_form_model", ["angular2
       });
     };
     NgFormModel = __decorate([core_1.Directive({
-      selector: '[ng-form-model]',
+      selector: '[ngFormModel]',
       bindings: [formDirectiveProvider],
-      inputs: ['form: ng-form-model'],
+      inputs: ['form: ngFormModel'],
       host: {'(submit)': 'onSubmit()'},
       outputs: ['ngSubmit'],
       exportAs: 'ngForm'
@@ -13574,7 +13574,7 @@ System.register("angular2/src/common/forms/directives/ng_form", ["angular2/src/f
       return collection_1.ListWrapper.isEmpty(path) ? this.form : this.form.find(path);
     };
     NgForm = __decorate([core_1.Directive({
-      selector: 'form:not([ng-no-form]):not([ng-form-model]),ng-form,[ng-form]',
+      selector: 'form:not([ngNoForm]):not([ngFormModel]),ngForm,[ngForm]',
       bindings: [formDirectiveProvider],
       host: {'(submit)': 'onSubmit()'},
       outputs: ['ngSubmit'],
@@ -13662,7 +13662,7 @@ System.register("angular2/src/common/forms/directives/ng_control_status", ["angu
       configurable: true
     });
     NgControlStatus = __decorate([core_1.Directive({
-      selector: '[ng-control],[ng-model],[ng-form-control]',
+      selector: '[ngControl],[ngModel],[ngFormControl]',
       host: {
         '[class.ng-untouched]': 'ngClassUntouched',
         '[class.ng-touched]': 'ngClassTouched',
@@ -13715,7 +13715,7 @@ System.register("angular2/src/common/forms/directives/validators", ["angular2/co
   var RequiredValidator = (function() {
     function RequiredValidator() {}
     RequiredValidator = __decorate([core_1.Directive({
-      selector: '[required][ng-control],[required][ng-form-control],[required][ng-model]',
+      selector: '[required][ngControl],[required][ngFormControl],[required][ngModel]',
       providers: [REQUIRED_VALIDATOR]
     }), __metadata('design:paramtypes', [])], RequiredValidator);
     return RequiredValidator;
@@ -13735,7 +13735,7 @@ System.register("angular2/src/common/forms/directives/validators", ["angular2/co
       return this._validator(c);
     };
     MinLengthValidator = __decorate([core_1.Directive({
-      selector: '[minlength][ng-control],[minlength][ng-form-control],[minlength][ng-model]',
+      selector: '[minlength][ngControl],[minlength][ngFormControl],[minlength][ngModel]',
       providers: [MIN_LENGTH_VALIDATOR]
     }), __param(0, core_1.Attribute("minlength")), __metadata('design:paramtypes', [String])], MinLengthValidator);
     return MinLengthValidator;
@@ -13755,7 +13755,7 @@ System.register("angular2/src/common/forms/directives/validators", ["angular2/co
       return this._validator(c);
     };
     MaxLengthValidator = __decorate([core_1.Directive({
-      selector: '[maxlength][ng-control],[maxlength][ng-form-control],[maxlength][ng-model]',
+      selector: '[maxlength][ngControl],[maxlength][ngFormControl],[maxlength][ngModel]',
       providers: [MAX_LENGTH_VALIDATOR]
     }), __param(0, core_1.Attribute("maxlength")), __metadata('design:paramtypes', [String])], MaxLengthValidator);
     return MaxLengthValidator;
@@ -15037,9 +15037,6 @@ System.register("angular2/src/compiler/selector", ["angular2/src/facade/collecti
       if (element === void 0) {
         element = null;
       }
-      if (lang_1.isPresent(element)) {
-        element = element.toLowerCase();
-      }
       this.element = element;
     };
     CssSelector.prototype.getMatchingElementTemplate = function() {
@@ -15057,7 +15054,7 @@ System.register("angular2/src/compiler/selector", ["angular2/src/facade/collecti
       if (value === void 0) {
         value = _EMPTY_ATTR_VALUE;
       }
-      this.attrs.push(name.toLowerCase());
+      this.attrs.push(name);
       if (lang_1.isPresent(value)) {
         value = value.toLowerCase();
       } else {
@@ -16891,21 +16888,21 @@ System.register("angular2/src/compiler/template_preparser", ["angular2/src/facad
   var LINK_STYLE_REL_VALUE = 'stylesheet';
   var STYLE_ELEMENT = 'style';
   var SCRIPT_ELEMENT = 'script';
-  var NG_NON_BINDABLE_ATTR = 'ng-non-bindable';
+  var NG_NON_BINDABLE_ATTR = 'ngNonBindable';
   function preparseElement(ast) {
     var selectAttr = null;
     var hrefAttr = null;
     var relAttr = null;
     var nonBindable = false;
     ast.attrs.forEach(function(attr) {
-      var attrName = attr.name.toLowerCase();
-      if (attrName == NG_CONTENT_SELECT_ATTR) {
+      var lcAttrName = attr.name.toLowerCase();
+      if (lcAttrName == NG_CONTENT_SELECT_ATTR) {
         selectAttr = attr.value;
-      } else if (attrName == LINK_STYLE_HREF_ATTR) {
+      } else if (lcAttrName == LINK_STYLE_HREF_ATTR) {
         hrefAttr = attr.value;
-      } else if (attrName == LINK_STYLE_REL_ATTR) {
+      } else if (lcAttrName == LINK_STYLE_REL_ATTR) {
         relAttr = attr.value;
-      } else if (attrName == NG_NON_BINDABLE_ATTR) {
+      } else if (attr.name == NG_NON_BINDABLE_ATTR) {
         nonBindable = true;
       }
     });
@@ -22586,7 +22583,7 @@ System.register("angular2/src/common/forms/directives/ng_control_name", ["angula
       configurable: true
     });
     NgControlName = __decorate([core_1.Directive({
-      selector: '[ng-control]',
+      selector: '[ngControl]',
       bindings: [controlNameBinding],
       inputs: ['name: ngControl', 'model: ngModel'],
       outputs: ['update: ngModelChange'],
@@ -23037,7 +23034,7 @@ System.register("angular2/src/compiler/html_parser", ["angular2/src/facade/lang"
     TreeBuilder.prototype._popElement = function(fullName) {
       for (var stackIndex = this.elementStack.length - 1; stackIndex >= 0; stackIndex--) {
         var el = this.elementStack[stackIndex];
-        if (el.name.toLowerCase() == fullName.toLowerCase()) {
+        if (el.name == fullName) {
           collection_1.ListWrapper.splice(this.elementStack, stackIndex, this.elementStack.length - stackIndex);
           return true;
         }
@@ -26241,7 +26238,7 @@ System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/c
   var style_url_resolver_1 = require("angular2/src/compiler/style_url_resolver");
   var html_ast_1 = require("angular2/src/compiler/html_ast");
   var util_1 = require("angular2/src/compiler/util");
-  var BIND_NAME_REGEXP = /^(?:(?:(?:(bind-)|(var-|#)|(on-)|(bindon-))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/ig;
+  var BIND_NAME_REGEXP = /^(?:(?:(?:(bind-)|(var-|#)|(on-)|(bindon-))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/g;
   var TEMPLATE_ELEMENT = 'template';
   var TEMPLATE_ATTR = 'template';
   var TEMPLATE_ATTR_PREFIX = '*';
@@ -26418,7 +26415,7 @@ System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/c
     };
     TemplateParseVisitor.prototype._parseInlineTemplateBinding = function(attr, targetMatchableAttrs, targetProps, targetVars) {
       var templateBindingsSource = null;
-      if (attr.name.toLowerCase() == TEMPLATE_ATTR) {
+      if (attr.name == TEMPLATE_ATTR) {
         templateBindingsSource = attr.value;
       } else if (attr.name.startsWith(TEMPLATE_ATTR_PREFIX)) {
         var key = attr.name.substring(TEMPLATE_ATTR_PREFIX.length);
@@ -26428,15 +26425,14 @@ System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/c
         var bindings = this._parseTemplateBindings(templateBindingsSource, attr.sourceSpan);
         for (var i = 0; i < bindings.length; i++) {
           var binding = bindings[i];
-          var dashCaseKey = util_1.camelCaseToDashCase(binding.key);
           if (binding.keyIsVar) {
-            targetVars.push(new template_ast_1.VariableAst(util_1.dashCaseToCamelCase(binding.key), binding.name, attr.sourceSpan));
-            targetMatchableAttrs.push([dashCaseKey, binding.name]);
+            targetVars.push(new template_ast_1.VariableAst(binding.key, binding.name, attr.sourceSpan));
+            targetMatchableAttrs.push([binding.key, binding.name]);
           } else if (lang_1.isPresent(binding.expression)) {
-            this._parsePropertyAst(dashCaseKey, binding.expression, attr.sourceSpan, targetMatchableAttrs, targetProps);
+            this._parsePropertyAst(binding.key, binding.expression, attr.sourceSpan, targetMatchableAttrs, targetProps);
           } else {
-            targetMatchableAttrs.push([dashCaseKey, '']);
-            this._parseLiteralAttr(dashCaseKey, null, attr.sourceSpan, targetProps);
+            targetMatchableAttrs.push([binding.key, '']);
+            this._parseLiteralAttr(binding.key, null, attr.sourceSpan, targetProps);
           }
         }
         return true;
@@ -26480,7 +26476,10 @@ System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/c
       return attrName.toLowerCase().startsWith('data-') ? attrName.substring(5) : attrName;
     };
     TemplateParseVisitor.prototype._parseVariable = function(identifier, value, sourceSpan, targetVars) {
-      targetVars.push(new template_ast_1.VariableAst(util_1.dashCaseToCamelCase(identifier), value, sourceSpan));
+      if (identifier.indexOf('-') > -1) {
+        this._reportError("\"-\" is not allowed in variable names", sourceSpan);
+      }
+      targetVars.push(new template_ast_1.VariableAst(identifier, value, sourceSpan));
     };
     TemplateParseVisitor.prototype._parseProperty = function(name, expression, sourceSpan, targetMatchableAttrs, targetProps) {
       this._parsePropertyAst(name, this._parseBinding(expression, sourceSpan), sourceSpan, targetMatchableAttrs, targetProps);
@@ -26498,16 +26497,16 @@ System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/c
       targetProps.push(new BoundElementOrDirectiveProperty(name, ast, false, sourceSpan));
     };
     TemplateParseVisitor.prototype._parseAssignmentEvent = function(name, expression, sourceSpan, targetMatchableAttrs, targetEvents) {
-      this._parseEvent(name + "-change", expression + "=$event", sourceSpan, targetMatchableAttrs, targetEvents);
+      this._parseEvent(name + "Change", expression + "=$event", sourceSpan, targetMatchableAttrs, targetEvents);
     };
     TemplateParseVisitor.prototype._parseEvent = function(name, expression, sourceSpan, targetMatchableAttrs, targetEvents) {
       var parts = util_1.splitAtColon(name, [null, name]);
       var target = parts[0];
       var eventName = parts[1];
-      targetEvents.push(new template_ast_1.BoundEventAst(util_1.dashCaseToCamelCase(eventName), target, this._parseAction(expression, sourceSpan), sourceSpan));
+      targetEvents.push(new template_ast_1.BoundEventAst(eventName, target, this._parseAction(expression, sourceSpan), sourceSpan));
     };
     TemplateParseVisitor.prototype._parseLiteralAttr = function(name, value, sourceSpan, targetProps) {
-      targetProps.push(new BoundElementOrDirectiveProperty(util_1.dashCaseToCamelCase(name), this._exprParser.wrapLiteralPrimitive(value, ''), true, sourceSpan));
+      targetProps.push(new BoundElementOrDirectiveProperty(name, this._exprParser.wrapLiteralPrimitive(value, ''), true, sourceSpan));
     };
     TemplateParseVisitor.prototype._parseDirectives = function(selectorMatcher, elementCssSelector) {
       var _this = this;
@@ -26575,14 +26574,12 @@ System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/c
       if (lang_1.isPresent(directiveProperties)) {
         var boundPropsByName = new Map();
         boundProps.forEach(function(boundProp) {
-          var key = util_1.dashCaseToCamelCase(boundProp.name);
           var prevValue = boundPropsByName.get(boundProp.name);
           if (lang_1.isBlank(prevValue) || prevValue.isLiteral) {
-            boundPropsByName.set(key, boundProp);
+            boundPropsByName.set(boundProp.name, boundProp);
           }
         });
         collection_1.StringMapWrapper.forEach(directiveProperties, function(elProp, dirProp) {
-          elProp = util_1.dashCaseToCamelCase(elProp);
           var boundProp = boundPropsByName.get(elProp);
           if (lang_1.isPresent(boundProp)) {
             targetBoundDirectiveProps.push(new template_ast_1.BoundDirectivePropertyAst(dirProp, boundProp.name, boundProp.expression, boundProp.sourceSpan));
@@ -26612,25 +26609,24 @@ System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/c
       var boundPropertyName;
       var parts = name.split(PROPERTY_PARTS_SEPARATOR);
       if (parts.length === 1) {
-        boundPropertyName = this._schemaRegistry.getMappedPropName(util_1.dashCaseToCamelCase(parts[0]));
+        boundPropertyName = this._schemaRegistry.getMappedPropName(parts[0]);
         bindingType = template_ast_1.PropertyBindingType.Property;
         if (!this._schemaRegistry.hasProperty(elementName, boundPropertyName)) {
           this._reportError("Can't bind to '" + boundPropertyName + "' since it isn't a known native property", sourceSpan);
         }
       } else {
-        var lcPrefix = parts[0].toLowerCase();
-        if (lcPrefix == ATTRIBUTE_PREFIX) {
-          boundPropertyName = util_1.dashCaseToCamelCase(parts[1]);
+        if (parts[0] == ATTRIBUTE_PREFIX) {
+          boundPropertyName = parts[1];
           bindingType = template_ast_1.PropertyBindingType.Attribute;
-        } else if (lcPrefix == CLASS_PREFIX) {
+        } else if (parts[0] == CLASS_PREFIX) {
           boundPropertyName = parts[1];
           bindingType = template_ast_1.PropertyBindingType.Class;
-        } else if (lcPrefix == STYLE_PREFIX) {
+        } else if (parts[0] == STYLE_PREFIX) {
           unit = parts.length > 2 ? parts[2] : null;
-          boundPropertyName = util_1.dashCaseToCamelCase(parts[1]);
+          boundPropertyName = parts[1];
           bindingType = template_ast_1.PropertyBindingType.Style;
         } else {
-          this._reportError("Invalid property name " + name, sourceSpan);
+          this._reportError("Invalid property name '" + name + "'", sourceSpan);
           bindingType = null;
         }
       }
@@ -26754,7 +26750,7 @@ System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/c
     var cssSelector = new selector_1.CssSelector();
     cssSelector.setElement(elementName);
     for (var i = 0; i < matchableAttrs.length; i++) {
-      var attrName = matchableAttrs[i][0].toLowerCase();
+      var attrName = matchableAttrs[i][0];
       var attrValue = matchableAttrs[i][1];
       cssSelector.addAttribute(attrName, attrValue);
       if (attrName == CLASS_ATTR) {
@@ -27629,7 +27625,7 @@ System.register("angular2/src/core/linker/proto_view_factory", ["angular2/src/fa
   return module.exports;
 });
 
-System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di", "angular2/src/animate/animation_builder", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/platform/dom/shared_styles_host", "angular2/src/core/profile/profile", "angular2/core", "angular2/src/platform/dom/events/event_manager", "angular2/src/platform/dom/dom_tokens", "angular2/src/core/render/view_factory", "angular2/src/core/render/view", "angular2/src/platform/dom/util", "angular2/src/core/metadata", "angular2/src/platform/dom/dom_adapter"], true, function(require, exports, module) {
+System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di", "angular2/src/animate/animation_builder", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/platform/dom/shared_styles_host", "angular2/src/core/profile/profile", "angular2/core", "angular2/src/platform/dom/events/event_manager", "angular2/src/platform/dom/dom_tokens", "angular2/src/core/render/view_factory", "angular2/src/core/render/view", "angular2/src/core/metadata", "angular2/src/platform/dom/dom_adapter"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -27674,7 +27670,6 @@ System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di
   var dom_tokens_1 = require("angular2/src/platform/dom/dom_tokens");
   var view_factory_1 = require("angular2/src/core/render/view_factory");
   var view_1 = require("angular2/src/core/render/view");
-  var util_1 = require("angular2/src/platform/dom/util");
   var metadata_1 = require("angular2/src/core/metadata");
   var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
   var NAMESPACE_URIS = lang_1.CONST_EXPR({
@@ -27734,11 +27729,10 @@ System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di
     DomRenderer.prototype.setElementAttribute = function(location, attributeName, attributeValue) {
       var view = resolveInternalDomView(location.renderView);
       var element = view.boundElements[location.boundElementIndex];
-      var dashCasedAttributeName = util_1.camelCaseToDashCase(attributeName);
       if (lang_1.isPresent(attributeValue)) {
-        dom_adapter_1.DOM.setAttribute(element, dashCasedAttributeName, lang_1.stringify(attributeValue));
+        dom_adapter_1.DOM.setAttribute(element, attributeName, lang_1.stringify(attributeValue));
       } else {
-        dom_adapter_1.DOM.removeAttribute(element, dashCasedAttributeName);
+        dom_adapter_1.DOM.removeAttribute(element, attributeName);
       }
     };
     DomRenderer.prototype.setElementClass = function(location, className, isAdd) {
@@ -27753,11 +27747,10 @@ System.register("angular2/src/platform/dom/dom_renderer", ["angular2/src/core/di
     DomRenderer.prototype.setElementStyle = function(location, styleName, styleValue) {
       var view = resolveInternalDomView(location.renderView);
       var element = view.boundElements[location.boundElementIndex];
-      var dashCasedStyleName = util_1.camelCaseToDashCase(styleName);
       if (lang_1.isPresent(styleValue)) {
-        dom_adapter_1.DOM.setStyle(element, dashCasedStyleName, lang_1.stringify(styleValue));
+        dom_adapter_1.DOM.setStyle(element, styleName, lang_1.stringify(styleValue));
       } else {
-        dom_adapter_1.DOM.removeStyle(element, dashCasedStyleName);
+        dom_adapter_1.DOM.removeStyle(element, styleName);
       }
     };
     DomRenderer.prototype.invokeElementMethod = function(location, methodName, args) {

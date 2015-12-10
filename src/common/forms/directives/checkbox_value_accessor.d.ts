@@ -5,7 +5,7 @@ import { ControlValueAccessor } from './control_value_accessor';
  *
  *  ### Example
  *  ```
- *  <input type="checkbox" ng-control="rememberLogin">
+ *  <input type="checkbox" ngControl="rememberLogin">
  *  ```
  */
 export declare class CheckboxControlValueAccessor implements ControlValueAccessor {

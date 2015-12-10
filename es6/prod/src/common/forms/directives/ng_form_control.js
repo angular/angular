@@ -36,7 +36,7 @@ const formControlBinding = CONST_EXPR(new Provider(NgControl, { useExisting: for
  *       <h2>NgFormControl Example</h2>
  *       <form>
  *         <p>Element with existing control: <input type="text"
- * [ng-form-control]="loginControl"></p>
+ * [ngFormControl]="loginControl"></p>
  *         <p>Value of existing control: {{loginControl.value}}</p>
  *       </form>
  *     </div>
@@ -48,9 +48,9 @@ const formControlBinding = CONST_EXPR(new Provider(NgControl, { useExisting: for
  * }
  *  ```
  *
- * ###ng-model
+ * ###ngModel
  *
- * We can also use `ng-model` to bind a domain model to the form.
+ * We can also use `ngModel` to bind a domain model to the form.
  *
  * ### Example ([live demo](http://plnkr.co/edit/yHMLuHO7DNgT8XvtjTDH?p=preview))
  *
@@ -58,7 +58,7 @@ const formControlBinding = CONST_EXPR(new Provider(NgControl, { useExisting: for
  * @Component({
  *      selector: "login-comp",
  *      directives: [FORM_DIRECTIVES],
- *      template: "<input type='text' [ng-form-control]='loginControl' [(ng-model)]='login'>"
+ *      template: "<input type='text' [ngFormControl]='loginControl' [(ngModel)]='login'>"
  *      })
  * class LoginComp {
  *  loginControl: Control = new Control('');
@@ -98,7 +98,7 @@ export let NgFormControl = class extends NgControl {
 };
 NgFormControl = __decorate([
     Directive({
-        selector: '[ng-form-control]',
+        selector: '[ngFormControl]',
         bindings: [formControlBinding],
         inputs: ['form: ngFormControl', 'model: ngModel'],
         outputs: ['update: ngModelChange'],

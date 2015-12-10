@@ -38,8 +38,8 @@ NoteIndexCmp = __decorate([
         template: `
     <h1>Your Notes</h1>
     <div>
-      Edit <a [router-link]="['/NoteCmp', {id: 1}]" id="note-1-link">Note 1</a> |
-      Edit <a [router-link]="['/NoteCmp', {id: 2}]" id="note-2-link">Note 2</a>
+      Edit <a [routerLink]="['/NoteCmp', {id: 1}]" id="note-1-link">Note 1</a> |
+      Edit <a [routerLink]="['/NoteCmp', {id: 2}]" id="note-2-link">Note 2</a>
     </div>
   `,
         directives: [ROUTER_DIRECTIVES]

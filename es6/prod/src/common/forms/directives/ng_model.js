@@ -24,8 +24,8 @@ const formControlBinding = CONST_EXPR(new Provider(NgControl, { useExisting: for
  *
  * ### Usage
  *
- * `ng-model` binds an existing domain model to a form control. For a
- * two-way binding, use `[(ng-model)]` to ensure the model updates in
+ * `ngModel` binds an existing domain model to a form control. For a
+ * two-way binding, use `[(ngModel)]` to ensure the model updates in
  * both directions.
  *
  * ### Example ([live demo](http://plnkr.co/edit/R3UX5qDaUqFO2VYR0UzH?p=preview))
@@ -33,7 +33,7 @@ const formControlBinding = CONST_EXPR(new Provider(NgControl, { useExisting: for
  * @Component({
  *      selector: "search-comp",
  *      directives: [FORM_DIRECTIVES],
- *      template: `<input type='text' [(ng-model)]="searchQuery">`
+ *      template: `<input type='text' [(ngModel)]="searchQuery">`
  *      })
  * class SearchComp {
  *  searchQuery: string;
@@ -74,7 +74,7 @@ export let NgModel = class extends NgControl {
 };
 NgModel = __decorate([
     Directive({
-        selector: '[ng-model]:not([ng-control]):not([ng-form-control])',
+        selector: '[ngModel]:not([ngControl]):not([ngFormControl])',
         bindings: [formControlBinding],
         inputs: ['model: ngModel'],
         outputs: ['update: ngModelChange'],

@@ -8,12 +8,12 @@ import { ViewContainerRef, TemplateRef } from 'angular2/core';
  * `NgSwitch` simply inserts nested elements based on which match expression matches the value
  * obtained from the evaluated switch expression. In other words, you define a container element
  * (where you place the directive with a switch expression on the
- * **`[ng-switch]="..."` attribute**), define any inner elements inside of the directive and
- * place a `[ng-switch-when]` attribute per element.
+ * **`[ngSwitch]="..."` attribute**), define any inner elements inside of the directive and
+ * place a `[ngSwitchWhen]` attribute per element.
  *
- * The `ng-switch-when` property is used to inform `NgSwitch` which element to display when the
- * expression is evaluated. If a matching expression is not found via a `ng-switch-when` property
- * then an element with the `ng-switch-default` attribute is displayed.
+ * The `ngSwitchWhen` property is used to inform `NgSwitch` which element to display when the
+ * expression is evaluated. If a matching expression is not found via a `ngSwitchWhen` property
+ * then an element with the `ngSwitchDefault` attribute is displayed.
  *
  * ### Example ([live demo](http://plnkr.co/edit/DQMTII95CbuqWrl3lYAs?p=preview))
  *
@@ -24,22 +24,22 @@ import { ViewContainerRef, TemplateRef } from 'angular2/core';
  *     <p>Value = {{value}}</p>
  *     <button (click)="inc()">Increment</button>
  *
- *     <div [ng-switch]="value">
- *       <p *ng-switch-when="'init'">increment to start</p>
- *       <p *ng-switch-when="0">0, increment again</p>
- *       <p *ng-switch-when="1">1, increment again</p>
- *       <p *ng-switch-when="2">2, stop incrementing</p>
- *       <p *ng-switch-default>&gt; 2, STOP!</p>
+ *     <div [ngSwitch]="value">
+ *       <p *ngSwitchWhen="'init'">increment to start</p>
+ *       <p *ngSwitchWhen="0">0, increment again</p>
+ *       <p *ngSwitchWhen="1">1, increment again</p>
+ *       <p *ngSwitchWhen="2">2, stop incrementing</p>
+ *       <p *ngSwitchDefault>&gt; 2, STOP!</p>
  *     </div>
  *
  *     <!-- alternate syntax -->
  *
- *     <p [ng-switch]="value">
- *       <template ng-switch-when="init">increment to start</template>
- *       <template [ng-switch-when]="0">0, increment again</template>
- *       <template [ng-switch-when]="1">1, increment again</template>
- *       <template [ng-switch-when]="2">2, stop incrementing</template>
- *       <template ng-switch-default>&gt; 2, STOP!</template>
+ *     <p [ngSwitch]="value">
+ *       <template ngSwitchWhen="init">increment to start</template>
+ *       <template [ngSwitchWhen]="0">0, increment again</template>
+ *       <template [ngSwitchWhen]="1">1, increment again</template>
+ *       <template [ngSwitchWhen]="2">2, stop incrementing</template>
+ *       <template ngSwitchDefault>&gt; 2, STOP!</template>
  *     </p>
  *   `,
  *   directives: [NgSwitch, NgSwitchWhen, NgSwitchDefault]
@@ -63,7 +63,7 @@ export declare class NgSwitch {
     ngSwitch: any;
 }
 /**
- * Insert the sub-tree when the `ng-switch-when` expression evaluates to the same value as the
+ * Insert the sub-tree when the `ngSwitchWhen` expression evaluates to the same value as the
  * enclosing switch expression.
  *
  * If multiple match expression match the switch expression value, all of them are displayed.

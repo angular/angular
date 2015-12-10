@@ -12,14 +12,14 @@ import { isPresent, isBlank } from 'angular2/src/facade/lang';
 /**
  * The `NgStyle` directive changes styles based on a result of expression evaluation.
  *
- * An expression assigned to the `ng-style` property must evaluate to an object and the
+ * An expression assigned to the `ngStyle` property must evaluate to an object and the
  * corresponding element styles are updated based on changes to this object. Style names to update
  * are taken from the object's keys, and values - from the corresponding object's values.
  *
  * ### Syntax
  *
- * - `<div [ng-style]="{'font-style': style}"></div>`
- * - `<div [ng-style]="styleExp"></div>` - here the `styleExp` must evaluate to an object
+ * - `<div [ngStyle]="{'font-style': style}"></div>`
+ * - `<div [ngStyle]="styleExp"></div>` - here the `styleExp` must evaluate to an object
  *
  * ### Example ([live demo](http://plnkr.co/edit/YamGS6GkUh9GqWNQhCyM?p=preview)):
  *
@@ -27,9 +27,9 @@ import { isPresent, isBlank } from 'angular2/src/facade/lang';
  * import {Component, NgStyle} from 'angular2/angular2';
  *
  * @Component({
- *  selector: 'ng-style-example',
+ *  selector: 'ngStyle-example',
  *  template: `
- *    <h1 [ng-style]="{'font-style': style, 'font-size': size, 'font-weight': weight}">
+ *    <h1 [ngStyle]="{'font-style': style, 'font-size': size, 'font-weight': weight}">
  *      Change style of this text!
  *    </h1>
  *
@@ -89,6 +89,6 @@ export let NgStyle = class {
     }
 };
 NgStyle = __decorate([
-    Directive({ selector: '[ng-style]', inputs: ['rawStyle: ng-style'] }), 
+    Directive({ selector: '[ngStyle]', inputs: ['rawStyle: ngStyle'] }), 
     __metadata('design:paramtypes', [KeyValueDiffers, ElementRef, Renderer])
 ], NgStyle);

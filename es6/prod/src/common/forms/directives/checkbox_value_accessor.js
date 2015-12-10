@@ -16,7 +16,7 @@ const CHECKBOX_VALUE_ACCESSOR = CONST_EXPR(new Provider(NG_VALUE_ACCESSOR, { use
  *
  *  ### Example
  *  ```
- *  <input type="checkbox" ng-control="rememberLogin">
+ *  <input type="checkbox" ngControl="rememberLogin">
  *  ```
  */
 export let CheckboxControlValueAccessor = class {
@@ -34,7 +34,7 @@ export let CheckboxControlValueAccessor = class {
 };
 CheckboxControlValueAccessor = __decorate([
     Directive({
-        selector: 'input[type=checkbox][ng-control],input[type=checkbox][ng-form-control],input[type=checkbox][ng-model]',
+        selector: 'input[type=checkbox][ngControl],input[type=checkbox][ngFormControl],input[type=checkbox][ngModel]',
         host: { '(change)': 'onChange($event.target.checked)', '(blur)': 'onTouched()' },
         bindings: [CHECKBOX_VALUE_ACCESSOR]
     }), 

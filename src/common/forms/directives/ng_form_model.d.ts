@@ -19,9 +19,9 @@ import { Control, ControlGroup } from '../model';
  *   template: `
  *     <div>
  *       <h2>NgFormModel Example</h2>
- *       <form [ng-form-model]="loginForm">
- *         <p>Login: <input type="text" ng-control="login"></p>
- *         <p>Password: <input type="password" ng-control="password"></p>
+ *       <form [ngFormModel]="loginForm">
+ *         <p>Login: <input type="text" ngControl="login"></p>
+ *         <p>Password: <input type="password" ngControl="password"></p>
  *       </form>
  *       <p>Value:</p>
  *       <pre>{{value}}</pre>
@@ -45,17 +45,17 @@ import { Control, ControlGroup } from '../model';
  * }
  *  ```
  *
- * We can also use ng-model to bind a domain model to the form.
+ * We can also use ngModel to bind a domain model to the form.
  *
  *  ```typescript
  * @Component({
  *      selector: "login-comp",
  *      directives: [FORM_DIRECTIVES],
  *      template: `
- *        <form [ng-form-model]='loginForm'>
- *          Login <input type='text' ng-control='login' [(ng-model)]='credentials.login'>
- *          Password <input type='password' ng-control='password'
- *                          [(ng-model)]='credentials.password'>
+ *        <form [ngFormModel]='loginForm'>
+ *          Login <input type='text' ngControl='login' [(ngModel)]='credentials.login'>
+ *          Password <input type='password' ngControl='password'
+ *                          [(ngModel)]='credentials.password'>
  *          <button (click)="onLogin()">Login</button>
  *        </form>`
  *      })

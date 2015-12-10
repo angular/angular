@@ -12,13 +12,13 @@ import { isBlank } from 'angular2/src/facade/lang';
 /**
  * Removes or recreates a portion of the DOM tree based on an {expression}.
  *
- * If the expression assigned to `ng-if` evaluates to a false value then the element
+ * If the expression assigned to `ngIf` evaluates to a false value then the element
  * is removed from the DOM, otherwise a clone of the element is reinserted into the DOM.
  *
  * ### Example ([live demo](http://plnkr.co/edit/fe0kgemFBtmQOY31b4tw?p=preview)):
  *
  * ```
- * <div *ng-if="errorCount > 0" class="error">
+ * <div *ngIf="errorCount > 0" class="error">
  *   <!-- Error message displayed when the errorCount property on the current context is greater
  * than 0. -->
  *   {{errorCount}} errors detected
@@ -27,9 +27,9 @@ import { isBlank } from 'angular2/src/facade/lang';
  *
  * ### Syntax
  *
- * - `<div *ng-if="condition">...</div>`
- * - `<div template="ng-if condition">...</div>`
- * - `<template [ng-if]="condition"><div>...</div></template>`
+ * - `<div *ngIf="condition">...</div>`
+ * - `<div template="ngIf condition">...</div>`
+ * - `<template [ngIf]="condition"><div>...</div></template>`
  */
 export let NgIf = class {
     constructor(_viewContainer, _templateRef) {
@@ -49,6 +49,6 @@ export let NgIf = class {
     }
 };
 NgIf = __decorate([
-    Directive({ selector: '[ng-if]', inputs: ['ngIf'] }), 
+    Directive({ selector: '[ngIf]', inputs: ['ngIf'] }), 
     __metadata('design:paramtypes', [ViewContainerRef, TemplateRef])
 ], NgIf);

@@ -29,7 +29,7 @@ export interface Validator {
  * ### Example
  *
  * ```
- * <input ng-control="fullName" required>
+ * <input ngControl="fullName" required>
  * ```
  */
 export declare class RequiredValidator {

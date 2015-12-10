@@ -24,7 +24,7 @@ import { DoCheck, OnDestroy, ElementRef, IterableDiffers, KeyValueDiffers, Rende
  *   selector: 'toggle-button',
  *   inputs: ['isDisabled'],
  *   template: `
- *      <div class="button" [ng-class]="{active: isOn, disabled: isDisabled}"
+ *      <div class="button" [ngClass]="{active: isOn, disabled: isDisabled}"
  *          (click)="toggle(!isOn)">
  *          Click me!
  *      </div>`,

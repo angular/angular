@@ -39,9 +39,9 @@ import { DoCheck, ChangeDetectorRef, IterableDiffers, ViewContainerRef, Template
  *
  * # Syntax
  *
- * - `<li *ng-for="#item of items; #i = index">...</li>`
- * - `<li template="ng-for #item of items; #i = index">...</li>`
- * - `<template ng-for #item [ng-for-of]="items" #i="index"><li>...</li></template>`
+ * - `<li *ngFor="#item of items; #i = index">...</li>`
+ * - `<li template="ngFor #item of items; #i = index">...</li>`
+ * - `<template ngFor #item [ngForOf]="items" #i="index"><li>...</li></template>`
  *
  * ### Example
  *

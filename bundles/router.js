@@ -805,7 +805,7 @@ System.register("angular2/src/router/router_link", ["angular2/core", "angular2/s
       return true;
     };
     RouterLink = __decorate([core_1.Directive({
-      selector: '[router-link]',
+      selector: '[routerLink]',
       inputs: ['routeParams: routerLink', 'target: target'],
       host: {
         '(click)': 'onClick()',

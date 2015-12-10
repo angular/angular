@@ -37,8 +37,8 @@ AppCmp = __decorate([
         selector: 'example-app',
         template: `
     <h1>Say hi to...</h1>
-    <a [router-link]="['/HomeCmp', {name: 'naomi'}]" id="naomi-link">Naomi</a> |
-    <a [router-link]="['/HomeCmp', {name: 'brad'}]" id="brad-link">Brad</a>
+    <a [routerLink]="['/HomeCmp', {name: 'naomi'}]" id="naomi-link">Naomi</a> |
+    <a [routerLink]="['/HomeCmp', {name: 'brad'}]" id="brad-link">Brad</a>
     <router-outlet></router-outlet>
   `,
         directives: [ROUTER_DIRECTIVES]

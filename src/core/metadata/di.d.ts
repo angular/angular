@@ -44,7 +44,7 @@ export declare class AttributeMetadata extends DependencyMetadata {
  * ```html
  * <tabs>
  *   <pane title="Overview">...</pane>
- *   <pane *ng-for="#o of objects" [title]="o.title">{{o.text}}</pane>
+ *   <pane *ngFor="#o of objects" [title]="o.title">{{o.text}}</pane>
  * </tabs>
  * ```
  *
@@ -63,7 +63,7 @@ export declare class AttributeMetadata extends DependencyMetadata {
  *  selector: 'tabs',
  *  template: `
  *    <ul>
- *      <li *ng-for="#pane of panes">{{pane.title}}</li>
+ *      <li *ngFor="#pane of panes">{{pane.title}}</li>
  *    </ul>
  *    <content></content>
  *  `

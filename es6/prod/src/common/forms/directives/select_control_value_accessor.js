@@ -21,8 +21,8 @@ const SELECT_VALUE_ACCESSOR = CONST_EXPR(new Provider(NG_VALUE_ACCESSOR, { useEx
  * ### Example
  *
  * ```
- * <select ng-control="city">
- *   <option *ng-for="#c of cities" [value]="c"></option>
+ * <select ngControl="city">
+ *   <option *ngFor="#c of cities" [value]="c"></option>
  * </select>
  * ```
  */
@@ -55,7 +55,7 @@ export let SelectControlValueAccessor = class {
 };
 SelectControlValueAccessor = __decorate([
     Directive({
-        selector: 'select[ng-control],select[ng-form-control],select[ng-model]',
+        selector: 'select[ngControl],select[ngFormControl],select[ngModel]',
         host: {
             '(change)': 'onChange($event.target.value)',
             '(input)': 'onChange($event.target.value)',

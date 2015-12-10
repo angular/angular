@@ -6,7 +6,7 @@ import { ControlValueAccessor } from './control_value_accessor';
  *
  *  ### Example
  *  ```
- *  <input type="number" [(ng-model)]="age">
+ *  <input type="number" [(ngModel)]="age">
  *  ```
  */
 export declare class NumberValueAccessor implements ControlValueAccessor {

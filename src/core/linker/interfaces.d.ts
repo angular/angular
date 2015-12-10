@@ -94,7 +94,7 @@ export interface OnChanges {
  *     <button (click)="hasChild = !hasChild">
  *       {{hasChild ? 'Destroy' : 'Create'}} MyComponent
  *     </button>
- *     <my-cmp *ng-if="hasChild"></my-cmp>`,
+ *     <my-cmp *ngIf="hasChild"></my-cmp>`,
  *   directives: [MyComponent, NgIf]
  * })
  * export class App {
@@ -136,7 +136,7 @@ export interface OnInit {
  *   template: `
  *     <p>Changes:</p>
  *     <ul>
- *       <li *ng-for="#line of logs">{{line}}</li>
+ *       <li *ngFor="#line of logs">{{line}}</li>
  *     </ul>`,
  *   directives: [NgFor]
  * })
@@ -204,7 +204,7 @@ export interface DoCheck {
  *     <button (click)="hasChild = !hasChild">
  *       {{hasChild ? 'Destroy' : 'Create'}} MyComponent
  *     </button>
- *     <my-cmp *ng-if="hasChild"></my-cmp>`,
+ *     <my-cmp *ngIf="hasChild"></my-cmp>`,
  *   directives: [MyComponent, NgIf]
  * })
  * export class App {
@@ -356,7 +356,7 @@ export interface AfterContentInit {
  *   template: `
  *     <parent-cmp>
  *       <button (click)="hasContent = !hasContent">Toggle content child</button>
- *       <child-cmp *ng-if="hasContent" where="content"></child-cmp>
+ *       <child-cmp *ngIf="hasContent" where="content"></child-cmp>
  *     </parent-cmp>`,
  *   directives: [NgIf, ParentComponent, ChildComponent]
  * })
@@ -433,7 +433,7 @@ export interface AfterViewInit {
  *   selector: 'parent-cmp',
  *   template: `
  *     <button (click)="showView = !showView">Toggle view child</button>
- *     <child-cmp *ng-if="showView" where="view"></child-cmp>`,
+ *     <child-cmp *ngIf="showView" where="view"></child-cmp>`,
  *   directives: [NgIf, ChildComponent]
  * })
  * class ParentComponent implements AfterViewChecked {

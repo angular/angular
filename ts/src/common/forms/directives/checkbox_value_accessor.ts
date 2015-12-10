@@ -11,12 +11,12 @@ const CHECKBOX_VALUE_ACCESSOR = CONST_EXPR(new Provider(
  *
  *  ### Example
  *  ```
- *  <input type="checkbox" ng-control="rememberLogin">
+ *  <input type="checkbox" ngControl="rememberLogin">
  *  ```
  */
 @Directive({
   selector:
-      'input[type=checkbox][ng-control],input[type=checkbox][ng-form-control],input[type=checkbox][ng-model]',
+      'input[type=checkbox][ngControl],input[type=checkbox][ngFormControl],input[type=checkbox][ngModel]',
   host: {'(change)': 'onChange($event.target.checked)', '(blur)': 'onTouched()'},
   bindings: [CHECKBOX_VALUE_ACCESSOR]
 })
