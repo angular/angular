@@ -24175,8 +24175,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.classesToRemove = [];
 	        /** classes to be added for the duration of the animation */
 	        this.animationClasses = [];
-	        /** styles to be applied for the duration of the animation */
-	        this.animationStyles = {};
 	    }
 	    return CssAnimationOptions;
 	})();
@@ -24211,7 +24209,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        /** flag used to track whether or not the animation has finished */
 	        this.completed = false;
 	        this._stringPrefix = '';
-	        this._temporaryStyles = {};
 	        this.startTime = lang_1.DateWrapper.toMillis(lang_1.DateWrapper.now());
 	        this._stringPrefix = dom_adapter_1.DOM.getAnimationPrefix();
 	        this.setup();
@@ -24235,26 +24232,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	     * Sets up the initial styles before the animation is started
 	     */
 	    Animation.prototype.setup = function () {
-	        var _this = this;
 	        if (this.data.fromStyles != null)
 	            this.applyStyles(this.data.fromStyles);
-	        if (this.data.duration != null) {
-	            this._temporaryStyles['transitionDuration'] = this._readStyle('transitionDuration');
+	        if (this.data.duration != null)
 	            this.applyStyles({ 'transitionDuration': this.data.duration.toString() + 'ms' });
-	        }
-	        if (this.data.delay != null) {
-	            this._temporaryStyles['transitionDelay'] = this._readStyle('transitionDelay');
+	        if (this.data.delay != null)
 	            this.applyStyles({ 'transitionDelay': this.data.delay.toString() + 'ms' });
-	        }
-	        if (!collection_1.StringMapWrapper.isEmpty(this.data.animationStyles)) {
-	            // it's important that we setup a list of the styles and their
-	            // initial inline style values prior to applying the animation
-	            // styles such that we can restore the values after the animation
-	            // has been completed.
-	            collection_1.StringMapWrapper.keys(this.data.animationStyles)
-	                .forEach(function (prop) { _this._temporaryStyles[prop] = _this._readStyle(prop); });
-	            this.applyStyles(this.data.animationStyles);
-	        }
 	    };
 	    /**
 	     * After the initial setup has occurred, this method adds the animation styles
@@ -24278,8 +24261,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Animation.prototype.applyStyles = function (styles) {
 	        var _this = this;
 	        collection_1.StringMapWrapper.forEach(styles, function (value, key) {
-	            var prop = _this._formatStyleProp(key);
-	            dom_adapter_1.DOM.setStyle(_this.element, prop, value.toString());
+	            var dashCaseKey = util_1.camelCaseToDashCase(key);
+	            if (lang_1.isPresent(dom_adapter_1.DOM.getStyle(_this.element, dashCaseKey))) {
+	                dom_adapter_1.DOM.setStyle(_this.element, dashCaseKey, value.toString());
+	            }
+	            else {
+	                dom_adapter_1.DOM.setStyle(_this.element, _this._stringPrefix + dashCaseKey, value.toString());
+	            }
 	        });
 	    };
 	    /**
@@ -24297,25 +24285,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Animation.prototype.removeClasses = function (classes) {
 	        for (var i = 0, len = classes.length; i < len; i++)
 	            dom_adapter_1.DOM.removeClass(this.element, classes[i]);
-	    };
-	    Animation.prototype._readStyle = function (prop) {
-	        return dom_adapter_1.DOM.getStyle(this.element, this._formatStyleProp(prop));
-	    };
-	    Animation.prototype._formatStyleProp = function (prop) {
-	        prop = util_1.camelCaseToDashCase(prop);
-	        return prop.indexOf('animation') >= 0 ? this._stringPrefix + prop : prop;
-	    };
-	    Animation.prototype._removeAndRestoreStyles = function (styles) {
-	        var _this = this;
-	        collection_1.StringMapWrapper.forEach(styles, function (value, prop) {
-	            prop = _this._formatStyleProp(prop);
-	            if (value.length > 0) {
-	                dom_adapter_1.DOM.setStyle(_this.element, prop, value);
-	            }
-	            else {
-	                dom_adapter_1.DOM.removeStyle(_this.element, prop);
-	            }
-	        });
 	    };
 	    /**
 	     * Adds events to track when animations have finished
@@ -24342,8 +24311,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    Animation.prototype.handleAnimationCompleted = function () {
 	        this.removeClasses(this.data.animationClasses);
-	        this._removeAndRestoreStyles(this._temporaryStyles);
-	        this._temporaryStyles = {};
 	        this.callbacks.forEach(function (callback) { return callback(); });
 	        this.callbacks = [];
 	        this.eventClearFunctions.forEach(function (fn) { return fn(); });

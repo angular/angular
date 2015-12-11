@@ -17,7 +17,6 @@ export declare class Animation {
     /** flag used to track whether or not the animation has finished */
     completed: boolean;
     private _stringPrefix;
-    private _temporaryStyles;
     /** total amount of time that the animation should take including delay */
     totalTime: number;
     /**
@@ -53,9 +52,6 @@ export declare class Animation {
      * @param classes
      */
     removeClasses(classes: string[]): void;
-    private _readStyle(prop);
-    private _formatStyleProp(prop);
-    private _removeAndRestoreStyles(styles);
     /**
      * Adds events to track when animations have finished
      */
