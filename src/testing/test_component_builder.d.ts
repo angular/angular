@@ -1,9 +1,6 @@
-import { Injector } from 'angular2/src/core/di';
+import { ComponentRef, DebugElement, Injector, ViewMetadata } from 'angular2/core';
 import { Type } from 'angular2/src/facade/lang';
 import { Promise } from 'angular2/src/facade/async';
-import { ViewMetadata } from '../core/metadata';
-import { ComponentRef } from 'angular2/src/core/linker/dynamic_component_loader';
-import { DebugElement } from 'angular2/src/core/debug/debug_element';
 /**
  * Fixture for debugging and testing a component.
  */
