@@ -12,7 +12,7 @@ import {
 } from 'angular2/testing_internal';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
-import {Component, Class, Inject, EventEmitter, ApplicationRef, provide} from 'angular2/angular2';
+import {Component, Class, Inject, EventEmitter, ApplicationRef, provide} from 'angular2/core';
 import {UpgradeAdapter} from 'angular2/upgrade';
 import * as angular from 'angular2/src/upgrade/angular_js';
 
