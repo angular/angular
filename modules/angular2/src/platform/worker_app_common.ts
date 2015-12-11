@@ -1,7 +1,6 @@
 import {XHR} from 'angular2/src/compiler/xhr';
 import {WebWorkerXHRImpl} from 'angular2/src/web_workers/worker/xhr_impl';
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {AppRootUrl} from 'angular2/src/compiler/app_root_url';
 import {WebWorkerRenderer} from 'angular2/src/web_workers/worker/renderer';
 import {print, Type, CONST_EXPR, isPresent} from 'angular2/src/facade/lang';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
@@ -86,7 +85,6 @@ export function genericWorkerAppProviders(bus: MessageBus,
   subscription = ObservableWrapper.subscribe(emitter, (initData: {[key: string]: any}) => {
     var bindings = ListWrapper.concat(WORKER_APP_COMMON_PROVIDERS, [
       new Provider(MessageBus, {useValue: bus}),
-      new Provider(AppRootUrl, {useValue: new AppRootUrl(initData['rootUrl'])}),
     ]);
     bootstrapProcess.resolve(bindings);
     ObservableWrapper.dispose(subscription);
