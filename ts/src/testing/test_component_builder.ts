@@ -1,29 +1,26 @@
-import {
-  ComponentRef,
-  DebugElement,
-  DirectiveResolver,
-  DynamicComponentLoader,
-  Injector,
-  Injectable,
-  ViewMetadata,
-  ViewRef,
-  ViewResolver,
-  provide
-} from 'angular2/core';
+import {Injector, provide, Injectable} from 'angular2/src/core/di';
 
 import {Type, isPresent, isBlank} from 'angular2/src/facade/lang';
 import {Promise} from 'angular2/src/facade/async';
 import {ListWrapper, MapWrapper} from 'angular2/src/facade/collection';
 
+import {ViewMetadata} from '../core/metadata';
+
+import {DirectiveResolver} from 'angular2/src/core/linker/directive_resolver';
+import {ViewResolver} from 'angular2/src/core/linker/view_resolver';
 import {AppView} from 'angular2/src/core/linker/view';
-import {internalView} from 'angular2/src/core/linker/view_ref';
+import {internalView, ViewRef} from 'angular2/src/core/linker/view_ref';
+import {
+  DynamicComponentLoader,
+  ComponentRef
+} from 'angular2/src/core/linker/dynamic_component_loader';
 
 import {el} from './utils';
 
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
 
-import {DebugElement_} from 'angular2/src/core/debug/debug_element';
+import {DebugElement, DebugElement_} from 'angular2/src/core/debug/debug_element';
 
 
 /**

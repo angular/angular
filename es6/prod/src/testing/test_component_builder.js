@@ -7,10 +7,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { DirectiveResolver, DynamicComponentLoader, Injector, Injectable, ViewResolver } from 'angular2/core';
+import { Injector, Injectable } from 'angular2/src/core/di';
 import { isPresent } from 'angular2/src/facade/lang';
 import { MapWrapper } from 'angular2/src/facade/collection';
+import { DirectiveResolver } from 'angular2/src/core/linker/directive_resolver';
+import { ViewResolver } from 'angular2/src/core/linker/view_resolver';
 import { internalView } from 'angular2/src/core/linker/view_ref';
+import { DynamicComponentLoader } from 'angular2/src/core/linker/dynamic_component_loader';
 import { el } from './utils';
 import { DOCUMENT } from 'angular2/src/platform/dom/dom_tokens';
 import { DOM } from 'angular2/src/platform/dom/dom_adapter';
