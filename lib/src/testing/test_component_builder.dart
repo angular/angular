@@ -1,27 +1,24 @@
 library angular2.src.testing.test_component_builder;
 
-import "package:angular2/core.dart"
-    show
-        ComponentRef,
-        DebugElement,
-        DirectiveResolver,
-        DynamicComponentLoader,
-        Injector,
-        Injectable,
-        ViewMetadata,
-        ViewRef,
-        ViewResolver,
-        provide;
+import "package:angular2/src/core/di.dart" show Injector, provide, Injectable;
 import "package:angular2/src/facade/lang.dart" show Type, isPresent, isBlank;
 import "package:angular2/src/facade/async.dart" show Future;
 import "package:angular2/src/facade/collection.dart"
     show ListWrapper, MapWrapper;
+import "../core/metadata.dart" show ViewMetadata;
+import "package:angular2/src/core/linker/directive_resolver.dart"
+    show DirectiveResolver;
+import "package:angular2/src/core/linker/view_resolver.dart" show ViewResolver;
 import "package:angular2/src/core/linker/view.dart" show AppView;
-import "package:angular2/src/core/linker/view_ref.dart" show internalView;
+import "package:angular2/src/core/linker/view_ref.dart"
+    show internalView, ViewRef;
+import "package:angular2/src/core/linker/dynamic_component_loader.dart"
+    show DynamicComponentLoader, ComponentRef;
 import "utils.dart" show el;
 import "package:angular2/src/platform/dom/dom_tokens.dart" show DOCUMENT;
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
-import "package:angular2/src/core/debug/debug_element.dart" show DebugElement_;
+import "package:angular2/src/core/debug/debug_element.dart"
+    show DebugElement, DebugElement_;
 
 /**
  * Fixture for debugging and testing a component.
