@@ -18,7 +18,7 @@ const IGNORE = const {
 };
 
 const LIB_MAP = const {
-  'simple_library': 'simple_library',
+  'simple_library': 'angular2.test.symbol_inspector.simple_library',
   'ngCommon': 'angular2.common',
   'ngCompiler': 'angular2.compiler',
   'ngCore': 'angular2.core',
@@ -26,9 +26,10 @@ const LIB_MAP = const {
   'ngPlatformBrowser': 'angular2.platform.browser'
 };
 
+// Have this list here to trick dart to force import.
+var libs = [simple_library.A, Component];
+
 List<String> getSymbolsFromLibrary(String name) {
-  // Have this list here to trick dart to force import.
-  var libs = [simple_library.A, Component];
   var libraryName = LIB_MAP[name];
   if (libs.isEmpty) throw "No libriries loaded.";
   if (libraryName == null) throw "Don't know how to load '$name' library.";
