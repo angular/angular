@@ -35,7 +35,7 @@
     "es6-shim": "^0.33.3",
     "reflect-metadata": "0.1.2",
     "rxjs": "5.0.0-alpha.14",
-    "zone.js": "0.5.8"
+    "zone.js": "0.5.10"
   },
   "devDependencies": {
     "angular": "^1.4.7",
