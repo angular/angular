@@ -253,7 +253,7 @@ export interface ComponentFactory {
  * ### Example as TypeScript Decorator
  *
  * ```
- * import {Component, View} from "angular2/angular2";
+ * import {Component, View} from "angular2/core";
  *
  * @Component({...})
  * @View({...})
@@ -356,7 +356,7 @@ export interface AttributeFactory {
  * ### Example as TypeScript Decorator
  *
  * ```
- * import {Query, QueryList, Component} from "angular2/angular2";
+ * import {Query, QueryList, Component} from "angular2/core";
  *
  * @Component({...})
  * class MyComponent {

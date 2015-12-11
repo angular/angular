@@ -17,7 +17,7 @@ import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from './ng_switch';
  * Instead of writing:
  *
  * ```typescript
- * import {NgClass, NgIf, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/angular2';
+ * import {NgClass, NgIf, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/common';
  * import {OtherDirective} from './myDirectives';
  *
  * @Component({
@@ -32,7 +32,7 @@ import {NgSwitch, NgSwitchWhen, NgSwitchDefault} from './ng_switch';
  * one could import all the core directives at once:
  *
  * ```typescript
- * import {CORE_DIRECTIVES} from 'angular2/angular2';
+ * import {CORE_DIRECTIVES} from 'angular2/common';
  * import {OtherDirective} from './myDirectives';
  *
  * @Component({

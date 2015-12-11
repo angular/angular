@@ -2,8 +2,8 @@
 Class decorators
 @cheatsheetIndex 4
 @description
-{@target js ts}`import {Directive, ...} from 'angular2/angular2';`{@endtarget}
-{@target dart}`import 'package:angular2/angular2.dart';`{@endtarget}
+{@target js ts}`import {Directive, ...} from 'angular2/core';`{@endtarget}
+{@target dart}`import 'package:angular2/core.dart';`{@endtarget}
 
 @cheatsheetItem
 syntax(js ts):

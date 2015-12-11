@@ -12,7 +12,8 @@ import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
  * ### Example
  *
  * ```
- * import {bootstrap, Component} from 'angular2/angular2';
+ * import {Component} from 'angular2/core';
+ * import {bootstrap} from 'angular2/platform/browser';
  * import {Router, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
@@ -46,7 +47,8 @@ export class RouteParams {
  * ### Example
  *
  * ```
- * import {bootstrap, Component, View} from 'angular2/angular2';
+ * import {Component, View} from 'angular2/core';
+ * import {bootstrap} from 'angular2/platform/browser';
  * import {Router, ROUTER_DIRECTIVES, routerBindings, RouteConfig} from 'angular2/router';
  *
  * @Component({...})
@@ -86,7 +88,8 @@ export var BLANK_ROUTE_DATA = new RouteData();
  * ### Example
  *
  * ```
- * import {bootstrap, Component} from 'angular2/angular2';
+ * import {Component} from 'angular2/core';
+ * import {bootstrap} from 'angular2/platform/browser';
  * import {Router, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})
