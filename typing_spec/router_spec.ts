@@ -1,4 +1,5 @@
-import {Component, bootstrap, View} from 'angular2/angular2';
+import {Component, View} from 'angular2/core';
+import {bootstrap} from 'angular2/platform/browser';
 import {RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS} from 'angular2/router';
 
 @Component({
