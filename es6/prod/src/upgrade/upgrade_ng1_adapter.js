@@ -96,7 +96,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
         }
     }
     compileTemplate(compile, templateCache, httpBackend) {
-        if (this.directive.template) {
+        if (this.directive.template !== undefined) {
             this.linkFn = compileHtml(this.directive.template);
         }
         else if (this.directive.templateUrl) {

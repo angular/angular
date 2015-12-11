@@ -37328,7 +37328,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    UpgradeNg1ComponentAdapterBuilder.prototype.compileTemplate = function (compile, templateCache, httpBackend) {
 	        var _this = this;
-	        if (this.directive.template) {
+	        if (this.directive.template !== undefined) {
 	            this.linkFn = compileHtml(this.directive.template);
 	        }
 	        else if (this.directive.templateUrl) {
