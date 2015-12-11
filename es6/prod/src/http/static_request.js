@@ -16,7 +16,7 @@ import { isPresent, StringWrapper } from 'angular2/src/facade/lang';
  * where it may be useful to generate a `Request` with arbitrary headers and search params.
  *
  * ```typescript
- * import {Injectable, Injector} from 'angular2/angular2';
+ * import {Injectable, Injector} from 'angular2/core';
  * import {HTTP_PROVIDERS, Http, Request, RequestMethod} from 'angular2/http';
  *
  * @Injectable()

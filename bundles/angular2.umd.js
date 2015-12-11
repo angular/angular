@@ -13721,7 +13721,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * ### Example ([live demo](http://plnkr.co/edit/lY9m8HLy7z06vDoUaSN2?p=preview))
 	 * ```
-	 * import {Component, View, NgIf, NgZone} from 'angular2/angular2';
+	 * import {Component, View, NgZone} from 'angular2/core';
+	 * import {NgIf} from 'angular2/common';
 	 *
 	 * @Component({
 	 *   selector: 'ng-zone-demo'.
@@ -18118,7 +18119,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example
 	 *
 	 * ```typescript
-	 * import {PLATFORM_DIRECTIVES} from 'angular2/angular2';
+	 * import {PLATFORM_DIRECTIVES} from 'angular2/core';
 	 * import {OtherDirective} from './myDirectives';
 	 *
 	 * @Component({
@@ -18143,7 +18144,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example
 	 *
 	 * ```typescript
-	 * import {PLATFORM_PIPES} from 'angular2/angular2';
+	 * import {PLATFORM_PIPES} from 'angular2/core';
 	 * import {OtherPipe} from './myPipe';
 	 *
 	 * @Component({
@@ -19681,7 +19682,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example ([live demo](http://plnkr.co/edit/a4YdtmWywhJ33uqfpPPn?p=preview)):
 	 *
 	 * ```
-	 * import {Component, NgClass} from 'angular2/angular2';
+	 * import {Component} from 'angular2/core';
+	 * import {NgClass} from 'angular2/common';
 	 *
 	 * @Component({
 	 *   selector: 'toggle-button',
@@ -20106,7 +20108,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example ([live demo](http://plnkr.co/edit/YamGS6GkUh9GqWNQhCyM?p=preview)):
 	 *
 	 * ```
-	 * import {Component, NgStyle} from 'angular2/angular2';
+	 * import {Component} from 'angular2/core';
+	 * import {NgStyle} from 'angular2/common';
 	 *
 	 * @Component({
 	 *  selector: 'ngStyle-example',
@@ -20441,7 +20444,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Instead of writing:
 	 *
 	 * ```typescript
-	 * import {NgClass, NgIf, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/angular2';
+	 * import {NgClass, NgIf, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/common';
 	 * import {OtherDirective} from './myDirectives';
 	 *
 	 * @Component({
@@ -20456,7 +20459,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * one could import all the core directives at once:
 	 *
 	 * ```typescript
-	 * import {CORE_DIRECTIVES} from 'angular2/angular2';
+	 * import {CORE_DIRECTIVES} from 'angular2/common';
 	 * import {OtherDirective} from './myDirectives';
 	 *
 	 * @Component({
@@ -23045,7 +23048,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * ```typescript
 	 * import {NgClass, NgIf, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault, NgModel, NgForm} from
-	 * 'angular2/angular2';
+	 * 'angular2/common';
 	 * import {OtherDirective} from './myDirectives';
 	 *
 	 * @Component({
@@ -23061,7 +23064,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * one could import all the common directives at once:
 	 *
 	 * ```typescript
-	 * import {COMMON_DIRECTIVES} from 'angular2/angular2';
+	 * import {COMMON_DIRECTIVES} from 'angular2/common';
 	 * import {OtherDirective} from './myDirectives';
 	 *
 	 * @Component({
@@ -31159,7 +31162,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example ([live demo](http://plnkr.co/edit/snj7Nv?p=preview))
 	 *
 	 * ```
-	 * import {bootstrap, Component, NgFor, View} from 'angular2/angular2';
+	 * import {Component} from 'angular2/core';
+	 * import {bootstrap} from 'angular2/platform/browser';
+	 * import {NgFor} from 'angular2/common';
 	 * import {HTTP_PROVIDERS, Http} from 'angular2/http';
 	 *
 	 * @Component({
@@ -31213,7 +31218,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example ([live demo](http://plnkr.co/edit/aCMEXi?p=preview))
 	 *
 	 * ```
-	 * import {provide, bootstrap} from 'angular2/angular2';
+	 * import {provide} from 'angular2/core';
+	 * import {bootstrap} from 'angular2/platform/browser';
 	 * import {HTTP_PROVIDERS, BaseRequestOptions, RequestOptions} from 'angular2/http';
 	 *
 	 * class MyOptions extends BaseRequestOptions {
@@ -31230,7 +31236,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example ([live demo](http://plnkr.co/edit/7LWALD?p=preview))
 	 *
 	 * ```
-	 * import {provide, Injector} from 'angular2/angular2';
+	 * import {provide} from 'angular2/core';
+	 * import {bootstrap} from 'angular2/platform/browser';
 	 * import {HTTP_PROVIDERS, Http, Response, XHRBackend} from 'angular2/http';
 	 * import {MockBackend} from 'angular2/http/testing';
 	 *
@@ -31287,7 +31294,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example ([live demo](http://plnkr.co/edit/vmeN4F?p=preview))
 	 *
 	 * ```
-	 * import {Component, NgFor, View} from 'angular2/angular2';
+	 * import {Component} from 'angular2/core';
+	 * import {NgFor} from 'angular2/common';
 	 * import {JSONP_PROVIDERS, Jsonp} from 'angular2/http';
 	 *
 	 * @Component({
@@ -31334,7 +31342,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example ([live demo](http://plnkr.co/edit/TFug7x?p=preview))
 	 *
 	 * ```
-	 * import {provide, bootstrap} from 'angular2/angular2';
+	 * import {provide} from 'angular2/core';
+	 * import {bootstrap} from 'angular2/platform/browser';
 	 * import {JSONP_PROVIDERS, BaseRequestOptions, RequestOptions} from 'angular2/http';
 	 *
 	 * class MyOptions extends BaseRequestOptions {
@@ -31351,7 +31360,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example ([live demo](http://plnkr.co/edit/HDqZWL?p=preview))
 	 *
 	 * ```
-	 * import {provide, Injector} from 'angular2/angular2';
+	 * import {provide, Injector} from 'angular2/core';
 	 * import {JSONP_PROVIDERS, Jsonp, Response, JSONPBackend} from 'angular2/http';
 	 * import {MockBackend} from 'angular2/http/testing';
 	 *
@@ -31657,7 +31666,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * where it may be useful to generate a `Request` with arbitrary headers and search params.
 	 *
 	 * ```typescript
-	 * import {Injectable, Injector} from 'angular2/angular2';
+	 * import {Injectable, Injector} from 'angular2/core';
 	 * import {HTTP_PROVIDERS, Http, Request, RequestMethod} from 'angular2/http';
 	 *
 	 * @Injectable()
@@ -32034,7 +32043,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example ([live demo](http://plnkr.co/edit/LEKVSx?p=preview))
 	 *
 	 * ```typescript
-	 * import {provide, bootstrap} from 'angular2/angular2';
+	 * import {provide} from 'angular2/core';
+	 * import {bootstrap} from 'angular2/platform/browser';
 	 * import {HTTP_PROVIDERS, Http, BaseRequestOptions, RequestOptions} from 'angular2/http';
 	 * import {App} from './myapp';
 	 *
@@ -32521,7 +32531,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example ([live demo](http://plnkr.co/edit/qv8DLT?p=preview))
 	 *
 	 * ```typescript
-	 * import {provide, bootstrap} from 'angular2/angular2';
+	 * import {provide} from 'angular2/core';
+	 * import {bootstrap} from 'angular2/platform/browser';
 	 * import {HTTP_PROVIDERS, Headers, Http, BaseResponseOptions, ResponseOptions} from
 	 * 'angular2/http';
 	 * import {App} from './myapp';
@@ -32860,7 +32871,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example ([live demo](http://plnkr.co/edit/iRUP8B5OUbxCWQ3AcIDm))
 	 *
 	 * ```
-	 * import {Component} from 'angular2/angular2';
+	 * import {Component} from 'angular2/core';
 	 * import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
 	 *
 	 * @Component({directives: [ROUTER_DIRECTIVES]})
@@ -32881,7 +32892,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example ([live demo](http://plnkr.co/edit/iRUP8B5OUbxCWQ3AcIDm))
 	 *
 	 * ```
-	 * import {Component} from 'angular2/angular2';
+	 * import {Component} from 'angular2/core';
 	 * import {
 	 *   ROUTER_DIRECTIVES,
 	 *   ROUTER_PROVIDERS,
@@ -33458,7 +33469,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example ([live demo](http://plnkr.co/edit/iRUP8B5OUbxCWQ3AcIDm))
 	 *
 	 * ```
-	 * import {Component} from 'angular2/angular2';
+	 * import {Component} from 'angular2/core';
 	 * import {
 	 *   ROUTER_DIRECTIVES,
 	 *   ROUTER_PROVIDERS,
@@ -34149,7 +34160,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example
 	 *
 	 * ```
-	 * import {bootstrap, Component} from 'angular2/angular2';
+	 * import {Component} from 'angular2/core';
+	 * import {bootstrap} from 'angular2/platform/browser';
 	 * import {Router, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
 	 *
 	 * @Component({directives: [ROUTER_DIRECTIVES]})
@@ -34185,7 +34197,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example
 	 *
 	 * ```
-	 * import {bootstrap, Component, View} from 'angular2/angular2';
+	 * import {Component, View} from 'angular2/core';
+	 * import {bootstrap} from 'angular2/platform/browser';
 	 * import {Router, ROUTER_DIRECTIVES, routerBindings, RouteConfig} from 'angular2/router';
 	 *
 	 * @Component({...})
@@ -34227,7 +34240,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example
 	 *
 	 * ```
-	 * import {bootstrap, Component} from 'angular2/angular2';
+	 * import {Component} from 'angular2/core';
+	 * import {bootstrap} from 'angular2/platform/browser';
 	 * import {Router, ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
 	 *
 	 * @Component({directives: [ROUTER_DIRECTIVES]})
@@ -35256,7 +35270,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example
 	 *
 	 * ```
-	 * import {Component} from 'angular2/angular2';
+	 * import {Component} from 'angular2/core';
 	 * import {
 	 *   ROUTER_DIRECTIVES,
 	 *   ROUTER_PROVIDERS,
@@ -35412,7 +35426,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example
 	 *
 	 * ```
-	 * import {Component} from 'angular2/angular2';
+	 * import {Component} from 'angular2/core';
 	 * import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
 	 *
 	 * @Component({directives: [ROUTER_DIRECTIVES]})
@@ -35937,7 +35951,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example
 	 *
 	 * ```
-	 * import {Component, provide} from 'angular2/angular2';
+	 * import {Component, provide} from 'angular2/core';
 	 * import {
 	 *   ROUTER_DIRECTIVES,
 	 *   ROUTER_PROVIDERS,
@@ -36065,7 +36079,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example
 	 *
 	 * ```
-	 * import {Component, provide} from 'angular2/angular2';
+	 * import {Component, provide} from 'angular2/core';
 	 * import {
 	 *   APP_BASE_HREF
 	 *   ROUTER_DIRECTIVES,

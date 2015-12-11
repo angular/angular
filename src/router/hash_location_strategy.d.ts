@@ -12,7 +12,7 @@ import { PlatformLocation } from './platform_location';
  * ### Example
  *
  * ```
- * import {Component, provide} from 'angular2/angular2';
+ * import {Component, provide} from 'angular2/core';
  * import {
  *   ROUTER_DIRECTIVES,
  *   ROUTER_PROVIDERS,

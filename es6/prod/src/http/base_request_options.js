@@ -99,7 +99,8 @@ export class RequestOptions {
  * ### Example ([live demo](http://plnkr.co/edit/LEKVSx?p=preview))
  *
  * ```typescript
- * import {provide, bootstrap} from 'angular2/angular2';
+ * import {provide} from 'angular2/core';
+ * import {bootstrap} from 'angular2/platform/browser';
  * import {HTTP_PROVIDERS, Http, BaseRequestOptions, RequestOptions} from 'angular2/http';
  * import {App} from './myapp';
  *

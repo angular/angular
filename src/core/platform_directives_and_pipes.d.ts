@@ -6,7 +6,7 @@ import { OpaqueToken } from "angular2/src/core/di";
  * ### Example
  *
  * ```typescript
- * import {PLATFORM_DIRECTIVES} from 'angular2/angular2';
+ * import {PLATFORM_DIRECTIVES} from 'angular2/core';
  * import {OtherDirective} from './myDirectives';
  *
  * @Component({
@@ -31,7 +31,7 @@ export declare const PLATFORM_DIRECTIVES: OpaqueToken;
  * ### Example
  *
  * ```typescript
- * import {PLATFORM_PIPES} from 'angular2/angular2';
+ * import {PLATFORM_PIPES} from 'angular2/core';
  * import {OtherPipe} from './myPipe';
  *
  * @Component({

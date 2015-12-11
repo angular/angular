@@ -29,7 +29,7 @@ export class LocationStrategy {
  * ### Example
  *
  * ```
- * import {Component} from 'angular2/angular2';
+ * import {Component} from 'angular2/core';
  * import {ROUTER_DIRECTIVES, ROUTER_PROVIDERS, RouteConfig} from 'angular2/router';
  *
  * @Component({directives: [ROUTER_DIRECTIVES]})

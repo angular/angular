@@ -18,7 +18,7 @@ import { LocationStrategy } from './location_strategy';
  * ### Example
  *
  * ```
- * import {Component} from 'angular2/angular2';
+ * import {Component} from 'angular2/core';
  * import {
  *   ROUTER_DIRECTIVES,
  *   ROUTER_PROVIDERS,

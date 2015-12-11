@@ -26,7 +26,8 @@ export class NgZoneError {
  *
  * ### Example ([live demo](http://plnkr.co/edit/lY9m8HLy7z06vDoUaSN2?p=preview))
  * ```
- * import {Component, View, NgIf, NgZone} from 'angular2/angular2';
+ * import {Component, View, NgZone} from 'angular2/core';
+ * import {NgIf} from 'angular2/common';
  *
  * @Component({
  *   selector: 'ng-zone-demo'.

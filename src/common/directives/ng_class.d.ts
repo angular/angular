@@ -18,7 +18,8 @@ import { DoCheck, OnDestroy, ElementRef, IterableDiffers, KeyValueDiffers, Rende
  * ### Example ([live demo](http://plnkr.co/edit/a4YdtmWywhJ33uqfpPPn?p=preview)):
  *
  * ```
- * import {Component, NgClass} from 'angular2/angular2';
+ * import {Component} from 'angular2/core';
+ * import {NgClass} from 'angular2/common';
  *
  * @Component({
  *   selector: 'toggle-button',
