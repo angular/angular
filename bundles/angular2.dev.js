@@ -3722,405 +3722,6 @@ System.register("angular2/src/facade/lang", [], true, function(require, exports,
   return module.exports;
 });
 
-System.register("angular2/src/facade/promise", [], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var PromiseWrapper = (function() {
-    function PromiseWrapper() {}
-    PromiseWrapper.resolve = function(obj) {
-      return Promise.resolve(obj);
-    };
-    PromiseWrapper.reject = function(obj, _) {
-      return Promise.reject(obj);
-    };
-    PromiseWrapper.catchError = function(promise, onError) {
-      return promise.catch(onError);
-    };
-    PromiseWrapper.all = function(promises) {
-      if (promises.length == 0)
-        return Promise.resolve([]);
-      return Promise.all(promises);
-    };
-    PromiseWrapper.then = function(promise, success, rejection) {
-      return promise.then(success, rejection);
-    };
-    PromiseWrapper.wrap = function(computation) {
-      return new Promise(function(res, rej) {
-        try {
-          res(computation());
-        } catch (e) {
-          rej(e);
-        }
-      });
-    };
-    PromiseWrapper.scheduleMicrotask = function(computation) {
-      PromiseWrapper.then(PromiseWrapper.resolve(null), computation, function(_) {});
-    };
-    PromiseWrapper.isPromise = function(obj) {
-      return obj instanceof Promise;
-    };
-    PromiseWrapper.completer = function() {
-      var resolve;
-      var reject;
-      var p = new Promise(function(res, rej) {
-        resolve = res;
-        reject = rej;
-      });
-      return {
-        promise: p,
-        resolve: resolve,
-        reject: reject
-      };
-    };
-    return PromiseWrapper;
-  })();
-  exports.PromiseWrapper = PromiseWrapper;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/util/noop", [], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  function noop() {}
-  exports.noop = noop;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/util/throwError", [], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  function throwError(e) {
-    throw e;
-  }
-  exports.throwError = throwError;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/util/tryOrOnError", [], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  function tryOrOnError(target) {
-    function tryCatcher() {
-      try {
-        tryCatcher.target.apply(this, arguments);
-      } catch (e) {
-        this.error(e);
-      }
-    }
-    tryCatcher.target = target;
-    return tryCatcher;
-  }
-  exports.tryOrOnError = tryOrOnError;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/Subscription", ["rxjs/util/noop"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var noop_1 = require("rxjs/util/noop");
-  var Subscription = (function() {
-    function Subscription(_unsubscribe) {
-      this.isUnsubscribed = false;
-      if (_unsubscribe) {
-        this._unsubscribe = _unsubscribe;
-      }
-    }
-    Subscription.prototype._unsubscribe = function() {
-      noop_1.noop();
-    };
-    Subscription.prototype.unsubscribe = function() {
-      if (this.isUnsubscribed) {
-        return ;
-      }
-      this.isUnsubscribed = true;
-      var unsubscribe = this._unsubscribe;
-      var subscriptions = this._subscriptions;
-      this._subscriptions = void 0;
-      if (unsubscribe) {
-        unsubscribe.call(this);
-      }
-      if (subscriptions != null) {
-        var index = -1;
-        var len = subscriptions.length;
-        while (++index < len) {
-          subscriptions[index].unsubscribe();
-        }
-      }
-    };
-    Subscription.prototype.add = function(subscription) {
-      if (!subscription || (subscription === this) || (subscription === Subscription.EMPTY)) {
-        return ;
-      }
-      var sub = subscription;
-      switch (typeof subscription) {
-        case 'function':
-          sub = new Subscription(subscription);
-        case 'object':
-          if (sub.isUnsubscribed || typeof sub.unsubscribe !== 'function') {
-            break;
-          } else if (this.isUnsubscribed) {
-            sub.unsubscribe();
-          } else {
-            var subscriptions = this._subscriptions || (this._subscriptions = []);
-            subscriptions.push(sub);
-          }
-          break;
-        default:
-          throw new Error('Unrecognized subscription ' + subscription + ' added to Subscription.');
-      }
-    };
-    Subscription.prototype.remove = function(subscription) {
-      if (subscription == null || (subscription === this) || (subscription === Subscription.EMPTY)) {
-        return ;
-      }
-      var subscriptions = this._subscriptions;
-      if (subscriptions) {
-        var subscriptionIndex = subscriptions.indexOf(subscription);
-        if (subscriptionIndex !== -1) {
-          subscriptions.splice(subscriptionIndex, 1);
-        }
-      }
-    };
-    Subscription.EMPTY = (function(empty) {
-      empty.isUnsubscribed = true;
-      return empty;
-    }(new Subscription()));
-    return Subscription;
-  })();
-  exports.Subscription = Subscription;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/util/root", [], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var objectTypes = {
-    'boolean': false,
-    'function': true,
-    'object': true,
-    'number': false,
-    'string': false,
-    'undefined': false
-  };
-  exports.root = (objectTypes[typeof self] && self) || (objectTypes[typeof window] && window);
-  var freeExports = objectTypes[typeof exports] && exports && !exports.nodeType && exports;
-  var freeModule = objectTypes[typeof module] && module && !module.nodeType && module;
-  var freeGlobal = objectTypes[typeof global] && global;
-  if (freeGlobal && (freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal)) {
-    exports.root = freeGlobal;
-  }
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/subject/SubjectSubscription", ["rxjs/Subscription", "rxjs/Subscriber"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var Subscription_1 = require("rxjs/Subscription");
-  var Subscriber_1 = require("rxjs/Subscriber");
-  var SubjectSubscription = (function(_super) {
-    __extends(SubjectSubscription, _super);
-    function SubjectSubscription(subject, observer) {
-      _super.call(this);
-      this.subject = subject;
-      this.observer = observer;
-      this.isUnsubscribed = false;
-    }
-    SubjectSubscription.prototype.unsubscribe = function() {
-      if (this.isUnsubscribed) {
-        return ;
-      }
-      this.isUnsubscribed = true;
-      var subject = this.subject;
-      var observers = subject.observers;
-      this.subject = void 0;
-      if (!observers || observers.length === 0 || subject.isUnsubscribed) {
-        return ;
-      }
-      if (this.observer instanceof Subscriber_1.Subscriber) {
-        this.observer.unsubscribe();
-      }
-      var subscriberIndex = observers.indexOf(this.observer);
-      if (subscriberIndex !== -1) {
-        observers.splice(subscriberIndex, 1);
-      }
-    };
-    return SubjectSubscription;
-  })(Subscription_1.Subscription);
-  exports.SubjectSubscription = SubjectSubscription;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/scheduler/QueueAction", ["rxjs/Subscription"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var Subscription_1 = require("rxjs/Subscription");
-  var QueueAction = (function(_super) {
-    __extends(QueueAction, _super);
-    function QueueAction(scheduler, work) {
-      _super.call(this);
-      this.scheduler = scheduler;
-      this.work = work;
-    }
-    QueueAction.prototype.schedule = function(state) {
-      if (this.isUnsubscribed) {
-        return this;
-      }
-      this.state = state;
-      var scheduler = this.scheduler;
-      scheduler.actions.push(this);
-      scheduler.flush();
-      return this;
-    };
-    QueueAction.prototype.execute = function() {
-      if (this.isUnsubscribed) {
-        throw new Error('How did did we execute a canceled Action?');
-      }
-      this.work(this.state);
-    };
-    QueueAction.prototype.unsubscribe = function() {
-      var scheduler = this.scheduler;
-      var actions = scheduler.actions;
-      var index = actions.indexOf(this);
-      this.work = void 0;
-      this.state = void 0;
-      this.scheduler = void 0;
-      if (index !== -1) {
-        actions.splice(index, 1);
-      }
-      _super.prototype.unsubscribe.call(this);
-    };
-    return QueueAction;
-  })(Subscription_1.Subscription);
-  exports.QueueAction = QueueAction;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/scheduler/FutureAction", ["rxjs/scheduler/QueueAction"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var QueueAction_1 = require("rxjs/scheduler/QueueAction");
-  var FutureAction = (function(_super) {
-    __extends(FutureAction, _super);
-    function FutureAction(scheduler, work) {
-      _super.call(this, scheduler, work);
-      this.scheduler = scheduler;
-      this.work = work;
-    }
-    FutureAction.prototype.schedule = function(state, delay) {
-      var _this = this;
-      if (delay === void 0) {
-        delay = 0;
-      }
-      if (this.isUnsubscribed) {
-        return this;
-      }
-      this.delay = delay;
-      this.state = state;
-      var id = this.id;
-      if (id != null) {
-        this.id = undefined;
-        clearTimeout(id);
-      }
-      var scheduler = this.scheduler;
-      this.id = setTimeout(function() {
-        _this.id = void 0;
-        scheduler.actions.push(_this);
-        scheduler.flush();
-      }, this.delay);
-      return this;
-    };
-    FutureAction.prototype.unsubscribe = function() {
-      var id = this.id;
-      if (id != null) {
-        this.id = void 0;
-        clearTimeout(id);
-      }
-      _super.prototype.unsubscribe.call(this);
-    };
-    return FutureAction;
-  })(QueueAction_1.QueueAction);
-  exports.FutureAction = FutureAction;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/operator/toPromise", ["rxjs/util/root"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var root_1 = require("rxjs/util/root");
-  function toPromise(PromiseCtor) {
-    var _this = this;
-    if (!PromiseCtor) {
-      if (root_1.root.Rx && root_1.root.Rx.config && root_1.root.Rx.config.Promise) {
-        PromiseCtor = root_1.root.Rx.config.Promise;
-      } else if (root_1.root.Promise) {
-        PromiseCtor = root_1.root.Promise;
-      }
-    }
-    if (!PromiseCtor) {
-      throw new Error('no Promise impl found');
-    }
-    return new PromiseCtor(function(resolve, reject) {
-      var value;
-      _this.subscribe(function(x) {
-        return value = x;
-      }, function(err) {
-        return reject(err);
-      }, function() {
-        return resolve(value);
-      });
-    });
-  }
-  exports.toPromise = toPromise;
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/src/core/di/metadata", ["angular2/src/facade/lang"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -8841,19 +8442,401 @@ System.register("angular2/src/core/dev_mode", ["angular2/src/facade/lang"], true
   return module.exports;
 });
 
-System.register("angular2/src/facade/facade", ["angular2/src/facade/lang", "angular2/src/facade/async", "angular2/src/facade/exceptions", "angular2/src/facade/exception_handler"], true, function(require, exports, module) {
+System.register("angular2/src/facade/promise", [], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  var lang_1 = require("angular2/src/facade/lang");
-  exports.Type = lang_1.Type;
-  var async_1 = require("angular2/src/facade/async");
-  exports.Observable = async_1.Observable;
-  exports.EventEmitter = async_1.EventEmitter;
-  var exceptions_1 = require("angular2/src/facade/exceptions");
-  exports.WrappedException = exceptions_1.WrappedException;
-  var exception_handler_1 = require("angular2/src/facade/exception_handler");
-  exports.ExceptionHandler = exception_handler_1.ExceptionHandler;
+  var PromiseWrapper = (function() {
+    function PromiseWrapper() {}
+    PromiseWrapper.resolve = function(obj) {
+      return Promise.resolve(obj);
+    };
+    PromiseWrapper.reject = function(obj, _) {
+      return Promise.reject(obj);
+    };
+    PromiseWrapper.catchError = function(promise, onError) {
+      return promise.catch(onError);
+    };
+    PromiseWrapper.all = function(promises) {
+      if (promises.length == 0)
+        return Promise.resolve([]);
+      return Promise.all(promises);
+    };
+    PromiseWrapper.then = function(promise, success, rejection) {
+      return promise.then(success, rejection);
+    };
+    PromiseWrapper.wrap = function(computation) {
+      return new Promise(function(res, rej) {
+        try {
+          res(computation());
+        } catch (e) {
+          rej(e);
+        }
+      });
+    };
+    PromiseWrapper.scheduleMicrotask = function(computation) {
+      PromiseWrapper.then(PromiseWrapper.resolve(null), computation, function(_) {});
+    };
+    PromiseWrapper.isPromise = function(obj) {
+      return obj instanceof Promise;
+    };
+    PromiseWrapper.completer = function() {
+      var resolve;
+      var reject;
+      var p = new Promise(function(res, rej) {
+        resolve = res;
+        reject = rej;
+      });
+      return {
+        promise: p,
+        resolve: resolve,
+        reject: reject
+      };
+    };
+    return PromiseWrapper;
+  })();
+  exports.PromiseWrapper = PromiseWrapper;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/util/noop", [], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  function noop() {}
+  exports.noop = noop;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/util/throwError", [], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  function throwError(e) {
+    throw e;
+  }
+  exports.throwError = throwError;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/util/tryOrOnError", [], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  function tryOrOnError(target) {
+    function tryCatcher() {
+      try {
+        tryCatcher.target.apply(this, arguments);
+      } catch (e) {
+        this.error(e);
+      }
+    }
+    tryCatcher.target = target;
+    return tryCatcher;
+  }
+  exports.tryOrOnError = tryOrOnError;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/Subscription", ["rxjs/util/noop"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var noop_1 = require("rxjs/util/noop");
+  var Subscription = (function() {
+    function Subscription(_unsubscribe) {
+      this.isUnsubscribed = false;
+      if (_unsubscribe) {
+        this._unsubscribe = _unsubscribe;
+      }
+    }
+    Subscription.prototype._unsubscribe = function() {
+      noop_1.noop();
+    };
+    Subscription.prototype.unsubscribe = function() {
+      if (this.isUnsubscribed) {
+        return ;
+      }
+      this.isUnsubscribed = true;
+      var unsubscribe = this._unsubscribe;
+      var subscriptions = this._subscriptions;
+      this._subscriptions = void 0;
+      if (unsubscribe) {
+        unsubscribe.call(this);
+      }
+      if (subscriptions != null) {
+        var index = -1;
+        var len = subscriptions.length;
+        while (++index < len) {
+          subscriptions[index].unsubscribe();
+        }
+      }
+    };
+    Subscription.prototype.add = function(subscription) {
+      if (!subscription || (subscription === this) || (subscription === Subscription.EMPTY)) {
+        return ;
+      }
+      var sub = subscription;
+      switch (typeof subscription) {
+        case 'function':
+          sub = new Subscription(subscription);
+        case 'object':
+          if (sub.isUnsubscribed || typeof sub.unsubscribe !== 'function') {
+            break;
+          } else if (this.isUnsubscribed) {
+            sub.unsubscribe();
+          } else {
+            var subscriptions = this._subscriptions || (this._subscriptions = []);
+            subscriptions.push(sub);
+          }
+          break;
+        default:
+          throw new Error('Unrecognized subscription ' + subscription + ' added to Subscription.');
+      }
+    };
+    Subscription.prototype.remove = function(subscription) {
+      if (subscription == null || (subscription === this) || (subscription === Subscription.EMPTY)) {
+        return ;
+      }
+      var subscriptions = this._subscriptions;
+      if (subscriptions) {
+        var subscriptionIndex = subscriptions.indexOf(subscription);
+        if (subscriptionIndex !== -1) {
+          subscriptions.splice(subscriptionIndex, 1);
+        }
+      }
+    };
+    Subscription.EMPTY = (function(empty) {
+      empty.isUnsubscribed = true;
+      return empty;
+    }(new Subscription()));
+    return Subscription;
+  })();
+  exports.Subscription = Subscription;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/util/root", [], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var objectTypes = {
+    'boolean': false,
+    'function': true,
+    'object': true,
+    'number': false,
+    'string': false,
+    'undefined': false
+  };
+  exports.root = (objectTypes[typeof self] && self) || (objectTypes[typeof window] && window);
+  var freeExports = objectTypes[typeof exports] && exports && !exports.nodeType && exports;
+  var freeModule = objectTypes[typeof module] && module && !module.nodeType && module;
+  var freeGlobal = objectTypes[typeof global] && global;
+  if (freeGlobal && (freeGlobal.global === freeGlobal || freeGlobal.window === freeGlobal)) {
+    exports.root = freeGlobal;
+  }
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/subject/SubjectSubscription", ["rxjs/Subscription", "rxjs/Subscriber"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var Subscription_1 = require("rxjs/Subscription");
+  var Subscriber_1 = require("rxjs/Subscriber");
+  var SubjectSubscription = (function(_super) {
+    __extends(SubjectSubscription, _super);
+    function SubjectSubscription(subject, observer) {
+      _super.call(this);
+      this.subject = subject;
+      this.observer = observer;
+      this.isUnsubscribed = false;
+    }
+    SubjectSubscription.prototype.unsubscribe = function() {
+      if (this.isUnsubscribed) {
+        return ;
+      }
+      this.isUnsubscribed = true;
+      var subject = this.subject;
+      var observers = subject.observers;
+      this.subject = void 0;
+      if (!observers || observers.length === 0 || subject.isUnsubscribed) {
+        return ;
+      }
+      if (this.observer instanceof Subscriber_1.Subscriber) {
+        this.observer.unsubscribe();
+      }
+      var subscriberIndex = observers.indexOf(this.observer);
+      if (subscriberIndex !== -1) {
+        observers.splice(subscriberIndex, 1);
+      }
+    };
+    return SubjectSubscription;
+  })(Subscription_1.Subscription);
+  exports.SubjectSubscription = SubjectSubscription;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/scheduler/QueueAction", ["rxjs/Subscription"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var Subscription_1 = require("rxjs/Subscription");
+  var QueueAction = (function(_super) {
+    __extends(QueueAction, _super);
+    function QueueAction(scheduler, work) {
+      _super.call(this);
+      this.scheduler = scheduler;
+      this.work = work;
+    }
+    QueueAction.prototype.schedule = function(state) {
+      if (this.isUnsubscribed) {
+        return this;
+      }
+      this.state = state;
+      var scheduler = this.scheduler;
+      scheduler.actions.push(this);
+      scheduler.flush();
+      return this;
+    };
+    QueueAction.prototype.execute = function() {
+      if (this.isUnsubscribed) {
+        throw new Error('How did did we execute a canceled Action?');
+      }
+      this.work(this.state);
+    };
+    QueueAction.prototype.unsubscribe = function() {
+      var scheduler = this.scheduler;
+      var actions = scheduler.actions;
+      var index = actions.indexOf(this);
+      this.work = void 0;
+      this.state = void 0;
+      this.scheduler = void 0;
+      if (index !== -1) {
+        actions.splice(index, 1);
+      }
+      _super.prototype.unsubscribe.call(this);
+    };
+    return QueueAction;
+  })(Subscription_1.Subscription);
+  exports.QueueAction = QueueAction;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/scheduler/FutureAction", ["rxjs/scheduler/QueueAction"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var QueueAction_1 = require("rxjs/scheduler/QueueAction");
+  var FutureAction = (function(_super) {
+    __extends(FutureAction, _super);
+    function FutureAction(scheduler, work) {
+      _super.call(this, scheduler, work);
+      this.scheduler = scheduler;
+      this.work = work;
+    }
+    FutureAction.prototype.schedule = function(state, delay) {
+      var _this = this;
+      if (delay === void 0) {
+        delay = 0;
+      }
+      if (this.isUnsubscribed) {
+        return this;
+      }
+      this.delay = delay;
+      this.state = state;
+      var id = this.id;
+      if (id != null) {
+        this.id = undefined;
+        clearTimeout(id);
+      }
+      var scheduler = this.scheduler;
+      this.id = setTimeout(function() {
+        _this.id = void 0;
+        scheduler.actions.push(_this);
+        scheduler.flush();
+      }, this.delay);
+      return this;
+    };
+    FutureAction.prototype.unsubscribe = function() {
+      var id = this.id;
+      if (id != null) {
+        this.id = void 0;
+        clearTimeout(id);
+      }
+      _super.prototype.unsubscribe.call(this);
+    };
+    return FutureAction;
+  })(QueueAction_1.QueueAction);
+  exports.FutureAction = FutureAction;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/operator/toPromise", ["rxjs/util/root"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var root_1 = require("rxjs/util/root");
+  function toPromise(PromiseCtor) {
+    var _this = this;
+    if (!PromiseCtor) {
+      if (root_1.root.Rx && root_1.root.Rx.config && root_1.root.Rx.config.Promise) {
+        PromiseCtor = root_1.root.Rx.config.Promise;
+      } else if (root_1.root.Promise) {
+        PromiseCtor = root_1.root.Promise;
+      }
+    }
+    if (!PromiseCtor) {
+      throw new Error('no Promise impl found');
+    }
+    return new PromiseCtor(function(resolve, reject) {
+      var value;
+      _this.subscribe(function(x) {
+        return value = x;
+      }, function(err) {
+        return reject(err);
+      }, function() {
+        return resolve(value);
+      });
+    });
+  }
+  exports.toPromise = toPromise;
   global.define = __define;
   return module.exports;
 });
@@ -10935,6 +10918,39 @@ System.register("angular2/src/core/application_common_providers", ["angular2/src
   var dynamic_component_loader_1 = require("angular2/src/core/linker/dynamic_component_loader");
   var dynamic_component_loader_2 = require("angular2/src/core/linker/dynamic_component_loader");
   exports.APPLICATION_COMMON_PROVIDERS = lang_1.CONST_EXPR([new di_1.Provider(compiler_1.Compiler, {useClass: compiler_2.Compiler_}), application_tokens_1.APP_ID_RANDOM_PROVIDER, view_pool_1.AppViewPool, new di_1.Provider(view_pool_1.APP_VIEW_POOL_CAPACITY, {useValue: 10000}), new di_1.Provider(view_manager_1.AppViewManager, {useClass: view_manager_2.AppViewManager_}), view_manager_utils_1.AppViewManagerUtils, view_listener_1.AppViewListener, proto_view_factory_1.ProtoViewFactory, view_resolver_1.ViewResolver, new di_1.Provider(change_detection_1.IterableDiffers, {useValue: change_detection_1.defaultIterableDiffers}), new di_1.Provider(change_detection_1.KeyValueDiffers, {useValue: change_detection_1.defaultKeyValueDiffers}), directive_resolver_1.DirectiveResolver, pipe_resolver_1.PipeResolver, new di_1.Provider(dynamic_component_loader_1.DynamicComponentLoader, {useClass: dynamic_component_loader_2.DynamicComponentLoader_})]);
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/core/angular_entrypoint", ["angular2/src/facade/lang"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var lang_1 = require("angular2/src/facade/lang");
+  var AngularEntrypoint = (function() {
+    function AngularEntrypoint(name) {
+      this.name = name;
+    }
+    AngularEntrypoint = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [String])], AngularEntrypoint);
+    return AngularEntrypoint;
+  })();
+  exports.AngularEntrypoint = AngularEntrypoint;
   global.define = __define;
   return module.exports;
 });
@@ -13861,52 +13877,6 @@ System.register("angular2/src/common/common_directives", ["angular2/src/facade/l
   var forms_1 = require("angular2/src/common/forms");
   var directives_1 = require("angular2/src/common/directives");
   exports.COMMON_DIRECTIVES = lang_1.CONST_EXPR([directives_1.CORE_DIRECTIVES, forms_1.FORM_DIRECTIVES]);
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("angular2/instrumentation", ["angular2/src/core/profile/profile"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var profile_1 = require("angular2/src/core/profile/profile");
-  exports.wtfCreateScope = profile_1.wtfCreateScope;
-  exports.wtfLeave = profile_1.wtfLeave;
-  exports.wtfStartTimeRange = profile_1.wtfStartTimeRange;
-  exports.wtfEndTimeRange = profile_1.wtfEndTimeRange;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("angular2/src/core/angular_entrypoint", ["angular2/src/facade/lang"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var lang_1 = require("angular2/src/facade/lang");
-  var AngularEntrypoint = (function() {
-    function AngularEntrypoint(name) {
-      this.name = name;
-    }
-    AngularEntrypoint = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [String])], AngularEntrypoint);
-    return AngularEntrypoint;
-  })();
-  exports.AngularEntrypoint = AngularEntrypoint;
   global.define = __define;
   return module.exports;
 });
@@ -17681,120 +17651,6 @@ System.register("angular2/src/upgrade/angular_js", [], true, function(require, e
   return module.exports;
 });
 
-System.register("rxjs/util/SymbolShim", ["rxjs/util/root"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var root_1 = require("rxjs/util/root");
-  function polyfillSymbol(root) {
-    var Symbol = ensureSymbol(root);
-    ensureIterator(Symbol, root);
-    ensureObservable(Symbol);
-    ensureFor(Symbol);
-    return Symbol;
-  }
-  exports.polyfillSymbol = polyfillSymbol;
-  function ensureFor(Symbol) {
-    if (!Symbol.for) {
-      Symbol.for = symbolForPolyfill;
-    }
-  }
-  exports.ensureFor = ensureFor;
-  var id = 0;
-  function ensureSymbol(root) {
-    if (!root.Symbol) {
-      root.Symbol = function symbolFuncPolyfill(description) {
-        return "@@Symbol(" + description + "):" + id++;
-      };
-    }
-    return root.Symbol;
-  }
-  exports.ensureSymbol = ensureSymbol;
-  function symbolForPolyfill(key) {
-    return '@@' + key;
-  }
-  exports.symbolForPolyfill = symbolForPolyfill;
-  function ensureIterator(Symbol, root) {
-    if (!Symbol.iterator) {
-      if (typeof Symbol.for === 'function') {
-        Symbol.iterator = Symbol.for('iterator');
-      } else if (root.Set && typeof new root.Set()['@@iterator'] === 'function') {
-        Symbol.iterator = '@@iterator';
-      } else if (root.Map) {
-        var keys = Object.getOwnPropertyNames(root.Map.prototype);
-        for (var i = 0; i < keys.length; ++i) {
-          var key = keys[i];
-          if (key !== 'entries' && key !== 'size' && root.Map.prototype[key] === root.Map.prototype['entries']) {
-            Symbol.iterator = key;
-            break;
-          }
-        }
-      } else {
-        Symbol.iterator = '@@iterator';
-      }
-    }
-  }
-  exports.ensureIterator = ensureIterator;
-  function ensureObservable(Symbol) {
-    if (!Symbol.observable) {
-      if (typeof Symbol.for === 'function') {
-        Symbol.observable = Symbol.for('observable');
-      } else {
-        Symbol.observable = '@@observable';
-      }
-    }
-  }
-  exports.ensureObservable = ensureObservable;
-  exports.SymbolShim = polyfillSymbol(root_1.root);
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/scheduler/QueueScheduler", ["rxjs/scheduler/QueueAction", "rxjs/scheduler/FutureAction"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var QueueAction_1 = require("rxjs/scheduler/QueueAction");
-  var FutureAction_1 = require("rxjs/scheduler/FutureAction");
-  var QueueScheduler = (function() {
-    function QueueScheduler() {
-      this.actions = [];
-      this.active = false;
-      this.scheduled = false;
-    }
-    QueueScheduler.prototype.now = function() {
-      return Date.now();
-    };
-    QueueScheduler.prototype.flush = function() {
-      if (this.active || this.scheduled) {
-        return ;
-      }
-      this.active = true;
-      var actions = this.actions;
-      for (var action = void 0; action = actions.shift(); ) {
-        action.execute();
-      }
-      this.active = false;
-    };
-    QueueScheduler.prototype.schedule = function(work, delay, state) {
-      if (delay === void 0) {
-        delay = 0;
-      }
-      return (delay <= 0) ? this.scheduleNow(work, state) : this.scheduleLater(work, delay, state);
-    };
-    QueueScheduler.prototype.scheduleNow = function(work, state) {
-      return new QueueAction_1.QueueAction(this, work).schedule(state);
-    };
-    QueueScheduler.prototype.scheduleLater = function(work, delay, state) {
-      return new FutureAction_1.FutureAction(this, work).schedule(state, delay);
-    };
-    return QueueScheduler;
-  })();
-  exports.QueueScheduler = QueueScheduler;
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/src/core/di/decorators", ["angular2/src/core/di/metadata", "angular2/src/core/util/decorators"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -18426,6 +18282,120 @@ System.register("angular2/src/core/change_detection/codegen_logic_util", ["angul
   return module.exports;
 });
 
+System.register("rxjs/util/SymbolShim", ["rxjs/util/root"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var root_1 = require("rxjs/util/root");
+  function polyfillSymbol(root) {
+    var Symbol = ensureSymbol(root);
+    ensureIterator(Symbol, root);
+    ensureObservable(Symbol);
+    ensureFor(Symbol);
+    return Symbol;
+  }
+  exports.polyfillSymbol = polyfillSymbol;
+  function ensureFor(Symbol) {
+    if (!Symbol.for) {
+      Symbol.for = symbolForPolyfill;
+    }
+  }
+  exports.ensureFor = ensureFor;
+  var id = 0;
+  function ensureSymbol(root) {
+    if (!root.Symbol) {
+      root.Symbol = function symbolFuncPolyfill(description) {
+        return "@@Symbol(" + description + "):" + id++;
+      };
+    }
+    return root.Symbol;
+  }
+  exports.ensureSymbol = ensureSymbol;
+  function symbolForPolyfill(key) {
+    return '@@' + key;
+  }
+  exports.symbolForPolyfill = symbolForPolyfill;
+  function ensureIterator(Symbol, root) {
+    if (!Symbol.iterator) {
+      if (typeof Symbol.for === 'function') {
+        Symbol.iterator = Symbol.for('iterator');
+      } else if (root.Set && typeof new root.Set()['@@iterator'] === 'function') {
+        Symbol.iterator = '@@iterator';
+      } else if (root.Map) {
+        var keys = Object.getOwnPropertyNames(root.Map.prototype);
+        for (var i = 0; i < keys.length; ++i) {
+          var key = keys[i];
+          if (key !== 'entries' && key !== 'size' && root.Map.prototype[key] === root.Map.prototype['entries']) {
+            Symbol.iterator = key;
+            break;
+          }
+        }
+      } else {
+        Symbol.iterator = '@@iterator';
+      }
+    }
+  }
+  exports.ensureIterator = ensureIterator;
+  function ensureObservable(Symbol) {
+    if (!Symbol.observable) {
+      if (typeof Symbol.for === 'function') {
+        Symbol.observable = Symbol.for('observable');
+      } else {
+        Symbol.observable = '@@observable';
+      }
+    }
+  }
+  exports.ensureObservable = ensureObservable;
+  exports.SymbolShim = polyfillSymbol(root_1.root);
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/scheduler/QueueScheduler", ["rxjs/scheduler/QueueAction", "rxjs/scheduler/FutureAction"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var QueueAction_1 = require("rxjs/scheduler/QueueAction");
+  var FutureAction_1 = require("rxjs/scheduler/FutureAction");
+  var QueueScheduler = (function() {
+    function QueueScheduler() {
+      this.actions = [];
+      this.active = false;
+      this.scheduled = false;
+    }
+    QueueScheduler.prototype.now = function() {
+      return Date.now();
+    };
+    QueueScheduler.prototype.flush = function() {
+      if (this.active || this.scheduled) {
+        return ;
+      }
+      this.active = true;
+      var actions = this.actions;
+      for (var action = void 0; action = actions.shift(); ) {
+        action.execute();
+      }
+      this.active = false;
+    };
+    QueueScheduler.prototype.schedule = function(work, delay, state) {
+      if (delay === void 0) {
+        delay = 0;
+      }
+      return (delay <= 0) ? this.scheduleNow(work, state) : this.scheduleLater(work, delay, state);
+    };
+    QueueScheduler.prototype.scheduleNow = function(work, state) {
+      return new QueueAction_1.QueueAction(this, work).schedule(state);
+    };
+    QueueScheduler.prototype.scheduleLater = function(work, delay, state) {
+      return new FutureAction_1.FutureAction(this, work).schedule(state, delay);
+    };
+    return QueueScheduler;
+  })();
+  exports.QueueScheduler = QueueScheduler;
+  global.define = __define;
+  return module.exports;
+});
+
 System.register("angular2/src/core/pipes/pipes", ["angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/facade/collection", "angular2/src/core/change_detection/pipes"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -19004,6 +18974,129 @@ System.register("angular2/src/core/linker/directive_lifecycle_reflector", ["angu
     }
   }
   exports.hasLifecycleHook = hasLifecycleHook;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/common/pipes/async_pipe", ["angular2/src/facade/lang", "angular2/src/facade/async", "angular2/core", "angular2/src/common/pipes/invalid_pipe_argument_exception"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var lang_1 = require("angular2/src/facade/lang");
+  var async_1 = require("angular2/src/facade/async");
+  var core_1 = require("angular2/core");
+  var invalid_pipe_argument_exception_1 = require("angular2/src/common/pipes/invalid_pipe_argument_exception");
+  var ObservableStrategy = (function() {
+    function ObservableStrategy() {}
+    ObservableStrategy.prototype.createSubscription = function(async, updateLatestValue) {
+      return async_1.ObservableWrapper.subscribe(async, updateLatestValue, function(e) {
+        throw e;
+      });
+    };
+    ObservableStrategy.prototype.dispose = function(subscription) {
+      async_1.ObservableWrapper.dispose(subscription);
+    };
+    ObservableStrategy.prototype.onDestroy = function(subscription) {
+      async_1.ObservableWrapper.dispose(subscription);
+    };
+    return ObservableStrategy;
+  })();
+  var PromiseStrategy = (function() {
+    function PromiseStrategy() {}
+    PromiseStrategy.prototype.createSubscription = function(async, updateLatestValue) {
+      return async.then(updateLatestValue);
+    };
+    PromiseStrategy.prototype.dispose = function(subscription) {};
+    PromiseStrategy.prototype.onDestroy = function(subscription) {};
+    return PromiseStrategy;
+  })();
+  var _promiseStrategy = new PromiseStrategy();
+  var _observableStrategy = new ObservableStrategy();
+  var AsyncPipe = (function() {
+    function AsyncPipe(_ref) {
+      this._latestValue = null;
+      this._latestReturnedValue = null;
+      this._subscription = null;
+      this._obj = null;
+      this._strategy = null;
+      this._ref = _ref;
+    }
+    AsyncPipe.prototype.ngOnDestroy = function() {
+      if (lang_1.isPresent(this._subscription)) {
+        this._dispose();
+      }
+    };
+    AsyncPipe.prototype.transform = function(obj, args) {
+      if (lang_1.isBlank(this._obj)) {
+        if (lang_1.isPresent(obj)) {
+          this._subscribe(obj);
+        }
+        return this._latestValue;
+      }
+      if (obj !== this._obj) {
+        this._dispose();
+        return this.transform(obj);
+      }
+      if (this._latestValue === this._latestReturnedValue) {
+        return this._latestReturnedValue;
+      } else {
+        this._latestReturnedValue = this._latestValue;
+        return core_1.WrappedValue.wrap(this._latestValue);
+      }
+    };
+    AsyncPipe.prototype._subscribe = function(obj) {
+      var _this = this;
+      this._obj = obj;
+      this._strategy = this._selectStrategy(obj);
+      this._subscription = this._strategy.createSubscription(obj, function(value) {
+        return _this._updateLatestValue(obj, value);
+      });
+    };
+    AsyncPipe.prototype._selectStrategy = function(obj) {
+      if (lang_1.isPromise(obj)) {
+        return _promiseStrategy;
+      } else if (async_1.ObservableWrapper.isObservable(obj)) {
+        return _observableStrategy;
+      } else {
+        throw new invalid_pipe_argument_exception_1.InvalidPipeArgumentException(AsyncPipe, obj);
+      }
+    };
+    AsyncPipe.prototype._dispose = function() {
+      this._strategy.dispose(this._subscription);
+      this._latestValue = null;
+      this._latestReturnedValue = null;
+      this._subscription = null;
+      this._obj = null;
+    };
+    AsyncPipe.prototype._updateLatestValue = function(async, value) {
+      if (async === this._obj) {
+        this._latestValue = value;
+        this._ref.markForCheck();
+      }
+    };
+    AsyncPipe = __decorate([core_1.Pipe({
+      name: 'async',
+      pure: false
+    }), core_1.Injectable(), __metadata('design:paramtypes', [core_1.ChangeDetectorRef])], AsyncPipe);
+    return AsyncPipe;
+  })();
+  exports.AsyncPipe = AsyncPipe;
   global.define = __define;
   return module.exports;
 });
@@ -21261,26 +21354,6 @@ System.register("angular2/src/upgrade/upgrade_ng1_adapter", ["angular2/core", "a
   return module.exports;
 });
 
-System.register("rxjs/symbol/rxSubscriber", ["rxjs/util/SymbolShim"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var SymbolShim_1 = require("rxjs/util/SymbolShim");
-  exports.rxSubscriber = SymbolShim_1.SymbolShim.for('rxSubscriber');
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/scheduler/queue", ["rxjs/scheduler/QueueScheduler"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var QueueScheduler_1 = require("rxjs/scheduler/QueueScheduler");
-  exports.queue = new QueueScheduler_1.QueueScheduler();
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/src/core/di/provider", ["angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/facade/collection", "angular2/src/core/reflection/reflection", "angular2/src/core/di/key", "angular2/src/core/di/metadata", "angular2/src/core/di/exceptions", "angular2/src/core/di/forward_ref"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -22217,6 +22290,26 @@ System.register("angular2/src/core/change_detection/change_detection_jit_generat
   return module.exports;
 });
 
+System.register("rxjs/symbol/rxSubscriber", ["rxjs/util/SymbolShim"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var SymbolShim_1 = require("rxjs/util/SymbolShim");
+  exports.rxSubscriber = SymbolShim_1.SymbolShim.for('rxSubscriber');
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/scheduler/queue", ["rxjs/scheduler/QueueScheduler"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var QueueScheduler_1 = require("rxjs/scheduler/QueueScheduler");
+  exports.queue = new QueueScheduler_1.QueueScheduler();
+  global.define = __define;
+  return module.exports;
+});
+
 System.register("angular2/src/core/linker/view_manager", ["angular2/src/core/di", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/core/linker/view", "angular2/src/core/linker/view_ref", "angular2/src/core/render/api", "angular2/src/core/linker/view_manager_utils", "angular2/src/core/linker/view_pool", "angular2/src/core/linker/view_listener", "angular2/src/core/profile/profile", "angular2/src/core/linker/proto_view_factory"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -22473,6 +22566,40 @@ System.register("angular2/src/core/linker/view_manager", ["angular2/src/core/di"
     return AppViewManager_;
   })(AppViewManager);
   exports.AppViewManager_ = AppViewManager_;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/common/pipes", ["angular2/src/common/pipes/async_pipe", "angular2/src/common/pipes/uppercase_pipe", "angular2/src/common/pipes/lowercase_pipe", "angular2/src/common/pipes/json_pipe", "angular2/src/common/pipes/slice_pipe", "angular2/src/common/pipes/date_pipe", "angular2/src/common/pipes/number_pipe", "angular2/src/facade/lang", "angular2/src/common/pipes/async_pipe", "angular2/src/common/pipes/date_pipe", "angular2/src/common/pipes/json_pipe", "angular2/src/common/pipes/slice_pipe", "angular2/src/common/pipes/lowercase_pipe", "angular2/src/common/pipes/number_pipe", "angular2/src/common/pipes/uppercase_pipe"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var async_pipe_1 = require("angular2/src/common/pipes/async_pipe");
+  var uppercase_pipe_1 = require("angular2/src/common/pipes/uppercase_pipe");
+  var lowercase_pipe_1 = require("angular2/src/common/pipes/lowercase_pipe");
+  var json_pipe_1 = require("angular2/src/common/pipes/json_pipe");
+  var slice_pipe_1 = require("angular2/src/common/pipes/slice_pipe");
+  var date_pipe_1 = require("angular2/src/common/pipes/date_pipe");
+  var number_pipe_1 = require("angular2/src/common/pipes/number_pipe");
+  var lang_1 = require("angular2/src/facade/lang");
+  var async_pipe_2 = require("angular2/src/common/pipes/async_pipe");
+  exports.AsyncPipe = async_pipe_2.AsyncPipe;
+  var date_pipe_2 = require("angular2/src/common/pipes/date_pipe");
+  exports.DatePipe = date_pipe_2.DatePipe;
+  var json_pipe_2 = require("angular2/src/common/pipes/json_pipe");
+  exports.JsonPipe = json_pipe_2.JsonPipe;
+  var slice_pipe_2 = require("angular2/src/common/pipes/slice_pipe");
+  exports.SlicePipe = slice_pipe_2.SlicePipe;
+  var lowercase_pipe_2 = require("angular2/src/common/pipes/lowercase_pipe");
+  exports.LowerCasePipe = lowercase_pipe_2.LowerCasePipe;
+  var number_pipe_2 = require("angular2/src/common/pipes/number_pipe");
+  exports.NumberPipe = number_pipe_2.NumberPipe;
+  exports.DecimalPipe = number_pipe_2.DecimalPipe;
+  exports.PercentPipe = number_pipe_2.PercentPipe;
+  exports.CurrencyPipe = number_pipe_2.CurrencyPipe;
+  var uppercase_pipe_2 = require("angular2/src/common/pipes/uppercase_pipe");
+  exports.UpperCasePipe = uppercase_pipe_2.UpperCasePipe;
+  exports.COMMON_PIPES = lang_1.CONST_EXPR([async_pipe_1.AsyncPipe, uppercase_pipe_1.UpperCasePipe, lowercase_pipe_1.LowerCasePipe, json_pipe_1.JsonPipe, slice_pipe_1.SlicePipe, number_pipe_1.DecimalPipe, number_pipe_1.PercentPipe, number_pipe_1.CurrencyPipe, date_pipe_1.DatePipe]);
   global.define = __define;
   return module.exports;
 });
@@ -23082,421 +23209,6 @@ System.register("angular2/src/compiler/html_parser", ["angular2/src/facade/lang"
       }
     }
     return mergeNsAndName(prefix, localName);
-  }
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("angular2/src/upgrade/upgrade_adapter", ["angular2/core", "angular2/src/facade/async", "angular2/platform/browser", "angular2/src/upgrade/metadata", "angular2/src/upgrade/util", "angular2/src/upgrade/constants", "angular2/src/upgrade/downgrade_ng2_adapter", "angular2/src/upgrade/upgrade_ng1_adapter", "angular2/src/upgrade/angular_js"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var core_1 = require("angular2/core");
-  var async_1 = require("angular2/src/facade/async");
-  var browser_1 = require("angular2/platform/browser");
-  var metadata_1 = require("angular2/src/upgrade/metadata");
-  var util_1 = require("angular2/src/upgrade/util");
-  var constants_1 = require("angular2/src/upgrade/constants");
-  var downgrade_ng2_adapter_1 = require("angular2/src/upgrade/downgrade_ng2_adapter");
-  var upgrade_ng1_adapter_1 = require("angular2/src/upgrade/upgrade_ng1_adapter");
-  var angular = require("angular2/src/upgrade/angular_js");
-  var upgradeCount = 0;
-  var UpgradeAdapter = (function() {
-    function UpgradeAdapter() {
-      this.idPrefix = "NG2_UPGRADE_" + upgradeCount++ + "_";
-      this.upgradedComponents = [];
-      this.downgradedComponents = {};
-      this.providers = [];
-    }
-    UpgradeAdapter.prototype.downgradeNg2Component = function(type) {
-      this.upgradedComponents.push(type);
-      var info = metadata_1.getComponentInfo(type);
-      return ng1ComponentDirective(info, "" + this.idPrefix + info.selector + "_c");
-    };
-    UpgradeAdapter.prototype.upgradeNg1Component = function(name) {
-      if (this.downgradedComponents.hasOwnProperty(name)) {
-        return this.downgradedComponents[name].type;
-      } else {
-        return (this.downgradedComponents[name] = new upgrade_ng1_adapter_1.UpgradeNg1ComponentAdapterBuilder(name)).type;
-      }
-    };
-    UpgradeAdapter.prototype.bootstrap = function(element, modules, config) {
-      var _this = this;
-      var upgrade = new UpgradeAdapterRef();
-      var ng1Injector = null;
-      var platformRef = core_1.platform(browser_1.BROWSER_PROVIDERS);
-      var applicationRef = platformRef.application([browser_1.BROWSER_APP_PROVIDERS, core_1.provide(constants_1.NG1_INJECTOR, {useFactory: function() {
-          return ng1Injector;
-        }}), core_1.provide(constants_1.NG1_COMPILE, {useFactory: function() {
-          return ng1Injector.get(constants_1.NG1_COMPILE);
-        }}), this.providers]);
-      var injector = applicationRef.injector;
-      var ngZone = injector.get(core_1.NgZone);
-      var compiler = injector.get(core_1.Compiler);
-      var delayApplyExps = [];
-      var original$applyFn;
-      var rootScopePrototype;
-      var rootScope;
-      var protoViewRefMap = {};
-      var ng1Module = angular.module(this.idPrefix, modules);
-      var ng1compilePromise = null;
-      ng1Module.value(constants_1.NG2_INJECTOR, injector).value(constants_1.NG2_ZONE, ngZone).value(constants_1.NG2_COMPILER, compiler).value(constants_1.NG2_PROTO_VIEW_REF_MAP, protoViewRefMap).value(constants_1.NG2_APP_VIEW_MANAGER, injector.get(core_1.AppViewManager)).config(['$provide', function(provide) {
-        provide.decorator(constants_1.NG1_ROOT_SCOPE, ['$delegate', function(rootScopeDelegate) {
-          rootScopePrototype = rootScopeDelegate.constructor.prototype;
-          if (rootScopePrototype.hasOwnProperty('$apply')) {
-            original$applyFn = rootScopePrototype.$apply;
-            rootScopePrototype.$apply = function(exp) {
-              return delayApplyExps.push(exp);
-            };
-          } else {
-            throw new Error("Failed to find '$apply' on '$rootScope'!");
-          }
-          return rootScope = rootScopeDelegate;
-        }]);
-      }]).run(['$injector', '$rootScope', function(injector, rootScope) {
-        ng1Injector = injector;
-        async_1.ObservableWrapper.subscribe(ngZone.onTurnDone, function(_) {
-          ngZone.run(function() {
-            return rootScope.$apply();
-          });
-        });
-        ng1compilePromise = upgrade_ng1_adapter_1.UpgradeNg1ComponentAdapterBuilder.resolve(_this.downgradedComponents, injector);
-      }]);
-      angular.element(element).data(util_1.controllerKey(constants_1.NG2_INJECTOR), injector);
-      ngZone.run(function() {
-        angular.bootstrap(element, [_this.idPrefix], config);
-      });
-      Promise.all([this.compileNg2Components(compiler, protoViewRefMap), ng1compilePromise]).then(function() {
-        ngZone.run(function() {
-          if (rootScopePrototype) {
-            rootScopePrototype.$apply = original$applyFn;
-            while (delayApplyExps.length) {
-              rootScope.$apply(delayApplyExps.shift());
-            }
-            upgrade._bootstrapDone(applicationRef, ng1Injector);
-            rootScopePrototype = null;
-          }
-        });
-      }, util_1.onError);
-      return upgrade;
-    };
-    UpgradeAdapter.prototype.addProvider = function(provider) {
-      this.providers.push(provider);
-    };
-    UpgradeAdapter.prototype.upgradeNg1Provider = function(name, options) {
-      var token = options && options.asToken || name;
-      this.providers.push(core_1.provide(token, {
-        useFactory: function(ng1Injector) {
-          return ng1Injector.get(name);
-        },
-        deps: [constants_1.NG1_INJECTOR]
-      }));
-    };
-    UpgradeAdapter.prototype.downgradeNg2Provider = function(token) {
-      var factory = function(injector) {
-        return injector.get(token);
-      };
-      factory.$inject = [constants_1.NG2_INJECTOR];
-      return factory;
-    };
-    UpgradeAdapter.prototype.compileNg2Components = function(compiler, protoViewRefMap) {
-      var _this = this;
-      var promises = [];
-      var types = this.upgradedComponents;
-      for (var i = 0; i < types.length; i++) {
-        promises.push(compiler.compileInHost(types[i]));
-      }
-      return Promise.all(promises).then(function(protoViews) {
-        var types = _this.upgradedComponents;
-        for (var i = 0; i < protoViews.length; i++) {
-          protoViewRefMap[metadata_1.getComponentInfo(types[i]).selector] = protoViews[i];
-        }
-        return protoViewRefMap;
-      }, util_1.onError);
-    };
-    return UpgradeAdapter;
-  })();
-  exports.UpgradeAdapter = UpgradeAdapter;
-  function ng1ComponentDirective(info, idPrefix) {
-    directiveFactory.$inject = [constants_1.NG2_PROTO_VIEW_REF_MAP, constants_1.NG2_APP_VIEW_MANAGER, constants_1.NG1_PARSE];
-    function directiveFactory(protoViewRefMap, viewManager, parse) {
-      var protoView = protoViewRefMap[info.selector];
-      if (!protoView)
-        throw new Error('Expecting ProtoViewRef for: ' + info.selector);
-      var idCount = 0;
-      return {
-        restrict: 'E',
-        require: constants_1.REQUIRE_INJECTOR,
-        link: {post: function(scope, element, attrs, parentInjector, transclude) {
-            var domElement = element[0];
-            var facade = new downgrade_ng2_adapter_1.DowngradeNg2ComponentAdapter(idPrefix + (idCount++), info, element, attrs, scope, parentInjector, parse, viewManager, protoView);
-            facade.setupInputs();
-            facade.bootstrapNg2();
-            facade.projectContent();
-            facade.setupOutputs();
-            facade.registerCleanup();
-          }}
-      };
-    }
-    return directiveFactory;
-  }
-  var UpgradeAdapterRef = (function() {
-    function UpgradeAdapterRef() {
-      this._readyFn = null;
-      this.ng1RootScope = null;
-      this.ng1Injector = null;
-      this.ng2ApplicationRef = null;
-      this.ng2Injector = null;
-    }
-    UpgradeAdapterRef.prototype._bootstrapDone = function(applicationRef, ng1Injector) {
-      this.ng2ApplicationRef = applicationRef;
-      this.ng2Injector = applicationRef.injector;
-      this.ng1Injector = ng1Injector;
-      this.ng1RootScope = ng1Injector.get(constants_1.NG1_ROOT_SCOPE);
-      this._readyFn && this._readyFn(this);
-    };
-    UpgradeAdapterRef.prototype.ready = function(fn) {
-      this._readyFn = fn;
-    };
-    UpgradeAdapterRef.prototype.dispose = function() {
-      this.ng1Injector.get(constants_1.NG1_ROOT_SCOPE).$destroy();
-      this.ng2ApplicationRef.dispose();
-    };
-    return UpgradeAdapterRef;
-  })();
-  exports.UpgradeAdapterRef = UpgradeAdapterRef;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/Subscriber", ["rxjs/util/noop", "rxjs/util/throwError", "rxjs/util/tryOrOnError", "rxjs/Subscription", "rxjs/symbol/rxSubscriber"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var noop_1 = require("rxjs/util/noop");
-  var throwError_1 = require("rxjs/util/throwError");
-  var tryOrOnError_1 = require("rxjs/util/tryOrOnError");
-  var Subscription_1 = require("rxjs/Subscription");
-  var rxSubscriber_1 = require("rxjs/symbol/rxSubscriber");
-  var Subscriber = (function(_super) {
-    __extends(Subscriber, _super);
-    function Subscriber(destination) {
-      _super.call(this);
-      this.destination = destination;
-      this._isUnsubscribed = false;
-      if (!this.destination) {
-        return ;
-      }
-      var subscription = destination._subscription;
-      if (subscription) {
-        this._subscription = subscription;
-      } else if (destination instanceof Subscriber) {
-        this._subscription = destination;
-      }
-    }
-    Subscriber.prototype[rxSubscriber_1.rxSubscriber] = function() {
-      return this;
-    };
-    Object.defineProperty(Subscriber.prototype, "isUnsubscribed", {
-      get: function() {
-        var subscription = this._subscription;
-        if (subscription) {
-          return this._isUnsubscribed || subscription.isUnsubscribed;
-        } else {
-          return this._isUnsubscribed;
-        }
-      },
-      set: function(value) {
-        var subscription = this._subscription;
-        if (subscription) {
-          subscription.isUnsubscribed = Boolean(value);
-        } else {
-          this._isUnsubscribed = Boolean(value);
-        }
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Subscriber.create = function(next, error, complete) {
-      var subscriber = new Subscriber();
-      subscriber._next = (typeof next === 'function') && tryOrOnError_1.tryOrOnError(next) || noop_1.noop;
-      subscriber._error = (typeof error === 'function') && error || throwError_1.throwError;
-      subscriber._complete = (typeof complete === 'function') && complete || noop_1.noop;
-      return subscriber;
-    };
-    Subscriber.prototype.add = function(sub) {
-      var _subscription = this._subscription;
-      if (_subscription) {
-        _subscription.add(sub);
-      } else {
-        _super.prototype.add.call(this, sub);
-      }
-    };
-    Subscriber.prototype.remove = function(sub) {
-      if (this._subscription) {
-        this._subscription.remove(sub);
-      } else {
-        _super.prototype.remove.call(this, sub);
-      }
-    };
-    Subscriber.prototype.unsubscribe = function() {
-      if (this._isUnsubscribed) {
-        return ;
-      } else if (this._subscription) {
-        this._isUnsubscribed = true;
-      } else {
-        _super.prototype.unsubscribe.call(this);
-      }
-    };
-    Subscriber.prototype._next = function(value) {
-      var destination = this.destination;
-      if (destination.next) {
-        destination.next(value);
-      }
-    };
-    Subscriber.prototype._error = function(err) {
-      var destination = this.destination;
-      if (destination.error) {
-        destination.error(err);
-      }
-    };
-    Subscriber.prototype._complete = function() {
-      var destination = this.destination;
-      if (destination.complete) {
-        destination.complete();
-      }
-    };
-    Subscriber.prototype.next = function(value) {
-      if (!this.isUnsubscribed) {
-        this._next(value);
-      }
-    };
-    Subscriber.prototype.error = function(err) {
-      if (!this.isUnsubscribed) {
-        this._error(err);
-        this.unsubscribe();
-      }
-    };
-    Subscriber.prototype.complete = function() {
-      if (!this.isUnsubscribed) {
-        this._complete();
-        this.unsubscribe();
-      }
-    };
-    return Subscriber;
-  })(Subscription_1.Subscription);
-  exports.Subscriber = Subscriber;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/observable/fromPromise", ["rxjs/Observable", "rxjs/Subscription", "rxjs/scheduler/queue"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var Observable_1 = require("rxjs/Observable");
-  var Subscription_1 = require("rxjs/Subscription");
-  var queue_1 = require("rxjs/scheduler/queue");
-  var PromiseObservable = (function(_super) {
-    __extends(PromiseObservable, _super);
-    function PromiseObservable(promise, scheduler) {
-      if (scheduler === void 0) {
-        scheduler = queue_1.queue;
-      }
-      _super.call(this);
-      this.promise = promise;
-      this.scheduler = scheduler;
-      this._isScalar = false;
-    }
-    PromiseObservable.create = function(promise, scheduler) {
-      if (scheduler === void 0) {
-        scheduler = queue_1.queue;
-      }
-      return new PromiseObservable(promise, scheduler);
-    };
-    PromiseObservable.prototype._subscribe = function(subscriber) {
-      var _this = this;
-      var scheduler = this.scheduler;
-      var promise = this.promise;
-      if (scheduler === queue_1.queue) {
-        if (this._isScalar) {
-          subscriber.next(this.value);
-          subscriber.complete();
-        } else {
-          promise.then(function(value) {
-            _this._isScalar = true;
-            _this.value = value;
-            subscriber.next(value);
-            subscriber.complete();
-          }, function(err) {
-            return subscriber.error(err);
-          }).then(null, function(err) {
-            setTimeout(function() {
-              throw err;
-            });
-          });
-        }
-      } else {
-        var subscription = new Subscription_1.Subscription();
-        if (this._isScalar) {
-          var value = this.value;
-          subscription.add(scheduler.schedule(dispatchNext, 0, {
-            value: value,
-            subscriber: subscriber
-          }));
-        } else {
-          promise.then(function(value) {
-            _this._isScalar = true;
-            _this.value = value;
-            subscription.add(scheduler.schedule(dispatchNext, 0, {
-              value: value,
-              subscriber: subscriber
-            }));
-          }, function(err) {
-            return subscription.add(scheduler.schedule(dispatchError, 0, {
-              err: err,
-              subscriber: subscriber
-            }));
-          }).then(null, function(err) {
-            scheduler.schedule(function() {
-              throw err;
-            });
-          });
-        }
-        return subscription;
-      }
-    };
-    return PromiseObservable;
-  })(Observable_1.Observable);
-  exports.PromiseObservable = PromiseObservable;
-  function dispatchNext(_a) {
-    var value = _a.value,
-        subscriber = _a.subscriber;
-    subscriber.next(value);
-    subscriber.complete();
-  }
-  function dispatchError(_a) {
-    var err = _a.err,
-        subscriber = _a.subscriber;
-    subscriber.error(err);
   }
   global.define = __define;
   return module.exports;
@@ -24584,6 +24296,239 @@ System.register("angular2/src/core/change_detection/jit_proto_change_detector", 
     return JitProtoChangeDetector;
   })();
   exports.JitProtoChangeDetector = JitProtoChangeDetector;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/Subscriber", ["rxjs/util/noop", "rxjs/util/throwError", "rxjs/util/tryOrOnError", "rxjs/Subscription", "rxjs/symbol/rxSubscriber"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var noop_1 = require("rxjs/util/noop");
+  var throwError_1 = require("rxjs/util/throwError");
+  var tryOrOnError_1 = require("rxjs/util/tryOrOnError");
+  var Subscription_1 = require("rxjs/Subscription");
+  var rxSubscriber_1 = require("rxjs/symbol/rxSubscriber");
+  var Subscriber = (function(_super) {
+    __extends(Subscriber, _super);
+    function Subscriber(destination) {
+      _super.call(this);
+      this.destination = destination;
+      this._isUnsubscribed = false;
+      if (!this.destination) {
+        return ;
+      }
+      var subscription = destination._subscription;
+      if (subscription) {
+        this._subscription = subscription;
+      } else if (destination instanceof Subscriber) {
+        this._subscription = destination;
+      }
+    }
+    Subscriber.prototype[rxSubscriber_1.rxSubscriber] = function() {
+      return this;
+    };
+    Object.defineProperty(Subscriber.prototype, "isUnsubscribed", {
+      get: function() {
+        var subscription = this._subscription;
+        if (subscription) {
+          return this._isUnsubscribed || subscription.isUnsubscribed;
+        } else {
+          return this._isUnsubscribed;
+        }
+      },
+      set: function(value) {
+        var subscription = this._subscription;
+        if (subscription) {
+          subscription.isUnsubscribed = Boolean(value);
+        } else {
+          this._isUnsubscribed = Boolean(value);
+        }
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Subscriber.create = function(next, error, complete) {
+      var subscriber = new Subscriber();
+      subscriber._next = (typeof next === 'function') && tryOrOnError_1.tryOrOnError(next) || noop_1.noop;
+      subscriber._error = (typeof error === 'function') && error || throwError_1.throwError;
+      subscriber._complete = (typeof complete === 'function') && complete || noop_1.noop;
+      return subscriber;
+    };
+    Subscriber.prototype.add = function(sub) {
+      var _subscription = this._subscription;
+      if (_subscription) {
+        _subscription.add(sub);
+      } else {
+        _super.prototype.add.call(this, sub);
+      }
+    };
+    Subscriber.prototype.remove = function(sub) {
+      if (this._subscription) {
+        this._subscription.remove(sub);
+      } else {
+        _super.prototype.remove.call(this, sub);
+      }
+    };
+    Subscriber.prototype.unsubscribe = function() {
+      if (this._isUnsubscribed) {
+        return ;
+      } else if (this._subscription) {
+        this._isUnsubscribed = true;
+      } else {
+        _super.prototype.unsubscribe.call(this);
+      }
+    };
+    Subscriber.prototype._next = function(value) {
+      var destination = this.destination;
+      if (destination.next) {
+        destination.next(value);
+      }
+    };
+    Subscriber.prototype._error = function(err) {
+      var destination = this.destination;
+      if (destination.error) {
+        destination.error(err);
+      }
+    };
+    Subscriber.prototype._complete = function() {
+      var destination = this.destination;
+      if (destination.complete) {
+        destination.complete();
+      }
+    };
+    Subscriber.prototype.next = function(value) {
+      if (!this.isUnsubscribed) {
+        this._next(value);
+      }
+    };
+    Subscriber.prototype.error = function(err) {
+      if (!this.isUnsubscribed) {
+        this._error(err);
+        this.unsubscribe();
+      }
+    };
+    Subscriber.prototype.complete = function() {
+      if (!this.isUnsubscribed) {
+        this._complete();
+        this.unsubscribe();
+      }
+    };
+    return Subscriber;
+  })(Subscription_1.Subscription);
+  exports.Subscriber = Subscriber;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/observable/fromPromise", ["rxjs/Observable", "rxjs/Subscription", "rxjs/scheduler/queue"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var Observable_1 = require("rxjs/Observable");
+  var Subscription_1 = require("rxjs/Subscription");
+  var queue_1 = require("rxjs/scheduler/queue");
+  var PromiseObservable = (function(_super) {
+    __extends(PromiseObservable, _super);
+    function PromiseObservable(promise, scheduler) {
+      if (scheduler === void 0) {
+        scheduler = queue_1.queue;
+      }
+      _super.call(this);
+      this.promise = promise;
+      this.scheduler = scheduler;
+      this._isScalar = false;
+    }
+    PromiseObservable.create = function(promise, scheduler) {
+      if (scheduler === void 0) {
+        scheduler = queue_1.queue;
+      }
+      return new PromiseObservable(promise, scheduler);
+    };
+    PromiseObservable.prototype._subscribe = function(subscriber) {
+      var _this = this;
+      var scheduler = this.scheduler;
+      var promise = this.promise;
+      if (scheduler === queue_1.queue) {
+        if (this._isScalar) {
+          subscriber.next(this.value);
+          subscriber.complete();
+        } else {
+          promise.then(function(value) {
+            _this._isScalar = true;
+            _this.value = value;
+            subscriber.next(value);
+            subscriber.complete();
+          }, function(err) {
+            return subscriber.error(err);
+          }).then(null, function(err) {
+            setTimeout(function() {
+              throw err;
+            });
+          });
+        }
+      } else {
+        var subscription = new Subscription_1.Subscription();
+        if (this._isScalar) {
+          var value = this.value;
+          subscription.add(scheduler.schedule(dispatchNext, 0, {
+            value: value,
+            subscriber: subscriber
+          }));
+        } else {
+          promise.then(function(value) {
+            _this._isScalar = true;
+            _this.value = value;
+            subscription.add(scheduler.schedule(dispatchNext, 0, {
+              value: value,
+              subscriber: subscriber
+            }));
+          }, function(err) {
+            return subscription.add(scheduler.schedule(dispatchError, 0, {
+              err: err,
+              subscriber: subscriber
+            }));
+          }).then(null, function(err) {
+            scheduler.schedule(function() {
+              throw err;
+            });
+          });
+        }
+        return subscription;
+      }
+    };
+    return PromiseObservable;
+  })(Observable_1.Observable);
+  exports.PromiseObservable = PromiseObservable;
+  function dispatchNext(_a) {
+    var value = _a.value,
+        subscriber = _a.subscriber;
+    subscriber.next(value);
+    subscriber.complete();
+  }
+  function dispatchError(_a) {
+    var err = _a.err,
+        subscriber = _a.subscriber;
+    subscriber.error(err);
+  }
   global.define = __define;
   return module.exports;
 });
@@ -26773,105 +26718,6 @@ System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/c
   return module.exports;
 });
 
-System.register("angular2/upgrade", ["angular2/src/upgrade/upgrade_adapter"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var upgrade_adapter_1 = require("angular2/src/upgrade/upgrade_adapter");
-  exports.UpgradeAdapter = upgrade_adapter_1.UpgradeAdapter;
-  exports.UpgradeAdapterRef = upgrade_adapter_1.UpgradeAdapterRef;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("rxjs/Observable", ["rxjs/Subscriber", "rxjs/util/root", "rxjs/util/SymbolShim", "rxjs/symbol/rxSubscriber"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var Subscriber_1 = require("rxjs/Subscriber");
-  var root_1 = require("rxjs/util/root");
-  var SymbolShim_1 = require("rxjs/util/SymbolShim");
-  var rxSubscriber_1 = require("rxjs/symbol/rxSubscriber");
-  var Observable = (function() {
-    function Observable(subscribe) {
-      this._isScalar = false;
-      if (subscribe) {
-        this._subscribe = subscribe;
-      }
-    }
-    Observable.prototype.lift = function(operator) {
-      var observable = new Observable();
-      observable.source = this;
-      observable.operator = operator;
-      return observable;
-    };
-    Observable.prototype[SymbolShim_1.SymbolShim.observable] = function() {
-      return this;
-    };
-    Observable.prototype.subscribe = function(observerOrNext, error, complete) {
-      var subscriber;
-      if (observerOrNext && typeof observerOrNext === 'object') {
-        if (observerOrNext instanceof Subscriber_1.Subscriber) {
-          subscriber = observerOrNext;
-        } else if (observerOrNext[rxSubscriber_1.rxSubscriber]) {
-          subscriber = observerOrNext[rxSubscriber_1.rxSubscriber]();
-        } else {
-          subscriber = new Subscriber_1.Subscriber(observerOrNext);
-        }
-      } else {
-        var next = observerOrNext;
-        subscriber = Subscriber_1.Subscriber.create(next, error, complete);
-      }
-      subscriber.add(this._subscribe(subscriber));
-      return subscriber;
-    };
-    Observable.prototype.forEach = function(next, thisArg, PromiseCtor) {
-      if (!PromiseCtor) {
-        if (root_1.root.Rx && root_1.root.Rx.config && root_1.root.Rx.config.Promise) {
-          PromiseCtor = root_1.root.Rx.config.Promise;
-        } else if (root_1.root.Promise) {
-          PromiseCtor = root_1.root.Promise;
-        }
-      }
-      if (!PromiseCtor) {
-        throw new Error('no Promise impl found');
-      }
-      var nextHandler;
-      if (thisArg) {
-        nextHandler = function nextHandlerFn(value) {
-          var _a = nextHandlerFn,
-              thisArg = _a.thisArg,
-              next = _a.next;
-          return next.call(thisArg, value);
-        };
-        nextHandler.thisArg = thisArg;
-        nextHandler.next = next;
-      } else {
-        nextHandler = next;
-      }
-      var promiseCallback = function promiseCallbackFn(resolve, reject) {
-        var _a = promiseCallbackFn,
-            source = _a.source,
-            nextHandler = _a.nextHandler;
-        source.subscribe(nextHandler, reject, resolve);
-      };
-      promiseCallback.source = this;
-      promiseCallback.nextHandler = nextHandler;
-      return new PromiseCtor(promiseCallback);
-    };
-    Observable.prototype._subscribe = function(subscriber) {
-      return this.source._subscribe(this.operator.call(subscriber));
-    };
-    Observable.create = function(subscribe) {
-      return new Observable(subscribe);
-    };
-    return Observable;
-  })();
-  exports.Observable = Observable;
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/src/core/di", ["angular2/src/core/di/metadata", "angular2/src/core/di/decorators", "angular2/src/core/di/forward_ref", "angular2/src/core/di/injector", "angular2/src/core/di/provider", "angular2/src/core/di/key", "angular2/src/core/di/exceptions", "angular2/src/core/di/opaque_token"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -27325,6 +27171,94 @@ System.register("angular2/src/core/change_detection/proto_change_detector", ["an
   return module.exports;
 });
 
+System.register("rxjs/Observable", ["rxjs/Subscriber", "rxjs/util/root", "rxjs/util/SymbolShim", "rxjs/symbol/rxSubscriber"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var Subscriber_1 = require("rxjs/Subscriber");
+  var root_1 = require("rxjs/util/root");
+  var SymbolShim_1 = require("rxjs/util/SymbolShim");
+  var rxSubscriber_1 = require("rxjs/symbol/rxSubscriber");
+  var Observable = (function() {
+    function Observable(subscribe) {
+      this._isScalar = false;
+      if (subscribe) {
+        this._subscribe = subscribe;
+      }
+    }
+    Observable.prototype.lift = function(operator) {
+      var observable = new Observable();
+      observable.source = this;
+      observable.operator = operator;
+      return observable;
+    };
+    Observable.prototype[SymbolShim_1.SymbolShim.observable] = function() {
+      return this;
+    };
+    Observable.prototype.subscribe = function(observerOrNext, error, complete) {
+      var subscriber;
+      if (observerOrNext && typeof observerOrNext === 'object') {
+        if (observerOrNext instanceof Subscriber_1.Subscriber) {
+          subscriber = observerOrNext;
+        } else if (observerOrNext[rxSubscriber_1.rxSubscriber]) {
+          subscriber = observerOrNext[rxSubscriber_1.rxSubscriber]();
+        } else {
+          subscriber = new Subscriber_1.Subscriber(observerOrNext);
+        }
+      } else {
+        var next = observerOrNext;
+        subscriber = Subscriber_1.Subscriber.create(next, error, complete);
+      }
+      subscriber.add(this._subscribe(subscriber));
+      return subscriber;
+    };
+    Observable.prototype.forEach = function(next, thisArg, PromiseCtor) {
+      if (!PromiseCtor) {
+        if (root_1.root.Rx && root_1.root.Rx.config && root_1.root.Rx.config.Promise) {
+          PromiseCtor = root_1.root.Rx.config.Promise;
+        } else if (root_1.root.Promise) {
+          PromiseCtor = root_1.root.Promise;
+        }
+      }
+      if (!PromiseCtor) {
+        throw new Error('no Promise impl found');
+      }
+      var nextHandler;
+      if (thisArg) {
+        nextHandler = function nextHandlerFn(value) {
+          var _a = nextHandlerFn,
+              thisArg = _a.thisArg,
+              next = _a.next;
+          return next.call(thisArg, value);
+        };
+        nextHandler.thisArg = thisArg;
+        nextHandler.next = next;
+      } else {
+        nextHandler = next;
+      }
+      var promiseCallback = function promiseCallbackFn(resolve, reject) {
+        var _a = promiseCallbackFn,
+            source = _a.source,
+            nextHandler = _a.nextHandler;
+        source.subscribe(nextHandler, reject, resolve);
+      };
+      promiseCallback.source = this;
+      promiseCallback.nextHandler = nextHandler;
+      return new PromiseCtor(promiseCallback);
+    };
+    Observable.prototype._subscribe = function(subscriber) {
+      return this.source._subscribe(this.operator.call(subscriber));
+    };
+    Observable.create = function(subscribe) {
+      return new Observable(subscribe);
+    };
+    return Observable;
+  })();
+  exports.Observable = Observable;
+  global.define = __define;
+  return module.exports;
+});
+
 System.register("angular2/src/core/linker/proto_view_factory", ["angular2/src/facade/lang", "angular2/src/core/render/api", "angular2/src/core/di", "angular2/src/core/pipes/pipe_provider", "angular2/src/core/pipes/pipes", "angular2/src/core/linker/view", "angular2/src/core/linker/element_binder", "angular2/src/core/linker/element_injector", "angular2/src/core/linker/directive_resolver", "angular2/src/core/linker/view_resolver", "angular2/src/core/linker/pipe_resolver", "angular2/src/core/metadata/view", "angular2/src/core/platform_directives_and_pipes", "angular2/src/core/linker/template_commands", "angular2/src/core/render/api", "angular2/src/core/application_tokens"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -27626,6 +27560,23 @@ System.register("angular2/src/core/linker/proto_view_factory", ["angular2/src/fa
     }
     return out;
   }
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/common", ["angular2/src/common/pipes", "angular2/src/common/directives", "angular2/src/common/forms", "angular2/src/common/common_directives"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  function __export(m) {
+    for (var p in m)
+      if (!exports.hasOwnProperty(p))
+        exports[p] = m[p];
+  }
+  __export(require("angular2/src/common/pipes"));
+  __export(require("angular2/src/common/directives"));
+  __export(require("angular2/src/common/forms"));
+  __export(require("angular2/src/common/common_directives"));
   global.define = __define;
   return module.exports;
 });
@@ -28213,6 +28164,243 @@ System.register("angular2/src/compiler/template_compiler", ["angular2/src/facade
   return module.exports;
 });
 
+System.register("angular2/src/core/metadata/di", ["angular2/src/facade/lang", "angular2/src/core/di", "angular2/src/core/di/metadata"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var lang_1 = require("angular2/src/facade/lang");
+  var di_1 = require("angular2/src/core/di");
+  var metadata_1 = require("angular2/src/core/di/metadata");
+  var AttributeMetadata = (function(_super) {
+    __extends(AttributeMetadata, _super);
+    function AttributeMetadata(attributeName) {
+      _super.call(this);
+      this.attributeName = attributeName;
+    }
+    Object.defineProperty(AttributeMetadata.prototype, "token", {
+      get: function() {
+        return this;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    AttributeMetadata.prototype.toString = function() {
+      return "@Attribute(" + lang_1.stringify(this.attributeName) + ")";
+    };
+    AttributeMetadata = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [String])], AttributeMetadata);
+    return AttributeMetadata;
+  })(metadata_1.DependencyMetadata);
+  exports.AttributeMetadata = AttributeMetadata;
+  var QueryMetadata = (function(_super) {
+    __extends(QueryMetadata, _super);
+    function QueryMetadata(_selector, _a) {
+      var _b = _a === void 0 ? {} : _a,
+          _c = _b.descendants,
+          descendants = _c === void 0 ? false : _c,
+          _d = _b.first,
+          first = _d === void 0 ? false : _d;
+      _super.call(this);
+      this._selector = _selector;
+      this.descendants = descendants;
+      this.first = first;
+    }
+    Object.defineProperty(QueryMetadata.prototype, "isViewQuery", {
+      get: function() {
+        return false;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(QueryMetadata.prototype, "selector", {
+      get: function() {
+        return di_1.resolveForwardRef(this._selector);
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(QueryMetadata.prototype, "isVarBindingQuery", {
+      get: function() {
+        return lang_1.isString(this.selector);
+      },
+      enumerable: true,
+      configurable: true
+    });
+    Object.defineProperty(QueryMetadata.prototype, "varBindings", {
+      get: function() {
+        return this.selector.split(',');
+      },
+      enumerable: true,
+      configurable: true
+    });
+    QueryMetadata.prototype.toString = function() {
+      return "@Query(" + lang_1.stringify(this.selector) + ")";
+    };
+    QueryMetadata = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [Object, Object])], QueryMetadata);
+    return QueryMetadata;
+  })(metadata_1.DependencyMetadata);
+  exports.QueryMetadata = QueryMetadata;
+  var ContentChildrenMetadata = (function(_super) {
+    __extends(ContentChildrenMetadata, _super);
+    function ContentChildrenMetadata(_selector, _a) {
+      var _b = (_a === void 0 ? {} : _a).descendants,
+          descendants = _b === void 0 ? false : _b;
+      _super.call(this, _selector, {descendants: descendants});
+    }
+    ContentChildrenMetadata = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [Object, Object])], ContentChildrenMetadata);
+    return ContentChildrenMetadata;
+  })(QueryMetadata);
+  exports.ContentChildrenMetadata = ContentChildrenMetadata;
+  var ContentChildMetadata = (function(_super) {
+    __extends(ContentChildMetadata, _super);
+    function ContentChildMetadata(_selector) {
+      _super.call(this, _selector, {
+        descendants: true,
+        first: true
+      });
+    }
+    ContentChildMetadata = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [Object])], ContentChildMetadata);
+    return ContentChildMetadata;
+  })(QueryMetadata);
+  exports.ContentChildMetadata = ContentChildMetadata;
+  var ViewQueryMetadata = (function(_super) {
+    __extends(ViewQueryMetadata, _super);
+    function ViewQueryMetadata(_selector, _a) {
+      var _b = _a === void 0 ? {} : _a,
+          _c = _b.descendants,
+          descendants = _c === void 0 ? false : _c,
+          _d = _b.first,
+          first = _d === void 0 ? false : _d;
+      _super.call(this, _selector, {
+        descendants: descendants,
+        first: first
+      });
+    }
+    Object.defineProperty(ViewQueryMetadata.prototype, "isViewQuery", {
+      get: function() {
+        return true;
+      },
+      enumerable: true,
+      configurable: true
+    });
+    ViewQueryMetadata.prototype.toString = function() {
+      return "@ViewQuery(" + lang_1.stringify(this.selector) + ")";
+    };
+    ViewQueryMetadata = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [Object, Object])], ViewQueryMetadata);
+    return ViewQueryMetadata;
+  })(QueryMetadata);
+  exports.ViewQueryMetadata = ViewQueryMetadata;
+  var ViewChildrenMetadata = (function(_super) {
+    __extends(ViewChildrenMetadata, _super);
+    function ViewChildrenMetadata(_selector) {
+      _super.call(this, _selector, {descendants: true});
+    }
+    ViewChildrenMetadata = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [Object])], ViewChildrenMetadata);
+    return ViewChildrenMetadata;
+  })(ViewQueryMetadata);
+  exports.ViewChildrenMetadata = ViewChildrenMetadata;
+  var ViewChildMetadata = (function(_super) {
+    __extends(ViewChildMetadata, _super);
+    function ViewChildMetadata(_selector) {
+      _super.call(this, _selector, {
+        descendants: true,
+        first: true
+      });
+    }
+    ViewChildMetadata = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [Object])], ViewChildMetadata);
+    return ViewChildMetadata;
+  })(ViewQueryMetadata);
+  exports.ViewChildMetadata = ViewChildMetadata;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/core/change_detection/change_detection", ["angular2/src/core/change_detection/differs/iterable_differs", "angular2/src/core/change_detection/differs/default_iterable_differ", "angular2/src/core/change_detection/differs/keyvalue_differs", "angular2/src/core/change_detection/differs/default_keyvalue_differ", "angular2/src/facade/lang", "angular2/src/core/change_detection/parser/ast", "angular2/src/core/change_detection/parser/lexer", "angular2/src/core/change_detection/parser/parser", "angular2/src/core/change_detection/parser/locals", "angular2/src/core/change_detection/exceptions", "angular2/src/core/change_detection/interfaces", "angular2/src/core/change_detection/constants", "angular2/src/core/change_detection/proto_change_detector", "angular2/src/core/change_detection/jit_proto_change_detector", "angular2/src/core/change_detection/binding_record", "angular2/src/core/change_detection/directive_record", "angular2/src/core/change_detection/dynamic_change_detector", "angular2/src/core/change_detection/change_detector_ref", "angular2/src/core/change_detection/differs/iterable_differs", "angular2/src/core/change_detection/differs/keyvalue_differs", "angular2/src/core/change_detection/change_detection_util"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var iterable_differs_1 = require("angular2/src/core/change_detection/differs/iterable_differs");
+  var default_iterable_differ_1 = require("angular2/src/core/change_detection/differs/default_iterable_differ");
+  var keyvalue_differs_1 = require("angular2/src/core/change_detection/differs/keyvalue_differs");
+  var default_keyvalue_differ_1 = require("angular2/src/core/change_detection/differs/default_keyvalue_differ");
+  var lang_1 = require("angular2/src/facade/lang");
+  var ast_1 = require("angular2/src/core/change_detection/parser/ast");
+  exports.ASTWithSource = ast_1.ASTWithSource;
+  exports.AST = ast_1.AST;
+  exports.AstTransformer = ast_1.AstTransformer;
+  exports.PropertyRead = ast_1.PropertyRead;
+  exports.LiteralArray = ast_1.LiteralArray;
+  exports.ImplicitReceiver = ast_1.ImplicitReceiver;
+  var lexer_1 = require("angular2/src/core/change_detection/parser/lexer");
+  exports.Lexer = lexer_1.Lexer;
+  var parser_1 = require("angular2/src/core/change_detection/parser/parser");
+  exports.Parser = parser_1.Parser;
+  var locals_1 = require("angular2/src/core/change_detection/parser/locals");
+  exports.Locals = locals_1.Locals;
+  var exceptions_1 = require("angular2/src/core/change_detection/exceptions");
+  exports.DehydratedException = exceptions_1.DehydratedException;
+  exports.ExpressionChangedAfterItHasBeenCheckedException = exceptions_1.ExpressionChangedAfterItHasBeenCheckedException;
+  exports.ChangeDetectionError = exceptions_1.ChangeDetectionError;
+  var interfaces_1 = require("angular2/src/core/change_detection/interfaces");
+  exports.ChangeDetectorDefinition = interfaces_1.ChangeDetectorDefinition;
+  exports.DebugContext = interfaces_1.DebugContext;
+  exports.ChangeDetectorGenConfig = interfaces_1.ChangeDetectorGenConfig;
+  var constants_1 = require("angular2/src/core/change_detection/constants");
+  exports.ChangeDetectionStrategy = constants_1.ChangeDetectionStrategy;
+  exports.CHANGE_DETECTION_STRATEGY_VALUES = constants_1.CHANGE_DETECTION_STRATEGY_VALUES;
+  var proto_change_detector_1 = require("angular2/src/core/change_detection/proto_change_detector");
+  exports.DynamicProtoChangeDetector = proto_change_detector_1.DynamicProtoChangeDetector;
+  var jit_proto_change_detector_1 = require("angular2/src/core/change_detection/jit_proto_change_detector");
+  exports.JitProtoChangeDetector = jit_proto_change_detector_1.JitProtoChangeDetector;
+  var binding_record_1 = require("angular2/src/core/change_detection/binding_record");
+  exports.BindingRecord = binding_record_1.BindingRecord;
+  exports.BindingTarget = binding_record_1.BindingTarget;
+  var directive_record_1 = require("angular2/src/core/change_detection/directive_record");
+  exports.DirectiveIndex = directive_record_1.DirectiveIndex;
+  exports.DirectiveRecord = directive_record_1.DirectiveRecord;
+  var dynamic_change_detector_1 = require("angular2/src/core/change_detection/dynamic_change_detector");
+  exports.DynamicChangeDetector = dynamic_change_detector_1.DynamicChangeDetector;
+  var change_detector_ref_1 = require("angular2/src/core/change_detection/change_detector_ref");
+  exports.ChangeDetectorRef = change_detector_ref_1.ChangeDetectorRef;
+  var iterable_differs_2 = require("angular2/src/core/change_detection/differs/iterable_differs");
+  exports.IterableDiffers = iterable_differs_2.IterableDiffers;
+  var keyvalue_differs_2 = require("angular2/src/core/change_detection/differs/keyvalue_differs");
+  exports.KeyValueDiffers = keyvalue_differs_2.KeyValueDiffers;
+  var change_detection_util_1 = require("angular2/src/core/change_detection/change_detection_util");
+  exports.WrappedValue = change_detection_util_1.WrappedValue;
+  exports.SimpleChange = change_detection_util_1.SimpleChange;
+  exports.keyValDiff = lang_1.CONST_EXPR([lang_1.CONST_EXPR(new default_keyvalue_differ_1.DefaultKeyValueDifferFactory())]);
+  exports.iterableDiff = lang_1.CONST_EXPR([lang_1.CONST_EXPR(new default_iterable_differ_1.DefaultIterableDifferFactory())]);
+  exports.defaultIterableDiffers = lang_1.CONST_EXPR(new iterable_differs_1.IterableDiffers(exports.iterableDiff));
+  exports.defaultKeyValueDiffers = lang_1.CONST_EXPR(new keyvalue_differs_1.KeyValueDiffers(exports.keyValDiff));
+  global.define = __define;
+  return module.exports;
+});
+
 /**
  @license
 Apache License
@@ -28596,243 +28784,6 @@ System.register("rxjs/Subject", ["rxjs/Observable", "rxjs/Subscriber", "rxjs/Sub
   return module.exports;
 });
 
-System.register("angular2/src/core/metadata/di", ["angular2/src/facade/lang", "angular2/src/core/di", "angular2/src/core/di/metadata"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var lang_1 = require("angular2/src/facade/lang");
-  var di_1 = require("angular2/src/core/di");
-  var metadata_1 = require("angular2/src/core/di/metadata");
-  var AttributeMetadata = (function(_super) {
-    __extends(AttributeMetadata, _super);
-    function AttributeMetadata(attributeName) {
-      _super.call(this);
-      this.attributeName = attributeName;
-    }
-    Object.defineProperty(AttributeMetadata.prototype, "token", {
-      get: function() {
-        return this;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    AttributeMetadata.prototype.toString = function() {
-      return "@Attribute(" + lang_1.stringify(this.attributeName) + ")";
-    };
-    AttributeMetadata = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [String])], AttributeMetadata);
-    return AttributeMetadata;
-  })(metadata_1.DependencyMetadata);
-  exports.AttributeMetadata = AttributeMetadata;
-  var QueryMetadata = (function(_super) {
-    __extends(QueryMetadata, _super);
-    function QueryMetadata(_selector, _a) {
-      var _b = _a === void 0 ? {} : _a,
-          _c = _b.descendants,
-          descendants = _c === void 0 ? false : _c,
-          _d = _b.first,
-          first = _d === void 0 ? false : _d;
-      _super.call(this);
-      this._selector = _selector;
-      this.descendants = descendants;
-      this.first = first;
-    }
-    Object.defineProperty(QueryMetadata.prototype, "isViewQuery", {
-      get: function() {
-        return false;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(QueryMetadata.prototype, "selector", {
-      get: function() {
-        return di_1.resolveForwardRef(this._selector);
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(QueryMetadata.prototype, "isVarBindingQuery", {
-      get: function() {
-        return lang_1.isString(this.selector);
-      },
-      enumerable: true,
-      configurable: true
-    });
-    Object.defineProperty(QueryMetadata.prototype, "varBindings", {
-      get: function() {
-        return this.selector.split(',');
-      },
-      enumerable: true,
-      configurable: true
-    });
-    QueryMetadata.prototype.toString = function() {
-      return "@Query(" + lang_1.stringify(this.selector) + ")";
-    };
-    QueryMetadata = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [Object, Object])], QueryMetadata);
-    return QueryMetadata;
-  })(metadata_1.DependencyMetadata);
-  exports.QueryMetadata = QueryMetadata;
-  var ContentChildrenMetadata = (function(_super) {
-    __extends(ContentChildrenMetadata, _super);
-    function ContentChildrenMetadata(_selector, _a) {
-      var _b = (_a === void 0 ? {} : _a).descendants,
-          descendants = _b === void 0 ? false : _b;
-      _super.call(this, _selector, {descendants: descendants});
-    }
-    ContentChildrenMetadata = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [Object, Object])], ContentChildrenMetadata);
-    return ContentChildrenMetadata;
-  })(QueryMetadata);
-  exports.ContentChildrenMetadata = ContentChildrenMetadata;
-  var ContentChildMetadata = (function(_super) {
-    __extends(ContentChildMetadata, _super);
-    function ContentChildMetadata(_selector) {
-      _super.call(this, _selector, {
-        descendants: true,
-        first: true
-      });
-    }
-    ContentChildMetadata = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [Object])], ContentChildMetadata);
-    return ContentChildMetadata;
-  })(QueryMetadata);
-  exports.ContentChildMetadata = ContentChildMetadata;
-  var ViewQueryMetadata = (function(_super) {
-    __extends(ViewQueryMetadata, _super);
-    function ViewQueryMetadata(_selector, _a) {
-      var _b = _a === void 0 ? {} : _a,
-          _c = _b.descendants,
-          descendants = _c === void 0 ? false : _c,
-          _d = _b.first,
-          first = _d === void 0 ? false : _d;
-      _super.call(this, _selector, {
-        descendants: descendants,
-        first: first
-      });
-    }
-    Object.defineProperty(ViewQueryMetadata.prototype, "isViewQuery", {
-      get: function() {
-        return true;
-      },
-      enumerable: true,
-      configurable: true
-    });
-    ViewQueryMetadata.prototype.toString = function() {
-      return "@ViewQuery(" + lang_1.stringify(this.selector) + ")";
-    };
-    ViewQueryMetadata = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [Object, Object])], ViewQueryMetadata);
-    return ViewQueryMetadata;
-  })(QueryMetadata);
-  exports.ViewQueryMetadata = ViewQueryMetadata;
-  var ViewChildrenMetadata = (function(_super) {
-    __extends(ViewChildrenMetadata, _super);
-    function ViewChildrenMetadata(_selector) {
-      _super.call(this, _selector, {descendants: true});
-    }
-    ViewChildrenMetadata = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [Object])], ViewChildrenMetadata);
-    return ViewChildrenMetadata;
-  })(ViewQueryMetadata);
-  exports.ViewChildrenMetadata = ViewChildrenMetadata;
-  var ViewChildMetadata = (function(_super) {
-    __extends(ViewChildMetadata, _super);
-    function ViewChildMetadata(_selector) {
-      _super.call(this, _selector, {
-        descendants: true,
-        first: true
-      });
-    }
-    ViewChildMetadata = __decorate([lang_1.CONST(), __metadata('design:paramtypes', [Object])], ViewChildMetadata);
-    return ViewChildMetadata;
-  })(ViewQueryMetadata);
-  exports.ViewChildMetadata = ViewChildMetadata;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("angular2/src/core/change_detection/change_detection", ["angular2/src/core/change_detection/differs/iterable_differs", "angular2/src/core/change_detection/differs/default_iterable_differ", "angular2/src/core/change_detection/differs/keyvalue_differs", "angular2/src/core/change_detection/differs/default_keyvalue_differ", "angular2/src/facade/lang", "angular2/src/core/change_detection/parser/ast", "angular2/src/core/change_detection/parser/lexer", "angular2/src/core/change_detection/parser/parser", "angular2/src/core/change_detection/parser/locals", "angular2/src/core/change_detection/exceptions", "angular2/src/core/change_detection/interfaces", "angular2/src/core/change_detection/constants", "angular2/src/core/change_detection/proto_change_detector", "angular2/src/core/change_detection/jit_proto_change_detector", "angular2/src/core/change_detection/binding_record", "angular2/src/core/change_detection/directive_record", "angular2/src/core/change_detection/dynamic_change_detector", "angular2/src/core/change_detection/change_detector_ref", "angular2/src/core/change_detection/differs/iterable_differs", "angular2/src/core/change_detection/differs/keyvalue_differs", "angular2/src/core/change_detection/change_detection_util"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var iterable_differs_1 = require("angular2/src/core/change_detection/differs/iterable_differs");
-  var default_iterable_differ_1 = require("angular2/src/core/change_detection/differs/default_iterable_differ");
-  var keyvalue_differs_1 = require("angular2/src/core/change_detection/differs/keyvalue_differs");
-  var default_keyvalue_differ_1 = require("angular2/src/core/change_detection/differs/default_keyvalue_differ");
-  var lang_1 = require("angular2/src/facade/lang");
-  var ast_1 = require("angular2/src/core/change_detection/parser/ast");
-  exports.ASTWithSource = ast_1.ASTWithSource;
-  exports.AST = ast_1.AST;
-  exports.AstTransformer = ast_1.AstTransformer;
-  exports.PropertyRead = ast_1.PropertyRead;
-  exports.LiteralArray = ast_1.LiteralArray;
-  exports.ImplicitReceiver = ast_1.ImplicitReceiver;
-  var lexer_1 = require("angular2/src/core/change_detection/parser/lexer");
-  exports.Lexer = lexer_1.Lexer;
-  var parser_1 = require("angular2/src/core/change_detection/parser/parser");
-  exports.Parser = parser_1.Parser;
-  var locals_1 = require("angular2/src/core/change_detection/parser/locals");
-  exports.Locals = locals_1.Locals;
-  var exceptions_1 = require("angular2/src/core/change_detection/exceptions");
-  exports.DehydratedException = exceptions_1.DehydratedException;
-  exports.ExpressionChangedAfterItHasBeenCheckedException = exceptions_1.ExpressionChangedAfterItHasBeenCheckedException;
-  exports.ChangeDetectionError = exceptions_1.ChangeDetectionError;
-  var interfaces_1 = require("angular2/src/core/change_detection/interfaces");
-  exports.ChangeDetectorDefinition = interfaces_1.ChangeDetectorDefinition;
-  exports.DebugContext = interfaces_1.DebugContext;
-  exports.ChangeDetectorGenConfig = interfaces_1.ChangeDetectorGenConfig;
-  var constants_1 = require("angular2/src/core/change_detection/constants");
-  exports.ChangeDetectionStrategy = constants_1.ChangeDetectionStrategy;
-  exports.CHANGE_DETECTION_STRATEGY_VALUES = constants_1.CHANGE_DETECTION_STRATEGY_VALUES;
-  var proto_change_detector_1 = require("angular2/src/core/change_detection/proto_change_detector");
-  exports.DynamicProtoChangeDetector = proto_change_detector_1.DynamicProtoChangeDetector;
-  var jit_proto_change_detector_1 = require("angular2/src/core/change_detection/jit_proto_change_detector");
-  exports.JitProtoChangeDetector = jit_proto_change_detector_1.JitProtoChangeDetector;
-  var binding_record_1 = require("angular2/src/core/change_detection/binding_record");
-  exports.BindingRecord = binding_record_1.BindingRecord;
-  exports.BindingTarget = binding_record_1.BindingTarget;
-  var directive_record_1 = require("angular2/src/core/change_detection/directive_record");
-  exports.DirectiveIndex = directive_record_1.DirectiveIndex;
-  exports.DirectiveRecord = directive_record_1.DirectiveRecord;
-  var dynamic_change_detector_1 = require("angular2/src/core/change_detection/dynamic_change_detector");
-  exports.DynamicChangeDetector = dynamic_change_detector_1.DynamicChangeDetector;
-  var change_detector_ref_1 = require("angular2/src/core/change_detection/change_detector_ref");
-  exports.ChangeDetectorRef = change_detector_ref_1.ChangeDetectorRef;
-  var iterable_differs_2 = require("angular2/src/core/change_detection/differs/iterable_differs");
-  exports.IterableDiffers = iterable_differs_2.IterableDiffers;
-  var keyvalue_differs_2 = require("angular2/src/core/change_detection/differs/keyvalue_differs");
-  exports.KeyValueDiffers = keyvalue_differs_2.KeyValueDiffers;
-  var change_detection_util_1 = require("angular2/src/core/change_detection/change_detection_util");
-  exports.WrappedValue = change_detection_util_1.WrappedValue;
-  exports.SimpleChange = change_detection_util_1.SimpleChange;
-  exports.keyValDiff = lang_1.CONST_EXPR([lang_1.CONST_EXPR(new default_keyvalue_differ_1.DefaultKeyValueDifferFactory())]);
-  exports.iterableDiff = lang_1.CONST_EXPR([lang_1.CONST_EXPR(new default_iterable_differ_1.DefaultIterableDifferFactory())]);
-  exports.defaultIterableDiffers = lang_1.CONST_EXPR(new iterable_differs_1.IterableDiffers(exports.iterableDiff));
-  exports.defaultKeyValueDiffers = lang_1.CONST_EXPR(new keyvalue_differs_1.KeyValueDiffers(exports.keyValDiff));
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/src/core/linker/compiler", ["angular2/src/core/linker/proto_view_factory", "angular2/src/core/di", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/facade/async", "angular2/src/core/reflection/reflection", "angular2/src/core/linker/template_commands"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -29054,6 +29005,23 @@ System.register("angular2/src/compiler/runtime_compiler", ["angular2/src/core/li
   return module.exports;
 });
 
+System.register("angular2/src/core/change_detection", ["angular2/src/core/change_detection/change_detection"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var change_detection_1 = require("angular2/src/core/change_detection/change_detection");
+  exports.ChangeDetectionStrategy = change_detection_1.ChangeDetectionStrategy;
+  exports.ExpressionChangedAfterItHasBeenCheckedException = change_detection_1.ExpressionChangedAfterItHasBeenCheckedException;
+  exports.ChangeDetectionError = change_detection_1.ChangeDetectionError;
+  exports.ChangeDetectorRef = change_detection_1.ChangeDetectorRef;
+  exports.WrappedValue = change_detection_1.WrappedValue;
+  exports.SimpleChange = change_detection_1.SimpleChange;
+  exports.IterableDiffers = change_detection_1.IterableDiffers;
+  exports.KeyValueDiffers = change_detection_1.KeyValueDiffers;
+  global.define = __define;
+  return module.exports;
+});
+
 System.register("angular2/src/facade/async", ["angular2/src/facade/lang", "angular2/src/facade/promise", "rxjs/Subject", "rxjs/Observable", "rxjs/observable/fromPromise", "rxjs/operator/toPromise", "rxjs/Subject"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -29233,23 +29201,6 @@ System.register("angular2/src/facade/async", ["angular2/src/facade/lang", "angul
     return Observable;
   })(Observable_1.Observable);
   exports.Observable = Observable;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("angular2/src/core/change_detection", ["angular2/src/core/change_detection/change_detection"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var change_detection_1 = require("angular2/src/core/change_detection/change_detection");
-  exports.ChangeDetectionStrategy = change_detection_1.ChangeDetectionStrategy;
-  exports.ExpressionChangedAfterItHasBeenCheckedException = change_detection_1.ExpressionChangedAfterItHasBeenCheckedException;
-  exports.ChangeDetectionError = change_detection_1.ChangeDetectionError;
-  exports.ChangeDetectorRef = change_detection_1.ChangeDetectorRef;
-  exports.WrappedValue = change_detection_1.WrappedValue;
-  exports.SimpleChange = change_detection_1.SimpleChange;
-  exports.IterableDiffers = change_detection_1.IterableDiffers;
-  exports.KeyValueDiffers = change_detection_1.KeyValueDiffers;
   global.define = __define;
   return module.exports;
 });
@@ -29671,6 +29622,23 @@ System.register("angular2/src/core/metadata/directives", ["angular2/src/facade/l
     return HostListenerMetadata;
   })();
   exports.HostListenerMetadata = HostListenerMetadata;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/facade/facade", ["angular2/src/facade/lang", "angular2/src/facade/async", "angular2/src/facade/exceptions", "angular2/src/facade/exception_handler"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var lang_1 = require("angular2/src/facade/lang");
+  exports.Type = lang_1.Type;
+  var async_1 = require("angular2/src/facade/async");
+  exports.Observable = async_1.Observable;
+  exports.EventEmitter = async_1.EventEmitter;
+  var exceptions_1 = require("angular2/src/facade/exceptions");
+  exports.WrappedException = exceptions_1.WrappedException;
+  var exception_handler_1 = require("angular2/src/facade/exception_handler");
+  exports.ExceptionHandler = exception_handler_1.ExceptionHandler;
   global.define = __define;
   return module.exports;
 });
@@ -30186,201 +30154,208 @@ System.register("angular2/core", ["angular2/src/core/metadata", "angular2/src/co
   return module.exports;
 });
 
-System.register("angular2/src/common/pipes/async_pipe", ["angular2/src/facade/lang", "angular2/src/facade/async", "angular2/core", "angular2/src/common/pipes/invalid_pipe_argument_exception"], true, function(require, exports, module) {
+System.register("angular2/src/upgrade/upgrade_adapter", ["angular2/core", "angular2/src/facade/async", "angular2/platform/browser", "angular2/src/upgrade/metadata", "angular2/src/upgrade/util", "angular2/src/upgrade/constants", "angular2/src/upgrade/downgrade_ng2_adapter", "angular2/src/upgrade/upgrade_ng1_adapter", "angular2/src/upgrade/angular_js"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var lang_1 = require("angular2/src/facade/lang");
-  var async_1 = require("angular2/src/facade/async");
   var core_1 = require("angular2/core");
-  var invalid_pipe_argument_exception_1 = require("angular2/src/common/pipes/invalid_pipe_argument_exception");
-  var ObservableStrategy = (function() {
-    function ObservableStrategy() {}
-    ObservableStrategy.prototype.createSubscription = function(async, updateLatestValue) {
-      return async_1.ObservableWrapper.subscribe(async, updateLatestValue, function(e) {
-        throw e;
-      });
-    };
-    ObservableStrategy.prototype.dispose = function(subscription) {
-      async_1.ObservableWrapper.dispose(subscription);
-    };
-    ObservableStrategy.prototype.onDestroy = function(subscription) {
-      async_1.ObservableWrapper.dispose(subscription);
-    };
-    return ObservableStrategy;
-  })();
-  var PromiseStrategy = (function() {
-    function PromiseStrategy() {}
-    PromiseStrategy.prototype.createSubscription = function(async, updateLatestValue) {
-      return async.then(updateLatestValue);
-    };
-    PromiseStrategy.prototype.dispose = function(subscription) {};
-    PromiseStrategy.prototype.onDestroy = function(subscription) {};
-    return PromiseStrategy;
-  })();
-  var _promiseStrategy = new PromiseStrategy();
-  var _observableStrategy = new ObservableStrategy();
-  var AsyncPipe = (function() {
-    function AsyncPipe(_ref) {
-      this._latestValue = null;
-      this._latestReturnedValue = null;
-      this._subscription = null;
-      this._obj = null;
-      this._strategy = null;
-      this._ref = _ref;
+  var async_1 = require("angular2/src/facade/async");
+  var browser_1 = require("angular2/platform/browser");
+  var metadata_1 = require("angular2/src/upgrade/metadata");
+  var util_1 = require("angular2/src/upgrade/util");
+  var constants_1 = require("angular2/src/upgrade/constants");
+  var downgrade_ng2_adapter_1 = require("angular2/src/upgrade/downgrade_ng2_adapter");
+  var upgrade_ng1_adapter_1 = require("angular2/src/upgrade/upgrade_ng1_adapter");
+  var angular = require("angular2/src/upgrade/angular_js");
+  var upgradeCount = 0;
+  var UpgradeAdapter = (function() {
+    function UpgradeAdapter() {
+      this.idPrefix = "NG2_UPGRADE_" + upgradeCount++ + "_";
+      this.upgradedComponents = [];
+      this.downgradedComponents = {};
+      this.providers = [];
     }
-    AsyncPipe.prototype.ngOnDestroy = function() {
-      if (lang_1.isPresent(this._subscription)) {
-        this._dispose();
-      }
+    UpgradeAdapter.prototype.downgradeNg2Component = function(type) {
+      this.upgradedComponents.push(type);
+      var info = metadata_1.getComponentInfo(type);
+      return ng1ComponentDirective(info, "" + this.idPrefix + info.selector + "_c");
     };
-    AsyncPipe.prototype.transform = function(obj, args) {
-      if (lang_1.isBlank(this._obj)) {
-        if (lang_1.isPresent(obj)) {
-          this._subscribe(obj);
-        }
-        return this._latestValue;
-      }
-      if (obj !== this._obj) {
-        this._dispose();
-        return this.transform(obj);
-      }
-      if (this._latestValue === this._latestReturnedValue) {
-        return this._latestReturnedValue;
+    UpgradeAdapter.prototype.upgradeNg1Component = function(name) {
+      if (this.downgradedComponents.hasOwnProperty(name)) {
+        return this.downgradedComponents[name].type;
       } else {
-        this._latestReturnedValue = this._latestValue;
-        return core_1.WrappedValue.wrap(this._latestValue);
+        return (this.downgradedComponents[name] = new upgrade_ng1_adapter_1.UpgradeNg1ComponentAdapterBuilder(name)).type;
       }
     };
-    AsyncPipe.prototype._subscribe = function(obj) {
+    UpgradeAdapter.prototype.bootstrap = function(element, modules, config) {
       var _this = this;
-      this._obj = obj;
-      this._strategy = this._selectStrategy(obj);
-      this._subscription = this._strategy.createSubscription(obj, function(value) {
-        return _this._updateLatestValue(obj, value);
+      var upgrade = new UpgradeAdapterRef();
+      var ng1Injector = null;
+      var platformRef = core_1.platform(browser_1.BROWSER_PROVIDERS);
+      var applicationRef = platformRef.application([browser_1.BROWSER_APP_PROVIDERS, core_1.provide(constants_1.NG1_INJECTOR, {useFactory: function() {
+          return ng1Injector;
+        }}), core_1.provide(constants_1.NG1_COMPILE, {useFactory: function() {
+          return ng1Injector.get(constants_1.NG1_COMPILE);
+        }}), this.providers]);
+      var injector = applicationRef.injector;
+      var ngZone = injector.get(core_1.NgZone);
+      var compiler = injector.get(core_1.Compiler);
+      var delayApplyExps = [];
+      var original$applyFn;
+      var rootScopePrototype;
+      var rootScope;
+      var protoViewRefMap = {};
+      var ng1Module = angular.module(this.idPrefix, modules);
+      var ng1compilePromise = null;
+      ng1Module.value(constants_1.NG2_INJECTOR, injector).value(constants_1.NG2_ZONE, ngZone).value(constants_1.NG2_COMPILER, compiler).value(constants_1.NG2_PROTO_VIEW_REF_MAP, protoViewRefMap).value(constants_1.NG2_APP_VIEW_MANAGER, injector.get(core_1.AppViewManager)).config(['$provide', function(provide) {
+        provide.decorator(constants_1.NG1_ROOT_SCOPE, ['$delegate', function(rootScopeDelegate) {
+          rootScopePrototype = rootScopeDelegate.constructor.prototype;
+          if (rootScopePrototype.hasOwnProperty('$apply')) {
+            original$applyFn = rootScopePrototype.$apply;
+            rootScopePrototype.$apply = function(exp) {
+              return delayApplyExps.push(exp);
+            };
+          } else {
+            throw new Error("Failed to find '$apply' on '$rootScope'!");
+          }
+          return rootScope = rootScopeDelegate;
+        }]);
+      }]).run(['$injector', '$rootScope', function(injector, rootScope) {
+        ng1Injector = injector;
+        async_1.ObservableWrapper.subscribe(ngZone.onTurnDone, function(_) {
+          ngZone.run(function() {
+            return rootScope.$apply();
+          });
+        });
+        ng1compilePromise = upgrade_ng1_adapter_1.UpgradeNg1ComponentAdapterBuilder.resolve(_this.downgradedComponents, injector);
+      }]);
+      angular.element(element).data(util_1.controllerKey(constants_1.NG2_INJECTOR), injector);
+      ngZone.run(function() {
+        angular.bootstrap(element, [_this.idPrefix], config);
       });
+      Promise.all([this.compileNg2Components(compiler, protoViewRefMap), ng1compilePromise]).then(function() {
+        ngZone.run(function() {
+          if (rootScopePrototype) {
+            rootScopePrototype.$apply = original$applyFn;
+            while (delayApplyExps.length) {
+              rootScope.$apply(delayApplyExps.shift());
+            }
+            upgrade._bootstrapDone(applicationRef, ng1Injector);
+            rootScopePrototype = null;
+          }
+        });
+      }, util_1.onError);
+      return upgrade;
     };
-    AsyncPipe.prototype._selectStrategy = function(obj) {
-      if (lang_1.isPromise(obj)) {
-        return _promiseStrategy;
-      } else if (async_1.ObservableWrapper.isObservable(obj)) {
-        return _observableStrategy;
-      } else {
-        throw new invalid_pipe_argument_exception_1.InvalidPipeArgumentException(AsyncPipe, obj);
+    UpgradeAdapter.prototype.addProvider = function(provider) {
+      this.providers.push(provider);
+    };
+    UpgradeAdapter.prototype.upgradeNg1Provider = function(name, options) {
+      var token = options && options.asToken || name;
+      this.providers.push(core_1.provide(token, {
+        useFactory: function(ng1Injector) {
+          return ng1Injector.get(name);
+        },
+        deps: [constants_1.NG1_INJECTOR]
+      }));
+    };
+    UpgradeAdapter.prototype.downgradeNg2Provider = function(token) {
+      var factory = function(injector) {
+        return injector.get(token);
+      };
+      factory.$inject = [constants_1.NG2_INJECTOR];
+      return factory;
+    };
+    UpgradeAdapter.prototype.compileNg2Components = function(compiler, protoViewRefMap) {
+      var _this = this;
+      var promises = [];
+      var types = this.upgradedComponents;
+      for (var i = 0; i < types.length; i++) {
+        promises.push(compiler.compileInHost(types[i]));
       }
+      return Promise.all(promises).then(function(protoViews) {
+        var types = _this.upgradedComponents;
+        for (var i = 0; i < protoViews.length; i++) {
+          protoViewRefMap[metadata_1.getComponentInfo(types[i]).selector] = protoViews[i];
+        }
+        return protoViewRefMap;
+      }, util_1.onError);
     };
-    AsyncPipe.prototype._dispose = function() {
-      this._strategy.dispose(this._subscription);
-      this._latestValue = null;
-      this._latestReturnedValue = null;
-      this._subscription = null;
-      this._obj = null;
-    };
-    AsyncPipe.prototype._updateLatestValue = function(async, value) {
-      if (async === this._obj) {
-        this._latestValue = value;
-        this._ref.markForCheck();
-      }
-    };
-    AsyncPipe = __decorate([core_1.Pipe({
-      name: 'async',
-      pure: false
-    }), core_1.Injectable(), __metadata('design:paramtypes', [core_1.ChangeDetectorRef])], AsyncPipe);
-    return AsyncPipe;
+    return UpgradeAdapter;
   })();
-  exports.AsyncPipe = AsyncPipe;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("angular2/src/common/pipes", ["angular2/src/common/pipes/async_pipe", "angular2/src/common/pipes/uppercase_pipe", "angular2/src/common/pipes/lowercase_pipe", "angular2/src/common/pipes/json_pipe", "angular2/src/common/pipes/slice_pipe", "angular2/src/common/pipes/date_pipe", "angular2/src/common/pipes/number_pipe", "angular2/src/facade/lang", "angular2/src/common/pipes/async_pipe", "angular2/src/common/pipes/date_pipe", "angular2/src/common/pipes/json_pipe", "angular2/src/common/pipes/slice_pipe", "angular2/src/common/pipes/lowercase_pipe", "angular2/src/common/pipes/number_pipe", "angular2/src/common/pipes/uppercase_pipe"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var async_pipe_1 = require("angular2/src/common/pipes/async_pipe");
-  var uppercase_pipe_1 = require("angular2/src/common/pipes/uppercase_pipe");
-  var lowercase_pipe_1 = require("angular2/src/common/pipes/lowercase_pipe");
-  var json_pipe_1 = require("angular2/src/common/pipes/json_pipe");
-  var slice_pipe_1 = require("angular2/src/common/pipes/slice_pipe");
-  var date_pipe_1 = require("angular2/src/common/pipes/date_pipe");
-  var number_pipe_1 = require("angular2/src/common/pipes/number_pipe");
-  var lang_1 = require("angular2/src/facade/lang");
-  var async_pipe_2 = require("angular2/src/common/pipes/async_pipe");
-  exports.AsyncPipe = async_pipe_2.AsyncPipe;
-  var date_pipe_2 = require("angular2/src/common/pipes/date_pipe");
-  exports.DatePipe = date_pipe_2.DatePipe;
-  var json_pipe_2 = require("angular2/src/common/pipes/json_pipe");
-  exports.JsonPipe = json_pipe_2.JsonPipe;
-  var slice_pipe_2 = require("angular2/src/common/pipes/slice_pipe");
-  exports.SlicePipe = slice_pipe_2.SlicePipe;
-  var lowercase_pipe_2 = require("angular2/src/common/pipes/lowercase_pipe");
-  exports.LowerCasePipe = lowercase_pipe_2.LowerCasePipe;
-  var number_pipe_2 = require("angular2/src/common/pipes/number_pipe");
-  exports.NumberPipe = number_pipe_2.NumberPipe;
-  exports.DecimalPipe = number_pipe_2.DecimalPipe;
-  exports.PercentPipe = number_pipe_2.PercentPipe;
-  exports.CurrencyPipe = number_pipe_2.CurrencyPipe;
-  var uppercase_pipe_2 = require("angular2/src/common/pipes/uppercase_pipe");
-  exports.UpperCasePipe = uppercase_pipe_2.UpperCasePipe;
-  exports.COMMON_PIPES = lang_1.CONST_EXPR([async_pipe_1.AsyncPipe, uppercase_pipe_1.UpperCasePipe, lowercase_pipe_1.LowerCasePipe, json_pipe_1.JsonPipe, slice_pipe_1.SlicePipe, number_pipe_1.DecimalPipe, number_pipe_1.PercentPipe, number_pipe_1.CurrencyPipe, date_pipe_1.DatePipe]);
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("angular2/common", ["angular2/src/common/pipes", "angular2/src/common/directives", "angular2/src/common/forms", "angular2/src/common/common_directives"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  function __export(m) {
-    for (var p in m)
-      if (!exports.hasOwnProperty(p))
-        exports[p] = m[p];
+  exports.UpgradeAdapter = UpgradeAdapter;
+  function ng1ComponentDirective(info, idPrefix) {
+    directiveFactory.$inject = [constants_1.NG2_PROTO_VIEW_REF_MAP, constants_1.NG2_APP_VIEW_MANAGER, constants_1.NG1_PARSE];
+    function directiveFactory(protoViewRefMap, viewManager, parse) {
+      var protoView = protoViewRefMap[info.selector];
+      if (!protoView)
+        throw new Error('Expecting ProtoViewRef for: ' + info.selector);
+      var idCount = 0;
+      return {
+        restrict: 'E',
+        require: constants_1.REQUIRE_INJECTOR,
+        link: {post: function(scope, element, attrs, parentInjector, transclude) {
+            var domElement = element[0];
+            var facade = new downgrade_ng2_adapter_1.DowngradeNg2ComponentAdapter(idPrefix + (idCount++), info, element, attrs, scope, parentInjector, parse, viewManager, protoView);
+            facade.setupInputs();
+            facade.bootstrapNg2();
+            facade.projectContent();
+            facade.setupOutputs();
+            facade.registerCleanup();
+          }}
+      };
+    }
+    return directiveFactory;
   }
-  __export(require("angular2/src/common/pipes"));
-  __export(require("angular2/src/common/directives"));
-  __export(require("angular2/src/common/forms"));
-  __export(require("angular2/src/common/common_directives"));
+  var UpgradeAdapterRef = (function() {
+    function UpgradeAdapterRef() {
+      this._readyFn = null;
+      this.ng1RootScope = null;
+      this.ng1Injector = null;
+      this.ng2ApplicationRef = null;
+      this.ng2Injector = null;
+    }
+    UpgradeAdapterRef.prototype._bootstrapDone = function(applicationRef, ng1Injector) {
+      this.ng2ApplicationRef = applicationRef;
+      this.ng2Injector = applicationRef.injector;
+      this.ng1Injector = ng1Injector;
+      this.ng1RootScope = ng1Injector.get(constants_1.NG1_ROOT_SCOPE);
+      this._readyFn && this._readyFn(this);
+    };
+    UpgradeAdapterRef.prototype.ready = function(fn) {
+      this._readyFn = fn;
+    };
+    UpgradeAdapterRef.prototype.dispose = function() {
+      this.ng1Injector.get(constants_1.NG1_ROOT_SCOPE).$destroy();
+      this.ng2ApplicationRef.dispose();
+    };
+    return UpgradeAdapterRef;
+  })();
+  exports.UpgradeAdapterRef = UpgradeAdapterRef;
   global.define = __define;
   return module.exports;
 });
 
-System.register("angular2/angular2", ["angular2/common", "angular2/core", "angular2/instrumentation", "angular2/platform/browser", "angular2/src/platform/dom/dom_adapter", "angular2/src/platform/dom/events/event_manager", "angular2/upgrade", "angular2/compiler"], true, function(require, exports, module) {
+System.register("angular2/upgrade", ["angular2/src/upgrade/upgrade_adapter"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
-  function __export(m) {
-    for (var p in m)
-      if (!exports.hasOwnProperty(p))
-        exports[p] = m[p];
-  }
-  __export(require("angular2/common"));
-  __export(require("angular2/core"));
-  __export(require("angular2/instrumentation"));
-  __export(require("angular2/platform/browser"));
-  __export(require("angular2/src/platform/dom/dom_adapter"));
-  __export(require("angular2/src/platform/dom/events/event_manager"));
-  __export(require("angular2/upgrade"));
-  var compiler_1 = require("angular2/compiler");
-  exports.UrlResolver = compiler_1.UrlResolver;
-  exports.AppRootUrl = compiler_1.AppRootUrl;
-  exports.getUrlScheme = compiler_1.getUrlScheme;
-  exports.DEFAULT_PACKAGE_URL_PROVIDER = compiler_1.DEFAULT_PACKAGE_URL_PROVIDER;
+  var upgrade_adapter_1 = require("angular2/src/upgrade/upgrade_adapter");
+  exports.UpgradeAdapter = upgrade_adapter_1.UpgradeAdapter;
+  exports.UpgradeAdapterRef = upgrade_adapter_1.UpgradeAdapterRef;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/instrumentation", ["angular2/src/core/profile/profile"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var profile_1 = require("angular2/src/core/profile/profile");
+  exports.wtfCreateScope = profile_1.wtfCreateScope;
+  exports.wtfLeave = profile_1.wtfLeave;
+  exports.wtfStartTimeRange = profile_1.wtfStartTimeRange;
+  exports.wtfEndTimeRange = profile_1.wtfEndTimeRange;
   global.define = __define;
   return module.exports;
 });

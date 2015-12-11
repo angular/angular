@@ -820,27 +820,6 @@ System.register("angular2/src/router/router_link", ["angular2/core", "angular2/s
   return module.exports;
 });
 
-System.register("angular2/src/platform/dom/dom_adapter", ["angular2/src/facade/lang"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var lang_1 = require("angular2/src/facade/lang");
-  exports.DOM = null;
-  function setRootDomAdapter(adapter) {
-    if (lang_1.isBlank(exports.DOM)) {
-      exports.DOM = adapter;
-    }
-  }
-  exports.setRootDomAdapter = setRootDomAdapter;
-  var DomAdapter = (function() {
-    function DomAdapter() {}
-    return DomAdapter;
-  })();
-  exports.DomAdapter = DomAdapter;
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/src/router/hash_location_strategy", ["angular2/core", "angular2/src/router/location_strategy", "angular2/src/facade/lang", "angular2/src/router/platform_location"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
