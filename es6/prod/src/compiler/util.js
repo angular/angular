@@ -1,8 +1,8 @@
 import { IS_DART, StringWrapper, isBlank } from 'angular2/src/facade/lang';
 var CAMEL_CASE_REGEXP = /([A-Z])/g;
 var DASH_CASE_REGEXP = /-([a-z])/g;
-var SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\$/g;
-var DOUBLE_QUOTE_ESCAPE_STRING_RE = /"|\\|\n|\$/g;
+var SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\r|\$/g;
+var DOUBLE_QUOTE_ESCAPE_STRING_RE = /"|\\|\n|\r|\$/g;
 export var MODULE_SUFFIX = IS_DART ? '.dart' : '.js';
 export function camelCaseToDashCase(input) {
     return StringWrapper.replaceAllMapped(input, CAMEL_CASE_REGEXP, (m) => { return '-' + m[1].toLowerCase(); });
@@ -29,6 +29,9 @@ function escapeString(input, re) {
         }
         else if (match[0] == '\n') {
             return '\\n';
+        }
+        else if (match[0] == '\r') {
+            return '\\r';
         }
         else {
             return `\\${match[0]}`;
