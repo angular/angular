@@ -5,8 +5,8 @@ import "package:angular2/src/facade/lang.dart"
 
 var CAMEL_CASE_REGEXP = new RegExp(r'([A-Z])');
 var DASH_CASE_REGEXP = new RegExp(r'-([a-z])');
-var SINGLE_QUOTE_ESCAPE_STRING_RE = new RegExp(r'' + "'" + r'|\\|\n|\r|\$');
-var DOUBLE_QUOTE_ESCAPE_STRING_RE = new RegExp(r'"|\\|\n|\r|\$');
+var SINGLE_QUOTE_ESCAPE_STRING_RE = new RegExp(r'' + "'" + r'|\\|\n|\$');
+var DOUBLE_QUOTE_ESCAPE_STRING_RE = new RegExp(r'"|\\|\n|\$');
 var MODULE_SUFFIX = IS_DART ? ".dart" : ".js";
 String camelCaseToDashCase(String input) {
   return StringWrapper.replaceAllMapped(input, CAMEL_CASE_REGEXP, (m) {
@@ -40,8 +40,6 @@ String escapeString(String input, RegExp re) {
       return IS_DART ? "\\\$" : "\$";
     } else if (match[0] == "\n") {
       return "\\n";
-    } else if (match[0] == "\r") {
-      return "\\r";
     } else {
       return '''\\${ match [ 0 ]}''';
     }

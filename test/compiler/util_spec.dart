@@ -29,9 +29,6 @@ main() {
       it("should escape newlines", () {
         expect(escapeSingleQuoteString("\n")).toEqual('''\'\\n\'''');
       });
-      it("should escape carriage returns", () {
-        expect(escapeSingleQuoteString("\r")).toEqual('''\'\\r\'''');
-      });
       if (IS_DART) {
         it("should escape \$", () {
           expect(escapeSingleQuoteString("\$")).toEqual('''\'\\\$\'''');
@@ -51,9 +48,6 @@ main() {
       });
       it("should escape newlines", () {
         expect(escapeDoubleQuoteString("\n")).toEqual('''"\\n"''');
-      });
-      it("should escape carriage returns", () {
-        expect(escapeDoubleQuoteString("\r")).toEqual('''"\\r"''');
       });
       if (IS_DART) {
         it("should escape \$", () {

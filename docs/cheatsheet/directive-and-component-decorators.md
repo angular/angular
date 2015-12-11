@@ -9,22 +9,22 @@ Class field decorators for directives and components
 syntax:
 `@Input() myProperty;`|`@Input()`
 description:
-Declares an input property that we can update via property binding, e.g.
-`<my-cmp [my-property]="someExpression">`
+Declares an input property that we can update via property binding (e.g.
+`<my-cmp [my-property]="someExpression">`).
 
 
 @cheatsheetItem
 syntax:
 `@Output() myEvent = new EventEmitter();`|`@Output()`
 description:
-Declares an output property that fires events to which we can subscribe with an event binding, e.g. `<my-cmp (my-event)="doSomething()">`
+Declares an output property that fires events to which we can subscribe with an event binding (e.g. `<my-cmp (my-event)="doSomething()">`).
 
 
 @cheatsheetItem
 syntax:
 `@HostBinding('[class.valid]') isValid;`|`@HostBinding('[class.valid]')`
 description:
-Binds a host element property (e.g. css class valid) to directive/component property (e.g. isValid)
+Binds a host element property (e.g. CSS class valid) to directive/component property (e.g. isValid).
 
 
 
@@ -32,7 +32,7 @@ Binds a host element property (e.g. css class valid) to directive/component prop
 syntax:
 `@HostListener('click', ['$event']) onClick(e) {...}`|`@HostListener('click', ['$event'])`
 description:
-Subscribes to a host element event (e.g. click) with a directive/component method (e.g., onClick), optionally passing an argument ($event)
+Subscribes to a host element event (e.g. click) with a directive/component method (e.g. onClick), optionally passing an argument ($event).
 
 
 @cheatsheetItem
