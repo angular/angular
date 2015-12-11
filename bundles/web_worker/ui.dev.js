@@ -13424,18 +13424,18 @@ System.register("angular2/src/compiler/html_tags", ["angular2/src/facade/lang"],
   }
   exports.getHtmlTagDefinition = getHtmlTagDefinition;
   var NS_PREFIX_RE = /^@([^:]+):(.+)/g;
-  function splitHtmlTagNamespace(elementName) {
+  function splitNsName(elementName) {
     if (elementName[0] != '@') {
       return [null, elementName];
     }
     var match = lang_1.RegExpWrapper.firstMatch(NS_PREFIX_RE, elementName);
     return [match[1], match[2]];
   }
-  exports.splitHtmlTagNamespace = splitHtmlTagNamespace;
-  function getHtmlTagNamespacePrefix(elementName) {
-    return splitHtmlTagNamespace(elementName)[0];
+  exports.splitNsName = splitNsName;
+  function getNsPrefix(elementName) {
+    return splitNsName(elementName)[0];
   }
-  exports.getHtmlTagNamespacePrefix = getHtmlTagNamespacePrefix;
+  exports.getNsPrefix = getNsPrefix;
   global.define = __define;
   return module.exports;
 });
@@ -13459,11 +13459,12 @@ System.register("angular2/src/compiler/schema/element_schema_registry", [], true
   return module.exports;
 });
 
-System.register("angular2/src/compiler/template_preparser", ["angular2/src/facade/lang"], true, function(require, exports, module) {
+System.register("angular2/src/compiler/template_preparser", ["angular2/src/facade/lang", "angular2/src/compiler/html_tags"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
   var lang_1 = require("angular2/src/facade/lang");
+  var html_tags_1 = require("angular2/src/compiler/html_tags");
   var NG_CONTENT_SELECT_ATTR = 'select';
   var NG_CONTENT_ELEMENT = 'ng-content';
   var LINK_ELEMENT = 'link';
@@ -13493,7 +13494,7 @@ System.register("angular2/src/compiler/template_preparser", ["angular2/src/facad
     selectAttr = normalizeNgContentSelect(selectAttr);
     var nodeName = ast.name.toLowerCase();
     var type = PreparsedElementType.OTHER;
-    if (nodeName == NG_CONTENT_ELEMENT) {
+    if (html_tags_1.splitNsName(nodeName)[1] == NG_CONTENT_ELEMENT) {
       type = PreparsedElementType.NG_CONTENT;
     } else if (nodeName == STYLE_ELEMENT) {
       type = PreparsedElementType.STYLE;
@@ -13861,7 +13862,7 @@ System.register("angular2/src/compiler/schema/dom_element_schema_registry", ["an
     DomElementSchemaRegistry.prototype._getProtoElement = function(tagName) {
       var element = this._protoElements.get(tagName);
       if (lang_1.isBlank(element)) {
-        var nsAndName = html_tags_1.splitHtmlTagNamespace(tagName);
+        var nsAndName = html_tags_1.splitNsName(tagName);
         element = lang_1.isPresent(nsAndName[0]) ? dom_adapter_1.DOM.createElementNS(NAMESPACE_URIS[nsAndName[0]], nsAndName[1]) : dom_adapter_1.DOM.createElement(nsAndName[1]);
         this._protoElements.set(tagName, element);
       }
@@ -21568,7 +21569,7 @@ System.register("angular2/src/compiler/html_parser", ["angular2/src/facade/lang"
       if (this.peek.type === html_lexer_1.HtmlTokenType.TAG_OPEN_END_VOID) {
         this._advance();
         selfClosing = true;
-        if (html_tags_1.getHtmlTagNamespacePrefix(fullName) == null && !html_tags_1.getHtmlTagDefinition(fullName).isVoid) {
+        if (html_tags_1.getNsPrefix(fullName) == null && !html_tags_1.getHtmlTagDefinition(fullName).isVoid) {
           this.errors.push(HtmlTreeError.create(fullName, startTagToken.sourceSpan.start, "Only void and foreign elements can be self closed \"" + startTagToken.parts[1] + "\""));
         }
       } else if (this.peek.type === html_lexer_1.HtmlTokenType.TAG_OPEN_END) {
@@ -21653,7 +21654,7 @@ System.register("angular2/src/compiler/html_parser", ["angular2/src/facade/lang"
     if (lang_1.isBlank(prefix)) {
       prefix = html_tags_1.getHtmlTagDefinition(localName).implicitNamespacePrefix;
       if (lang_1.isBlank(prefix) && lang_1.isPresent(parentElement)) {
-        prefix = html_tags_1.getHtmlTagNamespacePrefix(parentElement.name);
+        prefix = html_tags_1.getNsPrefix(parentElement.name);
       }
     }
     return mergeNsAndName(prefix, localName);
@@ -24290,7 +24291,7 @@ System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/c
           hasInlineTemplates = true;
         }
       });
-      var lcElName = html_tags_1.splitHtmlTagNamespace(nodeName.toLowerCase())[1];
+      var lcElName = html_tags_1.splitNsName(nodeName.toLowerCase())[1];
       var isTemplateElement = lcElName == TEMPLATE_ELEMENT;
       var elementCssSelector = createElementCssSelector(nodeName, matchableAttrs);
       var directives = this._createDirectiveAsts(element.name, this._parseDirectives(this.selectorMatcher, elementCssSelector), elementOrDirectiveProps, isTemplateElement ? [] : vars, element.sourceSpan);
@@ -24658,12 +24659,14 @@ System.register("angular2/src/compiler/template_parser", ["angular2/src/facade/c
   })();
   function createElementCssSelector(elementName, matchableAttrs) {
     var cssSelector = new selector_1.CssSelector();
-    cssSelector.setElement(elementName);
+    var elNameNoNs = html_tags_1.splitNsName(elementName)[1];
+    cssSelector.setElement(elNameNoNs);
     for (var i = 0; i < matchableAttrs.length; i++) {
       var attrName = matchableAttrs[i][0];
+      var attrNameNoNs = html_tags_1.splitNsName(attrName)[1];
       var attrValue = matchableAttrs[i][1];
-      cssSelector.addAttribute(attrName, attrValue);
-      if (attrName == CLASS_ATTR) {
+      cssSelector.addAttribute(attrNameNoNs, attrValue);
+      if (attrName.toLowerCase() == CLASS_ATTR) {
         var classes = splitClasses(attrValue);
         classes.forEach(function(className) {
           return cssSelector.addClassName(className);

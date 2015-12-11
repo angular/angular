@@ -1,4 +1,5 @@
 import { isBlank } from 'angular2/src/facade/lang';
+import { splitNsName } from './html_tags';
 const NG_CONTENT_SELECT_ATTR = 'select';
 const NG_CONTENT_ELEMENT = 'ng-content';
 const LINK_ELEMENT = 'link';
@@ -31,7 +32,7 @@ export function preparseElement(ast) {
     selectAttr = normalizeNgContentSelect(selectAttr);
     var nodeName = ast.name.toLowerCase();
     var type = PreparsedElementType.OTHER;
-    if (nodeName == NG_CONTENT_ELEMENT) {
+    if (splitNsName(nodeName)[1] == NG_CONTENT_ELEMENT) {
         type = PreparsedElementType.NG_CONTENT;
     }
     else if (nodeName == STYLE_ELEMENT) {

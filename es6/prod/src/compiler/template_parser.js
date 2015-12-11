@@ -17,7 +17,7 @@ import { CONST_EXPR } from 'angular2/src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
 import { Parser } from 'angular2/src/core/change_detection/change_detection';
 import { HtmlParser } from './html_parser';
-import { splitHtmlTagNamespace } from './html_tags';
+import { splitNsName } from './html_tags';
 import { ParseError } from './parse_util';
 import { ElementAst, BoundElementPropertyAst, BoundEventAst, VariableAst, templateVisitAll, TextAst, BoundTextAst, EmbeddedTemplateAst, AttrAst, NgContentAst, PropertyBindingType, DirectiveAst, BoundDirectivePropertyAst } from './template_ast';
 import { CssSelector, SelectorMatcher } from 'angular2/src/compiler/selector';
@@ -185,7 +185,7 @@ class TemplateParseVisitor {
                 hasInlineTemplates = true;
             }
         });
-        var lcElName = splitHtmlTagNamespace(nodeName.toLowerCase())[1];
+        var lcElName = splitNsName(nodeName.toLowerCase())[1];
         var isTemplateElement = lcElName == TEMPLATE_ELEMENT;
         var elementCssSelector = createElementCssSelector(nodeName, matchableAttrs);
         var directives = this._createDirectiveAsts(element.name, this._parseDirectives(this.selectorMatcher, elementCssSelector), elementOrDirectiveProps, isTemplateElement ? [] : vars, element.sourceSpan);
@@ -565,12 +565,14 @@ class Component {
 }
 function createElementCssSelector(elementName, matchableAttrs) {
     var cssSelector = new CssSelector();
-    cssSelector.setElement(elementName);
+    let elNameNoNs = splitNsName(elementName)[1];
+    cssSelector.setElement(elNameNoNs);
     for (var i = 0; i < matchableAttrs.length; i++) {
-        var attrName = matchableAttrs[i][0];
-        var attrValue = matchableAttrs[i][1];
-        cssSelector.addAttribute(attrName, attrValue);
-        if (attrName == CLASS_ATTR) {
+        let attrName = matchableAttrs[i][0];
+        let attrNameNoNs = splitNsName(attrName)[1];
+        let attrValue = matchableAttrs[i][1];
+        cssSelector.addAttribute(attrNameNoNs, attrValue);
+        if (attrName.toLowerCase() == CLASS_ATTR) {
             var classes = splitClasses(attrValue);
             classes.forEach(className => cssSelector.addClassName(className));
         }

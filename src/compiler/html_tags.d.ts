@@ -281,5 +281,5 @@ export declare class HtmlTagDefinition {
     isClosedByChild(name: string): boolean;
 }
 export declare function getHtmlTagDefinition(tagName: string): HtmlTagDefinition;
-export declare function splitHtmlTagNamespace(elementName: string): string[];
-export declare function getHtmlTagNamespacePrefix(elementName: string): string;
+export declare function splitNsName(elementName: string): string[];
+export declare function getNsPrefix(elementName: string): string;

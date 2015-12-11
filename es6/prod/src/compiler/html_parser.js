@@ -13,7 +13,7 @@ import { HtmlAttrAst, HtmlTextAst, HtmlElementAst } from './html_ast';
 import { Injectable } from 'angular2/src/core/di';
 import { HtmlTokenType, tokenizeHtml } from './html_lexer';
 import { ParseError, ParseSourceSpan } from './parse_util';
-import { getHtmlTagDefinition, getHtmlTagNamespacePrefix } from './html_tags';
+import { getHtmlTagDefinition, getNsPrefix } from './html_tags';
 export class HtmlTreeError extends ParseError {
     constructor(elementName, location, msg) {
         super(location, msg);
@@ -137,7 +137,7 @@ class TreeBuilder {
         if (this.peek.type === HtmlTokenType.TAG_OPEN_END_VOID) {
             this._advance();
             selfClosing = true;
-            if (getHtmlTagNamespacePrefix(fullName) == null && !getHtmlTagDefinition(fullName).isVoid) {
+            if (getNsPrefix(fullName) == null && !getHtmlTagDefinition(fullName).isVoid) {
                 this.errors.push(HtmlTreeError.create(fullName, startTagToken.sourceSpan.start, `Only void and foreign elements can be self closed "${startTagToken.parts[1]}"`));
             }
         }
@@ -225,7 +225,7 @@ function getElementFullName(prefix, localName, parentElement) {
     if (isBlank(prefix)) {
         prefix = getHtmlTagDefinition(localName).implicitNamespacePrefix;
         if (isBlank(prefix) && isPresent(parentElement)) {
-            prefix = getHtmlTagNamespacePrefix(parentElement.name);
+            prefix = getNsPrefix(parentElement.name);
         }
     }
     return mergeNsAndName(prefix, localName);
