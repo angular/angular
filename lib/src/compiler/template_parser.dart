@@ -13,7 +13,7 @@ import "package:angular2/src/core/change_detection/parser/ast.dart"
     show TemplateBinding;
 import "directive_metadata.dart" show CompileDirectiveMetadata;
 import "html_parser.dart" show HtmlParser;
-import "html_tags.dart" show splitHtmlTagNamespace;
+import "html_tags.dart" show splitNsName;
 import "parse_util.dart" show ParseSourceSpan, ParseError, ParseLocation;
 import "template_ast.dart"
     show
@@ -235,7 +235,7 @@ class TemplateParseVisitor implements HtmlAstVisitor {
         hasInlineTemplates = true;
       }
     });
-    var lcElName = splitHtmlTagNamespace(nodeName.toLowerCase())[1];
+    var lcElName = splitNsName(nodeName.toLowerCase())[1];
     var isTemplateElement = lcElName == TEMPLATE_ELEMENT;
     var elementCssSelector = createElementCssSelector(nodeName, matchableAttrs);
     var directives = this._createDirectiveAsts(
@@ -782,12 +782,14 @@ class Component {
 CssSelector createElementCssSelector(
     String elementName, List<List<String>> matchableAttrs) {
   var cssSelector = new CssSelector();
-  cssSelector.setElement(elementName);
+  var elNameNoNs = splitNsName(elementName)[1];
+  cssSelector.setElement(elNameNoNs);
   for (var i = 0; i < matchableAttrs.length; i++) {
     var attrName = matchableAttrs[i][0];
+    var attrNameNoNs = splitNsName(attrName)[1];
     var attrValue = matchableAttrs[i][1];
-    cssSelector.addAttribute(attrName, attrValue);
-    if (attrName == CLASS_ATTR) {
+    cssSelector.addAttribute(attrNameNoNs, attrValue);
+    if (attrName.toLowerCase() == CLASS_ATTR) {
       var classes = splitClasses(attrValue);
       classes.forEach((className) => cssSelector.addClassName(className));
     }

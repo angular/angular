@@ -15,7 +15,7 @@ import "package:angular2/src/core/di.dart" show Injectable;
 import "html_lexer.dart" show HtmlToken, HtmlTokenType, tokenizeHtml;
 import "parse_util.dart" show ParseError, ParseLocation, ParseSourceSpan;
 import "html_tags.dart"
-    show HtmlTagDefinition, getHtmlTagDefinition, getHtmlTagNamespacePrefix;
+    show HtmlTagDefinition, getHtmlTagDefinition, getNsPrefix;
 
 class HtmlTreeError extends ParseError {
   String elementName;
@@ -149,7 +149,7 @@ class TreeBuilder {
     if (identical(this.peek.type, HtmlTokenType.TAG_OPEN_END_VOID)) {
       this._advance();
       selfClosing = true;
-      if (getHtmlTagNamespacePrefix(fullName) == null &&
+      if (getNsPrefix(fullName) == null &&
           !getHtmlTagDefinition(fullName).isVoid) {
         this.errors.add(HtmlTreeError.create(
             fullName,
@@ -261,7 +261,7 @@ String getElementFullName(
   if (isBlank(prefix)) {
     prefix = getHtmlTagDefinition(localName).implicitNamespacePrefix;
     if (isBlank(prefix) && isPresent(parentElement)) {
-      prefix = getHtmlTagNamespacePrefix(parentElement.name);
+      prefix = getNsPrefix(parentElement.name);
     }
   }
   return mergeNsAndName(prefix, localName);

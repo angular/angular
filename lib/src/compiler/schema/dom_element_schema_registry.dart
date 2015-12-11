@@ -4,8 +4,7 @@ import "package:angular2/src/core/di.dart" show Injectable;
 import "package:angular2/src/facade/lang.dart" show isPresent, isBlank;
 import "package:angular2/src/facade/collection.dart" show StringMapWrapper;
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
-import "package:angular2/src/compiler/html_tags.dart"
-    show splitHtmlTagNamespace;
+import "package:angular2/src/compiler/html_tags.dart" show splitNsName;
 import "element_schema_registry.dart" show ElementSchemaRegistry;
 
 const NAMESPACE_URIS = const {
@@ -19,7 +18,7 @@ class DomElementSchemaRegistry extends ElementSchemaRegistry {
   dynamic _getProtoElement(String tagName) {
     var element = this._protoElements[tagName];
     if (isBlank(element)) {
-      var nsAndName = splitHtmlTagNamespace(tagName);
+      var nsAndName = splitNsName(tagName);
       element = isPresent(nsAndName[0])
           ? DOM.createElementNS(NAMESPACE_URIS[nsAndName[0]], nsAndName[1])
           : DOM.createElement(nsAndName[1]);

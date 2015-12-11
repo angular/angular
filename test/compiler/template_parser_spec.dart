@@ -105,6 +105,13 @@ main() {
           [NgContentAst]
         ]);
       });
+      it("should parse ngContent regardless the namespace", () {
+        var parsed = parse("<svg><ng-content></ng-content></svg>", []);
+        expect(humanizeTplAst(parsed)).toEqual([
+          [ElementAst, "@svg:svg"],
+          [NgContentAst]
+        ]);
+      });
       it("should parse bound text nodes", () {
         expect(humanizeTplAst(parse("{{a}}", []))).toEqual([
           [BoundTextAst, "{{ a }}"]
@@ -1052,6 +1059,22 @@ Property binding a not used by any directive on an embedded template ("[ERROR ->
           [AttrAst, "a", "", "a"],
           [DirectiveAst, comp, "<div a>"],
           [DirectiveAst, dirA, "<div a>"]
+        ]);
+      });
+      it("should support directive in namespace", () {
+        var tagSel = CompileDirectiveMetadata.create(
+            selector: "circle", type: new CompileTypeMetadata(name: "elDir"));
+        var attrSel = CompileDirectiveMetadata.create(
+            selector: "[href]", type: new CompileTypeMetadata(name: "attrDir"));
+        expect(humanizeTplAstSourceSpans(parse(
+            "<svg><circle /><use xlink:href=\"Port\" /></svg>",
+            [tagSel, attrSel]))).toEqual([
+          [ElementAst, "@svg:svg", "<svg>"],
+          [ElementAst, "@svg:circle", "<circle />"],
+          [DirectiveAst, tagSel, "<circle />"],
+          [ElementAst, "@svg:use", "<use xlink:href=\"Port\" />"],
+          [AttrAst, "@xlink:href", "Port", "xlink:href=\"Port\""],
+          [DirectiveAst, attrSel, "<use xlink:href=\"Port\" />"]
         ]);
       });
       it("should support directive property", () {

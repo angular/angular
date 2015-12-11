@@ -406,7 +406,7 @@ HtmlTagDefinition getHtmlTagDefinition(String tagName) {
 }
 
 var NS_PREFIX_RE = new RegExp(r'^@([^:]+):(.+)');
-List<String> splitHtmlTagNamespace(String elementName) {
+List<String> splitNsName(String elementName) {
   if (elementName[0] != "@") {
     return [null, elementName];
   }
@@ -414,6 +414,6 @@ List<String> splitHtmlTagNamespace(String elementName) {
   return [match[1], match[2]];
 }
 
-String getHtmlTagNamespacePrefix(String elementName) {
-  return splitHtmlTagNamespace(elementName)[0];
+String getNsPrefix(String elementName) {
+  return splitNsName(elementName)[0];
 }
