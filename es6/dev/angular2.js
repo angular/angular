@@ -1,9 +1,0 @@
-export * from './common';
-export * from './core';
-export * from './instrumentation';
-export * from './platform/browser';
-export * from './src/platform/dom/dom_adapter';
-export * from './src/platform/dom/events/event_manager';
-export * from './upgrade';
-export * from './compiler';
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYW5ndWxhcjIuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJhbmd1bGFyMi9hbmd1bGFyMi50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxjQUFjLFVBQVUsQ0FBQztBQUN6QixjQUFjLFFBQVEsQ0FBQztBQUN2QixjQUFjLG1CQUFtQixDQUFDO0FBQ2xDLGNBQWMsb0JBQW9CLENBQUM7QUFDbkMsY0FBYyxnQ0FBZ0MsQ0FBQztBQUMvQyxjQUFjLHlDQUF5QyxDQUFDO0FBQ3hELGNBQWMsV0FBVyxDQUFDO0FBQzFCLGNBQWMsWUFBWSxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0ICogZnJvbSAnLi9jb21tb24nO1xuZXhwb3J0ICogZnJvbSAnLi9jb3JlJztcbmV4cG9ydCAqIGZyb20gJy4vaW5zdHJ1bWVudGF0aW9uJztcbmV4cG9ydCAqIGZyb20gJy4vcGxhdGZvcm0vYnJvd3Nlcic7XG5leHBvcnQgKiBmcm9tICcuL3NyYy9wbGF0Zm9ybS9kb20vZG9tX2FkYXB0ZXInO1xuZXhwb3J0ICogZnJvbSAnLi9zcmMvcGxhdGZvcm0vZG9tL2V2ZW50cy9ldmVudF9tYW5hZ2VyJztcbmV4cG9ydCAqIGZyb20gJy4vdXBncmFkZSc7XG5leHBvcnQgKiBmcm9tICcuL2NvbXBpbGVyJztcbiJdfQ==
