@@ -31854,6 +31854,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    Headers.prototype.values = function () { return collection_1.MapWrapper.values(this._headersMap); };
 	    /**
+	     * Returns string of all headers.
+	     */
+	    Headers.prototype.toJSON = function () { return lang_1.Json.stringify(this.values()); };
+	    /**
 	     * Returns list of header values for a given name.
 	     */
 	    Headers.prototype.getAll = function (header) {
