@@ -2,7 +2,11 @@ library angular.symbol_inspector.symbol_inspector;
 
 import 'dart:mirrors';
 import './simple_library.dart' as simple_library;
-import 'package:angular2/angular2.dart' as angular2;
+import 'package:angular2/common.dart' as common;
+import 'package:angular2/compiler.dart' as compiler;
+import 'package:angular2/core.dart' as core;
+import 'package:angular2/instrumentation.dart' as instrumentation;
+import 'package:angular2/platform/browser.dart' as browser;
 
 const IGNORE = const {
   'runtimeType': true,
@@ -13,17 +17,21 @@ const IGNORE = const {
   'originalStack': true
 };
 
-const LIB_MAP = const {
-  'simple_library': 'angular2.test.symbol_inspector.simple_library',
-  'ng': 'angular2'
-};
-
-// Have this list here to trick dart to force import.
-var libs = [simple_library.A, angular2.Component];
+String getLibraryName (library) {
+  return MirrorSystem.getName(library.qualifiedName);
+}
 
 List<String> getSymbolsFromLibrary(String name) {
+  var LIB_MAP = {
+    'simple_library': getLibraryName(reflect(simple_library)),
+    'ngCommon': getLibraryName(reflect(common)),
+    'ngCompiler': getLibraryName(reflect(compiler)),
+    'ngCore': getLibraryName(reflect(core)),
+    'ngInstrumentation': getLibraryName(reflect(instrumentation)),
+    'ngPlatformBrowser': getLibraryName(reflect(browser))
+  };
+
   var libraryName = LIB_MAP[name];
-  if (libs.isEmpty) throw "No libriries loaded.";
   if (libraryName == null) throw "Don't know how to load '$name' library.";
   var lib = currentMirrorSystem().findLibrary(new Symbol(libraryName));
   var names = [];

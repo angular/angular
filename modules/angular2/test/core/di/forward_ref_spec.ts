@@ -9,7 +9,7 @@ import {
   it,
   xit,
 } from 'angular2/testing_internal';
-import {forwardRef, resolveForwardRef} from 'angular2/core';
+import {forwardRef, resolveForwardRef} from 'angular2/src/core/di';
 import {Type} from 'angular2/src/facade/lang';
 
 export function main() {
