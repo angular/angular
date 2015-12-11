@@ -19,7 +19,7 @@ import "ng_switch.dart" show NgSwitch, NgSwitchWhen, NgSwitchDefault;
  * Instead of writing:
  *
  * ```typescript
- * import {NgClass, NgIf, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/angular2';
+ * import {NgClass, NgIf, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault} from 'angular2/common';
  * import {OtherDirective} from './myDirectives';
  *
  * @Component({
@@ -34,7 +34,7 @@ import "ng_switch.dart" show NgSwitch, NgSwitchWhen, NgSwitchDefault;
  * one could import all the core directives at once:
  *
  * ```typescript
- * import {CORE_DIRECTIVES} from 'angular2/angular2';
+ * import {CORE_DIRECTIVES} from 'angular2/common';
  * import {OtherDirective} from './myDirectives';
  *
  * @Component({

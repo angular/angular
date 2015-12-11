@@ -29,7 +29,7 @@ import "platform_location.dart" show PlatformLocation;
  * ### Example
  *
  * ```
- * import {Component, provide} from 'angular2/angular2';
+ * import {Component, provide} from 'angular2/core';
  * import {
  *   APP_BASE_HREF
  *   ROUTER_DIRECTIVES,

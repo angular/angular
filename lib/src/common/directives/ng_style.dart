@@ -25,7 +25,8 @@ import "package:angular2/src/facade/lang.dart" show isPresent, isBlank, print;
  * ### Example ([live demo](http://plnkr.co/edit/YamGS6GkUh9GqWNQhCyM?p=preview)):
  *
  * ```
- * import {Component, NgStyle} from 'angular2/angular2';
+ * import {Component} from 'angular2/core';
+ * import {NgStyle} from 'angular2/common';
  *
  * @Component({
  *  selector: 'ngStyle-example',

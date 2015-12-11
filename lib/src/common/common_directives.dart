@@ -18,7 +18,7 @@ import "directives.dart" show CORE_DIRECTIVES;
  *
  * ```typescript
  * import {NgClass, NgIf, NgFor, NgSwitch, NgSwitchWhen, NgSwitchDefault, NgModel, NgForm} from
- * 'angular2/angular2';
+ * 'angular2/common';
  * import {OtherDirective} from './myDirectives';
  *
  * @Component({
@@ -34,7 +34,7 @@ import "directives.dart" show CORE_DIRECTIVES;
  * one could import all the common directives at once:
  *
  * ```typescript
- * import {COMMON_DIRECTIVES} from 'angular2/angular2';
+ * import {COMMON_DIRECTIVES} from 'angular2/common';
  * import {OtherDirective} from './myDirectives';
  *
  * @Component({

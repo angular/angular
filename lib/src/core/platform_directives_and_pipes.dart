@@ -9,7 +9,7 @@ import "package:angular2/src/core/di.dart" show OpaqueToken;
  * ### Example
  *
  * ```typescript
- * import {PLATFORM_DIRECTIVES} from 'angular2/angular2';
+ * import {PLATFORM_DIRECTIVES} from 'angular2/core';
  * import {OtherDirective} from './myDirectives';
  *
  * @Component({
@@ -35,7 +35,7 @@ const OpaqueToken PLATFORM_DIRECTIVES =
  * ### Example
  *
  * ```typescript
- * import {PLATFORM_PIPES} from 'angular2/angular2';
+ * import {PLATFORM_PIPES} from 'angular2/core';
  * import {OtherPipe} from './myPipe';
  *
  * @Component({
