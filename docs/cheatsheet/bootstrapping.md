@@ -9,5 +9,4 @@ Bootstrapping
 syntax:
 `bootstrap​(MyAppComponent, [MyService, provide(...)]);`|`provide`
 description:
-Bootstraps an application with MyAppComponent as the root component, and
-configures the app's dependency injection providers.
+Bootstraps an application with MyAppComponent as the root component and configures the DI providers.

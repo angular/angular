@@ -31,4 +31,5 @@ Conditionally swaps the contents of the div by selecting one of the embedded tem
 syntax:
 `<div [ngClass]="{active: isActive, disabled: isDisabled}">`|`[ngClass]`
 description:
-Binds the presence of CSS classes on the element to the truthiness of the associated map values. The right-hand side expression should return {class-name: true/false} map.
+Binds the presence of css classes on the element to the truthiness of the associated map values. The right-hand side expression should return {class-name: true/false} map.
+
