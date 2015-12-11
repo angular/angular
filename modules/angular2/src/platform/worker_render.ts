@@ -6,7 +6,6 @@ import {
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {APP_INITIALIZER} from 'angular2/core';
 import {Injector, Injectable, Provider} from 'angular2/src/core/di';
-import {WebWorkerSetup} from 'angular2/src/web_workers/ui/setup';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {MessageBasedXHRImpl} from 'angular2/src/web_workers/ui/xhr_impl';
 import {

@@ -31,9 +31,7 @@ import {
 } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
 import {WebWorkerEventDispatcher} from 'angular2/src/web_workers/worker/event_dispatcher';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {Promise, PromiseWrapper, PromiseCompleter} from 'angular2/src/facade/async';
-import {SETUP_CHANNEL} from 'angular2/src/web_workers/shared/messaging_api';
-import {ObservableWrapper} from 'angular2/src/facade/async';
+import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 
 class PrintLogger {
   log = print;
@@ -76,20 +74,9 @@ function _exceptionHandler(): ExceptionHandler {
  */
 export function genericWorkerAppProviders(bus: MessageBus,
                                           zone: NgZone): Promise<Array<Type | Provider | any[]>> {
-  var bootstrapProcess: PromiseCompleter<any> = PromiseWrapper.completer();
   bus.attachToZone(zone);
-  bus.initChannel(SETUP_CHANNEL, false);
-
-  var subscription: any;
-  var emitter = bus.from(SETUP_CHANNEL);
-  subscription = ObservableWrapper.subscribe(emitter, (initData: {[key: string]: any}) => {
-    var bindings = ListWrapper.concat(WORKER_APP_COMMON_PROVIDERS, [
-      new Provider(MessageBus, {useValue: bus}),
-    ]);
-    bootstrapProcess.resolve(bindings);
-    ObservableWrapper.dispose(subscription);
-  });
-
-  ObservableWrapper.callNext(bus.to(SETUP_CHANNEL), "ready");
-  return bootstrapProcess.promise;
+  var bindings = ListWrapper.concat(WORKER_APP_COMMON_PROVIDERS, [
+    new Provider(MessageBus, {useValue: bus}),
+  ]);
+  return PromiseWrapper.resolve(bindings);
 }
