@@ -17,7 +17,7 @@ syntax:
 `template: 'Hello {{name}}'
 templateUrl: 'my-component.html'`|`template:`|`templateUrl:`
 description:
-Inline template / external template url of the component's view.
+Inline template / external template URL of the component's view.
 
 
 @cheatsheetItem
@@ -25,7 +25,7 @@ syntax:
 `styles: ['.primary {color: red}']
 styleUrls: ['my-component.css']`|`styles:`|`styleUrls:`
 description:
-List of inline css styles / external stylesheet urls for styling component’s view.
+List of inline CSS styles / external stylesheet URLs for styling component’s view.
 
 
 @cheatsheetItem
