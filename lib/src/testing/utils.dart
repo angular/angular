@@ -1,6 +1,6 @@
 library angular2.src.testing.utils;
 
-import "package:angular2/src/core/di.dart" show Injectable;
+import "package:angular2/core.dart" show Injectable;
 import "package:angular2/src/facade/collection.dart"
     show ListWrapper, MapWrapper;
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;

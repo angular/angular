@@ -1,6 +1,18 @@
 library angular2.src.testing.test_injector;
 
-import "package:angular2/src/core/di.dart" show provide, Provider;
+import "package:angular2/core.dart"
+    show
+        APP_ID,
+        APPLICATION_COMMON_PROVIDERS,
+        AppViewManager,
+        DirectiveResolver,
+        DynamicComponentLoader,
+        Injector,
+        NgZone,
+        Renderer,
+        Provider,
+        ViewResolver,
+        provide;
 import "package:angular2/src/animate/animation_builder.dart"
     show AnimationBuilder;
 import "package:angular2/src/mock/animation_builder_mock.dart"
@@ -17,14 +29,8 @@ import "package:angular2/src/core/change_detection/change_detection.dart"
         defaultKeyValueDiffers,
         ChangeDetectorGenConfig;
 import "package:angular2/src/facade/exceptions.dart" show ExceptionHandler;
-import "package:angular2/src/core/linker/view_resolver.dart" show ViewResolver;
-import "package:angular2/src/core/linker/directive_resolver.dart"
-    show DirectiveResolver;
 import "package:angular2/src/core/linker/pipe_resolver.dart" show PipeResolver;
-import "package:angular2/src/core/linker/dynamic_component_loader.dart"
-    show DynamicComponentLoader;
 import "package:angular2/src/compiler/xhr.dart" show XHR;
-import "package:angular2/src/core/zone/ng_zone.dart" show NgZone;
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
 import "package:angular2/src/mock/directive_resolver_mock.dart"
     show MockDirectiveResolver;
@@ -36,17 +42,14 @@ import "package:angular2/src/router/location_strategy.dart"
     show LocationStrategy;
 import "package:angular2/src/mock/ng_zone_mock.dart" show MockNgZone;
 import "test_component_builder.dart" show TestComponentBuilder;
-import "package:angular2/src/core/di.dart" show Injector;
 import "package:angular2/platform/common_dom.dart"
     show EventManager, EVENT_MANAGER_PLUGINS, ELEMENT_PROBE_PROVIDERS;
 import "package:angular2/src/facade/collection.dart" show ListWrapper;
 import "package:angular2/src/facade/lang.dart" show FunctionWrapper, Type;
 import "package:angular2/src/core/linker/view_pool.dart"
     show AppViewPool, APP_VIEW_POOL_CAPACITY;
-import "package:angular2/src/core/linker/view_manager.dart" show AppViewManager;
 import "package:angular2/src/core/linker/view_manager_utils.dart"
     show AppViewManagerUtils;
-import "package:angular2/src/core/render/api.dart" show Renderer;
 import "package:angular2/src/platform/dom/dom_tokens.dart" show DOCUMENT;
 import "package:angular2/src/platform/dom/dom_renderer.dart" show DomRenderer;
 import "package:angular2/src/platform/dom/shared_styles_host.dart"
@@ -55,7 +58,6 @@ import "package:angular2/src/platform/dom/shared_styles_host.dart"
     show SharedStylesHost;
 import "package:angular2/src/platform/dom/events/dom_events.dart"
     show DomEventsPlugin;
-import "package:angular2/src/core/application_tokens.dart" show APP_ID;
 import "package:angular2/src/web_workers/shared/serializer.dart"
     show Serializer;
 import "utils.dart" show Log;
@@ -65,8 +67,6 @@ import "package:angular2/src/core/linker/dynamic_component_loader.dart"
     show DynamicComponentLoader_;
 import "package:angular2/src/core/linker/view_manager.dart"
     show AppViewManager_;
-import "package:angular2/src/core/application_common_providers.dart"
-    show APPLICATION_COMMON_PROVIDERS;
 
 /**
  * Returns the root injector providers.
