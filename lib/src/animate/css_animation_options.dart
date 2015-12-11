@@ -11,8 +11,6 @@ class CssAnimationOptions {
   List<String> classesToRemove = [];
   /** classes to be added for the duration of the animation */
   List<String> animationClasses = [];
-  /** styles to be applied for the duration of the animation */
-  Map<String, String> animationStyles = {};
   /** override the duration of the animation (in milliseconds) */
   num duration;
   /** override the transition delay (in milliseconds) */
