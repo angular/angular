@@ -2,11 +2,7 @@ library angular.symbol_inspector.symbol_inspector;
 
 import 'dart:mirrors';
 import './simple_library.dart' as simple_library;
-import 'package:angular2/common.dart';
-import 'package:angular2/compiler.dart';
-import 'package:angular2/core.dart';
-import 'package:angular2/instrumentation.dart';
-import 'package:angular2/platform/browser.dart';
+import 'package:angular2/angular2.dart' as angular2;
 
 const IGNORE = const {
   'runtimeType': true,
@@ -19,15 +15,11 @@ const IGNORE = const {
 
 const LIB_MAP = const {
   'simple_library': 'angular2.test.symbol_inspector.simple_library',
-  'ngCommon': 'angular2.common',
-  'ngCompiler': 'angular2.compiler',
-  'ngCore': 'angular2.core',
-  'ngInstrumentation': 'angular2.instrumentation',
-  'ngPlatformBrowser': 'angular2.platform.browser'
+  'ng': 'angular2'
 };
 
 // Have this list here to trick dart to force import.
-var libs = [simple_library.A, Component];
+var libs = [simple_library.A, angular2.Component];
 
 List<String> getSymbolsFromLibrary(String name) {
   var libraryName = LIB_MAP[name];

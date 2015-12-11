@@ -11,7 +11,7 @@ import "package:angular2/testing_internal.dart"
         inject,
         it,
         xit;
-import "package:angular2/src/core/di.dart" show resolveForwardRef;
+import "package:angular2/core.dart" show resolveForwardRef;
 import "package:angular2/src/facade/lang.dart" show Type;
 
 main() {
