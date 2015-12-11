@@ -4,7 +4,7 @@ import "package:angular2/src/core/application_ref.dart" show ApplicationRef;
 import "package:angular2/src/core/linker/dynamic_component_loader.dart"
     show ComponentRef, ComponentRef_;
 import "package:angular2/src/facade/lang.dart" show isPresent, NumberWrapper;
-import "package:angular2/src/facade/browser.dart" show performance, window;
+import "package:angular2/src/facade/browser.dart" show window;
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
 
 /**
