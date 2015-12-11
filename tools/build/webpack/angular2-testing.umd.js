@@ -13,3 +13,5 @@ exports.instrumentation = require('angular2/instrumentation');
 exports.upgrade = require('angular2/upgrade');
 // this is the only difference as compared to the angular2.umd.js bundle
 exports.testing = require('angular2/testing');
+exports.http.testing = require('angular2/http/testing');
+exports.router.testing = require('angular2/router/testing');
