@@ -137,7 +137,7 @@ var CONFIG = {
     dart: 'dist/dart',
     docs: 'dist/docs',
     docs_angular_io: 'dist/angular.io',
-    benchpress_bundle: 'dist/build/benchpress_bundle/'
+    bundles: {all: 'dist/build', benchpress: 'dist/build/benchpress_bundle/'}
   }
 };
 
@@ -147,7 +147,7 @@ var BENCHPRESS_BUNDLE_CONFIG = {
   includes: ['angular2'],
   excludes: ['reflect-metadata', 'selenium-webdriver', 'zone.js'],
   ignore: [],
-  dest: CONFIG.dest.benchpress_bundle
+  dest: CONFIG.dest.bundles.benchpress
 };
 
 // ------------
@@ -164,8 +164,10 @@ gulp.task('build/clean.docs', function(done) { del(CONFIG.dest.docs, done); });
 gulp.task('build/clean.docs_angular_io',
           function(done) { del(CONFIG.dest.docs_angular_io, done); });
 
-gulp.task('build/clean.benchpress.bundle',
-          function(done) { del(CONFIG.dest.benchpress_bundle, done); });
+gulp.task('build/clean.bundles', function(done) { del(CONFIG.dest.bundles.all, done); });
+
+gulp.task('build/clean.bundles.benchpress',
+          function(done) { del(CONFIG.dest.bundles.benchpress, done); });
 
 // ------------
 // transpile
@@ -1235,7 +1237,7 @@ gulp.task('clean', [
   'build/clean.js',
   'build/clean.dart',
   'build/clean.docs',
-  'build/clean.benchpress.bundle'
+  'build/clean.bundles'
 ]);
 
 gulp.task('build', ['build.js', 'build.dart']);
@@ -1326,7 +1328,7 @@ gulp.task('build.dart.material', ['build/packages.dart'], function(done) {
 
 gulp.task('cleanup.builder', function() { return angularBuilder.cleanup(); });
 
-gulp.task('benchpress.bundle', ['build/clean.benchpress.bundle', 'build.js.cjs'], function(cb) {
+gulp.task('benchpress.bundle', ['build/clean.bundles.benchpress', 'build.js.cjs'], function(cb) {
   var bundler = require('./tools/build/bundle');
 
   bundler.benchpressBundle(BENCHPRESS_BUNDLE_CONFIG.entries, BENCHPRESS_BUNDLE_CONFIG.packageJson,
