@@ -1,6 +1,6 @@
 import { StringMapWrapper } from 'angular2/src/facade/collection';
 import { global, isFunction, Math } from 'angular2/src/facade/lang';
-import { provide } from 'angular2/src/core/di';
+import { provide } from 'angular2/core';
 import { createTestInjectorWithRuntimeCompiler, FunctionWithParamTokens } from './test_injector';
 import { browserDetection } from './utils';
 export { inject } from './test_injector';

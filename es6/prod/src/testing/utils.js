@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Injectable } from 'angular2/src/core/di';
+import { Injectable } from 'angular2/core';
 import { ListWrapper } from 'angular2/src/facade/collection';
 import { DOM } from 'angular2/src/platform/dom/dom_adapter';
 import { isPresent, isString, RegExpWrapper, StringWrapper } from 'angular2/src/facade/lang';

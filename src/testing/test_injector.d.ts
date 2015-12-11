@@ -1,5 +1,4 @@
-import { Provider } from 'angular2/src/core/di';
-import { Injector } from 'angular2/src/core/di';
+import { Injector, Provider } from 'angular2/core';
 import { Type } from 'angular2/src/facade/lang';
 export declare function createTestInjector(providers: Array<Type | Provider | any[]>): Injector;
 export declare function createTestInjectorWithRuntimeCompiler(providers: Array<Type | Provider | any[]>): Injector;
