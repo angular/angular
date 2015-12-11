@@ -1,9 +1,19 @@
 import * as simple_library from './simple_library';
-import * as ng from 'angular2/angular2';
+import * as ngCommon from 'angular2/common';
+import * as ngCompiler from 'angular2/compiler';
+import * as ngCore from 'angular2/core';
+import * as ngInstrumentation from 'angular2/instrumentation';
+import * as ngPlatformBrowser from 'angular2/platform/browser';
+import * as ngUpgrade from 'angular2/upgrade';
 
 const LIB_MAP = {
   'simple_library': simple_library,
-  'ng': ng
+  ngCommon,
+  ngCompiler,
+  ngCore,
+  ngInstrumentation,
+  ngPlatformBrowser,
+  ngUpgrade
 };
 
 const IGNORE =
