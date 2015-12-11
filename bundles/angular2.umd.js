@@ -27133,8 +27133,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var lang_1 = __webpack_require__(5);
 	var CAMEL_CASE_REGEXP = /([A-Z])/g;
 	var DASH_CASE_REGEXP = /-([a-z])/g;
-	var SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\$/g;
-	var DOUBLE_QUOTE_ESCAPE_STRING_RE = /"|\\|\n|\$/g;
+	var SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\r|\$/g;
+	var DOUBLE_QUOTE_ESCAPE_STRING_RE = /"|\\|\n|\r|\$/g;
 	exports.MODULE_SUFFIX = lang_1.IS_DART ? '.dart' : '.js';
 	function camelCaseToDashCase(input) {
 	    return lang_1.StringWrapper.replaceAllMapped(input, CAMEL_CASE_REGEXP, function (m) { return '-' + m[1].toLowerCase(); });
@@ -27165,6 +27165,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        else if (match[0] == '\n') {
 	            return '\\n';
+	        }
+	        else if (match[0] == '\r') {
+	            return '\\r';
 	        }
 	        else {
 	            return "\\" + match[0];

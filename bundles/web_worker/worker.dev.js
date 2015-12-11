@@ -14795,8 +14795,8 @@ System.register("angular2/src/compiler/util", ["angular2/src/facade/lang"], true
   var lang_1 = require("angular2/src/facade/lang");
   var CAMEL_CASE_REGEXP = /([A-Z])/g;
   var DASH_CASE_REGEXP = /-([a-z])/g;
-  var SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\$/g;
-  var DOUBLE_QUOTE_ESCAPE_STRING_RE = /"|\\|\n|\$/g;
+  var SINGLE_QUOTE_ESCAPE_STRING_RE = /'|\\|\n|\r|\$/g;
+  var DOUBLE_QUOTE_ESCAPE_STRING_RE = /"|\\|\n|\r|\$/g;
   exports.MODULE_SUFFIX = lang_1.IS_DART ? '.dart' : '.js';
   function camelCaseToDashCase(input) {
     return lang_1.StringWrapper.replaceAllMapped(input, CAMEL_CASE_REGEXP, function(m) {
@@ -14830,6 +14830,8 @@ System.register("angular2/src/compiler/util", ["angular2/src/facade/lang"], true
         return lang_1.IS_DART ? '\\$' : '$';
       } else if (match[0] == '\n') {
         return '\\n';
+      } else if (match[0] == '\r') {
+        return '\\r';
       } else {
         return "\\" + match[0];
       }
