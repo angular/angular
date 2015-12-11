@@ -86,9 +86,6 @@ System.register("angular2/src/http/headers", ["angular2/src/facade/lang", "angul
     Headers.prototype.values = function() {
       return collection_1.MapWrapper.values(this._headersMap);
     };
-    Headers.prototype.toJSON = function() {
-      return lang_1.Json.stringify(this.values());
-    };
     Headers.prototype.getAll = function(header) {
       var headers = this._headersMap.get(header);
       return collection_1.isListLikeIterable(headers) ? headers : [];

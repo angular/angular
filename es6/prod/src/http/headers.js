@@ -1,4 +1,4 @@
-import { isBlank, Json } from 'angular2/src/facade/lang';
+import { isBlank } from 'angular2/src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
 import { isListLikeIterable, Map, MapWrapper, StringMapWrapper, ListWrapper } from 'angular2/src/facade/collection';
 /**
@@ -96,10 +96,6 @@ export class Headers {
      * Returns values of all headers.
      */
     values() { return MapWrapper.values(this._headersMap); }
-    /**
-     * Returns string of all headers.
-     */
-    toJSON() { return Json.stringify(this.values()); }
     /**
      * Returns list of header values for a given name.
      */

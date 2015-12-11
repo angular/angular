@@ -1,4 +1,4 @@
-import { DateWrapper, StringWrapper, RegExpWrapper, NumberWrapper, isPresent } from 'angular2/src/facade/lang';
+import { DateWrapper, StringWrapper, RegExpWrapper, NumberWrapper } from 'angular2/src/facade/lang';
 import { Math } from 'angular2/src/facade/math';
 import { camelCaseToDashCase } from 'angular2/src/platform/dom/util';
 import { StringMapWrapper } from 'angular2/src/facade/collection';
@@ -21,6 +21,7 @@ export class Animation {
         /** flag used to track whether or not the animation has finished */
         this.completed = false;
         this._stringPrefix = '';
+        this._temporaryStyles = {};
         this.startTime = DateWrapper.toMillis(DateWrapper.now());
         this._stringPrefix = DOM.getAnimationPrefix();
         this.setup();
@@ -42,10 +43,23 @@ export class Animation {
     setup() {
         if (this.data.fromStyles != null)
             this.applyStyles(this.data.fromStyles);
-        if (this.data.duration != null)
+        if (this.data.duration != null) {
+            this._temporaryStyles['transitionDuration'] = this._readStyle('transitionDuration');
             this.applyStyles({ 'transitionDuration': this.data.duration.toString() + 'ms' });
-        if (this.data.delay != null)
+        }
+        if (this.data.delay != null) {
+            this._temporaryStyles['transitionDelay'] = this._readStyle('transitionDelay');
             this.applyStyles({ 'transitionDelay': this.data.delay.toString() + 'ms' });
+        }
+        if (!StringMapWrapper.isEmpty(this.data.animationStyles)) {
+            // it's important that we setup a list of the styles and their
+            // initial inline style values prior to applying the animation
+            // styles such that we can restore the values after the animation
+            // has been completed.
+            StringMapWrapper.keys(this.data.animationStyles)
+                .forEach((prop) => { this._temporaryStyles[prop] = this._readStyle(prop); });
+            this.applyStyles(this.data.animationStyles);
+        }
     }
     /**
      * After the initial setup has occurred, this method adds the animation styles
@@ -68,13 +82,8 @@ export class Animation {
      */
     applyStyles(styles) {
         StringMapWrapper.forEach(styles, (value, key) => {
-            var dashCaseKey = camelCaseToDashCase(key);
-            if (isPresent(DOM.getStyle(this.element, dashCaseKey))) {
-                DOM.setStyle(this.element, dashCaseKey, value.toString());
-            }
-            else {
-                DOM.setStyle(this.element, this._stringPrefix + dashCaseKey, value.toString());
-            }
+            var prop = this._formatStyleProp(key);
+            DOM.setStyle(this.element, prop, value.toString());
         });
     }
     /**
@@ -92,6 +101,24 @@ export class Animation {
     removeClasses(classes) {
         for (let i = 0, len = classes.length; i < len; i++)
             DOM.removeClass(this.element, classes[i]);
+    }
+    _readStyle(prop) {
+        return DOM.getStyle(this.element, this._formatStyleProp(prop));
+    }
+    _formatStyleProp(prop) {
+        prop = camelCaseToDashCase(prop);
+        return prop.indexOf('animation') >= 0 ? this._stringPrefix + prop : prop;
+    }
+    _removeAndRestoreStyles(styles) {
+        StringMapWrapper.forEach(styles, (value, prop) => {
+            prop = this._formatStyleProp(prop);
+            if (value.length > 0) {
+                DOM.setStyle(this.element, prop, value);
+            }
+            else {
+                DOM.removeStyle(this.element, prop);
+            }
+        });
     }
     /**
      * Adds events to track when animations have finished
@@ -117,6 +144,8 @@ export class Animation {
      */
     handleAnimationCompleted() {
         this.removeClasses(this.data.animationClasses);
+        this._removeAndRestoreStyles(this._temporaryStyles);
+        this._temporaryStyles = {};
         this.callbacks.forEach(callback => callback());
         this.callbacks = [];
         this.eventClearFunctions.forEach(fn => fn());

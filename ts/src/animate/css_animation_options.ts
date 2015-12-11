@@ -14,6 +14,9 @@ export class CssAnimationOptions {
   /** classes to be added for the duration of the animation */
   animationClasses: string[] = [];
 
+  /** styles to be applied for the duration of the animation */
+  animationStyles: {[key: string]: string} = {};
+
   /** override the duration of the animation (in milliseconds) */
   duration: number;
 
