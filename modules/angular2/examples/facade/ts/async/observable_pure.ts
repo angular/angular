@@ -1,5 +1,5 @@
 // #docregion Observable
-import {Observable} from 'angular2/core';
+import {Observable} from 'rxjs/Observable';
 import {map} from 'rxjs/operator/map';
 
 var obs = new Observable(obs => {

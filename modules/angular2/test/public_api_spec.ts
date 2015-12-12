@@ -1010,11 +1010,6 @@ var NG_CORE = [
    RxJS API - may need to maintain as RxJS evolves
   */
   'EventEmitter.emit():js',
-  'Observable:js',
-  'Observable#create():js',
-  'Observable.forEach():js',
-  'Observable.lift():js',
-  'Observable.subscribe():js',
   'OutputMetadata',
   'OutputMetadata.bindingPropertyName',
   'enableDevMode():js',
