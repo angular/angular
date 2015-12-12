@@ -4,7 +4,6 @@ import "package:angular2/src/compiler/xhr.dart" show XHR;
 import "package:angular2/src/web_workers/worker/xhr_impl.dart"
     show WebWorkerXHRImpl;
 import "package:angular2/src/facade/collection.dart" show ListWrapper;
-import "package:angular2/src/compiler/app_root_url.dart" show AppRootUrl;
 import "package:angular2/src/web_workers/worker/renderer.dart"
     show WebWorkerRenderer;
 import "package:angular2/src/facade/lang.dart" show print, Type, isPresent;
@@ -36,11 +35,7 @@ import "package:angular2/src/web_workers/shared/render_view_with_fragments_store
 import "package:angular2/src/web_workers/worker/event_dispatcher.dart"
     show WebWorkerEventDispatcher;
 import "package:angular2/src/core/zone/ng_zone.dart" show NgZone;
-import "package:angular2/src/facade/async.dart"
-    show Future, PromiseWrapper, PromiseCompleter;
-import "package:angular2/src/web_workers/shared/messaging_api.dart"
-    show SETUP_CHANNEL;
-import "package:angular2/src/facade/async.dart" show ObservableWrapper;
+import "package:angular2/src/facade/async.dart" show Future, PromiseWrapper;
 
 class PrintLogger {
   var log = print;
@@ -85,20 +80,8 @@ Future<
     List<
         dynamic /* Type | Provider | List < dynamic > */ >> genericWorkerAppProviders(
     MessageBus bus, NgZone zone) {
-  PromiseCompleter<dynamic> bootstrapProcess = PromiseWrapper.completer();
   bus.attachToZone(zone);
-  bus.initChannel(SETUP_CHANNEL, false);
-  dynamic subscription;
-  var emitter = bus.from(SETUP_CHANNEL);
-  subscription = ObservableWrapper.subscribe(emitter,
-      (Map<String, dynamic> initData) {
-    var bindings = ListWrapper.concat(WORKER_APP_COMMON_PROVIDERS, [
-      new Provider(MessageBus, useValue: bus),
-      new Provider(AppRootUrl, useValue: new AppRootUrl(initData["rootUrl"]))
-    ]);
-    bootstrapProcess.resolve(bindings);
-    ObservableWrapper.dispose(subscription);
-  });
-  ObservableWrapper.callNext(bus.to(SETUP_CHANNEL), "ready");
-  return bootstrapProcess.promise;
+  var bindings = ListWrapper.concat(
+      WORKER_APP_COMMON_PROVIDERS, [new Provider(MessageBus, useValue: bus)]);
+  return PromiseWrapper.resolve(bindings);
 }
