@@ -4,7 +4,7 @@ import { Request } from '../static_request';
 import { Response } from '../static_response';
 import { ResponseOptions } from '../base_response_options';
 import { BrowserJsonp } from './browser_jsonp';
-import { Observable } from 'angular2/core';
+import { Observable } from 'rxjs/Observable';
 export declare abstract class JSONPConnection implements Connection {
     readyState: ReadyState;
     request: Request;

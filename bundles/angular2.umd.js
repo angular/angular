@@ -12010,7 +12010,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var lang_1 = __webpack_require__(5);
 	exports.Type = lang_1.Type;
 	var async_1 = __webpack_require__(60);
-	exports.Observable = async_1.Observable;
 	exports.EventEmitter = async_1.EventEmitter;
 	var exceptions_1 = __webpack_require__(14);
 	exports.WrappedException = exceptions_1.WrappedException;
@@ -12032,9 +12031,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.PromiseWrapper = promise_1.PromiseWrapper;
 	exports.Promise = promise_1.Promise;
 	var Subject_1 = __webpack_require__(62);
-	var Observable_1 = __webpack_require__(63);
 	var fromPromise_1 = __webpack_require__(74);
 	var toPromise_1 = __webpack_require__(79);
+	var Observable_1 = __webpack_require__(63);
+	exports.Observable = Observable_1.Observable;
 	var Subject_2 = __webpack_require__(62);
 	exports.Subject = Subject_2.Subject;
 	var TimerWrapper = (function () {
@@ -12169,81 +12169,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return EventEmitter;
 	})(Subject_1.Subject);
 	exports.EventEmitter = EventEmitter;
-	/**
-	 * Allows publishing and subscribing to series of async values.
-	 *
-	 * The `Observable` class is an alias to the `Observable` returned from
-	 * {@link https://github.com/reactivex/rxjs}. `Observables` are a means of delivering
-	 * any number of values over any period of time. `Observables` can be thought of as a
-	 * mixture of `Promise` and `Array`. `Observables` are like `Arrays` in that they can have
-	 * chained combinators -- like `map`, `reduce`, and `filter` -- attached in order to
-	 * perform projections and transformations of data. And they are like `Promises`
-	 * in that they can asynchronously deliver values. But unlike a `Promise`, an
-	 * `Observable` can emit many values over time, and decides if/when it is completed.
-	 *
-	 * `Observable` is also being considered for inclusion in the
-	 * [ECMAScript spec](https://github.com/zenparsing/es-observable).
-	 *
-	 * ## Example
-	 *
-	 * A simple example of using an `Observable` is a timer `Observable`, which will
-	 * notify an `Observer` each time an interval has completed.
-	 *
-	 * {@example facade/ts/async/observable.ts region='Observable'}
-	 *
-	 * The `Observable` in Angular currently doesn't provide any combinators by default.
-	 * So it's necessary to explicitly import any combinators that an application requires.
-	 * There are two ways to import RxJS combinators: pure and patched. The "pure" approach
-	 * involves importing a combinator as a function every place that an application needs it,
-	 * then calling the function with the source observable as the context of the function.
-	 *
-	 * ## Example
-	 *
-	 * {@example facade/ts/async/observable_pure.ts region='Observable'}
-	 *
-	 * The "patched" approach to using combinators is to import a special module for
-	 * each combinator, which will automatically cause the combinator to be patched
-	 * to the `Observable` prototype, which will make it available to use anywhere in
-	 * an application after the combinator has been imported once.
-	 *
-	 * ## Example
-	 *
-	 * (Notice the extra "add" in the path to import `map`)
-	 *
-	 * {@example facade/ts/async/observable_patched.ts region='Observable'}
-	 *
-	 * Notice that the sequence of operations is now able to be expressed "left-to-right"
-	 * because `map` is on the `Observable` prototype. For a simple example like this one,
-	 * the left-to-right expression may seem insignificant. However, when several operators
-	 * are used in combination, the "callback tree" grows several levels deep, and becomes
-	 * difficult to read. For this reason, the "patched" approach is the recommended approach
-	 * to add new operators to `Observable`.
-	 *
-	 * For applications that are less sensitive about payload size, the set of core operators
-	 * can be patched onto the `Observable` prototype with a single import, by importing the
-	 * `rxjs` module.
-	 *
-	 * {@example facade/ts/async/observable_all.ts region='Observable'}
-	 *
-	 * Full documentation on RxJS `Observable` and available combinators can be found
-	 * in the RxJS [Observable docs](http://reactivex.io/RxJS/class/es6/Observable.js~Observable.html).
-	 *
-	 */
-	// todo(robwormald): ts2dart should handle this properly
-	var Observable = (function (_super) {
-	    __extends(Observable, _super);
-	    function Observable() {
-	        _super.apply(this, arguments);
-	    }
-	    Observable.prototype.lift = function (operator) {
-	        var observable = new Observable();
-	        observable.source = this;
-	        observable.operator = operator;
-	        return observable;
-	    };
-	    return Observable;
-	})(Observable_1.Observable);
-	exports.Observable = Observable;
 
 
 /***/ },
@@ -32155,7 +32080,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var core_1 = __webpack_require__(2);
 	var browser_xhr_1 = __webpack_require__(235);
 	var lang_1 = __webpack_require__(5);
-	var core_2 = __webpack_require__(2);
+	var Observable_1 = __webpack_require__(63);
 	var http_utils_1 = __webpack_require__(228);
 	/**
 	* Creates connections using `XMLHttpRequest`. Given a fully-qualified
@@ -32169,7 +32094,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    function XHRConnection(req, browserXHR, baseResponseOptions) {
 	        var _this = this;
 	        this.request = req;
-	        this.response = new core_2.Observable(function (responseObserver) {
+	        this.response = new Observable_1.Observable(function (responseObserver) {
 	            var _xhr = browserXHR.build();
 	            _xhr.open(enums_1.RequestMethod[req.method].toUpperCase(), req.url);
 	            // load event handler
@@ -32545,7 +32470,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var browser_jsonp_1 = __webpack_require__(237);
 	var exceptions_1 = __webpack_require__(14);
 	var lang_1 = __webpack_require__(5);
-	var core_2 = __webpack_require__(2);
+	var Observable_1 = __webpack_require__(63);
 	var JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callback.';
 	var JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
 	var JSONPConnection = (function () {
@@ -32566,7 +32491,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            throw exceptions_1.makeTypeError(JSONP_ERR_WRONG_METHOD);
 	        }
 	        this.request = req;
-	        this.response = new core_2.Observable(function (responseObserver) {
+	        this.response = new Observable_1.Observable(function (responseObserver) {
 	            _this.readyState = enums_1.ReadyState.Loading;
 	            var id = _this._id = _dom.nextRequestID();
 	            _dom.exposeConnection(id, _this);

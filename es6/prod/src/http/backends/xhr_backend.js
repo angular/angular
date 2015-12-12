@@ -14,7 +14,7 @@ import { ResponseOptions } from '../base_response_options';
 import { Injectable } from 'angular2/core';
 import { BrowserXhr } from './browser_xhr';
 import { isPresent } from 'angular2/src/facade/lang';
-import { Observable } from 'angular2/core';
+import { Observable } from 'rxjs/Observable';
 import { isSuccess, getResponseURL } from '../http_utils';
 /**
 * Creates connections using `XMLHttpRequest`. Given a fully-qualified

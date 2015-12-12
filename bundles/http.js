@@ -594,7 +594,7 @@ System.register("angular2/src/http/base_request_options", ["angular2/src/facade/
   return module.exports;
 });
 
-System.register("angular2/src/http/backends/xhr_backend", ["angular2/src/http/enums", "angular2/src/http/static_response", "angular2/src/http/headers", "angular2/src/http/base_response_options", "angular2/core", "angular2/src/http/backends/browser_xhr", "angular2/src/facade/lang", "angular2/core", "angular2/src/http/http_utils"], true, function(require, exports, module) {
+System.register("angular2/src/http/backends/xhr_backend", ["angular2/src/http/enums", "angular2/src/http/static_response", "angular2/src/http/headers", "angular2/src/http/base_response_options", "angular2/core", "angular2/src/http/backends/browser_xhr", "angular2/src/facade/lang", "rxjs/Observable", "angular2/src/http/http_utils"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -621,13 +621,13 @@ System.register("angular2/src/http/backends/xhr_backend", ["angular2/src/http/en
   var core_1 = require("angular2/core");
   var browser_xhr_1 = require("angular2/src/http/backends/browser_xhr");
   var lang_1 = require("angular2/src/facade/lang");
-  var core_2 = require("angular2/core");
+  var Observable_1 = require("rxjs/Observable");
   var http_utils_1 = require("angular2/src/http/http_utils");
   var XHRConnection = (function() {
     function XHRConnection(req, browserXHR, baseResponseOptions) {
       var _this = this;
       this.request = req;
-      this.response = new core_2.Observable(function(responseObserver) {
+      this.response = new Observable_1.Observable(function(responseObserver) {
         var _xhr = browserXHR.build();
         _xhr.open(enums_1.RequestMethod[req.method].toUpperCase(), req.url);
         var onLoad = function() {
@@ -699,7 +699,7 @@ System.register("angular2/src/http/backends/xhr_backend", ["angular2/src/http/en
   return module.exports;
 });
 
-System.register("angular2/src/http/backends/jsonp_backend", ["angular2/src/http/interfaces", "angular2/src/http/enums", "angular2/src/http/static_response", "angular2/src/http/base_response_options", "angular2/core", "angular2/src/http/backends/browser_jsonp", "angular2/src/facade/exceptions", "angular2/src/facade/lang", "angular2/core"], true, function(require, exports, module) {
+System.register("angular2/src/http/backends/jsonp_backend", ["angular2/src/http/interfaces", "angular2/src/http/enums", "angular2/src/http/static_response", "angular2/src/http/base_response_options", "angular2/core", "angular2/src/http/backends/browser_jsonp", "angular2/src/facade/exceptions", "angular2/src/facade/lang", "rxjs/Observable"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -736,7 +736,7 @@ System.register("angular2/src/http/backends/jsonp_backend", ["angular2/src/http/
   var browser_jsonp_1 = require("angular2/src/http/backends/browser_jsonp");
   var exceptions_1 = require("angular2/src/facade/exceptions");
   var lang_1 = require("angular2/src/facade/lang");
-  var core_2 = require("angular2/core");
+  var Observable_1 = require("rxjs/Observable");
   var JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callback.';
   var JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
   var JSONPConnection = (function() {
@@ -756,7 +756,7 @@ System.register("angular2/src/http/backends/jsonp_backend", ["angular2/src/http/
         throw exceptions_1.makeTypeError(JSONP_ERR_WRONG_METHOD);
       }
       this.request = req;
-      this.response = new core_2.Observable(function(responseObserver) {
+      this.response = new Observable_1.Observable(function(responseObserver) {
         _this.readyState = enums_1.ReadyState.Loading;
         var id = _this._id = _dom.nextRequestID();
         _dom.exposeConnection(id, _this);

@@ -15,7 +15,7 @@ import { Injectable } from 'angular2/core';
 import { BrowserJsonp } from './browser_jsonp';
 import { makeTypeError } from 'angular2/src/facade/exceptions';
 import { StringWrapper, isPresent } from 'angular2/src/facade/lang';
-import { Observable } from 'angular2/core';
+import { Observable } from 'rxjs/Observable';
 const JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callback.';
 const JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
 export class JSONPConnection {

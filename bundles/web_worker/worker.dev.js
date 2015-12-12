@@ -8848,7 +8848,6 @@ System.register("angular2/src/facade/facade", ["angular2/src/facade/lang", "angu
   var lang_1 = require("angular2/src/facade/lang");
   exports.Type = lang_1.Type;
   var async_1 = require("angular2/src/facade/async");
-  exports.Observable = async_1.Observable;
   exports.EventEmitter = async_1.EventEmitter;
   var exceptions_1 = require("angular2/src/facade/exceptions");
   exports.WrappedException = exceptions_1.WrappedException;
@@ -38001,7 +38000,7 @@ System.register("angular2/platform/common_dom", ["angular2/src/platform/dom/dom_
   return module.exports;
 });
 
-System.register("angular2/src/facade/async", ["angular2/src/facade/lang", "angular2/src/facade/promise", "rxjs/Subject", "rxjs/Observable", "rxjs/observable/fromPromise", "rxjs/operator/toPromise", "rxjs/Subject"], true, function(require, exports, module) {
+System.register("angular2/src/facade/async", ["angular2/src/facade/lang", "angular2/src/facade/promise", "rxjs/Subject", "rxjs/observable/fromPromise", "rxjs/operator/toPromise", "rxjs/Observable", "rxjs/Subject"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -38019,9 +38018,10 @@ System.register("angular2/src/facade/async", ["angular2/src/facade/lang", "angul
   exports.PromiseWrapper = promise_1.PromiseWrapper;
   exports.Promise = promise_1.Promise;
   var Subject_1 = require("rxjs/Subject");
-  var Observable_1 = require("rxjs/Observable");
   var fromPromise_1 = require("rxjs/observable/fromPromise");
   var toPromise_1 = require("rxjs/operator/toPromise");
+  var Observable_1 = require("rxjs/Observable");
+  exports.Observable = Observable_1.Observable;
   var Subject_2 = require("rxjs/Subject");
   exports.Subject = Subject_2.Subject;
   var TimerWrapper = (function() {
@@ -38166,20 +38166,6 @@ System.register("angular2/src/facade/async", ["angular2/src/facade/lang", "angul
     return EventEmitter;
   })(Subject_1.Subject);
   exports.EventEmitter = EventEmitter;
-  var Observable = (function(_super) {
-    __extends(Observable, _super);
-    function Observable() {
-      _super.apply(this, arguments);
-    }
-    Observable.prototype.lift = function(operator) {
-      var observable = new Observable();
-      observable.source = this;
-      observable.operator = operator;
-      return observable;
-    };
-    return Observable;
-  })(Observable_1.Observable);
-  exports.Observable = Observable;
   global.define = __define;
   return module.exports;
 });
