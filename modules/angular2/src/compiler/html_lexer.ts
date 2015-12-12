@@ -4,8 +4,10 @@ import {
   isPresent,
   isBlank,
   CONST_EXPR,
-  serializeEnum
+  serializeEnum,
+  isString,
 } from 'angular2/src/facade/lang';
+import {BaseException} from 'angular2/src/facade/exceptions';
 import {ListWrapper} from 'angular2/src/facade/collection';
 import {ParseLocation, ParseError, ParseSourceFile, ParseSourceSpan} from './parse_util';
 import {getHtmlTagDefinition, HtmlTagContentType, NAMED_ENTITIES} from './html_tags';
@@ -44,13 +46,12 @@ export class HtmlTokenizeResult {
 }
 
 export function tokenizeHtml(sourceContent: string, sourceUrl: string): HtmlTokenizeResult {
-  return new _HtmlTokenizer(new ParseSourceFile(sourceContent, sourceUrl)).tokenize();
+  return new _HtmlTokenizer(new ParseSourceFile(sourceContent, sourceUrl), '{{', '}}').tokenize();
 }
 
 const $EOF = 0;
 const $TAB = 9;
 const $LF = 10;
-const $FF = 12;
 const $CR = 13;
 
 const $SPACE = 32;
@@ -58,7 +59,6 @@ const $SPACE = 32;
 const $BANG = 33;
 const $DQ = 34;
 const $HASH = 35;
-const $$ = 36;
 const $AMPERSAND = 38;
 const $SQ = 39;
 const $MINUS = 45;
@@ -72,7 +72,6 @@ const $COLON = 58;
 const $LT = 60;
 const $EQ = 61;
 const $GT = 62;
-const $QUESTION = 63;
 const $A = 65;
 const $Z = 90;
 const $LBRACKET = 91;
@@ -116,7 +115,18 @@ class _HtmlTokenizer {
   tokens: HtmlToken[] = [];
   errors: HtmlTokenError[] = [];
 
-  constructor(private _file: ParseSourceFile) {
+  constructor(private _file: ParseSourceFile, private _expStart = null, private _expEnd = null) {
+    if (isString(this._expStart) && this._expStart.length == 0) {
+      this._expStart = null;
+    }
+    if (isString(this._expEnd) && this._expEnd.length == 0) {
+      this._expEnd = null;
+    }
+    if (isBlank(this._expEnd) && isPresent(this._expStart)) {
+      throw new BaseException(
+          'An expression end delimiter is required when a start delimiter is specified');
+    }
+
     this._input = _file.content;
     this._inputLowercase = _file.content.toLowerCase();
     this._length = _file.content.length;
@@ -149,6 +159,8 @@ class _HtmlTokenizer {
           } else {
             this._consumeTagOpen(start);
           }
+        } else if (this._peekExpStart()) {
+          this._consumeExpression();
         } else {
           this._consumeText();
         }
@@ -209,6 +221,20 @@ class _HtmlTokenizer {
     this._index++;
     this._peek = this._index >= this._length ? $EOF : StringWrapper.charCodeAt(this._inputLowercase,
                                                                                this._index);
+  }
+
+  private _peekStr(str: string): boolean {
+    let charLeft = this._length - this._index;
+
+    if (charLeft < str.length) return false;
+
+    for (let i = 0; i < str.length; i++) {
+      if (!StringWrapper.equals(this._input[this._index + i], str[i])) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   private _attemptChar(charCode: number): boolean {
@@ -311,9 +337,7 @@ class _HtmlTokenizer {
   private _consumeRawText(decodeEntities: boolean, firstCharOfEnd: number,
                           attemptEndRest: Function): HtmlToken {
     var tagCloseStart;
-    var textStart = this._getLocation();
-    this._beginToken(decodeEntities ? HtmlTokenType.ESCAPABLE_RAW_TEXT : HtmlTokenType.RAW_TEXT,
-                     textStart);
+    this._beginToken(decodeEntities ? HtmlTokenType.ESCAPABLE_RAW_TEXT : HtmlTokenType.RAW_TEXT);
     var parts = [];
     while (true) {
       tagCloseStart = this._getLocation();
@@ -328,6 +352,19 @@ class _HtmlTokenizer {
       }
     }
     return this._endToken([this._processCarriageReturns(parts.join(''))], tagCloseStart);
+  }
+
+  private _consumeExpression(): void {
+    let parts: string[] = [this._expStart];
+    this._beginToken(HtmlTokenType.TEXT);
+    this._requireChars(this._expStart);
+    while (!this._peekStr(this._expEnd)) {
+      parts.push(this._readChar(true));
+    }
+    this._requireChars(this._expEnd);
+    parts.push(this._expEnd);
+
+    this._endToken([this._processCarriageReturns(parts.join(''))]);
   }
 
   private _consumeComment(start: ParseLocation) {
@@ -375,38 +412,20 @@ class _HtmlTokenizer {
   }
 
   private _consumeTagOpen(start: ParseLocation) {
-    let savedPos = this._savePosition();
-    let lowercaseTagName;
-    try {
-      if (!isAsciiLetter(this._peek)) {
-        throw this._createError(unexpectedCharacterErrorMsg(this._peek), this._getLocation());
-      }
-      var nameStart = this._index;
-      this._consumeTagOpenStart(start);
-      lowercaseTagName = this._inputLowercase.substring(nameStart, this._index);
+    let nameStart = this._index;
+    this._consumeTagOpenStart(start);
+    let lowercaseTagName = this._inputLowercase.substring(nameStart, this._index);
+    this._attemptUntilFn(isNotWhitespace);
+    while (this._peek !== $SLASH && this._peek !== $GT) {
+      this._consumeAttributeName();
       this._attemptUntilFn(isNotWhitespace);
-      while (this._peek !== $SLASH && this._peek !== $GT) {
-        this._consumeAttributeName();
+      if (this._attemptChar($EQ)) {
         this._attemptUntilFn(isNotWhitespace);
-        if (this._attemptChar($EQ)) {
-          this._attemptUntilFn(isNotWhitespace);
-          this._consumeAttributeValue();
-        }
-        this._attemptUntilFn(isNotWhitespace);
+        this._consumeAttributeValue();
       }
-      this._consumeTagOpenEnd();
-    } catch (e) {
-      if (e instanceof ControlFlowError) {
-        // When the start tag is invalid, assume we want a "<"
-        this._restorePosition(savedPos);
-        // Back to back text tokens are merged at the end
-        this._beginToken(HtmlTokenType.TEXT, start);
-        this._endToken(['<']);
-        return;
-      }
-
-      throw e;
+      this._attemptUntilFn(isNotWhitespace);
     }
+    this._consumeTagOpenEnd();
 
     var contentTokenType = getHtmlTagDefinition(lowercaseTagName).contentType;
     if (contentTokenType === HtmlTagContentType.RAW_TEXT) {
@@ -431,6 +450,9 @@ class _HtmlTokenizer {
 
   private _consumeTagOpenStart(start: ParseLocation) {
     this._beginToken(HtmlTokenType.TAG_OPEN_START, start);
+    if (!isAsciiLetter(this._peek)) {
+      throw this._createError(unexpectedCharacterErrorMsg(this._peek), this._getLocation());
+    }
     var parts = this._consumePrefixAndName();
     this._endToken(parts);
   }
@@ -480,10 +502,9 @@ class _HtmlTokenizer {
   }
 
   private _consumeText() {
-    var start = this._getLocation();
-    this._beginToken(HtmlTokenType.TEXT, start);
+    this._beginToken(HtmlTokenType.TEXT);
     var parts = [this._readChar(true)];
-    while (!isTextEnd(this._peek)) {
+    while (!isTextEnd(this._peek) && !this._peekExpStart()) {
       parts.push(this._readChar(true));
     }
     this._endToken([this._processCarriageReturns(parts.join(''))]);
@@ -491,6 +512,10 @@ class _HtmlTokenizer {
 
   private _savePosition(): number[] {
     return [this._peek, this._index, this._column, this._line, this.tokens.length];
+  }
+
+  private _peekExpStart(): boolean {
+    return isPresent(this._expStart) && this._peekStr(this._expStart);
   }
 
   private _restorePosition(position: number[]): void {
