@@ -2,6 +2,7 @@
 // the only difference being "testing" export
 exports.core = require('angular2/core');
 exports.common = require('angular2/common');
+exports.compiler = require('angular2/compiler');
 exports.platform = {
   browser: require('angular2/platform/browser'),
   common_dom: require('angular2/platform/common_dom')

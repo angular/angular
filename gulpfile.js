@@ -152,8 +152,11 @@ var ANGULAR2_BUNDLE_CONFIG = [
 
 var NG2_BUNDLE_CONTENT = ANGULAR2_BUNDLE_CONFIG.join(' + ');
 var HTTP_BUNDLE_CONTENT = 'angular2/http - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
-var ROUTER_BUNDLE_CONTENT = 'angular2/router - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
-var TESTING_BUNDLE_CONTENT = 'angular2/testing - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
+var ROUTER_BUNDLE_CONTENT =
+    'angular2/router + angular2/router/router_link_dsl - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
+var TESTING_BUNDLE_CONTENT =
+    'angular2/testing + angular2/http/testing + angular2/router/testing - ' +
+    ANGULAR2_BUNDLE_CONFIG.join(' - ');
 var UPGRADE_BUNDLE_CONTENT = 'angular2/upgrade - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
 
 var BENCHPRESS_BUNDLE_CONFIG = {
