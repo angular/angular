@@ -17276,87 +17276,6 @@ System.register("angular2/src/compiler/schema/dom_element_schema_registry", ["an
   return module.exports;
 });
 
-System.register("angular2/src/compiler/app_root_url", ["angular2/src/core/di"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var di_1 = require("angular2/src/core/di");
-  var AppRootUrl = (function() {
-    function AppRootUrl(value) {
-      this.value = value;
-    }
-    AppRootUrl = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [String])], AppRootUrl);
-    return AppRootUrl;
-  })();
-  exports.AppRootUrl = AppRootUrl;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("angular2/src/compiler/anchor_based_app_root_url", ["angular2/src/compiler/app_root_url", "angular2/src/platform/dom/dom_adapter", "angular2/src/core/di"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var app_root_url_1 = require("angular2/src/compiler/app_root_url");
-  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
-  var di_1 = require("angular2/src/core/di");
-  var AnchorBasedAppRootUrl = (function(_super) {
-    __extends(AnchorBasedAppRootUrl, _super);
-    function AnchorBasedAppRootUrl() {
-      _super.call(this, "");
-      var a = dom_adapter_1.DOM.createElement('a');
-      dom_adapter_1.DOM.resolveAndSetHref(a, './', null);
-      this.value = dom_adapter_1.DOM.getHref(a);
-    }
-    AnchorBasedAppRootUrl = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], AnchorBasedAppRootUrl);
-    return AnchorBasedAppRootUrl;
-  })(app_root_url_1.AppRootUrl);
-  exports.AnchorBasedAppRootUrl = AnchorBasedAppRootUrl;
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/src/upgrade/metadata", ["angular2/core"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -29340,7 +29259,7 @@ System.register("angular2/src/core/linker/dynamic_component_loader", ["angular2/
   return module.exports;
 });
 
-System.register("angular2/src/compiler/compiler", ["angular2/src/compiler/runtime_compiler", "angular2/src/compiler/template_compiler", "angular2/src/compiler/directive_metadata", "angular2/src/compiler/source_module", "angular2/src/core/platform_directives_and_pipes", "angular2/src/compiler/template_ast", "angular2/src/compiler/template_parser", "angular2/src/facade/lang", "angular2/src/core/di", "angular2/src/compiler/template_parser", "angular2/src/compiler/html_parser", "angular2/src/compiler/template_normalizer", "angular2/src/compiler/runtime_metadata", "angular2/src/compiler/change_detector_compiler", "angular2/src/compiler/style_compiler", "angular2/src/compiler/command_compiler", "angular2/src/compiler/template_compiler", "angular2/src/core/change_detection/change_detection", "angular2/src/core/linker/compiler", "angular2/src/compiler/runtime_compiler", "angular2/src/compiler/schema/element_schema_registry", "angular2/src/compiler/schema/dom_element_schema_registry", "angular2/src/compiler/url_resolver", "angular2/src/compiler/app_root_url", "angular2/src/compiler/anchor_based_app_root_url", "angular2/src/core/change_detection/change_detection"], true, function(require, exports, module) {
+System.register("angular2/src/compiler/compiler", ["angular2/src/compiler/runtime_compiler", "angular2/src/compiler/template_compiler", "angular2/src/compiler/directive_metadata", "angular2/src/compiler/source_module", "angular2/src/core/platform_directives_and_pipes", "angular2/src/compiler/template_ast", "angular2/src/compiler/template_parser", "angular2/src/facade/lang", "angular2/src/core/di", "angular2/src/compiler/template_parser", "angular2/src/compiler/html_parser", "angular2/src/compiler/template_normalizer", "angular2/src/compiler/runtime_metadata", "angular2/src/compiler/change_detector_compiler", "angular2/src/compiler/style_compiler", "angular2/src/compiler/command_compiler", "angular2/src/compiler/template_compiler", "angular2/src/core/change_detection/change_detection", "angular2/src/core/linker/compiler", "angular2/src/compiler/runtime_compiler", "angular2/src/compiler/schema/element_schema_registry", "angular2/src/compiler/schema/dom_element_schema_registry", "angular2/src/compiler/url_resolver", "angular2/src/core/change_detection/change_detection"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -29381,8 +29300,6 @@ System.register("angular2/src/compiler/compiler", ["angular2/src/compiler/runtim
   var element_schema_registry_1 = require("angular2/src/compiler/schema/element_schema_registry");
   var dom_element_schema_registry_1 = require("angular2/src/compiler/schema/dom_element_schema_registry");
   var url_resolver_1 = require("angular2/src/compiler/url_resolver");
-  var app_root_url_1 = require("angular2/src/compiler/app_root_url");
-  var anchor_based_app_root_url_1 = require("angular2/src/compiler/anchor_based_app_root_url");
   var change_detection_2 = require("angular2/src/core/change_detection/change_detection");
   function _createChangeDetectorGenConfig() {
     return new change_detection_1.ChangeDetectorGenConfig(lang_1.assertionsEnabled(), false, true);
@@ -29390,7 +29307,7 @@ System.register("angular2/src/compiler/compiler", ["angular2/src/compiler/runtim
   exports.COMPILER_PROVIDERS = lang_1.CONST_EXPR([change_detection_2.Lexer, change_detection_2.Parser, html_parser_1.HtmlParser, template_parser_2.TemplateParser, template_normalizer_1.TemplateNormalizer, runtime_metadata_1.RuntimeMetadataResolver, url_resolver_1.DEFAULT_PACKAGE_URL_PROVIDER, style_compiler_1.StyleCompiler, command_compiler_1.CommandCompiler, change_detector_compiler_1.ChangeDetectionCompiler, new di_1.Provider(change_detection_1.ChangeDetectorGenConfig, {
     useFactory: _createChangeDetectorGenConfig,
     deps: []
-  }), template_compiler_2.TemplateCompiler, new di_1.Provider(runtime_compiler_2.RuntimeCompiler, {useClass: runtime_compiler_1.RuntimeCompiler_}), new di_1.Provider(compiler_1.Compiler, {useExisting: runtime_compiler_2.RuntimeCompiler}), dom_element_schema_registry_1.DomElementSchemaRegistry, new di_1.Provider(element_schema_registry_1.ElementSchemaRegistry, {useExisting: dom_element_schema_registry_1.DomElementSchemaRegistry}), anchor_based_app_root_url_1.AnchorBasedAppRootUrl, new di_1.Provider(app_root_url_1.AppRootUrl, {useExisting: anchor_based_app_root_url_1.AnchorBasedAppRootUrl}), url_resolver_1.UrlResolver]);
+  }), template_compiler_2.TemplateCompiler, new di_1.Provider(runtime_compiler_2.RuntimeCompiler, {useClass: runtime_compiler_1.RuntimeCompiler_}), new di_1.Provider(compiler_1.Compiler, {useExisting: runtime_compiler_2.RuntimeCompiler}), dom_element_schema_registry_1.DomElementSchemaRegistry, new di_1.Provider(element_schema_registry_1.ElementSchemaRegistry, {useExisting: dom_element_schema_registry_1.DomElementSchemaRegistry}), url_resolver_1.UrlResolver]);
   global.define = __define;
   return module.exports;
 });
@@ -30008,7 +29925,7 @@ System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng
   return module.exports;
 });
 
-System.register("angular2/compiler", ["angular2/src/compiler/url_resolver", "angular2/src/compiler/xhr", "angular2/src/compiler/compiler", "angular2/src/compiler/app_root_url"], true, function(require, exports, module) {
+System.register("angular2/compiler", ["angular2/src/compiler/url_resolver", "angular2/src/compiler/xhr", "angular2/src/compiler/compiler"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -30020,7 +29937,6 @@ System.register("angular2/compiler", ["angular2/src/compiler/url_resolver", "ang
   __export(require("angular2/src/compiler/url_resolver"));
   __export(require("angular2/src/compiler/xhr"));
   __export(require("angular2/src/compiler/compiler"));
-  __export(require("angular2/src/compiler/app_root_url"));
   global.define = __define;
   return module.exports;
 });

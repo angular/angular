@@ -1,8 +1,6 @@
 import { CONST_EXPR, IS_DART } from 'angular2/src/facade/lang';
 import { MessageBus } from 'angular2/src/web_workers/shared/message_bus';
 import { NgZone } from 'angular2/src/core/zone/ng_zone';
-import { AnchorBasedAppRootUrl } from 'angular2/src/compiler/anchor_based_app_root_url';
-import { AppRootUrl } from 'angular2/src/compiler/app_root_url';
 import { ExceptionHandler, APPLICATION_COMMON_PROVIDERS, PLATFORM_COMMON_PROVIDERS, Renderer, PLATFORM_INITIALIZER } from 'angular2/core';
 import { EVENT_MANAGER_PLUGINS, EventManager } from 'angular2/platform/common_dom';
 import { Provider, OpaqueToken } from 'angular2/src/core/di';
@@ -22,7 +20,6 @@ import { Testability } from 'angular2/src/core/testability/testability';
 import { BrowserGetTestability } from 'angular2/src/platform/browser/testability';
 import { BrowserDomAdapter } from './browser/browser_adapter';
 import { wtfInit } from 'angular2/src/core/profile/wtf_init';
-import { WebWorkerSetup } from 'angular2/src/web_workers/ui/setup';
 import { MessageBasedRenderer } from 'angular2/src/web_workers/ui/renderer';
 import { MessageBasedXHRImpl } from 'angular2/src/web_workers/ui/xhr_impl';
 import { ServiceMessageBrokerFactory, ServiceMessageBrokerFactory_ } from 'angular2/src/web_workers/shared/service_message_broker';
@@ -33,7 +30,7 @@ import { RenderProtoViewRefStore } from 'angular2/src/web_workers/shared/render_
 import { RenderViewWithFragmentsStore } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
 export const WORKER_SCRIPT = CONST_EXPR(new OpaqueToken("WebWorkerScript"));
 // Message based Worker classes that listen on the MessageBus
-export const WORKER_RENDER_MESSAGING_PROVIDERS = CONST_EXPR([MessageBasedRenderer, MessageBasedXHRImpl, WebWorkerSetup]);
+export const WORKER_RENDER_MESSAGING_PROVIDERS = CONST_EXPR([MessageBasedRenderer, MessageBasedXHRImpl]);
 export const WORKER_RENDER_PLATFORM = CONST_EXPR([
     PLATFORM_COMMON_PROVIDERS,
     new Provider(PLATFORM_INITIALIZER, { useValue: initWebWorkerRenderPlatform, multi: true })
@@ -55,8 +52,6 @@ export const WORKER_RENDER_APP_COMMON = CONST_EXPR([
     MessageBasedXHRImpl,
     new Provider(ServiceMessageBrokerFactory, { useClass: ServiceMessageBrokerFactory_ }),
     new Provider(ClientMessageBrokerFactory, { useClass: ClientMessageBrokerFactory_ }),
-    AnchorBasedAppRootUrl,
-    new Provider(AppRootUrl, { useExisting: AnchorBasedAppRootUrl }),
     Serializer,
     new Provider(ON_WEB_WORKER, { useValue: false }),
     RenderViewWithFragmentsStore,

@@ -10278,60 +10278,6 @@ System.register("angular2/src/web_workers/shared/message_bus", ["angular2/src/fa
   return module.exports;
 });
 
-System.register("angular2/src/compiler/app_root_url", ["angular2/src/core/di"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var di_1 = require("angular2/src/core/di");
-  var AppRootUrl = (function() {
-    function AppRootUrl(value) {
-      this.value = value;
-    }
-    AppRootUrl = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [String])], AppRootUrl);
-    return AppRootUrl;
-  })();
-  exports.AppRootUrl = AppRootUrl;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("angular2/src/platform/dom/dom_adapter", ["angular2/src/facade/lang"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var lang_1 = require("angular2/src/facade/lang");
-  exports.DOM = null;
-  function setRootDomAdapter(adapter) {
-    if (lang_1.isBlank(exports.DOM)) {
-      exports.DOM = adapter;
-    }
-  }
-  exports.setRootDomAdapter = setRootDomAdapter;
-  var DomAdapter = (function() {
-    function DomAdapter() {}
-    return DomAdapter;
-  })();
-  exports.DomAdapter = DomAdapter;
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/src/core/util", ["angular2/src/core/util/decorators"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -10663,6 +10609,27 @@ System.register("angular2/src/core/application_common_providers", ["angular2/src
   var dynamic_component_loader_1 = require("angular2/src/core/linker/dynamic_component_loader");
   var dynamic_component_loader_2 = require("angular2/src/core/linker/dynamic_component_loader");
   exports.APPLICATION_COMMON_PROVIDERS = lang_1.CONST_EXPR([new di_1.Provider(compiler_1.Compiler, {useClass: compiler_2.Compiler_}), application_tokens_1.APP_ID_RANDOM_PROVIDER, view_pool_1.AppViewPool, new di_1.Provider(view_pool_1.APP_VIEW_POOL_CAPACITY, {useValue: 10000}), new di_1.Provider(view_manager_1.AppViewManager, {useClass: view_manager_2.AppViewManager_}), view_manager_utils_1.AppViewManagerUtils, view_listener_1.AppViewListener, proto_view_factory_1.ProtoViewFactory, view_resolver_1.ViewResolver, new di_1.Provider(change_detection_1.IterableDiffers, {useValue: change_detection_1.defaultIterableDiffers}), new di_1.Provider(change_detection_1.KeyValueDiffers, {useValue: change_detection_1.defaultKeyValueDiffers}), directive_resolver_1.DirectiveResolver, pipe_resolver_1.PipeResolver, new di_1.Provider(dynamic_component_loader_1.DynamicComponentLoader, {useClass: dynamic_component_loader_2.DynamicComponentLoader_})]);
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/platform/dom/dom_adapter", ["angular2/src/facade/lang"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var lang_1 = require("angular2/src/facade/lang");
+  exports.DOM = null;
+  function setRootDomAdapter(adapter) {
+    if (lang_1.isBlank(exports.DOM)) {
+      exports.DOM = adapter;
+    }
+  }
+  exports.setRootDomAdapter = setRootDomAdapter;
+  var DomAdapter = (function() {
+    function DomAdapter() {}
+    return DomAdapter;
+  })();
+  exports.DomAdapter = DomAdapter;
   global.define = __define;
   return module.exports;
 });
@@ -14105,18 +14072,6 @@ System.register("angular2/src/core/profile/wtf_init", [], true, function(require
   return module.exports;
 });
 
-System.register("angular2/src/web_workers/shared/messaging_api", [], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  exports.SETUP_CHANNEL = "ng-WebWorkerSetup";
-  exports.RENDERER_CHANNEL = "ng-Renderer";
-  exports.XHR_CHANNEL = "ng-XHR";
-  exports.EVENT_CHANNEL = "ng-events";
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/src/web_workers/shared/api", ["angular2/src/facade/lang", "angular2/src/core/di"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -14501,6 +14456,17 @@ System.register("angular2/src/web_workers/shared/render_view_with_fragments_stor
     return WebWorkerRenderFragmentRef;
   })(api_1.RenderFragmentRef);
   exports.WebWorkerRenderFragmentRef = WebWorkerRenderFragmentRef;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/web_workers/shared/messaging_api", [], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  exports.RENDERER_CHANNEL = "ng-Renderer";
+  exports.XHR_CHANNEL = "ng-XHR";
+  exports.EVENT_CHANNEL = "ng-events";
   global.define = __define;
   return module.exports;
 });
@@ -16723,54 +16689,6 @@ System.register("angular2/src/core/metadata", ["angular2/src/core/metadata/di", 
   return module.exports;
 });
 
-System.register("angular2/src/compiler/anchor_based_app_root_url", ["angular2/src/compiler/app_root_url", "angular2/src/platform/dom/dom_adapter", "angular2/src/core/di"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var app_root_url_1 = require("angular2/src/compiler/app_root_url");
-  var dom_adapter_1 = require("angular2/src/platform/dom/dom_adapter");
-  var di_1 = require("angular2/src/core/di");
-  var AnchorBasedAppRootUrl = (function(_super) {
-    __extends(AnchorBasedAppRootUrl, _super);
-    function AnchorBasedAppRootUrl() {
-      _super.call(this, "");
-      var a = dom_adapter_1.DOM.createElement('a');
-      dom_adapter_1.DOM.resolveAndSetHref(a, './', null);
-      this.value = dom_adapter_1.DOM.getHref(a);
-    }
-    AnchorBasedAppRootUrl = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], AnchorBasedAppRootUrl);
-    return AnchorBasedAppRootUrl;
-  })(app_root_url_1.AppRootUrl);
-  exports.AnchorBasedAppRootUrl = AnchorBasedAppRootUrl;
-  global.define = __define;
-  return module.exports;
-});
-
 System.register("angular2/core", ["angular2/src/core/metadata", "angular2/src/core/util", "angular2/src/core/dev_mode", "angular2/src/core/di", "angular2/src/facade/facade", "angular2/src/core/application_ref", "angular2/src/core/application_tokens", "angular2/src/core/zone", "angular2/src/core/render", "angular2/src/core/linker", "angular2/src/core/debug/debug_element", "angular2/src/core/testability/testability", "angular2/src/core/change_detection", "angular2/src/core/platform_directives_and_pipes", "angular2/src/core/platform_common_providers", "angular2/src/core/application_common_providers", "angular2/src/core/reflection/reflection"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -18954,56 +18872,6 @@ System.register("angular2/src/platform/browser/browser_adapter", ["angular2/src/
     urlParsingNode.setAttribute('href', url);
     return (urlParsingNode.pathname.charAt(0) === '/') ? urlParsingNode.pathname : '/' + urlParsingNode.pathname;
   }
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("angular2/src/web_workers/ui/setup", ["angular2/src/web_workers/shared/messaging_api", "angular2/src/facade/async", "angular2/src/web_workers/shared/message_bus", "angular2/src/compiler/anchor_based_app_root_url", "angular2/src/facade/lang", "angular2/src/core/di"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var messaging_api_1 = require("angular2/src/web_workers/shared/messaging_api");
-  var async_1 = require("angular2/src/facade/async");
-  var message_bus_1 = require("angular2/src/web_workers/shared/message_bus");
-  var anchor_based_app_root_url_1 = require("angular2/src/compiler/anchor_based_app_root_url");
-  var lang_1 = require("angular2/src/facade/lang");
-  var di_1 = require("angular2/src/core/di");
-  var WebWorkerSetup = (function() {
-    function WebWorkerSetup(_bus, anchorBasedAppRootUrl) {
-      this._bus = _bus;
-      this.rootUrl = anchorBasedAppRootUrl.value;
-    }
-    WebWorkerSetup.prototype.start = function() {
-      var _this = this;
-      this._bus.initChannel(messaging_api_1.SETUP_CHANNEL, false);
-      var sink = this._bus.to(messaging_api_1.SETUP_CHANNEL);
-      var source = this._bus.from(messaging_api_1.SETUP_CHANNEL);
-      async_1.ObservableWrapper.subscribe(source, function(message) {
-        if (lang_1.StringWrapper.equals(message, "ready")) {
-          async_1.ObservableWrapper.callEmit(sink, {"rootUrl": _this.rootUrl});
-        }
-      });
-    };
-    WebWorkerSetup = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [message_bus_1.MessageBus, anchor_based_app_root_url_1.AnchorBasedAppRootUrl])], WebWorkerSetup);
-    return WebWorkerSetup;
-  })();
-  exports.WebWorkerSetup = WebWorkerSetup;
   global.define = __define;
   return module.exports;
 });
@@ -26697,7 +26565,7 @@ System.register("angular2/src/core/linker/proto_view_factory", ["angular2/src/fa
   return module.exports;
 });
 
-System.register("angular2/src/compiler/compiler", ["angular2/src/compiler/runtime_compiler", "angular2/src/compiler/template_compiler", "angular2/src/compiler/directive_metadata", "angular2/src/compiler/source_module", "angular2/src/core/platform_directives_and_pipes", "angular2/src/compiler/template_ast", "angular2/src/compiler/template_parser", "angular2/src/facade/lang", "angular2/src/core/di", "angular2/src/compiler/template_parser", "angular2/src/compiler/html_parser", "angular2/src/compiler/template_normalizer", "angular2/src/compiler/runtime_metadata", "angular2/src/compiler/change_detector_compiler", "angular2/src/compiler/style_compiler", "angular2/src/compiler/command_compiler", "angular2/src/compiler/template_compiler", "angular2/src/core/change_detection/change_detection", "angular2/src/core/linker/compiler", "angular2/src/compiler/runtime_compiler", "angular2/src/compiler/schema/element_schema_registry", "angular2/src/compiler/schema/dom_element_schema_registry", "angular2/src/compiler/url_resolver", "angular2/src/compiler/app_root_url", "angular2/src/compiler/anchor_based_app_root_url", "angular2/src/core/change_detection/change_detection"], true, function(require, exports, module) {
+System.register("angular2/src/compiler/compiler", ["angular2/src/compiler/runtime_compiler", "angular2/src/compiler/template_compiler", "angular2/src/compiler/directive_metadata", "angular2/src/compiler/source_module", "angular2/src/core/platform_directives_and_pipes", "angular2/src/compiler/template_ast", "angular2/src/compiler/template_parser", "angular2/src/facade/lang", "angular2/src/core/di", "angular2/src/compiler/template_parser", "angular2/src/compiler/html_parser", "angular2/src/compiler/template_normalizer", "angular2/src/compiler/runtime_metadata", "angular2/src/compiler/change_detector_compiler", "angular2/src/compiler/style_compiler", "angular2/src/compiler/command_compiler", "angular2/src/compiler/template_compiler", "angular2/src/core/change_detection/change_detection", "angular2/src/core/linker/compiler", "angular2/src/compiler/runtime_compiler", "angular2/src/compiler/schema/element_schema_registry", "angular2/src/compiler/schema/dom_element_schema_registry", "angular2/src/compiler/url_resolver", "angular2/src/core/change_detection/change_detection"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -26738,8 +26606,6 @@ System.register("angular2/src/compiler/compiler", ["angular2/src/compiler/runtim
   var element_schema_registry_1 = require("angular2/src/compiler/schema/element_schema_registry");
   var dom_element_schema_registry_1 = require("angular2/src/compiler/schema/dom_element_schema_registry");
   var url_resolver_1 = require("angular2/src/compiler/url_resolver");
-  var app_root_url_1 = require("angular2/src/compiler/app_root_url");
-  var anchor_based_app_root_url_1 = require("angular2/src/compiler/anchor_based_app_root_url");
   var change_detection_2 = require("angular2/src/core/change_detection/change_detection");
   function _createChangeDetectorGenConfig() {
     return new change_detection_1.ChangeDetectorGenConfig(lang_1.assertionsEnabled(), false, true);
@@ -26747,7 +26613,7 @@ System.register("angular2/src/compiler/compiler", ["angular2/src/compiler/runtim
   exports.COMPILER_PROVIDERS = lang_1.CONST_EXPR([change_detection_2.Lexer, change_detection_2.Parser, html_parser_1.HtmlParser, template_parser_2.TemplateParser, template_normalizer_1.TemplateNormalizer, runtime_metadata_1.RuntimeMetadataResolver, url_resolver_1.DEFAULT_PACKAGE_URL_PROVIDER, style_compiler_1.StyleCompiler, command_compiler_1.CommandCompiler, change_detector_compiler_1.ChangeDetectionCompiler, new di_1.Provider(change_detection_1.ChangeDetectorGenConfig, {
     useFactory: _createChangeDetectorGenConfig,
     deps: []
-  }), template_compiler_2.TemplateCompiler, new di_1.Provider(runtime_compiler_2.RuntimeCompiler, {useClass: runtime_compiler_1.RuntimeCompiler_}), new di_1.Provider(compiler_1.Compiler, {useExisting: runtime_compiler_2.RuntimeCompiler}), dom_element_schema_registry_1.DomElementSchemaRegistry, new di_1.Provider(element_schema_registry_1.ElementSchemaRegistry, {useExisting: dom_element_schema_registry_1.DomElementSchemaRegistry}), anchor_based_app_root_url_1.AnchorBasedAppRootUrl, new di_1.Provider(app_root_url_1.AppRootUrl, {useExisting: anchor_based_app_root_url_1.AnchorBasedAppRootUrl}), url_resolver_1.UrlResolver]);
+  }), template_compiler_2.TemplateCompiler, new di_1.Provider(runtime_compiler_2.RuntimeCompiler, {useClass: runtime_compiler_1.RuntimeCompiler_}), new di_1.Provider(compiler_1.Compiler, {useExisting: runtime_compiler_2.RuntimeCompiler}), dom_element_schema_registry_1.DomElementSchemaRegistry, new di_1.Provider(element_schema_registry_1.ElementSchemaRegistry, {useExisting: dom_element_schema_registry_1.DomElementSchemaRegistry}), url_resolver_1.UrlResolver]);
   global.define = __define;
   return module.exports;
 });
@@ -26845,7 +26711,7 @@ System.register("angular2/src/core/linker/compiler", ["angular2/src/core/linker/
   return module.exports;
 });
 
-System.register("angular2/compiler", ["angular2/src/compiler/url_resolver", "angular2/src/compiler/xhr", "angular2/src/compiler/compiler", "angular2/src/compiler/app_root_url"], true, function(require, exports, module) {
+System.register("angular2/compiler", ["angular2/src/compiler/url_resolver", "angular2/src/compiler/xhr", "angular2/src/compiler/compiler"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -26857,7 +26723,6 @@ System.register("angular2/compiler", ["angular2/src/compiler/url_resolver", "ang
   __export(require("angular2/src/compiler/url_resolver"));
   __export(require("angular2/src/compiler/xhr"));
   __export(require("angular2/src/compiler/compiler"));
-  __export(require("angular2/src/compiler/app_root_url"));
   global.define = __define;
   return module.exports;
 });
@@ -26997,15 +26862,13 @@ System.register("angular2/src/core/linker/dynamic_component_loader", ["angular2/
   return module.exports;
 });
 
-System.register("angular2/src/platform/worker_render_common", ["angular2/src/facade/lang", "angular2/src/web_workers/shared/message_bus", "angular2/src/core/zone/ng_zone", "angular2/src/compiler/anchor_based_app_root_url", "angular2/src/compiler/app_root_url", "angular2/core", "angular2/platform/common_dom", "angular2/src/core/di", "angular2/src/platform/dom/dom_adapter", "angular2/src/platform/dom/events/dom_events", "angular2/src/platform/dom/events/key_events", "angular2/src/platform/dom/events/hammer_gestures", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/shared_styles_host", "angular2/src/animate/browser_details", "angular2/src/animate/animation_builder", "angular2/compiler", "angular2/src/platform/browser/xhr_impl", "angular2/src/core/testability/testability", "angular2/src/platform/browser/testability", "angular2/src/platform/browser/browser_adapter", "angular2/src/core/profile/wtf_init", "angular2/src/web_workers/ui/setup", "angular2/src/web_workers/ui/renderer", "angular2/src/web_workers/ui/xhr_impl", "angular2/src/web_workers/shared/service_message_broker", "angular2/src/web_workers/shared/client_message_broker", "angular2/src/web_workers/shared/serializer", "angular2/src/web_workers/shared/api", "angular2/src/web_workers/shared/render_proto_view_ref_store", "angular2/src/web_workers/shared/render_view_with_fragments_store"], true, function(require, exports, module) {
+System.register("angular2/src/platform/worker_render_common", ["angular2/src/facade/lang", "angular2/src/web_workers/shared/message_bus", "angular2/src/core/zone/ng_zone", "angular2/core", "angular2/platform/common_dom", "angular2/src/core/di", "angular2/src/platform/dom/dom_adapter", "angular2/src/platform/dom/events/dom_events", "angular2/src/platform/dom/events/key_events", "angular2/src/platform/dom/events/hammer_gestures", "angular2/src/platform/dom/dom_tokens", "angular2/src/platform/dom/dom_renderer", "angular2/src/platform/dom/shared_styles_host", "angular2/src/platform/dom/shared_styles_host", "angular2/src/animate/browser_details", "angular2/src/animate/animation_builder", "angular2/compiler", "angular2/src/platform/browser/xhr_impl", "angular2/src/core/testability/testability", "angular2/src/platform/browser/testability", "angular2/src/platform/browser/browser_adapter", "angular2/src/core/profile/wtf_init", "angular2/src/web_workers/ui/renderer", "angular2/src/web_workers/ui/xhr_impl", "angular2/src/web_workers/shared/service_message_broker", "angular2/src/web_workers/shared/client_message_broker", "angular2/src/web_workers/shared/serializer", "angular2/src/web_workers/shared/api", "angular2/src/web_workers/shared/render_proto_view_ref_store", "angular2/src/web_workers/shared/render_view_with_fragments_store"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
   var lang_1 = require("angular2/src/facade/lang");
   var message_bus_1 = require("angular2/src/web_workers/shared/message_bus");
   var ng_zone_1 = require("angular2/src/core/zone/ng_zone");
-  var anchor_based_app_root_url_1 = require("angular2/src/compiler/anchor_based_app_root_url");
-  var app_root_url_1 = require("angular2/src/compiler/app_root_url");
   var core_1 = require("angular2/core");
   var common_dom_1 = require("angular2/platform/common_dom");
   var di_1 = require("angular2/src/core/di");
@@ -27025,7 +26888,6 @@ System.register("angular2/src/platform/worker_render_common", ["angular2/src/fac
   var testability_2 = require("angular2/src/platform/browser/testability");
   var browser_adapter_1 = require("angular2/src/platform/browser/browser_adapter");
   var wtf_init_1 = require("angular2/src/core/profile/wtf_init");
-  var setup_1 = require("angular2/src/web_workers/ui/setup");
   var renderer_1 = require("angular2/src/web_workers/ui/renderer");
   var xhr_impl_2 = require("angular2/src/web_workers/ui/xhr_impl");
   var service_message_broker_1 = require("angular2/src/web_workers/shared/service_message_broker");
@@ -27035,7 +26897,7 @@ System.register("angular2/src/platform/worker_render_common", ["angular2/src/fac
   var render_proto_view_ref_store_1 = require("angular2/src/web_workers/shared/render_proto_view_ref_store");
   var render_view_with_fragments_store_1 = require("angular2/src/web_workers/shared/render_view_with_fragments_store");
   exports.WORKER_SCRIPT = lang_1.CONST_EXPR(new di_1.OpaqueToken("WebWorkerScript"));
-  exports.WORKER_RENDER_MESSAGING_PROVIDERS = lang_1.CONST_EXPR([renderer_1.MessageBasedRenderer, xhr_impl_2.MessageBasedXHRImpl, setup_1.WebWorkerSetup]);
+  exports.WORKER_RENDER_MESSAGING_PROVIDERS = lang_1.CONST_EXPR([renderer_1.MessageBasedRenderer, xhr_impl_2.MessageBasedXHRImpl]);
   exports.WORKER_RENDER_PLATFORM = lang_1.CONST_EXPR([core_1.PLATFORM_COMMON_PROVIDERS, new di_1.Provider(core_1.PLATFORM_INITIALIZER, {
     useValue: initWebWorkerRenderPlatform,
     multi: true
@@ -27055,7 +26917,7 @@ System.register("angular2/src/platform/worker_render_common", ["angular2/src/fac
   }), new di_1.Provider(common_dom_1.EVENT_MANAGER_PLUGINS, {
     useClass: hammer_gestures_1.HammerGesturesPlugin,
     multi: true
-  }), new di_1.Provider(dom_renderer_1.DomRenderer, {useClass: dom_renderer_1.DomRenderer_}), new di_1.Provider(core_1.Renderer, {useExisting: dom_renderer_1.DomRenderer}), new di_1.Provider(shared_styles_host_2.SharedStylesHost, {useExisting: shared_styles_host_1.DomSharedStylesHost}), new di_1.Provider(compiler_1.XHR, {useClass: xhr_impl_1.XHRImpl}), xhr_impl_2.MessageBasedXHRImpl, new di_1.Provider(service_message_broker_1.ServiceMessageBrokerFactory, {useClass: service_message_broker_1.ServiceMessageBrokerFactory_}), new di_1.Provider(client_message_broker_1.ClientMessageBrokerFactory, {useClass: client_message_broker_1.ClientMessageBrokerFactory_}), anchor_based_app_root_url_1.AnchorBasedAppRootUrl, new di_1.Provider(app_root_url_1.AppRootUrl, {useExisting: anchor_based_app_root_url_1.AnchorBasedAppRootUrl}), serializer_1.Serializer, new di_1.Provider(api_1.ON_WEB_WORKER, {useValue: false}), render_view_with_fragments_store_1.RenderViewWithFragmentsStore, render_proto_view_ref_store_1.RenderProtoViewRefStore, shared_styles_host_1.DomSharedStylesHost, testability_1.Testability, browser_details_1.BrowserDetails, animation_builder_1.AnimationBuilder, common_dom_1.EventManager]);
+  }), new di_1.Provider(dom_renderer_1.DomRenderer, {useClass: dom_renderer_1.DomRenderer_}), new di_1.Provider(core_1.Renderer, {useExisting: dom_renderer_1.DomRenderer}), new di_1.Provider(shared_styles_host_2.SharedStylesHost, {useExisting: shared_styles_host_1.DomSharedStylesHost}), new di_1.Provider(compiler_1.XHR, {useClass: xhr_impl_1.XHRImpl}), xhr_impl_2.MessageBasedXHRImpl, new di_1.Provider(service_message_broker_1.ServiceMessageBrokerFactory, {useClass: service_message_broker_1.ServiceMessageBrokerFactory_}), new di_1.Provider(client_message_broker_1.ClientMessageBrokerFactory, {useClass: client_message_broker_1.ClientMessageBrokerFactory_}), serializer_1.Serializer, new di_1.Provider(api_1.ON_WEB_WORKER, {useValue: false}), render_view_with_fragments_store_1.RenderViewWithFragmentsStore, render_proto_view_ref_store_1.RenderProtoViewRefStore, shared_styles_host_1.DomSharedStylesHost, testability_1.Testability, browser_details_1.BrowserDetails, animation_builder_1.AnimationBuilder, common_dom_1.EventManager]);
   function initializeGenericWorkerRenderer(injector) {
     var bus = injector.get(message_bus_1.MessageBus);
     var zone = injector.get(ng_zone_1.NgZone);

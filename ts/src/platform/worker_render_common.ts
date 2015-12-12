@@ -1,8 +1,6 @@
 import {CONST_EXPR, IS_DART} from 'angular2/src/facade/lang';
 import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {AnchorBasedAppRootUrl} from 'angular2/src/compiler/anchor_based_app_root_url';
-import {AppRootUrl} from 'angular2/src/compiler/app_root_url';
 import {
   PLATFORM_DIRECTIVES,
   PLATFORM_PIPES,
@@ -36,7 +34,6 @@ import {Testability} from 'angular2/src/core/testability/testability';
 import {BrowserGetTestability} from 'angular2/src/platform/browser/testability';
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {wtfInit} from 'angular2/src/core/profile/wtf_init';
-import {WebWorkerSetup} from 'angular2/src/web_workers/ui/setup';
 import {MessageBasedRenderer} from 'angular2/src/web_workers/ui/renderer';
 import {MessageBasedXHRImpl} from 'angular2/src/web_workers/ui/xhr_impl';
 import {
@@ -58,7 +55,7 @@ export const WORKER_SCRIPT: OpaqueToken = CONST_EXPR(new OpaqueToken("WebWorkerS
 
 // Message based Worker classes that listen on the MessageBus
 export const WORKER_RENDER_MESSAGING_PROVIDERS: Array<any /*Type | Provider | any[]*/> =
-    CONST_EXPR([MessageBasedRenderer, MessageBasedXHRImpl, WebWorkerSetup]);
+    CONST_EXPR([MessageBasedRenderer, MessageBasedXHRImpl]);
 
 export const WORKER_RENDER_PLATFORM: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
   PLATFORM_COMMON_PROVIDERS,
@@ -82,8 +79,6 @@ export const WORKER_RENDER_APP_COMMON: Array<any /*Type | Provider | any[]*/> = 
   MessageBasedXHRImpl,
   new Provider(ServiceMessageBrokerFactory, {useClass: ServiceMessageBrokerFactory_}),
   new Provider(ClientMessageBrokerFactory, {useClass: ClientMessageBrokerFactory_}),
-  AnchorBasedAppRootUrl,
-  new Provider(AppRootUrl, {useExisting: AnchorBasedAppRootUrl}),
   Serializer,
   new Provider(ON_WEB_WORKER, {useValue: false}),
   RenderViewWithFragmentsStore,

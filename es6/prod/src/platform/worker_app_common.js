@@ -1,7 +1,6 @@
 import { XHR } from 'angular2/src/compiler/xhr';
 import { WebWorkerXHRImpl } from 'angular2/src/web_workers/worker/xhr_impl';
 import { ListWrapper } from 'angular2/src/facade/collection';
-import { AppRootUrl } from 'angular2/src/compiler/app_root_url';
 import { WebWorkerRenderer } from 'angular2/src/web_workers/worker/renderer';
 import { print, CONST_EXPR } from 'angular2/src/facade/lang';
 import { MessageBus } from 'angular2/src/web_workers/shared/message_bus';
@@ -18,8 +17,6 @@ import { RenderProtoViewRefStore } from 'angular2/src/web_workers/shared/render_
 import { RenderViewWithFragmentsStore } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
 import { WebWorkerEventDispatcher } from 'angular2/src/web_workers/worker/event_dispatcher';
 import { PromiseWrapper } from 'angular2/src/facade/async';
-import { SETUP_CHANNEL } from 'angular2/src/web_workers/shared/messaging_api';
-import { ObservableWrapper } from 'angular2/src/facade/async';
 class PrintLogger {
     constructor() {
         this.log = print;
@@ -57,19 +54,9 @@ function _exceptionHandler() {
  * Also takes care of attaching the {@link MessageBus} to the given {@link NgZone}.
  */
 export function genericWorkerAppProviders(bus, zone) {
-    var bootstrapProcess = PromiseWrapper.completer();
     bus.attachToZone(zone);
-    bus.initChannel(SETUP_CHANNEL, false);
-    var subscription;
-    var emitter = bus.from(SETUP_CHANNEL);
-    subscription = ObservableWrapper.subscribe(emitter, (initData) => {
-        var bindings = ListWrapper.concat(WORKER_APP_COMMON_PROVIDERS, [
-            new Provider(MessageBus, { useValue: bus }),
-            new Provider(AppRootUrl, { useValue: new AppRootUrl(initData['rootUrl']) }),
-        ]);
-        bootstrapProcess.resolve(bindings);
-        ObservableWrapper.dispose(subscription);
-    });
-    ObservableWrapper.callNext(bus.to(SETUP_CHANNEL), "ready");
-    return bootstrapProcess.promise;
+    var bindings = ListWrapper.concat(WORKER_APP_COMMON_PROVIDERS, [
+        new Provider(MessageBus, { useValue: bus }),
+    ]);
+    return PromiseWrapper.resolve(bindings);
 }
