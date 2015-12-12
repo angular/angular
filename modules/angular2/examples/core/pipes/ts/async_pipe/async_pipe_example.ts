@@ -1,5 +1,6 @@
-import {Component, provide, Observable} from 'angular2/core';
+import {Component, provide} from 'angular2/core';
 import {bootstrap} from 'angular2/bootstrap';
+import {Observable} from 'rxjs/Observable';
 
 // #docregion AsyncPipe
 @Component({
