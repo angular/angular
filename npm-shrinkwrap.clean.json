@@ -9944,9 +9944,6 @@
             }
           }
         },
-        "typescript": {
-          "version": "1.7.3"
-        },
         "vinyl-fs": {
           "version": "2.2.1",
           "dependencies": {
@@ -13524,7 +13521,7 @@
       }
     },
     "ts2dart": {
-      "version": "0.7.17",
+      "version": "0.7.18",
       "dependencies": {
         "source-map": {
           "version": "0.4.4",
@@ -14768,5 +14765,5 @@
     }
   },
   "name": "angular-srcs",
-  "version": "2.0.0-alpha.50"
+  "version": "2.0.0-alpha.52"
 }
