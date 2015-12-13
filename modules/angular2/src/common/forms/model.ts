@@ -52,9 +52,7 @@ function toObservable(r: any): Observable<any> {
  *
  */
 export abstract class AbstractControl {
-  /** @internal */
-  _value: any;
-
+  private _value: any;
   private _valueChanges: EventEmitter<any>;
   private _statusChanges: EventEmitter<any>;
   private _status: string;
@@ -90,6 +88,8 @@ export abstract class AbstractControl {
   get statusChanges(): Observable<any> { return this._statusChanges; }
 
   get pending(): boolean { return this._status == PENDING; }
+
+  set value(value: any) { this._value = value }
 
   markAsTouched(): void { this._touched = true; }
 
@@ -217,8 +217,7 @@ export abstract class AbstractControl {
     }
   }
 
-  /** @internal */
-  _initObservables() {
+  initObservables() {
     this._valueChanges = new EventEmitter();
     this._statusChanges = new EventEmitter();
   }
@@ -260,9 +259,9 @@ export class Control extends AbstractControl {
 
   constructor(value: any = null, validator: Function = null, asyncValidator: Function = null) {
     super(validator, asyncValidator);
-    this._value = value;
+    this.value = value;
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
-    this._initObservables();
+    this.initObservables();
   }
 
   /**
@@ -283,8 +282,8 @@ export class Control extends AbstractControl {
     emitModelToViewChange?: boolean
   } = {}): void {
     emitModelToViewChange = isPresent(emitModelToViewChange) ? emitModelToViewChange : true;
-    this._value = value;
-    if (isPresent(this._onChange) && emitModelToViewChange) this._onChange(this._value);
+    this.value = value;
+    if (isPresent(this._onChange) && emitModelToViewChange) this._onChange(this.value);
     this.updateValueAndValidity({onlySelf: onlySelf, emitEvent: emitEvent});
   }
 
@@ -325,7 +324,7 @@ export class ControlGroup extends AbstractControl {
               asyncValidator: Function = null) {
     super(validator, asyncValidator);
     this._optionals = isPresent(optionals) ? optionals : {};
-    this._initObservables();
+    this.initObservables();
     this._setParentForControls();
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
   }
@@ -373,7 +372,7 @@ export class ControlGroup extends AbstractControl {
   }
 
   /** @internal */
-  _updateValue() { this._value = this._reduceValue(); }
+  _updateValue() { this.value = this._reduceValue(); }
 
   /** @internal */
   _anyControlsHaveStatus(status: string): boolean {
@@ -435,7 +434,7 @@ export class ControlArray extends AbstractControl {
   constructor(public controls: AbstractControl[], validator: Function = null,
               asyncValidator: Function = null) {
     super(validator, asyncValidator);
-    this._initObservables();
+    this.initObservables();
     this._setParentForControls();
     this.updateValueAndValidity({onlySelf: true, emitEvent: false});
   }
@@ -477,7 +476,7 @@ export class ControlArray extends AbstractControl {
   get length(): number { return this.controls.length; }
 
   /** @internal */
-  _updateValue(): void { this._value = this.controls.map((control) => control.value); }
+  _updateValue(): void { this.value = this.controls.map((control) => control.value); }
 
   /** @internal */
   _anyControlsHaveStatus(status: string): boolean {
