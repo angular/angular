@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0-alpha.52",
+  "version": "2.0.0-alpha.53",
   "branchPattern": "2.0.*",
   "description": "Angular 2 - a web framework for modern web apps",
   "homepage": "https://github.com/angular/angular",
