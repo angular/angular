@@ -2,7 +2,8 @@
 Built-in directives
 @cheatsheetIndex 2
 @description
-{@target js ts}`import {NgIf, ...} from 'angular2/common';`{@endtarget}
+{@target ts}`import {NgIf, ...} from 'angular2/common';`{@endtarget}
+{@target js}Available from the `ng.common` namespace{@endtarget}
 {@target dart}`import 'package:angular2/common.dart';`{@endtarget}
 
 @cheatsheetItem
