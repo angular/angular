@@ -2,12 +2,15 @@
 Bootstrapping
 @cheatsheetIndex 0
 @description
-{@target js ts}`import {bootstrap} from 'angular2/platform/browser';`{@endtarget}
+{@target ts}`import {bootstrap} from 'angular2/angular2';`{@endtarget}
+{@target js}Available on the `ng.platform.browser` namespace.{@endtarget}
 {@target dart}`import 'package:angular2/bootstrap.dart';`{@endtarget}
 
 @cheatsheetItem
-syntax:
+syntax(ts dart):
 `bootstrap​(MyAppComponent, [MyService, provide(...)]);`|`provide`
+syntax(js):
+`ng.platform.browser.bootstrap(MyAppComponent,
+  [MyService, ng.core.provide(...)]);`|`provide`
 description:
-Bootstraps an application with MyAppComponent as the root component, and
-configures the app's dependency injection providers.
+Bootstraps an application with MyAppComponent as the root component and configures the DI providers.
