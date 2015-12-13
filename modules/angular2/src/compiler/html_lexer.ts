@@ -84,8 +84,7 @@ const $x = 120;
 
 const $NBSP = 160;
 
-var CRLF_REGEXP = /\r\n/g;
-var CR_REGEXP = /\r/g;
+var CR_OR_CRLF_REGEXP = /\r\n?/g;
 
 function unexpectedCharacterErrorMsg(charCode: number): string {
   var char = charCode === $EOF ? 'EOF' : StringWrapper.fromCharCode(charCode);
@@ -127,8 +126,7 @@ class _HtmlTokenizer {
     // http://www.w3.org/TR/html5/syntax.html#preprocessing-the-input-stream
     // In order to keep the original position in the source, we can not pre-process it.
     // Instead CRs are processed right before instantiating the tokens.
-    content = StringWrapper.replaceAll(content, CRLF_REGEXP, '\r');
-    return StringWrapper.replaceAll(content, CR_REGEXP, '\n');
+    return StringWrapper.replaceAll(content, CR_OR_CRLF_REGEXP, '\n');
   }
 
   tokenize(): HtmlTokenizeResult {
