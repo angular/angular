@@ -84,7 +84,7 @@ class WebSocketWrapper {
     _socket.addStream(_sendStream.stream);
   }
 
-  void send (String data) {
+  void send(String data) {
     _sendStream.add(data);
   }
 
