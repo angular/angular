@@ -33,8 +33,16 @@
 
 ### BREAKING CHANGES
 
-* Before import {Observable} from 'angular2/core'
-After import {Observable} from 'rxjs/Observable';
+* `Observable` are no more re-exported from `angular2/core`
+
+    Before 
+    ```
+    import {Observable} from 'angular2/core'
+    ```
+    After 
+    ```
+    import {Observable} from 'rxjs/Observable';
+    ```
 
 * The setupWebWorker function exported from
 angular2/platform/worker_app  no longer returns a promise of providers,
