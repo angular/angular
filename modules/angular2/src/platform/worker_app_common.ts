@@ -1,9 +1,7 @@
 import {XHR} from 'angular2/src/compiler/xhr';
 import {WebWorkerXHRImpl} from 'angular2/src/web_workers/worker/xhr_impl';
-import {ListWrapper} from 'angular2/src/facade/collection';
 import {WebWorkerRenderer} from 'angular2/src/web_workers/worker/renderer';
 import {print, Type, CONST_EXPR, isPresent} from 'angular2/src/facade/lang';
-import {MessageBus} from 'angular2/src/web_workers/shared/message_bus';
 import {Renderer} from 'angular2/src/core/render/api';
 import {
   PLATFORM_DIRECTIVES,
@@ -30,8 +28,6 @@ import {
   RenderViewWithFragmentsStore
 } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
 import {WebWorkerEventDispatcher} from 'angular2/src/web_workers/worker/event_dispatcher';
-import {NgZone} from 'angular2/src/core/zone/ng_zone';
-import {Promise, PromiseWrapper} from 'angular2/src/facade/async';
 
 class PrintLogger {
   log = print;
@@ -43,7 +39,7 @@ class PrintLogger {
 export const WORKER_APP_PLATFORM: Array<any /*Type | Provider | any[]*/> =
     CONST_EXPR([PLATFORM_COMMON_PROVIDERS]);
 
-export const WORKER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
+export const WORKER_APP_APPLICATION_COMMON: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
   APPLICATION_COMMON_PROVIDERS,
   COMPILER_PROVIDERS,
   FORM_PROVIDERS,
@@ -65,18 +61,4 @@ export const WORKER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/>
 
 function _exceptionHandler(): ExceptionHandler {
   return new ExceptionHandler(new PrintLogger());
-}
-
-/**
- * Asynchronously returns a list of providers that can be used to initialize the
- * Application injector.
- * Also takes care of attaching the {@link MessageBus} to the given {@link NgZone}.
- */
-export function genericWorkerAppProviders(bus: MessageBus,
-                                          zone: NgZone): Promise<Array<Type | Provider | any[]>> {
-  bus.attachToZone(zone);
-  var bindings = ListWrapper.concat(WORKER_APP_COMMON_PROVIDERS, [
-    new Provider(MessageBus, {useValue: bus}),
-  ]);
-  return PromiseWrapper.resolve(bindings);
 }
