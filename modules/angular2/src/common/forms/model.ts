@@ -89,7 +89,7 @@ export abstract class AbstractControl {
 
   get pending(): boolean { return this._status == PENDING; }
 
-  set value(value: any) { this._value = value }
+  set value(value: any) { this._value = value; }
 
   markAsTouched(): void { this._touched = true; }
 
