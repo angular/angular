@@ -32,7 +32,7 @@ if (global.Zone) {
 global.Zone = microtask.addMicrotaskSupport(core.Zone);
 global.zone = new global.Zone();
 
-// Monkey patch the Promise implementation to add support for microtasks
+// Monkey path ẗhe Promise implementation to add support for microtasks
 global.Promise = es6Promise.Promise;
 
 browserPatch.apply();
@@ -185,11 +185,16 @@ module.exports = {
 },{"./keys":3,"./patch/promise":12}],3:[function(require,module,exports){
 /**
  * Creates keys for `private` properties on exposed objects to minimize interactions with other codebases.
+ * The key will be a Symbol if the host supports it; otherwise a prefixed string.
  */
-
-function create(name) {
-  // `Symbol` implementation is broken in Chrome 39.0.2171, do not use them even if they are available
-  return '_zone$' + name;
+if (typeof Symbol !== 'undefined') {
+  function create(name) {
+    return Symbol(name);
+  } 
+} else {
+  function create(name) {
+    return '_zone$' + name;
+  }
 }
 
 var commonKeys = {
@@ -201,40 +206,11 @@ module.exports = {
   create: create,
   common: commonKeys
 };
-
 },{}],4:[function(require,module,exports){
 (function (global){
 'use strict';
 
-// TODO(vicb): Create a benchmark for the different methods & the usage of the queue
-// see https://github.com/angular/zone.js/issues/97
-
-// It is required to initialize hasNativePromise before requiring es6-promise otherwise es6-promise would
-// overwrite the native Promise implementation on v8 and the check would always return false.
-// see https://github.com/jakearchibald/es6-promise/issues/140
-var hasNativePromise = typeof Promise !== "undefined" &&
-    Promise.toString().indexOf("[native code]") !== -1;
-
-var isFirefox = global.navigator &&
-    global.navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-
-var resolvedPromise;
-
-// TODO(vicb): remove '!isFirefox' when the bug gets fixed:
-// https://bugzilla.mozilla.org/show_bug.cgi?id=1162013
-if (hasNativePromise && !isFirefox) {
-  // When available use a native Promise to schedule microtasks.
-  // When not available, es6-promise fallback will be used
-  resolvedPromise = Promise.resolve();
-}
-
 var es6Promise = require('es6-promise').Promise;
-
-if (resolvedPromise) {
-  es6Promise._setScheduler(function(fn) {
-    resolvedPromise.then(fn);
-  });
-}
 
 // es6-promise asap should schedule microtasks via zone.scheduleMicrotask so that any
 // user defined hooks are triggered
@@ -259,7 +235,25 @@ module.exports = {
   addMicrotaskSupport: addMicrotaskSupport
 };
 
+// TODO(vicb): Create a benchmark for the different methods & the usage of the queue
+// see https://github.com/angular/zone.js/issues/97
 
+var hasNativePromise = typeof Promise !== "undefined" &&
+                       Promise.toString().indexOf("[native code]") !== -1;
+
+var isFirefox = global.navigator &&
+                global.navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+
+// TODO(vicb): remove '!isFirefox' when the bug gets fixed:
+// https://bugzilla.mozilla.org/show_bug.cgi?id=1162013
+if (hasNativePromise && !isFirefox) {
+  // When available use a native Promise to schedule microtasks.
+  // When not available, es6-promise fallback will be used
+  var resolvedPromise = Promise.resolve();
+  es6Promise._setScheduler(function(fn) {
+    resolvedPromise.then(fn);
+  });
+}
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
@@ -651,7 +645,7 @@ function patchClass(className) {
   var prop;
   for (prop in instance) {
     (function (prop) {
-      if (typeof global[className].prototype !== 'undefined') {
+      if (typeof global[className].prototype !== undefined) {
         return;
       }
       if (typeof instance[prop] === 'function') {
@@ -1068,10 +1062,10 @@ function patchEventTargetMethods(obj) {
   // This is required for the addEventListener hook on the root zone.
   obj[keys.common.addEventListener] = obj.addEventListener;
   obj.addEventListener = function (eventName, handler, useCapturing) {
+    var eventType = eventName + (useCapturing ? '$capturing' : '$bubbling');
+    var fn;
     //Ignore special listeners of IE11 & Edge dev tools, see https://github.com/angular/zone.js/issues/150
-    if (handler && handler.toString() !== "[object FunctionWrapper]") {
-      var eventType = eventName + (useCapturing ? '$capturing' : '$bubbling');
-      var fn;
+    if (handler.toString() !== "[object FunctionWrapper]") {
       if (handler.handleEvent) {
         // Have to pass in 'handler' reference as an argument here, otherwise it gets clobbered in
         // IE9 by the arguments[1] assignment at end of this function.
@@ -1094,6 +1088,7 @@ function patchEventTargetMethods(obj) {
     // - When `addEventListener` is called on the global context in strict mode, `this` is undefined
     // see https://github.com/angular/zone.js/issues/190
     var target = this || global;
+
     return global.zone.addEventListener.apply(target, arguments);
   };
 
@@ -1101,18 +1096,19 @@ function patchEventTargetMethods(obj) {
   obj[keys.common.removeEventListener] = obj.removeEventListener;
   obj.removeEventListener = function (eventName, handler, useCapturing) {
     var eventType = eventName + (useCapturing ? '$capturing' : '$bubbling');
-    if (handler && handler[boundFnsKey] && handler[boundFnsKey][eventType]) {
+    if (handler[boundFnsKey] && handler[boundFnsKey][eventType]) {
       var _bound = handler[boundFnsKey];
       arguments[1] = _bound[eventType];
       delete _bound[eventType];
-      global.zone.dequeueTask(handler[originalFnKey]);
     }
 
     // - Inside a Web Worker, `this` is undefined, the context is `global`
     // - When `addEventListener` is called on the global context in strict mode, `this` is undefined
     // see https://github.com/angular/zone.js/issues/190
     var target = this || global;
+
     var result = global.zone.removeEventListener.apply(target, arguments);
+    global.zone.dequeueTask(handler[originalFnKey]);
     return result;
   };
 };
@@ -39676,16 +39672,14 @@ System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng
   return module.exports;
 });
 
-System.register("angular2/src/platform/worker_app_common", ["angular2/src/compiler/xhr", "angular2/src/web_workers/worker/xhr_impl", "angular2/src/facade/collection", "angular2/src/web_workers/worker/renderer", "angular2/src/facade/lang", "angular2/src/web_workers/shared/message_bus", "angular2/src/core/render/api", "angular2/core", "angular2/common", "angular2/src/web_workers/shared/client_message_broker", "angular2/src/web_workers/shared/service_message_broker", "angular2/src/compiler/compiler", "angular2/src/web_workers/shared/serializer", "angular2/src/web_workers/shared/api", "angular2/src/core/di", "angular2/src/web_workers/shared/render_proto_view_ref_store", "angular2/src/web_workers/shared/render_view_with_fragments_store", "angular2/src/web_workers/worker/event_dispatcher", "angular2/src/facade/async"], true, function(require, exports, module) {
+System.register("angular2/src/platform/worker_app_common", ["angular2/src/compiler/xhr", "angular2/src/web_workers/worker/xhr_impl", "angular2/src/web_workers/worker/renderer", "angular2/src/facade/lang", "angular2/src/core/render/api", "angular2/core", "angular2/common", "angular2/src/web_workers/shared/client_message_broker", "angular2/src/web_workers/shared/service_message_broker", "angular2/src/compiler/compiler", "angular2/src/web_workers/shared/serializer", "angular2/src/web_workers/shared/api", "angular2/src/core/di", "angular2/src/web_workers/shared/render_proto_view_ref_store", "angular2/src/web_workers/shared/render_view_with_fragments_store", "angular2/src/web_workers/worker/event_dispatcher"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
   var xhr_1 = require("angular2/src/compiler/xhr");
   var xhr_impl_1 = require("angular2/src/web_workers/worker/xhr_impl");
-  var collection_1 = require("angular2/src/facade/collection");
   var renderer_1 = require("angular2/src/web_workers/worker/renderer");
   var lang_1 = require("angular2/src/facade/lang");
-  var message_bus_1 = require("angular2/src/web_workers/shared/message_bus");
   var api_1 = require("angular2/src/core/render/api");
   var core_1 = require("angular2/core");
   var common_1 = require("angular2/common");
@@ -39698,7 +39692,6 @@ System.register("angular2/src/platform/worker_app_common", ["angular2/src/compil
   var render_proto_view_ref_store_1 = require("angular2/src/web_workers/shared/render_proto_view_ref_store");
   var render_view_with_fragments_store_1 = require("angular2/src/web_workers/shared/render_view_with_fragments_store");
   var event_dispatcher_1 = require("angular2/src/web_workers/worker/event_dispatcher");
-  var async_1 = require("angular2/src/facade/async");
   var PrintLogger = (function() {
     function PrintLogger() {
       this.log = lang_1.print;
@@ -39709,7 +39702,7 @@ System.register("angular2/src/platform/worker_app_common", ["angular2/src/compil
     return PrintLogger;
   })();
   exports.WORKER_APP_PLATFORM = lang_1.CONST_EXPR([core_1.PLATFORM_COMMON_PROVIDERS]);
-  exports.WORKER_APP_COMMON_PROVIDERS = lang_1.CONST_EXPR([core_1.APPLICATION_COMMON_PROVIDERS, compiler_1.COMPILER_PROVIDERS, common_1.FORM_PROVIDERS, serializer_1.Serializer, new di_1.Provider(core_1.PLATFORM_PIPES, {
+  exports.WORKER_APP_APPLICATION_COMMON = lang_1.CONST_EXPR([core_1.APPLICATION_COMMON_PROVIDERS, compiler_1.COMPILER_PROVIDERS, common_1.FORM_PROVIDERS, serializer_1.Serializer, new di_1.Provider(core_1.PLATFORM_PIPES, {
     useValue: common_1.COMMON_PIPES,
     multi: true
   }), new di_1.Provider(core_1.PLATFORM_DIRECTIVES, {
@@ -39722,34 +39715,41 @@ System.register("angular2/src/platform/worker_app_common", ["angular2/src/compil
   function _exceptionHandler() {
     return new core_1.ExceptionHandler(new PrintLogger());
   }
-  function genericWorkerAppProviders(bus, zone) {
-    bus.attachToZone(zone);
-    var bindings = collection_1.ListWrapper.concat(exports.WORKER_APP_COMMON_PROVIDERS, [new di_1.Provider(message_bus_1.MessageBus, {useValue: bus})]);
-    return async_1.PromiseWrapper.resolve(bindings);
-  }
-  exports.genericWorkerAppProviders = genericWorkerAppProviders;
   global.define = __define;
   return module.exports;
 });
 
-System.register("angular2/src/platform/worker_app", ["angular2/src/platform/server/parse5_adapter", "angular2/src/web_workers/shared/post_message_bus", "angular2/src/platform/worker_app_common"], true, function(require, exports, module) {
+System.register("angular2/src/platform/worker_app", ["angular2/src/core/zone/ng_zone", "angular2/src/core/di", "angular2/src/platform/server/parse5_adapter", "angular2/src/web_workers/shared/post_message_bus", "angular2/src/platform/worker_app_common", "angular2/core", "angular2/src/web_workers/shared/message_bus"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
+  var ng_zone_1 = require("angular2/src/core/zone/ng_zone");
+  var di_1 = require("angular2/src/core/di");
   var parse5_adapter_1 = require("angular2/src/platform/server/parse5_adapter");
   var post_message_bus_1 = require("angular2/src/web_workers/shared/post_message_bus");
   var worker_app_common_1 = require("angular2/src/platform/worker_app_common");
-  var _postMessage = postMessage;
-  function setupWebWorker(zone) {
-    parse5_adapter_1.Parse5DomAdapter.makeCurrent();
-    var sink = new post_message_bus_1.PostMessageBusSink({postMessage: function(message, transferrables) {
-        _postMessage(message, transferrables);
-      }});
+  var core_1 = require("angular2/core");
+  var message_bus_1 = require("angular2/src/web_workers/shared/message_bus");
+  var _postMessage = {postMessage: function(message, transferrables) {
+      postMessage(message, transferrables);
+    }};
+  exports.WORKER_APP_APPLICATION = [worker_app_common_1.WORKER_APP_APPLICATION_COMMON, new di_1.Provider(message_bus_1.MessageBus, {
+    useFactory: createMessageBus,
+    deps: [ng_zone_1.NgZone]
+  }), new di_1.Provider(core_1.APP_INITIALIZER, {
+    useValue: setupWebWorker,
+    multi: true
+  })];
+  function createMessageBus(zone) {
+    var sink = new post_message_bus_1.PostMessageBusSink(_postMessage);
     var source = new post_message_bus_1.PostMessageBusSource();
     var bus = new post_message_bus_1.PostMessageBus(sink, source);
-    return worker_app_common_1.genericWorkerAppProviders(bus, zone);
+    bus.attachToZone(zone);
+    return bus;
   }
-  exports.setupWebWorker = setupWebWorker;
+  function setupWebWorker() {
+    parse5_adapter_1.Parse5DomAdapter.makeCurrent();
+  }
   global.define = __define;
   return module.exports;
 });
@@ -39815,8 +39815,9 @@ System.register("angular2/platform/worker_app", ["angular2/src/platform/worker_a
   }
   var worker_app_common_1 = require("angular2/src/platform/worker_app_common");
   exports.WORKER_APP_PLATFORM = worker_app_common_1.WORKER_APP_PLATFORM;
-  exports.genericWorkerAppProviders = worker_app_common_1.genericWorkerAppProviders;
-  __export(require("angular2/src/platform/worker_app"));
+  exports.WORKER_APP_APPLICATION_COMMON = worker_app_common_1.WORKER_APP_APPLICATION_COMMON;
+  var worker_app_1 = require("angular2/src/platform/worker_app");
+  exports.WORKER_APP_APPLICATION = worker_app_1.WORKER_APP_APPLICATION;
   var client_message_broker_1 = require("angular2/src/web_workers/shared/client_message_broker");
   exports.ClientMessageBroker = client_message_broker_1.ClientMessageBroker;
   exports.ClientMessageBrokerFactory = client_message_broker_1.ClientMessageBrokerFactory;
