@@ -83,8 +83,7 @@ const $f = 102;
 const $z = 122;
 const $x = 120;
 const $NBSP = 160;
-var CRLF_REGEXP = new RegExp(r'\r\n');
-var CR_REGEXP = new RegExp(r'\r');
+var CR_OR_CRLF_REGEXP = new RegExp(r'\r\n?');
 String unexpectedCharacterErrorMsg(num charCode) {
   var char =
       identical(charCode, $EOF) ? "EOF" : StringWrapper.fromCharCode(charCode);
@@ -127,8 +126,7 @@ class _HtmlTokenizer {
     // In order to keep the original position in the source, we can not pre-process it.
 
     // Instead CRs are processed right before instantiating the tokens.
-    content = StringWrapper.replaceAll(content, CRLF_REGEXP, "\r");
-    return StringWrapper.replaceAll(content, CR_REGEXP, "\n");
+    return StringWrapper.replaceAll(content, CR_OR_CRLF_REGEXP, "\n");
   }
 
   HtmlTokenizeResult tokenize() {
