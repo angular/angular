@@ -29603,8 +29603,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var $z = 122;
 	var $x = 120;
 	var $NBSP = 160;
-	var CRLF_REGEXP = /\r\n/g;
-	var CR_REGEXP = /\r/g;
+	var CR_OR_CRLF_REGEXP = /\r\n?/g;
 	function unexpectedCharacterErrorMsg(charCode) {
 	    var char = charCode === $EOF ? 'EOF' : lang_1.StringWrapper.fromCharCode(charCode);
 	    return "Unexpected character \"" + char + "\"";
@@ -29638,8 +29637,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // http://www.w3.org/TR/html5/syntax.html#preprocessing-the-input-stream
 	        // In order to keep the original position in the source, we can not pre-process it.
 	        // Instead CRs are processed right before instantiating the tokens.
-	        content = lang_1.StringWrapper.replaceAll(content, CRLF_REGEXP, '\r');
-	        return lang_1.StringWrapper.replaceAll(content, CR_REGEXP, '\n');
+	        return lang_1.StringWrapper.replaceAll(content, CR_OR_CRLF_REGEXP, '\n');
 	    };
 	    _HtmlTokenizer.prototype.tokenize = function () {
 	        while (this.peek !== $EOF) {
