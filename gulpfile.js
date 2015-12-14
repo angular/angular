@@ -1160,7 +1160,7 @@ gulp.task('bundles.js.umd.min', ['!bundles.js.umd', '!bundle.ng.polyfills'], fun
 gulp.task('!bundle.js.prod.deps', ['!bundle.js.prod'], function() {
   var bundler = require('./tools/build/bundle');
 
-  return merge2(addDevDependencies('angular2.js'),
+  return merge2(bundler.modify(['dist/build/angular2.js'], 'angular2.js'),
                 bundler.modify(['dist/build/http.js'], 'http.js'),
                 bundler.modify(['dist/build/router.js'], 'router.js'),
                 bundler.modify(['dist/build/upgrade.js'], 'upgrade.js'))
@@ -1171,7 +1171,7 @@ gulp.task('!bundle.js.min.deps', ['!bundle.js.min'], function() {
   var bundler = require('./tools/build/bundle');
   var uglify = require('gulp-uglify');
 
-  return merge2(addDevDependencies('angular2.min.js'),
+  return merge2(bundler.modify(['dist/build/angular2.min.js'], 'angular2.min.js'),
                 bundler.modify(['dist/build/http.min.js'], 'http.min.js'),
                 bundler.modify(['dist/build/router.min.js'], 'router.min.js'),
                 bundler.modify(['dist/build/upgrade.min.js'], 'upgrade.min.js'))
@@ -1215,7 +1215,7 @@ function addDevDependencies(outputFile) {
 gulp.task('!bundle.js.dev.deps', ['!bundle.js.dev'], function() {
   var bundler = require('./tools/build/bundle');
 
-  return merge2(addDevDependencies('angular2.dev.js'),
+  return merge2(bundler.modify(['dist/build/angular2.dev.js'], 'angular2.dev.js'),
                 bundler.modify(['dist/build/http.dev.js'], 'http.dev.js'),
                 bundler.modify(['dist/build/router.dev.js'], 'router.dev.js'),
                 bundler.modify(['dist/build/upgrade.dev.js'], 'upgrade.dev.js'))
@@ -1223,8 +1223,10 @@ gulp.task('!bundle.js.dev.deps', ['!bundle.js.dev'], function() {
 });
 
 gulp.task('!bundle.web_worker.js.dev.deps', ['!bundle.web_worker.js.dev'], function() {
-  return merge2(
-      addDevDependencies("web_worker/ui.dev.js", addDevDependencies("web_worker/worker.dev.js")));
+  var bundler = require('./tools/build/bundle');
+  return merge2(bundler.modify(['dist/build/web_worker/ui.dev.js'], "web_worker/ui.dev.js"),
+                bundler.modify(['dist/build/web_worker/worker.dev.js'], "web_worker/worker.dev.js"))
+      .pipe(gulp.dest('dist/js/bundle'));
 });
 
 gulp.task('!bundle.copy', function() {
