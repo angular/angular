@@ -1,4 +1,765 @@
 "format register";
+System.register("angular2/src/mock/location_mock", ["angular2/src/core/di", "angular2/src/facade/async"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var di_1 = require("angular2/src/core/di");
+  var async_1 = require("angular2/src/facade/async");
+  var SpyLocation = (function() {
+    function SpyLocation() {
+      this.urlChanges = [];
+      this._path = '';
+      this._query = '';
+      this._subject = new async_1.EventEmitter();
+      this._baseHref = '';
+      this.platformStrategy = null;
+    }
+    SpyLocation.prototype.setInitialPath = function(url) {
+      this._path = url;
+    };
+    SpyLocation.prototype.setBaseHref = function(url) {
+      this._baseHref = url;
+    };
+    SpyLocation.prototype.path = function() {
+      return this._path;
+    };
+    SpyLocation.prototype.simulateUrlPop = function(pathname) {
+      async_1.ObservableWrapper.callEmit(this._subject, {
+        'url': pathname,
+        'pop': true
+      });
+    };
+    SpyLocation.prototype.simulateHashChange = function(pathname) {
+      this.setInitialPath(pathname);
+      this.urlChanges.push('hash: ' + pathname);
+      async_1.ObservableWrapper.callEmit(this._subject, {
+        'url': pathname,
+        'pop': true,
+        'type': 'hashchange'
+      });
+    };
+    SpyLocation.prototype.prepareExternalUrl = function(url) {
+      if (url.length > 0 && !url.startsWith('/')) {
+        url = '/' + url;
+      }
+      return this._baseHref + url;
+    };
+    SpyLocation.prototype.go = function(path, query) {
+      if (query === void 0) {
+        query = '';
+      }
+      path = this.prepareExternalUrl(path);
+      if (this._path == path && this._query == query) {
+        return ;
+      }
+      this._path = path;
+      this._query = query;
+      var url = path + (query.length > 0 ? ('?' + query) : '');
+      this.urlChanges.push(url);
+    };
+    SpyLocation.prototype.replaceState = function(path, query) {
+      if (query === void 0) {
+        query = '';
+      }
+      path = this.prepareExternalUrl(path);
+      this._path = path;
+      this._query = query;
+      var url = path + (query.length > 0 ? ('?' + query) : '');
+      this.urlChanges.push('replace: ' + url);
+    };
+    SpyLocation.prototype.forward = function() {};
+    SpyLocation.prototype.back = function() {};
+    SpyLocation.prototype.subscribe = function(onNext, onThrow, onReturn) {
+      if (onThrow === void 0) {
+        onThrow = null;
+      }
+      if (onReturn === void 0) {
+        onReturn = null;
+      }
+      return async_1.ObservableWrapper.subscribe(this._subject, onNext, onThrow, onReturn);
+    };
+    SpyLocation.prototype.normalize = function(url) {
+      return null;
+    };
+    SpyLocation = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], SpyLocation);
+    return SpyLocation;
+  })();
+  exports.SpyLocation = SpyLocation;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/router/location_strategy", ["angular2/src/facade/lang", "angular2/core"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var lang_1 = require("angular2/src/facade/lang");
+  var core_1 = require("angular2/core");
+  var LocationStrategy = (function() {
+    function LocationStrategy() {}
+    return LocationStrategy;
+  })();
+  exports.LocationStrategy = LocationStrategy;
+  exports.APP_BASE_HREF = lang_1.CONST_EXPR(new core_1.OpaqueToken('appBaseHref'));
+  function normalizeQueryParams(params) {
+    return (params.length > 0 && params.substring(0, 1) != '?') ? ('?' + params) : params;
+  }
+  exports.normalizeQueryParams = normalizeQueryParams;
+  function joinWithSlash(start, end) {
+    if (start.length == 0) {
+      return end;
+    }
+    if (end.length == 0) {
+      return start;
+    }
+    var slashes = 0;
+    if (start.endsWith('/')) {
+      slashes++;
+    }
+    if (end.startsWith('/')) {
+      slashes++;
+    }
+    if (slashes == 2) {
+      return start + end.substring(1);
+    }
+    if (slashes == 1) {
+      return start + end;
+    }
+    return start + '/' + end;
+  }
+  exports.joinWithSlash = joinWithSlash;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/mock/mock_location_strategy", ["angular2/src/core/di", "angular2/src/facade/async", "angular2/src/router/location_strategy"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var di_1 = require("angular2/src/core/di");
+  var async_1 = require("angular2/src/facade/async");
+  var location_strategy_1 = require("angular2/src/router/location_strategy");
+  var MockLocationStrategy = (function(_super) {
+    __extends(MockLocationStrategy, _super);
+    function MockLocationStrategy() {
+      _super.call(this);
+      this.internalBaseHref = '/';
+      this.internalPath = '/';
+      this.internalTitle = '';
+      this.urlChanges = [];
+      this._subject = new async_1.EventEmitter();
+    }
+    MockLocationStrategy.prototype.simulatePopState = function(url) {
+      this.internalPath = url;
+      async_1.ObservableWrapper.callEmit(this._subject, new MockPopStateEvent(this.path()));
+    };
+    MockLocationStrategy.prototype.path = function() {
+      return this.internalPath;
+    };
+    MockLocationStrategy.prototype.prepareExternalUrl = function(internal) {
+      if (internal.startsWith('/') && this.internalBaseHref.endsWith('/')) {
+        return this.internalBaseHref + internal.substring(1);
+      }
+      return this.internalBaseHref + internal;
+    };
+    MockLocationStrategy.prototype.pushState = function(ctx, title, path, query) {
+      this.internalTitle = title;
+      var url = path + (query.length > 0 ? ('?' + query) : '');
+      this.internalPath = url;
+      var externalUrl = this.prepareExternalUrl(url);
+      this.urlChanges.push(externalUrl);
+    };
+    MockLocationStrategy.prototype.replaceState = function(ctx, title, path, query) {
+      this.internalTitle = title;
+      var url = path + (query.length > 0 ? ('?' + query) : '');
+      this.internalPath = url;
+      var externalUrl = this.prepareExternalUrl(url);
+      this.urlChanges.push('replace: ' + externalUrl);
+    };
+    MockLocationStrategy.prototype.onPopState = function(fn) {
+      async_1.ObservableWrapper.subscribe(this._subject, fn);
+    };
+    MockLocationStrategy.prototype.getBaseHref = function() {
+      return this.internalBaseHref;
+    };
+    MockLocationStrategy.prototype.back = function() {
+      if (this.urlChanges.length > 0) {
+        this.urlChanges.pop();
+        var nextUrl = this.urlChanges.length > 0 ? this.urlChanges[this.urlChanges.length - 1] : '';
+        this.simulatePopState(nextUrl);
+      }
+    };
+    MockLocationStrategy.prototype.forward = function() {
+      throw 'not implemented';
+    };
+    MockLocationStrategy = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], MockLocationStrategy);
+    return MockLocationStrategy;
+  })(location_strategy_1.LocationStrategy);
+  exports.MockLocationStrategy = MockLocationStrategy;
+  var MockPopStateEvent = (function() {
+    function MockPopStateEvent(newUrl) {
+      this.newUrl = newUrl;
+      this.pop = true;
+      this.type = 'popstate';
+    }
+    return MockPopStateEvent;
+  })();
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/router/testing", ["angular2/src/mock/mock_location_strategy", "angular2/src/mock/location_mock"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  function __export(m) {
+    for (var p in m)
+      if (!exports.hasOwnProperty(p))
+        exports[p] = m[p];
+  }
+  __export(require("angular2/src/mock/mock_location_strategy"));
+  __export(require("angular2/src/mock/location_mock"));
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/http/headers", ["angular2/src/facade/lang", "angular2/src/facade/exceptions", "angular2/src/facade/collection"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var lang_1 = require("angular2/src/facade/lang");
+  var exceptions_1 = require("angular2/src/facade/exceptions");
+  var collection_1 = require("angular2/src/facade/collection");
+  var Headers = (function() {
+    function Headers(headers) {
+      var _this = this;
+      if (headers instanceof Headers) {
+        this._headersMap = headers._headersMap;
+        return ;
+      }
+      this._headersMap = new collection_1.Map();
+      if (lang_1.isBlank(headers)) {
+        return ;
+      }
+      collection_1.StringMapWrapper.forEach(headers, function(v, k) {
+        _this._headersMap.set(k, collection_1.isListLikeIterable(v) ? v : [v]);
+      });
+    }
+    Headers.fromResponseHeaderString = function(headersString) {
+      return headersString.trim().split('\n').map(function(val) {
+        return val.split(':');
+      }).map(function(_a) {
+        var key = _a[0],
+            parts = _a.slice(1);
+        return ([key.trim(), parts.join(':').trim()]);
+      }).reduce(function(headers, _a) {
+        var key = _a[0],
+            value = _a[1];
+        return !headers.set(key, value) && headers;
+      }, new Headers());
+    };
+    Headers.prototype.append = function(name, value) {
+      var mapName = this._headersMap.get(name);
+      var list = collection_1.isListLikeIterable(mapName) ? mapName : [];
+      list.push(value);
+      this._headersMap.set(name, list);
+    };
+    Headers.prototype.delete = function(name) {
+      this._headersMap.delete(name);
+    };
+    Headers.prototype.forEach = function(fn) {
+      this._headersMap.forEach(fn);
+    };
+    Headers.prototype.get = function(header) {
+      return collection_1.ListWrapper.first(this._headersMap.get(header));
+    };
+    Headers.prototype.has = function(header) {
+      return this._headersMap.has(header);
+    };
+    Headers.prototype.keys = function() {
+      return collection_1.MapWrapper.keys(this._headersMap);
+    };
+    Headers.prototype.set = function(header, value) {
+      var list = [];
+      if (collection_1.isListLikeIterable(value)) {
+        var pushValue = value.join(',');
+        list.push(pushValue);
+      } else {
+        list.push(value);
+      }
+      this._headersMap.set(header, list);
+    };
+    Headers.prototype.values = function() {
+      return collection_1.MapWrapper.values(this._headersMap);
+    };
+    Headers.prototype.toJSON = function() {
+      return lang_1.Json.stringify(this.values());
+    };
+    Headers.prototype.getAll = function(header) {
+      var headers = this._headersMap.get(header);
+      return collection_1.isListLikeIterable(headers) ? headers : [];
+    };
+    Headers.prototype.entries = function() {
+      throw new exceptions_1.BaseException('"entries" method is not implemented on Headers class');
+    };
+    return Headers;
+  })();
+  exports.Headers = Headers;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/http/enums", [], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  (function(RequestMethod) {
+    RequestMethod[RequestMethod["Get"] = 0] = "Get";
+    RequestMethod[RequestMethod["Post"] = 1] = "Post";
+    RequestMethod[RequestMethod["Put"] = 2] = "Put";
+    RequestMethod[RequestMethod["Delete"] = 3] = "Delete";
+    RequestMethod[RequestMethod["Options"] = 4] = "Options";
+    RequestMethod[RequestMethod["Head"] = 5] = "Head";
+    RequestMethod[RequestMethod["Patch"] = 6] = "Patch";
+  })(exports.RequestMethod || (exports.RequestMethod = {}));
+  var RequestMethod = exports.RequestMethod;
+  (function(ReadyState) {
+    ReadyState[ReadyState["Unsent"] = 0] = "Unsent";
+    ReadyState[ReadyState["Open"] = 1] = "Open";
+    ReadyState[ReadyState["HeadersReceived"] = 2] = "HeadersReceived";
+    ReadyState[ReadyState["Loading"] = 3] = "Loading";
+    ReadyState[ReadyState["Done"] = 4] = "Done";
+    ReadyState[ReadyState["Cancelled"] = 5] = "Cancelled";
+  })(exports.ReadyState || (exports.ReadyState = {}));
+  var ReadyState = exports.ReadyState;
+  (function(ResponseType) {
+    ResponseType[ResponseType["Basic"] = 0] = "Basic";
+    ResponseType[ResponseType["Cors"] = 1] = "Cors";
+    ResponseType[ResponseType["Default"] = 2] = "Default";
+    ResponseType[ResponseType["Error"] = 3] = "Error";
+    ResponseType[ResponseType["Opaque"] = 4] = "Opaque";
+  })(exports.ResponseType || (exports.ResponseType = {}));
+  var ResponseType = exports.ResponseType;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/subject/ReplaySubject", ["rxjs/Subject", "rxjs/scheduler/queue"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var Subject_1 = require("rxjs/Subject");
+  var queue_1 = require("rxjs/scheduler/queue");
+  var ReplaySubject = (function(_super) {
+    __extends(ReplaySubject, _super);
+    function ReplaySubject(bufferSize, windowTime, scheduler) {
+      if (bufferSize === void 0) {
+        bufferSize = Number.POSITIVE_INFINITY;
+      }
+      if (windowTime === void 0) {
+        windowTime = Number.POSITIVE_INFINITY;
+      }
+      _super.call(this);
+      this.events = [];
+      this.bufferSize = bufferSize < 1 ? 1 : bufferSize;
+      this._windowTime = windowTime < 1 ? 1 : windowTime;
+      this.scheduler = scheduler;
+    }
+    ReplaySubject.prototype._next = function(value) {
+      var now = this._getNow();
+      this.events.push(new ReplayEvent(now, value));
+      this._trimBufferThenGetEvents(now);
+      _super.prototype._next.call(this, value);
+    };
+    ReplaySubject.prototype._subscribe = function(subscriber) {
+      var events = this._trimBufferThenGetEvents(this._getNow());
+      var index = -1;
+      var len = events.length;
+      while (!subscriber.isUnsubscribed && ++index < len) {
+        subscriber.next(events[index].value);
+      }
+      return _super.prototype._subscribe.call(this, subscriber);
+    };
+    ReplaySubject.prototype._getNow = function() {
+      return (this.scheduler || queue_1.queue).now();
+    };
+    ReplaySubject.prototype._trimBufferThenGetEvents = function(now) {
+      var bufferSize = this.bufferSize;
+      var _windowTime = this._windowTime;
+      var events = this.events;
+      var eventsCount = events.length;
+      var spliceCount = 0;
+      while (spliceCount < eventsCount) {
+        if ((now - events[spliceCount].time) < _windowTime) {
+          break;
+        }
+        spliceCount += 1;
+      }
+      if (eventsCount > bufferSize) {
+        spliceCount = Math.max(spliceCount, eventsCount - bufferSize);
+      }
+      if (spliceCount > 0) {
+        events.splice(0, spliceCount);
+      }
+      return events;
+    };
+    return ReplaySubject;
+  })(Subject_1.Subject);
+  exports.ReplaySubject = ReplaySubject;
+  var ReplayEvent = (function() {
+    function ReplayEvent(time, value) {
+      this.time = time;
+      this.value = value;
+    }
+    return ReplayEvent;
+  })();
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/util/ArgumentOutOfRangeError", [], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var ArgumentOutOfRangeError = (function() {
+    function ArgumentOutOfRangeError() {
+      this.name = 'ArgumentOutOfRangeError';
+      this.message = 'argument out of range';
+    }
+    return ArgumentOutOfRangeError;
+  })();
+  exports.ArgumentOutOfRangeError = ArgumentOutOfRangeError;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/observable/empty", ["rxjs/Observable"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var Observable_1 = require("rxjs/Observable");
+  var EmptyObservable = (function(_super) {
+    __extends(EmptyObservable, _super);
+    function EmptyObservable(scheduler) {
+      _super.call(this);
+      this.scheduler = scheduler;
+    }
+    EmptyObservable.create = function(scheduler) {
+      return new EmptyObservable(scheduler);
+    };
+    EmptyObservable.dispatch = function(_a) {
+      var subscriber = _a.subscriber;
+      subscriber.complete();
+    };
+    EmptyObservable.prototype._subscribe = function(subscriber) {
+      var scheduler = this.scheduler;
+      if (scheduler) {
+        subscriber.add(scheduler.schedule(EmptyObservable.dispatch, 0, {subscriber: subscriber}));
+      } else {
+        subscriber.complete();
+      }
+    };
+    return EmptyObservable;
+  })(Observable_1.Observable);
+  exports.EmptyObservable = EmptyObservable;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/http/http_utils", ["angular2/src/facade/lang", "angular2/src/http/enums", "angular2/src/facade/exceptions", "angular2/src/facade/lang"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var lang_1 = require("angular2/src/facade/lang");
+  var enums_1 = require("angular2/src/http/enums");
+  var exceptions_1 = require("angular2/src/facade/exceptions");
+  function normalizeMethodName(method) {
+    if (lang_1.isString(method)) {
+      var originalMethod = method;
+      method = method.replace(/(\w)(\w*)/g, function(g0, g1, g2) {
+        return g1.toUpperCase() + g2.toLowerCase();
+      });
+      method = enums_1.RequestMethod[method];
+      if (typeof method !== 'number')
+        throw exceptions_1.makeTypeError("Invalid request method. The method \"" + originalMethod + "\" is not supported.");
+    }
+    return method;
+  }
+  exports.normalizeMethodName = normalizeMethodName;
+  exports.isSuccess = function(status) {
+    return (status >= 200 && status < 300);
+  };
+  function getResponseURL(xhr) {
+    if ('responseURL' in xhr) {
+      return xhr.responseURL;
+    }
+    if (/^X-Request-URL:/m.test(xhr.getAllResponseHeaders())) {
+      return xhr.getResponseHeader('X-Request-URL');
+    }
+    return ;
+  }
+  exports.getResponseURL = getResponseURL;
+  var lang_2 = require("angular2/src/facade/lang");
+  exports.isJsObject = lang_2.isJsObject;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("rxjs/operator/take", ["rxjs/Subscriber", "rxjs/util/ArgumentOutOfRangeError", "rxjs/observable/empty"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __extends = (this && this.__extends) || function(d, b) {
+    for (var p in b)
+      if (b.hasOwnProperty(p))
+        d[p] = b[p];
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+  };
+  var Subscriber_1 = require("rxjs/Subscriber");
+  var ArgumentOutOfRangeError_1 = require("rxjs/util/ArgumentOutOfRangeError");
+  var empty_1 = require("rxjs/observable/empty");
+  function take(total) {
+    if (total === 0) {
+      return new empty_1.EmptyObservable();
+    } else {
+      return this.lift(new TakeOperator(total));
+    }
+  }
+  exports.take = take;
+  var TakeOperator = (function() {
+    function TakeOperator(total) {
+      this.total = total;
+      if (this.total < 0) {
+        throw new ArgumentOutOfRangeError_1.ArgumentOutOfRangeError;
+      }
+    }
+    TakeOperator.prototype.call = function(subscriber) {
+      return new TakeSubscriber(subscriber, this.total);
+    };
+    return TakeOperator;
+  })();
+  var TakeSubscriber = (function(_super) {
+    __extends(TakeSubscriber, _super);
+    function TakeSubscriber(destination, total) {
+      _super.call(this, destination);
+      this.total = total;
+      this.count = 0;
+    }
+    TakeSubscriber.prototype._next = function(value) {
+      var total = this.total;
+      if (++this.count <= total) {
+        this.destination.next(value);
+        if (this.count === total) {
+          this.destination.complete();
+        }
+      }
+    };
+    return TakeSubscriber;
+  })(Subscriber_1.Subscriber);
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/http/static_request", ["angular2/src/http/headers", "angular2/src/http/http_utils", "angular2/src/facade/lang"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var headers_1 = require("angular2/src/http/headers");
+  var http_utils_1 = require("angular2/src/http/http_utils");
+  var lang_1 = require("angular2/src/facade/lang");
+  var Request = (function() {
+    function Request(requestOptions) {
+      var url = requestOptions.url;
+      this.url = requestOptions.url;
+      if (lang_1.isPresent(requestOptions.search)) {
+        var search = requestOptions.search.toString();
+        if (search.length > 0) {
+          var prefix = '?';
+          if (lang_1.StringWrapper.contains(this.url, '?')) {
+            prefix = (this.url[this.url.length - 1] == '&') ? '' : '&';
+          }
+          this.url = url + prefix + search;
+        }
+      }
+      this._body = requestOptions.body;
+      this.method = http_utils_1.normalizeMethodName(requestOptions.method);
+      this.headers = new headers_1.Headers(requestOptions.headers);
+    }
+    Request.prototype.text = function() {
+      return lang_1.isPresent(this._body) ? this._body.toString() : '';
+    };
+    return Request;
+  })();
+  exports.Request = Request;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/src/http/backends/mock_backend", ["angular2/core", "angular2/src/http/static_request", "angular2/src/http/enums", "angular2/src/facade/lang", "angular2/src/facade/exceptions", "rxjs/Subject", "rxjs/subject/ReplaySubject", "rxjs/operator/take"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
+    var c = arguments.length,
+        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
+        d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
+      r = Reflect.decorate(decorators, target, key, desc);
+    else
+      for (var i = decorators.length - 1; i >= 0; i--)
+        if (d = decorators[i])
+          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+  };
+  var __metadata = (this && this.__metadata) || function(k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
+      return Reflect.metadata(k, v);
+  };
+  var core_1 = require("angular2/core");
+  var static_request_1 = require("angular2/src/http/static_request");
+  var enums_1 = require("angular2/src/http/enums");
+  var lang_1 = require("angular2/src/facade/lang");
+  var exceptions_1 = require("angular2/src/facade/exceptions");
+  var Subject_1 = require("rxjs/Subject");
+  var ReplaySubject_1 = require("rxjs/subject/ReplaySubject");
+  var take_1 = require("rxjs/operator/take");
+  var MockConnection = (function() {
+    function MockConnection(req) {
+      this.response = take_1.take.call(new ReplaySubject_1.ReplaySubject(1), 1);
+      this.readyState = enums_1.ReadyState.Open;
+      this.request = req;
+    }
+    MockConnection.prototype.mockRespond = function(res) {
+      if (this.readyState === enums_1.ReadyState.Done || this.readyState === enums_1.ReadyState.Cancelled) {
+        throw new exceptions_1.BaseException('Connection has already been resolved');
+      }
+      this.readyState = enums_1.ReadyState.Done;
+      this.response.next(res);
+      this.response.complete();
+    };
+    MockConnection.prototype.mockDownload = function(res) {};
+    MockConnection.prototype.mockError = function(err) {
+      this.readyState = enums_1.ReadyState.Done;
+      this.response.error(err);
+    };
+    return MockConnection;
+  })();
+  exports.MockConnection = MockConnection;
+  var MockBackend = (function() {
+    function MockBackend() {
+      var _this = this;
+      this.connectionsArray = [];
+      this.connections = new Subject_1.Subject();
+      this.connections.subscribe(function(connection) {
+        return _this.connectionsArray.push(connection);
+      });
+      this.pendingConnections = new Subject_1.Subject();
+    }
+    MockBackend.prototype.verifyNoPendingRequests = function() {
+      var pending = 0;
+      this.pendingConnections.subscribe(function(c) {
+        return pending++;
+      });
+      if (pending > 0)
+        throw new exceptions_1.BaseException(pending + " pending connections to be resolved");
+    };
+    MockBackend.prototype.resolveAllConnections = function() {
+      this.connections.subscribe(function(c) {
+        return c.readyState = 4;
+      });
+    };
+    MockBackend.prototype.createConnection = function(req) {
+      if (!lang_1.isPresent(req) || !(req instanceof static_request_1.Request)) {
+        throw new exceptions_1.BaseException("createConnection requires an instance of Request, got " + req);
+      }
+      var connection = new MockConnection(req);
+      this.connections.next(connection);
+      return connection;
+    };
+    MockBackend = __decorate([core_1.Injectable(), __metadata('design:paramtypes', [])], MockBackend);
+    return MockBackend;
+  })();
+  exports.MockBackend = MockBackend;
+  global.define = __define;
+  return module.exports;
+});
+
+System.register("angular2/http/testing", ["angular2/src/http/backends/mock_backend"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  function __export(m) {
+    for (var p in m)
+      if (!exports.hasOwnProperty(p))
+        exports[p] = m[p];
+  }
+  __export(require("angular2/src/http/backends/mock_backend"));
+  global.define = __define;
+  return module.exports;
+});
+
 System.register("angular2/src/mock/animation_builder_mock", ["angular2/src/core/di", "angular2/src/animate/animation_builder", "angular2/src/animate/css_animation_builder", "angular2/src/animate/animation", "angular2/src/animate/browser_details"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -288,49 +1049,6 @@ System.register("angular2/src/mock/view_resolver_mock", ["angular2/src/core/di",
     return MockViewResolver;
   })(view_resolver_1.ViewResolver);
   exports.MockViewResolver = MockViewResolver;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("angular2/src/router/location_strategy", ["angular2/src/facade/lang", "angular2/core"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var lang_1 = require("angular2/src/facade/lang");
-  var core_1 = require("angular2/core");
-  var LocationStrategy = (function() {
-    function LocationStrategy() {}
-    return LocationStrategy;
-  })();
-  exports.LocationStrategy = LocationStrategy;
-  exports.APP_BASE_HREF = lang_1.CONST_EXPR(new core_1.OpaqueToken('appBaseHref'));
-  function normalizeQueryParams(params) {
-    return (params.length > 0 && params.substring(0, 1) != '?') ? ('?' + params) : params;
-  }
-  exports.normalizeQueryParams = normalizeQueryParams;
-  function joinWithSlash(start, end) {
-    if (start.length == 0) {
-      return end;
-    }
-    if (end.length == 0) {
-      return start;
-    }
-    var slashes = 0;
-    if (start.endsWith('/')) {
-      slashes++;
-    }
-    if (end.startsWith('/')) {
-      slashes++;
-    }
-    if (slashes == 2) {
-      return start + end.substring(1);
-    }
-    if (slashes == 1) {
-      return start + end;
-    }
-    return start + '/' + end;
-  }
-  exports.joinWithSlash = joinWithSlash;
   global.define = __define;
   return module.exports;
 });
@@ -1475,107 +2193,6 @@ System.register("angular2/src/mock/mock_application_ref", ["angular2/src/core/ap
     return MockApplicationRef;
   })(application_ref_1.ApplicationRef);
   exports.MockApplicationRef = MockApplicationRef;
-  global.define = __define;
-  return module.exports;
-});
-
-System.register("angular2/src/mock/mock_location_strategy", ["angular2/src/core/di", "angular2/src/facade/async", "angular2/src/router/location_strategy"], true, function(require, exports, module) {
-  var global = System.global,
-      __define = global.define;
-  global.define = undefined;
-  var __extends = (this && this.__extends) || function(d, b) {
-    for (var p in b)
-      if (b.hasOwnProperty(p))
-        d[p] = b[p];
-    function __() {
-      this.constructor = d;
-    }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-  };
-  var __decorate = (this && this.__decorate) || function(decorators, target, key, desc) {
-    var c = arguments.length,
-        r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,
-        d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function")
-      r = Reflect.decorate(decorators, target, key, desc);
-    else
-      for (var i = decorators.length - 1; i >= 0; i--)
-        if (d = decorators[i])
-          r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-  };
-  var __metadata = (this && this.__metadata) || function(k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function")
-      return Reflect.metadata(k, v);
-  };
-  var di_1 = require("angular2/src/core/di");
-  var async_1 = require("angular2/src/facade/async");
-  var location_strategy_1 = require("angular2/src/router/location_strategy");
-  var MockLocationStrategy = (function(_super) {
-    __extends(MockLocationStrategy, _super);
-    function MockLocationStrategy() {
-      _super.call(this);
-      this.internalBaseHref = '/';
-      this.internalPath = '/';
-      this.internalTitle = '';
-      this.urlChanges = [];
-      this._subject = new async_1.EventEmitter();
-    }
-    MockLocationStrategy.prototype.simulatePopState = function(url) {
-      this.internalPath = url;
-      async_1.ObservableWrapper.callEmit(this._subject, new MockPopStateEvent(this.path()));
-    };
-    MockLocationStrategy.prototype.path = function() {
-      return this.internalPath;
-    };
-    MockLocationStrategy.prototype.prepareExternalUrl = function(internal) {
-      if (internal.startsWith('/') && this.internalBaseHref.endsWith('/')) {
-        return this.internalBaseHref + internal.substring(1);
-      }
-      return this.internalBaseHref + internal;
-    };
-    MockLocationStrategy.prototype.pushState = function(ctx, title, path, query) {
-      this.internalTitle = title;
-      var url = path + (query.length > 0 ? ('?' + query) : '');
-      this.internalPath = url;
-      var externalUrl = this.prepareExternalUrl(url);
-      this.urlChanges.push(externalUrl);
-    };
-    MockLocationStrategy.prototype.replaceState = function(ctx, title, path, query) {
-      this.internalTitle = title;
-      var url = path + (query.length > 0 ? ('?' + query) : '');
-      this.internalPath = url;
-      var externalUrl = this.prepareExternalUrl(url);
-      this.urlChanges.push('replace: ' + externalUrl);
-    };
-    MockLocationStrategy.prototype.onPopState = function(fn) {
-      async_1.ObservableWrapper.subscribe(this._subject, fn);
-    };
-    MockLocationStrategy.prototype.getBaseHref = function() {
-      return this.internalBaseHref;
-    };
-    MockLocationStrategy.prototype.back = function() {
-      if (this.urlChanges.length > 0) {
-        this.urlChanges.pop();
-        var nextUrl = this.urlChanges.length > 0 ? this.urlChanges[this.urlChanges.length - 1] : '';
-        this.simulatePopState(nextUrl);
-      }
-    };
-    MockLocationStrategy.prototype.forward = function() {
-      throw 'not implemented';
-    };
-    MockLocationStrategy = __decorate([di_1.Injectable(), __metadata('design:paramtypes', [])], MockLocationStrategy);
-    return MockLocationStrategy;
-  })(location_strategy_1.LocationStrategy);
-  exports.MockLocationStrategy = MockLocationStrategy;
-  var MockPopStateEvent = (function() {
-    function MockPopStateEvent(newUrl) {
-      this.newUrl = newUrl;
-      this.pop = true;
-      this.type = 'popstate';
-    }
-    return MockPopStateEvent;
-  })();
   global.define = __define;
   return module.exports;
 });

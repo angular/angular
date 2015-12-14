@@ -9,12 +9,15 @@ import 'package:angular2/src/facade/lang.dart';
 import 'package:angular2/src/facade/exceptions.dart';
 
 class GenericMessageBus implements MessageBus {
-  MessageBusSink sink;
-  MessageBusSource source;
+  final MessageBusSink _sink;
+  final MessageBusSource _source;
+
+  MessageBusSink get sink => _sink;
+  MessageBusSource get source => _source;
 
   GenericMessageBus(MessageBusSink sink, MessageBusSource source)
-      : sink = sink,
-        source = source;
+      : _sink = sink,
+        _source = source;
 
   void attachToZone(NgZone zone) {
     sink.attachToZone(zone);

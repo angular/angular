@@ -1,7 +1,9 @@
 import { XHR } from 'angular2/src/compiler/xhr';
 import { WebWorkerXHRImpl } from 'angular2/src/web_workers/worker/xhr_impl';
+import { ListWrapper } from 'angular2/src/facade/collection';
 import { WebWorkerRenderer } from 'angular2/src/web_workers/worker/renderer';
 import { print, CONST_EXPR } from 'angular2/src/facade/lang';
+import { MessageBus } from 'angular2/src/web_workers/shared/message_bus';
 import { Renderer } from 'angular2/src/core/render/api';
 import { PLATFORM_DIRECTIVES, PLATFORM_PIPES, ExceptionHandler, APPLICATION_COMMON_PROVIDERS, PLATFORM_COMMON_PROVIDERS } from 'angular2/core';
 import { COMMON_DIRECTIVES, COMMON_PIPES, FORM_PROVIDERS } from "angular2/common";
@@ -14,6 +16,7 @@ import { Provider } from 'angular2/src/core/di';
 import { RenderProtoViewRefStore } from 'angular2/src/web_workers/shared/render_proto_view_ref_store';
 import { RenderViewWithFragmentsStore } from 'angular2/src/web_workers/shared/render_view_with_fragments_store';
 import { WebWorkerEventDispatcher } from 'angular2/src/web_workers/worker/event_dispatcher';
+import { PromiseWrapper } from 'angular2/src/facade/async';
 class PrintLogger {
     constructor() {
         this.log = print;
@@ -23,7 +26,7 @@ class PrintLogger {
     logGroupEnd() { }
 }
 export const WORKER_APP_PLATFORM = CONST_EXPR([PLATFORM_COMMON_PROVIDERS]);
-export const WORKER_APP_APPLICATION_COMMON = CONST_EXPR([
+export const WORKER_APP_COMMON_PROVIDERS = CONST_EXPR([
     APPLICATION_COMMON_PROVIDERS,
     COMPILER_PROVIDERS,
     FORM_PROVIDERS,
@@ -44,4 +47,16 @@ export const WORKER_APP_APPLICATION_COMMON = CONST_EXPR([
 ]);
 function _exceptionHandler() {
     return new ExceptionHandler(new PrintLogger());
+}
+/**
+ * Asynchronously returns a list of providers that can be used to initialize the
+ * Application injector.
+ * Also takes care of attaching the {@link MessageBus} to the given {@link NgZone}.
+ */
+export function genericWorkerAppProviders(bus, zone) {
+    bus.attachToZone(zone);
+    var bindings = ListWrapper.concat(WORKER_APP_COMMON_PROVIDERS, [
+        new Provider(MessageBus, { useValue: bus }),
+    ]);
+    return PromiseWrapper.resolve(bindings);
 }

@@ -1,8 +1,8 @@
 export {
   WORKER_APP_PLATFORM,
-  WORKER_APP_APPLICATION_COMMON
+  genericWorkerAppProviders
 } from 'angular2/src/platform/worker_app_common';
-export {WORKER_APP_APPLICATION} from 'angular2/src/platform/worker_app';
+export * from 'angular2/src/platform/worker_app';
 export {
   ClientMessageBroker,
   ClientMessageBrokerFactory,

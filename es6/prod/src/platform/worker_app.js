@@ -1,28 +1,13 @@
-import { NgZone } from 'angular2/src/core/zone/ng_zone';
-import { Provider } from 'angular2/src/core/di';
 import { Parse5DomAdapter } from 'angular2/src/platform/server/parse5_adapter';
 import { PostMessageBus, PostMessageBusSink, PostMessageBusSource } from 'angular2/src/web_workers/shared/post_message_bus';
-import { WORKER_APP_APPLICATION_COMMON } from './worker_app_common';
-import { APP_INITIALIZER } from 'angular2/core';
-import { MessageBus } from 'angular2/src/web_workers/shared/message_bus';
-// TODO(jteplitz602) remove this and compile with lib.webworker.d.ts (#3492)
-let _postMessage = {
-    postMessage: (message, transferrables) => {
-        postMessage(message, transferrables);
-    }
-};
-export const WORKER_APP_APPLICATION = [
-    WORKER_APP_APPLICATION_COMMON,
-    new Provider(MessageBus, { useFactory: createMessageBus, deps: [NgZone] }),
-    new Provider(APP_INITIALIZER, { useValue: setupWebWorker, multi: true })
-];
-function createMessageBus(zone) {
-    let sink = new PostMessageBusSink(_postMessage);
-    let source = new PostMessageBusSource();
-    let bus = new PostMessageBus(sink, source);
-    bus.attachToZone(zone);
-    return bus;
-}
-function setupWebWorker() {
+import { genericWorkerAppProviders } from './worker_app_common';
+var _postMessage = postMessage;
+export function setupWebWorker(zone) {
     Parse5DomAdapter.makeCurrent();
+    var sink = new PostMessageBusSink({
+        postMessage: (message, transferrables) => { _postMessage(message, transferrables); }
+    });
+    var source = new PostMessageBusSource();
+    var bus = new PostMessageBus(sink, source);
+    return genericWorkerAppProviders(bus, zone);
 }
