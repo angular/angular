@@ -70,10 +70,10 @@ export function main() {
 
       it('should use the moduleUrl from the reflector if none is given',
          inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
-           var value: string = resolver.getMetadata(DirectiveWithoutModuleId).type.moduleUrl;
+           var value: string = resolver.getMetadata(ComponentWithoutModuleId).type.moduleUrl;
            var expectedEndValue =
                IS_DART ? 'base/dist/dart/angular2/test/compiler/runtime_metadata_spec.dart' : './';
-           expect((<any>value).endsWith(expectedEndValue)).toBe(true);
+           expect(value.endsWith(expectedEndValue)).toBe(true);
          }));
     });
 
@@ -82,7 +82,7 @@ export function main() {
       it('should return the directive metadatas',
          inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
            expect(resolver.getViewDirectivesMetadata(ComponentWithEverything))
-               .toEqual([resolver.getMetadata(DirectiveWithoutModuleId)]);
+               .toEqual([resolver.getMetadata(SomeDirective)]);
          }));
 
       describe("platform directives", () => {
@@ -91,10 +91,7 @@ export function main() {
         it('should include platform directives when available',
            inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
              expect(resolver.getViewDirectivesMetadata(ComponentWithEverything))
-                 .toEqual([
-                   resolver.getMetadata(ADirective),
-                   resolver.getMetadata(DirectiveWithoutModuleId)
-                 ]);
+                 .toEqual([resolver.getMetadata(ADirective), resolver.getMetadata(SomeDirective)]);
            }));
       });
     });
@@ -102,14 +99,16 @@ export function main() {
   });
 }
 
-
-
 @Directive({selector: 'a-directive'})
 class ADirective {
 }
 
 @Directive({selector: 'someSelector'})
-class DirectiveWithoutModuleId {
+class SomeDirective {
+}
+
+@Component({selector: 'someComponent', template: ''})
+class ComponentWithoutModuleId {
 }
 
 @Component({
@@ -131,7 +130,7 @@ class DirectiveWithoutModuleId {
   encapsulation: ViewEncapsulation.Emulated,
   styles: ['someStyle'],
   styleUrls: ['someStyleUrl'],
-  directives: [DirectiveWithoutModuleId]
+  directives: [SomeDirective]
 })
 class ComponentWithEverything implements OnChanges,
     OnInit, DoCheck, OnDestroy, AfterContentInit, AfterContentChecked, AfterViewInit,
