@@ -6,7 +6,7 @@ import {
   HostMetadata,
   SkipSelfMetadata
 } from './metadata';
-import {makeDecorator, makeParamDecorator, TypeDecorator} from '../util/decorators';
+import {makeDecorator, makeParamDecorator} from '../util/decorators';
 
 /**
  * Factory for creating {@link InjectMetadata}.
