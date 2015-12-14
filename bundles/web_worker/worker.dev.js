@@ -25810,7 +25810,8 @@ System.register("angular2/src/compiler/html_lexer", ["angular2/src/facade/lang",
   var $z = 122;
   var $x = 120;
   var $NBSP = 160;
-  var CR_OR_CRLF_REGEXP = /\r\n?/g;
+  var CRLF_REGEXP = /\r\n/g;
+  var CR_REGEXP = /\r/g;
   function unexpectedCharacterErrorMsg(charCode) {
     var char = charCode === $EOF ? 'EOF' : lang_1.StringWrapper.fromCharCode(charCode);
     return "Unexpected character \"" + char + "\"";
@@ -25839,7 +25840,8 @@ System.register("angular2/src/compiler/html_lexer", ["angular2/src/facade/lang",
       this._advance();
     }
     _HtmlTokenizer.prototype._processCarriageReturns = function(content) {
-      return lang_1.StringWrapper.replaceAll(content, CR_OR_CRLF_REGEXP, '\n');
+      content = lang_1.StringWrapper.replaceAll(content, CRLF_REGEXP, '\r');
+      return lang_1.StringWrapper.replaceAll(content, CR_REGEXP, '\n');
     };
     _HtmlTokenizer.prototype.tokenize = function() {
       while (this.peek !== $EOF) {
@@ -39672,16 +39674,14 @@ System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng
   return module.exports;
 });
 
-System.register("angular2/src/platform/worker_app_common", ["angular2/src/compiler/xhr", "angular2/src/web_workers/worker/xhr_impl", "angular2/src/facade/collection", "angular2/src/web_workers/worker/renderer", "angular2/src/facade/lang", "angular2/src/web_workers/shared/message_bus", "angular2/src/core/render/api", "angular2/core", "angular2/common", "angular2/src/web_workers/shared/client_message_broker", "angular2/src/web_workers/shared/service_message_broker", "angular2/src/compiler/compiler", "angular2/src/web_workers/shared/serializer", "angular2/src/web_workers/shared/api", "angular2/src/core/di", "angular2/src/web_workers/shared/render_proto_view_ref_store", "angular2/src/web_workers/shared/render_view_with_fragments_store", "angular2/src/web_workers/worker/event_dispatcher", "angular2/src/facade/async"], true, function(require, exports, module) {
+System.register("angular2/src/platform/worker_app_common", ["angular2/src/compiler/xhr", "angular2/src/web_workers/worker/xhr_impl", "angular2/src/web_workers/worker/renderer", "angular2/src/facade/lang", "angular2/src/core/render/api", "angular2/core", "angular2/common", "angular2/src/web_workers/shared/client_message_broker", "angular2/src/web_workers/shared/service_message_broker", "angular2/src/compiler/compiler", "angular2/src/web_workers/shared/serializer", "angular2/src/web_workers/shared/api", "angular2/src/core/di", "angular2/src/web_workers/shared/render_proto_view_ref_store", "angular2/src/web_workers/shared/render_view_with_fragments_store", "angular2/src/web_workers/worker/event_dispatcher"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
   var xhr_1 = require("angular2/src/compiler/xhr");
   var xhr_impl_1 = require("angular2/src/web_workers/worker/xhr_impl");
-  var collection_1 = require("angular2/src/facade/collection");
   var renderer_1 = require("angular2/src/web_workers/worker/renderer");
   var lang_1 = require("angular2/src/facade/lang");
-  var message_bus_1 = require("angular2/src/web_workers/shared/message_bus");
   var api_1 = require("angular2/src/core/render/api");
   var core_1 = require("angular2/core");
   var common_1 = require("angular2/common");
@@ -39694,7 +39694,6 @@ System.register("angular2/src/platform/worker_app_common", ["angular2/src/compil
   var render_proto_view_ref_store_1 = require("angular2/src/web_workers/shared/render_proto_view_ref_store");
   var render_view_with_fragments_store_1 = require("angular2/src/web_workers/shared/render_view_with_fragments_store");
   var event_dispatcher_1 = require("angular2/src/web_workers/worker/event_dispatcher");
-  var async_1 = require("angular2/src/facade/async");
   var PrintLogger = (function() {
     function PrintLogger() {
       this.log = lang_1.print;
@@ -39705,7 +39704,7 @@ System.register("angular2/src/platform/worker_app_common", ["angular2/src/compil
     return PrintLogger;
   })();
   exports.WORKER_APP_PLATFORM = lang_1.CONST_EXPR([core_1.PLATFORM_COMMON_PROVIDERS]);
-  exports.WORKER_APP_COMMON_PROVIDERS = lang_1.CONST_EXPR([core_1.APPLICATION_COMMON_PROVIDERS, compiler_1.COMPILER_PROVIDERS, common_1.FORM_PROVIDERS, serializer_1.Serializer, new di_1.Provider(core_1.PLATFORM_PIPES, {
+  exports.WORKER_APP_APPLICATION_COMMON = lang_1.CONST_EXPR([core_1.APPLICATION_COMMON_PROVIDERS, compiler_1.COMPILER_PROVIDERS, common_1.FORM_PROVIDERS, serializer_1.Serializer, new di_1.Provider(core_1.PLATFORM_PIPES, {
     useValue: common_1.COMMON_PIPES,
     multi: true
   }), new di_1.Provider(core_1.PLATFORM_DIRECTIVES, {
@@ -39718,34 +39717,41 @@ System.register("angular2/src/platform/worker_app_common", ["angular2/src/compil
   function _exceptionHandler() {
     return new core_1.ExceptionHandler(new PrintLogger());
   }
-  function genericWorkerAppProviders(bus, zone) {
-    bus.attachToZone(zone);
-    var bindings = collection_1.ListWrapper.concat(exports.WORKER_APP_COMMON_PROVIDERS, [new di_1.Provider(message_bus_1.MessageBus, {useValue: bus})]);
-    return async_1.PromiseWrapper.resolve(bindings);
-  }
-  exports.genericWorkerAppProviders = genericWorkerAppProviders;
   global.define = __define;
   return module.exports;
 });
 
-System.register("angular2/src/platform/worker_app", ["angular2/src/platform/server/parse5_adapter", "angular2/src/web_workers/shared/post_message_bus", "angular2/src/platform/worker_app_common"], true, function(require, exports, module) {
+System.register("angular2/src/platform/worker_app", ["angular2/src/core/zone/ng_zone", "angular2/src/core/di", "angular2/src/platform/server/parse5_adapter", "angular2/src/web_workers/shared/post_message_bus", "angular2/src/platform/worker_app_common", "angular2/core", "angular2/src/web_workers/shared/message_bus"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
+  var ng_zone_1 = require("angular2/src/core/zone/ng_zone");
+  var di_1 = require("angular2/src/core/di");
   var parse5_adapter_1 = require("angular2/src/platform/server/parse5_adapter");
   var post_message_bus_1 = require("angular2/src/web_workers/shared/post_message_bus");
   var worker_app_common_1 = require("angular2/src/platform/worker_app_common");
-  var _postMessage = postMessage;
-  function setupWebWorker(zone) {
-    parse5_adapter_1.Parse5DomAdapter.makeCurrent();
-    var sink = new post_message_bus_1.PostMessageBusSink({postMessage: function(message, transferrables) {
-        _postMessage(message, transferrables);
-      }});
+  var core_1 = require("angular2/core");
+  var message_bus_1 = require("angular2/src/web_workers/shared/message_bus");
+  var _postMessage = {postMessage: function(message, transferrables) {
+      postMessage(message, transferrables);
+    }};
+  exports.WORKER_APP_APPLICATION = [worker_app_common_1.WORKER_APP_APPLICATION_COMMON, new di_1.Provider(message_bus_1.MessageBus, {
+    useFactory: createMessageBus,
+    deps: [ng_zone_1.NgZone]
+  }), new di_1.Provider(core_1.APP_INITIALIZER, {
+    useValue: setupWebWorker,
+    multi: true
+  })];
+  function createMessageBus(zone) {
+    var sink = new post_message_bus_1.PostMessageBusSink(_postMessage);
     var source = new post_message_bus_1.PostMessageBusSource();
     var bus = new post_message_bus_1.PostMessageBus(sink, source);
-    return worker_app_common_1.genericWorkerAppProviders(bus, zone);
+    bus.attachToZone(zone);
+    return bus;
   }
-  exports.setupWebWorker = setupWebWorker;
+  function setupWebWorker() {
+    parse5_adapter_1.Parse5DomAdapter.makeCurrent();
+  }
   global.define = __define;
   return module.exports;
 });
@@ -39811,8 +39817,9 @@ System.register("angular2/platform/worker_app", ["angular2/src/platform/worker_a
   }
   var worker_app_common_1 = require("angular2/src/platform/worker_app_common");
   exports.WORKER_APP_PLATFORM = worker_app_common_1.WORKER_APP_PLATFORM;
-  exports.genericWorkerAppProviders = worker_app_common_1.genericWorkerAppProviders;
-  __export(require("angular2/src/platform/worker_app"));
+  exports.WORKER_APP_APPLICATION_COMMON = worker_app_common_1.WORKER_APP_APPLICATION_COMMON;
+  var worker_app_1 = require("angular2/src/platform/worker_app");
+  exports.WORKER_APP_APPLICATION = worker_app_1.WORKER_APP_APPLICATION;
   var client_message_broker_1 = require("angular2/src/web_workers/shared/client_message_broker");
   exports.ClientMessageBroker = client_message_broker_1.ClientMessageBroker;
   exports.ClientMessageBrokerFactory = client_message_broker_1.ClientMessageBrokerFactory;

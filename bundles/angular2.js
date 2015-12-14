@@ -26769,7 +26769,8 @@ System.register("angular2/src/compiler/html_lexer", ["angular2/src/facade/lang",
   var $z = 122;
   var $x = 120;
   var $NBSP = 160;
-  var CR_OR_CRLF_REGEXP = /\r\n?/g;
+  var CRLF_REGEXP = /\r\n/g;
+  var CR_REGEXP = /\r/g;
   function unexpectedCharacterErrorMsg(charCode) {
     var char = charCode === $EOF ? 'EOF' : lang_1.StringWrapper.fromCharCode(charCode);
     return "Unexpected character \"" + char + "\"";
@@ -26798,7 +26799,8 @@ System.register("angular2/src/compiler/html_lexer", ["angular2/src/facade/lang",
       this._advance();
     }
     _HtmlTokenizer.prototype._processCarriageReturns = function(content) {
-      return lang_1.StringWrapper.replaceAll(content, CR_OR_CRLF_REGEXP, '\n');
+      content = lang_1.StringWrapper.replaceAll(content, CRLF_REGEXP, '\r');
+      return lang_1.StringWrapper.replaceAll(content, CR_REGEXP, '\n');
     };
     _HtmlTokenizer.prototype.tokenize = function() {
       while (this.peek !== $EOF) {
