@@ -63,10 +63,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.core = __webpack_require__(2);
 	exports.common = __webpack_require__(118);
-	exports.compiler = __webpack_require__(161);
 	exports.platform = {
-	  browser: __webpack_require__(193),
-	  common_dom: __webpack_require__(217)
+	  browser: __webpack_require__(161),
+	  common_dom: __webpack_require__(189)
 	};
 	exports.http = __webpack_require__(223);
 	exports.router = __webpack_require__(238);
@@ -23010,6 +23009,2756 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var angular_entrypoint_1 = __webpack_require__(162);
+	exports.AngularEntrypoint = angular_entrypoint_1.AngularEntrypoint;
+	var browser_common_1 = __webpack_require__(163);
+	exports.BROWSER_PROVIDERS = browser_common_1.BROWSER_PROVIDERS;
+	exports.ELEMENT_PROBE_BINDINGS = browser_common_1.ELEMENT_PROBE_BINDINGS;
+	exports.ELEMENT_PROBE_PROVIDERS = browser_common_1.ELEMENT_PROBE_PROVIDERS;
+	exports.inspectNativeElement = browser_common_1.inspectNativeElement;
+	exports.BrowserDomAdapter = browser_common_1.BrowserDomAdapter;
+	exports.By = browser_common_1.By;
+	exports.Title = browser_common_1.Title;
+	exports.DOCUMENT = browser_common_1.DOCUMENT;
+	exports.enableDebugTools = browser_common_1.enableDebugTools;
+	exports.disableDebugTools = browser_common_1.disableDebugTools;
+	var lang_1 = __webpack_require__(5);
+	var browser_common_2 = __webpack_require__(163);
+	var compiler_1 = __webpack_require__(195);
+	var core_1 = __webpack_require__(2);
+	var reflection_capabilities_1 = __webpack_require__(18);
+	var xhr_impl_1 = __webpack_require__(184);
+	var compiler_2 = __webpack_require__(195);
+	var di_1 = __webpack_require__(6);
+	/**
+	 * An array of providers that should be passed into `application()` when bootstrapping a component.
+	 */
+	exports.BROWSER_APP_PROVIDERS = lang_1.CONST_EXPR([
+	    browser_common_2.BROWSER_APP_COMMON_PROVIDERS,
+	    compiler_1.COMPILER_PROVIDERS,
+	    new di_1.Provider(compiler_2.XHR, { useClass: xhr_impl_1.XHRImpl }),
+	]);
+	/**
+	 * Bootstrapping for Angular applications.
+	 *
+	 * You instantiate an Angular application by explicitly specifying a component to use
+	 * as the root component for your application via the `bootstrap()` method.
+	 *
+	 * ## Simple Example
+	 *
+	 * Assuming this `index.html`:
+	 *
+	 * ```html
+	 * <html>
+	 *   <!-- load Angular script tags here. -->
+	 *   <body>
+	 *     <my-app>loading...</my-app>
+	 *   </body>
+	 * </html>
+	 * ```
+	 *
+	 * An application is bootstrapped inside an existing browser DOM, typically `index.html`.
+	 * Unlike Angular 1, Angular 2 does not compile/process providers in `index.html`. This is
+	 * mainly for security reasons, as well as architectural changes in Angular 2. This means
+	 * that `index.html` can safely be processed using server-side technologies such as
+	 * providers. Bindings can thus use double-curly `{{ syntax }}` without collision from
+	 * Angular 2 component double-curly `{{ syntax }}`.
+	 *
+	 * We can use this script code:
+	 *
+	 * {@example core/ts/bootstrap/bootstrap.ts region='bootstrap'}
+	 *
+	 * When the app developer invokes `bootstrap()` with the root component `MyApp` as its
+	 * argument, Angular performs the following tasks:
+	 *
+	 *  1. It uses the component's `selector` property to locate the DOM element which needs
+	 *     to be upgraded into the angular component.
+	 *  2. It creates a new child injector (from the platform injector). Optionally, you can
+	 *     also override the injector configuration for an app by invoking `bootstrap` with the
+	 *     `componentInjectableBindings` argument.
+	 *  3. It creates a new `Zone` and connects it to the angular application's change detection
+	 *     domain instance.
+	 *  4. It creates an emulated or shadow DOM on the selected component's host element and loads the
+	 *     template into it.
+	 *  5. It instantiates the specified component.
+	 *  6. Finally, Angular performs change detection to apply the initial data providers for the
+	 *     application.
+	 *
+	 *
+	 * ## Bootstrapping Multiple Applications
+	 *
+	 * When working within a browser window, there are many singleton resources: cookies, title,
+	 * location, and others. Angular services that represent these resources must likewise be
+	 * shared across all Angular applications that occupy the same browser window. For this
+	 * reason, Angular creates exactly one global platform object which stores all shared
+	 * services, and each angular application injector has the platform injector as its parent.
+	 *
+	 * Each application has its own private injector as well. When there are multiple
+	 * applications on a page, Angular treats each application injector's services as private
+	 * to that application.
+	 *
+	 * ## API
+	 *
+	 * - `appComponentType`: The root component which should act as the application. This is
+	 *   a reference to a `Type` which is annotated with `@Component(...)`.
+	 * - `customProviders`: An additional set of providers that can be added to the
+	 *   app injector to override default injection behavior.
+	 *
+	 * Returns a `Promise` of {@link ComponentRef}.
+	 */
+	function bootstrap(appComponentType, customProviders) {
+	    core_1.reflector.reflectionCapabilities = new reflection_capabilities_1.ReflectionCapabilities();
+	    var appProviders = lang_1.isPresent(customProviders) ? [exports.BROWSER_APP_PROVIDERS, customProviders] : exports.BROWSER_APP_PROVIDERS;
+	    return core_1.platform(browser_common_2.BROWSER_PROVIDERS).application(appProviders).bootstrap(appComponentType);
+	}
+	exports.bootstrap = bootstrap;
+
+
+/***/ },
+/* 162 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var lang_1 = __webpack_require__(5);
+	/**
+	 * Marks a function or method as an Angular 2 entrypoint. Only necessary in Dart code.
+	 *
+	 * The optional `name` parameter will be reflected in logs when the entry point is processed.
+	 *
+	 * See [the wiki][] for detailed documentation.
+	 * [the wiki]: https://github.com/angular/angular/wiki/Angular-2-Dart-Transformer#entry_points
+	 *
+	 * ## Example
+	 *
+	 * ```
+	 * @AngularEntrypoint("name-for-debug")
+	 * void main() {
+	 *   bootstrap(MyComponent);
+	 * }
+	 * ```
+	 */
+	var AngularEntrypoint = (function () {
+	    function AngularEntrypoint(name) {
+	        this.name = name;
+	    }
+	    AngularEntrypoint = __decorate([
+	        lang_1.CONST(), 
+	        __metadata('design:paramtypes', [String])
+	    ], AngularEntrypoint);
+	    return AngularEntrypoint;
+	})();
+	exports.AngularEntrypoint = AngularEntrypoint;
+
+
+/***/ },
+/* 163 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var lang_1 = __webpack_require__(5);
+	var di_1 = __webpack_require__(6);
+	var core_1 = __webpack_require__(2);
+	var common_1 = __webpack_require__(118);
+	var testability_1 = __webpack_require__(83);
+	var dom_adapter_1 = __webpack_require__(164);
+	var dom_events_1 = __webpack_require__(165);
+	var key_events_1 = __webpack_require__(167);
+	var hammer_gestures_1 = __webpack_require__(168);
+	var dom_tokens_1 = __webpack_require__(170);
+	var dom_renderer_1 = __webpack_require__(171);
+	var shared_styles_host_1 = __webpack_require__(179);
+	var shared_styles_host_2 = __webpack_require__(179);
+	var browser_details_1 = __webpack_require__(178);
+	var animation_builder_1 = __webpack_require__(172);
+	var browser_adapter_1 = __webpack_require__(182);
+	var testability_2 = __webpack_require__(186);
+	var wtf_init_1 = __webpack_require__(187);
+	var event_manager_1 = __webpack_require__(166);
+	var dom_tokens_2 = __webpack_require__(170);
+	exports.DOCUMENT = dom_tokens_2.DOCUMENT;
+	var title_1 = __webpack_require__(188);
+	exports.Title = title_1.Title;
+	var common_dom_1 = __webpack_require__(189);
+	exports.DebugElementViewListener = common_dom_1.DebugElementViewListener;
+	exports.ELEMENT_PROBE_PROVIDERS = common_dom_1.ELEMENT_PROBE_PROVIDERS;
+	exports.ELEMENT_PROBE_BINDINGS = common_dom_1.ELEMENT_PROBE_BINDINGS;
+	exports.inspectNativeElement = common_dom_1.inspectNativeElement;
+	exports.By = common_dom_1.By;
+	var browser_adapter_2 = __webpack_require__(182);
+	exports.BrowserDomAdapter = browser_adapter_2.BrowserDomAdapter;
+	var tools_1 = __webpack_require__(192);
+	exports.enableDebugTools = tools_1.enableDebugTools;
+	exports.disableDebugTools = tools_1.disableDebugTools;
+	exports.BROWSER_PROVIDERS = lang_1.CONST_EXPR([
+	    core_1.PLATFORM_COMMON_PROVIDERS,
+	    new di_1.Provider(core_1.PLATFORM_INITIALIZER, { useValue: initDomAdapter, multi: true }),
+	]);
+	function _exceptionHandler() {
+	    // !IS_DART is required because we must rethrow exceptions in JS,
+	    // but must not rethrow exceptions in Dart
+	    return new core_1.ExceptionHandler(dom_adapter_1.DOM, !lang_1.IS_DART);
+	}
+	function _document() {
+	    return dom_adapter_1.DOM.defaultDoc();
+	}
+	exports.BROWSER_APP_COMMON_PROVIDERS = lang_1.CONST_EXPR([
+	    core_1.APPLICATION_COMMON_PROVIDERS,
+	    common_1.FORM_PROVIDERS,
+	    new di_1.Provider(core_1.PLATFORM_PIPES, { useValue: common_1.COMMON_PIPES, multi: true }),
+	    new di_1.Provider(core_1.PLATFORM_DIRECTIVES, { useValue: common_1.COMMON_DIRECTIVES, multi: true }),
+	    new di_1.Provider(core_1.ExceptionHandler, { useFactory: _exceptionHandler, deps: [] }),
+	    new di_1.Provider(dom_tokens_1.DOCUMENT, { useFactory: _document, deps: [] }),
+	    new di_1.Provider(event_manager_1.EVENT_MANAGER_PLUGINS, { useClass: dom_events_1.DomEventsPlugin, multi: true }),
+	    new di_1.Provider(event_manager_1.EVENT_MANAGER_PLUGINS, { useClass: key_events_1.KeyEventsPlugin, multi: true }),
+	    new di_1.Provider(event_manager_1.EVENT_MANAGER_PLUGINS, { useClass: hammer_gestures_1.HammerGesturesPlugin, multi: true }),
+	    new di_1.Provider(dom_renderer_1.DomRenderer, { useClass: dom_renderer_1.DomRenderer_ }),
+	    new di_1.Provider(core_1.Renderer, { useExisting: dom_renderer_1.DomRenderer }),
+	    new di_1.Provider(shared_styles_host_2.SharedStylesHost, { useExisting: shared_styles_host_1.DomSharedStylesHost }),
+	    shared_styles_host_1.DomSharedStylesHost,
+	    testability_1.Testability,
+	    browser_details_1.BrowserDetails,
+	    animation_builder_1.AnimationBuilder,
+	    event_manager_1.EventManager
+	]);
+	function initDomAdapter() {
+	    browser_adapter_1.BrowserDomAdapter.makeCurrent();
+	    wtf_init_1.wtfInit();
+	    testability_2.BrowserGetTestability.init();
+	}
+	exports.initDomAdapter = initDomAdapter;
+
+
+/***/ },
+/* 164 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var lang_1 = __webpack_require__(5);
+	exports.DOM = null;
+	function setRootDomAdapter(adapter) {
+	    if (lang_1.isBlank(exports.DOM)) {
+	        exports.DOM = adapter;
+	    }
+	}
+	exports.setRootDomAdapter = setRootDomAdapter;
+	/* tslint:disable:requireParameterType */
+	/**
+	 * Provides DOM operations in an environment-agnostic way.
+	 */
+	var DomAdapter = (function () {
+	    function DomAdapter() {
+	    }
+	    return DomAdapter;
+	})();
+	exports.DomAdapter = DomAdapter;
+
+
+/***/ },
+/* 165 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var dom_adapter_1 = __webpack_require__(164);
+	var core_1 = __webpack_require__(2);
+	var event_manager_1 = __webpack_require__(166);
+	var DomEventsPlugin = (function (_super) {
+	    __extends(DomEventsPlugin, _super);
+	    function DomEventsPlugin() {
+	        _super.apply(this, arguments);
+	    }
+	    // This plugin should come last in the list of plugins, because it accepts all
+	    // events.
+	    DomEventsPlugin.prototype.supports = function (eventName) { return true; };
+	    DomEventsPlugin.prototype.addEventListener = function (element, eventName, handler) {
+	        var zone = this.manager.getZone();
+	        var outsideHandler = function (event) { return zone.run(function () { return handler(event); }); };
+	        this.manager.getZone().runOutsideAngular(function () { dom_adapter_1.DOM.on(element, eventName, outsideHandler); });
+	    };
+	    DomEventsPlugin.prototype.addGlobalEventListener = function (target, eventName, handler) {
+	        var element = dom_adapter_1.DOM.getGlobalEventTarget(target);
+	        var zone = this.manager.getZone();
+	        var outsideHandler = function (event) { return zone.run(function () { return handler(event); }); };
+	        return this.manager.getZone().runOutsideAngular(function () { return dom_adapter_1.DOM.onAndCancel(element, eventName, outsideHandler); });
+	    };
+	    DomEventsPlugin = __decorate([
+	        core_1.Injectable(), 
+	        __metadata('design:paramtypes', [])
+	    ], DomEventsPlugin);
+	    return DomEventsPlugin;
+	})(event_manager_1.EventManagerPlugin);
+	exports.DomEventsPlugin = DomEventsPlugin;
+
+
+/***/ },
+/* 166 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var lang_1 = __webpack_require__(5);
+	var exceptions_1 = __webpack_require__(14);
+	var di_1 = __webpack_require__(6);
+	var ng_zone_1 = __webpack_require__(81);
+	var collection_1 = __webpack_require__(12);
+	exports.EVENT_MANAGER_PLUGINS = lang_1.CONST_EXPR(new di_1.OpaqueToken("EventManagerPlugins"));
+	var EventManager = (function () {
+	    function EventManager(plugins, _zone) {
+	        var _this = this;
+	        this._zone = _zone;
+	        plugins.forEach(function (p) { return p.manager = _this; });
+	        this._plugins = collection_1.ListWrapper.reversed(plugins);
+	    }
+	    EventManager.prototype.addEventListener = function (element, eventName, handler) {
+	        var plugin = this._findPluginFor(eventName);
+	        plugin.addEventListener(element, eventName, handler);
+	    };
+	    EventManager.prototype.addGlobalEventListener = function (target, eventName, handler) {
+	        var plugin = this._findPluginFor(eventName);
+	        return plugin.addGlobalEventListener(target, eventName, handler);
+	    };
+	    EventManager.prototype.getZone = function () { return this._zone; };
+	    /** @internal */
+	    EventManager.prototype._findPluginFor = function (eventName) {
+	        var plugins = this._plugins;
+	        for (var i = 0; i < plugins.length; i++) {
+	            var plugin = plugins[i];
+	            if (plugin.supports(eventName)) {
+	                return plugin;
+	            }
+	        }
+	        throw new exceptions_1.BaseException("No event manager plugin found for event " + eventName);
+	    };
+	    EventManager = __decorate([
+	        di_1.Injectable(),
+	        __param(0, di_1.Inject(exports.EVENT_MANAGER_PLUGINS)), 
+	        __metadata('design:paramtypes', [Array, ng_zone_1.NgZone])
+	    ], EventManager);
+	    return EventManager;
+	})();
+	exports.EventManager = EventManager;
+	var EventManagerPlugin = (function () {
+	    function EventManagerPlugin() {
+	    }
+	    // That is equivalent to having supporting $event.target
+	    EventManagerPlugin.prototype.supports = function (eventName) { return false; };
+	    EventManagerPlugin.prototype.addEventListener = function (element, eventName, handler) {
+	        throw "not implemented";
+	    };
+	    EventManagerPlugin.prototype.addGlobalEventListener = function (element, eventName, handler) {
+	        throw "not implemented";
+	    };
+	    return EventManagerPlugin;
+	})();
+	exports.EventManagerPlugin = EventManagerPlugin;
+
+
+/***/ },
+/* 167 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var dom_adapter_1 = __webpack_require__(164);
+	var lang_1 = __webpack_require__(5);
+	var collection_1 = __webpack_require__(12);
+	var event_manager_1 = __webpack_require__(166);
+	var di_1 = __webpack_require__(6);
+	var modifierKeys = ['alt', 'control', 'meta', 'shift'];
+	var modifierKeyGetters = {
+	    'alt': function (event) { return event.altKey; },
+	    'control': function (event) { return event.ctrlKey; },
+	    'meta': function (event) { return event.metaKey; },
+	    'shift': function (event) { return event.shiftKey; }
+	};
+	var KeyEventsPlugin = (function (_super) {
+	    __extends(KeyEventsPlugin, _super);
+	    function KeyEventsPlugin() {
+	        _super.call(this);
+	    }
+	    KeyEventsPlugin.prototype.supports = function (eventName) {
+	        return lang_1.isPresent(KeyEventsPlugin.parseEventName(eventName));
+	    };
+	    KeyEventsPlugin.prototype.addEventListener = function (element, eventName, handler) {
+	        var parsedEvent = KeyEventsPlugin.parseEventName(eventName);
+	        var outsideHandler = KeyEventsPlugin.eventCallback(element, collection_1.StringMapWrapper.get(parsedEvent, 'fullKey'), handler, this.manager.getZone());
+	        this.manager.getZone().runOutsideAngular(function () {
+	            dom_adapter_1.DOM.on(element, collection_1.StringMapWrapper.get(parsedEvent, 'domEventName'), outsideHandler);
+	        });
+	    };
+	    KeyEventsPlugin.parseEventName = function (eventName) {
+	        var parts = eventName.toLowerCase().split('.');
+	        var domEventName = parts.shift();
+	        if ((parts.length === 0) ||
+	            !(lang_1.StringWrapper.equals(domEventName, 'keydown') ||
+	                lang_1.StringWrapper.equals(domEventName, 'keyup'))) {
+	            return null;
+	        }
+	        var key = KeyEventsPlugin._normalizeKey(parts.pop());
+	        var fullKey = '';
+	        modifierKeys.forEach(function (modifierName) {
+	            if (collection_1.ListWrapper.contains(parts, modifierName)) {
+	                collection_1.ListWrapper.remove(parts, modifierName);
+	                fullKey += modifierName + '.';
+	            }
+	        });
+	        fullKey += key;
+	        if (parts.length != 0 || key.length === 0) {
+	            // returning null instead of throwing to let another plugin process the event
+	            return null;
+	        }
+	        var result = collection_1.StringMapWrapper.create();
+	        collection_1.StringMapWrapper.set(result, 'domEventName', domEventName);
+	        collection_1.StringMapWrapper.set(result, 'fullKey', fullKey);
+	        return result;
+	    };
+	    KeyEventsPlugin.getEventFullKey = function (event) {
+	        var fullKey = '';
+	        var key = dom_adapter_1.DOM.getEventKey(event);
+	        key = key.toLowerCase();
+	        if (lang_1.StringWrapper.equals(key, ' ')) {
+	            key = 'space'; // for readability
+	        }
+	        else if (lang_1.StringWrapper.equals(key, '.')) {
+	            key = 'dot'; // because '.' is used as a separator in event names
+	        }
+	        modifierKeys.forEach(function (modifierName) {
+	            if (modifierName != key) {
+	                var modifierGetter = collection_1.StringMapWrapper.get(modifierKeyGetters, modifierName);
+	                if (modifierGetter(event)) {
+	                    fullKey += modifierName + '.';
+	                }
+	            }
+	        });
+	        fullKey += key;
+	        return fullKey;
+	    };
+	    KeyEventsPlugin.eventCallback = function (element, fullKey, handler, zone) {
+	        return function (event) {
+	            if (lang_1.StringWrapper.equals(KeyEventsPlugin.getEventFullKey(event), fullKey)) {
+	                zone.run(function () { return handler(event); });
+	            }
+	        };
+	    };
+	    /** @internal */
+	    KeyEventsPlugin._normalizeKey = function (keyName) {
+	        // TODO: switch to a StringMap if the mapping grows too much
+	        switch (keyName) {
+	            case 'esc':
+	                return 'escape';
+	            default:
+	                return keyName;
+	        }
+	    };
+	    KeyEventsPlugin = __decorate([
+	        di_1.Injectable(), 
+	        __metadata('design:paramtypes', [])
+	    ], KeyEventsPlugin);
+	    return KeyEventsPlugin;
+	})(event_manager_1.EventManagerPlugin);
+	exports.KeyEventsPlugin = KeyEventsPlugin;
+
+
+/***/ },
+/* 168 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var hammer_common_1 = __webpack_require__(169);
+	var lang_1 = __webpack_require__(5);
+	var exceptions_1 = __webpack_require__(14);
+	var di_1 = __webpack_require__(6);
+	var HammerGesturesPlugin = (function (_super) {
+	    __extends(HammerGesturesPlugin, _super);
+	    function HammerGesturesPlugin() {
+	        _super.apply(this, arguments);
+	    }
+	    HammerGesturesPlugin.prototype.supports = function (eventName) {
+	        if (!_super.prototype.supports.call(this, eventName))
+	            return false;
+	        if (!lang_1.isPresent(window['Hammer'])) {
+	            throw new exceptions_1.BaseException("Hammer.js is not loaded, can not bind " + eventName + " event");
+	        }
+	        return true;
+	    };
+	    HammerGesturesPlugin.prototype.addEventListener = function (element, eventName, handler) {
+	        var zone = this.manager.getZone();
+	        eventName = eventName.toLowerCase();
+	        zone.runOutsideAngular(function () {
+	            // Creating the manager bind events, must be done outside of angular
+	            var mc = new Hammer(element);
+	            mc.get('pinch').set({ enable: true });
+	            mc.get('rotate').set({ enable: true });
+	            mc.on(eventName, function (eventObj) { zone.run(function () { handler(eventObj); }); });
+	        });
+	    };
+	    HammerGesturesPlugin = __decorate([
+	        di_1.Injectable(), 
+	        __metadata('design:paramtypes', [])
+	    ], HammerGesturesPlugin);
+	    return HammerGesturesPlugin;
+	})(hammer_common_1.HammerGesturesPluginCommon);
+	exports.HammerGesturesPlugin = HammerGesturesPlugin;
+
+
+/***/ },
+/* 169 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var event_manager_1 = __webpack_require__(166);
+	var collection_1 = __webpack_require__(12);
+	var _eventNames = {
+	    // pan
+	    'pan': true,
+	    'panstart': true,
+	    'panmove': true,
+	    'panend': true,
+	    'pancancel': true,
+	    'panleft': true,
+	    'panright': true,
+	    'panup': true,
+	    'pandown': true,
+	    // pinch
+	    'pinch': true,
+	    'pinchstart': true,
+	    'pinchmove': true,
+	    'pinchend': true,
+	    'pinchcancel': true,
+	    'pinchin': true,
+	    'pinchout': true,
+	    // press
+	    'press': true,
+	    'pressup': true,
+	    // rotate
+	    'rotate': true,
+	    'rotatestart': true,
+	    'rotatemove': true,
+	    'rotateend': true,
+	    'rotatecancel': true,
+	    // swipe
+	    'swipe': true,
+	    'swipeleft': true,
+	    'swiperight': true,
+	    'swipeup': true,
+	    'swipedown': true,
+	    // tap
+	    'tap': true,
+	};
+	var HammerGesturesPluginCommon = (function (_super) {
+	    __extends(HammerGesturesPluginCommon, _super);
+	    function HammerGesturesPluginCommon() {
+	        _super.call(this);
+	    }
+	    HammerGesturesPluginCommon.prototype.supports = function (eventName) {
+	        eventName = eventName.toLowerCase();
+	        return collection_1.StringMapWrapper.contains(_eventNames, eventName);
+	    };
+	    return HammerGesturesPluginCommon;
+	})(event_manager_1.EventManagerPlugin);
+	exports.HammerGesturesPluginCommon = HammerGesturesPluginCommon;
+
+
+/***/ },
+/* 170 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var di_1 = __webpack_require__(6);
+	var lang_1 = __webpack_require__(5);
+	/**
+	 * A DI Token representing the main rendering context. In a browser this is the DOM Document.
+	 *
+	 * Note: Document might not be available in the Application Context when Application and Rendering
+	 * Contexts are not the same (e.g. when running the application into a Web Worker).
+	 */
+	exports.DOCUMENT = lang_1.CONST_EXPR(new di_1.OpaqueToken('DocumentToken'));
+
+
+/***/ },
+/* 171 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var di_1 = __webpack_require__(6);
+	var animation_builder_1 = __webpack_require__(172);
+	var lang_1 = __webpack_require__(5);
+	var exceptions_1 = __webpack_require__(14);
+	var shared_styles_host_1 = __webpack_require__(179);
+	var profile_1 = __webpack_require__(45);
+	var core_1 = __webpack_require__(2);
+	var event_manager_1 = __webpack_require__(166);
+	var dom_tokens_1 = __webpack_require__(170);
+	var view_factory_1 = __webpack_require__(180);
+	var view_1 = __webpack_require__(181);
+	var metadata_1 = __webpack_require__(3);
+	var dom_adapter_1 = __webpack_require__(164);
+	var util_1 = __webpack_require__(177);
+	var NAMESPACE_URIS = lang_1.CONST_EXPR({ 'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg' });
+	var TEMPLATE_COMMENT_TEXT = 'template bindings={}';
+	var TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/g;
+	var DomRenderer = (function (_super) {
+	    __extends(DomRenderer, _super);
+	    function DomRenderer() {
+	        _super.apply(this, arguments);
+	    }
+	    DomRenderer.prototype.getNativeElementSync = function (location) {
+	        return resolveInternalDomView(location.renderView).boundElements[location.boundElementIndex];
+	    };
+	    DomRenderer.prototype.getRootNodes = function (fragment) { return resolveInternalDomFragment(fragment); };
+	    DomRenderer.prototype.attachFragmentAfterFragment = function (previousFragmentRef, fragmentRef) {
+	        var previousFragmentNodes = resolveInternalDomFragment(previousFragmentRef);
+	        if (previousFragmentNodes.length > 0) {
+	            var sibling = previousFragmentNodes[previousFragmentNodes.length - 1];
+	            var nodes = resolveInternalDomFragment(fragmentRef);
+	            moveNodesAfterSibling(sibling, nodes);
+	            this.animateNodesEnter(nodes);
+	        }
+	    };
+	    /**
+	     * Iterates through all nodes being added to the DOM and animates them if necessary
+	     * @param nodes
+	     */
+	    DomRenderer.prototype.animateNodesEnter = function (nodes) {
+	        for (var i = 0; i < nodes.length; i++)
+	            this.animateNodeEnter(nodes[i]);
+	    };
+	    DomRenderer.prototype.attachFragmentAfterElement = function (elementRef, fragmentRef) {
+	        var parentView = resolveInternalDomView(elementRef.renderView);
+	        var element = parentView.boundElements[elementRef.boundElementIndex];
+	        var nodes = resolveInternalDomFragment(fragmentRef);
+	        moveNodesAfterSibling(element, nodes);
+	        this.animateNodesEnter(nodes);
+	    };
+	    DomRenderer.prototype.hydrateView = function (viewRef) { resolveInternalDomView(viewRef).hydrate(); };
+	    DomRenderer.prototype.dehydrateView = function (viewRef) { resolveInternalDomView(viewRef).dehydrate(); };
+	    DomRenderer.prototype.createTemplateAnchor = function (attrNameAndValues) {
+	        return dom_adapter_1.DOM.createComment(TEMPLATE_COMMENT_TEXT);
+	    };
+	    DomRenderer.prototype.createText = function (value) { return dom_adapter_1.DOM.createTextNode(lang_1.isPresent(value) ? value : ''); };
+	    DomRenderer.prototype.appendChild = function (parent, child) { dom_adapter_1.DOM.appendChild(parent, child); };
+	    DomRenderer.prototype.setElementProperty = function (location, propertyName, propertyValue) {
+	        var view = resolveInternalDomView(location.renderView);
+	        dom_adapter_1.DOM.setProperty(view.boundElements[location.boundElementIndex], propertyName, propertyValue);
+	    };
+	    DomRenderer.prototype.setElementAttribute = function (location, attributeName, attributeValue) {
+	        var view = resolveInternalDomView(location.renderView);
+	        var element = view.boundElements[location.boundElementIndex];
+	        if (lang_1.isPresent(attributeValue)) {
+	            dom_adapter_1.DOM.setAttribute(element, attributeName, lang_1.stringify(attributeValue));
+	        }
+	        else {
+	            dom_adapter_1.DOM.removeAttribute(element, attributeName);
+	        }
+	    };
+	    /**
+	     * Used only in debug mode to serialize property changes to comment nodes,
+	     * such as <template> placeholders.
+	     */
+	    DomRenderer.prototype.setBindingDebugInfo = function (location, propertyName, propertyValue) {
+	        var view = resolveInternalDomView(location.renderView);
+	        var element = view.boundElements[location.boundElementIndex];
+	        var dashCasedPropertyName = util_1.camelCaseToDashCase(propertyName);
+	        if (dom_adapter_1.DOM.isCommentNode(element)) {
+	            var existingBindings = lang_1.RegExpWrapper.firstMatch(TEMPLATE_BINDINGS_EXP, lang_1.StringWrapper.replaceAll(dom_adapter_1.DOM.getText(element), /\n/g, ''));
+	            var parsedBindings = lang_1.Json.parse(existingBindings[1]);
+	            parsedBindings[dashCasedPropertyName] = propertyValue;
+	            dom_adapter_1.DOM.setText(element, lang_1.StringWrapper.replace(TEMPLATE_COMMENT_TEXT, '{}', lang_1.Json.stringify(parsedBindings)));
+	        }
+	        else {
+	            this.setElementAttribute(location, propertyName, propertyValue);
+	        }
+	    };
+	    DomRenderer.prototype.setElementClass = function (location, className, isAdd) {
+	        var view = resolveInternalDomView(location.renderView);
+	        var element = view.boundElements[location.boundElementIndex];
+	        if (isAdd) {
+	            dom_adapter_1.DOM.addClass(element, className);
+	        }
+	        else {
+	            dom_adapter_1.DOM.removeClass(element, className);
+	        }
+	    };
+	    DomRenderer.prototype.setElementStyle = function (location, styleName, styleValue) {
+	        var view = resolveInternalDomView(location.renderView);
+	        var element = view.boundElements[location.boundElementIndex];
+	        if (lang_1.isPresent(styleValue)) {
+	            dom_adapter_1.DOM.setStyle(element, styleName, lang_1.stringify(styleValue));
+	        }
+	        else {
+	            dom_adapter_1.DOM.removeStyle(element, styleName);
+	        }
+	    };
+	    DomRenderer.prototype.invokeElementMethod = function (location, methodName, args) {
+	        var view = resolveInternalDomView(location.renderView);
+	        var element = view.boundElements[location.boundElementIndex];
+	        dom_adapter_1.DOM.invoke(element, methodName, args);
+	    };
+	    DomRenderer.prototype.setText = function (viewRef, textNodeIndex, text) {
+	        var view = resolveInternalDomView(viewRef);
+	        dom_adapter_1.DOM.setText(view.boundTextNodes[textNodeIndex], text);
+	    };
+	    DomRenderer.prototype.setEventDispatcher = function (viewRef, dispatcher) {
+	        resolveInternalDomView(viewRef).setEventDispatcher(dispatcher);
+	    };
+	    return DomRenderer;
+	})(core_1.Renderer);
+	exports.DomRenderer = DomRenderer;
+	var DomRenderer_ = (function (_super) {
+	    __extends(DomRenderer_, _super);
+	    function DomRenderer_(_eventManager, _domSharedStylesHost, _animate, document) {
+	        _super.call(this);
+	        this._eventManager = _eventManager;
+	        this._domSharedStylesHost = _domSharedStylesHost;
+	        this._animate = _animate;
+	        this._componentTpls = new Map();
+	        /** @internal */
+	        this._createRootHostViewScope = profile_1.wtfCreateScope('DomRenderer#createRootHostView()');
+	        /** @internal */
+	        this._createViewScope = profile_1.wtfCreateScope('DomRenderer#createView()');
+	        /** @internal */
+	        this._detachFragmentScope = profile_1.wtfCreateScope('DomRenderer#detachFragment()');
+	        this._document = document;
+	    }
+	    DomRenderer_.prototype.registerComponentTemplate = function (template) {
+	        this._componentTpls.set(template.id, template);
+	        if (template.encapsulation !== metadata_1.ViewEncapsulation.Native) {
+	            var encapsulatedStyles = view_factory_1.encapsulateStyles(template);
+	            this._domSharedStylesHost.addStyles(encapsulatedStyles);
+	        }
+	    };
+	    DomRenderer_.prototype.createProtoView = function (componentTemplateId, cmds) {
+	        return new view_1.DefaultProtoViewRef(this._componentTpls.get(componentTemplateId), cmds);
+	    };
+	    DomRenderer_.prototype.resolveComponentTemplate = function (templateId) {
+	        return this._componentTpls.get(templateId);
+	    };
+	    DomRenderer_.prototype.createRootHostView = function (hostProtoViewRef, fragmentCount, hostElementSelector) {
+	        var s = this._createRootHostViewScope();
+	        var element = dom_adapter_1.DOM.querySelector(this._document, hostElementSelector);
+	        if (lang_1.isBlank(element)) {
+	            profile_1.wtfLeave(s);
+	            throw new exceptions_1.BaseException("The selector \"" + hostElementSelector + "\" did not match any elements");
+	        }
+	        return profile_1.wtfLeave(s, this._createView(hostProtoViewRef, element));
+	    };
+	    DomRenderer_.prototype.createView = function (protoViewRef, fragmentCount) {
+	        var s = this._createViewScope();
+	        return profile_1.wtfLeave(s, this._createView(protoViewRef, null));
+	    };
+	    DomRenderer_.prototype._createView = function (protoViewRef, inplaceElement) {
+	        var dpvr = protoViewRef;
+	        var view = view_factory_1.createRenderView(dpvr.template, dpvr.cmds, inplaceElement, this);
+	        var sdRoots = view.nativeShadowRoots;
+	        for (var i = 0; i < sdRoots.length; i++) {
+	            this._domSharedStylesHost.addHost(sdRoots[i]);
+	        }
+	        return new core_1.RenderViewWithFragments(view, view.fragments);
+	    };
+	    DomRenderer_.prototype.destroyView = function (viewRef) {
+	        var view = viewRef;
+	        var sdRoots = view.nativeShadowRoots;
+	        for (var i = 0; i < sdRoots.length; i++) {
+	            this._domSharedStylesHost.removeHost(sdRoots[i]);
+	        }
+	    };
+	    DomRenderer_.prototype.animateNodeEnter = function (node) {
+	        if (dom_adapter_1.DOM.isElementNode(node) && dom_adapter_1.DOM.hasClass(node, 'ng-animate')) {
+	            dom_adapter_1.DOM.addClass(node, 'ng-enter');
+	            this._animate.css()
+	                .addAnimationClass('ng-enter-active')
+	                .start(node)
+	                .onComplete(function () { dom_adapter_1.DOM.removeClass(node, 'ng-enter'); });
+	        }
+	    };
+	    DomRenderer_.prototype.animateNodeLeave = function (node) {
+	        if (dom_adapter_1.DOM.isElementNode(node) && dom_adapter_1.DOM.hasClass(node, 'ng-animate')) {
+	            dom_adapter_1.DOM.addClass(node, 'ng-leave');
+	            this._animate.css()
+	                .addAnimationClass('ng-leave-active')
+	                .start(node)
+	                .onComplete(function () {
+	                dom_adapter_1.DOM.removeClass(node, 'ng-leave');
+	                dom_adapter_1.DOM.remove(node);
+	            });
+	        }
+	        else {
+	            dom_adapter_1.DOM.remove(node);
+	        }
+	    };
+	    DomRenderer_.prototype.detachFragment = function (fragmentRef) {
+	        var s = this._detachFragmentScope();
+	        var fragmentNodes = resolveInternalDomFragment(fragmentRef);
+	        for (var i = 0; i < fragmentNodes.length; i++) {
+	            this.animateNodeLeave(fragmentNodes[i]);
+	        }
+	        profile_1.wtfLeave(s);
+	    };
+	    DomRenderer_.prototype.createElement = function (name, attrNameAndValues) {
+	        var nsAndName = splitNamespace(name);
+	        var el = lang_1.isPresent(nsAndName[0]) ?
+	            dom_adapter_1.DOM.createElementNS(NAMESPACE_URIS[nsAndName[0]], nsAndName[1]) :
+	            dom_adapter_1.DOM.createElement(nsAndName[1]);
+	        this._setAttributes(el, attrNameAndValues);
+	        return el;
+	    };
+	    DomRenderer_.prototype.mergeElement = function (existing, attrNameAndValues) {
+	        dom_adapter_1.DOM.clearNodes(existing);
+	        this._setAttributes(existing, attrNameAndValues);
+	    };
+	    DomRenderer_.prototype._setAttributes = function (node, attrNameAndValues) {
+	        for (var attrIdx = 0; attrIdx < attrNameAndValues.length; attrIdx += 2) {
+	            var attrNs;
+	            var attrName = attrNameAndValues[attrIdx];
+	            var nsAndName = splitNamespace(attrName);
+	            if (lang_1.isPresent(nsAndName[0])) {
+	                attrName = nsAndName[0] + ':' + nsAndName[1];
+	                attrNs = NAMESPACE_URIS[nsAndName[0]];
+	            }
+	            var attrValue = attrNameAndValues[attrIdx + 1];
+	            if (lang_1.isPresent(attrNs)) {
+	                dom_adapter_1.DOM.setAttributeNS(node, attrNs, attrName, attrValue);
+	            }
+	            else {
+	                dom_adapter_1.DOM.setAttribute(node, nsAndName[1], attrValue);
+	            }
+	        }
+	    };
+	    DomRenderer_.prototype.createRootContentInsertionPoint = function () {
+	        return dom_adapter_1.DOM.createComment('root-content-insertion-point');
+	    };
+	    DomRenderer_.prototype.createShadowRoot = function (host, templateId) {
+	        var sr = dom_adapter_1.DOM.createShadowRoot(host);
+	        var tpl = this._componentTpls.get(templateId);
+	        for (var i = 0; i < tpl.styles.length; i++) {
+	            dom_adapter_1.DOM.appendChild(sr, dom_adapter_1.DOM.createStyleElement(tpl.styles[i]));
+	        }
+	        return sr;
+	    };
+	    DomRenderer_.prototype.on = function (element, eventName, callback) {
+	        this._eventManager.addEventListener(element, eventName, decoratePreventDefault(callback));
+	    };
+	    DomRenderer_.prototype.globalOn = function (target, eventName, callback) {
+	        return this._eventManager.addGlobalEventListener(target, eventName, decoratePreventDefault(callback));
+	    };
+	    DomRenderer_ = __decorate([
+	        di_1.Injectable(),
+	        __param(3, di_1.Inject(dom_tokens_1.DOCUMENT)), 
+	        __metadata('design:paramtypes', [event_manager_1.EventManager, shared_styles_host_1.DomSharedStylesHost, animation_builder_1.AnimationBuilder, Object])
+	    ], DomRenderer_);
+	    return DomRenderer_;
+	})(DomRenderer);
+	exports.DomRenderer_ = DomRenderer_;
+	function resolveInternalDomView(viewRef) {
+	    return viewRef;
+	}
+	function resolveInternalDomFragment(fragmentRef) {
+	    return fragmentRef.nodes;
+	}
+	function moveNodesAfterSibling(sibling, nodes) {
+	    var parent = dom_adapter_1.DOM.parentElement(sibling);
+	    if (nodes.length > 0 && lang_1.isPresent(parent)) {
+	        var nextSibling = dom_adapter_1.DOM.nextSibling(sibling);
+	        if (lang_1.isPresent(nextSibling)) {
+	            for (var i = 0; i < nodes.length; i++) {
+	                dom_adapter_1.DOM.insertBefore(nextSibling, nodes[i]);
+	            }
+	        }
+	        else {
+	            for (var i = 0; i < nodes.length; i++) {
+	                dom_adapter_1.DOM.appendChild(parent, nodes[i]);
+	            }
+	        }
+	    }
+	}
+	function decoratePreventDefault(eventHandler) {
+	    return function (event) {
+	        var allowDefaultBehavior = eventHandler(event);
+	        if (!allowDefaultBehavior) {
+	            // TODO(tbosch): move preventDefault into event plugins...
+	            dom_adapter_1.DOM.preventDefault(event);
+	        }
+	    };
+	}
+	var NS_PREFIX_RE = /^@([^:]+):(.+)/g;
+	function splitNamespace(name) {
+	    if (name[0] != '@') {
+	        return [null, name];
+	    }
+	    var match = lang_1.RegExpWrapper.firstMatch(NS_PREFIX_RE, name);
+	    return [match[1], match[2]];
+	}
+
+
+/***/ },
+/* 172 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var di_1 = __webpack_require__(6);
+	var css_animation_builder_1 = __webpack_require__(173);
+	var browser_details_1 = __webpack_require__(178);
+	var AnimationBuilder = (function () {
+	    /**
+	     * Used for DI
+	     * @param browserDetails
+	     */
+	    function AnimationBuilder(browserDetails) {
+	        this.browserDetails = browserDetails;
+	    }
+	    /**
+	     * Creates a new CSS Animation
+	     * @returns {CssAnimationBuilder}
+	     */
+	    AnimationBuilder.prototype.css = function () { return new css_animation_builder_1.CssAnimationBuilder(this.browserDetails); };
+	    AnimationBuilder = __decorate([
+	        di_1.Injectable(), 
+	        __metadata('design:paramtypes', [browser_details_1.BrowserDetails])
+	    ], AnimationBuilder);
+	    return AnimationBuilder;
+	})();
+	exports.AnimationBuilder = AnimationBuilder;
+
+
+/***/ },
+/* 173 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var css_animation_options_1 = __webpack_require__(174);
+	var animation_1 = __webpack_require__(175);
+	var CssAnimationBuilder = (function () {
+	    /**
+	     * Accepts public properties for CssAnimationBuilder
+	     */
+	    function CssAnimationBuilder(browserDetails) {
+	        this.browserDetails = browserDetails;
+	        /** @type {CssAnimationOptions} */
+	        this.data = new css_animation_options_1.CssAnimationOptions();
+	    }
+	    /**
+	     * Adds a temporary class that will be removed at the end of the animation
+	     * @param className
+	     */
+	    CssAnimationBuilder.prototype.addAnimationClass = function (className) {
+	        this.data.animationClasses.push(className);
+	        return this;
+	    };
+	    /**
+	     * Adds a class that will remain on the element after the animation has finished
+	     * @param className
+	     */
+	    CssAnimationBuilder.prototype.addClass = function (className) {
+	        this.data.classesToAdd.push(className);
+	        return this;
+	    };
+	    /**
+	     * Removes a class from the element
+	     * @param className
+	     */
+	    CssAnimationBuilder.prototype.removeClass = function (className) {
+	        this.data.classesToRemove.push(className);
+	        return this;
+	    };
+	    /**
+	     * Sets the animation duration (and overrides any defined through CSS)
+	     * @param duration
+	     */
+	    CssAnimationBuilder.prototype.setDuration = function (duration) {
+	        this.data.duration = duration;
+	        return this;
+	    };
+	    /**
+	     * Sets the animation delay (and overrides any defined through CSS)
+	     * @param delay
+	     */
+	    CssAnimationBuilder.prototype.setDelay = function (delay) {
+	        this.data.delay = delay;
+	        return this;
+	    };
+	    /**
+	     * Sets styles for both the initial state and the destination state
+	     * @param from
+	     * @param to
+	     */
+	    CssAnimationBuilder.prototype.setStyles = function (from, to) {
+	        return this.setFromStyles(from).setToStyles(to);
+	    };
+	    /**
+	     * Sets the initial styles for the animation
+	     * @param from
+	     */
+	    CssAnimationBuilder.prototype.setFromStyles = function (from) {
+	        this.data.fromStyles = from;
+	        return this;
+	    };
+	    /**
+	     * Sets the destination styles for the animation
+	     * @param to
+	     */
+	    CssAnimationBuilder.prototype.setToStyles = function (to) {
+	        this.data.toStyles = to;
+	        return this;
+	    };
+	    /**
+	     * Starts the animation and returns a promise
+	     * @param element
+	     */
+	    CssAnimationBuilder.prototype.start = function (element) {
+	        return new animation_1.Animation(element, this.data, this.browserDetails);
+	    };
+	    return CssAnimationBuilder;
+	})();
+	exports.CssAnimationBuilder = CssAnimationBuilder;
+
+
+/***/ },
+/* 174 */
+/***/ function(module, exports) {
+
+	var CssAnimationOptions = (function () {
+	    function CssAnimationOptions() {
+	        /** classes to be added to the element */
+	        this.classesToAdd = [];
+	        /** classes to be removed from the element */
+	        this.classesToRemove = [];
+	        /** classes to be added for the duration of the animation */
+	        this.animationClasses = [];
+	    }
+	    return CssAnimationOptions;
+	})();
+	exports.CssAnimationOptions = CssAnimationOptions;
+
+
+/***/ },
+/* 175 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var lang_1 = __webpack_require__(5);
+	var math_1 = __webpack_require__(176);
+	var util_1 = __webpack_require__(177);
+	var collection_1 = __webpack_require__(12);
+	var dom_adapter_1 = __webpack_require__(164);
+	var Animation = (function () {
+	    /**
+	     * Stores the start time and starts the animation
+	     * @param element
+	     * @param data
+	     * @param browserDetails
+	     */
+	    function Animation(element, data, browserDetails) {
+	        var _this = this;
+	        this.element = element;
+	        this.data = data;
+	        this.browserDetails = browserDetails;
+	        /** functions to be called upon completion */
+	        this.callbacks = [];
+	        /** functions for removing event listeners */
+	        this.eventClearFunctions = [];
+	        /** flag used to track whether or not the animation has finished */
+	        this.completed = false;
+	        this._stringPrefix = '';
+	        this.startTime = lang_1.DateWrapper.toMillis(lang_1.DateWrapper.now());
+	        this._stringPrefix = dom_adapter_1.DOM.getAnimationPrefix();
+	        this.setup();
+	        this.wait(function (timestamp) { return _this.start(); });
+	    }
+	    Object.defineProperty(Animation.prototype, "totalTime", {
+	        /** total amount of time that the animation should take including delay */
+	        get: function () {
+	            var delay = this.computedDelay != null ? this.computedDelay : 0;
+	            var duration = this.computedDuration != null ? this.computedDuration : 0;
+	            return delay + duration;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Animation.prototype.wait = function (callback) {
+	        // Firefox requires 2 frames for some reason
+	        this.browserDetails.raf(callback, 2);
+	    };
+	    /**
+	     * Sets up the initial styles before the animation is started
+	     */
+	    Animation.prototype.setup = function () {
+	        if (this.data.fromStyles != null)
+	            this.applyStyles(this.data.fromStyles);
+	        if (this.data.duration != null)
+	            this.applyStyles({ 'transitionDuration': this.data.duration.toString() + 'ms' });
+	        if (this.data.delay != null)
+	            this.applyStyles({ 'transitionDelay': this.data.delay.toString() + 'ms' });
+	    };
+	    /**
+	     * After the initial setup has occurred, this method adds the animation styles
+	     */
+	    Animation.prototype.start = function () {
+	        this.addClasses(this.data.classesToAdd);
+	        this.addClasses(this.data.animationClasses);
+	        this.removeClasses(this.data.classesToRemove);
+	        if (this.data.toStyles != null)
+	            this.applyStyles(this.data.toStyles);
+	        var computedStyles = dom_adapter_1.DOM.getComputedStyle(this.element);
+	        this.computedDelay =
+	            math_1.Math.max(this.parseDurationString(computedStyles.getPropertyValue(this._stringPrefix + 'transition-delay')), this.parseDurationString(this.element.style.getPropertyValue(this._stringPrefix + 'transition-delay')));
+	        this.computedDuration = math_1.Math.max(this.parseDurationString(computedStyles.getPropertyValue(this._stringPrefix + 'transition-duration')), this.parseDurationString(this.element.style.getPropertyValue(this._stringPrefix + 'transition-duration')));
+	        this.addEvents();
+	    };
+	    /**
+	     * Applies the provided styles to the element
+	     * @param styles
+	     */
+	    Animation.prototype.applyStyles = function (styles) {
+	        var _this = this;
+	        collection_1.StringMapWrapper.forEach(styles, function (value, key) {
+	            var dashCaseKey = util_1.camelCaseToDashCase(key);
+	            if (lang_1.isPresent(dom_adapter_1.DOM.getStyle(_this.element, dashCaseKey))) {
+	                dom_adapter_1.DOM.setStyle(_this.element, dashCaseKey, value.toString());
+	            }
+	            else {
+	                dom_adapter_1.DOM.setStyle(_this.element, _this._stringPrefix + dashCaseKey, value.toString());
+	            }
+	        });
+	    };
+	    /**
+	     * Adds the provided classes to the element
+	     * @param classes
+	     */
+	    Animation.prototype.addClasses = function (classes) {
+	        for (var i = 0, len = classes.length; i < len; i++)
+	            dom_adapter_1.DOM.addClass(this.element, classes[i]);
+	    };
+	    /**
+	     * Removes the provided classes from the element
+	     * @param classes
+	     */
+	    Animation.prototype.removeClasses = function (classes) {
+	        for (var i = 0, len = classes.length; i < len; i++)
+	            dom_adapter_1.DOM.removeClass(this.element, classes[i]);
+	    };
+	    /**
+	     * Adds events to track when animations have finished
+	     */
+	    Animation.prototype.addEvents = function () {
+	        var _this = this;
+	        if (this.totalTime > 0) {
+	            this.eventClearFunctions.push(dom_adapter_1.DOM.onAndCancel(this.element, dom_adapter_1.DOM.getTransitionEnd(), function (event) { return _this.handleAnimationEvent(event); }));
+	        }
+	        else {
+	            this.handleAnimationCompleted();
+	        }
+	    };
+	    Animation.prototype.handleAnimationEvent = function (event) {
+	        var elapsedTime = math_1.Math.round(event.elapsedTime * 1000);
+	        if (!this.browserDetails.elapsedTimeIncludesDelay)
+	            elapsedTime += this.computedDelay;
+	        event.stopPropagation();
+	        if (elapsedTime >= this.totalTime)
+	            this.handleAnimationCompleted();
+	    };
+	    /**
+	     * Runs all animation callbacks and removes temporary classes
+	     */
+	    Animation.prototype.handleAnimationCompleted = function () {
+	        this.removeClasses(this.data.animationClasses);
+	        this.callbacks.forEach(function (callback) { return callback(); });
+	        this.callbacks = [];
+	        this.eventClearFunctions.forEach(function (fn) { return fn(); });
+	        this.eventClearFunctions = [];
+	        this.completed = true;
+	    };
+	    /**
+	     * Adds animation callbacks to be called upon completion
+	     * @param callback
+	     * @returns {Animation}
+	     */
+	    Animation.prototype.onComplete = function (callback) {
+	        if (this.completed) {
+	            callback();
+	        }
+	        else {
+	            this.callbacks.push(callback);
+	        }
+	        return this;
+	    };
+	    /**
+	     * Converts the duration string to the number of milliseconds
+	     * @param duration
+	     * @returns {number}
+	     */
+	    Animation.prototype.parseDurationString = function (duration) {
+	        var maxValue = 0;
+	        // duration must have at least 2 characters to be valid. (number + type)
+	        if (duration == null || duration.length < 2) {
+	            return maxValue;
+	        }
+	        else if (duration.substring(duration.length - 2) == 'ms') {
+	            var value = lang_1.NumberWrapper.parseInt(this.stripLetters(duration), 10);
+	            if (value > maxValue)
+	                maxValue = value;
+	        }
+	        else if (duration.substring(duration.length - 1) == 's') {
+	            var ms = lang_1.NumberWrapper.parseFloat(this.stripLetters(duration)) * 1000;
+	            var value = math_1.Math.floor(ms);
+	            if (value > maxValue)
+	                maxValue = value;
+	        }
+	        return maxValue;
+	    };
+	    /**
+	     * Strips the letters from the duration string
+	     * @param str
+	     * @returns {string}
+	     */
+	    Animation.prototype.stripLetters = function (str) {
+	        return lang_1.StringWrapper.replaceAll(str, lang_1.RegExpWrapper.create('[^0-9]+$', ''), '');
+	    };
+	    return Animation;
+	})();
+	exports.Animation = Animation;
+
+
+/***/ },
+/* 176 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var lang_1 = __webpack_require__(5);
+	exports.Math = lang_1.global.Math;
+	exports.NaN = typeof exports.NaN;
+
+
+/***/ },
+/* 177 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var lang_1 = __webpack_require__(5);
+	var CAMEL_CASE_REGEXP = /([A-Z])/g;
+	var DASH_CASE_REGEXP = /-([a-z])/g;
+	function camelCaseToDashCase(input) {
+	    return lang_1.StringWrapper.replaceAllMapped(input, CAMEL_CASE_REGEXP, function (m) { return '-' + m[1].toLowerCase(); });
+	}
+	exports.camelCaseToDashCase = camelCaseToDashCase;
+	function dashCaseToCamelCase(input) {
+	    return lang_1.StringWrapper.replaceAllMapped(input, DASH_CASE_REGEXP, function (m) { return m[1].toUpperCase(); });
+	}
+	exports.dashCaseToCamelCase = dashCaseToCamelCase;
+
+
+/***/ },
+/* 178 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var di_1 = __webpack_require__(6);
+	var math_1 = __webpack_require__(176);
+	var dom_adapter_1 = __webpack_require__(164);
+	var BrowserDetails = (function () {
+	    function BrowserDetails() {
+	        this.elapsedTimeIncludesDelay = false;
+	        this.doesElapsedTimeIncludesDelay();
+	    }
+	    /**
+	     * Determines if `event.elapsedTime` includes transition delay in the current browser.  At this
+	     * time, Chrome and Opera seem to be the only browsers that include this.
+	     */
+	    BrowserDetails.prototype.doesElapsedTimeIncludesDelay = function () {
+	        var _this = this;
+	        var div = dom_adapter_1.DOM.createElement('div');
+	        dom_adapter_1.DOM.setAttribute(div, 'style', "position: absolute; top: -9999px; left: -9999px; width: 1px;\n      height: 1px; transition: all 1ms linear 1ms;");
+	        // Firefox requires that we wait for 2 frames for some reason
+	        this.raf(function (timestamp) {
+	            dom_adapter_1.DOM.on(div, 'transitionend', function (event) {
+	                var elapsed = math_1.Math.round(event.elapsedTime * 1000);
+	                _this.elapsedTimeIncludesDelay = elapsed == 2;
+	                dom_adapter_1.DOM.remove(div);
+	            });
+	            dom_adapter_1.DOM.setStyle(div, 'width', '2px');
+	        }, 2);
+	    };
+	    BrowserDetails.prototype.raf = function (callback, frames) {
+	        if (frames === void 0) { frames = 1; }
+	        var queue = new RafQueue(callback, frames);
+	        return function () { return queue.cancel(); };
+	    };
+	    BrowserDetails = __decorate([
+	        di_1.Injectable(), 
+	        __metadata('design:paramtypes', [])
+	    ], BrowserDetails);
+	    return BrowserDetails;
+	})();
+	exports.BrowserDetails = BrowserDetails;
+	var RafQueue = (function () {
+	    function RafQueue(callback, frames) {
+	        this.callback = callback;
+	        this.frames = frames;
+	        this._raf();
+	    }
+	    RafQueue.prototype._raf = function () {
+	        var _this = this;
+	        this.currentFrameId = dom_adapter_1.DOM.requestAnimationFrame(function (timestamp) { return _this._nextFrame(timestamp); });
+	    };
+	    RafQueue.prototype._nextFrame = function (timestamp) {
+	        this.frames--;
+	        if (this.frames > 0) {
+	            this._raf();
+	        }
+	        else {
+	            this.callback(timestamp);
+	        }
+	    };
+	    RafQueue.prototype.cancel = function () {
+	        dom_adapter_1.DOM.cancelAnimationFrame(this.currentFrameId);
+	        this.currentFrameId = null;
+	    };
+	    return RafQueue;
+	})();
+
+
+/***/ },
+/* 179 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var __param = (this && this.__param) || function (paramIndex, decorator) {
+	    return function (target, key) { decorator(target, key, paramIndex); }
+	};
+	var dom_adapter_1 = __webpack_require__(164);
+	var di_1 = __webpack_require__(6);
+	var collection_1 = __webpack_require__(12);
+	var dom_tokens_1 = __webpack_require__(170);
+	var SharedStylesHost = (function () {
+	    function SharedStylesHost() {
+	        /** @internal */
+	        this._styles = [];
+	        /** @internal */
+	        this._stylesSet = new Set();
+	    }
+	    SharedStylesHost.prototype.addStyles = function (styles) {
+	        var _this = this;
+	        var additions = [];
+	        styles.forEach(function (style) {
+	            if (!collection_1.SetWrapper.has(_this._stylesSet, style)) {
+	                _this._stylesSet.add(style);
+	                _this._styles.push(style);
+	                additions.push(style);
+	            }
+	        });
+	        this.onStylesAdded(additions);
+	    };
+	    SharedStylesHost.prototype.onStylesAdded = function (additions) { };
+	    SharedStylesHost.prototype.getAllStyles = function () { return this._styles; };
+	    SharedStylesHost = __decorate([
+	        di_1.Injectable(), 
+	        __metadata('design:paramtypes', [])
+	    ], SharedStylesHost);
+	    return SharedStylesHost;
+	})();
+	exports.SharedStylesHost = SharedStylesHost;
+	var DomSharedStylesHost = (function (_super) {
+	    __extends(DomSharedStylesHost, _super);
+	    function DomSharedStylesHost(doc) {
+	        _super.call(this);
+	        this._hostNodes = new Set();
+	        this._hostNodes.add(doc.head);
+	    }
+	    /** @internal */
+	    DomSharedStylesHost.prototype._addStylesToHost = function (styles, host) {
+	        for (var i = 0; i < styles.length; i++) {
+	            var style = styles[i];
+	            dom_adapter_1.DOM.appendChild(host, dom_adapter_1.DOM.createStyleElement(style));
+	        }
+	    };
+	    DomSharedStylesHost.prototype.addHost = function (hostNode) {
+	        this._addStylesToHost(this._styles, hostNode);
+	        this._hostNodes.add(hostNode);
+	    };
+	    DomSharedStylesHost.prototype.removeHost = function (hostNode) { collection_1.SetWrapper.delete(this._hostNodes, hostNode); };
+	    DomSharedStylesHost.prototype.onStylesAdded = function (additions) {
+	        var _this = this;
+	        this._hostNodes.forEach(function (hostNode) { _this._addStylesToHost(additions, hostNode); });
+	    };
+	    DomSharedStylesHost = __decorate([
+	        di_1.Injectable(),
+	        __param(0, di_1.Inject(dom_tokens_1.DOCUMENT)), 
+	        __metadata('design:paramtypes', [Object])
+	    ], DomSharedStylesHost);
+	    return DomSharedStylesHost;
+	})(SharedStylesHost);
+	exports.DomSharedStylesHost = DomSharedStylesHost;
+
+
+/***/ },
+/* 180 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var lang_1 = __webpack_require__(5);
+	var view_1 = __webpack_require__(181);
+	var metadata_1 = __webpack_require__(3);
+	var collection_1 = __webpack_require__(12);
+	function encapsulateStyles(componentTemplate) {
+	    var processedStyles = componentTemplate.styles;
+	    if (componentTemplate.encapsulation === metadata_1.ViewEncapsulation.Emulated) {
+	        processedStyles = collection_1.ListWrapper.createFixedSize(componentTemplate.styles.length);
+	        for (var i = 0; i < componentTemplate.styles.length; i++) {
+	            processedStyles[i] = lang_1.StringWrapper.replaceAll(componentTemplate.styles[i], COMPONENT_REGEX, componentTemplate.shortId);
+	        }
+	    }
+	    return processedStyles;
+	}
+	exports.encapsulateStyles = encapsulateStyles;
+	function createRenderView(componentTemplate, cmds, inplaceElement, nodeFactory) {
+	    var view;
+	    var eventDispatcher = function (boundElementIndex, eventName, event) {
+	        return view.dispatchRenderEvent(boundElementIndex, eventName, event);
+	    };
+	    var context = new BuildContext(eventDispatcher, nodeFactory, inplaceElement);
+	    context.build(componentTemplate, cmds);
+	    var fragments = [];
+	    for (var i = 0; i < context.fragments.length; i++) {
+	        fragments.push(new view_1.DefaultRenderFragmentRef(context.fragments[i]));
+	    }
+	    view = new view_1.DefaultRenderView(fragments, context.boundTextNodes, context.boundElements, context.nativeShadowRoots, context.globalEventAdders, context.rootContentInsertionPoints);
+	    return view;
+	}
+	exports.createRenderView = createRenderView;
+	var BuildContext = (function () {
+	    function BuildContext(_eventDispatcher, factory, _inplaceElement) {
+	        this._eventDispatcher = _eventDispatcher;
+	        this.factory = factory;
+	        this._inplaceElement = _inplaceElement;
+	        this._builders = [];
+	        this.globalEventAdders = [];
+	        this.boundElements = [];
+	        this.boundTextNodes = [];
+	        this.nativeShadowRoots = [];
+	        this.fragments = [];
+	        this.rootContentInsertionPoints = [];
+	        this.componentCount = 0;
+	        this.isHost = lang_1.isPresent((_inplaceElement));
+	    }
+	    BuildContext.prototype.build = function (template, cmds) {
+	        this.enqueueRootBuilder(template, cmds);
+	        this._build(this._builders[0]);
+	    };
+	    BuildContext.prototype._build = function (builder) {
+	        this._builders = [];
+	        builder.build(this);
+	        var enqueuedBuilders = this._builders;
+	        for (var i = 0; i < enqueuedBuilders.length; i++) {
+	            this._build(enqueuedBuilders[i]);
+	        }
+	    };
+	    BuildContext.prototype.enqueueComponentBuilder = function (component) {
+	        this.componentCount++;
+	        this._builders.push(new RenderViewBuilder(component, null, component.template, component.template.commands));
+	    };
+	    BuildContext.prototype.enqueueFragmentBuilder = function (parentComponent, parentTemplate, commands) {
+	        var rootNodes = [];
+	        this.fragments.push(rootNodes);
+	        this._builders.push(new RenderViewBuilder(parentComponent, rootNodes, parentTemplate, commands));
+	    };
+	    BuildContext.prototype.enqueueRootBuilder = function (template, cmds) {
+	        var rootNodes = [];
+	        this.fragments.push(rootNodes);
+	        this._builders.push(new RenderViewBuilder(null, rootNodes, template, cmds));
+	    };
+	    BuildContext.prototype.consumeInplaceElement = function () {
+	        var result = this._inplaceElement;
+	        this._inplaceElement = null;
+	        return result;
+	    };
+	    BuildContext.prototype.addEventListener = function (boundElementIndex, target, eventName) {
+	        if (lang_1.isPresent(target)) {
+	            var handler = createEventHandler(boundElementIndex, target + ":" + eventName, this._eventDispatcher);
+	            this.globalEventAdders.push(createGlobalEventAdder(target, eventName, handler, this.factory));
+	        }
+	        else {
+	            var handler = createEventHandler(boundElementIndex, eventName, this._eventDispatcher);
+	            this.factory.on(this.boundElements[boundElementIndex], eventName, handler);
+	        }
+	    };
+	    return BuildContext;
+	})();
+	function createEventHandler(boundElementIndex, eventName, eventDispatcher) {
+	    return function ($event) { return eventDispatcher(boundElementIndex, eventName, $event); };
+	}
+	function createGlobalEventAdder(target, eventName, eventHandler, nodeFactory) {
+	    return function () { return nodeFactory.globalOn(target, eventName, eventHandler); };
+	}
+	var RenderViewBuilder = (function () {
+	    function RenderViewBuilder(parentComponent, fragmentRootNodes, template, cmds) {
+	        this.parentComponent = parentComponent;
+	        this.fragmentRootNodes = fragmentRootNodes;
+	        this.template = template;
+	        this.cmds = cmds;
+	        var rootNodesParent = lang_1.isPresent(fragmentRootNodes) ? null : parentComponent.shadowRoot;
+	        this.parentStack = [rootNodesParent];
+	    }
+	    RenderViewBuilder.prototype.build = function (context) {
+	        var cmds = this.cmds;
+	        for (var i = 0; i < cmds.length; i++) {
+	            cmds[i].visit(this, context);
+	        }
+	    };
+	    Object.defineProperty(RenderViewBuilder.prototype, "parent", {
+	        get: function () { return this.parentStack[this.parentStack.length - 1]; },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    RenderViewBuilder.prototype.visitText = function (cmd, context) {
+	        var text = context.factory.createText(cmd.value);
+	        this._addChild(text, cmd.ngContentIndex, context);
+	        if (cmd.isBound) {
+	            context.boundTextNodes.push(text);
+	        }
+	        return null;
+	    };
+	    RenderViewBuilder.prototype.visitNgContent = function (cmd, context) {
+	        if (lang_1.isPresent(this.parentComponent)) {
+	            if (this.parentComponent.isRoot) {
+	                var insertionPoint = context.factory.createRootContentInsertionPoint();
+	                if (this.parent instanceof Component) {
+	                    context.factory.appendChild(this.parent.shadowRoot, insertionPoint);
+	                }
+	                else {
+	                    context.factory.appendChild(this.parent, insertionPoint);
+	                }
+	                context.rootContentInsertionPoints.push(insertionPoint);
+	            }
+	            else {
+	                var projectedNodes = this.parentComponent.project(cmd.index);
+	                for (var i = 0; i < projectedNodes.length; i++) {
+	                    var node = projectedNodes[i];
+	                    this._addChild(node, cmd.ngContentIndex, context);
+	                }
+	            }
+	        }
+	        return null;
+	    };
+	    RenderViewBuilder.prototype.visitBeginElement = function (cmd, context) {
+	        this.parentStack.push(this._beginElement(cmd, context, null));
+	        return null;
+	    };
+	    RenderViewBuilder.prototype.visitEndElement = function (context) {
+	        this._endElement();
+	        return null;
+	    };
+	    RenderViewBuilder.prototype.visitBeginComponent = function (cmd, context) {
+	        var templateId = cmd.templateId;
+	        var tpl = context.factory.resolveComponentTemplate(templateId);
+	        var el = this._beginElement(cmd, context, tpl);
+	        var root = el;
+	        if (tpl.encapsulation === metadata_1.ViewEncapsulation.Native) {
+	            root = context.factory.createShadowRoot(el, templateId);
+	            context.nativeShadowRoots.push(root);
+	        }
+	        var isRoot = context.componentCount === 0 && context.isHost;
+	        var component = new Component(el, root, isRoot, tpl);
+	        context.enqueueComponentBuilder(component);
+	        this.parentStack.push(component);
+	        return null;
+	    };
+	    RenderViewBuilder.prototype.visitEndComponent = function (context) {
+	        this._endElement();
+	        return null;
+	    };
+	    RenderViewBuilder.prototype.visitEmbeddedTemplate = function (cmd, context) {
+	        var el = context.factory.createTemplateAnchor(cmd.attrNameAndValues);
+	        this._addChild(el, cmd.ngContentIndex, context);
+	        context.boundElements.push(el);
+	        if (cmd.isMerged) {
+	            context.enqueueFragmentBuilder(this.parentComponent, this.template, cmd.children);
+	        }
+	        return null;
+	    };
+	    RenderViewBuilder.prototype._beginElement = function (cmd, context, componentTemplate) {
+	        var el = context.consumeInplaceElement();
+	        var attrNameAndValues = cmd.attrNameAndValues;
+	        var templateEmulatedEncapsulation = this.template.encapsulation === metadata_1.ViewEncapsulation.Emulated;
+	        var componentEmulatedEncapsulation = lang_1.isPresent(componentTemplate) &&
+	            componentTemplate.encapsulation === metadata_1.ViewEncapsulation.Emulated;
+	        var newAttrLength = attrNameAndValues.length + (templateEmulatedEncapsulation ? 2 : 0) +
+	            (componentEmulatedEncapsulation ? 2 : 0);
+	        if (newAttrLength > attrNameAndValues.length) {
+	            // Note: Need to clone attrNameAndValues to make it writable!
+	            var newAttrNameAndValues = collection_1.ListWrapper.createFixedSize(newAttrLength);
+	            var attrIndex;
+	            for (attrIndex = 0; attrIndex < attrNameAndValues.length; attrIndex++) {
+	                newAttrNameAndValues[attrIndex] = attrNameAndValues[attrIndex];
+	            }
+	            if (templateEmulatedEncapsulation) {
+	                newAttrNameAndValues[attrIndex++] = _shimContentAttribute(this.template.shortId);
+	                newAttrNameAndValues[attrIndex++] = '';
+	            }
+	            if (componentEmulatedEncapsulation) {
+	                newAttrNameAndValues[attrIndex++] = _shimHostAttribute(componentTemplate.shortId);
+	                newAttrNameAndValues[attrIndex++] = '';
+	            }
+	            attrNameAndValues = newAttrNameAndValues;
+	        }
+	        if (lang_1.isPresent(el)) {
+	            context.factory.mergeElement(el, attrNameAndValues);
+	            this.fragmentRootNodes.push(el);
+	        }
+	        else {
+	            el = context.factory.createElement(cmd.name, attrNameAndValues);
+	            this._addChild(el, cmd.ngContentIndex, context);
+	        }
+	        if (cmd.isBound) {
+	            var boundElementIndex = context.boundElements.length;
+	            context.boundElements.push(el);
+	            for (var i = 0; i < cmd.eventTargetAndNames.length; i += 2) {
+	                var target = cmd.eventTargetAndNames[i];
+	                var eventName = cmd.eventTargetAndNames[i + 1];
+	                context.addEventListener(boundElementIndex, target, eventName);
+	            }
+	        }
+	        return el;
+	    };
+	    RenderViewBuilder.prototype._endElement = function () { this.parentStack.pop(); };
+	    RenderViewBuilder.prototype._addChild = function (node, ngContentIndex, context) {
+	        var parent = this.parent;
+	        if (lang_1.isPresent(parent)) {
+	            if (parent instanceof Component) {
+	                parent.addContentNode(ngContentIndex, node, context);
+	            }
+	            else {
+	                context.factory.appendChild(parent, node);
+	            }
+	        }
+	        else {
+	            this.fragmentRootNodes.push(node);
+	        }
+	    };
+	    return RenderViewBuilder;
+	})();
+	var Component = (function () {
+	    function Component(hostElement, shadowRoot, isRoot, template) {
+	        this.hostElement = hostElement;
+	        this.shadowRoot = shadowRoot;
+	        this.isRoot = isRoot;
+	        this.template = template;
+	        this.contentNodesByNgContentIndex = [];
+	    }
+	    Component.prototype.addContentNode = function (ngContentIndex, node, context) {
+	        if (lang_1.isBlank(ngContentIndex)) {
+	            if (this.template.encapsulation === metadata_1.ViewEncapsulation.Native) {
+	                context.factory.appendChild(this.hostElement, node);
+	            }
+	        }
+	        else {
+	            while (this.contentNodesByNgContentIndex.length <= ngContentIndex) {
+	                this.contentNodesByNgContentIndex.push([]);
+	            }
+	            this.contentNodesByNgContentIndex[ngContentIndex].push(node);
+	        }
+	    };
+	    Component.prototype.project = function (ngContentIndex) {
+	        return ngContentIndex < this.contentNodesByNgContentIndex.length ?
+	            this.contentNodesByNgContentIndex[ngContentIndex] :
+	            [];
+	    };
+	    return Component;
+	})();
+	var COMPONENT_REGEX = /%COMP%/g;
+	exports.COMPONENT_VARIABLE = '%COMP%';
+	exports.HOST_ATTR = "_nghost-" + exports.COMPONENT_VARIABLE;
+	exports.CONTENT_ATTR = "_ngcontent-" + exports.COMPONENT_VARIABLE;
+	function _shimContentAttribute(componentShortId) {
+	    return lang_1.StringWrapper.replaceAll(exports.CONTENT_ATTR, COMPONENT_REGEX, componentShortId);
+	}
+	function _shimHostAttribute(componentShortId) {
+	    return lang_1.StringWrapper.replaceAll(exports.HOST_ATTR, COMPONENT_REGEX, componentShortId);
+	}
+
+
+/***/ },
+/* 181 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var exceptions_1 = __webpack_require__(14);
+	var collection_1 = __webpack_require__(12);
+	var lang_1 = __webpack_require__(5);
+	var api_1 = __webpack_require__(87);
+	var DefaultProtoViewRef = (function (_super) {
+	    __extends(DefaultProtoViewRef, _super);
+	    function DefaultProtoViewRef(template, cmds) {
+	        _super.call(this);
+	        this.template = template;
+	        this.cmds = cmds;
+	    }
+	    return DefaultProtoViewRef;
+	})(api_1.RenderProtoViewRef);
+	exports.DefaultProtoViewRef = DefaultProtoViewRef;
+	var DefaultRenderFragmentRef = (function (_super) {
+	    __extends(DefaultRenderFragmentRef, _super);
+	    function DefaultRenderFragmentRef(nodes) {
+	        _super.call(this);
+	        this.nodes = nodes;
+	    }
+	    return DefaultRenderFragmentRef;
+	})(api_1.RenderFragmentRef);
+	exports.DefaultRenderFragmentRef = DefaultRenderFragmentRef;
+	var DefaultRenderView = (function (_super) {
+	    __extends(DefaultRenderView, _super);
+	    function DefaultRenderView(fragments, boundTextNodes, boundElements, nativeShadowRoots, globalEventAdders, rootContentInsertionPoints) {
+	        _super.call(this);
+	        this.fragments = fragments;
+	        this.boundTextNodes = boundTextNodes;
+	        this.boundElements = boundElements;
+	        this.nativeShadowRoots = nativeShadowRoots;
+	        this.globalEventAdders = globalEventAdders;
+	        this.rootContentInsertionPoints = rootContentInsertionPoints;
+	        this.hydrated = false;
+	        this.eventDispatcher = null;
+	        this.globalEventRemovers = null;
+	    }
+	    DefaultRenderView.prototype.hydrate = function () {
+	        if (this.hydrated)
+	            throw new exceptions_1.BaseException('The view is already hydrated.');
+	        this.hydrated = true;
+	        this.globalEventRemovers = collection_1.ListWrapper.createFixedSize(this.globalEventAdders.length);
+	        for (var i = 0; i < this.globalEventAdders.length; i++) {
+	            this.globalEventRemovers[i] = this.globalEventAdders[i]();
+	        }
+	    };
+	    DefaultRenderView.prototype.dehydrate = function () {
+	        if (!this.hydrated)
+	            throw new exceptions_1.BaseException('The view is already dehydrated.');
+	        for (var i = 0; i < this.globalEventRemovers.length; i++) {
+	            this.globalEventRemovers[i]();
+	        }
+	        this.globalEventRemovers = null;
+	        this.hydrated = false;
+	    };
+	    DefaultRenderView.prototype.setEventDispatcher = function (dispatcher) { this.eventDispatcher = dispatcher; };
+	    DefaultRenderView.prototype.dispatchRenderEvent = function (boundElementIndex, eventName, event) {
+	        var allowDefaultBehavior = true;
+	        if (lang_1.isPresent(this.eventDispatcher)) {
+	            var locals = new collection_1.Map();
+	            locals.set('$event', event);
+	            allowDefaultBehavior =
+	                this.eventDispatcher.dispatchRenderEvent(boundElementIndex, eventName, locals);
+	        }
+	        return allowDefaultBehavior;
+	    };
+	    return DefaultRenderView;
+	})(api_1.RenderViewRef);
+	exports.DefaultRenderView = DefaultRenderView;
+
+
+/***/ },
+/* 182 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var collection_1 = __webpack_require__(12);
+	var lang_1 = __webpack_require__(5);
+	var dom_adapter_1 = __webpack_require__(164);
+	var generic_browser_adapter_1 = __webpack_require__(183);
+	var _attrToPropMap = {
+	    'class': 'className',
+	    'innerHtml': 'innerHTML',
+	    'readonly': 'readOnly',
+	    'tabindex': 'tabIndex'
+	};
+	var DOM_KEY_LOCATION_NUMPAD = 3;
+	// Map to convert some key or keyIdentifier values to what will be returned by getEventKey
+	var _keyMap = {
+	    // The following values are here for cross-browser compatibility and to match the W3C standard
+	    // cf http://www.w3.org/TR/DOM-Level-3-Events-key/
+	    '\b': 'Backspace',
+	    '\t': 'Tab',
+	    '\x7F': 'Delete',
+	    '\x1B': 'Escape',
+	    'Del': 'Delete',
+	    'Esc': 'Escape',
+	    'Left': 'ArrowLeft',
+	    'Right': 'ArrowRight',
+	    'Up': 'ArrowUp',
+	    'Down': 'ArrowDown',
+	    'Menu': 'ContextMenu',
+	    'Scroll': 'ScrollLock',
+	    'Win': 'OS'
+	};
+	// There is a bug in Chrome for numeric keypad keys:
+	// https://code.google.com/p/chromium/issues/detail?id=155654
+	// 1, 2, 3 ... are reported as A, B, C ...
+	var _chromeNumKeyPadMap = {
+	    'A': '1',
+	    'B': '2',
+	    'C': '3',
+	    'D': '4',
+	    'E': '5',
+	    'F': '6',
+	    'G': '7',
+	    'H': '8',
+	    'I': '9',
+	    'J': '*',
+	    'K': '+',
+	    'M': '-',
+	    'N': '.',
+	    'O': '/',
+	    '\x60': '0',
+	    '\x90': 'NumLock'
+	};
+	/* tslint:disable:requireParameterType */
+	var BrowserDomAdapter = (function (_super) {
+	    __extends(BrowserDomAdapter, _super);
+	    function BrowserDomAdapter() {
+	        _super.apply(this, arguments);
+	    }
+	    BrowserDomAdapter.prototype.parse = function (templateHtml) { throw new Error("parse not implemented"); };
+	    BrowserDomAdapter.makeCurrent = function () { dom_adapter_1.setRootDomAdapter(new BrowserDomAdapter()); };
+	    BrowserDomAdapter.prototype.hasProperty = function (element, name) { return name in element; };
+	    BrowserDomAdapter.prototype.setProperty = function (el, name, value) { el[name] = value; };
+	    BrowserDomAdapter.prototype.getProperty = function (el, name) { return el[name]; };
+	    BrowserDomAdapter.prototype.invoke = function (el, methodName, args) {
+	        el[methodName].apply(el, args);
+	    };
+	    // TODO(tbosch): move this into a separate environment class once we have it
+	    BrowserDomAdapter.prototype.logError = function (error) {
+	        if (window.console.error) {
+	            window.console.error(error);
+	        }
+	        else {
+	            window.console.log(error);
+	        }
+	    };
+	    BrowserDomAdapter.prototype.log = function (error) { window.console.log(error); };
+	    BrowserDomAdapter.prototype.logGroup = function (error) {
+	        if (window.console.group) {
+	            window.console.group(error);
+	            this.logError(error);
+	        }
+	        else {
+	            window.console.log(error);
+	        }
+	    };
+	    BrowserDomAdapter.prototype.logGroupEnd = function () {
+	        if (window.console.groupEnd) {
+	            window.console.groupEnd();
+	        }
+	    };
+	    Object.defineProperty(BrowserDomAdapter.prototype, "attrToPropMap", {
+	        get: function () { return _attrToPropMap; },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    BrowserDomAdapter.prototype.query = function (selector) { return document.querySelector(selector); };
+	    BrowserDomAdapter.prototype.querySelector = function (el, selector) { return el.querySelector(selector); };
+	    BrowserDomAdapter.prototype.querySelectorAll = function (el, selector) { return el.querySelectorAll(selector); };
+	    BrowserDomAdapter.prototype.on = function (el, evt, listener) { el.addEventListener(evt, listener, false); };
+	    BrowserDomAdapter.prototype.onAndCancel = function (el, evt, listener) {
+	        el.addEventListener(evt, listener, false);
+	        // Needed to follow Dart's subscription semantic, until fix of
+	        // https://code.google.com/p/dart/issues/detail?id=17406
+	        return function () { el.removeEventListener(evt, listener, false); };
+	    };
+	    BrowserDomAdapter.prototype.dispatchEvent = function (el, evt) { el.dispatchEvent(evt); };
+	    BrowserDomAdapter.prototype.createMouseEvent = function (eventType) {
+	        var evt = document.createEvent('MouseEvent');
+	        evt.initEvent(eventType, true, true);
+	        return evt;
+	    };
+	    BrowserDomAdapter.prototype.createEvent = function (eventType) {
+	        var evt = document.createEvent('Event');
+	        evt.initEvent(eventType, true, true);
+	        return evt;
+	    };
+	    BrowserDomAdapter.prototype.preventDefault = function (evt) {
+	        evt.preventDefault();
+	        evt.returnValue = false;
+	    };
+	    BrowserDomAdapter.prototype.isPrevented = function (evt) {
+	        return evt.defaultPrevented || lang_1.isPresent(evt.returnValue) && !evt.returnValue;
+	    };
+	    BrowserDomAdapter.prototype.getInnerHTML = function (el) { return el.innerHTML; };
+	    BrowserDomAdapter.prototype.getOuterHTML = function (el) { return el.outerHTML; };
+	    BrowserDomAdapter.prototype.nodeName = function (node) { return node.nodeName; };
+	    BrowserDomAdapter.prototype.nodeValue = function (node) { return node.nodeValue; };
+	    BrowserDomAdapter.prototype.type = function (node) { return node.type; };
+	    BrowserDomAdapter.prototype.content = function (node) {
+	        if (this.hasProperty(node, "content")) {
+	            return node.content;
+	        }
+	        else {
+	            return node;
+	        }
+	    };
+	    BrowserDomAdapter.prototype.firstChild = function (el) { return el.firstChild; };
+	    BrowserDomAdapter.prototype.nextSibling = function (el) { return el.nextSibling; };
+	    BrowserDomAdapter.prototype.parentElement = function (el) { return el.parentNode; };
+	    BrowserDomAdapter.prototype.childNodes = function (el) { return el.childNodes; };
+	    BrowserDomAdapter.prototype.childNodesAsList = function (el) {
+	        var childNodes = el.childNodes;
+	        var res = collection_1.ListWrapper.createFixedSize(childNodes.length);
+	        for (var i = 0; i < childNodes.length; i++) {
+	            res[i] = childNodes[i];
+	        }
+	        return res;
+	    };
+	    BrowserDomAdapter.prototype.clearNodes = function (el) {
+	        while (el.firstChild) {
+	            el.removeChild(el.firstChild);
+	        }
+	    };
+	    BrowserDomAdapter.prototype.appendChild = function (el, node) { el.appendChild(node); };
+	    BrowserDomAdapter.prototype.removeChild = function (el, node) { el.removeChild(node); };
+	    BrowserDomAdapter.prototype.replaceChild = function (el, newChild, oldChild) { el.replaceChild(newChild, oldChild); };
+	    BrowserDomAdapter.prototype.remove = function (node) {
+	        if (node.parentNode) {
+	            node.parentNode.removeChild(node);
+	        }
+	        return node;
+	    };
+	    BrowserDomAdapter.prototype.insertBefore = function (el, node) { el.parentNode.insertBefore(node, el); };
+	    BrowserDomAdapter.prototype.insertAllBefore = function (el, nodes) { nodes.forEach(function (n) { return el.parentNode.insertBefore(n, el); }); };
+	    BrowserDomAdapter.prototype.insertAfter = function (el, node) { el.parentNode.insertBefore(node, el.nextSibling); };
+	    BrowserDomAdapter.prototype.setInnerHTML = function (el, value) { el.innerHTML = value; };
+	    BrowserDomAdapter.prototype.getText = function (el) { return el.textContent; };
+	    // TODO(vicb): removed Element type because it does not support StyleElement
+	    BrowserDomAdapter.prototype.setText = function (el, value) { el.textContent = value; };
+	    BrowserDomAdapter.prototype.getValue = function (el) { return el.value; };
+	    BrowserDomAdapter.prototype.setValue = function (el, value) { el.value = value; };
+	    BrowserDomAdapter.prototype.getChecked = function (el) { return el.checked; };
+	    BrowserDomAdapter.prototype.setChecked = function (el, value) { el.checked = value; };
+	    BrowserDomAdapter.prototype.createComment = function (text) { return document.createComment(text); };
+	    BrowserDomAdapter.prototype.createTemplate = function (html) {
+	        var t = document.createElement('template');
+	        t.innerHTML = html;
+	        return t;
+	    };
+	    BrowserDomAdapter.prototype.createElement = function (tagName, doc) {
+	        if (doc === void 0) { doc = document; }
+	        return doc.createElement(tagName);
+	    };
+	    BrowserDomAdapter.prototype.createElementNS = function (ns, tagName, doc) {
+	        if (doc === void 0) { doc = document; }
+	        return doc.createElementNS(ns, tagName);
+	    };
+	    BrowserDomAdapter.prototype.createTextNode = function (text, doc) {
+	        if (doc === void 0) { doc = document; }
+	        return doc.createTextNode(text);
+	    };
+	    BrowserDomAdapter.prototype.createScriptTag = function (attrName, attrValue, doc) {
+	        if (doc === void 0) { doc = document; }
+	        var el = doc.createElement('SCRIPT');
+	        el.setAttribute(attrName, attrValue);
+	        return el;
+	    };
+	    BrowserDomAdapter.prototype.createStyleElement = function (css, doc) {
+	        if (doc === void 0) { doc = document; }
+	        var style = doc.createElement('style');
+	        this.appendChild(style, this.createTextNode(css));
+	        return style;
+	    };
+	    BrowserDomAdapter.prototype.createShadowRoot = function (el) { return el.createShadowRoot(); };
+	    BrowserDomAdapter.prototype.getShadowRoot = function (el) { return el.shadowRoot; };
+	    BrowserDomAdapter.prototype.getHost = function (el) { return el.host; };
+	    BrowserDomAdapter.prototype.clone = function (node) { return node.cloneNode(true); };
+	    BrowserDomAdapter.prototype.getElementsByClassName = function (element, name) {
+	        return element.getElementsByClassName(name);
+	    };
+	    BrowserDomAdapter.prototype.getElementsByTagName = function (element, name) {
+	        return element.getElementsByTagName(name);
+	    };
+	    BrowserDomAdapter.prototype.classList = function (element) { return Array.prototype.slice.call(element.classList, 0); };
+	    BrowserDomAdapter.prototype.addClass = function (element, className) { element.classList.add(className); };
+	    BrowserDomAdapter.prototype.removeClass = function (element, className) { element.classList.remove(className); };
+	    BrowserDomAdapter.prototype.hasClass = function (element, className) { return element.classList.contains(className); };
+	    BrowserDomAdapter.prototype.setStyle = function (element, styleName, styleValue) {
+	        element.style[styleName] = styleValue;
+	    };
+	    BrowserDomAdapter.prototype.removeStyle = function (element, stylename) { element.style[stylename] = null; };
+	    BrowserDomAdapter.prototype.getStyle = function (element, stylename) { return element.style[stylename]; };
+	    BrowserDomAdapter.prototype.hasStyle = function (element, styleName, styleValue) {
+	        if (styleValue === void 0) { styleValue = null; }
+	        var value = this.getStyle(element, styleName) || '';
+	        return styleValue ? value == styleValue : value.length > 0;
+	    };
+	    BrowserDomAdapter.prototype.tagName = function (element) { return element.tagName; };
+	    BrowserDomAdapter.prototype.attributeMap = function (element) {
+	        var res = new Map();
+	        var elAttrs = element.attributes;
+	        for (var i = 0; i < elAttrs.length; i++) {
+	            var attrib = elAttrs[i];
+	            res.set(attrib.name, attrib.value);
+	        }
+	        return res;
+	    };
+	    BrowserDomAdapter.prototype.hasAttribute = function (element, attribute) { return element.hasAttribute(attribute); };
+	    BrowserDomAdapter.prototype.getAttribute = function (element, attribute) { return element.getAttribute(attribute); };
+	    BrowserDomAdapter.prototype.setAttribute = function (element, name, value) { element.setAttribute(name, value); };
+	    BrowserDomAdapter.prototype.setAttributeNS = function (element, ns, name, value) {
+	        element.setAttributeNS(ns, name, value);
+	    };
+	    BrowserDomAdapter.prototype.removeAttribute = function (element, attribute) { element.removeAttribute(attribute); };
+	    BrowserDomAdapter.prototype.templateAwareRoot = function (el) { return this.isTemplateElement(el) ? this.content(el) : el; };
+	    BrowserDomAdapter.prototype.createHtmlDocument = function () {
+	        return document.implementation.createHTMLDocument('fakeTitle');
+	    };
+	    BrowserDomAdapter.prototype.defaultDoc = function () { return document; };
+	    BrowserDomAdapter.prototype.getBoundingClientRect = function (el) {
+	        try {
+	            return el.getBoundingClientRect();
+	        }
+	        catch (e) {
+	            return { top: 0, bottom: 0, left: 0, right: 0, width: 0, height: 0 };
+	        }
+	    };
+	    BrowserDomAdapter.prototype.getTitle = function () { return document.title; };
+	    BrowserDomAdapter.prototype.setTitle = function (newTitle) { document.title = newTitle || ''; };
+	    BrowserDomAdapter.prototype.elementMatches = function (n, selector) {
+	        var matches = false;
+	        if (n instanceof HTMLElement) {
+	            if (n.matches) {
+	                matches = n.matches(selector);
+	            }
+	            else if (n.msMatchesSelector) {
+	                matches = n.msMatchesSelector(selector);
+	            }
+	            else if (n.webkitMatchesSelector) {
+	                matches = n.webkitMatchesSelector(selector);
+	            }
+	        }
+	        return matches;
+	    };
+	    BrowserDomAdapter.prototype.isTemplateElement = function (el) {
+	        return el instanceof HTMLElement && el.nodeName == "TEMPLATE";
+	    };
+	    BrowserDomAdapter.prototype.isTextNode = function (node) { return node.nodeType === Node.TEXT_NODE; };
+	    BrowserDomAdapter.prototype.isCommentNode = function (node) { return node.nodeType === Node.COMMENT_NODE; };
+	    BrowserDomAdapter.prototype.isElementNode = function (node) { return node.nodeType === Node.ELEMENT_NODE; };
+	    BrowserDomAdapter.prototype.hasShadowRoot = function (node) { return node instanceof HTMLElement && lang_1.isPresent(node.shadowRoot); };
+	    BrowserDomAdapter.prototype.isShadowRoot = function (node) { return node instanceof DocumentFragment; };
+	    BrowserDomAdapter.prototype.importIntoDoc = function (node) {
+	        var toImport = node;
+	        if (this.isTemplateElement(node)) {
+	            toImport = this.content(node);
+	        }
+	        return document.importNode(toImport, true);
+	    };
+	    BrowserDomAdapter.prototype.adoptNode = function (node) { return document.adoptNode(node); };
+	    BrowserDomAdapter.prototype.getHref = function (el) { return el.href; };
+	    BrowserDomAdapter.prototype.getEventKey = function (event) {
+	        var key = event.key;
+	        if (lang_1.isBlank(key)) {
+	            key = event.keyIdentifier;
+	            // keyIdentifier is defined in the old draft of DOM Level 3 Events implemented by Chrome and
+	            // Safari
+	            // cf
+	            // http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/events.html#Events-KeyboardEvents-Interfaces
+	            if (lang_1.isBlank(key)) {
+	                return 'Unidentified';
+	            }
+	            if (key.startsWith('U+')) {
+	                key = String.fromCharCode(parseInt(key.substring(2), 16));
+	                if (event.location === DOM_KEY_LOCATION_NUMPAD && _chromeNumKeyPadMap.hasOwnProperty(key)) {
+	                    // There is a bug in Chrome for numeric keypad keys:
+	                    // https://code.google.com/p/chromium/issues/detail?id=155654
+	                    // 1, 2, 3 ... are reported as A, B, C ...
+	                    key = _chromeNumKeyPadMap[key];
+	                }
+	            }
+	        }
+	        if (_keyMap.hasOwnProperty(key)) {
+	            key = _keyMap[key];
+	        }
+	        return key;
+	    };
+	    BrowserDomAdapter.prototype.getGlobalEventTarget = function (target) {
+	        if (target == "window") {
+	            return window;
+	        }
+	        else if (target == "document") {
+	            return document;
+	        }
+	        else if (target == "body") {
+	            return document.body;
+	        }
+	    };
+	    BrowserDomAdapter.prototype.getHistory = function () { return window.history; };
+	    BrowserDomAdapter.prototype.getLocation = function () { return window.location; };
+	    BrowserDomAdapter.prototype.getBaseHref = function () {
+	        var href = getBaseElementHref();
+	        if (lang_1.isBlank(href)) {
+	            return null;
+	        }
+	        return relativePath(href);
+	    };
+	    BrowserDomAdapter.prototype.resetBaseElement = function () { baseElement = null; };
+	    BrowserDomAdapter.prototype.getUserAgent = function () { return window.navigator.userAgent; };
+	    BrowserDomAdapter.prototype.setData = function (element, name, value) {
+	        this.setAttribute(element, 'data-' + name, value);
+	    };
+	    BrowserDomAdapter.prototype.getData = function (element, name) { return this.getAttribute(element, 'data-' + name); };
+	    BrowserDomAdapter.prototype.getComputedStyle = function (element) { return getComputedStyle(element); };
+	    // TODO(tbosch): move this into a separate environment class once we have it
+	    BrowserDomAdapter.prototype.setGlobalVar = function (path, value) { lang_1.setValueOnPath(lang_1.global, path, value); };
+	    BrowserDomAdapter.prototype.requestAnimationFrame = function (callback) { return window.requestAnimationFrame(callback); };
+	    BrowserDomAdapter.prototype.cancelAnimationFrame = function (id) { window.cancelAnimationFrame(id); };
+	    BrowserDomAdapter.prototype.performanceNow = function () {
+	        // performance.now() is not available in all browsers, see
+	        // http://caniuse.com/#search=performance.now
+	        if (lang_1.isPresent(window.performance) && lang_1.isPresent(window.performance.now)) {
+	            return window.performance.now();
+	        }
+	        else {
+	            return lang_1.DateWrapper.toMillis(lang_1.DateWrapper.now());
+	        }
+	    };
+	    return BrowserDomAdapter;
+	})(generic_browser_adapter_1.GenericBrowserDomAdapter);
+	exports.BrowserDomAdapter = BrowserDomAdapter;
+	var baseElement = null;
+	function getBaseElementHref() {
+	    if (lang_1.isBlank(baseElement)) {
+	        baseElement = document.querySelector('base');
+	        if (lang_1.isBlank(baseElement)) {
+	            return null;
+	        }
+	    }
+	    return baseElement.getAttribute('href');
+	}
+	// based on urlUtils.js in AngularJS 1
+	var urlParsingNode = null;
+	function relativePath(url) {
+	    if (lang_1.isBlank(urlParsingNode)) {
+	        urlParsingNode = document.createElement("a");
+	    }
+	    urlParsingNode.setAttribute('href', url);
+	    return (urlParsingNode.pathname.charAt(0) === '/') ? urlParsingNode.pathname :
+	        '/' + urlParsingNode.pathname;
+	}
+
+
+/***/ },
+/* 183 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var collection_1 = __webpack_require__(12);
+	var lang_1 = __webpack_require__(5);
+	var dom_adapter_1 = __webpack_require__(164);
+	var xhr_impl_1 = __webpack_require__(184);
+	/**
+	 * Provides DOM operations in any browser environment.
+	 */
+	var GenericBrowserDomAdapter = (function (_super) {
+	    __extends(GenericBrowserDomAdapter, _super);
+	    function GenericBrowserDomAdapter() {
+	        var _this = this;
+	        _super.call(this);
+	        this._animationPrefix = null;
+	        this._transitionEnd = null;
+	        try {
+	            var element = this.createElement('div', this.defaultDoc());
+	            if (lang_1.isPresent(this.getStyle(element, 'animationName'))) {
+	                this._animationPrefix = '';
+	            }
+	            else {
+	                var domPrefixes = ['Webkit', 'Moz', 'O', 'ms'];
+	                for (var i = 0; i < domPrefixes.length; i++) {
+	                    if (lang_1.isPresent(this.getStyle(element, domPrefixes[i] + 'AnimationName'))) {
+	                        this._animationPrefix = '-' + domPrefixes[i].toLowerCase() + '-';
+	                        break;
+	                    }
+	                }
+	            }
+	            var transEndEventNames = {
+	                WebkitTransition: 'webkitTransitionEnd',
+	                MozTransition: 'transitionend',
+	                OTransition: 'oTransitionEnd otransitionend',
+	                transition: 'transitionend'
+	            };
+	            collection_1.StringMapWrapper.forEach(transEndEventNames, function (value, key) {
+	                if (lang_1.isPresent(_this.getStyle(element, key))) {
+	                    _this._transitionEnd = value;
+	                }
+	            });
+	        }
+	        catch (e) {
+	            this._animationPrefix = null;
+	            this._transitionEnd = null;
+	        }
+	    }
+	    GenericBrowserDomAdapter.prototype.getXHR = function () { return xhr_impl_1.XHRImpl; };
+	    GenericBrowserDomAdapter.prototype.getDistributedNodes = function (el) { return el.getDistributedNodes(); };
+	    GenericBrowserDomAdapter.prototype.resolveAndSetHref = function (el, baseUrl, href) {
+	        el.href = href == null ? baseUrl : baseUrl + '/../' + href;
+	    };
+	    GenericBrowserDomAdapter.prototype.supportsDOMEvents = function () { return true; };
+	    GenericBrowserDomAdapter.prototype.supportsNativeShadowDOM = function () {
+	        return lang_1.isFunction(this.defaultDoc().body.createShadowRoot);
+	    };
+	    GenericBrowserDomAdapter.prototype.getAnimationPrefix = function () {
+	        return lang_1.isPresent(this._animationPrefix) ? this._animationPrefix : "";
+	    };
+	    GenericBrowserDomAdapter.prototype.getTransitionEnd = function () { return lang_1.isPresent(this._transitionEnd) ? this._transitionEnd : ""; };
+	    GenericBrowserDomAdapter.prototype.supportsAnimation = function () {
+	        return lang_1.isPresent(this._animationPrefix) && lang_1.isPresent(this._transitionEnd);
+	    };
+	    return GenericBrowserDomAdapter;
+	})(dom_adapter_1.DomAdapter);
+	exports.GenericBrowserDomAdapter = GenericBrowserDomAdapter;
+
+
+/***/ },
+/* 184 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var promise_1 = __webpack_require__(61);
+	var lang_1 = __webpack_require__(5);
+	var xhr_1 = __webpack_require__(185);
+	var XHRImpl = (function (_super) {
+	    __extends(XHRImpl, _super);
+	    function XHRImpl() {
+	        _super.apply(this, arguments);
+	    }
+	    XHRImpl.prototype.get = function (url) {
+	        var completer = promise_1.PromiseWrapper.completer();
+	        var xhr = new XMLHttpRequest();
+	        xhr.open('GET', url, true);
+	        xhr.responseType = 'text';
+	        xhr.onload = function () {
+	            // responseText is the old-school way of retrieving response (supported by IE8 & 9)
+	            // response/responseType properties were introduced in XHR Level2 spec (supported by IE10)
+	            var response = lang_1.isPresent(xhr.response) ? xhr.response : xhr.responseText;
+	            // normalize IE9 bug (http://bugs.jquery.com/ticket/1450)
+	            var status = xhr.status === 1223 ? 204 : xhr.status;
+	            // fix status code when it is 0 (0 status is undocumented).
+	            // Occurs when accessing file resources or on Android 4.1 stock browser
+	            // while retrieving files from application cache.
+	            if (status === 0) {
+	                status = response ? 200 : 0;
+	            }
+	            if (200 <= status && status <= 300) {
+	                completer.resolve(response);
+	            }
+	            else {
+	                completer.reject("Failed to load " + url, null);
+	            }
+	        };
+	        xhr.onerror = function () { completer.reject("Failed to load " + url, null); };
+	        xhr.send();
+	        return completer.promise;
+	    };
+	    return XHRImpl;
+	})(xhr_1.XHR);
+	exports.XHRImpl = XHRImpl;
+
+
+/***/ },
+/* 185 */
+/***/ function(module, exports) {
+
+	// TODO: vsavkin rename it into TemplateLoader
+	var XHR = (function () {
+	    function XHR() {
+	    }
+	    XHR.prototype.get = function (url) { return null; };
+	    return XHR;
+	})();
+	exports.XHR = XHR;
+
+
+/***/ },
+/* 186 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var lang_1 = __webpack_require__(5);
+	var dom_adapter_1 = __webpack_require__(164);
+	var core_1 = __webpack_require__(2);
+	var PublicTestability = (function () {
+	    function PublicTestability(testability) {
+	        this._testability = testability;
+	    }
+	    PublicTestability.prototype.isStable = function () { return this._testability.isStable(); };
+	    PublicTestability.prototype.whenStable = function (callback) { this._testability.whenStable(callback); };
+	    PublicTestability.prototype.findBindings = function (using, provider, exactMatch) {
+	        return this.findProviders(using, provider, exactMatch);
+	    };
+	    PublicTestability.prototype.findProviders = function (using, provider, exactMatch) {
+	        return this._testability.findBindings(using, provider, exactMatch);
+	    };
+	    return PublicTestability;
+	})();
+	var BrowserGetTestability = (function () {
+	    function BrowserGetTestability() {
+	    }
+	    BrowserGetTestability.init = function () { core_1.setTestabilityGetter(new BrowserGetTestability()); };
+	    BrowserGetTestability.prototype.addToWindow = function (registry) {
+	        lang_1.global.getAngularTestability = function (elem, findInAncestors) {
+	            if (findInAncestors === void 0) { findInAncestors = true; }
+	            var testability = registry.findTestabilityInTree(elem, findInAncestors);
+	            if (testability == null) {
+	                throw new Error('Could not find testability for element.');
+	            }
+	            return new PublicTestability(testability);
+	        };
+	        lang_1.global.getAllAngularTestabilities = function () {
+	            var testabilities = registry.getAllTestabilities();
+	            return testabilities.map(function (testability) { return new PublicTestability(testability); });
+	        };
+	    };
+	    BrowserGetTestability.prototype.findTestabilityInTree = function (registry, elem, findInAncestors) {
+	        if (elem == null) {
+	            return null;
+	        }
+	        var t = registry.getTestability(elem);
+	        if (lang_1.isPresent(t)) {
+	            return t;
+	        }
+	        else if (!findInAncestors) {
+	            return null;
+	        }
+	        if (dom_adapter_1.DOM.isShadowRoot(elem)) {
+	            return this.findTestabilityInTree(registry, dom_adapter_1.DOM.getHost(elem), true);
+	        }
+	        return this.findTestabilityInTree(registry, dom_adapter_1.DOM.parentElement(elem), true);
+	    };
+	    return BrowserGetTestability;
+	})();
+	exports.BrowserGetTestability = BrowserGetTestability;
+
+
+/***/ },
+/* 187 */
+/***/ function(module, exports) {
+
+	/**
+	 * This is here because DART requires it. It is noop in JS.
+	 */
+	function wtfInit() { }
+	exports.wtfInit = wtfInit;
+
+
+/***/ },
+/* 188 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var dom_adapter_1 = __webpack_require__(164);
+	/**
+	 * A service that can be used to get and set the title of a current HTML document.
+	 *
+	 * Since an Angular 2 application can't be bootstrapped on the entire HTML document (`<html>` tag)
+	 * it is not possible to bind to the `text` property of the `HTMLTitleElement` elements
+	 * (representing the `<title>` tag). Instead, this service can be used to set and get the current
+	 * title value.
+	 */
+	var Title = (function () {
+	    function Title() {
+	    }
+	    /**
+	     * Get the title of the current HTML document.
+	     * @returns {string}
+	     */
+	    Title.prototype.getTitle = function () { return dom_adapter_1.DOM.getTitle(); };
+	    /**
+	     * Set the title of the current HTML document.
+	     * @param newTitle
+	     */
+	    Title.prototype.setTitle = function (newTitle) { dom_adapter_1.DOM.setTitle(newTitle); };
+	    return Title;
+	})();
+	exports.Title = Title;
+
+
+/***/ },
+/* 189 */
+/***/ function(module, exports, __webpack_require__) {
+
+	function __export(m) {
+	    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+	}
+	/**
+	 * This is a set of classes and objects that can be used both in the browser and on the server.
+	 */
+	var dom_adapter_1 = __webpack_require__(164);
+	exports.DOM = dom_adapter_1.DOM;
+	exports.setRootDomAdapter = dom_adapter_1.setRootDomAdapter;
+	exports.DomAdapter = dom_adapter_1.DomAdapter;
+	var dom_renderer_1 = __webpack_require__(171);
+	exports.DomRenderer = dom_renderer_1.DomRenderer;
+	var dom_tokens_1 = __webpack_require__(170);
+	exports.DOCUMENT = dom_tokens_1.DOCUMENT;
+	var shared_styles_host_1 = __webpack_require__(179);
+	exports.SharedStylesHost = shared_styles_host_1.SharedStylesHost;
+	exports.DomSharedStylesHost = shared_styles_host_1.DomSharedStylesHost;
+	var dom_events_1 = __webpack_require__(165);
+	exports.DomEventsPlugin = dom_events_1.DomEventsPlugin;
+	var event_manager_1 = __webpack_require__(166);
+	exports.EVENT_MANAGER_PLUGINS = event_manager_1.EVENT_MANAGER_PLUGINS;
+	exports.EventManager = event_manager_1.EventManager;
+	exports.EventManagerPlugin = event_manager_1.EventManagerPlugin;
+	__export(__webpack_require__(190));
+	__export(__webpack_require__(191));
+
+
+/***/ },
+/* 190 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var lang_1 = __webpack_require__(5);
+	var dom_adapter_1 = __webpack_require__(164);
+	var By = (function () {
+	    function By() {
+	    }
+	    By.all = function () { return function (debugElement) { return true; }; };
+	    By.css = function (selector) {
+	        return function (debugElement) {
+	            return lang_1.isPresent(debugElement.nativeElement) ?
+	                dom_adapter_1.DOM.elementMatches(debugElement.nativeElement, selector) :
+	                false;
+	        };
+	    };
+	    By.directive = function (type) {
+	        return function (debugElement) { return debugElement.hasDirective(type); };
+	    };
+	    return By;
+	})();
+	exports.By = By;
+
+
+/***/ },
+/* 191 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	    return c > 3 && r && Object.defineProperty(target, key, r), r;
+	};
+	var __metadata = (this && this.__metadata) || function (k, v) {
+	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+	};
+	var lang_1 = __webpack_require__(5);
+	var collection_1 = __webpack_require__(12);
+	var di_1 = __webpack_require__(6);
+	var view_listener_1 = __webpack_require__(101);
+	var dom_adapter_1 = __webpack_require__(164);
+	var api_1 = __webpack_require__(87);
+	var debug_element_1 = __webpack_require__(115);
+	var NG_ID_PROPERTY = 'ngid';
+	var INSPECT_GLOBAL_NAME = 'ng.probe';
+	var NG_ID_SEPARATOR = '#';
+	// Need to keep the views in a global Map so that multiple angular apps are supported
+	var _allIdsByView = new collection_1.Map();
+	var _allViewsById = new collection_1.Map();
+	var _nextId = 0;
+	function _setElementId(element, indices) {
+	    if (lang_1.isPresent(element) && dom_adapter_1.DOM.isElementNode(element)) {
+	        dom_adapter_1.DOM.setData(element, NG_ID_PROPERTY, indices.join(NG_ID_SEPARATOR));
+	    }
+	}
+	function _getElementId(element) {
+	    var elId = dom_adapter_1.DOM.getData(element, NG_ID_PROPERTY);
+	    if (lang_1.isPresent(elId)) {
+	        return elId.split(NG_ID_SEPARATOR).map(function (partStr) { return lang_1.NumberWrapper.parseInt(partStr, 10); });
+	    }
+	    else {
+	        return null;
+	    }
+	}
+	/**
+	 * Returns a {@link DebugElement} for the given native DOM element, or
+	 * null if the given native element does not have an Angular view associated
+	 * with it.
+	 */
+	function inspectNativeElement(element) {
+	    var elId = _getElementId(element);
+	    if (lang_1.isPresent(elId)) {
+	        var view = _allViewsById.get(elId[0]);
+	        if (lang_1.isPresent(view)) {
+	            return new debug_element_1.DebugElement_(view, elId[1]);
+	        }
+	    }
+	    return null;
+	}
+	exports.inspectNativeElement = inspectNativeElement;
+	var DebugElementViewListener = (function () {
+	    function DebugElementViewListener(_renderer) {
+	        this._renderer = _renderer;
+	        dom_adapter_1.DOM.setGlobalVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
+	    }
+	    DebugElementViewListener.prototype.onViewCreated = function (view) {
+	        var viewId = _nextId++;
+	        _allViewsById.set(viewId, view);
+	        _allIdsByView.set(view, viewId);
+	        for (var i = 0; i < view.elementRefs.length; i++) {
+	            var el = view.elementRefs[i];
+	            _setElementId(this._renderer.getNativeElementSync(el), [viewId, i]);
+	        }
+	    };
+	    DebugElementViewListener.prototype.onViewDestroyed = function (view) {
+	        var viewId = _allIdsByView.get(view);
+	        _allIdsByView.delete(view);
+	        _allViewsById.delete(viewId);
+	    };
+	    DebugElementViewListener = __decorate([
+	        di_1.Injectable(), 
+	        __metadata('design:paramtypes', [api_1.Renderer])
+	    ], DebugElementViewListener);
+	    return DebugElementViewListener;
+	})();
+	exports.DebugElementViewListener = DebugElementViewListener;
+	exports.ELEMENT_PROBE_PROVIDERS = lang_1.CONST_EXPR([
+	    DebugElementViewListener,
+	    lang_1.CONST_EXPR(new di_1.Provider(view_listener_1.AppViewListener, { useExisting: DebugElementViewListener })),
+	]);
+	exports.ELEMENT_PROBE_BINDINGS = exports.ELEMENT_PROBE_PROVIDERS;
+
+
+/***/ },
+/* 192 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var lang_1 = __webpack_require__(5);
+	var common_tools_1 = __webpack_require__(193);
+	var context = lang_1.global;
+	/**
+	 * Enabled Angular 2 debug tools that are accessible via your browser's
+	 * developer console.
+	 *
+	 * Usage:
+	 *
+	 * 1. Open developer console (e.g. in Chrome Ctrl + Shift + j)
+	 * 1. Type `ng.` (usually the console will show auto-complete suggestion)
+	 * 1. Try the change detection profiler `ng.profiler.timeChangeDetection()`
+	 *    then hit Enter.
+	 */
+	function enableDebugTools(ref) {
+	    context.ng = new common_tools_1.AngularTools(ref);
+	}
+	exports.enableDebugTools = enableDebugTools;
+	/**
+	 * Disables Angular 2 tools.
+	 */
+	function disableDebugTools() {
+	    delete context.ng;
+	}
+	exports.disableDebugTools = disableDebugTools;
+
+
+/***/ },
+/* 193 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var application_ref_1 = __webpack_require__(80);
+	var lang_1 = __webpack_require__(5);
+	var browser_1 = __webpack_require__(194);
+	var dom_adapter_1 = __webpack_require__(164);
+	/**
+	 * Entry point for all Angular debug tools. This object corresponds to the `ng`
+	 * global variable accessible in the dev console.
+	 */
+	var AngularTools = (function () {
+	    function AngularTools(ref) {
+	        this.profiler = new AngularProfiler(ref);
+	    }
+	    return AngularTools;
+	})();
+	exports.AngularTools = AngularTools;
+	/**
+	 * Entry point for all Angular profiling-related debug tools. This object
+	 * corresponds to the `ng.profiler` in the dev console.
+	 */
+	var AngularProfiler = (function () {
+	    function AngularProfiler(ref) {
+	        this.appRef = ref.injector.get(application_ref_1.ApplicationRef);
+	    }
+	    /**
+	     * Exercises change detection in a loop and then prints the average amount of
+	     * time in milliseconds how long a single round of change detection takes for
+	     * the current state of the UI. It runs a minimum of 5 rounds for a minimum
+	     * of 500 milliseconds.
+	     *
+	     * Optionally, a user may pass a `config` parameter containing a map of
+	     * options. Supported options are:
+	     *
+	     * `record` (boolean) - causes the profiler to record a CPU profile while
+	     * it exercises the change detector. Example:
+	     *
+	     * ```
+	     * ng.profiler.timeChangeDetection({record: true})
+	     * ```
+	     */
+	    AngularProfiler.prototype.timeChangeDetection = function (config) {
+	        var record = lang_1.isPresent(config) && config['record'];
+	        var profileName = 'Change Detection';
+	        // Profiler is not available in Android browsers, nor in IE 9 without dev tools opened
+	        var isProfilerAvailable = lang_1.isPresent(browser_1.window.console.profile);
+	        if (record && isProfilerAvailable) {
+	            browser_1.window.console.profile(profileName);
+	        }
+	        var start = dom_adapter_1.DOM.performanceNow();
+	        var numTicks = 0;
+	        while (numTicks < 5 || (dom_adapter_1.DOM.performanceNow() - start) < 500) {
+	            this.appRef.tick();
+	            numTicks++;
+	        }
+	        var end = dom_adapter_1.DOM.performanceNow();
+	        if (record && isProfilerAvailable) {
+	            // need to cast to <any> because type checker thinks there's no argument
+	            // while in fact there is:
+	            //
+	            // https://developer.mozilla.org/en-US/docs/Web/API/Console/profileEnd
+	            browser_1.window.console.profileEnd(profileName);
+	        }
+	        var msPerTick = (end - start) / numTicks;
+	        browser_1.window.console.log("ran " + numTicks + " change detection cycles");
+	        browser_1.window.console.log(lang_1.NumberWrapper.toFixed(msPerTick, 2) + " ms per check");
+	    };
+	    return AngularProfiler;
+	})();
+	exports.AngularProfiler = AngularProfiler;
+
+
+/***/ },
+/* 194 */
+/***/ function(module, exports) {
+
+	/**
+	 * JS version of browser APIs. This library can only run in the browser.
+	 */
+	var win = window;
+	exports.window = win;
+	exports.document = window.document;
+	exports.location = window.location;
+	exports.gc = window['gc'] ? function () { return window['gc'](); } : function () { return null; };
+	exports.performance = window['performance'] ? window['performance'] : null;
+	exports.Event = window['Event'];
+	exports.MouseEvent = window['MouseEvent'];
+	exports.KeyboardEvent = window['KeyboardEvent'];
+	exports.EventTarget = window['EventTarget'];
+	exports.History = window['History'];
+	exports.Location = window['Location'];
+	exports.EventListener = window['EventListener'];
+
+
+/***/ },
+/* 195 */
+/***/ function(module, exports, __webpack_require__) {
+
 	function __export(m) {
 	    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 	}
@@ -23018,13 +25767,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @description
 	 * Starting point to import all compiler APIs.
 	 */
-	__export(__webpack_require__(162));
-	__export(__webpack_require__(163));
-	__export(__webpack_require__(164));
+	__export(__webpack_require__(196));
+	__export(__webpack_require__(185));
+	__export(__webpack_require__(197));
 
 
 /***/ },
-/* 162 */
+/* 196 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -23341,58 +26090,44 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 163 */
-/***/ function(module, exports) {
-
-	// TODO: vsavkin rename it into TemplateLoader
-	var XHR = (function () {
-	    function XHR() {
-	    }
-	    XHR.prototype.get = function (url) { return null; };
-	    return XHR;
-	})();
-	exports.XHR = XHR;
-
-
-/***/ },
-/* 164 */
+/* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
 	function __export(m) {
 	    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 	}
-	var runtime_compiler_1 = __webpack_require__(165);
-	var template_compiler_1 = __webpack_require__(166);
+	var runtime_compiler_1 = __webpack_require__(198);
+	var template_compiler_1 = __webpack_require__(199);
 	exports.TemplateCompiler = template_compiler_1.TemplateCompiler;
-	var directive_metadata_1 = __webpack_require__(167);
+	var directive_metadata_1 = __webpack_require__(200);
 	exports.CompileDirectiveMetadata = directive_metadata_1.CompileDirectiveMetadata;
 	exports.CompileTypeMetadata = directive_metadata_1.CompileTypeMetadata;
 	exports.CompileTemplateMetadata = directive_metadata_1.CompileTemplateMetadata;
-	var source_module_1 = __webpack_require__(170);
+	var source_module_1 = __webpack_require__(203);
 	exports.SourceModule = source_module_1.SourceModule;
 	exports.SourceWithImports = source_module_1.SourceWithImports;
 	var platform_directives_and_pipes_1 = __webpack_require__(110);
 	exports.PLATFORM_DIRECTIVES = platform_directives_and_pipes_1.PLATFORM_DIRECTIVES;
 	exports.PLATFORM_PIPES = platform_directives_and_pipes_1.PLATFORM_PIPES;
-	__export(__webpack_require__(173));
-	var template_parser_1 = __webpack_require__(181);
+	__export(__webpack_require__(206));
+	var template_parser_1 = __webpack_require__(212);
 	exports.TEMPLATE_TRANSFORMS = template_parser_1.TEMPLATE_TRANSFORMS;
 	var lang_1 = __webpack_require__(5);
 	var di_1 = __webpack_require__(6);
-	var template_parser_2 = __webpack_require__(181);
-	var html_parser_1 = __webpack_require__(182);
-	var template_normalizer_1 = __webpack_require__(189);
-	var runtime_metadata_1 = __webpack_require__(190);
-	var change_detector_compiler_1 = __webpack_require__(171);
-	var style_compiler_1 = __webpack_require__(175);
-	var command_compiler_1 = __webpack_require__(180);
-	var template_compiler_2 = __webpack_require__(166);
+	var template_parser_2 = __webpack_require__(212);
+	var html_parser_1 = __webpack_require__(213);
+	var template_normalizer_1 = __webpack_require__(220);
+	var runtime_metadata_1 = __webpack_require__(221);
+	var change_detector_compiler_1 = __webpack_require__(204);
+	var style_compiler_1 = __webpack_require__(208);
+	var command_compiler_1 = __webpack_require__(211);
+	var template_compiler_2 = __webpack_require__(199);
 	var change_detection_1 = __webpack_require__(25);
 	var compiler_1 = __webpack_require__(85);
-	var runtime_compiler_2 = __webpack_require__(165);
-	var element_schema_registry_1 = __webpack_require__(187);
-	var dom_element_schema_registry_1 = __webpack_require__(191);
-	var url_resolver_1 = __webpack_require__(162);
+	var runtime_compiler_2 = __webpack_require__(198);
+	var element_schema_registry_1 = __webpack_require__(218);
+	var dom_element_schema_registry_1 = __webpack_require__(222);
+	var url_resolver_1 = __webpack_require__(196);
 	var change_detection_2 = __webpack_require__(25);
 	function _createChangeDetectorGenConfig() {
 	    return new change_detection_1.ChangeDetectorGenConfig(lang_1.assertionsEnabled(), false, true);
@@ -23419,7 +26154,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 165 */
+/* 198 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -23438,7 +26173,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	var compiler_1 = __webpack_require__(85);
 	var proto_view_factory_1 = __webpack_require__(86);
-	var template_compiler_1 = __webpack_require__(166);
+	var template_compiler_1 = __webpack_require__(199);
 	var di_1 = __webpack_require__(6);
 	var RuntimeCompiler = (function (_super) {
 	    __extends(RuntimeCompiler, _super);
@@ -23473,7 +26208,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 166 */
+/* 199 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -23490,17 +26225,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	var collection_1 = __webpack_require__(12);
 	var async_1 = __webpack_require__(60);
 	var template_commands_1 = __webpack_require__(111);
-	var directive_metadata_1 = __webpack_require__(167);
+	var directive_metadata_1 = __webpack_require__(200);
 	var di_1 = __webpack_require__(6);
-	var source_module_1 = __webpack_require__(170);
-	var change_detector_compiler_1 = __webpack_require__(171);
-	var style_compiler_1 = __webpack_require__(175);
-	var command_compiler_1 = __webpack_require__(180);
-	var template_parser_1 = __webpack_require__(181);
-	var template_normalizer_1 = __webpack_require__(189);
-	var runtime_metadata_1 = __webpack_require__(190);
-	var command_compiler_2 = __webpack_require__(180);
-	var util_1 = __webpack_require__(169);
+	var source_module_1 = __webpack_require__(203);
+	var change_detector_compiler_1 = __webpack_require__(204);
+	var style_compiler_1 = __webpack_require__(208);
+	var command_compiler_1 = __webpack_require__(211);
+	var template_parser_1 = __webpack_require__(212);
+	var template_normalizer_1 = __webpack_require__(220);
+	var runtime_metadata_1 = __webpack_require__(221);
+	var command_compiler_2 = __webpack_require__(211);
+	var util_1 = __webpack_require__(202);
 	var TemplateCompiler = (function () {
 	    function TemplateCompiler(_runtimeMetadataResolver, _templateNormalizer, _templateParser, _styleCompiler, _commandCompiler, _cdCompiler) {
 	        this._runtimeMetadataResolver = _runtimeMetadataResolver;
@@ -23715,15 +26450,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 167 */
+/* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
 	var collection_1 = __webpack_require__(12);
 	var change_detection_1 = __webpack_require__(25);
 	var view_1 = __webpack_require__(56);
-	var selector_1 = __webpack_require__(168);
-	var util_1 = __webpack_require__(169);
+	var selector_1 = __webpack_require__(201);
+	var util_1 = __webpack_require__(202);
 	var interfaces_1 = __webpack_require__(104);
 	// group 1: "property" from "[property]"
 	// group 2: "event" from "(event)"
@@ -23920,7 +26655,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 168 */
+/* 201 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var collection_1 = __webpack_require__(12);
@@ -24282,7 +27017,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 169 */
+/* 202 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -24380,7 +27115,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 170 */
+/* 203 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -24445,7 +27180,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 171 */
+/* 204 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -24457,13 +27192,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var source_module_1 = __webpack_require__(170);
+	var source_module_1 = __webpack_require__(203);
 	var change_detection_jit_generator_1 = __webpack_require__(52);
-	var change_definition_factory_1 = __webpack_require__(172);
+	var change_definition_factory_1 = __webpack_require__(205);
 	var lang_1 = __webpack_require__(5);
 	var change_detection_1 = __webpack_require__(25);
-	var change_detector_codegen_1 = __webpack_require__(174);
-	var util_1 = __webpack_require__(169);
+	var change_detector_codegen_1 = __webpack_require__(207);
+	var util_1 = __webpack_require__(202);
 	var di_1 = __webpack_require__(6);
 	var ABSTRACT_CHANGE_DETECTOR = "AbstractChangeDetector";
 	var UTIL = "ChangeDetectionUtil";
@@ -24533,14 +27268,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 172 */
+/* 205 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var collection_1 = __webpack_require__(12);
 	var lang_1 = __webpack_require__(5);
 	var reflection_1 = __webpack_require__(16);
 	var change_detection_1 = __webpack_require__(25);
-	var template_ast_1 = __webpack_require__(173);
+	var template_ast_1 = __webpack_require__(206);
 	var interfaces_1 = __webpack_require__(104);
 	function createChangeDetectorDefinitions(componentType, componentStrategy, genConfig, parsedTemplate) {
 	    var pvVisitors = [];
@@ -24697,7 +27432,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 173 */
+/* 206 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -24889,7 +27624,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 174 */
+/* 207 */
 /***/ function(module, exports) {
 
 	// Note: This class is only here so that we can reference it from TypeScript code.
@@ -24909,7 +27644,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 175 */
+/* 208 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -24921,17 +27656,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var source_module_1 = __webpack_require__(170);
+	var source_module_1 = __webpack_require__(203);
 	var view_1 = __webpack_require__(56);
-	var xhr_1 = __webpack_require__(163);
+	var xhr_1 = __webpack_require__(185);
 	var lang_1 = __webpack_require__(5);
 	var async_1 = __webpack_require__(60);
-	var shadow_css_1 = __webpack_require__(176);
-	var url_resolver_1 = __webpack_require__(162);
-	var style_url_resolver_1 = __webpack_require__(177);
-	var util_1 = __webpack_require__(169);
+	var shadow_css_1 = __webpack_require__(209);
+	var url_resolver_1 = __webpack_require__(196);
+	var style_url_resolver_1 = __webpack_require__(210);
+	var util_1 = __webpack_require__(202);
 	var di_1 = __webpack_require__(6);
-	var view_factory_1 = __webpack_require__(178);
+	var view_factory_1 = __webpack_require__(180);
 	var StyleCompiler = (function () {
 	    function StyleCompiler(_xhr, _urlResolver) {
 	        this._xhr = _xhr;
@@ -25007,7 +27742,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 176 */
+/* 209 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var collection_1 = __webpack_require__(12);
@@ -25509,7 +28244,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 177 */
+/* 210 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// Some of the code comes from WebComponents.JS
@@ -25555,372 +28290,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 178 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var lang_1 = __webpack_require__(5);
-	var view_1 = __webpack_require__(179);
-	var metadata_1 = __webpack_require__(3);
-	var collection_1 = __webpack_require__(12);
-	function encapsulateStyles(componentTemplate) {
-	    var processedStyles = componentTemplate.styles;
-	    if (componentTemplate.encapsulation === metadata_1.ViewEncapsulation.Emulated) {
-	        processedStyles = collection_1.ListWrapper.createFixedSize(componentTemplate.styles.length);
-	        for (var i = 0; i < componentTemplate.styles.length; i++) {
-	            processedStyles[i] = lang_1.StringWrapper.replaceAll(componentTemplate.styles[i], COMPONENT_REGEX, componentTemplate.shortId);
-	        }
-	    }
-	    return processedStyles;
-	}
-	exports.encapsulateStyles = encapsulateStyles;
-	function createRenderView(componentTemplate, cmds, inplaceElement, nodeFactory) {
-	    var view;
-	    var eventDispatcher = function (boundElementIndex, eventName, event) {
-	        return view.dispatchRenderEvent(boundElementIndex, eventName, event);
-	    };
-	    var context = new BuildContext(eventDispatcher, nodeFactory, inplaceElement);
-	    context.build(componentTemplate, cmds);
-	    var fragments = [];
-	    for (var i = 0; i < context.fragments.length; i++) {
-	        fragments.push(new view_1.DefaultRenderFragmentRef(context.fragments[i]));
-	    }
-	    view = new view_1.DefaultRenderView(fragments, context.boundTextNodes, context.boundElements, context.nativeShadowRoots, context.globalEventAdders, context.rootContentInsertionPoints);
-	    return view;
-	}
-	exports.createRenderView = createRenderView;
-	var BuildContext = (function () {
-	    function BuildContext(_eventDispatcher, factory, _inplaceElement) {
-	        this._eventDispatcher = _eventDispatcher;
-	        this.factory = factory;
-	        this._inplaceElement = _inplaceElement;
-	        this._builders = [];
-	        this.globalEventAdders = [];
-	        this.boundElements = [];
-	        this.boundTextNodes = [];
-	        this.nativeShadowRoots = [];
-	        this.fragments = [];
-	        this.rootContentInsertionPoints = [];
-	        this.componentCount = 0;
-	        this.isHost = lang_1.isPresent((_inplaceElement));
-	    }
-	    BuildContext.prototype.build = function (template, cmds) {
-	        this.enqueueRootBuilder(template, cmds);
-	        this._build(this._builders[0]);
-	    };
-	    BuildContext.prototype._build = function (builder) {
-	        this._builders = [];
-	        builder.build(this);
-	        var enqueuedBuilders = this._builders;
-	        for (var i = 0; i < enqueuedBuilders.length; i++) {
-	            this._build(enqueuedBuilders[i]);
-	        }
-	    };
-	    BuildContext.prototype.enqueueComponentBuilder = function (component) {
-	        this.componentCount++;
-	        this._builders.push(new RenderViewBuilder(component, null, component.template, component.template.commands));
-	    };
-	    BuildContext.prototype.enqueueFragmentBuilder = function (parentComponent, parentTemplate, commands) {
-	        var rootNodes = [];
-	        this.fragments.push(rootNodes);
-	        this._builders.push(new RenderViewBuilder(parentComponent, rootNodes, parentTemplate, commands));
-	    };
-	    BuildContext.prototype.enqueueRootBuilder = function (template, cmds) {
-	        var rootNodes = [];
-	        this.fragments.push(rootNodes);
-	        this._builders.push(new RenderViewBuilder(null, rootNodes, template, cmds));
-	    };
-	    BuildContext.prototype.consumeInplaceElement = function () {
-	        var result = this._inplaceElement;
-	        this._inplaceElement = null;
-	        return result;
-	    };
-	    BuildContext.prototype.addEventListener = function (boundElementIndex, target, eventName) {
-	        if (lang_1.isPresent(target)) {
-	            var handler = createEventHandler(boundElementIndex, target + ":" + eventName, this._eventDispatcher);
-	            this.globalEventAdders.push(createGlobalEventAdder(target, eventName, handler, this.factory));
-	        }
-	        else {
-	            var handler = createEventHandler(boundElementIndex, eventName, this._eventDispatcher);
-	            this.factory.on(this.boundElements[boundElementIndex], eventName, handler);
-	        }
-	    };
-	    return BuildContext;
-	})();
-	function createEventHandler(boundElementIndex, eventName, eventDispatcher) {
-	    return function ($event) { return eventDispatcher(boundElementIndex, eventName, $event); };
-	}
-	function createGlobalEventAdder(target, eventName, eventHandler, nodeFactory) {
-	    return function () { return nodeFactory.globalOn(target, eventName, eventHandler); };
-	}
-	var RenderViewBuilder = (function () {
-	    function RenderViewBuilder(parentComponent, fragmentRootNodes, template, cmds) {
-	        this.parentComponent = parentComponent;
-	        this.fragmentRootNodes = fragmentRootNodes;
-	        this.template = template;
-	        this.cmds = cmds;
-	        var rootNodesParent = lang_1.isPresent(fragmentRootNodes) ? null : parentComponent.shadowRoot;
-	        this.parentStack = [rootNodesParent];
-	    }
-	    RenderViewBuilder.prototype.build = function (context) {
-	        var cmds = this.cmds;
-	        for (var i = 0; i < cmds.length; i++) {
-	            cmds[i].visit(this, context);
-	        }
-	    };
-	    Object.defineProperty(RenderViewBuilder.prototype, "parent", {
-	        get: function () { return this.parentStack[this.parentStack.length - 1]; },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    RenderViewBuilder.prototype.visitText = function (cmd, context) {
-	        var text = context.factory.createText(cmd.value);
-	        this._addChild(text, cmd.ngContentIndex, context);
-	        if (cmd.isBound) {
-	            context.boundTextNodes.push(text);
-	        }
-	        return null;
-	    };
-	    RenderViewBuilder.prototype.visitNgContent = function (cmd, context) {
-	        if (lang_1.isPresent(this.parentComponent)) {
-	            if (this.parentComponent.isRoot) {
-	                var insertionPoint = context.factory.createRootContentInsertionPoint();
-	                if (this.parent instanceof Component) {
-	                    context.factory.appendChild(this.parent.shadowRoot, insertionPoint);
-	                }
-	                else {
-	                    context.factory.appendChild(this.parent, insertionPoint);
-	                }
-	                context.rootContentInsertionPoints.push(insertionPoint);
-	            }
-	            else {
-	                var projectedNodes = this.parentComponent.project(cmd.index);
-	                for (var i = 0; i < projectedNodes.length; i++) {
-	                    var node = projectedNodes[i];
-	                    this._addChild(node, cmd.ngContentIndex, context);
-	                }
-	            }
-	        }
-	        return null;
-	    };
-	    RenderViewBuilder.prototype.visitBeginElement = function (cmd, context) {
-	        this.parentStack.push(this._beginElement(cmd, context, null));
-	        return null;
-	    };
-	    RenderViewBuilder.prototype.visitEndElement = function (context) {
-	        this._endElement();
-	        return null;
-	    };
-	    RenderViewBuilder.prototype.visitBeginComponent = function (cmd, context) {
-	        var templateId = cmd.templateId;
-	        var tpl = context.factory.resolveComponentTemplate(templateId);
-	        var el = this._beginElement(cmd, context, tpl);
-	        var root = el;
-	        if (tpl.encapsulation === metadata_1.ViewEncapsulation.Native) {
-	            root = context.factory.createShadowRoot(el, templateId);
-	            context.nativeShadowRoots.push(root);
-	        }
-	        var isRoot = context.componentCount === 0 && context.isHost;
-	        var component = new Component(el, root, isRoot, tpl);
-	        context.enqueueComponentBuilder(component);
-	        this.parentStack.push(component);
-	        return null;
-	    };
-	    RenderViewBuilder.prototype.visitEndComponent = function (context) {
-	        this._endElement();
-	        return null;
-	    };
-	    RenderViewBuilder.prototype.visitEmbeddedTemplate = function (cmd, context) {
-	        var el = context.factory.createTemplateAnchor(cmd.attrNameAndValues);
-	        this._addChild(el, cmd.ngContentIndex, context);
-	        context.boundElements.push(el);
-	        if (cmd.isMerged) {
-	            context.enqueueFragmentBuilder(this.parentComponent, this.template, cmd.children);
-	        }
-	        return null;
-	    };
-	    RenderViewBuilder.prototype._beginElement = function (cmd, context, componentTemplate) {
-	        var el = context.consumeInplaceElement();
-	        var attrNameAndValues = cmd.attrNameAndValues;
-	        var templateEmulatedEncapsulation = this.template.encapsulation === metadata_1.ViewEncapsulation.Emulated;
-	        var componentEmulatedEncapsulation = lang_1.isPresent(componentTemplate) &&
-	            componentTemplate.encapsulation === metadata_1.ViewEncapsulation.Emulated;
-	        var newAttrLength = attrNameAndValues.length + (templateEmulatedEncapsulation ? 2 : 0) +
-	            (componentEmulatedEncapsulation ? 2 : 0);
-	        if (newAttrLength > attrNameAndValues.length) {
-	            // Note: Need to clone attrNameAndValues to make it writable!
-	            var newAttrNameAndValues = collection_1.ListWrapper.createFixedSize(newAttrLength);
-	            var attrIndex;
-	            for (attrIndex = 0; attrIndex < attrNameAndValues.length; attrIndex++) {
-	                newAttrNameAndValues[attrIndex] = attrNameAndValues[attrIndex];
-	            }
-	            if (templateEmulatedEncapsulation) {
-	                newAttrNameAndValues[attrIndex++] = _shimContentAttribute(this.template.shortId);
-	                newAttrNameAndValues[attrIndex++] = '';
-	            }
-	            if (componentEmulatedEncapsulation) {
-	                newAttrNameAndValues[attrIndex++] = _shimHostAttribute(componentTemplate.shortId);
-	                newAttrNameAndValues[attrIndex++] = '';
-	            }
-	            attrNameAndValues = newAttrNameAndValues;
-	        }
-	        if (lang_1.isPresent(el)) {
-	            context.factory.mergeElement(el, attrNameAndValues);
-	            this.fragmentRootNodes.push(el);
-	        }
-	        else {
-	            el = context.factory.createElement(cmd.name, attrNameAndValues);
-	            this._addChild(el, cmd.ngContentIndex, context);
-	        }
-	        if (cmd.isBound) {
-	            var boundElementIndex = context.boundElements.length;
-	            context.boundElements.push(el);
-	            for (var i = 0; i < cmd.eventTargetAndNames.length; i += 2) {
-	                var target = cmd.eventTargetAndNames[i];
-	                var eventName = cmd.eventTargetAndNames[i + 1];
-	                context.addEventListener(boundElementIndex, target, eventName);
-	            }
-	        }
-	        return el;
-	    };
-	    RenderViewBuilder.prototype._endElement = function () { this.parentStack.pop(); };
-	    RenderViewBuilder.prototype._addChild = function (node, ngContentIndex, context) {
-	        var parent = this.parent;
-	        if (lang_1.isPresent(parent)) {
-	            if (parent instanceof Component) {
-	                parent.addContentNode(ngContentIndex, node, context);
-	            }
-	            else {
-	                context.factory.appendChild(parent, node);
-	            }
-	        }
-	        else {
-	            this.fragmentRootNodes.push(node);
-	        }
-	    };
-	    return RenderViewBuilder;
-	})();
-	var Component = (function () {
-	    function Component(hostElement, shadowRoot, isRoot, template) {
-	        this.hostElement = hostElement;
-	        this.shadowRoot = shadowRoot;
-	        this.isRoot = isRoot;
-	        this.template = template;
-	        this.contentNodesByNgContentIndex = [];
-	    }
-	    Component.prototype.addContentNode = function (ngContentIndex, node, context) {
-	        if (lang_1.isBlank(ngContentIndex)) {
-	            if (this.template.encapsulation === metadata_1.ViewEncapsulation.Native) {
-	                context.factory.appendChild(this.hostElement, node);
-	            }
-	        }
-	        else {
-	            while (this.contentNodesByNgContentIndex.length <= ngContentIndex) {
-	                this.contentNodesByNgContentIndex.push([]);
-	            }
-	            this.contentNodesByNgContentIndex[ngContentIndex].push(node);
-	        }
-	    };
-	    Component.prototype.project = function (ngContentIndex) {
-	        return ngContentIndex < this.contentNodesByNgContentIndex.length ?
-	            this.contentNodesByNgContentIndex[ngContentIndex] :
-	            [];
-	    };
-	    return Component;
-	})();
-	var COMPONENT_REGEX = /%COMP%/g;
-	exports.COMPONENT_VARIABLE = '%COMP%';
-	exports.HOST_ATTR = "_nghost-" + exports.COMPONENT_VARIABLE;
-	exports.CONTENT_ATTR = "_ngcontent-" + exports.COMPONENT_VARIABLE;
-	function _shimContentAttribute(componentShortId) {
-	    return lang_1.StringWrapper.replaceAll(exports.CONTENT_ATTR, COMPONENT_REGEX, componentShortId);
-	}
-	function _shimHostAttribute(componentShortId) {
-	    return lang_1.StringWrapper.replaceAll(exports.HOST_ATTR, COMPONENT_REGEX, componentShortId);
-	}
-
-
-/***/ },
-/* 179 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var exceptions_1 = __webpack_require__(14);
-	var collection_1 = __webpack_require__(12);
-	var lang_1 = __webpack_require__(5);
-	var api_1 = __webpack_require__(87);
-	var DefaultProtoViewRef = (function (_super) {
-	    __extends(DefaultProtoViewRef, _super);
-	    function DefaultProtoViewRef(template, cmds) {
-	        _super.call(this);
-	        this.template = template;
-	        this.cmds = cmds;
-	    }
-	    return DefaultProtoViewRef;
-	})(api_1.RenderProtoViewRef);
-	exports.DefaultProtoViewRef = DefaultProtoViewRef;
-	var DefaultRenderFragmentRef = (function (_super) {
-	    __extends(DefaultRenderFragmentRef, _super);
-	    function DefaultRenderFragmentRef(nodes) {
-	        _super.call(this);
-	        this.nodes = nodes;
-	    }
-	    return DefaultRenderFragmentRef;
-	})(api_1.RenderFragmentRef);
-	exports.DefaultRenderFragmentRef = DefaultRenderFragmentRef;
-	var DefaultRenderView = (function (_super) {
-	    __extends(DefaultRenderView, _super);
-	    function DefaultRenderView(fragments, boundTextNodes, boundElements, nativeShadowRoots, globalEventAdders, rootContentInsertionPoints) {
-	        _super.call(this);
-	        this.fragments = fragments;
-	        this.boundTextNodes = boundTextNodes;
-	        this.boundElements = boundElements;
-	        this.nativeShadowRoots = nativeShadowRoots;
-	        this.globalEventAdders = globalEventAdders;
-	        this.rootContentInsertionPoints = rootContentInsertionPoints;
-	        this.hydrated = false;
-	        this.eventDispatcher = null;
-	        this.globalEventRemovers = null;
-	    }
-	    DefaultRenderView.prototype.hydrate = function () {
-	        if (this.hydrated)
-	            throw new exceptions_1.BaseException('The view is already hydrated.');
-	        this.hydrated = true;
-	        this.globalEventRemovers = collection_1.ListWrapper.createFixedSize(this.globalEventAdders.length);
-	        for (var i = 0; i < this.globalEventAdders.length; i++) {
-	            this.globalEventRemovers[i] = this.globalEventAdders[i]();
-	        }
-	    };
-	    DefaultRenderView.prototype.dehydrate = function () {
-	        if (!this.hydrated)
-	            throw new exceptions_1.BaseException('The view is already dehydrated.');
-	        for (var i = 0; i < this.globalEventRemovers.length; i++) {
-	            this.globalEventRemovers[i]();
-	        }
-	        this.globalEventRemovers = null;
-	        this.hydrated = false;
-	    };
-	    DefaultRenderView.prototype.setEventDispatcher = function (dispatcher) { this.eventDispatcher = dispatcher; };
-	    DefaultRenderView.prototype.dispatchRenderEvent = function (boundElementIndex, eventName, event) {
-	        var allowDefaultBehavior = true;
-	        if (lang_1.isPresent(this.eventDispatcher)) {
-	            var locals = new collection_1.Map();
-	            locals.set('$event', event);
-	            allowDefaultBehavior =
-	                this.eventDispatcher.dispatchRenderEvent(boundElementIndex, eventName, locals);
-	        }
-	        return allowDefaultBehavior;
-	    };
-	    return DefaultRenderView;
-	})(api_1.RenderViewRef);
-	exports.DefaultRenderView = DefaultRenderView;
-
-
-/***/ },
-/* 180 */
+/* 211 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -25935,9 +28305,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var lang_1 = __webpack_require__(5);
 	var collection_1 = __webpack_require__(12);
 	var template_commands_1 = __webpack_require__(111);
-	var template_ast_1 = __webpack_require__(173);
-	var source_module_1 = __webpack_require__(170);
-	var util_1 = __webpack_require__(169);
+	var template_ast_1 = __webpack_require__(206);
+	var source_module_1 = __webpack_require__(203);
+	var util_1 = __webpack_require__(202);
 	var di_1 = __webpack_require__(6);
 	exports.TEMPLATE_COMMANDS_MODULE_REF = source_module_1.moduleRef("package:angular2/src/core/linker/template_commands" + util_1.MODULE_SUFFIX);
 	var IMPLICIT_TEMPLATE_VAR = '\$implicit';
@@ -26225,7 +28595,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 181 */
+/* 212 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -26251,16 +28621,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	var lang_2 = __webpack_require__(5);
 	var exceptions_1 = __webpack_require__(14);
 	var change_detection_1 = __webpack_require__(25);
-	var html_parser_1 = __webpack_require__(182);
-	var html_tags_1 = __webpack_require__(186);
-	var parse_util_1 = __webpack_require__(185);
-	var template_ast_1 = __webpack_require__(173);
-	var selector_1 = __webpack_require__(168);
-	var element_schema_registry_1 = __webpack_require__(187);
-	var template_preparser_1 = __webpack_require__(188);
-	var style_url_resolver_1 = __webpack_require__(177);
-	var html_ast_1 = __webpack_require__(183);
-	var util_1 = __webpack_require__(169);
+	var html_parser_1 = __webpack_require__(213);
+	var html_tags_1 = __webpack_require__(217);
+	var parse_util_1 = __webpack_require__(216);
+	var template_ast_1 = __webpack_require__(206);
+	var selector_1 = __webpack_require__(201);
+	var element_schema_registry_1 = __webpack_require__(218);
+	var template_preparser_1 = __webpack_require__(219);
+	var style_url_resolver_1 = __webpack_require__(210);
+	var html_ast_1 = __webpack_require__(214);
+	var util_1 = __webpack_require__(202);
 	// Group 1 = "bind-"
 	// Group 2 = "var-" or "#"
 	// Group 3 = "on-"
@@ -26840,7 +29210,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 182 */
+/* 213 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -26859,11 +29229,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	var lang_1 = __webpack_require__(5);
 	var collection_1 = __webpack_require__(12);
-	var html_ast_1 = __webpack_require__(183);
+	var html_ast_1 = __webpack_require__(214);
 	var di_1 = __webpack_require__(6);
-	var html_lexer_1 = __webpack_require__(184);
-	var parse_util_1 = __webpack_require__(185);
-	var html_tags_1 = __webpack_require__(186);
+	var html_lexer_1 = __webpack_require__(215);
+	var parse_util_1 = __webpack_require__(216);
+	var html_tags_1 = __webpack_require__(217);
 	var HtmlTreeError = (function (_super) {
 	    __extends(HtmlTreeError, _super);
 	    function HtmlTreeError(elementName, location, msg) {
@@ -27093,7 +29463,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 183 */
+/* 214 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -27142,7 +29512,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 184 */
+/* 215 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -27152,8 +29522,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 	var lang_1 = __webpack_require__(5);
 	var collection_1 = __webpack_require__(12);
-	var parse_util_1 = __webpack_require__(185);
-	var html_tags_1 = __webpack_require__(186);
+	var parse_util_1 = __webpack_require__(216);
+	var html_tags_1 = __webpack_require__(217);
 	(function (HtmlTokenType) {
 	    HtmlTokenType[HtmlTokenType["TAG_OPEN_START"] = 0] = "TAG_OPEN_START";
 	    HtmlTokenType[HtmlTokenType["TAG_OPEN_END"] = 1] = "TAG_OPEN_END";
@@ -27679,7 +30049,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 185 */
+/* 216 */
 /***/ function(module, exports) {
 
 	var ParseLocation = (function () {
@@ -27756,7 +30126,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 186 */
+/* 217 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
@@ -28156,7 +30526,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 187 */
+/* 218 */
 /***/ function(module, exports) {
 
 	var ElementSchemaRegistry = (function () {
@@ -28170,11 +30540,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 188 */
+/* 219 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
-	var html_tags_1 = __webpack_require__(186);
+	var html_tags_1 = __webpack_require__(217);
 	var NG_CONTENT_SELECT_ATTR = 'select';
 	var NG_CONTENT_ELEMENT = 'ng-content';
 	var LINK_ELEMENT = 'link';
@@ -28249,7 +30619,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 189 */
+/* 220 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -28261,18 +30631,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var directive_metadata_1 = __webpack_require__(167);
+	var directive_metadata_1 = __webpack_require__(200);
 	var lang_1 = __webpack_require__(5);
 	var exceptions_1 = __webpack_require__(14);
 	var async_1 = __webpack_require__(60);
-	var xhr_1 = __webpack_require__(163);
-	var url_resolver_1 = __webpack_require__(162);
-	var style_url_resolver_1 = __webpack_require__(177);
+	var xhr_1 = __webpack_require__(185);
+	var url_resolver_1 = __webpack_require__(196);
+	var style_url_resolver_1 = __webpack_require__(210);
 	var di_1 = __webpack_require__(6);
 	var view_1 = __webpack_require__(56);
-	var html_ast_1 = __webpack_require__(183);
-	var html_parser_1 = __webpack_require__(182);
-	var template_preparser_1 = __webpack_require__(188);
+	var html_ast_1 = __webpack_require__(214);
+	var html_parser_1 = __webpack_require__(213);
+	var template_preparser_1 = __webpack_require__(219);
 	var TemplateNormalizer = (function () {
 	    function TemplateNormalizer(_xhr, _urlResolver, _htmlParser) {
 	        this._xhr = _xhr;
@@ -28377,7 +30747,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 190 */
+/* 221 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
@@ -28395,7 +30765,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var di_1 = __webpack_require__(6);
 	var lang_1 = __webpack_require__(5);
 	var exceptions_1 = __webpack_require__(14);
-	var cpl = __webpack_require__(167);
+	var cpl = __webpack_require__(200);
 	var md = __webpack_require__(23);
 	var directive_resolver_1 = __webpack_require__(107);
 	var view_resolver_1 = __webpack_require__(108);
@@ -28404,8 +30774,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var reflection_1 = __webpack_require__(16);
 	var di_2 = __webpack_require__(6);
 	var platform_directives_and_pipes_1 = __webpack_require__(110);
-	var util_1 = __webpack_require__(169);
-	var url_resolver_1 = __webpack_require__(162);
+	var util_1 = __webpack_require__(202);
+	var url_resolver_1 = __webpack_require__(196);
 	var RuntimeMetadataResolver = (function () {
 	    function RuntimeMetadataResolver(_directiveResolver, _viewResolver, _platformDirectives) {
 	        this._directiveResolver = _directiveResolver;
@@ -28507,7 +30877,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 191 */
+/* 222 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -28527,9 +30897,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var di_1 = __webpack_require__(6);
 	var lang_1 = __webpack_require__(5);
 	var collection_1 = __webpack_require__(12);
-	var dom_adapter_1 = __webpack_require__(192);
-	var html_tags_1 = __webpack_require__(186);
-	var element_schema_registry_1 = __webpack_require__(187);
+	var dom_adapter_1 = __webpack_require__(164);
+	var html_tags_1 = __webpack_require__(217);
+	var element_schema_registry_1 = __webpack_require__(218);
 	var NAMESPACE_URIS = lang_1.CONST_EXPR({ 'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg' });
 	var DomElementSchemaRegistry = (function (_super) {
 	    __extends(DomElementSchemaRegistry, _super);
@@ -28570,2377 +30940,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return DomElementSchemaRegistry;
 	})(element_schema_registry_1.ElementSchemaRegistry);
 	exports.DomElementSchemaRegistry = DomElementSchemaRegistry;
-
-
-/***/ },
-/* 192 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var lang_1 = __webpack_require__(5);
-	exports.DOM = null;
-	function setRootDomAdapter(adapter) {
-	    if (lang_1.isBlank(exports.DOM)) {
-	        exports.DOM = adapter;
-	    }
-	}
-	exports.setRootDomAdapter = setRootDomAdapter;
-	/* tslint:disable:requireParameterType */
-	/**
-	 * Provides DOM operations in an environment-agnostic way.
-	 */
-	var DomAdapter = (function () {
-	    function DomAdapter() {
-	    }
-	    return DomAdapter;
-	})();
-	exports.DomAdapter = DomAdapter;
-
-
-/***/ },
-/* 193 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var angular_entrypoint_1 = __webpack_require__(194);
-	exports.AngularEntrypoint = angular_entrypoint_1.AngularEntrypoint;
-	var browser_common_1 = __webpack_require__(195);
-	exports.BROWSER_PROVIDERS = browser_common_1.BROWSER_PROVIDERS;
-	exports.ELEMENT_PROBE_BINDINGS = browser_common_1.ELEMENT_PROBE_BINDINGS;
-	exports.ELEMENT_PROBE_PROVIDERS = browser_common_1.ELEMENT_PROBE_PROVIDERS;
-	exports.inspectNativeElement = browser_common_1.inspectNativeElement;
-	exports.BrowserDomAdapter = browser_common_1.BrowserDomAdapter;
-	exports.By = browser_common_1.By;
-	exports.Title = browser_common_1.Title;
-	exports.DOCUMENT = browser_common_1.DOCUMENT;
-	exports.enableDebugTools = browser_common_1.enableDebugTools;
-	exports.disableDebugTools = browser_common_1.disableDebugTools;
-	var lang_1 = __webpack_require__(5);
-	var browser_common_2 = __webpack_require__(195);
-	var compiler_1 = __webpack_require__(161);
-	var core_1 = __webpack_require__(2);
-	var reflection_capabilities_1 = __webpack_require__(18);
-	var xhr_impl_1 = __webpack_require__(213);
-	var compiler_2 = __webpack_require__(161);
-	var di_1 = __webpack_require__(6);
-	/**
-	 * An array of providers that should be passed into `application()` when bootstrapping a component.
-	 */
-	exports.BROWSER_APP_PROVIDERS = lang_1.CONST_EXPR([
-	    browser_common_2.BROWSER_APP_COMMON_PROVIDERS,
-	    compiler_1.COMPILER_PROVIDERS,
-	    new di_1.Provider(compiler_2.XHR, { useClass: xhr_impl_1.XHRImpl }),
-	]);
-	/**
-	 * Bootstrapping for Angular applications.
-	 *
-	 * You instantiate an Angular application by explicitly specifying a component to use
-	 * as the root component for your application via the `bootstrap()` method.
-	 *
-	 * ## Simple Example
-	 *
-	 * Assuming this `index.html`:
-	 *
-	 * ```html
-	 * <html>
-	 *   <!-- load Angular script tags here. -->
-	 *   <body>
-	 *     <my-app>loading...</my-app>
-	 *   </body>
-	 * </html>
-	 * ```
-	 *
-	 * An application is bootstrapped inside an existing browser DOM, typically `index.html`.
-	 * Unlike Angular 1, Angular 2 does not compile/process providers in `index.html`. This is
-	 * mainly for security reasons, as well as architectural changes in Angular 2. This means
-	 * that `index.html` can safely be processed using server-side technologies such as
-	 * providers. Bindings can thus use double-curly `{{ syntax }}` without collision from
-	 * Angular 2 component double-curly `{{ syntax }}`.
-	 *
-	 * We can use this script code:
-	 *
-	 * {@example core/ts/bootstrap/bootstrap.ts region='bootstrap'}
-	 *
-	 * When the app developer invokes `bootstrap()` with the root component `MyApp` as its
-	 * argument, Angular performs the following tasks:
-	 *
-	 *  1. It uses the component's `selector` property to locate the DOM element which needs
-	 *     to be upgraded into the angular component.
-	 *  2. It creates a new child injector (from the platform injector). Optionally, you can
-	 *     also override the injector configuration for an app by invoking `bootstrap` with the
-	 *     `componentInjectableBindings` argument.
-	 *  3. It creates a new `Zone` and connects it to the angular application's change detection
-	 *     domain instance.
-	 *  4. It creates an emulated or shadow DOM on the selected component's host element and loads the
-	 *     template into it.
-	 *  5. It instantiates the specified component.
-	 *  6. Finally, Angular performs change detection to apply the initial data providers for the
-	 *     application.
-	 *
-	 *
-	 * ## Bootstrapping Multiple Applications
-	 *
-	 * When working within a browser window, there are many singleton resources: cookies, title,
-	 * location, and others. Angular services that represent these resources must likewise be
-	 * shared across all Angular applications that occupy the same browser window. For this
-	 * reason, Angular creates exactly one global platform object which stores all shared
-	 * services, and each angular application injector has the platform injector as its parent.
-	 *
-	 * Each application has its own private injector as well. When there are multiple
-	 * applications on a page, Angular treats each application injector's services as private
-	 * to that application.
-	 *
-	 * ## API
-	 *
-	 * - `appComponentType`: The root component which should act as the application. This is
-	 *   a reference to a `Type` which is annotated with `@Component(...)`.
-	 * - `customProviders`: An additional set of providers that can be added to the
-	 *   app injector to override default injection behavior.
-	 *
-	 * Returns a `Promise` of {@link ComponentRef}.
-	 */
-	function bootstrap(appComponentType, customProviders) {
-	    core_1.reflector.reflectionCapabilities = new reflection_capabilities_1.ReflectionCapabilities();
-	    var appProviders = lang_1.isPresent(customProviders) ? [exports.BROWSER_APP_PROVIDERS, customProviders] : exports.BROWSER_APP_PROVIDERS;
-	    return core_1.platform(browser_common_2.BROWSER_PROVIDERS).application(appProviders).bootstrap(appComponentType);
-	}
-	exports.bootstrap = bootstrap;
-
-
-/***/ },
-/* 194 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-	    return c > 3 && r && Object.defineProperty(target, key, r), r;
-	};
-	var __metadata = (this && this.__metadata) || function (k, v) {
-	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-	};
-	var lang_1 = __webpack_require__(5);
-	/**
-	 * Marks a function or method as an Angular 2 entrypoint. Only necessary in Dart code.
-	 *
-	 * The optional `name` parameter will be reflected in logs when the entry point is processed.
-	 *
-	 * See [the wiki][] for detailed documentation.
-	 * [the wiki]: https://github.com/angular/angular/wiki/Angular-2-Dart-Transformer#entry_points
-	 *
-	 * ## Example
-	 *
-	 * ```
-	 * @AngularEntrypoint("name-for-debug")
-	 * void main() {
-	 *   bootstrap(MyComponent);
-	 * }
-	 * ```
-	 */
-	var AngularEntrypoint = (function () {
-	    function AngularEntrypoint(name) {
-	        this.name = name;
-	    }
-	    AngularEntrypoint = __decorate([
-	        lang_1.CONST(), 
-	        __metadata('design:paramtypes', [String])
-	    ], AngularEntrypoint);
-	    return AngularEntrypoint;
-	})();
-	exports.AngularEntrypoint = AngularEntrypoint;
-
-
-/***/ },
-/* 195 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var lang_1 = __webpack_require__(5);
-	var di_1 = __webpack_require__(6);
-	var core_1 = __webpack_require__(2);
-	var common_1 = __webpack_require__(118);
-	var testability_1 = __webpack_require__(83);
-	var dom_adapter_1 = __webpack_require__(192);
-	var dom_events_1 = __webpack_require__(196);
-	var key_events_1 = __webpack_require__(198);
-	var hammer_gestures_1 = __webpack_require__(199);
-	var dom_tokens_1 = __webpack_require__(201);
-	var dom_renderer_1 = __webpack_require__(202);
-	var shared_styles_host_1 = __webpack_require__(210);
-	var shared_styles_host_2 = __webpack_require__(210);
-	var browser_details_1 = __webpack_require__(209);
-	var animation_builder_1 = __webpack_require__(203);
-	var browser_adapter_1 = __webpack_require__(211);
-	var testability_2 = __webpack_require__(214);
-	var wtf_init_1 = __webpack_require__(215);
-	var event_manager_1 = __webpack_require__(197);
-	var dom_tokens_2 = __webpack_require__(201);
-	exports.DOCUMENT = dom_tokens_2.DOCUMENT;
-	var title_1 = __webpack_require__(216);
-	exports.Title = title_1.Title;
-	var common_dom_1 = __webpack_require__(217);
-	exports.DebugElementViewListener = common_dom_1.DebugElementViewListener;
-	exports.ELEMENT_PROBE_PROVIDERS = common_dom_1.ELEMENT_PROBE_PROVIDERS;
-	exports.ELEMENT_PROBE_BINDINGS = common_dom_1.ELEMENT_PROBE_BINDINGS;
-	exports.inspectNativeElement = common_dom_1.inspectNativeElement;
-	exports.By = common_dom_1.By;
-	var browser_adapter_2 = __webpack_require__(211);
-	exports.BrowserDomAdapter = browser_adapter_2.BrowserDomAdapter;
-	var tools_1 = __webpack_require__(220);
-	exports.enableDebugTools = tools_1.enableDebugTools;
-	exports.disableDebugTools = tools_1.disableDebugTools;
-	exports.BROWSER_PROVIDERS = lang_1.CONST_EXPR([
-	    core_1.PLATFORM_COMMON_PROVIDERS,
-	    new di_1.Provider(core_1.PLATFORM_INITIALIZER, { useValue: initDomAdapter, multi: true }),
-	]);
-	function _exceptionHandler() {
-	    // !IS_DART is required because we must rethrow exceptions in JS,
-	    // but must not rethrow exceptions in Dart
-	    return new core_1.ExceptionHandler(dom_adapter_1.DOM, !lang_1.IS_DART);
-	}
-	function _document() {
-	    return dom_adapter_1.DOM.defaultDoc();
-	}
-	exports.BROWSER_APP_COMMON_PROVIDERS = lang_1.CONST_EXPR([
-	    core_1.APPLICATION_COMMON_PROVIDERS,
-	    common_1.FORM_PROVIDERS,
-	    new di_1.Provider(core_1.PLATFORM_PIPES, { useValue: common_1.COMMON_PIPES, multi: true }),
-	    new di_1.Provider(core_1.PLATFORM_DIRECTIVES, { useValue: common_1.COMMON_DIRECTIVES, multi: true }),
-	    new di_1.Provider(core_1.ExceptionHandler, { useFactory: _exceptionHandler, deps: [] }),
-	    new di_1.Provider(dom_tokens_1.DOCUMENT, { useFactory: _document, deps: [] }),
-	    new di_1.Provider(event_manager_1.EVENT_MANAGER_PLUGINS, { useClass: dom_events_1.DomEventsPlugin, multi: true }),
-	    new di_1.Provider(event_manager_1.EVENT_MANAGER_PLUGINS, { useClass: key_events_1.KeyEventsPlugin, multi: true }),
-	    new di_1.Provider(event_manager_1.EVENT_MANAGER_PLUGINS, { useClass: hammer_gestures_1.HammerGesturesPlugin, multi: true }),
-	    new di_1.Provider(dom_renderer_1.DomRenderer, { useClass: dom_renderer_1.DomRenderer_ }),
-	    new di_1.Provider(core_1.Renderer, { useExisting: dom_renderer_1.DomRenderer }),
-	    new di_1.Provider(shared_styles_host_2.SharedStylesHost, { useExisting: shared_styles_host_1.DomSharedStylesHost }),
-	    shared_styles_host_1.DomSharedStylesHost,
-	    testability_1.Testability,
-	    browser_details_1.BrowserDetails,
-	    animation_builder_1.AnimationBuilder,
-	    event_manager_1.EventManager
-	]);
-	function initDomAdapter() {
-	    browser_adapter_1.BrowserDomAdapter.makeCurrent();
-	    wtf_init_1.wtfInit();
-	    testability_2.BrowserGetTestability.init();
-	}
-	exports.initDomAdapter = initDomAdapter;
-
-
-/***/ },
-/* 196 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-	    return c > 3 && r && Object.defineProperty(target, key, r), r;
-	};
-	var __metadata = (this && this.__metadata) || function (k, v) {
-	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-	};
-	var dom_adapter_1 = __webpack_require__(192);
-	var core_1 = __webpack_require__(2);
-	var event_manager_1 = __webpack_require__(197);
-	var DomEventsPlugin = (function (_super) {
-	    __extends(DomEventsPlugin, _super);
-	    function DomEventsPlugin() {
-	        _super.apply(this, arguments);
-	    }
-	    // This plugin should come last in the list of plugins, because it accepts all
-	    // events.
-	    DomEventsPlugin.prototype.supports = function (eventName) { return true; };
-	    DomEventsPlugin.prototype.addEventListener = function (element, eventName, handler) {
-	        var zone = this.manager.getZone();
-	        var outsideHandler = function (event) { return zone.run(function () { return handler(event); }); };
-	        this.manager.getZone().runOutsideAngular(function () { dom_adapter_1.DOM.on(element, eventName, outsideHandler); });
-	    };
-	    DomEventsPlugin.prototype.addGlobalEventListener = function (target, eventName, handler) {
-	        var element = dom_adapter_1.DOM.getGlobalEventTarget(target);
-	        var zone = this.manager.getZone();
-	        var outsideHandler = function (event) { return zone.run(function () { return handler(event); }); };
-	        return this.manager.getZone().runOutsideAngular(function () { return dom_adapter_1.DOM.onAndCancel(element, eventName, outsideHandler); });
-	    };
-	    DomEventsPlugin = __decorate([
-	        core_1.Injectable(), 
-	        __metadata('design:paramtypes', [])
-	    ], DomEventsPlugin);
-	    return DomEventsPlugin;
-	})(event_manager_1.EventManagerPlugin);
-	exports.DomEventsPlugin = DomEventsPlugin;
-
-
-/***/ },
-/* 197 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-	    return c > 3 && r && Object.defineProperty(target, key, r), r;
-	};
-	var __metadata = (this && this.__metadata) || function (k, v) {
-	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-	};
-	var __param = (this && this.__param) || function (paramIndex, decorator) {
-	    return function (target, key) { decorator(target, key, paramIndex); }
-	};
-	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(14);
-	var di_1 = __webpack_require__(6);
-	var ng_zone_1 = __webpack_require__(81);
-	var collection_1 = __webpack_require__(12);
-	exports.EVENT_MANAGER_PLUGINS = lang_1.CONST_EXPR(new di_1.OpaqueToken("EventManagerPlugins"));
-	var EventManager = (function () {
-	    function EventManager(plugins, _zone) {
-	        var _this = this;
-	        this._zone = _zone;
-	        plugins.forEach(function (p) { return p.manager = _this; });
-	        this._plugins = collection_1.ListWrapper.reversed(plugins);
-	    }
-	    EventManager.prototype.addEventListener = function (element, eventName, handler) {
-	        var plugin = this._findPluginFor(eventName);
-	        plugin.addEventListener(element, eventName, handler);
-	    };
-	    EventManager.prototype.addGlobalEventListener = function (target, eventName, handler) {
-	        var plugin = this._findPluginFor(eventName);
-	        return plugin.addGlobalEventListener(target, eventName, handler);
-	    };
-	    EventManager.prototype.getZone = function () { return this._zone; };
-	    /** @internal */
-	    EventManager.prototype._findPluginFor = function (eventName) {
-	        var plugins = this._plugins;
-	        for (var i = 0; i < plugins.length; i++) {
-	            var plugin = plugins[i];
-	            if (plugin.supports(eventName)) {
-	                return plugin;
-	            }
-	        }
-	        throw new exceptions_1.BaseException("No event manager plugin found for event " + eventName);
-	    };
-	    EventManager = __decorate([
-	        di_1.Injectable(),
-	        __param(0, di_1.Inject(exports.EVENT_MANAGER_PLUGINS)), 
-	        __metadata('design:paramtypes', [Array, ng_zone_1.NgZone])
-	    ], EventManager);
-	    return EventManager;
-	})();
-	exports.EventManager = EventManager;
-	var EventManagerPlugin = (function () {
-	    function EventManagerPlugin() {
-	    }
-	    // That is equivalent to having supporting $event.target
-	    EventManagerPlugin.prototype.supports = function (eventName) { return false; };
-	    EventManagerPlugin.prototype.addEventListener = function (element, eventName, handler) {
-	        throw "not implemented";
-	    };
-	    EventManagerPlugin.prototype.addGlobalEventListener = function (element, eventName, handler) {
-	        throw "not implemented";
-	    };
-	    return EventManagerPlugin;
-	})();
-	exports.EventManagerPlugin = EventManagerPlugin;
-
-
-/***/ },
-/* 198 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-	    return c > 3 && r && Object.defineProperty(target, key, r), r;
-	};
-	var __metadata = (this && this.__metadata) || function (k, v) {
-	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-	};
-	var dom_adapter_1 = __webpack_require__(192);
-	var lang_1 = __webpack_require__(5);
-	var collection_1 = __webpack_require__(12);
-	var event_manager_1 = __webpack_require__(197);
-	var di_1 = __webpack_require__(6);
-	var modifierKeys = ['alt', 'control', 'meta', 'shift'];
-	var modifierKeyGetters = {
-	    'alt': function (event) { return event.altKey; },
-	    'control': function (event) { return event.ctrlKey; },
-	    'meta': function (event) { return event.metaKey; },
-	    'shift': function (event) { return event.shiftKey; }
-	};
-	var KeyEventsPlugin = (function (_super) {
-	    __extends(KeyEventsPlugin, _super);
-	    function KeyEventsPlugin() {
-	        _super.call(this);
-	    }
-	    KeyEventsPlugin.prototype.supports = function (eventName) {
-	        return lang_1.isPresent(KeyEventsPlugin.parseEventName(eventName));
-	    };
-	    KeyEventsPlugin.prototype.addEventListener = function (element, eventName, handler) {
-	        var parsedEvent = KeyEventsPlugin.parseEventName(eventName);
-	        var outsideHandler = KeyEventsPlugin.eventCallback(element, collection_1.StringMapWrapper.get(parsedEvent, 'fullKey'), handler, this.manager.getZone());
-	        this.manager.getZone().runOutsideAngular(function () {
-	            dom_adapter_1.DOM.on(element, collection_1.StringMapWrapper.get(parsedEvent, 'domEventName'), outsideHandler);
-	        });
-	    };
-	    KeyEventsPlugin.parseEventName = function (eventName) {
-	        var parts = eventName.toLowerCase().split('.');
-	        var domEventName = parts.shift();
-	        if ((parts.length === 0) ||
-	            !(lang_1.StringWrapper.equals(domEventName, 'keydown') ||
-	                lang_1.StringWrapper.equals(domEventName, 'keyup'))) {
-	            return null;
-	        }
-	        var key = KeyEventsPlugin._normalizeKey(parts.pop());
-	        var fullKey = '';
-	        modifierKeys.forEach(function (modifierName) {
-	            if (collection_1.ListWrapper.contains(parts, modifierName)) {
-	                collection_1.ListWrapper.remove(parts, modifierName);
-	                fullKey += modifierName + '.';
-	            }
-	        });
-	        fullKey += key;
-	        if (parts.length != 0 || key.length === 0) {
-	            // returning null instead of throwing to let another plugin process the event
-	            return null;
-	        }
-	        var result = collection_1.StringMapWrapper.create();
-	        collection_1.StringMapWrapper.set(result, 'domEventName', domEventName);
-	        collection_1.StringMapWrapper.set(result, 'fullKey', fullKey);
-	        return result;
-	    };
-	    KeyEventsPlugin.getEventFullKey = function (event) {
-	        var fullKey = '';
-	        var key = dom_adapter_1.DOM.getEventKey(event);
-	        key = key.toLowerCase();
-	        if (lang_1.StringWrapper.equals(key, ' ')) {
-	            key = 'space'; // for readability
-	        }
-	        else if (lang_1.StringWrapper.equals(key, '.')) {
-	            key = 'dot'; // because '.' is used as a separator in event names
-	        }
-	        modifierKeys.forEach(function (modifierName) {
-	            if (modifierName != key) {
-	                var modifierGetter = collection_1.StringMapWrapper.get(modifierKeyGetters, modifierName);
-	                if (modifierGetter(event)) {
-	                    fullKey += modifierName + '.';
-	                }
-	            }
-	        });
-	        fullKey += key;
-	        return fullKey;
-	    };
-	    KeyEventsPlugin.eventCallback = function (element, fullKey, handler, zone) {
-	        return function (event) {
-	            if (lang_1.StringWrapper.equals(KeyEventsPlugin.getEventFullKey(event), fullKey)) {
-	                zone.run(function () { return handler(event); });
-	            }
-	        };
-	    };
-	    /** @internal */
-	    KeyEventsPlugin._normalizeKey = function (keyName) {
-	        // TODO: switch to a StringMap if the mapping grows too much
-	        switch (keyName) {
-	            case 'esc':
-	                return 'escape';
-	            default:
-	                return keyName;
-	        }
-	    };
-	    KeyEventsPlugin = __decorate([
-	        di_1.Injectable(), 
-	        __metadata('design:paramtypes', [])
-	    ], KeyEventsPlugin);
-	    return KeyEventsPlugin;
-	})(event_manager_1.EventManagerPlugin);
-	exports.KeyEventsPlugin = KeyEventsPlugin;
-
-
-/***/ },
-/* 199 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-	    return c > 3 && r && Object.defineProperty(target, key, r), r;
-	};
-	var __metadata = (this && this.__metadata) || function (k, v) {
-	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-	};
-	var hammer_common_1 = __webpack_require__(200);
-	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(14);
-	var di_1 = __webpack_require__(6);
-	var HammerGesturesPlugin = (function (_super) {
-	    __extends(HammerGesturesPlugin, _super);
-	    function HammerGesturesPlugin() {
-	        _super.apply(this, arguments);
-	    }
-	    HammerGesturesPlugin.prototype.supports = function (eventName) {
-	        if (!_super.prototype.supports.call(this, eventName))
-	            return false;
-	        if (!lang_1.isPresent(window['Hammer'])) {
-	            throw new exceptions_1.BaseException("Hammer.js is not loaded, can not bind " + eventName + " event");
-	        }
-	        return true;
-	    };
-	    HammerGesturesPlugin.prototype.addEventListener = function (element, eventName, handler) {
-	        var zone = this.manager.getZone();
-	        eventName = eventName.toLowerCase();
-	        zone.runOutsideAngular(function () {
-	            // Creating the manager bind events, must be done outside of angular
-	            var mc = new Hammer(element);
-	            mc.get('pinch').set({ enable: true });
-	            mc.get('rotate').set({ enable: true });
-	            mc.on(eventName, function (eventObj) { zone.run(function () { handler(eventObj); }); });
-	        });
-	    };
-	    HammerGesturesPlugin = __decorate([
-	        di_1.Injectable(), 
-	        __metadata('design:paramtypes', [])
-	    ], HammerGesturesPlugin);
-	    return HammerGesturesPlugin;
-	})(hammer_common_1.HammerGesturesPluginCommon);
-	exports.HammerGesturesPlugin = HammerGesturesPlugin;
-
-
-/***/ },
-/* 200 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var event_manager_1 = __webpack_require__(197);
-	var collection_1 = __webpack_require__(12);
-	var _eventNames = {
-	    // pan
-	    'pan': true,
-	    'panstart': true,
-	    'panmove': true,
-	    'panend': true,
-	    'pancancel': true,
-	    'panleft': true,
-	    'panright': true,
-	    'panup': true,
-	    'pandown': true,
-	    // pinch
-	    'pinch': true,
-	    'pinchstart': true,
-	    'pinchmove': true,
-	    'pinchend': true,
-	    'pinchcancel': true,
-	    'pinchin': true,
-	    'pinchout': true,
-	    // press
-	    'press': true,
-	    'pressup': true,
-	    // rotate
-	    'rotate': true,
-	    'rotatestart': true,
-	    'rotatemove': true,
-	    'rotateend': true,
-	    'rotatecancel': true,
-	    // swipe
-	    'swipe': true,
-	    'swipeleft': true,
-	    'swiperight': true,
-	    'swipeup': true,
-	    'swipedown': true,
-	    // tap
-	    'tap': true,
-	};
-	var HammerGesturesPluginCommon = (function (_super) {
-	    __extends(HammerGesturesPluginCommon, _super);
-	    function HammerGesturesPluginCommon() {
-	        _super.call(this);
-	    }
-	    HammerGesturesPluginCommon.prototype.supports = function (eventName) {
-	        eventName = eventName.toLowerCase();
-	        return collection_1.StringMapWrapper.contains(_eventNames, eventName);
-	    };
-	    return HammerGesturesPluginCommon;
-	})(event_manager_1.EventManagerPlugin);
-	exports.HammerGesturesPluginCommon = HammerGesturesPluginCommon;
-
-
-/***/ },
-/* 201 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var di_1 = __webpack_require__(6);
-	var lang_1 = __webpack_require__(5);
-	/**
-	 * A DI Token representing the main rendering context. In a browser this is the DOM Document.
-	 *
-	 * Note: Document might not be available in the Application Context when Application and Rendering
-	 * Contexts are not the same (e.g. when running the application into a Web Worker).
-	 */
-	exports.DOCUMENT = lang_1.CONST_EXPR(new di_1.OpaqueToken('DocumentToken'));
-
-
-/***/ },
-/* 202 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-	    return c > 3 && r && Object.defineProperty(target, key, r), r;
-	};
-	var __metadata = (this && this.__metadata) || function (k, v) {
-	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-	};
-	var __param = (this && this.__param) || function (paramIndex, decorator) {
-	    return function (target, key) { decorator(target, key, paramIndex); }
-	};
-	var di_1 = __webpack_require__(6);
-	var animation_builder_1 = __webpack_require__(203);
-	var lang_1 = __webpack_require__(5);
-	var exceptions_1 = __webpack_require__(14);
-	var shared_styles_host_1 = __webpack_require__(210);
-	var profile_1 = __webpack_require__(45);
-	var core_1 = __webpack_require__(2);
-	var event_manager_1 = __webpack_require__(197);
-	var dom_tokens_1 = __webpack_require__(201);
-	var view_factory_1 = __webpack_require__(178);
-	var view_1 = __webpack_require__(179);
-	var metadata_1 = __webpack_require__(3);
-	var dom_adapter_1 = __webpack_require__(192);
-	var util_1 = __webpack_require__(208);
-	var NAMESPACE_URIS = lang_1.CONST_EXPR({ 'xlink': 'http://www.w3.org/1999/xlink', 'svg': 'http://www.w3.org/2000/svg' });
-	var TEMPLATE_COMMENT_TEXT = 'template bindings={}';
-	var TEMPLATE_BINDINGS_EXP = /^template bindings=(.*)$/g;
-	var DomRenderer = (function (_super) {
-	    __extends(DomRenderer, _super);
-	    function DomRenderer() {
-	        _super.apply(this, arguments);
-	    }
-	    DomRenderer.prototype.getNativeElementSync = function (location) {
-	        return resolveInternalDomView(location.renderView).boundElements[location.boundElementIndex];
-	    };
-	    DomRenderer.prototype.getRootNodes = function (fragment) { return resolveInternalDomFragment(fragment); };
-	    DomRenderer.prototype.attachFragmentAfterFragment = function (previousFragmentRef, fragmentRef) {
-	        var previousFragmentNodes = resolveInternalDomFragment(previousFragmentRef);
-	        if (previousFragmentNodes.length > 0) {
-	            var sibling = previousFragmentNodes[previousFragmentNodes.length - 1];
-	            var nodes = resolveInternalDomFragment(fragmentRef);
-	            moveNodesAfterSibling(sibling, nodes);
-	            this.animateNodesEnter(nodes);
-	        }
-	    };
-	    /**
-	     * Iterates through all nodes being added to the DOM and animates them if necessary
-	     * @param nodes
-	     */
-	    DomRenderer.prototype.animateNodesEnter = function (nodes) {
-	        for (var i = 0; i < nodes.length; i++)
-	            this.animateNodeEnter(nodes[i]);
-	    };
-	    DomRenderer.prototype.attachFragmentAfterElement = function (elementRef, fragmentRef) {
-	        var parentView = resolveInternalDomView(elementRef.renderView);
-	        var element = parentView.boundElements[elementRef.boundElementIndex];
-	        var nodes = resolveInternalDomFragment(fragmentRef);
-	        moveNodesAfterSibling(element, nodes);
-	        this.animateNodesEnter(nodes);
-	    };
-	    DomRenderer.prototype.hydrateView = function (viewRef) { resolveInternalDomView(viewRef).hydrate(); };
-	    DomRenderer.prototype.dehydrateView = function (viewRef) { resolveInternalDomView(viewRef).dehydrate(); };
-	    DomRenderer.prototype.createTemplateAnchor = function (attrNameAndValues) {
-	        return dom_adapter_1.DOM.createComment(TEMPLATE_COMMENT_TEXT);
-	    };
-	    DomRenderer.prototype.createText = function (value) { return dom_adapter_1.DOM.createTextNode(lang_1.isPresent(value) ? value : ''); };
-	    DomRenderer.prototype.appendChild = function (parent, child) { dom_adapter_1.DOM.appendChild(parent, child); };
-	    DomRenderer.prototype.setElementProperty = function (location, propertyName, propertyValue) {
-	        var view = resolveInternalDomView(location.renderView);
-	        dom_adapter_1.DOM.setProperty(view.boundElements[location.boundElementIndex], propertyName, propertyValue);
-	    };
-	    DomRenderer.prototype.setElementAttribute = function (location, attributeName, attributeValue) {
-	        var view = resolveInternalDomView(location.renderView);
-	        var element = view.boundElements[location.boundElementIndex];
-	        if (lang_1.isPresent(attributeValue)) {
-	            dom_adapter_1.DOM.setAttribute(element, attributeName, lang_1.stringify(attributeValue));
-	        }
-	        else {
-	            dom_adapter_1.DOM.removeAttribute(element, attributeName);
-	        }
-	    };
-	    /**
-	     * Used only in debug mode to serialize property changes to comment nodes,
-	     * such as <template> placeholders.
-	     */
-	    DomRenderer.prototype.setBindingDebugInfo = function (location, propertyName, propertyValue) {
-	        var view = resolveInternalDomView(location.renderView);
-	        var element = view.boundElements[location.boundElementIndex];
-	        var dashCasedPropertyName = util_1.camelCaseToDashCase(propertyName);
-	        if (dom_adapter_1.DOM.isCommentNode(element)) {
-	            var existingBindings = lang_1.RegExpWrapper.firstMatch(TEMPLATE_BINDINGS_EXP, lang_1.StringWrapper.replaceAll(dom_adapter_1.DOM.getText(element), /\n/g, ''));
-	            var parsedBindings = lang_1.Json.parse(existingBindings[1]);
-	            parsedBindings[dashCasedPropertyName] = propertyValue;
-	            dom_adapter_1.DOM.setText(element, lang_1.StringWrapper.replace(TEMPLATE_COMMENT_TEXT, '{}', lang_1.Json.stringify(parsedBindings)));
-	        }
-	        else {
-	            this.setElementAttribute(location, propertyName, propertyValue);
-	        }
-	    };
-	    DomRenderer.prototype.setElementClass = function (location, className, isAdd) {
-	        var view = resolveInternalDomView(location.renderView);
-	        var element = view.boundElements[location.boundElementIndex];
-	        if (isAdd) {
-	            dom_adapter_1.DOM.addClass(element, className);
-	        }
-	        else {
-	            dom_adapter_1.DOM.removeClass(element, className);
-	        }
-	    };
-	    DomRenderer.prototype.setElementStyle = function (location, styleName, styleValue) {
-	        var view = resolveInternalDomView(location.renderView);
-	        var element = view.boundElements[location.boundElementIndex];
-	        if (lang_1.isPresent(styleValue)) {
-	            dom_adapter_1.DOM.setStyle(element, styleName, lang_1.stringify(styleValue));
-	        }
-	        else {
-	            dom_adapter_1.DOM.removeStyle(element, styleName);
-	        }
-	    };
-	    DomRenderer.prototype.invokeElementMethod = function (location, methodName, args) {
-	        var view = resolveInternalDomView(location.renderView);
-	        var element = view.boundElements[location.boundElementIndex];
-	        dom_adapter_1.DOM.invoke(element, methodName, args);
-	    };
-	    DomRenderer.prototype.setText = function (viewRef, textNodeIndex, text) {
-	        var view = resolveInternalDomView(viewRef);
-	        dom_adapter_1.DOM.setText(view.boundTextNodes[textNodeIndex], text);
-	    };
-	    DomRenderer.prototype.setEventDispatcher = function (viewRef, dispatcher) {
-	        resolveInternalDomView(viewRef).setEventDispatcher(dispatcher);
-	    };
-	    return DomRenderer;
-	})(core_1.Renderer);
-	exports.DomRenderer = DomRenderer;
-	var DomRenderer_ = (function (_super) {
-	    __extends(DomRenderer_, _super);
-	    function DomRenderer_(_eventManager, _domSharedStylesHost, _animate, document) {
-	        _super.call(this);
-	        this._eventManager = _eventManager;
-	        this._domSharedStylesHost = _domSharedStylesHost;
-	        this._animate = _animate;
-	        this._componentTpls = new Map();
-	        /** @internal */
-	        this._createRootHostViewScope = profile_1.wtfCreateScope('DomRenderer#createRootHostView()');
-	        /** @internal */
-	        this._createViewScope = profile_1.wtfCreateScope('DomRenderer#createView()');
-	        /** @internal */
-	        this._detachFragmentScope = profile_1.wtfCreateScope('DomRenderer#detachFragment()');
-	        this._document = document;
-	    }
-	    DomRenderer_.prototype.registerComponentTemplate = function (template) {
-	        this._componentTpls.set(template.id, template);
-	        if (template.encapsulation !== metadata_1.ViewEncapsulation.Native) {
-	            var encapsulatedStyles = view_factory_1.encapsulateStyles(template);
-	            this._domSharedStylesHost.addStyles(encapsulatedStyles);
-	        }
-	    };
-	    DomRenderer_.prototype.createProtoView = function (componentTemplateId, cmds) {
-	        return new view_1.DefaultProtoViewRef(this._componentTpls.get(componentTemplateId), cmds);
-	    };
-	    DomRenderer_.prototype.resolveComponentTemplate = function (templateId) {
-	        return this._componentTpls.get(templateId);
-	    };
-	    DomRenderer_.prototype.createRootHostView = function (hostProtoViewRef, fragmentCount, hostElementSelector) {
-	        var s = this._createRootHostViewScope();
-	        var element = dom_adapter_1.DOM.querySelector(this._document, hostElementSelector);
-	        if (lang_1.isBlank(element)) {
-	            profile_1.wtfLeave(s);
-	            throw new exceptions_1.BaseException("The selector \"" + hostElementSelector + "\" did not match any elements");
-	        }
-	        return profile_1.wtfLeave(s, this._createView(hostProtoViewRef, element));
-	    };
-	    DomRenderer_.prototype.createView = function (protoViewRef, fragmentCount) {
-	        var s = this._createViewScope();
-	        return profile_1.wtfLeave(s, this._createView(protoViewRef, null));
-	    };
-	    DomRenderer_.prototype._createView = function (protoViewRef, inplaceElement) {
-	        var dpvr = protoViewRef;
-	        var view = view_factory_1.createRenderView(dpvr.template, dpvr.cmds, inplaceElement, this);
-	        var sdRoots = view.nativeShadowRoots;
-	        for (var i = 0; i < sdRoots.length; i++) {
-	            this._domSharedStylesHost.addHost(sdRoots[i]);
-	        }
-	        return new core_1.RenderViewWithFragments(view, view.fragments);
-	    };
-	    DomRenderer_.prototype.destroyView = function (viewRef) {
-	        var view = viewRef;
-	        var sdRoots = view.nativeShadowRoots;
-	        for (var i = 0; i < sdRoots.length; i++) {
-	            this._domSharedStylesHost.removeHost(sdRoots[i]);
-	        }
-	    };
-	    DomRenderer_.prototype.animateNodeEnter = function (node) {
-	        if (dom_adapter_1.DOM.isElementNode(node) && dom_adapter_1.DOM.hasClass(node, 'ng-animate')) {
-	            dom_adapter_1.DOM.addClass(node, 'ng-enter');
-	            this._animate.css()
-	                .addAnimationClass('ng-enter-active')
-	                .start(node)
-	                .onComplete(function () { dom_adapter_1.DOM.removeClass(node, 'ng-enter'); });
-	        }
-	    };
-	    DomRenderer_.prototype.animateNodeLeave = function (node) {
-	        if (dom_adapter_1.DOM.isElementNode(node) && dom_adapter_1.DOM.hasClass(node, 'ng-animate')) {
-	            dom_adapter_1.DOM.addClass(node, 'ng-leave');
-	            this._animate.css()
-	                .addAnimationClass('ng-leave-active')
-	                .start(node)
-	                .onComplete(function () {
-	                dom_adapter_1.DOM.removeClass(node, 'ng-leave');
-	                dom_adapter_1.DOM.remove(node);
-	            });
-	        }
-	        else {
-	            dom_adapter_1.DOM.remove(node);
-	        }
-	    };
-	    DomRenderer_.prototype.detachFragment = function (fragmentRef) {
-	        var s = this._detachFragmentScope();
-	        var fragmentNodes = resolveInternalDomFragment(fragmentRef);
-	        for (var i = 0; i < fragmentNodes.length; i++) {
-	            this.animateNodeLeave(fragmentNodes[i]);
-	        }
-	        profile_1.wtfLeave(s);
-	    };
-	    DomRenderer_.prototype.createElement = function (name, attrNameAndValues) {
-	        var nsAndName = splitNamespace(name);
-	        var el = lang_1.isPresent(nsAndName[0]) ?
-	            dom_adapter_1.DOM.createElementNS(NAMESPACE_URIS[nsAndName[0]], nsAndName[1]) :
-	            dom_adapter_1.DOM.createElement(nsAndName[1]);
-	        this._setAttributes(el, attrNameAndValues);
-	        return el;
-	    };
-	    DomRenderer_.prototype.mergeElement = function (existing, attrNameAndValues) {
-	        dom_adapter_1.DOM.clearNodes(existing);
-	        this._setAttributes(existing, attrNameAndValues);
-	    };
-	    DomRenderer_.prototype._setAttributes = function (node, attrNameAndValues) {
-	        for (var attrIdx = 0; attrIdx < attrNameAndValues.length; attrIdx += 2) {
-	            var attrNs;
-	            var attrName = attrNameAndValues[attrIdx];
-	            var nsAndName = splitNamespace(attrName);
-	            if (lang_1.isPresent(nsAndName[0])) {
-	                attrName = nsAndName[0] + ':' + nsAndName[1];
-	                attrNs = NAMESPACE_URIS[nsAndName[0]];
-	            }
-	            var attrValue = attrNameAndValues[attrIdx + 1];
-	            if (lang_1.isPresent(attrNs)) {
-	                dom_adapter_1.DOM.setAttributeNS(node, attrNs, attrName, attrValue);
-	            }
-	            else {
-	                dom_adapter_1.DOM.setAttribute(node, nsAndName[1], attrValue);
-	            }
-	        }
-	    };
-	    DomRenderer_.prototype.createRootContentInsertionPoint = function () {
-	        return dom_adapter_1.DOM.createComment('root-content-insertion-point');
-	    };
-	    DomRenderer_.prototype.createShadowRoot = function (host, templateId) {
-	        var sr = dom_adapter_1.DOM.createShadowRoot(host);
-	        var tpl = this._componentTpls.get(templateId);
-	        for (var i = 0; i < tpl.styles.length; i++) {
-	            dom_adapter_1.DOM.appendChild(sr, dom_adapter_1.DOM.createStyleElement(tpl.styles[i]));
-	        }
-	        return sr;
-	    };
-	    DomRenderer_.prototype.on = function (element, eventName, callback) {
-	        this._eventManager.addEventListener(element, eventName, decoratePreventDefault(callback));
-	    };
-	    DomRenderer_.prototype.globalOn = function (target, eventName, callback) {
-	        return this._eventManager.addGlobalEventListener(target, eventName, decoratePreventDefault(callback));
-	    };
-	    DomRenderer_ = __decorate([
-	        di_1.Injectable(),
-	        __param(3, di_1.Inject(dom_tokens_1.DOCUMENT)), 
-	        __metadata('design:paramtypes', [event_manager_1.EventManager, shared_styles_host_1.DomSharedStylesHost, animation_builder_1.AnimationBuilder, Object])
-	    ], DomRenderer_);
-	    return DomRenderer_;
-	})(DomRenderer);
-	exports.DomRenderer_ = DomRenderer_;
-	function resolveInternalDomView(viewRef) {
-	    return viewRef;
-	}
-	function resolveInternalDomFragment(fragmentRef) {
-	    return fragmentRef.nodes;
-	}
-	function moveNodesAfterSibling(sibling, nodes) {
-	    var parent = dom_adapter_1.DOM.parentElement(sibling);
-	    if (nodes.length > 0 && lang_1.isPresent(parent)) {
-	        var nextSibling = dom_adapter_1.DOM.nextSibling(sibling);
-	        if (lang_1.isPresent(nextSibling)) {
-	            for (var i = 0; i < nodes.length; i++) {
-	                dom_adapter_1.DOM.insertBefore(nextSibling, nodes[i]);
-	            }
-	        }
-	        else {
-	            for (var i = 0; i < nodes.length; i++) {
-	                dom_adapter_1.DOM.appendChild(parent, nodes[i]);
-	            }
-	        }
-	    }
-	}
-	function decoratePreventDefault(eventHandler) {
-	    return function (event) {
-	        var allowDefaultBehavior = eventHandler(event);
-	        if (!allowDefaultBehavior) {
-	            // TODO(tbosch): move preventDefault into event plugins...
-	            dom_adapter_1.DOM.preventDefault(event);
-	        }
-	    };
-	}
-	var NS_PREFIX_RE = /^@([^:]+):(.+)/g;
-	function splitNamespace(name) {
-	    if (name[0] != '@') {
-	        return [null, name];
-	    }
-	    var match = lang_1.RegExpWrapper.firstMatch(NS_PREFIX_RE, name);
-	    return [match[1], match[2]];
-	}
-
-
-/***/ },
-/* 203 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-	    return c > 3 && r && Object.defineProperty(target, key, r), r;
-	};
-	var __metadata = (this && this.__metadata) || function (k, v) {
-	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-	};
-	var di_1 = __webpack_require__(6);
-	var css_animation_builder_1 = __webpack_require__(204);
-	var browser_details_1 = __webpack_require__(209);
-	var AnimationBuilder = (function () {
-	    /**
-	     * Used for DI
-	     * @param browserDetails
-	     */
-	    function AnimationBuilder(browserDetails) {
-	        this.browserDetails = browserDetails;
-	    }
-	    /**
-	     * Creates a new CSS Animation
-	     * @returns {CssAnimationBuilder}
-	     */
-	    AnimationBuilder.prototype.css = function () { return new css_animation_builder_1.CssAnimationBuilder(this.browserDetails); };
-	    AnimationBuilder = __decorate([
-	        di_1.Injectable(), 
-	        __metadata('design:paramtypes', [browser_details_1.BrowserDetails])
-	    ], AnimationBuilder);
-	    return AnimationBuilder;
-	})();
-	exports.AnimationBuilder = AnimationBuilder;
-
-
-/***/ },
-/* 204 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var css_animation_options_1 = __webpack_require__(205);
-	var animation_1 = __webpack_require__(206);
-	var CssAnimationBuilder = (function () {
-	    /**
-	     * Accepts public properties for CssAnimationBuilder
-	     */
-	    function CssAnimationBuilder(browserDetails) {
-	        this.browserDetails = browserDetails;
-	        /** @type {CssAnimationOptions} */
-	        this.data = new css_animation_options_1.CssAnimationOptions();
-	    }
-	    /**
-	     * Adds a temporary class that will be removed at the end of the animation
-	     * @param className
-	     */
-	    CssAnimationBuilder.prototype.addAnimationClass = function (className) {
-	        this.data.animationClasses.push(className);
-	        return this;
-	    };
-	    /**
-	     * Adds a class that will remain on the element after the animation has finished
-	     * @param className
-	     */
-	    CssAnimationBuilder.prototype.addClass = function (className) {
-	        this.data.classesToAdd.push(className);
-	        return this;
-	    };
-	    /**
-	     * Removes a class from the element
-	     * @param className
-	     */
-	    CssAnimationBuilder.prototype.removeClass = function (className) {
-	        this.data.classesToRemove.push(className);
-	        return this;
-	    };
-	    /**
-	     * Sets the animation duration (and overrides any defined through CSS)
-	     * @param duration
-	     */
-	    CssAnimationBuilder.prototype.setDuration = function (duration) {
-	        this.data.duration = duration;
-	        return this;
-	    };
-	    /**
-	     * Sets the animation delay (and overrides any defined through CSS)
-	     * @param delay
-	     */
-	    CssAnimationBuilder.prototype.setDelay = function (delay) {
-	        this.data.delay = delay;
-	        return this;
-	    };
-	    /**
-	     * Sets styles for both the initial state and the destination state
-	     * @param from
-	     * @param to
-	     */
-	    CssAnimationBuilder.prototype.setStyles = function (from, to) {
-	        return this.setFromStyles(from).setToStyles(to);
-	    };
-	    /**
-	     * Sets the initial styles for the animation
-	     * @param from
-	     */
-	    CssAnimationBuilder.prototype.setFromStyles = function (from) {
-	        this.data.fromStyles = from;
-	        return this;
-	    };
-	    /**
-	     * Sets the destination styles for the animation
-	     * @param to
-	     */
-	    CssAnimationBuilder.prototype.setToStyles = function (to) {
-	        this.data.toStyles = to;
-	        return this;
-	    };
-	    /**
-	     * Starts the animation and returns a promise
-	     * @param element
-	     */
-	    CssAnimationBuilder.prototype.start = function (element) {
-	        return new animation_1.Animation(element, this.data, this.browserDetails);
-	    };
-	    return CssAnimationBuilder;
-	})();
-	exports.CssAnimationBuilder = CssAnimationBuilder;
-
-
-/***/ },
-/* 205 */
-/***/ function(module, exports) {
-
-	var CssAnimationOptions = (function () {
-	    function CssAnimationOptions() {
-	        /** classes to be added to the element */
-	        this.classesToAdd = [];
-	        /** classes to be removed from the element */
-	        this.classesToRemove = [];
-	        /** classes to be added for the duration of the animation */
-	        this.animationClasses = [];
-	    }
-	    return CssAnimationOptions;
-	})();
-	exports.CssAnimationOptions = CssAnimationOptions;
-
-
-/***/ },
-/* 206 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var lang_1 = __webpack_require__(5);
-	var math_1 = __webpack_require__(207);
-	var util_1 = __webpack_require__(208);
-	var collection_1 = __webpack_require__(12);
-	var dom_adapter_1 = __webpack_require__(192);
-	var Animation = (function () {
-	    /**
-	     * Stores the start time and starts the animation
-	     * @param element
-	     * @param data
-	     * @param browserDetails
-	     */
-	    function Animation(element, data, browserDetails) {
-	        var _this = this;
-	        this.element = element;
-	        this.data = data;
-	        this.browserDetails = browserDetails;
-	        /** functions to be called upon completion */
-	        this.callbacks = [];
-	        /** functions for removing event listeners */
-	        this.eventClearFunctions = [];
-	        /** flag used to track whether or not the animation has finished */
-	        this.completed = false;
-	        this._stringPrefix = '';
-	        this.startTime = lang_1.DateWrapper.toMillis(lang_1.DateWrapper.now());
-	        this._stringPrefix = dom_adapter_1.DOM.getAnimationPrefix();
-	        this.setup();
-	        this.wait(function (timestamp) { return _this.start(); });
-	    }
-	    Object.defineProperty(Animation.prototype, "totalTime", {
-	        /** total amount of time that the animation should take including delay */
-	        get: function () {
-	            var delay = this.computedDelay != null ? this.computedDelay : 0;
-	            var duration = this.computedDuration != null ? this.computedDuration : 0;
-	            return delay + duration;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Animation.prototype.wait = function (callback) {
-	        // Firefox requires 2 frames for some reason
-	        this.browserDetails.raf(callback, 2);
-	    };
-	    /**
-	     * Sets up the initial styles before the animation is started
-	     */
-	    Animation.prototype.setup = function () {
-	        if (this.data.fromStyles != null)
-	            this.applyStyles(this.data.fromStyles);
-	        if (this.data.duration != null)
-	            this.applyStyles({ 'transitionDuration': this.data.duration.toString() + 'ms' });
-	        if (this.data.delay != null)
-	            this.applyStyles({ 'transitionDelay': this.data.delay.toString() + 'ms' });
-	    };
-	    /**
-	     * After the initial setup has occurred, this method adds the animation styles
-	     */
-	    Animation.prototype.start = function () {
-	        this.addClasses(this.data.classesToAdd);
-	        this.addClasses(this.data.animationClasses);
-	        this.removeClasses(this.data.classesToRemove);
-	        if (this.data.toStyles != null)
-	            this.applyStyles(this.data.toStyles);
-	        var computedStyles = dom_adapter_1.DOM.getComputedStyle(this.element);
-	        this.computedDelay =
-	            math_1.Math.max(this.parseDurationString(computedStyles.getPropertyValue(this._stringPrefix + 'transition-delay')), this.parseDurationString(this.element.style.getPropertyValue(this._stringPrefix + 'transition-delay')));
-	        this.computedDuration = math_1.Math.max(this.parseDurationString(computedStyles.getPropertyValue(this._stringPrefix + 'transition-duration')), this.parseDurationString(this.element.style.getPropertyValue(this._stringPrefix + 'transition-duration')));
-	        this.addEvents();
-	    };
-	    /**
-	     * Applies the provided styles to the element
-	     * @param styles
-	     */
-	    Animation.prototype.applyStyles = function (styles) {
-	        var _this = this;
-	        collection_1.StringMapWrapper.forEach(styles, function (value, key) {
-	            var dashCaseKey = util_1.camelCaseToDashCase(key);
-	            if (lang_1.isPresent(dom_adapter_1.DOM.getStyle(_this.element, dashCaseKey))) {
-	                dom_adapter_1.DOM.setStyle(_this.element, dashCaseKey, value.toString());
-	            }
-	            else {
-	                dom_adapter_1.DOM.setStyle(_this.element, _this._stringPrefix + dashCaseKey, value.toString());
-	            }
-	        });
-	    };
-	    /**
-	     * Adds the provided classes to the element
-	     * @param classes
-	     */
-	    Animation.prototype.addClasses = function (classes) {
-	        for (var i = 0, len = classes.length; i < len; i++)
-	            dom_adapter_1.DOM.addClass(this.element, classes[i]);
-	    };
-	    /**
-	     * Removes the provided classes from the element
-	     * @param classes
-	     */
-	    Animation.prototype.removeClasses = function (classes) {
-	        for (var i = 0, len = classes.length; i < len; i++)
-	            dom_adapter_1.DOM.removeClass(this.element, classes[i]);
-	    };
-	    /**
-	     * Adds events to track when animations have finished
-	     */
-	    Animation.prototype.addEvents = function () {
-	        var _this = this;
-	        if (this.totalTime > 0) {
-	            this.eventClearFunctions.push(dom_adapter_1.DOM.onAndCancel(this.element, dom_adapter_1.DOM.getTransitionEnd(), function (event) { return _this.handleAnimationEvent(event); }));
-	        }
-	        else {
-	            this.handleAnimationCompleted();
-	        }
-	    };
-	    Animation.prototype.handleAnimationEvent = function (event) {
-	        var elapsedTime = math_1.Math.round(event.elapsedTime * 1000);
-	        if (!this.browserDetails.elapsedTimeIncludesDelay)
-	            elapsedTime += this.computedDelay;
-	        event.stopPropagation();
-	        if (elapsedTime >= this.totalTime)
-	            this.handleAnimationCompleted();
-	    };
-	    /**
-	     * Runs all animation callbacks and removes temporary classes
-	     */
-	    Animation.prototype.handleAnimationCompleted = function () {
-	        this.removeClasses(this.data.animationClasses);
-	        this.callbacks.forEach(function (callback) { return callback(); });
-	        this.callbacks = [];
-	        this.eventClearFunctions.forEach(function (fn) { return fn(); });
-	        this.eventClearFunctions = [];
-	        this.completed = true;
-	    };
-	    /**
-	     * Adds animation callbacks to be called upon completion
-	     * @param callback
-	     * @returns {Animation}
-	     */
-	    Animation.prototype.onComplete = function (callback) {
-	        if (this.completed) {
-	            callback();
-	        }
-	        else {
-	            this.callbacks.push(callback);
-	        }
-	        return this;
-	    };
-	    /**
-	     * Converts the duration string to the number of milliseconds
-	     * @param duration
-	     * @returns {number}
-	     */
-	    Animation.prototype.parseDurationString = function (duration) {
-	        var maxValue = 0;
-	        // duration must have at least 2 characters to be valid. (number + type)
-	        if (duration == null || duration.length < 2) {
-	            return maxValue;
-	        }
-	        else if (duration.substring(duration.length - 2) == 'ms') {
-	            var value = lang_1.NumberWrapper.parseInt(this.stripLetters(duration), 10);
-	            if (value > maxValue)
-	                maxValue = value;
-	        }
-	        else if (duration.substring(duration.length - 1) == 's') {
-	            var ms = lang_1.NumberWrapper.parseFloat(this.stripLetters(duration)) * 1000;
-	            var value = math_1.Math.floor(ms);
-	            if (value > maxValue)
-	                maxValue = value;
-	        }
-	        return maxValue;
-	    };
-	    /**
-	     * Strips the letters from the duration string
-	     * @param str
-	     * @returns {string}
-	     */
-	    Animation.prototype.stripLetters = function (str) {
-	        return lang_1.StringWrapper.replaceAll(str, lang_1.RegExpWrapper.create('[^0-9]+$', ''), '');
-	    };
-	    return Animation;
-	})();
-	exports.Animation = Animation;
-
-
-/***/ },
-/* 207 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var lang_1 = __webpack_require__(5);
-	exports.Math = lang_1.global.Math;
-	exports.NaN = typeof exports.NaN;
-
-
-/***/ },
-/* 208 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var lang_1 = __webpack_require__(5);
-	var CAMEL_CASE_REGEXP = /([A-Z])/g;
-	var DASH_CASE_REGEXP = /-([a-z])/g;
-	function camelCaseToDashCase(input) {
-	    return lang_1.StringWrapper.replaceAllMapped(input, CAMEL_CASE_REGEXP, function (m) { return '-' + m[1].toLowerCase(); });
-	}
-	exports.camelCaseToDashCase = camelCaseToDashCase;
-	function dashCaseToCamelCase(input) {
-	    return lang_1.StringWrapper.replaceAllMapped(input, DASH_CASE_REGEXP, function (m) { return m[1].toUpperCase(); });
-	}
-	exports.dashCaseToCamelCase = dashCaseToCamelCase;
-
-
-/***/ },
-/* 209 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-	    return c > 3 && r && Object.defineProperty(target, key, r), r;
-	};
-	var __metadata = (this && this.__metadata) || function (k, v) {
-	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-	};
-	var di_1 = __webpack_require__(6);
-	var math_1 = __webpack_require__(207);
-	var dom_adapter_1 = __webpack_require__(192);
-	var BrowserDetails = (function () {
-	    function BrowserDetails() {
-	        this.elapsedTimeIncludesDelay = false;
-	        this.doesElapsedTimeIncludesDelay();
-	    }
-	    /**
-	     * Determines if `event.elapsedTime` includes transition delay in the current browser.  At this
-	     * time, Chrome and Opera seem to be the only browsers that include this.
-	     */
-	    BrowserDetails.prototype.doesElapsedTimeIncludesDelay = function () {
-	        var _this = this;
-	        var div = dom_adapter_1.DOM.createElement('div');
-	        dom_adapter_1.DOM.setAttribute(div, 'style', "position: absolute; top: -9999px; left: -9999px; width: 1px;\n      height: 1px; transition: all 1ms linear 1ms;");
-	        // Firefox requires that we wait for 2 frames for some reason
-	        this.raf(function (timestamp) {
-	            dom_adapter_1.DOM.on(div, 'transitionend', function (event) {
-	                var elapsed = math_1.Math.round(event.elapsedTime * 1000);
-	                _this.elapsedTimeIncludesDelay = elapsed == 2;
-	                dom_adapter_1.DOM.remove(div);
-	            });
-	            dom_adapter_1.DOM.setStyle(div, 'width', '2px');
-	        }, 2);
-	    };
-	    BrowserDetails.prototype.raf = function (callback, frames) {
-	        if (frames === void 0) { frames = 1; }
-	        var queue = new RafQueue(callback, frames);
-	        return function () { return queue.cancel(); };
-	    };
-	    BrowserDetails = __decorate([
-	        di_1.Injectable(), 
-	        __metadata('design:paramtypes', [])
-	    ], BrowserDetails);
-	    return BrowserDetails;
-	})();
-	exports.BrowserDetails = BrowserDetails;
-	var RafQueue = (function () {
-	    function RafQueue(callback, frames) {
-	        this.callback = callback;
-	        this.frames = frames;
-	        this._raf();
-	    }
-	    RafQueue.prototype._raf = function () {
-	        var _this = this;
-	        this.currentFrameId = dom_adapter_1.DOM.requestAnimationFrame(function (timestamp) { return _this._nextFrame(timestamp); });
-	    };
-	    RafQueue.prototype._nextFrame = function (timestamp) {
-	        this.frames--;
-	        if (this.frames > 0) {
-	            this._raf();
-	        }
-	        else {
-	            this.callback(timestamp);
-	        }
-	    };
-	    RafQueue.prototype.cancel = function () {
-	        dom_adapter_1.DOM.cancelAnimationFrame(this.currentFrameId);
-	        this.currentFrameId = null;
-	    };
-	    return RafQueue;
-	})();
-
-
-/***/ },
-/* 210 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-	    return c > 3 && r && Object.defineProperty(target, key, r), r;
-	};
-	var __metadata = (this && this.__metadata) || function (k, v) {
-	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-	};
-	var __param = (this && this.__param) || function (paramIndex, decorator) {
-	    return function (target, key) { decorator(target, key, paramIndex); }
-	};
-	var dom_adapter_1 = __webpack_require__(192);
-	var di_1 = __webpack_require__(6);
-	var collection_1 = __webpack_require__(12);
-	var dom_tokens_1 = __webpack_require__(201);
-	var SharedStylesHost = (function () {
-	    function SharedStylesHost() {
-	        /** @internal */
-	        this._styles = [];
-	        /** @internal */
-	        this._stylesSet = new Set();
-	    }
-	    SharedStylesHost.prototype.addStyles = function (styles) {
-	        var _this = this;
-	        var additions = [];
-	        styles.forEach(function (style) {
-	            if (!collection_1.SetWrapper.has(_this._stylesSet, style)) {
-	                _this._stylesSet.add(style);
-	                _this._styles.push(style);
-	                additions.push(style);
-	            }
-	        });
-	        this.onStylesAdded(additions);
-	    };
-	    SharedStylesHost.prototype.onStylesAdded = function (additions) { };
-	    SharedStylesHost.prototype.getAllStyles = function () { return this._styles; };
-	    SharedStylesHost = __decorate([
-	        di_1.Injectable(), 
-	        __metadata('design:paramtypes', [])
-	    ], SharedStylesHost);
-	    return SharedStylesHost;
-	})();
-	exports.SharedStylesHost = SharedStylesHost;
-	var DomSharedStylesHost = (function (_super) {
-	    __extends(DomSharedStylesHost, _super);
-	    function DomSharedStylesHost(doc) {
-	        _super.call(this);
-	        this._hostNodes = new Set();
-	        this._hostNodes.add(doc.head);
-	    }
-	    /** @internal */
-	    DomSharedStylesHost.prototype._addStylesToHost = function (styles, host) {
-	        for (var i = 0; i < styles.length; i++) {
-	            var style = styles[i];
-	            dom_adapter_1.DOM.appendChild(host, dom_adapter_1.DOM.createStyleElement(style));
-	        }
-	    };
-	    DomSharedStylesHost.prototype.addHost = function (hostNode) {
-	        this._addStylesToHost(this._styles, hostNode);
-	        this._hostNodes.add(hostNode);
-	    };
-	    DomSharedStylesHost.prototype.removeHost = function (hostNode) { collection_1.SetWrapper.delete(this._hostNodes, hostNode); };
-	    DomSharedStylesHost.prototype.onStylesAdded = function (additions) {
-	        var _this = this;
-	        this._hostNodes.forEach(function (hostNode) { _this._addStylesToHost(additions, hostNode); });
-	    };
-	    DomSharedStylesHost = __decorate([
-	        di_1.Injectable(),
-	        __param(0, di_1.Inject(dom_tokens_1.DOCUMENT)), 
-	        __metadata('design:paramtypes', [Object])
-	    ], DomSharedStylesHost);
-	    return DomSharedStylesHost;
-	})(SharedStylesHost);
-	exports.DomSharedStylesHost = DomSharedStylesHost;
-
-
-/***/ },
-/* 211 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var collection_1 = __webpack_require__(12);
-	var lang_1 = __webpack_require__(5);
-	var dom_adapter_1 = __webpack_require__(192);
-	var generic_browser_adapter_1 = __webpack_require__(212);
-	var _attrToPropMap = {
-	    'class': 'className',
-	    'innerHtml': 'innerHTML',
-	    'readonly': 'readOnly',
-	    'tabindex': 'tabIndex'
-	};
-	var DOM_KEY_LOCATION_NUMPAD = 3;
-	// Map to convert some key or keyIdentifier values to what will be returned by getEventKey
-	var _keyMap = {
-	    // The following values are here for cross-browser compatibility and to match the W3C standard
-	    // cf http://www.w3.org/TR/DOM-Level-3-Events-key/
-	    '\b': 'Backspace',
-	    '\t': 'Tab',
-	    '\x7F': 'Delete',
-	    '\x1B': 'Escape',
-	    'Del': 'Delete',
-	    'Esc': 'Escape',
-	    'Left': 'ArrowLeft',
-	    'Right': 'ArrowRight',
-	    'Up': 'ArrowUp',
-	    'Down': 'ArrowDown',
-	    'Menu': 'ContextMenu',
-	    'Scroll': 'ScrollLock',
-	    'Win': 'OS'
-	};
-	// There is a bug in Chrome for numeric keypad keys:
-	// https://code.google.com/p/chromium/issues/detail?id=155654
-	// 1, 2, 3 ... are reported as A, B, C ...
-	var _chromeNumKeyPadMap = {
-	    'A': '1',
-	    'B': '2',
-	    'C': '3',
-	    'D': '4',
-	    'E': '5',
-	    'F': '6',
-	    'G': '7',
-	    'H': '8',
-	    'I': '9',
-	    'J': '*',
-	    'K': '+',
-	    'M': '-',
-	    'N': '.',
-	    'O': '/',
-	    '\x60': '0',
-	    '\x90': 'NumLock'
-	};
-	/* tslint:disable:requireParameterType */
-	var BrowserDomAdapter = (function (_super) {
-	    __extends(BrowserDomAdapter, _super);
-	    function BrowserDomAdapter() {
-	        _super.apply(this, arguments);
-	    }
-	    BrowserDomAdapter.prototype.parse = function (templateHtml) { throw new Error("parse not implemented"); };
-	    BrowserDomAdapter.makeCurrent = function () { dom_adapter_1.setRootDomAdapter(new BrowserDomAdapter()); };
-	    BrowserDomAdapter.prototype.hasProperty = function (element, name) { return name in element; };
-	    BrowserDomAdapter.prototype.setProperty = function (el, name, value) { el[name] = value; };
-	    BrowserDomAdapter.prototype.getProperty = function (el, name) { return el[name]; };
-	    BrowserDomAdapter.prototype.invoke = function (el, methodName, args) {
-	        el[methodName].apply(el, args);
-	    };
-	    // TODO(tbosch): move this into a separate environment class once we have it
-	    BrowserDomAdapter.prototype.logError = function (error) {
-	        if (window.console.error) {
-	            window.console.error(error);
-	        }
-	        else {
-	            window.console.log(error);
-	        }
-	    };
-	    BrowserDomAdapter.prototype.log = function (error) { window.console.log(error); };
-	    BrowserDomAdapter.prototype.logGroup = function (error) {
-	        if (window.console.group) {
-	            window.console.group(error);
-	            this.logError(error);
-	        }
-	        else {
-	            window.console.log(error);
-	        }
-	    };
-	    BrowserDomAdapter.prototype.logGroupEnd = function () {
-	        if (window.console.groupEnd) {
-	            window.console.groupEnd();
-	        }
-	    };
-	    Object.defineProperty(BrowserDomAdapter.prototype, "attrToPropMap", {
-	        get: function () { return _attrToPropMap; },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    BrowserDomAdapter.prototype.query = function (selector) { return document.querySelector(selector); };
-	    BrowserDomAdapter.prototype.querySelector = function (el, selector) { return el.querySelector(selector); };
-	    BrowserDomAdapter.prototype.querySelectorAll = function (el, selector) { return el.querySelectorAll(selector); };
-	    BrowserDomAdapter.prototype.on = function (el, evt, listener) { el.addEventListener(evt, listener, false); };
-	    BrowserDomAdapter.prototype.onAndCancel = function (el, evt, listener) {
-	        el.addEventListener(evt, listener, false);
-	        // Needed to follow Dart's subscription semantic, until fix of
-	        // https://code.google.com/p/dart/issues/detail?id=17406
-	        return function () { el.removeEventListener(evt, listener, false); };
-	    };
-	    BrowserDomAdapter.prototype.dispatchEvent = function (el, evt) { el.dispatchEvent(evt); };
-	    BrowserDomAdapter.prototype.createMouseEvent = function (eventType) {
-	        var evt = document.createEvent('MouseEvent');
-	        evt.initEvent(eventType, true, true);
-	        return evt;
-	    };
-	    BrowserDomAdapter.prototype.createEvent = function (eventType) {
-	        var evt = document.createEvent('Event');
-	        evt.initEvent(eventType, true, true);
-	        return evt;
-	    };
-	    BrowserDomAdapter.prototype.preventDefault = function (evt) {
-	        evt.preventDefault();
-	        evt.returnValue = false;
-	    };
-	    BrowserDomAdapter.prototype.isPrevented = function (evt) {
-	        return evt.defaultPrevented || lang_1.isPresent(evt.returnValue) && !evt.returnValue;
-	    };
-	    BrowserDomAdapter.prototype.getInnerHTML = function (el) { return el.innerHTML; };
-	    BrowserDomAdapter.prototype.getOuterHTML = function (el) { return el.outerHTML; };
-	    BrowserDomAdapter.prototype.nodeName = function (node) { return node.nodeName; };
-	    BrowserDomAdapter.prototype.nodeValue = function (node) { return node.nodeValue; };
-	    BrowserDomAdapter.prototype.type = function (node) { return node.type; };
-	    BrowserDomAdapter.prototype.content = function (node) {
-	        if (this.hasProperty(node, "content")) {
-	            return node.content;
-	        }
-	        else {
-	            return node;
-	        }
-	    };
-	    BrowserDomAdapter.prototype.firstChild = function (el) { return el.firstChild; };
-	    BrowserDomAdapter.prototype.nextSibling = function (el) { return el.nextSibling; };
-	    BrowserDomAdapter.prototype.parentElement = function (el) { return el.parentNode; };
-	    BrowserDomAdapter.prototype.childNodes = function (el) { return el.childNodes; };
-	    BrowserDomAdapter.prototype.childNodesAsList = function (el) {
-	        var childNodes = el.childNodes;
-	        var res = collection_1.ListWrapper.createFixedSize(childNodes.length);
-	        for (var i = 0; i < childNodes.length; i++) {
-	            res[i] = childNodes[i];
-	        }
-	        return res;
-	    };
-	    BrowserDomAdapter.prototype.clearNodes = function (el) {
-	        while (el.firstChild) {
-	            el.removeChild(el.firstChild);
-	        }
-	    };
-	    BrowserDomAdapter.prototype.appendChild = function (el, node) { el.appendChild(node); };
-	    BrowserDomAdapter.prototype.removeChild = function (el, node) { el.removeChild(node); };
-	    BrowserDomAdapter.prototype.replaceChild = function (el, newChild, oldChild) { el.replaceChild(newChild, oldChild); };
-	    BrowserDomAdapter.prototype.remove = function (node) {
-	        if (node.parentNode) {
-	            node.parentNode.removeChild(node);
-	        }
-	        return node;
-	    };
-	    BrowserDomAdapter.prototype.insertBefore = function (el, node) { el.parentNode.insertBefore(node, el); };
-	    BrowserDomAdapter.prototype.insertAllBefore = function (el, nodes) { nodes.forEach(function (n) { return el.parentNode.insertBefore(n, el); }); };
-	    BrowserDomAdapter.prototype.insertAfter = function (el, node) { el.parentNode.insertBefore(node, el.nextSibling); };
-	    BrowserDomAdapter.prototype.setInnerHTML = function (el, value) { el.innerHTML = value; };
-	    BrowserDomAdapter.prototype.getText = function (el) { return el.textContent; };
-	    // TODO(vicb): removed Element type because it does not support StyleElement
-	    BrowserDomAdapter.prototype.setText = function (el, value) { el.textContent = value; };
-	    BrowserDomAdapter.prototype.getValue = function (el) { return el.value; };
-	    BrowserDomAdapter.prototype.setValue = function (el, value) { el.value = value; };
-	    BrowserDomAdapter.prototype.getChecked = function (el) { return el.checked; };
-	    BrowserDomAdapter.prototype.setChecked = function (el, value) { el.checked = value; };
-	    BrowserDomAdapter.prototype.createComment = function (text) { return document.createComment(text); };
-	    BrowserDomAdapter.prototype.createTemplate = function (html) {
-	        var t = document.createElement('template');
-	        t.innerHTML = html;
-	        return t;
-	    };
-	    BrowserDomAdapter.prototype.createElement = function (tagName, doc) {
-	        if (doc === void 0) { doc = document; }
-	        return doc.createElement(tagName);
-	    };
-	    BrowserDomAdapter.prototype.createElementNS = function (ns, tagName, doc) {
-	        if (doc === void 0) { doc = document; }
-	        return doc.createElementNS(ns, tagName);
-	    };
-	    BrowserDomAdapter.prototype.createTextNode = function (text, doc) {
-	        if (doc === void 0) { doc = document; }
-	        return doc.createTextNode(text);
-	    };
-	    BrowserDomAdapter.prototype.createScriptTag = function (attrName, attrValue, doc) {
-	        if (doc === void 0) { doc = document; }
-	        var el = doc.createElement('SCRIPT');
-	        el.setAttribute(attrName, attrValue);
-	        return el;
-	    };
-	    BrowserDomAdapter.prototype.createStyleElement = function (css, doc) {
-	        if (doc === void 0) { doc = document; }
-	        var style = doc.createElement('style');
-	        this.appendChild(style, this.createTextNode(css));
-	        return style;
-	    };
-	    BrowserDomAdapter.prototype.createShadowRoot = function (el) { return el.createShadowRoot(); };
-	    BrowserDomAdapter.prototype.getShadowRoot = function (el) { return el.shadowRoot; };
-	    BrowserDomAdapter.prototype.getHost = function (el) { return el.host; };
-	    BrowserDomAdapter.prototype.clone = function (node) { return node.cloneNode(true); };
-	    BrowserDomAdapter.prototype.getElementsByClassName = function (element, name) {
-	        return element.getElementsByClassName(name);
-	    };
-	    BrowserDomAdapter.prototype.getElementsByTagName = function (element, name) {
-	        return element.getElementsByTagName(name);
-	    };
-	    BrowserDomAdapter.prototype.classList = function (element) { return Array.prototype.slice.call(element.classList, 0); };
-	    BrowserDomAdapter.prototype.addClass = function (element, className) { element.classList.add(className); };
-	    BrowserDomAdapter.prototype.removeClass = function (element, className) { element.classList.remove(className); };
-	    BrowserDomAdapter.prototype.hasClass = function (element, className) { return element.classList.contains(className); };
-	    BrowserDomAdapter.prototype.setStyle = function (element, styleName, styleValue) {
-	        element.style[styleName] = styleValue;
-	    };
-	    BrowserDomAdapter.prototype.removeStyle = function (element, stylename) { element.style[stylename] = null; };
-	    BrowserDomAdapter.prototype.getStyle = function (element, stylename) { return element.style[stylename]; };
-	    BrowserDomAdapter.prototype.hasStyle = function (element, styleName, styleValue) {
-	        if (styleValue === void 0) { styleValue = null; }
-	        var value = this.getStyle(element, styleName) || '';
-	        return styleValue ? value == styleValue : value.length > 0;
-	    };
-	    BrowserDomAdapter.prototype.tagName = function (element) { return element.tagName; };
-	    BrowserDomAdapter.prototype.attributeMap = function (element) {
-	        var res = new Map();
-	        var elAttrs = element.attributes;
-	        for (var i = 0; i < elAttrs.length; i++) {
-	            var attrib = elAttrs[i];
-	            res.set(attrib.name, attrib.value);
-	        }
-	        return res;
-	    };
-	    BrowserDomAdapter.prototype.hasAttribute = function (element, attribute) { return element.hasAttribute(attribute); };
-	    BrowserDomAdapter.prototype.getAttribute = function (element, attribute) { return element.getAttribute(attribute); };
-	    BrowserDomAdapter.prototype.setAttribute = function (element, name, value) { element.setAttribute(name, value); };
-	    BrowserDomAdapter.prototype.setAttributeNS = function (element, ns, name, value) {
-	        element.setAttributeNS(ns, name, value);
-	    };
-	    BrowserDomAdapter.prototype.removeAttribute = function (element, attribute) { element.removeAttribute(attribute); };
-	    BrowserDomAdapter.prototype.templateAwareRoot = function (el) { return this.isTemplateElement(el) ? this.content(el) : el; };
-	    BrowserDomAdapter.prototype.createHtmlDocument = function () {
-	        return document.implementation.createHTMLDocument('fakeTitle');
-	    };
-	    BrowserDomAdapter.prototype.defaultDoc = function () { return document; };
-	    BrowserDomAdapter.prototype.getBoundingClientRect = function (el) {
-	        try {
-	            return el.getBoundingClientRect();
-	        }
-	        catch (e) {
-	            return { top: 0, bottom: 0, left: 0, right: 0, width: 0, height: 0 };
-	        }
-	    };
-	    BrowserDomAdapter.prototype.getTitle = function () { return document.title; };
-	    BrowserDomAdapter.prototype.setTitle = function (newTitle) { document.title = newTitle || ''; };
-	    BrowserDomAdapter.prototype.elementMatches = function (n, selector) {
-	        var matches = false;
-	        if (n instanceof HTMLElement) {
-	            if (n.matches) {
-	                matches = n.matches(selector);
-	            }
-	            else if (n.msMatchesSelector) {
-	                matches = n.msMatchesSelector(selector);
-	            }
-	            else if (n.webkitMatchesSelector) {
-	                matches = n.webkitMatchesSelector(selector);
-	            }
-	        }
-	        return matches;
-	    };
-	    BrowserDomAdapter.prototype.isTemplateElement = function (el) {
-	        return el instanceof HTMLElement && el.nodeName == "TEMPLATE";
-	    };
-	    BrowserDomAdapter.prototype.isTextNode = function (node) { return node.nodeType === Node.TEXT_NODE; };
-	    BrowserDomAdapter.prototype.isCommentNode = function (node) { return node.nodeType === Node.COMMENT_NODE; };
-	    BrowserDomAdapter.prototype.isElementNode = function (node) { return node.nodeType === Node.ELEMENT_NODE; };
-	    BrowserDomAdapter.prototype.hasShadowRoot = function (node) { return node instanceof HTMLElement && lang_1.isPresent(node.shadowRoot); };
-	    BrowserDomAdapter.prototype.isShadowRoot = function (node) { return node instanceof DocumentFragment; };
-	    BrowserDomAdapter.prototype.importIntoDoc = function (node) {
-	        var toImport = node;
-	        if (this.isTemplateElement(node)) {
-	            toImport = this.content(node);
-	        }
-	        return document.importNode(toImport, true);
-	    };
-	    BrowserDomAdapter.prototype.adoptNode = function (node) { return document.adoptNode(node); };
-	    BrowserDomAdapter.prototype.getHref = function (el) { return el.href; };
-	    BrowserDomAdapter.prototype.getEventKey = function (event) {
-	        var key = event.key;
-	        if (lang_1.isBlank(key)) {
-	            key = event.keyIdentifier;
-	            // keyIdentifier is defined in the old draft of DOM Level 3 Events implemented by Chrome and
-	            // Safari
-	            // cf
-	            // http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/events.html#Events-KeyboardEvents-Interfaces
-	            if (lang_1.isBlank(key)) {
-	                return 'Unidentified';
-	            }
-	            if (key.startsWith('U+')) {
-	                key = String.fromCharCode(parseInt(key.substring(2), 16));
-	                if (event.location === DOM_KEY_LOCATION_NUMPAD && _chromeNumKeyPadMap.hasOwnProperty(key)) {
-	                    // There is a bug in Chrome for numeric keypad keys:
-	                    // https://code.google.com/p/chromium/issues/detail?id=155654
-	                    // 1, 2, 3 ... are reported as A, B, C ...
-	                    key = _chromeNumKeyPadMap[key];
-	                }
-	            }
-	        }
-	        if (_keyMap.hasOwnProperty(key)) {
-	            key = _keyMap[key];
-	        }
-	        return key;
-	    };
-	    BrowserDomAdapter.prototype.getGlobalEventTarget = function (target) {
-	        if (target == "window") {
-	            return window;
-	        }
-	        else if (target == "document") {
-	            return document;
-	        }
-	        else if (target == "body") {
-	            return document.body;
-	        }
-	    };
-	    BrowserDomAdapter.prototype.getHistory = function () { return window.history; };
-	    BrowserDomAdapter.prototype.getLocation = function () { return window.location; };
-	    BrowserDomAdapter.prototype.getBaseHref = function () {
-	        var href = getBaseElementHref();
-	        if (lang_1.isBlank(href)) {
-	            return null;
-	        }
-	        return relativePath(href);
-	    };
-	    BrowserDomAdapter.prototype.resetBaseElement = function () { baseElement = null; };
-	    BrowserDomAdapter.prototype.getUserAgent = function () { return window.navigator.userAgent; };
-	    BrowserDomAdapter.prototype.setData = function (element, name, value) {
-	        this.setAttribute(element, 'data-' + name, value);
-	    };
-	    BrowserDomAdapter.prototype.getData = function (element, name) { return this.getAttribute(element, 'data-' + name); };
-	    BrowserDomAdapter.prototype.getComputedStyle = function (element) { return getComputedStyle(element); };
-	    // TODO(tbosch): move this into a separate environment class once we have it
-	    BrowserDomAdapter.prototype.setGlobalVar = function (path, value) { lang_1.setValueOnPath(lang_1.global, path, value); };
-	    BrowserDomAdapter.prototype.requestAnimationFrame = function (callback) { return window.requestAnimationFrame(callback); };
-	    BrowserDomAdapter.prototype.cancelAnimationFrame = function (id) { window.cancelAnimationFrame(id); };
-	    BrowserDomAdapter.prototype.performanceNow = function () {
-	        // performance.now() is not available in all browsers, see
-	        // http://caniuse.com/#search=performance.now
-	        if (lang_1.isPresent(window.performance) && lang_1.isPresent(window.performance.now)) {
-	            return window.performance.now();
-	        }
-	        else {
-	            return lang_1.DateWrapper.toMillis(lang_1.DateWrapper.now());
-	        }
-	    };
-	    return BrowserDomAdapter;
-	})(generic_browser_adapter_1.GenericBrowserDomAdapter);
-	exports.BrowserDomAdapter = BrowserDomAdapter;
-	var baseElement = null;
-	function getBaseElementHref() {
-	    if (lang_1.isBlank(baseElement)) {
-	        baseElement = document.querySelector('base');
-	        if (lang_1.isBlank(baseElement)) {
-	            return null;
-	        }
-	    }
-	    return baseElement.getAttribute('href');
-	}
-	// based on urlUtils.js in AngularJS 1
-	var urlParsingNode = null;
-	function relativePath(url) {
-	    if (lang_1.isBlank(urlParsingNode)) {
-	        urlParsingNode = document.createElement("a");
-	    }
-	    urlParsingNode.setAttribute('href', url);
-	    return (urlParsingNode.pathname.charAt(0) === '/') ? urlParsingNode.pathname :
-	        '/' + urlParsingNode.pathname;
-	}
-
-
-/***/ },
-/* 212 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var collection_1 = __webpack_require__(12);
-	var lang_1 = __webpack_require__(5);
-	var dom_adapter_1 = __webpack_require__(192);
-	var xhr_impl_1 = __webpack_require__(213);
-	/**
-	 * Provides DOM operations in any browser environment.
-	 */
-	var GenericBrowserDomAdapter = (function (_super) {
-	    __extends(GenericBrowserDomAdapter, _super);
-	    function GenericBrowserDomAdapter() {
-	        var _this = this;
-	        _super.call(this);
-	        this._animationPrefix = null;
-	        this._transitionEnd = null;
-	        try {
-	            var element = this.createElement('div', this.defaultDoc());
-	            if (lang_1.isPresent(this.getStyle(element, 'animationName'))) {
-	                this._animationPrefix = '';
-	            }
-	            else {
-	                var domPrefixes = ['Webkit', 'Moz', 'O', 'ms'];
-	                for (var i = 0; i < domPrefixes.length; i++) {
-	                    if (lang_1.isPresent(this.getStyle(element, domPrefixes[i] + 'AnimationName'))) {
-	                        this._animationPrefix = '-' + domPrefixes[i].toLowerCase() + '-';
-	                        break;
-	                    }
-	                }
-	            }
-	            var transEndEventNames = {
-	                WebkitTransition: 'webkitTransitionEnd',
-	                MozTransition: 'transitionend',
-	                OTransition: 'oTransitionEnd otransitionend',
-	                transition: 'transitionend'
-	            };
-	            collection_1.StringMapWrapper.forEach(transEndEventNames, function (value, key) {
-	                if (lang_1.isPresent(_this.getStyle(element, key))) {
-	                    _this._transitionEnd = value;
-	                }
-	            });
-	        }
-	        catch (e) {
-	            this._animationPrefix = null;
-	            this._transitionEnd = null;
-	        }
-	    }
-	    GenericBrowserDomAdapter.prototype.getXHR = function () { return xhr_impl_1.XHRImpl; };
-	    GenericBrowserDomAdapter.prototype.getDistributedNodes = function (el) { return el.getDistributedNodes(); };
-	    GenericBrowserDomAdapter.prototype.resolveAndSetHref = function (el, baseUrl, href) {
-	        el.href = href == null ? baseUrl : baseUrl + '/../' + href;
-	    };
-	    GenericBrowserDomAdapter.prototype.supportsDOMEvents = function () { return true; };
-	    GenericBrowserDomAdapter.prototype.supportsNativeShadowDOM = function () {
-	        return lang_1.isFunction(this.defaultDoc().body.createShadowRoot);
-	    };
-	    GenericBrowserDomAdapter.prototype.getAnimationPrefix = function () {
-	        return lang_1.isPresent(this._animationPrefix) ? this._animationPrefix : "";
-	    };
-	    GenericBrowserDomAdapter.prototype.getTransitionEnd = function () { return lang_1.isPresent(this._transitionEnd) ? this._transitionEnd : ""; };
-	    GenericBrowserDomAdapter.prototype.supportsAnimation = function () {
-	        return lang_1.isPresent(this._animationPrefix) && lang_1.isPresent(this._transitionEnd);
-	    };
-	    return GenericBrowserDomAdapter;
-	})(dom_adapter_1.DomAdapter);
-	exports.GenericBrowserDomAdapter = GenericBrowserDomAdapter;
-
-
-/***/ },
-/* 213 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var promise_1 = __webpack_require__(61);
-	var lang_1 = __webpack_require__(5);
-	var xhr_1 = __webpack_require__(163);
-	var XHRImpl = (function (_super) {
-	    __extends(XHRImpl, _super);
-	    function XHRImpl() {
-	        _super.apply(this, arguments);
-	    }
-	    XHRImpl.prototype.get = function (url) {
-	        var completer = promise_1.PromiseWrapper.completer();
-	        var xhr = new XMLHttpRequest();
-	        xhr.open('GET', url, true);
-	        xhr.responseType = 'text';
-	        xhr.onload = function () {
-	            // responseText is the old-school way of retrieving response (supported by IE8 & 9)
-	            // response/responseType properties were introduced in XHR Level2 spec (supported by IE10)
-	            var response = lang_1.isPresent(xhr.response) ? xhr.response : xhr.responseText;
-	            // normalize IE9 bug (http://bugs.jquery.com/ticket/1450)
-	            var status = xhr.status === 1223 ? 204 : xhr.status;
-	            // fix status code when it is 0 (0 status is undocumented).
-	            // Occurs when accessing file resources or on Android 4.1 stock browser
-	            // while retrieving files from application cache.
-	            if (status === 0) {
-	                status = response ? 200 : 0;
-	            }
-	            if (200 <= status && status <= 300) {
-	                completer.resolve(response);
-	            }
-	            else {
-	                completer.reject("Failed to load " + url, null);
-	            }
-	        };
-	        xhr.onerror = function () { completer.reject("Failed to load " + url, null); };
-	        xhr.send();
-	        return completer.promise;
-	    };
-	    return XHRImpl;
-	})(xhr_1.XHR);
-	exports.XHRImpl = XHRImpl;
-
-
-/***/ },
-/* 214 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var lang_1 = __webpack_require__(5);
-	var dom_adapter_1 = __webpack_require__(192);
-	var core_1 = __webpack_require__(2);
-	var PublicTestability = (function () {
-	    function PublicTestability(testability) {
-	        this._testability = testability;
-	    }
-	    PublicTestability.prototype.isStable = function () { return this._testability.isStable(); };
-	    PublicTestability.prototype.whenStable = function (callback) { this._testability.whenStable(callback); };
-	    PublicTestability.prototype.findBindings = function (using, provider, exactMatch) {
-	        return this.findProviders(using, provider, exactMatch);
-	    };
-	    PublicTestability.prototype.findProviders = function (using, provider, exactMatch) {
-	        return this._testability.findBindings(using, provider, exactMatch);
-	    };
-	    return PublicTestability;
-	})();
-	var BrowserGetTestability = (function () {
-	    function BrowserGetTestability() {
-	    }
-	    BrowserGetTestability.init = function () { core_1.setTestabilityGetter(new BrowserGetTestability()); };
-	    BrowserGetTestability.prototype.addToWindow = function (registry) {
-	        lang_1.global.getAngularTestability = function (elem, findInAncestors) {
-	            if (findInAncestors === void 0) { findInAncestors = true; }
-	            var testability = registry.findTestabilityInTree(elem, findInAncestors);
-	            if (testability == null) {
-	                throw new Error('Could not find testability for element.');
-	            }
-	            return new PublicTestability(testability);
-	        };
-	        lang_1.global.getAllAngularTestabilities = function () {
-	            var testabilities = registry.getAllTestabilities();
-	            return testabilities.map(function (testability) { return new PublicTestability(testability); });
-	        };
-	    };
-	    BrowserGetTestability.prototype.findTestabilityInTree = function (registry, elem, findInAncestors) {
-	        if (elem == null) {
-	            return null;
-	        }
-	        var t = registry.getTestability(elem);
-	        if (lang_1.isPresent(t)) {
-	            return t;
-	        }
-	        else if (!findInAncestors) {
-	            return null;
-	        }
-	        if (dom_adapter_1.DOM.isShadowRoot(elem)) {
-	            return this.findTestabilityInTree(registry, dom_adapter_1.DOM.getHost(elem), true);
-	        }
-	        return this.findTestabilityInTree(registry, dom_adapter_1.DOM.parentElement(elem), true);
-	    };
-	    return BrowserGetTestability;
-	})();
-	exports.BrowserGetTestability = BrowserGetTestability;
-
-
-/***/ },
-/* 215 */
-/***/ function(module, exports) {
-
-	/**
-	 * This is here because DART requires it. It is noop in JS.
-	 */
-	function wtfInit() { }
-	exports.wtfInit = wtfInit;
-
-
-/***/ },
-/* 216 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var dom_adapter_1 = __webpack_require__(192);
-	/**
-	 * A service that can be used to get and set the title of a current HTML document.
-	 *
-	 * Since an Angular 2 application can't be bootstrapped on the entire HTML document (`<html>` tag)
-	 * it is not possible to bind to the `text` property of the `HTMLTitleElement` elements
-	 * (representing the `<title>` tag). Instead, this service can be used to set and get the current
-	 * title value.
-	 */
-	var Title = (function () {
-	    function Title() {
-	    }
-	    /**
-	     * Get the title of the current HTML document.
-	     * @returns {string}
-	     */
-	    Title.prototype.getTitle = function () { return dom_adapter_1.DOM.getTitle(); };
-	    /**
-	     * Set the title of the current HTML document.
-	     * @param newTitle
-	     */
-	    Title.prototype.setTitle = function (newTitle) { dom_adapter_1.DOM.setTitle(newTitle); };
-	    return Title;
-	})();
-	exports.Title = Title;
-
-
-/***/ },
-/* 217 */
-/***/ function(module, exports, __webpack_require__) {
-
-	function __export(m) {
-	    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-	}
-	/**
-	 * This is a set of classes and objects that can be used both in the browser and on the server.
-	 */
-	var dom_adapter_1 = __webpack_require__(192);
-	exports.DOM = dom_adapter_1.DOM;
-	exports.setRootDomAdapter = dom_adapter_1.setRootDomAdapter;
-	exports.DomAdapter = dom_adapter_1.DomAdapter;
-	var dom_renderer_1 = __webpack_require__(202);
-	exports.DomRenderer = dom_renderer_1.DomRenderer;
-	var dom_tokens_1 = __webpack_require__(201);
-	exports.DOCUMENT = dom_tokens_1.DOCUMENT;
-	var shared_styles_host_1 = __webpack_require__(210);
-	exports.SharedStylesHost = shared_styles_host_1.SharedStylesHost;
-	exports.DomSharedStylesHost = shared_styles_host_1.DomSharedStylesHost;
-	var dom_events_1 = __webpack_require__(196);
-	exports.DomEventsPlugin = dom_events_1.DomEventsPlugin;
-	var event_manager_1 = __webpack_require__(197);
-	exports.EVENT_MANAGER_PLUGINS = event_manager_1.EVENT_MANAGER_PLUGINS;
-	exports.EventManager = event_manager_1.EventManager;
-	exports.EventManagerPlugin = event_manager_1.EventManagerPlugin;
-	__export(__webpack_require__(218));
-	__export(__webpack_require__(219));
-
-
-/***/ },
-/* 218 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var lang_1 = __webpack_require__(5);
-	var dom_adapter_1 = __webpack_require__(192);
-	var By = (function () {
-	    function By() {
-	    }
-	    By.all = function () { return function (debugElement) { return true; }; };
-	    By.css = function (selector) {
-	        return function (debugElement) {
-	            return lang_1.isPresent(debugElement.nativeElement) ?
-	                dom_adapter_1.DOM.elementMatches(debugElement.nativeElement, selector) :
-	                false;
-	        };
-	    };
-	    By.directive = function (type) {
-	        return function (debugElement) { return debugElement.hasDirective(type); };
-	    };
-	    return By;
-	})();
-	exports.By = By;
-
-
-/***/ },
-/* 219 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-	    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-	    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-	    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-	    return c > 3 && r && Object.defineProperty(target, key, r), r;
-	};
-	var __metadata = (this && this.__metadata) || function (k, v) {
-	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-	};
-	var lang_1 = __webpack_require__(5);
-	var collection_1 = __webpack_require__(12);
-	var di_1 = __webpack_require__(6);
-	var view_listener_1 = __webpack_require__(101);
-	var dom_adapter_1 = __webpack_require__(192);
-	var api_1 = __webpack_require__(87);
-	var debug_element_1 = __webpack_require__(115);
-	var NG_ID_PROPERTY = 'ngid';
-	var INSPECT_GLOBAL_NAME = 'ng.probe';
-	var NG_ID_SEPARATOR = '#';
-	// Need to keep the views in a global Map so that multiple angular apps are supported
-	var _allIdsByView = new collection_1.Map();
-	var _allViewsById = new collection_1.Map();
-	var _nextId = 0;
-	function _setElementId(element, indices) {
-	    if (lang_1.isPresent(element) && dom_adapter_1.DOM.isElementNode(element)) {
-	        dom_adapter_1.DOM.setData(element, NG_ID_PROPERTY, indices.join(NG_ID_SEPARATOR));
-	    }
-	}
-	function _getElementId(element) {
-	    var elId = dom_adapter_1.DOM.getData(element, NG_ID_PROPERTY);
-	    if (lang_1.isPresent(elId)) {
-	        return elId.split(NG_ID_SEPARATOR).map(function (partStr) { return lang_1.NumberWrapper.parseInt(partStr, 10); });
-	    }
-	    else {
-	        return null;
-	    }
-	}
-	/**
-	 * Returns a {@link DebugElement} for the given native DOM element, or
-	 * null if the given native element does not have an Angular view associated
-	 * with it.
-	 */
-	function inspectNativeElement(element) {
-	    var elId = _getElementId(element);
-	    if (lang_1.isPresent(elId)) {
-	        var view = _allViewsById.get(elId[0]);
-	        if (lang_1.isPresent(view)) {
-	            return new debug_element_1.DebugElement_(view, elId[1]);
-	        }
-	    }
-	    return null;
-	}
-	exports.inspectNativeElement = inspectNativeElement;
-	var DebugElementViewListener = (function () {
-	    function DebugElementViewListener(_renderer) {
-	        this._renderer = _renderer;
-	        dom_adapter_1.DOM.setGlobalVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
-	    }
-	    DebugElementViewListener.prototype.onViewCreated = function (view) {
-	        var viewId = _nextId++;
-	        _allViewsById.set(viewId, view);
-	        _allIdsByView.set(view, viewId);
-	        for (var i = 0; i < view.elementRefs.length; i++) {
-	            var el = view.elementRefs[i];
-	            _setElementId(this._renderer.getNativeElementSync(el), [viewId, i]);
-	        }
-	    };
-	    DebugElementViewListener.prototype.onViewDestroyed = function (view) {
-	        var viewId = _allIdsByView.get(view);
-	        _allIdsByView.delete(view);
-	        _allViewsById.delete(viewId);
-	    };
-	    DebugElementViewListener = __decorate([
-	        di_1.Injectable(), 
-	        __metadata('design:paramtypes', [api_1.Renderer])
-	    ], DebugElementViewListener);
-	    return DebugElementViewListener;
-	})();
-	exports.DebugElementViewListener = DebugElementViewListener;
-	exports.ELEMENT_PROBE_PROVIDERS = lang_1.CONST_EXPR([
-	    DebugElementViewListener,
-	    lang_1.CONST_EXPR(new di_1.Provider(view_listener_1.AppViewListener, { useExisting: DebugElementViewListener })),
-	]);
-	exports.ELEMENT_PROBE_BINDINGS = exports.ELEMENT_PROBE_PROVIDERS;
-
-
-/***/ },
-/* 220 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var lang_1 = __webpack_require__(5);
-	var common_tools_1 = __webpack_require__(221);
-	var context = lang_1.global;
-	/**
-	 * Enabled Angular 2 debug tools that are accessible via your browser's
-	 * developer console.
-	 *
-	 * Usage:
-	 *
-	 * 1. Open developer console (e.g. in Chrome Ctrl + Shift + j)
-	 * 1. Type `ng.` (usually the console will show auto-complete suggestion)
-	 * 1. Try the change detection profiler `ng.profiler.timeChangeDetection()`
-	 *    then hit Enter.
-	 */
-	function enableDebugTools(ref) {
-	    context.ng = new common_tools_1.AngularTools(ref);
-	}
-	exports.enableDebugTools = enableDebugTools;
-	/**
-	 * Disables Angular 2 tools.
-	 */
-	function disableDebugTools() {
-	    delete context.ng;
-	}
-	exports.disableDebugTools = disableDebugTools;
-
-
-/***/ },
-/* 221 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var application_ref_1 = __webpack_require__(80);
-	var lang_1 = __webpack_require__(5);
-	var browser_1 = __webpack_require__(222);
-	var dom_adapter_1 = __webpack_require__(192);
-	/**
-	 * Entry point for all Angular debug tools. This object corresponds to the `ng`
-	 * global variable accessible in the dev console.
-	 */
-	var AngularTools = (function () {
-	    function AngularTools(ref) {
-	        this.profiler = new AngularProfiler(ref);
-	    }
-	    return AngularTools;
-	})();
-	exports.AngularTools = AngularTools;
-	/**
-	 * Entry point for all Angular profiling-related debug tools. This object
-	 * corresponds to the `ng.profiler` in the dev console.
-	 */
-	var AngularProfiler = (function () {
-	    function AngularProfiler(ref) {
-	        this.appRef = ref.injector.get(application_ref_1.ApplicationRef);
-	    }
-	    /**
-	     * Exercises change detection in a loop and then prints the average amount of
-	     * time in milliseconds how long a single round of change detection takes for
-	     * the current state of the UI. It runs a minimum of 5 rounds for a minimum
-	     * of 500 milliseconds.
-	     *
-	     * Optionally, a user may pass a `config` parameter containing a map of
-	     * options. Supported options are:
-	     *
-	     * `record` (boolean) - causes the profiler to record a CPU profile while
-	     * it exercises the change detector. Example:
-	     *
-	     * ```
-	     * ng.profiler.timeChangeDetection({record: true})
-	     * ```
-	     */
-	    AngularProfiler.prototype.timeChangeDetection = function (config) {
-	        var record = lang_1.isPresent(config) && config['record'];
-	        var profileName = 'Change Detection';
-	        // Profiler is not available in Android browsers, nor in IE 9 without dev tools opened
-	        var isProfilerAvailable = lang_1.isPresent(browser_1.window.console.profile);
-	        if (record && isProfilerAvailable) {
-	            browser_1.window.console.profile(profileName);
-	        }
-	        var start = dom_adapter_1.DOM.performanceNow();
-	        var numTicks = 0;
-	        while (numTicks < 5 || (dom_adapter_1.DOM.performanceNow() - start) < 500) {
-	            this.appRef.tick();
-	            numTicks++;
-	        }
-	        var end = dom_adapter_1.DOM.performanceNow();
-	        if (record && isProfilerAvailable) {
-	            // need to cast to <any> because type checker thinks there's no argument
-	            // while in fact there is:
-	            //
-	            // https://developer.mozilla.org/en-US/docs/Web/API/Console/profileEnd
-	            browser_1.window.console.profileEnd(profileName);
-	        }
-	        var msPerTick = (end - start) / numTicks;
-	        browser_1.window.console.log("ran " + numTicks + " change detection cycles");
-	        browser_1.window.console.log(lang_1.NumberWrapper.toFixed(msPerTick, 2) + " ms per check");
-	    };
-	    return AngularProfiler;
-	})();
-	exports.AngularProfiler = AngularProfiler;
-
-
-/***/ },
-/* 222 */
-/***/ function(module, exports) {
-
-	/**
-	 * JS version of browser APIs. This library can only run in the browser.
-	 */
-	var win = window;
-	exports.window = win;
-	exports.document = window.document;
-	exports.location = window.location;
-	exports.gc = window['gc'] ? function () { return window['gc'](); } : function () { return null; };
-	exports.performance = window['performance'] ? window['performance'] : null;
-	exports.Event = window['Event'];
-	exports.MouseEvent = window['MouseEvent'];
-	exports.KeyboardEvent = window['KeyboardEvent'];
-	exports.EventTarget = window['EventTarget'];
-	exports.History = window['History'];
-	exports.Location = window['Location'];
-	exports.EventListener = window['EventListener'];
 
 
 /***/ },
@@ -35697,7 +35696,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var dom_adapter_1 = __webpack_require__(192);
+	var dom_adapter_1 = __webpack_require__(164);
 	var core_1 = __webpack_require__(2);
 	/**
 	 * `PlatformLocation` encapsulates all of the direct calls to platform APIs.
@@ -35997,7 +35996,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var compiler_1 = __webpack_require__(161);
+	var compiler_1 = __webpack_require__(195);
 	var core_1 = __webpack_require__(2);
 	var router_link_transform_1 = __webpack_require__(263);
 	var lang_1 = __webpack_require__(5);
@@ -36050,7 +36049,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var __metadata = (this && this.__metadata) || function (k, v) {
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
-	var compiler_1 = __webpack_require__(161);
+	var compiler_1 = __webpack_require__(195);
 	var ast_1 = __webpack_require__(30);
 	var exceptions_1 = __webpack_require__(14);
 	var core_1 = __webpack_require__(2);
@@ -36275,7 +36274,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var core_1 = __webpack_require__(2);
 	var async_1 = __webpack_require__(60);
-	var browser_1 = __webpack_require__(193);
+	var browser_1 = __webpack_require__(161);
 	var metadata_1 = __webpack_require__(267);
 	var util_1 = __webpack_require__(268);
 	var constants_1 = __webpack_require__(269);
