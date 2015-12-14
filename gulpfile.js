@@ -1113,6 +1113,10 @@ gulp.task('!bundle.testing', ['build.js.dev'], function() {
                         {sourceMaps: true});
 });
 
+gulp.task('!bundles.js.docs', function() {
+  gulp.src('modules/angular2/docs/bundles/*').pipe(gulp.dest('dist/js/bundle'));
+});
+
 gulp.task('!bundles.js.umd', ['build.js.dev'], function() {
   var q = require('q');
   var webpack = q.denodeify(require('webpack'));
@@ -1250,7 +1254,8 @@ gulp.task('bundles.js',
             '!bundle.web_worker.js.dev.deps',
             'bundles.js.umd.min',
             '!bundle.testing',
-            '!bundle.ng.polyfills'
+            '!bundle.ng.polyfills',
+            '!bundles.js.docs'
           ],
           function(done) { runSequence('!bundle.copy', '!bundles.js.checksize', done); });
 
