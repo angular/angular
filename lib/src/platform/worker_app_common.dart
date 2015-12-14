@@ -3,12 +3,9 @@ library angular2.src.platform.worker_app_common;
 import "package:angular2/src/compiler/xhr.dart" show XHR;
 import "package:angular2/src/web_workers/worker/xhr_impl.dart"
     show WebWorkerXHRImpl;
-import "package:angular2/src/facade/collection.dart" show ListWrapper;
 import "package:angular2/src/web_workers/worker/renderer.dart"
     show WebWorkerRenderer;
 import "package:angular2/src/facade/lang.dart" show print, Type, isPresent;
-import "package:angular2/src/web_workers/shared/message_bus.dart"
-    show MessageBus;
 import "package:angular2/src/core/render/api.dart" show Renderer;
 import "package:angular2/core.dart"
     show
@@ -34,8 +31,6 @@ import "package:angular2/src/web_workers/shared/render_view_with_fragments_store
     show RenderViewWithFragmentsStore;
 import "package:angular2/src/web_workers/worker/event_dispatcher.dart"
     show WebWorkerEventDispatcher;
-import "package:angular2/src/core/zone/ng_zone.dart" show NgZone;
-import "package:angular2/src/facade/async.dart" show Future, PromiseWrapper;
 
 class PrintLogger {
   var log = print;
@@ -45,7 +40,7 @@ class PrintLogger {
 }
 
 const List<dynamic> WORKER_APP_PLATFORM = const [PLATFORM_COMMON_PROVIDERS];
-const List<dynamic> WORKER_APP_COMMON_PROVIDERS = const [
+const List<dynamic> WORKER_APP_APPLICATION_COMMON = const [
   APPLICATION_COMMON_PROVIDERS,
   COMPILER_PROVIDERS,
   FORM_PROVIDERS,
@@ -69,19 +64,4 @@ const List<dynamic> WORKER_APP_COMMON_PROVIDERS = const [
 ];
 ExceptionHandler _exceptionHandler() {
   return new ExceptionHandler(new PrintLogger());
-}
-
-/**
- * Asynchronously returns a list of providers that can be used to initialize the
- * Application injector.
- * Also takes care of attaching the [MessageBus] to the given [NgZone].
- */
-Future<
-    List<
-        dynamic /* Type | Provider | List < dynamic > */ >> genericWorkerAppProviders(
-    MessageBus bus, NgZone zone) {
-  bus.attachToZone(zone);
-  var bindings = ListWrapper.concat(
-      WORKER_APP_COMMON_PROVIDERS, [new Provider(MessageBus, useValue: bus)]);
-  return PromiseWrapper.resolve(bindings);
 }
