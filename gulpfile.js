@@ -150,14 +150,14 @@ var ANGULAR2_BUNDLE_CONFIG = [
   'angular2/platform/common_dom'
 ];
 
-var NG2_BUNDLE_CONTENT = ANGULAR2_BUNDLE_CONFIG.join(' + ');
-var HTTP_BUNDLE_CONTENT = 'angular2/http - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
-var ROUTER_BUNDLE_CONTENT =
-    'angular2/router + angular2/router/router_link_dsl - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
+var NG2_BUNDLE_CONTENT = ANGULAR2_BUNDLE_CONFIG.join(' + ') + ' - rxjs/*';
+var HTTP_BUNDLE_CONTENT = 'angular2/http - rxjs/* - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
+var ROUTER_BUNDLE_CONTENT = 'angular2/router + angular2/router/router_link_dsl - rxjs/* - ' +
+                            ANGULAR2_BUNDLE_CONFIG.join(' - ');
 var TESTING_BUNDLE_CONTENT =
-    'angular2/testing + angular2/http/testing + angular2/router/testing - ' +
+    'angular2/testing + angular2/http/testing + angular2/router/testing - rxjs/* - ' +
     ANGULAR2_BUNDLE_CONFIG.join(' - ');
-var UPGRADE_BUNDLE_CONTENT = 'angular2/upgrade - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
+var UPGRADE_BUNDLE_CONTENT = 'angular2/upgrade - rxjs/* - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
 
 var BENCHPRESS_BUNDLE_CONFIG = {
   entries: ['./dist/js/cjs/benchpress/index.js'],
