@@ -321,7 +321,7 @@ class CompWithEmbeddedTemplate {
 }
 
 
-@Directive({selector: 'plain', moduleId: THIS_MODULE_ID})
+@Directive({selector: 'plain'})
 @View({template: ''})
 class NonComponent {
 }
