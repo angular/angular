@@ -33,19 +33,19 @@ System.register("angular2/src/facade/lang", [], true, function(require, exports,
   exports.getTypeNameForDebugging = getTypeNameForDebugging;
   exports.Math = _global.Math;
   exports.Date = _global.Date;
-  var _devMode = !!_global.angularDevMode;
-  var _devModeLocked = false;
-  function lockDevMode() {
-    _devModeLocked = true;
+  var _devMode = true;
+  var _modeLocked = false;
+  function lockMode() {
+    _modeLocked = true;
   }
-  exports.lockDevMode = lockDevMode;
-  function enableDevMode() {
-    if (_devModeLocked) {
-      throw 'Cannot enable dev mode after platform setup.';
+  exports.lockMode = lockMode;
+  function enableProdMode() {
+    if (_modeLocked) {
+      throw 'Cannot enable prod mode after platform setup.';
     }
-    _devMode = true;
+    _devMode = false;
   }
-  exports.enableDevMode = enableDevMode;
+  exports.enableProdMode = enableProdMode;
   function assertionsEnabled() {
     return _devMode;
   }
@@ -6971,6 +6971,23 @@ System.register("angular2/src/core/linker/template_commands", ["angular2/src/fac
   return module.exports;
 });
 
+System.register("angular2/src/core/console", ["angular2/src/facade/lang"], true, function(require, exports, module) {
+  var global = System.global,
+      __define = global.define;
+  global.define = undefined;
+  var lang_1 = require("angular2/src/facade/lang");
+  var Console = (function() {
+    function Console() {}
+    Console.prototype.log = function(message) {
+      lang_1.print(message);
+    };
+    return Console;
+  })();
+  exports.Console = Console;
+  global.define = __define;
+  return module.exports;
+});
+
 System.register("angular2/src/core/zone", ["angular2/src/core/zone/ng_zone"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
@@ -7008,12 +7025,12 @@ System.register("angular2/src/core/util", ["angular2/src/core/util/decorators"],
   return module.exports;
 });
 
-System.register("angular2/src/core/dev_mode", ["angular2/src/facade/lang"], true, function(require, exports, module) {
+System.register("angular2/src/core/prod_mode", ["angular2/src/facade/lang"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
   var lang_1 = require("angular2/src/facade/lang");
-  exports.enableDevMode = lang_1.enableDevMode;
+  exports.enableProdMode = lang_1.enableProdMode;
   global.define = __define;
   return module.exports;
 });
@@ -7288,12 +7305,13 @@ System.register("angular2/src/core/debug/debug_element", ["angular2/src/facade/l
   return module.exports;
 });
 
-System.register("angular2/src/core/platform_common_providers", ["angular2/src/facade/lang", "angular2/src/core/di", "angular2/src/core/reflection/reflection", "angular2/src/core/testability/testability"], true, function(require, exports, module) {
+System.register("angular2/src/core/platform_common_providers", ["angular2/src/facade/lang", "angular2/src/core/di", "angular2/src/core/console", "angular2/src/core/reflection/reflection", "angular2/src/core/testability/testability"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
   var lang_1 = require("angular2/src/facade/lang");
   var di_1 = require("angular2/src/core/di");
+  var console_1 = require("angular2/src/core/console");
   var reflection_1 = require("angular2/src/core/reflection/reflection");
   var testability_1 = require("angular2/src/core/testability/testability");
   function _reflector() {
@@ -7302,7 +7320,7 @@ System.register("angular2/src/core/platform_common_providers", ["angular2/src/fa
   exports.PLATFORM_COMMON_PROVIDERS = lang_1.CONST_EXPR([new di_1.Provider(reflection_1.Reflector, {
     useFactory: _reflector,
     deps: []
-  }), testability_1.TestabilityRegistry]);
+  }), testability_1.TestabilityRegistry, console_1.Console]);
   global.define = __define;
   return module.exports;
 });
@@ -13409,7 +13427,7 @@ System.register("angular2/src/core/metadata", ["angular2/src/core/metadata/di", 
   return module.exports;
 });
 
-System.register("angular2/core", ["angular2/src/core/metadata", "angular2/src/core/util", "angular2/src/core/dev_mode", "angular2/src/core/di", "angular2/src/facade/facade", "angular2/src/core/application_ref", "angular2/src/core/application_tokens", "angular2/src/core/zone", "angular2/src/core/render", "angular2/src/core/linker", "angular2/src/core/debug/debug_element", "angular2/src/core/testability/testability", "angular2/src/core/change_detection", "angular2/src/core/platform_directives_and_pipes", "angular2/src/core/platform_common_providers", "angular2/src/core/application_common_providers", "angular2/src/core/reflection/reflection"], true, function(require, exports, module) {
+System.register("angular2/core", ["angular2/src/core/metadata", "angular2/src/core/util", "angular2/src/core/prod_mode", "angular2/src/core/di", "angular2/src/facade/facade", "angular2/src/facade/lang", "angular2/src/core/application_ref", "angular2/src/core/application_tokens", "angular2/src/core/zone", "angular2/src/core/render", "angular2/src/core/linker", "angular2/src/core/debug/debug_element", "angular2/src/core/testability/testability", "angular2/src/core/change_detection", "angular2/src/core/platform_directives_and_pipes", "angular2/src/core/platform_common_providers", "angular2/src/core/application_common_providers", "angular2/src/core/reflection/reflection"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -13420,9 +13438,11 @@ System.register("angular2/core", ["angular2/src/core/metadata", "angular2/src/co
   }
   __export(require("angular2/src/core/metadata"));
   __export(require("angular2/src/core/util"));
-  __export(require("angular2/src/core/dev_mode"));
+  __export(require("angular2/src/core/prod_mode"));
   __export(require("angular2/src/core/di"));
   __export(require("angular2/src/facade/facade"));
+  var lang_1 = require("angular2/src/facade/lang");
+  exports.enableProdMode = lang_1.enableProdMode;
   var application_ref_1 = require("angular2/src/core/application_ref");
   exports.platform = application_ref_1.platform;
   exports.createNgZone = application_ref_1.createNgZone;
@@ -23443,7 +23463,7 @@ System.register("angular2/src/platform/worker_render_common", ["angular2/src/fac
   return module.exports;
 });
 
-System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng_zone", "angular2/src/facade/lang", "angular2/src/core/di", "angular2/src/core/application_tokens", "angular2/src/facade/async", "angular2/src/facade/collection", "angular2/src/core/testability/testability", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/facade/exceptions", "angular2/src/core/linker/view_ref", "angular2/src/core/profile/profile", "angular2/src/facade/lang"], true, function(require, exports, module) {
+System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng_zone", "angular2/src/facade/lang", "angular2/src/core/di", "angular2/src/core/application_tokens", "angular2/src/facade/async", "angular2/src/facade/collection", "angular2/src/core/testability/testability", "angular2/src/core/linker/dynamic_component_loader", "angular2/src/facade/exceptions", "angular2/src/core/linker/view_ref", "angular2/src/core/console", "angular2/src/core/profile/profile", "angular2/src/facade/lang"], true, function(require, exports, module) {
   var global = System.global,
       __define = global.define;
   global.define = undefined;
@@ -23466,6 +23486,7 @@ System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng
   var dynamic_component_loader_1 = require("angular2/src/core/linker/dynamic_component_loader");
   var exceptions_1 = require("angular2/src/facade/exceptions");
   var view_ref_1 = require("angular2/src/core/linker/view_ref");
+  var console_1 = require("angular2/src/core/console");
   var profile_1 = require("angular2/src/core/profile/profile");
   var lang_2 = require("angular2/src/facade/lang");
   function _componentProviders(appComponentType) {
@@ -23499,7 +23520,7 @@ System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng
   var _platform;
   var _platformProviders;
   function platform(providers) {
-    lang_2.lockDevMode();
+    lang_2.lockMode();
     if (lang_1.isPresent(_platform)) {
       if (collection_1.ListWrapper.equals(_platformProviders, providers)) {
         return _platform;
@@ -23732,7 +23753,12 @@ System.register("angular2/src/core/application_ref", ["angular2/src/core/zone/ng
           completer.reject(e, e.stack);
         }
       });
-      return completer.promise;
+      return completer.promise.then(function(_) {
+        var c = _this._injector.get(console_1.Console);
+        var modeDescription = lang_1.assertionsEnabled() ? "in the development mode. Call enableProdMode() to enable the production mode." : "in the production mode. Call enableDevMode() to enable the development mode.";
+        c.log("Angular 2 is running " + modeDescription);
+        return _;
+      });
     };
     ApplicationRef_.prototype._loadComponent = function(ref) {
       var appChangeDetector = view_ref_1.internalView(ref.hostView).changeDetector;
