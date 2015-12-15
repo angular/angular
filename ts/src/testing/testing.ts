@@ -7,10 +7,11 @@ import {ListWrapper} from 'angular2/src/facade/collection';
 import {bind} from 'angular2/core';
 
 import {
-  createTestInjectorWithRuntimeCompiler,
   FunctionWithParamTokens,
   inject,
-  injectAsync
+  injectAsync,
+  TestInjector,
+  getTestInjector
 } from './test_injector';
 
 export {inject, injectAsync} from './test_injector';
@@ -80,14 +81,10 @@ var jsmIt = _global.it;
 var jsmIIt = _global.fit;
 var jsmXIt = _global.xit;
 
-var testProviders;
-var injector;
+var testInjector: TestInjector = getTestInjector();
 
 // Reset the test providers before each test.
-jsmBeforeEach(() => {
-  testProviders = [];
-  injector = null;
-});
+jsmBeforeEach(() => { testInjector.reset(); });
 
 /**
  * Allows overriding default providers of the test injector,
@@ -103,8 +100,9 @@ export function beforeEachProviders(fn): void {
   jsmBeforeEach(() => {
     var providers = fn();
     if (!providers) return;
-    testProviders = [...testProviders, ...providers];
-    if (injector !== null) {
+    try {
+      testInjector.addProviders(providers);
+    } catch (e) {
       throw new Error('beforeEachProviders was called after the injector had ' +
                       'been used in a beforeEach or it block. This invalidates the ' +
                       'test injector');
@@ -176,11 +174,7 @@ function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | An
 
   if (testFn instanceof FunctionWithParamTokens) {
     jsmFn(name, (done) => {
-      if (!injector) {
-        injector = createTestInjectorWithRuntimeCompiler(testProviders);
-      }
-
-      var returnedTestValue = runInTestZone(() => testFn.execute(injector), done, done.fail);
+      var returnedTestValue = runInTestZone(() => testInjector.execute(testFn), done, done.fail);
       if (_isPromiseLike(returnedTestValue)) {
         (<Promise<any>>returnedTestValue).then(null, (err) => { done.fail(err); });
       }
@@ -209,13 +203,7 @@ export function beforeEach(fn: FunctionWithParamTokens | AnyTestFn): void {
     // The test case uses inject(). ie `beforeEach(inject([ClassA], (a) => { ...
     // }));`
 
-    jsmBeforeEach((done) => {
-      if (!injector) {
-        injector = createTestInjectorWithRuntimeCompiler(testProviders);
-      }
-
-      runInTestZone(() => fn.execute(injector), done, done.fail);
-    });
+    jsmBeforeEach((done) => { runInTestZone(() => testInjector.execute(fn), done, done.fail); });
   } else {
     // The test case doesn't use inject(). ie `beforeEach((done) => { ... }));`
     if ((<any>fn).length === 0) {
