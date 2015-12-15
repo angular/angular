@@ -327,7 +327,7 @@ class CompWithTemplateUrl {}
     encapsulation: ViewEncapsulation.None)
 class CompWithEmbeddedTemplate {}
 
-@Directive(selector: "plain")
+@Directive(selector: "plain", moduleId: THIS_MODULE_ID)
 @View(template: "")
 class NonComponent {}
 

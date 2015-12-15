@@ -708,6 +708,25 @@ class DirectiveMetadata extends InjectableMetadata {
    * ```
    */
   final String exportAs;
+  /**
+   * The module id of the module that contains the directive.
+   * Needed to be able to resolve relative urls for templates and styles.
+   * In Dart, this can be determined automatically and does not need to be set.
+   * In CommonJS, this can always be set to `module.id`.
+   *
+   * ## Simple Example
+   *
+   * ```
+   * @Directive({
+   *   selector: 'someDir',
+   *   moduleId: module.id
+   * })
+   * class SomeDir {
+   * }
+   *
+   * ```
+   */
+  final String moduleId;
   // TODO: add an example after ContentChildren and ViewChildren are in master
 
   /**
@@ -753,6 +772,7 @@ class DirectiveMetadata extends InjectableMetadata {
       bindings,
       providers,
       exportAs,
+      moduleId,
       queries})
       : selector = selector,
         _inputs = inputs,
@@ -761,6 +781,7 @@ class DirectiveMetadata extends InjectableMetadata {
         _events = events,
         host = host,
         exportAs = exportAs,
+        moduleId = moduleId,
         queries = queries,
         _providers = providers,
         _bindings = bindings,
@@ -854,25 +875,6 @@ class ComponentMetadata extends DirectiveMetadata {
 
   final List<dynamic> _viewProviders;
   final List<dynamic> _viewBindings;
-  /**
-   * The module id of the module that contains the component.
-   * Needed to be able to resolve relative urls for templates and styles.
-   * In Dart, this can be determined automatically and does not need to be set.
-   * In CommonJS, this can always be set to `module.id`.
-   *
-   * ## Simple Example
-   *
-   * ```
-   * @Directive({
-   *   selector: 'someDir',
-   *   moduleId: module.id
-   * })
-   * class SomeDir {
-   * }
-   *
-   * ```
-   */
-  final String moduleId;
   final String templateUrl;
   final String template;
   final List<String> styleUrls;
@@ -912,7 +914,6 @@ class ComponentMetadata extends DirectiveMetadata {
         directives = directives,
         pipes = pipes,
         encapsulation = encapsulation,
-        moduleId = moduleId,
         super(
             selector: selector,
             inputs: inputs,
@@ -921,6 +922,7 @@ class ComponentMetadata extends DirectiveMetadata {
             events: events,
             host: host,
             exportAs: exportAs,
+            moduleId: moduleId,
             bindings: bindings,
             providers: providers,
             queries: queries);
