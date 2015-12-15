@@ -6,6 +6,7 @@ import {
   ddescribe,
   xdescribe,
   expect,
+  fakeAsync,
   tick,
   beforeEach,
   inject,
@@ -168,6 +169,14 @@ export function main() {
            return service.getAsyncValue().then(
                (value) => { expect(value).toEqual('async value'); });
          }));
+
+      it('should allow the use of fakeAsync',
+         inject([FancyService], fakeAsync((service) => {
+                  var value;
+                  service.getAsyncValue().then(function(val) { value = val; });
+                  tick();
+                  expect(value).toEqual('async value');
+                })));
 
       describe('using beforeEach', () => {
         beforeEach(inject([FancyService],
