@@ -2,11 +2,21 @@ library angular.symbol_inspector.symbol_inspector;
 
 import 'dart:mirrors';
 import './simple_library.dart' as simple_library;
+import 'package:angular2/animate.dart';
 import 'package:angular2/common.dart';
 import 'package:angular2/compiler.dart';
 import 'package:angular2/core.dart';
 import 'package:angular2/instrumentation.dart';
 import 'package:angular2/platform/browser.dart';
+import 'package:angular2/platform/common_dom.dart';
+// TODO(#5906): currently not compatible with our test setup
+//import 'package:angular2/platform/server.dart';
+//import 'package:angular2/platform/worker_app.dart';
+import 'package:angular2/platform/worker_render.dart';
+import 'package:angular2/router.dart';
+import 'package:angular2/router/router_link_dsl.dart';
+import 'package:angular2/router/testing.dart';
+import 'package:angular2/testing.dart';
 
 const IGNORE = const {
   'runtimeType': true,
@@ -18,16 +28,28 @@ const IGNORE = const {
 };
 
 const LIB_MAP = const {
-  'simple_library': 'angular2.test.symbol_inspector.simple_library',
-  'ngCommon': 'angular2.common',
-  'ngCompiler': 'angular2.compiler',
-  'ngCore': 'angular2.core',
-  'ngInstrumentation': 'angular2.instrumentation',
-  'ngPlatformBrowser': 'angular2.platform.browser'
+  'simple_library' : 'angular2.test.symbol_inspector.simple_library',
+  'ngAnimate' : 'angular2.animate',
+  'ngCommon' : 'angular2.common',
+  'ngCompiler' : 'angular2.compiler',
+  'ngCore' : 'angular2.core',
+  'ngInstrumentation' : 'angular2.instrumentation',
+  'ngPlatformBrowser' : 'angular2.platform.browser',
+  'ngPlatformCommonDom' : 'angular2.platform.common_dom',
+  // TODO(#5906): currently not compatible with our test setup
+  // ngPlatformServer,
+  // ngPlatformWorkerApp,
+  'ngPlatformWorkerRender' : 'angular2.platform.worker_render',
+  'ngRouter' : 'angular2.router',
+  'ngRouterLinkDsl' : 'angular2.router.router_link_dsl',
+  'ngRouterTesting' : 'angular2.router.testing',
+  'ngTesting' : 'angular2.testing'
 };
 
 // Have this list here to trick dart to force import.
-var libs = [simple_library.A, Component, Form, TemplateCompiler, NgIf, wtfCreateScope, Title];
+var libs = [simple_library.A, Animation, Form, Component, TemplateCompiler,
+  Provider, wtfCreateScope, Title, DomRenderer, WORKER_RENDER_APP, Router,
+  RouterLinkTransform, SpyLocation, TestComponentBuilder];
 
 List<String> getSymbolsFromLibrary(String name) {
   var libraryName = LIB_MAP[name];

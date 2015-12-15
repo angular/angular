@@ -1,19 +1,43 @@
 import * as simple_library from './simple_library';
+import * as ngAnimate from 'angular2/animate';
 import * as ngCommon from 'angular2/common';
 import * as ngCompiler from 'angular2/compiler';
 import * as ngCore from 'angular2/core';
+import * as ngHttp from 'angular2/http';
+import * as ngHttpTesting from 'angular2/http/testing';
 import * as ngInstrumentation from 'angular2/instrumentation';
 import * as ngPlatformBrowser from 'angular2/platform/browser';
+import * as ngPlatformCommonDom from 'angular2/platform/common_dom';
+// TODO(#5906): currently not compatible with our test setup
+// import * as ngPlatformServer from 'angular2/platform/server';
+// import * as ngPlatformWorkerApp from 'angular2/platform/worker_app';
+import * as ngPlatformWorkerRender from 'angular2/platform/worker_render';
 import * as ngUpgrade from 'angular2/upgrade';
+import * as ngRouter from 'angular2/router';
+import * as ngRouterLinkDsl from 'angular2/router/router_link_dsl';
+import * as ngRouterTesting from 'angular2/router/testing';
+import * as ngTesting from 'angular2/testing';
 
 const LIB_MAP = {
   'simple_library': simple_library,
+  ngAnimate,
   ngCommon,
   ngCompiler,
   ngCore,
+  ngHttp,
+  ngHttpTesting,
   ngInstrumentation,
   ngPlatformBrowser,
-  ngUpgrade
+  ngPlatformCommonDom,
+  // TODO(#5906): currently not compatible with our test setup
+  // ngPlatformServer,
+  // ngPlatformWorkerApp,
+  ngPlatformWorkerRender,
+  ngUpgrade,
+  ngRouter,
+  ngRouterLinkDsl,
+  ngRouterTesting,
+  ngTesting
 };
 
 const IGNORE =
@@ -25,7 +49,7 @@ const IGNORE =
       originalStack: true,
       wrapperMessage: true,
       wrapperStack: true, '@@observable': true
-    }
+    };
 
 function collectClassSymbols(symbols: string[], prefix: String, type: Function):
     void {
