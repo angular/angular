@@ -23,7 +23,7 @@ transformers:
   - $dart2js:
       commandLineOptions:
         - '--show-package-warnings'
-version: 2.0.0-alpha.54
+version: 2.0.0-alpha.55
 homepage: 'https://github.com/angular/angular'
 authors:
   - 'Alex Eagle <alexeagle@google.com>'
