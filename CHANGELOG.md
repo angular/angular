@@ -1,3 +1,39 @@
+<a name="2.0.0-alpha.54"></a>
+# 2.0.0-alpha.54 (2015-12-15)
+
+
+### Bug Fixes
+
+* **bundles:** don't include RxJS in System.register bundles ([77b7cae](https://github.com/angular/angular/commit/77b7cae))
+* **bundles:** remove ngUpgrade from the angular2.js bundle ([283962f](https://github.com/angular/angular/commit/283962f)), closes [#5739](https://github.com/angular/angular/issues/5739) [#5854](https://github.com/angular/angular/issues/5854)
+* **bundles:** remove polyfills from angular2.js bundle ([2983558](https://github.com/angular/angular/commit/2983558)), closes [#5881](https://github.com/angular/angular/issues/5881)
+* **bundles:** rename the testing.js bundle to testing.dev.js ([d55655f](https://github.com/angular/angular/commit/d55655f)), closes [#5899](https://github.com/angular/angular/issues/5899) [#5776](https://github.com/angular/angular/issues/5776)
+* **bundles:** rename UMD bundles ([61b9468](https://github.com/angular/angular/commit/61b9468)), closes [#5898](https://github.com/angular/angular/issues/5898)
+
+
+### BREAKING CHANGES
+
+* System.register testing bundle was renamed:
+`testing.js` -> `testing.dev.js`
+
+* UMD bundles were renamed:
+  * `angular2.umd.js` -> `angular2-all.umd.js`
+  * `angular2-testing.umd.js` -> `angular2-all-testing.umd.js`
+
+* RxJS used to be bundled with Angular 2 code and this is not the case
+any more. RxJS needs to be loaded explicitly.
+
+* Previously `angular2.js`, `angular2.min.js` and `angular2.dev.js` bundles
+would have zone.js and reflect-metadata pre-appended. New bundles don't
+contain zone.js nor reflect-metadata - those external dependencies can
+be easily loaded into a browser using `angular2-polyfills.js`
+
+* `ngUpgrade` related symbols are no longer part of the `angular2.js`
+bundle. `ngUpgrade` has a dedicated `upgrade.js` bundle now.
+
+
+
+
 <a name="2.0.0-alpha.53"></a>
 # 2.0.0-alpha.53 (2015-12-13)
 
