@@ -29,10 +29,10 @@ ES5 users and AngularJS 1.x users interested in the `ngUpgrade` path can take ad
 
 filename    | list of barrels   | dev/prod | minified? 
 ------------|-------------------|----------|-------------|--------------|-------------
-`angular2.umd.js` | `RxJS`, `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/http`, `angular2/router`, `angular2/instrumentation`, `angular2/upgrade`| prod | no
-`angular2.umd.min.js` | `RxJS`, `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/http`, `angular2/router`, `angular2/instrumentation`, `angular2/upgrade` | prod | yes
-`angular2.umd.dev.js` | `RxJS`, `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/http`, `angular2/router`, `angular2/instrumentation`, `angular2/upgrade` | dev | no
-`angular2-testing.umd.dev.js` | `RxJS`, `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/http`, `angular2/router`, `angular2/instrumentation`, `angular2/upgrade`, `angular2/testing`, `angular2/http/testing`, `angular2/router/testing` | dev | no
+`angular2.umd.js` | `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/http`, `angular2/router`, `angular2/instrumentation`, `angular2/upgrade`| prod | no
+`angular2.umd.min.js` | `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/http`, `angular2/router`, `angular2/instrumentation`, `angular2/upgrade` | prod | yes
+`angular2.umd.dev.js` | `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/http`, `angular2/router`, `angular2/instrumentation`, `angular2/upgrade` | dev | no
+`angular2-testing.umd.dev.js` | `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/http`, `angular2/router`, `angular2/instrumentation`, `angular2/upgrade`, `angular2/testing`, `angular2/http/testing`, `angular2/router/testing` | dev | no
 
 **Warning**: bundles in the `UMD` format are _not_ "additive". A single application should use only one bundle from the above list.
 
@@ -43,9 +43,9 @@ For this scenario Angular 2 is distributed with bundles in the [System.register 
 
 filename    | list of barrels   | dev/prod | minified? 
 ------------|-------------------|----------|-------------|--------------|-------------
-`angular2.js` | `RxJS`, `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/instrumentation`| prod | no
-`angular2.min.js` | `RxJS`, `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/instrumentation`| prod | yes
-`angular2.dev.js` | `RxJS`, `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/instrumentation`| dev | no
+`angular2.js` | `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/instrumentation`| prod | no
+`angular2.min.js` | `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/instrumentation`| prod | yes
+`angular2.dev.js` | `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/instrumentation`| dev | no
 `http.js` | `angular2/http` | prod | no
 `http.min.js` | `angular2/http` | prod | yes
 `http.dev.js` | `angular2/http` | dev | no
@@ -65,7 +65,10 @@ For example people using Angular 2 with `http` and `router` would include: `angu
 Angular 2 doesn't provide any bundles for use with packaging tools Browserify or WebPack. Those tools are sophisticated enough to build optimal bundles for production use from individual Angular 2 files distributed in the npm package.
 An example of an Angular 2 project built with WebPack can be found in the [angular2-seed](https://github.com/angular/angular2-seed) repository.      
 
+
 # Polyfills and external dependencies
+
+## Required Polyfills
 
 Polyfills are required for Angular 2 to function properly (the exact list depends on the browser used) and external dependencies ([zone.js](https://github.com/angular/zone.js)).
 To ease setup of Angular 2 applications there is one file - `angular2-polyfills.js` - that combines:
@@ -73,5 +76,17 @@ To ease setup of Angular 2 applications there is one file - `angular2-polyfills.
 * [zone.js](https://github.com/angular/zone.js)     
 
 **Note**: `angular2-polyfills.js` contains code that should be loaded into the browser as the very first code of the web application even before the module loader. The preferred solution is to load the mentioned file in a `script` tag as early as possible. 
+
+
+## RxJS
+
+[RxJS](https://github.com/ReactiveX/RxJS) is a required dependency of Angular 2.
+
+You should include RxJS in your project by declaring a dependency on the [`rxjs` npm package](https://www.npmjs.com/package/rxjs).
+
+Depending on if you are using Angular bundles or not you can either use RxJS bundles from `node_modules/rxjs/bundles/` or configure your bundler to pull in the individual files from the npm package.
+
+
+## ES6 shims (optional)
 
 Users of pre-ES6 browsers might need to add an ES6 shim (e.g. [es6-shim](https://github.com/paulmillr/es6-shim))
