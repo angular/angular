@@ -24,7 +24,7 @@ class MockLocationStrategy extends LocationStrategy {
   void simulatePopState(String url) {
     this.internalPath = url;
     ObservableWrapper.callEmit(
-        this._subject, new MockPopStateEvent(this.path()));
+        this._subject, new _MockPopStateEvent(this.path()));
   }
 
   String path() {
@@ -77,9 +77,9 @@ class MockLocationStrategy extends LocationStrategy {
   }
 }
 
-class MockPopStateEvent {
+class _MockPopStateEvent {
   String newUrl;
   bool pop = true;
   String type = "popstate";
-  MockPopStateEvent(this.newUrl) {}
+  _MockPopStateEvent(this.newUrl) {}
 }
