@@ -249,7 +249,7 @@ bool isJsObject(o) {
   return false;
 }
 
-bool _forceDevMode = true;
+bool _forceDevMode = false;
 bool _modeLocked = false;
 
 void lockMode() {
