@@ -29,10 +29,10 @@ ES5 users and AngularJS 1.x users interested in the `ngUpgrade` path can take ad
 
 filename    | list of barrels   | dev/prod | minified? 
 ------------|-------------------|----------|-------------|--------------|-------------
-`angular2.umd.js` | `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/http`, `angular2/router`, `angular2/instrumentation`, `angular2/upgrade`| prod | no
-`angular2.umd.min.js` | `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/http`, `angular2/router`, `angular2/instrumentation`, `angular2/upgrade` | prod | yes
-`angular2.umd.dev.js` | `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/http`, `angular2/router`, `angular2/instrumentation`, `angular2/upgrade` | dev | no
-`angular2-testing.umd.dev.js` | `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/http`, `angular2/router`, `angular2/instrumentation`, `angular2/upgrade`, `angular2/testing`, `angular2/http/testing`, `angular2/router/testing` | dev | no
+`angular2-all.umd.js` | `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/http`, `angular2/router`, `angular2/instrumentation`, `angular2/upgrade`| prod | no
+`angular2-all.umd.min.js` | `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/http`, `angular2/router`, `angular2/instrumentation`, `angular2/upgrade` | prod | yes
+`angular2-all.umd.dev.js` | `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/http`, `angular2/router`, `angular2/instrumentation`, `angular2/upgrade` | dev | no
+`angular2-all-testing.umd.dev.js` | `angular2/core`, `angular2/common`, `angular2/compiler`, `angular2/platform/browser`, `angular2/platform/common_dom`, `angular2/http`, `angular2/router`, `angular2/instrumentation`, `angular2/upgrade`, `angular2/testing`, `angular2/http/testing`, `angular2/router/testing` | dev | no
 
 **Warning**: bundles in the `UMD` format are _not_ "additive". A single application should use only one bundle from the above list.
 
