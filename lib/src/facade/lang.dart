@@ -249,32 +249,21 @@ bool isJsObject(o) {
   return false;
 }
 
-bool _forceDevMode = true;
-bool _modeLocked = false;
+bool _forceDevMode = false;
+bool _devModeLocked = false;
 
-void lockMode() {
-  _modeLocked = true;
+void lockDevMode() {
+  _devModeLocked = true;
 }
 
-@deprecated
 void enableDevMode() {
   if (_forceDevMode) {
     return;
   }
-  if (_modeLocked) {
+  if (_devModeLocked) {
     throw new Exception("Cannot enable dev mode after platform setup.");
   }
   _forceDevMode = true;
-}
-
-void enableProdMode() {
-  if (_forceDevMode) {
-    return;
-  }
-  if (_modeLocked) {
-    throw new Exception("Cannot enable prod mode after platform setup.");
-  }
-  _forceDevMode = false;
 }
 
 bool assertionsEnabled() {

@@ -22,11 +22,10 @@ import "package:angular2/src/core/linker/dynamic_component_loader.dart"
 import "package:angular2/src/facade/exceptions.dart"
     show BaseException, WrappedException, ExceptionHandler, unimplemented;
 import "package:angular2/src/core/linker/view_ref.dart" show internalView;
-import "package:angular2/src/core/console.dart" show Console;
 import "profile/profile.dart" show wtfLeave, wtfCreateScope, WtfScopeFn;
 import "package:angular2/src/core/change_detection/change_detector_ref.dart"
     show ChangeDetectorRef;
-import "package:angular2/src/facade/lang.dart" show lockMode;
+import "package:angular2/src/facade/lang.dart" show lockDevMode;
 
 /**
  * Construct providers specific to an individual root component.
@@ -84,7 +83,7 @@ List<dynamic> _platformProviders;
  */
 PlatformRef platform(
     [List<dynamic /* Type | Provider | List < dynamic > */ > providers]) {
-  lockMode();
+  lockDevMode();
   if (isPresent(_platform)) {
     if (ListWrapper.equals(_platformProviders, providers)) {
       return _platform;
@@ -436,14 +435,7 @@ class ApplicationRef_ extends ApplicationRef {
         completer.reject(e, e_stack);
       }
     });
-    return completer.promise.then((_) {
-      var c = this._injector.get(Console);
-      var modeDescription = assertionsEnabled()
-          ? "in the development mode. Call enableProdMode() to enable the production mode."
-          : "in the production mode. Call enableDevMode() to enable the development mode.";
-      c.log('''Angular 2 is running ${ modeDescription}''');
-      return _;
-    });
+    return completer.promise;
   }
 
   /** @internal */

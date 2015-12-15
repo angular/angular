@@ -19,7 +19,6 @@ import "package:angular2/platform/browser.dart" show bootstrap;
 import "package:angular2/src/core/metadata.dart"
     show Component, Directive, View;
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
-import "package:angular2/src/core/console.dart" show Console;
 import "package:angular2/core.dart" show provide, ViewChild, AfterViewInit;
 import "package:angular2/src/platform/dom/dom_tokens.dart" show DOCUMENT;
 import "package:angular2/src/router/route_config_decorator.dart"
@@ -42,10 +41,6 @@ import "package:angular2/src/core/application_ref.dart" show ApplicationRef;
 import "package:angular2/src/mock/mock_application_ref.dart"
     show MockApplicationRef;
 
-class DummyConsole implements Console {
-  log(message) {}
-}
-
 main() {
   describe("router bootstrap", () {
     beforeEachProviders(() => [
@@ -66,8 +61,7 @@ main() {
             ROUTER_PROVIDERS,
             provide(ROUTER_PRIMARY_COMPONENT, useValue: AppCmp),
             provide(LocationStrategy, useClass: MockLocationStrategy),
-            provide(DOCUMENT, useValue: fakeDoc),
-            provide(Console, useClass: DummyConsole)
+            provide(DOCUMENT, useValue: fakeDoc)
           ]).then((applicationRef) {
             var router = applicationRef.hostComponent.router;
             router.subscribe((_) {

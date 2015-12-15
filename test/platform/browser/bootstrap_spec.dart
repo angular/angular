@@ -18,7 +18,6 @@ import "package:angular2/src/facade/lang.dart"
     show IS_DART, isPresent, stringify;
 import "package:angular2/platform/browser.dart" show bootstrap;
 import "package:angular2/src/core/application_ref.dart" show ApplicationRef;
-import "package:angular2/src/core/console.dart" show Console;
 import "package:angular2/core.dart"
     show Component, Directive, View, OnDestroy, platform;
 import "package:angular2/platform/browser.dart"
@@ -112,10 +111,6 @@ class _ArrayLogger {
   logGroupEnd() {}
 }
 
-class DummyConsole implements Console {
-  log(message) {}
-}
-
 main() {
   var fakeDoc, el, el2, testProviders, lightDom;
   describe("bootstrap factory method", () {
@@ -128,10 +123,7 @@ main() {
       DOM.appendChild(fakeDoc.body, el2);
       DOM.appendChild(el, lightDom);
       DOM.setText(lightDom, "loading");
-      testProviders = [
-        provide(DOCUMENT, useValue: fakeDoc),
-        provide(Console, useClass: DummyConsole)
-      ];
+      testProviders = [provide(DOCUMENT, useValue: fakeDoc)];
     });
     afterEach(disposePlatform);
     it(
