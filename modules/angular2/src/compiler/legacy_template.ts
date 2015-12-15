@@ -35,7 +35,7 @@ export class LegacyHtmlAstTransformer implements HtmlAstVisitor {
   rewrittenAst: HtmlAst[] = [];
   visitingTemplateEl: boolean = false;
 
-  constructor(private dashCaseSelectors?: string[]) {}
+  constructor(private _dashCaseSelectors?: string[]) {}
 
   visitElement(ast: HtmlElementAst, context: any): HtmlElementAst {
     this.visitingTemplateEl = ast.name.toLowerCase() == 'template';
@@ -191,7 +191,7 @@ export class LegacyHtmlAstTransformer implements HtmlAstVisitor {
       return new HtmlAttrAst(dashCaseToCamelCase(attrName), ast.value, ast.sourceSpan);
     }
 
-    if (isPresent(this.dashCaseSelectors) && this.dashCaseSelectors.indexOf(attrName) > -1) {
+    if (isPresent(this._dashCaseSelectors) && this._dashCaseSelectors.indexOf(attrName) > -1) {
       return new HtmlAttrAst(dashCaseToCamelCase(attrName), ast.value, ast.sourceSpan);
     }
 

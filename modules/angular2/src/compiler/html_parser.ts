@@ -43,31 +43,31 @@ export class HtmlParser {
 }
 
 class TreeBuilder {
-  private index: number = -1;
-  private peek: HtmlToken;
+  private _index: number = -1;
+  private _peek: HtmlToken;
 
-  private rootNodes: HtmlAst[] = [];
-  private errors: HtmlTreeError[] = [];
+  private _rootNodes: HtmlAst[] = [];
+  private _errors: HtmlTreeError[] = [];
 
-  private elementStack: HtmlElementAst[] = [];
+  private _elementStack: HtmlElementAst[] = [];
 
-  constructor(private tokens: HtmlToken[]) { this._advance(); }
+  constructor(private _tokens: HtmlToken[]) { this._advance(); }
 
   build(): HtmlParseTreeResult {
-    while (this.peek.type !== HtmlTokenType.EOF) {
-      if (this.peek.type === HtmlTokenType.TAG_OPEN_START) {
+    while (this._peek.type !== HtmlTokenType.EOF) {
+      if (this._peek.type === HtmlTokenType.TAG_OPEN_START) {
         this._consumeStartTag(this._advance());
-      } else if (this.peek.type === HtmlTokenType.TAG_CLOSE) {
+      } else if (this._peek.type === HtmlTokenType.TAG_CLOSE) {
         this._consumeEndTag(this._advance());
-      } else if (this.peek.type === HtmlTokenType.CDATA_START) {
+      } else if (this._peek.type === HtmlTokenType.CDATA_START) {
         this._closeVoidElement();
         this._consumeCdata(this._advance());
-      } else if (this.peek.type === HtmlTokenType.COMMENT_START) {
+      } else if (this._peek.type === HtmlTokenType.COMMENT_START) {
         this._closeVoidElement();
         this._consumeComment(this._advance());
-      } else if (this.peek.type === HtmlTokenType.TEXT ||
-                 this.peek.type === HtmlTokenType.RAW_TEXT ||
-                 this.peek.type === HtmlTokenType.ESCAPABLE_RAW_TEXT) {
+      } else if (this._peek.type === HtmlTokenType.TEXT ||
+                 this._peek.type === HtmlTokenType.RAW_TEXT ||
+                 this._peek.type === HtmlTokenType.ESCAPABLE_RAW_TEXT) {
         this._closeVoidElement();
         this._consumeText(this._advance());
       } else {
@@ -75,21 +75,21 @@ class TreeBuilder {
         this._advance();
       }
     }
-    return new HtmlParseTreeResult(this.rootNodes, this.errors);
+    return new HtmlParseTreeResult(this._rootNodes, this._errors);
   }
 
   private _advance(): HtmlToken {
-    var prev = this.peek;
-    if (this.index < this.tokens.length - 1) {
+    var prev = this._peek;
+    if (this._index < this._tokens.length - 1) {
       // Note: there is always an EOF token at the end
-      this.index++;
+      this._index++;
     }
-    this.peek = this.tokens[this.index];
+    this._peek = this._tokens[this._index];
     return prev;
   }
 
   private _advanceIf(type: HtmlTokenType): HtmlToken {
-    if (this.peek.type === type) {
+    if (this._peek.type === type) {
       return this._advance();
     }
     return null;
@@ -121,11 +121,11 @@ class TreeBuilder {
   }
 
   private _closeVoidElement(): void {
-    if (this.elementStack.length > 0) {
-      let el = ListWrapper.last(this.elementStack);
+    if (this._elementStack.length > 0) {
+      let el = ListWrapper.last(this._elementStack);
 
       if (getHtmlTagDefinition(el.name).isVoid) {
-        this.elementStack.pop();
+        this._elementStack.pop();
       }
     }
   }
@@ -134,26 +134,26 @@ class TreeBuilder {
     var prefix = startTagToken.parts[0];
     var name = startTagToken.parts[1];
     var attrs = [];
-    while (this.peek.type === HtmlTokenType.ATTR_NAME) {
+    while (this._peek.type === HtmlTokenType.ATTR_NAME) {
       attrs.push(this._consumeAttr(this._advance()));
     }
     var fullName = getElementFullName(prefix, name, this._getParentElement());
     var selfClosing = false;
     // Note: There could have been a tokenizer error
     // so that we don't get a token for the end tag...
-    if (this.peek.type === HtmlTokenType.TAG_OPEN_END_VOID) {
+    if (this._peek.type === HtmlTokenType.TAG_OPEN_END_VOID) {
       this._advance();
       selfClosing = true;
       if (getNsPrefix(fullName) == null && !getHtmlTagDefinition(fullName).isVoid) {
-        this.errors.push(HtmlTreeError.create(
+        this._errors.push(HtmlTreeError.create(
             fullName, startTagToken.sourceSpan.start,
             `Only void and foreign elements can be self closed "${startTagToken.parts[1]}"`));
       }
-    } else if (this.peek.type === HtmlTokenType.TAG_OPEN_END) {
+    } else if (this._peek.type === HtmlTokenType.TAG_OPEN_END) {
       this._advance();
       selfClosing = false;
     }
-    var end = this.peek.sourceSpan.start;
+    var end = this._peek.sourceSpan.start;
     var el = new HtmlElementAst(fullName, attrs, [],
                                 new ParseSourceSpan(startTagToken.sourceSpan.start, end));
     this._pushElement(el);
@@ -163,10 +163,10 @@ class TreeBuilder {
   }
 
   private _pushElement(el: HtmlElementAst) {
-    if (this.elementStack.length > 0) {
-      var parentEl = ListWrapper.last(this.elementStack);
+    if (this._elementStack.length > 0) {
+      var parentEl = ListWrapper.last(this._elementStack);
       if (getHtmlTagDefinition(parentEl.name).isClosedByChild(el.name)) {
-        this.elementStack.pop();
+        this._elementStack.pop();
       }
     }
 
@@ -175,11 +175,11 @@ class TreeBuilder {
     if (tagDef.requireExtraParent(isPresent(parentEl) ? parentEl.name : null)) {
       var newParent = new HtmlElementAst(tagDef.parentToAdd, [], [el], el.sourceSpan);
       this._addToParent(newParent);
-      this.elementStack.push(newParent);
-      this.elementStack.push(el);
+      this._elementStack.push(newParent);
+      this._elementStack.push(el);
     } else {
       this._addToParent(el);
-      this.elementStack.push(el);
+      this._elementStack.push(el);
     }
   }
 
@@ -188,20 +188,20 @@ class TreeBuilder {
         getElementFullName(endTagToken.parts[0], endTagToken.parts[1], this._getParentElement());
 
     if (getHtmlTagDefinition(fullName).isVoid) {
-      this.errors.push(
+      this._errors.push(
           HtmlTreeError.create(fullName, endTagToken.sourceSpan.start,
                                `Void elements do not have end tags "${endTagToken.parts[1]}"`));
     } else if (!this._popElement(fullName)) {
-      this.errors.push(HtmlTreeError.create(fullName, endTagToken.sourceSpan.start,
-                                            `Unexpected closing tag "${endTagToken.parts[1]}"`));
+      this._errors.push(HtmlTreeError.create(fullName, endTagToken.sourceSpan.start,
+                                             `Unexpected closing tag "${endTagToken.parts[1]}"`));
     }
   }
 
   private _popElement(fullName: string): boolean {
-    for (let stackIndex = this.elementStack.length - 1; stackIndex >= 0; stackIndex--) {
-      let el = this.elementStack[stackIndex];
+    for (let stackIndex = this._elementStack.length - 1; stackIndex >= 0; stackIndex--) {
+      let el = this._elementStack[stackIndex];
       if (el.name == fullName) {
-        ListWrapper.splice(this.elementStack, stackIndex, this.elementStack.length - stackIndex);
+        ListWrapper.splice(this._elementStack, stackIndex, this._elementStack.length - stackIndex);
         return true;
       }
 
@@ -216,7 +216,7 @@ class TreeBuilder {
     var fullName = mergeNsAndName(attrName.parts[0], attrName.parts[1]);
     var end = attrName.sourceSpan.end;
     var value = '';
-    if (this.peek.type === HtmlTokenType.ATTR_VALUE) {
+    if (this._peek.type === HtmlTokenType.ATTR_VALUE) {
       var valueToken = this._advance();
       value = valueToken.parts[0];
       end = valueToken.sourceSpan.end;
@@ -225,7 +225,7 @@ class TreeBuilder {
   }
 
   private _getParentElement(): HtmlElementAst {
-    return this.elementStack.length > 0 ? ListWrapper.last(this.elementStack) : null;
+    return this._elementStack.length > 0 ? ListWrapper.last(this._elementStack) : null;
   }
 
   private _addToParent(node: HtmlAst) {
@@ -233,7 +233,7 @@ class TreeBuilder {
     if (isPresent(parent)) {
       parent.children.push(node);
     } else {
-      this.rootNodes.push(node);
+      this._rootNodes.push(node);
     }
   }
 }
