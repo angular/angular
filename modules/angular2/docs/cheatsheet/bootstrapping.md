@@ -10,7 +10,9 @@ Bootstrapping
 syntax(ts dart):
 `bootstrap​(MyAppComponent, [MyService, provide(...)]);`|`provide`
 syntax(js):
-`ng.platform.browser.bootstrap(MyAppComponent,
-  [MyService, ng.core.provide(...)]);`|`provide`
+`document.addEventListener('DOMContentLoaded', function () {
+  ng.platform.browser.bootstrap(MyAppComponent,
+    [MyService, ng.core.provide(...)]);
+});`|`provide`
 description:
-Bootstraps an application with MyAppComponent as the root component and configures the DI providers.
+Bootstraps an application with MyAppComponent as the root component and configures the DI providers. {@target js}Must be wrapped in the event listener to fire when the page loads.{@endtarget}

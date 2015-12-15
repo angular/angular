@@ -11,34 +11,39 @@ syntax(ts):
 `@Component({...})
 class MyComponent() {}`|`@Component({...})`
 syntax(js):
-`var MyComponent = ng.core.Component({...})`|`ng.core.Component({...})`
+`var MyComponent = ng.core.Component({...}).Class({...})`|`ng.core.Component({...})`
 syntax(dart):
 `@Component(...)
 class MyComponent() {}`|`@Component(...)`
 description:
-Declares that {@target ts dart}a class{@endtarget}{@target js}an object{@endtarget} is a component and provides metadata about the component.
+Declares that a class is a component and provides metadata about the component.
 
 @cheatsheetItem
 syntax(ts):
 `@Pipe({...})
 class MyPipe() {}`|`@Pipe({...})`
 syntax(js):
-`var MyPipe = ng.core.Pipe({...})`|`ng.core.Pipe({...})`
+`var MyPipe = ng.core.Pipe({...}).Class({...})`|`ng.core.Pipe({...})`
 syntax(dart):
 `@Pipe(...)
 class MyPipe() {}`|`@Pipe(...)`
 description:
-Declares that {@target ts dart}a class{@endtarget}{@target js}an object{@endtarget} is a pipe and provides metadata about the pipe.
+Declares that a class is a pipe and provides metadata about the pipe.
 
 @cheatsheetItem
 syntax(ts):
 `@Injectable()
 class MyService() {}`|`@Injectable()`
 syntax(js):
-`var MyService = ng.core.Injectable({...})`|`ng.core.Injectable({...})`
+`var MyService = ng.core.Class({constructor: [OtherService, function(otherService) { }]});
+var OtherService = ng.core.Class({constructor: function() { }});`
+var MyService = ng.core.Injectable({...})`|`ng.core.Injectable({...})`
 syntax(dart):
 `@Injectable()
 class MyService() {}`|`@Injectable()`
 description:
-Declares that {@target ts dart}a class{@endtarget}{@target js}an object{@endtarget} has dependencies that should be injected into the constructor when the dependency
-injector is creating an instance of this {@target ts dart}class{@endtarget}{@target js}object{@endtarget}.
+{@target ts dart}Declares that a class has dependencies that should be injected into the constructor when the dependency injector is creating an instance of this class.
+{@endtarget}
+{@target js}
+Declares a service to inject into a class by providing an array with the services with the final item being the function which will receive the injected services.
+{@endtarget}

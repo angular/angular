@@ -3,7 +3,7 @@ Directive configuration
 @cheatsheetIndex 5
 @description
 {@target ts}`@Directive({ property1: value1, ... })`{@endtarget}
-{@target js}`ng.core.Directive({ property1: value1, ... })`{@endtarget}
+{@target js}`ng.core.Directive({ property1: value1, ... }).Class({...})`{@endtarget}
 {@target dart}`@Directive(property1: value1, ...)`{@endtarget}
 
 @cheatsheetItem
