@@ -1,8 +1,8 @@
-// #docregion enableDevMode
-import {enableDevMode} from 'angular2/core';
+// #docregion enableProdMode
+import {enableProdMode} from 'angular2/core';
 import {bootstrap} from 'angular2/bootstrap';
 import {MyComponent} from 'my_component';
 
-enableDevMode();
+enableProdMode();
 bootstrap(MyComponent);
 // #enddocregion

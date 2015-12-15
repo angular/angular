@@ -1010,7 +1010,7 @@ var NG_CORE = [
   'EventEmitter.emit():js',
   'OutputMetadata',
   'OutputMetadata.bindingPropertyName',
-  'enableDevMode():js',
+  'enableProdMode():js',
   'ExpressionChangedAfterItHasBeenCheckedException',
   'ExpressionChangedAfterItHasBeenCheckedException.message',
   'ExpressionChangedAfterItHasBeenCheckedException.stackTrace',
