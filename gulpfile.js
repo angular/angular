@@ -1109,7 +1109,7 @@ gulp.task('!bundle.testing', ['build.js.dev'], function() {
   var devBundleConfig = merge(true, bundleConfig);
   devBundleConfig.paths = merge(true, devBundleConfig.paths, {"*": "dist/js/dev/es5/*.js"});
 
-  return bundler.bundle(devBundleConfig, TESTING_BUNDLE_CONTENT, './dist/js/bundle/testing.js',
+  return bundler.bundle(devBundleConfig, TESTING_BUNDLE_CONTENT, './dist/js/bundle/testing.dev.js',
                         {sourceMaps: true});
 });
 
