@@ -232,7 +232,7 @@ System.register("angular2/router/router_link_dsl", ["angular2/compiler", "angula
   var lang_1 = require("angular2/src/facade/lang");
   var router_link_transform_2 = require("angular2/src/router/router_link_transform");
   exports.RouterLinkTransform = router_link_transform_2.RouterLinkTransform;
-  var ROUTER_LINK_DSL_PROVIDER = lang_1.CONST_EXPR(new core_1.Provider(compiler_1.TEMPLATE_TRANSFORMS, {
+  exports.ROUTER_LINK_DSL_PROVIDER = lang_1.CONST_EXPR(new core_1.Provider(compiler_1.TEMPLATE_TRANSFORMS, {
     useClass: router_link_transform_1.RouterLinkTransform,
     multi: true
   }));

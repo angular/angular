@@ -26,7 +26,7 @@ export let MockLocationStrategy = class extends LocationStrategy {
     }
     simulatePopState(url) {
         this.internalPath = url;
-        ObservableWrapper.callEmit(this._subject, new MockPopStateEvent(this.path()));
+        ObservableWrapper.callEmit(this._subject, new _MockPopStateEvent(this.path()));
     }
     path() { return this.internalPath; }
     prepareExternalUrl(internal) {
@@ -64,7 +64,7 @@ MockLocationStrategy = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [])
 ], MockLocationStrategy);
-class MockPopStateEvent {
+class _MockPopStateEvent {
     constructor(newUrl) {
         this.newUrl = newUrl;
         this.pop = true;

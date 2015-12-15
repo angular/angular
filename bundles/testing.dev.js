@@ -192,7 +192,7 @@ System.register("angular2/src/mock/mock_location_strategy", ["angular2/src/core/
     }
     MockLocationStrategy.prototype.simulatePopState = function(url) {
       this.internalPath = url;
-      async_1.ObservableWrapper.callEmit(this._subject, new MockPopStateEvent(this.path()));
+      async_1.ObservableWrapper.callEmit(this._subject, new _MockPopStateEvent(this.path()));
     };
     MockLocationStrategy.prototype.path = function() {
       return this.internalPath;
@@ -237,13 +237,13 @@ System.register("angular2/src/mock/mock_location_strategy", ["angular2/src/core/
     return MockLocationStrategy;
   })(location_strategy_1.LocationStrategy);
   exports.MockLocationStrategy = MockLocationStrategy;
-  var MockPopStateEvent = (function() {
-    function MockPopStateEvent(newUrl) {
+  var _MockPopStateEvent = (function() {
+    function _MockPopStateEvent(newUrl) {
       this.newUrl = newUrl;
       this.pop = true;
       this.type = 'popstate';
     }
-    return MockPopStateEvent;
+    return _MockPopStateEvent;
   })();
   global.define = __define;
   return module.exports;
