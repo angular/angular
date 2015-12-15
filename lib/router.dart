@@ -100,6 +100,8 @@ const List<dynamic> ROUTER_PROVIDERS = const [
       useFactory: routerPrimaryComponentFactory, deps: const [ApplicationRef])
 ];
 /**
+ * Use [ROUTER_PROVIDERS] instead.
+ *
  * @deprecated
  */
 const ROUTER_BINDINGS = ROUTER_PROVIDERS;

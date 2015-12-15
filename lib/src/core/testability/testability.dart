@@ -97,6 +97,9 @@ class Testability {
   }
 }
 
+/**
+ * A global registry of [Testability] instances for specific elements.
+ */
 @Injectable()
 class TestabilityRegistry {
   /** @internal */
@@ -123,6 +126,10 @@ class TestabilityRegistry {
   }
 }
 
+/**
+ * Adapter interface for retrieving the `Testability` service associated for a
+ * particular context.
+ */
 abstract class GetTestability {
   void addToWindow(TestabilityRegistry registry);
   Testability findTestabilityInTree(
@@ -139,6 +146,9 @@ class _NoopGetTestability implements GetTestability {
   const _NoopGetTestability();
 }
 
+/**
+ * Set the [GetTestability] implementation used by the Angular testing framework.
+ */
 void setTestabilityGetter(GetTestability getter) {
   _testabilityGetter = getter;
 }

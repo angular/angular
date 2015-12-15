@@ -25,4 +25,9 @@ abstract class ControlValueAccessor {
   void registerOnTouched(dynamic fn);
 }
 
+/**
+ * Used to provide a [ControlValueAccessor] for form controls.
+ *
+ * See [DefaultValueAccessor] for how to implement one.
+ */
 const OpaqueToken NG_VALUE_ACCESSOR = const OpaqueToken("NgValueAccessor");

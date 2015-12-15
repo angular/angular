@@ -123,6 +123,8 @@ class FormBuilder {
  */
 const List<Type> FORM_PROVIDERS = const [FormBuilder];
 /**
+ * See [FORM_PROVIDERS] instead.
+ *
  * @deprecated
  */
 const FORM_BINDINGS = FORM_PROVIDERS;

@@ -22,9 +22,9 @@ class RenderProtoViewRef {}
  * Represents a list of sibling Nodes that can be moved by the [Renderer] independently of
  * other Render Fragments.
  *
- * Any [RenderView] has one Render Fragment.
+ * Any [RenderViewRef] has one Render Fragment.
  *
- * Additionally any View with an Embedded View that contains a [NgContent View Projection]
+ * Additionally any View with an Embedded View that contains a [NgContentAst View Projection]
  * results in additional Render Fragment.
  */
 
@@ -73,10 +73,16 @@ class RenderFragmentRef {}
 // TODO(i): refactor into an interface
 class RenderViewRef {}
 
+/**
+ * Abstract base class for commands to the Angular renderer, using the visitor pattern.
+ */
 abstract class RenderTemplateCmd {
   dynamic visit(RenderCommandVisitor visitor, dynamic context);
 }
 
+/**
+ * Command to begin rendering.
+ */
 abstract class RenderBeginCmd extends RenderTemplateCmd {
   num get ngContentIndex {
     return unimplemented();
@@ -87,12 +93,18 @@ abstract class RenderBeginCmd extends RenderTemplateCmd {
   }
 }
 
+/**
+ * Command to render text.
+ */
 abstract class RenderTextCmd extends RenderBeginCmd {
   String get value {
     return unimplemented();
   }
 }
 
+/**
+ * Command to render projected content.
+ */
 abstract class RenderNgContentCmd extends RenderTemplateCmd {
   // The index of this NgContent element
   num get index {
@@ -106,6 +118,9 @@ abstract class RenderNgContentCmd extends RenderTemplateCmd {
   }
 }
 
+/**
+ * Command to begin rendering an element.
+ */
 abstract class RenderBeginElementCmd extends RenderBeginCmd {
   String get name {
     return unimplemented();
@@ -120,12 +135,18 @@ abstract class RenderBeginElementCmd extends RenderBeginCmd {
   }
 }
 
+/**
+ * Command to begin rendering a component.
+ */
 abstract class RenderBeginComponentCmd extends RenderBeginElementCmd {
   String get templateId {
     return unimplemented();
   }
 }
 
+/**
+ * Command to render a component's template.
+ */
 abstract class RenderEmbeddedTemplateCmd extends RenderBeginElementCmd {
   bool get isMerged {
     return unimplemented();
@@ -136,6 +157,9 @@ abstract class RenderEmbeddedTemplateCmd extends RenderBeginElementCmd {
   }
 }
 
+/**
+ * Visitor for a [RenderTemplateCmd].
+ */
 abstract class RenderCommandVisitor {
   dynamic visitText(RenderTextCmd cmd, dynamic context);
   dynamic visitNgContent(RenderNgContentCmd cmd, dynamic context);
@@ -190,6 +214,9 @@ abstract class RenderElementRef {
   num boundElementIndex;
 }
 
+/**
+ * Template for rendering a component, including commands and styles.
+ */
 class RenderComponentTemplate {
   String id;
   String shortId;
@@ -210,7 +237,7 @@ class RenderComponentTemplate {
  *
  * If you are implementing a custom renderer, you must implement this interface.
  *
- * The default Renderer implementation is [DomRenderer]. Also see [WebWorkerRenderer].
+ * The default Renderer implementation is `DomRenderer`. Also available is `WebWorkerRenderer`.
  */
 abstract class Renderer {
   /**

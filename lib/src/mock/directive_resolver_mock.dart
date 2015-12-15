@@ -9,6 +9,10 @@ import "../core/metadata.dart" show DirectiveMetadata, ComponentMetadata;
 import "package:angular2/src/core/linker/directive_resolver.dart"
     show DirectiveResolver;
 
+/**
+ * An implementation of [DirectiveResolver] that allows overriding
+ * various properties of directives.
+ */
 @Injectable()
 class MockDirectiveResolver extends DirectiveResolver {
   var _providerOverrides = new Map<Type, List<dynamic>>();

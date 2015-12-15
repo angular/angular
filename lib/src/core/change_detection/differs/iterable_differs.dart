@@ -7,6 +7,10 @@ import "../change_detector_ref.dart" show ChangeDetectorRef;
 import "package:angular2/src/core/di.dart"
     show Provider, SkipSelfMetadata, OptionalMetadata, Injectable;
 
+/**
+ * A strategy for tracking changes over time to an iterable. Used for [NgFor] to
+ * respond to changes in an iterable by effecting equivalent changes in the DOM.
+ */
 abstract class IterableDiffer {
   dynamic diff(Object object);
   onDestroy();

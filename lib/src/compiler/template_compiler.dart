@@ -35,6 +35,11 @@ import "util.dart"
         codeGenValueFn,
         MODULE_SUFFIX;
 
+/**
+ * An internal module of the Angular compiler that begins with component types,
+ * extracts templates, and eventually produces a compiled version of the component
+ * ready for linking into an application.
+ */
 @Injectable()
 class TemplateCompiler {
   RuntimeMetadataResolver _runtimeMetadataResolver;

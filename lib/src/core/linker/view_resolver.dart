@@ -9,6 +9,9 @@ import "package:angular2/src/facade/exceptions.dart" show BaseException;
 import "package:angular2/src/facade/collection.dart" show Map;
 import "package:angular2/src/core/reflection/reflection.dart" show reflector;
 
+/**
+ * Resolves types to [ViewMetadata].
+ */
 @Injectable()
 class ViewResolver {
   /** @internal */

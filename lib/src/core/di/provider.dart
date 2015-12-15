@@ -32,6 +32,10 @@ import "exceptions.dart"
         InvalidProviderError;
 import "forward_ref.dart" show resolveForwardRef;
 
+/**
+ * `Dependency` is used by the framework to extend DI.
+ * This is internal to Angular and should not be used directly.
+ */
 class Dependency {
   Key key;
   bool optional;
@@ -231,6 +235,8 @@ class Provider {
 }
 
 /**
+ * See [Provider] instead.
+ *
  * @deprecated
  */
 class Binding extends Provider {
@@ -303,6 +309,8 @@ abstract class ResolvedProvider {
 }
 
 /**
+ * See [ResolvedProvider] instead.
+ *
  * @deprecated
  */
 abstract class ResolvedBinding implements ResolvedProvider {}
@@ -335,7 +343,6 @@ class ResolvedFactory {
 }
 
 /**
- * @deprecated
  * Creates a [Provider].
  *
  * To construct a [Provider], bind a `token` to either a class, a value, a factory function,
@@ -344,6 +351,8 @@ class ResolvedFactory {
  * See [ProviderBuilder] for more details.
  *
  * The `token` is most commonly a class or [angular2/di/OpaqueToken].
+ *
+ * @deprecated
  */
 ProviderBuilder bind(token) {
   return new ProviderBuilder(token);

@@ -56,6 +56,11 @@ export "browser/browser_adapter.dart" show BrowserDomAdapter;
 export "package:angular2/src/platform/browser/tools/tools.dart"
     show enableDebugTools, disableDebugTools;
 
+/**
+ * A set of providers to initialize the Angular platform in a web browser.
+ *
+ * Used automatically by `bootstrap`, or can be passed to [platform].
+ */
 const List<dynamic> BROWSER_PROVIDERS = const [
   PLATFORM_COMMON_PROVIDERS,
   const Provider(PLATFORM_INITIALIZER, useValue: initDomAdapter, multi: true)
@@ -71,6 +76,11 @@ dynamic _document() {
   return DOM.defaultDoc();
 }
 
+/**
+ * A set of providers to initialize an Angular application in a web browser.
+ *
+ * Used automatically by `bootstrap`, or can be passed to [PlatformRef.application].
+ */
 const List<dynamic> BROWSER_APP_COMMON_PROVIDERS = const [
   APPLICATION_COMMON_PROVIDERS,
   FORM_PROVIDERS,

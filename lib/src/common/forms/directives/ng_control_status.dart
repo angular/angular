@@ -4,6 +4,10 @@ import "package:angular2/core.dart" show Directive, Self;
 import "ng_control.dart" show NgControl;
 import "package:angular2/src/facade/lang.dart" show isBlank, isPresent;
 
+/**
+ * Directive automatically applied to Angular forms that sets CSS classes
+ * based on control status (valid/invalid/dirty/etc).
+ */
 @Directive(
     selector: "[ngControl],[ngModel],[ngFormControl]",
     host: const {

@@ -50,10 +50,16 @@ var _wrappedValues = [
 ];
 var _wrappedIndex = 0;
 
+/**
+ * Represents a basic change from a previous to a new value.
+ */
 class SimpleChange {
   dynamic previousValue;
   dynamic currentValue;
   SimpleChange(this.previousValue, this.currentValue) {}
+  /**
+   * Check whether the new value is the first value assigned.
+   */
   bool isFirstChange() {
     return identical(this.previousValue, ChangeDetectionUtil.uninitialized);
   }

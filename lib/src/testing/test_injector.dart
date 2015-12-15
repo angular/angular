@@ -134,6 +134,9 @@ _runtimeCompilerBindings() {
   return [provide(XHR, useClass: DOM.getXHR()), COMPILER_PROVIDERS];
 }
 
+/**
+ * Configures an injector suitable for testing.
+ */
 class TestInjector {
   bool _instantiated = false;
   Injector _injector = null;
@@ -171,6 +174,10 @@ class TestInjector {
 }
 
 TestInjector _testInjector = null;
+/**
+ * Retrieve the [TestInjector], possibly creating one if it doesn't
+ * exist yet.
+ */
 getTestInjector() {
   if (_testInjector == null) {
     _testInjector = new TestInjector();
@@ -211,12 +218,17 @@ FunctionWithParamTokens inject(List<dynamic> tokens, Function fn) {
 }
 
 /**
- * @deprecated Use inject instead, which now supports both synchronous and asynchronous tests.
+ * Use [inject] instead, which now supports both synchronous and asynchronous tests.
+ *
+ * @deprecated
  */
 FunctionWithParamTokens injectAsync(List<dynamic> tokens, Function fn) {
   return new FunctionWithParamTokens(tokens, fn, true);
 }
 
+/**
+ * A testing function with parameters which will be injected. See [inject] for details.
+ */
 class FunctionWithParamTokens {
   List<dynamic> _tokens;
   Function _fn;

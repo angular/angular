@@ -21,6 +21,13 @@ export "pipes/number_pipe.dart"
     show NumberPipe, DecimalPipe, PercentPipe, CurrencyPipe;
 export "pipes/uppercase_pipe.dart" show UpperCasePipe;
 
+/**
+ * A collection of Angular core pipes that are likely to be used in each and every
+ * application.
+ *
+ * This collection can be used to quickly enumerate all the built-in pipes in the `pipes`
+ * property of the `@Component` or `@View` decorators.
+ */
 const COMMON_PIPES = const [
   AsyncPipe,
   UpperCasePipe,

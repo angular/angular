@@ -13,6 +13,13 @@ import "slice_pipe.dart" show SlicePipe;
 import "date_pipe.dart" show DatePipe;
 import "number_pipe.dart" show DecimalPipe, PercentPipe, CurrencyPipe;
 
+/**
+ * A collection of Angular core pipes that are likely to be used in each and every
+ * application.
+ *
+ * This collection can be used to quickly enumerate all the built-in pipes in the `pipes`
+ * property of the `@Component` or `@View` decorators.
+ */
 const COMMON_PIPES = const [
   AsyncPipe,
   UpperCasePipe,

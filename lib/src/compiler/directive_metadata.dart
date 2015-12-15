@@ -23,6 +23,9 @@ import "package:angular2/src/core/linker/interfaces.dart"
 // group 2: "event" from "(event)"
 var HOST_REG_EXP = new RegExp(r'^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$');
 
+/**
+ * Metadata regarding compilation of a type.
+ */
 class CompileTypeMetadata {
   Type runtime;
   String name;
@@ -49,6 +52,9 @@ class CompileTypeMetadata {
   }
 }
 
+/**
+ * Metadata regarding compilation of a template.
+ */
 class CompileTemplateMetadata {
   ViewEncapsulation encapsulation;
   String template;
@@ -98,6 +104,9 @@ class CompileTemplateMetadata {
   }
 }
 
+/**
+ * Metadata regarding compilation of a directive.
+ */
 class CompileDirectiveMetadata {
   static CompileDirectiveMetadata create(
       {type,
@@ -251,6 +260,9 @@ class CompileDirectiveMetadata {
   }
 }
 
+/**
+ * Construct [CompileDirectiveMetadata] from [ComponentTypeMetadata] and a selector.
+ */
 CompileDirectiveMetadata createHostComponentMeta(
     CompileTypeMetadata componentType, String componentSelector) {
   var template =

@@ -122,7 +122,7 @@ abstract class ChangeDetectorRef {
    * check
    * every five seconds.
    *
-   * See [detach] for more information.
+   * See [ChangeDetectorRef#detach] for more information.
    */
   void detectChanges();
   /**

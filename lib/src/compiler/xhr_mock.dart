@@ -9,6 +9,10 @@ import "package:angular2/src/facade/exceptions.dart"
 import "package:angular2/src/facade/async.dart"
     show PromiseCompleter, PromiseWrapper, Future;
 
+/**
+ * A mock implemenation of [XHR] that allows outgoing requests to be mocked
+ * and responded to within a single test, without going to the network.
+ */
 class MockXHR extends XHR {
   List<_Expectation> _expectations = [];
   var _definitions = new Map<String, String>();
@@ -19,15 +23,32 @@ class MockXHR extends XHR {
     return request.getPromise();
   }
 
+  /**
+   * Add an expectation for the given URL. Incoming requests will be checked against
+   * the next expectation (in FIFO order). The `verifyNoOutstandingExpectations` method
+   * can be used to check if any expectations have not yet been met.
+   *
+   * The response given will be returned if the expectation matches.
+   */
   expect(String url, String response) {
     var expectation = new _Expectation(url, response);
     this._expectations.add(expectation);
   }
 
+  /**
+   * Add a definition for the given URL to return the given response. Unlike expectations,
+   * definitions have no order and will satisfy any matching request at any time. Also
+   * unlike expectations, unused definitions do not cause `verifyNoOutstandingExpectations`
+   * to return an error.
+   */
   when(String url, String response) {
     this._definitions[url] = response;
   }
 
+  /**
+   * Process pending requests and verify there are no outstanding expectations. Also fails
+   * if no requests are pending.
+   */
   flush() {
     if (identical(this._requests.length, 0)) {
       throw new BaseException("No pending requests to flush");
@@ -38,6 +59,9 @@ class MockXHR extends XHR {
     this.verifyNoOutstandingExpectations();
   }
 
+  /**
+   * Throw an exception if any expectations have not been satisfied.
+   */
   verifyNoOutstandingExpectations() {
     if (identical(this._expectations.length, 0)) return;
     var urls = [];

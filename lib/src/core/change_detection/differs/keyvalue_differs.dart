@@ -7,6 +7,9 @@ import "../change_detector_ref.dart" show ChangeDetectorRef;
 import "package:angular2/src/core/di.dart"
     show Provider, SkipSelfMetadata, OptionalMetadata, Injectable;
 
+/**
+ * A differ that tracks changes made to an object over time.
+ */
 abstract class KeyValueDiffer {
   diff(Object object);
   onDestroy();

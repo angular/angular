@@ -5,6 +5,9 @@ import "package:angular2/src/core/zone/ng_zone.dart" show NgZone;
 import "package:angular2/src/facade/async.dart"
     show EventEmitter, ObservableWrapper;
 
+/**
+ * A mock implementation of [NgZone].
+ */
 @Injectable()
 class MockNgZone extends NgZone {
   /** @internal */

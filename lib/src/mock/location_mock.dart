@@ -6,6 +6,9 @@ import "package:angular2/src/facade/async.dart"
 import "package:angular2/src/facade/collection.dart" show ListWrapper;
 import "package:angular2/src/router/location.dart" show Location;
 
+/**
+ * A spy for [Location] that allows tests to fire simulated location events.
+ */
 @Injectable()
 class SpyLocation implements Location {
   List<String> urlChanges = [];

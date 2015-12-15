@@ -47,9 +47,20 @@ const REQUIRED_VALIDATOR =
     providers: const [REQUIRED_VALIDATOR])
 class RequiredValidator {}
 
+/**
+ * Provivder which adds [MinLengthValidator] to [NG_VALIDATORS].
+ *
+ * ## Example:
+ *
+ * {@example common/forms/ts/validators/validators.ts region='min'}
+ */
 const MIN_LENGTH_VALIDATOR =
     const Provider(NG_VALIDATORS, useExisting: MinLengthValidator, multi: true);
 
+/**
+ * A directive which installs the [MinLengthValidator] for any `ngControl`,
+ * `ngFormControl`, or control with `ngModel` that also has a `minlength` attribute.
+ */
 @Directive(
     selector:
         "[minlength][ngControl],[minlength][ngFormControl],[minlength][ngModel]",
@@ -65,9 +76,20 @@ class MinLengthValidator implements Validator {
   }
 }
 
+/**
+ * Provider which adds [MaxLengthValidator] to [NG_VALIDATORS].
+ *
+ * ## Example:
+ *
+ * {@example common/forms/ts/validators/validators.ts region='max'}
+ */
 const MAX_LENGTH_VALIDATOR =
     const Provider(NG_VALIDATORS, useExisting: MaxLengthValidator, multi: true);
 
+/**
+ * A directive which installs the [MaxLengthValidator] for any `ngControl, `ngFormControl`,
+ * or control with `ngModel` that also has a `maxlength` attribute.
+ */
 @Directive(
     selector:
         "[maxlength][ngControl],[maxlength][ngFormControl],[maxlength][ngModel]",

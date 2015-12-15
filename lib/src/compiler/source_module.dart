@@ -7,6 +7,9 @@ String moduleRef(moduleUrl) {
   return '''#MODULE[${ moduleUrl}]''';
 }
 
+/**
+ * Represents generated source code with module references. Internal to the Angular compiler.
+ */
 class SourceModule {
   String moduleUrl;
   String sourceWithModuleRefs;
@@ -45,6 +48,9 @@ class SourceExpressions {
   SourceExpressions(this.declarations, this.expressions) {}
 }
 
+/**
+ * Represents generated source code with imports. Internal to the Angular compiler.
+ */
 class SourceWithImports {
   String source;
   List<List<String>> imports;

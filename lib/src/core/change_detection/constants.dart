@@ -3,6 +3,9 @@ library angular2.src.core.change_detection.constants;
 import "package:angular2/src/facade/lang.dart"
     show StringWrapper, normalizeBool, isBlank;
 
+/**
+ * Describes the current state of the change detector.
+ */
 enum ChangeDetectorState {
   /**
    * `NeverChecked` means that the change detector has not been checked yet, and
@@ -21,6 +24,10 @@ enum ChangeDetectorState {
    */
   Errored
 }
+/**
+ * Describes within the change detector which strategy will be used the next time change
+ * detection is triggered.
+ */
 enum ChangeDetectionStrategy {
   /**
    * `CheckedOnce` means that after calling detectChanges the mode of the change detector
@@ -55,6 +62,9 @@ enum ChangeDetectionStrategy {
    */
   OnPushObserve
 }
+/**
+ * List of possible [ChangeDetectionStrategy] values.
+ */
 var CHANGE_DETECTION_STRATEGY_VALUES = [
   ChangeDetectionStrategy.CheckOnce,
   ChangeDetectionStrategy.Checked,
@@ -64,6 +74,9 @@ var CHANGE_DETECTION_STRATEGY_VALUES = [
   ChangeDetectionStrategy.Default,
   ChangeDetectionStrategy.OnPushObserve
 ];
+/**
+ * List of possible [ChangeDetectorState] values.
+ */
 var CHANGE_DETECTOR_STATE_VALUES = [
   ChangeDetectorState.NeverChecked,
   ChangeDetectorState.CheckedBefore,

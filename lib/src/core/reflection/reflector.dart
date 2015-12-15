@@ -12,6 +12,9 @@ export "types.dart" show SetterFn, GetterFn, MethodFn;
 export "platform_reflection_capabilities.dart"
     show PlatformReflectionCapabilities;
 
+/**
+ * Reflective information about a symbol, including annotations, interfaces, and other metadata.
+ */
 class ReflectionInfo {
   List<dynamic> annotations;
   List<List<dynamic>> parameters;
@@ -26,6 +29,10 @@ class ReflectionInfo {
       this.propMetadata]) {}
 }
 
+/**
+ * Provides access to reflection data about symbols. Used internally by Angular
+ * to power dependency injection and compilation.
+ */
 class Reflector {
   /** @internal */
   var _injectableInfo = new Map<dynamic, ReflectionInfo>();

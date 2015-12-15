@@ -9,6 +9,9 @@ import "package:angular2/src/core/di.dart" show Provider, Injector;
 import "package:angular2/src/core/zone/ng_zone.dart" show NgZone;
 import "package:angular2/src/facade/async.dart" show Future;
 
+/**
+ * A no-op implementation of [ApplicationRef], useful for testing.
+ */
 @Injectable()
 class MockApplicationRef extends ApplicationRef {
   void registerBootstrapListener(

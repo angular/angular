@@ -16,7 +16,6 @@ import "model.dart" as modelModule;
  * ### Example
  *
  * {@example core/forms/ts/ng_validators/ng_validators.ts region='ng_validators'}
- * ```
  */
 const OpaqueToken NG_VALIDATORS = const OpaqueToken("NgValidators");
 /**
@@ -33,8 +32,7 @@ const OpaqueToken NG_ASYNC_VALIDATORS = const OpaqueToken("NgAsyncValidators");
  * Provides a set of validators used by form controls.
  *
  * A validator is a function that processes a [Control] or collection of
- * controls and returns a [StringMap] of errors. A null map means that
- * validation has passed.
+ * controls and returns a map of errors. A null map means that validation has passed.
  *
  * ### Example
  *

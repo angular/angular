@@ -6,6 +6,10 @@ import "package:angular2/src/facade/async.dart"
 import "package:angular2/src/router/location_strategy.dart"
     show LocationStrategy;
 
+/**
+ * A mock implementation of [LocationStrategy] that allows tests to fire simulated
+ * location events.
+ */
 @Injectable()
 class MockLocationStrategy extends LocationStrategy {
   String internalBaseHref = "/";
