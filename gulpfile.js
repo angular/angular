@@ -1176,10 +1176,12 @@ gulp.task('!bundles.js.umd', ['build.js.dev'], function() {
   }
 
   return q.all([
-    webpack(webPackConf([__dirname + '/tools/build/webpack/angular2.umd.js'], 'angular2', 'dev')),
-    webpack(webPackConf([__dirname + '/tools/build/webpack/angular2.umd.js'], 'angular2', 'prod')),
-    webpack(webPackConf([__dirname + '/tools/build/webpack/angular2-testing.umd.js'],
-                        'angular2-testing', 'dev'))
+    webpack(webPackConf([__dirname + '/tools/build/webpack/angular2-all.umd.js'], 'angular2-all',
+                        'dev')),
+    webpack(webPackConf([__dirname + '/tools/build/webpack/angular2-all.umd.js'], 'angular2-all',
+                        'prod')),
+    webpack(webPackConf([__dirname + '/tools/build/webpack/angular2-all-testing.umd.js'],
+                        'angular2-all-testing', 'dev'))
   ]);
 });
 
@@ -1188,7 +1190,7 @@ gulp.task('bundles.js.umd.min', ['!bundles.js.umd', '!bundle.ng.polyfills'], fun
   var uglify = require('gulp-uglify');
 
   // minify production bundles
-  return gulp.src(['dist/js/bundle/angular2-polyfills.js', 'dist/js/bundle/angular2.umd.js'])
+  return gulp.src(['dist/js/bundle/angular2-polyfills.js', 'dist/js/bundle/angular2-all.umd.js'])
       .pipe(uglify())
       .pipe(rename({extname: '.min.js'}))
       .pipe(gulp.dest('dist/js/bundle'));
