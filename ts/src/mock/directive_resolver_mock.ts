@@ -47,6 +47,7 @@ export class MockDirectiveResolver extends DirectiveResolver {
       host: dm.host,
       providers: providers,
       exportAs: dm.exportAs,
+      moduleId: dm.moduleId,
       queries: dm.queries
     });
   }

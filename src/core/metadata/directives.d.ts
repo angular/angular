@@ -683,6 +683,25 @@ export declare class DirectiveMetadata extends InjectableMetadata {
      */
     exportAs: string;
     /**
+     * The module id of the module that contains the directive.
+     * Needed to be able to resolve relative urls for templates and styles.
+     * In Dart, this can be determined automatically and does not need to be set.
+     * In CommonJS, this can always be set to `module.id`.
+     *
+     * ## Simple Example
+     *
+     * ```
+     * @Directive({
+     *   selector: 'someDir',
+     *   moduleId: module.id
+     * })
+     * class SomeDir {
+     * }
+     *
+     * ```
+     */
+    moduleId: string;
+    /**
      * Configures the queries that will be injected into the directive.
      *
      * Content queries are set before the `ngAfterContentInit` callback is called.
@@ -717,7 +736,7 @@ export declare class DirectiveMetadata extends InjectableMetadata {
     queries: {
         [key: string]: any;
     };
-    constructor({selector, inputs, outputs, properties, events, host, bindings, providers, exportAs, queries}?: {
+    constructor({selector, inputs, outputs, properties, events, host, bindings, providers, exportAs, moduleId, queries}?: {
         selector?: string;
         inputs?: string[];
         outputs?: string[];
@@ -729,6 +748,7 @@ export declare class DirectiveMetadata extends InjectableMetadata {
         providers?: any[];
         /** @deprecated */ bindings?: any[];
         exportAs?: string;
+        moduleId?: string;
         queries?: {
             [key: string]: any;
         };
@@ -813,25 +833,6 @@ export declare class ComponentMetadata extends DirectiveMetadata {
     viewBindings: any[];
     private _viewProviders;
     private _viewBindings;
-    /**
-     * The module id of the module that contains the component.
-     * Needed to be able to resolve relative urls for templates and styles.
-     * In Dart, this can be determined automatically and does not need to be set.
-     * In CommonJS, this can always be set to `module.id`.
-     *
-     * ## Simple Example
-     *
-     * ```
-     * @Directive({
-     *   selector: 'someDir',
-     *   moduleId: module.id
-     * })
-     * class SomeDir {
-     * }
-     *
-     * ```
-     */
-    moduleId: string;
     templateUrl: string;
     template: string;
     styleUrls: string[];

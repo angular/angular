@@ -35,12 +35,11 @@ export let RuntimeMetadataResolver = class {
         var meta = this._cache.get(directiveType);
         if (isBlank(meta)) {
             var dirMeta = this._directiveResolver.resolve(directiveType);
-            var moduleUrl = null;
+            var moduleUrl = calcModuleUrl(directiveType, dirMeta);
             var templateMeta = null;
             var changeDetectionStrategy = null;
             if (dirMeta instanceof md.ComponentMetadata) {
                 var cmpMeta = dirMeta;
-                moduleUrl = calcModuleUrl(directiveType, cmpMeta);
                 var viewMeta = this._viewResolver.resolve(directiveType);
                 templateMeta = new cpl.CompileTemplateMetadata({
                     encapsulation: viewMeta.encapsulation,
@@ -109,8 +108,8 @@ function flattenArray(tree, out) {
 function isValidDirective(value) {
     return isPresent(value) && (value instanceof Type);
 }
-function calcModuleUrl(type, cmpMetadata) {
-    var moduleId = cmpMetadata.moduleId;
+function calcModuleUrl(type, dirMeta) {
+    var moduleId = dirMeta.moduleId;
     if (isPresent(moduleId)) {
         var scheme = getUrlScheme(moduleId);
         return isPresent(scheme) && scheme.length > 0 ? moduleId :

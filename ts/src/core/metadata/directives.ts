@@ -696,6 +696,26 @@ export class DirectiveMetadata extends InjectableMetadata {
    */
   exportAs: string;
 
+  /**
+   * The module id of the module that contains the directive.
+   * Needed to be able to resolve relative urls for templates and styles.
+   * In Dart, this can be determined automatically and does not need to be set.
+   * In CommonJS, this can always be set to `module.id`.
+   *
+   * ## Simple Example
+   *
+   * ```
+   * @Directive({
+   *   selector: 'someDir',
+   *   moduleId: module.id
+   * })
+   * class SomeDir {
+   * }
+   *
+   * ```
+   */
+  moduleId: string;
+
   // TODO: add an example after ContentChildren and ViewChildren are in master
   /**
    * Configures the queries that will be injected into the directive.
@@ -732,7 +752,7 @@ export class DirectiveMetadata extends InjectableMetadata {
   queries: {[key: string]: any};
 
   constructor({selector, inputs, outputs, properties, events, host, bindings, providers, exportAs,
-               queries}: {
+               moduleId, queries}: {
     selector?: string,
     inputs?: string[],
     outputs?: string[],
@@ -742,6 +762,7 @@ export class DirectiveMetadata extends InjectableMetadata {
     providers?: any[],
     /** @deprecated */ bindings?: any[],
     exportAs?: string,
+    moduleId?: string,
     queries?: {[key: string]: any}
   } = {}) {
     super();
@@ -752,6 +773,7 @@ export class DirectiveMetadata extends InjectableMetadata {
     this._events = events;
     this.host = host;
     this.exportAs = exportAs;
+    this.moduleId = moduleId;
     this.queries = queries;
     this._providers = providers;
     this._bindings = bindings;
@@ -843,26 +865,6 @@ export class ComponentMetadata extends DirectiveMetadata {
   private _viewProviders: any[];
   private _viewBindings: any[];
 
-  /**
-   * The module id of the module that contains the component.
-   * Needed to be able to resolve relative urls for templates and styles.
-   * In Dart, this can be determined automatically and does not need to be set.
-   * In CommonJS, this can always be set to `module.id`.
-   *
-   * ## Simple Example
-   *
-   * ```
-   * @Directive({
-   *   selector: 'someDir',
-   *   moduleId: module.id
-   * })
-   * class SomeDir {
-   * }
-   *
-   * ```
-   */
-  moduleId: string;
-
   templateUrl: string;
 
   template: string;
@@ -911,6 +913,7 @@ export class ComponentMetadata extends DirectiveMetadata {
       events: events,
       host: host,
       exportAs: exportAs,
+      moduleId: moduleId,
       bindings: bindings,
       providers: providers,
       queries: queries
@@ -926,7 +929,6 @@ export class ComponentMetadata extends DirectiveMetadata {
     this.directives = directives;
     this.pipes = pipes;
     this.encapsulation = encapsulation;
-    this.moduleId = moduleId;
   }
 }
 

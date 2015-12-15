@@ -146,6 +146,7 @@ export interface DirectiveFactory {
     bindings?: any[],
     providers?: any[],
     exportAs?: string,
+    moduleId?: string,
     queries?: {[key: string]: any}
   }): DirectiveDecorator;
   new (obj: {
@@ -158,6 +159,7 @@ export interface DirectiveFactory {
     bindings?: any[],
     providers?: any[],
     exportAs?: string,
+    moduleId?: string,
     queries?: {[key: string]: any}
   }): DirectiveMetadata;
 }

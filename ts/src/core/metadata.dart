@@ -27,6 +27,7 @@ class Directive extends DirectiveMetadata {
       List bindings,
       List providers,
       String exportAs,
+      String moduleId,
       Map<String, dynamic> queries})
       : super(
             selector: selector,
@@ -38,6 +39,7 @@ class Directive extends DirectiveMetadata {
             bindings: bindings,
             providers: providers,
             exportAs: exportAs,
+            moduleId: moduleId,
             queries: queries);
 }
 

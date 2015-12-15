@@ -7259,6 +7259,7 @@ System.register("angular2/src/core/linker/directive_resolver", ["angular2/src/co
           outputs: mergedOutputs,
           host: mergedHost,
           exportAs: dm.exportAs,
+          moduleId: dm.moduleId,
           queries: mergedQueries,
           providers: dm.providers
         });
@@ -15021,6 +15022,7 @@ System.register("angular2/src/core/metadata/directives", ["angular2/src/facade/l
           bindings = _b.bindings,
           providers = _b.providers,
           exportAs = _b.exportAs,
+          moduleId = _b.moduleId,
           queries = _b.queries;
       _super.call(this);
       this.selector = selector;
@@ -15030,6 +15032,7 @@ System.register("angular2/src/core/metadata/directives", ["angular2/src/facade/l
       this._events = events;
       this.host = host;
       this.exportAs = exportAs;
+      this.moduleId = moduleId;
       this.queries = queries;
       this._providers = providers;
       this._bindings = bindings;
@@ -15114,6 +15117,7 @@ System.register("angular2/src/core/metadata/directives", ["angular2/src/facade/l
         events: events,
         host: host,
         exportAs: exportAs,
+        moduleId: moduleId,
         bindings: bindings,
         providers: providers,
         queries: queries
@@ -15128,7 +15132,6 @@ System.register("angular2/src/core/metadata/directives", ["angular2/src/facade/l
       this.directives = directives;
       this.pipes = pipes;
       this.encapsulation = encapsulation;
-      this.moduleId = moduleId;
     }
     Object.defineProperty(ComponentMetadata.prototype, "viewProviders", {
       get: function() {
@@ -21950,12 +21953,11 @@ System.register("angular2/src/compiler/runtime_metadata", ["angular2/src/core/di
       var meta = this._cache.get(directiveType);
       if (lang_1.isBlank(meta)) {
         var dirMeta = this._directiveResolver.resolve(directiveType);
-        var moduleUrl = null;
+        var moduleUrl = calcModuleUrl(directiveType, dirMeta);
         var templateMeta = null;
         var changeDetectionStrategy = null;
         if (dirMeta instanceof md.ComponentMetadata) {
           var cmpMeta = dirMeta;
-          moduleUrl = calcModuleUrl(directiveType, cmpMeta);
           var viewMeta = this._viewResolver.resolve(directiveType);
           templateMeta = new cpl.CompileTemplateMetadata({
             encapsulation: viewMeta.encapsulation,
@@ -22029,8 +22031,8 @@ System.register("angular2/src/compiler/runtime_metadata", ["angular2/src/core/di
   function isValidDirective(value) {
     return lang_1.isPresent(value) && (value instanceof lang_1.Type);
   }
-  function calcModuleUrl(type, cmpMetadata) {
-    var moduleId = cmpMetadata.moduleId;
+  function calcModuleUrl(type, dirMeta) {
+    var moduleId = dirMeta.moduleId;
     if (lang_1.isPresent(moduleId)) {
       var scheme = url_resolver_1.getUrlScheme(moduleId);
       return lang_1.isPresent(scheme) && scheme.length > 0 ? moduleId : "package:" + moduleId + util_1.MODULE_SUFFIX;
