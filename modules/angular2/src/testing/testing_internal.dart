@@ -93,7 +93,7 @@ void beforeEachBindings(Function fn) {
 
 void beforeEach(fn) {
   if (fn is! FunctionWithParamTokens) fn =
-      new FunctionWithParamTokens([], fn, false);
+      new FunctionWithParamTokens([], fn);
   gns.beforeEach(() {
     fn.execute(_injector);
   });
@@ -101,7 +101,7 @@ void beforeEach(fn) {
 
 void _it(gnsFn, name, fn) {
   if (fn is! FunctionWithParamTokens) fn =
-      new FunctionWithParamTokens([], fn, false);
+      new FunctionWithParamTokens([], fn);
   gnsFn(name, () {
     _inIt = true;
     fn.execute(_injector);

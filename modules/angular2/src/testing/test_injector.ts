@@ -170,18 +170,11 @@ export function createTestInjectorWithRuntimeCompiler(
  * @return {FunctionWithParamTokens}
  */
 export function inject(tokens: any[], fn: Function): FunctionWithParamTokens {
-  return new FunctionWithParamTokens(tokens, fn, false);
-}
-
-/**
- * @deprecated Use inject instead, which now supports both synchronous and asynchronous tests.
- */
-export function injectAsync(tokens: any[], fn: Function): FunctionWithParamTokens {
-  return new FunctionWithParamTokens(tokens, fn, true);
+  return new FunctionWithParamTokens(tokens, fn);
 }
 
 export class FunctionWithParamTokens {
-  constructor(private _tokens: any[], private _fn: Function, public isAsync: boolean) {}
+  constructor(private _tokens: any[], private _fn: Function) {}
 
   /**
    * Returns the value of the executed function.
