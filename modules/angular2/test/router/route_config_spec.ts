@@ -14,6 +14,7 @@ import {
 import {bootstrap} from 'angular2/platform/browser';
 import {Component, Directive, View} from 'angular2/src/core/metadata';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+import {Console} from 'angular2/src/core/console';
 import {provide} from 'angular2/core';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 import {Type, IS_DART} from 'angular2/src/facade/lang';
@@ -38,6 +39,10 @@ class _ArrayLogger {
   logGroupEnd(){};
 }
 
+class DummyConsole implements Console {
+  log(message) {}
+}
+
 export function main() {
   describe('RouteConfig with POJO arguments', () => {
     var fakeDoc, el, testBindings;
@@ -51,7 +56,8 @@ export function main() {
         ROUTER_PROVIDERS,
         provide(LocationStrategy, {useClass: MockLocationStrategy}),
         provide(DOCUMENT, {useValue: fakeDoc}),
-        provide(ExceptionHandler, {useValue: exceptionHandler})
+        provide(ExceptionHandler, {useValue: exceptionHandler}),
+        provide(Console, {useClass: DummyConsole})
       ];
     });
 

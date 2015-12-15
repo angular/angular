@@ -250,20 +250,31 @@ bool isJsObject(o) {
 }
 
 bool _forceDevMode = false;
-bool _devModeLocked = false;
+bool _modeLocked = false;
 
-void lockDevMode() {
-  _devModeLocked = true;
+void lockMode() {
+  _modeLocked = true;
 }
 
+@deprecated
 void enableDevMode() {
   if (_forceDevMode) {
     return;
   }
-  if (_devModeLocked) {
+  if (_modeLocked) {
     throw new Exception("Cannot enable dev mode after platform setup.");
   }
   _forceDevMode = true;
+}
+
+void enableProdMode() {
+  if (_forceDevMode) {
+    return;
+  }
+  if (_modeLocked) {
+    throw new Exception("Cannot enable prod mode after platform setup.");
+  }
+  _forceDevMode = false;
 }
 
 bool assertionsEnabled() {
