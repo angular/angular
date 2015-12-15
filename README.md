@@ -18,10 +18,6 @@ Angular 2 is currently in **Beta**.
 
 [Get started in 5 minutes][quickstart].
 
-## Setup & Install Angular 2
-
-Follow the instructions given on the [Angular download page][download].
-
 
 ## Want to help?
 
