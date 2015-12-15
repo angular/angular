@@ -14,9 +14,6 @@ repository for [Angular 2][ng2], both the JavaScript (JS) and [Dart][dart] versi
 
 Angular 2 is currently in **Beta**. 
 
-* [AngularJS][ngJS]: [angular/angular.js](http://github.com/angular/angular.js).
-* [AngularDart][ngDart]: [angular/angular.dart](http://github.com/angular/angular.dart).
-
 ## Quickstart
 
 [Get started in 5 minutes][quickstart].
