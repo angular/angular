@@ -1358,6 +1358,10 @@ export function main() {
           val = _createChangeDetector('(event)="true"', d, null);
           res = val.changeDetector.handleEvent("event", 0, event);
           expect(res).toBe(true);
+
+          val = _createChangeDetector('(event)="true; false"', d, null);
+          res = val.changeDetector.handleEvent("event", 0, event);
+          expect(res).toBe(false);
         });
 
         it('should support short-circuiting', () => {
