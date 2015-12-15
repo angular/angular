@@ -80,11 +80,11 @@ main() {
           "should use the moduleUrl from the reflector if none is given",
           inject([RuntimeMetadataResolver], (RuntimeMetadataResolver resolver) {
             String value =
-                resolver.getMetadata(DirectiveWithoutModuleId).type.moduleUrl;
+                resolver.getMetadata(ComponentWithoutModuleId).type.moduleUrl;
             var expectedEndValue = IS_DART
                 ? "base/dist/dart/angular2/test/compiler/runtime_metadata_spec.dart"
                 : "./";
-            expect(((value as dynamic)).endsWith(expectedEndValue)).toBe(true);
+            expect(value.endsWith(expectedEndValue)).toBe(true);
           }));
     });
     describe("getViewDirectivesMetadata", () {
@@ -92,7 +92,7 @@ main() {
           "should return the directive metadatas",
           inject([RuntimeMetadataResolver], (RuntimeMetadataResolver resolver) {
             expect(resolver.getViewDirectivesMetadata(ComponentWithEverything))
-                .toEqual([resolver.getMetadata(DirectiveWithoutModuleId)]);
+                .toEqual([resolver.getMetadata(SomeDirective)]);
           }));
       describe("platform directives", () {
         beforeEachProviders(() => [
@@ -105,7 +105,7 @@ main() {
               expect(resolver
                   .getViewDirectivesMetadata(ComponentWithEverything)).toEqual([
                 resolver.getMetadata(ADirective),
-                resolver.getMetadata(DirectiveWithoutModuleId)
+                resolver.getMetadata(SomeDirective)
               ]);
             }));
       });
@@ -117,7 +117,10 @@ main() {
 class ADirective {}
 
 @Directive(selector: "someSelector")
-class DirectiveWithoutModuleId {}
+class SomeDirective {}
+
+@Component(selector: "someComponent", template: "")
+class ComponentWithoutModuleId {}
 
 @Component(
     selector: "someSelector",
@@ -137,7 +140,7 @@ class DirectiveWithoutModuleId {}
     encapsulation: ViewEncapsulation.Emulated,
     styles: const ["someStyle"],
     styleUrls: const ["someStyleUrl"],
-    directives: const [DirectiveWithoutModuleId])
+    directives: const [SomeDirective])
 class ComponentWithEverything
     implements
         OnChanges,
