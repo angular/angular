@@ -22,6 +22,8 @@ function init {
   else
     IS_SNAPSHOT_BUILD=
   fi
+  RX_BUNDLE_DIR=$(resolveDir ../../node_modules/rxjs/bundles)
+  RX_LICENSE=$(resolveDir ../../node_modules/rxjs)/LICENSE.txt
 }
 
 function prepare {
@@ -54,6 +56,8 @@ function prepare {
     #
     mkdir $REPO_DIR/$NEW_VERSION
     cp -r $BUILD_DIR/* $REPO_DIR/$NEW_VERSION/
+    cp -r $RX_BUNDLE_DIR/* $REPO_DIR/$NEW_VERSION/
+    node ./add-license-to-rx.js --license-path=$RX_LICENSE --build-path=$REPO_DIR/$NEW_VERSION
   fi
 
   #
