@@ -148,26 +148,9 @@ function _it(jsmFn, name, testFn, testTimeOut) {
             if (!injector) {
                 injector = createTestInjectorWithRuntimeCompiler(testProviders);
             }
-            var finishCallback = () => {
-                // Wait one more event loop to make sure we catch unreturned promises and
-                // promise rejections.
-                setTimeout(done, 0);
-            };
-            var returnedTestValue = runInTestZone(() => testFn.execute(injector), finishCallback, done.fail);
-            if (testFn.isAsync) {
-                if (_isPromiseLike(returnedTestValue)) {
-                    returnedTestValue.then(null, (err) => { done.fail(err); });
-                }
-                else {
-                    done.fail('Error: injectAsync was expected to return a promise, but the ' +
-                        ' returned value was: ' + returnedTestValue);
-                }
-            }
-            else {
-                if (!(returnedTestValue === undefined)) {
-                    done.fail('Error: inject returned a value. Did you mean to use injectAsync? Returned ' +
-                        'value was: ' + returnedTestValue);
-                }
+            var returnedTestValue = runInTestZone(() => testFn.execute(injector), done, done.fail);
+            if (_isPromiseLike(returnedTestValue)) {
+                returnedTestValue.then(null, (err) => { done.fail(err); });
             }
         }, timeOut);
     }
@@ -194,30 +177,10 @@ export function beforeEach(fn) {
         // The test case uses inject(). ie `beforeEach(inject([ClassA], (a) => { ...
         // }));`
         jsmBeforeEach((done) => {
-            var finishCallback = () => {
-                // Wait one more event loop to make sure we catch unreturned promises and
-                // promise rejections.
-                setTimeout(done, 0);
-            };
             if (!injector) {
                 injector = createTestInjectorWithRuntimeCompiler(testProviders);
             }
-            var returnedTestValue = runInTestZone(() => fn.execute(injector), finishCallback, done.fail);
-            if (fn.isAsync) {
-                if (_isPromiseLike(returnedTestValue)) {
-                    returnedTestValue.then(null, (err) => { done.fail(err); });
-                }
-                else {
-                    done.fail('Error: injectAsync was expected to return a promise, but the ' +
-                        ' returned value was: ' + returnedTestValue);
-                }
-            }
-            else {
-                if (!(returnedTestValue === undefined)) {
-                    done.fail('Error: inject returned a value. Did you mean to use injectAsync? Returned ' +
-                        'value was: ' + returnedTestValue);
-                }
-            }
+            runInTestZone(() => fn.execute(injector), done, done.fail);
         });
     }
     else {
