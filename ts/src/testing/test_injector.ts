@@ -23,7 +23,7 @@ import {
   defaultKeyValueDiffers,
   ChangeDetectorGenConfig
 } from 'angular2/src/core/change_detection/change_detection';
-import {BaseException, ExceptionHandler} from 'angular2/src/facade/exceptions';
+import {ExceptionHandler} from 'angular2/src/facade/exceptions';
 import {PipeResolver} from 'angular2/src/core/linker/pipe_resolver';
 import {XHR} from 'angular2/src/compiler/xhr';
 
@@ -131,56 +131,14 @@ function _runtimeCompilerBindings() {
   ];
 }
 
-/**
- * Configures an injector suitable for testing.
- */
-export class TestInjector {
-  private _instantiated: boolean = false;
-
-  private _injector: Injector = null;
-
-  private _providers: Array<Type | Provider | any[]> = [];
-
-  reset() {
-    this._injector = null;
-    this._providers = [];
-    this._instantiated = false;
-  }
-
-  addProviders(providers: Array<Type | Provider | any[]>) {
-    if (this._instantiated) {
-      throw new BaseException('Cannot add providers after test injector is instantiated');
-    }
-    this._providers = ListWrapper.concat(this._providers, providers);
-  }
-
-  createInjector() {
-    var rootInjector = Injector.resolveAndCreate(_getRootProviders());
-    this._injector = rootInjector.resolveAndCreateChild(ListWrapper.concat(
-        ListWrapper.concat(_getAppBindings(), _runtimeCompilerBindings()), this._providers));
-    this._instantiated = true;
-    return this._injector;
-  }
-
-  execute(fn: FunctionWithParamTokens): any {
-    if (!this._instantiated) {
-      this.createInjector();
-    }
-    return fn.execute(this._injector);
-  }
+export function createTestInjector(providers: Array<Type | Provider | any[]>): Injector {
+  var rootInjector = Injector.resolveAndCreate(_getRootProviders());
+  return rootInjector.resolveAndCreateChild(ListWrapper.concat(_getAppBindings(), providers));
 }
 
-var _testInjector: TestInjector = null;
-
-/**
- * Retrieve the {@link TestInjector}, possibly creating one if it doesn't
- * exist yet.
- */
-export function getTestInjector() {
-  if (_testInjector == null) {
-    _testInjector = new TestInjector();
-  }
-  return _testInjector;
+export function createTestInjectorWithRuntimeCompiler(
+    providers: Array<Type | Provider | any[]>): Injector {
+  return createTestInjector(ListWrapper.concat(_runtimeCompilerBindings(), providers));
 }
 
 /**
@@ -216,17 +174,12 @@ export function inject(tokens: any[], fn: Function): FunctionWithParamTokens {
 }
 
 /**
- * Use {@link inject} instead, which now supports both synchronous and asynchronous tests.
- *
- * @deprecated
+ * @deprecated Use inject instead, which now supports both synchronous and asynchronous tests.
  */
 export function injectAsync(tokens: any[], fn: Function): FunctionWithParamTokens {
   return new FunctionWithParamTokens(tokens, fn, true);
 }
 
-/**
- * A testing function with parameters which will be injected. See {@link inject} for details.
- */
 export class FunctionWithParamTokens {
   constructor(private _tokens: any[], private _fn: Function, public isAsync: boolean) {}
 

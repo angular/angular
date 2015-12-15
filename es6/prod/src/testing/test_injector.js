@@ -4,7 +4,7 @@ import { MockAnimationBuilder } from 'angular2/src/mock/animation_builder_mock';
 import { ProtoViewFactory } from 'angular2/src/core/linker/proto_view_factory';
 import { Reflector, reflector } from 'angular2/src/core/reflection/reflection';
 import { IterableDiffers, defaultIterableDiffers, KeyValueDiffers, defaultKeyValueDiffers, ChangeDetectorGenConfig } from 'angular2/src/core/change_detection/change_detection';
-import { BaseException, ExceptionHandler } from 'angular2/src/facade/exceptions';
+import { ExceptionHandler } from 'angular2/src/facade/exceptions';
 import { PipeResolver } from 'angular2/src/core/linker/pipe_resolver';
 import { XHR } from 'angular2/src/compiler/xhr';
 import { DOM } from 'angular2/src/platform/dom/dom_adapter';
@@ -95,49 +95,12 @@ function _runtimeCompilerBindings() {
         COMPILER_PROVIDERS,
     ];
 }
-/**
- * Configures an injector suitable for testing.
- */
-export class TestInjector {
-    constructor() {
-        this._instantiated = false;
-        this._injector = null;
-        this._providers = [];
-    }
-    reset() {
-        this._injector = null;
-        this._providers = [];
-        this._instantiated = false;
-    }
-    addProviders(providers) {
-        if (this._instantiated) {
-            throw new BaseException('Cannot add providers after test injector is instantiated');
-        }
-        this._providers = ListWrapper.concat(this._providers, providers);
-    }
-    createInjector() {
-        var rootInjector = Injector.resolveAndCreate(_getRootProviders());
-        this._injector = rootInjector.resolveAndCreateChild(ListWrapper.concat(ListWrapper.concat(_getAppBindings(), _runtimeCompilerBindings()), this._providers));
-        this._instantiated = true;
-        return this._injector;
-    }
-    execute(fn) {
-        if (!this._instantiated) {
-            this.createInjector();
-        }
-        return fn.execute(this._injector);
-    }
+export function createTestInjector(providers) {
+    var rootInjector = Injector.resolveAndCreate(_getRootProviders());
+    return rootInjector.resolveAndCreateChild(ListWrapper.concat(_getAppBindings(), providers));
 }
-var _testInjector = null;
-/**
- * Retrieve the {@link TestInjector}, possibly creating one if it doesn't
- * exist yet.
- */
-export function getTestInjector() {
-    if (_testInjector == null) {
-        _testInjector = new TestInjector();
-    }
-    return _testInjector;
+export function createTestInjectorWithRuntimeCompiler(providers) {
+    return createTestInjector(ListWrapper.concat(_runtimeCompilerBindings(), providers));
 }
 /**
  * Allows injecting dependencies in `beforeEach()` and `it()`. When using with the
@@ -171,16 +134,11 @@ export function inject(tokens, fn) {
     return new FunctionWithParamTokens(tokens, fn, false);
 }
 /**
- * Use {@link inject} instead, which now supports both synchronous and asynchronous tests.
- *
- * @deprecated
+ * @deprecated Use inject instead, which now supports both synchronous and asynchronous tests.
  */
 export function injectAsync(tokens, fn) {
     return new FunctionWithParamTokens(tokens, fn, true);
 }
-/**
- * A testing function with parameters which will be injected. See {@link inject} for details.
- */
 export class FunctionWithParamTokens {
     constructor(_tokens, _fn, isAsync) {
         this._tokens = _tokens;

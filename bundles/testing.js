@@ -2647,46 +2647,15 @@ System.register("angular2/src/testing/test_injector", ["angular2/core", "angular
   function _runtimeCompilerBindings() {
     return [core_1.provide(xhr_1.XHR, {useClass: dom_adapter_1.DOM.getXHR()}), compiler_1.COMPILER_PROVIDERS];
   }
-  var TestInjector = (function() {
-    function TestInjector() {
-      this._instantiated = false;
-      this._injector = null;
-      this._providers = [];
-    }
-    TestInjector.prototype.reset = function() {
-      this._injector = null;
-      this._providers = [];
-      this._instantiated = false;
-    };
-    TestInjector.prototype.addProviders = function(providers) {
-      if (this._instantiated) {
-        throw new exceptions_1.BaseException('Cannot add providers after test injector is instantiated');
-      }
-      this._providers = collection_1.ListWrapper.concat(this._providers, providers);
-    };
-    TestInjector.prototype.createInjector = function() {
-      var rootInjector = core_1.Injector.resolveAndCreate(_getRootProviders());
-      this._injector = rootInjector.resolveAndCreateChild(collection_1.ListWrapper.concat(collection_1.ListWrapper.concat(_getAppBindings(), _runtimeCompilerBindings()), this._providers));
-      this._instantiated = true;
-      return this._injector;
-    };
-    TestInjector.prototype.execute = function(fn) {
-      if (!this._instantiated) {
-        this.createInjector();
-      }
-      return fn.execute(this._injector);
-    };
-    return TestInjector;
-  })();
-  exports.TestInjector = TestInjector;
-  var _testInjector = null;
-  function getTestInjector() {
-    if (_testInjector == null) {
-      _testInjector = new TestInjector();
-    }
-    return _testInjector;
+  function createTestInjector(providers) {
+    var rootInjector = core_1.Injector.resolveAndCreate(_getRootProviders());
+    return rootInjector.resolveAndCreateChild(collection_1.ListWrapper.concat(_getAppBindings(), providers));
   }
-  exports.getTestInjector = getTestInjector;
+  exports.createTestInjector = createTestInjector;
+  function createTestInjectorWithRuntimeCompiler(providers) {
+    return createTestInjector(collection_1.ListWrapper.concat(_runtimeCompilerBindings(), providers));
+  }
+  exports.createTestInjectorWithRuntimeCompiler = createTestInjectorWithRuntimeCompiler;
   function inject(tokens, fn) {
     return new FunctionWithParamTokens(tokens, fn, false);
   }
@@ -2739,18 +2708,19 @@ System.register("angular2/src/testing/testing", ["angular2/src/facade/lang", "an
   var jsmIt = _global.it;
   var jsmIIt = _global.fit;
   var jsmXIt = _global.xit;
-  var testInjector = test_injector_1.getTestInjector();
+  var testProviders;
+  var injector;
   jsmBeforeEach(function() {
-    testInjector.reset();
+    testProviders = [];
+    injector = null;
   });
   function beforeEachProviders(fn) {
     jsmBeforeEach(function() {
       var providers = fn();
       if (!providers)
         return ;
-      try {
-        testInjector.addProviders(providers);
-      } catch (e) {
+      testProviders = testProviders.concat(providers);
+      if (injector !== null) {
         throw new Error('beforeEachProviders was called after the injector had ' + 'been used in a beforeEach or it block. This invalidates the ' + 'test injector');
       }
     });
@@ -2819,8 +2789,11 @@ System.register("angular2/src/testing/testing", ["angular2/src/facade/lang", "an
     var timeOut = testTimeOut;
     if (testFn instanceof test_injector_1.FunctionWithParamTokens) {
       jsmFn(name, function(done) {
+        if (!injector) {
+          injector = test_injector_1.createTestInjectorWithRuntimeCompiler(testProviders);
+        }
         var returnedTestValue = runInTestZone(function() {
-          return testInjector.execute(testFn);
+          return testFn.execute(injector);
         }, done, done.fail);
         if (_isPromiseLike(returnedTestValue)) {
           returnedTestValue.then(null, function(err) {
@@ -2835,8 +2808,11 @@ System.register("angular2/src/testing/testing", ["angular2/src/facade/lang", "an
   function beforeEach(fn) {
     if (fn instanceof test_injector_1.FunctionWithParamTokens) {
       jsmBeforeEach(function(done) {
+        if (!injector) {
+          injector = test_injector_1.createTestInjectorWithRuntimeCompiler(testProviders);
+        }
         runInTestZone(function() {
-          return testInjector.execute(fn);
+          return fn.execute(injector);
         }, done, done.fail);
       });
     } else {

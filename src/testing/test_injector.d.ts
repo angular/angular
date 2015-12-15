@@ -1,22 +1,7 @@
 import { Injector, Provider } from 'angular2/core';
 import { Type } from 'angular2/src/facade/lang';
-/**
- * Configures an injector suitable for testing.
- */
-export declare class TestInjector {
-    private _instantiated;
-    private _injector;
-    private _providers;
-    reset(): void;
-    addProviders(providers: Array<Type | Provider | any[]>): void;
-    createInjector(): Injector;
-    execute(fn: FunctionWithParamTokens): any;
-}
-/**
- * Retrieve the {@link TestInjector}, possibly creating one if it doesn't
- * exist yet.
- */
-export declare function getTestInjector(): TestInjector;
+export declare function createTestInjector(providers: Array<Type | Provider | any[]>): Injector;
+export declare function createTestInjectorWithRuntimeCompiler(providers: Array<Type | Provider | any[]>): Injector;
 /**
  * Allows injecting dependencies in `beforeEach()` and `it()`. When using with the
  * `angular2/testing` library, the test function will be run within a zone and will
@@ -47,14 +32,9 @@ export declare function getTestInjector(): TestInjector;
  */
 export declare function inject(tokens: any[], fn: Function): FunctionWithParamTokens;
 /**
- * Use {@link inject} instead, which now supports both synchronous and asynchronous tests.
- *
- * @deprecated
+ * @deprecated Use inject instead, which now supports both synchronous and asynchronous tests.
  */
 export declare function injectAsync(tokens: any[], fn: Function): FunctionWithParamTokens;
-/**
- * A testing function with parameters which will be injected. See {@link inject} for details.
- */
 export declare class FunctionWithParamTokens {
     private _tokens;
     private _fn;
