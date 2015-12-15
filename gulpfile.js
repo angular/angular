@@ -1227,25 +1227,12 @@ var JS_DEV_DEPS = [
   'node_modules/reflect-metadata/Reflect.js'
 ];
 
-// Splice in RX license if rx is in the bundle.
-function insertRXLicense(source) {
-  var n = source.indexOf('System.register("rxjs/Subject"');
-  if (n >= 0) {
-    // TODO: point this to Rx once Rx includes license in dist
-    // https://github.com/angular/angular/issues/5558
-    var rxLicense = licenseWrap('LICENSE');
-    return source.slice(0, n) + rxLicense + source.slice(n);
-  } else {
-    return source;
-  }
-}
 
 function addDevDependencies(outputFile) {
   var bundler = require('./tools/build/bundle');
   var insert = require('gulp-insert');
 
   return bundler.modify(JS_DEV_DEPS.concat(['dist/build/' + outputFile]), outputFile)
-      .pipe(insert.transform(insertRXLicense))
       .pipe(gulp.dest('dist/js/bundle'));
 }
 
