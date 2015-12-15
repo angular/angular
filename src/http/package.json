@@ -1,6 +1,6 @@
 {
   "name": "ngHttp",
-  "version": "2.0.0-alpha.54",
+  "version": "2.0.0-alpha.55",
   "description": "Http module for Angular 2",
   "homepage": "https://github.com/angular/angular",
   "bugs": "https://github.com/angular/angular/issues",
@@ -9,7 +9,7 @@
   "repository": {"type":"git","url":"https://github.com/angular/angular.git"},
   "devDependencies": {},
   "peerDependencies": {
-    "angular2": "2.0.0-alpha.54",
+    "angular2": "2.0.0-alpha.55",
     "rxjs": "5.0.0-beta.0"
   }
 }
