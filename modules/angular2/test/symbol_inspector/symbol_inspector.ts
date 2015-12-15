@@ -73,6 +73,9 @@ function collectTopLevelSymbols(prefix: string, lib: any):
     }
 
 export function getSymbolsFromLibrary(name: string): string[] {
+  if(!LIB_MAP.hasOwnProperty(name)) {
+    throw new Error(`Unknown barrel ${name}.`);
+  }
   var symbols = collectTopLevelSymbols(name, LIB_MAP[name]);
   symbols.sort();
   return symbols;
