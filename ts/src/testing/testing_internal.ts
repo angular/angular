@@ -5,7 +5,11 @@ import {NgZoneZone} from 'angular2/src/core/zone/ng_zone';
 
 import {provide} from 'angular2/core';
 
-import {TestInjector, getTestInjector, FunctionWithParamTokens, inject} from './test_injector';
+import {
+  createTestInjectorWithRuntimeCompiler,
+  FunctionWithParamTokens,
+  inject
+} from './test_injector';
 import {browserDetection} from './utils';
 
 export {inject} from './test_injector';
@@ -41,7 +45,7 @@ var inIt = false;
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 500;
 var globalTimeOut = browserDetection.isSlow ? 3000 : jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
-var testInjector = getTestInjector();
+var testProviders;
 
 /**
  * Mechanism to run `beforeEach()` functions of Angular tests.
@@ -55,17 +59,16 @@ class BeforeEachRunner {
 
   beforeEach(fn: FunctionWithParamTokens | SyncTestFn): void { this._fns.push(fn); }
 
-  run(): void {
-    if (this._parent) this._parent.run();
+  run(injector): void {
+    if (this._parent) this._parent.run(injector);
     this._fns.forEach((fn) => {
-      return isFunction(fn) ? (<SyncTestFn>fn)() :
-                              (testInjector.execute(<FunctionWithParamTokens>fn));
+      return isFunction(fn) ? (<SyncTestFn>fn)() : (<FunctionWithParamTokens>fn).execute(injector);
     });
   }
 }
 
 // Reset the test providers before each test
-jsmBeforeEach(() => { testInjector.reset(); });
+jsmBeforeEach(() => { testProviders = []; });
 
 function _describe(jsmFn, ...args) {
   var parentRunner = runnerStack.length === 0 ? null : runnerStack[runnerStack.length - 1];
@@ -114,7 +117,7 @@ export function beforeEachProviders(fn): void {
   jsmBeforeEach(() => {
     var providers = fn();
     if (!providers) return;
-    testInjector.addProviders(providers);
+    testProviders = [...testProviders, ...providers];
   });
 }
 
@@ -144,17 +147,18 @@ function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | An
           }
         });
 
-        testInjector.addProviders([completerProvider]);
-        runner.run();
+        var injector = createTestInjectorWithRuntimeCompiler([...testProviders, completerProvider]);
+        runner.run(injector);
 
         inIt = true;
-        testInjector.execute(testFn);
+        testFn.execute(injector);
         inIt = false;
       }, timeOut);
     } else {
       jsmFn(name, () => {
-        runner.run();
-        testInjector.execute(testFn);
+        var injector = createTestInjectorWithRuntimeCompiler(testProviders);
+        runner.run(injector);
+        testFn.execute(injector);
       }, timeOut);
     }
 
@@ -163,12 +167,14 @@ function _it(jsmFn: Function, name: string, testFn: FunctionWithParamTokens | An
 
     if ((<any>testFn).length === 0) {
       jsmFn(name, () => {
-        runner.run();
+        var injector = createTestInjectorWithRuntimeCompiler(testProviders);
+        runner.run(injector);
         (<SyncTestFn>testFn)();
       }, timeOut);
     } else {
       jsmFn(name, (done) => {
-        runner.run();
+        var injector = createTestInjectorWithRuntimeCompiler(testProviders);
+        runner.run(injector);
         (<AsyncTestFn>testFn)(done);
       }, timeOut);
     }

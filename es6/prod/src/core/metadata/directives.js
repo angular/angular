@@ -389,7 +389,7 @@ import { ChangeDetectionStrategy } from 'angular2/src/core/change_detection';
  * view occurs on the second `<li></li>` which is a sibling to the `<template>` element.
  */
 export let DirectiveMetadata = class extends InjectableMetadata {
-    constructor({ selector, inputs, outputs, properties, events, host, bindings, providers, exportAs, moduleId, queries } = {}) {
+    constructor({ selector, inputs, outputs, properties, events, host, bindings, providers, exportAs, queries } = {}) {
         super();
         this.selector = selector;
         this._inputs = inputs;
@@ -398,7 +398,6 @@ export let DirectiveMetadata = class extends InjectableMetadata {
         this._events = events;
         this.host = host;
         this.exportAs = exportAs;
-        this.moduleId = moduleId;
         this.queries = queries;
         this._providers = providers;
         this._bindings = bindings;
@@ -581,7 +580,6 @@ export let ComponentMetadata = class extends DirectiveMetadata {
             events: events,
             host: host,
             exportAs: exportAs,
-            moduleId: moduleId,
             bindings: bindings,
             providers: providers,
             queries: queries
@@ -596,6 +594,7 @@ export let ComponentMetadata = class extends DirectiveMetadata {
         this.directives = directives;
         this.pipes = pipes;
         this.encapsulation = encapsulation;
+        this.moduleId = moduleId;
     }
     /**
      * Defines the set of injectable objects that are visible to its view DOM children.
