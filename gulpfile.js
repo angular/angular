@@ -633,7 +633,7 @@ gulp.task('test.unit.dart', function(done) {
 // This test will fail if the size of our hello_world app goes beyond one of
 // these values when compressed at the specified level.
 // Measure in bytes.
-var _DART_PAYLOAD_SIZE_LIMITS = {'uncompressed': 375 * 1024, 'gzip level=6': 105 * 1024};
+var _DART_PAYLOAD_SIZE_LIMITS = {'uncompressed': 320 * 1024, 'gzip level=6': 90 * 1024};
 gulp.task('test.payload.dart/ci', function(done) {
   runSequence('build/packages.dart', '!pubget.payload.dart', '!pubbuild.payload.dart',
               '!checkAndReport.payload.dart', done);
