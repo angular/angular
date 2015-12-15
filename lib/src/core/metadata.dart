@@ -24,7 +24,6 @@ class Directive extends DirectiveMetadata {
       @Deprecated('Use `providers` instead') List bindings,
       List providers,
       String exportAs,
-      String moduleId,
       Map<String, dynamic> queries})
       : super(
             selector: selector,
@@ -36,7 +35,6 @@ class Directive extends DirectiveMetadata {
             bindings: bindings,
             providers: providers,
             exportAs: exportAs,
-            moduleId: moduleId,
             queries: queries);
 }
 

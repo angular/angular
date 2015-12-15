@@ -10,6 +10,7 @@ import "package:angular2/testing_internal.dart"
         it,
         expect,
         beforeEach,
+        createTestInjector,
         beforeEachProviders,
         SpyObject,
         proxy;
