@@ -1,6 +1,6 @@
 import { global } from 'angular2/src/facade/lang';
 import { ListWrapper } from 'angular2/src/facade/collection';
-import { createTestInjectorWithRuntimeCompiler, FunctionWithParamTokens } from './test_injector';
+import { FunctionWithParamTokens, getTestInjector } from './test_injector';
 export { inject, injectAsync } from './test_injector';
 export { expect } from './matchers';
 var _global = (typeof window === 'undefined' ? global : window);
@@ -55,13 +55,9 @@ var jsmBeforeEach = _global.beforeEach;
 var jsmIt = _global.it;
 var jsmIIt = _global.fit;
 var jsmXIt = _global.xit;
-var testProviders;
-var injector;
+var testInjector = getTestInjector();
 // Reset the test providers before each test.
-jsmBeforeEach(() => {
-    testProviders = [];
-    injector = null;
-});
+jsmBeforeEach(() => { testInjector.reset(); });
 /**
  * Allows overriding default providers of the test injector,
  * which are defined in test_injector.js.
@@ -77,8 +73,10 @@ export function beforeEachProviders(fn) {
         var providers = fn();
         if (!providers)
             return;
-        testProviders = [...testProviders, ...providers];
-        if (injector !== null) {
+        try {
+            testInjector.addProviders(providers);
+        }
+        catch (e) {
             throw new Error('beforeEachProviders was called after the injector had ' +
                 'been used in a beforeEach or it block. This invalidates the ' +
                 'test injector');
@@ -145,10 +143,7 @@ function _it(jsmFn, name, testFn, testTimeOut) {
     var timeOut = testTimeOut;
     if (testFn instanceof FunctionWithParamTokens) {
         jsmFn(name, (done) => {
-            if (!injector) {
-                injector = createTestInjectorWithRuntimeCompiler(testProviders);
-            }
-            var returnedTestValue = runInTestZone(() => testFn.execute(injector), done, done.fail);
+            var returnedTestValue = runInTestZone(() => testInjector.execute(testFn), done, done.fail);
             if (_isPromiseLike(returnedTestValue)) {
                 returnedTestValue.then(null, (err) => { done.fail(err); });
             }
@@ -176,12 +171,7 @@ export function beforeEach(fn) {
     if (fn instanceof FunctionWithParamTokens) {
         // The test case uses inject(). ie `beforeEach(inject([ClassA], (a) => { ...
         // }));`
-        jsmBeforeEach((done) => {
-            if (!injector) {
-                injector = createTestInjectorWithRuntimeCompiler(testProviders);
-            }
-            runInTestZone(() => fn.execute(injector), done, done.fail);
-        });
+        jsmBeforeEach((done) => { runInTestZone(() => testInjector.execute(fn), done, done.fail); });
     }
     else {
         // The test case doesn't use inject(). ie `beforeEach((done) => { ... }));`
