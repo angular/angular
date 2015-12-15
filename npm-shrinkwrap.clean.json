@@ -13212,7 +13212,7 @@
       }
     },
     "rxjs": {
-      "version": "5.0.0-alpha.14"
+      "version": "5.0.0-beta.0"
     },
     "selenium-webdriver": {
       "version": "2.48.2",
@@ -14765,5 +14765,5 @@
     }
   },
   "name": "angular-srcs",
-  "version": "2.0.0-alpha.52"
+  "version": "2.0.0-alpha.53"
 }
