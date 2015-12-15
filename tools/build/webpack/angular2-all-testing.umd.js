@@ -12,7 +12,7 @@ exports.router = require('angular2/router');
 exports.router_link_dsl = require('angular2/router/router_link_dsl.js');
 exports.instrumentation = require('angular2/instrumentation');
 exports.upgrade = require('angular2/upgrade');
-// this is the only difference as compared to the angular2.umd.js bundle
+// this is the only difference as compared to the angular2-all.umd.js bundle
 exports.testing = require('angular2/testing');
 exports.http.testing = require('angular2/http/testing');
 exports.router.testing = require('angular2/router/testing');
