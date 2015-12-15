@@ -35,9 +35,8 @@ syntax(ts):
 `@Injectable()
 class MyService() {}`|`@Injectable()`
 syntax(js):
-`var MyService = ng.core.Class({constructor: [OtherService, function(otherService) { }]});
-var OtherService = ng.core.Class({constructor: function() { }});`
-var MyService = ng.core.Injectable({...})`|`ng.core.Injectable({...})`
+`var OtherService = ng.core.Class({constructor: function() { }});
+var MyService = ng.core.Class({constructor: [OtherService, function(otherService) { }]});`|`var MyService = ng.core.Class({constructor: [OtherService, function(otherService) { }]});`
 syntax(dart):
 `@Injectable()
 class MyService() {}`|`@Injectable()`
