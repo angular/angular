@@ -17,6 +17,7 @@ import {
 import {bootstrap} from 'angular2/platform/browser';
 import {Component, Directive, View} from 'angular2/src/core/metadata';
 import {DOM} from 'angular2/src/platform/dom/dom_adapter';
+import {Console} from 'angular2/src/core/console';
 import {provide, ViewChild, AfterViewInit} from 'angular2/core';
 import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
 import {RouteConfig, Route, Redirect, AuxRoute} from 'angular2/src/router/route_config_decorator';
@@ -35,6 +36,10 @@ import {
 import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
 import {ApplicationRef} from 'angular2/src/core/application_ref';
 import {MockApplicationRef} from 'angular2/src/mock/mock_application_ref';
+
+class DummyConsole implements Console {
+  log(message) {}
+}
 
 export function main() {
   describe('router bootstrap', () => {
@@ -56,7 +61,8 @@ export function main() {
                      ROUTER_PROVIDERS,
                      provide(ROUTER_PRIMARY_COMPONENT, {useValue: AppCmp}),
                      provide(LocationStrategy, {useClass: MockLocationStrategy}),
-                     provide(DOCUMENT, {useValue: fakeDoc})
+                     provide(DOCUMENT, {useValue: fakeDoc}),
+                     provide(Console, {useClass: DummyConsole})
                    ])
              .then((applicationRef) => {
                var router = applicationRef.hostComponent.router;
