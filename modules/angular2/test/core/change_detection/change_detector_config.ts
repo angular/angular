@@ -438,6 +438,7 @@ var _availableEventDefinitions = [
   '(event)="a[0]=\$event"',
   // '(event)="\$event=1"',
   '(event)="a=a+1; a=a+1;"',
+  '(event)="true; false"',
   '(event)="false"',
   '(event)="true"',
   '(event)="true ? a = a + 1 : a = a + 1"',
