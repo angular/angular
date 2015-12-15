@@ -29,16 +29,11 @@ function prepare {
 
 
   if [ -d "$REPO_DIR" ]; then
-    # TODO(i): it's not clear how to safely fetch and update a shallow clone
-    #          I'll need to test this during the next release
-    echo "-- TODO: Update code.angularjs.org repo at $REPO_DIR"
-    echo "-- TODO: if pushing the 'publish' action fails, rebase the repo manually and push"
-    echo "-- TODO: or delete $REPO_DIR and rerun the prepare and publish steps"
-    #cd $REPO_DIR
-    #git fetch --update-shallow origin
-    #git checkout master
-    #git merge --ff-only origin/master
-    #cd -
+    cd $REPO_DIR
+    git fetch --update-shallow origin
+    git checkout master
+    git merge --ff-only origin/master
+    cd -
   else
     echo "-- Cloning code.angularjs.org into $REPO_DIR"
     git clone git@github.com:angular/code.angularjs.org.git $REPO_DIR --depth=1
