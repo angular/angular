@@ -142,9 +142,7 @@ export function createTestInjectorWithRuntimeCompiler(
 }
 
 /**
- * Allows injecting dependencies in `beforeEach()` and `it()`. When using with the
- * `angular2/testing` library, the test function will be run within a zone and will
- * automatically complete when all asynchronous tests have finished.
+ * Allows injecting dependencies in `beforeEach()` and `it()`.
  *
  * Example:
  *
@@ -155,9 +153,8 @@ export function createTestInjectorWithRuntimeCompiler(
  * }));
  *
  * it('...', inject([AClass], (object) => {
- *   object.doSomething().then(() => {
- *     expect(...);
- *   });
+ *   object.doSomething();
+ *   expect(...);
  * })
  * ```
  *
@@ -174,7 +171,22 @@ export function inject(tokens: any[], fn: Function): FunctionWithParamTokens {
 }
 
 /**
- * @deprecated Use inject instead, which now supports both synchronous and asynchronous tests.
+ * Allows injecting dependencies in `beforeEach()` and `it()`. The test must return
+ * a promise which will resolve when all asynchronous activity is complete.
+ *
+ * Example:
+ *
+ * ```
+ * it('...', injectAsync([AClass], (object) => {
+ *   return object.doSomething().then(() => {
+ *     expect(...);
+ *   });
+ * })
+ * ```
+ *
+ * @param {Array} tokens
+ * @param {Function} fn
+ * @return {FunctionWithParamTokens}
  */
 export function injectAsync(tokens: any[], fn: Function): FunctionWithParamTokens {
   return new FunctionWithParamTokens(tokens, fn, true);
