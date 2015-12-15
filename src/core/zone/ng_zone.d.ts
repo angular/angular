@@ -1,9 +1,15 @@
 import { EventEmitter } from 'angular2/src/facade/async';
 export interface NgZoneZone extends Zone {
 }
+/**
+ * Interface for a function with zero arguments.
+ */
 export interface ZeroArgFunction {
     (): void;
 }
+/**
+ * Function type for an error handler, which takes an error and a stack trace.
+ */
 export interface ErrorHandlingFn {
     (error: any, stackTrace: any): void;
 }

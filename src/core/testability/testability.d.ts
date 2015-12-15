@@ -15,6 +15,9 @@ export declare class Testability {
     findBindings(using: any, provider: string, exactMatch: boolean): any[];
     findProviders(using: any, provider: string, exactMatch: boolean): any[];
 }
+/**
+ * A global registry of {@link Testability} instances for specific elements.
+ */
 export declare class TestabilityRegistry {
     constructor();
     registerApplication(token: any, testability: Testability): void;
@@ -22,8 +25,15 @@ export declare class TestabilityRegistry {
     getAllTestabilities(): Testability[];
     findTestabilityInTree(elem: Node, findInAncestors?: boolean): Testability;
 }
+/**
+ * Adapter interface for retrieving the `Testability` service associated for a
+ * particular context.
+ */
 export interface GetTestability {
     addToWindow(registry: TestabilityRegistry): void;
     findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean): Testability;
 }
+/**
+ * Set the {@link GetTestability} implementation used by the Angular testing framework.
+ */
 export declare function setTestabilityGetter(getter: GetTestability): void;

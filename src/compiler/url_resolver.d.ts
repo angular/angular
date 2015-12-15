@@ -1,12 +1,22 @@
 import { Provider } from 'angular2/src/core/di';
+/**
+ * Create a {@link UrlResolver} with no package prefix.
+ */
 export declare function createWithoutPackagePrefix(): UrlResolver;
+/**
+ * A default provider for {@link PACKAGE_ROOT_URL} that maps to '/'.
+ */
 export declare var DEFAULT_PACKAGE_URL_PROVIDER: Provider;
 /**
  * Used by the {@link Compiler} when resolving HTML and CSS template URLs.
  *
- * This interface can be overridden by the application developer to create custom behavior.
+ * This class can be overridden by the application developer to create custom behavior.
  *
  * See {@link Compiler}
+ *
+ * ## Example
+ *
+ * {@example compiler/ts/url_resolver/url_resolver.ts region='url_resolver'}
  */
 export declare class UrlResolver {
     private _packagePrefix;
@@ -25,4 +35,7 @@ export declare class UrlResolver {
      */
     resolve(baseUrl: string, url: string): string;
 }
+/**
+ * Extract the scheme of a URL.
+ */
 export declare function getUrlScheme(url: string): string;

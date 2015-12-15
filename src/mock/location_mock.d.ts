@@ -1,4 +1,7 @@
 import { Location } from 'angular2/src/router/location';
+/**
+ * A spy for {@link Location} that allows tests to fire simulated location events.
+ */
 export declare class SpyLocation implements Location {
     urlChanges: string[];
     setInitialPath(url: string): void;

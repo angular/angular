@@ -9,6 +9,9 @@ import {Map} from 'angular2/src/facade/collection';
 import {reflector} from 'angular2/src/core/reflection/reflection';
 
 
+/**
+ * Resolves types to {@link ViewMetadata}.
+ */
 @Injectable()
 export class ViewResolver {
   /** @internal */

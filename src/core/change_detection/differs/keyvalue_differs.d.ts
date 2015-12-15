@@ -1,5 +1,8 @@
 import { ChangeDetectorRef } from '../change_detector_ref';
 import { Provider } from 'angular2/src/core/di';
+/**
+ * A differ that tracks changes made to an object over time.
+ */
 export interface KeyValueDiffer {
     diff(object: Object): any;
     onDestroy(): any;

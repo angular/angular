@@ -1,6 +1,10 @@
 import { Type } from 'angular2/src/facade/lang';
 import { DirectiveMetadata } from '../core/metadata';
 import { DirectiveResolver } from 'angular2/src/core/linker/directive_resolver';
+/**
+ * An implementation of {@link DirectiveResolver} that allows overriding
+ * various properties of directives.
+ */
 export declare class MockDirectiveResolver extends DirectiveResolver {
     private _providerOverrides;
     private viewProviderOverrides;

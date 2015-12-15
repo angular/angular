@@ -1,4 +1,7 @@
 import { isBlank } from 'angular2/src/facade/lang';
+/**
+ * Describes the current state of the change detector.
+ */
 export var ChangeDetectorState;
 (function (ChangeDetectorState) {
     /**
@@ -18,6 +21,10 @@ export var ChangeDetectorState;
      */
     ChangeDetectorState[ChangeDetectorState["Errored"] = 2] = "Errored";
 })(ChangeDetectorState || (ChangeDetectorState = {}));
+/**
+ * Describes within the change detector which strategy will be used the next time change
+ * detection is triggered.
+ */
 export var ChangeDetectionStrategy;
 (function (ChangeDetectionStrategy) {
     /**
@@ -53,6 +60,9 @@ export var ChangeDetectionStrategy;
      */
     ChangeDetectionStrategy[ChangeDetectionStrategy["OnPushObserve"] = 6] = "OnPushObserve";
 })(ChangeDetectionStrategy || (ChangeDetectionStrategy = {}));
+/**
+ * List of possible {@link ChangeDetectionStrategy} values.
+ */
 export var CHANGE_DETECTION_STRATEGY_VALUES = [
     ChangeDetectionStrategy.CheckOnce,
     ChangeDetectionStrategy.Checked,
@@ -62,6 +72,9 @@ export var CHANGE_DETECTION_STRATEGY_VALUES = [
     ChangeDetectionStrategy.Default,
     ChangeDetectionStrategy.OnPushObserve
 ];
+/**
+ * List of possible {@link ChangeDetectorState} values.
+ */
 export var CHANGE_DETECTOR_STATE_VALUES = [
     ChangeDetectorState.NeverChecked,
     ChangeDetectorState.CheckedBefore,

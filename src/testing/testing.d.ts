@@ -48,8 +48,18 @@ export declare var fdescribe: Function;
  * {@example testing/ts/testing.ts region='xdescribe'}
  */
 export declare var xdescribe: Function;
+/**
+ * Signature for a synchronous test function (no arguments).
+ */
 export declare type SyncTestFn = () => void;
+/**
+ * Signature for an asynchronous test function which takes a
+ * `done` callback.
+ */
 export declare type AsyncTestFn = (done: () => void) => void;
+/**
+ * Signature for any simple testing function.
+ */
 export declare type AnyTestFn = SyncTestFn | AsyncTestFn;
 /**
  * Allows overriding default providers of the test injector,
@@ -88,7 +98,7 @@ export declare function beforeEach(fn: FunctionWithParamTokens | AnyTestFn): voi
  *
  * ## Example:
  *
- * {@example testing/ts/testing.ts region='it'}
+ * {@example testing/ts/testing.ts region='describeIt'}
  */
 export declare function it(name: string, fn: FunctionWithParamTokens | AnyTestFn, timeOut?: number): void;
 /**

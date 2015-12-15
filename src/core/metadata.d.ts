@@ -360,6 +360,9 @@ export interface QueryFactory {
         descendants?: boolean;
     }): QueryMetadata;
 }
+/**
+ * Factory for {@link ContentChildren}.
+ */
 export interface ContentChildrenFactory {
     (selector: Type | string, {descendants}?: {
         descendants?: boolean;
@@ -368,14 +371,23 @@ export interface ContentChildrenFactory {
         descendants?: boolean;
     }): ContentChildrenMetadata;
 }
+/**
+ * Factory for {@link ContentChild}.
+ */
 export interface ContentChildFactory {
     (selector: Type | string): any;
     new (selector: Type | string): ContentChildFactory;
 }
+/**
+ * Factory for {@link ViewChildren}.
+ */
 export interface ViewChildrenFactory {
     (selector: Type | string): any;
     new (selector: Type | string): ViewChildrenMetadata;
 }
+/**
+ * Factory for {@link ViewChild}.
+ */
 export interface ViewChildFactory {
     (selector: Type | string): any;
     new (selector: Type | string): ViewChildFactory;

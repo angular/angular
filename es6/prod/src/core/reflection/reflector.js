@@ -1,6 +1,9 @@
 import { isPresent } from 'angular2/src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
 import { Map, MapWrapper, Set, SetWrapper, StringMapWrapper } from 'angular2/src/facade/collection';
+/**
+ * Reflective information about a symbol, including annotations, interfaces, and other metadata.
+ */
 export class ReflectionInfo {
     constructor(annotations, parameters, factory, interfaces, propMetadata) {
         this.annotations = annotations;
@@ -10,6 +13,10 @@ export class ReflectionInfo {
         this.propMetadata = propMetadata;
     }
 }
+/**
+ * Provides access to reflection data about symbols. Used internally by Angular
+ * to power dependency injection and compilation.
+ */
 export class Reflector {
     constructor(reflectionCapabilities) {
         /** @internal */

@@ -9,6 +9,11 @@ import { CommandCompiler } from './command_compiler';
 import { TemplateParser } from './template_parser';
 import { TemplateNormalizer } from './template_normalizer';
 import { RuntimeMetadataResolver } from './runtime_metadata';
+/**
+ * An internal module of the Angular compiler that begins with component types,
+ * extracts templates, and eventually produces a compiled version of the component
+ * ready for linking into an application.
+ */
 export declare class TemplateCompiler {
     private _runtimeMetadataResolver;
     private _templateNormalizer;

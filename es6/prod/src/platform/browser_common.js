@@ -22,6 +22,11 @@ export { Title } from 'angular2/src/platform/browser/title';
 export { DebugElementViewListener, ELEMENT_PROBE_PROVIDERS, ELEMENT_PROBE_BINDINGS, inspectNativeElement, By } from 'angular2/platform/common_dom';
 export { BrowserDomAdapter } from './browser/browser_adapter';
 export { enableDebugTools, disableDebugTools } from 'angular2/src/platform/browser/tools/tools';
+/**
+ * A set of providers to initialize the Angular platform in a web browser.
+ *
+ * Used automatically by `bootstrap`, or can be passed to {@link platform}.
+ */
 export const BROWSER_PROVIDERS = CONST_EXPR([
     PLATFORM_COMMON_PROVIDERS,
     new Provider(PLATFORM_INITIALIZER, { useValue: initDomAdapter, multi: true }),
@@ -34,6 +39,11 @@ function _exceptionHandler() {
 function _document() {
     return DOM.defaultDoc();
 }
+/**
+ * A set of providers to initialize an Angular application in a web browser.
+ *
+ * Used automatically by `bootstrap`, or can be passed to {@link PlatformRef.application}.
+ */
 export const BROWSER_APP_COMMON_PROVIDERS = CONST_EXPR([
     APPLICATION_COMMON_PROVIDERS,
     FORM_PROVIDERS,

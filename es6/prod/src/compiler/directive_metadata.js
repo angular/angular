@@ -8,6 +8,9 @@ import { LIFECYCLE_HOOKS_VALUES } from 'angular2/src/core/linker/interfaces';
 // group 1: "property" from "[property]"
 // group 2: "event" from "(event)"
 var HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$/g;
+/**
+ * Metadata regarding compilation of a type.
+ */
 export class CompileTypeMetadata {
     constructor({ runtime, name, moduleUrl, isHost } = {}) {
         this.runtime = runtime;
@@ -27,6 +30,9 @@ export class CompileTypeMetadata {
         };
     }
 }
+/**
+ * Metadata regarding compilation of a template.
+ */
 export class CompileTemplateMetadata {
     constructor({ encapsulation, template, templateUrl, styles, styleUrls, ngContentSelectors } = {}) {
         this.encapsulation = isPresent(encapsulation) ? encapsulation : ViewEncapsulation.Emulated;
@@ -59,6 +65,9 @@ export class CompileTemplateMetadata {
         };
     }
 }
+/**
+ * Metadata regarding compilation of a directive.
+ */
 export class CompileDirectiveMetadata {
     constructor({ type, isComponent, dynamicLoadable, selector, exportAs, changeDetection, inputs, outputs, hostListeners, hostProperties, hostAttributes, lifecycleHooks, template } = {}) {
         this.type = type;
@@ -166,6 +175,9 @@ export class CompileDirectiveMetadata {
         };
     }
 }
+/**
+ * Construct {@link CompileDirectiveMetadata} from {@link ComponentTypeMetadata} and a selector.
+ */
 export function createHostComponentMeta(componentType, componentSelector) {
     var template = CssSelector.parse(componentSelector)[0].getMatchingElementTemplate();
     return CompileDirectiveMetadata.create({

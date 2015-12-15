@@ -10,6 +10,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 import { Injectable } from 'angular2/src/core/di';
 import { NgZone } from 'angular2/src/core/zone/ng_zone';
 import { EventEmitter, ObservableWrapper } from 'angular2/src/facade/async';
+/**
+ * A mock implementation of {@link NgZone}.
+ */
 export let MockNgZone = class extends NgZone {
     constructor() {
         super({ enableLongStackTrace: false });

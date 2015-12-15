@@ -18,9 +18,9 @@ export class RenderProtoViewRef {
  * Represents a list of sibling Nodes that can be moved by the {@link Renderer} independently of
  * other Render Fragments.
  *
- * Any {@link RenderView} has one Render Fragment.
+ * Any {@link RenderViewRef} has one Render Fragment.
  *
- * Additionally any View with an Embedded View that contains a {@link NgContent View Projection}
+ * Additionally any View with an Embedded View that contains a {@link NgContentAst View Projection}
  * results in additional Render Fragment.
  */
 /*
@@ -67,18 +67,30 @@ export class RenderFragmentRef {
 // TODO(i): refactor into an interface
 export class RenderViewRef {
 }
+/**
+ * Abstract base class for commands to the Angular renderer, using the visitor pattern.
+ */
 export class RenderTemplateCmd {
 }
+/**
+ * Command to begin rendering.
+ */
 export class RenderBeginCmd extends RenderTemplateCmd {
     get ngContentIndex() { return unimplemented(); }
     ;
     get isBound() { return unimplemented(); }
     ;
 }
+/**
+ * Command to render text.
+ */
 export class RenderTextCmd extends RenderBeginCmd {
     get value() { return unimplemented(); }
     ;
 }
+/**
+ * Command to render projected content.
+ */
 export class RenderNgContentCmd extends RenderTemplateCmd {
     // The index of this NgContent element
     get index() { return unimplemented(); }
@@ -88,6 +100,9 @@ export class RenderNgContentCmd extends RenderTemplateCmd {
     get ngContentIndex() { return unimplemented(); }
     ;
 }
+/**
+ * Command to begin rendering an element.
+ */
 export class RenderBeginElementCmd extends RenderBeginCmd {
     get name() { return unimplemented(); }
     ;
@@ -96,10 +111,16 @@ export class RenderBeginElementCmd extends RenderBeginCmd {
     get eventTargetAndNames() { return unimplemented(); }
     ;
 }
+/**
+ * Command to begin rendering a component.
+ */
 export class RenderBeginComponentCmd extends RenderBeginElementCmd {
     get templateId() { return unimplemented(); }
     ;
 }
+/**
+ * Command to render a component's template.
+ */
 export class RenderEmbeddedTemplateCmd extends RenderBeginElementCmd {
     get isMerged() { return unimplemented(); }
     ;
@@ -127,6 +148,9 @@ export class RenderViewWithFragments {
         this.fragmentRefs = fragmentRefs;
     }
 }
+/**
+ * Template for rendering a component, including commands and styles.
+ */
 export class RenderComponentTemplate {
     constructor(id, shortId, encapsulation, commands, styles) {
         this.id = id;
@@ -146,7 +170,7 @@ export class RenderComponentTemplate {
  *
  * If you are implementing a custom renderer, you must implement this interface.
  *
- * The default Renderer implementation is {@link DomRenderer}. Also see {@link WebWorkerRenderer}.
+ * The default Renderer implementation is `DomRenderer`. Also available is `WebWorkerRenderer`.
  */
 export class Renderer {
 }

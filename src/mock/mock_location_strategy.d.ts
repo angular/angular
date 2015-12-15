@@ -1,4 +1,8 @@
 import { LocationStrategy } from 'angular2/src/router/location_strategy';
+/**
+ * A mock implementation of {@link LocationStrategy} that allows tests to fire simulated
+ * location events.
+ */
 export declare class MockLocationStrategy extends LocationStrategy {
     internalBaseHref: string;
     internalPath: string;

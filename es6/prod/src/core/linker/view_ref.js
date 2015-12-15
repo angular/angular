@@ -17,7 +17,7 @@ export function internalProtoView(protoViewRef) {
  *
  * Properties of elements in a View can change, but the structure (number and order) of elements in
  * a View cannot. Changing the structure of Elements can only be done by inserting, moving or
- * removing nested Views via a {@link ViewContainer}. Each View can contain many View Containers.
+ * removing nested Views via a {@link ViewContainerRef}. Each View can contain many View Containers.
  * <!-- /TODO -->
  *
  * ### Example

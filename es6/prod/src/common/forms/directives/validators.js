@@ -34,7 +34,18 @@ RequiredValidator = __decorate([
     }), 
     __metadata('design:paramtypes', [])
 ], RequiredValidator);
+/**
+ * Provivder which adds {@link MinLengthValidator} to {@link NG_VALIDATORS}.
+ *
+ * ## Example:
+ *
+ * {@example common/forms/ts/validators/validators.ts region='min'}
+ */
 const MIN_LENGTH_VALIDATOR = CONST_EXPR(new Provider(NG_VALIDATORS, { useExisting: forwardRef(() => MinLengthValidator), multi: true }));
+/**
+ * A directive which installs the {@link MinLengthValidator} for any `ngControl`,
+ * `ngFormControl`, or control with `ngModel` that also has a `minlength` attribute.
+ */
 export let MinLengthValidator = class {
     constructor(minLength) {
         this._validator = Validators.minLength(NumberWrapper.parseInt(minLength, 10));
@@ -49,7 +60,18 @@ MinLengthValidator = __decorate([
     __param(0, Attribute("minlength")), 
     __metadata('design:paramtypes', [String])
 ], MinLengthValidator);
+/**
+ * Provider which adds {@link MaxLengthValidator} to {@link NG_VALIDATORS}.
+ *
+ * ## Example:
+ *
+ * {@example common/forms/ts/validators/validators.ts region='max'}
+ */
 const MAX_LENGTH_VALIDATOR = CONST_EXPR(new Provider(NG_VALIDATORS, { useExisting: forwardRef(() => MaxLengthValidator), multi: true }));
+/**
+ * A directive which installs the {@link MaxLengthValidator} for any `ngControl, `ngFormControl`,
+ * or control with `ngModel` that also has a `maxlength` attribute.
+ */
 export let MaxLengthValidator = class {
     constructor(maxLength) {
         this._validator = Validators.maxLength(NumberWrapper.parseInt(maxLength, 10));

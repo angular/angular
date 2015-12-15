@@ -26,10 +26,16 @@ export declare class WrappedValue {
     constructor(wrapped: any);
     static wrap(value: any): WrappedValue;
 }
+/**
+ * Represents a basic change from a previous to a new value.
+ */
 export declare class SimpleChange {
     previousValue: any;
     currentValue: any;
     constructor(previousValue: any, currentValue: any);
+    /**
+     * Check whether the new value is the first value assigned.
+     */
     isFirstChange(): boolean;
 }
 export declare class ChangeDetectionUtil {

@@ -26,4 +26,9 @@ export interface ControlValueAccessor {
   registerOnTouched(fn: any): void;
 }
 
+/**
+ * Used to provide a {@link ControlValueAccessor} for form controls.
+ *
+ * See {@link DefaultValueAccessor} for how to implement one.
+ */
 export const NG_VALUE_ACCESSOR: OpaqueToken = CONST_EXPR(new OpaqueToken("NgValueAccessor"));

@@ -72,8 +72,20 @@ export var fdescribe: Function = _global.fdescribe;
  */
 export var xdescribe: Function = _global.xdescribe;
 
+/**
+ * Signature for a synchronous test function (no arguments).
+ */
 export type SyncTestFn = () => void;
+
+/**
+ * Signature for an asynchronous test function which takes a
+ * `done` callback.
+ */
 export type AsyncTestFn = (done: () => void) => void;
+
+/**
+ * Signature for any simple testing function.
+ */
 export type AnyTestFn = SyncTestFn | AsyncTestFn;
 
 var jsmBeforeEach = _global.beforeEach;
@@ -226,7 +238,7 @@ export function beforeEach(fn: FunctionWithParamTokens | AnyTestFn): void {
  *
  * ## Example:
  *
- * {@example testing/ts/testing.ts region='it'}
+ * {@example testing/ts/testing.ts region='describeIt'}
  */
 export function it(name: string, fn: FunctionWithParamTokens | AnyTestFn,
                    timeOut: number = null): void {

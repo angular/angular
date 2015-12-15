@@ -13,4 +13,11 @@ export { SlicePipe } from './pipes/slice_pipe';
 export { LowerCasePipe } from './pipes/lowercase_pipe';
 export { NumberPipe, DecimalPipe, PercentPipe, CurrencyPipe } from './pipes/number_pipe';
 export { UpperCasePipe } from './pipes/uppercase_pipe';
+/**
+ * A collection of Angular core pipes that are likely to be used in each and every
+ * application.
+ *
+ * This collection can be used to quickly enumerate all the built-in pipes in the `pipes`
+ * property of the `@Component` or `@View` decorators.
+ */
 export declare const COMMON_PIPES: (typeof AsyncPipe | typeof UpperCasePipe | typeof SlicePipe)[];

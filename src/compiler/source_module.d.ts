@@ -1,4 +1,7 @@
 export declare function moduleRef(moduleUrl: any): string;
+/**
+ * Represents generated source code with module references. Internal to the Angular compiler.
+ */
 export declare class SourceModule {
     moduleUrl: string;
     sourceWithModuleRefs: string;
@@ -15,6 +18,9 @@ export declare class SourceExpressions {
     expressions: string[];
     constructor(declarations: string[], expressions: string[]);
 }
+/**
+ * Represents generated source code with imports. Internal to the Angular compiler.
+ */
 export declare class SourceWithImports {
     source: string;
     imports: string[][];

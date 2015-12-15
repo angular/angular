@@ -34,6 +34,10 @@ export interface Validator {
  */
 export declare class RequiredValidator {
 }
+/**
+ * A directive which installs the {@link MinLengthValidator} for any `ngControl`,
+ * `ngFormControl`, or control with `ngModel` that also has a `minlength` attribute.
+ */
 export declare class MinLengthValidator implements Validator {
     private _validator;
     constructor(minLength: string);
@@ -41,6 +45,10 @@ export declare class MinLengthValidator implements Validator {
         [key: string]: any;
     };
 }
+/**
+ * A directive which installs the {@link MaxLengthValidator} for any `ngControl, `ngFormControl`,
+ * or control with `ngModel` that also has a `maxlength` attribute.
+ */
 export declare class MaxLengthValidator implements Validator {
     private _validator;
     constructor(maxLength: string);

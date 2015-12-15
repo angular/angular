@@ -18,6 +18,9 @@ import { StringWrapper, isPresent } from 'angular2/src/facade/lang';
 import { Observable } from 'rxjs/Observable';
 const JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callback.';
 const JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
+/**
+ * Abstract base class for an in-flight JSONP request.
+ */
 export class JSONPConnection {
 }
 export class JSONPConnection_ extends JSONPConnection {
@@ -98,6 +101,9 @@ export class JSONPConnection_ extends JSONPConnection {
         this._responseData = data;
     }
 }
+/**
+ * A {@link ConnectionBackend} that uses the JSONP strategy of making requests.
+ */
 export class JSONPBackend extends ConnectionBackend {
 }
 export let JSONPBackend_ = class extends JSONPBackend {

@@ -1,4 +1,7 @@
 import { GenericBrowserDomAdapter } from './generic_browser_adapter';
+/**
+ * A `DomAdapter` powered by full browser DOM APIs.
+ */
 export declare class BrowserDomAdapter extends GenericBrowserDomAdapter {
     parse(templateHtml: string): void;
     static makeCurrent(): void;

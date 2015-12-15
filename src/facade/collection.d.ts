@@ -55,6 +55,10 @@ export declare class StringMapWrapper {
         [key: string]: V;
     }): boolean;
 }
+/**
+ * A boolean-valued function over a value, possibly including context information
+ * regarding that value's position in an array.
+ */
 export interface Predicate<T> {
     (value: T, index?: number, array?: T[]): boolean;
 }

@@ -4,6 +4,9 @@ export { expect, NgMatchers } from './matchers';
 export declare var proxy: ClassDecorator;
 export declare var afterEach: Function;
 export declare type SyncTestFn = () => void;
+/**
+ * Injectable completer that allows signaling completion of an asynchronous test. Used internally.
+ */
 export declare class AsyncTestCompleter {
     private _done;
     constructor(_done: Function);

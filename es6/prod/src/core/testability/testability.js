@@ -86,6 +86,9 @@ Testability = __decorate([
     Injectable(), 
     __metadata('design:paramtypes', [NgZone])
 ], Testability);
+/**
+ * A global registry of {@link Testability} instances for specific elements.
+ */
 export let TestabilityRegistry = class {
     constructor() {
         /** @internal */
@@ -115,6 +118,9 @@ _NoopGetTestability = __decorate([
     CONST(), 
     __metadata('design:paramtypes', [])
 ], _NoopGetTestability);
+/**
+ * Set the {@link GetTestability} implementation used by the Angular testing framework.
+ */
 export function setTestabilityGetter(getter) {
     _testabilityGetter = getter;
 }

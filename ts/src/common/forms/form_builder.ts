@@ -119,6 +119,8 @@ export class FormBuilder {
 export const FORM_PROVIDERS: Type[] = CONST_EXPR([FormBuilder]);
 
 /**
+ * See {@link FORM_PROVIDERS} instead.
+ *
  * @deprecated
  */
 export const FORM_BINDINGS = FORM_PROVIDERS;

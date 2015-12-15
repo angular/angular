@@ -8,6 +8,9 @@ export { expect } from './matchers';
 export var proxy = (t) => t;
 var _global = (typeof window === 'undefined' ? global : window);
 export var afterEach = _global.afterEach;
+/**
+ * Injectable completer that allows signaling completion of an asynchronous test. Used internally.
+ */
 export class AsyncTestCompleter {
     constructor(_done) {
         this._done = _done;

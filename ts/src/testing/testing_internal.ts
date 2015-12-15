@@ -22,6 +22,9 @@ export type SyncTestFn = () => void;
 type AsyncTestFn = (done: () => void) => void;
 type AnyTestFn = SyncTestFn | AsyncTestFn;
 
+/**
+ * Injectable completer that allows signaling completion of an asynchronous test. Used internally.
+ */
 export class AsyncTestCompleter {
   constructor(private _done: Function) {}
 

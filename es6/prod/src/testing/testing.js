@@ -195,7 +195,7 @@ export function beforeEach(fn) {
  *
  * ## Example:
  *
- * {@example testing/ts/testing.ts region='it'}
+ * {@example testing/ts/testing.ts region='describeIt'}
  */
 export function it(name, fn, timeOut = null) {
     return _it(jsmIt, name, fn, timeOut);

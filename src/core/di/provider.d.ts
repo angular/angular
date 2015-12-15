@@ -1,5 +1,9 @@
 import { Type } from 'angular2/src/facade/lang';
 import { Key } from './key';
+/**
+ * `Dependency` is used by the framework to extend DI.
+ * This is internal to Angular and should not be used directly.
+ */
 export declare class Dependency {
     key: Key;
     optional: boolean;
@@ -185,6 +189,8 @@ export declare class Provider {
     multi: boolean;
 }
 /**
+ * See {@link Provider} instead.
+ *
  * @deprecated
  */
 export declare class Binding extends Provider {
@@ -244,6 +250,8 @@ export interface ResolvedProvider {
     multiProvider: boolean;
 }
 /**
+ * See {@link ResolvedProvider} instead.
+ *
  * @deprecated
  */
 export interface ResolvedBinding extends ResolvedProvider {
@@ -278,7 +286,6 @@ export declare class ResolvedFactory {
         dependencies: Dependency[]);
 }
 /**
- * @deprecated
  * Creates a {@link Provider}.
  *
  * To construct a {@link Provider}, bind a `token` to either a class, a value, a factory function,
@@ -287,6 +294,8 @@ export declare class ResolvedFactory {
  * See {@link ProviderBuilder} for more details.
  *
  * The `token` is most commonly a class or {@link angular2/di/OpaqueToken}.
+ *
+ * @deprecated
  */
 export declare function bind(token: any): ProviderBuilder;
 /**

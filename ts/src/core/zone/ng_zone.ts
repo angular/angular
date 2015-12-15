@@ -8,8 +8,14 @@ export interface NgZoneZone extends Zone {
   _innerZone: boolean;
 }
 
+/**
+ * Interface for a function with zero arguments.
+ */
 export interface ZeroArgFunction { (): void; }
 
+/**
+ * Function type for an error handler, which takes an error and a stack trace.
+ */
 export interface ErrorHandlingFn { (error: any, stackTrace: any): void; }
 
 /**

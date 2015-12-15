@@ -8,7 +8,6 @@ import * as modelModule from './model';
  * ### Example
  *
  * {@example core/forms/ts/ng_validators/ng_validators.ts region='ng_validators'}
- * ```
  */
 export declare const NG_VALIDATORS: OpaqueToken;
 /**
@@ -24,8 +23,7 @@ export declare const NG_ASYNC_VALIDATORS: OpaqueToken;
  * Provides a set of validators used by form controls.
  *
  * A validator is a function that processes a {@link Control} or collection of
- * controls and returns a {@link StringMap} of errors. A null map means that
- * validation has passed.
+ * controls and returns a map of errors. A null map means that validation has passed.
  *
  * ### Example
  *

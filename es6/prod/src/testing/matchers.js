@@ -2,6 +2,13 @@ import { DOM } from 'angular2/src/platform/dom/dom_adapter';
 import { global, isString } from 'angular2/src/facade/lang';
 import { StringMapWrapper } from 'angular2/src/facade/collection';
 var _global = (typeof window === 'undefined' ? global : window);
+/**
+ * Jasmine matching function with Angular matchers mixed in.
+ *
+ * ## Example
+ *
+ * {@example testing/ts/matchers.ts region='toHaveText'}
+ */
 export var expect = _global.expect;
 // Some Map polyfills don't polyfill Map.toString correctly, which
 // gives us bad error messages in tests.

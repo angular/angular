@@ -9,6 +9,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { Injectable } from 'angular2/src/core/di';
 import { EventEmitter, ObservableWrapper } from 'angular2/src/facade/async';
+/**
+ * A spy for {@link Location} that allows tests to fire simulated location events.
+ */
 export let SpyLocation = class {
     constructor() {
         this.urlChanges = [];

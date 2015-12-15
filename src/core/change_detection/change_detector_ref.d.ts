@@ -118,7 +118,7 @@ export declare abstract class ChangeDetectorRef {
      * check
      * every five seconds.
      *
-     * See {@link detach} for more information.
+     * See {@link ChangeDetectorRef#detach} for more information.
      */
     abstract detectChanges(): void;
     /**

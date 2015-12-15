@@ -121,6 +121,8 @@ FormBuilder = __decorate([
  */
 export const FORM_PROVIDERS = CONST_EXPR([FormBuilder]);
 /**
+ * See {@link FORM_PROVIDERS} instead.
+ *
  * @deprecated
  */
 export const FORM_BINDINGS = FORM_PROVIDERS;

@@ -3,6 +3,9 @@ var MODULE_REGEXP = /#MODULE\[([^\]]*)\]/g;
 export function moduleRef(moduleUrl) {
     return `#MODULE[${moduleUrl}]`;
 }
+/**
+ * Represents generated source code with module references. Internal to the Angular compiler.
+ */
 export class SourceModule {
     constructor(moduleUrl, sourceWithModuleRefs) {
         this.moduleUrl = moduleUrl;
@@ -41,6 +44,9 @@ export class SourceExpressions {
         this.expressions = expressions;
     }
 }
+/**
+ * Represents generated source code with imports. Internal to the Angular compiler.
+ */
 export class SourceWithImports {
     constructor(source, imports) {
         this.source = source;

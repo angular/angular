@@ -1,3 +1,6 @@
+/**
+ * Describes the current state of the change detector.
+ */
 export declare enum ChangeDetectorState {
     /**
      * `NeverChecked` means that the change detector has not been checked yet, and
@@ -16,6 +19,10 @@ export declare enum ChangeDetectorState {
      */
     Errored = 2,
 }
+/**
+ * Describes within the change detector which strategy will be used the next time change
+ * detection is triggered.
+ */
 export declare enum ChangeDetectionStrategy {
     /**
      * `CheckedOnce` means that after calling detectChanges the mode of the change detector
@@ -50,6 +57,12 @@ export declare enum ChangeDetectionStrategy {
      */
     OnPushObserve = 6,
 }
+/**
+ * List of possible {@link ChangeDetectionStrategy} values.
+ */
 export declare var CHANGE_DETECTION_STRATEGY_VALUES: ChangeDetectionStrategy[];
+/**
+ * List of possible {@link ChangeDetectorState} values.
+ */
 export declare var CHANGE_DETECTOR_STATE_VALUES: ChangeDetectorState[];
 export declare function isDefaultChangeDetectionStrategy(changeDetectionStrategy: ChangeDetectionStrategy): boolean;

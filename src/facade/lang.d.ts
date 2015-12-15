@@ -10,6 +10,9 @@ export declare var Type: FunctionConstructor;
  */
 export interface Type extends Function {
 }
+/**
+ * Runtime representation of a type that is constructable (non-abstract).
+ */
 export interface ConcreteType extends Type {
     new (...args: any[]): any;
 }

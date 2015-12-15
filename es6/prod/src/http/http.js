@@ -40,7 +40,7 @@ function mergeOptions(defaultOpts, providedOpts, method, url) {
  * Performs http requests using `XMLHttpRequest` as the default backend.
  *
  * `Http` is available as an injectable class, with methods to perform http requests. Calling
- * `request` returns an {@link Observable} which will emit a single {@link Response} when a
+ * `request` returns an `Observable` which will emit a single {@link Response} when a
  * response is received.
  *
  * ### Example

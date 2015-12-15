@@ -14,5 +14,17 @@ export declare class DebugElementViewListener implements AppViewListener {
     onViewCreated(view: AppView): void;
     onViewDestroyed(view: AppView): void;
 }
+/**
+ * Providers which support debugging Angular applications (e.g. via `ng.probe`).
+ *
+ * ## Example
+ *
+ * {@example platform/dom/debug/ts/debug_element_view_listener/providers.ts region='providers'}
+ */
 export declare const ELEMENT_PROBE_PROVIDERS: any[];
+/**
+ * Use {@link ELEMENT_PROBE_PROVIDERS}.
+ *
+ * @deprecated
+ */
 export declare const ELEMENT_PROBE_BINDINGS: any[];

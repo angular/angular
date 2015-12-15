@@ -23,6 +23,11 @@ import { TemplateNormalizer } from './template_normalizer';
 import { RuntimeMetadataResolver } from './runtime_metadata';
 import { TEMPLATE_COMMANDS_MODULE_REF } from './command_compiler';
 import { codeGenExportVariable, codeGenValueFn, MODULE_SUFFIX } from './util';
+/**
+ * An internal module of the Angular compiler that begins with component types,
+ * extracts templates, and eventually produces a compiled version of the component
+ * ready for linking into an application.
+ */
 export let TemplateCompiler = class {
     constructor(_runtimeMetadataResolver, _templateNormalizer, _templateParser, _styleCompiler, _commandCompiler, _cdCompiler) {
         this._runtimeMetadataResolver = _runtimeMetadataResolver;

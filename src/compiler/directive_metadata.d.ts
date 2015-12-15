@@ -2,6 +2,9 @@ import { Type } from 'angular2/src/facade/lang';
 import { ChangeDetectionStrategy } from 'angular2/src/core/change_detection/change_detection';
 import { ViewEncapsulation } from 'angular2/src/core/metadata/view';
 import { LifecycleHooks } from 'angular2/src/core/linker/interfaces';
+/**
+ * Metadata regarding compilation of a type.
+ */
 export declare class CompileTypeMetadata {
     runtime: Type;
     name: string;
@@ -20,6 +23,9 @@ export declare class CompileTypeMetadata {
         [key: string]: any;
     };
 }
+/**
+ * Metadata regarding compilation of a template.
+ */
 export declare class CompileTemplateMetadata {
     encapsulation: ViewEncapsulation;
     template: string;
@@ -42,6 +48,9 @@ export declare class CompileTemplateMetadata {
         [key: string]: any;
     };
 }
+/**
+ * Metadata regarding compilation of a directive.
+ */
 export declare class CompileDirectiveMetadata {
     static create({type, isComponent, dynamicLoadable, selector, exportAs, changeDetection, inputs, outputs, host, lifecycleHooks, template}?: {
         type?: CompileTypeMetadata;
@@ -113,4 +122,7 @@ export declare class CompileDirectiveMetadata {
         [key: string]: any;
     };
 }
+/**
+ * Construct {@link CompileDirectiveMetadata} from {@link ComponentTypeMetadata} and a selector.
+ */
 export declare function createHostComponentMeta(componentType: CompileTypeMetadata, componentSelector: string): CompileDirectiveMetadata;

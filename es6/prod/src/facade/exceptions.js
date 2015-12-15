@@ -8,6 +8,9 @@ export class BaseException extends Error {
     }
     toString() { return this.message; }
 }
+/**
+ * Wraps an exception and provides additional context or information.
+ */
 export class WrappedException extends Error {
     constructor(_wrapperMessage, _originalException, _originalStack, _context) {
         super(_wrapperMessage);

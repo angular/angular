@@ -25,6 +25,10 @@ import { Parser, Lexer } from 'angular2/src/core/change_detection/change_detecti
 function _createChangeDetectorGenConfig() {
     return new ChangeDetectorGenConfig(assertionsEnabled(), false, true);
 }
+/**
+ * A set of providers that provide `RuntimeCompiler` and its dependencies to use for
+ * template compilation.
+ */
 export const COMPILER_PROVIDERS = CONST_EXPR([
     Lexer,
     Parser,

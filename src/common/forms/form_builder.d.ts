@@ -74,6 +74,8 @@ export declare class FormBuilder {
  */
 export declare const FORM_PROVIDERS: Type[];
 /**
+ * See {@link FORM_PROVIDERS} instead.
+ *
  * @deprecated
  */
 export declare const FORM_BINDINGS: Type[];

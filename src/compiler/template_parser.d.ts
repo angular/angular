@@ -5,6 +5,13 @@ import { HtmlParser } from './html_parser';
 import { ParseError, ParseLocation } from './parse_util';
 import { TemplateAst, TemplateAstVisitor } from './template_ast';
 import { ElementSchemaRegistry } from 'angular2/src/compiler/schema/element_schema_registry';
+/**
+ * Provides an array of {@link TemplateAstVisitor}s which will be used to transform
+ * parsed templates before compilation is invoked, allowing custom expression syntax
+ * and other advanced transformations.
+ *
+ * This is currently an internal-only feature and not meant for general use.
+ */
 export declare const TEMPLATE_TRANSFORMS: OpaqueToken;
 export declare class TemplateParseError extends ParseError {
     constructor(message: string, location: ParseLocation);

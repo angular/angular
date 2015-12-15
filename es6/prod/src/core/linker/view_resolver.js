@@ -14,6 +14,9 @@ import { stringify, isBlank, isPresent } from 'angular2/src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
 import { Map } from 'angular2/src/facade/collection';
 import { reflector } from 'angular2/src/core/reflection/reflection';
+/**
+ * Resolves types to {@link ViewMetadata}.
+ */
 export let ViewResolver = class {
     constructor() {
         /** @internal */

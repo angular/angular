@@ -41,11 +41,17 @@ var _wrappedValues = [
     new WrappedValue(null)
 ];
 var _wrappedIndex = 0;
+/**
+ * Represents a basic change from a previous to a new value.
+ */
 export class SimpleChange {
     constructor(previousValue, currentValue) {
         this.previousValue = previousValue;
         this.currentValue = currentValue;
     }
+    /**
+     * Check whether the new value is the first value assigned.
+     */
     isFirstChange() { return this.previousValue === ChangeDetectionUtil.uninitialized; }
 }
 var _simpleChangesIndex = 0;

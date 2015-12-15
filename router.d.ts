@@ -68,6 +68,8 @@ export declare const ROUTER_DIRECTIVES: any[];
  */
 export declare const ROUTER_PROVIDERS: any[];
 /**
+ * Use {@link ROUTER_PROVIDERS} instead.
+ *
  * @deprecated
  */
 export declare const ROUTER_BINDINGS: any[];

@@ -128,6 +128,8 @@ export { URLSearchParams } from './src/http/url_search_params';
  */
 export declare const HTTP_PROVIDERS: any[];
 /**
+ * See {@link HTTP_PROVIDERS} instead.
+ *
  * @deprecated
  */
 export declare const HTTP_BINDINGS: any[];
@@ -239,6 +241,8 @@ export declare const HTTP_BINDINGS: any[];
  */
 export declare const JSONP_PROVIDERS: any[];
 /**
+ * See {@link JSONP_PROVIDERS} instead.
+ *
  * @deprecated
  */
 export declare const JSON_BINDINGS: any[];

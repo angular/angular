@@ -18,9 +18,9 @@ export declare class RenderProtoViewRef {
  * Represents a list of sibling Nodes that can be moved by the {@link Renderer} independently of
  * other Render Fragments.
  *
- * Any {@link RenderView} has one Render Fragment.
+ * Any {@link RenderViewRef} has one Render Fragment.
  *
- * Additionally any View with an Embedded View that contains a {@link NgContent View Projection}
+ * Additionally any View with an Embedded View that contains a {@link NgContentAst View Projection}
  * results in additional Render Fragment.
  */
 export declare class RenderFragmentRef {
@@ -39,32 +39,56 @@ export declare class RenderFragmentRef {
  */
 export declare class RenderViewRef {
 }
+/**
+ * Abstract base class for commands to the Angular renderer, using the visitor pattern.
+ */
 export declare abstract class RenderTemplateCmd {
     abstract visit(visitor: RenderCommandVisitor, context: any): any;
 }
+/**
+ * Command to begin rendering.
+ */
 export declare abstract class RenderBeginCmd extends RenderTemplateCmd {
     ngContentIndex: number;
     isBound: boolean;
 }
+/**
+ * Command to render text.
+ */
 export declare abstract class RenderTextCmd extends RenderBeginCmd {
     value: string;
 }
+/**
+ * Command to render projected content.
+ */
 export declare abstract class RenderNgContentCmd extends RenderTemplateCmd {
     index: number;
     ngContentIndex: number;
 }
+/**
+ * Command to begin rendering an element.
+ */
 export declare abstract class RenderBeginElementCmd extends RenderBeginCmd {
     name: string;
     attrNameAndValues: string[];
     eventTargetAndNames: string[];
 }
+/**
+ * Command to begin rendering a component.
+ */
 export declare abstract class RenderBeginComponentCmd extends RenderBeginElementCmd {
     templateId: string;
 }
+/**
+ * Command to render a component's template.
+ */
 export declare abstract class RenderEmbeddedTemplateCmd extends RenderBeginElementCmd {
     isMerged: boolean;
     children: RenderTemplateCmd[];
 }
+/**
+ * Visitor for a {@link RenderTemplateCmd}.
+ */
 export interface RenderCommandVisitor {
     visitText(cmd: RenderTextCmd, context: any): any;
     visitNgContent(cmd: RenderNgContentCmd, context: any): any;
@@ -113,6 +137,9 @@ export interface RenderElementRef {
      */
     renderView: RenderViewRef;
 }
+/**
+ * Template for rendering a component, including commands and styles.
+ */
 export declare class RenderComponentTemplate {
     id: string;
     shortId: string;
@@ -131,7 +158,7 @@ export declare class RenderComponentTemplate {
  *
  * If you are implementing a custom renderer, you must implement this interface.
  *
- * The default Renderer implementation is {@link DomRenderer}. Also see {@link WebWorkerRenderer}.
+ * The default Renderer implementation is `DomRenderer`. Also available is `WebWorkerRenderer`.
  */
 export declare abstract class Renderer {
     /**

@@ -3,6 +3,10 @@ import {EventEmitter, ObservableWrapper} from 'angular2/src/facade/async';
 import {LocationStrategy} from 'angular2/src/router/location_strategy';
 
 
+/**
+ * A mock implementation of {@link LocationStrategy} that allows tests to fire simulated
+ * location events.
+ */
 @Injectable()
 export class MockLocationStrategy extends LocationStrategy {
   internalBaseHref: string = '/';

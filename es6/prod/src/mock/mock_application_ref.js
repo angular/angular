@@ -9,6 +9,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { ApplicationRef } from 'angular2/src/core/application_ref';
 import { Injectable } from 'angular2/src/core/di';
+/**
+ * A no-op implementation of {@link ApplicationRef}, useful for testing.
+ */
 export let MockApplicationRef = class extends ApplicationRef {
     registerBootstrapListener(listener) { }
     registerDisposeListener(dispose) { }

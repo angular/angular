@@ -13,6 +13,10 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 import { Directive, Self } from 'angular2/core';
 import { NgControl } from './ng_control';
 import { isPresent } from 'angular2/src/facade/lang';
+/**
+ * Directive automatically applied to Angular forms that sets CSS classes
+ * based on control status (valid/invalid/dirty/etc).
+ */
 export let NgControlStatus = class {
     constructor(cd) {
         this._cd = cd;

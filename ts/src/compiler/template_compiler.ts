@@ -32,6 +32,11 @@ import {
   MODULE_SUFFIX
 } from './util';
 
+/**
+ * An internal module of the Angular compiler that begins with component types,
+ * extracts templates, and eventually produces a compiled version of the component
+ * ready for linking into an application.
+ */
 @Injectable()
 export class TemplateCompiler {
   private _hostCacheKeys = new Map<Type, any>();

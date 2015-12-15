@@ -12,6 +12,10 @@ import { Map } from 'angular2/src/facade/collection';
 import { isPresent } from 'angular2/src/facade/lang';
 import { DirectiveMetadata, ComponentMetadata } from '../core/metadata';
 import { DirectiveResolver } from 'angular2/src/core/linker/directive_resolver';
+/**
+ * An implementation of {@link DirectiveResolver} that allows overriding
+ * various properties of directives.
+ */
 export let MockDirectiveResolver = class extends DirectiveResolver {
     constructor(...args) {
         super(...args);

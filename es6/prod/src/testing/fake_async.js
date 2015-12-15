@@ -12,6 +12,10 @@ var _pendingTimers = [];
  *
  * If there are any pending timers at the end of the function, an exception will be thrown.
  *
+ * ## Example
+ *
+ * {@example testing/ts/fake_async.ts region='basic'}
+ *
  * @param fn
  * @returns {Function} The function wrapped to be executed in the fakeAsync zone
  */
@@ -47,8 +51,17 @@ export function fakeAsync(fn) {
         return res;
     };
 }
-// TODO we should fix tick to dequeue the failed timer instead of relying on clearPendingTimers
+/**
+ * Clear the queue of pending timers and microtasks.
+ *
+ * Useful for cleaning up after an asynchronous test passes.
+ *
+ * ## Example
+ *
+ * {@example testing/ts/fake_async.ts region='pending'}
+ */
 export function clearPendingTimers() {
+    // TODO we should fix tick to dequeue the failed timer instead of relying on clearPendingTimers
     ListWrapper.clear(_microtasks);
     ListWrapper.clear(_pendingPeriodicTimers);
     ListWrapper.clear(_pendingTimers);
@@ -58,6 +71,10 @@ export function clearPendingTimers() {
  *
  * The microtasks queue is drained at the very start of this function and after any timer callback
  * has been executed.
+ *
+ * ## Example
+ *
+ * {@example testing/ts/fake_async.ts region='basic'}
  *
  * @param {number} millis Number of millisecond, defaults to 0
  */

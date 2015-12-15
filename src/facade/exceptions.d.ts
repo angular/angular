@@ -5,6 +5,9 @@ export declare class BaseException extends Error {
     constructor(message?: string);
     toString(): string;
 }
+/**
+ * Wraps an exception and provides additional context or information.
+ */
 export declare class WrappedException extends Error {
     private _wrapperMessage;
     private _originalException;

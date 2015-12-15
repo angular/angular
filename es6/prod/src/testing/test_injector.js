@@ -95,6 +95,9 @@ function _runtimeCompilerBindings() {
         COMPILER_PROVIDERS,
     ];
 }
+/**
+ * Configures an injector suitable for testing.
+ */
 export class TestInjector {
     constructor() {
         this._instantiated = false;
@@ -126,6 +129,10 @@ export class TestInjector {
     }
 }
 var _testInjector = null;
+/**
+ * Retrieve the {@link TestInjector}, possibly creating one if it doesn't
+ * exist yet.
+ */
 export function getTestInjector() {
     if (_testInjector == null) {
         _testInjector = new TestInjector();
@@ -164,11 +171,16 @@ export function inject(tokens, fn) {
     return new FunctionWithParamTokens(tokens, fn, false);
 }
 /**
- * @deprecated Use inject instead, which now supports both synchronous and asynchronous tests.
+ * Use {@link inject} instead, which now supports both synchronous and asynchronous tests.
+ *
+ * @deprecated
  */
 export function injectAsync(tokens, fn) {
     return new FunctionWithParamTokens(tokens, fn, true);
 }
+/**
+ * A testing function with parameters which will be injected. See {@link inject} for details.
+ */
 export class FunctionWithParamTokens {
     constructor(_tokens, _fn, isAsync) {
         this._tokens = _tokens;

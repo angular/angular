@@ -3,6 +3,9 @@ import { SetterFn, GetterFn, MethodFn } from './types';
 import { PlatformReflectionCapabilities } from './platform_reflection_capabilities';
 export { SetterFn, GetterFn, MethodFn } from './types';
 export { PlatformReflectionCapabilities } from './platform_reflection_capabilities';
+/**
+ * Reflective information about a symbol, including annotations, interfaces, and other metadata.
+ */
 export declare class ReflectionInfo {
     annotations: any[];
     parameters: any[][];
@@ -15,6 +18,10 @@ export declare class ReflectionInfo {
         [key: string]: any[];
     });
 }
+/**
+ * Provides access to reflection data about symbols. Used internally by Angular
+ * to power dependency injection and compilation.
+ */
 export declare class Reflector {
     reflectionCapabilities: PlatformReflectionCapabilities;
     constructor(reflectionCapabilities: PlatformReflectionCapabilities);

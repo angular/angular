@@ -44,6 +44,13 @@ const ATTRIBUTE_PREFIX = 'attr';
 const CLASS_PREFIX = 'class';
 const STYLE_PREFIX = 'style';
 var TEXT_CSS_SELECTOR = CssSelector.parse('*')[0];
+/**
+ * Provides an array of {@link TemplateAstVisitor}s which will be used to transform
+ * parsed templates before compilation is invoked, allowing custom expression syntax
+ * and other advanced transformations.
+ *
+ * This is currently an internal-only feature and not meant for general use.
+ */
 export const TEMPLATE_TRANSFORMS = CONST_EXPR(new OpaqueToken('TemplateTransforms'));
 export class TemplateParseError extends ParseError {
     constructor(message, location) {

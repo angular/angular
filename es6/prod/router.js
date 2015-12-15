@@ -88,6 +88,8 @@ export const ROUTER_PROVIDERS = CONST_EXPR([
     CONST_EXPR(new Provider(ROUTER_PRIMARY_COMPONENT, { useFactory: routerPrimaryComponentFactory, deps: CONST_EXPR([ApplicationRef]) }))
 ]);
 /**
+ * Use {@link ROUTER_PROVIDERS} instead.
+ *
  * @deprecated
  */
 export const ROUTER_BINDINGS = ROUTER_PROVIDERS;

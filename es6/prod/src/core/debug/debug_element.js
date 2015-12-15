@@ -7,14 +7,23 @@ import { internalView } from 'angular2/src/core/linker/view_ref';
  * element and provides access to the corresponding ElementInjector and
  * underlying DOM Element, as well as a way to query for children.
  *
- * A DebugElement can be obtained from a {@link ComponentFixture} or
- * {@link RootTestComponent}.
+ * A DebugElement can be obtained from a {@link ComponentFixture} or from an
+ * {@link ElementRef} via {@link inspectElement}.
  */
 export class DebugElement {
+    /**
+     * Return the instance of the component associated with this element, if any.
+     */
     get componentInstance() { return unimplemented(); }
     ;
+    /**
+     * Return the native HTML element for this DebugElement.
+     */
     get nativeElement() { return unimplemented(); }
     ;
+    /**
+     * Return an Angular {@link ElementRef} for this element.
+     */
     get elementRef() { return unimplemented(); }
     ;
     /**
@@ -133,10 +142,24 @@ export class DebugElement_ extends DebugElement {
 export function inspectElement(elementRef) {
     return new DebugElement_(internalView(elementRef.parentView), elementRef.boundElementIndex);
 }
+/**
+ * Maps an array of {@link DebugElement}s to an array of native DOM elements.
+ */
 export function asNativeElements(arr) {
     return arr.map((debugEl) => debugEl.nativeElement);
 }
+/**
+ * Set of scope functions used with {@link DebugElement}'s query functionality.
+ */
 export class Scope {
+    /**
+     * Scope queries to both the light dom and view of an element and its
+     * children.
+     *
+     * ## Example
+     *
+     * {@example core/debug/ts/debug_element/debug_element.ts region='scope_all'}
+     */
     static all(debugElement) {
         var scope = [];
         scope.push(debugElement);
@@ -144,6 +167,13 @@ export class Scope {
         debugElement.componentViewChildren.forEach(child => scope = scope.concat(Scope.all(child)));
         return scope;
     }
+    /**
+     * Scope queries to the light dom of an element and its children.
+     *
+     * ## Example
+     *
+     * {@example core/debug/ts/debug_element/debug_element.ts region='scope_light'}
+     */
     static light(debugElement) {
         var scope = [];
         debugElement.children.forEach(child => {
@@ -152,6 +182,13 @@ export class Scope {
         });
         return scope;
     }
+    /**
+     * Scope queries to the view of an element of its children.
+     *
+     * ## Example
+     *
+     * {@example core/debug/ts/debug_element/debug_element.ts region='scope_view'}
+     */
     static view(debugElement) {
         var scope = [];
         debugElement.componentViewChildren.forEach(child => {

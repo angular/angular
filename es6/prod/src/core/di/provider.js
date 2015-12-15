@@ -15,6 +15,10 @@ import { Key } from './key';
 import { InjectMetadata, OptionalMetadata, SelfMetadata, HostMetadata, SkipSelfMetadata, DependencyMetadata } from './metadata';
 import { NoAnnotationError, MixingMultiProvidersWithRegularProvidersError, InvalidProviderError } from './exceptions';
 import { resolveForwardRef } from './forward_ref';
+/**
+ * `Dependency` is used by the framework to extend DI.
+ * This is internal to Angular and should not be used directly.
+ */
 export class Dependency {
     constructor(key, optional, lowerBoundVisibility, upperBoundVisibility, properties) {
         this.key = key;
@@ -88,6 +92,8 @@ Provider = __decorate([
     __metadata('design:paramtypes', [Object, Object])
 ], Provider);
 /**
+ * See {@link Provider} instead.
+ *
  * @deprecated
  */
 export let Binding = class extends Provider {
@@ -148,7 +154,6 @@ export class ResolvedFactory {
     }
 }
 /**
- * @deprecated
  * Creates a {@link Provider}.
  *
  * To construct a {@link Provider}, bind a `token` to either a class, a value, a factory function,
@@ -157,6 +162,8 @@ export class ResolvedFactory {
  * See {@link ProviderBuilder} for more details.
  *
  * The `token` is most commonly a class or {@link angular2/di/OpaqueToken}.
+ *
+ * @deprecated
  */
 export function bind(token) {
     return new ProviderBuilder(token);

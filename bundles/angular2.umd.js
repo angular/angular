@@ -3817,6 +3817,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var metadata_1 = __webpack_require__(7);
 	var exceptions_2 = __webpack_require__(21);
 	var forward_ref_1 = __webpack_require__(10);
+	/**
+	 * `Dependency` is used by the framework to extend DI.
+	 * This is internal to Angular and should not be used directly.
+	 */
 	var Dependency = (function () {
 	    function Dependency(key, optional, lowerBoundVisibility, upperBoundVisibility, properties) {
 	        this.key = key;
@@ -3899,6 +3903,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	})();
 	exports.Provider = Provider;
 	/**
+	 * See {@link Provider} instead.
+	 *
 	 * @deprecated
 	 */
 	var Binding = (function (_super) {
@@ -3987,7 +3993,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	})();
 	exports.ResolvedFactory = ResolvedFactory;
 	/**
-	 * @deprecated
 	 * Creates a {@link Provider}.
 	 *
 	 * To construct a {@link Provider}, bind a `token` to either a class, a value, a factory function,
@@ -3996,6 +4001,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * See {@link ProviderBuilder} for more details.
 	 *
 	 * The `token` is most commonly a class or {@link angular2/di/OpaqueToken}.
+	 *
+	 * @deprecated
 	 */
 	function bind(token) {
 	    return new ProviderBuilder(token);
@@ -4347,6 +4354,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return BaseException;
 	})(Error);
 	exports.BaseException = BaseException;
+	/**
+	 * Wraps an exception and provides additional context or information.
+	 */
 	var WrappedException = (function (_super) {
 	    __extends(WrappedException, _super);
 	    function WrappedException(_wrapperMessage, _originalException, _originalStack, _context) {
@@ -4545,6 +4555,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.Reflector = reflector_2.Reflector;
 	exports.ReflectionInfo = reflector_2.ReflectionInfo;
 	var reflection_capabilities_1 = __webpack_require__(18);
+	/**
+	 * The {@link Reflector} used internally in Angular to access metadata
+	 * about symbols.
+	 */
 	exports.reflector = new reflector_1.Reflector(new reflection_capabilities_1.ReflectionCapabilities());
 
 
@@ -4555,6 +4569,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var lang_1 = __webpack_require__(5);
 	var exceptions_1 = __webpack_require__(14);
 	var collection_1 = __webpack_require__(12);
+	/**
+	 * Reflective information about a symbol, including annotations, interfaces, and other metadata.
+	 */
 	var ReflectionInfo = (function () {
 	    function ReflectionInfo(annotations, parameters, factory, interfaces, propMetadata) {
 	        this.annotations = annotations;
@@ -4566,6 +4583,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return ReflectionInfo;
 	})();
 	exports.ReflectionInfo = ReflectionInfo;
+	/**
+	 * Provides access to reflection data about symbols. Used internally by Angular
+	 * to power dependency injection and compilation.
+	 */
 	var Reflector = (function () {
 	    function Reflector(reflectionCapabilities) {
 	        /** @internal */
@@ -9225,6 +9246,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
+	/**
+	 * Describes the current state of the change detector.
+	 */
 	(function (ChangeDetectorState) {
 	    /**
 	     * `NeverChecked` means that the change detector has not been checked yet, and
@@ -9244,6 +9268,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    ChangeDetectorState[ChangeDetectorState["Errored"] = 2] = "Errored";
 	})(exports.ChangeDetectorState || (exports.ChangeDetectorState = {}));
 	var ChangeDetectorState = exports.ChangeDetectorState;
+	/**
+	 * Describes within the change detector which strategy will be used the next time change
+	 * detection is triggered.
+	 */
 	(function (ChangeDetectionStrategy) {
 	    /**
 	     * `CheckedOnce` means that after calling detectChanges the mode of the change detector
@@ -9279,6 +9307,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    ChangeDetectionStrategy[ChangeDetectionStrategy["OnPushObserve"] = 6] = "OnPushObserve";
 	})(exports.ChangeDetectionStrategy || (exports.ChangeDetectionStrategy = {}));
 	var ChangeDetectionStrategy = exports.ChangeDetectionStrategy;
+	/**
+	 * List of possible {@link ChangeDetectionStrategy} values.
+	 */
 	exports.CHANGE_DETECTION_STRATEGY_VALUES = [
 	    ChangeDetectionStrategy.CheckOnce,
 	    ChangeDetectionStrategy.Checked,
@@ -9288,6 +9319,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    ChangeDetectionStrategy.Default,
 	    ChangeDetectionStrategy.OnPushObserve
 	];
+	/**
+	 * List of possible {@link ChangeDetectorState} values.
+	 */
 	exports.CHANGE_DETECTOR_STATE_VALUES = [
 	    ChangeDetectorState.NeverChecked,
 	    ChangeDetectorState.CheckedBefore,
@@ -9743,11 +9777,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    new WrappedValue(null)
 	];
 	var _wrappedIndex = 0;
+	/**
+	 * Represents a basic change from a previous to a new value.
+	 */
 	var SimpleChange = (function () {
 	    function SimpleChange(previousValue, currentValue) {
 	        this.previousValue = previousValue;
 	        this.currentValue = currentValue;
 	    }
+	    /**
+	     * Check whether the new value is the first value assigned.
+	     */
 	    SimpleChange.prototype.isFirstChange = function () { return this.previousValue === ChangeDetectionUtil.uninitialized; };
 	    return SimpleChange;
 	})();
@@ -14216,6 +14256,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return Testability;
 	})();
 	exports.Testability = Testability;
+	/**
+	 * A global registry of {@link Testability} instances for specific elements.
+	 */
 	var TestabilityRegistry = (function () {
 	    function TestabilityRegistry() {
 	        /** @internal */
@@ -14251,6 +14294,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    ], _NoopGetTestability);
 	    return _NoopGetTestability;
 	})();
+	/**
+	 * Set the {@link GetTestability} implementation used by the Angular testing framework.
+	 */
 	function setTestabilityGetter(getter) {
 	    _testabilityGetter = getter;
 	}
@@ -14817,9 +14863,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Represents a list of sibling Nodes that can be moved by the {@link Renderer} independently of
 	 * other Render Fragments.
 	 *
-	 * Any {@link RenderView} has one Render Fragment.
+	 * Any {@link RenderViewRef} has one Render Fragment.
 	 *
-	 * Additionally any View with an Embedded View that contains a {@link NgContent View Projection}
+	 * Additionally any View with an Embedded View that contains a {@link NgContentAst View Projection}
 	 * results in additional Render Fragment.
 	 */
 	/*
@@ -14874,12 +14920,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return RenderViewRef;
 	})();
 	exports.RenderViewRef = RenderViewRef;
+	/**
+	 * Abstract base class for commands to the Angular renderer, using the visitor pattern.
+	 */
 	var RenderTemplateCmd = (function () {
 	    function RenderTemplateCmd() {
 	    }
 	    return RenderTemplateCmd;
 	})();
 	exports.RenderTemplateCmd = RenderTemplateCmd;
+	/**
+	 * Command to begin rendering.
+	 */
 	var RenderBeginCmd = (function (_super) {
 	    __extends(RenderBeginCmd, _super);
 	    function RenderBeginCmd() {
@@ -14900,6 +14952,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return RenderBeginCmd;
 	})(RenderTemplateCmd);
 	exports.RenderBeginCmd = RenderBeginCmd;
+	/**
+	 * Command to render text.
+	 */
 	var RenderTextCmd = (function (_super) {
 	    __extends(RenderTextCmd, _super);
 	    function RenderTextCmd() {
@@ -14914,6 +14969,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return RenderTextCmd;
 	})(RenderBeginCmd);
 	exports.RenderTextCmd = RenderTextCmd;
+	/**
+	 * Command to render projected content.
+	 */
 	var RenderNgContentCmd = (function (_super) {
 	    __extends(RenderNgContentCmd, _super);
 	    function RenderNgContentCmd() {
@@ -14937,6 +14995,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return RenderNgContentCmd;
 	})(RenderTemplateCmd);
 	exports.RenderNgContentCmd = RenderNgContentCmd;
+	/**
+	 * Command to begin rendering an element.
+	 */
 	var RenderBeginElementCmd = (function (_super) {
 	    __extends(RenderBeginElementCmd, _super);
 	    function RenderBeginElementCmd() {
@@ -14963,6 +15024,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return RenderBeginElementCmd;
 	})(RenderBeginCmd);
 	exports.RenderBeginElementCmd = RenderBeginElementCmd;
+	/**
+	 * Command to begin rendering a component.
+	 */
 	var RenderBeginComponentCmd = (function (_super) {
 	    __extends(RenderBeginComponentCmd, _super);
 	    function RenderBeginComponentCmd() {
@@ -14977,6 +15041,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return RenderBeginComponentCmd;
 	})(RenderBeginElementCmd);
 	exports.RenderBeginComponentCmd = RenderBeginComponentCmd;
+	/**
+	 * Command to render a component's template.
+	 */
 	var RenderEmbeddedTemplateCmd = (function (_super) {
 	    __extends(RenderEmbeddedTemplateCmd, _super);
 	    function RenderEmbeddedTemplateCmd() {
@@ -15020,6 +15087,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return RenderViewWithFragments;
 	})();
 	exports.RenderViewWithFragments = RenderViewWithFragments;
+	/**
+	 * Template for rendering a component, including commands and styles.
+	 */
 	var RenderComponentTemplate = (function () {
 	    function RenderComponentTemplate(id, shortId, encapsulation, commands, styles) {
 	        this.id = id;
@@ -15041,7 +15111,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * If you are implementing a custom renderer, you must implement this interface.
 	 *
-	 * The default Renderer implementation is {@link DomRenderer}. Also see {@link WebWorkerRenderer}.
+	 * The default Renderer implementation is `DomRenderer`. Also available is `WebWorkerRenderer`.
 	 */
 	var Renderer = (function () {
 	    function Renderer() {
@@ -15493,7 +15563,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 *
 	 * Properties of elements in a View can change, but the structure (number and order) of elements in
 	 * a View cannot. Changing the structure of Elements can only be done by inserting, moving or
-	 * removing nested Views via a {@link ViewContainer}. Each View can contain many View Containers.
+	 * removing nested Views via a {@link ViewContainerRef}. Each View can contain many View Containers.
 	 * <!-- /TODO -->
 	 *
 	 * ### Example
@@ -17889,6 +17959,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var exceptions_1 = __webpack_require__(14);
 	var collection_1 = __webpack_require__(12);
 	var reflection_1 = __webpack_require__(16);
+	/**
+	 * Resolves types to {@link ViewMetadata}.
+	 */
 	var ViewResolver = (function () {
 	    function ViewResolver() {
 	        /** @internal */
@@ -18390,25 +18463,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * element and provides access to the corresponding ElementInjector and
 	 * underlying DOM Element, as well as a way to query for children.
 	 *
-	 * A DebugElement can be obtained from a {@link ComponentFixture} or
-	 * {@link RootTestComponent}.
+	 * A DebugElement can be obtained from a {@link ComponentFixture} or from an
+	 * {@link ElementRef} via {@link inspectElement}.
 	 */
 	var DebugElement = (function () {
 	    function DebugElement() {
 	    }
 	    Object.defineProperty(DebugElement.prototype, "componentInstance", {
+	        /**
+	         * Return the instance of the component associated with this element, if any.
+	         */
 	        get: function () { return exceptions_1.unimplemented(); },
 	        enumerable: true,
 	        configurable: true
 	    });
 	    ;
 	    Object.defineProperty(DebugElement.prototype, "nativeElement", {
+	        /**
+	         * Return the native HTML element for this DebugElement.
+	         */
 	        get: function () { return exceptions_1.unimplemented(); },
 	        enumerable: true,
 	        configurable: true
 	    });
 	    ;
 	    Object.defineProperty(DebugElement.prototype, "elementRef", {
+	        /**
+	         * Return an Angular {@link ElementRef} for this element.
+	         */
 	        get: function () { return exceptions_1.unimplemented(); },
 	        enumerable: true,
 	        configurable: true
@@ -18567,13 +18649,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return new DebugElement_(view_ref_1.internalView(elementRef.parentView), elementRef.boundElementIndex);
 	}
 	exports.inspectElement = inspectElement;
+	/**
+	 * Maps an array of {@link DebugElement}s to an array of native DOM elements.
+	 */
 	function asNativeElements(arr) {
 	    return arr.map(function (debugEl) { return debugEl.nativeElement; });
 	}
 	exports.asNativeElements = asNativeElements;
+	/**
+	 * Set of scope functions used with {@link DebugElement}'s query functionality.
+	 */
 	var Scope = (function () {
 	    function Scope() {
 	    }
+	    /**
+	     * Scope queries to both the light dom and view of an element and its
+	     * children.
+	     *
+	     * ## Example
+	     *
+	     * {@example core/debug/ts/debug_element/debug_element.ts region='scope_all'}
+	     */
 	    Scope.all = function (debugElement) {
 	        var scope = [];
 	        scope.push(debugElement);
@@ -18581,6 +18677,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        debugElement.componentViewChildren.forEach(function (child) { return scope = scope.concat(Scope.all(child)); });
 	        return scope;
 	    };
+	    /**
+	     * Scope queries to the light dom of an element and its children.
+	     *
+	     * ## Example
+	     *
+	     * {@example core/debug/ts/debug_element/debug_element.ts region='scope_light'}
+	     */
 	    Scope.light = function (debugElement) {
 	        var scope = [];
 	        debugElement.children.forEach(function (child) {
@@ -18589,6 +18692,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        });
 	        return scope;
 	    };
+	    /**
+	     * Scope queries to the view of an element of its children.
+	     *
+	     * ## Example
+	     *
+	     * {@example core/debug/ts/debug_element/debug_element.ts region='scope_view'}
+	     */
 	    Scope.view = function (debugElement) {
 	        var scope = [];
 	        debugElement.componentViewChildren.forEach(function (child) {
@@ -18709,6 +18819,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.CurrencyPipe = number_pipe_2.CurrencyPipe;
 	var uppercase_pipe_2 = __webpack_require__(122);
 	exports.UpperCasePipe = uppercase_pipe_2.UpperCasePipe;
+	/**
+	 * A collection of Angular core pipes that are likely to be used in each and every
+	 * application.
+	 *
+	 * This collection can be used to quickly enumerate all the built-in pipes in the `pipes`
+	 * property of the `@Component` or `@View` decorators.
+	 */
 	exports.COMMON_PIPES = lang_1.CONST_EXPR([
 	    async_pipe_1.AsyncPipe,
 	    uppercase_pipe_1.UpperCasePipe,
@@ -21275,6 +21392,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var core_1 = __webpack_require__(2);
 	var lang_1 = __webpack_require__(5);
+	/**
+	 * Used to provide a {@link ControlValueAccessor} for form controls.
+	 *
+	 * See {@link DefaultValueAccessor} for how to implement one.
+	 */
 	exports.NG_VALUE_ACCESSOR = lang_1.CONST_EXPR(new core_1.OpaqueToken("NgValueAccessor"));
 
 
@@ -21397,7 +21519,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * ### Example
 	 *
 	 * {@example core/forms/ts/ng_validators/ng_validators.ts region='ng_validators'}
-	 * ```
 	 */
 	exports.NG_VALIDATORS = lang_1.CONST_EXPR(new core_1.OpaqueToken("NgValidators"));
 	/**
@@ -21413,8 +21534,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Provides a set of validators used by form controls.
 	 *
 	 * A validator is a function that processes a {@link Control} or collection of
-	 * controls and returns a {@link StringMap} of errors. A null map means that
-	 * validation has passed.
+	 * controls and returns a map of errors. A null map means that validation has passed.
 	 *
 	 * ### Example
 	 *
@@ -22581,6 +22701,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var core_1 = __webpack_require__(2);
 	var ng_control_1 = __webpack_require__(142);
 	var lang_1 = __webpack_require__(5);
+	/**
+	 * Directive automatically applied to Angular forms that sets CSS classes
+	 * based on control status (valid/invalid/dirty/etc).
+	 */
 	var NgControlStatus = (function () {
 	    function NgControlStatus(cd) {
 	        this._cd = cd;
@@ -22772,7 +22896,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return RequiredValidator;
 	})();
 	exports.RequiredValidator = RequiredValidator;
+	/**
+	 * Provivder which adds {@link MinLengthValidator} to {@link NG_VALIDATORS}.
+	 *
+	 * ## Example:
+	 *
+	 * {@example common/forms/ts/validators/validators.ts region='min'}
+	 */
 	var MIN_LENGTH_VALIDATOR = lang_1.CONST_EXPR(new core_1.Provider(validators_1.NG_VALIDATORS, { useExisting: core_1.forwardRef(function () { return MinLengthValidator; }), multi: true }));
+	/**
+	 * A directive which installs the {@link MinLengthValidator} for any `ngControl`,
+	 * `ngFormControl`, or control with `ngModel` that also has a `minlength` attribute.
+	 */
 	var MinLengthValidator = (function () {
 	    function MinLengthValidator(minLength) {
 	        this._validator = validators_1.Validators.minLength(lang_2.NumberWrapper.parseInt(minLength, 10));
@@ -22789,7 +22924,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return MinLengthValidator;
 	})();
 	exports.MinLengthValidator = MinLengthValidator;
+	/**
+	 * Provider which adds {@link MaxLengthValidator} to {@link NG_VALIDATORS}.
+	 *
+	 * ## Example:
+	 *
+	 * {@example common/forms/ts/validators/validators.ts region='max'}
+	 */
 	var MAX_LENGTH_VALIDATOR = lang_1.CONST_EXPR(new core_1.Provider(validators_1.NG_VALIDATORS, { useExisting: core_1.forwardRef(function () { return MaxLengthValidator; }), multi: true }));
+	/**
+	 * A directive which installs the {@link MaxLengthValidator} for any `ngControl, `ngFormControl`,
+	 * or control with `ngModel` that also has a `maxlength` attribute.
+	 */
 	var MaxLengthValidator = (function () {
 	    function MaxLengthValidator(maxLength) {
 	        this._validator = validators_1.Validators.maxLength(lang_2.NumberWrapper.parseInt(maxLength, 10));
@@ -22946,6 +23092,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	exports.FORM_PROVIDERS = lang_1.CONST_EXPR([FormBuilder]);
 	/**
+	 * See {@link FORM_PROVIDERS} instead.
+	 *
 	 * @deprecated
 	 */
 	exports.FORM_BINDINGS = exports.FORM_PROVIDERS;
@@ -23041,17 +23189,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	var lang_1 = __webpack_require__(5);
 	var application_tokens_1 = __webpack_require__(82);
 	var di_2 = __webpack_require__(6);
+	/**
+	 * Create a {@link UrlResolver} with no package prefix.
+	 */
 	function createWithoutPackagePrefix() {
 	    return new UrlResolver();
 	}
 	exports.createWithoutPackagePrefix = createWithoutPackagePrefix;
+	/**
+	 * A default provider for {@link PACKAGE_ROOT_URL} that maps to '/'.
+	 */
 	exports.DEFAULT_PACKAGE_URL_PROVIDER = new di_2.Provider(application_tokens_1.PACKAGE_ROOT_URL, { useValue: "/" });
 	/**
 	 * Used by the {@link Compiler} when resolving HTML and CSS template URLs.
 	 *
-	 * This interface can be overridden by the application developer to create custom behavior.
+	 * This class can be overridden by the application developer to create custom behavior.
 	 *
 	 * See {@link Compiler}
+	 *
+	 * ## Example
+	 *
+	 * {@example compiler/ts/url_resolver/url_resolver.ts region='url_resolver'}
 	 */
 	var UrlResolver = (function () {
 	    function UrlResolver(packagePrefix) {
@@ -23090,6 +23248,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return UrlResolver;
 	})();
 	exports.UrlResolver = UrlResolver;
+	/**
+	 * Extract the scheme of a URL.
+	 */
 	function getUrlScheme(url) {
 	    var match = _split(url);
 	    return (match && match[_ComponentIndex.Scheme]) || "";
@@ -23343,6 +23504,10 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	// TODO: vsavkin rename it into TemplateLoader
+	/**
+	 * An interface for retrieving documents by URL that the compiler uses
+	 * to load templates.
+	 */
 	var XHR = (function () {
 	    function XHR() {
 	    }
@@ -23395,6 +23560,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _createChangeDetectorGenConfig() {
 	    return new change_detection_1.ChangeDetectorGenConfig(lang_1.assertionsEnabled(), false, true);
 	}
+	/**
+	 * A set of providers that provide `RuntimeCompiler` and its dependencies to use for
+	 * template compilation.
+	 */
 	exports.COMPILER_PROVIDERS = lang_1.CONST_EXPR([
 	    change_detection_2.Lexer,
 	    change_detection_2.Parser,
@@ -23499,6 +23668,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	var runtime_metadata_1 = __webpack_require__(190);
 	var command_compiler_2 = __webpack_require__(180);
 	var util_1 = __webpack_require__(169);
+	/**
+	 * An internal module of the Angular compiler that begins with component types,
+	 * extracts templates, and eventually produces a compiled version of the component
+	 * ready for linking into an application.
+	 */
 	var TemplateCompiler = (function () {
 	    function TemplateCompiler(_runtimeMetadataResolver, _templateNormalizer, _templateParser, _styleCompiler, _commandCompiler, _cdCompiler) {
 	        this._runtimeMetadataResolver = _runtimeMetadataResolver;
@@ -23726,6 +23900,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	// group 1: "property" from "[property]"
 	// group 2: "event" from "(event)"
 	var HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))$/g;
+	/**
+	 * Metadata regarding compilation of a type.
+	 */
 	var CompileTypeMetadata = (function () {
 	    function CompileTypeMetadata(_a) {
 	        var _b = _a === void 0 ? {} : _a, runtime = _b.runtime, name = _b.name, moduleUrl = _b.moduleUrl, isHost = _b.isHost;
@@ -23748,6 +23925,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return CompileTypeMetadata;
 	})();
 	exports.CompileTypeMetadata = CompileTypeMetadata;
+	/**
+	 * Metadata regarding compilation of a template.
+	 */
 	var CompileTemplateMetadata = (function () {
 	    function CompileTemplateMetadata(_a) {
 	        var _b = _a === void 0 ? {} : _a, encapsulation = _b.encapsulation, template = _b.template, templateUrl = _b.templateUrl, styles = _b.styles, styleUrls = _b.styleUrls, ngContentSelectors = _b.ngContentSelectors;
@@ -23783,6 +23963,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return CompileTemplateMetadata;
 	})();
 	exports.CompileTemplateMetadata = CompileTemplateMetadata;
+	/**
+	 * Metadata regarding compilation of a directive.
+	 */
 	var CompileDirectiveMetadata = (function () {
 	    function CompileDirectiveMetadata(_a) {
 	        var _b = _a === void 0 ? {} : _a, type = _b.type, isComponent = _b.isComponent, dynamicLoadable = _b.dynamicLoadable, selector = _b.selector, exportAs = _b.exportAs, changeDetection = _b.changeDetection, inputs = _b.inputs, outputs = _b.outputs, hostListeners = _b.hostListeners, hostProperties = _b.hostProperties, hostAttributes = _b.hostAttributes, lifecycleHooks = _b.lifecycleHooks, template = _b.template;
@@ -23894,6 +24077,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return CompileDirectiveMetadata;
 	})();
 	exports.CompileDirectiveMetadata = CompileDirectiveMetadata;
+	/**
+	 * Construct {@link CompileDirectiveMetadata} from {@link ComponentTypeMetadata} and a selector.
+	 */
 	function createHostComponentMeta(componentType, componentSelector) {
 	    var template = selector_1.CssSelector.parse(componentSelector)[0].getMatchingElementTemplate();
 	    return CompileDirectiveMetadata.create({
@@ -24387,6 +24573,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return "#MODULE[" + moduleUrl + "]";
 	}
 	exports.moduleRef = moduleRef;
+	/**
+	 * Represents generated source code with module references. Internal to the Angular compiler.
+	 */
 	var SourceModule = (function () {
 	    function SourceModule(moduleUrl, sourceWithModuleRefs) {
 	        this.moduleUrl = moduleUrl;
@@ -24432,6 +24621,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return SourceExpressions;
 	})();
 	exports.SourceExpressions = SourceExpressions;
+	/**
+	 * Represents generated source code with imports. Internal to the Angular compiler.
+	 */
 	var SourceWithImports = (function () {
 	    function SourceWithImports(source, imports) {
 	        this.source = source;
@@ -24699,6 +24891,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	var lang_1 = __webpack_require__(5);
+	/**
+	 * A segment of text within the template.
+	 */
 	var TextAst = (function () {
 	    function TextAst(value, ngContentIndex, sourceSpan) {
 	        this.value = value;
@@ -24709,6 +24904,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return TextAst;
 	})();
 	exports.TextAst = TextAst;
+	/**
+	 * A bound expression within the text of a template.
+	 */
 	var BoundTextAst = (function () {
 	    function BoundTextAst(value, ngContentIndex, sourceSpan) {
 	        this.value = value;
@@ -24721,6 +24919,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return BoundTextAst;
 	})();
 	exports.BoundTextAst = BoundTextAst;
+	/**
+	 * A plain attribute on an element.
+	 */
 	var AttrAst = (function () {
 	    function AttrAst(name, value, sourceSpan) {
 	        this.name = name;
@@ -24731,6 +24932,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return AttrAst;
 	})();
 	exports.AttrAst = AttrAst;
+	/**
+	 * A binding for an element property (e.g. `[property]="expression"`).
+	 */
 	var BoundElementPropertyAst = (function () {
 	    function BoundElementPropertyAst(name, type, value, unit, sourceSpan) {
 	        this.name = name;
@@ -24745,6 +24949,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return BoundElementPropertyAst;
 	})();
 	exports.BoundElementPropertyAst = BoundElementPropertyAst;
+	/**
+	 * A binding for an element event (e.g. `(event)="handler()"`).
+	 */
 	var BoundEventAst = (function () {
 	    function BoundEventAst(name, target, handler, sourceSpan) {
 	        this.name = name;
@@ -24770,6 +24977,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return BoundEventAst;
 	})();
 	exports.BoundEventAst = BoundEventAst;
+	/**
+	 * A variable declaration on an element (e.g. `#var="expression"`).
+	 */
 	var VariableAst = (function () {
 	    function VariableAst(name, value, sourceSpan) {
 	        this.name = name;
@@ -24782,6 +24992,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return VariableAst;
 	})();
 	exports.VariableAst = VariableAst;
+	/**
+	 * An element declaration in a template.
+	 */
 	var ElementAst = (function () {
 	    function ElementAst(name, attrs, inputs, outputs, exportAsVars, directives, children, ngContentIndex, sourceSpan) {
 	        this.name = name;
@@ -24797,10 +25010,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    ElementAst.prototype.visit = function (visitor, context) {
 	        return visitor.visitElement(this, context);
 	    };
+	    /**
+	     * Whether the element has any active bindings (inputs, outputs, vars, or directives).
+	     */
 	    ElementAst.prototype.isBound = function () {
 	        return (this.inputs.length > 0 || this.outputs.length > 0 || this.exportAsVars.length > 0 ||
 	            this.directives.length > 0);
 	    };
+	    /**
+	     * Get the component associated with this element, if any.
+	     */
 	    ElementAst.prototype.getComponent = function () {
 	        return this.directives.length > 0 && this.directives[0].directive.isComponent ?
 	            this.directives[0].directive :
@@ -24809,6 +25028,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return ElementAst;
 	})();
 	exports.ElementAst = ElementAst;
+	/**
+	 * A `<template>` element included in an Angular template.
+	 */
 	var EmbeddedTemplateAst = (function () {
 	    function EmbeddedTemplateAst(attrs, outputs, vars, directives, children, ngContentIndex, sourceSpan) {
 	        this.attrs = attrs;
@@ -24825,6 +25047,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return EmbeddedTemplateAst;
 	})();
 	exports.EmbeddedTemplateAst = EmbeddedTemplateAst;
+	/**
+	 * A directive property with a bound value (e.g. `*ngIf="condition").
+	 */
 	var BoundDirectivePropertyAst = (function () {
 	    function BoundDirectivePropertyAst(directiveName, templateName, value, sourceSpan) {
 	        this.directiveName = directiveName;
@@ -24838,6 +25063,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return BoundDirectivePropertyAst;
 	})();
 	exports.BoundDirectivePropertyAst = BoundDirectivePropertyAst;
+	/**
+	 * A directive declared on an element.
+	 */
 	var DirectiveAst = (function () {
 	    function DirectiveAst(directive, inputs, hostProperties, hostEvents, exportAsVars, sourceSpan) {
 	        this.directive = directive;
@@ -24853,6 +25081,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return DirectiveAst;
 	})();
 	exports.DirectiveAst = DirectiveAst;
+	/**
+	 * Position where content is to be projected (instance of `<ng-content>` in a template).
+	 */
 	var NgContentAst = (function () {
 	    function NgContentAst(index, ngContentIndex, sourceSpan) {
 	        this.index = index;
@@ -24865,13 +25096,31 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return NgContentAst;
 	})();
 	exports.NgContentAst = NgContentAst;
+	/**
+	 * Enumeration of types of property bindings.
+	 */
 	(function (PropertyBindingType) {
+	    /**
+	     * A normal binding to a property (e.g. `[property]="expression"`).
+	     */
 	    PropertyBindingType[PropertyBindingType["Property"] = 0] = "Property";
+	    /**
+	     * A binding to an element attribute (e.g. `[attr.name]="expression"`).
+	     */
 	    PropertyBindingType[PropertyBindingType["Attribute"] = 1] = "Attribute";
+	    /**
+	     * A binding to a CSS class (e.g. `[class.name]="condition"`).
+	     */
 	    PropertyBindingType[PropertyBindingType["Class"] = 2] = "Class";
+	    /**
+	     * A binding to a style rule (e.g. `[style.rule]="expression"`).
+	     */
 	    PropertyBindingType[PropertyBindingType["Style"] = 3] = "Style";
 	})(exports.PropertyBindingType || (exports.PropertyBindingType = {}));
 	var PropertyBindingType = exports.PropertyBindingType;
+	/**
+	 * Visit every node in a list of {@link TemplateAst}s with the given {@link TemplateAstVisitor}.
+	 */
 	function templateVisitAll(visitor, asts, context) {
 	    if (context === void 0) { context = null; }
 	    var result = [];
@@ -26277,6 +26526,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	var CLASS_PREFIX = 'class';
 	var STYLE_PREFIX = 'style';
 	var TEXT_CSS_SELECTOR = selector_1.CssSelector.parse('*')[0];
+	/**
+	 * Provides an array of {@link TemplateAstVisitor}s which will be used to transform
+	 * parsed templates before compilation is invoked, allowing custom expression syntax
+	 * and other advanced transformations.
+	 *
+	 * This is currently an internal-only feature and not meant for general use.
+	 */
 	exports.TEMPLATE_TRANSFORMS = lang_2.CONST_EXPR(new core_1.OpaqueToken('TemplateTransforms'));
 	var TemplateParseError = (function (_super) {
 	    __extends(TemplateParseError, _super);
@@ -28786,6 +29042,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	var tools_1 = __webpack_require__(220);
 	exports.enableDebugTools = tools_1.enableDebugTools;
 	exports.disableDebugTools = tools_1.disableDebugTools;
+	/**
+	 * A set of providers to initialize the Angular platform in a web browser.
+	 *
+	 * Used automatically by `bootstrap`, or can be passed to {@link platform}.
+	 */
 	exports.BROWSER_PROVIDERS = lang_1.CONST_EXPR([
 	    core_1.PLATFORM_COMMON_PROVIDERS,
 	    new di_1.Provider(core_1.PLATFORM_INITIALIZER, { useValue: initDomAdapter, multi: true }),
@@ -28798,6 +29059,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _document() {
 	    return dom_adapter_1.DOM.defaultDoc();
 	}
+	/**
+	 * A set of providers to initialize an Angular application in a web browser.
+	 *
+	 * Used automatically by `bootstrap`, or can be passed to {@link PlatformRef.application}.
+	 */
 	exports.BROWSER_APP_COMMON_PROVIDERS = lang_1.CONST_EXPR([
 	    core_1.APPLICATION_COMMON_PROVIDERS,
 	    common_1.FORM_PROVIDERS,
@@ -30111,6 +30377,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    '\x60': '0',
 	    '\x90': 'NumLock'
 	};
+	/**
+	 * A `DomAdapter` powered by full browser DOM APIs.
+	 */
 	/* tslint:disable:requireParameterType */
 	var BrowserDomAdapter = (function (_super) {
 	    __extends(BrowserDomAdapter, _super);
@@ -30706,10 +30975,27 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var lang_1 = __webpack_require__(5);
 	var dom_adapter_1 = __webpack_require__(192);
+	/**
+	 * Predicates for use with {@link DebugElement}'s query functions.
+	 */
 	var By = (function () {
 	    function By() {
 	    }
+	    /**
+	     * Match all elements.
+	     *
+	     * ## Example
+	     *
+	     * {@example platform/dom/debug/ts/by/by.ts region='by_all'}
+	     */
 	    By.all = function () { return function (debugElement) { return true; }; };
+	    /**
+	     * Match elements by the given CSS selector.
+	     *
+	     * ## Example
+	     *
+	     * {@example platform/dom/debug/ts/by/by.ts region='by_css'}
+	     */
 	    By.css = function (selector) {
 	        return function (debugElement) {
 	            return lang_1.isPresent(debugElement.nativeElement) ?
@@ -30717,6 +31003,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	                false;
 	        };
 	    };
+	    /**
+	     * Match elements that have the given directive present.
+	     *
+	     * ## Example
+	     *
+	     * {@example platform/dom/debug/ts/by/by.ts region='by_directive'}
+	     */
 	    By.directive = function (type) {
 	        return function (debugElement) { return debugElement.hasDirective(type); };
 	    };
@@ -30808,10 +31101,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return DebugElementViewListener;
 	})();
 	exports.DebugElementViewListener = DebugElementViewListener;
+	/**
+	 * Providers which support debugging Angular applications (e.g. via `ng.probe`).
+	 *
+	 * ## Example
+	 *
+	 * {@example platform/dom/debug/ts/debug_element_view_listener/providers.ts region='providers'}
+	 */
 	exports.ELEMENT_PROBE_PROVIDERS = lang_1.CONST_EXPR([
 	    DebugElementViewListener,
 	    lang_1.CONST_EXPR(new di_1.Provider(view_listener_1.AppViewListener, { useExisting: DebugElementViewListener })),
 	]);
+	/**
+	 * Use {@link ELEMENT_PROBE_PROVIDERS}.
+	 *
+	 * @deprecated
+	 */
 	exports.ELEMENT_PROBE_BINDINGS = exports.ELEMENT_PROBE_PROVIDERS;
 
 
@@ -31121,6 +31426,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    xhr_backend_1.XHRBackend
 	];
 	/**
+	 * See {@link HTTP_PROVIDERS} instead.
+	 *
 	 * @deprecated
 	 */
 	exports.HTTP_BINDINGS = exports.HTTP_PROVIDERS;
@@ -31243,6 +31550,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    core_1.provide(jsonp_backend_1.JSONPBackend, { useClass: jsonp_backend_1.JSONPBackend_ })
 	];
 	/**
+	 * See {@link JSONP_PROVIDERS} instead.
+	 *
 	 * @deprecated
 	 */
 	exports.JSON_BINDINGS = exports.JSONP_PROVIDERS;
@@ -31299,7 +31608,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * Performs http requests using `XMLHttpRequest` as the default backend.
 	 *
 	 * `Http` is available as an injectable class, with methods to perform http requests. Calling
-	 * `request` returns an {@link Observable} which will emit a single {@link Response} when a
+	 * `request` returns an `Observable` which will emit a single {@link Response} when a
 	 * response is received.
 	 *
 	 * ### Example
@@ -32428,7 +32737,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 	};
 	var core_1 = __webpack_require__(2);
-	// Make sure not to evaluate this in a non-browser environment!
+	/**
+	 * A backend for http that uses the `XMLHttpRequest` browser API.
+	 *
+	 * Take care not to evaluate this in non-browser contexts.
+	 */
 	var BrowserXhr = (function () {
 	    function BrowserXhr() {
 	    }
@@ -32471,6 +32784,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	var Observable_1 = __webpack_require__(63);
 	var JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callback.';
 	var JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
+	/**
+	 * Abstract base class for an in-flight JSONP request.
+	 */
 	var JSONPConnection = (function () {
 	    function JSONPConnection() {
 	    }
@@ -32559,6 +32875,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return JSONPConnection_;
 	})(JSONPConnection);
 	exports.JSONPConnection_ = JSONPConnection_;
+	/**
+	 * A {@link ConnectionBackend} that uses the JSONP strategy of making requests.
+	 */
 	var JSONPBackend = (function (_super) {
 	    __extends(JSONPBackend, _super);
 	    function JSONPBackend() {
@@ -32761,6 +33080,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    lang_1.CONST_EXPR(new core_2.Provider(route_registry_2.ROUTER_PRIMARY_COMPONENT, { useFactory: routerPrimaryComponentFactory, deps: lang_1.CONST_EXPR([core_2.ApplicationRef]) }))
 	]);
 	/**
+	 * Use {@link ROUTER_PROVIDERS} instead.
+	 *
 	 * @deprecated
 	 */
 	exports.ROUTER_BINDINGS = exports.ROUTER_PROVIDERS;
@@ -35071,6 +35392,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.Redirect = route_config_impl_2.Redirect;
 	exports.AuxRoute = route_config_impl_2.AuxRoute;
 	exports.AsyncRoute = route_config_impl_2.AsyncRoute;
+	// Copied from RouteConfig in route_config_impl.
+	/**
+	 * The `RouteConfig` decorator defines routes for a given component.
+	 *
+	 * It takes an array of {@link RouteDefinition}s.
+	 */
 	exports.RouteConfig = decorators_1.makeDecorator(route_config_impl_1.RouteConfig);
 
 

@@ -147,6 +147,8 @@ export const HTTP_PROVIDERS = [
     XHRBackend
 ];
 /**
+ * See {@link HTTP_PROVIDERS} instead.
+ *
  * @deprecated
  */
 export const HTTP_BINDINGS = HTTP_PROVIDERS;
@@ -269,6 +271,8 @@ export const JSONP_PROVIDERS = [
     provide(JSONPBackend, { useClass: JSONPBackend_ })
 ];
 /**
+ * See {@link JSONP_PROVIDERS} instead.
+ *
  * @deprecated
  */
 export const JSON_BINDINGS = JSONP_PROVIDERS;
