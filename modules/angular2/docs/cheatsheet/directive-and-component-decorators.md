@@ -20,7 +20,7 @@ Declares an input property that we can update via property binding (e.g.
 syntax(ts dart):
 `@Output() myEvent = new EventEmitter();`|`@Output()`
 syntax(js):
-`myEvent = new EventEmitter(); ng.core.Output(myEvent, myComponent);`|`ng.core.Output(`|`);`
+`myEvent = new ng.core.EventEmitter(); ng.core.Output(myEvent, myComponent);`|`ng.core.Output(`|`);`
 description:
 Declares an output property that fires events to which we can subscribe with an event binding (e.g. `<my-cmp (my-event)="doSomething()">`).
 
