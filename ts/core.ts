@@ -5,10 +5,9 @@
  */
 export * from './src/core/metadata';
 export * from './src/core/util';
-export * from './src/core/prod_mode';
+export * from './src/core/dev_mode';
 export * from './src/core/di';
 export * from './src/facade/facade';
-export {enableProdMode} from 'angular2/src/facade/lang';
 export {platform, createNgZone, PlatformRef, ApplicationRef} from './src/core/application_ref';
 export {
   APP_ID,

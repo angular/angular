@@ -1,0 +1,3 @@
+'use strict';var lang_1 = require('angular2/src/facade/lang');
+exports.enableDevMode = lang_1.enableDevMode;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZGV2X21vZGUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJhbmd1bGFyMi9zcmMvY29yZS9kZXZfbW9kZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQSxxQkFBNEIsMEJBQTBCLENBQUM7QUFBL0MsNkNBQStDIiwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0IHtlbmFibGVEZXZNb2RlfSBmcm9tICdhbmd1bGFyMi9zcmMvZmFjYWRlL2xhbmcnOyJdfQ==

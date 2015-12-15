@@ -16,16 +16,18 @@ export interface ConcreteType extends Type {
 export declare function getTypeNameForDebugging(type: Type): string;
 export declare var Math: Math;
 export declare var Date: DateConstructor;
-export declare function lockMode(): void;
+export declare function lockDevMode(): void;
 /**
- * Disable Angular's development mode, which turns off assertions and other
+ * Enable Angular's development mode, which turns on assertions and other
  * checks within the framework.
  *
- * One important assertion this disables verifies that a change detection pass
+ * One important assertion this enables verifies that a change detection pass
  * does not result in additional changes to any bindings (also known as
  * unidirectional data flow).
+ *
+ * {@example core/ts/dev_mode/dev_mode_example.ts region='enableDevMode'}
  */
-export declare function enableProdMode(): void;
+export declare function enableDevMode(): void;
 export declare function assertionsEnabled(): boolean;
 export declare function CONST_EXPR<T>(expr: T): T;
 export declare function CONST(): ClassDecorator & PropertyDecorator;

@@ -39,27 +39,30 @@ export function getTypeNameForDebugging(type: Type): string {
 export var Math = _global.Math;
 export var Date = _global.Date;
 
-var _devMode: boolean = true;
-var _modeLocked: boolean = false;
+var _devMode: boolean = !!_global.angularDevMode;
+var _devModeLocked: boolean = false;
 
-export function lockMode() {
-  _modeLocked = true;
+export function lockDevMode() {
+  _devModeLocked = true;
 }
 
 /**
- * Disable Angular's development mode, which turns off assertions and other
+ * Enable Angular's development mode, which turns on assertions and other
  * checks within the framework.
  *
- * One important assertion this disables verifies that a change detection pass
+ * One important assertion this enables verifies that a change detection pass
  * does not result in additional changes to any bindings (also known as
  * unidirectional data flow).
+ *
+ * {@example core/ts/dev_mode/dev_mode_example.ts region='enableDevMode'}
  */
-export function enableProdMode() {
-  if (_modeLocked) {
+export function enableDevMode() {
+  // TODO(alxhub): Refactor out of facade/lang as per issue #5157.
+  if (_devModeLocked) {
     // Cannot use BaseException as that ends up importing from facade/lang.
-    throw 'Cannot enable prod mode after platform setup.';
+    throw 'Cannot enable dev mode after platform setup.';
   }
-  _devMode = false;
+  _devMode = true;
 }
 
 export function assertionsEnabled(): boolean {

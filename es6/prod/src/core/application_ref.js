@@ -8,9 +8,8 @@ import { TestabilityRegistry, Testability } from 'angular2/src/core/testability/
 import { DynamicComponentLoader } from 'angular2/src/core/linker/dynamic_component_loader';
 import { BaseException, ExceptionHandler, unimplemented } from 'angular2/src/facade/exceptions';
 import { internalView } from 'angular2/src/core/linker/view_ref';
-import { Console } from 'angular2/src/core/console';
 import { wtfLeave, wtfCreateScope } from './profile/profile';
-import { lockMode } from 'angular2/src/facade/lang';
+import { lockDevMode } from 'angular2/src/facade/lang';
 /**
  * Construct providers specific to an individual root component.
  */
@@ -63,7 +62,7 @@ var _platformProviders;
  * provides, Angular will throw an exception.
  */
 export function platform(providers) {
-    lockMode();
+    lockDevMode();
     if (isPresent(_platform)) {
         if (ListWrapper.equals(_platformProviders, providers)) {
             return _platform;
@@ -274,14 +273,7 @@ export class ApplicationRef_ extends ApplicationRef {
                 completer.reject(e, e.stack);
             }
         });
-        return completer.promise.then(_ => {
-            let c = this._injector.get(Console);
-            let modeDescription = assertionsEnabled() ?
-                "in the development mode. Call enableProdMode() to enable the production mode." :
-                "in the production mode. Call enableDevMode() to enable the development mode.";
-            c.log(`Angular 2 is running ${modeDescription}`);
-            return _;
-        });
+        return completer.promise;
     }
     /** @internal */
     _loadComponent(ref) {
