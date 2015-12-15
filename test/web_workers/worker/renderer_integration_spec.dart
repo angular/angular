@@ -10,8 +10,8 @@ import "package:angular2/testing_internal.dart"
         iit,
         expect,
         beforeEach,
+        createTestInjectorWithRuntimeCompiler,
         beforeEachProviders,
-        TestInjector,
         TestComponentBuilder;
 import "package:angular2/src/platform/dom/dom_adapter.dart" show DOM;
 import "package:angular2/core.dart"
@@ -114,14 +114,12 @@ main() {
     beforeEachProviders(() {
       var uiRenderProtoViewStore = new RenderProtoViewRefStore(false);
       uiRenderViewStore = new RenderViewWithFragmentsStore(false);
-      var testInjector = new TestInjector();
-      testInjector.addProviders([
+      uiInjector = createTestInjectorWithRuntimeCompiler([
         provide(RenderProtoViewRefStore, useValue: uiRenderProtoViewStore),
         provide(RenderViewWithFragmentsStore, useValue: uiRenderViewStore),
         provide(DomRenderer, useClass: DomRenderer_),
         provide(Renderer, useExisting: DomRenderer)
       ]);
-      uiInjector = testInjector.createInjector();
       var uiSerializer = uiInjector.get(Serializer);
       var domRenderer = uiInjector.get(DomRenderer);
       var workerRenderProtoViewStore = new RenderProtoViewRefStore(true);
