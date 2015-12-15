@@ -100,7 +100,6 @@ export interface DirectiveFactory {
         bindings?: any[];
         providers?: any[];
         exportAs?: string;
-        moduleId?: string;
         queries?: {
             [key: string]: any;
         };
@@ -117,7 +116,6 @@ export interface DirectiveFactory {
         bindings?: any[];
         providers?: any[];
         exportAs?: string;
-        moduleId?: string;
         queries?: {
             [key: string]: any;
         };

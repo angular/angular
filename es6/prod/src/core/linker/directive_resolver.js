@@ -115,7 +115,6 @@ export let DirectiveResolver = class {
                 outputs: mergedOutputs,
                 host: mergedHost,
                 exportAs: dm.exportAs,
-                moduleId: dm.moduleId,
                 queries: mergedQueries,
                 providers: dm.providers
             });

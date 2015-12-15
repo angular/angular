@@ -918,7 +918,6 @@ System.register("angular2/src/mock/directive_resolver_mock", ["angular2/src/core
         host: dm.host,
         providers: providers,
         exportAs: dm.exportAs,
-        moduleId: dm.moduleId,
         queries: dm.queries
       });
     };
