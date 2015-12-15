@@ -1139,7 +1139,35 @@ gulp.task('!bundles.js.umd', ['build.js.dev'], function() {
       resolve: resolveOptions(devOrProd),
       module: {preLoaders: [{test: /\.js$/, loader: 'source-map-loader'}]},
       devtool: devOrProd === 'dev' ? 'inline-source-map' : undefined,
-      output: outputOptions(outFileName, devOrProd)
+      output: outputOptions(outFileName, devOrProd),
+      externals: {
+        'rxjs/Observable': 'umd Rx',
+        'rxjs/Subject': 'umd Rx',
+        'rxjs/subject/ReplaySubject': {
+          commonjs: 'rxjs/subject/ReplaySubject',
+          commonjs2: 'rxjs/subject/ReplaySubject',
+          amd: 'rxjs/subject/ReplaySubject',
+          root: ['Rx']
+        },
+        'rxjs/operator/take': {
+          commonjs: 'rxjs/operator/take',
+          commonjs2: 'rxjs/operator/take',
+          amd: 'rxjs/operator/take',
+          root: ['Rx', 'Observable', 'prototype']
+        },
+        'rxjs/observable/fromPromise': {
+          commonjs: 'rxjs/observable/fromPromise',
+          commonjs2: 'rxjs/observable/fromPromise',
+          amd: 'rxjs/observable/fromPromise',
+          root: ['Rx', 'Observable']
+        },
+        'rxjs/operator/toPromise': {
+          commonjs: 'rxjs/operator/toPromise',
+          commonjs2: 'rxjs/operator/toPromise',
+          amd: 'rxjs/operator/toPromise',
+          root: ['Rx', 'Observable', 'prototype']
+        }
+      }
     };
   }
 
