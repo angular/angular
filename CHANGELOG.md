@@ -1,3 +1,9 @@
+<a name="2.0.0-beta.0"></a>
+# 2.0.0-beta.0 sonambulent-inauguration (2015-12-15)
+
+**Enjoy!**
+
+
 <a name="2.0.0-alpha.55"></a>
 # 2.0.0-alpha.55 (2015-12-15)
 
