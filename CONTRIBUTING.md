@@ -48,13 +48,17 @@ features, by not reporting duplicate issues.  Providing the following informatio
 chances of your issue being dealt with quickly:
 
 * **Overview of the Issue** - if an error is being thrown a non-minified stack trace helps
-* **Motivation for or Use Case** - explain why this is a bug for you
+* **Angular Version** - what version of Angular is affected (e.g. 2.0.0-alpha.53)
+* **Motivation for or Use Case** - explain what are you trying to do and why the current behavior is a bug for you
 * **Browsers and Operating System** - is this a problem with all browsers?
 * **Reproduce the Error** - provide a live example (using [Plunker][plunker],
-  [JSFiddle][jsfiddle] or [Runnable][runnable]) or a unambiguous set of steps.
+  [JSFiddle][jsfiddle] or [Runnable][runnable]) or a unambiguous set of steps
 * **Related Issues** - has a similar issue been reported before?
 * **Suggest a Fix** - if you can't fix the bug yourself, perhaps you can point to what might be
   causing the problem (line of code or commit)
+
+You can file new issues by providing the above information [here](https://github.com/angular/angular/issues/new).
+
 
 ### <a name="submit-pr"></a> Submitting a Pull Request (PR)
 Before you submit your Pull Request (PR) consider the following guidelines:

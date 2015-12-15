@@ -137,7 +137,7 @@ var CONFIG = {
     dart: 'dist/dart',
     docs: 'dist/docs',
     docs_angular_io: 'dist/angular.io',
-    benchpress_bundle: 'dist/build/benchpress_bundle/'
+    bundles: {all: 'dist/build', benchpress: 'dist/build/benchpress_bundle/'}
   }
 };
 
@@ -147,14 +147,17 @@ var ANGULAR2_BUNDLE_CONFIG = [
   'angular2/compiler',
   'angular2/instrumentation',
   'angular2/platform/browser',
-  'angular2/platform/common_dom',
-  'angular2/upgrade'
+  'angular2/platform/common_dom'
 ];
 
-var NG2_BUNDLE_CONTENT = ANGULAR2_BUNDLE_CONFIG.join(' + ');
-var HTTP_BUNDLE_CONTENT = 'angular2/http - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
-var ROUTER_BUNDLE_CONTENT = 'angular2/router - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
-var TESTING_BUNDLE_CONTENT = 'angular2/testing - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
+var NG2_BUNDLE_CONTENT = ANGULAR2_BUNDLE_CONFIG.join(' + ') + ' - rxjs/*';
+var HTTP_BUNDLE_CONTENT = 'angular2/http - rxjs/* - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
+var ROUTER_BUNDLE_CONTENT = 'angular2/router + angular2/router/router_link_dsl - rxjs/* - ' +
+                            ANGULAR2_BUNDLE_CONFIG.join(' - ');
+var TESTING_BUNDLE_CONTENT =
+    'angular2/testing + angular2/http/testing + angular2/router/testing - rxjs/* - ' +
+    ANGULAR2_BUNDLE_CONFIG.join(' - ');
+var UPGRADE_BUNDLE_CONTENT = 'angular2/upgrade - rxjs/* - ' + ANGULAR2_BUNDLE_CONFIG.join(' - ');
 
 var BENCHPRESS_BUNDLE_CONFIG = {
   entries: ['./dist/js/cjs/benchpress/index.js'],
@@ -162,7 +165,7 @@ var BENCHPRESS_BUNDLE_CONFIG = {
   includes: ['angular2'],
   excludes: ['reflect-metadata', 'selenium-webdriver', 'zone.js'],
   ignore: [],
-  dest: CONFIG.dest.benchpress_bundle
+  dest: CONFIG.dest.bundles.benchpress
 };
 
 // ------------
@@ -179,8 +182,10 @@ gulp.task('build/clean.docs', function(done) { del(CONFIG.dest.docs, done); });
 gulp.task('build/clean.docs_angular_io',
           function(done) { del(CONFIG.dest.docs_angular_io, done); });
 
-gulp.task('build/clean.benchpress.bundle',
-          function(done) { del(CONFIG.dest.benchpress_bundle, done); });
+gulp.task('build/clean.bundles', function(done) { del(CONFIG.dest.bundles.all, done); });
+
+gulp.task('build/clean.bundles.benchpress',
+          function(done) { del(CONFIG.dest.bundles.benchpress, done); });
 
 // ------------
 // transpile
@@ -1035,6 +1040,8 @@ gulp.task('!bundle.js.prod', ['build.js.prod'], function() {
         return Promise.all([
           bundler.bundle(bundleConfig, HTTP_BUNDLE_CONTENT, './dist/build/http.js', bundlerConfig),
           bundler.bundle(bundleConfig, ROUTER_BUNDLE_CONTENT, './dist/build/router.js',
+                         bundlerConfig),
+          bundler.bundle(bundleConfig, UPGRADE_BUNDLE_CONTENT, './dist/build/upgrade.js',
                          bundlerConfig)
         ]);
       });
@@ -1052,6 +1059,8 @@ gulp.task('!bundle.js.min', ['build.js.prod'], function() {
           bundler.bundle(bundleConfig, HTTP_BUNDLE_CONTENT, './dist/build/http.min.js',
                          bundlerConfig),
           bundler.bundle(bundleConfig, ROUTER_BUNDLE_CONTENT, './dist/build/router.min.js',
+                         bundlerConfig),
+          bundler.bundle(bundleConfig, UPGRADE_BUNDLE_CONTENT, './dist/build/upgrade.min.js',
                          bundlerConfig)
         ]);
       });
@@ -1072,6 +1081,8 @@ gulp.task('!bundle.js.dev', ['build.js.dev'], function() {
           bundler.bundle(devBundleConfig, HTTP_BUNDLE_CONTENT, './dist/build/http.dev.js',
                          bundlerConfig),
           bundler.bundle(devBundleConfig, ROUTER_BUNDLE_CONTENT, './dist/build/router.dev.js',
+                         bundlerConfig),
+          bundler.bundle(devBundleConfig, UPGRADE_BUNDLE_CONTENT, './dist/build/upgrade.dev.js',
                          bundlerConfig)
         ]);
       });
@@ -1098,8 +1109,12 @@ gulp.task('!bundle.testing', ['build.js.dev'], function() {
   var devBundleConfig = merge(true, bundleConfig);
   devBundleConfig.paths = merge(true, devBundleConfig.paths, {"*": "dist/js/dev/es5/*.js"});
 
-  return bundler.bundle(devBundleConfig, TESTING_BUNDLE_CONTENT, './dist/js/bundle/testing.js',
+  return bundler.bundle(devBundleConfig, TESTING_BUNDLE_CONTENT, './dist/js/bundle/testing.dev.js',
                         {sourceMaps: true});
+});
+
+gulp.task('!bundles.js.docs', function() {
+  gulp.src('modules/angular2/docs/bundles/*').pipe(gulp.dest('dist/js/bundle'));
 });
 
 gulp.task('!bundles.js.umd', ['build.js.dev'], function() {
@@ -1128,15 +1143,45 @@ gulp.task('!bundles.js.umd', ['build.js.dev'], function() {
       resolve: resolveOptions(devOrProd),
       module: {preLoaders: [{test: /\.js$/, loader: 'source-map-loader'}]},
       devtool: devOrProd === 'dev' ? 'inline-source-map' : undefined,
-      output: outputOptions(outFileName, devOrProd)
+      output: outputOptions(outFileName, devOrProd),
+      externals: {
+        'rxjs/Observable': 'umd Rx',
+        'rxjs/Subject': 'umd Rx',
+        'rxjs/subject/ReplaySubject': {
+          commonjs: 'rxjs/subject/ReplaySubject',
+          commonjs2: 'rxjs/subject/ReplaySubject',
+          amd: 'rxjs/subject/ReplaySubject',
+          root: ['Rx']
+        },
+        'rxjs/operator/take': {
+          commonjs: 'rxjs/operator/take',
+          commonjs2: 'rxjs/operator/take',
+          amd: 'rxjs/operator/take',
+          root: ['Rx', 'Observable', 'prototype']
+        },
+        'rxjs/observable/fromPromise': {
+          commonjs: 'rxjs/observable/fromPromise',
+          commonjs2: 'rxjs/observable/fromPromise',
+          amd: 'rxjs/observable/fromPromise',
+          root: ['Rx', 'Observable']
+        },
+        'rxjs/operator/toPromise': {
+          commonjs: 'rxjs/operator/toPromise',
+          commonjs2: 'rxjs/operator/toPromise',
+          amd: 'rxjs/operator/toPromise',
+          root: ['Rx', 'Observable', 'prototype']
+        }
+      }
     };
   }
 
   return q.all([
-    webpack(webPackConf([__dirname + '/tools/build/webpack/angular2.umd.js'], 'angular2', 'dev')),
-    webpack(webPackConf([__dirname + '/tools/build/webpack/angular2.umd.js'], 'angular2', 'prod')),
-    webpack(webPackConf([__dirname + '/tools/build/webpack/angular2-testing.umd.js'],
-                        'angular2-testing', 'dev'))
+    webpack(webPackConf([__dirname + '/tools/build/webpack/angular2-all.umd.js'], 'angular2-all',
+                        'dev')),
+    webpack(webPackConf([__dirname + '/tools/build/webpack/angular2-all.umd.js'], 'angular2-all',
+                        'prod')),
+    webpack(webPackConf([__dirname + '/tools/build/webpack/angular2-all-testing.umd.js'],
+                        'angular2-all-testing', 'dev'))
   ]);
 });
 
@@ -1145,7 +1190,7 @@ gulp.task('bundles.js.umd.min', ['!bundles.js.umd', '!bundle.ng.polyfills'], fun
   var uglify = require('gulp-uglify');
 
   // minify production bundles
-  return gulp.src(['dist/js/bundle/angular2-polyfills.js', 'dist/js/bundle/angular2.umd.js'])
+  return gulp.src(['dist/js/bundle/angular2-polyfills.js', 'dist/js/bundle/angular2-all.umd.js'])
       .pipe(uglify())
       .pipe(rename({extname: '.min.js'}))
       .pipe(gulp.dest('dist/js/bundle'));
@@ -1154,9 +1199,10 @@ gulp.task('bundles.js.umd.min', ['!bundles.js.umd', '!bundle.ng.polyfills'], fun
 gulp.task('!bundle.js.prod.deps', ['!bundle.js.prod'], function() {
   var bundler = require('./tools/build/bundle');
 
-  return merge2(addDevDependencies('angular2.js'),
+  return merge2(bundler.modify(['dist/build/angular2.js'], 'angular2.js'),
                 bundler.modify(['dist/build/http.js'], 'http.js'),
-                bundler.modify(['dist/build/router.js'], 'router.js'))
+                bundler.modify(['dist/build/router.js'], 'router.js'),
+                bundler.modify(['dist/build/upgrade.js'], 'upgrade.js'))
       .pipe(gulp.dest('dist/js/bundle'));
 });
 
@@ -1164,9 +1210,10 @@ gulp.task('!bundle.js.min.deps', ['!bundle.js.min'], function() {
   var bundler = require('./tools/build/bundle');
   var uglify = require('gulp-uglify');
 
-  return merge2(addDevDependencies('angular2.min.js'),
+  return merge2(bundler.modify(['dist/build/angular2.min.js'], 'angular2.min.js'),
                 bundler.modify(['dist/build/http.min.js'], 'http.min.js'),
-                bundler.modify(['dist/build/router.min.js'], 'router.min.js'))
+                bundler.modify(['dist/build/router.min.js'], 'router.min.js'),
+                bundler.modify(['dist/build/upgrade.min.js'], 'upgrade.min.js'))
       .pipe(uglify())
       .pipe(gulp.dest('dist/js/bundle'));
 });
@@ -1182,40 +1229,30 @@ var JS_DEV_DEPS = [
   'node_modules/reflect-metadata/Reflect.js'
 ];
 
-// Splice in RX license if rx is in the bundle.
-function insertRXLicense(source) {
-  var n = source.indexOf('System.register("rxjs/Subject"');
-  if (n >= 0) {
-    // TODO: point this to Rx once Rx includes license in dist
-    // https://github.com/angular/angular/issues/5558
-    var rxLicense = licenseWrap('LICENSE');
-    return source.slice(0, n) + rxLicense + source.slice(n);
-  } else {
-    return source;
-  }
-}
 
 function addDevDependencies(outputFile) {
   var bundler = require('./tools/build/bundle');
   var insert = require('gulp-insert');
 
   return bundler.modify(JS_DEV_DEPS.concat(['dist/build/' + outputFile]), outputFile)
-      .pipe(insert.transform(insertRXLicense))
       .pipe(gulp.dest('dist/js/bundle'));
 }
 
 gulp.task('!bundle.js.dev.deps', ['!bundle.js.dev'], function() {
   var bundler = require('./tools/build/bundle');
 
-  return merge2(addDevDependencies('angular2.dev.js'),
+  return merge2(bundler.modify(['dist/build/angular2.dev.js'], 'angular2.dev.js'),
                 bundler.modify(['dist/build/http.dev.js'], 'http.dev.js'),
-                bundler.modify(['dist/build/router.dev.js'], 'router.dev.js'))
+                bundler.modify(['dist/build/router.dev.js'], 'router.dev.js'),
+                bundler.modify(['dist/build/upgrade.dev.js'], 'upgrade.dev.js'))
       .pipe(gulp.dest('dist/js/bundle'));
 });
 
 gulp.task('!bundle.web_worker.js.dev.deps', ['!bundle.web_worker.js.dev'], function() {
-  return merge2(
-      addDevDependencies("web_worker/ui.dev.js", addDevDependencies("web_worker/worker.dev.js")));
+  var bundler = require('./tools/build/bundle');
+  return merge2(bundler.modify(['dist/build/web_worker/ui.dev.js'], "web_worker/ui.dev.js"),
+                bundler.modify(['dist/build/web_worker/worker.dev.js'], "web_worker/worker.dev.js"))
+      .pipe(gulp.dest('dist/js/bundle'));
 });
 
 gulp.task('!bundle.copy', function() {
@@ -1236,7 +1273,8 @@ gulp.task('bundles.js',
             '!bundle.web_worker.js.dev.deps',
             'bundles.js.umd.min',
             '!bundle.testing',
-            '!bundle.ng.polyfills'
+            '!bundle.ng.polyfills',
+            '!bundles.js.docs'
           ],
           function(done) { runSequence('!bundle.copy', '!bundles.js.checksize', done); });
 
@@ -1248,7 +1286,7 @@ gulp.task('clean', [
   'build/clean.js',
   'build/clean.dart',
   'build/clean.docs',
-  'build/clean.benchpress.bundle'
+  'build/clean.bundles'
 ]);
 
 gulp.task('build', ['build.js', 'build.dart']);
@@ -1339,7 +1377,7 @@ gulp.task('build.dart.material', ['build/packages.dart'], function(done) {
 
 gulp.task('cleanup.builder', function() { return angularBuilder.cleanup(); });
 
-gulp.task('benchpress.bundle', ['build/clean.benchpress.bundle', 'build.js.cjs'], function(cb) {
+gulp.task('benchpress.bundle', ['build/clean.bundles.benchpress', 'build.js.cjs'], function(cb) {
   var bundler = require('./tools/build/bundle');
 
   bundler.benchpressBundle(BENCHPRESS_BUNDLE_CONFIG.entries, BENCHPRESS_BUNDLE_CONFIG.packageJson,

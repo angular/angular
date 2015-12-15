@@ -1,6 +1,6 @@
 {
   "name": "angular-srcs",
-  "version": "2.0.0-alpha.53",
+  "version": "2.0.0-alpha.54",
   "branchPattern": "2.0.*",
   "description": "Angular 2 - a web framework for modern web apps",
   "homepage": "https://github.com/angular/angular",
@@ -34,8 +34,8 @@
     "es6-promise": "^3.0.2",
     "es6-shim": "^0.33.3",
     "reflect-metadata": "0.1.2",
-    "rxjs": "5.0.0-alpha.14",
-    "zone.js": "0.5.8"
+    "rxjs": "5.0.0-beta.0",
+    "zone.js": "0.5.10"
   },
   "devDependencies": {
     "angular": "^1.4.7",

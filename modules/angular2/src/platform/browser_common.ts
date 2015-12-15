@@ -42,6 +42,11 @@ export {
 export {BrowserDomAdapter} from './browser/browser_adapter';
 export {enableDebugTools, disableDebugTools} from 'angular2/src/platform/browser/tools/tools';
 
+/**
+ * A set of providers to initialize the Angular platform in a web browser.
+ *
+ * Used automatically by `bootstrap`, or can be passed to {@link platform}.
+ */
 export const BROWSER_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
   PLATFORM_COMMON_PROVIDERS,
   new Provider(PLATFORM_INITIALIZER, {useValue: initDomAdapter, multi: true}),
@@ -57,6 +62,11 @@ function _document(): any {
   return DOM.defaultDoc();
 }
 
+/**
+ * A set of providers to initialize an Angular application in a web browser.
+ *
+ * Used automatically by `bootstrap`, or can be passed to {@link PlatformRef.application}.
+ */
 export const BROWSER_APP_COMMON_PROVIDERS: Array<any /*Type | Provider | any[]*/> = CONST_EXPR([
   APPLICATION_COMMON_PROVIDERS,
   FORM_PROVIDERS,
