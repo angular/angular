@@ -1,3 +1,25 @@
+<a name="2.0.0-alpha.55"></a>
+# 2.0.0-alpha.55 (2015-12-15)
+
+
+### Bug Fixes
+
+* **router:** export ROUTER_LINK_DSL_PROVIDER and hide MockPopStateEvent ([fc75220](https://github.com/angular/angular/commit/fc75220))
+
+### Features
+
+* **core:** enable dev mode by default ([3dca9d5](https://github.com/angular/angular/commit/3dca9d5))
+
+
+### BREAKING CHANGES
+
+* Before
+Previously Angular would run in dev prod mode by default, and you could enable the dev mode by calling enableDevMode.
+After
+Now, Angular runs in the dev mode by default, and you can enable the prod mode by calling enableProdMode.
+
+
+
 <a name="2.0.0-alpha.54"></a>
 # 2.0.0-alpha.54 (2015-12-15)
 
