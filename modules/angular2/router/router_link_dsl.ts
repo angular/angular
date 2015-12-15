@@ -31,5 +31,5 @@ export {RouterLinkTransform} from 'angular2/src/router/router_link_transform';
  * <a [routerLink]="User[Modal]"> <!-- Same as <a [routerLink]="['User', ['Modal']]"> -->
  * ```
  */
-const ROUTER_LINK_DSL_PROVIDER =
+export const ROUTER_LINK_DSL_PROVIDER =
     CONST_EXPR(new Provider(TEMPLATE_TRANSFORMS, {useClass: RouterLinkTransform, multi: true}));

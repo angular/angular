@@ -19,7 +19,7 @@ export class MockLocationStrategy extends LocationStrategy {
 
   simulatePopState(url: string): void {
     this.internalPath = url;
-    ObservableWrapper.callEmit(this._subject, new MockPopStateEvent(this.path()));
+    ObservableWrapper.callEmit(this._subject, new _MockPopStateEvent(this.path()));
   }
 
   path(): string { return this.internalPath; }
@@ -66,7 +66,7 @@ export class MockLocationStrategy extends LocationStrategy {
   forward(): void { throw 'not implemented'; }
 }
 
-class MockPopStateEvent {
+class _MockPopStateEvent {
   pop: boolean = true;
   type: string = 'popstate';
   constructor(public newUrl: string) {}
