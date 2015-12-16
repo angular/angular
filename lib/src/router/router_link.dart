@@ -52,26 +52,16 @@ class RouterLink {
   String target;
   // the instruction passed to the router to navigate
   Instruction _navigationInstruction;
-  RouterLink(this._router, this._location) {
-    // we need to update the link whenever a route changes to account for aux routes
-    this._router.subscribe((_) => this._updateLink());
-  }
-  // because auxiliary links take existing primary and auxiliary routes into account,
-
-  // we need to update the link whenever params or other routes change.
-  void _updateLink() {
-    this._navigationInstruction = this._router.generate(this._routeParams);
-    var navigationHref = this._navigationInstruction.toLinkUrl();
-    this.visibleHref = this._location.prepareExternalUrl(navigationHref);
-  }
-
+  RouterLink(this._router, this._location) {}
   bool get isRouteActive {
     return this._router.isRouteActive(this._navigationInstruction);
   }
 
   set routeParams(List<dynamic> changes) {
     this._routeParams = changes;
-    this._updateLink();
+    this._navigationInstruction = this._router.generate(this._routeParams);
+    var navigationHref = this._navigationInstruction.toLinkUrl();
+    this.visibleHref = this._location.prepareExternalUrl(navigationHref);
   }
 
   bool onClick() {

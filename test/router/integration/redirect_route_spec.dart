@@ -21,7 +21,8 @@ import "package:angular2/router.dart"
 import "package:angular2/src/router/route_config_decorator.dart"
     show RouteConfig, Route, AuxRoute, AsyncRoute, Redirect;
 import "util.dart" show TEST_ROUTER_PROVIDERS, RootCmp, compile;
-import "impl/fixture_components.dart" show HelloCmp, RedirectToParentCmp;
+import "impl/fixture_components.dart"
+    show HelloCmp, GoodbyeCmp, RedirectToParentCmp;
 
 var cmpInstanceCount;
 var childCmpInstanceCount;
@@ -113,6 +114,28 @@ main() {
             rootTC.detectChanges();
             expect(rootTC.debugElement.nativeElement).toHaveText("hello");
             expect(location.urlChanges).toEqual(["/redirected"]);
+            async.done();
+          });
+        }));
+    it(
+        "should not redirect when redirect is less specific than other matching routes",
+        inject([AsyncTestCompleter, Location], (async, location) {
+          compile(tcb).then((rtc) {
+            rootTC = rtc;
+          })
+              .then((_) => rtr.config([
+                    new Route(path: "/foo", component: HelloCmp, name: "Hello"),
+                    new Route(
+                        path: "/:param",
+                        component: GoodbyeCmp,
+                        name: "Goodbye"),
+                    new Redirect(path: "/*rest", redirectTo: ["/Hello"])
+                  ]))
+              .then((_) => rtr.navigateByUrl("/bye"))
+              .then((_) {
+            rootTC.detectChanges();
+            expect(rootTC.debugElement.nativeElement).toHaveText("goodbye");
+            expect(location.urlChanges).toEqual(["/bye"]);
             async.done();
           });
         }));

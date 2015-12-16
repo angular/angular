@@ -72,11 +72,7 @@ var specs = {};
 void describeRouter(String description, Function fn, [exclusive = false]) {
   var specName = descriptionToSpecName(description);
   specNameBuilder.add(specName);
-  if (exclusive) {
-    ddescribe(description, fn);
-  } else {
-    describe(description, fn);
-  }
+  describe(description, fn);
   specNameBuilder.removeLast();
 }
 

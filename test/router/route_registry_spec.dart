@@ -42,11 +42,9 @@ main() {
               path: "/first/...", component: DummyParentCmp, name: "FirstCmp"));
       var instr = registry.generate(["FirstCmp", "SecondCmp"], []);
       expect(stringifyInstruction(instr)).toEqual("first/second");
-      expect(stringifyInstruction(
-              registry.generate(["SecondCmp"], [instr, instr.child])))
+      expect(stringifyInstruction(registry.generate(["SecondCmp"], [instr])))
           .toEqual("first/second");
-      expect(stringifyInstruction(
-              registry.generate(["./SecondCmp"], [instr, instr.child])))
+      expect(stringifyInstruction(registry.generate(["./SecondCmp"], [instr])))
           .toEqual("first/second");
     });
     it("should generate URLs that account for default routes", () {
