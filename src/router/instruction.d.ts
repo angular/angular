@@ -170,11 +170,9 @@ export declare class UnresolvedInstruction extends Instruction {
     resolveComponent(): Promise<ComponentInstruction>;
 }
 export declare class RedirectInstruction extends ResolvedInstruction {
-    private _specificity;
     constructor(component: ComponentInstruction, child: Instruction, auxInstruction: {
         [key: string]: Instruction;
-    }, _specificity: number);
-    specificity: number;
+    });
 }
 /**
  * A `ComponentInstruction` represents the route state for a single component. An `Instruction` is

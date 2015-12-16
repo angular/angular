@@ -107,8 +107,8 @@ export class Instruction {
     constructor() {
         this.auxInstruction = {};
     }
-    get urlPath() { return this.component.urlPath; }
-    get urlParams() { return this.component.urlParams; }
+    get urlPath() { return isPresent(this.component) ? this.component.urlPath : ''; }
+    get urlParams() { return isPresent(this.component) ? this.component.urlParams : []; }
     get specificity() {
         var total = 0;
         if (isPresent(this.component)) {
@@ -164,7 +164,7 @@ export class Instruction {
     }
     /** @internal */
     _stringifyMatrixParams() {
-        return this.urlParams.length > 0 ? (';' + this.component.urlParams.join(';')) : '';
+        return this.urlParams.length > 0 ? (';' + this.urlParams.join(';')) : '';
     }
     /** @internal */
     _stringifyPathMatrixAux() {
@@ -254,11 +254,9 @@ export class UnresolvedInstruction extends Instruction {
     }
 }
 export class RedirectInstruction extends ResolvedInstruction {
-    constructor(component, child, auxInstruction, _specificity) {
+    constructor(component, child, auxInstruction) {
         super(component, child, auxInstruction);
-        this._specificity = _specificity;
     }
-    get specificity() { return this._specificity; }
 }
 /**
  * A `ComponentInstruction` represents the route state for a single component. An `Instruction` is

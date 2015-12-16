@@ -44,13 +44,20 @@ export let RouterLink = class {
     constructor(_router, _location) {
         this._router = _router;
         this._location = _location;
+        // we need to update the link whenever a route changes to account for aux routes
+        this._router.subscribe((_) => this._updateLink());
+    }
+    // because auxiliary links take existing primary and auxiliary routes into account,
+    // we need to update the link whenever params or other routes change.
+    _updateLink() {
+        this._navigationInstruction = this._router.generate(this._routeParams);
+        var navigationHref = this._navigationInstruction.toLinkUrl();
+        this.visibleHref = this._location.prepareExternalUrl(navigationHref);
     }
     get isRouteActive() { return this._router.isRouteActive(this._navigationInstruction); }
     set routeParams(changes) {
         this._routeParams = changes;
-        this._navigationInstruction = this._router.generate(this._routeParams);
-        var navigationHref = this._navigationInstruction.toLinkUrl();
-        this.visibleHref = this._location.prepareExternalUrl(navigationHref);
+        this._updateLink();
     }
     onClick() {
         // If no target, or if target is _self, prevent default browser behavior
