@@ -12,14 +12,6 @@ import "package:angular2/router.dart"
         ROUTER_DIRECTIVES;
 import "package:angular2/src/facade/async.dart" show PromiseWrapper;
 
-@Component(selector: "goodbye-cmp", template: '''{{farewell}}''')
-class GoodbyeCmp {
-  String farewell;
-  GoodbyeCmp() {
-    this.farewell = "goodbye";
-  }
-}
-
 @Component(selector: "hello-cmp", template: '''{{greeting}}''')
 class HelloCmp {
   String greeting;

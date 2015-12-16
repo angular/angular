@@ -117,11 +117,11 @@ abstract class Instruction {
   Instruction child;
   Map<String, Instruction> auxInstruction = {};
   String get urlPath {
-    return this.component.urlPath;
+    return isPresent(this.component) ? this.component.urlPath : "";
   }
 
   List<String> get urlParams {
-    return this.component.urlParams;
+    return isPresent(this.component) ? this.component.urlParams : [];
   }
 
   num get specificity {
@@ -195,9 +195,7 @@ abstract class Instruction {
 
   /** @internal */
   String _stringifyMatrixParams() {
-    return this.urlParams.length > 0
-        ? (";" + this.component.urlParams.join(";"))
-        : "";
+    return this.urlParams.length > 0 ? (";" + this.urlParams.join(";")) : "";
   }
 
   /** @internal */
@@ -304,14 +302,10 @@ class UnresolvedInstruction extends Instruction {
 }
 
 class RedirectInstruction extends ResolvedInstruction {
-  num _specificity;
   RedirectInstruction(ComponentInstruction component, Instruction child,
-      Map<String, Instruction> auxInstruction, this._specificity)
+      Map<String, Instruction> auxInstruction)
       : super(component, child, auxInstruction) {
     /* super call moved to initializer */;
-  }
-  num get specificity {
-    return this._specificity;
   }
 }
 
