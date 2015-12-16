@@ -64,7 +64,7 @@ export declare class RouteRegistry {
      * route boundary.
      */
     generate(linkParams: any[], ancestorInstructions: Instruction[], _aux?: boolean): Instruction;
-    private _generate(linkParams, ancestorInstructions, prevInstruction, _aux, _originalLink);
+    private _generate(linkParams, ancestorInstructions, _aux?);
     hasRoute(name: string, parentComponent: any): boolean;
     generateDefault(componentCursor: Type): Instruction;
 }

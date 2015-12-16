@@ -111,9 +111,9 @@ export abstract class Instruction {
   public child: Instruction;
   public auxInstruction: {[key: string]: Instruction} = {};
 
-  get urlPath(): string { return isPresent(this.component) ? this.component.urlPath : ''; }
+  get urlPath(): string { return this.component.urlPath; }
 
-  get urlParams(): string[] { return isPresent(this.component) ? this.component.urlParams : []; }
+  get urlParams(): string[] { return this.component.urlParams; }
 
   get specificity(): number {
     var total = 0;
@@ -181,7 +181,7 @@ export abstract class Instruction {
 
   /** @internal */
   _stringifyMatrixParams(): string {
-    return this.urlParams.length > 0 ? (';' + this.urlParams.join(';')) : '';
+    return this.urlParams.length > 0 ? (';' + this.component.urlParams.join(';')) : '';
   }
 
   /** @internal */
@@ -281,9 +281,11 @@ export class UnresolvedInstruction extends Instruction {
 
 export class RedirectInstruction extends ResolvedInstruction {
   constructor(component: ComponentInstruction, child: Instruction,
-              auxInstruction: {[key: string]: Instruction}) {
+              auxInstruction: {[key: string]: Instruction}, private _specificity: number) {
     super(component, child, auxInstruction);
   }
+
+  get specificity(): number { return this._specificity; }
 }
 
 
