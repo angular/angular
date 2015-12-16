@@ -36,11 +36,7 @@ export class NgSelectOption {
  */
 @Directive({
   selector: 'select[ngControl],select[ngFormControl],select[ngModel]',
-  host: {
-    '(change)': 'onChange($event.target.value)',
-    '(input)': 'onChange($event.target.value)',
-    '(blur)': 'onTouched()'
-  },
+  host: {'(input)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
   bindings: [SELECT_VALUE_ACCESSOR]
 })
 export class SelectControlValueAccessor implements ControlValueAccessor {
