@@ -7,7 +7,12 @@ import "package:angular2/src/facade/collection.dart"
     show Map, MapWrapper, ListWrapper, StringMapWrapper;
 import "package:angular2/src/facade/async.dart" show Future, PromiseWrapper;
 import "route_recognizer.dart"
-    show AbstractRecognizer, RouteRecognizer, RedirectRecognizer, RouteMatch;
+    show
+        AbstractRecognizer,
+        RouteRecognizer,
+        RedirectRecognizer,
+        RouteMatch,
+        PathMatch;
 import "route_config_impl.dart"
     show Route, AsyncRoute, AuxRoute, Redirect, RouteDefinition;
 import "async_route_handler.dart" show AsyncRouteHandler;
@@ -101,6 +106,14 @@ class ComponentRecognizer {
         solutions.add(pathMatch);
       }
     });
+    // handle cases where we are routing just to an aux route
+    if (solutions.length == 0 &&
+        isPresent(urlParse) &&
+        urlParse.auxiliary.length > 0) {
+      return [
+        PromiseWrapper.resolve(new PathMatch(null, null, urlParse.auxiliary))
+      ];
+    }
     return solutions;
   }
 

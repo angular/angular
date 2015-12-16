@@ -12,7 +12,7 @@ import "impl/async_route_spec_impl.dart" show registerSpecs;
 
 main() {
   registerSpecs();
-  ddescribeRouter("async routes", () {
+  describeRouter("async routes", () {
     describeWithout("children", () {
       describeWith("route data", itShouldRoute);
       describeWithAndWithout("params", itShouldRoute);

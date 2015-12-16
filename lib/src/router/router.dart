@@ -93,9 +93,6 @@ class Router {
       throw new BaseException(
           '''registerAuxOutlet expects to be called with an outlet with a name.''');
     }
-    // TODO...
-
-    // what is the host of an aux route???
     var router = this.auxRouter(this.hostComponent);
     this._auxRouters[outletName] = router;
     router._outlet = outlet;
@@ -220,8 +217,10 @@ class Router {
   /** @internal */
   Future<dynamic> _settleInstruction(Instruction instruction) {
     return instruction.resolveComponent().then((_) {
-      instruction.component.reuse = false;
       List<Future<dynamic>> unsettledInstructions = [];
+      if (isPresent(instruction.component)) {
+        instruction.component.reuse = false;
+      }
       if (isPresent(instruction.child)) {
         unsettledInstructions.add(this._settleInstruction(instruction.child));
       }
@@ -252,6 +251,9 @@ class Router {
     if (isBlank(this._outlet)) {
       return _resolveToFalse;
     }
+    if (isBlank(instruction.component)) {
+      return _resolveToTrue;
+    }
     return this._outlet.routerCanReuse(instruction.component).then((result) {
       instruction.component.reuse = result;
       if (result &&
@@ -277,7 +279,7 @@ class Router {
     if (isPresent(instruction)) {
       childInstruction = instruction.child;
       componentInstruction = instruction.component;
-      reuse = instruction.component.reuse;
+      reuse = isBlank(instruction.component) || instruction.component.reuse;
     }
     if (reuse) {
       next = _resolveToTrue;
@@ -303,7 +305,7 @@ class Router {
       [bool _skipLocationChange = false]) {
     this._currentInstruction = instruction;
     Future<dynamic> next = _resolveToTrue;
-    if (isPresent(this._outlet)) {
+    if (isPresent(this._outlet) && isPresent(instruction.component)) {
       var componentInstruction = instruction.component;
       if (componentInstruction.reuse) {
         next = this._outlet.reuse(componentInstruction);
@@ -376,15 +378,13 @@ class Router {
   }
 
   List<Instruction> _getAncestorInstructions() {
-    var ancestorComponents = [];
+    var ancestorInstructions = [this._currentInstruction];
     Router ancestorRouter = this;
-    while (isPresent(ancestorRouter.parent) &&
-        isPresent(ancestorRouter.parent._currentInstruction)) {
-      ancestorRouter = ancestorRouter.parent;
-      (ancestorComponents..insert(0, ancestorRouter._currentInstruction))
+    while (isPresent(ancestorRouter = ancestorRouter.parent)) {
+      (ancestorInstructions..insert(0, ancestorRouter._currentInstruction))
           .length;
     }
-    return ancestorComponents;
+    return ancestorInstructions;
   }
 
   /**
@@ -501,6 +501,9 @@ class ChildRouter extends Router {
 Future<bool> canActivateOne(
     Instruction nextInstruction, Instruction prevInstruction) {
   var next = _resolveToTrue;
+  if (isBlank(nextInstruction.component)) {
+    return next;
+  }
   if (isPresent(nextInstruction.child)) {
     next = canActivateOne(nextInstruction.child,
         isPresent(prevInstruction) ? prevInstruction.child : null);
