@@ -19,7 +19,7 @@ import {Math} from 'angular2/src/facade/math';
 // TODO(jelbourn): Re-layout on window resize / media change (debounced).
 // TODO(jelbourn): gridTileHeader and gridTileFooter.
 
-/** Row hieght mode options. Use a static class b/c TypeScript enums are strictly number-based. */
+/** Row height mode options. Use a static class b/c TypeScript enums are strictly number-based. */
 class RowHeightMode {
   static FIT = 'fit';
   static FIXED = 'fixed';
@@ -128,7 +128,7 @@ export class MdGridList implements AfterContentChecked {
   getBaseTileSize(sizePercent: number, gutterFraction: number): string {
     // Take the base size percent (as would be if evenly dividing the size between cells),
     // and then subtracting the size of one gutter. However, since there are no gutters on the
-    // edges, each tile only uses a fration (gutterShare = numGutters / numCells) of the gutter
+    // edges, each tile only uses a fraction (gutterShare = numGutters / numCells) of the gutter
     // size. (Imagine having one gutter per tile, and then breaking up the extra gutter on the
     // edge evenly among the cells).
     return `(${sizePercent}% - ( ${this.gutterSize} * ${gutterFraction} ))`;

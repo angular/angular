@@ -111,7 +111,7 @@ export class PerflogMetric extends Metric {
 
   _endPlainMeasureAndMeasureForceGc(restartMeasure: boolean) {
     return this._endMeasure(true).then((measureValues) => {
-      // disable frame capture for measurments during forced gc
+      // disable frame capture for measurements during forced gc
       var originalFrameCaptureValue = this._captureFrames;
       this._captureFrames = false;
       return this._driverExtension.gc()

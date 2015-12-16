@@ -296,7 +296,7 @@ export function main() {
            expect(template.styleUrls).toEqual(['http://some/module/test.css']);
          }));
 
-      it('should normalize ViewEncapsulation.Emulated to ViewEncapsulation.None if there are no stlyes nor stylesheets',
+      it('should normalize ViewEncapsulation.Emulated to ViewEncapsulation.None if there are no styles nor stylesheets',
          inject([TemplateNormalizer], (normalizer: TemplateNormalizer) => {
            var template = normalizer.normalizeLoadedTemplate(
                dirType, new CompileTemplateMetadata(

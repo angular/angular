@@ -5,7 +5,7 @@ import {BaseException, WrappedException} from 'angular2/src/facade/exceptions';
 import {PromiseCompleter, PromiseWrapper, Promise} from 'angular2/src/facade/async';
 
 /**
- * A mock implemenation of {@link XHR} that allows outgoing requests to be mocked
+ * A mock implementation of {@link XHR} that allows outgoing requests to be mocked
  * and responded to within a single test, without going to the network.
  */
 export class MockXHR extends XHR {
