@@ -1,130 +1,7 @@
-import {
-  APP_ID,
-  APPLICATION_COMMON_PROVIDERS,
-  AppViewManager,
-  DirectiveResolver,
-  DynamicComponentLoader,
-  Injector,
-  NgZone,
-  Renderer,
-  Provider,
-  ViewResolver,
-  provide
-} from 'angular2/core';
-import {AnimationBuilder} from 'angular2/src/animate/animation_builder';
-import {MockAnimationBuilder} from 'angular2/src/mock/animation_builder_mock';
-
-import {ResolvedMetadataCache} from 'angular2/src/core/linker/resolved_metadata_cache';
-import {Reflector, reflector} from 'angular2/src/core/reflection/reflection';
-import {
-  IterableDiffers,
-  defaultIterableDiffers,
-  KeyValueDiffers,
-  defaultKeyValueDiffers,
-  ChangeDetectorGenConfig
-} from 'angular2/src/core/change_detection/change_detection';
+import {Injector, Provider, PLATFORM_INITIALIZER} from 'angular2/core';
 import {BaseException, ExceptionHandler} from 'angular2/src/facade/exceptions';
-import {PipeResolver} from 'angular2/src/core/linker/pipe_resolver';
-import {XHR} from 'angular2/src/compiler/xhr';
-
-import {DOM} from 'angular2/src/platform/dom/dom_adapter';
-
-import {MockDirectiveResolver} from 'angular2/src/mock/directive_resolver_mock';
-import {MockViewResolver} from 'angular2/src/mock/view_resolver_mock';
-import {MockLocationStrategy} from 'angular2/src/mock/mock_location_strategy';
-import {LocationStrategy} from 'angular2/src/router/location_strategy';
-import {MockNgZone} from 'angular2/src/mock/ng_zone_mock';
-
-import {TestComponentBuilder} from './test_component_builder';
-
-import {
-  EventManager,
-  EVENT_MANAGER_PLUGINS,
-  ELEMENT_PROBE_PROVIDERS
-} from 'angular2/platform/common_dom';
-
 import {ListWrapper} from 'angular2/src/facade/collection';
-import {FunctionWrapper, Type} from 'angular2/src/facade/lang';
-
-import {RootRenderer} from 'angular2/src/core/render/api';
-
-import {DOCUMENT} from 'angular2/src/platform/dom/dom_tokens';
-import {DomRootRenderer, DomRootRenderer_} from 'angular2/src/platform/dom/dom_renderer';
-import {DomSharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';
-import {SharedStylesHost} from 'angular2/src/platform/dom/shared_styles_host';
-import {DomEventsPlugin} from 'angular2/src/platform/dom/events/dom_events';
-
-import {Serializer} from "angular2/src/web_workers/shared/serializer";
-import {Log} from './utils';
-import {COMPILER_PROVIDERS} from 'angular2/src/compiler/compiler';
-import {DynamicComponentLoader_} from "angular2/src/core/linker/dynamic_component_loader";
-import {AppViewManager_} from "angular2/src/core/linker/view_manager";
-
-/**
- * Returns the root injector providers.
- *
- * This must be kept in sync with the _rootBindings in application.js
- *
- * @returns {any[]}
- */
-function _getRootProviders() {
-  return [provide(Reflector, {useValue: reflector})];
-}
-
-/**
- * Returns the application injector providers.
- *
- * This must be kept in sync with _injectorBindings() in application.js
- *
- * @returns {any[]}
- */
-function _getAppBindings() {
-  var appDoc;
-
-  // The document is only available in browser environment
-  try {
-    appDoc = DOM.defaultDoc();
-  } catch (e) {
-    appDoc = null;
-  }
-
-  return [
-    APPLICATION_COMMON_PROVIDERS,
-    provide(ChangeDetectorGenConfig, {useValue: new ChangeDetectorGenConfig(true, false, false)}),
-    provide(DOCUMENT, {useValue: appDoc}),
-    provide(DomRootRenderer, {useClass: DomRootRenderer_}),
-    provide(RootRenderer, {useExisting: DomRootRenderer}),
-    provide(APP_ID, {useValue: 'a'}),
-    DomSharedStylesHost,
-    provide(SharedStylesHost, {useExisting: DomSharedStylesHost}),
-    provide(AppViewManager, {useClass: AppViewManager_}),
-    Serializer,
-    ELEMENT_PROBE_PROVIDERS,
-    ResolvedMetadataCache,
-    provide(DirectiveResolver, {useClass: MockDirectiveResolver}),
-    provide(ViewResolver, {useClass: MockViewResolver}),
-    provide(IterableDiffers, {useValue: defaultIterableDiffers}),
-    provide(KeyValueDiffers, {useValue: defaultKeyValueDiffers}),
-    Log,
-    provide(DynamicComponentLoader, {useClass: DynamicComponentLoader_}),
-    PipeResolver,
-    provide(ExceptionHandler, {useValue: new ExceptionHandler(DOM)}),
-    provide(LocationStrategy, {useClass: MockLocationStrategy}),
-    provide(XHR, {useClass: DOM.getXHR()}),
-    TestComponentBuilder,
-    provide(NgZone, {useClass: MockNgZone}),
-    provide(AnimationBuilder, {useClass: MockAnimationBuilder}),
-    EventManager,
-    new Provider(EVENT_MANAGER_PLUGINS, {useClass: DomEventsPlugin, multi: true})
-  ];
-}
-
-function _runtimeCompilerBindings() {
-  return [
-    provide(XHR, {useClass: DOM.getXHR()}),
-    COMPILER_PROVIDERS,
-  ];
-}
+import {FunctionWrapper, isPresent, Type} from 'angular2/src/facade/lang';
 
 export class TestInjector {
   private _instantiated: boolean = false;
@@ -139,6 +16,10 @@ export class TestInjector {
     this._instantiated = false;
   }
 
+  platformProviders: Array<Type | Provider | any[]> = [];
+
+  applicationProviders: Array<Type | Provider | any[]> = [];
+
   addProviders(providers: Array<Type | Provider | any[]>) {
     if (this._instantiated) {
       throw new BaseException('Cannot add providers after test injector is instantiated');
@@ -147,9 +28,9 @@ export class TestInjector {
   }
 
   createInjector() {
-    var rootInjector = Injector.resolveAndCreate(_getRootProviders());
-    this._injector = rootInjector.resolveAndCreateChild(ListWrapper.concat(
-        ListWrapper.concat(_getAppBindings(), _runtimeCompilerBindings()), this._providers));
+    var rootInjector = Injector.resolveAndCreate(this.platformProviders);
+    this._injector = rootInjector.resolveAndCreateChild(
+        ListWrapper.concat(this.applicationProviders, this._providers));
     this._instantiated = true;
     return this._injector;
   }
@@ -172,19 +53,40 @@ export function getTestInjector() {
 }
 
 /**
- * @deprecated Use TestInjector#createInjector() instead.
+ * Set the providers that the test injector should use. These should be providers
+ * common to every test in the suite.
+ *
+ * This may only be called once, to set up the common providers for the current test
+ * suite on teh current platform. If you absolutely need to change the providers,
+ * first use `resetBaseTestProviders`.
+ *
+ * Test Providers for individual platforms are available from
+ * 'angular2/platform/testing/<platform_name>'.
  */
-export function createTestInjector(providers: Array<Type | Provider | any[]>): Injector {
-  var rootInjector = Injector.resolveAndCreate(_getRootProviders());
-  return rootInjector.resolveAndCreateChild(ListWrapper.concat(_getAppBindings(), providers));
+export function setBaseTestProviders(platformProviders: Array<Type | Provider | any[]>,
+                                     applicationProviders: Array<Type | Provider | any[]>) {
+  var testInjector = getTestInjector();
+  if (testInjector.platformProviders.length > 0 || testInjector.applicationProviders.length > 0) {
+    throw new BaseException('Cannot set base providers because it has already been called');
+  }
+  testInjector.platformProviders = platformProviders;
+  testInjector.applicationProviders = applicationProviders;
+  var injector = testInjector.createInjector();
+  let inits: Function[] = injector.getOptional(PLATFORM_INITIALIZER);
+  if (isPresent(inits)) {
+    inits.forEach(init => init());
+  }
+  testInjector.reset();
 }
 
 /**
- * @deprecated Use TestInjector#createInjector() instead.
+ * Reset the providers for the test injector.
  */
-export function createTestInjectorWithRuntimeCompiler(
-    providers: Array<Type | Provider | any[]>): Injector {
-  return createTestInjector(ListWrapper.concat(_runtimeCompilerBindings(), providers));
+export function resetBaseTestProviders() {
+  var testInjector = getTestInjector();
+  testInjector.platformProviders = [];
+  testInjector.applicationProviders = [];
+  testInjector.reset();
 }
 
 /**

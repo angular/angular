@@ -25,8 +25,9 @@ module.exports = function(gulp, plugins, config) {
       // No test files found
       return Q.resolve();
     }
-    var header = ['library _all_tests;', ''];
+    var header = ['library _all_tests;', 'import "package:angular2/testing.dart";', ''];
     var main = ['main() {'];
+    main.push('  setBaseTestProviders([], []);');
     testFiles.forEach(function(fileName, index) {
       header.push('import "' + fileName + '" as test_' + index + ';');
       main.push('  test_' + index + '.main();');

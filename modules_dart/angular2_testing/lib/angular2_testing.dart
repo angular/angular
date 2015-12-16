@@ -5,12 +5,12 @@ import 'package:test/test.dart';
 import 'package:angular2/angular2.dart';
 import 'package:angular2/src/core/di/metadata.dart' show InjectMetadata;
 import 'package:angular2/src/core/di/exceptions.dart' show NoAnnotationError;
-import 'package:angular2/platform/browser_static.dart' show BrowserDomAdapter;
 import 'package:angular2/src/core/reflection/reflection.dart';
 import 'package:angular2/src/core/reflection/reflection_capabilities.dart';
 import 'package:angular2/src/testing/test_injector.dart';
 export 'package:angular2/src/testing/test_component_builder.dart';
 export 'package:angular2/src/testing/test_injector.dart' show inject;
+import 'package:angular2/platform/testing/browser.dart';
 
 /// One time initialization that must be done for Angular2 component
 /// tests. Call before any test methods.
@@ -24,8 +24,8 @@ export 'package:angular2/src/testing/test_injector.dart' show inject;
 /// }
 /// ```
 void initAngularTests() {
-  BrowserDomAdapter.makeCurrent();
   reflector.reflectionCapabilities = new ReflectionCapabilities();
+  setBaseTestProviders(TEST_BROWSER_PLATFORM_PROVIDERS, TEST_BROWSER_APPLICATION_PROVIDERS);
 }
 
 void _addTestInjectorTearDown() {

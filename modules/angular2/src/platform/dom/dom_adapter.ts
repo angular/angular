@@ -23,6 +23,7 @@ export abstract class DomAdapter {
   abstract logGroup(error);
   abstract logGroupEnd();
 
+  /** @deprecated */
   abstract getXHR(): Type;
 
   /**
