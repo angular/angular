@@ -4,7 +4,7 @@ Forms
 @description
 {@target ts}`import {FORM_DIRECTIVES} from 'angular2/common';`{@endtarget}
 {@target js}Available from `ng.common.FORM_DIRECTIVES`{@endtarget}
-{@target dart}`import 'package:angular2/common.dart';`{@endtarget}
+{@target dart}Available using `platform_directives` in pubspec{@endtarget}
 
 @cheatsheetItem
 syntax:
