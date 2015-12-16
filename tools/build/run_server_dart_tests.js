@@ -16,38 +16,34 @@ module.exports = function(gulp, plugins, config) {
   };
 
   function run(dir) {
-    var testDir = path.join(dir, 'test');
-    var relativeMasterTestFile = 'test/_all_tests.dart';
     var testFiles = [].slice.call(glob.sync('**/*.server.spec.dart', {
-      cwd: testDir
+      cwd: dir
     }));
     if (testFiles.length == 0) {
       // No test files found
       return Q.resolve();
     }
-    var header = ['library _all_tests;', 'import "package:angular2/testing.dart";', ''];
-    var main = ['main() {'];
-    main.push('  setBaseTestProviders([], []);');
-    testFiles.forEach(function(fileName, index) {
-      header.push('import "' + fileName + '" as test_' + index + ';');
-      main.push('  test_' + index + '.main();');
-    });
-    header.push('');
-    main.push('}');
-
-    var absMasterTestFile = path.join(dir, relativeMasterTestFile);
-    fs.writeFileSync(absMasterTestFile, header.concat(main).join('\n'));
 
     var defer = Q.defer();
     var done = defer.makeNodeResolver();
     console.log('start tests:', dir);
-    util.processToPromise(spawn('dart', ['-c', relativeMasterTestFile], {
-      stdio: 'inherit',
-      cwd: dir
-    })).then(
-      function() { done(); },
-      function(error) { done(error); }
-    );
+    var processSerial = function() {
+      if (testFiles.length == 0) {
+        done();
+        return;
+      }
+      var file = testFiles.shift();
+      util.processToPromise(spawn('dart', ['-c', file], {
+        stdio: 'inherit',
+        cwd: dir
+      })).then(
+        processSerial,
+        function(error) {
+          done(error);
+        }
+      );
+    };
+    processSerial();
     return defer.promise.then(function() {
       console.log('end tests');
     });
