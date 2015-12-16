@@ -82,16 +82,19 @@ export function main() {
       it('should return the directive metadatas',
          inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
            expect(resolver.getViewDirectivesMetadata(ComponentWithEverything))
-               .toEqual([resolver.getMetadata(SomeDirective)]);
+               .toContain(resolver.getMetadata(SomeDirective));
          }));
 
       describe("platform directives", () => {
-        beforeEachProviders(() => [provide(PLATFORM_DIRECTIVES, {useValue: [ADirective]})]);
+        beforeEachProviders(
+            () => [provide(PLATFORM_DIRECTIVES, {useValue: [ADirective], multi: true})]);
 
         it('should include platform directives when available',
            inject([RuntimeMetadataResolver], (resolver: RuntimeMetadataResolver) => {
              expect(resolver.getViewDirectivesMetadata(ComponentWithEverything))
-                 .toEqual([resolver.getMetadata(ADirective), resolver.getMetadata(SomeDirective)]);
+                 .toContain(resolver.getMetadata(ADirective));
+             expect(resolver.getViewDirectivesMetadata(ComponentWithEverything))
+                 .toContain(resolver.getMetadata(SomeDirective));
            }));
       });
     });
