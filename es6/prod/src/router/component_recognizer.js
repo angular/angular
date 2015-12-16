@@ -2,7 +2,7 @@ import { isBlank, isPresent } from 'angular2/src/facade/lang';
 import { BaseException } from 'angular2/src/facade/exceptions';
 import { Map } from 'angular2/src/facade/collection';
 import { PromiseWrapper } from 'angular2/src/facade/async';
-import { RouteRecognizer, RedirectRecognizer } from './route_recognizer';
+import { RouteRecognizer, RedirectRecognizer, PathMatch } from './route_recognizer';
 import { Route, AsyncRoute, AuxRoute, Redirect } from './route_config_impl';
 import { AsyncRouteHandler } from './async_route_handler';
 import { SyncRouteHandler } from './sync_route_handler';
@@ -88,6 +88,10 @@ export class ComponentRecognizer {
                 solutions.push(pathMatch);
             }
         });
+        // handle cases where we are routing just to an aux route
+        if (solutions.length == 0 && isPresent(urlParse) && urlParse.auxiliary.length > 0) {
+            return [PromiseWrapper.resolve(new PathMatch(null, null, urlParse.auxiliary))];
+        }
         return solutions;
     }
     recognizeAuxiliary(urlParse) {

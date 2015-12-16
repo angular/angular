@@ -107,8 +107,8 @@ export class Instruction {
     constructor() {
         this.auxInstruction = {};
     }
-    get urlPath() { return this.component.urlPath; }
-    get urlParams() { return this.component.urlParams; }
+    get urlPath() { return isPresent(this.component) ? this.component.urlPath : ''; }
+    get urlParams() { return isPresent(this.component) ? this.component.urlParams : []; }
     get specificity() {
         var total = 0;
         if (isPresent(this.component)) {
@@ -164,7 +164,7 @@ export class Instruction {
     }
     /** @internal */
     _stringifyMatrixParams() {
-        return this.urlParams.length > 0 ? (';' + this.component.urlParams.join(';')) : '';
+        return this.urlParams.length > 0 ? (';' + this.urlParams.join(';')) : '';
     }
     /** @internal */
     _stringifyPathMatrixAux() {
