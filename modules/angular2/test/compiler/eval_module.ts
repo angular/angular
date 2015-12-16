@@ -26,7 +26,7 @@ export function evalModule(moduleSource: string, imports: string[][], args: any[
     // using SystemJS, the loader might get confused by the presence of require,
     // and attempt to load "+ modName +.js" !?!
     // A simple string concat manages to prevent that, but that is one compiler
-    // optimaztion away from breaking again. Proceed with caution!
+    // optimization away from breaking again. Proceed with caution!
     moduleSourceWithImports.push(`var ${modAlias} = require` + `('${modId}');`);
   });
   moduleSourceWithImports.push(moduleSource);
