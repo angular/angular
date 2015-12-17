@@ -230,12 +230,14 @@ class NoAnnotationError extends BaseException {
         signature.add(parameter.map(stringify).toList().join(" "));
       }
     }
-    return "Cannot resolve all parameters for " +
+    return "Cannot resolve all parameters for '" +
         stringify(typeOrFunc) +
-        "(" +
+        "'(" +
         signature.join(", ") +
         "). " +
-        "Make sure they all have valid type or annotations.";
+        "Make sure that all the parameters are decorated with Inject or have valid type annotations and that '" +
+        stringify(typeOrFunc) +
+        "' is decorated with Injectable.";
   }
 }
 

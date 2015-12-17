@@ -1178,7 +1178,7 @@ main() {
           val.changeDetector.handleEvent("event", 0, locals);
           expect(d.a).toEqual(2);
         });
-        // TODO: enable after chaining dart infrastructure for generating tests
+        // TODO: enable after chaning dart infrastructure for generating tests
 
         // it('should throw when trying to assign to a local', () => {
 

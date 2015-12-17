@@ -10,7 +10,7 @@ import "package:angular2/src/facade/async.dart"
     show PromiseCompleter, PromiseWrapper, Future;
 
 /**
- * A mock implementation of [XHR] that allows outgoing requests to be mocked
+ * A mock implemenation of [XHR] that allows outgoing requests to be mocked
  * and responded to within a single test, without going to the network.
  */
 class MockXHR extends XHR {

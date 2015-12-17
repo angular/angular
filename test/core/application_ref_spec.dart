@@ -38,7 +38,7 @@ main() {
   describe("PlatformRef", () {
     describe("asyncApplication", () {
       it(
-          "should merge synchronous and asynchronous providers",
+          "should merge syncronous and asyncronous providers",
           inject([AsyncTestCompleter, Injector], (async, injector) {
             var ref = new PlatformRef_(injector, null);
             var ASYNC_PROVIDERS = [new Provider(Foo, useValue: new Foo())];

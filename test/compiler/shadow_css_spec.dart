@@ -200,7 +200,7 @@ main() {
         expect(captureRules("a {b {c}} d {e}"))
             .toEqual([new CssRule("a", "b {c}"), new CssRule("d", "e")]);
       });
-      it("should capture multiple rules where some have no body", () {
+      it("should capture mutiple rules where some have no body", () {
         expect(captureRules("@import a ; b {c}"))
             .toEqual([new CssRule("@import a", ""), new CssRule("b", "c")]);
       });
