@@ -1820,14 +1820,8 @@ export function main() {
                    expect(DOM.getProperty(<Element>use, 'namespaceURI'))
                        .toEqual('http://www.w3.org/2000/svg');
 
-                   if (!IS_DART) {
-                     var firstAttribute = DOM.getProperty(<Element>use, 'attributes')[0];
-                     expect(firstAttribute.name).toEqual('xlink:href');
-                     expect(firstAttribute.namespaceURI).toEqual('http://www.w3.org/1999/xlink');
-                   } else {
-                     // For Dart where '_Attr' has no instance getter 'namespaceURI'
-                     expect(DOM.getOuterHTML(<HTMLElement>use)).toContain('xmlns:xlink');
-                   }
+                   expect(DOM.getAttributeNS(use, 'http://www.w3.org/1999/xlink', 'href'))
+                       .toEqual('Port');
 
                    async.done();
                  });

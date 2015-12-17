@@ -26,6 +26,7 @@ module.exports = function makeNodeTree(projects, destinationPath) {
       'angular2/test/testing/testing_public_spec.ts',
       'angular2/test/platform/xhr_impl_spec.ts',
       'angular2/test/platform/browser/**/*.ts',
+      'angular2/test/platform/dom/dom_renderer_integration_spec.ts',
       'angular2/test/common/forms/**',
 
       // we call browser's bootstrap

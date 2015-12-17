@@ -135,14 +135,27 @@ export abstract class DomRenderer extends Renderer implements NodeFactory<Node> 
                     propertyValue);
   }
 
-  setElementAttribute(location: RenderElementRef, attributeName: string,
-                      attributeValue: string): void {
+  setElementAttribute(location: RenderElementRef, attrName: string, attrValue: string): void {
     var view = resolveInternalDomView(location.renderView);
     var element = view.boundElements[location.boundElementIndex];
-    if (isPresent(attributeValue)) {
-      DOM.setAttribute(element, attributeName, stringify(attributeValue));
+    var attrNs;
+    var nsAndName = splitNsName(attrName);
+    if (isPresent(nsAndName[0])) {
+      attrName = nsAndName[1];
+      attrNs = NAMESPACE_URIS[nsAndName[0]];
+    }
+    if (isPresent(attrValue)) {
+      if (isPresent(attrNs)) {
+        DOM.setAttributeNS(element, attrNs, attrName, attrValue);
+      } else {
+        DOM.setAttribute(element, nsAndName[1], attrValue);
+      }
     } else {
-      DOM.removeAttribute(element, attributeName);
+      if (isPresent(attrNs)) {
+        DOM.removeAttributeNS(element, attrNs, attrName);
+      } else {
+        DOM.removeAttribute(element, attrName);
+      }
     }
   }
 
@@ -307,7 +320,7 @@ export class DomRenderer_ extends DomRenderer {
     wtfLeave(s);
   }
   createElement(name: string, attrNameAndValues: string[]): Node {
-    var nsAndName = splitNamespace(name);
+    var nsAndName = splitNsName(name);
     var el = isPresent(nsAndName[0]) ?
                  DOM.createElementNS(NAMESPACE_URIS[nsAndName[0]], nsAndName[1]) :
                  DOM.createElement(nsAndName[1]);
@@ -320,11 +333,11 @@ export class DomRenderer_ extends DomRenderer {
   }
   private _setAttributes(node: Node, attrNameAndValues: string[]) {
     for (var attrIdx = 0; attrIdx < attrNameAndValues.length; attrIdx += 2) {
-      var attrNs;
+      var attrNs = null;
       var attrName = attrNameAndValues[attrIdx];
-      var nsAndName = splitNamespace(attrName);
+      var nsAndName = splitNsName(attrName);
       if (isPresent(nsAndName[0])) {
-        attrName = nsAndName[0] + ':' + nsAndName[1];
+        attrName = nsAndName[1];
         attrNs = NAMESPACE_URIS[nsAndName[0]];
       }
       var attrValue = attrNameAndValues[attrIdx + 1];
@@ -392,7 +405,7 @@ function decoratePreventDefault(eventHandler: Function): Function {
 
 var NS_PREFIX_RE = /^@([^:]+):(.+)/g;
 
-function splitNamespace(name: string): string[] {
+function splitNsName(name: string): string[] {
   if (name[0] != '@') {
     return [null, name];
   }

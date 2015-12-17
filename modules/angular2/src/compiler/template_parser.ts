@@ -554,6 +554,9 @@ class TemplateParseVisitor implements HtmlAstVisitor {
     } else {
       if (parts[0] == ATTRIBUTE_PREFIX) {
         boundPropertyName = parts[1];
+        if (boundPropertyName.indexOf(':') > -1) {
+          boundPropertyName = '@' + boundPropertyName;
+        }
         bindingType = PropertyBindingType.Attribute;
       } else if (parts[0] == CLASS_PREFIX) {
         boundPropertyName = parts[1];
