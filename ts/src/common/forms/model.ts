@@ -14,7 +14,7 @@ export const VALID = "VALID";
 export const INVALID = "INVALID";
 
 /**
- * Indicates that a Control is pending, i.e. that async validation is occurring and
+ * Indicates that a Control is pending, i.e. that async validation is occuring and
  * errors are not yet available for the input value.
  */
 export const PENDING = "PENDING";

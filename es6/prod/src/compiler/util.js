@@ -67,7 +67,7 @@ export function codeGenToString(expr) {
         return `'\${${expr}}'`;
     }
     else {
-        // JS automatically converts to string...
+        // JS automatically convets to string...
         return expr;
     }
 }

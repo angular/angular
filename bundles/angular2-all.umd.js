@@ -3865,7 +3865,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	         * Creates multiple providers matching the same token (a multi-provider).
 	         *
 	         * Multi-providers are used for creating pluggable service, where the system comes
-	         * with some default providers, and the user can register additional providers.
+	         * with some default providers, and the user can register additonal providers.
 	         * The combination of the default providers and the additional providers will be
 	         * used to drive the behavior of the system.
 	         *
@@ -5234,8 +5234,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                signature.push(parameter.map(lang_1.stringify).join(' '));
 	            }
 	        }
-	        return "Cannot resolve all parameters for " + lang_1.stringify(typeOrFunc) + "(" +
-	            signature.join(', ') + "). " + 'Make sure they all have valid type or annotations.';
+	        return "Cannot resolve all parameters for '" + lang_1.stringify(typeOrFunc) + "'(" +
+	            signature.join(', ') + "). " +
+	            "Make sure that all the parameters are decorated with Inject or have valid type annotations and that '" +
+	            lang_1.stringify(typeOrFunc) + "' is decorated with Injectable.";
 	    };
 	    return NoAnnotationError;
 	})(exceptions_1.BaseException);
@@ -12926,7 +12928,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 	    Object.defineProperty(NgZone.prototype, "hasPendingAsyncTasks", {
 	        /**
-	         * Whether there are any outstanding asynchronous tasks of any kind that are
+	         * Whether there are any outstanding asychnronous tasks of any kind that are
 	         * scheduled to run within Angular zone.
 	         *
 	         * Useful as a signal of UI stability. For example, when a test reaches a
@@ -19656,7 +19658,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	exports.INVALID = "INVALID";
 	/**
-	 * Indicates that a Control is pending, i.e. that async validation is occurring and
+	 * Indicates that a Control is pending, i.e. that async validation is occuring and
 	 * errors are not yet available for the input value.
 	 */
 	exports.PENDING = "PENDING";
@@ -23597,7 +23599,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return "'${" + expr + "}'";
 	    }
 	    else {
-	        // JS automatically converts to string...
+	        // JS automatically convets to string...
 	        return expr;
 	    }
 	}
@@ -24353,7 +24355,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	  * encapsultion: Styles defined within ShadowDOM, apply only to
-	  dom inside the ShadowDOM. Polymer uses one of two techniques to implement
+	  dom inside the ShadowDOM. Polymer uses one of two techniques to imlement
 	  this feature.
 
 	  By default, rules are prefixed with the host element tag name
@@ -25564,8 +25566,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	// Group 3 = "on-"
 	// Group 4 = "bindon-"
 	// Group 5 = the identifier after "bind-", "var-/#", or "on-"
-	// Group 6 = identifer inside [()]
-	// Group 7 = identifer inside []
+	// Group 6 = idenitifer inside [()]
+	// Group 7 = idenitifer inside []
 	// Group 8 = identifier inside ()
 	var BIND_NAME_REGEXP = /^(?:(?:(?:(bind-)|(var-|#)|(on-)|(bindon-))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/g;
 	var TEMPLATE_ELEMENT = 'template';
