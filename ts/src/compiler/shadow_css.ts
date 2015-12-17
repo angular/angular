@@ -52,7 +52,7 @@ import {
     }
 
   * encapsultion: Styles defined within ShadowDOM, apply only to
-  dom inside the ShadowDOM. Polymer uses one of two techniques to imlement
+  dom inside the ShadowDOM. Polymer uses one of two techniques to implement
   this feature.
 
   By default, rules are prefixed with the host element tag name

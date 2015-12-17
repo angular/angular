@@ -73,7 +73,7 @@ export function codeGenToString(expr: string): string {
   if (IS_DART) {
     return `'\${${expr}}'`;
   } else {
-    // JS automatically convets to string...
+    // JS automatically converts to string...
     return expr;
   }
 }

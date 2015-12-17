@@ -60,7 +60,7 @@ export let Provider = class {
      * Creates multiple providers matching the same token (a multi-provider).
      *
      * Multi-providers are used for creating pluggable service, where the system comes
-     * with some default providers, and the user can register additonal providers.
+     * with some default providers, and the user can register additional providers.
      * The combination of the default providers and the additional providers will be
      * used to drive the behavior of the system.
      *
