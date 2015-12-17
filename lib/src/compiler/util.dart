@@ -76,7 +76,7 @@ String codeGenToString(String expr) {
   if (IS_DART) {
     return '''\'\${${ expr}}\'''';
   } else {
-    // JS automatically convets to string...
+    // JS automatically converts to string...
     return expr;
   }
 }
