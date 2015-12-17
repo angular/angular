@@ -217,7 +217,7 @@ export class NgZone {
      */
     get hasPendingTimers() { return this._pendingTimeouts.length > 0; }
     /**
-     * Whether there are any outstanding asychnronous tasks of any kind that are
+     * Whether there are any outstanding asynchronous tasks of any kind that are
      * scheduled to run within Angular zone.
      *
      * Useful as a signal of UI stability. For example, when a test reaches a
