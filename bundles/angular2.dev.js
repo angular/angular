@@ -1708,7 +1708,7 @@ System.register("angular2/src/core/di/exceptions", ["angular2/src/facade/collect
           signature.push(parameter.map(lang_1.stringify).join(' '));
         }
       }
-      return "Cannot resolve all parameters for '" + lang_1.stringify(typeOrFunc) + "'(" + signature.join(', ') + "). " + "Make sure that all the parameters are decorated with Inject or have valid type annotations and that '" + lang_1.stringify(typeOrFunc) + "' is decorated with Injectable.";
+      return "Cannot resolve all parameters for " + lang_1.stringify(typeOrFunc) + "(" + signature.join(', ') + "). " + 'Make sure they all have valid type or annotations.';
     };
     return NoAnnotationError;
   })(exceptions_1.BaseException);

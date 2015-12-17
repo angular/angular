@@ -30,15 +30,7 @@ bool isPromise(obj) => obj is Future;
 bool isNumber(obj) => obj is num;
 bool isDate(obj) => obj is DateTime;
 
-String stringify(obj) {
-  final exp = new RegExp(r"from Function '(\w+)'");
-  final str = obj.toString();
-  if (exp.firstMatch(str) != null) {
-    return exp.firstMatch(str).group(1);
-  } else {
-    return str;
-  }
-}
+String stringify(obj) => obj.toString();
 
 int serializeEnum(val) {
   return val.index;
