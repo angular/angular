@@ -58,9 +58,9 @@ import "util.dart" show splitAtColon;
 
 // Group 5 = the identifier after "bind-", "var-/#", or "on-"
 
-// Group 6 = idenitifer inside [()]
+// Group 6 = identifer inside [()]
 
-// Group 7 = idenitifer inside []
+// Group 7 = identifer inside []
 
 // Group 8 = identifier inside ()
 var BIND_NAME_REGEXP = new RegExp(

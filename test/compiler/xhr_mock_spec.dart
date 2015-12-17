@@ -110,7 +110,7 @@ main() {
         xhr.flush();
       }).toThrowError("No pending requests to flush");
     });
-    it("should throw on unstatisfied expectations", () {
+    it("should throw on unsatisfied expectations", () {
       xhr.expect("/foo", "bar");
       xhr.when("/bar", "foo");
       xhr.get("/bar");

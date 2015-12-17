@@ -190,7 +190,7 @@ main() {
           [2]
         ]);
       });
-      it("should return an empty list when no paramters field in the stored type info",
+      it("should return an empty list when no parameters field in the stored type info",
           () {
         reflector.registerType(TestObj, new ReflectionInfo());
         expect(reflector.parameters(TestObj)).toEqual([]);
