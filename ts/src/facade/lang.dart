@@ -30,15 +30,7 @@ bool isPromise(obj) => obj is Future;
 bool isNumber(obj) => obj is num;
 bool isDate(obj) => obj is DateTime;
 
-String stringify(obj) {
-  final exp = new RegExp(r"from Function '(\w+)'");
-  final str = obj.toString();
-  if (exp.firstMatch(str) != null) {
-    return exp.firstMatch(str).group(1);
-  } else {
-    return str;
-  }
-}
+String stringify(obj) => obj.toString();
 
 int serializeEnum(val) {
   return val.index;
@@ -257,34 +249,38 @@ bool isJsObject(o) {
   return false;
 }
 
-// Functions below are noop in Dart. Imperatively controlling dev mode kills
-// tree shaking. We should only rely on `assertionsEnabled`.
-@Deprecated('Do not use this function. It is for JS only. There is no alternative.')
-void lockMode() {}
-@Deprecated('Do not use this function. It is for JS only. There is no alternative.')
-void enableDevMode() {}
-@Deprecated('Do not use this function. It is for JS only. There is no alternative.')
-void enableProdMode() {}
+bool _forceDevMode = true;
+bool _modeLocked = false;
 
-/// Use this function to guard debugging code. When Dart is compiled in
-/// production mode, the code guarded using this function will be tree
-/// shaken away, reducing code size.
-///
-/// WARNING: DO NOT CHANGE THIS METHOD! This method is designed to have no
-/// more AST nodes than the maximum allowed by dart2js to inline it. In
-/// addition, the use of `assert` allows the compiler to statically compute
-/// the value returned by this function and tree shake conditions guarded by
-/// it.
-///
-/// Example:
-///
-/// if (assertionsEnabled()) {
-///   ...code here is tree shaken away in prod mode...
-/// }
+void lockMode() {
+  _modeLocked = true;
+}
+
+@deprecated
+void enableDevMode() {
+  if (_forceDevMode) {
+    return;
+  }
+  if (_modeLocked) {
+    throw new Exception("Cannot enable dev mode after platform setup.");
+  }
+  _forceDevMode = true;
+}
+
+void enableProdMode() {
+  if (_forceDevMode) {
+    return;
+  }
+  if (_modeLocked) {
+    throw new Exception("Cannot enable prod mode after platform setup.");
+  }
+  _forceDevMode = false;
+}
+
 bool assertionsEnabled() {
   var k = false;
   assert((k = true));
-  return k;
+  return _forceDevMode || k;
 }
 
 // Can't be all uppercase as our transpiler would think it is a special directive...
