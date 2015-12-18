@@ -1,6 +1,22 @@
 import { Injector, Provider } from 'angular2/core';
 import { Type } from 'angular2/src/facade/lang';
+export declare class TestInjector {
+    private _instantiated;
+    private _injector;
+    private _providers;
+    reset(): void;
+    addProviders(providers: Array<Type | Provider | any[]>): void;
+    createInjector(): Injector;
+    execute(fn: FunctionWithParamTokens): any;
+}
+export declare function getTestInjector(): TestInjector;
+/**
+ * @deprecated Use TestInjector#createInjector() instead.
+ */
 export declare function createTestInjector(providers: Array<Type | Provider | any[]>): Injector;
+/**
+ * @deprecated Use TestInjector#createInjector() instead.
+ */
 export declare function createTestInjectorWithRuntimeCompiler(providers: Array<Type | Provider | any[]>): Injector;
 /**
  * Allows injecting dependencies in `beforeEach()` and `it()`.
@@ -20,7 +36,8 @@ export declare function createTestInjectorWithRuntimeCompiler(providers: Array<T
  * ```
  *
  * Notes:
- * - inject is currently a function because of some Traceur limitation the syntax should eventually
+ * - inject is currently a function because of some Traceur limitation the syntax should
+ * eventually
  *   becomes `it('...', @Inject (object: AClass, async: AsyncTestCompleter) => { ... });`
  *
  * @param {Array} tokens

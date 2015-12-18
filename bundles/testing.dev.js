@@ -2449,6 +2449,46 @@ System.register("angular2/src/testing/test_injector", ["angular2/core", "angular
   function _runtimeCompilerBindings() {
     return [core_1.provide(xhr_1.XHR, {useClass: dom_adapter_1.DOM.getXHR()}), compiler_1.COMPILER_PROVIDERS];
   }
+  var TestInjector = (function() {
+    function TestInjector() {
+      this._instantiated = false;
+      this._injector = null;
+      this._providers = [];
+    }
+    TestInjector.prototype.reset = function() {
+      this._injector = null;
+      this._providers = [];
+      this._instantiated = false;
+    };
+    TestInjector.prototype.addProviders = function(providers) {
+      if (this._instantiated) {
+        throw new exceptions_1.BaseException('Cannot add providers after test injector is instantiated');
+      }
+      this._providers = collection_1.ListWrapper.concat(this._providers, providers);
+    };
+    TestInjector.prototype.createInjector = function() {
+      var rootInjector = core_1.Injector.resolveAndCreate(_getRootProviders());
+      this._injector = rootInjector.resolveAndCreateChild(collection_1.ListWrapper.concat(collection_1.ListWrapper.concat(_getAppBindings(), _runtimeCompilerBindings()), this._providers));
+      this._instantiated = true;
+      return this._injector;
+    };
+    TestInjector.prototype.execute = function(fn) {
+      if (!this._instantiated) {
+        this.createInjector();
+      }
+      return fn.execute(this._injector);
+    };
+    return TestInjector;
+  })();
+  exports.TestInjector = TestInjector;
+  var _testInjector = null;
+  function getTestInjector() {
+    if (_testInjector == null) {
+      _testInjector = new TestInjector();
+    }
+    return _testInjector;
+  }
+  exports.getTestInjector = getTestInjector;
   function createTestInjector(providers) {
     var rootInjector = core_1.Injector.resolveAndCreate(_getRootProviders());
     return rootInjector.resolveAndCreateChild(collection_1.ListWrapper.concat(_getAppBindings(), providers));
@@ -2510,19 +2550,18 @@ System.register("angular2/src/testing/testing", ["angular2/src/facade/lang", "an
   var jsmIt = _global.it;
   var jsmIIt = _global.fit;
   var jsmXIt = _global.xit;
-  var testProviders;
-  var injector;
+  var testInjector = test_injector_1.getTestInjector();
   jsmBeforeEach(function() {
-    testProviders = [];
-    injector = null;
+    testInjector.reset();
   });
   function beforeEachProviders(fn) {
     jsmBeforeEach(function() {
       var providers = fn();
       if (!providers)
         return ;
-      testProviders = testProviders.concat(providers);
-      if (injector !== null) {
+      try {
+        testInjector.addProviders(providers);
+      } catch (e) {
         throw new Error('beforeEachProviders was called after the injector had ' + 'been used in a beforeEach or it block. This invalidates the ' + 'test injector');
       }
     });
@@ -2591,14 +2630,11 @@ System.register("angular2/src/testing/testing", ["angular2/src/facade/lang", "an
     var timeOut = testTimeOut;
     if (testFn instanceof test_injector_1.FunctionWithParamTokens) {
       jsmFn(name, function(done) {
-        if (!injector) {
-          injector = test_injector_1.createTestInjectorWithRuntimeCompiler(testProviders);
-        }
         var finishCallback = function() {
           setTimeout(done, 0);
         };
         var returnedTestValue = runInTestZone(function() {
-          return testFn.execute(injector);
+          return testInjector.execute(testFn);
         }, finishCallback, done.fail);
         if (testFn.isAsync) {
           if (_isPromiseLike(returnedTestValue)) {
@@ -2624,11 +2660,8 @@ System.register("angular2/src/testing/testing", ["angular2/src/facade/lang", "an
         var finishCallback = function() {
           setTimeout(done, 0);
         };
-        if (!injector) {
-          injector = test_injector_1.createTestInjectorWithRuntimeCompiler(testProviders);
-        }
         var returnedTestValue = runInTestZone(function() {
-          return fn.execute(injector);
+          return testInjector.execute(fn);
         }, finishCallback, done.fail);
         if (fn.isAsync) {
           if (_isPromiseLike(returnedTestValue)) {
